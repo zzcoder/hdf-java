@@ -1075,7 +1075,7 @@ implements ViewManager, HyperlinkListener
                 ((ImageObserver)frame).zoomOut();
             }
         }
-        else if (cmd.equals("Show palette"))
+        else if (cmd.equals("Edit palette"))
         {
             JInternalFrame frame = contentPane.getSelectedFrame();
             if (frame != null && frame instanceof ImageObserver)
@@ -1833,10 +1833,10 @@ implements ViewManager, HyperlinkListener
 
         menu.addSeparator();
 
-        item = new JMenuItem( "Show Palette");
+        item = new JMenuItem( "Edit Palette");
         item.setMnemonic(KeyEvent.VK_P);
         item.addActionListener(this);
-        item.setActionCommand("Show palette");
+        item.setActionCommand("Edit palette");
         menu.add(item);
         imageGUIs.add(item);
 
@@ -2060,7 +2060,7 @@ implements ViewManager, HyperlinkListener
         button.setToolTipText( "Palette" );
         button.setMargin( new Insets( 0, 0, 0, 0 ) );
         button.addActionListener( this );
-        button.setActionCommand( "Show palette" );
+        button.setActionCommand( "Edit palette" );
         imageGUIs.add(button);
         paletteIcon = button;
 
