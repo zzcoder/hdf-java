@@ -2138,6 +2138,13 @@ implements ViewManager, ActionListener, HyperlinkListener
         try {
             ugPath = ViewProperties.getUsersGuide();
 
+            String tmpPath = ugPath.toLowerCase();
+            if (!(tmpPath.startsWith("http:") || tmpPath.startsWith("file:")))
+            {
+                ugPath = "file:"+ugPath;
+                ViewProperties.setUsersGuide(ugPath);
+            }
+
             if (ugPath != null && ugPath.length()>0)
                 usersGuideURL = new URL(ugPath);
         } catch (Exception e) {
