@@ -158,10 +158,10 @@ tests:
 	@if test -d "test"; then cd test; $(MAKE); fi
 
 clean-test:
-	@if test -d "test"; then  cd test; $(MAKE) clean; fi
+	@if test -d "test/Makefile"; then  cd test; $(MAKE) clean; fi
 
 clean-testlink:
-	@if test -d "test/testlink"; then  cd test/linktest; $(MAKE) clean; fi
+	@if test -d "test/testlink/Makefile"; then  cd test/linktest; $(MAKE) clean; fi
 
 clean: clean-natives clean-classes clean-test clean-testlink
 
@@ -435,12 +435,10 @@ ncsa.hdf.object: ncsa/hdf/object/Attribute.class \
 	ncsa/hdf/object/DataFormat.class \
 	ncsa/hdf/object/Dataset.class \
 	ncsa/hdf/object/Group.class \
-	ncsa/hdf/object/H4Accessory.class \
 	ncsa/hdf/object/H4GRImage.class \
 	ncsa/hdf/object/H4Group.class \
 	ncsa/hdf/object/H4SDS.class \
 	ncsa/hdf/object/H4Vdata.class \
-	ncsa/hdf/object/H5Accessory.class \
 	ncsa/hdf/object/H5CompoundDS.class \
 	ncsa/hdf/object/H5Group.class \
 	ncsa/hdf/object/H5ScalarDS.class \
@@ -501,6 +499,7 @@ ncsa.hdf.view: ./ncsa/hdf/view/TreeView.class \
 	./ncsa/hdf/view/ImageObserver.class \
 	./ncsa/hdf/view/ImageView.class \
 	./ncsa/hdf/view/ImageView$$1.class \
+	./ncsa/hdf/view/ImageView$$ContourFilter.class \
 	./ncsa/hdf/view/ImageView$$FlipFilter.class \
 	./ncsa/hdf/view/ImageView$$ImageComponent.class \
 	./ncsa/hdf/view/MetadataDialog.class \
@@ -598,12 +597,10 @@ CompoundDS: ncsa/hdf/object/CompoundDS.class
 DataFormat: /ncsa/hdf/object/DataFormat.class 
 Dataset: ncsa/hdf/object/Dataset.class 
 Group:	ncsa/hdf/object/Group.class 
-H4Accessory: ncsa/hdf/object/H4Accessory.class 
 H4GRImage: ncsa/hdf/object/H4GRImage.class 
 H4Group:	ncsa/hdf/object/H4Group.class 
 H4SDS: ncsa/hdf/object/H4SDS.class 
 H4Vdata: ncsa/hdf/object/H4Vdata.class 
-H5Accessory:	ncsa/hdf/object/H5Accessory.class 
 H5Compound: ncsa/hdf/object/H5CompoundDS.class 
 H5Group: ncsa/hdf/object/H5Group.class 
 H5ScalarDS: ncsa/hdf/object/H5ScalarDS.class 
@@ -710,12 +707,10 @@ HDFOBJCLASSES= ./ncsa/hdf/object/Attribute.class \
 	./ncsa/hdf/object/DataFormat.class \
 	./ncsa/hdf/object/Dataset.class \
 	./ncsa/hdf/object/Group.class \
-	./ncsa/hdf/object/H4Accessory.class \
 	./ncsa/hdf/object/H4GRImage.class \
 	./ncsa/hdf/object/H4Group.class \
 	./ncsa/hdf/object/H4SDS.class \
 	./ncsa/hdf/object/H4Vdata.class \
-	./ncsa/hdf/object/H5Accessory.class \
 	./ncsa/hdf/object/H5CompoundDS.class \
 	./ncsa/hdf/object/H5Group.class \
 	./ncsa/hdf/object/H5ScalarDS.class \
@@ -723,13 +718,18 @@ HDFOBJCLASSES= ./ncsa/hdf/object/Attribute.class \
 	./ncsa/hdf/object/ScalarDS.class \
 	./ncsa/hdf/object/Metadata.class \
 	./ncsa/hdf/object/FileFormat.class \
+	./ncsa/hdf/object/Datatype.class \
+	./ncsa/hdf/object/H4Datatype.class \
+	./ncsa/hdf/object/H5Datatype.class \
 	./ncsa/hdf/object/H4File.class \
 	./ncsa/hdf/object/H5File.class \
 	./ncsa/hdf/object/H4File\$$1.class \
 	./ncsa/hdf/object/H4File\$$2.class \
 	./ncsa/hdf/object/H4File\$$3.class \
+	./ncsa/hdf/object/H4File\$$4.class \
 	./ncsa/hdf/object/H5File\$$1.class \
 	./ncsa/hdf/object/H5File\$$2.class \
+	./ncsa/hdf/object/H5File\$$3.class \
 	./ncsa/hdf/object/ScalarDS.class 
 
 
@@ -751,6 +751,7 @@ HDFVIEWCLASSES= ./ncsa/hdf/view/ViewManager.class \
 	./ncsa/hdf/view/ChartView\$$1.class \
 	./ncsa/hdf/view/ChartView\$$ChartPanel.class \
 	./ncsa/hdf/view/HDFView\$$1.class \
+	./ncsa/hdf/view/ImageView\$$ContourFilter.class \
 	./ncsa/hdf/view/ImageView\$$FlipFilter.class \
 	./ncsa/hdf/view/ImageView\$$ImageComponent.class \
 	./ncsa/hdf/view/MetadataDialog\$$1.class \
@@ -873,12 +874,10 @@ JAVASRCS= \
 ./ncsa/hdf/object/DataFormat.java  \
 ./ncsa/hdf/object/Dataset.java  \
 ./ncsa/hdf/object/Group.java  \
-./ncsa/hdf/object/H4Accessory.java  \
 ./ncsa/hdf/object/H4GRImage.java  \
 ./ncsa/hdf/object/H4Group.java  \
 ./ncsa/hdf/object/H4SDS.java  \
 ./ncsa/hdf/object/H4Vdata.java  \
-./ncsa/hdf/object/H5Accessory.java  \
 ./ncsa/hdf/object/H5CompoundDS.java  \
 ./ncsa/hdf/object/H5Group.java  \
 ./ncsa/hdf/object/H5ScalarDS.java  \
