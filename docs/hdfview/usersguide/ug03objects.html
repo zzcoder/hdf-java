@@ -92,13 +92,19 @@ calls into one single call read().
 reflect fundamental conceptual to design of HDF objects. Objects
 of HDF5 (group and dataset) and HDF4 (group, multi-dimension array, raster
 image, vdata and annotation) are presented as Java classes.
+
 <p>The HDF object package has two major goals. First, it simplifies the
 process of reading information from or writing data to file because the
 details of accessing to the HDF library are encapsulated into respective
 classes. Second, HDF4 and HDF5 objects are inherited from the same common object
 and interface. Applications can use of the HDF Object Package to access
 objects from either HDF4 or HDF5 in a uniform way, without accessing the
-libraries directly.
+libraries directly. The following diagram explains the relationship of the
+object package, HDF JNI and applcation.
+
+<p><b>
+HDF Applcations <==> HDF Object Package <==> HDF4/5 Java Wraper (JNI4/5) <==> HDF File
+</b>
 
 <h2>
 <a NAME="ug03hierarchy"></a>3.2 The Class Hierarchy</h2>
@@ -384,7 +390,7 @@ of Illinois at Urbana-Champaign</a></font>
 <br><font face="arial,helvetica" size=-1>
 <a href="mailto:hdfhelp@ncsa.uiuc.edu">hdfhelp@ncsa.uiuc.edu</a></font>
 <p>
-<i><font color="#FF0000" size=-1>Updated 6/25/2002</font></i>
+<i><font color="#FF0000" size=-1>Updated 11/5/2002</font></i>
 <!- END OF FOOTER INFO -->
 
 </body>

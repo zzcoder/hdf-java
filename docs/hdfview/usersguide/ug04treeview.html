@@ -119,7 +119,7 @@ an image, a table or text based on its datatype.  See the following chapters
 for a detailed discussion of the data viewers.
 
 <p>
-If the data value is not im memory, the "Open" action will load the data from
+If the data value is not in memory, the "Open" action will load the data from
 file and display it. If the data is already loaded into memory, it will just
 display the data. If you want to refresh data in memory or open dataset with
 different selection (subset or display option), you have to use "Open As".
@@ -129,13 +129,13 @@ Using "Open As", you can select a subset of dataset to display or change the
 default display options. For example, you can display the data values of an image
 in spreadsheet, or show a scalar dataset as an image. For multi-dimension dataset,
 you can select any of two dimensions to display. The mouse-drag navigator allows 
-you select a subset by dragging the mouse.
+you select a subset by dragging the mouse onver the preview image.
 
 <p>
-The start determines the starting coordinate of the hyperslab to select.
+The start determines the starting coordinate of the selected area.
 
 <p>
-The count determines how many blocks/points to select from the dataspace.
+The end determines the ending coordinate of the selected area.
 
 <p>
 The stride chooses array locations from the dataspace with each value in 
@@ -240,6 +240,16 @@ character. For HDF5, it also include String and Object references.
 <br><b>Figure 4.10 Create New Dataset</b></center>
 
 <p>
+The "New Image" command from the object menu allows you to create an empty image with
+default image attributes. The new image does not have any palette attached to it.
+You can create two kinds of images: indexed image with 256 colors and 24-bit true color image.
+
+<center>
+<p><img SRC="images/new_image.gif" >
+<br><b>Figure 4.11 Create New Image</b></center>
+
+
+<p>
 To delete objects from the tree, you first select the objects, then choose the "Delete" 
 command from the Object menu. A confirmation dialog appears to make sure you want to 
 delete the selected objects. 
@@ -286,7 +296,7 @@ Attributes of multiple dimensions or compound datatype are not supported.
 
 <center>
 <p><img SRC="images/new_attribute.gif" >
-<br><b>Figure 4.11 Create New Attribute</b></center>
+<br><b>Figure 4.12 Create New Attribute</b></center>
 
 <p>
 To change the value of an attribute, type in the new value into the cell. Only 
@@ -313,7 +323,7 @@ of Illinois at Urbana-Champaign</a></font>
 <br><font face="arial,helvetica" size=-1>
 <a href="mailto:hdfhelp@ncsa.uiuc.edu">hdfhelp@ncsa.uiuc.edu</a></font>
 <p>
-<i><font color="#FF0000" size=-1>Updated 6/25/2002</font></i>
+<i><font color="#FF0000" size=-1>Updated 11/5/2002</font></i>
 <!- END OF FOOTER INFO -->
 
 </body>

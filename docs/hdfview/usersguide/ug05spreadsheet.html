@@ -41,6 +41,7 @@ to flip the two dimension table along that dimension.
 <dt><a href="ug05spreadsheet.html#ug05lineplot">5.3 Display Column/Row Line Plot</a></dt>
 <dt><a href="ug05spreadsheet.html#ug05change">5.4 Change Data Value</a></dt>
 <dt><a href="ug05spreadsheet.html#ug05save">5.5 Save Data Value to Text File</a></dt>
+<dt><a href="ug05spreadsheet.html#ug05import">5.6 Import Data from Text File</a></dt>
 </dl>
 
 <hr noshade size=1>
@@ -99,17 +100,13 @@ and rows.
 
 <p>To make a selection, select a dataset from the tree and choose "Open
 As" command from the Object menu or the popup menu. The selection
-dialog appears. Figure 5.3 shows that a subset of dim[0]=[50, 99], dim[1]=[0,
-49] and dim[2]=[7, 7] is selected inclusively. The dimension order is selected
-by dim[2]=depth, dim[1]=height and dim[0]=width.
+dialog appears. You can make a selection by draging the mouse on the preview
+image or entering the values of start, end and stride. Figure 5.3 shows that 
+a subset is selected from a true color image with the size of 3796 x 3720.
 
 <center>
 <p><img SRC="images/dataset_subset.gif" >
 <br><b>Figure 5.3 Selection of Dataset.</b></center>
-
-<p>The order of the dimensions can be changed, for example to make dim[0]
-the horizontal and dim[1] the vertical. When this is selected, the data
-will be reordered in memory, and displayed in the new layout.
 
 <p>By default, a scalar dataset (e.g., a dataset or SDS of numbers) 
 is displayed in a Spreadsheet. You can also display
@@ -225,8 +222,14 @@ to copy the data to and select the "Paste Data" command.
 You can also copy and paste between HDFView and other applications. To copy external
 data from other application such as a text editor or MS Spreadsheet, select and 
 copy data from the application, then paste the data to the HDFView TableView, 
-<i>vice versa</i>. 
+<i>vice versa</i>.
 
+<p>
+You can also change values by predefined math functions. To change table values, you 
+select the data area and choose "Math conversion" command from the table menu. A list 
+of predefined mathematic functions are provided. Select a function and enter the
+function parameters. The values of selected data cells will be changed based on the
+mathematic function.
 
 <h2>
 <a NAME="ug05save"></a>
@@ -242,6 +245,31 @@ back the text file</I></B>.
 <p><img SRC="images/save_as_text.gif" >
 <br><b>Figure 5.5 Save As Text</b></center>
 
+<h2>
+<a NAME="ug05import"></a>
+5.6 Import Data from Text File</h2>
+You can fill the table cells directly from text file. Choose "Import Data From Text File"
+command from table menu and select the text file to import. The data values must be
+separated by space or the delimiter specified in the "User Options". The cells of 
+the table are filled row by row starting with the selected cell. The line breaks in the
+text file are not important. For example, 
+<pre>
+10 11 12 13 14 15
+16 17 18 19 20 21
+</pre>
+
+and
+
+<pre>
+10 11 12 13
+14 15 16 17
+18 19 
+20 21
+</pre>
+
+are the same.
+
+
 
 <!-- BEGIN OF FOOTER INFO -->
 <p>
@@ -256,7 +284,7 @@ of Illinois at Urbana-Champaign</a></font>
 <br><font face="arial,helvetica" size=-1>
 <a href="mailto:hdfhelp@ncsa.uiuc.edu">hdfhelp@ncsa.uiuc.edu</a></font>
 <p>
-<i><font color="#FF0000" size=-1>Updated 6/25/2002</font></i>
+<i><font color="#FF0000" size=-1>Updated 11/5/2002</font></i>
 <!- END OF FOOTER INFO -->
 
 </body>
