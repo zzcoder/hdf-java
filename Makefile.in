@@ -166,9 +166,9 @@ docs: javadocs
 javadocs:
 	-mkdir -p docs/javadocs;
 	@if test -n "$(H45INC)" ; then \
-	$(JAVADOC) -sourcepath $(CLASSPATH) -d ./docs/javadocs $(JAVADOC_FLAGS) $(JH45PACKAGES) ncsa.hdf.hdflib $(JHI5PACKAGES) $(HDFOBJPACKAGES) ; \
+	$(JAVADOC) -sourcepath $(CLASSPATH) -d ./docs/javadocs $(JAVADOC_FLAGS) $(JH45PACKAGES) ncsa.hdf.hdflib $(JHI5PACKAGES) $(HDFOBJPACKAGES) $(H4OBJPACKAGES) $(H5OBJPACKAGES); \
 	else \
-	$(JAVADOC) -sourcepath $(CLASSPATH) -d ./docs/javadocs $(JAVADOC_FLAGS) ncsa.hdf.hdflib $(JHI5PACKAGES) $(HDFOBJPACKAGES) ; \
+	$(JAVADOC) -sourcepath $(CLASSPATH) -d ./docs/javadocs $(JAVADOC_FLAGS) ncsa.hdf.hdflib $(JHI5PACKAGES) $(HDFOBJPACKAGES) $(H4OBJPACKAGES) $(H5OBJPACKAGES) ; \
 	fi
 
 linktest:
