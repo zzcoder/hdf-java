@@ -187,15 +187,15 @@ public class ViewProperties extends Properties
         URL url= null, url2=null, url3=null;
 
         try {
-            url = new URL("file:"+rootPath+"/lib/jhdfview.jar");
+            url = new URL("file:"+rootPath+File.separator+"lib"+File.separator+"jhdfview.jar");
         } catch (MalformedURLException mfu) {;}
 
         try {
-            url2 = new URL("file:"+rootPath+"/");
+            url2 = new URL("file:"+rootPath+File.separator);
         } catch (MalformedURLException mfu) {;}
 
         try {
-            url3 = new URL("file:"+rootPath+"/src/");
+            url3 = new URL("file:"+rootPath+File.separator+"src"+File.separator);
         } catch (MalformedURLException mfu) {;}
 
         URL uu[] = {url, url2, url3};
