@@ -2,22 +2,40 @@
 
 # Set up default variable values if not supplied by the user.
 
+<<<<<<< hdfview.sh
+set HDFVIEW_HOME=/afs/.ncsa.uiuc.edu/projects/hdf/java/java5/ModularHDFView   # where the HDFView is installed
+=======
 # where the HDFView is installed
 HDFVIEW_HOME=/afs/ncsa.uiuc.edu/projects/hdf/java/java10/mcgrath/verbena/Java
 export HDFVIEW_HOME
+>>>>>>> 1.7
 
+<<<<<<< hdfview.sh
+set JAVAPATH=/opt/jdk1.4.1/bin     # where Java is installed (requires jdk1.3 or above)
+#set JAVAPATH=/usr/bin     # where Java is installed (requires jdk1.3 or above)
+=======
 # where Java is installed (requires jdk1.3 or above)
 JAVAPATH=/opt/jdk1.4.1/bin
 export JAVAPATH
+>>>>>>> 1.7
 
 ###############################################################################
 #            DO NOT MODIFY BELOW THIS LINE
 ###############################################################################
 
+<<<<<<< hdfview.sh
+set CPATH=$HDFVIEW_HOME"/lib/jhdf.jar:"$HDFVIEW_HOME"/lib/jhdf5.jar:"$HDFVIEW_HOME"/lib/jhdfobj.jar"
+=======
 CPATH=$HDFVIEW_HOME"/lib/jhdf.jar:"$HDFVIEW_HOME"/lib/jhdf5.jar:"$HDFVIEW_HOME"/lib/jhdfobj.jar:"$HDFVIEW_HOME"/lib/netcdf.jar:"$HDFVIEW_HOME"/lib/fits.jar"
+>>>>>>> 1.7
 
+<<<<<<< hdfview.sh
+set CPATH=$CPATH":"$HDFVIEW_HOME"/lib/jhdf4obj.jar:"$HDFVIEW_HOME"/lib/jhdf5obj.jar:"$HDFVIEW_HOME"/lib/jhdfview.jar"
+set CPATH=$CPATH":"$HDFVIEW_HOME"/lib/netcdf.jar:"$HDFVIEW_HOME"/lib/fits.jar"
+=======
 CPATH=$CPATH":"$HDFVIEW_HOME"/lib/jhdf4obj.jar:"$HDFVIEW_HOME"/lib/jhdf5obj.jar:"$HDFVIEW_HOME"/lib/jhdfview.jar"
 
+>>>>>>> 1.7
 
 if test -z "$CLASSPATH"; then
 	CLASSPATH=""
