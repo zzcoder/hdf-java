@@ -44,15 +44,6 @@ public class H5Group extends Group
         super (fileFormat, name, path, parent, oid);
     }
 
-    // To do: Implementing DataFormat
-    public Object read() throws HDF5Exception
-    {
-        return null;
-    }
-
-    // To do: Implementing DataFormat
-    public void write() { ; }
-
     // Implementing DataFormat
     public List getMetadata() throws HDF5Exception
     {

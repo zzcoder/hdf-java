@@ -56,4 +56,10 @@ public interface FileFormat
      * Returns the full path of the file: file path + file name.
      */
     public abstract String getFilePath();
+
+    /**
+     * Returns the true if the file is read-only, otherwise returns false.
+     */
+    public abstract boolean isReadOnly();
+
 }

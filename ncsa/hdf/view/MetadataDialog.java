@@ -145,7 +145,7 @@ implements ActionListener
             isUnsigned = H4Datatype.isUnsigned(attr.getType());
         }
 
-        rowData[1] = attr.toString(", ", isUnsigned);
+        rowData[1] = attr.toString(", ");
 
         long dims[] = attr.getDataDims();
 
@@ -484,6 +484,41 @@ implements ActionListener
             } // if (n > 0)
         } // if (d instanceof Compound)
 
+        // add compression and data lauoyt information
+        try { d.getMetadata(); } catch (Exception ex) {}
+        String chunkInfo = "";
+        long[] chunks = d.getChunkSize();
+        if (chunks == null)
+            chunkInfo = "NONE";
+        else
+        {
+            int n = chunks.length;
+            chunkInfo = String.valueOf(chunks[0]);
+            for (int i=1; i<n; i++)
+            {
+                chunkInfo += " X " + chunks[i];
+            }
+        }
+
+        JPanel bPanel = new JPanel();
+        bPanel.setBorder(new TitledBorder(""));
+        bPanel.setLayout(new BorderLayout());
+        lp = new JPanel();
+        lp.setLayout(new GridLayout(2,1));
+        lp.add(new JLabel("Chunking: "));
+        lp.add(new JLabel("Compression: "));
+        bPanel.add(lp, BorderLayout.WEST);
+
+        rp = new JPanel();
+        rp.setLayout(new GridLayout(2,1));
+        rp.add(new JLabel(chunkInfo));
+        rp.add(new JLabel(d.getCompression()));
+        bPanel.add(rp, BorderLayout.CENTER);
+
+        // getChunkInfo does not work for HDF4 files
+        if (d.getFileFormat() instanceof H5File)
+            panel.add(bPanel, BorderLayout.SOUTH);
+
         return panel;
     }
 
@@ -501,14 +536,16 @@ implements ActionListener
         attrNumberLabel = new JLabel("Number of attributes = 0");
         topPanel.add(attrNumberLabel, BorderLayout.WEST);
 
+        FileFormat theFile = hObject.getFileFormat();
         JPanel bPanel = new JPanel();
         JButton b = new JButton(" Add ");
         b.setMnemonic('A');
         b.addActionListener(this);
         b.setActionCommand("Add attribute");
         bPanel.add(b);
+        b.setEnabled(!theFile.isReadOnly());
 
-        if (hObject.getFileFormat() instanceof H4File)
+        if (theFile instanceof H4File)
         {
             // cannot add attribute to HDF4 froup
             if (hObject instanceof Group &&
@@ -517,7 +554,7 @@ implements ActionListener
                 b.setEnabled(false);
             }
         }
-        else if (hObject.getFileFormat() instanceof H5File)
+        else if (theFile instanceof H5File)
         {
             // deleting is not supported by HDF4
             b = new JButton("Delete");
@@ -525,6 +562,7 @@ implements ActionListener
             b.addActionListener(this);
             b.setActionCommand("Delete attribute");
             bPanel.add(b);
+            b.setEnabled(!theFile.isReadOnly());
         }
         topPanel.add(bPanel, BorderLayout.EAST);
 
@@ -572,7 +610,9 @@ implements ActionListener
             {
                 if (getSelectedRow()==row && getSelectedColumn()==col)
                 {
-                    attrContentArea.setText(getValueAt(row, col).toString());
+                    Object attrV = getValueAt(row, col);
+                    if (attrV != null)
+                        attrContentArea.setText(attrV.toString());
                 }
 
                 return super.isCellSelected(row, col);
@@ -626,7 +666,7 @@ implements ActionListener
                 size += " x " + dims[j];
 
             attrTable.setValueAt(name, i, 0);
-            attrTable.setValueAt(attr.toString(", ", isUnsigned), i, 1);
+            attrTable.setValueAt(attr.toString(", "), i, 1);
             attrTable.setValueAt(type, i, 2);
             attrTable.setValueAt(size, i, 3);
         }  //for (int i=0; i<n; i++)
@@ -658,85 +698,66 @@ implements ActionListener
         }
 
         Attribute attr = (Attribute)attrList.get(row);
-        Object oldValue = attr.getValue();
+        Object data = attr.getValue();
+        if (data == null) return;
 
-        int array_length = Array.getLength(oldValue);
+        int array_length = Array.getLength(data);
         StringTokenizer st = new StringTokenizer(newValue, ",");
         if (st.countTokens() < array_length)
-            return; // not enough number of values
+        {
+            JOptionPane.showMessageDialog(getOwner(),
+                "More data value needed: "+newValue,
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         char NT = ' ';
-        String cName = oldValue.getClass().getName();
+        String cName = data.getClass().getName();
         int cIndex = cName.lastIndexOf("[");
         if (cIndex >= 0 ) NT = cName.charAt(cIndex+1);
+        boolean isUnsigned = attr.isUnsigned();
 
+        double d = 0;
         String theToken = null;
-        switch (NT)
+        for (int i=0; i<array_length; i++)
         {
-            case 'B':
-                byte bv = 0;
-                for (int j=0; j<array_length; j++)
-                {
-                    theToken = st.nextToken().trim();
-                    try { bv = Byte.parseByte(theToken); }
-                    catch (NumberFormatException ex){ continue; }
-                    Array.setByte(oldValue, j, bv);
-                }
-                break;
-            case 'S':
-                short sv = 0;
-                for (int j=0; j<array_length; j++)
-                {
-                    theToken = st.nextToken().trim();
-                    try { sv = Short.parseShort(theToken); }
-                    catch (NumberFormatException ex){ continue; }
-                    Array.setShort(oldValue, j, sv);
-                }
-                break;
-            case 'I':
-                int iv = 0;
-                for (int j=0; j<array_length; j++)
-                {
-                    theToken = st.nextToken().trim();
-                    try { iv = Integer.parseInt(theToken); }
-                    catch (NumberFormatException ex){ continue; }
-                    Array.setInt(oldValue, j, iv);
-                }
-                break;
-            case 'J':
-                long lv = 0;
-                for (int j=0; j<array_length; j++)
-                {
-                    theToken = st.nextToken().trim();
-                    try { lv = Long.parseLong(theToken); }
-                    catch (NumberFormatException ex){ continue; }
-                    Array.setLong(oldValue, j, lv);
-                }
-                break;
-            case 'F':
-                float fv = 0;
-                for (int j=0; j<array_length; j++)
-                {
-                    theToken = st.nextToken().trim();
-                    try { fv = Float.parseFloat(theToken); }
-                    catch (NumberFormatException ex){ continue; }
-                    Array.setFloat(oldValue, j, fv);
-                }
-                break;
-            case 'D':
-                double dv = 0;
-                for (int j=0; j<array_length; j++)
-                {
-                    theToken = st.nextToken().trim();
-                    try { dv = Double.parseDouble(theToken); }
-                    catch (NumberFormatException ex){ continue; }
-                    Array.setDouble(oldValue, j, dv);
-                }
-                break;
-            default:
-                Array.set(oldValue, 0, newValue);
-                break;
-        } // switch (class_t)
+            theToken = st.nextToken().trim();
+            try {
+                if (!(Array.get(data, i) instanceof String))
+                    d = Double.parseDouble(theToken);
+            }
+            catch (NumberFormatException ex)
+            {
+                JOptionPane.showMessageDialog(
+                    getOwner(),
+                    ex,
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (isUnsigned && d < 0)
+            {
+                JOptionPane.showMessageDialog(
+                    getOwner(),
+                    "Negative value for unsigned integer: "+newValue,
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            switch (NT)
+            {
+                case 'B': Array.setByte  (data, i, (byte)d); break;
+                case 'S': Array.setShort (data, i, (short)d); break;
+                case 'I': Array.setInt   (data, i, (int)d); break;
+                case 'J': Array.setLong  (data, i, (long)d); break;
+                case 'F': Array.setFloat (data, i, (float)d); break;
+                case 'D': Array.setDouble(data, i, (double)d); break;
+                default:  Array.set      (data, i, newValue); break;
+            }
+        }
 
         try {
             if (hObject.getFileFormat() instanceof H5File)
@@ -745,7 +766,8 @@ implements ActionListener
                 H4File.writeAttribute(hObject, attr);
         } catch (Exception ex)
         {
-            JOptionPane.showMessageDialog(getOwner(),
+            JOptionPane.showMessageDialog(
+                getOwner(),
                 ex,
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
@@ -753,7 +775,7 @@ implements ActionListener
         }
 
         // update the attribute table
-        attrTable.setValueAt(attr.toString(", ", true), row, 1);
+        attrTable.setValueAt(attr.toString(", "), row, 1);
     }
 
 }

@@ -12,8 +12,6 @@
  package ncsa.hdf.object;
 
  import java.lang.reflect.*;
- import ncsa.hdf.hdf5lib.*;
- import ncsa.hdf.hdf5lib.exceptions.*;
 
 /**
  * Attribute holds a (name, value) pair of HDF4/5 attribute.
@@ -51,6 +49,8 @@ public class Attribute implements Metadata
      */
     private Object value;
 
+    private boolean isUnsigned;
+
     /**
      * Create an attribute with specified name, data type and dimension sizes.
      * For scalar attribute, the dimension size can either an array of size one
@@ -73,15 +73,9 @@ public class Attribute implements Metadata
         else
             this.dataRank = 0;
 
-        this.value = null;
-    }
+        isUnsigned = (H5Datatype.isUnsigned(type) || H4Datatype.isUnsigned(type));
 
-    /**
-     * Returns the Class of this Attribute.
-     */
-    public Class getImplementationClass()
-    {
-        return this.getClass();
+        this.value = null;
     }
 
     /**
@@ -95,9 +89,9 @@ public class Attribute implements Metadata
     /**
      * Sets the value of this attribute.
      */
-    public void setValue(Object value)
+    public void setValue(Object theValue)
     {
-        this.value = value;
+        value = theValue;
     }
 
     /**
@@ -133,12 +127,19 @@ public class Attribute implements Metadata
     }
 
     /**
+     * Check the data type of the attribute is unsigned.
+     */
+    public boolean isUnsigned()
+    {
+        return isUnsigned;
+    }
+
+    /**
      * Returns the string representation of the value of this attribute.
      * <p>
      * @param delimiter the delimiter to separate individual data points.
-     * @param isUnsigned True is the attribute value is unsigned the integer.
      */
-    public String toString(String delimiter, boolean isUnsigned)
+    public String toString(String delimiter)
     {
         if (value == null)
             return null;

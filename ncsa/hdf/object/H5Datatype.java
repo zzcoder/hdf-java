@@ -36,7 +36,6 @@ public class H5Datatype extends Datatype
         super(tclass, tsize, torder, tsign);
     }
 
-
     /**
      * Allocate a one-dimensional array of byte, short, int, long, float, double,
      * or String to store data retrieved from an HDF5 file based on the given
@@ -47,6 +46,7 @@ public class H5Datatype extends Datatype
      * @return the array object if successful and null otherwise.
      */
     public static Object allocateArray(int tid, int size)
+    throws OutOfMemoryError
     {
         Object data = null;
 

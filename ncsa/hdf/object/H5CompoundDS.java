@@ -79,9 +79,6 @@ public class H5CompoundDS extends CompoundDS
      */
     public Object read() throws HDF5Exception
     {
-        if (data != null)
-            return data; // data is loaded
-
         List list = null;
 
         if (rank <= 0 )
@@ -96,41 +93,23 @@ public class H5CompoundDS extends CompoundDS
         int member_tid=-1, member_class=-1, member_size=0, fspace=-1, mspace=-1;
         int did = open();
 
-        boolean isAllSelected = true;
-        for (int i=0; i<rank; i++)
-        {
-            if (selectedDims[i] < dims[i])
-            {
-                isAllSelected = false;
-                break;
-            }
-        }
-
         try
         {
             long[] lsize = {1};
             for (int j=0; j<selectedDims.length; j++)
                 lsize[0] *= selectedDims[j];
 
-            if (isAllSelected)
-            {
-                mspace = HDF5Constants.H5S_ALL;
-                fspace = HDF5Constants.H5S_ALL;
-            }
-            else
-            {
-                fspace = H5.H5Dget_space(did);
-                mspace = H5.H5Screate_simple(1, lsize, null);
+            fspace = H5.H5Dget_space(did);
+            mspace = H5.H5Screate_simple(1, lsize, null);
 
-                // set the rectangle selection
-                H5.H5Sselect_hyperslab(
-                    fspace,
-                    HDF5Constants.H5S_SELECT_SET,
-                    startDims,
-                    selectedStride,     // set stride to 1
-                    selectedDims,
-                    null );   // set block to 1
-            }
+            // set the rectangle selection
+            H5.H5Sselect_hyperslab(
+                fspace,
+                HDF5Constants.H5S_SELECT_SET,
+                startDims,
+                selectedStride,
+                selectedDims,
+                null );   // set block to 1
 
             for (int i=0; i<numberOfMembers; i++)
             {
@@ -170,7 +149,7 @@ public class H5CompoundDS extends CompoundDS
                 try
                 {
                     member_size = H5.H5Tget_size(member_tid);
-                    read_tid = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND,member_size);
+                    read_tid = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND, member_size);
                     H5.H5Tinsert(read_tid, member_name, 0, arrayType);
                     H5.H5Dread(
                         did,
@@ -209,7 +188,7 @@ public class H5CompoundDS extends CompoundDS
             close(did);
         }
 
-        return (data=list);
+        return list;
     }
 
     // To do: Implementing DataFormat
@@ -223,6 +202,33 @@ public class H5CompoundDS extends CompoundDS
         {
             int did = open();
             attributeList = H5File.getAttribute(did);
+
+            // get the compresson and chunk information
+            int pid = H5.H5Dget_create_plist(did);
+            if (H5.H5Pget_layout(pid) == HDF5Constants.H5D_CHUNKED)
+            {
+                if (rank <= 0) init();
+                chunkSize = new long[rank];
+                H5.H5Pget_chunk(pid, rank, chunkSize);
+            }
+            else chunkSize = null;
+
+            int[] flags = {0};
+            int[] cd_nelmts = {1};
+            int[] cd_values = {0};
+            String[] cd_name ={""};
+            int nfilt = H5.H5Pget_nfilters(pid);
+            int filter = -1;
+            for (int i=0; i<nfilt; i++)
+            {
+                filter = H5.H5Pget_filter(pid, i, flags, cd_nelmts, cd_values, 20, cd_name);
+                if (filter == HDF5Constants.H5Z_FILTER_DEFLATE)
+                {
+                    compression = "DEFLATE";
+                    break;
+                }
+            }
+
             close(did);
         }
 

@@ -43,6 +43,7 @@ public class H4Datatype extends Datatype
      *  @return an array of 'datasize' numbers of datatype.
      */
     public static final Object allocateArray(int datatype, int datasize)
+    throws OutOfMemoryError
     {
         if (datasize <= 0)
             return null;
@@ -191,19 +192,19 @@ public class H4Datatype extends Datatype
                     else
                         tid = HDFConstants.DFNT_INT16;
                 }
+                else if (tsize == 4 || tsize == NATIVE)
+                {
+                    if (tsign == Datatype.SIGN_NONE)
+                        tid = HDFConstants.DFNT_UINT32;
+                    else
+                        tid = HDFConstants.DFNT_INT32;
+                }
                 else if (tsize == 8)
                 {
                     if (tsign == Datatype.SIGN_NONE)
                         tid = HDFConstants.DFNT_UINT64;
                     else
                         tid = HDFConstants.DFNT_INT64;
-                }
-                else
-                {
-                    if (tsign == Datatype.SIGN_NONE)
-                        tid = HDFConstants.DFNT_UINT32;
-                    else
-                        tid = HDFConstants.DFNT_INT32;
                 }
                 break;
             case Datatype.CLASS_FLOAT:

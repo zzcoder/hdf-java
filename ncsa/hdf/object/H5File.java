@@ -48,12 +48,14 @@ public class H5File extends File implements FileFormat
      */
     private MutableTreeNode rootNode;
 
+    private boolean isReadOnly;
+
     /**
      * Creates an H5File object with read only access.
      */
     public H5File(String pathname)
     {
-        this(pathname, HDF5Constants.H5F_ACC_RDONLY);
+        this(pathname, READ);
     }
 
     /**
@@ -69,6 +71,7 @@ public class H5File extends File implements FileFormat
     public H5File(String pathname, int access)
     {
         super(pathname);
+        isReadOnly = (access == READ);
 
         this.fid = -1;
         this.fullFileName = pathname;
@@ -134,6 +137,22 @@ public class H5File extends File implements FileFormat
     // Implementing FileFormat
     public void close() throws HDF5Exception
     {
+        // clean unused objects
+        if (rootNode != null)
+        {
+            DefaultMutableTreeNode theNode = null;
+            HObject theObj = null;
+            Enumeration enum = ((DefaultMutableTreeNode)rootNode).breadthFirstEnumeration();
+            while(enum.hasMoreElements())
+            {
+                theNode = (DefaultMutableTreeNode)enum.nextElement();
+                theObj = (HObject)theNode.getUserObject();
+                if (theObj instanceof Dataset) ((Dataset)theObj).clearData();
+                theObj = null;
+                theNode = null;
+            }
+        }
+
         H5.H5Fclose(fid);
         fid = -1;
     }
@@ -148,6 +167,12 @@ public class H5File extends File implements FileFormat
     public String getFilePath()
     {
         return fullFileName;
+    }
+
+    // Implementing FileFormat
+    public boolean isReadOnly()
+    {
+        return isReadOnly;
     }
 
     /**
@@ -228,6 +253,74 @@ public class H5File extends File implements FileFormat
         }
 
         return newNode;
+    }
+
+    /**
+     * Copy selected 2D subset of dataset into a new dataset.
+     */
+    public Dataset copy(Dataset srcDataset, Group pgroup,
+        String dstName, long[] dims, Object data)
+        throws Exception
+    {
+        if (srcDataset == null ||
+            pgroup == null ||
+            data == null)
+            return null;
+
+        Dataset dataset = null;
+        int srcdid, dstdid, tid, sid, plist;
+        String dname=null, path=null;
+
+        if (pgroup.isRoot()) path = HObject.separator;
+        else path = pgroup.getPath()+pgroup.getName()+HObject.separator;
+        dname = path + dstName;
+
+        srcdid = srcDataset.open();
+        tid = H5.H5Dget_type(srcdid);
+        sid = H5.H5Screate_simple(dims.length, dims, null);
+        plist = H5.H5Dget_create_plist(srcdid);
+        dstdid = H5.H5Dcreate(fid, dname, tid, sid, plist);
+
+        // write data values
+        H5.H5Dwrite(dstdid, tid, HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
+            HDF5Constants.H5P_DEFAULT, data);
+
+        // copy attributes from one object to the new object
+        copyAttributes(srcdid, dstdid);
+
+        byte[] ref_buf = H5.H5Rcreate(
+            fid,
+            dname,
+            HDF5Constants.H5R_OBJECT,
+            -1);
+        long l = HDFNativeData.byteToLong(ref_buf, 0);
+        long[] oid = {l};
+
+        if (srcDataset instanceof H5ScalarDS)
+        {
+            dataset = new H5ScalarDS(
+                this,
+                dstName,
+                path,
+                oid);
+        } else
+        {
+            dataset = new H5CompoundDS(
+                this,
+                dstName,
+                path,
+                oid);
+        }
+
+        pgroup.addToMemberList(dataset);
+
+        try { H5.H5Pclose(plist); } catch(Exception ex) {}
+        try { H5.H5Sclose(sid); } catch(Exception ex) {}
+        try { H5.H5Tclose(tid); } catch(Exception ex) {}
+        try { H5.H5Dclose(srcdid); } catch(Exception ex) {}
+        try { H5.H5Dclose(dstdid); } catch(Exception ex) {}
+
+        return dataset;
     }
 
     private TreeNode copy(Dataset srcDataset, H5Group pgroup)
@@ -369,6 +462,9 @@ public class H5File extends File implements FileFormat
         return theNode;
     }
 
+    /**
+     * Copy attributes of the source object to the destination object.
+     */
     public void copyAttributes(int src_id, int dst_id)
     {
         int aid_src=-1, aid_target=-1, atid=-1, asid=-1, num_attr=-1;
@@ -414,6 +510,125 @@ public class H5File extends File implements FileFormat
             try { H5.H5Aclose(aid_src); } catch(Exception ex) {}
             try { H5.H5Aclose(aid_target); } catch(Exception ex) {}
         } // for (int i=0; i<num_attr; i++)
+    }
+
+    /**
+     * Update values of reference datasets. When a file is saved into a
+     * new file, the values of reference dataset will not make sense in
+     * the new file and must be updated based on the values of references
+     * in the new file.
+     */
+    public static void updateReferenceDataset(H5File srcFile, H5File newFile)
+    throws Exception
+    {
+        if (srcFile == null || newFile == null)
+            return;
+
+        DefaultMutableTreeNode srcRoot = (DefaultMutableTreeNode)srcFile.getRootNode();
+        DefaultMutableTreeNode newRoot = (DefaultMutableTreeNode)newFile.getRootNode();
+
+        Enumeration srcEnum = srcRoot.breadthFirstEnumeration();
+        Enumeration newEnum = newRoot.breadthFirstEnumeration();
+
+        // build one-to-one table of between objects in
+        // the source file and new file
+        int did=-1, tid=-1;
+        HObject srcObj, newObj;
+        Hashtable oidMap = new Hashtable();
+        List refDatasets = new Vector();
+        while(newEnum.hasMoreElements() && srcEnum.hasMoreElements())
+        {
+            srcObj = (HObject)((DefaultMutableTreeNode)srcEnum.nextElement()).getUserObject();
+            newObj = (HObject)((DefaultMutableTreeNode)newEnum.nextElement()).getUserObject();
+            oidMap.put(String.valueOf(((long[])srcObj.getOID())[0]), newObj.getOID());
+            did = -1;
+            tid = -1;
+            if (newObj instanceof ScalarDS)
+            {
+                ScalarDS sd = (ScalarDS)newObj;
+                did = sd.open();
+                if (did > 0)
+                {
+                    try {
+                        tid= H5.H5Dget_type(did);
+                        if (H5.H5Tequal(tid, H5.J2C(HDF5CDataTypes.JH5T_STD_REF_OBJ)))
+                            refDatasets.add(sd);
+                    } catch (Exception ex) {}
+                    finally
+                    { try {H5.H5Tclose(tid);} catch (Exception ex) {}}
+                }
+                sd.close(did);
+            } // if (newObj instanceof ScalarDS)
+        }
+
+        H5ScalarDS d = null;
+        int sid=-1, size=0, rank=0;
+        int n = refDatasets.size();
+        for (int i=0; i<n; i++)
+        {
+            d = (H5ScalarDS)refDatasets.get(i);
+            byte[] buf = null;
+            long[] refs = null;
+
+            try {
+                did = d.open();
+                tid = H5.H5Dget_type(did);
+                sid = H5.H5Dget_space(did);
+                rank = H5.H5Sget_simple_extent_ndims(sid);
+                size = 1;
+                if (rank > 0)
+                {
+                    long[] dims = new long[rank];
+                    H5.H5Sget_simple_extent_dims(sid, dims, null);
+                    for (int j=0; j<rank; j++)
+                        size *= (int)dims[j];
+                    dims = null;
+                }
+
+                buf = new byte[size*8];
+                H5.H5Dread(
+                    did,
+                    tid,
+                    HDF5Constants.H5S_ALL,
+                    HDF5Constants.H5S_ALL,
+                    HDF5Constants.H5P_DEFAULT,
+                    buf);
+
+                // update the ref values
+                refs = HDFNativeData.byteToLong(buf);
+                size = refs.length;
+                for (int j=0; j<size; j++)
+                {
+                    long[] theOID = (long[])oidMap.get(String.valueOf(refs[j]));
+                    if (theOID != null)
+                    {
+                        refs[j] = theOID[0];
+                    }
+                }
+
+                // write back to file
+                H5.H5Dwrite(
+                    did,
+                    tid,
+                    HDF5Constants.H5S_ALL,
+                    HDF5Constants.H5S_ALL,
+                    HDF5Constants.H5P_DEFAULT,
+                    refs);
+
+            } catch (Exception ex)
+            {
+                continue;
+            } finally
+            {
+                try { H5.H5Tclose(tid); } catch (Exception ex) {}
+                try { H5.H5Sclose(sid); } catch (Exception ex) {}
+                try { H5.H5Dclose(did); } catch (Exception ex) {}
+            }
+
+            refs = null;
+            buf = null;
+        } // for (int i=0; i<n; i++)
+
     }
 
     /** find object by its OID. */
@@ -650,12 +865,14 @@ public class H5File extends File implements FileFormat
                 int nativeType = H5Datatype.toNativeType(tid);
 
                 Attribute attr = new Attribute(nameA[0], nativeType, dims);
+                attributeList.add(attr);
 
+                // retrieve the attribute value
                 long lsize = 1;
-                for (int j=0; j<dims.length; j++)
-                    lsize *= dims[j];
-
+                for (int j=0; j<dims.length; j++) lsize *= dims[j];
                 Object value = H5Datatype.allocateArray(nativeType, (int)lsize);
+                if (value == null)
+                    continue;
 
                 if (H5.H5Tget_class(nativeType)==HDF5Constants.H5T_ARRAY)
                     H5.H5Aread(aid, H5Datatype.toNativeType(H5.H5Tget_super(nativeType)), value);
@@ -667,9 +884,8 @@ public class H5File extends File implements FileFormat
                     value = Dataset.byteToString((byte[])value, H5.H5Tget_size(nativeType));
                 else if (typeClass == HDF5Constants.H5T_REFERENCE)
                     value = HDFNativeData.byteToLong((byte[])value);
-
                 attr.setValue(value);
-                attributeList.add(attr);
+
             } catch (HDF5Exception ex) {}
 
             try { H5.H5Tclose(tid); } catch (HDF5Exception ex) {}
@@ -744,6 +960,80 @@ public class H5File extends File implements FileFormat
         }
 
         obj.close(objID);
+    }
+
+    /**
+     * Creates required atriubtes for HDF5 image.
+     * @param dataset the image dataset which the attributes are added to.
+     * @param interlace the interlace mode of image data.
+     */
+    public static void createImageAttributes(Dataset dataset, int interlace) throws Exception
+    {
+        String subclass = null;
+        String interlaceMode = null;
+
+        if (interlace == ScalarDS.INTERLACE_PIXEL)
+        {
+            subclass = "IMAGE_TRUECOLOR";
+            interlaceMode = "INTERLACE_PIXEL";
+        } else if (interlace == ScalarDS.INTERLACE_PLANE)
+        {
+            subclass = "IMAGE_TRUECOLOR";
+            interlaceMode = "INTERLACE_PLANE";
+        } else
+        {
+            subclass = "IMAGE_INDEXED";
+        }
+
+        long[] attrDims = {1};
+        String attrName = "CLASS";
+        String[] attrValue = {"IMAGE"};
+        Datatype attrType = new H5Datatype(Datatype.CLASS_STRING, attrValue[0].length()+1, -1, -1);
+        Attribute attr = new Attribute(attrName, attrType.toNative(), attrDims);
+        attr.setValue(attrValue);
+        dataset.writeMetadata(attr);
+
+        attrName = "IMAGE_VERSION";
+        attrValue[0] = "1.2";
+        attrType = new H5Datatype(Datatype.CLASS_STRING, attrValue[0].length()+1, -1, -1);
+        attr = new Attribute(attrName, attrType.toNative(), attrDims);
+        attr.setValue(attrValue);
+        dataset.writeMetadata(attr);
+
+        attrDims[0] = 2;
+        attrName = "IMAGE_MINMAXRANGE";
+        byte[] attrValueInt = {0, (byte)255};
+        attrType = new H5Datatype(Datatype.CLASS_CHAR, 1, Datatype.NATIVE, Datatype.SIGN_NONE);
+        attr = new Attribute(attrName, attrType.toNative(), attrDims);
+        attr.setValue(attrValueInt);
+        dataset.writeMetadata(attr);
+
+        attrDims[0] = 1;
+        attrName = "IMAGE_SUBCLASS";
+        attrValue[0] = subclass;
+        attrType = new H5Datatype(Datatype.CLASS_STRING, attrValue[0].length()+1, -1, -1);
+        attr = new Attribute(attrName, attrType.toNative(), attrDims);
+        attr.setValue(attrValue);
+        dataset.writeMetadata(attr);
+
+        if (interlace == ScalarDS.INTERLACE_PIXEL || interlace == ScalarDS.INTERLACE_PLANE)
+        {
+            attrName = "INTERLACE_MODE";
+            attrValue[0] = interlaceMode;
+            attrType = new H5Datatype(Datatype.CLASS_STRING, attrValue[0].length()+1, -1, -1);
+            attr = new Attribute(attrName, attrType.toNative(), attrDims);
+            attr.setValue(attrValue);
+            dataset.writeMetadata(attr);
+        }
+        else
+        {
+            attrName = "PALETTE";
+            long[] palRef = {-1};
+            attrType = new H5Datatype(H5Datatype.CLASS_REFERENCE, 1, Datatype.NATIVE, Datatype.SIGN_NONE);
+            attr = new Attribute(attrName, attrType.toNative(), attrDims);
+            attr.setValue(palRef);
+            dataset.writeMetadata(attr);
+        }
     }
 
     /**

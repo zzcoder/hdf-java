@@ -74,6 +74,11 @@ public abstract class ScalarDS extends Dataset
     protected boolean isUnsigned;
 
     /**
+     * Flag to indicate is the original unsigned C data is converted.
+     */
+    protected boolean unsignedConverted;
+
+    /**
      * Creates a ScalarDS object with specific name, path, and parent.
      * <p>
      * @param fileFormat the HDF file.
@@ -103,6 +108,15 @@ public abstract class ScalarDS extends Dataset
     public final int getDataType()
     {
         return datatype;
+    }
+
+    /**
+     * Removes the data value of this dataset in memory.
+     */
+    public void clearData()
+    {
+        super.clearData();
+        unsignedConverted = false;
     }
 
     /**

@@ -57,30 +57,8 @@ implements ActionListener
         isFontChanged = false;
         fontSize = ViewProperties.getFontSizeInt();
 
-        JPanel contentPane = (JPanel)getContentPane();
-        contentPane.setLayout(new BorderLayout(5,5));
-        contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
-        contentPane.setPreferredSize(new Dimension(550, 200));
-
-        JPanel centerP = new JPanel();
-        centerP.setLayout(new BorderLayout(5,5));
-        centerP.setBorder(new TitledBorder(""));
-
-        JPanel p = new JPanel();
-        JLabel label = null;
-        p.setLayout(new GridLayout(3,1,10,10));
-        p.add(label = new JLabel("User's Guide:"));
-        //p.add(label = new JLabel("H4toH5 Converter:"));
-        p.add(label = new JLabel("Font Size:"));
-        p.add(label = new JLabel("Data Delimiter:"));
-        centerP.add("West", p);
-
-        p = new JPanel();
-        p.setLayout(new GridLayout(3,1,10,10));
-        p.add(UGField = new JTextField(ViewProperties.getUsersGuide()));
-        //p.add(H4toH5Field = new JTextField(ViewProperties.getH4toH5()));
-        p.add(fontChoice = new Choice());
-        p.add(delimiterChoice = new Choice());
+        fontChoice = new Choice();
+        delimiterChoice = new Choice();
         for (int i=0; i<6; i++)
         {
             fontChoice.add(String.valueOf(10+2*i));
@@ -92,21 +70,48 @@ implements ActionListener
         delimiterChoice.add(ViewProperties.DELIMITER_COLON);
         delimiterChoice.add(ViewProperties.DELIMITER_SEMI_COLON);
         delimiterChoice.select(ViewProperties.getDataDelimiter());
-        centerP.add("Center", p);
 
-        p = new JPanel();
-        p.setLayout(new GridLayout(4,1,10,10));
+        JPanel contentPane = (JPanel)getContentPane();
+        contentPane.setLayout(new BorderLayout(8,8));
+        contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
+        contentPane.setPreferredSize(new Dimension(500, 270));
+
+        JPanel centerP = new JPanel();
+        centerP.setLayout(new GridLayout(3,1,8,8));
+        //centerP.setBorder(new TitledBorder(""));
+
+        JPanel p0 = new JPanel();
+        p0.setLayout(new BorderLayout());
+        p0.add(new JLabel("User's Guide:  "), BorderLayout.WEST);
+        p0.add(UGField = new JTextField(ViewProperties.getUsersGuide()), BorderLayout.CENTER);
         JButton b = new JButton("Browse...");
         b.setActionCommand("Browse UG");
         b.addActionListener(this);
-        p.add(b);
-        b = new JButton("Browse...");
-        b.setActionCommand("Browse h4toh5");
-        b.addActionListener(this);
-        //p.add(b);
-        centerP.add("East", p);
+        p0.add(b, BorderLayout.EAST);
+        TitledBorder border = new TitledBorder("Help Document");
+        border.setTitleColor(Color.darkGray);
+        p0.setBorder(border);
+        centerP.add(p0);
 
-        p = new JPanel();
+        p0 = new JPanel();
+        p0.setLayout(new BorderLayout());
+        p0.add(new JLabel("Font Size:  "), BorderLayout.WEST);
+        p0.add(fontChoice, BorderLayout.CENTER);
+        border = new TitledBorder("TreeView Display");
+        border.setTitleColor(Color.darkGray);
+        p0.setBorder(border);
+        centerP.add(p0);
+
+        p0 = new JPanel();
+        p0.setLayout(new BorderLayout());
+        p0.add(new JLabel("Data Delimiter:  "), BorderLayout.WEST);
+        p0.add(delimiterChoice, BorderLayout.CENTER);
+        border = new TitledBorder("Text Data Input/Output");
+        border.setTitleColor(Color.darkGray);
+        p0.setBorder(border);
+        centerP.add(p0);
+
+        JPanel p = new JPanel();
         b = new JButton("   Ok   ");
         b.setActionCommand("Set options");
         b.addActionListener(this);
@@ -117,9 +122,9 @@ implements ActionListener
         p.add(b);
 
         String propertyFile = ViewProperties.getPropertyFile();
-        contentPane.add("North", new JLabel(propertyFile));
-        contentPane.add("South", p);
-        contentPane.add("Center", centerP);
+        contentPane.add(new JLabel(propertyFile), BorderLayout.NORTH);
+        contentPane.add(p, BorderLayout.SOUTH);
+        contentPane.add(centerP, BorderLayout.CENTER);
 
         Point l =((Frame)viewer).getLocation();
         l.x += 150;

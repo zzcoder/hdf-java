@@ -216,4 +216,9 @@ implements ActionListener
     /** Returns the new group created. */
     public DataFormat getObject() { return newObject; }
 
+    /** Returns the parent group of the new group. */
+    public Group getParentGroup() {
+        return (Group)groupList.get(parentChoice.getSelectedIndex());
+    }
+
 }

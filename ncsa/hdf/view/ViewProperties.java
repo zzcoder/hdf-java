@@ -36,7 +36,7 @@ public class ViewProperties extends Properties
     public static final String USER_PROPS = "hdfview.props";
 
     /** the maximum number of most recent files */
-    public static final int MAX_RECENT_FILES = 10;
+    public static final int MAX_RECENT_FILES = 20;
 
     /** name of the tab delimiter */
     public static final String DELIMITER_TAB = "Tab";

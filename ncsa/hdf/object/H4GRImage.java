@@ -43,7 +43,7 @@ public class H4GRImage extends ScalarDS
     private List attributeList;
 
     /**
-     * The GR interface identifier obtained from SDstart(filename, access)
+     * The GR interface identifier obtained from GRstart(fid)
      */
     private int grid;
 
@@ -51,8 +51,6 @@ public class H4GRImage extends ScalarDS
      * The number of components in the raster image
      */
     private int ncomp;
-
-    private boolean unsignedConverted;
 
     /**
      * Creates a H4GRImage object with specific name, path, and object ID.
@@ -82,8 +80,7 @@ public class H4GRImage extends ScalarDS
     // ***** need to implement from DataFormat *****
     public Object read() throws HDFException
     {
-        if (data != null)
-            return data; // data is loaded
+        Object theData = null;
 
         if (rank <=0 ) init();
 
@@ -95,9 +92,9 @@ public class H4GRImage extends ScalarDS
             // set the interlacing scheme for reading image data
             HDFLibrary.GRreqimageil(id, interlace);
             int datasize = getWidth()*getHeight()*ncomp;
-            data = H4Datatype.allocateArray(datatype, datasize);
+            theData = H4Datatype.allocateArray(datatype, datasize);
 
-            if (data != null)
+            if (theData != null)
             {
                 int[] start = {(int)startDims[0], (int)startDims[1]};
                 int[] select = {(int)selectedDims[0], (int)selectedDims[1]};
@@ -110,14 +107,14 @@ public class H4GRImage extends ScalarDS
                         stride[i] = (int)selectedStride[i];
                 }
 
-                HDFLibrary.GRreadimage(id, start, stride, select, data);
+                HDFLibrary.GRreadimage(id, start, stride, select, theData);
             }
         } finally
         {
             close(id);
         }
 
-        return data;
+        return theData;
     }
 
     // Implementing DataFormat
@@ -409,6 +406,137 @@ public class H4GRImage extends ScalarDS
     public int getComponentCount()
     {
         return ncomp;
+    }
+
+    /**
+     * Creates a new image.
+     * @param file the file which the dataset is added to.
+     * @param name the name of the dataset to create.
+     * @param pgroup the parent group of the new dataset.
+     * @param type the datatype of the dataset.
+     * @param dims the dimension size of the dataset.
+     * @param maxdims the max dimension size of the dataset.
+     * @param chunk the chunk size of the dataset.
+     * @param gzip the level of the gzip compression.
+     * @param ncomp number of components of the image data.
+     * @param interlace the interlace mode.
+     * @param data the array of data values.
+     * @return the new image if successful. Otherwise returns null.
+     */
+    public static H4GRImage create(
+        FileFormat file,
+        String name,
+        Group pgroup,
+        Datatype type,
+        long[] dims,
+        long[] maxdims,
+        long[] chunks,
+        int gzip,
+        int ncomp,
+        int interlace,
+        Object data) throws Exception
+    {
+        H4GRImage dataset = null;
+        String fullPath = null;
+
+        if (file == null ||
+            name == null ||
+            pgroup == null ||
+            dims == null ||
+            (gzip>0 && chunks==null))
+            return null;
+
+        String path = HObject.separator;
+        if (!pgroup.isRoot())
+            path = pgroup.getPath()+pgroup.getName()+HObject.separator;
+        fullPath = path +  name;
+
+        if (interlace == ScalarDS.INTERLACE_PLANE)
+            interlace = HDFConstants.MFGR_INTERLACE_COMPONENT;
+        else
+            interlace = HDFConstants.MFGR_INTERLACE_PIXEL;
+
+        // prepare the dataspace
+        boolean isTrueColor = dims.length> 3;
+        int rank = 2;
+        int idims[] = new int[rank];
+        int imaxdims[] = new int[rank];
+        int start[] = new int [rank];
+        for (int i=0; i<rank; i++)
+        {
+            idims[i] = (int)dims[i];
+            if (maxdims != null)
+                imaxdims[i] = (int)maxdims[i];
+            else
+                imaxdims[i] = idims[i];
+            start[i] = 0;
+        }
+
+        int ichunks[] = null;
+        if (chunks != null)
+        {
+            ichunks = new int[rank];
+            for (int i=0; i<rank; i++)
+                ichunks[i] = (int)chunks[i];
+        }
+
+        int grid, vgid;
+        int gid = ((H4File)file).getGRAccessID();
+        int tid = type.toNative();
+
+        try {
+            grid = HDFLibrary.GRcreate(gid, name, ncomp, tid, interlace, idims);
+        } catch (Exception ex) {  throw (ex); }
+
+        if (grid < 0)
+        {
+            throw (new HDFException("Unable to create the new dataset."));
+        }
+
+        if (grid > 0 && data != null)
+        {
+            HDFLibrary.GRwriteimage(grid, start, null, idims, data);
+        }
+
+        if (chunks != null)
+        {
+            // set chunk
+            HDFOnlyChunkInfo chunkInfo = new HDFOnlyChunkInfo(ichunks);
+            HDFLibrary.GRsetchunk(grid, chunkInfo, HDFConstants.HDF_CHUNK);
+        }
+
+        if (gzip > 0)
+        {
+            // set compression
+            int compType = HDFConstants.COMP_CODE_DEFLATE;
+            HDFDeflateCompInfo compInfo = new HDFDeflateCompInfo();
+            compInfo.level = gzip;
+            HDFLibrary.GRsetcompress(grid, compType, compInfo);
+        }
+
+        int ref = HDFLibrary.GRidtoref(grid);
+
+        if (!pgroup.isRoot())
+        {
+            // add the dataset to the parent group
+            vgid = pgroup.open();
+            if (vgid < 0)
+            {
+                if (grid > 0) HDFLibrary.GRendaccess(grid);
+                throw (new HDFException("Unable to open the parent group."));
+            }
+
+            HDFLibrary.Vaddtagref(vgid, HDFConstants.DFTAG_NDG, ref);
+
+            pgroup.close(vgid);
+        }
+
+        try {  if (grid > 0) HDFLibrary.GRendaccess(grid); } catch (Exception ex) {}
+
+        long[] oid = {HDFConstants.DFTAG_NDG, ref};
+        dataset = new H4GRImage(file, name, path, oid);
+
+        return dataset;
     }
 
 }

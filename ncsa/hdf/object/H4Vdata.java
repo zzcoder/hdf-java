@@ -61,10 +61,6 @@ public class H4Vdata extends CompoundDS
     // Implementing DataFormat
     public Object read() throws HDFException
     {
-        //System.out.println("ncsa.hdf.object.H4Vdata.read()");
-        if (data != null)
-            return data; // data is loaded
-
         if (rank <=0 ) init();
         if (numberOfMembers <= 0)
             return null; // this Vdata does not have any filed
@@ -120,7 +116,7 @@ public class H4Vdata extends CompoundDS
 
         close(id);
 
-        return (data=list);
+        return list;
     }
 
     // To do: Implementing DataFormat

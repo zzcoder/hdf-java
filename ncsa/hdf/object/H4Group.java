@@ -67,15 +67,6 @@ public class H4Group extends Group
         }
     }
 
-    // To do: Implementing DataFormat
-    public Object read() throws HDFException
-    {
-        return null;
-    }
-
-    // To do: Implementing DataFormat
-    public void write() throws HDFException { ; }
-
     // Implementing DataFormat
     public List getMetadata() throws HDFException
     {

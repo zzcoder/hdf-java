@@ -62,6 +62,8 @@ public class H4File extends File implements FileFormat
      */
     private int grid;
 
+    private boolean isReadOnly;
+
     /**
      * The SDS interface identifier.
      * The identifier is returned by SDstart(fname, flag), which initializes the
@@ -76,7 +78,7 @@ public class H4File extends File implements FileFormat
      */
     public H4File(String pathname)
     {
-        this(pathname, HDFConstants.DFACC_READ);
+        this(pathname, READ);
     }
 
     /**
@@ -97,6 +99,7 @@ public class H4File extends File implements FileFormat
     public H4File(String pathname, int access)
     {
         super(pathname);
+        isReadOnly = (access == READ);
 
         this.fid = -1;
         this.fullFileName = pathname;
@@ -185,11 +188,28 @@ public class H4File extends File implements FileFormat
     // Implementing FileFormat
     public void close() throws HDFException
     {
+        // clean unused objects
+        if (rootNode != null)
+        {
+            DefaultMutableTreeNode theNode = null;
+            HObject theObj = null;
+            Enumeration enum = ((DefaultMutableTreeNode)rootNode).breadthFirstEnumeration();
+            while(enum.hasMoreElements())
+            {
+                theNode = (DefaultMutableTreeNode)enum.nextElement();
+                theObj = (HObject)theNode.getUserObject();
+                if (theObj instanceof Dataset) ((Dataset)theObj).clearData();
+                theObj = null;
+                theNode = null;
+            }
+        }
+
         try { HDFLibrary.GRend(grid); } catch (HDFException ex) {}
         try { HDFLibrary.SDend(sdid); } catch (HDFException ex) {}
         try { HDFLibrary.Vend(fid); } catch (HDFException ex) {}
 
         HDFLibrary.Hclose(fid);
+
         fid = -1;
         objList = null;
     }
@@ -204,6 +224,12 @@ public class H4File extends File implements FileFormat
     public String getFilePath()
     {
         return fullFileName;
+    }
+
+    // Implementing FileFormat
+    public boolean isReadOnly()
+    {
+        return isReadOnly;
     }
 
     /**
@@ -243,15 +269,17 @@ public class H4File extends File implements FileFormat
 
         if (srcObj instanceof H4SDS)
         {
-           newNode = copy((H4SDS)srcObj, dstGroup);
+            newNode = new DefaultMutableTreeNode(
+            copy((H4SDS)srcObj, dstGroup, srcObj.getName(), null, null));
         }
         else if (srcObj instanceof H4GRImage)
         {
-           newNode = copy((H4GRImage)srcObj, dstGroup);
+            newNode = new DefaultMutableTreeNode(
+            copy((H4GRImage)srcObj, dstGroup, srcObj.getName(), null, null));
         }
         else if (srcObj instanceof H4Vdata)
         {
-           newNode = copy((H4Vdata)srcObj, dstGroup);
+           newNode = new DefaultMutableTreeNode(copy((H4Vdata)srcObj, dstGroup));
         }
         else if (srcObj instanceof H4Group)
         {
@@ -319,56 +347,11 @@ public class H4File extends File implements FileFormat
         obj.close(id);
     }
 
-    private TreeNode copy(H4SDS sds, H4Group pgroup) throws Exception
+    /**
+     * copy attributes from one SDS to another SDS
+     */
+    private void copyAttributeSDS(int srcdid, int dstdid)
     {
-        TreeNode newNode = null;
-        Dataset dataset = null;
-        int srcdid=-1, dstdid=-1, tid=-1, size=1;
-        String dname=null, path=null;
-
-        if (sds == null || pgroup == null)
-            return null;
-
-        if (pgroup.isRoot())
-            path = HObject.separator;
-        else
-            path = pgroup.getPath()+pgroup.getName()+HObject.separator;
-        dname = sds.getName();
-
-        srcdid = sds.open();
-        if (srcdid < 0)
-            return null;
-
-        int rank = sds.getRank();
-        if (rank <=0) sds.init();
-        rank = sds.getRank();
-
-        long[] dims = sds.getDims();
-        if (dims == null)
-            return null;
-
-        int[] start = new int[rank];
-        int[] count = new int[rank];
-        for (int i=0; i<rank; i++)
-        {
-            start[i] = 0;
-            count[i] = (int)dims[i];
-            size *= count[i];
-        }
-
-        // create the new dataset and attached it to the parent group
-        tid = sds.getDataType();
-        dstdid = HDFLibrary.SDcreate(sdid, dname, tid, rank, count);
-        if (dstdid < 0) return null;
-        int ref = HDFLibrary.SDidtoref(dstdid);
-        if (!pgroup.isRoot())
-        {
-            int vgid = pgroup.open();
-            HDFLibrary.Vaddtagref(vgid, HDFConstants.DFTAG_NDG, ref);
-            pgroup.close(vgid);
-        }
-
-        // copy attributes from one object to the new object
         try {
             String[] objName = {""};
             int[] sdInfo = {0, 0, 0};
@@ -399,10 +382,103 @@ public class H4File extends File implements FileFormat
                 HDFLibrary.SDsetattr(dstdid, attrName[0], attrInfo[0], attrInfo[1], attrBuff);
             } // for (int i=0; i<numberOfAttributes; i++)
         } catch (Exception ex) {}
+    }
+
+    /**
+     * copy attributes from one GR image to another GR image
+     */
+    private void copyAttributeGR(int srcdid, int dstdid, int numberOfAttributes)
+    {
+        if (numberOfAttributes <=0 )
+            return;
+
+        try {
+            boolean b = false;
+            String[] attrName = new String[1];
+            int[] attrInfo = {0, 0};
+            for (int i=0; i<numberOfAttributes; i++)
+            {
+                attrName[0] = "";
+                try {
+                    b = HDFLibrary.GRattrinfo(srcdid, i, attrName, attrInfo);
+                } catch (HDFException ex) { b = false; }
+
+                if (!b) continue;
+
+                // read attribute data from source dataset
+                byte[] attrBuff = new byte[attrInfo[1] * HDFLibrary.DFKNTsize(attrInfo[0])];
+                try { HDFLibrary.GRgetattr(srcdid, i, attrBuff);
+                } catch (Exception ex) { attrBuff = null; }
+
+                if (attrBuff == null)  continue;
+
+                // attach attribute to the destination dataset
+                HDFLibrary.GRsetattr(dstdid, attrName[0], attrInfo[0], attrInfo[1], attrBuff);
+            } // for (int i=0; i<numberOfAttributes; i++)
+        } catch (Exception ex) {}
+    }
+
+    public Dataset copy(H4SDS sds, H4Group pgroup,
+        String dname, int[] count, Object buff) throws Exception
+    {
+        Dataset dataset = null;
+        int srcdid=-1, dstdid=-1, tid=-1, size=1, rank;
+        String path=null;
+
+        if (sds == null || pgroup == null)
+            return null;
+
+        if (pgroup.isRoot()) path = HObject.separator;
+        else path = pgroup.getPath()+pgroup.getName()+HObject.separator;
+
+        srcdid = sds.open();
+        if (srcdid < 0)
+            return null;
+
+        int[] start = {0, 0};
+        if (count == null)
+        {
+            rank = sds.getRank();
+            if (rank <=0) sds.init();
+            rank = sds.getRank();
+
+            long[] dims = sds.getDims();
+            start = new int[rank];
+            count = new int[rank];
+            for (int i=0; i<rank; i++)
+            {
+                start[i] = 0;
+                count[i] = (int)dims[i];
+                size *= count[i];
+            }
+        }
+        else
+        {
+            rank = 2;
+        }
+
+        // create the new dataset and attached it to the parent group
+        tid = sds.getDataType();
+        dstdid = HDFLibrary.SDcreate(sdid, dname, tid, rank, count);
+        if (dstdid < 0) return null;
+
+        int ref = HDFLibrary.SDidtoref(dstdid);
+        if (!pgroup.isRoot())
+        {
+            int vgid = pgroup.open();
+            HDFLibrary.Vaddtagref(vgid, HDFConstants.DFTAG_NDG, ref);
+            pgroup.close(vgid);
+        }
+
+        // copy attributes from one object to the new object
+        copyAttributeSDS(srcdid, dstdid);
 
         // read data from the source dataset
-        byte[] buff = new byte[size * HDFLibrary.DFKNTsize(tid)];
-        HDFLibrary.SDreaddata(srcdid, start, null, count, buff);
+        if (buff == null)
+        {
+            buff = new byte[size * HDFLibrary.DFKNTsize(tid)];
+            HDFLibrary.SDreaddata(srcdid, start, null, count, buff);
+        }
 
         // write the data into the destination dataset
         HDFLibrary.SDwritedata(dstdid, start, null, count, buff);
@@ -411,30 +487,27 @@ public class H4File extends File implements FileFormat
         dataset = new H4SDS(this, dname, path, oid);
 
         pgroup.addToMemberList(dataset);
-        newNode = new DefaultMutableTreeNode(dataset);
 
         sds.close(srcdid);
         try { HDFLibrary.SDendaccess(dstdid); }
         catch (HDFException ex) { ; }
 
-        return newNode;
+        return dataset;
     }
 
-    private TreeNode copy(H4GRImage img, H4Group pgroup) throws Exception
+    /** copy an image. */
+    public Dataset copy(H4GRImage img, H4Group pgroup,
+        String dname, int[] count, Object buff) throws Exception
     {
-        TreeNode newNode = null;
         Dataset dataset = null;
         int srcdid=-1, dstdid=-1, size=1;
-        String dname=null, path=null;
+        String path=null;
 
         if (img == null || pgroup == null)
             return null;
 
-        if (pgroup.isRoot())
-            path = HObject.separator;
-        else
-            path = pgroup.getPath()+pgroup.getName()+HObject.separator;
-        dname = img.getName();
+        if (pgroup.isRoot()) path = HObject.separator;
+        else path = pgroup.getPath()+pgroup.getName()+HObject.separator;
 
         srcdid = img.open();
         if (srcdid < 0)
@@ -442,12 +515,12 @@ public class H4File extends File implements FileFormat
 
         int rank = 2;
         int[] start = new int[rank];
-        int[] count = new int[rank];
         int[] grInfo = new int[4]; //ncomp, data_type, interlace and num_attrs
         try {
             String[] tmpName = {""};
             int[] tmpDims = new int[2];
-            HDFLibrary.GRgetiminfo(srcdid, tmpName, grInfo, count);
+            HDFLibrary.GRgetiminfo(srcdid, tmpName, grInfo, tmpDims);
+            if (count == null) count = tmpDims;
         } catch (HDFException ex) {}
 
         int ncomp = grInfo[0];
@@ -476,30 +549,7 @@ public class H4File extends File implements FileFormat
         HDFLibrary.GRwritelut(pid, palInfo[0], palInfo[1], palInfo[2], palInfo[3], palBuff);
 
         // copy attributes from one object to the new object
-        try {
-            boolean b = false;
-            String[] attrName = new String[1];
-            int[] attrInfo = {0, 0};
-            for (int i=0; i<numberOfAttributes; i++)
-            {
-                attrName[0] = "";
-                try {
-                    b = HDFLibrary.GRattrinfo(srcdid, i, attrName, attrInfo);
-                } catch (HDFException ex) { b = false; }
-
-                if (!b) continue;
-
-                // read attribute data from source dataset
-                byte[] attrBuff = new byte[attrInfo[1] * HDFLibrary.DFKNTsize(attrInfo[0])];
-                try { HDFLibrary.GRgetattr(srcdid, i, attrBuff);
-                } catch (Exception ex) { attrBuff = null; }
-
-                if (attrBuff == null)  continue;
-
-                // attach attribute to the destination dataset
-                HDFLibrary.GRsetattr(dstdid, attrName[0], attrInfo[0], attrInfo[1], attrBuff);
-            } // for (int i=0; i<numberOfAttributes; i++)
-        } catch (Exception ex) {}
+        copyAttributeGR(srcdid, dstdid, numberOfAttributes);
 
         for (int i=0; i<rank; i++)
         {
@@ -508,8 +558,11 @@ public class H4File extends File implements FileFormat
         }
 
         // read data from the source dataset
-        byte[] buff = new byte[size * HDFLibrary.DFKNTsize(tid)];
-        HDFLibrary.GRreadimage(srcdid, start, null, count, buff);
+        if (buff == null)
+        {
+            buff = new byte[size * HDFLibrary.DFKNTsize(tid)];
+            HDFLibrary.GRreadimage(srcdid, start, null, count, buff);
+        }
 
         // write the data into the destination dataset
         HDFLibrary.GRwriteimage(dstdid, start, null, count, buff);
@@ -518,18 +571,16 @@ public class H4File extends File implements FileFormat
         dataset = new H4GRImage(this, dname, path, oid);
 
         pgroup.addToMemberList(dataset);
-        newNode = new DefaultMutableTreeNode(dataset);
 
         img.close(srcdid);
         try { HDFLibrary.GRendaccess(dstdid); }
         catch (HDFException ex) {;}
 
-        return newNode;
+        return dataset;
     }
 
-    private TreeNode copy(H4Vdata vdata, H4Group pgroup) throws Exception
+    private Dataset copy(H4Vdata vdata, H4Group pgroup) throws Exception
     {
-        TreeNode newNode = null;
         Dataset dataset = null;
         int srcdid=-1, dstdid=-1;
         String dname=null, path=null;
@@ -620,13 +671,12 @@ public class H4File extends File implements FileFormat
         dataset = new H4Vdata(this, dname, path, oid);
 
         pgroup.addToMemberList(dataset);
-        newNode = new DefaultMutableTreeNode(dataset);
 
         vdata.close(srcdid);
         try { HDFLibrary.VSdetach(dstdid); }
         catch (Exception ex) { ; }
 
-        return newNode;
+        return dataset;
     }
 
     private TreeNode copy(H4Group srcGroup, H4Group pgroup) throws Exception
@@ -774,7 +824,7 @@ public class H4File extends File implements FileFormat
         argv = new int[2];
         boolean b = false;
         try {
-            b = HDFLibrary.GRfileinfo(grid,argv);
+            b = HDFLibrary.GRfileinfo(grid, argv);
         } catch (HDFException ex)
         {
             b = false;
@@ -783,6 +833,7 @@ public class H4File extends File implements FileFormat
         if ( b )
         {
             n = argv[0];
+
             for (int i=0; i<n; i++)
             {
                 // no duplicate object at top level
