@@ -166,9 +166,9 @@ docs: javadocs
 javadocs:
 	-mkdir -p docs/javadocs;
 	@if test -n "$(H45INC)" ; then \
-	$(JAVADOC) -sourcepath $(CLASSPATH) -d ./docs/javadocs $(JAVADOC_FLAGS) $(JH45PACKAGES) $(JHIPACKAGES) $(JHI5PACKAGES) $(HDFOBJPACKAGES) $(HDFVIEWPACKAGES); \
+	$(JAVADOC) -sourcepath $(CLASSPATH) -d ./docs/javadocs $(JAVADOC_FLAGS) $(JH45PACKAGES) ncsa.hdf.hdflib $(JHI5PACKAGES) $(HDFOBJPACKAGES) ; \
 	else \
-	$(JAVADOC) -sourcepath $(CLASSPATH) -d ./docs/javadocs $(JAVADOC_FLAGS) $(JHIPACKAGES) $(JHI5PACKAGES) $(HDFOBJPACKAGES) $(HDFVIEWPACKAGES); \
+	$(JAVADOC) -sourcepath $(CLASSPATH) -d ./docs/javadocs $(JAVADOC_FLAGS) ncsa.hdf.hdflib $(JHI5PACKAGES) $(HDFOBJPACKAGES) ; \
 	fi
 
 linktest:
@@ -218,7 +218,7 @@ clean-docs:
 	cd docs; \
 	rm *.html
 	cd docs/javadocs; \
-	rm *.html
+	rm -r *.html
 
 check: install $(TESTPACKAGES)
 	cd test; \
@@ -349,9 +349,9 @@ install-docs: install-javadocs install-ug
 install-javadocs:
 	-mkdir -p $(DOCDIR)/javadocs;
 	@if test -n "$(H45INC)" ; then \
-	$(JAVADOC) -sourcepath $(CLASSPATH) -d $(DOCDIR)/javadocs $(JAVADOC_FLAGS) $(JH45PACKAGES) $(JHIPACKAGES) $(JHI5PACKAGES) $(HDFOBJPACKAGES); \
+	$(JAVADOC) -sourcepath $(CLASSPATH) -d $(DOCDIR)/javadocs $(JAVADOC_FLAGS) $(JH45PACKAGES) ncsa.hdf.hdflib $(JHI5PACKAGES) $(HDFOBJPACKAGES); \
 	else \
-	$(JAVADOC) -sourcepath $(CLASSPATH) -d $(DOCDIR)/javadocs $(JAVADOC_FLAGS) $(JHIPACKAGES) $(JHI5PACKAGES) $(HDFOBJPACKAGES); \
+	$(JAVADOC) -sourcepath $(CLASSPATH) -d $(DOCDIR)/javadocs $(JAVADOC_FLAGS) ncsa.hdf.hdflib $(JHI5PACKAGES) $(HDFOBJPACKAGES); \
 	fi
 	-mkdir -p $(DOCDIR)/javadocs/images;
 	cp docs/javadocs/images/*.gif $(DOCDIR)/javadocs/images;
