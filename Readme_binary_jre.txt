@@ -1,0 +1,151 @@
+
+
+
+			     NCSA HDFView 1.0
+                            ------------------
+			
+	1) What it is
+	2) Features
+	3) Limitations
+	4) System requirements
+	5) Installation
+        6) The files you should get
+        7) For further information
+______________________________________________________________________
+
+
+1) What it is
+
+The HDFView is a Java-based tool for browsing and editing NCSA HDF4 and 
+HDF5 files. HDFView allows users to browse through any HDF4 and HDF5 file; 
+starting with a tree view of all top-level objects in an HDF file's hierarchy. 
+HDFView allows a user to descend through the hierarchy and navigate among 
+the file's data objects. The content of a data object is loaded only when 
+the object is selected, providing interactive and efficient access to HDF4 
+and HDF5 files. HDFView editing features allow a user to create, delete, and 
+modify the value of HDF objects and attributes.
+
+HDFView Version 1.0 is the first release. It does not support editing. Editing 
+features will be added in the future release.
+
+2) Features
+
+HDFView Version 1.0 provides basic browsing features for HDF4 and HDF5 files. 
+The browsing features are listed below. Details of the features are discussed 
+in their related chapters of the HDFView User's Guide.
+
+  -> Open multiple HDF4 or HDF5 files.
+  -> Display file hierarchy in a tree.
+  -> Show dataset as an image, a table or text.
+  -> Allow users to select a subset of dataset to display.
+  -> Show attributes and other general information of data objects.
+  -> Display lineplot/histrogram for selected table data/image area.
+  -> Display simple compound dataset (non-nested compound datatype) in a table.
+  -> Support simple image manipulation, such as zooming in/out image.
+  -> Allow to display any of three dimensions of a multiple dimension data set.
+
+3) Limitations
+
+Version 1.0 is the first release of the HDFView. It has the following limitations.
+
+  -> does not support editing HDF files.
+  -> does not display dataset of nested compound datatypes.
+  -> does not display named datatypes.
+  -> supports only indexed image with RGB color model or 24-bit true color image.
+  -> Opening a large image or dataset may cause "out of memory" error due to 
+     the limitations of the Java Virtual Machine.
+  -> is tested and runs only at JDK/JRE1.3.x. It does not work with JDK 1.1.x or 
+     JDK 1.2.x.
+
+4) System requirements
+
+The Java 2 Runtime Environment, Sun JRE1.3.1_02, is bundled in this product.
+No aditional software is required. 
+
+Since the Java 2 Runtime Environment is bundled in the HDFView, download and 
+installation the HDFView requires acceptance of the Java 2 Runtime Environment 
+license agreement. Please read the Java Binary Code License Agreement at
+
+http://java.sun.com/j2se/1.3/jre/j2re-1_3_1_02-license.html
+
+HDFView 1.0 has been built and tested on Solaris, SGI IRIX 6.5, Linux,
+and Windows 95/98/2000/NT
+
+5) Installation
+
+Install on Unix
+
+After downloading installation file and,  cd to the directory where you 
+downloaded the installer. At the prompt type:  
+
+sh ./hdfview-xxx.bin 
+
+where xxx is the Unix OS name such as solaris, linux or irix. The installer 
+will guide you to select the Java Virtual Machine and HDFView home directory 
+(where you want to install the HDFView). 
+
+Install on Windows
+After downloading, double-click 
+
+hdfview-windows.exe
+ 
+The installer will guide you to select the Java Virtual Machine and 
+HDFView home directory (where you want to install the HDFView). After 
+installing, you can lanuch the HDFView from 
+Start -> Program Files -> NCSA HDFView
+
+6) The files you should get
+
+For Windows
+    Readme.txt          - This readme file.
+    Copyright           - The copyright information.
+    hdfview.exe         - The excutable program to start the HDFView
+    docs/UsersGuide     - The HDFView User's Guide
+    jre/                - The Java 2 Runtime Environment: Sun JRE 1.3.1_02
+    lib/
+        jhdf.jar        - The jar file containing all the classes of the Java
+                          wrapper of the HDF 4 library.
+        jhdf5.jar       - The jar file containing all the classes of the Java
+                          wrapper of the HDF 5 library.
+        jhdfobj.jar     - The jar file containing all the Java classes of the 
+                           HDF data objects.
+        jhdfview.jar    - The jar file containing allthe Java classes of the GUI
+                          components of the HDFView.
+    lib/win
+        jhdf.dll        - The dynamic link library of HDF 4.
+        jhdf5.dll       - The dynamic link library of HDF 5.
+    samples/            - Sample HDF 4 and HDF 5 files.
+    UninstallerData/    - Files for uninstalling the HDfView.
+
+For Unix
+    Readme.txt          - This readme file.
+    Copyright           - The copyright information.
+    hdfview             - The shell script to start the HDFView
+    docs/UsersGuide     - The HDFView User's Guide
+    jre/                - The Java 2 Runtime Environment: Sun JRE 1.3.1_02
+    lib/
+        jhdf.jar        - The jar file containing all the classes of the Java
+                          wrapper of the HDF 4 library.
+        jhdf5.jar       - The jar file containing all the classes of the Java
+                          wrapper of the HDF 5 library.
+        jhdfobj.jar     - The jar file containing all the Java classes of the 
+                           HDF data objects.
+        jhdfview.jar    - The jar file containing allthe Java classes of the GUI
+                          components of the HDFView.
+    lib/(solaris, linux, or irix-6.5)
+        jhdf.so         - The dynamic link library of HDF 4.
+        jhdf5.so        - The dynamic link library of HDF 5.
+    samples/            - Sample HDF 4 and HDF 5 files.
+    UninstallerData/    - Files for uninstalling the HDfView.
+
+7) For further information
+
+General information about HDF and HDF4 and HDF5 are available at:
+http://hdf.ncsa.uiuc.edu
+
+Information about the HDFView tool and related products is available
+http://hdf.ncsa.uiuc.edu/hdf-java-html
+
+Questions and feedback may be sent to:
+hdfhelp@ncsa.uiuc.edu
+
