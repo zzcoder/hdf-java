@@ -828,10 +828,11 @@ if test -n "$ac_init_help"; then
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-libz=LIB     Path to the gzip library (required if not in default path)
+  --with-libjpeg=LIB     Path to the jpeg library (required if not in default path)
+  --with-libsz=LIB     Path to the gzip library (required if not in default path)
   --with-hdf4=INC,LIB     Path to the HDF4 library (required if not in default path)
-  --with-libz=LIB     Path to the gzip library (requied if not in default path)
   --with-hdf5=INC,LIB     Path to the HDF5 library (requied if not in default path)
-  --with-libsz=LIB     Path to the gzip library (requied if not in default path)
   --with-h4toh5=INC,LIB     Path to the HDF 4 to 5 library (optional feature, if selected then path required is not in default path)
   --with-classpath=LIB
   --with-jdk=INC,LIB     Path to the JDK (required if not in default path)
@@ -2824,6 +2825,297 @@ esac
 HERE=`pwd`
 
 
+
+withval="";
+ ZLIB=""
+
+# Check whether --with-libz or --without-libz was given.
+if test "${with_libz+set}" = set; then
+  withval="$with_libz"
+
+fi;
+
+case "$withval" in
+  yes)
+    { { echo "$as_me:$LINENO: error: GZIP library needed for compilation." >&5
+echo "$as_me: error: GZIP library needed for compilation." >&2;}
+   { (exit 1); exit 1; }; }
+    ;;
+  no)
+      ZLIB=""
+    	echo "$as_me:$LINENO: result: GZIP suppressed" >&5
+echo "${ECHO_T}GZIP suppressed" >&6;
+    ;;
+  *)
+if test -n "$withval" ; then
+    z_lib="`echo $withval |cut -f2 -d, -s`"
+	ZLIB=$z_lib"/libz.a"
+    	echo "$as_me:$LINENO: result: zlib found: $ZLIB" >&5
+echo "${ECHO_T}zlib found: $ZLIB" >&6;
+else
+echo "$as_me:$LINENO: checking for compress in -lz" >&5
+echo $ECHO_N "checking for compress in -lz... $ECHO_C" >&6
+if test "${ac_cv_lib_z_compress+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lz  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+#include "confdefs.h"
+
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char compress ();
+#ifdef F77_DUMMY_MAIN
+#  ifdef __cplusplus
+     extern "C"
+#  endif
+   int F77_DUMMY_MAIN() { return 1; }
+#endif
+int
+main ()
+{
+compress ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_z_compress=yes
+else
+  echo "$as_me: failed program was:" >&5
+cat conftest.$ac_ext >&5
+ac_cv_lib_z_compress=no
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_z_compress" >&5
+echo "${ECHO_T}$ac_cv_lib_z_compress" >&6
+if test $ac_cv_lib_z_compress = yes; then
+  ZLIB=-lz
+else
+  { { echo "$as_me:$LINENO: error: GZIP library needed for compilation." >&5
+echo "$as_me: error: GZIP library needed for compilation." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
+fi
+;;
+esac
+if test -n "$ZLIB"; then
+LIBS="$LIBS $ZLIB"
+fi
+
+withval="";
+ JPEGLIB=""
+
+# Check whether --with-libjpeg or --without-libjpeg was given.
+if test "${with_libjpeg+set}" = set; then
+  withval="$with_libjpeg"
+
+fi;
+
+case "$withval" in
+  yes)
+    { { echo "$as_me:$LINENO: error: JPEG library needed for compilation." >&5
+echo "$as_me: error: JPEG library needed for compilation." >&2;}
+   { (exit 1); exit 1; }; }
+    ;;
+  no)
+      JPEGLIB=""
+    	echo "$as_me:$LINENO: result: JPEG suppressed" >&5
+echo "${ECHO_T}JPEG suppressed" >&6;
+    ;;
+  *)
+if test -n "$withval" ; then
+    jpeg_lib="`echo $withval |cut -f2 -d, -s`"
+	JPEGLIB=$jpeg_lib"/libjpeg.a"
+    	echo "$as_me:$LINENO: result: jpeg found: $JPEGLIB" >&5
+echo "${ECHO_T}jpeg found: $JPEGLIB" >&6;
+else
+echo "$as_me:$LINENO: checking for jpeg_start_compress in -ljpeg" >&5
+echo $ECHO_N "checking for jpeg_start_compress in -ljpeg... $ECHO_C" >&6
+if test "${ac_cv_lib_jpeg_jpeg_start_compress+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-ljpeg  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+#include "confdefs.h"
+
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char jpeg_start_compress ();
+#ifdef F77_DUMMY_MAIN
+#  ifdef __cplusplus
+     extern "C"
+#  endif
+   int F77_DUMMY_MAIN() { return 1; }
+#endif
+int
+main ()
+{
+jpeg_start_compress ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_jpeg_jpeg_start_compress=yes
+else
+  echo "$as_me: failed program was:" >&5
+cat conftest.$ac_ext >&5
+ac_cv_lib_jpeg_jpeg_start_compress=no
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_jpeg_jpeg_start_compress" >&5
+echo "${ECHO_T}$ac_cv_lib_jpeg_jpeg_start_compress" >&6
+if test $ac_cv_lib_jpeg_jpeg_start_compress = yes; then
+  JPEGLIB=-ljpeg
+else
+  { { echo "$as_me:$LINENO: error: JPEG library needed for compilation." >&5
+echo "$as_me: error: JPEG library needed for compilation." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
+fi
+;;
+esac
+if test -n "$JPEGLIB"; then
+LIBS="$LIBS $JPEGLIB"
+fi
+
+withval="";
+ SZLIB=""
+
+# Check whether --with-libsz or --without-libsz was given.
+if test "${with_libsz+set}" = set; then
+  withval="$with_libsz"
+
+fi;
+
+case "$withval" in
+  yes)
+    { { echo "$as_me:$LINENO: error: SZIP library needed for compilation." >&5
+echo "$as_me: error: SZIP library needed for compilation." >&2;}
+   { (exit 1); exit 1; }; }
+    ;;
+  no)
+      SZLIB=""
+    	echo "$as_me:$LINENO: result: SZIP suppressed" >&5
+echo "${ECHO_T}SZIP suppressed" >&6;
+    ;;
+  *)
+if test -n "$withval" ; then
+    sz_lib="`echo $withval |cut -f2 -d, -s`"
+	SZLIB=$sz_lib"/libsz.a"
+else
+echo "$as_me:$LINENO: checking for SZ_BufftoBuffCompress in -lsz" >&5
+echo $ECHO_N "checking for SZ_BufftoBuffCompress in -lsz... $ECHO_C" >&6
+if test "${ac_cv_lib_sz_SZ_BufftoBuffCompress+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lsz  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+#include "confdefs.h"
+
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char SZ_BufftoBuffCompress ();
+#ifdef F77_DUMMY_MAIN
+#  ifdef __cplusplus
+     extern "C"
+#  endif
+   int F77_DUMMY_MAIN() { return 1; }
+#endif
+int
+main ()
+{
+SZ_BufftoBuffCompress ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_sz_SZ_BufftoBuffCompress=yes
+else
+  echo "$as_me: failed program was:" >&5
+cat conftest.$ac_ext >&5
+ac_cv_lib_sz_SZ_BufftoBuffCompress=no
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_sz_SZ_BufftoBuffCompress" >&5
+echo "${ECHO_T}$ac_cv_lib_sz_SZ_BufftoBuffCompress" >&6
+if test $ac_cv_lib_sz_SZ_BufftoBuffCompress = yes; then
+  SZLIB=-lsz
+else
+  { { echo "$as_me:$LINENO: error: SZIP library needed for compilation." >&5
+echo "$as_me: error: SZIP library needed for compilation." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
+fi
+;;
+esac
+if test -n "$SZLIB"; then
+LIBS="$LIBS $SZLIB"
+fi
+
+
 withval=""
 
 # Check whether --with-hdf4 or --without-hdf4 was given.
@@ -3142,145 +3434,14 @@ done
     if test -n "$hdf4_lib"; then
       HDF4LIB="$hdf4_lib"
       saved_LDFLAGS="$LDFLAGS"
-      LDFLAGS="$LDFLAGS -L$hdf4_lib"
-
-echo "$as_me:$LINENO: checking for compress in -lz" >&5
-echo $ECHO_N "checking for compress in -lz... $ECHO_C" >&6
-if test "${ac_cv_lib_z_compress+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lz  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-#include "confdefs.h"
-
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char compress ();
-#ifdef F77_DUMMY_MAIN
-#  ifdef __cplusplus
-     extern "C"
-#  endif
-   int F77_DUMMY_MAIN() { return 1; }
-#endif
-int
-main ()
-{
-compress ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-         { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_z_compress=yes
-else
-  echo "$as_me: failed program was:" >&5
-cat conftest.$ac_ext >&5
-ac_cv_lib_z_compress=no
-fi
-rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_z_compress" >&5
-echo "${ECHO_T}$ac_cv_lib_z_compress" >&6
-if test $ac_cv_lib_z_compress = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBZ 1
-_ACEOF
-
-  LIBS="-lz $LIBS"
-
-fi
-
-
-echo "$as_me:$LINENO: checking for jpeg_start_compress in -ljpeg" >&5
-echo $ECHO_N "checking for jpeg_start_compress in -ljpeg... $ECHO_C" >&6
-if test "${ac_cv_lib_jpeg_jpeg_start_compress+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-ljpeg  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-#include "confdefs.h"
-
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char jpeg_start_compress ();
-#ifdef F77_DUMMY_MAIN
-#  ifdef __cplusplus
-     extern "C"
-#  endif
-   int F77_DUMMY_MAIN() { return 1; }
-#endif
-int
-main ()
-{
-jpeg_start_compress ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-         { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_jpeg_jpeg_start_compress=yes
-else
-  echo "$as_me: failed program was:" >&5
-cat conftest.$ac_ext >&5
-ac_cv_lib_jpeg_jpeg_start_compress=no
-fi
-rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_jpeg_jpeg_start_compress" >&5
-echo "${ECHO_T}$ac_cv_lib_jpeg_jpeg_start_compress" >&6
-if test $ac_cv_lib_jpeg_jpeg_start_compress = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBJPEG 1
-_ACEOF
-
-  LIBS="-ljpeg $LIBS"
-
-fi
-
-
-echo "$as_me:$LINENO: checking for Hstartaccess in -ldf" >&5
+      LDFLAGS="$LDFLAGS -L$HDF4LIB $ZLIB $JPEGLIB $SZLIB"
+      echo "$as_me:$LINENO: checking for Hstartaccess in -ldf" >&5
 echo $ECHO_N "checking for Hstartaccess in -ldf... $ECHO_C" >&6
 if test "${ac_cv_lib_df_Hstartaccess+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-ldf  $LIBS"
+LIBS="-ldf $ZLIB $JPEGLIB $SZLIB $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
 #include "confdefs.h"
@@ -3330,22 +3491,20 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_lib_df_Hstartaccess" >&5
 echo "${ECHO_T}$ac_cv_lib_df_Hstartaccess" >&6
 if test $ac_cv_lib_df_Hstartaccess = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBDF 1
-_ACEOF
-
-  LIBS="-ldf $LIBS"
-
+  LIBS="$LIBS -ldf $ZLIB $JPEGLIB $SZLIB"
+else
+  { { echo "$as_me:$LINENO: error: can't find df library at $HDF4LIB" >&5
+echo "$as_me: error: can't find df library at $HDF4LIB" >&2;}
+   { (exit 1); exit 1; }; }
 fi
 
-
-echo "$as_me:$LINENO: checking for SDstart in -lmfhdf" >&5
+      echo "$as_me:$LINENO: checking for SDstart in -lmfhdf" >&5
 echo $ECHO_N "checking for SDstart in -lmfhdf... $ECHO_C" >&6
 if test "${ac_cv_lib_mfhdf_SDstart+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lmfhdf  $LIBS"
+LIBS="-lmfhdf $ZLIB $JPEGLIB $SZLIB $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
 #include "confdefs.h"
@@ -3395,153 +3554,21 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_lib_mfhdf_SDstart" >&5
 echo "${ECHO_T}$ac_cv_lib_mfhdf_SDstart" >&6
 if test $ac_cv_lib_mfhdf_SDstart = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBMFHDF 1
-_ACEOF
-
-  LIBS="-lmfhdf $LIBS"
-
+  LIBS="$LIBS $ZLIB $JPEGLIB $SZLIB"
+else
+  { { echo "$as_me:$LINENO: error: can't find mfhdf library at $HDF4LIB" >&5
+echo "$as_me: error: can't find mfhdf library at $HDF4LIB" >&2;}
+   { (exit 1); exit 1; }; }
 fi
 
     else
-
-echo "$as_me:$LINENO: checking for compress in -lz" >&5
-echo $ECHO_N "checking for compress in -lz... $ECHO_C" >&6
-if test "${ac_cv_lib_z_compress+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lz  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-#include "confdefs.h"
-
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char compress ();
-#ifdef F77_DUMMY_MAIN
-#  ifdef __cplusplus
-     extern "C"
-#  endif
-   int F77_DUMMY_MAIN() { return 1; }
-#endif
-int
-main ()
-{
-compress ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-         { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_z_compress=yes
-else
-  echo "$as_me: failed program was:" >&5
-cat conftest.$ac_ext >&5
-ac_cv_lib_z_compress=no
-fi
-rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_z_compress" >&5
-echo "${ECHO_T}$ac_cv_lib_z_compress" >&6
-if test $ac_cv_lib_z_compress = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBZ 1
-_ACEOF
-
-  LIBS="-lz $LIBS"
-
-fi
-
-
-echo "$as_me:$LINENO: checking for jpeg_start_compress in -ljpeg" >&5
-echo $ECHO_N "checking for jpeg_start_compress in -ljpeg... $ECHO_C" >&6
-if test "${ac_cv_lib_jpeg_jpeg_start_compress+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-ljpeg  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-#include "confdefs.h"
-
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char jpeg_start_compress ();
-#ifdef F77_DUMMY_MAIN
-#  ifdef __cplusplus
-     extern "C"
-#  endif
-   int F77_DUMMY_MAIN() { return 1; }
-#endif
-int
-main ()
-{
-jpeg_start_compress ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-         { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_jpeg_jpeg_start_compress=yes
-else
-  echo "$as_me: failed program was:" >&5
-cat conftest.$ac_ext >&5
-ac_cv_lib_jpeg_jpeg_start_compress=no
-fi
-rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_jpeg_jpeg_start_compress" >&5
-echo "${ECHO_T}$ac_cv_lib_jpeg_jpeg_start_compress" >&6
-if test $ac_cv_lib_jpeg_jpeg_start_compress = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBJPEG 1
-_ACEOF
-
-  LIBS="-ljpeg $LIBS"
-
-fi
-
-
-echo "$as_me:$LINENO: checking for Hstartaccess in -ldf" >&5
+      echo "$as_me:$LINENO: checking for Hstartaccess in -ldf" >&5
 echo $ECHO_N "checking for Hstartaccess in -ldf... $ECHO_C" >&6
 if test "${ac_cv_lib_df_Hstartaccess+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-ldf  $LIBS"
+LIBS="-ldf $ZLIB $JPEGLIB $SZLIB $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
 #include "confdefs.h"
@@ -3591,22 +3618,20 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_lib_df_Hstartaccess" >&5
 echo "${ECHO_T}$ac_cv_lib_df_Hstartaccess" >&6
 if test $ac_cv_lib_df_Hstartaccess = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBDF 1
-_ACEOF
-
-  LIBS="-ldf $LIBS"
-
+  LIBS=$LIBS $ZLIB $JPEGLIB $SZLIB
+else
+  { { echo "$as_me:$LINENO: error: can't find df library at $HDF4LIB" >&5
+echo "$as_me: error: can't find df library at $HDF4LIB" >&2;}
+   { (exit 1); exit 1; }; }
 fi
 
-
-echo "$as_me:$LINENO: checking for SDstart in -lmfhdf" >&5
+      echo "$as_me:$LINENO: checking for SDstart in -lmfhdf" >&5
 echo $ECHO_N "checking for SDstart in -lmfhdf... $ECHO_C" >&6
 if test "${ac_cv_lib_mfhdf_SDstart+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lmfhdf  $LIBS"
+LIBS="-lmfhdf $ZLIB $JPEGLIB $SZLIB $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
 #include "confdefs.h"
@@ -3656,40 +3681,24 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_lib_mfhdf_SDstart" >&5
 echo "${ECHO_T}$ac_cv_lib_mfhdf_SDstart" >&6
 if test $ac_cv_lib_mfhdf_SDstart = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBMFHDF 1
-_ACEOF
-
-  LIBS="-lmfhdf $LIBS"
-
+  LIBS=$LIBS $ZLIB $JPEGLIB $SZLIB
+else
+  { { echo "$as_me:$LINENO: error: can't find mfhdf library at $HDF4LIB" >&5
+echo "$as_me: error: can't find mfhdf library at $HDF4LIB" >&2;}
+   { (exit 1); exit 1; }; }
 fi
 
     fi
     ;;
 esac
 
+if test -n "$HDF4LIB"; then
+echo "$as_me:$LINENO: result: HDF4 library found at: $HDF4LIB" >&5
+echo "${ECHO_T}HDF4 library found at: $HDF4LIB" >&6
+fi
 ac_cv_lib_HDF4=$HDF4LIB
 ac_cv_lib_HDF4INC=$HDF4INC
 
-withval="";
- ZLIB=""
-
-# Check whether --with-libz or --without-libz was given.
-if test "${with_libz+set}" = set; then
-  withval="$with_libz"
-
-fi;
-
-if test -n "$withval" ; then
-    z_lib="`echo $withval |cut -f2 -d, -s`"
-	ZLIB=$z_lib"/libz.a"
-else
-if test -n "$HDF4LIB" ; then
-ZLIB=$HDF4LIB"/libz.a"
-else
-ZLIB=-lz
-fi
-fi
 
 withval="";
  LIBHDF5=""
@@ -3922,42 +3931,13 @@ echo "$as_me: error: cannot find HDF5 library path." >&2;}
     ;;
 esac
 
+if test -n "$HDF5LIB"; then
+echo "$as_me:$LINENO: result: HDF5 library found at: $HDF5LIB" >&5
+echo "${ECHO_T}HDF5 library found at: $HDF5LIB" >&6
+fi
 ac_cv_lib_HDF5=$HDF5LIB
 ac_cv_lib_HDF5INC=$HDF5INC
 
-
-withval="";
- SZLIB=""
-
-# Check whether --with-libsz or --without-libsz was given.
-if test "${with_libsz+set}" = set; then
-  withval="$with_libsz"
-
-else
-  withval=no
-fi;
-
-case "$withval" in
-  yes)
-    { { echo "$as_me:$LINENO: error: SZIP library needed for compilation." >&5
-echo "$as_me: error: SZIP library needed for compilation." >&2;}
-   { (exit 1); exit 1; }; }
-    ;;
-  no)
-      SZLIB=""
-	echo "SZIP suppressed";
-    ;;
-  *)
-if test -n "$withval" ; then
-    sz_lib="`echo $withval |cut -f2 -d, -s`"
-	SZLIB=$sz_lib"/libsz.a"
-else
-if test -n "$HDF5LIB" ; then
-SZLIB=$HDF5LIB"/libsz.a"
-fi
-fi
-;;
-esac
 
 
 USEH45="no"
@@ -4195,6 +4175,10 @@ echo "$as_me: error: cannot find HDF45 library path." >&2;}
     ;;
 esac
 
+if test -n "$H45LIB"; then
+echo "$as_me:$LINENO: result: h4toh5 library found at: $HDF45LIB" >&5
+echo "${ECHO_T}h4toh5 library found at: $HDF45LIB" >&6
+fi
 H45LIB=$HDF45LIB
 H45INC=$HDF45INC
 
@@ -5429,8 +5413,9 @@ s,@target_cpu@,$target_cpu,;t t
 s,@target_vendor@,$target_vendor,;t t
 s,@target_os@,$target_os,;t t
 s,@ZLIB@,$ZLIB,;t t
-s,@LIBHDF5@,$LIBHDF5,;t t
+s,@JPEGLIB@,$JPEGLIB,;t t
 s,@SZLIB@,$SZLIB,;t t
+s,@LIBHDF5@,$LIBHDF5,;t t
 s,@LIBH45@,$LIBH45,;t t
 s,@jdkclasses@,$jdkclasses,;t t
 s,@JAVALIB@,$JAVALIB,;t t
