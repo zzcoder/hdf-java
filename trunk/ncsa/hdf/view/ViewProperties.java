@@ -76,7 +76,7 @@ public class ViewProperties extends Properties
     private static String rootDir;
 
     /** default starting file directory */
-    private static String workDir;
+    private static String workDir = "user.dir";
 
     /** default HDF4 file extension */
     private static String h4Ext = "hdf, h4, hdf4";
@@ -580,7 +580,12 @@ public class ViewProperties extends Properties
     public static String getPropertyFile(){ return propertyFile;}
 
     /** returns the default work directory, where the open file starts.*/
-    public static String getWorkDir() { return workDir; }
+    public static String getWorkDir() {
+        if (workDir.equals("user.dir"))
+            return System.getProperty("user.dir");
+        else
+            return workDir;
+    }
 
     /** returns the maximum number of the most recent file */
     public static int getMaxRecentFiles() { return MAX_RECENT_FILES; }

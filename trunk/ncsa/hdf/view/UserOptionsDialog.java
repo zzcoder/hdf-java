@@ -40,6 +40,8 @@ implements ActionListener
             maxMemberField, startMemberField;
     private JComboBox fontSizeChoice, fontTypeChoice, delimiterChoice;
     private String rootDir, workDir;
+    private JCheckBox checkCurrentUserDir;
+    private JButton currentDirButton;
 
     private final int fontSize;
 
@@ -63,8 +65,7 @@ implements ActionListener
         isWorkDirChanged = false;
         fontSize = ViewProperties.getFontSize();
         workDir = ViewProperties.getWorkDir();
-        if (workDir == null)
-            workDir = rootDir;
+        if (workDir == null) workDir = rootDir;
 
         String[] fontSizeChoices = {"10", "12", "14", "16", "18", "20"};
         fontSizeChoice = new JComboBox(fontSizeChoices);
@@ -111,13 +112,16 @@ implements ActionListener
 
         JPanel p0 = new JPanel();
         p0.setLayout(new BorderLayout());
-        p0.add(new JLabel("File Directory:  "), BorderLayout.WEST);
+        p0.add(checkCurrentUserDir=new JCheckBox("Working Dir ", false) , BorderLayout.WEST);
+        checkCurrentUserDir.addActionListener(this);
+        checkCurrentUserDir.setActionCommand("Set to user.dir");
         p0.add(workField = new JTextField(workDir), BorderLayout.CENTER);
         JButton b = new JButton("Browse...");
+        currentDirButton = b;
         b.setActionCommand("Browse current dir");
         b.addActionListener(this);
         p0.add(b, BorderLayout.EAST);
-        TitledBorder tborder = new TitledBorder("Default Work Directory");
+        TitledBorder tborder = new TitledBorder("Default Working Directory");
         tborder.setTitleColor(Color.darkGray);
         p0.setBorder(tborder);
         centerP.add(p0);
@@ -236,6 +240,12 @@ implements ActionListener
             isFontChanged = false;
             dispose();
         }
+        else if (cmd.equals("Set to user.dir"))
+        {
+            boolean isCheckCurrentUserDirSelected = checkCurrentUserDir.isSelected();
+            workField.setEnabled(!isCheckCurrentUserDirSelected);
+            currentDirButton.setEnabled(!isCheckCurrentUserDirSelected);
+        }
         else if (cmd.equals("Browse UG"))
         {
             final JFileChooser fchooser = new JFileChooser(rootDir);
@@ -299,6 +309,8 @@ implements ActionListener
         }
 
         String workPath = workField.getText();
+        if (checkCurrentUserDir.isSelected())
+            workPath = "user.dir";
         if (workPath != null && workPath.length()>0)
         {
             workPath = workPath.trim();

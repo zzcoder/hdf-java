@@ -1282,56 +1282,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sget_1select_1bounds
 	return (jint)status;
 }
 
-/*
- * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Dget_space_status(hid_t dset_id, H5D_space_status_t *status) 
- * Signature: (IJ)I
- */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dget_1space_1status
-  (JNIEnv *env, jclass clss, jint dset_id, jintArray status)
-{
-	herr_t retVal = -1;
-	jint *theArray;
-	jboolean isCopy;
-	H5D_space_status_t space_status;
-
-
-	if (status == NULL) {
-		/* exception ? */
-		h5nullArgument( env, "H5Dget_space_status:  status is NULL");
-		return -1;
-	}
-#ifdef __cplusplus
-	theArray = (jint *)env->GetIntArrayElements(status,&isCopy);
-#else
-	theArray = (jint *)(*env)->GetIntArrayElements(env,status,&isCopy);
-#endif
-	if (theArray == NULL) {
-		h5JNIFatalError( env, "H5Dget_space_status:  status not pinned");
-		return -1;
-	}
-
-	retVal =  H5Dget_space_status((hid_t)dset_id, &space_status );
-
-	if (retVal < 0) {
-#ifdef __cplusplus
-		env->ReleaseIntArrayElements(status,theArray,JNI_ABORT);
-#else
-		(*env)->ReleaseIntArrayElements(env,status,theArray,JNI_ABORT);
-#endif
-		h5libraryError(env);
-	} else {
-		theArray[0] = space_status;
-#ifdef __cplusplus
-		env->ReleaseIntArrayElements(status,theArray,0);
-#else
-		(*env)->ReleaseIntArrayElements(env,status,theArray,0);
-#endif
-	}
-
-	return (jint)retVal;
-}
-
 
 #ifdef __cplusplus
 }

@@ -2024,6 +2024,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1small_1data_1block_1size
 	return (jint)status;
 }
 
+
+/***************************************************************
+ *                   New APIs for HDF5.1.6                     *
+ ***************************************************************/
+
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Pset_alloc_time(hid_t plist_id, H5D_alloc_time_t alloc_time ) 
@@ -2139,6 +2144,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1fill_1time
 	}
 
 	retVal =  H5Pget_fill_time((hid_t)plist, &time );
+
 
 	if (retVal < 0) {
 #ifdef __cplusplus
@@ -2392,10 +2398,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pmodify_1filter
   jlong cd_nelmts, jintArray cd_values)
 {
 	herr_t status;
-	jint i;
 	jint *cd_valuesP;
 	jboolean isCopy;
-	unsigned int *valuesP;
 
 	if (cd_values == NULL) {
 		h5nullArgument( env, "H5Pmodify_filter:  cd_values is NULL");
@@ -2413,31 +2417,14 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pmodify_1filter
 		return -1;
 	}
 
-	valuesP = (unsigned int *)malloc( (int)cd_nelmts * sizeof(unsigned int)); 
-
-	if (valuesP == NULL) {
-#ifdef __cplusplus
-		(*env)->ReleaseIntArrayElements(cd_values,cd_valuesP,JNI_ABORT);
-#else
-		(*env)->ReleaseIntArrayElements(env,cd_values,cd_valuesP,JNI_ABORT);
-#endif
-		h5JNIFatalError(env,  "H5Pmodify_filter:  cd_values array not converted to hssize_t");
-		return -1;
-	}
-
-	for (i= 0; i < (cd_nelmts); i++) {
-		valuesP[i] = cd_valuesP[i];
-	}
-
 	status = H5Pmodify_filter((hid_t)plist, (H5Z_filter_t)filter,(const unsigned int)flags, 
-		(size_t)cd_nelmts, (unsigned int *)valuesP);
+		(size_t)cd_nelmts, (unsigned int *)cd_valuesP);
 
 #ifdef __cplusplus
 	(*env)->ReleaseIntArrayElements(cd_values, cd_valuesP, JNI_ABORT);
 #else
 	(*env)->ReleaseIntArrayElements(env, cd_values, cd_valuesP, JNI_ABORT);
 #endif
-	free(valuesP);
 
 	if (status < 0) {
 		h5libraryError(env);
@@ -2461,7 +2448,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id
 	jint *cd_valuesP, *flagsP;
 	jlong *cd_nelmsP;
 	jboolean isCopy;
-	unsigned int *valuesP, *c_flagsP;
 	size_t *nelmsP;
 	int rank;
 	long bs;
@@ -2512,19 +2498,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id
 		return -1;
 	}
 
-	c_flagsP = (unsigned int *)malloc( sizeof(unsigned int)); 
-
-	if (c_flagsP == NULL) {
-#ifdef __cplusplus
-		(*env)->ReleaseIntArrayElements(flags,flagsP,JNI_ABORT);
-#else
-		(*env)->ReleaseIntArrayElements(env,flags,flagsP,JNI_ABORT);
-#endif
-		free(aName);
-		h5JNIFatalError(env,  "H5Pget_filter_by_id:  flags array not converted to unsigned int.");
-		return -1;
-	}
-
 #ifdef __cplusplus
 	cd_nelmsP = (*env)->GetLongArrayElements(cd_nelmts,&isCopy);
 #else
@@ -2548,7 +2521,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id
 		(*env)->ReleaseLongArrayElements(env,cd_nelmts,cd_nelmsP,JNI_ABORT);
 #endif
 		free(aName);
-		free(c_flagsP);
 		h5JNIFatalError(env,  "H5Pget_filter_by_id:  cd_nelmts array not converted to unsigned int.");
 		return -1;
 	}
@@ -2561,9 +2533,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id
 	rank  = (*env)->GetArrayLength(env, cd_values);
 #endif
 
-	valuesP = (unsigned int *)malloc( rank * sizeof(unsigned int)); 
-
-	if (cd_valuesP == NULL || valuesP == NULL) {
+	if (cd_valuesP == NULL) {
 #ifdef __cplusplus
 		(*env)->ReleaseIntArrayElements(flags,flagsP,JNI_ABORT);
 		(*env)->ReleaseLongArrayElements(cd_nelmts,cd_nelmsP,JNI_ABORT);
@@ -2574,14 +2544,13 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id
 		(*env)->ReleaseIntArrayElements(env,cd_values,cd_valuesP,JNI_ABORT);
 #endif
 		free(aName);
-		free(c_flagsP);
 		free(nelmsP);
 		h5JNIFatalError(env,  "H5Pget_filter_by_id:  cd_values array not converted to unsigned int.");
 		return -1;
 	}
 
 	status = H5Pget_filter_by_id( (hid_t)plist, (H5Z_filter_t)filter, 
-		(unsigned int *)c_flagsP, (size_t *)nelmsP, (unsigned int *)valuesP, 
+		(unsigned int *)flagsP, (size_t *)nelmsP, (unsigned int *)cd_valuesP, 
 		(size_t)namelen, (char *)aName);
 
 	if (status < 0) {
@@ -2598,11 +2567,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id
 	} else {
 #ifdef __cplusplus
 
-		for (i=0; i<rank; i++) {
-			cd_valuesP[i] = valuesP[i];
-		}
-
-		flagsP[0] = c_flagsP[0];
 		cd_nelmsP[0] = nelmsP[0];
 
 		str = env->NewStringUTF(aName);
@@ -2619,9 +2583,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id
 	}
 
 	free(aName);
-	free(c_flagsP);
 	free(nelmsP);
-	free(valuesP);
 
 	return (jint)status;
 }

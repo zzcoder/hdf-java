@@ -704,6 +704,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1comment
 	return (jint)status;
 }
 
+
+/***************************************************************
+ *                   New APIs for HDF5.1.6                     *
+ ***************************************************************/
+
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Gget_num_objs 

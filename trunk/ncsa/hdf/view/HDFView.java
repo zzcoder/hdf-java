@@ -515,13 +515,12 @@ implements ViewManager, HyperlinkListener
             catch (Throwable ex) {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(this,
-                    "Out of Memory Error",
+                    ex.getMessage(),
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
                 stopBusyIndicator();
                 return;
             } finally { stopBusyIndicator(); }
-
         }
 
         if (isImage)
@@ -2763,6 +2762,7 @@ implements ViewManager, HyperlinkListener
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
                 this,
+//                ex,
                 ex.getMessage(),
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);

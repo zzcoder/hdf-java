@@ -181,18 +181,38 @@ public class H5CompoundDS extends CompoundDS
     public Object read() throws HDF5Exception
     {
         List list = null;
+        Object member_data = null;
+        String member_name = null;
+        int member_tid=-1, member_class=-1, member_size=0, fspace=-1, mspace=-1;
 
         if (rank <= 0 ) init(); // read data informatin into memory
 
         if (numberOfMembers <= 0)
             return null; // this compound dataset does not have any member
 
-        list = new Vector();
-
-        Object member_data = null;
-        String member_name = null;
-        int member_tid=-1, member_class=-1, member_size=0, fspace=-1, mspace=-1;
         int did = open();
+
+        // check is storage space is allocated
+        try {
+            if (H5.H5Dget_storage_size(did) <=0)
+            {
+                throw new HDF5Exception("Storage space is not allocated.");
+            }
+        } catch (Exception ex) {}
+
+        // check is fill value is defined
+        try {
+            int plist = H5.H5Dget_create_plist(did);
+            int[] fillValue = {0};
+            H5.H5Pfill_value_defined(plist, fillValue);
+            try { H5.H5Pclose(plist); } catch (Exception ex2) {}
+            if (fillValue[0] == HDF5Constants.H5D_FILL_VALUE_UNDEFINED)
+            {
+                throw new HDF5Exception("Fill value is not defined.");
+            }
+        } catch (Exception ex) {}
+
+        list = new Vector();
 
         try // to match finally for closing resources
         {
@@ -217,14 +237,13 @@ public class H5CompoundDS extends CompoundDS
             int n = flatNameList.size();
             for (int i=0; i<n; i++)
             {
-
                 if (!isMemberSelected[i])
                     continue; // the field is not selected
 
                 member_name = new String(memberNames[i]);
                 member_tid = memberTypes[i];
                 try { member_class = H5.H5Tget_class(member_tid);
-                } catch (HDF5Exception ex) {System.out.println(ex);}
+                } catch (HDF5Exception ex) {}
 
                 try {
                     member_size = H5.H5Tget_size(member_tid);
@@ -474,24 +493,52 @@ public class H5CompoundDS extends CompoundDS
             }
             else chunkSize = null;
 
-            int[] flags = {0};
-            int[] cd_nelmts = {1};
-            int[] cd_values = {0};
-            String[] cd_name ={""};
+            int[] flags = {0, 0};
+            int[] cd_nelmts = {2};
+            int[] cd_values = {0,0};
+            String[] cd_name ={"", ""};
             int nfilt = H5.H5Pget_nfilters(pid);
             int filter = -1;
+            compression = "";
+
             for (int i=0; i<nfilt; i++)
             {
-                filter = H5.H5Pget_filter(pid, i, flags, cd_nelmts, cd_values, 20, cd_name);
+                if (i>0) compression += ", ";
+                filter = H5.H5Pget_filter(pid, i, flags, cd_nelmts, cd_values, 120, cd_name);
                 if (filter == HDF5Constants.H5Z_FILTER_DEFLATE)
                 {
-                    compression = "DEFLATE";
-                    break;
+                    compression += "Deflate Level = "+cd_values[0];
                 }
-            }
+                else if (filter == HDF5Constants.H5Z_FILTER_FLETCHER32)
+                {
+                    compression += "Error detection filter";
+                }
+                else if (filter == HDF5Constants.H5Z_FILTER_SHUFFLE)
+                {
+                    compression += "Shuffle Nbytes = "+cd_values[0];
+                }
+                else if (filter == HDF5Constants.H5Z_FILTER_SZIP)
+                {
+                    compression += "SZIP: Pixels per block = "+cd_values[1];
+                }
+            } // for (int i=0; i<nfilt; i++)
 
+            if (compression.length() == 0) compression = "NONE";
+
+            try {
+                int[] at = {0};
+                H5.H5Pget_fill_time(pid, at);
+                if (at[0] == HDF5Constants.H5D_ALLOC_TIME_EARLY)
+                    compression += ", Allocation time: Early";
+                else if (at[0] == HDF5Constants.H5D_ALLOC_TIME_INCR)
+                    compression += ", Allocation time: Incremental";
+                else if (at[0] == HDF5Constants.H5D_ALLOC_TIME_LATE)
+                    compression += ", Allocation time: Late";
+            } catch (Exception ex) { ;}
+
+            if (pid >0) try {H5.H5Pclose(pid); } catch(Exception ex){}
             close(did);
-        }
+        } // if (attributeList == null)
 
         return attributeList;
     }

@@ -1131,14 +1131,43 @@ public class HDFLibrary {
      */
     public static boolean SDreaddata(  int sdsid, int[] start, int[] stride,
                        int[] count, Object theData ) throws HDFException {
-        byte[] data;
-        boolean rval;
+        boolean status = false;
+        boolean is1D = false;
 
-        HDFArray theArray = new HDFArray(theData);
-        data = theArray.emptyBytes();
-            rval= SDreaddata(  sdsid, start, stride, count, data);
-        theData = theArray.arrayify( data );
-        return rval;
+        Class dataClass = theData.getClass();
+         if (!dataClass.isArray())
+             throw (new HDFJavaException("SDreaddata: data is not an array"));
+
+        String cname = dataClass.getName();
+        is1D = (cname.lastIndexOf('[') ==cname.indexOf('['));
+        char dname = cname.charAt(cname.lastIndexOf("[")+1);
+
+        if (is1D && dname == 'B') {
+            status = SDreaddata(sdsid, start, stride, count, (byte[])theData);
+        }
+        else if (is1D && dname == 'S') {
+            status = SDreaddata_short(sdsid, start, stride, count, (short[])theData);
+        }
+        else if (is1D && dname == 'I') {
+            status = SDreaddata_int(sdsid, start, stride, count, (int[])theData);
+        }
+        else if (is1D && dname == 'J') {
+            status = SDreaddata_long(sdsid, start, stride, count, (long[])theData);
+        }
+        else if (is1D && dname == 'F') {
+            status = SDreaddata_float(sdsid, start, stride, count, (float[])theData);
+        }
+        else if (is1D && dname == 'D') {
+            status = status = SDreaddata_double(sdsid, start, stride, count, (double[])theData);
+        } else {
+            byte[] data;
+            HDFArray theArray = new HDFArray(theData);
+            data = theArray.emptyBytes();
+            status = SDreaddata(  sdsid, start, stride, count, data);
+            theData = theArray.arrayify( data );
+        }
+
+        return status;
     }
 
     public static native boolean SDendaccess( int sdsid) throws HDFException;
@@ -3216,4 +3245,29 @@ public class HDFLibrary {
     }
 
      private static native boolean _DFR8writeref(String filename, short ref) throws HDFException;
+
+    ////////////////////////////////////////////////////////////////////
+    //                                                                //
+    //         New APIs for read data from library                    //
+    //  Using SDreaddata(..., Object buf) requires function calls        //
+    //  theArray.emptyBytes() and theArray.arrayify( buf), which      //
+    //  triples the actual memory needed by the data set.             //
+    //  Using the following APIs solves the problem.                  //
+    //                                                                //
+    ////////////////////////////////////////////////////////////////////
+
+    public static native boolean SDreaddata_short(  int sdsid, int[] start, int[] stride,
+                       int[] count, short[] theData ) throws HDFException;
+
+    public static native boolean SDreaddata_int(  int sdsid, int[] start, int[] stride,
+                       int[] count, int[] theData ) throws HDFException;
+
+    public static native boolean SDreaddata_long(  int sdsid, int[] start, int[] stride,
+                       int[] count, long[] theData ) throws HDFException;
+
+    public static native boolean SDreaddata_float(  int sdsid, int[] start, int[] stride,
+                       int[] count, float[] theData ) throws HDFException;
+
+    public static native boolean SDreaddata_double(  int sdsid, int[] start, int[] stride,
+                       int[] count, double[] theData ) throws HDFException;
 }
