@@ -239,7 +239,7 @@ else
 		 AC_MSG_ERROR(cannot find jdk classes in JDK lib path.)
 	fi
 fi
-CLASSPATH="$JAVACLASSES"":""$HERE"
+CLASSPATH="$JAVACLASSES"":""$HERE""/lib/jai_codec.jar:""$HERE"
 
 
 JAVABIN=`dirname $JAVAINC`

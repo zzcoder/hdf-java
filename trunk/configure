@@ -2223,7 +2223,7 @@ else
 		 { echo "configure: error: cannot find jdk classes in JDK lib path." 1>&2; exit 1; }
 	fi
 fi
-CLASSPATH="$JAVACLASSES"":""$HERE"
+CLASSPATH="$JAVACLASSES"":""$HERE""/lib/jai_codec.jar:""$HERE"
 
 
 JAVABIN=`dirname $JAVAINC`
