@@ -18,6 +18,7 @@ import java.io.*;
 import java.util.*;
 import javax.swing.text.*;
 import javax.swing.event.*;
+import javax.swing.text.html.*;
 import javax.swing.tree.*;
 import java.net.URL;
 import java.awt.Event;
@@ -26,6 +27,7 @@ import java.awt.Dimension;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.Image;
 import java.awt.Font;
@@ -118,6 +120,9 @@ implements ViewManager, ActionListener, HyperlinkListener
 
     /** The previous URL of the User's Guide. */
     private URL previousUsersGuideURL;
+
+    /** the text field to display the current ug link */
+    private JTextField ugField;
 
     /** The previously visited URLs for back action. */
     private Stack visitedUsersGuideURLs;
@@ -939,15 +944,32 @@ implements ViewManager, ActionListener, HyperlinkListener
         if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
         {
             JEditorPane pane = (JEditorPane) e.getSource();
+
             try
             {
                 URL currentURL = e.getURL();
+                String htmlDoc = currentURL.getFile();
+                htmlDoc = htmlDoc.toLowerCase();
+
+                // only support html files
+                if (htmlDoc.length()<=1 ||
+                    !(htmlDoc.endsWith("html") ||
+                    htmlDoc.endsWith("htm")))
+                return;
+
                 pane.setPage(currentURL);
                 if(visitedUsersGuideURLs.isEmpty())
                     usersGuideBackButton.setEnabled(true);
                 visitedUsersGuideURLs.push(previousUsersGuideURL);
                 previousUsersGuideURL = currentURL;
-            } catch (Throwable t) { showStatus(t.toString()); }
+                ugField.setText(currentURL.toString());
+            } catch (Throwable t)
+            {
+                try {pane.setPage(previousUsersGuideURL);}
+                catch (Throwable t2) {}
+                showStatus(t.toString());
+            }
+
         }
     }
 
@@ -2229,7 +2251,13 @@ implements ViewManager, ActionListener, HyperlinkListener
         JScrollPane editorScrollPane = new JScrollPane(usersGuideEditorPane);
         JPanel contentPane = (JPanel)usersGuideWindow.getContentPane();
         contentPane.setLayout(new BorderLayout());
-        contentPane.add (tbar, BorderLayout.NORTH);
+        JPanel northP = new JPanel();
+        northP.setLayout(new GridLayout(2,1));
+        northP.add(tbar);
+        northP.add(ugField = new JTextField());
+        ugField.setEditable(false);
+        if (usersGuideURL != null) ugField.setText(usersGuideURL.toString());
+        contentPane.add (northP, BorderLayout.NORTH);
         contentPane.add (editorScrollPane, BorderLayout.CENTER);
     }
 
