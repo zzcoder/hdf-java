@@ -47,6 +47,7 @@ JHIDISTFILES=./VERSION ./COPYING ./Makefile.in  \
 	./native/hdflib/*.c \
 	./ncsa/hdf/hdflib/*.java  \
 	./glguerin/io/*.java ./glguerin/mac/io/*.java ./glguerin/util/*.java   
+
 JHI5DISTFILES=./VERSION ./COPYING ./Makefile.in  \
         ./configure.in ./Config/config* ./Config/install-sh \
         ./configure ./native/Makefile.in ./native/hdf5lib/Makefile.in \
