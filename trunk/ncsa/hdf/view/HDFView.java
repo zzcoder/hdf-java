@@ -742,8 +742,8 @@ implements ViewManager, ActionListener, HyperlinkListener
             msgScroller);
 
         // set the window size
-        float inset = 0.17f; // for UG only.
-        //float inset = 0.07f;
+        //float inset = 0.17f; // for UG only.
+        float inset = 0.07f;
         Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
         d.width = Math.max(400, (int)((1-2*inset)*d.width));
         d.height = Math.max(300, (int)((1-2*inset)*d.height));
@@ -1302,8 +1302,10 @@ implements ViewManager, ActionListener, HyperlinkListener
         Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
         usersGuideWindow.setLocation(d.width/2, 20);
         usersGuideWindow.setSize(d.width/2, d.height-200);
-        Image helpImage = ((ImageIcon)ViewProperties.getHelpIcon()).getImage();
-        try { usersGuideWindow.setIconImage(helpImage); }
+        try {
+            Image helpImage = ((ImageIcon)ViewProperties.getHelpIcon()).getImage();
+            usersGuideWindow.setIconImage(helpImage);
+        }
         catch (Exception ex ) {}
         JToolBar tbar = new JToolBar();
 
