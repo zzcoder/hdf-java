@@ -64,6 +64,6 @@ case  $machtype in
         ;;
 esac
 
-export LD_LIBRARYN_PATH
+export LD_LIBRARY_PATH
 
 $JAVAPATH/java -mx512m ncsa.hdf.view.HDFView -root $HDFVIEW_HOME
