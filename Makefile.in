@@ -30,7 +30,7 @@ LIBDIR=$(JH45INSTALLDIR)/lib
 BINDIR=$(JH45INSTALLDIR)/bin
 DOCDIR= $(JH45INSTALLDIR)/docs
 
-HDFVIEWDISTFILES= ./ncsa/hdf/view/*.java $(HDFVIEWICONS) ./lib/jai_codec.jar
+HDFVIEWDISTFILES= ./ncsa/hdf/view/*.java $(HDFVIEWICONS)
 
 HDFOBJDISTFILES= ./ncsa/hdf/object/*.java
 
@@ -276,7 +276,6 @@ install-jhdfobj: ncsa.hdf.object
 
 install-jhdfview: ncsa.hdf.view
 	-mkdir -p $(LIBDIR);
-	cp ./lib/jai_codec.jar $(LIBDIR);
 	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdfview.jar $(HDFVIEWCLASSES) $(HDFVIEWICONS)
 	@echo "Install HDFVIEW complete"
 

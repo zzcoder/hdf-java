@@ -27,15 +27,17 @@ LIBDIR=../../lib/@JAVATARG@
 
 LD=@LD@
 LDOPT=@LDOPT@
+LLEXT=@LLEXT@
 SLEXT=@SLEXT@
+JSLEXT=@JSLEXT@
 
 COPT=@COPT@
 
 CFLAGS = $(DEFS) -I. -I$(HDF4INC) -I$(HDF5INC) -I$(H45INC) -I$(JAVAINC1) -I$(JAVAINC2)
 
-HDFL=$(HDF4LIB)/libdf.a $(HDF4LIB)/libjpeg.a $(HDF4LIB)/libmfhdf.a $(HDF4LIB)/libz.a
+HDFL=$(HDF4LIB)/libdf.$(LLEXT) $(HDF4LIB)/libjpeg.$(LLEXT) $(HDF4LIB)/libmfhdf.$(LLEXT) $(HDF4LIB)/libz.$(LLEXT)
 
-LIBS =  $(H45LIB)/libh4toh5.a $(HDF5LIB)/libhdf5.a $(HDFL) -lm
+LIBS =  $(H45LIB)/libh4toh5.$(LLEXT) $(HDF5LIB)/libhdf5.$(LLEXT) $(HDFL) -lm
 
 H4OBJECTS =  ../hdflib/hdfstructsutil.o \
 	../hdflib/hdfImp.o \
@@ -87,8 +89,8 @@ h4toh5lib: libjh4toh5
 
 libjh4toh5: $(OBJECTS)
 	-mkdir -p $(LIBDIR);
-	$(LD) $(LDOPT) -o $(LIBDIR)/libjh4toh5.$(SLEXT) $(LDOPT2) $(OBJECTS) $(LIBS)
+	$(LD) $(LDOPT) -o $(LIBDIR)/libjh4toh5.$(JSLEXT) $(LDOPT2) $(OBJECTS) $(LIBS)
 
 clean:
-	rm -f *.o so_locations $(LIBDIR)/libjh4toh5.$(SLEXT)
+	rm -f *.o so_locations $(LIBDIR)/libjh4toh5.$(JSLEXT)
 
