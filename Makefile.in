@@ -5,7 +5,7 @@
 #* 605 E. Springfield, Champaign IL 61820                                   *
 #*                                                                          *
 #* For conditions of distribution and use, see the accompanying             *
-#* java-hdf5/COPYING file.                                                  *
+#* COPYING file.                                                            *
 #*                                                                          *
 #****************************************************************************/
 
@@ -48,9 +48,11 @@ JHI5DISTFILES=./VERSION ./COPYING ./Makefile.in  \
         ./ncsa/hdf/hdf5lib/*.java  \
         ./ncsa/hdf/hdf5lib/exceptions/*.java 
 
-TESTFILES=./test/h4toh5/*.java ./test/h4toh5/*.in ./test/h4toh5/testfiles/*.hdf ./test/h4toh5/Expected/*.h5 ./test/object/*.java ./test/object/*.in
+TESTFILES=./test/Makefile.in ./test/h4toh5/*.java ./test/h4toh5/*.in ./test/h4toh5/testfiles/*.hdf ./test/h4toh5/Expected/*.h5 ./test/object/*.java ./test/object/*.in
 
-DISTFILES= $(JHI5DISTFILES) $(JHIDISTFILES) $(JH45IDISTFILES) ./ncsa/hdf/object/*.java  $(TESTFILES)
+DOCFILES=./docs/javadocs/*.html ./docs/javadocs/images/*.gif
+
+DISTFILES= $(JHI5DISTFILES) $(JHIDISTFILES) $(JH45IDISTFILES) ./ncsa/hdf/object/*.java  $(TESTFILES) $(DOCFILES)
 
 
 JH45PACKAGES = \
@@ -300,12 +302,13 @@ distclean: clean-natives clean-classes clean-test
 #	./build/JRE/buildjre @JAVATARG@
 
 src-dist:
-	-mkdir -p $(VERSION)
+	-mkdir -p hdf-java
 	tar cvf $(VERSION)-x.tar $(DISTFILES)
-	cd $(VERSION) ; tar xf ../$(VERSION)-x.tar
+	cd hdf-java ; tar xf ../$(VERSION)-x.tar
 	rm -f $(VERSION)-x.tar
-	tar cvf $(VERSION).tar $(VERSION)/*
-	@JAR@ cvf $(VERSION).jar $(VERSION)/*
+	tar cvf $(VERSION).tar hdf-java/*
+	@JAR@ cvf $(VERSION).jar hdf-java/*
+	rm -rf hdf-java
 	
 
 

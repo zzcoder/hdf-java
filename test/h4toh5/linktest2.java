@@ -1,4 +1,14 @@
 
+/****************************************************************************
+ * NCSA HDF                                                                 *
+ * National Comptational Science Alliance                                   *
+ * University of Illinois at Urbana-Champaign                               *
+ * 605 E. Springfield, Champaign IL 61820                                   *
+ *                                                                          *
+ * For conditions of distribution and use, see the accompanying             *
+ * hdf-java/COPYING file.                                                   *
+ *                                                                          *
+ ****************************************************************************/
 
 import ncsa.hdf.h4toh5lib.*;
 import ncsa.hdf.h4toh5lib.exceptions.*;
