@@ -63,7 +63,7 @@ JHI5DISTFILES=./VERSION ./COPYING ./Makefile.in  \
 
 TESTFILES=./test/Makefile.in ./test/h4toh5/*.java ./test/h4toh5/*.in ./test/h4toh5/testfiles/*.hdf ./test/h4toh5/Expected/*.h5 ./test/object/*.java ./test/object/*.in ./test/linktest/Makefile.in ./test/linktest/testh4link.in ./test/linktest/testlink.in ./test/linktest/*.java
 
-DOCFILES=./docs/javadocs/*.html ./docs/javadocs/images/*.gif
+DOCFILES=./docs/javadocs
 
 DISTFILES= $(JHI5DISTFILES) $(JHIDISTFILES) $(JH45IDISTFILES) $(HDFDISTFILES) $(HDFVIEWDISTFILES) $(HDFOBJDISTFILES) $(H4OBJDISTFILES) $(H5OBJDISTFILES) $(TESTFILES) $(DOCFILES)
 
