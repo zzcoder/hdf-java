@@ -79,9 +79,9 @@ implements TextObserver
             return;
         }
 
+        String fname = new java.io.File(dataset.getFile()).getName();
         this.setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
-        this.setTitle("TextView - "+dataset.getPath()+dataset.getName());
-        this.setName(dataset.getPath()+dataset.getName());
+        this.setTitle("TextView - "+fname+" - " +dataset.getPath()+dataset.getName());
         this.setFrameIcon(ViewProperties.getTextIcon());
 
         textPane = new JTextPane();
@@ -117,6 +117,12 @@ implements TextObserver
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout());
         contentPane.add (scroller, BorderLayout.CENTER);
+    }
+
+    public void dispose()
+    {
+        super.dispose();
+        viewer.contentFrameWasRemoved(getName());
     }
 
     // Implementing DataObserver.

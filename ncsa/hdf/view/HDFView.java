@@ -188,7 +188,18 @@ implements ViewManager, ActionListener, HyperlinkListener
                     if (hObj instanceof Dataset)
                     {
                         Dataset ds = (Dataset)hObj;
+
                         is3D = (ds.getRank() > 2);
+
+                        // disable 3D components for true color image
+                        if (c instanceof ImageObserver &&
+                            hObj instanceof H5ScalarDS)
+                        {
+                            H5ScalarDS h5sd = (H5ScalarDS)hObj;
+                            int interlace = h5sd.getInterlace();
+                            is3D = (interlace == ScalarDS.INTERLACE_PIXEL &&
+                                interlace == ScalarDS.INTERLACE_PLANE);
+                        }
                     }
                 }
                 it = d3GUIs.iterator();
@@ -199,6 +210,7 @@ implements ViewManager, ActionListener, HyperlinkListener
                 }
             } //public void moveToFront(Component c)
         };
+
         contentPane.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
         treeView = new TreeView(this);
         windowMenu = new JMenu( "Window" );
@@ -392,6 +404,9 @@ implements ViewManager, ActionListener, HyperlinkListener
             if (theFrame != null) // discard the displayed data
                 ((DataObserver)theFrame).dispose();
             isImage = dialog.isImageDisplay();
+
+            //clear the old data
+            d.clearData();
         }
 
         if (isImage)
@@ -1116,16 +1131,19 @@ implements ViewManager, ActionListener, HyperlinkListener
     {
         contentPane.add(frame);
 
+        String fullPath = selectedObject.getPath()+selectedObject.getName();
+        String cmd = fullPath + selectedObject.getFID();
+
         frame.setMaximizable(true);
         frame.setClosable(true);
         frame.setResizable(true);
         //try { frame.setMaximum(true); } catch (Exception ex) {}
         frame.setSize(contentPane.getSize());
+        frame.setName(cmd);
         frame.show();
 
-        String name = frame.getName();
-        JMenuItem item = new JMenuItem( name );
-        item.setActionCommand(name);
+        JMenuItem item = new JMenuItem( fullPath );
+        item.setActionCommand(cmd);
         item.addActionListener(this);
 
         if (windowMenu.getMenuComponentCount() == 6)
@@ -1152,7 +1170,7 @@ implements ViewManager, ActionListener, HyperlinkListener
 
             if (theItem == null) continue;
 
-            if (theItem.getText().equals(name))
+            if (theItem.getActionCommand().equals(name))
             {
                 windowMenu.remove(i);
                 theItem = null;
