@@ -17,45 +17,12 @@ import ncsa.hdf.hdf5lib.exceptions.*;
 
 /**
  * H5ScalarDS describes an multi-dimension array of HDF5 scalar or atomic data
- * types and operations performed on the scalar dataset.
+ * types and operations performed on the scalar dataset, such as byte, int,
+ * short, long, float, double and string.
  * <p>
- * The library predefines a modest number of datatypes having names like
- * H5T_arch_base where arch is an architecture name and base is a programming
- * type name.
- <pre>
-    Architecture    Name Description
-    IEEE            Standard floating point.
-    STD             Semi-standard datatypes.
-    UNIX            Unix operating systems.
-    C/FORTRAN       C or Fortran programming languages.
-    NATIVE          Machine dependent datatype.
-    CRAY            Cray architectures.
-    INTEL           All Intel and compatible CPU's.
-    MIPS            SGI systems.
-    ALPHA           DEC Alpha CPU's.
-
-    Letter    Base name
-    B         Bitfield
-    D         Date and time
-    F         Floating point
-    I         Signed integer
-    R         References
-    S         Character string
-    U         Unsigned integer
-
-    Letters    Byte order
-    BE         Big endian
-    LE         Little endian
-    VX         Vax order
-
-    Example         Description
-    H5T_IEEE_F32BE  Four-byte, big-endian, IEEE floating point
-    H5T_STD_U16BE   Two-byte, big-endian, unsigned integer
-    H5T_UNIX_D32LE  Four-byte, little-endian, time_t
-    H5T_INTEL_B64   Eight-byte bit field on an Intel CPU
-    H5T_CRAY_F64    Eight-byte Cray floating point
-    H5T_STD_ROBJ    Reference to an entire object in a file
- </pre>
+ * The library predefines a modest number of datatypes. For details, read
+ * <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/Datatypes.html">
+ * The Datatype Interface (H5T)</a>
  * <p>
  * @version 1.0 12/12/2001
  * @author Peter X. Cao, NCSA
@@ -78,28 +45,23 @@ public class H5ScalarDS extends ScalarDS
     private byte[][] palette;
 
     /**
-     * Creates a H5ScalarDS object with specific name, path, and parent.
+     * Creates an H5ScalarDS object with specific name and path.
      * <p>
-     * @param fid the file identifier.
-     * @param filename the full path of the file that contains this data object.
+     * @param fileFormat the HDF file.
      * @param name the name of this H5ScalarDS.
      * @param path the full path of this H5ScalarDS.
      * @param oid the unique identifier of this data object.
      */
     public H5ScalarDS(
-        int fid,
-        String filename,
+        FileFormat fileFormat,
         String name,
         String path,
         long[] oid)
     {
-        super (fid, filename, name, path, oid);
+        super (fileFormat, name, path, oid);
     }
 
-    /**
-     * Reads data from file into memory if the data is loaded or returns the
-     * data is the data is not loaded.
-     */
+    // Implementing DataFormat
     public Object read() throws HDF5Exception
     {
         if (data != null)
@@ -159,13 +121,10 @@ public class H5ScalarDS extends ScalarDS
         return data;
     }
 
-    // ***** need to implement from DataFormat *****
-    public boolean write() throws HDF5Exception
-    {
-        return false;
-    }
+    // To do: Implementing DataFormat
+    public void write() throws HDF5Exception {;}
 
-    // ***** implement from DataFormat *****
+    // Implementing DataFormat
     public List getMetadata() throws HDF5Exception
     {
         // load attributes first
@@ -185,34 +144,27 @@ public class H5ScalarDS extends ScalarDS
      *
      * <p>
      * @param info the atribute to attach
-     * @return true if successful and false otherwise.
      */
-    public boolean writeMetadata(Object info) throws HDF5Exception
+    public void writeMetadata(Object info) throws HDF5Exception
     {
-        Attribute attr = null;
-
         // only attribute metadata is supported.
-        if (info instanceof Attribute)
-            attr = (Attribute)info;
-        else
-            return false;
+        if (!(info instanceof Attribute))
+            return;
 
-        boolean b = true;
+        Attribute attr = (Attribute)info;
         String name = attr.getName();
         List attrList = getMetadata();
         boolean attrExisted = attrList.contains(attr);
 
         int did = open();
         try {
-            b = H5Accessory.writeAttribute(did, attr, attrExisted);
+            H5Accessory.writeAttribute(did, attr, attrExisted);
             // add the new attribute into attribute list
             if (!attrExisted) attrList.add(attr);
         } finally
         {
             close(did);
         }
-
-        return b;
     }
 
     /**
@@ -220,43 +172,24 @@ public class H5ScalarDS extends ScalarDS
      * <p>
      * @param info the attribute to delete.
      */
-    public boolean removeMetadata(Object info) throws HDF5Exception
+    public void removeMetadata(Object info) throws HDF5Exception
     {
-        Attribute attr = null;
-
         // only attribute metadata is supported.
-        if (info instanceof Attribute)
-            attr = (Attribute)info;
-        else
-            return false;
+        if (!(info instanceof Attribute))
+            return;
 
-        boolean b = true;
+        Attribute attr = (Attribute)info;
         int did = open();
         try {
             H5.H5Adelete(did, attr.getName());
+            List attrList = getMetadata();
+            attrList.remove(attr);
         } finally {
             close(did);
         }
-
-        // delete attribute from the List in memory
-        List attrList = null;
-        try { attrList = getMetadata(); }
-        catch (Exception ex) {}
-
-        if (b && attrList != null)
-        {
-            attrList.remove(attr);
-        }
-
-        return b;
     }
 
-    /**
-     * Opens this dataset for access.
-     * <p>
-     * @return a dataset identifier if successful; otherwise returns a negative
-     * value.
-     */
+    // Implementing HObject
     public int open()
     {
         int did = -1;
@@ -272,24 +205,11 @@ public class H5ScalarDS extends ScalarDS
         return did;
     }
 
-    /**
-     * Ends access to a dataset specified by dataset_id and releases resources
-     * used by it. Further use of the dataset identifier is illegal in calls to
-     * the dataset API.
-     */
-    public static boolean close(int dataset_id)
+    // Implementing HObject
+    public static void close(int did)
     {
-        boolean b = true;
-
-        try
-        {
-            H5.H5Dclose(dataset_id);
-        } catch (HDF5Exception ex)
-        {
-            b = false;
-        }
-
-        return b;
+        try { H5.H5Dclose(did); }
+        catch (HDF5Exception ex) {;}
     }
 
     /**
@@ -350,7 +270,7 @@ public class H5ScalarDS extends ScalarDS
         }
     }
 
-    // ***** need to implement from ScalarDS *****
+    // Implementing ScalarDS
     public byte[][] getPalette()
     {
         if (palette != null)

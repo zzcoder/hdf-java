@@ -39,34 +39,32 @@ public class H4Vdata extends CompoundDS
     private int numberOfRecords;
 
     /**
-     * The order of fields.
+     * The number of data points of each field.
      */
     private int[] memberOrders;
 
 
     /**
-     * Creates a H4Vdata object with specific name, path, and parent.
+     * Creates an H4Vdata object with specific name and path.
      * <p>
-     * @param fid the file identifier.
-     * @param filename the full path of the file that contains this data object.
+     * @param fileFormat the HDF file.
      * @param name the name of this H4Vdata.
      * @param path the full path of this H4Vdata.
      * @param oid the unique identifier of this data object.
      */
     public H4Vdata(
-        int fid,
-        String filename,
+        FileFormat fileFormat,
         String name,
         String path,
         long[] oid)
     {
-        super (fid, filename, name, path, oid);
+        super (fileFormat, name, path, oid);
         numberOfRecords = 0;
         numberOfMembers = 0;
         memberOrders = null;
     }
 
-    // ***** need to implement from DataFormat *****
+    // Implementing DataFormat
     public Object read() throws HDFException
     {
         //System.out.println("ncsa.hdf.object.H4Vdata.read()");
@@ -126,13 +124,10 @@ public class H4Vdata extends CompoundDS
         return data;
     }
 
-    // ***** need to implement from DataFormat *****
-    public boolean write() throws HDFException
-    {
-        return false;
-    }
+    // To do: Implementing DataFormat
+    public void write() throws HDFException {;}
 
-    // ***** need to implement from DataFormat *****
+    // Implementing DataFormat
     public List getMetadata() throws HDFException
     {
         if (attributeList != null)
@@ -201,29 +196,20 @@ public class H4Vdata extends CompoundDS
         return attributeList;
     }
 
-    // ***** need to implement from DataFormat *****
-    public boolean writeMetadata(Object info) throws HDFException
-    {
-        return false;
-    }
+    // To do: Implementing DataFormat
+    public void writeMetadata(Object info) throws HDFException { ; }
 
-    // ***** need to implement from DataFormat *****
-    public boolean removeMetadata(Object info) throws HDFException
-    {
-        boolean b = true;
+    // To do: Implementing DataFormat
+    public void removeMetadata(Object info) throws HDFException { ; }
 
-        return b;
-    }
-
-    // ***** need to implement from HObejct *****
+    // Implementing DataFormat
     public int open()
     {
         int vsid = -1;
-        long[] theOID = getOID();
 
-        // try to open with read and write permission
+        // try to open with write permission
         try {
-            vsid = HDFLibrary.VSattach(getFID(), (int)theOID[1], "w");
+            vsid = HDFLibrary.VSattach(getFID(), (int)oid[1], "w");
         } catch (HDFException ex)
         {
             vsid = -1;
@@ -233,7 +219,7 @@ public class H4Vdata extends CompoundDS
         if (vsid < 0)
         {
             try {
-                vsid = HDFLibrary.VSattach(getFID(), (int)theOID[1], "r");
+                vsid = HDFLibrary.VSattach(getFID(), (int)oid[1], "r");
             } catch (HDFException ex)
             {
                 vsid = -1;
@@ -243,18 +229,11 @@ public class H4Vdata extends CompoundDS
         return vsid;
     }
 
-    // ***** need to implement from HObejct *****
-    public static boolean close(int vsid)
+    // Implementing DataFormat
+    public static void close(int vsid)
     {
-        boolean b = true;
-
-        try {
-            HDFLibrary.VSdetach(vsid);
-        } catch (Exception ex) {
-            b = false;
-        }
-
-        return b;
+        try { HDFLibrary.VSdetach(vsid); }
+        catch (Exception ex) { ; }
     }
 
     /**

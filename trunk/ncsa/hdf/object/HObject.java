@@ -72,10 +72,10 @@ implements Serializable, DataFormat
     /**
      * array of long integer storing unique identifier for each HDF object.
      * <p>
-     * HDF4 objects are uniquely identified by the (ref_id, tag_id) pairs.
+     * HDF4 objects are uniquely identified by the (tag_id, ref_id) pairs.
      * HDF5 objects uniquely identified by the reference identifier.
      */
-    private final long[] oid;
+    protected final long[] oid;
 
     /**
      * Constructs an instance of the data object with specific name and path.
@@ -83,16 +83,17 @@ implements Serializable, DataFormat
      * by its full name (the full path + the name of the object) and the file
      * that contains the data object.
      * <p>
-     * @param fid the file identifier.
-     * @param filename the full path of the file that contains this data object.
+     * @param fileFormat the HDF file.
      * @param name the name of the data object.
      * @param path the full path of the data object.
      * @param oid the unique identifier of this data object.
      */
-    public HObject(int fid, String filename, String name, String path, long[] oid)
+    public HObject(FileFormat fileFormat, String name, String path, long[] oid)
     {
-        this.fid = fid;
-        this.filename = filename;
+        try { this.fid = fileFormat.open(); }
+        catch (Exception ex) { this.fid = -1; }
+
+        this.filename = fileFormat.getFilePath();
         this.name = name;
 
         if (path!=null && !path.endsWith(separator))
@@ -144,20 +145,6 @@ implements Serializable, DataFormat
     public abstract int open();
 
     /**
-     * Terminates access to this object.
-     * <p>
-     * Sub-classes have to replace this interface so that different data
-     * objects have their own ways of how the data resources are closed.
-     * <p>
-     * @param access_id the access_id of the object to be closed.
-     * @return true if successful and false otherwise.
-     */
-    public static boolean close(int access_id)
-    {
-        return false;
-    }
-
-    /**
      * Returns the file identifier of this data object.
      */
     public final int getFID()
@@ -166,27 +153,26 @@ implements Serializable, DataFormat
     }
 
     /**
-     * Returns the unique identifier of this object.
+     * Check if this object has the given object identifier.
      */
-    public final long[] getOID()
+    public final boolean equalsOID(long[] theID)
     {
-        return oid;
-    }
+        if (theID == null || oid == null)
+            return false;
 
-    /**
-     * Creates a new data object on disk and constructs a new instance of the object
-     * in memory. Subclasses must replace this interface to create appropriate
-     * instance of data object.
-     * <p>
-     * @param fid the file identifier.
-     * @param filename the full path of the file that contains this data object.
-     * @param name the name of the data object.
-     * @param path the full path of the data object.
-     * @return the new data object if succcesseful; otherwise return null.
-     */
-    public static Object create(int fid, String filename, String name, String path)
-    {
-        return null;
+        int n1 = theID.length;
+        int n2 = oid.length;
+
+        if (n1 != n2 )
+            return false;
+
+        boolean isMatched = (theID[0]==oid[0]);
+        for (int i=1; isMatched && i<n1; i++)
+        {
+            isMatched = (theID[i]==oid[i]);
+        }
+
+        return isMatched;
     }
 
     /**
