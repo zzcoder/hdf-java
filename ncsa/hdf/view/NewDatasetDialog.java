@@ -53,10 +53,10 @@ implements ActionListener, ItemListener, HyperlinkListener
 
     private JDialog helpDialog;
 
+    private boolean isH5;
+
     /** a list of current groups */
     private List groupList;
-
-    private boolean isH5;
 
     private HObject newObject;
 
@@ -79,9 +79,9 @@ implements ActionListener, ItemListener, HyperlinkListener
         newObject = null;
         dataObserver = null;
 
-        isH5 = (pGroup instanceof H5Group);
         fileFormat = pGroup.getFileFormat();
         toolkit = Toolkit.getDefaultToolkit();
+        isH5 = pGroup.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
 
         groupList = new Vector();
         parentChoice = new Choice();
@@ -308,9 +308,9 @@ implements ActionListener, ItemListener, HyperlinkListener
         newObject = null;
         dataObserver = observer;
 
-        isH5 = (pGroup instanceof H5Group);
         fileFormat = pGroup.getFileFormat();
         toolkit = Toolkit.getDefaultToolkit();
+        isH5 = pGroup.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
 
         groupList = new Vector();
         parentChoice = new Choice();
@@ -659,7 +659,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         }
         else if (idx == 4)
         {
-            tclass = H5Datatype.CLASS_REFERENCE;
+            tclass = Datatype.CLASS_REFERENCE;
         }
 
         // set datatype size/order
@@ -685,7 +685,7 @@ implements ActionListener, ItemListener, HyperlinkListener
 
             tsize = stringLength;
         }
-        else if (tclass == H5Datatype.CLASS_REFERENCE)
+        else if (tclass == Datatype.CLASS_REFERENCE)
         {
             tsize = 1;
         }
@@ -693,7 +693,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         {
             tsize = Datatype.NATIVE;
         }
-        else if (tclass == H5Datatype.CLASS_FLOAT)
+        else if (tclass == Datatype.CLASS_FLOAT)
         {
             tsize = idx*4;
         }
@@ -893,18 +893,9 @@ implements ActionListener, ItemListener, HyperlinkListener
         HObject obj = null;
         try
         {
-            if (isH5)
-            {
-                Datatype datatype = new H5Datatype(tclass, tsize, torder, tsign);
-                obj = H5ScalarDS.create(fileFormat, name, pgroup, datatype,
-                    dims, maxdims, chunks, gzip, null);
-            }
-            else
-            {
-                Datatype datatype = new H4Datatype(tclass, tsize, torder, tsign);
-                obj = H4SDS.create(fileFormat, name, pgroup, datatype,
-                    dims, maxdims, chunks, gzip, null);
-            }
+            Datatype datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign);
+            obj = fileFormat.createScalarDS(fileFormat, name, pgroup, datatype,
+                dims, maxdims, chunks, gzip, null);
         } catch (Exception ex)
         {
             toolkit.beep();
@@ -974,17 +965,8 @@ implements ActionListener, ItemListener, HyperlinkListener
 
         try
         {
-            if (isH5)
-            {
-                long[] dims = {h, w};
-                obj = ((H5File)pgroup.getFileFormat()).copy(dataset, pgroup, name, dims, theData);
-            }
-            else
-            {
-                int[] count = {h, w};
-                obj = ((H4File)pgroup.getFileFormat()).copy(
-                    (H4SDS)dataset, (H4Group)pgroup, name, count, theData);
-            }
+            long[] dims = {h, w};
+            obj = dataset.copy(pgroup, name, dims, theData);
         }
         catch (Exception ex)
         {
@@ -1049,9 +1031,9 @@ implements ActionListener, ItemListener, HyperlinkListener
 
         try
         {
+            long[] dims = null;
             if (isH5)
             {
-                long[] dims = null;
                 if (imageView.isTrueColor())
                 {
                     dims = new long[3];
@@ -1074,15 +1056,15 @@ implements ActionListener, ItemListener, HyperlinkListener
                     dims[0] = h;
                     dims[1] = w;
                 }
-                obj = ((H5File)pgroup.getFileFormat()).copy(
-                    dataset, pgroup, name, dims, theData);
             }
             else
             {
-                int[] count = {w, h};
-                obj = ((H4File)pgroup.getFileFormat()).copy(
-                    (H4GRImage)dataset, (H4Group)pgroup, name, count, theData);
+                dims = new long[2];
+                dims[0] = w;
+                dims[1] = h;
             }
+
+            obj = dataset.copy(pgroup, name, dims, theData);
         }
         catch (Exception ex)
         {

@@ -81,6 +81,9 @@ public abstract class Dataset extends HObject
      */
     protected String compression;
 
+    /** the datatype of this dataset. */
+    protected Datatype datatype;
+
     /**
      * Creates a Dataset object with specific name and path.
      * <p>
@@ -184,6 +187,19 @@ public abstract class Dataset extends HObject
 
     /** Write data values from memory into file. */
     public abstract void write() throws Exception;
+
+    /** Copy this dataset to another group.
+     * @param pgroup the group which the dataset is copied to.
+     * @param name the name of the new dataset.
+     * @param dims the dimension sizes of the the new dataset.
+     * @param data the data to be copied.
+     * @return the new dataset.
+     */
+    public abstract Dataset copy(Group pgroup, String name, long[] dims, Object data) throws Exception;
+
+
+    /** returns the datatype of this dataset. */
+    public abstract Datatype getDatatype();
 
     /** If data is loaded into memory, returns the data value, otherwise
      *  load the data value into memory and returns the data value.
@@ -403,6 +419,9 @@ public abstract class Dataset extends HObject
         StringBuffer strBuff = new StringBuffer(length);
         for (int i=0; i<size; i++)
         {
+            if (strings[i].length() > length)
+                strings[i] = strings[i].substring(0, length-1);
+            // padding the string with space
             strBuff.replace(0, length, " ");
             strBuff.replace(0, length, strings[i]);
             strBuff.setLength(length);

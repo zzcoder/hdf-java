@@ -52,6 +52,7 @@ implements ActionListener
     private DefaultTableModel attrTableModel;
     private JLabel attrNumberLabel;
     private int numAttributes;
+    private boolean isH5;
 
     /**
      * Constructs a MetadataDialog with the given HDFView.
@@ -67,10 +68,13 @@ implements ActionListener
 
         if (hObject == null)
             dispose();
+
         else if ( hObject.getPath()== null)
             setTitle("Properties - "+hObject.getName());
         else
             setTitle("Properties - "+hObject.getPath()+hObject.getName());
+
+        isH5 = hObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
 
         tabbedPane = new JTabbedPane();
 
@@ -134,16 +138,8 @@ implements ActionListener
         boolean isUnsigned = false;
 
         rowData[0] = attr.getName();
-        if (hObject.getFileFormat() instanceof H5File)
-        {
-            rowData[2] = H5Datatype.getDatatypeDescription(attr.getType());
-            isUnsigned = H5Datatype.isUnsigned(attr.getType());
-        }
-        else
-        {
-            rowData[2] = H4Datatype.getDatatypeDescription(attr.getType());
-            isUnsigned = H4Datatype.isUnsigned(attr.getType());
-        }
+        rowData[2] = attr.getType().getDatatypeDescription();
+        isUnsigned = attr.getType().isUnsigned();
 
         rowData[1] = attr.toString(", ");
 
@@ -232,10 +228,10 @@ implements ActionListener
         lp.add(new JLabel("Name: "));
         lp.add(new JLabel("Path: "));
         lp.add(new JLabel("Type: "));
-        if (theFile instanceof H4File)
-            lp.add(new JLabel("Ref, Tag: "));
-        else
+        if (isH5)
             lp.add(new JLabel("Object ID: "));
+        else
+            lp.add(new JLabel("Ref, Tag: "));
 
         JPanel rp = new JPanel();
         rp.setLayout(new GridLayout(4,1));
@@ -274,32 +270,19 @@ implements ActionListener
                     datasetCount++;
             }
 
-            fileInfo = "filesize="+size+"KB,  groups="+groupCount+ ",  datasets="+datasetCount;
+            fileInfo = "size="+size+"K,  groups="+groupCount+ ",  datasets="+datasetCount;
         }
-        if (hObject instanceof H4Group)
+
+        if (isRoot)
         {
-            if (isRoot) typeStr = "HDF4,  "+fileInfo;
-            else typeStr = "HDF4 Vgroup";
-        } else if (hObject instanceof H5Group)
-        {
-            if (isRoot) typeStr = "HDF5,  "+fileInfo;
-            else typeStr = "HDF5 Group";
-        } else if (hObject instanceof H4GRImage)
-        {
-            typeStr = "HDF4 GR Image";
-        } else if (hObject instanceof H4SDS)
-        {
-            typeStr = "HDF4 SDS";
-        } else if (hObject instanceof H4Vdata)
-        {
-            typeStr = "HDF4 Vdata";
-        } else if (hObject instanceof H5ScalarDS)
-        {
-            typeStr = "HDF5 Scalar Dataset";
-        } else if (hObject instanceof H5CompoundDS)
-        {
-            typeStr = "HDF5 Compound Dataset";
+            if (isH5) typeStr = "HDF5,  "+fileInfo;
+            else typeStr = "HDF4,  "+fileInfo;
         }
+        else
+        {
+            typeStr = hObject.getClass().getName();
+        }
+
         JTextField typeField = new JTextField(typeStr);
         typeField.setEditable(false);
         rp.add(typeField);
@@ -419,21 +402,16 @@ implements ActionListener
         rp.add(txtf);
 
         String typeStr = null;
-        if (d instanceof H5ScalarDS)
-        {
-            H5ScalarDS sd = (H5ScalarDS)d;
-            typeStr = H5Datatype.getDatatypeDescription(sd.getDataType());
-        } else if (d instanceof H5CompoundDS)
-        {
-            typeStr = "Compound";
-        } else if (d instanceof H4Vdata)
-        {
-            typeStr = "Vdata";
-        } else if (d instanceof H4GRImage || d instanceof H4SDS)
+        if (d instanceof ScalarDS)
         {
             ScalarDS sd = (ScalarDS)d;
-            typeStr = H4Datatype.getDatatypeDescription(sd.getDataType());
+            typeStr = sd.getDatatype().getDatatypeDescription();
+        } else if (d instanceof CompoundDS)
+        {
+            if (isH5) typeStr = "Compound";
+            else typeStr = "Vdata";
         }
+
         txtf = new JTextField(typeStr);
         txtf.setEditable(false);
         rp.add(txtf);
@@ -462,14 +440,13 @@ implements ActionListener
                 int types[] = compound.getMemberTypes();
                 int orders[] = compound.getMemberOrders();
 
+                Datatype datatype = compound.getDatatype();
                 for (int i=0; i<n; i++)
                 {
                     rowData[i][0] = names[i];
                     rowData[i][2] = String.valueOf(orders[i]);
-                    if (compound instanceof H4Vdata)
-                        rowData[i][1] = H4Datatype.getDatatypeDescription(types[i]);
-                    else
-                        rowData[i][1] = H5Datatype.getDatatypeDescription(types[i]);
+                    datatype.fromNative(types[i]);
+                    rowData[i][1] = datatype.getDatatypeDescription();
                 }
 
                 String[] columnNames = {"Name", "Type", "Array Size"};
@@ -518,7 +495,7 @@ implements ActionListener
         bPanel.add(rp, BorderLayout.CENTER);
 
         // getChunkInfo does not work for HDF4 files
-        if (d.getFileFormat() instanceof H5File)
+        if (isH5)
             panel.add(bPanel, BorderLayout.SOUTH);
 
         return panel;
@@ -547,16 +524,7 @@ implements ActionListener
         bPanel.add(b);
         b.setEnabled(!theFile.isReadOnly());
 
-        if (theFile instanceof H4File)
-        {
-            // cannot add attribute to HDF4 froup
-            if (hObject instanceof Group &&
-                ((Group)hObject).isRoot())
-            {
-                b.setEnabled(false);
-            }
-        }
-        else if (theFile instanceof H5File)
+        if (isH5)
         {
             // deleting is not supported by HDF4
             b = new JButton("Delete");
@@ -566,6 +534,16 @@ implements ActionListener
             bPanel.add(b);
             b.setEnabled(!theFile.isReadOnly());
         }
+        else
+        {
+            // cannot add attribute to HDF4 froup
+            if (hObject instanceof Group &&
+                ((Group)hObject).isRoot())
+            {
+                b.setEnabled(false);
+            }
+        }
+
         topPanel.add(bPanel, BorderLayout.EAST);
 
         panel.add(topPanel, BorderLayout.NORTH);
@@ -652,16 +630,8 @@ implements ActionListener
             name = attr.getName();
 
             boolean isUnsigned = false;
-            if (hObject.getFileFormat() instanceof H5File)
-            {
-                type = H5Datatype.getDatatypeDescription(attr.getType());
-                isUnsigned = H5Datatype.isUnsigned(attr.getType());
-            }
-            else
-            {
-                type = H4Datatype.getDatatypeDescription(attr.getType());
-                isUnsigned = H4Datatype.isUnsigned(attr.getType());
-            }
+            type = attr.getType().getDatatypeDescription();
+            isUnsigned = attr.getType().isUnsigned();
 
             long dims[] = attr.getDataDims();
             size = String.valueOf(dims[0]);
@@ -834,10 +804,7 @@ implements ActionListener
         }
 
         try {
-            if (hObject.getFileFormat() instanceof H5File)
-                H5File.writeAttribute(hObject, attr, true);
-            else
-                H4File.writeAttribute(hObject, attr);
+            hObject.getFileFormat().writeAttribute(hObject, attr, true);
         } catch (Exception ex)
         {
             JOptionPane.showMessageDialog(

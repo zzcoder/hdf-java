@@ -371,21 +371,9 @@ implements ImageObserver
 
         int rank = dataset.getRank();
         if (rank <=0) dataset.init();
+        isTrueColor = dataset.isTrueColor();
 
-        isTrueColor = false;
         String strValue = null;
-
-        if (dataset instanceof H4GRImage)
-        {
-            H4GRImage h4image = (H4GRImage)dataset;
-            int n = h4image.getComponentCount();
-            if (n >= 3) isTrueColor = true;
-        }
-        else if (dataset instanceof H5ScalarDS)
-        {
-            int interlace = dataset.getInterlace();
-            isTrueColor = (interlace == ScalarDS.INTERLACE_PIXEL || interlace == ScalarDS.INTERLACE_PLANE);
-        }
 
         try
         {
@@ -1066,34 +1054,23 @@ implements ImageObserver
     /** Save the image to an image file.
      *  @param type the image type.
      */
-    public void saveImageAs(int type) throws Exception
+    public void saveImageAs(String type) throws Exception
     {
         if (image == null)
             return;
 
-        String extension = "";
         final JFileChooser fchooser = new JFileChooser(dataset.getFile());
-
-        if (type == Tools.FILE_TYPE_JPEG)
-        {
+        if (type.equals(FileFormat.FILE_TYPE_JPEG))
             fchooser.setFileFilter(DefaultFileFilter.getFileFilterJPEG());
-            extension = "jpg";
-        }
-        else if (type == Tools.FILE_TYPE_TIFF)
-        {
+        else if (type.equals(FileFormat.FILE_TYPE_TIFF))
             fchooser.setFileFilter(DefaultFileFilter.getFileFilterTIFF());
-            extension = "tif";
-        }
-        else if (type == Tools.FILE_TYPE_PNG)
-        {
+        else if (type.equals(FileFormat.FILE_TYPE_PNG))
             fchooser.setFileFilter(DefaultFileFilter.getFileFilterPNG());
-            extension = "png";
-        }
 
         fchooser.changeToParentDirectory();
-        fchooser.setDialogTitle("Save Current Image To "+extension.toUpperCase()+" File --- "+dataset.getName());
+        fchooser.setDialogTitle("Save Current Image To "+type+" File --- "+dataset.getName());
 
-        File choosedFile = new File(dataset.getName()+"."+extension);;
+        File choosedFile = new File(dataset.getName()+"."+type.toLowerCase());
         fchooser.setSelectedFile(choosedFile);
 
         int returnVal = fchooser.showSaveDialog(this);
@@ -1105,7 +1082,7 @@ implements ImageObserver
         String fname = choosedFile.getAbsolutePath();
 
         // check if the file is in use
-        List fileList = ((HDFView)viewer).getOpenFiles();
+        List fileList = viewer.getOpenFiles();
         if (fileList != null)
         {
             FileFormat theFile = null;
@@ -1974,7 +1951,7 @@ implements ImageObserver
             chartP.addMouseMotionListener(this);
 
             x0 = y0 = 0;
-            originalImage = currentImage = image;
+            originalImage = currentImage = imageComponent.image;
             palette = new byte[3][256];
         }
 
@@ -2042,9 +2019,13 @@ implements ImageObserver
 
             if (cmd.equals("Ok"))
             {
-                this.updatePalette();
-                imageComponent.setImage(currentImage);
-                imagePalette = palette;
+                if (isPaletteChanged)
+                {
+                    this.updatePalette();
+                    isPaletteChanged = false;
+                    imageComponent.setImage(currentImage);
+                    imagePalette = palette;
+                }
                 super.dispose();
             }
             else if (cmd.equals("Cancel"))
@@ -2061,11 +2042,6 @@ implements ImageObserver
 
         private void updatePalette()
         {
-            if (!isPaletteChanged)
-                return;
-            else
-                isPaletteChanged = false;
-
             for (int i=0; i<256; i++)
             {
                 palette[0][i] = (byte)super.data[0][i];

@@ -25,21 +25,6 @@ import com.sun.image.codec.jpeg.*;
  */
 public final class Tools
 {
-    /** tag for JPEG image.*/
-    public static final int FILE_TYPE_JPEG = 0;
-
-    /** tag for TIFF image. */
-    public static final int FILE_TYPE_TIFF = 1;
-
-    /** tag for PNG image. */
-    public static final int FILE_TYPE_PNG = 2;
-
-    /** tag for HDF4 file. */
-    public static final int FILE_TYPE_HDF4 = 3;
-
-    /** tag for HDF5 file. */
-    public static final int FILE_TYPE_HDF5 = 4;
-
     /** Converts an image file into HDF4/5 file.
      *  @param imgFileName the input image file.
      *  @param hFileName the name of the HDF4/5 file.
@@ -47,7 +32,7 @@ public final class Tools
      *  @param toType the type of file converted to.
      */
     public static void convertImageToHDF(String imgFileName, String hFileName,
-        int fromType, int toType) throws Exception
+        String fromType, String toType) throws Exception
     {
         File imgFile = null;
 
@@ -58,9 +43,10 @@ public final class Tools
         else if (hFileName == null)
             throw new NullPointerException("The target HDF file is null.");
 
-        if (fromType != FILE_TYPE_JPEG)
+        if (!fromType.equals(FileFormat.FILE_TYPE_JPEG))
             throw new UnsupportedOperationException("Unsupported image type.");
-        else if ( !(toType == FILE_TYPE_HDF4 || toType == FILE_TYPE_HDF5 ))
+        else if ( !(toType.equals(FileFormat.FILE_TYPE_HDF4)
+             || toType.equals(FileFormat.FILE_TYPE_HDF5 )))
              throw new UnsupportedOperationException("Unsupported destination file type.");
 
         BufferedInputStream in = new BufferedInputStream(new FileInputStream(imgFileName));
@@ -93,32 +79,36 @@ public final class Tools
         }
 
         int fid = -1;
+        long[] dims = null;
         Datatype type = null;
         Group pgroup = null;
         Dataset dataset = null;
         String imgName = imgFile.getName();
-        if (toType==FILE_TYPE_HDF5)
+        FileFormat newfile=null, thefile=null;
+        if (toType.equals(FileFormat.FILE_TYPE_HDF5))
         {
+            thefile = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
             long[] h5dims = {h, w, 3}; // RGB pixel interlace
-            H5File.create(hFileName);
-            H5File h5file = new H5File(hFileName, H5File.WRITE);
-            fid = h5file.open();
-            pgroup = (Group)((DefaultMutableTreeNode) h5file.getRootNode()).getUserObject();
-            type = new H5Datatype(Datatype.CLASS_CHAR, 1, Datatype.NATIVE, Datatype.SIGN_NONE);
-            dataset = H5ScalarDS.create(h5file, imgName, pgroup, type, h5dims, null, null, -1, data);
-            try { H5File.createImageAttributes(dataset, ScalarDS.INTERLACE_PIXEL); } catch (Exception ex) {}
-            h5file.close();
+            dims = h5dims;
         }
-        else if (toType==FILE_TYPE_HDF4)
+        else if (toType.equals(FileFormat.FILE_TYPE_HDF4))
         {
+            thefile = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4);
             long[] h4dims = {w, h, 3}; // RGB pixel interlace
-            H4File.create(hFileName);
-            H4File h4file = new H4File(hFileName, H4File.WRITE);
-            fid = h4file.open();
-            pgroup = (Group)((DefaultMutableTreeNode) h4file.getRootNode()).getUserObject();
-            type = new H4Datatype(Datatype.CLASS_CHAR, 1, Datatype.NATIVE, Datatype.SIGN_NONE);
-            dataset = H4GRImage.create(h4file, imgName, pgroup, type, h4dims, null, null, -1, 3, ScalarDS.INTERLACE_PIXEL, data);
-            h4file.close();
+            dims = h4dims;
+        }
+        else
+            thefile = null;
+
+        if (thefile != null)
+        {
+            newfile = thefile.create(hFileName);
+            fid = newfile.open();
+            pgroup = (Group)((DefaultMutableTreeNode) newfile.getRootNode()).getUserObject();
+            type = newfile.createDatatype(Datatype.CLASS_CHAR, 1, Datatype.NATIVE, Datatype.SIGN_NONE);
+            dataset = newfile.createImage(newfile, imgName, pgroup, type,
+                dims, null, null, -1, 3, ScalarDS.INTERLACE_PIXEL, data);
+            newfile.close();
         }
 
         // clean up memory
@@ -132,13 +122,13 @@ public final class Tools
      *  @param file the image file.
      *  @param type the image type.
      */
-    public static void saveImageAs(BufferedImage image, File file, int type)
+    public static void saveImageAs(BufferedImage image, File file, String type)
     throws Exception
     {
         if (image == null)
             throw new NullPointerException("The source image is null.");
 
-        if (type != FILE_TYPE_JPEG)
+        if (!type.equals(FileFormat.FILE_TYPE_JPEG))
             throw new UnsupportedOperationException("Unsupported image type.");
 
         BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));

@@ -30,18 +30,19 @@ public abstract class ScalarDS extends Dataset
     // to make the defination consistent with the image specs.
 
     /** The component value for a pixel are contiguous. */
-    public final static int INTERLACE_PIXEL =
-        ncsa.hdf.hdflib.HDFConstants.MFGR_INTERLACE_PIXEL;
+    public final static int INTERLACE_PIXEL = 0;
+
+    /** Each component is stored as a scan line. */
+    public static final int INTERLACE_LINE = 1;
 
     /** Each component is stored as a plane. */
-    public final static int INTERLACE_PLANE =
-        ncsa.hdf.hdflib.HDFConstants.MFGR_INTERLACE_COMPONENT;
+    public final static int INTERLACE_PLANE = 2;
 
     /**
      * The data type of this scalar dataset
      * such as 32-bit integer, 32-bit float, etc.
      */
-    protected int datatype;
+    protected int nativeDatatype;
 
     /**
      * The interlace mode of the stored raster image data
@@ -62,6 +63,11 @@ public abstract class ScalarDS extends Dataset
      * True if this dataset is an image.
      */
     protected boolean isImage;
+
+    /**
+     * True if this dataset is a true color image.
+     */
+    protected boolean isTrueColor;
 
     /**
      * True if this dataset is ASCII text.
@@ -94,20 +100,22 @@ public abstract class ScalarDS extends Dataset
     {
         super (fileFormat, name, path, oid);
 
-        datatype = -1;
+        nativeDatatype = -1;
         palette = null;
         isImage = false;
+        isTrueColor = false;
         isText = false;
         isUnsigned = false;
         interlace = -1;
+        datatype = null;
     }
 
     /**
      * Returns the type of this scalar dataset.
      */
-    public final int getDataType()
+    public final int getNativeDataType()
     {
-        return datatype;
+        return nativeDatatype;
     }
 
     /**
@@ -153,12 +161,30 @@ public abstract class ScalarDS extends Dataset
         palette = pal;
     }
 
+    /** read specific image palette from file.
+     *  @param idx the palette index to read.
+     */
+    public abstract byte[][] readPalette(int idx);
+
+    /** returns the byte array of palette refs.
+     *  returns null if there is no palette attribute attached to this dataset.
+     */
+    public abstract byte[] getPaletteRefs();
+
     /**
      * Returns true if this dataset is an image.
      */
     public final boolean isImage()
     {
         return isImage;
+    }
+
+    /**
+     * Returns true if this dataset is a true color image.
+     */
+    public final boolean isTrueColor()
+    {
+        return isTrueColor;
     }
 
     /**
