@@ -312,7 +312,9 @@ public class H5CompoundDS extends CompoundDS
 
                 if (member_data == null)
                 {
-                    isMemberSelected[i] = false; // do not display memeber without data
+                    String[] nullValues = new String[(int)lsize[0]];
+                    for (int j=0; j<lsize[0]; j++) nullValues[j] = "*error*";
+                    list.add(nullValues);
                     continue;
                 }
 
@@ -370,7 +372,10 @@ public class H5CompoundDS extends CompoundDS
                         try { H5.H5Sclose(fspace); }  catch (HDF5Exception ex3) {}
                     }
 
-                    isMemberSelected[i] = false; // do not display memeber without data
+                    String[] nullValues = new String[(int)lsize[0]];
+                    for (int j=0; j<lsize[0]; j++) nullValues[j] = "*error*";
+                    list.add(nullValues);
+                    //isMemberSelected[i] = false; // do not display memeber without data
                     continue;
                 }
                 try { H5.H5Tclose(nested_tid); } catch (HDF5Exception ex2) {}

@@ -301,13 +301,14 @@ public class H4Vdata extends CompoundDS
                 continue;
             }
 
-            member_data = H4Datatype.allocateArray(
-                memberTypes[i],
-                memberOrders[i]*(int)selectedDims[0]);
+            int n = memberOrders[i]*(int)selectedDims[0];
+            member_data = H4Datatype.allocateArray(memberTypes[i], n);
 
             if (member_data == null)
             {
-                isMemberSelected[i] = false;
+                String[] nullValues = new String[n];
+                for (int j=0; j<n; j++) nullValues[j] = "*error*";
+                list.add(nullValues);
                 continue;
             }
 
@@ -331,7 +332,9 @@ public class H4Vdata extends CompoundDS
                 }
             } catch (HDFException ex)
             {
-                isMemberSelected[i] = false;
+                String[] nullValues = new String[n];
+                for (int j=0; j<n; j++) nullValues[j] = "*error*";
+                list.add(nullValues);
                 continue;
             }
 
