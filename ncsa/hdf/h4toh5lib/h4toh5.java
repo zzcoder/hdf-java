@@ -17,8 +17,11 @@
 package ncsa.hdf.h4toh5lib;
 
 import java.io.*;
+import ncsa.hdf.hdflib.*;
+import ncsa.hdf.hdf5lib.*;
 import ncsa.hdf.h4toh5lib.exceptions.*;
 
+import java.lang.Class;
 
 public class h4toh5 {
 	public final static String H45PATH_PROPERTY_KEY = "ncsa.hdf.h4toh5lib.h4toh5.h45lib"; 
@@ -27,7 +30,46 @@ public class h4toh5 {
 
     static
     {
-	
+	Class c1 = null;
+	try {
+		c1 = Class.forName("ncsa.hdf.h4toh5lib.h4toh5");
+	} catch (ClassNotFoundException cnf) {
+// what to do here?
+		System.out.println("h4toh5 is not found.");
+	}
+	ClassLoader cl1  = null;
+	if (c1 != null) {
+		try {
+			cl1 = c1.getClassLoader();
+		} catch (SecurityException se) {
+// what to do here?
+			System.out.println("class loader not accessible: ");
+		}
+	}
+
+	/* special:  Want to force loading of classes, but not
+	 *   call the static initializer because this will zap
+         *   the library if already open.
+        */
+	if (cl1 != null) {
+	Class c3 = null;
+	try {
+		c3 = Class.forName("ncsa.hdf.hdf5lib.H5",false,cl1);
+	} catch (ClassNotFoundException cnf) {
+// what to do here?
+		System.out.println("HDF5 is not found.");
+	}
+
+	Class c4 = null;
+	try {
+		c4 = Class.forName("ncsa.hdf.hdflib.HDFLibrary");
+	} catch (ClassNotFoundException cnf) {
+// what to do here?
+		System.out.println("HDF is not found.");
+	}
+	}
+
+	// Actually load the jh4toh5lib here.  May already be loaded.
         String filename = null;
         filename = System.getProperty(H45PATH_PROPERTY_KEY,null);
         if ((filename != null) && (filename.length() > 0))
@@ -42,6 +84,8 @@ public class h4toh5 {
         else {
             System.loadLibrary("jh4toh5");
         }
+
+	// To do:  do the HDF5 'atexit call'?
     }
 
 public static String JH4toh5version() { return JH4to5vers; };
