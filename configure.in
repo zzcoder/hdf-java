@@ -254,6 +254,9 @@ else
 if test -f $JAVALIB/classes.zip ; then
 	JAVACLASSES=$JAVALIB/classes.zip
 	JAVACLASSPATH_FOUND=1
+elif test -f $JAVALIB/core.jar ; then
+	JAVACLASSES=$JAVALIB/rt.jar
+	JAVACLASSPATH_FOUND=1
 elif test -f $JAVALIB/rt.jar ; then
 	JAVACLASSES=$JAVALIB/rt.jar
 	JAVACLASSPATH_FOUND=1
