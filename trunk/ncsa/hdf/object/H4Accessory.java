@@ -5,7 +5,7 @@
  * 605 E. Springfield, Champaign IL 61820                                   *
  *                                                                          *
  * For conditions of distribution and use, see the accompanying             *
- * java-hdf COPYING file.                                                *
+ * hdf-java/COPYING file.                                                   *
  *                                                                          *
  ****************************************************************************/
 
