@@ -26,3 +26,5 @@ clean:
 	$(MAKE) clean;
 	cd object; \
 	$(MAKE) clean;
+	cd testlink; \
+	$(MAKE) clean;

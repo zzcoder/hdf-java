@@ -28,28 +28,4 @@ LD_LIBRARY_PATH=$LIBDIR"/@JAVATARG@"
 export CLASSPATH
 export LD_LIBRARY_PATH
 
-@JAVA@ -version > /tmp/jv 2>&1
-grep 'java version' /tmp/jv | grep -q '\"1.2' > /tmp/jjv
-if [ -z $? ]
-then
-grep -q '\"1.3' /tmp/jv > /tmp/jjv
-if [ -z $? ]
-then
-grep -q '\"1.4' /tmp/jv > /tmp/jjv
-if [ -z $? ]
-then
-#JDK 1
-	@JAVA@  TestHDF5Link
-else
-#JDK 1.4
-	@JAVA@ -Djava.library.path=$LD_LIBRARY_PATH TestHDF5Link
-fi
-else
-#JDK 1.3
-	@JAVA@ -Djava.library.path=$LD_LIBRARY_PATH TestHDF5Link
-fi
-else
-#JDK 1.2
-	@JAVA@ -Djava.library.path=$LD_LIBRARY_PATH TestHDF5Link
-fi
-rm /tmp/jv /tmp/jjv
+@JAVA@ -Djava.library.path=$LD_LIBRARY_PATH TestHDF5Link
