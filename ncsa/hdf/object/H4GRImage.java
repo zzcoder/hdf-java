@@ -17,7 +17,7 @@ import ncsa.hdf.hdflib.*;
 
 /**
  * H4GRImage describes HDF4 general raster(GR) image and operations performed on
- * the GR image. Ah HDF4 raster image is a two-dimension array of pixel values.
+ * the GR image. An HDF4 raster image is a two-dimension array of pixel values.
  * <p>
  * Every GR data set must contain the following components: image array, name,
  * pixel type, and dimensions. The name, dimensions, and pixel type must be
@@ -75,21 +75,24 @@ public class H4GRImage extends ScalarDS
     /**
      * Creates a H4GRImage object with specific name, path, and object ID.
      * <p>
-     * @param fid the file identifier.
-     * @param filename the full path of the file that contains this data object.
+     * @param fileFormat the HDF file.
      * @param name the name of this H4GRImage.
      * @param path the full path of this H4GRImage.
      * @param oid the unique identifier of this data object.
      */
     public H4GRImage(
-        int fid,
-        String filename,
+        FileFormat fileFormat,
         String name,
         String path,
         long[] oid)
     {
-        super (fid, filename, name, path, oid);
+        super (fileFormat, name, path, oid);
         palette = null;
+
+        if (fileFormat instanceof H4File)
+        {
+            this.grid = ((H4File)fileFormat).getGRAccessID();
+        }
     }
 
     // ***** need to implement from DataFormat *****
@@ -125,10 +128,7 @@ public class H4GRImage extends ScalarDS
     }
 
     // ***** need to implement from DataFormat *****
-    public boolean write() throws HDFException
-    {
-        return false;
-    }
+    public void write() throws HDFException {;}
 
     // ***** need to implement from DataFormat *****
     public List getMetadata() throws HDFException
@@ -197,16 +197,10 @@ public class H4GRImage extends ScalarDS
     }
 
     // ***** need to implement from DataFormat *****
-    public boolean writeMetadata(Object info) throws HDFException
-    {
-        return false;
-    }
+    public void writeMetadata(Object info) throws HDFException {;}
 
     // ***** need to implement from DataFormat *****
-    public boolean removeMetadata(Object info) throws HDFException
-    {
-        return false;
-    }
+    public void removeMetadata(Object info) throws HDFException {;}
 
     // ***** need to implement from HObejct *****
     public int open()
@@ -214,7 +208,7 @@ public class H4GRImage extends ScalarDS
 
         int id = -1;
         try {
-            int index = HDFLibrary.GRreftoindex(grid, (short)getOID()[1]);
+            int index = HDFLibrary.GRreftoindex(grid, (short)oid[1]);
             id = HDFLibrary.GRselect(grid, index);
         } catch (HDFException ex)
         {
@@ -225,17 +219,10 @@ public class H4GRImage extends ScalarDS
     }
 
     // ***** need to implement from HObejct *****
-    public static boolean close(int grid)
+    public static void close(int grid)
     {
-        boolean b = true;
-
-        try {
-            HDFLibrary.GRendaccess(grid); }
-        catch (HDFException ex) {
-            b = false;
-        }
-
-        return b;
+        try { HDFLibrary.GRendaccess(grid); }
+        catch (HDFException ex) {;}
     }
 
     // ***** need to implement from Dataset *****
@@ -346,22 +333,6 @@ public class H4GRImage extends ScalarDS
 
         close(id);
         return palette;
-    }
-
-    /**
-     * Sets the GR interface identifiers.
-     * <p>
-     * The GR identifier is returned by GRstart(fid), which initializes the
-     * GR interface for the file specified by the parameter. GRstart(fid)
-     * is an expensive call. It should be only called once.
-     * <p>
-
-     * @param grid the GR interface identifier.
-     */
-    public void setAccess(int grid)
-    {
-
-        this.grid = grid;
     }
 
     /**

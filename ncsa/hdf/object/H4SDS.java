@@ -46,25 +46,28 @@ public class H4SDS extends ScalarDS
     private int datatype;
 
     /**
-     * Creates a H4SDS object with specific name, path, and parent.
+     * Creates an H4SDS object with specific name and path.
      * <p>
-     * @param fid the file identifier.
-     * @param filename the full path of the file that contains this data object.
+     * @param fileFormat the HDF file.
      * @param name the name of this H4SDS.
      * @param path the full path of this H4SDS.
      * @param oid the unique identifier of this data object.
      */
     public H4SDS(
-        int fid,
-        String filename,
+        FileFormat fileFormat,
         String name,
         String path,
         long[] oid)
     {
-        super (fid, filename, name, path, oid);
+        super (fileFormat, name, path, oid);
+
+        if (fileFormat instanceof H4File)
+        {
+            this.sdid = ((H4File)fileFormat).getSDAccessID();
+        }
     }
 
-    // ***** need to implement from DataFormat *****
+    // Implementing DataFormat
     public Object read() throws HDFException
     {
         if (data != null)
@@ -100,13 +103,10 @@ public class H4SDS extends ScalarDS
         return data;
     }
 
-    // ***** need to implement from DataFormat *****
-    public boolean write() throws HDFException
-    {
-        return false;
-    }
+    // To do: Implementing DataFormat
+    public void write() throws HDFException {;}
 
-    // ***** need to implement from DataFormat *****
+    // Implementing DataFormat
     public List getMetadata() throws HDFException
     {
         if (attributeList != null)
@@ -170,24 +170,18 @@ public class H4SDS extends ScalarDS
         return attributeList;
     }
 
-    // ***** need to implement from DataFormat *****
-    public boolean writeMetadata(Object info) throws HDFException
-    {
-        return false;
-    }
+   // To do: implementing DataFormat
+    public void writeMetadata(Object info) throws HDFException {;}
 
-    // ***** need to implement from DataFormat *****
-    public boolean removeMetadata(Object info) throws HDFException
-    {
-        return false;
-    }
+   // To do: implementing DataFormat
+    public void removeMetadata(Object info) throws HDFException {;}
 
-    // ***** need to implement from HObejct *****
+    // Implementing HObject
     public int open()
     {
         int id = -1;
         try {
-            int index = HDFLibrary.SDreftoindex(sdid, (int)getOID()[1]);
+            int index = HDFLibrary.SDreftoindex(sdid, (int)oid[1]);
             id = HDFLibrary.SDselect(sdid,index);
         } catch (HDFException ex)
         {
@@ -197,18 +191,11 @@ public class H4SDS extends ScalarDS
         return id;
     }
 
-    // ***** need to implement from HObejct *****
-    public static boolean close(int id)
+    // Implementing HObject
+    public static void close(int id)
     {
-        boolean b = true;
-
-        try {
-            HDFLibrary.SDendaccess(id); }
-        catch (HDFException ex) {
-            b = false;
-        }
-
-        return b;
+        try { HDFLibrary.SDendaccess(id); }
+        catch (HDFException ex) { ; }
     }
 
     /**
@@ -263,26 +250,10 @@ public class H4SDS extends ScalarDS
         }
     }
 
-    // ***** need to implement from ScalarDS *****
+    // Implementing ScalarDS
     public byte[][] getPalette()
     {
         return null;
-    }
-
-    /**
-     * Sets the SD interface identifiers.
-     * <p>
-     * The SD identifier is returned by SDstart(fname, flag), which initializes the
-     * SD interface for the file specified by the parameter. SDstart(fname, flag)
-     * is an expensive call. It should be only called once.
-     * <p>
-
-     * @param sdid the SDS interface identifier.
-     */
-    public void setAccess(int sdid)
-    {
-
-        this.sdid = sdid;
     }
 
 }

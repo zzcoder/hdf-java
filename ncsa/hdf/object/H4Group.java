@@ -15,13 +15,11 @@ import java.util.*;
 import ncsa.hdf.hdflib.*;
 
 /**
- * Group is the superclass for HDF4/5 group, inheriting the HObject.
- * <p>
- * Group is an abstract class. Its implementing sub-classes are the H4Group and
- * H4Group. This class includes general information of a group object such as
- * members of a group and common operation on groups for both HDF4 and HDF5.
- * <p>
- * Members of a group may include other groups, datasets or links.
+ * An H4Group is a vgroup in HDF4, inheriting from Group.
+ * A vgroup is a structure designed to associate related data objects. The
+ * general structure of a vgroup is similar to that of the UNIX file system in
+ * that the vgroup may contain references to other vgroups or HDF data objects
+ * just as the UNIX directory may contain subdirectories or files.
  * <p>
  * @version 1.0 12/12/2001
  * @author Peter X. Cao, NCSA
@@ -44,33 +42,41 @@ public class H4Group extends Group
       */
     private int sdid;
 
+    /**
+     * Creates a group object with specific name, path, and parent.
+     * <p>
+     * @param fileFormat the HDF file.
+     * @param name the name of this group.
+     * @param path the full path of this group.
+     * @param parent the parent of this group.
+     * @param oid the unique identifier of this data object.
+     */
     public H4Group(
-        int fid,
-        String filename,
+        FileFormat fileFormat,
         String name,
         String path,
         Group parent,
         long[] oid)
     {
-        super (fid, filename, name, path, parent, oid);
+        super (fileFormat, name, path, parent, oid);
 
-        grid = HDFConstants.FAIL;
-        sdid = HDFConstants.FAIL;
+        if (fileFormat instanceof H4File)
+        {
+            this.grid = ((H4File)fileFormat).getGRAccessID();
+            this.sdid = ((H4File)fileFormat).getSDAccessID();
+        }
     }
 
-    // ***** need to implement from DataFormat *****
+    // To do: Implementing DataFormat
     public Object read() throws HDFException
     {
         return null;
     }
 
-    // ***** need to implement from DataFormat *****
-    public boolean write() throws HDFException
-    {
-        return false;
-    }
+    // To do: Implementing DataFormat
+    public void write() throws HDFException { ; }
 
-    // ***** need to implement from DataFormat *****
+    // Implementing DataFormat
     public List getMetadata() throws HDFException
     {
         if (attributeList != null)
@@ -144,65 +150,44 @@ public class H4Group extends Group
         return attributeList;
     }
 
-    // ***** need to implement from DataFormat *****
-    public boolean writeMetadata(Object info) throws HDFException
-    {
-        return false;
-    }
+    // To do: implementing DataFormat
+    public void writeMetadata(Object info) throws HDFException {;}
 
-    // ***** need to implement from DataFormat *****
-    public boolean removeMetadata(Object info) throws HDFException
-    {
-        return false;
-    }
+   // To do: implementing DataFormat
+    public void removeMetadata(Object info) throws HDFException {;}
 
-    // ***** need to implement from HObejct *****
+   // Implementing HObject
     public int open()
     {
         int vgid = -1;
 
+        // try to open with write permission
         try {
-            long[] theOID = getOID();
-            vgid = HDFLibrary.Vattach(getFID(), (int)theOID[1], "w");
+            vgid = HDFLibrary.Vattach(getFID(), (int)oid[1], "w");
         } catch (HDFException ex)
         {
             vgid = -1;
         }
 
+        // try to open with read-only permission
+        if (vgid < 0)
+        {
+            try {
+                vgid = HDFLibrary.Vattach(getFID(), (int)oid[1], "r");
+            } catch (HDFException ex)
+            {
+                vgid = -1;
+            }
+        }
+
         return vgid;
     }
 
-    // ***** need to implement from HObejct *****
-    public static boolean close(int vgid)
+  // Implementing HObject
+    public static void close(int vgid)
     {
-        boolean b = true;
-
-        try {
-            HDFLibrary.Vdetach(vgid);
-        } catch (Exception ex) {
-            b = false;
-        }
-
-        return b;
+        try { HDFLibrary.Vdetach(vgid); }
+        catch (Exception ex) { ; }
     }
 
-    /**
-     * Sets the GR and SD interface identifiers.
-     * <p>
-     * The GR identifier is returned by GRstart(fid), which initializes the GR
-     * interface for the file specified by the parameter. GRstart(fid) is an
-     * expensive call. It should be only called once.
-     * <p>
-     * The SD identifier is returned by SDstart(fname, flag), which initializes the
-     * SD interface for the file specified by the parameter. SDstart(fname, flag)
-     * is an expensive call. It should be only called once.
-     * <p>
-     * @param grid the GR interface identifier.
-     * @param sdid the SDS interface identifier.
-     */
-    public void setAccess(int grid, int sdid)
-    {
-        this.grid = grid;
-        this.sdid = sdid;
-    }
 }

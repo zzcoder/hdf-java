@@ -14,7 +14,7 @@ package ncsa.hdf.object;
 import java.util.*;
 
 /**
- * Group is the superclass for HDF4/5 group, inheriting the HObject.
+ * Group is the superclass for HDF4 and HDF5 group, inheriting the HObject.
  * <p>
  * Group is an abstract class. Its implementing sub-classes are the H4Group and
  * H5Group. This class includes general information of a group object such as
@@ -40,22 +40,20 @@ public abstract class Group extends HObject
     /**
      * Creates a group object with specific name, path, and parent.
      * <p>
-     * @param fid the file identifier.
-     * @param filename the full path of the file that contains this data object.
+     * @param fileFormat the HDF file.
      * @param name the name of this group.
      * @param path the full path of this group.
      * @param parent the parent of this group.
      * @param oid the unique identifier of this data object.
      */
     public Group(
-        int fid,
-        String filename,
+        FileFormat fileFormat,
         String name,
         String path,
         Group parent,
         long[] oid)
     {
-        super (fid, filename, name, path, oid);
+        super (fileFormat, name, path, oid);
 
         this.parent = parent;
     }
@@ -95,10 +93,18 @@ public abstract class Group extends HObject
     }
 
     /**
-     * Checks if the group is a root group.
+     * Checks if it is a root group.
      */
     public final boolean isRoot()
     {
         return (parent==null);
+    }
+
+    /**
+     * Returns the parent group.
+     */
+    public final Group getParent()
+    {
+        return parent;
     }
 }

@@ -18,35 +18,8 @@ import java.util.*;
  * <p>
  * Dataset is an abstract class. Its implementing sub-classes are the HDF4 and
  * HDF5 dataset. This class includes general information of a Dataset object
- * such as data type and dimensions, and common operation on Datasets of HDF4
+ * such as datatype and dimensions, and common operation on Datasets of HDF4
  * and HDF5.
- *  <p>
- *  This class provides a mechanism to describe properties of datasets and to
- *  transfer data between memory and disk. A dataset is composed of a collection
- *  of raw data points and four classes of meta data to describe the data points.
- *  <p>
- *  The four classes of meta data are:
- *  <pre>
-    Constant Meta Data
-        Meta data that is created when the dataset is created and exists unchanged
-        for the life of the dataset. For instance, the data type of stored array
-        elements is defined when the dataset is created and cannot be subsequently
-        changed.
-    Persistent Meta Data
-        Meta data that is an integral and permanent part of a dataset but can
-        change over time. For instance, the size in any dimension can increase
-        over time if such an increase is allowed when the dataset was created.
-    Memory Meta Data
-        Meta data that exists to describe how raw data is organized in the
-        application's memory space. For instance, the data type of elements in
-        an application array might not be the same as the data type of those
-        elements as stored in the HDF5 file.
-    Transport Meta Data
-        Meta data that is used only during the transfer of raw data from one
-        location to another. For instance, the number of processes participating
-        in a collective I/O request or hints to the library to control caching
-        of raw data.
- *  </pre>
  * <p>
  * @version 1.0 12/12/2001
  * @author Peter X. Cao, NCSA
@@ -95,22 +68,20 @@ public abstract class Dataset extends HObject
     protected int[] selectedIndex;
 
     /**
-     * Creates a Dataset object with specific name, path, and parent.
+     * Creates a Dataset object with specific name and path.
      * <p>
-     * @param fid the file identifier.
-     * @param filename the full path of the file that contains this data object.
+     * @param fileFormat the HDF file.
      * @param name the name of this Dataset.
      * @param path the full path of this Dataset.
-     * @param oid the unique identifier of this data object.
+     * @param oid the unique identifier of this dataset.
      */
     public Dataset(
-        int fid,
-        String filename,
+        FileFormat fileFormat,
         String name,
         String path,
         long[] oid)
     {
-        super (fid, filename, name, path, oid);
+        super (fileFormat, name, path, oid);
 
         rank = 0;
         data = null;
@@ -123,6 +94,12 @@ public abstract class Dataset extends HObject
      * Initializes the dataset such as dimension size of this dataset.
      * Sub-classes have to replace this interface. HDF4 and HDF5 datasets
      * call the different library to have more detailed initialization.
+     * <p>
+     * The Dataset is designed in a way of "ask and load". When a data object
+     * is retrieved from file, it does not load the datatype and dataspce
+     * information, and data value into memory. When it is asked to load the
+     * data, teh data object first call init() to fill the datatype and
+     * dataspace information, then load the data content.
      */
     public abstract void init();
 

@@ -36,7 +36,7 @@ import ncsa.hdf.hdf5lib.exceptions.*;
  * the compound dataset are similar to fileds of HDF4 VData table.
  * <p>
  * ARRAY of compound dataset is not supported in this implementation. ARRAY of
- * compound dataset requires to read the whole data structure instead of read 
+ * compound dataset requires to read the whole data structure instead of read
  * field by field.
  * <p>
  * @version 1.0 12/12/2001
@@ -51,28 +51,27 @@ public class H5CompoundDS extends CompoundDS
      private List attributeList;
 
     /**
-     * Creates a H5CompoundDS object with specific name, path, and parent.
+     * Creates a H5CompoundDS object with specific name and path.
      * <p>
-     * @param fid the file identifier.
-     * @param filename the full path of the file that contains this data object.
+     * @param fileFormat the HDF file.
      * @param name the name of this H5CompoundDS.
      * @param path the full path of this H5CompoundDS.
      * @param oid the unique identifier of this data object.
      */
     public H5CompoundDS(
-        int fid,
-        String filename,
+        FileFormat fileFormat,
         String name,
         String path,
         long[] oid)
     {
-        super (fid, filename, name, path, oid);
+        super (fileFormat, name, path, oid);
     }
 
-
     /**
-     * Reads data from file into memory if the data is loaded or returns the
-     * data is the data is not loaded.
+     * Loads the content of this data object into memory if the data of the
+     * object is not loaded. If the content is already loaded, it returns the
+     * content. It returns null if the data object has no content or it fails
+     * to load the data content.
      * <p>
      * The current implementation only support one dimensional compound dataset.
      * Compound data are stored in a vector, where each element of the vector
@@ -84,6 +83,7 @@ public class H5CompoundDS extends CompoundDS
             return data; // data is loaded
 
         List list = null;
+
         if (rank <= 0 )
             init(); // initialize the dimension information
 
@@ -187,13 +187,10 @@ public class H5CompoundDS extends CompoundDS
         return data;
     }
 
-    // ***** need to implement from DataFormat *****
-    public boolean write() throws HDF5Exception
-    {
-        return false;
-    }
+    // To do: Implementing DataFormat
+    public void write() throws HDF5Exception {;}
 
-    // ***** implement from DataFormat *****
+    // Implementing DataFormat
     public List getMetadata() throws HDF5Exception
     {
 
@@ -213,34 +210,27 @@ public class H5CompoundDS extends CompoundDS
      *
      * <p>
      * @param info the atribute to attach
-     * @return true if successful and false otherwise.
      */
-    public boolean writeMetadata(Object info) throws HDF5Exception
+    public void writeMetadata(Object info) throws HDF5Exception
     {
-        Attribute attr = null;
-
         // only attribute metadata is supported.
-        if (info instanceof Attribute)
-            attr = (Attribute)info;
-        else
-            return false;
+        if (!(info instanceof Attribute))
+            return;
 
-        boolean b = true;
+        Attribute attr = (Attribute)info;
         String name = attr.getName();
         List attrList = getMetadata();
         boolean attrExisted = attrList.contains(attr);
 
         int did = open();
         try {
-            b = H5Accessory.writeAttribute(did, attr, attrExisted);
+            H5Accessory.writeAttribute(did, attr, attrExisted);
             // add the new attribute into attribute list
             if (!attrExisted) attrList.add(attr);
         } finally
         {
             close(did);
         }
-
-        return b;
     }
 
     /**
@@ -248,40 +238,24 @@ public class H5CompoundDS extends CompoundDS
      * <p>
      * @param info the attribute to delete.
      */
-    public boolean removeMetadata(Object info) throws HDF5Exception
+    public void removeMetadata(Object info) throws HDF5Exception
     {
-        Attribute attr = null;
-
         // only attribute metadata is supported.
-        if (info instanceof Attribute)
-            attr = (Attribute)info;
-        else
-            return false;
+        if (!(info instanceof Attribute))
+            return;
 
-        boolean b = true;
+        Attribute attr = (Attribute)info;
         int did = open();
         try {
             H5.H5Adelete(did, attr.getName());
+            List attrList = getMetadata();
+            attrList.remove(attr);
         } finally {
             close(did);
         }
-
-        // delete attribute from the List in memory
-        List attrList = getMetadata();
-        if (b && attrList != null)
-        {
-            attrList.remove(attr);
-        }
-
-        return b;
     }
 
-    /**
-     * Opens this dataset for access.
-     * <p>
-     * @return a dataset identifier if successful; otherwise returns a negative
-     * value.
-     */
+    // Implementing HObject
     public int open()
     {
         int did = -1;
@@ -297,24 +271,11 @@ public class H5CompoundDS extends CompoundDS
         return did;
     }
 
-    /**
-     * Ends access to a dataset specified by dataset_id and releases resources
-     * used by it. Further use of the dataset identifier is illegal in calls to
-     * the dataset API.
-     */
-    public static boolean close(int dataset_id)
+    // Implementing HObject
+    public static void close(int did)
     {
-        boolean b = true;
-
-        try
-        {
-            H5.H5Dclose(dataset_id);
-        } catch (HDF5Exception ex)
-        {
-            b = false;
-        }
-
-        return b;
+        try { H5.H5Dclose(did); }
+        catch (HDF5Exception ex) { ; }
     }
 
     /**

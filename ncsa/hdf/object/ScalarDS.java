@@ -45,20 +45,18 @@ public abstract class ScalarDS extends Dataset
     /**
      * Creates a ScalarDS object with specific name, path, and parent.
      * <p>
-     * @param fid the file identifier.
-     * @param filename the full path of the file that contains this data object.
+     * @param fileFormat the HDF file.
      * @param name the name of this ScalarDS.
      * @param path the full path of this ScalarDS.
      * @param oid the unique identifier of this data object.
      */
     public ScalarDS(
-        int fid,
-        String filename,
+        FileFormat fileFormat,
         String name,
         String path,
         long[] oid)
     {
-        super (fid, filename, name, path, oid);
+        super (fileFormat, name, path, oid);
 
         datatype = -1;
         dataclass = -1;

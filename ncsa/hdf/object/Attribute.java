@@ -21,7 +21,7 @@
  * @version 1.0 12/12/2001
  * @author Peter X. Cao, NCSA
  */
-public class Attribute implements java.io.Serializable
+public class Attribute implements Metadata
 {
     /**
      * The name of the attribute.
@@ -50,7 +50,7 @@ public class Attribute implements java.io.Serializable
 
 
     /**
-     * Create a new attribute with the given (name, value) pair.
+     * Create a new attribute with a given (name, value) pair.
      * Attribute is independent of dataformat, i.e., this implementation of
      * attribute applies to both HDF4 and HDF5.
      * <p>
@@ -93,6 +93,30 @@ public class Attribute implements java.io.Serializable
     }
 
     /**
+     * Returns the Class of this Attribute.
+     */
+    public Class getImplementationClass()
+    {
+        return this.getClass();
+    }
+
+    /**
+     * Returns the value of this attriubte from file.
+     */
+    public Object getValue()
+    {
+        return value;
+    }
+
+    /**
+     * Sets the value of this attribute.
+     */
+    public void setValue(Object value)
+    {
+        this.value = value;
+    }
+
+    /**
      * Returns the name of this attribute.
      */
     public String getName()
@@ -122,22 +146,6 @@ public class Attribute implements java.io.Serializable
     public int getType()
     {
         return datatype;
-    }
-
-    /**
-     * Returns the value of this attriubte from file.
-     */
-    public Object getValue()
-    {
-        return value;
-    }
-
-    /**
-     * Sets the value of this attribute.
-     */
-    public void setValue(Object value)
-    {
-        this.value = value;
     }
 
     /**

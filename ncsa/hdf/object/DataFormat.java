@@ -14,11 +14,9 @@ package ncsa.hdf.object;
 import java.util.List;
 
 /**
- * This interface loads and saves data content from/to file. Implementation of
- * DataFormat defines how data is loaded to memeory and how data is saved to
- * file. The design of this interface is intended to support modular data I/O.
- * <p>
- * The interface is implemented by HObject.
+ * This interface describes general I/O operations of data object,
+ * such as read data content or data attribute into memory, write
+ * data content or data attribute into disk.
  * <p>
  * @version 1.0 12/12/2001
  * @author Peter X. Cao, NCSA
@@ -47,10 +45,8 @@ public interface DataFormat
 
     /**
      * Saves the content of this data object into file.
-     * <p>
-     * @return true if writing data into file is succsessful, false otherwise
      */
-    public abstract boolean write() throws Exception;
+    public abstract void write() throws Exception;
 
     /**
      * Loads the metadata such as attributes and type of the the data object
@@ -69,16 +65,14 @@ public interface DataFormat
      * and attach the new metadata to the object and saves it into file.
      * <p>
      * @param info the specific metadata.
-     * @return true if writing metadata into file is succsessful, false otherwise
      */
-    public abstract boolean writeMetadata(Object info) throws Exception;
+    public abstract void writeMetadata(Object info) throws Exception;
 
     /**
      * Deletes an existing metadata from this data object.
      * <p>
      * @param info the metadata to delete.
-     * @return true if deleting metadata is succsessful, false otherwise.
      */
-    public abstract boolean removeMetadata(Object info) throws Exception;
+    public abstract void removeMetadata(Object info) throws Exception;
 
 }
