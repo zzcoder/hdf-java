@@ -215,231 +215,117 @@ implements ActionListener, ListSelectionListener
         }
 
         int n = Array.getLength(dataValue);
+        double value=0, x=0;
+
         switch (NT)
         {
             case 'B':
                 byte[] bdata = (byte[])dataValue;
                 for (int i=0; i<n; i++)
                 {
-                    switch (index)
+                    x = bdata[i];
+                    value = y(index, x, a, b);
+                    if (value > Byte.MAX_VALUE || value < Byte.MIN_VALUE)
                     {
-                        case 0:
-                            if (bdata[i] < a) bdata[i] = (byte)a;
-                            else if (bdata[i] > b) bdata[i] = (byte)b;
-                            break;
-                        case 1:
-                            bdata[i] = (byte)Math.abs(bdata[i]);  break;
-                        case 2:
-                            bdata[i] = (byte)(a+b*bdata[i]); break;
-                        case 3:
-                            bdata[i] = (byte)Math.pow(bdata[i], a); break;
-                        case 4:
-                            bdata[i] = (byte)Math.exp(bdata[i]); break;
-                        case 5:
-                            bdata[i] = (byte)Math.log(bdata[i]); break;
-                        case 6:
-                            bdata[i] = (byte)(Math.log(bdata[i])/Math.log(a)); break;
-                        case 7:
-                            bdata[i] = (byte)Math.sin(bdata[i]); break;
-                        case 8:
-                            bdata[i] = (byte)Math.cos(bdata[i]); break;
-                        case 9:
-                            bdata[i] = (byte)Math.tan(bdata[i]); break;
-                        default:
-                            break;
+                        JOptionPane.showMessageDialog(this,
+                            "Invalid byte value: "+(long)value,
+                            getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
+                        return false;
                     }
-                }
+
+                    bdata[i] = (byte)value;
+                } //for (int i=0; i<n; i++)
                 break;
             case 'S':
                 short[] sdata = (short[])dataValue;
                 for (int i=0; i<n; i++)
                 {
-                    switch (index)
+                    x = sdata[i];
+                    value = y(index, x, a, b);
+                    if (value > Short.MAX_VALUE || value < Short.MIN_VALUE)
                     {
-                        case 0:
-                            if (sdata[i] < a) sdata[i] = (short)a;
-                            else if (sdata[i] > b) sdata[i] = (short)b;
-                            break;
-                        case 1:
-                            sdata[i] = (short)Math.abs(sdata[i]);  break;
-                        case 2:
-                            sdata[i] = (short)(a+b*sdata[i]); break;
-                        case 3:
-                            sdata[i] = (short)Math.pow(sdata[i], a); break;
-                        case 4:
-                            sdata[i] = (short)Math.exp(sdata[i]); break;
-                        case 5:
-                            sdata[i] = (short)Math.log(sdata[i]); break;
-                        case 6:
-                            sdata[i] = (short)(Math.log(sdata[i])/Math.log(a)); break;
-                        case 7:
-                            sdata[i] = (short)Math.sin(sdata[i]); break;
-                        case 8:
-                            sdata[i] = (short)Math.cos(sdata[i]); break;
-                        case 9:
-                            sdata[i] = (short)Math.tan(sdata[i]); break;
-                        default:
-                            break;
+                        JOptionPane.showMessageDialog(this,
+                            "Invalid short value: "+(long)value,
+                            getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
+                        return false;
                     }
-                }
+
+                    sdata[i] = (short)value;
+                } //for (int i=0; i<n; i++)
                 break;
             case 'I':
                 int[] idata = (int[])dataValue;
                 for (int i=0; i<n; i++)
                 {
-                    switch (index)
+                    x = idata[i];
+                    value = y(index, x, a, b);
+                    if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE)
                     {
-                        case 0:
-                            if (idata[i] < a) idata[i] = (int)a;
-                            else if (idata[i] > b) idata[i] = (int)b;
-                            break;
-                        case 1:
-                            idata[i] = (int)Math.abs(idata[i]);  break;
-                        case 2:
-                            idata[i] = (int)(a+b*idata[i]); break;
-                        case 3:
-                            idata[i] = (int)Math.pow(idata[i], a); break;
-                        case 4:
-                            idata[i] = (int)Math.exp(idata[i]); break;
-                        case 5:
-                            idata[i] = (int)Math.log(idata[i]); break;
-                        case 6:
-                            idata[i] = (int)(Math.log(idata[i])/Math.log(a)); break;
-                        case 7:
-                            idata[i] = (int)Math.sin(idata[i]); break;
-                        case 8:
-                            idata[i] = (int)Math.cos(idata[i]); break;
-                        case 9:
-                            idata[i] = (int)Math.tan(idata[i]); break;
-                        default:
-                            break;
+                        JOptionPane.showMessageDialog(this,
+                            "Invalid int value: "+(long)value,
+                            getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
+                        return false;
                     }
-                }
+
+                    idata[i] = (int)value;
+                } //for (int i=0; i<n; i++)
                 break;
             case 'J':
                 long[] ldata = (long[])dataValue;
                 for (int i=0; i<n; i++)
                 {
-                    switch (index)
+                    x = ldata[i];
+                    value = y(index, x, a, b);
+                    if (value > Long.MAX_VALUE || value < Long.MIN_VALUE)
                     {
-                        case 0:
-                            if (ldata[i] < a) ldata[i] = (long)a;
-                            else if (ldata[i] > b) ldata[i] = (long)b;
-                            break;
-                        case 1:
-                            ldata[i] = (long)Math.abs(ldata[i]);  break;
-                        case 2:
-                            ldata[i] = (long)(a+b*ldata[i]); break;
-                        case 3:
-                            ldata[i] = (long)Math.pow(ldata[i], a); break;
-                        case 4:
-                            ldata[i] = (long)Math.exp(ldata[i]); break;
-                        case 5:
-                            ldata[i] = (long)Math.log(ldata[i]); break;
-                        case 6:
-                            ldata[i] = (long)(Math.log(ldata[i])/Math.log(a)); break;
-                        case 7:
-                            ldata[i] = (long)Math.sin(ldata[i]); break;
-                        case 8:
-                            ldata[i] = (long)Math.cos(ldata[i]); break;
-                        case 9:
-                            ldata[i] = (long)Math.tan(ldata[i]); break;
-                        default:
-                            break;
+                        JOptionPane.showMessageDialog(this,
+                            "Invalid long value: "+(long)value,
+                            getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
+                        return false;
                     }
-                }
+
+                    ldata[i] = (long)value;
+                } //for (int i=0; i<n; i++)
                 break;
             case 'F':
                 float[] fdata = (float[])dataValue;
                 for (int i=0; i<n; i++)
                 {
-                    switch (index)
+                    x = fdata[i];
+                    value = y(index, x, a, b);
+                    if (value > Float.MAX_VALUE || value < Float.MIN_VALUE || value == Float.NaN)
                     {
-                        case 0:
-                            if (fdata[i] < a) fdata[i] = (float)a;
-                            else if (fdata[i] > b) fdata[i] = (float)b;
-                            break;
-                        case 1:
-                            fdata[i] = (float)Math.abs(fdata[i]);  break;
-                        case 2:
-                            fdata[i] = (float)(a+b*fdata[i]); break;
-                        case 3:
-                            fdata[i] = (float)Math.pow(fdata[i], a); break;
-                        case 4:
-                            fdata[i] = (float)Math.exp(fdata[i]); break;
-                        case 5:
-                            fdata[i] = (float)Math.log(fdata[i]); break;
-                        case 6:
-                            fdata[i] = (float)(Math.log(fdata[i])/Math.log(a)); break;
-                        case 7:
-                            fdata[i] = (float)Math.sin(fdata[i]); break;
-                        case 8:
-                            fdata[i] = (float)Math.cos(fdata[i]); break;
-                        case 9:
-                            fdata[i] = (float)Math.tan(fdata[i]); break;
-                        default:
-                            break;
-                    }
-
-                    if (fdata[i] == Float.NaN ||
-                        fdata[i] <= Float.NEGATIVE_INFINITY ||
-                        fdata[i] >= Float.POSITIVE_INFINITY)
-                    {
-                        toolkit.beep();
                         JOptionPane.showMessageDialog(this,
-                            "Invalid float value: "+fdata[i],
+                            "Invalid float value: "+value,
                             getTitle(),
                             JOptionPane.ERROR_MESSAGE);
                         return false;
                     }
 
-                }
+                    fdata[i] = (float)value;
+                } //for (int i=0; i<n; i++)
                 break;
             case 'D':
                 double[] ddata = (double[])dataValue;
                 for (int i=0; i<n; i++)
                 {
-                    switch (index)
+                    x = ddata[i];
+                    value = y(index, x, a, b);
+                    if (value > Double.MAX_VALUE || value < Double.MIN_VALUE || value == Double.NaN)
                     {
-                        case 0:
-                            if (ddata[i] < a) ddata[i] = (double)a;
-                            else if (ddata[i] > b) ddata[i] = (double)b;
-                            break;
-                        case 1:
-                            ddata[i] = (double)Math.abs(ddata[i]);  break;
-                        case 2:
-                            ddata[i] = (double)(a+b*ddata[i]); break;
-                        case 3:
-                            ddata[i] = (double)Math.pow(ddata[i], a); break;
-                        case 4:
-                            ddata[i] = (double)Math.exp(ddata[i]); break;
-                        case 5:
-                            ddata[i] = (double)Math.log(ddata[i]); break;
-                        case 6:
-                            ddata[i] = (double)(Math.log(ddata[i])/Math.log(a)); break;
-                        case 7:
-                            ddata[i] = (double)Math.sin(ddata[i]); break;
-                        case 8:
-                            ddata[i] = (double)Math.cos(ddata[i]); break;
-                        case 9:
-                            ddata[i] = (double)Math.tan(ddata[i]); break;
-                        default:
-                            break;
-                    }
-
-                    if (ddata[i] == Double.NaN ||
-                        ddata[i] <= Double.NEGATIVE_INFINITY ||
-                        ddata[i] >= Double.POSITIVE_INFINITY)
-                    {
-                        toolkit.beep();
                         JOptionPane.showMessageDialog(this,
-                            "Invalid float value: "+ddata[i],
+                            "Invalid double value: "+value,
                             getTitle(),
                             JOptionPane.ERROR_MESSAGE);
                         return false;
                     }
 
-                }
+                    ddata[i] = value;
+                } //for (int i=0; i<n; i++)
                 break;
             default:
                 break;
@@ -495,6 +381,27 @@ implements ActionListener, ListSelectionListener
             aField.setEnabled(false);
             bField.setEnabled(false);
         }
+    }
+
+    private double y(int index, double x, double a, double b)
+    {
+        double y = x;
+        switch (index)
+        {
+            case 0: if (x < a) y = a; else if (x > b) y = b; break;
+            case 1: y = Math.abs(x);  break;
+            case 2: y = (a+b*x); break;
+            case 3: y = Math.pow(x, a); break;
+            case 4: y = Math.exp(x); break;
+            case 5: y = Math.log(x); break;
+            case 6: y = (Math.log(x)/Math.log(a)); break;
+            case 7: y = Math.sin(x); break;
+            case 8: y = Math.cos(x); break;
+            case 9: y = Math.tan(x); break;
+            default: y = x; break;
+        }
+
+        return y;
     }
 
     /** Returns true if the data is successfully converted. */

@@ -506,42 +506,57 @@ implements ViewManager, HyperlinkListener
             isTransposed = dialog.isTransposed();
         }
 
+        int w = d.getWidth();
+        int h = d.getHeight();
+        int tsize = w*h;
+        if ((isImage && tsize>4000000) || (!isImage && tsize>100000))
+        {
+            int reply = JOptionPane.showConfirmDialog(this,
+                "The selected data is large ("+h+ " x "+w+
+                "). \nIt will take a few minutes to load the data."+
+                "\n\nDo you want to continue?\n",
+               "Open Data",
+               JOptionPane.YES_NO_OPTION);
+            if (reply == JOptionPane.NO_OPTION)
+                return;
+        }
+
         // try to see if can open the data content
         if (selectedObject instanceof Dataset)
         {
             startBusyIndicator();
             Dataset data = (Dataset)selectedObject;
-            try { data.getData(); }
-            catch (Throwable ex) {
+            try {
+                data.getData();
+                if (isImage)
+                {
+                    ImageView dataView = new ImageView(this);
+                    if (dataView.getImage() != null)
+                        addDataWindow(dataView);
+                }
+                else if (isText)
+                {
+                    TextView dataView = new TextView(this);
+                    if (dataView.getText() != null)
+                        addDataWindow(dataView);
+                }
+                else
+                {
+                    TableView dataView = new TableView(this, isDisplayTypeChar, isTransposed);
+                    if (dataView.getTable() != null)
+                        addDataWindow(dataView);
+                }
+            }  catch (Throwable ex)
+            {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(this,
-                    ex.getMessage(),
+                    ex,
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
                 stopBusyIndicator();
                 return;
             } finally { stopBusyIndicator(); }
-        }
-
-        if (isImage)
-        {
-            ImageView dataView = new ImageView(this);
-            if (dataView.getImage() != null)
-                addDataWindow(dataView);
-        }
-        else if (isText)
-        {
-            TextView dataView = new TextView(this);
-            if (dataView.getText() != null)
-                addDataWindow(dataView);
-        }
-        else
-        {
-            TableView dataView = new TableView(this, isDisplayTypeChar, isTransposed);
-            if (dataView.getTable() != null)
-                addDataWindow(dataView);
-        }
-
+        } //if (selectedObject instanceof Dataset)
     }
 
     // To do: Implementing ViewManager
@@ -849,7 +864,15 @@ implements ViewManager, HyperlinkListener
 
             if (selectedObject instanceof Group &&
                 ((Group)selectedObject).isRoot())
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(
+                    this,
+                    "Cannot save the root group.\nUse \"Save As\" from file menu to save the whole file",
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
                 return;
+            }
 
             String filetype = FileFormat.FILE_TYPE_HDF4;
             boolean isH5 = selectedObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
@@ -961,7 +984,14 @@ implements ViewManager, HyperlinkListener
             JTable jtable = theTable.getTable();
             if (jtable.getSelectedColumnCount() <=0 ||
                 jtable.getSelectedRowCount() <=0 )
+            {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Select table cells to write.",
+                        "HDFView",
+                        JOptionPane.INFORMATION_MESSAGE);
                 return;
+            }
 
             Dataset dataset = (Dataset)theTable.getDataObject();
             TreeNode node = treeView.findTreeNode(dataset);
@@ -1076,7 +1106,14 @@ implements ViewManager, HyperlinkListener
             ImageView theImage = (ImageView)frame;
             if (theImage.getSelectedArea().width <=0 ||
                 theImage.getSelectedArea().height <= 0)
+            {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Select image area to write.",
+                        "HDFView",
+                        JOptionPane.INFORMATION_MESSAGE);
                 return;
+            }
 
             Dataset dataset = (Dataset)theImage.getDataObject();
             TreeNode node = treeView.findTreeNode(dataset);

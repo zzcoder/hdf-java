@@ -197,7 +197,7 @@ implements ActionListener
         p00.add(startMemberField=new JTextField(String.valueOf(
                 ViewProperties.getStartMembers())), BorderLayout.CENTER);
         p0.add(p00);
-        tborder = new TitledBorder("Max Number of Objects to Load");
+        tborder = new TitledBorder("Max Number of Member Objects to Load in Each Group");
         tborder.setTitleColor(Color.darkGray);
         p0.setBorder(tborder);
         centerP.add(p0);
