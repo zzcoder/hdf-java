@@ -77,10 +77,9 @@ JHI5PACKAGES = \
 
 HDFOBJPACKAGES = ncsa.hdf.object
 
-HDFVIEWPACKAGES= ncsa.hdf.io \
-	ncsa.hdf.view
+HDFVIEWPACKAGES= ncsa.hdf.view
 
-TESTPACKAGES = test.h4toh5 ncsa.hdf.io test.object
+TESTPACKAGES = test.h4toh5 test.object
 
 
 .SUFFIXES: .java .class
@@ -458,8 +457,6 @@ test.h4toh5: test/h4toh5/apitest.class \
 	test/h4toh5/linktest3.class \
 	test/h4toh5/linktest4.class \
 	test/h4toh5/linktest5.class 
-
-ncsa.hdf.io: 
 
 ncsa.hdf.view: ./ncsa/hdf/view/TreeView.class \
 	./ncsa/hdf/view/TreeView\\$$1.class \
