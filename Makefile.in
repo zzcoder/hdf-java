@@ -265,6 +265,8 @@ distclean: clean-natives clean-classes clean-test
 	rm -rf ./test/Makefile
 	rm -rf ./test/h4toh5/Makefile
 	rm -rf ./test/h4toh5/*.sh
+	rm -rf ./test/object/Makefile
+	rm -rf ./test/object/*.sh
 	rm -rf ./Makefile
 
 #build_package:
