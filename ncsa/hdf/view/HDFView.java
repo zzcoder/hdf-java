@@ -127,6 +127,12 @@ public class HDFView extends JFrame
     /** GUI component: the text area for showing status message */
     private final JTextArea statusArea;
 
+    /** GUI component: the text area for quick attribute view */
+    private final JTextArea attributeArea;
+
+    // create tab pane to display attributes and status information
+    private final JTabbedPane infoTabbedPane;
+
     /** GUI component: a list of current data windwos */
     private final JMenu windowMenu;
 
@@ -141,6 +147,9 @@ public class HDFView extends JFrame
 
     /** the string buffer holding the status message */
     private final StringBuffer message;
+
+    /** the string buffer holding the meadata information */
+    private final StringBuffer metadata;
 
     private final Toolkit toolkit;
 
@@ -181,6 +190,7 @@ public class HDFView extends JFrame
     public HDFView(String root, String filename)
     {
         super("HDFView");
+
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         // set the module class jar files to the class path
@@ -198,7 +208,7 @@ public class HDFView extends JFrame
         // load the view properties
         ViewProperties.loadIcons(rootDir);
         props = new ViewProperties(rootDir);
-        try { props.load(); } catch (Exception ex){System.out.println(ex);}
+        try { props.load(); } catch (Exception ex){;}
         //recentFiles = props.getMRF();
         currentDir = ViewProperties.getWorkDir();
         if (currentDir == null) currentDir = System.getProperty("user.dir");
@@ -214,11 +224,20 @@ public class HDFView extends JFrame
         // initialize GUI components
         statusArea = new JTextArea();
         statusArea.setEditable(false);
-        statusArea.setBackground(new java.awt.Color(220, 220, 220));
+        statusArea.setBackground(new java.awt.Color(240, 240, 240));
         statusArea.setLineWrap(true);
         message = new StringBuffer();
+        metadata = new StringBuffer();
         showStatus("HDFView root - "+rootDir);
         showStatus("User property file - "+props.getPropertyFile());
+
+        attributeArea = new JTextArea();
+        attributeArea.setEditable(false);
+        attributeArea.setBackground(new java.awt.Color(240, 240, 240));
+        attributeArea.setLineWrap(true);
+
+        // create tab pane to display attributes and status information
+        infoTabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
 
         // setup the Users guide window
         usersGuideWindow = new JFrame("HDFView User's Guide");
@@ -228,10 +247,16 @@ public class HDFView extends JFrame
         windowMenu = new JMenu( "Window" );
         fileMenu = new JMenu( "File" );
 
+        String className = (String)treeViews.get(0);
+        // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
         Class theClass = null;
-        try {
-            theClass = props.loadExtClass().loadClass((String)treeViews.get(0));
-        } catch (Exception ex) { theClass = null; }
+        try { theClass = Class.forName(className); }
+        catch (Exception ex)
+        {
+            try { theClass = ViewProperties.loadExtClass().loadClass(className); }
+            catch (Exception ex2)
+            {theClass = null;}
+        }
 
         if (theClass != null) {
             try {
@@ -298,13 +323,16 @@ public class HDFView extends JFrame
             contentScroller);
         topSplitPane.setDividerLocation(200);
 
+
+        infoTabbedPane.addTab("Log Info", new JScrollPane(statusArea));
+        infoTabbedPane.addTab("Metadata ", new JScrollPane(attributeArea));
+
         // create splitpane to separate message area and treeview-contentpane
-        JScrollPane msgScroller = new JScrollPane(statusArea);
         topSplitPane.setBorder(null); // refer to Java bug #4131528
         JSplitPane splitPane = new JSplitPane(
             JSplitPane.VERTICAL_SPLIT,
             topSplitPane,
-            msgScroller);
+            infoTabbedPane);
 
         // set the window size
         //float inset = 0.17f; // for UG only.
@@ -313,7 +341,7 @@ public class HDFView extends JFrame
         d.width = Math.max(400, (int)((1-2*inset)*d.width));
         d.height = Math.max(300, (int)((1-2*inset)*d.height));
 
-        splitPane.setDividerLocation(d.height-100);
+        splitPane.setDividerLocation(d.height-180);
 
         int x0 = Math.max(10, (int)(inset*d.width));
         int y0 = 10;//Math.max(10, (int)(inset*d.height));
@@ -363,7 +391,7 @@ public class HDFView extends JFrame
         fileMenu.setMnemonic('f');
         mbar.add(fileMenu);
 
-        item = new JMenuItem( "Open File");
+        item = new JMenuItem( "Open");
         item.setMnemonic(KeyEvent.VK_O);
         item.addActionListener(this);
         item.setActionCommand("Open file");
@@ -842,9 +870,6 @@ public class HDFView extends JFrame
             int fileAccessID = FileFormat.WRITE;
             String filename = null;
 
-            if (cmd.equals("Open file read-only"))
-                fileAccessID = FileFormat.READ;
-
             if (cmd.equals("Open file: from file bar"))
             {
                 filename = (String) urlBar.getSelectedItem();
@@ -858,61 +883,50 @@ public class HDFView extends JFrame
                     if (tmpFile.exists() && tmpFile.isDirectory())
                     {
                         currentDir = filename;
-                        cmd = "Open file";
+                        filename = chooseLocalFile();
                     }
                 }
             }
-
-            if (cmd.equals("Open file"))
+            else if (cmd.equals("Open file read-only"))
             {
-                JFileChooser fchooser = new JFileChooser(currentDir);
-                fchooser.setFileFilter(DefaultFileFilter.getFileFilter());
-
-                int returnVal = fchooser.showOpenDialog(this);
-                if(returnVal != JFileChooser.APPROVE_OPTION)
-                    return;
-
-                File choosedFile = fchooser.getSelectedFile();
-                if (choosedFile == null)
-                    return;
-
-                if (choosedFile.isDirectory())
-                    currentDir = choosedFile.getPath();
-                else
-                    currentDir = choosedFile.getParent();
-
-                filename = choosedFile.getAbsolutePath();
+                fileAccessID = FileFormat.READ;
+                filename = chooseLocalFile();
             }
+            else
+                filename = chooseLocalFile();
 
             if (filename == null)
                 return;
 
+            if (filename.startsWith("http://") || filename.startsWith("ftp://") )
+            {
+                filename = loadRemoteFile(filename);
+            }
+
+            if (filename == null ||
+                filename.length() < 1 ||
+                filename.equals(currentFile))
+                return;
+
+            currentFile = filename;
             try {
                 urlBar.removeItem(filename);
                 urlBar.insertItemAt(filename, 0);
                 urlBar.setSelectedIndex(0);
             } catch (Exception ex ) {}
 
-            if (filename.startsWith("http://") || filename.startsWith("ftp://"))
-            {
-                filename = loadRemoteFile(filename);
-            }
-
-            if (filename == null || filename.length() < 1)
-                return;
-
             try {
                 treeView.openFile(filename, fileAccessID);
-                //try { updateRecentFiles(filename); } catch (Exception ex) {}
             } catch (Exception ex)
             {
-                String msg = "Failed to open file "+filename+"\n"+ex;
-                toolkit.beep();
-                JOptionPane.showMessageDialog(
-                    this,
-                    msg,
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+                try {
+                    treeView.openFile(filename, FileFormat.READ);
+                } catch (Exception ex2)
+                {
+                    String msg = "Failed to open file "+filename+"\n"+ex2;
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog( this, msg, getTitle(), JOptionPane.ERROR_MESSAGE);
+                }
             }
         }
         else if (cmd.startsWith("New HDF"))
@@ -921,21 +935,21 @@ public class HDFView extends JFrame
             if (cmd.equals("New HDF4 file"))
                 ftype = FileFormat.FILE_TYPE_HDF4;
 
-            NewFileDialog dialog = new NewFileDialog(
-                this, currentDir, ftype, treeView.getCurrentFiles());
-            dialog.show();
+            NewFileDialog dialog = new NewFileDialog(this, currentDir, ftype, treeView.getCurrentFiles());
+            //dialog.show();
 
-            if (!dialog.isFileCreated())
-                return;
-
+            if (!dialog.isFileCreated()) return;
             String filename = dialog.getFile();
+            if (filename == null) return;
+
             try {
                 treeView.openFile(filename, FileFormat.WRITE);
+                currentFile = filename;
                 try {
                     urlBar.removeItem(filename);
                     urlBar.insertItemAt(filename, 0);
                     urlBar.setSelectedIndex(0);
-                    } catch (Exception ex2 ) {}
+                } catch (Exception ex2 ) {}
             } catch (Exception ex)
             {
                 toolkit.beep();
@@ -948,9 +962,16 @@ public class HDFView extends JFrame
         }
         else if (cmd.equals("Close file"))
         {
+            FileFormat theFile = treeView.getSelectedFile();
+            if (theFile == null)
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog( this, "Select a file to close", getTitle(), JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             // close all the data windows of this file
             JInternalFrame[] frames = contentPane.getAllFrames();
-            FileFormat theFile = treeView.getSelectedFile();
             if (frames != null)
             {
                 for (int i=0; i<frames.length; i++)
@@ -964,8 +985,17 @@ public class HDFView extends JFrame
                 }
             }
 
+            String fname = (String) urlBar.getSelectedItem();
+            if (theFile.getFilePath().equals(fname))
+            {
+                currentFile = null;
+                urlBar.setSelectedIndex(-1);
+            }
+
             try { treeView.closeFile(theFile); }
-            catch (Exception ex) {}
+            catch (Exception ex) {;}
+            theFile = null;
+            System.gc();
         }
         else if (cmd.equals("Close all file"))
         {
@@ -981,6 +1011,7 @@ public class HDFView extends JFrame
         {
             try {
                 treeView.saveFile(treeView.getSelectedFile());
+                /*
                 List list = treeView.getCurrentFiles();
                 if (list != null && list.size()>0) {
                     FileFormat newFile = (FileFormat)list.get(list.size()-1);
@@ -991,6 +1022,7 @@ public class HDFView extends JFrame
                         urlBar.setSelectedIndex(0);
                     } catch (Exception ex2 ) {}
                 }
+                */
             }
             catch (Exception ex) {
                 toolkit.beep();
@@ -1175,8 +1207,18 @@ public class HDFView extends JFrame
                 }
             }
 
+            // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
+            Class theClass = null;
+            try { theClass = Class.forName(className); }
+            catch (Exception ex)
+            {
+                try { theClass = ViewProperties.loadExtClass().loadClass(className); }
+                catch (Exception ex2) {theClass = null;}
+            }
+            if (theClass == null)
+                return;
+
             try {
-                Class theClass = ViewProperties.loadExtClass().loadClass(className);
                 Object theObject = theClass.newInstance();
                 if (theObject instanceof FileFormat)
                     FileFormat.addFileFormat(key, (FileFormat)theObject);
@@ -1476,6 +1518,82 @@ public class HDFView extends JFrame
 
     public TreeView getTreeView() { return treeView; }
 
+    /** Tree mouse event fired */
+    public void mouseEventFired(java.awt.event.MouseEvent e)
+    {
+        Object src = e.getSource();
+        if ((src instanceof JTree) && infoTabbedPane.getSelectedIndex()==1)
+        {
+            HObject obj = treeView.getCurrentObject();
+            if (obj == null)
+                return;
+
+            urlBar.setSelectedItem(obj.getFile());
+
+            metadata.setLength(0);
+            metadata.append(obj.getName());
+
+            if (obj instanceof Group)
+            {
+                Group g = (Group)obj;
+                metadata.append("\n    Group size = ");
+                metadata.append(g.getMemberList().size());
+            }
+            else if (obj instanceof Dataset)
+            {
+                Dataset d = (Dataset)obj;
+                if (d.getRank() <= 0)
+                    d.init();
+
+                metadata.append("\n    ");
+                if (d instanceof ScalarDS)
+                    metadata.append(((ScalarDS)d).getDatatype().getDatatypeDescription());
+                else if (d instanceof CompoundDS)
+                    metadata.append("Compound/Vdata");
+                metadata.append(",    ");
+
+                long dims[] = d.getDims();
+
+               if (dims != null)
+                {
+                     metadata.append(dims[0]);
+                    for (int i=1; i<dims.length; i++)
+                    {
+                        metadata.append(" x ");
+                        metadata.append(dims[i]);
+                    }
+                }
+            } // else if (obj instanceof Dataset)
+
+            List attrList = null;
+            try { attrList = obj.getMetadata(); } catch (Exception ex) {}
+
+            if (attrList == null)
+                metadata.append("\n    Number of attributes = 0");
+            else
+            {
+                int n = attrList.size();
+                metadata.append("\n    Number of attributes = ");
+                metadata.append(n);
+
+                for (int i=0; i<n; i++)
+                {
+                    Object attrObj = attrList.get(i);
+                    if (!(attrObj instanceof Attribute))
+                        continue;
+                    Attribute attr = (Attribute)attrObj;
+                    metadata.append("\n        ");
+                    metadata.append(attr.getName());
+                    metadata.append(" = ");
+                    metadata.append(attr.toString(","));
+                }
+            }
+
+            attributeArea.setText(metadata.toString());
+            attributeArea.setCaretPosition(0);
+        } // if ((src instanceof JTree) && infoTabbedPane.getSelectedIndex()==1)
+    }
+
     /** Returns DataView contains the specified data object.
      * It is useful to avoid redundant display of data object that is opened already.
      * @param dataObject the whose presence in the main view is to be tested.
@@ -1574,6 +1692,17 @@ public class HDFView extends JFrame
     {
         String rootDir = System.getProperty("user.dir");
 
+try {
+Group g = (Group)FileFormat.getHObject("e:\\hdf-files\\test.h5#//");
+System.out.println(g);
+if (g != null) {
+    List m = g.getMemberList();
+    Iterator it = m.iterator();
+    while (it.hasNext())
+        System.out.println(it.next());
+}
+} catch (Exception ex) {System.out.println(ex);}
+
         boolean backup = false;
         File tmpFile = null;
         int i = 0;
@@ -1597,7 +1726,6 @@ public class HDFView extends JFrame
                 backup = true;
             }
         }
-
         if (backup)
             i--;
 
@@ -1610,6 +1738,29 @@ public class HDFView extends JFrame
         frame.pack();
         frame.setVisible(true);
      }
+
+     /** choose local file */
+     private String chooseLocalFile()
+     {
+         JFileChooser fchooser = new JFileChooser(currentDir);
+         fchooser.setFileFilter(DefaultFileFilter.getFileFilter());
+
+         int returnVal = fchooser.showOpenDialog(this);
+         if(returnVal != JFileChooser.APPROVE_OPTION)
+             return null;
+
+        File choosedFile = fchooser.getSelectedFile();
+        if (choosedFile == null)
+            return null;
+
+        if (choosedFile.isDirectory())
+            currentDir = choosedFile.getPath();
+        else
+            currentDir = choosedFile.getParent();
+
+        return choosedFile.getAbsolutePath();
+    }
+
 
      /** load remote file and save it to local temporary directory*/
      private String loadRemoteFile(String urlStr)

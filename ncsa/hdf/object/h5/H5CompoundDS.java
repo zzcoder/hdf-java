@@ -127,6 +127,11 @@ public class H5CompoundDS extends CompoundDS
       */
      private List flatTypeList;
 
+    public H5CompoundDS(FileFormat fileFormat, String name, String path)
+    {
+        this(fileFormat, name, path, null);
+    }
+
     /**
      * Creates a H5CompoundDS object with specific name and path.
      * <p>
@@ -445,10 +450,6 @@ public class H5CompoundDS extends CompoundDS
 
                 try { member_class = H5.H5Tget_class(member_tid);
                 } catch (HDF5Exception ex) {}
-
-                if (member_class == HDF5Constants.H5T_COMPOUND)
-                    continue; // cannot write nested compound member
-
                 int arrayType = member_tid;
                 int baseType = arrayType;
                 if (member_class == HDF5Constants.H5T_ARRAY)
@@ -475,6 +476,7 @@ public class H5CompoundDS extends CompoundDS
                     String theName = member_name;
                     int tmp_tid = H5.H5Tcopy(arrayType);
                     int sep = member_name.lastIndexOf('.');
+
                     while (sep > 0)
                     {
                         theName = member_name.substring(sep+1);
@@ -496,6 +498,9 @@ public class H5CompoundDS extends CompoundDS
                     else if (member_class == HDF5Constants.H5T_STRING) {
                         tmpData = stringToByte((String[])member_data, member_size);
                     }
+
+                    // BUG!!! does not write nested data and no exception caght
+                    // need to check if it is a java error or C library error
                     H5.H5Dwrite(
                         did,
                         nested_tid,
@@ -863,5 +868,101 @@ public class H5CompoundDS extends CompoundDS
             types.add(new Integer(mtype));
         } //for (int i=0; i<nMembers; i++)
     } //extractNestedCompoundInfo
+
+    /**
+     * creates a new compound dataset
+     * @param name the name of the dataset
+     * @param pgroup the parent group
+     * @param dims the dimension size
+     * @param memberNames the names of compound datatype
+     * @param memberDatatypes the datatypes of the compound datatype
+     * @param memberSizes the sizes of memeber array
+     * @param data the initial data
+     * @return the new compound dataset or null if failed
+     * @throws Exception
+     */
+    public static Dataset create(
+        String name,
+        Group pgroup,
+        long[] dims,
+        String[] memberNames,
+        Datatype[] memberDatatypes,
+        int[] memberSizes,
+        Object data) throws Exception
+    {
+        H5CompoundDS dataset = null;
+        String fullPath = null;
+        int did = -1;
+
+        if (pgroup == null ||
+            name == null ||
+            dims == null ||
+            memberNames == null ||
+            memberDatatypes == null ||
+            memberSizes == null)
+            return null;
+
+        H5File file = (H5File)pgroup.getFileFormat();
+        if (file == null)
+            return null;
+
+        String path = HObject.separator;
+        if (!pgroup.isRoot())
+            path = pgroup.getPath()+pgroup.getName()+HObject.separator;
+        fullPath = path +  name;
+
+        int typeSize = 0;
+        int nMembers = memberNames.length;
+        int[] mTypes = new int[nMembers];
+        for (int i=0; i<nMembers; i++)
+        {
+            if (memberSizes[i] > 1 && (memberDatatypes[i].getDatatypeClass() != Datatype.CLASS_STRING))
+            {
+                int[] mDim = {memberSizes[i]};
+                mTypes[i] = H5.H5Tarray_create(memberDatatypes[i].toNative(),1, mDim, null);
+            }
+            else
+                mTypes[i] = memberDatatypes[i].toNative();
+            typeSize += H5.H5Tget_size(mTypes[i]);
+        }
+
+        int tid = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND, typeSize);
+        int offset = 0;
+        for (int i=0; i<nMembers; i++)
+        {
+            H5.H5Tinsert(tid, memberNames[i], offset, mTypes[i]);
+            offset += H5.H5Tget_size(mTypes[i]);
+        }
+
+        int rank = dims.length;
+        int sid = H5.H5Screate_simple(rank, dims, null);
+
+        int fid = file.open();
+        did = H5.H5Dcreate(fid, fullPath, tid, sid, HDF5Constants.H5P_DEFAULT);
+
+        try {H5.H5Sclose(sid);} catch (HDF5Exception ex) {};
+        try {H5.H5Dclose(did);} catch (HDF5Exception ex) {};
+
+        byte[] ref_buf = H5.H5Rcreate(
+            fid,
+            fullPath,
+            HDF5Constants.H5R_OBJECT,
+            -1);
+        long l = HDFNativeData.byteToLong(ref_buf, 0);
+        long[] oid = {l};
+        dataset = new H5CompoundDS(file, name, path, oid);
+
+        if (dataset != null)
+        {
+            pgroup.addToMemberList(dataset);
+
+            if (data == null) {
+                dataset.init();
+                dataset.write(data);
+            }
+        }
+
+        return dataset;
+    }
 
 }

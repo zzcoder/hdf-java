@@ -169,6 +169,11 @@ public abstract class Dataset extends HObject
     /** names of dimensions */
     protected String[] dimNames;
 
+    public Dataset(FileFormat fileFormat, String name, String path)
+    {
+        this(fileFormat, name, path, null);
+    }
+
     /**
      * Creates a Dataset object with a given file and dataset name and path.
      * <p>

@@ -92,6 +92,11 @@ public class H5ScalarDS extends ScalarDS
      */
      private byte[] paletteRefs;
 
+    public H5ScalarDS(FileFormat fileFormat, String name, String path)
+    {
+        this(fileFormat, name, path, null);
+    }
+
     /**
      * Constructs an H5ScalarDS object with specific name and path.
      * <p>
@@ -394,15 +399,12 @@ public class H5ScalarDS extends ScalarDS
                     null );
             }
 
-            tid = H5.H5Dget_type(did);
-            if ( isUnsigned && unsignedConverted)
-                tmpData = convertToUnsignedC(buf);
-            else if (isText)
-            {
-                tmpData = stringToByte((String[])buf, H5.H5Tget_size(tid));
-            }
-            else
-                tmpData = buf;
+            int org_tid = H5.H5Dget_type(did);
+            tid = H5.H5Tget_native_type(org_tid);
+            try { H5.H5Tclose(org_tid); } catch (Exception ex) {}
+            if ( isUnsigned && unsignedConverted) tmpData = convertToUnsignedC(buf);
+            else if (isText) tmpData = stringToByte((String[])buf, H5.H5Tget_size(tid));
+            else tmpData = buf;
             H5.H5Dwrite(did, tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, tmpData);
         } finally {
             tmpData = null;

@@ -76,6 +76,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Screate_1simple
 #else
 	dimsP = (*env)->GetByteArrayElements(env,dims,&isCopy);
 #endif
+
 	if (dimsP == NULL) {
 		h5JNIFatalError(env,  "H5Screate-simple:  dims not pinned");
 		return -1;
@@ -87,6 +88,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Screate_1simple
 #else
 		(*env)->ReleaseByteArrayElements(env,dims,dimsP,JNI_ABORT);
 #endif
+
 		h5JNIFatalError(env,  "H5Screate-simple:  dims not converted to hsize_t");
 		return -1;
 	}
@@ -155,7 +157,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Screate_1simple
 	free (sa);
 
 	if (status < 0) {
-		h5libraryError(env);
+//		h5libraryError(env);
 	}
 	return (jint)status;
 }

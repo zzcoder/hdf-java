@@ -140,6 +140,11 @@ public abstract class ScalarDS extends Dataset
      */
     protected boolean unsignedConverted;
 
+    public ScalarDS(FileFormat fileFormat, String name, String path)
+    {
+        this(fileFormat, name, path, null);
+    }
+
     /**
      * Creates a ScalarDS object with specific name, path, and parent.
      * <p>

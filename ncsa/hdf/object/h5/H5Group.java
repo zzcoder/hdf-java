@@ -38,6 +38,11 @@ public class H5Group extends Group
     /** The default object ID for HDF5 objects */
     private final static long[] DEFAULT_OID = {0};
 
+    public H5Group(FileFormat fileFormat, String name, String path, Group parent)
+    {
+        this(fileFormat, name, path, parent, null);
+    }
+
     /**
      * Constructs an HDF5 group with specific name, path, and parent.
      * <p>

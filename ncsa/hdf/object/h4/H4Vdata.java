@@ -90,6 +90,11 @@ public class H4Vdata extends CompoundDS
      */
     private int numberOfRecords;
 
+    public H4Vdata(FileFormat fileFormat, String name, String path)
+    {
+        this(fileFormat, name, path, null);
+    }
+
     /**
      * Creates an H4Vdata object with specific name and path.
      * <p>

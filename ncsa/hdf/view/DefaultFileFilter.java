@@ -32,6 +32,8 @@ public class DefaultFileFilter extends FileFilter
     private static String HIDDEN_FILE = "Hidden File";
 
     private static FileFilter FILE_FILTER_HDF = null;
+    private static FileFilter FILE_FILTER_HDF4 = null;
+    private static FileFilter FILE_FILTER_HDF5 = null;
     private static FileFilter FILE_FILTER_JPEG = null;
     private static FileFilter FILE_FILTER_TIFF = null;
     private static FileFilter FILE_FILTER_PNG = null;
@@ -274,6 +276,37 @@ public class DefaultFileFilter extends FileFilter
         filter.addExtension(fileExtension);
 
         return (FILE_FILTER_HDF = filter);
+    }
+
+    /** Return a file filter for HDF4 file. */
+    public static FileFilter getFileFilterHDF4()
+    {
+        if (FILE_FILTER_HDF4 != null)
+            return FILE_FILTER_HDF4;
+
+        DefaultFileFilter filter = new DefaultFileFilter();
+        filter.addExtension("hdf");
+        filter.addExtension("h4");
+        filter.addExtension("hdf4");
+        filter.setDescription("HDF4 files");
+        FILE_FILTER_HDF4 = filter;
+
+        return FILE_FILTER_HDF4;
+    }
+
+    /** Return a file filter for HDF5 file. */
+    public static FileFilter getFileFilterHDF5()
+    {
+        if (FILE_FILTER_HDF5 != null)
+            return FILE_FILTER_HDF5;
+
+        DefaultFileFilter filter = new DefaultFileFilter();
+        filter.addExtension("h5");
+        filter.addExtension("hdf5");
+        filter.setDescription("HDF5 files");
+        FILE_FILTER_HDF5 = filter;
+
+        return FILE_FILTER_HDF5;
     }
 
     /** Return a file filter for JPEG image file. */

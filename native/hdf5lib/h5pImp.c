@@ -25,15 +25,9 @@
 extern "C" {
 #endif 
 #include "hdf5.h"
-
 /* missing definitions from hdf5.h */
-#ifndef FALSE
 #define FALSE 0
-#endif
-
-#ifndef TRUE
 #define TRUE (!FALSE)
-#endif
 /* delete TRUE and FALSE when fixed in HDF5 */
 
 #include <jni.h>
@@ -2597,3 +2591,38 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id
 #ifdef __cplusplus
 }
 #endif 
+
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_fclose_degree
+ * Signature: (IJI)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fclose_1degree
+  (JNIEnv *env, jclass clss, jint plist, jint fc_degree)
+{
+	herr_t retVal = -1;
+	retVal =  H5Pset_fclose_degree((hid_t) plist, (H5F_close_degree_t) fc_degree);
+	if (retVal < 0) {
+		h5libraryError(env);
+	}
+	return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_fclose_degree
+ * Signature: (IJI)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1fclose_1degree
+  (JNIEnv *env, jclass clss, jint plist)
+{
+    H5F_close_degree_t degree;
+	herr_t retVal = -1;
+	retVal =  H5Pget_fclose_degree((hid_t) plist, &degree);
+	if (retVal < 0) {
+		h5libraryError(env);
+	}
+
+	return (jint)degree;
+}

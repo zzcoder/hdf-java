@@ -76,10 +76,37 @@ public abstract class FileFormat extends File
      */
     private int start_members = 0; // 0 by default
 
+    /** a list of file extensions for supported file types */
+    private static String extensions = "hdf, h4, hdf5, h5";
+
+    /**
+     * file identifier for the open file.
+     */
+    protected int fid = -1;
+
     /** Constructs a FileFormat with a given file name.
      * @param filename the full name of the file.
      */
 
+    static {
+        // add default HDF4 modules
+        try {
+            Class fileclass = Class.forName("ncsa.hdf.object.h4.H4File");
+            FileFormat fileformat = (FileFormat)fileclass.newInstance();
+            if (fileformat != null)
+                FileFormat.addFileFormat("HDF", fileformat);
+        } catch (Throwable err ) {err.printStackTrace();}
+
+        // add default HDF5 modules
+        try {
+            Class fileclass = Class.forName("ncsa.hdf.object.h5.H5File");
+            FileFormat fileformat = (FileFormat)fileclass.newInstance();
+            if (fileformat != null)
+                FileFormat.addFileFormat("HDF5", fileformat);
+        } catch (Throwable err ) {err.printStackTrace();}
+    }
+
+    /** Construct a FileFormat with given file name */
     public FileFormat(String filename) {
         super(filename);
     }
@@ -178,6 +205,45 @@ public abstract class FileFormat extends File
         long[] chunks,
         int gzip,
         Object data) throws Exception;
+
+    /**
+     * Create a new compound dataset in this file.
+     * For example, to create a 2D compound dataset with size of 100X50 and
+     * member x and y at the root in an HDF5 file.
+     * <pre>
+     * String name = "2D compound";
+     * Group pgroup = (Group)((DefaultMutableTreeNode)getRootNode).getUserObject();
+     * long[] dims = {100, 50};
+     * String[] memberNames = {"x", "y"}
+     * Datatype[] memberDatatypes = {
+     *     new H5Datatype(Datatype.CLASS_INTEGER, Datatype.NATIVE, Datatype.NATIVE, Datatype.NATIVE)
+     *     new H5Datatype(Datatype.CLASS_FLOAT, Datatype.NATIVE, Datatype.NATIVE, Datatype.NATIVE));
+     * int[] memberSizes = {1, 10};
+     * Object data = null; // no initial data values
+     *
+     * Dataset d = (H5File)file.createCompoundDS(name, pgroup, dims, memberNames, memberDatatypes, memberSizes, null);
+     * </pre>
+     *
+     * @param name the name of the new dataset
+     * @param pgroup the parent group where the new dataset is created.
+     * @param dims dimension sizes of the new dataset.
+     * @param memberNames the names of the members.
+     * @param memberDatatypes the datatypes of the members.
+     * @param memberSizes the array size of the member.
+     * @param data the data of the new dataset.
+     */
+    public Dataset createCompoundDS(
+        String name,
+        Group pgroup,
+        long[] dims,
+        String[] memberNames,
+        Datatype[] memberDatatypes,
+        int[] memberSizes,
+        Object data) throws Exception
+    {
+        // subclass to implement it
+        throw new UnsupportedOperationException("Dataset FileFormat.createCompoundDS(...) is not implemented.");
+    }
 
     /**
      * Create a new image at given parent group in this file.
@@ -352,5 +418,131 @@ public abstract class FileFormat extends File
     protected int getMaxMembers() { return max_members; }
 
     protected int getStartMembers() { return start_members; }
+
+    public static String getFileExtensions() { return extensions; }
+
+    public int getFID() { return fid; }
+
+    public static void addFileExtension(String extension)
+    {
+        if (extensions == null || extensions.length() <=0)
+        {
+            extensions = extension;
+        }
+
+        StringTokenizer currentExt = new StringTokenizer(extensions, ",");
+        List tokens = new Vector();
+        while (currentExt.hasMoreTokens())
+        {
+            tokens.add(currentExt.nextToken().trim().toLowerCase());
+        }
+
+        currentExt = new StringTokenizer(extension, ",");
+        String ext = null;
+        while (currentExt.hasMoreTokens())
+        {
+            ext = currentExt.nextToken().trim().toLowerCase();
+            if (tokens.contains(ext))
+                continue;
+
+            extensions = extensions + ", "+ext;
+        }
+    }
+
+    /**
+     * Constructs a FileFormat corresponding to the data in a file. fileName
+     *  may be an absolute or a relative file specification. It checks the registered
+     * FileFormats and returns an instance of the matched one, or null if none is matched
+     */
+    public static FileFormat getInstance(String fileName) throws Exception
+    {
+        if (fileName == null || fileName.length()<=0)
+            throw new IllegalArgumentException("Invalid file name. "+fileName);
+
+        if (!(new File(fileName)).exists())
+            throw new IllegalArgumentException("File does not exists");
+
+        FileFormat fileformat = null;
+        FileFormat theformat = null;
+        Enumeration elms = ((Hashtable)FileList).elements();
+        while(elms.hasMoreElements())
+        {
+            theformat = (FileFormat)elms.nextElement();
+            if (theformat.isThisType(fileName))
+            {
+                Class fileclass = theformat.getClass();
+                Object[] intiargs = {fileName};
+                Class[] paramClass = {fileName.getClass()};
+                try {
+                    java.lang.reflect.Constructor  constructor = fileclass.getConstructor(paramClass);
+                    fileformat = (FileFormat)constructor.newInstance(intiargs);
+                } catch (Exception ex) {}
+                break;
+            }
+        }
+
+        return fileformat;
+    }
+
+    /** get HObject with given file name and object path
+     * in the format of filename#//path
+     *
+     * @param fullPath the file name and object path in the
+     *  format of filename#//path
+     */
+    public static HObject getHObject(String fullPath) throws Exception
+    {
+        if (fullPath == null || fullPath.length() <=0)
+            return null;
+
+        String filename=null, path=null;
+        int idx = fullPath.indexOf("#//");
+
+        if (idx >0 )
+        {
+            filename = fullPath.substring(0, idx);
+            path = fullPath.substring(idx+3);
+            if (path == null || path.length() == 0)
+                path = "/";
+        }
+        else
+        {
+            filename = fullPath;
+            path = "/";
+        }
+
+        return FileFormat.getHObject(filename, path);
+    };
+
+    /** get HObject with given file name and object path
+     *
+     * @param filename the name of the file to open
+     * @param path the path of the data object in the file
+     */
+    public static HObject getHObject(String filename, String path) throws Exception
+    {
+        if (filename == null || filename.length()<=0)
+            throw new IllegalArgumentException("Invalid file name. "+filename);
+
+        if (!(new File(filename)).exists())
+            throw new IllegalArgumentException("File does not exists");
+
+        HObject obj = null;
+        FileFormat file = FileFormat.getInstance(filename);
+
+        if (file != null)
+            obj = file.get(path);
+
+        return obj;
+    }
+
+    /**
+     * Get an individual HObject with a given path.
+     */
+    public HObject get(String path) throws Exception
+    {
+        // subclass to implement it
+        throw new UnsupportedOperationException("HObject FileFormat.get(String path) is not implemented.");
+    }
 
 }

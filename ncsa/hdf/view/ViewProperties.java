@@ -82,7 +82,7 @@ public class ViewProperties extends Properties
     /** default HDF4 file extension */
     private static String fileExt = "hdf, h4, hdf4, h5, hdf5, he5";
 
-    private static ClassLoader extClassLoader = null;
+    private static ClassLoader extClassLoader=null;
 
     /**
      * Current Java application such as HDFView cannot handle files
@@ -223,14 +223,17 @@ public class ViewProperties extends Properties
 
         try { extClassLoader = new URLClassLoader(urls); }
         catch (Exception ex) { extClassLoader = extClassLoader; }
-
         // load user modules into their list
         n = classList.size();
         for (int i=0; i<n; i++) {
             String theName = (String)classList.get(i);
 
             try {
-                Class theClass = extClassLoader.loadClass(theName);
+                // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
+                Class theClass = null;
+                try { theClass = Class.forName(theName); }
+                catch (Exception ex) { theClass = extClassLoader.loadClass(theName); }
+
                 Class[] interfaces = theClass.getInterfaces();
                 if (interfaces != null) {
                     for (int j=0; j<interfaces.length; j++) {
@@ -262,7 +265,6 @@ public class ViewProperties extends Properties
                 } // if (interfaces != null) {
             } catch (Exception ex) {;}
         }
-
         return extClassLoader;
     }
 
@@ -542,12 +544,6 @@ public class ViewProperties extends Properties
             fis.close();
         } catch (Exception e) {;}
 
-        // add default HDF4 and HDF5 modules
-        try { FileFormat.addFileFormat("HDF", (FileFormat)extClassLoader.loadClass("ncsa.hdf.object.h4.H4File").newInstance());
-        } catch (Throwable err ) {;}
-        try { FileFormat.addFileFormat("H5", (FileFormat)extClassLoader.loadClass("ncsa.hdf.object.h5.H5File").newInstance());
-        } catch (Throwable err ) {;}
-
         // add fileformat modules
         Enumeration enum = this.keys();
         String theKey = null;
@@ -557,7 +553,12 @@ public class ViewProperties extends Properties
             if (theKey.startsWith("module.fileformat")) {
                 fExt = theKey.substring(18);
                 try {
-                    Class theClass = extClassLoader.loadClass((String)get(theKey));
+                    // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
+                    String className = (String)get(theKey);
+                    Class theClass = null;
+                    try { theClass = Class.forName(className); }
+                    catch (Exception ex) { theClass = extClassLoader.loadClass(className); }
+
                     Object theObject = theClass.newInstance();
                     if (theObject instanceof FileFormat)
                         FileFormat.addFileFormat(fExt, (FileFormat)theObject);
@@ -566,7 +567,6 @@ public class ViewProperties extends Properties
         }
 
         String str = (String)get("users.guide");
-
         if (str != null)
         {
             String tmpUG = str.toLowerCase();
@@ -598,7 +598,10 @@ public class ViewProperties extends Properties
 
         str = (String)get("file.extension");
         if (str != null && str.length()>0)
+        {
             fileExt = str;
+            FileFormat.addFileExtension(fileExt);
+        }
 
         str = (String)get("font.size");
         if (str != null && str.length()>0)

@@ -90,6 +90,8 @@ implements ActionListener
      */
     private boolean isInteger;
 
+    private java.text.DecimalFormat format;
+
     /**
      *  Constructs a new ChartView given data and data ranges.
      *  <p>
@@ -109,6 +111,7 @@ implements ActionListener
     {
         super(owner, title, false);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        format = new java.text.DecimalFormat("0.00E0");
 
         if (data == null)
             return;
@@ -152,6 +155,9 @@ implements ActionListener
             // search data range from the data
             findDataRange();
         }
+
+        if ( ymax > 0.000001 && ymax < 1000000)
+            format = new java.text.DecimalFormat("0.######");
 
         chartP = new ChartPanel();
         chartP.setBackground(Color.white);
@@ -233,10 +239,8 @@ implements ActionListener
     }
 
     /** The canvas that paints the data lines. */
-    public final class ChartPanel extends JComponent
+    private class ChartPanel extends JComponent
     {
-        java.text.DecimalFormat format = new java.text.DecimalFormat("0.00E0");
-
         /**
         * Paints the plot components.
         */

@@ -80,6 +80,8 @@ implements TreeView, ActionListener {
     /** the list of current selected objects */
     private List objectsToCopy;
 
+    private JMenuItem addTableMenuItem;
+
     public DefaultTreeView(ViewManager theView) {
         viewer = theView;
 
@@ -92,6 +94,10 @@ implements TreeView, ActionListener {
         editGUIs = new Vector();
         objectsToCopy = null;
         isDefaultDisplay = true;
+
+        addTableMenuItem = new JMenuItem( "Table", ViewProperties.getTableIcon());
+        addTableMenuItem.addActionListener(this);
+        addTableMenuItem.setActionCommand("Add table");
 
         // initialize the tree and root
         treeModel = new DefaultTreeModel(root);
@@ -190,10 +196,7 @@ implements TreeView, ActionListener {
         item.setActionCommand("Add image");
         newOjbectMenu.add(item);
 
-        item = new JMenuItem( "Table", ViewProperties.getTableIcon());
-        item.addActionListener(this);
-        item.setActionCommand("Add table");
-//        newOjbectMenu.add(item);
+        newOjbectMenu.add(addTableMenuItem);
 
         menu.addSeparator();
 
@@ -280,6 +283,13 @@ implements TreeView, ActionListener {
             popupMenu.getComponent(10).setEnabled(isWritable); // "rename" menuitem
         }
 
+        // adding table is only supported by HDF5
+        if (selectedFile != null &&
+            selectedFile.isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5)))
+            addTableMenuItem.setVisible(true);
+        else
+            addTableMenuItem.setVisible(false);
+
         popupMenu.show((JComponent)e.getSource(), x, y);
     }
 
@@ -315,7 +325,7 @@ implements TreeView, ActionListener {
         JFrame owner = (viewer == null) ? new JFrame() : (JFrame)viewer;
         String currentDir = srcFile.getParent();
         NewFileDialog dialog = new NewFileDialog(owner, currentDir, FileFormat.FILE_TYPE_HDF4, getCurrentFiles());
-        dialog.show();
+        //dialog.show();
 
         if (!dialog.isFileCreated())
             return;
@@ -418,7 +428,7 @@ implements TreeView, ActionListener {
         JFrame owner = (viewer == null) ? new JFrame() : (JFrame)viewer;
         NewFileDialog dialog = new NewFileDialog(owner, srcFile.getParent(),
             FileFormat.FILE_TYPE_HDF5, getCurrentFiles());
-        dialog.show();
+        //dialog.show();
 
         if (!dialog.isFileCreated())
             return;
@@ -905,7 +915,6 @@ implements TreeView, ActionListener {
         }
     }
 
-/*
     private void addTable()
     {
         if (selectedObject == null || selectedNode == null)
@@ -939,7 +948,6 @@ implements TreeView, ActionListener {
             return;
         }
     }
-*/
 
     private void renameObject()
     {
@@ -1001,7 +1009,7 @@ implements TreeView, ActionListener {
             addImage();
         }
         else if (cmd.equals("Add table")) {
-            ;//addTable();
+            addTable();
         }
         else if (cmd.startsWith("Open data"))
         {
@@ -1054,7 +1062,7 @@ implements TreeView, ActionListener {
                 selectedObject.getFileFormat().getParent(),
                 filetype,
                 fileList);
-            dialog.show();
+            //dialog.show();
 
             if (!dialog.isFileCreated()) {
                 return;
@@ -1120,12 +1128,17 @@ implements TreeView, ActionListener {
      * @return the FileFormat of this file if successful; otherwise returns null.
      */
     public FileFormat openFile(String filename, int accessID)
-        throws Exception {
+        throws Exception
+    {
         FileFormat fileFormat = null;
         MutableTreeNode fileRoot = null;
         String msg = "";
+
         if (isFileOpen(filename))
-            throw new UnsupportedOperationException("File is in use.");
+        {
+            return null;
+            //throw new UnsupportedOperationException("File is in use.");
+        }
 
         File tmpFile = new File(filename);
         if (!tmpFile.exists())
@@ -1137,7 +1150,8 @@ implements TreeView, ActionListener {
         Enumeration keys = FileFormat.getFileFormatKeys();
 
         String theKey = null;
-        while (keys.hasMoreElements()) {
+        while (keys.hasMoreElements())
+        {
             theKey = (String)keys.nextElement();
             if (theKey.equals(FileFormat.FILE_TYPE_HDF4))
             {
@@ -1191,13 +1205,12 @@ implements TreeView, ActionListener {
      * close a file
      * @param file the file to close
      */
-    public void closeFile(FileFormat file)
-        throws Exception {
-        // find the file node in the tree and removed it from the tree.
-
+    public void closeFile(FileFormat file) throws Exception
+    {
         if (file == null)
             return;
 
+        // find the file node in the tree and removed it from the tree first
         FileFormat theFile = null;
         DefaultMutableTreeNode theNode = null;
         Enumeration enumeration = root.children();
@@ -1209,7 +1222,7 @@ implements TreeView, ActionListener {
 
             if (theFile.equals(file)) {
                 treeModel.removeNodeFromParent(theNode);
-                try { theFile.close(); } catch (Exception ex) {}
+                try { theFile.close(); } catch (Exception ex) {;}
                 fileList.remove(theFile);
                 if (theFile.equals(selectedFile)) {
                     selectedFile = null;
@@ -1350,10 +1363,13 @@ implements TreeView, ActionListener {
             dataViewName = dialog.getDataViewName();
         }
 
-        Object theView = null;
-        Class theClass = ViewProperties.loadExtClass().loadClass(dataViewName);
-        Object[] initargs = {viewer};
+        // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
+        Class theClass = null;
+        try { theClass = Class.forName(dataViewName); }
+        catch (Exception ex) { theClass = ViewProperties.loadExtClass().loadClass(dataViewName); }
 
+        Object theView = null;
+        Object[] initargs = {viewer};
         if (dataViewName.startsWith("ncsa.hdf.view.DefaultTableView")) {
             Object[] tmpargs = {viewer, new Boolean(isDisplayTypeChar), new Boolean(isTransposed)};
             initargs = tmpargs;
@@ -1405,7 +1421,11 @@ implements TreeView, ActionListener {
                 className);
         }
 
-        Class theClass = ViewProperties.loadExtClass().loadClass(className);
+        // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
+        Class theClass = null;
+        try { theClass = Class.forName(className); }
+        catch (Exception ex) { theClass = ViewProperties.loadExtClass().loadClass(className); }
+
         Object[] initargs = {viewer};
         MetaDataView dataView = (MetaDataView)Tools.newInstance(theClass, initargs);
 
@@ -1552,25 +1572,22 @@ implements TreeView, ActionListener {
                 else
                     leafIcon = datasetIcon;
             }
-            else if (theObject instanceof CompoundDS) {
+            else if (theObject instanceof CompoundDS)
+            {
                 leafIcon = tableIcon;
             }
-            else if (theObject instanceof Group) {
+            else if (theObject instanceof Group)
+            {
                 Group g = (Group)theObject;
-                if (g.isRoot() &&
-                    g.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5)))
+                openIcon = openFolder;
+                closedIcon = closeFolder;
+
+                if (g.isRoot())
                 {
+                    if ( g.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5)))
                         openIcon = closedIcon = h5Icon;
-                }
-                else if (g.isRoot() &&
-                    g.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4)))
-                {
+                    else if ( g.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4)))
                         openIcon = closedIcon = h4Icon;
-                }
-                else
-                {
-                    openIcon = openFolder;
-                    closedIcon = closeFolder;
                 }
             }
 
@@ -1593,28 +1610,35 @@ implements TreeView, ActionListener {
      */
     private class HTreeMouseAdapter extends MouseAdapter
     {
-        public void mousePressed(MouseEvent e)
+        //public void mousePressed(MouseEvent e)
+        public void mouseReleased(MouseEvent e)
         {
             TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+            if (selPath == null) return;
 
-            if (selPath == null)
-                return;
-
-            selectedNode = (DefaultMutableTreeNode)selPath.getLastPathComponent();
-            selectedObject = ((HObject)(selectedNode.getUserObject()));
-            FileFormat theFile = selectedObject.getFileFormat();
-            if (!theFile.equals(selectedFile))
+            DefaultMutableTreeNode theNode = (DefaultMutableTreeNode)selPath.getLastPathComponent();
+            if (!theNode.equals(selectedNode))
             {
-                // a different file is selected, handle only one file a time
-                selectedFile = theFile;
-                tree.clearSelection();
-                tree.setSelectionPath(selPath);
+                selectedNode = theNode;
+                selectedObject = ((HObject)(selectedNode.getUserObject()));
+                FileFormat theFile = selectedObject.getFileFormat();
+                if (!theFile.equals(selectedFile))
+                {
+                    // a different file is selected, handle only one file a time
+                    selectedFile = theFile;
+                    tree.clearSelection();
+                    tree.setSelectionPath(selPath);
+                }
+                viewer.mouseEventFired(e);
             }
 
-            int mask = e.getModifiers();
-
-            // right click to show popup menu
-            if (mask == MouseEvent.META_MASK)
+            // ***************************************************************
+            // Different platforms have different ways to show popups
+            // if (e.getModifiers() == MouseEvent.BUTTON3_MASK) works for all but mac
+            // mouseReleased() and e.isPopupTrigger() work on windows and mac but not unix,
+            // mouseClicked() and e.isPopupTrigger() work on unix and mac but not windows,
+            // to solve the problem, we use both.
+            if (e.isPopupTrigger() || e.getModifiers() == MouseEvent.BUTTON3_MASK)
             {
                 int selRow = tree.getRowForLocation(e.getX(), e.getY());
 
