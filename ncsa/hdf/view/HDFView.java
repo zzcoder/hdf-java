@@ -91,6 +91,9 @@ public class HDFView extends JFrame
     /** a list of palette view implementation. */
     private static List paletteViews;
 
+    /** a list of help view implementation. */
+    private static List helpViews;
+
     private static final String aboutHDFView =
         "HDF Viewer, "+ "Version "+ViewProperties.VERSION+"\n"+
         "For "+System.getProperty("os.name")+"\n\n"+
@@ -203,6 +206,7 @@ public class HDFView extends JFrame
         tableViews = props.getTableViewList();
         imageViews = props.getImageViewList();
         paletteViews = props.getPaletteViewList();
+        helpViews = props.getHelpViewList();
 
         // initialize GUI components
         statusArea = new JTextArea();
@@ -498,6 +502,20 @@ public class HDFView extends JFrame
         menu.add(item);
 
         menu.addSeparator();
+
+        if (helpViews != null && helpViews.size() > 0)
+        {
+            int n = helpViews.size();
+            for (int i=0; i<n; i++)
+            {
+                HelpView theView = (HelpView)helpViews.get(i);
+                item = new JMenuItem( theView.getLabel());
+                item.setActionCommand(theView.getActionCommand());
+                item.addActionListener(this);
+                menu.add(item);
+            }
+            menu.addSeparator();
+        }
 
         item = new JMenuItem( "HDF4 Library Version");
         item.setMnemonic(KeyEvent.VK_4);
@@ -1252,8 +1270,23 @@ public class HDFView extends JFrame
                 "HDFView",
                 JOptionPane.PLAIN_MESSAGE,
                 ViewProperties.getLargeHdfIcon());
-        }
+        } else
+        {
+            if (helpViews == null || helpViews.size() <= 0)
+                return;
 
+            // try if one of the user help information;
+            int n = helpViews.size();
+            for (int i=0; i<n; i++)
+            {
+                HelpView theView = (HelpView)helpViews.get(i);
+                if (cmd.equals(theView.getActionCommand()))
+                {
+                    theView.show();
+                    break;
+                }
+            } // for (int i=0; i<n; i++)
+        }
     }
 
     public void hyperlinkUpdate(HyperlinkEvent e) {

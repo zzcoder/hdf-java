@@ -82,7 +82,7 @@ public class ViewProperties extends Properties
     /** default HDF4 file extension */
     private static String fileExt = "hdf, h4, hdf4, h5, hdf5, he5";
 
-    private static ClassLoader extClassLoader;
+    private static ClassLoader extClassLoader = null;
 
     /**
      * Current Java application such as HDFView cannot handle files
@@ -130,6 +130,9 @@ public class ViewProperties extends Properties
     /** a list of paletteview module */
     private static Vector moduleListPaletteView = new Vector();
 
+    /** a list of helpview module */
+    private static Vector moduleListHelpView = new Vector();
+
     /**
      * Creates a property list with given root directory of the HDFView.
      */
@@ -175,14 +178,16 @@ public class ViewProperties extends Properties
     {
         if (extClassLoader != null)
             return extClassLoader;
+        else
+             extClassLoader = ClassLoader.getSystemClassLoader(); // default classloader
 
         String rootPath = System.getProperty("hdfview.root");
         String dirname = rootPath+File.separator+"lib"+File.separator+"ext"+File.separator;
         File extdir = new File(dirname);
         String[] jars = extdir.list();
 
-        if (jars == null)
-            return ClassLoader.getSystemClassLoader();
+        if (jars == null || jars.length <= 0)
+            return extClassLoader;
 
         Vector jarList = new Vector();
         Vector classList = new Vector();
@@ -207,7 +212,7 @@ public class ViewProperties extends Properties
 
         int n = jarList.size();
         if (n <= 0)
-            return ClassLoader.getSystemClassLoader();
+            return extClassLoader;
 
         URL[] urls = new URL[n];
         for (int i=0; i<n; i++) {
@@ -217,7 +222,7 @@ public class ViewProperties extends Properties
         }
 
         try { extClassLoader = new URLClassLoader(urls); }
-        catch (Exception ex) { extClassLoader = ClassLoader.getSystemClassLoader(); }
+        catch (Exception ex) { extClassLoader = extClassLoader; }
 
         // load user modules into their list
         n = classList.size();
@@ -248,10 +253,14 @@ public class ViewProperties extends Properties
                         } else if ("ncsa.hdf.view.PaletteView".equals(intfaceName)) {
                             moduleListPaletteView.add(theName);
                             break;
+                        } else if ("ncsa.hdf.view.HelpView".equals(intfaceName)) {
+                            try  { moduleListHelpView.add(theClass.newInstance()); }
+                            catch (Throwable err) {}
+                            break;
                         }
                     } // for (int j=0; j<interfaces.length; j++) {
                 } // if (interfaces != null) {
-            } catch (Exception ex) {System.out.println(ex);}
+            } catch (Exception ex) {;}
         }
 
         return extClassLoader;
@@ -533,6 +542,13 @@ public class ViewProperties extends Properties
             fis.close();
         } catch (Exception e) {;}
 
+        // add default HDF4 and HDF5 modules
+        try { FileFormat.addFileFormat("HDF", (FileFormat)extClassLoader.loadClass("ncsa.hdf.object.h4.H4File").newInstance());
+        } catch (Throwable err ) {;}
+        try { FileFormat.addFileFormat("H5", (FileFormat)extClassLoader.loadClass("ncsa.hdf.object.h5.H5File").newInstance());
+        } catch (Throwable err ) {;}
+
+        // add fileformat modules
         Enumeration enum = this.keys();
         String theKey = null;
         String fExt = null;
@@ -545,7 +561,7 @@ public class ViewProperties extends Properties
                     Object theObject = theClass.newInstance();
                     if (theObject instanceof FileFormat)
                         FileFormat.addFileFormat(fExt, (FileFormat)theObject);
-                } catch (Throwable err) {err.printStackTrace();}
+                } catch (Throwable err) {;}
             }
         }
 
@@ -795,6 +811,9 @@ public class ViewProperties extends Properties
 
     /** returns a list of paletteview modules */
     public static Vector getPaletteViewList() { return moduleListPaletteView; }
+
+    /** returns a list of helpview modules */
+    public static Vector getHelpViewList() { return moduleListHelpView; }
 
     /** set the path of H5View User's guide */
     public static void setUsersGuide( String str)
