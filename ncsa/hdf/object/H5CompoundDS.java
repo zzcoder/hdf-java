@@ -47,11 +47,6 @@ public class H5CompoundDS extends CompoundDS
      private List attributeList;
 
     /**
-     * The datatype classes of the members of this compound dataset.
-     */
-    private int[] memberClasses;
-
-    /**
      * Creates a H5CompoundDS object with specific name, path, and parent.
      * <p>
      * @param fid the file identifier.
@@ -68,7 +63,6 @@ public class H5CompoundDS extends CompoundDS
         long[] oid)
     {
         super (fid, filename, name, path, oid);
-        memberClasses = null;
     }
 
 
@@ -117,7 +111,6 @@ public class H5CompoundDS extends CompoundDS
             {
                 member_name = memberNames[i];
                 member_tid = memberTypes[i];
-                member_class = memberClasses[i];
 
                 long lsize = 1;
                 for (int j=0; j<selectedDims.length; j++)
@@ -128,6 +121,8 @@ public class H5CompoundDS extends CompoundDS
                 if (member_data == null)
                     continue;
 
+                try { member_class = H5.H5Tget_class(member_tid);
+                } catch (HDF5Exception ex) {}
                 int arrayType = member_tid;
                 if (member_class == HDF5Constants.H5T_ARRAY)
                 {
@@ -359,10 +354,8 @@ public class H5CompoundDS extends CompoundDS
             numberOfMembers = H5.H5Tget_nmembers(tid);
             memberNames = new String[numberOfMembers];
             memberTypes = new int[numberOfMembers];
-            memberClasses = new int[numberOfMembers];
             for (int i=0; i<numberOfMembers; i++)
             {
-                memberClasses[i] = H5.H5Tget_member_class(tid, i);
                 int mtid = H5.H5Tget_member_type(tid, i);
                 memberTypes[i] = H5Accessory.toNativeType(mtid);
                 memberNames[i] = H5.H5Tget_member_name(tid, i);
@@ -373,7 +366,6 @@ public class H5CompoundDS extends CompoundDS
             numberOfMembers = 0;
             memberNames = null;
             memberTypes = null;
-            memberClasses = null;
         }
         finally
         {
@@ -381,14 +373,6 @@ public class H5CompoundDS extends CompoundDS
             try { H5.H5Sclose(sid); } catch (HDF5Exception ex2) {}
             try { H5.H5Dclose(did); } catch (HDF5Exception ex2) {}
         }
-    }
-
-    /**
-     * Returns the datatype classes of the members of this compound dataset.
-     */
-    public final int[] getMemberClasses()
-    {
-        return memberClasses;
     }
 
 }
