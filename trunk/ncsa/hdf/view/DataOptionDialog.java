@@ -23,6 +23,9 @@ import java.awt.Choice;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.Graphics;
+import java.awt.Color;
 
 /**
  * DataOptionDialog is an dialog window used to select display options.
@@ -39,6 +42,8 @@ implements ActionListener, ItemListener
      * The main HDFView.
      */
     private final ViewManager viewer;
+
+    private static final int NAVIGATOR_SIZE = 150;
 
     /** the selected dataset/image */
     private Dataset dataset;
@@ -81,6 +86,8 @@ implements ActionListener, ItemListener
 
     private final Toolkit toolkit;
 
+    private final SubsetNavigator navigator;
+
     /**
      * Constructs a DataOptionDialog with the given HDFView.
      */
@@ -98,7 +105,7 @@ implements ActionListener, ItemListener
         if (dataset == null)
             dispose();
         else
-            setTitle("Data Selection - "+dataset.getPath()+dataset.getName());
+            setTitle("Dataset Selection - "+dataset.getPath()+dataset.getName());
 
         rank = dataset.getRank();
         if (rank <=0 ) dataset.init();
@@ -110,6 +117,10 @@ implements ActionListener, ItemListener
         selectedIndex = dataset.getSelectedIndex();
         stride = dataset.getStride();
         fieldList = null;
+        int h=1, w=1;
+        h = (int)dims[selectedIndex[0]];
+        if (rank > 1) w = (int)dims[selectedIndex[1]];
+        navigator = new SubsetNavigator(w, h);
 
         if (stride == null)
         {
@@ -127,34 +138,22 @@ implements ActionListener, ItemListener
         choicePalette.add("Wave");
         choicePalette.addItemListener(this);
 
+        spreadsheetButton = new JRadioButton("Spreadsheet ", true);
+        spreadsheetButton.setMnemonic(KeyEvent.VK_S);
+        imageButton = new JRadioButton("Image");
+        imageButton.setMnemonic(KeyEvent.VK_I);
+
         // layout the components
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5, 5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
 
-        // setup GUI components for the display options: table or image
-        spreadsheetButton = new JRadioButton("Spreadsheet ", true);
-        spreadsheetButton.setMnemonic(KeyEvent.VK_S);
-        imageButton = new JRadioButton("Image");
-        imageButton.setMnemonic(KeyEvent.VK_I);
-        imageButton.addItemListener(this);
-        spreadsheetButton.addItemListener(this);
-        ButtonGroup rgroup = new ButtonGroup();
-        rgroup.add(spreadsheetButton);
-        rgroup.add(imageButton);
-        JPanel viewP = new JPanel();
-        viewP.add(spreadsheetButton);
-        viewP.add(new JLabel("              "));
-        viewP.add(imageButton);
-        viewP.add(choicePalette);
-        viewP.setBorder(new TitledBorder("Display As"));
-
-        int heightGap = 150;
         int rows = Math.min(5, rank+1);
 
+        JPanel northP = new JPanel();
+        northP.setLayout(new GridLayout(1, 2));
         if (dataset instanceof CompoundDS)
         {
-            heightGap = 170;
             // setup GUI components for the field selection
             CompoundDS d = (CompoundDS)dataset;
             String[] names = d.getMemberNames();
@@ -165,33 +164,58 @@ implements ActionListener, ItemListener
             fieldP.setLayout(new BorderLayout());
             JScrollPane scrollP = new JScrollPane(fieldList);
             fieldP.add(scrollP, BorderLayout.CENTER);
-            fieldP.setBorder(new TitledBorder("Select Members/Fileds to Display"));
-            contentPane.add(fieldP, BorderLayout.NORTH);
+            fieldP.setBorder(new TitledBorder("Select Members/Fields to Display"));
+            northP.add(fieldP);
         }
-        else if (((ScalarDS)dataset).isText())
-            heightGap = 70;
-        else
-            contentPane.add(viewP, BorderLayout.NORTH);
+        else if (!((ScalarDS)dataset).isText())
+        {
+            // setup GUI components for the display options: table or image
+            imageButton.addItemListener(this);
+            spreadsheetButton.addItemListener(this);
+            ButtonGroup rgroup = new ButtonGroup();
+            rgroup.add(spreadsheetButton);
+            rgroup.add(imageButton);
+            JPanel viewP = new JPanel();
+            viewP.setLayout(new GridLayout(2,1));
+            viewP.add(spreadsheetButton);
+            JPanel imageP = new JPanel();
+            imageP.setLayout(new BorderLayout());
+            imageP.add(imageButton, BorderLayout.WEST);
+            imageP.add(choicePalette, BorderLayout.CENTER);
+            viewP.add(imageP);
+            viewP.setBorder(new TitledBorder("Display As"));
+            northP.add(viewP);
+        }
+
+        JPanel navigatorP = new JPanel();
+        navigatorP.add(navigator);
+        navigatorP.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+
+        contentPane.add(northP, BorderLayout.NORTH);
+
+        JPanel centerP = new JPanel();
+        centerP.setLayout(new BorderLayout());
+        centerP.setBorder(new TitledBorder("Dimension and Subset Selection"));
 
         // setup GUI for dimension and subset selection
         JPanel selectionP = new JPanel();
-        selectionP.setLayout(new GridLayout(rows, 6, 10, 3));
-        selectionP.setBorder(new TitledBorder("Dimension and Subset Selection"));
-        contentPane.add(selectionP, BorderLayout.CENTER);
+        selectionP.setLayout(new GridLayout(5, 6, 10, 3));
+        selectionP.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+
+        centerP.add(navigatorP, BorderLayout.WEST);
+        centerP.add(selectionP, BorderLayout.CENTER);
+
+        contentPane.add(centerP, BorderLayout.CENTER);
 
         selectionP.add(new JLabel(" "));
         selectionP.add(new JLabel(" "));
         JLabel label = new JLabel("Start:");
-        //label.setHorizontalAlignment(JLabel.CENTER);
         selectionP.add(label);
         label = new JLabel("Count:");
-        //label.setHorizontalAlignment(JLabel.CENTER);
         selectionP.add(label);
         label = new JLabel("Stride:");
-        //label.setHorizontalAlignment(JLabel.CENTER);
         selectionP.add(label);
         label = new JLabel("Max Size");
-        //label.setHorizontalAlignment(JLabel.CENTER);
         selectionP.add(label);
 
         choices = new Choice[rows-1];
@@ -224,6 +248,12 @@ implements ActionListener, ItemListener
             selectionP.add(maxLabels[i]);
         }
 
+        for (int i=0; i<5-rows; i++)
+        {
+            for (int j=0; j<6; j++)
+                selectionP.add(new JLabel(" "));
+        }
+
         if (startFields.length >=4 )
             startFields[3].addActionListener(this);
 
@@ -244,7 +274,7 @@ implements ActionListener, ItemListener
         init();
 
         // locate the H5Property dialog
-        contentPane.setPreferredSize(new Dimension(420, heightGap+30*rows));
+        contentPane.setPreferredSize(new Dimension(580, 325));
         Point l = getParent().getLocation();
         l.x += 250;
         l.y += 80;
@@ -314,34 +344,27 @@ implements ActionListener, ItemListener
                 if (choices[i].getSelectedIndex() == theIndex &&
                     i != theSelectedChoice)
                 {
-                    // exchange the selected item
+                    // exchange the selected item and reset their values
+                    startFields[theSelectedChoice].setText("0");
+                    startFields[i].setText("0");
                     tmpValue = maxLabels[theSelectedChoice].getText();
                     maxLabels[theSelectedChoice].setText( maxLabels[i].getText());
+                    countFields[theSelectedChoice].setText( maxLabels[i].getText());
                     maxLabels[i].setText(tmpValue);
-                    tmpValue = startFields[theSelectedChoice].getText();
-                    startFields[theSelectedChoice].setText( startFields[i].getText());
-                    startFields[i].setText(tmpValue);
-                    tmpValue = countFields[theSelectedChoice].getText();
-                    if (i == 2)
-                    {
-                        countFields[theSelectedChoice].setText(String.valueOf(dims[theIndex]-1));
-                        countFields[2].setText("1");
-                    }
-                    else
-                    {
-                        countFields[theSelectedChoice].setText( countFields[i].getText());
-                        countFields[i].setText(tmpValue);
-                    }
+                    countFields[i].setText(tmpValue);
+                    strideFields[theSelectedChoice].setText("1");
+                    strideFields[i].setText("1");
+
                     choices[i].select(currentIndex[theSelectedChoice]);
                     currentIndex[i] = currentIndex[theSelectedChoice];
                     currentIndex[theSelectedChoice] = theIndex;
                     isChoiceSet = true;
-
                 } // if (choices[i].getSelectedIndex() == theIndex)
             } // for (int i=0; i<n; i++)
 
             if (rank > 3 && !isChoiceSet)
             {
+                // update the slice (4th) choice menu
                 String seletedItemOther = choices[3].getSelectedItem();
                 boolean isSelected = seletedItemOther.equals(theChoice.getSelectedItem());
 
@@ -352,18 +375,33 @@ implements ActionListener, ItemListener
 
                 tmpValue = startFields[theSelectedChoice].getText();
                 startFields[theSelectedChoice].setText( String.valueOf(start[theIndex]));
-                if (isSelected)
-                    startFields[3].setText(tmpValue);
+                if (isSelected) startFields[3].setText(tmpValue);
 
                 String seletedItem = theChoice.getItem(currentIndex[theSelectedChoice]);
                 choices[3].remove(theChoice.getSelectedItem());
                 choices[3].add(seletedItem);
-                if (isSelected)
-                    choices[3].select(seletedItem);
+                if (isSelected) choices[3].select(seletedItem);
 
                 currentIndex[theSelectedChoice] = theIndex;
-                countFields[theSelectedChoice].setText(String.valueOf(dims[theIndex]-1));
             }
+
+            // update the navigator
+            if (rank > 1)
+            {
+                int hIdx = choices[0].getSelectedIndex();
+                int wIdx = choices[1].getSelectedIndex();
+                long dims[] = dataset.getDims();
+                int w = (int)dims[wIdx];
+                int h = (int)dims[hIdx];
+                navigator.setDimensionSize(w, h);
+                navigator.updateUI();
+            }
+
+            if (rank > 2)
+                countFields[2].setText("1");
+
+            if (rank > 3)
+                countFields[3].setText("1");
 
         } // else if (source instanceof Choice)
     }
@@ -629,6 +667,130 @@ implements ActionListener, ItemListener
 
         return true;
     }
+
+    /** SubsetNavigator draws selection rectangle of subset. */
+    private class SubsetNavigator extends JComponent
+        implements MouseListener, MouseMotionListener
+    {
+        private int dimX, dimY, x, y;
+        private double r;
+        private Point startPosition; // mouse clicked position
+        private Rectangle selectedArea;
+
+        private SubsetNavigator(int w, int h)
+        {
+            dimX = w;
+            dimY = h;
+            if (dimX > dimY)
+            {
+                x = NAVIGATOR_SIZE;
+                r = dimX/(double)x;
+                y = (int)(dimY/r);
+            } else
+            {
+                y = NAVIGATOR_SIZE;
+                r = dimY/(double)y;
+                x = (int)(dimX/r);
+            }
+
+            selectedArea = new Rectangle();
+            setPreferredSize(new Dimension(NAVIGATOR_SIZE, NAVIGATOR_SIZE));
+
+            addMouseListener(this);
+            addMouseMotionListener(this);
+        }
+
+        public void paint(Graphics g)
+        {
+            g.setColor(Color.blue);
+            g.fillRect(0, 0, x, y);
+
+            int w = selectedArea.width;
+            int h = selectedArea.height;
+            if (w>0 && h >0)
+            {
+                g.setColor(Color.red);
+                g.drawRect(selectedArea.x, selectedArea.y, w, h);
+            }
+        }
+
+        public void mousePressed(MouseEvent e)
+        {
+            startPosition = e.getPoint();
+            selectedArea.setBounds(startPosition.x, startPosition.y, 0, 0);
+        }
+
+        public void mouseClicked(MouseEvent e)
+        {
+            startPosition = e.getPoint();
+            selectedArea.setBounds(startPosition.x, startPosition.y, 0, 0);
+            repaint();
+        }
+
+        public void mouseDragged(MouseEvent e)
+        {
+            Point p0 = startPosition;
+            Point p1 = e.getPoint();
+
+            int x0 = Math.max(0, Math.min(p0.x, p1.x));
+            int y0 = Math.max(0, Math.min(p0.y, p1.y));
+            int x1 = Math.min(x, Math.max(p0.x, p1.x));
+            int y1 = Math.min(y, Math.max(p0.y, p1.y));
+
+            int w = x1 - x0;
+            int h = y1 - y0;
+            selectedArea.setBounds(x0, y0, w, h);
+
+            try { updateSelection(x0, y0, w, h); }
+            catch (Exception ex ) {}
+
+            repaint();
+        }
+
+        private void updateSelection(int x0, int y0, int w, int h)
+        {
+            int s = Integer.parseInt(strideFields[0].getText());
+            startFields[0].setText(String.valueOf((int)(y0*r)));
+            int count = (int)((h*r)/s);
+            if (count == 0) count = 1;
+            countFields[0].setText(String.valueOf(count));
+
+            if (rank > 1)
+            {
+                s = Integer.parseInt(strideFields[1].getText());
+                startFields[1].setText(String.valueOf((int)(x0*r)));
+                count = (int)((w*r)/s);
+                if (count == 0) count = 1;
+                countFields[1].setText(String.valueOf(count));
+            }
+        }
+
+        public void mouseReleased(MouseEvent e) {}
+        public void mouseEntered(MouseEvent e) {}
+        public void mouseExited(MouseEvent e)  {}
+        public void mouseMoved(MouseEvent e) {}
+
+        private void setDimensionSize(int w, int h)
+        {
+            dimX = w;
+            dimY = h;
+            if (dimX > dimY)
+            {
+                x = NAVIGATOR_SIZE;
+                r = dimX/(double)x;
+                y = (int)(dimY/r);
+            } else
+            {
+                y = NAVIGATOR_SIZE-30;
+                r = dimY/(double)y;
+                x = (int)(dimX/r);
+            }
+            setPreferredSize(new Dimension(NAVIGATOR_SIZE, NAVIGATOR_SIZE));
+            selectedArea.setSize(0, 0);
+
+            repaint();
+        }
+    } // private class SubsetNavigator extends JComponent
 
 
 }

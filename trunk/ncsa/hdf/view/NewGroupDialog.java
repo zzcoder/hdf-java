@@ -95,7 +95,7 @@ implements ActionListener
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
-        contentPane.setPreferredSize(new Dimension(550, 120));
+        contentPane.setPreferredSize(new Dimension(400, 120));
 
         JButton okButton = new JButton("   Ok   ");
         okButton.setActionCommand("Ok");

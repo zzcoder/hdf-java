@@ -103,7 +103,7 @@ implements ActionListener
         b = new JButton("Browse...");
         b.setActionCommand("Browse h4toh5");
         b.addActionListener(this);
-        p.add(b);
+        //p.add(b);
         centerP.add("East", p);
 
         p = new JPanel();

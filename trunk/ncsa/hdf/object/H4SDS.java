@@ -161,7 +161,7 @@ public class H4SDS extends ScalarDS
         String[] objName = {""};
         int[] sdInfo = {0, 0, 0};
         try {
-            int[] tmpDim = new int[1];
+            int[] tmpDim = new int[HDFConstants.MAX_VAR_DIMS];
             HDFLibrary.SDgetinfo(id, objName, tmpDim, sdInfo);
             int n = sdInfo[2];
 
@@ -263,7 +263,7 @@ public class H4SDS extends ScalarDS
         int id = open();
         String[] objName = {""};
         int[] sdInfo = {0, 0, 0};
-        int[] idims = new int[1];
+        int[] idims = new int[HDFConstants.MAX_VAR_DIMS];
         try {
             HDFLibrary.SDgetinfo(id, objName, idims, sdInfo);
             // mask off the litend bit

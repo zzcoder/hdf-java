@@ -272,7 +272,7 @@ public class H4GRImage extends ScalarDS
         int id = open();
         String[] objName = {""};
         int[] grInfo = new int[4]; //ncomp, data_type, interlace and num_attrs
-        int[] idims = new int[3];
+        int[] idims = new int[2];
         try {
             HDFLibrary.GRgetiminfo(id, objName, grInfo, idims);
             // mask off the litend bit
