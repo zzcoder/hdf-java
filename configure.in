@@ -137,9 +137,10 @@ ac_cv_lib_HDF5INC=$HDF5INC
 dnl check for libh4toh5  == if with-h4toh5 is not set, then can
 dnl only build hdf and hdf5 separately.
 
+USEH45="no"
 withval="";
 AC_SUBST(LIBH45) LIBH45=""
-AC_ARG_WITH(h4toh5,[  --with-h4toh5=INC,LIB     Path to the HDF 4 to 5 library (optional feature, if selected then path required in not in default path)],,)
+AC_ARG_WITH(h4toh5,[  --with-h4toh5=INC,LIB     Path to the HDF 4 to 5 library (optional feature, if selected then path required is not in default path)],,)
 case "$withval" in
   yes)
     AC_MSG_ERROR(HDF 4 to 5 library needed for compilation.)
@@ -173,6 +174,7 @@ case "$withval" in
         else
     	 AC_MSG_ERROR(cannot find HDF45 library path.)
         fi
+	USEH45="yes"
     fi
     ;;
 esac
@@ -423,12 +425,23 @@ AC_SUBST(VERSSTRING)
 
 
 ##
-## Select one of the following...
-###
-#just h4 and 5
-#AC_OUTPUT(Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile)
-#with h4 to 5
-#AC_OUTPUT(Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile native/h4toh5lib/Makefile)
-# with tests
-AC_OUTPUT(Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile native/h4toh5lib/Makefile test/Makefile test/h4toh5/Makefile test/h4toh5/apitest.sh test/h4toh5/imagetest.sh test/h4toh5/nametest.sh test/h4toh5/sdstest.sh test/h4toh5/vdatatest.sh test/h4toh5/vgrouptest.sh test/h4toh5/runtests.sh test/object/testh4file.sh test/object/testh5file.sh test/object/Makefile test/object/runtests.sh test/h4toh5/linktest.sh test/h4toh5/sdstestattr.sh test/h4toh5/imagetestattr.sh test/h4toh5/lonesdstest.sh test/h4toh5/lonevdatatest.sh test/h4toh5/loneimagetest.sh )
+## Select one of the following, depending on what is being distributed.
+##
 
+if test "$USEH45" = "yes"; then
+##  want H4toH5 configured
+if test -d "./test"; then
+##
+##  Everything
+##
+AC_OUTPUT(Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile native/h4toh5lib/Makefile test/Makefile test/h4toh5/Makefile test/h4toh5/apitest.sh test/h4toh5/imagetest.sh test/h4toh5/nametest.sh test/h4toh5/sdstest.sh test/h4toh5/vdatatest.sh test/h4toh5/vgrouptest.sh test/h4toh5/runtests.sh test/object/testh4file.sh test/object/testh5file.sh test/object/Makefile test/object/runtests.sh test/h4toh5/linktest.sh test/h4toh5/sdstestattr.sh test/h4toh5/imagetestattr.sh test/h4toh5/lonesdstest.sh test/h4toh5/lonevdatatest.sh test/h4toh5/loneimagetest.sh )
+else
+##
+##  H4, H5, H45, but NO tests
+##
+AC_OUTPUT(Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile native/h4toh5lib/Makefile)
+fi
+else
+##  Don't use H4toH5 (no tests)
+AC_OUTPUT(Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile)
+fi
