@@ -332,6 +332,7 @@ public class HDFView extends JFrame
         urlBar.setEditable(true);
         urlBar.addActionListener(this);
         urlBar.setActionCommand("Open file: from file bar");
+        urlBar.setSelectedIndex(-1);
         //urlBar.addItem("http://hdf.ncsa.uiuc.edu/hdf-java-html/hdf5_test.h5");
 
         JPanel urlPane = new JPanel();
