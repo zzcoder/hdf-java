@@ -2611,11 +2611,21 @@ public class H5 {
         NullPointerException,
         IllegalArgumentException;
 
+/*
+    [NOTE: This function is only supported in HDF5 Releases 1.4.x. It has been
+    replaced in Release 1.6 by the function H5Rget_obj_type
+    public synchronized static native int H5Rget_object_type(int loc_id,
+        byte ref[])
+        throws HDF5LibraryException,
+        NullPointerException,
+        IllegalArgumentException;
+*/
     /**
-     *  Given a reference to an object ref, H5Rget_object_type
+     *  Given a reference to an object ref, H5Rget_obj_type
      *  returns the type of the object pointed to.
      *
      *  @param loc_id,  IN: loc_id  of the reference object.
+     *  @param ref_type,  IN: Type of reference to query.     *
      *  @param ref  IN: the reference
      *
      *  @return a valid identifier if successful
@@ -2624,12 +2634,12 @@ public class H5 {
      *  @exception NullPointerException - array is null.
      *  @exception IllegalArgumentException - array is invalid.
      **/
-    public synchronized static native int H5Rget_object_type(int loc_id,
+    public synchronized static native int H5Rget_obj_type(int loc_id,
+        int ref_type,
         byte ref[])
         throws HDF5LibraryException,
         NullPointerException,
         IllegalArgumentException;
-
 
     //////////////////////////////////////////////////////////////
     //                                                          //
@@ -4075,8 +4085,9 @@ public class H5 {
      */
     public synchronized static int H5Gget_obj_info_idx( int loc_id,
         String name, int idx, String[] oname, int[]type)
-        throws HDF5LibraryException, NullPointerException {
-        long default_buf_size = 4096;
+        throws HDF5LibraryException, NullPointerException
+ {
+         long default_buf_size = 4096;
         String n[] = new String[1];
         n[0] = new String("");
         int grp_id = H5Gopen(loc_id, name);
@@ -4087,6 +4098,29 @@ public class H5 {
         int ret = (new Long(val)).intValue();
         return ret;
     }
+
+    public synchronized static int H5Gget_obj_info_all( int loc_id,
+        String name, String[] oname, int[]type)
+        throws HDF5LibraryException, NullPointerException
+    {
+        if (oname == null)
+            throw new NullPointerException("H5Gget_obj_info_all(): name array is null");
+
+        if (type == null)
+            throw new NullPointerException("H5Gget_obj_info_all(): type array is null");
+
+        if (oname.length == 0)
+            throw new HDF5LibraryException("H5Gget_obj_info_all(): array size is zero");
+
+        if (oname.length != type.length)
+            throw new HDF5LibraryException("H5Gget_obj_info_all(): name and type array sizes are different");
+
+        return H5Gget_obj_info_all( loc_id, name, oname, type, oname.length);
+    }
+
+    public synchronized static native int H5Gget_obj_info_all( int loc_id,
+        String name, String[] oname, int[]type, int n)
+        throws HDF5LibraryException, NullPointerException;
 
 //
 //  This function is denegrated.  It is recommended that the new
