@@ -90,11 +90,13 @@ jint ctype;
         }
         cinf->szip.options_mask = (*env)->GetIntField(env, ciobj, jf);
 
+/*
         jf = (*env)->GetFieldID(env, jc, "compression_mode", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
         cinf->szip.compression_mode = (*env)->GetIntField(env, ciobj, jf);
+*/
 
         jf = (*env)->GetFieldID(env, jc, "pixels", "I");
         if (jf == NULL) {
@@ -239,11 +241,13 @@ jclass jc;
         }
         (*env)->SetIntField(env, ciobj, jf, cinf->szip.options_mask);
 
+/*
         jf = (*env)->GetFieldID(env, jc, "compression_mode", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
         (*env)->SetIntField(env, ciobj, jf, cinf->szip.compression_mode);
+*/
 
         jf = (*env)->GetFieldID(env, jc, "pixels", "I");
         if (jf == NULL) {
@@ -560,7 +564,6 @@ jobject compinfo;
                 }
                 compinfo = (*env)->NewObject(env,jc,jmi,
                         cinf->comp.cinfo.szip.bits_per_pixel,
-                        cinf->comp.cinfo.szip.compression_mode,
                         cinf->comp.cinfo.szip.options_mask,
                         cinf->comp.cinfo.szip.pixels,
                         cinf->comp.cinfo.szip.pixels_per_block,
