@@ -1461,7 +1461,7 @@ public class HDFView extends JFrame
             int n = files.length;
             for (int i=0; i<n; i++) {
                 try { treeView.closeFile((FileFormat)files[i]); }
-                catch (Exception ex) {continue;}
+                catch (Throwable ex) {continue;}
             }
         }
         } catch (Exception ex) {}
