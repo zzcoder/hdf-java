@@ -284,11 +284,23 @@ public class H4File extends File implements FileFormat
         }
 
         Object attrValue = attr.getValue();
-        if (Array.get(attrValue, 0) instanceof String)
+         if (Array.get(attrValue, 0) instanceof String)
         {
             String strValue = (String)Array.get(attrValue, 0);
-            for (int i=strValue.length(); i<count; i++)
-                strValue += " ";
+
+            if (strValue.length() > count)
+            {
+                // truncate the extra characters
+                strValue = strValue.substring(0, count);
+                Array.set(attrValue, 0, strValue);
+            }
+            else
+            {
+                // pad space to the unused space
+                for (int i=strValue.length(); i<count; i++)
+                    strValue += " ";
+            }
+
             byte[] bval = strValue.getBytes();
             // add null to the end to get rid of the junks
             bval[(strValue.length() - 1)] = 0;
@@ -1146,8 +1158,10 @@ public class H4File extends File implements FileFormat
         if (id != HDFConstants.FAIL &&
             // do not display Vdata named "Attr0.0"
             !vClass[0].equalsIgnoreCase(HDFConstants.HDF_ATTRIBUTE) &&
-            // do not display internal Vdata
-            !vClass[0].equalsIgnoreCase(HDFConstants.HDF_CHK_TBL))
+            // do not display internal Vdata, "_HDF_CHK_TBL_"
+            !vClass[0].startsWith(HDFConstants.HDF_CHK_TBL) &&
+            // do not display internal vdata for CDF, "CDF0.0"
+            !vClass[0].equalsIgnoreCase(HDFConstants.HDF_CDF))
         {
             vdata = new H4Vdata(
                 this,

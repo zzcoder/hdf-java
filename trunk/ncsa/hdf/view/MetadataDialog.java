@@ -507,9 +507,19 @@ implements ActionListener
         b.addActionListener(this);
         b.setActionCommand("Add attribute");
         bPanel.add(b);
-        // deleting is not supported by HDF4
-        if (hObject.getFileFormat() instanceof H5File)
+
+        if (hObject.getFileFormat() instanceof H4File)
         {
+            // cannot add attribute to HDF4 froup
+            if (hObject instanceof Group &&
+                ((Group)hObject).isRoot())
+            {
+                b.setEnabled(false);
+            }
+        }
+        else if (hObject.getFileFormat() instanceof H5File)
+        {
+            // deleting is not supported by HDF4
             b = new JButton("Delete");
             b.setMnemonic('D');
             b.addActionListener(this);
@@ -743,7 +753,7 @@ implements ActionListener
         }
 
         // update the attribute table
-        attrTable.setValueAt(newValue, row, 1);
+        attrTable.setValueAt(attr.toString(", ", true), row, 1);
     }
 
 }

@@ -12,6 +12,9 @@
 package ncsa.hdf.view;
 
 import java.awt.event.*;
+import javax.swing.event.*;
+import javax.swing.text.*;
+import javax.swing.text.html.*;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.Color;
@@ -27,7 +30,8 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.util.*;
 import ncsa.hdf.object.*;
-
+import java.net.URL;
+import java.net.URLClassLoader;
 
 /**
  * NewDatasetDialog shows a message dialog requesting user input for creating
@@ -37,9 +41,9 @@ import ncsa.hdf.object.*;
  * @author Peter X. Cao
  */
 public class NewDatasetDialog extends JDialog
-implements ActionListener, ItemListener
+implements ActionListener, ItemListener, HyperlinkListener
 {
-    private JTextField nameField, currentSizeField, maxSizeField, chunkSizeField;
+    private JTextField nameField, currentSizeField, maxSizeField, chunkSizeField, stringLengthField;
 
     private Choice parentChoice, classChoice, sizeChoice, endianChoice, rankChoice, compressionLevel;
 
@@ -147,32 +151,47 @@ implements ActionListener, ItemListener
         TitledBorder border = new TitledBorder("Datatype");
         border.setTitleColor(Color.blue);
         typePanel.setBorder(border);
+
         classChoice = new Choice();
+        sizeChoice = new Choice();
+        endianChoice = new Choice();
+        stringLengthField = new JTextField("String length");
+        stringLengthField.setEnabled(false);
+
         classChoice.add("INTEGER");
         classChoice.add("FLOAT");
         classChoice.add("CHAR");
-        sizeChoice = new Choice();
-        sizeChoice.add("NATIVE");
+
+
+        typePanel.add(new JLabel("Datatype class"));
+        typePanel.add(new JLabel("Size (bits)"));
+        typePanel.add(new JLabel("Byte ordering"));
+        typePanel.add(checkUnsigned = new JCheckBox("Unsigned"));
+        typePanel.add(classChoice);
+        typePanel.add(sizeChoice);
+        typePanel.add(endianChoice);
+
+        if (isH5)
+        {
+            classChoice.add("STRING");
+            classChoice.add("REFERENCE");
+            sizeChoice.add("NATIVE");
+            endianChoice.add("NATIVE");
+            endianChoice.add("LITTLE ENDIAN");
+            endianChoice.add("BIG ENDIAN");
+            typePanel.add(stringLengthField);
+        }
+        else
+        {
+            sizeChoice.add("DEFAULT");
+            endianChoice.add("DEFAULT");
+            endianChoice.setEnabled(false);
+            typePanel.add(new JLabel());
+        }
         sizeChoice.add("64");
         sizeChoice.add("32");
         sizeChoice.add("16");
         sizeChoice.add("8");
-        endianChoice = new Choice();
-        endianChoice.add("NATIVE");
-        if (isH5)
-        {
-            // no byte order setting for HDF4 dataset
-            endianChoice.add("LITTLE ENDIAN");
-            endianChoice.add("BIG ENDIAN");
-        }
-        typePanel.add(new JLabel("Datatype class"));
-        typePanel.add(new JLabel("Size in bits"));
-        typePanel.add(new JLabel("Byte ordering"));
-        typePanel.add(new JLabel(""));
-        typePanel.add(classChoice);
-        typePanel.add(sizeChoice);
-        typePanel.add(endianChoice);
-        typePanel.add(checkUnsigned = new JCheckBox("Unsigned"));
 
         // set DATATSPACE
         JPanel spacePanel = new JPanel();
@@ -293,11 +312,12 @@ implements ActionListener, ItemListener
             int idx = classChoice.getSelectedIndex();
             sizeChoice.select(0);
             endianChoice.select(0);
+            stringLengthField.setEnabled(false);
 
             if (idx == 0)
             {
                 sizeChoice.setEnabled(true);
-                endianChoice.setEnabled(true);
+                endianChoice.setEnabled(isH5);
                 checkUnsigned.setEnabled(true);
 
                 if (sizeChoice.getItemCount() == 3)
@@ -309,7 +329,7 @@ implements ActionListener, ItemListener
             else if (idx == 1)
             {
                 sizeChoice.setEnabled(true);
-                endianChoice.setEnabled(true);
+                endianChoice.setEnabled(isH5);
                 checkUnsigned.setEnabled(false);
 
                 if (sizeChoice.getItemCount() == 5)
@@ -321,8 +341,23 @@ implements ActionListener, ItemListener
             else if (idx == 2)
             {
                 sizeChoice.setEnabled(false);
-                endianChoice.setEnabled(false);
+                endianChoice.setEnabled(isH5);
                 checkUnsigned.setEnabled(true);
+            }
+            else if (idx == 3)
+            {
+                sizeChoice.setEnabled(false);
+                endianChoice.setEnabled(false);
+                checkUnsigned.setEnabled(false);
+                stringLengthField.setEnabled(true);
+                stringLengthField.setText("String length");
+            }
+            else if (idx == 4)
+            {
+                sizeChoice.setEnabled(false);
+                endianChoice.setEnabled(false);
+                checkUnsigned.setEnabled(false);
+                stringLengthField.setEnabled(false);
             }
         }
         else if (source.equals(rankChoice))
@@ -384,57 +419,42 @@ implements ActionListener, ItemListener
         contentPane.add (tmpP, BorderLayout.SOUTH);
 
         JEditorPane infoPane = new JEditorPane();
-        infoPane.setContentType("text/html");
         infoPane.setEditable(false);
         JScrollPane editorScrollPane = new JScrollPane(infoPane);
         contentPane.add (editorScrollPane, BorderLayout.CENTER);
 
-        StringBuffer buff = new StringBuffer();
-        buff.append("<html>");
-        buff.append("<body>");
+        try {
+            URL url= null, url2=null, url3=null;
+            String rootPath = ViewProperties.getViewRoot();
 
-        buff.append("<center><h1>How to Create a New Dataset</h1></center>");
-        buff.append("<p>The following instruction expalins how to create a new ");
-        buff.append("dataset.");
+            try {
+                url = new URL("file:"+rootPath+"/lib/jhdfview.jar");
+            } catch (java.net.MalformedURLException mfu) {;}
 
-        buff.append("<h2>1) Dataset name and path</h2>");
-        buff.append("The name of the new dataset must follow the HDF name ");
-        buff.append("rules (similar to the unix name rules). The name must not ");
-        buff.append("contain any path. For example, /dataset1 or datasets/array1");
-        buff.append("are not accepted.");
-        buff.append("<p>The path is the parent group where the new dataset is ");
-        buff.append("created. The parent group must be an existing group.");
+            try {
+                url2 = new URL("file:"+rootPath+"/");
+            } catch (java.net.MalformedURLException mfu) {;}
 
-        buff.append("<h2>2) Datatype</h2>");
-        buff.append("Datatype includes class, size, byte order and sign. ");
-        buff.append("The tool only supports three datatypes: integer, float and string ");
-        buff.append("The size specifies the size of a single data point in bits ");
-        buff.append("such as 32-bit integer or 64-bit float. \"NATIVE\" means that ");
-        buff.append("the size is defined by the machine. The size of a float is ");
-        buff.append("either 32-bit or 64-bit. There are ");
-        buff.append("three byte order choices: NATIVE, LITTLE ENDIAN and BIG ENDIAN. ");
-        buff.append("\"NATIVE\" byte order means that the byte order is determined ");
-        buff.append("by the machine.");
+            try {
+                url3 = new URL("file:"+rootPath+"/src/");
+            } catch (java.net.MalformedURLException mfu) {;}
 
-        buff.append("<h2>3) Dataspace</h2>");
-        buff.append("Dataspece includes number of dimensions (rank),  ");
-        buff.append("current dimension size and maximum dimension size. ");
-        buff.append("The dimension size is separated by \"x\". For example, ");
-        buff.append("20 x 30 x 5 is 3-D dataset. The currnet size must be greater  ");
-        buff.append("than zero. If the maximum size must be larger than the current ");
-        buff.append("size or zero (maximum size = current size) or -1 (unlimited extent)");
+            URL uu[] = {url, url2, url3};
+            URLClassLoader cl = new URLClassLoader(uu);
+            URL u = cl.findResource("ncsa/hdf/view/NewDatasetHelp.html");
 
-        buff.append("<h2>4) Storage layout and data compression</h2>");
-        buff.append("There are two options for storage layout: continguous or chunked,  ");
-        buff.append("The default storage layout is continguous. If chunked layout. ");
-        buff.append("is selected, the chunck size must be specified. The compression ");
-        buff.append("level is ranged from zero (no compression) to 9 (highest compression). ");
-        buff.append("The compression method is gzip.");
-
-        buff.append("</body>");
-        buff.append("</html>");
-
-        infoPane.setText(buff.toString());
+            infoPane.setPage(u);
+            infoPane.addHyperlinkListener(this);
+        } catch (Exception e) {
+            infoPane.setContentType("text/html");
+            StringBuffer buff = new StringBuffer();
+            buff.append("<html>");
+            buff.append("<body>");
+            buff.append("ERROR: cannot load help information.");
+            buff.append("</body>");
+            buff.append("</html>");
+            infoPane.setText(buff.toString());
+       }
 
         Point l = helpDialog.getOwner().getLocation();
         l.x += 50;
@@ -442,6 +462,25 @@ implements ActionListener, ItemListener
         helpDialog.setLocation(l);
         helpDialog.validate();
         helpDialog.pack();
+    }
+
+    public void hyperlinkUpdate(HyperlinkEvent e)
+    {
+        if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
+        {
+            JEditorPane pane = (JEditorPane) e.getSource();
+
+            if (e instanceof HTMLFrameHyperlinkEvent)
+            {
+                HTMLFrameHyperlinkEvent  evt = (HTMLFrameHyperlinkEvent)e;
+                HTMLDocument doc = (HTMLDocument)pane.getDocument();
+                doc.processHTMLFrameHyperlinkEvent(evt);
+            } else
+            {
+                try { pane.setPage(e.getURL()); }
+                catch (Throwable t)  {}
+            }
+        }
     }
 
     private HObject create()
@@ -494,19 +533,56 @@ implements ActionListener, ItemListener
         }
         else if (idx == 1)
             tclass = Datatype.CLASS_FLOAT;
-        else
+        else if (idx == 2)
         {
             tclass = Datatype.CLASS_CHAR;
             if (checkUnsigned.isSelected())
                 tsign = Datatype.SIGN_NONE;
         }
+        else if (idx == 3)
+        {
+            tclass = Datatype.CLASS_STRING;
+        }
+        else if (idx == 4)
+        {
+            tclass = H5Datatype.CLASS_REFERENCE;
+        }
 
         // set datatype size/order
         idx = sizeChoice.getSelectedIndex();
-        if (idx == 0)
+        if (tclass == Datatype.CLASS_STRING)
+        {
+            int stringLength = 0;
+            try { stringLength = Integer.parseInt(stringLengthField.getText()); }
+            catch (NumberFormatException ex)
+            {
+                stringLength = -1;
+            }
+
+            if (stringLength<=0)
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(this,
+                    "Invalid string length: "+stringLengthField.getText(),
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return null;
+            }
+
+            tsize = stringLength;
+        }
+        else if (tclass == H5Datatype.CLASS_REFERENCE)
+        {
+            tsize = 1;
+        }
+        else if (idx == 0)
+        {
             tsize = Datatype.NATIVE;
+        }
         else
+        {
             tsize = 1 << (idx-1);
+        }
 
         // set order
         idx = endianChoice.getSelectedIndex();
@@ -538,7 +614,7 @@ implements ActionListener, ItemListener
             try { l = Long.parseLong(token); }
             catch (NumberFormatException ex)
             {
-            toolkit.beep();
+                toolkit.beep();
                 JOptionPane.showMessageDialog(this,
                     "Invalid dimension size: "+currentSizeField.getText(),
                     getTitle(),

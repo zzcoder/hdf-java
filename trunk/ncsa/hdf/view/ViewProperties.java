@@ -72,7 +72,7 @@ public class ViewProperties extends Properties
     private static Vector mrf;
 
     /** the root directory of the HDFView */
-    private final String rootDir;
+    private static String rootDir;
 
     private static Icon hdfIcon, h4Icon, h5Icon, largeHdfIcon,
         blankIcon, helpIcon,
@@ -123,6 +123,9 @@ public class ViewProperties extends Properties
             catch (Exception ex) { propertyFile = null; }
         }
     }
+
+    /** returns the root directory where the HDFView is installed. */
+    public static String getViewRoot() { return rootDir; }
 
     public static Icon getFoldercloseIcon() { return foldercloseIcon; }
 

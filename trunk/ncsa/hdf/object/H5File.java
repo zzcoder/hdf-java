@@ -294,7 +294,8 @@ public class H5File extends File implements FileFormat
             HObject pal = findObject(srcDataset.getFileFormat(), oid);
             if (pal != null && pal instanceof Dataset)
             {
-                copy((Dataset)pal, pgroup);
+                try { copy((Dataset)pal, pgroup); }
+                catch (Exception ex2) {}
                 ref_buf = H5.H5Rcreate(
                     fid,
                     path+pal.getName(),
@@ -368,7 +369,7 @@ public class H5File extends File implements FileFormat
         return theNode;
     }
 
-    private void copyAttributes(int src_id, int dst_id)
+    public void copyAttributes(int src_id, int dst_id)
     {
         int aid_src=-1, aid_target=-1, atid=-1, asid=-1, num_attr=-1;
         String[] aName = {""};
@@ -379,12 +380,9 @@ public class H5File extends File implements FileFormat
 
         try {
             num_attr = H5.H5Aget_num_attrs(src_id);
-        } catch (Exception ex) {
-            return;
-        }
+        } catch (Exception ex) { num_attr = -1; }
 
-        if (num_attr < 0)
-            return;
+        if (num_attr < 0) return;
 
         for (int i=0; i<num_attr; i++)
         {
@@ -717,8 +715,20 @@ public class H5File extends File implements FileFormat
             {
                 String strValue = (String)Array.get(attrValue, 0);
                 int size = H5.H5Tget_size(tid);
-                for (int i=strValue.length(); i<size; i++)
-                    strValue += " ";
+
+                if (strValue.length() > size)
+                {
+                    // truncate the extra characters
+                    strValue = strValue.substring(0, size);
+                    Array.set(attrValue, 0, strValue);
+                }
+                else
+                {
+                    // pad space to the unused space
+                    for (int i=strValue.length(); i<size; i++)
+                        strValue += " ";
+                }
+
                 byte[] bval = strValue.getBytes();
                 // add null to the end to get rid of the junks
                 bval[(strValue.length() - 1)] = 0;
