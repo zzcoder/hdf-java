@@ -6,7 +6,7 @@
 HDFVIEW_HOME=@JH45INST@
 export HDFVIEW_HOME
 
-# where Java is installed (requires jdk1.3 or above)
+# where Java is installed (requires jdk1.4.x)
 JAVAPATH=@JAVABIN@
 export JAVAPATH
 
@@ -50,7 +50,7 @@ case  $os_name in
     Linux)
         LD_LIBRARY_PATH=$HDFVIEW_HOME"/lib/linux:"$LD_LIBRARY_PATH
 	;;
-    IRIX)
+    IRIX*)
 	OSREV=`/bin/uname -r`
 	LD_LIBRARY_PATH=$HDFVIEW_HOME"/lib/irix-"$OSREV":"$LD_LIBRARY_PATH 
 	LD_LIBRARYN32_PATH=$HDFVIEW_HOME"/lib/irix-"$OSREV":"$LD_LIBRARY_PATH
