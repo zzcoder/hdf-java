@@ -36,15 +36,6 @@ public class H5ScalarDS extends ScalarDS
      private List attributeList;
 
     /**
-     * The indexed RGB color model with 256 colors.
-     * The palette values are stored in a two-dimensional byte array and arrange
-     * by color components of red, green and blue. palette[][] = byte[3][256],
-     * where, palette[0][], palette[1][] and palette[2][] are the red, green and
-     * blue components respectively.
-     */
-    private byte[][] palette;
-
-    /**
      * Creates an H5ScalarDS object with specific name and path.
      * <p>
      * @param fileFormat the HDF file.
@@ -265,7 +256,8 @@ public class H5ScalarDS extends ScalarDS
         } catch (HDF5Exception ex) {}
         finally
         {
-            try { H5.H5Tclose(tid); } catch (HDF5Exception ex2) {}
+            datatype = tid; // warning the datatype resource is not closed
+            //try { H5.H5Tclose(tid); } catch (HDF5Exception ex2) {}
             try { H5.H5Sclose(sid); } catch (HDF5Exception ex2) {}
             try { H5.H5Dclose(did); } catch (HDF5Exception ex2) {}
         }

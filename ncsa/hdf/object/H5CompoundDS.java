@@ -327,14 +327,28 @@ public class H5CompoundDS extends CompoundDS
                 tid = H5.H5Tget_super(tmptid);
                 try { H5.H5Tclose(tmptid); } catch (HDF5Exception ex) {}
             }
+
             numberOfMembers = H5.H5Tget_nmembers(tid);
             memberNames = new String[numberOfMembers];
             memberTypes = new int[numberOfMembers];
+            memberOrders = new int[numberOfMembers];
             for (int i=0; i<numberOfMembers; i++)
             {
                 int mtid = H5.H5Tget_member_type(tid, i);
                 memberTypes[i] = H5Accessory.toNativeType(mtid);
                 memberNames[i] = H5.H5Tget_member_name(tid, i);
+                memberOrders[i] = 1;
+
+                try { tclass = H5.H5Tget_class(mtid); }
+                catch (HDF5Exception ex ) {}
+
+                if (tclass == HDF5Constants.H5T_ARRAY)
+                {
+                    int tmptid = H5.H5Tget_super(mtid);
+                    memberOrders[i] = (int)(H5.H5Tget_size(mtid)/H5.H5Tget_size(tmptid));
+                    try { H5.H5Tclose(tmptid); } catch (HDF5Exception ex) {}
+                }
+
                 try { H5.H5Tclose(mtid); } catch (HDF5Exception ex2) {}
             }
         } catch (HDF5Exception ex)
@@ -342,6 +356,7 @@ public class H5CompoundDS extends CompoundDS
             numberOfMembers = 0;
             memberNames = null;
             memberTypes = null;
+            memberOrders = null;
         }
         finally
         {

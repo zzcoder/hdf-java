@@ -253,6 +253,7 @@ public class H5File extends File implements FileFormat
                         public boolean isLeaf() { return false; }
                     };
                     pnode.add( node );
+                    pgroup.addToMemberList(g);
 
                     // detect and stop loops
                     // a loop is detected if there exists object with the same
@@ -320,6 +321,7 @@ public class H5File extends File implements FileFormat
 
                     node = new DefaultMutableTreeNode(d);
                     pnode.add( node );
+                    pgroup.addToMemberList(d);
                     break;
                 default:
                     break;
