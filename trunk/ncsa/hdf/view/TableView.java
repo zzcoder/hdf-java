@@ -103,10 +103,7 @@ implements TableObserver
 
         dataset = (Dataset)hobject;
         String fname = new java.io.File(hobject.getFile()).getName();
-        frameTitle = "TableView - "+fname+" - " +hobject.getPath()+hobject.getName();
-
         this.setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
-        this.setTitle(frameTitle);
 
         // create the table and its columnHeader
         if (dataset instanceof ScalarDS)
@@ -162,14 +159,66 @@ implements TableObserver
         contentPane.add(valuePane, BorderLayout.SOUTH);
         contentPane.add (scroller, BorderLayout.CENTER);
 
-        // reset the title for 3D dataset
-        if (dataset.getRank() > 2)
+        // set title
+        StringBuffer sb = new StringBuffer("TableView - ");
+        sb.append(fname);
+        sb.append(" - ");
+        sb.append(hobject.getPath());
+        sb.append(hobject.getName());
+
+        // setup subset information
+        int rank = dataset.getRank();
+        int[] selectedIndex = dataset.getSelectedIndex();
+        long[] count = dataset.getSelectedDims();
+        long[] stride = dataset.getStride();
+        long[] dims = dataset.getDims();
+        long[] start = dataset.getStartDims();
+        int n = Math.min(3, rank);
+
+        if (stride == null)
+            stride = new long[rank];
+        for (int i=0; i<rank; i++)
+            stride[i] = 1;
+
+        sb.append(" [ dims");
+        sb.append(selectedIndex[0]);
+        for (int i=1; i<n; i++)
         {
-            long[] start = dataset.getStartDims();
-            int[] selectedIndex = dataset.getSelectedIndex();
-            long[] dims = dataset.getDims();
+            sb.append("x");
+            sb.append(selectedIndex[i]);
+        }
+        sb.append(", start");
+        sb.append(start[selectedIndex[0]]);
+        for (int i=1; i<n; i++)
+        {
+            sb.append("x");
+            sb.append(start[selectedIndex[i]]);
+        }
+        sb.append(", count");
+        sb.append(count[selectedIndex[0]]);
+        for (int i=1; i<n; i++)
+        {
+            sb.append("x");
+            sb.append(count[selectedIndex[i]]);
+        }
+        sb.append(", stride");
+        sb.append(stride[selectedIndex[0]]);
+        for (int i=1; i<n; i++)
+        {
+            sb.append("x");
+            sb.append(stride[selectedIndex[i]]);
+        }
+        sb.append(" ] ");
+
+        frameTitle = sb.toString();
+        setTitle(frameTitle);
+        if (rank > 2)
+        {
+            // reset the title for 3D dataset
             setTitle( frameTitle+ " - Page "+String.valueOf(start[selectedIndex[2]]+1)+ " of "+dims[selectedIndex[2]]);
         }
+
+        viewer.showStatus(frameTitle);
     }
 
     public void dispose()
