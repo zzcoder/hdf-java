@@ -179,23 +179,29 @@ public class DefaultFileFilter extends FileFilter
      * @see FileFilter#getDescription
      */
     public String getDescription() {
-    if(fullDescription == null) {
-        if(description == null || isExtensionListInDescription()) {
-        fullDescription = description==null ? "(" : description + " (";
-        // build the description from the extension list
-        Enumeration extensions = filters.keys();
-        if(extensions != null) {
-            fullDescription += "." + (String) extensions.nextElement();
-            while (extensions.hasMoreElements()) {
-            fullDescription += ", " + (String) extensions.nextElement();
+        if(fullDescription == null) {
+            if(description == null || isExtensionListInDescription()) {
+                fullDescription = description==null ? "(" : description + " (";
+                // build the description from the extension list
+                Enumeration extensions = filters.keys();
+                if(extensions != null) {
+
+                    if (!extensions.hasMoreElements()) {
+                        fullDescription = null;
+                        return null;
+                    }
+
+                    fullDescription += "." + (String) extensions.nextElement();
+                    while (extensions.hasMoreElements()) {
+                        fullDescription += ", " + (String) extensions.nextElement();
+                    }
+                }
+                fullDescription += ")";
+            } else {
+                fullDescription = description;
             }
         }
-        fullDescription += ")";
-        } else {
-        fullDescription = description;
-        }
-    }
-    return fullDescription;
+        return fullDescription;
     }
 
     /**
@@ -252,6 +258,7 @@ public class DefaultFileFilter extends FileFilter
             return FILE_FILTER_HDF;
         }
 
+        // update extensions
         h4FileExtension = ViewProperties.getH4Extension();
         h5FileExtension = ViewProperties.getH5Extension();
 
@@ -260,12 +267,12 @@ public class DefaultFileFilter extends FileFilter
 
         if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4) != null)
         {
-            filter.addExtension(ViewProperties.getH4Extension());
+            filter.addExtension(h4FileExtension);
         }
 
         if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) != null)
         {
-            filter.addExtension(ViewProperties.getH5Extension());
+            filter.addExtension(h5FileExtension);
         }
 
         return (FILE_FILTER_HDF = filter);

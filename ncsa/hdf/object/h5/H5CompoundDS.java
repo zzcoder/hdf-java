@@ -224,13 +224,17 @@ public class H5CompoundDS extends CompoundDS
             mspace = H5.H5Screate_simple(1, lsize, null);
 
             // set the rectangle selection
-            H5.H5Sselect_hyperslab(
-                fspace,
-                HDF5Constants.H5S_SELECT_SET,
-                startDims,
-                selectedStride,
-                selectedDims,
-                null );   // set block to 1
+            // don't do hyber selection for one point dataset
+            if (rank*dims[0] > 1)
+            {
+                H5.H5Sselect_hyperslab(
+                    fspace,
+                    HDF5Constants.H5S_SELECT_SET,
+                    startDims,
+                    selectedStride,
+                    selectedDims,
+                    null );   // set block to 1
+            }
 
             // read each of member data into a byte array, then extract
             // it into its type such, int, long, float, etc.

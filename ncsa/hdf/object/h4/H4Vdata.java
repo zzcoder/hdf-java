@@ -288,8 +288,11 @@ public class H4Vdata extends CompoundDS
     // Implementing DataFormat
     public void write(Object buf) throws HDFException
     {
-// HDF4 bug: cannot write field by field. Write a single field will mess up the whole
-// vdata.
+        //For writing to a vdata, VSsetfields can only be called once, to set
+        //up the fields in a vdata. Once the vdata fields are set, they may
+        //not be changed. Thus, to update some fields of a record after the
+        //first write, the user must read all the fields to a buffer, update
+        //the buffer, then write the entire record back to the vdata.
 /*
         if (buf == null || numberOfMembers <= 0 || !(buf instanceof List))
             return; // no data to write
@@ -307,9 +310,10 @@ public class H4Vdata extends CompoundDS
             if (!isMemberSelected[i])
                 continue;
 
+            HDFLibrary.VSsetfields(vid, memberNames[i]);
+
             try {
                 // Specify the fields to be accessed
-                HDFLibrary.VSsetfields(vid, memberNames[i]);
 
                 // moves the access pointer to the start position
                 HDFLibrary.VSseek(vid, (int)startDims[0]);
@@ -331,17 +335,13 @@ public class H4Vdata extends CompoundDS
                 member_data = Dataset.convertToUnsignedC(member_data);
             }
 
-//#################################bug in the library
-System.out.println("@@@@@@ vid = "+vid);
 
             int interlace = HDFConstants.NO_INTERLACE;
             try {
                 int write_num = HDFLibrary.VSwrite(
                     vid, member_data, (int)selectedDims[0], interlace);
-System.out.println(write_num);
             } catch (HDFException ex) {}
         } // for (int i=0; i<numberOfMembers; i++)
-System.out.println("######################### end of write H4Vdata ");
 
         close(vid);
 */
@@ -547,57 +547,4 @@ System.out.println("######################### end of write H4Vdata ");
     {
         return memberOrders;
     }
-
-    /**
-     *  convert an array of raw data of one Vdata field into a byte array.
-     *
-     *  @param data  the raw vdata
-     *  @return  the byte array
-     *
-     *  Input data is the array of raw data such as int[], float[], string[], etc;
-     *
-     *  The output is a single array of bytes with all the records
-     */
-    private byte[] toByte(int member_idx, Object member_data)
-    {
-        byte[] byteData = null;
-
-        int type = memberTypes[member_idx];
-        if ((type & HDFConstants.DFNT_LITEND) != 0) {
-            type -= HDFConstants.DFNT_LITEND;
-        }
-
-        switch(type)
-        {
-            case HDFConstants.DFNT_CHAR:
-            case HDFConstants.DFNT_UCHAR8:
-            case HDFConstants.DFNT_UINT8:
-            case HDFConstants.DFNT_INT8:
-                byteData = (byte[])member_data;
-                break;
-            case HDFConstants.DFNT_INT16:
-            case HDFConstants.DFNT_UINT16:
-                byteData = HDFNativeData.shortToByte(0, Array.getLength(member_data), (short[])member_data);
-                break;
-            case HDFConstants.DFNT_INT32:
-            case HDFConstants.DFNT_UINT32:
-                byteData = HDFNativeData.intToByte(0, Array.getLength(member_data), (int[])member_data);
-                break;
-            case HDFConstants.DFNT_INT64:
-            case HDFConstants.DFNT_UINT64:
-                byteData = HDFNativeData.longToByte(0, Array.getLength(member_data), (long[])member_data);
-                break;
-            case HDFConstants.DFNT_FLOAT:
-            //case HDFConstants.DFNT_FLOAT32:
-                byteData = HDFNativeData.floatToByte(0, Array.getLength(member_data), (float[])member_data);
-                break;
-            case HDFConstants.DFNT_DOUBLE:
-            //case HDFConstants.DFNT_FLOAT64:
-                byteData = HDFNativeData.doubleToByte(0, Array.getLength(member_data), (double[])member_data);
-                break;
-        }
-
-        return byteData;
-    }
-
 }
