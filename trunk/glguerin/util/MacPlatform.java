@@ -36,76 +36,76 @@ package glguerin.util;
 public class MacPlatform
 {
 
-	/**
-	** Determine whether the current platform is the Mac OS or not.
-	** This method compares the "os.name" property's value to
-	** the String "Mac OS" using a case-insensitive comparison.  
-	** Upon matching, it returns true, else false.
-	** Note that this uses a completely different mechanism than isMRJ().
-	**<p>
-	** I don't know what Mac OS X Server returns for "os.name" when 
-	** running outside of the Blue Box.  Nor do I know what Mac OS X Consumer will return.
-	**
-	** @return  True if this platform is the Mac OS, false if not.
-	*/
-	public static boolean
-	isMacOS()
-	{  return ( "Mac OS".equalsIgnoreCase( System.getProperty( "os.name" ) ) );  }
+    /**
+    ** Determine whether the current platform is the Mac OS or not.
+    ** This method compares the "os.name" property's value to
+    ** the String "Mac OS" using a case-insensitive comparison.
+    ** Upon matching, it returns true, else false.
+    ** Note that this uses a completely different mechanism than isMRJ().
+    **<p>
+    ** I don't know what Mac OS X Server returns for "os.name" when
+    ** running outside of the Blue Box.  Nor do I know what Mac OS X Consumer will return.
+    **
+    ** @return  True if this platform is the Mac OS, false if not.
+    */
+    public static boolean
+    isMacOS()
+    {  return ( "Mac OS".equalsIgnoreCase( System.getProperty( "os.name" ) ) );  }
 
 
-	/**
-	** Return true on MRJ platform, false on others, by determining
-	** whether the platform supports JDirect or not.
-	*/
-	public static boolean
-	isMRJ()
-	{  return ( getJDirectVersion() != 0 );  }
+    /**
+    ** Return true on MRJ platform, false on others, by determining
+    ** whether the platform supports JDirect or not.
+    */
+    public static boolean
+    isMRJ()
+    {  return ( getJDirectVersion() != 0 );  }
 
 
-	/**
-	** Determine whether JDirect 1 or 2 is available, or not at all.
-	** When JDirect 2 is available, you should use it.  JDirect 1 is currently available
-	** whenever JDirect 2 is, but Apple may remove JDirect 1 in the future.
-	** When only JDirect 1 is available, you should use it.
-	** When JDirect is unavailable in any form, e.g. on all platforms other than MRJ,
-	** zero is returned.
-	** Note that the Classes looked for are not instantiated -- we only need to know
-	** whether the Class itself is present and usable.
-	**<p>
-	** You can also use the returned value as an indication of MRJ-ness or not.
-	** Any non-zero value means "MRJ", while zero means "not MRJ".
-	** Indeed, isMRJ() does exactly that.
-	**<p>
-	** Arguably, <b>ANY</b> Throwable thrown when trying to load a Class
-	** should be caught and result in moving to the next trial Class.
-	** I chose not to do this because someone might want a SecurityException to
-	** be caught at a higher level, and I didn't want to preclude that.
-	**
-	** @see #isMRJ()
-	*/
-	public static int
-	getJDirectVersion()
-	{
-		// JDirect 2 is preferred over JDirect 1, when both are available.
-		try
-		{
-			Class.forName( "com.apple.mrj.jdirect.JDirectLinker" );
-			return ( 2 );
-		}
-		catch ( ClassNotFoundException why )
-		{  /* FALL THROUGH */  }
+    /**
+    ** Determine whether JDirect 1 or 2 is available, or not at all.
+    ** When JDirect 2 is available, you should use it.  JDirect 1 is currently available
+    ** whenever JDirect 2 is, but Apple may remove JDirect 1 in the future.
+    ** When only JDirect 1 is available, you should use it.
+    ** When JDirect is unavailable in any form, e.g. on all platforms other than MRJ,
+    ** zero is returned.
+    ** Note that the Classes looked for are not instantiated -- we only need to know
+    ** whether the Class itself is present and usable.
+    **<p>
+    ** You can also use the returned value as an indication of MRJ-ness or not.
+    ** Any non-zero value means "MRJ", while zero means "not MRJ".
+    ** Indeed, isMRJ() does exactly that.
+    **<p>
+    ** Arguably, <b>ANY</b> Throwable thrown when trying to load a Class
+    ** should be caught and result in moving to the next trial Class.
+    ** I chose not to do this because someone might want a SecurityException to
+    ** be caught at a higher level, and I didn't want to preclude that.
+    **
+    ** @see #isMRJ()
+    */
+    public static int
+    getJDirectVersion()
+    {
+        // JDirect 2 is preferred over JDirect 1, when both are available.
+        try
+        {
+            Class.forName( "com.apple.mrj.jdirect.JDirectLinker" );
+            return ( 2 );
+        }
+        catch ( ClassNotFoundException why )
+        {  /* FALL THROUGH */  }
 
-		try
-		{
-			// A JDirect 1 class...
-			Class.forName( "com.apple.memory.MemoryObject" );
-			return ( 1 );
-		}
-		catch ( ClassNotFoundException why )
-		{  /* FALL THROUGH */  }
+        try
+        {
+            // A JDirect 1 class...
+            Class.forName( "com.apple.memory.MemoryObject" );
+            return ( 1 );
+        }
+        catch ( ClassNotFoundException why )
+        {  /* FALL THROUGH */  }
 
-		return ( 0 );
-	}
+        return ( 0 );
+    }
 
 }
 

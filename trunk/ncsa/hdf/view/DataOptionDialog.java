@@ -67,7 +67,7 @@ implements ActionListener, ItemListener
 
     private int currentIndex[];
 
-    private JRadioButton spreadsheetButton, imageButton, charButton, transposeButton;
+    private JRadioButton spreadsheetButton, imageButton, charButton, swapOnlyButton;
 
     private JComboBox choiceTextView, choiceTableView, choiceImageView, choicePalette, choices[];
 
@@ -90,6 +90,7 @@ implements ActionListener, ItemListener
     private final SubsetNavigator navigator;
 
     private int numberOfPalettes;
+    private boolean isTransposed = false;
 
     /** JComboBox.setSelectedItem() or setSelectedIndex() always fires
      * action event. If you call setSelectedItem() or setSelectedIndex()
@@ -169,14 +170,14 @@ implements ActionListener, ItemListener
         charButton = new JRadioButton("Show As Char", false);
         charButton.setMnemonic(KeyEvent.VK_C);
         charButton.setEnabled(false);
-        transposeButton = new JRadioButton("Transpose", false);
-        transposeButton.setMnemonic(KeyEvent.VK_T);
+        swapOnlyButton = new JRadioButton("Swap Only", false);
+        swapOnlyButton.setMnemonic(KeyEvent.VK_T);
 
         // layout the components
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5, 5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        contentPane.setPreferredSize(new Dimension(700, 280));
+        contentPane.setPreferredSize(new Dimension(700, 300));
 
         JPanel centerP = new JPanel();
         centerP.setLayout(new BorderLayout());
@@ -225,7 +226,7 @@ implements ActionListener, ItemListener
 
                 centerP.add(txtviewP, BorderLayout.SOUTH);
             } else {
-                contentPane.setPreferredSize(new Dimension(700, 355));
+                contentPane.setPreferredSize(new Dimension(800, 360));
                 if (rank > 1) centerP.add(navigatorP, BorderLayout.WEST);
 
                 // setup GUI components for the display options: table or image
@@ -242,7 +243,7 @@ implements ActionListener, ItemListener
                 sheetP.setLayout(new GridLayout(1,3, 5, 5));
                 sheetP.add(spreadsheetButton);
                 sheetP.add(charButton);
-                sheetP.add(transposeButton);
+                //sheetP.add(swapOnlyButton);
 
                 // add tableview selection
                 JPanel tviewP = new JPanel();
@@ -291,7 +292,7 @@ implements ActionListener, ItemListener
         contentPane.add(centerP, BorderLayout.CENTER);
 
         selectionP.add(new JLabel(" "));
-        selectionP.add(new JLabel(""));
+        selectionP.add(swapOnlyButton);
         JLabel label = new JLabel("Start:");
         selectionP.add(label);
         label = new JLabel("End: ");
@@ -312,11 +313,17 @@ implements ActionListener, ItemListener
             new JLabel("Depth", JLabel.RIGHT),
             };
 
+        String[] dimNames = dataset.getDimNames();
          for (int i=0; i<3; i++)
         {
             choices[i] = new JComboBox();
             choices[i].addItemListener(this);
-            for (int j=0; j<rank; j++) choices[i].addItem("dim "+j);
+            for (int j=0; j<rank; j++) {
+                if (dimNames == null)
+                    choices[i].addItem("dim "+j);
+                else
+                    choices[i].addItem(dimNames[j]);
+            }
             maxLabels[i] = new JLabel("1");
             startFields[i] = new JTextField("1");
             endFields[i] = new JTextField("1");
@@ -505,7 +512,7 @@ implements ActionListener, ItemListener
                 charButton.setSelected(false);
             }
 
-            transposeButton.setEnabled(spreadsheetButton.isSelected());
+            //swapOnlyButton.setEnabled(spreadsheetButton.isSelected());
         }
         else if (source instanceof JComboBox)
         {
@@ -664,7 +671,7 @@ implements ActionListener, ItemListener
                 choices[2].setEnabled(true);
                 startFields[2].setEnabled(true);
                 startFields[2].setText(String.valueOf(start[selectedIndex[2]]+1));
-                endFields[2].setEnabled(!isText);
+                //endFields[2].setEnabled(!isText);
                 endFields[2].setText(startFields[2].getText());
             }
         }
@@ -805,25 +812,26 @@ implements ActionListener, ItemListener
         {
             selectedIndex[i] = sIndex[i];
             start[selectedIndex[i]] = n0[i]-1;
-            if (i<2)
-            {
+            if (i<2) {
                 selected[selectedIndex[i]] = (int)((n1[i]-n0[i])/n2[i]+1);
                 stride[selectedIndex[i]] = n2[i];
             }
         }
 
-        if (rank > 1 && isText)
-        {
+        if (rank > 1 && isText) {
             selected[selectedIndex[1]] = 1;
             stride[selectedIndex[1]] = 1;
-        }
-
-        if (rank >2 &&
+        } else if (rank >2 &&
             isTrueColorImage &&
-            imageButton.isSelected())
-        {
+            imageButton.isSelected()) {
                 start[selectedIndex[2]] = 0;
                 selected[selectedIndex[2]] = 3;
+        } else if (rank >1 && selectedIndex[0]>selectedIndex[1] &&
+                   !swapOnlyButton.isSelected() && !(dataset instanceof CompoundDS)) {
+            // transpose data
+            isTransposed = true;
+            selectedIndex[0] = sIndex[1];
+            selectedIndex[1] = sIndex[0];
         }
 
         //clear the old data
@@ -933,8 +941,20 @@ implements ActionListener, ItemListener
                 else
                 {
                     byte[][] imagePalette = sd.getPalette();
-                    if (imagePalette == null)
-                        imagePalette = Tools.createGrayPalette();
+                    if (imagePalette == null) imagePalette = Tools.createGrayPalette();
+
+                    if (rank >1 && selectedIndex[0]>selectedIndex[1] && !swapOnlyButton.isSelected()) {
+                        // transpose data
+                        int n = bData.length;
+                        byte[] bData2 = new byte[n];
+                        System.arraycopy(bData, 0, bData2, 0, n);
+                        for (int i=0; i<h; i++) {
+                            for (int j=0; j<w; j++) {
+                                bData[i*w+j] = bData2[j*h+i];
+                            }
+
+                        }
+                    }
                     preImage = Tools.createIndexedImage(bData, imagePalette, w, h);
                 }
             }
@@ -1057,7 +1077,7 @@ implements ActionListener, ItemListener
 
     public boolean isDisplayTypeChar() { return charButton.isSelected(); }
 
-    public boolean isTransposed() { return transposeButton.isSelected(); }
+    public boolean isTransposed() { return isTransposed; }
 
     /** return the name of selected dataview*/
     public String getDataViewName() {
@@ -1073,5 +1093,3 @@ implements ActionListener, ItemListener
         return viewName;
     }
 }
-
-
