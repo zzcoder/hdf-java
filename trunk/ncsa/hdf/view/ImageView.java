@@ -147,6 +147,7 @@ implements ImageObserver
     public ImageView(ViewManager theView)
     {
         super();
+
         setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
         setFrameIcon(ViewProperties.getImageIcon());
 
@@ -200,6 +201,9 @@ implements ImageObserver
         sb.append(hobject.getPath());
         sb.append(hobject.getName());
 
+        frameTitle = sb.toString();
+        setTitle(frameTitle);
+
         // setup subset information
         int rank = dataset.getRank();
         int[] selectedIndex = dataset.getSelectedIndex();
@@ -239,11 +243,7 @@ implements ImageObserver
         }
         sb.append(" ] ");
 
-        frameTitle = sb.toString();
-        setTitle(frameTitle);
-        //if (rank > 2) setTitle( frameTitle+ " - Page "+String.valueOf(start[selectedIndex[2]]+1)+ " of "+dims[selectedIndex[2]]);
-
-        viewer.showStatus(frameTitle);
+        viewer.showStatus(sb.toString());
     }
 
     public void dispose()
@@ -643,8 +643,7 @@ implements ImageObserver
     public void setValueVisible(boolean b)
     {
         valueField.setVisible(b);
-        updateUI();
-        // bug !!! on Windows. gives NullPointerException at
+        //updateUI(); bug !!! on Windows. gives NullPointerException at
         //javax.swing.plaf.basic.BasicInternalFrameUI$BorderListener.mousePressed(BasicInternalFrameUI.java:693)
     }
 

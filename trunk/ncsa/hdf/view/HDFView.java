@@ -152,8 +152,8 @@ implements ViewManager, ActionListener, HyperlinkListener
     public HDFView(String root, String workDir, String filename)
     {
         super("HDFView");
-
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
         String lf = UIManager.getSystemLookAndFeelClassName();
         if ( lf != null )
         {
@@ -181,7 +181,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         // load the view properties
         ViewProperties.loadIcons(rootDir);
         props = new ViewProperties(rootDir);
-        try { props.load(); } catch (Exception ex){}
+        try { props.load(); } catch (Exception ex){System.out.println(ex);}
         recentFiles = props.getMRF();
 
         // initialize GUI components
@@ -267,10 +267,20 @@ implements ViewManager, ActionListener, HyperlinkListener
                 }
 
                 HDFView.setEnabled(d3GUIs, is3D);
+
+                // disable object menu items. Working on the data content
+                Component[] menuItems = objectMenu.getMenuComponents();
+                for (int i=0; i<menuItems.length; i++)
+                {
+                    menuItems[i].setEnabled(false);
+                }
+
             } //public void moveToFront(Component c)
         };
 
-        contentPane.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
+        //        contentPane.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
+        // BUG on JDK1.4.1_01. The OUTLINE_DRAG_MODE flashes window and cause
+        // slow display of the window as the window is moved. OK for JDK1.3.1
         treeView = new TreeView(this);
         windowMenu = new JMenu( "Window" );
         objectMenu = new JMenu( "Object" );
@@ -386,16 +396,27 @@ implements ViewManager, ActionListener, HyperlinkListener
         selectedObject = (HObject)data;
 
         boolean noSelect = (selectedObject == null);
-        if (!noSelect)
-        {
-            currentFile = selectedObject.getFile();
-            setTitle("HDFView - "+currentFile);
-        }
 
         Component[] menuItems = objectMenu.getMenuComponents();
         for (int i=0; i<menuItems.length; i++)
         {
             menuItems[i].setEnabled(!noSelect);
+        }
+
+        if (!noSelect)
+        {
+            currentFile = selectedObject.getFile();
+            setTitle("HDFView - "+currentFile);
+            setEnabled(editGUIs, !selectedObject.getFileFormat().isReadOnly());
+            setEnabled(imageGUIs, false);
+            setEnabled(tableGUIs, false);
+        }
+
+        JInternalFrame frame = contentPane.getSelectedFrame();
+        if (frame != null)
+        {
+            try { frame.setSelected(false); }
+            catch (Exception ex) {}
         }
     }
 
@@ -434,7 +455,12 @@ implements ViewManager, ActionListener, HyperlinkListener
         {
             if (theFrame != null)
             {
-                theFrame.show();
+                theFrame.toFront();
+
+                try {
+                    theFrame.setSelected(true);
+                } catch (java.beans.PropertyVetoException e) {}
+
                 return;
             }
         }
@@ -2103,7 +2129,22 @@ implements ViewManager, ActionListener, HyperlinkListener
         frame.setClosable(true);
         frame.setResizable(true);
         //try { frame.setMaximum(true); } catch (Exception ex) {}
-        frame.setSize(contentPane.getSize());
+        Dimension d = contentPane.getSize();
+        frame.setSize(d.width-60, d.height-60);
+
+        JComponent comp = contentPane.getSelectedFrame();
+        if (comp != null)
+        {
+            java.awt.Point p = comp.getLocation();
+            int x0 = p.x+15;
+            int y0 = p.y+15;
+            if (y0 >60 || x0 >60)
+            {
+                x0 = 0;
+                y0 = 0;
+            }
+            frame.setLocation(x0, y0);
+        }
 
         // data windows are identified by full path the file id
         frame.setName(cmd);
