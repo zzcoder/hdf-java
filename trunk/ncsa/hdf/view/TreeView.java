@@ -199,10 +199,11 @@ implements ActionListener
         fileRoot = (MutableTreeNode)fileFormat.getRootNode();
         if (fileRoot != null)
         {
-            int[] childIndices = {root.getChildCount()};
-            ((DefaultMutableTreeNode)root).add(fileRoot);
-            treeModel.nodesWereInserted(root, childIndices);
-            tree.expandRow(tree.getRowCount()-1);
+            insertNode(fileRoot, root);
+
+            int currentRowCount = tree.getRowCount();
+            if (currentRowCount>0) tree.expandRow(tree.getRowCount()-1);
+
             fileList.add(fileFormat);
             viewer.showStatus(filename);
         }

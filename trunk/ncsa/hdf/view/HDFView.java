@@ -282,6 +282,8 @@ implements ViewManager, HyperlinkListener
                 {
                     menuItems[i].setEnabled(false);
                 }
+                // deselect tree node
+                treeView.clearSelection();
 
             } //public void moveToFront(Component c)
         };
@@ -326,7 +328,7 @@ implements ViewManager, HyperlinkListener
 
                 try {
                     treeView.openFile(filename, fileAccessID);
-                    updateRecentFiles(filename);
+                     try { updateRecentFiles(filename); } catch (Exception ex) {}
                 } catch (Exception ex)
                 {
                     showStatus(ex.toString());
@@ -500,7 +502,7 @@ implements ViewManager, HyperlinkListener
             catch (Throwable ex) {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(this,
-                    ex,
+                    ex.getMessage(),
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
                 return;
@@ -561,7 +563,6 @@ implements ViewManager, HyperlinkListener
             fchooser.setFileFilter(DefaultFileFilter.getFileFilterHDF());
 
             int returnVal = fchooser.showOpenDialog(this);
-
             if(returnVal != JFileChooser.APPROVE_OPTION)
                 return;
 
@@ -578,13 +579,14 @@ implements ViewManager, HyperlinkListener
 
             try {
                 treeView.openFile(filename, fileAccessID);
-                updateRecentFiles(filename);
+                try {  try { updateRecentFiles(filename); } catch (Exception ex) {} } catch (Exception ex) {}
             } catch (Exception ex)
             {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
                     this,
-                    "Failed to open file "+filename+"\n"+ex,
+                    "Failed to open file "+filename+"\n"+ex.getMessage()+
+                    "\n\nTry open file read-only",
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             }
@@ -594,8 +596,9 @@ implements ViewManager, HyperlinkListener
             fileAccessID = FileFormat.READ;
 
             JFileChooser fchooser = new JFileChooser(currentDir);
-            int returnVal = fchooser.showOpenDialog(this);
+            fchooser.setFileFilter(DefaultFileFilter.getFileFilterHDF());
 
+            int returnVal = fchooser.showOpenDialog(this);
             if(returnVal != JFileChooser.APPROVE_OPTION)
                 return;
 
@@ -612,13 +615,13 @@ implements ViewManager, HyperlinkListener
 
             try {
                 treeView.openFile(filename, fileAccessID);
-                updateRecentFiles(filename);
+                try {  try { updateRecentFiles(filename); } catch (Exception ex) {} } catch (Exception ex) {}
             } catch (Exception ex)
             {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
                     this,
-                    "Failed to open file "+filename+"\n"+ex,
+                    "Failed to open file "+filename+"\n"+ex.getMessage(),
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             }
@@ -638,13 +641,13 @@ implements ViewManager, HyperlinkListener
             String filename = dialog.getFile();
             try {
                 treeView.openFile(filename, fileAccessID);
-                updateRecentFiles(filename);
+                try {  try { updateRecentFiles(filename); } catch (Exception ex) {} } catch (Exception ex) {}
             } catch (Exception ex)
             {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
                     this,
-                    ex+"\n"+filename,
+                    ex.getMessage()+"\n"+filename,
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             }
@@ -664,13 +667,13 @@ implements ViewManager, HyperlinkListener
             String filename = dialog.getFile();
             try {
                 treeView.openFile(filename, fileAccessID);
-                updateRecentFiles(filename);
+                 try { updateRecentFiles(filename); } catch (Exception ex) {}
             } catch (Exception ex)
             {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
                     this,
-                    ex+"\n"+filename,
+                    ex.getMessage()+"\n"+filename,
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             }
@@ -710,13 +713,13 @@ implements ViewManager, HyperlinkListener
             FileFormat dstFile = null;
             try {
                 dstFile = treeView.openFile(filename, fileAccessID);
-                updateRecentFiles(filename);
+                 try { updateRecentFiles(filename); } catch (Exception ex) {}
             } catch (Exception ex)
             {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
                     this,
-                    ex+"\n"+filename,
+                    ex.getMessage()+"\n"+filename,
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             }
@@ -732,13 +735,14 @@ implements ViewManager, HyperlinkListener
             String filename = mi.getName();
             try {
                 treeView.openFile(filename, fileAccessID);
-                updateRecentFiles(filename);
+                 try { updateRecentFiles(filename); } catch (Exception ex) {}
             } catch (Exception ex)
             {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
                     this,
-                    "Failed to open file "+filename+"\n"+ex,
+                    "Failed to open file "+filename+"\n"+ex.getMessage()+
+                    "\n\nTry open file read-only",
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             }
@@ -804,7 +808,7 @@ implements ViewManager, HyperlinkListener
             {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(this,
-                    err,
+                    err.getMessage(),
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
                 return;
@@ -817,7 +821,7 @@ implements ViewManager, HyperlinkListener
             {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(this,
-                    err,
+                    err.getMessage(),
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
                 return;
@@ -862,7 +866,7 @@ implements ViewManager, HyperlinkListener
                 catch (Exception ex)
                 {
                     toolkit.beep();
-                    JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
                 } finally
                 {
                     treeView.setSelectionPaths(paths);
@@ -945,7 +949,7 @@ implements ViewManager, HyperlinkListener
                 catch (Exception ex)
                 {
                     toolkit.beep();
-                    JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
@@ -963,7 +967,7 @@ implements ViewManager, HyperlinkListener
                 catch (Exception ex)
                 {
                     toolkit.beep();
-                    JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
@@ -976,7 +980,7 @@ implements ViewManager, HyperlinkListener
                 catch (Exception ex)
                 {
                     toolkit.beep();
-                    JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
@@ -989,7 +993,7 @@ implements ViewManager, HyperlinkListener
                 catch (Exception ex)
                 {
                     toolkit.beep();
-                    JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
@@ -1012,7 +1016,7 @@ implements ViewManager, HyperlinkListener
                 catch (Exception ex)
                 {
                     toolkit.beep();
-                    JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
                 } finally
                 {
                     treeView.setSelectionPaths(paths);
@@ -1240,7 +1244,7 @@ implements ViewManager, HyperlinkListener
 
                 try {
                     treeView.openFile(filename, FileFormat.WRITE);
-                    updateRecentFiles(filename);
+                     try { updateRecentFiles(filename); } catch (Exception ex) {}
                 } catch (Exception ex)
                 {
                     showStatus(ex.toString());
@@ -2140,17 +2144,7 @@ implements ViewManager, HyperlinkListener
         if (recentFiles.contains(newFile))
             recentFiles.remove(newFile);
 
-        // add the new file to the top.
-        int size = recentFiles.size();
-        if (size >= ViewProperties.MAX_RECENT_FILES)
-            size = ViewProperties.MAX_RECENT_FILES;
-
-        for (int i=1; i<size; i++)
-        {
-            recentFiles.set(size-i, recentFiles.get(size-i-1));
-        }
-        recentFiles.set(0, newFile);
-
+        recentFiles.insertElementAt(newFile, 0);
         JMenuItem fileItem=null, theItem=null;
         int n = fileMenu.getItemCount();
         for (int i=0; i<n; i++)
@@ -2185,6 +2179,7 @@ implements ViewManager, HyperlinkListener
         }
 
         // rearrange the menu items to put the most recent on the top
+        int size = recentFiles.size()-1;
         for (int i=0; i<size-1; i++)
         {
             fileMenu.add(fileMenu.getItem(n-i-2), n-i-1);
@@ -2371,7 +2366,7 @@ implements ViewManager, HyperlinkListener
             toolkit.beep();
             JOptionPane.showMessageDialog(
             this,
-            ex+"\n"+filename,
+            ex.getMessage()+"\n"+filename,
             getTitle(),
             JOptionPane.ERROR_MESSAGE);
             return;
@@ -2386,7 +2381,7 @@ implements ViewManager, HyperlinkListener
             toolkit.beep();
             JOptionPane.showMessageDialog(
             this,
-            ex+"\n"+filename,
+            ex.getMessage()+"\n"+filename,
             getTitle(),
             JOptionPane.ERROR_MESSAGE);
             return;
@@ -2410,13 +2405,13 @@ implements ViewManager, HyperlinkListener
 
         try {
             treeView.openFile(filename, fileAccessID);
-            updateRecentFiles(filename);
+             try { updateRecentFiles(filename); } catch (Exception ex) {}
         } catch (Exception ex)
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(
             this,
-            ex+"\n"+filename,
+            ex.getMessage()+"\n"+filename,
             getTitle(),
             JOptionPane.ERROR_MESSAGE);
             return;
@@ -2463,13 +2458,13 @@ implements ViewManager, HyperlinkListener
         FileFormat newFile = null;
         try {
             newFile = treeView.openFile(filename, fileAccessID);
-            updateRecentFiles(filename);
+             try { updateRecentFiles(filename); } catch (Exception ex) {}
         } catch (Exception ex)
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(
             this,
-            ex+"\n"+filename,
+            ex.getMessage()+"\n"+filename,
             getTitle(),
             JOptionPane.ERROR_MESSAGE);
             return;
@@ -2654,7 +2649,7 @@ implements ViewManager, HyperlinkListener
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
                 this,
-                ex,
+                ex.getMessage(),
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
                 //newNode = null;
@@ -2741,7 +2736,7 @@ implements ViewManager, HyperlinkListener
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
                     this,
-                    ex,
+                    ex.getMessage(),
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             }

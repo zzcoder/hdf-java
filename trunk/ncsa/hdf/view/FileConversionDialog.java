@@ -346,7 +346,7 @@ implements ActionListener
             converted = false;
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                ex,
+                ex.getMessage(),
                 this.getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             return false;

@@ -199,7 +199,7 @@ implements ActionListener, ListSelectionListener
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                ex,
+                ex.getMessage(),
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             return false;
