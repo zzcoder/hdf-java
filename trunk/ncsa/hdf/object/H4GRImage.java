@@ -58,21 +58,6 @@ public class H4GRImage extends ScalarDS
     private int ncomp;
 
     /**
-     * The data type of this data set.
-     */
-    private int datatype;
-
-    /**
-     * The indexed RGB color model with 256 colors.
-     * <p>
-     * The palette values are stored in a two-dimensional byte array and arrange
-     * by color components of red, green and blue. palette[][] = byte[3][256],
-     * where, palette[0][], palette[1][] and palette[2][] are the red, green and
-     * blue components respectively.
-     */
-    private byte[][] palette;
-
-    /**
      * Creates a H4GRImage object with specific name, path, and object ID.
      * <p>
      * @param fileFormat the HDF file.
@@ -234,11 +219,13 @@ public class H4GRImage extends ScalarDS
         int[] grInfo = new int[4]; //ncomp, data_type, interlace and num_attrs
         int[] idims = new int[2];
         try {
+System.out.println("************ "+datatype);
             HDFLibrary.GRgetiminfo(id, objName, grInfo, idims);
             // mask off the litend bit
 
             grInfo[1] = grInfo[1] & (~HDFConstants.DFNT_LITEND);
             datatype = grInfo[1];
+System.out.println("************ "+datatype);
         } catch (HDFException ex) {}
         finally {
             close(id);

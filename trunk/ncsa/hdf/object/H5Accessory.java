@@ -224,6 +224,7 @@ public final class H5Accessory
 
         return data;
     }
+
     /**
      * Return the HDF5 native datatype based on the HDF5 datatype on disk
      * <p>
@@ -296,6 +297,97 @@ public final class H5Accessory
         }
 
         return native_type;
+    }
+
+    /**
+     *  Returns the short description of datatype.
+     *  <p>
+     *  @param tid  the data type.
+     */
+    public static final String getDatatypeDescription(int tid)
+    {
+        String description = "Unknown";
+
+        // data type information
+        int typeClass=-1, typeSize=-1, typeSign=-1;
+
+        try
+        {
+            typeClass = H5.H5Tget_class(tid);
+            typeSize = H5.H5Tget_size(tid);
+            typeSign = H5.H5Tget_sign(tid);
+        } catch (Exception ex) {}
+
+        switch (typeClass)
+        {
+            case HDF5Constants.H5T_INTEGER:
+                if (typeSize == 1)
+                {
+                    if (typeSign == HDF5Constants.H5T_SGN_NONE)
+                        description = "8-bit unsigned integer";
+                    else
+                        description = "8-bit integer";
+                }
+                else if (typeSize == 2)
+                {
+                    if (typeSign == HDF5Constants.H5T_SGN_NONE)
+                        description = "16-bit unsigned integer";
+                    else
+                        description = "16-bit integer";
+                }
+                else if (typeSize == 4)
+                {
+                    if (typeSign == HDF5Constants.H5T_SGN_NONE)
+                        description = "32-bit unsigned integer";
+                    else
+                        description = "32-bit integer";
+                }
+                else if (typeSize == 8)
+                {
+                    if (typeSign == HDF5Constants.H5T_SGN_NONE)
+                        description = "64-bit unsigned integer";
+                    else
+                        description = "64-bit integer";
+                }
+                break;
+            case HDF5Constants.H5T_FLOAT:
+                if (typeSize == 4)
+                {
+                    description = "32-bit floating-point";
+                }
+                else if (typeSize == 8)
+                {
+                    description = "64-bit floating-point";
+                }
+                break;
+            case HDF5Constants.H5T_STRING:
+                description = "String";
+                break;
+            case HDF5Constants.H5T_REFERENCE:
+                description = "Object reference";
+                break;
+            case HDF5Constants.H5T_BITFIELD:
+                description = "Bitfield";
+                break;
+            case HDF5Constants.H5T_ARRAY:
+                description = "Array of ";
+                // use the base datatype to define the array
+                try {
+                    description += getDatatypeDescription(H5.H5Tget_super(tid));
+                } catch (Exception ex) {}
+                break;
+            case HDF5Constants.H5T_COMPOUND:
+                description = "Compound";
+                break;
+            case HDF5Constants.H5T_VLEN:
+                description = "Variable-length dataype";
+                break;
+            default:
+                description = "Unknown";
+                break;
+        }
+
+        return description;
     }
 
 }

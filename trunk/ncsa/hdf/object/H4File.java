@@ -251,6 +251,7 @@ public class H4File extends File implements FileFormat
                     public boolean isLeaf() { return false; }
                 };
                 root.add( node );
+                rootGroup.addToMemberList(g);
 
                 // recursively get the sub-tree
                 depth_first(node);
@@ -278,6 +279,7 @@ public class H4File extends File implements FileFormat
                 {
                     node = new DefaultMutableTreeNode(gr);
                     root.add( node );
+                    rootGroup.addToMemberList(gr);
                 }
             } // for (int i=0; i<n; i++)
         } // if ( grid!=HDFConstants.FAIL && HDFLibrary.GRfileinfo(grid,argv) )
@@ -301,6 +303,7 @@ public class H4File extends File implements FileFormat
                 {
                     node = new DefaultMutableTreeNode(sds);
                     root.add( node );
+                    rootGroup.addToMemberList(sds);
                 }
             } // for (int i=0; i<n; i++)
         } // if (sdid != HDFConstants.FAIL && HDFLibrary.SDfileinfo(sdid, argv))
@@ -325,6 +328,7 @@ public class H4File extends File implements FileFormat
             {
                 node = new DefaultMutableTreeNode(vdata);
                 root.add( node );
+                rootGroup.addToMemberList(vdata);
             }
         } // for (int i=0; i<n; i++)
 
@@ -394,6 +398,7 @@ public class H4File extends File implements FileFormat
                         {
                             node = new DefaultMutableTreeNode(gr);
                             pnode.add( node );
+                            pgroup.addToMemberList(gr);
                         }
                     }
                     break;
@@ -413,6 +418,7 @@ public class H4File extends File implements FileFormat
                         {
                             node = new DefaultMutableTreeNode(sds);
                             pnode.add( node );
+                            pgroup.addToMemberList(sds);
                         }
                     }
                     break;
@@ -423,6 +429,7 @@ public class H4File extends File implements FileFormat
                     {
                         node = new DefaultMutableTreeNode(vdata);
                         pnode.add( node );
+                        pgroup.addToMemberList(vdata);
                     }
                     break;
                 case HDFConstants.DFTAG_VG:
@@ -436,6 +443,7 @@ public class H4File extends File implements FileFormat
                         };
 
                         pnode.add( node );
+                        pgroup.addToMemberList(vgroup);
 
                         // check for loops
                         boolean looped = false;

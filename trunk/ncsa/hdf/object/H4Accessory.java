@@ -248,7 +248,7 @@ public final class H4Accessory
      *  Allocate a 1D array large enough to hold a multidimensional
      *  array of 'datasize' elements of 'dataType' numbers.
      *
-     *  @param dataType  the type of the iamge data
+     *  @param dataType  the data type
      *  @param datasize  the size of the data array
      *  @return an array of 'datasize' numbers of dataType.
      */
@@ -293,4 +293,58 @@ public final class H4Accessory
         return data;
     }
 
+    /**
+     *  Returns the short description of datatype.
+     *  <p>
+     *  @param dataType  the data type.
+     */
+    public static final String getDatatypeDescription(int dataType)
+    {
+        String description = "Unknown";
+
+        switch(dataType)
+        {
+            case HDFConstants.DFNT_CHAR:
+                description = "8-bit character";
+                break;
+            case HDFConstants.DFNT_UCHAR8:
+                description = "8-bit unsigned character";
+                break;
+            case HDFConstants.DFNT_UINT8:
+                description = "8-bit unsigned integer";
+                break;
+            case HDFConstants.DFNT_INT8:
+                description = "8-bit integer";
+                break;
+            case HDFConstants.DFNT_INT16:
+                description = "16-bit integer";
+                break;
+            case HDFConstants.DFNT_UINT16:
+                description = "16-bit unsigned integer";
+                break;
+            case HDFConstants.DFNT_INT32:
+                description = "32-bit integer";
+                break;
+            case HDFConstants.DFNT_UINT32:
+                description = "32-bit unsigned integer";
+                break;
+            case HDFConstants.DFNT_INT64:
+                description = "64-bit integer";
+                break;
+            case HDFConstants.DFNT_UINT64:
+                description = "64-bit unsigned integer";
+                break;
+            case HDFConstants.DFNT_FLOAT32:
+                description = "32-bit floating-point";
+                break;
+            case HDFConstants.DFNT_FLOAT64:
+                description = "64-bit floating-point";
+                break;
+            default:
+                description = "Unknown";
+                break;
+        }
+
+        return description;
+    }
 }

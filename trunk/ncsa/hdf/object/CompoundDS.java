@@ -41,6 +41,12 @@ public abstract class CompoundDS extends Dataset
     protected int[] memberTypes;
 
     /**
+     * The number of data points of each member of this compound dataset.
+     */
+    protected int[] memberOrders;
+
+
+    /**
      * Creates a CompoundDS object with specific name and path.
      * <p>
      * @param fileFormat the HDF file.
@@ -83,6 +89,14 @@ public abstract class CompoundDS extends Dataset
     public final int[] getMemberTypes()
     {
         return memberTypes;
+    }
+
+    /**
+     * Returns the orders of the members of this compound dataset.
+     */
+    public int[] getMemberOrders()
+    {
+        return memberOrders;
     }
 
 }

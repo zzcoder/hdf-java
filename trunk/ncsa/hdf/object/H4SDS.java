@@ -41,11 +41,6 @@ public class H4SDS extends ScalarDS
     private int sdid;
 
     /**
-     * The data type of this data set.
-     */
-    private int datatype;
-
-    /**
      * Creates an H4SDS object with specific name and path.
      * <p>
      * @param fileFormat the HDF file.

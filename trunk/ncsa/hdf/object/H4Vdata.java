@@ -39,12 +39,6 @@ public class H4Vdata extends CompoundDS
     private int numberOfRecords;
 
     /**
-     * The number of data points of each field.
-     */
-    private int[] memberOrders;
-
-
-    /**
      * Creates an H4Vdata object with specific name and path.
      * <p>
      * @param fileFormat the HDF file.

@@ -29,18 +29,17 @@ public abstract class ScalarDS extends Dataset
      * The data type of this scalar dataset
      * such as 32-bit integer, 32-bit float, etc.
      */
-    private int datatype;
+    protected int datatype;
 
     /**
-     * The datatype class of this scalar dataset
-     * such as INTEGER, FLOAT, STRING, etc.
+     * The indexed RGB color model with 256 colors.
+     * <p>
+     * The palette values are stored in a two-dimensional byte array and arrange
+     * by color components of red, green and blue. palette[][] = byte[3][256],
+     * where, palette[0][], palette[1][] and palette[2][] are the red, green and
+     * blue components respectively.
      */
-    private int dataclass;
-
-    /**
-     * The palette attached to this scalar dataset.
-     */
-    private byte[] palette;
+    protected byte[][] palette;
 
     /**
      * True is this dataset is an image.
@@ -64,7 +63,6 @@ public abstract class ScalarDS extends Dataset
         super (fileFormat, name, path, oid);
 
         datatype = -1;
-        dataclass = -1;
         palette = null;
         isImage = false;
     }
@@ -75,14 +73,6 @@ public abstract class ScalarDS extends Dataset
     public final int getDataType()
     {
         return datatype;
-    }
-
-    /**
-     * Returns the datatype class of this scalar dataset.
-     */
-    public final int getDataClass()
-    {
-        return dataclass;
     }
 
     /**
