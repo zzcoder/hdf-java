@@ -1,4 +1,4 @@
-package test;
+package test.object;
 
 import javax.swing.tree.*;
 import java.util.*;

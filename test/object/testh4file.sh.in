@@ -1,0 +1,18 @@
+#!/bin/sh
+
+JH45INSTALLDIR=@JH45INST@
+
+LIBDIR=$JH45INSTALLDIR"/lib"
+
+CLASSPATH="../..:"$LIBDIR"/jh4toh5.jar:"$LIBDIR"/jhdf.jar:"$LIBDIR"/jhdf5.jar"
+
+LD_LIBRARY_PATH=$LIBDIR"/solaris"
+
+export CLASSPATH
+export LD_LIBRARY_PATH
+
+#modify to try different files
+@JAVA@ -Djava.library.path=$LD_LIBRARY_PATH -Dncsa.hdf.hdflib.HDFLibrary.hdflib=$LIBDIR"/@JAVATARG@/libjhdf.so" test.object.TestH4File vg_all_test.hdf
+
+#check output?
+
