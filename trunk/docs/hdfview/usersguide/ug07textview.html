@@ -27,11 +27,19 @@ The Text Viewer provides a scroller for large string dataset. Users can scroll
 up or down and left or right to view the full content of the dataset.
 
 <p>
-The current version of the HDFView does not support editing string datasets.
+TextView shows text of one dimension text dataset in rows of text areas. For 
+multiple dimension datasets, you can select one dimension to display using
+"Open AS" command. The following figure shows that two rows of 1-D text 
+(dim[0] = 2) are displayed in separeate text areas.
 
 <center>
 <p><img SRC="images/dataset_text.gif" >
 <br><b>Figure 7.1 A Dataset with String data</b></center>
+
+<p>
+You can modify the text content by typing the new text in the text area. The modified
+text is chopped based on the maximum lenght of the string dataset. String dataset with 
+variable lenght is not supported. 
 
 <!-- BEGIN OF FOOTER INFO -->
 <p>
@@ -46,7 +54,7 @@ of Illinois at Urbana-Champaign</a></font>
 <br><font face="arial,helvetica" size=-1>
 <a href="mailto:hdfhelp@ncsa.uiuc.edu">hdfhelp@ncsa.uiuc.edu</a></font>
 <p>
-<i><font color="#FF0000" size=-1>Updated 6/25/2002</font></i>
+<i><font color="#FF0000" size=-1>Updated 11/5/2002</font></i>
 <!- END OF FOOTER INFO -->
 
 </body>

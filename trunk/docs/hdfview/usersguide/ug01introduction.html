@@ -58,13 +58,13 @@ represented as conventional folders and icons. Users can easily expand
 or collapse folders to navigate the hierarchical structure of an HDF file.
 
 <h2>
-<a NAME="ug01features"></a>1.2 Browsing/Editing Features</h2>
+<a NAME="ug01features"></a>1.2 Features</h2>
 
-The previous version of HDFView, Version 1.0, provides basic browsing features 
-for HDF4 and HDF5 files. It does not have any editing feature. This version
-includes all the browsing features from verions 1.0, and also adds basic 
-editing features. The browsing and editing features of version 1.1 are listed 
-below. Details of the features are discussed in their related chapters.
+HDFView version 1.2 fixed bugs from version 1.1 and added a few new and 
+enhanced features. It includes all the major features of H5View and is
+used to replace the HDFView. The browsing and editing features of HDFView
+are listed  below. Details of the features are discussed in their related 
+chapters.
 
 <h3>
 <a NAME="ug01browsing"></a>1.2.1 Browsing Features</h3>
@@ -102,23 +102,35 @@ horizontally or vertically, and showing palette for index RGB image.
 Allow to display any of three dimensions of a multiple dimension data set.
 
 <li>
-<font color="FF0000" size=-1><i>(new)</i></font>
 Allow users to specify stride of dataset selection.
 
 <li>
-<font color="FF0000" size=-1><i>(new)</i></font>
 Allow users to selection select fields/members of VData/compound dataet
 to display.
 
+<LI>
+Display file information, such as file size, total number of datasets.
+
 <li>
 <font color="FF0000" size=-1><i>(new)</i></font>
-Display file information, such as file size, total number of datasets.
+Open file as read only.
+
+<li>
+<font color="FF0000" size=-1><i>(new)</i></font>
+Show preview image for selecting subset.
+
+<li>
+<font color="FF0000" size=-1><i>(new)</i></font>
+Support multiple color tables for HDF5 images.
+
+<li>
+<font color="FF0000" size=-1><i>(new)</i></font>
+Display color table in separate red/green/blue lines.
 
 </ul>
 
 <h3>
 <a NAME="ug01editing"></a>1.2.2 Editing Features
-<font color="FF0000" size=-1><i>(new)</i></font>
 </h3>
 
 <UL>
@@ -162,6 +174,46 @@ Add/delete attribute (no deletion for HDF4).
 <LI>
 Modify and save attibute value.
 
+<li>
+<font color="FF0000" size=-1><i>(new)</i></font>
+Convert JPEG/TIFF/PNG image file into HDF4/HDF5 file.
+
+<li>
+<font color="FF0000" size=-1><i>(new)</i></font>
+Save HDF4/HDF5 imag into JPEG/TIFF/PNG image file.
+
+<li>
+<font color="FF0000" size=-1><i>(new)</i></font>
+Save single data object into HDF file.
+
+<li>
+<font color="FF0000" size=-1><i>(new)</i></font>
+Update datasets of references when a file is saved into a new file.
+
+<li>
+<font color="FF0000" size=-1><i>(new)</i></font>
+Import data values from text file.
+
+<li>
+<font color="FF0000" size=-1><i>(new)</i></font>
+Create new dataset/image out of existing dataset/image.
+
+<li>
+<font color="FF0000" size=-1><i>(new)</i></font>
+Modify string dataset.
+
+<li>
+<font color="FF0000" size=-1><i>(new)</i></font>
+Simple math calculation and statistic summary.
+
+<li>
+<font color="FF0000" size=-1><i>(new)</i></font>
+Create empty image with default image attributes.
+
+<li>
+<font color="FF0000" size=-1><i>(new)</i></font>
+Modify image color table.
+
 </UL>
 
 <h2>
@@ -199,21 +251,21 @@ the limitations of the Java virtual machine.</li>
 
 <li>
 HDFView is implemented in Java<sup><font size=-2>TM</font></sup> 2 Platform.
-It runs only at JDK 1.3.x. It does not work with JDK 1.1.x or JDK 1.2.x.
+It runs only at JDK 1.3.x or 1.4.x. It does not work with JDK 1.1.x and JDK 1.2.x.
 </li>
 </ul>
 
 <h2>
 <a NAME="ug01requirements"></a>1.4 System Requirements</h2>
 
-The HDFView is distributed in two forms: No_VM_bundled and VM_bundled. The No_VM_bundled distribution
-does not contain the Java Runtime Environment (JRE) while the VM_bundled distribution
-bundles the JRE.
+The HDFView is distributed in two forms: No_VM_bundled and VM_bundled. The No_VM_bundled 
+distribution does not contain the Java Runtime Environment (JRE) while the VM_bundled 
+distribution bundles the JRE.
 
 <p>
 To run HDFView with No_VM_bundled distribution, a Java 2 Virtual Machine, such as JDK1.3.1, 
-or JRE1.3.1 is required. The HDFView does not compile and run with the JDK 1.1.x 
-or JDK 1.2.x.
+or JRE1.3.1 is required. The HDFView does not compile and run with the JDK1.1.x 
+or JDK1.2.x. Although HDFView compiles and runs on JDK1.4.1, it is not tested on JDK1.4.1.
  
 <p>
 Download Java 2 Platform at:
@@ -226,7 +278,7 @@ Java<sup><font size=-2>TM</font></sup> 2 Platform for SGI</a>
 </ul>
 
 <p>
-HDFView 1.1 has been built and tested on the following platforms:
+HDFView 1.2 has been built and tested on the following platforms:
 
 <ul>
 <li>
@@ -323,8 +375,8 @@ hdfview_install_windows_vm_bundled.bin 10 MB</a>]</td>
 <h3>No_VM_bundled distribution</h3>
 
 The No_VM_bundled binary distribution does not contain the Java 2 Runtime Environment. 
-The No_VM_bundled requires JDK1.3.x or JRE1.3.x. Before you install the No_VM_bundled distribution, 
-you must have JDK1.3.x or JRE 1.3.x installed on your machine. If you don't
+The No_VM_bundled requires JDK1.3.x or JDK1.4.x. Before you install the No_VM_bundled 
+distribution, you must have JDK1.3.x or JDK 1.4.x installed on your machine. If you don't
 have a Java 2 VM, you must download and install one.
 
 <p>
@@ -344,7 +396,7 @@ JRE1.3.1 is bundled in the VM_bundled distribution. You do not need any aditiona
 software to run HDFView. 
 
 <p>
-Sun JRE 1.3.1 is Bundled in the HDFView. Download and installation the
+Sun JRE1.3.1 is Bundled in the HDFView. Download and installation the
 HDFView requires acceptance of the Java 2 Runtime Environment license agreement.
 Please read the 
 <a href="http://java.sun.com/j2se/1.3/jre/j2re-1_3_1_02-license.html">
@@ -400,7 +452,7 @@ of Illinois at Urbana-Champaign</a></font>
 <br><font face="arial,helvetica" size=-1>
 <a href="mailto:hdfhelp@ncsa.uiuc.edu">hdfhelp@ncsa.uiuc.edu</a></font>
 <p>
-<i><font color="#FF0000" size=-1>Updated 6/25/2002</font></i>
+<i><font color="#FF0000" size=-1>Updated 11/5/2002</font></i>
 <!- END OF FOOTER INFO -->
 
 </body>
