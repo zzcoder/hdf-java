@@ -128,9 +128,9 @@ public class H4File extends FileFormat
     String shwAll = System.getProperty("h4showall");
     if (shwAll != null) {
         showAll = true;
-        System.err.println("show all is on");
+        //System.err.println("show all is on");
     } else {
-        System.err.println("show all is off");
+        //System.err.println("show all is off");
     }
     }
 
