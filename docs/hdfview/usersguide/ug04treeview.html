@@ -40,8 +40,15 @@ and manage HDF data objects in an HDF file.
 
 <dl>
 <dt><a href="ug04treeview.html#ug04tree">4.1 Tree Viewer</a></dt>
-<dt><a href="ug04treeview.html#ug04data">4.2 Data Content</a></dt>
-<dt><a href="ug04treeview.html#ug04metadata">4.3 Metadata and Attributes</a></dt>
+<dt><a href="ug04treeview.html#ug04data">4.2 View Data Content</a></dt>
+<dt><a href="ug04treeview.html#ug04metadata">4.3 Display Metadata and Attributes</a></dt>
+<dt><a href="ug04treeview.html#ug04edit">4.4 Edit File and  File Structure</a></dt>
+<dl>
+<dt><a href="ug04treeview.html#ug04file">4.4.1 Create and Save File</a></dt>
+<dt><a href="ug04treeview.html#ug04add">4.4.2 Add and Delete Object</a></dt>
+<dt><a href="ug04treeview.html#ug04copy">4.4.3 Copy and Paste Object</a></dt>
+<dt><a href="ug04treeview.html#ug04attribute">4.4.4 Add, Delete and Modify Attribute</a></dt>
+</dl>
 </dl>
 
 <hr noshade size=1><a NAME="ug04tree"></a>
@@ -85,7 +92,7 @@ popup menu.
 <br><b>Figure 4.3 The Object Menu</b></center>
 
 <h2>
-<a NAME="ug04data"></a>4.2 Data Content</h2>
+<a NAME="ug04data"></a>4.2 View Data Content</h2>
 The Tree View allows the user to navigate the structure of the HDF file,
 to select individual objects, and to view the content of the selected object.
 
@@ -96,9 +103,10 @@ an image, a table or text based on its datatype.
 
 <p>
 Using "Open As", you can select a subset of dataset to display or change the
-default display options. For example, you can display the data values an image
+default display options. For example, you can display the data values of an image
 in spreadsheet, or show a scalar dataset as an image. For multi-dimension dataset,
-you use the display option window to select three dimensions to display.
+you can select any of two dimensions to display. The mouse-drag navigator allows 
+you select a subset by dragging the mouse.
 
 <center>
 <p><img SRC="images/dataset_open_as.gif" >
@@ -106,7 +114,7 @@ you use the display option window to select three dimensions to display.
 
 
 <h2>
-<a NAME="ug04metadata"></a>4.3 Metadata and Attributes</h2>
+<a NAME="ug04metadata"></a>4.3 Display Metadata and Attributes</h2>
 
 The metadata dialog appears by clicking the object (icon) in the tree with
 the right button or select the "Properties" command from the "Object"
@@ -124,7 +132,7 @@ of group.
 <br><b>Figure 4.5 General Properties of HDF group.</b></center>
 
 
-<p>For a dataset (or image), the general metadata includes the dataspace
+<p>For a dataset (or image), the general metadata also includes the dataspace
 information (rank, current and maximum size of each dimensions), datatype
 information (type, size, order). 
 Figure 4.6 shows an example of the metadata for a dataset.
@@ -143,6 +151,107 @@ of the attribute display.
 <p><img SRC="images/property_attribute.gif" >
 <br><b>Figure 4.7 HDF Attributes</b></center>
 
+<h2>
+<a NAME="ug04edit"></a>4.4 Edit File and File Structure</h2>
+The HDFView allow you to create ans save file, to add and delete objects in the
+file. <B>Since this version does not support undo operation, all the changes go
+to the physical file, and the editing results cannot be recovered</b>.
+
+<h3>
+<a NAME="ug04file"></a>4.4.1 Create and Save File</h3>
+The file creation dialog appears when you choose the "New HDF4/5" command from the 
+file menu. Choose the path and the file name you want to create and click "Ok" button
+from the new file dialog. A new file will be create with an empty root group.
+
+<center>
+<p><img SRC="images/new_file.gif" >
+<br><b>Figure 4.8 Create New File</b></center>
+
+<p>
+Use "Save As" from the file menu to save the current selected file into a new file
+of the same format, i.e. HDF4 to HDF4 or HDF5 to HDF5. HDFView does not support
+HDF4/5 conversion. For HDF5, the new file does not contain the inaccessible objects
+and it packs the unusable space. Dataset values of object reference are not updated.
+For HDF4, the new file is the exact copy, same file content and file size.
+
+<h3>
+<a NAME="ug04add"></a>4.4.2 Add and Delete Object</h3>
+To create a new group, select the "New Group" command from the object menu. Then, 
+give the name of the new group and parent group to which the new group is to be added. 
+
+<center>
+<p><img SRC="images/new_group.gif" >
+<br><b>Figure 4.9 Create New Group</b></center>
+
+<p>
+To create a new dataset, select the "New Dataset" command from the object menu. Then, 
+specify the name, path, datatype, dataspace and storage layout and compression of the 
+new dataset. The current version only supports simple datatypes. You cannot create
+VData and compound dataset.
+
+<center>
+<p><img SRC="images/new_dataset.gif" >
+<br><b>Figure 4.10 Create New Dataset</b></center>
+
+<p>
+To delete objects from the tree, you first select the objects, then choose the "Delete" 
+command from the Object menu. A confirmation dialog appears to make sure you want to 
+delete the selected objects. <b>Deleting object from HDF4 file is not supported</b>.
+
+<p>
+The deleting HDF5 object calls the H5Gunlink() function of the HDF5 library. The unlink 
+function removes the link, and when an object has no remaining links it can be deleted. 
+However, the HDF5 library does not currently reclaim the space in the file. This means 
+that the size of the file does not shrink even though objects are removed. (Users are 
+cautioned that repeatedly creating and deleting objects with H5View can cause the HDF5 
+file to grow.) To get rid of the inaccessable objects, you have to save the current 
+file into a new file and rename the new file to the current file. 
+
+
+<h3>
+<a NAME="ug04copy"></a>4.4.3 Copy and Paste Object</h3>
+HDFView allows you to copy an object and paste it in the same file or a different file
+of the same type. To copy and paste an HDF5 object from the tree, you first select 
+the object and select the "Copy" command from the Object menu. You then select a group 
+by a single click on the group that the object is pasted to. After you select the 
+"Paste" command, the object is copied into the selected group. HDFView does not allow 
+you to copy/paste an object of different format. "Paste" command will create a new 
+object in the selected group instead of making an hard link.
+
+<p>
+You can also select multiple objects in the tree and apply the copy/paste action into 
+the selected objects. Selection can be contiguous and discontinguous. To make a 
+continguous selection, hold down the Shift key and click on the fisrt object, then 
+click on the second object while holding down the Shift key. All the objects between 
+the two objects will be selected inclusively. To make a discontinguous selection, 
+hold down both the Ctrl key and click on the objects with the left mouse button. The 
+objects being clicked will be selected. The rest of the operation of copying/pasting 
+multiple objects is the same as that of copying/pasting single object. 
+
+<p>
+Copying a group will also copy all the decendents of the group. Copying a root
+group is not allowed.
+
+<h3>
+<a NAME="ug04attribute"></a>4.4.4 Add, Delete and Modify Attribute</h3>
+To add an attriubte, click the "Add" button on the attribute panel as in Figure 4.7. 
+You create an attribute of a string, scalar, and 1D array of simple datatypes. 
+Attributes of multiple dimensions or compound datatype are not supported. 
+
+<center>
+<p><img SRC="images/new_attribute.gif" >
+<br><b>Figure 4.11 Create New Attribute</b></center>
+
+<p>
+To change the value of an attribute, type in the new value into the cell. Only 
+string and scalar attributes can be modified. The new value must be interpretable 
+as a value of the correct type for the attribute. For a string value, the value 
+typed will be truncated to the size of the attribute if it is longer than the 
+declared size of the attribute.
+
+<P>
+To delete an attribute, you select the attribute and click the "Delete" button.
+<b>Deleting attribute in HDF4 is not supported</b>.
 
 <!-- BEGIN OF FOOTER INFO -->
 <p>
@@ -157,7 +266,7 @@ of Illinois at Urbana-Champaign</a></font>
 <br><font face="arial,helvetica" size=-1>
 <a href="mailto:hdfhelp@ncsa.uiuc.edu">hdfhelp@ncsa.uiuc.edu</a></font>
 <p>
-<i><font color="#FF0000" size=-1>Updated 3/25/2002</font></i>
+<i><font color="#FF0000" size=-1>Updated 6/25/2002</font></i>
 <!- END OF FOOTER INFO -->
 
 </body>

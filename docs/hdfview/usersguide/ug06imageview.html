@@ -38,9 +38,10 @@ HDF5 Image Specification </a>.
 
 <dl>
 <dt><a href="ug06imageview.html#ug06image">6.1 Display a 2D or 3D Image</a></dt>
-<dt><a href="ug06imageview.html#ug06zoom">6.2 Image Zooming/Flipping</a></dt>
-<dt><a href="ug06imageview.html#ug06palette">6.3 Image Palette</a></dt>
-<dt><a href="ug06imageview.html#ug06histogram">6.4 Histogram of Pixel Values</a></dt>
+<dt><a href="ug06imageview.html#ug06zoom">6.2 Zoom/Flip/Contour Image</a></dt>
+<dt><a href="ug06imageview.html#ug06palette">6.3 View Image Palette/Values</a></dt>
+<dt><a href="ug06imageview.html#ug06histogram">6.4 Show Histogram of Pixel Values</a></dt>
+<dt><a href="ug06imageview.html#ug06jpeg">6.5 Save Image to JPEG File</a></dt>
 </dl>
 
 <hr noshade size=1>
@@ -130,25 +131,35 @@ is plane interleaving with dimensions of [3][149][227].
 <br><b>Figure 6.2 True Color Image Displayed in the Image View</b></center>
 
 <h2>
-<a NAME="ug06zoom"></a>6.2 Image Zooming/Flipping</h2>
-You can zoom in and out of an image. The minimum zoom factor
+<a NAME="ug06zoom"></a>6.2 Zoom/Flip/Contour Image</h2>
+HDFView supports only limited image manipulation such as zooming, flipping and 
+contour. You can zoom in and out of an image. The minimum zoom factor
 is 1/8 (reduced to 1/8 the size) and the maximum is 8 (magnified to 8 times
 the size). Reduction (zoom out) is done by sampling pixels, such as a 1/2
 size image is created by selecting every second pixel. Magnification (zoom
 in) is done by replicating pixels.
 <p>
 You can also flip an image horizontally or verticaly. Flipping an image will
-change the coordinates of the image. Selected of an area of an fliiped image
+change the coordinates of the image. Selected of an area of an flipped image
 may not follwing the coordinates of the orginal image.
+<p>
+There are five levels of image contour ranged from three to nine. Level three
+has less details of contour and level nine has more details of the contour. The
+following shows an contour image of level nine. 
+
+<center>
+<p><img SRC="images/image_contour.gif" >
+<br><b>Figure 6.3 Contour Image</b></center>
 
 <h2>
-<a NAME="ug06palette"></a>6.3 Image Palettes</h2>
+<a NAME="ug06palette"></a>6.3 View Image Palette/Values</h2>
 A palette is the means by which color is applied to an image and is also
 referred to as a color lookup table. It is a table in which every row contains
 the numerical representation of a particular color. In the example of an
 8-bit standard RGB color model palette, this numerical representation of
 a color is presented as a triplet specifying the intensity of red, green,
 and blue components that make up each color.
+
 <p>Although the HDF5 palette specification allows for variable color length,
 different look-up methods and color models beyond RGB, HDFView only supports
 the indexed RGB color model of 256 colors. Clicking the palette icon from the 
@@ -158,17 +169,27 @@ line plot.
 
 <center>
 <p><img SRC="images/image_palette.gif" >
-<br><b>Figure 6.3 Image Palette (256 Colors)</b></center>
+<br><b>Figure 6.4 Image Palette (256 Colors)</b></center>
+
+<p>
+To view pixel values of each individual point, check the "Show value" item
+in the "Image" menu. When you move the mouse over the image, the pixel values
+of the mouse point are shown at the bottom of the image.
 
 <h2>
-<a NAME="ug06histogram"></a>6.4 Histogram of Pixel Values</h2>
+<a NAME="ug06histogram"></a>6.4 Show Histogram of Pixel Values</h2>
 The frequency of pixel values of a selected area or the whole image can
 be displayed in a histogram chart. The horizontal axis of the histogram
 chart is the the 256 pixel values. The vertical axis shows the frequency
 of the pixel values.
 <center>
 <p><img SRC="images/chart_histogram.gif" >
-<br><b>Figure 6.4 Histogram of Pixel Values</b></center>
+<br><b>Figure 6.5 Histogram of Pixel Values</b></center>
+
+<h2>
+<a NAME="ug06JPEG"></a>6.5 Save Image to JPEG File</h2>
+Using "Save as JPEG" command in the "Image" menu, you can save the
+current image into an JPEG file.
 
 
 <!-- BEGIN OF FOOTER INFO -->
@@ -184,7 +205,7 @@ of Illinois at Urbana-Champaign</a></font>
 <br><font face="arial,helvetica" size=-1>
 <a href="mailto:hdfhelp@ncsa.uiuc.edu">hdfhelp@ncsa.uiuc.edu</a></font>
 <p>
-<i><font color="#FF0000" size=-1>Updated 3/25/2002</font></i>
+<i><font color="#FF0000" size=-1>Updated 6/25/2002</font></i>
 <!- END OF FOOTER INFO -->
 
 </body>
