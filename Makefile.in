@@ -67,6 +67,11 @@ JHI5PACKAGES = \
 
 HDFOBJPACKAGES = ncsa.hdf.object
 
+HDFVIEWPACKAGES= ncsa.hdf.io \
+	ncsa.hdf.view
+
+
+
 .SUFFIXES: .java .class
 
 .java.class:
@@ -366,6 +371,14 @@ ncsa.hdf.object: ncsa/hdf/object/Attribute.class \
 	ncsa/hdf/object/HObject.class \
 	ncsa/hdf/object/ScalarDS.class
 
+ncsa.hdf.io: ./ncsa/hdf/io/DefaultFileFormat.class \
+	./ncsa/hdf/io/FileFormat.class \
+	./ncsa/hdf/io/H4File.class \
+	./ncsa/hdf/io/H5File.class
+
+ncsa.hdf.view: ./ncsa/hdf/view/TreeView.class \
+	./ncsa/hdf/view/ViewManager.class
+
 # --------------
 # Single targets
 # --------------
@@ -450,6 +463,12 @@ H5Group: ncsa/hdf/object/H5Group.class
 H5ScalarDS: ncsa/hdf/object/H5ScalarDS.class 
 HObject: ncsa/hdf/object/HObject.class 
 ScalarDS: ncsa/hdf/object/ScalarDS.class
+DefaultFileFormat: ncsa/hdf/io/DefaultFileFormat.class
+FileFormat: ncsa/hdf/io/FileFormat.class
+H4File: ncsa/hdf/io/H4File.class
+H5File: ncsa/hdf/io/H5File.class
+TreeView: ncsa/hdf/view/TreeView.class
+ViewManager: ncsa/hdf/view/ViewManager.class
 
 
 #  All classes that are built, including private classes:
@@ -544,6 +563,13 @@ HDFOBJCLASSES= ./ncsa/hdf/object/Attribute.class \
 	./ncsa/hdf/object/H5ScalarDS.class \
 	./ncsa/hdf/object/HObject.class \
 	./ncsa/hdf/object/ScalarDS.class
+
+HDFVIEWCLASSES= ./ncsa/hdf/io/DefaultFileFormat.class \
+	./ncsa/hdf/io/FileFormat.class \
+	./ncsa/hdf/io/H4File.class \
+	./ncsa/hdf/io/H5File.class \
+	./ncsa/hdf/view/TreeView.class \
+	./ncsa/hdf/view/ViewManager.class
 
 ##
 #  Source to pack for distribution
