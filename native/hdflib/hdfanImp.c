@@ -43,9 +43,7 @@ jint anid)
 {
 	int32 retVal;
 
-printf("call ANend %d\n",anid);fflush(stdout);
 	retVal = ANend((int32)anid);
-printf("ANend return %d\n",retVal);fflush(stdout);
 
 	if (retVal == FAIL) {
 		return JNI_FALSE;
