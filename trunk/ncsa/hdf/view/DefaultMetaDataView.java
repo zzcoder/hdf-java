@@ -1085,6 +1085,12 @@ implements ActionListener, MetaDataView
                 }
             } catch (Exception ex) {}
             try { raf.close();} catch (Exception ex) {}
+
+            JOptionPane.showMessageDialog(
+                this,
+                "Saving user block is successful.",
+                getTitle(),
+                JOptionPane.INFORMATION_MESSAGE);
         }
         else
         {
@@ -1094,10 +1100,10 @@ implements ActionListener, MetaDataView
                     "The user block to write is "+blkSize1+" (bytes),\n"+
                     "which is larger than the user block space in file "+blkSize0+" (bytes).\n"+
                     "To expand the user block, the file must be rewriten.\n\n"+
-                    "Do you want to replace the current file ?"+
-                    "\nClick \"Yes\" to replace the current file, "+
-                    "\nClick \"No\" to save to a different file, "+
-                    "\nClick \"Cancel\" to discard the change.\n\n ",
+                    "Do you want to replace the current file? Click "+
+                    "\n\"Yes\" to replace the current file,"+
+                    "\n\"No\" to save to a different file, "+
+                    "\n\"Cancel\" to quit without saving the change.\n\n ",
                     getTitle(),
                     JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.WARNING_MESSAGE);
@@ -1106,13 +1112,20 @@ implements ActionListener, MetaDataView
                 return;
 
             String fin = hObject.getFile();
-            String fout = fin+"~";
+
+            String fout = fin+"~copy.h5";
+            if (fin.endsWith(".h5"))
+                fout = fin.substring(0, fin.length()-3)+"~copy.h5";
+            else if (fin.endsWith(".hdf5"))
+                fout = fin.substring(0, fin.length()-5)+"~copy.h5";
+
             File outFile = null;
 
             if (op == JOptionPane.NO_OPTION)
             {
-                JFileChooser fchooser = new JFileChooser(fin);
+                JFileChooser fchooser = new JFileChooser();
                 fchooser.setFileFilter(DefaultFileFilter.getFileFilterHDF5());
+                fchooser.setSelectedFile(new File(fout));
 
                 int returnVal = fchooser.showSaveDialog(this);
                 if(returnVal != JFileChooser.APPROVE_OPTION)
@@ -1144,61 +1157,45 @@ implements ActionListener, MetaDataView
                 }
             }
 
-            if (op == JOptionPane.NO_OPTION)
-            {
-                if (!DefaultFileFilter.setHDF5UserBlock(fin, fout, buf))
-                {
-                    JOptionPane.showMessageDialog(
-                            this,
-                            "Fail to write user block into file. ",
-                            getTitle(),
-                            JOptionPane.ERROR_MESSAGE);
-                    outFile.delete();
-                }
+            // close the file
+            ActionEvent e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Close file");
+            ((HDFView)viewer).actionPerformed(e);
 
-                // open the new file
-                dispose();
-                ActionEvent e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Open file://"+fout);
-                ((HDFView)viewer).actionPerformed(e);
-            }
-            else
+            if (DefaultFileFilter.setHDF5UserBlock(fin, fout, buf))
             {
-                // close the file
-                ActionEvent e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Close file");
-                ((HDFView)viewer).actionPerformed(e);
-
-                if (DefaultFileFilter.setHDF5UserBlock(fin, fout, buf))
+                if (op == JOptionPane.NO_OPTION)
+                    fin = fout; // open the new file
+                else
                 {
-                    boolean status = false;
                     File oldFile = new File(fin);
-                    status = oldFile.delete();
+                    boolean status = oldFile.delete();
                     if (status)
                         outFile.renameTo(oldFile);
                     else
                     {
                         JOptionPane.showMessageDialog(
-                            this,
-                            "Fail to write user block into file. ",
-                            getTitle(),
-                            JOptionPane.ERROR_MESSAGE);
+                                this,
+                                "Cannot replace the current file.\nPlease save to a different file.",
+                                getTitle(),
+                                JOptionPane.ERROR_MESSAGE);
                         outFile.delete();
                     }
                 }
-                else
-                {
-                    JOptionPane.showMessageDialog(
-                            this,
-                            "Fail to write user block into file. ",
-                            getTitle(),
-                            JOptionPane.ERROR_MESSAGE);
-                    outFile.delete();
-                }
-
-                // reopen the file
-                dispose();
-                e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Open file://"+fin);
-                ((HDFView)viewer).actionPerformed(e);
             }
+            else
+            {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Fail to write user block into file. ",
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                outFile.delete();
+            }
+
+            // reopen the file
+            dispose();
+            e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Open file://"+fin);
+            ((HDFView)viewer).actionPerformed(e);
          }
     }
 

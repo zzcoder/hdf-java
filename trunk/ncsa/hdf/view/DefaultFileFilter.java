@@ -607,14 +607,14 @@ public class DefaultFileFilter extends FileFilter
         // find the end of uerser block for the input file;
         RandomAccessFile raf = null;
         try { raf = new RandomAccessFile(fin, "r"); }
-        catch (Exception ex)
+        catch (Exception ex) { raf = null; }
+
+        if (raf == null)
         {
             try { raf.close();} catch (Throwable err) {;}
             raf = null;
-        }
-
-        if (raf == null)
             return false;
+        }
 
         byte[] header = new byte[8];
         long fileSize = 0;
@@ -675,6 +675,7 @@ public class DefaultFileFilter extends FileFilter
         }
         catch (Exception ex )
         {
+            try { bi.close(); } catch (Exception ex2 ) {}
             return false;
         }
 
@@ -683,6 +684,7 @@ public class DefaultFileFilter extends FileFilter
         }
         catch (Exception ex )
         {
+            try { bo.close(); } catch (Exception ex2 ) {}
             try { bi.close(); } catch (Exception ex2 ) {}
             return false;
         }

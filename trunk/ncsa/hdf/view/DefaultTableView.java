@@ -1121,18 +1121,6 @@ null, options, options[0]);
         int rank = d.getRank();
         if (rank <=0 ) d.init();
 
-        int rows = d.getHeight();
-        int cols = d.getSelectedMemberCount();
-        String[] columnNames = new String[cols];
-
-        int idx = 0;
-        String[] columnNamesAll = d.getMemberNames();
-        for (int i=0; i<columnNamesAll.length; i++)
-        {
-            if (d.isMemberSelected(i))
-                columnNames[idx++] = columnNamesAll[i];
-        }
-
         dataValue = null;
         try { dataValue = d.getData(); }
         catch (Exception ex)
@@ -1149,6 +1137,18 @@ null, options, options[0]);
         if (dataValue == null ||
            !(dataValue instanceof List) )
             return null;
+
+        int rows = d.getHeight();
+        int cols = d.getSelectedMemberCount();
+        String[] columnNames = new String[cols];
+
+        int idx = 0;
+        String[] columnNamesAll = d.getMemberNames();
+        for (int i=0; i<columnNamesAll.length; i++)
+        {
+            if (d.isMemberSelected(i))
+                columnNames[idx++] = columnNamesAll[i];
+        }
 
         String[] subColumnNames = columnNames;
         int columns = d.getWidth();
