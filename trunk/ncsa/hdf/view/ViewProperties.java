@@ -253,6 +253,7 @@ public class ViewProperties extends Properties
                 } // if (interfaces != null) {
             } catch (Exception ex) {System.out.println(ex);}
         }
+
         return extClassLoader;
     }
 
@@ -557,14 +558,14 @@ public class ViewProperties extends Properties
             String tmpUG = str.toLowerCase();
             if (tmpUG.startsWith("file:") || tmpUG.startsWith("http:"))
                 usersGuide = str;
-        }
-        else
-        {
-            File tmpFile = new File(str);
-            if (tmpFile.exists())
-                usersGuide = "file:"+str;
             else
-                usersGuide = "http://"+str;
+            {
+                File tmpFile = new File(str);
+                if (tmpFile.exists())
+                    usersGuide = "file:"+str;
+                else
+                    usersGuide = "http://"+str;
+            }
         }
 
         str = (String)get("data.delimiter");
@@ -617,6 +618,7 @@ public class ViewProperties extends Properties
             }
         }
 
+
         String[] keys = {"module.treeview", "module.metadataview", "module.textview",
             "module.tableview", "module.imageview", "module.paletteview"};
         Vector[] moduleList = {moduleListTreeView, moduleListMetaDataView, moduleListTextView,
@@ -641,6 +643,7 @@ public class ViewProperties extends Properties
             theList.remove(str);
             theList.add(0, str);
         }
+
     }
 
     /** Save user properties into property file */
