@@ -588,8 +588,6 @@ test.h4toh5: test/h4toh5/apitest.class \
 ncsa.hdf.view: ./ncsa/hdf/view/TreeView.class \
 	./ncsa/hdf/view/FileConversionDialog.class \
 	./ncsa/hdf/view/DataOptionDialog.class \
-	./ncsa/hdf/view/DataOptionDialog$$1.class \
-	./ncsa/hdf/view/DataOptionDialog$$SubsetNavigator.class \
 	./ncsa/hdf/view/HDFView.class \
 	./ncsa/hdf/view/ImageView.class \
 	./ncsa/hdf/view/TableView.class \
@@ -603,42 +601,18 @@ ncsa.hdf.view: ./ncsa/hdf/view/TreeView.class \
 	./ncsa/hdf/view/Tools.class \
 	./ncsa/hdf/view/DataView.class \
 	./ncsa/hdf/view/Chart.class \
-	./ncsa/hdf/view/Chart$$ChartPanel.class \
 	./ncsa/hdf/view/PaletteView.class \
 	./ncsa/hdf/view/MetaDataView.class \
 	./ncsa/hdf/view/NewImageDialog.class \
 	./ncsa/hdf/view/NewGroupDialog.class \
 	./ncsa/hdf/view/NewAttributeDialog.class \
 	./ncsa/hdf/view/DefaultImageView.class \
-	./ncsa/hdf/view/DefaultImageView$$1.class \
-	./ncsa/hdf/view/DefaultImageView$$Animation.class \
-	./ncsa/hdf/view/DefaultImageView$$BrightnessFilter.class \
-	./ncsa/hdf/view/DefaultImageView$$ContourFilter.class \
-	./ncsa/hdf/view/DefaultImageView$$FlipFilter.class \
-	./ncsa/hdf/view/DefaultImageView$$ImageComponent.class \
-	./ncsa/hdf/view/DefaultImageView$$PaletteComponent.class \
 	./ncsa/hdf/view/DefaultTableView.class \
-	./ncsa/hdf/view/DefaultTableView$$1.class \
-	./ncsa/hdf/view/DefaultTableView$$2.class \
-	./ncsa/hdf/view/DefaultTableView$$3.class \
-	./ncsa/hdf/view/DefaultTableView$$4.class \
-	./ncsa/hdf/view/DefaultTableView$$ColumnHeader.class \
-	./ncsa/hdf/view/DefaultTableView$$MultiLineHeaderRenderer.class \
-	./ncsa/hdf/view/DefaultTableView$$RowHeader.class \
-	./ncsa/hdf/view/DefaultTableView$$RowHeaderRenderer.class \
 	./ncsa/hdf/view/DefaultTreeView.class \
-	./ncsa/hdf/view/DefaultTreeView$1.class \
-	./ncsa/hdf/view/DefaultTreeView$2.class \
-	./ncsa/hdf/view/DefaultTreeView$$HTreeCellRenderer.class \
-	./ncsa/hdf/view/DefaultTreeView$$HTreeMouseAdapter.class \
 	./ncsa/hdf/view/DefaultMetaDataView.class \
-	./ncsa/hdf/view/DefaultMetaDataView$$1.class \
-	./ncsa/hdf/view/DefaultMetaDataView$$2.class \
-	./ncsa/hdf/view/DefaultMetaDataView$$3.class \
 	./ncsa/hdf/view/DefaultTextView.class \
 	./ncsa/hdf/view/ViewManager.class \
-	./ncsa/hdf/view/DefaultPaletteView.class \
-	./ncsa/hdf/view/DefaultPaletteView$$ChartPanel.class
+	./ncsa/hdf/view/DefaultPaletteView.class
 
 # --------------
 # Single targets
