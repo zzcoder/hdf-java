@@ -1298,50 +1298,6 @@ public class H5 {
     public synchronized static native int H5Gunlink(int loc_id, String name)
         throws HDF5LibraryException, NullPointerException;
 
-    // extensions to the standard interface:  not in the Ref. Man.
-
-    /**
-     *  H5Gn_members  report the number of objects in
-     *        a Group.  The 'objects' include everything that
-     *        will be visited by H5Giterate.  Each link is
-     *        returned, so objects with multiple links will
-     *        be counted once for each link.
-     *
-     *  @param loc_id  file or group ID.
-     *  @param name   name of the group to iterate, relative to
-     *  the loc_id
-     *
-     *  @return the number of members in the group or -1 if error.
-     *
-     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-     *  @exception NullPointerException - name is null.
-     */
-    public synchronized static native int H5Gn_members( int loc_id, String name)
-        throws HDF5LibraryException, NullPointerException;
-
-    /**
-     *   H5Gget_obj_info_idx   report the name and type of
-     *        object with index 'idx' in a Group.  The 'idx'
-     *        corresponds to the index maintained by H5Giterate.
-     *        Each link is returned, so objects with multiple
-     *        links will be counted once for each link.
-     *
-     *  @param loc_id  IN:  file or group ID.
-     *  @param name   IN:  name of the group to iterate,
-     *   relative to the loc_id
-     *  @param idx   IN:  the index of the object to iterate.
-     *  @param oname  the name of the object [OUT]
-     *  @param type   the type of the object [OUT]
-     *
-     *  @return non-negative if successful, -1 if not.
-     *
-     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-     *  @exception NullPointerException - name is null.
-     */
-    public synchronized static native int H5Gget_obj_info_idx( int loc_id,
-        String name, int idx, String[] oname, int[]type)
-        throws HDF5LibraryException, NullPointerException;
-
     /**
      *  H5Gmove renames an object within an HDF5 file.
      *  The original name, src, is unlinked from the group graph
@@ -1361,82 +1317,6 @@ public class H5 {
     public synchronized static native int H5Gmove(int loc_id, String src,
         String dst)
         throws HDF5LibraryException, NullPointerException;
-
-
-    /**
-     *  H5Gget_objinfo returns information about the specified
-     *  object.
-     *
-     *  @param loc_id  IN: File, group, dataset, or datatype
-     *  identifier.
-     *  @param name  IN: Name of the object for which status is
-     *  being sought.
-     *  @param follow_link  IN: Link flag.
-     *  @param  fileno  OUT: file id numbers.
-     *  @param  objno  OUT: object id numbers.
-     *  @param  link_info  OUT: link information.
-     *      <pre>
-     *          link_info[0] = nlink
-     *          link_info[1] = type
-     *          link_info[2] = linklen
-     *      </pre>
-     *  @param  mtime  OUT: modification time
-     *
-     *  @return a non-negative value if successful, with the
-     *  fields of link_info and mtime  (if non-null) initialized.
-     *
-     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-     *  @exception NullPointerException - name or array is null.
-     *  @exception IllegalArgumentException - bad argument.
-     **/
-    public synchronized static native int H5Gget_objinfo(int loc_id, String name,
-        boolean follow_link, long[] fileno, long[] objno,
-        int[] link_info, long[] mtime)
-        throws HDF5LibraryException,
-        NullPointerException,
-        IllegalArgumentException;
-
-    /**
-     *  H5Gget_objinfo returns information about the specified
-     *  object in an HDF5GroupInfo object.
-     *
-     *  @param loc_id  IN: File, group, dataset, or datatype
-     *  identifier.
-     *  @param name  IN: Name of the object for which status
-     *  is being sought.
-     *  @param follow_link  IN: Link flag.
-     *  @param  info OUT: the HDF5GroupInfo object to store the
-     *  object infomation
-     *
-     *  @return a non-negative value if successful, with the
-     *  fields of HDF5GroupInfo object (if non-null) initialized.
-     *
-     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-     *  @exception NullPointerException - name is null.
-     *
-     *  @see ncsa.hdf.hdf5lib.HDF5GroupInfo
-     *  See public synchronized static native int H5Gget_objinfo();
-     **/
-    public synchronized static int H5Gget_objinfo(int loc_id, String name,
-        boolean follow_link,
-        HDF5GroupInfo info)
-        throws HDF5LibraryException, NullPointerException
-    {
-        int status = -1;
-        long[] fileno = new long[2];
-        long[] objno = new long[2];
-        int[] link_info = new int[3];
-        long[] mtime = new long[1];
-
-        status = H5Gget_objinfo(loc_id, name, follow_link,
-            fileno, objno, link_info, mtime);
-
-        if (status >=0 ) {
-            info.setGroupInfo(fileno, objno, link_info[0],
-            link_info[1], mtime[0], link_info[2]);
-        }
-        return status;
-    }
 
     /**
      *  H5Gget_linkval returns size characters of the link value
@@ -1520,7 +1400,6 @@ public class H5 {
         HDF5LibraryException,
         NullPointerException,
         IllegalArgumentException;
-
 
     //////////////////////////////////////////////////////////////
     //                                                          //
@@ -2568,46 +2447,6 @@ public class H5 {
         return H5Pget_gc_references(fapl_id,
         gc_ref);
     }
-
-    /**
-     *  H5Pset_hyper_cache Indicates whether to cache hyperslab
-     *  blocks during I/O.
-     *  <P>
-     *  Given a dataset transfer property list,
-     *  H5Pset_hyper_cache indicates whether to cache
-     *  hyperslab blocks during I/O, a process which can
-     *  significantly increase I/O speeds.
-     *
-     *  @param plist_id  IN Dataset transfer property list
-     *  @param cache  IN  cache on (true)/off (false)
-     *  @param limit  IN   Maximum size of the hyperslab block
-     *  to cache. 0 (zero) indicates no limit.
-     *
-     *  @return non-negative if succeed
-     *
-     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-     **/
-    public synchronized static native int H5Pset_hyper_cache(int plist_id,
-        boolean cache, int limit)
-        throws HDF5LibraryException;
-
-    /**
-     *  H5Pget_hyper_cache Find whether to hyperslab
-     *  blocks are cached during I/O.
-     *
-     *  @param plist_id  IN Dataset transfer property list
-     *  @param cache  OUT  cache on (true)/off (false)
-     *  @param limit  OUT   Maximum size of the hyperslab block
-     *  to cache. 0 (zero) indicates no limit.
-     *
-     *  @return non-negative if succeed
-     *
-     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-     *  @exception NullPointerException - an array is null.
-     **/
-    public synchronized static native int H5Pget_hyper_cache(int plist_id,
-        boolean[] cache, int[] limit)
-        throws HDF5LibraryException, NullPointerException;
 
     /**
      *  H5Pset_btree_ratio Sets B-tree split ratios for a dataset
@@ -4095,5 +3934,135 @@ public class H5 {
     public synchronized static native int H5Tget_array_dims(int dt,
         int[] dims, int[] perms)
         throws HDF5LibraryException, NullPointerException;
+
+
+    //////////////////////////////////////////////////////////////
+    //                                                          //
+    //                  New APIs for HDF5.1.6                   //
+    //  removed APIs: H5Pset_hyper_cache, H5Pget_hyper_cache    //
+    //                                                          //
+    //////////////////////////////////////////////////////////////
+
+    /**
+     * Returns number of objects in the group specified by its identifier
+     * @param loc_id Identifier of the group or the file
+     * @param num_obj Number of objects in the group
+     * @return positive value if successful; otherwise returns a negative value.
+     * @throws HDF5LibraryException
+     * @throws NullPointerException
+     */
+    public synchronized static native int H5Gget_num_objs(int loc_id, long[] num_obj)
+        throws HDF5LibraryException, NullPointerException;
+
+    /**
+     * Returns a name of an object specified by an index.
+     *
+     * @param group_id Group or file identifier
+     * @param idx Transient index identifying object
+     * @param name the object name
+     * @param size Name length
+     * @return the size of the object name if successful, or 0 if no name is
+     * associated with the group identifier. Otherwise returns a negative value
+     * @throws HDF5LibraryException
+     * @throws NullPointerException
+     */
+    public synchronized static native long H5Gget_objname_by_idx(int group_id,
+        long idx, String[] name, long size )
+        throws HDF5LibraryException, NullPointerException;
+
+    /**
+     * Returns the type of an object specified by an index.
+     *
+     * @param group_id Group or file identifier.
+     * @param idx Transient index identifying object.
+     * @return Returns the type of the object if successful. Otherwise returns a negative value
+     * @throws HDF5LibraryException
+     * @throws NullPointerException
+     */
+    public synchronized static native int H5Gget_objtype_by_idx(int group_id, long idx)
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Tget_native_type(int tid, int alloc_time )
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static int H5Tget_native_type(int tid)
+        throws HDF5LibraryException, NullPointerException
+    {
+        return H5Tget_native_type(tid, HDF5Constants.H5T_DIR_ASCEND);
+    }
+
+    public synchronized static native int H5Pset_alloc_time(int plist_id, int alloc_time )
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Pget_alloc_time(int plist_id, int[] alloc_time )
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Pset_fill_time(int plist_id, int fill_time )
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Pget_fill_time(int plist_id, int[] fill_time )
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Pfill_value_defined(int plist_id, int[] status )
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Pset_fletcher32(int plist)
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Pset_edc_check(int plist, int check)
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Pget_edc_check(int plist)
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Pset_shuffle(int plist_id)
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Pset_szip(int plist, int options_mask, int pixels_per_block)
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Dget_space_status(int dset_id, int[] status )
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native long H5Iget_name(int obj_id, String[] name, long size )
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5set_free_list_limits(int reg_global_lim, int reg_list_lim, int arr_global_lim, int arr_list_lim, int blk_global_lim, int blk_list_lim )
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Fget_obj_ids(int file_id, int types, int[] obj_id_list )
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Fget_obj_count(int file_id, int types, int[] obj_id_count )
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native boolean H5Tis_variable_str(int dtype_id )
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Zfilter_avail(int filter)
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Zunregister(int filter)
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Pmodify_filter(int plist, int filter, int flags, long cd_nelmts, int[] cd_values )
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Pget_filter_by_id( int plist_id, int filter, int[] flags, long[] cd_nelmts, int[] cd_values, long namelen, String[] name )
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native boolean H5Pall_filters_avail(int dcpl_id)
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Pset_hyper_vector_size(int dxpl_id, long vector_size )
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Pget_hyper_vector_size(int dxpl_id, long[] vector_size )
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native boolean H5Tdetect_class(int dtype_id, int dtype_class )
+        throws HDF5LibraryException, NullPointerException;
+
+
 }
 

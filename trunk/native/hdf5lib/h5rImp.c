@@ -236,6 +236,47 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1region
 	return (jint)status;
 }
 
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5G_obj_t H5Rget_obj_type(hid_t id, H5R_type_t ref_type, void *_ref)
+ * Signature: (I[B)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1object_1type
+  (JNIEnv *env, jclass clss, jint loc_id, jint ref_type, jbyteArray ref)
+{
+
+	H5G_obj_t status;
+	jboolean isCopy;
+	jbyte *refP;
+
+	if (ref == NULL) {
+		h5nullArgument( env, "H5Rget_object_type:  ref is NULL");
+		return -1;
+	}
+
+#ifdef __cplusplus
+	refP = (jbyte *)env->GetByteArrayElements(ref,&isCopy);
+#else
+	refP = (jbyte *)(*env)->GetByteArrayElements(env,ref,&isCopy);
+#endif
+	if (refP == NULL) {
+		h5JNIFatalError(env,  "H5Rget_object_type:  ref not pinned");
+		return -1;
+	}
+
+	status = H5Rget_obj_type((hid_t)loc_id, (H5R_type_t)ref_type, refP);
+
+#ifdef __cplusplus
+	env->ReleaseByteArrayElements(ref,refP,JNI_ABORT);
+#else
+	(*env)->ReleaseByteArrayElements(env,ref,refP,JNI_ABORT);
+#endif
+
+	if (status < 0) {
+		h5libraryError(env);
+	}
+	return (jint)status;
+}
 
 #ifdef __cplusplus
 }
