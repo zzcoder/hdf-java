@@ -157,7 +157,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Screate_1simple
 	free (sa);
 
 	if (status < 0) {
-//		h5libraryError(env);
+		h5libraryError(env);
 	}
 	return (jint)status;
 }
