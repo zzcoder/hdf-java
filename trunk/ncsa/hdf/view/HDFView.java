@@ -181,7 +181,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         // load the view properties
         ViewProperties.loadIcons(rootDir);
         props = new ViewProperties(rootDir);
-        props.load();
+        try { props.load(); } catch (Exception ex){}
         recentFiles = props.getMRF();
 
         // initialize GUI components

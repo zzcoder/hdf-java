@@ -394,7 +394,7 @@ public class ViewProperties extends Properties
     }
 
     /** Load user properties from property file */
-    public void load()
+    public void load() throws Exception
     {
         if (propertyFile == null)
             return;
@@ -406,9 +406,13 @@ public class ViewProperties extends Properties
         } catch (Exception e) {;}
 
         String str = (String)get("users.guide");
-        String tmpUG = str.toLowerCase();
-        if (tmpUG.startsWith("file:") || tmpUG.startsWith("http:"))
-            usersGuide = str;
+
+        if (str != null)
+        {
+            String tmpUG = str.toLowerCase();
+            if (tmpUG.startsWith("file:") || tmpUG.startsWith("http:"))
+                usersGuide = str;
+        }
         else
         {
             File tmpFile = new File(str);
