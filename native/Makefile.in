@@ -10,30 +10,21 @@
 # ****************************************************************************/
 
 
-all:
+all: hdflib hdf5lib h4toh5lib
+
+hdflib: FORCE
 	cd hdflib; \
 	$(MAKE) ; 
+
+hdf5lib: FORCE
 	cd hdf5lib; \
 	$(MAKE) ; 
+
+h4toh5lib: FORCE
 	cd h4toh5lib; \
-	$(MAKE) 
-
-hdflib:
-	cd hdflib; \
 	$(MAKE) ; 
 
-hdf5lib:
-	cd hdf5lib; \
-	$(MAKE) ; 
-
-h4to5lib:
-	cd h4to5lib; \
-	$(MAKE) ; 
-
-clean:
-	cd h4toh5lib; $(MAKE) clean;
-	cd hdflib; $(MAKE) clean;
-	cd hdf5lib; $(MAKE) clean;
+clean: clean-hdflib clean-hdf5lib clean-h4toh5lib
 
 clean-hdflib:
 	cd hdflib; \
@@ -46,3 +37,5 @@ clean-hdf5lib:
 clean-h4toh5lib:
 	cd h4toh5lib; \
 	$(MAKE) clean ; 
+
+FORCE:
