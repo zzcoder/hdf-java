@@ -98,7 +98,7 @@ case "$withval" in
   *)
 if test -n "$withval" ; then
     z_lib="`echo $withval |cut -f2 -d, -s`"
-	ZLIB=$z_lib"/libz.a"
+	ZLIB=$z_lib"/libz"
     	AC_MSG_RESULT([zlib found: $ZLIB]);
 else
 AC_CHECK_LIB(z, compress, [ZLIB=-lz], 
@@ -125,7 +125,7 @@ case "$withval" in
   *)
 if test -n "$withval" ; then
     jpeg_lib="`echo $withval |cut -f2 -d, -s`"
-	JPEGLIB=$jpeg_lib"/libjpeg.a"
+	JPEGLIB=$jpeg_lib"/libjpeg"
     	AC_MSG_RESULT([jpeg found: $JPEGLIB]);
 else
 AC_CHECK_LIB(jpeg, jpeg_start_compress, JPEGLIB=-ljpeg,
@@ -152,7 +152,7 @@ case "$withval" in
   *)
 if test -n "$withval" ; then
     sz_lib="`echo $withval |cut -f2 -d, -s`"
-	SZLIB=$sz_lib"/libsz.a"
+	SZLIB=$sz_lib"/libsz"
 else
 AC_CHECK_LIB(sz, SZ_BufftoBuffCompress,SZLIB=-lsz, 
     AC_MSG_ERROR(SZIP library needed for compilation.) , )

@@ -2878,7 +2878,7 @@ echo "${ECHO_T}GZIP suppressed" >&6;
   *)
 if test -n "$withval" ; then
     z_lib="`echo $withval |cut -f2 -d, -s`"
-	ZLIB=$z_lib"/libz.a"
+	ZLIB=$z_lib"/libz"
     	echo "$as_me:$LINENO: result: zlib found: $ZLIB" >&5
 echo "${ECHO_T}zlib found: $ZLIB" >&6;
 else
@@ -2975,7 +2975,7 @@ echo "${ECHO_T}JPEG suppressed" >&6;
   *)
 if test -n "$withval" ; then
     jpeg_lib="`echo $withval |cut -f2 -d, -s`"
-	JPEGLIB=$jpeg_lib"/libjpeg.a"
+	JPEGLIB=$jpeg_lib"/libjpeg"
     	echo "$as_me:$LINENO: result: jpeg found: $JPEGLIB" >&5
 echo "${ECHO_T}jpeg found: $JPEGLIB" >&6;
 else
