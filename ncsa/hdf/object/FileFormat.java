@@ -68,7 +68,6 @@ public abstract class FileFormat extends File
      */
     private int max_members = 10000; // 10,000 by default
 
-
     /**
      * Current Java application such as HDFView cannot handle files
      * with large number of objects such 1,000,000 objects.
@@ -76,51 +75,6 @@ public abstract class FileFormat extends File
      * into memory.
      */
     private int start_members = 0; // 0 by default
-
-    private static ClassLoader extClassLoader = ClassLoader.getSystemClassLoader();
-
-    static {
-
-        // load extension classes.
-        // must put packed jar files of implementing classes of FileFormat
-        // into hdfview_root/lib/ext
-        Vector jarList = new Vector();
-        String rootPath = System.getProperty("hdfview.root");
-        String dirname = rootPath+File.separator+"lib"+File.separator+"ext"+File.separator;
-        File extdir = new File(dirname);
-        String[] jars = extdir.list();
-        if (jars != null) {
-            for (int i=0; i<jars.length; i++) {
-                if (jars[i].endsWith(".jar")) {
-                    jarList.add(jars[i]);
-                }
-            }
-            int n = jarList.size();
-            if (n>0) {
-                URL[] urls = new URL[n];
-
-                for (int i=0; i<n; i++) {
-                    try {
-                        urls[i] = new URL("file://localhost/"+rootPath + "/lib/ext/"+jarList.get(i));
-                    } catch (MalformedURLException mfu) {;}
-                }
-                try { extClassLoader = new URLClassLoader(urls); }
-                catch (Exception ex) { extClassLoader = ClassLoader.getSystemClassLoader(); }
-            }
-        }
-
-        // add H5File into the file list
-        addFileFormat(FILE_TYPE_HDF5, "ncsa.hdf.object.h5.H5File");
-
-        // add H4File into the file list
-        addFileFormat(FILE_TYPE_HDF4, "ncsa.hdf.object.h4.H4File");
-
-        // add NETCDF into the file list
-        addFileFormat("NC", "ncsa.hdf.object.nc2.NC2File");
-
-        // add FITS into the file list
-        addFileFormat("FITS", "ncsa.hdf.object.fits.FitsFile");
-    }
 
     /** Constructs a FileFormat with a given file name.
      * @param filename the full name of the file.
@@ -297,19 +251,13 @@ public abstract class FileFormat extends File
      *   such as "HDF5" or "HDF4"
      * @param fileformat the name of the new file format to be added.
      */
-    public static void addFileFormat(String key, String fileformat) {
+    public static void addFileFormat(String key, FileFormat fileformat) {
         if (fileformat == null || key == null)
             return;
 
         key = key.trim();
-        if (FileList.containsKey(key))
-            return;
-
-        try {
-            Class fileClass = extClassLoader.loadClass(fileformat);
-            Object fileInst = fileClass.newInstance();
-            FileList.put(key, fileInst);
-        } catch (Exception ex) {}
+        if (!FileList.containsKey(key))
+            FileList.put(key, fileformat);
     }
 
     /**

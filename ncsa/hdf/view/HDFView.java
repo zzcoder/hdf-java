@@ -1163,15 +1163,16 @@ public class HDFView extends JFrame
 
             try {
                 Class theClass = ViewProperties.loadExtClass().loadClass(className);
-            } catch (ClassNotFoundException ex) {
+                Object theObject = theClass.newInstance();
+                if (theObject instanceof FileFormat)
+                    FileFormat.addFileFormat(key, (FileFormat)theObject);
+            } catch (Throwable ex) {
                 JOptionPane.showMessageDialog(
                         this, "Failed to register "+str +"\n\n"+ex,
                         "Register File Format",
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
-            FileFormat.addFileFormat(key, className);
 
             if (extension != null && extension.length()>0)
             {
@@ -1553,7 +1554,6 @@ public class HDFView extends JFrame
                 backup = true;
             }
         }
-        System.setProperty("hdfview.root", rootDir);
 
         if (backup)
             i--;

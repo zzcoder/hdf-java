@@ -170,7 +170,7 @@ public class ViewProperties extends Properties
         }
     }
 
-    /** load extension classes of implementation of data views */
+    /** load module classes */
     public static ClassLoader loadExtClass()
     {
         if (extClassLoader != null)
@@ -223,9 +223,9 @@ public class ViewProperties extends Properties
         n = classList.size();
         for (int i=0; i<n; i++) {
             String theName = (String)classList.get(i);
+
             try {
                 Class theClass = extClassLoader.loadClass(theName);
-
                 Class[] interfaces = theClass.getInterfaces();
                 if (interfaces != null) {
                     for (int j=0; j<interfaces.length; j++) {
@@ -318,12 +318,6 @@ public class ViewProperties extends Properties
 
     public static void loadIcons(String rootPath)
     {
-        URL url= null, url2=null, url3=null;
-
-        try {
-            url = new URL("file://localhost/"+rootPath+ "/lib/jhdfview.jar");
-        } catch (MalformedURLException mfu) {;}
-
         URL u = null;
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
 
@@ -539,7 +533,6 @@ public class ViewProperties extends Properties
             fis.close();
         } catch (Exception e) {;}
 
-
         Enumeration enum = this.keys();
         String theKey = null;
         String fExt = null;
@@ -547,7 +540,12 @@ public class ViewProperties extends Properties
             theKey = (String)enum.nextElement();
             if (theKey.startsWith("module.fileformat")) {
                 fExt = theKey.substring(18);
-                FileFormat.addFileFormat(fExt, (String)get(theKey));
+                try {
+                    Class theClass = extClassLoader.loadClass((String)get(theKey));
+                    Object theObject = theClass.newInstance();
+                    if (theObject instanceof FileFormat)
+                        FileFormat.addFileFormat(fExt, (FileFormat)theObject);
+                } catch (Throwable err) {err.printStackTrace();}
             }
         }
 

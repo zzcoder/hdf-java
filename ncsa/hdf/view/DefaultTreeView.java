@@ -34,7 +34,6 @@ import java.awt.event.*;
  */
 public class DefaultTreeView extends JPanel
 implements TreeView, ActionListener {
-
     /** the owner of this treeview */
     private ViewManager viewer;
 
@@ -1128,17 +1127,6 @@ implements TreeView, ActionListener {
 
         if (isFileOpen(filename))
             throw new UnsupportedOperationException("File is in use.");
-
-/*
-        boolean ish4 = DefaultFileFilter.isHDF4(filename);
-        boolean ish5=DefaultFileFilter.isHDF5(filename);
-
-        if (ish4 && (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4) == null))
-            throw new UnsupportedOperationException("HDF4 is not supported.");
-
-        if (ish5 && (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) == null))
-            throw new UnsupportedOperationException("HDF5 is not supported.");
-*/
 
         Enumeration keys = FileFormat.getFileFormatKeys();
 
