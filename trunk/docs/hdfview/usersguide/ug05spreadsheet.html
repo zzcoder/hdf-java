@@ -24,9 +24,10 @@
 Chapter 5: Table Viewer</h1>
 
 HDFView displays datasets in a two dimensional table, the TableView. The TableView
-allows you to view and chnage the values of a dataset of image. You can select rows 
-and columns and plot the row/cloumn data in line plot. HDFView 1.2 does not allow 
-you to change data values of Vdata or compound dataset. 
+allows you to view and change the values of a dataset of image. You can select rows 
+and columns and plot the row/cloumn data in line plot. The current version of 
+HDFView does not allow 
+you to change data values of an HDF4 Vdata or an HDF5 compound dataset. 
 
 <P>
 If a dataset has three or more dimensions you can only view two dimensions
@@ -90,7 +91,7 @@ and 50 rows and sheet six is displayed.
 <br><b>Figure 5.2 Spreadsheet with 3D dataset.</b></center>
 
 
-<p>Opening an entire large dataset may cause an out of memory error, because
+<p>Opening an entire large dataset may cause an 'Out Of Memory Error', because
 the Java Virtual Machine cannot create the required objects. HDFView provides
 options to select a subset of a dataset for display. You can also select
 dimensions and order of dimension to display, e.g., to switch the columns
@@ -110,7 +111,8 @@ by dim[2]=depth, dim[1]=height and dim[0]=width.
 the horizontal and dim[1] the vertical. When this is selected, the data
 will be reordered in memory, and displayed in the new layout.
 
-<p>By default, a scalar dataset is displayed in a Spreadsheet. You can also display
+<p>By default, a scalar dataset (e.g., a dataset or SDS of numbers) 
+is displayed in a Spreadsheet. You can also display
 a dataset as an image. To display a dataset in image, click the check box
 of image in the selection dialog and select a predefined color table the the
 dataset. This operation takes the data values of the dataset as values of an
@@ -145,7 +147,8 @@ the right of the line plot with column names and line colors.
 
 You can change the values of a dataset in two ways: typing data into the table
 cell or paste data from system clipboard. HDFView will reject invalid data values. 
-For example, it will not accept a float point for the integer dataset. Table 5.1 
+For example, it will not accept a floating point number into an integer 
+dataset. Table 5.1 
 lists the rules for entering data. <b><i>The change of data value is only in
 memory. It is not saved to file untill you choose "Update File" from the object
 menu, or when you dismiss the table, you will be asked if you want to save the change
@@ -187,7 +190,8 @@ to the file</i></b>.
 <tr>
 <td>string</td>
 
-<td>A string longer than the stored value will be truncated.</td>
+<td>A string longer than the stored value will be silently truncated when
+written to the file.</td>
 </tr>
 
 <tr>

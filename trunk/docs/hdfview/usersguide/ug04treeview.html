@@ -22,7 +22,13 @@
 
 <h1>
 Chapter 4: The Tree Viewer</h1>
-Every HDF5 object appears in at least one group. A set of objects can be
+The Tree shows the objects in each open file, and supports navigation and
+editing of the objects. Muliple files can be viewed and edited, and both
+HDF4 and HDF5 files can be opened. The viewing and editing operations work
+for both HDF4 and HDF5, although some operations cannot be implemented for
+HDF4.
+
+<p>Every HDF5 object appears in at least one group. A set of objects can be
 stored together in a group. You can use the group object API functions
 to create and manipulate the groups. With the groups, you can organize
 the data objects in an HDF file. Objects in HDF4 may or may not belong to 
@@ -99,7 +105,8 @@ to select individual objects, and to view the content of the selected object.
 <p>
 You can open a data object in the tree by a double-mouse-click or selecting open
 command from menu bar or popup menu. By default, data content is displayed as 
-an image, a table or text based on its datatype.
+an image, a table or text based on its datatype.  See the following chapters 
+for a detailed discussion of the data viewers.
 
 <p>
 Using "Open As", you can select a subset of dataset to display or change the
@@ -111,7 +118,6 @@ you select a subset by dragging the mouse.
 <center>
 <p><img SRC="images/dataset_open_as.gif" >
 <br><b>Figure 4.4 The Display Option</b></center>
-
 
 <h2>
 <a NAME="ug04metadata"></a>4.3 Display Metadata and Attributes</h2>
@@ -154,8 +160,10 @@ of the attribute display.
 <h2>
 <a NAME="ug04edit"></a>4.4 Edit File and File Structure</h2>
 The HDFView allow you to create ans save file, to add and delete objects in the
-file. <B>Since this version does not support undo operation, all the changes go
-to the physical file, and the editing results cannot be recovered</b>.
+file. 
+<B>Users should be aware that all the changes are made to the actual stored 
+file.  This version does not support undo operation, editing results cannot 
+be automatically recovered</b>.
 
 <h3>
 <a NAME="ug04file"></a>4.4.1 Create and Save File</h3>
@@ -169,10 +177,15 @@ from the new file dialog. A new file will be create with an empty root group.
 
 <p>
 Use "Save As" from the file menu to save the current selected file into a new file
-of the same format, i.e. HDF4 to HDF4 or HDF5 to HDF5. HDFView does not support
-HDF4/5 conversion. For HDF5, the new file does not contain the inaccessible objects
-and it packs the unusable space. Dataset values of object reference are not updated.
-For HDF4, the new file is the exact copy, same file content and file size.
+of the same format, i.e. HDF4 to HDF4 or HDF5 to HDF5. (HDFView does not support
+HDF4/5 conversion.) 
+
+<p>For HDF5, a new file is written that does not contain the inaccessible 
+objects and it packs the unusable space. Thus, the new file may be smaller 
+than the original. <b>Dataset or attributes 
+values that are object references can not be updated.<b> 
+
+<p>For HDF4, a new file is the exact copy, same file content and file size.
 
 <h3>
 <a NAME="ug04add"></a>4.4.2 Add and Delete Object</h3>
@@ -186,8 +199,9 @@ give the name of the new group and parent group to which the new group is to be 
 <p>
 To create a new dataset, select the "New Dataset" command from the object menu. Then, 
 specify the name, path, datatype, dataspace and storage layout and compression of the 
-new dataset. The current version only supports simple datatypes. You cannot create
-VData and compound dataset.
+new dataset. The current version only supports creating simple datatypes. You 
+cannot create an HDF4 VData or an HDF5 compound dataset. (These objects can
+be viewed.)
 
 <center>
 <p><img SRC="images/new_dataset.gif" >
@@ -196,9 +210,9 @@ VData and compound dataset.
 <p>
 To delete objects from the tree, you first select the objects, then choose the "Delete" 
 command from the Object menu. A confirmation dialog appears to make sure you want to 
-delete the selected objects. <b>Deleting object from HDF4 file is not supported</b>.
+delete the selected objects. 
 
-<p>
+<b>Deleting an object from an HDF4 file is not supported</b>.
 The deleting HDF5 object calls the H5Gunlink() function of the HDF5 library. The unlink 
 function removes the link, and when an object has no remaining links it can be deleted. 
 However, the HDF5 library does not currently reclaim the space in the file. This means 
@@ -251,7 +265,7 @@ declared size of the attribute.
 
 <P>
 To delete an attribute, you select the attribute and click the "Delete" button.
-<b>Deleting attribute in HDF4 is not supported</b>.
+<b>Deleting an attribute of an HDF4 object is not supported</b>.
 
 <!-- BEGIN OF FOOTER INFO -->
 <p>

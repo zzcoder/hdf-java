@@ -22,19 +22,19 @@
 <h1>
 Chapter 6: Image Viewer</h1>
 
-HDFView displays HDF images in the ImageView by default. An HDF4 image is raster
-image of 8-bit with index RGB color table, or a 24-bit true color image. HDF4
+HDFView displays HDF images in the ImageView window by default. An HDF4 image is raster
+image of 8-bit pixels with and indexed RGB color table, or a 24-bit true color image. HDF4
 library provides image APIs to access image data and color table.
 
 <p>
 An HDF5 image is a dataset that confirms the
 <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/ADGuide/ImageSpec.html">
-HDF5 Image Specification </a>. HDFView supports two types of images: indexed 
+HDF5 Image Specification</a>. HDFView supports two types of images: indexed 
 and true color. Both indexed image and true color image have predefined
 attributes and data layout according to the HDF5 image specification.
 For more details about HDF5 image, see the 
 <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/ADGuide/ImageSpec.html">
-HDF5 Image Specification </a>.
+HDF5 Image Specification</a>.
 
 <dl>
 <dt><a href="ug06imageview.html#ug06image">6.1 Display a 2D or 3D Image</a></dt>
@@ -57,14 +57,20 @@ Other image formats supported by the Image and Palette Specification are
 not supported by this tool. 
 
 <h3>
-6.1.1 Indexed Image </h3>
-<p>An indexed image is a dataset which has an attribute "IMAGE_SUBCLASS=IMAGE_INDEXED"
-or the image subclass is not defined. A general dataset with 2 or more dimensions
-is displayed as indexed images. The dataset is converted to a raster image using 
-the first palette specified by the PALETTE attribute, or a default palette. 
+6.1.1 Indexed Image (8-bit) </h3>
+<p>An indexed image is one of the following:
+<ul>
+<li>An HDF4 RI8 image</li>
+<li>An HDF5 dataset that conforms to the HDF5 Image specification, and is
+a "IMAGE_SUBCLASS=IMAGE_INDEXED"
+<li>An SDS or HDF5 dataset with data that can be interpreted as an image </li>
+</ul>
+<p>The dataset is displayed as a Java image using IndexColorModel. 
+The dataset is converted to a raster image using 
+the first palette specified by the PALETTE attribute, or the default palette for
+HDF4. 
 Multiple user defined palettes (i.e., the PALETTE attribute may be a list) are 
-not supported in version 1.0. A default palette of gray, rainbow, nature or wave is
-used if the dataset does not has a palette.
+not supported in version 1.0.
 
 <p>The dataset of an indexed image holds the values of indices of the color lookup
 table (palette). The dataset is converted into image pixels by looking up the color 
@@ -76,8 +82,12 @@ table. The following figure is an example of mapping dataset values into pixels.
 
 <p>
 For a two dimensional indexed image HDFView assumes that the width of the image is 
-the size of secon dimension and the height of the image is the first dimension, 
+the size of second dimension and the height of the image is the first dimension, 
 i.e. dim[0]=height and dim[1]=width.
+
+<p>Although HDFView displays the entire image by the order of (dim[0], dim[1],
+dim[2])=(depth, height, width) by default, you can always change the order
+and select a subset for display as discussed in Chpater 5.
 
 <p>HDFView also displays a three dimensional array as an array of 2D images
 arranged along the third dimension, i.e. dim[0]=depth, dim[1]=height and
@@ -88,26 +98,49 @@ x 600 (dim[0]=20, dim[1]=400, and dim[2]=600), HDFView will display it as
 However, A three-dimension image of [1][height][width] or [height][width][1]
 is treated as a two-dimension indexed image of [height][width].
 
-<p>Although HDFView displays the entire image by the order of (dim[0], dim[1],
-dim[2])=(depth, height, width) by default, you can always change the order
-and select a subset for display as discussed in Chpater 5.
 
+<p>
+A 2D or 3D SDS or HDF5 dataset with integer or float data can be displayed as
+an indexed image using the "Open As" selection from the Object menu.
+Since the dataset does not have a palette, a default palette is
+used. The palette is chosen from the "Select Palette" menu in the
+"Dataset Selection" window. The palettes include:
+<ul>
+<li>gray
+</li>
+<li>
+rainbow
+</li>
+<li>
+nature 
+</li>
+<li>
+wave 
+</li>
+</ul>
+The default is "gray", a gray scale.
 <h3>
 6.1.2 True Color Image </h3>
 In the case of an image with more than one component per pixel (e.g., Red, 
-Green, and Blue), the data may be arranged in one of two ways.  Following HDF4 
-terminology, the data may be interlaced by pixel or by plane, which should 
-be indicated by the INTERLACE_MODE  attribute.  In both cases, the dataset will 
-have a dataspace with three dimensions, height, width, and components. The 
-data is arranged by the order of [height][width][pixel components] for pixle
-interlace and [pixel components][height][width] for plane interlace. HDFView
+Green, and Blue), the data may be arranged in one of two ways.  
+HDFView
 only supports three color components: red, green and blue.
+<p>Following HDF4 
+terminology, the data may be interlaced by <i>pixel</i> or by <i>plane</i>. For an HDF5 Image dataset the interlace should 
+be indicated by the INTERLACE_MODE attribute.  In both cases, the dataset will 
+have a dataspace with three dimensions, <i>height</i>, <i>width</i>, and <i>components</i>. 
+For <i>pixel interlace</i> the 
+data is arranged by the order of [height][width][pixel components]. 
+For <i>plane interlace</i> the data is arranged by the order
+[pixel components][height][width]. 
 
 <p>
 The translation from pixel values to color components for display or processing 
-purposes is a one-to-one correspondence of samples to components. Data of RGB
-color components is converted into byte data, which is packed into single int 
-pixel. A DirectColorModel is used with image data which uses masks to define 
+purposes is a one-to-one correspondence of data values to components. 
+Data of RGB
+color components is converted into byte data, which is packed into 
+single <i>int</i> 
+pixel. The Java Image is created with a DirectColorModel, with masks to define 
 packed samples. This color model is similar to an X11 TrueColor visual. The 
 default RGB ColorModel specified with the following parameters:
 <pre>
@@ -140,10 +173,12 @@ size image is created by selecting every second pixel. Magnification (zoom
 in) is done by replicating pixels.
 <p>
 You can also flip an image horizontally or verticaly. Flipping an image will
-change the coordinates of the image. Selected of an area of an flipped image
-may not follwing the coordinates of the orginal image.
+change the coordinates of the image. 
+This can be used to adjust images that may have been created with
+different origins that the defaults.
 <p>
-There are five levels of image contour ranged from three to nine. Level three
+The "contour" creates a contour plot of the pixel values.
+The contour can have from three to nine contour levels. Level three
 has less details of contour and level nine has more details of the contour. The
 following shows an contour image of level nine. 
 
