@@ -432,12 +432,12 @@ ncsa.hdf.object: ncsa/hdf/object/Attribute.class \
 	ncsa/hdf/object/HObject.class \
 	ncsa/hdf/object/ScalarDS.class \
 	ncsa/hdf/object/H4File.class \
-	ncsa/hdf/object/H4File\\$$1.class \
-	ncsa/hdf/object/H4File\\$$2.class \
-	ncsa/hdf/object/H4File\\$$3.class \
+	ncsa/hdf/object/H4File$$1.class \
+	ncsa/hdf/object/H4File$$2.class \
+	ncsa/hdf/object/H4File$$3.class \
 	ncsa/hdf/object/H5File.class \
-	ncsa/hdf/object/H5File\\$$1.class \
-	ncsa/hdf/object/H5File\\$$2.class \
+	ncsa/hdf/object/H5File$$1.class \
+	ncsa/hdf/object/H5File$$2.class \
 	ncsa/hdf/object/FileFormat.class \
 	ncsa/hdf/object/Metadata.class 
 
@@ -462,34 +462,34 @@ test.h4toh5: test/h4toh5/apitest.class \
 	test/h4toh5/linktest5.class 
 
 ncsa.hdf.view: ./ncsa/hdf/view/TreeView.class \
-	./ncsa/hdf/view/TreeView\\$$1.class \
-	./ncsa/hdf/view/TreeView\\$$HTreeCellRenderer.class \
-	./ncsa/hdf/view/TreeView\\$$HTreeMouseAdapter.class \
+	./ncsa/hdf/view/TreeView$$1.class \
+	./ncsa/hdf/view/TreeView$$HTreeCellRenderer.class \
+	./ncsa/hdf/view/TreeView$$HTreeMouseAdapter.class \
 	./ncsa/hdf/view/ViewManager.class \
 	./ncsa/hdf/view/ChartView.class \
-	./ncsa/hdf/view/ChartView\\$$1.class \
-	./ncsa/hdf/view/ChartView\\$$ChartPanel.class \
+	./ncsa/hdf/view/ChartView$$1.class \
+	./ncsa/hdf/view/ChartView$$ChartPanel.class \
 	./ncsa/hdf/view/DataObserver.class \
 	./ncsa/hdf/view/DataOptionDialog.class \
 	./ncsa/hdf/view/HDFView.class \
-	./ncsa/hdf/view/HDFView\\$$1.class \
+	./ncsa/hdf/view/HDFView$$1.class \
 	./ncsa/hdf/view/ImageObserver.class \
 	./ncsa/hdf/view/ImageView.class \
-	./ncsa/hdf/view/ImageView\\$$FlipFilter.class \
-	./ncsa/hdf/view/ImageView\\$$ImageComponent.class \
+	./ncsa/hdf/view/ImageView$$FlipFilter.class \
+	./ncsa/hdf/view/ImageView$$ImageComponent.class \
 	./ncsa/hdf/view/MetadataDialog.class \
-	./ncsa/hdf/view/MetadataDialog\\$$1.class \
-	./ncsa/hdf/view/MetadataDialog\\$$2.class \
-	./ncsa/hdf/view/MetadataDialog\\$$3.class \
+	./ncsa/hdf/view/MetadataDialog$$1.class \
+	./ncsa/hdf/view/MetadataDialog$$2.class \
+	./ncsa/hdf/view/MetadataDialog$$3.class \
 	./ncsa/hdf/view/TableObserver.class \
 	./ncsa/hdf/view/TableView.class \
-	./ncsa/hdf/view/TableView\\$$1.class \
-	./ncsa/hdf/view/TableView\\$$2.class \
-	./ncsa/hdf/view/TableView\\$$3.class \
-	./ncsa/hdf/view/TableView\\$$4.class \
-	./ncsa/hdf/view/TableView\\$$ButtonRenderer.class \
-	./ncsa/hdf/view/TableView\\$$ColumnHeader.class \
-	./ncsa/hdf/view/TableView\\$$RowHeader.class \
+	./ncsa/hdf/view/TableView$$1.class \
+	./ncsa/hdf/view/TableView$$2.class \
+	./ncsa/hdf/view/TableView$$3.class \
+	./ncsa/hdf/view/TableView$$4.class \
+	./ncsa/hdf/view/TableView$$ButtonRenderer.class \
+	./ncsa/hdf/view/TableView$$ColumnHeader.class \
+	./ncsa/hdf/view/TableView$$RowHeader.class \
 	./ncsa/hdf/view/TextObserver.class \
 	./ncsa/hdf/view/TextView.class \
 	./ncsa/hdf/view/ViewProperties.class 
