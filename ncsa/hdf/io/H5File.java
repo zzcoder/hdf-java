@@ -286,6 +286,13 @@ public class H5File extends DefaultFileFormat
                         did = H5.H5Dopen(fid, fullPath+oName[0]);
                         tid = H5.H5Dget_type(did);
                         tclass = H5.H5Tget_class(tid);
+                        if (tclass == HDF5Constants.H5T_ARRAY)
+                        {
+                            // for ARRAY, the type is determined by the base type
+                            int btid = H5.H5Tget_super(tid);
+                            tclass = H5.H5Tget_class(btid);
+                            try { H5.H5Tclose(btid); } catch (HDF5Exception ex) {}
+                        }
                     } catch (HDF5Exception ex) {}
                     finally {
                         try { H5.H5Tclose(tid); } catch (HDF5Exception ex) {}
@@ -293,7 +300,6 @@ public class H5File extends DefaultFileFormat
                     }
                     Dataset d = null;
 
-                    // Todo: what about ARRAY of scalar or compound data
                     if (tclass == HDF5Constants.H5T_COMPOUND)
                     {
                         // create a new compound dataset

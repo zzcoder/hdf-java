@@ -35,6 +35,10 @@ import ncsa.hdf.hdf5lib.exceptions.*;
  * An one-dimension HDF5 compound array is like an HDF5 Vdata table. Members of
  * the compound dataset are similar to fileds of HDF4 VData table.
  * <p>
+ * ARRAY of compound dataset is not supported in this implementation. ARRAY of
+ * compound dataset requires to read the whole dataset instead of read field by
+ * field.
+ * <p>
  * @version 1.0 12/12/2001
  * @author Peter X. Cao, NCSA
  */
@@ -154,8 +158,12 @@ public class H5CompoundDS extends CompoundDS
                         member_data);
                 } catch (HDF5Exception ex2)
                 {
-                    try { H5.H5Tclose(read_tid); } catch (HDF5Exception ex3) {}
-                    if (fspace > 0) try { H5.H5Sclose(fspace); } catch (HDF5Exception ex3) {}
+                    try { H5.H5Tclose(read_tid); }
+                    catch (HDF5Exception ex3) {}
+                    if (fspace > 0) {
+                        try { H5.H5Sclose(fspace); }
+                        catch (HDF5Exception ex3) {}
+                    }
                     continue;
                 }
                 try { H5.H5Tclose(read_tid); } catch (HDF5Exception ex2) {}
@@ -314,14 +322,13 @@ public class H5CompoundDS extends CompoundDS
      */
     public void init()
     {
-        int did=-1, sid=-1, tid=-1;
+        int did=-1, sid=-1, tid=-1, tclass=-1;
         int fid = getFID();
         String fullName = getPath()+getName();
 
         try {
             did = H5.H5Dopen(fid, fullName);
             sid = H5.H5Dget_space(did);
-            tid= H5.H5Dget_type(did);
             rank = H5.H5Sget_simple_extent_ndims(sid);
 
             if (rank == 0)
@@ -351,6 +358,14 @@ public class H5CompoundDS extends CompoundDS
             }
 
             // initialize member information
+            tid= H5.H5Dget_type(did);
+            tclass = H5.H5Tget_class(tid);
+            if (tclass == HDF5Constants.H5T_ARRAY)
+            {
+                int tmptid = tid;
+                tid = H5.H5Tget_super(tmptid);
+                try { H5.H5Tclose(tmptid); } catch (HDF5Exception ex) {}
+            }
             numberOfMembers = H5.H5Tget_nmembers(tid);
             memberNames = new String[numberOfMembers];
             memberTypes = new int[numberOfMembers];
