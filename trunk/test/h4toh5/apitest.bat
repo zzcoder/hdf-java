@@ -15,7 +15,7 @@ set LIBDIR=%JH45HOME%\lib
 
 
 @REM Test if JH45 and java home directories are valid
-IF not exist "%JH45HOME%\lib\jhdf.jar" SET JH45HOME=..
+rem IF not exist "%JH45HOME%\lib\jhdf.jar" SET JH45HOME=..
 IF not exist "%JH45HOME%\lib\jhdf.jar" GOTO :NOJH45
 IF not exist "%JH45HOME%\lib\jhdf5.jar" GOTO :NOJH45
 IF not exist "%JH45HOME%\lib\jh4toh5.jar" GOTO :NOJH45
@@ -48,7 +48,7 @@ GOTO :RUN
 SET PATH=%JH45HOME%;"%JH45HOME%\lib\win32;%JAVAHOME%\bin;%WINDIR%\COMMAND"
 IF "%OS%"=="Windows_NT" SET PATH=%JH45HOME%\lib\win32;%JAVAHOME%\bin;%JH45HOME%
 
-SET CLASSPATH=%JH45HOME%\test;%JAVAHOME%\lib\rt.jar;%JAVAHOME%\lib\classes.zip;%JH45HOME%\lib\jhdf.jar;%JH45HOME%\lib\jhdf5.jar;%JH45HOME%\lib\jh4toh5.jar
-%JAVAHOME%\bin\java -Djava.library.path="%LIBDIR%\win32" -Dncsa.hdf.libh4toh5.h4toh5.h45lib="%LIBDIR%\win32\jh4toh5.dll" -classpath "%CLASSPATH%" apitest
+SET CLASSPATH=%JH45HOME%\test\h4toh5;%JAVAHOME%\lib\rt.jar;%JAVAHOME%\lib\classes.zip;%JH45HOME%\lib\jhdf.jar;%JH45HOME%\lib\jhdf5.jar;%JH45HOME%\lib\jh4toh5.jar
+%JAVAHOME%\bin\java -Djava.library.path="%LIBDIR%\win32" -Dncsa.hdf.h4toh5lib.h4toh5.h45lib="%LIBDIR%\win32\jh4toh5.dll" -Dncsa.hdf.hdflib.HDFLibrary.hdflib="%LIBDIR%\win32\jh4toh5.dll" -Dncsa.hdf.hdf5lib.h4toh5.hdf5lib="%LIBDIR%\win32\jh4toh5.dll" -classpath "%CLASSPATH%" apitest
 pause
 :END
