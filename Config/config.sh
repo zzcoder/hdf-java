@@ -47,35 +47,36 @@ set -x
 #CC=/bin/cc
 #export CC
 
-# ===================== setting for premium 
-#INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/irix
-#JAVAINC=/usr/java/include
-#JAVALIB=/usr/java/jre/lib
-#HDF4=/afs/ncsa.uiuc.edu/packages/hdf/4.2r1-irix64-n32
-#HDF5=/afs/ncsa.uiuc.edu/packages/hdf5/5-1.6.4-irix64-n32
-#SZIP=/afs/.ncsa.uiuc.edu/projects/hdf/packages/szip/IRIX64-6.5-32bit
-#GZIP=/afs/.ncsa.uiuc.edu/projects/hdf/packages/zlib/IRIX64-6.5-32bit
-#JPEG=/afs/.ncsa.uiuc.edu/projects/hdf/packages/jpeg/IRIX64-6.5-32bit
-#export CC=/opt/MIPSpro/bin/cc
+# ===================== setting for modi4 
+INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/irix
+JAVAINC=/usr/java2/include
+JAVALIB=/usr/java2/jre/lib
+HDF4=/afs/ncsa.uiuc.edu/packages/hdf/4.2r1-irix64-n32
+HDF5=/afs/ncsa.uiuc.edu/packages/hdf5/5-1.6.4-irix64-n32
+SZIP=/afs/ncsa.uiuc.edu/projects/hdf/packages/szip/IRIX64-6.5-32bit
+#SZIP=/afs/ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib-external/szip-2.0
+GZIP=/afs/ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib-external/zlib-1.2.1
+JPEG=/afs/ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib-external/jpeg-6b
+export CC=/opt/MIPSpro/bin/cc
 
 # ===================== setting for pommier
-INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/macosx
-JAVAINC=/System/Library/Frameworks/JavaVM.framework/Headers
-JAVALIB=/System/Library/Frameworks/JavaVM.framework/Libraries
-HDF4=/afs/ncsa.uiuc.edu/packages/hdf/4.2r1-macosx
-HDF5=/afs/ncsa.uiuc.edu/packages/hdf5/5-1.6.4-macosx
-SZIP=/afs/.ncsa.uiuc.edu/projects/hdf/packages/szip/Darwin-7.7
-JPEG=/afs/.ncsa.uiuc.edu/projects/hdf/packages/jpeg/MacOSX
+#INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/macosx
+#JAVAINC=/System/Library/Frameworks/JavaVM.framework/Headers
+#JAVALIB=/System/Library/Frameworks/JavaVM.framework/Libraries
+#HDF4=/afs/ncsa.uiuc.edu/packages/hdf/4.2r1-macosx
+#HDF5=/afs/ncsa.uiuc.edu/packages/hdf5/5-1.6.4-macosx
+#SZIP=/afs/.ncsa.uiuc.edu/projects/hdf/packages/szip/Darwin-7.7
+#JPEG=/afs/.ncsa.uiuc.edu/projects/hdf/packages/jpeg/MacOSX
 #SZIP=/afs/.ncsa.uiuc.edu/projects/hdf/java/java9/xcao/macosx/ext
-GZIP=/afs/.ncsa.uiuc.edu/projects/hdf/java/java9/xcao/macosx/ext
+#GZIP=/afs/.ncsa.uiuc.edu/projects/hdf/java/java9/xcao/macosx/ext
 #JPEG=/afs/.ncsa.uiuc.edu/projects/hdf/java/java9/xcao/macosx/ext
-export CC=/usr/bin/cc
+#export CC=/usr/bin/cc
+#-build=powerpc-apple \
+#--with-jdkclasses=/System/Library/Frameworks/JavaVM.framework/Classes \
+#--with-javabin=/System/Library/Frameworks/JavaVM.framework/Commands \
 
 
 ./configure --prefix=$INSTDIR \
--build=powerpc-apple \
---with-jdkclasses=/System/Library/Frameworks/JavaVM.framework/Classes \
---with-javabin=/System/Library/Frameworks/JavaVM.framework/Commands \
 --with-jdk=$JAVAINC,$JAVALIB \
 --with-hdf5=$HDF5/include,$HDF5/lib \
 --with-hdf4=$HDF4/include,$HDF4/lib \
