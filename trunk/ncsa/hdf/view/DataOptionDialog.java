@@ -22,6 +22,7 @@ import java.awt.GridLayout;
 import java.awt.Choice;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.Dimension;
 
 /**
  * DataOptionDialog is an dialog window used to select display options.
@@ -165,9 +166,9 @@ implements ActionListener, ItemListener
 
         // layout the components
         JPanel contentPane = (JPanel)getContentPane();
-        contentPane.removeAll();
-        contentPane.setLayout(new BorderLayout(5,5));
-        contentPane.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        contentPane.setLayout(new BorderLayout(5, 5));
+        contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+        contentPane.setPreferredSize(new Dimension(360, 250));
 
         JPanel labelP = new JPanel();
         labelP.setLayout(new GridLayout(3, 1, 3, 3));
@@ -236,7 +237,6 @@ implements ActionListener, ItemListener
         l.y += 80;
         setLocation(l);
         pack();
-        setSize(350, getSize().height);
     }
 
     private void init()

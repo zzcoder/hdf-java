@@ -20,6 +20,7 @@ import java.awt.Frame;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
+import java.awt.Dimension;
 import java.util.List;
 import java.lang.reflect.Array;
 
@@ -78,9 +79,10 @@ implements ActionListener
 
         //Add the tabbed pane to this panel.
         JPanel contentPane = (JPanel)getContentPane();
-        contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-
         contentPane.setLayout(new BorderLayout());
+        contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+        contentPane.setPreferredSize(new Dimension(400, 500));
+
         contentPane.add("Center", tabbedPane);
         contentPane.add("South", bPanel);
 
@@ -89,8 +91,7 @@ implements ActionListener
         l.x += 250;
         l.y += 80;
         setLocation(l);
-        setSize(400, 500);
-        validate();
+        pack();
     }
 
     public void actionPerformed(ActionEvent e)

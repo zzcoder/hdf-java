@@ -145,7 +145,9 @@ public class H5CompoundDS extends CompoundDS
 
                 try { member_class = H5.H5Tget_class(member_tid);
                 } catch (HDF5Exception ex) {}
+
                 int arrayType = member_tid;
+                int baseType = member_tid;
                 if (member_class == HDF5Constants.H5T_ARRAY)
                 {
                     try
@@ -153,8 +155,9 @@ public class H5CompoundDS extends CompoundDS
                         int mn = H5.H5Tget_array_ndims(member_tid);
                         int[] marray = new int[mn];
                         H5.H5Tget_array_dims(member_tid, marray, null);
+                        baseType = H5.H5Tget_super(member_tid);
                         arrayType = H5.H5Tarray_create (
-                            H5Accessory.toNativeType(H5.H5Tget_super(member_tid)),
+                            H5Accessory.toNativeType(baseType),
                             mn,
                             marray,
                             null);
@@ -190,6 +193,8 @@ public class H5CompoundDS extends CompoundDS
                     member_data = byteToString((byte[])member_data, member_size);
                 else if (member_class == HDF5Constants.H5T_REFERENCE)
                     member_data = HDFNativeData.byteToLong((byte[])member_data);
+                else if (H5Accessory.isUnsigned(baseType))
+                    member_data = Dataset.convertFromUnsignedC(member_data);
 
                 list.add(i, member_data);
             } // end of for (int i=0; i<num_members; i++)

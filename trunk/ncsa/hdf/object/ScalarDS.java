@@ -59,12 +59,12 @@ public abstract class ScalarDS extends Dataset
     protected byte[][] palette;
 
     /**
-     * True is this dataset is an image.
+     * True if this dataset is an image.
      */
     protected boolean isImage;
 
     /**
-     * True is this dataset is ASCII text.
+     * True if this dataset is ASCII text.
      */
     protected boolean isText;
 
@@ -134,7 +134,7 @@ public abstract class ScalarDS extends Dataset
     }
 
     /**
-     * Returns true is this dataset is an image.
+     * Returns true if this dataset is an image.
      */
     public final boolean isImage()
     {
@@ -142,7 +142,7 @@ public abstract class ScalarDS extends Dataset
     }
 
     /**
-     * Returns true is this dataset is ASCII text.
+     * Returns true if this dataset is ASCII text.
      */
     public final boolean isText()
     {
@@ -157,5 +157,14 @@ public abstract class ScalarDS extends Dataset
         return interlace;
     }
 
+    /**
+     * convert value of this dataset to unsigned C integer.
+     */
+    public abstract void convertToUnsignedC();
+
+    /**
+     * convert unsigned C value of this dataset to appropriate Java integer.
+     */
+    public abstract void convertFromUnsignedC();
 
 }

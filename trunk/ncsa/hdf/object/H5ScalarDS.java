@@ -443,4 +443,23 @@ public class H5ScalarDS extends ScalarDS
         return palette;
     }
 
+
+    // Implementing ScalarDS
+    public void convertFromUnsignedC()
+    {
+        if (data != null && H4Accessory.isUnsigned(datatype))
+        {
+            data = convertFromUnsignedC(data);
+        }
+    }
+
+    // Implementing ScalarDS
+    public void convertToUnsignedC()
+    {
+        if (data != null && H4Accessory.isUnsigned(datatype))
+        {
+            data = convertToUnsignedC(data);
+        }
+    }
+
 }

@@ -150,25 +150,27 @@ implements ActionListener
             findDataRange();
         }
 
+        JPanel contentPane = (JPanel)getContentPane();
+        contentPane.setLayout(new BorderLayout(5, 5));
+        contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+        contentPane.setPreferredSize(new Dimension(600, 400));
+
         ChartPanel chartP = new ChartPanel();
         chartP.setBackground(Color.white);
-        JPanel cp = (JPanel) getContentPane();
-        cp.removeAll();
-        cp.setLayout(new BorderLayout());
-        cp.add("Center", chartP);
+        contentPane.add(chartP, BorderLayout.CENTER);
 
         JButton button = new JButton("Close");
         button.addActionListener(this);
         button.setActionCommand("Close");
         JPanel tmp = new JPanel();
         tmp.add(button);
-        cp.add("South", tmp);
+        contentPane.add(tmp, BorderLayout.SOUTH);
 
         Point l = owner.getLocation();
         l.x += 250;
         l.y += 100;
         setLocation(l);
-        setSize(600, 400);
+        pack();
     }
 
     public void actionPerformed(ActionEvent e)
