@@ -215,7 +215,7 @@ public class H4File extends File implements FileFormat
 
         H4Group rootGroup = new H4Group(
             this,
-            "HDF4 - "+getName(), // set the node name to the file name
+            getName(), // set the node name to the file name
             null, // root node does not have a parent path
             null, // root node does not have a parent node
             oid);

@@ -17,12 +17,16 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 import javax.swing.text.*;
+import javax.swing.event.*;
+import java.net.URL;
 import java.awt.Event;
 import java.awt.Insets;
 import java.awt.Dimension;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.BorderLayout;
+import java.awt.Toolkit;
+import java.awt.Image;
 
 /**
  * HDFView is the main class of this HDF visual tool.
@@ -40,8 +44,13 @@ import java.awt.BorderLayout;
  * @author Peter X. Cao
  */
 public final class HDFView extends JFrame
-implements ViewManager, ActionListener
+implements ViewManager, ActionListener, HyperlinkListener
 {
+    private static final String aboutHDFView =
+        "HDF Viewer, "+ "Version "+ViewProperties.VERSION+"\n"+
+        "Copyright "+'\u00a9'+" 2001-2002 University of Illinois.\n"+
+        "All rights reserved.";
+
     /** the directory where the HDFView is installed */
     private String rootDir;
 
@@ -72,11 +81,38 @@ implements ViewManager, ActionListener
     /** GUI component: a list of current data windwos */
     private final JMenu windowMenu;
 
+    /** GUI component: a list of current data object */
+    private final JMenu objectMenu;
+
     /** GUI component: file menu on the menubar */
     private final JMenu fileMenu;
 
+    /** GUI component: window to show the Users' Guide */
+    private final JFrame usersGuideWindow;
+
+    /** GUI component: editorPane to show the Users' Guide */
+    private final JEditorPane usersGuideEditorPane;
+
     /** the string buffer holding the status message */
     private final StringBuffer message;
+
+    /** The list of GUI components related to image */
+    private final Vector imageGUIs;
+
+    /** The list of GUI components related to 3D datasets */
+    private final Vector d3GUIs;
+
+    /** The URL of the User's Guide. */
+    private URL usersGuideURL;
+
+    /** The previous URL of the User's Guide. */
+    private URL previousUsersGuideURL;
+
+    /** The previously visited URLs for back action. */
+    private Stack visitedUsersGuideURLs;
+
+    /** The back button for users guide. */
+    private JButton usersGuideBackButton;
 
     /**
      * Constructs the HDFView with a given root directory, where the
@@ -104,6 +140,11 @@ implements ViewManager, ActionListener
         this.currentDir = root;
         this.currentFile = null;
         this.selectedObject = null;
+        this.usersGuideURL = null;
+
+        this.imageGUIs = new Vector();
+        this.d3GUIs = new Vector();
+
         File theFile = new File(filename);
         if (theFile.exists())
         {
@@ -129,15 +170,82 @@ implements ViewManager, ActionListener
         statusArea.setEditable(false);
         statusArea.setLineWrap(true);
         message = new StringBuffer();
-        contentPane = new JDesktopPane();
+        showStatus(props.getPropertyFile());
+
+        // setup the Users guide window
+        usersGuideWindow = new JFrame("HDFView User's Guide");
+        usersGuideEditorPane = new JEditorPane();
+
+        contentPane = new JDesktopPane()
+        {
+            public void moveToFront(Component c)
+            {
+                super.moveToFront(c);
+
+                // enable or disable image GUI components
+                boolean isImage = (c instanceof ImageView);
+                Component item = null;
+                Iterator it = imageGUIs.iterator();
+                while (it.hasNext())
+                {
+                    item = (Component)it.next();
+                    item.setEnabled(isImage);
+                }
+
+                // enable or disable 3D GUI components
+                boolean is3D = false;
+                if (c instanceof DataObserver)
+                {
+                    DataObserver dataObs = (DataObserver)c;
+                    HObject hObj = (HObject)dataObs.getDataObject();
+                    if (hObj instanceof Dataset)
+                    {
+                        Dataset ds = (Dataset)hObj;
+                        is3D = (ds.getRank() > 2);
+                    }
+                }
+                it = d3GUIs.iterator();
+                while (it.hasNext())
+                {
+                    item = (Component)it.next();
+                    item.setEnabled(is3D);
+                }
+            } //public void moveToFront(Component c)
+        };
         contentPane.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
         treeView = new TreeView(this);
         windowMenu = new JMenu( "Window" );
+        objectMenu = new JMenu( "Object" );
         fileMenu = new JMenu( "File" );
 
         createMainWindow();
 
-        showStatus(props.getPropertyFile());
+        // disable image and 3D GUI components
+        Component item = null;
+        Iterator it = imageGUIs.iterator();
+        while (it.hasNext())
+        {
+            item = (Component)it.next();
+            item.setEnabled(false);
+        }
+        it = d3GUIs.iterator();
+        while (it.hasNext())
+        {
+            item = (Component)it.next();
+            item.setEnabled(false);
+        }
+
+        Component[] menuItems = windowMenu.getMenuComponents();
+        for (int i=0; i<6; i++)
+        {
+            menuItems[i].setEnabled(false);
+        }
+
+        menuItems = objectMenu.getMenuComponents();
+        for (int i=0; i<menuItems.length; i++)
+        {
+            menuItems[i].setEnabled(false);
+        }
     }
 
     /**
@@ -188,7 +296,7 @@ implements ViewManager, ActionListener
         JFrame frame = new HDFView(rootDir, filename);
         frame.pack();
         frame.setVisible(true);
-    }
+     }
 
 
     // Implementing ViewManager
@@ -206,6 +314,20 @@ implements ViewManager, ActionListener
         {
             currentFile = selectedObject.getFile();
             this.setTitle("HDFView - "+currentFile);
+
+            Component[] menuItems = objectMenu.getMenuComponents();
+            for (int i=0; i<menuItems.length; i++)
+            {
+                menuItems[i].setEnabled(true);
+            }
+        }
+        else
+        {
+            Component[] menuItems = objectMenu.getMenuComponents();
+            for (int i=0; i<menuItems.length; i++)
+            {
+                menuItems[i].setEnabled(false);
+            }
         }
     }
 
@@ -223,6 +345,9 @@ implements ViewManager, ActionListener
         {
             for (int i=0; i<frames.length; i++)
             {
+                if ( !(frames[i] instanceof DataObserver) )
+                    continue;
+
                 HObject obj = (HObject)(((DataObserver)frames[i]).getDataObject());
                 if (selectedObject.equals(obj))
                 {
@@ -354,11 +479,13 @@ implements ViewManager, ActionListener
                 }
             }
 
+            setSelectedObject(null);
             treeView.closeFile(currentFile);
         }
         else if (cmd.equals("Close all file"))
         {
             closeAllWindow();
+            setSelectedObject(null);
             treeView.closeFile();
         }
         else if (cmd.equals("Open data"))
@@ -423,6 +550,22 @@ implements ViewManager, ActionListener
                 ((ImageObserver)frame).showColorTable();
             }
         }
+        else if (cmd.equals("Flip horizontal"))
+        {
+            JInternalFrame frame = contentPane.getSelectedFrame();
+            if (frame != null && frame instanceof ImageObserver)
+            {
+                ((ImageObserver)frame).flip(ImageView.FLIP_HORIZONTAL);
+            }
+        }
+        else if (cmd.equals("Flip vertical"))
+        {
+            JInternalFrame frame = contentPane.getSelectedFrame();
+            if (frame != null && frame instanceof ImageObserver)
+            {
+                ((ImageObserver)frame).flip(ImageView.FLIP_VERTICAL);
+            }
+        }
         else if (cmd.equals("Show chart"))
         {
             JInternalFrame frame = contentPane.getSelectedFrame();
@@ -469,6 +612,86 @@ implements ViewManager, ActionListener
             {
                 ((DataObserver)frame).lastPage();
             }
+        }
+        else if (cmd.equals("Users guide"))
+        {
+            if (usersGuideURL != null)
+                usersGuideWindow.show();
+        }
+        else if (cmd.equals("Users guide home"))
+        {
+            HyperlinkEvent linkEvent = new HyperlinkEvent(
+                usersGuideEditorPane,
+                HyperlinkEvent.EventType.ACTIVATED,
+                usersGuideURL);
+
+            hyperlinkUpdate(linkEvent);
+        }
+        else if (cmd.equals("Users guide back"))
+        {
+            HyperlinkEvent linkEvent = new HyperlinkEvent(
+                usersGuideEditorPane,
+                HyperlinkEvent.EventType.ACTIVATED,
+                (URL)visitedUsersGuideURLs.pop());
+
+            hyperlinkUpdate(linkEvent);
+
+            // hyperlinkUpdate will push the popped link back into the stack
+            visitedUsersGuideURLs.pop();
+
+            if (visitedUsersGuideURLs.empty())
+            {
+                usersGuideBackButton.setEnabled(false);
+            }
+        }
+        else if (cmd.equals("Users guide"))
+        {
+            if (usersGuideURL != null)
+                usersGuideWindow.show();
+        }
+        else if (cmd.equals("HDF4 library"))
+        {
+            JOptionPane.showMessageDialog(
+                this,
+                H4Accessory.getLibversion(),
+                getTitle(),
+                JOptionPane.PLAIN_MESSAGE,
+                ViewProperties.getLargeHdfIcon());
+        }
+        else if (cmd.equals("HDF5 library"))
+        {
+            JOptionPane.showMessageDialog(
+                this,
+                H5Accessory.getLibversion(),
+                getTitle(),
+                JOptionPane.PLAIN_MESSAGE,
+                ViewProperties.getLargeHdfIcon());
+        }
+        else if (cmd.equals("About"))
+        {
+            JOptionPane.showMessageDialog(
+                this,
+                aboutHDFView,
+                getTitle(),
+                JOptionPane.PLAIN_MESSAGE,
+                ViewProperties.getLargeHdfIcon());
+        }
+    }
+
+    public void hyperlinkUpdate(HyperlinkEvent e)
+    {
+        if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
+        {
+            JEditorPane pane = (JEditorPane) e.getSource();
+            try
+            {
+                URL currentURL = e.getURL();
+                pane.setPage(currentURL);
+                if(visitedUsersGuideURLs.isEmpty())
+                    usersGuideBackButton.setEnabled(true);
+                visitedUsersGuideURLs.push(previousUsersGuideURL);
+                previousUsersGuideURL = currentURL;
+            } catch (Throwable t) { showStatus(t.toString()); }
         }
     }
 
@@ -520,7 +743,7 @@ implements ViewManager, ActionListener
 
         // set the window size
         float inset = 0.07f;
-        java.awt.Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
         d.width = Math.max(500, (int)((1-2*inset)*d.width));
         d.height = Math.max(400, (int)((1-2*inset)*d.height));
 
@@ -537,10 +760,12 @@ implements ViewManager, ActionListener
         this.setJMenuBar(createMenuBar());
 
         JPanel mainPane = (JPanel)getContentPane();
-        mainPane.setLayout(new java.awt.BorderLayout());
-        mainPane.add(createToolBar(), java.awt.BorderLayout.NORTH);
-        mainPane.add(splitPane, java.awt.BorderLayout.CENTER);
+        mainPane.setLayout(new BorderLayout());
+        mainPane.add(createToolBar(), BorderLayout.NORTH);
+        mainPane.add(splitPane, BorderLayout.CENTER);
         mainPane.setPreferredSize(d);
+
+        createUsersGuidePane();
     }
 
     private JMenuBar createMenuBar()
@@ -599,29 +824,81 @@ implements ViewManager, ActionListener
         }
 
         // add edit menu
-        menu = new JMenu( "Object" );
-        menu.setMnemonic('O');
-        mbar.add(menu);
+        objectMenu.setMnemonic('O');
+        mbar.add(objectMenu);
 
         item = new JMenuItem( "Open");
         item.setMnemonic(KeyEvent.VK_O);
         item.addActionListener(this);
         item.setActionCommand("Open data");
-        menu.add(item);
+        objectMenu.add(item);
 
         item = new JMenuItem( "Open As");
         item.setMnemonic(KeyEvent.VK_A);
         item.addActionListener(this);
         item.setActionCommand("Open data as");
-        menu.add(item);
+        objectMenu.add(item);
 
-        menu.addSeparator();
+        objectMenu.addSeparator();
 
         item = new JMenuItem( "Properties");
         item.setMnemonic(KeyEvent.VK_P);
         item.addActionListener(this);
         item.setActionCommand("Show object properties");
+        objectMenu.add(item);
+
+        // add image menu
+        menu = new JMenu("Image");
+        menu.setMnemonic('I');
+        mbar.add(menu);
+
+        item = new JMenuItem( "Zoom In");
+        item.setMnemonic(KeyEvent.VK_I);
+        item.addActionListener(this);
+        item.setActionCommand("Zoom in");
         menu.add(item);
+        imageGUIs.add(item);
+
+        item = new JMenuItem( "Zoom Out");
+        item.setMnemonic(KeyEvent.VK_O);
+        item.addActionListener(this);
+        item.setActionCommand("Zoom out");
+        menu.add(item);
+        imageGUIs.add(item);
+
+        menu.addSeparator();
+
+        item = new JMenuItem( "Show Palette");
+        item.setMnemonic(KeyEvent.VK_P);
+        item.addActionListener(this);
+        item.setActionCommand("Show palette");
+        menu.add(item);
+        imageGUIs.add(item);
+
+        menu.addSeparator();
+
+        item = new JMenuItem( "Show Chart");
+        item.setMnemonic(KeyEvent.VK_C);
+        item.addActionListener(this);
+        item.setActionCommand("Show chart");
+        menu.add(item);
+        imageGUIs.add(item);
+
+        menu.addSeparator();
+
+        item = new JMenuItem( "Flip Horizontal");
+        item.setMnemonic(KeyEvent.VK_H);
+        item.addActionListener(this);
+        item.setActionCommand("Flip horizontal");
+        menu.add(item);
+        imageGUIs.add(item);
+
+        item = new JMenuItem( "Flip Vertical");
+        item.setMnemonic(KeyEvent.VK_V);
+        item.addActionListener(this);
+        item.setActionCommand("Flip vertical");
+        menu.add(item);
+        imageGUIs.add(item);
 
         // add window menu
         windowMenu.setMnemonic('w');
@@ -655,6 +932,39 @@ implements ViewManager, ActionListener
 
         windowMenu.addSeparator();
 
+        // add help menu
+        menu = new JMenu("Help");
+        menu.setMnemonic('H');
+        mbar.add(menu);
+
+        item = new JMenuItem( "User's Guide");
+        item.setMnemonic(KeyEvent.VK_U);
+        item.setActionCommand("Users guide");
+        item.addActionListener(this);
+        menu.add(item);
+
+        menu.addSeparator();
+
+        item = new JMenuItem( "HDF4 Library Version");
+        item.setMnemonic(KeyEvent.VK_4);
+        item.setActionCommand("HDF4 library");
+        item.addActionListener(this);
+        menu.add(item);
+
+        item = new JMenuItem( "HDF5 Library Version");
+        item.setMnemonic(KeyEvent.VK_5);
+        item.setActionCommand("HDF5 library");
+        item.addActionListener(this);
+        menu.add(item);
+
+        menu.addSeparator();
+
+        item = new JMenuItem( "About...");
+        item.setMnemonic(KeyEvent.VK_A);
+        item.setActionCommand("About");
+        item.addActionListener(this);
+        menu.add(item);
+
         return mbar;
     }
 
@@ -681,6 +991,16 @@ implements ViewManager, ActionListener
 
         tbar.addSeparator();
 
+        // cahrt button
+        button = new JButton( props.getChartIcon() );
+        tbar.add( button );
+        button.setToolTipText( "Chart" );
+        button.setMargin( new Insets( 0, 0, 0, 0 ) );
+        button.addActionListener( this );
+        button.setActionCommand( "Show chart" );
+
+        tbar.addSeparator();
+
         // zoom in button
         button = new JButton( props.getZoominIcon() );
         tbar.add( button );
@@ -688,6 +1008,7 @@ implements ViewManager, ActionListener
         button.setMargin( new Insets( 0, 0, 0, 0 ) );
         button.addActionListener( this );
         button.setActionCommand( "Zoom in" );
+        imageGUIs.add(button);
 
         // zoom out button
         button = new JButton( props.getZoomoutIcon() );
@@ -696,6 +1017,7 @@ implements ViewManager, ActionListener
         button.setMargin( new Insets( 0, 0, 0, 0 ) );
         button.addActionListener( this );
         button.setActionCommand( "Zoom out" );
+        imageGUIs.add(button);
 
         // palette button
         button = new JButton( props.getPaletteIcon() );
@@ -704,6 +1026,7 @@ implements ViewManager, ActionListener
         button.setMargin( new Insets( 0, 0, 0, 0 ) );
         button.addActionListener( this );
         button.setActionCommand( "Show palette" );
+        imageGUIs.add(button);
 
         tbar.addSeparator();
 
@@ -714,6 +1037,7 @@ implements ViewManager, ActionListener
         button.setMargin( new Insets( 0, 0, 0, 0 ) );
         button.addActionListener( this );
         button.setActionCommand( "First page" );
+        d3GUIs.add(button);
 
         // previous button
         button = new JButton( props.getPreviousIcon() );
@@ -722,6 +1046,7 @@ implements ViewManager, ActionListener
         button.setMargin( new Insets( 0, 0, 0, 0 ) );
         button.addActionListener( this );
         button.setActionCommand( "Previous page" );
+        d3GUIs.add(button);
 
         // next button
         button = new JButton( props.getNextIcon() );
@@ -730,6 +1055,7 @@ implements ViewManager, ActionListener
         button.setMargin( new Insets( 0, 0, 0, 0 ) );
         button.addActionListener( this );
         button.setActionCommand( "Next page" );
+        d3GUIs.add(button);
 
         // last button
         button = new JButton( props.getLastIcon() );
@@ -738,16 +1064,17 @@ implements ViewManager, ActionListener
         button.setMargin( new Insets( 0, 0, 0, 0 ) );
         button.addActionListener( this );
         button.setActionCommand( "Last page" );
+        d3GUIs.add(button);
 
         tbar.addSeparator();
 
-        // cahrt button
-        button = new JButton( props.getChartIcon() );
+        // help button
+        button = new JButton( props.getHelpIcon() );
         tbar.add( button );
-        button.setToolTipText( "Chart" );
+        button.setToolTipText( "Help" );
         button.setMargin( new Insets( 0, 0, 0, 0 ) );
         button.addActionListener( this );
-        button.setActionCommand( "Show chart" );
+        button.setActionCommand( "Users guide" );
 
         return tbar;
     }
@@ -789,6 +1116,15 @@ implements ViewManager, ActionListener
         item.setActionCommand(name);
         item.addActionListener(this);
 
+        if (windowMenu.getMenuComponentCount() == 6)
+        {
+            Component[] menuItems = windowMenu.getMenuComponents();
+            for (int i=0; i<6; i++)
+            {
+                menuItems[i].setEnabled(true);
+            }
+        }
+
         windowMenu.add(item);
     }
 
@@ -798,7 +1134,7 @@ implements ViewManager, ActionListener
         // remove the window name from the window menu.
         int n = windowMenu.getItemCount();
         JMenuItem theItem = null;
-        for (int i=0; i<n; i++)
+        for (int i=6; i<n; i++)
         {
             theItem = windowMenu.getItem(i);
 
@@ -811,6 +1147,16 @@ implements ViewManager, ActionListener
                 break;
             }
         }
+
+        if (windowMenu.getMenuComponentCount() == 6)
+        {
+            Component[] menuItems = windowMenu.getMenuComponents();
+            for (int i=0; i<6; i++)
+            {
+                menuItems[i].setEnabled(false);
+            }
+        }
+
     }
 
     /** Bring the window to the front.
@@ -906,6 +1252,91 @@ implements ViewManager, ActionListener
             jif.dispose();
             contentPane.remove(jif);
         }
+    }
+
+    /**
+     * Create GUI components to show the users guide.
+     */
+    private void createUsersGuidePane()
+    {
+        String ugPath = null;
+        try {
+            ugPath = ViewProperties.getUsersGuide();
+
+            if (ugPath != null && ugPath.length()>0)
+                usersGuideURL = new URL(ViewProperties.getUsersGuide());
+        } catch (Exception e) {
+            usersGuideURL = null;
+            showStatus(e.toString());
+        }
+
+        if (usersGuideURL == null)
+        {
+            try {
+                ugPath = "file:"
+                + rootDir
+                + System.getProperty("file.separator")
+                + "docs"
+                + System.getProperty("file.separator")
+                + "UsersGuide"
+                + System.getProperty("file.separator")
+                + "index.html";
+                usersGuideURL = new URL(ugPath);
+                /* ...  use the URL to initialize the editor pane  ... */
+            } catch (Exception e) {
+                usersGuideURL = null;
+                showStatus(e.toString());
+            }
+        }
+
+        if (usersGuideURL == null)
+            return;
+        else
+            showStatus(usersGuideURL.toString());
+
+        previousUsersGuideURL = usersGuideURL;
+        visitedUsersGuideURLs = new Stack();
+
+        // set up the usersGuide window
+        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+        usersGuideWindow.setLocation(d.width/2, 20);
+        usersGuideWindow.setSize(d.width/2, d.height-200);
+        Image helpImage = ((ImageIcon)ViewProperties.getHelpIcon()).getImage();
+        try { usersGuideWindow.setIconImage(helpImage); }
+        catch (Exception ex ) {}
+        JToolBar tbar = new JToolBar();
+
+        // home button
+        JButton button = new JButton( props.getFirstIcon() );
+        tbar.add( button );
+        button.setToolTipText( "Home" );
+        button.setMargin( new Insets( 0, 0, 0, 0 ) );
+        button.addActionListener( this );
+        button.setActionCommand( "Users guide home" );
+
+        // back button
+        button = new JButton( props.getPreviousIcon() );
+        tbar.add( button );
+        button.setToolTipText( "Back" );
+        button.setMargin( new Insets( 0, 0, 0, 0 ) );
+        button.addActionListener( this );
+        button.setActionCommand( "Users guide back" );
+        button.setEnabled(false);
+        usersGuideBackButton = button;
+
+        usersGuideEditorPane.setEditable(false);
+        try {
+            usersGuideEditorPane.setPage(usersGuideURL);
+        } catch (IOException e) {
+            showStatus(e.toString());
+        }
+        usersGuideEditorPane.addHyperlinkListener(this);
+
+        JScrollPane editorScrollPane = new JScrollPane(usersGuideEditorPane);
+        JPanel contentPane = (JPanel)usersGuideWindow.getContentPane();
+        contentPane.setLayout(new BorderLayout());
+        contentPane.add (tbar, BorderLayout.NORTH);
+        contentPane.add (editorScrollPane, BorderLayout.CENTER);
     }
 
 }
