@@ -107,6 +107,7 @@ copy %HDFOBJECT%\Copying %HDFOBJECT%\windows\hdf-java
 xcopy %HDFOBJECT%\lib %HDFOBJECT%\windows\hdf-java\lib/E
 xcopy %HDFOBJECT%\docs %HDFOBJECT%\windows\hdf-java\docs/E
 
+del %HDFOBJECT%\windows\hdf-java-windows.jar/Q
 cd %HDFOBJECT%\windows\hdf-java
 jar -cf hdf-java-windows.jar *.*
 move hdf-java-windows.jar %HDFOBJECT%\windows
