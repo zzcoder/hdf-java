@@ -32,9 +32,14 @@ public abstract class Group extends HObject
     private final Group parent;
 
     /**
-     * The list of members of this group.
+     * The list of members (in memory) of this group.
      */
     private List memberList;
+
+    /**
+     * Total number of members of this group in file.
+     */
+    private int nMembersInFile;
 
     /**
      * Creates a group object with specific name, path, and parent.
@@ -65,9 +70,10 @@ public abstract class Group extends HObject
     public void addToMemberList(HObject object)
     {
         if (memberList == null)
-            memberList = new Vector(5, 5);
+            memberList = new Vector();
 
-        memberList.add(object);
+        if (object != null)
+            memberList.add(object);
     }
 
     /**
@@ -94,7 +100,10 @@ public abstract class Group extends HObject
 
         if (memberList == null && theFile != null)
         {
+            memberList = new Vector(); // avoid infinite loop search for groups without member
+
             // find the memberList from the file by check the group path and name
+            // group may be created out of the structure tree (H4/5File.loadTree()).
 
             try { theFile.open(); } // load the file structure;
             catch (Exception ex) {}
@@ -138,4 +147,16 @@ public abstract class Group extends HObject
     {
         return parent;
     }
+
+    /**
+     *
+     * @return total number of members of this group in file.
+     */
+    public int getNumberOfMembersInFile() { return nMembersInFile; }
+
+    /**
+     * sets total number of members of this group in file.
+     * @param n total number of members of this group in file.
+     */
+    public void setNumberOfMembersInFile(int n) { nMembersInFile = n; }
 }

@@ -504,6 +504,10 @@ null, options, options[0]);
         if (cols <=0 || rows <= 0)
             return null; // no data is selected
 
+        if (table.getColumnCount() == cols &&
+            table.getRowCount() == rows)
+            return dataValue;
+
         int size = cols*rows;
 
         if (NT == 'B')
@@ -1225,15 +1229,9 @@ null, options, options[0]);
             return;
 
         Object theData = getSelectedData();
-        if (theData == null)
-        {
-            toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-            "Select data cell(s) to show information.",
-            getTitle(),
-            JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+        if (theData == null ||
+            Array.getLength(theData)==1)
+            theData = dataValue;
 
         String statistics = calculateStatistics(theData);
         theData = null;
@@ -1432,7 +1430,9 @@ null, options, options[0]);
     private void updateScalarData(String cellValue, int row, int col)
     throws Exception
     {
-        if (!(dataset instanceof ScalarDS))
+        if (!(dataset instanceof ScalarDS) ||
+            cellValue == null ||
+            (cellValue=cellValue.trim()) == null)
             return;
 
         int i = 0;
@@ -1509,7 +1509,9 @@ null, options, options[0]);
     private void updateCompoundData(String cellValue, int row, int col)
     throws Exception
     {
-        if (!(dataset instanceof CompoundDS))
+        if (!(dataset instanceof CompoundDS) ||
+            cellValue == null ||
+            (cellValue=cellValue.trim()) == null)
             return;
 
         CompoundDS cds = (CompoundDS)dataset;

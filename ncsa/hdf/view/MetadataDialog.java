@@ -420,8 +420,13 @@ implements ActionListener
         JScrollPane scroller = new JScrollPane(table);
 
         panel.setLayout (new BorderLayout());
+        if (g.getNumberOfMembersInFile() < ViewProperties.getMaxMembers())
+            panel.add(new JLabel("Number of members: "+n), BorderLayout.NORTH);
+        else
+            panel.add(new JLabel("Number of members: "+n+
+            " (in memory), "+g.getNumberOfMembersInFile()+" (in file)"), BorderLayout.NORTH);
         panel.add(scroller, BorderLayout.CENTER);
-        panel.setBorder(new TitledBorder("Group members"));
+        panel.setBorder(new TitledBorder("Group Members"));
 
         return panel;
     }

@@ -728,11 +728,24 @@ public class H5File extends FileFormat
             return;
         }
 
+        pgroup.setNumberOfMembersInFile(nelems);
+
         int[] oType = new int[1];
         long[] oid = null;
         String [] oName = new String[1];
+
+        int i0 = Math.max(0, getStartMembers());
+        int i1 = getMaxMembers();
+        if (i1 >= nelems)
+        {
+            i1 = nelems;
+            i0 = 0; // load all members
+        }
+        i1 += i0;
+        i1 = Math.min(i1, nelems);
+
         //Iterate through the file to see members of the group
-        for ( int i = 0; i < nelems; i++)
+        for ( int i = i0; i < i1; i++)
         {
             oName[0] = "";
             oType[0] = -1;

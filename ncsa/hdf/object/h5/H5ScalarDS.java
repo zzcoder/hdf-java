@@ -474,6 +474,7 @@ public class H5ScalarDS extends ScalarDS
         // 3) INTERLACE_MODE = INTERLACE_PLANE
         if (rank >=3 && isImage)
         {
+            interlace = INTERLACE_PIXEL;
             try
             {
                 // try to find out if the image type
@@ -482,8 +483,8 @@ public class H5ScalarDS extends ScalarDS
                 byte[] attrValue = new byte[16];
                 H5.H5Aread(aid, atid, attrValue);
                 String strValue = new String(attrValue).trim();
-                if (strValue.equalsIgnoreCase("IMAGE_TRUECOLOR"))
-                    interlace = INTERLACE_PIXEL; // default interlace
+                if (strValue.equalsIgnoreCase("IMAGE_INDEXED"))
+                    interlace = -1; // default interlace
             } catch (Exception ex) {}
             finally
             {
@@ -501,8 +502,6 @@ public class H5ScalarDS extends ScalarDS
                 String strValue = new String(attrValue).trim();
                 if (strValue.equalsIgnoreCase("INTERLACE_PLANE"))
                     interlace = INTERLACE_PLANE;
-                else
-                    interlace = INTERLACE_PIXEL;
             } catch (Exception ex) {}
             finally
             {
@@ -530,9 +529,9 @@ public class H5ScalarDS extends ScalarDS
             selectedDims[i] = 1;
         }
 
-        // select only two dimension a time,
         if (interlace == INTERLACE_PIXEL)
         {
+            // 24-bit TRUE color image
             // [height][width][pixel components]
             selectedDims[2] = 3;
             selectedDims[0] = dims[0];
@@ -543,6 +542,7 @@ public class H5ScalarDS extends ScalarDS
         }
         else if (interlace == INTERLACE_PLANE)
         {
+            // 24-bit TRUE color image
             // [pixel components][height][width]
             selectedDims[0] = 3;
             selectedDims[1] = dims[1];
@@ -565,12 +565,35 @@ public class H5ScalarDS extends ScalarDS
         }
         else if (rank > 2)
         {
-            selectedIndex[0] = rank-2; // columns
-            selectedIndex[1] = rank-1; // rows
-            selectedIndex[2] = rank-3;
-            selectedDims[rank-1] = dims[rank-1];
-            selectedDims[rank-2] = dims[rank-2];
+            //in the case of images with only one component, the dataspace may
+            // be either a two dimensional array, or a three dimensional array
+            // with the third dimension of size 1.  For example, a 5 by 10 image
+            // with 8 bit color indexes would be an HDF5 dataset with type
+            // unsigned 8 bit integer.  The dataspace could be either a two
+            // dimensional array, with dimensions [10][5], or three dimensions,
+            // with dimensions either [10][5][1] or [1][10][5].
+            if (dims[0] == 1)
+            {
+                // case [1][10][5]
+                selectedIndex[0] = 1;
+                selectedIndex[1] = 2;
+                selectedIndex[2] = 0;
+                selectedDims[1] = dims[1];
+                selectedDims[2] = dims[2];
+            }
+            else
+            {
+                // case [10][5][1]
+                selectedIndex[0] = 0;
+                selectedIndex[1] = 1;
+                selectedIndex[2] = 2;
+                selectedDims[0] = dims[0];
+                selectedDims[1] = dims[1];
+            }
         }
+
+        if (rank > 1 && isText)
+            selectedDims[1] = 1;
     }
 
     // Implementing ScalarDS
@@ -754,7 +777,6 @@ public class H5ScalarDS extends ScalarDS
         long[] oid = {l};
 
         try {H5.H5Sclose(sid);} catch (HDF5Exception ex) {};
-        try {H5.H5Tclose(tid);} catch (HDF5Exception ex) {};
         try {H5.H5Dclose(did);} catch (HDF5Exception ex) {};
         try {H5.H5Pclose(plist);} catch (HDF5Exception ex) {};
 

@@ -76,6 +76,8 @@ implements ActionListener, ItemListener
 
     private boolean isTrueColorImage;
 
+    private boolean isText;
+
     private boolean isH5;
 
     private JLabel maxLabels[];
@@ -112,6 +114,7 @@ implements ActionListener, ItemListener
         dataset = (Dataset)theview.getSelectedObject();
         isSelectionCancelled = true;
         isTrueColorImage = false;
+        isText = false;
         numberOfPalettes = 1;
         toolkit = Toolkit.getDefaultToolkit();
 
@@ -175,6 +178,15 @@ implements ActionListener, ItemListener
         contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
         contentPane.setPreferredSize(new Dimension(700, 300));
 
+        JPanel centerP = new JPanel();
+        centerP.setLayout(new BorderLayout());
+        centerP.setBorder(new TitledBorder("Dimension and Subset Selection"));
+
+        JPanel navigatorP = new JPanel();
+        navigatorP.add(navigator);
+        navigatorP.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        performJComboBoxEvent = true;
+
         if (dataset instanceof CompoundDS)
         {
             // setup GUI components for the field selection
@@ -190,36 +202,41 @@ implements ActionListener, ItemListener
             fieldP.setBorder(new TitledBorder("Select Members"));
             contentPane.add(fieldP, BorderLayout.WEST);
         }
-        else if (!((ScalarDS)dataset).isText())
+        else if ( dataset instanceof ScalarDS)
         {
-            // setup GUI components for the display options: table or image
-            imageButton.addItemListener(this);
-            spreadsheetButton.addItemListener(this);
-            ButtonGroup rgroup = new ButtonGroup();
-            rgroup.add(spreadsheetButton);
-            rgroup.add(imageButton);
-            JPanel viewP = new JPanel();
-            viewP.setLayout(new GridLayout(1,2));
-            JPanel sheetP = new JPanel();
-            sheetP.setLayout(new GridLayout(1,3, 5, 5));
-            sheetP.add(spreadsheetButton);
-            sheetP.add(charButton);
-            sheetP.add(transposeButton);
-            sheetP.setBorder(new TitledBorder(""));
-            viewP.add(sheetP);
-            JPanel imageP = new JPanel();
-            imageP.setLayout(new BorderLayout(5,5));
-            imageP.add(imageButton, BorderLayout.WEST);
-            imageP.add(choicePalette, BorderLayout.CENTER);
-            imageP.setBorder(new TitledBorder(""));
-            viewP.add(imageP);
-            viewP.setBorder(new TitledBorder("Display As"));
-            contentPane.add(viewP, BorderLayout.NORTH);
-        }
+            ScalarDS sd = (ScalarDS)dataset;
+            isText = sd.isText();
 
-        JPanel centerP = new JPanel();
-        centerP.setLayout(new BorderLayout());
-        centerP.setBorder(new TitledBorder("Dimension and Subset Selection"));
+            if (!isText)
+            {
+                if (rank > 1)
+                    centerP.add(navigatorP, BorderLayout.WEST);
+
+                // setup GUI components for the display options: table or image
+                imageButton.addItemListener(this);
+                spreadsheetButton.addItemListener(this);
+                ButtonGroup rgroup = new ButtonGroup();
+                rgroup.add(spreadsheetButton);
+                rgroup.add(imageButton);
+                JPanel viewP = new JPanel();
+                viewP.setLayout(new GridLayout(1,2));
+                JPanel sheetP = new JPanel();
+                sheetP.setLayout(new GridLayout(1,3, 5, 5));
+                sheetP.add(spreadsheetButton);
+                sheetP.add(charButton);
+                sheetP.add(transposeButton);
+                sheetP.setBorder(new TitledBorder(""));
+                viewP.add(sheetP);
+                JPanel imageP = new JPanel();
+                imageP.setLayout(new BorderLayout(5,5));
+                imageP.add(imageButton, BorderLayout.WEST);
+                imageP.add(choicePalette, BorderLayout.CENTER);
+                imageP.setBorder(new TitledBorder(""));
+                viewP.add(imageP);
+                viewP.setBorder(new TitledBorder("Display As"));
+                contentPane.add(viewP, BorderLayout.NORTH);
+            }
+        }
 
         // setup GUI for dimension and subset selection
         JPanel selectionP = new JPanel();
@@ -310,13 +327,6 @@ implements ActionListener, ItemListener
         confirmP.add(button);
 
         init();
-
-        JPanel navigatorP = new JPanel();
-        navigatorP.add(navigator);
-        navigatorP.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
-        if (rank>1 && !(dataset instanceof CompoundDS)) centerP.add(navigatorP, BorderLayout.WEST);
-
-        performJComboBoxEvent = true;
 
         // locate the H5Property dialog
         Point l = getParent().getLocation();
@@ -507,13 +517,18 @@ implements ActionListener, ItemListener
             // update the navigator
             if (rank > 1)
             {
-                int hIdx = choices[0].getSelectedIndex();
-                int wIdx = choices[1].getSelectedIndex();
-                long dims[] = dataset.getDims();
-                int w = (int)dims[wIdx];
-                int h = (int)dims[hIdx];
-                navigator.setDimensionSize(w, h);
-                navigator.updateUI();
+                if (isText)
+                    endFields[1].setText(startFields[1].getText());
+                else
+                {
+                    int hIdx = choices[0].getSelectedIndex();
+                    int wIdx = choices[1].getSelectedIndex();
+                    long dims[] = dataset.getDims();
+                    int w = (int)dims[wIdx];
+                    int h = (int)dims[hIdx];
+                    navigator.setDimensionSize(w, h);
+                    navigator.updateUI();
+                }
             }
 
             if (rank > 2)
@@ -538,6 +553,7 @@ implements ActionListener, ItemListener
     {
         // set the imagebutton state
         boolean isImage = false;
+
         if (dataset instanceof ScalarDS)
         {
             ScalarDS sd = (ScalarDS)dataset;
@@ -576,6 +592,12 @@ implements ActionListener, ItemListener
                 strideFields[i].setText(String.valueOf(stride[idx]));
         }
 
+        if (rank > 1 && isText)
+        {
+            endFields[1].setEnabled(false);
+            endFields[1].setText(startFields[1].getText());
+        }
+
         if (rank > 2 )
         {
             endFields[2].setEnabled(false);
@@ -596,6 +618,7 @@ implements ActionListener, ItemListener
                 choices[2].setEnabled(true);
                 startFields[2].setEnabled(true);
                 startFields[2].setText(String.valueOf(start[selectedIndex[2]]+1));
+                endFields[2].setEnabled(!isText);
                 endFields[2].setText(startFields[2].getText());
             }
         }
@@ -741,6 +764,12 @@ implements ActionListener, ItemListener
                 selected[selectedIndex[i]] = (int)((n1[i]-n0[i])/n2[i]+1);
                 stride[selectedIndex[i]] = n2[i];
             }
+        }
+
+        if (rank > 1 && isText)
+        {
+            selected[selectedIndex[1]] = 1;
+            stride[selectedIndex[1]] = 1;
         }
 
         if (rank >2 &&

@@ -102,6 +102,7 @@ implements TextObserver
         JPanel txtPane = new JPanel();
         txtPane.setLayout(new GridLayout(size, 1));
 
+        Border txtBorder = new MatteBorder(0, 0, 1, 0, java.awt.Color.BLUE);
         String ftype = ViewProperties.getFontType();
         int fsize = ViewProperties.getFontSize();
         Font font = null;
@@ -112,18 +113,12 @@ implements TextObserver
             textAreas[i] = new JTextArea(text[i]);
             textAreas[i].setEditable(!isReadOnly);
             textAreas[i].setWrapStyleWord(true);
-            textAreas[i].setBorder(new LineBorder(java.awt.Color.black));
+            textAreas[i].setBorder(txtBorder);
             txtPane.add(textAreas[i]);
             if (font != null) textAreas[i].setFont(font);
         }
 
-        JScrollPane scroller = new JScrollPane(txtPane);
-        scroller.getVerticalScrollBar().setUnitIncrement(50);
-        scroller.getHorizontalScrollBar().setUnitIncrement(50);
-
-        JPanel contentPane = (JPanel)getContentPane();
-        contentPane.setLayout(new BorderLayout());
-        contentPane.add (scroller, BorderLayout.CENTER);
+        ((JPanel)getContentPane()).add (new JScrollPane(txtPane));
     }
 
     /** update dataset value in file.
