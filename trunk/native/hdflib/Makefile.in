@@ -24,14 +24,16 @@ LIBDIR=../../lib/@JAVATARG@
 
 LD=@LD@
 LDOPT=@LDOPT@
+LLEXT=@LLEXT@
 SLEXT=@SLEXT@
+JSLEXT=@JSLEXT@
 
 COPT=@COPT@
 
 CFLAGS = $(DEFS) -I. -I$(JAVAINC1) -I$(JAVAINC2) -I$(HDFINC)
 
 # Be sure to add -lbsd if compiling in a SYSV environment
-LIBS =  $(HDFLIB)/libmfhdf.a $(HDFLIB)/libdf.a $(HDFLIB)/libjpeg.a $(HDFLIB)/libz.a -lm 
+LIBS =  $(HDFLIB)/libmfhdf.$(LLEXT) $(HDFLIB)/libdf.$(LLEXT) $(HDFLIB)/libjpeg.$(LLEXT) $(HDFLIB)/libz.$(LLEXT) -lm 
 
 # Macro def: object filename used
 OBJECTS =  hdfstructsutil.o \
@@ -50,7 +52,7 @@ hdflib: libjhdf
 
 libjhdf: $(OBJECTS) 
 	-mkdir -p $(LIBDIR);
-	$(LD) $(LDOPT) -o $(LIBDIR)/libjhdf.$(SLEXT) $(LDOPT2) $(OBJECTS) $(LIBS)
+	$(LD) $(LDOPT) -o $(LIBDIR)/libjhdf.$(JSLEXT) $(LDOPT2) $(OBJECTS) $(LIBS)
 
 clean:
-	rm -f *.o so_locations $(LIBDIR)/libjhdf.$(SLEXT)
+	rm -f *.o so_locations $(LIBDIR)/libjhdf.$(JSLEXT)

@@ -2268,7 +2268,7 @@ else
 	fi
 fi
 fi
-CLASSPATH="$JAVACLASSES"":""$HERE""/lib/jai_codec.jar:""$HERE"
+CLASSPATH="$JAVACLASSES"":""$HERE"
 
 withval="";
  javabin=""
@@ -2534,10 +2534,13 @@ JH5INST=$JH45INST
 case $target in
 *-*-solaris2*) 
 LD=$CC; LDOPT=-G; SLEXT="so";
+LLEXT="a";  
 JSLEXT="so";
 COPT=-G; COPTNOSHARED=; JAVAINC2=$JAVAINC/solaris ; JAVATARG=solaris;
 ;;
 mips*-sgi-irix6*) LD=ld; 
+LLEXT="a";  # the extension for the HDF and other libraries to link to
+JSLEXT="so";  
 OS=`uname -r`;
 SYS=`uname -s`
 if test "$SYS" = "IRIX"; then
@@ -2563,7 +2566,9 @@ echo "No such system: "$SYS
 fi
 JSLEXT="so";
 JAVAINC2=$JAVAINC/irix; JAVATARG=irix-$OS;;
-*-pc-linux*) LD=$CC; LDOPT=-shared; SLEXT="so";
+*-pc-linux*) LD=$CC; LDOPT=-shared; 
+SLEXT="so";
+LLEXT="a";  # the extension for the HDF and other libraries to link to
 JSLEXT="so";
 COPT="-shared -DUNIX386" ; 
 JAVAINC2=$JAVAINC/linux; 
@@ -2572,12 +2577,16 @@ JAVATARG=linux;
 *powerpc-apple*) LD=$CC; LDOPT=-dynamiclib; 
 JSLEXT="jnilib";
 SLEXT="dylib";
+LLEXT="dylib";
 JAVAINC2=$JAVAINC/macosx; 
 JAVATARG=macosx;
 ;;
 *) LD=$CC; LDOPT=-G; SLEXT="so";
+JSLEXT="so";
+LLEXT="a";
 COPT=-shared; COPTNOSHSARED=; JAVAINC2=$JAVAINC/$target; JAVATARG=$TARGET ;;
 esac
+
 
 
 
@@ -2826,6 +2835,7 @@ s%@JAR@%$JAR%g
 s%@LD@%$LD%g
 s%@LDOPT@%$LDOPT%g
 s%@LDOPT2@%$LDOPT2%g
+s%@LLEXT@%$LLEXT%g
 s%@SLEXT@%$SLEXT%g
 s%@JSLEXT@%$JSLEXT%g
 s%@COPT@%$COPT%g
