@@ -19,7 +19,7 @@ JAVADOC_FLAGS   = -version -author
 SLEXT=@SLEXT@
 JSLEXT=@JSLEXT@
 
-CLASSPATH=@CLASSPATH@
+CLASSPATH=@CLASSPATH@:lib/fits.jar:lib/netcdf.jar
 JH45INSTALLDIR=@JH45INST@
 H45INC=@H45INC@
 H4INC=@HDF4INC@
@@ -351,6 +351,8 @@ install-jhdfview: ncsa.hdf.view
 	$(JAR) cf $(JH45INSTALLDIR)/lib/ext/nc2obj.jar $(NC2OBJCLASSES)
 	$(JAR) cf $(JH45INSTALLDIR)/lib/ext/fitsobj.jar $(FITSOBJCLASSES)
 	-mkdir -p $(BINDIR);
+	cp lib/netcdf.jar $(LIBDIR)
+	cp lib/fits.jar $(LIBDIR)
 	cp bin/hdfview.sh $(BINDIR)
 	chmod a+x $(BINDIR)/hdfview.sh
 	@echo "Install HDFVIEW complete"
