@@ -20,18 +20,23 @@
  * the user action is passed to the ViewManager.
  * <p>
  * The interface is implemented by HDFView.
- *
- * @version 1.3.0 10/26/2001
+ * <p>
+ * @version 1.3.0 01/10/2002
  * @author Peter X. Cao
  */
 public interface ViewManager
 {
     /**
-     * Returns the the current working data object or null if the current
+     * Returns the current working data object or null if the current
      * data object does not exist. The currentdata object along with the current
      * working file is uniquely identified by other GUI components.
      */
-    public abstract Object getCurrentObject();
+    public abstract Object getSelectedObject();
+
+    /**
+     * Sets the current working data object.
+     */
+    public abstract void setSelectedObject(Object data);
 
     /**
      * Displays the content of current selected data object. If the data of the
@@ -41,23 +46,30 @@ public interface ViewManager
      * null or the Viewer does not support the type of the data, it will give
      * warning message to the user.
      * <p>
-     * @param data the data object to be displayed
+     * @param isDefaultDisplay True is the data content is displayed with default
+     *        options; otherwise, false.
      */
-    public abstract void showDataContent(Object data);
+    public abstract void showDataContent(boolean isDefaultDisplay);
 
     /**
      * Displays the metadata such as attributes and datatype of current selected
      * data object. If the metadata of the object is not loaded, it first loads
      * the metadata from file into memory and then display it. If the object has
      * no metadata or the object is null, it will give warning message.
-     * <p>
-     * @param data the data object to be displayed
      */
-    public abstract void showDataInfo(Object data);
+    public abstract void showDataInfo();
 
     /**
      * Displays feedback message in "status window" such as error message and
      * warning message, and inform users of its current state.
      */
     public abstract void showStatus(String msg);
+
+    /**
+     *  Invoke this method after you've removed a data content frame from the
+     *  content desktoppane. It is the oppsite action of showDataContent().
+     *  <p>
+     *  @param name the name of the content frame to be deleted.
+     */
+    public abstract void contentFrameWasRemoved(String name);
 }
