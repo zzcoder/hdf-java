@@ -401,10 +401,10 @@ public class H5File extends FileFormat
         plist = H5.H5Dget_create_plist(srcdid);
 
         // @@@@@@@@@ HDF5.1.6 bug at H5Dcreate(fid, dname, tid, sid, plist);
-try {
-        dstdid = H5.H5Dcreate(fid, dname, tid, sid, plist);
-} catch (Exception ex) { throw new HDF5LibraryException(
-"H5ScalarDS.copyDataset(): HDF5.1.6 failed at H5Dcreate(fid, dname, tid, sid, plist)");}
+        try {
+            dstdid = H5.H5Dcreate(fid, dname, tid, sid, plist);
+        } catch (Exception ex) { throw new HDF5LibraryException(
+            "H5ScalarDS.copyDataset(): HDF5.1.6 failed at H5Dcreate(fid, dname, tid, sid, plist)");}
 
         // copy data values
         H5.H5Dcopy(srcdid, dstdid);
@@ -749,6 +749,7 @@ try {
         MutableTreeNode node = null;
         String fullPath = null;
         String ppath = null;
+        String objName = null;
         DefaultMutableTreeNode pnode = (DefaultMutableTreeNode)parentNode;
         int gid = -1;
 
@@ -758,9 +759,11 @@ try {
         if (ppath == null)
         {
             fullPath = HObject.separator;
+            objName = "/";
         }
         else
         {
+            objName = pgroup.getName();
             fullPath = ppath+pgroup.getName()+HObject.separator;
         }
 
@@ -775,15 +778,20 @@ try {
             gid = -1;
         }
 
-        if (nelems < 0 ) {
+        if (nelems <= 0 ) {
             return;
         }
 
         pgroup.setNumberOfMembersInFile(nelems);
 
-        int[] oType = new int[1];
-        long[] oid = null;
-        String [] oName = new String[1];
+        // since each call of H5.H5Gget_objname_by_idx() takes about one second.
+        // 1,000,000 calls take 12 days. Instead of calling it in a loop,
+        // we use only one call to get all the information, which takes about
+        // two seconds
+        int[] objTypes = new int[nelems];
+        String[] objNames = new String[nelems];
+        try { H5.H5Gget_obj_info_all(fid, fullPath, objNames, objTypes ); }
+        catch (HDF5Exception ex) {ex.printStackTrace(); }
 
         int i0 = Math.max(0, getStartMembers());
         int i1 = getMaxMembers();
@@ -795,28 +803,35 @@ try {
         i1 += i0;
         i1 = Math.min(i1, nelems);
 
+        long[] oid = null;
+        String obj_name;
+        int obj_type;
         //Iterate through the file to see members of the group
         for ( int i = i0; i < i1; i++)
         {
-            oName[0] = "";
-            oType[0] = -1;
             oid = null;
+            obj_name = objNames[i];
+            obj_type = objTypes[i];
+
+            // Comment it out for bad performance. See the notes above
+/*
             try {
-                H5.H5Gget_objname_by_idx(gid, i, oName, 80l);
+                H5.H5Gget_objname_by_idx(gid, i, oName, 80);
                 oType[0] = H5.H5Gget_objtype_by_idx(gid, i);
             } catch (HDF5Exception ex) {
                 // do not stop if accessing one member fails
                 continue;
             }
+*/
 
             try
             {
                 byte[] ref_buf = null;
-                if (oType[0] == HDF5Constants.H5G_LINK)
+                if (obj_type == HDF5Constants.H5G_LINK)
                 {
                     // find the object linked to
                     String[] realName = {""};
-                    H5.H5Gget_linkval(fid, fullPath+oName[0], 100, realName);
+                    H5.H5Gget_linkval(fid, fullPath+obj_name, 100, realName);
                     if (realName[0] != null && !realName[0].startsWith(HObject.separator))
                     {
                         realName[0] = fullPath+realName[0];
@@ -824,7 +839,7 @@ try {
                     ref_buf = H5.H5Rcreate(fid, realName[0], HDF5Constants.H5R_OBJECT, -1);
                     if (realName[0] != null && realName[0].length()>0 && ref_buf !=null)
                     {
-                        oType[0] = H5.H5Rget_object_type(fid, ref_buf);
+                        obj_type = H5.H5Rget_obj_type(fid, HDF5Constants.H5R_OBJECT, ref_buf);
                     }
                 }
                 else
@@ -832,7 +847,7 @@ try {
                     // retrieve the object ID.
                     ref_buf = H5.H5Rcreate(
                         fid,
-                        fullPath+oName[0],
+                        fullPath+obj_name,
                         HDF5Constants.H5R_OBJECT,
                         -1);
                 }
@@ -846,11 +861,11 @@ try {
                 continue; // do the next one, if the object is not identified.
 
             // create a new group
-            if (oType[0] == HDF5Constants.H5G_GROUP)
+            if (obj_type == HDF5Constants.H5G_GROUP)
             {
                 H5Group g = new H5Group(
                     this,
-                    oName[0],
+                    obj_name,
                     fullPath,
                     pgroup,
                     oid);
@@ -884,12 +899,12 @@ try {
                 // stops if it has loop.
                 if (!hasLoop)
                     depth_first(node);
-            } else if (oType[0] == HDF5Constants.H5G_DATASET)
+            } else if (obj_type == HDF5Constants.H5G_DATASET)
             {
                 int did=-1, tid=-1, tclass=-1;
                 boolean isDefaultImage = false;
                 try {
-                    did = H5.H5Dopen(fid, fullPath+oName[0]);
+                    did = H5.H5Dopen(fid, fullPath+obj_name);
                     tid = H5.H5Dget_type(did);
                     tclass = H5.H5Tget_class(tid);
                     if (tclass == HDF5Constants.H5T_ARRAY)
@@ -911,7 +926,7 @@ try {
                     // create a new compound dataset
                     d = new H5CompoundDS(
                         this,
-                        oName[0],
+                        obj_name,
                         fullPath,
                         oid);
                 }
@@ -920,7 +935,7 @@ try {
                     // create a new scalar dataset
                     d = new H5ScalarDS(
                         this,
-                        oName[0],
+                        obj_name,
                         fullPath,
                         oid);
                 }

@@ -31,7 +31,6 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.Image;
-import java.awt.Font;
 
 /**
  * <p>Title: HDFView</p>
@@ -53,7 +52,7 @@ import java.awt.Font;
  */
 
 public class HDFView extends JFrame
-    implements ViewManager, ActionListener, HyperlinkListener{
+    implements ViewManager, ActionListener, HyperlinkListener, ChangeListener {
 
     /** tag for TreeView*/
     public static final int MODULE_TREEVIEW = 100;
@@ -99,6 +98,8 @@ public class HDFView extends JFrame
         "For "+System.getProperty("os.name")+"\n\n"+
         "Copyright "+'\u00a9'+" 2001-2004 University of Illinois.\n"+
         "All rights reserved.";
+
+    private static final String JAVA_COMPILER = "JDK 1.4.1_01-b01";
 
     /** the directory where the HDFView is installed */
     private String rootDir;
@@ -208,7 +209,25 @@ public class HDFView extends JFrame
         // load the view properties
         ViewProperties.loadIcons(rootDir);
         props = new ViewProperties(rootDir);
-        try { props.load(); } catch (Exception ex){;}
+        try
+        {
+            props.load();
+            java.awt.Font font = null;
+            String ftype = props.getFontType();
+            int fsize = props.getFontSize();
+            try { font = new java.awt.Font(ftype, java.awt.Font.PLAIN, fsize); }
+            catch (Exception ex) { font = null; }
+
+            if (font != null)
+            {
+                UIDefaults uiDefaults = UIManager.getDefaults();
+                uiDefaults.put("TextArea.font", font);
+                uiDefaults.put("TextPane.font", font);
+                uiDefaults.put("Table.font", font);
+                uiDefaults.put("Tree.font", font);
+                uiDefaults.put("TreeNode.font", font);
+            }
+        } catch (Exception ex){;}
         //recentFiles = props.getMRF();
         currentDir = ViewProperties.getWorkDir();
         if (currentDir == null) currentDir = System.getProperty("user.dir");
@@ -238,6 +257,7 @@ public class HDFView extends JFrame
 
         // create tab pane to display attributes and status information
         infoTabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
+        infoTabbedPane.addChangeListener(this);
 
         // setup the Users guide window
         usersGuideWindow = new JFrame("HDFView User's Guide");
@@ -365,7 +385,10 @@ public class HDFView extends JFrame
 
         JPanel urlPane = new JPanel();
         urlPane.setLayout(new BorderLayout());
-        urlPane.add(new JLabel(" File/URL "), BorderLayout.WEST);
+        JButton b = new JButton("File/URL");
+        urlPane.add(b, BorderLayout.WEST);
+        b.addActionListener(this);
+        b.setActionCommand("Popup URL list");
         urlPane.add(urlBar, BorderLayout.CENTER);
         JPanel toolPane = new JPanel();
         toolPane.setLayout(new GridLayout(2,1,0,0));
@@ -583,6 +606,12 @@ public class HDFView extends JFrame
         item.setActionCommand("HDF5 library");
         item.addActionListener(this);
         h5GUIs.add(item);
+        menu.add(item);
+
+        item = new JMenuItem( "Java Version");
+        item.setMnemonic(KeyEvent.VK_5);
+        item.setActionCommand("Java version");
+        item.addActionListener(this);
         menu.add(item);
 
         menu.addSeparator();
@@ -900,6 +929,10 @@ public class HDFView extends JFrame
                 fileAccessID = FileFormat.READ;
                 filename = chooseLocalFile();
             }
+            else if (cmd.startsWith("Open file://"))
+            {
+                filename = cmd.substring(12);
+            }
             else
                 filename = chooseLocalFile();
 
@@ -1168,7 +1201,7 @@ public class HDFView extends JFrame
                 "where, KEY: the unique identifier for the file format"+
                 "\n           FILE_FORMAT: the full class name of the file format"+
                 "\n           FILE_EXTENSION: the file extension for the file format"+
-                "\n\nFor example, the following line register HDF4 file format:"+
+                "\n\nFor example, the following line registers HDF4 file format:"+
                 "\nHDF:ncsa.hdf.object.h4.H4File:hdf\n\n";
             String str = JOptionPane.showInputDialog(this, msg);
             if (str == null || str.length()<1)
@@ -1308,6 +1341,17 @@ public class HDFView extends JFrame
                 JOptionPane.PLAIN_MESSAGE,
                 ViewProperties.getLargeHdfIcon());
         }
+        else if (cmd.equals("Java version"))
+        {
+            String info = "Compiled at "+JAVA_COMPILER+
+                "\nRunning at "+System.getProperty("java.vm.version");
+            JOptionPane.showMessageDialog(
+                this,
+                info,
+                "HDFView",
+                JOptionPane.PLAIN_MESSAGE,
+                ViewProperties.getLargeHdfIcon());
+        }
         else if (cmd.equals("File format list"))
         {
             FileFormat[] fileformats = FileFormat.getFileFormats();
@@ -1333,6 +1377,10 @@ public class HDFView extends JFrame
                 "HDFView",
                 JOptionPane.PLAIN_MESSAGE,
                 ViewProperties.getLargeHdfIcon());
+        }
+        else if (cmd.equals("Popup URL list"))
+        {
+            urlBar.setPopupVisible(true);
         } else
         {
             if (helpViews == null || helpViews.size() <= 0)
@@ -1377,6 +1425,22 @@ public class HDFView extends JFrame
                 try {pane.setPage(previousUsersGuideURL);}
                 catch (Throwable t2) {}
                 showStatus(t.toString());
+            }
+        }
+    }
+
+    public void stateChanged(ChangeEvent e)
+    {
+        Object src = e.getSource();
+
+        if (src.equals(infoTabbedPane))
+        {
+            int idx = infoTabbedPane.getSelectedIndex();
+            if (idx == 1)
+            {
+                // meta info pane is selected
+                attributeArea.setText("");
+                showMetaData(treeView.getCurrentObject());
             }
         }
     }
@@ -1540,69 +1604,76 @@ public class HDFView extends JFrame
                 return;
 
             urlBar.setSelectedItem(obj.getFile());
+            showMetaData(obj);
+        }
+    }
 
-            metadata.setLength(0);
-            metadata.append(obj.getName());
+    private void showMetaData(HObject obj)
+    {
+        if (obj == null)
+            return;
 
-            if (obj instanceof Group)
+        metadata.setLength(0);
+        metadata.append(obj.getName());
+
+        if (obj instanceof Group)
+        {
+            Group g = (Group)obj;
+            metadata.append("\n    Group size = ");
+            metadata.append(g.getMemberList().size());
+        }
+        else if (obj instanceof Dataset)
+        {
+            Dataset d = (Dataset)obj;
+            if (d.getRank() <= 0)
+                d.init();
+
+            metadata.append("\n    ");
+            if (d instanceof ScalarDS)
+                metadata.append(((ScalarDS)d).getDatatype().getDatatypeDescription());
+            else if (d instanceof CompoundDS)
+                metadata.append("Compound/Vdata");
+            metadata.append(",    ");
+
+            long dims[] = d.getDims();
+
+           if (dims != null)
             {
-                Group g = (Group)obj;
-                metadata.append("\n    Group size = ");
-                metadata.append(g.getMemberList().size());
-            }
-            else if (obj instanceof Dataset)
-            {
-                Dataset d = (Dataset)obj;
-                if (d.getRank() <= 0)
-                    d.init();
-
-                metadata.append("\n    ");
-                if (d instanceof ScalarDS)
-                    metadata.append(((ScalarDS)d).getDatatype().getDatatypeDescription());
-                else if (d instanceof CompoundDS)
-                    metadata.append("Compound/Vdata");
-                metadata.append(",    ");
-
-                long dims[] = d.getDims();
-
-               if (dims != null)
+                 metadata.append(dims[0]);
+                for (int i=1; i<dims.length; i++)
                 {
-                     metadata.append(dims[0]);
-                    for (int i=1; i<dims.length; i++)
-                    {
-                        metadata.append(" x ");
-                        metadata.append(dims[i]);
-                    }
-                }
-            } // else if (obj instanceof Dataset)
-
-            List attrList = null;
-            try { attrList = obj.getMetadata(); } catch (Exception ex) {}
-
-            if (attrList == null)
-                metadata.append("\n    Number of attributes = 0");
-            else
-            {
-                int n = attrList.size();
-                metadata.append("\n    Number of attributes = ");
-                metadata.append(n);
-
-                for (int i=0; i<n; i++)
-                {
-                    Object attrObj = attrList.get(i);
-                    if (!(attrObj instanceof Attribute))
-                        continue;
-                    Attribute attr = (Attribute)attrObj;
-                    metadata.append("\n        ");
-                    metadata.append(attr.getName());
-                    metadata.append(" = ");
-                    metadata.append(attr.toString(","));
+                    metadata.append(" x ");
+                    metadata.append(dims[i]);
                 }
             }
+        } // else if (obj instanceof Dataset)
 
-            attributeArea.setText(metadata.toString());
-            attributeArea.setCaretPosition(0);
-        } // if ((src instanceof JTree) && infoTabbedPane.getSelectedIndex()==1)
+        List attrList = null;
+        try { attrList = obj.getMetadata(); } catch (Exception ex) {}
+
+        if (attrList == null)
+            metadata.append("\n    Number of attributes = 0");
+        else
+        {
+            int n = attrList.size();
+            metadata.append("\n    Number of attributes = ");
+            metadata.append(n);
+
+            for (int i=0; i<n; i++)
+            {
+                Object attrObj = attrList.get(i);
+                if (!(attrObj instanceof Attribute))
+                    continue;
+                Attribute attr = (Attribute)attrObj;
+                metadata.append("\n        ");
+                metadata.append(attr.getName());
+                metadata.append(" = ");
+                metadata.append(attr.toString(","));
+            }
+        }
+
+        attributeArea.setText(metadata.toString());
+        attributeArea.setCaretPosition(0);
     }
 
     /** Returns DataView contains the specified data object.
@@ -1733,6 +1804,17 @@ if (g != null) {
                         rootDir = tmpFile.getParent();
                     }
                 } catch (Exception e) {}
+            } else if ("-java.vm.version".equalsIgnoreCase(args[i]))
+            {
+                String info = "Compiled at "+JAVA_COMPILER+
+                    "\nRunning at "+System.getProperty("java.vm.version");
+                JOptionPane.showMessageDialog(
+                new JFrame(),
+                info,
+                "HDFView",
+                JOptionPane.PLAIN_MESSAGE,
+                ViewProperties.getLargeHdfIcon());
+                System.exit(0);
             } else {
                 backup = true;
             }

@@ -146,7 +146,7 @@ implements ActionListener, ListSelectionListener
 
         tmpP0 = new JPanel();
         tmpP0.setLayout(new GridLayout(4,1,5,5));
-        tmpP0.add(aField = new JTextField("0          "));
+        tmpP0.add(aField = new JTextField("0"));
         tmpP0.add(bField = new JTextField("1"));
         tmpP0.add(new JLabel(""));
         tmpP0.add(new JLabel(""));

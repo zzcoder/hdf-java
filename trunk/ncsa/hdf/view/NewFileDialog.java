@@ -52,6 +52,10 @@ public class NewFileDialog extends JFileChooser //JDialog
 
     private final JFrame viewer;
 
+    private boolean isH5 = false;
+
+    private boolean isH4 = false;
+
     /** constructs an NewFileDialog.
      * @param owner The owner of the dialog.
      * @param dir The default directory of the new file.
@@ -76,9 +80,17 @@ public class NewFileDialog extends JFileChooser //JDialog
         toolkit = Toolkit.getDefaultToolkit();
 
         if (fileType == FileFormat.FILE_TYPE_HDF4)
+        {
+            isH4 = true;
+            setSelectedFile(new File("*.hdf"));
             setFileFilter(DefaultFileFilter.getFileFilterHDF4());
+        }
         else if (fileType == FileFormat.FILE_TYPE_HDF5)
+        {
+            isH5 = true;
+            setSelectedFile(new File("*.h5"));
             setFileFilter(DefaultFileFilter.getFileFilterHDF5());
+        }
 
         if (currentDir != null) currentDir += File.separator;
         else currentDir = "";
@@ -113,10 +125,44 @@ public class NewFileDialog extends JFileChooser //JDialog
         fname = fname.trim();
         if (fname == null || fname.length()==0)
         {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+                "Invalid file name.",
+                viewer.getTitle(),
+                JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
-        if (f.isDirectory())
+        String extensions = FileFormat.getFileExtensions();
+        boolean noExtension = true;
+        if (extensions != null && extensions.length() >0)
+        {
+            java.util.StringTokenizer currentExt = new java.util.StringTokenizer(extensions, ",");
+            String extension = "";
+            String tmpFilename = fname.toLowerCase();
+            while (currentExt.hasMoreTokens() && noExtension)
+            {
+                extension = currentExt.nextToken().trim().toLowerCase();
+                noExtension = !tmpFilename.endsWith("."+extension);
+            }
+        }
+
+        if (noExtension)
+        {
+            if (isH4)
+            {
+                fname += ".hdf";
+                f = new File(fname);
+                setSelectedFile(f);
+            } else if (isH5)
+            {
+                fname += ".h5";
+                f = new File(fname);
+                setSelectedFile(f);
+            }
+        }
+
+        if (f.exists() && f.isDirectory())
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,

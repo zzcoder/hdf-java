@@ -90,7 +90,7 @@ public class ViewProperties extends Properties
      * max_members defines the maximum number of objects will be loaded
      * into memory.
      */
-    private static int max_members = 10000; // 10,000 by default
+    private static int max_members = 10000; // 1,000 by default
 
     /**
      * Current Java application such as HDFView cannot handle files
@@ -204,7 +204,10 @@ public class ViewProperties extends Properties
                         String entryName = jarEntry.getName();
                         int idx = entryName.indexOf(".class");
                         if (idx>0 && entryName.indexOf('$')<=0)
+                        {
+                            entryName = entryName.replace('/','.');
                             classList.add(entryName.substring(0, idx));
+                        }
                     }
                 } catch (Exception ex) {}
             } // if (jars[i].endsWith(".jar")) {
@@ -217,22 +220,26 @@ public class ViewProperties extends Properties
         URL[] urls = new URL[n];
         for (int i=0; i<n; i++) {
             try {
-                urls[i] = new URL("file://localhost/"+rootPath + "/lib/ext/"+jarList.get(i));
+                urls[i] = new URL("file:///"+rootPath + "/lib/ext/"+jarList.get(i));
             } catch (MalformedURLException mfu) {;}
         }
 
-        try { extClassLoader = new URLClassLoader(urls); }
-        catch (Exception ex) { extClassLoader = extClassLoader; }
+        //try { extClassLoader = new URLClassLoader(urls); }
+        try { extClassLoader = URLClassLoader.newInstance(urls); }
+        catch (Exception ex) {ex.printStackTrace();}
+
         // load user modules into their list
         n = classList.size();
         for (int i=0; i<n; i++) {
             String theName = (String)classList.get(i);
-
             try {
                 // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
                 Class theClass = null;
                 try { theClass = Class.forName(theName); }
-                catch (Exception ex) { theClass = extClassLoader.loadClass(theName); }
+                catch (Exception ex)
+                {
+                    theClass = extClassLoader.loadClass(theName);
+                }
 
                 Class[] interfaces = theClass.getInterfaces();
                 if (interfaces != null) {
@@ -557,7 +564,11 @@ public class ViewProperties extends Properties
                     String className = (String)get(theKey);
                     Class theClass = null;
                     try { theClass = Class.forName(className); }
-                    catch (Exception ex) { theClass = extClassLoader.loadClass(className); }
+                    catch (Exception ex)
+                    {
+                        try { theClass = extClassLoader.loadClass(className); }
+                    catch (Exception ex2) { }
+                }
 
                     Object theObject = theClass.newInstance();
                     if (theObject instanceof FileFormat)

@@ -241,13 +241,14 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1region
  * Method:    H5G_obj_t H5Rget_obj_type(hid_t id, H5R_type_t ref_type, void *_ref)
  * Signature: (I[B)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1object_1type
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type
   (JNIEnv *env, jclass clss, jint loc_id, jint ref_type, jbyteArray ref)
 {
 
 	H5G_obj_t status;
 	jboolean isCopy;
 	jbyte *refP;
+
 
 	if (ref == NULL) {
 		h5nullArgument( env, "H5Rget_object_type:  ref is NULL");

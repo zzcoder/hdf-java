@@ -754,8 +754,11 @@ implements ImageView, ActionListener
                 (int)(imageComponent.originalSize.width*zoomFactor),
                 (int)(imageComponent.originalSize.height*zoomFactor));
 
+        this.invalidate();
+        imageComponent.invalidate();
         imageComponent.setImageSize(imageSize);
-        updateUI();
+        this.validate();
+        //updateUI();
 
          if (zoomFactor>0.99 && zoomFactor<1.01)
             setTitle(frameTitle);
@@ -1613,8 +1616,6 @@ implements ImageView, ActionListener
                     pixelData[i] = (dataRange[0] + ratio*i);
                 }
             }
-
-            setFont(new Font(((JFrame)viewer).getName(), Font.PLAIN, 10));
 
             updatePalette (palette);
 

@@ -505,8 +505,9 @@ public class UserOptionsDialog extends JDialog implements ActionListener
         }
 
         // set font size
+        int fsize = 12;
         try {
-            int fsize = Integer.parseInt((String)fontSizeChoice.getSelectedItem());
+            fsize = Integer.parseInt((String)fontSizeChoice.getSelectedItem());
             ViewProperties.setFontSize(fsize);
             if ((fontSize != ViewProperties.getFontSize()))
                 isFontChanged = true;
@@ -518,6 +519,22 @@ public class UserOptionsDialog extends JDialog implements ActionListener
         {
             isFontChanged = true;
             ViewProperties.setFontType(ftype);
+        }
+
+        if (isFontChanged)
+        {
+            java.awt.Font font = null;
+            try { font = new java.awt.Font(ftype, java.awt.Font.PLAIN, fsize); }
+            catch (Exception ex) { font = null; }
+
+            if (font != null)
+            {
+                UIDefaults uiDefaults = UIManager.getDefaults();
+                uiDefaults.put("TextArea.font", font);
+                uiDefaults.put("TextPane.font", font);
+                uiDefaults.put("Table.font", font);
+                uiDefaults.put("TreeNode.font", font);
+            }
         }
 
         // set data delimiter

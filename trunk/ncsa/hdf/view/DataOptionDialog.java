@@ -765,14 +765,71 @@ implements ActionListener, ItemListener
                 return false;
             }
 
-            if (n0[i] < 1 ||
-                n0[i] > dims[sIndex[i]] ||
-                n1[i] > dims[sIndex[i]])
+            if (n0[i] < 1)
             {
-                toolkit.beep();
                 JOptionPane.showMessageDialog(
                     (JFrame)viewer,
-                    "Selected index is out of bound.",
+                    "Invalid selection: start["+sIndex[i]+"] < 1",
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+
+            if (n0[i] > dims[sIndex[i]])
+            {
+                JOptionPane.showMessageDialog(
+                    (JFrame)viewer,
+                    "Invalid selection: start["+sIndex[i]+"] > "+dims[sIndex[i]],
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+
+            if (n1[i] < 1)
+            {
+                JOptionPane.showMessageDialog(
+                    (JFrame)viewer,
+                    "Invalid selection: end["+sIndex[i]+"] < 1",
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+
+            if (n1[i] > dims[sIndex[i]])
+            {
+                JOptionPane.showMessageDialog(
+                    (JFrame)viewer,
+                    "Invalid selection: end["+sIndex[i]+"] > "+dims[sIndex[i]],
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+
+            if (n0[i] > n1[i])
+            {
+                JOptionPane.showMessageDialog(
+                    (JFrame)viewer,
+                    "Invalid selection: end["+sIndex[i]+"] > "+"start["+sIndex[i]+"]",
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+
+            if (n2[i] <= 0)
+            {
+                JOptionPane.showMessageDialog(
+                    (JFrame)viewer,
+                    "Invalid selection: stride["+sIndex[i]+"] <= 0",
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+
+            if (n2[i] > dims[sIndex[i]])
+            {
+                JOptionPane.showMessageDialog(
+                    (JFrame)viewer,
+                    "Invalid selection: stride["+sIndex[i]+"] > "+dims[sIndex[i]],
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
                 return false;
@@ -826,10 +883,13 @@ implements ActionListener, ItemListener
             imageButton.isSelected()) {
                 start[selectedIndex[2]] = 0;
                 selected[selectedIndex[2]] = 3;
-        } else if (rank >1 && selectedIndex[0]>selectedIndex[1] &&
-                   !swapOnlyButton.isSelected() && !(dataset instanceof CompoundDS)) {
+        } else if (rank >1 &&
+                   selectedIndex[0]>selectedIndex[1] &&
+                   !swapOnlyButton.isSelected() &&
+                   !(dataset instanceof CompoundDS) &&
+                   isH5) { // HDF4 is Height=dim[1], width = dim[0]
             // transpose data
-            isTransposed = true;
+            isTransposed = isH5;
             selectedIndex[0] = sIndex[1];
             selectedIndex[1] = sIndex[0];
         }
