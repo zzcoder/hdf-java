@@ -299,7 +299,7 @@ implements ActionListener, ItemListener
             startDepth.setText(String.valueOf(start[idxDepth]));
             endVertical.setText(String.valueOf(start[idxVertical]+selected[idxVertical]-1));
             endHorizontal.setText(String.valueOf(start[idxHorizontal]+selected[idxHorizontal]-1));
-            endDepth.setText("            +"+String.valueOf(start[idxDepth]+selected[idxDepth]-1));
+            //endDepth.setText("            +"+String.valueOf(start[idxDepth]+selected[idxDepth]-1));
         }
 
         boolean isImage = false;

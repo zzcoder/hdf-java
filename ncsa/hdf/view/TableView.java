@@ -23,6 +23,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.MouseEvent;
+import javax.swing.plaf.metal.MetalBorders.TableHeaderBorder;
 
 /**
  * TableView displays an HDF dataset as a two-dimensional table.
@@ -776,7 +777,7 @@ implements TableObserver
         public ButtonRenderer()
         {
             super();
-            setBorder(new javax.swing.plaf.metal.MetalBorders.TableHeaderBorder());
+            setBorder(new TableHeaderBorder());
             setHorizontalAlignment(JButton.LEFT);
         }
 
