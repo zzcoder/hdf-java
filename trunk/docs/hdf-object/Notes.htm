@@ -1,0 +1,193 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.72 [en] (WinNT; U) [Netscape]">
+</head>
+<body>
+<b>Status of Code:</b>
+<p>Not tagged yet!
+<p>Source and binary are at:
+<p>&nbsp; .../java1/hdf-objects
+<p>Revised documents are at:
+<p>&nbsp;&nbsp; <a href="https://internal.ncsa.uiuc.edu/ITech/HDF/mcgrath/hdf-object/index.html">https://internal.ncsa.uiuc.edu/ITech/HDF/mcgrath/hdf-object/index.html</a>
+<p>To do:
+<p>1 Need to review and revise UML diagrams.&nbsp; (Bob's diagram is available
+in hdf-obj.sdr)
+<p>2.&nbsp; Need the binary libraries for windows, update README.txt
+<p>3.&nbsp;&nbsp; Need to write instructions for how to link:
+<p>CLASSPATH=$CLASSPATH:"$LIBDIR"/jhdf.jar:"$LIBDIR"/jhdf5.jar"
+<br>&nbsp;
+<p>&nbsp; -Djava.library.path=$LD_LIBRARY_PATH
+<br>or
+<br>-Dncsa.hdf.hdf5lib.H5.hdf5lib=$LIBDIR"/linux/libjhdf5.so"
+<br>-Dncsa.hdf.hdflib.HDFLibrary.hdflib=$LIBDIR"/linux/libjhdf.so"
+<p>4. fix 'download' section of web pages
+<br>&nbsp;
+<p>
+<hr SIZE=1 WIDTH="100%">
+<br>
+<hr SIZE=1 WIDTH="100%">
+<h3>
+Comments on the Java docs</h3>
+The javadocs need a lot of work. Overall, there isn't enough information
+to actuallyuse the library without reading the source.&nbsp; There's not
+much point in doing the javadoc if it's not useful.
+<p>Basically, this needs a couple of days concentration to upgrade all
+the comments.
+<p>Here is a list of some high priority issues.
+<p>1.&nbsp; It is critical to label all parameters as 'IN' or 'OUT'.&nbsp;
+(I had to refer to the source code to figure out how to call some methods.)
+<p>2.&nbsp; The 'metadata object' is not explained.&nbsp; This is critical,
+because I cna't tell how to use it at all.
+<p>3.&nbsp; Where are the dimension scales for an HDF4 SDS?&nbsp; How are
+they handled?
+<p>
+<hr SIZE=1 WIDTH="100%">
+<br>4. Much of the documentation is incorrect or inappropriate for the
+Javadoc.
+<p>In general, the javadoc should be about the java package, not about
+the HDF libraries.&nbsp; Refer to the HDF documentation if needed, but
+don't document it in the javadocs.
+<p>Here are some high priority examples.&nbsp; There are many other cases:
+<br>&nbsp;
+<blockquote><b>Class Dataset</b>:&nbsp; The comments about 'types of metadata'
+should be deleted.&nbsp; There are 3 reasons:
+<br>1. The comments are not about the java package
+<br>2. The comments are relevant to HDF5 but not to HDF4
+<br>3. The comments are, IMO, wrong.
+<br>The simplest thing to do is cut it out of here completely and don't
+worry about it.</blockquote>
+
+<blockquote><b>Class ScalarDS</b>:&nbsp; The discussion of palette types
+is HDF5 specific, it is incorrect for HDF4.&nbsp; This information should
+be in H5ScalarDS or whereever.
+<p><b>Class H5ScalarDS</b>: The comments about 'the type codes' refer to
+the C library, and are basically irrelevant wrong with regard to Java.&nbsp;
+This should be omitted.&nbsp; If you need to refer to this information,
+point to the HDF5 documentation.
+<p><b>Class Group</b>:&nbsp; Lot's of missing information about these classes.&nbsp;
+E.g.,
+<br>1. how do I access the members?
+<br>2. What does 'read' do?
+<br>3. What is the meaning of 'isRoot' for HDF4?
+<br>4. How do links work?
+<br>5. When I delete a Group, does it delete all the children?&nbsp; Does
+it recursively delete the whole tree below?
+<p><b>Class H4SDS:</b>&nbsp; In the constructor, it is unclear what the
+arguments mean.&nbsp; (Similar comments apply for many classes.)&nbsp;
+E.g.,
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fid - the file identifier.
+
+<i>(This should be an open HDF4 file from the library, right?)</i>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; filename - the full path
+of the file that contains this data object. <i>(Obvious what this is, but
+not clear why I need it.)</i>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; name - the name of this
+H4SDS. <i>(Technically, HDF4 objects don't have names.&nbsp; So this needs
+to be explained.)</i>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; path - the full path of
+this H4SDS. <i>(HDF4 objects don't have paths, so this needs to be explained.)</i>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; oid - the unique identifier
+of this data object <i>(When is this needed?&nbsp; E.g., when the object
+doesn't have a name?&nbsp; Explain.)</i>
+<br>Etc.
+<p><b>Class H5group</b>:&nbsp; The discussion of 'name space' and 'object
+header' and 'links' refer to the HDF5 library.&nbsp; This has nothing to
+do with the Java, so it should not be included here.
+<p><b>Etc.</b>
+<br>&nbsp;</blockquote>
+
+<p><br>
+<hr SIZE=1 WIDTH="100%">
+<br>
+<hr SIZE=1 WIDTH="100%">
+<h3>
+Comments on the design</h3>
+
+<p><br>Now that I finally have the source and docs and a little time, I
+have a whole bunch of suggestions for very important changes to the design.
+<p>I think these should be implemented as soon as possible.
+<p>Here are some ideas, not necessarily in order of priority or difficulty.
+<p>
+<hr SIZE=1 WIDTH="100%">
+<br>1.&nbsp; Error returns
+<p>The classes are inconsistent.&nbsp; Some return error codes, some generate
+exceptions, and some say they do both.
+<p>In general, the preference is that all classes should throw appropriate
+exceptions.&nbsp; Return codes should not be used to indicate errors.
+<br>&nbsp;
+<p>
+<hr SIZE=1 WIDTH="100%">
+<br>2. "Metadata"
+<p>The Metadata class is a very powerful and elegant feature.&nbsp; It
+needs to be fully developed!
+<p>It would probably be sensible to create a new class hierarchy for 'HMetadata',
+with 'Attribute' as a sub-class.&nbsp; HDF4 Annotations might be another
+sub-class, and attributes of Vdata fields, etc.
+<p>This would allow the addition of new flavors of metadata.
+<p>It could also be extended by others, e.g., to have a sub-class for HDF-EOS
+geo-coordinates.
+<br>
+<hr SIZE=1 WIDTH="100%">
+<br>3. Dimension scales?
+<p>HDF4 SDS dimension scales need to be supported.&nbsp; This could probably
+be a special kind of 'metadata' object.
+<p>
+<hr SIZE=1 WIDTH="100%">
+<br>4.&nbsp; Groups
+<p>The Group objects are critical for the navigation of the files, they
+need much more development.
+<p>a) The 'Group' object should have one or more ways to interate.&nbsp;
+This is the most important operation on a group!
+<p>b) There should be a 'getparents()' method!
+<p>c) Overall, the 'Group' classes need some serious examination.&nbsp;
+The 'read' and 'write' methods make little sense, etc.
+<p>d) objects in > 1 group are not handled well, this needs to be tackled
+and documented.
+<p>
+<hr SIZE=1 WIDTH="100%">
+<br>5.&nbsp; Object references
+<p>This object layer is supposed to conceal the libraries, so it is really
+glaringly inconsistent to have all that code dealing with object references.
+<p>The oids should not be visible at all. When an OID is needed (which
+should be very rare), it should be encapsulated in a Java object.
+<p>If OIDs are needed (and they really aren't necessary), it would probably
+be good to have a special class for 'OID', which would handle all the tricky
+details of generating, comparing, etc. OIDs.&nbsp; This could be an abstract
+class, with specializations for HDF4 and HDF5.
+<p>For example, the constructor for H5ScalarDS() does not need the OID,
+and all that H5R code should be inside the class, not in the calling program.
+<p>
+<hr SIZE=1 WIDTH="100%">
+<br>6. Files
+<p>There should be an HDFFile class, similar to HObject, with sub-classes
+for HDF4 and HDF5.&nbsp; It should take paths or whatever, and handle the
+open/close operations.&nbsp; It should have a method 'isHDF4()' and 'isHDF5()',
+or something like this.&nbsp; It will also encapsulate the paths and open
+file descriptors, as needed.
+<p>The file id's should not be visible in the user's code, the arguments
+should be type H5File().
+<p>E.g.,
+<p>public H4SDS(HDFFile f,
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+java.lang.String name,
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+java.lang.String path)
+<p>Note that the 'open', 'getFile' and so on methods are affected by this
+change.
+<p>
+<hr SIZE=1 WIDTH="100%">
+<br>7. Descriptors in general shouldn't be visible
+<p>Things like 'setAccess()' etc. should not be visible.&nbsp; These don't
+need to be done by the calling program at all, they can be handled by static
+initializers, e.g., in H4SDS et al.
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+</body>
+</html>
