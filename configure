@@ -2664,7 +2664,7 @@ done
 ac_given_srcdir=$srcdir
 ac_given_INSTALL="$INSTALL"
 
-trap 'rm -fr `echo "Makefile native/Makefile native/h4toh5lib/Makefile native/hdflib/Makefile native/hdf5lib/Makefile test/Makefile test/h4toh5/Makefile test/h4toh5/apitest.sh test/h4toh5/imagetest.sh test/h4toh5/nametest.sh test/h4toh5/sdstest.sh test/h4toh5/vdatatest.sh test/h4toh5/vgrouptest.sh test/h4toh5/runtests.sh test/object/testh4file.sh test/object/testh5file.sh test/object/Makefile test/object/runtests.sh test/h4toh5/linktest.sh" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
+trap 'rm -fr `echo "Makefile native/Makefile native/h4toh5lib/Makefile native/hdflib/Makefile native/hdf5lib/Makefile test/Makefile test/h4toh5/Makefile test/h4toh5/apitest.sh test/h4toh5/imagetest.sh test/h4toh5/nametest.sh test/h4toh5/sdstest.sh test/h4toh5/vdatatest.sh test/h4toh5/vgrouptest.sh test/h4toh5/runtests.sh test/object/testh4file.sh test/object/testh5file.sh test/object/Makefile test/object/runtests.sh test/h4toh5/linktest.sh test/h4toh5/sdstestattr.sh test/h4toh5/imagetestattr.sh test/h4toh5/lonesdstest.sh test/h4toh5/lonevdatatest.sh test/h4toh5/loneimagetest.sh " | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
@@ -2794,7 +2794,7 @@ EOF
 
 cat >> $CONFIG_STATUS <<EOF
 
-CONFIG_FILES=\${CONFIG_FILES-"Makefile native/Makefile native/h4toh5lib/Makefile native/hdflib/Makefile native/hdf5lib/Makefile test/Makefile test/h4toh5/Makefile test/h4toh5/apitest.sh test/h4toh5/imagetest.sh test/h4toh5/nametest.sh test/h4toh5/sdstest.sh test/h4toh5/vdatatest.sh test/h4toh5/vgrouptest.sh test/h4toh5/runtests.sh test/object/testh4file.sh test/object/testh5file.sh test/object/Makefile test/object/runtests.sh test/h4toh5/linktest.sh"}
+CONFIG_FILES=\${CONFIG_FILES-"Makefile native/Makefile native/h4toh5lib/Makefile native/hdflib/Makefile native/hdf5lib/Makefile test/Makefile test/h4toh5/Makefile test/h4toh5/apitest.sh test/h4toh5/imagetest.sh test/h4toh5/nametest.sh test/h4toh5/sdstest.sh test/h4toh5/vdatatest.sh test/h4toh5/vgrouptest.sh test/h4toh5/runtests.sh test/object/testh4file.sh test/object/testh5file.sh test/object/Makefile test/object/runtests.sh test/h4toh5/linktest.sh test/h4toh5/sdstestattr.sh test/h4toh5/imagetestattr.sh test/h4toh5/lonesdstest.sh test/h4toh5/lonevdatatest.sh test/h4toh5/loneimagetest.sh "}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
 for ac_file in .. $CONFIG_FILES; do if test "x$ac_file" != x..; then
