@@ -208,6 +208,13 @@ implements ImageObserver
     public void dispose()
     {
         super.dispose();
+
+        // reload the data when it is displayed next time
+        // because the display type (table or image) may be
+        // different.
+        if (!dataset.isImage())
+            dataset.clearData();
+
         viewer.contentFrameWasRemoved(getName());
     }
 

@@ -175,6 +175,17 @@ implements TableObserver
     public void dispose()
     {
         if (isValueChanged) updateValueInFile();
+
+        if (dataset instanceof ScalarDS)
+        {
+            ScalarDS sds = (ScalarDS)dataset;
+            // reload the data when it is displayed next time
+            // because the display type (table or image) may be
+            // different.
+            if (sds.isImage())
+                sds.clearData();
+        }
+
         viewer.contentFrameWasRemoved(getName());
         super.dispose();
     }
@@ -868,12 +879,7 @@ implements TableObserver
 
             if (lvalue < 0)
             {
-                JOptionPane.showMessageDialog(
-                    this,
-                    "Negative value for unsigned integer.",
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
-                return;
+                throw new IllegalArgumentException("Negative value for unsigned integer: "+lvalue);
             }
 
             if (NT=='S') maxValue = 255;
@@ -882,12 +888,7 @@ implements TableObserver
 
             if (lvalue < 0 || lvalue > maxValue)
             {
-                JOptionPane.showMessageDialog(
-                    this,
-                    "Data value must be between 0 and "+maxValue,
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
-                return;
+                throw new IllegalArgumentException("Data value is out of range: "+lvalue);
             }
         }
 
