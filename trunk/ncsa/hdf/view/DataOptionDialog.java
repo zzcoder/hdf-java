@@ -764,6 +764,17 @@ implements ActionListener, ItemListener
                     JOptionPane.ERROR_MESSAGE);
                 return false;
             }
+
+            // silently correct error
+            if (n0[i] < 1) n0[i] = 1;
+            if (n0[i] > dims[sIndex[i]]) n0[i] = dims[sIndex[i]];
+            if (n1[i] < 1) n1[i] = 1;
+            if (n1[i] > dims[sIndex[i]]) n1[i] = dims[sIndex[i]];
+            if (n0[i] > n1[i]) n1[i] = n0[i];
+            if (n2[i] <= 0) n2[i] = 1;
+            if (n2[i] > dims[sIndex[i]]) n2[i] = dims[sIndex[i]];
+
+/*
             if (n0[i] < 1)
             {
                 JOptionPane.showMessageDialog(
@@ -808,7 +819,7 @@ implements ActionListener, ItemListener
             {
                 JOptionPane.showMessageDialog(
                     (JFrame)viewer,
-                    "Invalid selection: end["+sIndex[i]+"] > "+"start["+sIndex[i]+"]",
+                    "Invalid selection: end["+sIndex[i]+"] < "+"start["+sIndex[i]+"]",
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
                 return false;
@@ -833,7 +844,8 @@ implements ActionListener, ItemListener
                     JOptionPane.ERROR_MESSAGE);
                 return false;
             }
-        }
+*/
+        } // for (int i=0; i<n; i++)
 
         if (dataset instanceof CompoundDS)
         {

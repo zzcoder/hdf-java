@@ -1266,11 +1266,8 @@ implements TreeView, ActionListener {
         boolean isH4 = file.isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4));
         boolean isH5 = file.isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
 
-        if (isH5)
-            saveAsHDF5(file);
-        else if (isH4)
-            saveAsHDF4(file);
-        else {
+        if (!(isH4 || isH5))
+        {
             toolkit.beep();
             JOptionPane.showMessageDialog(
             this,
@@ -1279,6 +1276,42 @@ implements TreeView, ActionListener {
             JOptionPane.ERROR_MESSAGE);
             return;
         }
+
+        // write the change of the data into file before save the file
+        List views = ((HDFView)viewer).getDataViews();
+        Object theView = null;
+        TableView tableView = null;
+        TextView textView = null;
+        FileFormat theFile = null;
+        if (views != null)
+        {
+            int n = views.size();
+            for (int i=0; i<n; i++)
+            {
+                theView = views.get(i);
+                if (theView instanceof TableView)
+                {
+                    tableView = (TableView)theView;
+                    theFile = tableView.getDataObject().getFileFormat();
+                    if (file.equals(theFile))
+                    {
+                        tableView.updateValueInFile();
+                    }
+                }
+                else if (theView instanceof TextView)
+                {
+                    textView = (TextView)theView;
+                    theFile = textView.getDataObject().getFileFormat();
+                    if (file.equals(theFile))
+                    {
+                        textView.updateValueInFile();
+                    }
+                }
+            }
+        }
+
+        if (isH5) saveAsHDF5(file);
+        else if (isH4) saveAsHDF4(file);
     }
 
 
@@ -1306,14 +1339,22 @@ implements TreeView, ActionListener {
             return null;
 
         List objs = new Vector();
-        HObject theObject = null;
-        DefaultMutableTreeNode currentNode = null;
+        HObject theObject=null, parentObject;
+        DefaultMutableTreeNode currentNode=null, parentNode=null;
         for (int i=0; i<paths.length; i++)
         {
             currentNode = (DefaultMutableTreeNode) (paths[i].getLastPathComponent());
             theObject = (HObject)currentNode.getUserObject();
+
             if (theObject != null)
+            {
                 objs.add(theObject);
+                // removed the group from the selected list if some of its members are selected
+                // to avoid duplicated copy/paste when a group is pasted.
+                parentNode = (DefaultMutableTreeNode)currentNode.getParent();
+                parentObject = (HObject)parentNode.getUserObject();
+                objs.remove(parentObject);
+            }
         }
 
         return objs;
@@ -1521,8 +1562,11 @@ implements TreeView, ActionListener {
      */
     private class HTreeCellRenderer extends DefaultTreeCellRenderer
     {
-        private Icon datasetIcon, imageIcon, tableIcon, textIcon,
-            h4Icon, h5Icon, openFolder, closeFolder;
+        private Icon h4Icon, h5Icon,
+                datasetIcon, imageIcon, tableIcon, textIcon,
+                openFolder, closeFolder,
+                datasetIconA, imageIconA, tableIconA, textIconA,
+                openFolderA, closeFolderA;
 
         private HTreeCellRenderer()
         {
@@ -1537,6 +1581,14 @@ implements TreeView, ActionListener {
             tableIcon = ViewProperties.getTableIcon();
             textIcon = ViewProperties.getTextIcon();
 
+            openFolderA = ViewProperties.getFolderopenIconA();
+            closeFolderA = ViewProperties.getFoldercloseIconA();
+            datasetIconA = ViewProperties.getDatasetIconA();
+            imageIconA = ViewProperties.getImageIconA();
+            tableIconA = ViewProperties.getTableIconA();
+            textIconA = ViewProperties.getTextIconA();
+
+
             if (openFolder != null)
                 openIcon = openFolder;
             else
@@ -1547,24 +1599,19 @@ implements TreeView, ActionListener {
             else
                 closeFolder = closedIcon;
 
-            if (datasetIcon == null)
-                datasetIcon = leafIcon;
+            if (datasetIcon == null) datasetIcon = leafIcon;
+            if (imageIcon == null) imageIcon = leafIcon;
+            if (tableIcon == null) tableIcon = leafIcon;
+            if (textIcon == null) textIcon = leafIcon;
+            if (h4Icon == null) h4Icon = leafIcon;
+            if (h5Icon == null) h5Icon = leafIcon;
 
-            if (imageIcon == null)
-                imageIcon = leafIcon;
-
-            if (tableIcon == null)
-                tableIcon = leafIcon;
-
-            if (textIcon == null)
-                textIcon = leafIcon;
-
-            if (h4Icon == null)
-                h4Icon = leafIcon;
-
-            if (h5Icon == null)
-                h5Icon = leafIcon;
-
+            if (openFolderA == null) openFolderA = openFolder;
+            if (closeFolderA == null) closeFolderA = closeFolder;
+            if (datasetIconA == null) datasetIconA = datasetIcon;
+            if (imageIconA == null) imageIconA = imageIcon;
+            if (tableIconA == null) tableIconA = tableIcon;
+            if (textIconA == null) textIconA = textIcon;
         }
 
         public Component getTreeCellRendererComponent(
@@ -1576,26 +1623,45 @@ implements TreeView, ActionListener {
             int row,
             boolean hasFocus)
         {
-            Object theObject = ((DefaultMutableTreeNode)value).getUserObject();
+            HObject theObject = (HObject)((DefaultMutableTreeNode)value).getUserObject();
             if (theObject instanceof ScalarDS)
             {
                 ScalarDS sd = (ScalarDS)theObject;
                 if (sd.isImage())
-                    leafIcon = imageIcon;
+                {
+                    if (sd.hasAttribute()) leafIcon = imageIconA;
+                    else leafIcon = imageIcon;
+                }
                 else if (sd.isText())
-                    leafIcon = textIcon;
+                {
+                    if (sd.hasAttribute()) leafIcon = textIconA;
+                    else leafIcon = textIcon;
+                }
+                else if (sd.hasAttribute())
+                    leafIcon = datasetIconA;
                 else
                     leafIcon = datasetIcon;
             }
             else if (theObject instanceof CompoundDS)
             {
-                leafIcon = tableIcon;
+                if (theObject.hasAttribute())
+                    leafIcon = tableIconA;
+                else
+                    leafIcon = tableIcon;
             }
             else if (theObject instanceof Group)
             {
                 Group g = (Group)theObject;
-                openIcon = openFolder;
-                closedIcon = closeFolder;
+
+                if (g.hasAttribute())
+                {
+                    openIcon = openFolderA;
+                    closedIcon = closeFolderA;
+                } else
+                {
+                    openIcon = openFolder;
+                    closedIcon = closeFolder;
+                }
 
                 if (g.isRoot())
                 {

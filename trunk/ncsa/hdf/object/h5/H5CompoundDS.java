@@ -147,6 +147,11 @@ public class H5CompoundDS extends CompoundDS
         long[] oid)
     {
         super (fileFormat, name, path, oid);
+
+        int did = open();
+        try { hasAttribute = (H5.H5Aget_num_attrs(did)>0); }
+        catch (Exception ex) {}
+        close(did);
     }
 
     // implementing Dataset

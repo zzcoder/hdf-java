@@ -24,4 +24,8 @@ import ncsa.hdf.object.*;
 public abstract interface TextView extends DataView {
     /** return array of the text in this textview */
     public abstract String[] getText();
+
+    /** Write the change of a dataset into file. */
+    public abstract void updateValueInFile();
+
 }

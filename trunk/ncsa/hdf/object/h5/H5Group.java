@@ -60,6 +60,11 @@ public class H5Group extends Group
         long[] theID)
     {
         super (fileFormat, name, path, parent, ((theID == null) ? DEFAULT_OID : theID));
+
+        int gid = open();
+        try { hasAttribute = (H5.H5Aget_num_attrs(gid)>0); }
+        catch (Exception ex ) {}
+        close(gid);
     }
 
     // Implementing DataFormat

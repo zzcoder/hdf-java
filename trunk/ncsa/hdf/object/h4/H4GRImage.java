@@ -130,6 +130,16 @@ public class H4GRImage extends ScalarDS
         if (fileFormat instanceof H4File)
         {
             this.grid = ((H4File)fileFormat).getGRAccessID();
+
+            int id = open();
+            String[] objName = {""};
+            int[] grInfo = new int[4]; //ncomp, data_type, interlace, and num_attrs
+            int[] idims = new int[2];
+            try {
+                HDFLibrary.GRgetiminfo(id, objName, grInfo, idims);
+                hasAttribute = (grInfo[3]>0);
+            } catch (Exception ex) {}
+            close(id);
         }
     }
 

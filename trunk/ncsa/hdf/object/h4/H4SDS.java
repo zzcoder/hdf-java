@@ -122,6 +122,18 @@ public class H4SDS extends ScalarDS
         if (fileFormat instanceof H4File)
         {
             this.sdid = ((H4File)fileFormat).getSDAccessID();
+            init();
+/*
+            int id = open();
+            try { // retireve attributes of the dataset
+                String[] objName = {""};
+                int[] sdInfo = {0, 0, 0};
+                int[] tmpDim = new int[HDFConstants.MAX_VAR_DIMS];
+                HDFLibrary.SDgetinfo(id, objName, tmpDim, sdInfo);
+                hasAttribute = (sdInfo[2]>0);
+            } catch (Exception ex) {}
+            close(id);
+*/
         }
     }
 
@@ -490,13 +502,14 @@ public class H4SDS extends ScalarDS
             HDFLibrary.SDgetinfo(id, objName, idims, sdInfo);
             // mask off the litend bit
             sdInfo[1] = sdInfo[1] & (~HDFConstants.DFNT_LITEND);
+            hasAttribute = (sdInfo[2]>0);
             rank = sdInfo[0];
             if (rank <= 0) rank = 1;
             nativeDatatype = sdInfo[1];
-            isText = (nativeDatatype == HDFConstants.DFNT_CHAR ||
-                nativeDatatype == HDFConstants.DFNT_UCHAR8);
-            idims = new int[rank];
-            HDFLibrary.SDgetinfo(id, objName, idims, sdInfo);
+            isText = (nativeDatatype == HDFConstants.DFNT_CHAR || nativeDatatype == HDFConstants.DFNT_UCHAR8);
+
+            //idims = new int[rank];
+            //HDFLibrary.SDgetinfo(id, objName, idims, sdInfo);
 
             // get the dimension names
             try {

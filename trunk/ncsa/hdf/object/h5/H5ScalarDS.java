@@ -122,6 +122,7 @@ public class H5ScalarDS extends ScalarDS
         int aid=-1, atid=-1, tid=0, asid=-1;
         try
         {
+            hasAttribute = (H5.H5Aget_num_attrs(did)>0);
             tid= H5.H5Dget_type(did);
             int tclass = H5.H5Tget_class(tid);
             isText = (tclass==HDF5Constants.H5T_STRING);

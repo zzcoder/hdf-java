@@ -576,7 +576,7 @@ public class H4File extends FileFormat
         for ( int i = i0; i < i1; i++)
         {
             ref = refs[i];
-            H4Group g = getVGroup(ref, HObject.separator, rootGroup, false);
+            H4Group g = getVGroup(HDFConstants.DFTAG_VG, ref, HObject.separator, rootGroup, false);
 
             if (g != null)
             {
@@ -609,7 +609,7 @@ public class H4File extends FileFormat
             for (int i=0; i<n; i++)
             {
                 // no duplicate object at top level
-                H4GRImage gr = getGRImage(i, HObject.separator, false);
+                H4GRImage gr = getGRImage(HDFConstants.DFTAG_RIG, i, HObject.separator, false);
                 if (gr != null)
                 {
                     node = new DefaultMutableTreeNode(gr);
@@ -634,7 +634,7 @@ public class H4File extends FileFormat
             for (int i=0; i<n; i++)
             {
                 // no duplicate object at top level
-                H4SDS sds = getSDS(i, HObject.separator, false);
+                H4SDS sds = getSDS(HDFConstants.DFTAG_NDG, i, HObject.separator, false);
                 if (sds != null)
                 {
                     node = new DefaultMutableTreeNode(sds);
@@ -658,7 +658,7 @@ public class H4File extends FileFormat
             ref = refs[i];
 
             // no duplicate object at top level
-            H4Vdata vdata = getVdata(ref, HObject.separator, false);
+            H4Vdata vdata = getVdata(HDFConstants.DFTAG_VS, ref, HObject.separator, false);
 
             if (vdata != null)
             {
@@ -765,7 +765,7 @@ public class H4File extends FileFormat
                     }
                     if (index != HDFConstants.FAIL)
                     {
-                        H4GRImage gr = getGRImage(index, fullPath, true);
+                        H4GRImage gr = getGRImage(tag, index, fullPath, true);
                         pgroup.addToMemberList(gr);
                         if (gr != null && pnode != null)
                         {
@@ -785,7 +785,7 @@ public class H4File extends FileFormat
                     }
                     if (index != HDFConstants.FAIL)
                     {
-                        H4SDS sds = getSDS(index, fullPath, true);
+                        H4SDS sds = getSDS(tag, index, fullPath, true);
                         pgroup.addToMemberList(sds);
                         if (sds != null  && pnode != null)
                         {
@@ -796,7 +796,7 @@ public class H4File extends FileFormat
                     break;
                 case HDFConstants.DFTAG_VH:
                 case HDFConstants.DFTAG_VS:
-                    H4Vdata vdata = getVdata(ref, fullPath, true);
+                    H4Vdata vdata = getVdata(tag, ref, fullPath, true);
                     pgroup.addToMemberList(vdata);
                     if (vdata != null && pnode != null)
                     {
@@ -805,7 +805,7 @@ public class H4File extends FileFormat
                     }
                     break;
                 case HDFConstants.DFTAG_VG:
-                    H4Group vgroup = getVGroup(ref, fullPath, pgroup, true);
+                    H4Group vgroup = getVGroup(tag, ref, fullPath, pgroup, true);
                     pgroup.addToMemberList(vgroup);
                     if (vgroup != null && pnode != null)
                     {
@@ -848,14 +848,14 @@ public class H4File extends FileFormat
      * @param copyAllowed The indicator if multiple copies of an object is allowed.
      * @return the new H5GRImage if successful; otherwise returns null.
      */
-    private final H4GRImage getGRImage(int index, String path, boolean copyAllowed)
+    private final H4GRImage getGRImage(int tag, int index, String path, boolean copyAllowed)
     {
         int id=-1, ref=-1;
         H4GRImage gr = null;
         String[] objName = {""};
         int[] imgInfo = new int[4];
         int[] dim_sizes = {0, 0};
-        int tag = HDFConstants.DFTAG_RIG;
+        //int tag = HDFConstants.DFTAG_RIG;
 
         try
         {
@@ -903,14 +903,14 @@ public class H4File extends FileFormat
      * @param copyAllowed The indicator if multiple copies of an object is allowed.
      * @return the new H4SDS if successful; otherwise returns null.
      */
-    private final H4SDS getSDS(int index, String path, boolean copyAllowed)
+    private final H4SDS getSDS(int tag, int index, String path, boolean copyAllowed)
     {
         int id=-1, ref=-1;
         H4SDS sds = null;
         String[] objName = {""};
         int[] tmpInfo = new int[HDFConstants.MAX_VAR_DIMS];
         int[] sdInfo = {0, 0, 0};
-        int tag = HDFConstants.DFTAG_NDG;
+        //int tag = HDFConstants.DFTAG_NDG;
 
         boolean isCoordvar = false;
         try
@@ -939,7 +939,13 @@ public class H4File extends FileFormat
         // Coordinate variables are not displayed. They are created to store
         // metadata associated with dimensions. To ensure compatibility with
         // netCDF, coordinate variables are implemented as data sets
-        if (id != HDFConstants.FAIL && !isCoordvar)
+
+        if (isCoordvar)
+        {
+            objName[0] += " (dimension)";
+        }
+
+        if (id != HDFConstants.FAIL)// && !isCoordvar)
         {
             long oid[] = {tag, ref};
 
@@ -969,13 +975,13 @@ public class H4File extends FileFormat
      * @param copyAllowed The indicator if multiple copies of an object is allowed.
      * @return the new H4Vdata if successful; otherwise returns null.
      */
-    private final H4Vdata getVdata(int ref, String path, boolean copyAllowed)
+    private final H4Vdata getVdata(int tag, int ref, String path, boolean copyAllowed)
     {
         int id=-1;
         H4Vdata vdata = null;
         String[] objName = {""};
         String[] vClass = {""};
-        int tag = HDFConstants.DFTAG_VS;
+        //int tag = HDFConstants.DFTAG_VS;
         long oid[] = {tag, ref};
 
         if (copyAllowed)
@@ -1029,13 +1035,13 @@ public class H4File extends FileFormat
      * @param copyAllowed The indicator if multiple copies of an object is allowed.
      * @return the new H4VGroup if successful; otherwise returns null.
      */
-    private final H4Group getVGroup(int ref, String path, H4Group pgroup, boolean copyAllowed)
+    private final H4Group getVGroup(int tag, int ref, String path, H4Group pgroup, boolean copyAllowed)
     {
         int id=-1;
         H4Group vgroup  = null;
         String[] objName = {""};
         String[] vClass = {""};
-        int tag = HDFConstants.DFTAG_VG;
+        //int tag = HDFConstants.DFTAG_VG;
         long oid[] = {tag, ref};
 
         if (copyAllowed)
@@ -1495,7 +1501,7 @@ public class H4File extends FileFormat
         for ( int i = 0; i < n; i++)
         {
             ref = refs[i];
-            H4Group g = getVGroup(ref, HObject.separator, rootGroup, false);
+            H4Group g = getVGroup(HDFConstants.DFTAG_VG, ref, HObject.separator, rootGroup, false);
             if (g != null)
                 rootGroup.addToMemberList(g);
         } // for (int i=0; i<n; i++)
@@ -1512,7 +1518,7 @@ public class H4File extends FileFormat
             for (int i=0; i<n; i++)
             {
                 // no duplicate object at top level
-                H4GRImage gr = getGRImage(i, HObject.separator, false);
+                H4GRImage gr = getGRImage(HDFConstants.DFTAG_RIG, i, HObject.separator, false);
                 if (gr != null)
                     rootGroup.addToMemberList(gr);
             } // for (int i=0; i<n; i++)
@@ -1529,7 +1535,7 @@ public class H4File extends FileFormat
             for (int i=0; i<n; i++)
             {
                 // no duplicate object at top level
-                H4SDS sds = getSDS(i, HObject.separator, false);
+                H4SDS sds = getSDS(HDFConstants.DFTAG_NDG, i, HObject.separator, false);
                 if (sds != null)
                     rootGroup.addToMemberList(sds);
             } // for (int i=0; i<n; i++)
@@ -1547,7 +1553,7 @@ public class H4File extends FileFormat
             ref = refs[i];
 
             // no duplicate object at top level
-            H4Vdata vdata = getVdata(ref, HObject.separator, false);
+            H4Vdata vdata = getVdata(HDFConstants.DFTAG_VS, ref, HObject.separator, false);
 
             if (vdata != null)
                 rootGroup.addToMemberList(vdata);
@@ -1591,7 +1597,7 @@ public class H4File extends FileFormat
         } catch (HDFException ex) { idx = -1; }
 
         if ( idx >= 0 )
-            return getGRImage(idx, HObject.separator, false);
+            return getGRImage(HDFConstants.DFTAG_RIG, idx, HObject.separator, false);
 
         // get top level SDS
         try {
@@ -1600,7 +1606,7 @@ public class H4File extends FileFormat
 
         if ( idx >= 0 )
         {
-            return getSDS(idx, HObject.separator, false);
+            return getSDS(HDFConstants.DFTAG_NDG, idx, HObject.separator, false);
         } // if (sdid != HDFConstants.FAIL && HDFLibrary.SDfileinfo(sdid, argv))
 
         int ref = 0;
@@ -1624,7 +1630,7 @@ public class H4File extends FileFormat
 
         if (ref > 0)
         {
-            return getVdata(ref, HObject.separator, false);
+            return getVdata(HDFConstants.DFTAG_VS, ref, HObject.separator, false);
         } // for (int i=0; i<n; i++)
 
         return obj;

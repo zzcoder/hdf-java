@@ -1708,6 +1708,30 @@ public class HDFView extends JFrame
         return (DataView)theFrame;
     }
 
+    /** Returns a list of all open DataViews
+     */
+    public List getDataViews()
+    {
+        // check if the data content is already displayed
+        JInternalFrame[] frames = contentPane.getAllFrames();
+        JInternalFrame theFrame = null;
+
+        if (frames == null || frames.length<=0)
+            return null;
+
+        Vector views = new Vector(frames.length);
+        HObject obj = null;
+        for (int i=0; i<frames.length; i++)
+        {
+            if ( !(frames[i] instanceof DataView) )
+                continue;
+            else
+                views.add(frames[i]);
+        }
+
+        return views;
+    }
+
     /**
      * @return a list of treeview implementations.
      */

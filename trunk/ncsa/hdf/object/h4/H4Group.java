@@ -73,6 +73,11 @@ public class H4Group extends Group
         {
             this.grid = ((H4File)fileFormat).getGRAccessID();
             this.sdid = ((H4File)fileFormat).getSDAccessID();
+
+            int vgid = open();
+            try {  hasAttribute =(HDFLibrary.Vnattrs(vgid)>0);
+            } catch (Exception ex) {}
+            close(vgid);
         }
     }
 
