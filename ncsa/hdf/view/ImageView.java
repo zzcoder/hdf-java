@@ -17,6 +17,7 @@ import java.awt.image.*;
 import java.awt.event.*;
 import java.lang.reflect.Array;
 import java.util.List;
+import java.util.Hashtable;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Image;
@@ -60,6 +61,12 @@ import java.awt.Frame;
 public class ImageView extends JInternalFrame
 implements ImageObserver
 {
+    /** Horizontal direction to flip an image. */
+    public static final int FLIP_HORIZONTAL = 0;
+
+    /** Vertical direction to flip an image. */
+    public static final int FLIP_VERTICAL   = 1;
+
     /**
      * The main HDFView.
      */
@@ -458,6 +465,25 @@ implements ImageObserver
         cv.show();
     }
 
+    // implementing ImageObserver
+    public void flip(int direction)
+    {
+        ImageFilter filter = new FlipFilter(direction);
+
+        if (filter == null)
+            return;
+
+        ImageProducer imageProducer = image.getSource();
+
+        try {
+            image = createImage(new FilteredImageSource(imageProducer,filter));
+            imageComponent.setImage(image);
+        } catch (Throwable err)
+        {
+            viewer.showStatus(err.toString());
+        }
+    }
+
     /**
      *  Convert an array of raw data into array of a byte data.
      *  Byte data ranged from -128 to 127.
@@ -642,7 +668,7 @@ implements ImageObserver
      *  where, palette[0][], palette[1][] and palette[2][] are the red, green and
      *  blue components respectively.
      */
-    public static byte[][] createGrayPalette()
+    public static final byte[][] createGrayPalette()
     {
         byte[][] p = new byte[3][256];
 
@@ -662,7 +688,7 @@ implements ImageObserver
      *  where, palette[0][], palette[1][] and palette[2][] are the red, green and
      *  blue components respectively.
      */
-    public static byte[][] createRainbowPalette()
+    public static final byte[][] createRainbowPalette()
     {
         byte r, g, b;
         byte[][] p = new byte[3][256];
@@ -719,7 +745,7 @@ implements ImageObserver
      *  where, palette[0][], palette[1][] and palette[2][] are the red, green and
      *  blue components respectively.
      */
-    public static byte[][] createNaturePalette()
+    public static final byte[][] createNaturePalette()
     {
         byte[][] p = new byte[3][256];
 
@@ -751,7 +777,7 @@ implements ImageObserver
      *  where, palette[0][], palette[1][] and palette[2][] are the red, green and
      *  blue components respectively.
      */
-    public static byte[][] createWavePalette()
+    public static final byte[][] createWavePalette()
     {
         byte[][] p = new byte[3][256];
 
@@ -987,5 +1013,154 @@ implements ImageObserver
         }
 
     } // private class ImageComponent extends JComponent
+
+    /**
+     * FlipFileter creates image filter to flip image horizontally or
+     * vertically.
+     */
+    private class FlipFilter extends ImageFilter
+    {
+        /** flip direction */
+        private int direction;
+
+        /** default color model */
+        private final  ColorModel defaultRGB = ColorModel.getRGBdefault();
+
+        /** pixel value */
+        private int raster[] = null;
+
+        /** width & height */
+        private int imageWidth, imageHeight;
+
+        /**
+         * Constructs an image filter to flip horizontally or vertically.
+         * <p>
+         * @param d the flip direction.
+         */
+        public FlipFilter(int d)
+        {
+            if (d < FLIP_HORIZONTAL)
+                d = FLIP_HORIZONTAL;
+            else if (d > FLIP_VERTICAL)
+                d = FLIP_VERTICAL;
+
+            direction = d;
+        }
+
+        public void setDimensions(int w, int h)
+        {
+            imageWidth = w;
+            imageHeight = h;
+
+            // specify the raster
+            if (raster == null)
+                raster = new int[imageWidth*imageHeight];
+
+            consumer.setDimensions(imageWidth, imageHeight);
+        }
+
+        public void setProperties(Hashtable props)
+        {
+            props = (Hashtable) props.clone();
+            Object o = props.get("filters");
+            if (o == null) {
+                props.put("filters", toString());
+            } else if (o instanceof String) {
+                props.put("filters", ((String) o)+toString());
+            }
+
+            consumer.setProperties(props);
+        }
+
+        public void setHints(int hintflags)
+        {
+            consumer.setHints(
+                TOPDOWNLEFTRIGHT
+                | COMPLETESCANLINES
+                | SINGLEPASS
+                | (hintflags & SINGLEFRAME));
+        }
+
+        public void setColorModel_old(ColorModel model)
+        {
+            consumer.setColorModel(defaultRGB);
+            // consumer.setColorModel(model);
+        }
+
+        public void setPixels(int x, int y, int w, int h, ColorModel model,
+            byte pixels[], int off, int scansize)
+        {
+            int srcoff = off;
+            int dstoff = y * imageWidth + x;
+            for (int yc = 0; yc < h; yc++)
+            {
+                for (int xc = 0; xc < w; xc++)
+                {
+                    raster[dstoff++] = model.getRGB(pixels[srcoff++] & 0xff);
+                }
+
+                srcoff += (scansize - w);
+                dstoff += (imageWidth - w);
+            }
+        }
+
+        public void setPixels(int x, int y, int w, int h, ColorModel model,
+            int pixels[], int off, int scansize)
+        {
+            int srcoff = off;
+            int dstoff = y * imageWidth + x;
+
+            for (int yc = 0; yc < h; yc++)
+            {
+                for (int xc = 0; xc < w; xc++)
+                {
+                    raster[dstoff++] = model.getRGB(pixels[srcoff++]);
+                }
+                srcoff += (scansize - w);
+                dstoff += (imageWidth - w);
+            }
+        }
+
+        public void imageComplete(int status)
+        {
+            if (status == IMAGEERROR || status == IMAGEABORTED)
+            {
+                consumer.imageComplete(status);
+                return;
+            }
+
+            int pixels[] = new int[imageWidth];
+
+            for (int y = 0; y < imageHeight; y++)
+            {
+                if (direction == FLIP_VERTICAL )
+                {
+                    // vertical way ...
+                    int pos = (imageHeight-1-y)*imageWidth;
+                    for (int kk=0; kk<imageWidth; kk++)
+                        pixels[kk] = raster[pos+kk];
+                }
+                else
+                {
+                    int pos = y*imageWidth;
+                    for (int kk=0; kk<imageWidth; kk++)
+                        pixels[kk] = raster[pos+kk];
+
+                    for (int  kk=0; kk<imageWidth/2; kk++)
+                    {
+                        int tmp = pixels[kk];
+                        pixels[kk]  = pixels[imageWidth-kk-1];
+                        pixels[imageWidth-kk-1] = tmp;
+                    }
+                }
+
+                // consumer it ....
+                consumer.setPixels(0, y, imageWidth, 1, defaultRGB, pixels, 0, imageWidth);
+            } // for (int y = 0; y < imageHeight; y++)
+
+            // complete ?
+            consumer.imageComplete(status);
+        }
+    } // private class FlipFilter extends ImageFilter
 
 }

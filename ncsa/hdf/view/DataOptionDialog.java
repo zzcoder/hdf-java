@@ -90,6 +90,8 @@ implements ActionListener, ItemListener
 
     private JRadioButton spreadsheetButton, imageButton;
 
+    private Choice choicePalette;
+
     private boolean isSelectionCancelled;
 
     private boolean isTrueColor;
@@ -135,10 +137,17 @@ implements ActionListener, ItemListener
         choiceVertical = new Choice();
         choiceHorizontal = new Choice();
         choiceDepth = new Choice();
-
         choiceVertical.addItemListener(this);
         choiceHorizontal.addItemListener(this);
         choiceDepth.addItemListener(this);
+
+        choicePalette = new Choice();
+        choicePalette.add("Default palette");
+        choicePalette.add("Gray");
+        choicePalette.add("Rainbow");
+        choicePalette.add("Nature");
+        choicePalette.add("Wave");
+        choicePalette.addItemListener(this);
 
         startVertical = new JTextField();
         startHorizontal = new JTextField();
@@ -195,12 +204,15 @@ implements ActionListener, ItemListener
         spreadsheetButton.setMnemonic(KeyEvent.VK_S);
         imageButton = new JRadioButton("Image");
         imageButton.setMnemonic(KeyEvent.VK_I);
+        imageButton.addItemListener(this);
+        spreadsheetButton.addItemListener(this);
         ButtonGroup rgroup = new ButtonGroup();
         rgroup.add(spreadsheetButton);
         rgroup.add(imageButton);
         p.add(spreadsheetButton);
         p.add(imageButton);
-        p.setBorder(new TitledBorder("Display Option"));
+        p.add(choicePalette);
+        p.setBorder(new TitledBorder("View Option"));
         contentPane.add("North", p);
 
         p = new JPanel();
@@ -309,8 +321,9 @@ implements ActionListener, ItemListener
 
         if (dataset instanceof CompoundDS)
             imageButton.setEnabled(false);
-        else
-            imageButton.setSelected(isImage);
+
+        imageButton.setSelected(isImage);
+        choicePalette.setEnabled(isImage);
 
         if (isTrueColor)
         {
@@ -394,6 +407,26 @@ implements ActionListener, ItemListener
                 if (!isTrueColor)
                     selected[idxDepth] = 1; //  one page a time
                 selectedIndex[2] = choiceDepth.getSelectedIndex();
+            }
+
+            // set palette for image view
+            if (dataset instanceof ScalarDS &&
+                imageButton.isSelected())
+            {
+                int palChoice = choicePalette.getSelectedIndex();
+                byte[][] pal = null;
+                if (palChoice == 1)
+                    pal = ImageView.createGrayPalette();
+                else if (palChoice == 2)
+                    pal = ImageView.createRainbowPalette();
+                else if (palChoice == 3)
+                    pal = ImageView.createNaturePalette();
+                else if (palChoice == 4)
+                    pal = ImageView.createWavePalette();
+                else
+                    pal = null;
+
+                ((ScalarDS)dataset).setPalette(pal);
             }
 
             isSelectionCancelled = false;
@@ -523,6 +556,11 @@ implements ActionListener, ItemListener
             }
 
             idxDepth = d_idx;
+        }
+        else if (source.equals(imageButton) ||
+            source.equals(spreadsheetButton))
+        {
+            choicePalette.setEnabled(imageButton.isSelected());
         }
     }
 

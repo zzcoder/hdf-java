@@ -81,7 +81,6 @@ implements ActionListener
      */
     private final JPopupMenu popupMenu;
 
-
     /**
      * Constructs a treeview.
      * <p>
@@ -105,6 +104,7 @@ implements ActionListener
         tree.addMouseListener(new HTreeMouseAdapter());
         tree.setRowHeight(20);
         tree.setRootVisible(false);
+        tree.setShowsRootHandles(true);
 
         // create the popupmenu
         popupMenu = createPopupMenu();
@@ -307,6 +307,17 @@ implements ActionListener
         int x = e.getX();
         int y = e.getY();
 
+        if (selectedObject instanceof Group)
+        {
+            popupMenu.getComponent(0).setEnabled(false);
+            popupMenu.getComponent(1).setEnabled(false);
+        }
+        else
+        {
+            popupMenu.getComponent(0).setEnabled(true);
+            popupMenu.getComponent(1).setEnabled(true);
+        }
+
         popupMenu.show((JComponent)e.getSource(), x, y);
     }
 
@@ -334,7 +345,7 @@ implements ActionListener
         /**
          * Icon used to show hdf root nodes.
          */
-        private Icon hdfIcon;
+        private Icon h4Icon, h5Icon;
 
         private Icon openFolder, closeFolder;
 
@@ -346,7 +357,8 @@ implements ActionListener
             closeFolder = ViewProperties.getFoldercloseIcon();
             datasetIcon = ViewProperties.getDatasetIcon();
             imageIcon = ViewProperties.getImageIcon();
-            hdfIcon = ViewProperties.getHdfIcon();
+            h4Icon = ViewProperties.getH4Icon();
+            h5Icon = ViewProperties.getH5Icon();
             tableIcon = ViewProperties.getTableIcon();
 
             if (openFolder != null)
@@ -368,8 +380,11 @@ implements ActionListener
             if (tableIcon == null)
                 tableIcon = leafIcon;
 
-            if (hdfIcon == null)
-                hdfIcon = leafIcon;
+            if (h4Icon == null)
+                h4Icon = leafIcon;
+
+            if (h5Icon == null)
+                h5Icon = leafIcon;
         }
 
         public Component getTreeCellRendererComponent(
@@ -399,8 +414,10 @@ implements ActionListener
                 Group g = (Group)theObject;
                 if (g.isRoot())
                 {
-                    openIcon = hdfIcon;
-                    closedIcon = hdfIcon;
+                    if (g instanceof H4Group)
+                        openIcon = closedIcon = h4Icon;
+                    else
+                        openIcon = closedIcon = h5Icon;
                 }
                 else
                 {

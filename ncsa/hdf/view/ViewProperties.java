@@ -80,7 +80,8 @@ public class ViewProperties extends Properties
     /** a list of most recent files */
     private static Vector mrf;
 
-    private static Icon hdfIcon, largeHdfIcon, blankIcon,
+    private static Icon hdfIcon, h4Icon, h5Icon, largeHdfIcon,
+        blankIcon, helpIcon,
         fileopenIcon, filesaveIcon, filenewIcon, filecloseIcon,
         foldercloseIcon, folderopenIcon,
         datasetIcon, imageIcon, tableIcon, textIcon,
@@ -134,6 +135,10 @@ public class ViewProperties extends Properties
 
     public static Icon getHdfIcon() { return hdfIcon; }
 
+    public static Icon getH4Icon() { return h4Icon; }
+
+    public static Icon getH5Icon() { return h5Icon; }
+
     public static Icon getDatasetIcon() { return datasetIcon; }
 
     public static Icon getFileopenIcon() { return fileopenIcon; }
@@ -158,6 +163,8 @@ public class ViewProperties extends Properties
 
     public static Icon getBlankIcon() { return blankIcon; }
 
+    public static Icon getHelpIcon() { return helpIcon; }
+
     public static Icon getCopyIcon() { return copyIcon; }
 
     public static Icon getCutIcon() { return cutIcon; }
@@ -179,9 +186,16 @@ public class ViewProperties extends Properties
     public static void loadIcons(String rootPath)
     {
         URL url= null, url2=null, url3=null;
+
         try {
             url = new URL("file:"+rootPath+"/lib/hdfview.jar");
+        } catch (java.net.MalformedURLException mfu) {;}
+
+        try {
             url2 = new URL("file:"+rootPath+"/");
+        } catch (java.net.MalformedURLException mfu) {;}
+
+        try {
             url3 = new URL("file:"+rootPath+"/src/");
         } catch (java.net.MalformedURLException mfu) {;}
 
@@ -194,6 +208,20 @@ public class ViewProperties extends Properties
             u = cl.findResource("ncsa/hdf/view/icons/hdf.gif");
             if (u != null) {
                 hdfIcon = new ImageIcon (u);
+            }
+        }
+
+        if (h4Icon == null) {
+            u = cl.findResource("ncsa/hdf/view/icons/hdf4.gif");
+            if (u != null) {
+                h4Icon = new ImageIcon (u);
+            }
+        }
+
+        if (h5Icon == null) {
+            u = cl.findResource("ncsa/hdf/view/icons/hdf5.gif");
+            if (u != null) {
+                h5Icon = new ImageIcon (u);
             }
         }
 
@@ -292,6 +320,13 @@ public class ViewProperties extends Properties
             u = cl.findResource("ncsa/hdf/view/icons/blank.gif");
             if (u != null) {
                 blankIcon = new ImageIcon (u);
+            }
+        }
+
+        if (helpIcon == null) {
+            u = cl.findResource("ncsa/hdf/view/icons/help.gif");
+            if (u != null) {
+                helpIcon = new ImageIcon (u);
             }
         }
 

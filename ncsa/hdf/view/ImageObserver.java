@@ -39,6 +39,12 @@ public interface ImageObserver extends DataObserver
      */
     public abstract void zoomTo(float zf);
 
+    /** Flip an image horizontally or vertically.
+     *  <p>
+     *  @param direction the direction to flip the image.
+     */
+    public abstract void flip(int direction);
+
     /** Display the color table of this image. */
     public abstract void showColorTable();
 

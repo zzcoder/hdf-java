@@ -387,4 +387,21 @@ public final class H4Accessory
         return unsigned;
     }
 
+    /**
+     *  Returns the version of the HDF4 library.
+     */
+    public static final String getLibversion()
+    {
+        int[] vers = new int[3];
+        String ver = "NCSA HDF Version 4. ";
+        String[] verStr = {""};
+
+        try { HDFLibrary.Hgetlibversion(vers, verStr); }
+        catch (HDFException ex) {}
+
+        ver += vers[1] +" Release "+vers[2];
+
+        return ver;
+    }
+
 }

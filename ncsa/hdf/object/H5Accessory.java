@@ -414,4 +414,21 @@ public final class H5Accessory
         return unsigned;
     }
 
+    /**
+     *  Returns the version of the HDF5 library.
+     */
+    public static final String getLibversion()
+    {
+        int[] vers = new int[3];
+        String ver = "NCSA HDF Version 5. ";
+
+        try { H5.H5get_libversion(vers); }
+        catch (HDF5Exception ex) {}
+
+        ver += vers[1] +" Release "+vers[2];
+
+        return ver;
+    }
+
+
 }

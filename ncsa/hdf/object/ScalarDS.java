@@ -126,6 +126,14 @@ public abstract class ScalarDS extends Dataset
     public abstract byte[][] getPalette();
 
     /**
+     * Sets the palette for this dataset.
+     */
+    public final void setPalette(byte[][] pal)
+    {
+        palette = pal;
+    }
+
+    /**
      * Returns true is this dataset is an image.
      */
     public final boolean isImage()
