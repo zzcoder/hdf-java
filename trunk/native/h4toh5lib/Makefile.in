@@ -10,6 +10,7 @@
 #****************************************************************************/
 
 CC = @CC@ @COPT@
+RM = @RM@ 
 
 HDF5INC = @HDF5INC@
 HDF5LIB = @HDF5LIB@
@@ -17,6 +18,9 @@ HDF4INC = @HDF4INC@
 HDF4LIB = @HDF4LIB@
 H45INC = @H45INC@
 H45LIB = @H45LIB@
+
+##
+##  NOTE: this needs the external compression libraries, JPEG, GZP and SZP
 
 JAVAINC1=@JAVAINC@
 JAVAINC2=@JAVAINC2@
@@ -92,5 +96,5 @@ libjh4toh5: $(OBJECTS)
 	$(LD) $(LDOPT) -o $(LIBDIR)/libjh4toh5.$(JSLEXT) $(LDOPT2) $(OBJECTS) $(LIBS)
 
 clean:
-	rm -f *.o so_locations $(LIBDIR)/libjh4toh5.$(JSLEXT)
+	$(RM) -f *.o so_locations $(LIBDIR)/libjh4toh5.$(JSLEXT)
 

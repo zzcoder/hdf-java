@@ -15,6 +15,7 @@ JAVAC           = @JAVAC@
 JAVADOC         = @JAVADOC@
 JAR         	= @JAR@
 FIND            = @FIND@
+RM            = @RM@
 JAVADOC_FLAGS   = -version -author
 SLEXT=@SLEXT@
 JSLEXT=@JSLEXT@
@@ -206,17 +207,17 @@ clean-testlink:
 clean: clean-natives clean-classes clean-test clean-testlink
 
 clean-classes:
-	$(FIND) ./ncsa \( -name '#*' -o -name '*~' -o -name '*.class' \) -exec rm -f {} \; ;\
-	$(FIND) ./glguerin \( -name '#*' -o -name '*~' -o -name '*.class' \) -exec rm -f {} \; ;\
-	rm -f ./lib/jh4toh5.jar
-	rm -f ./lib/jhdf.jar
-	rm -f ./lib/jhdf5.jar
-	rm -f ./lib/jhdfobj.jar
-	rm -f ./lib/jhdf4obj.jar
-	rm -f ./lib/jhdf5obj.jar
-	rm -f ./lib/jhdfview.jar
-	rm -f ./lib/ext/nc2obj.jar
-	rm -f ./lib//ext/fitsobj.jar
+	$(FIND) ./ncsa \( -name '#*' -o -name '*~' -o -name '*.class' \) -exec $(RM) -f {} \; ;\
+	$(FIND) ./glguerin \( -name '#*' -o -name '*~' -o -name '*.class' \) -exec $(RM) -f {} \; ;\
+	$(RM) -f ./lib/jh4toh5.jar
+	$(RM) -f ./lib/jhdf.jar
+	$(RM) -f ./lib/jhdf5.jar
+	$(RM) -f ./lib/jhdfobj.jar
+	$(RM) -f ./lib/jhdf4obj.jar
+	$(RM) -f ./lib/jhdf5obj.jar
+	$(RM) -f ./lib/jhdfview.jar
+	$(RM) -f ./lib/ext/nc2obj.jar
+	$(RM) -f ./lib/ext/fitsobj.jar
 
 clean-packages: clean-classes
 
@@ -238,9 +239,9 @@ clean-h4toh5lib:
 
 clean-docs:
 	cd docs; \
-	rm *.html
+	$(RM) *.html
 	cd docs/javadocs; \
-	rm -r *.html
+	$(RM) -r *.html
 
 check: install $(TESTPACKAGES)
 	cd test; \
@@ -297,9 +298,9 @@ do-install-libh4to5: h4toh5lib
 
 
 uninstall-lib:
-	rm -f $(LIBDIR)/@JAVATARG@/libjhdf.$(JSLEXT)
-	rm -f $(LIBDIR)/@JAVATARG@/libjhdf5.$(JSLEXT)
-	rm -f $(LIBDIR)/@JAVATARG@/libjh4toh5.$(JSLEXT)
+	$(RM) -f $(LIBDIR)/@JAVATARG@/libjhdf.$(JSLEXT)
+	$(RM) -f $(LIBDIR)/@JAVATARG@/libjhdf5.$(JSLEXT)
+	$(RM) -f $(LIBDIR)/@JAVATARG@/libjh4toh5.$(JSLEXT)
 
 install-jars: install-jhdf install-jhdf5 install-jh45 install-jhdfobject install-jhdfview
 
@@ -358,21 +359,21 @@ install-jhdfview: ncsa.hdf.view
 	@echo "Install HDFVIEW complete"
 
 uninstall-jhi5: 
-	rm -f $(JH45INSTALLDIR)/lib/jhdf5.jar
+	$(RM) -f $(JH45INSTALLDIR)/lib/jhdf5.jar
 
 uninstall-jhi: 
-	rm -f $(JH45INSTALLDIR)/lib/jhdf.jar
+	$(RM) -f $(JH45INSTALLDIR)/lib/jhdf.jar
 
 uninstall-jh45: 
-	if test -n "$(H45INC)" ; then rm -f $(JH45INSTALLDIR)/lib/jh4toh5.jar ; fi
+	if test -n "$(H45INC)" ; then $(RM) -f $(JH45INSTALLDIR)/lib/jh4toh5.jar ; fi
 
 uninstall-jhdfobj: 
-	rm -f $(JH45INSTALLDIR)/lib/jhdfobj.jar
-	rm -f $(JH45INSTALLDIR)/lib/jhdf4obj.jar
-	rm -f $(JH45INSTALLDIR)/lib/jhdf5obj.jar
+	$(RM) -f $(JH45INSTALLDIR)/lib/jhdfobj.jar
+	$(RM) -f $(JH45INSTALLDIR)/lib/jhdf4obj.jar
+	$(RM) -f $(JH45INSTALLDIR)/lib/jhdf5obj.jar
 
 uninstall-jhdfview: 
-	rm -f $(JH45INSTALLDIR)/lib/jhdfview.jar
+	$(RM) -f $(JH45INSTALLDIR)/lib/jhdfview.jar
 
 install-docs: install-javadocs install-ug
 
@@ -387,7 +388,7 @@ install-javadocs:
 	cp docs/javadocs/images/*.gif $(DOCDIR)/javadocs/images;
 
 uninstall-javadocs:
-	rm -rf $(DOCDIR)/javadocs/*.html $(DOCDIR)/images
+	$(RM) -rf $(DOCDIR)/javadocs/*.html $(DOCDIR)/images
 
 install-ug:
 	-mkdir -p $(DOCDIR);
@@ -402,31 +403,31 @@ install-ug:
 	cp docs/hdf-object/*.h5 $(DOCDIR)/hdf-object;
 
 uninstall-ug:
-	rm -rf $(DOCDIR)/hdfview/usersguide/*
-	rm -rf $(DOCDIR)/hdf-object/*
+	$(RM) -rf $(DOCDIR)/hdfview/usersguide/*
+	$(RM) -rf $(DOCDIR)/hdf-object/*
 
 distclean: clean-natives clean-classes clean-test clean-testlink
-	rm -f config.cache config.status config.log 
-	rm -rf ./lib/@JAVATARG@
-	rm -rf ./lib/jhdf.jar
-	rm -rf ./lib/jhdf4obj.jar
-	rm -rf ./lib/jhdf5.jar
-	rm -rf ./lib/jhdf5obj.jar
-	rm -rf ./lib/jhdfobj.jar
-	rm -rf ./lib/jhdfview.jar
-	rm -f ./native/Makefile
-	rm -rf ./native/h4toh5lib/Makefile
-	rm -rf ./native/hdflib/Makefile
-	rm -rf ./native/hdf5lib/Makefile
-	rm -rf ./test/Makefile
-	rm -rf ./test/h4toh5/Makefile
-	rm -rf ./test/h4toh5/*.sh
-	rm -rf ./test/object/Makefile
-	rm -rf ./test/object/*.sh
-	rm -rf ./test/linktest/Makefile
-	rm -rf ./test/linktest/testh4link
-	rm -rf ./test/linktest/testlink
-	rm -rf ./Makefile
+	$(RM) -f config.cache config.status config.log 
+	$(RM) -rf ./lib/@JAVATARG@
+	$(RM) -rf ./lib/jhdf.jar
+	$(RM) -rf ./lib/jhdf4obj.jar
+	$(RM) -rf ./lib/jhdf5.jar
+	$(RM) -rf ./lib/jhdf5obj.jar
+	$(RM) -rf ./lib/jhdfobj.jar
+	$(RM) -rf ./lib/jhdfview.jar
+	$(RM) -f ./native/Makefile
+	$(RM) -rf ./native/h4toh5lib/Makefile
+	$(RM) -rf ./native/hdflib/Makefile
+	$(RM) -rf ./native/hdf5lib/Makefile
+	$(RM) -rf ./test/Makefile
+	$(RM) -rf ./test/h4toh5/Makefile
+	$(RM) -rf ./test/h4toh5/*.sh
+	$(RM) -rf ./test/object/Makefile
+	$(RM) -rf ./test/object/*.sh
+	$(RM) -rf ./test/linktest/Makefile
+	$(RM) -rf ./test/linktest/testh4link
+	$(RM) -rf ./test/linktest/testlink
+	$(RM) -rf ./Makefile
 
 #build_package:
 #	./build/JDK/builddist solaris
@@ -436,10 +437,10 @@ src-dist:
 	-mkdir -p hdf-java
 	tar cvf $(VERSION)-x.tar $(DISTFILES)
 	cd hdf-java ; tar xf ../$(VERSION)-x.tar
-	rm -f $(VERSION)-x.tar
+	$(RM) -f $(VERSION)-x.tar
 	tar cvf $(VERSION).tar hdf-java/*
 	$(JAR) cvf $(VERSION).jar hdf-java/*
-	rm -rf hdf-java
+	$(RM) -rf hdf-java
 
 
 # --------
