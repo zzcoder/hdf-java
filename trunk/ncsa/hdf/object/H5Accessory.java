@@ -420,12 +420,12 @@ public final class H5Accessory
     public static final String getLibversion()
     {
         int[] vers = new int[3];
-        String ver = "NCSA HDF Version 5. ";
+        String ver = "NCSA HDF Version 5.";
 
         try { H5.H5get_libversion(vers); }
         catch (HDF5Exception ex) {}
 
-        ver += vers[1] +" Release "+vers[2];
+        ver += vers[0] + "."+ vers[1] +" Release "+vers[2];
 
         return ver;
     }

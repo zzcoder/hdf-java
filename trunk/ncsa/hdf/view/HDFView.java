@@ -476,7 +476,12 @@ implements ViewManager, ActionListener, HyperlinkListener
                 addToRecentFiles(filename);
             } catch (Exception ex)
             {
-                showStatus(ex.toString());
+                Toolkit.getDefaultToolkit().beep();
+                JOptionPane.showMessageDialog(
+                    this,
+                    ex+"\n"+filename,
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
             }
         }
         else if (cmd.equals("recent.file"))
@@ -488,7 +493,12 @@ implements ViewManager, ActionListener, HyperlinkListener
                 treeView.openFile(filename);
             } catch (Exception ex)
             {
-                showStatus(ex.toString());
+                Toolkit.getDefaultToolkit().beep();
+                JOptionPane.showMessageDialog(
+                    this,
+                    ex+"\n"+filename,
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
             }
         }
         else if (cmd.equals("Close file"))
