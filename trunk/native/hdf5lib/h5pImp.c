@@ -26,8 +26,10 @@ extern "C" {
 #endif 
 #include "hdf5.h"
 /* missing definitions from hdf5.h */
+#ifndef FALSE
 #define FALSE 0
 #define TRUE (!FALSE)
+#endif
 /* delete TRUE and FALSE when fixed in HDF5 */
 
 #include <jni.h>
