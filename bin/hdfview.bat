@@ -16,7 +16,7 @@
 
 SET PATH=%HDFVIEW_HOME%\lib\win;%PATH%
 
-set CLASSPATH=%HDFVIEW_HOME%/lib/jhdf.jar;%HDFVIEW_HOME%/lib/jhdf5.jar;%HDFVIEW_HOME%/lib/jhdfobj.jarr;%HDFVIEW_HOME%/lib/netcdf.jar
+set CLASSPATH=%HDFVIEW_HOME%/lib/jhdf.jar;%HDFVIEW_HOME%/lib/jhdf5.jar;%HDFVIEW_HOME%/lib/jhdfobj.jar;%HDFVIEW_HOME%/lib/netcdf.jar;%HDFVIEW_HOME%//lib/fits.jar
 set CLASSPATH=%CLASSPATH%;%HDFVIEW_HOME%/lib/jhdf4obj.jar;%HDFVIEW_HOME%/lib/jhdf5obj.jar;%HDFVIEW_HOME%/lib/jhdfview.jar
 
 %JAVAHOME%\bin\java -mx512m -classpath %CLASSPATH% ncsa.hdf.view.HDFView -root %HDFVIEW_HOME%
