@@ -704,6 +704,7 @@ public class H5File extends FileFormat
         String fullPath = null;
         String ppath = null;
         DefaultMutableTreeNode pnode = (DefaultMutableTreeNode)parentNode;
+        int gid = -1;
 
         H5Group pgroup = (H5Group)(pnode.getUserObject());
         ppath = pgroup.getPath();
@@ -719,9 +720,13 @@ public class H5File extends FileFormat
 
         nelems = 0;
         try {
-            nelems = H5.H5Gn_members(fid, fullPath);
+            gid = pgroup.open();
+            long[] nmembers = {0};
+            H5.H5Gget_num_objs(gid, nmembers);
+            nelems = (int)nmembers[0];
         } catch (HDF5Exception ex) {
             nelems = -1;
+            gid = -1;
         }
 
         if (nelems < 0 ) {
@@ -751,7 +756,8 @@ public class H5File extends FileFormat
             oType[0] = -1;
             oid = null;
             try {
-                H5.H5Gget_obj_info_idx(fid, fullPath, i, oName, oType );
+                H5.H5Gget_objname_by_idx(gid, i, oName, 80l);
+                oType[0] = H5.H5Gget_objtype_by_idx(gid, i);
             } catch (HDF5Exception ex) {
                 // do not stop if accessing one member fails
                 continue;
@@ -882,6 +888,7 @@ public class H5File extends FileFormat
                     break;
             } // switch (oType[0])
         } // for ( i = 0; i < nelems; i++)
+
     } // private depth_first()
 
     /**

@@ -197,6 +197,8 @@ implements ViewManager, HyperlinkListener
         try { props.load(); } catch (Exception ex){System.out.println(ex);}
         recentFiles = props.getMRF();
         currentDir = ViewProperties.getWorkDir();
+        if (currentDir == null)
+            currentDir = System.getProperty("user.dir");
 
         // initialize GUI components
         statusArea = new JTextArea();
@@ -3124,35 +3126,34 @@ implements ViewManager, HyperlinkListener
             return;
         }
 
-        boolean isH5 = selectedObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
-        if (isH5)
-        {
-            String oldName = selectedObject.getName();
-            String newName = JOptionPane.showInputDialog(this, "Rename \""+ oldName + "\" to:",
-                    "Rename...", JOptionPane.INFORMATION_MESSAGE);
+        boolean isH4 = selectedObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4));
 
-            if (newName == null)
-                return;
-
-            newName = newName.trim();
-            if (newName == null ||
-                newName.length()==0 ||
-                newName.equals(oldName))
-             return;
-
-            try { selectedObject.setName(newName); }
-            catch (Exception ex)
-            {
-                toolkit.beep();
-                JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
-            }
-        }
-        else
+        if (isH4)
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this, "Cannot rename HDF4 object.",
                 getTitle(), JOptionPane.ERROR_MESSAGE);
             return;
+        }
+
+        String oldName = selectedObject.getName();
+        String newName = JOptionPane.showInputDialog(this, "Rename \""+ oldName + "\" to:",
+                "Rename...", JOptionPane.INFORMATION_MESSAGE);
+
+        if (newName == null)
+            return;
+
+        newName = newName.trim();
+        if (newName == null ||
+            newName.length()==0 ||
+            newName.equals(oldName))
+         return;
+
+        try { selectedObject.setName(newName); }
+        catch (Exception ex)
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
         }
     }
 
