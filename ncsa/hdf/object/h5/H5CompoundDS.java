@@ -40,6 +40,56 @@ import ncsa.hdf.object.*;
  * compound dataset requires to read the whole data structure instead of read
  * field by field.
  * <p>
+ * <b>How to Select a Subset</b>
+ * <p>
+ * Dataset defines APIs for read, write and subet a dataset. No function is defined
+ * to select a subset of a data array. The selection is done in an implicit way.
+ * Function calls to dimension information such as getSelectedDims() return an array
+ * of dimension values, which is a reference to the array in the dataset object.
+ * Changes of the array outside the dataset object directly change the values of
+ * the array in the dataset object. It is like pointers in C.
+ * <p>
+ *
+ * The following is an example of how to make a subset. In the example, the dataset
+ * is a 4-dimension with size of [200][100][50][10], i.e.
+ * dims[0]=200; dims[1]=100; dims[2]=50; dims[3]=10; <br>
+ * We want to select every other data points in dims[1] and dims[2]
+ * <pre>
+     int rank = dataset.getRank();   // number of dimension of the dataset
+     long[] dims = dataset.getDims(); // the dimension sizes of the dataset
+     long[] selected = dataset.getSelectedDims(); // the selected size of the dataet
+     long[] start = dataset.getStartDims(); // the off set of the selection
+     long[] stride = dataset.getStride(); // the stride of the dataset
+     int[]  selectedIndex = dataset.getSelectedIndex(); // the selected dimensions for display
+
+     // select dim1 and dim2 as 2D data for display,and slice through dim0
+     selectedIndex[0] = 1;
+     selectedIndex[1] = 2;
+     selectedIndex[1] = 0;
+
+     // reset the selection arrays
+     for (int i=0; i<rank; i++) {
+         start[i] = 0;
+         selected[i] = 1;
+         stride[i] = 1;
+    }
+
+    // set stride to 2 on dim1 and dim2 so that every other data points are selected.
+    stride[1] = 2;
+    stride[2] = 2;
+
+    // set the selection size of dim1 and dim2
+    selected[1] = dims[1]/stride[1];
+    selected[2] = dims[1]/stride[2];
+
+    // when dataset.read() is called, the slection above will be used since
+    // the dimension arrays is passed by reference. Changes of these arrays
+    // outside the dataset object directly change the values of these array
+    // in the dataset object.
+
+ * </pre>
+ *
+ * <p>
  * @version 1.0 12/12/2001
  * @author Peter X. Cao, NCSA
  */
@@ -181,6 +231,7 @@ public class H5CompoundDS extends CompoundDS
     public Object read() throws HDF5Exception
     {
         List list = null;
+
         Object member_data = null;
         String member_name = null;
         int member_tid=-1, member_class=-1, member_size=0, fspace=-1, mspace=-1;
@@ -707,6 +758,12 @@ public class H5CompoundDS extends CompoundDS
 
                 if (tclass == HDF5Constants.H5T_ARRAY)
                 {
+                    int n = H5.H5Tget_array_ndims(memberTypes[i]);
+                    int mdim[] = new int[n];
+                    if (memberDims==null)
+                        memberDims = new Object[numberOfMembers];
+                    H5.H5Tget_array_dims(memberTypes[i], mdim, null);
+                    memberDims[i] = mdim;
                     int tmptid = H5.H5Tget_super(memberTypes[i]);
                     memberOrders[i] = (int)(H5.H5Tget_size(memberTypes[i])/H5.H5Tget_size(tmptid));
                     try { H5.H5Tclose(tmptid); } catch (HDF5Exception ex) {}

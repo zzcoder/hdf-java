@@ -80,7 +80,7 @@ public class ViewProperties extends Properties
     private static String workDir = "user.dir";
 
     /** default HDF4 file extension */
-    private static String fileExt = "hdf, h4, hdf4, h5, hdf5";
+    private static String fileExt = "hdf, h4, hdf4, h5, hdf5, he5";
 
     private static ClassLoader extClassLoader;
 
@@ -107,7 +107,8 @@ public class ViewProperties extends Properties
         datasetIcon, imageIcon, tableIcon, textIcon,
         zoominIcon, zoomoutIcon, paletteIcon, chartIcon,
         copyIcon, cutIcon, pasteIcon,
-        previousIcon, nextIcon, firstIcon, lastIcon;
+        previousIcon, nextIcon, firstIcon, lastIcon,
+        animationIcon;
 
     private static String propertyFile;
 
@@ -312,6 +313,8 @@ public class ViewProperties extends Properties
 
     public static Icon getChartIcon() { return chartIcon; }
 
+    public static Icon getAnimationIcon() { return animationIcon; }
+
     public static void loadIcons(String rootPath)
     {
         URL url= null, url2=null, url3=null;
@@ -510,6 +513,13 @@ public class ViewProperties extends Properties
             u = classLoader.getResource("ncsa/hdf/view/icons/chart.gif");
             if (u != null) {
                 chartIcon = new ImageIcon (u);
+            }
+        }
+
+        if (animationIcon == null) {
+            u = classLoader.getResource("ncsa/hdf/view/icons/animation.gif");
+            if (u != null) {
+                animationIcon = new ImageIcon (u);
             }
         }
     }

@@ -14,6 +14,8 @@ package ncsa.hdf.view;
 import ncsa.hdf.view.*;
 import ncsa.hdf.object.*;
 import javax.swing.*;
+import javax.print.*;
+import javax.print.attribute.*;
 import java.util.*;
 import java.io.*;
 import javax.swing.border.*;
@@ -152,6 +154,9 @@ implements TextView, ActionListener
                         JOptionPane.ERROR_MESSAGE);
             }
         }
+        else if (cmd.equals("Print")) {
+            print();
+        }
     }
 
     private JMenuBar createMenuBar() {
@@ -181,6 +186,14 @@ implements TextView, ActionListener
         }
         menu.add(subMenu);
 
+/*
+        menu.addSeparator();
+
+        item = new JMenuItem( "Print");
+        item.addActionListener(this);
+        item.setActionCommand("Print");
+        menu.add(item);
+*/
         menu.addSeparator();
 
         item = new JMenuItem( "Close");
@@ -324,4 +337,48 @@ implements TextView, ActionListener
     public String[] getText()  {
         return text;
     }
+
+    // print the image
+    private void print() {
+StreamPrintServiceFactory[] spsf = StreamPrintServiceFactory.lookupStreamPrintServiceFactories(null, null);
+for (int i = 0; i<spsf.length; i++)
+    System.out.println(spsf[i]);
+DocFlavor[] docFlavors = spsf[0].getSupportedDocFlavors();
+for (int i = 0; i<docFlavors.length; i++)
+    System.out.println(docFlavors[i]);
+
+        // Get a text DocFlavor
+        InputStream is = null;
+        try { is = new BufferedInputStream( new java.io.FileInputStream("e:\\temp\\t.html"));}
+        catch (Exception ex) {}
+        DocFlavor flavor = DocFlavor.STRING.TEXT_HTML;
+
+        // Get all available print services
+        PrintService[] services = PrintServiceLookup.lookupPrintServices(null, null);
+
+        // Print this job on the first print server
+        DocPrintJob job = services[0].createPrintJob();
+        Doc doc = new SimpleDoc(is, flavor, null);
+
+        // Print it
+        try { job.print(doc, null); }
+        catch (Exception ex) {System.out.println(ex);}
+/*
+        //DocFlavor flavor = DocFlavor.BYTE_ARRAY.STRING.TEXT_PLAIN;//.STRING.TEXT_PLAIN;
+        DocFlavor flavor = DocFlavor.BYTE_ARRAY.JPEG;//.STRING.TEXT_PLAIN;
+System.out.println(flavor);
+        PrintRequestAttributeSet printAttr = new HashPrintRequestAttributeSet();
+        PrintService[] services = PrintServiceLookup.lookupPrintServices( flavor, printAttr);
+System.out.println(services);
+        PrintService service =  ServiceUI.printDialog(null, 50, 50,services, services[0], flavor, printAttr);
+        if (service != null) {
+            HashDocAttributeSet docAttr = new HashDocAttributeSet();
+            SimpleDoc doc = new SimpleDoc("this is a test of Java print", flavor, docAttr);
+            try { service.createPrintJob().print(doc, printAttr); }
+            catch (Exception ex) {}
+        }
+
+*/
+    }
+
 }

@@ -25,6 +25,56 @@ import ncsa.hdf.object.*;
  * <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/Datatypes.html">
  * The Datatype Interface (H5T)</a>
  * <p>
+ * <b>How to Select a Subset</b>
+ * <p>
+ * Dataset defines APIs for read, write and subet a dataset. No function is defined
+ * to select a subset of a data array. The selection is done in an implicit way.
+ * Function calls to dimension information such as getSelectedDims() return an array
+ * of dimension values, which is a reference to the array in the dataset object.
+ * Changes of the array outside the dataset object directly change the values of
+ * the array in the dataset object. It is like pointers in C.
+ * <p>
+ *
+ * The following is an example of how to make a subset. In the example, the dataset
+ * is a 4-dimension with size of [200][100][50][10], i.e.
+ * dims[0]=200; dims[1]=100; dims[2]=50; dims[3]=10; <br>
+ * We want to select every other data points in dims[1] and dims[2]
+ * <pre>
+     int rank = dataset.getRank();   // number of dimension of the dataset
+     long[] dims = dataset.getDims(); // the dimension sizes of the dataset
+     long[] selected = dataset.getSelectedDims(); // the selected size of the dataet
+     long[] start = dataset.getStartDims(); // the off set of the selection
+     long[] stride = dataset.getStride(); // the stride of the dataset
+     int[]  selectedIndex = dataset.getSelectedIndex(); // the selected dimensions for display
+
+     // select dim1 and dim2 as 2D data for display,and slice through dim0
+     selectedIndex[0] = 1;
+     selectedIndex[1] = 2;
+     selectedIndex[1] = 0;
+
+     // reset the selection arrays
+     for (int i=0; i<rank; i++) {
+         start[i] = 0;
+         selected[i] = 1;
+         stride[i] = 1;
+    }
+
+    // set stride to 2 on dim1 and dim2 so that every other data points are selected.
+    stride[1] = 2;
+    stride[2] = 2;
+
+    // set the selection size of dim1 and dim2
+    selected[1] = dims[1]/stride[1];
+    selected[2] = dims[1]/stride[2];
+
+    // when dataset.read() is called, the slection above will be used since
+    // the dimension arrays is passed by reference. Changes of these arrays
+    // outside the dataset object directly change the values of these array
+    // in the dataset object.
+
+ * </pre>
+ *
+ * <p>
  * @version 1.0 12/12/2001
  * @author Peter X. Cao, NCSA
  */
@@ -60,10 +110,13 @@ public class H5ScalarDS extends ScalarDS
         unsignedConverted = false;
         paletteRefs = null;
 
-        int did=-1, aid=-1, atid=-1;
+        int did=-1, aid=-1, atid=-1, tid=0;
         try
         {
             did = open();
+
+            tid= H5.H5Dget_type(did);
+            isText = (H5.H5Tget_class(tid)==HDF5Constants.H5T_STRING);
 
             // try to find out if the dataset is an image
             aid = H5.H5Aopen_name(did, "CLASS");
@@ -81,6 +134,7 @@ public class H5ScalarDS extends ScalarDS
         {
             try { H5.H5Tclose(atid); } catch (HDF5Exception ex) {;}
             try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
+            try { H5.H5Tclose(tid); } catch (HDF5Exception ex) {;}
             try { H5.H5Dclose(did); } catch (HDF5Exception ex) {;}
         }
     }
@@ -186,6 +240,7 @@ public class H5ScalarDS extends ScalarDS
     public Object read() throws HDF5Exception
     {
         Object theData = null;
+
         int fspace=-1, mspace=-1;
 
         if (rank <= 0) init();
@@ -212,8 +267,7 @@ public class H5ScalarDS extends ScalarDS
             }
         } catch (Exception ex) {}
 
-        try
-        {
+        try {
             long[] lsize = {1};
             for (int j=0; j<selectedDims.length; j++)
                 lsize[0] *= selectedDims[j];
@@ -223,8 +277,7 @@ public class H5ScalarDS extends ScalarDS
 
             // set the rectangle selection
             // HDF5 bug: for scalar dataset, H5Sselect_hyperslab gives core dump
-            if (rank*dims[0] > 1)
-            {
+            if (rank*dims[0] > 1) {
                 H5.H5Sselect_hyperslab(
                     fspace,
                     HDF5Constants.H5S_SELECT_SET,
@@ -236,8 +289,7 @@ public class H5ScalarDS extends ScalarDS
 
             theData = H5Datatype.allocateArray(nativeDatatype, (int)lsize[0]);
 
-            if (theData != null)
-            {
+            if (theData != null) {
                 H5.H5Dread(
                     did,
                     nativeDatatype,
@@ -251,9 +303,7 @@ public class H5ScalarDS extends ScalarDS
                 else if (H5.H5Tget_class(nativeDatatype) == HDF5Constants.H5T_REFERENCE)
                     theData = HDFNativeData.byteToLong((byte[])theData);
             }
-        }
-        finally
-        {
+        } finally {
             if (fspace > 0) try { H5.H5Sclose(fspace); } catch (Exception ex2) {}
             if (mspace > 0) try { H5.H5Sclose(mspace); } catch (Exception ex2) {}
             close(did);

@@ -14,11 +14,13 @@
  import java.lang.reflect.*;
 
 /**
-  * Attributes are small named datasets that are attached to primary datasets,
- * groups, or named datatypes. Each attribute has datatype and dataspace.
+  *An attribute is a (name, value) pair metadata that are attached to primary
+ * datasets and groups. The value field can be a scalar data point or an arrya
+ * of native datatype or compound data type.
  * <p>
  * The following is an example of how to create an attribute of one dimension
  * integer array of size two.
+ *
  * <pre>
  * // Create an attribute
  * String name = "data range";

@@ -153,9 +153,9 @@ implements TableView, ActionListener
         table.setGridColor(Color.gray);
 
         // add the table to a scroller
-        JScrollPane scroller = new JScrollPane(table);
-        scroller.getVerticalScrollBar().setUnitIncrement(50);
-        scroller.getHorizontalScrollBar().setUnitIncrement(50);
+        JScrollPane scrollingTable = new JScrollPane(table);
+        scrollingTable.getVerticalScrollBar().setUnitIncrement(50);
+        scrollingTable.getHorizontalScrollBar().setUnitIncrement(50);
 
         // create row headers and add it to the scroller
         RowHeader rowHeaders = new RowHeader( table );
@@ -163,28 +163,44 @@ implements TableView, ActionListener
         JViewport viewp = new JViewport();
         viewp.add( rowHeaders );
         viewp.setPreferredSize( rowHeaders.getPreferredSize() );
-        scroller.setRowHeader( viewp );
+        scrollingTable.setRowHeader( viewp );
 
         cellLabel = new JLabel("");
+        cellLabel.setBorder(new EtchedBorder(EtchedBorder.LOWERED) );
         Dimension dim = cellLabel.getPreferredSize();
-        dim.width = 80;
+        dim.width = 75;
         cellLabel.setPreferredSize( dim );
         cellLabel.setHorizontalAlignment(JLabel.RIGHT);
+
         cellValueField = new JTextArea();
         cellValueField.setLineWrap(true);
         cellValueField.setWrapStyleWord(true);
         cellValueField.setEditable(false);
-        cellValueField.setBackground(new Color(220, 220, 220));
+        cellValueField.setBackground(new Color(255, 255, 240));
+
+        JScrollPane scrollingcellValue = new JScrollPane(cellValueField);
+        scrollingcellValue.getVerticalScrollBar().setUnitIncrement(50);
+        scrollingcellValue.getHorizontalScrollBar().setUnitIncrement(50);
+
         JPanel valuePane = new JPanel();
         valuePane.setLayout(new BorderLayout());
         valuePane.add(cellLabel, BorderLayout.WEST);
-        valuePane.add (new JScrollPane(cellValueField), BorderLayout.CENTER);
+        valuePane.add (scrollingcellValue, BorderLayout.CENTER);
 
+/*
         // add to the main panel
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout());
         contentPane.add(valuePane, BorderLayout.SOUTH);
         contentPane.add (scroller, BorderLayout.CENTER);
+*/
+
+        JSplitPane splitPane = new JSplitPane(
+            JSplitPane.VERTICAL_SPLIT,
+            valuePane, scrollingTable);
+        splitPane.setDividerLocation(25);
+        JPanel contentPane = (JPanel)getContentPane();
+        contentPane.add(splitPane);
 
         // set title
         StringBuffer sb = new StringBuffer("TableView - ");
@@ -989,7 +1005,7 @@ null, options, options[0]);
                         String.valueOf(row+1)+
                         ", "+
                         table.getColumnName(column)+
-                        " = ");
+                        "  =  ");
                     cellValueField.setText(getValueAt(row, column).toString());
                 }
 
@@ -1041,8 +1057,7 @@ null, options, options[0]);
 
         String[] subColumnNames = columnNames;
         int columns = d.getWidth();
-        if (columns > 1)
-        {
+        if (columns > 1) {
             // multi-dimension compound dataset
             subColumnNames = new String[columns*columnNames.length];
             int halfIdx = columnNames.length/2;
@@ -1061,7 +1076,8 @@ null, options, options[0]);
             rows)
         {
             List list = (List)dataValue;
-            int orders[] = ((CompoundDS)dataset).getSelectedMemberOrders();
+            CompoundDS compound = (CompoundDS)dataset;
+            int orders[] = compound.getSelectedMemberOrders();
             StringBuffer stringBuffer = new StringBuffer();
             int nFields = list.size();
             int nRows = getRowCount();
@@ -1087,11 +1103,23 @@ null, options, options[0]);
                 if (colValue == null) return "Null";
 
                 stringBuffer.setLength(0); // clear the old string
-                stringBuffer.append(Array.get(colValue, rowIdx));
-
-                for (int i=1; i<orders[column]; i++) {
-                    stringBuffer.append(", ");
-                    stringBuffer.append(Array.get(colValue, rowIdx+i));
+                int[] mdim = compound.getMemeberDims(col);
+                if (mdim == null) {
+                    stringBuffer.append(Array.get(colValue, rowIdx));
+                    for (int i=1; i<orders[column]; i++) {
+                        stringBuffer.append(", ");
+                        stringBuffer.append(Array.get(colValue, rowIdx+i));
+                    }
+                } else {
+                    int i = 0;
+                    for (int j=0; j<mdim.length; j++) {
+                        if (j>0) stringBuffer.append("\n");
+                        stringBuffer.append(Array.get(colValue, rowIdx+i++));
+                        for (int k=1; k<mdim[j]; k++) {
+                            stringBuffer.append(", ");
+                            stringBuffer.append(Array.get(colValue, rowIdx+i++));
+                        }
+                    }
                 }
 
                 return stringBuffer;
@@ -1100,6 +1128,9 @@ null, options, options[0]);
 
         theTable = new JTable(tableModel)
         {
+            int lastSelectedRow = -1;
+            int lastSelectedColumn = -1;
+
             public boolean isCellEditable(int row, int column)
             {
                 // TODO: disable the editing feature. HDF4 has bug: cannot write vdata by field
@@ -1135,13 +1166,19 @@ null, options, options[0]);
 
             public boolean isCellSelected(int row, int column)
             {
+                if (lastSelectedRow == row &&
+                    lastSelectedColumn == column)
+                    return super.isCellSelected(row, column);
+
+                lastSelectedRow = row;
+                lastSelectedColumn = column;
                 if (getSelectedRow()==row && getSelectedColumn()==column)
                 {
                     cellLabel.setText(
                         String.valueOf(row+1)+
                         ", "+
                         String.valueOf(column+1)+
-                        " = ");
+                        "  =  ");
                     cellValueField.setText(getValueAt(row, column).toString());
                 }
 
@@ -1954,6 +1991,7 @@ null, options, options[0]);
 
             int mouseID = e.getID();
 
+/*
             if (e.getButton() != MouseEvent.BUTTON1)
             {
                 int idx = columnAtPoint(e.getPoint());
@@ -1962,6 +2000,7 @@ null, options, options[0]);
 
                 return;
             }
+*/
 
             if (mouseID == MouseEvent.MOUSE_CLICKED)
             {
