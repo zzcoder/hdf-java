@@ -969,7 +969,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
 #else
             (*env)->SetObjectArrayElement(env,objName,i,(jobject)str);
 #endif
-        } // for (i=0; i<n; i++)
+        } /* for (i=0; i<n; i++)*/
             free(oName);
         }
     } else {
