@@ -204,13 +204,6 @@ public class HDFView extends JFrame
         imageViews = props.getImageViewList();
         paletteViews = props.getPaletteViewList();
 
-        // for testing purpose only @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        //addModule(MODULE_METADATAVIEW, "test.ncsa.hdf.view.DefaultMetaDataViewTest");
-        //addModule(MODULE_TEXTVIEW, "test.ncsa.hdf.view.DefaultTextViewTest");
-        //addModule(MODULE_IMAGEVIEW, "test.ncsa.hdf.view.DefaultImageViewTest");
-        //addModule(MODULE_TABLEVIEW, "test.ncsa.hdf.view.DefaultTableViewTest");
-        //addModule(MODULE_PALETTEVIEW, "test.ncsa.hdf.view.DefaultPaletteViewTest");
-
         // initialize GUI components
         statusArea = new JTextArea();
         statusArea.setEditable(false);
@@ -857,8 +850,7 @@ public class HDFView extends JFrame
     {
         String cmd = e.getActionCommand();
 
-        if (cmd.equals("Exit"))
-        {
+        if (cmd.equals("Exit")) {
             dispose();  // terminate the application
         }
         else if (cmd.startsWith("Open file"))
@@ -1296,6 +1288,7 @@ public class HDFView extends JFrame
         catch (Exception ex) {}
 
         // close all open files
+        try {
         List filelist = treeView.getCurrentFiles();
         if (filelist != null && filelist.size()>0) {
             int n = filelist.size();
@@ -1304,6 +1297,7 @@ public class HDFView extends JFrame
                 catch (Exception ex) {}
             }
         }
+        } catch (Exception ex) {}
 
         try { super.dispose(); }
         catch (Exception ex ) {}
