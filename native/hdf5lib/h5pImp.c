@@ -2056,6 +2056,74 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1btree_1ratios
 
 	return (jint)status;
 }
+
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_small_data_block_size
+ * Signature: (IJ)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1small_1data_1block_1size
+  (JNIEnv *env, jclass clss, jint plist, jlong size)
+{
+	long sz;
+	herr_t retVal = -1;
+	sz = (long)size;
+	retVal =  H5Pset_small_data_block_size((hid_t)plist, (hsize_t)sz );
+	if (retVal < 0) {
+		h5libraryError(env);
+	}
+	return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_small_data_block_size
+ * Signature: (I[J)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1small_1data_1block_1size
+  (JNIEnv *env, jclass clss, jint plist, jlongArray size)
+{
+	herr_t status;
+	jlong *theArray;
+	jboolean isCopy;
+	hsize_t s;
+
+	if (size == NULL) {
+		/* exception ? */
+		h5nullArgument( env, "H5Pget_small_user_block_size:  size is NULL");
+		return -1;
+	}
+#ifdef __cplusplus
+	theArray = (jlong *)env->GetLongArrayElements(size,&isCopy);
+#else
+	theArray = (jlong *)(*env)->GetLongArrayElements(env,size,&isCopy);
+#endif
+	if (theArray == NULL) {
+		h5JNIFatalError( env, "H5Pget_userblock:  size not pinned");
+		return -1;
+	}
+
+	status = H5Pget_small_data_block_size((hid_t)plist, &s);
+
+	if (status < 0) {
+#ifdef __cplusplus
+		env->ReleaseLongArrayElements(size,theArray,JNI_ABORT);
+#else
+		(*env)->ReleaseLongArrayElements(env,size,theArray,JNI_ABORT);
+#endif
+		h5libraryError(env);
+	} else {
+		theArray[0] = s;
+#ifdef __cplusplus
+		env->ReleaseLongArrayElements(size,theArray,0);
+#else
+		(*env)->ReleaseLongArrayElements(env,size,theArray,0);
+#endif
+	}
+
+	return (jint)status;
+}
 #ifdef __cplusplus
 }
 #endif 
