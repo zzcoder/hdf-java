@@ -193,6 +193,7 @@ public class H5ScalarDS extends ScalarDS
             try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
         }
         try { H5.H5Dclose(did); } catch (HDF5Exception ex) {;}
+
     }
 
     //Implementing Dataset

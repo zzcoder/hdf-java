@@ -117,50 +117,55 @@ int h5str_sprintf(h5str_t *str, hid_t tid, void *ptr)
 	{
 		this_str = (char*)malloc(7);
         memcpy(&tmp_char, ptr, 1);
-		sprintf(this_str, "%d, ", tmp_char);
+		sprintf(this_str, "%d", tmp_char);
     } else if (H5Tequal(tid, H5T_NATIVE_UCHAR))
 	{
 		this_str = (char*)malloc(7);
         memcpy(&tmp_uchar, ptr, 1);
-		sprintf(this_str, "%u, ", tmp_uchar);
+		sprintf(this_str, "%u", tmp_uchar);
     } else if (H5Tequal(tid, H5T_NATIVE_SHORT))
 	{
 		this_str = (char*)malloc(9);
         memcpy(&tmp_short, ptr, 2);
-		sprintf(this_str, "%d, ", tmp_short);
+		sprintf(this_str, "%d", tmp_short);
     } else if (H5Tequal(tid, H5T_NATIVE_USHORT))
 	{
 		this_str = (char*)malloc(9);
         memcpy(&tmp_ushort, ptr, 2);
-		sprintf(this_str, "%u, ", tmp_ushort);
+		sprintf(this_str, "%u", tmp_ushort);
 	} else if (H5Tequal(tid, H5T_NATIVE_INT))
 	{
 		this_str = (char*)malloc(14);
         memcpy(&tmp_int, ptr, 4);
-		sprintf(this_str, "%d, ", tmp_int);
+		sprintf(this_str, "%d", tmp_int);
     } else if (H5Tequal(tid, H5T_NATIVE_UINT))
 	{
 		this_str = (char*)malloc(14);
         memcpy(&tmp_uint, ptr, 4);
-		sprintf(this_str, "%u, ", tmp_uint);
+		sprintf(this_str, "%u", tmp_uint);
     } else if (H5Tequal(tid, H5T_NATIVE_LONG)) {
 		this_str = (char*)malloc(23);
         memcpy(&tmp_long, ptr, sizeof(long));
-		sprintf(this_str, "%d, ", tmp_long);
+		sprintf(this_str, "%d", tmp_long);
     } else if (H5Tequal(tid, H5T_NATIVE_ULONG))
 	{
 		this_str = (char*)malloc(23);
         memcpy(&tmp_ulong, ptr, sizeof(unsigned long));
-		sprintf(this_str, "%u, ", tmp_ulong);
+		sprintf(this_str, "%u", tmp_ulong);
+    } else if (H5Tequal(tid, H5T_STD_REF_OBJ))
+	{
+		this_str = (char*)malloc(23);
+        memcpy(&tmp_ulong, ptr, 8);
+		sprintf(this_str, "%u", tmp_ulong);
 	} else 	if (H5Tequal(tid, H5T_NATIVE_FLOAT))
 	{
 		this_str = (char*)malloc(25);
         memcpy(&tmp_float, ptr, sizeof(float));
-		sprintf(this_str, "%f, ", tmp_float);
+		sprintf(this_str, "%f", tmp_float);
     } else if (H5Tequal(tid, H5T_NATIVE_DOUBLE)) {
 		this_str = (char*)malloc(25);
         memcpy(&tmp_double, ptr, sizeof(double));
-		sprintf(this_str, "%f, ", tmp_double);
+		sprintf(this_str, "%f", tmp_double);
     } else if (tclass == H5T_STRING)
 	{
         char *tmp_str;
@@ -213,6 +218,7 @@ int h5str_sprintf(h5str_t *str, hid_t tid, void *ptr)
         for (i = 0; i < total_elmts; i++)
 		{
             h5str_sprintf(str, mtid, cptr + i * size);
+			strcat(str->s, ", ");
         }
         H5Tclose(mtid);
 		h5str_append(str, "] ");
@@ -227,7 +233,8 @@ int h5str_sprintf(h5str_t *str, hid_t tid, void *ptr)
         for (i = 0; i < n; i++)
 		{
 			h5str_sprintf(str, mtid, ((char *)(vlptr->p)) + i * size);
-        }
+        	strcat(str->s, ", ");
+		}
         H5Tclose(mtid);
     } else /* All other types get printed as hexadecimal */
 	{

@@ -389,7 +389,7 @@ public class H5CompoundDS extends CompoundDS
                 }
                 try { H5.H5Tclose(nested_tid); } catch (HDF5Exception ex2) {}
 
-                if (!isVLEN)
+                if (!(isVLEN || is_variable_str))
                 {
                     if (member_class == HDF5Constants.H5T_STRING) {
                         member_data = byteToString((byte[])member_data, member_size);
@@ -399,6 +399,13 @@ public class H5CompoundDS extends CompoundDS
                     }
                     else if (H5Datatype.isUnsigned(baseType)) {
                         member_data = Dataset.convertFromUnsignedC(member_data);
+                    }
+                    else if (member_class == HDF5Constants.H5T_ENUM)
+                    {
+                        try {
+                            String[] strs = enumGetNames(member_tid, (int[])member_data);
+                            if (strs != null) member_data = strs;
+                        } catch (Exception ex) {}
                     }
                 }
 
@@ -468,7 +475,11 @@ public class H5CompoundDS extends CompoundDS
                 try { is_variable_str = H5.H5Tis_variable_str(member_tid); } catch (Exception ex) {}
                 try { isVL = (member_class==HDF5Constants.H5T_VLEN); } catch (Exception ex) {}
 
-                if (member_data == null || is_variable_str || isVL)
+                if ( member_data == null
+                     || is_variable_str
+                     || isVL
+                     || (member_class== HDF5Constants.H5T_ENUM)
+                    )
                     continue;
 
                 int arrayType = member_tid;
@@ -866,6 +877,7 @@ public class H5CompoundDS extends CompoundDS
             catch (HDF5Exception ex ) { continue; }
 
             mname = name+H5.H5Tget_member_name(tid, i);
+
             if (mclass == HDF5Constants.H5T_COMPOUND)
             {
                 // nested compound
@@ -985,5 +997,44 @@ public class H5CompoundDS extends CompoundDS
 
         return dataset;
     }
+
+    /** converts enum values to string names */
+    private String[] enumGetNames(int tid, int[] in) throws Exception
+    {
+        if (in == null || in.length <=0)
+            return null;
+
+        int n = H5.H5Tget_nmembers(tid);
+        if (n <=0 ) return null;
+
+        String[] out = new String[in.length];
+        String[] names = new String[n];
+        int[] values = new int[n];
+        int[] theValue = {0};
+
+        for (int i=0; i<n; i++)
+        {
+            names[i] = H5.H5Tget_member_name(tid, i);
+            H5.H5Tget_member_value(tid, i, theValue);
+            values[i] = theValue[0];
+        }
+
+        int val = -1;
+        for (int i=0; i<in.length; i++)
+        {
+            val = in[i];
+            for (int j=0; j<n; j++)
+            {
+                if (val == values[j])
+                {
+                    out[i] = names[j];
+                    break;
+                }
+            }
+        } //for (int i=0; i<values.length; i++)
+
+        return out;
+    }
+
 
 }

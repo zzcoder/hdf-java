@@ -337,7 +337,7 @@ implements TableView, ActionListener
 
         menu.addSeparator();
 
-        item = new JMenuItem( "Select All");
+        item = new JMenuItem( "Select Whole Page");
         //item.setMnemonic(KeyEvent.VK_A);
         item.addActionListener(this);
         item.setActionCommand("Select all data");

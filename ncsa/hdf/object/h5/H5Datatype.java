@@ -161,6 +161,8 @@ public class H5Datatype extends Datatype
             else if (tsize == 4) data = new int[size];
             else if (tsize == 8) data = new long[size];
         }
+        else if (tclass == HDF5Constants.H5T_ENUM)
+            data = new int[size];
         else if (tclass == HDF5Constants.H5T_FLOAT)
         {
             if (tsize == 4) data = new float[size];
@@ -334,6 +336,24 @@ public class H5Datatype extends Datatype
         else if (tclass == HDF5Constants.H5T_BITFIELD)
         {
             description = "Bitfield";
+        }
+        else if (tclass == HDF5Constants.H5T_ENUM)
+        {
+            description = "enum";
+            String enames = " (";
+            int evalue[] = {-1};
+            try {
+                int n = H5.H5Tget_nmembers(tid );
+                for (int i=0; i<n; i++)
+                {
+                    H5.H5Tget_member_value(tid, i, evalue);
+                    enames += H5.H5Tget_member_name(tid, i);
+                    enames += "="+evalue[0]+"  ";
+                }
+                enames += ")";
+                description += enames;
+            } catch (Exception ex) {}
+
         }
         else if (tclass == HDF5Constants.H5T_ARRAY)
         {
