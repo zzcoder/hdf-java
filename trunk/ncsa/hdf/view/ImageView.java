@@ -172,6 +172,13 @@ implements ImageObserver
         this.setTitle(frameTitle);
         this.setFrameIcon(ViewProperties.getImageIcon());
 
+        JPanel contentPane = (JPanel)getContentPane();
+        contentPane.setLayout(new BorderLayout());
+
+        contentPane.add(valueField=new JTextField(), BorderLayout.SOUTH);
+        valueField.setVisible(false);
+        valueField.setEditable(false);
+
         if (image == null)
             getImage();
 
@@ -185,14 +192,17 @@ implements ImageObserver
         JScrollPane scroller = new JScrollPane(imageComponent);
         scroller.getVerticalScrollBar().setUnitIncrement(50);
         scroller.getHorizontalScrollBar().setUnitIncrement(50);
-
-        JPanel contentPane = (JPanel)getContentPane();
-        contentPane.setLayout(new BorderLayout());
         contentPane.add (scroller, BorderLayout.CENTER);
 
-        contentPane.add(valueField=new JTextField(), BorderLayout.SOUTH);
-        valueField.setVisible(false);
-        valueField.setEditable(false);
+        // reset the title for 3D images
+        if (dataset.getRank() > 2 && !isTrueColor)
+        {
+            long[] start = dataset.getStartDims();
+            int[] selectedIndex = dataset.getSelectedIndex();
+            long[] dims = dataset.getDims();
+            setTitle( frameTitle+ " - Image "+String.valueOf(start[selectedIndex[2]]+1)+ " of "+dims[selectedIndex[2]]);
+        }
+
     }
 
     public void dispose()
@@ -329,9 +339,12 @@ implements ImageObserver
             image = createIndexedImage();
 
         // set number type, ...
-        isUnsigned = dataset.isUnsigned();
-        String cname = data.getClass().getName();
-        nt = cname.charAt(cname.lastIndexOf("[")+1);
+        if (data != null)
+        {
+            isUnsigned = dataset.isUnsigned();
+            String cname = data.getClass().getName();
+            nt = cname.charAt(cname.lastIndexOf("[")+1);
+        }
 
         return image;
     }
@@ -907,7 +920,11 @@ implements ImageObserver
 
         try { data = dataset.read(); }
         catch (Throwable ex) {
-            viewer.showStatus(ex.toString());
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+                ex,
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
@@ -963,7 +980,11 @@ implements ImageObserver
 
         try { data = dataset.read(); }
         catch (Throwable ex) {
-            viewer.showStatus(ex.toString());
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+                ex,
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
@@ -1023,7 +1044,11 @@ implements ImageObserver
             zoomTo(zoomFactor);
         } catch (Throwable err)
         {
-            viewer.showStatus(err.toString());
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+                err,
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
             status = false;
         }
 
