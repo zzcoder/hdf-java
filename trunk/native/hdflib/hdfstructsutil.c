@@ -502,7 +502,6 @@ jclass jc;
 jmethodID jmi;
 jintArray rarray;
 jobject compinfo;
-//jobject compmodel;
 
 	switch (flgs) {
 	    case HDF_CHUNK:
