@@ -685,7 +685,7 @@ char *defineHDF5LibraryException(int maj_num)
 		case H5E_ATTR:
 			 return "ncsa/hdf/hdf5lib/exceptions/HDF5AttributeException";
 		case H5E_PLINE:
-			 return "ncsa/hdf/hdf5lib/exceptions/HDF5DataFiltersExceptionn";
+			 return "ncsa/hdf/hdf5lib/exceptions/HDF5DataFiltersException";
 		case H5E_EFL:
 			 return "ncsa/hdf/hdf5lib/exceptions/HDF5ExternalFileListException";
 		case H5E_REFERENCE:
