@@ -13,6 +13,7 @@ package ncsa.hdf.object;
 
 import java.util.*;
 import java.io.File;
+import java.net.*;
 import javax.swing.tree.TreeNode;
 
 /**
@@ -76,40 +77,53 @@ public abstract class FileFormat extends File
      */
     private int start_members = 0; // 0 by default
 
+    private static ClassLoader extClassLoader = ClassLoader.getSystemClassLoader();
+
     static {
-        Class file_class = null;
-        Object hdffile = null;
-        ClassLoader cl = ClassLoader.getSystemClassLoader();
+
+        // load extension classes.
+        // must put packed jar files of implementing classes of FileFormat
+        // into hdfview_root/lib/ext
+        Vector jarList = new Vector();
+        String rootPath = System.getProperty("hdfview.root");
+        String dirname = rootPath+File.separator+"lib"+File.separator+"ext"+File.separator;
+        File extdir = new File(dirname);
+        String[] jars = extdir.list();
+        if (jars != null) {
+            for (int i=0; i<jars.length; i++) {
+                if (jars[i].endsWith(".jar")) {
+                    jarList.add(jars[i]);
+                }
+            }
+            int n = jarList.size();
+            if (n>0) {
+                URL[] urls = new URL[n];
+
+                for (int i=0; i<n; i++) {
+                    try {
+                        urls[i] = new URL("file://localhost/"+rootPath + "/lib/ext/"+jarList.get(i));
+                    } catch (MalformedURLException mfu) {;}
+                }
+                try { extClassLoader = new URLClassLoader(urls); }
+                catch (Exception ex) { extClassLoader = ClassLoader.getSystemClassLoader(); }
+            }
+        }
 
         // add H5File into the file list
-        try { file_class = cl.loadClass("ncsa.hdf.object.h5.H5File"); }
-        catch (ClassNotFoundException ex) {file_class = null;}
-        if (file_class != null)
-        {
-            try { hdffile = file_class.newInstance(); }
-            catch (Exception ex) { hdffile = null; }
-        }
-        if (hdffile != null) FileList.put(FILE_TYPE_HDF5, hdffile);
+        addFileFormat(FILE_TYPE_HDF5, "ncsa.hdf.object.h5.H5File");
 
         // add H4File into the file list
-        file_class = null;
-        hdffile = null;
-        try { file_class = cl.loadClass("ncsa.hdf.object.h4.H4File"); }
-        catch (ClassNotFoundException ex) {file_class = null;}
-        if (file_class != null)
-        {
-            try { hdffile = file_class.newInstance(); }
-            catch (Exception ex) { hdffile = null; }
-        }
-        if (hdffile != null) FileList.put(FILE_TYPE_HDF4, hdffile);
+        addFileFormat(FILE_TYPE_HDF4, "ncsa.hdf.object.h4.H4File");
+
+        // add NETCDF into the file list
+        addFileFormat("NC", "ncsa.hdf.object.nc2.NC2File");
     }
 
     /** Constructs a FileFormat with a given file name.
      * @param filename the full name of the file.
      */
 
-    public FileFormat(String filename)
-    {
+    public FileFormat(String filename) {
         super(filename);
     }
 
@@ -278,12 +292,17 @@ public abstract class FileFormat extends File
      *
      * @param key the unique ID key to identify the file format.
      *   such as "HDF5" or "HDF4"
-     * @param fileformat the new file format to be added.
+     * @param fileformat the name of the new file format to be added.
      */
-    public static void addFileFormat(String key, FileFormat fileformat)
-    {
-        if (fileformat != null)
-            FileList.put(key, fileformat);
+    public static void addFileFormat(String key, String fileformat) {
+        if (fileformat == null)
+            return;
+
+        try {
+            Class fileClass = extClassLoader.loadClass(fileformat);
+            Object fileInst = fileClass.newInstance();
+            FileList.put(key, fileInst);
+        }catch (Exception ex) {}
     }
 
     /**

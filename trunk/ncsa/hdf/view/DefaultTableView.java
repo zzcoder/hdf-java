@@ -496,6 +496,18 @@ implements TableView, ActionListener
         else if (cmd.equals("Show chart")) {
             showLineplot();
         }
+        else if (cmd.equals("First page")) {
+            firstPage();
+        }
+        else if (cmd.equals("Previous page")) {
+            previousPage();
+        }
+        else if (cmd.equals("Next page")) {
+            nextPage();
+        }
+        else if (cmd.equals("Last page")) {
+            lastPage();
+        }
         else if (cmd.equals("Show statistics")) {
             try { showStatistics(); }
             catch (Exception ex) {

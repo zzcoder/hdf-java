@@ -209,7 +209,12 @@ public class H5Datatype extends Datatype
         int native_type=-1;
 
         try {
-            native_type = H5.H5Tget_native_type(tid);
+            // there is a bug in H5.H5Tget_native_type for string.
+            // It cuts off the last character
+            if (H5.H5Tget_class(tid)==HDF5Constants.H5T_STRING)
+                native_type = H5.H5Tcopy(tid);
+            else
+                native_type = H5.H5Tget_native_type(tid);
         } catch (Exception ex) {}
 
         return native_type;

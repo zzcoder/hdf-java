@@ -1041,7 +1041,7 @@ implements TreeView, ActionListener {
         boolean ish4=false, ish5=false;
 
         ish4 = DefaultFileFilter.isHDF4(filename);
-        if (!ish4) ish5=DefaultFileFilter.isHDF5(filename);
+        ish5=DefaultFileFilter.isHDF5(filename);
 
         if (isFileOpen(filename))
             throw new UnsupportedOperationException("File is in use.");
@@ -1052,15 +1052,11 @@ implements TreeView, ActionListener {
         if (ish5 && (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) == null))
             throw new UnsupportedOperationException("HDF5 is not supported.");
 
-        if (!(ish4 || ish5))
-            throw new UnsupportedOperationException("Unsupported file type.");
-
         Iterator iterator = FileFormat.iterator();
         while (iterator.hasNext())
         {
             FileFormat theformat = (FileFormat)iterator.next();
-            if (theformat.isThisType(filename))
-            {
+            if (theformat.isThisType(filename)) {
                 fileFormat = theformat.open(filename, accessID);
                 break;
             }
@@ -1249,7 +1245,7 @@ implements TreeView, ActionListener {
         }
 
         Object theView = null;
-        Class theClass = ViewProperties.loadExtClass(null).loadClass(dataViewName);
+        Class theClass = ViewProperties.loadExtClass().loadClass(dataViewName);
         Object[] initargs = {viewer};
         if (dataViewName.startsWith("ncsa.hdf.view.DefaultTableView")) {
             Object[] tmpargs = {viewer, new Boolean(isDisplayTypeChar), new Boolean(isTransposed)};
@@ -1292,7 +1288,7 @@ implements TreeView, ActionListener {
                 className);
         }
 
-        Class theClass = ViewProperties.loadExtClass(null).loadClass(className);
+        Class theClass = ViewProperties.loadExtClass().loadClass(className);
         Object[] initargs = {viewer};
         MetaDataView dataView = (MetaDataView)Tools.newInstance(theClass, initargs);
 
@@ -1431,6 +1427,7 @@ implements TreeView, ActionListener {
 
             if (h5Icon == null)
                 h5Icon = leafIcon;
+
         }
 
         public Component getTreeCellRendererComponent(

@@ -462,7 +462,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener
             if (newModule == null || newModule.length()<1)
                 return;
 
-            try {ViewProperties.loadExtClass(null).loadClass(newModule); }
+            try {ViewProperties.loadExtClass().loadClass(newModule); }
             catch(ClassNotFoundException ex) {
                 JOptionPane.showMessageDialog(
                     this,
