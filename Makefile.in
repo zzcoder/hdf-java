@@ -168,6 +168,7 @@ clean: clean-natives clean-classes clean-test clean-testlink
 
 clean-classes:
 	$(FIND) ./ncsa \( -name '#*' -o -name '*~' -o -name '*.class' \) -exec rm -f {} \; ;\
+	$(FIND) ./glguerin \( -name '#*' -o -name '*~' -o -name '*.class' \) -exec rm -f {} \; ;\
 	rm -f ./lib/jh4toh5.jar
 	rm -f ./lib/jhdf.jar
 	rm -f ./lib/jhdf5.jar
@@ -501,6 +502,7 @@ ncsa.hdf.view: ./ncsa/hdf/view/TreeView.class \
 	./ncsa/hdf/view/DataOptionDialog.class \
 	./ncsa/hdf/view/HDFView.class \
 	./ncsa/hdf/view/HDFView$$1.class \
+	./ncsa/hdf/view/HDFView$$2.class \
 	./ncsa/hdf/view/ImageObserver.class \
 	./ncsa/hdf/view/ImageView.class \
 	./ncsa/hdf/view/ImageView$$1.class \
@@ -759,6 +761,7 @@ HDFVIEWCLASSES= ./ncsa/hdf/view/ViewManager.class \
 	./ncsa/hdf/view/ViewProperties.class \
 	./ncsa/hdf/view/ChartView\$$ChartPanel.class \
 	./ncsa/hdf/view/HDFView\$$1.class \
+	./ncsa/hdf/view/HDFView\$$2.class \
 	./ncsa/hdf/view/ImageView\$$ContourFilter.class \
 	./ncsa/hdf/view/ImageView\$$FlipFilter.class \
 	./ncsa/hdf/view/ImageView\$$ImageComponent.class \
