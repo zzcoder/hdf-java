@@ -531,7 +531,6 @@ public class H5 {
         return retVal;
     }
 
-
     /**
      *  H5Aread reads an attribute, specified with attr_id. The
      *  attribute's memory datatype is specified with mem_type_id.
@@ -582,6 +581,9 @@ public class H5 {
 
         return status;
     }
+
+    public synchronized static native int H5AreadVL(int attr_id, int mem_type_id, String[] buf)
+        throws HDF5LibraryException, NullPointerException;
 
     /**
      *  H5Aget_space retrieves a copy of the dataspace for an
@@ -789,6 +791,10 @@ public class H5 {
     public synchronized static native int H5Dread(int dataset_id, int mem_type_id,
         int mem_space_id, int file_space_id, int xfer_plist_id,
         byte[] buf)
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5DreadVL(int dataset_id, int mem_type_id,
+        int mem_space_id, int file_space_id, int xfer_plist_id, Object[] buf)
         throws HDF5LibraryException, NullPointerException;
 
     /**

@@ -2477,10 +2477,9 @@ public class HDFLibrary {
                     int arraysize) throws HDFException;
 
     /**
-     *  @param vgroup_id <b>IN</b>: the Vgroup id
-     *  @param index <b>IN</b>: the index of the object
-     *  @param tags <b>OUT</b>: int[1], the tag for the object
-     *  @param refs <b>OUT</b>: int[1], the ref for the object
+     *  @param vgroup_id - IN: the Vgroup id
+     *  @param index - IN: the index of the object
+     *  @param tagref[] - OUT: tagref[0]=tag, tagref[1]=ref
      *
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
