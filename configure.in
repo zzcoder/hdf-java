@@ -94,7 +94,7 @@ LLEXT="a";
 JSLEXT="so";
 COPT="-pthread -shared"; COPTNOSHARED=;
 ;;
-*-ibm-aix*) TARGETLIB="aix"
+*aix*) TARGETLIB="aix"
 LD=$CC; LDOPT=-G; SLEXT="so";
 LLEXT="a";
 JSLEXT="so";
@@ -642,7 +642,7 @@ JSLEXT="so";
 COPT="-pthread -shared"; COPTNOSHARED=;
 JAVAINC2=$JAVAINC/alpha ; JAVATARG=alpha;
 ;;
-*-ibm-aix*)
+*aix*)
 LD=$CC; LDOPT=-G; SLEXT="so";
 LLEXT="a";
 JSLEXT="so";
