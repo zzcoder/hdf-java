@@ -227,7 +227,15 @@ elif test -d $JAVALIB/classes ; then
 	JAVACLASSES=$JAVALIB/classes
 	JAVACLASSPATH_FOUND=1
 else
-	 AC_MSG_ERROR(cannot find jdk classes in JDK lib path.)
+	JL=`dirname $JAVALIB`
+	if test -f $JL/jre/lib/rt.jar; then
+		JAVACLASSES=$JL/jre/lib/rt.jar
+		JAVACLASSPATH_FOUND=1
+		JAVALIB=$JL/jre/lib
+		AC_SUBST(JAVALIB) JAVALIB=""
+	else
+		 AC_MSG_ERROR(cannot find jdk classes in JDK lib path.)
+	fi
 fi
 CLASSPATH="$JAVACLASSES"":""$HERE"
 
