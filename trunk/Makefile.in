@@ -553,6 +553,7 @@ ncsa.hdf.view: ./ncsa/hdf/view/TreeView.class \
 	./ncsa/hdf/view/HDFView.class \
 	./ncsa/hdf/view/HDFView$$1.class \
 	./ncsa/hdf/view/HDFView$$2.class \
+	./ncsa/hdf/view/HDFView$$3.class \
 	./ncsa/hdf/view/ImageObserver.class \
 	./ncsa/hdf/view/ImageView.class \
 	./ncsa/hdf/view/ImageView$$1.class \
@@ -560,6 +561,7 @@ ncsa.hdf.view: ./ncsa/hdf/view/TreeView.class \
 	./ncsa/hdf/view/ImageView$$FlipFilter.class \
 	./ncsa/hdf/view/ImageView$$ImageComponent.class \
 	./ncsa/hdf/view/ImageView$$PaletteComponent.class \
+	./ncsa/hdf/view/ImageView$$BrightnessFilter.class \
 	./ncsa/hdf/view/MetadataDialog.class \
 	./ncsa/hdf/view/MetadataDialog$$1.class \
 	./ncsa/hdf/view/MetadataDialog$$2.class \
@@ -570,9 +572,10 @@ ncsa.hdf.view: ./ncsa/hdf/view/TreeView.class \
 	./ncsa/hdf/view/TableView$$2.class \
 	./ncsa/hdf/view/TableView$$3.class \
 	./ncsa/hdf/view/TableView$$4.class \
-	./ncsa/hdf/view/TableView$$ButtonRenderer.class \
 	./ncsa/hdf/view/TableView$$ColumnHeader.class \
 	./ncsa/hdf/view/TableView$$RowHeader.class \
+	./ncsa/hdf/view/TableView$$MultiLineHeaderRenderer.class \
+	./ncsa/hdf/view/TableView$$RowHeaderRenderer.class \
 	./ncsa/hdf/view/TextObserver.class \
 	./ncsa/hdf/view/TextView.class \
 	./ncsa/hdf/view/ViewProperties.class \
@@ -657,19 +660,19 @@ CompoundDS: ncsa/hdf/object/CompoundDS.class
 DataFormat: /ncsa/hdf/object/DataFormat.class 
 Dataset: ncsa/hdf/object/Dataset.class 
 Group:	ncsa/hdf/object/Group.class 
-H4GRImage: ncsa/hdf/object/H4GRImage.class 
-H4Group:	ncsa/hdf/object/H4Group.class 
-H4SDS: ncsa/hdf/object/H4SDS.class 
-H4Vdata: ncsa/hdf/object/H4Vdata.class 
-H5Compound: ncsa/hdf/object/H5CompoundDS.class 
-H5Group: ncsa/hdf/object/H5Group.class 
-H5ScalarDS: ncsa/hdf/object/H5ScalarDS.class 
+H4GRImage: ncsa/hdf/object/h4/H4GRImage.class 
+H4Group:	ncsa/hdf/object/h4/H4Group.class 
+H4SDS: ncsa/hdf/object/h4/H4SDS.class 
+H4Vdata: ncsa/hdf/object/h4/H4Vdata.class 
+H5Compound: ncsa/hdf/object/h5/H5CompoundDS.class 
+H5Group: ncsa/hdf/object/h5/H5Group.class 
+H5ScalarDS: ncsa/hdf/object/h5/H5ScalarDS.class 
 HObject: ncsa/hdf/object/HObject.class 
 ScalarDS: ncsa/hdf/object/ScalarDS.class
 Metadata: ncsa/hdf/object/Metadata.class
 FileFormat: ncsa/hdf/object/FileFormat.class
-H4File: ncsa/hdf/object/H4File.class
-H5File: ncsa/hdf/object/H5File.class
+H4File: ncsa/hdf/object/h4/H4File.class
+H5File: ncsa/hdf/object/h5/H5File.class
 TreeView: ncsa/hdf/view/TreeView.class
 ViewManager: ncsa/hdf/view/ViewManager.class
 ChartView:	ncsa/hdf/view/ChartView.class
@@ -814,10 +817,12 @@ HDFVIEWCLASSES= ./ncsa/hdf/view/ViewManager.class \
 	./ncsa/hdf/view/ChartView\$$ChartPanel.class \
 	./ncsa/hdf/view/HDFView\$$1.class \
 	./ncsa/hdf/view/HDFView\$$2.class \
+	./ncsa/hdf/view/HDFView\$$3.class \
 	./ncsa/hdf/view/ImageView\$$ContourFilter.class \
 	./ncsa/hdf/view/ImageView\$$FlipFilter.class \
 	./ncsa/hdf/view/ImageView\$$ImageComponent.class \
 	./ncsa/hdf/view/ImageView\$$PaletteComponent.class \
+	./ncsa/hdf/view/ImageView\$$BrightnessFilter.class \
 	./ncsa/hdf/view/MetadataDialog\$$1.class \
 	./ncsa/hdf/view/MetadataDialog\$$2.class \
 	./ncsa/hdf/view/MetadataDialog\$$3.class \
@@ -825,9 +830,10 @@ HDFVIEWCLASSES= ./ncsa/hdf/view/ViewManager.class \
 	./ncsa/hdf/view/TableView\$$2.class \
 	./ncsa/hdf/view/TableView\$$3.class \
 	./ncsa/hdf/view/TableView\$$4.class \
-	./ncsa/hdf/view/TableView\$$ButtonRenderer.class \
 	./ncsa/hdf/view/TableView\$$ColumnHeader.class \
 	./ncsa/hdf/view/TableView\$$RowHeader.class \
+	./ncsa/hdf/view/TableView\$$MultiLineHeaderRenderer.class \
+	./ncsa/hdf/view/TableView\$$RowHeaderRenderer.class \
 	./ncsa/hdf/view/TreeView\$$1.class \
 	./ncsa/hdf/view/TreeView\$$HTreeCellRenderer.class \
 	./ncsa/hdf/view/TreeView\$$HTreeMouseAdapter.class \
@@ -843,7 +849,11 @@ HDFVIEWCLASSES= ./ncsa/hdf/view/ViewManager.class \
 	./ncsa/hdf/view/ImageView\$$PaletteView.class \
 	./ncsa/hdf/view/MathConversionDialog.class \
 	./ncsa/hdf/view/NewImageDialog.class \
-	./ncsa/hdf/view/Tools.class
+	./ncsa/hdf/view/UserOptionsDialog.class \
+	./ncsa/hdf/view/Tools.class 
+
+
+
 
 HDFVIEWICONS= ./ncsa/hdf/view/icons/blank.gif \
 	./ncsa/hdf/view/icons/chart.gif \
@@ -947,22 +957,22 @@ JAVASRCS= \
 ./ncsa/hdf/object/DataFormat.java  \
 ./ncsa/hdf/object/Dataset.java  \
 ./ncsa/hdf/object/Group.java  \
-./ncsa/hdf/object/H4GRImage.java  \
-./ncsa/hdf/object/H4Group.java  \
-./ncsa/hdf/object/H4SDS.java  \
-./ncsa/hdf/object/H4Vdata.java  \
-./ncsa/hdf/object/H5CompoundDS.java  \
-./ncsa/hdf/object/H5Group.java  \
-./ncsa/hdf/object/H5ScalarDS.java  \
+./ncsa/hdf/object/h4/H4GRImage.java  \
+./ncsa/hdf/object/h4/H4Group.java  \
+./ncsa/hdf/object/h4/H4SDS.java  \
+./ncsa/hdf/object/h4/H4Vdata.java  \
+./ncsa/hdf/object/h5/H5CompoundDS.java  \
+./ncsa/hdf/object/h5/H5Group.java  \
+./ncsa/hdf/object/h5/H5ScalarDS.java  \
 ./ncsa/hdf/object/HObject.java  \
 ./ncsa/hdf/object/ScalarDS.java \
 ./ncsa/hdf/object/Metadata.java \
 ./ncsa/hdf/object/FileFormat.java \
-./ncsa/hdf/object/H4File.java \
-./ncsa/hdf/object/H5File.java \
+./ncsa/hdf/object/h4/H4File.java \
+./ncsa/hdf/object/h5/H5File.java \
 ./ncsa/hdf/object/Datatype.java \
-./ncsa/hdf/object/H4Datatype.java \
-./ncsa/hdf/object/H5Datatype.java \
+./ncsa/hdf/object/h4/H4Datatype.java \
+./ncsa/hdf/object/h5/H5Datatype.java \
 ./ncsa/hdf/view/ChartView.java \
 ./ncsa/hdf/view/DataObserver.java \
 ./ncsa/hdf/view/DataOptionDialog.java \
@@ -985,6 +995,7 @@ JAVASRCS= \
 ./ncsa/hdf/view/FileConversionDialog.java \
 ./ncsa/hdf/view/MathConversionDialog.java \
 ./ncsa/hdf/view/NewImageDialog.java \
+./ncsa/hdf/view/UserOptionsDialog.java \
 ./ncsa/hdf/view/Tools.java \
 ./test/h4toh5/apitest.java \
 ./test/h4toh5/imagetest.java \
