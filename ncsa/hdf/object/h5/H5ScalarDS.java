@@ -777,7 +777,7 @@ public class H5ScalarDS extends ScalarDS
             tid = H5.H5Dget_type(pal_id);
 
             // support only 3*256 byte palette data
-            if (H5.H5Dget_storage_size(pal_id) == 768) {
+            if (H5.H5Dget_storage_size(pal_id) <= 768) {
                 p = new byte[3*256];
                 H5.H5Dread( pal_id, tid, HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, p);
             }
@@ -968,7 +968,7 @@ public class H5ScalarDS extends ScalarDS
             atype = H5.H5Aget_type(aid);
 
             H5.H5Aread( aid, atype, ref_buf);
-         } catch (HDF5Exception ex)
+        } catch (HDF5Exception ex)
         {
             ref_buf = null;
         } finally {

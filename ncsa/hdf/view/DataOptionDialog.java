@@ -738,8 +738,8 @@ implements ActionListener, ItemListener
 
     private boolean setSelection()
     {
-        long[] n0 = {0, 0, 0}; // start
-        long[] n1= {0, 0, 0}; // end
+        long[] n0 = {1, 1, 1}; // start
+        long[] n1= {1, 1, 1}; // end
         long[] n2= {1, 1, 1}; // stride
         int[] sIndex = {0, 1, 2};
 
@@ -764,7 +764,6 @@ implements ActionListener, ItemListener
                     JOptionPane.ERROR_MESSAGE);
                 return false;
             }
-
             if (n0[i] < 1)
             {
                 JOptionPane.showMessageDialog(
