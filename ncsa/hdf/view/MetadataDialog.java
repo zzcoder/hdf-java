@@ -664,7 +664,7 @@ implements ActionListener
         catch (Exception ex)
         {
             JOptionPane.showMessageDialog(getOwner(),
-                ex,
+                ex.getMessage(),
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             return;
@@ -707,7 +707,7 @@ implements ActionListener
             {
                 JOptionPane.showMessageDialog(
                     getOwner(),
-                    ex,
+                    ex.getMessage(),
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
                 return;
@@ -809,7 +809,7 @@ implements ActionListener
         {
             JOptionPane.showMessageDialog(
                 getOwner(),
-                ex,
+                ex.getMessage(),
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             return;

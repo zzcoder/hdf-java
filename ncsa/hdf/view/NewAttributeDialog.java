@@ -247,7 +247,7 @@ implements ActionListener, ItemListener, HyperlinkListener
                 catch (NumberFormatException ex)
                 {
                     JOptionPane.showMessageDialog(this,
-                        ex,
+                        ex.getMessage(),
                         getTitle(),
                         JOptionPane.ERROR_MESSAGE);
                     return false;
@@ -269,7 +269,7 @@ implements ActionListener, ItemListener, HyperlinkListener
                 catch (NumberFormatException ex)
                 {
                     JOptionPane.showMessageDialog(this,
-                        ex,
+                        ex.getMessage(),
                         getTitle(),
                         JOptionPane.ERROR_MESSAGE);
                     return false;
@@ -291,7 +291,7 @@ implements ActionListener, ItemListener, HyperlinkListener
                 catch (NumberFormatException ex)
                 {
                     JOptionPane.showMessageDialog(this,
-                        ex,
+                        ex.getMessage(),
                         getTitle(),
                         JOptionPane.ERROR_MESSAGE);
                     return false;
@@ -313,7 +313,7 @@ implements ActionListener, ItemListener, HyperlinkListener
                 catch (NumberFormatException ex)
                 {
                     JOptionPane.showMessageDialog(this,
-                        ex,
+                        ex.getMessage(),
                         getTitle(),
                         JOptionPane.ERROR_MESSAGE);
                     return false;
@@ -340,7 +340,7 @@ implements ActionListener, ItemListener, HyperlinkListener
                 catch (NumberFormatException ex)
                 {
                     JOptionPane.showMessageDialog(this,
-                        ex,
+                        ex.getMessage(),
                         getTitle(),
                         JOptionPane.ERROR_MESSAGE);
                     return false;
@@ -366,7 +366,7 @@ implements ActionListener, ItemListener, HyperlinkListener
                 catch (NumberFormatException ex)
                 {
                     JOptionPane.showMessageDialog(this,
-                        ex,
+                        ex.getMessage(),
                         getTitle(),
                         JOptionPane.ERROR_MESSAGE);
                     return false;
@@ -391,7 +391,7 @@ implements ActionListener, ItemListener, HyperlinkListener
                 catch (NumberFormatException ex)
                 {
                     JOptionPane.showMessageDialog(this,
-                        ex,
+                        ex.getMessage(),
                         getTitle(),
                         JOptionPane.ERROR_MESSAGE);
                     return false;
@@ -412,7 +412,7 @@ implements ActionListener, ItemListener, HyperlinkListener
                 catch (NumberFormatException ex)
                 {
                     JOptionPane.showMessageDialog(this,
-                        ex,
+                        ex.getMessage(),
                         getTitle(),
                         JOptionPane.ERROR_MESSAGE);
                     return false;
@@ -434,7 +434,7 @@ implements ActionListener, ItemListener, HyperlinkListener
                 catch (NumberFormatException ex)
                 {
                     JOptionPane.showMessageDialog(this,
-                        ex,
+                        ex.getMessage(),
                         getTitle(),
                         JOptionPane.ERROR_MESSAGE);
                     return false;
@@ -456,7 +456,7 @@ implements ActionListener, ItemListener, HyperlinkListener
                 catch (NumberFormatException ex)
                 {
                     JOptionPane.showMessageDialog(this,
-                        ex,
+                        ex.getMessage(),
                         getTitle(),
                         JOptionPane.ERROR_MESSAGE);
                     return false;
@@ -496,7 +496,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         catch (Exception ex)
         {
             JOptionPane.showMessageDialog(this,
-                ex,
+                ex.getMessage(),
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             return false;
@@ -510,7 +510,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         catch (Exception ex )
         {
             JOptionPane.showMessageDialog(this,
-                ex,
+                ex.getMessage(),
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             return false;

@@ -972,7 +972,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-            ex,
+            ex.getMessage(),
             getTitle(),
             JOptionPane.ERROR_MESSAGE);
             return null;
@@ -1070,7 +1070,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-            ex,
+            ex.getMessage(),
             getTitle(),
             JOptionPane.ERROR_MESSAGE);
             return null;

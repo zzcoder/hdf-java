@@ -26,7 +26,6 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.MouseEvent;
 import java.awt.Toolkit;
-import javax.swing.plaf.metal.MetalBorders.TableHeaderBorder;
 
 /**
  * TableView displays an HDF dataset as a two-dimensional table.
@@ -126,9 +125,11 @@ implements TableObserver
             return;
         }
 
+        ColumnHeader columnHeaders = new ColumnHeader(table);
         table.setCellSelectionEnabled(true);
         table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
-        table.setTableHeader(new ColumnHeader(table));
+        table.setTableHeader(columnHeaders);
+        table.setGridColor(java.awt.Color.gray);
 
         // add the table to a scroller
         JScrollPane scroller = new JScrollPane(table);
@@ -137,6 +138,7 @@ implements TableObserver
 
         // create row headers and add it to the scroller
         RowHeader rowHeaders = new RowHeader( table );
+
         JViewport viewp = new JViewport();
         viewp.add( rowHeaders );
         viewp.setPreferredSize( rowHeaders.getPreferredSize() );
@@ -560,7 +562,7 @@ null, options, options[0]);
         {
             JOptionPane.showMessageDialog(
                 this,
-                ex,
+                ex.getMessage(),
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             dataValue = null;
@@ -627,7 +629,7 @@ null, options, options[0]);
                         toolkit.beep();
                         JOptionPane.showMessageDialog(
                         this,
-                        ex,
+                        ex.getMessage(),
                         getTitle(),
                         JOptionPane.ERROR_MESSAGE);
                     }
@@ -682,7 +684,7 @@ null, options, options[0]);
             toolkit.beep();
             JOptionPane.showMessageDialog(
                 this,
-                ex,
+                ex.getMessage(),
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             dataValue = null;
@@ -784,7 +786,7 @@ null, options, options[0]);
         catch (Exception ex)
         {
             dataValue = null;
-            JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -869,7 +871,7 @@ null, options, options[0]);
             toolkit.beep();
             JOptionPane.showMessageDialog(
                 this,
-                ex,
+                ex.getMessage(),
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
         }
@@ -948,7 +950,7 @@ null, options, options[0]);
                         toolkit.beep();
                         JOptionPane.showMessageDialog(
                         this,
-                        ex,
+                        ex.getMessage(),
                         getTitle(),
                         JOptionPane.ERROR_MESSAGE);
                         try { in.close(); } catch (IOException ex2) {}
@@ -1090,7 +1092,7 @@ null, options, options[0]);
             toolkit.beep();
             JOptionPane.showMessageDialog(
                 this,
-                ex,
+                ex.getMessage(),
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             return;
@@ -1588,8 +1590,9 @@ null, options, options[0]);
         public ButtonRenderer()
         {
             super();
-            setBorder(new TableHeaderBorder());
             setHorizontalAlignment(JButton.LEFT);
+
+            setBorder(BorderFactory.createEmptyBorder());
         }
 
         /** Configures the button for the current cell, and returns it. */

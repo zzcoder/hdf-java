@@ -576,7 +576,7 @@ implements ActionListener, ItemListener
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
                     (Frame)viewer,
-                    ex,
+                    ex.getMessage(),
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
                 return false;
@@ -661,7 +661,7 @@ implements ActionListener, ItemListener
             toolkit.beep();
             JOptionPane.showMessageDialog(
                 (Frame)viewer,
-                ex,
+                ex.getMessage(),
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             return false;
@@ -674,7 +674,7 @@ implements ActionListener, ItemListener
             toolkit.beep();
             JOptionPane.showMessageDialog(
                 (Frame)viewer,
-                ex,
+                ex.getMessage(),
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             return false;

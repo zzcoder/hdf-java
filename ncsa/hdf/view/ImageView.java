@@ -432,7 +432,7 @@ implements ImageObserver
         catch (Throwable ex) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                ex,
+                ex.getMessage(),
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             return null;
@@ -1119,7 +1119,7 @@ implements ImageObserver
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                err,
+                err.getMessage(),
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             return;
@@ -1373,7 +1373,7 @@ implements ImageObserver
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                err,
+                err.getMessage(),
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             status = false;
