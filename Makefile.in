@@ -420,7 +420,6 @@ ncsa.hdf.h4toh5lib.exceptions: \
 
 ncsa.hdf.hdf5lib: \
 	ncsa/hdf/hdf5lib/H5.class \
-	ncsa/hdf/hdf5lib/HDF5CDataTypes.class \
 	ncsa/hdf/hdf5lib/HDF5Constants.class \
 	ncsa/hdf/hdf5lib/HDF5GroupInfo.class \
 	ncsa/hdf/hdf5lib/HDFArray.class \
@@ -595,7 +594,6 @@ h4toh5:	ncsa/hdf/h4toh5lib/h4toh5.class
 H45Exception:	ncsa/hdf/h4toh5lib/exceptions/H45Exception.class 
 H45LibraryException:	ncsa/hdf/h4toh5lib/exceptions/H45LibraryException.class 
 H5:	ncsa/hdf/hdf5lib/H5.class
-HDF5CDataTypes:	ncsa/hdf/hdf5lib/HDF5CDataTypes.class
 HDF5Constants:	ncsa/hdf/hdf5lib/HDF5Constants.class
 HDF5GroupInfo:	ncsa/hdf/hdf5lib/HDF5GroupInfo.class
 HDFArray:	ncsa/hdf/hdf5lib/HDFArray.class
@@ -703,7 +701,6 @@ JH45CLASSES= ./ncsa/hdf/h4toh5lib/h4toh5.class \
 
 JHI5CLASSES= ./ncsa/hdf/hdf5lib/ArrayDescriptor.class \
 	./ncsa/hdf/hdf5lib/HDF5Constants.class \
-	./ncsa/hdf/hdf5lib/HDF5CDataTypes.class \
 	./ncsa/hdf/hdf5lib/HDF5GroupInfo.class \
 	./ncsa/hdf/hdf5lib/H5.class \
 	./ncsa/hdf/hdf5lib/HDFArray.class \
@@ -893,7 +890,6 @@ JAVASRCS= \
 ./ncsa/hdf/h4toh5lib/exceptions/H45Exception.java  \
 ./ncsa/hdf/h4toh5lib/exceptions/H45LibraryException.java \
 ./ncsa/hdf/hdf5lib/H5.java  \
-./ncsa/hdf/hdf5lib/HDF5CDataTypes.java  \
 ./ncsa/hdf/hdf5lib/HDF5Constants.java  \
 ./ncsa/hdf/hdf5lib/HDF5GroupInfo.java  \
 ./ncsa/hdf/hdf5lib/HDFArray.java  \
