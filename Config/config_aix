@@ -1,0 +1,24 @@
+#!/bin/sh
+set -x
+
+INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/aix
+
+JAVAINC=/usr/java14/include
+JAVALIB=/usr/java14/jre/lib
+
+HDF4=/afs/ncsa.uiuc.edu/packages/hdf/4.2r0-aix
+HDF5=/afs/.ncsa.uiuc.edu/projects/hdf/java/java9/xcao/5-1.6.3-aix_NoEnc
+
+SZIP=/afs/.ncsa.uiuc.edu/projects/hdf/packages/szip_noencoder/AIX5.1
+GZIP=/afs/.ncsa.uiuc.edu/projects/hdf/packages/zlib/AIX5.1
+JPEG=/afs/.ncsa.uiuc.edu/projects/hdf/packages/jpeg/AIX5.1
+
+export CC=/usr/vacpp/bin/xlc
+
+./configure --prefix=$INSTDIR --with-jdk=$JAVAINC,$JAVALIB \
+--with-hdf5=$HDF5/include,$HDF5/lib \
+--with-hdf4=$HDF4/include,$HDF4/lib \
+--with-libsz=$SZIP/include,$SZIP/lib \
+--with-libz=$GZIP/include,$GZIP/lib \
+--with-libjpeg=$JPEG/include,$JPEG/lib
+ 

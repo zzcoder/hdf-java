@@ -1,0 +1,25 @@
+#!/bin/sh
+set -x
+
+INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/irix
+
+JAVAINC=/usr/java/include
+JAVALIB=/usr/java/jre/lib
+
+HDF4=/afs/ncsa.uiuc.edu/packages/hdf/4.2r0-irix64-n32 
+HDF5=/afs/.ncsa.uiuc.edu/projects/hdf/java/java9/xcao/5-1.6.3-irix64n32_NoEnc
+
+SZIP=/afs/ncsa.uiuc.edu/projects/hdf/packages/szip_noencoder/IRIX64-6.5-32bit
+GZIP=/afs/ncsa.uiuc.edu/projects/hdf/packages/zlib/IRIX64-6.5-32bit
+#JPEG=/afs/ncsa.uiuc.edu/projects/hdf/packages/jpeg/IRIX64-6.5-32bit
+JPEG=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/jpeg/jpeg-6b
+
+export CC=/opt/MIPSpro/bin/cc
+
+./configure --prefix=$INSTDIR --with-jdk=$JAVAINC,$JAVALIB \
+--with-hdf5=$HDF5/include,$HDF5/lib \
+--with-hdf4=$HDF4/include,$HDF4/lib \
+--with-libsz=$SZIP/include,$SZIP/lib \
+--with-libz=$GZIP/include,$GZIP/lib \
+--with-libjpeg=$JPEG,$JPEG
+ 

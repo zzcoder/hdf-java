@@ -1,0 +1,30 @@
+#!/bin/sh
+
+#tcs.psc.edu -l pcao
+
+set -x
+
+INSTDIR=/usr/users/1/pcao/build
+
+JAVAINC=/usr/opt/java142/include
+JAVALIB=/usr/opt/java142/jre/lib
+
+HDF4=/usr/users/1/pcao/4.2r0-osf1 
+HDF5=/usr/users/1/pcao/5-1.6.3-osf1-NoEnco
+
+SZIP=/usr/users/1/pcao/external-lib/szip-osf1-5.1_new
+GZIP=/usr/users/1/pcao/external-lib/zlib-osf1
+JPEG=/usr/users/1/pcao/external-lib/jpeg-6b
+
+#export CC=/usr/local/packages/gcc-3.3.3/bin/gcc
+CC=/bin/cc 
+export CC
+
+./configure --prefix=$INSTDIR --with-jdk=$JAVAINC,$JAVALIB \
+--without-h4toh5 \
+--with-hdf5=$HDF5/include,$HDF5/lib \
+--with-hdf4=$HDF4/include,$HDF4/lib \
+--with-libsz=$SZIP/include,$SZIP/lib \
+--with-libz=$GZIP/include,$GZIP/lib \
+--with-libjpeg=$JPEG,$JPEG
+ 
