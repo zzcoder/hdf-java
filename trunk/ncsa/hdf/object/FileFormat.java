@@ -22,6 +22,16 @@ import javax.swing.tree.MutableTreeNode;
  */
 public interface FileFormat
 {
+    /** Flag for opening a file for read only. */
+    public final static int READ = 0;
+
+    /** Flag for opening a file for read/write. */
+    public final static int WRITE = 1;
+
+    /** Flag for creating a new file. */
+    public final static int CREATE = 2;
+
+
     /**
      * Opens access to the file resource and returns the file identifier.
      * If the file is already open, it returns the file access identifier.

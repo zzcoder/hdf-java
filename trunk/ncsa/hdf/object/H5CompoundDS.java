@@ -90,8 +90,7 @@ public class H5CompoundDS extends CompoundDS
         if (numberOfMembers <= 0)
             return null; // this compound dataset does not have any member
 
-        list = new Vector(numberOfMembers);
-
+        list = new Vector();
         Object member_data = null;
         String member_name = null;
         int member_tid=-1, member_class=-1, member_size=0, fspace=-1, mspace=-1;
@@ -128,17 +127,20 @@ public class H5CompoundDS extends CompoundDS
                     fspace,
                     HDF5Constants.H5S_SELECT_SET,
                     startDims,
-                    null,     // set stride to 1
+                    selectedStride,     // set stride to 1
                     selectedDims,
                     null );   // set block to 1
             }
 
             for (int i=0; i<numberOfMembers; i++)
             {
+                if (!isMemberSelected[i])
+                    continue; // the field is not selected
+
                 member_name = memberNames[i];
                 member_tid = memberTypes[i];
 
-                member_data = H5Accessory.allocateArray(member_tid, (int)lsize[0]);
+                member_data = H5Datatype.allocateArray(member_tid, (int)lsize[0]);
 
                 if (member_data == null)
                     continue;
@@ -157,7 +159,7 @@ public class H5CompoundDS extends CompoundDS
                         H5.H5Tget_array_dims(member_tid, marray, null);
                         baseType = H5.H5Tget_super(member_tid);
                         arrayType = H5.H5Tarray_create (
-                            H5Accessory.toNativeType(baseType),
+                            H5Datatype.toNativeType(baseType),
                             mn,
                             marray,
                             null);
@@ -193,10 +195,10 @@ public class H5CompoundDS extends CompoundDS
                     member_data = byteToString((byte[])member_data, member_size);
                 else if (member_class == HDF5Constants.H5T_REFERENCE)
                     member_data = HDFNativeData.byteToLong((byte[])member_data);
-                else if (H5Accessory.isUnsigned(baseType))
+                else if (H5Datatype.isUnsigned(baseType))
                     member_data = Dataset.convertFromUnsignedC(member_data);
 
-                list.add(i, member_data);
+                list.add(member_data);
             } // end of for (int i=0; i<num_members; i++)
         } finally
         {
@@ -220,7 +222,7 @@ public class H5CompoundDS extends CompoundDS
         if (attributeList == null)
         {
             int did = open();
-            attributeList = H5Accessory.getAttribute(did);
+            attributeList = H5File.getAttribute(did);
             close(did);
         }
 
@@ -240,20 +242,18 @@ public class H5CompoundDS extends CompoundDS
         if (!(info instanceof Attribute))
             return;
 
+        boolean attrExisted = false;
         Attribute attr = (Attribute)info;
         String name = attr.getName();
-        List attrList = getMetadata();
-        boolean attrExisted = attrList.contains(attr);
 
-        int did = open();
-        try {
-            H5Accessory.writeAttribute(did, attr, attrExisted);
-            // add the new attribute into attribute list
-            if (!attrExisted) attrList.add(attr);
-        } finally
-        {
-            close(did);
-        }
+        if (attributeList == null)
+            attributeList = new Vector();
+        else
+            attrExisted = attributeList.contains(attr);
+
+        H5File.writeAttribute(this, attr, attrExisted);
+        // add the new attribute into attribute list
+        if (!attrExisted) attributeList.add(attr);
     }
 
     /**
@@ -295,7 +295,7 @@ public class H5CompoundDS extends CompoundDS
     }
 
     // Implementing HObject
-    public static void close(int did)
+    public void close(int did)
     {
         try { H5.H5Dclose(did); }
         catch (HDF5Exception ex) { ; }
@@ -354,10 +354,12 @@ public class H5CompoundDS extends CompoundDS
             memberNames = new String[numberOfMembers];
             memberTypes = new int[numberOfMembers];
             memberOrders = new int[numberOfMembers];
+            isMemberSelected = new boolean[numberOfMembers];
             for (int i=0; i<numberOfMembers; i++)
             {
+                isMemberSelected[i] = true;
                 int mtid = H5.H5Tget_member_type(tid, i);
-                memberTypes[i] = H5Accessory.toNativeType(mtid);
+                memberTypes[i] = H5Datatype.toNativeType(mtid);
                 memberNames[i] = H5.H5Tget_member_name(tid, i);
                 memberOrders[i] = 1;
 
@@ -387,5 +389,4 @@ public class H5CompoundDS extends CompoundDS
             try { H5.H5Dclose(did); } catch (HDF5Exception ex2) {}
         }
     }
-
 }

@@ -38,18 +38,6 @@ public class ViewProperties extends Properties
     /** the maximum number of most recent files */
     public static final int MAX_RECENT_FILES = 10;
 
-    /** name of default Gray palette */
-    public static final String PALETTE_GRAY = "Gray";
-
-    /** name of default Rainbow palette */
-    public static final String PALETTE_RAINBOW = "Rainbow";
-
-    /** name of default Nature palette */
-    public static final String PALETTE_NATURE = "Nature";
-
-    /** name of default Wave palette */
-    public static final String PALETTE_WAVE = "Wave";
-
     /** name of the tab delimiter */
     public static final String DELIMITER_TAB = "Tab";
 
@@ -62,23 +50,29 @@ public class ViewProperties extends Properties
     /** name of the tab delimiter */
     public static final String DELIMITER_COLON = "Colon";
 
-    /** browser path */
-    private static String browserPath = "";
+    /** name of the tab delimiter */
+    public static final String DELIMITER_SEMI_COLON = "Semi-Colon";
 
     /** user's guide */
     private static String usersGuide = "";
 
+    /** the font size */
+    private static String fontSizeStr = "12";
+
+    /** the font size */
+    private static int fontSize = 12;
+
     /** the full path of H4toH5 converter */
     private static String h4toh5 ="";
-
-    /** name of the default palette */
-    private static String defaultPalette = PALETTE_GRAY;
 
     /** data delimiter */
     private static String delimiter = DELIMITER_TAB;
 
     /** a list of most recent files */
     private static Vector mrf;
+
+    /** the root directory of the HDFView */
+    private final String rootDir;
 
     private static Icon hdfIcon, h4Icon, h5Icon, largeHdfIcon,
         blankIcon, helpIcon,
@@ -98,6 +92,7 @@ public class ViewProperties extends Properties
     {
         super();
         mrf = new Vector();
+        rootDir = viewRoot;
 
         // find the property file
         String uh="", ud="", h5v="", fn;
@@ -406,14 +401,25 @@ public class ViewProperties extends Properties
             fis.close();
         } catch (Exception e) {;}
 
-        delimiter = (String)get("data.delimiter");
-        browserPath = (String)get("browser.path");
-        usersGuide = (String)get("users.guide");
-        defaultPalette = (String)get("default.palette");
-        h4toh5 = (String)get("h4toh5.converter");
+        String str = (String)get("users.guide");
+        if (str == null || str.length()<=0)
+        {
+            usersGuide = "file:" + rootDir + File.separator + "docs"
+                + File.separator + "UsersGuide" + File.separator + "index.html";
+        } else
+            usersGuide = str;
 
-        if (delimiter == null ) delimiter = DELIMITER_TAB;
-        if (defaultPalette == null ) defaultPalette = PALETTE_GRAY;
+        str = (String)get("data.delimiter");
+        if (str != null && str.length()>0)
+            delimiter = str;
+
+        str = (String)get("h4toh5.converter");
+        if (str != null && str.length()>0)
+            h4toh5 = str;
+
+        str = (String)get("font.size");
+        if (str != null && str.length()>0)
+            setFontSize(str);
 
         // load the most recent file list from the property file
         if (mrf != null)
@@ -448,17 +454,14 @@ public class ViewProperties extends Properties
         else
             put("data.delimiter", delimiter);
 
-        if (browserPath!=null)
-            put("browser.path", browserPath);
-
         if (usersGuide != null)
             put("users.guide", usersGuide);
 
-        if (defaultPalette != null)
-            put("default.palette", defaultPalette);
-
         if (h4toh5 != null)
             put("h4toh5.converter", h4toh5);
+
+        if (fontSizeStr != null)
+            put("font.size", fontSizeStr);
 
         if (mrf != null)
         {
@@ -487,29 +490,35 @@ public class ViewProperties extends Properties
     /** returns the maximum number of the most recent file */
     public static int getMaxRecentFiles() { return MAX_RECENT_FILES; }
 
-    /** return the name of the default palette: RAINBOW or GRAY */
-    public static String getDefaultPalette() { return defaultPalette; }
+    /** return the path of the H5View uers guide */
+    public static String getUsersGuide() { return usersGuide; };
 
     /** returns the delimiter of data values */
     public static String getDataDelimiter() { return delimiter; }
 
-    /** returns the path of browser */
-    public static String getBrowserPath() { return browserPath; };
+    /** returns the font size */
+    public static String getFontSize() { return fontSizeStr; }
 
-    /** return the path of the H5View uers guide */
-    public static String getUsersGuide() { return usersGuide; };
+    /** returns the font size */
+    public static int getFontSizeInt() { return fontSize; }
+
+    /** sets the font size */
+    public static void setFontSize(String fsize) {
+        try { fontSize = Integer.parseInt(fsize); }
+        catch (Exception ex ) {fontSize = 12;}
+
+        fontSize = (fontSize/2)*2;
+        if (fontSize > 20 || fontSize < 10)
+            fontSize = 12;
+
+        fontSizeStr = String.valueOf(fontSize);
+    }
 
     /** returns the path of the H5toH5 converter */
     public static String getH4toH5() { return h4toh5; };
 
     /** returns the list of most recent files */
     public static Vector getMRF(){ return mrf;}
-
-    /** set the default palette to gray */
-    public static void setDefaultPalette(String p) { defaultPalette = p; };
-
-    /** set the path of browser */
-    public static void setBrowserPath( String bPath) { browserPath = bPath; };
 
     /** set the path of H5View User's guide */
     public static void setUsersGuide( String ug) { usersGuide = ug; };

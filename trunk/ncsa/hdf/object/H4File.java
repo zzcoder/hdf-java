@@ -13,6 +13,7 @@ package ncsa.hdf.object;
 
 import java.io.File;
 import java.util.*;
+import java.lang.reflect.Array;
 import javax.swing.tree.*;
 import ncsa.hdf.object.*;
 import ncsa.hdf.hdflib.*;
@@ -93,13 +94,22 @@ public class H4File extends File implements FileFormat
      *      create it.</DT>
      * </DL></DL>
      */
-    public H4File(String pathname, int flag)
+    public H4File(String pathname, int access)
     {
         super(pathname);
 
         this.fid = -1;
-        this.flag = flag;
         this.fullFileName = pathname;
+
+        if (access == READ)
+            flag = HDFConstants.DFACC_READ;
+        else if (access == WRITE)
+            flag = HDFConstants.DFACC_WRITE;
+        else if (access == CREATE)
+            flag = HDFConstants.DFACC_CREATE;
+        else
+            flag = access;
+
     }
 
     /**
@@ -194,6 +204,496 @@ public class H4File extends File implements FileFormat
     public String getFilePath()
     {
         return fullFileName;
+    }
+
+    /**
+     * Creates a new HDF4 file.
+     * @param fileName the name of the file to create.
+     */
+    public static void create(String fileName) throws Exception
+    {
+        int fileid = HDFLibrary.Hopen(fileName, HDFConstants.DFACC_CREATE);
+        try { HDFLibrary.Hclose(fileid); } catch (HDFException ex) {}
+    }
+
+    /**
+     * Delete an object from the file.
+     * @param obj the data object to delete.
+     */
+    public void delete(HObject obj) throws Exception
+    {
+        throw (new UnsupportedOperationException(
+            "Cannot delete HDF4 object."));
+    }
+
+    /**
+     * Copy an object to a group.
+     * @param srcObj   the object to copy.
+     * @param dstGroup the destination group.
+     * @return the new node containing the new object.
+     */
+    public TreeNode copy(HObject srcObj,
+        H4Group dstGroup) throws Exception
+    {
+        TreeNode newNode = null;
+
+        if (srcObj == null ||
+            dstGroup == null)
+            return null;
+
+        if (srcObj instanceof H4SDS)
+        {
+           newNode = copy((H4SDS)srcObj, dstGroup);
+        }
+        else if (srcObj instanceof H4GRImage)
+        {
+           newNode = copy((H4GRImage)srcObj, dstGroup);
+        }
+        else if (srcObj instanceof H4Vdata)
+        {
+           newNode = copy((H4Vdata)srcObj, dstGroup);
+        }
+        else if (srcObj instanceof H4Group)
+        {
+            newNode = copy((H4Group)srcObj, dstGroup);
+        }
+
+        return newNode;
+    }
+
+    /**
+     * Creates a new attribute and attached to the object if attribute does
+     * not exist. Otherwise, just update the value of the attribute.
+     *
+     * <p>
+     * @param obj the object which the attribute is to be attached to.
+     * @param attr the atribute to attach.
+     * @return true if successful and false otherwise.
+     */
+    public static void writeAttribute(HObject obj, Attribute attr)
+    throws HDFException
+    {
+        String attrName = attr.getName();
+        int attrType = attr.getType();
+        long[] dims = attr.getDataDims();
+        int count = 1;
+        if (dims != null)
+        {
+            for (int i=0; i<dims.length; i++)
+                count *= (int)dims[i];
+        }
+
+        Object attrValue = attr.getValue();
+        if (Array.get(attrValue, 0) instanceof String)
+        {
+            String strValue = (String)Array.get(attrValue, 0);
+            for (int i=strValue.length(); i<count; i++)
+                strValue += " ";
+            byte[] bval = strValue.getBytes();
+            // add null to the end to get rid of the junks
+            bval[(strValue.length() - 1)] = 0;
+            attrValue = bval;
+        }
+
+        int id = obj.open();
+        if (obj instanceof H4Group)
+            HDFLibrary.Vsetattr(id, attrName, attrType, count, attrValue);
+        else if (obj instanceof H4SDS)
+            HDFLibrary.SDsetattr(id, attrName, attrType, count, attrValue);
+        else if (obj instanceof H4GRImage)
+            HDFLibrary.GRsetattr(id, attrName, attrType, count, attrValue);
+        else if (obj instanceof H4Vdata)
+            HDFLibrary.VSsetattr(id, -1, attrName, attrType, count, attrValue);
+        obj.close(id);
+    }
+
+    private TreeNode copy(H4SDS sds, H4Group pgroup) throws Exception
+    {
+        TreeNode newNode = null;
+        Dataset dataset = null;
+        int srcdid=-1, dstdid=-1, tid=-1, size=1;
+        String dname=null, path=null;
+
+        if (sds == null || pgroup == null)
+            return null;
+
+        if (pgroup.isRoot())
+            path = HObject.separator;
+        else
+            path = pgroup.getPath()+pgroup.getName()+HObject.separator;
+        dname = sds.getName();
+
+        srcdid = sds.open();
+        if (srcdid < 0)
+            return null;
+
+        int rank = sds.getRank();
+        if (rank <=0) sds.init();
+        rank = sds.getRank();
+
+        long[] dims = sds.getDims();
+        if (dims == null)
+            return null;
+
+        int[] start = new int[rank];
+        int[] count = new int[rank];
+        for (int i=0; i<rank; i++)
+        {
+            start[i] = 0;
+            count[i] = (int)dims[i];
+            size *= count[i];
+        }
+
+        // create the new dataset and attached it to the parent group
+        tid = sds.getDataType();
+        dstdid = HDFLibrary.SDcreate(sdid, dname, tid, rank, count);
+        if (dstdid < 0) return null;
+        int ref = HDFLibrary.SDidtoref(dstdid);
+        if (!pgroup.isRoot())
+        {
+            int vgid = pgroup.open();
+            HDFLibrary.Vaddtagref(vgid, HDFConstants.DFTAG_NDG, ref);
+            pgroup.close(vgid);
+        }
+
+        // copy attributes from one object to the new object
+        try {
+            String[] objName = {""};
+            int[] sdInfo = {0, 0, 0};
+            int[] tmpDim = new int[1];
+            HDFLibrary.SDgetinfo(srcdid, objName, tmpDim, sdInfo);
+            int numberOfAttributes = sdInfo[2];
+
+            boolean b = false;
+            String[] attrName = new String[1];
+            int[] attrInfo = {0, 0};
+            for (int i=0; i<numberOfAttributes; i++)
+            {
+                attrName[0] = "";
+                try {
+                    b = HDFLibrary.SDattrinfo(srcdid, i, attrName, attrInfo);
+                } catch (HDFException ex) { b = false; }
+
+                if (!b) continue;
+
+                // read attribute data from source dataset
+                byte[] attrBuff = new byte[attrInfo[1] * HDFLibrary.DFKNTsize(attrInfo[0])];
+                try { HDFLibrary.SDreadattr(srcdid, i, attrBuff);
+                } catch (HDFException ex) { attrBuff = null; }
+
+                if (attrBuff == null)  continue;
+
+                // attach attribute to the destination dataset
+                HDFLibrary.SDsetattr(dstdid, attrName[0], attrInfo[0], attrInfo[1], attrBuff);
+            } // for (int i=0; i<numberOfAttributes; i++)
+        } catch (Exception ex) {}
+
+        // read data from the source dataset
+        byte[] buff = new byte[size * HDFLibrary.DFKNTsize(tid)];
+        HDFLibrary.SDreaddata(srcdid, start, null, count, buff);
+
+        // write the data into the destination dataset
+        HDFLibrary.SDwritedata(dstdid, start, null, count, buff);
+
+        long[] oid = {HDFConstants.DFTAG_NDG, ref};
+        dataset = new H4SDS(this, dname, path, oid);
+
+        pgroup.addToMemberList(dataset);
+        newNode = new DefaultMutableTreeNode(dataset);
+
+        sds.close(srcdid);
+        try { HDFLibrary.SDendaccess(dstdid); }
+        catch (HDFException ex) { ; }
+
+        return newNode;
+    }
+
+    private TreeNode copy(H4GRImage img, H4Group pgroup) throws Exception
+    {
+        TreeNode newNode = null;
+        Dataset dataset = null;
+        int srcdid=-1, dstdid=-1, size=1;
+        String dname=null, path=null;
+
+        if (img == null || pgroup == null)
+            return null;
+
+        if (pgroup.isRoot())
+            path = HObject.separator;
+        else
+            path = pgroup.getPath()+pgroup.getName()+HObject.separator;
+        dname = img.getName();
+
+        srcdid = img.open();
+        if (srcdid < 0)
+            return null;
+
+        int rank = 2;
+        int[] start = new int[rank];
+        int[] count = new int[rank];
+        int[] grInfo = new int[4]; //ncomp, data_type, interlace and num_attrs
+        try {
+            String[] tmpName = {""};
+            int[] tmpDims = new int[2];
+            HDFLibrary.GRgetiminfo(srcdid, tmpName, grInfo, count);
+        } catch (HDFException ex) {}
+
+        int ncomp = grInfo[0];
+        int tid = grInfo[1];
+        int interlace = grInfo[2];
+        int numberOfAttributes = grInfo[3];
+        dstdid = HDFLibrary.GRcreate(grid, dname, ncomp, tid, interlace, count);
+        if (dstdid < 0) return null;
+
+        int ref = HDFLibrary.GRidtoref(dstdid);
+        if (!pgroup.isRoot())
+        {
+            int vgid = pgroup.open();
+            HDFLibrary.Vaddtagref(vgid, HDFConstants.DFTAG_RIG, ref);
+            pgroup.close(vgid);
+        }
+
+        // copy palette
+        int pid = HDFLibrary.GRgetlutid(srcdid, 0);
+        int[] palInfo = new int[4];
+        HDFLibrary.GRgetlutinfo(pid, palInfo);
+        int palSize = palInfo[0]*HDFLibrary.DFKNTsize(palInfo[1])*palInfo[3];
+        byte[] palBuff = new byte[palSize];
+        HDFLibrary.GRreadlut(pid, palBuff);
+        pid = HDFLibrary.GRgetlutid(dstdid, 0);
+        HDFLibrary.GRwritelut(pid, palInfo[0], palInfo[1], palInfo[2], palInfo[3], palBuff);
+
+        // copy attributes from one object to the new object
+        try {
+            boolean b = false;
+            String[] attrName = new String[1];
+            int[] attrInfo = {0, 0};
+            for (int i=0; i<numberOfAttributes; i++)
+            {
+                attrName[0] = "";
+                try {
+                    b = HDFLibrary.GRattrinfo(srcdid, i, attrName, attrInfo);
+                } catch (HDFException ex) { b = false; }
+
+                if (!b) continue;
+
+                // read attribute data from source dataset
+                byte[] attrBuff = new byte[attrInfo[1] * HDFLibrary.DFKNTsize(attrInfo[0])];
+                try { HDFLibrary.GRgetattr(srcdid, i, attrBuff);
+                } catch (Exception ex) { attrBuff = null; }
+
+                if (attrBuff == null)  continue;
+
+                // attach attribute to the destination dataset
+                HDFLibrary.GRsetattr(dstdid, attrName[0], attrInfo[0], attrInfo[1], attrBuff);
+            } // for (int i=0; i<numberOfAttributes; i++)
+        } catch (Exception ex) {}
+
+        for (int i=0; i<rank; i++)
+        {
+            start[i] = 0;
+            size *= count[i];
+        }
+
+        // read data from the source dataset
+        byte[] buff = new byte[size * HDFLibrary.DFKNTsize(tid)];
+        HDFLibrary.GRreadimage(srcdid, start, null, count, buff);
+
+        // write the data into the destination dataset
+        HDFLibrary.GRwriteimage(dstdid, start, null, count, buff);
+
+        long[] oid = {HDFConstants.DFTAG_RIG, ref};
+        dataset = new H4GRImage(this, dname, path, oid);
+
+        pgroup.addToMemberList(dataset);
+        newNode = new DefaultMutableTreeNode(dataset);
+
+        img.close(srcdid);
+        try { HDFLibrary.GRendaccess(dstdid); }
+        catch (HDFException ex) {;}
+
+        return newNode;
+    }
+
+    private TreeNode copy(H4Vdata vdata, H4Group pgroup) throws Exception
+    {
+        TreeNode newNode = null;
+        Dataset dataset = null;
+        int srcdid=-1, dstdid=-1;
+        String dname=null, path=null;
+
+        if (vdata == null || pgroup == null)
+            return null;
+
+        if (pgroup.isRoot())
+            path = HObject.separator;
+        else
+            path = pgroup.getPath()+pgroup.getName()+HObject.separator;
+        dname = vdata.getName();
+
+        srcdid = vdata.open();
+        if (srcdid < 0) return null;
+
+        // create a new vdata
+        dstdid = HDFLibrary.VSattach(fid, -1, "w");
+        HDFLibrary.VSsetname(dstdid, dname);
+        String[] vclass = {""};
+        HDFLibrary.VSgetclass(srcdid, vclass);
+        HDFLibrary.VSsetclass(dstdid, vclass[0]);
+
+        // set fields in the new vdata
+        int size=1, fieldType=-1, fieldOrder=1;
+        String fieldName = null;
+        String nameList = "";
+        int numberOfFields = HDFLibrary.VFnfields(srcdid);
+        int numberOfRecords = HDFLibrary.VSelts(srcdid);
+        for (int i=0; i<numberOfFields; i++)
+        {
+            fieldName = HDFLibrary.VFfieldname(srcdid, i);
+            fieldType = HDFLibrary.VFfieldtype(srcdid, i);
+            fieldOrder = HDFLibrary.VFfieldorder(srcdid, i);
+            HDFLibrary.VSfdefine(dstdid, fieldName, fieldType, fieldOrder);
+
+            nameList += fieldName;
+            if (i<numberOfFields-1) nameList += ",";
+        }
+        HDFLibrary.VSsetfields(dstdid, nameList);
+        HDFLibrary.VSsetinterlace(dstdid, HDFConstants.FULL_INTERLACE);
+
+        int ref = HDFLibrary.VSfind(fid, dname);
+        if (!pgroup.isRoot())
+        {
+            int vgid = pgroup.open();
+            HDFLibrary.Vaddtagref(vgid, HDFConstants.DFTAG_VS, ref);
+            pgroup.close(vgid);
+        }
+
+        // copy attributes
+        int numberOfAttributes = 0;
+        try {
+            numberOfAttributes = HDFLibrary.VSfnattrs(srcdid, -1);
+        } catch (Exception ex) { numberOfAttributes = 0; }
+
+
+        String[] attrName = new String[1];
+        byte[] attrBuff = null;
+        int[] attrInfo = new int[3]; //data_type,  count, size
+        for (int i=0; i< numberOfAttributes; i++)
+        {
+            try {
+                attrName[0] = "";
+                HDFLibrary.VSattrinfo(srcdid, -1, i, attrName, attrInfo);
+                attrBuff = new byte[attrInfo[2]];
+                HDFLibrary.VSgetattr(srcdid, -1, i, attrBuff);
+                HDFLibrary.VSsetattr(dstdid, -1, attrName[0], attrInfo[0], attrInfo[2], attrBuff);
+            } catch (Exception ex) { continue; }
+        }
+
+        // write vdata values once by the whole table
+        byte[] buff = null;
+        try {
+            size = HDFLibrary.VSsizeof(srcdid, nameList)*numberOfRecords;
+            buff = new byte[size];
+
+            // read field data
+            HDFLibrary.VSseek(srcdid, 0); //moves the access pointer to the start position
+            HDFLibrary.VSsetfields(srcdid, nameList); //// Specify the fields to be accessed
+            HDFLibrary.VSread(srcdid, buff, numberOfRecords, HDFConstants.FULL_INTERLACE);
+
+            HDFLibrary.VSsetfields(dstdid, nameList); //// Specify the fields to be accessed
+            HDFLibrary.VSwrite(dstdid, buff, numberOfRecords, HDFConstants.FULL_INTERLACE);
+        } catch (Exception ex) { ; }
+
+        long[] oid = {HDFConstants.DFTAG_VS, ref};
+        dataset = new H4Vdata(this, dname, path, oid);
+
+        pgroup.addToMemberList(dataset);
+        newNode = new DefaultMutableTreeNode(dataset);
+
+        vdata.close(srcdid);
+        try { HDFLibrary.VSdetach(dstdid); }
+        catch (Exception ex) { ; }
+
+        return newNode;
+    }
+
+    private TreeNode copy(H4Group srcGroup, H4Group pgroup) throws Exception
+    {
+        H4Group group = null;
+        int srcgid, dstgid;
+        String gname=null, path=null;
+
+        dstgid = HDFLibrary.Vattach(fid, -1, "w");
+        if (dstgid < 0) return null;
+
+        gname = srcGroup.getName();
+        srcgid = srcGroup.open();
+
+        HDFLibrary.Vsetname(dstgid, gname);
+        int ref = HDFLibrary.VQueryref(dstgid);
+        int tag = HDFLibrary.VQuerytag(dstgid);
+
+        if (pgroup.isRoot())
+        {
+           path = HObject.separator;
+        }
+        else
+        {
+            // add the dataset to the parent group
+            path = pgroup.getPath()+pgroup.getName()+HObject.separator;
+            int pid = pgroup.open();
+            HDFLibrary.Vinsert(pid, dstgid);
+            pgroup.close(pid);
+        }
+
+        // copy attributes
+        int numberOfAttributes = 0;
+        try {
+            numberOfAttributes = HDFLibrary.Vnattrs(srcgid);
+        } catch (Exception ex) { numberOfAttributes = 0; }
+
+        String[] attrName = new String[1];
+        byte[] attrBuff = null;
+        int[] attrInfo = new int[3]; //data_type,  count, size
+        for (int i=0; i< numberOfAttributes; i++)
+        {
+            try {
+                attrName[0] = "";
+                HDFLibrary.Vattrinfo(srcgid, i, attrName, attrInfo);
+                attrBuff = new byte[attrInfo[2]];
+                HDFLibrary.Vgetattr(srcgid, i, attrBuff);
+                HDFLibrary.Vsetattr(dstgid, attrName[0], attrInfo[0], attrInfo[2], attrBuff);
+            } catch (Exception ex) { continue; }
+        }
+
+        long[] oid = {tag, ref};
+        group = new H4Group(this, gname, path, pgroup, oid);
+
+        DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(group)
+        {
+            public boolean isLeaf() { return false; }
+        };
+        pgroup.addToMemberList(group);
+
+        // copy members of the source group to the new group
+        List members = srcGroup.getMemberList();
+        if (members != null && members.size()>0)
+        {
+            Iterator iterator = members.iterator();
+            while (iterator.hasNext())
+            {
+                HObject mObj = (HObject)iterator.next();
+                try {
+                    newNode.add((MutableTreeNode)copy(mObj, group));
+                } catch (Exception ex) {}
+            }
+        }
+
+        srcGroup.close(srcgid);
+        try { HDFLibrary.Vdetach(dstgid); }
+        catch (Exception ex) { ; }
+
+        return newNode;
     }
 
     /**
@@ -331,6 +831,24 @@ public class H4File extends File implements FileFormat
                 rootGroup.addToMemberList(vdata);
             }
         } // for (int i=0; i<n; i++)
+
+        if (rootGroup != null)
+        {
+            // retrieve file annotation, GR and SDS globle attributes
+            List attributeList = null;
+            try { attributeList = rootGroup.getMetadata(); }
+            catch (HDFException ex) {}
+
+            if (attributeList != null)
+            {
+                try { getFileAnnotation(fid, attributeList); }
+                catch (HDFException ex) {}
+                try { getGRglobleAttribute(grid, attributeList); }
+                catch (HDFException ex) {}
+                try { getSDSglobleAttribute(sdid, attributeList); }
+                catch (HDFException ex) {}
+            }
+        }
 
         return root;
     }
@@ -747,4 +1265,256 @@ public class H4File extends File implements FileFormat
     {
         return sdid;
     }
+
+    /**
+     *  Reads HDF file annontation (file labels and descriptions) into memory.
+     *  The file annotation is stroed as attribute of the root group.
+     *  <p>
+     *  @param fid the file identifier.
+     *  @param attrList the list of attributes.
+     *  @return the updated attribute list.
+     */
+    private List getFileAnnotation(int fid, List attrList)
+    throws HDFException
+    {
+        if (fid < 0 )
+            return attrList;
+
+        int anid = HDFConstants.FAIL;
+        try
+        {
+            anid = HDFLibrary.ANstart(fid);
+            // fileInfo[0] = n_file_label, fileInfo[1] = n_file_desc,
+            // fileInfo[2] = n_data_label, fileInfo[3] = n_data_desc
+            int[] fileInfo = new int[4];
+            HDFLibrary.ANfileinfo(anid, fileInfo);
+
+            if (fileInfo[0]+fileInfo[1] <= 0)
+            {
+                try { HDFLibrary.ANend(anid); } catch (HDFException ex) {}
+                return attrList;
+            }
+
+            if (attrList == null)
+                attrList = new Vector(fileInfo[0]+fileInfo[1], 5);
+
+            // load file labels and descriptions
+            int id = -1;
+            int[] annTypes = {HDFConstants.AN_FILE_LABEL, HDFConstants.AN_FILE_DESC};
+            for (int j=0; j<2; j++)
+            {
+                String annName = null;
+                if (j == 0)
+                    annName = "File Label";
+                else
+                    annName = "File Description";
+
+                for (int i=0; i < fileInfo[j]; i++)
+                {
+                    try {
+                        id = HDFLibrary.ANselect(anid, i, annTypes[j]);
+                    } catch (HDFException ex)
+                    {
+                        id = HDFConstants.FAIL;
+                    }
+
+                    if (id == HDFConstants.FAIL)
+                    {
+                        try { HDFLibrary.ANendaccess(id); } catch (HDFException ex) {}
+                        continue;
+                    }
+
+                    int length = 0;
+                    try {
+                        length = HDFLibrary.ANannlen(id)+1;
+                    } catch (HDFException ex)
+                    {
+                        length = 0;
+                    }
+
+                    if (length > 0)
+                    {
+                        boolean b = false;
+                        String str[] = {""};
+                        try { b = HDFLibrary.ANreadann(id, str, length);
+                        } catch ( HDFException ex) { b = false; }
+
+                        if (b && str[0].length()>0)
+                        {
+                            long attrDims[] = {str[0].length()};
+                            Attribute newAttr = new Attribute(
+                                annName +" #"+i,
+                                HDFConstants.DFNT_CHAR,
+                                attrDims);
+                            attrList.add(newAttr);
+                            newAttr.setValue(str[0]);
+                        }
+                    }
+
+                    try { HDFLibrary.ANendaccess(id); } catch (HDFException ex) {}
+                } // for (int i=0; i < fileInfo[annTYpe]; i++)
+            } // for (int annType=0; annType<2; annType++)
+        } finally
+        {
+            try { HDFLibrary.ANend(anid); } catch (HDFException ex) {}
+        }
+
+        return attrList;
+    }
+
+    /**
+     *  Reads GR globle attributes into memory.
+     *  The attributes sre stroed as attributes of the root group.
+     *  <p>
+     *  @param grid the GR identifier.
+     *  @param attrList the list of attributes.
+     *  @return the updated attribute list.
+     */
+    private List getGRglobleAttribute(int grid, List attrList)
+    throws HDFException
+    {
+        if (grid == HDFConstants.FAIL)
+            return attrList;
+
+        int[] attrInfo = {0, 0};
+        HDFLibrary.GRfileinfo(grid, attrInfo);
+        int numberOfAttributes = attrInfo[1];
+
+        if (numberOfAttributes>0)
+        {
+            if (attrList == null)
+                attrList = new Vector(numberOfAttributes, 5);
+
+            String[] attrName = new String[1];
+            for (int i=0; i<numberOfAttributes; i++)
+            {
+                attrName[0] = "";
+                boolean b = false;
+                try {
+                    b =  HDFLibrary.GRattrinfo(grid, i, attrName, attrInfo);
+                    // mask off the litend bit
+                    attrInfo[0] = attrInfo[0] & (~HDFConstants.DFNT_LITEND);
+                } catch (HDFException ex)
+                {
+                    b = false;
+                }
+
+                if (!b)
+                    continue;
+
+                long[] attrDims = {attrInfo[1]};
+                Attribute attr = new Attribute(attrName[0], attrInfo[0], attrDims);;
+                attrList.add(attr);
+
+                Object buf = H4Datatype.allocateArray(attrInfo[0], attrInfo[1]);
+                try {
+                    HDFLibrary.GRgetattr(grid, i, buf);
+                } catch (HDFException ex)
+                {
+                    buf = null;
+                }
+
+                if (buf != null)
+                {
+                    if (attrInfo[0] == HDFConstants.DFNT_CHAR ||
+                        attrInfo[0] ==  HDFConstants.DFNT_UCHAR8)
+                    {
+                        buf = Dataset.byteToString((byte[])buf, attrInfo[1]);
+                    }
+
+                    attr.setValue(buf);
+                }
+
+            } // for (int i=0; i<numberOfAttributes; i++)
+        } // if (b && numberOfAttributes>0)
+
+        return attrList;
+    }
+
+    /**
+     *  Reads SDS globle attributes into memory.
+     *  The attributes sre stroed as attributes of the root group.
+     *  <p>
+     *  @param sdid the SD identifier.
+     *  @param attrList the list of attributes.
+     *  @return the updated attribute list.
+     */
+    private List getSDSglobleAttribute(int sdid, List attrList)
+    throws HDFException
+    {
+        if (sdid == HDFConstants.FAIL)
+            return attrList;
+
+        int[] attrInfo = {0, 0};
+        HDFLibrary.SDfileinfo(sdid, attrInfo);
+
+        int numberOfAttributes = attrInfo[1];
+        if (numberOfAttributes>0)
+        {
+            if (attrList == null)
+                attrList = new Vector(numberOfAttributes, 5);
+
+            String[] attrName = new String[1];
+            for (int i=0; i<numberOfAttributes; i++)
+            {
+                attrName[0] = "";
+                boolean b = false;
+                try {
+                    b =  HDFLibrary.SDattrinfo(sdid, i, attrName, attrInfo);
+                    // mask off the litend bit
+                    attrInfo[0] = attrInfo[0] & (~HDFConstants.DFNT_LITEND);
+                } catch (HDFException ex)
+                {
+                    b = false;
+                }
+
+                if (!b)
+                    continue;
+
+                long[] attrDims = {attrInfo[1]};
+                Attribute attr = new Attribute(attrName[0], attrInfo[0], attrDims);;
+                attrList.add(attr);
+
+                Object buf = H4Datatype.allocateArray(attrInfo[0], attrInfo[1]);
+                try {
+                    HDFLibrary.SDreadattr(sdid, i, buf);
+                } catch (HDFException ex)
+                {
+                    buf = null;
+                }
+
+                if (buf != null)
+                {
+                    if (attrInfo[0] == HDFConstants.DFNT_CHAR ||
+                        attrInfo[0] ==  HDFConstants.DFNT_UCHAR8)
+                    {
+                        buf = Dataset.byteToString((byte[])buf, attrInfo[1]);
+                    }
+
+                    attr.setValue(buf);
+                }
+
+            } // for (int i=0; i<numberOfAttributes; i++)
+        } // if (b && numberOfAttributes>0)
+
+        return attrList;
+    }
+
+    /**
+     *  Returns the version of the HDF4 library.
+     */
+    public static final String getLibversion()
+    {
+        int[] vers = new int[3];
+        String ver = "NCSA HDF Version ";
+        String[] verStr = {""};
+
+        try { HDFLibrary.Hgetlibversion(vers, verStr); }
+        catch (HDFException ex) {}
+
+        ver += vers[0] + "." + vers[1] +" Release "+vers[2];
+
+        return ver;
+    }
+
 }

@@ -15,6 +15,7 @@ import javax.swing.*;
 import ncsa.hdf.object.*;
 import java.awt.image.*;
 import java.awt.event.*;
+import java.io.*;
 import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Hashtable;
@@ -27,6 +28,8 @@ import java.awt.Rectangle;
 import java.awt.Point;
 import java.awt.Color;
 import java.awt.Frame;
+import java.awt.Graphics2D;
+import com.sun.image.codec.jpeg.*;
 
 /**
  * ImageView displays an HDF dataset as an image.
@@ -107,6 +110,30 @@ implements ImageObserver
      */
     private String frameTitle;
 
+    /** TextField to show the image value. */
+    private JTextField valueField;
+
+    /** Flag to indicate if the image is a true color image */
+    private boolean isTrueColor;
+
+    /** Flag to indicate if the image is plane interleaved */
+    private boolean isPlaneInterlace;
+
+    /** Flag to indicate if the image is flipped horizontally. */
+    private boolean horizontalFlipped;
+
+    /** Flag to indicate if the image is flipped vertically. */
+    private boolean verticalFlipped;
+
+    /** the number type of the image data */
+    private char nt;
+
+    /** the raw data of the image */
+    private Object data;
+
+    /** flag to indicate if the original data type is unsigned integer */
+    boolean isUnsigned;
+
     /**
      * Constructs an ImageView.
      * <p>
@@ -120,6 +147,13 @@ implements ImageObserver
         zoomFactor = 1.0f;
         indexedImageData = null;
         imagePalette = null;
+        isTrueColor = false;
+        isPlaneInterlace = false;
+        horizontalFlipped = false;
+        verticalFlipped = false;
+        isUnsigned = false;
+        data = null;
+        nt = 0;
 
         HObject hobject = (HObject)viewer.getSelectedObject();
         if (hobject == null || !(hobject instanceof ScalarDS))
@@ -153,6 +187,10 @@ implements ImageObserver
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout());
         contentPane.add (scroller, BorderLayout.CENTER);
+
+        contentPane.add(valueField=new JTextField(), BorderLayout.SOUTH);
+        valueField.setVisible(false);
+        valueField.setEditable(false);
     }
 
     public void dispose()
@@ -187,18 +225,7 @@ implements ImageObserver
         if (idx == 0)
             return; // current page is the first page
 
-        start[selectedIndex[2]] -= 1;
-        dataset.clearData();
-        this.image = null;
-
-        imageComponent.setImage(getImage());
-
-        this.setTitle(
-            frameTitle +
-            " - Image "+String.valueOf(start[selectedIndex[2]]+1)+
-            " of "+dims[selectedIndex[2]]);
-
-        this.updateUI();
+        gotoPage(start[selectedIndex[2]]-1);
     }
 
     // Implementing DataObserver.
@@ -221,18 +248,7 @@ implements ImageObserver
         if (idx == dims[selectedIndex[2]]-1)
             return; // current page is the last page
 
-        start[selectedIndex[2]] += 1;
-        dataset.clearData();
-        this.image = null;
-
-        imageComponent.setImage(getImage());
-
-        this.setTitle(
-            frameTitle +
-            " - Image "+String.valueOf(start[selectedIndex[2]]+1)+
-            " of "+dims[selectedIndex[2]]);
-
-        this.updateUI();
+        gotoPage(start[selectedIndex[2]]+1);
     }
 
     // Implementing DataObserver.
@@ -255,18 +271,7 @@ implements ImageObserver
         if (idx == 0)
             return; // current page is the first page
 
-        start[selectedIndex[2]] = 0;
-        dataset.clearData();
-        this.image = null;
-
-        imageComponent.setImage(getImage());
-
-        this.setTitle(
-            frameTitle+
-            " - Image "+String.valueOf(start[selectedIndex[2]]+1)+
-            " of "+dims[selectedIndex[2]]);
-
-        this.updateUI();
+        gotoPage(0);
     }
 
     // Implementing DataObserver.
@@ -289,54 +294,44 @@ implements ImageObserver
         if (idx == dims[selectedIndex[2]]-1)
             return; // current page is the last page
 
-        start[selectedIndex[2]] = dims[selectedIndex[2]]-1;
-        dataset.clearData();
-        this.image = null;
-
-        imageComponent.setImage(getImage());
-
-        this.setTitle(
-            frameTitle+
-            " - Image "+String.valueOf(start[selectedIndex[2]]+1)+
-            " of "+dims[selectedIndex[2]]);
-
-        this.updateUI();
+        gotoPage(dims[selectedIndex[2]]-1);
     }
 
     // implementing ImageObserver
     public Image getImage()
     {
-        if (this.image != null)
-            return this.image;
+        if (image != null)
+            return image;
 
         int rank = dataset.getRank();
         if (rank <=0) dataset.init();
 
-        boolean isTrueColor = false;
+        isTrueColor = false;
         String strValue = null;
 
         if (dataset instanceof H4GRImage)
         {
             H4GRImage h4image = (H4GRImage)dataset;
             int n = h4image.getComponentCount();
-            if (n >= 3)
-                isTrueColor = true;
+            if (n >= 3) isTrueColor = true;
         }
         else if (dataset instanceof H5ScalarDS)
         {
             int interlace = dataset.getInterlace();
-            isTrueColor = (interlace == ScalarDS.INTERLACE_PIXEL ||
-                interlace == ScalarDS.INTERLACE_PLANE);
+            isTrueColor = (interlace == ScalarDS.INTERLACE_PIXEL || interlace == ScalarDS.INTERLACE_PLANE);
         }
 
         if (isTrueColor)
-        {
-            this.image = createTrueColorImage();
-        }
+            image = createTrueColorImage();
         else
-            this.image = createIndexedImage();
+            image = createIndexedImage();
 
-        return this.image;
+        // set number type, ...
+        isUnsigned = dataset.isUnsigned();
+        String cname = data.getClass().getName();
+        nt = cname.charAt(cname.lastIndexOf("[")+1);
+
+        return image;
     }
 
     // implementing ImageObserver
@@ -472,16 +467,32 @@ implements ImageObserver
         if (filter == null)
             return;
 
-        ImageProducer imageProducer = image.getSource();
-
-        try {
-            image = createImage(new FilteredImageSource(imageProducer,filter));
-            imageComponent.setImage(image);
-            zoomTo(zoomFactor);
-        } catch (Throwable err)
+        if (changeImageFilter(filter))
         {
-            viewer.showStatus(err.toString());
+            // taggle flip flag
+            if (direction == FLIP_HORIZONTAL)
+                horizontalFlipped = !horizontalFlipped;
+            else
+                verticalFlipped = !verticalFlipped;
         }
+    }
+
+    // implementing ImageObserver
+    public void contour(int level)
+    {
+        ImageFilter filter = new ContourFilter(level);
+
+        if (filter == null)
+            return;
+
+        changeImageFilter(filter);
+    }
+
+    // implementing ImageObserver
+    public void setValueVisible(boolean b)
+    {
+        valueField.setVisible(b);
+        this.updateUI();
     }
 
     /**
@@ -794,6 +805,66 @@ implements ImageObserver
         return p;
     }
 
+    /** Save image ad JPEG. */
+    public void saveAsJPEG() throws Exception
+    {
+        if (image == null)
+            return;
+
+        final JFileChooser fchooser = new JFileChooser(dataset.getFile());
+        fchooser.changeToParentDirectory();
+        int returnVal = fchooser.showSaveDialog(this);
+
+        if(returnVal != JFileChooser.APPROVE_OPTION)
+            return;
+
+        File choosedFile = fchooser.getSelectedFile();
+        if (choosedFile == null)
+            return;
+
+        if (choosedFile.exists())
+        {
+            int newFileFlag = JOptionPane.showConfirmDialog(this,
+                "File exists. Do you want to replace it ?",
+                this.getTitle(),
+                JOptionPane.YES_NO_OPTION);
+            if (newFileFlag == JOptionPane.NO_OPTION)
+                return;
+        }
+
+        int w = image.getWidth(this);
+        int h = image.getHeight(this);
+        BufferedImage bi = (BufferedImage)createImage(w, h);
+        Graphics2D big = bi.createGraphics();
+        big.drawImage(image, 0, 0, w, h, this);
+
+        BufferedOutputStream out = new BufferedOutputStream(
+            new FileOutputStream(choosedFile));
+
+        JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
+        encoder.encode(bi);
+
+        out.flush();
+        out.close();
+    }
+
+    private void gotoPage(long idx)
+    {
+        if (dataset.getRank() < 3) return;
+
+        long[] start = dataset.getStartDims();
+        int[] selectedIndex = dataset.getSelectedIndex();
+        long[] dims = dataset.getDims();
+
+        start[selectedIndex[2]] = idx;
+        dataset.clearData();
+        image = null;
+        imageComponent.setImage(getImage());
+
+        setTitle( frameTitle+ " - Image "+String.valueOf(idx+1)+ " of "+dims[selectedIndex[2]]);
+        updateUI();
+    }
+
     /** Creates a RGB indexed image of 256 colors. */
     private Image createIndexedImage()
     {
@@ -810,15 +881,14 @@ implements ImageObserver
             imagePalette[1],  // g - the array of green color components
             imagePalette[2]); // b - the array of blue color components
 
-        Object rawData = null;
-        try { rawData = dataset.read(); }
+        try { data = dataset.read(); }
         catch (Throwable ex) {
             viewer.showStatus(ex.toString());
             return null;
         }
 
         // converts raw data to image data
-        indexedImageData = getBytes(rawData, null);
+        indexedImageData = getBytes(data, null);
 
         //the followint code creates an WImage instead of a bufferedimate
         Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -870,22 +940,21 @@ implements ImageObserver
     {
         Image theImage = null;
 
-        Object rawData = null;
-        try { rawData = dataset.read(); }
+        try { data = dataset.read(); }
         catch (Throwable ex) {
             viewer.showStatus(ex.toString());
             return null;
         }
 
         // converts raw data to image data
-        byte[] imageData = getBytes(rawData, null);
+        byte[] imageData = getBytes(data, null);
 
         int w = dataset.getWidth();
         int h = dataset.getHeight();
         int imgSize = w*h;
         int packedImageData[] = new int[imgSize];
         int pixel=0, idx=0, r=0, g=0, b=0;
-        boolean isPlaneInterlace = (dataset.getInterlace() ==ScalarDS.INTERLACE_PLANE);
+        isPlaneInterlace = (dataset.getInterlace() ==ScalarDS.INTERLACE_PLANE);
         for (int i=0; i<h; i++)
         {
             for (int j=0; j<w; j++)
@@ -923,22 +992,42 @@ implements ImageObserver
         return theImage;
     }
 
+    private boolean changeImageFilter(ImageFilter filter)
+    {
+        boolean status = true;
+        ImageProducer imageProducer = image.getSource();
+
+        try {
+            image = createImage(new FilteredImageSource(imageProducer,filter));
+            imageComponent.setImage(image);
+            zoomTo(zoomFactor);
+        } catch (Throwable err)
+        {
+            viewer.showStatus(err.toString());
+            status = false;
+        }
+
+        return status;
+    }
+
     /** ImageComponent draws the image. */
     private class ImageComponent extends JComponent
-    implements MouseListener, MouseMotionListener
+        implements MouseListener, MouseMotionListener
     {
         private Dimension originalSize, imageSize;
         private Image image;
         private Point startPosition; // mouse clicked position
         private Rectangle selectedArea;
+        private StringBuffer strBuff; // to hold display value
 
-        public ImageComponent (Image img)
+        private ImageComponent (Image img)
         {
             image = img;
             imageSize = new Dimension(image.getWidth(this), image.getHeight(this));
             originalSize = imageSize;
             selectedArea = new Rectangle();
             setPreferredSize(imageSize);
+            strBuff = new StringBuffer();
 
             addMouseListener(this);
             addMouseMotionListener(this);
@@ -989,7 +1078,124 @@ implements ImageObserver
         public void mouseReleased(MouseEvent e) {}
         public void mouseEntered(MouseEvent e) {}
         public void mouseExited(MouseEvent e)  {}
-        public void mouseMoved(MouseEvent e) {}
+
+        public void mouseMoved(MouseEvent e)
+        {
+            if (!valueField.isVisible())
+                return;
+
+            if (data == null)
+                return;
+
+            int x = (int) (e.getX()/zoomFactor);
+            int w = originalSize.width;
+            if (x < 0 || x >= w)
+                return; // out of image bound
+
+            int y = (int) (e.getY()/zoomFactor);
+            int h = originalSize.height;
+            if (y < 0 || y >= h)
+                return; // out of image bound
+
+            // transfer location to the original coordinator
+            if (horizontalFlipped)
+                x = w - 1 - x;
+
+            if (verticalFlipped)
+                y = h - 1 - y;
+
+            strBuff.setLength(0); // reset the string buffer
+            strBuff.append("x=");
+            strBuff.append(x);
+            strBuff.append(",   y=");
+            strBuff.append(y);
+            strBuff.append(",   value=");
+
+            if (isTrueColor)
+            {
+                strBuff.append("(");
+                if (isPlaneInterlace)
+                {
+                    if (isUnsigned)
+                    {
+                        strBuff.append(convertUnsignedPoint(y*w+x));
+                        strBuff.append(", ");
+                        strBuff.append(convertUnsignedPoint(w*h+y*w+x));
+                        strBuff.append(", ");
+                        strBuff.append(convertUnsignedPoint(2*w*h+y*w+x));
+                    }
+                    else
+                    {
+                        strBuff.append(Array.get(data, y*w+x));
+                        strBuff.append(", ");
+                        strBuff.append(Array.get(data, w*h+y*w+x));
+                        strBuff.append(", ");
+                        strBuff.append(Array.get(data, 2*w*h+y*w+x));
+                    }
+                }
+                else
+                {
+                    if (isUnsigned)
+                    {
+                        strBuff.append(convertUnsignedPoint(3*(y*w+x)));
+                        strBuff.append(", ");
+                        strBuff.append(convertUnsignedPoint(3*(y*w+x)+1));
+                        strBuff.append(", ");
+                        strBuff.append(convertUnsignedPoint(3*(y*w+x)+2));
+                    }
+                    else
+                    {
+                        strBuff.append(Array.get(data, 3*(y*w+x)));
+                        strBuff.append(", ");
+                        strBuff.append(Array.get(data, 3*(y*w+x)+1));
+                        strBuff.append(", ");
+                        strBuff.append(Array.get(data, 3*(y*w+x)+2));
+                    }
+                }
+                strBuff.append(")");
+            }
+            else
+            {
+                if (isUnsigned)
+                    strBuff.append(convertUnsignedPoint(y*w+x));
+                else
+                    strBuff.append(Array.get(data, y*w+x));
+            }
+
+            valueField.setText(strBuff.toString());
+        }
+
+        private long convertUnsignedPoint(int idx)
+        {
+            long l = 0;
+
+            if (nt == 'B')
+            {
+                byte b = Array.getByte(data, idx);
+                if (b<0)
+                    l = b+256;
+                else
+                    l = b;
+            }
+            else if (nt == 'S')
+            {
+                short s = Array.getShort(data, idx);
+                if (s<0)
+                    l = s+65536;
+                else
+                    l = s;
+            }
+            else if (nt == 'I')
+            {
+                int i = Array.getInt(data, idx);
+                if (i<0)
+                    l = i+4294967296L;
+                else
+                    l = i;
+            }
+
+            return l;
+        }
 
         private void setImageSize(Dimension size)
         {
@@ -1011,14 +1217,6 @@ implements ImageObserver
             }
 
             repaint();
-/*
-            double zf = size.getWidth()/imageSize.getWidth();
-
-            imageSize = size;
-            setPreferredSize(imageSize);
-
-            repaint();
-*/
         }
 
         private void setImage(Image img)
@@ -1043,9 +1241,6 @@ implements ImageObserver
         /** flip direction */
         private int direction;
 
-        /** default color model */
-        private final  ColorModel defaultRGB = ColorModel.getRGBdefault();
-
         /** pixel value */
         private int raster[] = null;
 
@@ -1057,7 +1252,7 @@ implements ImageObserver
          * <p>
          * @param d the flip direction.
          */
-        public FlipFilter(int d)
+        private FlipFilter(int d)
         {
             if (d < FLIP_HORIZONTAL)
                 d = FLIP_HORIZONTAL;
@@ -1077,34 +1272,6 @@ implements ImageObserver
                 raster = new int[imageWidth*imageHeight];
 
             consumer.setDimensions(imageWidth, imageHeight);
-        }
-
-        public void setProperties(Hashtable props)
-        {
-            props = (Hashtable) props.clone();
-            Object o = props.get("filters");
-            if (o == null) {
-                props.put("filters", toString());
-            } else if (o instanceof String) {
-                props.put("filters", ((String) o)+toString());
-            }
-
-            consumer.setProperties(props);
-        }
-
-        public void setHints(int hintflags)
-        {
-            consumer.setHints(
-                TOPDOWNLEFTRIGHT
-                | COMPLETESCANLINES
-                | SINGLEPASS
-                | (hintflags & SINGLEFRAME));
-        }
-
-        public void setColorModel_old(ColorModel model)
-        {
-            consumer.setColorModel(defaultRGB);
-            // consumer.setColorModel(model);
         }
 
         public void setPixels(int x, int y, int w, int h, ColorModel model,
@@ -1150,12 +1317,11 @@ implements ImageObserver
             }
 
             int pixels[] = new int[imageWidth];
-
             for (int y = 0; y < imageHeight; y++)
             {
                 if (direction == FLIP_VERTICAL )
                 {
-                    // vertical way ...
+                    // grab pixel values of the target line ...
                     int pos = (imageHeight-1-y)*imageWidth;
                     for (int kk=0; kk<imageWidth; kk++)
                         pixels[kk] = raster[pos+kk];
@@ -1166,7 +1332,9 @@ implements ImageObserver
                     for (int kk=0; kk<imageWidth; kk++)
                         pixels[kk] = raster[pos+kk];
 
-                    for (int  kk=0; kk<imageWidth/2; kk++)
+                    // swap the pixel values of the target line
+                    int hw = imageWidth/2;
+                    for (int  kk=0; kk<hw; kk++)
                     {
                         int tmp = pixels[kk];
                         pixels[kk]  = pixels[imageWidth-kk-1];
@@ -1175,12 +1343,203 @@ implements ImageObserver
                 }
 
                 // consumer it ....
-                consumer.setPixels(0, y, imageWidth, 1, defaultRGB, pixels, 0, imageWidth);
+                consumer.setPixels(0, y, imageWidth, 1,
+                    ColorModel.getRGBdefault(), pixels, 0, imageWidth);
             } // for (int y = 0; y < imageHeight; y++)
 
             // complete ?
             consumer.imageComplete(status);
         }
     } // private class FlipFilter extends ImageFilter
+
+    /**
+     * Makes an image filter for contour.
+     */
+    private class ContourFilter extends ImageFilter
+    {
+        // default color model
+        private ColorModel defaultRGB;
+
+        // contour level
+        int	level;
+
+        // the table of the contour levels
+        int	levels[];
+
+        // colors for drawable contour line
+        int[] levelColors;
+
+        // default RGB
+
+        // pixel value
+        private int raster[] = null;
+
+        // width & height
+        private int imageWidth, imageHeight;
+
+        /**
+         * Create an contour filter for a given level contouring.
+         */
+        private ContourFilter(int theLevel)
+        {
+            defaultRGB = ColorModel.getRGBdefault();
+
+            levelColors = new int[9];
+
+            if (theLevel < 1) theLevel = 1;
+            else if (theLevel > 9) theLevel = 9;
+
+            level = theLevel;
+            levels = new int[level];
+
+            levelColors[0] = Color.white.getRGB();
+            levelColors[1] = Color.red.getRGB();
+            levelColors[2] = Color.yellow.getRGB();
+            levelColors[3] = Color.blue.getRGB();
+            levelColors[4] = Color.orange.getRGB();
+            levelColors[5] = Color.green.getRGB();
+            levelColors[6] = Color.cyan.getRGB();
+            levelColors[7] = Color.pink.getRGB();
+            levelColors[8] = Color.gray.getRGB();
+
+            int dx  = 255/level;
+            for (int i=0; i<level; i++)
+                levels[i] = (i+1)*dx;
+        }
+
+        public void setDimensions(int width, int height)
+        {
+            this.imageWidth = width;
+            this.imageHeight= height;
+
+            // specify the raster
+            if (raster == null)
+                raster = new int[imageWidth*imageHeight];
+
+            consumer.setDimensions(width, height);
+        }
+
+        public void setPixels(int x, int y, int w, int h,
+            ColorModel model, byte pixels[], int off, int scansize)
+        {
+            int rgb = 0;
+            int srcoff = off;
+            int dstoff = y * imageWidth + x;
+
+            for (int yc = 0; yc < h; yc++)
+            {
+                for (int xc = 0; xc < w; xc++)
+                {
+                    rgb = model.getRGB(pixels[srcoff++] & 0xff);
+                    raster[dstoff++] = (((rgb >> 16) & 0xff) +
+                        ((rgb >> 8) & 0xff) +
+                        (rgb & 0xff))/3;
+                }
+                srcoff += (scansize - w);
+                dstoff += (imageWidth - w);
+            }
+
+        }
+
+        public void setPixels(int x, int y, int w, int h,
+            ColorModel model, int pixels[], int off, int scansize)
+        {
+            int rgb = 0;
+            int srcoff = off;
+            int dstoff = y * imageWidth + x;
+
+            for (int yc = 0; yc < h; yc++)
+            {
+                for (int xc = 0; xc < w; xc++)
+                {
+                    rgb = model.getRGB(pixels[srcoff++] & 0xff);
+                    raster[dstoff++] = (((rgb >> 16) & 0xff) +
+                        ((rgb >> 8) & 0xff) +
+                        (rgb & 0xff))/3;
+                }
+
+                srcoff += (scansize - w);
+                dstoff += (imageWidth - w);
+            }
+        }
+
+        public void imageComplete(int status)
+        {
+            if (status == IMAGEERROR ||
+                status == IMAGEABORTED)
+            {
+                consumer.imageComplete(status);
+                return;
+            }
+
+            int pixels[] = new int[imageWidth*imageHeight];
+            for (int z=0; z<levels.length; z++)
+            {
+                int currentLevel = levels[z];
+                int color = levelColors[z];
+
+                setContourLine(raster, pixels, currentLevel, color, imageWidth, imageHeight);
+            }
+
+            int line[] = new int[imageWidth];
+            for (int y = 0; y < imageHeight; y++)
+            {
+                for (int x=0; x < imageWidth; x++)
+                    line[x] = pixels[y*imageWidth+x];
+
+                consumer.setPixels(0, y, imageWidth, 1, defaultRGB, line, 0, imageWidth);
+            }  // for (int y = 0; y < imageHeight; y++) {
+
+            // complete ?
+            consumer.imageComplete(status);
+        }
+
+        /** draw a contour line based on the current parameter---level, color */
+        private void setContourLine(int[] raster, int[] pixels,
+                int level, int color, int w, int h)
+        {
+            int p = 0;   // entrance point
+            int q = p + (w*h-1);   // bottom right point
+            int u = 0 + (w-1);     // top right point
+
+            // first round
+            while(true)
+            {
+                while ( p < u )
+                {
+                    int rgb = raster[p];
+                    if (rgb < level)
+                    {
+                        while ((raster[p] < level)&&(p < u))
+                            p++;
+                        if (raster[p] >= level)
+                        pixels[p] = color;
+                    }
+                    else if (rgb == level)
+                    {
+                        while ((raster[p] == level)&&(p < u))
+                            p++;
+                        if ((raster[p] < level)  || (raster[p] > level))
+                            pixels[p] = color;
+                    }
+                    else
+                    {
+                        while ((raster[p] > level)&&(p < u))
+                            p++;
+                        if ((raster[p] <= level))
+                            pixels[p] = color;
+                    }
+                }
+
+                if (u == q)
+                    break;
+                else
+                {
+                    u += w;
+                    p++;
+                }
+            }
+        }
+    } // private class ContourFilter extends ImageFilter
 
 }

@@ -68,6 +68,9 @@ public abstract class Dataset extends HObject
      */
     protected final int[] selectedIndex;
 
+    /** The number of elements to move from the start location in each dimension. */
+    protected long[] selectedStride;
+
     /**
      * Creates a Dataset object with specific name and path.
      * <p>
@@ -89,6 +92,7 @@ public abstract class Dataset extends HObject
         dims = null;
         selectedDims = null;
         startDims = null;
+        selectedStride = null;
 
         // by default
         // selectedIndex[0] = row index;
@@ -143,6 +147,22 @@ public abstract class Dataset extends HObject
     public final long[] getStartDims()
     {
         return startDims;
+    }
+
+    /**
+     * Returns the selectedStride of the selected dataset.
+     */
+    public final long[] getStride()
+    {
+        return selectedStride;
+    }
+
+    /**
+     * Sets the selectedStride of the selected dataset.
+     */
+    public final void setStride(long[] stride)
+    {
+        selectedStride = stride;
     }
 
     /**

@@ -40,6 +40,8 @@ public class H4SDS extends ScalarDS
      */
     private int sdid;
 
+    private boolean unsignedConverted;
+
     /**
      * Creates an H4SDS object with specific name and path.
      * <p>
@@ -55,6 +57,7 @@ public class H4SDS extends ScalarDS
         long[] oid)
     {
         super (fileFormat, name, path, oid);
+        unsignedConverted = false;
 
         if (fileFormat instanceof H4File)
         {
@@ -83,12 +86,20 @@ public class H4SDS extends ScalarDS
             start[i] = (int)startDims[i];
         }
 
+        int[] stride = null;
+        if (selectedStride != null)
+        {
+            stride = new int[rank];
+            for (int i=0; i<rank; i++)
+                stride[i] = (int)selectedStride[i];
+        }
+
         try {
-            data = H4Accessory.allocateArray(datatype, datasize);
+            data = H4Datatype.allocateArray(datatype, datasize);
 
             if (data != null)
             {
-                HDFLibrary.SDreaddata(id, start, null, select, data);
+                HDFLibrary.SDreaddata(id, start, stride, select, data);
 
                 if (isText)
                     data = byteToString((byte[])data, select[0]);
@@ -101,8 +112,44 @@ public class H4SDS extends ScalarDS
         return data;
     }
 
-    // To do: Implementing DataFormat
-    public void write() throws HDFException {;}
+    // Implementing DataFormat
+    public void write() throws HDFException
+    {
+        if (data == null)
+            return;
+
+        int id = open();
+        if (id < 0) return;
+
+        int[] select = new int[rank];
+        int[] start = new int[rank];
+        for (int i=0; i<rank; i++)
+        {
+            select[i] = (int)selectedDims[i];
+            start[i] = (int)startDims[i];
+        }
+
+        int[] stride = null;
+        if (selectedStride != null)
+        {
+            stride = new int[rank];
+            for (int i=0; i<rank; i++)
+                stride[i] = (int)selectedStride[i];
+        }
+
+        Object tmpData = null;
+        try {
+            if ( isUnsigned && unsignedConverted)
+                tmpData = convertToUnsignedC(data);
+            else
+                tmpData = data;
+            HDFLibrary.SDwritedata(id, start, stride, select, tmpData);
+        } finally
+        {
+            tmpData = null;
+            close(id);
+        }
+    }
 
     // Implementing DataFormat
     public List getMetadata() throws HDFException
@@ -139,10 +186,10 @@ public class H4SDS extends ScalarDS
                 if (!b) continue;
 
                 long[] attrDims = {attrInfo[1]};
-                Attribute attr = new Attribute(attrName[0], attrInfo[0], attrDims);;
+                Attribute attr = new Attribute(attrName[0], attrInfo[0], attrDims);
                 attributeList.add(attr);
 
-                Object buf = H4Accessory.allocateArray(attrInfo[0], attrInfo[1]);
+                Object buf = H4Datatype.allocateArray(attrInfo[0], attrInfo[1]);
                 try {
                     HDFLibrary.SDreadattr(id, i, buf);
                 } catch (HDFException ex)
@@ -169,7 +216,19 @@ public class H4SDS extends ScalarDS
     }
 
    // To do: implementing DataFormat
-    public void writeMetadata(Object info) throws HDFException {;}
+    public void writeMetadata(Object info) throws HDFException
+    {
+        // only attribute metadata is supported.
+        if (!(info instanceof Attribute))
+            return;
+
+        H4File.writeAttribute(this, (Attribute)info);
+
+        if (attributeList == null)
+            attributeList = new Vector();
+
+        attributeList.add(info);
+    }
 
    // To do: implementing DataFormat
     public void removeMetadata(Object info) throws HDFException {;}
@@ -190,7 +249,7 @@ public class H4SDS extends ScalarDS
     }
 
     // Implementing HObject
-    public static void close(int id)
+    public void close(int id)
     {
         try { HDFLibrary.SDendaccess(id); }
         catch (HDFException ex) { ; }
@@ -220,6 +279,8 @@ public class H4SDS extends ScalarDS
         finally {
             close(id);
         }
+
+        isUnsigned = H4Datatype.isUnsigned(datatype);
 
         if (idims == null)
             return;
@@ -269,18 +330,142 @@ public class H4SDS extends ScalarDS
     // Implementing ScalarDS
     public void convertFromUnsignedC()
     {
-        if (data != null && H4Accessory.isUnsigned(datatype))
+        if (data != null && isUnsigned && !unsignedConverted)
         {
             data = convertFromUnsignedC(data);
+            unsignedConverted = true;
         }
     }
 
     // Implementing ScalarDS
     public void convertToUnsignedC()
     {
-        if (data != null && H4Accessory.isUnsigned(datatype))
+        if (data != null && isUnsigned)
         {
             data = convertToUnsignedC(data);
         }
+    }
+
+    /**
+     * Creates a new dataset.
+     * @param file the file which the dataset is added to.
+     * @param name the name of the dataset to create.
+     * @param pgroup the parent group of the new dataset.
+     * @param type the datatype of the dataset.
+     * @param dims the dimension size of the dataset.
+     * @param maxdims the max dimension size of the dataset.
+     * @param chunk the chunk size of the dataset.
+     * @param gzip the level of the gzip compression.
+     * @return the new dataset if successful. Otherwise returns null.
+     */
+    public static H4SDS create(
+        FileFormat file,
+        String name,
+        Group pgroup,
+        Datatype type,
+        long[] dims,
+        long[] maxdims,
+        long[] chunks,
+        int gzip) throws Exception
+    {
+        H4SDS dataset = null;
+        String fullPath = null;
+
+        if (file == null ||
+            name == null ||
+            pgroup == null ||
+            dims == null ||
+            maxdims == null ||
+            (gzip>0 && chunks==null))
+            return null;
+
+        String path = HObject.separator;
+        if (!pgroup.isRoot())
+            path = pgroup.getPath()+pgroup.getName()+HObject.separator;
+        fullPath = path +  name;
+
+        // datatype
+        int tid = type.toNative();
+
+        // prepare the dataspace
+        int rank = dims.length;
+        int idims[] = new int[rank];
+        int imaxdims[] = new int[rank];
+        for (int i=0; i<rank; i++)
+        {
+            idims[i] = (int)dims[i];
+            imaxdims[i] = (int)imaxdims[i];
+        }
+
+        int ichunks[] = null;
+        if (chunks != null)
+        {
+            ichunks = new int[rank];
+            for (int i=0; i<rank; i++)
+                ichunks[i] = (int)chunks[i];
+        }
+
+        int sdid, sdsid, vgid;
+
+        sdid = ((H4File)file).getSDAccessID();
+
+        try {
+            sdsid = HDFLibrary.SDcreate(sdid, name, tid, rank, idims);
+            // set fill value to zero.
+            int vsize = HDFLibrary.DFKNTsize(tid);
+            byte[] fillValue = new byte[vsize];
+            for (int i=0; i<vsize; i++) fillValue[i] = 0;
+            HDFLibrary.SDsetfillvalue(sdsid, fillValue);
+        } catch (Exception ex)
+        {
+            throw (ex);
+        }
+
+        if (sdsid < 0)
+        {
+            throw (new HDFException("Unable to create the new dataset."));
+        }
+
+        if (chunks != null)
+        {
+            // set chunk
+            HDFOnlyChunkInfo chunkInfo = new HDFOnlyChunkInfo(ichunks);
+            HDFLibrary.SDsetchunk (sdsid, chunkInfo, HDFConstants.HDF_CHUNK);
+        }
+
+        if (gzip > 0)
+        {
+            // set compression
+            int compType = HDFConstants.COMP_CODE_DEFLATE;
+            HDFDeflateCompInfo compInfo = new HDFDeflateCompInfo();
+            compInfo.level = gzip;
+            HDFLibrary.SDsetcompress(sdsid, compType, compInfo);
+        }
+
+        int ref = HDFLibrary.SDidtoref(sdsid);
+
+        if (!pgroup.isRoot())
+        {
+            // add the dataset to the parent group
+            vgid = pgroup.open();
+            if (vgid < 0)
+            {
+                if (sdsid > 0) HDFLibrary.SDendaccess(sdsid);
+                throw (new HDFException("Unable to open the parent group."));
+            }
+
+            HDFLibrary.Vaddtagref(vgid, HDFConstants.DFTAG_NDG, ref);
+
+            pgroup.close(vgid);
+        }
+
+        try {
+            if (sdsid > 0) HDFLibrary.SDendaccess(sdsid);
+        } catch (Exception ex) {}
+
+        long[] oid = {HDFConstants.DFTAG_NDG, ref};
+        dataset = new H4SDS(file, name, path, oid);
+
+        return dataset;
     }
 }

@@ -55,6 +55,9 @@ implements ActionListener, ItemListener
     /** the selected sizes of all dimensions */
     private long selected[];
 
+    /** the stride */
+    private long stride[];
+
     /** the indices of the selected dimensions. */
     private int selectedIndex[];
 
@@ -72,8 +75,11 @@ implements ActionListener, ItemListener
 
     private JLabel maxLabels[];
 
-    private JTextField startFields[], endFields[];
+    private JTextField startFields[], countFields[], strideFields[];
 
+    private JList fieldList;
+
+    private final Toolkit toolkit;
 
     /**
      * Constructs a DataOptionDialog with the given HDFView.
@@ -87,6 +93,7 @@ implements ActionListener, ItemListener
         dataset = (Dataset)theview.getSelectedObject();
         isSelectionCancelled = true;
         isTrueColorImage = false;
+        toolkit = Toolkit.getDefaultToolkit();
 
         if (dataset == null)
             dispose();
@@ -101,6 +108,15 @@ implements ActionListener, ItemListener
         selected = dataset.getSelectedDims();
         start = dataset.getStartDims();
         selectedIndex = dataset.getSelectedIndex();
+        stride = dataset.getStride();
+        fieldList = null;
+
+        if (stride == null)
+        {
+            stride = new long[rank];
+            for (int i=0; i<rank; i++)
+                stride[i] = 1;
+        }
 
         choicePalette = new Choice();
         choicePalette.add("Select palette");
@@ -136,36 +152,53 @@ implements ActionListener, ItemListener
         int heightGap = 150;
         int rows = Math.min(5, rank+1);
 
-        if (dataset instanceof ScalarDS && ((ScalarDS)dataset).isText())
+        if (dataset instanceof CompoundDS)
         {
-            heightGap = 90;
-            rows = 2;
+            heightGap = 170;
+            // setup GUI components for the field selection
+            CompoundDS d = (CompoundDS)dataset;
+            String[] names = d.getMemberNames();
+            fieldList = new JList(names);
+            fieldList.setVisibleRowCount(3);
+            fieldList.addSelectionInterval(0, names.length-1);
+            JPanel fieldP = new JPanel();
+            fieldP.setLayout(new BorderLayout());
+            JScrollPane scrollP = new JScrollPane(fieldList);
+            fieldP.add(scrollP, BorderLayout.CENTER);
+            fieldP.setBorder(new TitledBorder("Select Members/Fileds to Display"));
+            contentPane.add(fieldP, BorderLayout.NORTH);
         }
+        else if (((ScalarDS)dataset).isText())
+            heightGap = 70;
         else
             contentPane.add(viewP, BorderLayout.NORTH);
 
         // setup GUI for dimension and subset selection
         JPanel selectionP = new JPanel();
-        selectionP.setLayout(new GridLayout(rows, 5, 3, 3));
+        selectionP.setLayout(new GridLayout(rows, 6, 10, 3));
         selectionP.setBorder(new TitledBorder("Dimension and Subset Selection"));
         contentPane.add(selectionP, BorderLayout.CENTER);
 
         selectionP.add(new JLabel(" "));
         selectionP.add(new JLabel(" "));
-        JLabel label = new JLabel("Start at");
-        label.setHorizontalAlignment(JLabel.CENTER);
+        JLabel label = new JLabel("Start:");
+        //label.setHorizontalAlignment(JLabel.CENTER);
         selectionP.add(label);
-        label = new JLabel("End at ");
-        label.setHorizontalAlignment(JLabel.CENTER);
+        label = new JLabel("Count:");
+        //label.setHorizontalAlignment(JLabel.CENTER);
+        selectionP.add(label);
+        label = new JLabel("Stride:");
+        //label.setHorizontalAlignment(JLabel.CENTER);
         selectionP.add(label);
         label = new JLabel("Max Size");
-        label.setHorizontalAlignment(JLabel.CENTER);
+        //label.setHorizontalAlignment(JLabel.CENTER);
         selectionP.add(label);
 
         choices = new Choice[rows-1];
         maxLabels = new JLabel[rows-1];
         startFields = new JTextField[rows-1];
-        endFields = new JTextField[rows-1];
+        countFields = new JTextField[rows-1];
+        strideFields = new JTextField[rows-1];
         JLabel dimLabels[] = {
             new JLabel("Height", JLabel.RIGHT),
             new JLabel("Width", JLabel.RIGHT),
@@ -179,13 +212,15 @@ implements ActionListener, ItemListener
             choices[i].addItemListener(this);
             for (int j=0; j<rank; j++)
                 choices[i].add("dim "+j);
-            maxLabels[i] = new JLabel("0", JLabel.CENTER);
+            maxLabels[i] = new JLabel("0");
             startFields[i] = new JTextField("0");
-            endFields[i] = new JTextField("0");
+            countFields[i] = new JTextField("0");
+            strideFields[i] = new JTextField("1");
             selectionP.add(dimLabels[i]);
             selectionP.add(choices[i]);
             selectionP.add(startFields[i]);
-            selectionP.add(endFields[i]);
+            selectionP.add(countFields[i]);
+            selectionP.add(strideFields[i]);
             selectionP.add(maxLabels[i]);
         }
 
@@ -286,16 +321,16 @@ implements ActionListener, ItemListener
                     tmpValue = startFields[theSelectedChoice].getText();
                     startFields[theSelectedChoice].setText( startFields[i].getText());
                     startFields[i].setText(tmpValue);
-                    tmpValue = endFields[theSelectedChoice].getText();
+                    tmpValue = countFields[theSelectedChoice].getText();
                     if (i == 2)
                     {
-                        endFields[theSelectedChoice].setText(String.valueOf(dims[theIndex]-1));
-                        endFields[2].setText("+0");
+                        countFields[theSelectedChoice].setText(String.valueOf(dims[theIndex]-1));
+                        countFields[2].setText("1");
                     }
                     else
                     {
-                        endFields[theSelectedChoice].setText( endFields[i].getText());
-                        endFields[i].setText(tmpValue);
+                        countFields[theSelectedChoice].setText( countFields[i].getText());
+                        countFields[i].setText(tmpValue);
                     }
                     choices[i].select(currentIndex[theSelectedChoice]);
                     currentIndex[i] = currentIndex[theSelectedChoice];
@@ -327,7 +362,7 @@ implements ActionListener, ItemListener
                     choices[3].select(seletedItem);
 
                 currentIndex[theSelectedChoice] = theIndex;
-                endFields[theSelectedChoice].setText(String.valueOf(dims[theIndex]-1));
+                countFields[theSelectedChoice].setText(String.valueOf(dims[theIndex]-1));
             }
 
         } // else if (source instanceof Choice)
@@ -378,12 +413,17 @@ implements ActionListener, ItemListener
             choices[i].select(idx);
             maxLabels[i].setText(String.valueOf(dims[idx]));
             startFields[i].setText(String.valueOf(start[idx]));
-            endFields[i].setText(String.valueOf(selected[idx]+start[idx]-1));
+            countFields[i].setText(String.valueOf(selected[idx]+start[idx]));
+            if (dataset instanceof H4Vdata)
+                strideFields[i].setEnabled(false);
+            else
+                strideFields[i].setText(String.valueOf(stride[idx]));
         }
 
         if (rank > 2 )
         {
-            endFields[2].setEnabled(false);
+            countFields[2].setEnabled(false);
+            strideFields[2].setEnabled(false);
             if (isTrueColorImage && imageButton.isSelected())
             {
                 choices[0].setEnabled(false);
@@ -391,7 +431,7 @@ implements ActionListener, ItemListener
                 choices[2].setEnabled(false);
                 startFields[2].setEnabled(false);
                 startFields[2].setText("0");
-                endFields[2].setText("2");
+                countFields[2].setText("2");
             }
             else
             {
@@ -400,13 +440,14 @@ implements ActionListener, ItemListener
                 choices[2].setEnabled(true);
                 startFields[2].setEnabled(true);
                 startFields[2].setText(String.valueOf(start[selectedIndex[2]]));
-                endFields[2].setText("+0");
+                countFields[2].setText("1");
             }
         }
 
         if (rank >3)
         {
-            endFields[3].setEnabled(false);
+            countFields[3].setEnabled(false);
+            strideFields[3].setEnabled(false);
             for (int i=0; i<3; i++)
                 choices[3].remove(choices[i].getSelectedItem());
             choices[3].select(0);
@@ -415,7 +456,7 @@ implements ActionListener, ItemListener
             int idx = Integer.parseInt(dimName);
             maxLabels[3].setText(String.valueOf(dims[idx]));
             startFields[3].setText(String.valueOf(start[idx]));
-            endFields[3].setText("+0");
+            countFields[3].setText("1");
         }
 
         currentIndex = new int[choices.length];
@@ -451,6 +492,7 @@ implements ActionListener, ItemListener
 
         long[] n0 = {0, 0, 0};
         long[] n1= {0, 0, 0};
+        long[] n2= {1, 1, 1};
         int[] sIndex = {0, 1, 2};
 
         int n = Math.min(3, choices.length);
@@ -461,9 +503,12 @@ implements ActionListener, ItemListener
             try {
                 n0[i] = Long.parseLong(startFields[i].getText());
                 if (i<2)
-                    n1[i] = Long.parseLong(endFields[i].getText());
+                {
+                    n1[i] = Long.parseLong(countFields[i].getText());
+                    n2[i] = Long.parseLong(strideFields[i].getText());
+                }
             } catch (NumberFormatException ex) {
-                Toolkit.getDefaultToolkit().beep();
+                toolkit.beep();
                 JOptionPane.showMessageDialog(
                     (Frame)viewer,
                     ex,
@@ -474,22 +519,44 @@ implements ActionListener, ItemListener
 
             if (n0[i] < 0 ||
                 n0[i] >= dims[sIndex[i]] ||
-                (i<2 && n0[i] > n1[i]) ||
-                n1[i] >= dims[sIndex[i]])
+                (n0[i]+n1[i]*n2[i]) > dims[sIndex[i]])
             {
-                Toolkit.getDefaultToolkit().beep();
+                toolkit.beep();
                 JOptionPane.showMessageDialog(
                     (Frame)viewer,
-                    "Selected index is out of bound: ["+n0[i]+", "+n1[i]+"]",
+                    "Selected index is out of bound.",
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
                 return false;
             }
         }
 
+        if (dataset instanceof CompoundDS)
+        {
+            CompoundDS d = (CompoundDS)dataset;
+            int[] selectedFieldIndices = fieldList.getSelectedIndices();
+            if (selectedFieldIndices==null || selectedFieldIndices.length<1)
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(
+                    (Frame)viewer,
+                    "No member/field is selected.",
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+
+            d.setMemberSelection(false); // deselect all members
+            for (int i=0; i<selectedFieldIndices.length; i++)
+                d.selectMember(selectedFieldIndices[i]);
+        }
+
         // reset selected size
         for (int i=0; i<rank; i++)
+        {
             selected[i] = 1;
+            stride[i] = 1;
+        }
 
         // find no error, set selection the the dataset object
         for (int i=0; i<n; i++)
@@ -497,7 +564,10 @@ implements ActionListener, ItemListener
             selectedIndex[i] = sIndex[i];
             start[selectedIndex[i]] = n0[i];
             if (i<2)
-                selected[selectedIndex[i]] = n1[i]-n0[i]+1;
+            {
+                selected[selectedIndex[i]] = n1[i];
+                stride[selectedIndex[i]] = n2[i];
+            }
         }
 
         if (rank >2 &&
@@ -507,6 +577,8 @@ implements ActionListener, ItemListener
                 start[selectedIndex[2]] = 0;
                 selected[selectedIndex[2]] = 3;
         }
+
+        dataset.setStride(stride);
 
         return true;
     }
@@ -520,7 +592,7 @@ implements ActionListener, ItemListener
         try {
             n0 = Long.parseLong(startFields[3].getText());
         } catch (NumberFormatException ex) {
-            Toolkit.getDefaultToolkit().beep();
+            toolkit.beep();
             JOptionPane.showMessageDialog(
                 (Frame)viewer,
                 ex,
@@ -533,7 +605,7 @@ implements ActionListener, ItemListener
         try {
             sIdx = Integer.parseInt(choices[3].getSelectedItem().substring(4));
         } catch (NumberFormatException ex) {
-            Toolkit.getDefaultToolkit().beep();
+            toolkit.beep();
             JOptionPane.showMessageDialog(
                 (Frame)viewer,
                 ex,
@@ -544,7 +616,7 @@ implements ActionListener, ItemListener
 
         if (n0 < 0 || n0 >= dims[sIdx])
         {
-            Toolkit.getDefaultToolkit().beep();
+            toolkit.beep();
             JOptionPane.showMessageDialog(
                 (Frame)viewer,
                 "Invalid starting point: "+n0,

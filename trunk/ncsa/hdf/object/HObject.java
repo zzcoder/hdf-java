@@ -57,6 +57,11 @@ implements Serializable, DataFormat
     private final int fid;
 
     /**
+     * The fileformat
+     */
+    private final FileFormat fileFormat;
+
+    /**
      * The name of the HDF4 or HDF5 data object. The root group has its default
      * name, a slash. The name can be changed except the root group.
      */
@@ -90,6 +95,7 @@ implements Serializable, DataFormat
      */
     public HObject(FileFormat fileFormat, String name, String path, long[] oid)
     {
+        this.fileFormat = fileFormat;
         int theFID = -1;
         try { theFID = fileFormat.open(); }
         catch (Exception ex) { theFID = -1; }
@@ -148,6 +154,15 @@ implements Serializable, DataFormat
     public abstract int open();
 
     /**
+     * Closes access to this object.
+     * <p>
+     * @param id the object identifier.
+     * Sub-classes have to implement this interface so that different data
+     * objects have their own ways of how the data resources are closed.
+     */
+    public abstract void close(int id);
+
+    /**
      * Returns the file identifier of this data object.
      */
     public final int getFID()
@@ -179,12 +194,24 @@ implements Serializable, DataFormat
     }
 
     /**
+     * Returns the fileformat which contains this object.
+     */
+    public final FileFormat getFileFormat() { return fileFormat; }
+
+    /**
+     * Returns a cloned copy of the object identifier.
+     */
+    public final long[] getOID()
+    {
+        return (long[]) oid.clone();
+    }
+
+    /**
      * Returns the string representation of this data object.
      * The String consists of the name and path of the data object.
      */
     public String toString()
     {
         return name;
-        //return "[Type: "+this.getClass().getName()+"], [Name: "+name+"], [Path: "+path+"]";
     }
 }

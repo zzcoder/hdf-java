@@ -15,13 +15,16 @@ import ncsa.hdf.object.*;
 import javax.swing.*;
 import java.awt.event.*;
 import javax.swing.border.*;
+import javax.swing.event.*;
 import javax.swing.table.*;
+import javax.swing.tree.*;
 import java.awt.Frame;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Dimension;
-import java.util.List;
+import java.util.*;
+import java.io.File;
 import java.lang.reflect.Array;
 
 /**
@@ -45,6 +48,10 @@ implements ActionListener
 
     private JTabbedPane tabbedPane = null;
     private JTextArea attrContentArea;
+    private JTable attrTable; // table to hold a list of attributes
+    private DefaultTableModel attrTableModel;
+    private JLabel attrNumberLabel;
+    private int numAttributes;
 
     /**
      * Constructs a MetadataDialog with the given HDFView.
@@ -56,6 +63,7 @@ implements ActionListener
 
         viewer = theview;
         hObject = (HObject)theview.getSelectedObject();
+        numAttributes = 0;
 
         if (hObject == null)
             dispose();
@@ -103,7 +111,105 @@ implements ActionListener
         {
             dispose();
         }
+        else if (cmd.equals("Add attribute"))
+        {
+            addAttribute();
+        }
+        else if (cmd.equals("Delete attribute"))
+        {
+            deleteAttribute();
+        }
     }
+
+    private void addAttribute()
+    {
+        NewAttributeDialog  dialog = new NewAttributeDialog(this, hObject);
+        dialog.show();
+
+        Attribute attr = dialog.getAttribute();
+        if (attr == null)
+            return;
+
+        String rowData[] = new String[4]; // name, value, type, size
+        boolean isUnsigned = false;
+
+        rowData[0] = attr.getName();
+        if (hObject.getFileFormat() instanceof H5File)
+        {
+            rowData[2] = H5Datatype.getDatatypeDescription(attr.getType());
+            isUnsigned = H5Datatype.isUnsigned(attr.getType());
+        }
+        else
+        {
+            rowData[2] = H4Datatype.getDatatypeDescription(attr.getType());
+            isUnsigned = H4Datatype.isUnsigned(attr.getType());
+        }
+
+        rowData[1] = attr.toString(", ", isUnsigned);
+
+        long dims[] = attr.getDataDims();
+
+        rowData[3] = String.valueOf(dims[0]);
+        for (int j=1; j<dims.length; j++)
+            rowData[3] += " x " + dims[j];
+
+        attrTableModel.addRow(rowData);
+        attrTableModel.fireTableRowsInserted(
+            attrTableModel.getRowCount()-1, attrTableModel.getRowCount()-1);
+        numAttributes++;
+        attrContentArea.setText("");
+        attrNumberLabel.setText("Number of attributes = "+numAttributes);
+    }
+
+    private void deleteAttribute()
+    {
+        int size = attrTable.getSelectedRowCount();
+        if (size <= 0)
+        {
+            JOptionPane.showMessageDialog(getOwner(),
+                "No attribute is selected.",
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int option = JOptionPane.showConfirmDialog(this,
+                "Do you want to delete selected attributes?",
+                getTitle(),
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+
+        if (option == JOptionPane.NO_OPTION)
+        {
+            return;
+        }
+
+        int idxes[] = attrTable.getSelectedRows();
+        List attrList = null;
+        try { attrList = hObject.getMetadata(); }
+        catch (Exception ex) { attrList = null; }
+        if (attrList == null) return;
+
+        // keep a copy of the selected attributes because
+        // the attribute list may change when a attribute is deleted.
+        Object attrs[] = new Object[size];
+        for (int i=0; i<size; i++)
+            attrs[i] = attrList.get(idxes[i]);
+
+        for (int i=0; i<size; i++)
+        {
+            try { hObject.removeMetadata(attrs[i]); }
+            catch (Exception ex) { continue; }
+
+            attrTableModel.removeRow(idxes[i]);
+            numAttributes--;
+            attrTableModel.fireTableRowsDeleted(idxes[i], idxes[i]);
+        }
+
+        attrContentArea.setText("");
+        attrNumberLabel.setText("Number of attributes = "+numAttributes);
+    }
+
 
     /**
      * Creates a panel used to dispaly general information of HDF object.
@@ -113,40 +219,69 @@ implements ActionListener
         JPanel panel = new JPanel();
         panel.setLayout (new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10,0,0,0));
+        boolean isRoot = (hObject instanceof Group && ((Group)hObject).isRoot());
+        FileFormat theFile = hObject.getFileFormat();
 
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BorderLayout());
 
         JPanel lp = new JPanel();
-        lp.setLayout(new GridLayout(3,1));
+        lp.setLayout(new GridLayout(4,1));
         lp.add(new JLabel("Name: "));
         lp.add(new JLabel("Path: "));
         lp.add(new JLabel("Type: "));
+        if (theFile instanceof H4File)
+            lp.add(new JLabel("Ref, Tag: "));
+        else
+            lp.add(new JLabel("Object ID: "));
 
         JPanel rp = new JPanel();
-        rp.setLayout(new GridLayout(3,1));
+        rp.setLayout(new GridLayout(4,1));
 
         JTextField nameField = new JTextField(hObject.getName());
         nameField.setEditable(false);
         rp.add(nameField);
 
-        JTextField pathField = new JTextField(hObject.getPath());
+        JTextField pathField = new JTextField();
+        if (isRoot)
+            pathField.setText((new File(hObject.getFile())).getParent());
+        else
+            pathField.setText(hObject.getPath());
         pathField.setEditable(false);
         rp.add(pathField);
 
         String typeStr = "Unknown";
+        String fileInfo = "";
+        if (isRoot)
+        {
+            long size = 0;
+            try { size = (new File(hObject.getFile())).length(); }
+            catch (Exception ex) { size = -1; }
+            size /= 1024;
+
+            int groupCount=0, datasetCount=0;
+            DefaultMutableTreeNode root = (DefaultMutableTreeNode)theFile.getRootNode();
+            DefaultMutableTreeNode theNode = null;
+            Enumeration enum = root.depthFirstEnumeration();
+            while(enum.hasMoreElements())
+            {
+                theNode = (DefaultMutableTreeNode)enum.nextElement();
+                if (theNode.getUserObject() instanceof Group)
+                    groupCount++;
+                else
+                    datasetCount++;
+            }
+
+            fileInfo = "filesize="+size+"KB,  groups="+groupCount+ ",  datasets="+datasetCount;
+        }
         if (hObject instanceof H4Group)
         {
-            if (((H4Group)hObject).isRoot())
-                typeStr = "HDF4 File";
-            else
-                typeStr = "HDF4 Vgroup";
+            if (isRoot) typeStr = "HDF4,  "+fileInfo;
+            else typeStr = "HDF4 Vgroup";
         } else if (hObject instanceof H5Group)
         {
-            if (((H5Group)hObject).isRoot())
-                typeStr = "HDF5 File";
-            else
-                typeStr = "HDF5 Group";
+            if (isRoot) typeStr = "HDF5,  "+fileInfo;
+            else typeStr = "HDF5 Group";
         } else if (hObject instanceof H4GRImage)
         {
             typeStr = "HDF4 GR Image";
@@ -166,6 +301,18 @@ implements ActionListener
         JTextField typeField = new JTextField(typeStr);
         typeField.setEditable(false);
         rp.add(typeField);
+
+        String oidStr = null;
+        long[] OID = hObject.getOID();
+        if (OID != null)
+        {
+            oidStr = String.valueOf(OID[0]);
+            for (int i=1; i<OID.length; i++)
+                oidStr += ", "+ OID[i];
+        }
+        JTextField oidField = new JTextField(oidStr);
+        oidField.setEditable(false);
+        rp.add(oidField);
 
         JPanel tmpP = new JPanel();
         tmpP.setLayout(new BorderLayout());
@@ -273,7 +420,7 @@ implements ActionListener
         if (d instanceof H5ScalarDS)
         {
             H5ScalarDS sd = (H5ScalarDS)d;
-            typeStr = H5Accessory.getDatatypeDescription(sd.getDataType());
+            typeStr = H5Datatype.getDatatypeDescription(sd.getDataType());
         } else if (d instanceof H5CompoundDS)
         {
             typeStr = "Compound";
@@ -283,7 +430,7 @@ implements ActionListener
         } else if (d instanceof H4GRImage || d instanceof H4SDS)
         {
             ScalarDS sd = (ScalarDS)d;
-            typeStr = H4Accessory.getDatatypeDescription(sd.getDataType());
+            typeStr = H4Datatype.getDatatypeDescription(sd.getDataType());
         }
         txtf = new JTextField(typeStr);
         txtf.setEditable(false);
@@ -318,9 +465,9 @@ implements ActionListener
                     rowData[i][0] = names[i];
                     rowData[i][2] = String.valueOf(orders[i]);
                     if (compound instanceof H4Vdata)
-                        rowData[i][1] = H4Accessory.getDatatypeDescription(types[i]);
+                        rowData[i][1] = H4Datatype.getDatatypeDescription(types[i]);
                     else
-                        rowData[i][1] = H5Accessory.getDatatypeDescription(types[i]);
+                        rowData[i][1] = H5Datatype.getDatatypeDescription(types[i]);
                 }
 
                 String[] columnNames = {"Name", "Type", "Array Size"};
@@ -346,11 +493,32 @@ implements ActionListener
     private JPanel createAttributePanel()
     {
         JPanel panel = new JPanel();
-        panel.setLayout (new BorderLayout(10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(10,0,0,0));
+        panel.setLayout (new BorderLayout());
+        //panel.setBorder(BorderFactory.createEmptyBorder(10,0,0,0));
 
-        JLabel attrNumberLabel = new JLabel("Number of attributes = 0");
-        panel.add(attrNumberLabel, BorderLayout.NORTH);
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BorderLayout());
+        attrNumberLabel = new JLabel("Number of attributes = 0");
+        topPanel.add(attrNumberLabel, BorderLayout.WEST);
+
+        JPanel bPanel = new JPanel();
+        JButton b = new JButton(" Add ");
+        b.setMnemonic('A');
+        b.addActionListener(this);
+        b.setActionCommand("Add attribute");
+        bPanel.add(b);
+        // deleting is not supported by HDF4
+        if (hObject.getFileFormat() instanceof H5File)
+        {
+            b = new JButton("Delete");
+            b.setMnemonic('D');
+            b.addActionListener(this);
+            b.setActionCommand("Delete attribute");
+            bPanel.add(b);
+        }
+        topPanel.add(bPanel, BorderLayout.EAST);
+
+        panel.add(topPanel, BorderLayout.NORTH);
 
         List attrList = null;
 
@@ -361,25 +529,33 @@ implements ActionListener
             attrList = null;
         }
 
-        if (attrList == null)
-            return panel;
-
-        int numAttributes = attrList.size();
-        if (numAttributes <=0 )
-            return panel;
-
-        attrNumberLabel.setText("Number of attributes = "+numAttributes);
-
         String[] columnNames = {"Name", "Value", "Type", "Array Size"};
-        DefaultTableModel attrTableModel = new DefaultTableModel(
-            columnNames,
-            numAttributes);
+        attrTableModel = new DefaultTableModel(columnNames, 0);
 
-        JTable attrTable = new JTable(attrTableModel)
+        attrTable = new JTable(attrTableModel)
         {
             public boolean isCellEditable(int row, int column)
             {
-                    return false;
+                return (column == 1); // only value can be changed
+            }
+
+            public void editingStopped(ChangeEvent e)
+            {
+                int row = getEditingRow();
+                int col = getEditingColumn();
+                String oldValue = (String)getValueAt(row, col);
+
+                super.editingStopped(e);
+
+                Object source = e.getSource();
+
+                if (source instanceof CellEditor)
+                {
+                    CellEditor editor = (CellEditor)source;
+                    String newValue = (String)editor.getCellEditorValue();
+                    setValueAt(oldValue, row, col); // set back to what it is
+                    updateAttributeValue(newValue, row, col);
+                }
             }
 
             public boolean isCellSelected(int row, int col)
@@ -408,24 +584,30 @@ implements ActionListener
         splitPane.setDividerLocation(50);
         panel.add(splitPane, BorderLayout.CENTER);
 
+        if (attrList == null)
+            return panel;
+
+        numAttributes = attrList.size();
         Attribute attr = null;
         String name, type, size;
+        attrTableModel.setRowCount(numAttributes);
+        attrNumberLabel.setText("Number of attributes = "+numAttributes);
+
         for (int i=0; i<numAttributes; i++)
         {
             attr = (Attribute)attrList.get(i);
             name = attr.getName();
 
             boolean isUnsigned = false;
-            if (hObject instanceof H5ScalarDS ||
-                hObject instanceof H5CompoundDS)
+            if (hObject.getFileFormat() instanceof H5File)
             {
-                type = H5Accessory.getDatatypeDescription(attr.getType());
-                isUnsigned = H5Accessory.isUnsigned(attr.getType());
+                type = H5Datatype.getDatatypeDescription(attr.getType());
+                isUnsigned = H5Datatype.isUnsigned(attr.getType());
             }
             else
             {
-                type = H4Accessory.getDatatypeDescription(attr.getType());
-                isUnsigned = H4Accessory.isUnsigned(attr.getType());
+                type = H4Datatype.getDatatypeDescription(attr.getType());
+                isUnsigned = H4Datatype.isUnsigned(attr.getType());
             }
 
             long dims[] = attr.getDataDims();
@@ -441,4 +623,127 @@ implements ActionListener
 
         return panel;
     }
+
+    /** update attribute value. Currently can only update single data point.
+     *  @param newValue the string of the new value.
+     *  @param row the row number of the selected cell.
+     *  @param col the column number of the selected cell.
+     */
+    private void updateAttributeValue(String newValue, int row, int col)
+    {
+        if (col != 1)
+            return; // can only change attribute value
+
+        String attrName = (String)attrTable.getValueAt(row, 0);
+
+        List attrList = null;
+        try { attrList = hObject.getMetadata(); }
+        catch (Exception ex)
+        {
+            JOptionPane.showMessageDialog(getOwner(),
+                ex,
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Attribute attr = (Attribute)attrList.get(row);
+        Object oldValue = attr.getValue();
+
+        int array_length = Array.getLength(oldValue);
+        StringTokenizer st = new StringTokenizer(newValue, ",");
+        if (st.countTokens() < array_length)
+            return; // not enough number of values
+
+        char NT = ' ';
+        String cName = oldValue.getClass().getName();
+        int cIndex = cName.lastIndexOf("[");
+        if (cIndex >= 0 ) NT = cName.charAt(cIndex+1);
+
+        String theToken = null;
+        switch (NT)
+        {
+            case 'B':
+                byte bv = 0;
+                for (int j=0; j<array_length; j++)
+                {
+                    theToken = st.nextToken().trim();
+                    try { bv = Byte.parseByte(theToken); }
+                    catch (NumberFormatException ex){ continue; }
+                    Array.setByte(oldValue, j, bv);
+                }
+                break;
+            case 'S':
+                short sv = 0;
+                for (int j=0; j<array_length; j++)
+                {
+                    theToken = st.nextToken().trim();
+                    try { sv = Short.parseShort(theToken); }
+                    catch (NumberFormatException ex){ continue; }
+                    Array.setShort(oldValue, j, sv);
+                }
+                break;
+            case 'I':
+                int iv = 0;
+                for (int j=0; j<array_length; j++)
+                {
+                    theToken = st.nextToken().trim();
+                    try { iv = Integer.parseInt(theToken); }
+                    catch (NumberFormatException ex){ continue; }
+                    Array.setInt(oldValue, j, iv);
+                }
+                break;
+            case 'J':
+                long lv = 0;
+                for (int j=0; j<array_length; j++)
+                {
+                    theToken = st.nextToken().trim();
+                    try { lv = Long.parseLong(theToken); }
+                    catch (NumberFormatException ex){ continue; }
+                    Array.setLong(oldValue, j, lv);
+                }
+                break;
+            case 'F':
+                float fv = 0;
+                for (int j=0; j<array_length; j++)
+                {
+                    theToken = st.nextToken().trim();
+                    try { fv = Float.parseFloat(theToken); }
+                    catch (NumberFormatException ex){ continue; }
+                    Array.setFloat(oldValue, j, fv);
+                }
+                break;
+            case 'D':
+                double dv = 0;
+                for (int j=0; j<array_length; j++)
+                {
+                    theToken = st.nextToken().trim();
+                    try { dv = Double.parseDouble(theToken); }
+                    catch (NumberFormatException ex){ continue; }
+                    Array.setDouble(oldValue, j, dv);
+                }
+                break;
+            default:
+                Array.set(oldValue, 0, newValue);
+                break;
+        } // switch (class_t)
+
+        try {
+            if (hObject.getFileFormat() instanceof H5File)
+                H5File.writeAttribute(hObject, attr, true);
+            else
+                H4File.writeAttribute(hObject, attr);
+        } catch (Exception ex)
+        {
+            JOptionPane.showMessageDialog(getOwner(),
+                ex,
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // update the attribute table
+        attrTable.setValueAt(newValue, row, 1);
+    }
+
 }

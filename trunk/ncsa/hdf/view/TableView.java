@@ -16,7 +16,9 @@ import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.event.*;
 import javax.swing.border.*;
-import java.util.List;
+import java.awt.datatransfer.*;
+import java.util.*;
+import java.io.*;
 import java.lang.reflect.Array;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -39,6 +41,16 @@ implements TableObserver
      * The main HDFView.
      */
     private final ViewManager viewer;
+
+    /** numberical data type.
+      B = bypte array,
+      S = short array,
+      I = inte array,
+      J = long array,
+      F = float array, and
+      D = double array.
+     */
+    private char NT = ' ';
 
     /**
      * The Scalar Dataset.
@@ -66,6 +78,9 @@ implements TableObserver
      */
     private String frameTitle;
 
+    private boolean isValueChanged;
+
+    private final Toolkit toolkit;
 
     /**
      * Constructs an TableView.
@@ -77,6 +92,8 @@ implements TableObserver
         super();
 
         viewer = theView;
+        toolkit = Toolkit.getDefaultToolkit();
+        isValueChanged = false;
 
         HObject hobject = (HObject)viewer.getSelectedObject();
         if (hobject == null || !(hobject instanceof Dataset))
@@ -137,7 +154,6 @@ implements TableObserver
         JPanel valuePane = new JPanel();
         valuePane.setLayout(new BorderLayout());
         valuePane.add(cellLabel, BorderLayout.WEST);
-
         valuePane.add (new JScrollPane(cellValueField), BorderLayout.CENTER);
 
         // add to the main panel
@@ -149,8 +165,9 @@ implements TableObserver
 
     public void dispose()
     {
-        super.dispose();
+        if (isValueChanged) updateValueInFile();
         viewer.contentFrameWasRemoved(getName());
+        super.dispose();
     }
 
     // Implementing DataObserver.
@@ -174,22 +191,7 @@ implements TableObserver
         if (idx == 0)
             return; // current page is the first page
 
-        start[selectedIndex[2]] -= 1;
-        dataset.clearData();
-
-        try { dataValue = dataset.convertFromUnsignedC(dataset.read()); }
-        catch (Exception ex)
-        {
-            dataValue = null;
-            viewer.showStatus(ex.toString());
-        }
-
-        this.setTitle(
-            frameTitle+
-            " - Page "+String.valueOf(start[selectedIndex[2]]+1)+
-            " of "+dims[selectedIndex[2]]);
-
-        this.updateUI();
+        gotoPage(start[selectedIndex[2]]-1);
     }
 
     // Implementing DataObserver.
@@ -207,22 +209,7 @@ implements TableObserver
         if (idx == dims[selectedIndex[2]]-1)
             return; // current page is the last page
 
-        start[selectedIndex[2]] += 1;
-        dataset.clearData();
-
-        try { dataValue = dataset.convertFromUnsignedC(dataset.read()); }
-        catch (Exception ex)
-        {
-            dataValue = null;
-            viewer.showStatus(ex.toString());
-        }
-
-        this.setTitle(
-            frameTitle+
-            " - Page "+String.valueOf(start[selectedIndex[2]]+1)+
-            " of "+dims[selectedIndex[2]]);
-
-        this.updateUI();
+        gotoPage(start[selectedIndex[2]]+1);
     }
 
     // Implementing DataObserver.
@@ -240,22 +227,7 @@ implements TableObserver
         if (idx == 0)
             return; // current page is the first page
 
-        start[selectedIndex[2]] = 0;
-        dataset.clearData();
-
-        try { dataValue = dataset.convertFromUnsignedC(dataset.read()); }
-        catch (Exception ex)
-        {
-            dataValue = null;
-            viewer.showStatus(ex.toString());
-        }
-
-        this.setTitle(
-            frameTitle+
-            " - Page "+String.valueOf(start[selectedIndex[2]]+1)+
-            " of "+dims[selectedIndex[2]]);
-
-        this.updateUI();
+        gotoPage(0);
     }
 
     // Implementing DataObserver.
@@ -273,22 +245,7 @@ implements TableObserver
         if (idx == dims[selectedIndex[2]]-1)
             return; // current page is the last page
 
-        start[selectedIndex[2]] = dims[selectedIndex[2]]-1;
-        dataset.clearData();
-
-        try { dataValue = dataset.convertFromUnsignedC(dataset.read()); }
-        catch (Exception ex)
-        {
-            dataValue = null;
-            viewer.showStatus(ex.toString());
-        }
-
-        this.setTitle(
-            frameTitle+
-            " - Page "+String.valueOf(start[selectedIndex[2]]+1)+
-            " of "+dims[selectedIndex[2]]);
-
-        this.updateUI();
+        gotoPage(dims[selectedIndex[2]]-1);
     }
 
     // Implementing TableObserver.
@@ -328,7 +285,7 @@ implements TableObserver
             nLines = rows.length;
             if (nLines > 10)
             {
-                Toolkit.getDefaultToolkit().beep();
+                toolkit.beep();
                 nLines = 10;
                 JOptionPane.showMessageDialog(this,
                 "More than 10 rows are selected.\n"+
@@ -362,7 +319,7 @@ implements TableObserver
             nLines = cols.length;
             if (nLines > 10)
             {
-                Toolkit.getDefaultToolkit().beep();
+                toolkit.beep();
                 nLines = 10;
                 JOptionPane.showMessageDialog(this,
                 "More than 10 columns are selected.\n"+
@@ -395,10 +352,11 @@ implements TableObserver
             yRange[1] == Double.NEGATIVE_INFINITY ||
             yRange[0] == yRange[1])
         {
-            Toolkit.getDefaultToolkit().beep();
+            toolkit.beep();
             JOptionPane.showMessageDialog(
                 this,
-                "Cannot show line plot for the selected data.\n Please check the data range.",
+                "Cannot show line plot for the selected data. \n"+
+                "Please check the data range.",
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             data = null;
@@ -451,15 +409,27 @@ implements TableObserver
         }
 
         dataValue = null;
-        try { dataValue = d.convertFromUnsignedC(d.read());; }
+        try {
+            d.read();
+            d.convertFromUnsignedC();
+            dataValue = d.read();
+        }
         catch (Exception ex)
         {
+            JOptionPane.showMessageDialog(
+                this,
+                ex,
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
             dataValue = null;
-            viewer.showStatus(ex.toString());
         }
 
         if (dataValue == null)
             return null;
+
+        String cName = dataValue.getClass().getName();
+        int cIndex = cName.lastIndexOf("[");
+        if (cIndex >= 0 ) NT = cName.charAt(cIndex+1);
 
         String columnNames[] = new String[cols];
         for (int i=0; i<cols; i++)
@@ -479,9 +449,27 @@ implements TableObserver
 
         theTable = new JTable(tableModel)
         {
-            public boolean isCellEditable(int row, int column)
+            public boolean isCellEditable( int row, int col ) { return true; }
+
+            public void editingStopped(ChangeEvent e)
             {
-                    return false;
+                int row = getEditingRow();
+                int col = getEditingColumn();
+                super.editingStopped(e);
+
+                Object source = e.getSource();
+
+                if (source instanceof CellEditor)
+                {
+                    CellEditor editor = (CellEditor)source;
+                    String cellValue = (String)editor.getCellEditorValue();
+
+                    try { updateValueInMemory(cellValue, row, col); }
+                    catch (Exception ex)
+                    {
+                        JOptionPane.showMessageDialog( this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
+                    }
+                } // if (source instanceof CellEditor)
             }
 
             public boolean isCellSelected(int row, int column)
@@ -514,16 +502,28 @@ implements TableObserver
         if (rank <=0 ) d.init();
 
         int rows = d.getHeight();
-        int cols = d.getMemberCount();
+        int cols = d.getSelectedMemberCount();
+        String[] columnNames = new String[cols];
 
-        String[] columnNames = d.getMemberNames();
+        int idx = 0;
+        String[] columnNamesAll = d.getMemberNames();
+        for (int i=0; i<columnNamesAll.length; i++)
+        {
+            if (d.isMemberSelected(i))
+                columnNames[idx++] = columnNamesAll[i];
+        }
 
         dataValue = null;
         try { dataValue = d.read(); }
         catch (Exception ex)
         {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(
+                this,
+                ex,
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
             dataValue = null;
-            viewer.showStatus(ex.toString());
         }
 
         if (dataValue == null ||
@@ -535,15 +535,20 @@ implements TableObserver
             rows)
         {
             List list = (List)dataValue;
-            int orders[] = ((CompoundDS)dataset).getMemberOrders();
+            int orders[] = ((CompoundDS)dataset).getSelectedMemberOrders();
             StringBuffer stringBuffer = new StringBuffer();
 
             public Object getValueAt(int row, int column)
             {
                 Object cellValue = null;
                 Object colValue = list.get(column);
-                int cellSize = Array.getLength(colValue)/getRowCount();
 
+                if (colValue == null)
+                {
+                    return "Null";
+                }
+
+                int cellSize = Array.getLength(colValue)/getRowCount();
                 if (Array.getLength(colValue) == getRowCount())
                 {
                     cellValue = Array.get(colValue, row);
@@ -573,6 +578,7 @@ implements TableObserver
             {
                     return false;
             }
+
             public boolean isCellSelected(int row, int column)
             {
                 if (getSelectedRow()==row && getSelectedColumn()==column)
@@ -590,6 +596,301 @@ implements TableObserver
         };
 
         return theTable;
+    }
+
+    private void gotoPage(long idx)
+    {
+        if (dataset.getRank() < 3) return;
+
+        if (isValueChanged) updateValueInFile();
+
+        long[] start = dataset.getStartDims();
+        int[] selectedIndex = dataset.getSelectedIndex();
+        long[] dims = dataset.getDims();
+
+        start[selectedIndex[2]] = idx;
+        dataset.clearData();
+
+        try {
+            dataValue = dataset.read();
+            if (dataset instanceof ScalarDS)
+            {
+                ((ScalarDS)dataset).convertFromUnsignedC();
+                dataValue = dataset.read();
+            }
+        }
+        catch (Exception ex)
+        {
+            dataValue = null;
+            JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        setTitle( frameTitle+ " - Page "+String.valueOf(idx+1)+ " of "+dims[selectedIndex[2]]);
+        updateUI();
+    }
+
+    /** copy data from the spreadsheet to the system clipboard. */
+    public void copyData()
+    {
+        StringBuffer sb = new StringBuffer();
+
+        int r0 = table.getSelectedRow();     // starting row
+        int c0 = table.getSelectedColumn();  // starting column
+
+        if (r0<0 || c0 <0) return;
+
+        int r1 = r0 + table.getSelectedRowCount();     // finish row
+        int c1 = c0 + table.getSelectedColumnCount();  // finshing column
+
+        for (int i=r0; i<r1; i++)
+        {
+            sb.append(table.getValueAt(i, c0).toString());
+            for (int j=c0+1; j<c1; j++)
+            {
+                sb.append("\t");
+                sb.append(table.getValueAt(i, j).toString());
+            }
+            sb.append("\n");
+        }
+
+        Clipboard cb =  Toolkit.getDefaultToolkit().getSystemClipboard();
+        StringSelection contents = new StringSelection(sb.toString());
+        cb.setContents(contents, null);
+    }
+
+    /** paste data from the system clipboard to the spreadsheet. */
+    public void pasteData()
+    {
+        if (!(dataset instanceof ScalarDS))
+            return; // does not support compound dataset in this version
+
+        int cols = table.getColumnCount();
+        int rows = table.getRowCount();
+        int r0 = table.getSelectedRow();
+        int c0 = table.getSelectedColumn();
+
+        if (c0 < 0) c0 = 0;
+        if (r0 < 0) r0 = 0;
+        int r = r0;
+        int c = c0;
+        int index = r*cols+c;
+
+        Clipboard cb =  Toolkit.getDefaultToolkit().getSystemClipboard();
+        Transferable content = cb.getContents(this);
+        String line = "";
+        try {
+            String s =(String)content.getTransferData(DataFlavor.stringFlavor);
+            StringTokenizer st = new StringTokenizer(s, "\n");
+            while (st.hasMoreTokens() && r < rows)
+            {
+                line = st.nextToken();
+
+                StringTokenizer lt = new StringTokenizer(line);
+                while (lt.hasMoreTokens() && c < cols)
+                {
+                    index = r*cols+c;
+                    updateValueInMemory(lt.nextToken(), r, c);
+                    c = c + 1;
+                }
+                r = r+1;
+                c = c0;
+            }
+        }	catch (Throwable ex) {
+            JOptionPane.showMessageDialog(this,
+                ex,
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+        }
+
+        table.updateUI();
+    }
+
+    /** Save data as text. */
+    public void saveAsText() throws Exception
+    {
+        final JFileChooser fchooser = new JFileChooser(dataset.getFile());
+        fchooser.changeToParentDirectory();
+        int returnVal = fchooser.showSaveDialog(this);
+
+        if(returnVal != JFileChooser.APPROVE_OPTION)
+            return;
+
+        File choosedFile = fchooser.getSelectedFile();
+        if (choosedFile == null)
+            return;
+
+        if (choosedFile.exists())
+        {
+            int newFileFlag = JOptionPane.showConfirmDialog(this,
+                "File exists. Do you want to replace it ?",
+                this.getTitle(),
+                JOptionPane.YES_NO_OPTION);
+            if (newFileFlag == JOptionPane.NO_OPTION)
+                return;
+        }
+
+        PrintWriter out = new PrintWriter(
+            new BufferedWriter(new FileWriter(choosedFile)));
+
+        String delimiter = ViewProperties.getDataDelimiter();
+        if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_TAB))
+            delimiter = "\t";
+        else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_SPACE))
+            delimiter = " ";
+        else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_COMMA))
+            delimiter = ",";
+        else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_COLON))
+            delimiter = ":";
+        else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_SEMI_COLON))
+            delimiter = ";";
+        else
+            delimiter = "\t";
+
+        int cols = table.getColumnCount();
+        int rows = table.getRowCount();
+
+        for (int i=0; i<rows; i++)
+        {
+            out.print(table.getValueAt(i, 0));
+            for (int j=1; j<cols; j++)
+            {
+                out.print(delimiter);
+                out.print(table.getValueAt(i, j));
+            }
+            out.println();
+        }
+
+        out.flush();
+        out.close();
+    }
+
+    /** update dataset value in file.
+     *  The change will go to file.
+     */
+    private void updateValueInFile()
+    {
+        if (!(dataset instanceof ScalarDS))
+            return;
+
+        int op = JOptionPane.showConfirmDialog(this,
+            "\""+ dataset.getName() +"\" has changed.\n"+
+            "you want to save the changes?",
+            getTitle(),
+            JOptionPane.YES_NO_OPTION);
+
+        if (op == JOptionPane.NO_OPTION)
+            return;
+
+        try { dataset.write(); }
+        catch (Exception ex)
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(
+                this,
+                ex,
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        isValueChanged = false;
+    }
+
+    /** update cell value in memory.
+     *  It does not change the dataset value in file.
+     *  @param cellValue the string value of input.
+     *  @param row the row of the editing cell.
+     *  @param col the column of the editing cell.
+     */
+    private void updateValueInMemory(String cellValue, int row, int col)
+    throws NumberFormatException, IllegalArgumentException
+    {
+        int cols = table.getColumnCount();
+        int i = row*cols+col;
+
+        if (!(dataset instanceof ScalarDS))
+            return;
+
+        ScalarDS sds = (ScalarDS)dataset;
+        boolean isUnsigned = sds.isUnsigned();
+        Object data = null;
+        try { data = sds.read(); }
+        catch (Exception ex) { data = null; }
+
+        if (data == null)
+            return;
+
+        // check data range for undigned datatype
+        if (isUnsigned)
+        {
+            long lvalue = -1;
+            long maxValue = Long.MAX_VALUE;
+            lvalue = Long.parseLong(cellValue);
+
+            if (lvalue < 0)
+            {
+                JOptionPane.showMessageDialog(
+                    this,
+                    "Negative value for unsigned integer.",
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (NT=='S') maxValue = 255;
+            else if (NT=='I') maxValue = 65535;
+            else if (NT=='J') maxValue = 4294967295L;
+
+            if (lvalue < 0 || lvalue > maxValue)
+            {
+                JOptionPane.showMessageDialog(
+                    this,
+                    "Data value must be between 0 and "+maxValue,
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
+        if (NT == 'B')
+        {
+            byte value = 0;
+            value = Byte.parseByte(cellValue);
+            Array.setByte(data, i, value);
+        }
+        else if (NT == 'S')
+        {
+            short value = 0;
+            value = Short.parseShort(cellValue);
+            Array.setShort(data, i, value);
+        }
+        else if (NT == 'I')
+        {
+            int value = 0;
+            value = Integer.parseInt(cellValue);
+            Array.setInt(data, i, value);
+        }
+        else if (NT == 'J')
+        {
+            long value = 0;
+            value = Long.parseLong(cellValue);
+            Array.setLong(data, i, value);
+        }
+        else if (NT == 'F')
+        {
+            float value = 0;
+            value = Float.parseFloat(cellValue);
+            Array.setFloat(data, i, value);
+        }
+        else if (NT == 'D')
+        {
+            double value = 0;
+            value = Double.parseDouble(cellValue);
+            Array.setDouble(data, i, value);
+        }
+
+        isValueChanged = true;
     }
 
     private class ColumnHeader extends JTableHeader

@@ -59,7 +59,7 @@ public class H5Group extends Group
         if (attributeList == null)
         {
             int gid = open();
-            attributeList = H5Accessory.getAttribute(gid);
+            attributeList = H5File.getAttribute(gid);
             close(gid);
         }
 
@@ -79,20 +79,18 @@ public class H5Group extends Group
         if (!(info instanceof Attribute))
             return;
 
+        boolean attrExisted = false;
         Attribute attr = (Attribute)info;
         String name = attr.getName();
-        List attrList = getMetadata();
-        boolean attrExisted = attrList.contains(attr);
 
-        int gid = open();
-        try {
-            H5Accessory.writeAttribute(gid, attr, attrExisted);
-            // add the new attribute into attribute list
-            if (!attrExisted) attrList.add(attr);
-        } finally
-        {
-            close(gid);
-        }
+        if (attributeList == null)
+            attributeList = new Vector();
+        else
+            attrExisted = attributeList.contains(attr);
+
+        H5File.writeAttribute(this, attr, attrExisted);
+        // add the new attribute into attribute list
+        if (!attrExisted) attributeList.add(attr);
     }
 
     /**
@@ -137,10 +135,49 @@ public class H5Group extends Group
         return gid;
     }
 
-    // Implementing DataFormat
-    public static void close(int gid)
+    /** close group access */
+    public void close(int gid)
     {
         try { H5.H5Gclose(gid); }
         catch (HDF5Exception ex) {;}
     }
+
+    /**
+     * Creates a new group.
+     * @param file the file which the group is added to.
+     * @param name the name of the group to create.
+     * @param pgroup the parent group of the new group.
+     * @return the new group if successful. Otherwise returns null.
+     */
+    public static H5Group create(FileFormat file, String name, Group pgroup)
+        throws Exception
+    {
+        H5Group group = null;
+        String fullPath = null;
+
+        if (file == null ||
+            name == null ||
+            pgroup == null)
+            return null;
+
+        String path = HObject.separator;
+        if (!pgroup.isRoot())
+            path = pgroup.getPath()+pgroup.getName()+HObject.separator;
+        fullPath = path +  name;
+
+         // create a new group and add ot to the parent node
+        int gid = H5.H5Gcreate(file.open(), fullPath, -1);
+        byte[] ref_buf = H5.H5Rcreate(
+            file.open(),
+            fullPath,
+            HDF5Constants.H5R_OBJECT,
+            -1);
+        long l = HDFNativeData.byteToLong(ref_buf, 0);
+        long[] oid = {l};
+
+        group = new H5Group(file, name, path, pgroup, oid);
+
+        return group;
+    }
+
 }

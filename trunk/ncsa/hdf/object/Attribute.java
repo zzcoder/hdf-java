@@ -23,6 +23,9 @@
  */
 public class Attribute implements Metadata
 {
+    /** the default length of a string attribute */
+    public static final int DEFAULT_STRING_ATTRIBUTE_LENGTH = 256;
+
     /**
      * The name of the attribute.
      */
