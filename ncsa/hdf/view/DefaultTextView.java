@@ -221,7 +221,7 @@ implements TextView, ActionListener, KeyListener
     /** update dataset value in file.
      *  The change will go to file.
      */
-    private void updateValueInFile()
+    public void updateValueInFile()
     {
         if (isReadOnly) return;
 

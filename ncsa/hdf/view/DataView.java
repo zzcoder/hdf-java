@@ -27,4 +27,5 @@ public abstract interface DataView {
 
     /** Disposes of this dataobserver. */
     public abstract void dispose();
+
 }

@@ -103,8 +103,9 @@ public class ViewProperties extends Properties
     private static Icon hdfIcon, h4Icon, h5Icon, largeHdfIcon,
         blankIcon, helpIcon,
         fileopenIcon, filesaveIcon, filenewIcon, filecloseIcon,
-        foldercloseIcon, folderopenIcon,
+        foldercloseIcon, folderopenIcon, foldercloseIconA, folderopenIconA,
         datasetIcon, imageIcon, tableIcon, textIcon,
+        datasetIconA, imageIconA, tableIconA, textIconA,
         zoominIcon, zoomoutIcon, paletteIcon, chartIcon,
         copyIcon, cutIcon, pasteIcon,
         previousIcon, nextIcon, firstIcon, lastIcon,
@@ -160,10 +161,12 @@ public class ViewProperties extends Properties
         {
             propertyFile = ud;
         }
+/*
         else if ((new File(h5v)).exists())
         {
             propertyFile = h5v;
         }
+*/
         else // create new property file at user home directory
         {
             propertyFile = uh;
@@ -280,7 +283,11 @@ public class ViewProperties extends Properties
 
     public static Icon getFoldercloseIcon() { return foldercloseIcon; }
 
+    public static Icon getFoldercloseIconA() { return foldercloseIconA; }
+
     public static Icon getFolderopenIcon() { return folderopenIcon; }
+
+    public static Icon getFolderopenIconA() { return folderopenIconA; }
 
     public static Icon getHdfIcon() { return hdfIcon; }
 
@@ -289,6 +296,8 @@ public class ViewProperties extends Properties
     public static Icon getH5Icon() { return h5Icon; }
 
     public static Icon getDatasetIcon() { return datasetIcon; }
+
+    public static Icon getDatasetIconA() { return datasetIconA; }
 
     public static Icon getFileopenIcon() { return fileopenIcon; }
 
@@ -305,6 +314,12 @@ public class ViewProperties extends Properties
     public static Icon getTableIcon() { return tableIcon; }
 
     public static Icon getTextIcon() { return textIcon; }
+
+    public static Icon getImageIconA() { return imageIconA; }
+
+    public static Icon getTableIconA() { return tableIconA; }
+
+    public static Icon getTextIconA() { return textIconA; }
 
     public static Icon getZoominIcon() { return zoominIcon; }
 
@@ -368,6 +383,13 @@ public class ViewProperties extends Properties
             }
         }
 
+        if (foldercloseIconA == null) {
+            u = classLoader.getResource("ncsa/hdf/view/icons/foldercloseA.gif");
+            if (u != null) {
+                foldercloseIconA = new ImageIcon (u);
+            }
+        }
+
         if (folderopenIcon == null) {
             u = classLoader.getResource("ncsa/hdf/view/icons/folderopen.gif");
             if (u != null) {
@@ -375,10 +397,24 @@ public class ViewProperties extends Properties
             }
         }
 
+        if (folderopenIconA == null) {
+            u = classLoader.getResource("ncsa/hdf/view/icons/folderopenA.gif");
+            if (u != null) {
+                folderopenIconA = new ImageIcon (u);
+            }
+        }
+
         if (datasetIcon == null) {
             u = classLoader.getResource("ncsa/hdf/view/icons/dataset.gif");
             if (u != null) {
                 datasetIcon = new ImageIcon (u);
+            }
+        }
+
+        if (datasetIconA == null) {
+            u = classLoader.getResource("ncsa/hdf/view/icons/datasetA.gif");
+            if (u != null) {
+                datasetIconA = new ImageIcon (u);
             }
         }
 
@@ -424,6 +460,13 @@ public class ViewProperties extends Properties
             }
         }
 
+        if (imageIconA == null) {
+            u = classLoader.getResource("ncsa/hdf/view/icons/imageA.gif");
+            if (u != null) {
+                imageIconA = new ImageIcon (u);
+            }
+        }
+
         if (tableIcon == null) {
             u = classLoader.getResource("ncsa/hdf/view/icons/table.gif");
             if (u != null) {
@@ -431,10 +474,24 @@ public class ViewProperties extends Properties
             }
         }
 
+        if (tableIconA == null) {
+            u = classLoader.getResource("ncsa/hdf/view/icons/tableA.gif");
+            if (u != null) {
+                tableIconA = new ImageIcon (u);
+            }
+        }
+
         if (textIcon == null) {
             u = classLoader.getResource("ncsa/hdf/view/icons/text.gif");
             if (u != null) {
                 textIcon = new ImageIcon (u);
+            }
+        }
+
+        if (textIconA == null) {
+            u = classLoader.getResource("ncsa/hdf/view/icons/textA.gif");
+            if (u != null) {
+                textIconA = new ImageIcon (u);
             }
         }
 

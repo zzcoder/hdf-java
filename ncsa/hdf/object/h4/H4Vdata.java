@@ -113,6 +113,11 @@ public class H4Vdata extends CompoundDS
         numberOfRecords = 0;
         numberOfMembers = 0;
         memberOrders = null;
+
+        int id = open();
+        try { hasAttribute = (HDFLibrary.VSnattrs(id)>0); }
+        catch (Exception ex ) {}
+        close(id);
     }
 
     // implementing Dataset

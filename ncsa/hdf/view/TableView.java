@@ -30,4 +30,8 @@ public abstract interface TableView extends DataView
     /** returns array of selected data */
     public abstract Object getSelectedData();
 
+    /** Write the change of a dataset into file. */
+    public abstract void updateValueInFile();
+
+
 }

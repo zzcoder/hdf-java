@@ -15,10 +15,10 @@ import ncsa.hdf.object.*;
 import javax.swing.*;
 import javax.swing.tree.*;
 import javax.swing.border.*;
+import javax.swing.event.*;
 import javax.print.*;
 import javax.print.attribute.*;
 import java.awt.image.*;
-import java.awt.event.*;
 import java.awt.Font;
 import java.io.*;
 import java.lang.reflect.Array;
@@ -39,6 +39,11 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsConfiguration;
 import java.awt.Transparency;
 import java.awt.Insets;
+import java.awt.GridLayout;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
+import java.awt.event.*;
+import javax.swing.text.NumberFormatter;
 
 /**
  * ImageView displays an HDF dataset as an image.
@@ -341,17 +346,20 @@ implements ImageView, ActionListener
         item.setEnabled(!isTrueColor);
         menu.add(item);
 
-        item = new JMenuItem( "Set Data Range");
+        menu.addSeparator();
+
+        item = new JMenuItem( "Set Threshold Range");
+        item.setEnabled(!isTrueColor);
         item.addActionListener(this);
         item.setActionCommand("Set data range");
-        item.setEnabled(!isTrueColor);
+        menu.add(item);
+        // no need for byte data
         try {
             String cname = data.getClass().getName();
             char dname = cname.charAt(cname.lastIndexOf("[")+1);
             if (dname == 'B')
                 item.setEnabled(false);
         } catch (Exception ex) {}
-        menu.add(item);
 
        menu.addSeparator();
 
@@ -1166,35 +1174,14 @@ implements ImageView, ActionListener
         }
         else if (cmd.equals("Set data range"))
         {
-            double[] drange = dataset.getImageDataRange();
-            String minmaxStr = null;
+            //double[] drange = dataset.getImageDataRange();
+            DataRangeDialog drd = new DataRangeDialog ((JFrame)viewer, dataRange);
+            double[] drange = drd.getRange();
 
-            if (drange != null)
-                minmaxStr = Array.get(drange,0)+","+ Array.get(drange,1);
-
-            String msg = "Enter data range, (min, max)."+ "\n\nFor example, \"0, 255\" \n\n";
-            minmaxStr = JOptionPane.showInputDialog(this, msg, minmaxStr);
-
-            if (minmaxStr == null)
+            if (drange == null || (drange[0] == dataRange[0] && drange[1] == dataRange[1]))
                 return;
 
-            double x0=0, x1=0;
-            int idx = minmaxStr.indexOf(',');
-            if (idx > 0)
-            {
-                try {
-                    x0 = Double.valueOf(minmaxStr.substring(0, idx).trim()).doubleValue();
-                    x1 = Double.valueOf(minmaxStr.substring(idx+1).trim()).doubleValue();
-                } catch (Exception ex ) { x0=x1=0; }
-            }
-            if (x1 <= x0)
-                return;
-
-            if (drange != null && drange[0]==x0 && drange[1]==x1)
-                return;
-
-            double newRange[] = {x0, x1};
-            changeDataRange(newRange);
+            changeDataRange(drange);
         }
         else if (cmd.equals("Flip horizontal")) {
             flip(FLIP_HORIZONTAL);
@@ -1582,6 +1569,7 @@ implements ImageView, ActionListener
             image = createIndexedImage(indexedImageData, imagePalette, w, h);
             imageComponent.setImage(image);
             zoomTo(zoomFactor);
+            paletteComponent.updateRange(newRange);
         } catch (Throwable err)
         {
             toolkit.beep();
@@ -1641,6 +1629,21 @@ implements ImageView, ActionListener
 
                     colors[i] = new Color(r, g, b);
                 }
+            }
+
+            repaint();
+        }
+
+        private void updateRange(double[] newRange)
+        {
+            if (newRange == null)
+                return;
+
+            dataRange = newRange;
+            double ratio = (dataRange[1] - dataRange[0])/255;
+            for (int i=0; i<256; i++)
+            {
+                pixelData[i] = (dataRange[0] + ratio*i);
             }
 
             repaint();
@@ -2602,4 +2605,189 @@ implements ImageView, ActionListener
             engine.start();
         }
     } // private class Animation extends JDialog
+
+    private class DataRangeDialog extends JDialog implements
+            ActionListener,
+            ChangeListener,
+            PropertyChangeListener
+    {
+        double[] minmax = null;
+        JSlider minSlider, maxSlider;
+        JFormattedTextField minField, maxField;
+        int iMin=0, iMax=0;
+
+        public DataRangeDialog(JFrame theOwner, double[] dataRange)
+        {
+            super(theOwner, "Image Threshold Range", true);
+            minmax = new double[2];
+            if (dataRange==null || dataRange.length<=1)
+            {
+                minmax[0] =0;
+                minmax[1] = 255;
+            } else
+            {
+                minmax[0] = dataRange[0];
+                minmax[1] = dataRange[1];
+            }
+
+            iMin = (int)minmax[0];
+            iMax = (int)minmax[1];
+            int tickSpace = (iMax-iMin)/10;
+
+            java.text.NumberFormat numberFormat = java.text.NumberFormat.getIntegerInstance();
+            NumberFormatter formatter = new NumberFormatter(numberFormat);
+            formatter.setMinimum(new Integer(iMin));
+            formatter.setMaximum(new Integer(iMax));
+
+            minField = new JFormattedTextField(formatter);
+            minField.addPropertyChangeListener(this);
+            minField.setValue(new Integer(iMin));
+            maxField = new JFormattedTextField(formatter);
+            maxField.addPropertyChangeListener(this);
+            maxField.setValue(new Integer(iMax));
+
+            minSlider = new JSlider(JSlider.HORIZONTAL, iMin, iMax, iMin);
+            minSlider.setMajorTickSpacing(tickSpace);
+            minSlider.setPaintTicks(true);
+            minSlider.setPaintLabels(true);
+            minSlider.addChangeListener(this);
+            minSlider.setBorder( BorderFactory.createEmptyBorder(0,0,10,0));
+
+            maxSlider = new JSlider(JSlider.HORIZONTAL,iMin, iMax, iMax);
+            maxSlider.setMajorTickSpacing(tickSpace);
+            maxSlider.setPaintTicks(true);
+            maxSlider.setPaintLabels(true);
+            maxSlider.addChangeListener(this);
+            maxSlider.setBorder( BorderFactory.createEmptyBorder(0,0,10,0));
+
+            JPanel contentPane = (JPanel)getContentPane();
+            contentPane.setLayout(new BorderLayout(5, 5));
+            contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+            contentPane.setPreferredSize(new Dimension(500, 300));
+
+            JPanel minPane = new JPanel();
+            minPane.setBorder(new TitledBorder("Lower Bound"));
+            minPane.setLayout(new BorderLayout());
+            minPane.add(minField, BorderLayout.CENTER);
+            minPane.add(minSlider, BorderLayout.SOUTH);
+
+            JPanel maxPane = new JPanel();
+            maxPane.setBorder(new TitledBorder("Upperr Bound"));
+            maxPane.setLayout(new BorderLayout());
+            maxPane.add(maxField, BorderLayout.CENTER);
+            maxPane.add(maxSlider, BorderLayout.SOUTH);
+
+            JPanel mainPane = new JPanel();;
+            mainPane.setLayout(new GridLayout(2,1,5,5));
+            mainPane.add(minPane);
+            mainPane.add(maxPane);
+            contentPane.add(mainPane, BorderLayout.CENTER);
+
+            // add OK and CANCEL buttons
+            JPanel confirmP = new JPanel();
+            JButton button = new JButton("   Ok   ");
+            button.setMnemonic(KeyEvent.VK_O);
+            button.setActionCommand("Ok");
+            button.addActionListener(this);
+            confirmP.add(button);
+            button = new JButton("Cancel");
+            button.setMnemonic(KeyEvent.VK_C);
+            button.setActionCommand("Cancel");
+            button.addActionListener(this);
+            confirmP.add(button);
+            contentPane.add(confirmP, BorderLayout.SOUTH);
+            contentPane.add(new JLabel(" "), BorderLayout.NORTH);
+
+            Point l = getParent().getLocation();
+            Dimension d = getParent().getPreferredSize();
+            l.x += 300;
+            l.y += 200;
+            setLocation(l);
+            pack();
+            show();
+        }
+
+        public void actionPerformed(ActionEvent e)
+        {
+            Object source = e.getSource();
+            String cmd = e.getActionCommand();
+
+            if (cmd.equals("Ok"))
+            {
+                minmax[0] = ((Number)minField.getValue()).intValue();
+                minmax[1] = ((Number)maxField.getValue()).intValue();
+                this.dispose();
+            }
+            else if (cmd.equals("Cancel"))
+            {
+                minmax = null;
+                this.dispose();
+            }
+        }
+
+        /** Listen to the slider. */
+        public void stateChanged(ChangeEvent e)
+        {
+            Object source = e.getSource();
+
+            if (!(source instanceof JSlider))
+                return;
+
+            JSlider slider = (JSlider)source;
+            int value = slider.getValue();
+            if (slider.equals(minSlider))
+            {
+                int maxValue = maxSlider.getValue();
+                if (value > maxValue) value = maxValue;
+                //minField.setText(String.valueOf(value));
+                minField.setValue(new Integer(value));
+            }
+            else if (slider.equals(maxSlider))
+            {
+                int minValue = minSlider.getValue();
+                if (value < minValue) value = minValue;
+                //maxField.setText(String.valueOf(value));
+                maxField.setValue(new Integer(value));
+            }
+        }
+
+        /**
+         * Listen to the text field.  This method detects when the
+         * value of the text field changes.
+         */
+        public void propertyChange(PropertyChangeEvent e)
+        {
+            Object source = e.getSource();
+            if ("value".equals(e.getPropertyName()))
+            {
+                Number num = (Number)e.getNewValue();
+                if (num == null) return;
+                int value = num.intValue();
+
+                if (source.equals(minField) && minSlider!= null)
+                {
+                    int maxValue = maxSlider.getValue();
+                    if (value > maxValue)
+                    {
+                        value = maxValue;
+                        minField.setText(String.valueOf(value));
+                    }
+                    minSlider.setValue(value);
+                }
+                else if (source.equals(maxField) && maxSlider!= null)
+                {
+                    int minValue = minSlider.getValue();
+                    if (value < minValue)
+                    {
+                        value = minValue;
+                        maxField.setText(String.valueOf(value));
+                    }
+                    maxSlider.setValue(value);
+                }
+            }
+        }
+
+        public double[] getRange()  { return minmax; }
+    } //private class DataRangeDialog extends JDialog implements ActionListener
+
 }

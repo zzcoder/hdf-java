@@ -29,6 +29,7 @@ import java.awt.event.MouseEvent;
 import java.awt.Toolkit;
 import java.awt.Color;
 import java.awt.Insets;
+import java.text.DecimalFormat;
 
 /**
  * TableView displays an HDF dataset as a two-dimensional table.
@@ -90,7 +91,9 @@ implements TableView, ActionListener
 
     private boolean isTransposed;
 
-    /**
+    private JCheckBoxMenuItem checkScientificNotation;
+
+     /**
      * Constructs an TableView.
      * <p>
      * @param theView the main HDFView.
@@ -364,6 +367,15 @@ implements TableView, ActionListener
 
         menu.addSeparator();
 
+        checkScientificNotation = new JCheckBoxMenuItem("Scientific Notation", false);
+        item = checkScientificNotation;
+        item.addActionListener(this);
+        item.setActionCommand("Scientific Notation");
+        if (dataset instanceof ScalarDS)
+            menu.add(item);
+
+        menu.addSeparator();
+
         item = new JMenuItem( "Close");
         item.addActionListener(this);
         item.setActionCommand("Close");
@@ -561,6 +573,10 @@ implements TableView, ActionListener
                         getTitle(),
                         JOptionPane.ERROR_MESSAGE);
             }
+        }
+        else if (cmd.equals("Scientific Notation"))
+        {
+             this.updateUI();
         }
     }
 
@@ -1047,12 +1063,20 @@ null, options, options[0]);
             columnNames,
             rows)
         {
+            Object theValue = null;
+            DecimalFormat sf = new DecimalFormat ("0.0###E0#");
+
             public Object getValueAt(int row, int column)
             {
                 if (isTransposed)
-                    return Array.get(dataValue, column*getRowCount()+row);
+                    theValue = Array.get(dataValue, column*getRowCount()+row);
                 else
-                    return Array.get(dataValue, row*getColumnCount()+column);
+                    theValue = Array.get(dataValue, row*getColumnCount()+column);
+
+                if (checkScientificNotation.isSelected())
+                    return sf.format(theValue);
+                else
+                    return theValue;
             }
         };
 
@@ -1607,7 +1631,7 @@ null, options, options[0]);
     /** update dataset value in file.
      *  The change will go to file.
      */
-    private void updateValueInFile()
+    public void updateValueInFile()
     {
         if (isReadOnly) return;
 
@@ -2027,6 +2051,15 @@ null, options, options[0]);
 
         Object mdata = cdata.get(column);
 
+        // strings
+        if (Array.get(mdata, 0) instanceof String)
+        {
+            Array.set(mdata, offset, cellValue);
+            isValueChanged = true;
+            return;
+        }
+
+        // numveric data
         char mNT = ' ';
         String cName = mdata.getClass().getName();
         int cIndex = cName.lastIndexOf("[");
@@ -2044,68 +2077,66 @@ null, options, options[0]);
         }
 
         String token = "";
-        if (mNT == 'B')
-        {
-            byte value = 0;
-            for (int i=0; i<morder; i++)
-            {
-                token = st.nextToken().trim();
-                value = Byte.parseByte(token);
-                Array.setByte(mdata, offset+i, value);
-            }
-        }
-        else if (mNT == 'S')
-        {
-            short value = 0;
-            for (int i=0; i<morder; i++)
-            {
-                token = st.nextToken().trim();
-                value = Short.parseShort(token);
-                Array.setShort(mdata, offset+i, value);
-            }
-        }
-        else if (mNT == 'I')
-        {
-            int value = 0;
-            for (int i=0; i<morder; i++)
-            {
-                token = st.nextToken().trim();
-                value = Integer.parseInt(token);
-                Array.setInt(mdata, offset+i, value);
-            }
-        }
-        else if (mNT == 'J')
-        {
-            long value = 0;
-            for (int i=0; i<morder; i++)
-            {
-                token = st.nextToken().trim();
-                value = Long.parseLong(token);
-                Array.setLong(mdata, offset+i, value);
-            }
-        }
-        else if (mNT == 'F')
-        {
-            float value = 0;
-            for (int i=0; i<morder; i++)
-            {
-                token = st.nextToken().trim();
-                value = Float.parseFloat(token);
-                Array.setFloat(mdata, offset+i, value);
-            }
-        }
-        else if (mNT == 'D')
-        {
-            double value = 0;
-            for (int i=0; i<morder; i++)
-            {
-                token = st.nextToken().trim();
-                value = Double.parseDouble(token);
-                Array.setDouble(mdata, offset+i, value);
-            }
-        }
-
         isValueChanged = true;
+        switch (mNT)
+        {
+            case 'B':
+                byte bvalue = 0;
+                for (int i=0; i<morder; i++)
+                {
+                    token = st.nextToken().trim();
+                    bvalue = Byte.parseByte(token);
+                    Array.setByte(mdata, offset+i, bvalue);
+                }
+                break;
+            case 'S':
+                short svalue = 0;
+                for (int i=0; i<morder; i++)
+                {
+                    token = st.nextToken().trim();
+                    svalue = Short.parseShort(token);
+                    Array.setShort(mdata, offset+i, svalue);
+                }
+                break;
+            case 'I':
+                int ivalue = 0;
+                for (int i=0; i<morder; i++)
+                {
+                    token = st.nextToken().trim();
+                    ivalue = Integer.parseInt(token);
+                    Array.setInt(mdata, offset+i, ivalue);
+                }
+                break;
+            case 'J':
+                long lvalue = 0;
+                for (int i=0; i<morder; i++)
+                {
+                    token = st.nextToken().trim();
+                    lvalue = Long.parseLong(token);
+                    Array.setLong(mdata, offset+i, lvalue);
+                }
+                break;
+            case 'F':
+                float fvalue = 0;
+                for (int i=0; i<morder; i++)
+                {
+                    token = st.nextToken().trim();
+                    fvalue = Float.parseFloat(token);
+                    Array.setFloat(mdata, offset+i, fvalue);
+                }
+                break;
+            case 'D':
+                double dvalue = 0;
+                for (int i=0; i<morder; i++)
+                {
+                    token = st.nextToken().trim();
+                    dvalue = Double.parseDouble(token);
+                    Array.setDouble(mdata, offset+i, dvalue);
+                }
+                break;
+            default:
+                isValueChanged = false;
+        }
     }
 
     private class ColumnHeader extends JTableHeader

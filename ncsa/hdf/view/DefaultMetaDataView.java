@@ -292,7 +292,7 @@ implements ActionListener, MetaDataView
         }
 
         if (isH4)
-            lp.add(new JLabel("Ref, Tag: "));
+            lp.add(new JLabel("Tag, Ref: "));
         else
             lp.add(new JLabel("Object ID: "));
 

@@ -82,6 +82,8 @@ implements Serializable, DataFormat
      */
     protected final long[] oid;
 
+    protected boolean hasAttribute = false;
+
     /**
      * Constructs an instance of the data object with specific name and path.
      * An HDF data object must have a name. A data object is uniquely identified
@@ -254,4 +256,5 @@ implements Serializable, DataFormat
         return name;
     }
 
+    public boolean hasAttribute () { return hasAttribute; }
 }
