@@ -1,4 +1,4 @@
-#****************************************************************************
+
 #* NCSA HDF                                                                 *
 #* National Comptational Science Alliance                                   *
 #* University of Illinois at Urbana-Champaign                               *
@@ -49,6 +49,88 @@ TARGETLIB="$target"
 esac
 HERE=`pwd`
 
+
+
+withval="";
+AC_SUBST(ZLIB) ZLIB=""
+AC_ARG_WITH(libz,[  --with-libz=LIB     Path to the gzip library (required if not in default path)],,)
+
+case "$withval" in
+  yes)
+    AC_MSG_ERROR(GZIP library needed for compilation.)
+    ;;
+  no)
+      ZLIB=""
+    	AC_MSG_RESULT(GZIP suppressed);
+    ;;
+  *)
+if test -n "$withval" ; then
+    z_lib="`echo $withval |cut -f2 -d, -s`"
+	ZLIB=$z_lib"/libz.a"
+    	AC_MSG_RESULT([zlib found: $ZLIB]);
+else
+AC_CHECK_LIB(z, compress, [ZLIB=-lz], 
+    AC_MSG_ERROR([GZIP library needed for compilation.]) ,)
+fi
+;;
+esac
+if test -n "$ZLIB"; then
+LIBS="$LIBS $ZLIB"
+fi
+
+withval="";
+AC_SUBST(JPEGLIB) JPEGLIB=""
+AC_ARG_WITH(libjpeg,[  --with-libjpeg=LIB     Path to the jpeg library (required if not in default path)],,)
+
+case "$withval" in
+  yes)
+    AC_MSG_ERROR(JPEG library needed for compilation.)
+    ;;
+  no)
+      JPEGLIB=""
+    	AC_MSG_RESULT(JPEG suppressed);
+    ;;
+  *)
+if test -n "$withval" ; then
+    jpeg_lib="`echo $withval |cut -f2 -d, -s`"
+	JPEGLIB=$jpeg_lib"/libjpeg.a"
+    	AC_MSG_RESULT([jpeg found: $JPEGLIB]);
+else
+AC_CHECK_LIB(jpeg, jpeg_start_compress, JPEGLIB=-ljpeg,
+    AC_MSG_ERROR(JPEG library needed for compilation.) ,)
+fi
+;;
+esac
+if test -n "$JPEGLIB"; then
+LIBS="$LIBS $JPEGLIB"
+fi
+
+withval="";
+AC_SUBST(SZLIB) SZLIB=""
+AC_ARG_WITH(libsz,[  --with-libsz=LIB     Path to the gzip library (required if not in default path)],,)
+
+case "$withval" in
+  yes)
+    AC_MSG_ERROR(SZIP library needed for compilation.)
+    ;;
+  no)
+      SZLIB=""
+    	AC_MSG_RESULT(SZIP suppressed);
+    ;;
+  *)
+if test -n "$withval" ; then
+    sz_lib="`echo $withval |cut -f2 -d, -s`"
+	SZLIB=$sz_lib"/libsz.a"
+else
+AC_CHECK_LIB(sz, SZ_BufftoBuffCompress,SZLIB=-lsz, 
+    AC_MSG_ERROR(SZIP library needed for compilation.) , )
+fi
+;;
+esac
+if test -n "$SZLIB"; then
+LIBS="$LIBS $SZLIB"
+fi
+
 dnl  Check for HDF4 library  --with-hdf4 must be set.
 
 withval=""
@@ -76,37 +158,26 @@ case "$withval" in
     if test -n "$hdf4_lib"; then
       HDF4LIB="$hdf4_lib"
       saved_LDFLAGS="$LDFLAGS"
-      LDFLAGS="$LDFLAGS -L$hdf4_lib"
-      AC_CHECK_LIB(z, compress)
-      AC_CHECK_LIB(jpeg, jpeg_start_compress)
-      AC_CHECK_LIB(df, Hstartaccess)
-      AC_CHECK_LIB(mfhdf, SDstart)
+      LDFLAGS="$LDFLAGS -L$HDF4LIB $ZLIB $JPEGLIB $SZLIB"
+      AC_CHECK_LIB(df, Hstartaccess, [LIBS="$LIBS -ldf $ZLIB $JPEGLIB $SZLIB"],
+		AC_MSG_ERROR([can't find df library at $HDF4LIB]), [$ZLIB $JPEGLIB $SZLIB])
+      AC_CHECK_LIB(mfhdf, SDstart, [LIBS="$LIBS $ZLIB $JPEGLIB $SZLIB"],
+		AC_MSG_ERROR([can't find mfhdf library at $HDF4LIB]),[$ZLIB $JPEGLIB $SZLIB])
     else
-      AC_CHECK_LIB(z, compress)
-      AC_CHECK_LIB(jpeg, jpeg_start_compress)
-      AC_CHECK_LIB(df, Hstartaccess)
-      AC_CHECK_LIB(mfhdf, SDstart)
+      AC_CHECK_LIB(df, Hstartaccess, [LIBS=$LIBS $ZLIB $JPEGLIB $SZLIB],
+		AC_MSG_ERROR([can't find df library at $HDF4LIB]), [$ZLIB $JPEGLIB $SZLIB])
+      AC_CHECK_LIB(mfhdf, SDstart, [LIBS=$LIBS $ZLIB $JPEGLIB $SZLIB],
+		AC_MSG_ERROR([can't find mfhdf library at $HDF4LIB]),[$ZLIB $JPEGLIB $SZLIB])
     fi
     ;;
 esac
 
+if test -n "$HDF4LIB"; then
+AC_MSG_RESULT([HDF4 library found at: $HDF4LIB])
+fi
 ac_cv_lib_HDF4=$HDF4LIB
 ac_cv_lib_HDF4INC=$HDF4INC
 
-withval="";
-AC_SUBST(ZLIB) ZLIB=""
-AC_ARG_WITH(libz,[  --with-libz=LIB     Path to the gzip library (requied if not in default path)],,)
-
-if test -n "$withval" ; then
-    z_lib="`echo $withval |cut -f2 -d, -s`"
-	ZLIB=$z_lib"/libz.a"
-else
-if test -n "$HDF4LIB" ; then
-ZLIB=$HDF4LIB"/libz.a"
-else
-ZLIB=-lz
-fi
-fi
 
 dnl  Check for HDF5 library  --with-hdf5 must be set.
 withval="";
@@ -140,40 +211,19 @@ case "$withval" in
       saved_LDFLAGS="$LDFLAGS"
       LDFLAGS="$LDFLAGS -L$hdf5_lib"
       AC_CHECK_LIB(hdf5, H5open,, LDFLAGS="$saved_LDFLAGS"
-                 AC_MSG_ERROR(cannot find HDF5 library.))
+                 AC_MSG_ERROR(cannot find HDF5 library.),)
     else
 	 AC_MSG_ERROR(cannot find HDF5 library path.)
     fi
     ;;
 esac
 
+if test -n "$HDF5LIB"; then
+AC_MSG_RESULT([HDF5 library found at: $HDF5LIB])
+fi
 ac_cv_lib_HDF5=$HDF5LIB
 ac_cv_lib_HDF5INC=$HDF5INC
 
-
-withval="";
-AC_SUBST(SZLIB) SZLIB=""
-AC_ARG_WITH(libsz,[  --with-libsz=LIB     Path to the gzip library (requied if not in default path)],,withval=no)
-
-case "$withval" in
-  yes)
-    AC_MSG_ERROR(SZIP library needed for compilation.)
-    ;;
-  no)
-      SZLIB=""
-	echo "SZIP suppressed";
-    ;;
-  *)
-if test -n "$withval" ; then
-    sz_lib="`echo $withval |cut -f2 -d, -s`"
-	SZLIB=$sz_lib"/libsz.a"
-else
-if test -n "$HDF5LIB" ; then
-SZLIB=$HDF5LIB"/libsz.a"
-fi
-fi
-;;
-esac
 
 dnl check for libh4toh5  == if with-h4toh5 is not set, then can
 dnl only build hdf and hdf5 separately.
@@ -220,6 +270,9 @@ case "$withval" in
     ;;
 esac
 
+if test -n "$H45LIB"; then
+AC_MSG_RESULT([h4toh5 library found at: $HDF45LIB])
+fi
 H45LIB=$HDF45LIB
 H45INC=$HDF45INC
 
