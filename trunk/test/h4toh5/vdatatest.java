@@ -1,4 +1,3 @@
-
 /****************************************************************************
  * NCSA HDF                                                                 *
  * National Comptational Science Alliance                                   *
@@ -28,8 +27,9 @@ static public void main( String []args )
 	vdatatest vdt = new vdatatest();
 	vdt.setup();
 	boolean r1 = vdt.test1();
+	boolean r2 = vdt.test2();
 	vdt.cleanup();
-	if (r1) {
+	if (r1 && r2) {
 		System.exit(0);
 	} else {
 		System.exit(-1);
@@ -122,6 +122,7 @@ private void test1_cleanup() {
 	//   SDendaccess(sds_id);
 	//   GRendaccess(image_id);
 }
+private void test2_cleanup() {}
 
 /*
  *  Test batch I:  test Vdata conversion
@@ -159,6 +160,57 @@ public boolean test1(  )
 	}
 
 	System.out.print("Test Vdata conversion: ");
+ 	System.out.println("PASS");
+	return(true);
+}
+
+/*
+ *  Test batch II:  test Vdata conversion including attrs
+ *                 for the HDF5 objects.
+ */
+public boolean test2(  ) 
+{
+
+	int vdata_ref = 2;
+	int vdata_id = -1;
+	try {
+		vdata_id = HDFLibrary.VSattach(file_id,vdata_ref,"r");
+	} catch (HDFException he3) {
+		System.err.println("VSgetid exception "+he3);
+		System.err.println("Test 1: FAIL");
+		test2_cleanup();
+		return(false);
+	}
+
+	try {
+		h4toh5.H4toh5vdataattrindex(h4toh5id,vdata_id,"/group1",
+			null,1);
+	} catch (H45Exception h45e3) {
+		System.err.println("h4toh5vdataattrindex exception "+h45e3);
+		System.err.println("Test 1: FAIL");
+		test2_cleanup();
+		return(false);
+	}
+
+	try {
+		h4toh5.H4toh5vdatafieldattrindex(h4toh5id,vdata_id,"/group1",
+			null,2,2);
+	} catch (H45Exception h45e32) {
+		System.err.println("h4toh5vdatafieldattrindex exception "+h45e32);
+		System.err.println("Test 1: FAIL");
+		test2_cleanup();
+		return(false);
+	}
+
+	try {
+		HDFLibrary.VSdetach(vdata_id);
+	} catch (HDFException he3_4) {
+		System.err.println("VSdetach error ");
+		System.err.println("Test 1: FAIL after test");
+		return(false);
+	}
+
+	System.out.print("Test Vdata conversion of attrs: ");
  	System.out.println("PASS");
 	return(true);
 }
