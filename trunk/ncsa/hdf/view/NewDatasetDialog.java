@@ -432,8 +432,12 @@ implements ActionListener, ItemListener, HyperlinkListener
 
                 if (sizeChoice.getItemCount() == 3)
                 {
-                    sizeChoice.add("16");
+                    sizeChoice.remove("32");
+                    sizeChoice.remove("64");
                     sizeChoice.add("8");
+                    sizeChoice.add("16");
+                    sizeChoice.add("32");
+                    sizeChoice.add("64");
                 }
             }
             else if (idx == 1)
@@ -689,6 +693,10 @@ implements ActionListener, ItemListener, HyperlinkListener
         {
             tsize = Datatype.NATIVE;
         }
+        else if (tclass == H5Datatype.CLASS_FLOAT)
+        {
+            tsize = idx*4;
+        }
         else
         {
             tsize = 1 << (idx-1);
@@ -698,7 +706,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-            "64-bit integer is not supported by the current HDF4 library.",
+            "HDF4 does not support 64-bit integer.",
             getTitle(),
             JOptionPane.ERROR_MESSAGE);
             return null;

@@ -112,7 +112,6 @@ public class H4File extends File implements FileFormat
             flag = HDFConstants.DFACC_CREATE;
         else
             flag = access;
-
     }
 
     /**
@@ -157,17 +156,10 @@ public class H4File extends File implements FileFormat
             flag == HDFConstants.DFACC_CREATE)
         {
             if (exists() && !canWrite())
-                throw new HDFException("Cannot write file -- "+fullFileName);
+                throw new HDFException("Cannot write file, try open as read-only -- "+fullFileName);
         }
 
-        try
-        {
-            fid = HDFLibrary.Hopen( fullFileName, flag);
-        }
-        catch (HDFException ex)
-        {
-            fid = -1;
-        }
+        fid = HDFLibrary.Hopen( fullFileName, flag);
 
         if ( fid>=0 )
         {

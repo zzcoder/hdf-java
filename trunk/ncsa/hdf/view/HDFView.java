@@ -133,6 +133,8 @@ implements ViewManager, ActionListener, HyperlinkListener
     /** Check to show image value */
     private JCheckBoxMenuItem imageValueCheckBox;
 
+    private JButton chartIcon, paletteIcon;
+
     /**
      * file access id.
      */
@@ -147,7 +149,7 @@ implements ViewManager, ActionListener, HyperlinkListener
      * @param root the directory where the HDFView is installed.
      * @param filename the file to open.
      */
-    public HDFView(String root, String filename)
+    public HDFView(String root, String workDir, String filename)
     {
         super("HDFView");
 
@@ -163,7 +165,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         }
 
         rootDir = root;
-        currentDir = root;
+        currentDir = workDir;
         currentFile = null;
         selectedObject = null;
         objectsToCopy = null;
@@ -208,7 +210,20 @@ implements ViewManager, ActionListener, HyperlinkListener
                     FileFormat theFile = obj.getFileFormat();
                     HDFView.setEnabled(editGUIs, !theFile.isReadOnly());
                     HDFView.setEnabled(tableGUIs, false);
-                    ((ImageView)c).setValueVisible(imageValueCheckBox.getState());
+
+                    ImageView imgv = (ImageView)c;
+                    imgv.setValueVisible(imageValueCheckBox.getState());
+
+                    if (imgv.isTrueColor())
+                    {
+                        chartIcon.setEnabled(false);
+                        paletteIcon.setEnabled(false);
+                    }
+                    else
+                    {
+                        chartIcon.setEnabled(true);
+                        paletteIcon.setEnabled(true);
+                    }
                 }
                 else if (c instanceof TableView)
                 {
@@ -217,11 +232,14 @@ implements ViewManager, ActionListener, HyperlinkListener
                     FileFormat theFile = obj.getFileFormat();
                     HDFView.setEnabled(editGUIs, !theFile.isReadOnly());
                     HDFView.setEnabled(imageGUIs, false);
+                    chartIcon.setEnabled(true);
                 }
                 else
                 {
                     HDFView.setEnabled(tableGUIs, false);
                     HDFView.setEnabled(imageGUIs, false);
+                    chartIcon.setEnabled(false);
+                    paletteIcon.setEnabled(false);
                 }
 
                 // enable or disable 3D GUI components
@@ -265,6 +283,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         setEnabled(d3GUIs, false);
         setEnabled(editGUIs, false);
         setEnabled(tableGUIs, false);
+        chartIcon.setEnabled(false);
 
         Component[] menuItems = windowMenu.getMenuComponents();
         for (int i=0; i<6; i++)
@@ -289,7 +308,7 @@ implements ViewManager, ActionListener, HyperlinkListener
 
                 try {
                     treeView.openFile(filename, fileAccessID);
-                    addToRecentFiles(filename);
+                    updateRecentFiles(filename);
                 } catch (Exception ex)
                 {
                     showStatus(ex.toString());
@@ -315,6 +334,7 @@ implements ViewManager, ActionListener, HyperlinkListener
     public static void main( String args[] )
     {
         String rootDir = System.getProperty("user.dir");
+        String workDir = rootDir;
 
         boolean backup = false;
         File tmpFile = null;
@@ -348,7 +368,7 @@ implements ViewManager, ActionListener, HyperlinkListener
             filename = args[i];
         }
 
-        HDFView frame = new HDFView(rootDir, filename);
+        HDFView frame = new HDFView(rootDir, workDir, filename);
         frame.pack();
         frame.setVisible(true);
      }
@@ -365,25 +385,17 @@ implements ViewManager, ActionListener, HyperlinkListener
     {
         selectedObject = (HObject)data;
 
-        if (selectedObject != null)
+        boolean noSelect = (selectedObject == null);
+        if (!noSelect)
         {
             currentFile = selectedObject.getFile();
-            this.setTitle("HDFView - "+currentFile);
-
-            Component[] menuItems = objectMenu.getMenuComponents();
-            for (int i=0; i<menuItems.length; i++)
-            {
-                menuItems[i].setEnabled(true);
-            }
-            setEnabled(editGUIs, !selectedObject.getFileFormat().isReadOnly());
+            setTitle("HDFView - "+currentFile);
         }
-        else
+
+        Component[] menuItems = objectMenu.getMenuComponents();
+        for (int i=0; i<menuItems.length; i++)
         {
-            Component[] menuItems = objectMenu.getMenuComponents();
-            for (int i=0; i<menuItems.length; i++)
-            {
-                menuItems[i].setEnabled(false);
-            }
+            menuItems[i].setEnabled(!noSelect);
         }
     }
 
@@ -504,7 +516,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         else if (cmd.equals("Open file"))
         {
             fileAccessID = FileFormat.WRITE;
-            final JFileChooser fchooser = new JFileChooser(currentDir);
+            JFileChooser fchooser = new JFileChooser(currentDir);
             fchooser.setFileFilter(DefaultFileFilter.getFileFilterHDF());
 
             int returnVal = fchooser.showOpenDialog(this);
@@ -525,13 +537,13 @@ implements ViewManager, ActionListener, HyperlinkListener
 
             try {
                 treeView.openFile(filename, fileAccessID);
-                addToRecentFiles(filename);
+                updateRecentFiles(filename);
             } catch (Exception ex)
             {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
                     this,
-                    ex+"\n"+filename,
+                    ex+"\n"+filename+"\nTry open as read-only.",
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             }
@@ -540,7 +552,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         {
             fileAccessID = FileFormat.READ;
 
-            final JFileChooser fchooser = new JFileChooser(currentDir);
+            JFileChooser fchooser = new JFileChooser(currentDir);
             int returnVal = fchooser.showOpenDialog(this);
 
             if(returnVal != JFileChooser.APPROVE_OPTION)
@@ -559,7 +571,7 @@ implements ViewManager, ActionListener, HyperlinkListener
 
             try {
                 treeView.openFile(filename, fileAccessID);
-                addToRecentFiles(filename);
+                updateRecentFiles(filename);
             } catch (Exception ex)
             {
                 toolkit.beep();
@@ -585,7 +597,7 @@ implements ViewManager, ActionListener, HyperlinkListener
             String filename = dialog.getFile();
             try {
                 treeView.openFile(filename, fileAccessID);
-                addToRecentFiles(filename);
+                updateRecentFiles(filename);
             } catch (Exception ex)
             {
                 toolkit.beep();
@@ -629,7 +641,7 @@ implements ViewManager, ActionListener, HyperlinkListener
             FileFormat dstFile = null;
             try {
                 dstFile = treeView.openFile(filename, fileAccessID);
-                addToRecentFiles(filename);
+                updateRecentFiles(filename);
             } catch (Exception ex)
             {
                 toolkit.beep();
@@ -651,12 +663,13 @@ implements ViewManager, ActionListener, HyperlinkListener
             String filename = mi.getName();
             try {
                 treeView.openFile(filename, fileAccessID);
+                updateRecentFiles(filename);
             } catch (Exception ex)
             {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
                     this,
-                    ex+"\n"+filename,
+                    ex+"\n"+filename+"\nTry open as read-only.",
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             }
@@ -676,6 +689,15 @@ implements ViewManager, ActionListener, HyperlinkListener
                         frames[i] = null;
                     }
                 }
+            }
+
+            if (contentPane.getComponentCount() <=0)
+            {
+                // disable image and 3D GUI components if there is no data content window
+                setEnabled(imageGUIs, false);
+                setEnabled(d3GUIs, false);
+                setEnabled(tableGUIs, false);
+                chartIcon.setEnabled(false);
             }
 
             setSelectedObject(null);
@@ -800,7 +822,8 @@ implements ViewManager, ActionListener, HyperlinkListener
             JInternalFrame frame = contentPane.getSelectedFrame();
             if (frame != null && frame instanceof TableView)
             {
-                final JFileChooser fchooser = new JFileChooser(currentDir);
+                JFileChooser fchooser = new JFileChooser(currentDir);
+                fchooser.setFileFilter(DefaultFileFilter.getFileFilterText());
                 int returnVal = fchooser.showOpenDialog(this);
                 if(returnVal != JFileChooser.APPROVE_OPTION) return;
                 File choosedFile = fchooser.getSelectedFile();
@@ -1149,7 +1172,7 @@ implements ViewManager, ActionListener, HyperlinkListener
 
                 try {
                     treeView.openFile(filename, FileFormat.WRITE);
-                    addToRecentFiles(filename);
+                    updateRecentFiles(filename);
                 } catch (Exception ex)
                 {
                     showStatus(ex.toString());
@@ -1165,6 +1188,26 @@ implements ViewManager, ActionListener, HyperlinkListener
             {
                 int fsize = ViewProperties.getFontSizeInt();
                 treeView.setTreeFontSize(fsize);
+            }
+
+            if (dialog.isUserGuideChanged())
+            {
+                //update the UG path
+                String ugPath = ViewProperties.getUsersGuide();
+                try {
+                    usersGuideURL = new URL(ugPath);
+                } catch (Exception e2) {
+                    showStatus(e2.toString());
+                    return;
+                }
+
+                visitedUsersGuideURLs.clear();
+                try {
+                    usersGuideEditorPane.setPage(usersGuideURL);
+                    ugField.setText(ugPath);
+                } catch (IOException e2) {
+                    showStatus(e2.toString());
+                }
             }
         }
         else if (cmd.equals("Users guide"))
@@ -1356,12 +1399,14 @@ implements ViewManager, ActionListener, HyperlinkListener
         fileMenu.setMnemonic('f');
         mbar.add(fileMenu);
 
-        item = new JMenuItem( "Open HDF File");
+        item = new JMenuItem( "Open File");
         item.setMnemonic(KeyEvent.VK_O);
         item.addActionListener(this);
         item.setActionCommand("Open file");
         item.setAccelerator( KeyStroke.getKeyStroke(KeyEvent.VK_O, Event.CTRL_MASK, true));
         fileMenu.add(item);
+
+        fileMenu.addSeparator();
 
         item = new JMenuItem( "Open Read-Only");
         item.setMnemonic(KeyEvent.VK_R);
@@ -1382,6 +1427,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         imageSubmenu.add(item);
         fileMenu.add(imageSubmenu);
 
+/*
         imageSubmenu = new JMenu("Import TIFF To");
         item = new JMenuItem( "HDF4");
         item.setActionCommand("Convert image file: TIFF to HDF4");
@@ -1403,7 +1449,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         item.addActionListener(this);
         imageSubmenu.add(item);
         fileMenu.add(imageSubmenu);
-
+*/
         fileMenu.addSeparator();
 
         JMenu newFileMenu = new JMenu("New");
@@ -1464,8 +1510,8 @@ implements ViewManager, ActionListener, HyperlinkListener
             {
                 theFile = (String)recentFiles.get(i);
                 txtName = theFile;
-                if (txtName.length() > 33)
-                    txtName = "..." + txtName.substring(txtName.length()-30);
+                if (txtName.length() > 35)
+                    txtName = txtName.substring(0,10) + "....." + txtName.substring(txtName.length()-20);
                 item = new JMenuItem(txtName);
                 item.setName(theFile);
                 item.addActionListener(this);
@@ -1646,15 +1692,12 @@ implements ViewManager, ActionListener, HyperlinkListener
         menu.setMnemonic('I');
         mbar.add(menu);
 
-        JMenu imgsubmenu = new JMenu("Save Image As");
-        menu.add(imgsubmenu);
-        imageGUIs.add(imgsubmenu);
-
-        item = new JMenuItem( "JPEG");
+        item = new JMenuItem( "Save Image As JPEG");
         item.addActionListener(this);
         item.setActionCommand("Save image as jpeg");
-        imgsubmenu.add(item);
-
+        menu.add(item);
+        imageGUIs.add(item);
+/*
         item = new JMenuItem( "TIFF");
         item.addActionListener(this);
         item.setActionCommand("Save image as tiff");
@@ -1664,7 +1707,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         item.addActionListener(this);
         item.setActionCommand("Save image as png");
         imgsubmenu.add(item);
-
+*/
         menu.addSeparator();
 
         item = new JMenuItem( "Write Selection to New Image");
@@ -1771,8 +1814,8 @@ implements ViewManager, ActionListener, HyperlinkListener
 
         windowMenu.addSeparator();
 
-        item = new JMenuItem( "Close");
-        item.setMnemonic(KeyEvent.VK_C);
+        item = new JMenuItem( "Close Window");
+        item.setMnemonic(KeyEvent.VK_W);
         item.setActionCommand("Close a window");
         item.addActionListener(this);
         windowMenu.add(item);
@@ -1790,7 +1833,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         menu.setMnemonic('l');
         mbar.add(menu);
 
-        imageSubmenu = new JMenu("JPEG To");
+        imageSubmenu = new JMenu("Import JPEG To");
         item = new JMenuItem( "HDF4");
         item.setActionCommand("Convert image file: JPEG to HDF4");
         item.addActionListener(this);
@@ -1800,8 +1843,8 @@ implements ViewManager, ActionListener, HyperlinkListener
         item.addActionListener(this);
         imageSubmenu.add(item);
         menu.add(imageSubmenu);
-
-        imageSubmenu = new JMenu("TIFF To");
+/*
+        imageSubmenu = new JMenu("Import TIFF To");
         item = new JMenuItem( "HDF4");
         item.setActionCommand("Convert image file: TIFF to HDF4");
         item.addActionListener(this);
@@ -1812,7 +1855,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         imageSubmenu.add(item);
         menu.add(imageSubmenu);
 
-        imageSubmenu = new JMenu("PNG To");
+        imageSubmenu = new JMenu("Import PNG To");
         item = new JMenuItem( "HDF4");
         item.setActionCommand("Convert image file: PNG to HDF4");
         item.addActionListener(this);
@@ -1822,7 +1865,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         item.addActionListener(this);
         imageSubmenu.add(item);
         menu.add(imageSubmenu);
-
+*/
         menu.addSeparator();
 
         item = new JMenuItem( "User Options");
@@ -1897,6 +1940,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         button.setMargin( new Insets( 0, 0, 0, 0 ) );
         button.addActionListener( this );
         button.setActionCommand( "Show chart" );
+        chartIcon = button;
 
         tbar.addSeparator();
 
@@ -1926,6 +1970,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         button.addActionListener( this );
         button.setActionCommand( "Show palette" );
         imageGUIs.add(button);
+        paletteIcon = button;
 
         tbar.addSeparator();
 
@@ -1978,24 +2023,68 @@ implements ViewManager, ActionListener, HyperlinkListener
         return tbar;
     }
 
-    /** add a file to the most recent file list */
-    private void addToRecentFiles(String newFile)
+    /** add/update a file to the most recent file list */
+    private void updateRecentFiles(String newFile)
     {
-        if (recentFiles == null ||
-            recentFiles.contains(newFile))
+        if (recentFiles == null)
             return;
 
-        recentFiles.addElement(newFile);
+        // if the exists in the recent file list, remvoe it first
+        // and add it to the bottom to keep the recent file list sorted.
+        try {
+            recentFiles.remove(newFile);
+        }
+        catch (Exception ex) {}
 
-        // updates the menu
-        String txt = newFile;
-        if (txt.length() > 33)
-            txt = "..."+txt.substring(txt.length()-30);
-        JMenuItem fileItem = new JMenuItem(txt);
-        fileItem.setName(newFile);
-        fileItem.addActionListener(this);
-        fileItem.setActionCommand("recent.file");
-        fileMenu.add(fileItem);
+        // add the new file to the top.
+        int size = recentFiles.size();
+        recentFiles.setSize(size+1);
+        for (int i=0; i<size; i++)
+        {
+            recentFiles.set(size-i, recentFiles.get(size-i-1));
+        }
+        recentFiles.set(0, newFile);
+
+        JMenuItem fileItem=null, theItem=null;
+        int n = fileMenu.getItemCount();
+        for (int i=0; i<n; i++)
+        {
+            theItem = fileMenu.getItem(i);
+
+            if (theItem != null && newFile.equals(theItem.getName()))
+            {
+                fileItem = theItem;
+                break;
+            }
+        }
+
+        if (fileItem != null)
+        {
+            // file is listed in the recent files, rearrange it
+            fileMenu.remove(fileItem);
+            fileMenu.add(fileItem);
+        }
+        else
+        {
+            // add a new item to the menu
+            String txt = newFile;
+            if (txt.length() > 35)
+                txt = txt.substring(0, 10)+"....."+txt.substring(txt.length()-20);
+            fileItem = new JMenuItem(txt);
+            fileItem.setName(newFile);
+            fileItem.addActionListener(this);
+            fileItem.setActionCommand("recent.file");
+            fileMenu.add(fileItem);
+            n++;
+        }
+
+        // rearrange the menu items to put the most recent on the top
+        for (int i=0; i<size-1; i++)
+        {
+            fileMenu.add(fileMenu.getItem(n-i-2), n-i-1);
+        }
+            fileMenu.add(fileItem, n-size-1);
+
     }
 
     /**
@@ -2062,7 +2151,11 @@ implements ViewManager, ActionListener, HyperlinkListener
         {
             Group pgroup = dialog.getParentGroup();
             TreeNode pnode = treeView.findTreeNode(pgroup);
-            TreeNode newnode = new DefaultMutableTreeNode(obj);
+            TreeNode newnode = new DefaultMutableTreeNode(obj)
+            {
+                public boolean isLeaf() { return false; }
+            };
+
             treeView.insertNode(newnode, pnode);
         }
     }
@@ -2207,7 +2300,7 @@ implements ViewManager, ActionListener, HyperlinkListener
 
         try {
             treeView.openFile(filename, fileAccessID);
-            addToRecentFiles(filename);
+            updateRecentFiles(filename);
         } catch (Exception ex)
         {
             toolkit.beep();
@@ -2259,7 +2352,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         FileFormat newFile = null;
         try {
             newFile = treeView.openFile(filename, fileAccessID);
-            addToRecentFiles(filename);
+            updateRecentFiles(filename);
         } catch (Exception ex)
         {
             toolkit.beep();
@@ -2556,7 +2649,6 @@ implements ViewManager, ActionListener, HyperlinkListener
             setEnabled(imageGUIs, false);
             setEnabled(d3GUIs, false);
             setEnabled(tableGUIs, false);
-            setEnabled(editGUIs, false);
         }
     }
 
@@ -2675,19 +2767,9 @@ implements ViewManager, ActionListener, HyperlinkListener
      */
     private void createUsersGuidePane()
     {
-        String ugPath = null;
+        String ugPath = ViewProperties.getUsersGuide();
         try {
-            ugPath = ViewProperties.getUsersGuide();
-
-            String tmpPath = ugPath.toLowerCase();
-            if (!(tmpPath.startsWith("http:") || tmpPath.startsWith("file:")))
-            {
-                ugPath = "file:"+ugPath;
-                ViewProperties.setUsersGuide(ugPath);
-            }
-
-            if (ugPath != null && ugPath.length()>0)
-                usersGuideURL = new URL(ugPath);
+            usersGuideURL = new URL(ugPath);
         } catch (Exception e) {
             usersGuideURL = null;
             showStatus(e.toString());
@@ -2704,6 +2786,7 @@ implements ViewManager, ActionListener, HyperlinkListener
                 + "UsersGuide"
                 + System.getProperty("file.separator")
                 + "index.html";
+                ViewProperties.setUsersGuide(ugPath);
                 usersGuideURL = new URL(ugPath);
                 /* ...  use the URL to initialize the editor pane  ... */
             } catch (Exception e) {

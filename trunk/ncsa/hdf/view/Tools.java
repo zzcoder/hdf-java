@@ -15,7 +15,7 @@ import java.awt.image.*;
 import java.io.*;
 import ncsa.hdf.object.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import com.sun.media.jai.codec.*;
+import com.sun.image.codec.jpeg.*;
 
 /**
  * The "Tools" class contains various of tools for HDF files such as jpeg to
@@ -41,7 +41,7 @@ public final class Tools
     public static final int FILE_TYPE_HDF5 = 4;
 
     /** Converts an image file into HDF4/5 file.
-     *  @param imgFileName the input JPEG file.
+     *  @param imgFileName the input image file.
      *  @param hFileName the name of the HDF4/5 file.
      *  @param fromType the type of image.
      *  @param toType the type of file converted to.
@@ -58,35 +58,15 @@ public final class Tools
         else if (hFileName == null)
             throw new NullPointerException("The target HDF file is null.");
 
-        ImageDecodeParam param = null;
-        String name = null;
-
-        if (fromType == FILE_TYPE_JPEG)
-        {
-            name = "jpeg";
-            param = new JPEGDecodeParam();
-        }
-        else if (fromType == FILE_TYPE_TIFF)
-        {
-            name = "tiff";
-            param = new TIFFDecodeParam();
-        }
-        else if (fromType == FILE_TYPE_PNG)
-        {
-            name = "png";
-            param = new PNGDecodeParam();
-        }
-        else
-        {
-            throw new UnsupportedOperationException("Unsupported source image type.");
-        }
-
-        if ( !(toType == FILE_TYPE_HDF4 || toType == FILE_TYPE_HDF5 ))
+        if (fromType != FILE_TYPE_JPEG)
+            throw new UnsupportedOperationException("Unsupported image type.");
+        else if ( !(toType == FILE_TYPE_HDF4 || toType == FILE_TYPE_HDF5 ))
              throw new UnsupportedOperationException("Unsupported destination file type.");
 
         BufferedInputStream in = new BufferedInputStream(new FileInputStream(imgFileName));
-        ImageDecoder decoder = ImageCodec.createImageDecoder(name, in, param);
-        Raster image = decoder.decodeAsRaster();
+
+        JPEGImageDecoder decoder = JPEGCodec.createJPEGDecoder(in);
+        BufferedImage image = decoder.decodeAsBufferedImage();
         in.close();
 
         int h = image.getHeight();
@@ -100,15 +80,15 @@ public final class Tools
         }
 
         int idx=0;
-        int[] pixel = new int[3];
+        int rgb = 0;
         for (int i=0; i<h; i++)
         {
             for (int j=0; j<w; j++)
             {
-                image.getPixel(j, i, pixel);
-                data[idx++] = (byte) pixel[0];
-                data[idx++] = (byte) pixel[1];
-                data[idx++] = (byte) pixel[2];
+                rgb = image.getRGB(j, i);
+                data[idx++] = (byte) (rgb >> 16);
+                data[idx++] = (byte) (rgb >> 8);
+                data[idx++] = (byte) rgb;
             }
         }
 
@@ -155,35 +135,17 @@ public final class Tools
     public static void saveImageAs(BufferedImage image, File file, int type)
     throws Exception
     {
-        ImageEncodeParam param = null;
-        String name = null;
+        if (image == null)
+            throw new NullPointerException("The source image is null.");
 
-        if (type == FILE_TYPE_JPEG)
-        {
-            name = "jpeg";
-            param = new JPEGEncodeParam();
-        }
-        else if (type == FILE_TYPE_TIFF)
-        {
-            name = "tiff";
-            param = new TIFFEncodeParam();
-        }
-        else if (type == FILE_TYPE_PNG)
-        {
-            name = "png";
-            param = new PNGEncodeParam.RGB();
-        }
-        else
-        {
+        if (type != FILE_TYPE_JPEG)
             throw new UnsupportedOperationException("Unsupported image type.");
-        }
 
         BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
-        ImageEncoder encoder = ImageCodec.createImageEncoder(name, out, param);
-        encoder.encode(image.getData(), image.getColorModel());
+        JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
+        encoder.encode(image);
 
-        out.flush();
-        out.close();
+        try { out.close(); } catch (Exception ex) {}
     }
 
 }

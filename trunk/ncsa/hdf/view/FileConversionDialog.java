@@ -193,7 +193,7 @@ implements ActionListener
         }
         else if (cmd.equals("Browse source file"))
         {
-            final JFileChooser fchooser = new JFileChooser(currentDir);
+            JFileChooser fchooser = new JFileChooser(currentDir);
             if (fileTypeFrom == Tools.FILE_TYPE_JPEG)
                 fchooser.setFileFilter(DefaultFileFilter.getFileFilterJPEG());
             else if (fileTypeFrom == Tools.FILE_TYPE_TIFF)
@@ -220,7 +220,7 @@ implements ActionListener
         }
         else if (cmd.equals("Browse target file"))
         {
-            final JFileChooser fchooser = new JFileChooser();
+            JFileChooser fchooser = new JFileChooser();
             int returnVal = fchooser.showOpenDialog(this);
 
             if(returnVal != JFileChooser.APPROVE_OPTION)

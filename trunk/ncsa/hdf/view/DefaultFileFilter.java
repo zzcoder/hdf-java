@@ -244,7 +244,9 @@ public class DefaultFileFilter extends FileFilter
     public static FileFilter getFileFilterHDF()
     {
         if (FILE_FILTER_HDF != null)
+        {
             return FILE_FILTER_HDF;
+        }
 
         DefaultFileFilter filter = new DefaultFileFilter();
         filter.addExtension("hdf");

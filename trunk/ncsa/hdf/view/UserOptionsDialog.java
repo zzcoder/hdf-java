@@ -35,7 +35,7 @@ implements ActionListener
      */
     private final ViewManager viewer;
 
-    private String H4toH5Path, UGPath;
+    private String H4toH5Path, originalUGPath;
     private JTextField H4toH5Field, UGField;
     private Choice fontChoice;
     private Choice delimiterChoice;
@@ -44,6 +44,8 @@ implements ActionListener
     private final int fontSize;
 
     private boolean isFontChanged;
+
+    private boolean isUserGuideChanged;
 
     /** constructs an UserOptionsDialog.
      * @param view The HDFView.
@@ -55,7 +57,9 @@ implements ActionListener
         viewer = view;
         rootDir = viewroot;
         isFontChanged = false;
+        isUserGuideChanged = false;
         fontSize = ViewProperties.getFontSizeInt();
+        originalUGPath = ViewProperties.getUsersGuide();
 
         fontChoice = new Choice();
         delimiterChoice = new Choice();
@@ -83,7 +87,7 @@ implements ActionListener
         JPanel p0 = new JPanel();
         p0.setLayout(new BorderLayout());
         p0.add(new JLabel("User's Guide:  "), BorderLayout.WEST);
-        p0.add(UGField = new JTextField(ViewProperties.getUsersGuide()), BorderLayout.CENTER);
+        p0.add(UGField = new JTextField(originalUGPath), BorderLayout.CENTER);
         JButton b = new JButton("Browse...");
         b.setActionCommand("Browse UG");
         b.addActionListener(this);
@@ -163,7 +167,6 @@ implements ActionListener
 
             String fname = choosedFile.getAbsolutePath();
             if (fname == null) return;
-            UGPath = fname;
             UGField.setText(fname);
         }
         else if (cmd.equals("Browse h4toh5"))
@@ -187,13 +190,12 @@ implements ActionListener
 
     private void setUserOptions()
     {
-        UGPath = UGField.getText();
+        String UGPath = UGField.getText();
         if (UGPath != null && UGPath.length()>0)
+        {
             ViewProperties.setUsersGuide(UGPath);
-
-        //H4toH5Path = H4toH5Field.getText();
-        //if (H4toH5Path != null && H4toH5Path.length()>0)
-        //    ViewProperties.setH4toH5(H4toH5Path);
+            isUserGuideChanged = !UGPath.equals(originalUGPath);
+        }
 
         ViewProperties.setFontSize(fontChoice.getSelectedItem());
         ViewProperties.setDataDelimiter(delimiterChoice.getSelectedItem());
@@ -202,6 +204,8 @@ implements ActionListener
     }
 
     public boolean isFontChanged() { return isFontChanged; }
+
+    public boolean isUserGuideChanged() { return isUserGuideChanged; }
 
 }
 

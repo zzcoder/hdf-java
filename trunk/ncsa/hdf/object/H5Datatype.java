@@ -208,6 +208,25 @@ public class H5Datatype extends Datatype
      *  <p>
      *  @param tid  the data type.
      */
+    public static final int getDatatypeSize(int tid)
+    {
+        String description = "Unknown";
+
+        // data type information
+        int typeSize=-1;
+
+        try {
+            typeSize = H5.H5Tget_size(tid);
+        } catch (Exception ex) {typeSize = -1; }
+
+         return typeSize;
+    }
+
+    /**
+     *  Returns the short description of datatype.
+     *  <p>
+     *  @param tid  the data type.
+     */
     public static final String getDatatypeDescription(int tid)
     {
         String description = "Unknown";
@@ -270,7 +289,13 @@ public class H5Datatype extends Datatype
                 }
                 break;
             case HDF5Constants.H5T_STRING:
-                description = "String";
+                try {
+                    description = "String, length="+H5.H5Tget_size(tid);
+                }
+                catch (Exception ex)
+                {
+                    description = "String";
+                }
                 break;
             case HDF5Constants.H5T_REFERENCE:
                 description = "Object reference";

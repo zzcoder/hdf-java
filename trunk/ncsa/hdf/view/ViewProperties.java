@@ -20,6 +20,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.MalformedURLException;
 
 /**
  * The ViewProperties holds all the HDFView static information.
@@ -30,13 +31,13 @@ import java.net.URLClassLoader;
 public class ViewProperties extends Properties
 {
     /** the version of the HDFViewer */
-    public static final String VERSION = "1.1";
+    public static final String VERSION = "1.2";
 
     /** the local property file name */
     public static final String USER_PROPS = "hdfview.props";
 
     /** the maximum number of most recent files */
-    public static final int MAX_RECENT_FILES = 20;
+    public static final int MAX_RECENT_FILES = 15;
 
     /** name of the tab delimiter */
     public static final String DELIMITER_TAB = "Tab";
@@ -54,7 +55,7 @@ public class ViewProperties extends Properties
     public static final String DELIMITER_SEMI_COLON = "Semi-Colon";
 
     /** user's guide */
-    private static String usersGuide = "";
+    private static String usersGuide = "http://hdf.ncsa.uiuc.edu/hdf-java-html/hdfview/UsersGuide/index.html";
 
     /** the font size */
     private static String fontSizeStr = "12";
@@ -187,15 +188,15 @@ public class ViewProperties extends Properties
 
         try {
             url = new URL("file:"+rootPath+"/lib/jhdfview.jar");
-        } catch (java.net.MalformedURLException mfu) {;}
+        } catch (MalformedURLException mfu) {;}
 
         try {
             url2 = new URL("file:"+rootPath+"/");
-        } catch (java.net.MalformedURLException mfu) {;}
+        } catch (MalformedURLException mfu) {;}
 
         try {
             url3 = new URL("file:"+rootPath+"/src/");
-        } catch (java.net.MalformedURLException mfu) {;}
+        } catch (MalformedURLException mfu) {;}
 
         URL uu[] = {url, url2, url3};
         URLClassLoader cl = new URLClassLoader(uu);
@@ -405,12 +406,17 @@ public class ViewProperties extends Properties
         } catch (Exception e) {;}
 
         String str = (String)get("users.guide");
-        if (str == null || str.length()<=0)
-        {
-            usersGuide = "file:" + rootDir + File.separator + "docs"
-                + File.separator + "UsersGuide" + File.separator + "index.html";
-        } else
+        String tmpUG = str.toLowerCase();
+        if (tmpUG.startsWith("file:") || tmpUG.startsWith("http:"))
             usersGuide = str;
+        else
+        {
+            File tmpFile = new File(str);
+            if (tmpFile.exists())
+                usersGuide = "file:"+str;
+            else
+                usersGuide = "http://"+str;
+        }
 
         str = (String)get("data.delimiter");
         if (str != null && str.length()>0)
@@ -524,7 +530,23 @@ public class ViewProperties extends Properties
     public static Vector getMRF(){ return mrf;}
 
     /** set the path of H5View User's guide */
-    public static void setUsersGuide( String ug) { usersGuide = ug; };
+    public static void setUsersGuide( String str)
+    {
+        if (str == null || str.length()<=0)
+            return;
+
+        String tmpUG = str.toLowerCase();
+        if (tmpUG.startsWith("file:") || tmpUG.startsWith("http:"))
+            usersGuide = str;
+        else
+        {
+            File tmpFile = new File(str);
+            if (tmpFile.exists())
+                usersGuide = "file:"+str;
+            else
+                usersGuide = "http://"+str;
+        }
+    }
 
     /** set the path of the H5to H5 converter */
     public static void setH4toH5( String tool) { h4toh5 = tool; };

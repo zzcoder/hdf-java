@@ -21,6 +21,7 @@ import java.util.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Graphics2D;
 import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.Rectangle;
@@ -28,7 +29,6 @@ import java.awt.Point;
 import java.awt.Window;
 import java.awt.Color;
 import java.awt.Frame;
-import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsConfiguration;
@@ -147,6 +147,8 @@ implements ImageObserver
     public ImageView(ViewManager theView)
     {
         super();
+        setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
+        setFrameIcon(ViewProperties.getImageIcon());
 
         viewer = theView;
         zoomFactor = 1.0f;
@@ -169,10 +171,6 @@ implements ImageObserver
         }
 
         dataset = (ScalarDS)hobject;
-        String fname = new java.io.File(hobject.getFile()).getName();
-        this.setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
-        this.setFrameIcon(ViewProperties.getImageIcon());
-
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout());
 
@@ -197,7 +195,7 @@ implements ImageObserver
 
         // set title
         StringBuffer sb = new StringBuffer("ImageView - ");
-        sb.append(fname);
+        sb.append(dataset.getFile());
         sb.append(" - ");
         sb.append(hobject.getPath());
         sb.append(hobject.getName());
@@ -243,11 +241,7 @@ implements ImageObserver
 
         frameTitle = sb.toString();
         setTitle(frameTitle);
-        if (rank > 2)
-        {
-            // reset the title for 3D dataset
-            setTitle( frameTitle+ " - Page "+String.valueOf(start[selectedIndex[2]]+1)+ " of "+dims[selectedIndex[2]]);
-        }
+        //if (rank > 2) setTitle( frameTitle+ " - Page "+String.valueOf(start[selectedIndex[2]]+1)+ " of "+dims[selectedIndex[2]]);
 
         viewer.showStatus(frameTitle);
     }
@@ -991,7 +985,7 @@ implements ImageObserver
     /**
      * This method returns a buffered image with the contents of an image.
      */
-    public static BufferedImage toBufferedImage(Image image)
+    private BufferedImage toBufferedImage(Image image)
     {
         if (image == null)
             return null;
@@ -999,9 +993,33 @@ implements ImageObserver
         if (image instanceof BufferedImage)
             return (BufferedImage)image;
 
-        // This code ensures that all the pixels in the image are loaded
-        // the following line may cause memory error for large images
-        //  image = new ImageIcon(image).getImage();
+        // !!!!!!!!!!!!!!!!!! NOTICE !!!!!!!!!!!!!!!!!!!!!
+        // the following way of creating a buffered image is using
+        // Component.createImage(). This method can be used only if the
+        // component is visible on the screen. Also, this method returns
+        // buffered images that do not support transparent pixels.
+        // The buffered image created by this way works for package
+        // com.sun.image.codec.jpeg.*
+        // It does not work well with JavaTM Advanced Imaging
+        // com.sun.media.jai.codec.*;
+        // if the screen setting is less than 32-bit color
+        int w = image.getWidth(null);
+        int h = image.getHeight(null);
+        BufferedImage bimage = (BufferedImage)createImage(w, h);
+        Graphics g = bimage.createGraphics();
+        g.drawImage(image, 0, 0, null);
+
+/*
+        // !!!!!!!!!!!!!!!!!! NOTICE !!!!!!!!!!!!!!!!!!!!!
+        // An Image object cannot be converted to a BufferedImage object. The
+        // closest equivalent is to create a buffered image and then draw the
+        // image on the buffered image. The following way defines a method that
+        // does this.
+        // The buffered image created by this way does works with JavaTM Advanced Imaging
+        // com.sun.media.jai.codec.*;
+        // It does not work for the package
+        // com.sun.image.codec.jpeg.*
+        // if the image is a 24-bit true color image
 
         // Determine if the image has transparent pixels; for this method's
         boolean hasAlpha = hasAlpha(image);
@@ -1024,7 +1042,6 @@ implements ImageObserver
             } catch (Exception e) {
             // The system does not have a screen
         }
-
         if (bimage == null)
         {
             // Create a buffered image using the default color model
@@ -1036,12 +1053,14 @@ implements ImageObserver
         }
 
         // Copy image to buffered image
-        Graphics g = bimage.createGraphics();
+        Graphics2D g = bimage.createGraphics();
 
         // Paint the image onto the buffered image
-        g.drawImage(image, 0, 0, null);
-        g.dispose();
+        g.drawImage(image, 0, 0, this);
 
+*/
+
+        g.dispose();
         return bimage;
     }
 
@@ -1993,8 +2012,11 @@ implements ImageObserver
             bottomP.add(buttonP, BorderLayout.EAST);
 
             checkRed = new JRadioButton("Red");
+            checkRed.setForeground(Color.red);
             checkGreen = new JRadioButton("Green");
+            checkGreen.setForeground(Color.green);
             checkBlue = new JRadioButton("Blue");
+            checkBlue.setForeground(Color.blue);
             checkRed.setSelected(true);
             ButtonGroup bgroup = new ButtonGroup();
             bgroup.add(checkRed);
