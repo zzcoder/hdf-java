@@ -554,7 +554,7 @@ implements ActionListener, MetaDataView
         } // if (d instanceof Compound)
 
         // add compression and data lauoyt information
-        try { d.getMetadata(); } catch (Exception ex) {}
+        //try { d.getMetadata(); } catch (Exception ex) {}
         String chunkInfo = "";
         long[] chunks = d.getChunkSize();
         if (chunks == null)
@@ -584,9 +584,7 @@ implements ActionListener, MetaDataView
         rp.add(new JLabel(d.getCompression()));
         bPanel.add(rp, BorderLayout.CENTER);
 
-        // getChunkInfo does not work for HDF4 files
-        if (isH5)
-            panel.add(bPanel, BorderLayout.SOUTH);
+        panel.add(bPanel, BorderLayout.SOUTH);
 
         return panel;
     }

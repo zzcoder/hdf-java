@@ -209,8 +209,9 @@ public class HDFConstants
     public static final int COMP_CODE_NBIT     =  2;
     public static final int COMP_CODE_SKPHUFF  =  3;
     public static final int COMP_CODE_DEFLATE  =  4;
-    public static final int COMP_CODE_INVALID  =  5;
-    public static final int COMP_MODEL_STDIO  =  0;
+    public static final int COMP_CODE_SZIP  =  5;
+    public static final int COMP_CODE_INVALID  =  6;
+    public static final int COMP_CODE_JPEG  =  7;
 
     // Interlace schemes
     public static final int DFIL_PIXEL  = 0;  /* Pixel Interlacing */

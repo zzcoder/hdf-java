@@ -244,6 +244,9 @@ public class H4Group extends Group
         long[] oid = {tag, ref};
         group = new H4Group(file, name, path, pgroup, oid);
 
+        if (group != null)
+            pgroup.addToMemberList(group);
+
         return group;
     }
 

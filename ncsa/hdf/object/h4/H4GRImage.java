@@ -467,6 +467,39 @@ public class H4GRImage extends ScalarDS
             // mask off the litend bit
             grInfo[1] = grInfo[1] & (~HDFConstants.DFNT_LITEND);
             nativeDatatype = grInfo[1];
+
+            // get compression information
+            try {
+                HDFCompInfo compInfo = new HDFCompInfo();
+                boolean status = HDFLibrary.GRgetcompress(id, compInfo);
+                if (compInfo.ctype == HDFConstants.COMP_CODE_DEFLATE)
+                    compression = "GZIP";
+                else if (compInfo.ctype == HDFConstants.COMP_CODE_SZIP)
+                    compression = "SZIP";
+                else if (compInfo.ctype == HDFConstants.COMP_CODE_JPEG)
+                    compression = "JPEG";
+                else if (compInfo.ctype == HDFConstants.COMP_CODE_SKPHUFF)
+                    compression = "SKPHUFF";
+                else if (compInfo.ctype == HDFConstants.COMP_CODE_RLE)
+                    compression = "RLE";
+                else if (compInfo.ctype == HDFConstants.COMP_CODE_NBIT)
+                    compression = "NBIT";
+            } catch (Exception ex) {}
+
+            // get chunk information
+            try {
+                HDFOnlyChunkInfo chunkInfo = new HDFOnlyChunkInfo();
+                int[] cflag = {HDFConstants.HDF_NONE};
+                boolean status = HDFLibrary.GRgetchunkinfo(id, chunkInfo, cflag);
+                if (cflag[0] == HDFConstants.HDF_NONE)
+                    chunkSize = null;
+                else {
+                    chunkSize = new long[rank];
+                    for (int i=0; i<rank; i++)
+                        chunkSize[i] = (long)chunkInfo.chunk_lengths[i];
+                }
+            } catch (Exception ex) {}
+
         } catch (HDFException ex) {}
         finally {
             close(id);
@@ -714,13 +747,12 @@ public class H4GRImage extends ScalarDS
         {
             // add the dataset to the parent group
             vgid = pgroup.open();
-            if (vgid < 0)
-            {
+            if (vgid < 0) {
                 if (grid > 0) HDFLibrary.GRendaccess(grid);
                 throw (new HDFException("Unable to open the parent group."));
             }
 
-            HDFLibrary.Vaddtagref(vgid, HDFConstants.DFTAG_NDG, ref);
+            HDFLibrary.Vaddtagref(vgid, HDFConstants.DFTAG_RI, ref);
 
             pgroup.close(vgid);
         }
@@ -729,6 +761,9 @@ public class H4GRImage extends ScalarDS
 
         long[] oid = {HDFConstants.DFTAG_NDG, ref};
         dataset = new H4GRImage(file, name, path, oid);
+
+        if (dataset != null)
+            pgroup.addToMemberList(dataset);
 
         return dataset;
     }

@@ -115,22 +115,24 @@ comp_info *cinf)
 jfieldID jf;
 jclass jc;
 
-	jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFNewCompInfo");
+	jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFCompInfo");
+
 	if (jc == NULL) {
 		return JNI_FALSE;
+	} else {
+ 		jf = (*env)->GetFieldID(env, jc, "ctype", "I");
+		if (jf == NULL) {
+			return JNI_FALSE;
+		}
+		(*env)->SetIntField(env, ciobj, jf, coder);
 	}
 
 
 	switch(coder) {
 	case COMP_CODE_NONE:
-	default:
-		break;
 	case COMP_CODE_RLE:
-		jf = (*env)->GetFieldID(env, jc, "ctype", "I");
-		if (jf == NULL) {
-			return JNI_FALSE;
-		}
-		(*env)->SetIntField(env, jc, jf, COMP_CODE_RLE);
+	case COMP_CODE_SZIP:
+	default:
 		break;
 	case COMP_CODE_SKPHUFF:
 		jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFSKPHUFFCompInfo");
@@ -141,12 +143,12 @@ jclass jc;
 		if (jf == NULL) {
 			return JNI_FALSE;
 		}
-		(*env)->SetIntField(env, jc, jf, COMP_CODE_SKPHUFF);
+		(*env)->SetIntField(env, ciobj, jf, COMP_CODE_SKPHUFF);
 		jf = (*env)->GetFieldID(env, jc, "skp_size", "I");
 		if (jf == NULL) {
 			return JNI_FALSE;
 		}
-		(*env)->SetIntField(env, jc, jf, cinf->skphuff.skp_size );
+		(*env)->SetIntField(env, ciobj, jf, cinf->skphuff.skp_size );
 		break;
 
 	case COMP_CODE_DEFLATE:
@@ -158,12 +160,12 @@ jclass jc;
 		if (jf == NULL) {
 			return JNI_FALSE;
 		}
-		(*env)->SetIntField(env, jc, jf, COMP_CODE_DEFLATE);
+		(*env)->SetIntField(env, ciobj, jf, COMP_CODE_DEFLATE);
 		jf = (*env)->GetFieldID(env, jc, "level", "I");
 		if (jf == NULL) {
 			return JNI_FALSE;
 		}
-		(*env)->SetIntField(env, jc, jf, cinf->deflate.level );
+		(*env)->SetIntField(env, ciobj, jf, cinf->deflate.level );
 		break;
 	case COMP_CODE_NBIT:
 		jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFNBITCompInfo");
@@ -175,36 +177,36 @@ jclass jc;
 		if (jf == NULL) {
 			return JNI_FALSE;
 		}
-		(*env)->SetIntField(env, jc, jf, COMP_CODE_NBIT);
+		(*env)->SetIntField(env, ciobj, jf, COMP_CODE_NBIT);
 		jf = (*env)->GetFieldID(env, jc, "nt", "I");
 		if (jf == NULL) {
 			return JNI_FALSE;
 		}
-		(*env)->SetIntField(env, jc, jf, cinf->nbit.nt);
+		(*env)->SetIntField(env, ciobj, jf, cinf->nbit.nt);
 
 		jf = (*env)->GetFieldID(env, jc, "sign_ext", "I");
 		if (jf == NULL) {
 			return JNI_FALSE;
 		}
-		(*env)->SetIntField(env, jc, jf, cinf->nbit.sign_ext );
+		(*env)->SetIntField(env, ciobj, jf, cinf->nbit.sign_ext );
 
 		jf = (*env)->GetFieldID(env, jc, "fill_one", "I");
 		if (jf == NULL) {
 			return JNI_FALSE;
 		}
-		(*env)->SetIntField(env, jc, jf, cinf->nbit.fill_one);
+		(*env)->SetIntField(env, ciobj, jf, cinf->nbit.fill_one);
 
 		jf = (*env)->GetFieldID(env, jc, "start_bit", "I");
 		if (jf == NULL) {
 			return JNI_FALSE;
 		}
-		(*env)->SetIntField(env, jc, jf, cinf->nbit.start_bit );
+		(*env)->SetIntField(env, ciobj, jf, cinf->nbit.start_bit );
 
 		jf = (*env)->GetFieldID(env, jc, "bit_len", "I");
 		if (jf == NULL) {
 			return JNI_FALSE;
 		}
-		(*env)->SetIntField(env, jc, jf, cinf->nbit.bit_len);
+		(*env)->SetIntField(env, ciobj, jf, cinf->nbit.bit_len);
 		break;
 	}
 
@@ -515,6 +517,7 @@ jobject compmodel;
 		if (jmi == NULL) {
 			return JNI_FALSE;
 		}
+ 
 		(*env)->CallVoidMethod(env,chunkobj,jmi,rarray);
 		break;
 

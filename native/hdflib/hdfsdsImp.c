@@ -1203,10 +1203,9 @@ jint id,
 jobject cinfo) /* out: CompInfo */
 {
         intn rval;
-	comp_coder_t coder;
+		comp_coder_t coder;
         comp_info cinf;
-        jboolean bval;
-
+ 
         /* check for success... */
 
         rval = SDgetcompress((int32) id, (comp_coder_t *) &coder, 
@@ -1216,9 +1215,8 @@ jobject cinfo) /* out: CompInfo */
         if (rval == FAIL) {
                 return JNI_FALSE;
         } else {
-		bval = setNewCompInfo(env,cinfo, coder, &cinf);
-                return JNI_TRUE;
-        }
+			return setNewCompInfo(env,cinfo, coder, &cinf);
+         }
 }
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDsetaccesstype 
@@ -1360,8 +1358,8 @@ jboolean bb;
 		(*env)->ReleaseIntArrayElements(env,cflags,(jint *)flgs,JNI_ABORT);
 		return JNI_FALSE;
 	} else {
+		stat = makeChunkInfo( env, chunk_def, (int32)*flgs, &cdef);
 		(*env)->ReleaseIntArrayElements(env,cflags,(jint *)flgs,0);
-		stat = makeChunkInfo( env, chunk_def, (int32)flgs, &cdef);
 
 		return stat/*JNI_TRUE*/;
 	}
