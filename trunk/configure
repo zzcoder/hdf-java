@@ -2816,6 +2816,18 @@ test -n "$target_alias" &&
 TARGET=$target
 echo "FYI the target here is: "$target
 case $target in
+alpha-dec-osf*.*) TARGETLIB="alpha"
+LD=$CC; LDOPT="-pthread -shared"; SLEXT="so";
+LLEXT="a";
+JSLEXT="so";
+COPT="-pthread -shared"; COPTNOSHARED=;
+;;
+*aix*) TARGETLIB="aix"
+LD=$CC; LDOPT=-G; SLEXT="so";
+LLEXT="a";
+JSLEXT="so";
+COPT=-G; COPTNOSHARED=;
+;;
 *-*-solaris2*) TARGETLIB="solaris"
 LD=$CC; LDOPT=-G; SLEXT="so";
 LLEXT="a";
@@ -3486,7 +3498,7 @@ echo "$as_me: error: JDK needed for compilation." >&2;}
     if test -n "$jdk_inc"; then
       JAVAINC="$jdk_inc"
       saved_CPPFLAGS="$CPPFLAGS"
-      CPPFLAGS="$CPPFLAGS -I$jdk_inc -I$jdk_inc/$TARGETLIB"
+      CPPFLAGS="$CPPFLAGS $COPT -I$jdk_inc -I$jdk_inc/$TARGETLIB"
     fi
 
 
@@ -3948,6 +3960,20 @@ JHVINST=$JH45INST
 JH5INST=$JH45INST
 
 case $target in
+alpha-dec-osf*.*)
+LD=$CC; LDOPT="-pthread -shared"; SLEXT="so";
+LLEXT="a";
+JSLEXT="so";
+COPT="-pthread -shared"; COPTNOSHARED=;
+JAVAINC2=$JAVAINC/alpha ; JAVATARG=alpha;
+;;
+*aix*)
+LD=$CC; LDOPT=-G; SLEXT="so";
+LLEXT="a";
+JSLEXT="so";
+COPT=-G; COPTNOSHARED=;
+JAVAINC2=$JAVAINC/aix ; JAVATARG=aix;
+;;
 *-*-solaris2*)
 LD=$CC; LDOPT=-G; SLEXT="so";
 LLEXT="a";
