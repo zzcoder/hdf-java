@@ -92,7 +92,19 @@ esac
 ac_cv_lib_HDF4=$HDF4LIB
 ac_cv_lib_HDF4INC=$HDF4INC
 
+withval="";
+AC_SUBST(libz) libz=""
+AC_ARG_WITH(libz,[  --with-hdf5=LIB     Path to the HDF5 library (requied if not in default path)],,)
+
+libz=$withval
+
+if test -n "$libz" ; then
+ZLIB=$libz
+else
+
 ZLIB=$HDF4LIB"/libz.a"
+
+fi
 
 dnl  Check for HDF5 library  --with-hdf5 must be set.
 withval="";
@@ -188,6 +200,12 @@ ac_cv_lib_HDF45INC=$HDF45INC
 dnl  find java stuff:  use -with-jdk
 
 withval="";
+AC_SUBST(jdkclasses) jdkclasses=""
+AC_ARG_WITH(jdkclasses,[  --with-classpath=LIB],,)
+
+jdkclasses=$withval
+
+withval="";
 AC_SUBST(JAVALIB) JAVALIB=""
 AC_ARG_WITH(jdk,[  --with-jdk=INC,LIB     Path to the JDK (required if not in default path)],,)
 case "$withval" in
@@ -219,6 +237,16 @@ case "$withval" in
     ;;
 esac
 
+if test -n "$jdkclasses"; then
+
+if test -f $jdkclasses/classes.jar ; then
+	JAVACLASSES=$jdkclasses/classes.jar
+	JAVACLASSPATH_FOUND=1
+else
+	 AC_MSG_ERROR(cannot find jdk classes in JDK lib path.)
+fi
+else
+
 if test -f $JAVALIB/classes.zip ; then
 	JAVACLASSES=$JAVALIB/classes.zip
 	JAVACLASSPATH_FOUND=1
@@ -239,11 +267,20 @@ else
 		 AC_MSG_ERROR(cannot find jdk classes in JDK lib path.)
 	fi
 fi
+fi
 CLASSPATH="$JAVACLASSES"":""$HERE""/lib/jai_codec.jar:""$HERE"
 
+withval="";
+AC_SUBST(javabin) javabin=""
+AC_ARG_WITH(javabin,[  --with-javabin=LIB],,)
+javabin=$withval
 
+if test -n "$javabin" ; then
+JAVABIN=$javabin
+else
 JAVABIN=`dirname $JAVAINC`
 JAVABIN="$JAVABIN/bin"
+fi
 
 AC_PATH_PROG(JAVA,java,,$JAVABIN,)
 AC_PATH_PROG(JAVAC,javac,,$JAVABIN,)
@@ -339,6 +376,7 @@ JH5INST=$JH45INST
 case $target in
 *-*-solaris2*) 
 LD=$CC; LDOPT=-G; SLEXT="so";
+JSLEXT="so";
 COPT=-G; COPTNOSHARED=; JAVAINC2=$JAVAINC/solaris ; JAVATARG=solaris;
 ;;
 mips*-sgi-irix6*) LD=ld; 
@@ -365,11 +403,19 @@ fi
 else 
 echo "No such system: "$SYS
 fi
+JSLEXT="so";
 JAVAINC2=$JAVAINC/irix; JAVATARG=irix-$OS;;
 *-pc-linux*) LD=$CC; LDOPT=-shared; SLEXT="so";
+JSLEXT="so";
 COPT="-shared -DUNIX386" ; 
 JAVAINC2=$JAVAINC/linux; 
 JAVATARG=linux;
+;;
+*powerpc-apple*) LD=$CC; LDOPT=-dynamiclib; 
+JSLEXT="jnilib";
+SLEXT="dylib";
+JAVAINC2=$JAVAINC/macosx; 
+JAVATARG=macosx;
 ;;
 *) LD=$CC; LDOPT=-G; SLEXT="so";
 COPT=-shared; COPTNOSHSARED=; JAVAINC2=$JAVAINC/$target; JAVATARG=$TARGET ;;
@@ -379,6 +425,7 @@ AC_SUBST(LD)
 AC_SUBST(LDOPT)
 AC_SUBST(LDOPT2)
 AC_SUBST(SLEXT)
+AC_SUBST(JSLEXT)
 AC_SUBST(COPT)
 AC_SUBST(COPTNOSHARE)
 AC_SUBST(RM)
