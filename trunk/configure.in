@@ -443,8 +443,13 @@ else
 OUTPUT_FILES="Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile native/h4toh5lib/Makefile"
 fi
 else
+if test -d "./test"; then
+##  Don't use H4toH5 (but do include some tests)
+OUTPUT_FILES="$OUTPUT_FILES test/linktest/Makefile test/linktest/testlink"
+else
 ##  Don't use H4toH5 (no tests)
-OUTPUT_FILES="Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile "
+OUTPUT_FILES="$OUTPUR_FILES"
+fi
 fi
 
 AC_OUTPUT($OUTPUT_FILES)
