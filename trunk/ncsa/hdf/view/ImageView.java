@@ -303,8 +303,7 @@ implements ImageObserver
         int rank = dataset.getRank();
         if (rank <=0) dataset.init();
 
-        boolean isH4TrueColor = false;
-        boolean isH5TrueColor = false;
+        boolean isTrueColor = false;
         String strValue = null;
 
         if (dataset instanceof H4GRImage)
@@ -312,55 +311,18 @@ implements ImageObserver
             H4GRImage h4image = (H4GRImage)dataset;
             int n = h4image.getComponentCount();
             if (n >= 3)
-                isH4TrueColor = true;
+                isTrueColor = true;
         }
         else if (dataset instanceof H5ScalarDS)
         {
-            List list = null;
-            try { list = dataset.getMetadata(); }
-            catch (Exception ex) { viewer.showStatus(ex.toString()); }
-
-            if (list != null)
-            {
-                int n = list.size();
-                for (int i=0; i<n; i++)
-                {
-                    Attribute attr = (Attribute)list.get(i);
-                    String name = attr.getName();
-                    Object value = attr.getValue();
-
-                    if (value.getClass().isArray())
-                        strValue = Array.get(value, 0).toString();
-                    else
-                        strValue = value.toString();
-
-                    // it is a true color image at one of three cases:
-                    // 1) IMAGE_SUBCLASS = IMAGE_TRUECOLOR,
-                    // 2) INTERLACE_MODE = INTERLACE_PIXEL,
-                    // 3) INTERLACE_MODE = INTERLACE_PLANE
-                    if ( (ScalarDS.IMAGE_SUBCLASS.equals(name) &&
-                          ScalarDS.IMAGE_TRUECOLOR.equals(strValue)) ||
-                         (ScalarDS.INTERLACE_MODE.equals(name) &&
-                          ScalarDS.INTERLACE_PIXEL.equals(strValue)) ||
-                         (ScalarDS.INTERLACE_MODE.equals(name) &&
-                          ScalarDS.INTERLACE_PLANE.equals(strValue)) )
-                    {
-                        isH5TrueColor = true;
-                        break;
-                    }
-                } // for (int i=0; i<n; i++)
-            } // if (list != null)
-        } //else if (dataset instanceof H5ScalarDS)
-
-        if (isH4TrueColor)
-        {
-            H4GRImage h4i = (H4GRImage)dataset;
-            this.image = createTrueColorImage(h4i.getInterlace());
+            int interlace = dataset.getInterlace();
+            isTrueColor = (interlace == ScalarDS.INTERLACE_PIXEL ||
+                interlace == ScalarDS.INTERLACE_PLANE);
         }
-        else if (isH5TrueColor)
+
+        if (isTrueColor)
         {
-            if (setH5ImageDimension(strValue))
-                this.image = createTrueColorImage(strValue);
+            this.image = createTrueColorImage();
         }
         else
             this.image = createIndexedImage();
@@ -877,9 +839,8 @@ implements ImageObserver
            INTERLACE_PLANE = [pixel components][height][width]
        </pre>
      * <p>
-     * @param interlace the interlace mode of color components.
      */
-    private Image createTrueColorImage(String interlace)
+    private Image createTrueColorImage()
     {
         Image theImage = null;
 
@@ -898,7 +859,7 @@ implements ImageObserver
         int imgSize = w*h;
         int packedImageData[] = new int[imgSize];
         int pixel=0, idx=0, r=0, g=0, b=0;
-        boolean isPlaneInterlace = interlace.equals(ScalarDS.INTERLACE_PLANE);
+        boolean isPlaneInterlace = (dataset.getInterlace() ==ScalarDS.INTERLACE_PLANE);
         for (int i=0; i<h; i++)
         {
             for (int j=0; j<w; j++)
@@ -934,73 +895,6 @@ implements ImageObserver
             (w, h, dcm, packedImageData, 0, w));
 
         return theImage;
-    }
-
-    /**
-     * Specify orders for the HDF5 image dimensions as:
-       <pre>
-           INTERLACE_PIXEL = [height][width][pixel components]
-           INTERLACE_PLANE = [pixel components][height][width]
-       </pre>
-     * <p>
-     * @param interlace the name of the interlace.
-     */
-    private boolean setH5ImageDimension(String interlace)
-    {
-        long selectedDims[] = dataset.getSelectedDims();
-        if (selectedDims == null || selectedDims.length <3)
-        {
-            // requires at least three dimensions
-            viewer.showStatus("The dataset does not have three dimensions.");
-            return false;
-        }
-
-        if (interlace.equals(ScalarDS.INTERLACE_PLANE))
-        {
-            // plane interlace
-            long dims[] = dataset.getDims();
-            if (dims[0] < 3)
-            {
-                // requires three color components
-                viewer.showStatus("The dataset does not have three color components.");
-                return false;
-            }
-
-            selectedDims[0] = 3;
-            int selectedIndex[] = dataset.getSelectedIndex();
-            selectedIndex[0] = 1; // index for height
-            selectedIndex[1] = 2; // index for width
-            selectedIndex[2] = 0; // index for depth
-        }
-        else
-        {
-            // pixel interlace
-            long dims[] = dataset.getDims();
-            if (dims[2] < 3)
-            {
-                // requires three color components
-                viewer.showStatus("The dataset does not have three color components.");
-                return false;
-            }
-
-            int selectedIndex[] = dataset.getSelectedIndex();
-            selectedDims[2] = 3;
-            if (selectedIndex[0] != 0)
-            {
-                //change the default initialization
-                // for three, the default selection is
-                // selectedDims[2] = dims[2]
-                // selectedDims[1] = dims[1]
-                // selectedDims[0] = 1; which is not correct for true color images.
-                selectedDims[0] = dims[0];
-                selectedDims[1] = dims[1];
-            }
-            selectedIndex[0] = 0; // index for height
-            selectedIndex[1] = 1; // index for width
-            selectedIndex[2] = 2; // index for depth
-        }
-
-        return true;
     }
 
     /** ImageComponent draws the image. */

@@ -218,6 +218,7 @@ implements ViewManager, ActionListener
 
         // check if the data content is already displayed
         JInternalFrame[] frames = contentPane.getAllFrames();
+        JInternalFrame theFrame = null;
         if (frames != null)
         {
             for (int i=0; i<frames.length; i++)
@@ -225,24 +226,45 @@ implements ViewManager, ActionListener
                 HObject obj = (HObject)(((DataObserver)frames[i]).getDataObject());
                 if (selectedObject.equals(obj))
                 {
-                    frames[i].show();
-                    return; // data is already displayed
+                    theFrame = frames[i];
+                    break; // data is already displayed
                 }
             }
         }
 
         Dataset d = (Dataset)selectedObject;
         if (d.getRank() <= 0) d.init();
+        boolean isText = (d instanceof ScalarDS && ((ScalarDS)d).isText());
+        boolean isImage = (d instanceof ScalarDS && ((ScalarDS)d).isImage());
 
-        if (d instanceof ScalarDS &&
-            ((ScalarDS)d).isImage())
+        if (isDefaultDisplay)
+        {
+            if (theFrame != null)
+            {
+                theFrame.show();
+                return;
+            }
+        }
+        else
+        {
+            // make new selection and reload the dataset
+            DataOptionDialog dialog = new DataOptionDialog(this);
+            dialog.show();
+            if (dialog.isCancelled())
+                return;
+
+            if (theFrame != null) // discard the displayed data
+                ((DataObserver)theFrame).dispose();
+            isImage = dialog.isImageDisplay();
+        }
+
+        if (isImage)
         {
             ImageView dataView = new ImageView(this);
             if (dataView.getImage() != null)
                 addDataWindow(dataView);
         }
-        else if (d instanceof ScalarDS &&
-            ((ScalarDS)d).isText())
+        else if (isText)
         {
             TextView dataView = new TextView(this);
             if (dataView.getText() != null)
@@ -254,8 +276,6 @@ implements ViewManager, ActionListener
             if (dataView.getTable() != null)
                 addDataWindow(dataView);
         }
-
-        //************ more work here
     }
 
     // To do: Implementing ViewManager
