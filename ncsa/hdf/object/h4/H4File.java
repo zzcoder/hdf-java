@@ -75,6 +75,10 @@ public class H4File extends FileFormat
      */
     private int sdid;
 
+    /* secret flag: show CDF0.0, etc., to help debug
+     */
+    private boolean showAll = false;
+
     /**
      * Creates an H4File with read only access.
      */
@@ -123,6 +127,15 @@ public class H4File extends FileFormat
             flag = HDFConstants.DFACC_CREATE;
         else
             flag = access;
+
+
+	String shwAll = System.getProperty("h4showall");
+	if (shwAll != null) { 
+		showAll = true;
+		System.err.println("show all is on");
+	} else {
+		System.err.println("show all is off");
+	}
     }
 
     /**
@@ -976,13 +989,13 @@ public class H4File extends FileFormat
             catch (HDFException ex) {}
         }
 
-        if (id != HDFConstants.FAIL &&
+        if (showAll || (id != HDFConstants.FAIL &&
             // do not display Vdata named "Attr0.0"
             !vClass[0].equalsIgnoreCase(HDFConstants.HDF_ATTRIBUTE) &&
             // do not display internal Vdata, "_HDF_CHK_TBL_"
             !vClass[0].startsWith(HDFConstants.HDF_CHK_TBL) &&
             // do not display internal vdata for CDF, "CDF0.0"
-            !vClass[0].equalsIgnoreCase(HDFConstants.HDF_CDF))
+            !vClass[0].equalsIgnoreCase(HDFConstants.HDF_CDF)))
         {
             vdata = new H4Vdata(
                 this,
@@ -1037,13 +1050,13 @@ public class H4File extends FileFormat
         }
 
         // ignore the Vgroups created by the GR interface
-        if (id != HDFConstants.FAIL &&
+        if (showAll || (id != HDFConstants.FAIL &&
             // do not display Vdata named "Attr0.0"
             !vClass[0].equalsIgnoreCase(HDFConstants.GR_NAME) &&
             !vClass[0].equalsIgnoreCase(HDFConstants.RI_NAME) &&
             !vClass[0].equalsIgnoreCase(HDFConstants.RIGATTRNAME) &&
             !vClass[0].equalsIgnoreCase(HDFConstants.RIGATTRCLASS) &&
-            !vClass[0].equalsIgnoreCase(HDFConstants.HDF_CDF))
+            !vClass[0].equalsIgnoreCase(HDFConstants.HDF_CDF)))
         {
             vgroup = new H4Group( this, objName[0], path, pgroup, oid);
         }
