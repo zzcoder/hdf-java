@@ -19,8 +19,13 @@ CLASSPATH=@CLASSPATH@
 .java.class:
 	$(JAVAC) -classpath $(CLASSPATH) $<
 
+all: TestHDF5Link TestHDF4Link
+
 TestHDF5Link: TestHDF5Link.class
 	chmod u+x testlink
+
+TestHDF4Link: TestHDF4Link.class
+	chmod u+x testh4link
 
 clean:
 	rm *.class

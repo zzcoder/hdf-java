@@ -297,11 +297,6 @@ esac
 ac_cv_lib_JAVAINC=$JAVAINC
 
 
-($JAVA -version 2>&1 )|  grep 'java version' | grep '\"1.2' > /dev/null 2>&1;
-JAVA1_2=$?;
-($JAVA -version 2>&1 )|  grep 'java version' | grep '\"1.3' > /dev/null 2>&1;
-JAVA1_3=$?;
-
 if test "$prefix" != "NONE" ; then
 	JH45INST="$prefix"
 else
@@ -373,15 +368,7 @@ fi
 JAVAINC2=$JAVAINC/irix; JAVATARG=irix-$OS;;
 *-pc-linux*) LD=$CC; LDOPT=-shared; SLEXT="so";
 COPT="-shared -DUNIX386" ; 
-if test \( $JAVA1_3 -eq 0 \) ; then
 JAVAINC2=$JAVAINC/linux; 
-else
-if test \( $JAVA1_2 -eq 0 \) ; then
-JAVAINC2=$JAVAINC/linux; 
-else
-JAVAINC2=$JAVAINC/genunix; 
-fi
-fi
 JAVATARG=linux;
 ;;
 *) LD=$CC; LDOPT=-G; SLEXT="so";
@@ -445,10 +432,10 @@ fi
 else
 if test -d "./test"; then
 ##  Don't use H4toH5 (but do include some tests)
-OUTPUT_FILES="$OUTPUT_FILES test/linktest/Makefile test/linktest/testlink"
+OUTPUT_FILES="$OUTPUT_FILES test/linktest/Makefile test/linktest/testlink test/linktest/testh4link"
 else
 ##  Don't use H4toH5 (no tests)
-OUTPUT_FILES="$OUTPUR_FILES"
+OUTPUT_FILES="$OUTPUT_FILES"
 fi
 fi
 
