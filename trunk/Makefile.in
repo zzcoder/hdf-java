@@ -117,7 +117,7 @@ do-jh4toh5-packages: $(JH45PACKAGES)
 	$(JAR) cf ./lib/jh4toh5.jar $(JH45CLASSES)
 
 jhdf-packages: 
-	@if test -n "$(H4INC)" ; then $(MAKE) do-jhdf-packages-packages ; fi
+	@if test -n "$(H4INC)" ; then $(MAKE) do-jhdf-packages; fi
 
 do-jhdf-packages: $(JHIPACKAGES)  
 	$(JAR) cf ./lib/jhdf.jar $(JHICLASSES)
@@ -291,7 +291,10 @@ do-install-jhdf: jhdf-packages
 	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdf.jar $(JHICLASSES)
 	@echo "Install JHI complete"
 
-install-jhdf5: jhdf5-packages
+install-jhdf5: 
+	@if test -n "$(H5INC)" ; then $(MAKE) do-install-jhdf5 ; fi
+
+do-install-jhdf5: jhdf5-packages
 	-mkdir -p $(LIBDIR);
 	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdf5.jar $(JHI5CLASSES)
 	@echo "Install JHI5 complete"
