@@ -2015,7 +2015,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         {
             setEnabled(imageGUIs, false);
             setEnabled(d3GUIs, false);
-            setEnabled(editGUIs, false);
+            //setEnabled(editGUIs, false);
             setEnabled(tableGUIs, false);
         }
     }
