@@ -37,8 +37,7 @@ public class DefaultFileFilter extends FileFilter
     private static FileFilter FILE_FILTER_PNG = null;
     private static FileFilter FILE_FILTER_TEXT = null;
 
-    private static String h4FileExtension = ViewProperties.getH4Extension();
-    private static String h5FileExtension = ViewProperties.getH5Extension();
+    private static String fileExtension = ViewProperties.getFileExtension();
 
     private Hashtable filters = null;
     private String description = null;
@@ -259,29 +258,20 @@ public class DefaultFileFilter extends FileFilter
     }
 
     /** Return a file filter for HDF4/5 file. */
-    public static FileFilter getFileFilterHDF() {
-        boolean extensionNotChanged = (
-            h4FileExtension.equalsIgnoreCase( ViewProperties.getH4Extension())) &&
-            (h5FileExtension.equalsIgnoreCase(ViewProperties.getH5Extension()));
+    public static FileFilter getFileFilter() {
+        boolean extensionNotChanged = ( fileExtension.equalsIgnoreCase( ViewProperties.getFileExtension()));
 
         if (FILE_FILTER_HDF != null && extensionNotChanged) {
             return FILE_FILTER_HDF;
         }
 
         // update extensions
-        h4FileExtension = ViewProperties.getH4Extension();
-        h5FileExtension = ViewProperties.getH5Extension();
+        fileExtension = ViewProperties.getFileExtension();
 
         DefaultFileFilter filter = new DefaultFileFilter();
-        filter.setDescription("HDF");
+        filter.setDescription("HDF & more");
 
-        if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4) != null) {
-            filter.addExtension(h4FileExtension);
-        }
-
-        if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) != null) {
-            filter.addExtension(h5FileExtension);
-        }
+        filter.addExtension(fileExtension);
 
         return (FILE_FILTER_HDF = filter);
     }

@@ -812,7 +812,7 @@ implements TreeView, ActionListener {
             return;
 
         Group pgroup = dialog.getParentGroup();
-        try { this.addObject(obj, pgroup); }
+        try { addObject(obj, pgroup); }
         catch (Exception ex) {
             toolkit.beep();
             JOptionPane.showMessageDialog(
@@ -1038,27 +1038,47 @@ implements TreeView, ActionListener {
         FileFormat fileFormat = null;
         MutableTreeNode fileRoot = null;
         String msg = "";
-        boolean ish4=false, ish5=false;
-
-        ish4 = DefaultFileFilter.isHDF4(filename);
-        ish5=DefaultFileFilter.isHDF5(filename);
 
         if (isFileOpen(filename))
             throw new UnsupportedOperationException("File is in use.");
+
+/*
+        boolean ish4 = DefaultFileFilter.isHDF4(filename);
+        boolean ish5=DefaultFileFilter.isHDF5(filename);
 
         if (ish4 && (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4) == null))
             throw new UnsupportedOperationException("HDF4 is not supported.");
 
         if (ish5 && (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) == null))
             throw new UnsupportedOperationException("HDF5 is not supported.");
+*/
 
-        Iterator iterator = FileFormat.iterator();
-        while (iterator.hasNext())
-        {
-            FileFormat theformat = (FileFormat)iterator.next();
+        Enumeration keys = FileFormat.getFileFormatKeys();
+        String theKey = null;
+        while (keys.hasMoreElements()) {
+            theKey = (String)keys.nextElement();
+            if (theKey.equals(FileFormat.FILE_TYPE_HDF4) ||
+                theKey.equals(FileFormat.FILE_TYPE_HDF5))
+                continue;
+
+            FileFormat theformat = FileFormat.getFileFormat(theKey);
             if (theformat.isThisType(filename)) {
                 fileFormat = theformat.open(filename, accessID);
                 break;
+            }
+        }
+
+        // search for HDF4 and HDF5 last. File format built on hdf4 or hdf5
+        // will be chosen first.
+        if (fileFormat == null) {
+            FileFormat theformat = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4);
+            if (theformat.isThisType(filename)) {
+                fileFormat = theformat.open(filename, accessID);
+            } else {
+                theformat = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+                if (theformat.isThisType(filename)) {
+                    fileFormat = theformat.open(filename, accessID);
+                }
             }
         }
 
@@ -1369,27 +1389,8 @@ implements TreeView, ActionListener {
      */
     private class HTreeCellRenderer extends DefaultTreeCellRenderer
     {
-        /**
-         * Icon used to show dataset nodes.
-         */
-        private Icon datasetIcon;
-
-        /**
-         * Icon used to show image nodes.
-         */
-        private Icon imageIcon;
-
-        /**
-         * Icon used to show table nodes.
-         */
-        private Icon tableIcon;
-
-        /**
-         * Icon used to show hdf root nodes.
-         */
-        private Icon h4Icon, h5Icon;
-
-        private Icon openFolder, closeFolder;
+        private Icon datasetIcon, imageIcon, tableIcon, textIcon,
+            h4Icon, h5Icon, openFolder, closeFolder;
 
         private HTreeCellRenderer()
         {
@@ -1402,6 +1403,7 @@ implements TreeView, ActionListener {
             h4Icon = ViewProperties.getH4Icon();
             h5Icon = ViewProperties.getH5Icon();
             tableIcon = ViewProperties.getTableIcon();
+            textIcon = ViewProperties.getTextIcon();
 
             if (openFolder != null)
                 openIcon = openFolder;
@@ -1421,6 +1423,9 @@ implements TreeView, ActionListener {
 
             if (tableIcon == null)
                 tableIcon = leafIcon;
+
+            if (textIcon == null)
+                textIcon = leafIcon;
 
             if (h4Icon == null)
                 h4Icon = leafIcon;
@@ -1445,15 +1450,15 @@ implements TreeView, ActionListener {
                 ScalarDS sd = (ScalarDS)theObject;
                 if (sd.isImage())
                     leafIcon = imageIcon;
+                else if (sd.isText())
+                    leafIcon = textIcon;
                 else
                     leafIcon = datasetIcon;
             }
-            else if (theObject instanceof CompoundDS)
-            {
+            else if (theObject instanceof CompoundDS) {
                 leafIcon = tableIcon;
             }
-            else if (theObject instanceof Group)
-            {
+            else if (theObject instanceof Group) {
                 Group g = (Group)theObject;
                 if (g.isRoot() &&
                     g.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5)))

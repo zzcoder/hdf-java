@@ -139,8 +139,7 @@ implements Serializable, DataFormat
      * <p>
      * @param newName the new name of the object.
      */
-    public void setName (String newName) throws Exception
-    {
+    public void setName (String newName) throws Exception {
         name = newName;
     }
 

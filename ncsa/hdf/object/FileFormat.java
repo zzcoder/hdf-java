@@ -117,6 +117,9 @@ public abstract class FileFormat extends File
 
         // add NETCDF into the file list
         addFileFormat("NC", "ncsa.hdf.object.nc2.NC2File");
+
+        // add FITS into the file list
+        addFileFormat("FITS", "ncsa.hdf.object.fits.FitsFile");
     }
 
     /** Constructs a FileFormat with a given file name.
@@ -295,14 +298,18 @@ public abstract class FileFormat extends File
      * @param fileformat the name of the new file format to be added.
      */
     public static void addFileFormat(String key, String fileformat) {
-        if (fileformat == null)
+        if (fileformat == null || key == null)
+            return;
+
+        key = key.trim();
+        if (FileList.containsKey(key))
             return;
 
         try {
             Class fileClass = extClassLoader.loadClass(fileformat);
             Object fileInst = fileClass.newInstance();
             FileList.put(key, fileInst);
-        }catch (Exception ex) {}
+        } catch (Exception ex) {}
     }
 
     /**
@@ -310,17 +317,15 @@ public abstract class FileFormat extends File
      * @param key the unique ID key to identify the file format.
      *   such as "HDF5" or "HDF4"
      */
-    public static FileFormat getFileFormat(String key)
-    {
+    public static FileFormat getFileFormat(String key) {
         return (FileFormat)FileList.get(key);
     }
 
     /**
-     * Returns an iterator over the supported FileFormats.
+     * Returns a list of keys of the supported FileFormats.
      */
-    public static Iterator iterator()
-    {
-        return FileList.values().iterator();
+    public static final Enumeration getFileFormatKeys() {
+        return ((Hashtable)FileList).keys();
     }
 
     /**

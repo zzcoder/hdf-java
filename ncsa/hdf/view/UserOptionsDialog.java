@@ -35,7 +35,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener
     private final JFrame viewer;
 
     private String H4toH5Path;
-    private JTextField H4toH5Field, UGField, workField, h4ExtField, h5ExtField,
+    private JTextField H4toH5Field, UGField, workField, fileExtField,
             maxMemberField, startMemberField;
     private JComboBox fontSizeChoice, fontTypeChoice, delimiterChoice;
     private JComboBox choiceTreeView, choiceMetaDataView, choiceTextView,
@@ -195,25 +195,17 @@ public class UserOptionsDialog extends JDialog implements ActionListener
         centerP.add(p0);
 
         p0 = new JPanel();
-        p0.setLayout(new GridLayout(1,2,8,8));
-        JPanel p00 = new JPanel();
-        p00.setLayout(new BorderLayout());
-        p00.add(new JLabel("HDF5: "), BorderLayout.WEST);
-        p00.add(h5ExtField=new JTextField(ViewProperties.getH5Extension()), BorderLayout.CENTER);
-        p0.add(p00);
-        p00 = new JPanel();
-        p00.setLayout(new BorderLayout());
-        p00.add(new JLabel("HDF4: "), BorderLayout.WEST);
-        p00.add(h4ExtField=new JTextField(ViewProperties.getH4Extension()), BorderLayout.CENTER);
-        p0.add(p00);
-        tborder = new TitledBorder("HDF File Extension");
+        p0.setLayout(new BorderLayout());
+        p0.add(new JLabel("Extension: "), BorderLayout.WEST);
+        p0.add(fileExtField=new JTextField(ViewProperties.getFileExtension()), BorderLayout.CENTER);
+        tborder = new TitledBorder("File Extension");
         tborder.setTitleColor(Color.darkGray);
         p0.setBorder(tborder);
         centerP.add(p0);
 
         p0 = new JPanel();
         p0.setLayout(new GridLayout(1,2,8,8));
-        p00 = new JPanel();
+        JPanel p00 = new JPanel();
         p00.setLayout(new BorderLayout());
         p00.add(new JLabel("Font Size: "), BorderLayout.WEST);
         p00.add(fontSizeChoice, BorderLayout.CENTER);
@@ -261,6 +253,14 @@ public class UserOptionsDialog extends JDialog implements ActionListener
     }
 
     private JPanel createModuleOptionPanel() {
+        choiceTreeView = new JComboBox(treeViews);
+        choiceTableView = new JComboBox(tableViews);
+        choiceTextView = new JComboBox(textViews);
+        choiceImageView = new JComboBox(imageViews);
+        choiceMetaDataView = new JComboBox(metaDataViews);
+        choicePaletteView = new JComboBox(paletteViews);
+
+
         JPanel moduleP = new JPanel();
         moduleP.setLayout(new GridLayout(6,1,10,10));
         moduleP.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
@@ -270,114 +270,48 @@ public class UserOptionsDialog extends JDialog implements ActionListener
         tborder.setTitleColor(Color.darkGray);
         treeP.setBorder(tborder);
         moduleP.add(treeP);
-        JButton addButton = new JButton(" Add ");
-        addButton.setActionCommand("Add Module: Treeview");
-        addButton.addActionListener(this);
-        JButton delButton = new JButton("Delete");
-        delButton.setActionCommand("Delete Module: Treeview");
-        delButton.addActionListener(this);
-        JPanel buttonP = new JPanel();
-        buttonP.add(addButton);
-        buttonP.add(delButton);
-        choiceTreeView = new JComboBox(treeViews);
         treeP.setLayout(new BorderLayout(5,5));
         treeP.add(choiceTreeView, BorderLayout.CENTER);
-        treeP.add(buttonP, BorderLayout.EAST);
 
         JPanel attrP = new JPanel();
         tborder = new TitledBorder("MetaDataView");
         tborder.setTitleColor(Color.darkGray);
         attrP.setBorder(tborder);
         moduleP.add(attrP);
-        addButton = new JButton(" Add ");
-        addButton.setActionCommand("Add Module: Metadataview");
-        addButton.addActionListener(this);
-        delButton = new JButton("Delete");
-        delButton.setActionCommand("Delete Module: Metadataview");
-        delButton.addActionListener(this);
-        buttonP = new JPanel();
-        buttonP.add(addButton);
-        buttonP.add(delButton);
-        choiceMetaDataView = new JComboBox(metaDataViews);
         attrP.setLayout(new BorderLayout(5,5));
         attrP.add(choiceMetaDataView, BorderLayout.CENTER);
-        attrP.add(buttonP, BorderLayout.EAST);
 
         JPanel textP = new JPanel();
         tborder = new TitledBorder("TextView");
         tborder.setTitleColor(Color.darkGray);
         textP.setBorder(tborder);
         moduleP.add(textP);
-        addButton = new JButton(" Add ");
-        addButton.setActionCommand("Add Module: Textview");
-        addButton.addActionListener(this);
-        delButton = new JButton("Delete");
-        delButton.setActionCommand("Delete Module: Textview");
-        delButton.addActionListener(this);
-        buttonP = new JPanel();
-        buttonP.add(addButton);
-        buttonP.add(delButton);
-        choiceTextView = new JComboBox(textViews);
         textP.setLayout(new BorderLayout(5,5));
         textP.add(choiceTextView, BorderLayout.CENTER);
-        textP.add(buttonP, BorderLayout.EAST);
 
         JPanel tableP = new JPanel();
         tborder = new TitledBorder("TableView");
         tborder.setTitleColor(Color.darkGray);
         tableP.setBorder(tborder);
         moduleP.add(tableP);
-        addButton = new JButton(" Add ");
-        addButton.setActionCommand("Add Module: Tableview");
-        addButton.addActionListener(this);
-        delButton = new JButton("Delete");
-        delButton.setActionCommand("Delete Module: Tableview");
-        delButton.addActionListener(this);
-        buttonP = new JPanel();
-        buttonP.add(addButton);
-        buttonP.add(delButton);
-        choiceTableView = new JComboBox(tableViews);
         tableP.setLayout(new BorderLayout(5,5));
         tableP.add(choiceTableView, BorderLayout.CENTER);
-        tableP.add(buttonP, BorderLayout.EAST);
 
         JPanel imageP = new JPanel();
         tborder = new TitledBorder("ImageView");
         tborder.setTitleColor(Color.darkGray);
         imageP.setBorder(tborder);
         moduleP.add(imageP);
-        addButton = new JButton(" Add ");
-        addButton.setActionCommand("Add Module: Imageview");
-        addButton.addActionListener(this);
-        delButton = new JButton("Delete");
-        delButton.setActionCommand("Delete Module: Imageview");
-        delButton.addActionListener(this);
-        buttonP = new JPanel();
-        buttonP.add(addButton);
-        buttonP.add(delButton);
-        choiceImageView = new JComboBox(imageViews);
         imageP.setLayout(new BorderLayout(5,5));
         imageP.add(choiceImageView, BorderLayout.CENTER);
-        imageP.add(buttonP, BorderLayout.EAST);
 
         JPanel palP = new JPanel();
         tborder = new TitledBorder("PaletteView");
         tborder.setTitleColor(Color.darkGray);
         palP.setBorder(tborder);
         moduleP.add(palP);
-        addButton = new JButton(" Add ");
-        addButton.setActionCommand("Add Module: Paletteview");
-        addButton.addActionListener(this);
-        delButton = new JButton("Delete");
-        delButton.setActionCommand("Delete Module: Paletteview");
-        delButton.addActionListener(this);
-        buttonP = new JPanel();
-        buttonP.add(addButton);
-        buttonP.add(delButton);
-        choicePaletteView = new JComboBox(paletteViews);
         palP.setLayout(new BorderLayout(5,5));
         palP.add(choicePaletteView, BorderLayout.CENTER);
-        palP.add(buttonP, BorderLayout.EAST);
 
         return moduleP;
     }
@@ -560,18 +494,11 @@ public class UserOptionsDialog extends JDialog implements ActionListener
             ViewProperties.setWorkDir(workPath);
         }
 
-        String ext = h4ExtField.getText();
+        String ext = fileExtField.getText();
         if (ext != null && ext.length()>0)
         {
             ext = ext.trim();
-            ViewProperties.setH4Extension(ext);
-        }
-
-        ext = h5ExtField.getText();
-        if (ext != null && ext.length()>0)
-        {
-            ext = ext.trim();
-            ViewProperties.setH5Extension(ext);
+            ViewProperties.setFileExtension(ext);
         }
 
         // set font size
