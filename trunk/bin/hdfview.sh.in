@@ -1,4 +1,4 @@
-#!/bin/csh -f
+#!/bin/sh
 
 # Set up default variable values if not supplied by the user.
 
