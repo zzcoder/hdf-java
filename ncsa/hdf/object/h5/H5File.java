@@ -191,7 +191,10 @@ public class H5File extends FileFormat
             }
         }
 
-        H5.H5Fclose(fid);
+        try { H5.H5Fflush(fid, HDF5Constants.H5F_SCOPE_GLOBAL); }
+        catch (Exception ex) {}
+        try { H5.H5Fclose(fid); } catch (Exception ex) {}
+
         fid = -1;
     }
 
@@ -351,13 +354,18 @@ public class H5File extends FileFormat
             path = HObject.separator;
         else
             path = pgroup.getPath()+pgroup.getName()+HObject.separator;
-        dname = path + srcDataset.getName();
 
+        dname = path + srcDataset.getName();
         srcdid = srcDataset.open();
         tid = H5.H5Dget_type(srcdid);
         sid = H5.H5Dget_space(srcdid);
         plist = H5.H5Dget_create_plist(srcdid);
-        dstdid = H5.H5Dcreate(fid, dname, tid, sid, plist);
+
+        // @@@@@@@@@ HDF5.1.6 bug at H5Dcreate(fid, dname, tid, sid, plist);
+try {
+        dstdid = H5.H5Dcreate(fid, dname, tid, sid, HDF5Constants.H5P_DEFAULT);// plist);
+} catch (Exception ex) { throw new HDF5LibraryException(
+"H5ScalarDS.copyDataset(): HDF5.1.6 failed at H5Dcreate(fid, dname, tid, sid, plist)");}
 
         // copy data values
         H5.H5Dcopy(srcdid, dstdid);
@@ -900,9 +908,9 @@ public class H5File extends FileFormat
         int aid=-1, sid=-1, tid=-1, n=0;
 
         n = H5.H5Aget_num_attrs(objID);
-        if (n <= 0) return null; // no attribute attached to this object
+        if (n <= 0) new Vector(0); // no attribute attached to this object
 
-        attributeList = new Vector(n, 5);
+        attributeList = new Vector(n);
         for (int i=0; i<n; i++)
         {
             try

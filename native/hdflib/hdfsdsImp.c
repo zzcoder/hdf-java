@@ -1456,3 +1456,256 @@ jintArray emptySDS)  /* OUT: 1 if sds is empty */
 		return JNI_TRUE;
 	}
 }
+
+
+/*
+    ////////////////////////////////////////////////////////////////////
+    //                                                                //
+    //         New APIs for read data from library                    //
+    //  Using SDreaddata(..., Object buf) requires function calls        //
+    //  theArray.emptyBytes() and theArray.arrayify( buf), which      //
+    //  triples the actual memory needed by the data set.             //
+    //  Using the following APIs solves the problem.                  //
+    //                                                                //
+    ////////////////////////////////////////////////////////////////////
+*/
+
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDreaddata_1short
+( JNIEnv *env,
+jclass class, 
+jint sdsid,
+jintArray start, 
+jintArray stride,
+jintArray count,
+jshortArray data)
+{
+	int32 retVal;
+	int32 *strt;
+	int32 *strd;
+	int32 *cnt;
+	jshort *d;
+	jboolean bb;
+
+	strt = (int32 *)(*env)->GetIntArrayElements(env,start,&bb);
+	if (stride != NULL) {
+		strd = (int32 *)(*env)->GetIntArrayElements(env,stride,&bb);
+	} else {
+		strd = (int32 *)NULL;
+	}
+	cnt = (int32 *)(*env)->GetIntArrayElements(env,count,&bb);
+
+	/* assume that 'data' is big enough */
+	d = (*env)->GetShortArrayElements(env,data,&bb);
+
+	retVal = SDreaddata((int32)sdsid, strt, strd, cnt, d);
+
+	if (retVal == FAIL) {
+		(*env)->ReleaseIntArrayElements(env,start,(jint *)strt,JNI_ABORT);
+		if (stride != NULL) {
+			(*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,JNI_ABORT);
+		}
+		(*env)->ReleaseIntArrayElements(env,count,(jint *)cnt,JNI_ABORT);
+		(*env)->ReleaseShortArrayElements(env,data,d,JNI_ABORT);
+		return JNI_FALSE;
+	} else {
+		(*env)->ReleaseIntArrayElements(env,start,(jint *)strt,0);
+		if (stride != NULL) {
+			(*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,0);
+		}
+		(*env)->ReleaseIntArrayElements(env,count,(jint *)cnt,0);
+		(*env)->ReleaseShortArrayElements(env,data,d,0);
+		return JNI_TRUE;
+	}
+}
+
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDreaddata_1int
+( JNIEnv *env,
+jclass class, 
+jint sdsid,
+jintArray start, 
+jintArray stride,
+jintArray count,
+jintArray data)
+{
+	int32 retVal;
+	int32 *strt;
+	int32 *strd;
+	int32 *cnt;
+	jint *d;
+	jboolean bb;
+
+	strt = (int32 *)(*env)->GetIntArrayElements(env,start,&bb);
+	if (stride != NULL) {
+		strd = (int32 *)(*env)->GetIntArrayElements(env,stride,&bb);
+	} else {
+		strd = (int32 *)NULL;
+	}
+	cnt = (int32 *)(*env)->GetIntArrayElements(env,count,&bb);
+
+	/* assume that 'data' is big enough */
+	d = (*env)->GetIntArrayElements(env,data,&bb);
+
+	retVal = SDreaddata((int32)sdsid, strt, strd, cnt, d);
+
+	if (retVal == FAIL) {
+		(*env)->ReleaseIntArrayElements(env,start,(jint *)strt,JNI_ABORT);
+		if (stride != NULL) {
+			(*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,JNI_ABORT);
+		}
+		(*env)->ReleaseIntArrayElements(env,count,(jint *)cnt,JNI_ABORT);
+		(*env)->ReleaseIntArrayElements(env,data,d,JNI_ABORT);
+		return JNI_FALSE;
+	} else {
+		(*env)->ReleaseIntArrayElements(env,start,(jint *)strt,0);
+		if (stride != NULL) {
+			(*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,0);
+		}
+		(*env)->ReleaseIntArrayElements(env,count,(jint *)cnt,0);
+		(*env)->ReleaseIntArrayElements(env,data,d,0);
+		return JNI_TRUE;
+	}
+}
+
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDreaddata_1long
+( JNIEnv *env,
+jclass class, 
+jint sdsid,
+jintArray start, 
+jintArray stride,
+jintArray count,
+jlongArray data)
+{
+	int32 retVal;
+	int32 *strt;
+	int32 *strd;
+	int32 *cnt;
+	jlong *d;
+	jboolean bb;
+
+	strt = (int32 *)(*env)->GetIntArrayElements(env,start,&bb);
+	if (stride != NULL) {
+		strd = (int32 *)(*env)->GetIntArrayElements(env,stride,&bb);
+	} else {
+		strd = (int32 *)NULL;
+	}
+	cnt = (int32 *)(*env)->GetIntArrayElements(env,count,&bb);
+
+	/* assume that 'data' is big enough */
+	d = (*env)->GetLongArrayElements(env,data,&bb);
+
+	retVal = SDreaddata((int32)sdsid, strt, strd, cnt, d);
+
+	if (retVal == FAIL) {
+		(*env)->ReleaseIntArrayElements(env,start,(jint *)strt,JNI_ABORT);
+		if (stride != NULL) {
+			(*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,JNI_ABORT);
+		}
+		(*env)->ReleaseIntArrayElements(env,count,(jint *)cnt,JNI_ABORT);
+		(*env)->ReleaseLongArrayElements(env,data,d,JNI_ABORT);
+		return JNI_FALSE;
+	} else {
+		(*env)->ReleaseIntArrayElements(env,start,(jint *)strt,0);
+		if (stride != NULL) {
+			(*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,0);
+		}
+		(*env)->ReleaseIntArrayElements(env,count,(jint *)cnt,0);
+		(*env)->ReleaseLongArrayElements(env,data,d,0);
+		return JNI_TRUE;
+	}
+}
+
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDreaddata_1float
+( JNIEnv *env,
+jclass class, 
+jint sdsid,
+jintArray start, 
+jintArray stride,
+jintArray count,
+jfloatArray data)
+{
+	int32 retVal;
+	int32 *strt;
+	int32 *strd;
+	int32 *cnt;
+	jfloat *d;
+	jboolean bb;
+
+	strt = (int32 *)(*env)->GetIntArrayElements(env,start,&bb);
+	if (stride != NULL) {
+		strd = (int32 *)(*env)->GetIntArrayElements(env,stride,&bb);
+	} else {
+		strd = (int32 *)NULL;
+	}
+	cnt = (int32 *)(*env)->GetIntArrayElements(env,count,&bb);
+
+	/* assume that 'data' is big enough */
+	d = (*env)->GetFloatArrayElements(env,data,&bb);
+
+	retVal = SDreaddata((int32)sdsid, strt, strd, cnt, d);
+
+	if (retVal == FAIL) {
+		(*env)->ReleaseIntArrayElements(env,start,(jint *)strt,JNI_ABORT);
+		if (stride != NULL) {
+			(*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,JNI_ABORT);
+		}
+		(*env)->ReleaseIntArrayElements(env,count,(jint *)cnt,JNI_ABORT);
+		(*env)->ReleaseFloatArrayElements(env,data,d,JNI_ABORT);
+		return JNI_FALSE;
+	} else {
+		(*env)->ReleaseIntArrayElements(env,start,(jint *)strt,0);
+		if (stride != NULL) {
+			(*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,0);
+		}
+		(*env)->ReleaseIntArrayElements(env,count,(jint *)cnt,0);
+		(*env)->ReleaseFloatArrayElements(env,data,d,0);
+		return JNI_TRUE;
+	}
+}
+
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDreaddata_1double
+( JNIEnv *env,
+jclass class, 
+jint sdsid,
+jintArray start, 
+jintArray stride,
+jintArray count,
+jdoubleArray data)
+{
+	int32 retVal;
+	int32 *strt;
+	int32 *strd;
+	int32 *cnt;
+	jdouble *d;
+	jboolean bb;
+
+	strt = (int32 *)(*env)->GetIntArrayElements(env,start,&bb);
+	if (stride != NULL) {
+		strd = (int32 *)(*env)->GetIntArrayElements(env,stride,&bb);
+	} else {
+		strd = (int32 *)NULL;
+	}
+	cnt = (int32 *)(*env)->GetIntArrayElements(env,count,&bb);
+
+	/* assume that 'data' is big enough */
+	d = (*env)->GetDoubleArrayElements(env,data,&bb);
+
+	retVal = SDreaddata((int32)sdsid, strt, strd, cnt, d);
+
+	if (retVal == FAIL) {
+		(*env)->ReleaseIntArrayElements(env,start,(jint *)strt,JNI_ABORT);
+		if (stride != NULL) {
+			(*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,JNI_ABORT);
+		}
+		(*env)->ReleaseIntArrayElements(env,count,(jint *)cnt,JNI_ABORT);
+		(*env)->ReleaseDoubleArrayElements(env,data,d,JNI_ABORT);
+		return JNI_FALSE;
+	} else {
+		(*env)->ReleaseIntArrayElements(env,start,(jint *)strt,0);
+		if (stride != NULL) {
+			(*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,0);
+		}
+		(*env)->ReleaseIntArrayElements(env,count,(jint *)cnt,0);
+		(*env)->ReleaseDoubleArrayElements(env,data,d,0);
+		return JNI_TRUE;
+	}
+}

@@ -186,11 +186,31 @@ public class H5ScalarDS extends ScalarDS
     public Object read() throws HDF5Exception
     {
         Object theData = null;
+        int fspace=-1, mspace=-1;
 
         if (rank <= 0) init();
 
         int did = open();
-        int fspace=-1, mspace=-1, tid=-1, nativeType=-1;
+
+        // check is storage space is allocated
+        try {
+            if (H5.H5Dget_storage_size(did) <=0)
+            {
+                throw new HDF5Exception("Storage space is not allocated.");
+            }
+        } catch (Exception ex) {}
+
+        // check is fill value is defined
+        try {
+            int plist = H5.H5Dget_create_plist(did);
+            int[] fillValue = {0};
+            H5.H5Pfill_value_defined(plist, fillValue);
+            try { H5.H5Pclose(plist); } catch (Exception ex2) {}
+            if (fillValue[0] == HDF5Constants.H5D_FILL_VALUE_UNDEFINED)
+            {
+                throw new HDF5Exception("Fill value is not defined.");
+            }
+        } catch (Exception ex) {}
 
         try
         {
@@ -214,23 +234,21 @@ public class H5ScalarDS extends ScalarDS
                     null );   // set block to 1
             }
 
-            tid = H5.H5Dget_type(did);
-            nativeType = H5Datatype.toNative(tid);
-            theData = H5Datatype.allocateArray(nativeType, (int)lsize[0]);
+            theData = H5Datatype.allocateArray(nativeDatatype, (int)lsize[0]);
 
             if (theData != null)
             {
                 H5.H5Dread(
                     did,
-                    nativeType,
+                    nativeDatatype,
                     mspace,
                     fspace,
                     HDF5Constants.H5P_DEFAULT,
                     theData);
 
                 if (isText)
-                    theData = byteToString((byte[])theData, H5.H5Tget_size(nativeType));
-                else if (H5.H5Tget_class(nativeType) == HDF5Constants.H5T_REFERENCE)
+                    theData = byteToString((byte[])theData, H5.H5Tget_size(nativeDatatype));
+                else if (H5.H5Tget_class(nativeDatatype) == HDF5Constants.H5T_REFERENCE)
                     theData = HDFNativeData.byteToLong((byte[])theData);
             }
         }
@@ -238,8 +256,6 @@ public class H5ScalarDS extends ScalarDS
         {
             if (fspace > 0) try { H5.H5Sclose(fspace); } catch (Exception ex2) {}
             if (mspace > 0) try { H5.H5Sclose(mspace); } catch (Exception ex2) {}
-            try { H5.H5Tclose(tid); } catch (HDF5Exception ex2) {}
-            try { H5.H5Tclose(nativeType); } catch (HDF5Exception ex2) {}
             close(did);
         }
 
@@ -323,24 +339,52 @@ public class H5ScalarDS extends ScalarDS
             }
             else chunkSize = null;
 
-            int[] flags = {0};
-            int[] cd_nelmts = {1};
-            int[] cd_values = {0};
-            String[] cd_name ={""};
+            int[] flags = {0, 0};
+            int[] cd_nelmts = {2};
+            int[] cd_values = {0,0};
+            String[] cd_name ={"", ""};
             int nfilt = H5.H5Pget_nfilters(pid);
             int filter = -1;
+            compression = "";
+
             for (int i=0; i<nfilt; i++)
             {
-                filter = H5.H5Pget_filter(pid, i, flags, cd_nelmts, cd_values, 20, cd_name);
+                if (i>0) compression += ", ";
+                filter = H5.H5Pget_filter(pid, i, flags, cd_nelmts, cd_values, 120, cd_name);
                 if (filter == HDF5Constants.H5Z_FILTER_DEFLATE)
                 {
-                    compression = "DEFLATE";
-                    break;
+                    compression += "Deflate Level = "+cd_values[0];
                 }
-            }
+                else if (filter == HDF5Constants.H5Z_FILTER_FLETCHER32)
+                {
+                    compression += "Error detection filter";
+                }
+                else if (filter == HDF5Constants.H5Z_FILTER_SHUFFLE)
+                {
+                    compression += "Shuffle Nbytes = "+cd_values[0];
+                }
+                else if (filter == HDF5Constants.H5Z_FILTER_SZIP)
+                {
+                    compression += "SZIP: Pixels per block = "+cd_values[1];
+                }
+            } // for (int i=0; i<nfilt; i++)
 
+            if (compression.length() == 0) compression = "NONE";
+
+            try {
+                int[] at = {0};
+                H5.H5Pget_fill_time(pid, at);
+                if (at[0] == HDF5Constants.H5D_ALLOC_TIME_EARLY)
+                    compression += ", Allocation time: Early";
+                else if (at[0] == HDF5Constants.H5D_ALLOC_TIME_INCR)
+                    compression += ", Allocation time: Incremental";
+                else if (at[0] == HDF5Constants.H5D_ALLOC_TIME_LATE)
+                    compression += ", Allocation time: Late";
+            } catch (Exception ex) { ;}
+
+            if (pid >0) try {H5.H5Pclose(pid); } catch(Exception ex){}
             close(did);
-        }
+        } // if (attributeList == null)
 
         return attributeList;
     }
@@ -439,8 +483,8 @@ public class H5ScalarDS extends ScalarDS
         } catch (HDF5Exception ex) {}
         finally
         {
-            nativeDatatype = tid; // warning the datatype resource is not closed
-            //try { H5.H5Tclose(tid); } catch (HDF5Exception ex2) {}
+            nativeDatatype = H5Datatype.toNative(tid);
+            try { H5.H5Tclose(tid); } catch (HDF5Exception ex2) {}
             try { H5.H5Sclose(sid); } catch (HDF5Exception ex2) {}
         }
 
@@ -703,6 +747,7 @@ public class H5ScalarDS extends ScalarDS
     {
         H5ScalarDS dataset = null;
         String fullPath = null;
+        int did = -1;
 
         if (pgroup == null ||
             name == null ||
@@ -747,6 +792,7 @@ public class H5ScalarDS extends ScalarDS
 
         // figure out creation properties
         int plist = HDF5Constants.H5P_DEFAULT;
+
         if (chunks != null)
         {
             plist = H5.H5Pcreate (HDF5Constants.H5P_DATASET_CREATE);
@@ -756,7 +802,7 @@ public class H5ScalarDS extends ScalarDS
 
         if (gzip > 0) H5.H5Pset_deflate(plist, gzip);
         int fid = file.open();
-        int did = H5.H5Dcreate(fid, fullPath, tid, sid, plist);
+        did = H5.H5Dcreate(fid, fullPath, tid, sid, plist);
         if (did > 0 && data != null)
         {
             H5.H5Dwrite(
@@ -775,12 +821,11 @@ public class H5ScalarDS extends ScalarDS
             -1);
         long l = HDFNativeData.byteToLong(ref_buf, 0);
         long[] oid = {l};
+        dataset = new H5ScalarDS(file, name, path, oid);
 
+        try {H5.H5Pclose(plist);} catch (HDF5Exception ex) {};
         try {H5.H5Sclose(sid);} catch (HDF5Exception ex) {};
         try {H5.H5Dclose(did);} catch (HDF5Exception ex) {};
-        try {H5.H5Pclose(plist);} catch (HDF5Exception ex) {};
-
-        dataset = new H5ScalarDS(file, name, path, oid);
 
         return dataset;
     }

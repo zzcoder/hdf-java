@@ -45,6 +45,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1type
 	return (jint)retVal;
 }
 
+
+/***************************************************************
+ *                   New APIs for HDF5.1.6                     *
+ ***************************************************************/
+
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Iget_name(hid_t obj_id, char *name, size_t size ) 

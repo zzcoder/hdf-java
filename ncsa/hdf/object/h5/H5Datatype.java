@@ -209,7 +209,14 @@ public class H5Datatype extends Datatype
         int native_type=-1;
 
         try {
-            native_type = H5.H5Tget_native_type(tid);
+            int tclass = H5.H5Tget_class(tid);
+
+            // bug at H5.H5Tget_native_type(tid) for String datatype in
+            // the library
+            if (tclass == HDF5Constants.H5T_STRING)
+                native_type = H5.H5Tcopy(tid);
+            else
+                native_type = H5.H5Tget_native_type(tid);
         } catch (Exception ex) {}
 
         return native_type;
