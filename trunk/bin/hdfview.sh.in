@@ -50,7 +50,7 @@ case  $os_name in
     Linux)
         LD_LIBRARY_PATH=$HDFVIEW_HOME"/lib/linux:"$HDFVIEW_HOME"/lib/ext:"$LD_LIBRARY_PATH
 	;;
-    IRIX)
+    IRIX*)
 	OSREV=`/bin/uname -r`
 	LD_LIBRARY_PATH=$HDFVIEW_HOME"/lib/irix-6.5:"$HDFVIEW_HOME"/lib/ext:"$LD_LIBRARY_PATH 
 	LD_LIBRARYN32_PATH=$HDFVIEW_HOME"/lib/irix-6.5:"$HDFVIEW_HOME"/lib/ext":$LD_LIBRARY_PATH
