@@ -280,14 +280,12 @@ public class H5CompoundDS extends CompoundDS
                 }
 
                 int nested_tid = -1;
-                try
-                {
+                try {
                     // construct nested compound structure with a single field
                     String theName = member_name;
                     int tmp_tid = H5.H5Tcopy(arrayType);
                     int sep = member_name.lastIndexOf('.');
-                    while (sep > 0)
-                    {
+                    while (sep > 0) {
                         theName = member_name.substring(sep+1);
                         nested_tid = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND, member_size);
                         H5.H5Tinsert(nested_tid, theName, 0, tmp_tid);
@@ -321,16 +319,13 @@ public class H5CompoundDS extends CompoundDS
                 }
                 try { H5.H5Tclose(nested_tid); } catch (HDF5Exception ex2) {}
 
-                if (member_class == HDF5Constants.H5T_STRING)
-                {
+                if (member_class == HDF5Constants.H5T_STRING) {
                     member_data = byteToString((byte[])member_data, member_size);
                 }
-                else if (member_class == HDF5Constants.H5T_REFERENCE)
-                {
+                else if (member_class == HDF5Constants.H5T_REFERENCE) {
                     member_data = HDFNativeData.byteToLong((byte[])member_data);
                 }
-                else if (H5Datatype.isUnsigned(baseType))
-                {
+                else if (H5Datatype.isUnsigned(baseType)) {
                     member_data = Dataset.convertFromUnsignedC(member_data);
                 }
 
@@ -444,13 +439,19 @@ public class H5CompoundDS extends CompoundDS
                     H5.H5Tinsert(nested_tid, member_name, 0, tmp_tid);
                     try {H5.H5Tclose(tmp_tid);} catch (Exception ex) {}
 
+                    Object tmpData = member_data;
+                    if (H5Datatype.isUnsigned(baseType))
+                        tmpData = convertToUnsignedC(buf);
+                    else if (member_class == HDF5Constants.H5T_STRING) {
+                        tmpData = stringToByte((String[])member_data, member_size);
+                    }
                     H5.H5Dwrite(
                         did,
                         nested_tid,
                         mspace,
                         fspace,
                         HDF5Constants.H5P_DEFAULT,
-                        member_data);
+                        tmpData);
                 } catch (HDF5Exception ex2)
                 {
                     try { H5.H5Tclose(nested_tid); }

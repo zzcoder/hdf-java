@@ -12,14 +12,15 @@
 package ncsa.hdf.view;
 
 import java.io.*;
-import java.util.Properties;
-import java.util.Vector;
+import java.util.*;
+import javax.swing.*;
 import java.awt.Color;
 import java.awt.SystemColor;
-import javax.swing.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.MalformedURLException;
+import java.util.jar.JarFile;
+import java.util.jar.JarEntry;
 
 /**
  * The ViewProperties holds all the HDFView static information.
@@ -52,8 +53,6 @@ public class ViewProperties extends Properties
 
     /** name of the tab delimiter */
     public static final String DELIMITER_SEMI_COLON = "Semi-Colon";
-
-    private static final int MAX_NUMBER_MODULES = 10;
 
     /** user's guide */
     private static String usersGuide = "http://hdf.ncsa.uiuc.edu/hdf-java-html/hdfview/UsersGuide/index.html";
@@ -115,22 +114,22 @@ public class ViewProperties extends Properties
     private static String propertyFile;
 
     /** a list of treeview module */
-    private static Vector moduleListTreeView;
+    private static Vector moduleListTreeView = new Vector();
 
     /** a list of metaview module */
-    private static Vector moduleListMetaDataView;
+    private static Vector moduleListMetaDataView = new Vector();
 
     /** a list of textview module */
-    private static Vector moduleListTextView;
+    private static Vector moduleListTextView = new Vector();
 
     /** a list of tableview module */
-    private static Vector moduleListTableView;
+    private static Vector moduleListTableView = new Vector();
 
     /** a list of imageview module */
-    private static Vector moduleListImageView;
+    private static Vector moduleListImageView = new Vector();
 
     /** a list of paletteview module */
-    private static Vector moduleListPaletteView;
+    private static Vector moduleListPaletteView = new Vector();
 
     /**
      * Creates a property list with given root directory of the HDFView.
@@ -141,13 +140,6 @@ public class ViewProperties extends Properties
         rootDir = viewRoot;
 
         mrf = new Vector(MAX_RECENT_FILES);
-        moduleListTreeView = new Vector();
-        moduleListMetaDataView = new Vector();
-        moduleListTextView = new Vector();
-        moduleListTableView = new Vector();
-        moduleListImageView = new Vector();
-        moduleListPaletteView = new Vector();
-        extClassLoader = null;
 
         // find the property file
         String uh="", ud="", h5v="", fn;
@@ -180,12 +172,12 @@ public class ViewProperties extends Properties
     }
 
     /** load extension classes of implementation of data views */
-    public static ClassLoader loadExtClass(String rootPath)
+    public static ClassLoader loadExtClass()
     {
         if (extClassLoader != null)
             return extClassLoader;
 
-        Vector jarList = new Vector();
+        String rootPath = System.getProperty("hdfview.root");
         String dirname = rootPath+File.separator+"lib"+File.separator+"ext"+File.separator;
         File extdir = new File(dirname);
         String[] jars = extdir.list();
@@ -193,18 +185,32 @@ public class ViewProperties extends Properties
         if (jars == null)
             return ClassLoader.getSystemClassLoader();
 
+        Vector jarList = new Vector();
+        Vector classList = new Vector();
         for (int i=0; i<jars.length; i++) {
             if (jars[i].endsWith(".jar")) {
                 jarList.add(jars[i]);
-            }
-        }
+                // add class names to the list of classes
+                File tmpFile = new File(extdir, jars[i]);
+                try {
+                    JarFile jarFile = new JarFile(tmpFile, false, JarFile.OPEN_READ);
+                    Enumeration emu = jarFile.entries();
+                    while (emu.hasMoreElements()) {
+                        JarEntry jarEntry = (JarEntry)emu.nextElement();
+                        String entryName = jarEntry.getName();
+                        int idx = entryName.indexOf(".class");
+                        if (idx>0 && entryName.indexOf('$')<=0)
+                            classList.add(entryName.substring(0, idx));
+                    }
+                } catch (Exception ex) {}
+            } // if (jars[i].endsWith(".jar")) {
+        } // for (int i=0; i<jars.length; i++) {
 
         int n = jarList.size();
         if (n <= 0)
             return ClassLoader.getSystemClassLoader();
 
         URL[] urls = new URL[n];
-
         for (int i=0; i<n; i++) {
             try {
                 urls[i] = new URL("file://localhost/"+rootPath + "/lib/ext/"+jarList.get(i));
@@ -214,6 +220,40 @@ public class ViewProperties extends Properties
         try { extClassLoader = new URLClassLoader(urls); }
         catch (Exception ex) { extClassLoader = ClassLoader.getSystemClassLoader(); }
 
+        // load user modules into their list
+        n = classList.size();
+        for (int i=0; i<n; i++) {
+            String theName = (String)classList.get(i);
+            try {
+                Class theClass = extClassLoader.loadClass(theName);
+
+                Class[] interfaces = theClass.getInterfaces();
+                if (interfaces != null) {
+                    for (int j=0; j<interfaces.length; j++) {
+                        String intfaceName = interfaces[j].getName();
+                        if ("ncsa.hdf.view.TreeView".equals(intfaceName)) {
+                            moduleListTreeView.add(theName);
+                            break;
+                        } else if ("ncsa.hdf.view.MetaDataView".equals(intfaceName)) {
+                            moduleListMetaDataView.add(theName);
+                            break;
+                        } else if ("ncsa.hdf.view.TextView".equals(intfaceName)) {
+                            moduleListTextView.add(theName);
+                            break;
+                        } else if ("ncsa.hdf.view.TableView".equals(intfaceName)) {
+                            moduleListTableView.add(theName);
+                            break;
+                        } else if ("ncsa.hdf.view.ImageView".equals(intfaceName)) {
+                            moduleListImageView.add(theName);
+                            break;
+                        } else if ("ncsa.hdf.view.PaletteView".equals(intfaceName)) {
+                            moduleListPaletteView.add(theName);
+                            break;
+                        }
+                    } // for (int j=0; j<interfaces.length; j++) {
+                } // if (interfaces != null) {
+            } catch (Exception ex) {System.out.println(ex);}
+        }
         return extClassLoader;
     }
 
@@ -491,7 +531,7 @@ public class ViewProperties extends Properties
         if (propertyFile == null)
             return;
 
-        loadExtClass(rootDir);
+        loadExtClass();
 
         try {
             FileInputStream fis = new FileInputStream(propertyFile);
@@ -546,14 +586,12 @@ public class ViewProperties extends Properties
         }
 
         str = (String)get("font.type");
-        if (str != null && str.length()>0)
-        {
+        if (str != null && str.length()>0) {
             fontType = str.trim();
         }
 
         str = (String)get("max.members");
-        if (str != null && str.length()>0)
-        {
+        if (str != null && str.length()>0) {
             try { max_members = Integer.parseInt(str); }
             catch (Exception ex) {}
         }
@@ -572,54 +610,30 @@ public class ViewProperties extends Properties
             }
         }
 
-        // load a list of modules from property file
-        String theModuleName = null;
         String[] keys = {"module.treeview", "module.metadataview", "module.textview",
             "module.tableview", "module.imageview", "module.paletteview"};
         Vector[] moduleList = {moduleListTreeView, moduleListMetaDataView, moduleListTextView,
             moduleListTableView,moduleListImageView, moduleListPaletteView};
+        String[] moduleNames = {
+            "ncsa.hdf.view.DefaultTreeView", "ncsa.hdf.view.DefaultMetaDataView",
+            "ncsa.hdf.view.DefaultTextView", "ncsa.hdf.view.DefaultTableView",
+            "ncsa.hdf.view.DefaultImageView", "ncsa.hdf.view.DefaultPaletteView"};
 
-        for (int j=0; j<6; j++) {
-            String theKey = keys[j];
+        // add default implementation of modules
+        for (int i=0; i<6; i++) {
+            if (!moduleList[i].contains(moduleNames[i]))
+                moduleList[i].addElement(moduleNames[i]);
+        }
 
-            for (int i=0; i<MAX_NUMBER_MODULES; i++) {
-                theModuleName = getProperty(theKey+i);
-
-                if (theModuleName!= null && theModuleName.length()>0) {
-                    if (moduleListTreeView.contains(theModuleName))
-                        remove(theKey+i);
-                    else {
-                        try {
-                            extClassLoader.loadClass(theModuleName);
-                            moduleList[j].addElement(theModuleName);
-                        }
-                        catch(ClassNotFoundException ex) {
-                            JOptionPane.showMessageDialog(
-                                new JFrame(),
-                                "Cannot find module:\n "+theModuleName+
-                                "\nPlease check the module name and classpath.",
-                                "HDFView",
-                                JOptionPane.ERROR_MESSAGE);
-                            remove("module.treeview"+i);
-                        }
-                    }
-                } // if (theModuleName!= null && theModuleName.length()>0) {
-            } // for (int i=0; i<MAX_NUMBER_MODULES; i++) {
-        } // for (int j=0; j<6; j++) {
-
-        // add default modules
-        if (!moduleListTreeView.contains("ncsa.hdf.view.DefaultTreeView"))
-            moduleListTreeView.addElement("ncsa.hdf.view.DefaultTreeView");
-        if (!moduleListMetaDataView.contains("ncsa.hdf.view.DefaultMetaDataView"))
-            moduleListMetaDataView.addElement("ncsa.hdf.view.DefaultMetaDataView");
-        if (!moduleListTextView.contains("ncsa.hdf.view.DefaultTextView"))
-            moduleListTextView.addElement("ncsa.hdf.view.DefaultTextView");
-        if (!moduleListTableView.contains("ncsa.hdf.view.DefaultTableView"))
-            moduleListTableView.addElement("ncsa.hdf.view.DefaultTableView");
-        if (!moduleListImageView.contains("ncsa.hdf.view.DefaultImageView"))
-            moduleListImageView.addElement("ncsa.hdf.view.DefaultImageView");
-        if (!moduleListPaletteView.contains("ncsa.hdf.view.DefaultPaletteView"))
-            moduleListPaletteView.addElement("ncsa.hdf.view.DefaultPaletteView");
+        // set default selection of data views
+        for (int i=0; i<6; i++) {
+            Vector theList = moduleList[i];
+            str = (String)get(keys[i]);
+            if (!theList.contains(str))
+                str = moduleNames[i];
+            theList.remove(str);
+            theList.add(0, str);
+        }
     }
 
     /** Save user properties into property file */
@@ -667,49 +681,30 @@ public class ViewProperties extends Properties
                 put("recent.file"+i, theFile);
         }
 
-        // save list of modules
+        // save default modules
+        String moduleName = (String)moduleListTreeView.elementAt(0);
+        if (moduleName !=null && moduleName.length()>0)
+            put("module.treeview", moduleName);
 
-        int n = moduleListTreeView.size();
-        for (int i=0; i<n; i++) {
-            String moduleName = (String)moduleListTreeView.elementAt(i);
-            if (moduleName !=null && moduleName.length()>0)
-                put("module.treeview"+i, moduleName);
-        }
+        moduleName = (String)moduleListMetaDataView.elementAt(0);
+        if (moduleName !=null && moduleName.length()>0)
+            put("module.metadataview", moduleName);
 
-        n = moduleListMetaDataView.size();
-        for (int i=0; i<n; i++) {
-            String moduleName = (String)moduleListMetaDataView.elementAt(i);
-            if (moduleName !=null && moduleName.length()>0)
-                put("module.metadataview"+i, moduleName);
-        }
+        moduleName = (String)moduleListTextView.elementAt(0);
+        if (moduleName !=null && moduleName.length()>0)
+            put("module.textview", moduleName);
 
-        n = moduleListTextView.size();
-        for (int i=0; i<n; i++) {
-            String moduleName = (String)moduleListTextView.elementAt(i);
-            if (moduleName !=null && moduleName.length()>0)
-                put("module.textview"+i, moduleName);
-        }
+        moduleName = (String)moduleListTableView.elementAt(0);
+        if (moduleName !=null && moduleName.length()>0)
+            put("module.tableview", moduleName);
 
-        n = moduleListTableView.size();
-        for (int i=0; i<n; i++) {
-            String moduleName = (String)moduleListTableView.elementAt(i);
-            if (moduleName !=null && moduleName.length()>0)
-                put("module.tableview"+i, moduleName);
-        }
+        moduleName = (String)moduleListImageView.elementAt(0);
+        if (moduleName !=null && moduleName.length()>0)
+            put("module.imageview", moduleName);
 
-        n = moduleListImageView.size();
-        for (int i=0; i<n; i++) {
-            String moduleName = (String)moduleListImageView.elementAt(i);
-            if (moduleName !=null && moduleName.length()>0)
-                put("module.imageview"+i, moduleName);
-        }
-
-        n = moduleListPaletteView.size();
-        for (int i=0; i<n; i++) {
-            String moduleName = (String)moduleListPaletteView.elementAt(i);
-            if (moduleName !=null && moduleName.length()>0)
-                put("module.paletteview"+i, moduleName);
-        }
+        moduleName = (String)moduleListPaletteView.elementAt(0);
+        if (moduleName !=null && moduleName.length()>0)
+            put("module.paletteview", moduleName);
 
         try {
             FileOutputStream fos = new FileOutputStream(propertyFile);

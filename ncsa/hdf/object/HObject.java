@@ -222,6 +222,9 @@ implements Serializable, DataFormat
      */
     public final long[] getOID()
     {
+        if (oid == null)
+            return null;
+
         return (long[]) oid.clone();
     }
 

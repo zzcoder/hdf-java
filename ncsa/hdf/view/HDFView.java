@@ -182,7 +182,7 @@ public class HDFView extends JFrame
         currentFile = null;
         frameOffset = 0;
         toolkit = Toolkit.getDefaultToolkit();
-        ViewProperties.loadExtClass(root);
+        ViewProperties.loadExtClass();
 
         editGUIs = new Vector();
         h4GUIs = new Vector();
@@ -204,11 +204,11 @@ public class HDFView extends JFrame
         paletteViews = props.getPaletteViewList();
 
         // for testing purpose only @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        addModule(MODULE_METADATAVIEW, "test.ncsa.hdf.view.DefaultMetaDataViewTest");
-        addModule(MODULE_TEXTVIEW, "test.ncsa.hdf.view.DefaultTextViewTest");
-        addModule(MODULE_IMAGEVIEW, "test.ncsa.hdf.view.DefaultImageViewTest");
-        addModule(MODULE_TABLEVIEW, "test.ncsa.hdf.view.DefaultTableViewTest");
-        addModule(MODULE_PALETTEVIEW, "test.ncsa.hdf.view.DefaultPaletteViewTest");
+        //addModule(MODULE_METADATAVIEW, "test.ncsa.hdf.view.DefaultMetaDataViewTest");
+        //addModule(MODULE_TEXTVIEW, "test.ncsa.hdf.view.DefaultTextViewTest");
+        //addModule(MODULE_IMAGEVIEW, "test.ncsa.hdf.view.DefaultImageViewTest");
+        //addModule(MODULE_TABLEVIEW, "test.ncsa.hdf.view.DefaultTableViewTest");
+        //addModule(MODULE_PALETTEVIEW, "test.ncsa.hdf.view.DefaultPaletteViewTest");
 
         // initialize GUI components
         statusArea = new JTextArea();
@@ -229,7 +229,7 @@ public class HDFView extends JFrame
 
         Class theClass = null;
         try {
-            theClass = props.loadExtClass(root).loadClass((String)treeViews.get(0));
+            theClass = props.loadExtClass().loadClass((String)treeViews.get(0));
         } catch (Exception ex) { theClass = null; }
 
         if (theClass != null) {
@@ -1428,7 +1428,7 @@ public class HDFView extends JFrame
      */
     public static final void addModule(int moduleType, String moduleClassName) {
 
-        try { ViewProperties.loadExtClass(null).loadClass(moduleClassName); }
+        try { ViewProperties.loadExtClass().loadClass(moduleClassName); }
         catch(ClassNotFoundException ex) {
             JOptionPane.showMessageDialog(
                 new JFrame(),
@@ -1516,6 +1516,7 @@ public class HDFView extends JFrame
                 backup = true;
             }
         }
+        System.setProperty("hdfview.root", rootDir);
 
         if (backup)
             i--;

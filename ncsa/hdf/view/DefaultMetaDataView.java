@@ -53,7 +53,7 @@ implements ActionListener, MetaDataView
     private DefaultTableModel attrTableModel;
     private JLabel attrNumberLabel;
     private int numAttributes;
-    private boolean isH5;
+    private boolean isH5, isH4;
     private byte[] userBlock;
     private JTextArea userBlockArea;
 
@@ -78,9 +78,9 @@ implements ActionListener, MetaDataView
             setTitle("Properties - "+hObject.getPath()+hObject.getName());
 
         isH5 = hObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
+        isH4 = hObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4));
 
         tabbedPane = new JTabbedPane();
-
         tabbedPane.addTab("General", createGeneralPropertyPanel());
         tabbedPane.addTab("Attributes", createAttributePanel());
 
@@ -272,10 +272,10 @@ implements ActionListener, MetaDataView
             lp.add(new JLabel("Type: "));
         }
 
-        if (isH5)
-            lp.add(new JLabel("Object ID: "));
-        else
+        if (isH4)
             lp.add(new JLabel("Ref, Tag: "));
+        else
+            lp.add(new JLabel("Object ID: "));
 
         JPanel rp = new JPanel();
         rp.setLayout(new GridLayout(4,1));
@@ -313,14 +313,14 @@ implements ActionListener, MetaDataView
                 else
                     datasetCount++;
             }
-
             fileInfo = "size="+size+"K,  groups="+groupCount+ ",  datasets="+datasetCount;
         }
 
         if (isRoot)
         {
             if (isH5) typeStr = "HDF5,  "+fileInfo;
-            else typeStr = "HDF4,  "+fileInfo;
+            else if (isH4) typeStr = "HDF4,  "+fileInfo;
+            else typeStr = fileInfo;
         }
         else if (isH5)
         {
@@ -331,7 +331,7 @@ implements ActionListener, MetaDataView
             else if (hObject instanceof CompoundDS)
                 typeStr = "HDF5 Compound Dataset";
         }
-        else
+        else if (isH4)
         {
             if (hObject instanceof Group)
                 typeStr = "HDF4 Group";
@@ -345,6 +345,18 @@ implements ActionListener, MetaDataView
             }
             else if (hObject instanceof CompoundDS)
                 typeStr = "HDF4 Vdata";
+        }
+        else
+        {
+            if (hObject instanceof Group)
+                typeStr = "Group";
+            else if (hObject instanceof ScalarDS)
+            {
+                ScalarDS ds = (ScalarDS)hObject;
+                typeStr = "Scalar Dataset";
+            }
+            else if (hObject instanceof CompoundDS)
+                typeStr = "Compound Dataset";
         }
 
         JTextField typeField = new JTextField(typeStr);
