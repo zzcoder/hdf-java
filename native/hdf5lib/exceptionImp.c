@@ -651,7 +651,7 @@ char *defineHDF5LibraryException(int maj_num)
 		case H5E_ARGS:
 			 return "ncsa/hdf/hdf5lib/exceptions/HDF5FunctionArgumentException";
 		case H5E_RESOURCE:
-			 return "ncsa/hdf/hdf5lib/exceptions/HDF5ResourceUnavailabletException";
+			 return "ncsa/hdf/hdf5lib/exceptions/HDF5ResourceUnavailableException";
 		case H5E_INTERNAL:
 			 return "ncsa/hdf/hdf5lib/exceptions/HDF5InternalErrorException";
 		case H5E_FILE:
