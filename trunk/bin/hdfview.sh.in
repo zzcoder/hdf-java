@@ -3,60 +3,67 @@
 # Set up default variable values if not supplied by the user.
 
 # where the HDFView is installed
-set HDFVIEW_HOME=@JH45INST@
+HDFVIEW_HOME=@JH45INST@
+export HDFVIEW_HOME
 
 # where Java is installed (requires jdk1.3 or above)
-set JAVAPATH=@JAVABIN@
+JAVAPATH=@JAVABIN@
+export JAVAPATH
 
 ###############################################################################
 #            DO NOT MODIFY BELOW THIS LINE
 ###############################################################################
 
-set CPATH=$HDFVIEW_HOME"/lib/jhdf.jar:"$HDFVIEW_HOME"/lib/jhdf5.jar:"$HDFVIEW_HOME"/lib/jhdfobj.jar:"$HDFVIEW_HOME"/lib/netcdf.jar:"$HDFVIEW_HOME"/lib/fits.jar"
+CPATH=$HDFVIEW_HOME"/lib/jhdf.jar:"$HDFVIEW_HOME"/lib/jhdf5.jar:"$HDFVIEW_HOME"/lib/jhdfobj.jar:"$HDFVIEW_HOME"/lib/netcdf.jar:"$HDFVIEW_HOME"/lib/fits.jar"
 
-set CPATH=$CPATH":"$HDFVIEW_HOME"/lib/jhdf4obj.jar:"$HDFVIEW_HOME"/lib/jhdf5obj.jar:"$HDFVIEW_HOME"/lib/jhdfview.jar"
-
-
-if (${?CLASSPATH} == 0) then
-	setenv CLASSPATH ""
-endif
-setenv CLASSPATH $CPATH":"$CLASSPATH
-
-if (${?JAVAPATH} != 0) then
-	setenv PATH $JAVAPATH":"$PATH
-endif
+CPATH=$CPATH":"$HDFVIEW_HOME"/lib/jhdf4obj.jar:"$HDFVIEW_HOME"/lib/jhdf5obj.jar:"$HDFVIEW_HOME"/lib/jhdfview.jar"
 
 
-if (-e /bin/uname) then
-   set machtype=`/bin/uname -m`
-   set OS=`/bin/uname -s`
-else if (-e /usr/bin/uname) then
-   set machtype=`/usr/bin/uname -m`
-   set OS=`/usr/bin/uname -s`
+if test -z "$CLASSPATH"; then
+	CLASSPATH=""
+fi
+CLASSPATH=$CPATH":"$CLASSPATH
+export CLASSPATH
+
+if test -n "$JAVAPATH" ; then
+	PATH=$JAVAPATH":"$PATH
+	export PATH
+fi
+
+
+if test -e /bin/uname; then
+   machtype=`/bin/uname -m`
+   OS=`/bin/uname -s`
+elif test -e /usr/bin/uname; then
+   machtype=`/usr/bin/uname -m`
+   OS=`/usr/bin/uname -s`
 else
-   set machtype=unknown
-   set OS=unknown
-endif
+   machtype=unknown
+   OS=unknown
+fi
 
-if (${?LD_LIBRARY_PATH} == 0) then
-        setenv LD_LIBRARY_PATH ""
-endif
+if test -z "$LD_LIBRARY_PATH" ; then
+        LD_LIBRARY_PATH=""
+fi
 
-switch ( $machtype )
-    case sun4*:
-	setenv LD_LIBRARY_PATH $HDFVIEW_HOME/lib/solaris:$LD_LIBRARY_PATH
-	breaksw
-  case i*86:
-        setenv LD_LIBRARY_PATH $HDFVIEW_HOME"/lib/linux:"$LD_LIBRARY_PATH
-	breaksw
-  case IP*:
-	set OSREV=`/bin/uname -r`
-	setenv LD_LIBRARY_PATH $HDFVIEW_HOME"/lib/irix-"$OSREV":"$LD_LIBRARY_PATH 
-	setenv LD_LIBRARYN32_PATH $HDFVIEW_HOME"/lib/irix-"$OSREV":"$LD_LIBRARY_PATH
-	breaksw
-    default:
+case  $machtype in:
+    sun4*)
+	LD_LIBRARY_PATH=$HDFVIEW_HOME/lib/solaris:$LD_LIBRARY_PATH
+	;;
+  i*86)
+        LD_LIBRARY_PATH=$HDFVIEW_HOME"/lib/linux:"$LD_LIBRARY_PATH
+	;;
+  IP*)
+	OSREV=`/bin/uname -r`
+	LD_LIBRARY_PATH=$HDFVIEW_HOME"/lib/irix-"$OSREV":"$LD_LIBRARY_PATH 
+	LD_LIBRARYN32_PATH=$HDFVIEW_HOME"/lib/irix-"$OSREV":"$LD_LIBRARY_PATH
+	export LD_LIBRARYN32_PATH
+	;;
+    *)
 	echo "Unknown machine type:  jhv may not work correctly"
-        breaksw
-endsw
+        ;;
+esac
+
+export LD_LIBRARYN_PATH
 
 $JAVAPATH/java -mx512m ncsa.hdf.view.HDFView -root $HDFVIEW_HOME
