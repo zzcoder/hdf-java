@@ -491,12 +491,10 @@ test.h4toh5: test/h4toh5/apitest.class \
 #
 ncsa.hdf.view: ./ncsa/hdf/view/TreeView.class \
 	./ncsa/hdf/view/TreeView$$1.class \
-	./ncsa/hdf/view/TreeView$$2.class \
 	./ncsa/hdf/view/TreeView$$HTreeCellRenderer.class \
 	./ncsa/hdf/view/TreeView$$HTreeMouseAdapter.class \
 	./ncsa/hdf/view/ViewManager.class \
 	./ncsa/hdf/view/ChartView.class \
-	./ncsa/hdf/view/ChartView$$1.class \
 	./ncsa/hdf/view/ChartView$$ChartPanel.class \
 	./ncsa/hdf/view/DataObserver.class \
 	./ncsa/hdf/view/DataOptionDialog.class \
@@ -756,7 +754,6 @@ HDFVIEWCLASSES= ./ncsa/hdf/view/ViewManager.class \
 	./ncsa/hdf/view/TextObserver.class \
 	./ncsa/hdf/view/TextView.class \
 	./ncsa/hdf/view/ViewProperties.class \
-	./ncsa/hdf/view/ChartView\$$1.class \
 	./ncsa/hdf/view/ChartView\$$ChartPanel.class \
 	./ncsa/hdf/view/HDFView\$$1.class \
 	./ncsa/hdf/view/ImageView\$$ContourFilter.class \
@@ -773,7 +770,6 @@ HDFVIEWCLASSES= ./ncsa/hdf/view/ViewManager.class \
 	./ncsa/hdf/view/TableView\$$ColumnHeader.class \
 	./ncsa/hdf/view/TableView\$$RowHeader.class \
 	./ncsa/hdf/view/TreeView\$$1.class \
-	./ncsa/hdf/view/TreeView\$$2.class \
 	./ncsa/hdf/view/TreeView\$$HTreeCellRenderer.class \
 	./ncsa/hdf/view/TreeView\$$HTreeMouseAdapter.class \
 	./ncsa/hdf/view/NewAttributeDialog.class \
