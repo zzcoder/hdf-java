@@ -831,6 +831,7 @@ Optional Packages:
   --with-hdf4=INC,LIB     Path to the HDF4 library (required if not in default path)
   --with-libz=LIB     Path to the gzip library (requied if not in default path)
   --with-hdf5=INC,LIB     Path to the HDF5 library (requied if not in default path)
+  --with-libsz=LIB     Path to the gzip library (requied if not in default path)
   --with-h4toh5=INC,LIB     Path to the HDF 4 to 5 library (optional feature, if selected then path required is not in default path)
   --with-classpath=LIB
   --with-jdk=INC,LIB     Path to the JDK (required if not in default path)
@@ -3925,6 +3926,25 @@ ac_cv_lib_HDF5=$HDF5LIB
 ac_cv_lib_HDF5INC=$HDF5INC
 
 
+withval="";
+ SZLIB=""
+
+# Check whether --with-libsz or --without-libsz was given.
+if test "${with_libsz+set}" = set; then
+  withval="$with_libsz"
+
+fi;
+
+if test -n "$withval" ; then
+    sz_lib="`echo $withval |cut -f2 -d, -s`"
+	SZLIB=$sz_lib"/libsz.a"
+else
+if test -n "$HDF5LIB" ; then
+SZLIB=$HDF5LIB"/libsz.a"
+fi
+fi
+
+
 USEH45="no"
 withval="";
  LIBH45=""
@@ -4751,6 +4771,7 @@ esac
 
 
 
+
 VERSION=./VERSION
 VERSSTRING=`/bin/cat ./VERSION | sed -e 's/VERSION=HDF-JAVA-//' `
 
@@ -5393,6 +5414,7 @@ s,@target_vendor@,$target_vendor,;t t
 s,@target_os@,$target_os,;t t
 s,@ZLIB@,$ZLIB,;t t
 s,@LIBHDF5@,$LIBHDF5,;t t
+s,@SZLIB@,$SZLIB,;t t
 s,@LIBH45@,$LIBH45,;t t
 s,@jdkclasses@,$jdkclasses,;t t
 s,@JAVALIB@,$JAVALIB,;t t
