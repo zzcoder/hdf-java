@@ -429,9 +429,6 @@ implements ViewManager, ActionListener, HyperlinkListener
             if (theFrame != null) // discard the displayed data
                 ((DataObserver)theFrame).dispose();
             isImage = dialog.isImageDisplay();
-
-            //clear the old data
-            d.clearData();
         }
 
         // try to see if can open the data content

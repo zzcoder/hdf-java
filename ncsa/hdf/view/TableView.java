@@ -182,6 +182,7 @@ implements TableObserver
             // reload the data when it is displayed next time
             // because the display type (table or image) may be
             // different.
+
             if (sds.isImage())
                 sds.clearData();
         }

@@ -984,6 +984,16 @@ implements ImageObserver
     private Image createTrueColorImage()
     {
         Image theImage = null;
+        isPlaneInterlace = (dataset.getInterlace() ==ScalarDS.INTERLACE_PLANE);
+
+        long[] selected = dataset.getSelectedDims();
+        long[] start = dataset.getStartDims();
+        int[] selectedIndex = dataset.getSelectedIndex();
+        long[] stride = dataset.getStride();
+        start[selectedIndex[2]] = 0;
+        selected[selectedIndex[2]] = 3;
+        if (stride != null) stride[selectedIndex[2]] = 1;
+        dataset.clearData();
 
         try { data = dataset.read(); }
         catch (Throwable ex) {
@@ -1003,7 +1013,6 @@ implements ImageObserver
         int imgSize = w*h;
         int packedImageData[] = new int[imgSize];
         int pixel=0, idx=0, r=0, g=0, b=0;
-        isPlaneInterlace = (dataset.getInterlace() ==ScalarDS.INTERLACE_PLANE);
         for (int i=0; i<h; i++)
         {
             for (int j=0; j<w; j++)

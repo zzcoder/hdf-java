@@ -618,6 +618,10 @@ implements ActionListener, ItemListener
 
         dataset.setStride(stride);
 
+
+        //clear the old data
+        dataset.clearData();
+
         return true;
     }
 
