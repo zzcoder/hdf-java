@@ -53,5 +53,21 @@ public class TestHDF5Link {
 		System.out.println("\n");System.out.flush();
 
 		System.out.println("Path is Correct: \n\t"+libPath);
+		status = -1;
+		int fid = -1;
+		System.out.println("\nTest call to create file:");
+		try {
+			status = H5.H5open();
+			fid = H5.H5Fcreate("test.h5",0,0,0);
+			status = H5.H5Fclose(fid);
+			status = H5.H5close();
+		} catch (Throwable t3) {
+			System.out.println("Exception creating HDF-5 file: "+t3);
+			System.exit(1);
+		}
+		System.out.println("OK.  (H5.H5Fcreate())");System.out.flush();
+		System.out.println("\n");System.out.flush();
+
+		System.out.println("Library works");
 	}
 }
