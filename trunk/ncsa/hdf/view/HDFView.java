@@ -410,11 +410,11 @@ implements ViewManager, ActionListener
             {
                 if (frame instanceof ImageObserver)
                 {
-                    ((ImageObserver)frame).drawHistogram();
+                    ((ImageObserver)frame).showHistogram();
                 }
                 else if (frame instanceof TableObserver)
                 {
-                    ((TableObserver)frame).drawLineplot();
+                    ((TableObserver)frame).showLineplot();
                 }
             }
         }

@@ -91,6 +91,11 @@ implements ImageObserver
     private byte[] indexedImageData;
 
     /**
+     * The color table of the image.
+     */
+    byte[][] imagePalette;
+
+    /**
      * Constructs an ImageView.
      * <p>
      * @param theView the main HDFView.
@@ -102,6 +107,7 @@ implements ImageObserver
         viewer = theView;
         zoomFactor = 1.0f;
         indexedImageData = null;
+        imagePalette = null;
 
         HObject hobject = (HObject)viewer.getSelectedObject();
         if (hobject == null || !(hobject instanceof ScalarDS))
@@ -411,10 +417,42 @@ implements ImageObserver
     // implementing ImageObserver
     public void showColorTable()
     {
+        if (imagePalette == null)
+            return;
+
+        double[][] data = new double[3][256];
+        int[] xRange = {0, 255};
+        double[] yRange = {0, 255};
+        String[] lineLabels = {"Red", "Green", "Blue"};
+        Color[] lineColors = {Color.red, Color.green, Color.blue};
+        String title = "Image Palette - "+dataset.getPath()+dataset.getName();
+
+        double d = 0;
+        for (int i=0; i<3; i++)
+        {
+            for (int j=0; j<256; j++)
+            {
+                d = (double)imagePalette[i][j];
+                if (d < 0) d += 256;
+                data[i][j] = d;
+            }
+        }
+
+        ChartView cv = new ChartView(
+            (Frame)viewer,
+            title,
+            ChartView.LINEPLOT,
+            data,
+            xRange,
+            yRange);
+        cv.setLineLabels(lineLabels);
+        cv.setLineColors(lineColors);
+        cv.setTypeToInteger();
+        cv.show();
     }
 
     // implementing ImageObserver
-    public void drawHistogram()
+    public void showHistogram()
     {
         Rectangle rec = imageComponent.selectedArea;
         if (indexedImageData == null ||
@@ -447,6 +485,7 @@ implements ImageObserver
             dataset.getPath()+dataset.getName() +
             " - by pixel index";
         int[] xRange = {0, 255};
+
         ChartView cv = new ChartView(
             (Frame)viewer,
             title,
@@ -772,15 +811,16 @@ implements ImageObserver
     {
         Image theImage = null;
 
-        byte[][] p = dataset.getPalette();
-        if (p == null) p = createGrayPalette();
+        imagePalette = dataset.getPalette();
+        if (imagePalette == null)
+            imagePalette = createGrayPalette();
 
         IndexColorModel colorModel = new IndexColorModel (
-            8,     // bits - the number of bits each pixel occupies
-            256,   // size - the size of the color component arrays
-            p[0],  // r - the array of red color components
-            p[1],  // g - the array of green color components
-            p[2]); // b - the array of blue color components
+            8,                // bits - the number of bits each pixel occupies
+            256,              // size - the size of the color component arrays
+            imagePalette[0],  // r - the array of red color components
+            imagePalette[1],  // g - the array of green color components
+            imagePalette[2]); // b - the array of blue color components
 
         Object rawData = null;
         try { rawData = dataset.read(); }
