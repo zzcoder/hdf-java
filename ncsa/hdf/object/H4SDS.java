@@ -332,7 +332,7 @@ public class H4SDS extends ScalarDS
     // Implementing ScalarDS
     public byte[][] getPalette()
     {
-        return null;
+        return palette;
     }
 
 

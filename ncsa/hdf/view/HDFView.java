@@ -135,6 +135,8 @@ implements ViewManager, ActionListener, HyperlinkListener
 
     private JButton chartIcon, paletteIcon;
 
+    private int frameOffset;
+
     /**
      * file access id.
      */
@@ -170,6 +172,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         selectedObject = null;
         objectsToCopy = null;
         usersGuideURL = null;
+        frameOffset = 0;
         fileAccessID = FileFormat.WRITE;
         toolkit = Toolkit.getDefaultToolkit();
 
@@ -413,6 +416,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         }
 
         JInternalFrame frame = contentPane.getSelectedFrame();
+
         if (frame != null)
         {
             try { frame.setSelected(false); }
@@ -2125,31 +2129,11 @@ implements ViewManager, ActionListener, HyperlinkListener
         String fullPath = selectedObject.getPath()+selectedObject.getName();
         String cmd = fullPath + selectedObject.getFID();
 
+
+        frame.setName(cmd); // data windows are identified by full path the file id
         frame.setMaximizable(true);
         frame.setClosable(true);
         frame.setResizable(true);
-        //try { frame.setMaximum(true); } catch (Exception ex) {}
-        Dimension d = contentPane.getSize();
-        frame.setSize(d.width-60, d.height-60);
-
-        JComponent comp = contentPane.getSelectedFrame();
-        if (comp != null)
-        {
-            java.awt.Point p = comp.getLocation();
-            int x0 = p.x+15;
-            int y0 = p.y+15;
-            if (y0 >60 || x0 >60)
-            {
-                x0 = 0;
-                y0 = 0;
-            }
-            frame.setLocation(x0, y0);
-        }
-
-        // data windows are identified by full path the file id
-        frame.setName(cmd);
-
-        frame.show();
 
         JMenuItem item = new JMenuItem( fullPath );
         item.setActionCommand(cmd);
@@ -2165,7 +2149,16 @@ implements ViewManager, ActionListener, HyperlinkListener
         }
 
         windowMenu.add(item);
-    }
+
+        frame.setLocation(frameOffset, frameOffset);
+        if (frameOffset < 60) frameOffset += 15;
+        else frameOffset = 0;
+
+        Dimension d = contentPane.getSize();
+        frame.setSize(d.width-60, d.height-60);
+
+        frame.show();
+   }
 
     private void addGroup()
     {
