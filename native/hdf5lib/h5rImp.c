@@ -11,7 +11,7 @@
 
 /*
  *  This code is the C-interface called by Java programs to access the
- *  Reference API Functions of the HDF5 library. 
+ *  Reference API Functions of the HDF5 library.
  *
  *  Each routine wraps a single HDF entry point, generally with the
  *  analogous arguments and return codes.
@@ -22,7 +22,7 @@
  */
 #ifdef __cplusplus
 extern "C" {
-#endif 
+#endif
 
 #include "hdf5.h"
 #include <jni.h>
@@ -39,96 +39,96 @@ extern jboolean h5libraryError( JNIEnv *env );
  * Signature: ([BILjava/lang/String;II)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rcreate
-  (JNIEnv *env, jclass clss, 
+  (JNIEnv *env, jclass clss,
   jbyteArray ref, jint loc_id, jstring name, jint ref_type, jint space_id)
 {
-	char* rName;
-	jboolean isCopy;
-	herr_t status;
-	jbyte *refP;
+    char* rName;
+    jboolean isCopy;
+    herr_t status;
+    jbyte *refP;
 
-	if (ref == NULL) {
-		h5nullArgument( env, "H5Rcreate:  ref is NULL");
-		return -1;
-	}
-	if (name == NULL) {
-		h5nullArgument( env, "H5Rcreate:  name is NULL");
-		return -1;
-	}
-	if (ref_type == H5R_OBJECT) {
+    if (ref == NULL) {
+        h5nullArgument( env, "H5Rcreate:  ref is NULL");
+        return -1;
+    }
+    if (name == NULL) {
+        h5nullArgument( env, "H5Rcreate:  name is NULL");
+        return -1;
+    }
+    if (ref_type == H5R_OBJECT) {
 #ifdef __cplusplus
-		if (env->GetArrayLength(ref) < 8) {
-			h5badArgument( env, "H5Rcreate:  ref input array < 8");
-			return -1;
-		}
+        if (env->GetArrayLength(ref) < 8) {
+            h5badArgument( env, "H5Rcreate:  ref input array < 8");
+            return -1;
+        }
 #else
-		if ((*env)->GetArrayLength(env, ref) < 8) {
-			h5badArgument( env, "H5Rcreate:  ref input array < 8");
-			return -1;
-		}
+        if ((*env)->GetArrayLength(env, ref) < 8) {
+            h5badArgument( env, "H5Rcreate:  ref input array < 8");
+            return -1;
+        }
 #endif
-	} else if (ref_type == H5R_DATASET_REGION) {
+    } else if (ref_type == H5R_DATASET_REGION) {
 #ifdef __cplusplus
-		if (env->GetArrayLength( ref) < 12) {
-			h5badArgument( env, "H5Rcreate:  region ref input array < 12");
-			return -1;
-		}
+        if (env->GetArrayLength( ref) < 12) {
+            h5badArgument( env, "H5Rcreate:  region ref input array < 12");
+            return -1;
+        }
 #else
-		if ((*env)->GetArrayLength(env, ref) < 12) {
-			h5badArgument( env, "H5Rcreate:  region ref input array < 12");
-			return -1;
-		}
+        if ((*env)->GetArrayLength(env, ref) < 12) {
+            h5badArgument( env, "H5Rcreate:  region ref input array < 12");
+            return -1;
+        }
 #endif
-	} else {
-		h5badArgument( env, "H5Rcreate:  ref_type unknown type ");
-		return -1;
-	}
+    } else {
+        h5badArgument( env, "H5Rcreate:  ref_type unknown type ");
+        return -1;
+    }
 
 #ifdef __cplusplus
-	refP = (jbyte *)env->GetByteArrayElements(ref,&isCopy);
+    refP = (jbyte *)env->GetByteArrayElements(ref,&isCopy);
 #else
-	refP = (jbyte *)(*env)->GetByteArrayElements(env,ref,&isCopy);
+    refP = (jbyte *)(*env)->GetByteArrayElements(env,ref,&isCopy);
 #endif
-	if (refP == NULL) {
-		h5JNIFatalError(env,  "H5Rcreate:  ref not pinned");
-		return -1;
-	}
+    if (refP == NULL) {
+        h5JNIFatalError(env,  "H5Rcreate:  ref not pinned");
+        return -1;
+    }
 #ifdef __cplusplus
-	rName = (char *)env->GetStringUTFChars(name,&isCopy);
+    rName = (char *)env->GetStringUTFChars(name,&isCopy);
 #else
-	rName = (char *)(*env)->GetStringUTFChars(env,name,&isCopy);
+    rName = (char *)(*env)->GetStringUTFChars(env,name,&isCopy);
 #endif
-	if (rName == NULL) {
+    if (rName == NULL) {
 #ifdef __cplusplus
-		env->ReleaseByteArrayElements(ref,refP,JNI_ABORT);
+        env->ReleaseByteArrayElements(ref,refP,JNI_ABORT);
 #else
-		(*env)->ReleaseByteArrayElements(env,ref,refP,JNI_ABORT);
+        (*env)->ReleaseByteArrayElements(env,ref,refP,JNI_ABORT);
 #endif
-		h5JNIFatalError(env,  "H5Rcreate:  name not pinned");
-		return -1;
-	}
+        h5JNIFatalError(env,  "H5Rcreate:  name not pinned");
+        return -1;
+    }
 
-	status = H5Rcreate(refP, loc_id, rName, (H5R_type_t)ref_type, space_id);
-	if (status < 0) {
+    status = H5Rcreate(refP, loc_id, rName, (H5R_type_t)ref_type, space_id);
+    if (status < 0) {
 #ifdef __cplusplus
-		env->ReleaseStringUTFChars(name,rName);
-		env->ReleaseByteArrayElements(ref,refP,JNI_ABORT);
+        env->ReleaseStringUTFChars(name,rName);
+        env->ReleaseByteArrayElements(ref,refP,JNI_ABORT);
 #else
-		(*env)->ReleaseStringUTFChars(env,name,rName);
-		(*env)->ReleaseByteArrayElements(env,ref,refP,JNI_ABORT);
+        (*env)->ReleaseStringUTFChars(env,name,rName);
+        (*env)->ReleaseByteArrayElements(env,ref,refP,JNI_ABORT);
 #endif
-		h5libraryError(env);
-	} else {
+        h5libraryError(env);
+    } else {
 #ifdef __cplusplus
-		env->ReleaseStringUTFChars(name,rName);
-		env->ReleaseByteArrayElements(ref,refP,0);
+        env->ReleaseStringUTFChars(name,rName);
+        env->ReleaseByteArrayElements(ref,refP,0);
 #else
-		(*env)->ReleaseStringUTFChars(env,name,rName);
-		(*env)->ReleaseByteArrayElements(env,ref,refP,0);
+        (*env)->ReleaseStringUTFChars(env,name,rName);
+        (*env)->ReleaseByteArrayElements(env,ref,refP,0);
 #endif
-	}
+    }
 
-	return (jint)status;
+    return (jint)status;
 }
 
 /*
@@ -140,48 +140,48 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rdereference
   (JNIEnv *env, jclass clss, jint dataset, jint ref_type,
   jbyteArray ref )
 {
-	jboolean isCopy;
-	jbyte *refP;
-	herr_t status;
+    jboolean isCopy;
+    jbyte *refP;
+    herr_t status;
 
-	if (ref == NULL) {
-		h5nullArgument( env, "H5Rdereference:  ref is NULL");
-		return -1;
-	}
+    if (ref == NULL) {
+        h5nullArgument( env, "H5Rdereference:  ref is NULL");
+        return -1;
+    }
 #ifdef __cplusplus
-	if ((ref_type == H5R_OBJECT) && env->GetArrayLength(ref) < 8) {
-		h5badArgument( env, "H5Rdereference:  obj ref input array < 8");
-	} else if ((ref_type == H5R_DATASET_REGION)  
-		&& env->GetArrayLength(ref) < 12) {
-		h5badArgument( env, "H5Rdereference:  region ref input array < 12");
-	}
-	refP = (jbyte *)env->GetByteArrayElements(ref,&isCopy);
+    if ((ref_type == H5R_OBJECT) && env->GetArrayLength(ref) < 8) {
+        h5badArgument( env, "H5Rdereference:  obj ref input array < 8");
+    } else if ((ref_type == H5R_DATASET_REGION)
+        && env->GetArrayLength(ref) < 12) {
+        h5badArgument( env, "H5Rdereference:  region ref input array < 12");
+    }
+    refP = (jbyte *)env->GetByteArrayElements(ref,&isCopy);
 #else
-	if ((ref_type == H5R_OBJECT) && (*env)->GetArrayLength(env, ref) < 8) {
-		h5badArgument( env, "H5Rdereference:  obj ref input array < 8");
-	} else if ((ref_type == H5R_DATASET_REGION)  
-		&& (*env)->GetArrayLength(env, ref) < 12) {
-		h5badArgument( env, "H5Rdereference:  region ref input array < 12");
-	}
-	refP = (jbyte *)(*env)->GetByteArrayElements(env,ref,&isCopy);
+    if ((ref_type == H5R_OBJECT) && (*env)->GetArrayLength(env, ref) < 8) {
+        h5badArgument( env, "H5Rdereference:  obj ref input array < 8");
+    } else if ((ref_type == H5R_DATASET_REGION)
+        && (*env)->GetArrayLength(env, ref) < 12) {
+        h5badArgument( env, "H5Rdereference:  region ref input array < 12");
+    }
+    refP = (jbyte *)(*env)->GetByteArrayElements(env,ref,&isCopy);
 #endif
-	if (refP == NULL) {
-		h5JNIFatalError(env,  "H5Rderefernce:  ref not pinned");
-		return -1;
-	}
+    if (refP == NULL) {
+        h5JNIFatalError(env,  "H5Rderefernce:  ref not pinned");
+        return -1;
+    }
 
-	status = H5Rdereference((hid_t)dataset, (H5R_type_t)ref_type, refP);
+    status = H5Rdereference((hid_t)dataset, (H5R_type_t)ref_type, refP);
 
 #ifdef __cplusplus
-	env->ReleaseByteArrayElements(ref,refP,JNI_ABORT);
+    env->ReleaseByteArrayElements(ref,refP,JNI_ABORT);
 #else
-	(*env)->ReleaseByteArrayElements(env,ref,refP,JNI_ABORT);
+    (*env)->ReleaseByteArrayElements(env,ref,refP,JNI_ABORT);
 #endif
 
-	if (status < 0) {
-		h5libraryError(env);
-	}
-	return (jint)status;
+    if (status < 0) {
+        h5libraryError(env);
+    }
+    return (jint)status;
 }
 
 /*
@@ -193,47 +193,47 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1region
   (JNIEnv *env, jclass clss, jint dataset, jint ref_type,
   jbyteArray ref )
 {
-	hid_t status;
-	jboolean isCopy;
-	jbyte *refP;
+    hid_t status;
+    jboolean isCopy;
+    jbyte *refP;
 
-	if (ref_type != H5R_DATASET_REGION)  {
-		h5badArgument( env, "H5Rget_region:  bad ref_type ");
-		return -1;
-	}
+    if (ref_type != H5R_DATASET_REGION)  {
+        h5badArgument( env, "H5Rget_region:  bad ref_type ");
+        return -1;
+    }
 
-	if (ref == NULL) {
-		h5nullArgument( env, "H5Rget_region:  ref is NULL");
-		return -1;
-	}
+    if (ref == NULL) {
+        h5nullArgument( env, "H5Rget_region:  ref is NULL");
+        return -1;
+    }
 #ifdef __cplusplus
-	if ( env->GetArrayLength(ref) < 12) {
-		h5badArgument( env, "H5Rget_region:  region ref input array < 12");
-	}
-	refP = (jbyte *)env->GetByteArrayElements(ref,&isCopy);
+    if ( env->GetArrayLength(ref) < 12) {
+        h5badArgument( env, "H5Rget_region:  region ref input array < 12");
+    }
+    refP = (jbyte *)env->GetByteArrayElements(ref,&isCopy);
 #else
-	if ( (*env)->GetArrayLength(env, ref) < 12) {
-		h5badArgument( env, "H5Rget_region:  region ref input array < 12");
-	}
-	refP = (jbyte *)(*env)->GetByteArrayElements(env,ref,&isCopy);
+    if ( (*env)->GetArrayLength(env, ref) < 12) {
+        h5badArgument( env, "H5Rget_region:  region ref input array < 12");
+    }
+    refP = (jbyte *)(*env)->GetByteArrayElements(env,ref,&isCopy);
 #endif
-	if (refP == NULL) {
-		h5JNIFatalError(env,  "H5Rget_region:  ref not pinned");
-		return -1;
-	}
+    if (refP == NULL) {
+        h5JNIFatalError(env,  "H5Rget_region:  ref not pinned");
+        return -1;
+    }
 
-	status = H5Rget_region((hid_t)dataset, (H5R_type_t)ref_type, refP);
+    status = H5Rget_region((hid_t)dataset, (H5R_type_t)ref_type, refP);
 
 #ifdef __cplusplus
-	env->ReleaseByteArrayElements(ref,refP,JNI_ABORT);
+    env->ReleaseByteArrayElements(ref,refP,JNI_ABORT);
 #else
-	(*env)->ReleaseByteArrayElements(env,ref,refP,JNI_ABORT);
+    (*env)->ReleaseByteArrayElements(env,ref,refP,JNI_ABORT);
 #endif
 
-	if (status < 0) {
-		h5libraryError(env);
-	}
-	return (jint)status;
+    if (status < 0) {
+        h5libraryError(env);
+    }
+    return (jint)status;
 }
 
 /*
@@ -245,40 +245,40 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type
   (JNIEnv *env, jclass clss, jint loc_id, jint ref_type, jbyteArray ref)
 {
 
-	H5G_obj_t status;
-	jboolean isCopy;
-	jbyte *refP;
+    H5G_obj_t status;
+    jboolean isCopy;
+    jbyte *refP;
 
 
-	if (ref == NULL) {
-		h5nullArgument( env, "H5Rget_object_type:  ref is NULL");
-		return -1;
-	}
-
-#ifdef __cplusplus
-	refP = (jbyte *)env->GetByteArrayElements(ref,&isCopy);
-#else
-	refP = (jbyte *)(*env)->GetByteArrayElements(env,ref,&isCopy);
-#endif
-	if (refP == NULL) {
-		h5JNIFatalError(env,  "H5Rget_object_type:  ref not pinned");
-		return -1;
-	}
-
-	status = H5Rget_obj_type((hid_t)loc_id, (H5R_type_t)ref_type, refP);
+    if (ref == NULL) {
+        h5nullArgument( env, "H5Rget_object_type:  ref is NULL");
+        return -1;
+    }
 
 #ifdef __cplusplus
-	env->ReleaseByteArrayElements(ref,refP,JNI_ABORT);
+    refP = (jbyte *)env->GetByteArrayElements(ref,&isCopy);
 #else
-	(*env)->ReleaseByteArrayElements(env,ref,refP,JNI_ABORT);
+    refP = (jbyte *)(*env)->GetByteArrayElements(env,ref,&isCopy);
+#endif
+    if (refP == NULL) {
+        h5JNIFatalError(env,  "H5Rget_object_type:  ref not pinned");
+        return -1;
+    }
+
+    status = H5Rget_obj_type((hid_t)loc_id, (H5R_type_t)ref_type, refP);
+
+#ifdef __cplusplus
+    env->ReleaseByteArrayElements(ref,refP,JNI_ABORT);
+#else
+    (*env)->ReleaseByteArrayElements(env,ref,refP,JNI_ABORT);
 #endif
 
-	if (status < 0) {
-		h5libraryError(env);
-	}
-	return (jint)status;
+    if (status < 0) {
+        h5libraryError(env);
+    }
+    return (jint)status;
 }
 
 #ifdef __cplusplus
 }
-#endif 
+#endif

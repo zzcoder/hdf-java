@@ -9,7 +9,6 @@
  * hdf-java/COPYING file.                                                   *
  *                                                                          *
  ****************************************************************************/
-
 /*
  *  This code is the C-interface called by Java programs to access the
  *  HDF 4.1 library.
@@ -28,318 +27,318 @@
 
 extern jboolean h4outOfMemory( JNIEnv *env, char *functName);
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANstart 
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANstart
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint file_id)
 {
-	return ANstart((int32)file_id);
+    return ANstart((int32)file_id);
 }
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANend 
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANend
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint anid)
 {
-	int32 retVal;
+    int32 retVal;
 
-	retVal = ANend((int32)anid);
+    retVal = ANend((int32)anid);
 
-	if (retVal == FAIL) {
-		return JNI_FALSE;
-	} else {
-		return JNI_TRUE;
-	}
+    if (retVal == FAIL) {
+        return JNI_FALSE;
+    } else {
+        return JNI_TRUE;
+    }
 }
 
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANfileinfo 
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANfileinfo
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint anid,
 jintArray info)  /* OUT: n_file_label, n_file_desc, n_data_label, n_data_desc */
 {
-	int32 retVal;
-	jint *theArgs;
-	jboolean bb;
+    int32 retVal;
+    jint *theArgs;
+    jboolean bb;
 
-	theArgs = (*env)->GetIntArrayElements(env,info,&bb);
+    theArgs = (*env)->GetIntArrayElements(env,info,&bb);
 
-	retVal = ANfileinfo((int32)anid, (int32 *)&(theArgs[0]), 
-		(int32 *)&(theArgs[1]), (int32 *)&(theArgs[2]), 
-		(int32 *)&(theArgs[3]));
+    retVal = ANfileinfo((int32)anid, (int32 *)&(theArgs[0]),
+        (int32 *)&(theArgs[1]), (int32 *)&(theArgs[2]),
+        (int32 *)&(theArgs[3]));
 
-	if (retVal == FAIL) {
-		(*env)->ReleaseIntArrayElements(env,info,theArgs,JNI_ABORT);
-		return JNI_FALSE;
-	} else {
-		(*env)->ReleaseIntArrayElements(env,info,theArgs,0);
-		return JNI_TRUE;
-	}
+    if (retVal == FAIL) {
+        (*env)->ReleaseIntArrayElements(env,info,theArgs,JNI_ABORT);
+        return JNI_FALSE;
+    } else {
+        (*env)->ReleaseIntArrayElements(env,info,theArgs,0);
+        return JNI_TRUE;
+    }
 }
 
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANselect 
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANselect
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint anid,
 jint index,
 jint anntype)
 {
-	return(ANselect((int32)anid, (int32)index, (ann_type)anntype));
+    return(ANselect((int32)anid, (int32)index, (ann_type)anntype));
 }
 
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANendaccess 
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANendaccess
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint ann_id)
 {
-	int32 retVal;
+    int32 retVal;
 
-	retVal = ANendaccess((int32)ann_id);
+    retVal = ANendaccess((int32)ann_id);
 
-	if (!retVal) {
-		return JNI_TRUE;
-	} else {
-		return JNI_FALSE;
-	}
+    if (!retVal) {
+        return JNI_TRUE;
+    } else {
+        return JNI_FALSE;
+    }
 }
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANnumann 
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANnumann
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint an_id,
-jint anntype, 
-jshort tag, 
+jint anntype,
+jshort tag,
 jshort ref)
 {
-	return( (jint) ANnumann((int32)an_id, (ann_type)anntype, (uint16)tag, (uint16)ref) );
+    return( (jint) ANnumann((int32)an_id, (ann_type)anntype, (uint16)tag, (uint16)ref) );
 }
 
-JNIEXPORT jshort JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANatype2tag 
+JNIEXPORT jshort JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANatype2tag
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint antype)
 {
-	return (jshort)ANatype2tag((ann_type)antype);
+    return (jshort)ANatype2tag((ann_type)antype);
 }
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANtag2atype 
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANtag2atype
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint antag)
 {
-	return (jint)ANtag2atype((uint16)antag);
+    return (jint)ANtag2atype((uint16)antag);
 }
 
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANannlist 
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANannlist
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint an_id,
-jint anntype, 
-jshort tag, 
+jint anntype,
+jshort tag,
 jshort ref,
 jintArray annlist  /* OUT: int[] */
 )
 {
-	intn retVal;
-	jint *iarr;
-	jboolean bb;
+    intn retVal;
+    jint *iarr;
+    jboolean bb;
 
-	iarr = (*env)->GetIntArrayElements(env,annlist,&bb);
+    iarr = (*env)->GetIntArrayElements(env,annlist,&bb);
 
-	retVal = ANannlist((int32)an_id, (ann_type)anntype, 
-		(uint16)tag,(uint16)ref,(int32 *)iarr);
+    retVal = ANannlist((int32)an_id, (ann_type)anntype,
+        (uint16)tag,(uint16)ref,(int32 *)iarr);
 
-	if (retVal == FAIL) {
-		(*env)->ReleaseIntArrayElements(env,annlist,iarr,JNI_ABORT);
-	} else {
-		(*env)->ReleaseIntArrayElements(env,annlist,iarr,0);
-	}
-	return (jint)retVal;
+    if (retVal == FAIL) {
+        (*env)->ReleaseIntArrayElements(env,annlist,iarr,JNI_ABORT);
+    } else {
+        (*env)->ReleaseIntArrayElements(env,annlist,iarr,0);
+    }
+    return (jint)retVal;
 }
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANannlen 
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANannlen
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint ann_id)
 {
-	return ANannlen((int32)ann_id);
+    return ANannlen((int32)ann_id);
 }
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANreadann 
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANreadann
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint ann_id,
 jobjectArray annbuf, /* OUT: string */
 jint maxlen)
 {
-	int32 retVal;
-	char  *data;
-	jclass Sjc;
-	jstring rstring;
-	jobject o;
-	jboolean bb;
+    int32 retVal;
+    char  *data;
+    jclass Sjc;
+    jstring rstring;
+    jobject o;
+    jboolean bb;
 
-	data = (char *)HDmalloc((maxlen+1)*sizeof(char));
+    data = (char *)HDmalloc((maxlen+1)*sizeof(char));
 
-	if (data == NULL) {
-		/* Exception */
-		h4outOfMemory(env,"ANreadan");
-		return JNI_FALSE;
-	}
+    if (data == NULL) {
+        /* Exception */
+        h4outOfMemory(env,"ANreadan");
+        return JNI_FALSE;
+    }
 
-	/* read annotation from HDF */
-	retVal = ANreadann((int32)ann_id, data, (int32)maxlen);
-	data[maxlen] = '\0';
+    /* read annotation from HDF */
+    retVal = ANreadann((int32)ann_id, data, (int32)maxlen);
+    data[maxlen] = '\0';
 
-	if (retVal == FAIL) {
-		if (data != NULL) HDfree((char *)data);
-		return JNI_FALSE;
-	} else {
+    if (retVal == FAIL) {
+        if (data != NULL) HDfree((char *)data);
+        return JNI_FALSE;
+    } else {
 
-		o = (*env)->GetObjectArrayElement(env,annbuf,0);
-		if (o == NULL) {
-			if (data != NULL) HDfree((char *)data);
-			return JNI_FALSE;
-		}
-		Sjc = (*env)->FindClass(env, "java/lang/String");
-		if (Sjc == NULL) {
-			if (data != NULL) HDfree((char *)data);
-			return JNI_FALSE;
-		}
-		bb = (*env)->IsInstanceOf(env,o,Sjc);
-		if (bb == JNI_FALSE) {
-			if (data != NULL) HDfree((char *)data);
-			return JNI_FALSE;
-		}
+        o = (*env)->GetObjectArrayElement(env,annbuf,0);
+        if (o == NULL) {
+            if (data != NULL) HDfree((char *)data);
+            return JNI_FALSE;
+        }
+        Sjc = (*env)->FindClass(env, "java/lang/String");
+        if (Sjc == NULL) {
+            if (data != NULL) HDfree((char *)data);
+            return JNI_FALSE;
+        }
+        bb = (*env)->IsInstanceOf(env,o,Sjc);
+        if (bb == JNI_FALSE) {
+            if (data != NULL) HDfree((char *)data);
+            return JNI_FALSE;
+        }
 
-		rstring = (*env)->NewStringUTF(env, data);
-		(*env)->SetObjectArrayElement(env,annbuf,0,(jobject)rstring);
+        rstring = (*env)->NewStringUTF(env, data);
+        (*env)->SetObjectArrayElement(env,annbuf,0,(jobject)rstring);
 
-		if (data != NULL)
-			HDfree((char *)data);
+        if (data != NULL)
+            HDfree((char *)data);
 
-		return JNI_TRUE;
-	}
+        return JNI_TRUE;
+    }
 }
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANcreate 
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANcreate
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint an_id,
-jshort tag, 
+jshort tag,
 jshort ref,
 jint type)
 {
-	return (ANcreate((int32) an_id, (uint16) tag, (uint16) ref, (ann_type) type));
+    return (ANcreate((int32) an_id, (uint16) tag, (uint16) ref, (ann_type) type));
 }
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANcreatef 
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANcreatef
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint an_id,
 jint type)
 {
-	return (ANcreatef((int32) an_id, (ann_type) type));
+    return (ANcreatef((int32) an_id, (ann_type) type));
 }
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANdestroy 
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANdestroy
 ( JNIEnv *env,
 jobject obj)
 {
-	intn rval = ANdestroy( );
-	if (rval == FAIL) {
-		return JNI_FALSE;
-	} else {
-		return JNI_TRUE;
-	}
+    intn rval = ANdestroy( );
+    if (rval == FAIL) {
+        return JNI_FALSE;
+    } else {
+        return JNI_TRUE;
+    }
 }
 
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANget_1tagref 
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANget_1tagref
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint an_id,
-jint index,  
-jint type, 
+jint index,
+jint type,
 jshortArray tagref) /* OUT: short tag, ref */
 {
-	int32 rval;
-	short *theArgs;
-	jboolean bb;
+    int32 rval;
+    short *theArgs;
+    jboolean bb;
 
-	theArgs = (*env)->GetShortArrayElements(env,tagref,&bb);
+    theArgs = (*env)->GetShortArrayElements(env,tagref,&bb);
 
-	rval = ANget_tagref((int32) an_id, (int32) index,  (ann_type) type, (uint16 *)&(theArgs[0]), (uint16 *)&(theArgs[1]));
+    rval = ANget_tagref((int32) an_id, (int32) index,  (ann_type) type, (uint16 *)&(theArgs[0]), (uint16 *)&(theArgs[1]));
 
-	if (rval == FAIL) {
-		(*env)->ReleaseShortArrayElements(env,tagref,theArgs,JNI_ABORT);
-	} else {
-		(*env)->ReleaseShortArrayElements(env,tagref,theArgs,0);
-	}
-	return rval;
+    if (rval == FAIL) {
+        (*env)->ReleaseShortArrayElements(env,tagref,theArgs,JNI_ABORT);
+    } else {
+        (*env)->ReleaseShortArrayElements(env,tagref,theArgs,0);
+    }
+    return rval;
 }
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANid2tagref 
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANid2tagref
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint an_id,
 jshortArray tagref) /* OUT: short tag, ref */
 {
-	int32 rval;
-	short *theArgs;
-	jboolean bb;
+    int32 rval;
+    short *theArgs;
+    jboolean bb;
 
-	theArgs = (*env)->GetShortArrayElements(env,tagref,&bb);
+    theArgs = (*env)->GetShortArrayElements(env,tagref,&bb);
 
-	rval =  ANid2tagref((int32) an_id, (uint16 *)&(theArgs[0]),  
-		(uint16 *)&(theArgs[1]));
+    rval =  ANid2tagref((int32) an_id, (uint16 *)&(theArgs[0]),
+        (uint16 *)&(theArgs[1]));
 
-	if (rval == FAIL) {
-		(*env)->ReleaseShortArrayElements(env,tagref,theArgs,JNI_ABORT);
-		return JNI_FALSE;
-	} else {
-		(*env)->ReleaseShortArrayElements(env,tagref,theArgs,0);
-		return JNI_TRUE;
-	}
+    if (rval == FAIL) {
+        (*env)->ReleaseShortArrayElements(env,tagref,theArgs,JNI_ABORT);
+        return JNI_FALSE;
+    } else {
+        (*env)->ReleaseShortArrayElements(env,tagref,theArgs,0);
+        return JNI_TRUE;
+    }
 }
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANtagref2id 
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANtagref2id
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint an_id,
 jshort tag,
 jshort ref
 )
 {
-	return( ANtagref2id((int32) an_id, (uint16) tag, (uint16) ref));
+    return( ANtagref2id((int32) an_id, (uint16) tag, (uint16) ref));
 }
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANwriteann 
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANwriteann
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint ann_id,
-jstring label, 
+jstring label,
 jint ann_length)
 {
 
-	intn rval;
-	char * str;
+    intn rval;
+    char * str;
 
-	str =(char *) (*env)->GetStringUTFChars(env,label,0);
+    str =(char *) (*env)->GetStringUTFChars(env,label,0);
 
-	/* should check that str is as long as ann_length.... */
+    /* should check that str is as long as ann_length.... */
 
-	rval = ANwriteann((int32) ann_id, str, (int32) ann_length);
+    rval = ANwriteann((int32) ann_id, str, (int32) ann_length);
 
-	(*env)->ReleaseStringUTFChars(env,label,str);
+    (*env)->ReleaseStringUTFChars(env,label,str);
 
-	if (rval == FAIL) {
-		return JNI_FALSE;
-	} else {
-		return JNI_TRUE;
-	}
+    if (rval == FAIL) {
+        return JNI_FALSE;
+    } else {
+        return JNI_TRUE;
+    }
 }

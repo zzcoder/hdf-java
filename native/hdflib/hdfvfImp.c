@@ -9,8 +9,7 @@
  * hdf-java/COPYING file.                                                   *
  *                                                                          *
  ****************************************************************************/
- 
-/*
+ /*
  *  This code is the C-interface called by Java programs to access the
  *  HDF 4.1 library.
  *
@@ -26,47 +25,47 @@
 
 #include "jni.h"
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VFfieldesize 
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VFfieldesize
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint vdata_id,
 int field_index)
 {
-	return (VFfieldesize((int32) vdata_id,  (int32) field_index));
+    return (VFfieldesize((int32) vdata_id,  (int32) field_index));
 }
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VFfieldisize 
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VFfieldisize
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint vdata_id,
 int field_index)
 {
 
-	return (VFfieldisize((int32) vdata_id,  (int32) field_index));
+    return (VFfieldisize((int32) vdata_id,  (int32) field_index));
 }
 
-JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VFfieldname 
+JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VFfieldname
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint vdata_id,
 int field_index)
 {
-	jstring rstring;
-	char * str;
+    jstring rstring;
+    char * str;
 
-	str = VFfieldname((int32) vdata_id,  (int32) field_index);
+    str = VFfieldname((int32) vdata_id,  (int32) field_index);
 
-	/* check for error */
+    /* check for error */
 
-	/* convert it to java string */
-	rstring = (*env)->NewStringUTF(env,str);
+    /* convert it to java string */
+    rstring = (*env)->NewStringUTF(env,str);
 
-	return rstring;
+    return rstring;
 }
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VFfieldorder 
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VFfieldorder
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint vdata_id,
 int field_index)
 {
@@ -74,9 +73,9 @@ int field_index)
         return (VFfieldorder((int32) vdata_id,  (int32) field_index));
 }
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VFfieldtype 
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VFfieldtype
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint vdata_id,
 int field_index)
 {
@@ -84,10 +83,10 @@ int field_index)
         return (VFfieldtype((int32) vdata_id,  (int32) field_index));
 }
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VFnfields 
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VFnfields
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint key)
 {
-	return (VFnfields((int32) key));
+    return (VFnfields((int32) key));
 }

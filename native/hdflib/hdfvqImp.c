@@ -21,22 +21,21 @@
  *
  */
 #include "hdf.h"
-
 #include "jni.h"
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VQueryref 
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VQueryref
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint vkey)
 {
-	return VQueryref((int32) vkey);
+    return VQueryref((int32) vkey);
 }
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VQuerytag 
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VQuerytag
 ( JNIEnv *env,
-jclass class, 
+jclass class,
 jint vkey)
 {
-	return VQuerytag((int32) vkey);
+    return VQuerytag((int32) vkey);
 
 }

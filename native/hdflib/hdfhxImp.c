@@ -9,7 +9,6 @@
  * hdf-java/COPYING file.                                                   *
  *                                                                          *
  ****************************************************************************/
-
 /*
  *  This code is the C-interface called by Java programs to access the
  *  HDF 4.1 library.
@@ -25,56 +24,56 @@
 
 #include "jni.h"
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_HXsetcreatedir 
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_HXsetcreatedir
 ( JNIEnv *env,
 jclass class,
 jstring dir)
 {
-	intn rval;
-	char *str;
+    intn rval;
+    char *str;
 
-	if (dir != NULL) {
-		str =(char *) (*env)->GetStringUTFChars(env,dir,0);
-	} else {
-		str = NULL;
-	}
+    if (dir != NULL) {
+        str =(char *) (*env)->GetStringUTFChars(env,dir,0);
+    } else {
+        str = NULL;
+    }
 
-	rval = HXsetcreatedir((char *)str);
+    rval = HXsetcreatedir((char *)str);
 
-	if (str != NULL) {
-		(*env)->ReleaseStringUTFChars(env,dir,str);
-	}
+    if (str != NULL) {
+        (*env)->ReleaseStringUTFChars(env,dir,str);
+    }
 
-	if (rval == FAIL) {
-		return JNI_FALSE;
-	} else {
-		return JNI_TRUE;
-	}
+    if (rval == FAIL) {
+        return JNI_FALSE;
+    } else {
+        return JNI_TRUE;
+    }
 }
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_HXsetdir 
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_HXsetdir
 ( JNIEnv *env,
 jclass class,
 jstring dir)
 {
-	intn rval;
-	char *str;
+    intn rval;
+    char *str;
 
-	if (dir != NULL) {
-		str =(char *) (*env)->GetStringUTFChars(env,dir,0);
-	} else {
-		str = NULL;
-	}
+    if (dir != NULL) {
+        str =(char *) (*env)->GetStringUTFChars(env,dir,0);
+    } else {
+        str = NULL;
+    }
 
-	rval = HXsetdir(str);
+    rval = HXsetdir(str);
 
-	if (str != NULL) {
-		(*env)->ReleaseStringUTFChars(env,dir,str);
-	}
+    if (str != NULL) {
+        (*env)->ReleaseStringUTFChars(env,dir,str);
+    }
 
-	if (rval == FAIL) {
-		return JNI_FALSE;
-	} else {
-		return JNI_TRUE;
-	}
+    if (rval == FAIL) {
+        return JNI_FALSE;
+    } else {
+        return JNI_TRUE;
+    }
 }

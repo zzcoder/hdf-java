@@ -11,7 +11,7 @@
 
 /*
  *  This code is the C-interface called by Java programs to access the
- *  Identifier API Functions of the HDF5 library. 
+ *  Identifier API Functions of the HDF5 library.
  *
  *  Each routine wraps a single HDF entry point, generally with the
  *  analogous arguments and return codes.
@@ -23,7 +23,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif 
+#endif
 #include "hdf5.h"
 #include <jni.h>
 
@@ -37,12 +37,12 @@ extern jboolean h5libraryError( JNIEnv *env );
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1type
   (JNIEnv *env, jclass clss, jint obj_id)
 {
-	H5I_type_t retVal = H5I_BADID;
-	retVal =  H5Iget_type((hid_t)obj_id);
-	if (retVal == H5I_BADID) {
-		h5libraryError(env);
-	}
-	return (jint)retVal;
+    H5I_type_t retVal = H5I_BADID;
+    retVal =  H5Iget_type((hid_t)obj_id);
+    if (retVal == H5I_BADID) {
+        h5libraryError(env);
+    }
+    return (jint)retVal;
 }
 
 
@@ -54,103 +54,103 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1type
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Iget_name(hid_t obj_id, char *name, size_t size ) 
+ * Method:    H5Iget_name(hid_t obj_id, char *name, size_t size )
  * Signature: (IJLjava/lang/String;)J
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1name
   (JNIEnv *env, jclass clss, jint obj_id, jobjectArray name, jlong buf_size)
 {
-	char *aName;
-	jstring str;
-	hssize_t size;
-	long bs;
+    char *aName;
+    jstring str;
+    hssize_t size;
+    long bs;
 
-	bs = (long)buf_size;
-	if (bs <= 0) {
-		h5badArgument( env, "H5Iget_name:  buf_size <= 0");
-		return -1;
-	}
-	aName = (char*)malloc(sizeof(char)*bs);
-	if (aName == NULL) {
-		h5outOfMemory( env, "H5Iget_name:  malloc failed");
-		return -1;
-	}
-	size = H5Iget_name((hid_t)obj_id, aName, (size_t)buf_size);
-	if (size < 0) {
-		free(aName);
-		h5libraryError(env);
-		/*  exception, returns immediately */
-	}
-	/* successful return -- save the string; */
+    bs = (long)buf_size;
+    if (bs <= 0) {
+        h5badArgument( env, "H5Iget_name:  buf_size <= 0");
+        return -1;
+    }
+    aName = (char*)malloc(sizeof(char)*bs);
+    if (aName == NULL) {
+        h5outOfMemory( env, "H5Iget_name:  malloc failed");
+        return -1;
+    }
+    size = H5Iget_name((hid_t)obj_id, aName, (size_t)buf_size);
+    if (size < 0) {
+        free(aName);
+        h5libraryError(env);
+        /*  exception, returns immediately */
+    }
+    /* successful return -- save the string; */
 #ifdef __cplusplus
-	str = env->NewStringUTF(aName);
+    str = env->NewStringUTF(aName);
 #else
-	str = (*env)->NewStringUTF(env,aName);
+    str = (*env)->NewStringUTF(env,aName);
 #endif
-	if (str == NULL) {
-		free(aName);
-		h5JNIFatalError( env,"H5Iget_name:  return string failed");
-		return -1;
-	}
-	free(aName);
-	/*  Note: throws ArrayIndexOutOfBoundsException, 
-		ArrayStoreException */
+    if (str == NULL) {
+        free(aName);
+        h5JNIFatalError( env,"H5Iget_name:  return string failed");
+        return -1;
+    }
+    free(aName);
+    /*  Note: throws ArrayIndexOutOfBoundsException,
+        ArrayStoreException */
 #ifdef __cplusplus
-	env->SetObjectArrayElement(name,0,str);
+    env->SetObjectArrayElement(name,0,str);
 #else
-	(*env)->SetObjectArrayElement(env,name,0,str);
+    (*env)->SetObjectArrayElement(env,name,0,str);
 #endif
 
-	return (jlong)size;
+    return (jlong)size;
 }
 
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Signature: int H5Iget_ref(hid_t obj_id)   
+ * Signature: int H5Iget_ref(hid_t obj_id)
  * Purpose:   Retrieves the reference count for an object
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1ref
   (JNIEnv *env, jclass clss, jint obj_id)
 {
-	int retVal = -1;
-	retVal = H5Iget_ref( (hid_t)obj_id);
-	if (retVal < 0) {
-		h5libraryError(env);
-	}
-	return (jint)retVal;
+    int retVal = -1;
+    retVal = H5Iget_ref( (hid_t)obj_id);
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+    return (jint)retVal;
 }
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Signature: int H5Iinc_ref(hid_t obj_id)   
+ * Signature: int H5Iinc_ref(hid_t obj_id)
  * Purpose:   Increments the reference count for an object
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iinc_1ref
   (JNIEnv *env, jclass clss, jint obj_id)
 {
-	int retVal = -1;
-	retVal = H5Iinc_ref( (hid_t)obj_id);
-	if (retVal < 0) {
-		h5libraryError(env);
-	}
-	return (jint)retVal;
+    int retVal = -1;
+    retVal = H5Iinc_ref( (hid_t)obj_id);
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+    return (jint)retVal;
 }
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Signature: int H5Idec_ref(hid_t obj_id)   
+ * Signature: int H5Idec_ref(hid_t obj_id)
  * Purpose:   Decrements the reference count for an object
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Idec_1ref
   (JNIEnv *env, jclass clss, jint obj_id)
 {
-	int retVal = -1;
-	retVal = H5Idec_ref( (hid_t)obj_id);
-	if (retVal < 0) {
-		h5libraryError(env);
-	}
-	return (jint)retVal;
+    int retVal = -1;
+    retVal = H5Idec_ref( (hid_t)obj_id);
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+    return (jint)retVal;
 }
 
 
@@ -163,25 +163,25 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Idec_1ref
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Signature:  hid_t H5Iget_file_id (hid_t obj_id)   
- * Purpose:   
+ * Signature:  hid_t H5Iget_file_id (hid_t obj_id)
+ * Purpose:
  */
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1file_1id 
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1file_1id
   (JNIEnv *env, jclass clss, jint obj_id)
 {
-	hid_t file_id = 0;
+    hid_t file_id = 0;
 
-	file_id = H5Iget_file_id ((hid_t) obj_id);
+    file_id = H5Iget_file_id ((hid_t) obj_id);
 
-	if (file_id < 0) {
-		h5libraryError(env);
-	}
+    if (file_id < 0) {
+        h5libraryError(env);
+    }
 
-	return (jint) file_id;
+    return (jint) file_id;
 }
 
 
 #ifdef __cplusplus
 }
-#endif 
+#endif
