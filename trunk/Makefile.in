@@ -407,7 +407,10 @@ ncsa.hdf.object: ncsa/hdf/object/Attribute.class \
 	ncsa/hdf/object/H5Group.class \
 	ncsa/hdf/object/H5ScalarDS.class \
 	ncsa/hdf/object/HObject.class \
-	ncsa/hdf/object/ScalarDS.class
+	ncsa/hdf/object/Metadata.class \
+	ncsa/hdf/object/FileFormat.class \
+	ncsa/hdf/object/H4File.class \
+	ncsa/hdf/object/H5File.class
 
 test.object: test/object/TestH4File.class \
 	test/object/TestH5File.class
@@ -424,10 +427,7 @@ test.h4toh5: test/h4toh5/apitest.class \
 	test/h4toh5/linktest4.class \
 	test/h4toh5/linktest5.class 
 
-ncsa.hdf.io: ./ncsa/hdf/io/DefaultFileFormat.class \
-	./ncsa/hdf/io/FileFormat.class \
-	./ncsa/hdf/io/H4File.class \
-	./ncsa/hdf/io/H5File.class
+ncsa.hdf.io: 
 
 ncsa.hdf.view: ./ncsa/hdf/view/TreeView.class \
 	./ncsa/hdf/view/ViewManager.class
@@ -516,10 +516,10 @@ H5Group: ncsa/hdf/object/H5Group.class
 H5ScalarDS: ncsa/hdf/object/H5ScalarDS.class 
 HObject: ncsa/hdf/object/HObject.class 
 ScalarDS: ncsa/hdf/object/ScalarDS.class
-DefaultFileFormat: ncsa/hdf/io/DefaultFileFormat.class
-FileFormat: ncsa/hdf/io/FileFormat.class
-H4File: ncsa/hdf/io/H4File.class
-H5File: ncsa/hdf/io/H5File.class
+ScalarDS: ncsa/hdf/object/Metadata.class
+FileFormat: ncsa/hdf/object/FileFormat.class
+H4File: ncsa/hdf/object/H4File.class
+H5File: ncsa/hdf/object/H5File.class
 TreeView: ncsa/hdf/view/TreeView.class
 ViewManager: ncsa/hdf/view/ViewManager.class
 
@@ -615,14 +615,15 @@ HDFOBJCLASSES= ./ncsa/hdf/object/Attribute.class \
 	./ncsa/hdf/object/H5Group.class \
 	./ncsa/hdf/object/H5ScalarDS.class \
 	./ncsa/hdf/object/HObject.class \
-	./ncsa/hdf/object/ScalarDS.class
+	./ncsa/hdf/object/ScalarDS.class \
+	ncsa/hdf/object/HObject.class \
+	ncsa/hdf/object/Metadata.class \
+	ncsa/hdf/object/FileFormat.class \
+	ncsa/hdf/object/H4File.class \
+	ncsa/hdf/object/H5File.class
 
-HDFVIEWCLASSES= ./ncsa/hdf/io/DefaultFileFormat.class \
-	./ncsa/hdf/io/FileFormat.class \
-	./ncsa/hdf/io/H4File.class \
-	./ncsa/hdf/io/H5File.class \
-	./ncsa/hdf/view/TreeView.class \
-	./ncsa/hdf/view/ViewManager.class
+HDFVIEWCLASSES= ./ncsa/hdf/view/ViewManager.class \
+	./ncsa/hdf/view/TreeView.class 
 
 ##
 #  Source to pack for distribution
