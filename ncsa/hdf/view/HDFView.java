@@ -94,7 +94,7 @@ public class HDFView extends JFrame
     private static final String aboutHDFView =
         "HDF Viewer, "+ "Version "+ViewProperties.VERSION+"\n"+
         "For "+System.getProperty("os.name")+"\n\n"+
-        "Copyright "+'\u00a9'+" 2001-2002 University of Illinois.\n"+
+        "Copyright "+'\u00a9'+" 2001-2004 University of Illinois.\n"+
         "All rights reserved.";
 
     /** the directory where the HDFView is installed */
@@ -604,7 +604,7 @@ public class HDFView extends JFrame
         {
             String fileSeparator = System.getProperty("file.separator");
             try {
-                ugPath = "file:"  + rootDir  + fileSeparator  + "docs"
+                ugPath = "file:"  + rootDir
                 + fileSeparator  + "UsersGuide" + fileSeparator + "index.html";
                 ViewProperties.setUsersGuide(ugPath);
                 usersGuideURL = new URL(ugPath);

@@ -760,8 +760,7 @@ implements ImageView, ActionListener
     {
         Rectangle rec = imageComponent.selectedArea;
 
-        if (isTrueColor)
-        {
+        if (isTrueColor) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
             "Unsupported operation: unable to draw histogram for true color image.",
