@@ -145,20 +145,6 @@ implements ViewManager, ActionListener, HyperlinkListener
         this.imageGUIs = new Vector();
         this.d3GUIs = new Vector();
 
-        File theFile = new File(filename);
-        if (theFile.exists())
-        {
-            if (theFile.isFile())
-            {
-                this.currentDir = theFile.getParentFile().getAbsolutePath();
-                this.currentFile = theFile.getAbsolutePath();;
-            }
-            else
-            {
-                this.currentDir = theFile.getAbsolutePath();;
-            }
-        }
-
         // load the view properties
         ViewProperties.loadIcons(rootDir);
         props = new ViewProperties(rootDir);
@@ -170,7 +156,8 @@ implements ViewManager, ActionListener, HyperlinkListener
         statusArea.setEditable(false);
         statusArea.setLineWrap(true);
         message = new StringBuffer();
-        showStatus(props.getPropertyFile());
+        showStatus("HDFView root - "+rootDir);
+        showStatus("User property file - "+props.getPropertyFile());
 
         // setup the Users guide window
         usersGuideWindow = new JFrame("HDFView User's Guide");
@@ -246,6 +233,29 @@ implements ViewManager, ActionListener, HyperlinkListener
         {
             menuItems[i].setEnabled(false);
         }
+
+        File theFile = new File(filename);
+
+        if (theFile.exists())
+        {
+            if (theFile.isFile())
+            {
+                currentDir = theFile.getParentFile().getAbsolutePath();
+                currentFile = theFile.getAbsolutePath();
+
+                try {
+                    treeView.openFile(filename);
+                    addToRecentFiles(filename);
+                } catch (Exception ex)
+                {
+                    showStatus(ex.toString());
+                }
+            }
+            else
+            {
+                this.currentDir = theFile.getAbsolutePath();;
+            }
+        }
     }
 
     /**
@@ -260,12 +270,7 @@ implements ViewManager, ActionListener, HyperlinkListener
      */
     public static void main( String args[] )
     {
-        String rootDir = System.getProperty("user.home");
-        boolean isWindows = System.getProperty("os.name").startsWith("Windows");
-
-        if (isWindows) {
-            rootDir = System.getProperty("user.dir");
-        }
+        String rootDir = System.getProperty("user.dir");
 
         boolean backup = false;
         File tmpFile = null;
@@ -277,8 +282,14 @@ implements ViewManager, ActionListener, HyperlinkListener
                 try {
                     tmpFile = new File(args[++i]);
                     backup = false;
-                    if (tmpFile.isDirectory()) rootDir = tmpFile.getPath();
-                    else rootDir = tmpFile.getParent();
+                    if (tmpFile.isDirectory())
+                    {
+                        rootDir = tmpFile.getPath();
+                    }
+                    else if (tmpFile.isFile())
+                    {
+                        rootDir = tmpFile.getParent();
+                    }
                 } catch (Exception e) {}
             } else {
                 backup = true;
@@ -293,7 +304,7 @@ implements ViewManager, ActionListener, HyperlinkListener
             filename = args[i];
         }
 
-        JFrame frame = new HDFView(rootDir, filename);
+        HDFView frame = new HDFView(rootDir, filename);
         frame.pack();
         frame.setVisible(true);
      }

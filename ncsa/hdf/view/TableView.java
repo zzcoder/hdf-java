@@ -58,7 +58,7 @@ implements TableObserver
     private JLabel cellLabel;
 
     /** Text field to display the value of of the current cell. */
-    private JTextField cellValueField;
+    private JTextArea cellValueField;
 
     /**
      * Constructs an TableView.
@@ -122,17 +122,20 @@ implements TableObserver
         dim.width = 60;
         cellLabel.setPreferredSize( dim );
         cellLabel.setHorizontalAlignment(JLabel.RIGHT);
-        cellValueField = new JTextField();
+        cellValueField = new JTextArea();
+        cellValueField.setLineWrap(true);
+        cellValueField.setWrapStyleWord(true);
         cellValueField.setEditable(false);
         JPanel valuePane = new JPanel();
         valuePane.setLayout(new BorderLayout());
         valuePane.add(cellLabel, BorderLayout.WEST);
-        valuePane.add (cellValueField, BorderLayout.CENTER);
+
+        valuePane.add (new JScrollPane(cellValueField), BorderLayout.CENTER);
 
         // add to the main panel
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout());
-        contentPane.add(valuePane, BorderLayout.NORTH);
+        contentPane.add(valuePane, BorderLayout.SOUTH);
         contentPane.add (scroller, BorderLayout.CENTER);
     }
 
@@ -166,7 +169,7 @@ implements TableObserver
         start[selectedIndex[2]] -= 1;
         dataset.clearData();
 
-        try { dataValue = dataset.read(); }
+        try { dataValue = dataset.convertFromUnsignedC(dataset.read()); }
         catch (Exception ex)
         {
             dataValue = null;
@@ -200,7 +203,7 @@ implements TableObserver
         start[selectedIndex[2]] += 1;
         dataset.clearData();
 
-        try { dataValue = dataset.read(); }
+        try { dataValue = dataset.convertFromUnsignedC(dataset.read()); }
         catch (Exception ex)
         {
             dataValue = null;
@@ -234,7 +237,7 @@ implements TableObserver
         start[selectedIndex[2]] = 0;
         dataset.clearData();
 
-        try { dataValue = dataset.read(); }
+        try { dataValue = dataset.convertFromUnsignedC(dataset.read()); }
         catch (Exception ex)
         {
             dataValue = null;
@@ -268,7 +271,7 @@ implements TableObserver
         start[selectedIndex[2]] = dims[selectedIndex[2]]-1;
         dataset.clearData();
 
-        try { dataValue = dataset.read(); }
+        try { dataValue = dataset.convertFromUnsignedC(dataset.read()); }
         catch (Exception ex)
         {
             dataValue = null;
@@ -437,7 +440,7 @@ implements TableObserver
         }
 
         dataValue = null;
-        try { dataValue = d.read(); }
+        try { dataValue = d.convertFromUnsignedC(d.read());; }
         catch (Exception ex)
         {
             dataValue = null;
@@ -566,7 +569,7 @@ implements TableObserver
                     cellLabel.setText(
                         String.valueOf(row+1)+
                         ", "+
-                        table.getColumnName(column)+
+                        String.valueOf(column+1)+
                         " = ");
                     cellValueField.setText(getValueAt(row, column).toString());
                 }
@@ -594,6 +597,8 @@ implements TableObserver
 
         protected void processMouseMotionEvent(MouseEvent e)
         {
+            super.processMouseMotionEvent(e);
+
             if (e.getID() == MouseEvent.MOUSE_DRAGGED)
             {
                 int colEnd = columnAtPoint(e.getPoint());
@@ -613,6 +618,8 @@ implements TableObserver
 
         protected void processMouseEvent(MouseEvent e)
         {
+            super.processMouseEvent(e);
+
             int mouseID = e.getID();
 
             if (mouseID == MouseEvent.MOUSE_CLICKED)

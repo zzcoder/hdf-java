@@ -104,6 +104,10 @@ public class H4Vdata extends CompoundDS
                             // convert characters to string
                             member_data = Dataset.byteToString(
                                 (byte[])member_data, memberOrders[i]);
+                        } else if (H4Accessory.isUnsigned(memberTypes[i]))
+                        {
+                            // convert unsigned integer to appropriate Java integer
+                            member_data = Dataset.convertFromUnsignedC(member_data);
                         }
 
                     list.add(member_data);

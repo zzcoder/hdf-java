@@ -12,6 +12,7 @@
 package ncsa.hdf.object;
 
 import java.util.*;
+import java.lang.reflect.Array;
 
 /**
  * Dataset is the superclass for HDF4/5 Dataset, inheriting the HObject.
@@ -190,6 +191,106 @@ public abstract class Dataset extends HObject
     public final int[] getSelectedIndex()
     {
         return selectedIndex;
+    }
+
+    /**
+     * convert unsigned C integer to appropriate Java integer because Java does
+     * not support unsigned integers.
+     * <p>
+     * @param data_in the input data of the unsigned C.
+     * @return the converted Java integer data.
+     */
+    public static Object convertFromUnsignedC(Object data_in)
+    {
+        Object data_out = null;
+        String cname = data_in.getClass().getName();
+        char dname = cname.charAt(cname.lastIndexOf("[")+1);
+        int size = Array.getLength(data_in);
+
+        if (dname == 'B') {
+            short[] sdata = new short[size];
+            byte[] bdata = (byte[])data_in;
+            short value = 0;
+            for (int i=0; i<size; i++)
+            {
+                value = (short)bdata[i];
+                if (value < 0) value += 256;
+                sdata[i] = value;
+            }
+            data_out = sdata;
+        }
+        else if (dname == 'S') {
+            int[] idata = new int[size];
+            short[] sdata = (short[])data_in;
+            int value = 0;
+            for (int i=0; i<size; i++)
+            {
+                value = (int)sdata[i];
+                if (value < 0) value += 65536;
+                idata[i] = value;
+            }
+            data_out = idata;
+        }
+        else if (dname == 'I') {
+            long[] ldata = new long[size];
+            int[] idata = (int[])data_in;
+            long value = 0;
+            for (int i=0; i<size; i++)
+            {
+                value = (long)idata[i];
+                if (value < 0) value += 4294967296L;
+                ldata[i] = value;
+            }
+            data_out = ldata;
+        }
+        else data_out = data_in;
+        // Java does not support unsigned long
+
+        return data_out;
+    }
+
+    /**
+     * convert Java integer data back to unsigned C integer data.
+     * <p>
+     * @param data_in the input Java integer to be convert.
+     * @return the converted unsigned C integer.
+     */
+    public static Object convertToUnsignedC(Object data_in)
+    {
+        Object data_out = null;
+
+        if (data_in == null)
+            return null;
+
+        String cname = data_in.getClass().getName();
+        char dname = cname.charAt(cname.lastIndexOf("[")+1);
+        int size = Array.getLength(data_in);
+
+        if (dname == 'S') {
+            byte[] bdata = new byte[size];
+            short[] sdata = (short[])data_in;
+            for (int i=0; i<size; i++)
+                bdata[i] = (byte)sdata[i];
+            data_out = bdata;
+        }
+        else if (dname == 'I') {
+            short[] sdata = new short[size];
+            int[] idata = (int[])data_in;
+            for (int i=0; i<size; i++)
+                sdata[i] = (short)idata[i];
+            data_out = sdata;
+        }
+        else if (dname == 'J') {
+            int[] idata = new int[size];
+            long[] ldata = (long[])data_in;
+            for (int i=0; i<size; i++)
+                idata[i] = (int)ldata[i];
+            data_out = idata;
+        }
+        else data_out = data_in;
+        // Java does not support unsigned long
+
+        return data_out;
     }
 
     /**
