@@ -26,29 +26,29 @@ package ncsa.hdf.hdflib;
 
 public class HDFNBITCompInfo extends HDFNewCompInfo {
 
-	int   nt;     /* number type of the data to encode */
-	int    sign_ext;   /* whether to sign extend or not */
-	int    fill_one;   /* whether to fill with 1's or 0's */
-	int    start_bit;  /* offset of the start bit in the data */
-	int    bit_len;    /* number of bits to store */
+    int   nt;     /* number type of the data to encode */
+    int    sign_ext;   /* whether to sign extend or not */
+    int    fill_one;   /* whether to fill with 1's or 0's */
+    int    start_bit;  /* offset of the start bit in the data */
+    int    bit_len;    /* number of bits to store */
 
-	public HDFNBITCompInfo() {
+    public HDFNBITCompInfo() {
                 ctype = HDFConstants.COMP_CODE_NBIT;
-	}
+    }
 
-	public HDFNBITCompInfo(
-	int   Nt,     
-	int    Sign_ext,
-	int    Fill_one,
-	int    Start_bit,
-	int    Bit_len) {
+    public HDFNBITCompInfo(
+    int   Nt,
+    int    Sign_ext,
+    int    Fill_one,
+    int    Start_bit,
+    int    Bit_len) {
                 ctype = HDFConstants.COMP_CODE_NBIT;
-	
-		int   nt = Nt;
-		int    sign_ext = Sign_ext;
-		int    fill_one = Fill_one;
-		int    start_bit = Start_bit;
-		int    bit_len = Bit_len; 
-	}
+
+        int   nt = Nt;
+        int    sign_ext = Sign_ext;
+        int    fill_one = Fill_one;
+        int    start_bit = Start_bit;
+        int    bit_len = Bit_len;
+    }
 
 }

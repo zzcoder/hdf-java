@@ -28,34 +28,34 @@ package ncsa.hdf.hdflib;
  *  These exceptions will be sub-classed to represent specific
  *  error conditions, as needed.
  *  <p>
- *  The only specific exception currently defined is 
+ *  The only specific exception currently defined is
  *  HDFNotImplementedException, indicating a function that is part
  *  of the HDF API, but which cannot or will not be implemented
  *  for Java.
  */
 public class HDFException extends Exception {
 
-	
-	static public final String OutOfMemoryMessage="ERROR: HDF Library: Out of memory";
-	static public final String HDFExceptionMessage="ERROR: HDF Library Error"; 
-	static public final String HDFMessage="ERROR: Unknown HDF Error"; 
 
-	int HDFerror;
-	String msg;
+    static public final String OutOfMemoryMessage="ERROR: HDF Library: Out of memory";
+    static public final String HDFExceptionMessage="ERROR: HDF Library Error";
+    static public final String HDFMessage="ERROR: Unknown HDF Error";
 
-	public HDFException() {
-		HDFerror = 0;
-	}
+    int HDFerror;
+    String msg;
 
-	public HDFException(String s) {
-		msg = s;
-	}
+    public HDFException() {
+        HDFerror = 0;
+    }
 
-	public HDFException(int err) {
-		HDFerror = err;
-	}
+    public HDFException(String s) {
+        msg = s;
+    }
 
-	public String getMessage() {
-		return msg;
-	}
+    public HDFException(int err) {
+        HDFerror = err;
+    }
+
+    public String getMessage() {
+        return msg;
+    }
 }

@@ -24,8 +24,8 @@ package ncsa.hdf.hdflib;
 
 public class HDFOldRLECompInfo extends HDFOldCompInfo {
 
-	public HDFOldRLECompInfo () {
-		ctype = HDFConstants.COMP_RLE;
-	}
+    public HDFOldRLECompInfo () {
+        ctype = HDFConstants.COMP_RLE;
+    }
 
 }

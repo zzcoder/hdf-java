@@ -21,7 +21,7 @@ package ncsa.hdf.hdf5lib.exceptions;
 public class HDF5AttributeException extends HDF5LibraryException {
 
     /**
-     * Constructs an <code>HDF5AttributeException</code> with 
+     * Constructs an <code>HDF5AttributeException</code> with
      * no specified detail message.
      */
      public HDF5AttributeException() {
@@ -29,7 +29,7 @@ public class HDF5AttributeException extends HDF5LibraryException {
      }
 
     /**
-     * Constructs an <code>HDF5AttributeException</code> with 
+     * Constructs an <code>HDF5AttributeException</code> with
      * the specified detail message.
      *
      * @param   s   the detail message.
