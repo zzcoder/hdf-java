@@ -1,0 +1,34 @@
+#!/bin/sh
+set -x
+
+PATH=/opt/SUNWspro/bin:/usr/ccs/bin:/usr/ucb:$PATH
+export PATH
+
+INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/solaris
+
+JAVAINC=/usr/j2se/include
+JAVALIB=/usr/j2se/jre/lib
+
+HDF4=/tmp/solaris_hdf4 
+HDF5=/tmp/solaris_hdf5
+SZIP=/tmp/solaris_szip
+GZIP=/tmp/solaris_gzip
+JPEG=/tmp/solaris_jpeg
+
+#HDF4=/afs/ncsa.uiuc.edu/packages/hdf/4.2r0-solaris2.7-32 
+#HDF5=/afs/.ncsa.uiuc.edu/projects/hdf/java/java9/xcao/5-1.6.3-solaris2.7_NoEnc
+#SZIP=/afs/ncsa.uiuc.edu/projects/hdf/packages/szip_noencoder/SunOS_5.7
+#GZIP=/afs/ncsa.uiuc.edu/projects/hdf/packages/zlib/SunOS-5.7
+#JPEG=/afs/ncsa.uiuc.edu/projects/hdf/packages/jpeg/SunOS-5.7
+
+#export CC=/afs/ncsa.uiuc.edu/packages/sunpro/SunOS_5.7/bin/cc
+CC=/afs/ncsa.uiuc.edu/packages/sunpro/SunOS_5.7/bin/cc
+export CC
+
+./configure --prefix=$INSTDIR --with-jdk=$JAVAINC,$JAVALIB \
+--with-hdf5=$HDF5/include,$HDF5/lib \
+--with-hdf4=$HDF4/include,$HDF4/lib \
+--with-libsz=$SZIP/include,$SZIP/lib \
+--with-libz=$GZIP/include,$GZIP/lib \
+--with-libjpeg=$JPEG/include,$JPEG/lib
+

@@ -1,0 +1,28 @@
+#!/bin/sh
+set -x
+
+
+INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/macosx
+
+JAVAINC=/System/Library/Frameworks/JavaVM.framework/Headers
+JAVALIB=/System/Library/Frameworks/JavaVM.framework/Libraries
+
+HDF4=/afs/.ncsa.uiuc.edu/projects/hdf/java/java9/xcao/macosx/hdf4
+HDF5=/afs/.ncsa.uiuc.edu/projects/hdf/java/java9/xcao/macosx/hdf5
+SZIP=/afs/.ncsa.uiuc.edu/projects/hdf/java/java9/xcao/macosx/ext
+GZIP=/afs/.ncsa.uiuc.edu/projects/hdf/java/java9/xcao/macosx/ext
+JPEG=/afs/.ncsa.uiuc.edu/projects/hdf/java/java9/xcao/macosx/ext
+
+export CC=/usr/bin/cc
+
+./configure --prefix=$INSTDIR --with-jdk=$JAVAINC,$JAVALIB \
+-build=powerpc-apple \
+--with-hdf5=$HDF5/include,$HDF5/lib \
+--with-hdf4=$HDF4/include,$HDF4/lib \
+--without-h4toh5 \
+--with-libsz=$SZIP/include,$SZIP/lib \
+--with-libz=$GZIP/include,$GZIP/lib \
+--with-libjpeg=$JPEG/include,$JPEG/lib \
+--with-jdkclasses=/System/Library/Frameworks/JavaVM.framework/Classes \
+--with-javabin=/System/Library/Frameworks/JavaVM.framework/Commands
+
