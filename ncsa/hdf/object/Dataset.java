@@ -65,7 +65,7 @@ public abstract class Dataset extends HObject
      * selectedIndex[0] = row index; selectedIndex[1] = column index;
      * selectedIndex[2] = depth index.
      */
-    protected int[] selectedIndex;
+    protected final int[] selectedIndex;
 
     /**
      * Creates a Dataset object with specific name and path.
@@ -88,6 +88,15 @@ public abstract class Dataset extends HObject
         dims = null;
         selectedDims = null;
         startDims = null;
+
+        // by default
+        // selectedIndex[0] = row index;
+        // selectedIndex[1] = column index;
+        // selectedIndex[2] = depth index
+        selectedIndex = new int[3];
+        selectedIndex[0] = 0;
+        selectedIndex[1] = 1;
+        selectedIndex[2] = 2;
     }
 
     /**
@@ -145,6 +154,42 @@ public abstract class Dataset extends HObject
             data = null;
             System.gc();
         }
+    }
+
+    /**
+     * Returns the height of the dataset.
+     */
+    public final int getHeight()
+    {
+        if (selectedDims == null ||
+            selectedIndex == null )
+            return 0;
+
+        return (int)selectedDims[selectedIndex[0]];
+    }
+
+    /**
+     * Returns the width of the dataset.
+     */
+    public final int getWidth()
+    {
+        if (selectedDims == null ||
+            selectedIndex == null )
+            return 0;
+
+        if (selectedDims.length < 2 ||
+            selectedIndex.length < 2)
+            return 1;
+
+        return (int)selectedDims[selectedIndex[1]];
+    }
+
+    /**
+     * Returns the selected index.
+     */
+    public final int[] getSelectedIndex()
+    {
+        return selectedIndex;
     }
 
     /**

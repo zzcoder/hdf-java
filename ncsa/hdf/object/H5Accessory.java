@@ -65,11 +65,12 @@ public final class H5Accessory
 
                 tid = H5.H5Aget_type(aid);
                 int nativeType = toNativeType(tid);
+
                 Attribute attr = new Attribute(nameA[0], nativeType, dims);
 
                 long lsize = 1;
                 for (int j=0; j<dims.length; j++)
-                    j *= dims[j];
+                    lsize *= dims[j];
 
                 Object value = allocateArray(nativeType, (int)lsize);
 
@@ -204,6 +205,7 @@ public final class H5Accessory
                 try {
                     int mn = H5.H5Tget_array_ndims(tid);
                     int[] marray = new int[mn];
+
                     H5.H5Tget_array_dims(tid, marray, null);
                     int asize = 1;
                     for (int j=0; j<mn; j++)
@@ -388,6 +390,28 @@ public final class H5Accessory
         }
 
         return description;
+    }
+
+    /**
+     *  Checks if the datatype is an unsigned integer.
+     *  <p>
+     *  @param datatype  the data type.
+     *  @return True is the datatype is an unsigned integer; otherwise returns false.
+     */
+    public static final boolean isUnsigned(int datatype)
+    {
+        boolean unsigned = false;;
+
+        try
+        {
+            int typeSign = H5.H5Tget_sign(datatype);
+            if (typeSign == HDF5Constants.H5T_SGN_NONE)
+                unsigned = true;
+        } catch (Exception ex) {
+            unsigned = false;
+        }
+
+        return unsigned;
     }
 
 }

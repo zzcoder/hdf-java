@@ -188,7 +188,7 @@ public class H4GRImage extends ScalarDS
     // ***** need to implement from DataFormat *****
     public void removeMetadata(Object info) throws HDFException {;}
 
-    // ***** need to implement from HObejct *****
+    // Implementing HObject.
     public int open()
     {
 
@@ -204,28 +204,26 @@ public class H4GRImage extends ScalarDS
         return id;
     }
 
-    // ***** need to implement from HObejct *****
+    // Implementing HObject.
     public static void close(int grid)
     {
         try { HDFLibrary.GRendaccess(grid); }
         catch (HDFException ex) {;}
     }
 
-    // ***** need to implement from Dataset *****
+    // Implementing Dataset.
     public void init()
     {
         int id = open();
         String[] objName = {""};
         int[] grInfo = new int[4]; //ncomp, data_type, interlace and num_attrs
-        int[] idims = new int[2];
+        int[] idims = new int[3];
         try {
-System.out.println("************ "+datatype);
             HDFLibrary.GRgetiminfo(id, objName, grInfo, idims);
             // mask off the litend bit
 
             grInfo[1] = grInfo[1] & (~HDFConstants.DFNT_LITEND);
             datatype = grInfo[1];
-System.out.println("************ "+datatype);
         } catch (HDFException ex) {}
         finally {
             close(id);
@@ -234,8 +232,15 @@ System.out.println("************ "+datatype);
         if (idims == null)
             return;
 
-        rank = 2; // support only two dimensional raster image
         ncomp = grInfo[0];
+        interlace = grInfo[2];
+        rank = 2; // support only two dimensional raster image
+
+        // data in HDF4 GR image is arranged as dim[0]=width, dim[1]=height.
+        // other image data is arranged as dim[0]=height, dim[1]=width.
+        selectedIndex[0] = 1;
+        selectedIndex[1] = 0;
+
         dims = new long[rank];
         startDims = new long[rank];
         selectedDims = new long[rank];
@@ -245,6 +250,7 @@ System.out.println("************ "+datatype);
             selectedDims[i] = (long)idims[i];
             dims[i] = (long)idims[i];
         }
+
     }
 
     // ***** need to implement from ScalarDS *****
@@ -324,33 +330,14 @@ System.out.println("************ "+datatype);
     }
 
     /**
-     * Returns the width of this image.
-     */
-    public int getWidth()
-    {
-        if (selectedDims == null)
-            return 0;
-
-        return (int)selectedDims[0]; // the first dimension is the width
-    }
-
-    /**
-     * Returns the height of this image.
-     */
-    public int getHeight()
-    {
-        if (selectedDims == null)
-            return 0;
-
-        return (int)selectedDims[1]; // the second dimension is the width
-    }
-
-    /**
      * Returns the interlace of this image.
      */
-    public int getInterlace()
+    public String getInterlace()
     {
-        return interlace;
+        if (interlace == HDFConstants.MFGR_INTERLACE_PIXEL)
+            return INTERLACE_PIXEL;
+        else
+            return INTERLACE_PLANE;
     }
 
     /**

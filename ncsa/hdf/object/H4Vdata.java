@@ -73,7 +73,6 @@ public class H4Vdata extends CompoundDS
         if (id < 0)
             return null;
 
-
         List list = new Vector(numberOfMembers);
         Object member_data = null;
         for (int i=0; i<numberOfMembers; i++)
@@ -90,6 +89,7 @@ public class H4Vdata extends CompoundDS
             member_data = H4Accessory.allocateArray(
                 memberTypes[i],
                 memberOrders[i]*(int)selectedDims[0]);
+
             if (member_data != null)
             {
                 try {
@@ -101,9 +101,9 @@ public class H4Vdata extends CompoundDS
                         if (memberTypes[i] == HDFConstants.DFNT_CHAR ||
                             memberTypes[i] ==  HDFConstants.DFNT_UCHAR8)
                         {
+                            // convert characters to string
                             member_data = Dataset.byteToString(
-                                (byte[])member_data,
-                                memberOrders[i]);
+                                (byte[])member_data, memberOrders[i]);
                         }
 
                     list.add(member_data);
@@ -113,9 +113,7 @@ public class H4Vdata extends CompoundDS
 
         close(id);
 
-        data = list;
-
-        return data;
+        return (data=list);
     }
 
     // To do: Implementing DataFormat
@@ -260,6 +258,7 @@ public class H4Vdata extends CompoundDS
         dims[0] = (long)numberOfRecords;
         selectedDims = new long[1];
         selectedDims[0] = (long)numberOfRecords;
+        selectedIndex[0] = 0;
         startDims = new long[1];
         startDims[0] = 0;
 

@@ -150,7 +150,7 @@ public class H5File extends File implements FileFormat
         long[] oid = {0};
         H5Group rootGroup = new H5Group(
             this,
-            getName(), // set the name of the root node to the name of the file
+            "HDF5 - "+getName(), // set the node name to the file name
             null, // root node does not have a parent path
             null, // root node does not have a parent node
             oid);

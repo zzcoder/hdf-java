@@ -89,6 +89,9 @@ public class H4SDS extends ScalarDS
             if (data != null)
             {
                 HDFLibrary.SDreaddata(id, start, null, select, data);
+
+                if (isText)
+                    data = byteToString((byte[])data, select[0]);
             }
         } finally
         {
@@ -209,6 +212,8 @@ public class H4SDS extends ScalarDS
             rank = sdInfo[0];
             if (rank <= 0) rank = 1;
             datatype = sdInfo[1];
+            isText = (datatype == HDFConstants.DFNT_CHAR ||
+                datatype == HDFConstants.DFNT_UCHAR8);
             idims = new int[rank];
             HDFLibrary.SDgetinfo(id, objName, idims, sdInfo);
         } catch (HDFException ex) {}
@@ -231,17 +236,26 @@ public class H4SDS extends ScalarDS
         }
 
         // select only two dimension a time,
-        // need to more work to select any two dimensions
+        // select only two dimension a time,
         if (rank == 1)
         {
+            selectedIndex[0] = 0;
             selectedDims[0] = dims[0];
         }
-        else if (rank >= 2)
+        else if (rank == 2)
         {
-            int colIdx = rank-1;
-            int rowIdx = rank-2;
-            selectedDims[colIdx] = dims[colIdx];
-            selectedDims[rowIdx] = dims[rowIdx];
+            selectedIndex[0] = 0;
+            selectedIndex[1] = 1;
+            selectedDims[0] = dims[0];
+            selectedDims[1] = dims[1];
+        }
+        else if (rank > 2)
+        {
+            selectedIndex[0] = rank-2; // columns
+            selectedIndex[1] = rank-1; // rows
+            selectedIndex[2] = rank-3;
+            selectedDims[rank-1] = dims[rank-1];
+            selectedDims[rank-2] = dims[rank-2];
         }
     }
 
