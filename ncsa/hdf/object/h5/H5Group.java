@@ -63,8 +63,8 @@ public class H5Group extends Group
         if (attributeList == null)
         {
             int gid = open();
-            attributeList = H5File.getAttribute(gid);
-            close(gid);
+            try { attributeList = H5File.getAttribute(gid); }
+            finally { close(gid); }
         }
 
         return attributeList;

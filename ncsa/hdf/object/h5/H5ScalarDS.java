@@ -272,6 +272,9 @@ public class H5ScalarDS extends ScalarDS
             for (int j=0; j<selectedDims.length; j++)
                 lsize[0] *= selectedDims[j];
 
+            if (lsize[0] == 0)
+                throw new HDF5Exception("No data to read.\nEither the dataset or the selected subset is empty.");
+
             fspace = H5.H5Dget_space(did);
             mspace = H5.H5Screate_simple(1, lsize, null);
 
@@ -518,8 +521,7 @@ public class H5ScalarDS extends ScalarDS
             rank = H5.H5Sget_simple_extent_ndims(sid);
             isText = (H5.H5Tget_class(tid)==HDF5Constants.H5T_STRING);
 
-            if (rank == 0)
-            {
+            if (rank == 0) {
                 // a scalar data point
                 rank = 1;
                 dims = new long[1];
@@ -617,8 +619,7 @@ public class H5ScalarDS extends ScalarDS
 
         startDims = new long[rank];
         selectedDims = new long[rank];
-        for (int i=0; i<rank; i++)
-        {
+        for (int i=0; i<rank; i++) {
             startDims[i] = 0;
             selectedDims[i] = 1;
         }

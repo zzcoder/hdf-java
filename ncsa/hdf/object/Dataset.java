@@ -166,6 +166,9 @@ public abstract class Dataset extends HObject
     /** the datatype of this dataset. */
     protected Datatype datatype;
 
+    /** names of dimensions */
+    protected String[] dimNames;
+
     /**
      * Creates a Dataset object with a given file and dataset name and path.
      * <p>
@@ -190,6 +193,7 @@ public abstract class Dataset extends HObject
         selectedStride = null;
         chunkSize = null;
         compression = "NONE";
+        dimNames = null;
 
         // by default
         // selectedIndex[0] = row index;
@@ -605,4 +609,7 @@ public abstract class Dataset extends HObject
 
         return bytes;
     }
+
+    /** returns the names of all dimensions */
+    public final String[] getDimNames() { return dimNames; }
 }
