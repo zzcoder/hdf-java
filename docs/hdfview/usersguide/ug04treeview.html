@@ -198,9 +198,10 @@ give the name of the new group and parent group to which the new group is to be 
 <p>
 To create a new dataset, select the "New Dataset" command from the object menu. Then, 
 specify the name, path, datatype, dataspace and storage layout and compression of the 
-new dataset. The current version only supports creating simple datatypes. You 
-cannot create an HDF4 VData or an HDF5 compound dataset. (These objects can
-be viewed.)
+new dataset. The current version only supports creating simple datatypes. This version 
+cannot create an HDF4 VData or an HDF5 compound dataset (these objects can be viewed).
+Supported datatypes include integers (byte, short, int, long), float, double, and
+character. For HDF5, it also include String and Object references.
 
 <center>
 <p><img SRC="images/new_dataset.gif" >
