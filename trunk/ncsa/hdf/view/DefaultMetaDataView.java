@@ -650,6 +650,9 @@ implements ActionListener, MetaDataView
 
         attrTable = new JTable(attrTableModel)
         {
+            int lastSelectedRow = -1;
+            int lastSelectedCol = -1;
+
             public boolean isCellEditable(int row, int column)
             {
                 return (column == 1); // only value can be changed
@@ -676,16 +679,22 @@ implements ActionListener, MetaDataView
 
             public boolean isCellSelected(int row, int col)
             {
-                if (getSelectedRow()==row && getSelectedColumn()==col)
+
+                if (getSelectedRow()==row
+                    && getSelectedColumn()==col &&
+                    !(lastSelectedRow == row && lastSelectedCol== col))
                 {
+                    // selection is changed
                     Object attrV = getValueAt(row, col);
-                    if (attrV != null)
-                        attrContentArea.setText(attrV.toString());
+                    if (attrV != null) attrContentArea.setText(attrV.toString());
+                    lastSelectedRow = row;
+                    lastSelectedCol = col;
                 }
 
                 return super.isCellSelected(row, col);
             }
         };
+
         attrTable.setRowSelectionAllowed(false);
         attrTable.setCellSelectionEnabled(true);
         attrTable.getTableHeader().setReorderingAllowed(false);

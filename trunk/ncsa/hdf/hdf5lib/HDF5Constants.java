@@ -480,6 +480,8 @@ public class HDF5Constants
     final private static int JH5Z_FLAG_SKIP_EDC = 5460;
     final private static int JH5Z_MAX_NFILTERS = 5470;
     final private static int JH5Z_NO_EDC = 5480;
+    final private static int JH5Z_FILTER_CONFIG_ENCODE_ENABLED = 5490;
+    final private static int JH5Z_FILTER_CONFIG_DECODE_ENABLED = 5500;
 
     ///////////////////////////////////////////////////////////////////////////
     //                Get the HDF5 constants from the library                //
@@ -936,5 +938,7 @@ public class HDF5Constants
     final public static int H5Z_FLAG_SKIP_EDC = H5.J2C( JH5Z_FLAG_SKIP_EDC );
     final public static int H5Z_MAX_NFILTERS = H5.J2C( JH5Z_MAX_NFILTERS );
     final public static int H5Z_NO_EDC = H5.J2C( JH5Z_NO_EDC );
+    final public static int H5Z_FILTER_CONFIG_ENCODE_ENABLED = H5.J2C( JH5Z_FILTER_CONFIG_ENCODE_ENABLED );
+    final public static int H5Z_FILTER_CONFIG_DECODE_ENABLED = H5.J2C( JH5Z_FILTER_CONFIG_DECODE_ENABLED );
 
 }

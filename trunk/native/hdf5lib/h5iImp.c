@@ -46,9 +46,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1type
 }
 
 
-/***************************************************************
- *                   New APIs for HDF5.1.6                     *
- ***************************************************************/
+/**********************************************************************
+ *                                                                    *
+ *          New functions release 1.6.2 versus release 1.6.1          *
+ *                                                                    *
+ **********************************************************************/
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
@@ -101,6 +103,84 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1name
 
 	return (jlong)size;
 }
+
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Signature: int H5Iget_ref(hid_t obj_id)   
+ * Purpose:   Retrieves the reference count for an object
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1ref
+  (JNIEnv *env, jclass clss, jint obj_id)
+{
+	int retVal = -1;
+	retVal = H5Iget_ref( (hid_t)obj_id);
+	if (retVal < 0) {
+		h5libraryError(env);
+	}
+	return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Signature: int H5Iinc_ref(hid_t obj_id)   
+ * Purpose:   Increments the reference count for an object
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iinc_1ref
+  (JNIEnv *env, jclass clss, jint obj_id)
+{
+	int retVal = -1;
+	retVal = H5Iinc_ref( (hid_t)obj_id);
+	if (retVal < 0) {
+		h5libraryError(env);
+	}
+	return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Signature: int H5Idec_ref(hid_t obj_id)   
+ * Purpose:   Decrements the reference count for an object
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Idec_1ref
+  (JNIEnv *env, jclass clss, jint obj_id)
+{
+	int retVal = -1;
+	retVal = H5Idec_ref( (hid_t)obj_id);
+	if (retVal < 0) {
+		h5libraryError(env);
+	}
+	return (jint)retVal;
+}
+
+
+
+/**********************************************************************
+ *                                                                    *
+ *          New functions release 1.6.3 versus release 1.6.2          *
+ *                                                                    *
+ **********************************************************************/
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Signature:  hid_t H5Iget_file_id (hid_t obj_id)   
+ * Purpose:   
+ */
+
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1file_1id 
+  (JNIEnv *env, jclass clss, jint obj_id)
+{
+	hid_t file_id = 0;
+
+	file_id = H5Iget_file_id ((hid_t) obj_id);
+
+	if (file_id < 0) {
+		h5libraryError(env);
+	}
+
+	return (jint) file_id;
+}
+
 
 #ifdef __cplusplus
 }

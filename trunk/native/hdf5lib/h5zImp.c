@@ -73,6 +73,35 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Zfilter_1avail
 	return (jint)retValue;
 }
 
+
+/**********************************************************************
+ *                                                                    *
+ *          New functions release 1.6.3 versus release 1.6.2          *
+ *                                                                    *
+ **********************************************************************/
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Signature: herr_t H5Zget_filter_info (H5Z_filter_t filter, unsigned * flags)   
+ * Purpose:   
+ */
+
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Zget_1filter_1info
+  (JNIEnv *env, jclass clss, jint filter)
+{
+	herr_t status;
+	unsigned int flags = 0;
+
+	status = H5Zget_filter_info ((H5Z_filter_t) filter, (unsigned *) &flags);
+
+	if (status < 0) {
+		h5libraryError(env);
+	}
+
+	return flags;
+}
+
+
 #ifdef __cplusplus
 }
 #endif 

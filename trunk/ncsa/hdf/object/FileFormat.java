@@ -52,7 +52,7 @@ public abstract class FileFormat extends File
     public static final String FILE_TYPE_HDF4 = "HDF";
 
     /** tag for HDF5 file. */
-    public static final String FILE_TYPE_HDF5 = "H5";
+    public static final String FILE_TYPE_HDF5 = "HDF5";
 
     /** keep a list current supported file formats.
      * FileList keeps <key, fileFormat> pairs, such as
@@ -322,6 +322,7 @@ public abstract class FileFormat extends File
             return;
 
         key = key.trim();
+
         if (!FileList.containsKey(key))
             FileList.put(key, fileformat);
     }
@@ -543,6 +544,21 @@ public abstract class FileFormat extends File
     {
         // subclass to implement it
         throw new UnsupportedOperationException("HObject FileFormat.get(String path) is not implemented.");
+    }
+
+    /** returns a list of supported file formats */
+    public static FileFormat[] getFileFormats()
+    {
+        int n = FileList.size();
+        if ( n <=0 ) return null;
+
+        int i = 0;
+        FileFormat[] fileformats = new FileFormat[n];
+        Enumeration enum = ((Hashtable)FileList).elements();
+        while (enum.hasMoreElements())
+            fileformats[i++] = (FileFormat)enum.nextElement();
+
+        return fileformats;
     }
 
 }

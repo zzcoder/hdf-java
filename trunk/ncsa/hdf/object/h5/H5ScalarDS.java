@@ -642,6 +642,14 @@ public class H5ScalarDS extends ScalarDS
                 else if (filter == HDF5Constants.H5Z_FILTER_SZIP)
                 {
                     compression += "SZIP: Pixels per block = "+cd_values[1];
+                    int flag = -1;
+                    try { flag = H5.H5Zget_filter_info(filter); }
+                    catch (Exception ex) { flag = -1; }
+                    if (flag==HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED)
+                        compression += ": "+Dataset.H5Z_FILTER_CONFIG_DECODE_ENABLED;
+                    else if (flag==HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED ||
+                             flag >= (HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED+HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED))
+                        compression += ": "+Dataset.H5Z_FILTER_CONFIG_ENCODE_ENABLED;
                 }
             } // for (int i=0; i<nfilt; i++)
 
