@@ -474,6 +474,7 @@ AC_SUBST(AWK)
 AC_SUBST(FIND)
 AC_SUBST(GUNZIP)
 AC_SUBST(JAVA)
+AC_SUBST(JAVABIN)
 AC_SUBST(JAVAC)
 AC_SUBST(JAVADOC)
 AC_SUBST(JAVAINC)
@@ -504,7 +505,7 @@ AC_SUBST(VERSSTRING)
 ## Select one of the following, depending on what is being distributed.
 ##
 
-OUTPUT_FILES="Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile"
+OUTPUT_FILES="Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile bin/hdfview.sh"
 if test "$USEH45" = "yes"; then
 ##  want H4toH5 configured
 if test -d "./test"; then

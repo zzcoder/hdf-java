@@ -4787,6 +4787,7 @@ esac
 
 
 
+
 VERSION=./VERSION
 VERSSTRING=`/bin/cat ./VERSION | sed -e 's/VERSION=HDF-JAVA-//' `
 
@@ -4796,7 +4797,7 @@ VERSSTRING=`/bin/cat ./VERSION | sed -e 's/VERSION=HDF-JAVA-//' `
 ## Select one of the following, depending on what is being distributed.
 ##
 
-OUTPUT_FILES="Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile"
+OUTPUT_FILES="Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile bin/hdfview.sh"
 if test "$USEH45" = "yes"; then
 ##  want H4toH5 configured
 if test -d "./test"; then
@@ -5448,6 +5449,7 @@ s,@COPT@,$COPT,;t t
 s,@COPTNOSHARE@,$COPTNOSHARE,;t t
 s,@AWK@,$AWK,;t t
 s,@GUNZIP@,$GUNZIP,;t t
+s,@JAVABIN@,$JAVABIN,;t t
 s,@JAVAINC@,$JAVAINC,;t t
 s,@JAVAINC2@,$JAVAINC2,;t t
 s,@HDF5LIB@,$HDF5LIB,;t t

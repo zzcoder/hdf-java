@@ -331,6 +331,9 @@ do-install-jhdf5obj: ncsa.hdf.object.h5
 install-jhdfview: ncsa.hdf.view
 	-mkdir -p $(LIBDIR);
 	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdfview.jar $(HDFVIEWCLASSES) $(HDFVIEWICONS)
+	-mkdir -p $(BINDIR);
+	cp bin/hdfview.sh $(BINDIR)
+	chmod a+x $(BINDIR)/hdfview.sh
 	@echo "Install HDFVIEW complete"
 
 uninstall-jhi5: 
