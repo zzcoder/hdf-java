@@ -1,0 +1,54 @@
+# Generated automatically from Makefile.in by configure.
+# Generated automatically from Makefile.in by configure.
+#/****************************************************************************
+# * NCSA HDF                                                                 *
+# * National Comptational Science Alliance                                   *
+# * University of Illinois at Urbana-Champaign                               *
+# * 605 E. Springfield, Champaign IL 61820                                   *
+# *                                                                          *
+# * For conditions of distribution and use, see the accompanying             *
+# * java-h4toh5/COPYING file.                                                  *
+# *                                                                          *
+# ****************************************************************************/
+
+
+JAVAC=/usr/local/jdk1.3.1/bin/javac
+
+CLASSPATH=/usr/local/jdk1.3.1/jre/lib/rt.jar:/afs/ncsa/user/mcgrath/javaproj/java6/mcgrath/eirene/hdf-java:/afs/ncsa.uiuc.edu/projects/hdf/java/java6/mcgrath/eirene/New/lib/jhdf.jar:/afs/ncsa.uiuc.edu/projects/hdf/java/java6/mcgrath/eirene/New/lib/jhdf5.jar   
+
+.SUFFIXES: .java .class
+
+.java.class:
+	$(JAVAC) -classpath $(CLASSPATH) $<
+
+all: apitest imagetest sdstest vdatatest vgrouptest nametest runtests
+	chmod u+x runtests.sh
+
+apitest: apitest.class
+	chmod u+x apitest.sh
+
+imagetest: imagetest.class
+	chmod u+x imagetest.sh
+
+sdstest: sdstest.class
+	chmod u+x sdstest.sh
+
+vdatatest: vdatatest.class
+	chmod u+x vdatatest.sh
+
+vgrouptest: vgrouptest.class
+	chmod u+x vgrouptest.sh
+
+nametest: nametest.class
+	chmod u+x nametest.sh
+
+runtests:
+	chmod u+x runtests.sh
+
+check:
+	runtests.sh
+
+clean:
+	rm -f *.class
+	rm -f *.hdf
+	rm -f *.h5
