@@ -132,10 +132,10 @@ do-jhdf-packages: $(JHIPACKAGES)
 jhdf5-packages: $(JHI5PACKAGES)  
 	$(JAR) cf ./lib/jhdf5.jar $(JHI5CLASSES)
 
-nc2-packages: $(NC2PACKAGES)
-	$(JAR) cf ./lib//ext/nc2obj.jar $(NC2OBJCLASSES)
+nc2-packages: $(NC2OBJPACKAGES)
+	$(JAR) cf ./lib/ext/nc2obj.jar $(NC2OBJCLASSES)
 
-fits-packages: $(FITSPACKAGES)
+fits-packages: $(FITSOBJPACKAGES)
 	$(JAR) cf ./lib/ext/fitsobj.jar $(FITSOBJCLASSES)
 
 jhdfobj-packages: $(HDFOBJPACKAGES)  
