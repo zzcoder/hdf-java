@@ -28,6 +28,7 @@ package ncsa.hdf.hdf5lib;
  *  <b>See also:</b> ncsa.hdf.hdf5lib.HDF5CDataTypes
  */
 public class HDF5Constants
+{
  
 	/*AUTOMATICALLY GENERATED CONSTANTS*/ 
 	final static public int H5D_CHUNKED = 2;
