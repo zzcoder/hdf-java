@@ -48,25 +48,6 @@ public class Attribute implements Metadata
      */
     private Object value;
 
-
-    /**
-     * Create a new attribute with a given (name, value) pair.
-     * Attribute is independent of dataformat, i.e., this implementation of
-     * attribute applies to both HDF4 and HDF5.
-     * <p>
-     * @param name the name of the attribute.
-     * @param value the value of the attribute.
-     */
-    public Attribute(String name, Object value)
-    {
-        this.name = name;
-        this.value = value;
-
-        this.datatype = -1;
-        this.dataDims = null;
-        this.dataRank = 0;
-    }
-
     /**
      * Create an attribute with specified name, data type and dimension sizes.
      * For scalar attribute, the dimension size can either an array of size one
@@ -149,31 +130,102 @@ public class Attribute implements Metadata
     }
 
     /**
-     * Returns the string representation of this data object.
+     * Returns the string representation of the value of this attribute.
+     * <p>
+     * @param delimiter the delimiter to separate individual data points.
+     * @param isUnsigned True is the attribute value is unsigned the integer.
+     */
+    public String toString(String delimiter, boolean isUnsigned)
+    {
+        if (value == null)
+            return null;
+
+        Class valClass = value.getClass();
+
+        if (!valClass.isArray())
+            return value.toString();
+
+        // attribute value is an array
+        StringBuffer sb = new StringBuffer();
+        int n = Array.getLength(value);
+        if (isUnsigned)
+        {
+            long maxValue = 0;
+
+            String cname = valClass.getName();
+            char dname = cname.charAt(cname.lastIndexOf("[")+1);
+
+            switch (dname)
+            {
+                case 'B':
+                    byte[] barray = (byte[])value;
+                    short sValue = barray[0];
+                    if (sValue < 0) sValue += 256;
+                    sb.append(sValue);
+                    for (int i=1; i<n; i++)
+                    {
+                        sb.append(delimiter);
+                        sValue = barray[i];
+                        if (sValue < 0) sValue += 256;
+                        sb.append(sValue);
+                    }
+                    break;
+                case 'S':
+                    short[] sarray = (short[])value;
+                    int iValue = sarray[0];
+                    if (iValue < 0) iValue += 65536;
+                    sb.append(iValue);
+                    for (int i=1; i<n; i++)
+                    {
+                        sb.append(delimiter);
+                        iValue = sarray[i];
+                        if (iValue < 0) iValue += 65536;
+                        sb.append(iValue);
+                    }
+                    break;
+                case 'I':
+                    int[] iarray = (int[])value;
+                    long lValue = iarray[0];
+                    if (lValue < 0) lValue += 4294967296L;
+                    sb.append(lValue);
+                    for (int i=1; i<n; i++)
+                    {
+                        sb.append(delimiter);
+                        lValue = iarray[i];
+                        if (lValue < 0) lValue += 4294967296L;
+                        sb.append(lValue);
+                    }
+                    break;
+                default:
+                    sb.append(Array.get(value, 0));
+                    for (int i=1; i<n; i++)
+                    {
+                        sb.append(delimiter);
+                        sb.append(Array.get(value, i));
+                    }
+                    break;
+            }
+        }
+        else
+        {
+            sb.append(Array.get(value, 0));
+            for (int i=1; i<n; i++)
+            {
+                sb.append(delimiter);
+                sb.append(Array.get(value, i));
+            }
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Returns the string representation of this attribute.
      * The String consists of the name and path of the data object.
      */
     public String toString()
     {
-        String valStr = null;
-        if (value != null)
-        {
-            if (value.getClass().isArray())
-            {
-                StringBuffer sb = new StringBuffer();
-                int n = Array.getLength(value);
-                for (int i=0; i<n-1; i++)
-                {
-                    sb.append(Array.get(value, i));
-                    sb.append(", ");
-                }
-                sb.append(Array.get(value, n-1));
-                valStr = sb.toString();
-            }
-            else
-                valStr = value.toString();
-        }
-
-        return "[Type: Attribute], [Name: "+name+"], [Value: "+valStr+"]";
+        return "[Type: Attribute], [Name: "+name+"]";
     }
 
 }

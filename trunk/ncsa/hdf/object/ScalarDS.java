@@ -25,6 +25,34 @@ import java.util.*;
  */
 public abstract class ScalarDS extends Dataset
 {
+    // The following constant strings are copied from
+    // http://hdf.ncsa.uiuc.edu/HDF5/doc/ADGuide/ImageSpec.html
+    // to make the defination consistent with the image specs.
+
+    /** The type of Palette that should be used with the Image. */
+    public final static String IMAGE_SUBCLASS ="IMAGE_SUBCLASS";
+
+    /** A grayscale image, values 0-255 indicating brightness. */
+    public final static String IMAGE_GRAYSCALE ="IMAGE_GRAYSCALE";
+
+    /** A truecolor image . */
+    public final static String IMAGE_TRUECOLOR ="IMAGE_TRUECOLOR";
+
+    /** An indexed image. */
+    public final static String IMAGE_INDEXED ="IMAGE_INDEXED";
+
+    /**
+     * For images with more than one component for each pixel,
+     *  this optional attribute specifies the layout of the data.
+     */
+    public final static String INTERLACE_MODE ="INTERLACE_MODE";
+
+    /** The component value for a pixel are contiguous. */
+    public final static String INTERLACE_PIXEL ="INTERLACE_PIXEL";
+
+    /** Each component is stored as a plane. */
+    public final static String INTERLACE_PLANE ="INTERLACE_PLANE";
+
     /**
      * The data type of this scalar dataset
      * such as 32-bit integer, 32-bit float, etc.
@@ -47,6 +75,11 @@ public abstract class ScalarDS extends Dataset
     protected boolean isImage;
 
     /**
+     * True is this dataset is ASCII text.
+     */
+    protected boolean isText;
+
+    /**
      * Creates a ScalarDS object with specific name, path, and parent.
      * <p>
      * @param fileFormat the HDF file.
@@ -65,6 +98,7 @@ public abstract class ScalarDS extends Dataset
         datatype = -1;
         palette = null;
         isImage = false;
+        isText = false;
     }
 
     /**
@@ -104,9 +138,18 @@ public abstract class ScalarDS extends Dataset
     /**
      * Returns true is this dataset is an image.
      */
-    public boolean isImage()
+    public final boolean isImage()
     {
         return isImage;
     }
+
+    /**
+     * Returns true is this dataset is ASCII text.
+     */
+    public final boolean isText()
+    {
+        return isText;
+    }
+
 
 }

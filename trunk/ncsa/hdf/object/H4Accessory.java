@@ -59,6 +59,12 @@ public final class H4Accessory
             int[] annTypes = {HDFConstants.AN_FILE_LABEL, HDFConstants.AN_FILE_DESC};
             for (int j=0; j<2; j++)
             {
+                String annName = null;
+                if (j == 0)
+                    annName = "File Label";
+                else
+                    annName = "File Description";
+
                 for (int i=0; i < fileInfo[j]; i++)
                 {
                     try {
@@ -89,9 +95,15 @@ public final class H4Accessory
                         try { b = HDFLibrary.ANreadann(id, str, length);
                         } catch ( HDFException ex) { b = false; }
 
-                        if (b)
+                        if (b && str[0].length()>0)
                         {
-                            attrList.add(new Attribute("File label #"+i, str[0]));
+                            long attrDims[] = {str[0].length()};
+                            Attribute newAttr = new Attribute(
+                                annName +" #"+i,
+                                HDFConstants.DFNT_CHAR,
+                                attrDims);
+                            attrList.add(newAttr);
+                            newAttr.setValue(str[0]);
                         }
                     }
 
@@ -246,20 +258,20 @@ public final class H4Accessory
 
     /**
      *  Allocate a 1D array large enough to hold a multidimensional
-     *  array of 'datasize' elements of 'dataType' numbers.
+     *  array of 'datasize' elements of 'datatype' numbers.
      *
-     *  @param dataType  the data type
+     *  @param datatype  the data type
      *  @param datasize  the size of the data array
-     *  @return an array of 'datasize' numbers of dataType.
+     *  @return an array of 'datasize' numbers of datatype.
      */
-    public static final Object allocateArray(int dataType, int datasize)
+    public static final Object allocateArray(int datatype, int datasize)
     {
         if (datasize <= 0)
             return null;
 
         Object data = null;
 
-        switch(dataType)
+        switch(datatype)
         {
             case HDFConstants.DFNT_CHAR:
             case HDFConstants.DFNT_UCHAR8:
@@ -296,13 +308,13 @@ public final class H4Accessory
     /**
      *  Returns the short description of datatype.
      *  <p>
-     *  @param dataType  the data type.
+     *  @param datatype  the data type.
      */
-    public static final String getDatatypeDescription(int dataType)
+    public static final String getDatatypeDescription(int datatype)
     {
         String description = "Unknown";
 
-        switch(dataType)
+        switch(datatype)
         {
             case HDFConstants.DFNT_CHAR:
                 description = "8-bit character";
@@ -347,4 +359,32 @@ public final class H4Accessory
 
         return description;
     }
+
+    /**
+     *  Checks if the datatype is an unsigned integer.
+     *  <p>
+     *  @param datatype  the data type.
+     *  @return True is the datatype is an unsigned integer; otherwise returns false.
+     */
+    public static final boolean isUnsigned(int datatype)
+    {
+        boolean unsigned = false;;
+
+        switch(datatype)
+        {
+            case HDFConstants.DFNT_UCHAR8:
+            case HDFConstants.DFNT_UINT8:
+            case HDFConstants.DFNT_UINT16:
+            case HDFConstants.DFNT_UINT32:
+            case HDFConstants.DFNT_UINT64:
+                unsigned = true;
+                break;
+            default:
+                unsigned = false;
+                break;
+        }
+
+        return unsigned;
+    }
+
 }

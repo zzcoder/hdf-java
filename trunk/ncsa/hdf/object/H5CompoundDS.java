@@ -94,33 +94,51 @@ public class H5CompoundDS extends CompoundDS
 
         Object member_data = null;
         String member_name = null;
-        int member_tid=-1, member_class=-1, member_size=0;
-        int fspace=-1, mtid=-1;
+        int member_tid=-1, member_class=-1, member_size=0, fspace=-1, mspace=-1;
         int did = open();
 
-        try // matched with finally to close the did
+        boolean isAllSelected = true;
+        for (int i=0; i<rank; i++)
         {
-            fspace = H5.H5Dget_space(did);
+            if (selectedDims[i] < dims[i])
+            {
+                isAllSelected = false;
+                break;
+            }
+        }
 
-            // set the rectangle selection
-            H5.H5Sselect_hyperslab(
-                fspace,
-                HDF5Constants.H5S_SELECT_SET,
-                startDims,
-                null,     // set stride to 1
-                selectedDims,
-                null );   // set block to 1
+        try
+        {
+            long[] lsize = {1};
+            for (int j=0; j<selectedDims.length; j++)
+                lsize[0] *= selectedDims[j];
+
+            if (isAllSelected)
+            {
+                mspace = HDF5Constants.H5S_ALL;
+                fspace = HDF5Constants.H5S_ALL;
+            }
+            else
+            {
+                fspace = H5.H5Dget_space(did);
+                mspace = H5.H5Screate_simple(1, lsize, null);
+
+                // set the rectangle selection
+                H5.H5Sselect_hyperslab(
+                    fspace,
+                    HDF5Constants.H5S_SELECT_SET,
+                    startDims,
+                    null,     // set stride to 1
+                    selectedDims,
+                    null );   // set block to 1
+            }
 
             for (int i=0; i<numberOfMembers; i++)
             {
                 member_name = memberNames[i];
                 member_tid = memberTypes[i];
 
-                long lsize = 1;
-                for (int j=0; j<selectedDims.length; j++)
-                    lsize *= selectedDims[j];
-
-                member_data = H5Accessory.allocateArray(member_tid, (int)lsize);
+                member_data = H5Accessory.allocateArray(member_tid, (int)lsize[0]);
 
                 if (member_data == null)
                     continue;
@@ -152,7 +170,7 @@ public class H5CompoundDS extends CompoundDS
                     H5.H5Dread(
                         did,
                         read_tid,
-                        fspace,
+                        mspace,
                         fspace,
                         HDF5Constants.H5P_DEFAULT,
                         member_data);
@@ -167,7 +185,6 @@ public class H5CompoundDS extends CompoundDS
                     continue;
                 }
                 try { H5.H5Tclose(read_tid); } catch (HDF5Exception ex2) {}
-                try { H5.H5Tclose(member_tid); } catch (HDF5Exception ex2) {}
 
                 if (member_class == HDF5Constants.H5T_STRING)
                     member_data = byteToString((byte[])member_data, member_size);
@@ -178,13 +195,14 @@ public class H5CompoundDS extends CompoundDS
             } // end of for (int i=0; i<num_members; i++)
         } finally
         {
-            if (fspace > 0) try { H5.H5Sclose(fspace); } catch (HDF5Exception ex2) {}
-            try { H5.H5Tclose(mtid); } catch (HDF5Exception ex2) {}
+            if (fspace > 0)
+                try { H5.H5Sclose(fspace); } catch (Exception ex2) {}
+            if (mspace > 0)
+                try { H5.H5Sclose(mspace); } catch (Exception ex2) {}
             close(did);
         }
 
-        data = list;
-        return data;
+        return (data=list);
     }
 
     // To do: Implementing DataFormat
@@ -307,7 +325,6 @@ public class H5CompoundDS extends CompoundDS
 
             startDims = new long[rank];
             selectedDims = new long[rank];
-            selectedIndex = new int[1]; // only select 1D for compound dataset
             selectedIndex[0] = 0; // selected the first dimension by default
 
             // for default, only select 1D for compound dataset

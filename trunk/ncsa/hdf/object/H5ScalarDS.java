@@ -54,8 +54,9 @@ public class H5ScalarDS extends ScalarDS
         int did=-1, aid=-1, atid=-1;
         try
         {
+            did = open();
+
             // try to find out if the dataset is an image
-            did = H5.H5Dopen(getFID(), getPath()+getName());
             aid = H5.H5Aopen_name(did, "CLASS");
             atid = H5.H5Aget_type(aid);
             int aclass = H5.H5Tget_class(atid);
@@ -84,49 +85,70 @@ public class H5ScalarDS extends ScalarDS
         if (rank <= 0) init();
 
         int did = open();
-        int fspace=-1, tid=-1, nativeType=-1;
+        int fspace=-1, mspace=-1, tid=-1, nativeType=-1;
+
+        boolean isAllSelected = true;
+        for (int i=0; i<rank; i++)
+        {
+            if (selectedDims[i] < dims[i])
+            {
+                isAllSelected = false;
+                break;
+            }
+        }
 
         try
         {
-            fspace = H5.H5Dget_space(did);
+            long[] lsize = {1};
+            for (int j=0; j<selectedDims.length; j++)
+                lsize[0] *= selectedDims[j];
 
-            // set the rectangle selection
-            H5.H5Sselect_hyperslab(
-                fspace,
-                HDF5Constants.H5S_SELECT_SET,
-                startDims,
-                null,     // set stride to 1
-                selectedDims,
-                null );   // set block to 1
+            if (isAllSelected)
+            {
+                mspace = HDF5Constants.H5S_ALL;
+                fspace = HDF5Constants.H5S_ALL;
+            }
+            else
+            {
+                fspace = H5.H5Dget_space(did);
+                mspace = H5.H5Screate_simple(1, lsize, null);
+
+                // set the rectangle selection
+                H5.H5Sselect_hyperslab(
+                    fspace,
+                    HDF5Constants.H5S_SELECT_SET,
+                    startDims,
+                    null,     // set stride to 1
+                    selectedDims,
+                    null );   // set block to 1
+            }
 
             tid = H5.H5Dget_type(did);
             nativeType = H5Accessory.toNativeType(tid);
-            long lsize = 1;
-            for (int j=0; j<selectedDims.length; j++)
-                lsize *= selectedDims[j];
-
-            data = H5Accessory.allocateArray(nativeType, (int)lsize);
+            data = H5Accessory.allocateArray(nativeType, (int)lsize[0]);
 
             if (data != null)
             {
                 H5.H5Dread(
                     did,
                     nativeType,
-                    fspace,
+                    mspace,
                     fspace,
                     HDF5Constants.H5P_DEFAULT,
                     data);
 
-                int typeClass = H5.H5Tget_class(nativeType);
-                if (typeClass==HDF5Constants.H5T_STRING)
+                if (isText)
                     data = byteToString((byte[])data, H5.H5Tget_size(nativeType));
-                else if (typeClass == HDF5Constants.H5T_REFERENCE)
+                else if (H5.H5Tget_class(nativeType) == HDF5Constants.H5T_REFERENCE)
                     data = HDFNativeData.byteToLong((byte[])data);
             }
         }
         finally
         {
-            if (fspace > 0) try { H5.H5Sclose(fspace); } catch (Exception ex2) {}
+            if (fspace > 0)
+                try { H5.H5Sclose(fspace); } catch (Exception ex2) {}
+            if (mspace > 0)
+                try { H5.H5Sclose(mspace); } catch (Exception ex2) {}
             try { H5.H5Tclose(tid); } catch (HDF5Exception ex2) {}
             try { H5.H5Tclose(nativeType); } catch (HDF5Exception ex2) {}
             close(did);
@@ -232,14 +254,13 @@ public class H5ScalarDS extends ScalarDS
     public void init()
     {
         int did=-1, sid=-1, tid=-1;
-        int fid = getFID();
-        String fullName = getPath()+getName();
 
         try {
-            did = H5.H5Dopen(fid, fullName);
+            did = open();
             sid = H5.H5Dget_space(did);
             tid= H5.H5Dget_type(did);
             rank = H5.H5Sget_simple_extent_ndims(sid);
+            isText = (H5.H5Tget_class(tid)==HDF5Constants.H5T_STRING);
 
             if (rank == 0)
             {
@@ -271,17 +292,25 @@ public class H5ScalarDS extends ScalarDS
         }
 
         // select only two dimension a time,
-        // need to more work to select any two dimensions
         if (rank == 1)
         {
+            selectedIndex[0] = 0;
             selectedDims[0] = dims[0];
         }
-        else if (rank >= 2)
+        else if (rank == 2)
         {
-            int colIdx = rank-1;
-            int rowIdx = rank-2;
-            selectedDims[colIdx] = dims[colIdx];
-            selectedDims[rowIdx] = dims[rowIdx];
+            selectedIndex[0] = 0;
+            selectedIndex[1] = 1;
+            selectedDims[0] = dims[0];
+            selectedDims[1] = dims[1];
+        }
+        else if (rank > 2)
+        {
+            selectedIndex[0] = rank-2; // columns
+            selectedIndex[1] = rank-1; // rows
+            selectedIndex[2] = rank-3;
+            selectedDims[rank-1] = dims[rank-1];
+            selectedDims[rank-2] = dims[rank-2];
         }
     }
 
