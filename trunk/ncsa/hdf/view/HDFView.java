@@ -582,11 +582,13 @@ implements ViewManager, HyperlinkListener
                 try {  try { updateRecentFiles(filename); } catch (Exception ex) {} } catch (Exception ex) {}
             } catch (Exception ex)
             {
+                String msg = "Failed to open file "+filename+"\n"+ex.getMessage();
+                if (!(ex instanceof UnsupportedOperationException))
+                    msg +="\n\nTry open file read-only";
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
                     this,
-                    "Failed to open file "+filename+"\n"+ex.getMessage()+
-                    "\n\nTry open file read-only",
+                    msg,
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             }
@@ -738,11 +740,13 @@ implements ViewManager, HyperlinkListener
                  try { updateRecentFiles(filename); } catch (Exception ex) {}
             } catch (Exception ex)
             {
+                String msg = "Failed to open file "+filename+"\n"+ex.getMessage();
+                if (!(ex instanceof UnsupportedOperationException))
+                    msg +="\n\nTry open file read-only";
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
                     this,
-                    "Failed to open file "+filename+"\n"+ex.getMessage()+
-                    "\n\nTry open file read-only",
+                    msg,
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             }
