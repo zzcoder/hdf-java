@@ -16,7 +16,6 @@ import javax.swing.*;
 import java.awt.event.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
-import java.awt.Frame;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
@@ -70,7 +69,7 @@ implements ActionListener, ItemListener
 
     private JRadioButton spreadsheetButton, imageButton, charButton, transposeButton;
 
-    private JComboBox choicePalette, choices[];
+    private JComboBox choiceTextView, choiceTableView, choiceImageView, choicePalette, choices[];
 
     private boolean isSelectionCancelled;
 
@@ -105,13 +104,13 @@ implements ActionListener, ItemListener
     /**
      * Constructs a DataOptionDialog with the given HDFView.
      */
-    public DataOptionDialog(ViewManager theview)
+    public DataOptionDialog(ViewManager theview, Dataset theDataset)
     {
-        super((Frame)theview, true);
+        super((JFrame)theview, true);
         setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
 
         viewer = theview;
-        dataset = (Dataset)theview.getSelectedObject();
+        dataset = theDataset;
         isSelectionCancelled = true;
         isTrueColorImage = false;
         isText = false;
@@ -133,7 +132,6 @@ implements ActionListener, ItemListener
             if (palRefs != null && palRefs.length > 8)
                 numberOfPalettes = palRefs.length/8;
         }
-
         rank = dataset.getRank();
         dims = dataset.getDims();
         selected = dataset.getSelectedDims();
@@ -150,11 +148,13 @@ implements ActionListener, ItemListener
         currentIndex = new int[Math.min(3, rank)];
 
         choicePalette = new JComboBox();
+        choiceTextView = new JComboBox((Vector)HDFView.getListOfTextView());
+        choiceImageView = new JComboBox((Vector)HDFView.getListOfImageView());
+        choiceTableView = new JComboBox((Vector)HDFView.getListOfTableView());
 
         choicePalette.addItem("Select palette");
         choicePalette.addItem("Default");
-        for (int i=2; i<=numberOfPalettes; i++)
-        {
+        for (int i=2; i<=numberOfPalettes; i++) {
             choicePalette.addItem("Default "+i);
         }
         choicePalette.addItem("Gray");
@@ -176,7 +176,7 @@ implements ActionListener, ItemListener
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5, 5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        contentPane.setPreferredSize(new Dimension(700, 300));
+        contentPane.setPreferredSize(new Dimension(700, 280));
 
         JPanel centerP = new JPanel();
         centerP.setLayout(new BorderLayout());
@@ -187,8 +187,7 @@ implements ActionListener, ItemListener
         navigatorP.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
         performJComboBoxEvent = true;
 
-        if (dataset instanceof CompoundDS)
-        {
+        if (dataset instanceof CompoundDS) {
             // setup GUI components for the field selection
             CompoundDS d = (CompoundDS)dataset;
             String[] names = d.getMemberNames();
@@ -196,19 +195,38 @@ implements ActionListener, ItemListener
             fieldList.addSelectionInterval(0, names.length-1);
             JPanel fieldP = new JPanel();
             fieldP.setLayout(new BorderLayout());
-            fieldP.setPreferredSize(new Dimension(150, 300));
+            fieldP.setPreferredSize(new Dimension(150, 250));
             JScrollPane scrollP = new JScrollPane(fieldList);
-            fieldP.add(scrollP, BorderLayout.CENTER);
+            fieldP.add(scrollP);
             fieldP.setBorder(new TitledBorder("Select Members"));
             contentPane.add(fieldP, BorderLayout.WEST);
+
+            JPanel tviewP = new JPanel();
+            tviewP.setLayout(new BorderLayout());
+            tviewP.add(new JLabel("        TableView:  "), BorderLayout.WEST);
+            tviewP.add(choiceTableView, BorderLayout.CENTER);
+            tviewP.setBorder(new LineBorder(Color.LIGHT_GRAY));
+
+            centerP.add(tviewP, BorderLayout.SOUTH);
         }
         else if ( dataset instanceof ScalarDS)
         {
             ScalarDS sd = (ScalarDS)dataset;
             isText = sd.isText();
 
-            if (!isText)
-            {
+            if (isText) {
+                contentPane.setPreferredSize(new Dimension(600, 280));
+                // add textview selection
+                JPanel txtviewP = new JPanel();
+                txtviewP.setLayout(new BorderLayout());
+                txtviewP.add(new JLabel("          TextView:  "), BorderLayout.WEST);
+                txtviewP.add(choiceTextView, BorderLayout.CENTER);
+                txtviewP.setBorder(new LineBorder(Color.LIGHT_GRAY));
+
+                centerP.add(txtviewP, BorderLayout.SOUTH);
+            }
+            else {
+                contentPane.setPreferredSize(new Dimension(700, 340));
                 if (rank > 1)
                     centerP.add(navigatorP, BorderLayout.WEST);
 
@@ -220,20 +238,48 @@ implements ActionListener, ItemListener
                 rgroup.add(imageButton);
                 JPanel viewP = new JPanel();
                 viewP.setLayout(new GridLayout(1,2));
+                viewP.setBorder(new TitledBorder("Display As"));
+
                 JPanel sheetP = new JPanel();
                 sheetP.setLayout(new GridLayout(1,3, 5, 5));
                 sheetP.add(spreadsheetButton);
                 sheetP.add(charButton);
                 sheetP.add(transposeButton);
-                sheetP.setBorder(new TitledBorder(""));
-                viewP.add(sheetP);
+
+                // add tableview selection
+                JPanel tviewP = new JPanel();
+                tviewP.setLayout(new BorderLayout());
+                tviewP.add(new JLabel("TableView:  "), BorderLayout.WEST);
+                tviewP.add(choiceTableView, BorderLayout.CENTER);
+
+                JPanel leftP = new JPanel();
+                leftP.setBorder(new TitledBorder(""));
+                leftP.setLayout(new GridLayout(2,1, 5, 5));
+                leftP.add(sheetP);
+                leftP.add(tviewP);
+
+                viewP.add(leftP);
+
                 JPanel imageP = new JPanel();
                 imageP.setLayout(new BorderLayout(5,5));
                 imageP.add(imageButton, BorderLayout.WEST);
                 imageP.add(choicePalette, BorderLayout.CENTER);
                 imageP.setBorder(new TitledBorder(""));
-                viewP.add(imageP);
-                viewP.setBorder(new TitledBorder("Display As"));
+
+                // add imageview selection
+                JPanel iviewP = new JPanel();
+                iviewP.setLayout(new BorderLayout());
+                iviewP.add(new JLabel("ImageView:  "), BorderLayout.WEST);
+                iviewP.add(choiceImageView, BorderLayout.CENTER);
+
+                JPanel rightP = new JPanel();
+                rightP.setBorder(new TitledBorder(""));
+                rightP.setLayout(new GridLayout(2,1, 5, 5));
+                rightP.add(imageP);
+                rightP.add(iviewP);
+
+                viewP.add(rightP);
+
                 contentPane.add(viewP, BorderLayout.NORTH);
             }
         }
@@ -447,6 +493,14 @@ implements ActionListener, ItemListener
         {
             choicePalette.setEnabled( imageButton.isSelected() && !isTrueColorImage);
 
+            if (imageButton.isSelected()) {
+                choiceImageView.setEnabled(true);
+                choiceTableView.setEnabled(false);
+            } else {
+                choiceImageView.setEnabled(false);
+                choiceTableView.setEnabled(true);
+            }
+
             // reset show char button
             if (spreadsheetButton.isSelected() &&
                 dataset.getDatatype().getDatatypeSize()==1)
@@ -549,21 +603,21 @@ implements ActionListener, ItemListener
     /**
      * Set the initial state of all the variables
      */
-    private void init()
-    {
+    private void init() {
         // set the imagebutton state
         boolean isImage = false;
 
-        if (dataset instanceof ScalarDS)
-        {
+        if (dataset instanceof ScalarDS) {
             ScalarDS sd = (ScalarDS)dataset;
             isImage = sd.isImage();
             isTrueColorImage = sd.isTrueColor();
         }
-        else if (dataset instanceof CompoundDS)
-        {
+        else if (dataset instanceof CompoundDS) {
             imageButton.setEnabled(false);
         }
+
+        choiceTableView.setEnabled(!isImage);
+        choiceImageView.setEnabled(isImage);
         imageButton.setSelected(isImage);
         choicePalette.setEnabled(isImage && !isTrueColorImage);
 
@@ -667,13 +721,13 @@ implements ActionListener, ItemListener
         if (palChoice == 0)
             pal = null; // using the first default palette
         else if (palChoice == numberOfPalettes+1)
-            pal = ImageView.createGrayPalette();
+            pal = Tools.createGrayPalette();
         else if (palChoice == numberOfPalettes+2)
-            pal = ImageView.createRainbowPalette();
+            pal = Tools.createRainbowPalette();
         else if (palChoice == numberOfPalettes+3)
-            pal = ImageView.createNaturePalette();
+            pal = Tools.createNaturePalette();
         else if (palChoice == numberOfPalettes+4)
-            pal = ImageView.createWavePalette();
+            pal = Tools.createWavePalette();
         else
         {
             // multuple palettes attached
@@ -705,7 +759,7 @@ implements ActionListener, ItemListener
             } catch (NumberFormatException ex) {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
-                    (Frame)viewer,
+                    (JFrame)viewer,
                     ex.getMessage(),
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
@@ -718,7 +772,7 @@ implements ActionListener, ItemListener
             {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
-                    (Frame)viewer,
+                    (JFrame)viewer,
                     "Selected index is out of bound.",
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
@@ -734,7 +788,7 @@ implements ActionListener, ItemListener
             {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
-                    (Frame)viewer,
+                    (JFrame)viewer,
                     "No member/field is selected.",
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
@@ -875,21 +929,21 @@ implements ActionListener, ItemListener
             try
             {
                 Object data = sd.read();
-                byte[] bData = ImageView.getBytes(data, null);
+                byte[] bData = Tools.getBytes(data, null);
                 int h = (int)sd.getHeight();
                 int w = (int)sd.getWidth();
 
                 if (isTrueColorImage)
                 {
                     boolean isPlaneInterlace = (sd.getInterlace()==ScalarDS.INTERLACE_PLANE);
-                    preImage = ImageView.createTrueColorImage(bData, isPlaneInterlace, w, h);
+                    preImage = Tools.createTrueColorImage(bData, isPlaneInterlace, w, h);
                 }
                 else
                 {
                     byte[][] imagePalette = sd.getPalette();
                     if (imagePalette == null)
-                        imagePalette = ImageView.createGrayPalette();
-                    preImage = ImageView.createIndexedImage(bData, imagePalette, w, h);
+                        imagePalette = Tools.createGrayPalette();
+                    preImage = Tools.createIndexedImage(bData, imagePalette, w, h);
                 }
             }
             finally {
@@ -1011,8 +1065,21 @@ implements ActionListener, ItemListener
 
     public boolean isDisplayTypeChar() { return charButton.isSelected(); }
 
-   public boolean isTransposed() { return transposeButton.isSelected(); }
+    public boolean isTransposed() { return transposeButton.isSelected(); }
 
+    /** return the name of selected dataview*/
+    public String getDataViewName() {
+        String viewName = null;
+
+        if (isText)
+            viewName = (String) choiceTextView.getSelectedItem();
+        else if (isImageDisplay())
+            viewName = (String) choiceImageView.getSelectedItem();
+        else
+            viewName = (String) choiceTableView.getSelectedItem();
+
+        return viewName;
+    }
 }
 
 

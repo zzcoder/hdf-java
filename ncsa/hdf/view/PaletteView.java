@@ -15,13 +15,11 @@ import ncsa.hdf.object.*;
 
 /**
  *
- * <p>Title: ncsa.hdf.view.TextView</p>
- * <p>The text view interface for displaying text data</p>
+ * <p>Title: ncsa.hdf.view.PaletteView</p>
+ * <p>The palette view interface for displaying image palette</p>
  * <p>Company: National Computational Science Alliance</p>
  * @author Peter X. Cao
  * @version 1.0
  */
-public abstract interface TextView extends DataView {
-    /** return array of the text in this textview */
-    public abstract String[] getText();
+public abstract interface PaletteView extends DataView {
 }

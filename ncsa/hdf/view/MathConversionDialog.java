@@ -15,7 +15,6 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.border.TitledBorder;
-import java.awt.Frame;
 import java.awt.Point;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
@@ -55,7 +54,7 @@ implements ActionListener, ListSelectionListener
      *  @param owner the owner of the input
      *  @param data the data array to convert.
      */
-    public MathConversionDialog(Frame owner, Object data)
+    public MathConversionDialog(JFrame owner, Object data)
     {
         super (owner, "Convert Data...", true);
 

@@ -15,13 +15,18 @@ import ncsa.hdf.object.*;
 
 /**
  *
- * <p>Title: ncsa.hdf.view.TextView</p>
- * <p>The text view interface for displaying text data</p>
+ * <p>Title: ncsa.hdf.view.MetaDataView</p>
+ * <p>The metadata view interface for displaying metadata information</p>
  * <p>Company: National Computational Science Alliance</p>
  * @author Peter X. Cao
  * @version 1.0
  */
-public abstract interface TextView extends DataView {
-    /** return array of the text in this textview */
-    public abstract String[] getText();
+public abstract interface MetaDataView extends DataView
+{
+    /** add an attribute to a data object.*/
+    public abstract Attribute addAttribute(HObject obj);
+
+    /** delete an attribribute from a data object.*/
+    public abstract Attribute deleteAttribute(HObject obj);
+
 }

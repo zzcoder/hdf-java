@@ -18,7 +18,6 @@ import javax.swing.text.html.*;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.Color;
-import java.awt.Frame;
 import java.awt.Canvas;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -63,20 +62,20 @@ implements ActionListener, ItemListener, HyperlinkListener
 
     private final Toolkit toolkit;
 
-    private final DataObserver dataObserver;
+    private final DataView dataView;
 
     /** Constructs NewDatasetDialog with specified list of possible parent groups.
      *  @param owner the owner of the input
      *  @param pGroup the parent group which the new group is added to.
      *  @param objs the list of all objects.
      */
-    public NewDatasetDialog(Frame owner, Group pGroup, List objs)
+    public NewDatasetDialog(JFrame owner, Group pGroup, List objs)
     {
         super (owner, "New Dataset...", true);
 
         helpDialog = null;
         newObject = null;
-        dataObserver = null;
+        dataView = null;
 
         fileFormat = pGroup.getFileFormat();
         toolkit = Toolkit.getDefaultToolkit();
@@ -301,13 +300,13 @@ implements ActionListener, ItemListener, HyperlinkListener
      *  @param pGroup the parent group which the new group is added to.
      *  @param objs the list of all objects.
      */
-    public NewDatasetDialog(Frame owner, Group pGroup, List objs, DataObserver observer)
+    public NewDatasetDialog(JFrame owner, Group pGroup, List objs, DataView observer)
     {
         super (owner, "New Dataset...", true);
 
         helpDialog = null;
         newObject = null;
-        dataObserver = observer;
+        dataView = observer;
 
         fileFormat = pGroup.getFileFormat();
         toolkit = Toolkit.getDefaultToolkit();
@@ -317,8 +316,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         groupList = new Vector();
         Object obj = null;
         Iterator iterator = objs.iterator();
-        while (iterator.hasNext())
-        {
+        while (iterator.hasNext()) {
             obj = iterator.next();
             if (obj instanceof Group)
             {
@@ -387,11 +385,11 @@ implements ActionListener, ItemListener, HyperlinkListener
 
         if (cmd.equals("Ok"))
         {
-            if (dataObserver instanceof TableView)
+            if (dataView instanceof TableView)
                 newObject = createFromTable();
-            else if (dataObserver instanceof ImageView)
+            else if (dataView instanceof ImageView)
                 newObject = createFromImage();
-            else if (dataObserver == null)
+            else if (dataView == null)
                 newObject = createFromScratch();
 
             if (newObject != null)
@@ -950,7 +948,7 @@ implements ActionListener, ItemListener, HyperlinkListener
             return null;
         }
 
-        TableView tableView = (TableView)dataObserver;
+        TableView tableView = (TableView)dataView;
         Object theData = tableView.getSelectedData();
         if (theData == null)
             return null;
@@ -1022,7 +1020,7 @@ implements ActionListener, ItemListener, HyperlinkListener
             return null;
         }
 
-        ImageView imageView = (ImageView)dataObserver;
+        ImageView imageView = (ImageView)dataView;
         Object theData = imageView.getSelectedData();
         if (theData == null)
             return null;

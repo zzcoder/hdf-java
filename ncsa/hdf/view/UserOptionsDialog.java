@@ -27,18 +27,19 @@ import java.awt.Point;
 import java.awt.FileDialog;
 
 /** UserOptionsDialog displays components for choosing user options. */
-public class UserOptionsDialog extends JDialog
-implements ActionListener
+public class UserOptionsDialog extends JDialog implements ActionListener
 {
     /**
      * The main HDFView.
      */
-    private final ViewManager viewer;
+    private final JFrame viewer;
 
     private String H4toH5Path;
     private JTextField H4toH5Field, UGField, workField, h4ExtField, h5ExtField,
             maxMemberField, startMemberField;
     private JComboBox fontSizeChoice, fontTypeChoice, delimiterChoice;
+    private JComboBox choiceTreeView, choiceMetaDataView, choiceTextView,
+            choiceTableView, choiceImageView, choicePaletteView;
     private String rootDir, workDir;
     private JCheckBox checkCurrentUserDir;
     private JButton currentDirButton;
@@ -51,10 +52,28 @@ implements ActionListener
 
     private boolean isWorkDirChanged;
 
+    /** a list of tree view implementation. */
+    private static Vector treeViews;
+
+    /** a list of image view implementation. */
+    private static Vector imageViews;
+
+    /** a list of tree table implementation. */
+    private static Vector tableViews;
+
+    /** a list of Text view implementation. */
+    private static Vector textViews;
+
+    /** a list of metadata view implementation. */
+    private static Vector metaDataViews;
+
+    /** a list of palette view implementation. */
+    private static Vector paletteViews;
+
     /** constructs an UserOptionsDialog.
      * @param view The HDFView.
      */
-    public UserOptionsDialog(ViewManager view, String viewroot)
+    public UserOptionsDialog(JFrame view, String viewroot)
     {
         super ((Frame)view, "User Options", true);
 
@@ -66,7 +85,48 @@ implements ActionListener
         fontSize = ViewProperties.getFontSize();
         workDir = ViewProperties.getWorkDir();
         if (workDir == null) workDir = rootDir;
+        treeViews = ViewProperties.getTreeViewList();
+        metaDataViews = ViewProperties.getMetaDataViewList();
+        textViews = ViewProperties.getTextViewList();
+        tableViews = ViewProperties.getTableViewList();
+        imageViews = ViewProperties.getImageViewList();
+        paletteViews = ViewProperties.getPaletteViewList();
 
+        JPanel contentPane = (JPanel)getContentPane();
+        contentPane.setLayout(new BorderLayout(8,8));
+        contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
+        contentPane.setPreferredSize(new Dimension(600, 500));
+
+        JTabbedPane tabbedPane = new JTabbedPane();
+
+        tabbedPane.addTab("General Setting", createGeneralOptionPanel());
+        tabbedPane.addTab("Default Module", createModuleOptionPanel());
+
+        tabbedPane.setSelectedIndex(0);
+
+        JPanel buttonP = new JPanel();
+        JButton b = new JButton("   Ok   ");
+        b.setActionCommand("Set options");
+        b.addActionListener(this);
+        buttonP.add(b);
+        b = new JButton("Cancel");
+        b.setActionCommand("Cancel");
+        b.addActionListener(this);
+        buttonP.add(b);
+
+        contentPane.add("Center", tabbedPane);
+        contentPane.add("South", buttonP);
+
+        // locate the H5Property dialog
+        Point l = getParent().getLocation();
+        l.x += 250;
+        l.y += 80;
+        setLocation(l);
+        validate();
+        pack();
+    }
+
+    private JPanel createGeneralOptionPanel() {
         String[] fontSizeChoices = {"10", "12", "14", "16", "18", "20"};
         fontSizeChoice = new JComboBox(fontSizeChoices);
         fontSizeChoice.setSelectedItem(String.valueOf(ViewProperties.getFontSize()));
@@ -101,13 +161,8 @@ implements ActionListener
         delimiterChoice = new JComboBox(delimiterChoices);
         delimiterChoice.setSelectedItem(ViewProperties.getDataDelimiter());
 
-        JPanel contentPane = (JPanel)getContentPane();
-        contentPane.setLayout(new BorderLayout(8,8));
-        contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
-        contentPane.setPreferredSize(new Dimension(400, 450));
-
         JPanel centerP = new JPanel();
-        centerP.setLayout(new GridLayout(6,1,8,15));
+        centerP.setLayout(new GridLayout(6,1,10,10));
         centerP.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
 
         JPanel p0 = new JPanel();
@@ -202,27 +257,129 @@ implements ActionListener
         p0.setBorder(tborder);
         centerP.add(p0);
 
-        JPanel p = new JPanel();
-        b = new JButton("   Ok   ");
-        b.setActionCommand("Set options");
-        b.addActionListener(this);
-        p.add(b);
-        b = new JButton("Cancel");
-        b.setActionCommand("Cancel");
-        b.addActionListener(this);
-        p.add(b);
+        return centerP;
+    }
 
-        String propertyFile = ViewProperties.getPropertyFile();
-        contentPane.add(new JLabel(propertyFile), BorderLayout.NORTH);
-        contentPane.add(p, BorderLayout.SOUTH);
-        contentPane.add(centerP, BorderLayout.CENTER);
+    private JPanel createModuleOptionPanel() {
+        JPanel moduleP = new JPanel();
+        moduleP.setLayout(new GridLayout(6,1,10,10));
+        moduleP.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
 
-        Point l =((Frame)viewer).getLocation();
-        l.x += 150;
-        l.y += 100;
-        setLocation(l);
-        validate();
-        pack();
+        JPanel treeP = new JPanel();
+        TitledBorder tborder = new TitledBorder("TreeView");
+        tborder.setTitleColor(Color.darkGray);
+        treeP.setBorder(tborder);
+        moduleP.add(treeP);
+        JButton addButton = new JButton(" Add ");
+        addButton.setActionCommand("Add Module: Treeview");
+        addButton.addActionListener(this);
+        JButton delButton = new JButton("Delete");
+        delButton.setActionCommand("Delete Module: Treeview");
+        delButton.addActionListener(this);
+        JPanel buttonP = new JPanel();
+        buttonP.add(addButton);
+        buttonP.add(delButton);
+        choiceTreeView = new JComboBox(treeViews);
+        treeP.setLayout(new BorderLayout(5,5));
+        treeP.add(choiceTreeView, BorderLayout.CENTER);
+        treeP.add(buttonP, BorderLayout.EAST);
+
+        JPanel attrP = new JPanel();
+        tborder = new TitledBorder("MetaDataView");
+        tborder.setTitleColor(Color.darkGray);
+        attrP.setBorder(tborder);
+        moduleP.add(attrP);
+        addButton = new JButton(" Add ");
+        addButton.setActionCommand("Add Module: Metadataview");
+        addButton.addActionListener(this);
+        delButton = new JButton("Delete");
+        delButton.setActionCommand("Delete Module: Metadataview");
+        delButton.addActionListener(this);
+        buttonP = new JPanel();
+        buttonP.add(addButton);
+        buttonP.add(delButton);
+        choiceMetaDataView = new JComboBox(metaDataViews);
+        attrP.setLayout(new BorderLayout(5,5));
+        attrP.add(choiceMetaDataView, BorderLayout.CENTER);
+        attrP.add(buttonP, BorderLayout.EAST);
+
+        JPanel textP = new JPanel();
+        tborder = new TitledBorder("TextView");
+        tborder.setTitleColor(Color.darkGray);
+        textP.setBorder(tborder);
+        moduleP.add(textP);
+        addButton = new JButton(" Add ");
+        addButton.setActionCommand("Add Module: Textview");
+        addButton.addActionListener(this);
+        delButton = new JButton("Delete");
+        delButton.setActionCommand("Delete Module: Textview");
+        delButton.addActionListener(this);
+        buttonP = new JPanel();
+        buttonP.add(addButton);
+        buttonP.add(delButton);
+        choiceTextView = new JComboBox(textViews);
+        textP.setLayout(new BorderLayout(5,5));
+        textP.add(choiceTextView, BorderLayout.CENTER);
+        textP.add(buttonP, BorderLayout.EAST);
+
+        JPanel tableP = new JPanel();
+        tborder = new TitledBorder("TableView");
+        tborder.setTitleColor(Color.darkGray);
+        tableP.setBorder(tborder);
+        moduleP.add(tableP);
+        addButton = new JButton(" Add ");
+        addButton.setActionCommand("Add Module: Tableview");
+        addButton.addActionListener(this);
+        delButton = new JButton("Delete");
+        delButton.setActionCommand("Delete Module: Tableview");
+        delButton.addActionListener(this);
+        buttonP = new JPanel();
+        buttonP.add(addButton);
+        buttonP.add(delButton);
+        choiceTableView = new JComboBox(tableViews);
+        tableP.setLayout(new BorderLayout(5,5));
+        tableP.add(choiceTableView, BorderLayout.CENTER);
+        tableP.add(buttonP, BorderLayout.EAST);
+
+        JPanel imageP = new JPanel();
+        tborder = new TitledBorder("ImageView");
+        tborder.setTitleColor(Color.darkGray);
+        imageP.setBorder(tborder);
+        moduleP.add(imageP);
+        addButton = new JButton(" Add ");
+        addButton.setActionCommand("Add Module: Imageview");
+        addButton.addActionListener(this);
+        delButton = new JButton("Delete");
+        delButton.setActionCommand("Delete Module: Imageview");
+        delButton.addActionListener(this);
+        buttonP = new JPanel();
+        buttonP.add(addButton);
+        buttonP.add(delButton);
+        choiceImageView = new JComboBox(imageViews);
+        imageP.setLayout(new BorderLayout(5,5));
+        imageP.add(choiceImageView, BorderLayout.CENTER);
+        imageP.add(buttonP, BorderLayout.EAST);
+
+        JPanel palP = new JPanel();
+        tborder = new TitledBorder("PaletteView");
+        tborder.setTitleColor(Color.darkGray);
+        palP.setBorder(tborder);
+        moduleP.add(palP);
+        addButton = new JButton(" Add ");
+        addButton.setActionCommand("Add Module: Paletteview");
+        addButton.addActionListener(this);
+        delButton = new JButton("Delete");
+        delButton.setActionCommand("Delete Module: Paletteview");
+        delButton.addActionListener(this);
+        buttonP = new JPanel();
+        buttonP.add(addButton);
+        buttonP.add(delButton);
+        choicePaletteView = new JComboBox(paletteViews);
+        palP.setLayout(new BorderLayout(5,5));
+        palP.add(choicePaletteView, BorderLayout.CENTER);
+        palP.add(buttonP, BorderLayout.EAST);
+
+        return moduleP;
     }
 
     public void actionPerformed(ActionEvent e)
@@ -296,6 +453,91 @@ implements ActionListener
             H4toH5Path = fname;
             H4toH5Field.setText(fname);
         }
+        else if (cmd.startsWith("Add Module")) {
+            String newModule = JOptionPane.showInputDialog(this,
+                "Type the full path of the new module:",
+                cmd,
+                JOptionPane.PLAIN_MESSAGE);
+
+            if (newModule == null || newModule.length()<1)
+                return;
+
+            try {ViewProperties.loadExtClass(null).loadClass(newModule); }
+            catch(ClassNotFoundException ex) {
+                JOptionPane.showMessageDialog(
+                    this,
+                    "Cannot find module:\n "+newModule+
+                    "\nPlease check the module name and classpath.",
+                    "HDFView",
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (cmd.endsWith("TreeView") && !treeViews.contains(newModule)) {
+                treeViews.add(newModule);
+                choiceTreeView.addItem(newModule);
+            }
+            else if (cmd.endsWith("MetadataView") && !metaDataViews.contains(newModule)) {
+                metaDataViews.add(newModule);
+                choiceMetaDataView.addItem(newModule);
+            }
+            else if (cmd.endsWith("TextView") && !textViews.contains(newModule)) {
+                textViews.add(newModule);
+                choiceTextView.addItem(newModule);
+            }
+            else if (cmd.endsWith("TableView") && !tableViews.contains(newModule)) {
+                tableViews.add(newModule);
+                choiceTableView.addItem(newModule);
+            }
+            else if (cmd.endsWith("ImageView") && !imageViews.contains(newModule)) {
+                imageViews.add(newModule);
+                choiceImageView.addItem(newModule);
+            }
+            else if (cmd.endsWith("PaletteView") && !paletteViews.contains(newModule)) {
+                paletteViews.add(newModule);
+                choicePaletteView.addItem(newModule);
+            }
+        }
+        else if (cmd.startsWith("Delete Module")) {
+            JComboBox theChoice = (JComboBox)source;
+
+            if (theChoice.getItemCount() == 1) {
+                JOptionPane.showMessageDialog(
+                    this,
+                    "Cannot delete the last module.",
+                    cmd,
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            int reply = JOptionPane.showConfirmDialog(this,
+                "Do you want to delete the selected module?",
+                cmd,
+                JOptionPane.YES_NO_OPTION);
+            if (reply == JOptionPane.NO_OPTION)
+                return;
+
+            String moduleName = (String)theChoice.getSelectedItem();
+            theChoice.removeItem(moduleName);
+            if (cmd.endsWith("TreeView")) {
+                treeViews.remove(moduleName);
+            }
+            else if (cmd.endsWith("MetadataView")) {
+                metaDataViews.remove(moduleName);
+            }
+            else if (cmd.endsWith("TextView")) {
+                textViews.remove(moduleName);
+            }
+            else if (cmd.endsWith("TableView")) {
+                tableViews.remove(moduleName);
+            }
+            else if (cmd.endsWith("ImageView")) {
+                imageViews.remove(moduleName);
+            }
+            else if (cmd.endsWith("PaletteView")) {
+                paletteViews.remove(moduleName);
+            }
+        }
     }
 
     private void setUserOptions()
@@ -361,6 +603,15 @@ implements ActionListener
             ViewProperties.setStartMembers(startsize);
         } catch (Exception ex) {}
 
+        Vector[] moduleList = {treeViews, metaDataViews, textViews,
+            tableViews, imageViews, paletteViews};
+        JComboBox[] choiceList = {choiceTreeView, choiceMetaDataView, choiceTextView,
+            choiceTableView, choiceImageView, choicePaletteView};
+        for (int i=0; i<6; i++) {
+            Object theModule = choiceList[i].getSelectedItem();
+            moduleList[i].remove(theModule);
+            moduleList[i].add(0, theModule);
+        }
     }
 
     public boolean isFontChanged() { return isFontChanged; }
