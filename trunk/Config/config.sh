@@ -1,7 +1,7 @@
 #!/bin/sh
 set -x
 
-# ===================== setting for heping
+# 1 ===================== setting for heping
 #INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/linux
 #JAVAINC=/usr/java/j2sdk1.4.2_06/include
 #JAVALIB=/usr/java/j2sdk1.4.2_06/jre/lib
@@ -12,7 +12,7 @@ set -x
 #JPEG=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/jpeg/build
 #export CC=/usr/sdt/bin/gcc-3.3
 
-# ===================== setting for copper 
+# 2 ===================== setting for copper 
 #INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/aix
 #JAVAINC=/usr/java14/include
 #JAVALIB=/usr/java14/jre/lib
@@ -23,7 +23,7 @@ set -x
 #JPEG=/afs/.ncsa.uiuc.edu/projects/hdf/packages/jpeg/AIX5.1
 #export CC=/usr/vacpp/bin/xlc
 
-# ===================== setting for shanti 
+# 3 ===================== setting for shanti 
 #INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/solaris
 #JAVAINC=/usr/j2se/include
 #JAVALIB=/usr/j2se/jre/lib
@@ -35,7 +35,7 @@ set -x
 #CC=/opt/SUNWspro/bin/cc
 #export CC
 
-# ====================== setting for tcs.psc.edu -l pcao
+# 4 ====================== setting for tcs.psc.edu -l pcao
 #INSTDIR=/usr/users/1/pcao/osf1
 #JAVAINC=/usr/opt/java142/include
 #JAVALIB=/usr/opt/java142/jre/lib
@@ -47,19 +47,19 @@ set -x
 #CC=/bin/cc
 #export CC
 
-# ===================== setting for modi4 
-INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/irix
-JAVAINC=/usr/java2/include
-JAVALIB=/usr/java2/jre/lib
-HDF4=/afs/ncsa.uiuc.edu/packages/hdf/4.2r1-irix64-n32
-HDF5=/afs/ncsa.uiuc.edu/packages/hdf5/5-1.6.4-irix64-n32
-SZIP=/afs/ncsa.uiuc.edu/projects/hdf/packages/szip/IRIX64-6.5-32bit
-#SZIP=/afs/ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib-external/szip-2.0
-GZIP=/afs/ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib-external/zlib-1.2.1
-JPEG=/afs/ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib-external/jpeg-6b
-export CC=/opt/MIPSpro/bin/cc
+# 5 ===================== setting for modi4 
+#INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/irix
+#JAVAINC=/usr/java2/include
+#JAVALIB=/usr/java2/jre/lib
+#HDF4=/afs/ncsa.uiuc.edu/packages/hdf/4.2r1-irix64-n32
+#HDF5=/afs/ncsa.uiuc.edu/packages/hdf5/5-1.6.4-irix64-n32
+#SZIP=/afs/ncsa.uiuc.edu/projects/hdf/packages/szip/IRIX64-6.5-32bit
+##SZIP=/afs/ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib-external/szip-2.0
+#GZIP=/afs/ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib-external/zlib-1.2.1
+#JPEG=/afs/ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib-external/jpeg-6b
+#export CC=/opt/MIPSpro/bin/cc
 
-# ===================== setting for pommier
+# 6 ===================== setting for pommier
 #INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/macosx
 #JAVAINC=/System/Library/Frameworks/JavaVM.framework/Headers
 #JAVALIB=/System/Library/Frameworks/JavaVM.framework/Libraries
