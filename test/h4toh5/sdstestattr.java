@@ -15,17 +15,17 @@ import ncsa.hdf.h4toh5lib.exceptions.*;
 import ncsa.hdf.hdflib.*;
 import ncsa.hdf.hdf5lib.*;
 
-public class sdstest {
+public class sdstestattr {
 
 	private int sd_id   = -1;
 	private int h4toh5id = -1;
 	private boolean initialized = false;
 
-	public sdstest() {};
+	public sdstestattr() {};
 
 static public void main( String []args ) 
 {
-	sdstest sdt = new sdstest();
+	sdstestattr sdt = new sdstestattr();
 	sdt.setup();
 	boolean r1 = sdt.test1();
 	boolean r2 = sdt.test2();
@@ -58,7 +58,7 @@ public void setup(  )
 
 	try {
 		h4toh5id= h4toh5.H4toh5open("sds_lib_test.hdf",
-			"sds_lib_test.h5",h4toh5.H425_CLOBBER);
+			"sds_lib_testattr.h5",h4toh5.H425_CLOBBER);
 	} catch (H45Exception h45e1) {
 		System.err.println("Setup: H4toh5open exception "+h45e1);
 		try {
@@ -127,9 +127,19 @@ public boolean test1(  )
 	}
 
 	try {
-		h4toh5.H4toh5sds(h4toh5id,sds_id,"/group1",null,null,1,1);
+		h4toh5.H4toh5sds(h4toh5id,sds_id,"/group1",null,null,
+			h4toh5.H425_NODIMSCALE,h4toh5.H425_NOATTRS);
 	} catch (H45Exception h45e1) {
 		System.err.println("H4toh5sds exception "+h45e1);
+		System.err.println("Test 1: FAIL");
+		test1_cleanup();
+		return(false);
+	}
+
+	try {
+		h4toh5.H4toh5sdsattrindex(h4toh5id,sds_id,"/group1",null,0);
+	} catch (H45Exception h45e12) {
+		System.err.println("H4toh5sdsattrindex exception "+h45e12);
 		System.err.println("Test 1: FAIL");
 		test1_cleanup();
 		return(false);
@@ -142,7 +152,7 @@ public boolean test1(  )
 		return(false);
 	}
 
-	System.out.print("Test SDS conversion using the default name generation: ");
+	System.out.print("Test SDS conversion attr index: ");
  	System.out.println("PASS");
 	return(true);
 }
@@ -165,7 +175,8 @@ public boolean test2(  )
 
 	try {
 		h4toh5.H4toh5sds(h4toh5id,sds_id,"/group1",
-			"mysds","/mydimg",1,0);
+			"mysds","/mydimg",
+			h4toh5.H425_NODIMSCALE,h4toh5.H425_NOATTRS);
 	} catch (H45Exception h45e1) {
 		System.err.println("H4toh5sds exception "+h45e1);
 		System.err.println("Test 2: FAIL");
@@ -174,13 +185,24 @@ public boolean test2(  )
 	}
 
 	try {
+		h4toh5.H4toh5sdsattrname(h4toh5id,sds_id,"/group1","mysds",
+		"sds.attr");
+	} catch (H45Exception h45e12) {
+		System.err.println("H4toh5sdsattrname exception "+h45e12);
+		System.err.println("Test 1: FAIL");
+		test1_cleanup();
+		return(false);
+	}
+
+
+	try {
 		HDFLibrary.SDendaccess(sds_id);
 	} catch (HDFException he8_1) {
 		System.err.println("Test II.8: FAIL after test");
 		return(false);
 	}
 
-	System.out.print("Test SDS conversion using user names: ");
+	System.out.print("Test SDS conversion attr name: ");
  	System.out.println("PASS");
 	return(true);
 }

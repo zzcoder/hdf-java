@@ -77,7 +77,7 @@ public void setup(  )
 
 	try {
 		h4toh5id= h4toh5.H4toh5open("image_lib_test.hdf",
-			"image_lib_test.h5");
+			"image_lib_test.h5",h4toh5.H425_CLOBBER);
 	} catch (H45Exception h45e1) {
 		System.err.println("Setup: H4toh5open exception "+h45e1);
 		try {
@@ -150,7 +150,7 @@ public boolean test1(  )
 
 	try {
 		h4toh5.H4toh5image(h4toh5id,image_id,"/group1",
-			null,null,null,1,1);
+			null,null,null,h4toh5.H425_PAL,h4toh5.H425_ALLATTRS);
 	} catch (H45Exception h45e2) {
 		System.err.println("h4toh5image exception "+h45e2);
 		System.err.println("Test 1: FAIL");
@@ -190,7 +190,8 @@ public boolean test2(  )
 
 	try {
 		h4toh5.H4toh5image(h4toh5id,image_id,"/group1",
-			"myimage","/mypalg","mypal",0,1);
+			"myimage","/mypalg","mypal",h4toh5.H425_NOPAL,
+			h4toh5.H425_NOATTRS);
 	} catch (H45Exception h45e2_1) {
 		System.err.println("h4toh5image exception "+h45e2_1);
 		System.err.println("Test 2: FAIL");

@@ -59,7 +59,7 @@ public void setup(  )
 	}
 	try {
 		h4toh5id= h4toh5.H4toh5open("image_lib_test.hdf",
-			"image_lib_test.h5");
+			"image_lib_test.h5",h4toh5.H425_CLOBBER);
 	} catch (H45Exception h45e1) {
 		System.err.println("Setup: H4toh5open exception "+h45e1);
 		try {
