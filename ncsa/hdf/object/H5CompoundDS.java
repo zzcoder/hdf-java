@@ -36,8 +36,8 @@ import ncsa.hdf.hdf5lib.exceptions.*;
  * the compound dataset are similar to fileds of HDF4 VData table.
  * <p>
  * ARRAY of compound dataset is not supported in this implementation. ARRAY of
- * compound dataset requires to read the whole dataset instead of read field by
- * field.
+ * compound dataset requires to read the whole data structure instead of read 
+ * field by field.
  * <p>
  * @version 1.0 12/12/2001
  * @author Peter X. Cao, NCSA
