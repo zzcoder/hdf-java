@@ -1,24 +1,34 @@
 @ECHO OFF
 
 @REM =======================================================================
-@REM                 JHV run batch file for Windows 95/98/NT
+@REM
+@REM          Batch file to compile the HDF Java source code
+@REM
 @REM =======================================================================
 
+@REM set up your java home directory(requires jdk1.4.1 or above), for example
+@REM SET JAVAHOME=d:\java\jdk1.4.1
+SET JAVAHOME=d:\java\jdk1.4.1
 
-@REM To run this Java-based HDF Viewer (JHV), You need jdk1.1.x. 
+@REM set up "HDF JAVA Product" home directory, for example
+@REM SET HDFJAVA=D:\work\hdf-java
+SET HDFJAVA=D:\work\hdf-java
 
-@REM set up your jhv home directory, i.e. where you installed the JHV
-@SET HDFVIEW_HOME=I:\ModularHDFView
-@SET JAVAHOME=D:\Java\jdk1.4.1
 
 @REM Do not make changes under this line unless you know what you are doing.
 @REM =======================================================================
 
-SET PATH=%HDFVIEW_HOME%\lib\win;%PATH%
+SET PATH=%HDFJAVA%\lib\win;%PATH%
 
-set CLASSPATH=%HDFVIEW_HOME%/lib/jhdf.jar;%HDFVIEW_HOME%/lib/jhdf5.jar;%HDFVIEW_HOME%/lib/jhdfobj.jar;%HDFVIEW_HOME%/lib/netcdf.jar;%HDFVIEW_HOME%//lib/fits.jar
-set CLASSPATH=%CLASSPATH%;%HDFVIEW_HOME%/lib/jhdf4obj.jar;%HDFVIEW_HOME%/lib/jhdf5obj.jar;%HDFVIEW_HOME%/lib/jhdfview.jar
+@REM set the JNI classpath
+set JNI_CLASSPATH=%HDFJAVA%/lib/jhdf.jar;%HDFJAVA%/lib/jhdf5.jar
 
-%JAVAHOME%\bin\java -mx512m -classpath %CLASSPATH% ncsa.hdf.view.HDFView -root %HDFVIEW_HOME%
+@REM set the object package classpath
+set OBJ_CLASSPATH=%HDFJAVA%/lib/jhdfobj.jar;%HDFJAVA%/lib/jhdf4obj.jar;%HDFJAVA%/lib/jhdf5obj.jar;%HDFJAVA%\lib\netcdf.jar;%HDFJAVA%\lib\fits.jar
+
+@REM set the CLASSPATH
+set CLASSPATH=%JNI_CLASSPATH%;%OBJ_CLASSPATH%;%HDFJAVA%/lib/jhdfview.jar
+
+%JAVAHOME%\bin\java -mx512m -classpath %CLASSPATH% ncsa.hdf.view.HDFView -root %HDFJAVA%
 pause
 :END
