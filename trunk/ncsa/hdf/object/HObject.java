@@ -90,8 +90,11 @@ implements Serializable, DataFormat
      */
     public HObject(FileFormat fileFormat, String name, String path, long[] oid)
     {
-        try { this.fid = fileFormat.open(); }
-        catch (Exception ex) { ; }
+	int theFID = -1;
+        try { theFID = fileFormat.open(); }
+        catch (Exception ex) { theFID = -1; }
+
+	this.fid = theFID;
 
         this.filename = fileFormat.getFilePath();
         this.name = name;
