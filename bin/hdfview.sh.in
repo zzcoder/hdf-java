@@ -32,41 +32,45 @@ fi
 
 
 if test -e /bin/uname; then
-   machtype=`/bin/uname -m`
-   OS=`/bin/uname -s`
+   os_name=`/bin/uname -s`
 elif test -e /usr/bin/uname; then
-   machtype=`/usr/bin/uname -m`
-   OS=`/usr/bin/uname -s`
+   os_name=`/usr/bin/uname -s`
 else
-   machtype=unknown
-   OS=unknown
+   os_name=unknown
 fi
 
 if test -z "$LD_LIBRARY_PATH" ; then
         LD_LIBRARY_PATH=""
 fi
 
-case  $machtype in
-    sun4*)
+case  $os_name in
+    SunOS)
 	LD_LIBRARY_PATH=$HDFVIEW_HOME/lib/solaris:$LD_LIBRARY_PATH
 	;;
-    i*86)
+    Linux)
         LD_LIBRARY_PATH=$HDFVIEW_HOME"/lib/linux:"$LD_LIBRARY_PATH
 	;;
-    IP*)
+    IRIX)
 	OSREV=`/bin/uname -r`
 	LD_LIBRARY_PATH=$HDFVIEW_HOME"/lib/irix-"$OSREV":"$LD_LIBRARY_PATH 
 	LD_LIBRARYN32_PATH=$HDFVIEW_HOME"/lib/irix-"$OSREV":"$LD_LIBRARY_PATH
 	export LD_LIBRARYN32_PATH
 	;;
-    alpha*)
-        LD_LIBRARY_PATH=$HDFVIEW_HOME/lib/alpha:$LD_LIBRARY_PATH
-        ;;
+    OSF1)
+	LD_LIBRARY_PATH=$HDFVIEW_HOME/lib/alpha:$LD_LIBRARY_PATH
+	;;
+    AIX)
+	LD_LIBRARY_PATH=$HDFVIEW_HOME/lib/aix:$LD_LIBRARY_PATH
+	;;
+    Darwin)
+	DYLD_LIBRARY_PATH=$HDFVIEW_HOME/lib/macosx:$DYLD_LIBRARY_PATH
+	export DYLD_LIBRARY_PATH
+	;;
     *)
-	echo "Unknown machine type:  jhv may not work correctly"
+	echo "Unknown Operating System:  HDFView may not work correctly"
         ;;
 esac
 
 export LD_LIBRARY_PATH
 
-$JAVAPATH/java -mx512m ncsa.hdf.view.HDFView -root $HDFVIEW_HOME
+$JAVAPATH/java -mx512m -Djava.library.path=$LD_LIBRARY_PATH ncsa.hdf.view.HDFView -root $HDFVIEW_HOME

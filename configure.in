@@ -94,6 +94,12 @@ LLEXT="a";
 JSLEXT="so";
 COPT="-pthread -shared"; COPTNOSHARED=;
 ;;
+*-ibm-aix*) TARGETLIB="aix"
+LD=$CC; LDOPT=-G; SLEXT="so";
+LLEXT="a";
+JSLEXT="so";
+COPT=-G; COPTNOSHARED=;
+;;
 *-*-solaris2*) TARGETLIB="solaris"
 LD=$CC; LDOPT=-G; SLEXT="so";
 LLEXT="a";  
@@ -635,6 +641,13 @@ LLEXT="a";
 JSLEXT="so";
 COPT="-pthread -shared"; COPTNOSHARED=;
 JAVAINC2=$JAVAINC/alpha ; JAVATARG=alpha;
+;;
+*-ibm-aix*)
+LD=$CC; LDOPT=-G; SLEXT="so";
+LLEXT="a";
+JSLEXT="so";
+COPT=-G; COPTNOSHARED=;
+JAVAINC2=$JAVAINC/aix ; JAVATARG=aix;
 ;;
 *-*-solaris2*) 
 LD=$CC; LDOPT=-G; SLEXT="so";
