@@ -27,26 +27,12 @@ image of 8-bit with index RGB color table, or a 24-bit true color image. HDF4
 library provides image APIs to access image data and color table.
 
 <p>
-An HDF5 image is a dataset. An image dataset is distinguished from
-other datasets by giving it an attribute "CLASS=IMAGE". HDFView supports two
-types of images: indexed and true color.
-
-<p>An indexed image is a dataset with attribute "IMAGE_SUBCLASS=IMAGE_INDEXED".
-In addition, the image dataset has an attribute "PALETTE" that points to one 
-or more palettes. The first palette in this array will be the default palette 
-that the data may be viewed with.
-
-<p>A Palette is an HDF5 dataset. A palette dataset has an attribute "CLASS=PALETTE"
-and other attributes indicating the type and size of the palette. A palette
-is an independent object, which can be shared among several image datasets.
-
-<p>A true color image is a 3D dataset with attribute "IMAGE_SUBCLASS=IMAGE_TRUECOLOR".
-One of the three dimension specifies the number of image components such as
-for RGB model, the nubmer of components is three. The image components are arranged
-either by pixel interleaving or plane interleaving. A palette is not necessary for 
-a true color image. 
-
-<p>For more details of how HDF5 stores images, see the 
+An HDF5 image is a dataset that confirms the
+<a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/ADGuide/ImageSpec.html">
+HDF5 Image Specification </a>. HDFView supports two types of images: indexed 
+and true color. Both indexed image and true color image have predefined
+attributes and data layout according to the HDF5 image specification.
+For more details about HDF5 image, see the 
 <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/ADGuide/ImageSpec.html">
 HDF5 Image Specification </a>.
 
@@ -67,7 +53,7 @@ HDFView displays datasets that follow the HDF5
 and Palette Specification</a> for indexed images with a 8-bit standard 
 RGB color model palette or three-dimensional true color images.
 Other image formats supported by the Image and Palette Specification are
-not supported by this release. 
+not supported by this tool. 
 
 <h3>
 6.1.1 Indexed Image </h3>

@@ -208,7 +208,10 @@ implements ActionListener
         {
             HObject theObj = (HObject)mlist.get(i);
             rowData[i][0] = theObj.getName();
-            rowData[i][1] = theObj.getClass().getName().substring(16);
+            if (theObj instanceof Group)
+                rowData[i][1] = "Group";
+            else if (theObj instanceof Dataset)
+                rowData[i][1] = "Dataset";
         }
 
         String[] columnNames = {"Name", "Type"};

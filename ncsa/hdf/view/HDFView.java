@@ -488,7 +488,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         {
             JMenuItem mi = (JMenuItem)e.getSource();
 
-            String filename = mi.getText();
+            String filename = mi.getName();
             try {
                 treeView.openFile(filename);
             } catch (Exception ex)
@@ -850,10 +850,18 @@ implements ViewManager, ActionListener, HyperlinkListener
         // add recent files
         if (recentFiles != null)
         {
+            String theFile = null;
+            String txtName = null;
+
             int size = recentFiles.size();
             for (int i=0; i<size; i++)
             {
-                item = new JMenuItem((String)recentFiles.get(i));
+                theFile = (String)recentFiles.get(i);
+                txtName = theFile;
+                if (txtName.length() > 33)
+                    txtName = "..." + txtName.substring(txtName.length()-30);
+                item = new JMenuItem(txtName);
+                item.setName(theFile);
                 item.addActionListener(this);
                 item.setActionCommand("recent.file");
                 fileMenu.add(item);
@@ -1126,7 +1134,11 @@ implements ViewManager, ActionListener, HyperlinkListener
         recentFiles.addElement(newFile);
 
         // updates the menu
-        JMenuItem fileItem = new JMenuItem(newFile);
+        String txt = newFile;
+        if (txt.length() > 33)
+            txt = "..."+txt.substring(txt.length()-30);
+        JMenuItem fileItem = new JMenuItem(txt);
+        fileItem.setName(newFile);
         fileItem.addActionListener(this);
         fileItem.setActionCommand("recent.file");
         fileMenu.add(fileItem);

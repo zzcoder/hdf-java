@@ -22,10 +22,13 @@
 
 <h1>
 Chapter 4: The Tree Viewer</h1>
-Every HDF object appears in at least one group. A set of objects can be
+Every HDF5 object appears in at least one group. A set of objects can be
 stored together in a group. You can use the group object API functions
 to create and manipulate the groups. With the groups, you can organize
-the data objects in an HDF file.
+the data objects in an HDF file. Objects in HDF4 may or may not belong to 
+a group. An object that does not belong to any group is called lone object,
+such as lone Vdata. To map HDF4 structure to HDF5 structure, a "dummy" root
+group is created in the tree view and lone objects are put at the root group.
 
 <p>Since objects can have names in more than one group, the set of all
 objects in an HDF file is a directed graph. It is difficult to manipulate

@@ -33,7 +33,7 @@ import java.awt.Dimension;
  * @author Peter X. Cao
  */
 public class DataOptionDialog extends JDialog
-implements ActionListener, ItemListener, InputMethodListener
+implements ActionListener, ItemListener
 {
     /**
      * The main HDFView.
@@ -190,7 +190,7 @@ implements ActionListener, ItemListener, InputMethodListener
         }
 
         if (startFields.length >=4 )
-            startFields[3].addInputMethodListener(this);
+            startFields[3].addActionListener(this);
 
         // add OK and CANCEL buttons
         JPanel confirmP = new JPanel();
@@ -239,6 +239,10 @@ implements ActionListener, ItemListener, InputMethodListener
         else if (cmd.equals("Cancel"))
         {
             dispose();
+        }
+        else if (startFields.length>3 && source.equals(startFields[3]))
+        {
+            setSlicePosition();
         }
 
     }
@@ -327,64 +331,6 @@ implements ActionListener, ItemListener, InputMethodListener
             }
 
         } // else if (source instanceof Choice)
-    }
-
-
-    public void caretPositionChanged(InputMethodEvent e) {}
-
-    public void inputMethodTextChanged(InputMethodEvent e)
-    {
-        if (startFields.length < 4)
-            return;
-
-        if (e.getID() != e.INPUT_METHOD_TEXT_CHANGED)
-            return;
-
-        Object source = e.getSource();
-        if (!source.equals(startFields[3]))
-            return;
-
-        long n0 = 0;
-        try {
-            n0 = Long.parseLong(startFields[3].getText()+e.getText().last());
-        } catch (NumberFormatException ex) {
-            Toolkit.getDefaultToolkit().beep();
-            JOptionPane.showMessageDialog(
-                (Frame)viewer,
-                ex,
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
-            startFields[3].setText("");
-            return;
-        }
-
-        int sIdx = 0;
-        try {
-            sIdx = Integer.parseInt(choices[3].getSelectedItem().substring(4));
-        } catch (NumberFormatException ex) {
-            Toolkit.getDefaultToolkit().beep();
-            JOptionPane.showMessageDialog(
-                (Frame)viewer,
-                ex,
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
-            startFields[3].setText("");
-            return;
-        }
-
-        if (n0 < 0 || n0 >= dims[sIdx])
-        {
-            Toolkit.getDefaultToolkit().beep();
-            JOptionPane.showMessageDialog(
-                (Frame)viewer,
-                "Invalid starting point: "+n0,
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
-            startFields[3].setText("");
-            return;
-        }
-
-        start[sIdx] = n0;
     }
 
     /** Returns true if the data selection is cancelled. */
@@ -500,6 +446,9 @@ implements ActionListener, ItemListener, InputMethodListener
 
     private boolean setSelection()
     {
+        if (!setSlicePosition())
+            return false;
+
         long[] n0 = {0, 0, 0};
         long[] n1= {0, 0, 0};
         int[] sIndex = {0, 1, 2};
@@ -561,6 +510,54 @@ implements ActionListener, ItemListener, InputMethodListener
 
         return true;
     }
+
+    private boolean setSlicePosition()
+    {
+        if (startFields.length < 4)
+            return true;
+
+        long n0 = 0;
+        try {
+            n0 = Long.parseLong(startFields[3].getText());
+        } catch (NumberFormatException ex) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(
+                (Frame)viewer,
+                ex,
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        int sIdx = 0;
+        try {
+            sIdx = Integer.parseInt(choices[3].getSelectedItem().substring(4));
+        } catch (NumberFormatException ex) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(
+                (Frame)viewer,
+                ex,
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if (n0 < 0 || n0 >= dims[sIdx])
+        {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(
+                (Frame)viewer,
+                "Invalid starting point: "+n0,
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        start[sIdx] = n0;
+
+        return true;
+    }
+
 
 }
 
