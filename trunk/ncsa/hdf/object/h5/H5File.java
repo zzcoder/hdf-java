@@ -581,7 +581,7 @@ public class H5File extends FileFormat
                 {
                     try {
                         tid= H5.H5Dget_type(did);
-                        if (H5.H5Tequal(tid, H5.J2C(HDF5CDataTypes.JH5T_STD_REF_OBJ)))
+                        if (H5.H5Tequal(tid, HDF5Constants.H5T_STD_REF_OBJ))
                             refDatasets.add(sd);
                     } catch (Exception ex) {}
                     finally
@@ -799,94 +799,90 @@ public class H5File extends FileFormat
             if (oid == null)
                 continue; // do the next one, if the object is not identified.
 
-            switch (oType[0])
+            // create a new group
+            if (oType[0] == HDF5Constants.H5G_GROUP)
             {
-                // create a new group
-                case HDF5Constants.H5G_GROUP:
-                    H5Group g = new H5Group(
+                H5Group g = new H5Group(
+                    this,
+                    oName[0],
+                    fullPath,
+                    pgroup,
+                    oid);
+                node = new DefaultMutableTreeNode(g)
+                {
+                    public boolean isLeaf() { return false; }
+                };
+                pnode.add( node );
+                pgroup.addToMemberList(g);
+
+                // detect and stop loops
+                // a loop is detected if there exists object with the same
+                // object ID by tracing path back up to the root.
+                boolean hasLoop = false;
+                HObject tmpObj = null;
+                long[] tmpOID = null;
+                DefaultMutableTreeNode tmpNode = (DefaultMutableTreeNode)pnode;
+                while (tmpNode != null)
+                {
+                    tmpObj = (HObject)tmpNode.getUserObject();
+                    if (tmpObj.equalsOID(oid))
+                    {
+                        hasLoop = true;
+                        break;
+                    }
+                    else
+                        tmpNode = (DefaultMutableTreeNode)tmpNode.getParent();
+                }
+
+                // recursively go through the next group
+                // stops if it has loop.
+                if (!hasLoop)
+                    depth_first(node);
+            } else if (oType[0] == HDF5Constants.H5G_DATASET)
+            {
+                int did=-1, tid=-1, tclass=-1;
+                boolean isDefaultImage = false;
+                try {
+                    did = H5.H5Dopen(fid, fullPath+oName[0]);
+                    tid = H5.H5Dget_type(did);
+                    tclass = H5.H5Tget_class(tid);
+                    if (tclass == HDF5Constants.H5T_ARRAY)
+                    {
+                        // for ARRAY, the type is determined by the base type
+                        int btid = H5.H5Tget_super(tid);
+                        tclass = H5.H5Tget_class(btid);
+                        try { H5.H5Tclose(btid); } catch (HDF5Exception ex) {}
+                    }
+                } catch (HDF5Exception ex) {}
+                finally {
+                    try { H5.H5Tclose(tid); } catch (HDF5Exception ex) {}
+                    try { H5.H5Dclose(did); } catch (HDF5Exception ex) {}
+                }
+                Dataset d = null;
+
+                if (tclass == HDF5Constants.H5T_COMPOUND)
+                {
+                    // create a new compound dataset
+                    d = new H5CompoundDS(
                         this,
                         oName[0],
                         fullPath,
-                        pgroup,
                         oid);
-                    node = new DefaultMutableTreeNode(g)
-                    {
-                        public boolean isLeaf() { return false; }
-                    };
-                    pnode.add( node );
-                    pgroup.addToMemberList(g);
+                }
+                else
+                {
+                    // create a new scalar dataset
+                    d = new H5ScalarDS(
+                        this,
+                        oName[0],
+                        fullPath,
+                        oid);
+                }
 
-                    // detect and stop loops
-                    // a loop is detected if there exists object with the same
-                    // object ID by tracing path back up to the root.
-                    boolean hasLoop = false;
-                    HObject tmpObj = null;
-                    long[] tmpOID = null;
-                    DefaultMutableTreeNode tmpNode = (DefaultMutableTreeNode)pnode;
-                    while (tmpNode != null)
-                    {
-                        tmpObj = (HObject)tmpNode.getUserObject();
-                        if (tmpObj.equalsOID(oid))
-                        {
-                            hasLoop = true;
-                            break;
-                        }
-                        else
-                            tmpNode = (DefaultMutableTreeNode)tmpNode.getParent();
-                    }
-
-                    // recursively go through the next group
-                    // stops if it has loop.
-                    if (!hasLoop)
-                        depth_first(node);
-                    break;
-                case HDF5Constants.H5G_DATASET:
-                    int did=-1, tid=-1, tclass=-1;
-                    boolean isDefaultImage = false;
-                    try {
-                        did = H5.H5Dopen(fid, fullPath+oName[0]);
-                        tid = H5.H5Dget_type(did);
-                        tclass = H5.H5Tget_class(tid);
-                        if (tclass == HDF5Constants.H5T_ARRAY)
-                        {
-                            // for ARRAY, the type is determined by the base type
-                            int btid = H5.H5Tget_super(tid);
-                            tclass = H5.H5Tget_class(btid);
-                            try { H5.H5Tclose(btid); } catch (HDF5Exception ex) {}
-                        }
-                    } catch (HDF5Exception ex) {}
-                    finally {
-                        try { H5.H5Tclose(tid); } catch (HDF5Exception ex) {}
-                        try { H5.H5Dclose(did); } catch (HDF5Exception ex) {}
-                    }
-                    Dataset d = null;
-
-                    if (tclass == HDF5Constants.H5T_COMPOUND)
-                    {
-                        // create a new compound dataset
-                        d = new H5CompoundDS(
-                            this,
-                            oName[0],
-                            fullPath,
-                            oid);
-                    }
-                    else
-                    {
-                        // create a new scalar dataset
-                        d = new H5ScalarDS(
-                            this,
-                            oName[0],
-                            fullPath,
-                            oid);
-                    }
-
-                    node = new DefaultMutableTreeNode(d);
-                    pnode.add( node );
-                    pgroup.addToMemberList(d);
-                    break;
-                default:
-                    break;
-            } // switch (oType[0])
+                node = new DefaultMutableTreeNode(d);
+                pnode.add( node );
+                pgroup.addToMemberList(d);
+            }
         } // for ( i = 0; i < nelems; i++)
 
     } // private depth_first()
