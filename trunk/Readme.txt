@@ -54,7 +54,7 @@ To generate javadocs, 'make javadocs'
 
 
 Windows Build Instructions
-=======================
+==========================
 
 Prerequisites:
 
