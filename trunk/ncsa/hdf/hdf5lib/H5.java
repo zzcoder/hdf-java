@@ -4066,10 +4066,10 @@ public class H5 {
     public synchronized static native int H5set_free_list_limits(int reg_global_lim, int reg_list_lim, int arr_global_lim, int arr_list_lim, int blk_global_lim, int blk_list_lim )
         throws HDF5LibraryException, NullPointerException;
 
-    public synchronized static native int H5Fget_obj_ids(int file_id, int types, int[] obj_id_list )
+    public synchronized static native int H5Fget_obj_ids(int file_id, int types, int max, int[] obj_id_list )
         throws HDF5LibraryException, NullPointerException;
 
-    public synchronized static native int H5Fget_obj_count(int file_id, int types, int[] obj_id_count )
+    public synchronized static native int H5Fget_obj_count(int file_id, int types)
         throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native boolean H5Tis_variable_str(int dtype_id )
