@@ -88,6 +88,12 @@ AC_CANONICAL_SYSTEM
 TARGET=$target
 echo "FYI the target here is: "$target
 case $target in
+alpha-dec-osf*.*) TARGETLIB="alpha"
+LD=$CC; LDOPT="-pthread -shared"; SLEXT="so";
+LLEXT="a";
+JSLEXT="so";
+COPT="-pthread -shared"; COPTNOSHARED=;
+;;
 *-*-solaris2*) TARGETLIB="solaris"
 LD=$CC; LDOPT=-G; SLEXT="so";
 LLEXT="a";  
@@ -465,7 +471,7 @@ case "$withval" in
     if test -n "$jdk_inc"; then
       JAVAINC="$jdk_inc"
       saved_CPPFLAGS="$CPPFLAGS"
-      CPPFLAGS="$CPPFLAGS -I$jdk_inc -I$jdk_inc/$TARGETLIB"
+      CPPFLAGS="$CPPFLAGS $COPT -I$jdk_inc -I$jdk_inc/$TARGETLIB"
     fi
 
     AC_CHECK_HEADERS(jni.h,,
@@ -623,6 +629,13 @@ JHVINST=$JH45INST
 JH5INST=$JH45INST
 
 case $target in
+alpha-dec-osf*.*)
+LD=$CC; LDOPT="-pthread -shared"; SLEXT="so";
+LLEXT="a";
+JSLEXT="so";
+COPT="-pthread -shared"; COPTNOSHARED=;
+JAVAINC2=$JAVAINC/alpha ; JAVATARG=alpha;
+;;
 *-*-solaris2*) 
 LD=$CC; LDOPT=-G; SLEXT="so";
 LLEXT="a";  
