@@ -28,6 +28,7 @@ else
   AC_MSG_RESULT([yes])
 fi
 
+AC_PROG_AWK
 dnl ----------------------------------------------------------------------
 dnl Some platforms have broken 'expr' programs. Check
 dnl that it actually does what it's supposed to do. Catch this early
@@ -41,14 +42,21 @@ for yyy_option
 do
   yyy_opt=`expr "x$yyy_option" : 'x.*=.*'`
   if test "$yyy_opt" != "0"; then
-  yyy_optarg=`expr "x$yyy_option" : 'x[[^=]]*=\(.*\)'`
-  if test -z "$yyy_optarg"; then
-	echo "option "$yyy_option" too long, configure will fail"
-	yyy_ok="no"
-  fi
+	  zzz_opt=`echo x$yyy_option | awk '{print [index($0,"=")]}'`
+	  if test "$yyy_opt" != "$zzz_opt"; then
+	#	AC_MSG_WARN([$yyy_option: option is empty?])
+	#	yyy_ok="maybe"
+	#  else
+		  yyy_optarg=`expr "x$yyy_option" : 'x[[^=]]*=\(.*\)'`
+		  if test -z "$yyy_optarg"; then
+			AC_MSG_RESULT([option $yyy_option too long, configure will fail])
+			yyy_ok="no"
+		  fi
+	  fi
   fi
 done
-if test "$yyy_ok" = "no"; then
+if test "$yyy_ok" != "yes"; then
+echo $yyy_ok
   AC_MSG_ERROR([expr program doesn't work])
 else
   AC_MSG_RESULT([yes])
