@@ -188,7 +188,7 @@ public class ViewProperties extends Properties
         URL url= null, url2=null, url3=null;
 
         try {
-            url = new URL("file:"+rootPath+"/lib/hdfview.jar");
+            url = new URL("file:"+rootPath+"/lib/jhdfview.jar");
         } catch (java.net.MalformedURLException mfu) {;}
 
         try {
