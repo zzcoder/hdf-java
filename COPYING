@@ -2,7 +2,7 @@ Copyright Notice and Statement for NCSA Hierarchical Data Format (HDF)
 Software Library and Utilities
 
 NCSA Hierarchical Data Format (HDF) Software Library and Utilities 
-Copyright 1988-2002, the Board of Trustees of the University of Illinois. 
+Copyright 1988-2003, the Board of Trustees of the University of Illinois. 
 All rights reserved.
 
 Contributors to the library: National Center for Supercomputing 
@@ -21,7 +21,7 @@ These files are from the MacBinary Toolkit for Java:
 and are redistributed by NCSA with permission of the author.
 
 This work was supported in part by a Cooperative Agreement with 
-NASA under NASA grant NAG 5-2040. 
+NASA under NASA grant NAG 5-2040 and NAG NCC5-599.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted for any purpose (including commercial purposes)
