@@ -3,7 +3,7 @@
 # Set up default variable values if not supplied by the user.
 
 # where the HDFView is installed
-set HDFVIEW_HOME=/afs/ncsa.uiuc.edu/projects/hdf/java/java4/mcgrath/verbena/Java
+set HDFVIEW_HOME=/afs/ncsa.uiuc.edu/projects/hdf/java/java10/mcgrath/verbena/Java
 
 # where Java is installed (requires jdk1.3 or above)
 set JAVAPATH=/opt/jdk1.4.1/bin
@@ -12,7 +12,7 @@ set JAVAPATH=/opt/jdk1.4.1/bin
 #            DO NOT MODIFY BELOW THIS LINE
 ###############################################################################
 
-set CPATH=$HDFVIEW_HOME"/lib/jhdf.jar:"$HDFVIEW_HOME"/lib/jhdf5.jar:"$HDFVIEW_HOME"/lib/jhdfobj.jar:"$HDFVIEW_HOME"/lib/netcdf.jar:"$HDFVIEW_HOME"/lib/fits.jar"
+set CPATH=$HDFVIEW_HOME"/lib/jhdf.jar:"$HDFVIEW_HOME"/lib/jhdf5.jar:"$HDFVIEW_HOME"/lib/jhdfobj.jar:"$HDFVIEW_HOME"/lib/netcdf.jar:"$HDFFVIEW_HOME"/lib/fits.jar"
 
 set CPATH=$CPATH":"$HDFVIEW_HOME"/lib/jhdf4obj.jar:"$HDFVIEW_HOME"/lib/jhdf5obj.jar:"$HDFVIEW_HOME"/lib/jhdfview.jar"
 

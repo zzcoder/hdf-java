@@ -10,8 +10,37 @@
 #****************************************************************************/
 
 dnl Process this file with autoconf to produce a configure script.
+
 AC_INIT(native/hdflib/hdfImp.c)
 AC_CONFIG_AUX_DIR(./Config)
+
+dnl ----------------------------------------------------------------------
+dnl Some platforms have broken tr, basename, and/or xargs programs. Check
+dnl that it actually does what it's supposed to do. Catch this early
+dnl since configure relies upon tr heavily and there's no use continuing
+dnl if it's broken.
+dnl
+AC_MSG_CHECKING([if tr works])
+TR_TEST="`echo Test | tr 'a-z,' 'A-Z '`"
+if test $TR_TEST != "TEST"; then
+  AC_MSG_ERROR([tr program doesn't work])
+else
+  AC_MSG_RESULT([yes])
+fi
+
+yyy_ok="yes"
+yyy_option="$*"
+for yyy_option
+do
+  yyy_optarg=`expr "x$yyy_option" : 'x[[^=]]*=\(.*\)'`
+  if test -z "$yyy_optarg"; then
+	echo "option "$yyy_option" too long, configure will fail"
+	yyy_ok="no"
+  fi
+done
+if test "$yyy_ok" = "no"; then
+	exit 1
+fi
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -107,7 +136,7 @@ fi
 
 withval="";
 AC_SUBST(SZLIB) SZLIB=""
-AC_ARG_WITH(libsz,[  --with-libsz=LIB     Path to the gzip library (required if not in default path)],,)
+AC_ARG_WITH(libsz,[  --with-libsz=LIB     Path to the szip library (required if not in default path)],,)
 
 case "$withval" in
   yes)
@@ -131,46 +160,76 @@ if test -n "$SZLIB"; then
 LIBS="$LIBS $SZLIB"
 fi
 
-dnl  Check for HDF4 library  --with-hdf4 must be set.
+withval="";
+AC_SUBST(HDF4LIB) HDF4LIB=""
+AC_ARG_WITH(hdf4,[  --with-hdf4=LIB     Path to the hdf library (required if not in default path)],,)
 
-withval=""
-AC_ARG_WITH(hdf4,[  --with-hdf4=INC,LIB     Path to the HDF4 library (required if not in default path)])
 case "$withval" in
   yes)
     AC_MSG_ERROR(HDF4 library needed for compilation.)
     ;;
   no)
-      HDF4INC=""
       HDF4LIB=""
+    	AC_MSG_RESULT(HDF4 suppressed);
     ;;
   *)
+if test -n "$withval" ; then
     hdf4_inc="`echo $withval |cut -f1 -d,`"
     if test -n "$hdf4_inc"; then
       HDF4INC="$hdf4_inc"
-      saved_CPPFLAGS="$CPPFLAGS"
-      CPPFLAGS="$CPPFLAGS -I$hdf4_inc"
-      AC_CHECK_HEADERS(mfhdf.h,,CPPFLAGS="$saved_CPPFLAGS")
-    else
-      AC_CHECK_HEADERS(mfhdf.h)
     fi
-
     hdf4_lib="`echo $withval |cut -f2 -d, -s`"
     if test -n "$hdf4_lib"; then
-      HDF4LIB="$hdf4_lib"
-      saved_LDFLAGS="$LDFLAGS"
-      LDFLAGS="$LDFLAGS -L$HDF4LIB $ZLIB $JPEGLIB $SZLIB"
-      AC_CHECK_LIB(df, Hstartaccess, [LIBS="$LIBS -ldf $ZLIB $JPEGLIB $SZLIB"],
-		AC_MSG_ERROR([can't find df library at $HDF4LIB]), [$ZLIB $JPEGLIB $SZLIB])
-      AC_CHECK_LIB(mfhdf, SDstart, [LIBS="$LIBS $ZLIB $JPEGLIB $SZLIB"],
-		AC_MSG_ERROR([can't find mfhdf library at $HDF4LIB]),[$ZLIB $JPEGLIB $SZLIB])
-    else
-      AC_CHECK_LIB(df, Hstartaccess, [LIBS=$LIBS $ZLIB $JPEGLIB $SZLIB],
-		AC_MSG_ERROR([can't find df library at $HDF4LIB]), [$ZLIB $JPEGLIB $SZLIB])
-      AC_CHECK_LIB(mfhdf, SDstart, [LIBS=$LIBS $ZLIB $JPEGLIB $SZLIB],
-		AC_MSG_ERROR([can't find mfhdf library at $HDF4LIB]),[$ZLIB $JPEGLIB $SZLIB])
+	HDF4LIB=$hdf4_lib
     fi
-    ;;
+fi
+;;
 esac
+if test -n "$HDF4LIB"; then
+LIBS="$HDF4LIB/libdf.a $HDF4LIB/libmfhdf.a $LIBS"
+fi
+
+#dnl  Check for HDF4 library  --with-hdf4 must be set.
+#
+#withval=""
+#AC_ARG_WITH(hdf4,[  --with-hdf4=INC,LIB     Path to the HDF4 library (required if not in default path)])
+#case "$withval" in
+#  yes)
+#    AC_MSG_ERROR(HDF4 library needed for compilation.)
+#    ;;
+#  no)
+#      HDF4INC=""
+#      HDF4LIB=""
+#    ;;
+#  *)
+#    hdf4_inc="`echo $withval |cut -f1 -d,`"
+#    if test -n "$hdf4_inc"; then
+#      HDF4INC="$hdf4_inc"
+#      saved_CPPFLAGS="$CPPFLAGS"
+#      CPPFLAGS="$CPPFLAGS -I$hdf4_inc"
+#      AC_CHECK_HEADERS(mfhdf.h,,CPPFLAGS="$saved_CPPFLAGS")
+#    else
+#      AC_CHECK_HEADERS(mfhdf.h)
+#    fi
+#
+#    hdf4_lib="`echo $withval |cut -f2 -d, -s`"
+#    if test -n "$hdf4_lib"; then
+#      HDF4LIB="$hdf4_lib"
+#      saved_LDFLAGS="$LDFLAGS"
+# #     LDFLAGS="$LDFLAGS -L$HDF4LIB $HDF4LIB/libdf.a $ZLIB $JPEGLIB $SZLIB"
+# #     LDFLAGS="$LDFLAGS $HDF4LIB/libdf.a $ZLIB $JPEGLIB $SZLIB"
+#      AC_CHECK_LIB(df, Hstartaccess, [LIBS="$LIBS $HDF4LIB/libdf.a $ZLIB $JPEGLIB $SZLIB"],
+#		AC_MSG_ERROR([1 can't find df library at $HDF4LIB]), [$HDF4LIB/libdf.a $ZLIB $JPEGLIB $SZLIB])
+#      AC_CHECK_LIB(mfhdf, SDstart, [LIBS="$LIBS $ZLIB $JPEGLIB $SZLIB"],
+#		AC_MSG_ERROR([can't find mfhdf library at $HDF4LIB]),[$ZLIB $JPEGLIB $SZLIB])
+#    else
+#      AC_CHECK_LIB(df, Hstartaccess, [LIBS=$LIBS $HDF4LIB/libdf.a $ZLIB $JPEGLIB $SZLIB],
+#		AC_MSG_ERROR([2 can't find df library at $HDF4LIB]), [$ZLIB $JPEGLIB $SZLIB])
+#      AC_CHECK_LIB(mfhdf, SDstart, [LIBS=$LIBS $ZLIB $JPEGLIB $SZLIB],
+#		AC_MSG_ERROR([can't find mfhdf library at $HDF4LIB]),[$ZLIB $JPEGLIB $SZLIB])
+#    fi
+#    ;;
+#esac
 
 if test -n "$HDF4LIB"; then
 AC_MSG_RESULT([HDF4 library found at: $HDF4LIB])
@@ -179,44 +238,75 @@ ac_cv_lib_HDF4=$HDF4LIB
 ac_cv_lib_HDF4INC=$HDF4INC
 
 
-dnl  Check for HDF5 library  --with-hdf5 must be set.
 withval="";
-AC_SUBST(LIBHDF5) LIBHDF5=""
-AC_ARG_WITH(hdf5,[  --with-hdf5=INC,LIB     Path to the HDF5 library (requied if not in default path)],,)
+AC_SUBST(HDF5LIB) HDF5LIB=""
+AC_ARG_WITH(hdf5,[  --with-hdf5=LIB     Path to the hdf5 library (required if not in default path)],,)
+
 case "$withval" in
   yes)
     AC_MSG_ERROR(HDF5 library needed for compilation.)
     ;;
   no)
-      HDF5INC=""
       HDF5LIB=""
-    #AC_MSG_ERROR(HDF5 library needed for compilation.)
+    	AC_MSG_RESULT(HDF5 suppressed);
     ;;
   *)
+if test -n "$withval" ; then
+    hdf5_lib="`echo $withval |cut -f2 -d, -s`"
+	HDF5LIB=$hdf5_lib"/libhdf.a"
     hdf5_inc="`echo $withval |cut -f1 -d,`"
     if test -n "$hdf5_inc"; then
       HDF5INC="$hdf5_inc"
-      saved_CPPFLAGS="$CPPFLAGS"
-      CPPFLAGS="$CPPFLAGS -I$hdf5_inc"
     fi
-
-    AC_CHECK_HEADERS(hdf5.h,,
-                     CPPFLAGS="$saved_CPPFLAGS"
-                     AC_MSG_ERROR(cannot find HDF5 header files!))
-
-    hdf5_lib="`echo $withval | cut -f2 -d, -s`"
-
+    hdf5_lib="`echo $withval |cut -f2 -d, -s`"
     if test -n "$hdf5_lib"; then
-      HDF5LIB="$hdf5_lib"
-      saved_LDFLAGS="$LDFLAGS"
-      LDFLAGS="$LDFLAGS -L$hdf5_lib"
-      AC_CHECK_LIB(hdf5, H5open,, LDFLAGS="$saved_LDFLAGS"
-                 AC_MSG_ERROR(cannot find HDF5 library.),)
-    else
-	 AC_MSG_ERROR(cannot find HDF5 library path.)
+	HDF5LIB=$hdf5_lib
     fi
-    ;;
+fi
+;;
 esac
+if test -n "$HDF5LIB"; then
+LIBS="$HDF5LIB/libhdf5.a $LIBS"
+fi
+
+#dnl  Check for HDF5 library  --with-hdf5 must be set.
+#withval="";
+#AC_SUBST(LIBHDF5) LIBHDF5=""
+#AC_ARG_WITH(hdf5,[  --with-hdf5=INC,LIB     Path to the HDF5 library (requied if not in default path)],,)
+#case "$withval" in
+#  yes)
+#    AC_MSG_ERROR(HDF5 library needed for compilation.)
+#    ;;
+#  no)
+#      HDF5INC=""
+#      HDF5LIB=""
+#    #AC_MSG_ERROR(HDF5 library needed for compilation.)
+#    ;;
+#  *)
+#    hdf5_inc="`echo $withval |cut -f1 -d,`"
+#    if test -n "$hdf5_inc"; then
+#      HDF5INC="$hdf5_inc"
+#      saved_CPPFLAGS="$CPPFLAGS"
+#      CPPFLAGS="$CPPFLAGS -I$hdf5_inc"
+#    fi
+#
+#    AC_CHECK_HEADERS(hdf5.h,,
+#                     CPPFLAGS="$saved_CPPFLAGS"
+#                     AC_MSG_ERROR(cannot find HDF5 header files!))
+#
+#    hdf5_lib="`echo $withval | cut -f2 -d, -s`"
+#
+#    if test -n "$hdf5_lib"; then
+#      HDF5LIB="$hdf5_lib"
+#      saved_LDFLAGS="$LDFLAGS"
+#      LDFLAGS="$LDFLAGS -L$hdf5_lib"
+#      AC_CHECK_LIB(hdf5, H5open,, LDFLAGS="$saved_LDFLAGS"
+#                 AC_MSG_ERROR(cannot find HDF5 library.),)
+#    else
+#	 AC_MSG_ERROR(cannot find HDF5 library path.)
+#    fi
+#    ;;
+#esac
 
 if test -n "$HDF5LIB"; then
 AC_MSG_RESULT([HDF5 library found at: $HDF5LIB])
