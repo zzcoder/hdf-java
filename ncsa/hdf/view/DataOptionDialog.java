@@ -451,7 +451,7 @@ implements ActionListener, ItemListener
             choices[i].select(idx);
             maxLabels[i].setText(String.valueOf(dims[idx]));
             startFields[i].setText(String.valueOf(start[idx]));
-            countFields[i].setText(String.valueOf(selected[idx]+start[idx]));
+            countFields[i].setText(String.valueOf(selected[idx]));
             if (dataset instanceof H4Vdata)
                 strideFields[i].setEnabled(false);
             else
@@ -617,7 +617,6 @@ implements ActionListener, ItemListener
         }
 
         dataset.setStride(stride);
-
 
         //clear the old data
         dataset.clearData();

@@ -1522,13 +1522,13 @@ public class H4File extends File implements FileFormat
     public static final String getLibversion()
     {
         int[] vers = new int[3];
-        String ver = "NCSA HDF Version ";
+        String ver = "NCSA HDF ";
         String[] verStr = {""};
 
         try { HDFLibrary.Hgetlibversion(vers, verStr); }
         catch (HDFException ex) {}
 
-        ver += vers[0] + "." + vers[1] +" Release "+vers[2];
+        ver += vers[0] + "." + vers[1] +"."+vers[2];
 
         return ver;
     }
