@@ -339,6 +339,8 @@ public class H5CompoundDS extends CompoundDS
                 }
 
                 int nested_tid = -1;
+                boolean isVLEN = false;
+                boolean is_variable_str = false;
                 try {
                     // construct nested compound structure with a single field
                     String theName = member_name;
@@ -356,15 +358,15 @@ public class H5CompoundDS extends CompoundDS
 
                     nested_tid = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND, member_size);
                     H5.H5Tinsert(nested_tid, member_name, 0, tmp_tid);
+                    try { is_variable_str = H5.H5Tis_variable_str(tmp_tid); } catch (Exception ex) {}
+                    try { isVLEN = (H5.H5Tget_class(tmp_tid)==HDF5Constants.H5T_VLEN); } catch (Exception ex) {}
+
                     try {H5.H5Tclose(tmp_tid);} catch (Exception ex) {}
 
-                    H5.H5Dread(
-                        did,
-                        nested_tid,
-                        mspace,
-                        fspace,
-                        HDF5Constants.H5P_DEFAULT,
-                        member_data);
+                    if (isVLEN || is_variable_str)
+                        H5.H5DreadVL( did, nested_tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, (Object[])member_data);
+                    else
+                        H5.H5Dread( did, nested_tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, member_data);
                 } catch (HDF5Exception ex2)
                 {
                     try { H5.H5Tclose(nested_tid); }
@@ -377,18 +379,22 @@ public class H5CompoundDS extends CompoundDS
                     for (int j=0; j<lsize[0]; j++) nullValues[j] = "*error*";
                     list.add(nullValues);
                     //isMemberSelected[i] = false; // do not display memeber without data
+                    try { H5.H5Tclose(nested_tid); } catch (HDF5Exception ex3) {}
                     continue;
                 }
                 try { H5.H5Tclose(nested_tid); } catch (HDF5Exception ex2) {}
 
-                if (member_class == HDF5Constants.H5T_STRING) {
-                    member_data = byteToString((byte[])member_data, member_size);
-                }
-                else if (member_class == HDF5Constants.H5T_REFERENCE) {
-                    member_data = HDFNativeData.byteToLong((byte[])member_data);
-                }
-                else if (H5Datatype.isUnsigned(baseType)) {
-                    member_data = Dataset.convertFromUnsignedC(member_data);
+                if (!isVLEN)
+                {
+                    if (member_class == HDF5Constants.H5T_STRING) {
+                        member_data = byteToString((byte[])member_data, member_size);
+                    }
+                    else if (member_class == HDF5Constants.H5T_REFERENCE) {
+                        member_data = HDFNativeData.byteToLong((byte[])member_data);
+                    }
+                    else if (H5Datatype.isUnsigned(baseType)) {
+                        member_data = Dataset.convertFromUnsignedC(member_data);
+                    }
                 }
 
                 list.add(member_data);
@@ -442,6 +448,8 @@ public class H5CompoundDS extends CompoundDS
                 null );   // set block to 1
 
             int idx = 0;
+            boolean is_variable_str = false;
+            boolean isVL = false;
             for (int i=0; i<numberOfMembers; i++)
             {
                 if (!isMemberSelected[i])
@@ -450,12 +458,14 @@ public class H5CompoundDS extends CompoundDS
                 member_name = memberNames[i];
                 member_tid = memberTypes[i];
                 member_data = list.get(idx++);
+                try { member_class = H5.H5Tget_class(member_tid); } catch (HDF5Exception ex) {}
 
-                if (member_data == null)
+                try { is_variable_str = H5.H5Tis_variable_str(member_tid); } catch (Exception ex) {}
+                try { isVL = (member_class==HDF5Constants.H5T_VLEN); } catch (Exception ex) {}
+
+                if (member_data == null || is_variable_str || isVL)
                     continue;
 
-                try { member_class = H5.H5Tget_class(member_tid);
-                } catch (HDF5Exception ex) {}
                 int arrayType = member_tid;
                 int baseType = arrayType;
                 if (member_class == HDF5Constants.H5T_ARRAY)

@@ -24,7 +24,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 #include "hdf5.h"
+#include "h5util.h"
 #include <jni.h>
 #include <stdlib.h>
 
@@ -33,6 +35,11 @@ extern jboolean h5JNIFatalError( JNIEnv *env, char *functName);
 extern jboolean h5nullArgument( JNIEnv *env, char *functName);
 extern jboolean h5badArgument( JNIEnv *env, char *functName);
 extern jboolean h5libraryError( JNIEnv *env );
+
+herr_t H5AreadVL_str (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf);
+herr_t H5AreadVL_num (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf);
+herr_t H5AreadVL_comp (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf);
+
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
@@ -374,6 +381,202 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aclose
     }
     return (jint)retVal;
 }
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Aread
+ * Signature: (II[B)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5AreadVL
+  (JNIEnv *env, jclass clss, jint attr_id, jint mem_type_id, jobjectArray buf)
+{
+	htri_t isStr;
+
+    if ( buf == NULL ) {
+        h5nullArgument( env, "H5AreadVL:  buf is NULL");
+        return -1;
+    }
+
+	isStr = H5Tis_variable_str((hid_t)mem_type_id);
+
+	if (H5Tis_variable_str((hid_t)mem_type_id) > 0)
+	{
+		return (jint) H5AreadVL_str (env, (hid_t)attr_id, (hid_t)mem_type_id, buf);
+	}
+	else if (H5Tget_class((hid_t)mem_type_id) == H5T_COMPOUND)
+	{
+		return (jint) H5AreadVL_comp (env, (hid_t)attr_id, (hid_t)mem_type_id, buf);
+	}
+	else
+	{
+		return (jint) H5AreadVL_num (env, (hid_t)attr_id, (hid_t)mem_type_id, buf);
+	}
+}
+
+herr_t H5AreadVL_num (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
+{
+    herr_t status;
+	int i, n;
+	size_t max_len=0;
+	h5str_t h5str;
+	jstring jstr;
+	hvl_t *rdata;
+	size_t size;
+	hid_t sid;
+	hsize_t dims[H5S_MAX_RANK];
+
+	n = (*env)->GetArrayLength(env, buf);
+	rdata = (hvl_t *)calloc(n, sizeof(hvl_t));
+	if (rdata == NULL) {
+        h5JNIFatalError( env, "H5AreadVL:  failed to allocate buff for read");
+        return -1;
+    }
+
+    status = H5Aread(aid, tid, rdata);
+	dims[0] = n;
+	sid = H5Screate_simple(1, dims, NULL);
+
+    if (status < 0) {
+		H5Dvlen_reclaim(tid, sid, H5P_DEFAULT, rdata);
+		H5Sclose(sid);
+		free(rdata);
+        h5JNIFatalError(env, "H5AreadVL: failed to read data");
+		return -1;
+	}
+
+	for (i=0; i<n; i++)
+	{
+		if ((rdata+i)->len > max_len)
+			max_len = (rdata+i)->len;
+	}
+
+	size = H5Tget_size(tid);
+	memset(&h5str, 0, sizeof(h5str_t));
+	h5str_new(&h5str, 4*size);
+
+	if (h5str.s == NULL)
+	{
+		H5Dvlen_reclaim(tid, sid, H5P_DEFAULT, rdata);
+		H5Sclose(sid);
+		free(rdata);
+        h5JNIFatalError( env, "H5AreadVL:  failed to allocate strng buf");
+		return -1;
+	}
+
+	for (i=0; i<n; i++)
+	{
+		h5str.s[0] = '\0';
+		h5str_sprintf(&h5str, tid, rdata+i);
+		jstr = (*env)->NewStringUTF(env, h5str.s);
+		(*env)->SetObjectArrayElement(env, buf, i, jstr);
+	}
+
+	h5str_free(&h5str); 
+	H5Dvlen_reclaim(tid, sid, H5P_DEFAULT, rdata);
+	H5Sclose(sid);
+
+	if (rdata)
+		free(rdata);
+
+	return status;
+}
+
+herr_t H5AreadVL_comp (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
+{
+    herr_t status;
+	int i, n;
+	size_t max_len=0;
+	h5str_t h5str;
+	jstring jstr;
+	char *rdata;
+	size_t size;
+
+	size = H5Tget_size(tid);
+	n = (*env)->GetArrayLength(env, buf);
+	rdata = (char *)malloc(n*size);
+
+	if (rdata == NULL) {
+        h5JNIFatalError( env, "H5AreadVL:  failed to allocate buff for read");
+        return -1;
+    }
+
+    status = H5Aread(aid, tid, rdata);
+
+    if (status < 0) {
+		free(rdata);
+        h5JNIFatalError(env, "H5AreadVL: failed to read data");
+		return -1;
+	}
+
+	memset(&h5str, 0, sizeof(h5str_t));
+	h5str_new(&h5str, 4*size);
+
+	if (h5str.s == NULL)
+	{
+		free(rdata);
+        h5JNIFatalError( env, "H5AreadVL:  failed to allocate strng buf");
+		return -1;
+	}
+
+	for (i=0; i<n; i++)
+	{
+		h5str.s[0] = '\0';
+		h5str_sprintf(&h5str, tid, rdata+i*size);
+		jstr = (*env)->NewStringUTF(env, h5str.s);
+		(*env)->SetObjectArrayElement(env, buf, i, jstr);
+	}
+
+	h5str_free(&h5str); 
+	if (rdata) free(rdata);
+
+	return status;
+}
+
+herr_t H5AreadVL_str (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
+{
+    herr_t status=-1;
+	jstring jstr;
+	char **strs;
+	int i, n;
+	hid_t sid;
+	hsize_t dims[H5S_MAX_RANK];
+
+	n = (*env)->GetArrayLength(env, buf);
+	strs =(char **)malloc(n*sizeof(char *));
+
+	if (strs == NULL)
+	{
+        h5JNIFatalError( env, "H5AreadVL:  failed to allocate buff for read variable length strings");
+		return -1;
+	}
+
+    status = H5Aread(aid, tid, strs);
+	dims[0] = n;
+	sid = H5Screate_simple(1, dims, NULL);
+
+    if (status < 0) {
+		H5Dvlen_reclaim(tid, sid, H5P_DEFAULT, strs);
+		H5Sclose(sid);
+		free(strs);
+        h5JNIFatalError(env, "H5AreadVL: failed to read variable length strings");
+		return -1;
+	}
+
+	for (i=0; i<n; i++)
+	{
+		jstr = (*env)->NewStringUTF(env, strs[i]);
+		(*env)->SetObjectArrayElement(env, buf, i, jstr);
+	}
+		
+	H5Dvlen_reclaim(tid, sid, H5P_DEFAULT, strs);
+	H5Sclose(sid);
+
+	if (strs)
+		free(strs);
+
+	return status;
+}
+
 #ifdef __cplusplus
 }
 #endif

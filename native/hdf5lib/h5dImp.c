@@ -24,7 +24,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 #include "hdf5.h"
+#include "h5util.h"
 #include <jni.h>
 #include <stdlib.h>
 
@@ -32,6 +34,9 @@ extern jboolean h5outOfMemory( JNIEnv *env, char *functName);
 extern jboolean h5JNIFatalError( JNIEnv *env, char *functName);
 extern jboolean h5nullArgument( JNIEnv *env, char *functName);
 extern jboolean h5libraryError( JNIEnv *env );
+
+herr_t H5DreadVL_str (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t file_sid, hid_t xfer_plist_id, jobjectArray buf);
+herr_t H5DreadVL_num (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t file_sid, hid_t xfer_plist_id, jobjectArray buf);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
@@ -809,6 +814,138 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1double
     return (jint)status;
 }
 
+
+/**
+ *  Read VLEN data into array of arrays.
+ *  Object[] buf contains VL arrays of data points
+ *  Currently only deal with variable length of atomic data types
+ */
+/* old versin */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DreadVL
+  (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id,
+  jint file_space_id, jint xfer_plist_id, jobjectArray buf)
+{
+	htri_t isStr;
+
+    if ( buf == NULL ) {
+        h5nullArgument( env, "H5DreadVL:  buf is NULL");
+        return -1;
+    }
+
+	if (H5Tget_class((hid_t)mem_type_id) == H5T_COMPOUND)
+		isStr = H5Tis_variable_str(H5Tget_member_type((hid_t)mem_type_id, 0));
+	else
+		isStr = H5Tis_variable_str((hid_t)mem_type_id);
+
+	if (isStr > 0)
+	{
+		return (jint) H5DreadVL_str (env, (hid_t)dataset_id, (hid_t)mem_type_id, 
+			(hid_t) mem_space_id,(hid_t) file_space_id, (hid_t)xfer_plist_id, buf);
+	}
+	else if (isStr == 0)
+	{
+		return (jint) H5DreadVL_num (env, (hid_t)dataset_id, (hid_t)mem_type_id, 
+			(hid_t) mem_space_id,(hid_t) file_space_id, (hid_t)xfer_plist_id, buf);
+	}
+	else
+		return -1;
+}
+
+herr_t H5DreadVL_num (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t file_sid, hid_t xfer_plist_id, jobjectArray buf)
+{
+    herr_t status;
+	int i, n;
+	size_t max_len=0;
+	h5str_t h5str;
+	jstring jstr;
+	hvl_t *rdata;
+	size_t size;
+
+	n = (*env)->GetArrayLength(env, buf);
+	rdata = (hvl_t *)calloc(n, sizeof(hvl_t));
+	if (rdata == NULL) {
+        h5JNIFatalError( env, "H5DreadVL:  failed to allocate buff for read");
+        return -1;
+    }
+
+    status = H5Dread(did, tid, mem_sid, file_sid, xfer_plist_id, rdata);
+
+    if (status < 0) {
+		H5Dvlen_reclaim(tid, mem_sid, H5P_DEFAULT, rdata);
+		free(rdata);
+        h5JNIFatalError(env, "H5DreadVL: failed to read data");
+		return -1;
+	}
+
+	for (i=0; i<n; i++)
+	{
+		if ((rdata+i)->len > max_len)
+			max_len = (rdata+i)->len;
+	}
+
+	size = H5Tget_size(tid);
+	memset(&h5str, 0, sizeof(h5str_t));
+	h5str_new(&h5str, 4*size);
+
+	if (h5str.s == NULL)
+	{
+		H5Dvlen_reclaim(tid, mem_sid, H5P_DEFAULT, rdata);
+		free(rdata);
+        h5JNIFatalError( env, "H5DreadVL:  failed to allocate strng buf");
+		return -1;
+	}
+
+	for (i=0; i<n; i++)
+	{
+		h5str.s[0] = '\0';
+		h5str_sprintf(&h5str, tid, rdata+i);
+		jstr = (*env)->NewStringUTF(env, h5str.s);
+		(*env)->SetObjectArrayElement(env, buf, i, jstr);
+	}
+
+	h5str_free(&h5str); 
+	H5Dvlen_reclaim(tid, mem_sid, H5P_DEFAULT, rdata);
+	free(rdata);
+
+	return status;
+}
+
+herr_t H5DreadVL_str (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t file_sid, hid_t xfer_plist_id, jobjectArray buf)
+{
+    herr_t status=-1;
+	jstring jstr;
+	char **strs;
+	int i, n;
+
+	n = (*env)->GetArrayLength(env, buf);
+	strs =(char **)malloc(n*sizeof(char *));
+
+	if (strs == NULL)
+	{
+        h5JNIFatalError( env, "H5DreadVL:  failed to allocate buff for read variable length strings");
+		return -1;
+	}
+
+    status = H5Dread(did, tid, mem_sid, file_sid, xfer_plist_id, strs);
+
+    if (status < 0) {
+		H5Dvlen_reclaim(tid, mem_sid, H5P_DEFAULT, strs);
+		free(strs);
+        h5JNIFatalError(env, "H5DreadVL: failed to read variable length strings");
+		return -1;
+	}
+
+	for (i=0; i<n; i++)
+	{
+		jstr = (*env)->NewStringUTF(env, strs[i]);
+		(*env)->SetObjectArrayElement(env, buf, i, jstr);
+	}
+		
+	H5Dvlen_reclaim(tid, mem_sid, H5P_DEFAULT, strs);
+	free(strs);
+
+	return status;
+}
 
 #ifdef __cplusplus
 }

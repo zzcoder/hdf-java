@@ -577,6 +577,7 @@ public class H4File extends FileFormat
         {
             ref = refs[i];
             H4Group g = getVGroup(ref, HObject.separator, rootGroup, false);
+
             if (g != null)
             {
                 node = new DefaultMutableTreeNode(g)

@@ -243,7 +243,16 @@ implements TextView, ActionListener, KeyListener
         for (int i=0; i<text.length; i++)
             text[i] = textAreas[i].getText();
 
-        try { dataset.write(); }  catch (Exception ex) {}
+        try { dataset.write(); }
+        catch (Exception ex)
+        {
+             JOptionPane.showMessageDialog(
+                this,
+                ex,
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         isTextChanged = false;
 
         // refresh text in memory. After writing, text is cut off to its max string length

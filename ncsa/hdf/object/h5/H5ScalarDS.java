@@ -92,6 +92,8 @@ public class H5ScalarDS extends ScalarDS
      */
      private byte[] paletteRefs;
 
+     private boolean isVLEN = false;
+
     public H5ScalarDS(FileFormat fileFormat, String name, String path)
     {
         this(fileFormat, name, path, null);
@@ -121,7 +123,9 @@ public class H5ScalarDS extends ScalarDS
         try
         {
             tid= H5.H5Dget_type(did);
-            isText = (H5.H5Tget_class(tid)==HDF5Constants.H5T_STRING);
+            int tclass = H5.H5Tget_class(tid);
+            isText = (tclass==HDF5Constants.H5T_STRING);
+            isVLEN = (tclass==HDF5Constants.H5T_VLEN || H5.H5Tis_variable_str(tid));
 
             // try to find out if the dataset is an image
             aid = H5.H5Aopen_name(did, "CLASS");
@@ -344,12 +348,19 @@ public class H5ScalarDS extends ScalarDS
             theData = H5Datatype.allocateArray(nativeDatatype, (int)lsize[0]);
 
             if (theData != null) {
-                H5.H5Dread( did, nativeDatatype, mspace, fspace, HDF5Constants.H5P_DEFAULT, theData);
 
-                if (isText)
-                    theData = byteToString((byte[])theData, H5.H5Tget_size(nativeDatatype));
-                else if (H5.H5Tget_class(nativeDatatype) == HDF5Constants.H5T_REFERENCE)
-                    theData = HDFNativeData.byteToLong((byte[])theData);
+                if (isVLEN)
+                {
+                    H5.H5DreadVL(did, nativeDatatype, mspace, fspace, HDF5Constants.H5P_DEFAULT, (Object[])theData);
+                }
+                else
+                {
+                    H5.H5Dread( did, nativeDatatype, mspace, fspace, HDF5Constants.H5P_DEFAULT, theData);
+                    if (isText)
+                        theData = byteToString((byte[])theData, H5.H5Tget_size(nativeDatatype));
+                    else if (H5.H5Tget_class(nativeDatatype) == HDF5Constants.H5T_REFERENCE)
+                        theData = HDFNativeData.byteToLong((byte[])theData);
+                }
             }
         } finally {
             if (fspace > 0) try { H5.H5Sclose(fspace); } catch (Exception ex2) {}
@@ -365,6 +376,9 @@ public class H5ScalarDS extends ScalarDS
     {
         if (buf == null)
             return;
+
+        if (isVLEN)
+            throw(new HDF5Exception("Writing variable-length data is not supported"));
 
         int fspace=-1, mspace=-1, did=-1, tid=-1, status=-1;
         Object tmpData = null;

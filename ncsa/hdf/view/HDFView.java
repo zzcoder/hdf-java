@@ -53,7 +53,6 @@ import java.awt.Image;
 
 public class HDFView extends JFrame
     implements ViewManager, ActionListener, HyperlinkListener, ChangeListener {
-
     /** tag for TreeView*/
     public static final int MODULE_TREEVIEW = 100;
 
@@ -958,11 +957,11 @@ public class HDFView extends JFrame
 
             try {
                 treeView.openFile(filename, fileAccessID);
-            } catch (Exception ex)
+            } catch (Throwable ex)
             {
                 try {
                     treeView.openFile(filename, FileFormat.READ);
-                } catch (Exception ex2)
+                } catch (Throwable ex2)
                 {
                     String msg = "Failed to open file "+filename+"\n"+ex2;
                     toolkit.beep();
@@ -1047,6 +1046,7 @@ public class HDFView extends JFrame
                 try { treeView.closeFile((FileFormat)files.get(0)); }
                 catch (Exception ex) {}
             }
+            currentFile = null;
         }
         else if (cmd.equals("Save current file as"))
         {
@@ -1932,5 +1932,4 @@ if (g != null) {
 
          return localFile;
      }
-
 }
