@@ -15,7 +15,6 @@ import java.io.*;
 import java.net.*;
 import java.lang.*;
 import java.util.*;
-import ncsa.hdf.h4toh5lib.*;
 
 /**
  *  <hr>
@@ -227,9 +226,10 @@ public class HDFLibrary {
 
 	private final static String JHI_VERSION= "2.5";
 
-	public final static String H45PATH_PROPERTY_KEY = "ncsa.hdf.libh4toh5.h4toh5.h45lib";
+	public final static String H45PATH_PROPERTY_KEY = "ncsa.hdf.h4toh5lib.h4toh5.h45lib";
 
 	public final static String HDFPATH_PROPERTY_KEY = "ncsa.hdf.hdflib.HDFLibrary.hdflib";
+
 	static 
 	{
 		boolean done = false;
@@ -237,8 +237,6 @@ public class HDFLibrary {
 		filename = System.getProperty(H45PATH_PROPERTY_KEY,null);
 		if ((filename != null) && (filename.length() > 0))
 		{
-			String v = h4toh5.JH4toh5version(); 
-/*
 			File hdfdll = new File(filename);
 			if (hdfdll.exists() && hdfdll.canRead() && hdfdll.isFile()) {
 				System.load(filename);
@@ -246,7 +244,6 @@ public class HDFLibrary {
 			} else {
 				done = false;
 			}
-*/
 		}
 
 		if (done == false) {

@@ -16,7 +16,6 @@ import java.net.*;
 import java.lang.*;
 import java.util.*;
 import ncsa.hdf.hdf5lib.exceptions.*;
-import ncsa.hdf.h4toh5lib.*;
 
 
 /**
@@ -217,7 +216,7 @@ public class H5 {
 
 	public final static String H5PATH_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.hdf5lib";
 
-	public final static String H45PATH_PROPERTY_KEY = "ncsa.hdf.libh4toh5.h4toh5.h45lib";
+	public final static String H45PATH_PROPERTY_KEY = "ncsa.hdf.h4toh5lib.h4toh5.h45lib";
 
 	static 
 	{
@@ -226,10 +225,6 @@ public class H5 {
 		filename = System.getProperty(H45PATH_PROPERTY_KEY,null);
 		if ((filename != null) && (filename.length() > 0))
 		{
-			// force h4toh5lib
-			String v = h4toh5.JH4toh5version();
-			
-/*
 		    File h5dll = new File(filename);
 			if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) {
 				System.load(filename);
@@ -237,7 +232,6 @@ public class H5 {
 			} else {
 				done = false;
 			}
-*/
 		}
 
 		if (done == false) {
