@@ -119,11 +119,33 @@ an image, a table or text based on its datatype.  See the following chapters
 for a detailed discussion of the data viewers.
 
 <p>
+If the data value is not im memory, the "Open" action will load the data from
+file and display it. If the data is already loaded into memory, it will just
+display the data. If you want to refresh data in memory or open dataset with
+different selection (subset or display option), you have to use "Open As".
+
+<p>
 Using "Open As", you can select a subset of dataset to display or change the
 default display options. For example, you can display the data values of an image
 in spreadsheet, or show a scalar dataset as an image. For multi-dimension dataset,
 you can select any of two dimensions to display. The mouse-drag navigator allows 
 you select a subset by dragging the mouse.
+
+<p>
+The start determines the starting coordinate of the hyperslab to select.
+
+<p>
+The count determines how many blocks/points to select from the dataspace.
+
+<p>
+The stride chooses array locations from the dataspace with each value in 
+the stride array determining how many elements to move in each dimension. Setting 
+a value in the stride array to 1 moves to each element in that dimension of the 
+dataspace; setting a value of 2 in a location in the stride array moves to every 
+other element in that dimension of the dataspace. In other words, the stride 
+determines the number of elements to move from the start location in each dimension. 
+Stride values of 0 are not allowed. If the stride parameter is NULL, a contiguous 
+hyperslab is selected (as if each value in the stride array was set to all 1's). 
 
 <center>
 <p><img SRC="images/dataset_open_as.gif" >
