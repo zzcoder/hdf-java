@@ -61,7 +61,8 @@ JH45IDISTFILES=./native/h4toh5lib/Makefile.in \
 JHIDISTFILES=./native/hdflib/Makefile.in \
 	./native/hdflib/*.c \
 	./ncsa/hdf/hdflib/*.java  \
-	./glguerin/io/*.java ./glguerin/mac/io/*.java ./glguerin/util/*.java   
+	./glguerin/io/*.java ./glguerin/mac/io/*.java ./glguerin/util/*.java \
+        ./glguerin/README
 
 JHI5DISTFILES= ./native/hdf5lib/Makefile.in \
         ./native/hdf5lib/*.c ./native/hdf5lib/*.h \
