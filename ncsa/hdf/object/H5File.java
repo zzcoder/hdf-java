@@ -987,17 +987,17 @@ public class H5File extends File implements FileFormat
 
         long[] attrDims = {1};
         String attrName = "CLASS";
-        String[] attrValue = {"IMAGE"};
-        Datatype attrType = new H5Datatype(Datatype.CLASS_STRING, attrValue[0].length()+1, -1, -1);
+        String[] classValue = {"IMAGE"};
+        Datatype attrType = new H5Datatype(Datatype.CLASS_STRING, classValue[0].length()+1, -1, -1);
         Attribute attr = new Attribute(attrName, attrType.toNative(), attrDims);
-        attr.setValue(attrValue);
+        attr.setValue(classValue);
         dataset.writeMetadata(attr);
 
         attrName = "IMAGE_VERSION";
-        attrValue[0] = "1.2";
-        attrType = new H5Datatype(Datatype.CLASS_STRING, attrValue[0].length()+1, -1, -1);
+        String[] versionValue = {"1.2"};
+        attrType = new H5Datatype(Datatype.CLASS_STRING, versionValue[0].length()+1, -1, -1);
         attr = new Attribute(attrName, attrType.toNative(), attrDims);
-        attr.setValue(attrValue);
+        attr.setValue(versionValue);
         dataset.writeMetadata(attr);
 
         attrDims[0] = 2;
@@ -1010,19 +1010,19 @@ public class H5File extends File implements FileFormat
 
         attrDims[0] = 1;
         attrName = "IMAGE_SUBCLASS";
-        attrValue[0] = subclass;
-        attrType = new H5Datatype(Datatype.CLASS_STRING, attrValue[0].length()+1, -1, -1);
+        String[] subclassValue = {subclass};
+        attrType = new H5Datatype(Datatype.CLASS_STRING, subclassValue[0].length()+1, -1, -1);
         attr = new Attribute(attrName, attrType.toNative(), attrDims);
-        attr.setValue(attrValue);
+        attr.setValue(subclassValue);
         dataset.writeMetadata(attr);
 
         if (interlace == ScalarDS.INTERLACE_PIXEL || interlace == ScalarDS.INTERLACE_PLANE)
         {
             attrName = "INTERLACE_MODE";
-            attrValue[0] = interlaceMode;
-            attrType = new H5Datatype(Datatype.CLASS_STRING, attrValue[0].length()+1, -1, -1);
+            String[] interlaceValue = {interlaceMode};
+            attrType = new H5Datatype(Datatype.CLASS_STRING, interlaceValue[0].length()+1, -1, -1);
             attr = new Attribute(attrName, attrType.toNative(), attrDims);
-            attr.setValue(attrValue);
+            attr.setValue(interlaceValue);
             dataset.writeMetadata(attr);
         }
         else

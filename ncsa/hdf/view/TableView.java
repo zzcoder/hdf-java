@@ -169,6 +169,9 @@ implements TableObserver
         sb.append(hobject.getPath());
         sb.append(hobject.getName());
 
+        frameTitle = sb.toString();
+        setTitle(frameTitle);
+
         // setup subset information
         int rank = dataset.getRank();
         int[] selectedIndex = dataset.getSelectedIndex();
@@ -208,15 +211,13 @@ implements TableObserver
         }
         sb.append(" ] ");
 
-        frameTitle = sb.toString();
-        setTitle(frameTitle);
         if (rank > 2)
         {
             // reset the title for 3D dataset
             setTitle( frameTitle+ " - Page "+String.valueOf(start[selectedIndex[2]]+1)+ " of "+dims[selectedIndex[2]]);
         }
 
-        viewer.showStatus(frameTitle);
+        viewer.showStatus(sb.toString());
     }
 
     public void dispose()
