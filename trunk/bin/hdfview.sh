@@ -1,4 +1,4 @@
-#!/bin/sh -f
+#!/bin/csh -f
 
 # Set up default variable values if not supplied by the user.
 
@@ -19,7 +19,7 @@ CPATH=$HDFVIEW_HOME"/lib/jhdf.jar:"$HDFVIEW_HOME"/lib/jhdf5.jar:"$HDFVIEW_HOME"/
 CPATH=$CPATH":"$HDFVIEW_HOME"/lib/jhdf4obj.jar:"$HDFVIEW_HOME"/lib/jhdf5obj.jar:"$HDFVIEW_HOME"/lib/jhdfview.jar"
 
 
-if test -z "$CLASSPATH" ; then
+if test -z "$CLASSPATH"; then
 	CLASSPATH=""
 fi
 CLASSPATH=$CPATH":"$CLASSPATH
@@ -42,11 +42,11 @@ else
    OS=unknown
 fi
 
-if test -z  "$LD_LIBRARY_PATH" ; then
+if test -z "$LD_LIBRARY_PATH" ; then
         LD_LIBRARY_PATH=""
 fi
 
-case $machtype in
+case  $machtype in:
     sun4*)
 	LD_LIBRARY_PATH=$HDFVIEW_HOME/lib/solaris:$LD_LIBRARY_PATH
 	;;
@@ -63,6 +63,7 @@ case $machtype in
 	echo "Unknown machine type:  jhv may not work correctly"
         ;;
 esac
-export LD_LIBRARY_PATH
+
+export LD_LIBRARYN_PATH
 
 $JAVAPATH/java -mx512m ncsa.hdf.view.HDFView -root $HDFVIEW_HOME
