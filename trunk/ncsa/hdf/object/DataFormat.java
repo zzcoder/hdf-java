@@ -29,7 +29,7 @@ public interface DataFormat
      * uniquely identified when mutilple files are opened by an application
      * at the same time.
      * <p>
-     * @see ncsa.hdf.view.ViewManager#getCurrentObject()
+     * @see ncsa.hdf.view.ViewManager
      */
     public abstract String getFile();
 

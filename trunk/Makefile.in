@@ -293,7 +293,7 @@ uninstall-jhdfobj:
 uninstall-jhdfview: 
 	rm -f $(JH45INSTALLDIR)/lib/jhdfview.jar
 
-install-docs: install-javadocs 
+install-docs: install-javadocs install-ug
 
 install-javadocs:
 	-mkdir -p $(DOCDIR)/javadocs;
@@ -308,15 +308,21 @@ install-javadocs:
 uninstall-javadocs:
 	rm -rf $(DOCDIR)/javadocs/*.html $(DOCDIR)/images
 
-#install-ug:
-#	-mkdir -p $(DOCDIR);
-#	-mkdir -p $(DOCDIR)/H5View/UsersGuide;
-#	cp java-hdf5-html/H5View/UsersGuide/*.html $(DOCDIR)/H5View/UsersGuide;
-#	-mkdir -p $(DOCDIR)/H5View/UsersGuide/images;
-#	cp java-hdf5-html/H5View/UsersGuide/images/*.gif $(DOCDIR)/H5View/UsersGuide/images;
-#
-#uninstall-ug:
-##	rm -rf $(DOCDIR)/H5View/UsersGuide/*
+install-ug:
+	-mkdir -p $(DOCDIR);
+	-mkdir -p $(DOCDIR)/hdfview/usersguide;
+	cp docs/hdfview/index.html $(DOCDIR)/hdfview/usersguide;
+	cp docs/hdfview/usersguide/*.html $(DOCDIR)/hdfview/usersguide;
+	-mkdir -p $(DOCDIR)/hdfview/usersguide/images;
+	cp docs/hdfview/usersguide/images/*.gif $(DOCDIR)/hdfview/usersguide/images;
+	-mkdir -p $(DOCDIR)/hdf-object;
+	cp docs/hdf-object/*.html $(DOCDIR)/hdf-object;
+	cp docs/hdf-object/*.jpg $(DOCDIR)/hdf-object;
+	cp docs/hdf-object/*.h5 $(DOCDIR)/hdf-object;
+
+uninstall-ug:
+	rm -rf $(DOCDIR)/hdfview/usersguide/*
+	rm -rf $(DOCDIR)/hdf-object/*
 
 distclean: clean-natives clean-classes clean-test clean-testlink
 	rm config.cache config.status config.log 
