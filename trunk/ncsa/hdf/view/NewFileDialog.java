@@ -14,7 +14,6 @@ package ncsa.hdf.view;
 import java.awt.event.*;
 import javax.swing.*;
 import java.awt.Color;
-import java.awt.Frame;
 import java.awt.Canvas;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -62,7 +61,7 @@ implements ActionListener
      *        It is used to make sure the new file cannot be any file in use.
      */
     public NewFileDialog(
-        Frame owner,
+        JFrame owner,
         String dir,
         String type,
         List openFiles)

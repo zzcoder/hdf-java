@@ -1,6 +1,17 @@
+/****************************************************************************
+ * NCSA HDF                                                                 *
+ * National Comptational Science Alliance                                   *
+ * University of Illinois at Urbana-Champaign                               *
+ * 605 E. Springfield, Champaign IL 61820                                   *
+ *                                                                          *
+ * For conditions of distribution and use, see the accompanying             *
+ * hdf-java/COPYING file.                                                   *
+ *                                                                          *
+ ****************************************************************************/
 
 package ncsa.hdf.view;
 
+import ncsa.hdf.object.*;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.util.Hashtable;
@@ -91,12 +102,12 @@ public class DefaultFileFilter extends FileFilter
      * @see #addExtension
      */
     public DefaultFileFilter(String[] filters, String description) {
-    this();
-    for (int i = 0; i < filters.length; i++) {
-        // add filters one by one
-        addExtension(filters[i]);
-    }
-    if(description!=null) setDescription(description);
+        this();
+        for (int i = 0; i < filters.length; i++) {
+            // add filters one by one
+            addExtension(filters[i]);
+        }
+        if(description!=null) setDescription(description);
     }
 
     /**
@@ -154,8 +165,7 @@ public class DefaultFileFilter extends FileFilter
      */
     public void addExtension(String extension)
     {
-        if(filters == null)
-        {
+        if(filters == null) {
             filters = new Hashtable(5);
         }
 
@@ -213,8 +223,8 @@ public class DefaultFileFilter extends FileFilter
      * @see isExtensionListInDescription
      */
     public void setDescription(String description) {
-    this.description = description;
-    fullDescription = null;
+        this.description = description;
+        fullDescription = null;
     }
 
     /**
@@ -229,8 +239,8 @@ public class DefaultFileFilter extends FileFilter
      * @see isExtensionListInDescription
      */
     public void setExtensionListInDescription(boolean b) {
-    useExtensionsInDescription = b;
-    fullDescription = null;
+        useExtensionsInDescription = b;
+        fullDescription = null;
     }
 
     /**
@@ -245,16 +255,16 @@ public class DefaultFileFilter extends FileFilter
      * @see setExtensionListInDescription
      */
     public boolean isExtensionListInDescription() {
-    return useExtensionsInDescription;
+        return useExtensionsInDescription;
     }
 
     /** Return a file filter for HDF4/5 file. */
-    public static FileFilter getFileFilterHDF()
-    {
-        boolean extensionNotChanged = (h4FileExtension.equalsIgnoreCase(ViewProperties.getH4Extension())) &&
-                                       (h5FileExtension.equalsIgnoreCase(ViewProperties.getH5Extension()));
-        if (FILE_FILTER_HDF != null && extensionNotChanged)
-        {
+    public static FileFilter getFileFilterHDF() {
+        boolean extensionNotChanged = (
+            h4FileExtension.equalsIgnoreCase( ViewProperties.getH4Extension())) &&
+            (h5FileExtension.equalsIgnoreCase(ViewProperties.getH5Extension()));
+
+        if (FILE_FILTER_HDF != null && extensionNotChanged) {
             return FILE_FILTER_HDF;
         }
 
@@ -265,13 +275,11 @@ public class DefaultFileFilter extends FileFilter
         DefaultFileFilter filter = new DefaultFileFilter();
         filter.setDescription("HDF");
 
-        if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4) != null)
-        {
+        if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4) != null) {
             filter.addExtension(h4FileExtension);
         }
 
-        if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) != null)
-        {
+        if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) != null) {
             filter.addExtension(h5FileExtension);
         }
 

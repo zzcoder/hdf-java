@@ -11,77 +11,35 @@
 
 package ncsa.hdf.view;
 
-import java.util.List;
-import java.awt.event.ActionListener;
+import ncsa.hdf.object.*;
 
 /**
- * This interface describes the communication between the main viewer and other
- * GUI components which handle user input/output operations performed on data
- * objects. For example, when user click on an dataset in the TreeView to display
- * the data content. The action is passed to the ViewManager. The Viewmanager
- * fetch the data and create a spreadsheet to display the data. The feedback of
- * the user action is passed to the ViewManager.
- * <p>
- * The interface is implemented by HDFView.
- * <p>
- * @version 1.3.0 01/10/2002
+ *
+ * <p>ViewManager</p>
+ * <p>Description: defines a list of APIs for the main HDFView winodows</p>
+ * <p>Company: NCSA, University of Illinois at Urbana-Champaign</p>
  * @author Peter X. Cao
+ * @version 1.0, 06/10/2003
  */
-public interface ViewManager extends ActionListener
+public abstract interface ViewManager
 {
-    /**
-     * Returns the current working data object or null if the current
-     * data object does not exist. The currentdata object along with the current
-     * working file is uniquely identified by other GUI components.
-     */
-    public abstract Object getSelectedObject();
+    /** data content is displayed, and add the dataview to the main windows */
+    public abstract void addDataView(DataView dataView);
 
-    /**
-     * Sets the current working data object.
-     */
-    public abstract void setSelectedObject(Object data);
+    /** data content is closed, and remove the dataview from the main window */
+    public abstract void removeDataView(DataView dataView);
 
-    /**
-     * Displays the content of current selected data object. If the data of the
-     * object is not loaded, it first loads the data from file into memory and
-     * then display it. If the data is already loaded or displayed, it brings
-     * the displayed the data to the front. If the object has no data or is
-     * null or the Viewer does not support the type of the data, it will give
-     * warning message to the user.
-     * <p>
-     * @param isDefaultDisplay True is the data content is displayed with default
-     *        options; otherwise, false.
+    /** Returns DataView contains the specified data object.
+     * It is useful to avoid redundant display of data object that is opened already.
+     * @param dataObject the whose presence in the main view is to be tested.
+     * @return DataView contains the specified data object, null if the data object
+     * is not displayed.
      */
-    public abstract void showDataContent(boolean isDefaultDisplay);
+    public abstract DataView getDataView(HObject dataObject);
 
-    /**
-     * Displays the metadata such as attributes and datatype of current selected
-     * data object. If the metadata of the object is not loaded, it first loads
-     * the metadata from file into memory and then display it. If the object has
-     * no metadata or the object is null, it will give warning message.
-     */
-    public abstract void showDataInfo();
-
-    /**
-     * Displays feedback message in "status window" such as error message and
-     * warning message, and inform users of its current state.
-     */
+    /** display feedback message */
     public abstract void showStatus(String msg);
 
-    /**
-     *  Invoke this method after you've removed a data content frame from the
-     *  content desktoppane. It is the oppsite action of showDataContent().
-     *  <p>
-     *  @param name the name of the content frame to be deleted.
-     */
-    public abstract void contentFrameWasRemoved(String name);
-
-    /** Returns a list of current open file */
-    public abstract List getOpenFiles();
-
-    /** start the busy indicator when the main thread is busy in I/O access */
-    public abstract void startBusyIndicator();
-
-    /** stop the busy indicator when the main thread is done with I/O access */
-    public abstract void stopBusyIndicator();
+    /** returns the current treeView */
+    public abstract TreeView getTreeView();
 }

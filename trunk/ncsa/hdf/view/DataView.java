@@ -1,6 +1,6 @@
 /****************************************************************************
  * NCSA HDF                                                                 *
- * National Comptational Science Alliance                                   *
+ * National Computational Science Alliance                                   *
  * University of Illinois at Urbana-Champaign                               *
  * 605 E. Springfield, Champaign IL 61820                                   *
  *                                                                          *
@@ -15,13 +15,16 @@ import ncsa.hdf.object.*;
 
 /**
  *
- * <p>Title: ncsa.hdf.view.TextView</p>
- * <p>The text view interface for displaying text data</p>
+ * <p>Title: ncsa.hdf.view.DataView</p>
+ * <p>The data view interface for displaying data object</p>
  * <p>Company: National Computational Science Alliance</p>
  * @author Peter X. Cao
  * @version 1.0
  */
-public abstract interface TextView extends DataView {
-    /** return array of the text in this textview */
-    public abstract String[] getText();
+public abstract interface DataView {
+    /** returns the data object displayed in this data viewer */
+    public abstract HObject getDataObject();
+
+    /** Disposes of this dataobserver. */
+    public abstract void dispose();
 }
