@@ -9,6 +9,12 @@
 ##
 ##
 
+##
+## IMPORTANT NOTE:  The make files require 'gmake'
+##
+##  Be sure to 'setenv MAKE gmake' if necessary
+##
+
 INSTDIR= #where to install the hdfview.
 
 JAVAINC=  #path to java includes (jni.h, etc.)
