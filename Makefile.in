@@ -266,17 +266,17 @@ uninstall-jhdfobj:
 install-docs: install-javadocs 
 
 install-javadocs:
-	-mkdir -p $(DOCDIR);
+	-mkdir -p $(DOCDIR)/javadocs;
 	@if test -n "$(H45INC)" ; then \
-	$(JAVADOC) -sourcepath $(CLASSPATH) -d $(DOCDIR) $(JAVADOC_FLAGS) $(JH45PACKAGES) $(JHIPACKAGES) $(JHI5PACKAGES) $(HDFOBJPACKAGES); \
+	$(JAVADOC) -sourcepath $(CLASSPATH) -d $(DOCDIR)/javadocs $(JAVADOC_FLAGS) $(JH45PACKAGES) $(JHIPACKAGES) $(JHI5PACKAGES) $(HDFOBJPACKAGES); \
 	else \
-	$(JAVADOC) -sourcepath $(CLASSPATH) -d $(DOCDIR) $(JAVADOC_FLAGS) $(JHIPACKAGES) $(JHI5PACKAGES) $(HDFOBJPACKAGES); \
+	$(JAVADOC) -sourcepath $(CLASSPATH) -d $(DOCDIR)/javadocs $(JAVADOC_FLAGS) $(JHIPACKAGES) $(JHI5PACKAGES) $(HDFOBJPACKAGES); \
 	fi
-	-mkdir -p $(DOCDIR)/images;
-	cp docs/images/*.gif $(DOCDIR)/images;
+	-mkdir -p $(DOCDIR)/javadocs/images;
+	cp docs/javadocs/images/*.gif $(DOCDIR)/javadocs/images;
 
 uninstall-javadocs:
-	rm -rf $(DOCDIR)/*.html
+	rm -rf $(DOCDIR)/javadocs/*.html $(DOCDIR)/images
 
 #install-ug:
 #	-mkdir -p $(DOCDIR);
