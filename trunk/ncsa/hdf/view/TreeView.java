@@ -167,6 +167,18 @@ implements ActionListener
             throw new java.io.IOException("File is already open - "+filename);
         }
 
+        if (DefaultFileFilter.isHDF4(filename) &&
+            (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4) == null))
+        {
+            throw new java.io.IOException("HDF4 file is not supported.");
+        }
+
+        if (DefaultFileFilter.isHDF5(filename) &&
+            (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) == null))
+        {
+            throw new java.io.IOException("HDF5 file is not supported.");
+        }
+
         Iterator iterator = FileFormat.iterator();
         while (iterator.hasNext())
         {
