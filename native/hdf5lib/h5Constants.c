@@ -72,8 +72,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_J2C
         case JH5E_CACHE  : return  H5E_CACHE;
         case JH5E_CALLBACK  : return  H5E_CALLBACK;
         case JH5E_CANAPPLY  : return  H5E_CANAPPLY;
-        case JH5E_CANTALLOC  : return  H5E_CANTALLOC;
-        case JH5E_CANTCHANGE  : return  H5E_CANTCHANGE;
+        /*case JH5E_CANTALLOC  : return  H5E_CANTALLOC; 
+        case JH5E_CANTCHANGE  : return  H5E_CANTCHANGE; removed from 1.6.4*/
         case JH5E_CANTCLIP  : return  H5E_CANTCLIP;
         case JH5E_CANTCLOSEFILE  : return  H5E_CANTCLOSEFILE;
         case JH5E_CANTCONVERT  : return  H5E_CANTCONVERT;
@@ -97,11 +97,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_J2C
         case JH5E_CANTNEXT  : return  H5E_CANTNEXT;
         case JH5E_CANTOPENFILE  : return  H5E_CANTOPENFILE;
         case JH5E_CANTOPENOBJ  : return  H5E_CANTOPENOBJ;
-        case JH5E_CANTRECV  : return  H5E_CANTRECV;
+        /* case JH5E_CANTRECV  : return  H5E_CANTRECV; removed from 1.6.4*/
         case JH5E_CANTREGISTER  : return  H5E_CANTREGISTER;
         case JH5E_CANTRELEASE  : return  H5E_CANTRELEASE;
         case JH5E_CANTSELECT  : return  H5E_CANTSELECT;
-        case JH5E_CANTSENDMDATA  : return  H5E_CANTSENDMDATA;
+        /* case JH5E_CANTSENDMDATA  : return  H5E_CANTSENDMDATA; removed from 1.6.4*/
         case JH5E_CANTSET  : return  H5E_CANTSET;
         case JH5E_CANTSPLIT  : return  H5E_CANTSPLIT;
         case JH5E_CANTUNLOCK  : return  H5E_CANTUNLOCK;
@@ -118,7 +118,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_J2C
         case JH5E_FILE  : return  H5E_FILE;
         case JH5E_FILEEXISTS  : return  H5E_FILEEXISTS;
         case JH5E_FILEOPEN  : return  H5E_FILEOPEN;
-        case JH5E_FPHDF5  : return  H5E_FPHDF5;
+        /* case JH5E_FPHDF5  : return  H5E_FPHDF5; removed from 1.6.4*/
         case JH5E_FUNC  : return  H5E_FUNC;
         case JH5E_HEAP  : return  H5E_HEAP;
         case JH5E_INTERNAL  : return  H5E_INTERNAL;
@@ -209,7 +209,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_J2C
         case JH5I_INVALID_HID  : return  H5I_INVALID_HID;
         case JH5I_NGROUPS  : return  H5I_NGROUPS;
         case JH5I_REFERENCE  : return  H5I_REFERENCE;
-        case JH5I_TEMPBUF  : return  H5I_TEMPBUF;
+        /* case JH5I_TEMPBUF  : return  H5I_TEMPBUF; removed from 1.6.4*/
         case JH5I_VFL  : return  H5I_VFL;
         case JH5P_DATASET_CREATE  : return  H5P_DATASET_CREATE;
         case JH5P_DATASET_CREATE_DEFAULT  : return  H5P_DATASET_CREATE_DEFAULT;

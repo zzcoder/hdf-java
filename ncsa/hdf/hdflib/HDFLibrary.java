@@ -3269,4 +3269,10 @@ public class HDFLibrary {
 
     public static native boolean SDreaddata_double(  int sdsid, int[] start, int[] stride,
                        int[] count, double[] theData ) throws HDFException;
+
+    /**
+     *  New API for hdf-42r1
+     */
+    public static native int HCget_config_info(int coder_type) throws HDFException;
+
 }

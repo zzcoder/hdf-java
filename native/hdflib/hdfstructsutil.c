@@ -90,7 +90,7 @@ jint ctype;
         }
         cinf->szip.options_mask = (*env)->GetIntField(env, ciobj, jf);
 
-/*
+/*      changes from hdf-42r0 to hdf-42r1
         jf = (*env)->GetFieldID(env, jc, "compression_mode", "I");
         if (jf == NULL) {
             return JNI_FALSE;
@@ -241,7 +241,7 @@ jclass jc;
         }
         (*env)->SetIntField(env, ciobj, jf, cinf->szip.options_mask);
 
-/*
+/*   changes from hdf-42r0 to hdf-42r1
         jf = (*env)->GetFieldID(env, jc, "compression_mode", "I");
         if (jf == NULL) {
             return JNI_FALSE;
@@ -601,3 +601,23 @@ jobject compinfo;
 
     return JNI_TRUE;
 }
+
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_HCget_1config_1info
+( JNIEnv *env,
+jclass class,
+jint coder_type) /* out: CompInfo */
+{
+	intn rval;
+	uint32 compression_config_info=0;
+	
+	/* check for success... */
+	rval = HCget_config_info( (comp_coder_t) coder_type, (uint32*)&compression_config_info);
+
+	if (rval == FAIL)
+		return -1;
+	
+	return compression_config_info;
+}
+
+
+
