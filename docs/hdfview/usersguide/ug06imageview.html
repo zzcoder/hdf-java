@@ -22,12 +22,12 @@
 <h1>
 Chapter 6: Image Viewer</h1>
 
-HDFView displays HDF images in the ImageView by defaul. An HDF4 image is raster
+HDFView displays HDF images in the ImageView by default. An HDF4 image is raster
 image of 8-bit with index RGB color table, or a 24-bit true color image. HDF4
 library provides image APIs to access image data and color table.
 
 <p>
-An HDF5 image is a dataset. The dataset for an image is distinguished from
+An HDF5 image is a dataset. An image dataset is distinguished from
 other datasets by giving it an attribute "CLASS=IMAGE". HDFView supports two
 types of images: indexed and true color.
 
@@ -36,9 +36,9 @@ In addition, the image dataset has an attribute "PALETTE" that points to one
 or more palettes. The first palette in this array will be the default palette 
 that the data may be viewed with.
 
-<p>A Palette is an HDF5 dataset. A Pallet dataset has an attribute "CLASS=PALETTE"
-and other attributes indicating the type and size of the palette. A Palette
-is an independent object, which can be shared among several Image datasets.
+<p>A Palette is an HDF5 dataset. A palette dataset has an attribute "CLASS=PALETTE"
+and other attributes indicating the type and size of the palette. A palette
+is an independent object, which can be shared among several image datasets.
 
 <p>A true color image is a 3D dataset with attribute "IMAGE_SUBCLASS=IMAGE_TRUECOLOR".
 One of the three dimension specifies the number of image components such as
@@ -52,7 +52,7 @@ HDF5 Image Specification </a>.
 
 <dl>
 <dt><a href="ug06imageview.html#ug06image">6.1 Display a 2D or 3D Image</a></dt>
-<dt><a href="ug06imageview.html#ug06zoom">6.2 Image Zooming</a></dt>
+<dt><a href="ug06imageview.html#ug06zoom">6.2 Image Zooming/Flipping</a></dt>
 <dt><a href="ug06imageview.html#ug06palette">6.3 Image Palette</a></dt>
 <dt><a href="ug06imageview.html#ug06histogram">6.4 Histogram of Pixel Values</a></dt>
 </dl>
@@ -67,7 +67,7 @@ HDFView displays datasets that follow the HDF5
 and Palette Specification</a> for indexed images with a 8-bit standard 
 RGB color model palette or three-dimensional true color images.
 Other image formats supported by the Image and Palette Specification are
-not supported in Version 2.2. 
+not supported by this release. 
 
 <h3>
 6.1.1 Indexed Image </h3>
@@ -76,12 +76,12 @@ or the image subclass is not defined. A general dataset with 2 or more dimension
 is displayed as indexed images. The dataset is converted to a raster image using 
 the first palette specified by the PALETTE attribute, or a default palette. 
 Multiple user defined palettes (i.e., the PALETTE attribute may be a list) are 
-not supported in Version 2.2. Default palette of gray, rainbow, nature or wave is
+not supported in version 1.0. A default palette of gray, rainbow, nature or wave is
 used if the dataset does not has a palette.
 
 <p>The dataset of an indexed image holds the values of indices of the color lookup
 table (palette). The dataset is converted into image pixels by looking up the color 
-table. The following figure is an example of mapping dataset values into pixles.
+table. The following figure is an example of mapping dataset values into pixels.
 
 <center>
 <p><img SRC="images/image_indexed_mapping.gif" >
@@ -103,7 +103,7 @@ is treated as a two-dimension indexed image of [height][width].
 
 <p>Although HDFView displays the entire image by the order of (dim[0], dim[1],
 dim[2])=(depth, height, width) by default, you can always change the order
-and select a subset for display as discussed in 
+and select a subset for display as discussed in Chpater 5.
 
 <h3>
 6.1.2 True Color Image </h3>
@@ -144,12 +144,17 @@ is plane interleaving with dimensions of [3][149][227].
 <br><b>Figure 6.2 True Color Image Displayed in the Image View</b></center>
 
 <h2>
-<a NAME="ug06zoom"></a>6.2 Image Zooming</h2>
-The Image Display can zoom in and out of an image. The minimum zoom factor
+<a NAME="ug06zoom"></a>6.2 Image Zooming/Flipping</h2>
+You can zoom in and out of an image. The minimum zoom factor
 is 1/8 (reduced to 1/8 the size) and the maximum is 8 (magnified to 8 times
-the size). Reduction (zoom out) is done by sampling pixels, i.e., a 1/2
+the size). Reduction (zoom out) is done by sampling pixels, such as a 1/2
 size image is created by selecting every second pixel. Magnification (zoom
 in) is done by replicating pixels.
+<p>
+You can also flip an image horizontally or verticaly. Flipping an image will
+change the coordinates of the image. Selected of an area of an fliiped image
+may not follwing the coordinates of the orginal image.
+
 <h2>
 <a NAME="ug06palette"></a>6.3 Image Palettes</h2>
 A palette is the means by which color is applied to an image and is also
