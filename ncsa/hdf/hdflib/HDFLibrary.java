@@ -2484,6 +2484,8 @@ public class HDFLibrary {
   
     public static native int Vaddtagref(int vgroup_id, int tag, int ref) throws HDFException;
 
+    public static native int Vdeletetagref(int vgroup_id, int tag, int ref) throws HDFException;
+
     public static native int Vfind(int file_id, String vgroup_name) throws HDFException;
 
     public static native int Vfindclass(int file_id, String vgclassname) throws HDFException;
