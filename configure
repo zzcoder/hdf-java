@@ -3072,7 +3072,7 @@ echo "${ECHO_T}SZIP suppressed" >&6;
   *)
 if test -n "$withval" ; then
     sz_lib="`echo $withval |cut -f2 -d, -s`"
-	SZLIB=$sz_lib"/libsz.a"
+	SZLIB=$sz_lib"/libsz"
 else
 echo "$as_me:$LINENO: checking for SZ_BufftoBuffCompress in -lsz" >&5
 echo $ECHO_N "checking for SZ_BufftoBuffCompress in -lsz... $ECHO_C" >&6
