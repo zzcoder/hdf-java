@@ -525,7 +525,16 @@ implements ActionListener, MetaDataView
                 for (int i=0; i<n; i++)
                 {
                     rowData[i][0] = names[i];
-                    rowData[i][2] = String.valueOf(orders[i]);
+                    int mDims[] = compound.getMemeberDims(i);
+                    if (mDims == null)
+                        rowData[i][2] = String.valueOf(orders[i]);
+                    else {
+                        String mStr = String.valueOf(mDims[0]);
+                        int m = mDims.length;
+                        for (int j=1; j<m; j++)
+                            mStr +=" x "+mDims[j];
+                        rowData[i][2] = mStr;
+                    }
                     datatype.fromNative(types[i]);
                     rowData[i][1] = datatype.getDatatypeDescription();
                 }

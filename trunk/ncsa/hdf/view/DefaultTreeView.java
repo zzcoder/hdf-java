@@ -1271,8 +1271,14 @@ implements TreeView, ActionListener {
             Object[] tmpargs = {viewer, new Boolean(isDisplayTypeChar), new Boolean(isTransposed)};
             initargs = tmpargs;
         }
-        theView = Tools.newInstance(theClass, initargs);
-        viewer.addDataView((DataView)theView);
+
+        ((JFrame)viewer).setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
+        try {
+            theView = Tools.newInstance(theClass, initargs);
+            viewer.addDataView((DataView)theView);
+        } finally {
+            ((JFrame)viewer).setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
+        }
 
         return (DataView)theView;
     }

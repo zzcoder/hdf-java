@@ -167,7 +167,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener
 
         JPanel p0 = new JPanel();
         p0.setLayout(new BorderLayout());
-        p0.add(checkCurrentUserDir=new JCheckBox("Working Dir ", false) , BorderLayout.WEST);
+        p0.add(checkCurrentUserDir=new JCheckBox("\"user.dir\"         or", false), BorderLayout.WEST);
         checkCurrentUserDir.addActionListener(this);
         checkCurrentUserDir.setActionCommand("Set to user.dir");
         p0.add(workField = new JTextField(workDir), BorderLayout.CENTER);
@@ -176,7 +176,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener
         b.setActionCommand("Browse current dir");
         b.addActionListener(this);
         p0.add(b, BorderLayout.EAST);
-        TitledBorder tborder = new TitledBorder("Default Working Directory");
+        TitledBorder tborder = new TitledBorder("Default File Directory");
         tborder.setTitleColor(Color.darkGray);
         p0.setBorder(tborder);
         centerP.add(p0);

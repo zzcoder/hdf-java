@@ -15,6 +15,8 @@ import ncsa.hdf.object.*;
 import javax.swing.*;
 import javax.swing.tree.*;
 import javax.swing.border.*;
+import javax.print.*;
+import javax.print.attribute.*;
 import java.awt.image.*;
 import java.awt.event.*;
 import java.awt.Font;
@@ -123,6 +125,9 @@ implements ImageView, ActionListener
     /** Flag to indicate if the image is a true color image */
     private boolean isTrueColor;
 
+    /** Flag to indicate if the image is a 3D */
+    private boolean is3D;
+
     /** Flag to indicate if the image is plane interleaved */
     private boolean isPlaneInterlace;
 
@@ -147,6 +152,10 @@ implements ImageView, ActionListener
 
     private PaletteComponent paletteComponent;
 
+    private String palName = null;
+
+    private int animationSpeed = 2;
+
     /**
      * Constructs an ImageView.
      * <p>
@@ -165,6 +174,7 @@ implements ImageView, ActionListener
         imagePalette = null;
         paletteComponent = null;
         isTrueColor = false;
+        is3D = false;
         isPlaneInterlace = false;
         isHorizontalFlipped = false;
         isVerticalFlipped = false;
@@ -188,6 +198,7 @@ implements ImageView, ActionListener
         // add the text field to display pixel data
         contentPane.add(valueField=new JTextField(), BorderLayout.SOUTH);
         valueField.setEditable(false);
+        valueField.setVisible(false);
 
         if (image == null)
             getImage();
@@ -338,7 +349,23 @@ implements ImageView, ActionListener
             contourMenu.add(item);
         }
         menu.add(contourMenu);
+        menu.addSeparator();
 
+        item = new JMenuItem( "Show Animation");
+        item.addActionListener(this);
+        item.setActionCommand("Show animation");
+        item.setEnabled(is3D);
+        menu.add(item);
+
+        JMenu animationMenu = new JMenu("Animation (frames/second)");
+        for (int i=2; i<12; i=i+2) {
+            item = new JMenuItem( String.valueOf(i));
+            item.addActionListener(this);
+            item.setActionCommand("Animation speed "+i);
+            animationMenu.add(item);
+        }
+        animationMenu.setEnabled(is3D);
+        menu.add(animationMenu);
         menu.addSeparator();
 
         JCheckBoxMenuItem imageValueCheckBox = new JCheckBoxMenuItem( "Show Value", false);
@@ -399,7 +426,6 @@ implements ImageView, ActionListener
         button.addActionListener( this );
         button.setActionCommand( "Zoom out" );
 
-        boolean is3D = (dataset.getRank() > 2) && !((ScalarDS)dataset).isTrueColor();
         if (is3D) {
             bar.add( new JLabel("     ") );
 
@@ -434,6 +460,13 @@ implements ImageView, ActionListener
             button.setMargin( margin );
             button.addActionListener( this );
             button.setActionCommand( "Last page" );
+
+            button = new JButton( ViewProperties.getAnimationIcon() );
+            bar.add( button );
+            button.setToolTipText( "Animation" );
+            button.setMargin( margin );
+            button.addActionListener( this );
+            button.setActionCommand( "Show animation" );
         }
 
         return bar;
@@ -539,6 +572,7 @@ implements ImageView, ActionListener
         int rank = dataset.getRank();
         if (rank <=0) dataset.init();
         isTrueColor = dataset.isTrueColor();
+        is3D = (dataset.getRank() > 2) && !((ScalarDS)dataset).isTrueColor();
 
         String strValue = null;
 
@@ -572,18 +606,19 @@ implements ImageView, ActionListener
 
                 image = createTrueColorImage(imageData, isPlaneInterlace, w, h);
                 imageData = null;
-            }
-            else
-            {
+            } else {
                 imagePalette = dataset.getPalette();
-                if (imagePalette == null)
-                {
-                    imagePalette = createGrayPalette();
+                if (imagePalette == null) {
+                    imagePalette = Tools.createGrayPalette();
+
+                    viewer.showStatus("\nNo attached palette found, default grey palette is used to display image");
+/*
                     JOptionPane.showMessageDialog(
                         (Frame)viewer,
                         "No attached palette found, default grey palette is used.",
                         dataset.getName(),
                         JOptionPane.INFORMATION_MESSAGE);
+*/
                 }
                 data = dataset.getData();
 
@@ -788,9 +823,11 @@ implements ImageView, ActionListener
     private void setValueVisible(boolean b)
     {
         valueField.setVisible(b);
-        //updateUI(); bug !!! on Windows. gives NullPointerException at
+        validate();
+        //updateUI(); //bug !!! on Windows. gives NullPointerException at
         //javax.swing.plaf.basic.BasicInternalFrameUI$BorderListener.mousePressed(BasicInternalFrameUI.java:693)
     }
+
 
     /**
      *  Convert an array of raw data into array of a byte data.
@@ -831,7 +868,9 @@ implements ImageView, ActionListener
         }
 
         int size = Array.getLength(rawData);
+
         byteData = new byte[size];
+
         boolean minmaxFound = !(minmax[0] == minmax[1]);
 
         switch (dname)
@@ -980,144 +1019,6 @@ implements ImageView, ActionListener
         minmax[1] = max;
 
         return byteData;
-    }
-
-    /**
-     *  Creates the gray palette of the indexed 256-color table.
-     *  <p>
-     *  The palette values are stored in a two-dimensional byte array and arrange
-     *  by color components of red, green and blue. palette[][] = byte[3][256],
-     *  where, palette[0][], palette[1][] and palette[2][] are the red, green and
-     *  blue components respectively.
-     *  @return the gray palette in the form of byte[3][256]
-     */
-    public static final byte[][] createGrayPalette()
-    {
-        byte[][] p = new byte[3][256];
-
-        for (int i=0; i<256; i++)
-        {
-            p[0][i] = p[1][i] = p[2][i] = (byte)i;
-        }
-
-        return p;
-    }
-
-    /**
-     *  Creates the rainbow palette of the indexed 256-color table.
-     *  <p>
-     *  The palette values are stored in a two-dimensional byte array and arrange
-     *  by color components of red, green and blue. palette[][] = byte[3][256],
-     *  where, palette[0][], palette[1][] and palette[2][] are the red, green and
-     *  blue components respectively.
-     *  @return the rainbow palette in the form of byte[3][256]
-     */
-    public static final byte[][] createRainbowPalette()
-    {
-        byte r, g, b;
-        byte[][] p = new byte[3][256];
-
-        for (int i=1; i<255; i++)
-        {
-            if (i<=29)
-            {
-                r = (byte)(129.36-i*4.36);
-                g = 0;
-                b = (byte)255;
-            }
-            else if (i<=86)
-            {
-                r = 0;
-                g = (byte)(-133.54+i*4.52);
-                b = (byte)255;
-            }
-            else if (i<=141)
-            {
-                r = 0;
-                g = (byte)255;
-                b = (byte)(665.83-i*4.72);
-            }
-            else if (i<=199)
-            {
-                r = (byte)(-635.26+i*4.47);
-                g = (byte)255;
-                b = 0;
-            }
-            else
-            {
-                r = (byte)255;
-                g = (byte)(1166.81-i*4.57);
-                b = 0;
-            }
-
-            p[0][i] = r;
-            p[1][i] = g;
-            p[2][i] = b;
-        }
-
-        p[0][0] = p[1][0] = p[2][0] = 0;
-        p[0][255] = p[1][255] = p[2][255] = (byte)255;
-
-        return p;
-    }
-
-    /**
-     *  Creates the nature palette of the indexed 256-color table.
-     *  <p>
-     *  The palette values are stored in a two-dimensional byte array and arrange
-     *  by color components of red, green and blue. palette[][] = byte[3][256],
-     *  where, palette[0][], palette[1][] and palette[2][] are the red, green and
-     *  blue components respectively.
-     *  @return the nature palette in the form of byte[3][256]
-     */
-    public static final byte[][] createNaturePalette()
-    {
-        byte[][] p = new byte[3][256];
-
-        for (int i=1; i<210; i++)
-        {
-            p[0][i] = (byte) ((Math.sin((double)(i-5)/16)+1)*90);
-            p[1][i] = (byte) ((1-Math.sin((double)(i-30)/12))*64*(1-(double)i/255)+128-i/2);
-            p[2][i] = (byte) ((1-Math.sin((double)(i-8)/9))*110+30);
-        }
-
-        for (int i=210; i<255; i++)
-        {
-            p[0][i] = (byte)80;
-            p[1][i] = (byte)0;
-            p[2][i] = (byte)200;
-        }
-
-        p[0][0] = p[1][0] = p[2][0] = 0;
-        p[0][255] = p[1][255] = p[2][255] = (byte)255;
-
-        return p;
-    }
-
-    /**
-     *  Creates the wave palette of the indexed 256-color table.
-     *  <p>
-     *  The palette values are stored in a two-dimensional byte array and arrange
-     *  by color components of red, green and blue. palette[][] = byte[3][256],
-     *  where, palette[0][], palette[1][] and palette[2][] are the red, green and
-     *  blue components respectively.
-     *  @return the wave palette in the form of byte[3][256]
-     */
-    public static final byte[][] createWavePalette()
-    {
-        byte[][] p = new byte[3][256];
-
-        for (int i=1; i<255; i++)
-        {
-            p[0][i] = (byte) ((Math.sin(((double)i/40-3.2))+1)*128);
-            p[1][i] = (byte) ((1-Math.sin(((double)i/2.55-3.1)))*70+30);
-            p[2][i] = (byte) ((1-Math.sin(((double)i/40-3.1)))*128);
-        }
-
-        p[0][0] = p[1][0] = p[2][0] = 0;
-        p[0][255] = p[1][255] = p[2][255] = (byte)255;
-
-        return p;
     }
 
     /**
@@ -1384,6 +1285,15 @@ implements ImageView, ActionListener
             boolean b = ((JCheckBoxMenuItem)source).getState();
             setValueVisible(b);
         }
+        else if (cmd.startsWith("Show animation"))
+        {
+            new Animation((JFrame)viewer, dataset);
+        }
+        else if (cmd.startsWith("Animation speed"))
+        {
+            animationSpeed = Integer.parseInt((cmd.substring(cmd.length()-2)).trim());
+        }
+
         else if (cmd.startsWith("Contour"))
         {
             int level = Integer.parseInt(cmd.substring(cmd.length()-1));
@@ -1798,7 +1708,6 @@ implements ImageView, ActionListener
             }
             g.drawString(format.format(pixelData[255]), paintSize.width+5, paintSize.height*255);
         }
-
     }
 
     /** ImageComponent draws the image. */
@@ -2036,7 +1945,6 @@ implements ImageView, ActionListener
 
             repaint();
         }
-
     } // private class ImageComponent extends JComponent
 
     /**
@@ -2404,5 +2312,187 @@ implements ImageView, ActionListener
                 }
             }
         }
+
     } // private class ContourFilter extends ImageFilter
+
+    /**
+     * Makes animaion for 3D images.
+     */
+    private class Animation extends JDialog implements ActionListener, Runnable
+    {
+        private final int MAX_IMAGE_SIZE = 300;
+
+        private Image[] frames = null; // a list of images for animation
+        private JComponent canvas = null; // canvas to draw the image
+        private Thread engine = null; // Thread animating the images
+        private int numberOfImages = 0;
+        private int currentFrame = 0;
+        private int sleepTime = 500;
+        private Image offScrImage;  // Offscreen image
+        private Graphics offScrGC; // Offscreen graphics context
+        private JFrame owner;
+        private int x0=0, y0=0; // offset of the image drawing
+
+        public Animation(JFrame theOwner, ScalarDS dataset) {
+            super(theOwner, "Animation", true);
+            owner = theOwner;
+            setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
+
+            long[] dims = dataset.getDims();
+            long[] stride = dataset.getStride();
+            long[] start = dataset.getStartDims();
+            long[] selected = dataset.getSelectedDims();
+            int[] selectedIndex = dataset.getSelectedIndex();
+            int rank = dataset.getRank();
+            if (animationSpeed != 0)
+                sleepTime = 1000/animationSpeed;
+
+            // back up the sart and selected size
+            long[] tstart = new long[rank];
+            long[] tselected = new long[rank];
+            long[] tstride = new long[rank];
+            System.arraycopy(start, 0, tstart, 0, rank);
+            System.arraycopy(selected, 0, tselected, 0, rank);
+            System.arraycopy(stride, 0, tstride, 0, rank);
+
+            int stride_n = 1;
+            int max_size = (int)Math.max(selected[selectedIndex[0]], selected[selectedIndex[1]]);
+            if (max_size > MAX_IMAGE_SIZE) {
+                stride_n = max_size/MAX_IMAGE_SIZE;
+            }
+
+            start[selectedIndex[0]] = 0;
+            start[selectedIndex[1]] = 0;
+            start[selectedIndex[2]] = 0;
+            selected[selectedIndex[0]] = dims[selectedIndex[0]]/stride_n;
+            selected[selectedIndex[1]] = dims[selectedIndex[1]]/stride_n;
+            selected[selectedIndex[2]] = 1;
+            stride[selectedIndex[0]] = stride_n;
+            stride[selectedIndex[1]] = stride_n;
+            stride[selectedIndex[2]] = 1;
+
+            Object data3d = null;
+            byte[] byteData = null;
+            int h = (int)selected[selectedIndex[0]];
+            int w = (int)selected[selectedIndex[1]];
+            numberOfImages = (int)dims[selectedIndex[2]];
+            frames = new Image[numberOfImages];
+            int size = w*h;
+            try {
+                for (int i=0; i<numberOfImages; i++) {
+                    start[selectedIndex[2]] = i;
+                    try { data3d = dataset.read(); }
+                    catch (Throwable err) { continue;}
+                    byteData = getBytes(data3d, dataRange);
+                    frames[i] = createIndexedImage(byteData, imagePalette, w, h);
+                }
+            } finally {
+                // set back to original state
+                System.arraycopy(tstart, 0, start, 0, rank);
+                System.arraycopy(tselected, 0, selected, 0, rank);
+                System.arraycopy(tstride, 0, stride, 0, rank);
+            }
+
+            offScrImage = owner.createImage(w, h);
+            offScrGC = offScrImage.getGraphics();
+            x0 = Math.max((MAX_IMAGE_SIZE-w)/2, 0);
+            y0 = Math.max((MAX_IMAGE_SIZE-h)/2, 0);
+
+            canvas = new JComponent() {
+                public void paint(Graphics g) {
+                    if (offScrGC == null || frames==null)
+                        return;
+                    offScrGC.drawImage(frames[currentFrame],0,0,owner);
+                    g.drawImage(offScrImage,x0,y0,owner);
+                }
+            };
+
+            JPanel contentPane = (JPanel)getContentPane();
+            contentPane.add(canvas);
+            contentPane.setPreferredSize(new Dimension(MAX_IMAGE_SIZE, MAX_IMAGE_SIZE));
+
+            Point l = getParent().getLocation();
+            Dimension d = getParent().getPreferredSize();
+
+            l.x += 300;
+            l.y += 200;
+            setLocation(l);
+
+            start();
+
+            pack();
+            show();
+        }
+
+        public void actionPerformed(ActionEvent e)
+        {
+            Object source = e.getSource();
+            String cmd = e.getActionCommand();
+
+            if (cmd.equals("Close animation")) {
+                this.dispose();  // terminate the animation
+            }
+        }
+
+        public void dispose() {
+            super.dispose();
+            engine = null;
+            frames = null;
+        }
+
+        /**
+         * No need to clear anything; just paint.
+         */
+        public void update(Graphics g) {
+            paint(g);
+        }
+
+        /**
+         * Paint the current frame
+         */
+        public void paint(Graphics g) {
+            canvas.paint(g);
+        }
+
+        /**
+         * Run the animation. This method is called by class Thread.
+         * @see java.lang.Thread
+         */
+        public void run() {
+            Thread me = Thread.currentThread();
+
+            if (frames == null || canvas == null)
+                return;
+
+            while (me == engine) {
+
+                synchronized(this) {
+                    repaint();
+
+                    // Pause for duration or longer if user paused
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {}
+
+                    currentFrame++;
+                    if (currentFrame >= numberOfImages)
+                        currentFrame = 0;
+                }
+
+
+
+            }
+        }
+
+        /**
+         * Start the applet by forking an animation thread.
+         */
+        private void start() {
+            engine = new Thread(this);
+            engine.start();
+        }
+
+
+
+    } // private class Animation extends JDialog
 }

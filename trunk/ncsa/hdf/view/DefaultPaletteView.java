@@ -59,7 +59,7 @@ implements PaletteView, MouseListener, MouseMotionListener, ActionListener
         byte[][] imagePalette = imageView.getPalette();
         int[] xRange = {0, 255};
         double[] yRange = {0, 255};
-        this.setTitle("Image Palette - "+dataset.getPath()+dataset.getName());
+        this.setTitle("Image Palette for - "+dataset.getPath()+dataset.getName());
 
         int d = 0;
         for (int i=0; i<3; i++)

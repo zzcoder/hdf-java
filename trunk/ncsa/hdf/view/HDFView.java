@@ -244,6 +244,24 @@ public class HDFView extends JFrame
 
         createMainWindow();
 
+        File theFile = new File(filename);
+        if (theFile.exists()) {
+            if (theFile.isFile()) {
+                currentDir = theFile.getParentFile().getAbsolutePath();
+                currentFile = theFile.getAbsolutePath();
+
+                try {
+                    treeView.openFile(filename, FileFormat.WRITE);
+                     try { updateRecentFiles(filename); } catch (Exception ex) {}
+                } catch (Exception ex) {
+                    showStatus(ex.toString());
+                }
+            }
+            else {
+                currentDir = theFile.getAbsolutePath();;
+            }
+        }
+
         if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4) == null)
             setEnabled(h4GUIs, false);
 

@@ -224,11 +224,9 @@ implements ActionListener, ItemListener
                 txtviewP.setBorder(new LineBorder(Color.LIGHT_GRAY));
 
                 centerP.add(txtviewP, BorderLayout.SOUTH);
-            }
-            else {
-                contentPane.setPreferredSize(new Dimension(700, 340));
-                if (rank > 1)
-                    centerP.add(navigatorP, BorderLayout.WEST);
+            } else {
+                contentPane.setPreferredSize(new Dimension(700, 355));
+                if (rank > 1) centerP.add(navigatorP, BorderLayout.WEST);
 
                 // setup GUI components for the display options: table or image
                 imageButton.addItemListener(this);
@@ -293,7 +291,7 @@ implements ActionListener, ItemListener
         contentPane.add(centerP, BorderLayout.CENTER);
 
         selectionP.add(new JLabel(" "));
-        selectionP.add(new JLabel(" "));
+        selectionP.add(new JLabel(""));
         JLabel label = new JLabel("Start:");
         selectionP.add(label);
         label = new JLabel("End: ");
@@ -342,17 +340,11 @@ implements ActionListener, ItemListener
         // add button dimension selection when dimension size >= 4
         JButton button = new JButton("More...");
         selectionP.add(new JLabel(" "));
-        if (rank > 3)
-        {
-            button.setMnemonic(KeyEvent.VK_M);
-            button.setActionCommand("Select more dimensions");
-            button.addActionListener(this);
-            selectionP.add(button);
-        }
-        else
-        {
-            selectionP.add(new JLabel(" "));
-        } // padding last row of the center panel.
+        selectionP.add(button);
+        button.setMnemonic(KeyEvent.VK_M);
+        button.setActionCommand("Select more dimensions");
+        button.addActionListener(this);
+        button.setEnabled((rank > 3));
         selectionP.add(new JLabel(" "));
         selectionP.add(new JLabel(" "));
         selectionP.add(new JLabel(" "));
@@ -425,12 +417,12 @@ implements ActionListener, ItemListener
             }
 
             String msg = "Select slice location for dimension(s):\n\""
-                       +choice4.get(0)+"["+dims[choice4Index[0]]+"]\"";
+                       +choice4.get(0)+" [1 .. "+dims[choice4Index[0]]+"]\"";
             String initValue = String.valueOf(start[choice4Index[0]]+1);
             int n = choice4.size();
             for (int i=1; i<n; i++)
             {
-                msg +=" x \"" + choice4.get(i)+ "["+dims[choice4Index[i]]+"]\"";
+                msg +=" x \"" + choice4.get(i)+ " [1 .. "+dims[choice4Index[i]]+"]\"";
                 initValue += " x "+String.valueOf(start[choice4Index[i]]+1);
             }
 
