@@ -30,7 +30,7 @@ import java.awt.Font;
  * @author Peter X. Cao
  */
 public class DefaultTextView extends JInternalFrame
-implements TextView, ActionListener
+implements TextView, ActionListener, KeyListener
 {
     /**
      * The main HDFView.
@@ -61,6 +61,8 @@ implements TextView, ActionListener
     private JTable table;
 
     private boolean isReadOnly = false;
+
+    private boolean isTextChanged = false;
 
     /**
      * Constructs an TextView.
@@ -110,19 +112,15 @@ implements TextView, ActionListener
         txtPane.setLayout(new GridLayout(size, 1));
 
         Border txtBorder = new MatteBorder(0, 0, 1, 0, java.awt.Color.BLUE);
-        String ftype = ViewProperties.getFontType();
-        int fsize = ViewProperties.getFontSize();
-        Font font = null;
-        try { font = new Font(ftype, Font.PLAIN, fsize); }
-        catch (Exception ex) {font = null; }
         for (int i=0; i<size; i++)
         {
             textAreas[i] = new JTextArea(text[i]);
             textAreas[i].setEditable(!isReadOnly);
             textAreas[i].setWrapStyleWord(true);
+            if (!isReadOnly)
+                textAreas[i].addKeyListener(this);
             textAreas[i].setBorder(txtBorder);
             txtPane.add(textAreas[i]);
-            if (font != null) textAreas[i].setFont(font);
         }
 
         ((JPanel)getContentPane()).add (new JScrollPane(txtPane));
@@ -153,10 +151,19 @@ implements TextView, ActionListener
                         getTitle(),
                         JOptionPane.ERROR_MESSAGE);
             }
+        } else if (cmd.equals("Save changes")) {
+            updateValueInFile();
         }
         else if (cmd.equals("Print")) {
             print();
         }
+    }
+
+    public void keyPressed(KeyEvent e){}
+    public void keyReleased(KeyEvent e){}
+    public void keyTyped(KeyEvent e)
+    {
+        isTextChanged = true;
     }
 
     private JMenuBar createMenuBar() {
@@ -172,6 +179,13 @@ implements TextView, ActionListener
         //item.setMnemonic(KeyEvent.VK_T);
         item.addActionListener(this);
         item.setActionCommand("Save to text file");
+        menu.add(item);
+
+        menu.addSeparator();
+
+        item = new JMenuItem( "Save Changes");
+        item.addActionListener(this);
+        item.setActionCommand("Save changes");
         menu.add(item);
 
         menu.addSeparator();
@@ -214,18 +228,7 @@ implements TextView, ActionListener
         if (!(dataset instanceof ScalarDS))
             return;
 
-        boolean isValueChanged = false;
-        String txt = null;
-        for (int i=0; i<text.length; i++)
-        {
-            txt = textAreas[i].getText();
-            if (!text[i].equals(txt)) {
-                isValueChanged = true;
-                text[i] = txt;
-            }
-        }
-
-        if (!isValueChanged)
+        if (!isTextChanged)
             return;
 
         int op = JOptionPane.showConfirmDialog(this,
@@ -237,12 +240,15 @@ implements TextView, ActionListener
         if (op == JOptionPane.NO_OPTION)
             return;
 
+        for (int i=0; i<text.length; i++)
+            text[i] = textAreas[i].getText();
+
         try { dataset.write(); }  catch (Exception ex) {}
+        isTextChanged = false;
 
         // refresh text in memory. After writing, text is cut off to its max string length
         for (int i=0; i<text.length; i++)
             textAreas[i].setText(text[i]);
-
     }
 
     /** Save data as text. */

@@ -281,6 +281,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         contentPane.add(infoPanel, BorderLayout.CENTER);
 
         classChoice.addItemListener(this);
+        sizeChoice.addItemListener(this);
         rankChoice.addItemListener(this);
         checkCompression.addItemListener(this);
         checkContinguous.addItemListener(this);
@@ -439,6 +440,13 @@ implements ActionListener, ItemListener, HyperlinkListener
                     sizeChoice.addItem("32");
                     sizeChoice.addItem("64");
                 }
+
+                if (sizeChoice.getSelectedItem().equals("64"))
+                {
+                    // unsigned 64 bit integer is not allowed
+                    checkUnsigned.setSelected(false);
+                    checkUnsigned.setEnabled(false);
+                }
             }
             else if (idx == 1)
             {
@@ -472,6 +480,20 @@ implements ActionListener, ItemListener, HyperlinkListener
                 endianChoice.setEnabled(false);
                 checkUnsigned.setEnabled(false);
                 stringLengthField.setEnabled(false);
+            }
+        }
+        else if (source.equals(sizeChoice))
+        {
+            if (classChoice.getSelectedIndex() == 0)
+            {
+                if (sizeChoice.getSelectedItem().equals("64"))
+                {
+                    // unsigned 64 bit integer is not allowed
+                    checkUnsigned.setSelected(false);
+                    checkUnsigned.setEnabled(false);
+                }
+                else
+                   checkUnsigned.setEnabled(true);
             }
         }
         else if (source.equals(rankChoice))
@@ -839,7 +861,7 @@ implements ActionListener, ItemListener, HyperlinkListener
                 {
                     toolkit.beep();
                     JOptionPane.showMessageDialog(this,
-                        "Dimension size cannot be less than 1.",
+                        "Chunk size cannot be less than 1.",
                         getTitle(),
                         JOptionPane.ERROR_MESSAGE);
                     return null;

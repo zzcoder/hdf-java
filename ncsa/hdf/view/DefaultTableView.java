@@ -320,8 +320,9 @@ implements TableView, ActionListener
         //item.setMnemonic(KeyEvent.VK_W);
         item.addActionListener(this);
         item.setActionCommand("Write selection to dataset");
-        item.setEnabled(isEditable);
+        item.setEnabled(isEditable && (dataset instanceof ScalarDS));
         menu.add(item);
+
 
         item = new JMenuItem( "Save Change to File");
         //item.setMnemonic(KeyEvent.VK_U);
@@ -841,11 +842,6 @@ null, options, options[0]);
 
         if (cols <=0 || rows <= 0)
         {
-            toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-            "No data is selected.",
-            getTitle(),
-            JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
@@ -906,16 +902,6 @@ null, options, options[0]);
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
             "No data is selected.",
-            getTitle(),
-            JOptionPane.ERROR_MESSAGE);
-            return null;
-        }
-
-        if (cols>1)
-        {
-            toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-            "Only allow to select one column for math conversion/statistics.",
             getTitle(),
             JOptionPane.ERROR_MESSAGE);
             return null;
@@ -1629,7 +1615,7 @@ null, options, options[0]);
 
         int op = JOptionPane.showConfirmDialog(this,
             "\""+ dataset.getName() +"\" has changed.\n"+
-            "you want to save the changes?",
+            "Do you want to save the changes?",
             getTitle(),
             JOptionPane.YES_NO_OPTION);
 
@@ -1667,7 +1653,28 @@ null, options, options[0]);
         //if (!(dataset instanceof ScalarDS)) return;
 
         Object theData = getSelectedData();
-        if (theData == null ||
+
+        if (dataset instanceof CompoundDS)
+        {
+            int cols = table.getSelectedColumnCount();
+            //if (!(dataset instanceof ScalarDS))  return;
+            if ((dataset instanceof CompoundDS) && (cols>1))
+            {
+                JOptionPane.showMessageDialog(this,
+                        "Please select one colunm a time for compound dataset.",
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            else if (theData == null)
+            {
+                JOptionPane.showMessageDialog(this,
+                        "Select a column to show statistics.",
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        } else if (theData == null ||
             Array.getLength(theData)==1)
             theData = dataValue;
 
@@ -1823,10 +1830,28 @@ null, options, options[0]);
         if (isReadOnly)
             return;
 
+        int cols = table.getSelectedColumnCount();
         //if (!(dataset instanceof ScalarDS))  return;
+        if ((dataset instanceof CompoundDS) && (cols>1))
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+            "Please select one colunm a time for math conversion for compound dataset.",
+            getTitle(),
+            JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         Object theData = getSelectedData();
         if (theData == null)
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+            "No data is selected.",
+            getTitle(),
+            JOptionPane.ERROR_MESSAGE);
             return;
+        }
 
         MathConversionDialog dialog = new MathConversionDialog((JFrame)viewer, theData);
         dialog.show();
@@ -1848,7 +1873,6 @@ null, options, options[0]);
             }
             else
             {
-                int cols = table.getSelectedColumnCount();
                 int rows = table.getSelectedRowCount();
                 int r0 = table.getSelectedRow();
                 int c0 = table.getSelectedColumn();

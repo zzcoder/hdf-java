@@ -56,6 +56,7 @@ implements ActionListener, MetaDataView
     private boolean isH5, isH4;
     private byte[] userBlock;
     private JTextArea userBlockArea;
+    private JButton jamButton;
 
     /**
      * Constructs a DefaultMetadataView with the given HDFView.
@@ -131,19 +132,37 @@ implements ActionListener, MetaDataView
         else if (cmd.equals("Delete attribute")) {
             deleteAttribute(hObject);
         }
+        else if (cmd.equals("Jam user block")) {
+            writeUserBlock();
+        }
         else if (cmd.equals("Display user block as")) {
             int type = 0;
             String typeName = (String)((JComboBox)source).getSelectedItem();
+            jamButton.setEnabled(false);
+            userBlockArea.setEditable(false);
+
             if (typeName.equalsIgnoreCase("Text"))
+            {
                 type = 0;
+                jamButton.setEnabled(true);
+                userBlockArea.setEditable(true);
+            }
             else if (typeName.equalsIgnoreCase("Binary"))
+            {
                 type = 2;
+            }
             else if (typeName.equalsIgnoreCase("Octal"))
+            {
                 type = 8;
+            }
             else if (typeName.equalsIgnoreCase("Hexadecimal"))
+            {
                 type = 16;
+            }
             else if (typeName.equalsIgnoreCase("Decimal"))
+            {
                 type = 10;
+            }
 
             showUserBlockAs(type);
         }
@@ -702,12 +721,6 @@ implements ActionListener, MetaDataView
 
         JScrollPane scroller1 = new JScrollPane(attrTable);
         attrContentArea = new JTextArea();
-        String ftype = ViewProperties.getFontType();
-        int fsize = ViewProperties.getFontSize();
-        Font font = null;
-        try { font = new Font(ftype, Font.PLAIN, fsize); }
-        catch (Exception ex) {font = null; }
-        if (font != null) attrContentArea.setFont(font);
         attrContentArea.setLineWrap(true);
         attrContentArea.setEditable(false);
         Insets m = new Insets(5,5,5,5);
@@ -767,17 +780,10 @@ implements ActionListener, MetaDataView
         panel.setLayout (new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10,0,0,0));
         userBlockArea = new JTextArea();
-        userBlockArea.setEditable(false);
+        userBlockArea.setEditable(true);
         userBlockArea.setLineWrap(true);
         Insets m = new Insets(5,5,5,5);
         userBlockArea.setMargin(m);
-
-        String ftype = ViewProperties.getFontType();
-        int fsize = ViewProperties.getFontSize();
-        Font font = null;
-        try { font = new Font(ftype, Font.PLAIN, fsize); }
-        catch (Exception ex) {font = null; }
-        if (font != null) userBlockArea.setFont(font);
 
         String[] displayChoices = {"Text", "Binary", "Octal", "Hexadecimal", "Decimal"};
         JComboBox userBlockDisplayChoice = new JComboBox(displayChoices);
@@ -786,12 +792,19 @@ implements ActionListener, MetaDataView
         userBlockDisplayChoice.setEditable(false);
         userBlockDisplayChoice.setActionCommand("Display user block as");
 
-        JPanel topPane = new JPanel();
-        topPane.setLayout(new BorderLayout(10,10));
-        topPane.add(new JLabel("Display As:"), BorderLayout.WEST);
-        topPane.add(userBlockDisplayChoice, BorderLayout.CENTER);
         JLabel sizeLabel = new JLabel("Header Size (Bytes): 0");
-        topPane.add(sizeLabel, BorderLayout.EAST);
+        jamButton = new JButton("Save User Block");
+        jamButton.setActionCommand("Jam user block");
+        jamButton.addActionListener(this);
+        JPanel topPane = new JPanel();
+        topPane.setLayout(new BorderLayout(10, 5));
+        topPane.add(new JLabel("Display As:"), BorderLayout.WEST);
+        JPanel topPane0 = new JPanel();
+        topPane0.setLayout(new GridLayout(1,2,10,5));
+        topPane0.add(userBlockDisplayChoice);
+        topPane0.add(sizeLabel);
+        topPane.add(topPane0, BorderLayout.CENTER);
+        topPane.add(jamButton, BorderLayout.EAST);
 
         JScrollPane scroller = new JScrollPane(userBlockArea);
         panel.add(topPane, BorderLayout.NORTH);
@@ -1013,6 +1026,124 @@ implements ActionListener, MetaDataView
 
         // update the attribute table
         attrTable.setValueAt(attr.toString(", "), row, 1);
+    }
+
+
+    private void writeUserBlock()
+    {
+        if (!isH5) // only for h5
+            return;
+
+        int blkSize0 = 0;
+        if (userBlock != null)
+        {
+            blkSize0 = userBlock.length;
+            // The super block space is allocated by offset 0, 512, 1024, 2048, etc
+            if (blkSize0>0)
+            {
+                int offset = 512;
+                while (offset < blkSize0)
+                    offset *= 2;
+                blkSize0 = offset;
+            }
+        }
+
+        int blkSize1 = 0;
+        String userBlockStr = userBlockArea.getText();
+        if (userBlockStr == null )
+        {
+            if (blkSize0<=0)
+                return; // nothing to write
+            else
+                userBlockStr = " "; // want to wipe out old userblock content
+        }
+        byte buf[] = null;
+        buf = userBlockStr.getBytes();
+
+        blkSize1 = buf.length;
+        if (blkSize1 <= blkSize0)
+        {
+            java.io.RandomAccessFile raf = null;
+            try { raf = new java.io.RandomAccessFile(hObject.getFile(), "rw"); }
+            catch (Exception ex) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Can't open output file: "+hObject.getFile(),
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                        return;
+            }
+
+             try {
+                 raf.seek(0);
+                 raf.write(buf, 0, buf.length);
+                 raf.seek(buf.length);
+                 if (blkSize0 > buf.length)
+                 {
+                     byte[] padBuf = new byte[blkSize0-buf.length];
+                     raf.write(padBuf, 0, padBuf.length);
+                }
+            } catch (Exception ex) {}
+            try { raf.close();} catch (Exception ex) {}
+        }
+        else
+        {
+            // must rewrite the whole file
+            int op = JOptionPane.showConfirmDialog(this,
+                    "The user block to write is "+blkSize1+" (bytes),\n"+
+                    "which is larger than the user block space in file "+blkSize0+" (bytes).\n"+
+                    "To expand the user block, the file will be rewriten.\n"+
+                    "Do you want to save the changes?",
+                    getTitle(),
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+            if (op == JOptionPane.NO_OPTION)
+                return;
+
+            String fin = hObject.getFile();
+            String fout = fin+"~";
+            File tmpFile = new File(fout);
+
+            if (!tmpFile.exists())
+            {
+                try { tmpFile.createNewFile(); }
+                catch (Exception ex)
+                {
+                    JOptionPane.showMessageDialog(
+                        this,
+                        "Fail to write user block into file. ",
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+
+            // close the file
+            ActionEvent e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Close file");
+            ((HDFView)viewer).actionPerformed(e);
+
+            if (DefaultFileFilter.setHDF5UserBlock(fin, fout, buf))
+            {
+                boolean status = false;
+                File oldFile = new File(fin);
+                oldFile.delete();
+                tmpFile.renameTo(oldFile);
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Fail to write user block into file. ",
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                tmpFile.delete();
+             }
+
+             // reopen the file
+             dispose();
+             e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Open file://"+fin);
+            ((HDFView)viewer).actionPerformed(e);
+         }
     }
 
 }

@@ -23,6 +23,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Toolkit;
 import java.awt.event.*;
+import java.awt.Cursor;
 
 /**
  * <p>Title: </p>
@@ -108,7 +109,7 @@ implements TreeView, ActionListener {
         tree.setRootVisible(false);
         //tree.setShowsRootHandles(true);
         tree.setRowHeight(23);
-        tree.setFont(tree.getFont().deriveFont(16f));
+        //tree.setFont(tree.getFont().deriveFont(16f));
 
         // create the popupmenu
         popupMenu = createPopupMenu();
@@ -268,7 +269,7 @@ implements TreeView, ActionListener {
 
             boolean state = !(((Group)selectedObject).isRoot());
             popupMenu.getComponent(5).setEnabled(state); // "Copy" menuitem
-            popupMenu.getComponent(6).setEnabled(state && isWritable); // "Paste" menuitem
+            popupMenu.getComponent(6).setEnabled(isWritable); // "Paste" menuitem
             popupMenu.getComponent(7).setEnabled(state && isWritable); // "Delete" menuitem
             popupMenu.getComponent(9).setEnabled(state); // "save to" menuitem
             popupMenu.getComponent(10).setEnabled(state && isWritable); // "rename" menuitem
@@ -1182,11 +1183,14 @@ implements TreeView, ActionListener {
             throw new java.io.IOException("Unsupported fileformat - "+filename);
         }
 
+        ((JFrame)viewer).setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try {
             fileFormat.setMaxMembers(ViewProperties.getMaxMembers());
             fileFormat.setStartMembers(ViewProperties.getStartMembers());
             fileFormat.open();
-        } finally { ; }
+        } finally {
+            ((JFrame)viewer).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        }
 
         fileRoot = (MutableTreeNode)fileFormat.getRootNode();
         if (fileRoot != null) {
@@ -1379,12 +1383,12 @@ implements TreeView, ActionListener {
             initargs = tmpargs;
         }
 
-        ((JFrame)viewer).setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
+        ((JFrame)viewer).setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try {
             theView = Tools.newInstance(theClass, initargs);
             viewer.addDataView((DataView)theView);
         } finally {
-            ((JFrame)viewer).setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
+            ((JFrame)viewer).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
 
         return (DataView)theView;
