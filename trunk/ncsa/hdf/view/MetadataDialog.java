@@ -58,6 +58,8 @@ implements ActionListener
 
         if (hObject == null)
             dispose();
+        else if ( hObject.getPath()== null)
+            setTitle("Properties - "+hObject.getName());
         else
             setTitle("Properties - "+hObject.getPath()+hObject.getName());
 

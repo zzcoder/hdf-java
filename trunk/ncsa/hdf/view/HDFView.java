@@ -742,10 +742,11 @@ implements ViewManager, ActionListener, HyperlinkListener
             msgScroller);
 
         // set the window size
-        float inset = 0.07f;
+        float inset = 0.17f; // for UG only.
+        //float inset = 0.07f;
         Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-        d.width = Math.max(500, (int)((1-2*inset)*d.width));
-        d.height = Math.max(400, (int)((1-2*inset)*d.height));
+        d.width = Math.max(400, (int)((1-2*inset)*d.width));
+        d.height = Math.max(300, (int)((1-2*inset)*d.height));
 
         splitPane.setDividerLocation(d.height-100);
 
