@@ -34,8 +34,8 @@ COPT=@COPT@
 CFLAGS = $(DEFS) -I. -I$(JAVAINC1) -I$(JAVAINC2) -I$(HDFINC)
 
 # Be sure to add -lbsd if compiling in a SYSV environment
-LIBS =  $(HDFLIB)/libmfhdf.$(LLEXT) $(HDFLIB)/libdf.$(LLEXT) -lm -lz -ljpeg
-$(SZLIB)
+LIBS =  $(HDFLIB)/libmfhdf.$(LLEXT) $(HDFLIB)/libdf.$(LLEXT) -lm -lz -ljpeg $(SZLIB)
+
 # Macro def: object filename used
 OBJECTS =  hdfstructsutil.o \
 	hdfImp.o hdfvgroupImp.o hdfvdataImp.o hdfsdsImp.o hdfanImp.o \
