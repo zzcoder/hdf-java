@@ -429,6 +429,22 @@ implements ViewManager, ActionListener, HyperlinkListener
             d.clearData();
         }
 
+        // try to see if can open the data content
+        if (selectedObject instanceof DataFormat)
+        {
+            DataFormat data = (DataFormat)selectedObject;
+            try { data.read(); }
+            catch (Throwable ex) {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(this,
+                    ex,
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
+
         if (isImage)
         {
             ImageView dataView = new ImageView(this);

@@ -161,6 +161,15 @@ implements TableObserver
         contentPane.setLayout(new BorderLayout());
         contentPane.add(valuePane, BorderLayout.SOUTH);
         contentPane.add (scroller, BorderLayout.CENTER);
+
+        // reset the title for 3D dataset
+        if (dataset.getRank() > 2)
+        {
+            long[] start = dataset.getStartDims();
+            int[] selectedIndex = dataset.getSelectedIndex();
+            long[] dims = dataset.getDims();
+            setTitle( frameTitle+ " - Page "+String.valueOf(start[selectedIndex[2]]+1)+ " of "+dims[selectedIndex[2]]);
+        }
     }
 
     public void dispose()
