@@ -52,7 +52,7 @@ HERE=`pwd`
 dnl  Check for HDF4 library  --with-hdf4 must be set.
 
 withval=""
-AC_ARG_WITH(hdf4,[  --with-hdf4=INC,LIB     Use the HDF4 library])
+AC_ARG_WITH(hdf4,[  --with-hdf4=INC,LIB     Path to the HDF4 library (required if not in default path)])
 case "$withval" in
   yes)
     AC_MSG_ERROR(HDF4 library needed for compilation.)
@@ -97,7 +97,7 @@ ZLIB=$HDF4LIB"/libz.a"
 dnl  Check for HDF5 library  --with-hdf5 must be set.
 withval="";
 AC_SUBST(LIBHDF5) LIBHDF5=""
-AC_ARG_WITH(hdf5,[  --with-hdf5=INC,LIB     Where to find the HDF5 library],,)
+AC_ARG_WITH(hdf5,[  --with-hdf5=INC,LIB     Path to the HDF5 library (requied if not in default path)],,)
 case "$withval" in
   yes)
     AC_MSG_ERROR(HDF5 library needed for compilation.)
@@ -139,7 +139,7 @@ dnl only build hdf and hdf5 separately.
 
 withval="";
 AC_SUBST(LIBH45) LIBH45=""
-AC_ARG_WITH(h4toh5,[  --with-h4toh5=INC,LIB     Where to find the HDF 4 to 5 library],,)
+AC_ARG_WITH(h4toh5,[  --with-h4toh5=INC,LIB     Path to the HDF 4 to 5 library (optional feature, if selected then path required in not in default path)],,)
 case "$withval" in
   yes)
     AC_MSG_ERROR(HDF 4 to 5 library needed for compilation.)
@@ -187,7 +187,7 @@ dnl  find java stuff:  use -with-jdk
 
 withval="";
 AC_SUBST(JAVALIB) JAVALIB=""
-AC_ARG_WITH(jdk,[  --with-jdk=INC,LIB     Where to find the JDK ],,)
+AC_ARG_WITH(jdk,[  --with-jdk=INC,LIB     Path to the JDK (required if not in default path)],,)
 case "$withval" in
   yes)
     AC_MSG_ERROR(JDK needed for compilation.)
@@ -243,7 +243,7 @@ AC_PATH_PROG(JAR,jar,,$JAVABIN,)
 dnl  optional find the jhdf wrappers 
 
 withval="";
-AC_ARG_WITH(jhdf4,[  --with-jhdf4=LIB     Where to find the jhdf4 ],,)
+AC_ARG_WITH(jhdf4,[  --with-jhdf4=LIB     Path to the jhdf4,jar (optional override, used only by H4 to H5) ],,)
 case "$withval" in
   yes)
     AC_MSG_ERROR(jhdf4 path needed for compilation.)
@@ -264,7 +264,7 @@ case "$withval" in
 esac
 
 withval="";
-AC_ARG_WITH(jhdf5,[  --with-jhdf5=LIB     Where to find the jhdf45 ],,)
+AC_ARG_WITH(jhdf5,[  --with-jhdf5=LIB     Path to the jhdf45.jar (optional override, used only by the H4 to H5 library) ],,)
 case "$withval" in
   yes)
     AC_MSG_ERROR( jhdf5 path needed for compilation.)
