@@ -53,6 +53,22 @@ provided that the following conditions are met:
     suffered by the users arising out of the use of this software, even if
     advised of the possibility of such damage.
 
+The Java HDF products contail the SZIP compression library.
+
+The SZIP Science Data Lossless Compression Program is Copyright (C) 2001 Science
+& Technology Corporation @ UNM.  All rights released.  Copyright (C) 2003 Lowell
+H. Miles and Jack A. Venbrux.  Licensed to ICs Corp. for distribution by the
+University of Illinois' National Center for Supercomputing Applications as a
+part of the HDF data storage and retrieval file format and software library
+products package.  All rights reserved. 
+purposes.
+
+As distributed and implemented the HDF Java products are available
+for all use.
+
+For further information about SZIP licensing, see:
+  http://hdf.ncsa.uiuc.edu/doc_resource/SZIP
+
 --------------------------------------------------------------------------
 Portions of HDF5 were developed with support from the University of 
 California, Lawrence Livermore National Laboratory (UC LLNL).
