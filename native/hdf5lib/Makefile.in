@@ -15,8 +15,8 @@ HDF5INC = @HDF5INC@
 HDF5LIB = @HDF5LIB@
 JAVAINC1=@JAVAINC@
 JAVAINC2=@JAVAINC2@
-ZLIB=@ZLIB@
-SZLIB=@ZLIB@
+ZLIB=-lz
+SZLIB=@SZLIB@
 
 LIBDIR=../../lib/@JAVATARG@
 
@@ -32,7 +32,7 @@ COPT=@COPT@
 
 CFLAGS = $(DEFS) -I. -I$(HDF5INC) -I$(JAVAINC1) -I$(JAVAINC2)
 
-LIBS =  $(HDF5LIB)/libhdf5.$(LLEXT) @ZLIB@ @SZLIB@ -lm
+LIBS =  $(HDF5LIB)/libhdf5.$(LLEXT) $(ZLIB) $(SZLIB) -lm
 
 # Macro def: object filename used
 OBJECTS =  exceptionImp.o h5Constants.o h5Imp.o h5aImp.o h5dImp.o h5fImp.o h5gImp.o h5iImp.o h5pImp.o h5rImp.o h5sImp.o h5tImp.o nativeData.o 

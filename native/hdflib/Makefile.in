@@ -19,6 +19,7 @@ JAVAINC1=@JAVAINC@
 JAVAINC2=@JAVAINC2@
 
 LIBDIR=../../lib/@JAVATARG@
+SZLIB=@SZLIB@
 
 # Flags passed to the C compiler.  Leave these alone.
 
@@ -33,8 +34,8 @@ COPT=@COPT@
 CFLAGS = $(DEFS) -I. -I$(JAVAINC1) -I$(JAVAINC2) -I$(HDFINC)
 
 # Be sure to add -lbsd if compiling in a SYSV environment
-LIBS =  $(HDFLIB)/libmfhdf.$(LLEXT) $(HDFLIB)/libdf.$(LLEXT) $(HDFLIB)/libjpeg.$(LLEXT) $(HDFLIB)/libz.$(LLEXT) -lm 
-
+LIBS =  $(HDFLIB)/libmfhdf.$(LLEXT) $(HDFLIB)/libdf.$(LLEXT) -lm -lz -ljpeg
+$(SZLIB)
 # Macro def: object filename used
 OBJECTS =  hdfstructsutil.o \
 	hdfImp.o hdfvgroupImp.o hdfvdataImp.o hdfsdsImp.o hdfanImp.o \
