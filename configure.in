@@ -1,4 +1,4 @@
-
+#****************************************************************************/
 #* NCSA HDF                                                                 *
 #* National Comptational Science Alliance                                   *
 #* University of Illinois at Urbana-Champaign                               *
@@ -28,6 +28,13 @@ else
   AC_MSG_RESULT([yes])
 fi
 
+dnl ----------------------------------------------------------------------
+dnl Some platforms have broken 'expr' programs. Check
+dnl that it actually does what it's supposed to do. Catch this early
+dnl since configure relies upon 'expr' to process its arguments, and
+dnl there isn't much use continuging if it's broken.
+dnl
+AC_MSG_CHECKING([if expr works])
 yyy_ok="yes"
 yyy_option="$*"
 for yyy_option
@@ -42,7 +49,9 @@ do
   fi
 done
 if test "$yyy_ok" = "no"; then
-	exit 1
+  AC_MSG_ERROR([expr program doesn't work])
+else
+  AC_MSG_RESULT([yes])
 fi
 
 dnl Checks for programs.
@@ -61,27 +70,54 @@ fi
 
 
 AC_PREFIX_DEFAULT("")
-AC_PROG_RANLIB
 AC_PATH_PROG(RM,rm,\"\",,)
 AC_PATH_PROG(FIND,find,\"\",,)
 
+dnl
+dnl  Some platform specific settings for different Java implementations
+dnl
 AC_CANONICAL_SYSTEM
 TARGET=$target
+echo "FYI the target here is: "$target
 case $target in
 *-*-solaris2*) TARGETLIB="solaris"
+LD=$CC; LDOPT=-G; SLEXT="so";
+LLEXT="a";  
+JSLEXT="so";
+COPT=-G; COPTNOSHARED=; 
 ;;
 mips*-sgi-irix6*) 
 TARGETLIB="irix"
+LD=ld; 
+LLEXT="a";  
+JSLEXT="so";  
+JSLEXT="so";
 ;;
 *-pc-linux*) LD=$CC; LDOPT=-shared; SLEXT="so";
 TARGETLIB="linux"
+SLEXT="so";
+LLEXT="a";  # the extension for the HDF and other libraries to link to
+JSLEXT="so";
+COPT="-shared -DUNIX386" ; 
+;;
+*powerpc-apple*) 
+LD=$CC; LDOPT=-dynamiclib; 
+JSLEXT="jnilib";
+SLEXT="dylib";
+LLEXT="dylib";
 ;;
 *) LD=$CC; LDOPT=-G; SLEXT="so";
+LLEXT="a";
 TARGETLIB="$target"
 esac
-HERE=`pwd`
 
-
+dnl ----------------
+dnl  Check for the external compression libraries required by the 
+dnl  HDF libraries.
+dnl
+dnl  Note:  we need to find static libraries, so we can't rely on
+dnl  autoconf for these detections.
+dnl
 
 withval="";
 AC_SUBST(ZLIB) ZLIB=""
@@ -96,20 +132,20 @@ case "$withval" in
     	AC_MSG_RESULT(GZIP suppressed);
     ;;
   *)
-if test -n "$withval" ; then
-    z_lib="`echo $withval |cut -f2 -d, -s`"
-	ZLIB=$z_lib"/libz"
+    if test -n "$withval" ; then
+        z_lib="`echo $withval |cut -f2 -d, -s`"
+	ZLIB=$z_lib"/libz."$LLEXT
     	AC_MSG_RESULT([zlib found: $ZLIB]);
-else
-AC_CHECK_LIB(z, compress, [ZLIB=-lz], 
-    AC_MSG_ERROR([GZIP library needed for compilation.]) ,)
-fi
+    else
+        AC_MSG_ERROR(GZIP library needed for compilation.)
+    fi
 ;;
 esac
 if test -n "$ZLIB"; then
 LIBS="$LIBS $ZLIB"
 fi
 
+HAVE_JPEG="no"
 withval="";
 AC_SUBST(JPEGLIB) JPEGLIB=""
 AC_ARG_WITH(libjpeg,[  --with-libjpeg=LIB     Path to the jpeg library (required if not in default path)],,)
@@ -120,49 +156,61 @@ case "$withval" in
     ;;
   no)
       JPEGLIB=""
-    	AC_MSG_RESULT(JPEG suppressed);
+    	AC_MSG_RESULT([JPEG suppressed]);
+	HAVE_JPEG="no"
     ;;
   *)
-if test -n "$withval" ; then
-    jpeg_lib="`echo $withval |cut -f2 -d, -s`"
-	JPEGLIB=$jpeg_lib"/libjpeg"
+    if test -n "$withval" ; then
+        jpeg_lib="`echo $withval |cut -f2 -d, -s`"
+	JPEGLIB=$jpeg_lib"/libjpeg."$LLEXT
     	AC_MSG_RESULT([jpeg found: $JPEGLIB]);
-else
-AC_CHECK_LIB(jpeg, jpeg_start_compress, JPEGLIB=-ljpeg,
-    AC_MSG_ERROR(JPEG library needed for compilation.) ,)
-fi
+	HAVE_JPEG="yes"
+    else
+	    AC_MSG_ERROR([JPEG library needed for compilation.])
+    fi
 ;;
 esac
 if test -n "$JPEGLIB"; then
-LIBS="$LIBS $JPEGLIB"
+	LIBS="$LIBS $JPEGLIB"
+	HAVE_JPEG="yes"
 fi
 
+HAVE_SZIP="no"
 withval="";
 AC_SUBST(SZLIB) SZLIB=""
 AC_ARG_WITH(libsz,[  --with-libsz=LIB     Path to the szip library (required if not in default path)],,)
 
 case "$withval" in
   yes)
-    AC_MSG_ERROR(SZIP library needed for compilation.)
+    AC_MSG_ERROR([SZIP library needed for compilation.])
+	HAVE_SZIP="no"
     ;;
   no)
       SZLIB=""
     	AC_MSG_RESULT(SZIP suppressed);
+	HAVE_SZIP="no"
     ;;
   *)
-if test -n "$withval" ; then
-    sz_lib="`echo $withval |cut -f2 -d, -s`"
-	SZLIB=$sz_lib"/libsz"
-else
-AC_CHECK_LIB(sz, SZ_BufftoBuffCompress,SZLIB=-lsz, 
-    AC_MSG_ERROR(SZIP library needed for compilation.) , )
-fi
+	if test -n "$withval" ; then
+	    sz_lib="`echo $withval |cut -f2 -d, -s`"
+		SZLIB=$sz_lib"/libsz."$LLEXT
+		AC_MSG_RESULT([szlib found: $SZLIB]);
+		HAVE_SZIP="yes"
+	else
+	    AC_MSG_ERROR([SZIP library needed for compilation.]  )
+	fi
 ;;
 esac
 if test -n "$SZLIB"; then
-LIBS="$LIBS $SZLIB"
+	LIBS="$LIBS $SZLIB"
+	HAVE_SZIP="yes"
 fi
 
+dnl
+dnl  Look for HDF4 library, if selected.
+dnl  Must find static libraries.
+dnl
+HAVE_HDF4="no"
 withval="";
 AC_SUBST(HDF4LIB) HDF4LIB=""
 AC_ARG_WITH(hdf4,[  --with-hdf4=LIB     Path to the hdf library (required if not in default path)],,)
@@ -170,10 +218,12 @@ AC_ARG_WITH(hdf4,[  --with-hdf4=LIB     Path to the hdf library (required if not
 case "$withval" in
   yes)
     AC_MSG_ERROR(HDF4 library needed for compilation.)
+	HAVE_HDF4="no"
     ;;
   no)
       HDF4LIB=""
     	AC_MSG_RESULT(HDF4 suppressed);
+	HAVE_HDF4="no"
     ;;
   *)
 if test -n "$withval" ; then
@@ -189,50 +239,39 @@ fi
 ;;
 esac
 if test -n "$HDF4LIB"; then
-LIBS="$HDF4LIB/libdf.a $HDF4LIB/libmfhdf.a $LIBS"
+	LIBS="$HDF4LIB/libdf.$LLEXT $HDF4LIB/libmfhdf.$LLEXT $LIBS"
+	HAVE_HDF4="yes"
 fi
 
-#dnl  Check for HDF4 library  --with-hdf4 must be set.
-#
-#withval=""
-#AC_ARG_WITH(hdf4,[  --with-hdf4=INC,LIB     Path to the HDF4 library (required if not in default path)])
-#case "$withval" in
-#  yes)
-#    AC_MSG_ERROR(HDF4 library needed for compilation.)
-#    ;;
-#  no)
-#      HDF4INC=""
-#      HDF4LIB=""
-#    ;;
-#  *)
-#    hdf4_inc="`echo $withval |cut -f1 -d,`"
-#    if test -n "$hdf4_inc"; then
-#      HDF4INC="$hdf4_inc"
-#      saved_CPPFLAGS="$CPPFLAGS"
-#      CPPFLAGS="$CPPFLAGS -I$hdf4_inc"
-#      AC_CHECK_HEADERS(mfhdf.h,,CPPFLAGS="$saved_CPPFLAGS")
-#    else
-#      AC_CHECK_HEADERS(mfhdf.h)
-#    fi
-#
-#    hdf4_lib="`echo $withval |cut -f2 -d, -s`"
-#    if test -n "$hdf4_lib"; then
-#      HDF4LIB="$hdf4_lib"
-#      saved_LDFLAGS="$LDFLAGS"
-# #     LDFLAGS="$LDFLAGS -L$HDF4LIB $HDF4LIB/libdf.a $ZLIB $JPEGLIB $SZLIB"
-# #     LDFLAGS="$LDFLAGS $HDF4LIB/libdf.a $ZLIB $JPEGLIB $SZLIB"
-#      AC_CHECK_LIB(df, Hstartaccess, [LIBS="$LIBS $HDF4LIB/libdf.a $ZLIB $JPEGLIB $SZLIB"],
-#		AC_MSG_ERROR([1 can't find df library at $HDF4LIB]), [$HDF4LIB/libdf.a $ZLIB $JPEGLIB $SZLIB])
-#      AC_CHECK_LIB(mfhdf, SDstart, [LIBS="$LIBS $ZLIB $JPEGLIB $SZLIB"],
-#		AC_MSG_ERROR([can't find mfhdf library at $HDF4LIB]),[$ZLIB $JPEGLIB $SZLIB])
-#    else
-#      AC_CHECK_LIB(df, Hstartaccess, [LIBS=$LIBS $HDF4LIB/libdf.a $ZLIB $JPEGLIB $SZLIB],
-#		AC_MSG_ERROR([2 can't find df library at $HDF4LIB]), [$ZLIB $JPEGLIB $SZLIB])
-#      AC_CHECK_LIB(mfhdf, SDstart, [LIBS=$LIBS $ZLIB $JPEGLIB $SZLIB],
-#		AC_MSG_ERROR([can't find mfhdf library at $HDF4LIB]),[$ZLIB $JPEGLIB $SZLIB])
-#    fi
-#    ;;
-#esac
+dnl
+dnl  Check that the libraries that HDF4 needs have been found
+dnl
+dnl  Must stop here if something is missing.
+dnl
+if test "$HAVE_HDF4" = "yes"; then
+needjpg=`grep 'define H4_HAVE_LIBJPEG 1' $HDF4INC/h4config.h`
+needgzip=`grep 'define H4_HAVE_LIBZ 1' $HDF4INC/h4config.h`
+needszip=`grep 'define H4_HAVE_LIBSZ 1' $HDF4INC/h4config.h`
+if test -n "$needjpg"; then
+if test "$HAVE_JPEG" = "no"; then
+    AC_MSG_ERROR([ HDF4 library needs JPEG, JPEG not defined.])
+fi
+fi
+
+if test -n "$needgzip"; then
+if test "$HAVE_ZLIB" = "no"; then
+    AC_MSG_ERROR([ HDF4 library needs GZIP, GZIP not defined.])
+fi
+fi
+
+if test -n "$needszip"; then
+if test "$HAVE_SZIP" = "no"; then
+    AC_MSG_ERROR([ HDF4 library needs SZIP, SZIP not defined.])
+fi
+fi
+
+fi
+
 
 if test -n "$HDF4LIB"; then
 AC_MSG_RESULT([HDF4 library found at: $HDF4LIB])
@@ -241,6 +280,7 @@ ac_cv_lib_HDF4=$HDF4LIB
 ac_cv_lib_HDF4INC=$HDF4INC
 
 
+HAVE_HDF5="no"
 withval="";
 AC_SUBST(HDF5LIB) HDF5LIB=""
 AC_ARG_WITH(hdf5,[  --with-hdf5=LIB     Path to the hdf5 library (required if not in default path)],,)
@@ -252,11 +292,12 @@ case "$withval" in
   no)
       HDF5LIB=""
     	AC_MSG_RESULT(HDF5 suppressed);
+	HAVE_HDF5="no"
     ;;
   *)
 if test -n "$withval" ; then
     hdf5_lib="`echo $withval |cut -f2 -d, -s`"
-	HDF5LIB=$hdf5_lib"/libhdf.a"
+	HDF5LIB=$hdf5_lib"/libhdf.$LLEXT"
     hdf5_inc="`echo $withval |cut -f1 -d,`"
     if test -n "$hdf5_inc"; then
       HDF5INC="$hdf5_inc"
@@ -269,49 +310,32 @@ fi
 ;;
 esac
 if test -n "$HDF5LIB"; then
-LIBS="$HDF5LIB/libhdf5.a $LIBS"
+LIBS="$HDF5LIB/libhdf5.$LLEXT $LIBS"
+HAVE_HDF5="yes"
 fi
 
-#dnl  Check for HDF5 library  --with-hdf5 must be set.
-#withval="";
-#AC_SUBST(LIBHDF5) LIBHDF5=""
-#AC_ARG_WITH(hdf5,[  --with-hdf5=INC,LIB     Path to the HDF5 library (requied if not in default path)],,)
-#case "$withval" in
-#  yes)
-#    AC_MSG_ERROR(HDF5 library needed for compilation.)
-#    ;;
-#  no)
-#      HDF5INC=""
-#      HDF5LIB=""
-#    #AC_MSG_ERROR(HDF5 library needed for compilation.)
-#    ;;
-#  *)
-#    hdf5_inc="`echo $withval |cut -f1 -d,`"
-#    if test -n "$hdf5_inc"; then
-#      HDF5INC="$hdf5_inc"
-#      saved_CPPFLAGS="$CPPFLAGS"
-#      CPPFLAGS="$CPPFLAGS -I$hdf5_inc"
-#    fi
-#
-#    AC_CHECK_HEADERS(hdf5.h,,
-#                     CPPFLAGS="$saved_CPPFLAGS"
-#                     AC_MSG_ERROR(cannot find HDF5 header files!))
-#
-#    hdf5_lib="`echo $withval | cut -f2 -d, -s`"
-#
-#    if test -n "$hdf5_lib"; then
-#      HDF5LIB="$hdf5_lib"
-#      saved_LDFLAGS="$LDFLAGS"
-#      LDFLAGS="$LDFLAGS -L$hdf5_lib"
-#      AC_CHECK_LIB(hdf5, H5open,, LDFLAGS="$saved_LDFLAGS"
-#                 AC_MSG_ERROR(cannot find HDF5 library.),)
-#    else
-#	 AC_MSG_ERROR(cannot find HDF5 library path.)
-#    fi
-#    ;;
-#esac
-
+dnl
+dnl  Check that the libraries that HDF4 needs have been found
+dnl
+dnl  Must stop here if something is missing.
+dnl
 if test -n "$HDF5LIB"; then
+DFL=`grep 'filters (external)' $HDF5LIB"/libhdf5.settings" | grep deflate`
+SZP=`grep 'filters (external)' $HDF5LIB"/libhdf5.settings" | grep szip`
+if test -n "$DFL";
+then
+	#echo "HDF5 requires deflate"
+	if test "$HAVE_ZLIB" = "no"; then
+	    AC_MSG_ERROR([ HDF5 library needs GZIP, GZIP not defined.])
+	fi
+fi
+if test -n "$SZP";
+then
+	#echo "HDF5 requires szip"
+	if test "$HAVE_SZLIB" = "no"; then
+	    AC_MSG_ERROR([ HDF5 library needs SZIP, SZIP not defined.])
+	fi
+fi
 AC_MSG_RESULT([HDF5 library found at: $HDF5LIB])
 fi
 ac_cv_lib_HDF5=$HDF5LIB
@@ -320,6 +344,9 @@ ac_cv_lib_HDF5INC=$HDF5INC
 
 dnl check for libh4toh5  == if with-h4toh5 is not set, then can
 dnl only build hdf and hdf5 separately.
+dnl
+dnl  This code need to be updated to check all the dependencies,
+dnl  as for H4 and H5 libs above.
 
 USEH45="no"
 withval="";
@@ -446,6 +473,7 @@ else
 	fi
 fi
 fi
+HERE=`pwd`
 CLASSPATH="$JAVACLASSES"":""$HERE"
 
 withval="";
@@ -556,9 +584,11 @@ case $target in
 LD=$CC; LDOPT=-G; SLEXT="so";
 LLEXT="a";  
 JSLEXT="so";
-COPT=-G; COPTNOSHARED=; JAVAINC2=$JAVAINC/solaris ; JAVATARG=solaris;
+COPT=-G; COPTNOSHARED=; 
+JAVAINC2=$JAVAINC/solaris ; JAVATARG=solaris;
 ;;
-mips*-sgi-irix6*) LD=ld; 
+mips*-sgi-irix6*) 
+LD=ld; 
 LLEXT="a";  # the extension for the HDF and other libraries to link to
 JSLEXT="so";  
 OS=`uname -r`;
@@ -594,7 +624,8 @@ COPT="-shared -DUNIX386" ;
 JAVAINC2=$JAVAINC/linux; 
 JAVATARG=linux;
 ;;
-*powerpc-apple*) LD=$CC; LDOPT=-dynamiclib; 
+*powerpc-apple*) 
+LD=$CC; LDOPT=-dynamiclib; 
 JSLEXT="jnilib";
 SLEXT="dylib";
 LLEXT="dylib";
@@ -618,7 +649,6 @@ AC_SUBST(COPTNOSHARE)
 AC_SUBST(RM)
 AC_SUBST(AWK)
 AC_SUBST(FIND)
-AC_SUBST(GUNZIP)
 AC_SUBST(JAVA)
 AC_SUBST(JAVABIN)
 AC_SUBST(JAVAC)

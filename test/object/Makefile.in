@@ -12,6 +12,7 @@
 
 
 JAVAC=@JAVAC@
+RM=@RM@
 
 CLASSPATH=@CLASSPATH@   
 
@@ -36,6 +37,6 @@ check: all
 	runtests.sh
 
 clean:
-	rm -f *.class
-	rm -f *.hdf
-	rm -f *.h5
+	$(RM) -f *.class
+	$(RM) -f *.hdf
+	$(RM) -f *.h5

@@ -1235,6 +1235,8 @@ else
 echo "${ECHO_T}yes" >&6
 fi
 
+echo "$as_me:$LINENO: checking if expr works" >&5
+echo $ECHO_N "checking if expr works... $ECHO_C" >&6
 yyy_ok="yes"
 yyy_option="$*"
 for yyy_option
@@ -1249,7 +1251,12 @@ do
   fi
 done
 if test "$yyy_ok" = "no"; then
-	exit 1
+  { { echo "$as_me:$LINENO: error: expr program doesn't work" >&5
+echo "$as_me: error: expr program doesn't work" >&2;}
+   { (exit 1); exit 1; }; }
+else
+  echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
 fi
 
 ac_ext=c
@@ -2595,86 +2602,6 @@ fi
 
 
 
-if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
-set dummy ${ac_tool_prefix}ranlib; ac_word=$2
-echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_prog_RANLIB+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test -n "$RANLIB"; then
-  ac_cv_prog_RANLIB="$RANLIB" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_RANLIB="${ac_tool_prefix}ranlib"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-
-fi
-fi
-RANLIB=$ac_cv_prog_RANLIB
-if test -n "$RANLIB"; then
-  echo "$as_me:$LINENO: result: $RANLIB" >&5
-echo "${ECHO_T}$RANLIB" >&6
-else
-  echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-fi
-
-fi
-if test -z "$ac_cv_prog_RANLIB"; then
-  ac_ct_RANLIB=$RANLIB
-  # Extract the first word of "ranlib", so it can be a program name with args.
-set dummy ranlib; ac_word=$2
-echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_prog_ac_ct_RANLIB+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test -n "$ac_ct_RANLIB"; then
-  ac_cv_prog_ac_ct_RANLIB="$ac_ct_RANLIB" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_ac_ct_RANLIB="ranlib"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-
-  test -z "$ac_cv_prog_ac_ct_RANLIB" && ac_cv_prog_ac_ct_RANLIB=":"
-fi
-fi
-ac_ct_RANLIB=$ac_cv_prog_ac_ct_RANLIB
-if test -n "$ac_ct_RANLIB"; then
-  echo "$as_me:$LINENO: result: $ac_ct_RANLIB" >&5
-echo "${ECHO_T}$ac_ct_RANLIB" >&6
-else
-  echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-fi
-
-  RANLIB=$ac_ct_RANLIB
-else
-  RANLIB="$ac_cv_prog_RANLIB"
-fi
-
 # Extract the first word of "rm", so it can be a program name with args.
 set dummy rm; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
@@ -2839,20 +2766,38 @@ test -n "$target_alias" &&
     NONENONEs,x,x, &&
   program_prefix=${target_alias}-
 TARGET=$target
+echo "FYI the target here is: "$target
 case $target in
 *-*-solaris2*) TARGETLIB="solaris"
+LD=$CC; LDOPT=-G; SLEXT="so";
+LLEXT="a";
+JSLEXT="so";
+COPT=-G; COPTNOSHARED=;
 ;;
 mips*-sgi-irix6*)
 TARGETLIB="irix"
+LD=ld;
+LLEXT="a";
+JSLEXT="so";
+JSLEXT="so";
 ;;
 *-pc-linux*) LD=$CC; LDOPT=-shared; SLEXT="so";
 TARGETLIB="linux"
+SLEXT="so";
+LLEXT="a";  # the extension for the HDF and other libraries to link to
+JSLEXT="so";
+COPT="-shared -DUNIX386" ;
+;;
+*powerpc-apple*)
+LD=$CC; LDOPT=-dynamiclib;
+JSLEXT="jnilib";
+SLEXT="dylib";
+LLEXT="dylib";
 ;;
 *) LD=$CC; LDOPT=-G; SLEXT="so";
+LLEXT="a";
 TARGETLIB="$target"
 esac
-HERE=`pwd`
-
 
 
 withval="";
@@ -2876,82 +2821,23 @@ echo "$as_me: error: GZIP library needed for compilation." >&2;}
 echo "${ECHO_T}GZIP suppressed" >&6;
     ;;
   *)
-if test -n "$withval" ; then
-    z_lib="`echo $withval |cut -f2 -d, -s`"
-	ZLIB=$z_lib"/libz"
+    if test -n "$withval" ; then
+        z_lib="`echo $withval |cut -f2 -d, -s`"
+	ZLIB=$z_lib"/libz."$LLEXT
     	echo "$as_me:$LINENO: result: zlib found: $ZLIB" >&5
 echo "${ECHO_T}zlib found: $ZLIB" >&6;
-else
-echo "$as_me:$LINENO: checking for compress in -lz" >&5
-echo $ECHO_N "checking for compress in -lz... $ECHO_C" >&6
-if test "${ac_cv_lib_z_compress+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lz  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-#include "confdefs.h"
-
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char compress ();
-#ifdef F77_DUMMY_MAIN
-#  ifdef __cplusplus
-     extern "C"
-#  endif
-   int F77_DUMMY_MAIN() { return 1; }
-#endif
-int
-main ()
-{
-compress ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-         { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_z_compress=yes
-else
-  echo "$as_me: failed program was:" >&5
-cat conftest.$ac_ext >&5
-ac_cv_lib_z_compress=no
-fi
-rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_z_compress" >&5
-echo "${ECHO_T}$ac_cv_lib_z_compress" >&6
-if test $ac_cv_lib_z_compress = yes; then
-  ZLIB=-lz
-else
-  { { echo "$as_me:$LINENO: error: GZIP library needed for compilation." >&5
+    else
+        { { echo "$as_me:$LINENO: error: GZIP library needed for compilation." >&5
 echo "$as_me: error: GZIP library needed for compilation." >&2;}
    { (exit 1); exit 1; }; }
-fi
-
-fi
+    fi
 ;;
 esac
 if test -n "$ZLIB"; then
 LIBS="$LIBS $ZLIB"
 fi
 
+HAVE_JPEG="no"
 withval="";
  JPEGLIB=""
 
@@ -2971,84 +2857,28 @@ echo "$as_me: error: JPEG library needed for compilation." >&2;}
       JPEGLIB=""
     	echo "$as_me:$LINENO: result: JPEG suppressed" >&5
 echo "${ECHO_T}JPEG suppressed" >&6;
+	HAVE_JPEG="no"
     ;;
   *)
-if test -n "$withval" ; then
-    jpeg_lib="`echo $withval |cut -f2 -d, -s`"
-	JPEGLIB=$jpeg_lib"/libjpeg"
+    if test -n "$withval" ; then
+        jpeg_lib="`echo $withval |cut -f2 -d, -s`"
+	JPEGLIB=$jpeg_lib"/libjpeg."$LLEXT
     	echo "$as_me:$LINENO: result: jpeg found: $JPEGLIB" >&5
 echo "${ECHO_T}jpeg found: $JPEGLIB" >&6;
-else
-echo "$as_me:$LINENO: checking for jpeg_start_compress in -ljpeg" >&5
-echo $ECHO_N "checking for jpeg_start_compress in -ljpeg... $ECHO_C" >&6
-if test "${ac_cv_lib_jpeg_jpeg_start_compress+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-ljpeg  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-#include "confdefs.h"
-
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char jpeg_start_compress ();
-#ifdef F77_DUMMY_MAIN
-#  ifdef __cplusplus
-     extern "C"
-#  endif
-   int F77_DUMMY_MAIN() { return 1; }
-#endif
-int
-main ()
-{
-jpeg_start_compress ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-         { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_jpeg_jpeg_start_compress=yes
-else
-  echo "$as_me: failed program was:" >&5
-cat conftest.$ac_ext >&5
-ac_cv_lib_jpeg_jpeg_start_compress=no
-fi
-rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_jpeg_jpeg_start_compress" >&5
-echo "${ECHO_T}$ac_cv_lib_jpeg_jpeg_start_compress" >&6
-if test $ac_cv_lib_jpeg_jpeg_start_compress = yes; then
-  JPEGLIB=-ljpeg
-else
-  { { echo "$as_me:$LINENO: error: JPEG library needed for compilation." >&5
+	HAVE_JPEG="yes"
+    else
+	    { { echo "$as_me:$LINENO: error: JPEG library needed for compilation." >&5
 echo "$as_me: error: JPEG library needed for compilation." >&2;}
    { (exit 1); exit 1; }; }
-fi
-
-fi
+    fi
 ;;
 esac
 if test -n "$JPEGLIB"; then
-LIBS="$LIBS $JPEGLIB"
+	LIBS="$LIBS $JPEGLIB"
+	HAVE_JPEG="yes"
 fi
 
+HAVE_SZIP="no"
 withval="";
  SZLIB=""
 
@@ -3063,87 +2893,34 @@ case "$withval" in
     { { echo "$as_me:$LINENO: error: SZIP library needed for compilation." >&5
 echo "$as_me: error: SZIP library needed for compilation." >&2;}
    { (exit 1); exit 1; }; }
+	HAVE_SZIP="no"
     ;;
   no)
       SZLIB=""
     	echo "$as_me:$LINENO: result: SZIP suppressed" >&5
 echo "${ECHO_T}SZIP suppressed" >&6;
+	HAVE_SZIP="no"
     ;;
   *)
-if test -n "$withval" ; then
-    sz_lib="`echo $withval |cut -f2 -d, -s`"
-	SZLIB=$sz_lib"/libsz"
-else
-echo "$as_me:$LINENO: checking for SZ_BufftoBuffCompress in -lsz" >&5
-echo $ECHO_N "checking for SZ_BufftoBuffCompress in -lsz... $ECHO_C" >&6
-if test "${ac_cv_lib_sz_SZ_BufftoBuffCompress+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lsz  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-#include "confdefs.h"
-
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char SZ_BufftoBuffCompress ();
-#ifdef F77_DUMMY_MAIN
-#  ifdef __cplusplus
-     extern "C"
-#  endif
-   int F77_DUMMY_MAIN() { return 1; }
-#endif
-int
-main ()
-{
-SZ_BufftoBuffCompress ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-         { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_lib_sz_SZ_BufftoBuffCompress=yes
-else
-  echo "$as_me: failed program was:" >&5
-cat conftest.$ac_ext >&5
-ac_cv_lib_sz_SZ_BufftoBuffCompress=no
-fi
-rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_sz_SZ_BufftoBuffCompress" >&5
-echo "${ECHO_T}$ac_cv_lib_sz_SZ_BufftoBuffCompress" >&6
-if test $ac_cv_lib_sz_SZ_BufftoBuffCompress = yes; then
-  SZLIB=-lsz
-else
-  { { echo "$as_me:$LINENO: error: SZIP library needed for compilation." >&5
-echo "$as_me: error: SZIP library needed for compilation." >&2;}
+	if test -n "$withval" ; then
+	    sz_lib="`echo $withval |cut -f2 -d, -s`"
+		SZLIB=$sz_lib"/libsz."$LLEXT
+		echo "$as_me:$LINENO: result: szlib found: $SZLIB" >&5
+echo "${ECHO_T}szlib found: $SZLIB" >&6;
+		HAVE_SZIP="yes"
+	else
+	    { { echo "$as_me:$LINENO: error: SZIP library needed for compilation.  " >&5
+echo "$as_me: error: SZIP library needed for compilation.  " >&2;}
    { (exit 1); exit 1; }; }
-fi
-
-fi
+	fi
 ;;
 esac
 if test -n "$SZLIB"; then
-LIBS="$LIBS $SZLIB"
+	LIBS="$LIBS $SZLIB"
+	HAVE_SZIP="yes"
 fi
 
+HAVE_HDF4="no"
 withval="";
  HDF4LIB=""
 
@@ -3158,11 +2935,13 @@ case "$withval" in
     { { echo "$as_me:$LINENO: error: HDF4 library needed for compilation." >&5
 echo "$as_me: error: HDF4 library needed for compilation." >&2;}
    { (exit 1); exit 1; }; }
+	HAVE_HDF4="no"
     ;;
   no)
       HDF4LIB=""
     	echo "$as_me:$LINENO: result: HDF4 suppressed" >&5
 echo "${ECHO_T}HDF4 suppressed" >&6;
+	HAVE_HDF4="no"
     ;;
   *)
 if test -n "$withval" ; then
@@ -3178,50 +2957,40 @@ fi
 ;;
 esac
 if test -n "$HDF4LIB"; then
-LIBS="$HDF4LIB/libdf.a $HDF4LIB/libmfhdf.a $LIBS"
+	LIBS="$HDF4LIB/libdf.$LLEXT $HDF4LIB/libmfhdf.$LLEXT $LIBS"
+	HAVE_HDF4="yes"
 fi
 
-#dnl  Check for HDF4 library  --with-hdf4 must be set.
-#
-#withval=""
-#AC_ARG_WITH(hdf4,[  --with-hdf4=INC,LIB     Path to the HDF4 library (required if not in default path)])
-#case "$withval" in
-#  yes)
-#    AC_MSG_ERROR(HDF4 library needed for compilation.)
-#    ;;
-#  no)
-#      HDF4INC=""
-#      HDF4LIB=""
-#    ;;
-#  *)
-#    hdf4_inc="`echo $withval |cut -f1 -d,`"
-#    if test -n "$hdf4_inc"; then
-#      HDF4INC="$hdf4_inc"
-#      saved_CPPFLAGS="$CPPFLAGS"
-#      CPPFLAGS="$CPPFLAGS -I$hdf4_inc"
-#      AC_CHECK_HEADERS(mfhdf.h,,CPPFLAGS="$saved_CPPFLAGS")
-#    else
-#      AC_CHECK_HEADERS(mfhdf.h)
-#    fi
-#
-#    hdf4_lib="`echo $withval |cut -f2 -d, -s`"
-#    if test -n "$hdf4_lib"; then
-#      HDF4LIB="$hdf4_lib"
-#      saved_LDFLAGS="$LDFLAGS"
-# #     LDFLAGS="$LDFLAGS -L$HDF4LIB $HDF4LIB/libdf.a $ZLIB $JPEGLIB $SZLIB"
-# #     LDFLAGS="$LDFLAGS $HDF4LIB/libdf.a $ZLIB $JPEGLIB $SZLIB"
-#      AC_CHECK_LIB(df, Hstartaccess, [LIBS="$LIBS $HDF4LIB/libdf.a $ZLIB $JPEGLIB $SZLIB"],
-#		AC_MSG_ERROR([1 can't find df library at $HDF4LIB]), [$HDF4LIB/libdf.a $ZLIB $JPEGLIB $SZLIB])
-#      AC_CHECK_LIB(mfhdf, SDstart, [LIBS="$LIBS $ZLIB $JPEGLIB $SZLIB"],
-#		AC_MSG_ERROR([can't find mfhdf library at $HDF4LIB]),[$ZLIB $JPEGLIB $SZLIB])
-#    else
-#      AC_CHECK_LIB(df, Hstartaccess, [LIBS=$LIBS $HDF4LIB/libdf.a $ZLIB $JPEGLIB $SZLIB],
-#		AC_MSG_ERROR([2 can't find df library at $HDF4LIB]), [$ZLIB $JPEGLIB $SZLIB])
-#      AC_CHECK_LIB(mfhdf, SDstart, [LIBS=$LIBS $ZLIB $JPEGLIB $SZLIB],
-#		AC_MSG_ERROR([can't find mfhdf library at $HDF4LIB]),[$ZLIB $JPEGLIB $SZLIB])
-#    fi
-#    ;;
-#esac
+if test "$HAVE_HDF4" = "yes"; then
+needjpg=`grep 'define H4_HAVE_LIBJPEG 1' $HDF4INC/h4config.h`
+needgzip=`grep 'define H4_HAVE_LIBZ 1' $HDF4INC/h4config.h`
+needszip=`grep 'define H4_HAVE_LIBSZ 1' $HDF4INC/h4config.h`
+if test -n "$needjpg"; then
+if test "$HAVE_JPEG" = "no"; then
+    { { echo "$as_me:$LINENO: error:  HDF4 library needs JPEG, JPEG not defined." >&5
+echo "$as_me: error:  HDF4 library needs JPEG, JPEG not defined." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+fi
+
+if test -n "$needgzip"; then
+if test "$HAVE_ZLIB" = "no"; then
+    { { echo "$as_me:$LINENO: error:  HDF4 library needs GZIP, GZIP not defined." >&5
+echo "$as_me: error:  HDF4 library needs GZIP, GZIP not defined." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+fi
+
+if test -n "$needszip"; then
+if test "$HAVE_SZIP" = "no"; then
+    { { echo "$as_me:$LINENO: error:  HDF4 library needs SZIP, SZIP not defined." >&5
+echo "$as_me: error:  HDF4 library needs SZIP, SZIP not defined." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+fi
+
+fi
+
 
 if test -n "$HDF4LIB"; then
 echo "$as_me:$LINENO: result: HDF4 library found at: $HDF4LIB" >&5
@@ -3231,6 +3000,7 @@ ac_cv_lib_HDF4=$HDF4LIB
 ac_cv_lib_HDF4INC=$HDF4INC
 
 
+HAVE_HDF5="no"
 withval="";
  HDF5LIB=""
 
@@ -3250,11 +3020,12 @@ echo "$as_me: error: HDF5 library needed for compilation." >&2;}
       HDF5LIB=""
     	echo "$as_me:$LINENO: result: HDF5 suppressed" >&5
 echo "${ECHO_T}HDF5 suppressed" >&6;
+	HAVE_HDF5="no"
     ;;
   *)
 if test -n "$withval" ; then
     hdf5_lib="`echo $withval |cut -f2 -d, -s`"
-	HDF5LIB=$hdf5_lib"/libhdf.a"
+	HDF5LIB=$hdf5_lib"/libhdf.$LLEXT"
     hdf5_inc="`echo $withval |cut -f1 -d,`"
     if test -n "$hdf5_inc"; then
       HDF5INC="$hdf5_inc"
@@ -3267,49 +3038,31 @@ fi
 ;;
 esac
 if test -n "$HDF5LIB"; then
-LIBS="$HDF5LIB/libhdf5.a $LIBS"
+LIBS="$HDF5LIB/libhdf5.$LLEXT $LIBS"
+HAVE_HDF5="yes"
 fi
 
-#dnl  Check for HDF5 library  --with-hdf5 must be set.
-#withval="";
-#AC_SUBST(LIBHDF5) LIBHDF5=""
-#AC_ARG_WITH(hdf5,[  --with-hdf5=INC,LIB     Path to the HDF5 library (requied if not in default path)],,)
-#case "$withval" in
-#  yes)
-#    AC_MSG_ERROR(HDF5 library needed for compilation.)
-#    ;;
-#  no)
-#      HDF5INC=""
-#      HDF5LIB=""
-#    #AC_MSG_ERROR(HDF5 library needed for compilation.)
-#    ;;
-#  *)
-#    hdf5_inc="`echo $withval |cut -f1 -d,`"
-#    if test -n "$hdf5_inc"; then
-#      HDF5INC="$hdf5_inc"
-#      saved_CPPFLAGS="$CPPFLAGS"
-#      CPPFLAGS="$CPPFLAGS -I$hdf5_inc"
-#    fi
-#
-#    AC_CHECK_HEADERS(hdf5.h,,
-#                     CPPFLAGS="$saved_CPPFLAGS"
-#                     AC_MSG_ERROR(cannot find HDF5 header files!))
-#
-#    hdf5_lib="`echo $withval | cut -f2 -d, -s`"
-#
-#    if test -n "$hdf5_lib"; then
-#      HDF5LIB="$hdf5_lib"
-#      saved_LDFLAGS="$LDFLAGS"
-#      LDFLAGS="$LDFLAGS -L$hdf5_lib"
-#      AC_CHECK_LIB(hdf5, H5open,, LDFLAGS="$saved_LDFLAGS"
-#                 AC_MSG_ERROR(cannot find HDF5 library.),)
-#    else
-#	 AC_MSG_ERROR(cannot find HDF5 library path.)
-#    fi
-#    ;;
-#esac
-
 if test -n "$HDF5LIB"; then
+DFL=`grep 'filters (external)' $HDF5LIB"/libhdf5.settings" | grep deflate`
+SZP=`grep 'filters (external)' $HDF5LIB"/libhdf5.settings" | grep szip`
+if test -n "$DFL";
+then
+	#echo "HDF5 requires deflate"
+	if test "$HAVE_ZLIB" = "no"; then
+	    { { echo "$as_me:$LINENO: error:  HDF5 library needs GZIP, GZIP not defined." >&5
+echo "$as_me: error:  HDF5 library needs GZIP, GZIP not defined." >&2;}
+   { (exit 1); exit 1; }; }
+	fi
+fi
+if test -n "$SZP";
+then
+	#echo "HDF5 requires szip"
+	if test "$HAVE_SZLIB" = "no"; then
+	    { { echo "$as_me:$LINENO: error:  HDF5 library needs SZIP, SZIP not defined." >&5
+echo "$as_me: error:  HDF5 library needs SZIP, SZIP not defined." >&2;}
+   { (exit 1); exit 1; }; }
+	fi
+fi
 echo "$as_me:$LINENO: result: HDF5 library found at: $HDF5LIB" >&5
 echo "${ECHO_T}HDF5 library found at: $HDF5LIB" >&6
 fi
@@ -3830,6 +3583,7 @@ echo "$as_me: error: cannot find jdk classes in JDK lib path." >&2;}
 	fi
 fi
 fi
+HERE=`pwd`
 CLASSPATH="$JAVACLASSES"":""$HERE"
 
 withval="";
@@ -4122,9 +3876,11 @@ case $target in
 LD=$CC; LDOPT=-G; SLEXT="so";
 LLEXT="a";
 JSLEXT="so";
-COPT=-G; COPTNOSHARED=; JAVAINC2=$JAVAINC/solaris ; JAVATARG=solaris;
+COPT=-G; COPTNOSHARED=;
+JAVAINC2=$JAVAINC/solaris ; JAVATARG=solaris;
 ;;
-mips*-sgi-irix6*) LD=ld;
+mips*-sgi-irix6*)
+LD=ld;
 LLEXT="a";  # the extension for the HDF and other libraries to link to
 JSLEXT="so";
 OS=`uname -r`;
@@ -4160,7 +3916,8 @@ COPT="-shared -DUNIX386" ;
 JAVAINC2=$JAVAINC/linux;
 JAVATARG=linux;
 ;;
-*powerpc-apple*) LD=$CC; LDOPT=-dynamiclib;
+*powerpc-apple*)
+LD=$CC; LDOPT=-dynamiclib;
 JSLEXT="jnilib";
 SLEXT="dylib";
 LLEXT="dylib";
@@ -4172,7 +3929,6 @@ JSLEXT="so";
 LLEXT="a";
 COPT=-shared; COPTNOSHSARED=; JAVAINC2=$JAVAINC/$target; JAVATARG=$TARGET ;;
 esac
-
 
 
 
@@ -4832,8 +4588,6 @@ s,@INSTALL_PROGRAM@,$INSTALL_PROGRAM,;t t
 s,@INSTALL_SCRIPT@,$INSTALL_SCRIPT,;t t
 s,@INSTALL_DATA@,$INSTALL_DATA,;t t
 s,@CPP@,$CPP,;t t
-s,@RANLIB@,$RANLIB,;t t
-s,@ac_ct_RANLIB@,$ac_ct_RANLIB,;t t
 s,@RM@,$RM,;t t
 s,@FIND@,$FIND,;t t
 s,@build@,$build,;t t
@@ -4870,7 +4624,6 @@ s,@JSLEXT@,$JSLEXT,;t t
 s,@COPT@,$COPT,;t t
 s,@COPTNOSHARE@,$COPTNOSHARE,;t t
 s,@AWK@,$AWK,;t t
-s,@GUNZIP@,$GUNZIP,;t t
 s,@JAVABIN@,$JAVABIN,;t t
 s,@JAVAINC@,$JAVAINC,;t t
 s,@JAVAINC2@,$JAVAINC2,;t t

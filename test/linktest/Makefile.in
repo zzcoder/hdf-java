@@ -11,6 +11,7 @@
 
 
 JAVAC           = @JAVAC@
+RM           = @RM@
 
 CLASSPATH=@CLASSPATH@                                                         
 
@@ -28,4 +29,4 @@ TestHDF4Link: TestHDF4Link.class
 	chmod u+x testh4link
 
 clean:
-	rm *.class
+	$(RM) *.class

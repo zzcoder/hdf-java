@@ -18,6 +18,7 @@
 ##
 
 JH5INSTALLDIR=@JH5INST@
+RM=@RM@
 
 LIBDIR=$JH5INSTALLDIR"/lib"
 
@@ -28,6 +29,6 @@ LD_LIBRARY_PATH=$LIBDIR"/@JAVATARG@"
 export CLASSPATH
 export LD_LIBRARY_PATH
 
-rm -f test.h5
+$(RM) -f test.h5
 @JAVA@ -Djava.library.path=$LD_LIBRARY_PATH TestHDF5Link
-rm -f test.h5
+$(RM) -f test.h5

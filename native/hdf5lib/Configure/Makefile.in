@@ -12,6 +12,7 @@
 CC = @CC@ @COPTNOSHARE@
 HDF5INC = @HDF5INC@
 HDF5LIB = @HDF5LIB@
+RM = @RM@
 AWK = @AWK@
 
 COPT=@COPT@
@@ -34,7 +35,7 @@ mkconst.c:
 	$(AWK) -f scr H5Constants-needed > mkconst.c
 
 clean:
-	rm -f mkconst mkconst.o mkconst.c H5Const.jjj *.class
+	$(RM) -f mkconst mkconst.o mkconst.c H5Const.jjj *.class
 
 
 JAVAC           = @JAVAC@
