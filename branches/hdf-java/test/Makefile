@@ -1,0 +1,12 @@
+# Generated automatically from Makefile.in by configure.
+all:
+	cd h4toh5; \
+	$(MAKE);
+
+check:
+	cd h4toh5; \
+	$(MAKE) check;
+
+clean:
+	cd h4toh5; \
+	$(MAKE) clean;
