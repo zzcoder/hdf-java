@@ -488,7 +488,7 @@ public class H4GRImage extends ScalarDS
 
             // get chunk information
             try {
-                HDFOnlyChunkInfo chunkInfo = new HDFOnlyChunkInfo();
+                HDFChunkInfo chunkInfo = new HDFChunkInfo();
                 int[] cflag = {HDFConstants.HDF_NONE};
                 boolean status = HDFLibrary.GRgetchunkinfo(id, chunkInfo, cflag);
                 if (cflag[0] == HDFConstants.HDF_NONE)
@@ -728,7 +728,7 @@ public class H4GRImage extends ScalarDS
         if (chunks != null)
         {
             // set chunk
-            HDFOnlyChunkInfo chunkInfo = new HDFOnlyChunkInfo(ichunks);
+            HDFChunkInfo chunkInfo = new HDFChunkInfo(ichunks);
             HDFLibrary.GRsetchunk(grid, chunkInfo, HDFConstants.HDF_CHUNK);
         }
 

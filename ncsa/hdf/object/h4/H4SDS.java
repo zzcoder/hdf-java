@@ -510,7 +510,7 @@ public class H4SDS extends ScalarDS
 
             // get chunk information
             try {
-                HDFCompChunkInfo chunkInfo = new HDFCompChunkInfo();
+                HDFChunkInfo chunkInfo = new HDFChunkInfo();
                 int[] cflag = {HDFConstants.HDF_NONE};
 
                 try {
@@ -699,7 +699,7 @@ public class H4SDS extends ScalarDS
         if (chunks != null)
         {
             // set chunk
-            HDFOnlyChunkInfo chunkInfo = new HDFOnlyChunkInfo(ichunks);
+            HDFChunkInfo chunkInfo = new HDFChunkInfo(ichunks);
             HDFLibrary.SDsetchunk (sdsid, chunkInfo, HDFConstants.HDF_CHUNK);
         }
 
