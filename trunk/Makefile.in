@@ -409,11 +409,11 @@ distclean: clean-natives clean-classes clean-test clean-testlink
 	rm -f config.cache config.status config.log 
 	rm -rf ./lib/@JAVATARG@
 	rm -rf ./lib/jhdf.jar
-        rm -rf ./lib/jhdf4obj.jar
-        rm -rf ./lib/jhdf5.jar
-        rm -rf ./lib/jhdf5obj.jar
-        rm -rf ./lib/jhdfobj.jar
-        rm -rf ./lib/jhdfview.jar
+	rm -rf ./lib/jhdf4obj.jar
+	rm -rf ./lib/jhdf5.jar
+	rm -rf ./lib/jhdf5obj.jar
+	rm -rf ./lib/jhdfobj.jar
+	rm -rf ./lib/jhdfview.jar
 	rm -f ./native/Makefile
 	rm -rf ./native/h4toh5lib/Makefile
 	rm -rf ./native/hdflib/Makefile
