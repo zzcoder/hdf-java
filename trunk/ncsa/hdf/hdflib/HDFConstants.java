@@ -119,9 +119,9 @@ public class HDFConstants
     public static final int DFTAG_NDG   = 720;   // Numeric Data Group
     public static final int DFTAG_CAL   = 731;   // Calibration information
     public static final int DFTAG_FV    = 732;   // Fill Value information
-    public static final int DFTAG_BREQ  = 799;   // Beginning of required tags  
+    public static final int DFTAG_BREQ  = 799;   // Beginning of required tags
     public static final int DFTAG_SDRAG = 781;   // List of ragged array line lengths
-    public static final int DFTAG_EREQ  = 780;   // Current end of the range  
+    public static final int DFTAG_EREQ  = 780;   // Current end of the range
 
     // VSets
     public static final int DFTAG_VG     = 1965;   // Vgroup
@@ -143,7 +143,7 @@ public class HDFConstants
     /** line interlacing scheme */
     public static final int MFGR_INTERLACE_LINE = MFGR_INTERLACE_PIXEL +1;
 
-    /** component interlacing scheme */ 
+    /** component interlacing scheme */
     public static final int MFGR_INTERLACE_COMPONENT = MFGR_INTERLACE_PIXEL +2;
 
     /** interlacing supported by the vset.*/
@@ -169,7 +169,7 @@ public class HDFConstants
 
     //** double */
     public static final int  DFNT_FLOAT64   =  6;
-    public static final int  DFNT_FLOAT128  =  7 ; 
+    public static final int  DFNT_FLOAT128  =  7 ;
     public static final int  DFNT_DOUBLE    =  6  ;
 
     /** 8-bit integer */
@@ -207,7 +207,7 @@ public class HDFConstants
     public static final int COMP_CODE_NONE     =  0;
     public static final int COMP_CODE_RLE     =  1;
     public static final int COMP_CODE_NBIT     =  2;
-    public static final int COMP_CODE_SKPHUFF  =  3; 
+    public static final int COMP_CODE_SKPHUFF  =  3;
     public static final int COMP_CODE_DEFLATE  =  4;
     public static final int COMP_CODE_INVALID  =  5;
     public static final int COMP_MODEL_STDIO  =  0;
@@ -217,9 +217,9 @@ public class HDFConstants
     public static final int DFIL_LINE   = 1;  /* Scan Line Interlacing */
     public static final int DFIL_PLANE  = 2;  /* Scan Plane Interlacing */
 
-    public static final int SD_FILL  = 0;  
+    public static final int SD_FILL  = 0;
     public static final int SD_NOFILL  = 0x100;
-    public static final int SD_DIMVAL_BW_COMP  = 1;  
+    public static final int SD_DIMVAL_BW_COMP  = 1;
     public static final int SD_DIMVAL_BW_INCOMP  = 0;
 
     public static final int HDF_NONE  = 0x0;
@@ -234,7 +234,7 @@ public class HDFConstants
     public static final String RIGATTRNAME = "RIATTR0.0N";
     public static final String RIGATTRCLASS = "RIATTR0.0C";
 
-    // names of classes of the Vdatas/Vgroups created by the SD interface 
+    // names of classes of the Vdatas/Vgroups created by the SD interface
     public static final String  HDF_ATTRIBUTE = "Attr0.0";
     public static final String  HDF_VARIABLE = "Var0.0";
     public static final String  HDF_DIMENSION = "Dim0.0";

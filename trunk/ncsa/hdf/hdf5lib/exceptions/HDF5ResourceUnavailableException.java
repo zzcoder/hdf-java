@@ -22,7 +22,7 @@ package ncsa.hdf.hdf5lib.exceptions;
 public class HDF5ResourceUnavailableException extends HDF5LibraryException {
 
     /**
-     * Constructs an <code>HDF5ResourceUnavailableException</code> 
+     * Constructs an <code>HDF5ResourceUnavailableException</code>
      * with no specified detail message.
      */
     public HDF5ResourceUnavailableException() {
@@ -30,7 +30,7 @@ public class HDF5ResourceUnavailableException extends HDF5LibraryException {
     }
 
     /**
-     * Constructs an <code>HDF5FunctionArgumentException</code> 
+     * Constructs an <code>HDF5FunctionArgumentException</code>
      * with the specified detail message.
      *
      * @param   s   the detail message.

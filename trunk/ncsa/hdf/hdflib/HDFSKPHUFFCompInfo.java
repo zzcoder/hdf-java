@@ -23,11 +23,11 @@ package ncsa.hdf.hdflib;
  */
 public class HDFSKPHUFFCompInfo extends HDFNewCompInfo {
 
-	public int skp_size;
+    public int skp_size;
 
-	public HDFSKPHUFFCompInfo() {
-		ctype = HDFConstants.COMP_CODE_SKPHUFF;
-	} ;
+    public HDFSKPHUFFCompInfo() {
+        ctype = HDFConstants.COMP_CODE_SKPHUFF;
+    } ;
 }
 
 

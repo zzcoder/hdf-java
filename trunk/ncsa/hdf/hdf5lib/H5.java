@@ -215,40 +215,40 @@ import ncsa.hdf.hdf5lib.exceptions.*;
 **/
 public class H5 {
 
-	public final static String H5PATH_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.hdf5lib";
+    public final static String H5PATH_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.hdf5lib";
 
-	public final static String H45PATH_PROPERTY_KEY = "ncsa.hdf.h4toh5lib.h4toh5.h45lib";
+    public final static String H45PATH_PROPERTY_KEY = "ncsa.hdf.h4toh5lib.h4toh5.h45lib";
 
-	static 
-	{
-		boolean done = false;
-		String filename = null;
-		filename = System.getProperty(H45PATH_PROPERTY_KEY,null);
-		if ((filename != null) && (filename.length() > 0))
-		{
-		    File h5dll = new File(filename);
-			if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) {
-				System.load(filename);
-				done = true;
-			} else {
-				done = false;
-			}
-		}
+    static
+    {
+        boolean done = false;
+        String filename = null;
+        filename = System.getProperty(H45PATH_PROPERTY_KEY,null);
+        if ((filename != null) && (filename.length() > 0))
+        {
+            File h5dll = new File(filename);
+            if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) {
+                System.load(filename);
+                done = true;
+            } else {
+                done = false;
+            }
+        }
 
-		if (done == false) {
-		filename = System.getProperty(H5PATH_PROPERTY_KEY,null);
-		if ((filename != null) && (filename.length() > 0))
-		{
-			File h5dll = new File(filename);
-			if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) {
-				System.load(filename);
-			} else {
-				throw (new UnsatisfiedLinkError("Invalid HDF5 library, "+filename));
-			}
-		}
-		else {
-			System.loadLibrary("jhdf5");
-		}
+        if (done == false) {
+        filename = System.getProperty(H5PATH_PROPERTY_KEY,null);
+        if ((filename != null) && (filename.length() > 0))
+        {
+            File h5dll = new File(filename);
+            if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) {
+                System.load(filename);
+            } else {
+                throw (new UnsatisfiedLinkError("Invalid HDF5 library, "+filename));
+            }
+        }
+        else {
+            System.loadLibrary("jhdf5");
+        }
 
         /* Important!  Exit quietly */
         try {
@@ -1662,8 +1662,8 @@ public class H5 {
         NullPointerException;
 
     /**
-     *  H5Pset_small_data_block_size reserves blocks of size bytes for the 
-     *  contiguous storage of the raw data portion of small datasets. 
+     *  H5Pset_small_data_block_size reserves blocks of size bytes for the
+     *  contiguous storage of the raw data portion of small datasets.
      *
      *  @param plist  IN: Identifier of property list to modify.
      *  @param size  IN: Size of the blocks in bytes.
