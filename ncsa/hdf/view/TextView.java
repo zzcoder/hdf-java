@@ -92,39 +92,6 @@ implements TextObserver
         this.setTitle("TextView - "+fname+" - " +dataset.getPath()+dataset.getName());
         this.setFrameIcon(ViewProperties.getTextIcon());
 
-/*
-        //set text styles
-        StyleContext styleContext = StyleContext.getDefaultStyleContext();
-        Style def = styleContext.getStyle(StyleContext.DEFAULT_STYLE);
-        Style regular = styleContext.addStyle("regular", def);
-        Style underline = styleContext.addStyle("underline", regular);
-        StyleConstants.setUnderline(underline, true);
-        Style[] styles = {regular, underline};
-
-        // set contect document
-        StringContent strContent = new StringContent();
-        DefaultStyledDocument doc = new DefaultStyledDocument(strContent, styleContext);
-        textPane = new JTextPane(doc);
-
-        //Load the text pane with styled text.
-        try
-        {
-            for (int i=0; i < text.length; i++)
-            {
-                doc.insertString(doc.getLength(), text[i]+"\n\n", styles[i&0x1]);
-            }
-        } catch (BadLocationException ex) {
-            viewer.showStatus(ex.toString());
-        }
-        JScrollPane scroller = new JScrollPane(textPane);
-        scroller.getVerticalScrollBar().setUnitIncrement(50);
-        scroller.getHorizontalScrollBar().setUnitIncrement(50);
-
-        JPanel contentPane = (JPanel)getContentPane();
-        contentPane.setLayout(new BorderLayout());
-        contentPane.add (scroller, BorderLayout.CENTER);
-*/
-
         int size = text.length;
         textAreas = new JTextArea[size];
         JPanel txtPane = new JPanel();
@@ -154,8 +121,25 @@ implements TextObserver
         if (!(dataset instanceof ScalarDS))
             return;
 
-        for (int i=0; i<text.length; i++)
-            text[i] = textAreas[i].getText();
+        if (dataset instanceof H5ScalarDS)
+        {
+            int maxLength = H5Datatype.getDatatypeSize(dataset.getDataType());
+            for (int i=0; i<text.length; i++)
+            {
+                text[i] = textAreas[i].getText();
+
+                if (text[i].length() > maxLength)
+                {
+                    text[i] = text[i].substring(0, maxLength-1);
+                    textAreas[i].setText(text[i]);
+                }
+            }
+        }
+        else
+        {
+            for (int i=0; i<text.length; i++)
+                text[i] = textAreas[i].getText();
+        }
 
         try { dataset.write(); }
         catch (Exception ex) {}

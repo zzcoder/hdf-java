@@ -82,6 +82,8 @@ implements TableObserver
 
     private final Toolkit toolkit;
 
+    private boolean isReadOnly;
+
     /**
      * Constructs an TableView.
      * <p>
@@ -90,10 +92,12 @@ implements TableObserver
     public TableView(ViewManager theView)
     {
         super();
+        setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
 
         viewer = theView;
         toolkit = Toolkit.getDefaultToolkit();
         isValueChanged = false;
+        isReadOnly = false;
 
         HObject hobject = (HObject)viewer.getSelectedObject();
         if (hobject == null || !(hobject instanceof Dataset))
@@ -102,8 +106,7 @@ implements TableObserver
         }
 
         dataset = (Dataset)hobject;
-        String fname = new java.io.File(hobject.getFile()).getName();
-        this.setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
+        isReadOnly = dataset.getFileFormat().isReadOnly();
 
         // create the table and its columnHeader
         if (dataset instanceof ScalarDS)
@@ -161,7 +164,7 @@ implements TableObserver
 
         // set title
         StringBuffer sb = new StringBuffer("TableView - ");
-        sb.append(fname);
+        sb.append(dataset.getFile());
         sb.append(" - ");
         sb.append(hobject.getPath());
         sb.append(hobject.getName());
@@ -340,6 +343,12 @@ implements TableObserver
             return;
         }
 
+        int op = JOptionPane.showConfirmDialog(this,
+            "Do you want to draw data by column?\n\"Yes\" for column plot.\n\"No\" for row plot.",
+            getTitle(),
+            JOptionPane.YES_NO_OPTION);
+        boolean isRowPlot = (op == JOptionPane.NO_OPTION);
+
         int nrow = table.getRowCount();
         int ncol = table.getColumnCount();
 
@@ -352,7 +361,6 @@ implements TableObserver
         String title = "Lineplot - "+dataset.getPath()+dataset.getName();
         String[] lineLabels = null;
         double[] yRange = {Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY};
-        boolean isRowPlot = (rows.length<nrow && cols.length==ncol);
         if (isRowPlot)
         {
             title +=" - by row";
@@ -368,12 +376,12 @@ implements TableObserver
                 JOptionPane.WARNING_MESSAGE);
             }
             lineLabels = new String[nLines];
-            data = new double[nLines][ncol];
-            xRange[1] = ncol-1;
+            data = new double[nLines][cols.length];
+            xRange[1] = cols.length-1;
             for (int i=0; i<nLines; i++)
             {
                 lineLabels[i] = "Row"+String.valueOf(rows[i]+1);
-                for (int j=0; j<ncol; j++)
+                for (int j=0; j<cols.length; j++)
                 {
                     try {
                         data[i][j] = Double.parseDouble(
@@ -553,8 +561,15 @@ implements TableObserver
         long[] startArray = dataset.getStartDims();
         long[] strideArray = dataset.getStride();
         int[] selectedIndex = dataset.getSelectedIndex();
-        int start = (int)startArray[selectedIndex[1]];
-        int stride = (int)strideArray[selectedIndex[1]];
+        int start = 1;
+        int stride = 1;
+
+        if (rank > 1)
+        {
+            start = (int)startArray[selectedIndex[1]];
+            stride = (int)strideArray[selectedIndex[1]];
+        }
+
         for (int i=0; i<cols; i++)
         {
             columnNames[i] = String.valueOf(start+i*stride);
@@ -572,7 +587,10 @@ implements TableObserver
 
         theTable = new JTable(tableModel)
         {
-            public boolean isCellEditable( int row, int col ) { return true; }
+            public boolean isCellEditable( int row, int col )
+            {
+                return !isReadOnly;
+            }
 
             public void editingStopped(ChangeEvent e)
             {
@@ -874,7 +892,7 @@ implements TableObserver
         } catch (FileNotFoundException ex) { return; }
 
         String line = null;
-        StringTokenizer st = null;
+        StringTokenizer tokenizer1=null, tokenizer2=null;
 
         try { line = in.readLine(); }
         catch (IOException ex)
@@ -883,35 +901,53 @@ implements TableObserver
             return;
         }
 
-        String token = null;
         int size = Array.getLength(dataValue);
+        String delimiter = ViewProperties.getDataDelimiter();
+        if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_TAB))
+            delimiter = "\t";
+        else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_SPACE))
+            delimiter = " ";
+        else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_COMMA))
+            delimiter = ",";
+        else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_COLON))
+            delimiter = ":";
+        else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_SEMI_COLON))
+            delimiter = ";";
+        else
+            delimiter = "\t";
+
+        String token=null;
         while (line != null && index < size)
         {
-            st = new StringTokenizer(line);
-            while (st.hasMoreTokens() && index < size)
+            tokenizer1 = new StringTokenizer(line);
+            while (tokenizer1.hasMoreTokens() && index < size)
             {
-                token = st.nextToken();
-                try { updateValueInMemory(token, r, c); }
-                catch (Exception ex)
+                tokenizer2 = new StringTokenizer(tokenizer1.nextToken(), delimiter);
+                while (tokenizer2.hasMoreTokens() && index < size)
                 {
-                    toolkit.beep();
-                    JOptionPane.showMessageDialog(
-                    this,
-                    ex,
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
-                    try { in.close(); } catch (IOException ex2) {}
-                    return;
-                }
-                index++;
-                c++;
+                    token = tokenizer2.nextToken();
+                    try { updateValueInMemory(token, r, c); }
+                    catch (Exception ex)
+                    {
+                        toolkit.beep();
+                        JOptionPane.showMessageDialog(
+                        this,
+                        ex,
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                        try { in.close(); } catch (IOException ex2) {}
+                        return;
+                    }
+                    index++;
+                    c++;
 
-                if (c >= cols)
-                {
-                    c = 0;
-                    r++;
-                }
-            }
+                    if (c >= cols)
+                    {
+                        c = 0;
+                        r++;
+                    }
+                } // while (tokenizer2.hasMoreTokens() && index < size)
+            } // while (tokenizer1.hasMoreTokens() && index < size)
             try { line = in.readLine(); }
             catch (IOException ex) { line = null; }
         }

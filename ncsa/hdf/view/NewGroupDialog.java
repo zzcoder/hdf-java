@@ -193,7 +193,7 @@ implements ActionListener
             return null;
         }
 
-        HObject obj = null;
+        Group obj = null;
         try
         {
             if (isH5)

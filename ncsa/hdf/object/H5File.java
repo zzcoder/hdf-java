@@ -117,7 +117,7 @@ public class H5File extends File implements FileFormat
             throw new HDF5Exception("Invalid access identifer -- "+flag);
         else if ((flag == HDF5Constants.H5F_ACC_RDWR ||
             flag == HDF5Constants.H5F_ACC_CREAT) && !canWrite())
-            throw new HDF5Exception("Cannot write file -- "+fullFileName);
+            throw new HDF5Exception("Cannot write file, try open as read-only -- "+fullFileName);
         else if (!exists())
             throw new HDF5Exception("File does not exist -- "+fullFileName);
         else if ((flag == HDF5Constants.H5F_ACC_RDONLY) && !canRead())

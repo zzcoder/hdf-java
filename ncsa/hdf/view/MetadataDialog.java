@@ -194,7 +194,9 @@ implements ActionListener
         // the attribute list may change when a attribute is deleted.
         Object attrs[] = new Object[size];
         for (int i=0; i<size; i++)
+        {
             attrs[i] = attrList.get(idxes[i]);
+        }
 
         for (int i=0; i<size; i++)
         {
@@ -621,6 +623,7 @@ implements ActionListener
         attrTable.setRowSelectionAllowed(false);
         attrTable.setCellSelectionEnabled(true);
         attrTable.getTableHeader().setReorderingAllowed(false);
+        attrTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         JScrollPane scroller1 = new JScrollPane(attrTable);
         attrContentArea = new JTextArea();
@@ -720,8 +723,11 @@ implements ActionListener
 
         double d = 0;
         String theToken = null;
+        long max=0, min=0;
         for (int i=0; i<array_length; i++)
         {
+            max = min = 0;
+
             theToken = st.nextToken().trim();
             try {
                 if (!(Array.get(data, i) instanceof String))
@@ -749,12 +755,80 @@ implements ActionListener
 
             switch (NT)
             {
-                case 'B': Array.setByte  (data, i, (byte)d); break;
-                case 'S': Array.setShort (data, i, (short)d); break;
-                case 'I': Array.setInt   (data, i, (int)d); break;
-                case 'J': Array.setLong  (data, i, (long)d); break;
-                case 'F': Array.setFloat (data, i, (float)d); break;
-                case 'D': Array.setDouble(data, i, (double)d); break;
+                case 'B':
+                {
+                    if (isUnsigned)
+                    {
+                        min = 0;
+                        max = 255;
+                    }
+                    else
+                    {
+                        min = Byte.MIN_VALUE;
+                        max = Byte.MAX_VALUE;
+                    }
+
+                    if (d > max || d < min)
+                        JOptionPane.showMessageDialog(
+                            getOwner(),
+                            "Data is out of range["+min+", "+max+"]: "+newValue,
+                            getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
+                    else
+                        Array.setByte  (data, i, (byte)d);
+                    break;
+                }
+                case 'S':
+                {
+                    if (isUnsigned)
+                    {
+                        min = 0;
+                        max = 65535;
+                    }
+                    else
+                    {
+                        min = Short.MIN_VALUE;
+                        max = Short.MAX_VALUE;
+                    }
+
+                    if (d > max || d < min)
+                        JOptionPane.showMessageDialog(
+                            getOwner(),
+                            "Data is out of range["+min+", "+max+"]: "+newValue,
+                            getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
+                    else
+                        Array.setShort (data, i, (short)d);
+                    break;
+                }
+                case 'I':
+                {
+                    if (isUnsigned)
+                    {
+                        min = 0;
+                        max = 4294967295L;
+                    }
+                    else
+                    {
+                        min = Integer.MIN_VALUE;
+                        max = Integer.MAX_VALUE;
+                    }
+
+                    if (d > max || d < min)
+                        JOptionPane.showMessageDialog(
+                            getOwner(),
+                            "Data is out of range["+min+", "+max+"]: "+newValue,
+                            getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
+                    else
+                        Array.setInt   (data, i, (int)d);
+                    break;
+                }
+                case 'J':
+                    Array.setLong  (data, i, (long)d); break;
+                case 'F':
+                    Array.setFloat (data, i, (float)d); break;
+                case 'D':
                 default:  Array.set      (data, i, newValue); break;
             }
         }
