@@ -139,9 +139,11 @@ jhdf5-packages: $(JHI5PACKAGES)
 	$(JAR) cf ./lib/jhdf5.jar $(JHI5CLASSES)
 
 nc2-packages: $(NC2OBJPACKAGES)
+	-mkdir -p ./lib/ext 
 	$(JAR) cf ./lib/ext/nc2obj.jar $(NC2OBJCLASSES)
 
 fits-packages: $(FITSOBJPACKAGES)
+	-mkdir -p ./lib/ext 
 	$(JAR) cf ./lib/ext/fitsobj.jar $(FITSOBJCLASSES)
 
 jhdfobj-packages: $(HDFOBJPACKAGES)  
