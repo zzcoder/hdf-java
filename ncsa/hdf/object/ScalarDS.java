@@ -43,6 +43,11 @@ public abstract class ScalarDS extends Dataset
     private byte[] palette;
 
     /**
+     * True is this dataset is an image.
+     */
+    protected boolean isImage;
+
+    /**
      * Creates a ScalarDS object with specific name, path, and parent.
      * <p>
      * @param fileFormat the HDF file.
@@ -61,6 +66,7 @@ public abstract class ScalarDS extends Dataset
         datatype = -1;
         dataclass = -1;
         palette = null;
+        isImage = false;
     }
 
     /**
@@ -104,4 +110,13 @@ public abstract class ScalarDS extends Dataset
      * different library to retrieve the associated palette.
      */
     public abstract byte[][] getPalette();
+
+    /**
+     * Returns true is this dataset is an image.
+     */
+    public boolean isImage()
+    {
+        return isImage;
+    }
+
 }
