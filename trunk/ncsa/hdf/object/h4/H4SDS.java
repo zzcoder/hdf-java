@@ -462,7 +462,10 @@ public class H4SDS extends ScalarDS
     {
         int id = open();
         String[] objName = {""};
+        String[] dimName = {""};
+        int[] dimInfo = {0, 0, 0};
         int[] sdInfo = {0, 0, 0};
+
         int[] idims = new int[HDFConstants.MAX_VAR_DIMS];
         try {
             HDFLibrary.SDgetinfo(id, objName, idims, sdInfo);
@@ -475,6 +478,17 @@ public class H4SDS extends ScalarDS
                 nativeDatatype == HDFConstants.DFNT_UCHAR8);
             idims = new int[rank];
             HDFLibrary.SDgetinfo(id, objName, idims, sdInfo);
+
+            // get the dimension names
+            try {
+                dimNames = new String[rank];
+                for (int i=0; i<rank; i++) {
+                    int dimid = HDFLibrary.SDgetdimid(id, i);
+                    HDFLibrary.SDdiminfo(dimid, dimName, dimInfo);
+                    dimNames[i] = dimName[0];
+                }
+            } catch (Exception ex) {}
+
         } catch (HDFException ex) {}
         finally {
             close(id);

@@ -9,14 +9,15 @@
  *                                                                          *
  ****************************************************************************/
 
-package ncsa.hdf.object.nc2;
+package ncsa.hdf.object.fits;
 
 import java.util.*;
 import ncsa.hdf.object.*;
-import ucar.nc2.*;
+import java.lang.reflect.Array;
+import nom.tam.fits.*;
 
 /**
- * NC2Dataset describes an multi-dimension array of HDF5 scalar or atomic data
+ * FitsDataset describes an multi-dimension array of HDF5 scalar or atomic data
  * types, such as byte, int, short, long, float, double and string,
  * and operations performed on the scalar dataset
  * <p>
@@ -27,7 +28,7 @@ import ucar.nc2.*;
  * @version 1.0 12/12/2001
  * @author Peter X. Cao, NCSA
  */
-public class NC2Dataset extends ScalarDS
+public class FitsDataset extends ScalarDS
 {
     /**
      * The list of attributes of this data object. Members of the list are
@@ -35,22 +36,23 @@ public class NC2Dataset extends ScalarDS
      */
      private List attributeList;
 
-     private Variable nativeDataset;
+     private BasicHDU nativeDataset;
 
     /**
-     * Constructs an NC2Dataset object with specific netcdf variable.
+     * Constructs an FitsDataset object with specific netcdf variable.
      * <p>
      * @param fileFormat the netcdf file.
      * @param ncDataset the netcdf variable.
      * @param oid the unique identifier for this dataset.
      */
-    public NC2Dataset(
+    public FitsDataset(
         FileFormat fileFormat,
-        Variable ncDataset,
+        BasicHDU hdu,
+        String dName,
         long[] oid) {
-        super (fileFormat, ncDataset.getName(), HObject.separator, oid);
+        super (fileFormat, dName, HObject.separator, oid);
         unsignedConverted = false;
-        nativeDataset = ncDataset;
+        nativeDataset = hdu;
     }
 
     //Implementing Dataset
@@ -67,36 +69,18 @@ public class NC2Dataset extends ScalarDS
     }
 
     // Implementing DataFormat
-    public Object read() throws Exception
-    {
+    public Object read() throws Exception {
         Object theData = null;
 
         if (nativeDataset == null)
             return null;
 
-        int[] origin = new int[rank];
-        int[] shape = new int[rank];
+        Object fitsData = nativeDataset.getData().getData();
+        int n = get1DLength(fitsData);
 
-        for (int i=0; i<rank; i++) {
-            origin[i] = (int)startDims[i];
-            shape[i]=(int)selectedDims[i];
-        }
+        theData = FitsDatatype.allocateArray(nativeDataset.getBitPix(), n);
 
-        ucar.ma2.Array ncArray = null;
-
-        try { ncArray = nativeDataset.read(origin, shape); }
-        catch (Exception ex) { ncArray = nativeDataset.read(); }
-        Object oneD = ncArray.copyTo1DJavaArray();
-
-        if (oneD == null)
-            return null;
-
-        if (oneD.getClass().getName().startsWith("[C")) {
-            char[] charA = (char[])oneD;
-            String[] strA = {new String(charA)};
-            theData = strA;
-        } else
-            theData = oneD;
+        to1Darray(fitsData, theData, 0);
 
         return theData;
     }
@@ -113,18 +97,31 @@ public class NC2Dataset extends ScalarDS
             return attributeList;
 
         if (nativeDataset == null)
-            return (attributeList=null);
+            return null;
 
-        List ncAttrList = nativeDataset.getAttributes();
-        if (ncAttrList == null)
-            return (attributeList=null);
+        Header header = nativeDataset.getHeader();
+        if (header == null)
+            return null;
 
-        int n = ncAttrList.size();
-        attributeList = new Vector(n);
-        ucar.nc2.Attribute ncAttr = null;
-        for (int i=0; i<n; i++) {
-            ncAttr = (ucar.nc2.Attribute)ncAttrList.get(i);
-            attributeList.add(NC2File.convertAttribute(ncAttr));
+        attributeList = new Vector();
+        HeaderCard hc = null;
+        Iterator it = header.iterator();
+        Attribute attr = null;
+        Datatype dtype = new FitsDatatype(Datatype.CLASS_STRING, 80, 0, 0);
+        long[] dims = {1};
+        String value = null;
+        while (it.hasNext()) {
+            value = "";
+            hc = (HeaderCard)it.next();
+            attr = new Attribute(hc.getKey(), dtype, dims);
+            String tvalue = hc.getValue();
+            if (tvalue != null)
+                value += tvalue;
+            tvalue = hc.getComment();
+            if (tvalue != null)
+                value += " / " + tvalue;
+            attr.setValue(value);
+            attributeList.add(attr);
         }
 
         return attributeList;
@@ -155,9 +152,15 @@ public class NC2Dataset extends ScalarDS
         if (nativeDataset == null)
             return;
 
-        isText = nativeDataset.getDataType().equals(DataType.STRING);
 
-        rank = nativeDataset.getRank();
+        int[] axes= null;
+        try { axes = nativeDataset.getAxes(); }
+        catch (Exception ex) {}
+
+        if (axes == null)
+            return;
+
+        rank = axes.length;
         if (rank == 0) {
             // a scalar data point
             rank = 1;
@@ -167,7 +170,7 @@ public class NC2Dataset extends ScalarDS
         else {
             dims = new long[rank];
             for (int i=0; i<rank; i++) {
-                dims[i] = (long) (nativeDataset.getDimension(i).getLength());
+                dims[i] = (long) axes[i];
             }
         }
 
@@ -236,7 +239,7 @@ public class NC2Dataset extends ScalarDS
      * @param data the array of data values.
      * @return the new dataset if successful. Otherwise returns null.
      */
-    public static NC2Dataset create(
+    public static FitsDataset create(
          String name,
         Group pgroup,
         Datatype type,
@@ -259,7 +262,8 @@ public class NC2Dataset extends ScalarDS
     // implementing ScalarDS
     public Datatype getDatatype() {
         if (datatype == null) {
-            datatype = new NC2Datatype(nativeDataset.getDataType());
+            try {datatype = new FitsDatatype(nativeDataset.getBitPix());}
+            catch (Exception ex) {}
         }
 
         return datatype;
@@ -275,4 +279,38 @@ public class NC2Dataset extends ScalarDS
         throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
     }
 
+    private int get1DLength(Object data) throws Exception {
+        if (!data.getClass().isArray()) {
+            return 1;
+        }
+
+        int len = Array.getLength(data);
+
+        int total = 0;
+        for (int i = 0; i < len; i++) {
+            total += get1DLength(Array.get(data, i));
+        }
+
+        return total;
+    }
+
+    /** copy multi-dimension array of fits data into 1D array */
+    private int to1Darray(Object dataIn, Object dataOut, int offset) throws Exception {
+        Class component = dataIn.getClass().getComponentType();
+        if (component == null) {
+            return offset;
+        }
+
+        int size = Array.getLength(dataIn);
+        if (!component.isArray()) {
+            System.arraycopy(dataIn, 0, dataOut, offset, size);
+            return offset+size;
+        }
+
+        for (int i = size - 1; i >= 0; i--) {
+            offset = to1Darray(Array.get(dataIn, i), dataOut, offset);
+        }
+
+        return offset;
+    }
 }

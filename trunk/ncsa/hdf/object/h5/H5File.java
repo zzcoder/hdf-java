@@ -191,8 +191,28 @@ public class H5File extends FileFormat
             }
         }
 
-        try { H5.H5Fflush(fid, HDF5Constants.H5F_SCOPE_GLOBAL); }
-        catch (Exception ex) {}
+        // close all open datasets
+        try {
+            int n = H5.H5Fget_obj_count(fid, HDF5Constants.H5F_OBJ_DATASET);
+            int[] ids = new int[n];
+            H5.H5Fget_obj_ids(fid, HDF5Constants.H5F_OBJ_DATASET, n, ids);
+            for (int i=0; i<n; i++) {
+                try { H5.H5Dclose(ids[i]); } catch (Exception ex2) {}
+            }
+        } catch (Exception ex) {}
+
+        // close all open group
+        try {
+            int n = H5.H5Fget_obj_count(fid, HDF5Constants.H5F_OBJ_GROUP );
+            int[] ids = new int[n];
+            H5.H5Fget_obj_ids(fid, HDF5Constants.H5F_OBJ_GROUP , n, ids);
+            for (int i=0; i<n; i++) {
+                try { H5.H5Gclose(ids[i]); } catch (Exception ex2) {}
+            }
+        } catch (Exception ex) {}
+
+
+        try { H5.H5Fflush(fid, HDF5Constants.H5F_SCOPE_GLOBAL); } catch (Exception ex) {}
         try { H5.H5Fclose(fid); } catch (Exception ex) {}
 
         fid = -1;
@@ -892,6 +912,8 @@ try {
                 pgroup.addToMemberList(d);
             }
         } // for ( i = 0; i < nelems; i++)
+
+        pgroup.close(gid);
 
     } // private depth_first()
 
