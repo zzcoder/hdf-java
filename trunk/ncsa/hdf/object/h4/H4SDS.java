@@ -510,9 +510,13 @@ public class H4SDS extends ScalarDS
 
             // get chunk information
             try {
-                HDFOnlyChunkInfo chunkInfo = new HDFOnlyChunkInfo();
+                HDFCompChunkInfo chunkInfo = new HDFCompChunkInfo();
                 int[] cflag = {HDFConstants.HDF_NONE};
-                boolean status = HDFLibrary.SDgetchunkinfo(id, chunkInfo, cflag);
+
+                try {
+                    boolean status = HDFLibrary.SDgetchunkinfo(id, chunkInfo, cflag);
+                } catch (Throwable ex) {}
+
                 if (cflag[0] == HDFConstants.HDF_NONE)
                     chunkSize = null;
                 else {

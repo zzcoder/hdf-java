@@ -290,6 +290,10 @@ implements ImageView, ActionListener
         setJMenuBar(createMenuBar());
         viewer.showStatus(sb.toString());
 
+        if (is3D)
+            setTitle( "Image "+String.valueOf(start[selectedIndex[2]]+1)+ " of "+dims[selectedIndex[2]] + "    " + frameTitle);
+
+
         // tanspose the image
         if (isTransposed.booleanValue()) {
             rotate(ROTATE_CW_90);
@@ -1380,8 +1384,8 @@ implements ImageView, ActionListener
         dataset.clearData();
         image = null;
         imageComponent.setImage(getImage());
-
-        setTitle( frameTitle+ " - Image "+String.valueOf(idx+1)+ " of "+dims[selectedIndex[2]]);
+        setTitle( "Image "+String.valueOf(idx+1)+ " of "+dims[selectedIndex[2]] + "    " + frameTitle);
+        //setTitle( frameTitle+ " - Image "+String.valueOf(idx+1)+ " of "+dims[selectedIndex[2]]);
         updateUI();
     }
 

@@ -158,6 +158,20 @@ implements TreeView, ActionListener {
         JPopupMenu menu = new JPopupMenu();
         JMenuItem item;
 
+        item = new JMenuItem( "Open");
+        item.setMnemonic(KeyEvent.VK_O);
+        item.addActionListener(this);
+        item.setActionCommand("Open data");
+        menu.add(item);
+
+        item = new JMenuItem( "Open As");
+        item.setMnemonic(KeyEvent.VK_A);
+        item.addActionListener(this);
+        item.setActionCommand("Open data as");
+        menu.add(item);
+
+        menu.addSeparator();
+
         JMenu newOjbectMenu = new JMenu("New");
         menu.add(newOjbectMenu);
         editGUIs.add(newOjbectMenu);
@@ -177,19 +191,10 @@ implements TreeView, ActionListener {
         item.setActionCommand("Add image");
         newOjbectMenu.add(item);
 
-        menu.addSeparator();
-
-        item = new JMenuItem( "Open");
-        item.setMnemonic(KeyEvent.VK_O);
+        item = new JMenuItem( "Table", ViewProperties.getTableIcon());
         item.addActionListener(this);
-        item.setActionCommand("Open data");
-        menu.add(item);
-
-        item = new JMenuItem( "Open As");
-        item.setMnemonic(KeyEvent.VK_A);
-        item.addActionListener(this);
-        item.setActionCommand("Open data as");
-        menu.add(item);
+        item.setActionCommand("Add table");
+//        newOjbectMenu.add(item);
 
         menu.addSeparator();
 
@@ -253,14 +258,27 @@ implements TreeView, ActionListener {
         boolean isReadOnly = selectedObject.getFileFormat().isReadOnly();
         setEnabled(editGUIs, !isReadOnly);
 
+        boolean isWritable = !selectedObject.getFileFormat().isReadOnly();
         if (selectedObject instanceof Group)
         {
-            popupMenu.getComponent(2).setEnabled(false); // "open" menuitem
-            popupMenu.getComponent(3).setEnabled(false); // "open as" menuitem
+            popupMenu.getComponent(0).setEnabled(false); // "open" menuitem
+            popupMenu.getComponent(1).setEnabled(false); // "open as" menuitem
+
+            boolean state = !(((Group)selectedObject).isRoot());
+            popupMenu.getComponent(5).setEnabled(state); // "Copy" menuitem
+            popupMenu.getComponent(6).setEnabled(state && isWritable); // "Paste" menuitem
+            popupMenu.getComponent(7).setEnabled(state && isWritable); // "Delete" menuitem
+            popupMenu.getComponent(9).setEnabled(state); // "save to" menuitem
+            popupMenu.getComponent(10).setEnabled(state && isWritable); // "rename" menuitem
         }
         else {
-            popupMenu.getComponent(2).setEnabled(true);
-            popupMenu.getComponent(3).setEnabled(true);
+            popupMenu.getComponent(0).setEnabled(true);
+            popupMenu.getComponent(1).setEnabled(true);
+            popupMenu.getComponent(5).setEnabled(true); // "Copy" menuitem
+            popupMenu.getComponent(6).setEnabled(isWritable); // "Paste" menuitem
+            popupMenu.getComponent(7).setEnabled(isWritable); // "Delete" menuitem
+            popupMenu.getComponent(9).setEnabled(true); // "save to" menuitem
+            popupMenu.getComponent(10).setEnabled(isWritable); // "rename" menuitem
         }
 
         popupMenu.show((JComponent)e.getSource(), x, y);
@@ -888,6 +906,42 @@ implements TreeView, ActionListener {
         }
     }
 
+/*
+    private void addTable()
+    {
+        if (selectedObject == null || selectedNode == null)
+            return;
+
+        Group pGroup = null;
+        if (selectedObject instanceof Group)
+            pGroup = (Group)selectedObject;
+        else
+            pGroup = (Group)((DefaultMutableTreeNode)selectedNode.getParent()).getUserObject();
+
+        NewTableDataDialog dialog = new NewTableDataDialog(
+            (JFrame)viewer,
+            pGroup,
+            breadthFirstUserObjects(selectedObject.getFileFormat().getRootNode()));
+        dialog.show();
+
+        HObject obj = (HObject)dialog.getObject();
+        if (obj == null)
+            return;
+
+        Group pgroup = dialog.getParentGroup();
+        try { addObject(obj, pgroup); }
+        catch (Exception ex) {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(
+                this,
+                ex,
+                "HDFView",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+    }
+*/
+
     private void renameObject()
     {
         if (selectedObject == null)
@@ -946,6 +1000,9 @@ implements TreeView, ActionListener {
         }
         else if (cmd.equals("Add image")) {
             addImage();
+        }
+        else if (cmd.equals("Add table")) {
+            ;//addTable();
         }
         else if (cmd.startsWith("Open data"))
         {
