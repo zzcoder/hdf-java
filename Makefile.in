@@ -376,7 +376,7 @@ uninstall-ug:
 	rm -rf $(DOCDIR)/hdf-object/*
 
 distclean: clean-natives clean-classes clean-test clean-testlink
-	rm config.cache config.status config.log 
+	rm -f config.cache config.status config.log 
 	rm -rf ./lib/@JAVATARG@
 	rm -rf ./lib/*.jar
 	rm -f ./native/Makefile
