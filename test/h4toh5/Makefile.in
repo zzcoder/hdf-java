@@ -19,7 +19,7 @@ CLASSPATH=@CLASSPATH@
 .java.class:
 	$(JAVAC) -classpath $(CLASSPATH) $<
 
-all: apitest imagetest imagetestattr sdstest sdstestattr vdatatest vgrouptest nametest lonesdstest lonevdatatest runtests
+all: apitest imagetest imagetestattr sdstest sdstestattr vdatatest vgrouptest nametest lonesdstest lonevdatatest loneimagetest runtests
 	chmod u+x runtests.sh
 
 apitest: apitest.class
@@ -51,6 +51,9 @@ lonesdstest: lonesdstest.class
 
 lonevdatatest: lonevdatatest.class
 	chmod u+x lonevdatatest.sh
+
+loneimagetest: loneimagetest.class
+	chmod u+x loneimagetest.sh
 
 runtests: 
 	chmod u+x runtests.sh
