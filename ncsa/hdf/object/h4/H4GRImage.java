@@ -183,6 +183,43 @@ public class H4GRImage extends ScalarDS
         return datatype;
     }
 
+    // Implementing Dataset
+    public byte[] readBytes() throws HDFException
+    {
+        byte[] theData = null;
+
+        if (rank <=0 ) init();
+
+        int id = open();
+        if (id < 0)
+            return null;
+
+        try {
+            // set the interlacing scheme for reading image data
+            HDFLibrary.GRreqimageil(id, interlace);
+            int datasize = getWidth()*getHeight()*ncomp;
+            int size = HDFLibrary.DFKNTsize(nativeDatatype)*datasize;
+            theData = new byte[size];
+            int[] start = {(int)startDims[0], (int)startDims[1]};
+            int[] select = {(int)selectedDims[0], (int)selectedDims[1]};
+
+            int[] stride = null;
+            if (selectedStride != null)
+            {
+                stride = new int[rank];
+                for (int i=0; i<rank; i++)
+                    stride[i] = (int)selectedStride[i];
+            }
+
+            HDFLibrary.GRreadimage(id, start, stride, select, theData);
+        } finally
+        {
+            close(id);
+        }
+
+        return theData;
+    }
+
     // ***** need to implement from DataFormat *****
     public Object read() throws HDFException
     {
@@ -224,9 +261,9 @@ public class H4GRImage extends ScalarDS
     }
 
     // Implementing DataFormat
-    public void write() throws HDFException
+    public void write(Object buf) throws HDFException
     {
-        if (data == null)
+        if (buf == null)
             return;
 
         int id = open();
@@ -248,12 +285,10 @@ public class H4GRImage extends ScalarDS
                 stride[i] = (int)selectedStride[i];
         }
 
-        Object tmpData = null;
+        Object tmpData = buf;
         try {
             if ( isUnsigned && unsignedConverted)
-                tmpData = convertToUnsignedC(data);
-            else
-                tmpData = data;
+                tmpData = convertToUnsignedC(buf);
             HDFLibrary.GRwriteimage(id, start, stride, select, tmpData);
         } finally
         {
@@ -517,7 +552,6 @@ public class H4GRImage extends ScalarDS
 
     /**
      * Creates a new image.
-     * @param file the file which the dataset is added to.
      * @param name the name of the dataset to create.
      * @param pgroup the parent group of the new dataset.
      * @param type the datatype of the dataset.
@@ -531,7 +565,6 @@ public class H4GRImage extends ScalarDS
      * @return the new image if successful. Otherwise returns null.
      */
     public static H4GRImage create(
-        FileFormat file,
         String name,
         Group pgroup,
         Datatype type,
@@ -546,11 +579,14 @@ public class H4GRImage extends ScalarDS
         H4GRImage dataset = null;
         String fullPath = null;
 
-        if (file == null ||
-            name == null ||
+        if (name == null ||
             pgroup == null ||
             dims == null ||
             (gzip>0 && chunks==null))
+            return null;
+
+        H4File file = (H4File)pgroup.getFileFormat();
+        if (file == null)
             return null;
 
         String path = HObject.separator;

@@ -12,11 +12,10 @@
 package ncsa.hdf.object;
 
 import java.util.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
- * Group is the superclass for HDF4 and HDF5 group, inheriting the HObject.
- * <p>
- * Group is an abstract class. Its implementing sub-classes are the H4Group and
+ * Group is an abstract class. Current implementing classes are the H4Group and
  * H5Group. This class includes general information of a group object such as
  * members of a group and common operation on groups for both HDF4 and HDF5.
  * <p>
@@ -40,7 +39,7 @@ public abstract class Group extends HObject
     /**
      * Creates a group object with specific name, path, and parent.
      * <p>
-     * @param fileFormat the HDF file.
+     * @param fileFormat the file which containing the group.
      * @param name the name of this group.
      * @param path the full path of this group.
      * @param parent the parent of this group.
@@ -89,6 +88,38 @@ public abstract class Group extends HObject
      */
     public List getMemberList()
     {
+        FileFormat theFile = this.getFileFormat();
+        String thePath = this.getPath();
+        String theName = this.getName();
+
+        if (memberList == null && theFile != null)
+        {
+            // find the memberList from the file by check the group path and name
+
+            try { theFile.open(); } // load the file structure;
+            catch (Exception ex) {}
+
+            DefaultMutableTreeNode root = (DefaultMutableTreeNode)theFile.getRootNode();
+            Enumeration emu = root.depthFirstEnumeration();
+
+            Group g = null;
+            Object uObj = null;
+            while(emu.hasMoreElements())
+            {
+                uObj = (HObject)((DefaultMutableTreeNode)emu.nextElement()).getUserObject();
+                if (uObj instanceof Group)
+                {
+                    g = (Group)uObj;
+                    if ((this.isRoot() && g.isRoot()) ||
+                        (g.getPath().equals(thePath) && g.getName().endsWith(theName)))
+                    {
+                        memberList = g.getMemberList();
+                        break;
+                    }
+                }
+            }
+        }
+
         return memberList;
     }
 

@@ -14,10 +14,12 @@ package ncsa.hdf.object;
 import java.util.List;
 
 /**
- * This interface describes general I/O operations of data object,
- * such as read data content or data attribute into memory, write
- * data content or data attribute into disk.
+ * An interface provides general I/O operations for read/write information about
+ * the object. such as read data content or data attribute into memory, write
+ * data content or data attribute into file.
  * <p>
+ * @see ncsa.hdf.object.HObject
+ *
  * @version 1.0 12/12/2001
  * @author Peter X. Cao, NCSA
  */
@@ -28,8 +30,6 @@ public interface DataFormat
      * The file name is necessary because the file of this data object is
      * uniquely identified when mutilple files are opened by an application
      * at the same time.
-     * <p>
-     * @see ncsa.hdf.view.ViewManager
      */
     public abstract String getFile();
 

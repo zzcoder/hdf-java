@@ -19,7 +19,6 @@ import java.awt.Point;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.Choice;
 import java.awt.Toolkit;
 import java.util.*;
 import ncsa.hdf.object.*;
@@ -36,7 +35,7 @@ implements ActionListener, ItemListener
 {
     private JTextField nameField, widthField, heightField;
 
-    private Choice parentChoice;
+    private JComboBox parentChoice;
 
     private JRadioButton checkIndex, checkTrueColor, checkInterlacePixel, checkInterlacePlane;
 
@@ -66,8 +65,8 @@ implements ActionListener, ItemListener
         fileFormat = pGroup.getFileFormat();
         toolkit = Toolkit.getDefaultToolkit();
 
+        parentChoice = new JComboBox();
         groupList = new Vector();
-        parentChoice = new Choice();
         Object obj = null;
         Iterator iterator = objs.iterator();
         while (iterator.hasNext())
@@ -75,18 +74,19 @@ implements ActionListener, ItemListener
             obj = iterator.next();
             if (obj instanceof Group)
             {
-                Group g = (Group)obj;
                 groupList.add(obj);
+                Group g = (Group)obj;
                 if (g.isRoot())
                     parentChoice.addItem(HObject.separator);
                 else
                     parentChoice.addItem(g.getPath()+g.getName()+HObject.separator);
             }
         }
+
         if (pGroup.isRoot())
-            parentChoice.select(HObject.separator);
+            parentChoice.setSelectedItem(HObject.separator);
         else
-            parentChoice.select(pGroup.getPath()+pGroup.getName()+HObject.separator);
+            parentChoice.setSelectedItem(pGroup.getPath()+pGroup.getName()+HObject.separator);
 
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
@@ -310,7 +310,7 @@ implements ActionListener, ItemListener
         {
 
             Datatype datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign);
-            dataset = fileFormat.createImage(fileFormat, name, pgroup, datatype,
+            dataset = fileFormat.createImage(name, pgroup, datatype,
                 dims, dims, null, -1, ncomp, interlace, null);
             dataset.init();
         } catch (Exception ex)

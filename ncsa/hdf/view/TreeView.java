@@ -92,6 +92,9 @@ implements ActionListener
      */
     private final JPopupMenu popupMenu;
 
+    private List editGUIs;
+
+
     /**
      * Constructs a treeview.
      * <p>
@@ -108,6 +111,7 @@ implements ActionListener
 
         fileList = new Vector();
         toolkit = Toolkit.getDefaultToolkit();
+        editGUIs = new Vector();
 
         // initialize the tree and root
         treeModel = new DefaultTreeModel(root);
@@ -118,13 +122,7 @@ implements ActionListener
         tree.setRootVisible(false);
         //tree.setShowsRootHandles(true);
         tree.setRowHeight(23);
-        int fsize = ViewProperties.getFontSizeInt();
-        if (fsize >= 10 && fsize <=20)
-        {
-            Font font = tree.getFont();
-            Font newFont = new Font(font.getName(), font.getStyle(), fsize);
-            tree.setFont(newFont);
-        }
+        tree.setFont(tree.getFont().deriveFont(16f));
 
         // create the popupmenu
         popupMenu = createPopupMenu();
@@ -161,17 +159,21 @@ implements ActionListener
         FileFormat fileFormat = null;
         MutableTreeNode fileRoot = null;
         String msg = "";
+        boolean ish4=false, ish5=false;
+
+        ish4 = DefaultFileFilter.isHDF4(filename);
+        if (!ish4) ish5=DefaultFileFilter.isHDF5(filename);
 
         if (isFileOpen(filename))
             throw new UnsupportedOperationException("File is in use.");
 
-        if (DefaultFileFilter.isHDF4(filename) && (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4) == null))
+        if (ish4 && (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4) == null))
             throw new UnsupportedOperationException("HDF4 is not supported.");
 
-        if (DefaultFileFilter.isHDF5(filename) && (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) == null))
+        if (ish5 && (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) == null))
             throw new UnsupportedOperationException("HDF5 is not supported.");
 
-        if (!(DefaultFileFilter.isHDF5(filename) || DefaultFileFilter.isHDF4(filename)))
+        if (!(ish4 || ish5))
             throw new UnsupportedOperationException("Unsupported file type.");
 
         Iterator iterator = FileFormat.iterator();
@@ -187,10 +189,14 @@ implements ActionListener
 
         if (fileFormat == null)
         {
-            throw new java.io.IOException("Open file failed - "+filename);
+            throw new java.io.IOException("Unsupported fileformat - "+filename);
         }
 
-        fileFormat.open();
+        viewer.startBusyIndicator();
+        try {
+            fileFormat.open();
+        } finally { viewer.stopBusyIndicator(); }
+
         fileRoot = (MutableTreeNode)fileFormat.getRootNode();
         if (fileRoot != null)
         {
@@ -413,19 +419,6 @@ implements ActionListener
         return list;
     }
 
-    /**
-     * set the tree font.
-     */
-    public void setTreeFontSize(int fsize)
-    {
-        if (fsize >= 10 && fsize <=20)
-        {
-            Font font = tree.getFont();
-            Font newFont = new Font(font.getName(), font.getStyle(), fsize);
-            tree.setFont(newFont);
-        }
-    }
-
     /** Returns a list of all selected objects.
      */
     public List getSelectedObjects()
@@ -554,30 +547,9 @@ implements ActionListener
         JPopupMenu menu = new JPopupMenu();
         JMenuItem item;
 
-        item = new JMenuItem( "Open");
-        item.setMnemonic(KeyEvent.VK_O);
-        item.addActionListener(this);
-        item.setActionCommand("Open data");
-        menu.add(item);
-
-        item = new JMenuItem( "Open As");
-        item.setMnemonic(KeyEvent.VK_A);
-        item.addActionListener(this);
-        item.setActionCommand("Open data as");
-        menu.add(item);
-
-        menu.addSeparator();
-
-        item = new JMenuItem( "Save to File");
-        item.setMnemonic(KeyEvent.VK_S);
-        item.addActionListener(this);
-        item.setActionCommand("Save object to file");
-        menu.add(item);
-
-        menu.addSeparator();
-
         JMenu newOjbectMenu = new JMenu("New");
         menu.add(newOjbectMenu);
+        editGUIs.add(newOjbectMenu);
 
         item = new JMenuItem( "Group", ViewProperties.getFoldercloseIcon());
         item.addActionListener(this);
@@ -596,6 +568,35 @@ implements ActionListener
 
         menu.addSeparator();
 
+        item = new JMenuItem( "Open");
+        item.setMnemonic(KeyEvent.VK_O);
+        item.addActionListener(this);
+        item.setActionCommand("Open data");
+        menu.add(item);
+
+        item = new JMenuItem( "Open As");
+        item.setMnemonic(KeyEvent.VK_A);
+        item.addActionListener(this);
+        item.setActionCommand("Open data as");
+        menu.add(item);
+
+        menu.addSeparator();
+
+        item = new JMenuItem( "Save to");
+        item.setMnemonic(KeyEvent.VK_S);
+        item.addActionListener(this);
+        item.setActionCommand("Save object to file");
+        menu.add(item);
+
+        item = new JMenuItem( "Rename");
+        item.setMnemonic(KeyEvent.VK_R);
+        item.addActionListener(this);
+        item.setActionCommand("Rename object");
+        menu.add(item);
+        editGUIs.add(item);
+
+        menu.addSeparator();
+
         item = new JMenuItem( "Copy");
         item.setMnemonic(KeyEvent.VK_C);
         item.addActionListener(this);
@@ -607,12 +608,14 @@ implements ActionListener
         item.addActionListener(this);
         item.setActionCommand("Paste object");
         menu.add(item);
+        editGUIs.add(item);
 
         item = new JMenuItem( "Delete");
         item.setMnemonic(KeyEvent.VK_D);
         item.addActionListener(this);
         item.setActionCommand("Cut object");
         menu.add(item);
+        editGUIs.add(item);
 
         menu.addSeparator();
 
@@ -632,35 +635,32 @@ implements ActionListener
         int y = e.getY();
 
         HObject selectedObject = ((HObject)(selectedNode.getUserObject()));
+        boolean isReadOnly = selectedObject.getFileFormat().isReadOnly();
+        setEnabled(editGUIs, !isReadOnly);
+
         if (selectedObject instanceof Group)
         {
-            popupMenu.getComponent(0).setEnabled(false);
-            popupMenu.getComponent(1).setEnabled(false);
+            popupMenu.getComponent(2).setEnabled(false); // "open" menuitem
+            popupMenu.getComponent(3).setEnabled(false); // "open as" menuitem
         }
-        else
-        {
-            popupMenu.getComponent(0).setEnabled(true);
-            popupMenu.getComponent(1).setEnabled(true);
-        }
-
-        if (selectedObject.getFileFormat().isReadOnly())
-        {
-            popupMenu.getComponent(3).setEnabled(false);
-            popupMenu.getComponent(5).setEnabled(false);
-            popupMenu.getComponent(7).setEnabled(false);
-            popupMenu.getComponent(8).setEnabled(false);
-            popupMenu.getComponent(9).setEnabled(false);
-        }
-        else
-        {
+        else {
+            popupMenu.getComponent(2).setEnabled(true);
             popupMenu.getComponent(3).setEnabled(true);
-            popupMenu.getComponent(5).setEnabled(true);
-            popupMenu.getComponent(7).setEnabled(true);
-            popupMenu.getComponent(8).setEnabled(true);
-            popupMenu.getComponent(9).setEnabled(true);
         }
 
         popupMenu.show((JComponent)e.getSource(), x, y);
+    }
+
+    /** disable/enable GUI components */
+    private static void setEnabled(List list, boolean b)
+    {
+        Component item = null;
+        Iterator it = list.iterator();
+        while (it.hasNext())
+        {
+            item = (Component)it.next();
+            item.setEnabled(b);
+        }
     }
 
     /**

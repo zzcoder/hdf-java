@@ -48,10 +48,11 @@ public class H5File extends FileFormat
      */
     private MutableTreeNode rootNode;
 
+    /** flag to indicate if the file is readonly. */
     private boolean isReadOnly;
 
     /**
-     * Creates an H5File with read only access.
+     * Constructs an empty H5File with read-only access.
      */
     public H5File()
     {
@@ -59,7 +60,7 @@ public class H5File extends FileFormat
     }
 
     /**
-     * Creates an H5File object with read only access.
+     * Constructs an H5File object of given file name with read-only access.
      */
     public H5File(String pathname)
     {
@@ -67,13 +68,14 @@ public class H5File extends FileFormat
     }
 
     /**
-     * Creates an H5File object with specific file name and access flag.
+     * Constructs an H5File object with given file name and access flag.
      * <p>
      * @param pathname the full path name of the file.
      * @param flag the file access flag, it takes one of two values below:
      * <DL><DL>
-     * <DT> H5F_ACC_RDWR <DD> Allow read and write access to file.</DT>
-     * <DT> H5F_ACC_RDONLY <DD> Allow read-only access to file.</DT>
+     * <DT> READ <DD> Allow read-only access to file.</DT>
+     * <DT> WRITE <DD> Allow read and write access to file.</DT>
+     * <DT> CREATE <DD> Create a new file.</DT>
      * </DL></DL>
      */
     public H5File(String pathname, int access)
@@ -126,6 +128,17 @@ public class H5File extends FileFormat
         return isH5;
     }
 
+    /**
+     * Creates an instance of an H5File with given file name and access flag.
+     * <p>
+     * @param pathname the full path name of the file.
+     * @param flag the file access flag, it takes one of two values below:
+     * <DL><DL>
+     * <DT> READ <DD> Allow read-only access to file.</DT>
+     * <DT> WRITE <DD> Allow read and write access to file.</DT>
+     * <DT> CREATE <DD> Create a new file.</DT>
+     * </DL></DL>
+     */
     public FileFormat open(String pathname, int access) throws Exception
     {
         return new H5File(pathname, access);
@@ -201,8 +214,10 @@ public class H5File extends FileFormat
     }
 
     /**
-     * Creates a new HDF5 file.
-     * @param fileName the name of the file to create.
+     * Creates a new HDF5 file with given file name.
+     * <p>
+     * @param pathname the full path name of the file.
+     * @return an instance of the new H5File.
      */
     public FileFormat create(String fileName) throws Exception
     {
@@ -217,11 +232,13 @@ public class H5File extends FileFormat
         return new H5File(fileName, FileFormat.WRITE);
     }
 
-    public Group createGroup(FileFormat file, String name, Group pgroup) throws Exception
+    // implementign FileFormat
+    public Group createGroup(String name, Group pgroup) throws Exception
     {
-        return H5Group.create(file, name, pgroup);
+        return H5Group.create(name, pgroup);
     }
 
+    // implementign FileFormat
     public Datatype createDatatype(
         int tclass,
         int tsize,
@@ -231,8 +248,8 @@ public class H5File extends FileFormat
         return new H5Datatype(tclass, tsize, torder, tsign);
     }
 
+    // implementign FileFormat
     public Dataset createScalarDS(
-        FileFormat file,
         String name,
         Group pgroup,
         Datatype type,
@@ -242,11 +259,11 @@ public class H5File extends FileFormat
         int gzip,
         Object data) throws Exception
     {
-        return H5ScalarDS.create(file, name, pgroup, type, dims, maxdims, chunks, gzip, data);
+        return H5ScalarDS.create(name, pgroup, type, dims, maxdims, chunks, gzip, data);
     }
 
+    // implementign FileFormat
     public Dataset createImage(
-        FileFormat file,
         String name,
         Group pgroup,
         Datatype type,
@@ -258,16 +275,13 @@ public class H5File extends FileFormat
         int intelace,
         Object data) throws Exception
     {
-        H5ScalarDS dataset = (H5ScalarDS)H5ScalarDS.create(file, name, pgroup, type, dims, maxdims, chunks, gzip, data);
+        H5ScalarDS dataset = (H5ScalarDS)H5ScalarDS.create(name, pgroup, type, dims, maxdims, chunks, gzip, data);
         try { H5File.createImageAttributes(dataset, intelace); } catch (Exception ex) {}
 
         return dataset;
     }
 
-    /**
-     * Delete an object from the file.
-     * @param obj the data object to delete.
-     */
+    // implementign FileFormat
     public void delete(HObject obj) throws Exception
     {
         if (obj == null || fid < 0)
@@ -277,9 +291,7 @@ public class H5File extends FileFormat
         H5.H5Gunlink(fid, name);
     }
 
-    /**
-     * Retrieves and returns the tree structure from the file
-     */
+    // implementign FileFormat
     private MutableTreeNode loadTree()
     {
         if (fid <0 ) return null;
@@ -302,12 +314,7 @@ public class H5File extends FileFormat
         return root;
     }
 
-    /**
-     * Copy an object to a group.
-     * @param srcObj   the object to copy.
-     * @param dstGroup the destination group.
-     * @return the new node containing the new object.
-     */
+    // implementign FileFormat
     public TreeNode copy(HObject srcObj, Group dstGroup) throws Exception
     {
         TreeNode newNode = null;
@@ -326,6 +333,12 @@ public class H5File extends FileFormat
 
         return newNode;
     }
+
+    /** copy a dataset into another group.
+     * @param srcDataset the dataset to be copied.
+     * @param pgroup teh group where the dataset is copied to.
+     * @return the treeNode containing the new copy of the dataset.
+     */
 
     private TreeNode copyDataset(Dataset srcDataset, H5Group pgroup)
          throws Exception
@@ -733,16 +746,36 @@ public class H5File extends FileFormat
 
             try
             {
-                // retrieve the object ID.
-                byte[] ref_buf = H5.H5Rcreate(
-                    fid,
-                    fullPath+oName[0],
-                    HDF5Constants.H5R_OBJECT,
-                    -1);
+                byte[] ref_buf = null;
+                if (oType[0] == HDF5Constants.H5G_LINK)
+                {
+                    // find the object linked to
+                    String[] realName = {""};
+                    H5.H5Gget_linkval(fid, fullPath+oName[0], 100, realName);
+                    if (realName[0] != null && !realName[0].startsWith(HObject.separator))
+                    {
+                        realName[0] = fullPath+realName[0];
+                    }
+                    ref_buf = H5.H5Rcreate(fid, realName[0], HDF5Constants.H5R_OBJECT, -1);
+                    if (realName[0] != null && realName[0].length()>0 && ref_buf !=null)
+                    {
+                        oType[0] = H5.H5Rget_object_type(fid, ref_buf);
+                    }
+                }
+                else
+                {
+                    // retrieve the object ID.
+                    ref_buf = H5.H5Rcreate(
+                        fid,
+                        fullPath+oName[0],
+                        HDF5Constants.H5R_OBJECT,
+                        -1);
+                }
+
                 long l = HDFNativeData.byteToLong(ref_buf, 0);
                 oid = new long[1];
                 oid[0] = l; // save the object ID
-            } catch (HDF5Exception ex) {}
+            } catch (HDF5Exception ex) {;}
 
             if (oid == null)
                 continue; // do the next one, if the object is not identified.
@@ -879,7 +912,7 @@ public class H5File extends FileFormat
                 H5.H5Aget_name(aid, 80, nameA);
 
                 tid = H5.H5Aget_type(aid);
-                int nativeType = H5Datatype.toNativeType(tid);
+                int nativeType = H5Datatype.toNative(tid);
 
                 Attribute attr = new Attribute(nameA[0], new H5Datatype(nativeType), dims);
                 attributeList.add(attr);
@@ -892,7 +925,7 @@ public class H5File extends FileFormat
                     continue;
 
                 if (H5.H5Tget_class(nativeType)==HDF5Constants.H5T_ARRAY)
-                    H5.H5Aread(aid, H5Datatype.toNativeType(H5.H5Tget_super(nativeType)), value);
+                    H5.H5Aread(aid, H5Datatype.toNative(H5.H5Tget_super(nativeType)), value);
                 else
                     H5.H5Aread(aid, nativeType, value);
 
@@ -981,8 +1014,22 @@ public class H5File extends FileFormat
 
     /**
      * Creates required atriubtes for HDF5 image.
+     *
+     * <OL>The basic HDF5 image attributes include:
+     * <LI> The image identifier: name="CLASS", value="IMAGE"
+     * <LI> The type of the image: name="IMAGE_SUBCLASS", value="IMAGE_TRUECOLOR" or "IMAGE_INDEXED"
+     * <LI> The version of image: name="IMAGE_VERSION", value="1.2"
+     * <LI> The range of data value: name="IMAGE_MINMAXRANGE", value=[0, 255]
+     * <LI> The interlace mode: name="INTERLACE_MODE", value="INTERLACE_PIXEL" or "INTERLACE_PLANE"
+     * <LI> The pointer to the palette dataset: name="PALETTE", value=reference id of the palette dataset
+     * </OL>
+     * For more information about HDF5 image attributes, please read the
+     * <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/ADGuide/ImageSpec.html">
+     *    HDF5 Image and Palette Specification</a>
+     * <p>
      * @param dataset the image dataset which the attributes are added to.
-     * @param interlace the interlace mode of image data.
+     * @param interlace interlace the interlace mode of image data.
+     * @throws Exception
      */
     public static void createImageAttributes(Dataset dataset, int interlace) throws Exception
     {

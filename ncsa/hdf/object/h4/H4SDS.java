@@ -30,6 +30,12 @@ import ncsa.hdf.object.*;
  */
 public class H4SDS extends ScalarDS
 {
+    /** tag for netCDF datasets.
+     *  HDF4 library supports netCDF version 2.3.2. It only supports SDS APIs.
+     */
+    // magic number for netCDF: "C(67) D(68) F(70) '\001'"
+    public static final int DFTAG_NDG_NETCDF = 67687001;
+
     /**
      * The list of attributes of this data object. Members of the list are
      * instance of Attribute.
@@ -164,6 +170,46 @@ public class H4SDS extends ScalarDS
         return dataset;
     }
 
+    // Implementing Dataset
+    public byte[] readBytes() throws HDFException
+    {
+        byte[] theData = null;
+
+        if (rank <=0 ) init();
+
+        int id = open();
+        if (id < 0) return null;
+
+        int datasize = 1;
+        int[] select = new int[rank];
+        int[] start = new int[rank];
+        for (int i=0; i<rank; i++)
+        {
+            datasize *= (int)selectedDims[i];
+            select[i] = (int)selectedDims[i];
+            start[i] = (int)startDims[i];
+        }
+
+        int[] stride = null;
+        if (selectedStride != null)
+        {
+            stride = new int[rank];
+            for (int i=0; i<rank; i++)
+                stride[i] = (int)selectedStride[i];
+        }
+
+        try {
+            int size = HDFLibrary.DFKNTsize(nativeDatatype)*datasize;
+            theData = new byte[size];
+            HDFLibrary.SDreaddata(id, start, stride, select, theData);
+        } finally
+        {
+            close(id);
+        }
+
+        return theData;
+    }
+
     // Implementing DataFormat
     public Object read() throws HDFException
     {
@@ -211,9 +257,9 @@ public class H4SDS extends ScalarDS
     }
 
     // Implementing DataFormat
-    public void write() throws HDFException
+    public void write(Object buf) throws HDFException
     {
-        if (data == null)
+        if (buf == null)
             return;
 
         int id = open();
@@ -235,12 +281,10 @@ public class H4SDS extends ScalarDS
                 stride[i] = (int)selectedStride[i];
         }
 
-        Object tmpData = null;
+        Object tmpData = buf;
         try {
             if ( isUnsigned && unsignedConverted)
-                tmpData = convertToUnsignedC(data);
-            else
-                tmpData = data;
+                tmpData = convertToUnsignedC(buf);
             HDFLibrary.SDwritedata(id, start, stride, select, tmpData);
         } finally
         {
@@ -334,9 +378,17 @@ public class H4SDS extends ScalarDS
     // Implementing HObject
     public int open()
     {
-        int id = -1;
+        int id=-1;
+
         try {
-            int index = HDFLibrary.SDreftoindex(sdid, (int)oid[1]);
+            int index = 0;
+            int tag = (int)oid[0];
+
+            if (tag == this.DFTAG_NDG_NETCDF)
+                index = (int)oid[1]; //HDFLibrary.SDidtoref(id) fails for netCDF
+            else
+                index = HDFLibrary.SDreftoindex(sdid, (int)oid[1]);
+
             id = HDFLibrary.SDselect(sdid,index);
         } catch (HDFException ex)
         {
@@ -458,7 +510,6 @@ public class H4SDS extends ScalarDS
 
     /**
      * Creates a new dataset.
-     * @param file the file which the dataset is added to.
      * @param name the name of the dataset to create.
      * @param pgroup the parent group of the new dataset.
      * @param type the datatype of the dataset.
@@ -470,7 +521,6 @@ public class H4SDS extends ScalarDS
      * @return the new dataset if successful. Otherwise returns null.
      */
     public static H4SDS create(
-        FileFormat file,
         String name,
         Group pgroup,
         Datatype type,
@@ -483,11 +533,15 @@ public class H4SDS extends ScalarDS
         H4SDS dataset = null;
         String fullPath = null;
 
-        if (file == null ||
-            name == null ||
-            pgroup == null ||
+        if (pgroup == null ||
+            name == null||
             dims == null ||
             (gzip>0 && chunks==null))
+            return null;
+
+        H4File file = (H4File)pgroup.getFileFormat();
+
+        if (file == null)
             return null;
 
         String path = HObject.separator;

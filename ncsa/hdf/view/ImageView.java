@@ -15,6 +15,7 @@ import javax.swing.*;
 import ncsa.hdf.object.*;
 import java.awt.image.*;
 import java.awt.event.*;
+import java.awt.Font;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.util.*;
@@ -141,6 +142,8 @@ implements ImageObserver
 
     private double[] dataRange;
 
+    private PaletteComponent paletteComponent;
+
     /**
      * Constructs an ImageView.
      * <p>
@@ -157,6 +160,7 @@ implements ImageObserver
         zoomFactor = 1.0f;
         indexedImageData = null;
         imagePalette = null;
+        paletteComponent = null;
         isTrueColor = false;
         isPlaneInterlace = false;
         isHorizontalFlipped = false;
@@ -201,7 +205,7 @@ implements ImageObserver
         // add palette convas to show the palette
         if (imagePalette != null)
         {
-            PaletteComponent paletteComponent = new PaletteComponent(imagePalette, dataRange);
+            paletteComponent = new PaletteComponent(imagePalette, dataRange);
             contentPane.add (paletteComponent, BorderLayout.EAST);
         }
 
@@ -603,6 +607,7 @@ implements ImageObserver
 
     /**
      * Selects all whole image.
+     * @throws Exception
      */
     public void selectAll() throws Exception
     {
@@ -639,6 +644,18 @@ implements ImageObserver
     }
 
     // implementing ImageObserver
+    public void brightness(int level)
+    {
+        ImageFilter filter = new BrightnessFilter(level);
+
+        if (filter == null)
+            return;
+
+        changeImageFilter(filter);
+    }
+
+
+    // implementing ImageObserver
     public void setValueVisible(boolean b)
     {
         valueField.setVisible(b);
@@ -651,6 +668,7 @@ implements ImageObserver
      *  Byte data ranged from -128 to 127.
      *  <p>
      *  @param rawData The input raw data.
+     *  @param minmax the range of the raw data.
      *  @return the byte array of pixel data.
      */
     public static byte[] getBytes(Object rawData, double[] minmax)
@@ -843,6 +861,7 @@ implements ImageObserver
      *  by color components of red, green and blue. palette[][] = byte[3][256],
      *  where, palette[0][], palette[1][] and palette[2][] are the red, green and
      *  blue components respectively.
+     *  @return the gray palette in the form of byte[3][256]
      */
     public static final byte[][] createGrayPalette()
     {
@@ -863,6 +882,7 @@ implements ImageObserver
      *  by color components of red, green and blue. palette[][] = byte[3][256],
      *  where, palette[0][], palette[1][] and palette[2][] are the red, green and
      *  blue components respectively.
+     *  @return the rainbow palette in the form of byte[3][256]
      */
     public static final byte[][] createRainbowPalette()
     {
@@ -920,6 +940,7 @@ implements ImageObserver
      *  by color components of red, green and blue. palette[][] = byte[3][256],
      *  where, palette[0][], palette[1][] and palette[2][] are the red, green and
      *  blue components respectively.
+     *  @return the nature palette in the form of byte[3][256]
      */
     public static final byte[][] createNaturePalette()
     {
@@ -952,6 +973,7 @@ implements ImageObserver
      *  by color components of red, green and blue. palette[][] = byte[3][256],
      *  where, palette[0][], palette[1][] and palette[2][] are the red, green and
      *  blue components respectively.
+     *  @return the wave palette in the form of byte[3][256]
      */
     public static final byte[][] createWavePalette()
     {
@@ -972,6 +994,8 @@ implements ImageObserver
 
     /**
      * This method returns true if the specified image has transparent pixels.
+     * @param image the image to be check if has alpha.
+     * @return true if the image has alpha setting.
      */
     public static boolean hasAlpha(Image image)
     {
@@ -996,6 +1020,8 @@ implements ImageObserver
 
     /**
      * This method returns a buffered image with the contents of an image.
+     * @param image the plain image object.
+     * @return buffered image for the given image.
      */
     private BufferedImage toBufferedImage(Image image)
     {
@@ -1078,6 +1104,7 @@ implements ImageObserver
 
     /** Save the image to an image file.
      *  @param type the image type.
+     *  @throws Exception
      */
     public void saveImageAs(String type) throws Exception
     {
@@ -1137,6 +1164,7 @@ implements ImageObserver
                 return;
         }
 
+        viewer.startBusyIndicator();
         BufferedImage bi = null;
         try {
             bi = toBufferedImage(image);
@@ -1147,10 +1175,13 @@ implements ImageObserver
                 err.getMessage(),
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
+            viewer.stopBusyIndicator();
             return;
         }
 
-        Tools.saveImageAs(bi, choosedFile, type);
+        try {
+            Tools.saveImageAs(bi, choosedFile, type);
+        } finally { viewer.stopBusyIndicator(); }
 
         bi = null;
 
@@ -1166,6 +1197,7 @@ implements ImageObserver
 
     /**
      * Returns the selected data values.
+     * @return the selected data object.
      */
     public Object getSelectedData()
     {
@@ -1248,16 +1280,18 @@ implements ImageObserver
         return selectedData;
     }
 
-    /** returns the selected area of the image */
+    /** returns the selected area of the image
+     * @return the rectangle of the selected image area.
+     */
     public Rectangle getSelectedArea()
     {
         return imageComponent.originalSelectedArea;
     }
 
-    /** returns true if the image is a truecolor image. */
+    /** @return true if the image is a truecolor image. */
     public boolean isTrueColor() { return isTrueColor; }
 
-    /** returns true if the image interlace is plance interlace. */
+    /** @return true if the image interlace is plance interlace. */
     public boolean isPlaneInterlace() { return isPlaneInterlace; }
 
     private void gotoPage(long idx)
@@ -1407,23 +1441,44 @@ implements ImageObserver
         return status;
     }
 
-    /** PaletteComponent draws the palette. */
+    /** PaletteComponent draws the palette on the side of the image. */
     private class PaletteComponent extends JComponent
     {
         private Color[] colors = null;
         private double[] pixelData = null;
         private Dimension paintSize = null;
         java.text.DecimalFormat format;
+        double[] dataRange = null;
 
         private PaletteComponent (byte[][] palette, double[] range)
         {
             paintSize = new Dimension(25, 2);
             format = new java.text.DecimalFormat("0.00E0");
+            dataRange = range;
 
-            if (palette != null && range!= null)
+            if (palette != null && range !=null)
+            {
+                double ratio = (dataRange[1] - dataRange[0])/255;
+                pixelData = new double[256];
+                for (int i=0; i<256; i++)
+                {
+                    pixelData[i] = (dataRange[0] + ratio*i);
+                }
+            }
+
+            setFont(new Font(((JFrame)viewer).getName(), Font.PLAIN, 10));
+
+            updatePalette (palette);
+
+            setPreferredSize(new Dimension(paintSize.width+50, paintSize.height*256));
+            setVisible(true);
+        }
+
+        private void updatePalette (byte[][] palette)
+        {
+            if (palette != null && dataRange !=null)
             {
                 colors = new Color[256];
-                pixelData = new double[256];
 
                 int r, g, b;
                 for (int i=0; i<256; i++)
@@ -1436,14 +1491,10 @@ implements ImageObserver
                     if (b < 0) b += 256;
 
                     colors[i] = new Color(r, g, b);
-                    double ratio = (range[1] - range[0])/255;
-                    pixelData[i] = (range[0] + ratio*i);
                 }
             }
 
             repaint();
-            setPreferredSize(new Dimension(paintSize.width+50, paintSize.height*256));
-            setVisible(true);
         }
 
         public void paint(Graphics g)
@@ -1825,6 +1876,55 @@ implements ImageObserver
         }
     } // private class FlipFilter extends ImageFilter
 
+
+    /**
+     * Makes an image filter for brightness.
+     * @parma level the leve of brightness [-100 to 100]
+     */
+    private class BrightnessFilter extends RGBImageFilter
+    {
+        double level = 1.0;
+
+        public BrightnessFilter(int plevel) {
+            if (plevel == 0)
+            {
+                // the same
+                level = 0;
+            }
+            else if (plevel > 0)
+            {
+                // brighter
+                level = 1 + 2*(plevel/100.0);
+            }
+            else
+            {
+                // darker
+                level = 1/(1 - 2*(plevel/100.0));
+            }
+
+            canFilterIndexColorModel = true;
+        }
+
+        public int filterRGB(int x, int y, int rgb)
+        {
+            if (level == 0)
+                return rgb;
+
+            int r = (rgb & 0x00ff0000) >> 16;
+            int g = (rgb & 0x0000ff00) >> 8;
+            int b = (rgb & 0x000000ff);
+            r = Math.min(255, (int)(r*level));
+            g = Math.min(255, (int)(g*level));
+            b = Math.min(255, (int)(b*level));
+
+            r = (r << 16) & 0x00ff0000;
+            g = (g <<  8) & 0x0000ff00;
+            b =  b        & 0x000000ff;
+
+            return ((rgb & 0xff000000) | r | g | b);
+        }
+    }
+
     /**
      * Makes an image filter for contour.
      */
@@ -1852,6 +1952,7 @@ implements ImageObserver
 
         /**
          * Create an contour filter for a given level contouring.
+         * @param theLevel the contour level.
          */
         private ContourFilter(int theLevel)
         {
@@ -1967,7 +2068,14 @@ implements ImageObserver
             consumer.imageComplete(status);
         }
 
-        /** draw a contour line based on the current parameter---level, color */
+        /** draw a contour line based on the current parameter---level, color
+         * @param raster the data of the raster image.
+         * @param pixels the pixel value of the image.
+         * @param level the contour level.
+         * @param color the color of the contour line.
+         * @param w the width of the image.
+         * @param h the height of the image.
+         */
         private void setContourLine(int[] raster, int[] pixels,
                 int level, int color, int w, int h)
         {
@@ -2110,6 +2218,7 @@ implements ImageObserver
                     isPaletteChanged = false;
                     imageComponent.setImage(currentImage);
                     imagePalette = palette;
+                    paletteComponent.updatePalette(palette);
                 }
                 super.dispose();
             }

@@ -31,7 +31,7 @@ import java.net.MalformedURLException;
 public class ViewProperties extends Properties
 {
     /** the version of the HDFViewer */
-    public static final String VERSION = "1.2";
+    public static final String VERSION = "1.3";
 
     /** the local property file name */
     public static final String USER_PROPS = "hdfview.props";
@@ -58,10 +58,10 @@ public class ViewProperties extends Properties
     private static String usersGuide = "http://hdf.ncsa.uiuc.edu/hdf-java-html/hdfview/UsersGuide/index.html";
 
     /** the font size */
-    private static String fontSizeStr = "12";
-
-    /** the font size */
     private static int fontSize = 12;
+
+    /** the font type */
+    private static String fontType = null;
 
     /** the full path of H4toH5 converter */
     private static String h4toh5 ="";
@@ -74,6 +74,15 @@ public class ViewProperties extends Properties
 
     /** the root directory of the HDFView */
     private static String rootDir;
+
+    /** default starting file directory */
+    private static String workDir;
+
+    /** default HDF4 file extension */
+    private static String h4Ext = "hdf, h4, hdf4";
+
+    /** default HDF4 file extension */
+    private static String h5Ext = "hdf, h5, hdf5";
 
     private static Icon hdfIcon, h4Icon, h5Icon, largeHdfIcon,
         blankIcon, helpIcon,
@@ -430,9 +439,32 @@ public class ViewProperties extends Properties
         if (str != null && str.length()>0)
             h4toh5 = str;
 
+        str = (String)get("work.dir");
+        if (str != null && str.length()>0)
+            workDir = str;
+        else
+            workDir = rootDir;
+
+        str = (String)get("extension.h4");
+        if (str != null && str.length()>0)
+            h4Ext = str;
+
+        str = (String)get("extension.h5");
+        if (str != null && str.length()>0)
+            h5Ext = str;
+
         str = (String)get("font.size");
         if (str != null && str.length()>0)
-            setFontSize(str);
+        {
+            try { fontSize = Integer.parseInt(str); }
+            catch (Exception ex) {}
+        }
+
+        str = (String)get("font.type");
+        if (str != null && str.length()>0)
+        {
+            fontType = str.trim();
+        }
 
         // load the most recent file list from the property file
         if (mrf != null)
@@ -470,11 +502,22 @@ public class ViewProperties extends Properties
         if (usersGuide != null)
             put("users.guide", usersGuide);
 
+        if (workDir != null)
+            put("work.dir", workDir);
+
+        if (h4Ext != null)
+            put("extension.h4", h4Ext);
+
+        if (h5Ext != null)
+            put("extension.h5", h5Ext);
+
         if (h4toh5 != null)
             put("h4toh5.converter", h4toh5);
 
-        if (fontSizeStr != null)
-            put("font.size", fontSizeStr);
+        put("font.size", String.valueOf(fontSize));
+
+        if (fontType != null)
+            put("font.type", fontType);
 
         if (mrf != null)
         {
@@ -501,6 +544,9 @@ public class ViewProperties extends Properties
     /** returns the name of the user property file */
     public static String getPropertyFile(){ return propertyFile;}
 
+    /** returns the default work directory, where the open file starts.*/
+    public static String getWorkDir() { return workDir; }
+
     /** returns the maximum number of the most recent file */
     public static int getMaxRecentFiles() { return MAX_RECENT_FILES; }
 
@@ -511,21 +557,32 @@ public class ViewProperties extends Properties
     public static String getDataDelimiter() { return delimiter; }
 
     /** returns the font size */
-    public static String getFontSize() { return fontSizeStr; }
+    public static int getFontSize() { return fontSize; }
 
-    /** returns the font size */
-    public static int getFontSizeInt() { return fontSize; }
+    /** returns the font type */
+    public static String getFontType()  { return fontType; }
+
+    /** gets the HDF5 file extension */
+    public static String getH5Extension() { return h5Ext; }
+
+    /** gets the HDF4 file extension */
+    public static String getH4Extension() { return h4Ext; }
 
     /** sets the font size */
-    public static void setFontSize(String fsize) {
-        try { fontSize = Integer.parseInt(fsize); }
-        catch (Exception ex ) {fontSize = 12;}
+    public static void setFontSize(int fsize) {
+        fontSize = (fsize/2)*2;
+        if (fontSize > 20)
+           fontSize = 20;
 
-        fontSize = (fontSize/2)*2;
-        if (fontSize > 20 || fontSize < 10)
-            fontSize = 12;
+       if(fontSize < 10)
+           fontSize = 10;
+    }
 
-        fontSizeStr = String.valueOf(fontSize);
+    /** sets the font size */
+    public static void setFontType(String ftype)
+    {
+        if (ftype != null)
+            fontType = ftype.trim();
     }
 
     /** returns the path of the H5toH5 converter */
@@ -554,7 +611,16 @@ public class ViewProperties extends Properties
     }
 
     /** set the path of the H5to H5 converter */
-    public static void setH4toH5( String tool) { h4toh5 = tool; };
+    public static void setH4toH5( String tool) { h4toh5 = tool; }
+
+    /** set the path of the default work directory */
+    public static void setWorkDir( String wDir) { workDir = wDir; }
+
+    /** set the HDF5 file extension */
+    public static void setH5Extension( String ext5) { h5Ext = ext5; }
+
+    /** set the HDF4 file extension */
+    public static void setH4Extension( String ext4) { h4Ext = ext4; }
 
     /** set the delimiter of data values */
     public static void setDataDelimiter(String delim) { delimiter = delim; }

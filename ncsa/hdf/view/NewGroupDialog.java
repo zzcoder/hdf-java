@@ -22,7 +22,6 @@ import java.awt.Point;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.Choice;
 import java.awt.Toolkit;
 import java.io.File;
 import java.util.*;
@@ -41,7 +40,7 @@ implements ActionListener
 {
     private JTextField nameField;
 
-    private Choice parentChoice;
+    private JComboBox parentChoice;
 
     /** a list of current groups */
     private List groupList;
@@ -67,8 +66,8 @@ implements ActionListener
         fileFormat = pGroup.getFileFormat();
         toolkit = Toolkit.getDefaultToolkit();
 
+        parentChoice = new JComboBox();
         groupList = new Vector();
-        parentChoice = new Choice();
         Object obj = null;
         Iterator iterator = objs.iterator();
         while (iterator.hasNext())
@@ -84,10 +83,11 @@ implements ActionListener
                     parentChoice.addItem(g.getPath()+g.getName()+HObject.separator);
             }
         }
+
         if (pGroup.isRoot())
-            parentChoice.select(HObject.separator);
+            parentChoice.setSelectedItem(HObject.separator);
         else
-            parentChoice.select(pGroup.getPath()+pGroup.getName()+HObject.separator);
+            parentChoice.setSelectedItem(pGroup.getPath()+pGroup.getName()+HObject.separator);
 
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
@@ -120,7 +120,7 @@ implements ActionListener
         namePanel.add(tmpP, BorderLayout.WEST);
         tmpP = new JPanel();
         tmpP.setLayout(new GridLayout(2,1));
-        tmpP.add(nameField=new JTextField("group",40));
+        tmpP.add(nameField=new JTextField());
         tmpP.add(parentChoice);
         namePanel.add(tmpP, BorderLayout.CENTER);
         contentPane.add(namePanel, BorderLayout.CENTER);
@@ -193,7 +193,7 @@ implements ActionListener
         Group obj = null;
         try
         {
-            obj = fileFormat.createGroup(fileFormat, name, pgroup);
+            obj = fileFormat.createGroup(name, pgroup);
         } catch (Exception ex)
         {
             toolkit.beep();

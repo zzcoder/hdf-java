@@ -21,7 +21,7 @@ import java.awt.Frame;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.Choice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.awt.Point;
 import java.awt.FileDialog;
@@ -35,17 +35,18 @@ implements ActionListener
      */
     private final ViewManager viewer;
 
-    private String H4toH5Path, originalUGPath;
-    private JTextField H4toH5Field, UGField;
-    private Choice fontChoice;
-    private Choice delimiterChoice;
-    private final String rootDir;
+    private String H4toH5Path;
+    private JTextField H4toH5Field, UGField, workField, h4ExtField, h5ExtField;
+    private JComboBox fontSizeChoice, fontTypeChoice, delimiterChoice;
+    private String rootDir, workDir;
 
     private final int fontSize;
 
     private boolean isFontChanged;
 
     private boolean isUserGuideChanged;
+
+    private boolean isWorkDirChanged;
 
     /** constructs an UserOptionsDialog.
      * @param view The HDFView.
@@ -58,61 +59,122 @@ implements ActionListener
         rootDir = viewroot;
         isFontChanged = false;
         isUserGuideChanged = false;
-        fontSize = ViewProperties.getFontSizeInt();
-        originalUGPath = ViewProperties.getUsersGuide();
+        isWorkDirChanged = false;
+        fontSize = ViewProperties.getFontSize();
+        workDir = ViewProperties.getWorkDir();
+        if (workDir == null)
+            workDir = rootDir;
 
-        fontChoice = new Choice();
-        delimiterChoice = new Choice();
-        for (int i=0; i<6; i++)
+        String[] fontSizeChoices = {"10", "12", "14", "16", "18", "20"};
+        fontSizeChoice = new JComboBox(fontSizeChoices);
+        fontSizeChoice.setSelectedItem(String.valueOf(ViewProperties.getFontSize()));
+
+        String[] fontNames = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+        String fname = ViewProperties.getFontType();
+        fontTypeChoice = new JComboBox(fontNames);
+
+        boolean isFontValid = false;
+        if (fontNames != null)
         {
-            fontChoice.add(String.valueOf(10+2*i));
+            for (int i=0; i<fontNames.length; i++)
+            {
+                if (fontNames[i].equalsIgnoreCase(fname))
+                    isFontValid = true;
+            }
         }
-        fontChoice.select(ViewProperties.getFontSize());
-        delimiterChoice.add(ViewProperties.DELIMITER_TAB);
-        delimiterChoice.add(ViewProperties.DELIMITER_COMMA);
-        delimiterChoice.add(ViewProperties.DELIMITER_SPACE);
-        delimiterChoice.add(ViewProperties.DELIMITER_COLON);
-        delimiterChoice.add(ViewProperties.DELIMITER_SEMI_COLON);
-        delimiterChoice.select(ViewProperties.getDataDelimiter());
+        if (!isFontValid)
+        {
+            fname =((JFrame)viewer).getFont().getFamily();
+            ViewProperties.setFontType(fname);
+        }
+        fontTypeChoice.setSelectedItem(fname);
+
+        String[] delimiterChoices = {
+            ViewProperties.DELIMITER_TAB,
+            ViewProperties.DELIMITER_COMMA,
+            ViewProperties.DELIMITER_SPACE,
+            ViewProperties.DELIMITER_COLON,
+            ViewProperties.DELIMITER_SEMI_COLON};
+
+        delimiterChoice = new JComboBox(delimiterChoices);
+        delimiterChoice.setSelectedItem(ViewProperties.getDataDelimiter());
 
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(8,8));
         contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
-        contentPane.setPreferredSize(new Dimension(500, 270));
+        contentPane.setPreferredSize(new Dimension(350, 400));
 
         JPanel centerP = new JPanel();
-        centerP.setLayout(new GridLayout(3,1,8,8));
-        //centerP.setBorder(new TitledBorder(""));
+        centerP.setLayout(new GridLayout(5,1,8,15));
+        centerP.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
 
         JPanel p0 = new JPanel();
         p0.setLayout(new BorderLayout());
-        p0.add(new JLabel("User's Guide:  "), BorderLayout.WEST);
-        p0.add(UGField = new JTextField(originalUGPath), BorderLayout.CENTER);
+        p0.add(new JLabel("File Directory:  "), BorderLayout.WEST);
+        p0.add(workField = new JTextField(workDir), BorderLayout.CENTER);
         JButton b = new JButton("Browse...");
-        b.setActionCommand("Browse UG");
+        b.setActionCommand("Browse current dir");
         b.addActionListener(this);
         p0.add(b, BorderLayout.EAST);
-        TitledBorder border = new TitledBorder("Help Document");
-        border.setTitleColor(Color.darkGray);
-        p0.setBorder(border);
+        TitledBorder tborder = new TitledBorder("Default Work Directory");
+        tborder.setTitleColor(Color.darkGray);
+        p0.setBorder(tborder);
         centerP.add(p0);
 
         p0 = new JPanel();
         p0.setLayout(new BorderLayout());
-        p0.add(new JLabel("Font Size:  "), BorderLayout.WEST);
-        p0.add(fontChoice, BorderLayout.CENTER);
-        border = new TitledBorder("TreeView Display");
-        border.setTitleColor(Color.darkGray);
-        p0.setBorder(border);
+        p0.add(new JLabel("User's Guide:  "), BorderLayout.WEST);
+        p0.add(UGField = new JTextField(ViewProperties.getUsersGuide()), BorderLayout.CENTER);
+        b = new JButton("Browse...");
+        b.setActionCommand("Browse UG");
+        b.addActionListener(this);
+        p0.add(b, BorderLayout.EAST);
+        tborder = new TitledBorder("Help Document");
+        tborder.setTitleColor(Color.darkGray);
+        p0.setBorder(tborder);
+        centerP.add(p0);
+
+        p0 = new JPanel();
+        p0.setLayout(new GridLayout(1,2,8,8));
+        JPanel p00 = new JPanel();
+        p00.setLayout(new BorderLayout());
+        p00.add(new JLabel("HDF5: "), BorderLayout.WEST);
+        p00.add(h5ExtField=new JTextField(ViewProperties.getH5Extension()), BorderLayout.CENTER);
+        p0.add(p00);
+        p00 = new JPanel();
+        p00.setLayout(new BorderLayout());
+        p00.add(new JLabel("HDF4: "), BorderLayout.WEST);
+        p00.add(h4ExtField=new JTextField(ViewProperties.getH4Extension()), BorderLayout.CENTER);
+        p0.add(p00);
+        tborder = new TitledBorder("HDF File Extension");
+        tborder.setTitleColor(Color.darkGray);
+        p0.setBorder(tborder);
+        centerP.add(p0);
+
+        p0 = new JPanel();
+        p0.setLayout(new GridLayout(1,2,8,8));
+        p00 = new JPanel();
+        p00.setLayout(new BorderLayout());
+        p00.add(new JLabel("Font Size: "), BorderLayout.WEST);
+        p00.add(fontSizeChoice, BorderLayout.CENTER);
+        p0.add(p00);
+        p00 = new JPanel();
+        p00.setLayout(new BorderLayout());
+        p00.add(new JLabel("Font Type: "), BorderLayout.WEST);
+        p00.add(fontTypeChoice, BorderLayout.CENTER);
+        p0.add(p00);
+        tborder = new TitledBorder("Text Font");
+        tborder.setTitleColor(Color.darkGray);
+        p0.setBorder(tborder);
         centerP.add(p0);
 
         p0 = new JPanel();
         p0.setLayout(new BorderLayout());
         p0.add(new JLabel("Data Delimiter:  "), BorderLayout.WEST);
         p0.add(delimiterChoice, BorderLayout.CENTER);
-        border = new TitledBorder("Text Data Input/Output");
-        border.setTitleColor(Color.darkGray);
-        p0.setBorder(border);
+        tborder = new TitledBorder("Text Data Input/Output");
+        tborder.setTitleColor(Color.darkGray);
+        p0.setBorder(tborder);
         centerP.add(p0);
 
         JPanel p = new JPanel();
@@ -169,6 +231,23 @@ implements ActionListener
             if (fname == null) return;
             UGField.setText(fname);
         }
+        else if (cmd.equals("Browse current dir"))
+        {
+            final JFileChooser fchooser = new JFileChooser(rootDir);
+            fchooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int returnVal = fchooser.showDialog(this, "Select");
+
+            if(returnVal != JFileChooser.APPROVE_OPTION)
+                return;
+
+            File choosedFile = fchooser.getSelectedFile();
+            if (choosedFile == null)
+                return;
+
+            String fname = choosedFile.getAbsolutePath();
+            if (fname == null) return;
+            workField.setText(fname);
+        }
         else if (cmd.equals("Browse h4toh5"))
         {
             final JFileChooser fchooser = new JFileChooser(rootDir);
@@ -193,20 +272,59 @@ implements ActionListener
         String UGPath = UGField.getText();
         if (UGPath != null && UGPath.length()>0)
         {
+            UGPath = UGPath.trim();
+            isUserGuideChanged = !UGPath.equals(ViewProperties.getUsersGuide());
             ViewProperties.setUsersGuide(UGPath);
-            isUserGuideChanged = !UGPath.equals(originalUGPath);
         }
 
-        ViewProperties.setFontSize(fontChoice.getSelectedItem());
-        ViewProperties.setDataDelimiter(delimiterChoice.getSelectedItem());
+        String workPath = workField.getText();
+        if (workPath != null && workPath.length()>0)
+        {
+            workPath = workPath.trim();
+            isWorkDirChanged = !workPath.equals(ViewProperties.getWorkDir());
+            ViewProperties.setWorkDir(workPath);
+        }
 
-        isFontChanged = (fontSize != ViewProperties.getFontSizeInt());
+        String ext = h4ExtField.getText();
+        if (ext != null && ext.length()>0)
+        {
+            ext = ext.trim();
+            ViewProperties.setH4Extension(ext);
+        }
+
+        ext = h5ExtField.getText();
+        if (ext != null && ext.length()>0)
+        {
+            ext = ext.trim();
+            ViewProperties.setH5Extension(ext);
+        }
+
+        // set font size
+        try {
+            int fsize = Integer.parseInt((String)fontSizeChoice.getSelectedItem());
+            ViewProperties.setFontSize(fsize);
+            if ((fontSize != ViewProperties.getFontSize()))
+                isFontChanged = true;
+        } catch (Exception ex) {}
+
+        // set font type
+        String ftype = (String)fontTypeChoice.getSelectedItem();
+        if (!ftype.equalsIgnoreCase(ViewProperties.getFontType()))
+        {
+            isFontChanged = true;
+            ViewProperties.setFontType(ftype);
+        }
+
+        // set data delimiter
+        ViewProperties.setDataDelimiter((String)delimiterChoice.getSelectedItem());
+
     }
 
     public boolean isFontChanged() { return isFontChanged; }
 
     public boolean isUserGuideChanged() { return isUserGuideChanged; }
 
+    public boolean isWorkDirChanged() { return isWorkDirChanged; }
 }
 
 

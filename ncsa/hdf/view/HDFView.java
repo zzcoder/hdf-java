@@ -105,22 +105,22 @@ implements ViewManager, HyperlinkListener
     private final StringBuffer message;
 
     /** The list of GUI components related to image */
-    private final Vector imageGUIs;
+    private final List imageGUIs;
 
     /** The list of GUI components related to table */
-    private final Vector tableGUIs;
+    private final List tableGUIs;
 
     /** The list of GUI components related to 3D datasets */
-    private final Vector d3GUIs;
+    private final List d3GUIs;
 
     /** The list of GUI components related to editing */
-    private final Vector editGUIs;
+    private final List editGUIs;
 
     /** The list of GUI components related to HDF5 */
-    private final Vector h5GUIs;
+    private final List h5GUIs;
 
     /** The list of GUI components related to HDF4 */
-    private final Vector h4GUIs;
+    private final List h4GUIs;
 
     /** The URL of the User's Guide. */
     private URL usersGuideURL;
@@ -151,6 +151,8 @@ implements ViewManager, HyperlinkListener
 
     private final Toolkit toolkit;
 
+    private Thread busuIndicatorThread = null;
+
     /**
      * Constructs the HDFView with a given root directory, where the
      * HDFView is installed, and opens the given file in the viewer.
@@ -158,21 +160,22 @@ implements ViewManager, HyperlinkListener
      * @param root the directory where the HDFView is installed.
      * @param filename the file to open.
      */
-    public HDFView(String root, String workDir, String filename)
+    public HDFView(String root, String filename)
     {
         super("HDFView");
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
+/*
         String lf = UIManager.getSystemLookAndFeelClassName();
         if ( lf != null )
         {
             try	{ UIManager.setLookAndFeel( lf ); }
             catch ( Exception ex ) { ex.printStackTrace(); }
         }
+*/
 
         rootDir = root;
-        currentDir = workDir;
         currentFile = null;
         selectedObject = null;
         objectsToCopy = null;
@@ -193,10 +196,12 @@ implements ViewManager, HyperlinkListener
         props = new ViewProperties(rootDir);
         try { props.load(); } catch (Exception ex){System.out.println(ex);}
         recentFiles = props.getMRF();
+        currentDir = ViewProperties.getWorkDir();
 
         // initialize GUI components
         statusArea = new JTextArea();
         statusArea.setEditable(false);
+        statusArea.setBackground(new java.awt.Color(220, 220, 220));
         statusArea.setLineWrap(true);
         message = new StringBuffer();
         showStatus("HDFView root - "+rootDir);
@@ -345,7 +350,7 @@ implements ViewManager, HyperlinkListener
 
         if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) == null)
             setEnabled(h5GUIs, false);
-    }
+    } // end of constructor
 
     /**
      * The starting point of this application.
@@ -360,7 +365,6 @@ implements ViewManager, HyperlinkListener
     public static void main( String args[] )
     {
         String rootDir = System.getProperty("user.dir");
-        String workDir = rootDir;
 
         boolean backup = false;
         File tmpFile = null;
@@ -394,7 +398,7 @@ implements ViewManager, HyperlinkListener
             filename = args[i];
         }
 
-        HDFView frame = new HDFView(rootDir, workDir, filename);
+        HDFView frame = new HDFView(rootDir, filename);
         frame.pack();
         frame.setVisible(true);
      }
@@ -467,6 +471,8 @@ implements ViewManager, HyperlinkListener
         if (d.getRank() <= 0) d.init();
         boolean isText = (d instanceof ScalarDS && ((ScalarDS)d).isText());
         boolean isImage = (d instanceof ScalarDS && ((ScalarDS)d).isImage());
+        boolean isDisplayTypeChar = false;
+        boolean isTransposed = false;
 
         if (isDefaultDisplay)
         {
@@ -492,21 +498,26 @@ implements ViewManager, HyperlinkListener
             if (theFrame != null) // discard the displayed data
                 ((DataObserver)theFrame).dispose();
             isImage = dialog.isImageDisplay();
+            isDisplayTypeChar = dialog.isDisplayTypeChar();
+            isTransposed = dialog.isTransposed();
         }
 
         // try to see if can open the data content
         if (selectedObject instanceof Dataset)
         {
+            startBusyIndicator();
             Dataset data = (Dataset)selectedObject;
             try { data.getData(); }
             catch (Throwable ex) {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(this,
-                    ex.getMessage(),
+                    "Out of Memory Error",
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
+                stopBusyIndicator();
                 return;
-            }
+            } finally { stopBusyIndicator(); }
+
         }
 
         if (isImage)
@@ -523,10 +534,11 @@ implements ViewManager, HyperlinkListener
         }
         else
         {
-            TableView dataView = new TableView(this);
+            TableView dataView = new TableView(this, isDisplayTypeChar, isTransposed);
             if (dataView.getTable() != null)
                 addDataWindow(dataView);
         }
+
     }
 
     // To do: Implementing ViewManager
@@ -550,6 +562,8 @@ implements ViewManager, HyperlinkListener
     // To do: Implementing java.io.ActionListener
     public void actionPerformed(ActionEvent e)
     {
+        try {
+
         String cmd = e.getActionCommand();
 
         if (cmd.equals("Exit"))
@@ -579,7 +593,7 @@ implements ViewManager, HyperlinkListener
 
             try {
                 treeView.openFile(filename, fileAccessID);
-                try {  try { updateRecentFiles(filename); } catch (Exception ex) {} } catch (Exception ex) {}
+                try { updateRecentFiles(filename); } catch (Exception ex) {}
             } catch (Exception ex)
             {
                 String msg = "Failed to open file "+filename+"\n"+ex.getMessage();
@@ -617,7 +631,7 @@ implements ViewManager, HyperlinkListener
 
             try {
                 treeView.openFile(filename, fileAccessID);
-                try {  try { updateRecentFiles(filename); } catch (Exception ex) {} } catch (Exception ex) {}
+                try { updateRecentFiles(filename); } catch (Exception ex) {}
             } catch (Exception ex)
             {
                 toolkit.beep();
@@ -643,7 +657,7 @@ implements ViewManager, HyperlinkListener
             String filename = dialog.getFile();
             try {
                 treeView.openFile(filename, fileAccessID);
-                try {  try { updateRecentFiles(filename); } catch (Exception ex) {} } catch (Exception ex) {}
+                try { updateRecentFiles(filename); } catch (Exception ex) {}
             } catch (Exception ex)
             {
                 toolkit.beep();
@@ -679,55 +693,6 @@ implements ViewManager, HyperlinkListener
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             }
-        }
-        else if (cmd.equals("Save object to file"))
-        {
-            if (selectedObject == null)
-                return;
-
-            if (selectedObject instanceof Group &&
-                ((Group)selectedObject).isRoot())
-                return;
-
-            String filetype = FileFormat.FILE_TYPE_HDF4;
-            boolean isH5 = selectedObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
-            if (isH5) filetype = FileFormat.FILE_TYPE_HDF5;
-
-            NewFileDialog dialog = new NewFileDialog(
-                this,
-                currentDir,
-                filetype,
-                treeView.getOpenFiles());
-            dialog.show();
-
-            if (!dialog.isFileCreated())
-            {
-                toolkit.beep();
-                JOptionPane.showMessageDialog(
-                    this,
-                    "Failed to create the new file.",
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            String filename = dialog.getFile();
-            FileFormat dstFile = null;
-            try {
-                dstFile = treeView.openFile(filename, fileAccessID);
-                 try { updateRecentFiles(filename); } catch (Exception ex) {}
-            } catch (Exception ex)
-            {
-                toolkit.beep();
-                JOptionPane.showMessageDialog(
-                    this,
-                    ex.getMessage()+"\n"+filename,
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
-            }
-            List objList = new Vector(2);
-            objList.add(selectedObject);
-            pasteObject(objList, dstFile.getRootNode(), dstFile);
         }
         else if (cmd.equals("recent.file"))
         {
@@ -805,6 +770,25 @@ implements ViewManager, HyperlinkListener
             if (isH5) saveAsHDF5();
             else saveAsHDF4();
         }
+        else if (cmd.equals("Save as HDF"))
+        {
+            FileFormat selectedFile = treeView.getSelectedFile();
+
+            if (selectedFile == null)
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(
+                this,
+                "Select a file to save.",
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            boolean isH5 = selectedFile.isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
+            if (isH5) saveAsHDF5();
+            else saveAsHDF4();
+        }
         else if (cmd.equals("Open data"))
         {
             try { showDataContent(true); }
@@ -812,7 +796,7 @@ implements ViewManager, HyperlinkListener
             {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(this,
-                    err.getMessage(),
+                    "Out of Memory Error",
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
                 return;
@@ -825,7 +809,7 @@ implements ViewManager, HyperlinkListener
             {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(this,
-                    err.getMessage(),
+                    "Out of Memory Error",
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
                 return;
@@ -854,6 +838,59 @@ implements ViewManager, HyperlinkListener
         else if (cmd.equals("Add image"))
         {
             addImage();
+        }
+        else if (cmd.equals("Save object to file"))
+        {
+            if (selectedObject == null)
+                return;
+
+            if (selectedObject instanceof Group &&
+                ((Group)selectedObject).isRoot())
+                return;
+
+            String filetype = FileFormat.FILE_TYPE_HDF4;
+            boolean isH5 = selectedObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
+            if (isH5) filetype = FileFormat.FILE_TYPE_HDF5;
+
+            NewFileDialog dialog = new NewFileDialog(
+                this,
+                currentDir,
+                filetype,
+                treeView.getOpenFiles());
+            dialog.show();
+
+            if (!dialog.isFileCreated())
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(
+                    this,
+                    "Failed to create the new file.",
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            String filename = dialog.getFile();
+            FileFormat dstFile = null;
+            try {
+                dstFile = treeView.openFile(filename, fileAccessID);
+                 try { updateRecentFiles(filename); } catch (Exception ex) {}
+            } catch (Exception ex)
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(
+                    this,
+                    ex.getMessage()+"\n"+filename,
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+            }
+            List objList = new Vector(2);
+            objList.add(selectedObject);
+            pasteObject(objList, dstFile.getRootNode(), dstFile);
+        }
+        else if (cmd.equals("Rename object"))
+        {
+            renameObject();
         }
         else if (cmd.equals("Show object properties"))
         {
@@ -1117,6 +1154,43 @@ implements ViewManager, HyperlinkListener
                 ((ImageObserver)frame).contour(level);
             }
         }
+        else if (cmd.startsWith("Brightness"))
+        {
+            JInternalFrame frame = contentPane.getSelectedFrame();
+            if (frame != null && frame instanceof ImageObserver)
+            {
+                String strLevel = (String)JOptionPane.showInputDialog(this,
+                        "Enter level of brightness [-100, 100]\n-100 is the darkest and 100 is brightest",
+                        "Image Brightness",
+                        JOptionPane.INFORMATION_MESSAGE, null, null, "0");
+                if (strLevel == null)
+                    return;
+
+                int level = 0;
+                try { level = Integer.parseInt(strLevel.trim()); }
+                catch (Exception ex) { level = 0; }
+
+                if (level == 0)
+                    return;
+                else if (level > 100)
+                {
+                    JOptionPane.showMessageDialog(this,
+                            "Brightness level is greater than 100: "+level,
+                            "Image Brightness",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                else if (level < -100)
+                {
+                    JOptionPane.showMessageDialog(this,
+                            "Brightness level is less than -100: "+level,
+                            "Image Brightness",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                ((ImageObserver)frame).brightness(level);
+            }
+        }
         else if (cmd.equals("Show chart"))
         {
             JInternalFrame frame = contentPane.getSelectedFrame();
@@ -1260,10 +1334,9 @@ implements ViewManager, HyperlinkListener
             UserOptionsDialog dialog = new UserOptionsDialog(this, rootDir);
             dialog.show();
 
-            if (dialog.isFontChanged())
+            if (dialog.isWorkDirChanged())
             {
-                int fsize = ViewProperties.getFontSizeInt();
-                treeView.setTreeFontSize(fsize);
+                currentDir = ViewProperties.getWorkDir();
             }
 
             if (dialog.isUserGuideChanged())
@@ -1357,7 +1430,12 @@ implements ViewManager, HyperlinkListener
                 JOptionPane.PLAIN_MESSAGE,
                 ViewProperties.getLargeHdfIcon());
         }
-    }
+
+        } finally {
+            // make sure the cursor os reset
+            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        }
+    } // actionPerformed()
 
     public void hyperlinkUpdate(HyperlinkEvent e)
     {
@@ -1500,7 +1578,7 @@ implements ViewManager, HyperlinkListener
 
         fileMenu.addSeparator();
 
-        JMenu imageSubmenu = new JMenu("Import JPEG To");
+        JMenu imageSubmenu = new JMenu("Convert JPEG To");
         item = new JMenuItem( "HDF4");
         item.setActionCommand("Convert image file: JPEG to HDF4");
         item.addActionListener(this);
@@ -1612,28 +1690,6 @@ implements ViewManager, HyperlinkListener
         objectMenu.setMnemonic('O');
         mbar.add(objectMenu);
 
-        item = new JMenuItem( "Open");
-        item.setMnemonic(KeyEvent.VK_O);
-        item.addActionListener(this);
-        item.setActionCommand("Open data");
-        objectMenu.add(item);
-
-        item = new JMenuItem( "Open As");
-        item.setMnemonic(KeyEvent.VK_A);
-        item.addActionListener(this);
-        item.setActionCommand("Open data as");
-        objectMenu.add(item);
-
-        objectMenu.addSeparator();
-
-        item = new JMenuItem( "Save to File");
-        item.setMnemonic(KeyEvent.VK_S);
-        item.addActionListener(this);
-        item.setActionCommand("Save object to file");
-        objectMenu.add(item);
-
-        objectMenu.addSeparator();
-
         JMenu newOjbectMenu = new JMenu("New");
         editGUIs.add(newOjbectMenu);
         objectMenu.add(newOjbectMenu);
@@ -1652,6 +1708,35 @@ implements ViewManager, HyperlinkListener
         item.addActionListener(this);
         item.setActionCommand("Add image");
         newOjbectMenu.add(item);
+
+        objectMenu.addSeparator();
+
+        item = new JMenuItem( "Open");
+        item.setMnemonic(KeyEvent.VK_O);
+        item.addActionListener(this);
+        item.setActionCommand("Open data");
+        objectMenu.add(item);
+
+        item = new JMenuItem( "Open As");
+        item.setMnemonic(KeyEvent.VK_A);
+        item.addActionListener(this);
+        item.setActionCommand("Open data as");
+        objectMenu.add(item);
+
+        objectMenu.addSeparator();
+
+        item = new JMenuItem( "Save to");
+        item.setMnemonic(KeyEvent.VK_S);
+        item.addActionListener(this);
+        item.setActionCommand("Save object to file");
+        objectMenu.add(item);
+
+        item = new JMenuItem( "Rename");
+        item.setMnemonic(KeyEvent.VK_R);
+        item.addActionListener(this);
+        item.setActionCommand("Rename object");
+        editGUIs.add(item);
+        objectMenu.add(item);
 
         objectMenu.addSeparator();
 
@@ -1681,9 +1766,6 @@ implements ViewManager, HyperlinkListener
         item.addActionListener(this);
         editGUIs.add(item);
         item.setActionCommand("Rename object");
-
-        // rename is not supported by this version
-        //objectMenu.add(item);
 
         objectMenu.addSeparator();
 
@@ -1873,6 +1955,13 @@ implements ViewManager, HyperlinkListener
 
         menu.addSeparator();
 
+        item = new JMenuItem( "Brightness");
+        item.setMnemonic(KeyEvent.VK_B);
+        item.addActionListener(this);
+        item.setActionCommand("Brightness");
+        menu.add(item);
+        imageGUIs.add(item);
+
         JMenu contourMenu = new JMenu("Contour");
         for (int i=3; i<10; i++)
         {
@@ -1921,7 +2010,7 @@ implements ViewManager, HyperlinkListener
         menu.setMnemonic('l');
         mbar.add(menu);
 
-        imageSubmenu = new JMenu("Import JPEG To");
+        imageSubmenu = new JMenu("Convert JPEG To");
         item = new JMenuItem( "HDF4");
         item.setActionCommand("Convert image file: JPEG to HDF4");
         item.addActionListener(this);
@@ -2147,6 +2236,12 @@ implements ViewManager, HyperlinkListener
         // and add it to the bottom to keep the recent file list sorted.
         if (recentFiles.contains(newFile))
             recentFiles.remove(newFile);
+
+        if (recentFiles.size() == ViewProperties.MAX_RECENT_FILES)
+        {
+            recentFiles.remove(ViewProperties.MAX_RECENT_FILES-1);
+            fileMenu.remove(fileMenu.getItemCount()-1);
+        }
 
         recentFiles.insertElementAt(newFile, 0);
         JMenuItem fileItem=null, theItem=null;
@@ -2394,6 +2489,7 @@ implements ViewManager, HyperlinkListener
         buffer = new byte[bsize];
         try { length = bi.read(buffer,0,bsize); }
         catch (Exception ex ) { length = 0; }
+        startBusyIndicator();
         while ( length > 0 )
         {
             try {
@@ -2418,8 +2514,9 @@ implements ViewManager, HyperlinkListener
             ex.getMessage()+"\n"+filename,
             getTitle(),
             JOptionPane.ERROR_MESSAGE);
+            stopBusyIndicator();
             return;
-        }
+        }  finally { stopBusyIndicator(); }
     }
 
     /**
@@ -2478,7 +2575,11 @@ implements ViewManager, HyperlinkListener
             return;
 
         TreeNode pnode = newFile.getRootNode();
-        pasteObject(objList, pnode, newFile);
+
+        startBusyIndicator();
+        try {
+            pasteObject(objList, pnode, newFile);
+        } finally { stopBusyIndicator(); }
 
         Group srcGroup = (Group) ((DefaultMutableTreeNode)root).getUserObject();
         Group dstGroup = (Group) ((DefaultMutableTreeNode)newFile.getRootNode()).getUserObject();
@@ -2594,7 +2695,10 @@ implements ViewManager, HyperlinkListener
         if (op == JOptionPane.NO_OPTION)
             return;
 
-        pasteObject(objectsToCopy, pnode, dstFile);
+        startBusyIndicator();
+        try {
+            pasteObject(objectsToCopy, pnode, dstFile);
+        }  finally { stopBusyIndicator(); }
 
         objectsToCopy = null;
     }
@@ -2793,7 +2897,7 @@ implements ViewManager, HyperlinkListener
     }
 
     /** disable/enable GUI components */
-    private static void setEnabled(Vector list, boolean b)
+    private static void setEnabled(List list, boolean b)
     {
         Component item = null;
         Iterator it = list.iterator();
@@ -3000,6 +3104,79 @@ implements ViewManager, HyperlinkListener
         if (usersGuideURL != null) ugField.setText(usersGuideURL.toString());
         contentPane.add (northP, BorderLayout.NORTH);
         contentPane.add (editorScrollPane, BorderLayout.CENTER);
+    }
+
+    private void renameObject()
+    {
+        if (selectedObject == null)
+            return;
+
+        if (selectedObject instanceof Group &&
+            ((Group)selectedObject).isRoot())
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+                "Cannot rename the root.", getTitle(), JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        boolean isH5 = selectedObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
+        if (isH5)
+        {
+            String oldName = selectedObject.getName();
+            String newName = JOptionPane.showInputDialog(this, "Rename \""+ oldName + "\" to:",
+                    "Rename...", JOptionPane.INFORMATION_MESSAGE);
+
+            if (newName == null)
+                return;
+
+            newName = newName.trim();
+            if (newName == null ||
+                newName.length()==0 ||
+                newName.equals(oldName))
+             return;
+
+            try { selectedObject.setName(newName); }
+            catch (Exception ex)
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        else
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this, "Cannot rename HDF4 object.",
+                getTitle(), JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+    }
+
+    /** Start a new thread to show a wait cursor. It is used for read/write data
+     * from/to file.
+     */
+    public void startBusyIndicator()
+    {
+        busuIndicatorThread = new Thread(){
+            public void run(){
+                setCursor(new Cursor(Cursor.WAIT_CURSOR));
+            }
+        };
+        busuIndicatorThread.start();
+    }
+
+    /** Stop the wait cursor when read/write data from/to file is done.
+     */
+    public void stopBusyIndicator()
+    {
+        // cause the current thread to yield, so that the thread
+        // at startBusyIndicator() has time to start.
+        Thread currentThread = Thread.currentThread();
+        if (!currentThread.equals(busuIndicatorThread))
+            currentThread.yield();
+
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        busuIndicatorThread = null;
     }
 
 }

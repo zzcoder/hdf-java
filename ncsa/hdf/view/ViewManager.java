@@ -79,4 +79,9 @@ public interface ViewManager extends ActionListener
     /** Returns a list of current open file */
     public abstract List getOpenFiles();
 
+    /** start the busy indicator when the main thread is busy in I/O access */
+    public abstract void startBusyIndicator();
+
+    /** stop the busy indicator when the main thread is done with I/O access */
+    public abstract void stopBusyIndicator();
 }

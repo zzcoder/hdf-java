@@ -15,9 +15,9 @@ import java.io.*;
 import java.util.*;
 
 /**
- * HObject is the superclass for HDF data hierarchy, inheriting the DataFormat
- * interface. HObject an abstract class. It includes general and common fields
- * and operation for all HDF4 and HDF5 data objects.
+ * HObject is the base class for for all the data objects.
+ * Current implementing classes include HDF4 and HDF5 data objects. If a new
+ * FileFormat is added, the objects of the FileFormat should implementing HObject.
  * <p>
  * All the HDF4 and HDF5 data objects are inherited from HObject. At the top
  * level of hierarchy, both HDF4 and HDF5 have the same super-classes such Group,
@@ -52,17 +52,17 @@ implements Serializable, DataFormat
     private final String filename;
 
     /**
-     * The file identifier.
+     * The file identifier of this object.
      */
     private final int fid;
 
     /**
-     * The fileformat
+     * The file which contains this object
      */
     private final FileFormat fileFormat;
 
     /**
-     * The name of the HDF4 or HDF5 data object. The root group has its default
+     * The name of the data object. The root group has its default
      * name, a slash. The name can be changed except the root group.
      */
     private String name;
@@ -72,7 +72,7 @@ implements Serializable, DataFormat
      * with the root, a slash. The path cannot be changed. Also, a path must
      * ended with a slash.
      */
-    private final String path;
+    private String path;
 
     /**
      * array of long integer storing unique identifier for each HDF object.
@@ -112,6 +112,7 @@ implements Serializable, DataFormat
         this.name = name;
     }
 
+    // implementing FileFormat
     public final String getFile()
     {
         return filename;
@@ -138,9 +139,19 @@ implements Serializable, DataFormat
      * <p>
      * @param newName the new name of the object.
      */
-    public final void rename (String newName)
+    public void setName (String newName) throws Exception
     {
         name = newName;
+    }
+
+    /**
+     * Sets the path of the data object.
+     * <p>
+     * @param newPath the new path of the object.
+     */
+    public void setPath (String newPath) throws Exception
+    {
+        path = newPath;
     }
 
     /**
@@ -172,6 +183,11 @@ implements Serializable, DataFormat
 
     /**
      * Check if this object has the given object identifier.
+     * <p>
+     * HDF4 and HDF5 data objects are identified by their unique OIDs.
+     * A data object in file may have multiple pathes which are presented in
+     * the tree as separate objects. HObject.equalsOID(long[] theID) checks if
+     * two data objects int the tree point to the same object in the file.
      */
     public final boolean equalsOID(long[] theID)
     {
@@ -200,6 +216,9 @@ implements Serializable, DataFormat
 
     /**
      * Returns a cloned copy of the object identifier.
+     * The object OID cannot be modified once it is created. getIOD() clones
+     * the object OID to ensure the object OID cannot be modified.
+     * @return the cloned copy of the object OID.
      */
     public final long[] getOID()
     {
