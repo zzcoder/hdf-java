@@ -139,6 +139,8 @@ implements ImageObserver
 
     private final Toolkit toolkit;
 
+    private double[] dataRange;
+
     /**
      * Constructs an ImageView.
      * <p>
@@ -163,6 +165,8 @@ implements ImageObserver
         data = null;
         NT = 0;
         toolkit = Toolkit.getDefaultToolkit();
+        dataRange = new double[2];
+        dataRange[0] = dataRange[1] = 0;
 
         HObject hobject = (HObject)viewer.getSelectedObject();
         if (hobject == null || !(hobject instanceof ScalarDS))
@@ -175,8 +179,8 @@ implements ImageObserver
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout());
 
+        // add the text field to display pixel data
         contentPane.add(valueField=new JTextField(), BorderLayout.SOUTH);
-        valueField.setVisible(false);
         valueField.setEditable(false);
 
         if (image == null)
@@ -193,6 +197,13 @@ implements ImageObserver
         scroller.getVerticalScrollBar().setUnitIncrement(50);
         scroller.getHorizontalScrollBar().setUnitIncrement(50);
         contentPane.add (scroller, BorderLayout.CENTER);
+
+        // add palette convas to show the palette
+        if (imagePalette != null)
+        {
+            PaletteComponent paletteComponent = new PaletteComponent(imagePalette, dataRange);
+            contentPane.add (paletteComponent, BorderLayout.EAST);
+        }
 
         // set title
         StringBuffer sb = new StringBuffer("ImageView - ");
@@ -398,7 +409,7 @@ implements ImageObserver
                 data = dataset.getData();
 
                 // converts raw data to image data
-                byte[] imageData = getBytes(data, null);
+                byte[] imageData = getBytes(data, dataRange);
 
                 int w = dataset.getWidth();
                 int h = dataset.getHeight();
@@ -421,7 +432,7 @@ implements ImageObserver
                 data = dataset.getData();
 
                 // converts raw data to image data
-                indexedImageData = getBytes(data, null);
+                indexedImageData = getBytes(data, dataRange);
 
                 int w = dataset.getWidth();
                 int h = dataset.getHeight();
@@ -659,19 +670,30 @@ implements ImageObserver
         String cname = rawData.getClass().getName();
         char dname = cname.charAt(cname.lastIndexOf("[")+1);
 
+        if (minmax == null)
+        {
+            minmax = new double[2];
+            minmax[0] = minmax[1] = 0;
+        }
+
         // no need for conversion
         if (dname == 'B')
+        {
+            minmax[0] = 0;
+            minmax[1] = 255;
             return (byte[]) rawData;
+        }
 
         int size = Array.getLength(rawData);
         byteData = new byte[size];
+        boolean minmaxFound = !(minmax[0] == minmax[1]);
 
         switch (dname)
         {
             case 'S':
                 short[] s = (short[])rawData;
 
-                if (minmax != null)
+                if (minmaxFound)
                 {
                     min = minmax[0];
                     max = minmax[1];
@@ -698,7 +720,7 @@ implements ImageObserver
             case 'I':
                 int[] ia = (int[])rawData;
 
-                if (minmax != null)
+                if (minmaxFound)
                 {
                     min = minmax[0];
                     max = minmax[1];
@@ -725,7 +747,7 @@ implements ImageObserver
             case 'J':
                 long[] l = (long[])rawData;
 
-                if (minmax != null)
+                if (minmaxFound)
                 {
                     min = minmax[0];
                     max = minmax[1];
@@ -752,7 +774,7 @@ implements ImageObserver
             case 'F':
                 float[] f = (float[])rawData;
 
-                if (minmax != null)
+                if (minmaxFound)
                 {
                     min = minmax[0];
                     max = minmax[1];
@@ -779,7 +801,7 @@ implements ImageObserver
             case 'D':
                 double[] d = (double[])rawData;
 
-                if (minmax != null)
+                if (minmaxFound)
                 {
                     min = minmax[0];
                     max = minmax[1];
@@ -807,6 +829,9 @@ implements ImageObserver
                 byteData = null;
                 break;
         } // switch (dname)
+
+        minmax[0] = min;
+        minmax[1] = max;
 
         return byteData;
     }
@@ -1380,6 +1405,66 @@ implements ImageObserver
         }
 
         return status;
+    }
+
+    /** PaletteComponent draws the palette. */
+    private class PaletteComponent extends JComponent
+    {
+        private Color[] colors = null;
+        private double[] pixelData = null;
+        private Dimension paintSize = null;
+        java.text.DecimalFormat format;
+
+        private PaletteComponent (byte[][] palette, double[] range)
+        {
+            paintSize = new Dimension(25, 2);
+            format = new java.text.DecimalFormat("0.00E0");
+
+            if (palette != null && range!= null)
+            {
+                colors = new Color[256];
+                pixelData = new double[256];
+
+                int r, g, b;
+                for (int i=0; i<256; i++)
+                {
+                    r = (int)palette[0][i];
+                    if (r < 0) r += 256;
+                    g = (int)palette[1][i];
+                    if (g < 0) g += 256;
+                    b = (int)palette[2][i];
+                    if (b < 0) b += 256;
+
+                    colors[i] = new Color(r, g, b);
+                    double ratio = (range[1] - range[0])/255;
+                    pixelData[i] = (range[0] + ratio*i);
+                }
+            }
+
+            repaint();
+            setPreferredSize(new Dimension(paintSize.width+50, paintSize.height*256));
+            setVisible(true);
+        }
+
+        public void paint(Graphics g)
+        {
+            if (colors == null && pixelData == null)
+                return;
+
+            for (int i=0; i<256; i++)
+            {
+                g.setColor(colors[i]);
+                g.fillRect(0, paintSize.height*i, paintSize.width, paintSize.height);
+            }
+
+            g.setColor(Color.black);
+            for (int i=0; i<25; i++)
+            {
+                g.drawString(format.format(pixelData[i*10]), paintSize.width+5, 10+paintSize.height*i*10);
+            }
+            g.drawString(format.format(pixelData[255]), paintSize.width+5, paintSize.height*255);
+        }
+
     }
 
     /** ImageComponent draws the image. */
