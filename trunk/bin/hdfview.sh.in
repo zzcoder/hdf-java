@@ -46,7 +46,7 @@ if test -z "$LD_LIBRARY_PATH" ; then
         LD_LIBRARY_PATH=""
 fi
 
-case  $machtype in:
+case  $machtype in
     sun4*)
 	LD_LIBRARY_PATH=$HDFVIEW_HOME/lib/solaris:$LD_LIBRARY_PATH
 	;;
