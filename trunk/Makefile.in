@@ -24,7 +24,6 @@ JH45INSTALLDIR=@JH45INST@
 #make this relative to the source root...
 LIBDIR=$(JH45INSTALLDIR)/lib
 BINDIR=$(JH45INSTALLDIR)/bin
-ETCDIR=$(JH45INSTALLDIR)/etc
 DOCDIR= $(JH45INSTALLDIR)/docs
 
 JH45IDISTFILES=./VERSION ./COPYING ./Makefile.in win32make.bat \
@@ -42,8 +41,6 @@ JHIDISTFILES=./VERSION ./COPYING ./Makefile.in win32make.bat \
 JHI5DISTFILES=./VERSION ./COPYING ./Makefile.in win32make.bat \
         ./configure.in ./Config/config* ./Config/install-sh \
         ./configure native/Makefile.in native/hdf5lib/Makefile.in \
-        ./etc/H5Constants-needed ./etc/Makefile.in \
-        ./etc/scr etc/TestHDF5Link.java etc/testlink.in \
         ./native/hdf5lib/*.c ./native/hdf5lib/*.h \
         ./ncsa/hdf/hdf5lib/*.java  \
         ./ncsa/hdf/hdf5lib/exceptions/*.java 
@@ -65,7 +62,8 @@ JHI5PACKAGES = \
 	ncsa.hdf.hdf5lib.exceptions \
 	ncsa.hdf.hdf5lib 
 
-HDFOBJPACKAGES = ncsa.hdf.object
+HDFOBJPACKAGES = ncsa.hdf.object \
+	test.object
 
 HDFVIEWPACKAGES= ncsa.hdf.io \
 	ncsa.hdf.view
@@ -370,6 +368,9 @@ ncsa.hdf.object: ncsa/hdf/object/Attribute.class \
 	ncsa/hdf/object/H5ScalarDS.class \
 	ncsa/hdf/object/HObject.class \
 	ncsa/hdf/object/ScalarDS.class
+
+test.object: test/object/TestH4File.class \
+	test/object/TestH5File.class
 
 ncsa.hdf.io: ./ncsa/hdf/io/DefaultFileFormat.class \
 	./ncsa/hdf/io/FileFormat.class \
