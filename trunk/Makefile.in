@@ -528,7 +528,9 @@ ncsa.hdf.view: ./ncsa/hdf/view/TreeView.class \
 	./ncsa/hdf/view/NewDatasetDialog.class \
 	./ncsa/hdf/view/NewFileDialog.class \
 	./ncsa/hdf/view/NewGroupDialog.class \
-	./ncsa/hdf/view/UserOptionsDialog.class
+	./ncsa/hdf/view/UserOptionsDialog.class \
+	./ncsa/hdf/view/DataOptionDialog$$SubsetNavigator.class \
+	./ncsa/hdf/view/DataOptionDialog$$1.class
 
 # --------------
 # Single targets
@@ -778,7 +780,9 @@ HDFVIEWCLASSES= ./ncsa/hdf/view/ViewManager.class \
 	./ncsa/hdf/view/NewDatasetDialog.class \
 	./ncsa/hdf/view/NewFileDialog.class \
 	./ncsa/hdf/view/NewGroupDialog.class \
-	./ncsa/hdf/view/UserOptionsDialog.class
+	./ncsa/hdf/view/UserOptionsDialog.class \
+	./ncsa/hdf/view/DataOptionDialog\$$SubsetNavigator.class \
+	./ncsa/hdf/view/DataOptionDialog\$$1.class
 
 HDFVIEWICONS= ./ncsa/hdf/view/icons/blank.gif \
 	./ncsa/hdf/view/icons/chart.gif \
