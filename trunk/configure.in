@@ -51,6 +51,7 @@ HERE=`pwd`
 
 dnl  Check for HDF4 library  --with-hdf4 must be set.
 
+withval=""
 AC_ARG_WITH(hdf4,[  --with-hdf4=INC,LIB     Use the HDF4 library])
 case "$withval" in
   yes)
@@ -184,6 +185,7 @@ ac_cv_lib_HDF45INC=$HDF45INC
 
 dnl  find java stuff:  use -with-jdk
 
+withval="";
 AC_SUBST(JAVALIB) JAVALIB=""
 AC_ARG_WITH(jdk,[  --with-jdk=INC,LIB     Where to find the JDK ],,)
 case "$withval" in
@@ -238,40 +240,46 @@ AC_PATH_PROG(JAVAC,javac,,$JAVABIN,)
 AC_PATH_PROG(JAVADOC,javadoc,,$JAVABIN,)
 AC_PATH_PROG(JAR,jar,,$JAVABIN,)
 
-dnl  find the jhdf wrappers
+dnl  optional find the jhdf wrappers 
 
+withval="";
 AC_ARG_WITH(jhdf4,[  --with-jhdf4=LIB     Where to find the jhdf4 ],,)
 case "$withval" in
   yes)
-    AC_MSG_ERROR(jhdf4 needed for compilation.)
+    AC_MSG_ERROR(jhdf4 path needed for compilation.)
     ;;
   no)
-    AC_MSG_ERROR(jhdf4 needed for compilation.)
+    #AC_MSG_ERROR(jhdf4 needed for compilation.)
+	# use default path
     ;;
   *)
     jhdf_jar="`echo $withval |cut -f1 -d,`"
     if test -n "$jhdf_jar"; then
 	CLASSPATH="$CLASSPATH"":""$jhdf_jar""/jhdf.jar"
-    else
-        AC_MSG_ERROR(jhdf.jar needed for compilation.)
+    #else
+        #AC_MSG_ERROR(jhdf.jar needed for compilation.)
+	# use default path...
     fi
     ;;
 esac
 
+withval="";
 AC_ARG_WITH(jhdf5,[  --with-jhdf5=LIB     Where to find the jhdf45 ],,)
 case "$withval" in
   yes)
-    AC_MSG_ERROR( jhdf5 needed for compilation.)
+    AC_MSG_ERROR( jhdf5 path needed for compilation.)
     ;;
   no)
-    AC_MSG_ERROR( jhdf5 needed for compilation.)
+    #AC_MSG_ERROR( jhdf5 needed for compilation.)
+	# use default path
     ;;
   *)
     jhdf5_jar="`echo $withval |cut -f1 -d,`"
     if test -n "$jhdf5_jar"; then
 	CLASSPATH="$CLASSPATH"":""$jhdf5_jar""/jhdf5.jar"
-    else
-    AC_MSG_ERROR(jhdf5.jar needed for compilation.)
+    #else
+	   # AC_MSG_ERROR(jhdf5.jar needed for compilation.)
+	# use default path...
     fi
     ;;
 esac
