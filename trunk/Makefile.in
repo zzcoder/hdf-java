@@ -601,6 +601,7 @@ ncsa.hdf.view: ./ncsa/hdf/view/TreeView.class \
 	./ncsa/hdf/view/Chart.class \
 	./ncsa/hdf/view/PaletteView.class \
 	./ncsa/hdf/view/MetaDataView.class \
+	./ncsa/hdf/view/HelpView.class \
 	./ncsa/hdf/view/NewImageDialog.class \
 	./ncsa/hdf/view/NewGroupDialog.class \
 	./ncsa/hdf/view/NewAttributeDialog.class \
@@ -862,6 +863,7 @@ JAVASRCS= \
 ./ncsa/hdf/view/DefaultTextView.java \
 ./ncsa/hdf/view/DefaultTreeView.java \
 ./ncsa/hdf/view/MetaDataView.java \
+./ncsa/hdf/view/HelpView.java \
 ./ncsa/hdf/view/PaletteView.java \
 ./test/h4toh5/apitest.java \
 ./test/h4toh5/imagetest.java \
