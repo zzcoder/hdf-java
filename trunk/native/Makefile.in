@@ -10,14 +10,22 @@
 # ****************************************************************************/
 
 H45INC=@H45INC@
+H4INC=@HDF4INC@
+H5INC=@HDF5INC@
 
 all: hdflib hdf5lib h4toh5lib
 
 hdflib: FORCE
+	@if test -n "$(H4INC)" ; then $(MAKE) do-hdflib ; fi
+
+do-hdflib: 
 	cd hdflib; \
 	$(MAKE) ; 
 
 hdf5lib: FORCE
+	@if test -n "$(H5INC)" ; then $(MAKE) do-hdf5lib ; fi
+
+do-hdf5lib: 
 	cd hdf5lib; \
 	$(MAKE) ; 
 

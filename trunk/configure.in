@@ -93,17 +93,18 @@ ac_cv_lib_HDF4=$HDF4LIB
 ac_cv_lib_HDF4INC=$HDF4INC
 
 withval="";
-AC_SUBST(libz) libz=""
-AC_ARG_WITH(libz,[  --with-hdf5=LIB     Path to the HDF5 library (requied if not in default path)],,)
+AC_SUBST(ZLIB) ZLIB=""
+AC_ARG_WITH(libz,[  --with-libz=LIB     Path to the gzip library (requied if not in default path)],,)
 
-libz=$withval
-
-if test -n "$libz" ; then
-ZLIB=$libz
+if test -n "$withval" ; then
+    z_lib="`echo $withval |cut -f2 -d, -s`"
+	ZLIB=$z_lib"/libz.a"
 else
-
+if test -n "$HDF4LIB" ; then
 ZLIB=$HDF4LIB"/libz.a"
-
+else
+ZLIB=-lz
+fi
 fi
 
 dnl  Check for HDF5 library  --with-hdf5 must be set.

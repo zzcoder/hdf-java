@@ -1,4 +1,3 @@
-# Generated automatically from Makefile.in by configure.
 #****************************************************************************
 #* NCSA HDF                                                                 *
 #* National Comptational Science Alliance                                   *
@@ -24,6 +23,8 @@ JSLEXT=@JSLEXT@
 CLASSPATH=@CLASSPATH@
 JH45INSTALLDIR=@JH45INST@
 H45INC=@H45INC@
+H4INC=@HDF4INC@
+H5INC=@HDF5INC@
 
 #make this relative to the source root...
 LIBDIR=$(JH45INSTALLDIR)/lib
@@ -32,7 +33,11 @@ DOCDIR= $(JH45INSTALLDIR)/docs
 
 HDFVIEWDISTFILES= ./ncsa/hdf/view/*.java $(HDFVIEWICONS)
 
-HDFOBJDISTFILES= ./ncsa/hdf/object/*.java
+HDFOBJDISTFILES= ./ncsa/hdf/object/*.java 
+
+H4OBJDISTFILES= ./ncsa/hdf/object/h4/*.java 
+
+H5OBJDISTFILES= ./ncsa/hdf/object/h5/*.java 
 
 JH45IDISTFILES=./VERSION ./COPYING ./Makefile.in \
 	windows/lib.dsw windows/lib.dsp \
@@ -60,7 +65,7 @@ TESTFILES=./test/Makefile.in ./test/h4toh5/*.java ./test/h4toh5/*.in ./test/h4to
 
 DOCFILES=./docs/javadocs/*.html ./docs/javadocs/images/*.gif
 
-DISTFILES= $(JHI5DISTFILES) $(JHIDISTFILES) $(JH45IDISTFILES) $(HDFDISTFILES) $(HDFVIEWDISTFILES) $(HDFOBJDISTFILES) $(TESTFILES) $(DOCFILES)
+DISTFILES= $(JHI5DISTFILES) $(JHIDISTFILES) $(JH45IDISTFILES) $(HDFDISTFILES) $(HDFVIEWDISTFILES) $(HDFOBJDISTFILES) $(H4OBJDISTFILES) $(H5OBJDISTFILES) $(TESTFILES) $(DOCFILES)
 
 
 JH45PACKAGES = \
@@ -79,6 +84,10 @@ JHI5PACKAGES = \
 
 HDFOBJPACKAGES = ncsa.hdf.object
 
+H4OBJPACKAGES = ncsa.hdf.object.h4
+
+H5OBJPACKAGES = ncsa.hdf.object.h5
+
 HDFVIEWPACKAGES= ncsa.hdf.view
 
 TESTPACKAGES = test.h4toh5 test.object
@@ -89,7 +98,6 @@ TESTPACKAGES = test.h4toh5 test.object
 .java.class:
 	$(JAVAC) -classpath $(CLASSPATH) $<
 
-all: natives packages
 all: natives packages
 
 just-hdf4: hdflib jhdf-packages
@@ -108,7 +116,10 @@ jh4toh5-packages:
 do-jh4toh5-packages: $(JH45PACKAGES)  
 	$(JAR) cf ./lib/jh4toh5.jar $(JH45CLASSES)
 
-jhdf-packages: $(JHIPACKAGES)  
+jhdf-packages: 
+	@if test -n "$(H4INC)" ; then $(MAKE) do-jhdf-packages-packages ; fi
+
+do-jhdf-packages: $(JHIPACKAGES)  
 	$(JAR) cf ./lib/jhdf.jar $(JHICLASSES)
 
 jhdf5-packages: $(JHI5PACKAGES)  
@@ -116,6 +127,14 @@ jhdf5-packages: $(JHI5PACKAGES)
 
 jhdfobj-packages: $(HDFOBJPACKAGES)  
 	$(JAR) cf ./lib/jhdfobj.jar $(HDFOBJCLASSES)
+	@if test -n "$(H4INC)" ; then $(MAKE) do-jh4obj-packages ; fi
+	@if test -n "$(H5INC)" ; then $(MAKE) do-jh5obj-packages ; fi
+
+do-jh4obj-packages: $(H4OBJPACKAGES)  
+	$(JAR) cf ./lib/jhdf4obj.jar $(H4OBJCLASSES)
+
+do-jh5obj-packages: $(H5OBJPACKAGES)  
+	$(JAR) cf ./lib/jhdf5obj.jar $(H5OBJCLASSES)
 
 jhdfview-packages: $(HDFVIEWPACKAGES)  
 	$(JAR) cf ./lib/jhdfview.jar $(HDFVIEWCLASSES) $(HDFVIEWICONS)
@@ -173,6 +192,8 @@ clean-classes:
 	rm -f ./lib/jhdf.jar
 	rm -f ./lib/jhdf5.jar
 	rm -f ./lib/jhdfobj.jar
+	rm -f ./lib/jhdf4obj.jar
+	rm -f ./lib/jhdf5obj.jar
 	rm -f ./lib/jhdfview.jar
 
 clean-packages: clean-classes
@@ -212,13 +233,15 @@ checklink: install linktest
 install: install-lib install-jhdf install-jhdf5 install-jh4toh5 install-jhdfobj install-jhdfview
 	@echo "Install complete"
 
-uninstall: uninstall-lib uninstall-jh45 uninstall-jhi uninstall-jhi5
+uninstall: uninstall-jhdfview uninstall-jhdfobj uninstall-lib uninstall-jh45 uninstall-jhi uninstall-jhi5
 
 install-lib: natives
 	-mkdir -p $(LIBDIR);
 	-mkdir -p $(LIBDIR)/@JAVATARG@
-	cp ./lib/@JAVATARG@/libjhdf5.$(JSLEXT) $(LIBDIR)/@JAVATARG@
-	cp ./lib/@JAVATARG@/libjhdf.$(JSLEXT) $(LIBDIR)/@JAVATARG@
+	@if test -n "$(H5INC)" ; then \
+	cp ./lib/@JAVATARG@/libjhdf5.$(JSLEXT) $(LIBDIR)/@JAVATARG@ ; fi
+	@if test -n "$(H4INC)" ; then \
+	cp ./lib/@JAVATARG@/libjhdf.$(JSLEXT) $(LIBDIR)/@JAVATARG@ ; fi
 	@if test -n "$(H45INC)" ; then \
 	cp ./lib/@JAVATARG@/libjh4toh5.$(JSLEXT) $(LIBDIR)/@JAVATARG@ ; fi
 	@echo "Install Natives complete"
@@ -233,7 +256,7 @@ install-hdf5lib: hdf5lib
 	-mkdir -p $(LIBDIR);
 	-mkdir -p $(LIBDIR)/@JAVATARG@
 	cp ./lib/@JAVATARG@/libjhdf5.$(JSLEXT) $(LIBDIR)/@JAVATARG@
-	@echo "Install Native HDF5 complete"
+	echo "Install Native HDF5 complete"
 
 install-libh4to5: 
 	@if test -n "$(H45INC)" ; then $(MAKE) do-install-libh4toh5 ; fi
@@ -260,7 +283,10 @@ do-install-jh4toh5: jh4toh5-packages
 	$(JAR) cf $(JH45INSTALLDIR)/lib/jh4toh5.jar $(JH45CLASSES)
 	@echo "Install JH45 complete"
 
-install-jhdf: jhdf-packages
+install-jhdf: 
+	@if test -n "$(H4INC)" ; then $(MAKE) do-install-jhdf ; fi
+
+do-install-jhdf: jhdf-packages
 	-mkdir -p $(LIBDIR);
 	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdf.jar $(JHICLASSES)
 	@echo "Install JHI complete"
@@ -273,7 +299,19 @@ install-jhdf5: jhdf5-packages
 install-jhdfobj: ncsa.hdf.object
 	-mkdir -p $(LIBDIR);
 	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdfobj.jar $(HDFOBJCLASSES)
+	@if test -n "$(H4INC)" ; then $(MAKE) do-install-jhdf4obj ; fi
+	@if test -n "$(H5INC)" ; then $(MAKE) do-install-jhdf5obj ; fi
 	@echo "Install HDFOBJ complete"
+
+do-install-jhdf4obj: ncsa.hdf.object.h4
+	-mkdir -p $(LIBDIR);
+	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdf4obj.jar $(H4OBJCLASSES)
+	@echo "Install JHDF4 complete"
+
+do-install-jhdf5obj: ncsa.hdf.object.h5
+	-mkdir -p $(LIBDIR);
+	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdf5obj.jar $(H5OBJCLASSES)
+	@echo "Install JHDF4 complete"
 
 install-jhdfview: ncsa.hdf.view
 	-mkdir -p $(LIBDIR);
@@ -291,6 +329,8 @@ uninstall-jh45:
 
 uninstall-jhdfobj: 
 	rm -f $(JH45INSTALLDIR)/lib/jhdfobj.jar
+	rm -f $(JH45INSTALLDIR)/lib/jhdf4obj.jar
+	rm -f $(JH45INSTALLDIR)/lib/jhdf5obj.jar
 
 uninstall-jhdfview: 
 	rm -f $(JH45INSTALLDIR)/lib/jhdfview.jar
@@ -443,30 +483,31 @@ ncsa.hdf.object: ncsa/hdf/object/Attribute.class \
 	ncsa/hdf/object/DataFormat.class \
 	ncsa/hdf/object/Dataset.class \
 	ncsa/hdf/object/Group.class \
-	ncsa/hdf/object/H4GRImage.class \
-	ncsa/hdf/object/H4Group.class \
-	ncsa/hdf/object/H4SDS.class \
-	ncsa/hdf/object/H4Vdata.class \
-	ncsa/hdf/object/H5CompoundDS.class \
-	ncsa/hdf/object/H5Group.class \
-	ncsa/hdf/object/H5ScalarDS.class \
 	ncsa/hdf/object/HObject.class \
 	ncsa/hdf/object/ScalarDS.class \
 	ncsa/hdf/object/Datatype.class \
-	ncsa/hdf/object/H4Datatype.class \
-	ncsa/hdf/object/H4File.class \
-	ncsa/hdf/object/H4File$$1.class \
-	ncsa/hdf/object/H4File$$2.class \
-	ncsa/hdf/object/H4File$$3.class \
-	ncsa/hdf/object/H4File$$4.class \
-	ncsa/hdf/object/H5Datatype.class \
-	ncsa/hdf/object/H5File.class \
-	ncsa/hdf/object/H5File$$1.class \
-	ncsa/hdf/object/H5File$$2.class \
-	ncsa/hdf/object/H5File$$3.class \
 	ncsa/hdf/object/FileFormat.class \
 	ncsa/hdf/object/Metadata.class 
 
+ncsa.hdf.object.h4:	ncsa/hdf/object/h4/H4GRImage.class \
+	ncsa/hdf/object/h4/H4Group.class \
+	ncsa/hdf/object/h4/H4SDS.class \
+	ncsa/hdf/object/h4/H4Vdata.class \
+	ncsa/hdf/object/h4/H4Datatype.class \
+	ncsa/hdf/object/h4/H4File.class \
+	ncsa/hdf/object/h4/H4File$$1.class \
+	ncsa/hdf/object/h4/H4File$$2.class \
+	ncsa/hdf/object/h4/H4File$$3.class \
+	ncsa/hdf/object/h4/H4File$$4.class 
+
+ncsa.hdf.object.h5:	ncsa/hdf/object/h5/H5CompoundDS.class \
+	ncsa/hdf/object/h5/H5Group.class \
+	ncsa/hdf/object/h5/H5ScalarDS.class \
+	ncsa/hdf/object/h5/H5Datatype.class \
+	ncsa/hdf/object/h5/H5File.class \
+	ncsa/hdf/object/h5/H5File$$1.class \
+	ncsa/hdf/object/h5/H5File$$2.class \
+	ncsa/hdf/object/h5/H5File$$3.class 
 
 
 #
@@ -715,34 +756,35 @@ JHICLASSES= ./ncsa/hdf/hdflib/HDFArray.class \
 	./glguerin/util/MacPlatform.class 
 
 HDFOBJCLASSES= ./ncsa/hdf/object/Attribute.class \
-	./ncsa/hdf/object/CompoundDS.class \
-	./ncsa/hdf/object/DataFormat.class \
-	./ncsa/hdf/object/Dataset.class \
-	./ncsa/hdf/object/Group.class \
-	./ncsa/hdf/object/H4GRImage.class \
-	./ncsa/hdf/object/H4Group.class \
-	./ncsa/hdf/object/H4SDS.class \
-	./ncsa/hdf/object/H4Vdata.class \
-	./ncsa/hdf/object/H5CompoundDS.class \
-	./ncsa/hdf/object/H5Group.class \
-	./ncsa/hdf/object/H5ScalarDS.class \
-	./ncsa/hdf/object/HObject.class \
 	./ncsa/hdf/object/Metadata.class \
-	./ncsa/hdf/object/FileFormat.class \
 	./ncsa/hdf/object/Datatype.class \
-	./ncsa/hdf/object/H4Datatype.class \
-	./ncsa/hdf/object/H5Datatype.class \
-	./ncsa/hdf/object/H4File.class \
-	./ncsa/hdf/object/H5File.class \
-	./ncsa/hdf/object/H4File\$$1.class \
-	./ncsa/hdf/object/H4File\$$2.class \
-	./ncsa/hdf/object/H4File\$$3.class \
-	./ncsa/hdf/object/H4File\$$4.class \
-	./ncsa/hdf/object/H5File\$$1.class \
-	./ncsa/hdf/object/H5File\$$2.class \
-	./ncsa/hdf/object/H5File\$$3.class \
-	./ncsa/hdf/object/ScalarDS.class 
+	./ncsa/hdf/object/CompoundDS.class \
+	./ncsa/hdf/object/Dataset.class \
+	./ncsa/hdf/object/HObject.class \
+	./ncsa/hdf/object/DataFormat.class \
+	./ncsa/hdf/object/FileFormat.class \
+	./ncsa/hdf/object/Group.class \
+	./ncsa/hdf/object/ScalarDS.class
 
+H4OBJCLASSES= ./ncsa/hdf/object/h4/H4GRImage.class \
+	./ncsa/hdf/object/h4/H4Datatype.class \
+	./ncsa/hdf/object/h4/H4File.class \
+	./ncsa/hdf/object/h4/H4File\$$1.class \
+	./ncsa/hdf/object/h4/H4File\$$2.class \
+	./ncsa/hdf/object/h4/H4File\$$3.class \
+	./ncsa/hdf/object/h4/H4File\$$4.class \
+	./ncsa/hdf/object/h4/H4Group.class \
+	./ncsa/hdf/object/h4/H4SDS.class \
+	./ncsa/hdf/object/h4/H4Vdata.class
+
+H5OBJCLASSES= ./ncsa/hdf/object/h5/H5CompoundDS.class \
+	./ncsa/hdf/object/h5/H5Datatype.class \
+	./ncsa/hdf/object/h5/H5File.class \
+	./ncsa/hdf/object/h5/H5File\$$1.class \
+	./ncsa/hdf/object/h5/H5File\$$2.class \
+	./ncsa/hdf/object/h5/H5File\$$3.class \
+	./ncsa/hdf/object/h5/H5Group.class \
+	./ncsa/hdf/object/h5/H5ScalarDS.class 
 
 HDFVIEWCLASSES= ./ncsa/hdf/view/ViewManager.class \
 	./ncsa/hdf/view/TreeView.class  \
