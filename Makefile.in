@@ -44,12 +44,13 @@ NC2OBJDISTFILES= ./ncsa/hdf/object/nc2/*.java ./lib/netcdf.jar
 FITSOBJDISTFILES= ./ncsa/hdf/object/fits/*.java ./lib/fits.jar 
 
 TOPDIST=./VERSION ./COPYING ./Makefile.in \
-	./windows/lib.dsw windows/lib.dsp \
-	./lib/ext/testview.jar  \
+	./Readme_binary_jre.txt ./Readme_binary.txt ./Readme.txt \
 	./windows/jhdf.mak ./windows/Makefile_java.bat  \
+	./windows/jhdf5.mak \
 	./bin/hdfview.sh.in ./bin/hdfview.bat  \
 	./runconfig-example.sh \
 	./configure.in ./Config/config* ./Config/install-sh \
+	./samples/* \
 	./configure ./native/Makefile.in 
 
 JH45IDISTFILES=./native/h4toh5lib/Makefile.in \
@@ -68,7 +69,7 @@ JHI5DISTFILES= ./native/hdf5lib/Makefile.in \
         ./ncsa/hdf/hdf5lib/exceptions/*.java 
 
 
-TESTFILES=./test/Makefile.in ./test/h4toh5/*.java ./test/h4toh5/*.in ./test/h4toh5/testfiles/*.hdf ./test/h4toh5/Expected/*.h5 ./test/object/*.java ./test/object/*.in ./test/linktest/Makefile.in ./test/linktest/testh4link.in ./test/linktest/testlink.in ./test/linktest/*.java
+TESTFILES=./test/Makefile.in ./test/object/*.java ./test/object/*.in ./test/linktest/Makefile.in ./test/linktest/testh4link.in ./test/linktest/testlink.in ./test/linktest/*.java
 
 DOCFILES=./docs/javadocs
 
