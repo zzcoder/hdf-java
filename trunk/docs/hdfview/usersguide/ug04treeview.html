@@ -182,10 +182,9 @@ HDF4/5 conversion.)
 
 <p>For HDF5, a new file is written that does not contain the inaccessible 
 objects and it packs the unusable space. Thus, the new file may be smaller 
-than the original. <b>Dataset or attributes 
-values that are object references can not be updated.<b> 
-
-<p>For HDF4, a new file is the exact copy, same file content and file size.
+than the original. <b>Dataset or attributes values that are object references 
+can not be updated.</b> For HDF4, a new file is the exact copy, same file 
+content and file size.
 
 <h3>
 <a NAME="ug04add"></a>4.4.2 Add and Delete Object</h3>
@@ -261,7 +260,8 @@ To change the value of an attribute, type in the new value into the cell. Only
 string and scalar attributes can be modified. The new value must be interpretable 
 as a value of the correct type for the attribute. For a string value, the value 
 typed will be truncated to the size of the attribute if it is longer than the 
-declared size of the attribute.
+declared size of the attribute. A valid data value must follow the rules specified
+by Table 5.1 at section <a href="ug05spreadsheet.html#ug05change">5.4 Change Data Value</a>
 
 <P>
 To delete an attribute, you select the attribute and click the "Delete" button.
