@@ -162,21 +162,21 @@ public class UserOptionsDialog extends JDialog implements ActionListener
         delimiterChoice.setSelectedItem(ViewProperties.getDataDelimiter());
 
         JPanel centerP = new JPanel();
-        centerP.setLayout(new GridLayout(6,1,10,10));
+        centerP.setLayout(new GridLayout(7,1,10,10));
         centerP.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
 
         JPanel p0 = new JPanel();
         p0.setLayout(new BorderLayout());
         p0.add(checkCurrentUserDir=new JCheckBox("\"user.dir\"         or", false), BorderLayout.WEST);
         checkCurrentUserDir.addActionListener(this);
-        checkCurrentUserDir.setActionCommand("Set to user.dir");
+        checkCurrentUserDir.setActionCommand("Set current dir to user.dir");
         p0.add(workField = new JTextField(workDir), BorderLayout.CENTER);
         JButton b = new JButton("Browse...");
         currentDirButton = b;
         b.setActionCommand("Browse current dir");
         b.addActionListener(this);
         p0.add(b, BorderLayout.EAST);
-        TitledBorder tborder = new TitledBorder("Default File Directory");
+        TitledBorder tborder = new TitledBorder("Default Working Directory");
         tborder.setTitleColor(Color.darkGray);
         p0.setBorder(tborder);
         centerP.add(p0);
@@ -331,7 +331,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener
             isFontChanged = false;
             dispose();
         }
-        else if (cmd.equals("Set to user.dir"))
+        else if (cmd.equals("Set current dir to user.dir"))
         {
             boolean isCheckCurrentUserDirSelected = checkCurrentUserDir.isSelected();
             workField.setEnabled(!isCheckCurrentUserDirSelected);

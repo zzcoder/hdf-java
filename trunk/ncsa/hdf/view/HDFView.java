@@ -1797,6 +1797,7 @@ public class HDFView extends JFrame
     public static void main( String args[] )
     {
         String rootDir = System.getProperty("user.dir");
+
 /*
 try {
 Group g = (Group)FileFormat.getHObject("e:\\hdf-files\\test.h5#//");
