@@ -393,13 +393,13 @@ public final class H4Accessory
     public static final String getLibversion()
     {
         int[] vers = new int[3];
-        String ver = "NCSA HDF Version 4. ";
+        String ver = "NCSA HDF Version ";
         String[] verStr = {""};
 
         try { HDFLibrary.Hgetlibversion(vers, verStr); }
         catch (HDFException ex) {}
 
-        ver += vers[1] +" Release "+vers[2];
+        ver += vers[0] + "." + vers[1] +" Release "+vers[2];
 
         return ver;
     }

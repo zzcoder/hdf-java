@@ -231,6 +231,9 @@ implements ActionListener, ItemListener, InputMethodListener
 
             isSelectionCancelled = !setSelection();
 
+            if (isSelectionCancelled)
+                return;
+
             dispose();
         }
         else if (cmd.equals("Cancel"))
@@ -351,7 +354,7 @@ implements ActionListener, ItemListener, InputMethodListener
                 ex,
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
-            endFields[3].setText("+0");
+            startFields[3].setText("");
             return;
         }
 
@@ -365,7 +368,7 @@ implements ActionListener, ItemListener, InputMethodListener
                 ex,
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
-            endFields[3].setText("+0");
+            startFields[3].setText("");
             return;
         }
 
@@ -377,7 +380,7 @@ implements ActionListener, ItemListener, InputMethodListener
                 "Invalid starting point: "+n0,
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
-            endFields[3].setText("+0");
+            startFields[3].setText("");
             return;
         }
 
@@ -502,7 +505,6 @@ implements ActionListener, ItemListener, InputMethodListener
         int[] sIndex = {0, 1, 2};
 
         int n = Math.min(3, choices.length);
-
         for (int i=0; i<n; i++)
         {
             sIndex[i] = choices[i].getSelectedIndex();
@@ -522,12 +524,14 @@ implements ActionListener, ItemListener, InputMethodListener
             }
 
             if (n0[i] < 0 ||
+                n0[i] >= dims[sIndex[i]] ||
+                (i<2 && n0[i] > n1[i]) ||
                 n1[i] >= dims[sIndex[i]])
             {
                 Toolkit.getDefaultToolkit().beep();
                 JOptionPane.showMessageDialog(
                     (Frame)viewer,
-                    "Selected index is out Of bound",
+                    "Selected index is out of bound: ["+n0[i]+", "+n1[i]+"]",
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
                 return false;
