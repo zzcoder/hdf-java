@@ -1706,3 +1706,4 @@ jdoubleArray data)
         return JNI_TRUE;
     }
 }
+
