@@ -1148,8 +1148,9 @@ implements TreeView, ActionListener {
 
         if (isFileOpen(filename))
         {
-            //return null;
-            throw new UnsupportedOperationException("File is in use.");
+            viewer.showStatus("File is in use");
+            return null;
+            //throw new UnsupportedOperationException("File is in use.");
         }
 
         File tmpFile = new File(filename);
