@@ -257,6 +257,7 @@ implements ImageView, ActionListener
 
         frameTitle = sb.toString();
         setTitle(frameTitle);
+        this.setName(frameTitle);
 
         // setup subset information
         int rank = dataset.getRank();
@@ -301,7 +302,10 @@ implements ImageView, ActionListener
         viewer.showStatus(sb.toString());
 
         if (is3D)
-            setTitle( "Image "+String.valueOf(start[selectedIndex[2]]+1)+ " of "+dims[selectedIndex[2]] + "    " + frameTitle);
+        {
+            frameTitle = "Image "+String.valueOf(start[selectedIndex[2]]+1)+ " of "+dims[selectedIndex[2]] + "    " + frameTitle;
+            setTitle(frameTitle);
+        }
 
 
         // tanspose the image
@@ -1117,7 +1121,7 @@ implements ImageView, ActionListener
             try { saveImageAs(filetype); }
             catch (Exception ex) {
                     toolkit.beep();
-                    JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
             }
         }
         else if (cmd.equals("Write selection to image"))
@@ -1425,7 +1429,7 @@ implements ImageView, ActionListener
         dataset.clearData();
         image = null;
         imageComponent.setImage(getImage());
-        setTitle( "Image "+String.valueOf(idx+1)+ " of "+dims[selectedIndex[2]] + "    " + frameTitle);
+        setTitle( frameTitle = "Image "+String.valueOf(idx+1)+ " of "+dims[selectedIndex[2]] + "    " + this.getName());
         //setTitle( frameTitle+ " - Image "+String.valueOf(idx+1)+ " of "+dims[selectedIndex[2]]);
         updateUI();
     }
@@ -2634,17 +2638,17 @@ implements ImageView, ActionListener
             iMax = (int)minmax[1];
             int tickSpace = (iMax-iMin)/10;
 
-            java.text.NumberFormat numberFormat = java.text.NumberFormat.getIntegerInstance();
+            java.text.NumberFormat numberFormat = java.text.NumberFormat.getNumberInstance();
             NumberFormatter formatter = new NumberFormatter(numberFormat);
-            formatter.setMinimum(new Integer(iMin));
-            formatter.setMaximum(new Integer(iMax));
+            formatter.setMinimum(new Double(minmax[0]));
+            formatter.setMaximum(new Double(minmax[1]));
 
             minField = new JFormattedTextField(formatter);
             minField.addPropertyChangeListener(this);
-            minField.setValue(new Integer(iMin));
+            minField.setValue(new Double(minmax[0]));
             maxField = new JFormattedTextField(formatter);
             maxField.addPropertyChangeListener(this);
-            maxField.setValue(new Integer(iMax));
+            maxField.setValue(new Double(minmax[1]));
 
             minSlider = new JSlider(JSlider.HORIZONTAL, iMin, iMax, iMin);
             minSlider.setMajorTickSpacing(tickSpace);
@@ -2672,7 +2676,7 @@ implements ImageView, ActionListener
             minPane.add(minSlider, BorderLayout.SOUTH);
 
             JPanel maxPane = new JPanel();
-            maxPane.setBorder(new TitledBorder("Upperr Bound"));
+            maxPane.setBorder(new TitledBorder("Upper Bound"));
             maxPane.setLayout(new BorderLayout());
             maxPane.add(maxField, BorderLayout.CENTER);
             maxPane.add(maxSlider, BorderLayout.SOUTH);
@@ -2714,8 +2718,9 @@ implements ImageView, ActionListener
 
             if (cmd.equals("Ok"))
             {
-                minmax[0] = ((Number)minField.getValue()).intValue();
-                minmax[1] = ((Number)maxField.getValue()).intValue();
+                minmax[0] = ((Number)minField.getValue()).doubleValue();
+                minmax[1] = ((Number)maxField.getValue()).doubleValue();
+
                 this.dispose();
             }
             else if (cmd.equals("Cancel"))
@@ -2757,12 +2762,13 @@ implements ImageView, ActionListener
          */
         public void propertyChange(PropertyChangeEvent e)
         {
+/*
             Object source = e.getSource();
             if ("value".equals(e.getPropertyName()))
             {
                 Number num = (Number)e.getNewValue();
                 if (num == null) return;
-                int value = num.intValue();
+                double value = num.doubleValue();
 
                 if (source.equals(minField) && minSlider!= null)
                 {
@@ -2772,7 +2778,7 @@ implements ImageView, ActionListener
                         value = maxValue;
                         minField.setText(String.valueOf(value));
                     }
-                    minSlider.setValue(value);
+                    //minSlider.setValue((int)value);
                 }
                 else if (source.equals(maxField) && maxSlider!= null)
                 {
@@ -2782,9 +2788,10 @@ implements ImageView, ActionListener
                         value = minValue;
                         maxField.setText(String.valueOf(value));
                     }
-                    maxSlider.setValue(value);
+                    //maxSlider.setValue((int)value);
                 }
             }
+*/
         }
 
         public double[] getRange()  { return minmax; }
