@@ -683,7 +683,6 @@ implements ImageObserver
         if (!rawData.getClass().isArray())
             return null;
 
-
         double min=Double.MAX_VALUE, max=-Double.MAX_VALUE, ratio=1.0d;
         String cname = rawData.getClass().getName();
         char dname = cname.charAt(cname.lastIndexOf("[")+1);

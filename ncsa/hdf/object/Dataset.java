@@ -233,7 +233,7 @@ public abstract class Dataset extends HObject
     }
 
     /** Loads and returns the data value from file. */
-    public abstract Object read() throws Exception;
+    public abstract Object read() throws Exception, OutOfMemoryError;
 
     /** Read data values of this dataset into byte array.
      *  readBytes() loads data as arry of bytes instead of array of its datatype.
@@ -277,7 +277,7 @@ public abstract class Dataset extends HObject
     /** If data is loaded into memory, returns the data value, otherwise
      *  load the data value into memory and returns the data value.
      */
-    public final Object getData() throws Exception
+    public final Object getData() throws Exception, OutOfMemoryError
     {
         if (data == null)
             data = read(); // load the data;

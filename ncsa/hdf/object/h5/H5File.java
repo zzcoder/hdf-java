@@ -363,7 +363,7 @@ public class H5File extends FileFormat
 
         // @@@@@@@@@ HDF5.1.6 bug at H5Dcreate(fid, dname, tid, sid, plist);
 try {
-        dstdid = H5.H5Dcreate(fid, dname, tid, sid, HDF5Constants.H5P_DEFAULT);// plist);
+        dstdid = H5.H5Dcreate(fid, dname, tid, sid, plist);
 } catch (Exception ex) { throw new HDF5LibraryException(
 "H5ScalarDS.copyDataset(): HDF5.1.6 failed at H5Dcreate(fid, dname, tid, sid, plist)");}
 
