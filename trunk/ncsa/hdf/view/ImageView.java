@@ -100,7 +100,12 @@ implements ImageObserver
     /**
      * The color table of the image.
      */
-    byte[][] imagePalette;
+    private byte[][] imagePalette;
+
+    /**
+     * The title of this imageview.
+     */
+    private String frameTitle;
 
     /**
      * Constructs an ImageView.
@@ -124,10 +129,11 @@ implements ImageObserver
         }
 
         dataset = (ScalarDS)hobject;
+        String fname = new java.io.File(hobject.getFile()).getName();
+        frameTitle = "ImageView - "+fname+" - " +hobject.getPath()+hobject.getName();
 
         this.setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
-        this.setTitle("ImageView - "+hobject.getPath()+hobject.getName());
-        this.setName(hobject.getPath()+hobject.getName());
+        this.setTitle(frameTitle);
         this.setFrameIcon(ViewProperties.getImageIcon());
 
         if (image == null)
@@ -188,8 +194,7 @@ implements ImageObserver
         imageComponent.setImage(getImage());
 
         this.setTitle(
-            "ImageView - "+
-            dataset.getPath()+dataset.getName()+
+            frameTitle +
             " - Image "+String.valueOf(start[selectedIndex[2]]+1)+
             " of "+dims[selectedIndex[2]]);
 
@@ -223,8 +228,7 @@ implements ImageObserver
         imageComponent.setImage(getImage());
 
         this.setTitle(
-            "ImageView - "+
-            dataset.getPath()+dataset.getName()+
+            frameTitle +
             " - Image "+String.valueOf(start[selectedIndex[2]]+1)+
             " of "+dims[selectedIndex[2]]);
 
@@ -258,8 +262,7 @@ implements ImageObserver
         imageComponent.setImage(getImage());
 
         this.setTitle(
-            "ImageView - "+
-            dataset.getPath()+dataset.getName()+
+            frameTitle+
             " - Image "+String.valueOf(start[selectedIndex[2]]+1)+
             " of "+dims[selectedIndex[2]]);
 
@@ -293,8 +296,7 @@ implements ImageObserver
         imageComponent.setImage(getImage());
 
         this.setTitle(
-            "ImageView - "+
-            dataset.getPath()+dataset.getName()+
+            frameTitle+
             " - Image "+String.valueOf(start[selectedIndex[2]]+1)+
             " of "+dims[selectedIndex[2]]);
 
@@ -358,9 +360,9 @@ implements ImageObserver
     // implementing ImageObserver
     public void zoomTo(float zf)
     {
-        if (zf >= 8)
+        if (zf > 8)
             zoomFactor = 8;
-        else if (zf <= 0.125)
+        else if (zf < 0.125)
             zoomFactor = 0.125f;
         else
             zoomFactor = zf;
@@ -373,14 +375,9 @@ implements ImageObserver
         updateUI();
 
          if (zoomFactor>0.99 && zoomFactor<1.01)
-        {
-            setTitle("ImageView - "+dataset.getPath()+dataset.getName());
-        }
+            setTitle(frameTitle);
         else
-        {
-            setTitle("ImageView - "+dataset.getPath()+dataset.getName()+
-            " - "+100*zoomFactor+"%");
-        }
+            setTitle(frameTitle+ " - "+100*zoomFactor+"%");
     }
 
     // implementing ImageObserver
@@ -424,6 +421,8 @@ implements ImageObserver
     public void showHistogram()
     {
         Rectangle rec = imageComponent.selectedArea;
+
+
         if (indexedImageData == null ||
             rec == null ||
             rec.getWidth()==0 ||
@@ -435,10 +434,10 @@ implements ImageObserver
             data[0][i] = 0.0;
 
         int w = dataset.getWidth();
-        int x0 = rec.x;
-        int y0 = rec.y;
-        int x = x0 + rec.width;
-        int y = y0 + rec.height;
+        int x0 = (int)(rec.x/zoomFactor);
+        int y0 = (int)(rec.y/zoomFactor);
+        int x = x0 + (int)(rec.width/zoomFactor);
+        int y = y0 + (int)(rec.height/zoomFactor);
         int arrayIndex = 0;
         for (int i=y0; i<y; i++)
         {
@@ -478,6 +477,7 @@ implements ImageObserver
         try {
             image = createImage(new FilteredImageSource(imageProducer,filter));
             imageComponent.setImage(image);
+            zoomTo(zoomFactor);
         } catch (Throwable err)
         {
             viewer.showStatus(err.toString());
@@ -998,7 +998,27 @@ implements ImageObserver
             imageSize = size;
             setPreferredSize(imageSize);
 
+            int w = selectedArea.width;
+            int h = selectedArea.height;
+            if (w>0 && h >0)
+            {
+                selectedArea.setBounds(
+                    (int)(selectedArea.x*zf),
+                    (int)(selectedArea.y*zf),
+                    (int)(w*zf),
+                    (int)(h*zf)
+                );
+            }
+
             repaint();
+/*
+            double zf = size.getWidth()/imageSize.getWidth();
+
+            imageSize = size;
+            setPreferredSize(imageSize);
+
+            repaint();
+*/
         }
 
         private void setImage(Image img)

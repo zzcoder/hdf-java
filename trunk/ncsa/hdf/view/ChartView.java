@@ -153,7 +153,7 @@ implements ActionListener
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5, 5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        contentPane.setPreferredSize(new Dimension(600, 400));
+        contentPane.setPreferredSize(new Dimension(640, 400));
 
         ChartPanel chartP = new ChartPanel();
         chartP.setBackground(Color.white);
@@ -167,7 +167,7 @@ implements ActionListener
         contentPane.add(tmp, BorderLayout.SOUTH);
 
         Point l = owner.getLocation();
-        l.x += 250;
+        l.x += 220;
         l.y += 100;
         setLocation(l);
         pack();
@@ -230,11 +230,15 @@ implements ActionListener
 
             Dimension d = getSize();
             int gap = 20;
-            int h = d.height - 2*gap;
-            int w = d.width - 3*gap;
+            int legendSpace = 0;
+            if (chartStyle == LINEPLOT)
+                legendSpace = 60;
+
+            int h = d.height - gap;
+            int w = d.width - 3*gap - legendSpace;
 
             // draw the X axis
-            g.drawLine(2*gap, h, d.width-gap, h);
+            g.drawLine(2*gap, h, w+2*gap, h);
 
             // draw the Y axis
             g.drawLine(2*gap, h, 2*gap, 0);
@@ -288,19 +292,24 @@ implements ActionListener
                         x1 = (int)(w*(j+1 - xmin)/(xmax-xmin)) + 2*gap;
                         y1 = (int)(h - h*(data[i][j+1]-ymin)/(ymax-ymin));
                         g.drawLine(x0, y0, x1, y1);
-                        g.drawLine(x0, y0+1, x1, y1+1);
                     }
 
-                    // show line legend
+                    // draw line legend
                     if (lineLabels != null && lineLabels.length>= numberOfLines)
                     {
-                        g.drawLine(45+i*100, d.height-4, 55+i*100, d.height-4);
-                        g.drawLine(45+i*100, d.height-5, 55+i*100, d.height-5);
-                        g.drawLine(45+i*100, d.height-6, 55+i*100, d.height-6);
-                        g.drawString(lineLabels[i], 60+i*100, d.height);
+                        x0 = w+legendSpace;
+                        y0 = gap+gap*i;
+                        g.drawLine(x0, y0, x0+7, y0);
+                        g.drawString(lineLabels[i], x0+10, y0+3);
                     }
                 }
-            }
+
+                g.setColor(c); // set the color back to its default
+
+                // draw a box on the legend
+                g.drawRect(w+legendSpace-10, 10, legendSpace, 10*gap);
+
+            } // if (chartStyle == LINEPLOT)
             else if (chartStyle == HISTOGRAM)
             {
                 // draw histogram for selected image area
@@ -318,9 +327,9 @@ implements ActionListener
                     g.drawLine(xp+1, h, xp+1, yp);
                     g.drawLine(xp+2, h, xp+2, yp);
                 }
-            }
 
-            g.setColor(c); // set the color back to its default
+                g.setColor(c); // set the color back to its default
+            } // else if (chartStyle == HISTOGRAM)
         } // public void paint(Graphics g)
     } // private class ChartPanel extends Canvas
 

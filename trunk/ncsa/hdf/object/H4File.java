@@ -243,7 +243,7 @@ public class H4File extends File implements FileFormat
         for (int i=0; i<n; i++)
         {
             ref = refs[i];
-            H4Group g = getVGroup(ref, HObject.separator, null, false);
+            H4Group g = getVGroup(ref, HObject.separator, rootGroup, false);
             if (g != null)
             {
                 node = new DefaultMutableTreeNode(g)

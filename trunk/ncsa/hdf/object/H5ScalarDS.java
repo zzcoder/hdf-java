@@ -86,6 +86,7 @@ public class H5ScalarDS extends ScalarDS
 
         int did = open();
         int fspace=-1, mspace=-1, tid=-1, nativeType=-1;
+
         boolean isAllSelected = true;
         for (int i=0; i<rank; i++)
         {

@@ -23,6 +23,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.MouseEvent;
+import java.awt.Toolkit;
 import javax.swing.plaf.metal.MetalBorders.TableHeaderBorder;
 
 /**
@@ -61,6 +62,12 @@ implements TableObserver
     private JTextArea cellValueField;
 
     /**
+     * The title of this imageview.
+     */
+    private String frameTitle;
+
+
+    /**
      * Constructs an TableView.
      * <p>
      * @param theView the main HDFView.
@@ -78,10 +85,11 @@ implements TableObserver
         }
 
         dataset = (Dataset)hobject;
+        String fname = new java.io.File(hobject.getFile()).getName();
+        frameTitle = "TableView - "+fname+" - " +hobject.getPath()+hobject.getName();
 
         this.setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
-        this.setTitle("TableView - "+hobject.getPath()+hobject.getName());
-        this.setName(hobject.getPath()+hobject.getName());
+        this.setTitle(frameTitle);
 
         // create the table and its columnHeader
         if (dataset instanceof ScalarDS)
@@ -177,8 +185,7 @@ implements TableObserver
         }
 
         this.setTitle(
-            "TableView - "+
-            dataset.getPath()+dataset.getName()+
+            frameTitle+
             " - Page "+String.valueOf(start[selectedIndex[2]]+1)+
             " of "+dims[selectedIndex[2]]);
 
@@ -211,8 +218,7 @@ implements TableObserver
         }
 
         this.setTitle(
-            "TableView - "+
-            dataset.getPath()+dataset.getName()+
+            frameTitle+
             " - Page "+String.valueOf(start[selectedIndex[2]]+1)+
             " of "+dims[selectedIndex[2]]);
 
@@ -245,8 +251,7 @@ implements TableObserver
         }
 
         this.setTitle(
-            "TableView - "+
-            dataset.getPath()+dataset.getName()+
+            frameTitle+
             " - Page "+String.valueOf(start[selectedIndex[2]]+1)+
             " of "+dims[selectedIndex[2]]);
 
@@ -279,8 +284,7 @@ implements TableObserver
         }
 
         this.setTitle(
-            "TableView - "+
-            dataset.getPath()+dataset.getName()+
+            frameTitle+
             " - Page "+String.valueOf(start[selectedIndex[2]]+1)+
             " of "+dims[selectedIndex[2]]);
 
@@ -324,6 +328,7 @@ implements TableObserver
             nLines = rows.length;
             if (nLines > 10)
             {
+                Toolkit.getDefaultToolkit().beep();
                 nLines = 10;
                 JOptionPane.showMessageDialog(this,
                 "More than 10 rows are selected.\n"+
@@ -357,6 +362,7 @@ implements TableObserver
             nLines = cols.length;
             if (nLines > 10)
             {
+                Toolkit.getDefaultToolkit().beep();
                 nLines = 10;
                 JOptionPane.showMessageDialog(this,
                 "More than 10 columns are selected.\n"+
@@ -389,7 +395,12 @@ implements TableObserver
             yRange[1] == Double.NEGATIVE_INFINITY ||
             yRange[0] == yRange[1])
         {
-            viewer.showStatus("Cannot show line plot for the selected data.");
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(
+                this,
+                "Cannot show line plot for the selected data.\n Please check the data range.",
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
             data = null;
             return;
         }

@@ -346,6 +346,9 @@ implements ActionListener
         panel.setLayout (new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10,0,0,0));
 
+        JLabel attrNumberLabel = new JLabel("Number of attributes = 0");
+        panel.add(attrNumberLabel, BorderLayout.NORTH);
+
         List attrList = null;
 
         try {
@@ -361,6 +364,8 @@ implements ActionListener
         int numAttributes = attrList.size();
         if (numAttributes <=0 )
             return panel;
+
+        attrNumberLabel.setText("Number of attributes = "+numAttributes);
 
         String[] columnNames = {"Name", "Value", "Type", "Array Size"};
         DefaultTableModel attrTableModel = new DefaultTableModel(
@@ -398,7 +403,7 @@ implements ActionListener
             scroller2,
             scroller1);
         splitPane.setDividerLocation(50);
-        panel.add("Center", splitPane);
+        panel.add(splitPane, BorderLayout.CENTER);
 
         Attribute attr = null;
         String name, type, size;
