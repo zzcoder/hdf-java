@@ -220,7 +220,7 @@ install-jhdf5: jhdf5-packages
 	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdf5.jar $(JHI5CLASSES)
 	@echo "Install JHI5 complete"
 
-install-jhdfobj:
+install-jhdfobj: ncsa.hdf.object
 	-mkdir -p $(LIBDIR);
 	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdfobj.jar $(HDFOBJCLASSES)
 	@echo "Install HDFOBJ complete"
