@@ -16,7 +16,7 @@ import javax.swing.tree.*;
 import java.util.*;
 import java.lang.reflect.*;
 import ncsa.hdf.object.*;
-//import ncsa.hdf.io.*;
+import ncsa.hdf.object.h4.*;
 import ncsa.hdf.hdflib.*;
 
 /**
@@ -54,7 +54,7 @@ public class TestH4File
         long t = System.currentTimeMillis()-t0;
         System.out.println("Time of retrieving the tree is "+t);
 
-        MutableTreeNode root = h4file.getRootNode();
+        TreeNode root = h4file.getRootNode();
         if (root != null)
         {
             printNode(root, "    ");

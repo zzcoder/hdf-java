@@ -10,19 +10,13 @@
 #****************************************************************************/
 
 all:
-	cd h4toh5; \
-	$(MAKE);
 	cd object; \
 	$(MAKE);
 
 check:
-	cd h4toh5; \
-	$(MAKE) check;
 	cd object; \
 	$(MAKE) check;
 
 clean:
-	cd h4toh5; \
-	$(MAKE) clean;
 	cd object; \
 	$(MAKE) clean;
