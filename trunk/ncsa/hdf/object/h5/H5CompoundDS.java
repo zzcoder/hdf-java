@@ -107,6 +107,7 @@ public class H5CompoundDS extends CompoundDS
 
         try
         {
+
             long[] lsize = {1};
             for (int j=0; j<selectedDims.length; j++)
                 lsize[0] *= selectedDims[j];
@@ -130,7 +131,6 @@ public class H5CompoundDS extends CompoundDS
 
                 member_name = memberNames[i];
                 member_tid = memberTypes[i];
-
                 member_data = H5Datatype.allocateArray(member_tid, (int)lsize[0]);
 
                 if (member_data == null)

@@ -185,10 +185,8 @@ public class H5ScalarDS extends ScalarDS
         }
         finally
         {
-            if (fspace > 0)
-                try { H5.H5Sclose(fspace); } catch (Exception ex2) {}
-            if (mspace > 0)
-                try { H5.H5Sclose(mspace); } catch (Exception ex2) {}
+            if (fspace > 0) try { H5.H5Sclose(fspace); } catch (Exception ex2) {}
+            if (mspace > 0) try { H5.H5Sclose(mspace); } catch (Exception ex2) {}
             try { H5.H5Tclose(tid); } catch (HDF5Exception ex2) {}
             try { H5.H5Tclose(nativeType); } catch (HDF5Exception ex2) {}
             close(did);

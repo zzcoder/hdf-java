@@ -92,8 +92,7 @@ public class H5Datatype extends Datatype
      * @param size the total size of the array.
      * @return the array object if successful and null otherwise.
      */
-    public static Object allocateArray(int tid, int size)
-    throws OutOfMemoryError
+    public static Object allocateArray(int tid, int size) throws OutOfMemoryError
     {
         Object data = null;
 
@@ -113,6 +112,8 @@ public class H5Datatype extends Datatype
             tsize = H5.H5Tget_size(tid);
             tsign = H5.H5Tget_sign(tid);
         } catch (Exception ex) {}
+
+
 
         switch (tclass)
         {

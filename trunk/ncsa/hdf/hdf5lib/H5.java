@@ -2417,6 +2417,60 @@ public class H5 {
         throws HDF5LibraryException, NullPointerException;
 
     /**
+     *  H5Pset_buffer sets type conversion and background buffers.
+     *  status to TRUE or FALSE.
+     *
+     *  Given a dataset transfer property list, H5Pset_buffer sets the maximum
+     * size for the type conversion buffer and background buffer and optionally
+     * supplies pointers to application-allocated buffers. If the buffer size
+     * is smaller than the entire amount of data being transferred between the
+     * application and the file, and a type conversion buffer or background
+     * buffer is required, then strip mining will be used.
+     *
+     * Note that there are minimum size requirements for the buffer. Strip
+     * mining can only break the data up along the first dimension, so the
+     * buffer must be large enough to accommodate a complete slice that
+     * encompasses all of the remaining dimensions. For example, when strip
+     * mining a 100x200x300 hyperslab of a simple data space, the buffer must
+     * be large enough to hold 1x200x300 data elements. When strip mining a
+     * 100x200x300x150 hyperslab of a simple data space, the buffer must be
+     * large enough to hold 1x200x300x150 data elements.
+     *
+     * If tconv and/or bkg are null pointers, then buffers will be allocated
+     * and freed during the data transfer.
+     *
+     * @param plist Identifier for the dataset transfer property list.
+     * @param size Size, in bytes, of the type conversion and background buffers.
+     * @param tconv byte array of application-allocated type conversion buffer.
+     * @param bkg byte array of application-allocated background buffer.
+     *
+     *  @return a non-negative value if successful
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception IllegalArgumentException - plist is invalid.
+     **/
+    public synchronized static native int H5Pset_buffer(int plist, int size,
+        byte[] tcon, byte[] bkg)
+        throws HDF5LibraryException, IllegalArgumentException;
+
+    /**
+     *  HH5Pget_buffer gets type conversion and background buffers.
+     *  Returns buffer size, in bytes, if successful; otherwise 0 on failure.
+     *
+     * @param plist Identifier for the dataset transfer property list.
+     * @param tconv byte array of application-allocated type conversion buffer.
+     * @param bkg byte array of application-allocated background buffer.
+     *
+     *  @return buffer size, in bytes, if successful; otherwise 0 on failure
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception IllegalArgumentException - plist is invalid.
+     **/
+    public synchronized static native int H5Pget_buffer(int plist,
+        byte[] tcon, byte[] bkg)
+        throws HDF5LibraryException, IllegalArgumentException;
+
+    /**
      *  H5Pset_preserve sets the dataset transfer property list
      *  status to TRUE or FALSE.
      *
