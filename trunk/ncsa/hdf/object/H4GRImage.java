@@ -88,6 +88,7 @@ public class H4GRImage extends ScalarDS
     {
         super (fileFormat, name, path, oid);
         palette = null;
+        isImage = true;
 
         if (fileFormat instanceof H4File)
         {

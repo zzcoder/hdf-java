@@ -48,6 +48,14 @@ public class H5File extends File implements FileFormat
     private MutableTreeNode rootNode;
 
     /**
+     * Creates an H5File object with read only access.
+     */
+    public H5File(String pathname)
+    {
+        this(pathname, HDF5Constants.H5F_ACC_RDONLY);
+    }
+
+    /**
      * Creates an H5File object with specific file name and access flag.
      * <p>
      * @param pathname the full path name of the file.
@@ -147,7 +155,10 @@ public class H5File extends File implements FileFormat
             null, // root node does not have a parent node
             oid);
 
-        MutableTreeNode root = new DefaultMutableTreeNode(rootGroup);
+        MutableTreeNode root = new DefaultMutableTreeNode(rootGroup)
+        {
+            public boolean isLeaf() { return false; }
+        };
 
         depth_first(root);
 
@@ -237,7 +248,10 @@ public class H5File extends File implements FileFormat
                         fullPath,
                         pgroup,
                         oid);
-                    node = new DefaultMutableTreeNode(g);
+                    node = new DefaultMutableTreeNode(g)
+                    {
+                        public boolean isLeaf() { return false; }
+                    };
                     pnode.add( node );
 
                     // detect and stop loops
@@ -266,6 +280,7 @@ public class H5File extends File implements FileFormat
                     break;
                 case HDF5Constants.H5G_DATASET:
                     int did=-1, tid=-1, tclass=-1;
+                    boolean isDefaultImage = false;
                     try {
                         did = H5.H5Dopen(fid, fullPath+oName[0]);
                         tid = H5.H5Dget_type(did);

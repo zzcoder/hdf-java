@@ -59,6 +59,29 @@ public class H5ScalarDS extends ScalarDS
         long[] oid)
     {
         super (fileFormat, name, path, oid);
+
+        int did=-1, aid=-1, atid=-1;
+        try
+        {
+            // try to find out if the dataset is an image
+            did = H5.H5Dopen(getFID(), getPath()+getName());
+            aid = H5.H5Aopen_name(did, "CLASS");
+            atid = H5.H5Aget_type(aid);
+            int aclass = H5.H5Tget_class(atid);
+            if (aclass == HDF5Constants.H5T_STRING)
+            {
+                byte[] attrValue = new byte[6];
+                H5.H5Aread(aid, atid, attrValue);
+                String strValue = new String(attrValue).trim();
+                isImage = strValue.equalsIgnoreCase("IMAGE");
+            }
+        } catch (Exception ex) {}
+        finally
+        {
+            try { H5.H5Tclose(atid); } catch (HDF5Exception ex) {;}
+            try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
+            try { H5.H5Dclose(did); } catch (HDF5Exception ex) {;}
+        }
     }
 
     // Implementing DataFormat

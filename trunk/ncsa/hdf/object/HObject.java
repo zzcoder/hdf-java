@@ -90,20 +90,20 @@ implements Serializable, DataFormat
      */
     public HObject(FileFormat fileFormat, String name, String path, long[] oid)
     {
-	int theFID = -1;
+        int theFID = -1;
         try { theFID = fileFormat.open(); }
         catch (Exception ex) { theFID = -1; }
 
-	this.fid = theFID;
-
-        this.filename = fileFormat.getFilePath();
-        this.name = name;
+        this.fid = theFID;
 
         if (path!=null && !path.endsWith(separator))
             path += separator;
 
         this.path = path;
         this.oid = oid;
+
+        this.filename = fileFormat.getFilePath();
+        this.name = name;
     }
 
     public final String getFile()
@@ -184,7 +184,7 @@ implements Serializable, DataFormat
      */
     public String toString()
     {
-        return "[Type: "+this.getClass().getName()+
-            "], [Name: "+name+"], [Path: "+path+"]";
+        return name;
+        //return "[Type: "+this.getClass().getName()+"], [Name: "+name+"], [Path: "+path+"]";
     }
 }

@@ -71,6 +71,14 @@ public class H4File extends File implements FileFormat
     private int sdid;
 
     /**
+     * Creates an H4File with read only access.
+     */
+    public H4File(String pathname)
+    {
+        this(pathname, HDFConstants.DFACC_READ);
+    }
+
+    /**
      * Creates an H4File with specific full file name and access flag.
      * <p>
      * @param pathname the full path of the file name.
@@ -215,7 +223,10 @@ public class H4File extends File implements FileFormat
         if (objList == null)
             objList = new Vector(100);
 
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootGroup);
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootGroup)
+        {
+            public boolean isLeaf() { return false; }
+        };
 
         // get top level VGroup
         int[] tmpN = new int[1];
@@ -235,7 +246,10 @@ public class H4File extends File implements FileFormat
             H4Group g = getVGroup(ref, HObject.separator, null, false);
             if (g != null)
             {
-                node = new DefaultMutableTreeNode(g);
+                node = new DefaultMutableTreeNode(g)
+                {
+                    public boolean isLeaf() { return false; }
+                };
                 root.add( node );
 
                 // recursively get the sub-tree
@@ -416,7 +430,11 @@ public class H4File extends File implements FileFormat
 
                     if (vgroup != null)
                     {
-                        node = new DefaultMutableTreeNode(vgroup);
+                        node = new DefaultMutableTreeNode(vgroup)
+                        {
+                            public boolean isLeaf() { return false; }
+                        };
+
                         pnode.add( node );
 
                         // check for loops
