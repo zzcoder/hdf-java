@@ -125,7 +125,8 @@ implements TableView, ActionListener
         isReadOnly = dataset.getFileFormat().isReadOnly();
 
         // cannot edit hdf4 vdata
-        if (dataset.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4)))
+        if (dataset.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4)) &&
+            dataset instanceof CompoundDS)
             isReadOnly = true;
 
         // disable edit feature for szip compression when encode is not enabled
@@ -1005,6 +1006,7 @@ null, options, options[0]);
         String cName = dataValue.getClass().getName();
         int cIndex = cName.lastIndexOf("[");
         if (cIndex >= 0 ) NT = cName.charAt(cIndex+1);
+        boolean isVL = cName.startsWith("[Ljava.lang.String;");
 
         // convert nubmerical data into char
         // only possible cases are byte[] and short[] (converted from unsigned byte)

@@ -907,7 +907,8 @@ public class H5File extends FileFormat
                     did = H5.H5Dopen(fid, fullPath+obj_name);
                     tid = H5.H5Dget_type(did);
                     tclass = H5.H5Tget_class(tid);
-                    if (tclass == HDF5Constants.H5T_ARRAY)
+                    if (tclass == HDF5Constants.H5T_ARRAY ||
+                        tclass == HDF5Constants.H5T_VLEN)
                     {
                         // for ARRAY, the type is determined by the base type
                         int btid = H5.H5Tget_super(tid);
@@ -995,24 +996,45 @@ public class H5File extends FileFormat
 
                 Attribute attr = new Attribute(nameA[0], new H5Datatype(nativeType), dims);
                 attributeList.add(attr);
+                boolean is_variable_str = false;
+                boolean isVLEN = false;
+                boolean isCompound = false;
+                try { is_variable_str = H5.H5Tis_variable_str(nativeType); } catch (Exception ex) {}
+                try { isVLEN = (H5.H5Tget_class(nativeType)==HDF5Constants.H5T_VLEN); } catch (Exception ex) {}
+                try { isCompound = (H5.H5Tget_class(nativeType)==HDF5Constants.H5T_COMPOUND); } catch (Exception ex) {}
 
                 // retrieve the attribute value
                 long lsize = 1;
                 for (int j=0; j<dims.length; j++) lsize *= dims[j];
-                Object value = H5Datatype.allocateArray(nativeType, (int)lsize);
-               if (value == null)
+
+                if (lsize <=0 )
                     continue;
 
-                if (H5.H5Tget_class(nativeType)==HDF5Constants.H5T_ARRAY)
-                    H5.H5Aread(aid, H5Datatype.toNative(H5.H5Tget_super(nativeType)), value);
-                else
-                    H5.H5Aread(aid, nativeType, value);
+                Object value = null;
 
-                int typeClass = H5.H5Tget_class(nativeType);
-                if (typeClass==HDF5Constants.H5T_STRING)
-                    value = Dataset.byteToString((byte[])value, H5.H5Tget_size(nativeType));
-                else if (typeClass == HDF5Constants.H5T_REFERENCE)
-                    value = HDFNativeData.byteToLong((byte[])value);
+                if (isVLEN || is_variable_str || isCompound)
+                {
+                    String[] strs = new String[(int)lsize];
+                    for (int j=0; j<lsize; j++) strs[j] = "";
+                    H5.H5AreadVL(aid, nativeType, strs);
+                    value = strs;
+                }
+                else
+                {
+                    value = H5Datatype.allocateArray(nativeType, (int)lsize);
+                    if (value == null) continue;
+
+                    if (H5.H5Tget_class(nativeType)==HDF5Constants.H5T_ARRAY)
+                        H5.H5Aread(aid, H5Datatype.toNative(H5.H5Tget_super(nativeType)), value);
+                    else
+                        H5.H5Aread(aid, nativeType, value);
+                    int typeClass = H5.H5Tget_class(nativeType);
+                    if (typeClass==HDF5Constants.H5T_STRING)
+                        value = Dataset.byteToString((byte[])value, H5.H5Tget_size(nativeType));
+                    else if (typeClass == HDF5Constants.H5T_REFERENCE)
+                        value = HDFNativeData.byteToLong((byte[])value);
+                }
+
                 attr.setValue(value);
 
             } catch (HDF5Exception ex) {}

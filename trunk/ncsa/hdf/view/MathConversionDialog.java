@@ -109,7 +109,7 @@ implements ActionListener, ListSelectionListener
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(10,5,5,5));
-        contentPane.setPreferredSize(new Dimension(400, 300));
+        contentPane.setPreferredSize(new Dimension(500, 300));
 
         JButton okButton = new JButton("   Ok   ");
         okButton.setActionCommand("Ok");
@@ -140,24 +140,25 @@ implements ActionListener, ListSelectionListener
         tmpP0.setLayout(new GridLayout(4,1,5,5));
         tmpP0.add(new JLabel("a = "));
         tmpP0.add(new JLabel("b = "));
-        tmpP0.add(new JLabel(""));
-        tmpP0.add(new JLabel(""));
+        tmpP0.add(new JLabel("                     "));
+        tmpP0.add(new JLabel("                     "));
         tmpP.add(tmpP0, BorderLayout.WEST);
 
         tmpP0 = new JPanel();
         tmpP0.setLayout(new GridLayout(4,1,5,5));
         tmpP0.add(aField = new JTextField("0"));
         tmpP0.add(bField = new JTextField("1"));
-        tmpP0.add(new JLabel(""));
-        tmpP0.add(new JLabel(""));
+        tmpP0.add(new JLabel("                     "));
+        tmpP0.add(new JLabel("                     "));
         tmpP.add(tmpP0, BorderLayout.CENTER);
 
         centerP.add(tmpP, BorderLayout.EAST);
 
         centerP.setBorder(new TitledBorder("Converting Data With A Mathematic Function"));
-        centerP.add(infoArea = new JTextArea(5, 80), BorderLayout.SOUTH);
+        centerP.add(infoArea = new JTextArea(4, 80), BorderLayout.SOUTH);
         infoArea.setEditable(false);
         infoArea.setLineWrap(true);
+        infoArea.setBackground(java.awt.Color.lightGray);
         infoArea.setWrapStyleWord(true);
         aField.setEnabled(false);
         bField.setEnabled(false);

@@ -228,31 +228,45 @@ public class H5 {
         {
             File h5dll = new File(filename);
             if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) {
-                System.load(filename);
-                done = true;
+                try {
+                   System.load(filename);
+                   done = true;
+                } catch (Throwable err) { done = false; }
             } else {
                 done = false;
             }
         }
 
-        if (done == false) {
-        filename = System.getProperty(H5PATH_PROPERTY_KEY,null);
-        if ((filename != null) && (filename.length() > 0))
+        if (!done)
         {
-            File h5dll = new File(filename);
-            if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) {
-                System.load(filename);
-            } else {
-                throw (new UnsatisfiedLinkError("Invalid HDF5 library, "+filename));
+            filename = System.getProperty(H5PATH_PROPERTY_KEY,null);
+            if ((filename != null) && (filename.length() > 0))
+            {
+                File h5dll = new File(filename);
+                if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) {
+                    try {
+                        System.load(filename);
+                        done = true;
+                        } catch (Throwable err) { done = false; }
+                } else {
+                    done = false;
+                    throw (new UnsatisfiedLinkError("Invalid HDF5 library, "+filename));
+                }
             }
+
         }
-        else {
-            System.loadLibrary("jhdf5");
+
+        if (!done)
+        {
+            try {
+                System.loadLibrary("jhdf5");
+                done = true;
+            } catch (Throwable err) { done = false; }
         }
 
         /* Important!  Exit quietly */
         try {
-        H5.H5dont_atexit();
+            H5.H5dont_atexit();
         } catch (HDF5LibraryException e) {
             System.exit(1);
         }
@@ -270,8 +284,6 @@ public class H5 {
         if ((majnum != null) && (minnum != null) && (relnum != null)) {
             H5.H5check_version(majnum.intValue(),minnum.intValue(),relnum.intValue());
         }
-        }
-
     }
 
        //////////////////////////////////////////////////////////////////

@@ -127,6 +127,8 @@ public class H5Datatype extends Datatype
     public static Object allocateArray(int tid, int size) throws OutOfMemoryError
     {
         Object data = null;
+        boolean isVL = false;
+        boolean is_variable_str = false;
 
         if (size < 0) return null;
 
@@ -144,7 +146,15 @@ public class H5Datatype extends Datatype
             tsign = H5.H5Tget_sign(tid);
         } catch (Exception ex) {}
 
-        if (tclass == HDF5Constants.H5T_INTEGER)
+        try { is_variable_str = H5.H5Tis_variable_str(tid); } catch (Exception ex) {}
+        try { isVL = (tclass==HDF5Constants.H5T_VLEN); } catch (Exception ex) {}
+
+        if (is_variable_str || isVL)
+        {
+            data = new String[size];
+            for (int i=0; i<size; i++) ((String[])data)[i] = "";
+        }
+        else if (tclass == HDF5Constants.H5T_INTEGER)
         {
             if (tsize == 1) data = new byte[size];
             else if (tsize == 2) data = new short[size];
@@ -209,12 +219,7 @@ public class H5Datatype extends Datatype
         int native_type=-1;
 
         try {
-            // there is a bug in H5.H5Tget_native_type for string.
-            // It cuts off the last character
-            if (H5.H5Tget_class(tid)==HDF5Constants.H5T_STRING)
-                native_type = H5.H5Tcopy(tid);
-            else
-                native_type = H5.H5Tget_native_type(tid);
+            native_type = H5.H5Tget_native_type(tid);
         } catch (Exception ex) {}
 
         return native_type;
@@ -312,7 +317,10 @@ public class H5Datatype extends Datatype
         else if (tclass == HDF5Constants.H5T_STRING)
         {
             try {
-                description = "String, length="+H5.H5Tget_size(tid);
+                if ( H5.H5Tis_variable_str(tid ))
+                    description = "String, length = variable";
+                else
+                    description = "String, length = "+H5.H5Tget_size(tid);
             }
             catch (Exception ex)
             {
@@ -337,11 +345,25 @@ public class H5Datatype extends Datatype
         }
         else if (tclass == HDF5Constants.H5T_COMPOUND)
         {
-            description = "Compound";
+            description = "Compound ";
+            try {
+                description += "{";
+                int n = H5.H5Tget_nmembers(tid );
+                int mtid = 0;
+                try { H5.H5Tclose(mtid); } catch (Exception ex2) {;}
+                for (int i=0; i<n; i++)
+                {
+                    mtid = H5.H5Tget_member_type(tid, i);
+                    description += getDatatypeDescription(mtid) +", ";
+                    try { H5.H5Tclose(mtid); } catch (Exception ex2) {;}
+                }
+                description += "}";
+            } catch (Exception ex) {;}
         }
         else if (tclass == HDF5Constants.H5T_VLEN)
         {
-            description = "Variable-length";
+            try { description = "Variable-length of " +getDatatypeDescription(H5.H5Tget_super(tid));}
+            catch (Exception ex) {description = "Variable-length";}
         }
         else description = "Unknown";
 
