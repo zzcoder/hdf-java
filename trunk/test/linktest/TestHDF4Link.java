@@ -56,5 +56,17 @@ public class TestHDF4Link {
 		System.out.println("\n");System.out.flush();
 
 		System.out.println("Path is Correct: \n\t"+libPath);
+
+		System.out.println("Try to create file: \n");
+
+		int res = 0;
+		try {
+			res = HDFLibrary.Hopen("test.hdf", HDFConstants.DFACC_CREATE);
+		} catch (Throwable t4) {
+			System.out.println("Exception creating file: "+t4);
+			System.exit(1);
+		}
+		System.out.println("OK.");System.out.flush();
+		System.out.println("\n");System.out.flush();
 	}
 }
