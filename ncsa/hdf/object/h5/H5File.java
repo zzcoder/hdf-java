@@ -1062,7 +1062,7 @@ public class H5File extends FileFormat
         String ver = "NCSA HDF5 ";
 
         try { H5.H5get_libversion(vers); }
-        catch (HDF5Exception ex) {}
+        catch (Throwable ex) {}
 
         ver += vers[0] + "."+ vers[1] +"."+vers[2];
 
