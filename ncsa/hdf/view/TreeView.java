@@ -163,21 +163,16 @@ implements ActionListener
         String msg = "";
 
         if (isFileOpen(filename))
-        {
-            throw new java.io.IOException("File is already open - "+filename);
-        }
+            throw new UnsupportedOperationException("File is in use.");
 
-        if (DefaultFileFilter.isHDF4(filename) &&
-            (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4) == null))
-        {
-            throw new java.io.IOException("HDF4 file is not supported.");
-        }
+        if (DefaultFileFilter.isHDF4(filename) && (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4) == null))
+            throw new UnsupportedOperationException("HDF4 is not supported.");
 
-        if (DefaultFileFilter.isHDF5(filename) &&
-            (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) == null))
-        {
-            throw new java.io.IOException("HDF5 file is not supported.");
-        }
+        if (DefaultFileFilter.isHDF5(filename) && (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) == null))
+            throw new UnsupportedOperationException("HDF5 is not supported.");
+
+        if (!(DefaultFileFilter.isHDF5(filename) || DefaultFileFilter.isHDF4(filename)))
+            throw new UnsupportedOperationException("Unsupported file type.");
 
         Iterator iterator = FileFormat.iterator();
         while (iterator.hasNext())
