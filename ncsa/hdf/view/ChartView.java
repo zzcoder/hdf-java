@@ -16,7 +16,7 @@ import javax.swing.*;
 import java.lang.reflect.Array;
 import java.awt.Color;
 import java.awt.Frame;
-import java.awt.Window;
+import java.awt.Canvas;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Dimension;
@@ -43,15 +43,6 @@ implements ActionListener
         Color.black, Color.red, Color.green.darker(), Color.blue, Color.magenta,
         Color.pink, Color.yellow, Color.orange, Color.gray, Color.cyan};
 
-    /** the data values of line points or histogram */
-    protected double data[][];
-
-    /** Panel that draws plot of data values. */
-    protected ChartPanel chartP;
-
-    /** number of data points */
-    protected int numberOfPoints;
-
     /** the style of chart: histogram or line */
     private int chartStyle;
 
@@ -60,6 +51,9 @@ implements ActionListener
 
     /** the text label of X axis */
     private String xlabel;
+
+    /** the data values of line points or histogram */
+    private double data[][];
 
     /** the maximum value of the Y axis */
     private double ymax;
@@ -84,6 +78,9 @@ implements ActionListener
 
     /** number of lines */
     private int numberOfLines;
+
+    /** number of data points */
+    private int numberOfPoints;
 
     /**
      * True if the original data is integer (byte, short, integer, long).
@@ -153,24 +150,13 @@ implements ActionListener
             findDataRange();
         }
 
-        chartP = new ChartPanel();
-        chartP.setBackground(Color.white);
-
-        createUI();
-    }
-
-    /**
-     *  Creates and layouts GUI componentes.
-     */
-    protected void createUI()
-    {
-        Window owner = getOwner();
-
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5, 5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
         contentPane.setPreferredSize(new Dimension(640, 400));
 
+        ChartPanel chartP = new ChartPanel();
+        chartP.setBackground(Color.white);
         contentPane.add(chartP, BorderLayout.CENTER);
 
         JButton button = new JButton("Close");
@@ -232,8 +218,7 @@ implements ActionListener
         }
     }
 
-    /** The canvas that paints the data lines. */
-    public final class ChartPanel extends JComponent
+    private class ChartPanel extends Canvas
     {
         /**
         * Paints the plot components.
@@ -246,7 +231,7 @@ implements ActionListener
             Dimension d = getSize();
             int gap = 20;
             int legendSpace = 0;
-            if (chartStyle == LINEPLOT && lineLabels != null)
+            if (chartStyle == LINEPLOT)
                 legendSpace = 60;
 
             int h = d.height - gap;
@@ -322,8 +307,7 @@ implements ActionListener
                 g.setColor(c); // set the color back to its default
 
                 // draw a box on the legend
-                if (lineLabels != null && lineLabels.length>= numberOfLines)
-                    g.drawRect(w+legendSpace-10, 10, legendSpace, 10*gap);
+                g.drawRect(w+legendSpace-10, 10, legendSpace, 10*gap);
 
             } // if (chartStyle == LINEPLOT)
             else if (chartStyle == HISTOGRAM)

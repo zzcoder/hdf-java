@@ -25,17 +25,17 @@ package ncsa.hdf.hdflib;
 
 public class HDFNotImplementedException  extends HDFJavaException {
 
-    String msg;
+	String msg;
 
-    public HDFNotImplementedException() {
-        HDFerror = 0;
-    }
+	public HDFNotImplementedException() {
+		HDFerror = 0;
+	}
 
-    public HDFNotImplementedException(String s) {
-        msg = "HDFJavaException: HDF function not implmented (yet): "+s;
-    }
+	public HDFNotImplementedException(String s) {
+		msg = "HDFJavaException: HDF function not implmented (yet): "+s;
+	}
 
-    public String getMessage() {
-        return msg;
-    }
+	public String getMessage() {
+		return msg;
+	}
 }

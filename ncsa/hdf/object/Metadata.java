@@ -23,6 +23,11 @@
 public interface Metadata extends java.io.Serializable
 {
     /**
+     * Returns the stored Class for the object that this Metadata represents.
+     */
+    public abstract Class getImplementationClass();
+
+    /**
      * Returns the value of this Metadata.
      */
     public abstract Object getValue();

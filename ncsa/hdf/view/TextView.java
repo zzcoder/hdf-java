@@ -14,9 +14,7 @@ package ncsa.hdf.view;
 import ncsa.hdf.object.*;
 import javax.swing.*;
 import javax.swing.text.*;
-import javax.swing.border.*;
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 
 /**
  * TextView displays an HDF string dataset in text.
@@ -48,11 +46,6 @@ implements TextObserver
     private String[] text;
 
     /**
-     * text areas to hold the text.
-     */
-    private JTextArea[] textAreas;
-
-    /**
      * Constructs an TextView.
      * <p>
      * @param theView the main HDFView.
@@ -63,7 +56,6 @@ implements TextObserver
 
         viewer = theView;
         text = null;
-        textAreas = null;
 
         dataset = (ScalarDS)viewer.getSelectedObject();
 
@@ -74,7 +66,7 @@ implements TextObserver
         }
 
         try {
-            text = (String[])dataset.getData();
+            text = (String[])dataset.read();
         } catch (Exception ex)
         {
             viewer.showStatus(ex.toString());
@@ -92,19 +84,33 @@ implements TextObserver
         this.setTitle("TextView - "+fname+" - " +dataset.getPath()+dataset.getName());
         this.setFrameIcon(ViewProperties.getTextIcon());
 
-        int size = text.length;
-        textAreas = new JTextArea[size];
-        JPanel txtPane = new JPanel();
-        txtPane.setLayout(new GridLayout(size, 1));
-        for (int i=0; i<size; i++)
+        textPane = new JTextPane();
+        textPane.setEditable(false);
+        Document doc = textPane.getDocument();
+        String[] styles = {"regular", "italic"};
+
+        //Add "regular" and "italic" styles into the textPane.
+        Style def = StyleContext.getDefaultStyleContext().
+            getStyle(StyleContext.DEFAULT_STYLE);
+        Style regular = textPane.addStyle("regular", def);
+        Style s = textPane.addStyle("italic", regular);
+        StyleConstants.setItalic(s, true);
+
+        //Load the text pane with styled text.
+        try
         {
-            textAreas[i] = new JTextArea(text[i]);
-            textAreas[i].setWrapStyleWord(true);
-            textAreas[i].setBorder(new LineBorder(java.awt.Color.black));
-            txtPane.add(textAreas[i]);
+            for (int i=0; i < text.length; i++)
+            {
+                doc.insertString(doc.getLength(), text[i],
+                    textPane.getStyle(styles[i&0x1]));
+                doc.insertString(doc.getLength(), "\n\n",
+                    textPane.getStyle(styles[0]));
+            }
+        } catch (BadLocationException ex) {
+            viewer.showStatus(ex.toString());
         }
 
-        JScrollPane scroller = new JScrollPane(txtPane);
+        JScrollPane scroller = new JScrollPane(textPane);
         scroller.getVerticalScrollBar().setUnitIncrement(50);
         scroller.getHorizontalScrollBar().setUnitIncrement(50);
 
@@ -113,31 +119,8 @@ implements TextObserver
         contentPane.add (scroller, BorderLayout.CENTER);
     }
 
-    /** update dataset value in file.
-     *  The change will go to file.
-     */
-    private void updateValueInFile()
-    {
-        if (!(dataset instanceof ScalarDS))
-            return;
-
-        for (int i=0; i<text.length; i++)
-        {
-            text[i] = textAreas[i].getText();
-        }
-
-        try { dataset.write(); }
-        catch (Exception ex) {}
-
-        // refresh text in memory. After writing, text is cut off to its max string length
-        for (int i=0; i<text.length; i++)
-            textAreas[i].setText(text[i]);
-    }
-
     public void dispose()
     {
-        updateValueInFile();
-
         super.dispose();
         viewer.contentFrameWasRemoved(getName());
     }

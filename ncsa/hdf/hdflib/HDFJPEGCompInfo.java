@@ -37,14 +37,14 @@ public class HDFJPEGCompInfo extends HDFOldCompInfo {
             /* This is only an issue for quality */
             /* settings below 24 */
 
-    public HDFJPEGCompInfo() {
+	public HDFJPEGCompInfo() {
                 ctype = HDFConstants.COMP_JPEG;
-    }
+	}
 
-    public HDFJPEGCompInfo(int qual, int fb) {
+	public HDFJPEGCompInfo(int qual, int fb) {
                 ctype = HDFConstants.COMP_JPEG;
-        quality = qual;
-        force_baseline = fb;
-    }
+		quality = qual;
+		force_baseline = fb;
+	}
 
 }

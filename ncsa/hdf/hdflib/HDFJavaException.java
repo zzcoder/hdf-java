@@ -21,17 +21,17 @@ package ncsa.hdf.hdflib;
  */
 public class HDFJavaException extends HDFException {
 
-    String msg;
+	String msg;
 
-    public HDFJavaException() {
-        HDFerror = 0;
-    }
+	public HDFJavaException() {
+		HDFerror = 0;
+	}
 
-    public HDFJavaException(String s) {
-        msg = "HDFLibraryException: "+s;
-    }
+	public HDFJavaException(String s) {
+		msg = "HDFLibraryException: "+s;
+	}
 
-    public String getMessage() {
-        return msg;
-    }
+	public String getMessage() {
+		return msg;
+	}
 }

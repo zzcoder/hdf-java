@@ -1,5 +1,5 @@
 /****************************************************************************
- * NCSA HDF5
+ * NCSA HDF5 
  *
  * National Comptational Science Alliance                                   *
  * University of Illinois at Urbana-Champaign                               *
@@ -23,7 +23,7 @@ package ncsa.hdf.hdf5lib.exceptions;
 public class HDF5InternalErrorException extends HDF5LibraryException {
 
     /**
-     * Constructs an <code>HDF5InternalErrorException</code> with
+     * Constructs an <code>HDF5InternalErrorException</code> with 
      * no specified detail message.
      */
     public HDF5InternalErrorException() {
@@ -31,7 +31,7 @@ public class HDF5InternalErrorException extends HDF5LibraryException {
     }
 
     /**
-     * Constructs an <code>HDF5InternalErrorException</code> with
+     * Constructs an <code>HDF5InternalErrorException</code> with 
      * the specified detail message.
      *
      * @param   s   the detail message.

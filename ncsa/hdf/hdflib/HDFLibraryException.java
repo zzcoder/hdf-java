@@ -29,33 +29,33 @@ package ncsa.hdf.hdflib;
 
 public class HDFLibraryException extends HDFException {
 
-    int HDFerror;
-    String msg;
+	int HDFerror;
+	String msg;
 
-    public HDFLibraryException() {
-        HDFerror = 0;
-        msg = null;
-    }
+	public HDFLibraryException() {
+		HDFerror = 0;
+		msg = null;
+	}
 
-    public HDFLibraryException(String s) {
-        msg = "HDFLibraryException: "+s;
-    }
+	public HDFLibraryException(String s) {
+		msg = "HDFLibraryException: "+s;
+	}
 
-    public HDFLibraryException(int err) {
-        HDFerror = err;
-    }
+	public HDFLibraryException(int err) {
+		HDFerror = err;
+	}
 
-    public String getMessage() {
-        if (msg != null) return msg;
-
-        HDFLibrary h = new HDFLibrary();
-        String s;
-        try {
-            s = h.HEstring(HDFerror);
-        } catch (HDFException e) {
-            s = new String("HDF error number: "+HDFerror+", HEstring failed");
-        }
-        msg = "HDFLibraryException: "+s;
-        return msg;
-    }
+	public String getMessage() {
+		if (msg != null) return msg;
+		
+		HDFLibrary h = new HDFLibrary();
+		String s;
+		try {
+			s = h.HEstring(HDFerror);
+		} catch (HDFException e) {
+			s = new String("HDF error number: "+HDFerror+", HEstring failed");
+		}
+		msg = "HDFLibraryException: "+s;
+		return msg;
+	}
 }

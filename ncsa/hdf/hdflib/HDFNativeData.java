@@ -120,8 +120,10 @@ public class HDFNativeData
      *
      *  @param dataType  the type of the iamge data
      *  @param datasize  the size of the image data array
-     *  @return         an array of 'datasize' numbers of 'dataType
+     *  @returns         an array of 'datasize' numbers of 'dataType
      *
+     *  @see ncsa.hdf.hdfobject.HDFGR 
+     *  @see ncsa.hdf.hdfobject.HDFSDS
      */
 public static Object defineDataObject(int dataType, int datasize)
     {

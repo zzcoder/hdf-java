@@ -29,9 +29,24 @@ public interface DataFormat
      * uniquely identified when mutilple files are opened by an application
      * at the same time.
      * <p>
-     * @see ncsa.hdf.view.ViewManager
+     * @see ncsa.hdf.view.ViewManager#getCurrentObject()
      */
     public abstract String getFile();
+
+    /**
+     * Loads the content of this data object into memory if the data of the
+     * object is not loaded. If the content is already loaded, it returns the
+     * content. It returns null if the data object has no content or it fails
+     * to load the data content.
+     * <p>
+     * @return the content of the data object
+     */
+    public abstract Object read() throws Exception;
+
+    /**
+     * Saves the content of this data object into file.
+     */
+    public abstract void write() throws Exception;
 
     /**
      * Loads the metadata such as attributes and type of the the data object

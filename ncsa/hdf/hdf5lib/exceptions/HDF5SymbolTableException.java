@@ -23,7 +23,7 @@ package ncsa.hdf.hdf5lib.exceptions;
 public class HDF5SymbolTableException extends HDF5LibraryException {
 
     /**
-     * Constructs an <code>HDF5SymbolTableException</code> with no
+     * Constructs an <code>HDF5SymbolTableException</code> with no 
      * specified detail message.
      */
     public HDF5SymbolTableException() {
@@ -31,7 +31,7 @@ public class HDF5SymbolTableException extends HDF5LibraryException {
     }
 
     /**
-     * Constructs an <code>HDF5SymbolTableException</code> with
+     * Constructs an <code>HDF5SymbolTableException</code> with 
      * the specified detail message.
      *
      * @param   s   the detail message.

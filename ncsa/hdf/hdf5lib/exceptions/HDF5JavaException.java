@@ -22,7 +22,7 @@ package ncsa.hdf.hdf5lib.exceptions;
 public class HDF5JavaException extends HDF5Exception {
 
     /**
-     * Constructs an <code>HDF5JavaException</code> with no
+     * Constructs an <code>HDF5JavaException</code> with no 
      * specified detail message.
      */
     public HDF5JavaException() {
@@ -30,7 +30,7 @@ public class HDF5JavaException extends HDF5Exception {
     }
 
     /**
-     * Constructs an <code>HDF5JavaException</code> with the
+     * Constructs an <code>HDF5JavaException</code> with the 
      * specified detail message.
      *
      * @param   s   the detail message.

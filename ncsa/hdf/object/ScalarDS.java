@@ -30,19 +30,18 @@ public abstract class ScalarDS extends Dataset
     // to make the defination consistent with the image specs.
 
     /** The component value for a pixel are contiguous. */
-    public final static int INTERLACE_PIXEL = 0;
-
-    /** Each component is stored as a scan line. */
-    public static final int INTERLACE_LINE = 1;
+    public final static int INTERLACE_PIXEL =
+        ncsa.hdf.hdflib.HDFConstants.MFGR_INTERLACE_PIXEL;
 
     /** Each component is stored as a plane. */
-    public final static int INTERLACE_PLANE = 2;
+    public final static int INTERLACE_PLANE =
+        ncsa.hdf.hdflib.HDFConstants.MFGR_INTERLACE_COMPONENT;
 
     /**
      * The data type of this scalar dataset
      * such as 32-bit integer, 32-bit float, etc.
      */
-    protected int nativeDatatype;
+    protected int datatype;
 
     /**
      * The interlace mode of the stored raster image data
@@ -65,24 +64,9 @@ public abstract class ScalarDS extends Dataset
     protected boolean isImage;
 
     /**
-     * True if this dataset is a true color image.
-     */
-    protected boolean isTrueColor;
-
-    /**
      * True if this dataset is ASCII text.
      */
     protected boolean isText;
-
-    /**
-     * Flag to indicate if the original C data is unsigned integer.
-     */
-    protected boolean isUnsigned;
-
-    /**
-     * Flag to indicate is the original unsigned C data is converted.
-     */
-    protected boolean unsignedConverted;
 
     /**
      * Creates a ScalarDS object with specific name, path, and parent.
@@ -100,31 +84,19 @@ public abstract class ScalarDS extends Dataset
     {
         super (fileFormat, name, path, oid);
 
-        nativeDatatype = -1;
+        datatype = -1;
         palette = null;
         isImage = false;
-        isTrueColor = false;
         isText = false;
-        isUnsigned = false;
         interlace = -1;
-        datatype = null;
     }
 
     /**
      * Returns the type of this scalar dataset.
      */
-    public final int getNativeDataType()
+    public final int getDataType()
     {
-        return nativeDatatype;
-    }
-
-    /**
-     * Removes the data value of this dataset in memory.
-     */
-    public void clearData()
-    {
-        super.clearData();
-        unsignedConverted = false;
+        return datatype;
     }
 
     /**
@@ -161,30 +133,12 @@ public abstract class ScalarDS extends Dataset
         palette = pal;
     }
 
-    /** read specific image palette from file.
-     *  @param idx the palette index to read.
-     */
-    public abstract byte[][] readPalette(int idx);
-
-    /** returns the byte array of palette refs.
-     *  returns null if there is no palette attribute attached to this dataset.
-     */
-    public abstract byte[] getPaletteRefs();
-
     /**
      * Returns true if this dataset is an image.
      */
     public final boolean isImage()
     {
         return isImage;
-    }
-
-    /**
-     * Returns true if this dataset is a true color image.
-     */
-    public final boolean isTrueColor()
-    {
-        return isTrueColor;
     }
 
     /**
@@ -201,14 +155,6 @@ public abstract class ScalarDS extends Dataset
     public final int getInterlace()
     {
         return interlace;
-    }
-
-    /**
-     * Returns true if the original C data is unsigned integer.
-     */
-    public final boolean isUnsigned()
-    {
-        return isUnsigned;
     }
 
     /**

@@ -45,7 +45,6 @@ public abstract class CompoundDS extends Dataset
      */
     protected int[] memberOrders;
 
-    protected boolean[] isMemberSelected;
 
     /**
      * Creates a CompoundDS object with specific name and path.
@@ -66,7 +65,6 @@ public abstract class CompoundDS extends Dataset
         numberOfMembers = 0;
         memberNames = null;
         memberTypes = null;
-        isMemberSelected = null;
     }
 
     /**
@@ -75,29 +73,6 @@ public abstract class CompoundDS extends Dataset
     public final int getMemberCount()
     {
         return numberOfMembers;
-    }
-
-    /**
-     * Returns the number of selected members of this compound dataset.
-     */
-    public final int getSelectedMemberCount()
-    {
-        int count = 0;
-
-        if (isMemberSelected == null)
-        {
-            count = 0;
-        }
-        else
-        {
-            for (int i=0; i<isMemberSelected.length; i++)
-            {
-                if (isMemberSelected[i])
-                    count++;
-            }
-        }
-
-        return count;
     }
 
     /**
@@ -117,62 +92,11 @@ public abstract class CompoundDS extends Dataset
     }
 
     /**
-     * Returns true if the i-th memeber is selected.
-     */
-    public final boolean isMemberSelected(int i)
-    {
-        if (isMemberSelected != null && isMemberSelected.length>i)
-            return isMemberSelected[i];
-        else
-            return false;
-    }
-
-    /**
-     * select the i-th member.
-     */
-    public final void selectMember(int i)
-    {
-        if (isMemberSelected != null && isMemberSelected.length>i)
-            isMemberSelected[i] = true;
-    }
-
-    /**
-     * select/deselect all members.
-     */
-    public final void setMemberSelection(boolean b)
-    {
-        if (isMemberSelected == null)
-            return;
-
-        for (int i=0; i<isMemberSelected.length; i++)
-            isMemberSelected[i] = b;
-    }
-
-    /**
      * Returns the orders of the members of this compound dataset.
      */
     public int[] getMemberOrders()
     {
         return memberOrders;
-    }
-
-    /**
-     * Returns the orders of the selected members of this compound dataset.
-     */
-    public int[] getSelectedMemberOrders()
-    {
-        if (isMemberSelected == null)
-            return memberOrders;
-
-        int idx = 0;
-        int[] order = new int[getSelectedMemberCount()];
-        for (int i=0; i<isMemberSelected.length; i++)
-        {
-            if (isMemberSelected[i])
-                order[idx++] = memberOrders[i];
-        }
-
-        return order;
     }
 
 }

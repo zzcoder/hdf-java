@@ -9,10 +9,7 @@
  *                                                                          *
  ****************************************************************************/
 
-package ncsa.hdf.view;
-
-import java.util.List;
-import java.awt.event.ActionListener;
+ package ncsa.hdf.view;
 
 /**
  * This interface describes the communication between the main viewer and other
@@ -27,7 +24,7 @@ import java.awt.event.ActionListener;
  * @version 1.3.0 01/10/2002
  * @author Peter X. Cao
  */
-public interface ViewManager extends ActionListener
+public interface ViewManager
 {
     /**
      * Returns the current working data object or null if the current
@@ -75,8 +72,4 @@ public interface ViewManager extends ActionListener
      *  @param name the name of the content frame to be deleted.
      */
     public abstract void contentFrameWasRemoved(String name);
-
-    /** Returns a list of current open file */
-    public abstract List getOpenFiles();
-
 }

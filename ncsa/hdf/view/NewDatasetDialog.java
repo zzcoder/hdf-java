@@ -53,10 +53,10 @@ implements ActionListener, ItemListener, HyperlinkListener
 
     private JDialog helpDialog;
 
-    private boolean isH5;
-
     /** a list of current groups */
     private List groupList;
+
+    private boolean isH5;
 
     private HObject newObject;
 
@@ -64,7 +64,6 @@ implements ActionListener, ItemListener, HyperlinkListener
 
     private final Toolkit toolkit;
 
-    private final DataObserver dataObserver;
 
     /** Constructs NewDatasetDialog with specified list of possible parent groups.
      *  @param owner the owner of the input
@@ -77,11 +76,10 @@ implements ActionListener, ItemListener, HyperlinkListener
 
         helpDialog = null;
         newObject = null;
-        dataObserver = null;
 
+        isH5 = (pGroup instanceof H5Group);
         fileFormat = pGroup.getFileFormat();
         toolkit = Toolkit.getDefaultToolkit();
-        isH5 = pGroup.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
 
         groupList = new Vector();
         parentChoice = new Choice();
@@ -138,7 +136,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         JPanel tmpP = new JPanel();
         tmpP.setLayout(new GridLayout(2,1));
         tmpP.add(new JLabel("Dataset name: "));
-        tmpP.add(new JLabel("Parent group: "));
+        tmpP.add(new JLabel("Add to group: "));
         namePanel.add(tmpP, BorderLayout.WEST);
         tmpP = new JPanel();
         tmpP.setLayout(new GridLayout(2,1));
@@ -190,10 +188,10 @@ implements ActionListener, ItemListener, HyperlinkListener
             endianChoice.setEnabled(false);
             typePanel.add(new JLabel());
         }
-        sizeChoice.add("8");
-        sizeChoice.add("16");
-        sizeChoice.add("32");
         sizeChoice.add("64");
+        sizeChoice.add("32");
+        sizeChoice.add("16");
+        sizeChoice.add("8");
 
         // set DATATSPACE
         JPanel spacePanel = new JPanel();
@@ -208,19 +206,19 @@ implements ActionListener, ItemListener, HyperlinkListener
         currentSizeField = new JTextField("1 x 1");
         maxSizeField = new JTextField("0 x 0");
         spacePanel.add(new JLabel("No. of dimensions"));
-        spacePanel.add(new JLabel("Current size"));
-        spacePanel.add(new JLabel("Max size (-1 for unlimited)"));
+        spacePanel.add(new JLabel("Current dimension size"));
+        spacePanel.add(new JLabel("Max dimension size"));
         spacePanel.add(rankChoice);
         spacePanel.add(currentSizeField);
         spacePanel.add(maxSizeField);
+        maxSizeField.setEnabled(isH5);
 
         // set storage layout and data compression
         JPanel layoutPanel = new JPanel();
-        layoutPanel.setLayout(new BorderLayout());
+        layoutPanel.setLayout(new GridLayout(2,4));
         border = new TitledBorder("Data Layout and Compression");
         border.setTitleColor(Color.blue);
         layoutPanel.setBorder(border);
-
         checkContinguous = new JRadioButton("Contiguous");
         checkContinguous.setSelected(true);
         checkChunked = new JRadioButton("Chunked");
@@ -237,41 +235,22 @@ implements ActionListener, ItemListener, HyperlinkListener
         }
         compressionLevel.select(6);
         compressionLevel.setEnabled(false);
-
+        layoutPanel.add(new JLabel("Storage layout:"));
+        layoutPanel.add(checkContinguous);
+        layoutPanel.add(checkChunked);
         tmpP = new JPanel();
-        tmpP.setLayout(new GridLayout(2, 1));
-        tmpP.add(new JLabel("Storage layout:  "));
-        tmpP.add(new JLabel("Compression:  "));
-        layoutPanel.add(tmpP, BorderLayout.WEST);
-
+        tmpP.setLayout(new BorderLayout());
+        tmpP.add(new JLabel("Size:"), BorderLayout.WEST);
+        tmpP.add(chunkSizeField, BorderLayout.CENTER);
+        layoutPanel.add(tmpP);
+        layoutPanel.add(new JLabel("Compression:"));
+        layoutPanel.add(checkCompression);
         tmpP = new JPanel();
-        tmpP.setLayout(new GridLayout(2, 1));
-
-        JPanel tmpP0 = new JPanel();
-        tmpP0.setLayout(new GridLayout(1, 2));
-        tmpP0.add(checkContinguous);
-
-        JPanel tmpP00 = new JPanel();
-        tmpP00.setLayout(new GridLayout(1, 3));
-        tmpP00.add(checkChunked);
-        tmpP00.add(new JLabel("          Size: "));
-        tmpP00.add(chunkSizeField);
-        tmpP0.add(tmpP00);
-
-        tmpP.add(tmpP0);
-
-        tmpP0 = new JPanel();
-        tmpP0.setLayout(new GridLayout(1, 7));
-        tmpP0.add(checkCompression);
-        tmpP0.add(new JLabel("      Level: "));
-        tmpP0.add(compressionLevel);
-        tmpP0.add(new JLabel(""));
-        tmpP0.add(new JLabel(""));
-        tmpP0.add(new JLabel(""));
-        tmpP0.add(new JLabel(""));
-        tmpP.add(tmpP0);
-
-        layoutPanel.add(tmpP, BorderLayout.CENTER);
+        tmpP.setLayout(new BorderLayout());
+        tmpP.add(new JLabel("Level:"), BorderLayout.WEST);
+        tmpP.add(compressionLevel, BorderLayout.CENTER);
+        layoutPanel.add(tmpP);
+        layoutPanel.add(new JLabel(""));
 
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new GridLayout(3,1,5,10));
@@ -295,89 +274,6 @@ implements ActionListener, ItemListener, HyperlinkListener
         pack();
     }
 
-    /** Constructs NewDatasetDialog with specified list of possible parent groups.
-     *  @param owner the owner of the input
-     *  @param pGroup the parent group which the new group is added to.
-     *  @param objs the list of all objects.
-     */
-    public NewDatasetDialog(Frame owner, Group pGroup, List objs, DataObserver observer)
-    {
-        super (owner, "New Dataset...", true);
-
-        helpDialog = null;
-        newObject = null;
-        dataObserver = observer;
-
-        fileFormat = pGroup.getFileFormat();
-        toolkit = Toolkit.getDefaultToolkit();
-        isH5 = pGroup.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
-
-        groupList = new Vector();
-        parentChoice = new Choice();
-        Object obj = null;
-        Iterator iterator = objs.iterator();
-        while (iterator.hasNext())
-        {
-            obj = iterator.next();
-            if (obj instanceof Group)
-            {
-                Group g = (Group)obj;
-                groupList.add(obj);
-                if (g.isRoot())
-                    parentChoice.addItem(HObject.separator);
-                else
-                    parentChoice.addItem(g.getPath()+g.getName()+HObject.separator);
-            }
-        }
-        if (pGroup.isRoot())
-            parentChoice.select(HObject.separator);
-        else
-            parentChoice.select(pGroup.getPath()+pGroup.getName()+HObject.separator);
-
-        JPanel contentPane = (JPanel)getContentPane();
-        contentPane.setLayout(new BorderLayout(5,5));
-        contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
-        contentPane.setPreferredSize(new Dimension(400, 120));
-
-        JButton okButton = new JButton("   Ok   ");
-        okButton.setActionCommand("Ok");
-        okButton.setMnemonic(KeyEvent.VK_O);
-        okButton.addActionListener(this);
-
-        JButton cancelButton = new JButton("Cancel");
-        cancelButton.setMnemonic(KeyEvent.VK_C);
-        cancelButton.setActionCommand("Cancel");
-        cancelButton.addActionListener(this);
-
-        // set OK and CANCEL buttons
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(okButton);
-        buttonPanel.add(cancelButton);
-        contentPane.add(buttonPanel, BorderLayout.SOUTH);
-
-        // set NAME and PARENT GROUP panel
-        JPanel namePanel = new JPanel();
-        namePanel.setLayout(new BorderLayout(5,5));
-        JPanel tmpP = new JPanel();
-        tmpP.setLayout(new GridLayout(2,1));
-        tmpP.add(new JLabel("Dataset name: "));
-        tmpP.add(new JLabel("Parent group: "));
-        namePanel.add(tmpP, BorderLayout.WEST);
-        tmpP = new JPanel();
-        tmpP.setLayout(new GridLayout(2,1));
-        tmpP.add(nameField=new JTextField(((HObject)observer.getDataObject()).getName()+"~copy",40));
-        tmpP.add(parentChoice);
-        namePanel.add(tmpP, BorderLayout.CENTER);
-        contentPane.add(namePanel, BorderLayout.CENTER);
-
-        // locate the H5Property dialog
-        Point l = owner.getLocation();
-        l.x += 250;
-        l.y += 80;
-        setLocation(l);
-        pack();
-    }
-
     public void actionPerformed(ActionEvent e)
     {
         Object source = e.getSource();
@@ -385,13 +281,7 @@ implements ActionListener, ItemListener, HyperlinkListener
 
         if (cmd.equals("Ok"))
         {
-            if (dataObserver instanceof TableView)
-                newObject = createFromTable();
-            else if (dataObserver instanceof ImageView)
-                newObject = createFromImage();
-            else if (dataObserver == null)
-                newObject = createFromScratch();
-
+            newObject = create();
             if (newObject != null)
                 dispose();
         }
@@ -432,12 +322,8 @@ implements ActionListener, ItemListener, HyperlinkListener
 
                 if (sizeChoice.getItemCount() == 3)
                 {
-                    sizeChoice.remove("32");
-                    sizeChoice.remove("64");
-                    sizeChoice.add("8");
                     sizeChoice.add("16");
-                    sizeChoice.add("32");
-                    sizeChoice.add("64");
+                    sizeChoice.add("8");
                 }
             }
             else if (idx == 1)
@@ -597,7 +483,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         }
     }
 
-    private HObject createFromScratch()
+    private HObject create()
     {
         String name = null;
         Group pgroup = null;
@@ -659,7 +545,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         }
         else if (idx == 4)
         {
-            tclass = Datatype.CLASS_REFERENCE;
+            tclass = H5Datatype.CLASS_REFERENCE;
         }
 
         // set datatype size/order
@@ -685,7 +571,7 @@ implements ActionListener, ItemListener, HyperlinkListener
 
             tsize = stringLength;
         }
-        else if (tclass == Datatype.CLASS_REFERENCE)
+        else if (tclass == H5Datatype.CLASS_REFERENCE)
         {
             tsize = 1;
         }
@@ -693,23 +579,9 @@ implements ActionListener, ItemListener, HyperlinkListener
         {
             tsize = Datatype.NATIVE;
         }
-        else if (tclass == Datatype.CLASS_FLOAT)
-        {
-            tsize = idx*4;
-        }
         else
         {
             tsize = 1 << (idx-1);
-        }
-
-        if (tsize==8 && !isH5)
-        {
-            toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-            "HDF4 does not support 64-bit integer.",
-            getTitle(),
-            JOptionPane.ERROR_MESSAGE);
-            return null;
         }
 
         // set order
@@ -846,44 +718,8 @@ implements ActionListener, ItemListener, HyperlinkListener
                 }
 
                 chunks[i] = l;
-            } // for (int i=0; i<rank; i++)
-
-            long tchunksize=1, tdimsize=1;
-            for (int i=0; i<rank; i++)
-            {
-                tchunksize *= chunks[i];
-                tdimsize *= dims[i];
             }
-
-            if (tchunksize >= tdimsize)
-            {
-                toolkit.beep();
-                int status = JOptionPane.showConfirmDialog(
-                    this,
-                    "Chunk size is equal/greater than the current size. "+
-                    "\nAre you sure you want to set chunk size to "+
-                    chunkSizeField.getText()+"?",
-                    getTitle(),
-                    JOptionPane.YES_NO_OPTION);
-                if (status == JOptionPane.NO_OPTION)
-                    return null;
-            }
-
-            if (tchunksize == 1)
-            {
-                toolkit.beep();
-                int status = JOptionPane.showConfirmDialog(
-                    this,
-                     "Chunk size is one, which may cause large memory overhead for large dataset."+
-                    "\nAre you sure you want to set chunk size to "+
-                    chunkSizeField.getText()+"?",
-                    getTitle(),
-                    JOptionPane.YES_NO_OPTION);
-                if (status == JOptionPane.NO_OPTION)
-                    return null;
-            }
-
-        } // if (checkChunked.isSelected())
+        }
 
         if (checkCompression.isSelected())
             gzip = compressionLevel.getSelectedIndex();
@@ -893,9 +729,18 @@ implements ActionListener, ItemListener, HyperlinkListener
         HObject obj = null;
         try
         {
-            Datatype datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign);
-            obj = fileFormat.createScalarDS(fileFormat, name, pgroup, datatype,
-                dims, maxdims, chunks, gzip, null);
+            if (isH5)
+            {
+                Datatype datatype = new H5Datatype(tclass, tsize, torder, tsign);
+                obj = H5ScalarDS.create(fileFormat, name, pgroup, datatype,
+                    dims, maxdims, chunks, gzip);
+            }
+            else
+            {
+                Datatype datatype = new H4Datatype(tclass, tsize, torder, tsign);
+                obj = H4SDS.create(fileFormat, name, pgroup, datatype,
+                    dims, maxdims, chunks, gzip);
+            }
         } catch (Exception ex)
         {
             toolkit.beep();
@@ -909,182 +754,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         return obj;
     }
 
-    private HObject createFromTable()
-    {
-        HObject obj = null;
-
-        String name = null;
-        Group pgroup = null;
-
-        name = nameField.getText();
-        if (name == null)
-        {
-            toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                "Dataset name is not specified.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
-            return null;
-        }
-
-        if (name.indexOf(HObject.separator) >= 0)
-        {
-            toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                "Dataset name cannot contain path.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
-            return null;
-        }
-
-        pgroup = (Group)groupList.get(parentChoice.getSelectedIndex());
-        if (pgroup == null)
-        {
-            toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                "Parent group is null.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
-            return null;
-        }
-
-        TableView tableView = (TableView)dataObserver;
-        Object theData = tableView.getSelectedData();
-        if (theData == null)
-            return null;
-
-        int w = tableView.getTable().getSelectedColumnCount();
-        int h = tableView.getTable().getSelectedRowCount();
-        Dataset dataset = (Dataset)tableView.getDataObject();
-        if (dataset instanceof ScalarDS)
-        {
-            ScalarDS sd = (ScalarDS)dataset;
-            if (sd.isUnsigned())
-                theData = Dataset.convertToUnsignedC(theData);
-        }
-
-        try
-        {
-            long[] dims = {h, w};
-            obj = dataset.copy(pgroup, name, dims, theData);
-        }
-        catch (Exception ex)
-        {
-            toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-            ex.getMessage(),
-            getTitle(),
-            JOptionPane.ERROR_MESSAGE);
-            return null;
-        }
-
-        return obj;
-    }
-
-    private HObject createFromImage()
-    {
-        HObject obj = null;
-
-        String name = null;
-        Group pgroup = null;
-
-        name = nameField.getText();
-        if (name == null)
-        {
-            toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                "Dataset name is not specified.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
-            return null;
-        }
-
-        if (name.indexOf(HObject.separator) >= 0)
-        {
-            toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                "Dataset name cannot contain path.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
-            return null;
-        }
-
-        pgroup = (Group)groupList.get(parentChoice.getSelectedIndex());
-        if (pgroup == null)
-        {
-            toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                "Parent group is null.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
-            return null;
-        }
-
-        ImageView imageView = (ImageView)dataObserver;
-        Object theData = imageView.getSelectedData();
-        if (theData == null)
-            return null;
-
-        int w = imageView.getSelectedArea().width;
-        int h = imageView.getSelectedArea().height;
-        Dataset dataset = (Dataset)imageView.getDataObject();
-
-        try
-        {
-            long[] dims = null;
-            if (isH5)
-            {
-                if (imageView.isTrueColor())
-                {
-                    dims = new long[3];
-                    if (imageView.isPlaneInterlace())
-                    {
-                        dims[0] = 3;
-                        dims[1] = h;
-                        dims[2] = w;
-                    }
-                    else
-                    {
-                        dims[0] = h;
-                        dims[1] = w;
-                        dims[2] = 3;
-                    }
-                }
-                else
-                {
-                    dims = new long[2];
-                    dims[0] = h;
-                    dims[1] = w;
-                }
-            }
-            else
-            {
-                dims = new long[2];
-                dims[0] = w;
-                dims[1] = h;
-            }
-
-            obj = dataset.copy(pgroup, name, dims, theData);
-        }
-        catch (Exception ex)
-        {
-            toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-            ex.getMessage(),
-            getTitle(),
-            JOptionPane.ERROR_MESSAGE);
-            return null;
-        }
-
-        return obj;
-    }
-
     /** Returns the new dataset created. */
     public DataFormat getObject() { return newObject; }
-
-    /** Returns the parent group of the new dataset. */
-    public Group getParentGroup() {
-        return (Group)groupList.get(parentChoice.getSelectedIndex());
-    }
 
 }

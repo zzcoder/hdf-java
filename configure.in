@@ -58,8 +58,7 @@ case "$withval" in
     AC_MSG_ERROR(HDF4 library needed for compilation.)
     ;;
   no)
-      HDF4INC=""
-      HDF4LIB=""
+    AC_MSG_ERROR(HDF4 library needed for compilation.)
     ;;
   *)
     hdf4_inc="`echo $withval |cut -f1 -d,`"
@@ -93,20 +92,7 @@ esac
 ac_cv_lib_HDF4=$HDF4LIB
 ac_cv_lib_HDF4INC=$HDF4INC
 
-withval="";
-AC_SUBST(ZLIB) ZLIB=""
-AC_ARG_WITH(libz,[  --with-libz=LIB     Path to the gzip library (requied if not in default path)],,)
-
-if test -n "$withval" ; then
-    z_lib="`echo $withval |cut -f2 -d, -s`"
-	ZLIB=$z_lib"/libz.a"
-else
-if test -n "$HDF4LIB" ; then
 ZLIB=$HDF4LIB"/libz.a"
-else
-ZLIB=-lz
-fi
-fi
 
 dnl  Check for HDF5 library  --with-hdf5 must be set.
 withval="";
@@ -117,9 +103,7 @@ case "$withval" in
     AC_MSG_ERROR(HDF5 library needed for compilation.)
     ;;
   no)
-      HDF5INC=""
-      HDF5LIB=""
-    #AC_MSG_ERROR(HDF5 library needed for compilation.)
+    AC_MSG_ERROR(HDF5 library needed for compilation.)
     ;;
   *)
     hdf5_inc="`echo $withval |cut -f1 -d,`"
@@ -204,12 +188,6 @@ ac_cv_lib_HDF45INC=$HDF45INC
 dnl  find java stuff:  use -with-jdk
 
 withval="";
-AC_SUBST(jdkclasses) jdkclasses=""
-AC_ARG_WITH(jdkclasses,[  --with-classpath=LIB],,)
-
-jdkclasses=$withval
-
-withval="";
 AC_SUBST(JAVALIB) JAVALIB=""
 AC_ARG_WITH(jdk,[  --with-jdk=INC,LIB     Path to the JDK (required if not in default path)],,)
 case "$withval" in
@@ -241,21 +219,8 @@ case "$withval" in
     ;;
 esac
 
-if test -n "$jdkclasses"; then
-
-if test -f $jdkclasses/classes.jar ; then
-	JAVACLASSES=$jdkclasses/classes.jar
-	JAVACLASSPATH_FOUND=1
-else
-	 AC_MSG_ERROR(cannot find jdk classes in JDK lib path.)
-fi
-else
-
 if test -f $JAVALIB/classes.zip ; then
 	JAVACLASSES=$JAVALIB/classes.zip
-	JAVACLASSPATH_FOUND=1
-elif test -f $JAVALIB/core.jar ; then
-	JAVACLASSES=$JAVALIB/rt.jar
 	JAVACLASSPATH_FOUND=1
 elif test -f $JAVALIB/rt.jar ; then
 	JAVACLASSES=$JAVALIB/rt.jar
@@ -274,20 +239,11 @@ else
 		 AC_MSG_ERROR(cannot find jdk classes in JDK lib path.)
 	fi
 fi
-fi
 CLASSPATH="$JAVACLASSES"":""$HERE"
 
-withval="";
-AC_SUBST(javabin) javabin=""
-AC_ARG_WITH(javabin,[  --with-javabin=LIB],,)
-javabin=$withval
 
-if test -n "$javabin" ; then
-JAVABIN=$javabin
-else
 JAVABIN=`dirname $JAVAINC`
 JAVABIN="$JAVABIN/bin"
-fi
 
 AC_PATH_PROG(JAVA,java,,$JAVABIN,)
 AC_PATH_PROG(JAVAC,javac,,$JAVABIN,)
@@ -341,6 +297,11 @@ esac
 ac_cv_lib_JAVAINC=$JAVAINC
 
 
+($JAVA -version 2>&1 )|  grep 'java version' | grep '\"1.2' > /dev/null 2>&1;
+JAVA1_2=$?;
+($JAVA -version 2>&1 )|  grep 'java version' | grep '\"1.3' > /dev/null 2>&1;
+JAVA1_3=$?;
+
 if test "$prefix" != "NONE" ; then
 	JH45INST="$prefix"
 else
@@ -383,13 +344,9 @@ JH5INST=$JH45INST
 case $target in
 *-*-solaris2*) 
 LD=$CC; LDOPT=-G; SLEXT="so";
-LLEXT="a";  
-JSLEXT="so";
 COPT=-G; COPTNOSHARED=; JAVAINC2=$JAVAINC/solaris ; JAVATARG=solaris;
 ;;
 mips*-sgi-irix6*) LD=ld; 
-LLEXT="a";  # the extension for the HDF and other libraries to link to
-JSLEXT="so";  
 OS=`uname -r`;
 SYS=`uname -s`
 if test "$SYS" = "IRIX"; then
@@ -413,35 +370,28 @@ fi
 else 
 echo "No such system: "$SYS
 fi
-JSLEXT="so";
 JAVAINC2=$JAVAINC/irix; JAVATARG=irix-$OS;;
-*-pc-linux*) LD=$CC; LDOPT=-shared; 
-SLEXT="so";
-LLEXT="a";  # the extension for the HDF and other libraries to link to
-JSLEXT="so";
+*-pc-linux*) LD=$CC; LDOPT=-shared; SLEXT="so";
 COPT="-shared -DUNIX386" ; 
+if test \( $JAVA1_3 -eq 0 \) ; then
 JAVAINC2=$JAVAINC/linux; 
+else
+if test \( $JAVA1_2 -eq 0 \) ; then
+JAVAINC2=$JAVAINC/linux; 
+else
+JAVAINC2=$JAVAINC/genunix; 
+fi
+fi
 JAVATARG=linux;
 ;;
-*powerpc-apple*) LD=$CC; LDOPT=-dynamiclib; 
-JSLEXT="jnilib";
-SLEXT="dylib";
-LLEXT="dylib";
-JAVAINC2=$JAVAINC/macosx; 
-JAVATARG=macosx;
-;;
 *) LD=$CC; LDOPT=-G; SLEXT="so";
-JSLEXT="so";
-LLEXT="a";
 COPT=-shared; COPTNOSHSARED=; JAVAINC2=$JAVAINC/$target; JAVATARG=$TARGET ;;
 esac
 
 AC_SUBST(LD)
 AC_SUBST(LDOPT)
 AC_SUBST(LDOPT2)
-AC_SUBST(LLEXT)
 AC_SUBST(SLEXT)
-AC_SUBST(JSLEXT)
 AC_SUBST(COPT)
 AC_SUBST(COPTNOSHARE)
 AC_SUBST(RM)
@@ -493,13 +443,8 @@ else
 OUTPUT_FILES="Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile native/h4toh5lib/Makefile"
 fi
 else
-if test -d "./test"; then
-##  Don't use H4toH5 (but do include some tests)
-OUTPUT_FILES="$OUTPUT_FILES test/linktest/Makefile test/linktest/testlink test/linktest/testh4link"
-else
 ##  Don't use H4toH5 (no tests)
-OUTPUT_FILES="$OUTPUT_FILES"
-fi
+OUTPUT_FILES="Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile "
 fi
 
 AC_OUTPUT($OUTPUT_FILES)

@@ -27,10 +27,10 @@ package ncsa.hdf.hdflib;
 
 
 public class HDFChunkInfo {
-    public int ctype;
-    public HDFChunkInfo() {
-        ctype = HDFConstants.HDF_NONE;
-    } ;
+	public int ctype;
+	public HDFChunkInfo() {
+		ctype = HDFConstants.HDF_NONE;
+	} ;
 }
 
 

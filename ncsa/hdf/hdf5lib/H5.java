@@ -19,7 +19,6 @@ import ncsa.hdf.hdf5lib.exceptions.*;
 
 
 /**
- *  <p>
  *  <hr>
  *  <p>
  *  <center>
@@ -215,40 +214,40 @@ import ncsa.hdf.hdf5lib.exceptions.*;
 **/
 public class H5 {
 
-    public final static String H5PATH_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.hdf5lib";
+	public final static String H5PATH_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.hdf5lib";
 
-    public final static String H45PATH_PROPERTY_KEY = "ncsa.hdf.h4toh5lib.h4toh5.h45lib";
+	public final static String H45PATH_PROPERTY_KEY = "ncsa.hdf.h4toh5lib.h4toh5.h45lib";
 
-    static
-    {
-        boolean done = false;
-        String filename = null;
-        filename = System.getProperty(H45PATH_PROPERTY_KEY,null);
-        if ((filename != null) && (filename.length() > 0))
-        {
-            File h5dll = new File(filename);
-            if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) {
-                System.load(filename);
-                done = true;
-            } else {
-                done = false;
-            }
-        }
+	static 
+	{
+		boolean done = false;
+		String filename = null;
+		filename = System.getProperty(H45PATH_PROPERTY_KEY,null);
+		if ((filename != null) && (filename.length() > 0))
+		{
+		    File h5dll = new File(filename);
+			if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) {
+				System.load(filename);
+				done = true;
+			} else {
+				done = false;
+			}
+		}
 
-        if (done == false) {
-        filename = System.getProperty(H5PATH_PROPERTY_KEY,null);
-        if ((filename != null) && (filename.length() > 0))
-        {
-            File h5dll = new File(filename);
-            if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) {
-                System.load(filename);
-            } else {
-                throw (new UnsatisfiedLinkError("Invalid HDF5 library, "+filename));
-            }
-        }
-        else {
-            System.loadLibrary("jhdf5");
-        }
+		if (done == false) {
+		filename = System.getProperty(H5PATH_PROPERTY_KEY,null);
+		if ((filename != null) && (filename.length() > 0))
+		{
+			File h5dll = new File(filename);
+			if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) {
+				System.load(filename);
+			} else {
+				throw (new UnsatisfiedLinkError("Invalid HDF5 library, "+filename));
+			}
+		}
+		else {
+			System.loadLibrary("jhdf5");
+		}
 
         /* Important!  Exit quietly */
         try {
@@ -370,13 +369,13 @@ public class H5 {
          *  Upon failure (when the versions do not match), this function
      *  causes the application to abort (i.e., crash)
      *
-     *  See C API function: herr_t H5check_version()
+     *  @see C API function: herr_t H5check_version()
      **/
     public synchronized static native int H5check_version(int majnum, int minnum, int relnum);
 
     /**
      *  H5garbage_collect collects on all free-lists of all types.
-     *  <p>
+     *
      *  ** Note: this is new with HDF5.1.2.2.  If using
      *           an earlier version, use
      *           'configure --enable-hdf5_1_2_1'
@@ -504,7 +503,7 @@ public class H5 {
      *
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - data object is null.
-     *  See public synchronized static native int H5Awrite(int attr_id, int mem_type_id, byte[] buf);
+     *  @see public synchronized static native int H5Awrite(int attr_id, int mem_type_id, byte[] buf);
      **/
     public synchronized static int H5Awrite(int attr_id, int mem_type_id,
      Object obj )
@@ -552,7 +551,7 @@ public class H5 {
      *
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - data buffer is null.
-     *  See public synchronized static native int H5Aread( )
+     *  @see public synchronized static native int H5Aread( )
     **/
     public synchronized static int H5Aread(int attr_id, int mem_type_id, Object obj)
      throws HDF5Exception, NullPointerException
@@ -1301,7 +1300,7 @@ public class H5 {
     // extensions to the standard interface:  not in the Ref. Man.
 
     /**
-     *  H5Gn_members  report the number of objects in
+     *  @name H5Gn_members  report the number of objects in
      *        a Group.  The 'objects' include everything that
      *        will be visited by H5Giterate.  Each link is
      *        returned, so objects with multiple links will
@@ -1311,7 +1310,7 @@ public class H5 {
      *  @param name   name of the group to iterate, relative to
      *  the loc_id
      *
-     *  @return the number of members in the group or -1 if error.
+     *  @returns the number of members in the group or -1 if error.
      *
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - name is null.
@@ -1320,10 +1319,10 @@ public class H5 {
         throws HDF5LibraryException, NullPointerException;
 
     /**
-     *   H5Gget_obj_info_idx   report the name and type of
+     *  @name H5Gget_obj_info_idx   report the name and type of
      *        object with index 'idx' in a Group.  The 'idx'
      *        corresponds to the index maintained by H5Giterate.
-     *        Each link is returned, so objects with multiple
+	 *       	  Each link is returned, so objects with multiple
      *        links will be counted once for each link.
      *
      *  @param loc_id  IN:  file or group ID.
@@ -1333,7 +1332,7 @@ public class H5 {
      *  @param oname  the name of the object [OUT]
      *  @param type   the type of the object [OUT]
      *
-     *  @return non-negative if successful, -1 if not.
+     *  @returns non-negative if successful, -1 if not.
      *
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - name is null.
@@ -1350,8 +1349,8 @@ public class H5 {
      *  either a file or a group identifier.
      *
      *  @param loc_id File or group identifier.
-     *  @param  src Object's original name.
-     *  @param  dst Object's new name.
+     *  @paramsrc Object's original name.
+     *  @paramdst Object's new name.
      *
      *  @return a non-negative value if successful
      *
@@ -1415,7 +1414,7 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      *
      *  @see ncsa.hdf.hdf5lib.HDF5GroupInfo
-     *  See public synchronized static native int H5Gget_objinfo();
+     *  @see public synchronized static native int H5Gget_objinfo();
      **/
     public synchronized static int H5Gget_objinfo(int loc_id, String name,
         boolean follow_link,
@@ -1658,38 +1657,6 @@ public class H5 {
      *  @exception NullPointerException - size is null.
      **/
     public synchronized static native int H5Pget_userblock(int plist, long[] size)
-        throws HDF5LibraryException,
-        NullPointerException;
-
-    /**
-     *  H5Pset_small_data_block_size reserves blocks of size bytes for the
-     *  contiguous storage of the raw data portion of small datasets.
-     *
-     *  @param plist  IN: Identifier of property list to modify.
-     *  @param size  IN: Size of the blocks in bytes.
-     *
-     *  @return a non-negative value if successful
-     *
-     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-     **/
-    public synchronized static native int H5Pset_small_data_block_size(int plist, long size)
-        throws HDF5LibraryException;
-
-    /**
-     *  H5Pget_small_data_block_size retrieves the size of a block of small
-     *  data in a file creation property list.
-     *
-     *  @param plist  IN: Identifier for property list to query.
-     *  @param size  OUT: Pointer to location to return block
-     *  size.
-     *
-     *  @return a non-negative value and the size of the user block;
-     *  if successful
-     *
-     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-     *  @exception NullPointerException - size is null.
-     **/
-    public synchronized static native int H5Pget_small_data_block_size(int plist, long[] size)
         throws HDF5LibraryException,
         NullPointerException;
 
@@ -2096,7 +2063,7 @@ public class H5 {
      *  properties to the end of an output filter pipeline.
      *
      *  @param plist IN: Property list identifier.
-     *  @param filter IN: Filter to be added to the pipeline.
+     *  @param_t filter IN: Filter to be added to the pipeline.
      *  @param flags IN: Bit vector specifying certain general
      *  properties of the filter.
      *  @param cd_nelmts IN: Number of elements in cd_values
@@ -2417,60 +2384,6 @@ public class H5 {
         throws HDF5LibraryException, NullPointerException;
 
     /**
-     *  H5Pset_buffer sets type conversion and background buffers.
-     *  status to TRUE or FALSE.
-     *
-     *  Given a dataset transfer property list, H5Pset_buffer sets the maximum
-     * size for the type conversion buffer and background buffer and optionally
-     * supplies pointers to application-allocated buffers. If the buffer size
-     * is smaller than the entire amount of data being transferred between the
-     * application and the file, and a type conversion buffer or background
-     * buffer is required, then strip mining will be used.
-     *
-     * Note that there are minimum size requirements for the buffer. Strip
-     * mining can only break the data up along the first dimension, so the
-     * buffer must be large enough to accommodate a complete slice that
-     * encompasses all of the remaining dimensions. For example, when strip
-     * mining a 100x200x300 hyperslab of a simple data space, the buffer must
-     * be large enough to hold 1x200x300 data elements. When strip mining a
-     * 100x200x300x150 hyperslab of a simple data space, the buffer must be
-     * large enough to hold 1x200x300x150 data elements.
-     *
-     * If tconv and/or bkg are null pointers, then buffers will be allocated
-     * and freed during the data transfer.
-     *
-     * @param plist Identifier for the dataset transfer property list.
-     * @param size Size, in bytes, of the type conversion and background buffers.
-     * @param tconv byte array of application-allocated type conversion buffer.
-     * @param bkg byte array of application-allocated background buffer.
-     *
-     *  @return a non-negative value if successful
-     *
-     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-     *  @exception IllegalArgumentException - plist is invalid.
-     **/
-    public synchronized static native int H5Pset_buffer(int plist, int size,
-        byte[] tcon, byte[] bkg)
-        throws HDF5LibraryException, IllegalArgumentException;
-
-    /**
-     *  HH5Pget_buffer gets type conversion and background buffers.
-     *  Returns buffer size, in bytes, if successful; otherwise 0 on failure.
-     *
-     * @param plist Identifier for the dataset transfer property list.
-     * @param tconv byte array of application-allocated type conversion buffer.
-     * @param bkg byte array of application-allocated background buffer.
-     *
-     *  @return buffer size, in bytes, if successful; otherwise 0 on failure
-     *
-     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-     *  @exception IllegalArgumentException - plist is invalid.
-     **/
-    public synchronized static native int H5Pget_buffer(int plist,
-        byte[] tcon, byte[] bkg)
-        throws HDF5LibraryException, IllegalArgumentException;
-
-    /**
      *  H5Pset_preserve sets the dataset transfer property list
      *  status to TRUE or FALSE.
      *
@@ -2537,7 +2450,8 @@ public class H5 {
      *  H5Pget_gc_references Returns the current setting for the
      *  garbage collection refernces property from a file
      *  access property list.
-     *  <p>
+     *
+     *
      *  ** Note: this routine changed name with HDF5.1.2.2.  If using
      *           an earlier version, use
      *           'configure --enable-hdf5_1_2_1'
@@ -2699,7 +2613,7 @@ public class H5 {
      *  that object and return an identifier.
      *
      *  @param dataset  IN: Dataset containing reference object.
-     *  @param ref_type  IN: The reference type of ref.
+     *  @paramete ref_type  IN: The reference type of ref.
      *  @param ref  IN: reference to an object
      *
      *  @return valid identifier if successful
@@ -3827,20 +3741,6 @@ public class H5 {
      **/
     public synchronized static native String H5Tget_member_name(int type_id,
         int field_idx);
-
-    /**
-     *  H5Tget_member_index retrieves the index of a field of a compound
-     *  datatype.
-     *
-     *  @param type_id  Identifier of datatype to query.
-     *  @param field_name Field name of the field index
-     *  to retrieve.
-     *
-     *  @return if field is defined, the index; else negative.
-     *
-     **/
-    public synchronized static native int H5Tget_member_index(int type_id,
-        String field_name);
 
     /**
      *  H5Tget_member_class returns the datatype of the specified

@@ -715,43 +715,6 @@ JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1member_1name
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Tget_member_index
- * Signature: (ILjava/lang/String)I
- */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1member_1index
-  (JNIEnv *env, jclass clss, jint type_id, jstring field_name)
-{
-	char *tname;
-	int index;
-	jboolean isCopy;
-
-	if (field_name == NULL) {
-		h5nullArgument( env, "H5Tget_member_index:  field_name is NULL");
-		return -1;
-	}
-#ifdef __cplusplus
-	tname = (char *)env->GetStringUTFChars(field_name,&isCopy);
-#else
-	tname = (char *)(*env)->GetStringUTFChars(env,field_name,&isCopy);
-#endif
-	if (tname == NULL) {
-		h5JNIFatalError(env,  "H5Tget_member_index:  field_name not pinned");
-		return -1;
-	}
-
-	index = H5Tget_member_index(type_id, tname);
-
-#ifdef __cplusplus
-	env->ReleaseStringUTFChars(field_name,tname);
-#else
-	(*env)->ReleaseStringUTFChars(env,field_name,tname);
-#endif
-
-	return index;
-}
-
-/*
- * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Tget_member_type
  * Signature: (II)I
  */

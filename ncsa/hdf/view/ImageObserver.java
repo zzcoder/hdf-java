@@ -45,18 +45,10 @@ public interface ImageObserver extends DataObserver
      */
     public abstract void flip(int direction);
 
-    /** Display an image contour.
-     *  <p>
-     *  @param level the contour level.
-     */
-    public abstract void contour(int level);
-
     /** Display the color table of this image. */
     public abstract void showColorTable();
 
     /** Draws a histogram of the selected image area. */
     public abstract void showHistogram();
 
-    /** Sets whether or not to display point value of the image. */
-    public abstract void setValueVisible(boolean b);
 }

@@ -92,19 +92,13 @@ calls into one single call read().
 reflect fundamental conceptual to design of HDF objects. Objects
 of HDF5 (group and dataset) and HDF4 (group, multi-dimension array, raster
 image, vdata and annotation) are presented as Java classes.
-
 <p>The HDF object package has two major goals. First, it simplifies the
 process of reading information from or writing data to file because the
 details of accessing to the HDF library are encapsulated into respective
 classes. Second, HDF4 and HDF5 objects are inherited from the same common object
 and interface. Applications can use of the HDF Object Package to access
 objects from either HDF4 or HDF5 in a uniform way, without accessing the
-libraries directly. The following diagram explains the relationship of the
-object package, HDF JNI and applcation.
-
-<p><b>
-HDF Applcations <==> HDF Object Package <==> HDF4/5 Java Wraper (JNI4/5) <==> HDF File
-</b>
+libraries directly.
 
 <h2>
 <a NAME="ug03hierarchy"></a>3.2 The Class Hierarchy</h2>
@@ -129,13 +123,10 @@ are the implementing classes, which implement the public APIs defined at the
 upper classes.
 
 <center>
-<p><img SRC="images/class_diagram_object.jpg" height=541 width=703>
+<p><img SRC="images/class_diagram_object.jpg" height=620 width=717>
 <br><b>Figure 3.1. The Class Hierarchy of HDF Objects.</b></center>
 
-<p><br>
-
-
-<P>
+<p>
 
 <TABLE BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
 <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
@@ -143,21 +134,22 @@ upper classes.
 <B>Interface Summary</B></FONT></TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B><I>DataFormat</I></B></TD>
+<TD WIDTH="15%"><B><I>DataFormat</I></A></B></TD>
 <TD>This interface describes general I/O operations of data object,
  such as read data content or data attribute into memory, write
  data content or data attribute into disk.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B><I>FileFormat</I></B></TD>
+<TD WIDTH="15%"><B><I>FileFormat</I></A></B></TD>
 <TD>This FileFormat defines general I/O accessing interface to file resources,
  such as open/close file, and retrieve the file structure.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B><I>Metadata</I></B></TD>
+<TD WIDTH="15%"><B><I>Metadata</I></A></B></TD>
 <TD>Metadata is a general interface about supporting data.</TD>
 </TR>
 </TABLE>
+
 
 <P>
 
@@ -167,86 +159,82 @@ upper classes.
 <B>Class Summary</B></FONT></TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B>Attribute</B></TD>
+<TD WIDTH="15%"><B>Attribute</A></B></TD>
 <TD>Attribute holds a (name, value) pair of HDF4/5 attribute.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B>CompoundDS</B></TD>
+<TD WIDTH="15%"><B>CompoundDS</A></B></TD>
 <TD>CompoundDS is the superclass for HDF4 and HDF5 Compound Dataset.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B>Dataset</B></TD>
+<TD WIDTH="15%"><B>Dataset</A></B></TD>
 <TD>Dataset is the superclass for HDF4/5 Dataset, inheriting the HObject.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B>Datatype</B></TD>
-<TD>Datatype holds a (name, value) pair of HDF4/5 attribute.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B>Group</B></TD>
+<TD WIDTH="15%"><B>Group</A></B></TD>
 <TD>Group is the superclass for HDF4 and HDF5 group, inheriting the HObject.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B>H4Datatype</B></TD>
-<TD>Datatype holds a (name, value) pair of HDF4/5 attribute.</TD>
+<TD WIDTH="15%"><B>H4Accessory</A></B></TD>
+<TD>The H4Accessory class provides common static methods to HDF4 objects.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B>H4File</B></TD>
+<TD WIDTH="15%"><B>H4File</A></B></TD>
 <TD>This class provides file level APIs.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B>H4GRImage</B></TD>
+<TD WIDTH="15%"><B>H4GRImage</A></B></TD>
 <TD>H4GRImage describes HDF4 general raster(GR) image and operations performed on
  the GR image.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B>H4Group</B></TD>
+<TD WIDTH="15%"><B>H4Group</A></B></TD>
 <TD>An H4Group is a vgroup in HDF4, inheriting from Group.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B>H4SDS</B></TD>
+<TD WIDTH="15%"><B>H4SDS</A></B></TD>
 <TD>H4SDS describes HDF4 Scientific Data Sets (SDS) and operations performed on
  the SDS.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B>H4Vdata</B></TD>
+<TD WIDTH="15%"><B>H4Vdata</A></B></TD>
 <TD>H4Vdata describes a multi-dimension array of HDF4 vdata, inheriting CompoundDS.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B>H5CompoundDS</B></TD>
+<TD WIDTH="15%"><B>H5Accessory</A></B></TD>
+<TD>The H5Accessory class provides common static methods to HDF5 objects.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B>H5CompoundDS</A></B></TD>
 <TD>H5CompoundDS describes a multi-dimension array of HDF5 compound dataset,
  inheriting CompoundDS.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B>H5Datatype</B></TD>
-<TD>Datatype holds a (name, value) pair of HDF4/5 attribute.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B>H5File</B></TD>
+<TD WIDTH="15%"><B>H5File</A></B></TD>
 <TD>This class provides file level APIs.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B>H5Group</B></TD>
+<TD WIDTH="15%"><B>H5Group</A></B></TD>
 <TD>An H5Group represents HDF5 group, inheriting from Group.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B>H5ScalarDS</B></TD>
+<TD WIDTH="15%"><B>H5ScalarDS</A></B></TD>
 <TD>H5ScalarDS describes an multi-dimension array of HDF5 scalar or atomic data
  types and operations performed on the scalar dataset, such as byte, int,
  short, long, float, double and string.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B>HObject</B></TD>
+<TD WIDTH="15%"><B>HObject</A></B></TD>
 <TD>HObject is the superclass for HDF data hierarchy, inheriting the DataFormat
  interface.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B>ScalarDS</B></TD>
+<TD WIDTH="15%"><B>ScalarDS</A></B></TD>
 <TD>ScalarDS is the superclass for HDF4/5 ScalarDS, inheriting Dataset.</TD>
 </TR>
 </TABLE>
 
-<p>
+
 <h2>
 <a NAME="ug03application"></a>3.3 How to Use it</h2>
 
@@ -261,13 +249,11 @@ and the
 NCSA Java HDF5 Interface (JHI5)</a>. 
 
 <center>
-<p><img SRC="images/hdf-obj.jpg" height=750 width=630>
+<p><img SRC="images/hdf-obj.jpg" height=850 width=700>
 <br><b>Figure 3.2 The Software packages</b></center>
 
-<p>
-<br>
-The following examples show how to retreve file hierarchy using
-the HDF object package.
+<p>The following examples show how to retreve file hierarchy using
+the HDF Object Model.
 
 <h3>Example 3.1: retrieve and print HDF5 objects </h3>
 
@@ -308,7 +294,7 @@ public class TestH5File
         catch (Exception ex ) {}
     }
 
-    // print out the data object recusively
+    // print out the data ojbect recusively
     private static void printNode(javax.swing.tree.TreeNode node, String indent)
     {
         System.out.println(indent+node);
@@ -362,7 +348,7 @@ public class TestH4File
         catch (Exception ex ) {}
     }
 
-    // print out the data object recusively
+    // print out the data ojbect recusively
     private static void printNode(javax.swing.tree.TreeNode node, String indent)
     {
         System.out.println(indent+node);
@@ -390,7 +376,7 @@ of Illinois at Urbana-Champaign</a></font>
 <br><font face="arial,helvetica" size=-1>
 <a href="mailto:hdfhelp@ncsa.uiuc.edu">hdfhelp@ncsa.uiuc.edu</a></font>
 <p>
-<i><font color="#FF0000" size=-1>Updated 11/5/2002</font></i>
+<i><font color="#FF0000" size=-1>Updated 3/25/2002</font></i>
 <!- END OF FOOTER INFO -->
 
 </body>

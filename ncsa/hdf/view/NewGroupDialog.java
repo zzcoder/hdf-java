@@ -46,6 +46,8 @@ implements ActionListener
     /** a list of current groups */
     private List groupList;
 
+    private boolean isH5;
+
     private HObject newObject;
 
     private FileFormat fileFormat;
@@ -64,6 +66,7 @@ implements ActionListener
 
         newObject = null;
 
+        isH5 = (pGroup instanceof H5Group);
         fileFormat = pGroup.getFileFormat();
         toolkit = Toolkit.getDefaultToolkit();
 
@@ -190,15 +193,18 @@ implements ActionListener
             return null;
         }
 
-        Group obj = null;
+        HObject obj = null;
         try
         {
-            obj = fileFormat.createGroup(fileFormat, name, pgroup);
+            if (isH5)
+                obj = H5Group.create(fileFormat, name, pgroup);
+            else
+                obj = H4Group.create(fileFormat, name, pgroup);
         } catch (Exception ex)
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                ex.getMessage(),
+                ex,
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             return null;
@@ -209,10 +215,5 @@ implements ActionListener
 
     /** Returns the new group created. */
     public DataFormat getObject() { return newObject; }
-
-    /** Returns the parent group of the new group. */
-    public Group getParentGroup() {
-        return (Group)groupList.get(parentChoice.getSelectedIndex());
-    }
 
 }

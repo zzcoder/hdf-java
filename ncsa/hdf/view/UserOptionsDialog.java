@@ -35,7 +35,7 @@ implements ActionListener
      */
     private final ViewManager viewer;
 
-    private String H4toH5Path, originalUGPath;
+    private String H4toH5Path, UGPath;
     private JTextField H4toH5Field, UGField;
     private Choice fontChoice;
     private Choice delimiterChoice;
@@ -44,8 +44,6 @@ implements ActionListener
     private final int fontSize;
 
     private boolean isFontChanged;
-
-    private boolean isUserGuideChanged;
 
     /** constructs an UserOptionsDialog.
      * @param view The HDFView.
@@ -57,12 +55,32 @@ implements ActionListener
         viewer = view;
         rootDir = viewroot;
         isFontChanged = false;
-        isUserGuideChanged = false;
         fontSize = ViewProperties.getFontSizeInt();
-        originalUGPath = ViewProperties.getUsersGuide();
 
-        fontChoice = new Choice();
-        delimiterChoice = new Choice();
+        JPanel contentPane = (JPanel)getContentPane();
+        contentPane.setLayout(new BorderLayout(5,5));
+        contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
+        contentPane.setPreferredSize(new Dimension(550, 200));
+
+        JPanel centerP = new JPanel();
+        centerP.setLayout(new BorderLayout(5,5));
+        centerP.setBorder(new TitledBorder(""));
+
+        JPanel p = new JPanel();
+        JLabel label = null;
+        p.setLayout(new GridLayout(3,1,10,10));
+        p.add(label = new JLabel("User's Guide:"));
+        //p.add(label = new JLabel("H4toH5 Converter:"));
+        p.add(label = new JLabel("Font Size:"));
+        p.add(label = new JLabel("Data Delimiter:"));
+        centerP.add("West", p);
+
+        p = new JPanel();
+        p.setLayout(new GridLayout(3,1,10,10));
+        p.add(UGField = new JTextField(ViewProperties.getUsersGuide()));
+        //p.add(H4toH5Field = new JTextField(ViewProperties.getH4toH5()));
+        p.add(fontChoice = new Choice());
+        p.add(delimiterChoice = new Choice());
         for (int i=0; i<6; i++)
         {
             fontChoice.add(String.valueOf(10+2*i));
@@ -74,48 +92,21 @@ implements ActionListener
         delimiterChoice.add(ViewProperties.DELIMITER_COLON);
         delimiterChoice.add(ViewProperties.DELIMITER_SEMI_COLON);
         delimiterChoice.select(ViewProperties.getDataDelimiter());
+        centerP.add("Center", p);
 
-        JPanel contentPane = (JPanel)getContentPane();
-        contentPane.setLayout(new BorderLayout(8,8));
-        contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
-        contentPane.setPreferredSize(new Dimension(500, 270));
-
-        JPanel centerP = new JPanel();
-        centerP.setLayout(new GridLayout(3,1,8,8));
-        //centerP.setBorder(new TitledBorder(""));
-
-        JPanel p0 = new JPanel();
-        p0.setLayout(new BorderLayout());
-        p0.add(new JLabel("User's Guide:  "), BorderLayout.WEST);
-        p0.add(UGField = new JTextField(originalUGPath), BorderLayout.CENTER);
+        p = new JPanel();
+        p.setLayout(new GridLayout(4,1,10,10));
         JButton b = new JButton("Browse...");
         b.setActionCommand("Browse UG");
         b.addActionListener(this);
-        p0.add(b, BorderLayout.EAST);
-        TitledBorder border = new TitledBorder("Help Document");
-        border.setTitleColor(Color.darkGray);
-        p0.setBorder(border);
-        centerP.add(p0);
+        p.add(b);
+        b = new JButton("Browse...");
+        b.setActionCommand("Browse h4toh5");
+        b.addActionListener(this);
+        //p.add(b);
+        centerP.add("East", p);
 
-        p0 = new JPanel();
-        p0.setLayout(new BorderLayout());
-        p0.add(new JLabel("Font Size:  "), BorderLayout.WEST);
-        p0.add(fontChoice, BorderLayout.CENTER);
-        border = new TitledBorder("TreeView Display");
-        border.setTitleColor(Color.darkGray);
-        p0.setBorder(border);
-        centerP.add(p0);
-
-        p0 = new JPanel();
-        p0.setLayout(new BorderLayout());
-        p0.add(new JLabel("Data Delimiter:  "), BorderLayout.WEST);
-        p0.add(delimiterChoice, BorderLayout.CENTER);
-        border = new TitledBorder("Text Data Input/Output");
-        border.setTitleColor(Color.darkGray);
-        p0.setBorder(border);
-        centerP.add(p0);
-
-        JPanel p = new JPanel();
+        p = new JPanel();
         b = new JButton("   Ok   ");
         b.setActionCommand("Set options");
         b.addActionListener(this);
@@ -126,9 +117,9 @@ implements ActionListener
         p.add(b);
 
         String propertyFile = ViewProperties.getPropertyFile();
-        contentPane.add(new JLabel(propertyFile), BorderLayout.NORTH);
-        contentPane.add(p, BorderLayout.SOUTH);
-        contentPane.add(centerP, BorderLayout.CENTER);
+        contentPane.add("North", new JLabel(propertyFile));
+        contentPane.add("South", p);
+        contentPane.add("Center", centerP);
 
         Point l =((Frame)viewer).getLocation();
         l.x += 150;
@@ -167,6 +158,7 @@ implements ActionListener
 
             String fname = choosedFile.getAbsolutePath();
             if (fname == null) return;
+            UGPath = fname;
             UGField.setText(fname);
         }
         else if (cmd.equals("Browse h4toh5"))
@@ -190,12 +182,13 @@ implements ActionListener
 
     private void setUserOptions()
     {
-        String UGPath = UGField.getText();
+        UGPath = UGField.getText();
         if (UGPath != null && UGPath.length()>0)
-        {
             ViewProperties.setUsersGuide(UGPath);
-            isUserGuideChanged = !UGPath.equals(originalUGPath);
-        }
+
+        //H4toH5Path = H4toH5Field.getText();
+        //if (H4toH5Path != null && H4toH5Path.length()>0)
+        //    ViewProperties.setH4toH5(H4toH5Path);
 
         ViewProperties.setFontSize(fontChoice.getSelectedItem());
         ViewProperties.setDataDelimiter(delimiterChoice.getSelectedItem());
@@ -204,8 +197,6 @@ implements ActionListener
     }
 
     public boolean isFontChanged() { return isFontChanged; }
-
-    public boolean isUserGuideChanged() { return isUserGuideChanged; }
 
 }
 

@@ -42,100 +42,41 @@ public class HDFConstants
 
     // HDF Tag Definations
 
-    public static final int DFREF_WILDCARD     = 0;
-    public static final int DFTAG_WILDCARD     = 0;
+    // HDF WILDCARD
+    public static final int     DFTAG_WILDCARD = 0;
+    public static final int     DFREF_WILDCARD = 0;
 
-    public static final int DFREF_NONE         = 0;  // used by mfhdf/libsrc/putget.c
+    // File identifier
+    public static final int     DFTAG_FID = 100;
 
-    // tags and refs
-    public static final int DFTAG_NULL         = 1;
-    public static final int DFTAG_LINKED       = 20;  // linked-block special element
-    public static final int DFTAG_VERSION      = 30;
-    public static final int DFTAG_COMPRESSED   = 40;  // compressed special element
-    public static final int DFTAG_VLINKED      = 50;  // variable-len linked-block header
-    public static final int DFTAG_VLINKED_DATA = 51;  // variable-len linked-block data
-    public static final int DFTAG_CHUNKED      = 60;  // chunked special element header
-    public static final int DFTAG_CHUNK        = 61;  // chunk element
+    // File Description
+    public static final int     DFTAG_FD  = 101;
 
-    // utility set
-    public static final int DFTAG_FID   = 100;   // File identifier
-    public static final int DFTAG_FD    = 101;   // File description
-    public static final int DFTAG_TID   = 102;   // Tag identifier
-    public static final int DFTAG_TD    = 103;   // Tag descriptor
-    public static final int DFTAG_DIL   = 104;   // data identifier label
-    public static final int DFTAG_DIA   = 105;   // data identifier annotation
-    public static final int DFTAG_NT    = 106;   // number type
-    public static final int DFTAG_MT    = 107;   // machine type
-    public static final int DFTAG_FREE  = 108;   // free space in the file
+    // Data Identifier Label
+    public static final int     DFTAG_DIL = 104;
 
-    // raster-8 set
-    public static final int DFTAG_ID8   = 200;   // 8-bit Image dimension
-    public static final int DFTAG_IP8   = 201;   // 8-bit Image palette
-    public static final int DFTAG_RI8   = 202;   // Raster-8 image
-    public static final int DFTAG_CI8   = 203;   // RLE compressed 8-bit image
-    public static final int DFTAG_II8   = 204;   // IMCOMP compressed 8-bit image
+    // Data Identifier Annotation
+    public static final int     DFTAG_DIA = 105;
 
-    // Raster Image set
-    public static final int DFTAG_ID    = 300;   // Image DimRec
-    public static final int DFTAG_LUT   = 301;   // Image Palette
-    public static final int DFTAG_RI    = 302;   // Raster Image
-    public static final int DFTAG_CI    = 303;   // Compressed Image
-    public static final int DFTAG_NRI   = 304;   // New-format Raster Image
+    // 8-bits Raster image
+    public static final int     DFTAG_RI8  = 202;
+    public static final int     DFTAG_CI8  = 203;
+    public static final int     DFTAG_II8  = 204;
 
-    public static final int DFTAG_RIG   = 306;   // Raster Image Group
-    public static final int DFTAG_LD    = 307;   // Palette DimRec
-    public static final int DFTAG_MD    = 308;   // Matte DimRec
-    public static final int DFTAG_MA    = 309;   // Matte Data
-    public static final int DFTAG_CCN   = 310;   // color correction
-    public static final int DFTAG_CFM   = 311;   // color format
-    public static final int DFTAG_AR    = 312;   // aspect ratio
+    // 24-bits Raster image
+    public static final int     DFTAG_RI  = 302;
+    public static final int     DFTAG_CI  = 303;
+    public static final int     DFTAG_RIG = 306;
 
-    public static final int DFTAG_DRAW  = 400;   // Draw these images in sequence
-    public static final int DFTAG_RUN   = 401;   // run this as a program/script
-
-    public static final int DFTAG_XYP   = 500;   // x-y position
-    public static final int DFTAG_MTO   = 501;   // machine-type override
-
-    // Tektronix
-    public static final int DFTAG_T14   = 602;   // TEK 4014 data
-    public static final int DFTAG_T105  = 603;   // TEK 4105 data
-
-    // Scientific Data set
-    // Objects of tag 721 are never actually written to the file.  The tag is
-    // needed to make things easier mixing DFSD and SD style objects in the
-    // same file
-
-    public static final int DFTAG_SDG   = 700;   // Scientific Data Group
-    public static final int DFTAG_SDD   = 701;   // Scientific Data DimRec
-    public static final int DFTAG_SD    = 702;   // Scientific Data
-    public static final int DFTAG_SDS   = 703;   // Scales
-    public static final int DFTAG_SDL   = 704;   // Labels
-    public static final int DFTAG_SDU   = 705;   // Units
-    public static final int DFTAG_SDF   = 706;   // Formats
-    public static final int DFTAG_SDM   = 707;   // Max/Min
-    public static final int DFTAG_SDC   = 708;   // Coord sys
-    public static final int DFTAG_SDT   = 709;   // Transpose
-    public static final int DFTAG_SDLNK = 710;   // Links related to the dataset
-    public static final int DFTAG_NDG   = 720;   // Numeric Data Group
-    public static final int DFTAG_CAL   = 731;   // Calibration information
-    public static final int DFTAG_FV    = 732;   // Fill Value information
-    public static final int DFTAG_BREQ  = 799;   // Beginning of required tags
-    public static final int DFTAG_SDRAG = 781;   // List of ragged array line lengths
-    public static final int DFTAG_EREQ  = 780;   // Current end of the range
-
-    // VSets
-    public static final int DFTAG_VG     = 1965;   // Vgroup
-    public static final int DFTAG_VH     = 1962;   // Vdata Header
-    public static final int DFTAG_VS     = 1963;   // Vdata Storage
-
-    // compression schemes
-    public static final int DFTAG_RLE       = 11;   // run length encoding
-    public static final int DFTAG_IMC       = 12;   // IMCOMP compression alias
-    public static final int DFTAG_IMCOMP    = 12;   // IMCOMP compression
-    public static final int DFTAG_JPEG      = 13;   // JPEG compression (24-bit data)
-    public static final int DFTAG_GREYJPEG  = 14;   // JPEG compression (8-bit data)
-    public static final int DFTAG_JPEG5     = 15;   // JPEG compression (24-bit data)
-    public static final int DFTAG_GREYJPEG5 = 16;   // JPEG compression (8-bit data)
+    // SDS
+    public static final int     DFTAG_SD  = 702;
+    public static final int     DFTAG_SDG  = 700;
+    public static final int     DFTAG_NDG  = 720;
+    
+    // Vgroup or Vdata
+    public static final int     DFTAG_VH  = 1962;
+    public static final int     DFTAG_VS  = 1963;
+    public static final int     DFTAG_VG  = 1965;
 
     /** pixel interlacing scheme */
     public static final int MFGR_INTERLACE_PIXEL = 0;
@@ -143,7 +84,7 @@ public class HDFConstants
     /** line interlacing scheme */
     public static final int MFGR_INTERLACE_LINE = MFGR_INTERLACE_PIXEL +1;
 
-    /** component interlacing scheme */
+    /** component interlacing scheme */ 
     public static final int MFGR_INTERLACE_COMPONENT = MFGR_INTERLACE_PIXEL +2;
 
     /** interlacing supported by the vset.*/
@@ -169,7 +110,7 @@ public class HDFConstants
 
     //** double */
     public static final int  DFNT_FLOAT64   =  6;
-    public static final int  DFNT_FLOAT128  =  7 ;
+    public static final int  DFNT_FLOAT128  =  7 ; 
     public static final int  DFNT_DOUBLE    =  6  ;
 
     /** 8-bit integer */
@@ -207,7 +148,7 @@ public class HDFConstants
     public static final int COMP_CODE_NONE     =  0;
     public static final int COMP_CODE_RLE     =  1;
     public static final int COMP_CODE_NBIT     =  2;
-    public static final int COMP_CODE_SKPHUFF  =  3;
+    public static final int COMP_CODE_SKPHUFF  =  3; 
     public static final int COMP_CODE_DEFLATE  =  4;
     public static final int COMP_CODE_INVALID  =  5;
     public static final int COMP_MODEL_STDIO  =  0;
@@ -217,9 +158,9 @@ public class HDFConstants
     public static final int DFIL_LINE   = 1;  /* Scan Line Interlacing */
     public static final int DFIL_PLANE  = 2;  /* Scan Plane Interlacing */
 
-    public static final int SD_FILL  = 0;
+    public static final int SD_FILL  = 0;  
     public static final int SD_NOFILL  = 0x100;
-    public static final int SD_DIMVAL_BW_COMP  = 1;
+    public static final int SD_DIMVAL_BW_COMP  = 1;  
     public static final int SD_DIMVAL_BW_INCOMP  = 0;
 
     public static final int HDF_NONE  = 0x0;
@@ -234,7 +175,7 @@ public class HDFConstants
     public static final String RIGATTRNAME = "RIATTR0.0N";
     public static final String RIGATTRCLASS = "RIATTR0.0C";
 
-    // names of classes of the Vdatas/Vgroups created by the SD interface
+    // names of classes of the Vdatas/Vgroups created by the SD interface 
     public static final String  HDF_ATTRIBUTE = "Attr0.0";
     public static final String  HDF_VARIABLE = "Var0.0";
     public static final String  HDF_DIMENSION = "Dim0.0";

@@ -22,27 +22,25 @@
 <Center>
 <h1>
 HDFView User's Guide<br>
-<font size=-1>Version 1.2, December 2002</font></h1></center>
+<font size=-1>Version 1.0, March 2002</font></h1></center>
 
 <hr>
 The HDFView is a graphic utility designed for viewing and editing the
-contents of HDF4 and HDF5 files. This document provides instructions
-of how to use the HDFView. You will find the following information in
-this document:
+contents of HDF4 and HDF5 files. This document provides the following information:
 
 <ul>
 
 <li>
-User instructions for HDFView</li>
+User instructions for HDFView Version 1.0</li>
 
 <li>
-A brief discussion of the HDF object model.
-
-Details of the HDF object model are available from 
-<a href="http://hdf.ncsa.uiuc.edu/hdf-java-html/hdf-object/index.html">
-http://hdf.ncsa.uiuc.edu/hdf-java-html/hdf-object/</a>
+A brief discussion of the HDF object model.</li>
 
 </ul>
+Details of the HDF object model are available from 
+<a href="http://hdf.ncsa.uiuc.edu/hdf-java-html/hdf-object/index.html">
+The NCSA HDF Object Model</a> at
+<tt>http://hdf.ncsa.uiuc.edu/hdf-java-html/hdf-object/</tt>.
 
 <p>
 <hr noshade size=1>
@@ -55,15 +53,12 @@ Table of Contents</h2>
 
 <dl>
 <dt><a href="ug01introduction.html#ug01overview">1.1 Overview</a></dt>
-<dt><a href="ug01introduction.html#ug01features">1.2 Current Features</a></dt>
-<dl>
-<dt><a href="ug01introduction.html#ug01browsing">1.2.1 Browsing Features</a></dt>
-<dt><a href="ug01introduction.html#ug01editing">1.2.2 Editing Features</a></dt>
-</dl>
-<dt><a href="ug01introduction.html#ug01limitations">1.3 Limitations</a></dt>
-<dt><a href="ug01introduction.html#ug01requirements">1.4 System Requirements</a></dt>
-<dt><a href="ug01introduction.html#ug01installation">1.5 Installing and Running HDFView</a></dt>
-<dt><a href="ug01introduction.html#ug1furtherinfo">1.6 For Further Information</a></dt>
+<dt><a href="ug01introduction.html#ug01features">1.2 Browsing Features</a></dt>
+<dt><a href="ug01introduction.html#ug01editing">1.3 Editing Features</a></dt>
+<dt><a href="ug01introduction.html#ug01limitations">1.4 Limitations</a></dt>
+<dt><a href="ug01introduction.html#ug01requirements">1.5 System Requirements</a></dt>
+<dt><a href="ug01introduction.html#ug01installation">1.6 Installing and Running HDFView</a></dt>
+<dt><a href="ug01introduction.html#ug1furtherinfo">1.7 For Further Information</a></dt>
 </dl>
 
 <dt>
@@ -92,27 +87,17 @@ Table of Contents</h2>
 
 <dl>
 <dt><a href="ug04treeview.html#ug04tree">4.1 Tree Viewer</a></dt>
-<dt><a href="ug04treeview.html#ug04data">4.2 View Data Content</a></dt>
-<dt><a href="ug04treeview.html#ug04metadata">4.3 Display Metadata and Attributes</a></dt>
-<dt><a href="ug04treeview.html#ug04edit">4.4 Edit File and  File Structure</a></dt>
-<dl>
-<dt><a href="ug04treeview.html#ug04file">4.4.1 Create and Save File</a></dt>
-<dt><a href="ug04treeview.html#ug04add">4.4.2 Add and Delete Object</a></dt>
-<dt><a href="ug04treeview.html#ug04copy">4.4.3 Copy and Paste Object</a></dt>
-<dt><a href="ug04treeview.html#ug04attribute">4.4.4 Add, Delete and Modify Attribute</a></dt>
-</dl>
+<dt><a href="ug04treeview.html#ug04data">4.2 Data Content</a></dt>
+<dt><a href="ug04treeview.html#ug04metadata">4.3 Metadata and Attributes</a></dt>
 </dl>
 
 <dt>
 <a href="ug05spreadsheet.html">Chapter 5: Table Viewer</a></dt>
 
 <dl>
-<dt><a href="ug05spreadsheet.html#ug05display">5.1 View 1D or 2D Dataset</a></dt>
-<dt><a href="ug05spreadsheet.html#ug05subset">5.2 View Subset and Higher Dimension Dataset</a></dt>
-<dt><a href="ug05spreadsheet.html#ug05lineplot">5.3 Display Column/Row Line Plot</a></dt>
-<dt><a href="ug05spreadsheet.html#ug05change">5.4 Change Data Value</a></dt>
-<dt><a href="ug05spreadsheet.html#ug05save">5.5 Save Data Value to Text File</a></dt>
-<dt><a href="ug05spreadsheet.html#ug05import">5.6 Import Data from Text File</a></dt>
+<dt><a href="ug05spreadsheet.html#ug05display">5.1 1D or 2D Dataset</a></dt>
+<dt><a href="ug05spreadsheet.html#ug05subset">5.2 Subset and Higher Dimension Dataset</a></dt>
+<dt><a href="ug05spreadsheet.html#ug05lineplot">5.3 Column/Row Line Plot</a></dt>
 </dl>
 
 <dt>
@@ -120,11 +105,9 @@ Table of Contents</h2>
 
 <dl>
 <dt><a href="ug06imageview.html#ug06image">6.1 Display a 2D or 3D Image</a></dt>
-<dt><a href="ug06imageview.html#ug06zoom">6.2 Zoom/Flip/Contour Image</a></dt>
-<dt><a href="ug06imageview.html#ug06palette">6.3 View and Modify Image Palette/Values</a></dt>
-<dt><a href="ug06imageview.html#ug06histogram">6.4 Show Histogram of Pixel Values</a></dt>
-<dt><a href="ug06imageview.html#ug06import">6.5 Import JPEG/TIFF/PNG Image to HDF4/5</a></dt>
-<dt><a href="ug06imageview.html#ug06save">6.6 Save HDF Image to JPEG/TIFF/PNG File</a></dt>
+<dt><a href="ug06imageview.html#ug06zoom">6.2 Image Zooming</a></dt>
+<dt><a href="ug06imageview.html#ug06palette">6.3 Image Palette</a></dt>
+<dt><a href="ug06imageview.html#ug06histogram">6.4 Histogram of Pixel Values</a></dt>
 </dl>
 
 <dt>
@@ -146,7 +129,7 @@ of Illinois at Urbana-Champaign</a></font>
 <br><font face="arial,helvetica" size=-1>
 <a href="mailto:hdfhelp@ncsa.uiuc.edu">hdfhelp@ncsa.uiuc.edu</a></font>
 <p>
-<i><font color="#FF0000" size=-1>Updated 6/25/2002</font></i>
+<i><font color="#FF0000" size=-1>Updated 3/25/2002</font></i>
 <!- END OF FOOTER INFO -->
 
 </body>

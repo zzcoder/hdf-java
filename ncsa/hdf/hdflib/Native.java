@@ -12,56 +12,56 @@ import glguerin.util.MacPlatform;
 
 public class Native {
 
+			
+	private static boolean isMac = MacPlatform.isMRJ();
+	private static boolean isWin = (System.getProperty("os.name")).toLowerCase().startsWith("win");
 
-    private static boolean isMac = MacPlatform.isMRJ();
-    private static boolean isWin = (System.getProperty("os.name")).toLowerCase().startsWith("win");
+	private Native() {};
+	
+	public static String nativeFilePath(String javaFileName) {
 
-    private Native() {};
+		if (isWin) {
+			return javaFileName.replace('\\', '/');
+		} else if (isMac) {
+			return nativeFilePath(new File(javaFileName));
+		} else {
+			return javaFileName;
+		}	
+		
+	}
 
-    public static String nativeFilePath(String javaFileName) {
+	public static String nativeFilePath(File file) {
 
-        if (isWin) {
-            return javaFileName.replace('\\', '/');
-        } else if (isMac) {
-            return nativeFilePath(new File(javaFileName));
-        } else {
-            return javaFileName;
-        }
+		String path = file.getAbsolutePath();
 
-    }
+		if (isWin) {
+			return path.replace('\\', '/');
+		} else if (isMac) {
+		
+			MacFilePathname macPath = new MacFilePathname(file);
 
-    public static String nativeFilePath(File file) {
+			return macPath.getMacPath();
+			
+		} else {
+			return path;
+		}	
+	}
+	
+	public static String javaFilePath(String nativeFileName) {
 
-        String path = file.getAbsolutePath();
+		if (isMac) {
+		
+			MacFilePathname macPath = new MacFilePathname();
 
-        if (isWin) {
-            return path.replace('\\', '/');
-        } else if (isMac) {
-
-            MacFilePathname macPath = new MacFilePathname(file);
-
-            return macPath.getMacPath();
-
-        } else {
-            return path;
-        }
-    }
-
-    public static String javaFilePath(String nativeFileName) {
-
-        if (isMac) {
-
-            MacFilePathname macPath = new MacFilePathname();
-
-            macPath.appendMacPath(nativeFileName);
-
-            String javaPath = macPath.getPath();
-
-            return javaPath;
-
-        } else {
-            return nativeFileName;
-        }
-    }
-
+			macPath.appendMacPath(nativeFileName);
+			
+			String javaPath = macPath.getPath();
+					
+			return javaPath;
+			
+		} else {
+			return nativeFileName;
+		}	
+	}
+	
 }

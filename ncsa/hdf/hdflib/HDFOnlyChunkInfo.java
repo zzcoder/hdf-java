@@ -24,15 +24,15 @@ package ncsa.hdf.hdflib;
 
 public class HDFOnlyChunkInfo extends HDFChunkInfo {
 
-    public int[] chunk_lengths = new int[HDFConstants.MAX_VAR_DIMS];
+	public int[] chunk_lengths = new int[HDFConstants.MAX_VAR_DIMS];
 
-    public HDFOnlyChunkInfo() {
-        ctype = HDFConstants.HDF_CHUNK;
-    };
+	public HDFOnlyChunkInfo() {
+		ctype = HDFConstants.HDF_CHUNK;
+	};
 
-    public HDFOnlyChunkInfo(int[] cl) {
-        ctype = HDFConstants.HDF_CHUNK;
-        chunk_lengths = cl;
-    }
+	public HDFOnlyChunkInfo(int[] cl) {
+		ctype = HDFConstants.HDF_CHUNK;
+		chunk_lengths = cl;	
+	}
 
 }

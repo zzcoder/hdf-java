@@ -40,7 +40,7 @@ implements ActionListener
     private JTextField fileInputField;
 
     /** flag if the new file is an HDF5 */
-    private String fileType;
+    private boolean isH5 ;
 
     /** The current working directory*/
     private String currentDir;
@@ -57,30 +57,39 @@ implements ActionListener
     /** constructs an NewFileDialog.
      * @param owner The owner of the dialog.
      * @param dir The default directory of the new file.
-     * @param type The type of file format.
+     * @param isHDF5 The flag to indicate if the new file is an HDF5.
      * @param openFiles The list of current open files.
      *        It is used to make sure the new file cannot be any file in use.
      */
     public NewFileDialog(
         Frame owner,
         String dir,
-        String type,
+        boolean isHDF5,
         List openFiles)
     {
         super (owner, "New File...", true);
 
         currentDir = dir;
         viewDir = dir;
-        fileType = type;
+        isH5 = isHDF5;
         fileCreated = false;
         fileList = openFiles;
         toolkit = Toolkit.getDefaultToolkit();
-        setTitle("New "+ fileType + " File ...");
 
-        if (currentDir != null) currentDir += File.separator;
-        else currentDir = "";
+        if (isH5)
+            setTitle("New HDF5 File ...");
+        else
+            setTitle("New HDF4 File ...");
 
-        fileInputField = new JTextField(currentDir+"untitled."+fileType.toLowerCase());
+        if (currentDir != null)
+            currentDir += File.separator;
+        else
+            currentDir = "";
+
+        if (isH5)
+            fileInputField = new JTextField(currentDir+"untitled.h5");
+        else
+            fileInputField = new JTextField(currentDir+"untitled.hdf");
 
         // layout the components
         JPanel contentPane = (JPanel)getContentPane();
@@ -241,12 +250,15 @@ implements ActionListener
         currentDir = f.getParent();
         try
         {
-            FileFormat.getFileFormat(fileType).create(fname);
+            if (isH5)
+                H5File.create(fname);
+            else
+                H4File.create(fname);
         } catch (Exception ex)
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                ex.getMessage(),
+                ex,
                 this.getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             return false;

@@ -25,10 +25,10 @@ package ncsa.hdf.hdflib;
 
 
 public class HDFOldCompInfo extends HDFCompInfo {
-    public int ctype; /* from COMP_NONE defines */
-    public HDFOldCompInfo() {
-        ctype = HDFConstants.COMP_NONE;
-    } ;
+	public int ctype; /* from COMP_NONE defines */
+	public HDFOldCompInfo() {
+		ctype = HDFConstants.COMP_NONE;
+	} ;
 }
 
 

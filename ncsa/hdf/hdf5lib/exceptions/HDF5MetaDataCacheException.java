@@ -23,7 +23,7 @@ package ncsa.hdf.hdf5lib.exceptions;
 public class HDF5MetaDataCacheException extends HDF5LibraryException {
 
     /**
-     * Constructs an <code>HDF5MetaDataCacheException</code> with
+     * Constructs an <code>HDF5MetaDataCacheException</code> with 
      * no specified detail message.
      */
     public HDF5MetaDataCacheException() {
@@ -31,7 +31,7 @@ public class HDF5MetaDataCacheException extends HDF5LibraryException {
     }
 
     /**
-     * Constructs an <code>HDF5MetaDataCacheException</code> with
+     * Constructs an <code>HDF5MetaDataCacheException</code> with 
      * the specified detail message.
      *
      * @param   s   the detail message.

@@ -13,7 +13,7 @@ package ncsa.hdf.hdf5lib.exceptions;
 
 /**
  *  <p>
- *  The class HDF5Exception returns errors from the
+ *  The class HDF5Exception returns errors from the 
  *  Java HDF5 Interface.
  *  <p>
  *  Two sub-classes of HDF5Exception are defined:
@@ -26,43 +26,43 @@ package ncsa.hdf.hdf5lib.exceptions;
  *  </ol>
  *  <p>
  *  These exceptions are sub-classed to represent specific
- *  error conditions, as needed.  In particular,
+ *  error conditions, as needed.  In particular, 
  *  HDF5LibraryException has a sub-class for each major error
  *  code returned by the HDF5 library.
- *
+ * 
  */
 public class HDF5Exception extends Exception {
 
-
+	
     protected String detailMessage;
 
     /**
-     * Constructs an <code>HDF5Exception</code> with no specified
+     * Constructs an <code>HDF5Exception</code> with no specified 
      * detail message.
      */
      public HDF5Exception() {
-        super();
+		super();
      }
 
     /**
-     * Constructs an <code>HDF5Exception</code> with the specified
+     * Constructs an <code>HDF5Exception</code> with the specified 
      * detail message.
      *
      * @param   message   the detail message.
      */
     public HDF5Exception(String message) {
-        super();
-        detailMessage = message;
+		super();
+		detailMessage = message;
     }
 
     /**
      * Returns the detail message of this exception
      *
-     * @return  the detail message
+     * @return  the detail message 
      *          or <code>null</code> if this object does not
      *          have a detail message.
      */
     public String getMessage() {
-    return detailMessage;
+	return detailMessage;
     }
 }

@@ -23,7 +23,7 @@ package ncsa.hdf.hdf5lib.exceptions;
 public class HDF5DatatypeInterfaceException extends HDF5LibraryException {
 
     /**
-     * Constructs an <code>HDF5DatatypeInterfaceException</code> with
+     * Constructs an <code>HDF5DatatypeInterfaceException</code> with 
      * no specified detail message.
      */
     public HDF5DatatypeInterfaceException() {
@@ -31,7 +31,7 @@ public class HDF5DatatypeInterfaceException extends HDF5LibraryException {
     }
 
     /**
-     * Constructs an <code>HDF5DatatypeInterfaceException</code> with
+     * Constructs an <code>HDF5DatatypeInterfaceException</code> with 
      * the specified detail message.
      *
      * @param   s   the detail message.

@@ -68,22 +68,6 @@ public abstract class Dataset extends HObject
      */
     protected final int[] selectedIndex;
 
-    /** The number of elements to move from the start location in each dimension. */
-    protected long[] selectedStride;
-
-    /**
-     * The chunk size
-     */
-    protected long[] chunkSize;
-
-    /**
-     * Compression level.
-     */
-    protected String compression;
-
-    /** the datatype of this dataset. */
-    protected Datatype datatype;
-
     /**
      * Creates a Dataset object with specific name and path.
      * <p>
@@ -105,9 +89,6 @@ public abstract class Dataset extends HObject
         dims = null;
         selectedDims = null;
         startDims = null;
-        selectedStride = null;
-        chunkSize = null;
-        compression = "NONE";
 
         // by default
         // selectedIndex[0] = row index;
@@ -165,62 +146,14 @@ public abstract class Dataset extends HObject
     }
 
     /**
-     * Returns the selectedStride of the selected dataset.
-     */
-    public final long[] getStride()
-    {
-        if (rank <=0)
-            return null;
-
-        if (selectedStride == null)
-        {
-            selectedStride = new long[rank];
-            for (int i=0; i<rank; i++)
-                selectedStride[i] = 1;
-        }
-
-        return selectedStride;
-    }
-
-    /** Loads and returns the data value from file. */
-    public abstract Object read() throws Exception;
-
-    /** Write data values from memory into file. */
-    public abstract void write() throws Exception;
-
-    /** Copy this dataset to another group.
-     * @param pgroup the group which the dataset is copied to.
-     * @param name the name of the new dataset.
-     * @param dims the dimension sizes of the the new dataset.
-     * @param data the data to be copied.
-     * @return the new dataset.
-     */
-    public abstract Dataset copy(Group pgroup, String name, long[] dims, Object data) throws Exception;
-
-
-    /** returns the datatype of this dataset. */
-    public abstract Datatype getDatatype();
-
-    /** If data is loaded into memory, returns the data value, otherwise
-     *  load the data value into memory and returns the data value.
-     */
-    public final Object getData() throws Exception
-    {
-        if (data == null)
-            data = read(); // load the data;
-
-        return data;
-    }
-
-    /**
      * Removes the data value of this dataset in memory.
      */
-    public void clearData()
+    public final void clearData()
     {
         if (data != null)
         {
             data = null;
-            Runtime.getRuntime().gc();
+            System.gc();
         }
     }
 
@@ -258,22 +191,6 @@ public abstract class Dataset extends HObject
     public final int[] getSelectedIndex()
     {
         return selectedIndex;
-    }
-
-    /**
-     * Return the compression level.
-     */
-    public final String getCompression()
-    {
-        return compression;
-    }
-
-    /**
-     *  Returns the chunk sizes.
-     */
-    public final long[] getChunkSize()
-    {
-        return chunkSize;
     }
 
     /**
@@ -399,35 +316,5 @@ public abstract class Dataset extends HObject
         }
 
         return strArray;
-    }
-
-    /**
-     * Converts a string array into an array of bytes.
-     * <p>
-     * @param strings the array of string
-     * @param length the length of string
-     * @return the array of bytes.
-     */
-    public static final byte[] stringToByte(String[] strings, int length)
-    {
-        if (strings == null)
-            return null;
-
-        int size = strings.length;
-        byte[] bytes = new byte[size*length];
-
-        StringBuffer strBuff = new StringBuffer(length);
-        for (int i=0; i<size; i++)
-        {
-            if (strings[i].length() > length)
-                strings[i] = strings[i].substring(0, length-1);
-            // padding the string with space
-            strBuff.replace(0, length, " ");
-            strBuff.replace(0, length, strings[i]);
-            strBuff.setLength(length);
-            System.arraycopy(strBuff.toString().getBytes(), 0, bytes, length*i, length);
-        }
-
-        return bytes;
     }
 }

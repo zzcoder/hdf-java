@@ -22,7 +22,7 @@ package ncsa.hdf.hdf5lib.exceptions;
 public class HDF5AtomException extends HDF5LibraryException {
 
     /**
-     * Constructs an <code>HDF5AtomException</code> with no
+     * Constructs an <code>HDF5AtomException</code> with no 
      * specified detail message.
      */
      public HDF5AtomException() {
@@ -30,7 +30,7 @@ public class HDF5AtomException extends HDF5LibraryException {
     }
 
     /**
-     * Constructs an <code>HDF5AtomException</code> with the
+     * Constructs an <code>HDF5AtomException</code> with the 
      * specified detail message.
      *
      * @param   s   the detail message.

@@ -20,7 +20,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.net.MalformedURLException;
 
 /**
  * The ViewProperties holds all the HDFView static information.
@@ -31,13 +30,25 @@ import java.net.MalformedURLException;
 public class ViewProperties extends Properties
 {
     /** the version of the HDFViewer */
-    public static final String VERSION = "1.2";
+    public static final String VERSION = "1.0";
 
     /** the local property file name */
     public static final String USER_PROPS = "hdfview.props";
 
     /** the maximum number of most recent files */
-    public static final int MAX_RECENT_FILES = 15;
+    public static final int MAX_RECENT_FILES = 10;
+
+    /** name of default Gray palette */
+    public static final String PALETTE_GRAY = "Gray";
+
+    /** name of default Rainbow palette */
+    public static final String PALETTE_RAINBOW = "Rainbow";
+
+    /** name of default Nature palette */
+    public static final String PALETTE_NATURE = "Nature";
+
+    /** name of default Wave palette */
+    public static final String PALETTE_WAVE = "Wave";
 
     /** name of the tab delimiter */
     public static final String DELIMITER_TAB = "Tab";
@@ -51,29 +62,23 @@ public class ViewProperties extends Properties
     /** name of the tab delimiter */
     public static final String DELIMITER_COLON = "Colon";
 
-    /** name of the tab delimiter */
-    public static final String DELIMITER_SEMI_COLON = "Semi-Colon";
+    /** browser path */
+    private static String browserPath = "";
 
     /** user's guide */
-    private static String usersGuide = "http://hdf.ncsa.uiuc.edu/hdf-java-html/hdfview/UsersGuide/index.html";
-
-    /** the font size */
-    private static String fontSizeStr = "12";
-
-    /** the font size */
-    private static int fontSize = 12;
+    private static String usersGuide = "";
 
     /** the full path of H4toH5 converter */
     private static String h4toh5 ="";
+
+    /** name of the default palette */
+    private static String defaultPalette = PALETTE_GRAY;
 
     /** data delimiter */
     private static String delimiter = DELIMITER_TAB;
 
     /** a list of most recent files */
     private static Vector mrf;
-
-    /** the root directory of the HDFView */
-    private static String rootDir;
 
     private static Icon hdfIcon, h4Icon, h5Icon, largeHdfIcon,
         blankIcon, helpIcon,
@@ -92,8 +97,7 @@ public class ViewProperties extends Properties
     public ViewProperties(String viewRoot)
     {
         super();
-        mrf = new Vector(MAX_RECENT_FILES);
-        rootDir = viewRoot;
+        mrf = new Vector();
 
         // find the property file
         String uh="", ud="", h5v="", fn;
@@ -124,9 +128,6 @@ public class ViewProperties extends Properties
             catch (Exception ex) { propertyFile = null; }
         }
     }
-
-    /** returns the root directory where the HDFView is installed. */
-    public static String getViewRoot() { return rootDir; }
 
     public static Icon getFoldercloseIcon() { return foldercloseIcon; }
 
@@ -187,16 +188,16 @@ public class ViewProperties extends Properties
         URL url= null, url2=null, url3=null;
 
         try {
-            url = new URL("file://localhost/"+rootPath+ "/lib/jhdfview.jar");
-        } catch (MalformedURLException mfu) {;}
+            url = new URL("file:"+rootPath+"/lib/jhdfview.jar");
+        } catch (java.net.MalformedURLException mfu) {;}
 
         try {
-            url2 = new URL("file://localhost/"+rootPath+ "/");
-        } catch (MalformedURLException mfu) {;}
+            url2 = new URL("file:"+rootPath+"/");
+        } catch (java.net.MalformedURLException mfu) {;}
 
         try {
-            url3 = new URL("file://localhost/"+rootPath+"/src/");
-        } catch (MalformedURLException mfu) {;}
+            url3 = new URL("file:"+rootPath+"/src/");
+        } catch (java.net.MalformedURLException mfu) {;}
 
         URL uu[] = {url, url2, url3};
         URLClassLoader cl = new URLClassLoader(uu);
@@ -394,7 +395,7 @@ public class ViewProperties extends Properties
     }
 
     /** Load user properties from property file */
-    public void load() throws Exception
+    public void load()
     {
         if (propertyFile == null)
             return;
@@ -405,34 +406,14 @@ public class ViewProperties extends Properties
             fis.close();
         } catch (Exception e) {;}
 
-        String str = (String)get("users.guide");
+        delimiter = (String)get("data.delimiter");
+        browserPath = (String)get("browser.path");
+        usersGuide = (String)get("users.guide");
+        defaultPalette = (String)get("default.palette");
+        h4toh5 = (String)get("h4toh5.converter");
 
-        if (str != null)
-        {
-            String tmpUG = str.toLowerCase();
-            if (tmpUG.startsWith("file:") || tmpUG.startsWith("http:"))
-                usersGuide = str;
-        }
-        else
-        {
-            File tmpFile = new File(str);
-            if (tmpFile.exists())
-                usersGuide = "file:"+str;
-            else
-                usersGuide = "http://"+str;
-        }
-
-        str = (String)get("data.delimiter");
-        if (str != null && str.length()>0)
-            delimiter = str;
-
-        str = (String)get("h4toh5.converter");
-        if (str != null && str.length()>0)
-            h4toh5 = str;
-
-        str = (String)get("font.size");
-        if (str != null && str.length()>0)
-            setFontSize(str);
+        if (delimiter == null ) delimiter = DELIMITER_TAB;
+        if (defaultPalette == null ) defaultPalette = PALETTE_GRAY;
 
         // load the most recent file list from the property file
         if (mrf != null)
@@ -467,14 +448,17 @@ public class ViewProperties extends Properties
         else
             put("data.delimiter", delimiter);
 
+        if (browserPath!=null)
+            put("browser.path", browserPath);
+
         if (usersGuide != null)
             put("users.guide", usersGuide);
 
+        if (defaultPalette != null)
+            put("default.palette", defaultPalette);
+
         if (h4toh5 != null)
             put("h4toh5.converter", h4toh5);
-
-        if (fontSizeStr != null)
-            put("font.size", fontSizeStr);
 
         if (mrf != null)
         {
@@ -485,7 +469,6 @@ public class ViewProperties extends Properties
             for (int i=0; i<minSize; i++)
             {
                 theFile = (String)mrf.elementAt(size-minSize+i);
-
                 if (theFile != null && theFile.length()>0)
                  put("recent.file"+i, theFile);
             }
@@ -504,29 +487,17 @@ public class ViewProperties extends Properties
     /** returns the maximum number of the most recent file */
     public static int getMaxRecentFiles() { return MAX_RECENT_FILES; }
 
-    /** return the path of the H5View uers guide */
-    public static String getUsersGuide() { return usersGuide; };
+    /** return the name of the default palette: RAINBOW or GRAY */
+    public static String getDefaultPalette() { return defaultPalette; }
 
     /** returns the delimiter of data values */
     public static String getDataDelimiter() { return delimiter; }
 
-    /** returns the font size */
-    public static String getFontSize() { return fontSizeStr; }
+    /** returns the path of browser */
+    public static String getBrowserPath() { return browserPath; };
 
-    /** returns the font size */
-    public static int getFontSizeInt() { return fontSize; }
-
-    /** sets the font size */
-    public static void setFontSize(String fsize) {
-        try { fontSize = Integer.parseInt(fsize); }
-        catch (Exception ex ) {fontSize = 12;}
-
-        fontSize = (fontSize/2)*2;
-        if (fontSize > 20 || fontSize < 10)
-            fontSize = 12;
-
-        fontSizeStr = String.valueOf(fontSize);
-    }
+    /** return the path of the H5View uers guide */
+    public static String getUsersGuide() { return usersGuide; };
 
     /** returns the path of the H5toH5 converter */
     public static String getH4toH5() { return h4toh5; };
@@ -534,24 +505,14 @@ public class ViewProperties extends Properties
     /** returns the list of most recent files */
     public static Vector getMRF(){ return mrf;}
 
-    /** set the path of H5View User's guide */
-    public static void setUsersGuide( String str)
-    {
-        if (str == null || str.length()<=0)
-            return;
+    /** set the default palette to gray */
+    public static void setDefaultPalette(String p) { defaultPalette = p; };
 
-        String tmpUG = str.toLowerCase();
-        if (tmpUG.startsWith("file:") || tmpUG.startsWith("http:"))
-            usersGuide = str;
-        else
-        {
-            File tmpFile = new File(str);
-            if (tmpFile.exists())
-                usersGuide = "file:"+str;
-            else
-                usersGuide = "http://"+str;
-        }
-    }
+    /** set the path of browser */
+    public static void setBrowserPath( String bPath) { browserPath = bPath; };
+
+    /** set the path of H5View User's guide */
+    public static void setUsersGuide( String ug) { usersGuide = ug; };
 
     /** set the path of the H5to H5 converter */
     public static void setH4toH5( String tool) { h4toh5 = tool; };

@@ -12,6 +12,8 @@
  package ncsa.hdf.object;
 
  import java.lang.reflect.*;
+ import ncsa.hdf.hdf5lib.*;
+ import ncsa.hdf.hdf5lib.exceptions.*;
 
 /**
  * Attribute holds a (name, value) pair of HDF4/5 attribute.
@@ -21,9 +23,6 @@
  */
 public class Attribute implements Metadata
 {
-    /** the default length of a string attribute */
-    public static final int DEFAULT_STRING_ATTRIBUTE_LENGTH = 256;
-
     /**
      * The name of the attribute.
      */
@@ -32,24 +31,22 @@ public class Attribute implements Metadata
     /**
      * The datatype of this attribute.
      */
-    private final Datatype type;
+    private final int datatype;
 
     /**
      * The rank of the data value of this attribute.
      */
-    private int rank;
+    private final int dataRank;
 
     /**
      * The dimension sizes of the data value of this attribute.
      */
-    private long[] dims;
+    private final long[] dataDims;
 
     /**
      * The data value of this attribute.
      */
     private Object value;
-
-    private boolean isUnsigned;
 
     /**
      * Create an attribute with specified name, data type and dimension sizes.
@@ -62,19 +59,26 @@ public class Attribute implements Metadata
      * @param type the data type of the attribute.
      * @param dims the dimension sizes of the data of the attribute.
      */
-    public Attribute(String attrName, Datatype attrType, long[] attrDims)
+    public Attribute(String name, int type, long[] dims)
     {
-        name = attrName;
-        type = attrType;
-        dims = attrDims;
-        value = null;
-        rank = 0;
+        this.name = name;
+        this.datatype = type;
+        this.dataDims = dims;
 
         if (dims != null)
-            rank = dims.length;
+            this.dataRank = dims.length;
+        else
+            this.dataRank = 0;
 
-        isUnsigned = (type.getDatatypeSign()==Datatype.SIGN_NONE);
+        this.value = null;
+    }
 
+    /**
+     * Returns the Class of this Attribute.
+     */
+    public Class getImplementationClass()
+    {
+        return this.getClass();
     }
 
     /**
@@ -88,9 +92,9 @@ public class Attribute implements Metadata
     /**
      * Sets the value of this attribute.
      */
-    public void setValue(Object theValue)
+    public void setValue(Object value)
     {
-        value = theValue;
+        this.value = value;
     }
 
     /**
@@ -106,7 +110,7 @@ public class Attribute implements Metadata
      */
     public int getRank()
     {
-        return rank;
+        return dataRank;
     }
 
     /**
@@ -114,31 +118,24 @@ public class Attribute implements Metadata
      */
     public long[] getDataDims()
     {
-        return dims;
+        return dataDims;
     }
 
     /**
      * Returns the datatype of the attribute.
      */
-    public Datatype getType()
+    public int getType()
     {
-        return type;
-    }
-
-    /**
-     * Check the data type of the attribute is unsigned.
-     */
-    public boolean isUnsigned()
-    {
-        return isUnsigned;
+        return datatype;
     }
 
     /**
      * Returns the string representation of the value of this attribute.
      * <p>
      * @param delimiter the delimiter to separate individual data points.
+     * @param isUnsigned True is the attribute value is unsigned the integer.
      */
-    public String toString(String delimiter)
+    public String toString(String delimiter, boolean isUnsigned)
     {
         if (value == null)
             return null;

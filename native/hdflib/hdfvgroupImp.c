@@ -349,16 +349,6 @@ jint ref)
 	return (Vaddtagref((int32) vgroup_id, (int32) tag, (int32) ref));
 }
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_Vdeletetagref 
-( JNIEnv *env,
-jclass class, 
-jint vgroup_id,
-jint tag,
-jint ref)
-{
-	return (Vdeletetagref((int32) vgroup_id, (int32) tag, (int32) ref));
-}
-
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_Vclose_I 
 ( JNIEnv *env,
 jclass class, 
