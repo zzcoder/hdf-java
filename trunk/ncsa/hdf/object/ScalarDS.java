@@ -103,6 +103,8 @@ public abstract class ScalarDS extends Dataset
      */
     protected int interlace;
 
+    protected double[] imageDataRange;
+
     /**
      * The indexed RGB color model with 256 colors.
      * <p>
@@ -162,6 +164,7 @@ public abstract class ScalarDS extends Dataset
         isUnsigned = false;
         interlace = -1;
         datatype = null;
+        imageDataRange = null;
     }
 
     /**
@@ -275,5 +278,10 @@ public abstract class ScalarDS extends Dataset
      * @see ncsa.hdf.object.Dataset#convertFromUnsignedC(Object data_in)
      */
     public abstract void convertFromUnsignedC();
+
+    public double[] getImageDataRange()
+    {
+        return imageDataRange;
+    }
 
 }

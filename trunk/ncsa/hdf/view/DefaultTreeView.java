@@ -1124,36 +1124,43 @@ implements TreeView, ActionListener {
         FileFormat fileFormat = null;
         MutableTreeNode fileRoot = null;
         String msg = "";
-
         if (isFileOpen(filename))
             throw new UnsupportedOperationException("File is in use.");
+
+        File tmpFile = new File(filename);
+        if (!tmpFile.exists())
+            throw new UnsupportedOperationException("File does not exist.");
+
+        if (!tmpFile.canWrite())
+            accessID = FileFormat.READ;
 
         Enumeration keys = FileFormat.getFileFormatKeys();
 
         String theKey = null;
         while (keys.hasMoreElements()) {
             theKey = (String)keys.nextElement();
-
-            if (theKey.equals(FileFormat.FILE_TYPE_HDF4) ||
-                theKey.equals(FileFormat.FILE_TYPE_HDF5))
+            if (theKey.equals(FileFormat.FILE_TYPE_HDF4))
+            {
+                FileFormat h4format = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4);
+                if (h4format !=null && h4format.isThisType(filename))
+                    fileFormat = h4format.open(filename, accessID);
                 continue;
-
-            FileFormat theformat = FileFormat.getFileFormat(theKey);
-            if (theformat.isThisType(filename)) {
-                fileFormat = theformat.open(filename, accessID);
-                break;
             }
-        }
+            else if (theKey.equals(FileFormat.FILE_TYPE_HDF5))
+            {
+                FileFormat h5format = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+                if (h5format !=null && h5format.isThisType(filename))
+                    fileFormat = h5format.open(filename, accessID);
+                continue;
+            }
+            else
+            {
 
-        // search for HDF4 and HDF5 last. File format built on hdf4 or hdf5
-        // will be chosen first.
-        if (fileFormat == null) {
-            FileFormat h4format = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4);
-            FileFormat h5format = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-            if (h4format !=null && h4format.isThisType(filename)) {
-                fileFormat = h4format.open(filename, accessID);
-            } else if (h5format !=null && h5format.isThisType(filename)) {
-                fileFormat = h5format.open(filename, accessID);
+                FileFormat theformat = FileFormat.getFileFormat(theKey);
+                if (theformat.isThisType(filename)) {
+                    fileFormat = theformat.open(filename, accessID);
+                    break;
+                }
             }
         }
 

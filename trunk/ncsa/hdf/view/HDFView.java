@@ -113,7 +113,7 @@ public class HDFView extends JFrame
     private ViewProperties props;
 
     /** the list of most recent files */
-    private Vector recentFiles;
+    //private Vector recentFiles;
 
     /** GUI component: the TreeView */
     private TreeView treeView;
@@ -168,6 +168,9 @@ public class HDFView extends JFrame
     /** The back button for users guide. */
     private JButton usersGuideBackButton;
 
+    /** to add and display url */
+    private JComboBox urlBar;
+
     /**
      * Constructs the HDFView with a given root directory, where the
      * HDFView is installed, and opens the given file in the viewer.
@@ -196,7 +199,7 @@ public class HDFView extends JFrame
         ViewProperties.loadIcons(rootDir);
         props = new ViewProperties(rootDir);
         try { props.load(); } catch (Exception ex){System.out.println(ex);}
-        recentFiles = props.getMRF();
+        //recentFiles = props.getMRF();
         currentDir = ViewProperties.getWorkDir();
         if (currentDir == null) currentDir = System.getProperty("user.dir");
 
@@ -249,7 +252,11 @@ public class HDFView extends JFrame
 
                 try {
                     treeView.openFile(filename, FileFormat.WRITE);
-                     try { updateRecentFiles(filename); } catch (Exception ex) {}
+                    try {
+                        urlBar.removeItem(filename);
+                        urlBar.insertItemAt(filename, 0);
+                        urlBar.setSelectedIndex(0);
+                        } catch (Exception ex2 ) {}
                 } catch (Exception ex) {
                     showStatus(ex.toString());
                 }
@@ -317,10 +324,28 @@ public class HDFView extends JFrame
         } catch (Exception ex ) {}
 
         this.setJMenuBar(createMenuBar());
+        JToolBar toolBar = createToolBar();
+
+        /** create URL address bar */
+        urlBar = new JComboBox(props.getMRF());
+        urlBar.setMaximumRowCount(10);
+        urlBar.setEditable(true);
+        urlBar.addActionListener(this);
+        urlBar.setActionCommand("Open file: from file bar");
+        //urlBar.addItem("http://hdf.ncsa.uiuc.edu/hdf-java-html/hdf5_test.h5");
+
+        JPanel urlPane = new JPanel();
+        urlPane.setLayout(new BorderLayout());
+        urlPane.add(new JLabel(" File/URL "), BorderLayout.WEST);
+        urlPane.add(urlBar, BorderLayout.CENTER);
+        JPanel toolPane = new JPanel();
+        toolPane.setLayout(new GridLayout(2,1,0,0));
+        toolPane.add(toolBar);
+        toolPane.add(urlPane);
 
         JPanel mainPane = (JPanel)getContentPane();
         mainPane.setLayout(new BorderLayout());
-        mainPane.add(createToolBar(), BorderLayout.NORTH);
+        mainPane.add(toolPane, BorderLayout.NORTH);
         mainPane.add(splitPane, BorderLayout.CENTER);
         mainPane.setPreferredSize(d);
 
@@ -343,8 +368,6 @@ public class HDFView extends JFrame
         item.setActionCommand("Open file");
         item.setAccelerator( KeyStroke.getKeyStroke(KeyEvent.VK_O, Event.CTRL_MASK, true));
         fileMenu.add(item);
-
-        fileMenu.addSeparator();
 
         item = new JMenuItem( "Open Read-Only");
         item.setMnemonic(KeyEvent.VK_R);
@@ -404,6 +427,7 @@ public class HDFView extends JFrame
         fileMenu.addSeparator();
 
         // add recent files
+        /*
         if (recentFiles != null)
         {
             String theFile = null;
@@ -419,10 +443,11 @@ public class HDFView extends JFrame
                 item = new JMenuItem(txtName);
                 item.setName(theFile);
                 item.addActionListener(this);
-                item.setActionCommand("recent.file");
+                item.setActionCommand("Open file: recent file");
                 fileMenu.add(item);
             }
         }
+        */
 
         // add window menu
         windowMenu.setMnemonic('w');
@@ -803,66 +828,6 @@ public class HDFView extends JFrame
         }
     }
 
-    /** add/update a file to the most recent file list */
-    private void updateRecentFiles(String newFile)
-    {
-        if (recentFiles == null)
-            return;
-
-        // if the exists in the recent file list, remvoe it first
-        // and add it to the bottom to keep the recent file list sorted.
-        if (recentFiles.contains(newFile))
-            recentFiles.remove(newFile);
-
-        if (recentFiles.size() == ViewProperties.MAX_RECENT_FILES)
-        {
-            recentFiles.remove(ViewProperties.MAX_RECENT_FILES-1);
-            fileMenu.remove(fileMenu.getItemCount()-1);
-        }
-
-        recentFiles.insertElementAt(newFile, 0);
-        JMenuItem fileItem=null, theItem=null;
-        int n = fileMenu.getItemCount();
-        for (int i=0; i<n; i++)
-        {
-            theItem = fileMenu.getItem(i);
-
-            if (theItem != null && newFile.equals(theItem.getName()))
-            {
-                fileItem = theItem;
-                break;
-            }
-        }
-
-        if (fileItem != null)
-        {
-            // file is listed in the recent files, rearrange it
-            fileMenu.remove(fileItem);
-            fileMenu.add(fileItem);
-        }
-        else
-        {
-            // add a new item to the menu
-            String txt = newFile;
-            if (txt.length() > 35)
-                txt = txt.substring(0, 10)+"....."+txt.substring(txt.length()-20);
-            fileItem = new JMenuItem(txt);
-            fileItem.setName(newFile);
-            fileItem.addActionListener(this);
-            fileItem.setActionCommand("recent.file");
-            fileMenu.add(fileItem);
-            n++;
-        }
-
-        // rearrange the menu items to put the most recent on the top
-        int size = recentFiles.size()-1;
-        for (int i=0; i<size-1; i++)
-        {
-            fileMenu.add(fileMenu.getItem(n-i-2), n-i-1);
-        }
-        fileMenu.add(fileItem, n-size-1);
-    }
-
     // To do: Implementing java.io.ActionListener
     public void actionPerformed(ActionEvent e)
     {
@@ -874,31 +839,70 @@ public class HDFView extends JFrame
         else if (cmd.startsWith("Open file"))
         {
             int fileAccessID = FileFormat.WRITE;
+            String filename = null;
 
             if (cmd.equals("Open file read-only"))
                 fileAccessID = FileFormat.READ;
 
-            JFileChooser fchooser = new JFileChooser(currentDir);
-            fchooser.setFileFilter(DefaultFileFilter.getFileFilter());
+            if (cmd.equals("Open file: from file bar"))
+            {
+                filename = (String) urlBar.getSelectedItem();
+                if (filename == null)
+                   return;
 
-            int returnVal = fchooser.showOpenDialog(this);
-            if(returnVal != JFileChooser.APPROVE_OPTION)
+                // local file
+                if (!(filename.startsWith("http://") || filename.startsWith("ftp://")))
+                {
+                    File tmpFile = new File(filename);
+                    if (tmpFile.exists() && tmpFile.isDirectory())
+                    {
+                        currentDir = filename;
+                        cmd = "Open file";
+                    }
+                }
+            }
+
+            if (cmd.equals("Open file"))
+            {
+                JFileChooser fchooser = new JFileChooser(currentDir);
+                fchooser.setFileFilter(DefaultFileFilter.getFileFilter());
+
+                int returnVal = fchooser.showOpenDialog(this);
+                if(returnVal != JFileChooser.APPROVE_OPTION)
+                    return;
+
+                File choosedFile = fchooser.getSelectedFile();
+                if (choosedFile == null)
+                    return;
+
+                if (choosedFile.isDirectory())
+                    currentDir = choosedFile.getPath();
+                else
+                    currentDir = choosedFile.getParent();
+
+                filename = choosedFile.getAbsolutePath();
+            }
+
+            if (filename == null)
                 return;
 
-            File choosedFile = fchooser.getSelectedFile();
-            if (choosedFile == null)
+            try {
+                urlBar.removeItem(filename);
+                urlBar.insertItemAt(filename, 0);
+                urlBar.setSelectedIndex(0);
+            } catch (Exception ex ) {}
+
+            if (filename.startsWith("http://") || filename.startsWith("ftp://"))
+            {
+                filename = loadRemoteFile(filename);
+            }
+
+            if (filename == null || filename.length() < 1)
                 return;
-
-            if (choosedFile.isDirectory())
-                currentDir = choosedFile.getPath();
-            else
-                currentDir = choosedFile.getParent();
-
-            String filename = choosedFile.getAbsolutePath();
 
             try {
                 treeView.openFile(filename, fileAccessID);
-                try { updateRecentFiles(filename); } catch (Exception ex) {}
+                //try { updateRecentFiles(filename); } catch (Exception ex) {}
             } catch (Exception ex)
             {
                 String msg = "Failed to open file "+filename+"\n"+ex;
@@ -926,7 +930,11 @@ public class HDFView extends JFrame
             String filename = dialog.getFile();
             try {
                 treeView.openFile(filename, FileFormat.WRITE);
-                try { updateRecentFiles(filename); } catch (Exception ex) {}
+                try {
+                    urlBar.removeItem(filename);
+                    urlBar.insertItemAt(filename, 0);
+                    urlBar.setSelectedIndex(0);
+                    } catch (Exception ex2 ) {}
             } catch (Exception ex)
             {
                 toolkit.beep();
@@ -936,28 +944,6 @@ public class HDFView extends JFrame
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             }
-        }
-        else if (cmd.equals("recent.file"))
-        {
-            JMenuItem mi = (JMenuItem)e.getSource();
-
-            String filename = mi.getName();
-            try {
-                treeView.openFile(filename, FileFormat.WRITE);
-            } catch (Exception ex)
-            {
-                try {
-                    treeView.openFile(filename, FileFormat.READ);
-                } catch (Exception ex2)
-                {
-                    String msg = "Failed to open file "+filename+"\n"+ex2.getMessage();
-                    toolkit.beep();
-                    JOptionPane.showMessageDialog( this, msg, getTitle(), JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-            }
-
-            try { updateRecentFiles(filename); } catch (Exception ex) {}
         }
         else if (cmd.equals("Close file"))
         {
@@ -997,7 +983,12 @@ public class HDFView extends JFrame
                 List list = treeView.getCurrentFiles();
                 if (list != null && list.size()>0) {
                     FileFormat newFile = (FileFormat)list.get(list.size()-1);
-                    updateRecentFiles(newFile.getFilePath());
+                    try {
+                        String filename = newFile.getFilePath();
+                        urlBar.removeItem(filename);
+                        urlBar.insertItemAt(filename, 0);
+                        urlBar.setSelectedIndex(0);
+                    } catch (Exception ex2 ) {}
                 }
             }
             catch (Exception ex) {
@@ -1090,7 +1081,11 @@ public class HDFView extends JFrame
 
                 try {
                     treeView.openFile(filename, FileFormat.WRITE);
-                     try { updateRecentFiles(filename); } catch (Exception ex) {}
+                    try {
+                        urlBar.removeItem(filename);
+                        urlBar.insertItemAt(filename, 0);
+                        urlBar.setSelectedIndex(0);
+                    } catch (Exception ex2 ) {}
                 } catch (Exception ex)
                 {
                     showStatus(ex.toString());
@@ -1320,6 +1315,20 @@ public class HDFView extends JFrame
 
     public void dispose() {
         // save the current user properties into property file
+        try {
+            Vector mrf = props.getMRF();
+            if (mrf != null && urlBar.getItemCount()>0)
+            {
+                int n = urlBar.getItemCount();
+                for (int i = 0; i< n; i++)
+                {
+                    String filename = (String)urlBar.getItemAt(i);
+                    if (!mrf.contains(filename))
+                        mrf.add(filename);
+                }
+            }
+        } catch (Exception ex) {}
+
         try { props.save() ; }
         catch (Exception ex) {}
 
@@ -1600,4 +1609,83 @@ public class HDFView extends JFrame
         frame.pack();
         frame.setVisible(true);
      }
+
+     /** load remote file and save it to local temporary directory*/
+     private String loadRemoteFile(String urlStr)
+     {
+         String localFile = null;
+
+         if (urlStr == null)
+             return null;
+
+         if (urlStr.startsWith("http://"))
+             localFile = urlStr.substring(7);
+         else if (urlStr.startsWith("ftp://"))
+             localFile = urlStr.substring(6);
+         else
+             return null;
+
+         localFile = localFile.replace('/', '@');
+         localFile = localFile.replace('\\', '@');
+
+         // search the local file cache
+        String tmpDir = System.getProperty("java.io.tmpdir");
+        localFile =   tmpDir + localFile;
+
+        File tmpFile = new File( localFile);
+        if (tmpFile.exists())
+            return localFile;
+
+        URL url = null;
+
+        try { url = new URL(urlStr); }
+        catch (Exception ex)
+        {
+            url = null;
+            toolkit.beep();
+            JOptionPane.showMessageDialog(
+                this,
+                ex,
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        BufferedInputStream in = null;
+        BufferedOutputStream out = null;
+        try
+        {
+            in = new BufferedInputStream(url.openStream());
+            out = new BufferedOutputStream(new FileOutputStream(tmpFile));
+        }
+        catch (Exception ex)
+        {
+            in = null;
+            toolkit.beep();
+            JOptionPane.showMessageDialog(
+                this,
+                ex,
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            try { in.close();} catch (Exception ex2) {}
+            try { out.close();} catch (Exception ex2) {}
+            return null;
+        }
+
+        setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
+        byte[] buff = new byte[512]; // set the default buff size to 512
+        try {
+            int n = 0;
+            while ((n = in.read(buff)) > 0)
+                out.write(buff, 0, n);
+        } catch (Exception ex) {}
+
+        try { in.close();} catch (Exception ex2) {}
+        try { out.close();} catch (Exception ex2) {}
+
+        setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
+
+         return localFile;
+     }
+
 }

@@ -199,8 +199,6 @@ implements ImageView, ActionListener
         data = null;
         NT = 0;
         toolkit = Toolkit.getDefaultToolkit();
-        dataRange = new double[2];
-        dataRange[0] = dataRange[1] = 0;
         rotateRelatedItems = new Vector();
 
         HObject hobject = (HObject)viewer.getTreeView().getCurrentObject();
@@ -210,6 +208,13 @@ implements ImageView, ActionListener
         }
 
         dataset = (ScalarDS)hobject;
+        dataRange = dataset.getImageDataRange();
+        if (dataRange == null)
+        {
+            dataRange = new double[2];
+            dataRange[0] = dataRange[1] = 0;
+        }
+
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout());
 
@@ -335,6 +340,20 @@ implements ImageView, ActionListener
         item.setActionCommand("Edit palette");
         item.setEnabled(!isTrueColor);
         menu.add(item);
+
+        item = new JMenuItem( "Set Data Range");
+        item.addActionListener(this);
+        item.setActionCommand("Set data range");
+        item.setEnabled(!isTrueColor);
+        try {
+            String cname = data.getClass().getName();
+            char dname = cname.charAt(cname.lastIndexOf("[")+1);
+            if (dname == 'B')
+                item.setEnabled(false);
+        } catch (Exception ex) {}
+        menu.add(item);
+
+       menu.addSeparator();
 
         item = new JMenuItem( "Show Histogram");
         item.addActionListener(this);
@@ -1142,6 +1161,38 @@ implements ImageView, ActionListener
         else if (cmd.equals("Edit palette")) {
             showColorTable();
         }
+        else if (cmd.equals("Set data range"))
+        {
+            double[] drange = dataset.getImageDataRange();
+            String minmaxStr = null;
+
+            if (drange != null)
+                minmaxStr = Array.get(drange,0)+","+ Array.get(drange,1);
+
+            String msg = "Enter data range, (min, max)."+ "\n\nFor example, \"0, 255\" \n\n";
+            minmaxStr = JOptionPane.showInputDialog(this, msg, minmaxStr);
+
+            if (minmaxStr == null)
+                return;
+
+            double x0=0, x1=0;
+            int idx = minmaxStr.indexOf(',');
+            if (idx > 0)
+            {
+                try {
+                    x0 = Double.valueOf(minmaxStr.substring(0, idx).trim()).doubleValue();
+                    x1 = Double.valueOf(minmaxStr.substring(idx+1).trim()).doubleValue();
+                } catch (Exception ex ) { x0=x1=0; }
+            }
+            if (x1 <= x0)
+                return;
+
+            if (drange != null && drange[0]==x0 && drange[1]==x1)
+                return;
+
+            double newRange[] = {x0, x1};
+            changeDataRange(newRange);
+        }
         else if (cmd.equals("Flip horizontal")) {
             flip(FLIP_HORIZONTAL);
         }
@@ -1517,6 +1568,25 @@ implements ImageView, ActionListener
         }
 
         return status;
+    }
+
+    private void changeDataRange(double[] newRange)
+    {
+       try {
+            indexedImageData = Tools.getBytes(data, newRange);
+            int w = dataset.getWidth();
+            int h = dataset.getHeight();
+            image = createIndexedImage(indexedImageData, imagePalette, w, h);
+            imageComponent.setImage(image);
+            zoomTo(zoomFactor);
+        } catch (Throwable err)
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+                err.getMessage(),
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /** PaletteComponent draws the palette on the side of the image. */
@@ -2530,8 +2600,5 @@ implements ImageView, ActionListener
             engine = new Thread(this);
             engine.start();
         }
-
-
-
     } // private class Animation extends JDialog
 }
