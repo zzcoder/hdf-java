@@ -3933,8 +3933,21 @@ withval="";
 if test "${with_libsz+set}" = set; then
   withval="$with_libsz"
 
+else
+  withval=no
 fi;
 
+case "$withval" in
+  yes)
+    { { echo "$as_me:$LINENO: error: SZIP library needed for compilation." >&5
+echo "$as_me: error: SZIP library needed for compilation." >&2;}
+   { (exit 1); exit 1; }; }
+    ;;
+  no)
+      SZLIB=""
+	echo "SZIP suppressed";
+    ;;
+  *)
 if test -n "$withval" ; then
     sz_lib="`echo $withval |cut -f2 -d, -s`"
 	SZLIB=$sz_lib"/libsz.a"
@@ -3943,6 +3956,8 @@ if test -n "$HDF5LIB" ; then
 SZLIB=$HDF5LIB"/libsz.a"
 fi
 fi
+;;
+esac
 
 
 USEH45="no"

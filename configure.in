@@ -153,8 +153,17 @@ ac_cv_lib_HDF5INC=$HDF5INC
 
 withval="";
 AC_SUBST(SZLIB) SZLIB=""
-AC_ARG_WITH(libsz,[  --with-libsz=LIB     Path to the gzip library (requied if not in default path)],,)
+AC_ARG_WITH(libsz,[  --with-libsz=LIB     Path to the gzip library (requied if not in default path)],,withval=no)
 
+case "$withval" in
+  yes)
+    AC_MSG_ERROR(SZIP library needed for compilation.)
+    ;;
+  no)
+      SZLIB=""
+	echo "SZIP suppressed";
+    ;;
+  *)
 if test -n "$withval" ; then
     sz_lib="`echo $withval |cut -f2 -d, -s`"
 	SZLIB=$sz_lib"/libsz.a"
@@ -163,6 +172,8 @@ if test -n "$HDF5LIB" ; then
 SZLIB=$HDF5LIB"/libsz.a"
 fi
 fi
+;;
+esac
 
 dnl check for libh4toh5  == if with-h4toh5 is not set, then can
 dnl only build hdf and hdf5 separately.
