@@ -59,7 +59,7 @@ Version 1.0 is the first release of the HDFView. It has the following limitation
 
 4) System requirements
 
-The Java 2 Runtime Environment, Sun JRE1.3.1_02, is bundled in this product.
+The Java 2 Runtime Environment, Sun JRE1.3.1, is bundled in this product.
 No aditional software is required. 
 
 Since the Java 2 Runtime Environment is bundled in the HDFView, download and 
@@ -101,7 +101,7 @@ For Windows
     Copyright           - The copyright information.
     hdfview.exe         - The excutable program to start the HDFView
     docs/UsersGuide     - The HDFView User's Guide
-    jre/                - The Java 2 Runtime Environment: Sun JRE 1.3.1_02
+    jre/                - The Java 2 Runtime Environment: Sun JRE 1.3.1
     lib/
         jhdf.jar        - The jar file containing all the classes of the Java
                           wrapper of the HDF 4 library.
@@ -122,7 +122,7 @@ For Unix
     Copyright           - The copyright information.
     hdfview             - The shell script to start the HDFView
     docs/UsersGuide     - The HDFView User's Guide
-    jre/                - The Java 2 Runtime Environment: Sun JRE 1.3.1_02
+    jre/                - The Java 2 Runtime Environment: Sun JRE 1.3.1
     lib/
         jhdf.jar        - The jar file containing all the classes of the Java
                           wrapper of the HDF 4 library.
