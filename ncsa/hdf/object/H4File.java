@@ -360,7 +360,7 @@ public class H4File extends File implements FileFormat
         try {
             String[] objName = {""};
             int[] sdInfo = {0, 0, 0};
-            int[] tmpDim = new int[1];
+            int[] tmpDim = new int[HDFConstants.MAX_VAR_DIMS];
             HDFLibrary.SDgetinfo(srcdid, objName, tmpDim, sdInfo);
             int numberOfAttributes = sdInfo[2];
 
@@ -1000,14 +1000,15 @@ public class H4File extends File implements FileFormat
         int id=-1, ref=-1;
         H4GRImage gr = null;
         String[] objName = {""};
-        int[]  tmpInfo = new int[4];
+        int[] imgInfo = new int[4];
+        int[] dim_sizes = {0, 0};
         int tag = HDFConstants.DFTAG_RIG;
 
         try
         {
             id = HDFLibrary.GRselect(grid, index);
             ref = HDFLibrary.GRidtoref(id);
-            HDFLibrary.GRgetiminfo(id, objName, tmpInfo, tmpInfo);
+            HDFLibrary.GRgetiminfo(id, objName, imgInfo, dim_sizes);
         } catch (HDFException ex)
         {
             id = HDFConstants.FAIL;
@@ -1054,7 +1055,8 @@ public class H4File extends File implements FileFormat
         int id=-1, ref=-1;
         H4SDS sds = null;
         String[] objName = {""};
-        int[]  tmpInfo = new int[4];
+        int[] tmpInfo = new int[HDFConstants.MAX_VAR_DIMS];
+        int[] sdInfo = {0, 0, 0};
         int tag = HDFConstants.DFTAG_NDG;
 
         boolean isCoordvar = false;
@@ -1062,7 +1064,7 @@ public class H4File extends File implements FileFormat
         {
             id = HDFLibrary.SDselect(sdid, index);
             ref = HDFLibrary.SDidtoref(id);
-            HDFLibrary.SDgetinfo(id, objName, tmpInfo, tmpInfo);
+            HDFLibrary.SDgetinfo(id, objName, tmpInfo, sdInfo);
             isCoordvar = HDFLibrary.SDiscoordvar(id);
         } catch (HDFException ex)
         {

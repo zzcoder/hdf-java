@@ -547,7 +547,6 @@ public class H5ScalarDS extends ScalarDS
             name == null ||
             pgroup == null ||
             dims == null ||
-            maxdims == null ||
             (gzip>0 && chunks==null))
             return null;
 
@@ -556,10 +555,31 @@ public class H5ScalarDS extends ScalarDS
             path = pgroup.getPath()+pgroup.getName()+HObject.separator;
         fullPath = path +  name;
 
+        boolean isExtentable = false;
+        if (maxdims != null)
+        {
+            for (int i=0; i<maxdims.length; i++)
+            {
+                if (maxdims[i] == 0)
+                    maxdims[i] = dims[i];
+                else if (maxdims[i] < 0)
+                    maxdims[i] = HDF5Constants.H5S_UNLIMITED;
+
+                if (maxdims[i] != dims[i])
+                   isExtentable = true;
+            }
+        }
+
+        // HDF 5 requires you to use chunking in order to define extendible
+        // datasets. Chunking makes it possible to extend datasets efficiently,
+        // without having to reorganize storage excessively
+        if (chunks == null && isExtentable)
+            chunks = dims;
+
         // prepare the dataspace and datatype
         int rank = dims.length;
-        int sid = H5.H5Screate_simple(rank, dims, maxdims);
         int tid = type.toNative();
+        int sid = H5.H5Screate_simple(rank, dims, maxdims);
 
         // figure out creation properties
         int plist = HDF5Constants.H5P_DEFAULT;
@@ -569,11 +589,12 @@ public class H5ScalarDS extends ScalarDS
             H5.H5Pset_layout(plist, HDF5Constants.H5D_CHUNKED);
             H5.H5Pset_chunk(plist, rank, chunks);
         }
+
         if (gzip > 0)
             H5.H5Pset_deflate(plist, gzip);
         int fid = file.open();
-
         int did = H5.H5Dcreate(fid, fullPath, tid, sid, plist);
+
         byte[] ref_buf = H5.H5Rcreate(
             fid,
             fullPath,

@@ -176,6 +176,18 @@ implements ActionListener
     private boolean createNewFile()
     {
         String fname = fileInputField.getText();
+
+        if (fname == null)
+        {
+            return false;
+        }
+
+        fname = fname.trim();
+        if (fname == null || fname.length()==0)
+        {
+            return false;
+        }
+
         File f = new File(fname);
 
         if (f.isDirectory())
@@ -204,17 +216,6 @@ implements ActionListener
             return false;
         }
 
-        int newFileFlag = -1;
-        if (f.exists())
-        {
-            newFileFlag = JOptionPane.showConfirmDialog(this,
-                "File exists. Do you want to replace it ?",
-                this.getTitle(),
-                JOptionPane.YES_NO_OPTION);
-            if (newFileFlag == JOptionPane.NO_OPTION)
-                return false;
-        }
-
         // check if the file is in use
         if (fileList != null)
         {
@@ -233,6 +234,17 @@ implements ActionListener
                     return false;
                 }
             }
+        }
+
+        int newFileFlag = -1;
+        if (f.exists())
+        {
+            newFileFlag = JOptionPane.showConfirmDialog(this,
+                "File exists. Do you want to replace it ?",
+                this.getTitle(),
+                JOptionPane.YES_NO_OPTION);
+            if (newFileFlag == JOptionPane.NO_OPTION)
+                return false;
         }
 
         currentDir = f.getParent();

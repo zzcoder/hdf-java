@@ -226,11 +226,11 @@ implements ViewManager, ActionListener, HyperlinkListener
 
                         // disable 3D components for true color image
                         if (c instanceof ImageObserver &&
-                            hObj instanceof H5ScalarDS)
+                            hObj instanceof H5ScalarDS && is3D)
                         {
                             H5ScalarDS h5sd = (H5ScalarDS)hObj;
                             int interlace = h5sd.getInterlace();
-                            is3D = (interlace == ScalarDS.INTERLACE_PIXEL &&
+                            is3D = !(interlace == ScalarDS.INTERLACE_PIXEL ||
                                 interlace == ScalarDS.INTERLACE_PLANE);
                         }
                     }
@@ -672,6 +672,19 @@ implements ViewManager, ActionListener, HyperlinkListener
                 ((TableView)frame).pasteData();
             }
         }
+        else if (cmd.equals("Save dataset"))
+        {
+            JInternalFrame frame = contentPane.getSelectedFrame();
+            if (frame != null && frame instanceof TableView)
+            {
+                try { ((TableView)frame).updateValueInFile(); }
+                catch (Exception ex)
+                {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
         else if (cmd.equals("Save as text"))
         {
             JInternalFrame frame = contentPane.getSelectedFrame();
@@ -938,6 +951,12 @@ implements ViewManager, ActionListener, HyperlinkListener
 
     }
 
+    /** Returns a list of current open file */
+    public List getOpenFiles()
+    {
+        return treeView.getOpenFiles();
+    }
+
     /**
      * Creates and lays out GUI compoents.
      * ||=========||=============================||
@@ -1114,7 +1133,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         item = new JMenuItem( "Image", ViewProperties.getImageIcon());
         item.addActionListener(this);
         item.setActionCommand("Add image");
-        newOjbectMenu.add(item);
+        //newOjbectMenu.add(item);
 
         objectMenu.addSeparator();
 
@@ -1176,6 +1195,13 @@ implements ViewManager, ActionListener, HyperlinkListener
         tableGUIs.add(item);
 
         menu.addSeparator();
+
+        item = new JMenuItem( "Update File");
+        item.setMnemonic(KeyEvent.VK_U);
+        item.addActionListener(this);
+        item.setActionCommand("Save dataset");
+        menu.add(item);
+        tableGUIs.add(item);
 
         item = new JMenuItem( "Save As Text");
         item.setMnemonic(KeyEvent.VK_S);
@@ -1347,10 +1373,10 @@ implements ViewManager, ActionListener, HyperlinkListener
     private JToolBar createToolBar()
     {
         JToolBar tbar = new JToolBar();
-        JButton button;
+        tbar.setFloatable(false);
 
         // open file button
-        button = new JButton(props.getFileopenIcon() );
+        JButton button = new JButton(props.getFileopenIcon() );
         tbar.add( button );
         button.setToolTipText( "Open" );
         button.setMargin( new Insets( 0, 0, 0, 0 ) );
@@ -1791,18 +1817,24 @@ implements ViewManager, ActionListener, HyperlinkListener
                 "Unsupported operation: cannot copy the root group",
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
-                continue;
+                return;
             }
 
-            if ( theObj.equals(pgroup))
+            // check if it creates infinite loop
+            Group pg = pgroup;
+            while (!pg.isRoot())
             {
-                toolkit.beep();
-                JOptionPane.showMessageDialog(
-                this,
-                "Unsupported operation: cannot copy a group to itself",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
-                continue;
+                if ( theObj.equals(pg))
+                {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog(
+                    this,
+                    "Unsupported operation: cannot copy a group to itself.",
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                pg = pg.getParent();
             }
 
             try {
@@ -1864,6 +1896,22 @@ implements ViewManager, ActionListener, HyperlinkListener
         while (it.hasNext())
         {
             theObj = (HObject)it.next();
+
+            // cannot delete root
+            if (theObj instanceof Group)
+            {
+                Group g = (Group)theObj;
+                if (g.isRoot())
+                {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog(
+                        this,
+                        "Unsupported operation: cannot delete the root.",
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
 
             try
             {

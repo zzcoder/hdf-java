@@ -665,6 +665,13 @@ implements TableObserver
         if (!(dataset instanceof ScalarDS))
             return; // does not support compound dataset in this version
 
+        int pasteDataFlag = JOptionPane.showConfirmDialog(this,
+            "Do you want to paste selected data ?",
+            this.getTitle(),
+            JOptionPane.YES_NO_OPTION);
+        if (pasteDataFlag == JOptionPane.NO_OPTION)
+            return;
+
         int cols = table.getColumnCount();
         int rows = table.getRowCount();
         int r0 = table.getSelectedRow();
@@ -719,6 +726,28 @@ implements TableObserver
         File choosedFile = fchooser.getSelectedFile();
         if (choosedFile == null)
             return;
+        String fname = choosedFile.getAbsolutePath();
+
+        // check if the file is in use
+        List fileList = ((HDFView)viewer).getOpenFiles();
+        if (fileList != null)
+        {
+            FileFormat theFile = null;
+            Iterator iterator = fileList.iterator();
+            while(iterator.hasNext())
+            {
+                theFile = (FileFormat)iterator.next();
+                if (theFile.getFilePath().equals(fname))
+                {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog(this,
+                        "Unable to save data to file \""+fname+"\". \nThe file is being used.",
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+        }
 
         if (choosedFile.exists())
         {
@@ -768,7 +797,7 @@ implements TableObserver
     /** update dataset value in file.
      *  The change will go to file.
      */
-    private void updateValueInFile()
+    public void updateValueInFile()
     {
         if (!(dataset instanceof ScalarDS))
             return;

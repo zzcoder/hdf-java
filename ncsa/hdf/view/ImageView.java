@@ -17,8 +17,7 @@ import java.awt.image.*;
 import java.awt.event.*;
 import java.io.*;
 import java.lang.reflect.Array;
-import java.util.List;
-import java.util.Hashtable;
+import java.util.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Image;
@@ -132,7 +131,9 @@ implements ImageObserver
     private Object data;
 
     /** flag to indicate if the original data type is unsigned integer */
-    boolean isUnsigned;
+    private boolean isUnsigned;
+
+    private final Toolkit toolkit;
 
     /**
      * Constructs an ImageView.
@@ -154,6 +155,7 @@ implements ImageObserver
         isUnsigned = false;
         data = null;
         nt = 0;
+        toolkit = Toolkit.getDefaultToolkit();
 
         HObject hobject = (HObject)viewer.getSelectedObject();
         if (hobject == null || !(hobject instanceof ScalarDS))
@@ -821,6 +823,28 @@ implements ImageObserver
         File choosedFile = fchooser.getSelectedFile();
         if (choosedFile == null)
             return;
+        String fname = choosedFile.getAbsolutePath();
+
+        // check if the file is in use
+        List fileList = ((HDFView)viewer).getOpenFiles();
+        if (fileList != null)
+        {
+            FileFormat theFile = null;
+            Iterator iterator = fileList.iterator();
+            while(iterator.hasNext())
+            {
+                theFile = (FileFormat)iterator.next();
+                if (theFile.getFilePath().equals(fname))
+                {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog(this,
+                        "Unable to save data to file \""+fname+"\". \nThe file is being used.",
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+        }
 
         if (choosedFile.exists())
         {
@@ -889,9 +913,6 @@ implements ImageObserver
 
         // converts raw data to image data
         indexedImageData = getBytes(data, null);
-
-        //the followint code creates an WImage instead of a bufferedimate
-        Toolkit toolkit = Toolkit.getDefaultToolkit();
 
         int w = dataset.getWidth();
         int h = dataset.getHeight();
@@ -984,7 +1005,6 @@ implements ImageObserver
             } //for (int j=0; j<w; j++)
         } // for (int i=0; i<h; i++)
 
-        Toolkit toolkit = Toolkit.getDefaultToolkit();
         DirectColorModel dcm = (DirectColorModel)ColorModel.getRGBdefault();
         theImage = toolkit.createImage (new MemoryImageSource
             (w, h, dcm, packedImageData, 0, w));
@@ -1017,7 +1037,7 @@ implements ImageObserver
         private Dimension originalSize, imageSize;
         private Image image;
         private Point startPosition; // mouse clicked position
-        private Rectangle selectedArea;
+        private Rectangle selectedArea, originalSelectedArea;
         private StringBuffer strBuff; // to hold display value
 
         private ImageComponent (Image img)
@@ -1026,6 +1046,7 @@ implements ImageObserver
             imageSize = new Dimension(image.getWidth(this), image.getHeight(this));
             originalSize = imageSize;
             selectedArea = new Rectangle();
+            originalSelectedArea = new Rectangle();
             setPreferredSize(imageSize);
             strBuff = new StringBuffer();
 
@@ -1071,6 +1092,11 @@ implements ImageObserver
             int w = x1 - x0;
             int h = y1 - y0;
             selectedArea.setBounds(x0, y0, w, h);
+            originalSelectedArea.setBounds(
+                (int)(x0/zoomFactor),
+                (int)(y0/zoomFactor),
+                (int)(w/zoomFactor),
+                (int)(h/zoomFactor));
 
             repaint();
         }
@@ -1199,8 +1225,6 @@ implements ImageObserver
 
         private void setImageSize(Dimension size)
         {
-            double zf = size.getWidth()/imageSize.getWidth();
-
             imageSize = size;
             setPreferredSize(imageSize);
 
@@ -1208,11 +1232,12 @@ implements ImageObserver
             int h = selectedArea.height;
             if (w>0 && h >0)
             {
+                // use fixed aelected area to reduce the rounding error
                 selectedArea.setBounds(
-                    (int)(selectedArea.x*zf),
-                    (int)(selectedArea.y*zf),
-                    (int)(w*zf),
-                    (int)(h*zf)
+                    (int)(originalSelectedArea.x*zoomFactor),
+                    (int)(originalSelectedArea.y*zoomFactor),
+                    (int)(originalSelectedArea.width*zoomFactor),
+                    (int)(originalSelectedArea.height*zoomFactor)
                 );
             }
 
@@ -1226,6 +1251,10 @@ implements ImageObserver
             originalSize = imageSize;
             selectedArea.setSize(0, 0);
             setPreferredSize(imageSize);
+
+            setImageSize(new Dimension(
+                (int)(originalSize.width*zoomFactor),
+                (int)(originalSize.height*zoomFactor)));
 
             repaint();
         }
