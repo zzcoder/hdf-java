@@ -296,7 +296,7 @@ implements ActionListener, ListSelectionListener
                 {
                     x = fdata[i];
                     value = y(index, x, a, b);
-                    if (value > Float.MAX_VALUE || value < Float.MIN_VALUE || value == Float.NaN)
+                    if (value > Float.MAX_VALUE || value < -Float.MAX_VALUE || value == Float.NaN)
                     {
                         JOptionPane.showMessageDialog(this,
                             "Invalid float value: "+value,
@@ -314,7 +314,7 @@ implements ActionListener, ListSelectionListener
                 {
                     x = ddata[i];
                     value = y(index, x, a, b);
-                    if (value > Double.MAX_VALUE || value < Double.MIN_VALUE || value == Double.NaN)
+                    if (value > Double.MAX_VALUE || value < -Double.MAX_VALUE || value == Double.NaN)
                     {
                         JOptionPane.showMessageDialog(this,
                             "Invalid double value: "+value,
