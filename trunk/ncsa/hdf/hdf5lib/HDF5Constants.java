@@ -31,7 +31,9 @@ public class HDF5Constants
 
     final private static int JH5_SZIP_MAX_PIXELS_PER_BLOCK = 1000;
     final private static int JH5_SZIP_NN_OPTION_MASK = 1010;
-    final private static int JH5_SZIP_RAW_OPTION_MASK = 1020;
+    final private static int JH5_SZIP_EC_OPTION_MASK = 1020;
+    final private static int JH5_SZIP_ALLOW_K13_OPTION_MASK = 1021;
+    final private static int JH5_SZIP_CHIP_OPTION_MASK = 1022;
     final private static int JH5D_ALLOC_TIME_DEFAULT = 1030;
     final private static int JH5D_ALLOC_TIME_EARLY = 1040;
     final private static int JH5D_ALLOC_TIME_ERROR = 1050;
@@ -485,7 +487,9 @@ public class HDF5Constants
 
     final public static int H5_SZIP_MAX_PIXELS_PER_BLOCK = H5.J2C( JH5_SZIP_MAX_PIXELS_PER_BLOCK );
     final public static int H5_SZIP_NN_OPTION_MASK = H5.J2C( JH5_SZIP_NN_OPTION_MASK );
-    final public static int H5_SZIP_RAW_OPTION_MASK = H5.J2C( JH5_SZIP_RAW_OPTION_MASK );
+    final public static int H5_SZIP_EC_OPTION_MASK = H5.J2C( JH5_SZIP_EC_OPTION_MASK );
+    final public static int H5_SZIP_ALLOW_K13_OPTION_MASK = H5.J2C( JH5_SZIP_ALLOW_K13_OPTION_MASK );
+    final public static int H5_SZIP_CHIP_OPTION_MASK = H5.J2C( JH5_SZIP_CHIP_OPTION_MASK );
     final public static int H5D_ALLOC_TIME_DEFAULT = H5.J2C( JH5D_ALLOC_TIME_DEFAULT );
     final public static int H5D_ALLOC_TIME_EARLY = H5.J2C( JH5D_ALLOC_TIME_EARLY );
     final public static int H5D_ALLOC_TIME_ERROR = H5.J2C( JH5D_ALLOC_TIME_ERROR );
