@@ -929,7 +929,7 @@ implements ActionListener, ItemListener
             try
             {
                 Object data = sd.read();
-                byte[] bData = Tools.getBytes(data, null);
+                byte[] bData = Tools.getBytes(data, sd.getImageDataRange());
                 int h = (int)sd.getHeight();
                 int w = (int)sd.getWidth();
 

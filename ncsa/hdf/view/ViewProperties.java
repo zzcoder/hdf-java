@@ -623,8 +623,11 @@ public class ViewProperties extends Properties
         for (int i=0; i<MAX_RECENT_FILES; i++) {
             theFile = getProperty("recent.file"+i);
             if (theFile != null &&
-                !mrf.contains(theFile) &&
-                (new File(theFile)).exists()) {
+                !mrf.contains(theFile))
+            {
+                if (theFile.startsWith("http://") ||
+                    theFile.startsWith("ftp://") ||
+                    (new File(theFile)).exists())
                 mrf.addElement(theFile);
             }
             else {

@@ -443,7 +443,7 @@ implements ActionListener, ItemListener, HyperlinkListener
             }
             value = d;
             tclass = Datatype.CLASS_FLOAT;
-            tsize = 4;
+            tsize = 8;
             torder = Datatype.NATIVE;
         }
         else if (dt.startsWith("object reference"))

@@ -448,9 +448,10 @@ public final class Tools
         // no need for conversion
         if (dname == 'B')
         {
+            byteData = (byte[]) rawData;
             minmax[0] = 0;
             minmax[1] = 255;
-            return (byte[]) rawData;
+            return byteData;
         }
 
         int size = Array.getLength(rawData);

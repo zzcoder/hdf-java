@@ -110,11 +110,11 @@ public class H5ScalarDS extends ScalarDS
         unsignedConverted = false;
         paletteRefs = null;
 
-        int did=-1, aid=-1, atid=-1, tid=0;
+        // test if it is an image
+        int did = open();
+        int aid=-1, atid=-1, tid=0, asid=-1;
         try
         {
-            did = open();
-
             tid= H5.H5Dget_type(did);
             isText = (H5.H5Tget_class(tid)==HDF5Constants.H5T_STRING);
 
@@ -135,8 +135,54 @@ public class H5ScalarDS extends ScalarDS
             try { H5.H5Tclose(atid); } catch (HDF5Exception ex) {;}
             try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
             try { H5.H5Tclose(tid); } catch (HDF5Exception ex) {;}
-            try { H5.H5Dclose(did); } catch (HDF5Exception ex) {;}
         }
+
+        // retrieve the IMAGE_MINMAXRANGE
+        try
+        {
+            // try to find out if the dataset is an image
+            aid = H5.H5Aopen_name(did, "IMAGE_MINMAXRANGE");
+            if (aid > 0)
+            {
+                atid = H5.H5Aget_type(aid);
+                int nativeType = H5Datatype.toNative(atid);
+                asid = H5.H5Aget_space(aid);
+                long dims[] = null;
+                int rank = H5.H5Sget_simple_extent_ndims(asid);
+                if (rank > 0)
+                {
+                    dims = new long[rank];
+                    H5.H5Sget_simple_extent_dims(asid, dims, null);
+                }
+
+                // retrieve the attribute value
+                long lsize = 1;
+                for (int j=0; j<dims.length; j++) lsize *= dims[j];
+                Object value = H5Datatype.allocateArray(nativeType, (int)lsize);
+                if (value != null)
+                {
+                    H5.H5Aread(aid, nativeType, value);
+                    double x0=0, x1=0;
+                    try {
+                        x0 = Double.valueOf(java.lang.reflect.Array.get(value, 0).toString()).doubleValue();
+                        x1 = Double.valueOf(java.lang.reflect.Array.get(value, 1).toString()).doubleValue();
+                    } catch (Exception ex2) { x0=x1=0;}
+                    if (x1 > x0)
+                    {
+                        imageDataRange = new double[2];
+                        imageDataRange[0] = x0;
+                        imageDataRange[1] = x1;
+                    }
+                }
+            }
+        } catch (Exception ex) {}
+        finally
+        {
+            try { H5.H5Tclose(atid); } catch (HDF5Exception ex) {;}
+            try { H5.H5Sclose(asid); } catch (HDF5Exception ex) {;}
+            try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
+        }
+        try { H5.H5Dclose(did); } catch (HDF5Exception ex) {;}
     }
 
     //Implementing Dataset
