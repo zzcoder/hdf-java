@@ -1251,7 +1251,7 @@ implements ViewManager, ActionListener, HyperlinkListener
             JOptionPane.showMessageDialog(
                 this,
                 H4File.getLibversion(),
-                getTitle(),
+                "HDFView",
                 JOptionPane.PLAIN_MESSAGE,
                 ViewProperties.getLargeHdfIcon());
         }
@@ -1260,7 +1260,7 @@ implements ViewManager, ActionListener, HyperlinkListener
             JOptionPane.showMessageDialog(
                 this,
                 H5File.getLibversion(),
-                getTitle(),
+                "HDFView",
                 JOptionPane.PLAIN_MESSAGE,
                 ViewProperties.getLargeHdfIcon());
         }
@@ -1269,7 +1269,7 @@ implements ViewManager, ActionListener, HyperlinkListener
             JOptionPane.showMessageDialog(
                 this,
                 aboutHDFView,
-                getTitle(),
+                "HDFView",
                 JOptionPane.PLAIN_MESSAGE,
                 ViewProperties.getLargeHdfIcon());
         }
