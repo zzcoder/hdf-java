@@ -150,6 +150,20 @@ esac
 ac_cv_lib_HDF5=$HDF5LIB
 ac_cv_lib_HDF5INC=$HDF5INC
 
+
+withval="";
+AC_SUBST(SZLIB) SZLIB=""
+AC_ARG_WITH(libsz,[  --with-libsz=LIB     Path to the gzip library (requied if not in default path)],,)
+
+if test -n "$withval" ; then
+    sz_lib="`echo $withval |cut -f2 -d, -s`"
+	SZLIB=$sz_lib"/libsz.a"
+else
+if test -n "$HDF5LIB" ; then
+SZLIB=$HDF5LIB"/libsz.a"
+fi
+fi
+
 dnl check for libh4toh5  == if with-h4toh5 is not set, then can
 dnl only build hdf and hdf5 separately.
 
@@ -467,6 +481,7 @@ AC_SUBST(JH45INST)
 AC_SUBST(JHVINST)
 AC_SUBST(JH5INST)
 AC_SUBST(ZLIB)
+AC_SUBST(SZLIB)
 
 AC_SUBST_FILE(VERSION)
 VERSION=./VERSION
