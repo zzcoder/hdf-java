@@ -55,7 +55,7 @@ SZIP= # path to SZIP installation (the path to libsz.a is needed)
 #
 #  Some options required only for macOSX
 # 
-#  -host=powerpc-apple 
+#  -build=powerpc-apple 
 #  --with-jdkclasses=   # path to classes if not in 'jdk/lib'
 #  --with-javabin=  # path to java bin, if not in 'jdk/bin'
 

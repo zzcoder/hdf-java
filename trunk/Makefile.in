@@ -39,37 +39,40 @@ H4OBJDISTFILES= ./ncsa/hdf/object/h4/*.java
 
 H5OBJDISTFILES= ./ncsa/hdf/object/h5/*.java 
 
-NC2OBJDISTFILES= ./ncsa/hdf/object/nc2/*.java 
+NC2OBJDISTFILES= ./ncsa/hdf/object/nc2/*.java ./lib/netcdf.jar 
 
-FITSOBJDISTFILES= ./ncsa/hdf/object/fits/*.java 
+FITSOBJDISTFILES= ./ncsa/hdf/object/fits/*.java ./lib/fits.jar 
 
-JH45IDISTFILES=./VERSION ./COPYING ./Makefile.in \
-	windows/lib.dsw windows/lib.dsp \
+TOPDIST=./VERSION ./COPYING ./Makefile.in \
+	./windows/lib.dsw windows/lib.dsp \
+	./lib/ext/testview.jar  \
+	./windows/jhdf.mak ./windows/Makefile_java.bat  \
+	./bin/hdfview.sh.in ./bin/hdfview.bat  \
+	./runconfig-example.sh \
 	./configure.in ./Config/config* ./Config/install-sh \
-	./configure ./native/Makefile.in ./native/h4toh5lib/Makefile.in \
+	./configure ./native/Makefile.in 
+
+JH45IDISTFILES=./native/h4toh5lib/Makefile.in \
 	./native/h4toh5lib/*.c \
 	./ncsa/hdf/h4toh5lib/*.java  \
 	./ncsa/hdf/h4toh5lib/exceptions/*.java
 
-JHIDISTFILES=./VERSION ./COPYING ./Makefile.in  \
-	./configure.in ./Config/config* ./Config/install-sh \
-	./configure ./native/Makefile.in ./native/hdflib/Makefile.in \
+JHIDISTFILES=./native/hdflib/Makefile.in \
 	./native/hdflib/*.c \
 	./ncsa/hdf/hdflib/*.java  \
 	./glguerin/io/*.java ./glguerin/mac/io/*.java ./glguerin/util/*.java   
 
-JHI5DISTFILES=./VERSION ./COPYING ./Makefile.in  \
-        ./configure.in ./Config/config* ./Config/install-sh \
-        ./configure ./native/Makefile.in ./native/hdf5lib/Makefile.in \
+JHI5DISTFILES= ./native/hdf5lib/Makefile.in \
         ./native/hdf5lib/*.c ./native/hdf5lib/*.h \
         ./ncsa/hdf/hdf5lib/*.java  \
         ./ncsa/hdf/hdf5lib/exceptions/*.java 
+
 
 TESTFILES=./test/Makefile.in ./test/h4toh5/*.java ./test/h4toh5/*.in ./test/h4toh5/testfiles/*.hdf ./test/h4toh5/Expected/*.h5 ./test/object/*.java ./test/object/*.in ./test/linktest/Makefile.in ./test/linktest/testh4link.in ./test/linktest/testlink.in ./test/linktest/*.java
 
 DOCFILES=./docs/javadocs
 
-DISTFILES= $(JHI5DISTFILES) $(JHIDISTFILES) $(JH45IDISTFILES) $(HDFDISTFILES) $(HDFVIEWDISTFILES) $(HDFOBJDISTFILES) $(H4OBJDISTFILES) $(H5OBJDISTFILES) $(NC2OBJDISTFILES) $(FITSOBJDISTFILES) $(TESTFILES) $(DOCFILES)
+DISTFILES= $(TOPDIST) $(JHI5DISTFILES) $(JHIDISTFILES) $(JH45IDISTFILES) $(HDFDISTFILES) $(HDFVIEWDISTFILES) $(HDFOBJDISTFILES) $(H4OBJDISTFILES) $(H5OBJDISTFILES) $(NC2OBJDISTFILES) $(FITSOBJDISTFILES) $(TESTFILES) $(DOCFILES) 
 
 
 JH45PACKAGES = \
