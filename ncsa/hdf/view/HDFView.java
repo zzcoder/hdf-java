@@ -356,7 +356,7 @@ public class HDFView extends JFrame
 
         /** create URL address bar */
         urlBar = new JComboBox(props.getMRF());
-        urlBar.setMaximumRowCount(10);
+        urlBar.setMaximumRowCount(ViewProperties.MAX_RECENT_FILES);
         urlBar.setEditable(true);
         urlBar.addActionListener(this);
         urlBar.setActionCommand("Open file: from file bar");
@@ -583,6 +583,14 @@ public class HDFView extends JFrame
         item.setActionCommand("HDF5 library");
         item.addActionListener(this);
         h5GUIs.add(item);
+        menu.add(item);
+
+        menu.addSeparator();
+
+        item = new JMenuItem( "Supported File Formats");
+        item.setMnemonic(KeyEvent.VK_L);
+        item.setActionCommand("File format list");
+        item.addActionListener(this);
         menu.add(item);
 
         menu.addSeparator();
@@ -1300,6 +1308,23 @@ public class HDFView extends JFrame
                 JOptionPane.PLAIN_MESSAGE,
                 ViewProperties.getLargeHdfIcon());
         }
+        else if (cmd.equals("File format list"))
+        {
+            FileFormat[] fileformats = FileFormat.getFileFormats();
+            if (fileformats == null || fileformats.length <=0)
+                return;
+
+            String str = "\nSupported File Formats: \n";
+            for (int i=0; i<fileformats.length; i++)
+                str += "        "+fileformats[i].getClass().getName() + "\n";
+
+            JOptionPane.showMessageDialog(
+                this,
+                str,
+                "HDFView",
+                JOptionPane.PLAIN_MESSAGE,
+                ViewProperties.getLargeHdfIcon());
+        }
         else if (cmd.equals("About"))
         {
             JOptionPane.showMessageDialog(
@@ -1356,22 +1381,8 @@ public class HDFView extends JFrame
         }
     }
 
-    public void dispose() {
-        // save the current user properties into property file
-        try {
-            Vector mrf = props.getMRF();
-            if (mrf != null && urlBar.getItemCount()>0)
-            {
-                int n = urlBar.getItemCount();
-                for (int i = 0; i< n; i++)
-                {
-                    String filename = (String)urlBar.getItemAt(i);
-                    if (!mrf.contains(filename))
-                        mrf.add(filename);
-                }
-            }
-        } catch (Exception ex) {}
-
+    public void dispose()
+    {
         try { props.save() ; }
         catch (Exception ex) {}
 
@@ -1691,7 +1702,7 @@ public class HDFView extends JFrame
     public static void main( String args[] )
     {
         String rootDir = System.getProperty("user.dir");
-
+/*
 try {
 Group g = (Group)FileFormat.getHObject("e:\\hdf-files\\test.h5#//");
 System.out.println(g);
@@ -1702,7 +1713,7 @@ if (g != null) {
         System.out.println(it.next());
 }
 } catch (Exception ex) {System.out.println(ex);}
-
+*/
         boolean backup = false;
         File tmpFile = null;
         int i = 0;

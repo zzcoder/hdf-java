@@ -4289,5 +4289,61 @@ public class H5 {
     public synchronized static native int H5Pget_fclose_degree(int plist_id)
         throws HDF5LibraryException, NullPointerException;
 
+
+    ////////////////////////////////////////////////////////////////////
+    //                                                                //
+    //             New APIs from release 1.6.2                        //
+    //                 August 20, 2004                                //
+    ////////////////////////////////////////////////////////////////////
+
+    public synchronized static native int H5Iget_ref(int obj_id)
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Iinc_ref(int obj_id)
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Idec_ref(int obj_id)
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Pset_fapl_family ( int fapl_id, long memb_size, int memb_fapl_id )
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Pget_fapl_family ( int fapl_id, long[] memb_size, int[] memb_fapl_id )
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Pset_fapl_core( int fapl_id, int increment, boolean backing_store )
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Pget_fapl_core( int fapl_id, int[] increment, boolean[] backing_store )
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Pset_family_offset ( int fapl_id, long offset )
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native long H5Pget_family_offset ( int fapl_id)
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Pset_fapl_log( int fapl_id, String logfile, int flags, int buf_size )
+        throws HDF5LibraryException, NullPointerException;
+
+
+    ////////////////////////////////////////////////////////////////////
+    //                                                                //
+    //             New APIs from release 1.6.3                        //
+    //                 August 25, 2004                                //
+    ////////////////////////////////////////////////////////////////////
+
+    public synchronized static native long H5Fget_name (int obj_id, String name, int size);
+
+    public synchronized static native long H5Fget_filesize (int file_id);
+
+    public synchronized static native int H5Iget_file_id (int obj_id);
+
+    public synchronized static native int H5Premove_filter (int obj_id, int filter);
+
+    public synchronized static native int H5Zget_filter_info (int filter);
+
+
+
 }
 

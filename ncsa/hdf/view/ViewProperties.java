@@ -32,7 +32,7 @@ import ncsa.hdf.object.FileFormat;
 public class ViewProperties extends Properties
 {
     /** the version of the HDFViewer */
-    public static final String VERSION = "2.0";
+    public static final String VERSION = "2.1";
 
     /** the local property file name */
     public static final String USER_PROPS = "hdfview.props";
@@ -701,7 +701,7 @@ public class ViewProperties extends Properties
         int minSize = Math.min(size, MAX_RECENT_FILES);
 
         for (int i=0; i<minSize; i++) {
-            theFile = (String)mrf.elementAt(size-minSize+i);
+            theFile = (String)mrf.elementAt(i);
 
             if (theFile != null && theFile.length()>0)
                 put("recent.file"+i, theFile);

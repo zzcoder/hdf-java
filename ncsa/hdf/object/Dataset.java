@@ -80,6 +80,10 @@ import java.lang.reflect.Array;
  */
 public abstract class Dataset extends HObject
 {
+    public static final String H5Z_FILTER_CONFIG_DECODE_ENABLED = "H5Z_FILTER_CONFIG_DECODE_ENABLED";
+
+    public static final String H5Z_FILTER_CONFIG_ENCODE_ENABLED = "H5Z_FILTER_CONFIG_ENCODE_ENABLED";
+
     /**
      *  The buff which holds the content of this dataset.
      *  The type of the data object will be defined by implementing classes.

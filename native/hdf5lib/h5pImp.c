@@ -1364,88 +1364,6 @@ JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1split
 	return (jint)status;
 
 }
-
-/*
- * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Pset_family
- * Signature: (IJI)I
- */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1family
-  (JNIEnv *env, jclass clss, jint plist, jlong memb_size, jint memb_plist)
-{
-	long ms;
-	herr_t retVal = -1;
-	ms = memb_size;
-	retVal =  H5Pset_family((hid_t)plist, (hsize_t)ms, (hid_t)memb_plist);
-	if (retVal < 0) {
-		h5libraryError(env);
-	}
-	return (jint)retVal;
-}
-
-/*
- * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Pget_family
- * Signature: (I[JI)I
- */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1family
-  (JNIEnv *env, jclass clss, jint tid, jlongArray memb_size, jintArray memb_plist)
-{
-	herr_t status;
-	jlong *sizeArray;
-	jint *plistArray;
-	jboolean isCopy;
-	hsize_t *sa;
-	int i;
-	int rank;
-
-	if (memb_size == NULL) {
-		h5nullArgument( env, "H5Pget_family:  memb_size is NULL");
-		return -1; 
-	}
-	if (memb_plist == NULL) {
-		h5nullArgument( env, "H5Pget_family:  memb_plist is NULL");
-		return -1; 
-	}
-	sizeArray = (jlong *)(*env)->GetLongArrayElements(env,memb_size,&isCopy);
-	if (sizeArray == NULL) {
-		h5JNIFatalError(env,  "H5Pget_family:  sizeArray not pinned");
-		return -1; 
-	}
-	rank  = (*env)->GetArrayLength(env, memb_size);
-	sa = (hsize_t *)malloc( rank * sizeof(hsize_t)); 
-	if (sa == NULL) {
-		(*env)->ReleaseLongArrayElements(env,memb_size,sizeArray,JNI_ABORT);
-		h5JNIFatalError(env,  "H5Screate-simple:  dims not converted to hsize_t");
-		return -1;
-	}
-	plistArray = (jint *)(*env)->GetIntArrayElements(env,memb_plist,&isCopy);
-	if (plistArray == NULL) {
-		(*env)->ReleaseLongArrayElements(env,memb_size,sizeArray,JNI_ABORT);
-		h5JNIFatalError(env,  "H5Pget_family:  plistArray not pinned");
-		return -1; 
-	}
-	status = H5Pget_family((hid_t)tid, sa, (hid_t *)plistArray); 
-	
-	if (status < 0)
-	{
-		free(sa);
-		(*env)->ReleaseLongArrayElements(env,memb_size,sizeArray,JNI_ABORT);
-		(*env)->ReleaseIntArrayElements(env,memb_plist,plistArray,JNI_ABORT);
-		h5libraryError(env);
-	}
-	else
-	{
-		for (i= 0; i < rank; i++) {	
-			sa[i] = sizeArray[i];
-		}
-		free(sa); 
-		(*env)->ReleaseLongArrayElements(env,memb_size,sizeArray,0);
-		(*env)->ReleaseIntArrayElements(env,memb_plist,plistArray,0);
-	}
-
-	return (jint)status;
-}
 #endif
 
 /*
@@ -2625,4 +2543,258 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1fclose_1degree
 	}
 
 	return (jint)degree;
+}
+
+
+/**********************************************************************
+ *                                                                    *
+ *                    File access properties                          *
+ *                                                                    *
+ **********************************************************************/
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Signature: herr_t H5Pset_fapl_family ( hid_t fapl_id, hsize_t memb_size, hid_t memb_fapl_id )
+ * Purpose:   Sets the file access property list to use the family driver
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1family
+  (JNIEnv *env, jclass clss, jint plist, jlong memb_size, jint memb_plist)
+{
+	long ms;
+	herr_t retVal = -1;
+	ms = (long)memb_size;
+	retVal =  H5Pset_fapl_family((hid_t)plist, (hsize_t)ms, (hid_t)memb_plist);
+	if (retVal < 0) {
+		h5libraryError(env);
+	}
+	return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Signature: herr_t H5Pget_fapl_family ( hid_t fapl_id, hsize_t *memb_size, hid_t *memb_fapl_id ) 
+ * Purpose:   Returns file access property list information
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1family
+  (JNIEnv *env, jclass clss, jint tid, jlongArray memb_size, jintArray memb_plist)
+{
+	herr_t status;
+	jlong *sizeArray;
+	jint *plistArray;
+	jboolean isCopy;
+	hsize_t *sa;
+	int i;
+	int rank;
+
+	if (memb_size == NULL) {
+		h5nullArgument( env, "H5Pget_family:  memb_size is NULL");
+		return -1; 
+	}
+	if (memb_plist == NULL) {
+		h5nullArgument( env, "H5Pget_family:  memb_plist is NULL");
+		return -1; 
+	}
+	sizeArray = (jlong *)(*env)->GetLongArrayElements(env,memb_size,&isCopy);
+	if (sizeArray == NULL) {
+		h5JNIFatalError(env,  "H5Pget_family:  sizeArray not pinned");
+		return -1; 
+	}
+	rank  = (*env)->GetArrayLength(env, memb_size);
+	sa = (hsize_t *)malloc( rank * sizeof(hsize_t)); 
+	if (sa == NULL) {
+		(*env)->ReleaseLongArrayElements(env,memb_size,sizeArray,JNI_ABORT);
+		h5JNIFatalError(env,  "H5Screate-simple:  dims not converted to hsize_t");
+		return -1;
+	}
+	plistArray = (jint *)(*env)->GetIntArrayElements(env,memb_plist,&isCopy);
+	if (plistArray == NULL) {
+		(*env)->ReleaseLongArrayElements(env,memb_size,sizeArray,JNI_ABORT);
+		h5JNIFatalError(env,  "H5Pget_family:  plistArray not pinned");
+		return -1; 
+	}
+	status = H5Pget_fapl_family ((hid_t)tid, sa, (hid_t *)plistArray); 
+	
+	if (status < 0)
+	{
+		free(sa);
+		(*env)->ReleaseLongArrayElements(env,memb_size,sizeArray,JNI_ABORT);
+		(*env)->ReleaseIntArrayElements(env,memb_plist,plistArray,JNI_ABORT);
+		h5libraryError(env);
+	}
+	else
+	{
+		for (i= 0; i < rank; i++) {	
+			sa[i] = sizeArray[i];
+		}
+		free(sa); 
+		(*env)->ReleaseLongArrayElements(env,memb_size,sizeArray,0);
+		(*env)->ReleaseIntArrayElements(env,memb_plist,plistArray,0);
+	}
+
+	return (jint)status;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Signature: herr_t H5Pset_fapl_core( hid_t fapl_id, size_t increment, hbool_t backing_store ) 
+ * Purpose:   Modifies the file access property list to use the H5FD_CORE driver
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1core
+  (JNIEnv *env, jclass clss, jint fapl_id, jint increment, jboolean backing_store)
+{
+	herr_t retVal = -1;
+	retVal =  H5Pset_fapl_core( (hid_t) fapl_id, (size_t) increment, (hbool_t) backing_store );
+	if (retVal < 0) {
+		h5libraryError(env);
+	}
+	return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Signature: herr_t H5Pget_fapl_core( hid_t fapl_id, size_t *increment, hbool_t *backing_store ) 
+ * Purpose:   Queries core file driver properties
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1fapl_1core
+  (JNIEnv *env, jclass clss, jint fapl_id, jintArray increment, jbooleanArray backing_store)
+{
+	herr_t status;
+	jint *incArray;
+	jboolean *backArray;
+	jboolean isCopy;
+
+	if (increment == NULL) {
+		h5nullArgument( env, "H5Pget_fapl_core:  increment is NULL");
+		return -1; 
+	}
+	if (backing_store == NULL) {
+		h5nullArgument( env, "H5Pget_fapl_core:  backing_store is NULL");
+		return -1; 
+	}
+
+	incArray = (jint *)(*env)->GetIntArrayElements(env,increment,&isCopy);
+	if (incArray == NULL) {
+		h5JNIFatalError(env,  "H5Pget_fapl_core:  incArray not pinned");
+		return -1; 
+	}
+
+	backArray = (jboolean *)(*env)->GetBooleanArrayElements(env,backing_store,&isCopy);
+	if (backArray == NULL) {
+		(*env)->ReleaseIntArrayElements(env,increment,incArray,JNI_ABORT);
+		h5JNIFatalError(env,  "H5Pget_fapl_core:  backArray not pinned");
+		return -1; 
+	}
+	status = H5Pget_fapl_core( (hid_t) fapl_id, (size_t *)incArray, (hbool_t *)backArray ); 
+	
+	if (status < 0)
+	{
+		(*env)->ReleaseIntArrayElements(env,increment,incArray,JNI_ABORT);
+		(*env)->ReleaseBooleanArrayElements(env,backing_store,backArray,JNI_ABORT);
+		h5libraryError(env);
+	}
+	else
+	{
+		(*env)->ReleaseIntArrayElements(env,increment,incArray,0);
+		(*env)->ReleaseBooleanArrayElements(env,backing_store,backArray,0);
+	}
+
+	return (jint)status;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Signature: herr_t H5Pset_family_offset ( hid_t fapl_id, hsize_t offset ) 
+ * Purpose:   Sets offset property for low-level access to a file in a family of files
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1family_1offset
+  (JNIEnv *env, jclass clss, jint fapl_id, jlong offset)
+{
+	herr_t retVal = -1;
+	retVal =  H5Pset_family_offset ( (hid_t) fapl_id, (hsize_t) offset );
+	if (retVal < 0) {
+		h5libraryError(env);
+	}
+	return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Signature: herr_t H5Pget_family_offset ( hid_t fapl_id, hsize_t *offset ) 
+ * Purpose:   Retrieves a data offset from the file access property list
+ */
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1family_1offset
+  (JNIEnv *env, jclass clss, jint fapl_id)
+{
+	hsize_t offset = -1;
+	herr_t  retVal = -1;
+	retVal =  H5Pget_family_offset ( (hid_t) fapl_id, &offset );
+	if (retVal < 0) {
+		h5libraryError(env);
+	}
+	return (jlong)offset;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Signature: herr_t H5Pset_fapl_log( hid_t fapl_id, const char *logfile, unsigned int flags, size_t buf_size ) 
+ * Purpose:   Sets up the use of the logging driver
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1log
+  (JNIEnv *env, jclass clss, jint fapl_id, jstring logfile, jint flags, jint buf_size)
+{
+	herr_t retVal = -1;
+	char * pLogfile;
+	jboolean isCopy;
+
+	if (logfile == NULL) {
+		h5nullArgument( env, "H5Pset_fapl_log:  logfile is NULL");
+		return -1;
+	}
+
+	pLogfile = (char *)(*env)->GetStringUTFChars(env,logfile,&isCopy);
+
+	if (pLogfile == NULL) {
+		h5JNIFatalError(env,  "H5Pset_fapl_log:  logfile not pinned");
+		return -1;
+	}
+
+	retVal =  H5Pset_fapl_log( (hid_t) fapl_id, (const char *)pLogfile, (unsigned int) flags, (size_t) buf_size );
+	if (retVal < 0) {
+		h5libraryError(env);
+	}
+
+	(*env)->ReleaseStringUTFChars(env, logfile, pLogfile);
+
+	if (retVal < 0) {
+		h5libraryError(env);
+	}
+
+	return (jint)retVal;
+}
+
+
+/**********************************************************************
+ *                                                                    *
+ *          New functions release 1.6.3 versus release 1.6.2          *
+ *                                                                    *
+ **********************************************************************/
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Signature:  herr_t H5Premove_filter (hid_t obj_id, H5Z_filter_t filter)   
+ * Purpose:   
+ */
+
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5P1remove_1filter
+  (JNIEnv *env, jclass clss, jint obj_id, jint filter)
+{
+	herr_t status;
+
+	status = H5Premove_filter ((hid_t) obj_id, (H5Z_filter_t) filter);
+
+	if (status < 0) {
+		h5libraryError(env);
+	}
+
+	return status;
 }

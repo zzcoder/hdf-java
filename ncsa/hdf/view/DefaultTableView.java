@@ -128,10 +128,16 @@ implements TableView, ActionListener
         if (dataset.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4)))
             isReadOnly = true;
 
-        // disable edit feature for szip compression
-        String compression = dataset.getCompression();
-        if (compression != null && compression.startsWith("SZIP"))
-            isReadOnly = true;
+        // disable edit feature for szip compression when encode is not enabled
+        if (!isReadOnly)
+        {
+            String compression = dataset.getCompression();
+            if (compression != null && compression.startsWith("SZIP"))
+            {
+                if (!compression.endsWith(Dataset.H5Z_FILTER_CONFIG_ENCODE_ENABLED))
+                    isReadOnly = true;
+            }
+        }
 
         isDisplayTypeChar = (isDisplayChar.booleanValue() && dataset.getDatatype().getDatatypeSize()==1);
 

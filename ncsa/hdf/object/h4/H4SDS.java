@@ -511,6 +511,7 @@ public class H4SDS extends ScalarDS
             // get compression information
             try {
                 HDFCompInfo compInfo = new HDFCompInfo();
+
                 boolean status = HDFLibrary.SDgetcompress(id, compInfo);
                 if (compInfo.ctype == HDFConstants.COMP_CODE_DEFLATE)
                     compression = "GZIP";

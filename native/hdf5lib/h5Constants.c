@@ -478,6 +478,9 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_J2C
 		case JH5Z_FLAG_SKIP_EDC  : return  H5Z_FLAG_SKIP_EDC;
 		case JH5Z_MAX_NFILTERS  : return  H5Z_MAX_NFILTERS;
 		case JH5Z_NO_EDC  : return  H5Z_NO_EDC;
+		case JH5Z_FILTER_CONFIG_ENCODE_ENABLED  : return  H5Z_FILTER_CONFIG_ENCODE_ENABLED;
+		case JH5Z_FILTER_CONFIG_DECODE_ENABLED  : return  H5Z_FILTER_CONFIG_DECODE_ENABLED;
+
 		default: return java_constant;
 	}
 }

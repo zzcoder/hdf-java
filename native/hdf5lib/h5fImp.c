@@ -24,6 +24,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif 
+
 #include "hdf5.h"
 
 #include <stdio.h>
@@ -432,6 +433,87 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1obj_1count
 
 	return (jint)status;
 }
+
+
+/**********************************************************************
+ *                                                                    *
+ *          New functions release 1.6.3 versus release 1.6.2          *
+ *                                                                    *
+ **********************************************************************/
+
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Signature: ssize_t H5Fget_name (hid_t obj_id, char *name, size_t size)   
+ * Purpose:   
+ */
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1name
+  (JNIEnv *env, jclass clss, jint obj_id, jstring name, jint buf_size)
+{
+	char *aName;
+	jstring str;
+	ssize_t size;
+
+	if (buf_size <= 0) {
+		h5badArgument( env, "H5Fget_name:  buf_size <= 0");
+		return -1;
+	}
+	aName = (char*)malloc(sizeof(char)*buf_size);
+	if (aName == NULL) {
+		h5outOfMemory( env, "H5Fget_name:  malloc failed");
+		return -1;
+	}
+	size = H5Fget_name ((hid_t) obj_id, (char *)aName, (size_t)buf_size);
+	if (size < 0) {
+		free(aName);
+		h5libraryError(env);
+		/*  exception, returns immediately */
+	}
+	/* successful return -- save the string; */
+
+#ifdef __cplusplus
+	str = env->NewStringUTF(aName);
+#else
+	str = (*env)->NewStringUTF(env,aName);
+#endif
+	if (str == NULL) {
+		free(aName);
+		h5JNIFatalError( env,"H5Fget_name:  return string failed");
+		return -1;
+	}
+	free(aName);
+	/*  Note: throws ArrayIndexOutOfBoundsException, 
+		ArrayStoreException */
+#ifdef __cplusplus
+	env->SetObjectArrayElement(name,0,str);
+#else
+	(*env)->SetObjectArrayElement(env,name,0,str);
+#endif
+
+	return (jlong)size;
+
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Signature: herr_t H5Fget_filesize (hid_t file_id, hsize_t * size)   
+ * Purpose:   
+ */
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1filesize
+  (JNIEnv *env, jclass clss, jint file_id)
+{
+	herr_t status;
+	hsize_t size = 0;
+
+	status = H5Fget_filesize ((hid_t) file_id, (hsize_t *) &size);
+
+	if (status < 0) {
+		h5libraryError(env);
+	}
+
+	return (jlong) size;
+}
+
 
 #ifdef __cplusplus
 }

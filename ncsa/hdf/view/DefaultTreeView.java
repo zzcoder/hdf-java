@@ -1318,8 +1318,8 @@ implements TreeView, ActionListener {
      * @throws Exception
      */
     public DataView showDataContent(HObject dataObject)
-        throws Exception {
-
+        throws Exception
+    {
         if (dataObject == null ||!(dataObject instanceof Dataset))
             return null; // can only display dataset
 
@@ -1397,8 +1397,8 @@ implements TreeView, ActionListener {
      * @throws Exception
      */
     public MetaDataView showMetaData(HObject dataObject)
-        throws Exception {
-
+        throws Exception
+    {
         if (dataObject == null)
             return null;
 
