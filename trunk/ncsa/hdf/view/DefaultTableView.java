@@ -124,6 +124,10 @@ implements TableView, ActionListener
         dataset = (Dataset)hobject;
         isReadOnly = dataset.getFileFormat().isReadOnly();
 
+        // cannot edit hdf4 vdata
+        if (dataset.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4)))
+            isReadOnly = true;
+
         // disable edit feature for szip compression
         String compression = dataset.getCompression();
         if (compression != null && compression.startsWith("SZIP"))
@@ -158,8 +162,8 @@ implements TableView, ActionListener
 
         // add the table to a scroller
         JScrollPane scrollingTable = new JScrollPane(table);
-        scrollingTable.getVerticalScrollBar().setUnitIncrement(50);
-        scrollingTable.getHorizontalScrollBar().setUnitIncrement(50);
+        scrollingTable.getVerticalScrollBar().setUnitIncrement(100);
+        scrollingTable.getHorizontalScrollBar().setUnitIncrement(100);
 
         // create row headers and add it to the scroller
         RowHeader rowHeaders = new RowHeader( table );
@@ -339,14 +343,15 @@ implements TableView, ActionListener
         //item.setMnemonic(KeyEvent.VK_S);
         item.addActionListener(this);
         item.setActionCommand("Show statistics");
-        item.setEnabled(dataset instanceof ScalarDS);
+//        item.setEnabled(dataset instanceof ScalarDS);
         menu.add(item);
 
         item = new JMenuItem( "Math Conversion");
         //item.setMnemonic(KeyEvent.VK_M);
         item.addActionListener(this);
         item.setActionCommand("Math conversion");
-        item.setEnabled(isEditable && (dataset instanceof ScalarDS));
+        item.setEnabled(isEditable);
+//        item.setEnabled(isEditable && (dataset instanceof ScalarDS));
         menu.add(item);
 
         menu.addSeparator();
@@ -812,34 +817,59 @@ null, options, options[0]);
      */
     public Object getSelectedData()
     {
+        if (dataset instanceof CompoundDS)
+            return getSelectedCompoundData();
+        else
+            return getSelectedScalarData();
+    }
+
+    /**
+     * Returns the selected data values.
+     */
+    private Object getSelectedScalarData()
+    {
         Object selectedData = null;
 
         int cols = table.getSelectedColumnCount();
         int rows = table.getSelectedRowCount();
 
         if (cols <=0 || rows <= 0)
-            return null; // no data is selected
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+            "No data is selected.",
+            getTitle(),
+            JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
 
         if (table.getColumnCount() == cols &&
             table.getRowCount() == rows)
             return dataValue;
 
         int size = cols*rows;
-
-        if (NT == 'B')
+        int nt = NT;
+        if (nt == 'B')
             selectedData = new byte[size];
-        else if (NT == 'S')
+        else if (nt == 'S')
             selectedData = new short[size];
-        else if (NT == 'I')
+        else if (nt == 'I')
             selectedData = new int[size];
-        else if (NT == 'J')
+        else if (nt == 'J')
             selectedData = new long[size];
-        else if (NT == 'F')
+        else if (nt == 'F')
             selectedData = new float[size];
-        else if (NT == 'D')
+        else if (nt == 'D')
             selectedData = new double[size];
         else
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+            "Unsupported data type.",
+            getTitle(),
+            JOptionPane.ERROR_MESSAGE);
             return null;
+        }
 
         int r0 = table.getSelectedRow();
         int c0 = table.getSelectedColumn();
@@ -851,6 +881,74 @@ null, options, options[0]);
             System.arraycopy(dataValue, idx_src, selectedData, idx_dst, cols);
             idx_dst += cols;
         }
+
+        return selectedData;
+    }
+
+    /**
+     * Returns the selected data values.
+     */
+    private Object getSelectedCompoundData()
+    {
+        Object selectedData = null;
+
+        int cols = table.getSelectedColumnCount();
+        int rows = table.getSelectedRowCount();
+
+        if (cols <=0 || rows <= 0)
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+            "No data is selected.",
+            getTitle(),
+            JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        if (cols>1)
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+            "Only allow to select one column for math conversion/statistics.",
+            getTitle(),
+            JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        Object colData = null;
+        try {
+            colData = ((List)dataset.getData()).get(table.getSelectedColumn());
+        } catch (Exception ex) {return null;}
+
+        int size = Array.getLength(colData);
+        String cName = colData.getClass().getName();
+        int cIndex = cName.lastIndexOf("[");
+        char nt = ' ';
+        if (cIndex >= 0 ) nt = cName.charAt(cIndex+1);
+
+        if (nt == 'B')
+            selectedData = new byte[size];
+        else if (nt == 'S')
+            selectedData = new short[size];
+        else if (nt == 'I')
+            selectedData = new int[size];
+        else if (nt == 'J')
+            selectedData = new long[size];
+        else if (nt == 'F')
+            selectedData = new float[size];
+        else if (nt == 'D')
+            selectedData = new double[size];
+        else
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+            "Unsupported data type.",
+            getTitle(),
+            JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        System.arraycopy(colData, 0, selectedData, 0, size);
 
         return selectedData;
     }
@@ -1108,7 +1206,7 @@ null, options, options[0]);
                 if (colValue == null) return "Null";
 
                 stringBuffer.setLength(0); // clear the old string
-                int[] mdim = compound.getMemeberDims(col);
+                int[] mdim = compound.getMemeberDims(column);
                 if (mdim == null) {
                     stringBuffer.append(Array.get(colValue, rowIdx));
                     for (int i=1; i<orders[column]; i++) {
@@ -1560,8 +1658,7 @@ null, options, options[0]);
      */
     private void showStatistics() throws Exception
     {
-        if (!(dataset instanceof ScalarDS))
-            return;
+        //if (!(dataset instanceof ScalarDS)) return;
 
         Object theData = getSelectedData();
         if (theData == null ||
@@ -1570,6 +1667,7 @@ null, options, options[0]);
 
         String statistics = calculateStatistics(theData);
         theData = null;
+        System.gc();
 
         JOptionPane.showMessageDialog(this, statistics, "Statistics", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -1578,106 +1676,120 @@ null, options, options[0]);
     {
         double min=0, max=0, mean=0, variance = 0, sum=0, sum2=0;
         int n = Array.getLength(theData);
-        if (NT == 'B')
+        String cName = theData.getClass().getName();
+        int cIndex = cName.lastIndexOf("[");
+        char nt = ' ';
+        if (cIndex >= 0 ) nt = cName.charAt(cIndex+1);
+
+        switch (nt)
         {
-            byte[] bvalue = (byte[])theData;
-            min = bvalue[0];
-            max = bvalue[0];
-            sum = bvalue[0];
-            sum2 = bvalue[0]*bvalue[0];
-            for (int i=1; i<n; i++)
+            case ('B'):
             {
-                if (min > bvalue[i])
-                    min = bvalue[i];
-                if (max < bvalue[i])
-                    max = bvalue[i];
-                sum += bvalue[i];
-                sum2 += bvalue[i]*bvalue[i];
+                byte[] bvalue = (byte[])theData;
+                min = bvalue[0];
+                max = bvalue[0];
+                sum = bvalue[0];
+                sum2 = bvalue[0]*bvalue[0];
+                for (int i=1; i<n; i++)
+                {
+                    if (min > bvalue[i])
+                        min = bvalue[i];
+                    if (max < bvalue[i])
+                        max = bvalue[i];
+                    sum += bvalue[i];
+                    sum2 += bvalue[i]*bvalue[i];
+                }
+                break;
             }
-        }
-        else if (NT == 'S')
-        {
-            short[] svalue = (short[])theData;
-            min = svalue[0];
-            max = svalue[0];
-            sum = svalue[0];
-            sum2 = svalue[0]*svalue[0];
-            for (int i=1; i<n; i++)
+            case ('S'):
             {
-                if (min > svalue[i])
-                    min = svalue[i];
-                if (max < svalue[i])
-                    max = svalue[i];
-                sum += svalue[i];
-                sum2 += svalue[i]*svalue[i];
+                short[] svalue = (short[])theData;
+                min = svalue[0];
+                max = svalue[0];
+                sum = svalue[0];
+                sum2 = svalue[0]*svalue[0];
+                for (int i=1; i<n; i++)
+                {
+                    if (min > svalue[i])
+                        min = svalue[i];
+                    if (max < svalue[i])
+                        max = svalue[i];
+                    sum += svalue[i];
+                    sum2 += svalue[i]*svalue[i];
+                }
+                break;
             }
-        }
-        else if (NT == 'I')
-        {
-            int[] ivalue = (int[])theData;
-            min = ivalue[0];
-            max = ivalue[0];
-            sum = ivalue[0];
-            sum2 = ivalue[0]*ivalue[0];
-            for (int i=1; i<n; i++)
+            case('I'):
             {
-                if (min > ivalue[i])
-                    min = ivalue[i];
-                if (max < ivalue[i])
-                    max = ivalue[i];
-                sum += ivalue[i];
-                sum2 += ivalue[i]*ivalue[i];
+                int[] ivalue = (int[])theData;
+                min = ivalue[0];
+                max = ivalue[0];
+                sum = ivalue[0];
+                sum2 = ivalue[0]*ivalue[0];
+                for (int i=1; i<n; i++)
+                {
+                    if (min > ivalue[i])
+                        min = ivalue[i];
+                    if (max < ivalue[i])
+                        max = ivalue[i];
+                    sum += ivalue[i];
+                    sum2 += ivalue[i]*ivalue[i];
+                }
+                break;
             }
-        }
-        else if (NT == 'J')
-        {
-            long[] lvalue = (long[])theData;
-            min = lvalue[0];
-            max = lvalue[0];
-            sum = lvalue[0];
-            sum2 = lvalue[0]*lvalue[0];
-            for (int i=1; i<n; i++)
+            case('J'):
             {
-                if (min > lvalue[i])
-                    min = lvalue[i];
-                if (max < lvalue[i])
-                    max = lvalue[i];
-                sum += lvalue[i];
-                sum2 += lvalue[i]*lvalue[i];
+                long[] lvalue = (long[])theData;
+                min = lvalue[0];
+                max = lvalue[0];
+                sum = lvalue[0];
+                sum2 = lvalue[0]*lvalue[0];
+                for (int i=1; i<n; i++)
+                {
+                    if (min > lvalue[i])
+                        min = lvalue[i];
+                    if (max < lvalue[i])
+                        max = lvalue[i];
+                    sum += lvalue[i];
+                    sum2 += lvalue[i]*lvalue[i];
+                }
+                break;
             }
-        }
-        else if (NT == 'F')
-        {
-            float[] fvalue = (float[])theData;
-            min = fvalue[0];
-            max = fvalue[0];
-            sum = fvalue[0];
-            sum2 = fvalue[0]*fvalue[0];
-            for (int i=1; i<n; i++)
+            case('F'):
             {
-                if (min > fvalue[i])
-                    min = fvalue[i];
-                if (max < fvalue[i])
-                    max = fvalue[i];
-                sum += fvalue[i];
-                sum2 += fvalue[i]*fvalue[i];
+                float[] fvalue = (float[])theData;
+                min = fvalue[0];
+                max = fvalue[0];
+                sum = fvalue[0];
+                sum2 = fvalue[0]*fvalue[0];
+                for (int i=1; i<n; i++)
+                {
+                    if (min > fvalue[i])
+                        min = fvalue[i];
+                    if (max < fvalue[i])
+                        max = fvalue[i];
+                    sum += fvalue[i];
+                    sum2 += fvalue[i]*fvalue[i];
+                }
+                break;
             }
-        }
-        else if (NT == 'D')
-        {
-            double[] dvalue = (double[])theData;
-            min = dvalue[0];
-            max = dvalue[0];
-            sum = dvalue[0];
-            sum2 = dvalue[0]*dvalue[0];
-            for (int i=1; i<n; i++)
+            case('D'):
             {
-                if (min > dvalue[i])
-                    min = dvalue[i];
-                if (max < dvalue[i])
-                    max = dvalue[i];
-                sum += dvalue[i];
-                sum2 += dvalue[i]*dvalue[i];
+                double[] dvalue = (double[])theData;
+                min = dvalue[0];
+                max = dvalue[0];
+                sum = dvalue[0];
+                sum2 = dvalue[0]*dvalue[0];
+                for (int i=1; i<n; i++)
+                {
+                    if (min > dvalue[i])
+                        min = dvalue[i];
+                    if (max < dvalue[i])
+                        max = dvalue[i];
+                    sum += dvalue[i];
+                    sum2 += dvalue[i]*dvalue[i];
+                }
+                break;
             }
         }
 
@@ -1702,39 +1814,50 @@ null, options, options[0]);
      */
     private void mathConversion() throws Exception
     {
-        if (!(dataset instanceof ScalarDS))
+        if (isReadOnly)
             return;
 
+        //if (!(dataset instanceof ScalarDS))  return;
         Object theData = getSelectedData();
         if (theData == null)
-        {
-            toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-            "Select data cell(s) to convert.",
-            getTitle(),
-            JOptionPane.ERROR_MESSAGE);
             return;
-        }
 
         MathConversionDialog dialog = new MathConversionDialog((JFrame)viewer, theData);
         dialog.show();
 
         if (dialog.isConverted())
         {
-            int cols = table.getSelectedColumnCount();
-            int rows = table.getSelectedRowCount();
-            int r0 = table.getSelectedRow();
-            int c0 = table.getSelectedColumn();
-            int w = table.getColumnCount();
-            int idx_src=0, idx_dst=0;
-            for (int i=0; i<rows; i++)
+            if (dataset instanceof CompoundDS)
             {
-                idx_dst = (r0+i)*w+c0;
-                System.arraycopy(theData, idx_src, dataValue, idx_dst, cols);
-                idx_src += cols;
+                Object colData = null;
+                try {
+                    colData = ((List)dataset.getData()).get(table.getSelectedColumn());
+                } catch (Exception ex) {;}
+
+                if (colData != null)
+                {
+                    int size = Array.getLength(theData);
+                    System.arraycopy(theData, 0, colData, 0, size);
+                }
+            }
+            else
+            {
+                int cols = table.getSelectedColumnCount();
+                int rows = table.getSelectedRowCount();
+                int r0 = table.getSelectedRow();
+                int c0 = table.getSelectedColumn();
+                int w = table.getColumnCount();
+                int idx_src=0, idx_dst=0;
+                for (int i=0; i<rows; i++)
+                {
+                    idx_dst = (r0+i)*w+c0;
+                    System.arraycopy(theData, idx_src, dataValue, idx_dst, cols);
+                    idx_src += cols;
+                }
             }
 
             theData = null;
+            System.gc();
             table.updateUI();
             isValueChanged = true;
         }

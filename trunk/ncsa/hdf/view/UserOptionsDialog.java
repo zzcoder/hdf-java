@@ -396,8 +396,11 @@ public class UserOptionsDialog extends JDialog implements ActionListener
             if (newModule == null || newModule.length()<1)
                 return;
 
+            // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
+            try { Class.forName(newModule); }
+            catch (Exception ex) {
             try {ViewProperties.loadExtClass().loadClass(newModule); }
-            catch(ClassNotFoundException ex) {
+            catch(ClassNotFoundException ex2) {
                 JOptionPane.showMessageDialog(
                     this,
                     "Cannot find module:\n "+newModule+
@@ -405,7 +408,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener
                     "HDFView",
                     JOptionPane.ERROR_MESSAGE);
                 return;
-            }
+            } }
 
             if (cmd.endsWith("TreeView") && !treeViews.contains(newModule)) {
                 treeViews.add(newModule);

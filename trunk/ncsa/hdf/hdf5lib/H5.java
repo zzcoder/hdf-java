@@ -2680,10 +2680,12 @@ public class H5 {
 
         byte[] themaxdims = null;
         HDFArray theArr = null;
+
         if (maxdims != null) {
           theArr = new HDFArray((Object)maxdims);
           themaxdims = theArr.byteify();
         }
+
         int retVal = H5Screate_simple(rank, thedims,
             themaxdims);
 
@@ -4025,7 +4027,7 @@ public class H5 {
 //   Backward compatibility:
 //   These functions have been replaced by new HDF5 library calls.
 //   The interface is preserved as a convenience to existing code.
-// 
+//
     /**
       *  H5Gn_members  report the number of objects in
       *        a Group.  The 'objects' include everything that
@@ -4044,13 +4046,14 @@ public class H5 {
       */
      public synchronized static int H5Gn_members( int loc_id, String name)
          throws HDF5LibraryException, NullPointerException {
-		int grp_id = H5Gopen(loc_id, name);
-		long [] nobj = new long[1];
-		nobj[0] = -1;
-    		int ret = H5Gget_num_objs(loc_id, nobj);
-		int r = (new Long(nobj[0])).intValue();
-		return (r);	
+        int grp_id = H5Gopen(loc_id, name);
+        long [] nobj = new long[1];
+        nobj[0] = -1;
+        int ret = H5Gget_num_objs(grp_id, nobj);
+        int r = (new Long(nobj[0])).intValue();
+        return (r);
      }
+
     /**
      *   H5Gget_obj_info_idx   report the name and type of
      *        object with index 'idx' in a Group.  The 'idx'
@@ -4073,24 +4076,24 @@ public class H5 {
     public synchronized static int H5Gget_obj_info_idx( int loc_id,
         String name, int idx, String[] oname, int[]type)
         throws HDF5LibraryException, NullPointerException {
-		long default_buf_size = 4096;
-		String n[] = new String[1];
-		n[0] = new String("");
-		int grp_id = H5Gopen(loc_id, name);
-		long val = H5Gget_objname_by_idx(grp_id, idx, n, default_buf_size);
-		int type_code = H5Gget_objtype_by_idx(grp_id, idx);
-		oname[0] = new String(n[0]);
-		type[0] = type_code;
-		int ret = (new Long(val)).intValue();
-		return ret;
+        long default_buf_size = 4096;
+        String n[] = new String[1];
+        n[0] = new String("");
+        int grp_id = H5Gopen(loc_id, name);
+        long val = H5Gget_objname_by_idx(grp_id, idx, n, default_buf_size);
+        int type_code = H5Gget_objtype_by_idx(grp_id, idx);
+        oname[0] = new String(n[0]);
+        type[0] = type_code;
+        int ret = (new Long(val)).intValue();
+        return ret;
     }
 
 //
 //  This function is denegrated.  It is recommended that the new
-//  library calls should be used, 
+//  library calls should be used,
 //	H5Gget_objname_by_idx
 //	H5Gget_objtype_by_idx
-//  
+//
     /**
      *  H5Gget_objinfo returns information about the specified
      *  object.
@@ -4279,5 +4282,12 @@ public class H5 {
         int mem_space_id, int file_space_id, int xfer_plist_id,
         double[] buf)
         throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Pset_fclose_degree(int plist, int degree)
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Pget_fclose_degree(int plist_id)
+        throws HDF5LibraryException, NullPointerException;
+
 }
 

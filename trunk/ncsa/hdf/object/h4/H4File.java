@@ -28,11 +28,6 @@ import ncsa.hdf.object.*;
 public class H4File extends FileFormat
 {
     /**
-     * file identifier for the open file.
-     */
-    private int fid;
-
-    /**
      * the file access flag.
      */
     private int flag;
@@ -45,7 +40,7 @@ public class H4File extends FileFormat
     /**
      * The root node of the tree structure of this file.
      */
-    private MutableTreeNode rootNode;
+    private DefaultMutableTreeNode rootNode;
 
     /**
      * The list of unique (tag, ref) pairs.
@@ -84,7 +79,7 @@ public class H4File extends FileFormat
      */
     public H4File()
     {
-        this("", READ);
+        this("", WRITE);
     }
 
     /**
@@ -92,7 +87,7 @@ public class H4File extends FileFormat
      */
     public H4File(String pathname)
     {
-        this(pathname, READ);
+        this(pathname, WRITE);
     }
 
     /**
@@ -115,6 +110,7 @@ public class H4File extends FileFormat
         super(pathname);
 
         isReadOnly = (access == READ);
+        objList = new Vector();
 
         this.fid = -1;
         this.fullFileName = pathname;
@@ -129,13 +125,13 @@ public class H4File extends FileFormat
             flag = access;
 
 
-	String shwAll = System.getProperty("h4showall");
-	if (shwAll != null) { 
-		showAll = true;
-		System.err.println("Selected show all: hidden objects will be visible");
-	} else {
-		//System.err.println("show all is off");
-	}
+    String shwAll = System.getProperty("h4showall");
+    if (shwAll != null) {
+        showAll = true;
+        System.err.println("show all is on");
+    } else {
+        System.err.println("show all is off");
+    }
     }
 
     /**
@@ -306,6 +302,20 @@ public class H4File extends FileFormat
         Object data) throws Exception
     {
         return H4SDS.create(name, pgroup, type, dims, maxdims, chunks, gzip, data);
+    }
+
+    // implementign FileFormat
+    public Dataset createCompoundDS(
+        String name,
+        Group pgroup,
+        long[] dims,
+        String[] memberNames,
+        Datatype[] memberDatatypes,
+        int[] memberSizes,
+        Object data) throws Exception
+    {
+        // not supported
+        throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     public Dataset createImage(
@@ -517,7 +527,7 @@ public class H4File extends FileFormat
      * the sub-tree of that group, recursively.
      *
      */
-    private MutableTreeNode loadTree()
+    private DefaultMutableTreeNode loadTree()
     {
         if (fid <0 ) return null;
 
@@ -532,9 +542,6 @@ public class H4File extends FileFormat
             null, // root node does not have a parent path
             null, // root node does not have a parent node
             oid);
-
-        if (objList == null)
-            objList = new Vector(100);
 
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootGroup)
         {
@@ -580,7 +587,7 @@ public class H4File extends FileFormat
                 rootGroup.addToMemberList(g);
 
                 // recursively get the sub-tree
-                depth_first(node);
+                depth_first(node, null);
             }
         } // for (int i=0; i<n; i++)
 
@@ -688,18 +695,24 @@ public class H4File extends FileFormat
      * <p>
      * @param parentNode the parent node.
      */
-    private void depth_first(MutableTreeNode parentNode)
+    private void depth_first(MutableTreeNode parentNode, H4Group pgroup)
     {
+        if (pgroup == null && parentNode == null)
+            return;
+
         //System.out.println("H4File.depth_first() pnode = "+parentNode);
         int nelems=0, ref=-1, tag=-1, id=-1, index=-1;
         int[] tags = null;
         int[] refs = null;
         MutableTreeNode node = null;
+        DefaultMutableTreeNode pnode = null;
 
-        DefaultMutableTreeNode pnode = (DefaultMutableTreeNode)parentNode;
-        H4Group pgroup = (H4Group)(pnode.getUserObject());
+        if (parentNode != null) {
+            pnode = (DefaultMutableTreeNode)parentNode;
+            pgroup = (H4Group)(pnode.getUserObject());
+        }
+
         String fullPath = pgroup.getPath()+pgroup.getName()+HObject.separator;
-
         int gid = pgroup.open();
         if (gid == HDFConstants.FAIL)
         {
@@ -752,11 +765,11 @@ public class H4File extends FileFormat
                     if (index != HDFConstants.FAIL)
                     {
                         H4GRImage gr = getGRImage(index, fullPath, true);
-                        if (gr != null)
+                        pgroup.addToMemberList(gr);
+                        if (gr != null && pnode != null)
                         {
                             node = new DefaultMutableTreeNode(gr);
                             pnode.add( node );
-                            pgroup.addToMemberList(gr);
                         }
                     }
                     break;
@@ -772,28 +785,28 @@ public class H4File extends FileFormat
                     if (index != HDFConstants.FAIL)
                     {
                         H4SDS sds = getSDS(index, fullPath, true);
-                        if (sds != null)
+                        pgroup.addToMemberList(sds);
+                        if (sds != null  && pnode != null)
                         {
                             node = new DefaultMutableTreeNode(sds);
                             pnode.add( node );
-                            pgroup.addToMemberList(sds);
                         }
                     }
                     break;
                 case HDFConstants.DFTAG_VH:
                 case HDFConstants.DFTAG_VS:
                     H4Vdata vdata = getVdata(ref, fullPath, true);
-                    if (vdata != null)
+                    pgroup.addToMemberList(vdata);
+                    if (vdata != null && pnode != null)
                     {
                         node = new DefaultMutableTreeNode(vdata);
                         pnode.add( node );
-                        pgroup.addToMemberList(vdata);
                     }
                     break;
                 case HDFConstants.DFTAG_VG:
                     H4Group vgroup = getVGroup(ref, fullPath, pgroup, true);
-
-                    if (vgroup != null)
+                    pgroup.addToMemberList(vgroup);
+                    if (vgroup != null && pnode != null)
                     {
                         node = new DefaultMutableTreeNode(vgroup)
                         {
@@ -801,7 +814,6 @@ public class H4File extends FileFormat
                         };
 
                         pnode.add( node );
-                        pgroup.addToMemberList(vgroup);
 
                         // check for loops
                         boolean looped = false;
@@ -816,7 +828,7 @@ public class H4File extends FileFormat
                                 theNode = (DefaultMutableTreeNode)theNode.getParent();
                         }
                         if (!looped)
-                            depth_first(node);
+                            depth_first(node, null);
                     }
                     break;
                 default:
@@ -1369,7 +1381,11 @@ public class H4File extends FileFormat
         java.io.RandomAccessFile raf = null;
 
         try { raf = new java.io.RandomAccessFile(filename, "r"); }
-        catch (Exception ex) { raf = null; }
+        catch (Exception ex)
+        {
+            try { raf.close();} catch (Exception ex2) {}
+            raf = null;
+        }
 
         if (raf == null) return false;
 
@@ -1395,4 +1411,221 @@ public class H4File extends FileFormat
         return isnetcdf;
     }
 
+    /**
+     * Get an individual HObject with a given path. It deoes not load the whole
+     * file structure.
+     */
+    public HObject get(String path) throws Exception
+    {
+        if (objList == null)
+            objList = new Vector();
+
+        if (path == null || path.length() <= 0)
+            return null;
+
+        path = path.replace('\\', '/');
+        if (!path.startsWith("/"))
+            path = "/"+path;
+
+        String name=null, pPath=null;
+        boolean isRoot = false;
+
+        if (path.equals("/"))
+        {
+            name = "/"; // the root
+            isRoot = true;
+        } else
+        {
+            if (path.endsWith("/")) path = path.substring(0, path.length()-2);
+            int idx = path.lastIndexOf('/');
+            name = path.substring(idx+1);
+            if (idx == 0) pPath = "/";
+            else pPath = path.substring(0, idx);
+        }
+
+        HObject obj = null;
+        isReadOnly = false;
+
+        if (fid < 0)
+        {
+            fid = HDFLibrary.Hopen( fullFileName, HDFConstants.DFACC_WRITE);
+            if (fid < 0)
+            {
+                isReadOnly = true;
+                fid = HDFLibrary.Hopen( fullFileName, HDFConstants.DFACC_READ);
+            }
+            HDFLibrary.Vstart(fid);
+            grid = HDFLibrary.GRstart(fid);
+            sdid = HDFLibrary.SDstart(fullFileName, flag);
+        }
+
+        if (isRoot)
+            obj = getRootGroup();
+        else
+            obj = getAttachedObject(pPath, name);
+
+        return obj;
+    }
+
+    /** get the root group and all the alone objects */
+    private H4Group getRootGroup()
+    {
+        H4Group rootGroup = null;
+
+        long[] oid = {0, 0};
+        int n=0, tag=-1, ref=-1;
+        int[] argv = null;
+
+        rootGroup = new H4Group(this,"/",  null, null, oid);
+
+        // get top level VGroup
+        int[] tmpN = new int[1];
+        int[] refs = null;
+        String[] vClass = new String[1];
+        try {
+            // first call to get the number of lone Vgroup
+            n = HDFLibrary.Vlone(fid, tmpN, 0);
+            refs = new int[n];
+            // second call to get the references of all lone Vgroup
+            n = HDFLibrary.Vlone(fid, refs, n);
+        } catch (HDFException ex) { n = 0; }
+
+        //Iterate through the file to see members of the group
+        for ( int i = 0; i < n; i++)
+        {
+            ref = refs[i];
+            H4Group g = getVGroup(ref, HObject.separator, rootGroup, false);
+            if (g != null)
+                rootGroup.addToMemberList(g);
+        } // for (int i=0; i<n; i++)
+
+        // get the top level GR images
+        argv = new int[2];
+        boolean b = false;
+        try { b = HDFLibrary.GRfileinfo(grid, argv);
+        } catch (HDFException ex) { b = false; }
+
+        if ( b )
+        {
+            n = argv[0];
+            for (int i=0; i<n; i++)
+            {
+                // no duplicate object at top level
+                H4GRImage gr = getGRImage(i, HObject.separator, false);
+                if (gr != null)
+                    rootGroup.addToMemberList(gr);
+            } // for (int i=0; i<n; i++)
+        } // if ( grid!=HDFConstants.FAIL && HDFLibrary.GRfileinfo(grid,argv) )
+
+        // get top level SDS
+        try { b = HDFLibrary.SDfileinfo(sdid, argv);
+        } catch (HDFException ex) { b = false; }
+
+        if (b)
+        {
+            n = argv[0];
+
+            for (int i=0; i<n; i++)
+            {
+                // no duplicate object at top level
+                H4SDS sds = getSDS(i, HObject.separator, false);
+                if (sds != null)
+                    rootGroup.addToMemberList(sds);
+            } // for (int i=0; i<n; i++)
+        } // if (sdid != HDFConstants.FAIL && HDFLibrary.SDfileinfo(sdid, argv))
+
+        // get top level VData
+        try {
+            n = HDFLibrary.VSlone(fid, tmpN, 0);
+            refs = new int[n];
+            n = HDFLibrary.VSlone(fid, refs, n);
+        } catch (HDFException ex) {  n = 0; }
+
+        for (int i=0; i<n; i++)
+        {
+            ref = refs[i];
+
+            // no duplicate object at top level
+            H4Vdata vdata = getVdata(ref, HObject.separator, false);
+
+            if (vdata != null)
+                rootGroup.addToMemberList(vdata);
+        } // for (int i=0; i<n; i++)
+
+        if (rootGroup != null)
+        {
+            // retrieve file annotation, GR and SDS globle attributes
+            List attributeList = null;
+            try { attributeList = rootGroup.getMetadata(); }
+            catch (HDFException ex) {}
+
+            if (attributeList != null)
+            {
+                try { getFileAnnotation(fid, attributeList); }
+                catch (HDFException ex) {}
+                try { getGRglobleAttribute(grid, attributeList); }
+                catch (HDFException ex) {}
+                try { getSDSglobleAttribute(sdid, attributeList); }
+                catch (HDFException ex) {}
+            }
+        }
+
+        return rootGroup;
+    }
+
+    /** get the object attached to a vgroup */
+    private HObject getAttachedObject(String path, String name)
+    {
+        if (name== null || name.length()<=0)
+            return null;
+
+        HObject obj = null;
+
+        // get top level VGroup
+        String[] objName = {""};
+        // check if it is an image
+        int idx = -1;
+        try {
+            idx = HDFLibrary.GRnametoindex(grid, name);
+        } catch (HDFException ex) { idx = -1; }
+
+        if ( idx >= 0 )
+            return getGRImage(idx, HObject.separator, false);
+
+        // get top level SDS
+        try {
+            idx = HDFLibrary.SDnametoindex(sdid, name);
+        } catch (HDFException ex) { idx = -1; }
+
+        if ( idx >= 0 )
+        {
+            return getSDS(idx, HObject.separator, false);
+        } // if (sdid != HDFConstants.FAIL && HDFLibrary.SDfileinfo(sdid, argv))
+
+        int ref = 0;
+        String[] vClass = new String[1];
+        try {
+            ref = HDFLibrary.Vfind(fid, name);
+        } catch (HDFException ex) { ref = -1; }
+
+        if (ref > 0)
+        {
+            long oid[] = {HDFConstants.DFTAG_VG, ref};
+            H4Group g = new H4Group( this, objName[0], path, null, oid);
+            depth_first(null, g);
+            return g;
+        }
+
+        // get top level VData
+        try {
+            ref = HDFLibrary.VSfind(fid, name);
+        } catch (HDFException ex) {  ref = -1; }
+
+        if (ref > 0)
+        {
+            return getVdata(ref, HObject.separator, false);
+        } // for (int i=0; i<n; i++)
+
+        return obj;
+    }
 }

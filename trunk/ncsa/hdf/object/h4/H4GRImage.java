@@ -103,6 +103,11 @@ public class H4GRImage extends ScalarDS
      */
     private int ncomp;
 
+    public H4GRImage(FileFormat fileFormat, String name, String path)
+    {
+        this(fileFormat, name, path, null);
+    }
+
     /**
      * Creates a H4GRImage object with specific name, path, and object ID.
      * <p>

@@ -604,8 +604,8 @@ implements ActionListener, ItemListener, HyperlinkListener
         int rank=-1, gzip=-1, tclass=-1, tsize=-1, torder=-1, tsign=-1;
         long dims[], maxdims[], chunks[];
 
-        name = nameField.getText();
-        if (name == null)
+        name = nameField.getText().trim();
+        if (name == null || name.length()<1)
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,

@@ -91,16 +91,34 @@ implements Serializable, DataFormat
      * @param fileFormat the HDF file.
      * @param name the name of the data object.
      * @param path the full path of the data object.
+     */
+    public HObject(FileFormat fileFormat, String name, String path)
+    {
+        this(fileFormat, name, path, null);
+    }
+
+    /**
+     * Constructs an instance of the data object with specific name and path.
+     * An HDF data object must have a name. A data object is uniquely identified
+     * by its full name (the full path + the name of the object) and the file
+     * that contains the data object.
+     * <p>
+     * @param fileFormat the HDF file.
+     * @param name the name of the data object.
+     * @param path the full path of the data object.
      * @param oid the unique identifier of this data object.
      */
     public HObject(FileFormat fileFormat, String name, String path, long[] oid)
     {
         this.fileFormat = fileFormat;
+/*
         int theFID = -1;
         try { theFID = fileFormat.open(); }
         catch (Exception ex) { theFID = -1; }
-
         this.fid = theFID;
+*/
+
+        this.fid = fileFormat.getFID();
 
         if (path!=null && !path.endsWith(separator))
             path += separator;

@@ -97,6 +97,11 @@ public class H4SDS extends ScalarDS
      */
     private int sdid;
 
+    public H4SDS(FileFormat fileFormat, String name, String path)
+    {
+        this(fileFormat, name, path, null);
+    }
+
     /**
      * Creates an H4SDS object with specific name and path.
      * <p>
@@ -354,6 +359,8 @@ public class H4SDS extends ScalarDS
         String[] objName = {""};
         int[] sdInfo = {0, 0, 0};
         try {
+
+            // retireve attributes of the dataset
             int[] tmpDim = new int[HDFConstants.MAX_VAR_DIMS];
             HDFLibrary.SDgetinfo(id, objName, tmpDim, sdInfo);
             int n = sdInfo[2];
@@ -401,6 +408,17 @@ public class H4SDS extends ScalarDS
                     attr.setValue(buf);
                 }
             } // for (int i=0; i<n; i++)
+
+            // retrieve attribute of dimension
+            // BUG !! HDFLibrary.SDgetdimstrs(dimID, argv, 80) does not return anything
+/*
+            for (int i=0; i< rank; i++)
+            {
+                int dimID = HDFLibrary.SDgetdimid(id, i);
+                String[] argv = {" ", " ", " "};
+                HDFLibrary.SDgetdimstrs(dimID, argv, 80);
+            }
+*/
         } finally {
             close(id);
         }

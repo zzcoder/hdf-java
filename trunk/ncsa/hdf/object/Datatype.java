@@ -38,7 +38,7 @@ public abstract class Datatype
     /** unknown datatype*/
     final static public int CLASS_ERROR = -1;
 
-    /** default data size, endian */
+    /** default data size, endian, order */
     final static public int NATIVE = 10;
 
     /** big endian byte order*/

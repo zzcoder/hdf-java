@@ -100,8 +100,10 @@ public class FitsFile extends FileFormat
         try { raf = new RandomAccessFile(filename, "r"); }
         catch (Exception ex) { raf = null; }
 
-        if (raf == null)
+        if (raf == null) {
+            try { raf.close();} catch (Exception ex) {}
             return false;
+        }
 
         byte[] header = new byte[80];
         try { raf.read(header); }
@@ -111,12 +113,14 @@ public class FitsFile extends FileFormat
         {
             String front = new String(header, 0, 9);
             if (!front.startsWith("SIMPLE  =")) {
+                try { raf.close();} catch (Exception ex) {}
                 return false;
             }
 
             String back = new String(header, 9, 70);
             back = back.trim();
             if (back.length() < 1 || back.charAt(0) != 'T') {
+                try { raf.close();} catch (Exception ex) {}
                 return false;
             }
 
@@ -279,7 +283,21 @@ public class FitsFile extends FileFormat
         int gzip,
         Object data) throws Exception {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException("Unsupported operation.");
+    }
+
+    // implementign FileFormat
+    public Dataset createCompoundDS(
+        String name,
+        Group pgroup,
+        long[] dims,
+        String[] memberNames,
+        Datatype[] memberDatatypes,
+        int[] memberSizes,
+        Object data) throws Exception
+    {
+        // not supported
+        throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     // implementign FileFormat
@@ -295,19 +313,19 @@ public class FitsFile extends FileFormat
         int intelace,
         Object data) throws Exception {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     // implementign FileFormat
     public void delete(HObject obj) throws Exception {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     // implementign FileFormat
     public TreeNode copy(HObject srcObj, Group dstGroup) throws Exception {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     /** copy a dataset into another group.
@@ -319,13 +337,13 @@ public class FitsFile extends FileFormat
     private TreeNode copyDataset(Dataset srcDataset, FitsGroup pgroup)
          throws Exception {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     private TreeNode copyGroup(FitsGroup srcGroup, FitsGroup pgroup)
          throws Exception {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     /**
@@ -333,7 +351,7 @@ public class FitsFile extends FileFormat
      */
     public void copyAttributes(HObject src, HObject dst) {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     /**
@@ -341,7 +359,7 @@ public class FitsFile extends FileFormat
      */
     public void copyAttributes(int src_id, int dst_id) {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     /**
@@ -357,7 +375,7 @@ public class FitsFile extends FileFormat
     public void writeAttribute(HObject obj, ncsa.hdf.object.Attribute attr,
         boolean attrExisted) throws Exception {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     /**
@@ -371,5 +389,13 @@ public class FitsFile extends FileFormat
         return ver;
     }
 
+    /**
+     * Get an individual HObject with a given path. It deoes not load the whole
+     * file structure.
+     */
+    public HObject get(String path) throws Exception
+    {
+        return null; // TO DO To DO@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    }
 }
 

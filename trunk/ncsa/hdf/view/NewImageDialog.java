@@ -116,8 +116,8 @@ implements ActionListener, ItemListener
         tmpP.setLayout(new GridLayout(6, 1, 5, 5));
         tmpP.add(new JLabel("Image name: "));
         tmpP.add(new JLabel("Parent group: "));
-        tmpP.add(new JLabel("Width: "));
         tmpP.add(new JLabel("Height: "));
+        tmpP.add(new JLabel("Width: "));
         tmpP.add(new JLabel("Image type: "));
         tmpP.add(new JLabel("Data layout: "));
         centerP.add(tmpP, BorderLayout.WEST);
@@ -126,8 +126,8 @@ implements ActionListener, ItemListener
         tmpP.setLayout(new GridLayout(6, 1, 5, 5));
         tmpP.add(nameField=new JTextField());
         tmpP.add(parentChoice);
-        tmpP.add(widthField=new JTextField());
         tmpP.add(heightField=new JTextField());
+        tmpP.add(widthField=new JTextField());
 
         JPanel tmpP0 = new JPanel();
         tmpP0.setLayout(new GridLayout(1,2));

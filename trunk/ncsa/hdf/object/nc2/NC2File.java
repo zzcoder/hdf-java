@@ -101,8 +101,10 @@ public class NC2File extends FileFormat
         try { raf = new RandomAccessFile(filename, "r"); }
         catch (Exception ex) { raf = null; }
 
-        if (raf == null)
+        if (raf == null) {
+            try { raf.close();} catch (Exception ex) {}
             return false;
+        }
 
         byte[] header = new byte[4];
         try { raf.read(header); }
@@ -223,7 +225,7 @@ public class NC2File extends FileFormat
     // implementign FileFormat
     public Group createGroup(String name, Group pgroup) throws Exception {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     // implementign FileFormat
@@ -233,7 +235,7 @@ public class NC2File extends FileFormat
         int torder,
         int tsign) throws Exception {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     // implementign FileFormat
@@ -247,7 +249,21 @@ public class NC2File extends FileFormat
         int gzip,
         Object data) throws Exception {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException("Unsupported operation.");
+    }
+
+    // implementign FileFormat
+    public Dataset createCompoundDS(
+        String name,
+        Group pgroup,
+        long[] dims,
+        String[] memberNames,
+        Datatype[] memberDatatypes,
+        int[] memberSizes,
+        Object data) throws Exception
+    {
+        // not supported
+        throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     // implementign FileFormat
@@ -263,19 +279,19 @@ public class NC2File extends FileFormat
         int intelace,
         Object data) throws Exception {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     // implementign FileFormat
     public void delete(HObject obj) throws Exception {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     // implementign FileFormat
     public TreeNode copy(HObject srcObj, Group dstGroup) throws Exception {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     /** copy a dataset into another group.
@@ -287,13 +303,13 @@ public class NC2File extends FileFormat
     private TreeNode copyDataset(Dataset srcDataset, NC2Group pgroup)
          throws Exception {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     private TreeNode copyGroup(NC2Group srcGroup, NC2Group pgroup)
          throws Exception {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     /**
@@ -301,7 +317,7 @@ public class NC2File extends FileFormat
      */
     public void copyAttributes(HObject src, HObject dst) {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     /**
@@ -309,7 +325,7 @@ public class NC2File extends FileFormat
      */
     public void copyAttributes(int src_id, int dst_id) {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     /**
@@ -325,7 +341,7 @@ public class NC2File extends FileFormat
     public void writeAttribute(HObject obj, ncsa.hdf.object.Attribute attr,
         boolean attrExisted) throws Exception {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     /** converts a ucar.nc2.Attribute into an ncsa.hdf.object.Attribute */
@@ -355,5 +371,13 @@ public class NC2File extends FileFormat
         return ver;
     }
 
+    /**
+     * Get an individual HObject with a given path. It deoes not load the whole
+     * file structure.
+     */
+    public HObject get(String path) throws Exception
+    {
+        return null; // TO DO To DO@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    }
 }
 

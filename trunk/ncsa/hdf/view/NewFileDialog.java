@@ -32,12 +32,9 @@ import ncsa.hdf.object.*;
  * @version 1.3.0 04/23/2002
  * @author Peter X. Cao
  */
-public class NewFileDialog extends JDialog
-implements ActionListener
+public class NewFileDialog extends JFileChooser //JDialog
+//implements ActionListener
 {
-    /** TextField for entering the name of the target file. */
-    private JTextField fileInputField;
-
     /** flag if the new file is an HDF5 */
     private String fileType;
 
@@ -53,6 +50,8 @@ implements ActionListener
 
     private final Toolkit toolkit;
 
+    private final JFrame viewer;
+
     /** constructs an NewFileDialog.
      * @param owner The owner of the dialog.
      * @param dir The default directory of the new file.
@@ -66,106 +65,45 @@ implements ActionListener
         String type,
         List openFiles)
     {
-        super (owner, "New File...", true);
+        super (dir);
 
         currentDir = dir;
+        viewer = owner;
         viewDir = dir;
         fileType = type;
         fileCreated = false;
         fileList = openFiles;
         toolkit = Toolkit.getDefaultToolkit();
-        setTitle("New "+ fileType + " File ...");
+
+        if (fileType == FileFormat.FILE_TYPE_HDF4)
+            setFileFilter(DefaultFileFilter.getFileFilterHDF4());
+        else if (fileType == FileFormat.FILE_TYPE_HDF5)
+            setFileFilter(DefaultFileFilter.getFileFilterHDF5());
 
         if (currentDir != null) currentDir += File.separator;
         else currentDir = "";
 
-        fileInputField = new JTextField(currentDir+"untitled."+fileType.toLowerCase());
-
-        // layout the components
-        JPanel contentPane = (JPanel)getContentPane();
-        contentPane.setLayout(new BorderLayout(5,5));
-        contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        contentPane.setPreferredSize(new Dimension(400, 80));
-
-        // add the top panel for enter file name
-        JPanel p = new JPanel();
-        p.setLayout(new BorderLayout(5,5));
-        p.add("West",new JLabel("File name: "));
-        p.add("Center", fileInputField);
-
-        contentPane.add(p, BorderLayout.CENTER);
-
-        JButton okButton = new JButton("   Ok   ");
-        okButton.setMnemonic(KeyEvent.VK_O);
-        okButton.setActionCommand("Ok");
-        okButton.addActionListener(this);
-
-        JButton cancelButton = new JButton("Cancel");
-        cancelButton.setMnemonic(KeyEvent.VK_C);
-        cancelButton.setActionCommand("Cancel");
-        cancelButton.addActionListener(this);
-
-        JButton jb = new JButton("Browse...");
-        jb.setMnemonic(KeyEvent.VK_B);
-        jb.setActionCommand("Browse file");
-        jb.addActionListener(this);
-
-        p = new JPanel();
-        p.add(okButton);
-        p.add(cancelButton);
-        p.add(jb);
-
-        contentPane.add(p, BorderLayout.SOUTH);
-
-        Point l = owner.getLocation();
-        l.x += 250;
-        l.y += 80;
-        setLocation(l);
-        pack();
+        this.showSaveDialog(owner);
     }
 
-    public void actionPerformed(ActionEvent e)
+    protected void fireActionPerformed(String command)
     {
-        Object source = e.getSource();
-        String cmd = e.getActionCommand();
+        super.fireActionPerformed(command);
 
-        if (cmd.equals("Ok"))
-        {
+        if (command.equals("ApproveSelection"))
             fileCreated = createNewFile();
-
-            if (fileCreated)
-                dispose();
-        }
-        else if (cmd.equals("Cancel"))
-        {
+        else
             fileCreated = false;
-            dispose();
-        }
-        else if (cmd.equals("Browse file"))
-        {
-            final JFileChooser fchooser = new JFileChooser(currentDir);
-            int returnVal = fchooser.showOpenDialog(this);
-
-            if(returnVal != JFileChooser.APPROVE_OPTION)
-                return;
-
-            File choosedFile = fchooser.getSelectedFile();
-            if (choosedFile == null)
-                return;
-
-            currentDir = choosedFile.getPath();
-            String fname = choosedFile.getAbsolutePath();
-
-            if (fname == null) return;
-
-            fileInputField.setText(fname);
-        }
     }
 
     /** create a new HDF file with default file creation properties */
     private boolean createNewFile()
     {
-        String fname = fileInputField.getText();
+        File f = this.getSelectedFile();
+        if (f == null)
+            return false;
+
+        String fname = f.getAbsolutePath();
 
         if (fname == null)
         {
@@ -178,14 +116,12 @@ implements ActionListener
             return false;
         }
 
-        File f = new File(fname);
-
         if (f.isDirectory())
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
                 "File is a directory.",
-                this.getTitle(),
+                viewer.getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             return false;
         }
@@ -201,7 +137,7 @@ implements ActionListener
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
                 "File path does not exist at\n"+pfile.getPath(),
-                this.getTitle(),
+                 viewer.getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             return false;
         }
@@ -219,7 +155,7 @@ implements ActionListener
                     toolkit.beep();
                     JOptionPane.showMessageDialog(this,
                         "Unable to create the new file. \nThe file is being used.",
-                        getTitle(),
+                        viewer.getTitle(),
                         JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
@@ -231,7 +167,7 @@ implements ActionListener
         {
             newFileFlag = JOptionPane.showConfirmDialog(this,
                 "File exists. Do you want to replace it ?",
-                this.getTitle(),
+                viewer.getTitle(),
                 JOptionPane.YES_NO_OPTION);
             if (newFileFlag == JOptionPane.NO_OPTION)
                 return false;
@@ -246,7 +182,7 @@ implements ActionListener
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
                 ex.getMessage(),
-                this.getTitle(),
+                viewer.getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             return false;
         }
@@ -261,7 +197,12 @@ implements ActionListener
 
     public String getFile()
     {
-        return fileInputField.getText();
+        String fname = null;
+        File f = this.getSelectedFile();
+        if (f != null)
+            fname = f.getAbsolutePath();
+
+        return fname;
     }
 }
 

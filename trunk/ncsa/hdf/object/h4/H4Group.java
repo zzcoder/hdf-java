@@ -46,6 +46,11 @@ public class H4Group extends Group
       */
     private int sdid;
 
+    public H4Group(FileFormat fileFormat, String name, String path, Group parent)
+    {
+        this(fileFormat, name, path, parent, null);
+    }
+
     /**
      * Creates a group object with specific name, path, and parent.
      * <p>

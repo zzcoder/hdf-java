@@ -118,6 +118,11 @@ public abstract class CompoundDS extends Dataset
      */
     protected boolean[] isMemberSelected;
 
+    public CompoundDS(FileFormat fileFormat, String name, String path)
+    {
+        this(fileFormat, name, path, null);
+    }
+
     /**
      * Constructs a CompoundDS object with given file and dataset name and path.
      * This object is usually constructed at FileFormat.open(), which loads the
@@ -266,7 +271,6 @@ public abstract class CompoundDS extends Dataset
     public int[] getMemeberDims(int i) {
         if (memberDims == null)
             return null;
-
         return (int[])memberDims[i];
     }
 }

@@ -29,11 +29,6 @@ import ncsa.hdf.hdf5lib.exceptions.*;
 public class H5File extends FileFormat
 {
     /**
-     * file identifier for the open file.
-     */
-    private int fid;
-
-    /**
      * the file access flag.
      */
     private int flag;
@@ -46,7 +41,7 @@ public class H5File extends FileFormat
     /**
      * The root node of the file hierearchy.
      */
-    private MutableTreeNode rootNode;
+    private DefaultMutableTreeNode rootNode;
 
     /** flag to indicate if the file is readonly. */
     private boolean isReadOnly;
@@ -56,7 +51,7 @@ public class H5File extends FileFormat
      */
     public H5File()
     {
-        this("", READ);
+        this("", WRITE);
     }
 
     /**
@@ -64,7 +59,7 @@ public class H5File extends FileFormat
      */
     public H5File(String pathname)
     {
-        this(pathname, READ);
+        this(pathname, WRITE);
     }
 
     /**
@@ -161,7 +156,17 @@ public class H5File extends FileFormat
         else if ((flag == HDF5Constants.H5F_ACC_RDONLY) && !canRead())
             throw new HDF5Exception("Cannot read file -- "+fullFileName);
 
-        fid = H5.H5Fopen( fullFileName, flag, HDF5Constants.H5P_DEFAULT);
+        int plist = HDF5Constants.H5P_DEFAULT;
+
+        /*
+        try {
+            //All open objects ramaining in the file are closed then file is closed
+            plist = H5.H5Pcreate (HDF5Constants.H5P_FILE_ACCESS);
+            H5.H5Pset_fclose_degree ( plist, HDF5Constants.H5F_CLOSE_STRONG);
+        } catch (Exception ex) {System.out.println(ex);}
+        */
+
+        fid = H5.H5Fopen( fullFileName, flag, plist);
 
         if (fid>=0)
         {
@@ -286,6 +291,20 @@ public class H5File extends FileFormat
     }
 
     // implementign FileFormat
+    public Dataset createCompoundDS(
+        String name,
+        Group pgroup,
+        long[] dims,
+        String[] memberNames,
+        Datatype[] memberDatatypes,
+        int[] memberSizes,
+        Object data) throws Exception
+    {
+        // not supported
+        return H5CompoundDS.create(name, pgroup, dims, memberNames, memberDatatypes, memberSizes, data);
+    }
+
+    // implementign FileFormat
     public Dataset createImage(
         String name,
         Group pgroup,
@@ -315,7 +334,7 @@ public class H5File extends FileFormat
     }
 
     // implementign FileFormat
-    private MutableTreeNode loadTree()
+    private DefaultMutableTreeNode loadTree()
     {
         if (fid <0 ) return null;
 
@@ -327,7 +346,7 @@ public class H5File extends FileFormat
             null, // root node does not have a parent node
             oid);
 
-        MutableTreeNode root = new DefaultMutableTreeNode(rootGroup)
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootGroup)
         {
             public boolean isLeaf() { return false; }
         };
@@ -966,7 +985,7 @@ try {
                 long lsize = 1;
                 for (int j=0; j<dims.length; j++) lsize *= dims[j];
                 Object value = H5Datatype.allocateArray(nativeType, (int)lsize);
-                if (value == null)
+               if (value == null)
                     continue;
 
                 if (H5.H5Tget_class(nativeType)==HDF5Constants.H5T_ARRAY)
@@ -1159,6 +1178,156 @@ try {
         ver += vers[0] + "."+ vers[1] +"."+vers[2];
 
         return ver;
+    }
+
+    /**
+     * Get an individual HObject with a given path. It deoes not load the whole
+     * file structure.
+     */
+    public HObject get(String path) throws Exception
+    {
+        if (path == null || path.length() <= 0)
+            return null;
+
+        path = path.replace('\\', '/');
+        if (!path.startsWith("/"))
+            path = "/"+path;
+
+        String name=null, pPath=null;
+        if (path.equals("/"))
+        {
+            name = "/"; // the root
+        } else
+        {
+            if (path.endsWith("/")) path = path.substring(0, path.length()-2);
+            int idx = path.lastIndexOf('/');
+            name = path.substring(idx+1);
+            if (idx == 0) pPath = "/";
+            else pPath = path.substring(0, idx);
+            path = path+"/";
+
+        }
+
+        HObject obj = null;
+        isReadOnly = false;
+
+        if (fid < 0)
+        {
+            try {
+                fid = H5.H5Fopen( fullFileName, HDF5Constants.H5F_ACC_RDWR, HDF5Constants.H5P_DEFAULT);
+            } catch ( Exception ex) {
+                isReadOnly = true;
+                fid = H5.H5Fopen( fullFileName, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
+            }
+        }
+
+        if (fid < 0) return null;
+
+        int did=-1, gid=-1;
+
+        try { did = H5.H5Dopen(fid, path);
+        } catch (Exception ex) { did = -1; }
+        try { gid = H5.H5Gopen(fid, path);
+        } catch (Exception ex) { gid = -1; }
+
+        // requested object is a dataset
+        if (did > 0)
+        {
+            int tid=-1, tclass=-1;
+            try {
+                tid = H5.H5Dget_type(did);
+                tclass = H5.H5Tget_class(tid);
+                if (tclass == HDF5Constants.H5T_ARRAY)
+                {
+                    // for ARRAY, the type is determined by the base type
+                    int btid = H5.H5Tget_super(tid);
+                    tclass = H5.H5Tget_class(btid);
+                    try { H5.H5Tclose(btid); } catch (HDF5Exception ex) {}
+                }
+            } catch (HDF5Exception ex) {}
+            finally {
+                try { H5.H5Tclose(tid); } catch (HDF5Exception ex) {}
+                try { H5.H5Dclose(did); } catch (HDF5Exception ex) {}
+            }
+
+            Dataset dataset = null;
+            if (tclass == HDF5Constants.H5T_COMPOUND)
+                dataset = new H5CompoundDS(this, name, pPath);
+            else
+                dataset = new H5ScalarDS( this, name, pPath);
+
+            obj = dataset;
+        }
+        // requested object is a group
+        else if (gid > 0)
+        {
+            H5Group group = new H5Group(this, name,pPath,null);
+            obj = group;
+
+            int nelems = 0;
+            try {
+                long[] nmembers = {0};
+                H5.H5Gget_num_objs(gid, nmembers);
+                nelems = (int)nmembers[0];
+            } catch (HDF5Exception ex) {
+                nelems = -1;
+                gid = -1;
+            }
+
+            int[] oType = new int[1];
+            String [] oName = new String[1];
+
+            //get only one level objects in the group
+            for ( int i = 0; i <nelems; i++)
+            {
+                oName[0] = "";
+                oType[0] = -1;
+                try {
+                    H5.H5Gget_objname_by_idx(gid, i, oName, 80l);
+                    oType[0] = H5.H5Gget_objtype_by_idx(gid, i);
+                } catch (HDF5Exception ex) {
+                    // do not stop if accessing one member fails
+                    continue;
+                }
+
+                // create a new group
+                if (oType[0] == HDF5Constants.H5G_GROUP)
+                {
+                    H5Group g = new H5Group(this,oName[0],path,group);
+                    group.addToMemberList(g);
+                } else if (oType[0] == HDF5Constants.H5G_DATASET)
+                {
+                    int did1=-1, tid1=-1, tclass1=-1;
+                    try {
+                        did1 = H5.H5Dopen(fid, path+oName[0]);
+                        tid1 = H5.H5Dget_type(did);
+                        tclass1 = H5.H5Tget_class(tid1);
+                        if (tclass1 == HDF5Constants.H5T_ARRAY)
+                        {
+                            // for ARRAY, the type is determined by the base type
+                            int btid = H5.H5Tget_super(tid1);
+                            tclass1 = H5.H5Tget_class(btid);
+                            try { H5.H5Tclose(btid); } catch (HDF5Exception ex) {}
+                        }
+                    } catch (HDF5Exception ex) {}
+                    finally {
+                        try { H5.H5Tclose(tid1); } catch (HDF5Exception ex) {}
+                        try { H5.H5Dclose(did1); } catch (HDF5Exception ex) {}
+                    }
+
+                    Dataset d = null;
+
+                    if (tclass1 == HDF5Constants.H5T_COMPOUND)
+                        d = new H5CompoundDS(this,oName[0],path);
+                    else
+                        d = new H5ScalarDS(this,oName[0],path);
+                    group.addToMemberList(d);
+                }
+            } // for ( i = 0; i < nelems; i++)
+            try {H5.H5Gclose(gid);} catch (Exception ex2) {}
+        } // request group
+
+        return obj;
     }
 
 }
