@@ -27,24 +27,32 @@ export LD_LIBRARY_PATH
 cp ../h4toh5/testfiles/*.hdf .
 cp ../h4toh5/Expected/*.h5 .
 
-TESTFILES="vg_all_test"
+TESTFILES="image_lib_lonetest image_lib_test sds_lib_lonetest sds_lib_test testallvgroup vdata_lib_lonetest vdata_lib_test vg_all_testname vg_bas_test"
 
 #HDF4 tests
 for i in $TESTFILES
 do
 
-@JAVA@ -Djava.library.path=$LD_LIBRARY_PATH -Dncsa.hdf.hdflib.HDFLibrary.hdflib=$LIBDIR"/@JAVATARG@/libjhdf.so" test.object.TestH4File $i.hdf
+echo "***"
+echo $i
+echo "***"
+@JAVA@ -Djava.library.path=$LD_LIBRARY_PATH -Dncsa.hdf.hdflib.HDFLibrary.hdflib=$LIBDIR"/@JAVATARG@/libjhdf.so" test.object.TestH4File $i
 
 
 # check against correct output....
 
 done
 
+TESTFILES="image_lib_test.h5 sds_lib_test.h5 testallvgroup.h5 vdata_lib_test.h5 vg_all_test.h5 vg_all_testname.h5"
+
 #HDF5 tests
 for i in $TESTFILES
 do
 
-@JAVA@ -Djava.library.path=$LD_LIBRARY_PATH -Dncsa.hdf.hdf5lib.H5.hdf5lib=$LIBDIR"/@JAVATARG@/libjhdf5.so" test.object.TestH5File $i.h5
+echo "***"
+echo $i
+echo "***"
+@JAVA@ -Djava.library.path=$LD_LIBRARY_PATH -Dncsa.hdf.hdf5lib.H5.hdf5lib=$LIBDIR"/@JAVATARG@/libjhdf5.so" test.object.TestH5File $i
 
 
 # check against correct output....
