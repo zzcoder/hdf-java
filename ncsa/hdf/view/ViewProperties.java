@@ -34,11 +34,11 @@ public class ViewProperties extends Properties
     /** the version of the HDFViewer */
     public static final String VERSION = "2.2";
 
-    /** the local property file name */
-    public static final String USER_PROPS = "hdfview.props";
-
     /** the maximum number of most recent files */
     public static final int MAX_RECENT_FILES = 15;
+
+    /** the local property file name */
+    private static final String USER_PROPERTY_FILE = ".hdfview"+VERSION;
 
     /** name of the tab delimiter */
     public static final String DELIMITER_TAB = "Tab";
@@ -148,7 +148,7 @@ public class ViewProperties extends Properties
         String uh="", ud="", h5v="", fn;
 
         // look for the property file at the use home directory
-        fn = ViewProperties.USER_PROPS;
+        fn = USER_PROPERTY_FILE;
         uh = System.getProperty("user.home") + File.separator + fn;
         ud = System.getProperty("user.dir") + File.separator + fn;
         h5v = viewRoot + File.separator + "lib" + File.separator + fn;
