@@ -24,20 +24,21 @@ HDF5= # path to HDF5 installation
 HDF4= # path to HDF4 installation (if used)
 HDF45= # path to HDF4 to HDF5 installation (if used)
 
-SZIP= # path to SZIP installation (normally not needed, should be in HDF5)
+## Autoconf detects shared libraries, but we need static versions
+## must set these paths.
+SZIP= # path to SZIP installation (the path to libsz.a is needed)
+GZIP= # path to GZIP installation (the path to libz.a is needed)
+JPEG= # path to JPEG installation (the path to libjpeg.a is needed)
 
 ####
 
-# recommend using 'h5cc' to build
-CC=$HDF5/bin/h5cc
-export CC
-
-./configure --prefix=$INSTDIR --with-jdk=$JAVAINC,$JAVALIB --with-hdf5=$HDF5/include,$HDF5/lib --with-hdf4=$HDF4/include,$HDF4/lib
+./configure --prefix=$INSTDIR --with-jdk=$JAVAINC,$JAVALIB --with-hdf5=$HDF5/include,$HDF5/lib --with-hdf4=$HDF4/include,$HDF4/lib --with-libsz=$SZIP/include,$SZIP/lib --with-libz=$GZIP/include,$GZIP/lib --with-libjpeg=$JPEG/include,$JPEG/lib 
 
 # other options
 #  --with-libsz=$SZIP"/include,"$SZIP"/lib" # if need to tell where SZIP is
 #  --with-h5toh5=$HDF45"/include,"$HDF45"/lib" # if want h4toh5lib configured
-#  --with-libz= # path to gzip lib, if needed  (typically found by h5cc)
+#  --with-libz= # path to gzip lib, if needed  
+#  --with-libjpeg= # path to jpeg lib, if needed 
 #  
 #  --without-hdf4  -- omit HDF4
 #  --without-libsz  -- omit SZIP
