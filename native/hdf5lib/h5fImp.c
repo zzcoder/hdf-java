@@ -339,11 +339,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Freopen
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Fget_obj_ids(hid_t file_id, unsigned int types, hid_t *obj_id_list ) 
+ * Method:    H5Fget_obj_ids(hid_t file_id, unsigned int types, int maxObjs, hid_t *obj_id_list ) 
  * Signature: (I[J[J)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1obj_1ids
-  (JNIEnv *env, jclass clss, jint file_id, jint types, jintArray obj_id_list)
+  (JNIEnv *env, jclass clss, jint file_id, jint types, jint maxObjs, jintArray obj_id_list)
 {
 	herr_t status;
 	jint *obj_id_listP;
@@ -351,6 +351,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1obj_1ids
 	hid_t *id_list;
 	int rank;
 	int i;
+
+	status = -1;
 
 	if ( obj_id_list == NULL ) {
 		h5nullArgument( env, "H5Fget_obj_ids:  obj_id_list is NULL");
@@ -385,7 +387,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1obj_1ids
 		return -1;
 	}
 
-	status = H5Fget_obj_ids((hid_t)file_id, (unsigned int)types, id_list);
+	status = H5Fget_obj_ids((hid_t)file_id, (unsigned int)types, (int)maxObjs, id_list);
 	
 	if (status < 0) {
 #ifdef __cplusplus
@@ -412,72 +414,20 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1obj_1ids
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Fget_obj_count(hid_t file_id, unsigned int types, unsigned int *obj_id_count ) 
+ * Method:    H5Fget_obj_count(hid_t file_id, unsigned int types ) 
  * Signature: (I[J[J)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1obj_1count
-  (JNIEnv *env, jclass clss, jint file_id, jint types, jintArray obj_id_count)
+  (JNIEnv *env, jclass clss, jint file_id, jint types )
 {
 	herr_t status;
-	jint *obj_id_countP;
-	jboolean isCopy;
-	unsigned int *id_count;
-	int rank;
-	int i;
 
-	if ( obj_id_count == NULL ) {
-		h5nullArgument( env, "H5Fget_obj_count:  obj_id_count is NULL");
-		return -1;
-	}
+	status = -1;
 
-
-#ifdef __cplusplus
-	obj_id_countP = env->GetIntArrayElements(obj_id_count,&isCopy);
-#else
-	obj_id_countP = (*env)->GetIntArrayElements(env,obj_id_count,&isCopy);
-#endif
-	if (obj_id_countP == NULL) {
-		h5JNIFatalError( env, "H5Fget_obj_count:  obj_id_count not pinned");
-		return -1;
-	}
-#ifdef __cplusplus
-	rank = (int)env->GetArrayLength(obj_id_count);
-#else
-	rank = (int)(*env)->GetArrayLength(env,obj_id_count);
-#endif
-
-	id_count = (hid_t *)malloc( rank * sizeof(hid_t)); 
-
-	if (id_count == NULL) {
-#ifdef __cplusplus
-		env->ReleaseIntArrayElements(obj_id_count,obj_id_countP,JNI_ABORT);
-#else
-		(*env)->ReleaseIntArrayElements(env,obj_id_count,obj_id_countP,JNI_ABORT);
-#endif
-		h5JNIFatalError(env,  "H5Fget_obj_count:  obj_id_count not converted to hid_t");
-		return -1;
-	}
-
-	status = H5Fget_obj_count((hid_t)file_id, (unsigned int)types, id_count);
+	status = H5Fget_obj_count((hid_t)file_id, (unsigned int)types );
 	
 	if (status < 0) {
-#ifdef __cplusplus
-		env->ReleaseIntArrayElements(obj_id_count,obj_id_countP,JNI_ABORT);
-#else
-		(*env)->ReleaseIntArrayElements(env,obj_id_count,obj_id_countP,JNI_ABORT);
-#endif
-		free(id_count);
 		h5libraryError(env);
-	} else  {
-		for (i = 0; i < rank; i++) {
-			obj_id_countP[i] = id_count[i];
-		}
-		free(id_count);
-#ifdef __cplusplus
-		env->ReleaseIntArrayElements(obj_id_count,obj_id_countP,0);
-#else
-		(*env)->ReleaseIntArrayElements(env,obj_id_count,obj_id_countP,0);
-#endif
 	}
 
 	return (jint)status;
