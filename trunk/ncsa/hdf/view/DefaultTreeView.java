@@ -248,6 +248,14 @@ implements TreeView, ActionListener {
         item.setActionCommand("Show object properties as");
         menu.add(item);
 
+        menu.addSeparator();
+
+        item = new JMenuItem( "Close File");
+        item.setMnemonic(KeyEvent.VK_F);
+        item.addActionListener(this);
+        item.setActionCommand("Close file");
+        menu.add(item);
+
         return menu;
     }
 
@@ -1000,7 +1008,10 @@ implements TreeView, ActionListener {
     {
         String cmd = e.getActionCommand();
 
-        if (cmd.equals("Add group")) {
+        if (cmd.equals("Close file")) {
+            ((HDFView)viewer).actionPerformed(e);
+        }
+        else if (cmd.equals("Add group")) {
             addGroup();
         }
         else if (cmd.equals("Add dataset")) {
