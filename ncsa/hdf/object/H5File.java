@@ -612,7 +612,7 @@ public class H5File extends File implements FileFormat
      * Returns a list of attriubtes for the given object location.
      * <p>
      * @param objID the object identifier.
-     * @retun the list of attriubtes of the object.
+     * @return the list of attriubtes of the object.
      */
     public static List getAttribute(int objID) throws HDF5Exception
     {

@@ -19,6 +19,7 @@ import ncsa.hdf.hdf5lib.exceptions.*;
 
 
 /**
+ *  <p>
  *  <hr>
  *  <p>
  *  <center>
@@ -369,13 +370,13 @@ public class H5 {
          *  Upon failure (when the versions do not match), this function
      *  causes the application to abort (i.e., crash)
      *
-     *  @see C API function: herr_t H5check_version()
+     *  See C API function: herr_t H5check_version()
      **/
     public synchronized static native int H5check_version(int majnum, int minnum, int relnum);
 
     /**
      *  H5garbage_collect collects on all free-lists of all types.
-     *
+     *  <p>
      *  ** Note: this is new with HDF5.1.2.2.  If using
      *           an earlier version, use
      *           'configure --enable-hdf5_1_2_1'
@@ -503,7 +504,7 @@ public class H5 {
      *
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - data object is null.
-     *  @see public synchronized static native int H5Awrite(int attr_id, int mem_type_id, byte[] buf);
+     *  See public synchronized static native int H5Awrite(int attr_id, int mem_type_id, byte[] buf);
      **/
     public synchronized static int H5Awrite(int attr_id, int mem_type_id,
      Object obj )
@@ -551,7 +552,7 @@ public class H5 {
      *
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - data buffer is null.
-     *  @see public synchronized static native int H5Aread( )
+     *  See public synchronized static native int H5Aread( )
     **/
     public synchronized static int H5Aread(int attr_id, int mem_type_id, Object obj)
      throws HDF5Exception, NullPointerException
@@ -1300,7 +1301,7 @@ public class H5 {
     // extensions to the standard interface:  not in the Ref. Man.
 
     /**
-     *  @name H5Gn_members  report the number of objects in
+     *  H5Gn_members  report the number of objects in
      *        a Group.  The 'objects' include everything that
      *        will be visited by H5Giterate.  Each link is
      *        returned, so objects with multiple links will
@@ -1310,7 +1311,7 @@ public class H5 {
      *  @param name   name of the group to iterate, relative to
      *  the loc_id
      *
-     *  @returns the number of members in the group or -1 if error.
+     *  @return the number of members in the group or -1 if error.
      *
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - name is null.
@@ -1319,10 +1320,10 @@ public class H5 {
         throws HDF5LibraryException, NullPointerException;
 
     /**
-     *  @name H5Gget_obj_info_idx   report the name and type of
+     *   H5Gget_obj_info_idx   report the name and type of
      *        object with index 'idx' in a Group.  The 'idx'
      *        corresponds to the index maintained by H5Giterate.
-	 *       	  Each link is returned, so objects with multiple
+     *        Each link is returned, so objects with multiple
      *        links will be counted once for each link.
      *
      *  @param loc_id  IN:  file or group ID.
@@ -1332,7 +1333,7 @@ public class H5 {
      *  @param oname  the name of the object [OUT]
      *  @param type   the type of the object [OUT]
      *
-     *  @returns non-negative if successful, -1 if not.
+     *  @return non-negative if successful, -1 if not.
      *
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - name is null.
@@ -1349,8 +1350,8 @@ public class H5 {
      *  either a file or a group identifier.
      *
      *  @param loc_id File or group identifier.
-     *  @paramsrc Object's original name.
-     *  @paramdst Object's new name.
+     *  @param  src Object's original name.
+     *  @param  dst Object's new name.
      *
      *  @return a non-negative value if successful
      *
@@ -1414,7 +1415,7 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      *
      *  @see ncsa.hdf.hdf5lib.HDF5GroupInfo
-     *  @see public synchronized static native int H5Gget_objinfo();
+     *  See public synchronized static native int H5Gget_objinfo();
      **/
     public synchronized static int H5Gget_objinfo(int loc_id, String name,
         boolean follow_link,
@@ -2063,7 +2064,7 @@ public class H5 {
      *  properties to the end of an output filter pipeline.
      *
      *  @param plist IN: Property list identifier.
-     *  @param_t filter IN: Filter to be added to the pipeline.
+     *  @param filter IN: Filter to be added to the pipeline.
      *  @param flags IN: Bit vector specifying certain general
      *  properties of the filter.
      *  @param cd_nelmts IN: Number of elements in cd_values
@@ -2450,8 +2451,7 @@ public class H5 {
      *  H5Pget_gc_references Returns the current setting for the
      *  garbage collection refernces property from a file
      *  access property list.
-     *
-     *
+     *  <p>
      *  ** Note: this routine changed name with HDF5.1.2.2.  If using
      *           an earlier version, use
      *           'configure --enable-hdf5_1_2_1'
@@ -2613,7 +2613,7 @@ public class H5 {
      *  that object and return an identifier.
      *
      *  @param dataset  IN: Dataset containing reference object.
-     *  @paramete ref_type  IN: The reference type of ref.
+     *  @param ref_type  IN: The reference type of ref.
      *  @param ref  IN: reference to an object
      *
      *  @return valid identifier if successful
