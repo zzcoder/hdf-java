@@ -50,15 +50,18 @@ case  $machtype in
     sun4*)
 	LD_LIBRARY_PATH=$HDFVIEW_HOME/lib/solaris:$LD_LIBRARY_PATH
 	;;
-  i*86)
+    i*86)
         LD_LIBRARY_PATH=$HDFVIEW_HOME"/lib/linux:"$LD_LIBRARY_PATH
 	;;
-  IP*)
+    IP*)
 	OSREV=`/bin/uname -r`
 	LD_LIBRARY_PATH=$HDFVIEW_HOME"/lib/irix-"$OSREV":"$LD_LIBRARY_PATH 
 	LD_LIBRARYN32_PATH=$HDFVIEW_HOME"/lib/irix-"$OSREV":"$LD_LIBRARY_PATH
 	export LD_LIBRARYN32_PATH
 	;;
+    alpha*)
+        LD_LIBRARY_PATH=$HDFVIEW_HOME/lib/alpha:$LD_LIBRARY_PATH
+        ;;
     *)
 	echo "Unknown machine type:  jhv may not work correctly"
         ;;
