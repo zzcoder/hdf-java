@@ -1,3 +1,4 @@
+# Generated automatically from Makefile.in by configure.
 #****************************************************************************
 #* NCSA HDF                                                                 *
 #* National Comptational Science Alliance                                   *
@@ -8,6 +9,7 @@
 #* COPYING file.                                                            *
 #*                                                                          *
 #****************************************************************************/
+
 
 @VERSION@
 
@@ -26,6 +28,10 @@ H45INC=@H45INC@
 LIBDIR=$(JH45INSTALLDIR)/lib
 BINDIR=$(JH45INSTALLDIR)/bin
 DOCDIR= $(JH45INSTALLDIR)/docs
+
+HDFVIEWDISTFILES= ./ncsa/hdf/view/*.java
+
+HDFOBJDISTFILES= ./ncsa/hdf/object/*.java
 
 JH45IDISTFILES=./VERSION ./COPYING ./Makefile.in \
 	windows/lib.dsw windows/lib.dsp \
@@ -52,7 +58,7 @@ TESTFILES=./test/Makefile.in ./test/h4toh5/*.java ./test/h4toh5/*.in ./test/h4to
 
 DOCFILES=./docs/javadocs/*.html ./docs/javadocs/images/*.gif
 
-DISTFILES= $(JHI5DISTFILES) $(JHIDISTFILES) $(JH45IDISTFILES) ./ncsa/hdf/object/*.java  $(TESTFILES) $(DOCFILES)
+DISTFILES= $(JHI5DISTFILES) $(JHIDISTFILES) $(JH45IDISTFILES) $(HDFDISTFILES) $(HDFVIEWDISTFILES) $(TESTFILES) $(DOCFILES)
 
 
 JH45PACKAGES = \
@@ -71,10 +77,9 @@ JHI5PACKAGES = \
 
 HDFOBJPACKAGES = ncsa.hdf.object
 
-HDFVIEWPACKAGES= ncsa.hdf.io \
-	ncsa.hdf.view
+HDFVIEWPACKAGES= ncsa.hdf.view
 
-TESTPACKAGES = test.h4toh5 ncsa.hdf.io test.object
+TESTPACKAGES = test.h4toh5 test.object
 
 
 .SUFFIXES: .java .class
@@ -92,7 +97,7 @@ install-just-hdf4: install-hdflib install-jhdf
 
 install-just-hdf5: install-hdf5lib install-jhdf5
 
-packages: jhdf-packages jhdf5-packages jh4toh5-packages jhdfobj-packages
+packages: jhdf-packages jhdf5-packages jh4toh5-packages jhdfobj-packages jhdfview-packages
 
 jh4toh5-packages: 
 	@if test -n "$(H45INC)" ; then $(MAKE) do-jh4toh5-packages ; fi
@@ -108,6 +113,9 @@ jhdf5-packages: $(JHI5PACKAGES)
 
 jhdfobj-packages: $(HDFOBJPACKAGES)  
 	$(JAR) cf ./lib/jhdfobj.jar $(HDFOBJCLASSES)
+
+jhdfview-packages: $(HDFVIEWPACKAGES)  
+	$(JAR) cf ./lib/jhdfview.jar $(HDFVIEWCLASSES)
 
 classes: packages
 
@@ -136,9 +144,9 @@ docs: javadocs
 javadocs:
 	-mkdir -p docs/javadocs;
 	@if test -n "$(H45INC)" ; then \
-	$(JAVADOC) -sourcepath $(CLASSPATH) -d ./docs/javadocs $(JAVADOC_FLAGS) $(JH45PACKAGES) $(JHIPACKAGES) $(JHI5PACKAGES) $(HDFOBJPACKAGES); \
+	$(JAVADOC) -sourcepath $(CLASSPATH) -d ./docs/javadocs $(JAVADOC_FLAGS) $(JH45PACKAGES) $(JHIPACKAGES) $(JHI5PACKAGES) $(HDFOBJPACKAGES) $(HDFVIEWPACKAGES); \
 	else \
-	$(JAVADOC) -sourcepath $(CLASSPATH) -d ./docs/javadocs $(JAVADOC_FLAGS) $(JHIPACKAGES) $(JHI5PACKAGES) $(HDFOBJPACKAGES); \
+	$(JAVADOC) -sourcepath $(CLASSPATH) -d ./docs/javadocs $(JAVADOC_FLAGS) $(JHIPACKAGES) $(JHI5PACKAGES) $(HDFOBJPACKAGES) $(HDFVIEWPACKAGES); \
 	fi
 
 tests:
@@ -155,6 +163,7 @@ clean-classes:
 	rm -f ./lib/jhdf.jar
 	rm -f ./lib/jhdf5.jar
 	rm -f ./lib/jhdfobj.jar
+	rm -f ./lib/jhdfview.jar
 
 clean-packages: clean-classes
 
@@ -185,7 +194,7 @@ check: install $(TESTPACKAGES)
 	$(MAKE) check;
 
 
-install: install-lib install-jhdf install-jhdf5 install-jh4toh5 install-jhdfobj
+install: install-lib install-jhdf install-jhdf5 install-jh4toh5 install-jhdfobj install-jhdfview
 	@echo "Install complete"
 
 uninstall: uninstall-lib uninstall-jh45 uninstall-jhi uninstall-jhi5
@@ -251,6 +260,11 @@ install-jhdfobj: ncsa.hdf.object
 	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdfobj.jar $(HDFOBJCLASSES)
 	@echo "Install HDFOBJ complete"
 
+install-jhdfview: ncsa.hdf.view
+	-mkdir -p $(LIBDIR);
+	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdfview.jar $(HDFVIEWCLASSES)
+	@echo "Install HDFVIEW complete"
+
 uninstall-jhi5: 
 	rm -f $(JH45INSTALLDIR)/lib/jhdf5.jar
 
@@ -304,8 +318,8 @@ distclean: clean-natives clean-classes clean-test
 	rm -rf ./Makefile
 
 #build_package:
-#	./build/JDK/builddist @JAVATARG@
-#	./build/JRE/buildjre @JAVATARG@
+#	./build/JDK/builddist solaris
+#	./build/JRE/buildjre solaris
 
 src-dist:
 	-mkdir -p hdf-java
@@ -313,9 +327,8 @@ src-dist:
 	cd hdf-java ; tar xf ../$(VERSION)-x.tar
 	rm -f $(VERSION)-x.tar
 	tar cvf $(VERSION).tar hdf-java/*
-	@JAR@ cvf $(VERSION).jar hdf-java/*
+	$(JAR) cvf $(VERSION).jar hdf-java/*
 	rm -rf hdf-java
-	
 
 
 # --------
@@ -413,10 +426,18 @@ ncsa.hdf.object: ncsa/hdf/object/Attribute.class \
 	ncsa/hdf/object/H5Group.class \
 	ncsa/hdf/object/H5ScalarDS.class \
 	ncsa/hdf/object/HObject.class \
-	ncsa/hdf/object/Metadata.class \
-	ncsa/hdf/object/FileFormat.class \
+	ncsa/hdf/object/ScalarDS.class \
 	ncsa/hdf/object/H4File.class \
-	ncsa/hdf/object/H5File.class
+	ncsa/hdf/object/H4File\\$$1.class \
+	ncsa/hdf/object/H4File\\$$2.class \
+	ncsa/hdf/object/H4File\\$$3.class \
+	ncsa/hdf/object/H5File.class \
+	ncsa/hdf/object/H5File\\$$1.class \
+	ncsa/hdf/object/H5File\\$$2.class \
+	ncsa/hdf/object/FileFormat.class \
+	ncsa/hdf/object/Metadata.class 
+
+
 
 #
 # The test files are not included in the preliminary source release
@@ -436,10 +457,39 @@ test.h4toh5: test/h4toh5/apitest.class \
 	test/h4toh5/linktest4.class \
 	test/h4toh5/linktest5.class 
 
-ncsa.hdf.io: 
-
 ncsa.hdf.view: ./ncsa/hdf/view/TreeView.class \
-	./ncsa/hdf/view/ViewManager.class
+	./ncsa/hdf/view/TreeView\\$$1.class \
+	./ncsa/hdf/view/TreeView\\$$HTreeCellRenderer.class \
+	./ncsa/hdf/view/TreeView\\$$HTreeMouseAdapter.class \
+	./ncsa/hdf/view/ViewManager.class \
+	./ncsa/hdf/view/ChartView.class \
+	./ncsa/hdf/view/ChartView\\$$1.class \
+	./ncsa/hdf/view/ChartView\\$$ChartPanel.class \
+	./ncsa/hdf/view/DataObserver.class \
+	./ncsa/hdf/view/DataOptionDialog.class \
+	./ncsa/hdf/view/HDFView.class \
+	./ncsa/hdf/view/HDFView\\$$1.class \
+	./ncsa/hdf/view/ImageObserver.class \
+	./ncsa/hdf/view/ImageView.class \
+	./ncsa/hdf/view/ImageView\\$$FlipFilter.class \
+	./ncsa/hdf/view/ImageView\\$$ImageComponent.class \
+	./ncsa/hdf/view/MetadataDialog.class \
+	./ncsa/hdf/view/MetadataDialog\\$$1.class \
+	./ncsa/hdf/view/MetadataDialog\\$$2.class \
+	./ncsa/hdf/view/MetadataDialog\\$$3.class \
+	./ncsa/hdf/view/TableObserver.class \
+	./ncsa/hdf/view/TableView.class \
+	./ncsa/hdf/view/TableView\\$$1.class \
+	./ncsa/hdf/view/TableView\\$$2.class \
+	./ncsa/hdf/view/TableView\\$$3.class \
+	./ncsa/hdf/view/TableView\\$$4.class \
+	./ncsa/hdf/view/TableView\\$$ButtonRenderer.class \
+	./ncsa/hdf/view/TableView\\$$ColumnHeader.class \
+	./ncsa/hdf/view/TableView\\$$RowHeader.class \
+	./ncsa/hdf/view/TextObserver.class \
+	./ncsa/hdf/view/TextView.class \
+	./ncsa/hdf/view/ViewProperties.class 
+
 
 # --------------
 # Single targets
@@ -525,12 +575,24 @@ H5Group: ncsa/hdf/object/H5Group.class
 H5ScalarDS: ncsa/hdf/object/H5ScalarDS.class 
 HObject: ncsa/hdf/object/HObject.class 
 ScalarDS: ncsa/hdf/object/ScalarDS.class
-ScalarDS: ncsa/hdf/object/Metadata.class
+Metadata: ncsa/hdf/object/Metadata.class
 FileFormat: ncsa/hdf/object/FileFormat.class
 H4File: ncsa/hdf/object/H4File.class
 H5File: ncsa/hdf/object/H5File.class
 TreeView: ncsa/hdf/view/TreeView.class
 ViewManager: ncsa/hdf/view/ViewManager.class
+ChartView:	ncsa/hdf/view/ChartView.class
+DataObserver:	ncsa/hdf/view/DataObserver.class
+DataOptionDialog:	ncsa/hdf/view/DataOptionDialog.class
+HDFView:	ncsa/hdf/view/HDFView.class
+ImageObserver:	ncsa/hdf/view/ImageObserver.class
+ImageView:	ncsa/hdf/view/ImageView.class
+MetadataDialog:	ncsa/hdf/view/MetadataDialog.class
+TableObserver:	ncsa/hdf/view/TableObserver.class
+TableView:	ncsa/hdf/view/TableView.class
+TextObserver:	ncsa/hdf/view/TextObserver.class
+TextView:	ncsa/hdf/view/TextView.class
+ViewProperties:	ncsa/hdf/view/ViewProperties.class
 
 
 #  All classes that are built, including private classes:
@@ -628,10 +690,46 @@ HDFOBJCLASSES= ./ncsa/hdf/object/Attribute.class \
 	./ncsa/hdf/object/Metadata.class \
 	./ncsa/hdf/object/FileFormat.class \
 	./ncsa/hdf/object/H4File.class \
-	./ncsa/hdf/object/H5File.class
+	./ncsa/hdf/object/H5File.class \
+	./ncsa/hdf/object/H4File\$$1.class \
+	./ncsa/hdf/object/H4File\$$2.class \
+	./ncsa/hdf/object/H4File\$$3.class \
+	./ncsa/hdf/object/H5File\$$2.class \
+	./ncsa/hdf/object/ScalarDS.class 
+
 
 HDFVIEWCLASSES= ./ncsa/hdf/view/ViewManager.class \
-	./ncsa/hdf/view/TreeView.class 
+	./ncsa/hdf/view/TreeView.class  \
+	./ncsa/hdf/view/ChartView.class \
+	./ncsa/hdf/view/DataObserver.class \
+	./ncsa/hdf/view/DataOptionDialog.class \
+	./ncsa/hdf/view/HDFView.class \
+	./ncsa/hdf/view/ImageObserver.class \
+	./ncsa/hdf/view/ImageView.class \
+	./ncsa/hdf/view/MetadataDialog.class \
+	./ncsa/hdf/view/TableObserver.class \
+	./ncsa/hdf/view/TableView.class \
+	./ncsa/hdf/view/TextObserver.class \
+	./ncsa/hdf/view/TextView.class \
+	./ncsa/hdf/view/ViewProperties.class \
+	./ncsa/hdf/view/ChartView\$$1.class \
+	./ncsa/hdf/view/ChartView\$$ChartPanel.class \
+	./ncsa/hdf/view/HDFView\$$1.class \
+	./ncsa/hdf/view/ImageView\$$FlipFilter.class \
+	./ncsa/hdf/view/ImageView\$$ImageComponent.class \
+	./ncsa/hdf/view/MetadataDialog\$$1.class \
+	./ncsa/hdf/view/MetadataDialog\$$2.class \
+	./ncsa/hdf/view/MetadataDialog\$$3.class \
+	./ncsa/hdf/view/TableView\$$1.class \
+	./ncsa/hdf/view/TableView\$$2.class \
+	./ncsa/hdf/view/TableView\$$3.class \
+	./ncsa/hdf/view/TableView\$$4.class \
+	./ncsa/hdf/view/TableView\$$ButtonRenderer.class \
+	./ncsa/hdf/view/TableView\$$ColumnHeader.class \
+	./ncsa/hdf/view/TableView\$$RowHeader.class \
+	./ncsa/hdf/view/TreeView\$$1.class \
+	./ncsa/hdf/view/TreeView\$$HTreeCellRenderer.class \
+	./ncsa/hdf/view/TreeView\$$HTreeMouseAdapter.class 
 
 ##
 #  Source to pack for distribution
@@ -716,6 +814,24 @@ JAVASRCS= \
 ./ncsa/hdf/object/H5ScalarDS.java  \
 ./ncsa/hdf/object/HObject.java  \
 ./ncsa/hdf/object/ScalarDS.java \
+./ncsa/hdf/object/Metadata.java \
+./ncsa/hdf/object/FileFormat.java \
+./ncsa/hdf/object/H4File.java \
+./ncsa/hdf/object/H5File.java \
+./ncsa/hdf/view/ChartView.java \
+./ncsa/hdf/view/DataObserver.java \
+./ncsa/hdf/view/DataOptionDialog.java \
+./ncsa/hdf/view/HDFView.java \
+./ncsa/hdf/view/ImageObserver.java \
+./ncsa/hdf/view/ImageView.java \
+./ncsa/hdf/view/MetadataDialog.java \
+./ncsa/hdf/view/TableObserver.java \
+./ncsa/hdf/view/TableView.java \
+./ncsa/hdf/view/TextObserver.java \
+./ncsa/hdf/view/TextView.java \
+./ncsa/hdf/view/TreeView.java \
+./ncsa/hdf/view/ViewManager.java \
+./ncsa/hdf/view/ViewProperties.java \
 ./test/h4toh5/apitest.java \
 ./test/h4toh5/imagetest.java \
 ./test/h4toh5/linktest1.java \
@@ -729,3 +845,5 @@ JAVASRCS= \
 ./test/h4toh5/vgrouptest.java \
 ./test/object/TestH4File.java \
 ./test/object/TestH5File.java 
+
+
