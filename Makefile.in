@@ -246,13 +246,19 @@ install-lib: natives
 	cp ./lib/@JAVATARG@/libjh4toh5.$(JSLEXT) $(LIBDIR)/@JAVATARG@ ; fi
 	@echo "Install Natives complete"
 
-install-hdflib: hdflib
+install-hdflib: 
+	@if test -n "$(H4INC)" ; then $(MAKE) do-install-hdflib ; fi
+
+do-install-hdflib: hdflib
 	-mkdir -p $(LIBDIR);
 	-mkdir -p $(LIBDIR)/@JAVATARG@
 	cp ./lib/@JAVATARG@/libjhdf.$(JSLEXT) $(LIBDIR)/@JAVATARG@
 	@echo "Install Native HDF complete"
 
 install-hdf5lib: hdf5lib
+	@if test -n "$(H5INC)" ; then $(MAKE) do-install-hdf5lib ; fi
+
+do-install-hdf5lib: hdf5lib
 	-mkdir -p $(LIBDIR);
 	-mkdir -p $(LIBDIR)/@JAVATARG@
 	cp ./lib/@JAVATARG@/libjhdf5.$(JSLEXT) $(LIBDIR)/@JAVATARG@
