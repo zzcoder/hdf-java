@@ -4021,6 +4021,152 @@ public class H5 {
     public synchronized static native int H5Tget_native_type(int tid, int alloc_time )
         throws HDF5LibraryException, NullPointerException;
 
+//
+//   Backward compatibility:
+//   These functions have been replaced by new HDF5 library calls.
+//   The interface is preserved as a convenience to existing code.
+// 
+    /**
+      *  H5Gn_members  report the number of objects in
+      *        a Group.  The 'objects' include everything that
+      *        will be visited by H5Giterate.  Each link is
+      *        returned, so objects with multiple links will
+      *        be counted once for each link.
+      *
+      *  @param loc_id  file or group ID.
+      *  @param name   name of the group to iterate, relative to
+      *  the loc_id
+      *
+      *  @return the number of members in the group or -1 if error.
+      *
+      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+      *  @exception NullPointerException - name is null.
+      */
+     public synchronized static int H5Gn_members( int loc_id, String name)
+         throws HDF5LibraryException, NullPointerException {
+		int grp_id = H5Gopen(loc_id, name);
+		long [] nobj = new long[1];
+		nobj[0] = -1;
+    		int ret = H5Gget_num_objs(loc_id, nobj);
+		int r = (new Long(nobj[0])).intValue();
+		return (r);	
+     }
+    /**
+     *   H5Gget_obj_info_idx   report the name and type of
+     *        object with index 'idx' in a Group.  The 'idx'
+     *        corresponds to the index maintained by H5Giterate.
+     *        Each link is returned, so objects with multiple
+     *        links will be counted once for each link.
+     *
+     *  @param loc_id  IN:  file or group ID.
+     *  @param name   IN:  name of the group to iterate,
+     *   relative to the loc_id
+     *  @param idx   IN:  the index of the object to iterate.
+     *  @param oname  the name of the object [OUT]
+     *  @param type   the type of the object [OUT]
+     *
+     *  @return non-negative if successful, -1 if not.
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - name is null.
+     */
+    public synchronized static int H5Gget_obj_info_idx( int loc_id,
+        String name, int idx, String[] oname, int[]type)
+        throws HDF5LibraryException, NullPointerException {
+		long default_buf_size = 4096;
+		String n[] = new String[1];
+		n[0] = new String("");
+		int grp_id = H5Gopen(loc_id, name);
+		long val = H5Gget_objname_by_idx(grp_id, idx, n, default_buf_size);
+		int type_code = H5Gget_objtype_by_idx(grp_id, idx);
+		oname[0] = new String(n[0]);
+		type[0] = type_code;
+		int ret = (new Long(val)).intValue();
+		return ret;
+    }
+
+//
+//  This function is denegrated.  It is recommended that the new
+//  library calls should be used, 
+//	H5Gget_objname_by_idx
+//	H5Gget_objtype_by_idx
+//  
+    /**
+     *  H5Gget_objinfo returns information about the specified
+     *  object.
+     *
+     *  @param loc_id  IN: File, group, dataset, or datatype
+     *  identifier.
+     *  @param name  IN: Name of the object for which status is
+     *  being sought.
+     *  @param follow_link  IN: Link flag.
+     *  @param  fileno  OUT: file id numbers.
+     *  @param  objno  OUT: object id numbers.
+     *  @param  link_info  OUT: link information.
+     *      <pre>
+     *          link_info[0] = nlink
+     *          link_info[1] = type
+     *          link_info[2] = linklen
+     *      </pre>
+     *  @param  mtime  OUT: modification time
+     *
+     *  @return a non-negative value if successful, with the
+     *  fields of link_info and mtime  (if non-null) initialized.
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - name or array is null.
+     *  @exception IllegalArgumentException - bad argument.
+     **/
+    public synchronized static native int H5Gget_objinfo(int loc_id, String name,
+        boolean follow_link, long[] fileno, long[] objno,
+        int[] link_info, long[] mtime)
+        throws HDF5LibraryException,
+        NullPointerException,
+        IllegalArgumentException;
+
+    /**
+     *  H5Gget_objinfo returns information about the specified
+     *  object in an HDF5GroupInfo object.
+     *
+     *  @param loc_id  IN: File, group, dataset, or datatype
+     *  identifier.
+     *  @param name  IN: Name of the object for which status
+     *  is being sought.
+     *  @param follow_link  IN: Link flag.
+     *  @param  info OUT: the HDF5GroupInfo object to store the
+     *  object infomation
+     *
+     *  @return a non-negative value if successful, with the
+     *  fields of HDF5GroupInfo object (if non-null) initialized.
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - name is null.
+     *
+     *  @see ncsa.hdf.hdf5lib.HDF5GroupInfo
+     *  See public synchronized static native int H5Gget_objinfo();
+     **/
+    public synchronized static int H5Gget_objinfo(int loc_id, String name,
+        boolean follow_link,
+        HDF5GroupInfo info)
+        throws HDF5LibraryException, NullPointerException
+    {
+        int status = -1;
+        long[] fileno = new long[2];
+        long[] objno = new long[2];
+        int[] link_info = new int[3];
+        long[] mtime = new long[1];
+
+        status = H5Gget_objinfo(loc_id, name, follow_link,
+            fileno, objno, link_info, mtime);
+
+        if (status >=0 ) {
+            info.setGroupInfo(fileno, objno, link_info[0],
+            link_info[1], mtime[0], link_info[2]);
+        }
+        return status;
+    }
+
+
     public synchronized static int H5Tget_native_type(int tid)
         throws HDF5LibraryException, NullPointerException
     {
