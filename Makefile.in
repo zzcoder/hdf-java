@@ -130,12 +130,16 @@ h4to5lib: FORCE
 FORCE:
 
 ## revise arrangement of docs, java docs.
-DOCPACKAGES = $(JH45PACKAGES) $(JHIPACKAGES) $(JHI5PACKAGES) $(HDFOBJPACKAGES)
 
 docs: javadocs
 
 javadocs:
-	$(JAVADOC) -sourcepath $(CLASSPATH) -d ./docs/javadocs $(JAVADOC_FLAGS) $(DOCPACKAGES)
+	-mkdir -p docs/javadocs;
+	@if test -n "$(H45INC)" ; then \
+	$(JAVADOC) -sourcepath $(CLASSPATH) -d ./docs/javadocs $(JAVADOC_FLAGS) $(JH45PACKAGES) $(JHIPACKAGES) $(JHI5PACKAGES) $(HDFOBJPACKAGES); \
+	else \
+	$(JAVADOC) -sourcepath $(CLASSPATH) -d ./docs/javadocs $(JAVADOC_FLAGS) $(JHIPACKAGES) $(JHI5PACKAGES) $(HDFOBJPACKAGES); \
+	fi
 
 tests:
 	cd test; \
@@ -265,7 +269,11 @@ install-docs: install-javadocs
 
 install-javadocs:
 	-mkdir -p $(DOCDIR);
-	$(JAVADOC) -sourcepath $(CLASSPATH) -d $(DOCDIR) $(JAVADOC_FLAGS) $(DOCPACKAGES)
+	@if test -n "$(H45INC)" ; then \
+	$(JAVADOC) -sourcepath $(CLASSPATH) -d $(DOCDIR) $(JAVADOC_FLAGS) $(JH45PACKAGES) $(JHIPACKAGES) $(JHI5PACKAGES) $(HDFOBJPACKAGES); \
+	else \
+	$(JAVADOC) -sourcepath $(CLASSPATH) -d $(DOCDIR) $(JAVADOC_FLAGS) $(JHIPACKAGES) $(JHI5PACKAGES) $(HDFOBJPACKAGES); \
+	fi
 	-mkdir -p $(DOCDIR)/images;
 	cp docs/images/*.gif $(DOCDIR)/images;
 

@@ -21,6 +21,9 @@ hdf5lib: FORCE
 	$(MAKE) ; 
 
 h4toh5lib: FORCE
+	@if test -n "$(H45INC)" ; then $(MAKE) doh4toh5li ; fi
+
+doh4toh5lib: 
 	cd h4toh5lib; \
 	$(MAKE) ; 
 
@@ -35,6 +38,9 @@ clean-hdf5lib:
 	$(MAKE) clean ; 
 
 clean-h4toh5lib:
+	@if test -n "$(H45INC)" ; then $(MAKE) docleanh4toh5lib ; fi
+
+docleanh4toh5lib:
 	cd h4toh5lib; \
 	$(MAKE) clean ; 
 
