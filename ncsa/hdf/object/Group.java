@@ -138,8 +138,6 @@ public abstract class Group extends HObject
                 if (uObj instanceof Group)
                 {
                     g = (Group)uObj;
-                    System.out.println(g+" : name = " + g.getName() + " path = " + g.getPath()
-                                       +" this = " + this);
                     if( g.getPath() != null ) // add this check to get rid of null exception
                     {
                       if ( ( this.isRoot() && g.isRoot() ) ||
