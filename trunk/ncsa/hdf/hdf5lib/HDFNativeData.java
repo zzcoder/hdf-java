@@ -36,64 +36,15 @@ import ncsa.hdf.hdf5lib.exceptions.*;
 public class HDFNativeData
 {
 
-	public final static String H5PATH_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.hdf5lib";
-
-	public final static String H45PATH_PROPERTY_KEY = "ncsa.hdf.libh4toh5.h4toh5.h45lib";
-
 	static 
 	{
-		boolean done = false;
-		String filename = null;
-		filename = System.getProperty(H45PATH_PROPERTY_KEY,null);
-		if ((filename != null) && (filename.length() > 0))
-		{
-		    File h5dll = new File(filename);
-			if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) {
-				System.load(filename);
-				done = true;
-			} else {
-				done = false;
-			}
+		int plist = HDF5Constants.H5P_DEFAULT;
+		int[] version_info = new int[4];
+		try { 
+			H5.H5Pget_version(plist,version_info);
+		} catch (Exception ex) {
 		}
-
-		if (done == false) {
-		filename = System.getProperty(H5PATH_PROPERTY_KEY,null);
-		if ((filename != null) && (filename.length() > 0))
-		{
-			File h5dll = new File(filename);
-			if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) {
-				System.load(filename);
-			} else {
-				throw (new UnsatisfiedLinkError("Invalid HDF5 library, "+filename));
-			}
-		}
-		else {
-			System.loadLibrary("jhdf5");
-		}
-
-        /* Important!  Exit quietly */
-        try {
-        H5.H5dont_atexit();
-        } catch (HDF5LibraryException e) {
-            System.exit(1);
         }
-
-        /* Important!  Disable error output to C stdout */
-        H5.H5error_off();
-
-        /*  Optional:  confirm the version
-                 *     This will crash immediately if not the
-                 *     specified version.
-         */
-        Integer majnum = Integer.getInteger("ncsa.hdf.hdf5lib.H5.hdf5maj",null);
-        Integer minnum = Integer.getInteger("ncsa.hdf.hdf5lib.H5.hdf5min",null);
-        Integer relnum = Integer.getInteger("ncsa.hdf.hdf5lib.H5.hdf5rel",null);
-        if ((majnum != null) && (minnum != null) && (relnum != null)) {
-            H5.H5check_version(majnum.intValue(),minnum.intValue(),relnum.intValue());
-        }
-        }
-
-    }
 	/**
           * Convert an array of bytes into an array of ints
 	  *

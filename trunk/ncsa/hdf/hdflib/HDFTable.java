@@ -27,40 +27,8 @@ import java.lang.reflect.*;
 
 public class HDFTable {
 
-	public final static String H45PATH_PROPERTY_KEY = "ncsa.hdf.libh4toh5.h4toh5.h45lib";
-
-	public final static String HDFPATH_PROPERTY_KEY = "ncsa.hdf.hdflib.HDFLibrary.hdflib";
-	static 
-	{
-		boolean done = false;
-		String filename = null;
-		filename = System.getProperty(H45PATH_PROPERTY_KEY,null);
-		if ((filename != null) && (filename.length() > 0))
-		{
-			File hdfdll = new File(filename);
-			if (hdfdll.exists() && hdfdll.canRead() && hdfdll.isFile()) {
-				System.load(filename);
-				done = true;
-			} else {
-				done = false;
-			}
-		}
-
-		if (done == false) {
-		filename = System.getProperty(HDFPATH_PROPERTY_KEY,null);
-		if ((filename != null) && (filename.length() > 0))
-		{
-			File hdfdll = new File(filename);
-			if (hdfdll.exists() && hdfdll.canRead() && hdfdll.isFile()) {
-				System.load(filename);
-			} else {
-				throw (new UnsatisfiedLinkError("Invalid HDF library, "+filename));
-			}
-		}
-		else {
-			System.loadLibrary("jhdf");
-		}
-		}
+	static {
+		String v = HDFLibrary.getJHIVersion();
 	}
 
 	TabDescriptor _desc = null;

@@ -18,15 +18,12 @@ package ncsa.hdf.h4toh5lib;
 
 import java.io.*;
 import ncsa.hdf.h4toh5lib.exceptions.*;
-/*
-import ncsa.hdf.hdf5lib.*;
-import ncsa.hdf.hdf5lib.exceptions.*;
-import ncsa.hdf.hdflib.*;
-*/
 
 
 public class h4toh5 {
 	public final static String H45PATH_PROPERTY_KEY = "ncsa.hdf.h4toh5lib.h4toh5.h45lib"; 
+
+	public final static String JH4to5vers = "1.0beta";
 
     static
     {
@@ -46,6 +43,8 @@ public class h4toh5 {
             System.loadLibrary("jh4toh5");
         }
     }
+
+public static String JH4toh5version() { return JH4to5vers; };
 
 /**
   *   <p>Get the version of the java-h4toh5 library.
