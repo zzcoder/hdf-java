@@ -14,7 +14,7 @@ extern "C" {
 
 /*
  *  This code is the C-interface called by Java programs to access the
- *  general library functions of the HDF5 library. 
+ *  general library functions of the HDF5 library.
  *
  *  Each routine wraps a single HDF entry point, generally with the
  *  analogous arguments and return codes.
@@ -43,12 +43,12 @@ extern jboolean h5raiseException( JNIEnv *env, char *exception, char *message);
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5open
   (JNIEnv *env, jclass clss)
 {
-	herr_t retVal = -1;
-	retVal =  H5open();
-	if (retVal < 0) {
-		h5libraryError(env);
-	}
-	return (jint)retVal;
+    herr_t retVal = -1;
+    retVal =  H5open();
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+    return (jint)retVal;
 }
 
 /*
@@ -59,12 +59,12 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5open
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5close
   (JNIEnv *env, jclass clss)
 {
-	herr_t retVal = -1;
-	retVal =  H5close();
-	if (retVal < 0) {
-		h5libraryError(env);
-	}
-	return (jint)retVal;
+    herr_t retVal = -1;
+    retVal =  H5close();
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+    return (jint)retVal;
 }
 
 /*
@@ -75,11 +75,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5close
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5dont_1atexit
   (JNIEnv *env, jclass clss)
 {
-	int retVal = H5dont_atexit();
-	if (retVal < 0) {
-		h5libraryError(env);
-	}
-	return retVal;
+    int retVal = H5dont_atexit();
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+    return retVal;
 }
 
 /*
@@ -90,40 +90,40 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5dont_1atexit
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5get_1libversion
   (JNIEnv *env, jclass clss, jintArray libversion)
 {
-	unsigned *theArray = NULL;
-	jboolean isCopy;
-	int status;
+    unsigned *theArray = NULL;
+    jboolean isCopy;
+    int status;
 
-	if (libversion == NULL) {
-		h5nullArgument( env, "H5get_version:  libversion is NULL");
-	}
+    if (libversion == NULL) {
+        h5nullArgument( env, "H5get_version:  libversion is NULL");
+    }
 #ifdef __cplusplus
-	theArray = (unsigned *)env->GetIntArrayElements(libversion,&isCopy);
+    theArray = (unsigned *)env->GetIntArrayElements(libversion,&isCopy);
 #else
-	theArray = (unsigned *)(*env)->GetIntArrayElements(env,libversion,&isCopy);
+    theArray = (unsigned *)(*env)->GetIntArrayElements(env,libversion,&isCopy);
 #endif
-	if (theArray == NULL) {
-		h5JNIFatalError( env, "H5get_libversion:  input not pinned");
-		return -1;
-	}
+    if (theArray == NULL) {
+        h5JNIFatalError( env, "H5get_libversion:  input not pinned");
+        return -1;
+    }
 
-	status =  H5get_libversion(&(theArray[0]), &(theArray[1]), &(theArray[2]));
+    status =  H5get_libversion(&(theArray[0]), &(theArray[1]), &(theArray[2]));
 
-	if (status < 0) {
+    if (status < 0) {
 #ifdef __cplusplus
-		env->ReleaseIntArrayElements(libversion,(jint *)theArray,JNI_ABORT);
+        env->ReleaseIntArrayElements(libversion,(jint *)theArray,JNI_ABORT);
 #else
-		(*env)->ReleaseIntArrayElements(env,libversion,(jint *)theArray,JNI_ABORT);
+        (*env)->ReleaseIntArrayElements(env,libversion,(jint *)theArray,JNI_ABORT);
 #endif
-		h5libraryError(env);
-	} else {
+        h5libraryError(env);
+    } else {
 #ifdef __cplusplus
-		env->ReleaseIntArrayElements(libversion,(jint *)theArray,JNI_ABORT);
+        env->ReleaseIntArrayElements(libversion,(jint *)theArray,JNI_ABORT);
 #else
-		(*env)->ReleaseIntArrayElements(env,libversion,(jint *)theArray,0);
+        (*env)->ReleaseIntArrayElements(env,libversion,(jint *)theArray,0);
 #endif
-	}
-	return (jint)status;
+    }
+    return (jint)status;
 }
 
 #ifdef notdef
@@ -134,12 +134,12 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5get_1libversion
      sigset_t sa_mask;
      void (*sa_sigaction)(int, siginfo_t *, void *);
 };
-int sigaction(int sig, struct sigaction *act,                                                        struct sigaction *oact);         
+int sigaction(int sig, struct sigaction *act,                                                        struct sigaction *oact);
 */
 void catch_abrt()
 {
-	/*  Raise Java exception */
-	printf("raise exception....\n");
+    /*  Raise Java exception */
+    printf("raise exception....\n");
 }
 #endif
 /*
@@ -150,41 +150,41 @@ void catch_abrt()
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5check_1version
   (JNIEnv *env, jclass clss, jint majnum, jint minnum, jint relnum)
 {
-	int status;
+    int status;
 /*
  *   In principle, we want to catch the 'abort' signal, and
  *  do something other than crash.
  *   Look up how to do this portably.
  */
 /*
-	int res;
-	struct sigaction ctchit;
-	struct sigaction old;
-	ctchit.sa_handler = catch_abrt;
+    int res;
+    struct sigaction ctchit;
+    struct sigaction old;
+    ctchit.sa_handler = catch_abrt;
 */
 
 /*
-	res = sigaction(SIGABRT, &ctchit, &old);
-	if (res != 0) {
-		printf("sigaction failed\n");
-		return(-1);
-	}
+    res = sigaction(SIGABRT, &ctchit, &old);
+    if (res != 0) {
+        printf("sigaction failed\n");
+        return(-1);
+    }
 */
-	/*  catch the signal? */
-	status = H5check_version((unsigned)majnum, (unsigned)minnum, (unsigned)relnum);  
+    /*  catch the signal? */
+    status = H5check_version((unsigned)majnum, (unsigned)minnum, (unsigned)relnum);
 /*
-	res = sigaction(SIGABRT, &old, 0); 
-	if (res != 0) {
-		printf("sigaction failed\n");
-		return(-1);
-	}
+    res = sigaction(SIGABRT, &old, 0);
+    if (res != 0) {
+        printf("sigaction failed\n");
+        return(-1);
+    }
 */
-	return status;
+    return status;
 }
 
 
 /*
- *  This is the only routine from H5E currently implemente, so 
+ *  This is the only routine from H5E currently implemente, so
  *  there is no separate file h5eImp.c
  */
 /*
@@ -195,15 +195,15 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5check_1version
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eclear
   (JNIEnv *env, jclass clss )
 {
-	herr_t res = -1;
-	res = H5Eclear() ;
-	if (res < 0) {
-		h5raiseException( env, 
-		"ncsa/hdf/hdf5lib/exceptions/HDF5LibraryException", 
-		"H5Eclear Failed");
+    herr_t res = -1;
+    res = H5Eclear() ;
+    if (res < 0) {
+        h5raiseException( env,
+        "ncsa/hdf/hdf5lib/exceptions/HDF5LibraryException",
+        "H5Eclear Failed");
 
-	}
-	return (jint) res;
+    }
+    return (jint) res;
 }
 
 /*
@@ -212,39 +212,39 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eclear
  * Signature: ()I
  *
  *  ** New in HDF5.1.2.2:  if linking with earlier version
- *     of HDF5, configure with --enable-hdf5_1_2_1 
+ *     of HDF5, configure with --enable-hdf5_1_2_1
  *
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5garbage_1collect
   (JNIEnv *env, jclass clss)
 {
-	herr_t retVal = -1;
+    herr_t retVal = -1;
 #ifndef USE_H5_1_2_1
-	retVal =  H5garbage_collect();
-	if (retVal < 0) {
-		h5libraryError(env);
-	}
+    retVal =  H5garbage_collect();
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
 #endif
-	return (jint)retVal;
+    return (jint)retVal;
 }
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5set_free_list_limits(int reg_global_lim, int reg_list_lim, 
- *                int arr_global_lim, int arr_list_lim, int blk_global_lim, 
- *                int blk_list_lim ) 
+ * Method:    H5set_free_list_limits(int reg_global_lim, int reg_list_lim,
+ *                int arr_global_lim, int arr_list_lim, int blk_global_lim,
+ *                int blk_list_lim )
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5set_1free_1list_1limits
-  (JNIEnv *env, jclass clss,jint reg_global_lim, jint reg_list_lim, 
+  (JNIEnv *env, jclass clss,jint reg_global_lim, jint reg_list_lim,
   jint arr_global_lim, jint arr_list_lim, jint blk_global_lim, jint blk_list_lim )
 {
-	int retVal = H5set_free_list_limits((int)reg_global_lim, (int)reg_list_lim, 
-		(int)arr_global_lim, (int)arr_list_lim, (int)blk_global_lim, (int)blk_list_lim);
-	if (retVal < 0) {
-		h5libraryError(env);
-	}
-	return retVal;
+    int retVal = H5set_free_list_limits((int)reg_global_lim, (int)reg_list_lim,
+        (int)arr_global_lim, (int)arr_list_lim, (int)blk_global_lim, (int)blk_list_lim);
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+    return retVal;
 }
 
 

@@ -9,7 +9,6 @@
  * hdf-java/COPYING file.                                                   *
  *                                                                          *
  ****************************************************************************/
-
 /*
  *  This code is the C-interface called by Java programs to access the
  *  HDF 4.1 library.
@@ -27,79 +26,79 @@
 #include "jni.h"
 
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DFPaddpal 
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DFPaddpal
 ( JNIEnv *env,
 jclass class,
 jstring filename,
 jbyteArray palette)  /* IN:  byte[] */
 {
-	intn rval;
-	char * f;
-	jbyte *dat;
-	jboolean bb;
+    intn rval;
+    char * f;
+    jbyte *dat;
+    jboolean bb;
 
-	f = (char *) (*env)->GetStringUTFChars(env,filename,0);
-	dat = (*env)->GetByteArrayElements(env,palette,&bb);
+    f = (char *) (*env)->GetStringUTFChars(env,filename,0);
+    dat = (*env)->GetByteArrayElements(env,palette,&bb);
 
-	rval = DFPaddpal((char *)f, (VOIDP) dat);
+    rval = DFPaddpal((char *)f, (VOIDP) dat);
 
-	(*env)->ReleaseStringUTFChars(env,filename,f);
-	(*env)->ReleaseByteArrayElements(env,palette,dat,JNI_ABORT);
-	if (rval == FAIL) {
-		return JNI_FALSE;
-	} else {
-		return JNI_TRUE;
-	}
+    (*env)->ReleaseStringUTFChars(env,filename,f);
+    (*env)->ReleaseByteArrayElements(env,palette,dat,JNI_ABORT);
+    if (rval == FAIL) {
+        return JNI_FALSE;
+    } else {
+        return JNI_TRUE;
+    }
 }
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DFPgetpal 
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DFPgetpal
 ( JNIEnv *env,
 jclass class,
 jstring filename,
 jbyteArray palette)  /* OUT:  byte[] */
 {
-	intn rval;
-	char * f;
-	jbyte *dat;
-	jboolean bb;
+    intn rval;
+    char * f;
+    jbyte *dat;
+    jboolean bb;
 
-	f = (char *) (*env)->GetStringUTFChars(env,filename,0);
-	dat = (*env)->GetByteArrayElements(env,palette,&bb);
+    f = (char *) (*env)->GetStringUTFChars(env,filename,0);
+    dat = (*env)->GetByteArrayElements(env,palette,&bb);
 
-	rval = DFPgetpal((char *)f, (VOIDP) dat);
+    rval = DFPgetpal((char *)f, (VOIDP) dat);
 
-	(*env)->ReleaseStringUTFChars(env,filename,f);
-	if (rval == FAIL) {
-		(*env)->ReleaseByteArrayElements(env,palette,dat,JNI_ABORT);
-		return JNI_FALSE;
-	} else {
-		(*env)->ReleaseByteArrayElements(env,palette,dat,0);
-		return JNI_TRUE;
-	}
+    (*env)->ReleaseStringUTFChars(env,filename,f);
+    if (rval == FAIL) {
+        (*env)->ReleaseByteArrayElements(env,palette,dat,JNI_ABORT);
+        return JNI_FALSE;
+    } else {
+        (*env)->ReleaseByteArrayElements(env,palette,dat,0);
+        return JNI_TRUE;
+    }
 }
 
-JNIEXPORT jshort JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFPlastref 
+JNIEXPORT jshort JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFPlastref
 ( JNIEnv *env,
-jobject obj) 
+jobject obj)
 {
-	return (DFPlastref( ));
+    return (DFPlastref( ));
 }
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DFPnpals 
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DFPnpals
 ( JNIEnv *env,
 jclass class,
 jstring filename)
 {
-	intn rval;
-	char * f;
-	f = (char *) (*env)->GetStringUTFChars(env,filename,0);
-	rval = DFPnpals((char *)f);
+    intn rval;
+    char * f;
+    f = (char *) (*env)->GetStringUTFChars(env,filename,0);
+    rval = DFPnpals((char *)f);
 
-	(*env)->ReleaseStringUTFChars(env,filename,f);
-	return rval;
+    (*env)->ReleaseStringUTFChars(env,filename,f);
+    return rval;
 }
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DFPputpal 
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DFPputpal
 ( JNIEnv *env,
 jclass class,
 jstring filename,
@@ -107,71 +106,71 @@ jbyteArray palette, /* IN:  byte[] */
 jint overwrite,
 jstring filemode)
 {
-	intn rval;
-	char * f;
-	char * m;
-	jbyte *dat;
-	jboolean bb;
+    intn rval;
+    char * f;
+    char * m;
+    jbyte *dat;
+    jboolean bb;
 
-	f = (char *) (*env)->GetStringUTFChars(env,filename,0);
-	m = (char *) (*env)->GetStringUTFChars(env,filemode,0);
-	dat = (*env)->GetByteArrayElements(env,palette,&bb);
+    f = (char *) (*env)->GetStringUTFChars(env,filename,0);
+    m = (char *) (*env)->GetStringUTFChars(env,filemode,0);
+    dat = (*env)->GetByteArrayElements(env,palette,&bb);
 
-	rval = DFPputpal ((char *)f, (VOIDP) dat, (intn) overwrite, (char *)m);
+    rval = DFPputpal ((char *)f, (VOIDP) dat, (intn) overwrite, (char *)m);
 
-	(*env)->ReleaseStringUTFChars(env,filename,f);
-	(*env)->ReleaseStringUTFChars(env,filemode,m);
-	(*env)->ReleaseByteArrayElements(env,palette,dat,JNI_ABORT);
-	if (rval == FAIL) {
-		return JNI_FALSE;
-	} else {
-		return JNI_TRUE;
-	}
+    (*env)->ReleaseStringUTFChars(env,filename,f);
+    (*env)->ReleaseStringUTFChars(env,filemode,m);
+    (*env)->ReleaseByteArrayElements(env,palette,dat,JNI_ABORT);
+    if (rval == FAIL) {
+        return JNI_FALSE;
+    } else {
+        return JNI_TRUE;
+    }
 }
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DFPreadref 
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DFPreadref
 ( JNIEnv *env,
 jclass class,
 jstring filename,
 jshort ref)
 {
-	intn rval;
-	char * f;
-	f = (char *) (*env)->GetStringUTFChars(env,filename,0);
+    intn rval;
+    char * f;
+    f = (char *) (*env)->GetStringUTFChars(env,filename,0);
 
-	rval = DFPreadref((char *)f, (uint16) ref);
-	(*env)->ReleaseStringUTFChars(env,filename,f);
-	if (rval == FAIL) {
-		return JNI_FALSE;
-	} else {
-		return JNI_TRUE;
-	}
+    rval = DFPreadref((char *)f, (uint16) ref);
+    (*env)->ReleaseStringUTFChars(env,filename,f);
+    if (rval == FAIL) {
+        return JNI_FALSE;
+    } else {
+        return JNI_TRUE;
+    }
 }
 
-JNIEXPORT jshort JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFPrestart 
+JNIEXPORT jshort JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFPrestart
 ( JNIEnv *env,
-jobject obj) 
+jobject obj)
 {
-	return (DFPrestart( ));
+    return (DFPrestart( ));
 }
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DFPwriteref 
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DFPwriteref
 ( JNIEnv *env,
 jclass class,
 jstring filename,
 jshort ref)
 {
-	intn rval;
-	char * f;
-	f = (char *) (*env)->GetStringUTFChars(env,filename,0);
+    intn rval;
+    char * f;
+    f = (char *) (*env)->GetStringUTFChars(env,filename,0);
 
-	rval = DFPwriteref((char *)f, (uint16) ref);
+    rval = DFPwriteref((char *)f, (uint16) ref);
 
-	(*env)->ReleaseStringUTFChars(env,filename,f);
+    (*env)->ReleaseStringUTFChars(env,filename,f);
 
-	if (rval == FAIL) {
-		return JNI_FALSE;
-	} else {
-		return JNI_TRUE;
-	}
+    if (rval == FAIL) {
+        return JNI_FALSE;
+    } else {
+        return JNI_TRUE;
+    }
 }

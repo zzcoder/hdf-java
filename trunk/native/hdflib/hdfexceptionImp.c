@@ -8,7 +8,6 @@
  * hdf-java/COPYING file.                                                   *
  *                                                                          *
  ****************************************************************************/
-
 /*
  *  This is a utility program used by the HDF Java-C wrapper layer to
  *  generate exceptions.  This may be called from any part of the
@@ -27,22 +26,22 @@ jobject ex;
 int rval;
 
 
-	jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFLibraryException");
-	if (jc == NULL) {
-		return JNI_FALSE;
-	}
-	jm = (*env)->GetMethodID(env, jc, "<init>", "(I)V");
-	if (jm == NULL) {
-		return JNI_FALSE;
-	}
-	args[0] = HDFerr;
-	args[1] = 0;
+    jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFLibraryException");
+    if (jc == NULL) {
+        return JNI_FALSE;
+    }
+    jm = (*env)->GetMethodID(env, jc, "<init>", "(I)V");
+    if (jm == NULL) {
+        return JNI_FALSE;
+    }
+    args[0] = HDFerr;
+    args[1] = 0;
 
-	ex = (*env)->NewObjectA ( env, jc, jm, (jvalue *)args );
+    ex = (*env)->NewObjectA ( env, jc, jm, (jvalue *)args );
 
-	rval = (*env)->Throw(env, ex );
+    rval = (*env)->Throw(env, ex );
 
-	return JNI_TRUE;
+    return JNI_TRUE;
 }
 
 jboolean h4NotImplemented( JNIEnv *env, char *functName)
@@ -55,23 +54,23 @@ jstring str;
 int rval;
 
 
-	jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFNotImplementedException");
-	if (jc == NULL) {
-		return JNI_FALSE;
-	}
-	jm = (*env)->GetMethodID(env, jc, "<init>", "(Ljava/lang/String;)V");
-	if (jm == NULL) {
-		return JNI_FALSE;
-	}
+    jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFNotImplementedException");
+    if (jc == NULL) {
+        return JNI_FALSE;
+    }
+    jm = (*env)->GetMethodID(env, jc, "<init>", "(Ljava/lang/String;)V");
+    if (jm == NULL) {
+        return JNI_FALSE;
+    }
 
-	str = (*env)->NewStringUTF(env,functName);
-	args[0] = (char *)str;
-	args[1] = 0;
-	ex = (*env)->NewObjectA ( env, jc, jm, (jvalue *)args );
+    str = (*env)->NewStringUTF(env,functName);
+    args[0] = (char *)str;
+    args[1] = 0;
+    ex = (*env)->NewObjectA ( env, jc, jm, (jvalue *)args );
 
-	rval = (*env)->Throw(env, ex );
+    rval = (*env)->Throw(env, ex );
 
-	return JNI_TRUE;
+    return JNI_TRUE;
 }
 
 jboolean h4outOfMemory( JNIEnv *env, char *functName)
@@ -83,23 +82,23 @@ jobject ex;
 jstring str;
 int rval;
 
-	jc = (*env)->FindClass(env, "java/lang/OutOfMemoryError");
-	if (jc == NULL) {
-		return JNI_FALSE;
-	}
-	jm = (*env)->GetMethodID(env, jc, "<init>", "(Ljava/lang/String;)V");
-	if (jm == NULL) {
-		return JNI_FALSE;
-	}
+    jc = (*env)->FindClass(env, "java/lang/OutOfMemoryError");
+    if (jc == NULL) {
+        return JNI_FALSE;
+    }
+    jm = (*env)->GetMethodID(env, jc, "<init>", "(Ljava/lang/String;)V");
+    if (jm == NULL) {
+        return JNI_FALSE;
+    }
 
-	str = (*env)->NewStringUTF(env,functName);
-	args[0] = (char *)str;
-	args[1] = 0;
-	ex = (*env)->NewObjectA ( env, jc, jm, (jvalue *)args );
+    str = (*env)->NewStringUTF(env,functName);
+    args[0] = (char *)str;
+    args[1] = 0;
+    ex = (*env)->NewObjectA ( env, jc, jm, (jvalue *)args );
 
-	rval = (*env)->Throw(env, ex );
+    rval = (*env)->Throw(env, ex );
 
-	return JNI_TRUE;
+    return JNI_TRUE;
 }
 
 /*
@@ -114,23 +113,23 @@ jobject ex;
 jstring str;
 int rval;
 
-	jc = (*env)->FindClass(env, "java/lang/InternalError");
-	if (jc == NULL) {
-		return JNI_FALSE;
-	}
-	jm = (*env)->GetMethodID(env, jc, "<init>", "(Ljava/lang/String;)V");
-	if (jm == NULL) {
-		return JNI_FALSE;
-	}
+    jc = (*env)->FindClass(env, "java/lang/InternalError");
+    if (jc == NULL) {
+        return JNI_FALSE;
+    }
+    jm = (*env)->GetMethodID(env, jc, "<init>", "(Ljava/lang/String;)V");
+    if (jm == NULL) {
+        return JNI_FALSE;
+    }
 
-	str = (*env)->NewStringUTF(env,functName);
-	args[0] = (char *)str;
-	args[1] = 0;
-	ex = (*env)->NewObjectA ( env, jc, jm, (jvalue *)args );
+    str = (*env)->NewStringUTF(env,functName);
+    args[0] = (char *)str;
+    args[1] = 0;
+    ex = (*env)->NewObjectA ( env, jc, jm, (jvalue *)args );
 
-	rval = (*env)->Throw(env, ex );
+    rval = (*env)->Throw(env, ex );
 
-	return JNI_TRUE;
+    return JNI_TRUE;
 }
 
 jboolean h4raiseException( JNIEnv *env, char *message)
@@ -142,21 +141,21 @@ jobject ex;
 jstring str;
 int rval;
 
-	jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFLibraryException");
-	if (jc == NULL) {
-		return JNI_FALSE;
-	}
-	jm = (*env)->GetMethodID(env, jc, "<init>", "(Ljava/lang/String;)V");
-	if (jm == NULL) {
-		return JNI_FALSE;
-	}
+    jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFLibraryException");
+    if (jc == NULL) {
+        return JNI_FALSE;
+    }
+    jm = (*env)->GetMethodID(env, jc, "<init>", "(Ljava/lang/String;)V");
+    if (jm == NULL) {
+        return JNI_FALSE;
+    }
 
-	str = (*env)->NewStringUTF(env,message);
-	args[0] = (char *)str;
-	args[1] = 0;
-	ex = (*env)->NewObjectA ( env, jc, jm, (jvalue *)args );
+    str = (*env)->NewStringUTF(env,message);
+    args[0] = (char *)str;
+    args[1] = 0;
+    ex = (*env)->NewObjectA ( env, jc, jm, (jvalue *)args );
 
-	rval = (*env)->Throw(env, ex );
+    rval = (*env)->Throw(env, ex );
 
-	return JNI_TRUE;
+    return JNI_TRUE;
 }
