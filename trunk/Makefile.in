@@ -575,6 +575,8 @@ ncsa.hdf.view: ./ncsa/hdf/view/TreeView.class \
 	./ncsa/hdf/view/NewAttributeDialog.class \
 	./ncsa/hdf/view/DefaultImageView.class \
 	./ncsa/hdf/view/DefaultImageView$$1.class \
+	./ncsa/hdf/view/DefaultImageView$$$2.class \
+	./ncsa/hdf/view/DefaultImageView$$Animation.class \
 	./ncsa/hdf/view/DefaultImageView$$BrightnessFilter.class \
 	./ncsa/hdf/view/DefaultImageView$$ContourFilter.class \
 	./ncsa/hdf/view/DefaultImageView$$FlipFilter.class \
@@ -592,6 +594,7 @@ ncsa.hdf.view: ./ncsa/hdf/view/TreeView.class \
 	./ncsa/hdf/view/DefaultTreeView.class \
 	./ncsa/hdf/view/DefaultTreeView$1.class \
 	./ncsa/hdf/view/DefaultTreeView$2.class \
+	./ncsa/hdf/view/DefaultTreeView$$3.class \
 	./ncsa/hdf/view/DefaultTreeView$$HTreeCellRenderer.class \
 	./ncsa/hdf/view/DefaultTreeView$$HTreeMouseAdapter.class \
 	./ncsa/hdf/view/DefaultMetaDataView.class \
@@ -599,8 +602,6 @@ ncsa.hdf.view: ./ncsa/hdf/view/TreeView.class \
 	./ncsa/hdf/view/DefaultMetaDataView$$2.class \
 	./ncsa/hdf/view/DefaultMetaDataView$$3.class \
 	./ncsa/hdf/view/DefaultTextView.class \
-	./ncsa/hdf/view/DefaultTextView$$ScrollableTextAreaEditor.class \
-	./ncsa/hdf/view/DefaultTextView$$ScrollableTextAreaRenderer.class \
 	./ncsa/hdf/view/ViewManager.class \
 	./ncsa/hdf/view/DefaultPaletteView.class \
 	./ncsa/hdf/view/DefaultPaletteView$$ChartPanel.class
@@ -836,6 +837,8 @@ HDFVIEWCLASSES=./ncsa/hdf/view/TreeView.class \
 	./ncsa/hdf/view/NewAttributeDialog.class \
 	./ncsa/hdf/view/DefaultImageView.class \
 	./ncsa/hdf/view/DefaultImageView\$$1.class \
+	./ncsa/hdf/view/DefaultImageView$$$2.class \
+	./ncsa/hdf/view/DefaultImageView$$Animation.class \
 	./ncsa/hdf/view/DefaultImageView\$$BrightnessFilter.class \
 	./ncsa/hdf/view/DefaultImageView\$$ContourFilter.class \
 	./ncsa/hdf/view/DefaultImageView\$$FlipFilter.class \
@@ -853,6 +856,7 @@ HDFVIEWCLASSES=./ncsa/hdf/view/TreeView.class \
 	./ncsa/hdf/view/DefaultTreeView.class \
 	./ncsa/hdf/view/DefaultTreeView\$$1.class \
 	./ncsa/hdf/view/DefaultTreeView\$$2.class \
+	./ncsa/hdf/view/DefaultTreeView\$$3.class \
 	./ncsa/hdf/view/DefaultTreeView\$$HTreeCellRenderer.class \
 	./ncsa/hdf/view/DefaultTreeView\$$HTreeMouseAdapter.class \
 	./ncsa/hdf/view/DefaultMetaDataView.class \
@@ -860,14 +864,13 @@ HDFVIEWCLASSES=./ncsa/hdf/view/TreeView.class \
 	./ncsa/hdf/view/DefaultMetaDataView\$$2.class \
 	./ncsa/hdf/view/DefaultMetaDataView\$$3.class \
 	./ncsa/hdf/view/DefaultTextView.class \
-	./ncsa/hdf/view/DefaultTextView\$$ScrollableTextAreaEditor.class \
-	./ncsa/hdf/view/DefaultTextView\$$ScrollableTextAreaRenderer.class \
 	./ncsa/hdf/view/ViewManager.class \
 	./ncsa/hdf/view/DefaultPaletteView.class \
 	./ncsa/hdf/view/DefaultPaletteView\$$ChartPanel.class
 
 
 HDFVIEWICONS= ./ncsa/hdf/view/icons/blank.gif \
+	./ncsa/hdf/view/icons/animation.gif \
 	./ncsa/hdf/view/icons/chart.gif \
 	./ncsa/hdf/view/icons/copy.gif \
 	./ncsa/hdf/view/icons/cut.gif \
