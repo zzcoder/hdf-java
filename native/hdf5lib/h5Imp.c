@@ -227,6 +227,27 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5garbage_1collect
 #endif
 	return (jint)retVal;
 }
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5set_free_list_limits(int reg_global_lim, int reg_list_lim, 
+ *                int arr_global_lim, int arr_list_lim, int blk_global_lim, 
+ *                int blk_list_lim ) 
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5set_1free_1list_1limits
+  (JNIEnv *env, jclass clss,jint reg_global_lim, jint reg_list_lim, 
+  jint arr_global_lim, jint arr_list_lim, jint blk_global_lim, jint blk_list_lim )
+{
+	int retVal = H5set_free_list_limits((int)reg_global_lim, (int)reg_list_lim, 
+		(int)arr_global_lim, (int)arr_list_lim, (int)blk_global_lim, (int)blk_list_lim);
+	if (retVal < 0) {
+		h5libraryError(env);
+	}
+	return retVal;
+}
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -48,7 +48,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pcreate
   (JNIEnv *env, jclass clss, jint type)
 {
 	herr_t retVal = -1;
-	retVal =  H5Pcreate((H5P_class_t)type );
+	retVal =  H5Pcreate((hid_t)type );
 	if (retVal < 0) {
 		h5libraryError(env);
 	}
@@ -79,7 +79,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pclose
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1class
   (JNIEnv *env, jclass clss, jint plist)
 {
-	H5P_class_t retVal = H5P_NO_CLASS;
+	hid_t retVal = H5P_NO_CLASS;
 	retVal =  H5Pget_class((hid_t) plist );
 	if (retVal == H5P_NO_CLASS) {
 		h5libraryError(env);
@@ -1837,107 +1837,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1gc_1references
 	return (jint)status;
 }
 
-/*
- * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Pset_hyper_cache
- * Signature: (III)I
- */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1hyper_1cache
-  (JNIEnv *env, jclass clss, jint plist_id, jboolean cache, jint limit)
-{
-	herr_t retVal;
-	int docache = 0;
-	if (cache == JNI_TRUE) {
-		docache = 1;
-	} else {
-		docache = 0;
-	}
-	retVal = H5Pset_hyper_cache((hid_t)plist_id, (unsigned)docache, (int)limit); 
-	if (retVal < 0) {
-		h5libraryError(env);
-		return -1;
-	}
-
-	return (jint)retVal;
-}
-
-/*
- * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Pget_hyper_cache
- * Signature: (I[Z[I)I
- */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1hyper_1cache
-  (JNIEnv *env, jclass clss, jint plist_id, jbooleanArray cache, jintArray limit)
-{
-	herr_t status;
-	jint *limitP;
-	jboolean *cacheP;
-	jboolean isCopy;
-	int cval = 0;
-
-	if (cache == NULL) {
-		h5nullArgument( env, "H5Pget_hyper_cache:  cache input array is NULL");
-		return -1;
-	}
-
-	if (limit == NULL) {
-		h5nullArgument( env, "H5Pget_hyper_cache:  limit input array is NULL");
-		return -1;
-	}
-
-#ifdef __cplusplus
-	cacheP = (jboolean *)env->GetBooleanArrayElements(cache,&isCopy);
-#else
-	cacheP = (jboolean *)(*env)->GetBooleanArrayElements(env,cache,&isCopy);
-#endif
-	if (cacheP == NULL) {
-		h5JNIFatalError( env, "H5Pget_hyper_cache:  cache not pinned");
-		return -1;
-	}
-
-#ifdef __cplusplus
-	limitP = (jint *)env->GetIntArrayElements(limit,&isCopy);
-#else
-	limitP = (jint *)(*env)->GetIntArrayElements(env,limit,&isCopy);
-#endif
-	if (limitP == NULL) {
-#ifdef __cplusplus
-		env->ReleaseBooleanArrayElements(cache,cacheP,JNI_ABORT);
-#else
-		(*env)->ReleaseBooleanArrayElements(env,cache,cacheP,JNI_ABORT);
-#endif
-		h5JNIFatalError( env, "H5Pget_hyper_cache:  limit not pinned");
-		return -1;
-	}
-
-	status = H5Pget_hyper_cache((hid_t)plist_id, (unsigned*)&cval, (unsigned*)limitP);
-
-	if (status < 0) {
-#ifdef __cplusplus
-		env->ReleaseBooleanArrayElements(cache,cacheP,JNI_ABORT);
-		env->ReleaseIntArrayElements(limit,limitP,JNI_ABORT);
-#else
-		(*env)->ReleaseBooleanArrayElements(env,cache,cacheP,JNI_ABORT);
-		(*env)->ReleaseIntArrayElements(env,limit,limitP,JNI_ABORT);
-#endif
-		h5libraryError(env);
-	} else {
-		if (cval == 1) {
-			cacheP[0] = JNI_TRUE;
-		} else {
-			cacheP[0] = JNI_TRUE;
-		}
-#ifdef __cplusplus
-		env->ReleaseBooleanArrayElements(cache,cacheP,0);
-		env->ReleaseIntArrayElements(limit,limitP,0);
-#else
-		(*env)->ReleaseBooleanArrayElements(env,cache,cacheP,0);
-		(*env)->ReleaseIntArrayElements(env,limit,limitP,0);
-#endif
-	}
-
-	return (jint)status;
-}
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
@@ -2124,6 +2023,609 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1small_1data_1block_1size
 
 	return (jint)status;
 }
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_alloc_time(hid_t plist_id, H5D_alloc_time_t alloc_time ) 
+ * Signature: (IJ)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1alloc_1time
+  (JNIEnv *env, jclass clss, jint plist, jint alloc_time)
+{
+	herr_t retVal = -1;
+
+	retVal =  H5Pset_alloc_time((hid_t)plist, (H5D_alloc_time_t)alloc_time );
+	if (retVal < 0) {
+		h5libraryError(env);
+	}
+	return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_alloc_time(hid_t plist_id, H5D_alloc_time_t *alloc_time ) 
+ * Signature: (IJ)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1alloc_1time
+  (JNIEnv *env, jclass clss, jint plist, jintArray alloc_time)
+{
+	herr_t retVal = -1;
+	jint *theArray;
+	jboolean isCopy;
+	H5D_alloc_time_t time;
+
+
+	if (alloc_time == NULL) {
+		/* exception ? */
+		h5nullArgument( env, "H5Pget_alloc_time:  alloc_time is NULL");
+		return -1;
+	}
+#ifdef __cplusplus
+	theArray = (jint *)env->GetIntArrayElements(alloc_time,&isCopy);
+#else
+	theArray = (jint *)(*env)->GetIntArrayElements(env,alloc_time,&isCopy);
+#endif
+	if (theArray == NULL) {
+		h5JNIFatalError( env, "H5Pget_alloc_time:  alloc_time not pinned");
+		return -1;
+	}
+
+	retVal =  H5Pget_alloc_time((hid_t)plist, &time );
+
+	if (retVal < 0) {
+#ifdef __cplusplus
+		env->ReleaseIntArrayElements(alloc_time,theArray,JNI_ABORT);
+#else
+		(*env)->ReleaseIntArrayElements(env,alloc_time,theArray,JNI_ABORT);
+#endif
+		h5libraryError(env);
+	} else {
+		theArray[0] = time;
+#ifdef __cplusplus
+		env->ReleaseIntArrayElements(alloc_time,theArray,0);
+#else
+		(*env)->ReleaseIntArrayElements(env,alloc_time,theArray,0);
+#endif
+	}
+
+	return (jint)retVal;
+}
+
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_fill_time(hid_t plist_id, H5D_fill_time_t fill_time ) 
+ * Signature: (IJ)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fill_1time
+  (JNIEnv *env, jclass clss, jint plist, jint fill_time)
+{
+	herr_t retVal = -1;
+
+	retVal =  H5Pset_fill_time((hid_t)plist, (H5D_fill_time_t)fill_time );
+	if (retVal < 0) {
+		h5libraryError(env);
+	}
+	return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_fill_time(hid_t plist_id, H5D_fill_time_t *fill_time ) 
+ * Signature: (IJ)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1fill_1time
+  (JNIEnv *env, jclass clss, jint plist, jintArray fill_time)
+{
+	herr_t retVal = -1;
+	jint *theArray;
+	jboolean isCopy;
+	H5D_fill_time_t time;
+
+
+	if (fill_time == NULL) {
+		/* exception ? */
+		h5nullArgument( env, "H5Pget_fill_time:  fill_time is NULL");
+		return -1;
+	}
+#ifdef __cplusplus
+	theArray = (jint *)env->GetIntArrayElements(fill_time,&isCopy);
+#else
+	theArray = (jint *)(*env)->GetIntArrayElements(env,fill_time,&isCopy);
+#endif
+	if (theArray == NULL) {
+		h5JNIFatalError( env, "H5Pget_fill_time:  fill_time not pinned");
+		return -1;
+	}
+
+	retVal =  H5Pget_fill_time((hid_t)plist, &time );
+
+	if (retVal < 0) {
+#ifdef __cplusplus
+		env->ReleaseIntArrayElements(fill_time,theArray,JNI_ABORT);
+#else
+		(*env)->ReleaseIntArrayElements(env,fill_time,theArray,JNI_ABORT);
+#endif
+		h5libraryError(env);
+	} else {
+		theArray[0] = time;
+#ifdef __cplusplus
+		env->ReleaseIntArrayElements(fill_time,theArray,0);
+#else
+		(*env)->ReleaseIntArrayElements(env,fill_time,theArray,0);
+#endif
+	}
+
+	return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pfill_value_defined(hid_t plist_id, H5D_fill_value_t *status ) 
+ * Signature: (IJ)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pfill_1value_1defined
+  (JNIEnv *env, jclass clss, jint plist, jintArray status)
+{
+	herr_t retVal = -1;
+	jint *theArray;
+	jboolean isCopy;
+	H5D_fill_value_t value;
+
+
+	if (status == NULL) {
+		/* exception ? */
+		h5nullArgument( env, "H5Pfill_value_defined:  status is NULL");
+		return -1;
+	}
+#ifdef __cplusplus
+	theArray = (jint *)env->GetIntArrayElements(status,&isCopy);
+#else
+	theArray = (jint *)(*env)->GetIntArrayElements(env,status,&isCopy);
+#endif
+	if (theArray == NULL) {
+		h5JNIFatalError( env, "H5Pfill_value_defined:  status not pinned");
+		return -1;
+	}
+
+	retVal =  H5Pfill_value_defined((hid_t)plist, &value );
+
+	if (retVal < 0) {
+#ifdef __cplusplus
+		env->ReleaseIntArrayElements(status,theArray,JNI_ABORT);
+#else
+		(*env)->ReleaseIntArrayElements(env,status,theArray,JNI_ABORT);
+#endif
+		h5libraryError(env);
+	} else {
+		theArray[0] = value;
+#ifdef __cplusplus
+		env->ReleaseIntArrayElements(status,theArray,0);
+#else
+		(*env)->ReleaseIntArrayElements(env,status,theArray,0);
+#endif
+	}
+
+	return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_fletcher32(hid_t plist) 
+ * Signature: (IJ)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fletcher32
+  (JNIEnv *env, jclass clss, jint plist)
+{
+	herr_t retVal = -1;
+
+	retVal =  H5Pset_fletcher32((hid_t)plist);
+	if (retVal < 0) {
+		h5libraryError(env);
+	}
+	return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_edc_check(hid_t plist, H5Z_EDC_t check) 
+ * Signature: (IJ)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1edc_1check
+  (JNIEnv *env, jclass clss, jint plist, jint check)
+{
+	herr_t retVal = -1;
+
+	retVal =  H5Pset_edc_check((hid_t)plist, (H5Z_EDC_t)check );
+	if (retVal < 0) {
+		h5libraryError(env);
+	}
+	return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_edc_check(hid_t plist) 
+ * Signature: (IJ)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1edc_1check
+  (JNIEnv *env, jclass clss, jint plist)
+{
+	H5Z_EDC_t retVal = -1;
+
+	retVal =  H5Pget_edc_check((hid_t)plist);
+	if (retVal < 0) {
+		h5libraryError(env);
+	}
+	return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_shuffle(hid_t plist_id) 
+ * Signature: (IJ)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1shuffle
+  (JNIEnv *env, jclass clss, jint plist)
+{
+	herr_t retVal = -1;
+
+	retVal =  H5Pset_shuffle((hid_t)plist);
+	if (retVal < 0) {
+		h5libraryError(env);
+	}
+	return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_szip(hid_t plist, unsigned int options_mask, unsigned int pixels_per_block) 
+ * Signature: (IJ)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1szip
+  (JNIEnv *env, jclass clss, jint plist, jint options_mask, jint pixels_per_block)
+{
+	herr_t retVal = -1;
+
+	retVal =  H5Pset_szip((hid_t)plist, (unsigned int)options_mask, (unsigned int)pixels_per_block);
+	if (retVal < 0) {
+		h5libraryError(env);
+	}
+	return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_hyper_vector_size(hid_t dxpl_id, size_t vector_size ) 
+ * Signature: (IJ)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1hyper_1vector_1size
+  (JNIEnv *env, jclass clss, jint plist, jlong vector_size)
+{
+	herr_t retVal = -1;
+
+	retVal =  H5Pset_hyper_vector_size((hid_t)plist, (size_t)vector_size);
+	if (retVal < 0) {
+		h5libraryError(env);
+	}
+	return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_hyper_vector_size(hid_t dxpl_id, size_t *vector_size ) 
+ * Signature: (IJ)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1hyper_1vector_1size
+  (JNIEnv *env, jclass clss, jint plist, jlongArray vector_size)
+{
+	herr_t retVal = -1;
+	jlong *theArray;
+	size_t size;
+	jboolean isCopy;
+
+	if (vector_size == NULL) {
+		/* exception ? */
+		h5nullArgument( env, "H5Pget_hyper_vector_size:  vector_size is NULL");
+		return -1;
+	}
+
+#ifdef __cplusplus
+	theArray = (jlong *)env->GetLongArrayElements(vector_size,&isCopy);
+#else
+	theArray = (jlong *)(*env)->GetLongArrayElements(env,vector_size,&isCopy);
+#endif
+	if (theArray == NULL) {
+		h5JNIFatalError( env, "H5Pget_hyper_vector_size:  vector_size not pinned");
+		return -1;
+	}
+
+	retVal =  H5Pget_hyper_vector_size((hid_t)plist, &size);
+
+	if (retVal < 0) {
+#ifdef __cplusplus
+		env->ReleaseLongArrayElements(vector_size,theArray,JNI_ABORT);
+#else
+		(*env)->ReleaseLongArrayElements(env,vector_size,theArray,JNI_ABORT);
+#endif
+		h5libraryError(env);
+	} else {
+		theArray[0] = size;
+#ifdef __cplusplus
+		env->ReleaseLongArrayElements(vector_size,theArray,0);
+#else
+		(*env)->ReleaseLongArrayElements(env,vector_size,theArray,0);
+#endif
+	}
+
+	return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pall_filters_avail(hid_t dcpl_id) 
+ * Signature: (I)J
+ */
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pall_1filters_1avail
+  (JNIEnv *env, jclass clss, jint dcpl_id)
+{
+	htri_t bval;
+	bval = H5Pall_filters_avail((hid_t)dcpl_id);
+	if (bval > 0) {
+		return JNI_TRUE;
+	} else if (bval == 0) {
+		return JNI_FALSE;
+	} else {
+		h5libraryError(env);
+		return JNI_FALSE;
+	}
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pmodify_filter(hid_t plist, H5Z_filter_t filter, 
+ *                unsigned int flags, size_t cd_nelmts, const unsigned int cd_values[] ) 
+ * Signature: (III[J)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pmodify_1filter
+  (JNIEnv *env, jclass clss, jint plist, jint filter, jint flags, 
+  jlong cd_nelmts, jintArray cd_values)
+{
+	herr_t status;
+	jint i;
+	jint *cd_valuesP;
+	jboolean isCopy;
+	unsigned int *valuesP;
+
+	if (cd_values == NULL) {
+		h5nullArgument( env, "H5Pmodify_filter:  cd_values is NULL");
+		return -1;
+	}
+
+#ifdef __cplusplus
+	cd_valuesP = (*env)->GetIntArrayElements(cd_values,&isCopy);
+#else
+	cd_valuesP = (*env)->GetIntArrayElements(env,cd_values,&isCopy);
+#endif
+
+	if (cd_valuesP == NULL) {
+		h5JNIFatalError(env,  "H5Pmodify_filter:  cd_values not pinned");
+		return -1;
+	}
+
+	valuesP = (unsigned int *)malloc( (int)cd_nelmts * sizeof(unsigned int)); 
+
+	if (valuesP == NULL) {
+#ifdef __cplusplus
+		(*env)->ReleaseIntArrayElements(cd_values,cd_valuesP,JNI_ABORT);
+#else
+		(*env)->ReleaseIntArrayElements(env,cd_values,cd_valuesP,JNI_ABORT);
+#endif
+		h5JNIFatalError(env,  "H5Pmodify_filter:  cd_values array not converted to hssize_t");
+		return -1;
+	}
+
+	for (i= 0; i < (cd_nelmts); i++) {
+		valuesP[i] = cd_valuesP[i];
+	}
+
+	status = H5Pmodify_filter((hid_t)plist, (H5Z_filter_t)filter,(const unsigned int)flags, 
+		(size_t)cd_nelmts, (unsigned int *)valuesP);
+
+#ifdef __cplusplus
+	(*env)->ReleaseIntArrayElements(cd_values, cd_valuesP, JNI_ABORT);
+#else
+	(*env)->ReleaseIntArrayElements(env, cd_values, cd_valuesP, JNI_ABORT);
+#endif
+	free(valuesP);
+
+	if (status < 0) {
+		h5libraryError(env);
+	}
+	return (jint)status;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_filter_by_id( hid_t plist_id, H5Z_filter_t filter, 
+ *                unsigned int *flags, size_t *cd_nelmts, unsigned int cd_values[], 
+ *                size_t namelen, char *name[] ) 
+ * Signature: (III[J)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id
+  (JNIEnv *env, jclass clss, jint plist, jint filter, jintArray flags, 
+  jlongArray cd_nelmts, jintArray cd_values, jlong namelen, jobjectArray name)
+{
+	herr_t status;
+	int i=0;
+	jint *cd_valuesP, *flagsP;
+	jlong *cd_nelmsP;
+	jboolean isCopy;
+	unsigned int *valuesP, *c_flagsP;
+	size_t *nelmsP;
+	int rank;
+	long bs;
+	char *aName;
+	jstring str;
+
+	bs = (long)namelen;
+	if (bs <= 0) {
+		h5badArgument( env, "H5Pget_filter_by_id:  namelen <= 0");
+		return -1;
+	}
+
+	if (flags == NULL) {
+		h5nullArgument( env, "H5Pget_filter_by_id:  flags is NULL");
+		return -1;
+	}
+
+	if (cd_nelmts == NULL) {
+		h5nullArgument( env, "H5Pget_filter_by_id:  cd_nelms is NULL");
+		return -1;
+	}
+
+	if (cd_values == NULL) {
+		h5nullArgument( env, "H5Pget_filter_by_id:  cd_values is NULL");
+		return -1;
+	}
+
+	if (name == NULL) {
+		h5nullArgument( env, "H5Pget_filter_by_id:  name is NULL");
+		return -1;
+	}
+
+	aName = (char*)malloc(sizeof(char)*bs);
+	if (aName == NULL) {
+		h5outOfMemory( env, "H5Pget_filter_by_id:  malloc failed");
+		return -1;
+	}
+
+#ifdef __cplusplus
+	flagsP = (*env)->GetIntArrayElements(flags,&isCopy);
+#else
+	flagsP = (*env)->GetIntArrayElements(env,flags,&isCopy);
+#endif
+
+	if (flagsP == NULL) {
+		free(aName);
+		h5JNIFatalError(env,  "H5Pget_filter_by_id:  flags not pinned");
+		return -1;
+	}
+
+	c_flagsP = (unsigned int *)malloc( sizeof(unsigned int)); 
+
+	if (c_flagsP == NULL) {
+#ifdef __cplusplus
+		(*env)->ReleaseIntArrayElements(flags,flagsP,JNI_ABORT);
+#else
+		(*env)->ReleaseIntArrayElements(env,flags,flagsP,JNI_ABORT);
+#endif
+		free(aName);
+		h5JNIFatalError(env,  "H5Pget_filter_by_id:  flags array not converted to unsigned int.");
+		return -1;
+	}
+
+#ifdef __cplusplus
+	cd_nelmsP = (*env)->GetLongArrayElements(cd_nelmts,&isCopy);
+#else
+	cd_nelmsP = (*env)->GetLongArrayElements(env,cd_nelmts,&isCopy);
+#endif
+
+	if (cd_nelmsP == NULL) {
+		free(aName);
+		h5JNIFatalError(env,  "H5Pget_filter_by_id:  cd_nelms not pinned");
+		return -1;
+	}
+
+	nelmsP = (size_t *)malloc( sizeof(size_t)); 
+
+	if (nelmsP == NULL) {
+#ifdef __cplusplus
+		(*env)->ReleaseIntArrayElements(flags,flagsP,JNI_ABORT);
+		(*env)->ReleaseLongArrayElements(cd_nelmts,cd_nelmsP,JNI_ABORT);
+#else
+		(*env)->ReleaseIntArrayElements(env,flags,flagsP,JNI_ABORT);
+		(*env)->ReleaseLongArrayElements(env,cd_nelmts,cd_nelmsP,JNI_ABORT);
+#endif
+		free(aName);
+		free(c_flagsP);
+		h5JNIFatalError(env,  "H5Pget_filter_by_id:  cd_nelmts array not converted to unsigned int.");
+		return -1;
+	}
+
+#ifdef __cplusplus
+	cd_valuesP = (*env)->GetIntArrayElements(cd_values,&isCopy);
+	rank  = (*env)->GetArrayLength(env, cd_values);
+#else
+	cd_valuesP = (*env)->GetIntArrayElements(env,cd_values,&isCopy);
+	rank  = (*env)->GetArrayLength(env, cd_values);
+#endif
+
+	valuesP = (unsigned int *)malloc( rank * sizeof(unsigned int)); 
+
+	if (cd_valuesP == NULL || valuesP == NULL) {
+#ifdef __cplusplus
+		(*env)->ReleaseIntArrayElements(flags,flagsP,JNI_ABORT);
+		(*env)->ReleaseLongArrayElements(cd_nelmts,cd_nelmsP,JNI_ABORT);
+		(*env)->ReleaseIntArrayElements(cd_values,cd_valuesP,JNI_ABORT);
+#else
+		(*env)->ReleaseIntArrayElements(env,flags,flagsP,JNI_ABORT);
+		(*env)->ReleaseLongArrayElements(env,cd_nelmts,cd_nelmsP,JNI_ABORT);
+		(*env)->ReleaseIntArrayElements(env,cd_values,cd_valuesP,JNI_ABORT);
+#endif
+		free(aName);
+		free(c_flagsP);
+		free(nelmsP);
+		h5JNIFatalError(env,  "H5Pget_filter_by_id:  cd_values array not converted to unsigned int.");
+		return -1;
+	}
+
+	status = H5Pget_filter_by_id( (hid_t)plist, (H5Z_filter_t)filter, 
+		(unsigned int *)c_flagsP, (size_t *)nelmsP, (unsigned int *)valuesP, 
+		(size_t)namelen, (char *)aName);
+
+	if (status < 0) {
+#ifdef __cplusplus
+		(*env)->ReleaseIntArrayElements(flags,flagsP,JNI_ABORT);
+		(*env)->ReleaseLongArrayElements(cd_nelmts,cd_nelmsP,JNI_ABORT);
+		(*env)->ReleaseIntArrayElements(cd_values,cd_valuesP,JNI_ABORT);
+#else
+		(*env)->ReleaseIntArrayElements(env,flags,flagsP,JNI_ABORT);
+		(*env)->ReleaseLongArrayElements(env,cd_nelmts,cd_nelmsP,JNI_ABORT);
+		(*env)->ReleaseIntArrayElements(env,cd_values,cd_valuesP,JNI_ABORT);
+#endif
+		h5libraryError(env);
+	} else {
+#ifdef __cplusplus
+
+		for (i=0; i<rank; i++) {
+			cd_valuesP[i] = valuesP[i];
+		}
+
+		flagsP[0] = c_flagsP[0];
+		cd_nelmsP[0] = nelmsP[0];
+
+		str = env->NewStringUTF(aName);
+		(*env)->ReleaseIntArrayElements(flags,flagsP,0);
+		(*env)->ReleaseLongArrayElements(cd_nelmts,cd_nelmsP,0);
+		(*env)->ReleaseIntArrayElements(cd_values,cd_valuesP,0);
+#else
+		str = (*env)->NewStringUTF(env, aName);
+		(*env)->ReleaseIntArrayElements(env,flags,flagsP,0);
+		(*env)->ReleaseLongArrayElements(env,cd_nelmts,cd_nelmsP,0);
+		(*env)->ReleaseIntArrayElements(env,cd_values,cd_valuesP,0);
+#endif
+
+	}
+
+	free(aName);
+	free(c_flagsP);
+	free(nelmsP);
+	free(valuesP);
+
+	return (jint)status;
+}
+
 #ifdef __cplusplus
 }
 #endif 

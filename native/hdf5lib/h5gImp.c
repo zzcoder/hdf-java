@@ -32,7 +32,6 @@ extern "C" {
 
 #include <jni.h>
 #include <stdlib.h>
-#include "./H5Git.h"
 
 extern jboolean h5outOfMemory( JNIEnv *env, char *functName);
 extern jboolean h5JNIFatalError( JNIEnv *env, char *functName);
@@ -707,142 +706,148 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1comment
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Gn_members
- * Signature: (ILjava/lang/String;)I
+ * Method:    H5Gget_num_objs 
+ * Signature: (I[J[J)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gn_1members
-  (JNIEnv *env, jclass clss, jint loc_id, jstring name)
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1num_1objs
+  (JNIEnv *env, jclass clss, jint loc_id, jlongArray num_obj)
 {
-	herr_t status;
-	char *gName;
+	int status;
+	jlong *num_objP;
 	jboolean isCopy;
+	hsize_t *num_obja;
+	int i;
+	int rank;
 
-	if (name == NULL) {
-		h5nullArgument( env, "H5Gn_members:  name is NULL");
+	if (num_obj == NULL) {
+		h5nullArgument( env, "H5Gget_num_objs:  num_obj is NULL");
+		return -1;
+	}
+
+#ifdef __cplusplus
+	num_objP = env->GetLongArrayElements(num_obj,&isCopy);
+#else
+	num_objP = (*env)->GetLongArrayElements(env,num_obj,&isCopy);
+#endif
+	if (num_objP == NULL) {
+		h5JNIFatalError(env,  "H5Gget_num_objs:  num_obj not pinned");
 		return -1;
 	}
 #ifdef __cplusplus
-	gName = (char *)env->GetStringUTFChars(name,&isCopy);
+	rank = (int) env->GetArrayLength(num_obj);
 #else
-	gName = (char *)(*env)->GetStringUTFChars(env,name,&isCopy);
+	rank = (int) (*env)->GetArrayLength(env,num_obj);
 #endif
-	if (gName == NULL) {
-		h5JNIFatalError( env, "H5Gn_members:  name not pinned");
+	num_obja = (hsize_t *)malloc( rank * sizeof(hsize_t)); 
+	if (num_obja == NULL)  {
+#ifdef __cplusplus
+		env->ReleaseLongArrayElements(num_obj,num_objP,JNI_ABORT);
+#else
+		(*env)->ReleaseLongArrayElements(env,num_obj,num_objP,JNI_ABORT);
+#endif
+		h5JNIFatalError(env,  "H5Gget_num_objs:  num_obj not converted to hsize_t");
 		return -1;
 	}
-	status = H5Gn_members( (hid_t)loc_id, gName);
 
-#ifdef __cplusplus
-	env->ReleaseStringUTFChars(name,gName);
-#else
-	(*env)->ReleaseStringUTFChars(env,name,gName);
-#endif
+	status = H5Gget_num_objs(loc_id, (hsize_t *)num_obja); 
+	
 	if (status < 0) {
+#ifdef __cplusplus
+		env->ReleaseLongArrayElements(num_obj,num_objP,JNI_ABORT);
+#else
+		(*env)->ReleaseLongArrayElements(env,num_obj,num_objP,JNI_ABORT);
+#endif
+		free(num_obja);
 		h5libraryError(env);
+	} else {
+		for (i = 0; i < rank; i++) {
+			num_objP[i] = num_obja[i];
+		}
+		free(num_obja); 
+#ifdef __cplusplus
+		env->ReleaseLongArrayElements(num_objs,num_objP,0);
+#else
+		(*env)->ReleaseLongArrayElements(env,num_obj,num_objP,0);
+#endif
 	}
+
 	return (jint)status;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Gget_objname_by_idx(hid_t group_id, hsize_t idx, char *name, size_t* size ) 
+ * Signature: (IJLjava/lang/String;)J
+ */
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1objname_1by_1idx
+  (JNIEnv *env, jclass clss, jint group_id, jlong idx, jobjectArray name, jlong buf_size)
+{
+	char *aName;
+	jstring str;
+	hssize_t size;
+	long bs;
+
+	bs = (long)buf_size;
+	if (bs <= 0) {
+		h5badArgument( env, "H5Gget_objname_by_idx:  buf_size <= 0");
+		return -1;
+	}
+	aName = (char*)malloc(sizeof(char)*bs);
+	if (aName == NULL) {
+		h5outOfMemory( env, "H5Gget_objname_by_idx:  malloc failed");
+		return -1;
+	}
+	size = H5Gget_objname_by_idx((hid_t)group_id, (hsize_t)idx, aName, (size_t)buf_size);
+	if (size < 0) {
+		free(aName);
+		h5libraryError(env);
+		/*  exception, returns immediately */
+	}
+	/* successful return -- save the string; */
+#ifdef __cplusplus
+	str = env->NewStringUTF(aName);
+#else
+	str = (*env)->NewStringUTF(env,aName);
+#endif
+	if (str == NULL) {
+		free(aName);
+		h5JNIFatalError( env,"H5Gget_objname_by_idx:  return string failed");
+		return -1;
+	}
+	free(aName);
+	/*  Note: throws ArrayIndexOutOfBoundsException, 
+		ArrayStoreException */
+#ifdef __cplusplus
+	env->SetObjectArrayElement(name,0,str);
+#else
+	(*env)->SetObjectArrayElement(env,name,0,str);
+#endif
+
+	return (jlong)size;
 }
 
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Gget_obj_info_idx
- * Signature: (ILjava/lang/String;I[I[Ljava/lang/String;)I
+ * Method:    H5Gget_objtype_by_idx(hid_t group_id, hsize_t idx ) 
+ * Signature: (IJLjava/lang/String;)J
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1idx
-  (JNIEnv *env, jclass clss, jint loc_id, jstring group_name, jint idx, 
-	jobjectArray objName, jintArray oType)
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1objtype_1by_1idx
+  (JNIEnv *env, jclass clss, jint group_id, jlong idx)
 {
-	herr_t status;
-	char *gName;
-	char *oName;
-	jboolean isCopy;
-	jstring str;
-	jint *tarr;
+	int type;
 
-	if (group_name == NULL) {
-		h5nullArgument( env, "H5Gget_obj_info_idx:  group_name is NULL");
-		return -1;
-	}
-#ifdef __cplusplus
-	gName = (char *)env->GetStringUTFChars(group_name,&isCopy);
-#else
-	gName = (char *)(*env)->GetStringUTFChars(env,group_name,&isCopy);
-#endif
-	if (gName == NULL) {
-		h5JNIFatalError( env, "H5Gget_obj_info_idx:  group_name not pinned");
-		return -1;
-	}
-	if (oType == NULL) {
-#ifdef __cplusplus
-		env->ReleaseStringUTFChars(group_name,gName);
-#else
-		(*env)->ReleaseStringUTFChars(env,group_name,gName);
-#endif
-		h5nullArgument( env, "H5Gget_obj_info_idx:  oType is NULL");
-		return -1;
-	}
-
-#ifdef __cplusplus
-	tarr = env->GetIntArrayElements(oType,&isCopy);
-#else
-	tarr = (*env)->GetIntArrayElements(env,oType,&isCopy);
-#endif
-	if (tarr == NULL) {
-#ifdef __cplusplus
-		env->ReleaseStringUTFChars(group_name,gName);
-#else
-		(*env)->ReleaseStringUTFChars(env,group_name,gName);
-#endif
-		h5JNIFatalError( env, "H5Gget_obj_info_idx:  type not pinned");
-		return -1;
-	}
-
-	status = H5Gget_obj_info_idx( (hid_t) loc_id, gName, idx, 
-		&oName, (int *)tarr );
-
-#ifdef __cplusplus
-	env->ReleaseStringUTFChars(group_name,gName);
-#else
-	(*env)->ReleaseStringUTFChars(env,group_name,gName);
-#endif
-	if (status >= 0) {
-#ifdef __cplusplus
-		env->ReleaseIntArrayElements(oType,tarr,0);
-#else
-		(*env)->ReleaseIntArrayElements(env,oType,tarr,0);
-#endif
-		if (oName != NULL) {
-			/* may throw OutOfMemoryError */
-#ifdef __cplusplus
-			str = env->NewStringUTF(oName);
-#else
-			str = (*env)->NewStringUTF(env,oName);
-#endif
-			if (str == NULL) {
-				/* exception -- fatal JNI error */
-				free(oName);
-				h5JNIFatalError( env, "H5Gget_obj_info_idx:  return string not created");
-				return -1;
-			}
-			/*  the SetObjectArrayElement may raise exceptions... */
-#ifdef __cplusplus
-			env->SetObjectArrayElement(objName,0,(jobject)str);
-#else
-			(*env)->SetObjectArrayElement(env,objName,0,(jobject)str);
-#endif
-			free(oName);
-		}
-	} else {
-#ifdef __cplusplus
-		env->ReleaseIntArrayElements(oType,tarr,JNI_ABORT);
-#else
-		(*env)->ReleaseIntArrayElements(env,oType,tarr,JNI_ABORT);
-#endif
+	type = H5Gget_objtype_by_idx((hid_t)group_id, (hsize_t)idx );
+	if (type < 0) {
 		h5libraryError(env);
+		/*  exception, returns immediately */
 	}
-	return (jint)status;
+
+	return (jint)type;
 }
+
+
+
 #ifdef __cplusplus
 }
 #endif 

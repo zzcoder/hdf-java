@@ -1456,6 +1456,68 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1array_1dims
 
 	return (jint)status;
 }
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Tis_variable_str(hid_t dtype_id ) 
+ * Signature: (I)J
+ */
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tis_1variable_1str
+  (JNIEnv *env, jclass clss, jint dtype_id)
+{
+	htri_t bval;
+	bval = H5Tis_variable_str((hid_t)dtype_id);
+	if (bval > 0) {
+		return JNI_TRUE;
+	} else if (bval == 0) {
+		return JNI_FALSE;
+	} else {
+		h5libraryError(env);
+		return JNI_FALSE;
+	}
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Tget_native_type(hid_t type_id, H5T_direction_t direction ) 
+ * Signature: (I)J
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1native_1type
+  (JNIEnv *env, jclass clss, jint dtype_id, jint direction)
+{
+	hid_t native_tid;
+
+	native_tid = H5Tget_native_type((hid_t)dtype_id, (H5T_direction_t)direction);
+
+	if (native_tid < 0){
+		h5libraryError(env);
+		return -1;
+	}
+
+	return (jint)native_tid;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Tdetect_class(hid_t dtype_id, H5T_class_t dtype_class ) 
+ * Signature: (I)J
+ */
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tdetect_1class
+  (JNIEnv *env, jclass clss, jint dtype_id, jint dtype_class)
+{
+	htri_t bval;
+	bval = H5Tdetect_class((hid_t)dtype_id, (H5T_class_t)dtype_class);
+	if (bval > 0) {
+		return JNI_TRUE;
+	} else if (bval == 0) {
+		return JNI_FALSE;
+	} else {
+		h5libraryError(env);
+		return JNI_FALSE;
+	}
+}
+
+
 #ifdef __cplusplus
 }
 #endif 

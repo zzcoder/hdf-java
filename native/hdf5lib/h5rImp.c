@@ -236,47 +236,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1region
 	return (jint)status;
 }
 
-/*
- * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Rget_object_type
- * Signature: (I[B)I
- */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1object_1type
-  (JNIEnv *env, jclass clss, jint loc_id, jbyteArray ref)
-{
 
-	int status;
-	jboolean isCopy;
-	jbyte *refP;
-
-	if (ref == NULL) {
-		h5nullArgument( env, "H5Rget_object_type:  ref is NULL");
-		return -1;
-	}
-
-#ifdef __cplusplus
-	refP = (jbyte *)env->GetByteArrayElements(ref,&isCopy);
-#else
-	refP = (jbyte *)(*env)->GetByteArrayElements(env,ref,&isCopy);
-#endif
-	if (refP == NULL) {
-		h5JNIFatalError(env,  "H5Rget_object_type:  ref not pinned");
-		return -1;
-	}
-
-	status = H5Rget_object_type((hid_t)loc_id, refP);
-
-#ifdef __cplusplus
-	env->ReleaseByteArrayElements(ref,refP,JNI_ABORT);
-#else
-	(*env)->ReleaseByteArrayElements(env,ref,refP,JNI_ABORT);
-#endif
-
-	if (status < 0) {
-		h5libraryError(env);
-	}
-	return (jint)status;
-}
 #ifdef __cplusplus
 }
 #endif 
