@@ -2,10 +2,12 @@
 package ncsa.hdf.view;
 
 import java.io.File;
+import java.io.RandomAccessFile;
 import java.util.Hashtable;
 import java.util.Enumeration;
 import javax.swing.*;
 import javax.swing.filechooser.*;
+import ncsa.hdf.object.FileFormat;
 
 /**
  * A convenience implementation of FileFilter that filters out
@@ -249,15 +251,22 @@ public class DefaultFileFilter extends FileFilter
         }
 
         DefaultFileFilter filter = new DefaultFileFilter();
-        filter.addExtension("hdf");
-        filter.addExtension("h5");
-        filter.addExtension("h4");
-        filter.addExtension("hdf4");
-        filter.addExtension("hdf5");
-        filter.setDescription("HDF4 & HDF5");
-        FILE_FILTER_HDF = filter;
+        filter.setDescription("HDF");
 
-        return FILE_FILTER_HDF;
+        if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4) != null)
+        {
+            filter.addExtension("hdf");
+            filter.addExtension("h4");
+            filter.addExtension("hdf4");
+        }
+
+        if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) != null)
+        {
+            filter.addExtension("h5");
+            filter.addExtension("hdf5");
+        }
+
+        return (FILE_FILTER_HDF = filter);
     }
 
     /** Return a file filter for JPEG image file. */
@@ -319,4 +328,78 @@ public class DefaultFileFilter extends FileFilter
         return FILE_FILTER_TEXT;
     }
 
+    /** look at the first 4 bytes of the file to see if it is an HDF4 file.
+     *  byte[0]=14, byte[1]=3, byte[2]=19, byte[3]=1
+     */
+    public static boolean isHDF4(String filename)
+    {
+        boolean ish4 = false;
+        RandomAccessFile raf = null;
+
+        try { raf = new RandomAccessFile(filename, "r"); }
+        catch (Exception ex) { raf = null; }
+
+        if (raf == null)
+            return false;
+
+        byte[] header = new byte[4];
+        try { raf.read(header); }
+        catch (Exception ex) { header = null; }
+
+
+        if (header != null)
+        {
+            if ( header[0]==14 &&
+                 header[1]==3 &&
+                 header[2]==19 &&
+                 header[3]==1)
+                ish4 = true;
+            else
+                ish4 = false;
+        }
+
+        try { raf.close();} catch (Exception ex) {}
+
+        return ish4;
+    }
+
+    /** look at the first 8 bytes of the file to see if it is an HDF5 file.
+     *  byte[0]=-199 which is 137 in unsigned byte, byte[1]=72, byte[2]=68,
+     *   byte[3]=70, byte[4]=13, byte[5]=10, byte[6]=26, byte[7]=10
+     */
+    public static boolean isHDF5(String filename)
+    {
+        boolean ish5 = false;
+        RandomAccessFile raf = null;
+
+        try { raf = new RandomAccessFile(filename, "r"); }
+        catch (Exception ex) { raf = null; }
+
+        if (raf == null)
+            return false;
+
+        byte[] header = new byte[8];
+        try { raf.read(header); }
+        catch (Exception ex) { header = null; }
+
+
+        if (header != null)
+        {
+            if ( header[0]==-119 &&
+                 header[1]==72 &&
+                 header[2]==68 &&
+                 header[3]==70 &&
+                 header[4]==13 &&
+                 header[5]==10 &&
+                 header[6]==26 &&
+                 header[7]==10)
+                ish5 = true;
+            else
+                ish5 = false;
+        }
+
+        try { raf.close();} catch (Exception ex) {}
+
+        return ish5;
+    }
 }

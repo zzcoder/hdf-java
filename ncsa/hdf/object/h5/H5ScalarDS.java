@@ -151,13 +151,17 @@ public class H5ScalarDS extends ScalarDS
             mspace = H5.H5Screate_simple(1, lsize, null);
 
             // set the rectangle selection
-            H5.H5Sselect_hyperslab(
-                fspace,
-                HDF5Constants.H5S_SELECT_SET,
-                startDims,
-                selectedStride,
-                selectedDims,
-                null );   // set block to 1
+            // HDF5 bug: for scalar dataset, H5Sselect_hyperslab gives core dump
+            if (rank*dims[0] > 1)
+            {
+                H5.H5Sselect_hyperslab(
+                    fspace,
+                    HDF5Constants.H5S_SELECT_SET,
+                    startDims,
+                    selectedStride,
+                    selectedDims,
+                    null );   // set block to 1
+            }
 
             tid = H5.H5Dget_type(did);
             nativeType = H5Datatype.toNativeType(tid);

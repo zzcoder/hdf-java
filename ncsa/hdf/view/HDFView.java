@@ -738,7 +738,7 @@ implements ViewManager, HyperlinkListener
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
                     this,
-                    ex+"\n"+filename+"\nTry open as read-only.",
+                    "Failed to open file "+filename+"\n"+ex,
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             }
@@ -2015,7 +2015,7 @@ implements ViewManager, HyperlinkListener
         button.addActionListener( this );
         button.setActionCommand( "Close file" );
 
-        tbar.addSeparator();
+        tbar.addSeparator(new Dimension(20, 20));
 
         // cahrt button
         button = new JButton( props.getChartIcon() );
@@ -2026,7 +2026,7 @@ implements ViewManager, HyperlinkListener
         button.setActionCommand( "Show chart" );
         chartIcon = button;
 
-        tbar.addSeparator();
+        tbar.addSeparator(new Dimension(20, 20));
 
         // zoom in button
         button = new JButton( props.getZoominIcon() );
@@ -2056,7 +2056,7 @@ implements ViewManager, HyperlinkListener
         imageGUIs.add(button);
         paletteIcon = button;
 
-        tbar.addSeparator();
+        tbar.addSeparator(new Dimension(20, 20));
 
         // first button
         button = new JButton( props.getFirstIcon() );
@@ -2094,7 +2094,7 @@ implements ViewManager, HyperlinkListener
         button.setActionCommand( "Last page" );
         d3GUIs.add(button);
 
-        tbar.addSeparator();
+        tbar.addSeparator(new Dimension(20, 20));
 
         // help button
         button = new JButton( props.getHelpIcon() );
@@ -2103,6 +2103,28 @@ implements ViewManager, HyperlinkListener
         button.setMargin( new Insets( 0, 0, 0, 0 ) );
         button.addActionListener( this );
         button.setActionCommand( "Users guide" );
+
+        tbar.addSeparator(new Dimension(20, 20));
+
+        // HDF4 Library Version button
+        button = new JButton( props.getH4Icon() );
+        tbar.add( button );
+        button.setToolTipText( "HDF4 Library Version" );
+        button.setMargin( new Insets( 0, 0, 0, 0 ) );
+        button.addActionListener( this );
+        button.setActionCommand( "HDF4 library" );
+        if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4) == null)
+            button.setEnabled(false);
+
+        // HDF5 Library Version button
+        button = new JButton( props.getH5Icon() );
+        tbar.add( button );
+        button.setToolTipText( "HDF5 Library Version" );
+        button.setMargin( new Insets( 0, 0, 0, 0 ) );
+        button.addActionListener( this );
+        button.setActionCommand( "HDF5 library" );
+        if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) == null)
+            button.setEnabled(false);
 
         return tbar;
     }

@@ -57,18 +57,26 @@ public abstract class FileFormat extends File
         ClassLoader cl = ClassLoader.getSystemClassLoader();
 
         // add H5File into the file list
-        try {
-            file_class = cl.loadClass("ncsa.hdf.object.h5.H5File");
-            hdffile = file_class.newInstance();
-            if (hdffile != null) FileList.put(FILE_TYPE_HDF5, hdffile);
-        } catch (Exception ex) {System.err.println(ex);}
+        try { file_class = cl.loadClass("ncsa.hdf.object.h5.H5File"); }
+        catch (ClassNotFoundException ex) {file_class = null;}
+        if (file_class != null)
+        {
+            try { hdffile = file_class.newInstance(); }
+            catch (Exception ex) { hdffile = null; }
+        }
+        if (hdffile != null) FileList.put(FILE_TYPE_HDF5, hdffile);
 
         // add H4File into the file list
-        try {
-            file_class = cl.loadClass("ncsa.hdf.object.h4.H4File");
-            hdffile = file_class.newInstance();
-            if (hdffile != null) FileList.put(FILE_TYPE_HDF4, hdffile);
-        } catch (Exception ex) {System.err.println(ex);}
+        file_class = null;
+        hdffile = null;
+        try { file_class = cl.loadClass("ncsa.hdf.object.h4.H4File"); }
+        catch (ClassNotFoundException ex) {file_class = null;}
+        if (file_class != null)
+        {
+            try { hdffile = file_class.newInstance(); }
+            catch (Exception ex) { hdffile = null; }
+        }
+        if (hdffile != null) FileList.put(FILE_TYPE_HDF4, hdffile);
     }
 
     public FileFormat(String filename)
