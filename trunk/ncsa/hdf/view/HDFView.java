@@ -21,6 +21,7 @@ import javax.swing.event.*;
 import javax.swing.text.html.*;
 import javax.swing.tree.*;
 import java.net.URL;
+import java.lang.reflect.*;
 import java.awt.Event;
 import java.awt.Insets;
 import java.awt.Dimension;
@@ -48,7 +49,7 @@ import java.awt.Font;
  * @author Peter X. Cao
  */
 public final class HDFView extends JFrame
-implements ViewManager, ActionListener, HyperlinkListener
+implements ViewManager, HyperlinkListener
 {
     private static final String aboutHDFView =
         "HDF Viewer, "+ "Version "+ViewProperties.VERSION+"\n"+
@@ -115,6 +116,12 @@ implements ViewManager, ActionListener, HyperlinkListener
     /** The list of GUI components related to editing */
     private final Vector editGUIs;
 
+    /** The list of GUI components related to HDF5 */
+    private final Vector h5GUIs;
+
+    /** The list of GUI components related to HDF4 */
+    private final Vector h4GUIs;
+
     /** The URL of the User's Guide. */
     private URL usersGuideURL;
 
@@ -154,16 +161,14 @@ implements ViewManager, ActionListener, HyperlinkListener
     public HDFView(String root, String workDir, String filename)
     {
         super("HDFView");
+
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         String lf = UIManager.getSystemLookAndFeelClassName();
         if ( lf != null )
         {
-            try	{
-                UIManager.setLookAndFeel( lf );
-            } catch ( Exception ex )	{
-                ex.printStackTrace();
-            }
+            try	{ UIManager.setLookAndFeel( lf ); }
+            catch ( Exception ex ) { ex.printStackTrace(); }
         }
 
         rootDir = root;
@@ -180,6 +185,8 @@ implements ViewManager, ActionListener, HyperlinkListener
         d3GUIs = new Vector();
         editGUIs = new Vector();
         tableGUIs = new Vector();
+        h4GUIs = new Vector();
+        h5GUIs = new Vector();
 
         // load the view properties
         ViewProperties.loadIcons(rootDir);
@@ -259,12 +266,10 @@ implements ViewManager, ActionListener, HyperlinkListener
 
                         // disable 3D components for true color image
                         if (c instanceof ImageObserver &&
-                            hObj instanceof H5ScalarDS && is3D)
+                            hObj instanceof ScalarDS && is3D)
                         {
-                            H5ScalarDS h5sd = (H5ScalarDS)hObj;
-                            int interlace = h5sd.getInterlace();
-                            is3D = !(interlace == ScalarDS.INTERLACE_PIXEL ||
-                                interlace == ScalarDS.INTERLACE_PLANE);
+                            ScalarDS sd = (ScalarDS)hObj;
+                            is3D = !sd.isTrueColor();
                         }
                     }
                 }
@@ -332,6 +337,12 @@ implements ViewManager, ActionListener, HyperlinkListener
                 this.currentDir = theFile.getAbsolutePath();;
             }
         }
+
+        if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4) == null)
+            setEnabled(h4GUIs, false);
+
+        if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) == null)
+            setEnabled(h5GUIs, false);
     }
 
     /**
@@ -573,7 +584,7 @@ implements ViewManager, ActionListener, HyperlinkListener
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
                     this,
-                    ex+"\n"+filename+"\nTry open as read-only.",
+                    "Failed to open file "+filename+"\n"+ex,
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             }
@@ -607,17 +618,43 @@ implements ViewManager, ActionListener, HyperlinkListener
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
                     this,
+                    "Failed to open file "+filename+"\n"+ex,
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        else if (cmd.equals("New HDF5 file"))
+        {
+            NewFileDialog dialog = new NewFileDialog(
+                this,
+                currentDir,
+                FileFormat.FILE_TYPE_HDF5,
+                treeView.getOpenFiles());
+            dialog.show();
+
+            if (!dialog.isFileCreated())
+                return;
+
+            String filename = dialog.getFile();
+            try {
+                treeView.openFile(filename, fileAccessID);
+                updateRecentFiles(filename);
+            } catch (Exception ex)
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(
+                    this,
                     ex+"\n"+filename,
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             }
         }
-        else if (cmd.equals("New HDF4 file") || cmd.equals("New HDF5 file"))
+        else if (cmd.equals("New HDF4 file"))
         {
             NewFileDialog dialog = new NewFileDialog(
                 this,
                 currentDir,
-                cmd.equals("New HDF5 file"),
+                FileFormat.FILE_TYPE_HDF4,
                 treeView.getOpenFiles());
             dialog.show();
 
@@ -647,12 +684,14 @@ implements ViewManager, ActionListener, HyperlinkListener
                 ((Group)selectedObject).isRoot())
                 return;
 
-            FileFormat theFile = selectedObject.getFileFormat();
-            boolean isH5 = (theFile instanceof H5File);
+            String filetype = FileFormat.FILE_TYPE_HDF4;
+            boolean isH5 = selectedObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
+            if (isH5) filetype = FileFormat.FILE_TYPE_HDF5;
+
             NewFileDialog dialog = new NewFileDialog(
                 this,
                 currentDir,
-                isH5,
+                filetype,
                 treeView.getOpenFiles());
             dialog.show();
 
@@ -754,10 +793,9 @@ implements ViewManager, ActionListener, HyperlinkListener
                 return;
             }
 
-            if (selectedFile instanceof H5File)
-                saveAsHDF5();
-            else
-                saveAsHDF4();
+            boolean isH5 = selectedFile.isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
+            if (isH5) saveAsHDF5();
+            else saveAsHDF4();
         }
         else if (cmd.equals("Open data"))
         {
@@ -960,17 +998,17 @@ implements ViewManager, ActionListener, HyperlinkListener
             JInternalFrame frame = contentPane.getSelectedFrame();
             if (frame != null && frame instanceof ImageView)
             {
-                int type = -1;
+                String filetype = null;
                 if (cmd.equals("Save image as jpeg"))
-                    type = Tools.FILE_TYPE_JPEG;
+                    filetype = FileFormat.FILE_TYPE_JPEG;
                 else if (cmd.equals("Save image as tiff"))
-                    type = Tools.FILE_TYPE_TIFF;
+                    filetype = FileFormat.FILE_TYPE_TIFF;
                 else if (cmd.equals("Save image as png"))
-                    type = Tools.FILE_TYPE_PNG;
+                    filetype = FileFormat.FILE_TYPE_PNG;
 
                 TreePath[] paths = treeView.getSelectionPaths();
                 treeView.clearSelection();
-                try { ((ImageView)frame).saveImageAs(type); }
+                try { ((ImageView)frame).saveImageAs(filetype); }
                 catch (Exception ex)
                 {
                     toolkit.beep();
@@ -1139,44 +1177,44 @@ implements ViewManager, ActionListener, HyperlinkListener
         {
             closeAllWindow();
         }
-        else if (cmd.startsWith(HObject.separator))
+        else if (cmd.startsWith("SHOW WINDOW"))
         {
             // a window is selected to be shown at the front
             showWindow(cmd);
         }
         else if (cmd.startsWith("Convert image file:"))
         {
-            int typeFrom=-1, typeTo =-1;
+            String typeFrom=null, typeTo =null;
 
             if (cmd.equals("Convert image file: JPEG to HDF5"))
             {
-                typeFrom = Tools.FILE_TYPE_JPEG;
-                typeTo = Tools.FILE_TYPE_HDF5;
+                typeFrom = FileFormat.FILE_TYPE_JPEG;
+                typeTo = FileFormat.FILE_TYPE_HDF5;
             }
             else if (cmd.equals("Convert image file: TIFF to HDF5"))
             {
-                typeFrom = Tools.FILE_TYPE_TIFF;
-                typeTo = Tools.FILE_TYPE_HDF5;
+                typeFrom = FileFormat.FILE_TYPE_TIFF;
+                typeTo = FileFormat.FILE_TYPE_HDF5;
             }
             else if (cmd.equals("Convert image file: PNG to HDF5"))
             {
-                typeFrom = Tools.FILE_TYPE_PNG;
-                typeTo = Tools.FILE_TYPE_HDF5;
+                typeFrom = FileFormat.FILE_TYPE_PNG;
+                typeTo = FileFormat.FILE_TYPE_HDF5;
             }
             else if (cmd.equals("Convert image file: JPEG to HDF4"))
             {
-                typeFrom = Tools.FILE_TYPE_JPEG;
-                typeTo = Tools.FILE_TYPE_HDF4;
+                typeFrom = FileFormat.FILE_TYPE_JPEG;
+                typeTo = FileFormat.FILE_TYPE_HDF4;
             }
             else if (cmd.equals("Convert image file: TIFF to HDF4"))
             {
-                typeFrom = Tools.FILE_TYPE_TIFF;
-                typeTo = Tools.FILE_TYPE_HDF4;
+                typeFrom = FileFormat.FILE_TYPE_TIFF;
+                typeTo = FileFormat.FILE_TYPE_HDF4;
             }
             else if (cmd.equals("Convert image file: PNG to HDF4"))
             {
-                typeFrom = Tools.FILE_TYPE_PNG;
-                typeTo = Tools.FILE_TYPE_HDF4;
+                typeFrom = FileFormat.FILE_TYPE_PNG;
+                typeTo = FileFormat.FILE_TYPE_HDF4;
             }
             else
                 return;
@@ -1278,18 +1316,26 @@ implements ViewManager, ActionListener, HyperlinkListener
         }
         else if (cmd.equals("HDF4 library"))
         {
+            FileFormat thefile = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4);
+            if (thefile == null)
+                return;
+
             JOptionPane.showMessageDialog(
                 this,
-                H4File.getLibversion(),
+                thefile.getLibversion(),
                 "HDFView",
                 JOptionPane.PLAIN_MESSAGE,
                 ViewProperties.getLargeHdfIcon());
         }
         else if (cmd.equals("HDF5 library"))
         {
+            FileFormat thefile = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+            if (thefile == null)
+                return;
+
             JOptionPane.showMessageDialog(
                 this,
-                H5File.getLibversion(),
+                thefile.getLibversion(),
                 "HDFView",
                 JOptionPane.PLAIN_MESSAGE,
                 ViewProperties.getLargeHdfIcon());
@@ -1450,10 +1496,12 @@ implements ViewManager, ActionListener, HyperlinkListener
         item = new JMenuItem( "HDF4");
         item.setActionCommand("Convert image file: JPEG to HDF4");
         item.addActionListener(this);
+        h4GUIs.add(item);
         imageSubmenu.add(item);
         item = new JMenuItem( "HDF5");
         item.setActionCommand("Convert image file: JPEG to HDF5");
         item.addActionListener(this);
+        h5GUIs.add(item);
         imageSubmenu.add(item);
         fileMenu.add(imageSubmenu);
 
@@ -1487,11 +1535,13 @@ implements ViewManager, ActionListener, HyperlinkListener
         item.setActionCommand("New HDF4 file");
         item.setMnemonic(KeyEvent.VK_4);
         item.addActionListener(this);
+        h4GUIs.add(item);
         newFileMenu.add(item);
         item = new JMenuItem( "HDF5");
         item.setActionCommand("New HDF5 file");
         item.setMnemonic(KeyEvent.VK_5);
         item.addActionListener(this);
+        h5GUIs.add(item);
         newFileMenu.add(item);
         fileMenu.add(newFileMenu);
 
@@ -1867,10 +1917,12 @@ implements ViewManager, ActionListener, HyperlinkListener
         item = new JMenuItem( "HDF4");
         item.setActionCommand("Convert image file: JPEG to HDF4");
         item.addActionListener(this);
+        h4GUIs.add(item);
         imageSubmenu.add(item);
         item = new JMenuItem( "HDF5");
         item.setActionCommand("Convert image file: JPEG to HDF5");
         item.addActionListener(this);
+        h5GUIs.add(item);
         imageSubmenu.add(item);
         menu.add(imageSubmenu);
 /*
@@ -1921,12 +1973,14 @@ implements ViewManager, ActionListener, HyperlinkListener
         item.setMnemonic(KeyEvent.VK_4);
         item.setActionCommand("HDF4 library");
         item.addActionListener(this);
+        h4GUIs.add(item);
         menu.add(item);
 
         item = new JMenuItem( "HDF5 Library Version");
         item.setMnemonic(KeyEvent.VK_5);
         item.setActionCommand("HDF5 library");
         item.addActionListener(this);
+        h5GUIs.add(item);
         menu.add(item);
 
         menu.addSeparator();
@@ -2061,15 +2115,15 @@ implements ViewManager, ActionListener, HyperlinkListener
 
         // if the exists in the recent file list, remvoe it first
         // and add it to the bottom to keep the recent file list sorted.
-        try {
+        if (recentFiles.contains(newFile))
             recentFiles.remove(newFile);
-        }
-        catch (Exception ex) {}
 
         // add the new file to the top.
         int size = recentFiles.size();
-        recentFiles.setSize(size+1);
-        for (int i=0; i<size; i++)
+        if (size >= ViewProperties.MAX_RECENT_FILES)
+            size = ViewProperties.MAX_RECENT_FILES;
+
+        for (int i=1; i<size; i++)
         {
             recentFiles.set(size-i, recentFiles.get(size-i-1));
         }
@@ -2113,7 +2167,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         {
             fileMenu.add(fileMenu.getItem(n-i-2), n-i-1);
         }
-            fileMenu.add(fileItem, n-size-1);
+        fileMenu.add(fileItem, n-size-1);
 
     }
 
@@ -2127,7 +2181,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         contentPane.add(frame);
 
         String fullPath = selectedObject.getPath()+selectedObject.getName();
-        String cmd = fullPath + selectedObject.getFID();
+        String cmd = "SHOW WINDOW"+selectedObject.getFID() + fullPath; // make the window to be uniquie: fid+path
 
 
         frame.setName(cmd); // data windows are identified by full path the file id
@@ -2255,7 +2309,7 @@ implements ViewManager, ActionListener, HyperlinkListener
     }
 
     /** Save the current file into HDF4.
-     *  Since HDF4 doesnot support packing. The source file is
+     *  Since HDF4 does not support packing. The source file is
      *  copied into the new file with the exact same content.
      */
     private void saveAsHDF4()
@@ -2272,7 +2326,7 @@ implements ViewManager, ActionListener, HyperlinkListener
             return;
         }
 
-        NewFileDialog dialog = new NewFileDialog(this, currentDir, false, treeView.getOpenFiles());
+        NewFileDialog dialog = new NewFileDialog(this, currentDir, FileFormat.FILE_TYPE_HDF4, treeView.getOpenFiles());
         dialog.show();
 
         if (!dialog.isFileCreated())
@@ -2366,7 +2420,8 @@ implements ViewManager, ActionListener, HyperlinkListener
             return;
         }
 
-        NewFileDialog dialog = new NewFileDialog(this, currentDir, true, treeView.getOpenFiles());
+        NewFileDialog dialog = new NewFileDialog(this, currentDir,
+            FileFormat.FILE_TYPE_HDF5, treeView.getOpenFiles());
         dialog.show();
 
         if (!dialog.isFileCreated())
@@ -2401,22 +2456,34 @@ implements ViewManager, ActionListener, HyperlinkListener
         if (newFile == null)
             return;
 
-        // copy attributes of the root group
-        Group srcGroup = (Group) ((DefaultMutableTreeNode)root).getUserObject();
-        Group dstGroup = (Group) ((DefaultMutableTreeNode)newFile.getRootNode()).getUserObject();
-        int srcID = srcGroup.open();
-        int dstID = dstGroup.open();
-        try { ((H5File)newFile).copyAttributes(srcID, dstID);
-        } catch (Exception ex) {}
-        srcGroup.close(srcID);
-        dstGroup.close(dstID);
-
         TreeNode pnode = newFile.getRootNode();
         pasteObject(objList, pnode, newFile);
 
+        Group srcGroup = (Group) ((DefaultMutableTreeNode)root).getUserObject();
+        Group dstGroup = (Group) ((DefaultMutableTreeNode)newFile.getRootNode()).getUserObject();
+        Object[] parameter = new Object[2];
+        Class classHOjbect = null;
+        Class[] parameterClass = new Class[2];
+        Method method = null;
+
+        // copy attributes of the root group
+        try {
+            parameter[0] = srcGroup;
+            parameter[1] = dstGroup;
+            classHOjbect = Class.forName("ncsa.hdf.object.HObject");
+            parameterClass[0] = parameterClass[1] = classHOjbect;
+            method = newFile.getClass().getMethod("copyAttributes", parameterClass);
+            method.invoke(newFile, parameter);
+        } catch (Exception ex) {showStatus(ex.toString());}
+
         // update reference datasets
-        try { H5File.updateReferenceDataset((H5File)srcGroup.getFileFormat(), (H5File)newFile);
-        } catch (Exception ex) {}
+        parameter[0] = srcGroup.getFileFormat();
+        parameter[1] = newFile;
+        parameterClass[0] = parameterClass[1] = parameter[0].getClass();
+        try {
+            method = newFile.getClass().getMethod("updateReferenceDataset", parameterClass);
+            method.invoke(newFile, parameter);
+        } catch (Exception ex) {showStatus(ex.toString());}
     }
 
     /** copy selected objects */
@@ -2437,8 +2504,30 @@ implements ViewManager, ActionListener, HyperlinkListener
 
         FileFormat srcFile = ((HObject)objectsToCopy.get(0)).getFileFormat();
         FileFormat dstFile = treeView.getSelectedFile();
+        FileFormat h5file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+        FileFormat h4file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4);
 
-        if ((srcFile instanceof H4File) && (dstFile instanceof H5File))
+        if (srcFile == null)
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(
+                this,
+                "Source file is null.",
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        else if (dstFile == null)
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(
+                this,
+                "Destination file is null.",
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        else if (srcFile.isThisType(h4file) && dstFile.isThisType(h5file))
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(
@@ -2448,7 +2537,7 @@ implements ViewManager, ActionListener, HyperlinkListener
                 JOptionPane.ERROR_MESSAGE);
             return;
         }
-        else if ((srcFile instanceof H5File) && (dstFile instanceof H4File))
+        else if (srcFile.isThisType(h5file) && dstFile.isThisType(h4file))
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(
@@ -2466,7 +2555,7 @@ implements ViewManager, ActionListener, HyperlinkListener
 
         String msg = "";
         int msgType = JOptionPane.QUESTION_MESSAGE;
-        if (srcFile instanceof H4File)
+        if (srcFile.isThisType(h4file))
         {
             msg = "WARNING: object can not be deleted after it is copied.\n\n";
             msgType = JOptionPane.WARNING_MESSAGE;
@@ -2537,10 +2626,7 @@ implements ViewManager, ActionListener, HyperlinkListener
             }
 
             try {
-                if (dstFile instanceof H5File)
-                    newNode = ((H5File)dstFile).copy(theObj, (H5Group)pgroup);
-                else
-                    newNode = ((H4File)dstFile).copy(theObj, (H4Group)pgroup);
+                newNode = dstFile.copy(theObj, pgroup);
             } catch (Exception ex)
             {
                 toolkit.beep();
@@ -2562,7 +2648,7 @@ implements ViewManager, ActionListener, HyperlinkListener
     private void removeSelectedObjects()
     {
         FileFormat theFile = treeView.getSelectedFile();
-        if (theFile instanceof H4File)
+        if (theFile.isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4)))
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(
@@ -2604,7 +2690,7 @@ implements ViewManager, ActionListener, HyperlinkListener
                     toolkit.beep();
                     JOptionPane.showMessageDialog(
                         this,
-                        "Unsupported operation: cannot delete the root.",
+                        "Unsupported operation: cannot delete the file root.",
                         getTitle(),
                         JOptionPane.ERROR_MESSAGE);
                     return;
@@ -2613,19 +2699,18 @@ implements ViewManager, ActionListener, HyperlinkListener
 
             try
             {
-                ((H5File)theFile).delete(theObj);
+                theFile.delete(theObj);
 
                 // remove data windows of this object
                 if (clist != null)
                 {
-                    frameName = theObj.getPath()+theObj.getName() + theObj.getFID();
+                    frameName = "SHOW WINDOW"+theObj.getFID()+theObj.getPath()+theObj.getName();
                     for (int i=0; i<clist.length; i++)
                     {
                         jif = (JInternalFrame)clist[i];
-                        if (jif.getName().equals(frameName))
+                        if (jif.getName().startsWith(frameName)) // if it is a group, remove all the data windows belongs to the group
                         {
                             ((DataObserver)jif).dispose();
-                            break;
                         }
                     }
                 }
@@ -2706,8 +2791,7 @@ implements ViewManager, ActionListener, HyperlinkListener
     {
         JInternalFrame jif = null;
         Component[] clist = contentPane.getComponents();
-        if (clist == null)
-            return;
+        if (clist == null)  return;
 
         for (int i=0; i<clist.length; i++)
         {
@@ -2715,7 +2799,7 @@ implements ViewManager, ActionListener, HyperlinkListener
             if (jif.getName().equals(name))
             {
                 contentPane.setSelectedFrame(jif);
-                jif.show();
+                jif.toFront();//.show();
                 break;
             }
         }

@@ -32,17 +32,17 @@ public class Attribute implements Metadata
     /**
      * The datatype of this attribute.
      */
-    private final int datatype;
+    private final Datatype type;
 
     /**
      * The rank of the data value of this attribute.
      */
-    private final int dataRank;
+    private int rank;
 
     /**
      * The dimension sizes of the data value of this attribute.
      */
-    private final long[] dataDims;
+    private long[] dims;
 
     /**
      * The data value of this attribute.
@@ -62,20 +62,19 @@ public class Attribute implements Metadata
      * @param type the data type of the attribute.
      * @param dims the dimension sizes of the data of the attribute.
      */
-    public Attribute(String name, int type, long[] dims)
+    public Attribute(String attrName, Datatype attrType, long[] attrDims)
     {
-        this.name = name;
-        this.datatype = type;
-        this.dataDims = dims;
+        name = attrName;
+        type = attrType;
+        dims = attrDims;
+        value = null;
+        rank = 0;
 
         if (dims != null)
-            this.dataRank = dims.length;
-        else
-            this.dataRank = 0;
+            rank = dims.length;
 
-        isUnsigned = (H5Datatype.isUnsigned(type) || H4Datatype.isUnsigned(type));
+        isUnsigned = (type.getDatatypeSign()==Datatype.SIGN_NONE);
 
-        this.value = null;
     }
 
     /**
@@ -107,7 +106,7 @@ public class Attribute implements Metadata
      */
     public int getRank()
     {
-        return dataRank;
+        return rank;
     }
 
     /**
@@ -115,15 +114,15 @@ public class Attribute implements Metadata
      */
     public long[] getDataDims()
     {
-        return dataDims;
+        return dims;
     }
 
     /**
      * Returns the datatype of the attribute.
      */
-    public int getType()
+    public Datatype getType()
     {
-        return datatype;
+        return type;
     }
 
     /**

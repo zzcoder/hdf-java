@@ -139,37 +139,13 @@ implements ActionListener
     // Implementing java.io.ActionListener
     public void actionPerformed(ActionEvent e)
     {
-        String cmd = e.getActionCommand();
-
-        if (cmd.equals("Open data"))
+       Object src = e.getSource();
+        if (src instanceof JMenuItem)
         {
-            try { viewer.showDataContent(true); }
-            catch (OutOfMemoryError err)
-            {
-                toolkit.beep();
-                JOptionPane.showMessageDialog(this,
-                    err,
-                    ((Frame)viewer).getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }
-        else if (cmd.equals("Open data as"))
-        {
-            try { viewer.showDataContent(false); }
-            catch (OutOfMemoryError err)
-            {
-                toolkit.beep();
-                JOptionPane.showMessageDialog(this,
-                    err,
-                    ((Frame)viewer).getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }
-        else if (cmd.equals("Show object properties"))
-        {
-            viewer.showDataInfo();
+            JMenuItem mitem = (JMenuItem)src;
+            java.awt.Container pitem = mitem.getParent();
+            if (pitem instanceof JPopupMenu)
+                viewer.actionPerformed(e);
         }
     }
 
@@ -191,36 +167,32 @@ implements ActionListener
             throw new java.io.IOException("File is already open - "+filename);
         }
 
-        if (H4File.isThisType(filename))
+        Iterator iterator = FileFormat.iterator();
+        while (iterator.hasNext())
         {
-            fileFormat = new H4File(filename, flag);
-        }
-        else if (H5File.isThisType(filename))
-        {
-            fileFormat = new H5File(filename, flag);
-        }
-        else
-        {
-            throw new UnsupportedOperationException("Unsupported format.");
-        }
-
-        if (fileFormat != null)
-        {
-            fileFormat.open();
-            fileRoot = fileFormat.getRootNode();
-            if (fileRoot != null)
+            FileFormat theformat = (FileFormat)iterator.next();
+            if (theformat.isThisType(filename))
             {
-                int[] childIndices = {root.getChildCount()};
-                ((DefaultMutableTreeNode)root).add(fileRoot);
-                treeModel.nodesWereInserted(root, childIndices);
-                tree.expandRow(tree.getRowCount()-1);
-                fileList.add(fileFormat);
-                viewer.showStatus(filename);
+                fileFormat = theformat.open(filename, flag);
+                break;
             }
         }
-        else
+
+        if (fileFormat == null)
         {
             throw new java.io.IOException("Open file failed - "+filename);
+        }
+
+        fileFormat.open();
+        fileRoot = (MutableTreeNode)fileFormat.getRootNode();
+        if (fileRoot != null)
+        {
+            int[] childIndices = {root.getChildCount()};
+            ((DefaultMutableTreeNode)root).add(fileRoot);
+            treeModel.nodesWereInserted(root, childIndices);
+            tree.expandRow(tree.getRowCount()-1);
+            fileList.add(fileFormat);
+            viewer.showStatus(filename);
         }
 
         return fileFormat;
@@ -483,6 +455,12 @@ implements ActionListener
             if (parentNode != null)
             {
                 treeModel.removeNodeFromParent(currentNode);
+
+                // add the two lines to fix bug in HDFView 1.2. Delete a subgroup and
+                // then copy the group to another group, the deleted group still exists.
+                Group pgroup = (Group)parentNode.getUserObject();
+                pgroup.removeFromMemberList((HObject)currentNode.getUserObject());
+
                 if (currentNode.equals(selectedNode))
                 {
                     selectedNode = null;
@@ -582,6 +560,54 @@ implements ActionListener
 
         menu.addSeparator();
 
+        item = new JMenuItem( "Save to File");
+        item.setMnemonic(KeyEvent.VK_S);
+        item.addActionListener(this);
+        item.setActionCommand("Save object to file");
+        menu.add(item);
+
+        menu.addSeparator();
+
+        JMenu newOjbectMenu = new JMenu("New");
+        menu.add(newOjbectMenu);
+
+        item = new JMenuItem( "Group", ViewProperties.getFoldercloseIcon());
+        item.addActionListener(this);
+        item.setActionCommand("Add group");
+        newOjbectMenu.add(item);
+
+        item = new JMenuItem( "Dataset", ViewProperties.getDatasetIcon());
+        item.addActionListener(this);
+        item.setActionCommand("Add dataset");
+        newOjbectMenu.add(item);
+
+        item = new JMenuItem( "Image", ViewProperties.getImageIcon());
+        item.addActionListener(this);
+        item.setActionCommand("Add image");
+        newOjbectMenu.add(item);
+
+        menu.addSeparator();
+
+        item = new JMenuItem( "Copy");
+        item.setMnemonic(KeyEvent.VK_C);
+        item.addActionListener(this);
+        item.setActionCommand("Copy object");
+        menu.add(item);
+
+        item = new JMenuItem( "Paste");
+        item.setMnemonic(KeyEvent.VK_P);
+        item.addActionListener(this);
+        item.setActionCommand("Paste object");
+        menu.add(item);
+
+        item = new JMenuItem( "Delete");
+        item.setMnemonic(KeyEvent.VK_D);
+        item.addActionListener(this);
+        item.setActionCommand("Cut object");
+        menu.add(item);
+
+        menu.addSeparator();
+
         item = new JMenuItem( "Properties");
         item.setMnemonic(KeyEvent.VK_P);
         item.addActionListener(this);
@@ -607,6 +633,23 @@ implements ActionListener
         {
             popupMenu.getComponent(0).setEnabled(true);
             popupMenu.getComponent(1).setEnabled(true);
+        }
+
+        if (selectedObject.getFileFormat().isReadOnly())
+        {
+            popupMenu.getComponent(3).setEnabled(false);
+            popupMenu.getComponent(5).setEnabled(false);
+            popupMenu.getComponent(7).setEnabled(false);
+            popupMenu.getComponent(8).setEnabled(false);
+            popupMenu.getComponent(9).setEnabled(false);
+        }
+        else
+        {
+            popupMenu.getComponent(3).setEnabled(true);
+            popupMenu.getComponent(5).setEnabled(true);
+            popupMenu.getComponent(7).setEnabled(true);
+            popupMenu.getComponent(8).setEnabled(true);
+            popupMenu.getComponent(9).setEnabled(true);
         }
 
         popupMenu.show((JComponent)e.getSource(), x, y);
@@ -703,12 +746,15 @@ implements ActionListener
             else if (theObject instanceof Group)
             {
                 Group g = (Group)theObject;
-                if (g.isRoot())
+                if (g.isRoot() &&
+                    g.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5)))
                 {
-                    if (g instanceof H4Group)
-                        openIcon = closedIcon = h4Icon;
-                    else
                         openIcon = closedIcon = h5Icon;
+                }
+                else if (g.isRoot() &&
+                    g.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4)))
+                {
+                        openIcon = closedIcon = h4Icon;
                 }
                 else
                 {

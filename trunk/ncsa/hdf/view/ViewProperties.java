@@ -92,7 +92,7 @@ public class ViewProperties extends Properties
     public ViewProperties(String viewRoot)
     {
         super();
-        mrf = new Vector();
+        mrf = new Vector(MAX_RECENT_FILES);
         rootDir = viewRoot;
 
         // find the property file
@@ -485,6 +485,7 @@ public class ViewProperties extends Properties
             for (int i=0; i<minSize; i++)
             {
                 theFile = (String)mrf.elementAt(size-minSize+i);
+
                 if (theFile != null && theFile.length()>0)
                  put("recent.file"+i, theFile);
             }

@@ -76,6 +76,8 @@ implements ActionListener, ItemListener
 
     private boolean isTrueColorImage;
 
+    private boolean isH5;
+
     private Choice choices[];
 
     private JLabel maxLabels[];
@@ -110,11 +112,13 @@ implements ActionListener, ItemListener
         else
             setTitle("Dataset Selection - "+dataset.getPath()+dataset.getName());
 
+        isH5 = dataset.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
+
         rank = dataset.getRank();
         if (rank <=0 ) dataset.init();
-        if (dataset instanceof H5ScalarDS)
+        if (isH5 && (dataset instanceof ScalarDS))
         {
-            byte[] palRefs = ((H5ScalarDS)dataset).getPaletteRefs();
+            byte[] palRefs = ((ScalarDS)dataset).getPaletteRefs();
             if (palRefs != null && palRefs.length > 8)
                 numberOfPalettes = palRefs.length/8;
         }
@@ -441,20 +445,11 @@ implements ActionListener, ItemListener
     {
         // set the imagebutton state
         boolean isImage = false;
-        if (dataset instanceof H4GRImage)
+        if (dataset instanceof ScalarDS)
         {
-            isImage = true;
-            H4GRImage h4image = (H4GRImage)dataset;
-            int n = h4image.getComponentCount();
-            if (n >= 3) isTrueColorImage = true;
-        }
-        else if (dataset instanceof H5ScalarDS)
-        {
-            H5ScalarDS h5sd = (H5ScalarDS)dataset;
-            isImage = h5sd.isImage();
-            int interlace = h5sd.getInterlace();
-            isTrueColorImage = (interlace == ScalarDS.INTERLACE_PIXEL ||
-                interlace == ScalarDS.INTERLACE_PLANE);
+            ScalarDS sd = (ScalarDS)dataset;
+            isImage = sd.isImage();
+            isTrueColorImage = sd.isTrueColor();
         }
         else if (dataset instanceof CompoundDS)
         {
@@ -476,7 +471,7 @@ implements ActionListener, ItemListener
             startFields[i].setText(String.valueOf(start[idx]));
             endFields[i].setText(String.valueOf(endIdx));
 
-            if (dataset instanceof H4Vdata)
+            if (!isH5 && (dataset instanceof CompoundDS))
                 strideFields[i].setEnabled(false);
             else
                 strideFields[i].setText(String.valueOf(stride[idx]));
@@ -549,7 +544,7 @@ implements ActionListener, ItemListener
         else
         {
             // multuple palettes attached
-            pal = ((H5ScalarDS)dataset).readPalette(palChoice-1);
+            pal = ((ScalarDS)dataset).readPalette(palChoice-1);
         }
 
         ((ScalarDS)dataset).setPalette(pal);

@@ -62,7 +62,7 @@ implements ActionListener, ItemListener
 
         newObject = null;
 
-        isH5 = (pGroup instanceof H5Group);
+        isH5 = pGroup.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
         fileFormat = pGroup.getFileFormat();
         toolkit = Toolkit.getDefaultToolkit();
 
@@ -308,18 +308,11 @@ implements ActionListener, ItemListener
 
         try
         {
-            if (isH5)
-            {
-                Datatype datatype = new H5Datatype(tclass, tsize, torder, tsign);
-                dataset = H5ScalarDS.create(fileFormat, name, pgroup, datatype, dims, dims, null, -1, null);
-                H5File.createImageAttributes(dataset, interlace);
-                dataset.init();
-            }
-            else
-            {
-                Datatype datatype = new H4Datatype(tclass, tsize, torder, tsign);
-                dataset = H4GRImage.create(fileFormat, name, pgroup, datatype, dims, dims, null, -1, ncomp, interlace, null);
-            }
+
+            Datatype datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign);
+            dataset = fileFormat.createImage(fileFormat, name, pgroup, datatype,
+                dims, dims, null, -1, ncomp, interlace, null);
+            dataset.init();
         } catch (Exception ex)
         {
             toolkit.beep();

@@ -121,29 +121,17 @@ implements TextObserver
         if (!(dataset instanceof ScalarDS))
             return;
 
-        if (dataset instanceof H5ScalarDS)
+        for (int i=0; i<text.length; i++)
         {
-            int maxLength = H5Datatype.getDatatypeSize(dataset.getDataType());
-            for (int i=0; i<text.length; i++)
-            {
-                text[i] = textAreas[i].getText();
-
-                if (text[i].length() > maxLength)
-                {
-                    text[i] = text[i].substring(0, maxLength-1);
-                    textAreas[i].setText(text[i]);
-                }
-            }
-        }
-        else
-        {
-            for (int i=0; i<text.length; i++)
-                text[i] = textAreas[i].getText();
+            text[i] = textAreas[i].getText();
         }
 
         try { dataset.write(); }
         catch (Exception ex) {}
 
+        // refresh text in memory. After writing, text is cut off to its max string length
+        for (int i=0; i<text.length; i++)
+            textAreas[i].setText(text[i]);
     }
 
     public void dispose()

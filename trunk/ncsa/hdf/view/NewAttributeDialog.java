@@ -49,6 +49,8 @@ implements ActionListener, ItemListener, HyperlinkListener
     /** TextField for entering the attribute value. */
     private JTextField valueField;
 
+    private FileFormat fileFormat;
+
     /** TextField for entering the length of the data array or string. */
     private JTextField lengthField;
 
@@ -74,8 +76,9 @@ implements ActionListener, ItemListener, HyperlinkListener
 
         hObject = obj;
         newAttribute = null;
-        isH5 = (obj.getFileFormat() instanceof H5File);
+        isH5 = obj.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
         helpDialog = null;
+        fileFormat = obj.getFileFormat();
 
         typeChoice = new Choice();
         typeChoice.add("string");
@@ -88,8 +91,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         typeChoice.add("long (64-bit)");
         typeChoice.add("float");
         typeChoice.add("double");
-        if (hObject.getFileFormat() instanceof H5File)
-            typeChoice.add("object reference");
+        if (isH5) typeChoice.add("object reference");
         typeChoice.addItemListener(this);
 
         JPanel contentPane = (JPanel)getContentPane();
@@ -461,7 +463,7 @@ implements ActionListener, ItemListener, HyperlinkListener
                 }
             }
             value = ref;
-            tclass = H5Datatype.CLASS_REFERENCE;
+            tclass = Datatype.CLASS_REFERENCE;
             tsize = 8;
             torder = Datatype.NATIVE;
         }
@@ -489,13 +491,19 @@ implements ActionListener, ItemListener, HyperlinkListener
         }
 
         Datatype datatype = null;
-        if (isH5)
-            datatype = new H5Datatype(tclass, tsize, torder, tsign);
-        else
-            datatype = new H4Datatype(tclass, tsize, torder, tsign);
+
+        try { datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign); }
+        catch (Exception ex)
+        {
+            JOptionPane.showMessageDialog(this,
+                ex,
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
 
         long[] dims = {arraySize};
-        Attribute attr = new Attribute(attrName, datatype.toNative(), dims);
+        Attribute attr = new Attribute(attrName, datatype, dims);
         attr.setValue(value);
 
         try { hObject.writeMetadata(attr); }

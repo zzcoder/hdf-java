@@ -343,12 +343,27 @@ implements TableObserver
             JOptionPane.ERROR_MESSAGE);
             return;
         }
+/*
+Object[] options = { "OK", "CANCEL" };
+JOptionPane.showOptionDialog(null, "Click OK to continue", "Warning",
+JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+null, options, options[0]);
+*/
+        Object[] options = { "Column", "Row", "Cancel" };
+        int option = JOptionPane.showOptionDialog(
+                this,
+                "Do you want to draw line plot by column or row?",
+                getTitle(),
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]);
 
-        int op = JOptionPane.showConfirmDialog(this,
-            "Do you want to draw data by column?\n\"Yes\" for column plot.\n\"No\" for row plot.",
-            getTitle(),
-            JOptionPane.YES_NO_OPTION);
-        boolean isRowPlot = (op == JOptionPane.NO_OPTION);
+        if (option == 2)
+            return; // cancel the line plot action
+
+        boolean isRowPlot = (option == 1);
 
         int nrow = table.getRowCount();
         int ncol = table.getColumnCount();
@@ -978,7 +993,7 @@ implements TableObserver
         String fname = choosedFile.getAbsolutePath();
 
         // check if the file is in use
-        List fileList = ((HDFView)viewer).getOpenFiles();
+        List fileList = viewer.getOpenFiles();
         if (fileList != null)
         {
             FileFormat theFile = null;

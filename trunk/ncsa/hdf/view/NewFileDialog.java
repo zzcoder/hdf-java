@@ -40,7 +40,7 @@ implements ActionListener
     private JTextField fileInputField;
 
     /** flag if the new file is an HDF5 */
-    private boolean isH5 ;
+    private String fileType;
 
     /** The current working directory*/
     private String currentDir;
@@ -57,39 +57,30 @@ implements ActionListener
     /** constructs an NewFileDialog.
      * @param owner The owner of the dialog.
      * @param dir The default directory of the new file.
-     * @param isHDF5 The flag to indicate if the new file is an HDF5.
+     * @param type The type of file format.
      * @param openFiles The list of current open files.
      *        It is used to make sure the new file cannot be any file in use.
      */
     public NewFileDialog(
         Frame owner,
         String dir,
-        boolean isHDF5,
+        String type,
         List openFiles)
     {
         super (owner, "New File...", true);
 
         currentDir = dir;
         viewDir = dir;
-        isH5 = isHDF5;
+        fileType = type;
         fileCreated = false;
         fileList = openFiles;
         toolkit = Toolkit.getDefaultToolkit();
+        setTitle("New "+ fileType + " File ...");
 
-        if (isH5)
-            setTitle("New HDF5 File ...");
-        else
-            setTitle("New HDF4 File ...");
+        if (currentDir != null) currentDir += File.separator;
+        else currentDir = "";
 
-        if (currentDir != null)
-            currentDir += File.separator;
-        else
-            currentDir = "";
-
-        if (isH5)
-            fileInputField = new JTextField(currentDir+"untitled.h5");
-        else
-            fileInputField = new JTextField(currentDir+"untitled.hdf");
+        fileInputField = new JTextField(currentDir+"untitled."+fileType.toLowerCase());
 
         // layout the components
         JPanel contentPane = (JPanel)getContentPane();
@@ -250,10 +241,7 @@ implements ActionListener
         currentDir = f.getParent();
         try
         {
-            if (isH5)
-                H5File.create(fname);
-            else
-                H4File.create(fname);
+            FileFormat.getFileFormat(fileType).create(fname);
         } catch (Exception ex)
         {
             toolkit.beep();

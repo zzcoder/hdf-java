@@ -19,34 +19,43 @@
  */
 public abstract class Datatype
 {
-    final static public int NATIVE = 10000;
-    final static public int CLASS_INTEGER = 10001;
-    final static public int CLASS_FLOAT = 10002;
-    final static public int CLASS_CHAR = 10003;
-    final static public int CLASS_STRING = 10004;
-    final static public int ORDER_BE = 10010;
-    final static public int ORDER_LE = 10011;
-    final static public int SIGN_NONE = 10020;
+    final static public int CLASS_INTEGER = 0;
+    final static public int CLASS_FLOAT = 1;
+    final static public int CLASS_CHAR = 2;
+    final static public int CLASS_STRING = 3;
+    final static public int CLASS_REFERENCE = 7;
+    final static public int CLASS_ERROR = -1;
+
+    final static public int NATIVE = 10;
+    final static public int ORDER_BE = 11;
+    final static public int ORDER_LE = 12;
+    final static public int SIGN_NONE = 13;
 
     /**
      * The class of the datatype.
      */
-    private int datatypeClass;
+    protected int datatypeClass;
 
     /**
-     * The size of the datatype.
+     * The size (in bytes)  of the datatype.
      */
-    private int datatypeSize;
+    protected int datatypeSize;
 
     /**
      * The byte order of the datatype.
      */
-    private int datatypeOrder;
+    protected int datatypeOrder;
 
     /**
      * The sign of the datatype.
      */
-    private int datatypeSign;
+    protected int datatypeSign;
+
+    /**
+     * The native datatype.
+     */
+    protected int nativeType;
+
 
     /**
      * Create an Datatype with specified class, size, byte order and sign.
@@ -62,6 +71,23 @@ public abstract class Datatype
         datatypeSize = tsize;
         datatypeOrder = torder;
         datatypeSign = tsign;
+        nativeType = -1;
+    }
+
+    /**
+     * Create a Datatype with a given HDF native datatype.
+     * <p>
+     * @param nativeType the hdf native datatype.
+     */
+    public Datatype(int type)
+    {
+        datatypeClass = CLASS_ERROR;
+        datatypeSize = NATIVE;
+        datatypeOrder = NATIVE;
+        datatypeSign = NATIVE;
+        nativeType = type;
+
+        fromNative(nativeType);
     }
 
     /**
@@ -97,7 +123,24 @@ public abstract class Datatype
     }
 
     /**
-     * Converts this datatype to native HDF datatype.
+     * Converts this datatype to HDF native datatype.
      */
     public abstract int toNative();
+
+    /**
+     * Specify this datatype with a given HDF native datatype.
+     */
+    public abstract void fromNative(int nativeType);
+
+    /**
+     *  Returns the short description of this datatype.
+     */
+    public abstract String getDatatypeDescription();
+
+    /**
+     *  Checks if this datatype is an unsigned integer.
+     *  @return True is the datatype is an unsigned integer; otherwise returns false.
+     */
+    public abstract boolean isUnsigned();
+
 }

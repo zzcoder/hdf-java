@@ -46,8 +46,6 @@ implements ActionListener
     /** a list of current groups */
     private List groupList;
 
-    private boolean isH5;
-
     private HObject newObject;
 
     private FileFormat fileFormat;
@@ -66,7 +64,6 @@ implements ActionListener
 
         newObject = null;
 
-        isH5 = (pGroup instanceof H5Group);
         fileFormat = pGroup.getFileFormat();
         toolkit = Toolkit.getDefaultToolkit();
 
@@ -196,10 +193,7 @@ implements ActionListener
         Group obj = null;
         try
         {
-            if (isH5)
-                obj = H5Group.create(fileFormat, name, pgroup);
-            else
-                obj = H4Group.create(fileFormat, name, pgroup);
+            obj = fileFormat.createGroup(fileFormat, name, pgroup);
         } catch (Exception ex)
         {
             toolkit.beep();
