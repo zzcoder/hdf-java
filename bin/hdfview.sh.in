@@ -3,10 +3,10 @@
 # Set up default variable values if not supplied by the user.
 
 # where the HDFView is installed
-set HDFVIEW_HOME=/afs/ncsa.uiuc.edu/projects/hdf/java/java4/mcgrath/verbena/Java
+set HDFVIEW_HOME=@JH45INST@
 
 # where Java is installed (requires jdk1.3 or above)
-set JAVAPATH=/opt/jdk1.4.1/bin
+set JAVAPATH=@JAVABIN@
 
 ###############################################################################
 #            DO NOT MODIFY BELOW THIS LINE
