@@ -400,4 +400,4 @@ AC_SUBST(ZLIB)
 #AC_SUBST(VERSSTRING)
 
 
-AC_OUTPUT(Makefile native/Makefile native/h4toh5lib/Makefile native/hdflib/Makefile native/hdf5lib/Makefile test/Makefile test/h4toh5/Makefile test/h4toh5/apitest.sh test/h4toh5/imagetest.sh test/h4toh5/nametest.sh test/h4toh5/sdstest.sh test/h4toh5/vdatatest.sh test/h4toh5/vgrouptest.sh test/h4toh5/runtests.sh)
+AC_OUTPUT(Makefile native/Makefile native/h4toh5lib/Makefile native/hdflib/Makefile native/hdf5lib/Makefile test/Makefile test/h4toh5/Makefile test/h4toh5/apitest.sh test/h4toh5/imagetest.sh test/h4toh5/nametest.sh test/h4toh5/sdstest.sh test/h4toh5/vdatatest.sh test/h4toh5/vgrouptest.sh test/h4toh5/runtests.sh test/object/testh4file.sh test/object/testh5file.sh test/object/Makefile test/object/runtests.sh)
