@@ -35,14 +35,26 @@ public class H5Group extends Group
      */
     private List attributeList;
 
+    /** The default object ID for HDF5 objects */
+    private final static long[] DEFAULT_OID = {0};
+
+    /**
+     * Constructs an HDF5 group with specific name, path, and parent.
+     * <p>
+     * @param fileFormat the file which containing the group.
+     * @param name the name of this group.
+     * @param path the full path of this group.
+     * @param parent the parent of this group.
+     * @param oid the unique identifier of this data object.
+     */
     public H5Group(
         FileFormat fileFormat,
         String name,
         String path,
         Group parent,
-        long[] oid)
+        long[] theID)
     {
-        super (fileFormat, name, path, parent, oid);
+        super (fileFormat, name, path, parent, ((theID == null) ? DEFAULT_OID : theID));
     }
 
     // Implementing DataFormat
@@ -141,15 +153,19 @@ public class H5Group extends Group
      * @param pgroup the parent group of the new group.
      * @return the new group if successful. Otherwise returns null.
      */
-    public static H5Group create(FileFormat file, String name, Group pgroup)
+    public static H5Group create(String name, Group pgroup)
         throws Exception
     {
         H5Group group = null;
         String fullPath = null;
 
-        if (file == null ||
-            name == null ||
-            pgroup == null)
+        if (pgroup == null ||
+            name == null)
+            return null;
+
+        H5File file = (H5File)pgroup.getFileFormat();
+
+        if (file == null)
             return null;
 
         String path = HObject.separator;
@@ -170,6 +186,56 @@ public class H5Group extends Group
         group = new H5Group(file, name, path, pgroup, oid);
 
         return group;
+    }
+
+    /**
+     * Sets the name of the data object.
+     * <p>
+     * @param newName the new name of the object.
+     */
+    public void setName (String newName) throws Exception
+    {
+        int linkType = HDF5Constants.H5G_LINK_HARD;
+
+        String currentFullPath = getPath()+getName();
+        String newFullPath = getPath()+newName;
+
+        H5.H5Glink(getFID(), linkType, currentFullPath, newFullPath);
+        try { H5.H5Gunlink(getFID(), currentFullPath); } catch (Exception ex) {}
+
+        super.setName(newName);
+
+        List members = this.getMemberList();
+        if (members == null) return;
+
+        int n = members.size();
+        HObject obj = null;
+        for (int i=0; i<n; i++)
+        {
+            obj = (HObject)members.get(i);
+            obj.setPath(getPath()+newName+HObject.separator);
+        }
+    }
+
+    /**
+     * Sets the path of the data object.
+     * <p>
+     * @param newPath the new path of the object.
+     */
+    public void setPath (String newPath) throws Exception
+    {
+        super.setPath(newPath);
+
+        List members = this.getMemberList();
+        if (members == null) return;
+
+        int n = members.size();
+        HObject obj = null;
+        for (int i=0; i<n; i++)
+        {
+            obj = (HObject)members.get(i);
+            obj.setPath(getPath()+getName()+HObject.separator);
+        }
     }
 
 }

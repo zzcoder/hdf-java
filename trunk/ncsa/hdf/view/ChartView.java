@@ -235,6 +235,8 @@ implements ActionListener
     /** The canvas that paints the data lines. */
     public final class ChartPanel extends JComponent
     {
+        java.text.DecimalFormat format = new java.text.DecimalFormat("0.00E0");
+
         /**
         * Paints the plot components.
         */
@@ -271,7 +273,7 @@ implements ActionListener
             if (isInteger)
                 g.drawString(String.valueOf((int)y), 0, h+8);
             else
-                g.drawString(String.valueOf((float)y), 0, h+8);
+                g.drawString(format.format(y), 0, h+8);//g.drawString(String.valueOf((float)y), 0, h+8);
 
             g.drawString(String.valueOf(x), xp-5, h+gap);
             for (int i=0; i<10; i++)
@@ -285,7 +287,7 @@ implements ActionListener
                 if (isInteger)
                     g.drawString(String.valueOf((int)y), 0, h-yp+8);
                 else
-                    g.drawString(String.valueOf((float)y), 0, h-yp+8);
+                    g.drawString(format.format(y), 0, h-yp+8);//g.drawString(String.valueOf((float)y), 0, h-yp+8);
                 g.drawString(String.valueOf(x), xp-5, h+gap);
             }
 

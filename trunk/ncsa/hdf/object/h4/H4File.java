@@ -64,6 +64,8 @@ public class H4File extends FileFormat
 
     private boolean isReadOnly;
 
+    private boolean isNetCDF = false;
+
     /**
      * The SDS interface identifier.
      * The identifier is returned by SDstart(fname, flag), which initializes the
@@ -135,7 +137,8 @@ public class H4File extends FileFormat
     }
 
     /**
-     * Checks if the given file is an HDF4 file.
+     * Checks if the given file is an HDF4 file or netCDF.
+     * HDF4 library supports netCDF version 2.3.2. It only supports SDS APIs.
      * <p>
      * @param filename the file to be checked.
      * @return true if the given file is an HDF4 file; otherwise returns false.
@@ -150,6 +153,9 @@ public class H4File extends FileFormat
         {
             isH4 = false;
         }
+
+        if (!isH4) // check if it is a netCDF file
+            isH4 = isNetCDF(filename);
 
         return isH4;
     }
@@ -184,20 +190,21 @@ public class H4File extends FileFormat
                 throw new HDFException("Cannot write file, try open as read-only -- "+fullFileName);
         }
 
-        fid = HDFLibrary.Hopen( fullFileName, flag);
+        isNetCDF = isNetCDF(fullFileName);
+        if (isNetCDF) isReadOnly = true; // read only for netCDF
 
-        if ( fid>=0 )
-        {
-            try
-            {
-                HDFLibrary.Vstart(fid);
-                grid = HDFLibrary.GRstart(fid);
-                sdid = HDFLibrary.SDstart(fullFileName, flag);
-            } catch (HDFException ex) {}
-
-            // load the file hierarchy
-            rootNode = loadTree();
+        // only support SDS APIs for netCDF
+        if (isNetCDF)
+            fid = 0;
+        else {
+            fid = HDFLibrary.Hopen( fullFileName, flag);
+            HDFLibrary.Vstart(fid);
+            grid = HDFLibrary.GRstart(fid);
         }
+        sdid = HDFLibrary.SDstart(fullFileName, flag);
+
+        // load the file hierarchy
+        rootNode = loadTree();
 
         return fid;
     }
@@ -261,9 +268,9 @@ public class H4File extends FileFormat
         return new H4File(fileName, FileFormat.WRITE);
     }
 
-    public Group createGroup(FileFormat file, String name, Group pgroup) throws Exception
+    public Group createGroup(String name, Group pgroup) throws Exception
     {
-        return H4Group.create(file, name, pgroup);
+        return H4Group.create(name, pgroup);
     }
 
     public Datatype createDatatype(
@@ -276,7 +283,6 @@ public class H4File extends FileFormat
     }
 
     public Dataset createScalarDS(
-        FileFormat file,
         String name,
         Group pgroup,
         Datatype type,
@@ -286,11 +292,10 @@ public class H4File extends FileFormat
         int gzip,
         Object data) throws Exception
     {
-        return H4SDS.create(file, name, pgroup, type, dims, maxdims, chunks, gzip, data);
+        return H4SDS.create(name, pgroup, type, dims, maxdims, chunks, gzip, data);
     }
 
     public Dataset createImage(
-        FileFormat file,
         String name,
         Group pgroup,
         Datatype type,
@@ -302,7 +307,7 @@ public class H4File extends FileFormat
         int interlace,
         Object data) throws Exception
     {
-        H4GRImage dataset = H4GRImage.create(file, name, pgroup, type, dims, maxdims, chunks, gzip, ncomp, interlace, data);
+        H4GRImage dataset = H4GRImage.create(name, pgroup, type, dims, maxdims, chunks, gzip, ncomp, interlace, data);
 
         return dataset;
     }
@@ -591,6 +596,7 @@ public class H4File extends FileFormat
         if (b)
         {
             n = argv[0];
+
             for (int i=0; i<n; i++)
             {
                 // no duplicate object at top level
@@ -859,7 +865,13 @@ public class H4File extends FileFormat
         try
         {
             id = HDFLibrary.SDselect(sdid, index);
-            ref = HDFLibrary.SDidtoref(id);
+            if (isNetCDF)
+            {
+                ref = index; //HDFLibrary.SDidtoref(id) fails for netCDF
+                tag = H4SDS.DFTAG_NDG_NETCDF;
+            }
+            else
+                ref = HDFLibrary.SDidtoref(id);
             HDFLibrary.SDgetinfo(id, objName, tmpInfo, sdInfo);
             isCoordvar = HDFLibrary.SDiscoordvar(id);
         } catch (HDFException ex)
@@ -1315,6 +1327,39 @@ public class H4File extends FileFormat
         ver += vers[0] + "." + vers[1] +"."+vers[2];
 
         return ver;
+    }
+
+    /** HDF4 library supports netCDF version 2.3.2. It only supports SDS APIs.*/
+    private boolean isNetCDF(String filename)
+    {
+        boolean isnetcdf = false;
+        java.io.RandomAccessFile raf = null;
+
+        try { raf = new java.io.RandomAccessFile(filename, "r"); }
+        catch (Exception ex) { raf = null; }
+
+        if (raf == null) return false;
+
+        byte[] header = new byte[4];
+        try { raf.read(header); }
+        catch (Exception ex) { header = null; }
+
+        if (header != null)
+        {
+            if (
+                // netCDF
+               (header[0]==67 &&
+                header[1]==68 &&
+                header[2]==70 &&
+                header[3]==1) )
+                isnetcdf = true;
+            else
+                isnetcdf = false;
+        }
+
+        try { raf.close();} catch (Exception ex) {}
+
+        return isnetcdf;
     }
 
 }

@@ -26,6 +26,8 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.MouseEvent;
 import java.awt.Toolkit;
+import java.awt.Color;
+
 
 /**
  * TableView displays an HDF dataset as a two-dimensional table.
@@ -83,12 +85,16 @@ implements TableObserver
 
     private boolean isReadOnly;
 
+    private boolean isDisplayTypeChar;
+
+    private boolean isTransposed;
+
     /**
      * Constructs an TableView.
      * <p>
      * @param theView the main HDFView.
      */
-    public TableView(ViewManager theView)
+    public TableView(ViewManager theView, boolean isDisplayChar, boolean transposed)
     {
         super();
         setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
@@ -97,6 +103,7 @@ implements TableObserver
         toolkit = Toolkit.getDefaultToolkit();
         isValueChanged = false;
         isReadOnly = false;
+        isTransposed = transposed;
 
         HObject hobject = (HObject)viewer.getSelectedObject();
         if (hobject == null || !(hobject instanceof Dataset))
@@ -107,6 +114,8 @@ implements TableObserver
         dataset = (Dataset)hobject;
         isReadOnly = dataset.getFileFormat().isReadOnly();
 
+        isDisplayTypeChar = (isDisplayChar && dataset.getDatatype().getDatatypeSize()==1);
+
         // create the table and its columnHeader
         if (dataset instanceof ScalarDS)
         {
@@ -115,6 +124,7 @@ implements TableObserver
         }
         else if (dataset instanceof CompoundDS)
         {
+            isTransposed = false; // disable transpose for compound dataset
             this.setFrameIcon(ViewProperties.getTableIcon());
             table = createTable((CompoundDS)dataset);
         }
@@ -126,10 +136,10 @@ implements TableObserver
         }
 
         ColumnHeader columnHeaders = new ColumnHeader(table);
+        table.setTableHeader(columnHeaders);
         table.setCellSelectionEnabled(true);
         table.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
-        table.setTableHeader(columnHeaders);
-        table.setGridColor(java.awt.Color.gray);
+        table.setGridColor(Color.gray);
 
         // add the table to a scroller
         JScrollPane scroller = new JScrollPane(table);
@@ -146,13 +156,14 @@ implements TableObserver
 
         cellLabel = new JLabel("");
         Dimension dim = cellLabel.getPreferredSize();
-        dim.width = 60;
+        dim.width = 80;
         cellLabel.setPreferredSize( dim );
         cellLabel.setHorizontalAlignment(JLabel.RIGHT);
         cellValueField = new JTextArea();
         cellValueField.setLineWrap(true);
         cellValueField.setWrapStyleWord(true);
         cellValueField.setEditable(false);
+        cellValueField.setBackground(new Color(220, 220, 220));
         JPanel valuePane = new JPanel();
         valuePane.setLayout(new BorderLayout());
         valuePane.add(cellLabel, BorderLayout.WEST);
@@ -541,15 +552,25 @@ null, options, options[0]);
         long[] dims = d.getSelectedDims();
 
         // put one-dimensional data at one column table
-        if (rank == 1)
+        if (isTransposed)
         {
-            rows = (int)dims[0];
-            cols = 1;
+            cols = (int)dims[0];
+            rows = 1;
+            if (rank > 1)
+            {
+                cols = d.getHeight();
+                rows = d.getWidth();
+            }
         }
         else
         {
-            rows = d.getHeight();
-            cols = d.getWidth();
+            rows = (int)dims[0];
+            cols = 1;
+            if (rank > 1)
+            {
+                rows = d.getHeight();
+                cols = d.getWidth();
+            }
         }
 
         dataValue = null;
@@ -575,11 +596,28 @@ null, options, options[0]);
         int cIndex = cName.lastIndexOf("[");
         if (cIndex >= 0 ) NT = cName.charAt(cIndex+1);
 
+        // convert nubmerical data into char
+        // only possible cases are byte[] and short[] (converted from unsigned byte)
+        if (isDisplayTypeChar && (NT == 'B' || NT == 'S'))
+        {
+            int n = Array.getLength(dataValue);
+            char[] charData = new char[n];
+            for (int i=0; i<n; i++)
+            {
+                if (NT == 'B')
+                    charData[i] = (char)Array.getByte(dataValue, i);
+                else if (NT == 'S')
+                    charData[i] = (char)Array.getShort(dataValue, i);
+            }
+
+            dataValue = charData;
+        }
+
         String columnNames[] = new String[cols];
         long[] startArray = dataset.getStartDims();
         long[] strideArray = dataset.getStride();
         int[] selectedIndex = dataset.getSelectedIndex();
-        int start = 1;
+        int start = 0;
         int stride = 1;
 
         if (rank > 1)
@@ -590,7 +628,7 @@ null, options, options[0]);
 
         for (int i=0; i<cols; i++)
         {
-            columnNames[i] = String.valueOf(start+i*stride);
+            columnNames[i] = String.valueOf(start+(i+1)*stride);
         }
 
         DefaultTableModel tableModel =  new DefaultTableModel(
@@ -599,7 +637,10 @@ null, options, options[0]);
         {
             public Object getValueAt(int row, int column)
             {
-                return Array.get(dataValue, row*getColumnCount()+column);
+                if (isTransposed)
+                    return Array.get(dataValue, column*getRowCount()+row);
+                else
+                    return Array.get(dataValue, row*getColumnCount()+column);
             }
         };
 
@@ -607,7 +648,10 @@ null, options, options[0]);
         {
             public boolean isCellEditable( int row, int col )
             {
-                return !isReadOnly;
+                if (isReadOnly || isDisplayTypeChar)
+                    return false;
+                else
+                    return true;
             }
 
             public void editingStopped(ChangeEvent e)
@@ -623,7 +667,9 @@ null, options, options[0]);
                     CellEditor editor = (CellEditor)source;
                     String cellValue = (String)editor.getCellEditorValue();
 
-                    try { updateValueInMemory(cellValue, row, col); }
+                    try {
+                        updateValueInMemory(cellValue, row, col);
+                    }
                     catch (Exception ex)
                     {
                         toolkit.beep();
@@ -694,45 +740,62 @@ null, options, options[0]);
            !(dataValue instanceof List) )
             return null;
 
+        String[] subColumnNames = columnNames;
+        int columns = d.getWidth();
+        if (columns > 1)
+        {
+            // multi-dimension compound dataset
+            subColumnNames = new String[columns*columnNames.length];
+            int halfIdx = columnNames.length/2;
+            for (int i=0; i<columns; i++) {
+                for (int j=0; j<columnNames.length; j++) {
+                    if (j == halfIdx)
+                        subColumnNames[i*columnNames.length+j] = i+"\n "+columnNames[j];
+                    else
+                        subColumnNames[i*columnNames.length+j] = " \n "+columnNames[j];
+                }
+            }
+        }
+
         DefaultTableModel tableModel =  new DefaultTableModel(
-            columnNames,
+            subColumnNames,
             rows)
         {
             List list = (List)dataValue;
             int orders[] = ((CompoundDS)dataset).getSelectedMemberOrders();
             StringBuffer stringBuffer = new StringBuffer();
+            int nFields = list.size();
+            int nRows = getRowCount();
+            int nSubColumns = (nFields>0) ? getColumnCount()/nFields : 0;
 
-            public Object getValueAt(int row, int column)
+            public Object getValueAt(int row, int col)
             {
-                Object cellValue = null;
-                Object colValue = list.get(column);
+                int column = col;
+                int rowIdx = 0;
 
-                if (colValue == null)
+                if (nSubColumns > 1) // multi-dimension compound dataset
                 {
-                    return "Null";
-                }
-
-                int cellSize = Array.getLength(colValue)/getRowCount();
-                if (Array.getLength(colValue) == getRowCount())
-                {
-                    cellValue = Array.get(colValue, row);
-                }
-                else
-                {
-                    // cell value is an array
-                    stringBuffer.setLength(0); // clear the old string
+                    int colIdx = col/nFields;
+                    column = col - colIdx*nFields;
                     int n = orders[column];
-                    stringBuffer.append(Array.get(colValue, row*n));
-
-                    for (int i=1; i<n; i++)
-                    {
-                        stringBuffer.append(", ");
-                        stringBuffer.append(Array.get(colValue, row*n+i));
-                    }
-                    cellValue = stringBuffer;
+                    rowIdx = row*orders[column] + colIdx*nRows*orders[column];
+                }
+                else {
+                    rowIdx = row*orders[column];
                 }
 
-                return cellValue;
+                Object colValue = list.get(column);
+                if (colValue == null) return "Null";
+
+                stringBuffer.setLength(0); // clear the old string
+                stringBuffer.append(Array.get(colValue, rowIdx));
+
+                for (int i=1; i<orders[column]; i++) {
+                    stringBuffer.append(", ");
+                    stringBuffer.append(Array.get(colValue, rowIdx+i));
+                }
+
+                return stringBuffer;
             }
         };
 
@@ -740,7 +803,35 @@ null, options, options[0]);
         {
             public boolean isCellEditable(int row, int column)
             {
-                    return false;
+                // TODO: disable the editing feature. HDF4 has bug: cannot write vdata by field
+
+                return !isReadOnly;
+            }
+
+            public void editingStopped(ChangeEvent e)
+            {
+                int row = getEditingRow();
+                int col = getEditingColumn();
+                super.editingStopped(e);
+
+                Object source = e.getSource();
+
+                if (source instanceof CellEditor)
+                {
+                    CellEditor editor = (CellEditor)source;
+                    String cellValue = (String)editor.getCellEditorValue();
+
+                    try { updateValueInMemory(cellValue, row, col); }
+                    catch (Exception ex)
+                    {
+                        toolkit.beep();
+                        JOptionPane.showMessageDialog(
+                        this,
+                        ex.getMessage(),
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                    }
+                } // if (source instanceof CellEditor)
             }
 
             public boolean isCellSelected(int row, int column)
@@ -758,6 +849,17 @@ null, options, options[0]);
                 return super.isCellSelected(row, column);
             }
         };
+
+        if (columns > 1) {
+            // multi-dimension compound dataset
+            MultiLineHeaderRenderer renderer = new MultiLineHeaderRenderer(
+                    columns, columnNames.length);
+            Enumeration enum = theTable.getColumnModel().getColumns();
+            while (enum.hasMoreElements())
+            {
+                ((TableColumn)enum.nextElement()).setHeaderRenderer(renderer);
+            }
+        }
 
         return theTable;
     }
@@ -1045,6 +1147,7 @@ null, options, options[0]);
         int cols = table.getColumnCount();
         int rows = table.getRowCount();
 
+        viewer.startBusyIndicator();
         for (int i=0; i<rows; i++)
         {
             out.print(table.getValueAt(i, 0));
@@ -1055,6 +1158,7 @@ null, options, options[0]);
             }
             out.println();
         }
+        viewer.stopBusyIndicator();
 
         out.flush();
         out.close();
@@ -1074,7 +1178,10 @@ null, options, options[0]);
      */
     public void updateValueInFile()
     {
-        if (!(dataset instanceof ScalarDS) || !isValueChanged)
+        if (isReadOnly) return;
+
+        //if (!(dataset instanceof ScalarDS) || !isValueChanged)
+        if (!isValueChanged)
             return;
 
         int op = JOptionPane.showConfirmDialog(this,
@@ -1310,11 +1417,29 @@ null, options, options[0]);
     private void updateValueInMemory(String cellValue, int row, int col)
     throws Exception
     {
-        int cols = table.getColumnCount();
-        int i = row*cols+col;
+        if (dataset instanceof ScalarDS)
+            updateScalarData(cellValue, row, col);
+        else if (dataset instanceof CompoundDS)
+            updateCompoundData(cellValue, row, col);
+    }
 
+    /** update cell value in memory.
+     *  It does not change the dataset value in file.
+     *  @param cellValue the string value of input.
+     *  @param row the row of the editing cell.
+     *  @param col the column of the editing cell.
+     */
+    private void updateScalarData(String cellValue, int row, int col)
+    throws Exception
+    {
         if (!(dataset instanceof ScalarDS))
             return;
+
+        int i = 0;
+        if (isTransposed)
+            i = col*table.getRowCount()+row;
+        else
+            i = row*table.getColumnCount()+col;
 
         ScalarDS sds = (ScalarDS)dataset;
         boolean isUnsigned = sds.isUnsigned();
@@ -1381,6 +1506,116 @@ null, options, options[0]);
         isValueChanged = true;
     }
 
+    private void updateCompoundData(String cellValue, int row, int col)
+    throws Exception
+    {
+        if (!(dataset instanceof CompoundDS))
+            return;
+
+        CompoundDS cds = (CompoundDS)dataset;
+        List cdata = (List)cds.getData();
+        int orders[] = cds.getSelectedMemberOrders();
+        int nFields = cdata.size();
+        int nSubColumns = table.getColumnCount()/nFields;
+        int nRows = table.getRowCount();
+        int column = col;
+        int offset = 0;
+        int morder = 1;
+
+        if (nSubColumns > 1) // multi-dimension compound dataset
+        {
+            int colIdx = col/nFields;
+            column = col - colIdx*nFields;
+            offset = row*orders[column] + colIdx*nRows*orders[column];
+        }
+        else {
+            offset = row*orders[column];
+        }
+        morder = orders[column];
+
+        Object mdata = cdata.get(column);
+
+        char mNT = ' ';
+        String cName = mdata.getClass().getName();
+        int cIndex = cName.lastIndexOf("[");
+        if (cIndex >= 0 ) mNT = cName.charAt(cIndex+1);
+
+        StringTokenizer st = new StringTokenizer(cellValue, ",");
+        if (st.countTokens() < morder)
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+            "Number of data point < "+morder+".",
+            getTitle(),
+            JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String token = "";
+        if (mNT == 'B')
+        {
+            byte value = 0;
+            for (int i=0; i<morder; i++)
+            {
+                token = st.nextToken().trim();
+                value = Byte.parseByte(token);
+                Array.setByte(mdata, offset+i, value);
+            }
+        }
+        else if (mNT == 'S')
+        {
+            short value = 0;
+            for (int i=0; i<morder; i++)
+            {
+                token = st.nextToken().trim();
+                value = Short.parseShort(token);
+                Array.setShort(mdata, offset+i, value);
+            }
+        }
+        else if (mNT == 'I')
+        {
+            int value = 0;
+            for (int i=0; i<morder; i++)
+            {
+                token = st.nextToken().trim();
+                value = Integer.parseInt(token);
+                Array.setInt(mdata, offset+i, value);
+            }
+        }
+        else if (mNT == 'J')
+        {
+            long value = 0;
+            for (int i=0; i<morder; i++)
+            {
+                token = st.nextToken().trim();
+                value = Long.parseLong(token);
+                Array.setLong(mdata, offset+i, value);
+            }
+        }
+        else if (mNT == 'F')
+        {
+            float value = 0;
+            for (int i=0; i<morder; i++)
+            {
+                token = st.nextToken().trim();
+                value = Float.parseFloat(token);
+                Array.setFloat(mdata, offset+i, value);
+            }
+        }
+        else if (mNT == 'D')
+        {
+            double value = 0;
+            for (int i=0; i<morder; i++)
+            {
+                token = st.nextToken().trim();
+                value = Double.parseDouble(token);
+                Array.setDouble(mdata, offset+i, value);
+            }
+        }
+
+        isValueChanged = true;
+    }
+
     private class ColumnHeader extends JTableHeader
     {
         private int currentColumnIndex = -1;
@@ -1412,6 +1647,7 @@ null, options, options[0]);
                     parentTable.setColumnSelectionInterval(currentColumnIndex, colEnd);
                 else
                     parentTable.setColumnSelectionInterval(colEnd, currentColumnIndex);
+
                 parentTable.setRowSelectionInterval(0, parentTable.getRowCount()-1);
             }
         }
@@ -1421,6 +1657,15 @@ null, options, options[0]);
             super.processMouseEvent(e);
 
             int mouseID = e.getID();
+
+            if (e.getButton() != MouseEvent.BUTTON1)
+            {
+                int idx = columnAtPoint(e.getPoint());
+                if (idx >= 0 && idx < parentTable.getColumnCount())
+                    cellValueField.setText(parentTable.getColumnName(idx));
+
+                return;
+            }
 
             if (mouseID == MouseEvent.MOUSE_CLICKED)
             {
@@ -1484,22 +1729,14 @@ null, options, options[0]);
             int n = parentTable.getRowCount();
             for ( int i = 0; i < n;  i++ )
             {
-                setValueAt( new Integer(start+i*stride), i, 0 );
+                setValueAt( new Integer(start+(i+1)*stride), i, 0 );
             }
-
-            // Create a button cell renderer.
-            ButtonRenderer rend = new ButtonRenderer();
-
-            // Set the row headers preferred width to that of the button.
-            Dimension dim = getPreferredSize();
-            dim.width = 60;
-            setPreferredSize( dim );
 
             // Get the only table column.
             TableColumn col = getColumnModel().getColumn( 0 );
 
             // Use the cell renderer in the column.
-            col.setCellRenderer( rend );
+            col.setCellRenderer( new RowHeaderRenderer() );
         }
 
         /** Overridden to return false since the headers are not editable. */
@@ -1584,15 +1821,17 @@ null, options, options[0]);
         }
     }
 
-    /** ButtonRenderer is a custom cell renderer that displays cells as buttons. */
-    private class ButtonRenderer extends JButton implements TableCellRenderer
+    /** RowHeaderRenderer is a custom cell renderer that displays cells as buttons. */
+    private class RowHeaderRenderer extends JLabel implements TableCellRenderer
     {
-        public ButtonRenderer()
+        public RowHeaderRenderer()
         {
             super();
-            setHorizontalAlignment(JButton.LEFT);
+            setHorizontalAlignment(JLabel.CENTER);
 
-            setBorder(BorderFactory.createRaisedBevelBorder());
+            setOpaque(true);
+            setBorder(UIManager.getBorder("TableHeader.cellBorder"));
+            setBackground(Color.lightGray);
         }
 
         /** Configures the button for the current cell, and returns it. */
@@ -1604,11 +1843,63 @@ null, options, options[0]);
             int row,
             int column )
         {
+            setFont(table.getFont());
+
             if ( value != null )
                 setText( value.toString() );
 
             return this;
         }
     }
+
+    private class MultiLineHeaderRenderer extends JList implements TableCellRenderer
+    {
+        private final CompoundBorder subBorder = new CompoundBorder(
+                new MatteBorder(1, 0, 1, 0, java.awt.Color.darkGray),
+                new MatteBorder(1, 0, 1, 0, java.awt.Color.white));
+        private final CompoundBorder majorBorder = new CompoundBorder(
+                new MatteBorder(1, 1, 1, 0, java.awt.Color.darkGray),
+                new MatteBorder(1, 2, 1, 0, java.awt.Color.white));
+        Vector lines = new Vector();
+        int nMajorcolumns = 1;
+        int nSubcolumns = 1;
+
+        public MultiLineHeaderRenderer(int majorColumns, int subColumns)
+        {
+            nMajorcolumns = majorColumns;
+            nSubcolumns = subColumns;
+            setOpaque(true);
+            setForeground(UIManager.getColor("TableHeader.foreground"));
+            setBackground(UIManager.getColor("TableHeader.background"));
+        }
+
+        public Component getTableCellRendererComponent(JTable table, Object value,
+               boolean isSelected, boolean hasFocus, int row, int column)
+        {
+            setFont(table.getFont());
+            String str = (value == null) ? "" : value.toString();
+            BufferedReader br = new BufferedReader(new StringReader(str));
+            String line;
+
+            lines.clear();
+            try {
+                while ((line = br.readLine()) != null) {
+                    lines.addElement(line);
+                }
+            } catch (IOException ex) {}
+
+            if ((column/nSubcolumns)*nSubcolumns == column)
+            {
+                setBorder(majorBorder);
+            }
+            else {
+                setBorder(subBorder);
+            }
+            setListData(lines);
+
+            return this;
+        }
+    }
+
 
 }

@@ -51,6 +51,12 @@ public interface ImageObserver extends DataObserver
      */
     public abstract void contour(int level);
 
+    /** Change the brightness of the image.
+     *  <p>
+     *  @param level the brightness level.
+     */
+    public abstract void brightness(int level);
+
     /** Display the color table of this image. */
     public abstract void showColorTable();
 

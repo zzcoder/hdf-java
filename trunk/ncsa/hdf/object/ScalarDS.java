@@ -14,11 +14,15 @@ package ncsa.hdf.object;
 import java.util.*;
 
 /**
- * ScalarDS is the superclass for HDF4/5 ScalarDS, inheriting Dataset.
+ * A scalar dataset is a multiple dimension array of scalar points.
+ * Datatype of a scalar dataset must be a atomic datatype. Most common datatypes
+ * of a scalar dataset include char, byte, short, int, long, float, double and string.
  * <p>
- * ScalarDS is an abstract class. Its implementing sub-classes are the H4SDS,
- * H5GRImage and H5ScalarDS. A scalar dataset is a multiple dimension array of
- * scalar points.
+ * A ScalarDS can be an image or spreadsheet data. ScalarDS defines few methods
+ * to deal with both image and spreadsheet.
+ * <p>
+ * ScalarDS is an abstract class. Current implementing classes are the H4SDS,
+ * H5GRImage and H5ScalarDS.
  * <p>
  * @version 1.0 12/12/2001
  * @author Peter X. Cao, NCSA
@@ -210,15 +214,17 @@ public abstract class ScalarDS extends Dataset
     {
         return isUnsigned;
     }
-
     /**
      * convert value of this dataset to unsigned C integer.
+     * @see ncsa.hdf.object.Dataset#convertToUnsignedC(Object data_in)
      */
     public abstract void convertToUnsignedC();
 
     /**
      * convert unsigned C value of this dataset to appropriate Java integer.
+     * @see ncsa.hdf.object.Dataset#convertFromUnsignedC(Object data_in)
      */
     public abstract void convertFromUnsignedC();
+
 
 }

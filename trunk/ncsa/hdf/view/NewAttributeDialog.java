@@ -21,7 +21,6 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Dimension;
 import java.awt.Dialog;
-import java.awt.Choice;
 import java.util.*;
 import java.lang.reflect.*;
 import java.awt.event.*;
@@ -44,7 +43,7 @@ implements ActionListener, ItemListener, HyperlinkListener
     private JTextField nameField;
 
     /** The Choice of the datatypes */
-    private Choice typeChoice;
+    private JComboBox typeChoice;
 
     /** TextField for entering the attribute value. */
     private JTextField valueField;
@@ -80,19 +79,18 @@ implements ActionListener, ItemListener, HyperlinkListener
         helpDialog = null;
         fileFormat = obj.getFileFormat();
 
-        typeChoice = new Choice();
-        typeChoice.add("string");
-        typeChoice.add("byte (8-bit)");
-        typeChoice.add("short (16-bit)");
-        typeChoice.add("int (32-bit)");
-        typeChoice.add("unsigned byte (8-bit)");
-        typeChoice.add("unsigned short (16-bit)");
-        typeChoice.add("unsigned int (32-bit)");
-        typeChoice.add("long (64-bit)");
-        typeChoice.add("float");
-        typeChoice.add("double");
-        if (isH5) typeChoice.add("object reference");
-        typeChoice.addItemListener(this);
+        typeChoice = new JComboBox();
+        typeChoice.addItem("string");
+        typeChoice.addItem("byte (8-bit)");
+        typeChoice.addItem("short (16-bit)");
+        typeChoice.addItem("int (32-bit)");
+        typeChoice.addItem("unsigned byte (8-bit)");
+        typeChoice.addItem("unsigned short (16-bit)");
+        typeChoice.addItem("unsigned int (32-bit)");
+        typeChoice.addItem("long (64-bit)");
+        typeChoice.addItem("float");
+        typeChoice.addItem("double");
+        if (isH5) typeChoice.addItem("object reference");
 
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
@@ -102,17 +100,14 @@ implements ActionListener, ItemListener, HyperlinkListener
         JButton okButton = new JButton("   Ok   ");
         okButton.setActionCommand("Ok");
         okButton.setMnemonic(KeyEvent.VK_O);
-        okButton.addActionListener(this);
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.setActionCommand("Cancel");
         cancelButton.setMnemonic(KeyEvent.VK_C);
-        cancelButton.addActionListener(this);
 
         JButton helpButton = new JButton(" Help ");
         helpButton.setActionCommand("Show help");
         helpButton.setMnemonic(KeyEvent.VK_H);
-        helpButton.addActionListener(this);
 
         JPanel p = new JPanel();
         p.setLayout(new BorderLayout(5,5));
@@ -139,6 +134,11 @@ implements ActionListener, ItemListener, HyperlinkListener
         p.add(cancelButton);
         p.add(helpButton);
         contentPane.add("South", p);
+
+        typeChoice.addItemListener(this);
+        okButton.addActionListener(this);
+        cancelButton.addActionListener(this);
+        helpButton.addActionListener(this);
 
         Point l = owner.getLocation();
         l.x += 50;
@@ -196,7 +196,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         int tclass=-1, tsize=-1, torder=-1, tsign=-1;
 
         Object value = null;
-        String dt = typeChoice.getSelectedItem();
+        String dt = (String)typeChoice.getSelectedItem();
         String strValue = valueField.getText();
 
         String attrName = nameField.getText();

@@ -12,6 +12,7 @@
 package ncsa.hdf.object.h4;
 
 import java.util.*;
+import java.lang.reflect.Array;
 import ncsa.hdf.hdflib.*;
 import ncsa.hdf.object.*;
 
@@ -174,6 +175,46 @@ public class H4Vdata extends CompoundDS
         return dataset;
     }
 
+    // Implementing Dataset
+    public byte[] readBytes() throws HDFException
+    {
+        byte[] theData = null;
+
+        if (rank <=0 ) init();
+        if (numberOfMembers <= 0)
+            return null; // this Vdata does not have any filed
+
+        int id = open();
+        if (id < 0)
+            return null;
+
+        String allNames = memberNames[0];
+        for (int i=0; i<numberOfMembers; i++)
+        {
+            allNames += ","+memberNames[i];
+        }
+
+        try {
+            // moves the access pointer to the start position
+            HDFLibrary.VSseek(id, (int)startDims[0]);
+            // Specify the fields to be accessed
+            HDFLibrary.VSsetfields(id, allNames);
+            int[] recordSize = {0};
+            HDFLibrary.VSQueryvsize(id, recordSize);
+            int size =recordSize[0] * (int)selectedDims[0];
+            theData = new byte[size];
+            int read_num = HDFLibrary.VSread(
+                id,
+                theData,
+                (int)selectedDims[0],
+                HDFConstants.FULL_INTERLACE);
+        } finally {
+            close(id);
+        }
+
+        return theData;
+    }
+
     // Implementing DataFormat
     public Object read() throws HDFException
     {
@@ -198,6 +239,7 @@ public class H4Vdata extends CompoundDS
                 // Specify the fields to be accessed
                 HDFLibrary.VSsetfields(id, memberNames[i]);
             } catch (HDFException ex) {
+                isMemberSelected[i] = false;
                 continue;
             }
 
@@ -205,29 +247,37 @@ public class H4Vdata extends CompoundDS
                 memberTypes[i],
                 memberOrders[i]*(int)selectedDims[0]);
 
-            if (member_data != null)
+            if (member_data == null)
             {
-                try {
-                    int read_num = HDFLibrary.VSread(
-                        id,
-                        member_data,
-                        (int)selectedDims[0],
-                        HDFConstants.FULL_INTERLACE);
-                    if (memberTypes[i] == HDFConstants.DFNT_CHAR ||
-                        memberTypes[i] ==  HDFConstants.DFNT_UCHAR8)
-                    {
-                        // convert characters to string
-                        member_data = Dataset.byteToString(
-                            (byte[])member_data, memberOrders[i]);
-                    } else if (H4Datatype.isUnsigned(memberTypes[i]))
-                    {
-                        // convert unsigned integer to appropriate Java integer
-                        member_data = Dataset.convertFromUnsignedC(member_data);
-                    }
-
-                    list.add(member_data);
-                } catch (HDFException ex) {}
+                isMemberSelected[i] = false;
+                continue;
             }
+
+            try {
+                int read_num = HDFLibrary.VSread(
+                    id,
+                    member_data,
+                    (int)selectedDims[0],
+                    HDFConstants.FULL_INTERLACE);
+                if (memberTypes[i] == HDFConstants.DFNT_CHAR ||
+                    memberTypes[i] ==  HDFConstants.DFNT_UCHAR8)
+                {
+                    // convert characters to string
+                    member_data = Dataset.byteToString(
+                            (byte[])member_data, memberOrders[i]);
+                    memberOrders[i] = 1; //one String
+                } else if (H4Datatype.isUnsigned(memberTypes[i]))
+                {
+                    // convert unsigned integer to appropriate Java integer
+                    member_data = Dataset.convertFromUnsignedC(member_data);
+                }
+            } catch (HDFException ex)
+            {
+                isMemberSelected[i] = false;
+                continue;
+            }
+
+            list.add(member_data);
         } // for (int i=0; i<numberOfMembers; i++)
 
         close(id);
@@ -235,8 +285,67 @@ public class H4Vdata extends CompoundDS
         return list;
     }
 
-    // To do: Implementing DataFormat
-    public void write() throws HDFException {;}
+    // Implementing DataFormat
+    public void write(Object buf) throws HDFException
+    {
+// HDF4 bug: cannot write field by field. Write a single field will mess up the whole
+// vdata.
+/*
+        if (buf == null || numberOfMembers <= 0 || !(buf instanceof List))
+            return; // no data to write
+
+        List list = (List)buf;
+        Object member_data = null;
+        String member_name = null;
+
+        int vid = open();
+        if (vid < 0) return;
+
+        int idx = 0;
+        for (int i=0; i<numberOfMembers; i++)
+        {
+            if (!isMemberSelected[i])
+                continue;
+
+            try {
+                // Specify the fields to be accessed
+                HDFLibrary.VSsetfields(vid, memberNames[i]);
+
+                // moves the access pointer to the start position
+                HDFLibrary.VSseek(vid, (int)startDims[0]);
+            } catch (HDFException ex) {
+                continue;
+            }
+
+            member_data = list.get(idx++);
+            if (member_data == null)
+                continue;
+
+            if (memberTypes[i] == HDFConstants.DFNT_CHAR ||
+                memberTypes[i] ==  HDFConstants.DFNT_UCHAR8)
+            {
+                member_data = Dataset.stringToByte((String[])member_data, memberOrders[i]);
+            } else if (H4Datatype.isUnsigned(memberTypes[i]))
+            {
+                // convert unsigned integer to appropriate Java integer
+                member_data = Dataset.convertToUnsignedC(member_data);
+            }
+
+//#################################bug in the library
+System.out.println("@@@@@@ vid = "+vid);
+
+            int interlace = HDFConstants.NO_INTERLACE;
+            try {
+                int write_num = HDFLibrary.VSwrite(
+                    vid, member_data, (int)selectedDims[0], interlace);
+System.out.println(write_num);
+            } catch (HDFException ex) {}
+        } // for (int i=0; i<numberOfMembers; i++)
+System.out.println("######################### end of write H4Vdata ");
+
+        close(vid);
+*/
+    }
 
     // Implementing DataFormat
     public List getMetadata() throws HDFException
@@ -438,4 +547,57 @@ public class H4Vdata extends CompoundDS
     {
         return memberOrders;
     }
+
+    /**
+     *  convert an array of raw data of one Vdata field into a byte array.
+     *
+     *  @param data  the raw vdata
+     *  @return  the byte array
+     *
+     *  Input data is the array of raw data such as int[], float[], string[], etc;
+     *
+     *  The output is a single array of bytes with all the records
+     */
+    private byte[] toByte(int member_idx, Object member_data)
+    {
+        byte[] byteData = null;
+
+        int type = memberTypes[member_idx];
+        if ((type & HDFConstants.DFNT_LITEND) != 0) {
+            type -= HDFConstants.DFNT_LITEND;
+        }
+
+        switch(type)
+        {
+            case HDFConstants.DFNT_CHAR:
+            case HDFConstants.DFNT_UCHAR8:
+            case HDFConstants.DFNT_UINT8:
+            case HDFConstants.DFNT_INT8:
+                byteData = (byte[])member_data;
+                break;
+            case HDFConstants.DFNT_INT16:
+            case HDFConstants.DFNT_UINT16:
+                byteData = HDFNativeData.shortToByte(0, Array.getLength(member_data), (short[])member_data);
+                break;
+            case HDFConstants.DFNT_INT32:
+            case HDFConstants.DFNT_UINT32:
+                byteData = HDFNativeData.intToByte(0, Array.getLength(member_data), (int[])member_data);
+                break;
+            case HDFConstants.DFNT_INT64:
+            case HDFConstants.DFNT_UINT64:
+                byteData = HDFNativeData.longToByte(0, Array.getLength(member_data), (long[])member_data);
+                break;
+            case HDFConstants.DFNT_FLOAT:
+            //case HDFConstants.DFNT_FLOAT32:
+                byteData = HDFNativeData.floatToByte(0, Array.getLength(member_data), (float[])member_data);
+                break;
+            case HDFConstants.DFNT_DOUBLE:
+            //case HDFConstants.DFNT_FLOAT64:
+                byteData = HDFNativeData.doubleToByte(0, Array.getLength(member_data), (double[])member_data);
+                break;
+        }
+
+        return byteData;
+    }
+
 }

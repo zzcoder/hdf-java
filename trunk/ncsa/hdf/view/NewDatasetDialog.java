@@ -25,7 +25,6 @@ import java.awt.Point;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.Choice;
 import java.awt.Toolkit;
 import java.io.File;
 import java.util.*;
@@ -45,7 +44,7 @@ implements ActionListener, ItemListener, HyperlinkListener
 {
     private JTextField nameField, currentSizeField, maxSizeField, chunkSizeField, stringLengthField;
 
-    private Choice parentChoice, classChoice, sizeChoice, endianChoice, rankChoice, compressionLevel;
+    private JComboBox parentChoice, classChoice, sizeChoice, endianChoice, rankChoice, compressionLevel;
 
     private JCheckBox checkUnsigned, checkCompression;
 
@@ -83,8 +82,8 @@ implements ActionListener, ItemListener, HyperlinkListener
         toolkit = Toolkit.getDefaultToolkit();
         isH5 = pGroup.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
 
+        parentChoice = new JComboBox();
         groupList = new Vector();
-        parentChoice = new Choice();
         Object obj = null;
         Iterator iterator = objs.iterator();
         while (iterator.hasNext())
@@ -100,15 +99,16 @@ implements ActionListener, ItemListener, HyperlinkListener
                     parentChoice.addItem(g.getPath()+g.getName()+HObject.separator);
             }
         }
+
         if (pGroup.isRoot())
-            parentChoice.select(HObject.separator);
+            parentChoice.setSelectedItem(HObject.separator);
         else
-            parentChoice.select(pGroup.getPath()+pGroup.getName()+HObject.separator);
+            parentChoice.setSelectedItem(pGroup.getPath()+pGroup.getName()+HObject.separator);
 
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
-        contentPane.setPreferredSize(new Dimension(550, 350));
+        contentPane.setPreferredSize(new Dimension(600, 350));
 
         JButton okButton = new JButton("   Ok   ");
         okButton.setActionCommand("Ok");
@@ -142,7 +142,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         namePanel.add(tmpP, BorderLayout.WEST);
         tmpP = new JPanel();
         tmpP.setLayout(new GridLayout(2,1));
-        tmpP.add(nameField=new JTextField("dataset",40));
+        tmpP.add(nameField=new JTextField());
         tmpP.add(parentChoice);
         namePanel.add(tmpP, BorderLayout.CENTER);
         contentPane.add(namePanel, BorderLayout.NORTH);
@@ -154,46 +154,47 @@ implements ActionListener, ItemListener, HyperlinkListener
         border.setTitleColor(Color.blue);
         typePanel.setBorder(border);
 
-        classChoice = new Choice();
-        sizeChoice = new Choice();
-        endianChoice = new Choice();
         stringLengthField = new JTextField("String length");
         stringLengthField.setEnabled(false);
 
-        classChoice.add("INTEGER");
-        classChoice.add("FLOAT");
-        classChoice.add("CHAR");
+        endianChoice = new JComboBox();
+        classChoice = new JComboBox();
+        sizeChoice = new JComboBox();
+        endianChoice.setEnabled(isH5);
 
+        classChoice.addItem("INTEGER");
+        classChoice.addItem("FLOAT");
+        classChoice.addItem("CHAR");
+
+        if (isH5)
+        {
+            classChoice.addItem("STRING");
+            classChoice.addItem("REFERENCE");
+            sizeChoice.addItem("NATIVE");
+            endianChoice.addItem("NATIVE");
+            endianChoice.addItem("LITTLE ENDIAN");
+            endianChoice.addItem("BIG ENDIAN");
+        }
+        else
+        {
+            sizeChoice.addItem("DEFAULT");
+            endianChoice.addItem("DEFAULT");
+            typePanel.add(new JLabel());
+        }
+        sizeChoice.addItem("8");
+        sizeChoice.addItem("16");
+        sizeChoice.addItem("32");
+        sizeChoice.addItem("64");
 
         typePanel.add(new JLabel("Datatype class"));
         typePanel.add(new JLabel("Size (bits)"));
         typePanel.add(new JLabel("Byte ordering"));
         typePanel.add(checkUnsigned = new JCheckBox("Unsigned"));
+
         typePanel.add(classChoice);
         typePanel.add(sizeChoice);
         typePanel.add(endianChoice);
-
-        if (isH5)
-        {
-            classChoice.add("STRING");
-            classChoice.add("REFERENCE");
-            sizeChoice.add("NATIVE");
-            endianChoice.add("NATIVE");
-            endianChoice.add("LITTLE ENDIAN");
-            endianChoice.add("BIG ENDIAN");
-            typePanel.add(stringLengthField);
-        }
-        else
-        {
-            sizeChoice.add("DEFAULT");
-            endianChoice.add("DEFAULT");
-            endianChoice.setEnabled(false);
-            typePanel.add(new JLabel());
-        }
-        sizeChoice.add("8");
-        sizeChoice.add("16");
-        sizeChoice.add("32");
-        sizeChoice.add("64");
+        typePanel.add(stringLengthField);
 
         // set DATATSPACE
         JPanel spacePanel = new JPanel();
@@ -201,10 +202,12 @@ implements ActionListener, ItemListener, HyperlinkListener
         border = new TitledBorder("Dataspace");
         border.setTitleColor(Color.blue);
         spacePanel.setBorder(border);
-        rankChoice = new Choice();
-        for (int i=1; i<33; i++)
-            rankChoice.add(String.valueOf(i));
-        rankChoice.select(1);
+
+
+        rankChoice = new JComboBox();
+        for (int i=1; i<33; i++) rankChoice.addItem(String.valueOf(i));
+        rankChoice.setSelectedIndex(1);
+
         currentSizeField = new JTextField("1 x 1");
         maxSizeField = new JTextField("0 x 0");
         spacePanel.add(new JLabel("No. of dimensions"));
@@ -230,12 +233,10 @@ implements ActionListener, ItemListener, HyperlinkListener
         chunkSizeField = new JTextField("1 x 1");
         chunkSizeField.setEnabled(false);
         checkCompression = new JCheckBox("gzip");
-        compressionLevel = new Choice();
-        for (int i=0; i<10; i++)
-        {
-            compressionLevel.add(String.valueOf(i));
-        }
-        compressionLevel.select(6);
+
+        compressionLevel = new JComboBox();
+        for (int i=0; i<10; i++) compressionLevel.addItem(String.valueOf(i));
+        compressionLevel.setSelectedIndex(6);
         compressionLevel.setEnabled(false);
 
         tmpP = new JPanel();
@@ -312,8 +313,8 @@ implements ActionListener, ItemListener, HyperlinkListener
         toolkit = Toolkit.getDefaultToolkit();
         isH5 = pGroup.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
 
+        parentChoice = new JComboBox();
         groupList = new Vector();
-        parentChoice = new Choice();
         Object obj = null;
         Iterator iterator = objs.iterator();
         while (iterator.hasNext())
@@ -329,10 +330,11 @@ implements ActionListener, ItemListener, HyperlinkListener
                     parentChoice.addItem(g.getPath()+g.getName()+HObject.separator);
             }
         }
+
         if (pGroup.isRoot())
-            parentChoice.select(HObject.separator);
+            parentChoice.setSelectedItem(HObject.separator);
         else
-            parentChoice.select(pGroup.getPath()+pGroup.getName()+HObject.separator);
+            parentChoice.setSelectedItem(pGroup.getPath()+pGroup.getName()+HObject.separator);
 
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
@@ -420,8 +422,8 @@ implements ActionListener, ItemListener, HyperlinkListener
         if (source.equals(classChoice))
         {
             int idx = classChoice.getSelectedIndex();
-            sizeChoice.select(0);
-            endianChoice.select(0);
+            sizeChoice.setSelectedIndex(0);
+            endianChoice.setSelectedIndex(0);
             stringLengthField.setEnabled(false);
 
             if (idx == 0)
@@ -432,12 +434,12 @@ implements ActionListener, ItemListener, HyperlinkListener
 
                 if (sizeChoice.getItemCount() == 3)
                 {
-                    sizeChoice.remove("32");
-                    sizeChoice.remove("64");
-                    sizeChoice.add("8");
-                    sizeChoice.add("16");
-                    sizeChoice.add("32");
-                    sizeChoice.add("64");
+                    sizeChoice.removeItem("32");
+                    sizeChoice.removeItem("64");
+                    sizeChoice.addItem("8");
+                    sizeChoice.addItem("16");
+                    sizeChoice.addItem("32");
+                    sizeChoice.addItem("64");
                 }
             }
             else if (idx == 1)
@@ -448,8 +450,8 @@ implements ActionListener, ItemListener, HyperlinkListener
 
                 if (sizeChoice.getItemCount() == 5)
                 {
-                    sizeChoice.remove("16");
-                    sizeChoice.remove("8");
+                    sizeChoice.removeItem("16");
+                    sizeChoice.removeItem("8");
                 }
             }
             else if (idx == 2)
@@ -894,7 +896,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         try
         {
             Datatype datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign);
-            obj = fileFormat.createScalarDS(fileFormat, name, pgroup, datatype,
+            obj = fileFormat.createScalarDS(name, pgroup, datatype,
                 dims, maxdims, chunks, gzip, null);
         } catch (Exception ex)
         {

@@ -20,7 +20,6 @@ import java.awt.Point;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.Choice;
 import java.awt.Toolkit;
 import java.util.*;
 import java.lang.reflect.Array;

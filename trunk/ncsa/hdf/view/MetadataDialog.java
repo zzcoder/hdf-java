@@ -22,6 +22,8 @@ import java.awt.Frame;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
+import java.awt.Font;
+import java.awt.Insets;
 import java.awt.Dimension;
 import java.util.*;
 import java.io.File;
@@ -53,6 +55,8 @@ implements ActionListener
     private JLabel attrNumberLabel;
     private int numAttributes;
     private boolean isH5;
+    private byte[] userBlock;
+    private JTextArea userBlockArea;
 
     /**
      * Constructs a MetadataDialog with the given HDFView.
@@ -65,6 +69,8 @@ implements ActionListener
         viewer = theview;
         hObject = (HObject)theview.getSelectedObject();
         numAttributes = 0;
+        userBlock = null;
+        userBlockArea = null;
 
         if (hObject == null)
             dispose();
@@ -80,6 +86,13 @@ implements ActionListener
 
         tabbedPane.addTab("General", createGeneralPropertyPanel());
         tabbedPane.addTab("Attributes", createAttributePanel());
+
+        boolean isRoot = (hObject instanceof Group && ((Group)hObject).isRoot());
+        if (isH5 && isRoot)
+        {
+            // add panel to display user block
+            tabbedPane.addTab("User Block", createUserBlockPanel());
+        }
         tabbedPane.setSelectedIndex(0);
 
         JPanel bPanel = new JPanel();
@@ -93,7 +106,7 @@ implements ActionListener
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout());
         contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        contentPane.setPreferredSize(new Dimension(400, 500));
+        contentPane.setPreferredSize(new Dimension(620, 400));
 
         contentPane.add("Center", tabbedPane);
         contentPane.add("South", bPanel);
@@ -122,6 +135,23 @@ implements ActionListener
         else if (cmd.equals("Delete attribute"))
         {
             deleteAttribute();
+        }
+        else if (cmd.equals("Display user block as"))
+        {
+            int type = 0;
+            String typeName = (String)((JComboBox)source).getSelectedItem();
+            if (typeName.equalsIgnoreCase("Text"))
+                type = 0;
+            else if (typeName.equalsIgnoreCase("Binary"))
+                type = 2;
+            else if (typeName.equalsIgnoreCase("Octal"))
+                type = 8;
+            else if (typeName.equalsIgnoreCase("Hexadecimal"))
+                type = 16;
+            else if (typeName.equalsIgnoreCase("Decimal"))
+                type = 10;
+
+            showUserBlockAs(type);
         }
     }
 
@@ -225,9 +255,20 @@ implements ActionListener
 
         JPanel lp = new JPanel();
         lp.setLayout(new GridLayout(4,1));
-        lp.add(new JLabel("Name: "));
-        lp.add(new JLabel("Path: "));
-        lp.add(new JLabel("Type: "));
+
+        if (isRoot)
+        {
+            lp.add(new JLabel("File Name: "));
+            lp.add(new JLabel("File Path: "));
+            lp.add(new JLabel("File Type: "));
+        }
+        else
+        {
+            lp.add(new JLabel("Name: "));
+            lp.add(new JLabel("Path: "));
+            lp.add(new JLabel("Type: "));
+        }
+
         if (isH5)
             lp.add(new JLabel("Object ID: "));
         else
@@ -278,9 +319,29 @@ implements ActionListener
             if (isH5) typeStr = "HDF5,  "+fileInfo;
             else typeStr = "HDF4,  "+fileInfo;
         }
+        else if (isH5)
+        {
+            if (hObject instanceof Group)
+                typeStr = "HDF5 Group";
+            else if (hObject instanceof ScalarDS)
+                typeStr = "HDF5 Scalar Dataset";
+            else if (hObject instanceof CompoundDS)
+                typeStr = "HDF5 Compound Dataset";
+        }
         else
         {
-            typeStr = hObject.getClass().getName();
+            if (hObject instanceof Group)
+                typeStr = "HDF4 Group";
+            else if (hObject instanceof ScalarDS)
+            {
+                ScalarDS ds = (ScalarDS)hObject;
+                if (ds.isImage())
+                    typeStr = "HDF4 Raster Image";
+                else
+                    typeStr = "HDF4 SDS";
+            }
+            else if (hObject instanceof CompoundDS)
+                typeStr = "HDF4 Vdata";
         }
 
         JTextField typeField = new JTextField(typeStr);
@@ -556,9 +617,11 @@ implements ActionListener
             viewer.showStatus(ex.toString());
             attrList = null;
         }
+        if (attrList != null) numAttributes = attrList.size();
+
 
         String[] columnNames = {"Name", "Value", "Type", "Array Size"};
-        attrTableModel = new DefaultTableModel(columnNames, 0);
+        attrTableModel = new DefaultTableModel(columnNames, numAttributes);
 
         attrTable = new JTable(attrTableModel)
         {
@@ -605,23 +668,34 @@ implements ActionListener
 
         JScrollPane scroller1 = new JScrollPane(attrTable);
         attrContentArea = new JTextArea();
+        String ftype = ViewProperties.getFontType();
+        int fsize = ViewProperties.getFontSize();
+        Font font = null;
+        try { font = new Font(ftype, Font.PLAIN, fsize); }
+        catch (Exception ex) {font = null; }
+        if (font != null) attrContentArea.setFont(font);
         attrContentArea.setLineWrap(true);
         attrContentArea.setEditable(false);
+        Insets m = new Insets(5,5,5,5);
+        attrContentArea.setMargin(m);
+
         JScrollPane scroller2 = new JScrollPane(attrContentArea);
         JSplitPane splitPane = new JSplitPane(
             JSplitPane.VERTICAL_SPLIT,
-            scroller2,
-            scroller1);
-        splitPane.setDividerLocation(50);
+            scroller1,
+            scroller2);
+
+        // set the divider location
+        int h = Math.min((numAttributes+2)*attrTable.getRowHeight(),
+                 scroller1.getPreferredSize().height-40);
+        splitPane.setDividerLocation(h);
         panel.add(splitPane, BorderLayout.CENTER);
 
         if (attrList == null)
             return panel;
 
-        numAttributes = attrList.size();
         Attribute attr = null;
         String name, type, size;
-        attrTableModel.setRowCount(numAttributes);
         attrNumberLabel.setText("Number of attributes = "+numAttributes);
 
         for (int i=0; i<numAttributes; i++)
@@ -645,6 +719,94 @@ implements ActionListener
         }  //for (int i=0; i<n; i++)
 
         return panel;
+    }
+
+    /**
+     * Creates a panel used to display HDF5 user block.
+     */
+    private JPanel createUserBlockPanel()
+    {
+        JPanel panel = new JPanel();
+
+        userBlock = DefaultFileFilter.getHDF5UserBlock(hObject.getFile());
+
+        panel.setLayout (new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10,0,0,0));
+        userBlockArea = new JTextArea();
+        userBlockArea.setEditable(false);
+        userBlockArea.setLineWrap(true);
+        Insets m = new Insets(5,5,5,5);
+        userBlockArea.setMargin(m);
+
+        String ftype = ViewProperties.getFontType();
+        int fsize = ViewProperties.getFontSize();
+        Font font = null;
+        try { font = new Font(ftype, Font.PLAIN, fsize); }
+        catch (Exception ex) {font = null; }
+        if (font != null) userBlockArea.setFont(font);
+
+        String[] displayChoices = {"Text", "Binary", "Octal", "Hexadecimal", "Decimal"};
+        JComboBox userBlockDisplayChoice = new JComboBox(displayChoices);
+        userBlockDisplayChoice.setSelectedIndex(0);
+        userBlockDisplayChoice.addActionListener(this);
+        userBlockDisplayChoice.setEditable(false);
+        userBlockDisplayChoice.setActionCommand("Display user block as");
+
+        JPanel topPane = new JPanel();
+        topPane.setLayout(new BorderLayout(10,10));
+        topPane.add(new JLabel("Display As:"), BorderLayout.WEST);
+        topPane.add(userBlockDisplayChoice, BorderLayout.CENTER);
+        JLabel sizeLabel = new JLabel("Header Size (Bytes): 0");
+        topPane.add(sizeLabel, BorderLayout.EAST);
+
+        JScrollPane scroller = new JScrollPane(userBlockArea);
+        panel.add(topPane, BorderLayout.NORTH);
+        panel.add(scroller, BorderLayout.CENTER);
+
+        int headSize = 0;
+        if (userBlock != null)
+        {
+            headSize = showUserBlockAs(0);
+            sizeLabel.setText("Header Size (Bytes): "+headSize);
+        }
+        else
+            userBlockDisplayChoice.setEnabled(false);
+
+        return panel;
+    }
+
+    private int showUserBlockAs(int radix)
+    {
+        int headerSize = 0;
+
+        if (userBlock == null)
+            return 0;
+
+        String userBlockInfo = null;
+        if (radix==2|| radix==8 || radix ==16 || radix==10)
+        {
+            StringBuffer sb = new StringBuffer();
+            for (headerSize=0; headerSize<userBlock.length; headerSize++)
+            {
+                int intValue = (int)userBlock[headerSize];
+                if (intValue<0)
+                    intValue +=256;
+                else if (intValue == 0)
+                    break; // null end
+                sb.append(Integer.toString(intValue, radix));
+                sb.append(" ");
+            }
+            userBlockInfo = sb.toString();
+        } else
+        {
+            userBlockInfo = new String(userBlock).trim();
+            if (userBlockInfo != null)
+                headerSize = userBlockInfo.length();
+        }
+
+        userBlockArea.setText(userBlockInfo);
+
+        return headerSize;
     }
 
     /** update attribute value. Currently can only update single data point.

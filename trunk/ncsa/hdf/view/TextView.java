@@ -17,6 +17,7 @@ import javax.swing.text.*;
 import javax.swing.border.*;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.Font;
 
 /**
  * TextView displays an HDF string dataset in text.
@@ -52,6 +53,8 @@ implements TextObserver
      */
     private JTextArea[] textAreas;
 
+    private boolean isReadOnly = false;
+
     /**
      * Constructs an TextView.
      * <p>
@@ -72,6 +75,8 @@ implements TextObserver
             viewer.showStatus("Cnnot display non-text dataset in text view.");
             return;
         }
+
+        isReadOnly = dataset.getFileFormat().isReadOnly();
 
         try {
             text = (String[])dataset.getData();
@@ -96,12 +101,20 @@ implements TextObserver
         textAreas = new JTextArea[size];
         JPanel txtPane = new JPanel();
         txtPane.setLayout(new GridLayout(size, 1));
+
+        String ftype = ViewProperties.getFontType();
+        int fsize = ViewProperties.getFontSize();
+        Font font = null;
+        try { font = new Font(ftype, Font.PLAIN, fsize); }
+        catch (Exception ex) {font = null; }
         for (int i=0; i<size; i++)
         {
             textAreas[i] = new JTextArea(text[i]);
+            textAreas[i].setEditable(!isReadOnly);
             textAreas[i].setWrapStyleWord(true);
             textAreas[i].setBorder(new LineBorder(java.awt.Color.black));
             txtPane.add(textAreas[i]);
+            if (font != null) textAreas[i].setFont(font);
         }
 
         JScrollPane scroller = new JScrollPane(txtPane);
@@ -118,20 +131,30 @@ implements TextObserver
      */
     private void updateValueInFile()
     {
+        if (isReadOnly) return;
+
         if (!(dataset instanceof ScalarDS))
             return;
 
+        boolean isValueChanged = false;
+        String txt = null;
         for (int i=0; i<text.length; i++)
         {
-            text[i] = textAreas[i].getText();
+            txt = textAreas[i].getText();
+            if (!text[i].equals(txt)) {
+                isValueChanged = true;
+                text[i] = txt;
+            }
         }
 
-        try { dataset.write(); }
-        catch (Exception ex) {}
+        if (isValueChanged) {
+            try { dataset.write(); }  catch (Exception ex) {}
 
-        // refresh text in memory. After writing, text is cut off to its max string length
-        for (int i=0; i<text.length; i++)
-            textAreas[i].setText(text[i]);
+            // refresh text in memory. After writing, text is cut off to its max string length
+            for (int i=0; i<text.length; i++)
+                textAreas[i].setText(text[i]);
+        }
+
     }
 
     public void dispose()

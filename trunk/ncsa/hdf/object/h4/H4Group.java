@@ -33,9 +33,12 @@ public class H4Group extends Group
      */
     private List attributeList;
 
-     /**
-      * The GR interface identifier obtained from GRstart(file_id)
-      */
+    /** The default object ID for HDF4 objects */
+    private final static long[] DEFAULT_OID = {0, 0};
+
+    /**
+     * The GR interface identifier obtained from GRstart(file_id)
+     */
     private int grid;
 
      /**
@@ -57,9 +60,9 @@ public class H4Group extends Group
         String name,
         String path,
         Group parent,
-        long[] oid)
+        long[] theID)
     {
-        super (fileFormat, name, path, parent, oid);
+        super (fileFormat, name, path, parent, ((theID == null) ? DEFAULT_OID : theID));
 
         if (fileFormat instanceof H4File)
         {
@@ -187,20 +190,23 @@ public class H4Group extends Group
 
     /**
      * Creates a new group.
-     * @param file the file which the group is added to.
      * @param name the name of the group to create.
      * @param pgroup the parent group of the new group.
      * @return the new group if successful. Otherwise returns null.
      */
-    public static H4Group create(FileFormat file, String name, Group pgroup)
+    public static H4Group create(String name, Group pgroup)
         throws Exception
     {
         H4Group group = null;
         String fullPath = null;
 
-        if (file == null ||
-            name == null ||
-            pgroup == null)
+        if (pgroup == null ||
+            name == null)
+            return null;
+
+        H4File file = (H4File)pgroup.getFileFormat();
+
+        if (file == null)
             return null;
 
         String path = HObject.separator;

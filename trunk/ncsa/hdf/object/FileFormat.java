@@ -17,7 +17,12 @@ import javax.swing.tree.TreeNode;
 
 /**
  * This FileFormat defines general I/O accessing interface to file resources,
- * such as open/close file, and retrieve the file structure.
+ * such as open/close file, and retrieve file structure.
+ * <p>
+ * FileFormat is a plugable component. A implementing class of FileFormat can be
+ * added to the supported file list. The current implementing classes include
+ * H5File and H4File. By default, H5File and H4File are added to the list of
+ * supported file formats.
  * <p>
  * @version 1.0 12/12/2001
  * @author Peter X. Cao, NCSA
@@ -48,7 +53,10 @@ public abstract class FileFormat extends File
     /** tag for HDF5 file. */
     public static final String FILE_TYPE_HDF5 = "H5";
 
-    /** keep a list current supported file format. */
+    /** keep a list current supported file formats.
+     * FileList keeps <key, fileFormat> pairs, such as
+     * <"H5", ncsa.hdf.object.h5.H5File>
+     */
     private static final Map FileList = new Hashtable(10);
 
     static {
@@ -78,6 +86,10 @@ public abstract class FileFormat extends File
         }
         if (hdffile != null) FileList.put(FILE_TYPE_HDF4, hdffile);
     }
+
+    /** Constructs a FileFormat with a given file name.
+     * @param filename the full name of the file.
+     */
 
     public FileFormat(String filename)
     {
@@ -109,6 +121,8 @@ public abstract class FileFormat extends File
     /**
      * Returns the root node of the file.
      * The root node contains the hierarchy of the file.
+     * For file with hierarchical structure such HDF, the structure is stored
+     * as a tree. The root of the tree is the root the the file.
      */
     public abstract TreeNode getRootNode();
 
@@ -124,19 +138,50 @@ public abstract class FileFormat extends File
 
     /**
      * Create a new instance of this file.
+     * A subclass must implementing this method to create a file of its type.
+     * For example,
+     * <pre>
+     * FileFormat file = H5File.create("test.h5");
+     * </pre>
+     * creates an HDF5 file "test.h5".
      */
     public abstract FileFormat create(String fileName) throws Exception;
 
     /**
-     * Create a new group.
+     * Create a new group with given group name and a parent in this file.
+     * @param name the name fo the new group.
+     * @param pgroup the parent group.
      */
-    public abstract Group createGroup(FileFormat file, String name, Group pgroup) throws Exception;
+    public abstract Group createGroup(String name, Group pgroup) throws Exception;
 
     /**
-     * Create a new dataset.
+     * Create a new dataset in this file.
+     * For example, to create a 2D integer dataset of size 100X50 at the root
+     * in an HDF5 file.
+     * <pre>
+     * String name = "2D integer";
+     * Group pgroup = (Group)((DefaultMutableTreeNode)getRootNode).getUserObject();
+     * Datatype dtype = new H5Datatype(Datatype.CLASS_INTEGER, Datatype.NATIVE,
+     *     Datatype.NATIVE, Datatype.NATIVE);
+     * long[] dims = {100, 50};
+     * long[] maxdims = dims;
+     * long[] chunks = null; // no chunking
+     * int gzip = 0; // no compression
+     * Object data = null; // no initial data values
+     *
+     * Dataset d = (H5File)file.createScalarDS(name, pgroup, dtype, dims, maxdims, chunks, gzip, data);
+     * </pre>
+     *
+     * @param name the name of the new dataset
+     * @param pgroup the parent group where the new dataset is created.
+     * @param type the datatype of the new dataset.
+     * @param dims dimension sizes of the new dataset.
+     * @param maxdims the maximum dimension sizes of the new dataset.
+     * @param chunks the chunk sizes of the new dataset.
+     * @param gzip the compression level.
+     * @param data the data of the new dataset.
      */
     public abstract Dataset createScalarDS(
-        FileFormat file,
         String name,
         Group pgroup,
         Datatype type,
@@ -147,10 +192,36 @@ public abstract class FileFormat extends File
         Object data) throws Exception;
 
     /**
-     * Create a new dataset.
+     * Create a new image at given parent group in this file.
+     * For example, to create a 2D image of size 100X50 at the root in an HDF5 file.
+     * <pre>
+     * String name = "2D image";
+     * Group pgroup = (Group)((DefaultMutableTreeNode)getRootNode).getUserObject();
+     * Datatype dtype = new H5Datatype(Datatype.CLASS_INTEGER, 1, Datatype.NATIVE, Datatype.SIGN_NONE);
+     * long[] dims = {100, 50};
+     * long[] maxdims = dims;
+     * long[] chunks = null; // no chunking
+     * int gzip = 0; // no compression
+     * int ncomp = 2;
+     * int interlace = ScalarDS.INTERLACE_PIXEL;
+     * Object data = null; // no initial data values
+     *
+     * Dataset d = (H5File)file.createScalarDS(name, pgroup, dtype, dims,
+     *     maxdims, chunks, gzip, ncomp, interlace, data);
+     * </pre>
+     *
+     * @param name the name of the new image
+     * @param pgroup the parent group where the new image is created.
+     * @param type the datatype of the new image.
+     * @param dims dimension sizes of the new image.
+     * @param maxdims the maximum dimension sizes of the new image.
+     * @param chunks the chunk sizes of the new image.
+     * @param gzip the compression level.
+     * @param ncomp the number of components of the new image
+     * @param interlace the interlace of this image.
+     * @param data the data of the new image.
      */
     public abstract Dataset createImage(
-        FileFormat file,
         String name,
         Group pgroup,
         Datatype type,
@@ -163,7 +234,19 @@ public abstract class FileFormat extends File
         Object data) throws Exception;
 
     /**
-     * Create a new datatype.
+     * Create a new datatype based on this FileFormat.
+     * <p>
+     * For example, the following code creates an instance of H5Datatype.
+     * <pre>
+     * FileFormat file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+     * H5Datatype dtype = file.createDatatype(Datatype.CLASS_INTEGER,
+     *     Datatype.NATIVE, Datatype.NATIVE, Datatype.NATIVE);
+     * </pre>
+     *
+     * @param tclass the class of datatype, such as Integer, Float
+     * @param tsize the size of the datatype in bytes
+     * @param torder, the order of the byte endianing
+     * @param tsign, signed or unsinged the interger
      */
     public abstract Datatype createDatatype(
         int tclass,
@@ -173,6 +256,9 @@ public abstract class FileFormat extends File
 
     /**
      * Add a new file format.
+     * <p>
+     * This method is provided for adding new FileFormat dynamically.
+     *
      * @param key the unique ID key to identify the file format.
      *   such as "HDF5" or "HDF4"
      * @param fileformat the new file format to be added.
@@ -208,6 +294,13 @@ public abstract class FileFormat extends File
 
     /**
      * Checks if a given file is this type of file.
+     * For example, if "test.h5" is an HDF5 file, isThisType("test.h5") returns
+     * true for H5File, and false for H4File;
+     * <pre>
+     * FileFormat file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+     * boolean isH5 = file.isThisType("test.h5");
+     * </pre>
+     *
      * <p>
      * @param filename the file to be checked.
      */

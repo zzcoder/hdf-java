@@ -18,8 +18,8 @@ import ncsa.hdf.object.*;
 
 /**
  * H5ScalarDS describes an multi-dimension array of HDF5 scalar or atomic data
- * types and operations performed on the scalar dataset, such as byte, int,
- * short, long, float, double and string.
+ * types, such as byte, int, short, long, float, double and string,
+ * and operations performed on the scalar dataset
  * <p>
  * The library predefines a modest number of datatypes. For details, read
  * <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/Datatypes.html">
@@ -36,11 +36,14 @@ public class H5ScalarDS extends ScalarDS
      */
      private List attributeList;
 
-     /** references of palettes */
+     /** byte array containing references of palettes.
+      * Each reference requires  eight bytes storage. Therefore, the array length
+      * is 8*numberOfPalettes.
+     */
      private byte[] paletteRefs;
 
     /**
-     * Creates an H5ScalarDS object with specific name and path.
+     * Constructs an H5ScalarDS object with specific name and path.
      * <p>
      * @param fileFormat the HDF file.
      * @param name the name of this H5ScalarDS.
@@ -82,7 +85,7 @@ public class H5ScalarDS extends ScalarDS
         }
     }
 
-    // To do: Implementing Dataset
+    //Implementing Dataset
     public Dataset copy(Group pgroup, String dstName, long[] dims, Object buff)
     throws Exception
     {
@@ -131,6 +134,54 @@ public class H5ScalarDS extends ScalarDS
         return dataset;
     }
 
+    // implementing Dataset
+    public byte[] readBytes() throws HDF5Exception
+    {
+        byte[] theData = null;
+
+        if (rank <= 0) init();
+
+        int did = open();
+        int fspace=-1, mspace=-1, tid=-1;
+
+        try
+        {
+            long[] lsize = {1};
+            for (int j=0; j<selectedDims.length; j++)
+                lsize[0] *= selectedDims[j];
+
+            fspace = H5.H5Dget_space(did);
+            mspace = H5.H5Screate_simple(1, lsize, null);
+
+            // set the rectangle selection
+            // HDF5 bug: for scalar dataset, H5Sselect_hyperslab gives core dump
+            if (rank*dims[0] > 1)
+            {
+                H5.H5Sselect_hyperslab(
+                    fspace,
+                    HDF5Constants.H5S_SELECT_SET,
+                    startDims,
+                    selectedStride,
+                    selectedDims,
+                    null );   // set block to 1
+            }
+
+            tid = H5.H5Dget_type(did);
+            int size = H5.H5Tget_size(tid)*(int)lsize[0];
+            theData = new byte[size];
+            H5.H5Dread(did, tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, theData);
+        }
+        finally
+        {
+            if (fspace > 0) try { H5.H5Sclose(fspace); } catch (Exception ex2) {}
+            if (mspace > 0) try { H5.H5Sclose(mspace); } catch (Exception ex2) {}
+            try { H5.H5Tclose(tid); } catch (HDF5Exception ex2) {}
+            close(did);
+        }
+
+        return theData;
+    }
+
     // Implementing DataFormat
     public Object read() throws HDF5Exception
     {
@@ -164,7 +215,7 @@ public class H5ScalarDS extends ScalarDS
             }
 
             tid = H5.H5Dget_type(did);
-            nativeType = H5Datatype.toNativeType(tid);
+            nativeType = H5Datatype.toNative(tid);
             theData = H5Datatype.allocateArray(nativeType, (int)lsize[0]);
 
             if (theData != null)
@@ -196,9 +247,9 @@ public class H5ScalarDS extends ScalarDS
     }
 
     //Implementing DataFormat
-    public void write() throws HDF5Exception
+    public void write(Object buf) throws HDF5Exception
     {
-        if (data == null)
+        if (buf == null)
             return;
 
         int fspace=-1, mspace=-1, did=-1, tid=-1, status=-1;
@@ -236,13 +287,13 @@ public class H5ScalarDS extends ScalarDS
 
             tid = H5.H5Dget_type(did);
             if ( isUnsigned && unsignedConverted)
-                tmpData = convertToUnsignedC(data);
+                tmpData = convertToUnsignedC(buf);
             else if (isText)
             {
-                tmpData = stringToByte((String[])data, H5.H5Tget_size(tid));
+                tmpData = stringToByte((String[])buf, H5.H5Tget_size(tid));
             }
             else
-                tmpData = data;
+                tmpData = buf;
             H5.H5Dwrite(did, tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, tmpData);
         } finally {
             tmpData = null;
@@ -294,13 +345,7 @@ public class H5ScalarDS extends ScalarDS
         return attributeList;
     }
 
-    /**
-     * Creates a new attribute and attached to this dataset if attribute does
-     * not exist. Otherwise, just update the value of the attribute.
-     *
-     * <p>
-     * @param info the atribute to attach
-     */
+    // implementing DataFormat
     public void writeMetadata(Object info) throws Exception
     {
         // only attribute metadata is supported.
@@ -322,11 +367,7 @@ public class H5ScalarDS extends ScalarDS
         if (!attrExisted) attributeList.add(attr);
     }
 
-    /**
-     * Deletes an attribute from this dataset.
-     * <p>
-     * @param info the attribute to delete.
-     */
+    // implementing DataFormat
     public void removeMetadata(Object info) throws HDF5Exception
     {
         // only attribute metadata is supported.
@@ -541,8 +582,10 @@ public class H5ScalarDS extends ScalarDS
         return palette;
     }
 
-    /** read specific image palette from file.
-     *  @param idx the palette index to read.
+    /**
+     * read specific image palette from file.
+     * @param idx the palette index to read
+     * @return the palette data into two-dimension byte array, byte[3][256]
      */
     public byte[][] readPalette(int idx)
     {
@@ -615,7 +658,6 @@ public class H5ScalarDS extends ScalarDS
 
     /**
      * Creates a new dataset.
-     * @param file the file which the dataset is added to.
      * @param name the name of the dataset to create.
      * @param pgroup the parent group of the new dataset.
      * @param type the datatype of the dataset.
@@ -627,8 +669,7 @@ public class H5ScalarDS extends ScalarDS
      * @return the new dataset if successful. Otherwise returns null.
      */
     public static H5ScalarDS create(
-        FileFormat file,
-        String name,
+         String name,
         Group pgroup,
         Datatype type,
         long[] dims,
@@ -640,11 +681,14 @@ public class H5ScalarDS extends ScalarDS
         H5ScalarDS dataset = null;
         String fullPath = null;
 
-        if (file == null ||
-            pgroup == null ||
+        if (pgroup == null ||
             name == null ||
             dims == null ||
             (gzip>0 && chunks==null))
+            return null;
+
+        H5File file = (H5File)pgroup.getFileFormat();
+        if (file == null)
             return null;
 
         String path = HObject.separator;
@@ -727,6 +771,10 @@ public class H5ScalarDS extends ScalarDS
         return paletteRefs;
     }
 
+     /** reads references of palettes into a byte array
+      * Each reference requires  eight bytes storage. Therefore, the array length
+      * is 8*numberOfPalettes.
+     */
     private byte[] getPaletteRefs(int did)
     {
         int aid=-1, sid=-1, size=0, rank=0, atype=-1;
@@ -771,5 +819,24 @@ public class H5ScalarDS extends ScalarDS
 
         return datatype;
     }
+
+    /**
+     * Sets the name of the data object.
+     * <p>
+     * @param newName the new name of the object.
+     */
+    public void setName (String newName) throws Exception
+    {
+        int linkType = HDF5Constants.H5G_LINK_HARD;
+
+        String currentFullPath = getPath()+getName();
+        String newFullPath = getPath()+newName;
+
+        H5.H5Glink(getFID(), linkType, currentFullPath, newFullPath);
+        H5.H5Gunlink(getFID(), currentFullPath);
+
+        super.setName(newName);
+    }
+
 
 }

@@ -14,8 +14,26 @@
  import java.lang.reflect.*;
 
 /**
- * Attribute holds a (name, value) pair of HDF4/5 attribute.
+  * Attributes are small named datasets that are attached to primary datasets,
+ * groups, or named datatypes. Each attribute has datatype and dataspace.
  * <p>
+ * The following is an example of how to create an attribute of one dimension
+ * integer array of size two.
+ * <pre>
+ * // Create an attribute
+ * String name = "data range";
+ * Datatype type = new Datatype(Datatype.CLASS_INTEGER, Datatype.NATIVE,
+ *     Datatype.NATIVE, Datatype.NATIVE);
+ * long[] space = {2};
+ * int[] value = {0, 255};
+ *
+ * Attribute dataRange = new Attribute(name, type, space);
+ * dataRange.setValue(value);
+ *
+ * </pre>
+ *
+ * @see ncsa.hdf.object.Datatype
+ *
  * @version 1.0 12/12/2001
  * @author Peter X. Cao, NCSA
  */
@@ -30,12 +48,13 @@ public class Attribute implements Metadata
     private final String name;
 
     /**
-     * The datatype of this attribute.
+     * The datatype of the attribute.
      */
     private final Datatype type;
 
     /**
      * The rank of the data value of this attribute.
+     * An attribute can have multi dimensions.
      */
     private int rank;
 
@@ -49,6 +68,7 @@ public class Attribute implements Metadata
      */
     private Object value;
 
+    /** flag to indicate if the data type is an unsigned integer. */
     private boolean isUnsigned;
 
     /**
@@ -61,6 +81,8 @@ public class Attribute implements Metadata
      * @param name the name of the attribute.
      * @param type the data type of the attribute.
      * @param dims the dimension sizes of the data of the attribute.
+     *
+     * @see ncsa.hdf.object.Datatype
      */
     public Attribute(String attrName, Datatype attrType, long[] attrDims)
     {

@@ -15,7 +15,8 @@ import ncsa.hdf.hdf5lib.*;
 import ncsa.hdf.object.*;
 
 /**
- * Datatype holds a (name, value) pair of HDF4/5 attribute.
+ * Datatype encapsulates information of a datatype.
+ * Information includes the class, size, endian of a datatype.
  * <p>
  * @version 1.0 05/07/2002
  * @author Peter X. Cao, NCSA
@@ -24,9 +25,20 @@ public class H5Datatype extends Datatype
 {
     /**
      * Create an Datatype with specified class, size, byte order and sign.
+     * The following list a few example of how to create a Datatype.
+     * <OL>
+     * <LI>to create unsigned native integer<br>
+     * H5Datatype type = new H5Dataype(CLASS_INTEGER, NATIVE, NATIVE, SIGN_NONE);
+     * <LI>to create 16-bit signed integer with big endian<br>
+     * H5Datatype type = new H5Dataype(CLASS_INTEGER, 2, ORDER_BE, NATIVE);
+     * <LI>to create native float<br>
+     * H5Datatype type = new H5Dataype(CLASS_FLOAT, NATIVE, NATIVE, -1);
+     * <LI>to create 64-bit double<br>
+     * H5Datatype type = new H5Dataype(CLASS_FLOAT, 8, NATIVE, -1);
+     * </OL>
      * <p>
      * @param tclass the class of the datatype.
-     * @param tsize the size of the datatype.
+     * @param tsize the size of the datatype in bytes.
      * @param torder the order of the datatype.
      * @param tsign the sign of the datatype.
      */
@@ -37,20 +49,40 @@ public class H5Datatype extends Datatype
 
     /**
      * Create a Datatype with a given HDF native datatype.
+     * The following example constructs an H5Datatype from an HDF5 32-bit unsigned integer.
+     * <pre>
+     * int user_type = H5.J2C( HDF5CDataTypes.JH5T_NATIVE_UNINT32);
+     * H5Datatype dtype = new H5atatype(user_type);
+     * </pre>
+     * which is equivalent to
+     * <pre>
+     * H5Datatype dtype = new H5atatype(CLASS_INTEGER, 4, NATIVE, SIGN_NONE);
+     * </pre>
      * <p>
-     * @param nativeType the hdf native datatype.
+     * @param nativeID the hdf native datatype.
      */
-    public H5Datatype(int nativeType)
+    public H5Datatype(int nativeID)
     {
-        super(nativeType);
+        super(nativeID);
     }
 
     /**
-     * Specify this datatype with a given HDF native datatype.
+     * Translate HDF5 datatype identifier into H5Datatype.
+     * The following example constructs an H5Datatype from an HDF5 32-bit unsigned integer.
+     * <pre>
+     * int user_type = H5.J2C( HDF5CDataTypes.JH5T_NATIVE_UNINT32);
+     * H5Datatype dtype = new H5atatype(user_type);
+     * </pre>
+     * which is equivalent to
+     * <pre>
+     * H5Datatype dtype = new H5atatype(CLASS_INTEGER, 4, NATIVE, SIGN_NONE);
+     * </pre>
+     * <p>
+     * @param nativeID the hdf native datatype.
      */
     public void fromNative(int tid)
     {
-        nativeType = tid;
+        nativeID = tid;
 
         int tclass=-1, tsize=-1;
 
@@ -84,7 +116,7 @@ public class H5Datatype extends Datatype
     }
 
     /**
-     * Allocate a one-dimensional array of byte, short, int, long, float, double,
+     * Allocate an one-dimensional array of byte, short, int, long, float, double,
      * or String to store data retrieved from an HDF5 file based on the given
      * HDF5 datatype and dimension sizes.
      * <p>
@@ -96,8 +128,7 @@ public class H5Datatype extends Datatype
     {
         Object data = null;
 
-        if (size < 0)
-            return null;
+        if (size < 0) return null;
 
         // Scalar members have dimensionality zero, i.e. size =0
         // what can we do about it, set the size to 1
@@ -112,8 +143,6 @@ public class H5Datatype extends Datatype
             tsize = H5.H5Tget_size(tid);
             tsign = H5.H5Tget_sign(tid);
         } catch (Exception ex) {}
-
-
 
         switch (tclass)
         {
@@ -179,11 +208,21 @@ public class H5Datatype extends Datatype
 
     /**
      * Return the HDF5 native datatype based on the HDF5 datatype on disk
+     * For example, a HDF5 datatype created from<br>
+     * <pre>
+     * H5Dataype dtype = new H5Datatype(CLASS_INTEGER, 4, NATIVE, SIGN_NONE);
+     * int type = dtype.toNative();
+     * </pre>
+     * here "type" will be the HDF5 datatype id of a 32-bit unsigned integer,
+     * which is equivalent to
+     * <pre>
+     * int type = H5.J2C( HDF5CDataTypes.JH5T_NATIVE_UNINT32);
+     * </pre>
      * <p>
      * @param tid the datatype on disk.
-     * @return the native datatype if successful and negative otherwise.
+     * @return the native datatype if successful, and negative otherwise.
      */
-    public static int toNativeType(int tid)
+    public static int toNative(int tid)
     {
         // data type information
         int native_type=-1, tclass=-1, tsize=-1, tsign=-1;
@@ -252,7 +291,7 @@ public class H5Datatype extends Datatype
     }
 
     /**
-     *  Returns the short description of datatype.
+     *  Returns the size of this datatype in bytes.
      *  <p>
      *  @param tid  the data type.
      */
@@ -376,6 +415,7 @@ public class H5Datatype extends Datatype
         return description;
     }
 
+    // implementing Datatype
     public boolean isUnsigned()
     {
         return isUnsigned(toNative());
@@ -403,10 +443,12 @@ public class H5Datatype extends Datatype
         return unsigned;
     }
 
+    // implementing Datatype
     public int toNative()
     {
-        if (nativeType >=0 )
-            return nativeType;
+
+        if (nativeID >=0 )
+            return nativeID;
 
         int tid = -1;
 
@@ -415,14 +457,16 @@ public class H5Datatype extends Datatype
             switch (datatypeClass)
             {
                 case CLASS_INTEGER:
-                    if (datatypeSize == Datatype.NATIVE)
-                    {
-                        tid = H5.H5Tcopy(H5.J2C(HDF5CDataTypes.JH5T_NATIVE_INT));
-                    } else
-                    {
+                    if (datatypeSize == 1)
                         tid = H5.H5Tcopy(H5.J2C(HDF5CDataTypes.JH5T_NATIVE_INT8));
-                        H5.H5Tset_size(tid, datatypeSize);
-                    }
+                    else if (datatypeSize == 2)
+                        tid = H5.H5Tcopy(H5.J2C(HDF5CDataTypes.JH5T_NATIVE_INT16));
+                    else if (datatypeSize == 4)
+                        tid = H5.H5Tcopy(H5.J2C(HDF5CDataTypes.JH5T_NATIVE_INT32));
+                    else if (datatypeSize == 8)
+                        tid = H5.H5Tcopy(H5.J2C(HDF5CDataTypes.JH5T_NATIVE_INT64));
+                    else
+                        tid = H5.H5Tcopy(H5.J2C(HDF5CDataTypes.JH5T_NATIVE_INT));
 
                     if (datatypeOrder == Datatype.ORDER_BE)
                         H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_BE);
@@ -433,9 +477,10 @@ public class H5Datatype extends Datatype
                         H5.H5Tset_sign(tid, HDF5Constants.H5T_SGN_NONE);
                     break;
                 case CLASS_FLOAT:
-                    tid = H5.H5Tcopy(H5.J2C(HDF5CDataTypes.JH5T_NATIVE_FLOAT));
-                    if (datatypeSize != Datatype.NATIVE)
-                        H5.H5Tset_size(tid, datatypeSize);
+                    if (datatypeSize == 8)
+                        tid = H5.H5Tcopy(H5.J2C(HDF5CDataTypes.JH5T_NATIVE_DOUBLE));
+                    else
+                        tid = H5.H5Tcopy(H5.J2C(HDF5CDataTypes.JH5T_NATIVE_FLOAT));
 
                     if (datatypeOrder == Datatype.ORDER_BE)
                         H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_BE);
@@ -460,6 +505,6 @@ public class H5Datatype extends Datatype
             } // switch (tclass)
         } catch (Exception ex) { tid = -1; }
 
-        return (nativeType = tid);
+        return (nativeID = tid);
     }
 }

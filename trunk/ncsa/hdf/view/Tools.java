@@ -106,7 +106,7 @@ public final class Tools
             fid = newfile.open();
             pgroup = (Group)((DefaultMutableTreeNode) newfile.getRootNode()).getUserObject();
             type = newfile.createDatatype(Datatype.CLASS_CHAR, 1, Datatype.NATIVE, Datatype.SIGN_NONE);
-            dataset = newfile.createImage(newfile, imgName, pgroup, type,
+            dataset = newfile.createImage(imgName, pgroup, type,
                 dims, null, null, -1, 3, ScalarDS.INTERLACE_PIXEL, data);
             newfile.close();
         }

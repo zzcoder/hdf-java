@@ -15,7 +15,8 @@ import ncsa.hdf.hdflib.*;
 import ncsa.hdf.object.*;
 
 /**
- * Datatype holds a (name, value) pair of HDF4/5 attribute.
+ * Datatype encapsulates information of a datatype.
+ * Information includes the class, size, endian of a datatype.
  * <p>
  * @version 1.0 05/07/2002
  * @author Peter X. Cao, NCSA
@@ -38,19 +39,17 @@ public class H4Datatype extends Datatype
     /**
      * Create a Datatype with a given HDF native datatype.
      * <p>
-     * @param nativeType the hdf native datatype.
+     * @param nativeID the hdf native datatype.
      */
-    public H4Datatype(int nativeType)
+    public H4Datatype(int nativeID)
     {
-        super(nativeType);
+        super(nativeID);
     }
 
-    /**
-     * Specify this datatype with a given HDF native datatype.
-     */
+    // implementing Dataset
     public void fromNative(int tid)
     {
-        nativeType = tid;
+        nativeID = tid;
         datatypeOrder = NATIVE;
         datatypeSign = NATIVE;
 
@@ -258,8 +257,8 @@ public class H4Datatype extends Datatype
 
     public int toNative()
     {
-        if (nativeType >=0 )
-            return nativeType;
+        if (nativeID >=0 )
+            return nativeID;
 
         int tid = -1;
         int tclass = getDatatypeClass();
@@ -319,7 +318,7 @@ public class H4Datatype extends Datatype
                 break;
         }
 
-        return (nativeType = tid);
+        return (nativeID = tid);
     }
 
 }
