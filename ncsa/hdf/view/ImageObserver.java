@@ -43,6 +43,6 @@ public interface ImageObserver extends DataObserver
     public abstract void showColorTable();
 
     /** Draws a histogram of the selected image area. */
-    public abstract void drawHistogram();
+    public abstract void showHistogram();
 
 }

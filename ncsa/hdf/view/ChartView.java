@@ -83,6 +83,11 @@ implements ActionListener
     private int numberOfPoints;
 
     /**
+     * True if the original data is integer (byte, short, integer, long).
+     */
+    private boolean isInteger;
+
+    /**
      *  Constructs a new ChartView given data and data ranges.
      *  <p>
      *  @param owner the owner frame of this dialog.
@@ -107,6 +112,11 @@ implements ActionListener
 
         this.chartStyle = style;
         this.data = data;
+
+        if (style == HISTOGRAM)
+            isInteger = true;
+        else
+            isInteger = false;
 
         if (xRange != null)
         {
@@ -155,8 +165,8 @@ implements ActionListener
         cp.add("South", tmp);
 
         Point l = owner.getLocation();
-        l.x += 200;
-        l.y += 80;
+        l.x += 250;
+        l.y += 100;
         setLocation(l);
         setSize(600, 400);
     }
@@ -182,6 +192,9 @@ implements ActionListener
 
     /** Sets the label of the Y axis. */
     public void setYlabel (String label ) { ylabel = label; }
+
+    /** Set the data type of the plot data to be integer. */
+    public void setTypeToInteger() { isInteger = true; }
 
     /** find and set the minimum and maximum values of the data */
     private void findDataRange()
@@ -233,11 +246,12 @@ implements ActionListener
             int xp=2*gap, yp=0, x=xmin, x0, y0, x1, y1;
             double y = ymin;
 
-            // draw X and Y frid labels
-            if (chartStyle == LINEPLOT)
-                g.drawString(String.valueOf((float)y), 0, h+8);
-            else
+            // draw X and Y grid labels
+            if (isInteger)
                 g.drawString(String.valueOf((int)y), 0, h+8);
+            else
+                g.drawString(String.valueOf((float)y), 0, h+8);
+
             g.drawString(String.valueOf(x), xp-5, h+gap);
             for (int i=0; i<10; i++)
             {
@@ -247,10 +261,10 @@ implements ActionListener
                 y += dy;
                 g.drawLine(xp, h, xp, h-5);
                 g.drawLine(2*gap, h-yp, 2*gap+5, h-yp);
-                if (chartStyle == LINEPLOT)
-                    g.drawString(String.valueOf((float)y), 0, h-yp+8);
-                else
+                if (isInteger)
                     g.drawString(String.valueOf((int)y), 0, h-yp+8);
+                else
+                    g.drawString(String.valueOf((float)y), 0, h-yp+8);
                 g.drawString(String.valueOf(x), xp-5, h+gap);
             }
 
@@ -305,7 +319,7 @@ implements ActionListener
             }
 
             g.setColor(c); // set the color back to its default
-        }
-    }
+        } // public void paint(Graphics g)
+    } // private class ChartPanel extends Canvas
 
 }

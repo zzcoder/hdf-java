@@ -53,6 +53,12 @@ implements TableObserver
      */
     private JTable table;
 
+    /** Label to indicate the current cell location. */
+    private JLabel cellLabel;
+
+    /** Text field to display the value of of the current cell. */
+    private JTextField cellValueField;
+
     /**
      * Constructs an TableView.
      * <p>
@@ -110,9 +116,22 @@ implements TableObserver
         viewp.setPreferredSize( rowHeaders.getPreferredSize() );
         scroller.setRowHeader( viewp );
 
+        cellLabel = new JLabel("");
+        Dimension dim = cellLabel.getPreferredSize();
+        dim.width = 60;
+        cellLabel.setPreferredSize( dim );
+        cellLabel.setHorizontalAlignment(JLabel.RIGHT);
+        cellValueField = new JTextField();
+        cellValueField.setEditable(false);
+        JPanel valuePane = new JPanel();
+        valuePane.setLayout(new BorderLayout());
+        valuePane.add(cellLabel, BorderLayout.WEST);
+        valuePane.add (cellValueField, BorderLayout.CENTER);
+
         // add to the main panel
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout());
+        contentPane.add(valuePane, BorderLayout.NORTH);
         contentPane.add (scroller, BorderLayout.CENTER);
     }
 
@@ -271,7 +290,7 @@ implements TableObserver
     }
 
     // Implementing TableObserver.
-    public void drawLineplot()
+    public void showLineplot()
     {
         int[] rows = table.getSelectedRows();
         int[] cols = table.getSelectedColumns();
@@ -379,6 +398,12 @@ implements TableObserver
             xRange,
             yRange);
         cv.setLineLabels(lineLabels);
+
+        String cname = dataValue.getClass().getName();
+        char dname = cname.charAt(cname.lastIndexOf("[")+1);
+        if (dname == 'B' || dname == 'S' || dname == 'I' || dname == 'J')
+            cv.setTypeToInteger();
+
         cv.show();
     }
 
@@ -442,6 +467,21 @@ implements TableObserver
             public boolean isCellEditable(int row, int column)
             {
                     return false;
+            }
+
+            public boolean isCellSelected(int row, int column)
+            {
+                if (getSelectedRow()==row && getSelectedColumn()==column)
+                {
+                    cellLabel.setText(
+                        String.valueOf(row+1)+
+                        ", "+
+                        table.getColumnName(column)+
+                        " = ");
+                    cellValueField.setText(getValueAt(row, column).toString());
+                }
+
+                return super.isCellSelected(row, column);
             }
         };
 
@@ -517,6 +557,20 @@ implements TableObserver
             public boolean isCellEditable(int row, int column)
             {
                     return false;
+            }
+            public boolean isCellSelected(int row, int column)
+            {
+                if (getSelectedRow()==row && getSelectedColumn()==column)
+                {
+                    cellLabel.setText(
+                        String.valueOf(row+1)+
+                        ", "+
+                        table.getColumnName(column)+
+                        " = ");
+                    cellValueField.setText(getValueAt(row, column).toString());
+                }
+
+                return super.isCellSelected(row, column);
             }
         };
 

@@ -26,5 +26,5 @@ public interface TableObserver extends DataObserver
     public abstract JTable getTable();
 
     /** Draws a line plot of the selected table data. */
-    public abstract void drawLineplot();
+    public abstract void showLineplot();
 }
