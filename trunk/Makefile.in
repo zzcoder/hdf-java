@@ -616,11 +616,10 @@ HDFOBJCLASSES= ./ncsa/hdf/object/Attribute.class \
 	./ncsa/hdf/object/H5ScalarDS.class \
 	./ncsa/hdf/object/HObject.class \
 	./ncsa/hdf/object/ScalarDS.class \
-	ncsa/hdf/object/HObject.class \
-	ncsa/hdf/object/Metadata.class \
-	ncsa/hdf/object/FileFormat.class \
-	ncsa/hdf/object/H4File.class \
-	ncsa/hdf/object/H5File.class
+	./ncsa/hdf/object/Metadata.class \
+	./ncsa/hdf/object/FileFormat.class \
+	./ncsa/hdf/object/H4File.class \
+	./ncsa/hdf/object/H5File.class
 
 HDFVIEWCLASSES= ./ncsa/hdf/view/ViewManager.class \
 	./ncsa/hdf/view/TreeView.class 
