@@ -1,0 +1,169 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="description" content="NCSA Java-based Products Home Page -- Visit this site to get the latest NCSA Java-based Products free.">
+   <meta name="keywords" content="java hdf 5 interface,">
+   <meta name="distribution" content="global">
+   <meta name="GENERATOR" content="Mozilla/4.72 [en] (Windows NT 5.0; U) [Netscape]">
+   <meta name="Description" content="NCSA Java-based Products Home Page -- Visit this site to get the latest NCSA Java-based Products free.">
+   <meta name="KeyWords" content="java hdf object">
+   <title>HDF Object Package</title>
+<!-- BEGIN MAIN BODY -->
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#0000EE" vlink="#551A8B" alink="#FF0000">
+&nbsp;
+<center><table BORDER=0 CELLSPACING=0 CELLPADDING=5 >
+<tr>
+<td><a href="http://hdf.ncsa.uiuc.edu/"><img SRC="http://hdf.ncsa.uiuc.edu/image/hdf2.jpg" ALT="NCSA HDF home" NOSAVE height=72 width=92></a></td>
+
+<td>
+<h1>
+NCSA HDF Object Package</h1>
+
+<center><font face="arial,helvetica"><font color="#C80028"><font size=+0><a href="#DOWNLOAD">[Download]</a><a href="javadocs/index.html">[HDF
+Object Javadocs]</a></font></font></font></center>
+</td>
+</tr>
+</table></center>
+
+<dd>
+
+<hr noshade size=1></dd>
+
+<h2>
+How to use it</h2>
+The HDF Object Package is used by Java applications to access HDF4 and
+HDF5 files without directly calling the HDF4 and HDF5 library APIs. Library
+calls are encapsulated into respective classes. The HDF Object Package
+requires the
+<a href="../JNI/jhi/index.html">The Java HDF Interface (JHI)</a>
+and
+<a href="../JNI/jhi5/index.html">The Java HDF5 Interface (JHI5)</a>.
+Figure 2 shows the relationship of the packages.
+<center>
+<p><img SRC="hdf-obj.jpg" height=850 width=700>
+<p><b>Figure 2.&nbsp; The Software packages</b></center>
+
+<p>The following examples show how to retreve the file hierarchy.
+<h3>
+Example 1: retrieve and print HDF5 objects</h3>
+
+<pre>import ncsa.hdf.object.*; // include the HDF object package
+import ncsa.hdf.hdf5lib.*; // include the Java HDF5 interface
+
+/**
+&nbsp;* Retreve and print HDF5 objects from file <a href="hdf5_test.h5">hdf5_test.h5
+</a>&nbsp;* @version 1.3.0 10/26/2001
+&nbsp;* @author Peter X. Cao
+&nbsp;*
+&nbsp;*/
+public class TestH5File
+{
+&nbsp;&nbsp;&nbsp; public static void main(String[] argv)
+&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // create an H5File object
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; H5File h5file = new H5File("hdf5_test.h5", HDF5Constants.H5F_ACC_RDONLY);
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; try&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // open file and retrieve the file structure
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; h5file.open();&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; catch (Exception ex)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; System.out.println(ex);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; javax.swing.tree.MutableTreeNode root = h5file.getRootNode();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (root != null)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printNode(root, "&nbsp;&nbsp;&nbsp; ");
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; try { h5file.close(); }
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; catch (Exception ex ) {}
+&nbsp;&nbsp;&nbsp; }
+
+&nbsp;&nbsp;&nbsp; // print out the data ojbect recusively
+&nbsp;&nbsp;&nbsp; private static void printNode(javax.swing.tree.TreeNode node, String indent)
+&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; System.out.println(indent+node);
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int n = node.getChildCount();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for (int i=0; i&lt;n; i++)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printNode(node.getChildAt(i), indent+"&nbsp;&nbsp;&nbsp; ");
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp; }
+}</pre>
+
+<h3>
+Example 2: retrieve and print HDF4 objects</h3>
+
+<pre>import ncsa.hdf.object.*; // include the HDF object package
+import ncsa.hdf.hdflib.*; // include the Java HDF5 interface
+
+/**
+&nbsp;* Retreve and print HDF4 objects from file <a href="annras.hdf">annras.hdf</a>.
+&nbsp;* @version 1.3.0 10/26/2001
+&nbsp;* @author Peter X. Cao
+&nbsp;*
+&nbsp;*/
+
+public class TestH4File
+{
+&nbsp;&nbsp;&nbsp; public static void main(String[] argv)
+&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // create an H4File object
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; H4File h4file = new H4File("annras.hdf", HDFConstants.DFACC_READ);
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; try&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // open file and retrieve the file structure
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; h4file.open();&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; catch (Exception ex)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; System.out.println(ex);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; javax.swing.tree.MutableTreeNode root = h4file.getRootNode();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (root != null)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printNode(root, "&nbsp;&nbsp;&nbsp; ");
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; try { h4file.close(); }
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; catch (Exception ex ) {}
+&nbsp;&nbsp;&nbsp; }
+
+&nbsp;&nbsp;&nbsp; // print out the data ojbect recusively
+&nbsp;&nbsp;&nbsp; private static void printNode(javax.swing.tree.TreeNode node, String indent)
+&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; System.out.println(indent+node);
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int n = node.getChildCount();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for (int i=0; i&lt;n; i++)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printNode(node.getChildAt(i), indent+"&nbsp;&nbsp;&nbsp; ");
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp; }
+}
+
+</pre>
+
+<p><br>For details of how to the whole hierarchy is retrieved from file,
+read <a href="H4File.java.txt">H4File.java</a> and <a href="H5File.java.txt">H5File.java</a>.
+<br>
+<hr SIZE=1 WIDTH="100%">
+<p><i>December 20, 2001</i>
+<br><!-- BEGIN OF FOOTER INFO -->
+<p><a href="http://www.ncsa.uiuc.edu/"><img SRC="http://www.ncsa.uiuc.edu/Images/NCSAhome/footerlogo.gif" ALT="NCSA" NOSAVE BORDER=0 height=27 width=78></a>
+<br><font face="arial,helvetica"><font size=-1><a href="http://www.ncsa.uiuc.edu/">The
+National Center for Supercomputing Applications</a></font></font>
+<br><font face="arial,helvetica"><font size=-1><a href="http://www.uiuc.edu/">University
+of Illinois at Urbana-Champaign</a></font></font>
+<p><font face="arial,helvetica"><font size=-1><a href="mailto:hdfhelp@ncsa.uiuc.edu">hdfhelp@ncsa.uiuc.edu</a></font></font><!- END OF FOOTER INFO -->
+</body>
+</html>
