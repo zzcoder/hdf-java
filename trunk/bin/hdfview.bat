@@ -2,7 +2,7 @@
 
 @REM =======================================================================
 @REM
-@REM          Batch file to compile the HDF Java source code
+@REM          Batch file to run the HDFView
 @REM
 @REM =======================================================================
 
