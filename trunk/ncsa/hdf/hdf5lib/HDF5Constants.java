@@ -28,7 +28,7 @@ package ncsa.hdf.hdf5lib;
  *  <b>See also:</b> ncsa.hdf.hdf5lib.HDF5CDataTypes
  */
 public class HDF5Constants
-{
+ 
 	/*AUTOMATICALLY GENERATED CONSTANTS*/ 
 	final static public int H5D_CHUNKED = 2;
 	final static public int H5D_COMPACT = 0;
@@ -91,9 +91,8 @@ public class HDF5Constants
 	final static public int H5E_PLINE = 19;
 	final static public int H5E_PLIST = 17;
 	final static public int H5E_PROTECT = 29;
-	final static public int H5E_RAGGED = 21;
 	final static public int H5E_READERROR = 19;
-	final static public int H5E_REFERENCE = 22;
+	final static public int H5E_REFERENCE = 21;
 	final static public int H5E_RESOURCE = 2;
 	final static public int H5E_SEEKERROR = 18;
 	final static public int H5E_SLINK = 47;
@@ -131,8 +130,8 @@ public class HDF5Constants
 	final static public int H5I_DATATYPE = 13;
 	final static public int H5I_FILE = 1;
 	final static public int H5I_GROUP = 12;
-	final static public int H5I_REFERENCE = 19;
-	final static public int H5I_VFL = 20;
+	final static public int H5I_REFERENCE = 18;
+	final static public int H5I_VFL = 19;
 	final static public int H5P_DATASET_CREATE = 2;
 	final static public int H5P_DATASET_XFER = 3;
 	final static public int H5P_DEFAULT = 0;
@@ -199,5 +198,5 @@ public class HDF5Constants
 	final static public int H5Z_FILTER_NONE = 0;
 	final static public int H5_VERS_MAJOR = 1;
 	final static public int H5_VERS_MINOR = 4;
-	final static public int H5_VERS_RELEASE = 0;
+	final static public int H5_VERS_RELEASE = 3;
 }
