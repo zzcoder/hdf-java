@@ -90,8 +90,7 @@ implements TextObserver
         String[] styles = {"regular", "italic"};
 
         //Add "regular" and "italic" styles into the textPane.
-        Style def = StyleContext.getDefaultStyleContext().
-            getStyle(StyleContext.DEFAULT_STYLE);
+        Style def = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
         Style regular = textPane.addStyle("regular", def);
         Style s = textPane.addStyle("italic", regular);
         StyleConstants.setItalic(s, true);

@@ -73,10 +73,13 @@ public class H4Vdata extends CompoundDS
         if (id < 0)
             return null;
 
-        List list = new Vector(numberOfMembers);
+        List list = new Vector();
         Object member_data = null;
         for (int i=0; i<numberOfMembers; i++)
         {
+            if (!isMemberSelected[i])
+                continue;
+
             try {
                 // moves the access pointer to the start position
                 HDFLibrary.VSseek(id, (int)startDims[0]);
@@ -86,7 +89,7 @@ public class H4Vdata extends CompoundDS
                 continue;
             }
 
-            member_data = H4Accessory.allocateArray(
+            member_data = H4Datatype.allocateArray(
                 memberTypes[i],
                 memberOrders[i]*(int)selectedDims[0]);
 
@@ -98,17 +101,17 @@ public class H4Vdata extends CompoundDS
                         member_data,
                         (int)selectedDims[0],
                         HDFConstants.FULL_INTERLACE);
-                        if (memberTypes[i] == HDFConstants.DFNT_CHAR ||
-                            memberTypes[i] ==  HDFConstants.DFNT_UCHAR8)
-                        {
-                            // convert characters to string
-                            member_data = Dataset.byteToString(
-                                (byte[])member_data, memberOrders[i]);
-                        } else if (H4Accessory.isUnsigned(memberTypes[i]))
-                        {
-                            // convert unsigned integer to appropriate Java integer
-                            member_data = Dataset.convertFromUnsignedC(member_data);
-                        }
+                    if (memberTypes[i] == HDFConstants.DFNT_CHAR ||
+                        memberTypes[i] ==  HDFConstants.DFNT_UCHAR8)
+                    {
+                        // convert characters to string
+                        member_data = Dataset.byteToString(
+                            (byte[])member_data, memberOrders[i]);
+                    } else if (H4Datatype.isUnsigned(memberTypes[i]))
+                    {
+                        // convert unsigned integer to appropriate Java integer
+                        member_data = Dataset.convertFromUnsignedC(member_data);
+                    }
 
                     list.add(member_data);
                 } catch (HDFException ex) {}
@@ -163,7 +166,7 @@ public class H4Vdata extends CompoundDS
                 Attribute attr = new Attribute(attrName[0], attrInfo[0], attrDims);;
                 attributeList.add(attr);
 
-                Object buf = H4Accessory.allocateArray(attrInfo[0], attrInfo[1]);
+                Object buf = H4Datatype.allocateArray(attrInfo[0], attrInfo[1]);
                 try {
                     HDFLibrary.VSgetattr(id, -1, i, buf);
                 } catch (HDFException ex)
@@ -193,7 +196,19 @@ public class H4Vdata extends CompoundDS
     }
 
     // To do: Implementing DataFormat
-    public void writeMetadata(Object info) throws HDFException { ; }
+    public void writeMetadata(Object info) throws HDFException
+    {
+        // only attribute metadata is supported.
+        if (!(info instanceof Attribute))
+            return;
+
+        H4File.writeAttribute(this, (Attribute)info);
+
+        if (attributeList == null)
+            attributeList = new Vector();
+
+        attributeList.add(info);
+    }
 
     // To do: Implementing DataFormat
     public void removeMetadata(Object info) throws HDFException { ; }
@@ -226,7 +241,7 @@ public class H4Vdata extends CompoundDS
     }
 
     // Implementing DataFormat
-    public static void close(int vsid)
+    public void close(int vsid)
     {
         try { HDFLibrary.VSdetach(vsid); }
         catch (Exception ex) { ; }
@@ -269,9 +284,11 @@ public class H4Vdata extends CompoundDS
         memberNames = new String[numberOfMembers];
         memberTypes = new int[numberOfMembers];
         memberOrders = new int[numberOfMembers];
+        isMemberSelected = new boolean[numberOfMembers];
 
         for (int i=0; i<numberOfMembers; i++)
         {
+            isMemberSelected[i] = true;
             try {
                 memberNames[i] = HDFLibrary.VFfieldname(id, i);
                 memberTypes[i] = HDFLibrary.VFfieldtype(id, i);

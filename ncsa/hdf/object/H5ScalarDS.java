@@ -35,6 +35,8 @@ public class H5ScalarDS extends ScalarDS
      */
      private List attributeList;
 
+     private boolean unsignedConverted;
+
     /**
      * Creates an H5ScalarDS object with specific name and path.
      * <p>
@@ -50,6 +52,7 @@ public class H5ScalarDS extends ScalarDS
         long[] oid)
     {
         super (fileFormat, name, path, oid);
+        unsignedConverted = false;
 
         int did=-1, aid=-1, atid=-1;
         try
@@ -118,14 +121,14 @@ public class H5ScalarDS extends ScalarDS
                     fspace,
                     HDF5Constants.H5S_SELECT_SET,
                     startDims,
-                    null,     // set stride to 1
+                    selectedStride,     // set selectedStride to 1
                     selectedDims,
                     null );   // set block to 1
             }
 
             tid = H5.H5Dget_type(did);
-            nativeType = H5Accessory.toNativeType(tid);
-            data = H5Accessory.allocateArray(nativeType, (int)lsize[0]);
+            nativeType = H5Datatype.toNativeType(tid);
+            data = H5Datatype.allocateArray(nativeType, (int)lsize[0]);
 
             if (data != null)
             {
@@ -157,8 +160,59 @@ public class H5ScalarDS extends ScalarDS
         return data;
     }
 
-    // To do: Implementing DataFormat
-    public void write() throws HDF5Exception {;}
+    //Implementing DataFormat
+    public void write() throws HDF5Exception
+    {
+        if (data == null)
+            return;
+
+        int fspace=-1, mspace=-1, did=-1, tid=-1, status=-1;
+        Object tmpData = null;
+
+        long[] lsize = {1};
+        boolean isAllSelected = true;
+        for (int i=0; i<rank; i++)
+        {
+            lsize[0] *= selectedDims[i];
+            if (selectedDims[i] < dims[i])
+                isAllSelected = false;
+        }
+
+        try {
+            did = open();
+
+            if (isAllSelected)
+            {
+                mspace = HDF5Constants.H5S_ALL;
+                fspace = HDF5Constants.H5S_ALL;
+            }
+            else
+            {
+                fspace = H5.H5Dget_space(did);
+                mspace = H5.H5Screate_simple(1, lsize, null);
+                H5.H5Sselect_hyperslab(
+                    fspace,
+                    HDF5Constants.H5S_SELECT_SET,
+                    startDims,
+                    selectedStride,
+                    selectedDims,
+                    null );
+            }
+
+            tid = H5.H5Dget_type(did);
+            if ( isUnsigned && unsignedConverted)
+                tmpData = convertToUnsignedC(data);
+            else
+                tmpData = data;
+            H5.H5Dwrite(did, tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, tmpData);
+        } finally {
+            tmpData = null;
+            if (fspace > 0) try { H5.H5Sclose(fspace); } catch (Exception ex) {}
+            if (mspace > 0) try { H5.H5Sclose(mspace); } catch (Exception ex) {}
+            try { H5.H5Tclose(tid); } catch (Exception ex) {}
+            try { H5.H5Dclose(did); } catch (Exception ex) {}
+        }
+    }
 
     // Implementing DataFormat
     public List getMetadata() throws HDF5Exception
@@ -167,7 +221,7 @@ public class H5ScalarDS extends ScalarDS
         if (attributeList == null)
         {
             int did = open();
-            attributeList = H5Accessory.getAttribute(did);
+            attributeList = H5File.getAttribute(did);
             close(did);
         }
 
@@ -187,20 +241,18 @@ public class H5ScalarDS extends ScalarDS
         if (!(info instanceof Attribute))
             return;
 
+        boolean attrExisted = false;
         Attribute attr = (Attribute)info;
         String name = attr.getName();
-        List attrList = getMetadata();
-        boolean attrExisted = attrList.contains(attr);
 
-        int did = open();
-        try {
-            H5Accessory.writeAttribute(did, attr, attrExisted);
-            // add the new attribute into attribute list
-            if (!attrExisted) attrList.add(attr);
-        } finally
-        {
-            close(did);
-        }
+        if (attributeList == null)
+            attributeList = new Vector();
+        else
+            attrExisted = attributeList.contains(attr);
+
+        H5File.writeAttribute(this, attr, attrExisted);
+        // add the new attribute into attribute list
+        if (!attrExisted) attributeList.add(attr);
     }
 
     /**
@@ -242,7 +294,7 @@ public class H5ScalarDS extends ScalarDS
     }
 
     // Implementing HObject
-    public static void close(int did)
+    public void close(int did)
     {
         try { H5.H5Dclose(did); }
         catch (HDF5Exception ex) {;}
@@ -281,6 +333,8 @@ public class H5ScalarDS extends ScalarDS
             //try { H5.H5Tclose(tid); } catch (HDF5Exception ex2) {}
             try { H5.H5Sclose(sid); } catch (HDF5Exception ex2) {}
         }
+
+        isUnsigned = H5Datatype.isUnsigned(datatype);
 
         // check for the type of image and interlace mode
         // it is a true color image at one of three cases:
@@ -448,19 +502,94 @@ public class H5ScalarDS extends ScalarDS
     // Implementing ScalarDS
     public void convertFromUnsignedC()
     {
-        if (data != null && H4Accessory.isUnsigned(datatype))
+        if (data != null && isUnsigned && !unsignedConverted)
         {
             data = convertFromUnsignedC(data);
+            unsignedConverted = true;
         }
     }
 
     // Implementing ScalarDS
     public void convertToUnsignedC()
     {
-        if (data != null && H4Accessory.isUnsigned(datatype))
+        if (data != null && isUnsigned)
         {
             data = convertToUnsignedC(data);
         }
+    }
+
+    /**
+     * Creates a new dataset.
+     * @param file the file which the dataset is added to.
+     * @param name the name of the dataset to create.
+     * @param pgroup the parent group of the new dataset.
+     * @param type the datatype of the dataset.
+     * @param dims the dimension size of the dataset.
+     * @param maxdims the max dimension size of the dataset.
+     * @param chunk the chunk size of the dataset.
+     * @param gzip the level of the gzip compression.
+     * @return the new dataset if successful. Otherwise returns null.
+     */
+    public static H5ScalarDS create(
+        FileFormat file,
+        String name,
+        Group pgroup,
+        Datatype type,
+        long[] dims,
+        long[] maxdims,
+        long[] chunks,
+        int gzip) throws Exception
+    {
+        H5ScalarDS dataset = null;
+        String fullPath = null;
+
+        if (file == null ||
+            name == null ||
+            pgroup == null ||
+            dims == null ||
+            maxdims == null ||
+            (gzip>0 && chunks==null))
+            return null;
+
+        String path = HObject.separator;
+        if (!pgroup.isRoot())
+            path = pgroup.getPath()+pgroup.getName()+HObject.separator;
+        fullPath = path +  name;
+
+        // prepare the dataspace and datatype
+        int rank = dims.length;
+        int sid = H5.H5Screate_simple(rank, dims, maxdims);
+        int tid = type.toNative();
+
+        // figure out creation properties
+        int plist = HDF5Constants.H5P_DEFAULT;
+        if (chunks != null)
+        {
+            plist = H5.H5Pcreate (HDF5Constants.H5P_DATASET_CREATE);
+            H5.H5Pset_layout(plist, HDF5Constants.H5D_CHUNKED);
+            H5.H5Pset_chunk(plist, rank, chunks);
+        }
+        if (gzip > 0)
+            H5.H5Pset_deflate(plist, gzip);
+        int fid = file.open();
+
+        int did = H5.H5Dcreate(fid, fullPath, tid, sid, plist);
+        byte[] ref_buf = H5.H5Rcreate(
+            fid,
+            fullPath,
+            HDF5Constants.H5R_OBJECT,
+            -1);
+        long l = HDFNativeData.byteToLong(ref_buf, 0);
+        long[] oid = {l};
+
+        try {H5.H5Sclose(sid);} catch (HDF5Exception ex) {};
+        try {H5.H5Tclose(tid);} catch (HDF5Exception ex) {};
+        try {H5.H5Dclose(did);} catch (HDF5Exception ex) {};
+        try {H5.H5Pclose(plist);} catch (HDF5Exception ex) {};
+
+        dataset = new H5ScalarDS(file, name, path, oid);
+
+        return dataset;
     }
 
 }

@@ -13,6 +13,8 @@ package ncsa.hdf.view;
 
 import java.awt.Component;
 import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
@@ -72,9 +74,14 @@ implements ActionListener
     private final List fileList;
 
     /**
-     * The current selected data object.
+     * Selected file
      */
-    private HObject selectedObject;
+    private FileFormat selectedFile;
+
+    /**
+     * The current selected node.
+     */
+    private DefaultMutableTreeNode selectedNode;
 
     /**
      * The popup menu used to display user choice of actions on data object.
@@ -102,9 +109,16 @@ implements ActionListener
         tree = new JTree(treeModel);
         tree.setCellRenderer(new HTreeCellRenderer());
         tree.addMouseListener(new HTreeMouseAdapter());
-        tree.setRowHeight(20);
         tree.setRootVisible(false);
-        tree.setShowsRootHandles(true);
+        //tree.setShowsRootHandles(true);
+        tree.setRowHeight(23);
+        int fsize = ViewProperties.getFontSizeInt();
+        if (fsize >= 10 && fsize <=20)
+        {
+            Font font = tree.getFont();
+            Font newFont = new Font(font.getName(), font.getStyle(), fsize);
+            tree.setFont(newFont);
+        }
 
         // create the popupmenu
         popupMenu = createPopupMenu();
@@ -138,8 +152,9 @@ implements ActionListener
      * Add the root node of the file to the super root of the tree view.
      * <p>
      * @param filename the name of the file to open.
+     * @param flag file access id.
      */
-    public void openFile(String filename) throws Exception
+    public FileFormat openFile(String filename, int flag) throws Exception
     {
         FileFormat fileFormat = null;
         MutableTreeNode fileRoot = null;
@@ -152,15 +167,15 @@ implements ActionListener
 
         if (H4File.isThisType(filename))
         {
-            fileFormat = new H4File(filename);
+            fileFormat = new H4File(filename, flag);
         }
         else if (H5File.isThisType(filename))
         {
-            fileFormat = new H5File(filename);
+            fileFormat = new H5File(filename, flag);
         }
         else
         {
-            throw new UnsupportedOperationException("File format not supported.");
+            throw new UnsupportedOperationException("Unsupported format.");
         }
 
         if (fileFormat != null)
@@ -181,6 +196,8 @@ implements ActionListener
         {
             throw new java.io.IOException("Open file failed - "+filename);
         }
+
+        return fileFormat;
     }
 
     /**
@@ -201,6 +218,11 @@ implements ActionListener
                 try {
                     theFile.close();
                     fileList.remove(theFile);
+                    if (theFile.equals(selectedFile))
+                    {
+                        selectedFile = null;
+                        selectedNode = null;
+                    }
                 } catch (Exception ex) {
                     viewer.showStatus(ex.toString());
                 }
@@ -244,9 +266,228 @@ implements ActionListener
         try { fileList.clear(); }
         catch (Exception ex) {}
 
+        selectedFile = null;
+        selectedNode = null;
+
         // remove all files from the tree view
         ((DefaultMutableTreeNode)root).removeAllChildren();
         treeModel.reload();
+    }
+
+    /**
+     * Returns the list of current open files..
+     */
+    public List getOpenFiles()
+    {
+        return fileList;
+    }
+
+    /**
+     * Returns the selected node.
+     */
+    public MutableTreeNode getSelectedNode()
+    {
+        return selectedNode;
+    }
+
+    /**
+     * Returns the selected file.
+     */
+    public FileFormat getSelectedFile()
+    {
+        return selectedFile;
+    }
+
+
+    /**
+     * Returns the selected root node: a child node of the super root.
+     */
+    public TreeNode getSelectedRootNode()
+    {
+        if (selectedNode == null)
+            return null;
+
+        TreeNode theNode = selectedNode;
+        TreeNode pnode = theNode.getParent();
+        while (!pnode.equals(root))
+        {
+            theNode = pnode;
+            pnode = theNode.getParent();
+        }
+
+        return theNode;
+    }
+
+    /**
+     * Inserts an HObject into the tree.
+     * @param obj the object to add.
+     */
+    public void insertObject(HObject obj)
+    {
+        if (obj == null)
+            return;
+
+        String path = obj.getPath();
+
+        DefaultMutableTreeNode pnode = (DefaultMutableTreeNode)findTreeNode(path);
+        DefaultMutableTreeNode theNode = null;
+
+        if (obj instanceof Group)
+        {
+            theNode = new DefaultMutableTreeNode(obj)
+            {
+                public boolean isLeaf() { return false; }
+            };
+        }
+        else
+            theNode = new DefaultMutableTreeNode(obj);
+
+        ((Group)pnode.getUserObject()).addToMemberList(obj);
+
+        insertNode(theNode, pnode);
+    }
+
+    /**
+     * Insert a node into the tree.
+     * @param node the node to insert.
+     * @param pnode the parent node.
+     */
+    public void insertNode(TreeNode node, TreeNode pnode)
+    {
+        if (node == null || pnode==null)
+            return;
+
+        treeModel.insertNodeInto((DefaultMutableTreeNode)node,
+            (DefaultMutableTreeNode)pnode,
+            pnode.getChildCount());
+    }
+
+
+    /**
+     * Returns a list of all user objects that traverses the subtree rooted
+     * at this node in depth-first order..
+     * @param node the node to start with.
+     */
+    public static List depthFirstUserObjects(TreeNode node)
+    {
+        if (node == null)
+            return null;
+
+        Vector list = new Vector();
+        DefaultMutableTreeNode theNode = null;
+        Enumeration enum = ((DefaultMutableTreeNode)node).depthFirstEnumeration();
+        while(enum.hasMoreElements())
+        {
+            theNode = (DefaultMutableTreeNode)enum.nextElement();
+            list.add(theNode.getUserObject());
+        }
+
+        return list;
+    }
+
+    /**
+     * Returns a list of all user objects that traverses the subtree rooted
+     * at this node in breadth-first order..
+     * @param node the node to start with.
+     */
+    public static List breadthFirstUserObjects(TreeNode node)
+    {
+        if (node == null)
+            return null;
+
+        Vector list = new Vector();
+        DefaultMutableTreeNode theNode = null;
+        Enumeration enum = ((DefaultMutableTreeNode)node).breadthFirstEnumeration();
+        while(enum.hasMoreElements())
+        {
+            theNode = (DefaultMutableTreeNode)enum.nextElement();
+            list.add(theNode.getUserObject());
+        }
+
+        return list;
+    }
+
+    /**
+     * set the tree font.
+     */
+    public void setTreeFontSize(int fsize)
+    {
+        if (fsize >= 10 && fsize <=20)
+        {
+            Font font = tree.getFont();
+            Font newFont = new Font(font.getName(), font.getStyle(), fsize);
+            tree.setFont(newFont);
+        }
+    }
+
+    /** Returns a list of all selected objects.
+     */
+    public List getSelectedObjects()
+    {
+        TreePath[] paths = tree.getSelectionPaths();
+        if (paths == null || paths.length <=0)
+            return null;
+
+        List objs = new Vector();
+        HObject theObject = null;
+        DefaultMutableTreeNode currentNode = null;
+        for (int i=0; i<paths.length; i++)
+        {
+            currentNode = (DefaultMutableTreeNode) (paths[i].getLastPathComponent());
+            theObject = (HObject)currentNode.getUserObject();
+            if (theObject != null)
+                objs.add(theObject);
+        }
+
+        return objs;
+    }
+
+    /** remove selected nodes from the tree */
+    public void removeSelectedNodes()
+    {
+        TreePath[] currentSelections = tree.getSelectionPaths();
+
+        if (currentSelections == null || currentSelections.length <=0)
+            return;
+
+        for (int i=0; i< currentSelections.length; i++)
+        {
+            DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) (currentSelections[i].getLastPathComponent());
+            DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) (currentNode.getParent());
+            if (parentNode != null)
+            {
+                treeModel.removeNodeFromParent(currentNode);
+            }
+        }
+    }
+
+    /**
+     * Returns the node for a given path.
+     */
+    private TreeNode findTreeNode(String path)
+    {
+        TreeNode rootNode = getSelectedRootNode();
+        if (rootNode == null)
+            return null;
+
+        if (path.equals(HObject.separator))
+            return rootNode;
+
+        if (path.endsWith(HObject.separator))
+            path = path.substring(0, path.length()-1);
+
+        HObject obj = null;
+        DefaultMutableTreeNode theNode = null;
+        Enumeration enum = ((DefaultMutableTreeNode)rootNode).breadthFirstEnumeration();
+        while(enum.hasMoreElements())
+        {
+            theNode = (DefaultMutableTreeNode)enum.nextElement();
+            obj = (HObject)theNode.getUserObject();
+            if (path.equals(obj.getPath()+obj.getName()))
+                return theNode;
+        }
+
+        return null;
     }
 
     /**
@@ -307,6 +548,7 @@ implements ActionListener
         int x = e.getX();
         int y = e.getY();
 
+        HObject selectedObject = ((HObject)(selectedNode.getUserObject()));
         if (selectedObject instanceof Group)
         {
             popupMenu.getComponent(0).setEnabled(false);
@@ -349,7 +591,7 @@ implements ActionListener
 
         private Icon openFolder, closeFolder;
 
-        public HTreeCellRenderer()
+        private HTreeCellRenderer()
         {
             super();
 
@@ -452,9 +694,16 @@ implements ActionListener
             if (selPath == null)
                 return;
 
-            DefaultMutableTreeNode node =
-                (DefaultMutableTreeNode)selPath.getLastPathComponent();
-            selectedObject = ((HObject)(node.getUserObject()));
+            selectedNode = (DefaultMutableTreeNode)selPath.getLastPathComponent();
+            HObject selectedObject = ((HObject)(selectedNode.getUserObject()));
+            FileFormat theFile = selectedObject.getFileFormat();
+            if (!theFile.equals(selectedFile))
+            {
+                // a different file is selected, handle only one file a time
+                selectedFile = theFile;
+                tree.clearSelection();
+                tree.setSelectionPath(selPath);
+            }
 
             int mask = e.getModifiers();
 

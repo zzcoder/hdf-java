@@ -82,15 +82,8 @@ public class H4Group extends Group
         if (attributeList != null)
         {
             return attributeList;
-        }
-
-        if (isRoot())
-        {
-            // retrieve file annotation, GR and SDS globle attributes
-            attributeList = H4Accessory.getFileAnnotation(getFID(), attributeList);
-            attributeList = H4Accessory.getGRglobleAttribute(grid, attributeList);
-            attributeList = H4Accessory.getSDSglobleAttribute(sdid, attributeList);
-        }
+        } else
+            attributeList = new Vector();
 
         int vgid = open();
         if (vgid <= 0) return attributeList;
@@ -99,9 +92,6 @@ public class H4Group extends Group
 
         try {
             n = HDFLibrary.Vnattrs(vgid);
-            if (attributeList == null && n > 0)
-                attributeList = new Vector(n, 5);
-
             boolean b = false;
             String[] attrName = new String[1];
             int[] attrInfo = new int[3];
@@ -123,7 +113,7 @@ public class H4Group extends Group
                 Attribute attr = new Attribute(attrName[0], attrInfo[0], attrDims);;
                 attributeList.add(attr);
 
-                Object buf = H4Accessory.allocateArray(attrInfo[0], attrInfo[1]);
+                Object buf = H4Datatype.allocateArray(attrInfo[0], attrInfo[1]);
                 try {
                     HDFLibrary.Vgetattr(vgid, i, buf);
                 } catch (HDFException ex)
@@ -151,7 +141,20 @@ public class H4Group extends Group
     }
 
     // To do: implementing DataFormat
-    public void writeMetadata(Object info) throws HDFException {;}
+    public void writeMetadata(Object info) throws HDFException
+    {
+        // only attribute metadata is supported.
+        if (!(info instanceof Attribute))
+            return;
+
+        H4File.writeAttribute(this, (Attribute)info);
+
+        if (attributeList == null)
+            attributeList = new Vector();
+
+        attributeList.add(info);
+    }
+
 
    // To do: implementing DataFormat
     public void removeMetadata(Object info) throws HDFException {;}
@@ -183,11 +186,67 @@ public class H4Group extends Group
         return vgid;
     }
 
-  // Implementing HObject
-    public static void close(int vgid)
+    /** close group access. */
+    public void close(int vgid)
     {
         try { HDFLibrary.Vdetach(vgid); }
         catch (Exception ex) { ; }
+    }
+
+    /**
+     * Creates a new group.
+     * @param file the file which the group is added to.
+     * @param name the name of the group to create.
+     * @param pgroup the parent group of the new group.
+     * @return the new group if successful. Otherwise returns null.
+     */
+    public static H4Group create(FileFormat file, String name, Group pgroup)
+        throws Exception
+    {
+        H4Group group = null;
+        String fullPath = null;
+
+        if (file == null ||
+            name == null ||
+            pgroup == null)
+            return null;
+
+        String path = HObject.separator;
+        if (!pgroup.isRoot())
+            path = pgroup.getPath()+pgroup.getName()+HObject.separator;
+        fullPath = path +  name;
+
+        int fileid = file.open();
+        if (fileid < 0)
+            return null;
+
+        int gid = HDFLibrary.Vattach(fileid, -1, "w");
+        if (gid < 0)
+            return null;
+
+        HDFLibrary.Vsetname(gid, name);
+        int ref = HDFLibrary.VQueryref(gid);
+        int tag = HDFLibrary.VQuerytag(gid);
+
+        if (!pgroup.isRoot())
+        {
+            // add the dataset to the parent group
+            int pid = pgroup.open();
+            if (pid < 0)
+                throw (new HDFException("Unable to open the parent group."));
+
+            HDFLibrary.Vinsert(pid, gid);
+
+            pgroup.close(pid);
+        }
+
+        try { HDFLibrary.Vdetach(gid); }
+        catch (Exception ex) { ; }
+
+        long[] oid = {tag, ref};
+        group = new H4Group(file, name, path, pgroup, oid);
+
+        return group;
     }
 
 }

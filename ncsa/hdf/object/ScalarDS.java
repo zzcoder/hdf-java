@@ -69,6 +69,11 @@ public abstract class ScalarDS extends Dataset
     protected boolean isText;
 
     /**
+     * Flag to indicate if the original C data is unsigned integer.
+     */
+    protected boolean isUnsigned;
+
+    /**
      * Creates a ScalarDS object with specific name, path, and parent.
      * <p>
      * @param fileFormat the HDF file.
@@ -88,6 +93,7 @@ public abstract class ScalarDS extends Dataset
         palette = null;
         isImage = false;
         isText = false;
+        isUnsigned = false;
         interlace = -1;
     }
 
@@ -155,6 +161,14 @@ public abstract class ScalarDS extends Dataset
     public final int getInterlace()
     {
         return interlace;
+    }
+
+    /**
+     * Returns true if the original C data is unsigned integer.
+     */
+    public final boolean isUnsigned()
+    {
+        return isUnsigned;
     }
 
     /**
