@@ -1,0 +1,48 @@
+#/****************************************************************************
+# * NCSA HDF                                                                 *
+# * National Comptational Science Alliance                                   *
+# * University of Illinois at Urbana-Champaign                               *
+# * 605 E. Springfield, Champaign IL 61820                                   *
+# *                                                                          *
+# * For conditions of distribution and use, see the accompanying             *
+# * hdf-java/COPYING file.                                                   *
+# *                                                                          *
+# ****************************************************************************/
+
+H45INC=@H45INC@
+
+all: hdflib hdf5lib h4toh5lib
+
+hdflib: FORCE
+	cd hdflib; \
+	$(MAKE) ; 
+
+hdf5lib: FORCE
+	cd hdf5lib; \
+	$(MAKE) ; 
+
+h4toh5lib: FORCE
+	@if test -n "$(H45INC)" ; then $(MAKE) doh4toh5lib ; fi
+
+doh4toh5lib: 
+	cd h4toh5lib; \
+	$(MAKE) ; 
+
+clean: clean-hdflib clean-hdf5lib clean-h4toh5lib
+
+clean-hdflib:
+	cd hdflib; \
+	$(MAKE) clean ; 
+
+clean-hdf5lib:
+	cd hdf5lib; \
+	$(MAKE) clean ; 
+
+clean-h4toh5lib:
+	@if test -n "$(H45INC)" ; then $(MAKE) docleanh4toh5lib ; fi
+
+docleanh4toh5lib:
+	cd h4toh5lib; \
+	$(MAKE) clean ; 
+
+FORCE:
