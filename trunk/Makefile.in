@@ -575,7 +575,6 @@ ncsa.hdf.view: ./ncsa/hdf/view/TreeView.class \
 	./ncsa/hdf/view/NewAttributeDialog.class \
 	./ncsa/hdf/view/DefaultImageView.class \
 	./ncsa/hdf/view/DefaultImageView$$1.class \
-	./ncsa/hdf/view/DefaultImageView$$$2.class \
 	./ncsa/hdf/view/DefaultImageView$$Animation.class \
 	./ncsa/hdf/view/DefaultImageView$$BrightnessFilter.class \
 	./ncsa/hdf/view/DefaultImageView$$ContourFilter.class \
@@ -594,7 +593,6 @@ ncsa.hdf.view: ./ncsa/hdf/view/TreeView.class \
 	./ncsa/hdf/view/DefaultTreeView.class \
 	./ncsa/hdf/view/DefaultTreeView$1.class \
 	./ncsa/hdf/view/DefaultTreeView$2.class \
-	./ncsa/hdf/view/DefaultTreeView$$3.class \
 	./ncsa/hdf/view/DefaultTreeView$$HTreeCellRenderer.class \
 	./ncsa/hdf/view/DefaultTreeView$$HTreeMouseAdapter.class \
 	./ncsa/hdf/view/DefaultMetaDataView.class \
@@ -837,8 +835,7 @@ HDFVIEWCLASSES=./ncsa/hdf/view/TreeView.class \
 	./ncsa/hdf/view/NewAttributeDialog.class \
 	./ncsa/hdf/view/DefaultImageView.class \
 	./ncsa/hdf/view/DefaultImageView\$$1.class \
-	./ncsa/hdf/view/DefaultImageView$$$2.class \
-	./ncsa/hdf/view/DefaultImageView$$Animation.class \
+	./ncsa/hdf/view/DefaultImageView\$$Animation.class \
 	./ncsa/hdf/view/DefaultImageView\$$BrightnessFilter.class \
 	./ncsa/hdf/view/DefaultImageView\$$ContourFilter.class \
 	./ncsa/hdf/view/DefaultImageView\$$FlipFilter.class \
@@ -856,7 +853,6 @@ HDFVIEWCLASSES=./ncsa/hdf/view/TreeView.class \
 	./ncsa/hdf/view/DefaultTreeView.class \
 	./ncsa/hdf/view/DefaultTreeView\$$1.class \
 	./ncsa/hdf/view/DefaultTreeView\$$2.class \
-	./ncsa/hdf/view/DefaultTreeView\$$3.class \
 	./ncsa/hdf/view/DefaultTreeView\$$HTreeCellRenderer.class \
 	./ncsa/hdf/view/DefaultTreeView\$$HTreeMouseAdapter.class \
 	./ncsa/hdf/view/DefaultMetaDataView.class \
