@@ -341,7 +341,7 @@ public class H5Datatype extends Datatype
         }
         else if (tclass == HDF5Constants.H5T_VLEN)
         {
-            description = "Variable-length dataype";
+            description = "Variable-length";
         }
         else description = "Unknown";
 

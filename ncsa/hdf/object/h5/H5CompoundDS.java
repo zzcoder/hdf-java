@@ -313,7 +313,8 @@ public class H5CompoundDS extends CompoundDS
                 if (member_data == null)
                 {
                     String[] nullValues = new String[(int)lsize[0]];
-                    for (int j=0; j<lsize[0]; j++) nullValues[j] = "*error*";
+                    String errorStr = "not supported: "+ H5Datatype.getDatatypeDescription(member_tid);
+                    for (int j=0; j<lsize[0]; j++) nullValues[j] = errorStr;
                     list.add(nullValues);
                     continue;
                 }
