@@ -117,8 +117,7 @@ implements TableView, ActionListener
         isTransposed = transposed.booleanValue();
 
         HObject hobject = (HObject)viewer.getTreeView().getCurrentObject();
-        if (hobject == null || !(hobject instanceof Dataset))
-        {
+        if (hobject == null || !(hobject instanceof Dataset)) {
              return;
         }
 
@@ -335,13 +334,14 @@ implements TableView, ActionListener
         //item.setMnemonic(KeyEvent.VK_S);
         item.addActionListener(this);
         item.setActionCommand("Show statistics");
+        item.setEnabled(dataset instanceof ScalarDS);
         menu.add(item);
 
         item = new JMenuItem( "Math Conversion");
         //item.setMnemonic(KeyEvent.VK_M);
         item.addActionListener(this);
         item.setActionCommand("Math conversion");
-        item.setEnabled(isEditable);
+        item.setEnabled(isEditable && (dataset instanceof ScalarDS));
         menu.add(item);
 
         menu.addSeparator();

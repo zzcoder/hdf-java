@@ -567,7 +567,7 @@ implements TreeView, ActionListener {
 
         pasteObject(objectsToCopy, pnode, dstFile);
 
-        objectsToCopy = null;
+        //objectsToCopy = null;
     }
 
     /** paste selected objects */
@@ -651,8 +651,8 @@ implements TreeView, ActionListener {
             return;
         }
 
-        List objs = getSelectedObjects();
-        if (objs == null || objs.size()<=0)
+        TreePath[] currentSelections = tree.getSelectionPaths();
+        if (currentSelections == null || currentSelections.length <=0)
             return;
 
         int op = JOptionPane.showConfirmDialog(this,
@@ -663,12 +663,11 @@ implements TreeView, ActionListener {
         if (op == JOptionPane.NO_OPTION)
             return;
 
-        Iterator it = objs.iterator();
         String frameName = "";
         HObject theObj = null;
-
-        while (it.hasNext()) {
-            theObj = (HObject)it.next();
+        for (int i=0; i< currentSelections.length; i++) {
+            DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) (currentSelections[i].getLastPathComponent());
+            theObj = (HObject)currentNode.getUserObject();
 
             // cannot delete root
             if (theObj instanceof Group) {
@@ -684,6 +683,18 @@ implements TreeView, ActionListener {
                 }
             }
 
+            if (isObjectOpen(theObj)) {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(
+                    this,
+                    "Cannot delete the selected object: "+theObj+
+                    "\nThe dataset or dataset in the group is in use."+
+                    "\n\nPlease close the dataset(s) and try again.\n",
+                     "HDFView",
+                    JOptionPane.ERROR_MESSAGE);
+                continue;
+            }
+
             try {
                 theFile.delete(theObj);
             } catch (Exception ex) {
@@ -693,45 +704,64 @@ implements TreeView, ActionListener {
                     ex,
                     "HDFView",
                     JOptionPane.ERROR_MESSAGE);
+                continue;
             }
 
             if (theObj.equals(selectedObject))
                 selectedObject = null;
 
-            DataView dataView = viewer.getDataView(theObj);
-            if (dataView != null) {
-                dataView.dispose(); // close the opened data
-            }
-        } //  while (it.hasNext())
-
-        removeSelectedNodes();
+            removeNode(currentNode);
+        } //for (int i=0; i< currentSelections.length; i++) {
     }
 
-    /** remove selected nodes from the tree */
-    private void removeSelectedNodes()
+    private void removeNode(DefaultMutableTreeNode node)
     {
-        TreePath[] currentSelections = tree.getSelectionPaths();
-
-        if (currentSelections == null || currentSelections.length <=0)
+        if (node == null)
             return;
 
-        for (int i=0; i< currentSelections.length; i++) {
-            DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) (currentSelections[i].getLastPathComponent());
-            DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) (currentNode.getParent());
-            if (parentNode != null) {
-                treeModel.removeNodeFromParent(currentNode);
+        DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) (node.getParent());
+        if (parentNode != null) {
+            treeModel.removeNodeFromParent(node);
 
-                // add the two lines to fix bug in HDFView 1.2. Delete a subgroup and
-                // then copy the group to another group, the deleted group still exists.
-                Group pgroup = (Group)parentNode.getUserObject();
-                pgroup.removeFromMemberList((HObject)currentNode.getUserObject());
+            // add the two lines to fix bug in HDFView 1.2. Delete a subgroup and
+            // then copy the group to another group, the deleted group still exists.
+            Group pgroup = (Group)parentNode.getUserObject();
+            pgroup.removeFromMemberList((HObject)node.getUserObject());
 
-                if (currentNode.equals(selectedNode)) {
-                    selectedNode = null;
-                    selectedFile = null;
+            if (node.equals(selectedNode)) {
+                selectedNode = null;
+                selectedFile = null;
+            }
+        } // if (parentNode != null) {
+    }
+
+    private boolean isObjectOpen(HObject obj)
+    {
+        boolean isOpen = false;
+
+        if (obj instanceof Group) {
+            Group g = (Group) obj;
+            List members = g.getMemberList();
+            if (members == null || members.size() == 0)
+                isOpen = false;
+            else {
+                int n = members.size();
+                for (int i=0; i<n; i++) {
+                    HObject theObj = (HObject) members.get(i);
+                    isOpen = (viewer.getDataView(theObj) != null);
+                    if (isOpen)
+                        break;
                 }
-            } // if (parentNode != null) {
-        } // for (int i=0; i< currentSelections.length; i++) {
+            }
+        }
+        else {
+            if (viewer.getDataView(obj) == null)
+                isOpen = false;
+            else
+                isOpen = true;
+        }
+
+        return isOpen;
     }
 
     /**
@@ -1267,8 +1297,13 @@ implements TreeView, ActionListener {
         Object theView = null;
         Class theClass = ViewProperties.loadExtClass().loadClass(dataViewName);
         Object[] initargs = {viewer};
+
         if (dataViewName.startsWith("ncsa.hdf.view.DefaultTableView")) {
             Object[] tmpargs = {viewer, new Boolean(isDisplayTypeChar), new Boolean(isTransposed)};
+            initargs = tmpargs;
+        }
+        else if (dataViewName.startsWith("ncsa.hdf.view.DefaultImageView")) {
+            Object[] tmpargs = {viewer, new Boolean(isTransposed)};
             initargs = tmpargs;
         }
 

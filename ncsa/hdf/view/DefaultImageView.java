@@ -79,6 +79,12 @@ implements ImageView, ActionListener
     /** Vertical direction to flip an image. */
     public static final int FLIP_VERTICAL   = 1;
 
+    /** ROTATE IMAGE 90 DEGREE CLOCKWISE. */
+    public static final int ROTATE_CW_90 = 10;
+
+    /** ROTATE IMAGE COUNTER CLOCKWISE 90 DEGREE. */
+    public static final int ROTATE_CCW_90   = 11;
+
     /**
      * The main HDFView.
      */
@@ -131,11 +137,11 @@ implements ImageView, ActionListener
     /** Flag to indicate if the image is plane interleaved */
     private boolean isPlaneInterlace;
 
-    /** Flag to indicate if the image is flipped horizontally. */
-    private boolean isHorizontalFlipped;
+    private boolean isHorizontalFlipped = false;
 
-    /** Flag to indicate if the image is flipped vertically. */
-    private boolean isVerticalFlipped;
+    private boolean isVerticalFlipped = false;
+
+    private int rotateCount = 0;
 
     /** the number type of the image data */
     private char NT;
@@ -156,12 +162,25 @@ implements ImageView, ActionListener
 
     private int animationSpeed = 2;
 
+    private List rotateRelatedItems;
+
+
     /**
      * Constructs an ImageView.
      * <p>
      * @param theView the main HDFView.
      */
     public DefaultImageView(ViewManager theView)
+    {
+        this(theView, Boolean.FALSE);
+    }
+
+    /**
+     * Constructs an ImageView.
+     * <p>
+     * @param theView the main HDFView.
+     */
+    public DefaultImageView(ViewManager theView, Boolean isTransposed)
     {
         super();
 
@@ -176,14 +195,13 @@ implements ImageView, ActionListener
         isTrueColor = false;
         is3D = false;
         isPlaneInterlace = false;
-        isHorizontalFlipped = false;
-        isVerticalFlipped = false;
         isUnsigned = false;
         data = null;
         NT = 0;
         toolkit = Toolkit.getDefaultToolkit();
         dataRange = new double[2];
         dataRange[0] = dataRange[1] = 0;
+        rotateRelatedItems = new Vector();
 
         HObject hobject = (HObject)viewer.getTreeView().getCurrentObject();
         if (hobject == null || !(hobject instanceof ScalarDS)) {
@@ -271,6 +289,16 @@ implements ImageView, ActionListener
 
         setJMenuBar(createMenuBar());
         viewer.showStatus(sb.toString());
+
+        // tanspose the image
+        if (isTransposed.booleanValue()) {
+            rotate(ROTATE_CW_90);
+            rotateCount++;
+            n = rotateRelatedItems.size();
+            for (int i=0; i< n; i++) {
+                ((javax.swing.JComponent)rotateRelatedItems.get(i)).setEnabled(false);
+            }
+        }
     }
 
     private JMenuBar createMenuBar() {
@@ -289,10 +317,11 @@ implements ImageView, ActionListener
 
         menu.addSeparator();
 
-        item = new JMenuItem( "Write Selection to New Image");
+        item = new JMenuItem( "Write Selection to Image");
         item.addActionListener(this);
         item.setActionCommand("Write selection to image");
         item.setEnabled(isEditable);
+        rotateRelatedItems.add(item);
         menu.add(item);
 
         menu.addSeparator();
@@ -307,6 +336,7 @@ implements ImageView, ActionListener
         item.addActionListener(this);
         item.setActionCommand("Show chart");
         item.setEnabled(!isTrueColor);
+        rotateRelatedItems.add(item);
         menu.add(item);
 
         menu.addSeparator();
@@ -323,15 +353,32 @@ implements ImageView, ActionListener
 
         menu.addSeparator();
 
+        JMenu imageMenu = new JMenu("Flip");
+        menu.add(imageMenu);
+
         item = new JMenuItem( "Flip Horizontal");
         item.addActionListener(this);
         item.setActionCommand("Flip horizontal");
-        menu.add(item);
+        imageMenu.add(item);
 
         item = new JMenuItem( "Flip Vertical");
         item.addActionListener(this);
         item.setActionCommand("Flip vertical");
-        menu.add(item);
+        imageMenu.add(item);
+
+        imageMenu = new JMenu("Rotate Image");
+        menu.add(imageMenu);
+
+        char t= 186;
+        item = new JMenuItem( "90"+t+" CW");
+        item.addActionListener(this);
+        item.setActionCommand("Rotate clockwise");
+        imageMenu.add(item);
+
+        item = new JMenuItem( "90"+t+" CCW");
+        item.addActionListener(this);
+        item.setActionCommand("Rotate counter clockwise");
+        imageMenu.add(item);
 
         menu.addSeparator();
 
@@ -371,6 +418,7 @@ implements ImageView, ActionListener
         JCheckBoxMenuItem imageValueCheckBox = new JCheckBoxMenuItem( "Show Value", false);
         imageValueCheckBox.addActionListener(this);
         imageValueCheckBox.setActionCommand("Show image value");
+        rotateRelatedItems.add(imageValueCheckBox);
         menu.add(imageValueCheckBox);
 
         menu.addSeparator();
@@ -599,7 +647,7 @@ implements ImageView, ActionListener
                 data = dataset.getData();
 
                 // converts raw data to image data
-                byte[] imageData = getBytes(data, dataRange);
+                byte[] imageData = Tools.getBytes(data, dataRange);
 
                 int w = dataset.getWidth();
                 int h = dataset.getHeight();
@@ -623,7 +671,7 @@ implements ImageView, ActionListener
                 data = dataset.getData();
 
                 // converts raw data to image data
-                indexedImageData = getBytes(data, dataRange);
+                indexedImageData = Tools.getBytes(data, dataRange);
 
                 int w = dataset.getWidth();
                 int h = dataset.getHeight();
@@ -724,8 +772,8 @@ implements ImageView, ActionListener
 
 
         if( rec == null ||
-            rec.getWidth()==0 ||
-            rec.getHeight()== 0)
+            rec.getWidth()<=0 ||
+            rec.getHeight()<= 0)
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
@@ -797,6 +845,14 @@ implements ImageView, ActionListener
     }
 
     // implementing ImageObserver
+    private void rotate(int direction)
+    {
+        Rotate90Filter filter = new Rotate90Filter(direction);
+        changeImageFilter(filter);
+    }
+
+
+    // implementing ImageObserver
     private void contour(int level)
     {
         ImageFilter filter = new ContourFilter(level);
@@ -828,198 +884,6 @@ implements ImageView, ActionListener
         //javax.swing.plaf.basic.BasicInternalFrameUI$BorderListener.mousePressed(BasicInternalFrameUI.java:693)
     }
 
-
-    /**
-     *  Convert an array of raw data into array of a byte data.
-     *  Byte data ranged from -128 to 127.
-     *  <p>
-     *  @param rawData The input raw data.
-     *  @param minmax the range of the raw data.
-     *  @return the byte array of pixel data.
-     */
-    private byte[] getBytes(Object rawData, double[] minmax)
-    {
-        byte[] byteData = null;
-
-        // no pnput data
-        if (rawData == null)
-            return null;
-
-        // input data is not an array
-        if (!rawData.getClass().isArray())
-            return null;
-
-        double min=Double.MAX_VALUE, max=-Double.MAX_VALUE, ratio=1.0d;
-        String cname = rawData.getClass().getName();
-        char dname = cname.charAt(cname.lastIndexOf("[")+1);
-
-        if (minmax == null)
-        {
-            minmax = new double[2];
-            minmax[0] = minmax[1] = 0;
-        }
-
-        // no need for conversion
-        if (dname == 'B')
-        {
-            minmax[0] = 0;
-            minmax[1] = 255;
-            return (byte[]) rawData;
-        }
-
-        int size = Array.getLength(rawData);
-
-        byteData = new byte[size];
-
-        boolean minmaxFound = !(minmax[0] == minmax[1]);
-
-        switch (dname)
-        {
-            case 'S':
-                short[] s = (short[])rawData;
-
-                if (minmaxFound)
-                {
-                    min = minmax[0];
-                    max = minmax[1];
-                }
-                else
-                {
-                    // search for the minimum and maximum of the raw data
-                    for (int i=0; i<size; i++)
-                    {
-                        min = Math.min(min, s[i]);
-                        max = Math.max(max, s[i]);
-                    }
-                }
-
-                // converts the data based on the ratio to support only 256 colors
-                ratio = (min == max) ? 1.00d : (double)(255.00/(max-min));
-                for (int i=0; i<size; i++)
-                {
-                    byteData[i] = (byte)((s[i]-min)*ratio);
-                }
-
-                break;
-
-            case 'I':
-                int[] ia = (int[])rawData;
-
-                if (minmaxFound)
-                {
-                    min = minmax[0];
-                    max = minmax[1];
-                }
-                else
-                {
-                    // search for the minimum and maximum of the raw data
-                    for (int i=0; i<size; i++)
-                    {
-                        min = Math.min(min, ia[i]);
-                        max = Math.max(max, ia[i]);
-                    }
-                }
-
-                // converts the data based on the ratio to support only 256 colors
-                ratio = (min == max) ? 1.00d : (double)(255.00/(max-min));
-                for (int i=0; i<size; i++)
-                {
-                    byteData[i] = (byte)((ia[i] - min)*ratio);
-                }
-
-                break;
-
-            case 'J':
-                long[] l = (long[])rawData;
-
-                if (minmaxFound)
-                {
-                    min = minmax[0];
-                    max = minmax[1];
-                }
-                else
-                {
-                    // search for the minimum and maximum of the raw data
-                    for (int i=0; i<size; i++)
-                    {
-                        min = Math.min(min, l[i]);
-                        max = Math.max(max, l[i]);
-                    }
-                }
-
-                // converts the data based on the ratio to support only 256 colors
-                ratio = (min == max) ? 1.00d : (double)(255.00/(max-min));
-                for (int i=0; i<size; i++)
-                {
-                    byteData[i] = (byte)((l[i]-min)*ratio);
-                }
-
-                break;
-
-            case 'F':
-                float[] f = (float[])rawData;
-
-                if (minmaxFound)
-                {
-                    min = minmax[0];
-                    max = minmax[1];
-                }
-                else
-                {
-                    // search for the minimum and maximum of the raw data
-                    for (int i=0; i<size; i++)
-                    {
-                        min = Math.min(min, f[i]);
-                        max = Math.max(max, f[i]);
-                    }
-                }
-
-                // converts the data based on the ratio to support only 256 colors
-                ratio = (min == max) ? 1.00d : (double)(255.00/(max-min));
-                for (int i=0; i<size; i++)
-                {
-                    byteData[i] = (byte)((f[i]-min)*ratio);
-                }
-
-                break;
-
-            case 'D':
-                double[] d = (double[])rawData;
-
-                if (minmaxFound)
-                {
-                    min = minmax[0];
-                    max = minmax[1];
-                }
-                else
-                {
-                    // search for the minimum and maximum of the raw data
-                    for (int i=0; i<size; i++)
-                    {
-                        min = Math.min(min, d[i]);
-                        max = Math.max(max, d[i]);
-                    }
-                }
-
-                // converts the data based on the ratio to support only 256 colors
-                ratio = (min == max) ? 1.00d : (double)(255.00/(max-min));
-                for (int i=0; i<size; i++)
-                {
-                    byteData[i] = (byte)((d[i]-min)*ratio);
-                }
-
-                break;
-
-            default:
-                byteData = null;
-                break;
-        } // switch (dname)
-
-        minmax[0] = min;
-        minmax[1] = max;
-
-        return byteData;
-    }
 
     /**
      * This method returns true if the specified image has transparent pixels.
@@ -1280,6 +1144,24 @@ implements ImageView, ActionListener
         }
         else if (cmd.equals("Flip vertical")) {
             flip(FLIP_VERTICAL);
+        }
+        else if (cmd.startsWith("Rotate")) {
+            if (cmd.equals("Rotate clockwise")) {
+                rotate(ROTATE_CW_90);
+                rotateCount++;
+                if (rotateCount == 4) rotateCount = 0;
+            }
+            else {
+                rotate(ROTATE_CCW_90);
+                rotateCount--;
+                if (rotateCount == -4) rotateCount = 0;
+            }
+
+            int n = rotateRelatedItems.size();
+            for (int i=0; i< n; i++) {
+                boolean itemState =  (rotateCount == 0);
+                ((javax.swing.JComponent)rotateRelatedItems.get(i)).setEnabled(itemState);
+            }
         }
         else if (cmd.equals("Show image value")) {
             boolean b = ((JCheckBoxMenuItem)source).getState();
@@ -2315,6 +2197,160 @@ implements ImageView, ActionListener
 
     } // private class ContourFilter extends ImageFilter
 
+    private class Rotate90Filter extends ImageFilter {
+        private ColorModel defaultRGB = ColorModel.getRGBdefault();
+
+        private double coord[] = new double[2];
+
+        private int raster[];
+        private int xoffset, yoffset;
+        private int srcW, srcH;
+        private int dstW, dstH;
+        private int direction;
+
+        public Rotate90Filter(int dir) {
+            direction = dir;
+        }
+
+        public void transform(double x, double y, double[] retcoord) {
+            if (direction == ROTATE_CW_90) {
+                retcoord[0] =  -y;
+                retcoord[1] = x;
+            } else {
+                retcoord[0] = y;
+                retcoord[1] = -x;
+            }
+        }
+
+        public void itransform(double x, double y, double[] retcoord) {
+            if (direction == ROTATE_CCW_90) {
+                retcoord[0] =  -y;
+                retcoord[1] = x;
+            } else {
+                retcoord[0] = y;
+                retcoord[1] = -x;
+            }
+        }
+
+        public void transformBBox(Rectangle rect) {
+            double minx = Double.POSITIVE_INFINITY;
+            double miny = Double.POSITIVE_INFINITY;
+            double maxx = Double.NEGATIVE_INFINITY;
+            double maxy = Double.NEGATIVE_INFINITY;
+            for (int y = 0; y <= 1; y++) {
+                for (int x = 0; x <= 1; x++) {
+                    transform(rect.x + x * rect.width, rect.y + y * rect.height, coord);
+                    minx = Math.min(minx, coord[0]);
+                    miny = Math.min(miny, coord[1]);
+                    maxx = Math.max(maxx, coord[0]);
+                    maxy = Math.max(maxy, coord[1]);
+                }
+            }
+            rect.x = (int) Math.floor(minx);
+            rect.y = (int) Math.floor(miny);
+            rect.width = (int) Math.ceil(maxx) - rect.x + 1;
+            rect.height = (int) Math.ceil(maxy) - rect.y + 1;
+        }
+
+        public void setDimensions(int width, int height) {
+            Rectangle rect = new Rectangle(0, 0, width, height);
+            transformBBox(rect);
+            xoffset = -rect.x;
+            yoffset = -rect.y;
+            srcW = width;
+            srcH = height;
+            dstW = rect.width;
+            dstH = rect.height;
+            raster = new int[srcW * srcH];
+            consumer.setDimensions(dstW, dstH);
+        }
+
+        public void setProperties(Hashtable props) {
+            props = (Hashtable) props.clone();
+            Object o = props.get("filters");
+            if (o == null) {
+                props.put("filters", toString());
+            } else if (o instanceof String) {
+                props.put("filters", ((String) o)+toString());
+            }
+            consumer.setProperties(props);
+        }
+
+        public void setColorModel(ColorModel model) {
+            consumer.setColorModel(defaultRGB);
+        }
+
+        public void setHints(int hintflags) {
+            consumer.setHints(TOPDOWNLEFTRIGHT
+                | COMPLETESCANLINES
+                | SINGLEPASS
+                | (hintflags & SINGLEFRAME));
+        }
+
+        public void setPixels(int x, int y, int w, int h, ColorModel model, byte pixels[], int off, int scansize) {
+            int srcoff = off;
+            int dstoff = y * srcW + x;
+            for (int yc = 0; yc < h; yc++) {
+                for (int xc = 0; xc < w; xc++) {
+                    raster[dstoff++] = model.getRGB(pixels[srcoff++] & 0xff);
+                }
+                srcoff += (scansize - w);
+                dstoff += (srcW - w);
+            }
+        }
+
+        public void setPixels(int x, int y, int w, int h, ColorModel model, int pixels[], int off, int scansize) {
+            int srcoff = off;
+            int dstoff = y * srcW + x;
+            if (model == defaultRGB) {
+                for (int yc = 0; yc < h; yc++) {
+                    System.arraycopy(pixels, srcoff, raster, dstoff, w);
+                    srcoff += scansize;
+                    dstoff += srcW;
+                }
+            } else {
+                for (int yc = 0; yc < h; yc++) {
+                    for (int xc = 0; xc < w; xc++) {
+                        raster[dstoff++] = model.getRGB(pixels[srcoff++]);
+                    }
+                    srcoff += (scansize - w);
+                    dstoff += (srcW - w);
+                }
+            }
+        }
+
+        public void imageComplete(int status) {
+            if (status == IMAGEERROR || status == IMAGEABORTED) {
+                consumer.imageComplete(status);
+                return;
+            }
+            int pixels[] = new int[dstW];
+            for (int dy = 0; dy < dstH; dy++) {
+                itransform(0 - xoffset, dy - yoffset, coord);
+                double x1 = coord[0];
+                double y1 = coord[1];
+                itransform(dstW - xoffset, dy - yoffset, coord);
+                double x2 = coord[0];
+                double y2 = coord[1];
+                double xinc = (x2 - x1) / dstW;
+                double yinc = (y2 - y1) / dstW;
+                for (int dx = 0; dx < dstW; dx++) {
+                    int sx = (int) Math.round(x1);
+                    int sy = (int) Math.round(y1);
+                    if (sx < 0 || sy < 0 || sx >= srcW || sy >= srcH) {
+                        pixels[dx] = 0;
+                    } else {
+                        pixels[dx] = raster[sy * srcW + sx];
+                    }
+                    x1 += xinc;
+                    y1 += yinc;
+                }
+                consumer.setPixels(0, dy, dstW, 1, defaultRGB, pixels, 0, dstW);
+            }
+            consumer.imageComplete(status);
+        }
+    } // private class RotateFilter
+
     /**
      * Makes animaion for 3D images.
      */
@@ -2383,7 +2419,7 @@ implements ImageView, ActionListener
                     start[selectedIndex[2]] = i;
                     try { data3d = dataset.read(); }
                     catch (Throwable err) { continue;}
-                    byteData = getBytes(data3d, dataRange);
+                    byteData = Tools.getBytes(data3d, dataRange);
                     frames[i] = createIndexedImage(byteData, imagePalette, w, h);
                 }
             } finally {
