@@ -1,0 +1,450 @@
+#****************************************************************************
+#* NCSA HDF                                                                 *
+#* National Comptational Science Alliance                                   *
+#* University of Illinois at Urbana-Champaign                               *
+#* 605 E. Springfield, Champaign IL 61820                                   *
+#*                                                                          *
+#* For conditions of distribution and use, see the accompanying             *
+#* hdf-java/COPYING file.                                                   *
+#*                                                                          *
+#****************************************************************************/
+
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(native/hdflib/hdfImp.c)
+AC_CONFIG_AUX_DIR(./Config)
+
+dnl Checks for programs.
+AC_PROG_CC
+
+AC_PROG_MAKE_SET
+AC_PROG_INSTALL
+
+AC_HEADER_STDC                    
+AC_CHECK_LIB(m,ceil)
+
+if test "`uname`" = "SunOS" -o "`uname -sr`" = "HP-UX B.11.00"; then
+  dnl ...for Solaris and hdf4
+  AC_CHECK_LIB(nsl, xdr_int)
+fi
+
+
+AC_PREFIX_DEFAULT("")
+AC_PROG_RANLIB
+AC_PATH_PROG(RM,rm,\"\",,)
+AC_PATH_PROG(FIND,find,\"\",,)
+
+AC_CANONICAL_SYSTEM
+TARGET=$target
+case $target in
+*-*-solaris2*) TARGETLIB="solaris"
+;;
+mips*-sgi-irix6*) 
+TARGETLIB="irix"
+;;
+*-pc-linux*) LD=$CC; LDOPT=-shared; SLEXT="so";
+TARGETLIB="linux"
+;;
+*) LD=$CC; LDOPT=-G; SLEXT="so";
+TARGETLIB="$target"
+esac
+HERE=`pwd`
+
+dnl  Check for HDF4 library  --with-hdf4 must be set.
+
+withval=""
+AC_ARG_WITH(hdf4,[  --with-hdf4=INC,LIB     Path to the HDF4 library (required if not in default path)])
+case "$withval" in
+  yes)
+    AC_MSG_ERROR(HDF4 library needed for compilation.)
+    ;;
+  no)
+    AC_MSG_ERROR(HDF4 library needed for compilation.)
+    ;;
+  *)
+    hdf4_inc="`echo $withval |cut -f1 -d,`"
+    if test -n "$hdf4_inc"; then
+      HDF4INC="$hdf4_inc"
+      saved_CPPFLAGS="$CPPFLAGS"
+      CPPFLAGS="$CPPFLAGS -I$hdf4_inc"
+      AC_CHECK_HEADERS(mfhdf.h,,CPPFLAGS="$saved_CPPFLAGS")
+    else
+      AC_CHECK_HEADERS(mfhdf.h)
+    fi
+
+    hdf4_lib="`echo $withval |cut -f2 -d, -s`"
+    if test -n "$hdf4_lib"; then
+      HDF4LIB="$hdf4_lib"
+      saved_LDFLAGS="$LDFLAGS"
+      LDFLAGS="$LDFLAGS -L$hdf4_lib"
+      AC_CHECK_LIB(z, compress)
+      AC_CHECK_LIB(jpeg, jpeg_start_compress)
+      AC_CHECK_LIB(df, Hstartaccess)
+      AC_CHECK_LIB(mfhdf, SDstart)
+    else
+      AC_CHECK_LIB(z, compress)
+      AC_CHECK_LIB(jpeg, jpeg_start_compress)
+      AC_CHECK_LIB(df, Hstartaccess)
+      AC_CHECK_LIB(mfhdf, SDstart)
+    fi
+    ;;
+esac
+
+ac_cv_lib_HDF4=$HDF4LIB
+ac_cv_lib_HDF4INC=$HDF4INC
+
+ZLIB=$HDF4LIB"/libz.a"
+
+dnl  Check for HDF5 library  --with-hdf5 must be set.
+withval="";
+AC_SUBST(LIBHDF5) LIBHDF5=""
+AC_ARG_WITH(hdf5,[  --with-hdf5=INC,LIB     Path to the HDF5 library (requied if not in default path)],,)
+case "$withval" in
+  yes)
+    AC_MSG_ERROR(HDF5 library needed for compilation.)
+    ;;
+  no)
+    AC_MSG_ERROR(HDF5 library needed for compilation.)
+    ;;
+  *)
+    hdf5_inc="`echo $withval |cut -f1 -d,`"
+    if test -n "$hdf5_inc"; then
+      HDF5INC="$hdf5_inc"
+      saved_CPPFLAGS="$CPPFLAGS"
+      CPPFLAGS="$CPPFLAGS -I$hdf5_inc"
+    fi
+
+    AC_CHECK_HEADERS(hdf5.h,,
+                     CPPFLAGS="$saved_CPPFLAGS"
+                     AC_MSG_ERROR(cannot find HDF5 header files!))
+
+    hdf5_lib="`echo $withval | cut -f2 -d, -s`"
+
+    if test -n "$hdf5_lib"; then
+      HDF5LIB="$hdf5_lib"
+      saved_LDFLAGS="$LDFLAGS"
+      LDFLAGS="$LDFLAGS -L$hdf5_lib"
+      AC_CHECK_LIB(hdf5, H5open,, LDFLAGS="$saved_LDFLAGS"
+                 AC_MSG_ERROR(cannot find HDF5 library.))
+    else
+	 AC_MSG_ERROR(cannot find HDF5 library path.)
+    fi
+    ;;
+esac
+
+ac_cv_lib_HDF5=$HDF5LIB
+ac_cv_lib_HDF5INC=$HDF5INC
+
+dnl check for libh4toh5  == if with-h4toh5 is not set, then can
+dnl only build hdf and hdf5 separately.
+
+USEH45="no"
+withval="";
+AC_SUBST(LIBH45) LIBH45=""
+AC_ARG_WITH(h4toh5,[  --with-h4toh5=INC,LIB     Path to the HDF 4 to 5 library (optional feature, if selected then path required is not in default path)],,)
+case "$withval" in
+  yes)
+    AC_MSG_ERROR(HDF 4 to 5 library needed for compilation.)
+    ;;
+  no)
+    #AC_MSG_ERROR(HDF 4 to 5 library needed for compilation.)
+	H45LIB=""
+	H45INC=""
+    ;;
+  *)
+    if test -n "$withval"; then
+        hdf45_inc="`echo $withval |cut -f1 -d,`"
+        if test -n "$hdf45_inc"; then
+          HDF45INC="$hdf45_inc"
+          saved_CPPFLAGS="$CPPFLAGS"
+          CPPFLAGS="$CPPFLAGS -I$hdf45_inc"
+        fi
+    
+        AC_CHECK_HEADERS(h4toh5.h,,
+                         CPPFLAGS="$saved_CPPFLAGS"
+                         AC_MSG_ERROR(cannot find HDF45 header files!))
+    
+        hdf45_lib="`echo $withval | cut -f2 -d, -s`"
+    
+        if test -n "$hdf45_lib"; then
+          HDF45LIB="$hdf45_lib"
+          saved_LDFLAGS="$LDFLAGS"
+          LDFLAGS="$LDFLAGS -L$hdf45_lib"
+          AC_CHECK_LIB(h4toh5, H4toh5open,, LDFLAGS="$saved_LDFLAGS"
+                     AC_MSG_ERROR(cannot find HDF45 library.))
+        else
+    	 AC_MSG_ERROR(cannot find HDF45 library path.)
+        fi
+	USEH45="yes"
+    fi
+    ;;
+esac
+
+H45LIB=$HDF45LIB
+H45INC=$HDF45INC
+
+ac_cv_lib_HDF45=$HDF45LIB
+ac_cv_lib_HDF45INC=$HDF45INC
+
+dnl  find java stuff:  use -with-jdk
+
+withval="";
+AC_SUBST(JAVALIB) JAVALIB=""
+AC_ARG_WITH(jdk,[  --with-jdk=INC,LIB     Path to the JDK (required if not in default path)],,)
+case "$withval" in
+  yes)
+    AC_MSG_ERROR(JDK needed for compilation.)
+    ;;
+  no)
+    AC_MSG_ERROR(JDK needed for compilation.)
+    ;;
+  *)
+    jdk_inc="`echo $withval |cut -f1 -d,`"
+    if test -n "$jdk_inc"; then
+      JAVAINC="$jdk_inc"
+      saved_CPPFLAGS="$CPPFLAGS"
+      CPPFLAGS="$CPPFLAGS -I$jdk_inc -I$jdk_inc/$TARGETLIB"
+    fi
+
+    AC_CHECK_HEADERS(jni.h,,
+                     CPPFLAGS="$saved_CPPFLAGS"
+                     AC_MSG_ERROR(cannot find JDK header files!))
+
+    jdk_lib="`echo $withval | cut -f2 -d, -s`"
+
+    if test -n "$jdk_lib"; then
+      JAVALIB="$jdk_lib"
+    else
+	 AC_MSG_ERROR(cannot find jdk library path.)
+    fi
+    ;;
+esac
+
+if test -f $JAVALIB/classes.zip ; then
+	JAVACLASSES=$JAVALIB/classes.zip
+	JAVACLASSPATH_FOUND=1
+elif test -f $JAVALIB/rt.jar ; then
+	JAVACLASSES=$JAVALIB/rt.jar
+	JAVACLASSPATH_FOUND=1
+elif test -d $JAVALIB/classes ; then
+	JAVACLASSES=$JAVALIB/classes
+	JAVACLASSPATH_FOUND=1
+else
+	JL=`dirname $JAVALIB`
+	if test -f $JL/jre/lib/rt.jar; then
+		JAVACLASSES=$JL/jre/lib/rt.jar
+		JAVACLASSPATH_FOUND=1
+		JAVALIB=$JL/jre/lib
+		AC_SUBST(JAVALIB) JAVALIB=""
+	else
+		 AC_MSG_ERROR(cannot find jdk classes in JDK lib path.)
+	fi
+fi
+CLASSPATH="$JAVACLASSES"":""$HERE"
+
+
+JAVABIN=`dirname $JAVAINC`
+JAVABIN="$JAVABIN/bin"
+
+AC_PATH_PROG(JAVA,java,,$JAVABIN,)
+AC_PATH_PROG(JAVAC,javac,,$JAVABIN,)
+AC_PATH_PROG(JAVADOC,javadoc,,$JAVABIN,)
+AC_PATH_PROG(JAR,jar,,$JAVABIN,)
+
+dnl  optional find the jhdf wrappers 
+
+withval="";
+AC_ARG_WITH(jhdf4,[  --with-jhdf4=LIB     Path to the jhdf4,jar (optional override, used only by H4 to H5) ],,)
+case "$withval" in
+  yes)
+    AC_MSG_ERROR(jhdf4 path needed for compilation.)
+    ;;
+  no)
+    #AC_MSG_ERROR(jhdf4 needed for compilation.)
+	# use default path
+    ;;
+  *)
+    jhdf_jar="`echo $withval |cut -f1 -d,`"
+    if test -n "$jhdf_jar"; then
+	CLASSPATH="$CLASSPATH"":""$jhdf_jar""/jhdf.jar"
+    #else
+        #AC_MSG_ERROR(jhdf.jar needed for compilation.)
+	# use default path...
+    fi
+    ;;
+esac
+
+withval="";
+AC_ARG_WITH(jhdf5,[  --with-jhdf5=LIB     Path to the jhdf45.jar (optional override, used only by the H4 to H5 library) ],,)
+case "$withval" in
+  yes)
+    AC_MSG_ERROR( jhdf5 path needed for compilation.)
+    ;;
+  no)
+    #AC_MSG_ERROR( jhdf5 needed for compilation.)
+	# use default path
+    ;;
+  *)
+    jhdf5_jar="`echo $withval |cut -f1 -d,`"
+    if test -n "$jhdf5_jar"; then
+	CLASSPATH="$CLASSPATH"":""$jhdf5_jar""/jhdf5.jar"
+    #else
+	   # AC_MSG_ERROR(jhdf5.jar needed for compilation.)
+	# use default path...
+    fi
+    ;;
+esac
+
+ac_cv_lib_JAVAINC=$JAVAINC
+
+
+($JAVA -version 2>&1 )|  grep 'java version' | grep '\"1.2' > /dev/null 2>&1;
+JAVA1_2=$?;
+($JAVA -version 2>&1 )|  grep 'java version' | grep '\"1.3' > /dev/null 2>&1;
+JAVA1_3=$?;
+
+if test "$prefix" != "NONE" ; then
+	JH45INST="$prefix"
+else
+	JH45INST=""
+fi
+
+JH45INST_FOUND=1
+if test -z "$JH45INST" ; then
+AC_CACHE_CHECK("JH45 install directory",ac_cv_lib_JH45INST,JH45INST_FOUND=0)
+fi
+if test $JH45INST_FOUND -eq 1; then
+	if test -z "$JH45INST" ; then
+		JH45INST=$ac_cv_lib_JH45INST;
+	fi
+	if test \( ! -d "$JH45INST" \); then
+		JH45INST_FOUND=0
+	fi
+	if test \( ! -w "$JH45INST" \); then
+		AC_MSG_ERROR( [ $JAVINST : not writable ])
+		JH45INST_FOUND=0
+	fi
+fi
+until test $JH45INST_FOUND -eq 1; do
+	echo "Please type the directory in which to install the JH45"
+	read JH45INST
+	JH45INST_FOUND=1
+	if test \( ! -d "$JH45INST" \); then
+		JH45INST_FOUND=0
+	fi
+	if test \( ! -w "$JH45INST" \); then
+		AC_MSG_ERROR( [ $JAVINST : not writable ])
+		JH45INST_FOUND=0
+	fi
+done
+
+ac_cv_lib_JH45INST=$JH45INST
+JHVINST=$JH45INST
+JH5INST=$JH45INST
+
+case $target in
+*-*-solaris2*) 
+LD=$CC; LDOPT=-G; SLEXT="so";
+COPT=-G; COPTNOSHARED=; JAVAINC2=$JAVAINC/solaris ; JAVATARG=solaris;
+;;
+mips*-sgi-irix6*) LD=ld; 
+OS=`uname -r`;
+SYS=`uname -s`
+if test "$SYS" = "IRIX"; then
+LDOPT2="-check_registry /usr/lib/so_locations"; SLEXT="so";
+if test "$GCC" = "yes" ; then
+LDOPT="-shared";
+COPT="-shared" ; COPTNOSHARED=""; 
+else
+LDOPT="-n32 -shared";
+COPT="-n32 -shared" ; COPTNOSHARED="-n32"; 
+fi
+elif test "$SYS" = "IRIX64"; then
+LDOPT2="-check_registry /usr/lib/so_locations"; SLEXT="so";
+if test "$GCC" = "yes" ; then
+LDOPT="-shared";
+COPT="-shared" ; COPTNOSHARED=""; 
+else
+LDOPT="-n32 -shared";
+COPT="-n32 -shared" ; COPTNOSHARED="-n32"; 
+fi
+else 
+echo "No such system: "$SYS
+fi
+JAVAINC2=$JAVAINC/irix; JAVATARG=irix-$OS;;
+*-pc-linux*) LD=$CC; LDOPT=-shared; SLEXT="so";
+COPT="-shared -DUNIX386" ; 
+if test \( $JAVA1_3 -eq 0 \) ; then
+JAVAINC2=$JAVAINC/linux; 
+else
+if test \( $JAVA1_2 -eq 0 \) ; then
+JAVAINC2=$JAVAINC/linux; 
+else
+JAVAINC2=$JAVAINC/genunix; 
+fi
+fi
+JAVATARG=linux;
+;;
+*) LD=$CC; LDOPT=-G; SLEXT="so";
+COPT=-shared; COPTNOSHSARED=; JAVAINC2=$JAVAINC/$target; JAVATARG=$TARGET ;;
+esac
+
+AC_SUBST(LD)
+AC_SUBST(LDOPT)
+AC_SUBST(LDOPT2)
+AC_SUBST(SLEXT)
+AC_SUBST(COPT)
+AC_SUBST(COPTNOSHARE)
+AC_SUBST(RM)
+AC_SUBST(AWK)
+AC_SUBST(FIND)
+AC_SUBST(GUNZIP)
+AC_SUBST(JAVA)
+AC_SUBST(JAVAC)
+AC_SUBST(JAVADOC)
+AC_SUBST(JAVAINC)
+AC_SUBST(JAVAINC2)
+AC_SUBST(HDF5LIB)
+AC_SUBST(HDF5INC)
+AC_SUBST(HDF4LIB)
+AC_SUBST(HDF4INC)
+AC_SUBST(H45LIB)
+AC_SUBST(H45INC)
+AC_SUBST(TARGET)
+AC_SUBST(JAVATARG)
+AC_SUBST(JAR)
+AC_SUBST(CLASSPATH)
+AC_SUBST(JH45INST)
+AC_SUBST(JHVINST)
+AC_SUBST(JH5INST)
+AC_SUBST(ZLIB)
+
+AC_SUBST_FILE(VERSION)
+VERSION=./VERSION
+VERSSTRING=`/bin/cat ./VERSION | sed -e 's/VERSION=HDF-JAVA-//' `
+AC_SUBST(VERSSTRING)
+
+
+##
+## Select one of the following, depending on what is being distributed.
+##
+
+OUTPUT_FILES="Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile"
+if test "$USEH45" = "yes"; then
+##  want H4toH5 configured
+if test -d "./test"; then
+##
+##  Everything
+##
+OUTPUT_FILES="$OUTPUT_FILES native/hdf5lib/Makefile native/h4toh5lib/Makefile test/Makefile test/h4toh5/Makefile test/h4toh5/apitest.sh test/h4toh5/imagetest.sh test/h4toh5/nametest.sh test/h4toh5/sdstest.sh test/h4toh5/vdatatest.sh test/h4toh5/vgrouptest.sh test/h4toh5/runtests.sh test/object/testh4file.sh test/object/testh5file.sh test/object/Makefile test/object/runtests.sh test/h4toh5/linktest.sh test/h4toh5/sdstestattr.sh test/h4toh5/imagetestattr.sh test/h4toh5/lonesdstest.sh test/h4toh5/lonevdatatest.sh test/h4toh5/loneimagetest.sh"
+else
+##
+##  H4, H5, H45, but NO tests
+##
+OUTPUT_FILES="Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile native/h4toh5lib/Makefile"
+fi
+else
+##  Don't use H4toH5 (no tests)
+OUTPUT_FILES="Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile "
+fi
+
+AC_OUTPUT($OUTPUT_FILES)
