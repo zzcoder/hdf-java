@@ -6,30 +6,32 @@
 #============================================================================
 
 # Visual C++ directory, for example
-VCPPDIR=C:\Program Files\Microsoft Visual Studio\VC98
-#VCPPDIR=
+#VCPPDIR=C:\Program Files\Microsoft Visual Studio\VC98
+VCPPDIR=
 
 # directory where JDK is installed (need JDK 1.3.1 or above), for example
-JAVADIR=D:\java\jdk1.3.1\
-#JAVADIR=
+#JAVADIR=D:\java\jdk1.3.1\
+JAVADIR=
 
 # directory of the HDF Java Products, for example
-HDFJAVADIR=D:\work\hdf-java\
-#HDFJAVADIR=
+#HDFJAVADIR=D:\work\hdf-java\
+HDFJAVADIR=
 
 # the directory where HDF library is installed, for example
-HDFDIR=E:\Work\MyHDFstuff\hdf-42r0\
-#HDFDIR=
+#HDFDIR=E:\Work\MyHDFstuff\hdf-42r0\
+HDFDIR=
 
 # the JPEG library, for example
-JPEGLIB=E:\Work\MyHDFstuff\lib-external\jpeg\libjpeg.lib
+#JPEGLIB=E:\Work\MyHDFstuff\lib-external\jpeg\libjpeg.lib
+JPEGLIB=
 
 # the GZIP library, for example
-GZIPLIB=E:\Work\MyHDFstuff\lib-external\zlib\bin\windows\zlib114\lib\zlib.lib
+#GZIPLIB=E:\Work\MyHDFstuff\lib-external\zlib\bin\windows\zlib114\lib\zlib.lib
+GZIPLIB=
 
 # SZIP library, for example
-SZIPLIB=E:\Work\MyHDFstuff\lib-external\szip\bin\windows\szip-msvc++\lib\szlib.lib
-
+#SZIPLIB=E:\Work\MyHDFstuff\lib-external\szip\bin\windows\szip-msvc++\lib\szlib.lib
+SZIPLIB=
 
 #===========================================================================
 #   Do not make any change below this line unless you know what you do
