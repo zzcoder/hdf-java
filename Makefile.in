@@ -116,7 +116,7 @@ jhdfobj-packages: $(HDFOBJPACKAGES)
 	$(JAR) cf ./lib/jhdfobj.jar $(HDFOBJCLASSES)
 
 jhdfview-packages: $(HDFVIEWPACKAGES)  
-	$(JAR) cf ./lib/jhdfview.jar $(HDFVIEWCLASSES)
+	$(JAR) cf ./lib/jhdfview.jar $(HDFVIEWCLASSES) $(HDFVIEWICONS)
 
 classes: packages
 
@@ -236,7 +236,7 @@ uninstall-lib:
 	rm -f $(LIBDIR)/@JAVATARG@/libjhdf5.$(SLEXT)
 	rm -f $(LIBDIR)/@JAVATARG@/libjh4toh5.$(SLEXT)
 
-install-jars: install-jhdf install-jhdf5 install-jh45
+install-jars: install-jhdf install-jhdf5 install-jh45 install-jhdfobject install-jhdfview
 
 install-jh4toh5: 
 	@if test -n "$(H45INC)" ; then $(MAKE) do-install-jh4toh5 ; fi
@@ -263,7 +263,7 @@ install-jhdfobj: ncsa.hdf.object
 
 install-jhdfview: ncsa.hdf.view
 	-mkdir -p $(LIBDIR);
-	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdfview.jar $(HDFVIEWCLASSES)
+	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdfview.jar $(HDFVIEWCLASSES) $(HDFVIEWICONS)
 	@echo "Install HDFVIEW complete"
 
 uninstall-jhi5: 
@@ -277,6 +277,9 @@ uninstall-jh45:
 
 uninstall-jhdfobj: 
 	rm -f $(JH45INSTALLDIR)/lib/jhdfobj.jar
+
+uninstall-jhdfview: 
+	rm -f $(JH45INSTALLDIR)/lib/jhdfview.jar
 
 install-docs: install-javadocs 
 
@@ -695,6 +698,7 @@ HDFOBJCLASSES= ./ncsa/hdf/object/Attribute.class \
 	./ncsa/hdf/object/H4File\$$1.class \
 	./ncsa/hdf/object/H4File\$$2.class \
 	./ncsa/hdf/object/H4File\$$3.class \
+	./ncsa/hdf/object/H5File\$$1.class \
 	./ncsa/hdf/object/H5File\$$2.class \
 	./ncsa/hdf/object/ScalarDS.class 
 
@@ -731,6 +735,34 @@ HDFVIEWCLASSES= ./ncsa/hdf/view/ViewManager.class \
 	./ncsa/hdf/view/TreeView\$$1.class \
 	./ncsa/hdf/view/TreeView\$$HTreeCellRenderer.class \
 	./ncsa/hdf/view/TreeView\$$HTreeMouseAdapter.class 
+
+HDFVIEWICONS= ./ncsa/hdf/view/icons/blank.gif \
+	./ncsa/hdf/view/icons/chart.gif \
+	./ncsa/hdf/view/icons/copy.gif \
+	./ncsa/hdf/view/icons/cut.gif \
+	./ncsa/hdf/view/icons/dataset.gif \
+	./ncsa/hdf/view/icons/fileclose.gif \
+	./ncsa/hdf/view/icons/filenew.gif \
+	./ncsa/hdf/view/icons/fileopen.gif \
+	./ncsa/hdf/view/icons/filesave.gif \
+	./ncsa/hdf/view/icons/first.gif \
+	./ncsa/hdf/view/icons/folderclose.gif \
+	./ncsa/hdf/view/icons/folderopen.gif \
+	./ncsa/hdf/view/icons/hdf.gif \
+	./ncsa/hdf/view/icons/hdf4.gif \
+	./ncsa/hdf/view/icons/hdf5.gif \
+	./ncsa/hdf/view/icons/hdf_large.gif \
+	./ncsa/hdf/view/icons/help.gif \
+	./ncsa/hdf/view/icons/image.gif \
+	./ncsa/hdf/view/icons/last.gif \
+	./ncsa/hdf/view/icons/next.gif \
+	./ncsa/hdf/view/icons/palette.gif \
+	./ncsa/hdf/view/icons/paste.gif \
+	./ncsa/hdf/view/icons/previous.gif \
+	./ncsa/hdf/view/icons/table.gif \
+	./ncsa/hdf/view/icons/text.gif \
+	./ncsa/hdf/view/icons/zoomin.gif \
+	./ncsa/hdf/view/icons/zoomout.gif 
 
 ##
 #  Source to pack for distribution
