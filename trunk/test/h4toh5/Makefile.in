@@ -44,7 +44,7 @@ nametest: nametest.class
 runtests:
 	chmod u+x runtests.sh
 
-check:
+check: all
 	runtests.sh
 
 clean:
