@@ -16,7 +16,7 @@ import javax.swing.tree.*;
 import java.util.*;
 import java.lang.reflect.*;
 import ncsa.hdf.object.*;
-import ncsa.hdf.io.*;
+//import ncsa.hdf.io.*;
 import ncsa.hdf.hdf5lib.*;
 
 /**
@@ -59,7 +59,12 @@ public class TestH5File
             printNode(root, "    ");
         }
 
+	try {
         h5file.close();
+        } catch (Exception ex)
+        {
+            System.out.println(ex);
+        }
     }
 
     private static void printNode(TreeNode node, String indent)
@@ -161,7 +166,12 @@ public class TestH5File
             } //while (nodes.hasMoreElements())
         } //if (root != null)
 
+	try {
         h5file.close();
+        } catch (Exception ex)
+        {
+            System.out.println(ex);
+        }
     }
 
     /**
@@ -234,7 +244,12 @@ public class TestH5File
             } //while (nodes.hasMoreElements())
         } //if (root != null)
 
+	try {
         h5file.close();
+        } catch (Exception ex)
+        {
+            System.out.println(ex);
+        }
     }
 
     /**
@@ -285,7 +300,12 @@ public class TestH5File
             } //while (nodes.hasMoreElements())
         } //if (root != null)
 
+	try {
         h5file.close();
+        } catch (Exception ex)
+        {
+            System.out.println(ex);
+        }
     }
 
     public static void main(String[] argv)
