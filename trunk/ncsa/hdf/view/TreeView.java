@@ -376,7 +376,6 @@ implements ActionListener
             pnode.getChildCount());
     }
 
-
     /**
      * Returns a list of all user objects that traverses the subtree rooted
      * at this node in depth-first order..

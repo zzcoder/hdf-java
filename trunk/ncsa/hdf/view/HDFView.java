@@ -197,8 +197,7 @@ implements ViewManager, HyperlinkListener
         try { props.load(); } catch (Exception ex){System.out.println(ex);}
         recentFiles = props.getMRF();
         currentDir = ViewProperties.getWorkDir();
-        if (currentDir == null)
-            currentDir = System.getProperty("user.dir");
+        if (currentDir == null) currentDir = System.getProperty("user.dir");
 
         // initialize GUI components
         statusArea = new JTextArea();
@@ -715,24 +714,26 @@ implements ViewManager, HyperlinkListener
         else if (cmd.equals("recent.file"))
         {
             JMenuItem mi = (JMenuItem)e.getSource();
-            fileAccessID = FileFormat.WRITE;
 
             String filename = mi.getName();
             try {
+                fileAccessID = FileFormat.WRITE;
                 treeView.openFile(filename, fileAccessID);
-                 try { updateRecentFiles(filename); } catch (Exception ex) {}
             } catch (Exception ex)
             {
-                String msg = "Failed to open file "+filename+"\n"+ex.getMessage();
-                if (!(ex instanceof UnsupportedOperationException))
-                    msg +="\n\nTry open file read-only";
-                toolkit.beep();
-                JOptionPane.showMessageDialog(
-                    this,
-                    msg,
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+                try {
+                    fileAccessID=FileFormat.READ;
+                    treeView.openFile(filename, fileAccessID);
+                } catch (Exception ex2)
+                {
+                    String msg = "Failed to open file "+filename+"\n"+ex2.getMessage();
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog( this, msg, getTitle(), JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
             }
+
+            try { updateRecentFiles(filename); } catch (Exception ex) {}
         }
         else if (cmd.equals("Close file"))
         {
@@ -768,25 +769,6 @@ implements ViewManager, HyperlinkListener
             closeAllWindow();
             setSelectedObject(null);
             treeView.closeFile();
-        }
-        else if (cmd.equals("Save as HDF"))
-        {
-            FileFormat selectedFile = treeView.getSelectedFile();
-
-            if (selectedFile == null)
-            {
-                toolkit.beep();
-                JOptionPane.showMessageDialog(
-                this,
-                "Select a file to save.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            boolean isH5 = selectedFile.isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
-            if (isH5) saveAsHDF5();
-            else saveAsHDF4();
         }
         else if (cmd.equals("Save as HDF"))
         {
@@ -1537,6 +1519,7 @@ implements ViewManager, HyperlinkListener
 
     /**
      * Creates and lays out GUI compoents.
+     * <pre>
      * ||=========||=============================||
      * ||         ||                             ||
      * ||         ||                             ||
@@ -1545,6 +1528,7 @@ implements ViewManager, HyperlinkListener
      * ||=========||=============================||
      * ||            Message Area                ||
      * ||========================================||
+     * </pre>
      */
     private void createMainWindow()
     {
