@@ -1,0 +1,254 @@
+<HTML>
+<script language="JavaScript" type="text/javascript" src="header.js"></script>
+
+<p>
+<h2>
+Product Description</h2>
+
+<table BORDER=0 CELLSPACING=0 COLS=1 BGCOLOR="#FFFDDD" >
+<td>
+The HDF Java Products are revised and reorganized from the earlier Java
+HDF products. It is used to phase out the old HDF viewer (JHV) and the HDF5
+viewer (H5View).
+
+<p>
+JHV is not supported anymore but you can still obtain it from
+<a href="http://hdf.ncsa.uiuc.edu/java-hdf-html/">Java HDF4 Products</a>.
+
+<br>
+H5View is no longer supported, but you can access it at:
+<a href="http://hdf.ncsa.uiuc.edu/java-hdf5-html/">Java HDF5 Products</a>.
+
+</td>
+</table>
+
+
+<p>
+<table WIDTH=100% BORDER COLS=2>
+
+<tr>
+<th width=25% BGCOLOR="#CCDFF">Product</th>
+
+<th width=75% BGCOLOR="#CCDDFF">Description</th>
+</tr>
+
+<tr>
+<td><a href="JNI/jhi/index.html">Java HDF Interface (JHI)</a></td>
+
+<td>The Java Native Interface that wraps the HDF4 library.
+The Java HDF Interface (JHI) is used to access the HDF4 library only</td>
+</tr>
+
+<tr>
+<td><a href="JNI/jhi5/index.html">Java HDF5 Interface (JHI5)</a></td>
+
+<td>The Java Native Interface that wraps the HDF5 library.
+The Java HDF5 Interface (JHI5) is used to access the HDF5 library only</td>
+</tr>
+
+<tr>
+<td><a href="hdf-object/index.html">hdf-object package</a></td>
+
+<td>A Java package that implements HDF4 and HDF5 data objects in an object-oriented form.
+The HDF Java Object Package provides a common standard Java API to access both HDF4 and HDF5 files.</td>
+</tr>
+
+<tr>
+<td><a href="hdfview/index.html">HDFView</a></td>
+
+<td>A visual tool for browsing and editing HDF4 and HDF5 files. The HDFView 2.0
+or above is built on modules. Components of the HDFView are replacable. For
+more information about HDFView modules, please visit
+<a href="modular-hdfview/index.html">Modular HDFView</a>.</td>
+</tr>
+
+</table>
+
+<p>
+<h2>
+Download All HDF Java Products</h2>
+
+The source and pre-built binaries for all of the HDF Java Products can be downloaded
+from <a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/">ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/</a>.
+Files at the ftp site are not well documented. To download a specific HDF Java Product,
+go to its related web pages stated above.
+
+<p>
+The ftp directory contains the source code for the HDF Java Products, as well as
+pre-built code for platforms supported and HDFView. Below is a list of files at
+the hdf-java products ftp site.
+
+<pre>
+Full Source:
+   src/
+      hdf-java-src.jar
+      hdf-java-src.tar
+      hdf-java/  -- unpacked
+Pre-built:
+   bin/
+      linux/
+          hdf-java-linux.jar
+          hdf-java-linux.tar
+          hdf-java/  -- unpacked
+      solaris/
+          hdf-java-solaris.jar
+          hdf-java-solaris.tar
+          hdf-java/  -- unpacked
+      macosx/
+          hdf-java-macosx.jar
+          hdf-java-macosx.tar
+          hdf-java/  -- unpacked
+      windows/
+          hdf-java-solaris.jar
+          hdf-java/  -- unpacked
+HDFView Binaries:
+   hdfview/
+          hdfview_install_aix_novm.bin
+          hdfview_install_aix_vm.bin
+          hdfview_install_irix_novm.bin
+          hdfview_install_linux_novm.bin
+          hdfview_install_linux_vm.bin
+          hdfview_install_macosx_novm.bin
+          hdfview_install_macosx_novm.zip
+          hdfview_install_osf1_novm.bin
+          hdfview_install_solaris_novm.bin
+          hdfview_install_solaris_vm.bin
+          hdfview_install_windows_novm.exe
+          hdfview_install_windows_vm.exe
+</pre>
+
+<h3>
+Binary release</h3>
+<p>The binary release includes jar files for the view package,
+for the HDF Object Package, the JHI (HDF4 library interface) and
+JHI5 (HDF5 library interface). The native libraries are available
+for selected platforms. You can download the packed tar file from:
+<UL>
+ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/bin/{linux,macosx,solaris,windows}
+<P>
+</UL>
+Or the individual file from:
+<UL>
+ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/bin/{linux,macosx,solaris,windows}/hdf-java
+</UL>
+
+<p>
+<table WIDTH=100% BORDER COLS=2 >
+
+<tr>
+<th width=25% BGCOLOR="#CCDFF">Binary file</th>
+
+<th width=75% BGCOLOR="#CCDDFF">Description</th>
+</tr>
+
+<tr>
+<td>lib/jhdf.jar</td>
+
+<td>The Java HDF Interface, accesses the native HDF4 library</td>
+</tr>
+
+<tr>
+<td>lib/jhdf5.jar</td>
+
+<td>The Java HDF5 Interface, accesses the native HDF5 library</td>
+</tr>
+
+<tr>
+<td>lib/jhdfobj.jar</td>
+
+<td>The common HDF object package, ncsa.hdf.object</td>
+</tr>
+
+<tr>
+<td>lib/jhdf4obj.jar</td>
+
+<td>The HDF4 object package, ncsa.hdf.object.h4</td>
+</tr>
+
+<tr>
+<td>lib/jhdf5obj.jar</td>
+
+<td>The HDF5 object package, ncsa.hdf.object.h5</td>
+</tr>
+
+<tr>
+<td>lib/jhdfview.jar</td>
+
+<td>The ncsa.hdf.view package, for HDFView only.</td>
+</tr>
+
+<tr>
+<td>lib/{solaris,linux, irix}/</td>
+
+<td></td>
+</tr>
+
+<tr>
+<td> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; libjhdf.so</td>
+
+<td>The native HDF4 library and JNI implementation (called by jhdf.jar)</td>
+</tr>
+
+<tr>
+<td> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; libjhdf5.so</td>
+
+<td>The native HDF5 library and JNI implementation (called by jhdf5.jar)</td>
+</tr>
+
+<tr>
+<td>lib/macosx/</td>
+
+<td></td>
+</tr>
+
+<tr>
+<td> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; libjhdf5.jnilib</td>
+
+<td>The native HDF5 library and JNI implementation (called by jhdf5.jar)</td>
+</tr>
+
+<tr>
+<td> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; libjhdf5.dylib</td>
+
+<td>The HDF5 dynamic link library (called by jhdf5.jar)</td>
+</tr>
+
+<tr>
+<td>lib/win/</td>
+</tr>
+<tr>
+<td> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; jhdf.dll</td>
+
+<td>The native HDF4 library and JNI implementation (called by jhdf.jar)</td>
+</tr>
+
+<tr>
+<td> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; jhdf5.dll</td>
+
+<td>The native HDF5 library and JNI implementation (called by jhdf5.jar)</td>
+
+<td></td>
+</tr>
+</table>
+
+<p>
+<h3>Source</h3>
+<p>The source distribution includes all of the Java source to build the jar
+files, plus the C source for the native methods of the <a href="./JNI/jhi/index.html">JHI</a>
+and <a href="./JNI/jhi5/index.html">JHI5</a>.
+<p>The JHI requires the HDF4.2r0 library (binary) and the JHI5 requires
+the HDF5 1.6.2 library (binary). The HDF libraries are not included in
+the Java source. They can be obtained from:
+<b><a href="http://hdf.ncsa.uiuc.edu/">http://hdf.ncsa.uiuc.edu/</a></b>
+
+<P>
+Compiling the HDF Java Products from the source is not an easy task. Please
+read the following the instructions for more details.
+<UL>
+ <LI><A HREF="./build_src_unix.html">How to build from source on Unix and MacOSX</A>
+ <LI><A HREF="./build_src_windows.html">How to build from source on Windows</A>
+</UL>
+<P>
+
+<script language="JavaScript" type="text/javascript" src="footer.js"></script>
+</HTML>
