@@ -726,7 +726,7 @@ jstring dsetname, jint index)
 		return ;
 	}
 
-	status = H4toh5imageattrindex((hid_t) h45id,
+	status = H4toh5vdataattrindex((hid_t) h45id,
                     (int32) vgid,
                     (char*) pname,
                     (char*) dname,
