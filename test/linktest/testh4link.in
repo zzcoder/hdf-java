@@ -17,6 +17,7 @@
 ##  Edit these paths to debug
 ##
 
+RM=@RM@
 JHVINSTALLDIR=@JHVINST@
 
 LIBDIR=$JHVINSTALLDIR"/lib"
@@ -28,4 +29,6 @@ LD_LIBRARY_PATH=$LIBDIR"/@JAVATARG@"
 export CLASSPATH
 export LD_LIBRARY_PATH
 
+$RM -f test.hdf
 @JAVA@ -Djava.library.path=$LD_LIBRARY_PATH TestHDF4Link
+$RM -f test.hdf
