@@ -25,37 +25,51 @@ the object is selected, providing interactive and efficient access to HDF4
 and HDF5 files. HDFView editing features allow a user to create, delete, and 
 modify the value of HDF objects and attributes.
 
-HDFView Version 1.0 is the first release. It does not support editing. Editing 
-features will be added in the future release.
-
 2) Features
 
-HDFView Version 1.0 provides basic browsing features for HDF4 and HDF5 files. 
+HDFView Version 1.1 provides basic browsing features for HDF4 and HDF5 files. 
 The browsing features are listed below. Details of the features are discussed 
 in their related chapters of the HDFView User's Guide.
 
-  -> Open multiple HDF4 or HDF5 files.
-  -> Display file hierarchy in a tree.
-  -> Show dataset as an image, a table or text.
-  -> Allow users to select a subset of dataset to display.
-  -> Show attributes and other general information of data objects.
-  -> Display lineplot/histrogram for selected table data/image area.
-  -> Display simple compound dataset (non-nested compound datatype) in a table.
-  -> Support simple image manipulation, such as zooming in/out image.
-  -> Allow to display any of three dimensions of a multiple dimension data set.
+  -> Open multiple HDF4 or HDF5 files. 
+  -> Display file hierarchy in a tree and allow users to navigate among the file's data objects. 
+  -> Show dataset as an image, a table or text. 
+  -> Allow users to select a subset of dataset to display. 
+  -> Show attributes and other general information of data objects. 
+  -> Display line plot for selected table data, and histogram for selected image area. 
+  -> Display simple compound dataset (non-nested compound datatype) in a table. 
+  -> Support simple image manipulation: zooming in/out image, flipping image horizontally or vertically, and showing palette for index RGB image. 
+  -> Allow to display any of three dimensions of a multiple dimension data set. 
+  -> Allow users to specify stride of dataset selection. 
+  -> Allow users to selection select fields/members of VData/compound dataet to display. 
+  -> Display file information, such as file size, total number of datasets. 
+  -> Change and save user options such as recent files, delimiter, and font size. 
+  -> Save current file into the same type (HDF4 to HDF4, HDF5 to HDF5). 
+  -> Add/delete object in the file (no deletion for HDF4). 
+  -> Copy/paste object in the same file. 
+  -> Copy/paste object between files but the same file format (HDF4 to HDF4, HDF5 to HDF5). 
+  -> Add/delete a group and all its decendents (no deletion for HDF4). 
+  -> Modify and save data values in spreadsheet. 
+  -> Create new dataset with simple datatype such as SDS, atomic data array. 
+  -> Copy/paste data values of dataset. 
+  -> Save single dataset into ASCII text file. 
+  -> Save a single image to JPEG file. 
+  -> Add/delete attribute (no deletion for HDF4). 
+  -> Modify and save attibute value. 
 
 3) Limitations
 
-Version 1.0 is the first release of the HDFView. It has the following limitations.
+Version 1.1 is the first release of the HDFView. It has the following limitations.
 
-  -> does not support editing HDF files.
-  -> does not display dataset of nested compound datatypes.
-  -> does not display named datatypes.
-  -> supports only indexed image with RGB color model or 24-bit true color image.
-  -> Opening a large image or dataset may cause "out of memory" error due to 
-     the limitations of the Java Virtual Machine.
-  -> is tested and runs only at JDK/JRE1.3.x. It does not work with JDK 1.1.x or 
-     JDK 1.2.x.
+  -> HDFView does not support undo operation, all the changes will go to the physical file, and the editing results cannot be recovered. 
+  -> HDFView cannot create/modify Vdata or compound dataset. 
+  -> Deleting object/attribute in HDF4 is not supported. 
+  -> HDFView does not support conversion between HDF4 and HDf5. 
+  -> HDFView does not display dataset of nested compound datatypes. 
+  -> HDFView does not display named datatypes. 
+  -> HDFView supports only indexed image with RGB color model or 24-bit true color image. It does not support other color model such as CMYK and HSV. 
+  -> Opening a large image or dataset may cause "out of memory" error due to the limitations of the Java virtual machine. 
+  -> HDFView is implemented in JavaTM 2 Platform. It runs only at JDK 1.3.x. It does not work with JDK 1.1.x or JDK 1.2.x. 
 
 4) System requirements
 
@@ -68,7 +82,7 @@ license agreement. Please read the Java Binary Code License Agreement at
 
 http://java.sun.com/j2se/1.3/jre/j2re-1_3_1_02-license.html
 
-HDFView 1.0 has been built and tested on Solaris, SGI IRIX 6.5, Linux,
+HDFView 1.1 has been built and tested on Solaris, SGI IRIX 6.5, Linux,
 and Windows 95/98/2000/NT
 
 5) Installation
