@@ -19,7 +19,7 @@ Unix Build Instructions
 Prerequisites:
 
   1.  HDF4.1r5 binary distribution (source is not needed)
-  2.  HDF5-1.4.3 binary distribution (source is not needed)
+  2.  HDF5-1.4.4 binary distribution (source is not needed)
   3.  Java Development Kit 1.3.1 or equivalent.  (JDK 1.2 and above will
       work on most systems.)
 
@@ -54,12 +54,12 @@ To generate javadocs, 'make javadocs'
 
 
 Windows Build Instructions
-==========================
+=======================
 
 Prerequisites:
 
   1.  HDF4.1r5 binary distribution (source is not needed)
-  2.  HDF5-1.4.3 binary distribution (source is not needed)
+  2.  HDF5-1.4.4 binary distribution (source is not needed)
   3.  Java Development Kit 1.3.1 or equivalent.  (JDK 1.2 and above will
       work on most systems.)
 
@@ -135,6 +135,19 @@ Build:
 Run the batch file, Makefile.bat.
 
 The binary distribution for Windows will be created at 
+%HDFOBJECT%\windows
+
+
+
+For More Information:
+====================
+
+  http://hdf.ncsa.uiuc.edu/hdf-java-html
+
+  hdfhelp@ncsa.uiuc.edu
+
+
+at 
 %HDFOBJECT%\windows
 
 
