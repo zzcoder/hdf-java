@@ -1,4 +1,4 @@
-package test;
+package test.object;
 
 import javax.swing.tree.*;
 import java.util.*;
@@ -285,7 +285,8 @@ public class TestH5File
             System.exit(1);
         }
 
-        TestH5File.testH5CompoundDS(argv[0]);
+	System.out.println("Tree: for: "+argv[0]);
+        TestH5File.testTree(argv[0]);
     }
 
 }

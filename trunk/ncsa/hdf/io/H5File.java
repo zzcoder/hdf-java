@@ -326,8 +326,9 @@ public class H5File extends DefaultFileFormat
                     break;
                 default:
                     break;
-            } // switch (oType[0]) {
-        } // for ( i = 0; i < nelems; i++) {
+            } // switch (oType[0]) 
+        } // for ( i = 0; i < nelems; i++) 
     } // private depth_first()
 
 }
+

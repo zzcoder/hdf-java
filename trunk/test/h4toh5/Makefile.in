@@ -41,7 +41,7 @@ vgrouptest: vgrouptest.class
 nametest: nametest.class
 	chmod u+x nametest.sh
 
-runtests:
+runtests: all
 	chmod u+x runtests.sh
 
 check: all
