@@ -15,16 +15,16 @@ import ncsa.hdf.h4toh5lib.exceptions.*;
 import ncsa.hdf.hdflib.*;
 import ncsa.hdf.hdf5lib.*;
 
-public class lonesdstest {
+public class lonevdatatest {
 
 	private int h4toh5id = -1;
 	private boolean initialized = false;
 
-	public lonesdstest() {};
+	public lonevdatatest() {};
 
 static public void main( String []args ) 
 {
-	lonesdstest sdt = new lonesdstest();
+	lonevdatatest sdt = new lonevdatatest();
 	sdt.setup();
 	boolean r1 = sdt.test1();
 	sdt.cleanup();
@@ -43,8 +43,8 @@ static public void main( String []args )
 public void setup(  ) 
 {
 	try {
-		h4toh5id= h4toh5.H4toh5open("sds_lib_lonetest.hdf",
-			"sds_lib_lonetest.h5",h4toh5.H425_CLOBBER);
+		h4toh5id= h4toh5.H4toh5open("vdata_lib_lonetest.hdf",
+			"vdata_lib_lonetest.h5",h4toh5.H425_CLOBBER);
 	} catch (H45Exception h45e1) {
 		System.err.println("Setup: H4toh5open exception "+h45e1);
 		System.exit( -1);
@@ -88,16 +88,16 @@ public boolean test1(  )
 {
 	
 	try {
-		h4toh5.H4toh5alllonesds(h4toh5id,"/",null,
-			h4toh5.H425_DIMSCALE,h4toh5.H425_ALLATTRS);
+		h4toh5.H4toh5alllonevdata(h4toh5id,"/",
+			h4toh5.H425_ALLATTRS);
 	} catch (H45Exception h45e1) {
-		System.err.println("H4toh5alllonesds exception "+h45e1);
+		System.err.println("H4toh5alllonevdata exception "+h45e1);
 		System.err.println("Test 1: FAIL");
 		test1_cleanup();
 		return(false);
 	}
 
-	System.out.print("Test conversion of all SDS: ");
+	System.out.print("Test conversion of all VDatas: ");
  	System.out.println("PASS");
 	return(true);
 }
