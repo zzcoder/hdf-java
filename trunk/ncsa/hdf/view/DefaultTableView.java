@@ -124,6 +124,11 @@ implements TableView, ActionListener
         dataset = (Dataset)hobject;
         isReadOnly = dataset.getFileFormat().isReadOnly();
 
+        // disable edit feature for szip compression
+        String compression = dataset.getCompression();
+        if (compression != null && compression.startsWith("SZIP"))
+            isReadOnly = true;
+
         isDisplayTypeChar = (isDisplayChar.booleanValue() && dataset.getDatatype().getDatatypeSize()==1);
 
         // create the table and its columnHeader
@@ -263,7 +268,7 @@ implements TableView, ActionListener
     private JMenuBar createMenuBar() {
         JMenuBar bar = new JMenuBar();
         JButton button;
-        boolean isEditable = !dataset.getFileFormat().isReadOnly();
+        boolean isEditable = !isReadOnly;
 
         JMenu menu = new JMenu("Table", false);
         menu.setMnemonic('T');

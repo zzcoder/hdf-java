@@ -291,9 +291,10 @@ public class H4SDS extends ScalarDS
         try {
             theData = H4Datatype.allocateArray(nativeDatatype, datasize);
 
-            if (theData != null)
-            {
-                HDFLibrary.SDreaddata(id, start, stride, select, theData);
+            if (theData != null) {
+                // assume external data files are located in the same directory as the main file.
+                HDFLibrary.HXsetdir(getFileFormat().getParent());
+                boolean status = HDFLibrary.SDreaddata(id, start, stride, select, theData);
 
                 if (isText)
                     theData = byteToString((byte[])theData, select[0]);
@@ -489,11 +490,42 @@ public class H4SDS extends ScalarDS
                 }
             } catch (Exception ex) {}
 
+            // get compression information
+            try {
+                HDFCompInfo compInfo = new HDFCompInfo();
+                boolean status = HDFLibrary.SDgetcompress(id, compInfo);
+                if (compInfo.ctype == HDFConstants.COMP_CODE_DEFLATE)
+                    compression = "GZIP";
+                else if (compInfo.ctype == HDFConstants.COMP_CODE_SZIP)
+                    compression = "SZIP";
+                else if (compInfo.ctype == HDFConstants.COMP_CODE_JPEG)
+                    compression = "JPEG";
+                else if (compInfo.ctype == HDFConstants.COMP_CODE_SKPHUFF)
+                    compression = "SKPHUFF";
+                else if (compInfo.ctype == HDFConstants.COMP_CODE_RLE)
+                    compression = "RLE";
+                else if (compInfo.ctype == HDFConstants.COMP_CODE_NBIT)
+                    compression = "NBIT";
+            } catch (Exception ex) {}
+
+            // get chunk information
+            try {
+                HDFOnlyChunkInfo chunkInfo = new HDFOnlyChunkInfo();
+                int[] cflag = {HDFConstants.HDF_NONE};
+                boolean status = HDFLibrary.SDgetchunkinfo(id, chunkInfo, cflag);
+                if (cflag[0] == HDFConstants.HDF_NONE)
+                    chunkSize = null;
+                else {
+                    chunkSize = new long[rank];
+                    for (int i=0; i<rank; i++)
+                        chunkSize[i] = (long)chunkInfo.chunk_lengths[i];
+                }
+            } catch (Exception ex) {}
+
         } catch (HDFException ex) {}
         finally {
             close(id);
         }
-
         isUnsigned = H4Datatype.isUnsigned(nativeDatatype);
 
         if (idims == null)
@@ -699,6 +731,9 @@ public class H4SDS extends ScalarDS
 
         long[] oid = {HDFConstants.DFTAG_NDG, ref};
         dataset = new H4SDS(file, name, path, oid);
+
+        if (dataset != null)
+            pgroup.addToMemberList(dataset);
 
         return dataset;
     }

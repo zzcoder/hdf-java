@@ -185,6 +185,9 @@ public class H5Group extends Group
 
         group = new H5Group(file, name, path, pgroup, oid);
 
+        if (group != null)
+            pgroup.addToMemberList(group);
+
         return group;
     }
 

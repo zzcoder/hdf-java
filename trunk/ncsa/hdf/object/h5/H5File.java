@@ -497,7 +497,6 @@ try {
             while (iterator.hasNext())
             {
                 HObject mObj = (HObject)iterator.next();
-
                 try {
                     theNode.add((MutableTreeNode)copy(mObj, group));
                 } catch (Exception ex) {}
