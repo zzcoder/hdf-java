@@ -21,21 +21,22 @@ package ncsa.hdf.view;
  */
 public interface DataObserver
 {
-    /**
-     * Returns the data object of this DataObserver.
-     */
+    /** Returns the data object of this DataObserver. */
     public abstract Object getDataObject();
 
-    /* Displays the previous data sheet of 3D dataset. */
+    /** Displays the previous data sheet of 3D dataset. */
     public abstract void previousPage();
 
-    /* Displays the next data sheet of 3D dataset. */
+    /** Displays the next data sheet of 3D dataset. */
     public abstract void nextPage();
 
-        /* Displays the first data sheet of 3D dataset. */
+    /** Displays the first data sheet of 3D dataset. */
     public abstract void firstPage();
 
-        /* Displays the last data sheet of 3D dataset. */
+    /** Displays the last data sheet of 3D dataset. */
     public abstract void lastPage();
+
+    /** Disposes of this dataobserver. */
+    public void dispose();
 
 }

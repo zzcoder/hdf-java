@@ -48,11 +48,6 @@ public class H4GRImage extends ScalarDS
     private int grid;
 
     /**
-     * The interlace mode of the stored raster image data
-     */
-    private int interlace;
-
-    /**
      * The number of components in the raster image
      */
     private int ncomp;
@@ -324,20 +319,8 @@ public class H4GRImage extends ScalarDS
             }
         }
 
-
         close(id);
         return palette;
-    }
-
-    /**
-     * Returns the interlace of this image.
-     */
-    public String getInterlace()
-    {
-        if (interlace == HDFConstants.MFGR_INTERLACE_PIXEL)
-            return INTERLACE_PIXEL;
-        else
-            return INTERLACE_PLANE;
     }
 
     /**

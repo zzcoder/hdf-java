@@ -29,35 +29,24 @@ public abstract class ScalarDS extends Dataset
     // http://hdf.ncsa.uiuc.edu/HDF5/doc/ADGuide/ImageSpec.html
     // to make the defination consistent with the image specs.
 
-    /** The type of Palette that should be used with the Image. */
-    public final static String IMAGE_SUBCLASS ="IMAGE_SUBCLASS";
-
-    /** A grayscale image, values 0-255 indicating brightness. */
-    public final static String IMAGE_GRAYSCALE ="IMAGE_GRAYSCALE";
-
-    /** A truecolor image . */
-    public final static String IMAGE_TRUECOLOR ="IMAGE_TRUECOLOR";
-
-    /** An indexed image. */
-    public final static String IMAGE_INDEXED ="IMAGE_INDEXED";
-
-    /**
-     * For images with more than one component for each pixel,
-     *  this optional attribute specifies the layout of the data.
-     */
-    public final static String INTERLACE_MODE ="INTERLACE_MODE";
-
     /** The component value for a pixel are contiguous. */
-    public final static String INTERLACE_PIXEL ="INTERLACE_PIXEL";
+    public final static int INTERLACE_PIXEL =
+        ncsa.hdf.hdflib.HDFConstants.MFGR_INTERLACE_PIXEL;
 
     /** Each component is stored as a plane. */
-    public final static String INTERLACE_PLANE ="INTERLACE_PLANE";
+    public final static int INTERLACE_PLANE =
+        ncsa.hdf.hdflib.HDFConstants.MFGR_INTERLACE_COMPONENT;
 
     /**
      * The data type of this scalar dataset
      * such as 32-bit integer, 32-bit float, etc.
      */
     protected int datatype;
+
+    /**
+     * The interlace mode of the stored raster image data
+     */
+    protected int interlace;
 
     /**
      * The indexed RGB color model with 256 colors.
@@ -99,6 +88,7 @@ public abstract class ScalarDS extends Dataset
         palette = null;
         isImage = false;
         isText = false;
+        interlace = -1;
     }
 
     /**
@@ -149,6 +139,14 @@ public abstract class ScalarDS extends Dataset
     public final boolean isText()
     {
         return isText;
+    }
+
+    /**
+     * Returns the interlace of data points.
+     */
+    public final int getInterlace()
+    {
+        return interlace;
     }
 
 
