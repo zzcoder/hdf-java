@@ -1,4 +1,3 @@
-
 /****************************************************************************
  * NCSA HDF                                                                 *
  * National Comptational Science Alliance                                   *
@@ -18,11 +17,17 @@
  *
  */
 #include "hdf.h"
-#include "mfhdf.h"
 
 #include "jni.h"
 
 extern jboolean h4outOfMemory( JNIEnv *env, char *functName);
+
+/*
+ *  Get information from a Java HDFNewCompInfo object in to a C comp_info
+ *  struct.
+ *
+ *  Extract information for the different types of compression.
+ */
 
 jboolean getNewCompInfo( JNIEnv *env, jobject ciobj, comp_info *cinf)
 {
@@ -69,6 +74,47 @@ jint ctype;
 		}
 		cinf->deflate.level = (*env)->GetIntField(env, ciobj, jf);
 		break;
+	case COMP_CODE_SZIP:
+		jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFSZIPCompInfo");
+		if (jc == NULL) {
+			return JNI_FALSE;
+		}
+		jf = (*env)->GetFieldID(env, jc, "bits_per_pixel", "I");
+		if (jf == NULL) {
+			return JNI_FALSE;
+		}
+
+		cinf->szip.bits_per_pixel = (*env)->GetIntField(env, ciobj, jf);
+		jf = (*env)->GetFieldID(env, jc, "options_mask", "I");
+		if (jf == NULL) {
+			return JNI_FALSE;
+		}
+		cinf->szip.options_mask = (*env)->GetIntField(env, ciobj, jf);
+
+		jf = (*env)->GetFieldID(env, jc, "compression_mode", "I");
+		if (jf == NULL) {
+			return JNI_FALSE;
+		}
+		cinf->szip.compression_mode = (*env)->GetIntField(env, ciobj, jf);
+
+		jf = (*env)->GetFieldID(env, jc, "pixels", "I");
+		if (jf == NULL) {
+			return JNI_FALSE;
+		}
+		cinf->szip.pixels = (*env)->GetIntField(env, ciobj, jf);
+
+		jf = (*env)->GetFieldID(env, jc, "pixels_per_block", "I");
+		if (jf == NULL) {
+			return JNI_FALSE;
+		}
+		cinf->szip.pixels_per_block = (*env)->GetIntField(env, ciobj, jf);
+
+		jf = (*env)->GetFieldID(env, jc, "pixels_per_scanline", "I");
+		if (jf == NULL) {
+			return JNI_FALSE;
+		}
+		cinf->szip.pixels_per_scanline = (*env)->GetIntField(env, ciobj, jf);
+		break;
 	case COMP_CODE_NBIT:
 		jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFNBITCompInfo");
 		if (jc == NULL) {
@@ -109,6 +155,11 @@ jint ctype;
 	return JNI_TRUE;
 }
 
+/*
+ *   Extract info from C comp_info struct, put in Java HDFCompInfo object.
+ *
+ *   Put in the fields for each compression method.
+ */
 jboolean setNewCompInfo( JNIEnv *env, jobject ciobj, comp_coder_t coder, 
 comp_info *cinf)
 {
@@ -131,7 +182,6 @@ jclass jc;
 	switch(coder) {
 	case COMP_CODE_NONE:
 	case COMP_CODE_RLE:
-	case COMP_CODE_SZIP:
 	default:
 		break;
 	case COMP_CODE_SKPHUFF:
@@ -166,6 +216,53 @@ jclass jc;
 			return JNI_FALSE;
 		}
 		(*env)->SetIntField(env, ciobj, jf, cinf->deflate.level );
+		break;
+	case COMP_CODE_SZIP:
+		jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFSZIPCompInfo");
+		if (jc == NULL) {
+			return JNI_FALSE;
+		}
+		jf = (*env)->GetFieldID(env, jc, "ctype", "I");
+		if (jf == NULL) {
+			return JNI_FALSE;
+		}
+		(*env)->SetIntField(env, ciobj, jf, COMP_CODE_SZIP);
+
+		jf = (*env)->GetFieldID(env, jc, "bits_per_pixel", "I");
+		if (jf == NULL) {
+			return JNI_FALSE;
+		}
+		(*env)->SetIntField(env, ciobj, jf, cinf->szip.bits_per_pixel);
+
+		jf = (*env)->GetFieldID(env, jc, "options_mask", "I");
+		if (jf == NULL) {
+			return JNI_FALSE;
+		}
+		(*env)->SetIntField(env, ciobj, jf, cinf->szip.options_mask);
+
+		jf = (*env)->GetFieldID(env, jc, "compression_mode", "I");
+		if (jf == NULL) {
+			return JNI_FALSE;
+		}
+		(*env)->SetIntField(env, ciobj, jf, cinf->szip.compression_mode);
+
+		jf = (*env)->GetFieldID(env, jc, "pixels", "I");
+		if (jf == NULL) {
+			return JNI_FALSE;
+		}
+		(*env)->SetIntField(env, ciobj, jf, cinf->szip.pixels);
+
+		jf = (*env)->GetFieldID(env, jc, "pixels_per_block", "I");
+		if (jf == NULL) {
+			return JNI_FALSE;
+		}
+		(*env)->SetIntField(env, ciobj, jf, cinf->szip.pixels_per_block);
+
+		jf = (*env)->GetFieldID(env, jc, "pixels_per_scanline", "I");
+		if (jf == NULL) {
+			return JNI_FALSE;
+		}
+		(*env)->SetIntField(env, ciobj, jf, cinf->szip.pixels_per_scanline);
 		break;
 	case COMP_CODE_NBIT:
 		jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFNBITCompInfo");
@@ -214,6 +311,9 @@ jclass jc;
 }
 
 
+/*
+ *     Get info from old style C comp_info struct, put in HDFCompInfo object.
+ */
 jboolean getOldCompInfo( JNIEnv *env, jobject ciobj, comp_info *cinf)
 {
 jfieldID jf;
@@ -259,90 +359,10 @@ jint ctype;
 	return JNI_TRUE;
 }
 
-
-
 /*
-  this is not finished ....
-  need to get static array of ints, then copy to C array.
-
-  Not sure how the JNI works ....
-*/
-jboolean getCompModel(JNIEnv *env, jobject compobj, model_info *cmod)
-{
-jfieldID jf;
-jclass jc;
-jint cm;
-jobject darr;
-jint *dims;
-int i;
-jboolean bb;
-
-        jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFCompModel");
-        if (jc == NULL) {
-                return JNI_FALSE;
-        }
-        jf = (*env)->GetFieldID(env, jc, "comp_model", "I");
-        if (jf == NULL) {
-                return JNI_FALSE;
-        }
-        cm = (*env)->GetIntField(env, compobj, jf);
-
-        switch(cm) {
-	default:
-                break;
-
-        case COMP_MODEL_STDIO :
-                jf = (*env)->GetFieldID(env, jc, "nt", "I");
-                if (jf == NULL) {
-                        return JNI_FALSE;
-                }
-                cmod->dim.nt = (*env)->GetIntField(env, compobj, jf);
-
-                jf = (*env)->GetFieldID(env, jc, "ndim", "I");
-                if (jf == NULL) {
-                        return JNI_FALSE;
-                }
-                cmod->dim.ndim = (*env)->GetIntField(env, compobj, jf);
-
-		/* need to get static array 'dims', copy into C array,
-			put pointer in struct */
-		cmod->dim.dims = HDmalloc(cmod->dim.ndim * DFKNTsize(cmod->dim.nt));
-
-		if (cmod->dim.dims == NULL) {
-			h4outOfMemory(env, "getCompModel");
-		}
-
-                jf = (*env)->GetFieldID(env, jc, "dims", "[I");
-                if (jf == NULL) {
-                        return JNI_FALSE;
-                }
-		darr = (*env)->GetObjectField(env,compobj,jf);
-		if (darr == NULL) {
-			return JNI_FALSE;
-		}
-
-		dims = (jint *)(*env)->GetIntArrayElements(env,(jintArray)darr,&bb);
-
-		for (i = 0; i < cmod->dim.ndim; i++) {
-			cmod->dim.dims[i] = (int32)dims[i];
-		}
-
-		(*env)->ReleaseIntArrayElements(env,(jintArray)darr,(jint *)dims,JNI_ABORT);
-
-                break;
-        }
-
-	return JNI_TRUE;
-}
-
-void freeCompModel(JNIEnv *env, model_info *cmod)
-{
-	if (cmod->dim.dims != NULL) {
-		HDfree(cmod->dim.dims);
-	}
-}
-
-
+ *  Get the Chunk info from C HDF_CHUNK_DEF struct, put in 
+ *  Java HDFChunkInfo object.
+ */
 jboolean getChunkInfo( JNIEnv *env, jobject chunkobj, HDF_CHUNK_DEF *cinf)
 {
 jfieldID jf;
@@ -364,52 +384,24 @@ jboolean bb;
 	}
 	ctype = (*env)->GetIntField(env, chunkobj, jf);
 
-	switch (ctype) {
-	    case HDF_CHUNK:
-		jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFOnlyChunkInfo");
-		if (jc == NULL) {
-			return JNI_FALSE;
-		}
-		jf = (*env)->GetFieldID(env, jc, "chunk_lengths", "[I");
-		if (jf == NULL) {
-			return JNI_FALSE;
-		}
-		larr = (*env)->GetObjectField(env,chunkobj,jf);
-		if (larr == NULL) {
-			return JNI_FALSE;
-		}
+	jf = (*env)->GetFieldID(env, jc, "chunk_lengths", "[I");
+	if (jf == NULL) {
+		return JNI_FALSE;
+	}
+	larr = (*env)->GetObjectField(env,chunkobj,jf);
+	if (larr == NULL) {
+		return JNI_FALSE;
+	}
 
-		lens = (jint *)(*env)->GetIntArrayElements(env,(jintArray)larr,&bb);
+	lens = (jint *)(*env)->GetIntArrayElements(env,(jintArray)larr,&bb);
 
-		for (i = 0; i < MAX_VAR_DIMS; i++) {
-			cinf->chunk_lengths[i] = (int32)lens[i];
-		}
+	for (i = 0; i < MAX_VAR_DIMS; i++) {
+		cinf->comp.chunk_lengths[i] = (int32)lens[i];
+	}
 
-		(*env)->ReleaseIntArrayElements(env,(jintArray)larr,(jint *)lens,JNI_ABORT);
-		break;
+	(*env)->ReleaseIntArrayElements(env,(jintArray)larr,(jint *)lens,JNI_ABORT);
 
-	case (HDF_CHUNK | HDF_COMP):
-		jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFCompChunkInfo");
-		if (jc == NULL) {
-			return JNI_FALSE;
-		}
-		jf = (*env)->GetFieldID(env, jc, "chunk_lengths", "[I");
-		if (jf == NULL) {
-			return JNI_FALSE;
-		}
-		larr = (*env)->GetObjectField(env,chunkobj,jf);
-		if (larr == NULL) {
-			return JNI_FALSE;
-		}
-
-		lens = (jint *)(*env)->GetIntArrayElements(env,(jintArray)larr,&bb);
-
-		for (i = 0; i < MAX_VAR_DIMS; i++) {
-			cinf->comp.chunk_lengths[i] = (int32)lens[i];
-		}
-
-		(*env)->ReleaseIntArrayElements(env,(jintArray)larr,(jint *)lens,JNI_ABORT);
-
+	if (ctype == (HDF_CHUNK | HDF_COMP)) {
 		jf = (*env)->GetFieldID(env, jc, "comp_type", "I");
 		if (jf == NULL) {
 			return JNI_FALSE;
@@ -430,19 +422,8 @@ jboolean bb;
 		if (larr == NULL) {
 			return JNI_FALSE;
 		}
-		bval = getOldCompInfo(env,(jobject)larr,&(cinf->comp.cinfo));
-
-		jf = (*env)->GetFieldID(env, jc, "minfo", "Lncsa/hdf/hdflib/HDFModelInfo;");
-		if (jf == NULL) {
-			return JNI_FALSE;
-		}
-		larr = (*env)->GetObjectField(env,chunkobj,jf);
-		if (larr == NULL) {
-			return JNI_FALSE;
-		}
-		bval = getCompModel(env,(jobject)larr,&(cinf->comp.minfo));
-		break;
-	case (HDF_CHUNK | HDF_NBIT):
+		bval = getNewCompInfo(env,(jobject)larr,&(cinf->comp.cinfo));
+     } else if (ctype == (HDF_CHUNK | HDF_NBIT)) {
 		jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFNBITChunkInfo");
 		if (jc == NULL) {
 			return JNI_FALSE;
@@ -487,45 +468,53 @@ jboolean bb;
 			return JNI_FALSE;
 		}
                 cinf->nbit.fill_one = (*env)->GetIntField(env, chunkobj, jf);
-		break;
-
-		default:
-			return JNI_FALSE;
 	}
-
 	return JNI_TRUE;
 }
 
+/*
+ *  Create C HDF_CHUNK_DEF struct from Java HDFChunkInfo object.
+ *
+ *  Determine the compression method, and create an appropriate subclass
+ *  of HDFCompInfo.  Then call the constructor for HDFChunkInfo.
+ */
 jboolean makeChunkInfo( JNIEnv *env, jobject chunkobj, int32 flgs, HDF_CHUNK_DEF *cinf)
 {
 jclass jc;
+jclass jci;
 jmethodID jmi;
 jintArray rarray;
 jobject compinfo;
 
+	rarray = (*env)->NewIntArray(env,MAX_VAR_DIMS);
+	if (rarray == NULL) {
+		return JNI_FALSE;
+	}
+	(*env)->SetIntArrayRegion(env,rarray,0,MAX_VAR_DIMS,(jint *)cinf->chunk_lengths);
+
+        /* release rarray? */
+
+	jci = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFChunkInfo");
+	if (jci == NULL) {
+		return JNI_FALSE;
+	}
+
 	switch (flgs) {
 	    case HDF_CHUNK:
-		rarray = (*env)->NewIntArray(env,MAX_VAR_DIMS);
-		(*env)->SetIntArrayRegion(env,rarray,0,MAX_VAR_DIMS,(jint *)cinf->chunk_lengths);
-
-		jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFOnlyChunkInfo");
+		jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFCompInfo");
 		if (jc == NULL) {
 			return JNI_FALSE;
 		}
-		jmi = (*env)->GetMethodID(env, jc, "<init>", "([I)V");
+		jmi = (*env)->GetMethodID(env, jc, "<init>", "()V");
 		if (jmi == NULL) {
 			return JNI_FALSE;
 		}
- 
-		(*env)->CallVoidMethod(env,chunkobj,jmi,rarray);
+		compinfo = (*env)->NewObject(env,jc,jmi);
 		break;
-
 	    case (HDF_CHUNK | HDF_COMP):
-		/* create an HDFCompInfo (appropriate type) */
 		switch (cinf->comp.comp_type) {
-			case COMP_NONE:
+			case COMP_CODE_NONE:
 			default:
-				/* new HDFCompInfo() */
 				jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFCompInfo");
 				if (jc == NULL) {
 					return JNI_FALSE;
@@ -536,9 +525,9 @@ jobject compinfo;
 				}
 				compinfo = (*env)->NewObject(env,jc,jmi);
 				break;
-			case COMP_JPEG:
+			case COMP_CODE_JPEG:
 				/* new HDFJPEGCompInfo() */
-				jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFCompInfo");
+				jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFJPEGCompInfo");
 				if (jc == NULL) {
 					return JNI_FALSE;
 				}
@@ -546,62 +535,48 @@ jobject compinfo;
 				if (jmi == NULL) {
 					return JNI_FALSE;
 				}
-				compinfo = (*env)->NewObject(env,jc,jmi,cinf->comp.cinfo.jpeg.quality,
+				compinfo = (*env)->NewObject(env,jc,jmi,
+					cinf->comp.cinfo.jpeg.quality,
 					cinf->comp.cinfo.jpeg.force_baseline);
 				break;
-		}
-		/* create an HDFCompModel (what type?) */
-/*
-		switch (cinf->comp.model_type) {
-			default:
-				rarray = (*env)->NewIntArray(env,cinf->comp.minfo.dim.ndim);
-				(*env)->SetIntArrayRegion(env,rarray,0,MAX_VAR_DIMS,
-					(jint *)cinf->comp.minfo.dim.dims);
-
-				jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFCompInfo");
+			case COMP_CODE_DEFLATE:
+				jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFDeflateCompInfo");
 				if (jc == NULL) {
 					return JNI_FALSE;
 				}
-				jmi = (*env)->GetMethodID(env, jc, "<init>", "(III[I)V");
+				jmi = (*env)->GetMethodID(env, jc, "<init>", "(I)V");
+				if (jmi == NULL) {
+					return JNI_FALSE;
+				}
+				compinfo = (*env)->NewObject(env,jc,jmi, cinf->comp.cinfo.deflate.level);
+				break;
+			case COMP_CODE_SZIP:
+				jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFSZIPCompInfo");
+				if (jc == NULL) {
+					return JNI_FALSE;
+				}
+				jmi = (*env)->GetMethodID(env, jc, "<init>", "(IIIIII)V");
 				if (jmi == NULL) {
 					return JNI_FALSE;
 				}
 				compinfo = (*env)->NewObject(env,jc,jmi,
-					cinf->comp.model_type,
-					cinf->comp.minfo.dim.nt,
-					cinf->comp.minfo.dim.ndim,
-					rarray);
+					    cinf->comp.cinfo.szip.bits_per_pixel,
+					    cinf->comp.cinfo.szip.compression_mode,
+					    cinf->comp.cinfo.szip.options_mask,
+					    cinf->comp.cinfo.szip.pixels,
+					    cinf->comp.cinfo.szip.pixels_per_block,
+					    cinf->comp.cinfo.szip.pixels_per_scanline);
 				break;
 		}
-*/
-		/* create an int[] array */
-		rarray = (*env)->NewIntArray(env,MAX_VAR_DIMS);
-		(*env)->SetIntArrayRegion(env,rarray,0,MAX_VAR_DIMS,(jint *)cinf->comp.chunk_lengths);
-
-		jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFCompChunkInfo");
-		if (jc == NULL) {
-			return JNI_FALSE;
-		}
-		jmi = (*env)->GetMethodID(env, jc, "<init>", 
-			"([IIILncsa/hdf/hdflib/HDFCompInfo;Lncsa/hdf/hdflib/HDFCompModel;)V");
-		if (jmi == NULL) {
-			return JNI_FALSE;
-		}
-		(*env)->CallVoidMethod(env,chunkobj,jmi, rarray, cinf->comp.comp_type, compinfo);
-
-		/* create an HDFCompChunkInfo, using arguments */
 		break;
-		case (HDF_COMP | HDF_NBIT):
-		/* create an int[] array */
-		rarray = (*env)->NewIntArray(env,MAX_VAR_DIMS);
-		(*env)->SetIntArrayRegion(env,rarray,0,MAX_VAR_DIMS,(jint *)cinf->nbit.chunk_lengths);
-
+	    case (HDF_CHUNK | HDF_NBIT):
+		/* new HDFCompInfo() */
 		jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFNBITChunkInfo");
 		if (jc == NULL) {
 			return JNI_FALSE;
 		}
 		jmi = (*env)->GetMethodID(env, jc, "<init>", 
-			"([IIILncsa_hdf_HDFCompInfo;Lncsa/hdf/hdflib/HDFCompModel;)V");
+			"([IIIII;)V");
 		if (jmi == NULL) {
 			return JNI_FALSE;
 		}
@@ -610,11 +585,17 @@ jobject compinfo;
 			cinf->nbit.bit_len, 
 			cinf->nbit.sign_ext, 
 			cinf->nbit.fill_one); 
+		return JNI_TRUE;
 		break;
+    	} 
 
-		default:
-			return JNI_FALSE;
+	jmi = (*env)->GetMethodID(env, jci, "<init>", 
+		"([IILncsa/hdf/hdflib/HDFCompInfo;)V");
+	if (jmi == NULL) {
+		return JNI_FALSE;
 	}
+	(*env)->CallVoidMethod(env,chunkobj,jmi, rarray, cinf->comp.comp_type, 
+			compinfo);
 
 	return JNI_TRUE;
 }
