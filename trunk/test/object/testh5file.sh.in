@@ -14,9 +14,9 @@ JH45INSTALLDIR=@JH45INST@
 
 LIBDIR=$JH45INSTALLDIR"/lib"
 
-CLASSPATH="../..:"$LIBDIR"/jh4toh5.jar:"$LIBDIR"/jhdf.jar:"$LIBDIR"/jhdf5.jar"
+CLASSPATH=$LIBDIR"/jh4toh5.jar:"$LIBDIR"/jhdf.jar:"$LIBDIR"/jhdf5.jar:"$LIBDIR"/jhdf5obj.jar:"$LIBDIR/"jhdfobj.jar:../.."
 
-LD_LIBRARY_PATH=$LIBDIR"/solaris"
+LD_LIBRARY_PATH=$LIBDIR"/@JAVATARG@"
 
 export CLASSPATH
 export LD_LIBRARY_PATH
