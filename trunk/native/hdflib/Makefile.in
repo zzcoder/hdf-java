@@ -46,7 +46,9 @@ OBJECTS =  hdfstructsutil.o \
 # make depends on the files specified in the objects macro defination
 all:  libjhdf
 
-libjhdf: $(OBJECTS)
+hdflib: libjhdf
+
+libjhdf: $(OBJECTS) 
 	-mkdir -p $(LIBDIR);
 	$(LD) $(LDOPT) -o $(LIBDIR)/libjhdf.$(SLEXT) $(LDOPT2) $(OBJECTS) $(LIBS)
 

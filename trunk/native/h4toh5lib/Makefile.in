@@ -79,7 +79,11 @@ H45OBJECTS =  h45exceptionImp.o h4toh5Imp.o
 
 OBJECTS =  $(H45OBJECTS) $(H5OBJECTS) $(H4OBJECTS)
 
-all:  libjh4toh5
+all:  
+	@if test -n "$(H45INC)" ; then $(MAKE) libjh4toh5; fi
+	
+
+h4toh5lib: libjh4toh5
 
 libjh4toh5: $(OBJECTS)
 	-mkdir -p $(LIBDIR);

@@ -10,7 +10,7 @@
 #****************************************************************************/
 
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(native/h4toh5lib/h4toh5Imp.c)
+AC_INIT(native/hdflib/hdfImp.c)
 AC_CONFIG_AUX_DIR(./Config)
 
 dnl Checks for programs.
@@ -94,7 +94,7 @@ ac_cv_lib_HDF4INC=$HDF4INC
 ZLIB=$HDF4LIB"/libz.a"
 
 dnl  Check for HDF5 library  --with-hdf5 must be set.
-
+withval="";
 AC_SUBST(LIBHDF5) LIBHDF5=""
 AC_ARG_WITH(hdf5,[  --with-hdf5=INC,LIB     Where to find the HDF5 library],,)
 case "$withval" in
@@ -133,8 +133,10 @@ esac
 ac_cv_lib_HDF5=$HDF5LIB
 ac_cv_lib_HDF5INC=$HDF5INC
 
-dnl check for libh4toh5  == with-h4toh5 must be set
+dnl check for libh4toh5  == if with-h4toh5 is not set, then can
+dnl only build hdf and hdf5 separately.
 
+withval="";
 AC_SUBST(LIBH45) LIBH45=""
 AC_ARG_WITH(h4toh5,[  --with-h4toh5=INC,LIB     Where to find the HDF 4 to 5 library],,)
 case "$withval" in
@@ -142,30 +144,34 @@ case "$withval" in
     AC_MSG_ERROR(HDF 4 to 5 library needed for compilation.)
     ;;
   no)
-    AC_MSG_ERROR(HDF 4 to 5 library needed for compilation.)
+    #AC_MSG_ERROR(HDF 4 to 5 library needed for compilation.)
+	H45LIB=""
+	H45INC=""
     ;;
   *)
-    hdf45_inc="`echo $withval |cut -f1 -d,`"
-    if test -n "$hdf45_inc"; then
-      HDF45INC="$hdf45_inc"
-      saved_CPPFLAGS="$CPPFLAGS"
-      CPPFLAGS="$CPPFLAGS -I$hdf45_inc"
-    fi
-
-    AC_CHECK_HEADERS(h4toh5public.h,,
-                     CPPFLAGS="$saved_CPPFLAGS"
-                     AC_MSG_ERROR(cannot find HDF45 header files!))
-
-    hdf45_lib="`echo $withval | cut -f2 -d, -s`"
-
-    if test -n "$hdf45_lib"; then
-      HDF45LIB="$hdf45_lib"
-      saved_LDFLAGS="$LDFLAGS"
-      LDFLAGS="$LDFLAGS -L$hdf45_lib"
-      AC_CHECK_LIB(h4toh5, H4toh5open,, LDFLAGS="$saved_LDFLAGS"
-                 AC_MSG_ERROR(cannot find HDF45 library.))
-    else
-	 AC_MSG_ERROR(cannot find HDF45 library path.)
+    if test -n "$withval"; then
+        hdf45_inc="`echo $withval |cut -f1 -d,`"
+        if test -n "$hdf45_inc"; then
+          HDF45INC="$hdf45_inc"
+          saved_CPPFLAGS="$CPPFLAGS"
+          CPPFLAGS="$CPPFLAGS -I$hdf45_inc"
+        fi
+    
+        AC_CHECK_HEADERS(h4toh5public.h,,
+                         CPPFLAGS="$saved_CPPFLAGS"
+                         AC_MSG_ERROR(cannot find HDF45 header files!))
+    
+        hdf45_lib="`echo $withval | cut -f2 -d, -s`"
+    
+        if test -n "$hdf45_lib"; then
+          HDF45LIB="$hdf45_lib"
+          saved_LDFLAGS="$LDFLAGS"
+          LDFLAGS="$LDFLAGS -L$hdf45_lib"
+          AC_CHECK_LIB(h4toh5, H4toh5open,, LDFLAGS="$saved_LDFLAGS"
+                     AC_MSG_ERROR(cannot find HDF45 library.))
+        else
+    	 AC_MSG_ERROR(cannot find HDF45 library path.)
+        fi
     fi
     ;;
 esac
@@ -394,10 +400,10 @@ AC_SUBST(JHVINST)
 AC_SUBST(JH5INST)
 AC_SUBST(ZLIB)
 
-#AC_SUBST_FILE(VERSION)
-#VERSION=./VERSION
-#VERSSTRING=`/bin/cat ./VERSION | sed -e 's/VERSION=JH45-//' `
-#AC_SUBST(VERSSTRING)
+AC_SUBST_FILE(VERSION)
+VERSION=./VERSION
+VERSSTRING=`/bin/cat ./VERSION | sed -e 's/VERSION=HDF-JAVA-//' `
+AC_SUBST(VERSSTRING)
 
 
 AC_OUTPUT(Makefile native/Makefile native/h4toh5lib/Makefile native/hdflib/Makefile native/hdf5lib/Makefile test/Makefile test/h4toh5/Makefile test/h4toh5/apitest.sh test/h4toh5/imagetest.sh test/h4toh5/nametest.sh test/h4toh5/sdstest.sh test/h4toh5/vdatatest.sh test/h4toh5/vgrouptest.sh test/h4toh5/runtests.sh test/object/testh4file.sh test/object/testh5file.sh test/object/Makefile test/object/runtests.sh test/h4toh5/linktest.sh)

@@ -9,7 +9,7 @@
 #*                                                                          *
 #****************************************************************************/
 
-#@VERSION@
+@VERSION@
 
 JAVAC           = @JAVAC@
 JAVADOC         = @JAVADOC@
@@ -20,34 +20,37 @@ SLEXT=@SLEXT@
 
 CLASSPATH=@CLASSPATH@
 JH45INSTALLDIR=@JH45INST@
+H45INC=@H45INC@
 
 #make this relative to the source root...
 LIBDIR=$(JH45INSTALLDIR)/lib
 BINDIR=$(JH45INSTALLDIR)/bin
 DOCDIR= $(JH45INSTALLDIR)/docs
 
-JH45IDISTFILES=./VERSION ./COPYING ./Makefile.in win32make.bat \
+JH45IDISTFILES=./VERSION ./COPYING ./Makefile.in \
+	windows/lib.dsw windows/lib.dsp \
 	./configure.in ./Config/config* ./Config/install-sh \
-	./configure native/Makefile.in native/h4toh5lib/Makefile.in \
-	./native/h4toh5lib/*.c ./native/h4toh5lib/*.h \
+	./configure ./native/Makefile.in ./native/h4toh5lib/Makefile.in \
+	./native/h4toh5lib/*.c \
 	./ncsa/hdf/h4toh5lib/*.java  \
 	./ncsa/hdf/h4toh5lib/exceptions/*.java
 
-JHIDISTFILES=./VERSION ./COPYING ./Makefile.in win32make.bat \
+JHIDISTFILES=./VERSION ./COPYING ./Makefile.in  \
 	./configure.in ./Config/config* ./Config/install-sh \
-	./configure native/Makefile.in native/hdflib/Makefile.in \
+	./configure ./native/Makefile.in ./native/hdflib/Makefile.in \
+	./native/hdflib/*.c \
 	./ncsa/hdf/hdflib/*.java  \
 	./glguerin/io/*.java ./glguerin/mac/io/*.java ./glguerin/util/*.java   
-JHI5DISTFILES=./VERSION ./COPYING ./Makefile.in win32make.bat \
+JHI5DISTFILES=./VERSION ./COPYING ./Makefile.in  \
         ./configure.in ./Config/config* ./Config/install-sh \
-        ./configure native/Makefile.in native/hdf5lib/Makefile.in \
+        ./configure ./native/Makefile.in ./native/hdf5lib/Makefile.in \
         ./native/hdf5lib/*.c ./native/hdf5lib/*.h \
         ./ncsa/hdf/hdf5lib/*.java  \
         ./ncsa/hdf/hdf5lib/exceptions/*.java 
 
 TESTFILES=./test/h4toh5/*.java ./test/h4toh5/*.in ./test/h4toh5/testfiles/*.hdf ./test/h4toh5/Expected/*.h5 ./test/object/*.java ./test/object/*.in
 
-DISTFILES= $(JHI5IDISTFILES) $(JHIDISTFILES) ./ncsa/hdf/object/*.java  $(TESTFILES)
+DISTFILES= $(JHI5DISTFILES) $(JHIDISTFILES) $(JH45IDISTFILES) ./ncsa/hdf/object/*.java  $(TESTFILES)
 
 
 JH45PACKAGES = \
@@ -79,11 +82,20 @@ TESTPACKAGES = test.h4toh5 ncsa.hdf.io test.object
 
 all: natives packages
 
-# samples, docs, etc
+just-hdf4: hdflib jhdf-packages
+
+just-hdf5: hdf5lib jhdf5-packages
+
+install-just-hdf4: install-hdflib install-jhdf
+
+install-just-hdf5: install-hdf5lib install-jhdf5
 
 packages: jhdf-packages jhdf5-packages jh4toh5-packages jhdfobj-packages
 
-jh4toh5-packages: $(JH45PACKAGES)  
+jh4toh5-packages: 
+	@if test -n "$(H45INC)" ; then $(MAKE) do-jh4toh5-packages ; fi
+
+do-jh4toh5-packages: $(JH45PACKAGES)  
 	$(JAR) cf ./lib/jh4toh5.jar $(JH45CLASSES)
 
 jhdf-packages: $(JHIPACKAGES)  
@@ -168,6 +180,7 @@ check: install $(TESTPACKAGES)
 	cd test; \
 	$(MAKE) check;
 
+
 install: install-lib install-jhdf install-jhdf5 install-jh4toh5 install-jhdfobj
 	@echo "Install complete"
 
@@ -176,24 +189,28 @@ uninstall: uninstall-lib uninstall-jh45 uninstall-jhi uninstall-jhi5
 install-lib: natives
 	-mkdir -p $(LIBDIR);
 	-mkdir -p $(LIBDIR)/@JAVATARG@
-	cp ./lib/@JAVATARG@/libjh4toh5.$(SLEXT) $(LIBDIR)/@JAVATARG@
-	cp ./lib/@JAVATARG@/libjhdf.$(SLEXT) $(LIBDIR)/@JAVATARG@
 	cp ./lib/@JAVATARG@/libjhdf5.$(SLEXT) $(LIBDIR)/@JAVATARG@
+	cp ./lib/@JAVATARG@/libjhdf.$(SLEXT) $(LIBDIR)/@JAVATARG@
+	@if test -n "$(H45INC)" ; then \
+	cp ./lib/@JAVATARG@/libjh4toh5.$(SLEXT) $(LIBDIR)/@JAVATARG@ ; fi
 	@echo "Install Natives complete"
 
-install-libhdf: libhdf
+install-hdflib: hdflib
 	-mkdir -p $(LIBDIR);
 	-mkdir -p $(LIBDIR)/@JAVATARG@
 	cp ./lib/@JAVATARG@/libjhdf.$(SLEXT) $(LIBDIR)/@JAVATARG@
 	@echo "Install Native HDF complete"
 
-install-libhdf5: libhdf5
+install-hdf5lib: hdf5lib
 	-mkdir -p $(LIBDIR);
 	-mkdir -p $(LIBDIR)/@JAVATARG@
 	cp ./lib/@JAVATARG@/libjhdf5.$(SLEXT) $(LIBDIR)/@JAVATARG@
 	@echo "Install Native HDF5 complete"
 
-install-libh4to5: h4toh5lib
+install-libh4to5: 
+	@if test -n "$(H45INC)" ; then $(MAKE) do-install-libh4toh5 ; fi
+
+do-install-libh4to5: h4toh5lib
 	-mkdir -p $(LIBDIR);
 	-mkdir -p $(LIBDIR)/@JAVATARG@
 	cp ./lib/@JAVATARG@/libjh4toh5.$(SLEXT) $(LIBDIR)/@JAVATARG@
@@ -201,11 +218,16 @@ install-libh4to5: h4toh5lib
 
 
 uninstall-lib:
+	rm -f $(LIBDIR)/@JAVATARG@/libjhdf.$(SLEXT)
+	rm -f $(LIBDIR)/@JAVATARG@/libjhdf5.$(SLEXT)
 	rm -f $(LIBDIR)/@JAVATARG@/libjh4toh5.$(SLEXT)
 
 install-jars: install-jhdf install-jhdf5 install-jh45
 
-install-jh4toh5: jh4toh5-packages
+install-jh4toh5: 
+	@if test -n "$(H45INC)" ; then $(MAKE) do-install-jh4toh5 ; fi
+
+do-install-jh4toh5: jh4toh5-packages
 	-mkdir -p $(LIBDIR);
 	$(JAR) cf $(JH45INSTALLDIR)/lib/jh4toh5.jar $(JH45CLASSES)
 	@echo "Install JH45 complete"
@@ -231,8 +253,8 @@ uninstall-jhi5:
 uninstall-jhi: 
 	rm -f $(JH45INSTALLDIR)/lib/jhdf.jar
 
-uninstall-jhi45: 
-	rm -f $(JH45INSTALLDIR)/lib/jh4toh5.jar
+uninstall-jh45: 
+	if test -n "$(H45INC)" ; then rm -f $(JH45INSTALLDIR)/lib/jh4toh5.jar ; fi
 
 uninstall-jhdfobj: 
 	rm -f $(JH45INSTALLDIR)/lib/jhdfobj.jar
@@ -264,8 +286,8 @@ distclean: clean-natives clean-classes clean-test
 	rm -rf ./lib/*.jar
 	rm -f ./native/Makefile
 	rm -rf ./native/h4toh5lib/Makefile
-	rm -rf ./native/libhdf/Makefile
-	rm -rf ./native/libhdf5/Makefile
+	rm -rf ./native/hdflib/Makefile
+	rm -rf ./native/hdf5lib/Makefile
 	rm -rf ./test/Makefile
 	rm -rf ./test/h4toh5/Makefile
 	rm -rf ./test/h4toh5/*.sh
@@ -276,6 +298,15 @@ distclean: clean-natives clean-classes clean-test
 #build_package:
 #	./build/JDK/builddist @JAVATARG@
 #	./build/JRE/buildjre @JAVATARG@
+
+src-dist:
+	-mkdir -p $(VERSION)
+	tar cvf $(VERSION)-x.tar $(DISTFILES)
+	cd $(VERSION) ; tar xf ../$(VERSION)-x.tar
+	rm -f $(VERSION)-x.tar
+	tar cvf $(VERSION).tar $(VERSION)/*
+	@JAR@ cvf $(VERSION).jar $(VERSION)/*
+	
 
 
 # --------

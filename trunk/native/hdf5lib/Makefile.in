@@ -38,6 +38,8 @@ OBJECTS =  exceptionImp.o h5Constants.o h5Imp.o h5aImp.o h5dImp.o h5fImp.o h5gIm
 # make depends on the files specified in the objects macro defination
 all:  libjhdf5
 
+hdf5lib: libjhdf5
+
 libjhdf5: $(OBJECTS)
 	-mkdir -p $(LIBDIR);
 	$(LD) $(LDOPT) -o $(LIBDIR)/libjhdf5.$(SLEXT) $(LDOPT2) $(OBJECTS) $(LIBS)
