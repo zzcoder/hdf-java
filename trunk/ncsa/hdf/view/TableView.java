@@ -1592,7 +1592,7 @@ null, options, options[0]);
             super();
             setHorizontalAlignment(JButton.LEFT);
 
-            setBorder(BorderFactory.createEmptyBorder());
+            setBorder(BorderFactory.createRaisedBevelBorder());
         }
 
         /** Configures the button for the current cell, and returns it. */
