@@ -29,6 +29,6 @@ LD_LIBRARY_PATH=$LIBDIR"/@JAVATARG@"
 export CLASSPATH
 export LD_LIBRARY_PATH
 
-$(RM) -f test.h5
+$RM -f test.h5
 @JAVA@ -Djava.library.path=$LD_LIBRARY_PATH TestHDF5Link
-$(RM) -f test.h5
+$RM -f test.h5

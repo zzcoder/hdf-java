@@ -119,32 +119,42 @@ dnl  Note:  we need to find static libraries, so we can't rely on
 dnl  autoconf for these detections.
 dnl
 
+AC_MSG_CHECKING([gzip compression])
+HAVE_ZLIB="no"
 withval="";
 AC_SUBST(ZLIB) ZLIB=""
 AC_ARG_WITH(libz,[  --with-libz=LIB     Path to the gzip library (required if not in default path)],,)
 
 case "$withval" in
   yes)
-    AC_MSG_ERROR(GZIP library needed for compilation.)
+      ZLIB=""
+	HAVE_ZLIB="no"
     ;;
   no)
       ZLIB=""
-    	AC_MSG_RESULT(GZIP suppressed);
+	HAVE_ZLIB="suppressed"
     ;;
   *)
     if test -n "$withval" ; then
         z_lib="`echo $withval |cut -f2 -d, -s`"
 	ZLIB=$z_lib"/libz."$LLEXT
-    	AC_MSG_RESULT([zlib found: $ZLIB]);
+	HAVE_ZLIB="yes"
     else
-        AC_MSG_ERROR(GZIP library needed for compilation.)
+      ZLIB=""
+	HAVE_ZLIB="no"
     fi
 ;;
 esac
 if test -n "$ZLIB"; then
-LIBS="$LIBS $ZLIB"
+	LIBS="$LIBS $ZLIB"
+	HAVE_ZLIB="yes"
+fi
+AC_MSG_RESULT([$HAVE_ZLIB])
+if test $HAVE_ZLIB = "yes"; then
+    	AC_MSG_RESULT([zlib found: $ZLIB]);
 fi
 
+AC_MSG_CHECKING([jpeg compression])
 HAVE_JPEG="no"
 withval="";
 AC_SUBST(JPEGLIB) JPEGLIB=""
@@ -152,21 +162,20 @@ AC_ARG_WITH(libjpeg,[  --with-libjpeg=LIB     Path to the jpeg library (required
 
 case "$withval" in
   yes)
-    AC_MSG_ERROR(JPEG library needed for compilation.)
+	HAVE_JPEG="no"
     ;;
   no)
       JPEGLIB=""
-    	AC_MSG_RESULT([JPEG suppressed]);
-	HAVE_JPEG="no"
+	HAVE_JPEG="suppressed"
     ;;
   *)
     if test -n "$withval" ; then
         jpeg_lib="`echo $withval |cut -f2 -d, -s`"
 	JPEGLIB=$jpeg_lib"/libjpeg."$LLEXT
-    	AC_MSG_RESULT([jpeg found: $JPEGLIB]);
+    	#AC_MSG_RESULT([jpeg found: $JPEGLIB]);
 	HAVE_JPEG="yes"
     else
-	    AC_MSG_ERROR([JPEG library needed for compilation.])
+	HAVE_JPEG="no"
     fi
 ;;
 esac
@@ -174,7 +183,12 @@ if test -n "$JPEGLIB"; then
 	LIBS="$LIBS $JPEGLIB"
 	HAVE_JPEG="yes"
 fi
+AC_MSG_RESULT([$HAVE_JPEG])
+if test $HAVE_JPEG = "yes"; then
+    	AC_MSG_RESULT([jpeg found: $JPEGLIB]);
+fi
 
+AC_MSG_CHECKING([szip compression])
 HAVE_SZIP="no"
 withval="";
 AC_SUBST(SZLIB) SZLIB=""
@@ -182,34 +196,39 @@ AC_ARG_WITH(libsz,[  --with-libsz=LIB     Path to the szip library (required if 
 
 case "$withval" in
   yes)
-    AC_MSG_ERROR([SZIP library needed for compilation.])
+      SZLIB=""
 	HAVE_SZIP="no"
     ;;
   no)
       SZLIB=""
-    	AC_MSG_RESULT(SZIP suppressed);
-	HAVE_SZIP="no"
+	HAVE_SZIP="suppressed"
     ;;
   *)
 	if test -n "$withval" ; then
 	    sz_lib="`echo $withval |cut -f2 -d, -s`"
 		SZLIB=$sz_lib"/libsz."$LLEXT
-		AC_MSG_RESULT([szlib found: $SZLIB]);
+		#AC_MSG_RESULT([szlib found: $SZLIB]);
 		HAVE_SZIP="yes"
 	else
-	    AC_MSG_ERROR([SZIP library needed for compilation.]  )
+	      SZLIB=""
+		HAVE_SZIP="no"
 	fi
-;;
+  ;;
 esac
 if test -n "$SZLIB"; then
 	LIBS="$LIBS $SZLIB"
 	HAVE_SZIP="yes"
+fi
+AC_MSG_RESULT([$HAVE_SZIP])
+if test $HAVE_SZIP = "yes"; then
+    	AC_MSG_RESULT([szlib found: $SZLIB]);
 fi
 
 dnl
 dnl  Look for HDF4 library, if selected.
 dnl  Must find static libraries.
 dnl
+AC_MSG_CHECKING([HDF4 library])
 HAVE_HDF4="no"
 withval="";
 AC_SUBST(HDF4LIB) HDF4LIB=""
@@ -217,30 +236,38 @@ AC_ARG_WITH(hdf4,[  --with-hdf4=LIB     Path to the hdf library (required if not
 
 case "$withval" in
   yes)
-    AC_MSG_ERROR(HDF4 library needed for compilation.)
+    #AC_MSG_ERROR(HDF4 library needed for compilation.)
+      HDF4LIB=""
 	HAVE_HDF4="no"
     ;;
   no)
       HDF4LIB=""
-    	AC_MSG_RESULT(HDF4 suppressed);
-	HAVE_HDF4="no"
+	HAVE_HDF4="suppressed"
     ;;
   *)
-if test -n "$withval" ; then
-    hdf4_inc="`echo $withval |cut -f1 -d,`"
-    if test -n "$hdf4_inc"; then
-      HDF4INC="$hdf4_inc"
-    fi
-    hdf4_lib="`echo $withval |cut -f2 -d, -s`"
-    if test -n "$hdf4_lib"; then
-	HDF4LIB=$hdf4_lib
-    fi
-fi
-;;
+	if test -n "$withval" ; then
+	    hdf4_inc="`echo $withval |cut -f1 -d,`"
+	    if test -n "$hdf4_inc"; then
+	      HDF4INC="$hdf4_inc"
+	    fi
+	    hdf4_lib="`echo $withval |cut -f2 -d, -s`"
+	    if test -n "$hdf4_lib"; then
+		HDF4LIB=$hdf4_lib
+	    fi
+	    HAVE_HDF4="yes"
+	else
+	      HDF4LIB=""
+	    HAVE_HDF4="no"
+	fi
+	;;
 esac
 if test -n "$HDF4LIB"; then
 	LIBS="$HDF4LIB/libdf.$LLEXT $HDF4LIB/libmfhdf.$LLEXT $LIBS"
 	HAVE_HDF4="yes"
+fi
+AC_MSG_RESULT([$HAVE_HDF4])
+if test $HAVE_HDF4 = "yes"; then
+    	AC_MSG_RESULT([HDF4 found: $HDF4LIB]);
 fi
 
 dnl
@@ -249,37 +276,36 @@ dnl
 dnl  Must stop here if something is missing.
 dnl
 if test "$HAVE_HDF4" = "yes"; then
-needjpg=`grep 'define H4_HAVE_LIBJPEG 1' $HDF4INC/h4config.h`
-needgzip=`grep 'define H4_HAVE_LIBZ 1' $HDF4INC/h4config.h`
-needszip=`grep 'define H4_HAVE_LIBSZ 1' $HDF4INC/h4config.h`
-if test -n "$needjpg"; then
-if test "$HAVE_JPEG" = "no"; then
-    AC_MSG_ERROR([ HDF4 library needs JPEG, JPEG not defined.])
-fi
+	AC_MSG_CHECKING([dependencies for HDF4 library])
+	needjpg=`grep 'define H4_HAVE_LIBJPEG 1' $HDF4INC/h4config.h`
+	needgzip=`grep 'define H4_HAVE_LIBZ 1' $HDF4INC/h4config.h`
+	needszip=`grep 'define H4_HAVE_LIBSZ 1' $HDF4INC/h4config.h`
+	if test -n "$needjpg"; then
+		if test "$HAVE_JPEG" != "yes"; then
+		    AC_MSG_ERROR([ HDF4 library needs JPEG, JPEG not defined.])
+		fi
+	fi
+
+	if test -n "$needgzip"; then
+		if test "$HAVE_ZLIB" != "yes"; then
+		    AC_MSG_ERROR([ HDF4 library needs GZIP, GZIP not defined.])
+		fi
+	fi
+
+	if test -n "$needszip"; then
+		if test "$HAVE_SZIP" != "yes"; then
+		    AC_MSG_ERROR([ HDF4 library needs SZIP, SZIP not defined.])
+		fi
+	fi
+	AC_MSG_RESULT([OK])
 fi
 
-if test -n "$needgzip"; then
-if test "$HAVE_ZLIB" = "no"; then
-    AC_MSG_ERROR([ HDF4 library needs GZIP, GZIP not defined.])
-fi
-fi
 
-if test -n "$needszip"; then
-if test "$HAVE_SZIP" = "no"; then
-    AC_MSG_ERROR([ HDF4 library needs SZIP, SZIP not defined.])
-fi
-fi
-
-fi
-
-
-if test -n "$HDF4LIB"; then
-AC_MSG_RESULT([HDF4 library found at: $HDF4LIB])
-fi
 ac_cv_lib_HDF4=$HDF4LIB
 ac_cv_lib_HDF4INC=$HDF4INC
 
 
+AC_MSG_CHECKING([HDF5 library])
 HAVE_HDF5="no"
 withval="";
 AC_SUBST(HDF5LIB) HDF5LIB=""
@@ -287,31 +313,39 @@ AC_ARG_WITH(hdf5,[  --with-hdf5=LIB     Path to the hdf5 library (required if no
 
 case "$withval" in
   yes)
-    AC_MSG_ERROR(HDF5 library needed for compilation.)
+      HDF5LIB=""
+	HAVE_HDF5="no"
     ;;
   no)
       HDF5LIB=""
-    	AC_MSG_RESULT(HDF5 suppressed);
-	HAVE_HDF5="no"
+	HAVE_HDF5="suppressed"
     ;;
   *)
-if test -n "$withval" ; then
-    hdf5_lib="`echo $withval |cut -f2 -d, -s`"
-	HDF5LIB=$hdf5_lib"/libhdf.$LLEXT"
-    hdf5_inc="`echo $withval |cut -f1 -d,`"
-    if test -n "$hdf5_inc"; then
-      HDF5INC="$hdf5_inc"
-    fi
-    hdf5_lib="`echo $withval |cut -f2 -d, -s`"
-    if test -n "$hdf5_lib"; then
-	HDF5LIB=$hdf5_lib
-    fi
-fi
-;;
+	if test -n "$withval" ; then
+	    hdf5_lib="`echo $withval |cut -f2 -d, -s`"
+		HDF5LIB=$hdf5_lib"/libhdf.$LLEXT"
+	    hdf5_inc="`echo $withval |cut -f1 -d,`"
+	    if test -n "$hdf5_inc"; then
+	      HDF5INC="$hdf5_inc"
+	    fi
+	    hdf5_lib="`echo $withval |cut -f2 -d, -s`"
+	    if test -n "$hdf5_lib"; then
+		HDF5LIB=$hdf5_lib
+	    fi
+	    HAVE_HDF5="yes"
+	else
+	      HDF5LIB=""
+	    HAVE_HDF5="no"
+	fi
+	;;
 esac
 if test -n "$HDF5LIB"; then
-LIBS="$HDF5LIB/libhdf5.$LLEXT $LIBS"
-HAVE_HDF5="yes"
+	LIBS="$HDF5LIB/libhdf5.$LLEXT $LIBS"
+	HAVE_HDF5="yes"
+fi
+AC_MSG_RESULT([$HAVE_HDF5])
+if test $HAVE_HDF5 = "yes"; then
+    	AC_MSG_RESULT([HDF5 found: $HDF5LIB]);
 fi
 
 dnl
@@ -320,23 +354,22 @@ dnl
 dnl  Must stop here if something is missing.
 dnl
 if test -n "$HDF5LIB"; then
-DFL=`grep 'filters (external)' $HDF5LIB"/libhdf5.settings" | grep deflate`
-SZP=`grep 'filters (external)' $HDF5LIB"/libhdf5.settings" | grep szip`
-if test -n "$DFL";
-then
-	#echo "HDF5 requires deflate"
-	if test "$HAVE_ZLIB" = "no"; then
-	    AC_MSG_ERROR([ HDF5 library needs GZIP, GZIP not defined.])
+	AC_MSG_CHECKING([dependencies for HDF5 library])
+	DFL=`grep 'filters (external)' $HDF5LIB"/libhdf5.settings" | grep deflate`
+	SZP=`grep 'filters (external)' $HDF5LIB"/libhdf5.settings" | grep szip`
+	if test -n "$DFL";
+	then
+		if test "$HAVE_ZLIB" != "yes"; then
+		    AC_MSG_ERROR([ HDF5 library needs GZIP, GZIP not defined.])
+		fi
 	fi
-fi
-if test -n "$SZP";
-then
-	#echo "HDF5 requires szip"
-	if test "$HAVE_SZLIB" = "no"; then
-	    AC_MSG_ERROR([ HDF5 library needs SZIP, SZIP not defined.])
+	if test -n "$SZP";
+	then
+		if test "$HAVE_SZIP" != "yes"; then
+		    AC_MSG_ERROR([ HDF5 library needs SZIP, SZIP not defined.])
+		fi
 	fi
-fi
-AC_MSG_RESULT([HDF5 library found at: $HDF5LIB])
+	AC_MSG_RESULT([OK])
 fi
 ac_cv_lib_HDF5=$HDF5LIB
 ac_cv_lib_HDF5INC=$HDF5INC
@@ -348,18 +381,19 @@ dnl
 dnl  This code need to be updated to check all the dependencies,
 dnl  as for H4 and H5 libs above.
 
+AC_MSG_CHECKING([HDF4to5 library])
 USEH45="no"
 withval="";
 AC_SUBST(LIBH45) LIBH45=""
 AC_ARG_WITH(h4toh5,[  --with-h4toh5=INC,LIB     Path to the HDF 4 to 5 library (optional feature, if selected then path required is not in default path)],,)
 case "$withval" in
   yes)
-    AC_MSG_ERROR(HDF 4 to 5 library needed for compilation.)
+	USEH45="no"
     ;;
   no)
-    #AC_MSG_ERROR(HDF 4 to 5 library needed for compilation.)
 	H45LIB=""
 	H45INC=""
+	USEH45="suppressed"
     ;;
   *)
     if test -n "$withval"; then
@@ -390,8 +424,9 @@ case "$withval" in
     ;;
 esac
 
+AC_MSG_RESULT([$USEH45])
 if test -n "$H45LIB"; then
-AC_MSG_RESULT([h4toh5 library found at: $HDF45LIB])
+	AC_MSG_RESULT([h4toh5 library found at: $HDF45LIB])
 fi
 H45LIB=$HDF45LIB
 H45INC=$HDF45INC
