@@ -33,7 +33,7 @@ done
 for i in $TESTFILES
 do
 
-@JAVA@ -Djava.library.path=$LD_LIBRARY_PATH -Dncsa.hdf.hdflib.HDFLibrary.hdflib=$LIBDIR"/@JAVATARG@/libjhdf.so" test.object.TestH5File $i.h5
+@JAVA@ -Djava.library.path=$LD_LIBRARY_PATH -Dncsa.hdf.hdf5lib.H5.hdf5lib=$LIBDIR"/@JAVATARG@/libjhdf5.so" test.object.TestH5File $i.h5
 
 
 # check against correct output....
