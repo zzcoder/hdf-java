@@ -1,0 +1,161 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.72 [en] (WinNT; U) [Netscape]">
+   <meta name="Author" content="Robert E. McGrath">
+   <title>HDFView User's Guide -- Tree Viewer</title>
+</head>
+
+<!-- BEGIN OF THE BODY -->
+<body text="#000000" bgcolor="#FFFFFF" link="#0000EE" vlink="#551A8B" alink="#FF0000">
+
+<a href="index.html">[Index]</a>
+<a href="ug01introduction.html">[1]</a>
+<a href="ug02start.html">[2]</a>
+<a href="ug03objects.html">[3]</a>
+<a href="ug04treeview.html">[4]</a>
+<a href="ug05spreadsheet.html">[5]</a>
+<a href="ug06imageview.html">[6]</a>
+<a href="ug07textview.html">[7]</a>
+
+
+<h1>
+Chapter 4: The Tree Viewer</h1>
+Every HDF object appears in at least one group. A set of objects can be
+stored together in a group. You can use the group object API functions
+to create and manipulate the groups. With the groups, you can organize
+the data objects in an HDF file.
+
+<p>Since objects can have names in more than one group, the set of all
+objects in an HDF file is a directed graph. It is difficult to manipulate
+and browse the graph on a 2D virtual screen. Instead of showing the directed
+graph of the HDF file structure, HDFView displays HDF objects in an conventional
+structure of a tree of "folders"; breaking the "loops" in the graph when
+necessary. The tree viewer of HDFView provides users an easy way to browse
+and manage HDF data objects in an HDF file.
+
+<dl>
+<dt><a href="ug04treeview.html#ug04tree">4.1 Tree Viewer</a></dt>
+<dt><a href="ug04treeview.html#ug04data">4.2 Data Content</a></dt>
+<dt><a href="ug04treeview.html#ug04metadata">4.3 Metadata and Attributes</a></dt>
+</dl>
+
+<hr noshade size=1><a NAME="ug04tree"></a>
+<h2>
+4.1 Tree Viewer</h2>
+Upon opening an HDF file, HDFView displays the tree structure of the HDF
+file in the tree viewer (panel), which is at the left of the HDFView. Every
+HDF file has exact one root group that is created when the file is created.
+The root group is added to the root of the tree. When two or more files are
+open, the root groups of the files are listed at the root the tree view. 
+
+<p>Groups are presented as folders in the tree viewer. Opening and closing
+folders, you can browse the individual HDF objects in the HDF file. Datasets,
+images and tables are leaf objects in the tree. Clicking a leaf object,
+you see the content of the object displayed in the data/document window
+on the right of the HDFView. Figure 4.1 illustrates that an HDF4 file, annras.hdf,
+and an HDF5 file, hdf5_test.h5, are currently open by the HDFView.
+
+<center>
+<p><img SRC="images/tree_view.gif" >
+<br><b>Figure 4.1 The Tree Viewer</b></center>
+
+<p>
+To select an object in the tree, point mouse on the object and click once on the
+object. You can open the data content of the selected data object from menu bar
+or the popup menu. 
+
+<p>The popup menu appears by clicking the right mouse button on the object
+in the tree view. When a command is selected from the popup menu, the command
+action will be taken on the object clicked.
+
+<center>
+<p><img SRC="images/menu_popup.gif" >
+<br><b>Figure 4.2 The Object Popup Menu</b></center>
+
+<p>The object menu in the HDFView menu bar contains the same commands in the
+popup menu.
+
+<center>
+<p><img SRC="images/menu_object.gif" >
+<br><b>Figure 4.3 The Object Menu</b></center>
+
+<h2>
+<a NAME="ug04data"></a>4.2 Data Content</h2>
+The Tree View allows the user to navigate the structure of the HDF file,
+to select individual objects, and to view the content of the selected object.
+
+<p>
+You can open a data object in the tree by a double-mouse-click or selecting open
+command from menu bar or popup menu. By default, data content is displayed as 
+an image, a table or text based on its datatype.
+
+<p>
+Using "Open As", you can select a subset of dataset to display or change the
+default display options. For example, you can display the data values an image
+in spreadsheet, or show a scalar dataset as an image. For multi-dimension dataset,
+you use the display option window to select three dimensions to display.
+
+<center>
+<p><img SRC="images/dataset_open_as.gif" >
+<br><b>Figure 4.4 The Display Option</b></center>
+
+
+<h2>
+<a NAME="ug04metadata"></a>4.3 Metadata and Attributes</h2>
+
+The metadata dialog appears by clicking the object (icon) in the tree with
+the right button or select the "Properties" command from the "Object"
+menu. The HDF metadata display contains two tabbed panes, showing the
+general metadata and the user defined attributes.
+
+<p>General metadata includes the name, type, path of the data object.
+
+<p>For groups, general metadata also includes the name, type, size of all
+the members of the group. Figure 4.5 shows an example of the general information 
+of group.
+
+<center>
+<p><img SRC="images/property_general_group.gif" >
+<br><b>Figure 4.5 General Properties of HDF group.</b></center>
+
+
+<p>For a dataset (or image), the general metadata includes the dataspace
+information (rank, current and maximum size of each dimensions), datatype
+information (type, size, order). 
+Figure 4.6 shows an example of the metadata for a dataset.
+
+<center>
+<p><img SRC="images/property_general_dataset.gif" >
+<br><b>Figure 4.6 General Properties of Dataset.</b></center>
+
+<p>
+To see the attributes of an object, you click the "Attribute" tab at
+the Object Property Window. The name, type, size and value of all attributes
+of the slected object are displayed in a table. Figure 4.7 shows and example
+of the attribute display.
+
+<center>
+<p><img SRC="images/property_attribute.gif" >
+<br><b>Figure 4.7 HDF Attributes</b></center>
+
+
+<!-- BEGIN OF FOOTER INFO -->
+<p>
+<hr noshade size=1><a href="http://www.ncsa.uiuc.edu/">
+<img SRC="http://www.ncsa.uiuc.edu/Images/NCSAhome/footerlogo.gif" ALT="NCSA" BORDER=0 ></a>
+<br><font face="arial,helvetica" size=-1>
+<a href="http://www.ncsa.uiuc.edu/">
+The National Center for Supercomputing Applications</a></font>
+<br><font face="arial,helvetica" size=-1>
+<a href="http://www.uiuc.edu/">University
+of Illinois at Urbana-Champaign</a></font>
+<br><font face="arial,helvetica" size=-1>
+<a href="mailto:hdfhelp@ncsa.uiuc.edu">hdfhelp@ncsa.uiuc.edu</a></font>
+<p>
+<i><font color="#FF0000" size=-1>Updated 3/25/2002</font></i>
+<!- END OF FOOTER INFO -->
+
+</body>
+</html>
