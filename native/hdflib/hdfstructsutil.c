@@ -502,7 +502,7 @@ jclass jc;
 jmethodID jmi;
 jintArray rarray;
 jobject compinfo;
-jobject compmodel;
+//jobject compmodel;
 
 	switch (flgs) {
 	    case HDF_CHUNK:
@@ -535,7 +535,7 @@ jobject compmodel;
 				if (jmi == NULL) {
 					return JNI_FALSE;
 				}
-				compmodel = (*env)->NewObject(env,jc,jmi);
+				compinfo = (*env)->NewObject(env,jc,jmi);
 				break;
 			case COMP_JPEG:
 				/* new HDFJPEGCompInfo() */
@@ -547,18 +547,18 @@ jobject compmodel;
 				if (jmi == NULL) {
 					return JNI_FALSE;
 				}
-				compmodel = (*env)->NewObject(env,jc,jmi,cinf->comp.cinfo.jpeg.quality,
+				compinfo = (*env)->NewObject(env,jc,jmi,cinf->comp.cinfo.jpeg.quality,
 					cinf->comp.cinfo.jpeg.force_baseline);
 				break;
 		}
 		/* create an HDFCompModel (what type?) */
+/*
 		switch (cinf->comp.model_type) {
 			default:
 				rarray = (*env)->NewIntArray(env,cinf->comp.minfo.dim.ndim);
 				(*env)->SetIntArrayRegion(env,rarray,0,MAX_VAR_DIMS,
 					(jint *)cinf->comp.minfo.dim.dims);
 
-				/* new HDFCompModel() */
 				jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFCompInfo");
 				if (jc == NULL) {
 					return JNI_FALSE;
@@ -574,7 +574,7 @@ jobject compmodel;
 					rarray);
 				break;
 		}
-
+*/
 		/* create an int[] array */
 		rarray = (*env)->NewIntArray(env,MAX_VAR_DIMS);
 		(*env)->SetIntArrayRegion(env,rarray,0,MAX_VAR_DIMS,(jint *)cinf->comp.chunk_lengths);
@@ -584,12 +584,11 @@ jobject compmodel;
 			return JNI_FALSE;
 		}
 		jmi = (*env)->GetMethodID(env, jc, "<init>", 
-			"([IIILncsa_hdf_HDFCompInfo;Lncsa_hdf_HDFCompModel;)V");
+			"([IIILncsa/hdf/hdflib/HDFCompInfo;Lncsa/hdf/hdflib/HDFCompModel;)V");
 		if (jmi == NULL) {
 			return JNI_FALSE;
 		}
-		(*env)->CallVoidMethod(env,chunkobj,jmi, rarray, cinf->comp.comp_type, 
-			cinf->comp.model_type, compinfo, compmodel);
+		(*env)->CallVoidMethod(env,chunkobj,jmi, rarray, cinf->comp.comp_type, compinfo);
 
 		/* create an HDFCompChunkInfo, using arguments */
 		break;
@@ -603,7 +602,7 @@ jobject compmodel;
 			return JNI_FALSE;
 		}
 		jmi = (*env)->GetMethodID(env, jc, "<init>", 
-			"([IIILncsa_hdf_HDFCompInfo;Lncsa_hdf_HDFCompModel;)V");
+			"([IIILncsa_hdf_HDFCompInfo;Lncsa/hdf/hdflib/HDFCompModel;)V");
 		if (jmi == NULL) {
 			return JNI_FALSE;
 		}

@@ -258,7 +258,7 @@ implements TableView, ActionListener
         if (rank > 2)
         {
             // reset the title for 3D dataset
-            setTitle( frameTitle+ " - Page "+String.valueOf(start[selectedIndex[2]]+1)+ " of "+dims[selectedIndex[2]]);
+            setTitle( "Page "+String.valueOf(start[selectedIndex[2]]+1)+ " of "+dims[selectedIndex[2]] + "    " + frameTitle);
         }
 
         setJMenuBar(createMenuBar());
@@ -1233,8 +1233,7 @@ null, options, options[0]);
             return;
         }
 
-        setTitle( frameTitle+ " - Page "+String.valueOf(idx+1)+ " of "+dims[selectedIndex[2]]);
-        table.clearSelection();
+        setTitle( "Page "+String.valueOf(start[selectedIndex[2]]+1)+ " of "+dims[selectedIndex[2]] + "    " + frameTitle);        table.clearSelection();
         updateUI();
     }
 
