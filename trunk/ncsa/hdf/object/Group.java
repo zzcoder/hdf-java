@@ -121,6 +121,8 @@ public abstract class Group extends HObject
             while(emu.hasMoreElements())
             {
                 uObj = (HObject)((DefaultMutableTreeNode)emu.nextElement()).getUserObject();
+
+                /* bug in this code reported by Jarom R. Nelson, Lawrence Livermore National
                 if (uObj instanceof Group)
                 {
                     g = (Group)uObj;
@@ -131,6 +133,24 @@ public abstract class Group extends HObject
                         break;
                     }
                 }
+                */
+
+                if (uObj instanceof Group)
+                {
+                    g = (Group)uObj;
+                    System.out.println(g+" : name = " + g.getName() + " path = " + g.getPath()
+                                       +" this = " + this);
+                    if( g.getPath() != null ) // add this check to get rid of null exception
+                    {
+                      if ( ( this.isRoot() && g.isRoot() ) ||
+                           ( thePath.equals(g.getPath()) && g.getName().endsWith( theName ) ) )
+                      {
+                        memberList = g.getMemberList();
+                        break;
+                      }
+                    }
+                }
+
             }
         }
 
