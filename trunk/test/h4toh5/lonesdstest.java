@@ -15,21 +15,22 @@ import ncsa.hdf.h4toh5lib.exceptions.*;
 import ncsa.hdf.hdflib.*;
 import ncsa.hdf.hdf5lib.*;
 
-public class vdatatest {
+public class lonesdstest {
 
-	private int file_id = -1;
+	//private int sd_id   = -1;
 	private int h4toh5id = -1;
 	private boolean initialized = false;
 
-	public vdatatest() {};
+	public lonesdstest() {};
 
 static public void main( String []args ) 
 {
-	vdatatest vdt = new vdatatest();
-	vdt.setup();
-	boolean r1 = vdt.test1();
-	vdt.cleanup();
-	if (r1) {
+	lonesdstest sdt = new lonesdstest();
+	sdt.setup();
+	boolean r1 = sdt.test1();
+	//boolean r2 = sdt.test2();
+	sdt.cleanup();
+	if (r1 /*&& r2*/) {
 		System.exit(0);
 	} else {
 		System.exit(-1);
@@ -43,54 +44,39 @@ static public void main( String []args )
  */
 public void setup(  ) 
 {
+/*
 	try {
-		file_id = HDFLibrary.Hopen("vdata_lib_test.hdf",
+		sd_id = HDFLibrary.SDstart("sds_lib_test.hdf",
 			HDFConstants.DFACC_READ);
-	} catch (HDFException he1) {
-		System.err.println("Setup: open H interface exception: "+he1);
+	} catch (HDFException he2) {
+		System.err.println("Setup: open SD interface exception: "+he2);
 		System.exit( -1);
 	}
-	if (file_id == -1) {
-		System.err.println("Setup: cannot open H interface: "+file_id);
+	if(sd_id == -1) {
+		System.err.println("Setup: cannot start SD interface: "+sd_id);
 		System.exit( -1);
 	}
-
-	boolean status  = false;
-	try {
-		status = HDFLibrary.Vstart(file_id);
-	} catch (HDFException he9) {
-		System.err.println("Setup: open VS interface exception: "+he9);
-		try {
-			HDFLibrary.Hclose(file_id);
-		} catch (HDFException he10) {}
-		System.exit( -1);
-	}
-
-	if(status == false) {
-		System.err.println("Setup: open V interface error");
-		try {
-			HDFLibrary.Hclose(file_id);
-		} catch (HDFException he12) {}
-		System.exit( -1);
-	}
+*/
 
 	try {
-		h4toh5id= h4toh5.H4toh5open("vdata_lib_test.hdf",
-			"vdata_lib_test.h5",h4toh5.H425_CLOBBER);
+		h4toh5id= h4toh5.H4toh5open("sds_lib_lonetest.hdf",
+			"sds_lib_lonetest.h5",h4toh5.H425_CLOBBER);
 	} catch (H45Exception h45e1) {
 		System.err.println("Setup: H4toh5open exception "+h45e1);
+/*
 		try {
-			HDFLibrary.Vend(file_id);
-			HDFLibrary.Hclose(file_id);
+			HDFLibrary.SDend(sd_id);
 		} catch (HDFException he13) {}
+*/
 		System.exit( -1);
 	}
 	if(h4toh5id  < 0) {
 		System.err.println("Setup: error returned by H4toh5open: "+h4toh5id);
+/*
 		try {
-			HDFLibrary.Vend(file_id);
-			HDFLibrary.Hclose(file_id);
+			HDFLibrary.SDend(sd_id);
 		} catch (HDFException he14) {}
+*/
 		System.exit( -1);
 	}
 	initialized = true;
@@ -104,9 +90,10 @@ public void cleanup()
 	if (initialized) {
 		try {
 			h4toh5.H4toh5close(h4toh5id);
-			HDFLibrary.Vend(file_id);
-			HDFLibrary.Hclose(file_id);
-		} catch (HDFException he) {}
+/*
+			HDFLibrary.SDend(sd_id);
+*/
+		} /*catch (HDFException he) {}*/
 		catch (H45Exception h45e) {}
 		initialized = false;
 	}
@@ -123,44 +110,93 @@ private void test1_cleanup() {
 	//   GRendaccess(image_id);
 }
 
+private void test2_cleanup() {
+	// clean up for test 1 here?
+	// vdata_id
+	// vgroup_id
+	// etc.
+}
+
 /*
- *  Test batch I:  test Vdata conversion
+ *  Test batch I:  test all SDS conversion using the default name generation
  *                 for the HDF5 objects.
  */
 public boolean test1(  ) 
 {
-
-	int vdata_ref = 2;
-	int vdata_id = -1;
+	
+/*
+	int sds_id = -1;
 	try {
-		vdata_id = HDFLibrary.VSattach(file_id,vdata_ref,"r");
-	} catch (HDFException he3) {
-		System.err.println("VSgetid exception "+he3);
+		sds_id = HDFLibrary.SDselect(sd_id,0);
+	} catch (HDFException he1) {
+		System.err.println("SDselect failed");
+		System.err.println("Test 1: FAIL");
+		return(false);
+	}
+*/
+
+	try {
+		h4toh5.H4toh5alllonesds(h4toh5id,"/",null,
+			h4toh5.H425_DIMSCALE,h4toh5.H425_ALLATTRS);
+	} catch (H45Exception h45e1) {
+		System.err.println("H4toh5alllonesds exception "+h45e1);
 		System.err.println("Test 1: FAIL");
 		test1_cleanup();
 		return(false);
 	}
 
+/*
 	try {
-		h4toh5.H4toh5vdata(h4toh5id,vdata_id,"/group1",null,0);
-	} catch (H45Exception h45e3) {
-		System.err.println("h4toh5vdata exception "+h45e3);
-		System.err.println("Test 1: FAIL");
-		test1_cleanup();
+		HDFLibrary.SDendaccess(sds_id);
+	} catch (HDFException he8_1) {
+		System.err.println("Test I.8: FAIL after test");
 		return(false);
 	}
+*/
 
-	try {
-		HDFLibrary.VSdetach(vdata_id);
-	} catch (HDFException he3_4) {
-		System.err.println("VSdetach error ");
-		System.err.println("Test 1: FAIL after test");
-		return(false);
-	}
-
-	System.out.print("Test Vdata conversion: ");
+	System.out.print("Test conversion of all SDS: ");
  	System.out.println("PASS");
 	return(true);
 }
+
+/*
+ *  Test batch II:  Test SDS conversion with user-defined name for HDF5 objects
+ */
+/*
+public boolean test2(  ) 
+{
+
+	int sds_id = -1;
+	try {
+		sds_id = HDFLibrary.SDselect(sd_id,3);
+	} catch (HDFException he1) {
+		System.err.println("SDselect failed");
+		System.err.println("Test 2: FAIL");
+		test2_cleanup();
+		return(false);
+	}
+
+	try {
+		h4toh5.H4toh5sds(h4toh5id,sds_id,"/group1",
+			"mysds","/mydimg",1,0);
+	} catch (H45Exception h45e1) {
+		System.err.println("H4toh5sds exception "+h45e1);
+		System.err.println("Test 2: FAIL");
+		test2_cleanup();
+		return(false);
+	}
+
+	try {
+		HDFLibrary.SDendaccess(sds_id);
+	} catch (HDFException he8_1) {
+		System.err.println("Test II.8: FAIL after test");
+		return(false);
+	}
+
+	System.out.print("Test SDS conversion using user names: ");
+ 	System.out.println("PASS");
+	return(true);
+}
+*/
 
 }

@@ -15,21 +15,23 @@ import ncsa.hdf.h4toh5lib.exceptions.*;
 import ncsa.hdf.hdflib.*;
 import ncsa.hdf.hdf5lib.*;
 
-public class vdatatest {
+public class imagetestattr {
 
 	private int file_id = -1;
+	private int gr_id = -1;
 	private int h4toh5id = -1;
 	private boolean initialized = false;
 
-	public vdatatest() {};
+	public imagetestattr() {};
 
 static public void main( String []args ) 
 {
-	vdatatest vdt = new vdatatest();
-	vdt.setup();
-	boolean r1 = vdt.test1();
-	vdt.cleanup();
-	if (r1) {
+	imagetestattr it = new imagetestattr();
+	it.setup();
+	boolean r1 = it.test1();
+	boolean r2 = it.test2();
+	it.cleanup();
+	if (r1 && r2) {
 		System.exit(0);
 	} else {
 		System.exit(-1);
@@ -44,7 +46,7 @@ static public void main( String []args )
 public void setup(  ) 
 {
 	try {
-		file_id = HDFLibrary.Hopen("vdata_lib_test.hdf",
+		file_id = HDFLibrary.Hopen("image_lib_test.hdf",
 			HDFConstants.DFACC_READ);
 	} catch (HDFException he1) {
 		System.err.println("Setup: open H interface exception: "+he1);
@@ -55,32 +57,31 @@ public void setup(  )
 		System.exit( -1);
 	}
 
-	boolean status  = false;
+
 	try {
-		status = HDFLibrary.Vstart(file_id);
-	} catch (HDFException he9) {
-		System.err.println("Setup: open VS interface exception: "+he9);
+		gr_id = HDFLibrary.GRstart(file_id);
+	} catch (HDFException he5) {
+		System.err.println("Setup: open GR interface exception: "+he5);
 		try {
 			HDFLibrary.Hclose(file_id);
-		} catch (HDFException he10) {}
+		} catch (HDFException he6) {}
+		System.exit( -1);
+	}
+	if(gr_id == -1) {   
+		System.err.println("Setup: open GR interface error: "+gr_id);
+		try {
+			HDFLibrary.Hclose(file_id);
+		} catch (HDFException he8) {}
 		System.exit( -1);
 	}
 
-	if(status == false) {
-		System.err.println("Setup: open V interface error");
-		try {
-			HDFLibrary.Hclose(file_id);
-		} catch (HDFException he12) {}
-		System.exit( -1);
-	}
-
 	try {
-		h4toh5id= h4toh5.H4toh5open("vdata_lib_test.hdf",
-			"vdata_lib_test.h5",h4toh5.H425_CLOBBER);
+		h4toh5id= h4toh5.H4toh5open("image_lib_test.hdf",
+			"image_lib_testattr.h5",h4toh5.H425_CLOBBER);
 	} catch (H45Exception h45e1) {
 		System.err.println("Setup: H4toh5open exception "+h45e1);
 		try {
-			HDFLibrary.Vend(file_id);
+			HDFLibrary.GRend(gr_id);
 			HDFLibrary.Hclose(file_id);
 		} catch (HDFException he13) {}
 		System.exit( -1);
@@ -88,7 +89,7 @@ public void setup(  )
 	if(h4toh5id  < 0) {
 		System.err.println("Setup: error returned by H4toh5open: "+h4toh5id);
 		try {
-			HDFLibrary.Vend(file_id);
+			HDFLibrary.GRend(gr_id);
 			HDFLibrary.Hclose(file_id);
 		} catch (HDFException he14) {}
 		System.exit( -1);
@@ -104,7 +105,7 @@ public void cleanup()
 	if (initialized) {
 		try {
 			h4toh5.H4toh5close(h4toh5id);
-			HDFLibrary.Vend(file_id);
+			HDFLibrary.GRend(gr_id);
 			HDFLibrary.Hclose(file_id);
 		} catch (HDFException he) {}
 		catch (H45Exception h45e) {}
@@ -123,42 +124,107 @@ private void test1_cleanup() {
 	//   GRendaccess(image_id);
 }
 
+private void test2_cleanup() {
+	// clean up for test 1 here?
+	// vdata_id
+	// vgroup_id
+	// etc.
+}
+
 /*
- *  Test batch I:  test Vdata conversion
+ *  Test batch I:  test all API using the default name generation
  *                 for the HDF5 objects.
  */
 public boolean test1(  ) 
 {
 
-	int vdata_ref = 2;
-	int vdata_id = -1;
+	int image_id = -1;
 	try {
-		vdata_id = HDFLibrary.VSattach(file_id,vdata_ref,"r");
-	} catch (HDFException he3) {
-		System.err.println("VSgetid exception "+he3);
+		image_id = HDFLibrary.GRselect(gr_id,0);
+	} catch (HDFException he2) {
+		System.err.println("GRselect exception "+he2);
+		System.err.println("Test I.2: FAIL");
+		test1_cleanup();
+		return(false);
+	}
+
+	try {
+		h4toh5.H4toh5image(h4toh5id,image_id,"/group1",
+			null,null,null,h4toh5.H425_NOPAL,h4toh5.H425_NOATTRS);
+	} catch (H45Exception h45e2) {
+		System.err.println("h4toh5image exception "+h45e2);
 		System.err.println("Test 1: FAIL");
 		test1_cleanup();
 		return(false);
 	}
 
 	try {
-		h4toh5.H4toh5vdata(h4toh5id,vdata_id,"/group1",null,0);
-	} catch (H45Exception h45e3) {
-		System.err.println("h4toh5vdata exception "+h45e3);
+		h4toh5.H4toh5imageattrindex(h4toh5id,image_id,"/group1",
+			null,0);
+	} catch (H45Exception h45e21) {
+		System.err.println("h4toh5imageattrindex exception "+h45e21);
 		System.err.println("Test 1: FAIL");
 		test1_cleanup();
 		return(false);
 	}
 
+
 	try {
-		HDFLibrary.VSdetach(vdata_id);
-	} catch (HDFException he3_4) {
-		System.err.println("VSdetach error ");
+		HDFLibrary.GRendaccess(image_id);
+	} catch (HDFException he7_1) {
 		System.err.println("Test 1: FAIL after test");
 		return(false);
 	}
 
-	System.out.print("Test Vdata conversion: ");
+	System.out.print("Test image conversion attr index ");
+ 	System.out.println("PASS");
+	return(true);
+}
+
+/*
+ *  Test batch II:  Test API with user-defined name for HDF5 objects
+ */
+public boolean test2(  ) 
+{
+
+	int image_id = -1;
+	try {
+		image_id = HDFLibrary.GRselect(gr_id,1);
+	} catch (HDFException he2) {
+		System.err.println("GRselect exception "+he2);
+		System.err.println("Test 2: FAIL");
+		test2_cleanup();
+		return(false);
+	}
+
+	try {
+		h4toh5.H4toh5image(h4toh5id,image_id,"/group1",
+			"myimage","/mypalg","mypal",h4toh5.H425_NOPAL,h4toh5.H425_NOATTRS);
+	} catch (H45Exception h45e2_1) {
+		System.err.println("h4toh5image exception "+h45e2_1);
+		System.err.println("Test 2: FAIL");
+		test2_cleanup();
+		return(false);
+	}
+
+	try {
+		h4toh5.H4toh5imageattrname(h4toh5id,image_id,
+			"/group1","myimage","Image Attribute2");
+	} catch (H45Exception h45e2_1) {
+		System.err.println("h4toh5imageattrname exception "+h45e2_1);
+		System.err.println("Test 2: FAIL");
+		test2_cleanup();
+		return(false);
+	}
+
+	try {
+		HDFLibrary.GRendaccess(image_id);
+	} catch (HDFException he7_1) {
+		System.err.println("Test 2: FAIL after test");
+		return(false);
+	}
+
+	System.out.print("Test image conversion attr name: ");
  	System.out.println("PASS");
 	return(true);
 }
