@@ -1084,9 +1084,11 @@ implements TreeView, ActionListener {
 */
 
         Enumeration keys = FileFormat.getFileFormatKeys();
+
         String theKey = null;
         while (keys.hasMoreElements()) {
             theKey = (String)keys.nextElement();
+
             if (theKey.equals(FileFormat.FILE_TYPE_HDF4) ||
                 theKey.equals(FileFormat.FILE_TYPE_HDF5))
                 continue;
@@ -1101,14 +1103,12 @@ implements TreeView, ActionListener {
         // search for HDF4 and HDF5 last. File format built on hdf4 or hdf5
         // will be chosen first.
         if (fileFormat == null) {
-            FileFormat theformat = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4);
-            if (theformat.isThisType(filename)) {
-                fileFormat = theformat.open(filename, accessID);
-            } else {
-                theformat = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-                if (theformat.isThisType(filename)) {
-                    fileFormat = theformat.open(filename, accessID);
-                }
+            FileFormat h4format = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4);
+            FileFormat h5format = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+            if (h4format !=null && h4format.isThisType(filename)) {
+                fileFormat = h4format.open(filename, accessID);
+            } else if (h5format !=null && h5format.isThisType(filename)) {
+                fileFormat = h5format.open(filename, accessID);
             }
         }
 
@@ -1142,6 +1142,10 @@ implements TreeView, ActionListener {
     public void closeFile(FileFormat file)
         throws Exception {
         // find the file node in the tree and removed it from the tree.
+
+        if (file == null)
+            return;
+
         FileFormat theFile = null;
         DefaultMutableTreeNode theNode = null;
         Enumeration enumeration = root.children();

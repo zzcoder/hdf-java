@@ -643,7 +643,6 @@ public class ViewProperties extends Properties
             theList.remove(str);
             theList.add(0, str);
         }
-
     }
 
     /** Save user properties into property file */

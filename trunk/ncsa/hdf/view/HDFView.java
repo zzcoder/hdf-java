@@ -884,8 +884,6 @@ public class HDFView extends JFrame
             } catch (Exception ex)
             {
                 String msg = "Failed to open file "+filename+"\n"+ex;
-                //if (!(ex instanceof UnsupportedOperationException))
-                //    msg +="\n\nTry open file read-only";
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
                     this,
@@ -976,7 +974,14 @@ public class HDFView extends JFrame
         }
         else if (cmd.equals("Save current file as"))
         {
-            try { treeView.saveFile(treeView.getSelectedFile()); }
+            try {
+                treeView.saveFile(treeView.getSelectedFile());
+                List list = treeView.getCurrentFiles();
+                if (list != null && list.size()>0) {
+                    FileFormat newFile = (FileFormat)list.get(list.size()-1);
+                    updateRecentFiles(newFile.getFilePath());
+                }
+            }
             catch (Exception ex) {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
@@ -1291,10 +1296,11 @@ public class HDFView extends JFrame
         try {
         List filelist = treeView.getCurrentFiles();
         if (filelist != null && filelist.size()>0) {
-            int n = filelist.size();
+            Object[] files = filelist.toArray();
+            int n = files.length;
             for (int i=0; i<n; i++) {
-                try { treeView.closeFile((FileFormat)filelist.get(i)); }
-                catch (Exception ex) {}
+                try { treeView.closeFile((FileFormat)files[i]); }
+                catch (Exception ex) {continue;}
             }
         }
         } catch (Exception ex) {}
