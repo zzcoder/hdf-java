@@ -1662,6 +1662,38 @@ public class H5 {
         NullPointerException;
 
     /**
+     *  H5Pset_small_data_block_size reserves blocks of size bytes for the 
+     *  contiguous storage of the raw data portion of small datasets. 
+     *
+     *  @param plist  IN: Identifier of property list to modify.
+     *  @param size  IN: Size of the blocks in bytes.
+     *
+     *  @return a non-negative value if successful
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     **/
+    public synchronized static native int H5Pset_small_data_block_size(int plist, long size)
+        throws HDF5LibraryException;
+
+    /**
+     *  H5Pget_small_data_block_size retrieves the size of a block of small
+     *  data in a file creation property list.
+     *
+     *  @param plist  IN: Identifier for property list to query.
+     *  @param size  OUT: Pointer to location to return block
+     *  size.
+     *
+     *  @return a non-negative value and the size of the user block;
+     *  if successful
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - size is null.
+     **/
+    public synchronized static native int H5Pget_small_data_block_size(int plist, long[] size)
+        throws HDF5LibraryException,
+        NullPointerException;
+
+    /**
      *  H5Pset_sizes sets the byte size of the offsets and lengths
      *  used to address objects in an HDF5 file.
      *
@@ -3741,6 +3773,20 @@ public class H5 {
      **/
     public synchronized static native String H5Tget_member_name(int type_id,
         int field_idx);
+
+    /**
+     *  H5Tget_member_index retrieves the index of a field of a compound
+     *  datatype.
+     *
+     *  @param type_id  Identifier of datatype to query.
+     *  @param field_name Field name of the field index
+     *  to retrieve.
+     *
+     *  @return if field is defined, the index; else negative.
+     *
+     **/
+    public synchronized static native int H5Tget_member_index(int type_id,
+        String field_name);
 
     /**
      *  H5Tget_member_class returns the datatype of the specified
