@@ -72,6 +72,16 @@ public abstract class Dataset extends HObject
     protected long[] selectedStride;
 
     /**
+     * The chunk size
+     */
+    protected long[] chunkSize;
+
+    /**
+     * Compression level.
+     */
+    protected String compression;
+
+    /**
      * Creates a Dataset object with specific name and path.
      * <p>
      * @param fileFormat the HDF file.
@@ -93,6 +103,8 @@ public abstract class Dataset extends HObject
         selectedDims = null;
         startDims = null;
         selectedStride = null;
+        chunkSize = null;
+        compression = "NONE";
 
         // by default
         // selectedIndex[0] = row index;
@@ -154,26 +166,45 @@ public abstract class Dataset extends HObject
      */
     public final long[] getStride()
     {
+        if (rank <=0)
+            return null;
+
+        if (selectedStride == null)
+        {
+            selectedStride = new long[rank];
+            for (int i=0; i<rank; i++)
+                selectedStride[i] = 1;
+        }
+
         return selectedStride;
     }
 
-    /**
-     * Sets the selectedStride of the selected dataset.
+    /** Loads and returns the data value from file. */
+    public abstract Object read() throws Exception;
+
+    /** Write data values from memory into file. */
+    public abstract void write() throws Exception;
+
+    /** If data is loaded into memory, returns the data value, otherwise
+     *  load the data value into memory and returns the data value.
      */
-    public final void setStride(long[] stride)
+    public final Object getData() throws Exception
     {
-        selectedStride = stride;
+        if (data == null)
+            data = read(); // load the data;
+
+        return data;
     }
 
     /**
      * Removes the data value of this dataset in memory.
      */
-    public final void clearData()
+    public void clearData()
     {
         if (data != null)
         {
             data = null;
-            System.gc();
+            Runtime.getRuntime().gc();
         }
     }
 
@@ -211,6 +242,22 @@ public abstract class Dataset extends HObject
     public final int[] getSelectedIndex()
     {
         return selectedIndex;
+    }
+
+    /**
+     * Return the compression level.
+     */
+    public final String getCompression()
+    {
+        return compression;
+    }
+
+    /**
+     *  Returns the chunk sizes.
+     */
+    public final long[] getChunkSize()
+    {
+        return chunkSize;
     }
 
     /**
@@ -336,5 +383,32 @@ public abstract class Dataset extends HObject
         }
 
         return strArray;
+    }
+
+    /**
+     * Converts a string array into an array of bytes.
+     * <p>
+     * @param strings the array of string
+     * @param length the length of string
+     * @return the array of bytes.
+     */
+    public static final byte[] stringToByte(String[] strings, int length)
+    {
+        if (strings == null)
+            return null;
+
+        int size = strings.length;
+        byte[] bytes = new byte[size*length];
+
+        StringBuffer strBuff = new StringBuffer(length);
+        for (int i=0; i<size; i++)
+        {
+            strBuff.replace(0, length, " ");
+            strBuff.replace(0, length, strings[i]);
+            strBuff.setLength(length);
+            System.arraycopy(strBuff.toString().getBytes(), 0, bytes, length*i, length);
+        }
+
+        return bytes;
     }
 }

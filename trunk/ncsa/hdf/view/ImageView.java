@@ -25,10 +25,14 @@ import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.Rectangle;
 import java.awt.Point;
+import java.awt.Window;
 import java.awt.Color;
 import java.awt.Frame;
-import java.awt.Graphics2D;
-import com.sun.image.codec.jpeg.*;
+import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsConfiguration;
+import java.awt.Transparency;
 
 /**
  * ImageView displays an HDF dataset as an image.
@@ -119,13 +123,13 @@ implements ImageObserver
     private boolean isPlaneInterlace;
 
     /** Flag to indicate if the image is flipped horizontally. */
-    private boolean horizontalFlipped;
+    private boolean isHorizontalFlipped;
 
     /** Flag to indicate if the image is flipped vertically. */
-    private boolean verticalFlipped;
+    private boolean isVerticalFlipped;
 
     /** the number type of the image data */
-    private char nt;
+    private char NT;
 
     /** the raw data of the image */
     private Object data;
@@ -150,11 +154,11 @@ implements ImageObserver
         imagePalette = null;
         isTrueColor = false;
         isPlaneInterlace = false;
-        horizontalFlipped = false;
-        verticalFlipped = false;
+        isHorizontalFlipped = false;
+        isVerticalFlipped = false;
         isUnsigned = false;
         data = null;
-        nt = 0;
+        NT = 0;
         toolkit = Toolkit.getDefaultToolkit();
 
         HObject hobject = (HObject)viewer.getSelectedObject();
@@ -192,7 +196,7 @@ implements ImageObserver
         contentPane.add (scroller, BorderLayout.CENTER);
 
         // set title
-        StringBuffer sb = new StringBuffer("TableView - ");
+        StringBuffer sb = new StringBuffer("ImageView - ");
         sb.append(fname);
         sb.append(" - ");
         sb.append(hobject.getPath());
@@ -206,11 +210,6 @@ implements ImageObserver
         long[] dims = dataset.getDims();
         long[] start = dataset.getStartDims();
         int n = Math.min(3, rank);
-
-        if (stride == null)
-            stride = new long[rank];
-        for (int i=0; i<rank; i++)
-            stride[i] = 1;
 
         sb.append(" [ dims");
         sb.append(selectedIndex[0]);
@@ -260,8 +259,14 @@ implements ImageObserver
         // reload the data when it is displayed next time
         // because the display type (table or image) may be
         // different.
-        if (!dataset.isImage())
-            dataset.clearData();
+        if (!dataset.isImage()) dataset.clearData();
+
+        data = null;
+        image = null;
+        indexedImageData = null;
+        imageComponent = null;
+        System.runFinalization();
+        System.gc();
 
         viewer.contentFrameWasRemoved(getName());
     }
@@ -388,17 +393,75 @@ implements ImageObserver
             isTrueColor = (interlace == ScalarDS.INTERLACE_PIXEL || interlace == ScalarDS.INTERLACE_PLANE);
         }
 
-        if (isTrueColor)
-            image = createTrueColorImage();
-        else
-            image = createIndexedImage();
+        try
+        {
+            if (isTrueColor)
+            {
+                isPlaneInterlace = (dataset.getInterlace() ==ScalarDS.INTERLACE_PLANE);
+
+                long[] selected = dataset.getSelectedDims();
+                long[] start = dataset.getStartDims();
+                int[] selectedIndex = dataset.getSelectedIndex();
+                long[] stride = dataset.getStride();
+
+                if (start.length > 2)
+                {
+                    start[selectedIndex[2]] = 0;
+                    selected[selectedIndex[2]] = 3;
+                    stride[selectedIndex[2]] = 1;
+                }
+
+                // reload data
+                dataset.clearData();
+                data = dataset.getData();
+
+                // converts raw data to image data
+                byte[] imageData = getBytes(data, null);
+
+                int w = dataset.getWidth();
+                int h = dataset.getHeight();
+
+                image = createTrueColorImage(imageData, isPlaneInterlace, w, h);
+                imageData = null;
+            }
+            else
+            {
+                imagePalette = dataset.getPalette();
+                if (imagePalette == null)
+                {
+                    imagePalette = createGrayPalette();
+                    JOptionPane.showMessageDialog(
+                        (Frame)viewer,
+                        "No attached palette found, default grey palette is used.",
+                        dataset.getName(),
+                        JOptionPane.INFORMATION_MESSAGE);
+                }
+                data = dataset.getData();
+
+                // converts raw data to image data
+                indexedImageData = getBytes(data, null);
+
+                int w = dataset.getWidth();
+                int h = dataset.getHeight();
+
+                image = createIndexedImage(indexedImageData, imagePalette, w, h);
+            }
+        }
+        catch (Throwable ex) {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+                ex,
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
 
         // set number type, ...
         if (data != null)
         {
             isUnsigned = dataset.isUnsigned();
             String cname = data.getClass().getName();
-            nt = cname.charAt(cname.lastIndexOf("[")+1);
+            NT = cname.charAt(cname.lastIndexOf("[")+1);
         }
 
         return image;
@@ -451,10 +514,10 @@ implements ImageObserver
         if (imagePalette == null)
             return;
 
-        double[][] data = new double[3][256];
+        double[][] paletteData = new double[3][256];
         int[] xRange = {0, 255};
         double[] yRange = {0, 255};
-        String[] lineLabels = {"Red", "Green", "Blue"};
+        //String[] lineLabels = {"Red", "Green", "Blue"};
         Color[] lineColors = {Color.red, Color.green, Color.blue};
         String title = "Image Palette - "+dataset.getPath()+dataset.getName();
 
@@ -465,18 +528,18 @@ implements ImageObserver
             {
                 d = (double)imagePalette[i][j];
                 if (d < 0) d += 256;
-                data[i][j] = d;
+                paletteData[i][j] = d;
             }
         }
 
-        ChartView cv = new ChartView(
+        PaletteView cv = new PaletteView(
             (Frame)viewer,
             title,
             ChartView.LINEPLOT,
-            data,
+            paletteData,
             xRange,
             yRange);
-        cv.setLineLabels(lineLabels);
+        cv.setLineLabels(null);
         cv.setLineColors(lineColors);
         cv.setTypeToInteger();
         cv.show();
@@ -487,12 +550,28 @@ implements ImageObserver
     {
         Rectangle rec = imageComponent.selectedArea;
 
+        if (isTrueColor)
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+            "Unsupported operation: unable to draw histogram for true color image.",
+            getTitle(),
+            JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-        if (indexedImageData == null ||
-            rec == null ||
+
+        if( rec == null ||
             rec.getWidth()==0 ||
             rec.getHeight()== 0)
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+            "Select image area to draw histogram.",
+            getTitle(),
+            JOptionPane.ERROR_MESSAGE);
             return;
+        }
 
         double data[][] = new double[1][256];
         for (int i=0; i<256; i++)
@@ -529,6 +608,14 @@ implements ImageObserver
         cv.show();
     }
 
+    /**
+     * Selects all whole image.
+     */
+    public void selectAll() throws Exception
+    {
+        imageComponent.selectAll();
+    }
+
     // implementing ImageObserver
     public void flip(int direction)
     {
@@ -541,9 +628,9 @@ implements ImageObserver
         {
             // taggle flip flag
             if (direction == FLIP_HORIZONTAL)
-                horizontalFlipped = !horizontalFlipped;
+                isHorizontalFlipped = !isHorizontalFlipped;
             else
-                verticalFlipped = !verticalFlipped;
+                isVerticalFlipped = !isVerticalFlipped;
         }
     }
 
@@ -562,7 +649,9 @@ implements ImageObserver
     public void setValueVisible(boolean b)
     {
         valueField.setVisible(b);
-        this.updateUI();
+        updateUI();
+        // bug !!! on Windows. gives NullPointerException at
+        //javax.swing.plaf.basic.BasicInternalFrameUI$BorderListener.mousePressed(BasicInternalFrameUI.java:693)
     }
 
     /**
@@ -875,22 +964,126 @@ implements ImageObserver
         return p;
     }
 
-    /** Save image ad JPEG. */
-    public void saveAsJPEG() throws Exception
+    /**
+     * This method returns true if the specified image has transparent pixels.
+     */
+    public static boolean hasAlpha(Image image)
+    {
+        if (image == null)
+            return false;
+
+        // If buffered image, the color model is readily available
+        if (image instanceof BufferedImage)
+        {
+            BufferedImage bimage = (BufferedImage)image;
+            return bimage.getColorModel().hasAlpha();
+        }
+
+        // Use a pixel grabber to retrieve the image's color model;
+        // grabbing a single pixel is usually sufficient
+        PixelGrabber pg = new PixelGrabber(image, 0, 0, 1, 1, false);
+        try { pg.grabPixels(); } catch (InterruptedException e) {}
+        ColorModel cm = pg.getColorModel();
+
+        return cm.hasAlpha();
+    }
+
+    /**
+     * This method returns a buffered image with the contents of an image.
+     */
+    public static BufferedImage toBufferedImage(Image image)
+    {
+        if (image == null)
+            return null;
+
+        if (image instanceof BufferedImage)
+            return (BufferedImage)image;
+
+        // This code ensures that all the pixels in the image are loaded
+        // the following line may cause memory error for large images
+        //  image = new ImageIcon(image).getImage();
+
+        // Determine if the image has transparent pixels; for this method's
+        boolean hasAlpha = hasAlpha(image);
+
+        // Create a buffered image with a format that's compatible with the screen
+        BufferedImage bimage = null;
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        try {
+            // Determine the type of transparency of the new buffered image
+            int transparency = Transparency.OPAQUE;
+            if (hasAlpha) {
+                transparency = Transparency.BITMASK;
+            }
+
+            // Create the buffered image
+            GraphicsDevice gs = ge.getDefaultScreenDevice();
+            GraphicsConfiguration gc = gs.getDefaultConfiguration();
+            bimage = gc.createCompatibleImage(
+                image.getWidth(null), image.getHeight(null), transparency);
+            } catch (Exception e) {
+            // The system does not have a screen
+        }
+
+        if (bimage == null)
+        {
+            // Create a buffered image using the default color model
+            int type = BufferedImage.TYPE_INT_RGB;
+            if (hasAlpha)
+                type = BufferedImage.TYPE_INT_ARGB;
+
+            bimage = new BufferedImage(image.getWidth(null), image.getHeight(null), type);
+        }
+
+        // Copy image to buffered image
+        Graphics g = bimage.createGraphics();
+
+        // Paint the image onto the buffered image
+        g.drawImage(image, 0, 0, null);
+        g.dispose();
+
+        return bimage;
+    }
+
+    /** Save the image to an image file.
+     *  @param type the image type.
+     */
+    public void saveImageAs(int type) throws Exception
     {
         if (image == null)
             return;
 
+        String extension = "";
         final JFileChooser fchooser = new JFileChooser(dataset.getFile());
-        fchooser.changeToParentDirectory();
-        int returnVal = fchooser.showSaveDialog(this);
 
+        if (type == Tools.FILE_TYPE_JPEG)
+        {
+            fchooser.setFileFilter(DefaultFileFilter.getFileFilterJPEG());
+            extension = "jpg";
+        }
+        else if (type == Tools.FILE_TYPE_TIFF)
+        {
+            fchooser.setFileFilter(DefaultFileFilter.getFileFilterTIFF());
+            extension = "tif";
+        }
+        else if (type == Tools.FILE_TYPE_PNG)
+        {
+            fchooser.setFileFilter(DefaultFileFilter.getFileFilterPNG());
+            extension = "png";
+        }
+
+        fchooser.changeToParentDirectory();
+        fchooser.setDialogTitle("Save Current Image To "+extension.toUpperCase()+" File --- "+dataset.getName());
+
+        File choosedFile = new File(dataset.getName()+"."+extension);;
+        fchooser.setSelectedFile(choosedFile);
+
+        int returnVal = fchooser.showSaveDialog(this);
         if(returnVal != JFileChooser.APPROVE_OPTION)
             return;
 
-        File choosedFile = fchooser.getSelectedFile();
-        if (choosedFile == null)
-            return;
+        choosedFile = fchooser.getSelectedFile();
+        if (choosedFile == null) return;
         String fname = choosedFile.getAbsolutePath();
 
         // check if the file is in use
@@ -924,21 +1117,128 @@ implements ImageObserver
                 return;
         }
 
-        int w = image.getWidth(this);
-        int h = image.getHeight(this);
-        BufferedImage bi = (BufferedImage)createImage(w, h);
-        Graphics2D big = bi.createGraphics();
-        big.drawImage(image, 0, 0, w, h, this);
+        BufferedImage bi = null;
+        try {
+            bi = toBufferedImage(image);
+        } catch (OutOfMemoryError err)
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+                err,
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-        BufferedOutputStream out = new BufferedOutputStream(
-            new FileOutputStream(choosedFile));
+        Tools.saveImageAs(bi, choosedFile, type);
 
-        JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
-        encoder.encode(bi);
+        bi = null;
 
-        out.flush();
-        out.close();
+        viewer.showStatus("Current image saved to: "+fname);
+
+        try {
+            RandomAccessFile rf = new RandomAccessFile(choosedFile, "r");
+            long size = rf.length();
+            rf.close();
+            viewer.showStatus("File size (bytes): "+size);
+        } catch (Exception ex) {}
     }
+
+    /**
+     * Returns the selected data values.
+     */
+    public Object getSelectedData()
+    {
+        Object selectedData = null;
+
+        int cols = imageComponent.originalSelectedArea.width;
+        int rows = imageComponent.originalSelectedArea.height;
+
+        if (cols <=0 || rows <= 0)
+            return null; // no data is selected
+
+        int size = cols*rows;
+        if (isTrueColor) size *= 3;
+
+        if (NT == 'B')
+            selectedData = new byte[size];
+        else if (NT == 'S')
+            selectedData = new short[size];
+        else if (NT == 'I')
+            selectedData = new int[size];
+        else if (NT == 'J')
+            selectedData = new long[size];
+        else if (NT == 'F')
+            selectedData = new float[size];
+        else if (NT == 'D')
+            selectedData = new double[size];
+        else
+            return null;
+
+        int r0 = imageComponent.originalSelectedArea.y;
+        int c0 = imageComponent.originalSelectedArea.x;
+        int w = imageComponent.originalSize.width;
+        int h = imageComponent.originalSize.height;
+
+        // transfer location to the original coordinator
+        if (isHorizontalFlipped)
+            c0 = w - 1 - c0 - cols;
+
+        if (isVerticalFlipped)
+            r0 = h - 1 - r0 - rows;
+
+        int idx_src=0, idx_dst=0;
+        if (isTrueColor)
+        {
+            int imageSize = w*h;
+            if (isPlaneInterlace)
+            {
+                for (int j=0; j<3; j++)
+                {
+                    int plane = imageSize*j;
+                    for (int i=0; i<rows; i++)
+                    {
+                        idx_src = plane+(r0+i)*w+c0;
+                        System.arraycopy(data, idx_src, selectedData, idx_dst, cols);
+                        idx_dst += cols;
+                    }
+                }
+            }
+            else
+            {
+                int numberOfDataPoints = cols*3;
+                for (int i=0; i<rows; i++)
+                {
+                    idx_src = (r0+i)*w+c0;
+                    System.arraycopy(data, idx_src*3, selectedData, idx_dst, numberOfDataPoints);
+                    idx_dst += numberOfDataPoints;
+                }
+            }
+        }
+        else // indexed image
+        {
+            for (int i=0; i<rows; i++)
+            {
+                idx_src = (r0+i)*w+c0;
+                System.arraycopy(data, idx_src, selectedData, idx_dst, cols);
+                idx_dst += cols;
+            }
+        }
+
+        return selectedData;
+    }
+
+    /** returns the selected area of the image */
+    public Rectangle getSelectedArea()
+    {
+        return imageComponent.originalSelectedArea;
+    }
+
+    /** returns true if the image is a truecolor image. */
+    public boolean isTrueColor() { return isTrueColor; }
+
+    /** returns true if the image interlace is plance interlace. */
+    public boolean isPlaneInterlace() { return isPlaneInterlace; }
 
     private void gotoPage(long idx)
     {
@@ -957,39 +1257,26 @@ implements ImageObserver
         updateUI();
     }
 
-    /** Creates a RGB indexed image of 256 colors. */
-    private Image createIndexedImage()
+    /** Creates a RGB indexed image of 256 colors.
+     *  @param imageData the byte array of the image data.
+     *  @param palette the color lookup table.
+     *  @param w the width of the image.
+     *  @param h the height of the image.
+     *  @return the image.
+     */
+    public static Image createIndexedImage(byte[] imageData, byte[][] palette, int w, int h)
     {
         Image theImage = null;
 
-        imagePalette = dataset.getPalette();
-        if (imagePalette == null)
-            imagePalette = createGrayPalette();
-
         IndexColorModel colorModel = new IndexColorModel (
-            8,                // bits - the number of bits each pixel occupies
-            256,              // size - the size of the color component arrays
-            imagePalette[0],  // r - the array of red color components
-            imagePalette[1],  // g - the array of green color components
-            imagePalette[2]); // b - the array of blue color components
+            8,           // bits - the number of bits each pixel occupies
+            256,         // size - the size of the color component arrays
+            palette[0],  // r - the array of red color components
+            palette[1],  // g - the array of green color components
+            palette[2]); // b - the array of blue color components
 
-        try { data = dataset.read(); }
-        catch (Throwable ex) {
-            toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                ex,
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
-            return null;
-        }
-
-        // converts raw data to image data
-        indexedImageData = getBytes(data, null);
-
-        int w = dataset.getWidth();
-        int h = dataset.getHeight();
-        theImage = toolkit.createImage (new MemoryImageSource
-            (w, h, colorModel, indexedImageData, 0, w));
+        theImage = Toolkit.getDefaultToolkit().createImage (
+            new MemoryImageSource(w, h, colorModel, imageData, 0, w));
 
         return theImage;
     }
@@ -1028,36 +1315,15 @@ implements ImageObserver
            INTERLACE_PLANE = [pixel components][height][width]
        </pre>
      * <p>
+     *  @param imageData the byte array of the image data.
+     *  @param planeInterlace flag if the image is plane intelace.
+     *  @param w the width of the image.
+     *  @param h the height of the image.
+     *  @return the image.
      */
-    private Image createTrueColorImage()
+    public static Image createTrueColorImage(byte[] imageData, boolean planeInterlace, int w, int h)
     {
         Image theImage = null;
-        isPlaneInterlace = (dataset.getInterlace() ==ScalarDS.INTERLACE_PLANE);
-
-        long[] selected = dataset.getSelectedDims();
-        long[] start = dataset.getStartDims();
-        int[] selectedIndex = dataset.getSelectedIndex();
-        long[] stride = dataset.getStride();
-        start[selectedIndex[2]] = 0;
-        selected[selectedIndex[2]] = 3;
-        if (stride != null) stride[selectedIndex[2]] = 1;
-        dataset.clearData();
-
-        try { data = dataset.read(); }
-        catch (Throwable ex) {
-            toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                ex,
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
-            return null;
-        }
-
-        // converts raw data to image data
-        byte[] imageData = getBytes(data, null);
-
-        int w = dataset.getWidth();
-        int h = dataset.getHeight();
         int imgSize = w*h;
         int packedImageData[] = new int[imgSize];
         int pixel=0, idx=0, r=0, g=0, b=0;
@@ -1066,7 +1332,7 @@ implements ImageObserver
             for (int j=0; j<w; j++)
             {
                 pixel = r = g = b = 0;
-                if (isPlaneInterlace)
+                if (planeInterlace)
                 {
                     r = (int) imageData[idx];
                     g = (int) imageData[imgSize+idx];
@@ -1091,8 +1357,10 @@ implements ImageObserver
         } // for (int i=0; i<h; i++)
 
         DirectColorModel dcm = (DirectColorModel)ColorModel.getRGBdefault();
-        theImage = toolkit.createImage (new MemoryImageSource
-            (w, h, dcm, packedImageData, 0, w));
+        theImage = Toolkit.getDefaultToolkit().createImage (
+            new MemoryImageSource(w, h, dcm, packedImageData, 0, w));
+
+        packedImageData = null;
 
         return theImage;
     }
@@ -1213,10 +1481,10 @@ implements ImageObserver
                 return; // out of image bound
 
             // transfer location to the original coordinator
-            if (horizontalFlipped)
+            if (isHorizontalFlipped)
                 x = w - 1 - x;
 
-            if (verticalFlipped)
+            if (isVerticalFlipped)
                 y = h - 1 - y;
 
             strBuff.setLength(0); // reset the string buffer
@@ -1280,11 +1548,18 @@ implements ImageObserver
             valueField.setText(strBuff.toString());
         }
 
+        private void selectAll()
+        {
+            selectedArea.setBounds(0, 0, imageSize.width, imageSize.height);
+            originalSelectedArea.setBounds(0, 0, originalSize.width, originalSize.height);
+            repaint();
+        }
+
         private long convertUnsignedPoint(int idx)
         {
             long l = 0;
 
-            if (nt == 'B')
+            if (NT == 'B')
             {
                 byte b = Array.getByte(data, idx);
                 if (b<0)
@@ -1292,7 +1567,7 @@ implements ImageObserver
                 else
                     l = b;
             }
-            else if (nt == 'S')
+            else if (NT == 'S')
             {
                 short s = Array.getShort(data, idx);
                 if (s<0)
@@ -1300,7 +1575,7 @@ implements ImageObserver
                 else
                     l = s;
             }
-            else if (nt == 'I')
+            else if (NT == 'I')
             {
                 int i = Array.getInt(data, idx);
                 if (i<0)
@@ -1659,5 +1934,188 @@ implements ImageObserver
             }
         }
     } // private class ContourFilter extends ImageFilter
+
+    /**
+     * To view and change palette.
+     */
+    private class PaletteView extends ChartView
+    implements MouseListener, MouseMotionListener
+    {
+        JRadioButton checkRed, checkGreen, checkBlue;
+        int x0, y0; // starting point of mouse drag
+        Image originalImage, currentImage;
+        boolean isPaletteChanged = false;
+        byte[][] palette;
+
+        private PaletteView(Frame owner, String title, int style,
+            double[][] data, int[] xRange, double[] yRange)
+        {
+            super(owner, title, style, data, xRange, yRange);
+
+            chartP.addMouseListener(this);
+            chartP.addMouseMotionListener(this);
+
+            x0 = y0 = 0;
+            originalImage = currentImage = image;
+            palette = new byte[3][256];
+        }
+
+        /**
+        *  Creates and layouts GUI componentes.
+        */
+        protected void createUI()
+        {
+            Window owner = getOwner();
+
+            JPanel contentPane = (JPanel)getContentPane();
+            contentPane.setLayout(new BorderLayout(5, 5));
+            contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+            contentPane.setPreferredSize(new Dimension(640, 400));
+
+            contentPane.add(chartP, BorderLayout.CENTER);
+
+            JButton button = new JButton("  Ok  ");
+            button.addActionListener(this);
+            button.setActionCommand("Ok");
+            JPanel buttonP = new JPanel();
+            buttonP.add(button);
+            button = new JButton("Cancel");
+            button.addActionListener(this);
+            button.setActionCommand("Cancel");
+            buttonP.add(button);
+            button = new JButton("Preview");
+            button.addActionListener(this);
+            button.setActionCommand("Preview");
+            buttonP.add(button);
+
+            JPanel bottomP = new JPanel();
+            bottomP.setLayout(new BorderLayout());
+            bottomP.add(buttonP, BorderLayout.EAST);
+
+            checkRed = new JRadioButton("Red");
+            checkGreen = new JRadioButton("Green");
+            checkBlue = new JRadioButton("Blue");
+            checkRed.setSelected(true);
+            ButtonGroup bgroup = new ButtonGroup();
+            bgroup.add(checkRed);
+            bgroup.add(checkGreen);
+            bgroup.add(checkBlue);
+            JPanel checkP = new JPanel();
+            checkP.add(checkRed);
+            checkP.add(checkGreen);
+            checkP.add(checkBlue);
+            bottomP.add(checkP, BorderLayout.WEST);
+
+            contentPane.add(bottomP, BorderLayout.SOUTH);
+
+            Point l = owner.getLocation();
+            l.x += 250;
+            l.y += 200;
+            setLocation(l);
+            pack();
+        }
+
+        public void actionPerformed(ActionEvent e)
+        {
+            String cmd = e.getActionCommand();
+
+            if (cmd.equals("Ok"))
+            {
+                this.updatePalette();
+                imageComponent.setImage(currentImage);
+                imagePalette = palette;
+                super.dispose();
+            }
+            else if (cmd.equals("Cancel"))
+            {
+                imageComponent.setImage(originalImage);
+                super.dispose();
+            }
+            if (cmd.equals("Preview"))
+            {
+                this.updatePalette();
+                imageComponent.setImage(currentImage);
+            }
+        }
+
+        private void updatePalette()
+        {
+            if (!isPaletteChanged)
+                return;
+            else
+                isPaletteChanged = false;
+
+            for (int i=0; i<256; i++)
+            {
+                palette[0][i] = (byte)super.data[0][i];
+                palette[1][i] = (byte)super.data[1][i];
+                palette[2][i] = (byte)super.data[2][i];
+            }
+
+            IndexColorModel colorModel = new IndexColorModel (
+                8,           // bits - the number of bits each pixel occupies
+                256,         // size - the size of the color component arrays
+                palette[0],  // r - the array of red color components
+                palette[1],  // g - the array of green color components
+                palette[2]); // b - the array of blue color components
+
+            int w = dataset.getWidth();
+            int h = dataset.getHeight();
+            currentImage = toolkit.createImage (new MemoryImageSource
+                (w, h, colorModel, indexedImageData, 0, w));
+        }
+
+        public void mouseClicked(MouseEvent e){} // MouseListener
+        public void mouseReleased(MouseEvent e) {} // MouseListener
+        public void mouseEntered(MouseEvent e) {} // MouseListener
+        public void mouseExited(MouseEvent e)  {} // MouseListener
+        public void mouseMoved(MouseEvent e) {} // MouseMotionListener
+
+        // implementing MouseListener
+        public void mousePressed(MouseEvent e)
+        {
+            //x0 = e.getX()-40; // takes the horizontal gap
+            //if (x0 < 0) x0 = 0;
+            //y0 = e.getY()+20;
+        }
+
+        // implementing MouseMotionListener
+        public void mouseDragged(MouseEvent e)
+        {
+            int x1 = e.getX()-40;// takes the vertical gap
+            if (x1< 0) x1 = 0;
+            int y1 = e.getY()+20;
+
+            Dimension d = chartP.getSize();
+            double ry = 255/(double)d.height;
+            double rx = 255/(double)d.width;
+
+            int lineIdx = 0;
+            if (checkGreen.isSelected())
+                lineIdx = 1;
+            else if (checkBlue.isSelected())
+                lineIdx = 2;
+
+            int idx = 0;
+            double b = (double)(y1-y0)/(double)(x1-x0);
+            double a = y0-b*x0;
+            double value = y0*ry;
+            int i0 = Math.min(x0, x1);
+            int i1 =  Math.max(x0, x1);
+            for (int i=i0; i<i1; i++)
+            {
+                idx = (int)(rx*i);
+                if (idx > 255) continue;
+                value = 255-(a+b*i)*ry;
+                if (value < 0) value = 0;
+                else if (value > 255) value = 255;
+                super.data[lineIdx][idx] = value;
+            }
+
+            chartP.repaint();
+            isPaletteChanged = true;
+        }
+
+    } // private class PaletteView extends ChartView
 
 }

@@ -40,8 +40,6 @@ public class H4SDS extends ScalarDS
      */
     private int sdid;
 
-    private boolean unsignedConverted;
-
     /**
      * Creates an H4SDS object with specific name and path.
      * <p>
@@ -68,13 +66,12 @@ public class H4SDS extends ScalarDS
     // Implementing DataFormat
     public Object read() throws HDFException
     {
-        if (data != null)
-            return data; // data is loaded
+        Object theData = null;
 
         if (rank <=0 ) init();
 
         int id = open();
-        if (id < 0) return data;
+        if (id < 0) return null;
 
         int datasize = 1;
         int[] select = new int[rank];
@@ -95,21 +92,21 @@ public class H4SDS extends ScalarDS
         }
 
         try {
-            data = H4Datatype.allocateArray(datatype, datasize);
+            theData = H4Datatype.allocateArray(datatype, datasize);
 
-            if (data != null)
+            if (theData != null)
             {
-                HDFLibrary.SDreaddata(id, start, stride, select, data);
+                HDFLibrary.SDreaddata(id, start, stride, select, theData);
 
                 if (isText)
-                    data = byteToString((byte[])data, select[0]);
+                    theData = byteToString((byte[])theData, select[0]);
             }
         } finally
         {
             close(id);
         }
 
-        return data;
+        return theData;
     }
 
     // Implementing DataFormat
@@ -275,6 +272,18 @@ public class H4SDS extends ScalarDS
                 datatype == HDFConstants.DFNT_UCHAR8);
             idims = new int[rank];
             HDFLibrary.SDgetinfo(id, objName, idims, sdInfo);
+
+            /*
+            if (idims[0] == 0)
+            {
+                // unlimited
+                String[] dimname = {""};
+                int[] diminfo = new int[3];
+                int dimid = HDFLibrary.SDgetdimid(id, 0);
+                HDFLibrary.SDdiminfo(dimid, dimname, diminfo);
+            }
+            */
+
         } catch (HDFException ex) {}
         finally {
             close(id);
@@ -356,6 +365,7 @@ public class H4SDS extends ScalarDS
      * @param maxdims the max dimension size of the dataset.
      * @param chunk the chunk size of the dataset.
      * @param gzip the level of the gzip compression.
+     * @param data the array of data values.
      * @return the new dataset if successful. Otherwise returns null.
      */
     public static H4SDS create(
@@ -366,7 +376,8 @@ public class H4SDS extends ScalarDS
         long[] dims,
         long[] maxdims,
         long[] chunks,
-        int gzip) throws Exception
+        int gzip,
+        Object data) throws Exception
     {
         H4SDS dataset = null;
         String fullPath = null;
@@ -375,7 +386,6 @@ public class H4SDS extends ScalarDS
             name == null ||
             pgroup == null ||
             dims == null ||
-            maxdims == null ||
             (gzip>0 && chunks==null))
             return null;
 
@@ -384,17 +394,25 @@ public class H4SDS extends ScalarDS
             path = pgroup.getPath()+pgroup.getName()+HObject.separator;
         fullPath = path +  name;
 
-        // datatype
-        int tid = type.toNative();
-
         // prepare the dataspace
+        int tsize = 1;
         int rank = dims.length;
         int idims[] = new int[rank];
-        int imaxdims[] = new int[rank];
+        int start[] = new int [rank];
         for (int i=0; i<rank; i++)
         {
             idims[i] = (int)dims[i];
-            imaxdims[i] = (int)imaxdims[i];
+            start[i] = 0;
+            tsize *= idims[i];
+        }
+
+        // only the first element of the SDcreate parameter dim_sizes (i.e.,
+        // the dimension of the lowest rank or the slowest-changing dimension)
+        // can be assigned the value SD_UNLIMITED (or 0) to make the first
+        // dimension unlimited.
+        if (maxdims != null && maxdims[0]<0)
+        {
+            idims[0] = 0; // set to unlimited dimension.
         }
 
         int ichunks[] = null;
@@ -408,6 +426,8 @@ public class H4SDS extends ScalarDS
         int sdid, sdsid, vgid;
 
         sdid = ((H4File)file).getSDAccessID();
+        // datatype
+        int tid = type.toNative();
 
         try {
             sdsid = HDFLibrary.SDcreate(sdid, name, tid, rank, idims);
@@ -416,14 +436,25 @@ public class H4SDS extends ScalarDS
             byte[] fillValue = new byte[vsize];
             for (int i=0; i<vsize; i++) fillValue[i] = 0;
             HDFLibrary.SDsetfillvalue(sdsid, fillValue);
-        } catch (Exception ex)
-        {
-            throw (ex);
-        }
+
+            // when we create a new dataset with unlimited dimension,
+            // we have to write some data into the dataset or otherwise
+            // the current dataset has zero dimensin size.
+            if (idims[0] == 0 && data == null)
+            {
+                idims[0] = (int)dims[0];
+                data = new byte[tsize*vsize];
+            }
+        } catch (Exception ex) { throw (ex); }
 
         if (sdsid < 0)
         {
             throw (new HDFException("Unable to create the new dataset."));
+        }
+
+        if (sdsid > 0 && data != null)
+        {
+            HDFLibrary.SDwritedata(sdsid, start, null, idims, data);
         }
 
         if (chunks != null)

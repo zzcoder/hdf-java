@@ -175,11 +175,6 @@ implements TableObserver
         long[] start = dataset.getStartDims();
         int n = Math.min(3, rank);
 
-        if (stride == null)
-            stride = new long[rank];
-        for (int i=0; i<rank; i++)
-            stride[i] = 1;
-
         sb.append(" [ dims");
         sb.append(selectedIndex[0]);
         for (int i=1; i<n; i++)
@@ -232,8 +227,10 @@ implements TableObserver
             // because the display type (table or image) may be
             // different.
 
-            if (sds.isImage())
-                sds.clearData();
+            if (sds.isImage()) sds.clearData();
+
+            dataValue = null;
+            table = null;
         }
 
         viewer.contentFrameWasRemoved(getName());
@@ -334,7 +331,14 @@ implements TableObserver
             cols == null ||
             rows.length <=0 ||
             cols.length  <=0 )
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+            "Select rows/columns to draw line plot.",
+            getTitle(),
+            JOptionPane.ERROR_MESSAGE);
             return;
+        }
 
         int nrow = table.getRowCount();
         int ncol = table.getColumnCount();
@@ -451,6 +455,50 @@ implements TableObserver
     }
 
     /**
+     * Returns the selected data values.
+     */
+    public Object getSelectedData()
+    {
+        Object selectedData = null;
+
+        int cols = table.getSelectedColumnCount();
+        int rows = table.getSelectedRowCount();
+
+        if (cols <=0 || rows <= 0)
+            return null; // no data is selected
+
+        int size = cols*rows;
+
+        if (NT == 'B')
+            selectedData = new byte[size];
+        else if (NT == 'S')
+            selectedData = new short[size];
+        else if (NT == 'I')
+            selectedData = new int[size];
+        else if (NT == 'J')
+            selectedData = new long[size];
+        else if (NT == 'F')
+            selectedData = new float[size];
+        else if (NT == 'D')
+            selectedData = new double[size];
+        else
+            return null;
+
+        int r0 = table.getSelectedRow();
+        int c0 = table.getSelectedColumn();
+        int w = table.getColumnCount();
+        int idx_src=0, idx_dst=0;
+        for (int i=0; i<rows; i++)
+        {
+            idx_src = (r0+i)*w+c0;
+            System.arraycopy(dataValue, idx_src, selectedData, idx_dst, cols);
+            idx_dst += cols;
+        }
+
+        return selectedData;
+    }
+
+    /**
      * Creates a JTable to hold a scalar dataset.
      */
     private JTable createTable(ScalarDS d)
@@ -480,9 +528,9 @@ implements TableObserver
 
         dataValue = null;
         try {
-            d.read();
+            d.getData();
             d.convertFromUnsignedC();
-            dataValue = d.read();
+            dataValue = d.getData();
         }
         catch (Exception ex)
         {
@@ -502,9 +550,14 @@ implements TableObserver
         if (cIndex >= 0 ) NT = cName.charAt(cIndex+1);
 
         String columnNames[] = new String[cols];
+        long[] startArray = dataset.getStartDims();
+        long[] strideArray = dataset.getStride();
+        int[] selectedIndex = dataset.getSelectedIndex();
+        int start = (int)startArray[selectedIndex[1]];
+        int stride = (int)strideArray[selectedIndex[1]];
         for (int i=0; i<cols; i++)
         {
-            columnNames[i] = String.valueOf(i+1);
+            columnNames[i] = String.valueOf(start+i*stride);
         }
 
         DefaultTableModel tableModel =  new DefaultTableModel(
@@ -537,7 +590,12 @@ implements TableObserver
                     try { updateValueInMemory(cellValue, row, col); }
                     catch (Exception ex)
                     {
-                        JOptionPane.showMessageDialog( this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
+                        toolkit.beep();
+                        JOptionPane.showMessageDialog(
+                        this,
+                        ex,
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
                     }
                 } // if (source instanceof CellEditor)
             }
@@ -584,7 +642,7 @@ implements TableObserver
         }
 
         dataValue = null;
-        try { dataValue = d.read(); }
+        try { dataValue = d.getData(); }
         catch (Exception ex)
         {
             toolkit.beep();
@@ -627,8 +685,8 @@ implements TableObserver
                 {
                     // cell value is an array
                     stringBuffer.setLength(0); // clear the old string
-                    stringBuffer.append(Array.get(colValue, row));
                     int n = orders[column];
+                    stringBuffer.append(Array.get(colValue, row*n));
 
                     for (int i=1; i<n; i++)
                     {
@@ -682,11 +740,11 @@ implements TableObserver
         dataset.clearData();
 
         try {
-            dataValue = dataset.read();
+            dataValue = dataset.getData();
             if (dataset instanceof ScalarDS)
             {
                 ((ScalarDS)dataset).convertFromUnsignedC();
-                dataValue = dataset.read();
+                dataValue = dataset.getData();
             }
         }
         catch (Exception ex)
@@ -774,7 +832,9 @@ implements TableObserver
                 c = c0;
             }
         }	catch (Throwable ex) {
-            JOptionPane.showMessageDialog(this,
+            toolkit.beep();
+            JOptionPane.showMessageDialog(
+                this,
                 ex,
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
@@ -783,17 +843,99 @@ implements TableObserver
         table.updateUI();
     }
 
+    /**
+     *  import data values from text file.
+     */
+    public void importTextData(String fname)
+    {
+        if (!(dataset instanceof ScalarDS))
+            return; // does not support compound dataset in this version
+
+        int pasteDataFlag = JOptionPane.showConfirmDialog(this,
+            "Do you want to paste selected data ?",
+            this.getTitle(),
+            JOptionPane.YES_NO_OPTION);
+        if (pasteDataFlag == JOptionPane.NO_OPTION)
+            return;
+
+        int cols = table.getColumnCount();
+        int rows = table.getRowCount();
+        int r0 = table.getSelectedRow();
+        int c0 = table.getSelectedColumn();
+
+        if (c0 < 0) c0 = 0;
+        if (r0 < 0) r0 = 0;
+        int r = r0;
+        int c = c0;
+        int index = r*cols+c;
+
+        BufferedReader in = null;
+        try { in = new BufferedReader(new FileReader(fname));
+        } catch (FileNotFoundException ex) { return; }
+
+        String line = null;
+        StringTokenizer st = null;
+
+        try { line = in.readLine(); }
+        catch (IOException ex)
+        {
+            try { in.close(); } catch (IOException ex2) {}
+            return;
+        }
+
+        String token = null;
+        int size = Array.getLength(dataValue);
+        while (line != null && index < size)
+        {
+            st = new StringTokenizer(line);
+            while (st.hasMoreTokens() && index < size)
+            {
+                token = st.nextToken();
+                try { updateValueInMemory(token, r, c); }
+                catch (Exception ex)
+                {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog(
+                    this,
+                    ex,
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                    try { in.close(); } catch (IOException ex2) {}
+                    return;
+                }
+                index++;
+                c++;
+
+                if (c >= cols)
+                {
+                    c = 0;
+                    r++;
+                }
+            }
+            try { line = in.readLine(); }
+            catch (IOException ex) { line = null; }
+        }
+        try { in.close(); } catch (IOException ex) {}
+
+        table.updateUI();
+    }
+
     /** Save data as text. */
     public void saveAsText() throws Exception
     {
         final JFileChooser fchooser = new JFileChooser(dataset.getFile());
+        fchooser.setFileFilter(DefaultFileFilter.getFileFilterText());
         fchooser.changeToParentDirectory();
+        fchooser.setDialogTitle("Save Current Data To Text File --- "+dataset.getName());
+
+        File choosedFile = new File(dataset.getName()+".txt");;
+        fchooser.setSelectedFile(choosedFile);
         int returnVal = fchooser.showSaveDialog(this);
 
         if(returnVal != JFileChooser.APPROVE_OPTION)
             return;
 
-        File choosedFile = fchooser.getSelectedFile();
+        choosedFile = fchooser.getSelectedFile();
         if (choosedFile == null)
             return;
         String fname = choosedFile.getAbsolutePath();
@@ -862,6 +1004,15 @@ implements TableObserver
 
         out.flush();
         out.close();
+
+        viewer.showStatus("Data save to: "+fname);
+
+        try {
+            RandomAccessFile rf = new RandomAccessFile(choosedFile, "r");
+            long size = rf.length();
+            rf.close();
+            viewer.showStatus("File size (bytes): "+size);
+        } catch (Exception ex) {}
     }
 
     /** update dataset value in file.
@@ -869,7 +1020,7 @@ implements TableObserver
      */
     public void updateValueInFile()
     {
-        if (!(dataset instanceof ScalarDS))
+        if (!(dataset instanceof ScalarDS) || !isValueChanged)
             return;
 
         int op = JOptionPane.showConfirmDialog(this,
@@ -896,6 +1047,206 @@ implements TableObserver
         isValueChanged = false;
     }
 
+    /**
+     * Selects all rows, columns, and cells in the table.
+     */
+    public void selectAll() throws Exception
+    {
+        table.selectAll();
+    }
+
+    /**
+     * Show basic statistics, such as min, max, average and variance.
+     */
+    public void showStatistics() throws Exception
+    {
+        if (!(dataset instanceof ScalarDS))
+            return;
+
+        Object theData = getSelectedData();
+        if (theData == null)
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+            "Select data cell(s) to show information.",
+            getTitle(),
+            JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String statistics = calculateStatistics(theData);
+        theData = null;
+
+        JOptionPane.showMessageDialog(this, statistics, "Statistics", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private String calculateStatistics(Object theData) throws Exception
+    {
+        double min=0, max=0, mean=0, variance = 0, sum=0, sum2=0;
+        int n = Array.getLength(theData);
+        if (NT == 'B')
+        {
+            byte[] bvalue = (byte[])theData;
+            min = bvalue[0];
+            max = bvalue[0];
+            sum = bvalue[0];
+            sum2 = bvalue[0]*bvalue[0];
+            for (int i=1; i<n; i++)
+            {
+                if (min > bvalue[i])
+                    min = bvalue[i];
+                if (max < bvalue[i])
+                    max = bvalue[i];
+                sum += bvalue[i];
+                sum2 += bvalue[i]*bvalue[i];
+            }
+        }
+        else if (NT == 'S')
+        {
+            short[] svalue = (short[])theData;
+            min = svalue[0];
+            max = svalue[0];
+            sum = svalue[0];
+            sum2 = svalue[0]*svalue[0];
+            for (int i=1; i<n; i++)
+            {
+                if (min > svalue[i])
+                    min = svalue[i];
+                if (max < svalue[i])
+                    max = svalue[i];
+                sum += svalue[i];
+                sum2 += svalue[i]*svalue[i];
+            }
+        }
+        else if (NT == 'I')
+        {
+            int[] ivalue = (int[])theData;
+            min = ivalue[0];
+            max = ivalue[0];
+            sum = ivalue[0];
+            sum2 = ivalue[0]*ivalue[0];
+            for (int i=1; i<n; i++)
+            {
+                if (min > ivalue[i])
+                    min = ivalue[i];
+                if (max < ivalue[i])
+                    max = ivalue[i];
+                sum += ivalue[i];
+                sum2 += ivalue[i]*ivalue[i];
+            }
+        }
+        else if (NT == 'J')
+        {
+            long[] lvalue = (long[])theData;
+            min = lvalue[0];
+            max = lvalue[0];
+            sum = lvalue[0];
+            sum2 = lvalue[0]*lvalue[0];
+            for (int i=1; i<n; i++)
+            {
+                if (min > lvalue[i])
+                    min = lvalue[i];
+                if (max < lvalue[i])
+                    max = lvalue[i];
+                sum += lvalue[i];
+                sum2 += lvalue[i]*lvalue[i];
+            }
+        }
+        else if (NT == 'F')
+        {
+            float[] fvalue = (float[])theData;
+            min = fvalue[0];
+            max = fvalue[0];
+            sum = fvalue[0];
+            sum2 = fvalue[0]*fvalue[0];
+            for (int i=1; i<n; i++)
+            {
+                if (min > fvalue[i])
+                    min = fvalue[i];
+                if (max < fvalue[i])
+                    max = fvalue[i];
+                sum += fvalue[i];
+                sum2 += fvalue[i]*fvalue[i];
+            }
+        }
+        else if (NT == 'D')
+        {
+            double[] dvalue = (double[])theData;
+            min = dvalue[0];
+            max = dvalue[0];
+            sum = dvalue[0];
+            sum2 = dvalue[0]*dvalue[0];
+            for (int i=1; i<n; i++)
+            {
+                if (min > dvalue[i])
+                    min = dvalue[i];
+                if (max < dvalue[i])
+                    max = dvalue[i];
+                sum += dvalue[i];
+                sum2 += dvalue[i]*dvalue[i];
+            }
+        }
+
+        mean = sum/n;
+        variance = sum2/n - mean*mean;
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("\nMinimum                 = ");
+        sb.append(Float.toString((float)min));
+        sb.append("\nMaximum                 = ");
+        sb.append(Float.toString((float)max));
+        sb.append("\nMean                         = ");
+        sb.append(Float.toString((float)mean));
+        sb.append("\nStandard deviation = ");
+        sb.append(Float.toString((float)(Math.sqrt(variance))));
+
+        return sb.toString();
+    }
+
+    /**
+     * Converting selected data based on predefined math functions.
+     */
+    public void mathConversion() throws Exception
+    {
+        if (!(dataset instanceof ScalarDS))
+            return;
+
+        Object theData = getSelectedData();
+        if (theData == null)
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+            "Select data cell(s) to convert.",
+            getTitle(),
+            JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        MathConversionDialog dialog = new MathConversionDialog((Frame)viewer, theData);
+        dialog.show();
+
+        if (dialog.isConverted())
+        {
+            int cols = table.getSelectedColumnCount();
+            int rows = table.getSelectedRowCount();
+            int r0 = table.getSelectedRow();
+            int c0 = table.getSelectedColumn();
+            int w = table.getColumnCount();
+            int idx_src=0, idx_dst=0;
+            for (int i=0; i<rows; i++)
+            {
+                idx_dst = (r0+i)*w+c0;
+                System.arraycopy(theData, idx_src, dataValue, idx_dst, cols);
+                idx_src += cols;
+            }
+
+            theData = null;
+            table.updateUI();
+            isValueChanged = true;
+        }
+
+    }
+
     /** update cell value in memory.
      *  It does not change the dataset value in file.
      *  @param cellValue the string value of input.
@@ -903,7 +1254,7 @@ implements TableObserver
      *  @param col the column of the editing cell.
      */
     private void updateValueInMemory(String cellValue, int row, int col)
-    throws NumberFormatException, IllegalArgumentException
+    throws Exception
     {
         int cols = table.getColumnCount();
         int i = row*cols+col;
@@ -913,12 +1264,6 @@ implements TableObserver
 
         ScalarDS sds = (ScalarDS)dataset;
         boolean isUnsigned = sds.isUnsigned();
-        Object data = null;
-        try { data = sds.read(); }
-        catch (Exception ex) { data = null; }
-
-        if (data == null)
-            return;
 
         // check data range for undigned datatype
         if (isUnsigned)
@@ -929,7 +1274,7 @@ implements TableObserver
 
             if (lvalue < 0)
             {
-                throw new IllegalArgumentException("Negative value for unsigned integer: "+lvalue);
+                throw new NumberFormatException("Negative value for unsigned integer: "+lvalue);
             }
 
             if (NT=='S') maxValue = 255;
@@ -938,7 +1283,7 @@ implements TableObserver
 
             if (lvalue < 0 || lvalue > maxValue)
             {
-                throw new IllegalArgumentException("Data value is out of range: "+lvalue);
+                throw new NumberFormatException("Data value is out of range: "+lvalue);
             }
         }
 
@@ -946,37 +1291,37 @@ implements TableObserver
         {
             byte value = 0;
             value = Byte.parseByte(cellValue);
-            Array.setByte(data, i, value);
+            Array.setByte(dataValue, i, value);
         }
         else if (NT == 'S')
         {
             short value = 0;
             value = Short.parseShort(cellValue);
-            Array.setShort(data, i, value);
+            Array.setShort(dataValue, i, value);
         }
         else if (NT == 'I')
         {
             int value = 0;
             value = Integer.parseInt(cellValue);
-            Array.setInt(data, i, value);
+            Array.setInt(dataValue, i, value);
         }
         else if (NT == 'J')
         {
             long value = 0;
             value = Long.parseLong(cellValue);
-            Array.setLong(data, i, value);
+            Array.setLong(dataValue, i, value);
         }
         else if (NT == 'F')
         {
             float value = 0;
             value = Float.parseFloat(cellValue);
-            Array.setFloat(data, i, value);
+            Array.setFloat(dataValue, i, value);
         }
         else if (NT == 'D')
         {
             double value = 0;
             value = Double.parseDouble(cellValue);
-            Array.setDouble(data, i, value);
+            Array.setDouble(dataValue, i, value);
         }
 
         isValueChanged = true;
@@ -1072,6 +1417,12 @@ implements TableObserver
             // the parent table and one column.
             super( pTable.getRowCount(), 1 );
 
+            long[] startArray = dataset.getStartDims();
+            long[] strideArray = dataset.getStride();
+            int[] selectedIndex = dataset.getSelectedIndex();
+            int start = (int)startArray[selectedIndex[0]];
+            int stride = (int)strideArray[selectedIndex[0]];
+
             // Store the parent table.
             parentTable = pTable;
 
@@ -1079,7 +1430,7 @@ implements TableObserver
             int n = parentTable.getRowCount();
             for ( int i = 0; i < n;  i++ )
             {
-                setValueAt( new Integer(i+1), i, 0 );
+                setValueAt( new Integer(start+i*stride), i, 0 );
             }
 
             // Create a button cell renderer.

@@ -26,6 +26,8 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Graphics;
 import java.awt.Color;
+import java.awt.Image;
+import java.awt.image.*;
 
 /**
  * DataOptionDialog is an dialog window used to select display options.
@@ -42,8 +44,6 @@ implements ActionListener, ItemListener
      * The main HDFView.
      */
     private final ViewManager viewer;
-
-    private static final int NAVIGATOR_SIZE = 150;
 
     /** the selected dataset/image */
     private Dataset dataset;
@@ -80,13 +80,15 @@ implements ActionListener, ItemListener
 
     private JLabel maxLabels[];
 
-    private JTextField startFields[], countFields[], strideFields[];
+    private JTextField startFields[], endFields[], strideFields[];
 
     private JList fieldList;
 
     private final Toolkit toolkit;
 
     private final SubsetNavigator navigator;
+
+    private int numberOfPalettes;
 
     /**
      * Constructs a DataOptionDialog with the given HDFView.
@@ -100,6 +102,7 @@ implements ActionListener, ItemListener
         dataset = (Dataset)theview.getSelectedObject();
         isSelectionCancelled = true;
         isTrueColorImage = false;
+        numberOfPalettes = 1;
         toolkit = Toolkit.getDefaultToolkit();
 
         if (dataset == null)
@@ -109,6 +112,12 @@ implements ActionListener, ItemListener
 
         rank = dataset.getRank();
         if (rank <=0 ) dataset.init();
+        if (dataset instanceof H5ScalarDS)
+        {
+            byte[] palRefs = ((H5ScalarDS)dataset).getPaletteRefs();
+            if (palRefs != null && palRefs.length > 8)
+                numberOfPalettes = palRefs.length/8;
+        }
 
         rank = dataset.getRank();
         dims = dataset.getDims();
@@ -117,21 +126,14 @@ implements ActionListener, ItemListener
         selectedIndex = dataset.getSelectedIndex();
         stride = dataset.getStride();
         fieldList = null;
-        int h=1, w=1;
-        h = (int)dims[selectedIndex[0]];
-        if (rank > 1) w = (int)dims[selectedIndex[1]];
-        navigator = new SubsetNavigator(w, h);
-
-        if (stride == null)
-        {
-            stride = new long[rank];
-            for (int i=0; i<rank; i++)
-                stride[i] = 1;
-        }
 
         choicePalette = new Choice();
         choicePalette.add("Select palette");
         choicePalette.add("Default");
+        for (int i=2; i<=numberOfPalettes; i++)
+        {
+            choicePalette.add("Default "+i);
+        }
         choicePalette.add("Gray");
         choicePalette.add("Rainbow");
         choicePalette.add("Nature");
@@ -147,11 +149,12 @@ implements ActionListener, ItemListener
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5, 5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+        contentPane.setPreferredSize(new Dimension(580, 325));
 
         int rows = Math.min(5, rank+1);
 
         JPanel northP = new JPanel();
-        northP.setLayout(new GridLayout(1, 2));
+        northP.setLayout(new GridLayout(1, 1));
         if (dataset instanceof CompoundDS)
         {
             // setup GUI components for the field selection
@@ -176,7 +179,7 @@ implements ActionListener, ItemListener
             rgroup.add(spreadsheetButton);
             rgroup.add(imageButton);
             JPanel viewP = new JPanel();
-            viewP.setLayout(new GridLayout(2,1));
+            viewP.setLayout(new GridLayout(1,2));
             viewP.add(spreadsheetButton);
             JPanel imageP = new JPanel();
             imageP.setLayout(new BorderLayout());
@@ -186,10 +189,6 @@ implements ActionListener, ItemListener
             viewP.setBorder(new TitledBorder("Display As"));
             northP.add(viewP);
         }
-
-        JPanel navigatorP = new JPanel();
-        navigatorP.add(navigator);
-        navigatorP.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 
         contentPane.add(northP, BorderLayout.NORTH);
 
@@ -202,7 +201,6 @@ implements ActionListener, ItemListener
         selectionP.setLayout(new GridLayout(5, 6, 10, 3));
         selectionP.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 
-        centerP.add(navigatorP, BorderLayout.WEST);
         centerP.add(selectionP, BorderLayout.CENTER);
 
         contentPane.add(centerP, BorderLayout.CENTER);
@@ -211,7 +209,7 @@ implements ActionListener, ItemListener
         selectionP.add(new JLabel(" "));
         JLabel label = new JLabel("Start:");
         selectionP.add(label);
-        label = new JLabel("Count:");
+        label = new JLabel("End: ");
         selectionP.add(label);
         label = new JLabel("Stride:");
         selectionP.add(label);
@@ -221,7 +219,7 @@ implements ActionListener, ItemListener
         choices = new Choice[rows-1];
         maxLabels = new JLabel[rows-1];
         startFields = new JTextField[rows-1];
-        countFields = new JTextField[rows-1];
+        endFields = new JTextField[rows-1];
         strideFields = new JTextField[rows-1];
         JLabel dimLabels[] = {
             new JLabel("Height", JLabel.RIGHT),
@@ -238,12 +236,12 @@ implements ActionListener, ItemListener
                 choices[i].add("dim "+j);
             maxLabels[i] = new JLabel("0");
             startFields[i] = new JTextField("0");
-            countFields[i] = new JTextField("0");
+            endFields[i] = new JTextField("0");
             strideFields[i] = new JTextField("1");
             selectionP.add(dimLabels[i]);
             selectionP.add(choices[i]);
             selectionP.add(startFields[i]);
-            selectionP.add(countFields[i]);
+            selectionP.add(endFields[i]);
             selectionP.add(strideFields[i]);
             selectionP.add(maxLabels[i]);
         }
@@ -273,8 +271,17 @@ implements ActionListener, ItemListener
 
         init();
 
+        JPanel navigatorP = new JPanel();
+        int h=1, w=1;
+        h = (int)dims[selectedIndex[0]];
+        if (rank > 1) w = (int)dims[selectedIndex[1]];
+        navigator = new SubsetNavigator(w, h);
+        navigatorP.add(navigator);
+        navigatorP.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        if (rank>1 && !(dataset instanceof CompoundDS))
+            centerP.add(navigatorP, BorderLayout.WEST);
+
         // locate the H5Property dialog
-        contentPane.setPreferredSize(new Dimension(580, 325));
         Point l = getParent().getLocation();
         l.x += 250;
         l.y += 80;
@@ -338,23 +345,35 @@ implements ActionListener, ItemListener
                 return; // select the same item, no change
 
             String tmpValue = null;
+            int thisIndex =  0;
+            long tmpLong = 0;
             boolean isChoiceSet = false;
             for (int i=0; i<n; i++)
             {
-                if (choices[i].getSelectedIndex() == theIndex &&
-                    i != theSelectedChoice)
+                thisIndex = choices[i].getSelectedIndex();
+                if (thisIndex == theIndex &&  i != theSelectedChoice)
                 {
+                    // the selected dimension is this index
                     // exchange the selected item and reset their values
+
+                    // reset start fields
                     startFields[theSelectedChoice].setText("0");
                     startFields[i].setText("0");
+
+                    // reset end max labels
                     tmpValue = maxLabels[theSelectedChoice].getText();
                     maxLabels[theSelectedChoice].setText( maxLabels[i].getText());
-                    countFields[theSelectedChoice].setText( maxLabels[i].getText());
+                    tmpLong = Long.parseLong(maxLabels[i].getText())-1;
+                    endFields[theSelectedChoice].setText( String.valueOf(tmpLong));
+                    tmpLong = Long.parseLong(tmpValue)-1;
+                    endFields[i].setText(String.valueOf(tmpLong));
                     maxLabels[i].setText(tmpValue);
-                    countFields[i].setText(tmpValue);
+
+                    // reset stride
                     strideFields[theSelectedChoice].setText("1");
                     strideFields[i].setText("1");
 
+                    // reset GUI choices
                     choices[i].select(currentIndex[theSelectedChoice]);
                     currentIndex[i] = currentIndex[theSelectedChoice];
                     currentIndex[theSelectedChoice] = theIndex;
@@ -364,7 +383,7 @@ implements ActionListener, ItemListener
 
             if (rank > 3 && !isChoiceSet)
             {
-                // update the slice (4th) choice menu
+                // update the 4th slice choice menu
                 String seletedItemOther = choices[3].getSelectedItem();
                 boolean isSelected = seletedItemOther.equals(theChoice.getSelectedItem());
 
@@ -398,10 +417,10 @@ implements ActionListener, ItemListener
             }
 
             if (rank > 2)
-                countFields[2].setText("1");
+                endFields[2].setText(startFields[2].getText());
 
             if (rank > 3)
-                countFields[3].setText("1");
+                endFields[3].setText(startFields[3].getText());
 
         } // else if (source instanceof Choice)
     }
@@ -445,13 +464,18 @@ implements ActionListener, ItemListener
         choicePalette.setEnabled(isImage && !isTrueColorImage);
 
         int n = Math.min(3, choices.length);
+        long endIdx = 0;
         for(int i=0; i<n; i++)
         {
             int idx = selectedIndex[i];
+            endIdx = start[idx]+selected[idx]*stride[idx]-1;
+            if (endIdx >= dims[idx]) endIdx = dims[idx]-1;
+
             choices[i].select(idx);
             maxLabels[i].setText(String.valueOf(dims[idx]));
             startFields[i].setText(String.valueOf(start[idx]));
-            countFields[i].setText(String.valueOf(selected[idx]));
+            endFields[i].setText(String.valueOf(endIdx));
+
             if (dataset instanceof H4Vdata)
                 strideFields[i].setEnabled(false);
             else
@@ -460,7 +484,7 @@ implements ActionListener, ItemListener
 
         if (rank > 2 )
         {
-            countFields[2].setEnabled(false);
+            endFields[2].setEnabled(false);
             strideFields[2].setEnabled(false);
             if (isTrueColorImage && imageButton.isSelected())
             {
@@ -469,7 +493,7 @@ implements ActionListener, ItemListener
                 choices[2].setEnabled(false);
                 startFields[2].setEnabled(false);
                 startFields[2].setText("0");
-                countFields[2].setText("2");
+                endFields[2].setText("2");
             }
             else
             {
@@ -478,13 +502,13 @@ implements ActionListener, ItemListener
                 choices[2].setEnabled(true);
                 startFields[2].setEnabled(true);
                 startFields[2].setText(String.valueOf(start[selectedIndex[2]]));
-                countFields[2].setText("1");
+                endFields[2].setText(startFields[2].getText());
             }
         }
 
         if (rank >3)
         {
-            countFields[3].setEnabled(false);
+            endFields[3].setEnabled(false);
             strideFields[3].setEnabled(false);
             for (int i=0; i<3; i++)
                 choices[3].remove(choices[i].getSelectedItem());
@@ -494,7 +518,7 @@ implements ActionListener, ItemListener
             int idx = Integer.parseInt(dimName);
             maxLabels[3].setText(String.valueOf(dims[idx]));
             startFields[3].setText(String.valueOf(start[idx]));
-            countFields[3].setText("1");
+            endFields[3].setText(startFields[3].getText());
         }
 
         currentIndex = new int[choices.length];
@@ -506,19 +530,27 @@ implements ActionListener, ItemListener
 
     private void setPalette()
     {
+        if (!(dataset instanceof ScalarDS))
+            return;
+
         byte[][] pal = null;
         int palChoice = choicePalette.getSelectedIndex();
 
-        if (palChoice == 2)
+        if (palChoice == 0)
+            pal = null; // using the first default palette
+        else if (palChoice == numberOfPalettes+1)
             pal = ImageView.createGrayPalette();
-        else if (palChoice == 3)
+        else if (palChoice == numberOfPalettes+2)
             pal = ImageView.createRainbowPalette();
-        else if (palChoice == 4)
+        else if (palChoice == numberOfPalettes+3)
             pal = ImageView.createNaturePalette();
-        else if (palChoice == 5)
+        else if (palChoice == numberOfPalettes+4)
             pal = ImageView.createWavePalette();
         else
-            pal = null;
+        {
+            // multuple palettes attached
+            pal = ((H5ScalarDS)dataset).readPalette(palChoice-1);
+        }
 
         ((ScalarDS)dataset).setPalette(pal);
     }
@@ -528,9 +560,9 @@ implements ActionListener, ItemListener
         if (!setSlicePosition())
             return false;
 
-        long[] n0 = {0, 0, 0};
-        long[] n1= {0, 0, 0};
-        long[] n2= {1, 1, 1};
+        long[] n0 = {0, 0, 0}; // start
+        long[] n1= {0, 0, 0}; // end
+        long[] n2= {1, 1, 1}; // stride
         int[] sIndex = {0, 1, 2};
 
         int n = Math.min(3, choices.length);
@@ -542,7 +574,7 @@ implements ActionListener, ItemListener
                 n0[i] = Long.parseLong(startFields[i].getText());
                 if (i<2)
                 {
-                    n1[i] = Long.parseLong(countFields[i].getText());
+                    n1[i] = Long.parseLong(endFields[i].getText());
                     n2[i] = Long.parseLong(strideFields[i].getText());
                 }
             } catch (NumberFormatException ex) {
@@ -557,7 +589,7 @@ implements ActionListener, ItemListener
 
             if (n0[i] < 0 ||
                 n0[i] >= dims[sIndex[i]] ||
-                (n0[i]+n1[i]*n2[i]) > dims[sIndex[i]])
+                n1[i] >= dims[sIndex[i]])
             {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
@@ -603,7 +635,7 @@ implements ActionListener, ItemListener
             start[selectedIndex[i]] = n0[i];
             if (i<2)
             {
-                selected[selectedIndex[i]] = n1[i];
+                selected[selectedIndex[i]] = (int)((n1[i]-n0[i])/n2[i]+1);
                 stride[selectedIndex[i]] = n2[i];
             }
         }
@@ -615,8 +647,6 @@ implements ActionListener, ItemListener
                 start[selectedIndex[2]] = 0;
                 selected[selectedIndex[2]] = 3;
         }
-
-        dataset.setStride(stride);
 
         //clear the old data
         dataset.clearData();
@@ -675,10 +705,12 @@ implements ActionListener, ItemListener
     private class SubsetNavigator extends JComponent
         implements MouseListener, MouseMotionListener
     {
+        private final int NAVIGATOR_SIZE = 150;
         private int dimX, dimY, x, y;
         private double r;
         private Point startPosition; // mouse clicked position
         private Rectangle selectedArea;
+        private Image previewImage = null;
 
         private SubsetNavigator(int w, int h)
         {
@@ -698,15 +730,97 @@ implements ActionListener, ItemListener
 
             selectedArea = new Rectangle();
             setPreferredSize(new Dimension(NAVIGATOR_SIZE, NAVIGATOR_SIZE));
+            try { previewImage = createPreviewImage(); }
+            catch (Exception ex) {}
 
             addMouseListener(this);
             addMouseMotionListener(this);
         }
 
+        private Image createPreviewImage() throws Exception
+        {
+            if (rank <=1 || !(dataset instanceof ScalarDS))
+                return null;
+
+            Image preImage = null;
+            ScalarDS sd = (ScalarDS)dataset;
+
+            // backup the selection
+            long[] strideBackup = new long[rank];
+            long[] selectedBackup = new long[rank];
+            long[] startBackup = new long[rank];
+            int[] selectedIndexBackup = new int[rank];
+            System.arraycopy(stride, 0, strideBackup, 0, rank);
+            System.arraycopy(selected, 0, selectedBackup, 0, rank);
+            System.arraycopy(start, 0, startBackup, 0, rank);
+            System.arraycopy(selectedIndex, 0, selectedIndexBackup, 0, rank);
+
+            // set the selection for preview
+            for (int i=0; i<rank; i++)
+            {
+                start[i] = 0;
+                stride[i] = 1;
+                selected[i] = 1;
+            }
+            selectedIndex[0] = choices[0].getSelectedIndex();
+            selectedIndex[1] = choices[1].getSelectedIndex();
+            long steps = (long)Math.ceil(r);
+            selected[selectedIndex[0]] = (long)(dims[selectedIndex[0]]/steps);
+            selected[selectedIndex[1]] = (long)(dims[selectedIndex[1]]/steps);
+            stride[selectedIndex[0]] = stride[selectedIndex[1]] = steps;
+
+            if (isTrueColorImage && start.length > 2)
+            {
+                start[selectedIndex[2]] = 0;
+                selected[selectedIndex[2]] = 3;
+                stride[selectedIndex[2]] = 1;
+            }
+
+            // update the ration of preview image size to the real dataset
+            y = (int)selected[selectedIndex[0]];
+            x = (int)selected[selectedIndex[1]];
+            r = Math.min((double)dims[selectedIndex[0]]/(double)selected[selectedIndex[0]],
+                (double)dims[selectedIndex[1]]/(double)selected[selectedIndex[1]]);
+
+            try
+            {
+                Object data = sd.read();
+                byte[] bData = ImageView.getBytes(data, null);
+                int h = (int)sd.getHeight();
+                int w = (int)sd.getWidth();
+
+                if (isTrueColorImage)
+                {
+                    boolean isPlaneInterlace = (sd.getInterlace()==ScalarDS.INTERLACE_PLANE);
+                    preImage = ImageView.createTrueColorImage(bData, isPlaneInterlace, w, h);
+                }
+                else
+                {
+                    byte[][] imagePalette = sd.getPalette();
+                    if (imagePalette == null)
+                        imagePalette = ImageView.createGrayPalette();
+                    preImage = ImageView.createIndexedImage(bData, imagePalette, w, h);
+                }
+            }
+            finally {
+                // set back the origianl selection
+                System.arraycopy(strideBackup, 0, stride, 0, rank);
+                System.arraycopy(selectedBackup, 0, selected, 0, rank);
+                System.arraycopy(startBackup, 0, start, 0, rank);
+                System.arraycopy(selectedIndexBackup, 0, selectedIndex, 0, rank);
+            }
+
+            return preImage;
+        }
+
         public void paint(Graphics g)
         {
             g.setColor(Color.blue);
-            g.fillRect(0, 0, x, y);
+
+            if (previewImage != null)
+                g.drawImage(previewImage, 0, 0, this);
+            else
+                g.fillRect(0, 0, x, y);
 
             int w = selectedArea.width;
             int h = selectedArea.height;
@@ -754,17 +868,13 @@ implements ActionListener, ItemListener
         {
             int s = Integer.parseInt(strideFields[0].getText());
             startFields[0].setText(String.valueOf((int)(y0*r)));
-            int count = (int)((h*r)/s);
-            if (count == 0) count = 1;
-            countFields[0].setText(String.valueOf(count));
+            endFields[0].setText(String.valueOf((int)((y0+h)*r-1)));
 
             if (rank > 1)
             {
                 s = Integer.parseInt(strideFields[1].getText());
                 startFields[1].setText(String.valueOf((int)(x0*r)));
-                count = (int)((w*r)/s);
-                if (count == 0) count = 1;
-                countFields[1].setText(String.valueOf(count));
+                endFields[1].setText(String.valueOf((int)((x0+w)*r-1)));
             }
         }
 
@@ -784,12 +894,14 @@ implements ActionListener, ItemListener
                 y = (int)(dimY/r);
             } else
             {
-                y = NAVIGATOR_SIZE-30;
+                y = NAVIGATOR_SIZE;
                 r = dimY/(double)y;
                 x = (int)(dimX/r);
             }
             setPreferredSize(new Dimension(NAVIGATOR_SIZE, NAVIGATOR_SIZE));
             selectedArea.setSize(0, 0);
+            try { previewImage = createPreviewImage(); }
+            catch (Exception ex) {}
 
             repaint();
         }

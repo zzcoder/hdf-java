@@ -71,7 +71,7 @@ implements ViewManager, ActionListener, HyperlinkListener
     private HObject selectedObject;
 
     /** the list of current selected objects */
-    private List copyObjects;
+    private List objectsToCopy;
 
     /** the list of most recent files */
     private Vector recentFiles;
@@ -166,7 +166,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         currentDir = root;
         currentFile = null;
         selectedObject = null;
-        copyObjects = null;
+        objectsToCopy = null;
         usersGuideURL = null;
         fileAccessID = FileFormat.WRITE;
         toolkit = Toolkit.getDefaultToolkit();
@@ -201,21 +201,28 @@ implements ViewManager, ActionListener, HyperlinkListener
                 super.moveToFront(c);
 
                 // enable or disable image GUI components
-                boolean isImage = false;
-                boolean isTable = false;
-
                 if (c instanceof ImageView)
                 {
-                    isImage = true;
+                    HDFView.setEnabled(imageGUIs, true);
+                    HObject obj = (HObject) ((DataObserver)c).getDataObject();
+                    FileFormat theFile = obj.getFileFormat();
+                    HDFView.setEnabled(editGUIs, !theFile.isReadOnly());
+                    HDFView.setEnabled(tableGUIs, false);
                     ((ImageView)c).setValueVisible(imageValueCheckBox.getState());
                 }
                 else if (c instanceof TableView)
                 {
-                    isTable = true;
+                    HDFView.setEnabled(tableGUIs, true);
+                    HObject obj = (HObject) ((DataObserver)c).getDataObject();
+                    FileFormat theFile = obj.getFileFormat();
+                    HDFView.setEnabled(editGUIs, !theFile.isReadOnly());
+                    HDFView.setEnabled(imageGUIs, false);
                 }
-
-                HDFView.setEnabled(imageGUIs, isImage);
-                HDFView.setEnabled(tableGUIs, isTable);
+                else
+                {
+                    HDFView.setEnabled(tableGUIs, false);
+                    HDFView.setEnabled(imageGUIs, false);
+                }
 
                 // enable or disable 3D GUI components
                 boolean is3D = false;
@@ -368,6 +375,7 @@ implements ViewManager, ActionListener, HyperlinkListener
             {
                 menuItems[i].setEnabled(true);
             }
+            setEnabled(editGUIs, !selectedObject.getFileFormat().isReadOnly());
         }
         else
         {
@@ -432,10 +440,10 @@ implements ViewManager, ActionListener, HyperlinkListener
         }
 
         // try to see if can open the data content
-        if (selectedObject instanceof DataFormat)
+        if (selectedObject instanceof Dataset)
         {
-            DataFormat data = (DataFormat)selectedObject;
-            try { data.read(); }
+            Dataset data = (Dataset)selectedObject;
+            try { data.getData(); }
             catch (Throwable ex) {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(this,
@@ -445,7 +453,6 @@ implements ViewManager, ActionListener, HyperlinkListener
                 return;
             }
         }
-
 
         if (isImage)
         {
@@ -494,8 +501,45 @@ implements ViewManager, ActionListener, HyperlinkListener
         {
             dispose();  // terminate the application
         }
-        else if (cmd.startsWith("Open file"))
+        else if (cmd.equals("Open file"))
         {
+            fileAccessID = FileFormat.WRITE;
+            final JFileChooser fchooser = new JFileChooser(currentDir);
+            fchooser.setFileFilter(DefaultFileFilter.getFileFilterHDF());
+
+            int returnVal = fchooser.showOpenDialog(this);
+
+            if(returnVal != JFileChooser.APPROVE_OPTION)
+                return;
+
+            File choosedFile = fchooser.getSelectedFile();
+            if (choosedFile == null)
+                return;
+
+            if (choosedFile.isDirectory())
+                currentDir = choosedFile.getPath();
+            else
+                currentDir = choosedFile.getParent();
+
+            String filename = choosedFile.getAbsolutePath();
+
+            try {
+                treeView.openFile(filename, fileAccessID);
+                addToRecentFiles(filename);
+            } catch (Exception ex)
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(
+                    this,
+                    ex+"\n"+filename,
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        else if (cmd.equals("Open file read-only"))
+        {
+            fileAccessID = FileFormat.READ;
+
             final JFileChooser fchooser = new JFileChooser(currentDir);
             int returnVal = fchooser.showOpenDialog(this);
 
@@ -526,12 +570,12 @@ implements ViewManager, ActionListener, HyperlinkListener
                     JOptionPane.ERROR_MESSAGE);
             }
         }
-        else if (cmd.equals("New HDF4 file"))
+        else if (cmd.equals("New HDF4 file") || cmd.equals("New HDF5 file"))
         {
             NewFileDialog dialog = new NewFileDialog(
                 this,
                 currentDir,
-                false,
+                cmd.equals("New HDF5 file"),
                 treeView.getOpenFiles());
             dialog.show();
 
@@ -552,21 +596,39 @@ implements ViewManager, ActionListener, HyperlinkListener
                     JOptionPane.ERROR_MESSAGE);
             }
         }
-        else if (cmd.equals("New HDF5 file"))
+        else if (cmd.equals("Save object to file"))
         {
+            if (selectedObject == null)
+                return;
+
+            if (selectedObject instanceof Group &&
+                ((Group)selectedObject).isRoot())
+                return;
+
+            FileFormat theFile = selectedObject.getFileFormat();
+            boolean isH5 = (theFile instanceof H5File);
             NewFileDialog dialog = new NewFileDialog(
                 this,
                 currentDir,
-                true,
+                isH5,
                 treeView.getOpenFiles());
             dialog.show();
 
             if (!dialog.isFileCreated())
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(
+                    this,
+                    "Failed to create the new file.",
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
                 return;
+            }
 
             String filename = dialog.getFile();
+            FileFormat dstFile = null;
             try {
-                treeView.openFile(filename, fileAccessID);
+                dstFile = treeView.openFile(filename, fileAccessID);
                 addToRecentFiles(filename);
             } catch (Exception ex)
             {
@@ -577,10 +639,14 @@ implements ViewManager, ActionListener, HyperlinkListener
                     getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             }
+            List objList = new Vector(2);
+            objList.add(selectedObject);
+            pasteObject(objList, dstFile.getRootNode(), dstFile);
         }
         else if (cmd.equals("recent.file"))
         {
             JMenuItem mi = (JMenuItem)e.getSource();
+            fileAccessID = FileFormat.WRITE;
 
             String filename = mi.getName();
             try {
@@ -605,7 +671,10 @@ implements ViewManager, ActionListener, HyperlinkListener
                 {
                     HObject obj = (HObject)(((DataObserver)frames[i]).getDataObject());
                     if ( obj.getFile().equals(currentFile))
+                    {
                         frames[i].dispose();
+                        frames[i] = null;
+                    }
                 }
             }
 
@@ -627,7 +696,7 @@ implements ViewManager, ActionListener, HyperlinkListener
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
                 this,
-                "No file is selected.\n",
+                "Select a file to save.",
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
                 return;
@@ -640,11 +709,29 @@ implements ViewManager, ActionListener, HyperlinkListener
         }
         else if (cmd.equals("Open data"))
         {
-            showDataContent(true);
+            try { showDataContent(true); }
+            catch (OutOfMemoryError err)
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(this,
+                    err,
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
         }
         else if (cmd.equals("Open data as"))
         {
-            showDataContent(false);
+            try { showDataContent(false); }
+            catch (OutOfMemoryError err)
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(this,
+                    err,
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
         }
         else if (cmd.equals("Copy object"))
         {
@@ -674,6 +761,24 @@ implements ViewManager, ActionListener, HyperlinkListener
         {
             showDataInfo();
         }
+        else if (cmd.equals("Save table as text"))
+        {
+            JInternalFrame frame = contentPane.getSelectedFrame();
+            if (frame != null && frame instanceof TableView)
+            {
+                TreePath[] paths = treeView.getSelectionPaths();
+                treeView.clearSelection();
+                try { ((TableView)frame).saveAsText(); }
+                catch (Exception ex)
+                {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
+                } finally
+                {
+                    treeView.setSelectionPaths(paths);
+                }
+            }
+        }
         else if (cmd.equals("Copy data"))
         {
             JInternalFrame frame = contentPane.getSelectedFrame();
@@ -690,6 +795,56 @@ implements ViewManager, ActionListener, HyperlinkListener
                 ((TableView)frame).pasteData();
             }
         }
+        else if (cmd.equals("Import data from file"))
+        {
+            JInternalFrame frame = contentPane.getSelectedFrame();
+            if (frame != null && frame instanceof TableView)
+            {
+                final JFileChooser fchooser = new JFileChooser(currentDir);
+                int returnVal = fchooser.showOpenDialog(this);
+                if(returnVal != JFileChooser.APPROVE_OPTION) return;
+                File choosedFile = fchooser.getSelectedFile();
+                if (choosedFile == null) return;
+                if (choosedFile.isDirectory()) currentDir = choosedFile.getPath();
+                else currentDir = choosedFile.getParent();
+                String txtFile = choosedFile.getAbsolutePath();
+
+                ((TableView)frame).importTextData(txtFile);
+            }
+        }
+        else if (cmd.equals("Write selection to dataset"))
+        {
+            JInternalFrame frame = contentPane.getSelectedFrame();
+            if (frame == null ||  !(frame instanceof TableView))
+                return;
+
+            TableView theTable = (TableView)frame;
+            JTable jtable = theTable.getTable();
+            if (jtable.getSelectedColumnCount() <=0 ||
+                jtable.getSelectedRowCount() <=0 )
+                return;
+
+            Dataset dataset = (Dataset)theTable.getDataObject();
+            TreeNode node = treeView.findTreeNode(dataset);
+            Group pGroup = (Group)((DefaultMutableTreeNode)node.getParent()).getUserObject();
+            TreeNode root = treeView.findRootNode(dataset.getFileFormat());
+
+            NewDatasetDialog dialog = new NewDatasetDialog(
+                this,
+                pGroup,
+                treeView.breadthFirstUserObjects(root),
+                theTable);
+            dialog.show();
+
+            HObject obj = (HObject)dialog.getObject();
+            if (obj != null)
+            {
+                Group pgroup = dialog.getParentGroup();
+                TreeNode pnode = treeView.findTreeNode(pgroup);
+                TreeNode newnode = new DefaultMutableTreeNode(obj);
+                treeView.insertNode(newnode, pnode);
+            }
+        }
         else if (cmd.equals("Save dataset"))
         {
             JInternalFrame frame = contentPane.getSelectedFrame();
@@ -703,12 +858,17 @@ implements ViewManager, ActionListener, HyperlinkListener
                 }
             }
         }
-        else if (cmd.equals("Save as text"))
+        else if (cmd.equals("Select all data"))
         {
             JInternalFrame frame = contentPane.getSelectedFrame();
-            if (frame != null && frame instanceof TableView)
+            if (frame != null)
             {
-                try { ((TableView)frame).saveAsText(); }
+                try {
+                    if ( frame instanceof TableView)
+                        ((TableView)frame).selectAll();
+                    else if  ( frame instanceof ImageView)
+                        ((ImageView)frame).selectAll();
+                }
                 catch (Exception ex)
                 {
                     toolkit.beep();
@@ -716,17 +876,88 @@ implements ViewManager, ActionListener, HyperlinkListener
                 }
             }
         }
-        else if (cmd.equals("Save as jpeg"))
+        else if (cmd.equals("Show statistics"))
         {
             JInternalFrame frame = contentPane.getSelectedFrame();
-            if (frame != null && frame instanceof ImageView)
+            if (frame != null && frame instanceof TableView)
             {
-                try { ((ImageView)frame).saveAsJPEG(); }
+                try { ((TableView)frame).showStatistics(); }
                 catch (Exception ex)
                 {
                     toolkit.beep();
                     JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
                 }
+            }
+        }
+        else if (cmd.equals("Math conversion"))
+        {
+            JInternalFrame frame = contentPane.getSelectedFrame();
+            if (frame != null && frame instanceof TableView)
+            {
+                try { ((TableView)frame).mathConversion(); }
+                catch (Exception ex)
+                {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
+        else if (cmd.startsWith("Save image as "))
+        {
+            JInternalFrame frame = contentPane.getSelectedFrame();
+            if (frame != null && frame instanceof ImageView)
+            {
+                int type = -1;
+                if (cmd.equals("Save image as jpeg"))
+                    type = Tools.FILE_TYPE_JPEG;
+                else if (cmd.equals("Save image as tiff"))
+                    type = Tools.FILE_TYPE_TIFF;
+                else if (cmd.equals("Save image as png"))
+                    type = Tools.FILE_TYPE_PNG;
+
+                TreePath[] paths = treeView.getSelectionPaths();
+                treeView.clearSelection();
+                try { ((ImageView)frame).saveImageAs(type); }
+                catch (Exception ex)
+                {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
+                } finally
+                {
+                    treeView.setSelectionPaths(paths);
+                }
+            }
+        }
+        else if (cmd.equals("Write selection to image"))
+        {
+            JInternalFrame frame = contentPane.getSelectedFrame();
+            if (frame == null ||  !(frame instanceof ImageView))
+                return;
+
+            ImageView theImage = (ImageView)frame;
+            if (theImage.getSelectedArea().width <=0 ||
+                theImage.getSelectedArea().height <= 0)
+                return;
+
+            Dataset dataset = (Dataset)theImage.getDataObject();
+            TreeNode node = treeView.findTreeNode(dataset);
+            Group pGroup = (Group)((DefaultMutableTreeNode)node.getParent()).getUserObject();
+            TreeNode root = treeView.findRootNode(dataset.getFileFormat());
+
+            NewDatasetDialog dialog = new NewDatasetDialog(
+                this,
+                pGroup,
+                treeView.breadthFirstUserObjects(root),
+                theImage);
+            dialog.show();
+
+            HObject obj = (HObject)dialog.getObject();
+            if (obj != null)
+            {
+                Group pgroup = dialog.getParentGroup();
+                TreeNode pnode = treeView.findTreeNode(pgroup);
+                TreeNode newnode = new DefaultMutableTreeNode(obj);
+                treeView.insertNode(newnode, pnode);
             }
         }
         else if (cmd.equals("Zoom in"))
@@ -859,6 +1090,71 @@ implements ViewManager, ActionListener, HyperlinkListener
         {
             // a window is selected to be shown at the front
             showWindow(cmd);
+        }
+        else if (cmd.startsWith("Convert image file:"))
+        {
+            int typeFrom=-1, typeTo =-1;
+
+            if (cmd.equals("Convert image file: JPEG to HDF5"))
+            {
+                typeFrom = Tools.FILE_TYPE_JPEG;
+                typeTo = Tools.FILE_TYPE_HDF5;
+            }
+            else if (cmd.equals("Convert image file: TIFF to HDF5"))
+            {
+                typeFrom = Tools.FILE_TYPE_TIFF;
+                typeTo = Tools.FILE_TYPE_HDF5;
+            }
+            else if (cmd.equals("Convert image file: PNG to HDF5"))
+            {
+                typeFrom = Tools.FILE_TYPE_PNG;
+                typeTo = Tools.FILE_TYPE_HDF5;
+            }
+            else if (cmd.equals("Convert image file: JPEG to HDF4"))
+            {
+                typeFrom = Tools.FILE_TYPE_JPEG;
+                typeTo = Tools.FILE_TYPE_HDF4;
+            }
+            else if (cmd.equals("Convert image file: TIFF to HDF4"))
+            {
+                typeFrom = Tools.FILE_TYPE_TIFF;
+                typeTo = Tools.FILE_TYPE_HDF4;
+            }
+            else if (cmd.equals("Convert image file: PNG to HDF4"))
+            {
+                typeFrom = Tools.FILE_TYPE_PNG;
+                typeTo = Tools.FILE_TYPE_HDF4;
+            }
+            else
+                return;
+
+            FileConversionDialog dialog = new FileConversionDialog(
+                this,
+                typeFrom,
+                typeTo,
+                currentDir,
+                treeView.getOpenFiles());
+            dialog.show();
+
+            if (dialog.isFileConverted())
+            {
+                String filename = dialog.getConvertedFile();
+                File theFile = new File(filename);
+
+                if (!theFile.exists() || !theFile.exists())
+                    return;
+
+                currentDir = theFile.getParentFile().getAbsolutePath();
+                currentFile = theFile.getAbsolutePath();
+
+                try {
+                    treeView.openFile(filename, FileFormat.WRITE);
+                    addToRecentFiles(filename);
+                } catch (Exception ex)
+                {
+                    showStatus(ex.toString());
+                }
+            }
         }
         else if (cmd.equals("User options"))
         {
@@ -1060,25 +1356,68 @@ implements ViewManager, ActionListener, HyperlinkListener
         fileMenu.setMnemonic('f');
         mbar.add(fileMenu);
 
-        item = new JMenuItem( "Open");
+        item = new JMenuItem( "Open HDF File");
         item.setMnemonic(KeyEvent.VK_O);
         item.addActionListener(this);
         item.setActionCommand("Open file");
         item.setAccelerator( KeyStroke.getKeyStroke(KeyEvent.VK_O, Event.CTRL_MASK, true));
         fileMenu.add(item);
 
+        item = new JMenuItem( "Open Read-Only");
+        item.setMnemonic(KeyEvent.VK_R);
+        item.addActionListener(this);
+        item.setActionCommand("Open file read-only");
+        fileMenu.add(item);
+
         fileMenu.addSeparator();
 
-        item = new JMenuItem( "New HDF4");
+        JMenu imageSubmenu = new JMenu("Import JPEG To");
+        item = new JMenuItem( "HDF4");
+        item.setActionCommand("Convert image file: JPEG to HDF4");
+        item.addActionListener(this);
+        imageSubmenu.add(item);
+        item = new JMenuItem( "HDF5");
+        item.setActionCommand("Convert image file: JPEG to HDF5");
+        item.addActionListener(this);
+        imageSubmenu.add(item);
+        fileMenu.add(imageSubmenu);
+
+        imageSubmenu = new JMenu("Import TIFF To");
+        item = new JMenuItem( "HDF4");
+        item.setActionCommand("Convert image file: TIFF to HDF4");
+        item.addActionListener(this);
+        imageSubmenu.add(item);
+        item = new JMenuItem( "HDF5");
+        item.setActionCommand("Convert image file: TIFF to HDF5");
+        item.addActionListener(this);
+        imageSubmenu.add(item);
+        fileMenu.add(imageSubmenu);
+
+        imageSubmenu = new JMenu("Import PNG To");
+        item = new JMenuItem( "HDF4");
+        item.setActionCommand("Convert image file: PNG to HDF4");
+        item.addActionListener(this);
+        imageSubmenu.add(item);
+        item = new JMenuItem( "HDF5");
+        item.setActionCommand("Convert image file: PNG to HDF5");
+        item.addActionListener(this);
+        imageSubmenu.add(item);
+        fileMenu.add(imageSubmenu);
+
+        fileMenu.addSeparator();
+
+        JMenu newFileMenu = new JMenu("New");
+        item = new JMenuItem( "HDF4");
         item.setActionCommand("New HDF4 file");
         item.setMnemonic(KeyEvent.VK_4);
         item.addActionListener(this);
-        fileMenu.add(item);
-        item = new JMenuItem( "New HDF5");
+        newFileMenu.add(item);
+        item = new JMenuItem( "HDF5");
         item.setActionCommand("New HDF5 file");
         item.setMnemonic(KeyEvent.VK_5);
         item.addActionListener(this);
-        fileMenu.add(item);
+        newFileMenu.add(item);
+        fileMenu.add(newFileMenu);
 
         fileMenu.addSeparator();
 
@@ -1151,6 +1490,16 @@ implements ViewManager, ActionListener, HyperlinkListener
         item.setActionCommand("Open data as");
         objectMenu.add(item);
 
+        objectMenu.addSeparator();
+
+        item = new JMenuItem( "Save to File");
+        item.setMnemonic(KeyEvent.VK_S);
+        item.addActionListener(this);
+        item.setActionCommand("Save object to file");
+        objectMenu.add(item);
+
+        objectMenu.addSeparator();
+
         JMenu newOjbectMenu = new JMenu("New");
         editGUIs.add(newOjbectMenu);
         objectMenu.add(newOjbectMenu);
@@ -1168,7 +1517,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         item = new JMenuItem( "Image", ViewProperties.getImageIcon());
         item.addActionListener(this);
         item.setActionCommand("Add image");
-        //newOjbectMenu.add(item);
+        newOjbectMenu.add(item);
 
         objectMenu.addSeparator();
 
@@ -1215,6 +1564,15 @@ implements ViewManager, ActionListener, HyperlinkListener
         menu.setMnemonic('T');
         mbar.add(menu);
 
+        item = new JMenuItem( "Save As Text");
+        item.setMnemonic(KeyEvent.VK_T);
+        item.addActionListener(this);
+        item.setActionCommand("Save table as text");
+        menu.add(item);
+        tableGUIs.add(item);
+
+        menu.addSeparator();
+
         item = new JMenuItem( "Copy Data");
         item.setMnemonic(KeyEvent.VK_C);
         item.addActionListener(this);
@@ -1228,34 +1586,94 @@ implements ViewManager, ActionListener, HyperlinkListener
         item.setActionCommand("Paste data");
         menu.add(item);
         tableGUIs.add(item);
+        editGUIs.add(item);
 
         menu.addSeparator();
 
-        item = new JMenuItem( "Update File");
+        item = new JMenuItem( "Import Data from File");
+        item.setMnemonic(KeyEvent.VK_I);
+        item.addActionListener(this);
+        item.setActionCommand("Import data from file");
+        menu.add(item);
+        tableGUIs.add(item);
+        editGUIs.add(item);
+
+        menu.addSeparator();
+
+        item = new JMenuItem( "Write Selection to New Dataset");
+        item.setMnemonic(KeyEvent.VK_W);
+        item.addActionListener(this);
+        item.setActionCommand("Write selection to dataset");
+        menu.add(item);
+        tableGUIs.add(item);
+        editGUIs.add(item);
+
+        item = new JMenuItem( "Update Change in File");
         item.setMnemonic(KeyEvent.VK_U);
         item.addActionListener(this);
         item.setActionCommand("Save dataset");
         menu.add(item);
         tableGUIs.add(item);
+        editGUIs.add(item);
 
-        item = new JMenuItem( "Save As Text");
-        item.setMnemonic(KeyEvent.VK_S);
+        menu.addSeparator();
+
+        item = new JMenuItem( "Select All");
+        item.setMnemonic(KeyEvent.VK_A);
         item.addActionListener(this);
-        item.setActionCommand("Save as text");
+        item.setActionCommand("Select all data");
         menu.add(item);
         tableGUIs.add(item);
+        menu.addSeparator();
+
+        item = new JMenuItem( "Show Statistics");
+        item.setMnemonic(KeyEvent.VK_S);
+        item.addActionListener(this);
+        item.setActionCommand("Show statistics");
+        menu.add(item);
+        tableGUIs.add(item);
+
+        item = new JMenuItem( "Math Conversion");
+        item.setMnemonic(KeyEvent.VK_M);
+        item.addActionListener(this);
+        item.setActionCommand("Math conversion");
+        menu.add(item);
+        tableGUIs.add(item);
+        editGUIs.add(item);
 
         // add image menu
         menu = new JMenu("Image");
         menu.setMnemonic('I');
         mbar.add(menu);
 
-        item = new JMenuItem( "Save As JPEG");
-        item.setMnemonic(KeyEvent.VK_S);
+        JMenu imgsubmenu = new JMenu("Save Image As");
+        menu.add(imgsubmenu);
+        imageGUIs.add(imgsubmenu);
+
+        item = new JMenuItem( "JPEG");
         item.addActionListener(this);
-        item.setActionCommand("Save as jpeg");
+        item.setActionCommand("Save image as jpeg");
+        imgsubmenu.add(item);
+
+        item = new JMenuItem( "TIFF");
+        item.addActionListener(this);
+        item.setActionCommand("Save image as tiff");
+        imgsubmenu.add(item);
+
+        item = new JMenuItem( "PNG");
+        item.addActionListener(this);
+        item.setActionCommand("Save image as png");
+        imgsubmenu.add(item);
+
+        menu.addSeparator();
+
+        item = new JMenuItem( "Write Selection to New Image");
+        item.setMnemonic(KeyEvent.VK_W);
+        item.addActionListener(this);
+        item.setActionCommand("Write selection to image");
         menu.add(item);
         imageGUIs.add(item);
+        editGUIs.add(item);
 
         menu.addSeparator();
 
@@ -1270,6 +1688,15 @@ implements ViewManager, ActionListener, HyperlinkListener
         item.setMnemonic(KeyEvent.VK_O);
         item.addActionListener(this);
         item.setActionCommand("Zoom out");
+        menu.add(item);
+        imageGUIs.add(item);
+
+        menu.addSeparator();
+
+        item = new JMenuItem( "Select All");
+        item.setMnemonic(KeyEvent.VK_A);
+        item.addActionListener(this);
+        item.setActionCommand("Select all data");
         menu.add(item);
         imageGUIs.add(item);
 
@@ -1359,9 +1786,44 @@ implements ViewManager, ActionListener, HyperlinkListener
         windowMenu.addSeparator();
 
         // add tool menu
-        menu = new JMenu( "Options" );
-        menu.setMnemonic('O');
+        menu = new JMenu( "Tools" );
+        menu.setMnemonic('l');
         mbar.add(menu);
+
+        imageSubmenu = new JMenu("JPEG To");
+        item = new JMenuItem( "HDF4");
+        item.setActionCommand("Convert image file: JPEG to HDF4");
+        item.addActionListener(this);
+        imageSubmenu.add(item);
+        item = new JMenuItem( "HDF5");
+        item.setActionCommand("Convert image file: JPEG to HDF5");
+        item.addActionListener(this);
+        imageSubmenu.add(item);
+        menu.add(imageSubmenu);
+
+        imageSubmenu = new JMenu("TIFF To");
+        item = new JMenuItem( "HDF4");
+        item.setActionCommand("Convert image file: TIFF to HDF4");
+        item.addActionListener(this);
+        imageSubmenu.add(item);
+        item = new JMenuItem( "HDF5");
+        item.setActionCommand("Convert image file: TIFF to HDF5");
+        item.addActionListener(this);
+        imageSubmenu.add(item);
+        menu.add(imageSubmenu);
+
+        imageSubmenu = new JMenu("PNG To");
+        item = new JMenuItem( "HDF4");
+        item.setActionCommand("Convert image file: PNG to HDF4");
+        item.addActionListener(this);
+        imageSubmenu.add(item);
+        item = new JMenuItem( "HDF5");
+        item.setActionCommand("Convert image file: PNG to HDF5");
+        item.addActionListener(this);
+        imageSubmenu.add(item);
+        menu.add(imageSubmenu);
+
+        menu.addSeparator();
 
         item = new JMenuItem( "User Options");
         item.setMnemonic(KeyEvent.VK_O);
@@ -1580,15 +2042,14 @@ implements ViewManager, ActionListener, HyperlinkListener
         if (selectedObject == null)
             return;
 
-         TreeNode node = treeView.getSelectedNode();
-        if (node == null)
-            return;
-
        Group pGroup = null;
         if (selectedObject instanceof Group)
             pGroup = (Group)selectedObject;
         else
-                pGroup = (Group)((DefaultMutableTreeNode)node.getParent()).getUserObject();
+        {
+            TreeNode node = treeView.getSelectedNode();
+            pGroup = (Group)((DefaultMutableTreeNode)node.getParent()).getUserObject();
+        }
 
         NewGroupDialog dialog = new NewGroupDialog(
             this,
@@ -1597,7 +2058,13 @@ implements ViewManager, ActionListener, HyperlinkListener
         dialog.show();
 
         HObject obj = (HObject)dialog.getObject();
-        if (obj != null) treeView.insertObject(obj);
+        if (obj != null)
+        {
+            Group pgroup = dialog.getParentGroup();
+            TreeNode pnode = treeView.findTreeNode(pgroup);
+            TreeNode newnode = new DefaultMutableTreeNode(obj);
+            treeView.insertNode(newnode, pnode);
+        }
     }
 
     private void addDataset()
@@ -1621,11 +2088,43 @@ implements ViewManager, ActionListener, HyperlinkListener
         dialog.show();
 
         HObject obj = (HObject)dialog.getObject();
-        if (obj != null) treeView.insertObject(obj);
+        if (obj != null)
+        {
+            Group pgroup = dialog.getParentGroup();
+            TreeNode pnode = treeView.findTreeNode(pgroup);
+            TreeNode newnode = new DefaultMutableTreeNode(obj);
+            treeView.insertNode(newnode, pnode);
+        }
     }
 
     private void addImage()
     {
+        if (selectedObject == null)
+            return;
+
+        Group pGroup = null;
+        if (selectedObject instanceof Group)
+            pGroup = (Group)selectedObject;
+        else
+        {
+            TreeNode node = treeView.getSelectedNode();
+            pGroup = (Group)((DefaultMutableTreeNode)node.getParent()).getUserObject();
+        }
+
+        NewImageDialog dialog = new NewImageDialog(
+            this,
+            pGroup,
+            treeView.breadthFirstUserObjects(treeView.getSelectedRootNode()));
+        dialog.show();
+
+        HObject obj = (HObject)dialog.getObject();
+        if (obj != null)
+        {
+            Group pgroup = dialog.getParentGroup();
+            TreeNode pnode = treeView.findTreeNode(pgroup);
+            TreeNode newnode = new DefaultMutableTreeNode(obj);
+            treeView.insertNode(newnode, pnode);
+        }
     }
 
     /** Save the current file into HDF4.
@@ -1634,6 +2133,18 @@ implements ViewManager, ActionListener, HyperlinkListener
      */
     private void saveAsHDF4()
     {
+        FileFormat srcFile = treeView.getSelectedFile();
+        if(srcFile == null)
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(
+            this,
+            "Select a file to save.",
+            getTitle(),
+            JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         NewFileDialog dialog = new NewFileDialog(this, currentDir, false, treeView.getOpenFiles());
         dialog.show();
 
@@ -1648,7 +2159,6 @@ implements ViewManager, ActionListener, HyperlinkListener
         byte[] buffer;
         BufferedInputStream bi = null;
         BufferedOutputStream bo = null;
-        FileFormat srcFile = treeView.getSelectedFile();
 
         try {
             bi = new BufferedInputStream(new FileInputStream(srcFile.getFilePath()));
@@ -1717,6 +2227,18 @@ implements ViewManager, ActionListener, HyperlinkListener
      */
     private void saveAsHDF5()
     {
+        TreeNode root = treeView.getSelectedRootNode();
+        if(root == null)
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(
+            this,
+            "Select a file to save.",
+            getTitle(),
+            JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         NewFileDialog dialog = new NewFileDialog(this, currentDir, true, treeView.getOpenFiles());
         dialog.show();
 
@@ -1725,14 +2247,13 @@ implements ViewManager, ActionListener, HyperlinkListener
 
         String filename = dialog.getFile();
 
-        copyObjects = new Vector();
-        TreeNode root = treeView.getSelectedRootNode();
+        List objList = new Vector();
         DefaultMutableTreeNode node = null;
         int n = root.getChildCount();
         for (int i=0; i<n; i++)
         {
             node = (DefaultMutableTreeNode)root.getChildAt(i);
-            copyObjects.add(node.getUserObject());
+            objList.add(node.getUserObject());
         }
 
         FileFormat newFile = null;
@@ -1754,28 +2275,27 @@ implements ViewManager, ActionListener, HyperlinkListener
             return;
 
         // copy attributes of the root group
-        if (newFile instanceof H5File)
-        {
-            Group srcGroup = (Group) ((DefaultMutableTreeNode)root).getUserObject();
-            Group dstGroup = (Group) ((DefaultMutableTreeNode)newFile.getRootNode()).getUserObject();
-            int srcID = srcGroup.open();
-            int dstID = dstGroup.open();
-            try {
-                ((H5File)newFile).copyAttributes(srcID, dstID);
-            } catch (Exception ex) {}
-
-            srcGroup.close(srcID);
-            dstGroup.close(dstID);
-        }
+        Group srcGroup = (Group) ((DefaultMutableTreeNode)root).getUserObject();
+        Group dstGroup = (Group) ((DefaultMutableTreeNode)newFile.getRootNode()).getUserObject();
+        int srcID = srcGroup.open();
+        int dstID = dstGroup.open();
+        try { ((H5File)newFile).copyAttributes(srcID, dstID);
+        } catch (Exception ex) {}
+        srcGroup.close(srcID);
+        dstGroup.close(dstID);
 
         TreeNode pnode = newFile.getRootNode();
-        pasteObject(pnode, newFile);
+        pasteObject(objList, pnode, newFile);
+
+        // update reference datasets
+        try { H5File.updateReferenceDataset((H5File)srcGroup.getFileFormat(), (H5File)newFile);
+        } catch (Exception ex) {}
     }
 
     /** copy selected objects */
     private void copyObject()
     {
-        copyObjects = treeView.getSelectedObjects();
+        objectsToCopy = treeView.getSelectedObjects();
     }
 
     /** paste selected objects */
@@ -1783,12 +2303,12 @@ implements ViewManager, ActionListener, HyperlinkListener
     {
         TreeNode pnode = treeView.getSelectedNode();
 
-        if (copyObjects == null ||
-            copyObjects.size() <=0 ||
+        if (objectsToCopy == null ||
+            objectsToCopy.size() <=0 ||
             pnode == null)
             return;
 
-        FileFormat srcFile = ((HObject)copyObjects.get(0)).getFileFormat();
+        FileFormat srcFile = ((HObject)objectsToCopy.get(0)).getFileFormat();
         FileFormat dstFile = treeView.getSelectedFile();
 
         if ((srcFile instanceof H4File) && (dstFile instanceof H5File))
@@ -1837,23 +2357,25 @@ implements ViewManager, ActionListener, HyperlinkListener
         if (op == JOptionPane.NO_OPTION)
             return;
 
-        pasteObject(pnode, dstFile);
+        pasteObject(objectsToCopy, pnode, dstFile);
+
+        objectsToCopy = null;
     }
 
     /** paste selected objects */
-    private void pasteObject(TreeNode pnode, FileFormat dstFile)
+    private void pasteObject(List objList, TreeNode pnode, FileFormat dstFile)
     {
-        if (copyObjects == null ||
-            copyObjects.size() <=0 ||
+        if (objList == null ||
+            objList.size() <=0 ||
             pnode == null)
             return;
 
-        FileFormat srcFile = ((HObject)copyObjects.get(0)).getFileFormat();
+        FileFormat srcFile = ((HObject)objList.get(0)).getFileFormat();
         Group pgroup = (Group)((DefaultMutableTreeNode)pnode).getUserObject();
 
         HObject theObj=null;
         TreeNode newNode = null;
-        Iterator iterator = copyObjects.iterator();
+        Iterator iterator = objList.iterator();
         while (iterator.hasNext())
         {
             newNode = null;
@@ -1906,9 +2428,8 @@ implements ViewManager, ActionListener, HyperlinkListener
             // add the node to the tree
             if (newNode != null)
                 treeView.insertNode(newNode, pnode);
-        }
 
-        copyObjects = null;
+        } // while (iterator.hasNext())
     }
 
     private void removeSelectedObjects()
@@ -2034,8 +2555,8 @@ implements ViewManager, ActionListener, HyperlinkListener
         {
             setEnabled(imageGUIs, false);
             setEnabled(d3GUIs, false);
-            //setEnabled(editGUIs, false);
             setEnabled(tableGUIs, false);
+            setEnabled(editGUIs, false);
         }
     }
 
@@ -2145,6 +2666,7 @@ implements ViewManager, ActionListener, HyperlinkListener
         {
             jif = (JInternalFrame)clist[i];
             jif.dispose();
+            jif = null;
         }
     }
 

@@ -15,6 +15,8 @@ import java.awt.Component;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Toolkit;
+import java.awt.Frame;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
@@ -83,6 +85,8 @@ implements ActionListener
      */
     private DefaultMutableTreeNode selectedNode;
 
+    private final Toolkit toolkit;
+
     /**
      * The popup menu used to display user choice of actions on data object.
      */
@@ -103,10 +107,12 @@ implements ActionListener
         };
 
         fileList = new Vector();
+        toolkit = Toolkit.getDefaultToolkit();
 
         // initialize the tree and root
         treeModel = new DefaultTreeModel(root);
         tree = new JTree(treeModel);
+        tree.setLargeModel(true);
         tree.setCellRenderer(new HTreeCellRenderer());
         tree.addMouseListener(new HTreeMouseAdapter());
         tree.setRootVisible(false);
@@ -123,6 +129,8 @@ implements ActionListener
         // create the popupmenu
         popupMenu = createPopupMenu();
 
+        // reset the scroll increament
+
         // layout GUI component
         this.setLayout( new BorderLayout() );
         this.add(tree, BorderLayout.CENTER);
@@ -135,11 +143,29 @@ implements ActionListener
 
         if (cmd.equals("Open data"))
         {
-            viewer.showDataContent(true);
+            try { viewer.showDataContent(true); }
+            catch (OutOfMemoryError err)
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(this,
+                    err,
+                    ((Frame)viewer).getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
         }
         else if (cmd.equals("Open data as"))
         {
-            viewer.showDataContent(false);
+            try { viewer.showDataContent(false); }
+            catch (OutOfMemoryError err)
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(this,
+                    err,
+                    ((Frame)viewer).getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
         }
         else if (cmd.equals("Show object properties"))
         {
@@ -243,6 +269,9 @@ implements ActionListener
                 break;
             }
         } //while(enumeration.hasMoreElements())
+
+
+        Runtime.getRuntime().gc();
     }
 
     /**
@@ -272,6 +301,8 @@ implements ActionListener
         // remove all files from the tree view
         ((DefaultMutableTreeNode)root).removeAllChildren();
         treeModel.reload();
+
+        Runtime.getRuntime().gc();
     }
 
     /**
@@ -288,6 +319,30 @@ implements ActionListener
     public MutableTreeNode getSelectedNode()
     {
         return selectedNode;
+    }
+
+    /**
+     * Returns the selected nodes.
+     */
+    public TreePath[] getSelectionPaths()
+    {
+        return tree.getSelectionPaths();
+    }
+
+    /**
+     * Clears the selection.
+     */
+    public void clearSelection()
+    {
+        tree.clearSelection();
+    }
+
+    /**
+     * Selects the nodes identified by the specified array of paths
+     */
+    public void setSelectionPaths(TreePath[] paths)
+    {
+        tree.setSelectionPaths(paths);
     }
 
     /**
@@ -316,35 +371,6 @@ implements ActionListener
         }
 
         return theNode;
-    }
-
-    /**
-     * Inserts an HObject into the tree.
-     * @param obj the object to add.
-     */
-    public void insertObject(HObject obj)
-    {
-        if (obj == null)
-            return;
-
-        String path = obj.getPath();
-
-        DefaultMutableTreeNode pnode = (DefaultMutableTreeNode)findTreeNode(path);
-        DefaultMutableTreeNode theNode = null;
-
-        if (obj instanceof Group)
-        {
-            theNode = new DefaultMutableTreeNode(obj)
-            {
-                public boolean isLeaf() { return false; }
-            };
-        }
-        else
-            theNode = new DefaultMutableTreeNode(obj);
-
-        ((Group)pnode.getUserObject()).addToMemberList(obj);
-
-        insertNode(theNode, pnode);
     }
 
     /**
@@ -457,33 +483,56 @@ implements ActionListener
             if (parentNode != null)
             {
                 treeModel.removeNodeFromParent(currentNode);
+                if (currentNode.equals(selectedNode))
+                {
+                    selectedNode = null;
+                    selectedFile = null;
+                }
             }
         }
     }
 
     /**
-     * Returns the node for a given path.
+     * Returns the tree node for the given data object.
      */
-    private TreeNode findTreeNode(String path)
+    public TreeNode findTreeNode(HObject obj)
     {
-        TreeNode rootNode = getSelectedRootNode();
-        if (rootNode == null)
+        if (root == null)
             return null;
 
-        if (path.equals(HObject.separator))
-            return rootNode;
-
-        if (path.endsWith(HObject.separator))
-            path = path.substring(0, path.length()-1);
-
-        HObject obj = null;
         DefaultMutableTreeNode theNode = null;
-        Enumeration enum = ((DefaultMutableTreeNode)rootNode).breadthFirstEnumeration();
+        HObject theObj = null;
+        Enumeration enum = ((DefaultMutableTreeNode)root).breadthFirstEnumeration();
         while(enum.hasMoreElements())
         {
             theNode = (DefaultMutableTreeNode)enum.nextElement();
-            obj = (HObject)theNode.getUserObject();
-            if (path.equals(obj.getPath()+obj.getName()))
+            theObj = (HObject)theNode.getUserObject();
+            if (theObj == null)
+                continue;
+            else if (theObj.equals(obj))
+                return theNode;
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the root node that contains the given FileFormat.
+     */
+    public TreeNode findRootNode(FileFormat file)
+    {
+        if (root == null)
+            return null;
+
+        HObject theObj = null;
+        FileFormat theFile = null;
+        DefaultMutableTreeNode theNode = null;
+        Enumeration enum = root.children();
+        while(enum.hasMoreElements())
+        {
+            theNode = (DefaultMutableTreeNode)enum.nextElement();
+            theFile = ((HObject)theNode.getUserObject()).getFileFormat();
+            if (file.equals(theFile))
                 return theNode;
         }
 
