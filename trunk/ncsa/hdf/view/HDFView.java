@@ -93,6 +93,7 @@ public class HDFView extends JFrame
 
     private static final String aboutHDFView =
         "HDF Viewer, "+ "Version "+ViewProperties.VERSION+"\n"+
+        "For "+System.getProperty("os.name")+"\n\n"+
         "Copyright "+'\u00a9'+" 2001-2002 University of Illinois.\n"+
         "All rights reserved.";
 
@@ -466,6 +467,14 @@ public class HDFView extends JFrame
         item.addActionListener(this);
         menu.add(item);
 
+        menu.addSeparator();
+
+        item = new JMenuItem( "Register File Format");
+        item.setMnemonic(KeyEvent.VK_R);
+        item.setActionCommand("Register file format");
+        item.addActionListener(this);
+        menu.add(item);
+
         // add help menu
         menu = new JMenu("Help");
         menu.setMnemonic('H');
@@ -564,8 +573,10 @@ public class HDFView extends JFrame
     private void createUsersGuidePane()
     {
         String ugPath = ViewProperties.getUsersGuide();
+
         try {
             usersGuideURL = new URL(ugPath);
+            usersGuideEditorPane.setPage(usersGuideURL);
         } catch (Exception e) {
             usersGuideURL = null;
             showStatus(e.toString());
@@ -573,15 +584,10 @@ public class HDFView extends JFrame
 
         if (usersGuideURL == null)
         {
+            String fileSeparator = System.getProperty("file.separator");
             try {
-                ugPath = "file:"
-                + rootDir
-                + System.getProperty("file.separator")
-                + "docs"
-                + System.getProperty("file.separator")
-                + "UsersGuide"
-                + System.getProperty("file.separator")
-                + "index.html";
+                ugPath = "file:"  + rootDir  + fileSeparator  + "docs"
+                + fileSeparator  + "UsersGuide" + fileSeparator + "index.html";
                 ViewProperties.setUsersGuide(ugPath);
                 usersGuideURL = new URL(ugPath);
                 /* ...  use the URL to initialize the editor pane  ... */
@@ -845,7 +851,7 @@ public class HDFView extends JFrame
                 fileAccessID = FileFormat.READ;
 
             JFileChooser fchooser = new JFileChooser(currentDir);
-            fchooser.setFileFilter(DefaultFileFilter.getFileFilterHDF());
+            fchooser.setFileFilter(DefaultFileFilter.getFileFilter());
 
             int returnVal = fchooser.showOpenDialog(this);
             if(returnVal != JFileChooser.APPROVE_OPTION)
@@ -867,9 +873,9 @@ public class HDFView extends JFrame
                 try { updateRecentFiles(filename); } catch (Exception ex) {}
             } catch (Exception ex)
             {
-                String msg = "Failed to open file "+filename+"\n"+ex.getMessage();
-                if (!(ex instanceof UnsupportedOperationException))
-                    msg +="\n\nTry open file read-only";
+                String msg = "Failed to open file "+filename+"\n"+ex;
+                //if (!(ex instanceof UnsupportedOperationException))
+                //    msg +="\n\nTry open file read-only";
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
                     this,
@@ -1088,6 +1094,78 @@ public class HDFView extends JFrame
                 }
             }
         }
+        else if (cmd.equals("Register file format")) {
+            String msg = "Register a new file format by \nKEY:FILE_FORMAT:FILE_EXTENSION\n"+
+                "where, KEY: the unique identifier for the file format"+
+                "\n           FILE_FORMAT: the full class name of the file format"+
+                "\n           FILE_EXTENSION: the file extension for the file format"+
+                "\n\nFor example, the following line register HDF4 file format:"+
+                "\nHDF:ncsa.hdf.object.h4.H4File:hdf\n\n";
+            String str = JOptionPane.showInputDialog(this, msg);
+            if (str == null || str.length()<1)
+                return;
+
+            int idx1 = str.indexOf(':');
+            int idx2 = str.lastIndexOf(':');
+
+            if (idx1<0 || idx2<=idx1) {
+                JOptionPane.showMessageDialog(
+                        this, "Failed to register "+str +"\n\nMust in the form of KEY:FILE_FORMAT:FILE_EXTENSION",
+                        "Register File Format",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            String key = str.substring(0, idx1);
+            String className = str.substring(idx1+1, idx2);
+            String extension = str.substring(idx2+1);
+
+            // check is the file format has been registered or the key is taken.
+            String theKey = null;
+            String theClassName = null;
+            Enumeration enum = FileFormat.getFileFormatKeys();
+            while (enum.hasMoreElements()) {
+                theKey = (String)enum.nextElement();
+                if (theKey.endsWith(key)) {
+                    JOptionPane.showMessageDialog(
+                        this,
+                        "Invalid key: "+key+" is taken.",
+                        "Register File Format",
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                theClassName = FileFormat.getFileFormat(theKey).getClass().getName();
+                if (theClassName.endsWith(className)) {
+                    JOptionPane.showMessageDialog(
+                        this,
+                        "The file format has already been registered: "+className,
+                        "Register File Format",
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+
+            try {
+                Class theClass = ViewProperties.loadExtClass().loadClass(className);
+            } catch (ClassNotFoundException ex) {
+                JOptionPane.showMessageDialog(
+                        this, "Failed to register "+str +"\n\n"+ex,
+                        "Register File Format",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            FileFormat.addFileFormat(key, className);
+
+            if (extension != null && extension.length()>0)
+            {
+               extension = extension.trim();
+               String ext = ViewProperties.getFileExtension();
+               ext += ", "+extension;
+               ViewProperties.setFileExtension(ext);
+            }
+        }
         else if (cmd.equals("Users guide"))
         {
             if (usersGuideURL != null)
@@ -1201,12 +1279,10 @@ public class HDFView extends JFrame
 
         // close all open files
         List filelist = treeView.getCurrentFiles();
-        if (filelist != null && filelist.size()>1)
-        {
-            Iterator iterator = filelist.iterator();
-            while(iterator.hasNext())
-            {
-                try { treeView.closeFile ((FileFormat)iterator.next()); }
+        if (filelist != null && filelist.size()>0) {
+            int n = filelist.size();
+            for (int i=0; i<n; i++) {
+                try { treeView.closeFile((FileFormat)filelist.get(i)); }
                 catch (Exception ex) {}
             }
         }
@@ -1410,63 +1486,6 @@ public class HDFView extends JFrame
      */
     public static final List getListOfPaletteView() {
         return paletteViews;
-    }
-
-    /**
-     * Add a new module component.
-     * <p>The following example shows how to register the DefaultTreeView:</p>
-     *
-     * <pre>
-     * HDFView.addModule(HDFView.MODULE_TREEVIEW, "ncsa.hdf.view.DefaultTreeView");
-     * </pre>
-     *
-     * @param moduleType the type of the module.
-     *        valid values: MODULE_TREEVIEW, MODULE_IMAGEVIEW, MODULE_TABLEVIEW,
-     *        MODULE_TEXTVIEW, MODULE_METADATAVIEW, and MODULE_PALETTE.
-     * @param moduleClassName the full name of the module name.
-     * @throws Exception
-     */
-    public static final void addModule(int moduleType, String moduleClassName) {
-
-        try { ViewProperties.loadExtClass().loadClass(moduleClassName); }
-        catch(ClassNotFoundException ex) {
-            JOptionPane.showMessageDialog(
-                new JFrame(),
-                "Cannot find module:\n "+moduleClassName+
-                "\nPlease check the module name and classpath.",
-                "HDFView",
-                JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (moduleClassName != null) {
-            switch (moduleType) {
-                case MODULE_TREEVIEW:
-                    if (!treeViews.contains(moduleClassName))
-                        treeViews.add(moduleClassName);
-                    break;
-                case MODULE_IMAGEVIEW:
-                    if (!imageViews.contains(moduleClassName))
-                        imageViews.add(moduleClassName);
-                    break;
-                case MODULE_TABLEVIEW:
-                    if (!tableViews.contains(moduleClassName))
-                        tableViews.add(moduleClassName);
-                    break;
-                case MODULE_TEXTVIEW:
-                    if (!textViews.contains(moduleClassName))
-                        textViews.add(moduleClassName);
-                    break;
-                case MODULE_METADATAVIEW:
-                    if (!metaDataViews.contains(moduleClassName))
-                        metaDataViews.add(moduleClassName);
-                    break;
-                case MODULE_PALETTEVIEW:
-                    if (!paletteViews.contains(moduleClassName))
-                        paletteViews.add(moduleClassName);
-                    break;
-            } // switch (moduleType) {
-        } // if (theInstance != null)
     }
 
     /**

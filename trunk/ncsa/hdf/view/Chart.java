@@ -263,7 +263,8 @@ implements ActionListener
             // draw X and Y labels: 10 labels for x and y
             int dh = h/10;
             int dw = w/10;
-            int dx = Math.round((float)(xmax - xmin + 0.5) / 10);
+            double dx = (xmax - xmin)/10.0;
+            //int dx = Math.round((float)(xmax - xmin + 0.5) / 10);
             double dy = (ymax - ymin) / 10;
             if (dy > 1) dy = Math.round(10*dy)/10;
             int xp=2*gap, yp=0, x=xmin, x0, y0, x1, y1;
@@ -279,16 +280,19 @@ implements ActionListener
             for (int i=0; i<10; i++)
             {
                 xp += dw;
-                yp += dh;
-                x += dx;
-                y += dy;
+                //x += dx;
+                x = (int)(xmin+(double)(i*dx+dx));
                 g.drawLine(xp, h, xp, h-5);
+
+                g.drawString(String.valueOf(x), xp-5, h+gap);
+
+                yp += dh;
+                y += dy;
                 g.drawLine(2*gap, h-yp, 2*gap+5, h-yp);
                 if (isInteger)
                     g.drawString(String.valueOf((int)y), 0, h-yp+8);
                 else
                     g.drawString(format.format(y), 0, h-yp+8);//g.drawString(String.valueOf((float)y), 0, h-yp+8);
-                g.drawString(String.valueOf(x), xp-5, h+gap);
             }
 
             Color c = g.getColor();

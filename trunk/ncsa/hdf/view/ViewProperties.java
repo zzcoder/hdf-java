@@ -21,6 +21,7 @@ import java.net.URLClassLoader;
 import java.net.MalformedURLException;
 import java.util.jar.JarFile;
 import java.util.jar.JarEntry;
+import ncsa.hdf.object.FileFormat;
 
 /**
  * The ViewProperties holds all the HDFView static information.
@@ -79,10 +80,7 @@ public class ViewProperties extends Properties
     private static String workDir = "user.dir";
 
     /** default HDF4 file extension */
-    private static String h4Ext = "hdf, h4, hdf4";
-
-    /** default HDF4 file extension */
-    private static String h5Ext = "hdf, h5, hdf5";
+    private static String fileExt = "hdf, h4, hdf4, h5, hdf5";
 
     private static ClassLoader extClassLoader;
 
@@ -322,203 +320,194 @@ public class ViewProperties extends Properties
             url = new URL("file://localhost/"+rootPath+ "/lib/jhdfview.jar");
         } catch (MalformedURLException mfu) {;}
 
-        try {
-            url2 = new URL("file://localhost/"+rootPath+ "/");
-        } catch (MalformedURLException mfu) {;}
-
-        try {
-            url3 = new URL("file://localhost/"+rootPath+"/src/");
-        } catch (MalformedURLException mfu) {;}
-
-        URL uu[] = {url, url2, url3};
-        URLClassLoader cl = new URLClassLoader(uu);
         URL u = null;
+        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
 
         // load icon images
         if (hdfIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/hdf.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/hdf.gif");
             if (u != null) {
                 hdfIcon = new ImageIcon (u);
             }
         }
 
         if (h4Icon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/hdf4.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/hdf4.gif");
             if (u != null) {
                 h4Icon = new ImageIcon (u);
             }
         }
 
         if (h5Icon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/hdf5.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/hdf5.gif");
             if (u != null) {
                 h5Icon = new ImageIcon (u);
             }
         }
 
         if (foldercloseIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/folderclose.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/folderclose.gif");
             if (u != null) {
                 foldercloseIcon = new ImageIcon (u);
             }
         }
 
         if (folderopenIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/folderopen.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/folderopen.gif");
             if (u != null) {
                 folderopenIcon = new ImageIcon (u);
             }
         }
 
         if (datasetIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/dataset.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/dataset.gif");
             if (u != null) {
                 datasetIcon = new ImageIcon (u);
             }
         }
 
         if (fileopenIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/fileopen.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/fileopen.gif");
             if (u != null) {
                 fileopenIcon = new ImageIcon (u);
             }
         }
 
         if (filesaveIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/filesave.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/filesave.gif");
             if (u != null) {
                 filesaveIcon = new ImageIcon (u);
             }
         }
 
         if (filenewIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/filenew.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/filenew.gif");
             if (u != null) {
                 filenewIcon = new ImageIcon (u);
             }
         }
 
         if (filecloseIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/fileclose.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/fileclose.gif");
             if (u != null) {
                 filecloseIcon = new ImageIcon (u);
             }
         }
 
         if (paletteIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/palette.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/palette.gif");
             if (u != null) {
                 paletteIcon = new ImageIcon (u);
             }
         }
 
         if (imageIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/image.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/image.gif");
             if (u != null) {
                 imageIcon = new ImageIcon (u);
             }
         }
 
         if (tableIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/table.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/table.gif");
             if (u != null) {
                 tableIcon = new ImageIcon (u);
             }
         }
 
         if (textIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/text.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/text.gif");
             if (u != null) {
                 textIcon = new ImageIcon (u);
             }
         }
 
         if (zoominIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/zoomin.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/zoomin.gif");
             if (u != null) {
                 zoominIcon = new ImageIcon (u);
             }
         }
 
         if (zoomoutIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/zoomout.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/zoomout.gif");
             if (u != null) {
                 zoomoutIcon = new ImageIcon (u);
             }
         }
 
         if (blankIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/blank.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/blank.gif");
             if (u != null) {
                 blankIcon = new ImageIcon (u);
             }
         }
 
         if (helpIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/help.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/help.gif");
             if (u != null) {
                 helpIcon = new ImageIcon (u);
             }
         }
 
         if (copyIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/copy.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/copy.gif");
             if (u != null) {
                 copyIcon = new ImageIcon (u);
             }
         }
 
         if (cutIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/cut.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/cut.gif");
             if (u != null) {
                 cutIcon = new ImageIcon (u);
             }
         }
 
         if (pasteIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/paste.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/paste.gif");
             if (u != null) {
                 pasteIcon = new ImageIcon (u);
             }
         }
 
         if (largeHdfIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/hdf_large.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/hdf_large.gif");
             if (u != null) {
                 largeHdfIcon = new ImageIcon (u);
             }
         }
 
         if (previousIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/previous.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/previous.gif");
             if (u != null) {
                 previousIcon = new ImageIcon (u);
             }
         }
 
         if (nextIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/next.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/next.gif");
             if (u != null) {
                 nextIcon = new ImageIcon (u);
             }
         }
 
         if (firstIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/first.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/first.gif");
             if (u != null) {
                 firstIcon = new ImageIcon (u);
             }
         }
 
         if (lastIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/last.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/last.gif");
             if (u != null) {
                 lastIcon = new ImageIcon (u);
             }
         }
 
         if (chartIcon == null) {
-            u = cl.findResource("ncsa/hdf/view/icons/chart.gif");
+            u = classLoader.getResource("ncsa/hdf/view/icons/chart.gif");
             if (u != null) {
                 chartIcon = new ImageIcon (u);
             }
@@ -538,6 +527,18 @@ public class ViewProperties extends Properties
             load(fis);
             fis.close();
         } catch (Exception e) {;}
+
+
+        Enumeration enum = this.keys();
+        String theKey = null;
+        String fExt = null;
+        while (enum.hasMoreElements()) {
+            theKey = (String)enum.nextElement();
+            if (theKey.startsWith("module.fileformat")) {
+                fExt = theKey.substring(18);
+                FileFormat.addFileFormat(fExt, (String)get(theKey));
+            }
+        }
 
         String str = (String)get("users.guide");
 
@@ -570,13 +571,9 @@ public class ViewProperties extends Properties
         else
             workDir = rootDir;
 
-        str = (String)get("extension.h4");
+        str = (String)get("file.extension");
         if (str != null && str.length()>0)
-            h4Ext = str;
-
-        str = (String)get("extension.h5");
-        if (str != null && str.length()>0)
-            h5Ext = str;
+            fileExt = str;
 
         str = (String)get("font.size");
         if (str != null && str.length()>0)
@@ -654,11 +651,8 @@ public class ViewProperties extends Properties
         if (workDir != null)
             put("work.dir", workDir);
 
-        if (h4Ext != null)
-            put("extension.h4", h4Ext);
-
-        if (h5Ext != null)
-            put("extension.h5", h5Ext);
+        if (fileExt != null)
+            put("file.extension", fileExt);
 
         if (h4toh5 != null)
             put("h4toh5.converter", h4toh5);
@@ -706,6 +700,15 @@ public class ViewProperties extends Properties
         if (moduleName !=null && moduleName.length()>0)
             put("module.paletteview", moduleName);
 
+        //save the currenent supported fileformat
+        Enumeration keys = FileFormat.getFileFormatKeys();
+        String theKey = null;
+        while (keys.hasMoreElements()) {
+            theKey = (String)keys.nextElement();
+            FileFormat theformat = FileFormat.getFileFormat(theKey);
+            put("module.fileformat."+theKey, theformat.getClass().getName());
+        }
+
         try {
             FileOutputStream fos = new FileOutputStream(propertyFile);
             store(fos, "User properties modified on ");
@@ -739,11 +742,8 @@ public class ViewProperties extends Properties
     /** returns the font type */
     public static String getFontType()  { return fontType; }
 
-    /** gets the HDF5 file extension */
-    public static String getH5Extension() { return h5Ext; }
-
-    /** gets the HDF4 file extension */
-    public static String getH4Extension() { return h4Ext; }
+    /** gets the file extensions of supported file formats */
+    public static String getFileExtension() { return fileExt; }
 
     /** sets the font size */
     public static void setFontSize(int fsize) {
@@ -811,11 +811,8 @@ public class ViewProperties extends Properties
     /** set the path of the default work directory */
     public static void setWorkDir( String wDir) { workDir = wDir; }
 
-    /** set the HDF5 file extension */
-    public static void setH5Extension( String ext5) { h5Ext = ext5; }
-
-    /** set the HDF4 file extension */
-    public static void setH4Extension( String ext4) { h4Ext = ext4; }
+    /** set the file extension */
+    public static void setFileExtension( String ext) { fileExt = ext; }
 
     /** set the delimiter of data values */
     public static void setDataDelimiter(String delim) { delimiter = delim; }

@@ -293,7 +293,7 @@ implements TableView, ActionListener
         item.setEnabled(isEditable);
         menu.add(item);
 
-        item = new JMenuItem( "Update Change in File");
+        item = new JMenuItem( "Save Change to File");
         //item.setMnemonic(KeyEvent.VK_U);
         item.addActionListener(this);
         item.setActionCommand("Save dataset");
@@ -882,7 +882,7 @@ null, options, options[0]);
         {
             JOptionPane.showMessageDialog(
                 this,
-                ex.getMessage(),
+                ex,
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             dataValue = null;
@@ -974,7 +974,7 @@ null, options, options[0]);
                         toolkit.beep();
                         JOptionPane.showMessageDialog(
                         this,
-                        ex.getMessage(),
+                        ex,
                         getTitle(),
                         JOptionPane.ERROR_MESSAGE);
                     }
@@ -1029,7 +1029,7 @@ null, options, options[0]);
             toolkit.beep();
             JOptionPane.showMessageDialog(
                 this,
-                ex.getMessage(),
+                ex,
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             dataValue = null;
@@ -1126,7 +1126,7 @@ null, options, options[0]);
                         toolkit.beep();
                         JOptionPane.showMessageDialog(
                         this,
-                        ex.getMessage(),
+                        ex,
                         getTitle(),
                         JOptionPane.ERROR_MESSAGE);
                     }
@@ -1187,11 +1187,12 @@ null, options, options[0]);
         catch (Exception ex)
         {
             dataValue = null;
-            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         setTitle( frameTitle+ " - Page "+String.valueOf(idx+1)+ " of "+dims[selectedIndex[2]]);
+        table.clearSelection();
         updateUI();
     }
 
@@ -1272,7 +1273,7 @@ null, options, options[0]);
             toolkit.beep();
             JOptionPane.showMessageDialog(
                 this,
-                ex.getMessage(),
+                ex,
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
         }
@@ -1351,7 +1352,7 @@ null, options, options[0]);
                         toolkit.beep();
                         JOptionPane.showMessageDialog(
                         this,
-                        ex.getMessage(),
+                        ex,
                         getTitle(),
                         JOptionPane.ERROR_MESSAGE);
                         try { in.close(); } catch (IOException ex2) {}
@@ -1496,7 +1497,7 @@ null, options, options[0]);
             toolkit.beep();
             JOptionPane.showMessageDialog(
                 this,
-                ex.getMessage(),
+                ex,
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             return;

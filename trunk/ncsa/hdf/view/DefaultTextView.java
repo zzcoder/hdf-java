@@ -11,12 +11,15 @@
 
 package ncsa.hdf.view;
 
+import ncsa.hdf.view.*;
 import ncsa.hdf.object.*;
 import javax.swing.*;
+import java.util.*;
+import java.io.*;
 import javax.swing.border.*;
-import javax.swing.table.*;
-import java.awt.Component;
-import java.awt.image.BufferedImage;
+import java.awt.event.*;
+import java.awt.GridLayout;
+import java.awt.Font;
 
 /**
  * TextView displays an HDF string dataset in text.
@@ -25,7 +28,7 @@ import java.awt.image.BufferedImage;
  * @author Peter X. Cao
  */
 public class DefaultTextView extends JInternalFrame
-implements TextView
+implements TextView, ActionListener
 {
     /**
      * The main HDFView.
@@ -35,7 +38,7 @@ implements TextView
     /**
      * The Scalar Dataset.
      */
-    private final ScalarDS dataset;
+    private ScalarDS dataset;
 
     /**
      * GUI component: the text area used to dispaly the text content.
@@ -46,6 +49,11 @@ implements TextView
      * The string text.
      */
     private String[] text;
+
+    /**
+     * text areas to hold the text.
+     */
+    private JTextArea[] textAreas;
 
     /** the table to hold the text content */
     private JTable table;
@@ -59,18 +67,14 @@ implements TextView
      */
     public DefaultTextView(ViewManager theView)
     {
-        super("TextView", true, true, true, true);
-        setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
-        setFrameIcon(ViewProperties.getTextIcon());
-
         viewer = theView;
         text = null;
+        textAreas = null;
+        dataset = null;
 
         HObject obj = viewer.getTreeView().getCurrentObject();
-        if (!(obj instanceof ScalarDS)) {
-            viewer.showStatus("Data object is not a scalar dataset.");
+        if (!(obj instanceof ScalarDS))
             return;
-        }
 
         dataset = (ScalarDS)obj;
 
@@ -94,44 +98,97 @@ implements TextView
         }
 
         String fname = new java.io.File(dataset.getFile()).getName();
-        setTitle("TextView - "+fname+" - " +dataset.getPath()+dataset.getName());
+        this.setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
+        this.setTitle("TextView - "+fname+" - " +dataset.getPath()+dataset.getName());
+        this.setFrameIcon(ViewProperties.getTextIcon());
 
-        // setup 1D table to display the text content
-        table = new JTable(text.length, 1);
-        table.setRowHeight(80);
+        int size = text.length;
+        textAreas = new JTextArea[size];
+        JPanel txtPane = new JPanel();
+        txtPane.setLayout(new GridLayout(size, 1));
 
-        for (int i=0; i<text.length; i++)
-            table.setValueAt(text[i], i, 0);
+        Border txtBorder = new MatteBorder(0, 0, 1, 0, java.awt.Color.BLUE);
+        String ftype = ViewProperties.getFontType();
+        int fsize = ViewProperties.getFontSize();
+        Font font = null;
+        try { font = new Font(ftype, Font.PLAIN, fsize); }
+        catch (Exception ex) {font = null; }
+        for (int i=0; i<size; i++)
+        {
+            textAreas[i] = new JTextArea(text[i]);
+            textAreas[i].setEditable(!isReadOnly);
+            textAreas[i].setWrapStyleWord(true);
+            textAreas[i].setBorder(txtBorder);
+            txtPane.add(textAreas[i]);
+            if (font != null) textAreas[i].setFont(font);
+        }
 
-        TableColumn tableColumn = table.getColumnModel().getColumn(0);
-        tableColumn.setCellRenderer(new ScrollableTextAreaRenderer(table,new JTextArea()));
-        tableColumn.setCellEditor(new ScrollableTextAreaEditor(table,new JTextArea()));
-        table.setTableHeader(null);
+        ((JPanel)getContentPane()).add (new JScrollPane(txtPane));
 
-        ((JPanel)getContentPane()).add (new JScrollPane(table));
+        setJMenuBar(createMenuBar());
     }
 
-    private void setFrameIcon() {
-        int w=16, h=16;
-        ImageIcon icon = null;
-        BufferedImage image = new java.awt.image.BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+    public void actionPerformed(ActionEvent e)
+    {
+        Object source = e.getSource();
+        String cmd = e.getActionCommand();
 
-        for (int i=0; i<h; i++) {
-            for (int j=i>>1; j<w-(i>>1); j++) {
-                image.setRGB(j, i, 0xff0000);
+        if (cmd.equals("Close")) {
+            dispose();  // terminate the application
+        } else if (cmd.startsWith("Font size")) {
+            int fsize = Integer.parseInt(cmd.substring(10));
+            Font font = textAreas[0].getFont();
+            if (font != null) {
+                font = new Font(font.getName(), font.getStyle(), fsize);
+                for (int i=0; i<textAreas.length; i++)
+                    textAreas[i].setFont(font);
+            }
+        } else if (cmd.equals("Save to text file")) {
+            try { saveAsText(); }
+            catch (Exception ex) {
+                JOptionPane.showMessageDialog((JFrame)viewer,
+                        ex,
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
+    }
 
-        int offset = 0;
-        for (int i=0; i<h; i++) {
-            offset = i/2+i;
-            for (int j=offset; j<w-offset; j++) {
-                image.setRGB(j, i, 0);
-            }
+    private JMenuBar createMenuBar() {
+        JMenuBar bar = new JMenuBar();
+        JButton button;
+        boolean isEditable = !dataset.getFileFormat().isReadOnly();
+
+        JMenu menu = new JMenu("Text", false);
+        menu.setMnemonic('T');
+        bar.add(menu);
+
+        JMenuItem item = new JMenuItem( "Save To Text File");
+        //item.setMnemonic(KeyEvent.VK_T);
+        item.addActionListener(this);
+        item.setActionCommand("Save to text file");
+        menu.add(item);
+
+        menu.addSeparator();
+
+        JMenu subMenu = new JMenu( "Font Size");
+        for (int i=0; i<6; i++) {
+            int fsize = 10+2*i;
+            item = new JMenuItem( String.valueOf(fsize));
+            item.addActionListener(this);
+            item.setActionCommand("Font size "+fsize);
+            subMenu.add(item);
         }
+        menu.add(subMenu);
 
-        icon = new ImageIcon(image);
-        setFrameIcon(icon);
+        menu.addSeparator();
+
+        item = new JMenuItem( "Close");
+        item.addActionListener(this);
+        item.setActionCommand("Close");
+        menu.add(item);
+
+        return bar;
     }
 
     /** update dataset value in file.
@@ -144,21 +201,110 @@ implements TextView
         if (!(dataset instanceof ScalarDS))
             return;
 
+        boolean isValueChanged = false;
         String txt = null;
-        boolean isTextChanged = false;
-        for (int i=0; i<text.length; i++) {
-            txt = table.getValueAt(i, 0).toString();
+        for (int i=0; i<text.length; i++)
+        {
+            txt = textAreas[i].getText();
             if (!text[i].equals(txt)) {
-                isTextChanged = true;
+                isValueChanged = true;
                 text[i] = txt;
             }
         }
 
-        if (isTextChanged) {
-            try { dataset.write(); }  catch (Exception ex) {}
-             for (int i=0; i<text.length; i++)
-                table.setValueAt(text[i], i, 0);
+        if (!isValueChanged)
+            return;
+
+        int op = JOptionPane.showConfirmDialog(this,
+            "\""+ dataset.getName() +"\" has changed.\n"+
+            "you want to save the changes?",
+            getTitle(),
+            JOptionPane.YES_NO_OPTION);
+
+        if (op == JOptionPane.NO_OPTION)
+            return;
+
+        try { dataset.write(); }  catch (Exception ex) {}
+
+        // refresh text in memory. After writing, text is cut off to its max string length
+        for (int i=0; i<text.length; i++)
+            textAreas[i].setText(text[i]);
+
+    }
+
+    /** Save data as text. */
+    private void saveAsText() throws Exception
+    {
+        final JFileChooser fchooser = new JFileChooser(dataset.getFile());
+        fchooser.setFileFilter(DefaultFileFilter.getFileFilterText());
+        fchooser.changeToParentDirectory();
+        fchooser.setDialogTitle("Save Current Data To Text File --- "+dataset.getName());
+
+        File choosedFile = new File(dataset.getName()+".txt");;
+        fchooser.setSelectedFile(choosedFile);
+        int returnVal = fchooser.showSaveDialog(this);
+
+        if(returnVal != JFileChooser.APPROVE_OPTION)
+            return;
+
+        choosedFile = fchooser.getSelectedFile();
+        if (choosedFile == null)
+            return;
+
+        String fname = choosedFile.getAbsolutePath();
+
+        // check if the file is in use
+        List fileList = viewer.getTreeView().getCurrentFiles();
+        if (fileList != null)
+        {
+            FileFormat theFile = null;
+            Iterator iterator = fileList.iterator();
+            while(iterator.hasNext())
+            {
+                theFile = (FileFormat)iterator.next();
+                if (theFile.getFilePath().equals(fname))
+                {
+                     JOptionPane.showMessageDialog(this,
+                        "Unable to save data to file \""+fname+"\". \nThe file is being used.",
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
         }
+
+        if (choosedFile.exists())
+        {
+            int newFileFlag = JOptionPane.showConfirmDialog(this,
+                "File exists. Do you want to replace it ?",
+                this.getTitle(),
+                JOptionPane.YES_NO_OPTION);
+            if (newFileFlag == JOptionPane.NO_OPTION)
+                return;
+        }
+
+        PrintWriter out = new PrintWriter(
+            new BufferedWriter(new FileWriter(choosedFile)));
+
+        int rows = text.length;
+        for (int i=0; i<rows; i++)
+        {
+            out.print(textAreas[i].getText().trim());
+            out.println();
+            out.println();
+        }
+
+        out.flush();
+        out.close();
+
+        viewer.showStatus("Data save to: "+fname);
+
+        try {
+            RandomAccessFile rf = new RandomAccessFile(choosedFile, "r");
+            long size = rf.length();
+            rf.close();
+            viewer.showStatus("File size (bytes): "+size);
+        } catch (Exception ex) {}
     }
 
     public void dispose()
@@ -178,59 +324,4 @@ implements TextView
     public String[] getText()  {
         return text;
     }
-
-    private class ScrollableTextAreaEditor extends AbstractCellEditor
-    implements TableCellEditor {
-        private JScrollPane spScroll;
-        private JTextArea textArea;
-
-        public ScrollableTextAreaEditor(JTable table, JTextArea txtArea) {
-            textArea = txtArea;
-            spScroll = new JScrollPane(textArea);
-            spScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-            textArea.setLineWrap(true);
-            textArea.setWrapStyleWord(true);
-            textArea.setOpaque(true);
-            textArea.setEditable(true);
-        }
-
-        public Object getCellEditorValue() {
-            return ((JTextArea)textArea).getText();
-        }
-
-        public Component getTableCellEditorComponent(JTable table, Object value,
-            boolean isSelected, int row, int column) {
-            textArea.setText((value == null) ? "" : value.toString());
-            return spScroll;
-        }
-    }
-
-    private class ScrollableTextAreaRenderer extends JScrollPane
-        implements TableCellRenderer {
-        private JTextArea textArea;
-
-        public ScrollableTextAreaRenderer(JTable table,JTextArea txtArea) {
-            super(txtArea);
-            textArea = txtArea;
-            setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-            textArea.setLineWrap(true);
-            textArea.setWrapStyleWord(true);
-            textArea.setOpaque(true);
-        }
-
-        public Component getTableCellRendererComponent(JTable table, Object value,
-            boolean isSelected, boolean hasFocus, int row, int column) {
-            textArea.setText((value == null) ? "" : value.toString());
-            try { textArea.setCaretPosition(1);
-            } catch(Exception expGen) { }
-
-            if (hasFocus) {
-                setBorder(UIManager.getBorder("Table.focusCellHighlightBorder"));
-            } else {
-                setBorder(new EmptyBorder(1, 1, 1, 1));
-            }
-            return this;
-        }
-    }
-
 }
