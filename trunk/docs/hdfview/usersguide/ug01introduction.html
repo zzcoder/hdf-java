@@ -23,12 +23,15 @@ Chapter 1: Introduction</h1>
 
 <dl>
 <dt><a href="ug01introduction.html#ug01overview">1.1 Overview</a></dt>
-<dt><a href="ug01introduction.html#ug01features">1.2 Browsing Features</a></dt>
-<dt><a href="ug01introduction.html#ug01editing">1.3 Editing Features</a></dt>
-<dt><a href="ug01introduction.html#ug01limitations">1.4 Limitations</a></dt>
-<dt><a href="ug01introduction.html#ug01requirements">1.5 System Requirements</a></dt>
-<dt><a href="ug01introduction.html#ug01installation">1.6 Installing and Running HDFView</a></dt>
-<dt><a href="ug01introduction.html#ug1furtherinfo">1.7 For Further Information</a></dt>
+<dt><a href="ug01introduction.html#ug01features">1.2 Current Features</a></dt>
+<dl>
+<dt><a href="ug01introduction.html#ug01browsing">1.2.1 Browsing Features</a></dt>
+<dt><a href="ug01introduction.html#ug01editing">1.2.2 Editing Features</a></dt>
+</dl>
+<dt><a href="ug01introduction.html#ug01limitations">1.3 Limitations</a></dt>
+<dt><a href="ug01introduction.html#ug01requirements">1.4 System Requirements</a></dt>
+<dt><a href="ug01introduction.html#ug01installation">1.5 Installing and Running HDFView</a></dt>
+<dt><a href="ug01introduction.html#ug1furtherinfo">1.6 For Further Information</a></dt>
 </dl>
 
 <hr noshade size=1>
@@ -54,15 +57,17 @@ the structure of the HDF file in a tree with data groups and data objects
 represented as conventional folders and icons. Users can easily expand
 or collapse folders to navigate the hierarchical structure of an HDF file.
 
-<p>HDFView Version 1.0 is the first release. It does <b>not support editing</b>.
-Editing features will be added in the future release.
-
 <h2>
-<a NAME="ug01features"></a>1.2 Browsing Features</h2>
+<a NAME="ug01features"></a>1.2 Browsing/Editing Features</h2>
 
-HDFView Version 1.0 provides basic browsing features for HDF4 and HDF5 files. 
-The browsing features are listed below. Details of the features are discussed 
-in their related chapters.
+The previous version of HDFView, Version 1.0, provides basic browsing features 
+for HDF4 and HDF5 files. It does not have any editing feature. This version
+includes all the browsing features from verions 1.0, and also adds basic 
+editing features. The browsing and editing features of version 1.1 are listed 
+below. Details of the features are discussed in their related chapters.
+
+<h3>
+<a NAME="ug01browsing"></a>1.2.1 Browsing Features</h3>
 
 <ul>
 
@@ -96,21 +101,87 @@ horizontally or vertically, and showing palette for index RGB image.
 <li> 
 Allow to display any of three dimensions of a multiple dimension data set.
 
+<li>
+<font color="FF0000" size=-1><i>(new)</i></font>
+Allow users to specify stride of dataset selection.
+
+<li>
+<font color="FF0000" size=-1><i>(new)</i></font>
+Allow users to selection select fields/members of VData/compound dataet
+to display.
+
+<li>
+<font color="FF0000" size=-1><i>(new)</i></font>
+Display file information, such as file size, total number of datasets.
+
 </ul>
 
-<h2>
-<a NAME="ug01editing"></a>1.3 Editing Features</h2>
+<h3>
+<a NAME="ug01editing"></a>1.2.2 Editing Features
+<font color="FF0000" size=-1><i>(new)</i></font>
+</h3>
 
-HDFView version 1.0 does not support editing. Editing features will
-be included in the future release.
+<UL>
+
+<LI>
+Change and save user options such as recent files, delimiter, and font size.
+
+<LI>
+Save current file into the same type (HDF4 to HDF4, HDF5 to HDF5).
+
+<LI>
+Add/delete object in the file (no deletion for HDF4).
+
+<LI>
+Copy/paste object in the same file.
+
+<LI>
+Copy/paste object between files but the same file format (HDF4 to HDF4, HDF5 to HDF5).
+
+<LI>
+Add/delete a group and all its decendents (no deletion for HDF4).
+
+<LI>
+Modify and save data values in spreadsheet.
+
+<LI>
+Create new dataset with simple datatype such as SDS, atomic data array.
+
+<LI>
+Copy/paste data values of dataset.
+
+<LI>
+Save single dataset into ASCII text file.
+
+<LI>
+Save a single image to JPEG file.
+
+<LI>
+Add/delete attribute (no deletion for HDF4).
+
+<LI>
+Modify and save attibute value.
+
+</UL>
 
 <h2>
-<a NAME="ug01limitations"></a>1.4 Limitations</h2>
+<a NAME="ug01limitations"></a>1.3 Limitations</h2>
 
 The current implementation of HDFView has the following limitations.
 <ul>
-<li>
-HDFView does not support editing HDF files.
+
+<LI>
+HDFView does not support undo operation, all the changes will go
+to the physical file, and the editing results cannot be recovered.
+
+<LI>
+HDFView cannot create/modify Vdata or compound dataset.
+
+<LI>
+Deleting object/attribute in HDF4 is not supported.
+
+<LI>
+HDFView does not support conversion between HDF4 and HDf5. 
 
 <li>
 HDFView does not display dataset of nested compound datatypes.</li>
@@ -133,14 +204,14 @@ It runs only at JDK 1.3.x. It does not work with JDK 1.1.x or JDK 1.2.x.
 </ul>
 
 <h2>
-<a NAME="ug01requirements"></a>1.5 System Requirements</h2>
+<a NAME="ug01requirements"></a>1.4 System Requirements</h2>
 
-The HDFView is distributed in two forms: NoVM and VM bundled. The NoVM distribution
-does not contain the Java Runtime Environment (JRE) while the VM bundled distribution
+The HDFView is distributed in two forms: No_VM_bundled and VM_bundled. The No_VM_bundled distribution
+does not contain the Java Runtime Environment (JRE) while the VM_bundled distribution
 bundles the JRE.
 
 <p>
-To run HDFView with NoVM distribution, a Java 2 Virtual Machine, such as JDK1.3.1, 
+To run HDFView with No_VM_bundled distribution, a Java 2 Virtual Machine, such as JDK1.3.1, 
 or JRE1.3.1 is required. The HDFView does not compile and run with the JDK 1.1.x 
 or JDK 1.2.x.
  
@@ -155,7 +226,7 @@ Java<sup><font size=-2>TM</font></sup> 2 Platform for SGI</a>
 </ul>
 
 <p>
-HDFView 1.0 has been built and tested on the following platforms:
+HDFView 1.1 has been built and tested on the following platforms:
 
 <ul>
 <li>
@@ -178,7 +249,7 @@ visit website at <a href="http://hdf.ncsa.uiuc.edu/hdf-java-html/JNI/">
 http://hdf.ncsa.uiuc.edu/hdf-java-html/JNI/ </a>
 
 <h2>
-<a NAME="ug01installation" </a></a>1.6 Installation</h2>
+<a NAME="ug01installation" </a></a>1.5 Installation</h2>
 
 The source and pre-built binaries for HDFView can be downloaded from:
 <br>
@@ -186,7 +257,7 @@ The source and pre-built binaries for HDFView can be downloaded from:
 ftp://hdf.ncsa.uiuc.edu/hdf-java/hdfview/</a>
 
 <p>
-The pre-built binaries are available in two forms: NoVM, and VM bundled.
+The pre-built binaries are available in two forms: No_VM_bundled, and VM_bundled.
 
 <p>
 <center>
@@ -211,7 +282,7 @@ The pre-built binaries are available in two forms: NoVM, and VM bundled.
 <td>Irix 6.5</td>
 
 <td>[ <a href="ftp://ftp.ncsa.uiuc.edu/hdf-java/hdfview/irix/hdfview_install_irix_novm.bin">
-hdfview_install_irix_novm.bin 4 MB</a>]</td>
+hdfview_install_irix_no_vm_bundled.bin 4 MB</a>]</td>
 
 <td>[Not Available]</td>
 </tr>
@@ -220,39 +291,39 @@ hdfview_install_irix_novm.bin 4 MB</a>]</td>
 <td>Linux</td>
 
 <td>[ <a href="ftp://ftp.ncsa.uiuc.edu/hdf-java/hdfview/linux/hdfview_install_linux_novm.bin">
-hdfview_install_linux_novm.bin 4 MB</a>]</td>
+hdfview_install_linux_no_vm_bundled.bin 4 MB</a>]</td>
 
 <td>[ <a href="ftp://ftp.ncsa.uiuc.edu/hdf-java/hdfview/linux/hdfview_install_linux_vm.bin">
-hdfview_install_linux_vm.bin 26 MB</a>]</td>
+hdfview_install_linux_vm_bundled.bin 26 MB</a>]</td>
 </tr>
 
 <tr>
 <td>Solaris</td>
 
 <td>[ <a href="ftp://ftp.ncsa.uiuc.edu/hdf-java/hdfview/solaris/hdfview_install_solaris_novm.bin">
-hdfview_install_solaris_novm.bin 4 MB</a>]</td>
+hdfview_install_solaris_no_vm_bundled.bin 4 MB</a>]</td>
 
 <td>[ <a href="ftp://ftp.ncsa.uiuc.edu/hdf-java/hdfview/solaris/hdfview_install_solaris_vm.bin">
-hdfview_install_solaris_vm.bin 26 MB</a>]</td>
+hdfview_install_solaris_vm_bundled.bin 26 MB</a>]</td>
 </tr>
 
 <tr>
 <td>Windows 98/NT/2000</td>
 
 <td>[ <a href="ftp://ftp.ncsa.uiuc.edu/hdf-java/hdfview/win32/hdfview_install_windows_novm.bin">
-hdfview_install_windows_novm.bin 4 MB</a>]</td>
+hdfview_install_windows_no_vm_bundled.bin 4 MB</a>]</td>
 
 <td>[ <a href="ftp://ftp.ncsa.uiuc.edu/hdf-java/hdfview/win32/hdfview_install_windows_vm.bin">
-hdfview_install_windows_vm.bin 10 MB</a>]</td>
+hdfview_install_windows_vm_bundled.bin 10 MB</a>]</td>
 </tr>
 
 </table>
 </center>
 
-<h3>NoVM distribution</h3>
+<h3>No_VM_bundled distribution</h3>
 
-The NoVM binary distribution does not contain the Java 2 Runtime Environment. 
-The NoVM requires JDK1.3.x or JRE1.3.x. Before you install the NoVM distribution, 
+The No_VM_bundled binary distribution does not contain the Java 2 Runtime Environment. 
+The No_VM_bundled requires JDK1.3.x or JRE1.3.x. Before you install the No_VM_bundled distribution, 
 you must have JDK1.3.x or JRE 1.3.x installed on your machine. If you don't
 have a Java 2 VM, you must download and install one.
 
@@ -267,9 +338,9 @@ Java<sup><font size=-2>TM</font></sup> 2 Platform for SGI</a>
 </ul>
 
 
-<h3>VM bundled distribution</h3>
+<h3>VM_bundled distribution</h3>
 
-JRE1.3.1 is bundled in the VM bundled distribution. You do not need any aditional
+JRE1.3.1 is bundled in the VM_bundled distribution. You do not need any aditional
 software to run HDFView. 
 
 <p>
@@ -278,7 +349,7 @@ HDFView requires acceptance of the Java 2 Runtime Environment license agreement.
 Please read the 
 <a href="http://java.sun.com/j2se/1.3/jre/j2re-1_3_1_02-license.html">
 Java 2 Runtime Environment Binary Code License Agreement</a> before you
-download the VM bundled distribution. The installation program will <b>not</b>
+download the VM_bundled distribution. The installation program will <b>not</b>
 install HDFView unless you accept the Java 2 Runtime Environment 
 License Agreement.
 
@@ -301,7 +372,7 @@ installing, you can lanuch the HDFView from
 Start -> Program Files -> NCSA HDFView
 
 <h2>
-<a NAME="ug1furtherinfo"></a>1.7 For Further Information</h2>
+<a NAME="ug1furtherinfo"></a>1.6 For Further Information</h2>
 
 General information about HDF and HDF4 and HDF5 are available at:
 <a href="http://hdf.ncsa.uiuc.edu">http://hdf.ncsa.uiuc.edu</a>
@@ -329,7 +400,7 @@ of Illinois at Urbana-Champaign</a></font>
 <br><font face="arial,helvetica" size=-1>
 <a href="mailto:hdfhelp@ncsa.uiuc.edu">hdfhelp@ncsa.uiuc.edu</a></font>
 <p>
-<i><font color="#FF0000" size=-1>Updated 3/25/2002</font></i>
+<i><font color="#FF0000" size=-1>Updated 6/25/2002</font></i>
 <!- END OF FOOTER INFO -->
 
 </body>

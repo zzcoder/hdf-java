@@ -23,25 +23,29 @@
 <h1>
 Chapter 5: Table Viewer</h1>
 
-HDFView displays datasets in a two dimensional table, the TableView. HDFView 1.0
-does not allow you to change data values from the table. You can select rows and
-columns and plot the row/cloumn data in line plot.
+HDFView displays datasets in a two dimensional table, the TableView. The TableView
+allows you to view and chnage the values of a dataset of image. You can select rows 
+and columns and plot the row/cloumn data in line plot. HDFView 1.2 does not allow 
+you to change data values of Vdata or compound dataset. 
 
 <P>
-A dataset with three or more than three dimensions can be only shown two dimensions
-a time. You can select any two dimensions of the dataset to display and a third 
-dimension to flip the two dimension table along that dimension.
+If a dataset has three or more dimensions you can only view two dimensions
+a time. Using the <a href="images/dataset_open_as.gif"> Dataset Selection Dialog </a>, 
+you may select any two dimensions of the dataset to display and a third dimension 
+to flip the two dimension table along that dimension.
 
 <dl>
-<dt><a href="ug05spreadsheet.html#ug05display">5.1 1D or 2D Dataset</a></dt>
-<dt><a href="ug05spreadsheet.html#ug05subset">5.2 Subset and Higher Dimension Dataset</a></dt>
-<dt><a href="ug05spreadsheet.html#ug05lineplot">5.3 Column/Row Line Plot</a></dt>
+<dt><a href="ug05spreadsheet.html#ug05display">5.1 View 1D or 2D Dataset</a></dt>
+<dt><a href="ug05spreadsheet.html#ug05subset">5.2 View Subset and Higher Dimension Dataset</a></dt>
+<dt><a href="ug05spreadsheet.html#ug05lineplot">5.3 Display Column/Row Line Plot</a></dt>
+<dt><a href="ug05spreadsheet.html#ug05change">5.4 Change Data Value</a></dt>
+<dt><a href="ug05spreadsheet.html#ug05save">5.5 Save Data Value to Text File</a></dt>
 </dl>
 
 <hr noshade size=1>
 
 <h2>
-<a NAME="ug05display"></a>5.1 1D or 2D Dataset</h2>
+<a NAME="ug05display"></a>5.1 View 1D or 2D Dataset</h2>
 
 To open the entire content of dataset, double click on the dataset or select
 the dataset then choose "Open" command from the Object menu or popup menu.
@@ -59,7 +63,7 @@ You can change the order of the dimensions using "Open As" command.
 <br><b>Figure 5.1 Spreadsheet with 2D dataset</b></center>
 
 <h2>
-<a NAME="ug05subset"></a>5.2 Subset and Higher Dimension Dataset</h2>
+<a NAME="ug05subset"></a>5.2 View Subset and Higher Dimension Dataset</h2>
 
 For a three-dimensional dataset, the first two dimensions are displayed
 as 2D spreadsheet and the third dimension is chosen as the page number
@@ -78,7 +82,7 @@ default.
 
 <p>The following shows a 3D integer dataset with size of 100 x 50 x 10.
 The spreadsheet displays the dataset as 100 spreadsheets with 10 columns
-and 50 rows each. The current page number, 6, shows at the status bar.
+and 50 rows and sheet six is displayed.
 
 
 <center>
@@ -104,15 +108,12 @@ by dim[2]=depth, dim[1]=height and dim[0]=width.
 
 <p>The order of the dimensions can be changed, for example to make dim[0]
 the horizontal and dim[1] the vertical. When this is selected, the data
-will be reordered in memory, and displayed in the new layout. Users should
-be cautioned that this operation may consume a lot of memory.
+will be reordered in memory, and displayed in the new layout.
 
 <p>By default, a scalar dataset is displayed in a Spreadsheet. You can also display
 a dataset as an image. To display a dataset in image, click the check box
 of image in the selection dialog and select a predefined color table the the
-dataset.
-
-<p>This operation takes the data values of the dataset as values of an
+dataset. This operation takes the data values of the dataset as values of an
 indexed array, i.e., as indexes into a palette. The default palette will
 be used to create the image from the dataset if it does not have an attached
 palette. If the data values are not integers or have a range outside
@@ -120,7 +121,7 @@ palette. If the data values are not integers or have a range outside
 
 <h2>
 <a NAME="ug05lineplot"></a>
-5.3 Column/Row Line Plot</h2>
+5.3 Display Column/Row Line Plot</h2>
 
 Column or row data of numerical values can be displayed in a simple line
 plot. Select rows or columns by drag the mouse on the rows or column, respectively,
@@ -128,7 +129,7 @@ then click the chart icon: <img SRC="images/icon_chart.gif">.
 The row or column data is plotted against column or row index, respectively.
 HDFView displays up to 10 rows or columns a time.
 
-<p>The following figure shows that data of six columns are displayed in five
+<p>The following figure shows that data of five columns are displayed in five
 lines of different colors. The horizontal labels are the row index of the
 100 data points. The vertical labels are the ten points of equal data range
 with the maximum and minimum of the column data. The line legend is drawn at 
@@ -137,6 +138,105 @@ the right of the line plot with column names and line colors.
 <center>
 <p><img SRC="images/chart_line.gif" >
 <br><b>Figure 5.4 Line Plot.</b></center>
+
+<h2>
+<a NAME="ug05change"></a>
+5.4 Change Data Value</h2>
+
+You can change the values of a dataset in two ways: typing data into the table
+cell or paste data from system clipboard. HDFView will reject invalid data values. 
+For example, it will not accept a float point for the integer dataset. Table 5.1 
+lists the rules for entering data. <b><i>The change of data value is only in
+memory. It is not saved to file untill you choose "Update File" from the object
+menu, or when you dismiss the table, you will be asked if you want to save the change
+to the file</i></b>.
+
+<p>
+<center><table BORDER=2 COLS=2 WIDTH="100%" >
+<tr>
+<td><b>Data type</b></td>
+
+<td><b>Acceptable formats</b></td>
+</tr>
+
+<tr>
+<td>byte</td>
+
+<td>-127 to 128</td>
+</tr>
+
+<tr>
+<td>short</td>
+
+<td>-32768 to 32767</td>
+</tr>
+
+<tr>
+<td>int</td>
+
+<td>-2147483648 to 2147483647</td>
+</tr>
+
+<tr>
+<td>float, double</td>
+
+<td>Numbers of the form "99.9" or "8", and "-9.9" or "-9", and ".9" or
+"-.9". Numeric overflow or underflow will be detected.</td>
+</tr>
+
+<tr>
+<td>string</td>
+
+<td>A string longer than the stored value will be truncated.</td>
+</tr>
+
+<tr>
+<td>unsigned byte</td>
+
+<td>0 to 255</td>
+</tr>
+
+<tr>
+<td>unsigned short</td>
+
+<td>0 to 65535</td>
+</tr>
+
+<tr>
+<td>unsigned int</td>
+
+<td>0 to 4294967295</td>
+</tr>
+
+<caption ALIGN=BOTTOM><b>Table</b> <b>5.1 Data formats for Entering Data</b></caption>
+</table></center>
+
+<P>
+Data values can be copied with "Copy" and "Paste". Data can be copied within a 
+spreadsheet or between two spreadsheets. To copy data, you select the data cells 
+to copy, then choose the "Copy Data" command from the "Object" menu. Select where 
+to copy the data to and select the "Paste Data" command.
+
+<P>
+You can also copy and paste between HDFView and other applications. To copy external
+data from other application such as a text editor or MS Spreadsheet, select and 
+copy data from the application, then paste the data to the HDFView TableView, 
+<i>vice versa</i>. 
+
+
+<h2>
+<a NAME="ug05save"></a>
+5.5 Save Data Value to Text File</h2>
+Writing table data into ASCII file is nearly transparent. Select "Save As Text" from 
+the object menu and the file dialog pops up for you to enter the name of the file. 
+The data values of the current table will be written to the file. The data values
+are separated by the data delimiter specified by the user options. <B><I>The text
+file does not contain any datatype and dataspace information. HDFView cannot read
+back the text file</I></B>.
+
+<center>
+<p><img SRC="images/menu_option.gif" >
+<br><b>Figure 5.5 User Options</b></center>
 
 
 <!-- BEGIN OF FOOTER INFO -->
@@ -152,7 +252,7 @@ of Illinois at Urbana-Champaign</a></font>
 <br><font face="arial,helvetica" size=-1>
 <a href="mailto:hdfhelp@ncsa.uiuc.edu">hdfhelp@ncsa.uiuc.edu</a></font>
 <p>
-<i><font color="#FF0000" size=-1>Updated 3/25/2002</font></i>
+<i><font color="#FF0000" size=-1>Updated 6/25/2002</font></i>
 <!- END OF FOOTER INFO -->
 
 </body>
