@@ -84,23 +84,33 @@ implements ActionListener, ListSelectionListener
         functionList.addListSelectionListener(this);
 
         String[] tmpStrs = {
-            "The filter by lower and upper bounds. \nx=a if x<a; x=b if x>b.",
-            "The absolute value of a number, the number without its sign.",
-            "Linear function.",
-            "The result of a number raised to power of a.",
-            "The exponential number e (i.e., 2.718...) raised to the power of x.",
-            "The natural logarithm (base e) of x.",
-            "The logarithm of x to the base of a, a must be an integer greater than zero.",
-            "The trigonometric sine of angle x in radians.",
-            "The trigonometric cosine of angle x in radians.",
-            "The trigonometric tangent of angle x in radians."};
+            "The filter by lower and upper bounds. x=a if x<a; x=b if x>b."+
+                "\ne.g.\n x=5, [0, 127]=5\n x=-5, [0, 127]=0\n x=255, [0, 127]=127.",
+            "The absolute value of a number, the number without its sign."+
+                "\ne.g.\n abs(5)=5\n abs(-5)=5.",
+            "Linear function."+
+                "\ne.g.\n a=5, b=2, x=2.5, a+b*x=10.",
+            "The result of a number raised to power of a."+
+                "\ne.g.\n x=2.5, a=10, pow(x, a)=9536.743\n x=25, a=0.5, pow(x, a)=5.",
+            "The exponential number e (i.e., 2.718...) raised to the power of x."+
+                "\ne.g.\n exp(5.0)=148.41316\n exp(5.5)=244.69193",
+            "The natural logarithm (base e) of x."+
+                "\ne.g.\n ln(20.085541)=3\n ln(10)=2.302585",
+            "The logarithm of x to the base of a, \"a\" must be an integer > 0."+
+                "\ne.g.\n log(10, 2)=3.321928\n log(2, 10)=0.30103",
+            "The trigonometric sine of angle x in radians."+
+                "\ne.g.\n sin(0.523599)=0.5\n sin(1.047198)=0.866025",
+            "The trigonometric cosine of angle x in radians."+
+                "\ne.g.\n cos(0.523599)=0.866025\n cos(1.047198)=0.5",
+            "The trigonometric tangent of angle x in radians."+
+                "\ne.g.\n tan(0.785398)=1\n tan(1.047198)=1.732051"};
 
         functionDescription = tmpStrs;
 
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(10,5,5,5));
-        contentPane.setPreferredSize(new Dimension(400, 250));
+        contentPane.setPreferredSize(new Dimension(400, 300));
 
         JButton okButton = new JButton("   Ok   ");
         okButton.setActionCommand("Ok");
@@ -146,7 +156,7 @@ implements ActionListener, ListSelectionListener
         centerP.add(tmpP, BorderLayout.EAST);
 
         centerP.setBorder(new TitledBorder("Converting Data With A Mathematic Function"));
-        centerP.add(infoArea = new JTextArea(2, 50), BorderLayout.SOUTH);
+        centerP.add(infoArea = new JTextArea(5, 80), BorderLayout.SOUTH);
         infoArea.setEditable(false);
         infoArea.setLineWrap(true);
         infoArea.setWrapStyleWord(true);
@@ -174,16 +184,16 @@ implements ActionListener, ListSelectionListener
         {
             if (index==0 || index == 2)
             {
-                a = Double.parseDouble(aField.getText());
-                b = Double.parseDouble(bField.getText());
+                a = Double.parseDouble(aField.getText().trim());
+                b = Double.parseDouble(bField.getText().trim());
             }
             else if (index == 3)
             {
-                a = Double.parseDouble(aField.getText());
+                a = Double.parseDouble(aField.getText().trim());
             }
             else if (index == 6)
             {
-                a = Integer.parseInt(aField.getText());
+                a = Integer.parseInt(aField.getText().trim());
                 if (a <=0)
                 {
                     toolkit.beep();

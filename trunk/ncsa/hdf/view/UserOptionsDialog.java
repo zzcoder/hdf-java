@@ -36,7 +36,8 @@ implements ActionListener
     private final ViewManager viewer;
 
     private String H4toH5Path;
-    private JTextField H4toH5Field, UGField, workField, h4ExtField, h5ExtField;
+    private JTextField H4toH5Field, UGField, workField, h4ExtField, h5ExtField,
+            maxMemberField, startMemberField;
     private JComboBox fontSizeChoice, fontTypeChoice, delimiterChoice;
     private String rootDir, workDir;
 
@@ -102,10 +103,10 @@ implements ActionListener
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(8,8));
         contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
-        contentPane.setPreferredSize(new Dimension(350, 400));
+        contentPane.setPreferredSize(new Dimension(400, 450));
 
         JPanel centerP = new JPanel();
-        centerP.setLayout(new GridLayout(5,1,8,15));
+        centerP.setLayout(new GridLayout(6,1,8,15));
         centerP.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
 
         JPanel p0 = new JPanel();
@@ -173,6 +174,26 @@ implements ActionListener
         p0.add(new JLabel("Data Delimiter:  "), BorderLayout.WEST);
         p0.add(delimiterChoice, BorderLayout.CENTER);
         tborder = new TitledBorder("Text Data Input/Output");
+        tborder.setTitleColor(Color.darkGray);
+        p0.setBorder(tborder);
+        centerP.add(p0);
+
+        p0 = new JPanel();
+        p0.setLayout(new GridLayout(1,2,8,8));
+        p00 = new JPanel();
+        p00.setLayout(new BorderLayout());
+        p00.add(new JLabel("Max Members: "), BorderLayout.WEST);
+
+        p00.add(maxMemberField=new JTextField(String.valueOf(
+                ViewProperties.getMaxMembers())), BorderLayout.CENTER);
+        p0.add(p00);
+        p00 = new JPanel();
+        p00.setLayout(new BorderLayout());
+        p00.add(new JLabel("Start Member: "), BorderLayout.WEST);
+        p00.add(startMemberField=new JTextField(String.valueOf(
+                ViewProperties.getStartMembers())), BorderLayout.CENTER);
+        p0.add(p00);
+        tborder = new TitledBorder("Max Number of Objects to Load");
         tborder.setTitleColor(Color.darkGray);
         p0.setBorder(tborder);
         centerP.add(p0);
@@ -317,6 +338,16 @@ implements ActionListener
 
         // set data delimiter
         ViewProperties.setDataDelimiter((String)delimiterChoice.getSelectedItem());
+
+        try {
+            int maxsize = Integer.parseInt(maxMemberField.getText());
+            ViewProperties.setMaxMembers(maxsize);
+        } catch (Exception ex) {}
+
+        try {
+            int startsize = Integer.parseInt(startMemberField.getText());
+            ViewProperties.setStartMembers(startsize);
+        } catch (Exception ex) {}
 
     }
 

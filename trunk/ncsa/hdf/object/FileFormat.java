@@ -59,6 +59,23 @@ public abstract class FileFormat extends File
      */
     private static final Map FileList = new Hashtable(10);
 
+    /**
+     * Current Java application such as HDFView cannot handle files
+     * with large number of objects such 1,000,000 objects.
+     * max_members defines the maximum number of objects will be loaded
+     * into memory.
+     */
+    private int max_members = 10000; // 10,000 by default
+
+
+    /**
+     * Current Java application such as HDFView cannot handle files
+     * with large number of objects such 1,000,000 objects.
+     * start_members defines the starting index of objects will be loaded
+     * into memory.
+     */
+    private int start_members = 0; // 0 by default
+
     static {
         Class file_class = null;
         Object hdffile = null;
@@ -339,5 +356,29 @@ public abstract class FileFormat extends File
      * @param obj the data object to delete.
      */
     public abstract void delete(HObject obj) throws Exception;
+
+    /**
+     * Current Java application such as HDFView cannot handle files
+     * with large number of objects such 1,000,000 objects.
+     * setMaxMembers() sets the maximum number of objects will be loaded
+     * into memory.
+     *
+     * @param n the maximum number of objects to load into memory
+     */
+    public void setMaxMembers(int n) { max_members = n; }
+
+    /**
+     * Current Java application such as HDFView cannot handle files
+     * with large number of objects such 1,000,000 objects.
+     * setStartMember() sets the starting index of objects will be loaded
+     * into memory.
+     *
+     * @param n the maximum number of objects to load into memory
+     */
+    public void setStartMembers(int idx) { start_members = idx; }
+
+    protected int getMaxMembers() { return max_members; }
+
+    protected int getStartMembers() { return start_members; }
 
 }

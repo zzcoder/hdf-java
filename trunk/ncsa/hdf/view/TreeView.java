@@ -194,6 +194,8 @@ implements ActionListener
 
         viewer.startBusyIndicator();
         try {
+            fileFormat.setMaxMembers(ViewProperties.getMaxMembers());
+            fileFormat.setStartMembers(ViewProperties.getStartMembers());
             fileFormat.open();
         } finally { viewer.stopBusyIndicator(); }
 

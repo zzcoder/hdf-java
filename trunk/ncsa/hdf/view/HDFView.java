@@ -270,7 +270,9 @@ implements ViewManager, HyperlinkListener
                         is3D = (ds.getRank() > 2);
 
                         // disable 3D components for true color image
-                        if (c instanceof ImageObserver &&
+                        if (c instanceof TextObserver)
+                            is3D = false;
+                        else if (c instanceof ImageObserver &&
                             hObj instanceof ScalarDS && is3D)
                         {
                             ScalarDS sd = (ScalarDS)hObj;
@@ -1473,18 +1475,20 @@ implements ViewManager, HyperlinkListener
 
     public void dispose()
     {
-        try { super.dispose(); }
-        catch (Exception ex ) {}
-
         // save the current user properties into property file
         try { props.save() ; }
+        catch (Exception ex) {}
+
+        try { closeAllWindow(); }
         catch (Exception ex) {}
 
         // close all open files
         treeView.closeFile();
 
-        System.exit(0);
+        try { super.dispose(); }
+        catch (Exception ex ) {}
 
+        System.exit(0);
     }
 
     /** Returns a list of current open file */

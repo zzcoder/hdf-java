@@ -704,7 +704,7 @@ implements ActionListener, ItemListener, HyperlinkListener
             tsize = 1 << (idx-1);
         }
 
-        if (tsize==8 && !isH5)
+        if (tsize==8 && !isH5 && tclass == Datatype.CLASS_INTEGER)
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,

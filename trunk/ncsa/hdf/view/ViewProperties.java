@@ -84,6 +84,22 @@ public class ViewProperties extends Properties
     /** default HDF4 file extension */
     private static String h5Ext = "hdf, h5, hdf5";
 
+    /**
+     * Current Java application such as HDFView cannot handle files
+     * with large number of objects such 1,000,000 objects.
+     * max_members defines the maximum number of objects will be loaded
+     * into memory.
+     */
+    private static int max_members = 10000; // 10,000 by default
+
+    /**
+     * Current Java application such as HDFView cannot handle files
+     * with large number of objects such 1,000,000 objects.
+     * start_members defines the starting index of objects will be loaded
+     * into memory.
+     */
+    private static int start_members = 0; // 0 by default
+
     private static Icon hdfIcon, h4Icon, h5Icon, largeHdfIcon,
         blankIcon, helpIcon,
         fileopenIcon, filesaveIcon, filenewIcon, filecloseIcon,
@@ -466,6 +482,22 @@ public class ViewProperties extends Properties
             fontType = str.trim();
         }
 
+        str = (String)get("max.members");
+        if (str != null && str.length()>0)
+        {
+            try { max_members = Integer.parseInt(str); }
+            catch (Exception ex) {}
+        }
+
+/*
+        str = (String)get("start.members");
+        if (str != null && str.length()>0)
+        {
+            try { start_members = Integer.parseInt(str); }
+            catch (Exception ex) {}
+        }
+*/
+
         // load the most recent file list from the property file
         if (mrf != null)
         {
@@ -516,8 +548,11 @@ public class ViewProperties extends Properties
 
         put("font.size", String.valueOf(fontSize));
 
-        if (fontType != null)
-            put("font.type", fontType);
+        if (fontType != null) put("font.type", fontType);
+
+        put("max.members", String.valueOf(max_members));
+
+//        put("start.members", String.valueOf(start_members));
 
         if (mrf != null)
         {
@@ -624,4 +659,46 @@ public class ViewProperties extends Properties
 
     /** set the delimiter of data values */
     public static void setDataDelimiter(String delim) { delimiter = delim; }
+
+    /**
+     * Current Java application such as HDFView cannot handle files
+     * with large number of objects such 1,000,000 objects.
+     * setMaxMembers() sets the maximum number of objects will be loaded
+     * into memory.
+     *
+     * @param n the maximum number of objects to load into memory
+     */
+    public static void setMaxMembers(int n) { max_members = n; }
+
+    /**
+     * Current Java application such as HDFView cannot handle files
+     * with large number of objects such 1,000,000 objects.
+     * setStartMember() sets the starting index of objects will be loaded
+     * into memory.
+     *
+     * @param n the maximum number of objects to load into memory
+     */
+    public static void setStartMembers(int idx)
+    {
+        if (idx < 0) idx = 0;
+
+        start_members = idx;
+    }
+
+    /**
+     * Current Java application such as HDFView cannot handle files
+     * with large number of objects such 1,000,000 objects.
+     * getMaxMembers() returns the maximum number of objects will be loaded
+     * into memory.
+     */
+    public static int getMaxMembers() { return max_members; }
+
+    /**
+     * Current Java application such as HDFView cannot handle files
+     * with large number of objects such 1,000,000 objects.
+     * getStartMembers() returns the starting index of objects will be loaded
+     * into memory.
+     */
+    public static int getStartMembers() { return start_members; }
+
 }

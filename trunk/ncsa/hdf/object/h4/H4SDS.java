@@ -458,27 +458,23 @@ public class H4SDS extends ScalarDS
             dims[i] = (long)idims[i];
         }
 
-        // select only two dimension a time,
+        selectedIndex[0] = 0;
+        selectedIndex[1] = 1;
+        selectedIndex[2] = 2;
+
         // select only two dimension a time,
         if (rank == 1)
         {
-            selectedIndex[0] = 0;
             selectedDims[0] = dims[0];
         }
-        else if (rank == 2)
+
+        if (rank > 1)
         {
-            selectedIndex[0] = 0;
-            selectedIndex[1] = 1;
             selectedDims[0] = dims[0];
-            selectedDims[1] = dims[1];
-        }
-        else if (rank > 2)
-        {
-            selectedIndex[0] = rank-2; // columns
-            selectedIndex[1] = rank-1; // rows
-            selectedIndex[2] = rank-3;
-            selectedDims[rank-1] = dims[rank-1];
-            selectedDims[rank-2] = dims[rank-2];
+            if (isText)
+                selectedDims[1] = 1;
+            else
+                selectedDims[1] = dims[1];
         }
     }
 

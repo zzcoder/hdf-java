@@ -540,7 +540,20 @@ public class H4File extends FileFormat
             n = HDFLibrary.Vlone(fid, refs, n);
         } catch (HDFException ex) { n = 0; }
 
-        for (int i=0; i<n; i++)
+        rootGroup.setNumberOfMembersInFile(n);
+
+        int i0 = Math.max(0, getStartMembers());
+        int i1 = getMaxMembers();
+        if (i1 >= n)
+        {
+            i1 = n;
+            i0 = 0; // load all members
+        }
+        i1 += i0;
+        i1 = Math.min(i1, n);
+
+        //Iterate through the file to see members of the group
+        for ( int i = i0; i < i1; i++)
         {
             ref = refs[i];
             H4Group g = getVGroup(ref, HObject.separator, rootGroup, false);
@@ -694,8 +707,20 @@ public class H4File extends FileFormat
             pgroup.close(gid);
         }
 
-        // interate through all the objects under this group
-        for (int i=0; i<nelems; i++)
+        pgroup.setNumberOfMembersInFile(nelems);
+
+        int i0 = Math.max(0, getStartMembers());
+        int i1 = getMaxMembers();
+        if (i1 >= nelems)
+        {
+            i1 = nelems;
+            i0 = 0; // load all members
+        }
+        i1 += i0;
+        i1 = Math.min(i1, nelems);
+
+        //Iterate through the file to see members of the group
+        for ( int i = i0; i < i1; i++)
         {
             tag = tags[i];
             ref = refs[i];
@@ -1020,12 +1045,7 @@ public class H4File extends FileFormat
             !vClass[0].equalsIgnoreCase(HDFConstants.RIGATTRCLASS) &&
             !vClass[0].equalsIgnoreCase(HDFConstants.HDF_CDF))
         {
-                vgroup = new H4Group(
-                    this,
-                    objName[0],
-                    path,
-                    pgroup,
-                    oid);
+            vgroup = new H4Group( this, objName[0], path, pgroup, oid);
         }
 
         return vgroup;
