@@ -1734,6 +1734,21 @@ implements ViewManager, ActionListener, HyperlinkListener
         if (newFile == null)
             return;
 
+        // copy attributes of the root group
+        if (newFile instanceof H5File)
+        {
+            Group srcGroup = (Group) ((DefaultMutableTreeNode)root).getUserObject();
+            Group dstGroup = (Group) ((DefaultMutableTreeNode)newFile.getRootNode()).getUserObject();
+            int srcID = srcGroup.open();
+            int dstID = dstGroup.open();
+            try {
+                ((H5File)newFile).copyAttributes(srcID, dstID);
+            } catch (Exception ex) {}
+
+            srcGroup.close(srcID);
+            dstGroup.close(dstID);
+        }
+
         TreeNode pnode = newFile.getRootNode();
         pasteObject(pnode, newFile);
     }

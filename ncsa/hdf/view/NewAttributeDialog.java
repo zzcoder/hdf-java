@@ -12,6 +12,9 @@
 package ncsa.hdf.view;
 
 import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.text.*;
+import javax.swing.text.html.*;
 import java.awt.Frame;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -25,10 +28,12 @@ import java.awt.event.*;
 import javax.swing.event.*;
 import javax.swing.border.*;
 import ncsa.hdf.object.*;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 /** NewAttributeDialog displays components for adding new attribute. */
 public class NewAttributeDialog extends JDialog
-implements ActionListener
+implements ActionListener, ItemListener, HyperlinkListener
 {
     /** the object which the attribute to be attached to */
     private HObject hObject;
@@ -46,6 +51,8 @@ implements ActionListener
 
     /** TextField for entering the length of the data array or string. */
     private JTextField lengthField;
+
+    private JLabel arrayLengthLabel;
 
     /** flag to indicate if the dataset is created */
     private boolean isAttributeCreated;
@@ -79,10 +86,11 @@ implements ActionListener
         typeChoice.add("unsigned short (16-bit)");
         typeChoice.add("unsigned int (32-bit)");
         typeChoice.add("long (64-bit)");
-        typeChoice.add("float (native)");
-        typeChoice.add("double (native)");
+        typeChoice.add("float");
+        typeChoice.add("double");
         if (hObject.getFileFormat() instanceof H5File)
             typeChoice.add("object reference");
+        typeChoice.addItemListener(this);
 
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
@@ -110,7 +118,7 @@ implements ActionListener
         p2.setLayout(new GridLayout(4,1,3,3));
         p2.add(new JLabel("Name: "));
         p2.add(new JLabel("Type: "));
-        p2.add(new JLabel("Length: "));
+        p2.add(arrayLengthLabel= new JLabel("Max String Length: "));
         p2.add(new JLabel("Value: "));
         p.add("West", p2);
 
@@ -162,6 +170,21 @@ implements ActionListener
         {
             if (helpDialog != null)
                 helpDialog.hide();
+        }
+    }
+
+    public void itemStateChanged(ItemEvent e)
+    {
+        Object source = e.getSource();
+
+        if (source.equals(typeChoice))
+        {
+            int idx = typeChoice.getSelectedIndex();
+
+            if (idx == 0)
+                arrayLengthLabel.setText("Max String Length: ");
+            else
+                arrayLengthLabel.setText("Array Size: ");
         }
     }
 
@@ -448,13 +471,12 @@ implements ActionListener
                 string_length = Integer.parseInt(lengthField.getText());
             } catch (Exception e) { string_length = 0; }
 
-            strValue += " ";
-            string_length = Math.max(string_length, strValue.length());
-
+            //string_length = Math.max(string_length, strValue.length());
             if (string_length <=0)
                 string_length = Attribute.DEFAULT_STRING_ATTRIBUTE_LENGTH;
 
-            lengthField.setText(String.valueOf(string_length));
+            if (strValue.length() > string_length)
+                strValue = strValue.substring(0, string_length);
 
             tclass = Datatype.CLASS_STRING;
             tsize = string_length;
@@ -509,47 +531,42 @@ implements ActionListener
         contentPane.add (tmpP, BorderLayout.SOUTH);
 
         JEditorPane infoPane = new JEditorPane();
-        infoPane.setContentType("text/html");
         infoPane.setEditable(false);
         JScrollPane editorScrollPane = new JScrollPane(infoPane);
         contentPane.add (editorScrollPane, BorderLayout.CENTER);
 
-        StringBuffer buff = new StringBuffer();
-        buff.append("<html>");
-        buff.append("<body>");
+        try {
+            URL url= null, url2=null, url3=null;
+            String rootPath = ViewProperties.getViewRoot();
 
-        buff.append("<center><h1>How to Create a New Attribute</h1></center>");
-        buff.append("<p>The following instruction expalins how to create a new ");
-        buff.append("attribute.");
+            try {
+                url = new URL("file:"+rootPath+"/lib/jhdfview.jar");
+            } catch (java.net.MalformedURLException mfu) {;}
 
-        buff.append("<h2>1) Attribute name</h2>");
-        buff.append("The name of the new attibute must follow the HDF name ");
-        buff.append("rules (similar to the unix name rules). The name must not ");
-        buff.append("contain any path. For example, /attribute1 or attributes/attribute1");
-        buff.append("are not accepted.");
+            try {
+                url2 = new URL("file:"+rootPath+"/");
+            } catch (java.net.MalformedURLException mfu) {;}
 
-        buff.append("<h2>2) Datatype</h2>");
-        buff.append("A list of predefined datatypea are given. You can only select ");
-        buff.append("a datatype from the list. Other datatypes are not supported. ");
-        buff.append("The size specifies the size of a single data point in bits.");
+            try {
+                url3 = new URL("file:"+rootPath+"/src/");
+            } catch (java.net.MalformedURLException mfu) {;}
 
-        buff.append("<h2>3) Array length</h2>");
-        buff.append("Length field is used to specify the length of array or string. ");
-        buff.append("You can create an attribute with a single data point or ");
-        buff.append("one dimension array. Two or more dimensions are not supported.");
-        buff.append("Attributes must be relatively small, such as 64KB. You should ");
-        buff.append("not set the .attribute array too large.");
+            URL uu[] = {url, url2, url3};
+            URLClassLoader cl = new URLClassLoader(uu);
+            URL u = cl.findResource("ncsa/hdf/view/NewAttrHelp.html");
 
-        buff.append("<h2>4) Attribute value</h2>");
-        buff.append("Value field is used to enter the value of the attribute. ");
-        buff.append("If the attribute is an array, values of the array must be ");
-        buff.append("separated by a comma, for example, 12, 3, 4, 5. Other delimiters ");
-        buff.append(" such as, space, tab, colon, are not acceptable.");
-
-        buff.append("</body>");
-        buff.append("</html>");
-
-        infoPane.setText(buff.toString());
+            infoPane.setPage(u);
+            infoPane.addHyperlinkListener(this);
+        } catch (Exception e) {
+            infoPane.setContentType("text/html");
+            StringBuffer buff = new StringBuffer();
+            buff.append("<html>");
+            buff.append("<body>");
+            buff.append("ERROR: cannot load help information.");
+            buff.append("</body>");
+            buff.append("</html>");
+            infoPane.setText(buff.toString());
+       }
 
         Point l = helpDialog.getOwner().getLocation();
         l.x += 50;
@@ -557,6 +574,25 @@ implements ActionListener
         helpDialog.setLocation(l);
         helpDialog.validate();
         helpDialog.pack();
+    }
+
+    public void hyperlinkUpdate(HyperlinkEvent e)
+    {
+        if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
+        {
+            JEditorPane pane = (JEditorPane) e.getSource();
+
+            if (e instanceof HTMLFrameHyperlinkEvent)
+            {
+                HTMLFrameHyperlinkEvent  evt = (HTMLFrameHyperlinkEvent)e;
+                HTMLDocument doc = (HTMLDocument)pane.getDocument();
+                doc.processHTMLFrameHyperlinkEvent(evt);
+            } else
+            {
+                try { pane.setPage(e.getURL()); }
+                catch (Throwable t)  {}
+            }
+        }
     }
 
     /** return the new attribute created. */
