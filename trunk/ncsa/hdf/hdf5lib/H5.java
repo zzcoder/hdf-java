@@ -349,7 +349,7 @@ public class H5 {
      *
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
-    public synchronized static native int H5dont_atexit() throws HDF5LibraryException;
+    private synchronized static native int H5dont_atexit() throws HDF5LibraryException;
 
     /**
      *  H5get_libversion retrieves the major, minor, and release

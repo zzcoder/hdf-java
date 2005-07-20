@@ -94,9 +94,9 @@ implements Serializable, DataFormat
      * @param name the name of the data object.
      * @param path the full path of the data object.
      */
-    public HObject(FileFormat fileFormat, String name, String path)
+    public HObject(FileFormat theFileFormat, String theName, String thePath)
     {
-        this(fileFormat, name, path, null);
+        this(theFileFormat, theName, thePath, null);
     }
 
     /**
@@ -110,26 +110,28 @@ implements Serializable, DataFormat
      * @param path the full path of the data object.
      * @param oid the unique identifier of this data object.
      */
-    public HObject(FileFormat fileFormat, String name, String path, long[] oid)
+    public HObject(FileFormat theFileFormat, String theName, String thePath, long[] oid)
     {
-        this.fileFormat = fileFormat;
-/*
-        int theFID = -1;
-        try { theFID = fileFormat.open(); }
-        catch (Exception ex) { theFID = -1; }
-        this.fid = theFID;
-*/
-
+        this.fileFormat = theFileFormat;
         this.fid = fileFormat.getFID();
 
-        if (path!=null && !path.endsWith(separator))
-            path += separator;
+        // file name is packed in the full path
+        if (theName == null && thePath !=null)
+        {
+            if (thePath.endsWith(HObject.separator))
+                thePath = thePath.substring(0, thePath.length()-1);
+            theName = thePath.substring(thePath.lastIndexOf(HObject.separator)+1);
+            thePath = thePath.substring(0, thePath.lastIndexOf(HObject.separator));
+        }
 
-        this.path = path;
+        if (thePath!=null && !thePath.endsWith(separator))
+            thePath += separator;
+
+        this.path = thePath;
         this.oid = oid;
 
         this.filename = fileFormat.getFilePath();
-        this.name = name;
+        this.name = theName;
     }
 
     // implementing FileFormat

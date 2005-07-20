@@ -821,25 +821,6 @@ public class H5ScalarDS extends ScalarDS
     }
 
 
-    // Implementing ScalarDS
-    public void convertFromUnsignedC()
-    {
-        if (data != null && isUnsigned && !unsignedConverted)
-        {
-            data = convertFromUnsignedC(data);
-            unsignedConverted = true;
-        }
-    }
-
-    // Implementing ScalarDS
-    public void convertToUnsignedC()
-    {
-        if (data != null && isUnsigned)
-        {
-            data = convertToUnsignedC(data);
-        }
-    }
-
     /**
      * Creates a new dataset.
      * @param name the name of the dataset to create.

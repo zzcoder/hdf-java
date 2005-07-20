@@ -64,6 +64,9 @@ implements ActionListener, ItemListener, HyperlinkListener
 
     private JDialog helpDialog;
 
+    private JRadioButton  h4SdAttrRadioButton;
+    private JRadioButton  h4GrAttrRadioButton;
+
     /** Constructs NewAttributeDialog with specified object (dataset, group, or
      *  image) which the new attribute to be attached to.
      *  @param owner the owner of the input
@@ -119,10 +122,28 @@ implements ActionListener, ItemListener, HyperlinkListener
         p2.add(new JLabel("Value: "));
         p.add("West", p2);
 
+        JPanel typePane = new JPanel();
+        typePane.setLayout(new BorderLayout());
+        JPanel h4GattrPane = new JPanel();
+        h4GattrPane.setLayout(new GridLayout(1,2,3,3));
+        ButtonGroup bg = new ButtonGroup();
+        JRadioButton grAttr = new JRadioButton("GR");
+        JRadioButton sdAttr = new JRadioButton("SD");
+        bg.add(sdAttr);
+        bg.add(grAttr);
+        sdAttr.setSelected(true);
+        h4GattrPane.add(sdAttr);
+        h4GattrPane.add(grAttr);
+        typePane.add(typeChoice, BorderLayout.CENTER);
+        typePane.add(h4GattrPane, BorderLayout.EAST);
+        h4GrAttrRadioButton = grAttr;
+        h4SdAttrRadioButton = sdAttr;
+
         p2 = new JPanel();
         p2.setLayout(new GridLayout(4,1,3,3));
         p2.add(nameField=new JTextField("",30));
-        p2.add(typeChoice);
+        if (!isH5 && (obj instanceof Group) && ((Group)obj).isRoot()) p2.add(typePane);
+        else p2.add(typeChoice);
         p2.add(lengthField=new JTextField("1"));
         p2.add(valueField=new JTextField("0"));
         p.add("Center", p2);
@@ -506,7 +527,21 @@ implements ActionListener, ItemListener, HyperlinkListener
         Attribute attr = new Attribute(attrName, datatype, dims);
         attr.setValue(value);
 
-        try { hObject.writeMetadata(attr); }
+        try {
+            if (!isH5 &&
+                (hObject instanceof Group) &&
+                ((Group)hObject).isRoot() &&
+                h4GrAttrRadioButton.isSelected())
+            {
+                // don't find a good way to write HDF4 global
+                // attribute. Use the isExisted to separate the
+                // global attribute is GR or SD
+                hObject.getFileFormat().writeAttribute(hObject, attr, false);
+                if (hObject.getMetadata() == null)
+                    hObject.getMetadata().add(attr);
+            } else
+                hObject.writeMetadata(attr);
+        }
         catch (Exception ex )
         {
             JOptionPane.showMessageDialog(this,

@@ -41,7 +41,7 @@ implements TreeView, ActionListener {
     /**
      * The super root of tree: all open files start at this root.
      */
-    private final TreeNode root;
+    private final DefaultMutableTreeNode root;
 
     /**
      * The tree which holds file structures.
@@ -1389,6 +1389,7 @@ implements TreeView, ActionListener {
         String dataViewName = null;
 
         JInternalFrame theFrame = (JInternalFrame)viewer.getDataView(d);
+
         if (isDefaultDisplay) {
 
             if (theFrame != null) {
@@ -1625,30 +1626,35 @@ implements TreeView, ActionListener {
             boolean hasFocus)
         {
             HObject theObject = (HObject)((DefaultMutableTreeNode)value).getUserObject();
-            if (theObject instanceof ScalarDS)
+
+            if (theObject instanceof Dataset)
             {
-                ScalarDS sd = (ScalarDS)theObject;
-                if (sd.isImage())
-                {
-                    if (sd.hasAttribute()) leafIcon = imageIconA;
-                    else leafIcon = imageIcon;
-                }
-                else if (sd.isText())
-                {
-                    if (sd.hasAttribute()) leafIcon = textIconA;
-                    else leafIcon = textIcon;
-                }
-                else if (sd.hasAttribute())
+                if (((Dataset)theObject).hasAttribute())
                     leafIcon = datasetIconA;
                 else
                     leafIcon = datasetIcon;
-            }
-            else if (theObject instanceof CompoundDS)
-            {
-                if (theObject.hasAttribute())
-                    leafIcon = tableIconA;
-                else
-                    leafIcon = tableIcon;
+
+                if (theObject instanceof ScalarDS)
+                {
+                    ScalarDS sd = (ScalarDS)theObject;
+                    if (sd.isImage())
+                    {
+                        if (sd.hasAttribute()) leafIcon = imageIconA;
+                        else leafIcon = imageIcon;
+                    }
+                    else if (sd.isText())
+                    {
+                        if (sd.hasAttribute()) leafIcon = textIconA;
+                        else leafIcon = textIcon;
+                    }
+                }
+                else if (theObject instanceof CompoundDS)
+                {
+                    if (theObject.hasAttribute())
+                        leafIcon = tableIconA;
+                    else
+                        leafIcon = tableIcon;
+                }
             }
             else if (theObject instanceof Group)
             {

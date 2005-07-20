@@ -95,7 +95,7 @@ public abstract class FileFormat extends File
             FileFormat fileformat = (FileFormat)fileclass.newInstance();
             if (fileformat != null)
                 FileFormat.addFileFormat("HDF", fileformat);
-        } catch (Throwable err ) {err.printStackTrace();}
+        } catch (Throwable err ) {;}
 
         // add default HDF5 modules
         try {
@@ -103,7 +103,7 @@ public abstract class FileFormat extends File
             FileFormat fileformat = (FileFormat)fileclass.newInstance();
             if (fileformat != null)
                 FileFormat.addFileFormat("HDF5", fileformat);
-        } catch (Throwable err ) {err.printStackTrace();}
+        } catch (Throwable err ) {;}
     }
 
     /** Construct a FileFormat with given file name */
@@ -560,5 +560,4 @@ public abstract class FileFormat extends File
 
         return fileformats;
     }
-
 }

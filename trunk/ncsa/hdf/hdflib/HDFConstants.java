@@ -218,6 +218,7 @@ public class HDFConstants
     public static final int DFIL_LINE   = 1;  /* Scan Line Interlacing */
     public static final int DFIL_PLANE  = 2;  /* Scan Plane Interlacing */
 
+    public static final int SD_UNLIMITED  = 0;
     public static final int SD_FILL  = 0;
     public static final int SD_NOFILL  = 0x100;
     public static final int SD_DIMVAL_BW_COMP  = 1;

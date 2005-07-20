@@ -80,7 +80,7 @@ public class ViewProperties extends Properties
     private static String workDir = "user.dir";
 
     /** default HDF4 file extension */
-    private static String fileExt = "hdf, h4, hdf4, h5, hdf5, he5";
+    private static String fileExt = "hdf, h4, hdf4, h5, hdf5, he4, he5";
 
     private static ClassLoader extClassLoader=null;
 

@@ -9,7 +9,7 @@
  *                                                                          *
  ****************************************************************************/
 
- package ncsa.hdf.object;
+package ncsa.hdf.object;
 
 /**
  * Datatype encapsulates information of a datatype.
@@ -20,35 +20,33 @@
  */
 public abstract class Datatype
 {
-    /** integer datatype: byte, short, int, long */
-    final static public int CLASS_INTEGER = 0;
+    /* native for datatype size, order, and sign */
+    final static public int NATIVE = -1;
 
-    /** float datatype: float, double */
-    final static public int CLASS_FLOAT = 1;
+    /* class of datatypes */
+    final static public int CLASS_NO_CLASS         = -1;
+    final static public int CLASS_INTEGER          = 0;
+    final static public int CLASS_FLOAT            = 1;
+    final static public int CLASS_CHAR             = 2;
+    final static public int CLASS_STRING           = 3;
+    final static public int CLASS_BITFIELD         = 4;
+    final static public int CLASS_OPAQUE           = 5;
+    final static public int CLASS_COMPOUND         = 6;
+    final static public int CLASS_REFERENCE        = 7;
+    final static public int CLASS_ENUM             = 8;
+    final static public int CLASS_VLEN             = 9;
+    final static public int CLASS_ARRAY            = 10;
 
-    /** char datatype: char */
-    final static public int CLASS_CHAR = 2;
+    /* byte order of datatype */
+    final static public int ORDER_LE         = 0;
+    final static public int ORDER_BE         = 1;
+    final static public int ORDER_VAX        = 2;
+    final static public int ORDER_NONE       = 3;
 
-    /** string datatype: String */
-    final static public int CLASS_STRING = 3;
-
-    /** object reference: for HDF5 object reference*/
-    final static public int CLASS_REFERENCE = 7;
-
-    /** unknown datatype*/
-    final static public int CLASS_ERROR = -1;
-
-    /** default data size, endian, order */
-    final static public int NATIVE = 10;
-
-    /** big endian byte order*/
-    final static public int ORDER_BE = 11;
-
-    /** little endian byte order */
-    final static public int ORDER_LE = 12;
-
-    /** unsigned integer*/
-    final static public int SIGN_NONE = 13;
+    /* sign of integers */
+    final static public int SIGN_NONE         = 0;
+    final static public int SIGN_2            = 1;
+    final static public int NSGN             = 2;
 
     /**
      * The class of the datatype.
@@ -119,7 +117,7 @@ public abstract class Datatype
      */
     public Datatype(int type)
     {
-        this(CLASS_ERROR, NATIVE, NATIVE, NATIVE);
+        this(CLASS_NO_CLASS, NATIVE, NATIVE, NATIVE);
 
         nativeID = type;
         fromNative(nativeID);
@@ -196,7 +194,50 @@ public abstract class Datatype
     /**
      *  Returns a short text description of this datatype.
      */
-    public abstract String getDatatypeDescription();
+    public String getDatatypeDescription()
+    {
+        String description = "Unknown";
+
+        switch (datatypeClass)
+        {
+            case CLASS_INTEGER:
+                if (datatypeSign == SIGN_NONE)
+                    description = String.valueOf(datatypeSize*8) + "-bit unsigned integer";
+                else
+                    description = String.valueOf(datatypeSize*8) + "-bit integer";
+                break;
+            case CLASS_FLOAT:
+                description = String.valueOf(datatypeSize*8) + "-bit floating-point";
+                break;
+            case CLASS_STRING:
+                description = "String";
+                break;
+            case CLASS_REFERENCE:
+                description = "Object reference";
+                break;
+            case CLASS_BITFIELD:
+                description = "Bitfield";
+                break;
+            case CLASS_ENUM:
+                description = "enum";
+                break;
+            case CLASS_ARRAY:
+                description = "Array";
+                break;
+            case CLASS_COMPOUND:
+                description = "Compound ";
+                break;
+            case CLASS_VLEN:
+                description = "Variable-length";
+                break;
+            default:
+                description = "Unknown";
+                break;
+        }
+
+        return description;
+    }
+
 
     /**
      *  Checks if this datatype is an unsigned integer.

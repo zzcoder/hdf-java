@@ -92,7 +92,7 @@ public class H5Datatype extends Datatype
             tsize = H5.H5Tget_size(tid);
         } catch (Exception ex)
         {
-            datatypeClass = CLASS_ERROR;
+            datatypeClass = CLASS_NO_CLASS;
         }
 
         if (tclass == HDF5Constants.H5T_INTEGER)
