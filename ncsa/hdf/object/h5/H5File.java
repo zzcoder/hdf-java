@@ -356,6 +356,30 @@ public class H5File extends FileFormat
         return root;
     }
 
+    /** reload the sub-tree structure. Sube-calsses need to replace it */
+    public void reloadTree(Group g)
+    {
+        if (fid < 0 || rootNode == null || g==null) return;
+
+        HObject theObj = null;
+        DefaultMutableTreeNode theNode = null;
+
+        if (g.equals(rootNode.getUserObject()))
+            theNode = rootNode;
+        else {
+            Enumeration enum = rootNode.breadthFirstEnumeration();
+            while(enum.hasMoreElements()) {
+                theNode = (DefaultMutableTreeNode)enum.nextElement();
+                theObj = (HObject)theNode.getUserObject();
+                if (g.equals(theObj)) break;
+            }
+        }
+
+        theNode.removeAllChildren();
+
+        depth_first(theNode);
+    }
+
     // implementign FileFormat
     public TreeNode copy(HObject srcObj, Group dstGroup) throws Exception
     {
@@ -717,8 +741,7 @@ public class H5File extends FileFormat
         DefaultMutableTreeNode theNode = null;
 
         MutableTreeNode theRoot = (MutableTreeNode)file.getRootNode();
-        if (theRoot == null)
-            return null;
+        if (theRoot == null) return null;
 
         Enumeration enum = ((DefaultMutableTreeNode)theRoot).breadthFirstEnumeration();
         while(enum.hasMoreElements())
@@ -823,7 +846,6 @@ public class H5File extends FileFormat
                 continue;
             }
 */
-
             try
             {
                 byte[] ref_buf = null;
@@ -855,7 +877,7 @@ public class H5File extends FileFormat
                 long l = HDFNativeData.byteToLong(ref_buf, 0);
                 oid = new long[1];
                 oid[0] = l; // save the object ID
-            } catch (HDF5Exception ex) {;}
+            } catch (HDF5Exception ex) {System.out.println(ex);}
 
             if (oid == null)
                 continue; // do the next one, if the object is not identified.

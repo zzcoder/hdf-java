@@ -189,6 +189,25 @@ public abstract class ScalarDS extends Dataset
         unsignedConverted = false;
     }
 
+    // Implementing ScalarDS
+    public void convertFromUnsignedC()
+    {
+        if (data != null && isUnsigned && !unsignedConverted)
+        {
+            data = convertFromUnsignedC(data);
+            unsignedConverted = true;
+        }
+    }
+
+    // Implementing ScalarDS
+    public void convertToUnsignedC()
+    {
+        if (data != null && isUnsigned)
+        {
+            data = convertToUnsignedC(data);
+        }
+    }
+
     /**
      * Returns the palette of this scalar dataset or null if palette does not exist.
      * <p>
@@ -272,17 +291,6 @@ public abstract class ScalarDS extends Dataset
     {
         return isUnsigned;
     }
-    /**
-     * convert value of this dataset to unsigned C integer.
-     * @see ncsa.hdf.object.Dataset#convertToUnsignedC(Object data_in)
-     */
-    public abstract void convertToUnsignedC();
-
-    /**
-     * convert unsigned C value of this dataset to appropriate Java integer.
-     * @see ncsa.hdf.object.Dataset#convertFromUnsignedC(Object data_in)
-     */
-    public abstract void convertFromUnsignedC();
 
     public double[] getImageDataRange()
     {

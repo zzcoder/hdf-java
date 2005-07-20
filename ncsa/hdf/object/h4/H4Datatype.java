@@ -109,7 +109,7 @@ public class H4Datatype extends Datatype
                 datatypeSize = 8;
                 break;
             default:
-                datatypeClass = CLASS_ERROR;
+                datatypeClass = CLASS_NO_CLASS;
                 break;
         }
     }

@@ -348,6 +348,8 @@ public abstract class Dataset extends HObject
         return data;
     }
 
+    public final void setData(Object d)  { data =d; }
+
     /**
      * Removes the data value of this dataset in memory.
      */

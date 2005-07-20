@@ -186,8 +186,7 @@ implements ActionListener, MetaDataView
         dialog.show();
 
         Attribute attr = dialog.getAttribute();
-        if (attr == null)
-            return null;
+        if (attr == null) return null;
 
         String rowData[] = new String[4]; // name, value, type, size
         boolean isUnsigned = false;
@@ -641,16 +640,17 @@ implements ActionListener, MetaDataView
             bPanel.add(b);
             b.setEnabled(!theFile.isReadOnly());
         }
+/*
         else
         {
-            // cannot add attribute to HDF4 froup
+            // cannot add attribute to HDF4 root group
             if (hObject instanceof Group &&
                 ((Group)hObject).isRoot())
             {
                 b.setEnabled(false);
             }
         }
-
+*/
         topPanel.add(bPanel, BorderLayout.EAST);
 
         panel.add(topPanel, BorderLayout.NORTH);

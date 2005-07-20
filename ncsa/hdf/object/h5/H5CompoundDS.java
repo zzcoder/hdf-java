@@ -989,7 +989,7 @@ public class H5CompoundDS extends CompoundDS
         {
             pgroup.addToMemberList(dataset);
 
-            if (data == null) {
+            if (data != null) {
                 dataset.init();
                 dataset.write(data);
             }

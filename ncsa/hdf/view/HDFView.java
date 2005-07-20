@@ -180,6 +180,9 @@ public class HDFView extends JFrame
     /** to add and display url */
     private JComboBox urlBar;
 
+    /** dialog to display srb files */
+    private JDialog srbFileDialog;
+
     /**
      * Constructs the HDFView with a given root directory, where the
      * HDFView is installed, and opens the given file in the viewer.
@@ -198,6 +201,7 @@ public class HDFView extends JFrame
         rootDir = root;
         currentFile = null;
         frameOffset = 0;
+        srbFileDialog = null;
         toolkit = Toolkit.getDefaultToolkit();
         ViewProperties.loadExtClass();
 
@@ -425,6 +429,14 @@ public class HDFView extends JFrame
         item.addActionListener(this);
         item.setActionCommand("Open file read-only");
         fileMenu.add(item);
+
+        item = new JMenuItem( "Open from SRB");
+        item.setMnemonic(KeyEvent.VK_S);
+        item.addActionListener(this);
+        item.setActionCommand("Open from srb");
+        fileMenu.add(item);
+        try { Class.forName("ncsa.hdf.srb.SRBFileDialog"); }
+        catch (Exception ex) {item.setEnabled(false);}
 
         fileMenu.addSeparator();
 
@@ -919,28 +931,28 @@ public class HDFView extends JFrame
                     if (tmpFile.exists() && tmpFile.isDirectory())
                     {
                         currentDir = filename;
-                        filename = chooseLocalFile();
+                        filename = openLocalFile();
                     }
                 }
             }
             else if (cmd.equals("Open file read-only"))
             {
                 fileAccessID = FileFormat.READ;
-                filename = chooseLocalFile();
+                filename = openLocalFile();
             }
             else if (cmd.startsWith("Open file://"))
             {
                 filename = cmd.substring(12);
             }
             else
-                filename = chooseLocalFile();
+                filename = openLocalFile();
 
             if (filename == null)
                 return;
 
             if (filename.startsWith("http://") || filename.startsWith("ftp://") )
             {
-                filename = loadRemoteFile(filename);
+                filename = openRemoteFile(filename);
             }
 
             if (filename == null ||
@@ -967,6 +979,19 @@ public class HDFView extends JFrame
                     toolkit.beep();
                     JOptionPane.showMessageDialog( this, msg, getTitle(), JOptionPane.ERROR_MESSAGE);
                 }
+            }
+        }
+        else if (cmd.equals ("Open from srb"))
+        {
+            try { openFromSRB(); }
+            catch (Exception ex)
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(
+                    this,
+                    ex,
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
             }
         }
         else if (cmd.startsWith("New HDF"))
@@ -1797,7 +1822,6 @@ public class HDFView extends JFrame
     public static void main( String args[] )
     {
         String rootDir = System.getProperty("user.dir");
-
 /*
 try {
 Group g = (Group)FileFormat.getHObject("e:\\hdf-files\\test.h5#//");
@@ -1810,6 +1834,7 @@ if (g != null) {
 }
 } catch (Exception ex) {System.out.println(ex);}
 */
+
         boolean backup = false;
         File tmpFile = null;
         int i = 0;
@@ -1858,7 +1883,7 @@ if (g != null) {
      }
 
      /** choose local file */
-     private String chooseLocalFile()
+     private String openLocalFile()
      {
          JFileChooser fchooser = new JFileChooser(currentDir);
          fchooser.setFileFilter(DefaultFileFilter.getFileFilter());
@@ -1881,7 +1906,7 @@ if (g != null) {
 
 
      /** load remote file and save it to local temporary directory*/
-     private String loadRemoteFile(String urlStr)
+     private String openRemoteFile(String urlStr)
      {
          String localFile = null;
 
@@ -1957,4 +1982,28 @@ if (g != null) {
 
          return localFile;
      }
+
+     /** open file from SRB server */
+     private void openFromSRB()
+     {
+         if (srbFileDialog == null)
+         {
+            Class theClass = null;
+            try { theClass = Class.forName("ncsa.hdf.srb.SRBFileDialog"); }
+            catch (Exception ex) {theClass = null;showStatus(ex.toString());}
+            if (theClass == null) return;
+
+            try {
+                boolean mode = true;
+                Class[] paramClass = {Class.forName("java.awt.Frame")};
+                Constructor constructor = theClass.getConstructor(paramClass);
+                Object[] paramObj = {(java.awt.Frame)this};
+                srbFileDialog = (JDialog)constructor.newInstance(paramObj);
+            } catch (Exception ex) { srbFileDialog = null;showStatus(ex.toString()); }
+            if (srbFileDialog == null) return;
+         }
+
+        srbFileDialog.show();
+     }
+
 }

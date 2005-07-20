@@ -148,7 +148,6 @@ public abstract class Group extends HObject
                       }
                     }
                 }
-
             }
         }
 

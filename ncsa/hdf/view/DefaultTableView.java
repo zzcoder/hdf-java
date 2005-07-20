@@ -146,16 +146,16 @@ implements TableView, ActionListener
         isDisplayTypeChar = (isDisplayChar.booleanValue() && dataset.getDatatype().getDatatypeSize()==1);
 
         // create the table and its columnHeader
-        if (dataset instanceof ScalarDS)
-        {
-            this.setFrameIcon(ViewProperties.getDatasetIcon());
-            table = createTable((ScalarDS)dataset);
-        }
-        else if (dataset instanceof CompoundDS)
+        if (dataset instanceof CompoundDS)
         {
             isTransposed = false; // disable transpose for compound dataset
             this.setFrameIcon(ViewProperties.getTableIcon());
             table = createTable((CompoundDS)dataset);
+        }
+        else /*if (dataset instanceof ScalarDS) */
+        {
+            this.setFrameIcon(ViewProperties.getDatasetIcon());
+            table = createTable(dataset);
         }
 
         if (table == null)
@@ -965,7 +965,7 @@ null, options, options[0]);
     /**
      * Creates a JTable to hold a scalar dataset.
      */
-    private JTable createTable(ScalarDS d)
+    private JTable createTable(Dataset d)
     {
         JTable theTable = null;
         int rows=0, cols=0;
@@ -1003,7 +1003,9 @@ null, options, options[0]);
         dataValue = null;
         try {
             d.getData();
-            d.convertFromUnsignedC();
+            if (d instanceof ScalarDS) {
+                ((ScalarDS)d).convertFromUnsignedC();
+            }
             dataValue = d.getData();
         }
         catch (Exception ex)

@@ -392,7 +392,7 @@ public class H4File extends FileFormat
      * @return true if successful and false otherwise.
      */
     public void writeAttribute(HObject obj, Attribute attr,
-        boolean attrExisted) throws HDFException
+        boolean isSDglobalAttr) throws HDFException
     {
         String attrName = attr.getName();
         int attrType = attr.getType().toNative();
@@ -426,6 +426,18 @@ public class H4File extends FileFormat
             // add null to the end to get rid of the junks
             bval[(strValue.length() - 1)] = 0;
             attrValue = bval;
+        }
+
+        // April 05: use sdid and grid to add global attributes at the root group
+        H4Group g = null;
+        if ( (obj instanceof H4Group) &&
+             (g = (H4Group)obj).isRoot())
+        {
+            if (isSDglobalAttr)
+                HDFLibrary.SDsetattr(sdid, attrName, attrType, count, attrValue);
+            else
+                HDFLibrary.GRsetattr(grid, attrName, attrType, count, attrValue);
+            return;
         }
 
         int id = obj.open();

@@ -604,26 +604,6 @@ public class H4SDS extends ScalarDS
         return palette;
     }
 
-
-    // Implementing ScalarDS
-    public void convertFromUnsignedC()
-    {
-        if (data != null && isUnsigned && !unsignedConverted)
-        {
-            data = convertFromUnsignedC(data);
-            unsignedConverted = true;
-        }
-    }
-
-    // Implementing ScalarDS
-    public void convertToUnsignedC()
-    {
-        if (data != null && isUnsigned)
-        {
-            data = convertToUnsignedC(data);
-        }
-    }
-
     /**
      * Creates a new dataset.
      * @param name the name of the dataset to create.
@@ -711,11 +691,18 @@ public class H4SDS extends ScalarDS
             // when we create a new dataset with unlimited dimension,
             // we have to write some data into the dataset or otherwise
             // the current dataset has zero dimensin size.
+
+            // comment out the following lines because SDwritedata fails when
+            // try to write data into a zero dimension array. 05/25/05
+            // don't know why teh code was first put here ????
+            /**
             if (idims[0] == 0 && data == null)
             {
                 idims[0] = (int)dims[0];
                 data = new byte[tsize*vsize];
             }
+            */
+
         } catch (Exception ex) { throw (ex); }
 
         if (sdsid < 0)
