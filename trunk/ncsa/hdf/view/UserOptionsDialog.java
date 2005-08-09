@@ -15,6 +15,7 @@ import javax.swing.*;
 import java.io.*;
 import java.util.*;
 import java.awt.event.*;
+import javax.swing.event.*;
 import javax.swing.border.*;
 import java.awt.Color;
 import java.awt.Frame;
@@ -27,7 +28,8 @@ import java.awt.Point;
 import java.awt.FileDialog;
 
 /** UserOptionsDialog displays components for choosing user options. */
-public class UserOptionsDialog extends JDialog implements ActionListener
+public class UserOptionsDialog extends JDialog
+implements ActionListener, ListSelectionListener
 {
     /**
      * The main HDFView.
@@ -70,6 +72,12 @@ public class UserOptionsDialog extends JDialog implements ActionListener
     /** a list of palette view implementation. */
     private static Vector paletteViews;
 
+    private JList srbJList;
+
+    private JTextField srbFields[];
+
+    private Vector srbVector;
+
     /** constructs an UserOptionsDialog.
      * @param view The HDFView.
      */
@@ -82,6 +90,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener
         isFontChanged = false;
         isUserGuideChanged = false;
         isWorkDirChanged = false;
+        srbJList = null;
         fontSize = ViewProperties.getFontSize();
         workDir = ViewProperties.getWorkDir();
         if (workDir == null) workDir = rootDir;
@@ -91,6 +100,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener
         tableViews = ViewProperties.getTableViewList();
         imageViews = ViewProperties.getImageViewList();
         paletteViews = ViewProperties.getPaletteViewList();
+        srbVector = ViewProperties.getSrbAccount();
 
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(8,8));
@@ -101,6 +111,11 @@ public class UserOptionsDialog extends JDialog implements ActionListener
 
         tabbedPane.addTab("General Setting", createGeneralOptionPanel());
         tabbedPane.addTab("Default Module", createModuleOptionPanel());
+
+        try {
+             Class.forName("ncsa.hdf.srb.SRBFileDialog");
+             tabbedPane.addTab("SRB Connection", createSrbConnectionPanel());
+        } catch (Exception ex) {;}
 
         tabbedPane.setSelectedIndex(0);
 
@@ -316,6 +331,87 @@ public class UserOptionsDialog extends JDialog implements ActionListener
         return moduleP;
     }
 
+    private JPanel createSrbConnectionPanel() {
+        JPanel p = new JPanel();
+        p.setLayout(new BorderLayout(5,5));
+        TitledBorder tborder = new TitledBorder("SRB Connections");
+        tborder.setTitleColor(Color.darkGray);
+        p.setBorder(tborder);
+
+        DefaultListModel listModel = new DefaultListModel();
+        srbJList = new JList(listModel);
+        srbJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        srbJList.addListSelectionListener(this);
+
+        srbFields = new JTextField[7];
+
+        if (srbVector!= null) {
+            int n=srbVector.size();
+
+            String srbaccount[] = null;
+            for (int i=0; i<n; i++) {
+                srbaccount = (String[])srbVector.get(i);
+                if (srbaccount != null)
+                    listModel.addElement(srbaccount[0]);
+            }
+        }
+
+        JPanel cp = new JPanel();
+        cp.setLayout(new BorderLayout(5,5));
+
+        JPanel cpc = new JPanel();
+        cpc.setLayout(new GridLayout(7,1,5,5));
+        cpc.add(srbFields[0] = new JTextField());
+        cpc.add(srbFields[1] = new JTextField());
+        cpc.add(srbFields[2] = new JTextField());
+        cpc.add(srbFields[3] = new JTextField());
+        cpc.add(srbFields[4] = new JTextField());
+        cpc.add(srbFields[5] = new JTextField());
+        cpc.add(srbFields[6] = new JTextField());
+        cp.add(cpc, BorderLayout.CENTER);
+
+        JPanel cpl = new JPanel();
+        cpl.setLayout(new GridLayout(7,1,5,5));
+        cpl.add(new JLabel("Host Machine: ", JLabel.RIGHT));
+        cpl.add(new JLabel("Port Number: ", JLabel.RIGHT));
+        cpl.add(new JLabel("User Name: ", JLabel.RIGHT));
+        cpl.add(new JLabel("Password: ", JLabel.RIGHT));
+        cpl.add(new JLabel("Home Directory: ", JLabel.RIGHT));
+        cpl.add(new JLabel("mdas Domain Name: ", JLabel.RIGHT));
+        cpl.add(new JLabel(" Default Storage Resource: ", JLabel.RIGHT));
+        cp.add(cpl, BorderLayout.WEST);
+
+        JPanel lp = new JPanel();
+        lp.setLayout(new BorderLayout(5,5));
+        JPanel lpb = new JPanel();
+        JButton add = new JButton("Add");
+        add.addActionListener(this);
+        add.setActionCommand("Add srb connsction");
+        lpb.add(add);
+        JButton del = new JButton("Delete");
+        del.addActionListener(this);
+        del.setActionCommand("Delete srb connsction");
+        lpb.add(del);
+        lp.add(lpb, BorderLayout.SOUTH);
+        JScrollPane listScroller = new JScrollPane(srbJList);
+        listScroller.setPreferredSize(new Dimension(120, 200));
+        lp.add(listScroller, BorderLayout.CENTER);
+
+        /* padding */
+        JPanel sp = new JPanel();
+        sp.setLayout(new GridLayout(3,1,5,15));
+        sp.add(new JLabel(" "));
+
+        p.add(cp, BorderLayout.CENTER);
+        p.add(lp, BorderLayout.WEST);
+        p.add(sp, BorderLayout.SOUTH);
+
+        if (srbVector !=null)
+            srbJList.setSelectedIndex(0);
+
+        return p;
+    }
+
     public void actionPerformed(ActionEvent e)
     {
         Object source = e.getSource();
@@ -475,6 +571,55 @@ public class UserOptionsDialog extends JDialog implements ActionListener
                 paletteViews.remove(moduleName);
             }
         }
+        else if (cmd.equals("Add srb connsction"))
+        {
+            String srbaccount[] = new String[7];
+            for (int i=0; i<7; i++) {
+                srbaccount[i] = srbFields[i].getText();
+                if (srbaccount[i] == null) return;
+            }
+            DefaultListModel lm = (DefaultListModel)srbJList.getModel();
+            if (!lm.contains(srbaccount[0]))
+            {
+                srbVector.add(srbaccount);
+                lm.addElement(srbaccount[0]);
+                srbJList.setSelectedValue(srbaccount[0], true);
+            }
+        }
+        else if (cmd.equals("Delete srb connsction"))
+        {
+            int n = srbJList.getSelectedIndex();
+            if (n<0) return;
+
+            int resp = JOptionPane.showConfirmDialog(this,
+                    "Are you sure you want to delete the following SRB connection?\n"+
+                    "            \""+srbJList.getSelectedValue()+"\"",
+                    "Delete SRB Connection", JOptionPane.YES_NO_OPTION);
+            if (resp == JOptionPane.NO_OPTION) return;
+
+            DefaultListModel lm = (DefaultListModel)srbJList.getModel();
+            lm.removeElementAt(n);
+            srbVector.remove(n);
+            for (int i=0; i<7; i++) srbFields[i].setText("");
+        }
+    }
+
+    public void valueChanged(ListSelectionEvent e)
+    {
+        Object src = e.getSource();
+
+        if (!src.equals(srbJList))
+            return;
+
+        int n = srbJList.getSelectedIndex();
+        if ( n<0 ) return;
+
+        String srbaccount[] = (String[])srbVector.get(n);
+        if (srbaccount == null) return;
+
+        n = Math.min(7, srbaccount.length);
+        for (int i=0; i<n; i++)
+            srbFields[i].setText(srbaccount[i]);
     }
 
     private void setUserOptions()

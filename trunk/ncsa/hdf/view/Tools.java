@@ -165,6 +165,28 @@ public final class Tools
     }
 
     /**
+     *  Creates the gray wave palette of the indexed 256-color table.
+     *  <p>
+     *  The palette values are stored in a two-dimensional byte array and arrange
+     *  by color components of red, green and blue. palette[][] = byte[3][256],
+     *  where, palette[0][], palette[1][] and palette[2][] are the red, green and
+     *  blue components respectively.
+     *  @return the gray palette in the form of byte[3][256]
+     */
+    public static final byte[][] createGrayWavePalette()
+    {
+        byte[][] p = new byte[3][256];
+
+        for (int i=0; i<256; i++)
+        {
+            p[0][i] = p[1][i] = p[2][i] = (byte) (255/2 + (255/2)*Math.sin((i-32)/20.3));
+        }
+
+        return p;
+    }
+
+
+    /**
      *  Creates the rainbow palette of the indexed 256-color table.
      *  <p>
      *  The palette values are stored in a two-dimensional byte array and arrange

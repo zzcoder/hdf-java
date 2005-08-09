@@ -507,8 +507,8 @@ implements ActionListener, MetaDataView
             typeStr = sd.getDatatype().getDatatypeDescription();
         } else if (d instanceof CompoundDS)
         {
-            if (isH5) typeStr = "Compound";
-            else typeStr = "Vdata";
+            if (isH4)  typeStr = "Vdata";
+            else typeStr = "Compound";
         }
 
         txtf = new JTextField(typeStr);

@@ -15,6 +15,7 @@ import java.io.*;
 import java.util.*;
 import javax.swing.*;
 import java.awt.Color;
+import java.lang.reflect.Array;
 import java.awt.SystemColor;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -32,7 +33,7 @@ import ncsa.hdf.object.FileFormat;
 public class ViewProperties extends Properties
 {
     /** the version of the HDFViewer */
-    public static final String VERSION = "2.2";
+    public static final String VERSION = "2.3";
 
     /** the maximum number of most recent files */
     public static final int MAX_RECENT_FILES = 15;
@@ -83,6 +84,9 @@ public class ViewProperties extends Properties
     private static String fileExt = "hdf, h4, hdf4, h5, hdf5, he4, he5";
 
     private static ClassLoader extClassLoader=null;
+
+    /** a list of srb accounts */
+    private static Vector srbAccountList=new Vector();
 
     /**
      * Current Java application such as HDFView cannot handle files
@@ -174,6 +178,17 @@ public class ViewProperties extends Properties
             try { pFile.createNewFile(); }
             catch (Exception ex) { propertyFile = null; }
         }
+    }
+
+    /* the properties are sorted by keys */
+    public synchronized Enumeration keys() {
+        Enumeration keysEnum = super.keys();
+        Vector keyList = new Vector();
+        while(keysEnum.hasMoreElements()){
+            keyList.add(keysEnum.nextElement());
+        }
+        Collections.sort(keyList);
+        return keyList.elements();
     }
 
     /** load module classes */
@@ -706,6 +721,21 @@ public class ViewProperties extends Properties
             }
         }
 
+        // load srb account
+        str=null;
+        String srbaccount[] = new String[7];
+        for (int i=0; i<MAX_RECENT_FILES; i++)
+        {
+            if ( null == (srbaccount[0] = getProperty("srbaccount"+i+".host"))) continue;
+            if ( null == (srbaccount[1] = getProperty("srbaccount"+i+".port"))) continue;
+            if ( null == (srbaccount[2] = getProperty("srbaccount"+i+".user"))) continue;
+            if ( null == (srbaccount[3] = getProperty("srbaccount"+i+".password"))) continue;
+            if ( null == (srbaccount[4] = getProperty("srbaccount"+i+".home"))) continue;
+            if ( null == (srbaccount[5] = getProperty("srbaccount"+i+".domain"))) continue;
+            if ( null == (srbaccount[6] = getProperty("srbaccount"+i+".resource"))) continue;
+            srbAccountList.add(srbaccount);
+            srbaccount = new String[7];
+        }
 
         String[] keys = {"module.treeview", "module.metadataview", "module.textview",
             "module.tableview", "module.imageview", "module.paletteview"};
@@ -738,6 +768,7 @@ public class ViewProperties extends Properties
     {
         if (propertyFile == null)
             return;
+        else clear();
 
         // update data saving options
         if (delimiter == null)
@@ -767,12 +798,30 @@ public class ViewProperties extends Properties
         String theFile;
         int size = mrf.size();
         int minSize = Math.min(size, MAX_RECENT_FILES);
-
         for (int i=0; i<minSize; i++) {
             theFile = (String)mrf.elementAt(i);
-
             if (theFile != null && theFile.length()>0)
                 put("recent.file"+i, theFile);
+        }
+
+        // save srb account
+        String srbaccount[]=null;
+        size = srbAccountList.size();
+        minSize = Math.min(size, MAX_RECENT_FILES);
+        for (int i=0; i<minSize; i++) {
+            srbaccount = (String[]) srbAccountList.get(i);
+            if (srbaccount[0]!=null && srbaccount[1]!=null && srbaccount[2]!=null &&
+                srbaccount[3]!=null && srbaccount[4]!=null && srbaccount[5]!=null &&
+                srbaccount[6]!=null)
+            {
+                put("srbaccount"+i+".host", srbaccount[0]);
+                put("srbaccount"+i+".port", srbaccount[1]);
+                put("srbaccount"+i+".user", srbaccount[2]);
+                put("srbaccount"+i+".password", srbaccount[3]);
+                put("srbaccount"+i+".home", srbaccount[4]);
+                put("srbaccount"+i+".domain", srbaccount[5]);
+                put("srbaccount"+i+".resource", srbaccount[6]);
+            }
         }
 
         // save default modules
@@ -867,6 +916,8 @@ public class ViewProperties extends Properties
 
     /** returns the list of most recent files */
     public static Vector getMRF(){ return mrf;}
+
+    public static Vector getSrbAccount() { return srbAccountList; }
 
     /** returns a list of treeview modules */
     public static Vector getTreeViewList() { return moduleListTreeView; }
