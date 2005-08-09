@@ -159,6 +159,7 @@ implements ActionListener, ItemListener
             choicePalette.addItem("Default "+i);
         }
         choicePalette.addItem("Gray");
+        choicePalette.addItem("GrayWave");
         choicePalette.addItem("Rainbow");
         choicePalette.addItem("Nature");
         choicePalette.addItem("Wave");
@@ -722,10 +723,12 @@ implements ActionListener, ItemListener
         else if (palChoice == numberOfPalettes+1)
             pal = Tools.createGrayPalette();
         else if (palChoice == numberOfPalettes+2)
-            pal = Tools.createRainbowPalette();
+            pal = Tools.createGrayWavePalette();
         else if (palChoice == numberOfPalettes+3)
-            pal = Tools.createNaturePalette();
+            pal = Tools.createRainbowPalette();
         else if (palChoice == numberOfPalettes+4)
+            pal = Tools.createNaturePalette();
+        else if (palChoice == numberOfPalettes+5)
             pal = Tools.createWavePalette();
         else
         {
@@ -1012,7 +1015,7 @@ implements ActionListener, ItemListener
                 else
                 {
                     byte[][] imagePalette = sd.getPalette();
-                    if (imagePalette == null) imagePalette = Tools.createGrayPalette();
+                    if (imagePalette == null) imagePalette = Tools.createGrayWavePalette();
 
                     if (rank >1 && selectedIndex[0]>selectedIndex[1] && !swapOnlyButton.isSelected()) {
                         // transpose data

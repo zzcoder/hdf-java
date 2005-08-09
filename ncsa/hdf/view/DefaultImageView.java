@@ -692,9 +692,9 @@ implements ImageView, ActionListener
             } else {
                 imagePalette = dataset.getPalette();
                 if (imagePalette == null) {
-                    imagePalette = Tools.createGrayPalette();
+                    imagePalette = Tools.createGrayWavePalette();
 
-                    viewer.showStatus("\nNo attached palette found, default grey palette is used to display image");
+                    viewer.showStatus("\nNo attached palette found, default greywave palette is used to display image");
 /*
                     JOptionPane.showMessageDialog(
                         (Frame)viewer,

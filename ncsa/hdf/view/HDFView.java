@@ -1986,22 +1986,19 @@ if (g != null) {
      /** open file from SRB server */
      private void openFromSRB()
      {
-         if (srbFileDialog == null)
-         {
-            Class theClass = null;
-            try { theClass = Class.forName("ncsa.hdf.srb.SRBFileDialog"); }
-            catch (Exception ex) {theClass = null;showStatus(ex.toString());}
-            if (theClass == null) return;
+        Class theClass = null;
+        try { theClass = Class.forName("ncsa.hdf.srb.SRBFileDialog"); }
+        catch (Exception ex) {theClass = null;showStatus(ex.toString());}
+        if (theClass == null) return;
 
-            try {
-                boolean mode = true;
-                Class[] paramClass = {Class.forName("java.awt.Frame")};
-                Constructor constructor = theClass.getConstructor(paramClass);
-                Object[] paramObj = {(java.awt.Frame)this};
-                srbFileDialog = (JDialog)constructor.newInstance(paramObj);
-            } catch (Exception ex) { srbFileDialog = null;showStatus(ex.toString()); }
-            if (srbFileDialog == null) return;
-         }
+        try {
+            boolean mode = true;
+            Class[] paramClass = {Class.forName("java.awt.Frame")};
+            Constructor constructor = theClass.getConstructor(paramClass);
+            Object[] paramObj = {(java.awt.Frame)this};
+            srbFileDialog = (JDialog)constructor.newInstance(paramObj);
+        } catch (Exception ex) { srbFileDialog = null;showStatus(ex.toString()); }
+        if (srbFileDialog == null) return;
 
         srbFileDialog.show();
      }
