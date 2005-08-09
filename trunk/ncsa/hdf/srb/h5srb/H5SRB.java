@@ -56,9 +56,9 @@ public class H5SRB {
         }
     }
 
-
     /**
      **/
-    public synchronized static native int h5ObjRequest(Object obj, int obj_type) throws Exception;
+    public synchronized static native int h5ObjRequest
+        (String srb_info[], Object obj, int obj_type) throws Exception;
 }
 

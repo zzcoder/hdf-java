@@ -13,11 +13,19 @@ package ncsa.hdf.srb.obj;
 
 import java.util.*;
 import ncsa.hdf.object.*;
+import ncsa.hdf.srb.h5srb.*;
 
 public class H5SrbGroup extends Group
 {
     private int opID;
     private String fullPath; /*path+name*/
+    public static final int H5GROUP_OP_READ_ATTRIBUTE    = 0;
+
+    /**
+     * The list of attributes of this data object. Members of the list are
+     * instance of Attribute.
+     */
+     private List attributeList;
 
     public H5SrbGroup(FileFormat fileFormat, String name, String path, Group parent)
     {
@@ -88,7 +96,21 @@ public class H5SrbGroup extends Group
      * @return the list of metadata objects.
      * @see java.util.List
      */
-    public List getMetadata() throws Exception { return null; }
+    // Implementing DataFormat
+    public List getMetadata() throws Exception
+    {
+        String srbInfo[] = ((H5SrbFile)getFileFormat()).getSrbInfo();
+        if ( srbInfo == null || srbInfo.length<5) return null;
+
+        // load attributes first
+        if (attributeList == null)
+        {
+            opID = H5GROUP_OP_READ_ATTRIBUTE;
+            H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_GROUP);
+        } // if (attributeList == null)
+
+        return attributeList;
+    }
 
     /**
      * Saves a specific metadata into file. If the metadata exists, it

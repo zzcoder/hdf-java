@@ -49,13 +49,14 @@ implements ActionListener
     private ViewManager viewer;
     private TreeView treeView;
     private SRBFileSystem srbFileSystem;
+    private String srbInfo[];
 
     /** constructs a SRBFileDialog.
      * @param owner The owner of the dialog.
      * @param type the type of the conversion to perform.
      * @param openFiles The list of current open files.
       */
-    public SRBFileDialog( Frame owner)
+    public SRBFileDialog(Frame owner)
     {
         super (owner, "Open File from SRB ...", true);
         treeSrb = null;
@@ -69,7 +70,36 @@ implements ActionListener
         contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
 
         try {
-            srbFileSystem = new SRBFileSystem();
+            java.util.Vector srbList = ViewProperties.getSrbAccount();
+            int n = 0;
+            if (srbList != null && (n=srbList.size())>0)
+            {
+                int idx = 0;
+                if (n > 1) {
+                    String srb_hosts[] = new String[n];
+                    for (int i=0; i<n; i++)
+                        srb_hosts[i] = ((String[])srbList.get(i))[0];
+                    String selection = (String)JOptionPane.showInputDialog(
+                        this, "Select SRB Server Connection",
+                        "SRB Connection", JOptionPane.PLAIN_MESSAGE, null,
+                        srb_hosts, srb_hosts[0]);
+                    for (int i=0; i<n; i++) {
+                        if (srb_hosts[i].equals(selection)) {
+                            idx = i;
+                            break;
+                        }
+                    }
+                } /* if (n > 1) */
+                String srbInfo[] = (String[])srbList.get(idx);
+                int port = Integer.parseInt(srbInfo[1]);
+                SRBAccount srbAccount = new SRBAccount(srbInfo[0], port,
+                    srbInfo[2], srbInfo[3], srbInfo[4], srbInfo[5], srbInfo[6]);
+                srbFileSystem = new SRBFileSystem(srbAccount);
+            }
+
+            if (srbFileSystem == null)
+                srbFileSystem = new SRBFileSystem();
+
             GeneralFile root = FileFactory.newFile( srbFileSystem, srbFileSystem.getHomeDirectory() );
             String[] selectFieldNames = {
                 SRBMetaDataSet.FILE_COMMENTS,
@@ -126,11 +156,11 @@ implements ActionListener
 
             Object obj = treeSrb.getSelectionPath().getLastPathComponent();
             if ( (obj instanceof SRBFile) && (openFile((SRBFile)obj)) )
-                hide();
+                dispose();
         }
         else if (cmd.equals("Cancel"))
         {
-            hide();
+            dispose();
         }
     }
 
@@ -145,7 +175,16 @@ implements ActionListener
             return false;
         }
 
-        H5SrbFile fileFormat = new H5SrbFile(srbFile.getAbsolutePath());
+        String srbInfo[] = new String[5];
+        SRBAccount srbAccount = (SRBAccount)srbFile.getFileSystem().getAccount();
+        srbInfo[0] = srbAccount.getHost();
+        srbInfo[1] = String.valueOf(srbAccount.getPort());
+        srbInfo[2] = srbAccount.getPassword();
+        srbInfo[3] = srbAccount.getUserName();
+        srbInfo[4] = srbAccount.getDomainName();
+
+        H5SrbFile fileFormat = new H5SrbFile(srbInfo, srbFile.getAbsolutePath());
+
         try {
             fileFormat.open();
         } catch (Exception ex) {

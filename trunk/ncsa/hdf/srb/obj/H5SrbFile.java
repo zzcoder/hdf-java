@@ -31,6 +31,7 @@ public class H5SrbFile extends FileFormat
     private H5SrbGroup rootGroup;
     private final String fullFileName;
     private boolean isFileOpen = false;
+    private String srbInfo[]; /* srbHost, srbPort, srbAuth, userName, domainName*/
 
     /**
      * The root node of the file hierearchy.
@@ -50,10 +51,19 @@ public class H5SrbFile extends FileFormat
      */
     public H5SrbFile(String pathname)
     {
+        this (null, pathname);
+    }
+
+    /**
+     * Constructs an H5File object of given file name with read-only access.
+     */
+    public H5SrbFile(String[] srb, String pathname)
+    {
         super(pathname);
         opID = -1;
         rootGroup = null;
         fullFileName = pathname;
+        srbInfo = srb;
 
         long[] oid = {0};
         rootGroup = new H5SrbGroup( this, getName(), null, null, oid);
@@ -72,6 +82,8 @@ public class H5SrbFile extends FileFormat
      */
     public int open() throws Exception
     {
+        if ( srbInfo == null || srbInfo.length<5) return -1;
+
         int status = -1;
         opID = H5FILE_OP_OPEN;
 
@@ -85,7 +97,7 @@ public class H5SrbFile extends FileFormat
         if (!isFileOpen) /* make sure it is called only once */
         {
             isFileOpen = true;
-            status =  H5SRB.h5ObjRequest (this, H5SRB.H5OBJECT_FILE);
+            status =  H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_FILE);
             constructTree(rootGroup, rootNode);
         }
 
@@ -113,7 +125,7 @@ public class H5SrbFile extends FileFormat
                 pnode.add( node );
                 constructTree((Group)obj, node);
             }
-            else if (obj instanceof H5SrbDataset)
+            else
             {
                 node = new DefaultMutableTreeNode(obj);
                 pnode.add( node );
@@ -137,8 +149,10 @@ public class H5SrbFile extends FileFormat
      */
     public void close() throws Exception
     {
+        if ( srbInfo == null || srbInfo.length<5) return;
+
         opID = H5FILE_OP_CLOSE;
-        H5SRB.h5ObjRequest (this, H5SRB.H5OBJECT_FILE);
+        H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_FILE);
     }
 
     // Implementing FileFormat
@@ -146,6 +160,11 @@ public class H5SrbFile extends FileFormat
     {
         return rootNode;
     }
+
+    /** Get SRB server information:
+     *  srbHost, srbPort, srbAuth, userName, domainName
+     */
+    public String[] getSrbInfo() { return srbInfo; }
 
     /**
      * Returns the full path of the file: file path + file name.
