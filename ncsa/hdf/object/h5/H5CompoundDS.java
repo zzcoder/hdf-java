@@ -444,8 +444,9 @@ public class H5CompoundDS extends CompoundDS
         try
         {
             long[] lsize = {1};
-            for (int j=0; j<selectedDims.length; j++)
+            for (int j=0; j<selectedDims.length; j++) {
                 lsize[0] *= selectedDims[j];
+            }
 
             fspace = H5.H5Dget_space(did);
             mspace = H5.H5Screate_simple(1, lsize, null);
@@ -991,6 +992,8 @@ public class H5CompoundDS extends CompoundDS
 
             if (data != null) {
                 dataset.init();
+                long selected[] = dataset.getSelectedDims();
+                for (int i=0; i<rank; i++) selected[i] = dims[i];
                 dataset.write(data);
             }
         }

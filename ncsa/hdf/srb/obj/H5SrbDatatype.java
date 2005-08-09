@@ -92,7 +92,9 @@ public class H5SrbDatatype extends Datatype
      * <p>
      * @param nativeID the identifier of user defined datatype.
      */
-    public void fromNative(int nativeID) {;}
+    public void fromNative(int nativeID) {
+        datatypeClass = nativeID;
+    }
 
     /**
      *  Checks if this datatype is an unsigned integer.
@@ -100,5 +102,48 @@ public class H5SrbDatatype extends Datatype
      */
     public boolean isUnsigned() { return false; }
 
+    /**
+     *  Returns a short text description of this datatype.
+     */
+    public String getDatatypeDescription()
+    {
+        String description = "Unknown";
+
+        switch (datatypeClass)
+        {
+            case CLASS_INTEGER:
+                description = "Integer";
+                break;
+            case CLASS_FLOAT:
+                description = "Float";
+                break;
+            case CLASS_STRING:
+                description = "String";
+                break;
+            case CLASS_REFERENCE:
+                description = "Object reference";
+                break;
+            case CLASS_BITFIELD:
+                description = "Bitfield";
+                break;
+            case CLASS_ENUM:
+                description = "enum";
+                break;
+            case CLASS_ARRAY:
+                description = "Array";
+                break;
+            case CLASS_COMPOUND:
+                description = "Compound ";
+                break;
+            case CLASS_VLEN:
+                description = "Variable-length";
+                break;
+            default:
+                description = "Unknown";
+                break;
+        }
+
+        return description;
+    }
 
 }

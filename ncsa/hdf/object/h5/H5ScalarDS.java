@@ -134,7 +134,8 @@ public class H5ScalarDS extends ScalarDS
             int aclass = H5.H5Tget_class(atid);
             if (aclass == HDF5Constants.H5T_STRING)
             {
-                byte[] attrValue = new byte[6];
+                int size = H5.H5Tget_size(atid);
+                byte[] attrValue = new byte[size];
                 H5.H5Aread(aid, atid, attrValue);
                 String strValue = new String(attrValue).trim();
                 isImage = strValue.equalsIgnoreCase("IMAGE");
@@ -142,6 +143,7 @@ public class H5ScalarDS extends ScalarDS
         } catch (Exception ex) {}
         finally
         {
+            try { H5.H5Sclose(asid); } catch (HDF5Exception ex) {;}
             try { H5.H5Tclose(atid); } catch (HDF5Exception ex) {;}
             try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
             try { H5.H5Tclose(tid); } catch (HDF5Exception ex) {;}
