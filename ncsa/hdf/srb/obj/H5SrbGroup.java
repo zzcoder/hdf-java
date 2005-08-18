@@ -19,7 +19,11 @@ public class H5SrbGroup extends Group
 {
     private int opID;
     private String fullPath; /*path+name*/
-    public static final int H5GROUP_OP_READ_ATTRIBUTE    = 0;
+
+    public static final int H5GROUP_OP_ERROR          = -1;
+    public static final int H5GROUP_OP_CREATE         = 0;
+    public static final int H5GROUP_OP_DELETE         = 1;
+    public static final int H5GROUP_OP_READ_ATTRIBUTE = 2;
 
     /**
      * The list of attributes of this data object. Members of the list are

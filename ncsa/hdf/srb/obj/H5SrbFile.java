@@ -22,10 +22,10 @@ import ncsa.hdf.srb.h5srb.*;
 
 public class H5SrbFile extends FileFormat
 {
-    public static final int H5FILE_OP_ERROR     = -1;
-    public static final int H5FILE_OP_OPEN        = 0;
-    public static final int H5FILE_OP_CLOSE        = 1;
-    public static final int H5FILE_OP_CREATE    = 2;
+    public static final int H5FILE_OP_ERROR            = -1;
+    public static final int H5FILE_OP_OPEN             = 0;
+    public static final int H5FILE_OP_CLOSE            = 1;
+    public static final int H5FILE_OP_CREATE           = 2;
 
     private int opID;
     private H5SrbGroup rootGroup;

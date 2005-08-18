@@ -727,6 +727,8 @@ public class H5 {
     public synchronized static native int H5Dopen(int loc_id, String name)
         throws HDF5LibraryException, NullPointerException;
 
+    public synchronized static native int H5Dchdir_ext(String dir_name)
+        throws HDF5LibraryException, NullPointerException;
 
     /**
      *  H5Dget_space returns an identifier for a copy of the

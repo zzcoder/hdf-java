@@ -80,6 +80,45 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dcreate
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Dchdir_ext
+ * Signature: (ILjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dchdir_1ext
+  (JNIEnv *env, jclass clss, jstring dir_name)
+{
+    hid_t status;
+    char* file;
+    jboolean isCopy;
+
+    if (dir_name == NULL) {
+        h5nullArgument( env, "H5Dchdir_ext:  dir_name is NULL");
+        return -1;
+    }
+#ifdef __cplusplus
+    file = (char *)env->GetStringUTFChars(dir_name,&isCopy);
+#else
+    file = (char *)(*env)->GetStringUTFChars(env,dir_name,&isCopy);
+#endif
+    if (file == NULL) {
+        h5JNIFatalError( env, "H5Dchdir_ext:  file dir not pinned");
+        return -1;
+    }
+    status = chdir ( file );
+
+#ifdef __cplusplus
+    env->ReleaseStringUTFChars(dir_name,file);
+#else
+    (*env)->ReleaseStringUTFChars(env,dir_name,file);
+#endif
+    if (status < 0) {
+        h5libraryError(env);
+    }
+    return (jint)status;
+}
+
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dopen
  * Signature: (ILjava/lang/String;)I
  */
@@ -176,6 +215,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread
     herr_t status;
     jbyte *byteP;
     jboolean isCopy;
+
 
     if ( buf == NULL ) {
         h5nullArgument( env, "H5Dread:  buf is NULL");

@@ -167,7 +167,6 @@ implements ActionListener
     private boolean openFile(SRBFile srbFile)
     {
         boolean retVal = true;
-
         if (srbFile == null)
         {
             JOptionPane.showMessageDialog( (JFrame)viewer, "File is null",

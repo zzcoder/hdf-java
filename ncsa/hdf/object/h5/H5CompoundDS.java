@@ -251,6 +251,9 @@ public class H5CompoundDS extends CompoundDS
         if (numberOfMembers <= 0)
             return null; // this compound dataset does not have any member
 
+        /* external files will need this */
+        H5.H5Dchdir_ext(this.getFileFormat().getParent());
+
         int did = open();
 
         // check is storage space is allocated
