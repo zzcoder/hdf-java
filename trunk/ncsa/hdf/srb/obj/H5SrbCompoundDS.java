@@ -12,21 +12,29 @@
 package ncsa.hdf.srb.obj;
 
 import java.util.*;
+import java.lang.reflect.Array;
 import ncsa.hdf.object.*;
 import ncsa.hdf.srb.h5srb.*;
 
-public class H5SrbDataset extends ScalarDS
+public class H5SrbCompoundDS extends CompoundDS
 {
-    public static final int H5DATASET_OP_ERROR         = -1;
-    public static final int H5DATASET_OP_CREATE        = 0;
-    public static final int H5DATASET_OP_DELETE        = 1;
-    public static final int H5DATASET_OP_READ          = 2;
-    public static final int H5DATASET_OP_WRITE         = 3;
+    public static final int H5DATASET_OP_ERROR             = -1;
+    public static final int H5DATASET_OP_CREATE            = 0;
+    public static final int H5DATASET_OP_DELETE            = 1;
+    public static final int H5DATASET_OP_READ              = 2;
+    public static final int H5DATASET_OP_WRITE             = 3;
+    public static final int H5DATASET_OP_READ_ATTRIBUTE    = 4;
+
+    /**
+     * The list of attributes of this data object. Members of the list are
+     * instance of Attribute.
+     */
+     private List attributeList;
 
     private int opID;
     private String fullPath; /*path+name*/
 
-    public H5SrbDataset(FileFormat fileFormat, String name, String path)
+    public H5SrbCompoundDS(FileFormat fileFormat, String name, String path)
     {
         this(fileFormat, name, path, null);
     }
@@ -39,7 +47,7 @@ public class H5SrbDataset extends ScalarDS
      * @param path the full path of this H5ScalarDS.
      * @param oid the unique identifier of this data object.
      */
-    public H5SrbDataset(
+    public H5SrbCompoundDS(
         FileFormat fileFormat,
         String name,
         String path,
@@ -48,9 +56,25 @@ public class H5SrbDataset extends ScalarDS
         super (fileFormat, name, path, oid);
 
         opID = -1;
-        unsignedConverted = false;
         if (name == null) fullPath = path;
         else fullPath = path + HObject.separator + name;
+    }
+
+    public void setMemberCount(int nmembers)
+    {
+        if (nmembers > 0)
+        {
+            numberOfMembers = nmembers;
+            memberNames = new String[numberOfMembers];
+            memberTypes = new int[numberOfMembers];
+            memberOrders = new int[numberOfMembers];
+            isMemberSelected = new boolean[numberOfMembers];
+            for (int i=0; i<numberOfMembers; i++)
+            {
+                memberOrders[i] = 1;
+                isMemberSelected[i] = true;
+            }
+        }
     }
 
     /*abstract methods inherited from ScalarDS */
@@ -93,8 +117,35 @@ public class H5SrbDataset extends ScalarDS
     /** Loads and returns the data value from file. */
     public Object read() throws Exception, OutOfMemoryError
     {
+        String srbInfo[] = ((H5SrbFile)getFileFormat()).getSrbInfo();
+        if ( srbInfo == null || srbInfo.length<5) return null;
+
         opID = H5DATASET_OP_READ;
-        H5SRB.h5ObjRequest (this, H5SRB.H5OBJECT_DATASET);
+        H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_DATASET);
+
+        if (data != null && data.getClass().isArray())
+        {
+            int numberOfpoints = Array.getLength(data);
+            String strs[][] = new String[numberOfMembers][numberOfpoints];
+
+            String str;
+            int midx=0, strlen=0;
+            for (int i=0; i<numberOfpoints; i++) {
+                midx = 0;
+                str = (String)Array.get(data, i);
+                str = str.trim();
+                strlen = str.length();
+                if (strlen>1) str = str.substring(1, strlen-1);
+
+                StringTokenizer st = new StringTokenizer(str, "||");
+                while (st.hasMoreTokens() && midx<numberOfMembers)
+                    strs[midx++][i] = st.nextToken();
+            }
+
+            data = new Vector(numberOfMembers);
+            for (int i=0; i<numberOfMembers; i++)
+                ((Vector)data).add(i, strs[i]);
+        }
 
         return data;
     }
@@ -140,7 +191,21 @@ public class H5SrbDataset extends ScalarDS
      * @return the list of metadata objects.
      * @see java.util.List
      */
-    public List getMetadata() throws Exception { return null; }
+    // Implementing DataFormat
+    public List getMetadata() throws Exception
+    {
+        String srbInfo[] = ((H5SrbFile)getFileFormat()).getSrbInfo();
+        if ( srbInfo == null || srbInfo.length<5) return null;
+
+        // load attributes first
+        if (attributeList == null)
+        {
+            opID = H5DATASET_OP_READ_ATTRIBUTE;
+            H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_DATASET);
+        } // if (attributeList == null)
+
+        return attributeList;
+    }
 
     /**
      * Saves a specific metadata into file. If the metadata exists, it
@@ -165,7 +230,6 @@ public class H5SrbDataset extends ScalarDS
 
         rank = theRank;
         datatype = new H5SrbDatatype(tclass, tsize, torder, tsign);
-        isUnsigned = (tsign==Datatype.SIGN_NONE);
 
         if (rank == 0) {
             // a scalar data point

@@ -13,6 +13,8 @@
 
 #define NODEBUG
 
+#define MAX_CONNECTIONS 50
+
 #ifdef _WIN32
 #pragma comment(lib,"ws2_32")
 #endif
@@ -41,7 +43,7 @@ typedef struct srb_connection {
 } srb_connection;
 
 typedef struct srb_connection_list {
-    srb_connection connections[50];
+    srb_connection connections[MAX_CONNECTIONS];
     int count;      /* count of total connectins */
 } srb_connection_list;
 
@@ -161,6 +163,9 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_srb_h5srb_H5SRB_h5ObjRequest
 {
     int ret_val=0, i=0;
     H5Object_t obj_id = -1;
+
+    if ( connection_list.count < 0 || connection_list.count > MAX_CONNECTIONS)
+        memset(&connection_list, 0, sizeof(srb_connection_list)); /* first time use */
 
     if ( (current_connection = make_connection(env, jsrb_info)) == NULL )
         THROW_JNI_ERROR("java/lang/RuntimeException", "Cannot make connection to the SrbMaster server");

@@ -304,6 +304,9 @@ public class H5ScalarDS extends ScalarDS
 
         if (rank <= 0) init();
 
+        /* external files will need this */
+        H5.H5Dchdir_ext(this.getFileFormat().getParent());
+
         int did = open();
 
         // check is storage space is allocated
