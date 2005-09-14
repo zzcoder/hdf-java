@@ -98,7 +98,6 @@ public class Attribute implements Metadata
             rank = dims.length;
 
         isUnsigned = (type.getDatatypeSign()==Datatype.SIGN_NONE);
-
     }
 
     /**

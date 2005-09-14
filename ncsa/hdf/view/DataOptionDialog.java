@@ -28,7 +28,7 @@ import java.awt.Image;
 import java.awt.image.*;
 import java.util.*;
 
-/**
+/**blue
  * DataOptionDialog is an dialog window used to select display options.
  * Display opotions include selection of subset, display type (image, text, or
  * spreadsheet).
@@ -144,6 +144,10 @@ implements ActionListener, ItemListener
         int h=1, w=1;
         h = (int)dims[selectedIndex[0]];
         if (rank > 1) w = (int)dims[selectedIndex[1]];
+
+        swapOnlyButton = new JRadioButton("Swap Only", false);
+        swapOnlyButton.setMnemonic(KeyEvent.VK_T);
+
         navigator = new SubsetNavigator(w, h);
 
         currentIndex = new int[Math.min(3, rank)];
@@ -171,8 +175,6 @@ implements ActionListener, ItemListener
         charButton = new JRadioButton("Show As Char", false);
         charButton.setMnemonic(KeyEvent.VK_C);
         charButton.setEnabled(false);
-        swapOnlyButton = new JRadioButton("Swap Only", false);
-        swapOnlyButton.setMnemonic(KeyEvent.VK_T);
 
         // layout the components
         JPanel contentPane = (JPanel)getContentPane();
@@ -719,8 +721,9 @@ implements ActionListener, ItemListener
         int palChoice = choicePalette.getSelectedIndex();
 
         if (palChoice == 0)
-            pal = null; // using the first default palette
-        else if (palChoice == numberOfPalettes+1)
+            return; /* using default palette */
+
+        if (palChoice == numberOfPalettes+1)
             pal = Tools.createGrayPalette();
         else if (palChoice == numberOfPalettes+2)
             pal = Tools.createGrayWavePalette();
@@ -730,7 +733,7 @@ implements ActionListener, ItemListener
             pal = Tools.createNaturePalette();
         else if (palChoice == numberOfPalettes+5)
             pal = Tools.createWavePalette();
-        else
+        else if (palChoice > 0 && palChoice <numberOfPalettes )
         {
             // multuple palettes attached
             pal = ((ScalarDS)dataset).readPalette(palChoice-1);
@@ -777,77 +780,6 @@ implements ActionListener, ItemListener
             if (n2[i] <= 0) n2[i] = 1;
             if (n2[i] > dims[sIndex[i]]) n2[i] = dims[sIndex[i]];
 
-/*
-            if (n0[i] < 1)
-            {
-                JOptionPane.showMessageDialog(
-                    (JFrame)viewer,
-                    "Invalid selection: start["+sIndex[i]+"] < 1",
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-
-            if (n0[i] > dims[sIndex[i]])
-            {
-                JOptionPane.showMessageDialog(
-                    (JFrame)viewer,
-                    "Invalid selection: start["+sIndex[i]+"] > "+dims[sIndex[i]],
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-
-            if (n1[i] < 1)
-            {
-                JOptionPane.showMessageDialog(
-                    (JFrame)viewer,
-                    "Invalid selection: end["+sIndex[i]+"] < 1",
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-
-            if (n1[i] > dims[sIndex[i]])
-            {
-                JOptionPane.showMessageDialog(
-                    (JFrame)viewer,
-                    "Invalid selection: end["+sIndex[i]+"] > "+dims[sIndex[i]],
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-
-            if (n0[i] > n1[i])
-            {
-                JOptionPane.showMessageDialog(
-                    (JFrame)viewer,
-                    "Invalid selection: end["+sIndex[i]+"] < "+"start["+sIndex[i]+"]",
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-
-            if (n2[i] <= 0)
-            {
-                JOptionPane.showMessageDialog(
-                    (JFrame)viewer,
-                    "Invalid selection: stride["+sIndex[i]+"] <= 0",
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-
-            if (n2[i] > dims[sIndex[i]])
-            {
-                JOptionPane.showMessageDialog(
-                    (JFrame)viewer,
-                    "Invalid selection: stride["+sIndex[i]+"] > "+dims[sIndex[i]],
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-*/
         } // for (int i=0; i<n; i++)
 
         if (dataset instanceof CompoundDS)
@@ -868,7 +800,6 @@ implements ActionListener, ItemListener
             d.setMemberSelection(false); // deselect all members
             for (int i=0; i<selectedFieldIndices.length; i++)
                 d.selectMember(selectedFieldIndices[i]);
-
         }
 
         // reset selected size
@@ -900,12 +831,18 @@ implements ActionListener, ItemListener
         } else if (rank >1 &&
                    selectedIndex[0]>selectedIndex[1] &&
                    !swapOnlyButton.isSelected() &&
-                   !(dataset instanceof CompoundDS) &&
-                   isH5) { // HDF4 is Height=dim[1], width = dim[0]
-            // transpose data
-            isTransposed = isH5;
-            selectedIndex[0] = sIndex[1];
-            selectedIndex[1] = sIndex[0];
+                   !(dataset instanceof CompoundDS)) {
+            // do not transpose data for 2D HDF4 image
+            if (rank < 3 && !isH5)
+                isTransposed = false;
+            else {
+                // transpose data
+                isTransposed = true;
+                if (!imageButton.isSelected()) {
+                    selectedIndex[0] = sIndex[1];
+                    selectedIndex[1] = sIndex[0];
+                }
+            }
         }
 
         //clear the old data
@@ -945,7 +882,7 @@ implements ActionListener, ItemListener
             selectedArea = new Rectangle();
             setPreferredSize(new Dimension(NAVIGATOR_SIZE, NAVIGATOR_SIZE));
             try { previewImage = createPreviewImage(); }
-            catch (Exception ex) {}
+            catch (Exception ex) {ex.printStackTrace();}
 
             addMouseListener(this);
             addMouseMotionListener(this);
@@ -1017,7 +954,8 @@ implements ActionListener, ItemListener
                     byte[][] imagePalette = sd.getPalette();
                     if (imagePalette == null) imagePalette = Tools.createGrayWavePalette();
 
-                    if (rank >1 && selectedIndex[0]>selectedIndex[1] && !swapOnlyButton.isSelected()) {
+                    if ((isH5 || rank>2) && selectedIndex[0]>selectedIndex[1] && !swapOnlyButton.isSelected())
+                    {
                         // transpose data
                         int n = bData.length;
                         byte[] bData2 = new byte[n];
@@ -1026,7 +964,6 @@ implements ActionListener, ItemListener
                             for (int j=0; j<w; j++) {
                                 bData[i*w+j] = bData2[j*h+i];
                             }
-
                         }
                     }
                     preImage = Tools.createIndexedImage(bData, imagePalette, w, h);

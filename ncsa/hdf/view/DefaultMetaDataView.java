@@ -72,7 +72,6 @@ implements ActionListener, MetaDataView
         userBlockArea = null;
 
         if (hObject == null) dispose();
-
         else if ( hObject.getPath()== null)
             setTitle("Properties - "+hObject.getName());
         else
@@ -744,7 +743,6 @@ implements ActionListener, MetaDataView
         Attribute attr = null;
         String name, type, size;
         attrNumberLabel.setText("Number of attributes = "+numAttributes);
-
         for (int i=0; i<numAttributes; i++)
         {
             attr = (Attribute)attrList.get(i);
@@ -758,7 +756,6 @@ implements ActionListener, MetaDataView
             size = String.valueOf(dims[0]);
             for (int j=1; j<dims.length; j++)
                 size += " x " + dims[j];
-
             attrTable.setValueAt(name, i, 0);
             attrTable.setValueAt(attr.toString(", "), i, 1);
             attrTable.setValueAt(type, i, 2);

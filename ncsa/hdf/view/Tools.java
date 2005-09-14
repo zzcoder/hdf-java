@@ -443,9 +443,24 @@ public final class Tools
      *  <p>
      *  @param rawData The input raw data.
      *  @param minmax the range of the raw data.
+     *  @param isTransposed if the data is transposeed
      *  @return the byte array of pixel data.
      */
     public static byte[] getBytes(Object rawData, double[] minmax)
+    {
+        return Tools.getBytes(rawData, minmax, -1, -1, false);
+    }
+
+    /**
+     *  Convert an array of raw data into array of a byte data.
+     *  Byte data ranged from -128 to 127.
+     *  <p>
+     *  @param rawData The input raw data.
+     *  @param minmax the range of the raw data.
+     *  @param isTransposed if the data is transposeed
+     *  @return the byte array of pixel data.
+     */
+    public static byte[] getBytes(Object rawData, double[] minmax, int w, int h, boolean isTransposed)
     {
         byte[] byteData = null;
 
@@ -468,7 +483,7 @@ public final class Tools
         }
 
         // no need for conversion
-        if (dname == 'B')
+        if (dname == 'B' && !isTransposed)
         {
             byteData = (byte[]) rawData;
             minmax[0] = 0;
@@ -482,6 +497,19 @@ public final class Tools
 
         switch (dname)
         {
+            case 'B':
+                byte[] b = (byte[])rawData;
+
+                if (isTransposed)
+                {
+                    for (int i=0; i<h; i++)
+                    {
+                        for (int j=0; j<w; j++)
+                            byteData[i*w+j] = b[j*h+i];
+                    }
+                }
+                break;
+
             case 'S':
                 short[] s = (short[])rawData;
 
@@ -502,6 +530,15 @@ public final class Tools
 
                 // converts the data based on the ratio to support only 256 colors
                 ratio = (min == max) ? 1.00d : (double)(255.00/(max-min));
+                if (isTransposed)
+                {
+                    for (int i=0; i<h; i++)
+                    {
+                        for (int j=0; j<w; j++)
+                            byteData[i*w+j] = (byte)((s[j*h+i]-min)*ratio);
+                    }
+                }
+                else
                 for (int i=0; i<size; i++)
                 {
                     byteData[i] = (byte)((s[i]-min)*ratio);
@@ -529,6 +566,15 @@ public final class Tools
 
                 // converts the data based on the ratio to support only 256 colors
                 ratio = (min == max) ? 1.00d : (double)(255.00/(max-min));
+                if (isTransposed)
+                {
+                    for (int i=0; i<h; i++)
+                    {
+                        for (int j=0; j<w; j++)
+                            byteData[i*w+j] = (byte)((ia[j*h+i]-min)*ratio);
+                    }
+                }
+                else
                 for (int i=0; i<size; i++)
                 {
                     byteData[i] = (byte)((ia[i] - min)*ratio);
@@ -556,6 +602,15 @@ public final class Tools
 
                 // converts the data based on the ratio to support only 256 colors
                 ratio = (min == max) ? 1.00d : (double)(255.00/(max-min));
+                if (isTransposed)
+                {
+                    for (int i=0; i<h; i++)
+                    {
+                        for (int j=0; j<w; j++)
+                            byteData[i*w+j] = (byte)((l[j*h+i]-min)*ratio);
+                    }
+                }
+                else
                 for (int i=0; i<size; i++)
                 {
                     byteData[i] = (byte)((l[i]-min)*ratio);
@@ -583,6 +638,15 @@ public final class Tools
 
                 // converts the data based on the ratio to support only 256 colors
                 ratio = (min == max) ? 1.00d : (double)(255.00/(max-min));
+                if (isTransposed)
+                {
+                    for (int i=0; i<h; i++)
+                    {
+                        for (int j=0; j<w; j++)
+                            byteData[i*w+j] = (byte)((f[j*h+i]-min)*ratio);
+                    }
+                }
+                else
                 for (int i=0; i<size; i++)
                 {
                     byteData[i] = (byte)((f[i]-min)*ratio);
@@ -610,6 +674,15 @@ public final class Tools
 
                 // converts the data based on the ratio to support only 256 colors
                 ratio = (min == max) ? 1.00d : (double)(255.00/(max-min));
+                if (isTransposed)
+                {
+                    for (int i=0; i<h; i++)
+                    {
+                        for (int j=0; j<w; j++)
+                            byteData[i*w+j] = (byte)((d[j*h+i]-min)*ratio);
+                    }
+                }
+                else
                 for (int i=0; i<size; i++)
                 {
                     byteData[i] = (byte)((d[i]-min)*ratio);

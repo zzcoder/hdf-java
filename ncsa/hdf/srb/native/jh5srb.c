@@ -19,6 +19,8 @@
 #pragma comment(lib,"ws2_32")
 #endif
 
+extern int h5ObjRequest(srbConn *conn, void *obj, int objID);
+
 #define THROW_JNI_ERROR(_ex, _msg) { \
     (*env)->ThrowNew(env, (*env)->FindClass(env, _ex), _msg); \
      ret_val = -1; \
@@ -57,11 +59,16 @@ void close_srb_connections();
 
 jint h5file_request(JNIEnv *env, jobject jobj);
 jint h5dataset_request(JNIEnv *env, jobject jobj);
+jint h5group_request(JNIEnv *env, jobject jobj);
 jint j2c_h5file(JNIEnv *env, jobject jobj, H5File *cobj);
 jint j2c_h5dataset(JNIEnv *env, jobject jdataset, H5Dataset *cobj);
+jint j2c_h5group(JNIEnv *env, jobject jobj, H5Group *cobj);
 jint c2j_h5file(JNIEnv *env, jobject jobj, H5File *cobj);
-jint c2j_h5dataset(JNIEnv *env, jobject jdataset, H5Dataset *cobj);
+jint c2j_h5dataset_read(JNIEnv *env, jobject jdataset, H5Dataset *cobj);
+jint c2j_h5dataset_read_attribute(JNIEnv *env, jobject jdataset, H5Dataset *cobj);
 jint c2j_h5group(JNIEnv *env, jobject jfile, jobject jgroup, H5Group *cgroup);
+jobject c2j_data_value (JNIEnv *env, void *value, unsigned int npoints, int tclass, int tsize);
+jint c2j_h5group_read_attribute(JNIEnv *env, jobject jobj, H5Group *cobj);
 
 void load_field_method_IDs(JNIEnv *env);
 void set_field_method_IDs_scalar();
@@ -69,11 +76,13 @@ void set_field_method_IDs_compound();
 
 /* for debug purpose */
 void print_file(H5File *file);
-void print_group(srbConn *conn, const H5Group *pg);
-void print_dataset(const H5Dataset *d);
-void print_dataset_value(const H5Dataset *d);
+void print_group(srbConn *conn, H5Group *pg);
+void print_dataset(H5Dataset *d);
+void print_dataset_value(H5Dataset *d);
 void print_datatype(H5Datatype *type);
 void print_dataspace(H5Dataspace *space);
+void print_attribute(H5Attribute *a);
+
 
 /**
  * Caching in the Defining Class's Initializer
@@ -87,10 +96,12 @@ jfieldID  fid_file_rootGroup=NULL;
 jfieldID  fid_file_fullFileName=NULL;
 
 jclass    cls_group=NULL;
+jfieldID  fid_group_opID=NULL;
 jfieldID  fid_group_fid=NULL;
 jfieldID  fid_group_fullPath=NULL;
 jmethodID mid_group_ctr=NULL;
 jmethodID mid_group_addToMemberList=NULL;
+jmethodID mid_group_addAttribute=NULL;
 
 jclass    cls_dataset=NULL;
 jfieldID  fid_dataset_opID=NULL;
@@ -106,6 +117,7 @@ jfieldID  fid_dataset_datatype=NULL;
 jmethodID mid_dataset_ctr=NULL;
 jmethodID mid_dataset_setData=NULL;
 jmethodID mid_dataset_init=NULL;
+jmethodID mid_dataset_addAttribute=NULL;
 
 jclass    cls_dataset_scalar=NULL;
 jfieldID  fid_dataset_scalar_opID=NULL;
@@ -121,6 +133,7 @@ jfieldID  fid_dataset_scalar_datatype=NULL;
 jmethodID mid_dataset_scalar_ctr=NULL;
 jmethodID mid_dataset_scalar_setData=NULL;
 jmethodID mid_dataset_scalar_init=NULL;
+jmethodID mid_dataset_scalar_addAttribute=NULL;
 
 /* unique for scalar dataset */
 jmethodID mid_dataset_scalar_setPalette=NULL;
@@ -139,6 +152,7 @@ jfieldID  fid_dataset_compound_datatype=NULL;
 jmethodID mid_dataset_compound_ctr=NULL;
 jmethodID mid_dataset_compound_setData=NULL;
 jmethodID mid_dataset_compound_init=NULL;
+jmethodID mid_dataset_compound_addAttribute=NULL;
 
 /* unique for compound */
 jfieldID  fid_dataset_compound_memberNames=NULL;
@@ -178,6 +192,9 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_srb_h5srb_H5SRB_h5ObjRequest
             break;
         case H5OBJECT_DATASET:
             h5dataset_request(env, jobj);
+            break;
+        case H5OBJECT_GROUP:
+            h5group_request(env, jobj);
             break;
         default:
             THROW_JNI_ERROR("java/lang/UnsupportedOperationException",
@@ -243,11 +260,15 @@ jint h5dataset_request(JNIEnv *env, jobject jobj)
     jint ret_val=0, i=0;
     unsigned int npoints=1;
     H5Dataset h5dataset;
-    H5Dataset *d = &h5dataset;
 
     assert(connection);
 
     H5Dataset_ctor(&h5dataset);
+
+    if ( (*env)->IsInstanceOf(env, jobj, (*env)->FindClass(env, "ncsa/hdf/srb/obj/H5SrbScalarDS")) )
+        set_field_method_IDs_scalar();
+    else
+        set_field_method_IDs_compound();
 
     if ( (ret_val = j2c_h5dataset(env, jobj, &h5dataset)) < 0)
         goto done;
@@ -261,14 +282,47 @@ jint h5dataset_request(JNIEnv *env, jobject jobj)
         for (i=0; i<h5dataset.space.rank; i++)
             h5dataset.space.npoints *= h5dataset.space.count[i];
     }
-    
 
-    if ( (ret_val = c2j_h5dataset (env, jobj, &h5dataset)) < 0)
-        goto done;
+    if ( h5dataset.opID == H5DATASET_OP_READ_ATTRIBUTE)
+        ret_val = c2j_h5dataset_read_attribute (env, jobj, &h5dataset);
+    else if (h5dataset.opID == H5DATASET_OP_READ)
+        ret_val = c2j_h5dataset_read (env, jobj, &h5dataset);
 
 done:
 
     H5Dataset_dtor(&h5dataset);
+
+    return ret_val;
+}
+
+/* process HDF5-SRB file request: 
+ * 1) decode Java message to C, 
+ * 2) send request to the server
+ * 3) encode server result to Java
+ */
+jint h5group_request(JNIEnv *env, jobject jobj)
+{
+    jint ret_val=0, i=0;
+    unsigned int npoints=1;
+    H5Group h5group;
+
+    assert(connection);
+
+    H5Group_ctor(&h5group);
+
+    if ( (ret_val = j2c_h5group(env, jobj, &h5group)) < 0)
+        goto done;
+
+    /* send the request to the server to process */
+    if (h5ObjRequest(current_connection, &h5group, H5OBJECT_GROUP) < 0)
+        THROW_JNI_ERROR("java/lang/RuntimeException", "group h5ObjRequest() failed");
+
+    if ( h5group.opID == H5GROUP_OP_READ_ATTRIBUTE)
+        ret_val = c2j_h5group_read_attribute (env, jobj, &h5group);
+
+done:
+
+    H5Group_dtor(&h5group);
 
     return ret_val;
 }
@@ -318,16 +372,16 @@ jint j2c_h5dataset(JNIEnv *env, jobject jobj, H5Dataset *cobj)
     cobj->opID = (*env)->GetIntField(env, jobj, fid_dataset_opID);
     cobj->fid = (*env)->GetIntField(env, jobj, fid_dataset_fid);
 
+    /* set the full path */
+    jstr = (*env)->GetObjectField(env, jobj, fid_dataset_fullPath);
+    if (NULL == (cstr = (char *)(*env)->GetStringUTFChars(env, jstr, NULL)) )
+        THROW_JNI_ERROR("java/lang/OutOfMemoryError", jni_name);
+    cobj->fullpath = (char *)malloc(strlen(cstr)+1);
+    strcpy(cobj->fullpath, cstr);
+    (*env)->ReleaseStringUTFChars(env, jstr, cstr);
+
     if (H5DATASET_OP_READ == cobj->opID)
     {
-        /* set the full path */
-        jstr = (*env)->GetObjectField(env, jobj, fid_dataset_fullPath);
-        if (NULL == (cstr = (char *)(*env)->GetStringUTFChars(env, jstr, NULL)) )
-            THROW_JNI_ERROR("java/lang/OutOfMemoryError", jni_name);
-        cobj->fullpath = (char *)malloc(strlen(cstr)+1);
-        strcpy(cobj->fullpath, cstr);
-        (*env)->ReleaseStringUTFChars(env, jstr, cstr);
-
         /* set datatype information */
         jtype = (*env)->GetObjectField(env, jobj, fid_dataset_datatype);
         cobj->type.class = (H5Datatype_class_t) (*env)->GetIntField(env, jtype, fid_datatype_class);
@@ -380,6 +434,31 @@ jint j2c_h5dataset(JNIEnv *env, jobject jobj, H5Dataset *cobj)
             (*env)->ReleaseLongArrayElements(env, ja, jptr, 0);
         }
     }
+
+done:
+    return ret_val;
+}
+
+/* construct C H5Group structure from Java Group object */
+jint j2c_h5group(JNIEnv *env, jobject jobj, H5Group *cobj)
+{
+    jint ret_val = 0;
+    jstring jstr;
+    const char *cstr;
+    char jni_name[] = "j2c_h5group";
+
+    assert(cobj);
+
+    cobj->opID = (*env)->GetIntField(env, jobj, fid_group_opID);
+    cobj->fid = (*env)->GetIntField(env, jobj, fid_group_fid);
+
+    /* set the full path */
+    jstr = (*env)->GetObjectField(env, jobj, fid_group_fullPath);
+    if (NULL == (cstr = (char *)(*env)->GetStringUTFChars(env, jstr, NULL)) )
+        THROW_JNI_ERROR("java/lang/OutOfMemoryError", jni_name);
+    cobj->fullpath = (char *)malloc(strlen(cstr)+1);
+    strcpy(cobj->fullpath, cstr);
+    (*env)->ReleaseStringUTFChars(env, jstr, cstr);
 
 done:
     return ret_val;
@@ -499,17 +578,21 @@ jint c2j_h5group(JNIEnv *env, jobject jfile, jobject jgroup, H5Group *cgroup)
                 strcmp(PALETTE_VALUE, (cd->attributes)[0].name)==0 &&
                 (cd->attributes)[0].value)
             {
-                jbyte *value;             
+                unsigned char *value;             
                 jbyte *jbptr;
                 jbyteArray jbytes;
 
                 // setup palette
-                value = (jbyte *)(cd->attributes)[0].value;
+                value = (unsigned char *)(cd->attributes)[0].value;
                 jbytes = (*env)->NewByteArray(env, 768);
                 jbptr = (*env)->GetByteArrayElements(env, jbytes, 0);
-                for (j=0; j<768; j++) jbptr[j] = value[j];
-                (*env)->CallVoidMethod(env, jd, mid_dataset_scalar_setPalette, jbytes);
+                for (j=0; j<768; j++)
+                {
+                    jbptr[j] = (jbyte)value[j];
+
+                }
                 (*env)->ReleaseByteArrayElements(env, jbytes, jbptr, 0); 
+                (*env)->CallVoidMethod(env, jd, mid_dataset_scalar_setPalette, jbytes);
             }
 
             /* get the dims */
@@ -533,93 +616,106 @@ done:
 }
 
 /* construct  Java Dataset object from C H5Dataset structure*/
-jint c2j_h5dataset(JNIEnv *env, jobject jobj, H5Dataset *cobj)
+jint c2j_h5dataset_read(JNIEnv *env, jobject jobj, H5Dataset *cobj)
 {
     jint ret_val = 0;
-    unsigned int i=0;
-    char jni_name[] = "j2c_h5dataset";
-    jstring jstr;
-    char **strs;
-    jobjectArray jobj_a;
-
+    char jni_name[] = "c2j_h5dataset_read";
+    jobject jdata;
 
     assert(cobj);
+
+    jdata = c2j_data_value (env, cobj->value, cobj->space.npoints, cobj->type.class, cobj->type.size);
     
-    if (NULL == cobj->value)
+    if (NULL == jdata)
         GOTO_JNI_ERROR();
 
-    switch (cobj->type.class) {
-        case H5DATATYPE_INTEGER:
-        case H5DATATYPE_REFERENCE:
-            if (1 == cobj->type.size) {
-                jbyte *ca = (jbyte *)cobj->value;
-                jbyteArray ja = (*env)->NewByteArray(env, cobj->space.npoints);
-                jbyte *jptr = (*env)->GetByteArrayElements(env, ja, 0);
-                for (i=0; i<cobj->space.npoints; i++) jptr[i] = ca[i];
-                (*env)->ReleaseByteArrayElements(env, ja, jptr, 0); 
-                (*env)->CallVoidMethod(env, jobj, mid_dataset_setData, ja);
-            }
-            else if (2 == cobj->type.size) {
-                jshort *ca = (jshort *)cobj->value;
-                jshortArray ja = (*env)->NewShortArray(env, cobj->space.npoints);
-                jshort *jptr = (*env)->GetShortArrayElements(env, ja, 0);
-                for (i=0; i<cobj->space.npoints; i++) jptr[i] = ca[i];
-                (*env)->ReleaseShortArrayElements(env, ja, jptr, 0); 
-                (*env)->CallVoidMethod(env, jobj, mid_dataset_setData, ja);
-            }
-            else if (4 == cobj->type.size) {
-                jint *ca = (jint *)cobj->value;
-                jintArray ja = (*env)->NewIntArray(env, cobj->space.npoints);
-                jint *jptr = (*env)->GetIntArrayElements(env, ja, 0);
-                for (i=0; i<cobj->space.npoints; i++)
-                {
-                    jptr[i] = ca[i];
-                }
-                (*env)->ReleaseIntArrayElements(env, ja, jptr, 0); 
-                (*env)->CallVoidMethod(env, jobj, mid_dataset_setData, ja);
-            }
-            else {
-                jlong *ca = (jlong *)cobj->value;
-                jlongArray ja = (*env)->NewLongArray(env, cobj->space.npoints);
-                jlong *jptr = (*env)->GetLongArrayElements(env, ja, 0);
-                for (i=0; i<cobj->space.npoints; i++) jptr[i] = ca[i];
-                (*env)->ReleaseLongArrayElements(env, ja, jptr, 0); 
-                (*env)->CallVoidMethod(env, jobj, mid_dataset_setData, ja);
-            }
-            break;
-        case H5DATATYPE_FLOAT:
-            if (4 == cobj->type.size) {
-                jfloat *ca = (jfloat *)cobj->value;
-                jfloatArray ja = (*env)->NewFloatArray(env, cobj->space.npoints);
-                jfloat *jptr = (*env)->GetFloatArrayElements(env, ja, 0);
-                for (i=0; i<cobj->space.npoints; i++) jptr[i] = ca[i];
-                (*env)->ReleaseFloatArrayElements(env, ja, jptr, 0); 
-                (*env)->CallVoidMethod(env, jobj, mid_dataset_setData, ja);
-            }
-            else {
-                jdouble *ca = (jdouble *)cobj->value;
-                jdoubleArray ja = (*env)->NewDoubleArray(env, cobj->space.npoints);
-                jdouble *jptr = (*env)->GetDoubleArrayElements(env, ja, 0);
-                for (i=0; i<cobj->space.npoints; i++) jptr[i] = ca[i];
-                (*env)->ReleaseDoubleArrayElements(env, ja, jptr, 0); 
-                (*env)->CallVoidMethod(env, jobj, mid_dataset_setData, ja);
-            }
-            break;
-        case H5DATATYPE_STRING:
-        case H5DATATYPE_VLEN:
-        case H5DATATYPE_COMPOUND:
-            strs = (char **)cobj->value;
-            jobj_a = (*env)->NewObjectArray(env, cobj->space.npoints, 
-                (*env)->FindClass(env, "java/lang/String"), (*env)->NewStringUTF(env, ""));
-	        for (i=0; i<cobj->space.npoints; i++) {
-		        jstr = (*env)->NewStringUTF(env, strs[i]);
-		        (*env)->SetObjectArrayElement(env, jobj_a, i, jstr);
-	        }; 
-            (*env)->CallVoidMethod(env, jobj, mid_dataset_setData, jobj_a);
-            break;
-        default:
-            break;
-    }
+    (*env)->CallVoidMethod(env, jobj, mid_dataset_setData, jdata);
+
+done:
+    return ret_val;
+}
+
+/* construct  Java Dataset object from C H5Dataset structure for attributes*/
+jint c2j_h5dataset_read_attribute(JNIEnv *env, jobject jobj, H5Dataset *cobj)
+{
+    jint ret_val = 0;
+    int i=0;
+    char jni_name[] = "c2j_h5dataset_read_attribute";
+    jlongArray jdims;
+    jlong *jptr;
+    H5Attribute attr;
+    jstring attr_name;
+    jobject attr_value;
+
+    assert(cobj);
+
+    if (cobj->nattributes <=0 )
+        goto done;
+    
+    if (NULL == cobj->attributes)
+        GOTO_JNI_ERROR();
+
+    for (i=0; i<cobj->nattributes; i++)
+    {
+        attr = cobj->attributes[i];
+
+        attr_name = (*env)->NewStringUTF(env, attr.name);
+        attr_value = c2j_data_value (env, attr.value, attr.space.npoints, attr.type.class, attr.type.size);
+
+        /* get the dims */
+        jdims = (*env)->NewLongArray(env, attr.space.rank);
+        jptr = (*env)->GetLongArrayElements(env, jdims, 0);
+        for (j=0; j<attr.space.rank; j++) jptr[j] = (jlong)attr.space.dims[j];
+        (*env)->ReleaseLongArrayElements(env, jdims, jptr, 0);
+
+        /* add the attribute */
+        (*env)->CallVoidMethod(env, jobj, mid_dataset_addAttribute, 
+            attr_name, attr_value, jdims, attr.type.class, attr.type.size, 
+            attr.type.order, attr.type.sign);
+     }
+
+
+done:
+    return ret_val;
+}
+
+jint c2j_h5group_read_attribute(JNIEnv *env, jobject jobj, H5Group *cobj)
+{
+    jint ret_val = 0;
+    int i=0;
+    char jni_name[] = "c2j_h5group_read_attribute";
+    jlongArray jdims;
+    jlong *jptr;
+    H5Attribute attr;
+    jstring attr_name;
+    jobject attr_value;
+
+    assert(cobj);
+
+    if (cobj->nattributes <=0 )
+        goto done;
+    
+    if (NULL == cobj->attributes)
+        GOTO_JNI_ERROR();
+
+    for (i=0; i<cobj->nattributes; i++)
+    {
+        attr = cobj->attributes[i];
+
+        attr_name = (*env)->NewStringUTF(env, attr.name);
+        attr_value = c2j_data_value (env, attr.value, attr.space.npoints, attr.type.class, attr.type.size);
+
+        /* get the dims */
+        jdims = (*env)->NewLongArray(env, attr.space.rank);
+        jptr = (*env)->GetLongArrayElements(env, jdims, 0);
+        for (j=0; j<attr.space.rank; j++) jptr[j] = (jlong)attr.space.dims[j];
+        (*env)->ReleaseLongArrayElements(env, jdims, jptr, 0);
+
+        /* add the attribute */
+        (*env)->CallVoidMethod(env, jobj, mid_group_addAttribute, 
+            attr_name, attr_value, jdims, attr.type.class, attr.type.size, 
+            attr.type.order, attr.type.sign);
+     }
 
 
 done:
@@ -643,11 +739,13 @@ void load_field_method_IDs(JNIEnv *env) {
     if (cls != NULL)
     {
         cls_group = cls;
+        fid_group_opID = (*env)->GetFieldID(env, cls, "opID", "I");
         fid_group_fid = (*env)->GetFieldID(env, cls, "fid", "I");
         fid_group_fullPath = (*env)->GetFieldID(env, cls, "fullPath", "Ljava/lang/String;");
         mid_group_ctr = (*env)->GetMethodID(env, cls, "<init>", 
             "(Lncsa/hdf/object/FileFormat;Ljava/lang/String;Ljava/lang/String;Lncsa/hdf/object/Group;[J)V");
         mid_group_addToMemberList = (*env)->GetMethodID(env, cls, "addToMemberList", "(Lncsa/hdf/object/HObject;)V");
+        mid_group_addAttribute = (*env)->GetMethodID(env, cls, "addAttribute", "(Ljava/lang/String;Ljava/lang/Object;[JIIII)V");
     }
 
     cls = (*env)->FindClass(env, "ncsa/hdf/srb/obj/H5SrbScalarDS");
@@ -670,6 +768,7 @@ void load_field_method_IDs(JNIEnv *env) {
             "(Lncsa/hdf/object/FileFormat;Ljava/lang/String;Ljava/lang/String;[J)V");
         mid_dataset_scalar_setData = (*env)->GetMethodID(env, cls, "setData", "(Ljava/lang/Object;)V");
         mid_dataset_scalar_init = (*env)->GetMethodID(env, cls, "init", "(I[JIIII)V");
+        mid_dataset_scalar_addAttribute = (*env)->GetMethodID(env, cls, "addAttribute", "(Ljava/lang/String;Ljava/lang/Object;[JIIII)V");
 
         /* unique for scalar dataset */
         mid_dataset_scalar_setPalette = (*env)->GetMethodID(env, cls, "setPalette", "([B)V"); 
@@ -696,6 +795,7 @@ void load_field_method_IDs(JNIEnv *env) {
             "(Lncsa/hdf/object/FileFormat;Ljava/lang/String;Ljava/lang/String;[J)V");
         mid_dataset_compound_setData = (*env)->GetMethodID(env, cls, "setData", "(Ljava/lang/Object;)V");
         mid_dataset_compound_init = (*env)->GetMethodID(env, cls, "init", "(I[JIIII)V");
+        mid_dataset_compound_addAttribute = (*env)->GetMethodID(env, cls, "addAttribute", "(Ljava/lang/String;Ljava/lang/Object;[JIIII)V");
 
         /* unique for compound */
         fid_dataset_compound_memberNames = (*env)->GetFieldID(env, cls_dataset_compound, "memberNames", "[Ljava/lang/String;");
@@ -732,6 +832,7 @@ void set_field_method_IDs_scalar()
     mid_dataset_ctr = mid_dataset_scalar_ctr;
     mid_dataset_setData = mid_dataset_scalar_setData;
     mid_dataset_init = mid_dataset_scalar_init;
+    mid_dataset_addAttribute = mid_dataset_scalar_addAttribute;
 }
 
 void set_field_method_IDs_compound()
@@ -750,6 +851,7 @@ void set_field_method_IDs_compound()
     mid_dataset_ctr = mid_dataset_compound_ctr;
     mid_dataset_setData = mid_dataset_compound_setData;
     mid_dataset_init = mid_dataset_compound_init;
+    mid_dataset_addAttribute = mid_dataset_compound_addAttribute;
 }
 
 srbConn *make_connection(JNIEnv *env, jobjectArray jsrb_info) {
@@ -844,6 +946,96 @@ void close_srb_connections() {
     connection_list.count = 0;
 }
 
+/* write data value from c to java */
+jobject c2j_data_value (JNIEnv *env, void *value, unsigned int npoints, int tclass, int tsize)
+{
+    jobject jvalue = NULL;
+    unsigned int i=0;
+    jstring jstr;
+    char **strs;
+    jobjectArray jobj_a;
+
+    if (NULL == value)
+        return NULL;
+
+    switch (tclass) {
+        case H5DATATYPE_INTEGER:
+        case H5DATATYPE_REFERENCE:
+            if (1 == tsize) {
+                jbyte *ca = (jbyte *)value;
+                jbyteArray ja = (*env)->NewByteArray(env, npoints);
+                jbyte *jptr = (*env)->GetByteArrayElements(env, ja, 0);
+                for (i=0; i<npoints; i++) jptr[i] = ca[i];
+                (*env)->ReleaseByteArrayElements(env, ja, jptr, 0); 
+                jvalue = ja;
+            }
+            else if (2 == tsize) {
+                jshort *ca = (jshort *)value;
+                jshortArray ja = (*env)->NewShortArray(env, npoints);
+                jshort *jptr = (*env)->GetShortArrayElements(env, ja, 0);
+                for (i=0; i<npoints; i++) jptr[i] = ca[i];
+                (*env)->ReleaseShortArrayElements(env, ja, jptr, 0); 
+                jvalue = ja;
+            }
+            else if (4 == tsize) {
+                jint *ca = (jint *)value;
+                jintArray ja = (*env)->NewIntArray(env, npoints);
+                jint *jptr = (*env)->GetIntArrayElements(env, ja, 0);
+                for (i=0; i<npoints; i++)
+                {
+                    jptr[i] = ca[i];
+                }
+                (*env)->ReleaseIntArrayElements(env, ja, jptr, 0); 
+                jvalue = ja;
+            }
+            else {
+                jlong *ca = (jlong *)value;
+                jlongArray ja = (*env)->NewLongArray(env, npoints);
+                jlong *jptr = (*env)->GetLongArrayElements(env, ja, 0);
+                for (i=0; i<npoints; i++) jptr[i] = ca[i];
+                (*env)->ReleaseLongArrayElements(env, ja, jptr, 0); 
+                jvalue = ja;
+            }
+            break;
+        case H5DATATYPE_FLOAT:
+            if (4 == tsize) {
+                jfloat *ca = (jfloat *)value;
+                jfloatArray ja = (*env)->NewFloatArray(env, npoints);
+                jfloat *jptr = (*env)->GetFloatArrayElements(env, ja, 0);
+                for (i=0; i<npoints; i++) jptr[i] = ca[i];
+                (*env)->ReleaseFloatArrayElements(env, ja, jptr, 0); 
+                jvalue = ja;
+            }
+            else {
+                jdouble *ca = (jdouble *)value;
+                jdoubleArray ja = (*env)->NewDoubleArray(env, npoints);
+                jdouble *jptr = (*env)->GetDoubleArrayElements(env, ja, 0);
+                for (i=0; i<npoints; i++) jptr[i] = ca[i];
+                (*env)->ReleaseDoubleArrayElements(env, ja, jptr, 0); 
+                jvalue = ja;
+            }
+            break;
+        case H5DATATYPE_STRING:
+        case H5DATATYPE_VLEN:
+        case H5DATATYPE_COMPOUND:
+            strs = (char **)value;
+            jobj_a = (*env)->NewObjectArray(env, npoints, 
+                (*env)->FindClass(env, "java/lang/String"), (*env)->NewStringUTF(env, ""));
+	        for (i=0; i<npoints; i++) {
+		        jstr = (*env)->NewStringUTF(env, strs[i]);
+		        (*env)->SetObjectArrayElement(env, jobj_a, i, jstr);
+	        }; 
+            jvalue = jobj_a;
+            break;
+        default:
+            jvalue = NULL;
+            break;
+    }
+
+    return jvalue;
+
+}
+
 
 /**********************************************************************
  *                                                                    *
@@ -859,7 +1051,7 @@ void print_file(H5File *file)
     printf("opID = %d\n", file->opID);
 }
 
-void print_group(srbConn *conn, const H5Group *pg)
+void print_group(srbConn *conn, H5Group *pg)
 {
     int i=0;
     H5Group *g=0;
@@ -952,7 +1144,7 @@ void print_dataspace(H5Dataspace *space)
     }
 }
 
-void print_dataset(const H5Dataset *d)
+void print_dataset(H5Dataset *d)
 {
     assert(d);
 
@@ -964,7 +1156,7 @@ void print_dataset(const H5Dataset *d)
 }
 
 
-void print_dataset_value(const H5Dataset *d)
+void print_dataset_value(H5Dataset *d)
 {
     int size=0, i=0;
     char* pv;
@@ -1033,4 +1225,72 @@ void print_dataset_value(const H5Dataset *d)
 
     return;
 }
+
+void print_attribute(H5Attribute *a)
+{
+    int size=0, i=0;
+    char* pv;
+    char **strs;
+
+    assert(a);
+
+    printf("\n\tThe total size of the attribute value buffer = %d\n", a->nvalue);
+    printf("\n\tPrinting the first 10 values of %s\n", a->name);
+    if (a->value)
+    {
+        size = 1;
+        pv = (char*)a->value;
+        for (i=0; i<a->space.rank; i++) size *= a->space.count[i];
+        if (size > 10 ) size = 10; /* print only the first 10 values */
+        if (a->type.class == H5DATATYPE_VLEN
+            || a->type.class == H5DATATYPE_COMPOUND
+            || a->type.class == H5DATATYPE_STRING)
+            strs = (char **)a->value;
+
+        for (i=0; i<size; i++)
+        {
+            if (a->type.class == H5DATATYPE_INTEGER)
+            {
+                if (a->type.sign == H5DATATYPE_SGN_NONE)
+                {
+                    if (a->type.size == 1)
+                        printf("%u\t", *((unsigned char*)(pv+i)));
+                    else if (a->type.size == 2)
+                        printf("%u\t", *((unsigned short*)(pv+i*2)));
+                    else if (a->type.size == 4)
+                        printf("%u\t", *((unsigned int*)(pv+i*4)));
+                    else if (a->type.size == 8)
+                        printf("%u\t", *((unsigned long*)(pv+i*8)));
+                }
+                else
+                {
+                    if (a->type.size == 1)
+                        printf("%d\t", *((char*)(pv+i)));
+                    else if (a->type.size == 2)
+                        printf("%d\t", *((short*)(pv+i*2)));
+                    else if (a->type.size == 4)
+                        printf("%d\t", *((int*)(pv+i*4)));
+                    else if (a->type.size == 8)
+                        printf("%d\t", *((long *)(pv+i*8)));
+                }
+            } else if (a->type.class == H5DATATYPE_FLOAT)
+            {
+                if (a->type.size == 4)
+                    printf("%f\t", *((float *)(pv+i*4)));
+                else if (a->type.size == 8)
+                    printf("%f\t", *((double *)(pv+i*8)));
+            } else if (a->type.class == H5DATATYPE_VLEN
+                    || a->type.class == H5DATATYPE_COMPOUND)
+            {
+                if (strs[i])
+                    printf("%s\t", strs[i]);
+            } else if (a->type.class == H5DATATYPE_STRING)
+            {
+                if (strs[i]) printf("%s\t", strs[i]);
+            }
+        }
+        printf("\n\n");
+    }
+}
+
 

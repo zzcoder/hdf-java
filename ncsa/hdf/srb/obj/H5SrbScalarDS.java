@@ -28,7 +28,7 @@ public class H5SrbScalarDS extends ScalarDS
      * The list of attributes of this data object. Members of the list are
      * instance of Attribute.
      */
-     private List attributeList;
+    private List attributeList;
 
     private int opID;
     private String fullPath; /*path+name*/
@@ -78,6 +78,7 @@ public class H5SrbScalarDS extends ScalarDS
             palette[1][i] = pal[i*3+1];
             palette[2][i] = pal[i*3+2];
         }
+        isImage = true;
     }
 
     /**
@@ -116,7 +117,7 @@ public class H5SrbScalarDS extends ScalarDS
     public Object read() throws Exception, OutOfMemoryError
     {
         String srbInfo[] = ((H5SrbFile)getFileFormat()).getSrbInfo();
-        if ( srbInfo == null) return null;
+        if ( srbInfo == null  || srbInfo.length<5) return null;
 
         opID = H5DATASET_OP_READ;
         H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_DATASET);
@@ -169,16 +170,31 @@ public class H5SrbScalarDS extends ScalarDS
     public List getMetadata() throws Exception
     {
         String srbInfo[] = ((H5SrbFile)getFileFormat()).getSrbInfo();
-        if ( srbInfo == null) return null;
+        if ( srbInfo == null  || srbInfo.length<5) return null;
 
         // load attributes first
         if (attributeList == null)
         {
+            attributeList = new Vector();
+
             opID = H5DATASET_OP_READ_ATTRIBUTE;
             H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_DATASET);
         } // if (attributeList == null)
 
         return attributeList;
+    }
+
+    void addAttribute(String attrName, Object attrValue, long[] attrDims,
+                     int tclass, int tsize, int torder, int tsign)
+    {
+        if (attributeList == null)
+            attributeList = new Vector();
+
+        H5SrbDatatype type = new H5SrbDatatype(tclass, tsize, torder, tsign);
+        Attribute attr = new Attribute(attrName, type, attrDims);
+        attr.setValue(attrValue);
+
+        attributeList.add(attr);
     }
 
     /**

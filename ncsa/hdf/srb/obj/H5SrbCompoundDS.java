@@ -200,11 +200,26 @@ public class H5SrbCompoundDS extends CompoundDS
         // load attributes first
         if (attributeList == null)
         {
+           attributeList = new Vector();
+
             opID = H5DATASET_OP_READ_ATTRIBUTE;
             H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_DATASET);
         } // if (attributeList == null)
 
         return attributeList;
+    }
+
+    void addAttribute(String attrName, Object attrValue, long[] attrDims,
+                     int tclass, int tsize, int torder, int tsign)
+    {
+        if (attributeList == null)
+            attributeList = new Vector();
+
+        H5SrbDatatype type = new H5SrbDatatype(tclass, tsize, torder, tsign);
+        Attribute attr = new Attribute(attrName, type, attrDims);
+        attr.setValue(attrValue);
+
+        attributeList.add(attr);
     }
 
     /**
