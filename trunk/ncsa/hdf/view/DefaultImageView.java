@@ -169,6 +169,10 @@ implements ImageView, ActionListener
 
     private List rotateRelatedItems;
 
+    private JScrollPane imageScroller;
+
+    private boolean isTransposed;
+
 
     /**
      * Constructs an ImageView.
@@ -185,7 +189,7 @@ implements ImageView, ActionListener
      * <p>
      * @param theView the main HDFView.
      */
-    public DefaultImageView(ViewManager theView, Boolean isTransposed)
+    public DefaultImageView(ViewManager theView, Boolean _isTransposed)
     {
         super();
 
@@ -205,6 +209,8 @@ implements ImageView, ActionListener
         NT = 0;
         toolkit = Toolkit.getDefaultToolkit();
         rotateRelatedItems = new Vector();
+        imageScroller = null;
+        isTransposed = _isTransposed.booleanValue();
 
         HObject hobject = (HObject)viewer.getTreeView().getCurrentObject();
         if (hobject == null || !(hobject instanceof ScalarDS)) {
@@ -240,6 +246,7 @@ implements ImageView, ActionListener
         JScrollPane scroller = new JScrollPane(imageComponent);
         scroller.getVerticalScrollBar().setUnitIncrement(50);
         scroller.getHorizontalScrollBar().setUnitIncrement(50);
+        imageScroller = scroller;
         contentPane.add (scroller, BorderLayout.CENTER);
 
         // add palette convas to show the palette
@@ -307,9 +314,9 @@ implements ImageView, ActionListener
             setTitle(frameTitle);
         }
 
-
         // tanspose the image
-        if (isTransposed.booleanValue()) {
+/*
+        if (isTransposed) {
             rotate(ROTATE_CW_90);
             rotateCount++;
             n = rotateRelatedItems.size();
@@ -317,6 +324,7 @@ implements ImageView, ActionListener
                 ((javax.swing.JComponent)rotateRelatedItems.get(i)).setEnabled(false);
             }
         }
+*/
     }
 
     private JMenuBar createMenuBar() {
@@ -704,12 +712,14 @@ implements ImageView, ActionListener
 */
                 }
                 data = dataset.getData();
-
-                // converts raw data to image data
-                indexedImageData = Tools.getBytes(data, dataRange);
-
                 int w = dataset.getWidth();
                 int h = dataset.getHeight();
+
+                // converts raw data to image data
+                if (isTransposed)
+                    indexedImageData = Tools.getBytes(data, dataRange, w, h, true);
+                else
+                    indexedImageData = Tools.getBytes(data, dataRange);
 
                 image = createIndexedImage(indexedImageData, imagePalette, w, h);
             }
@@ -1675,13 +1685,14 @@ implements ImageView, ActionListener
 
     /** ImageComponent draws the image. */
     private class ImageComponent extends JComponent
-        implements MouseListener, MouseMotionListener
+        implements MouseListener, MouseMotionListener, MouseWheelListener
     {
         private Dimension originalSize, imageSize;
         private Image image;
         private Point startPosition; // mouse clicked position
         private Rectangle selectedArea, originalSelectedArea;
         private StringBuffer strBuff; // to hold display value
+        private int yMousePosition=0; /* the vertical position of the current mouse */
 
         private ImageComponent (Image img)
         {
@@ -1695,6 +1706,7 @@ implements ImageView, ActionListener
 
             addMouseListener(this);
             addMouseMotionListener(this);
+            addMouseWheelListener(this);
         }
 
         public void paint(Graphics g)
@@ -1750,18 +1762,41 @@ implements ImageView, ActionListener
 
         public void mouseMoved(MouseEvent e)
         {
+            yMousePosition = e.getY();
+            showPixelValue(e.getX(), yMousePosition);
+        }
+
+        public void mouseWheelMoved(MouseWheelEvent e)
+        {
+            JScrollBar jb = imageScroller.getVerticalScrollBar();
+            int us = e.getUnitsToScroll();
+            int wr = e.getWheelRotation();
+            int n = us*jb.getUnitIncrement();
+            int y = jb.getValue();
+
+            if ((y<=0 && wr<0) || (y+jb.getVisibleAmount()*wr >= zoomFactor*originalSize.height))
+                return;
+
+            yMousePosition += n;
+            jb.setValue(jb.getValue()+n);
+
+            showPixelValue(e.getX(), yMousePosition);
+        }
+
+        private void showPixelValue(int x, int y)
+        {
             if (!valueField.isVisible())
                 return;
 
             if (data == null)
                 return;
 
-            int x = (int) (e.getX()/zoomFactor);
+            x = (int) (x/zoomFactor);
             int w = originalSize.width;
             if (x < 0 || x >= w)
                 return; // out of image bound
 
-            int y = (int) (e.getY()/zoomFactor);
+            y = (int) (y/zoomFactor);
             int h = originalSize.height;
             if (y < 0 || y >= h)
                 return; // out of image bound
