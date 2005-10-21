@@ -4398,6 +4398,16 @@ public class H5 {
     public synchronized static native int H5Zget_filter_info (int filter);
 
 
+    ////////////////////////////////////////////////////////////////////
+    //                                                                //
+    //             New APIs for HDF5Index                             //
+    //                 October 10, 2005                               //
+    ////////////////////////////////////////////////////////////////////
 
+    public synchronized static native int H5INcreate (String grp_name, int grp_loc_id,
+        int property_list, int data_loc_id, String data_loc_name, String field_name, long max_mem_size);
+
+    public synchronized static native int H5INquery (int dset_id, String keys[],
+        Object ubounds, Object lbounds, int nkeys);
 }
 
