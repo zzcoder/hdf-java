@@ -15,6 +15,7 @@ import java.util.*;
 import ncsa.hdf.hdf5lib.*;
 import ncsa.hdf.hdf5lib.exceptions.*;
 import ncsa.hdf.object.*;
+import java.lang.reflect.Array;
 
 /**
  * H5CompoundDS describes a multi-dimension array of HDF5 compound dataset,
@@ -127,6 +128,8 @@ public class H5CompoundDS extends CompoundDS
       */
      private List flatTypeList;
 
+     private boolean isIndexTable;
+
     public H5CompoundDS(FileFormat fileFormat, String name, String path)
     {
         this(fileFormat, name, path, null);
@@ -149,6 +152,7 @@ public class H5CompoundDS extends CompoundDS
         super (fileFormat, name, path, oid);
 
         int did = open();
+        isIndexTable = false;
         try { hasAttribute = (H5.H5Aget_num_attrs(did)>0); }
         catch (Exception ex) {}
         close(did);
@@ -305,7 +309,10 @@ public class H5CompoundDS extends CompoundDS
             int n = flatNameList.size();
             for (int i=0; i<n; i++)
             {
-                if (!isMemberSelected[i])
+                // select all members for index table
+                if (isIndexTable)
+                    isMemberSelected[i] = true;
+                else if (!isMemberSelected[i])
                     continue; // the field is not selected
 
                 member_name = new String(memberNames[i]);
@@ -392,7 +399,7 @@ public class H5CompoundDS extends CompoundDS
                 }
                 try { H5.H5Tclose(nested_tid); } catch (HDF5Exception ex2) {}
 
-                if (!(isVLEN || is_variable_str))
+                if (!(isVLEN || is_variable_str || isIndexTable))
                 {
                     if (member_class == HDF5Constants.H5T_STRING) {
                         member_data = byteToString((byte[])member_data, member_size);
@@ -414,6 +421,13 @@ public class H5CompoundDS extends CompoundDS
 
                 list.add(member_data);
             } // end of for (int i=0; i<num_members; i++)
+
+/* TODO:
+            if (isIndexTable) {
+                try { queryIndexSpace(did, list); }
+                catch (Exception ex) {}
+            }
+*/
         } finally
         {
             if (fspace > 0)
@@ -429,13 +443,8 @@ public class H5CompoundDS extends CompoundDS
     //Implementing DataFormat
     public void write(Object buf) throws HDF5Exception
     {
-        if (buf == null)
-            return; // no data to write
-
-        if (numberOfMembers <= 0)
-            return; // this compound dataset does not have any member
-
-        if (!(buf instanceof List))
+        if (buf == null || numberOfMembers <= 0 ||
+            !(buf instanceof List) || isIndexTable)
             return;
 
         List list = (List)buf;
@@ -810,6 +819,29 @@ public class H5CompoundDS extends CompoundDS
                     try { H5.H5Tclose(tmptid); } catch (HDF5Exception ex) {}
                 }
             }
+
+            /* check is it is an index table */
+            int aid=-1, atid=-1, asid=-1;
+            try
+            {
+                aid = H5.H5Aopen_name(did, "CLASS");
+                atid = H5.H5Aget_type(aid);
+                int aclass = H5.H5Tget_class(atid);
+                if (aclass == HDF5Constants.H5T_STRING)
+                {
+                    int size = H5.H5Tget_size(atid);
+                    byte[] attrValue = new byte[size];
+                    H5.H5Aread(aid, atid, attrValue);
+                    String strValue = new String(attrValue).trim();
+                    isIndexTable = strValue.equalsIgnoreCase("INDEX");
+                }
+            } catch (Exception ex2) {}
+            finally
+            {
+                try { H5.H5Sclose(asid); } catch (HDF5Exception ex) {;}
+                try { H5.H5Tclose(atid); } catch (HDF5Exception ex) {;}
+                try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
+            }
         } catch (HDF5Exception ex)
         {
             numberOfMembers = 0;
@@ -1042,5 +1074,57 @@ public class H5CompoundDS extends CompoundDS
         return out;
     }
 
+    private void queryIndexSpace(int did, List list) throws Exception
+    {
+        if (list == null || list.size()<=0)
+            return;
 
+        Object keys = list.get(0);
+
+        Class data_class = keys.getClass();
+        if (!data_class.isArray())
+            return;
+
+        int size = Array.getLength(keys);
+        if (size <=0)
+            return;
+
+
+        String value[] = new String[size];
+        StringBuffer sb = new StringBuffer();
+
+        Object obj = null;
+        Object bound = null;
+        int npoints = 0;
+        int nblocks = 0;
+        int sid = 0;
+        for (int i=0; i<size; i++) {
+            obj = Array.get(keys, i);
+            if (obj instanceof Byte) {
+                bound = new byte[1];
+                ((byte[])bound)[0] = ((Byte)obj).byteValue();
+            } else if (obj instanceof Short) {
+                bound = new short[1];
+                ((short[])bound)[0] = ((Short)obj).shortValue();
+            } else if (obj instanceof Integer) {
+                bound = new int[1];
+                ((int[])bound)[0] = ((Integer)obj).intValue();
+            } else if (obj instanceof Long) {
+                bound = new long[1];
+                ((long[])bound)[0] = ((Long)obj).longValue();
+            } else if (obj instanceof Float) {
+                bound = new float[1];
+                ((float[])bound)[0] = ((Float)obj).floatValue();
+            } else if (obj instanceof Double) {
+                bound = new double[1];
+                ((double[])bound)[0] = ((Double)obj).doubleValue();
+            } else if (obj instanceof String) {
+                bound = obj;
+            }
+/* TODO: there is no back track to the dataset which is being indexed
+the H5INquery() does requires that information
+            sid = H5INquery (did, getName(), bound, bound, 1);
+*/
+        }
+    }
 }

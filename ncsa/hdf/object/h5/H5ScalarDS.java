@@ -906,22 +906,8 @@ public class H5ScalarDS extends ScalarDS
         if (gzip > 0) H5.H5Pset_deflate(plist, gzip);
         int fid = file.open();
         did = H5.H5Dcreate(fid, fullPath, tid, sid, plist);
-        if (did > 0 && data != null)
-        {
-            H5.H5Dwrite(
-                did,
-                tid,
-                HDF5Constants.H5S_ALL,
-                HDF5Constants.H5S_ALL,
-                HDF5Constants.H5P_DEFAULT,
-                data);
-        }
 
-        byte[] ref_buf = H5.H5Rcreate(
-            fid,
-            fullPath,
-            HDF5Constants.H5R_OBJECT,
-            -1);
+        byte[] ref_buf = H5.H5Rcreate( fid, fullPath, HDF5Constants.H5R_OBJECT, -1);
         long l = HDFNativeData.byteToLong(ref_buf, 0);
         long[] oid = {l};
         dataset = new H5ScalarDS(file, name, path, oid);
@@ -930,8 +916,11 @@ public class H5ScalarDS extends ScalarDS
         try {H5.H5Sclose(sid);} catch (HDF5Exception ex) {};
         try {H5.H5Dclose(did);} catch (HDF5Exception ex) {};
 
-        if (dataset != null)
+        if (dataset != null) {
             pgroup.addToMemberList(dataset);
+            if (data != null)
+                dataset.write(data);
+        }
 
         return dataset;
     }
