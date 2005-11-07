@@ -83,6 +83,8 @@ implements TreeView, ActionListener {
 
     private JMenuItem addTableMenuItem;
 
+    private JMenuItem addDatatypeMenuItem;
+
     public DefaultTreeView(ViewManager theView) {
         viewer = theView;
 
@@ -99,6 +101,10 @@ implements TreeView, ActionListener {
         addTableMenuItem = new JMenuItem( "Table", ViewProperties.getTableIcon());
         addTableMenuItem.addActionListener(this);
         addTableMenuItem.setActionCommand("Add table");
+
+        addDatatypeMenuItem = new JMenuItem( "Datatype", ViewProperties.getTableIcon());
+        addDatatypeMenuItem.addActionListener(this);
+        addDatatypeMenuItem.setActionCommand("Add datatype");
 
         // initialize the tree and root
         treeModel = new DefaultTreeModel(root);
@@ -198,6 +204,7 @@ implements TreeView, ActionListener {
         newOjbectMenu.add(item);
 
         newOjbectMenu.add(addTableMenuItem);
+        newOjbectMenu.add(addDatatypeMenuItem);
 
         menu.addSeparator();
 
@@ -267,6 +274,7 @@ implements TreeView, ActionListener {
 
         HObject selectedObject = ((HObject)(selectedNode.getUserObject()));
         boolean isReadOnly = selectedObject.getFileFormat().isReadOnly();
+
         setEnabled(editGUIs, !isReadOnly);
 
         boolean isWritable = !selectedObject.getFileFormat().isReadOnly();
@@ -295,9 +303,14 @@ implements TreeView, ActionListener {
         // adding table is only supported by HDF5
         if (selectedFile != null &&
             selectedFile.isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5)))
+        {
             addTableMenuItem.setVisible(true);
-        else
+            addDatatypeMenuItem.setVisible(true);
+        } else
+        {
             addTableMenuItem.setVisible(false);
+            addDatatypeMenuItem.setVisible(false);
+        }
 
         popupMenu.show((JComponent)e.getSource(), x, y);
     }
@@ -958,6 +971,40 @@ implements TreeView, ActionListener {
         }
     }
 
+    private void addDatatype()
+    {
+        if (selectedObject == null || selectedNode == null)
+            return;
+
+        Group pGroup = null;
+        if (selectedObject instanceof Group)
+            pGroup = (Group)selectedObject;
+        else
+            pGroup = (Group)((DefaultMutableTreeNode)selectedNode.getParent()).getUserObject();
+
+        NewDatatypeDialog dialog = new NewDatatypeDialog(
+            (JFrame)viewer,
+            pGroup,
+            breadthFirstUserObjects(selectedObject.getFileFormat().getRootNode()));
+        dialog.show();
+
+        HObject obj = (HObject)dialog.getObject();
+        if (obj == null)
+            return;
+
+        Group pgroup = dialog.getParentGroup();
+        try { addObject(obj, pgroup); }
+        catch (Exception ex) {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(
+                this,
+                ex,
+                "HDFView",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+    }
+
     private void renameObject()
     {
         if (selectedObject == null)
@@ -1022,6 +1069,9 @@ implements TreeView, ActionListener {
         }
         else if (cmd.equals("Add table")) {
             addTable();
+        }
+        else if (cmd.equals("Add datatype")) {
+            addDatatype();
         }
         else if (cmd.startsWith("Open data"))
         {
@@ -1568,7 +1618,7 @@ implements TreeView, ActionListener {
                 datasetIcon, imageIcon, tableIcon, textIcon,
                 openFolder, closeFolder,
                 datasetIconA, imageIconA, tableIconA, textIconA,
-                openFolderA, closeFolderA;
+                openFolderA, closeFolderA, datatypeIcon, datatypeIconA;
 
         private HTreeCellRenderer()
         {
@@ -1589,7 +1639,8 @@ implements TreeView, ActionListener {
             imageIconA = ViewProperties.getImageIconA();
             tableIconA = ViewProperties.getTableIconA();
             textIconA = ViewProperties.getTextIconA();
-
+            datatypeIcon = ViewProperties.getDatatypeIcon();
+            datatypeIconA = ViewProperties.getDatatypeIconA();
 
             if (openFolder != null)
                 openIcon = openFolder;
@@ -1607,6 +1658,7 @@ implements TreeView, ActionListener {
             if (textIcon == null) textIcon = leafIcon;
             if (h4Icon == null) h4Icon = leafIcon;
             if (h5Icon == null) h5Icon = leafIcon;
+            if (datatypeIcon == null) datatypeIcon = leafIcon;
 
             if (openFolderA == null) openFolderA = openFolder;
             if (closeFolderA == null) closeFolderA = closeFolder;
@@ -1614,6 +1666,7 @@ implements TreeView, ActionListener {
             if (imageIconA == null) imageIconA = imageIcon;
             if (tableIconA == null) tableIconA = tableIcon;
             if (textIconA == null) textIconA = textIcon;
+            if (datatypeIconA == null) datatypeIconA = datatypeIcon;
         }
 
         public Component getTreeCellRendererComponent(
@@ -1678,6 +1731,14 @@ implements TreeView, ActionListener {
                         openIcon = closedIcon = h4Icon;
                 }
             }
+            else if (theObject instanceof Datatype)
+            {
+                Datatype t = (Datatype)theObject;
+
+                if (t.hasAttribute())
+                    leafIcon = datatypeIconA;
+                else
+                    leafIcon = datatypeIcon;            }
 
             return super.getTreeCellRendererComponent(
                 tree,
@@ -1710,7 +1771,7 @@ implements TreeView, ActionListener {
                 selectedNode = theNode;
                 selectedObject = ((HObject)(selectedNode.getUserObject()));
                 FileFormat theFile = selectedObject.getFileFormat();
-                if (!theFile.equals(selectedFile))
+                if (theFile!= null && !theFile.equals(selectedFile))
                 {
                     // a different file is selected, handle only one file a time
                     selectedFile = theFile;

@@ -131,8 +131,8 @@ implements ActionListener
         }
         else
         {
-            this.xmin = 0;
-            this.xmax = data[0].length-1;
+            this.xmin = 1;
+            this.xmax = data[0].length;
         }
 
         this.xwidth = Math.max(String.valueOf(xmin).length(),
@@ -251,72 +251,77 @@ implements ActionListener
 
             Dimension d = getSize();
             int gap = 20;
-            int legendSpace = 0;
+            int xgap = 2*gap;
+            int ygap = 2*gap;
+            int legendSpace=0;
             if (chartStyle == LINEPLOT && lineLabels != null)
                 legendSpace = 60;
 
             int h = d.height - gap;
-            int w = d.width - 3*gap - legendSpace;
+            int w = d.width - (3*gap + legendSpace);
+            int xnpoints = Math.min(10, numberOfPoints-1);
+            int ynpoints = 10;
 
             // draw the X axis
-            g.drawLine(2*gap, h, w+2*gap, h);
+            g.drawLine(xgap, h, w+xgap, h);
 
             // draw the Y axis
-            g.drawLine(2*gap, h, 2*gap, 0);
+            g.drawLine(ygap, h, ygap, 0);
 
-            // draw X and Y labels: 10 labels for x and y
-            int dh = h/10;
-            int dw = w/10;
-            double dx = (xmax - xmin)/10.0;
-            //int dx = Math.round((float)(xmax - xmin + 0.5) / 10);
-            double dy = (ymax - ymin) / 10;
-            if (dy > 1) dy = Math.round(10*dy)/10;
-            int xp=2*gap, yp=0, x=xmin, x0, y0, x1, y1;
-            double y = ymin;
-
-            // draw X and Y grid labels
-            if (isInteger)
-                g.drawString(String.valueOf((int)y), 0, h+8);
-            else
-                g.drawString(format.format(y), 0, h+8);//g.drawString(String.valueOf((float)y), 0, h+8);
-
-            g.drawString(String.valueOf(x), xp-5, h+gap);
-            for (int i=0; i<10; i++)
+            // draw x labels
+            double xp=0, x=xmin;
+            double dw = (double)w/(double)xnpoints;
+            double dx = (xmax - xmin)/(double)xnpoints;
+            for (int i=0; i<=xnpoints; i++)
             {
-                xp += dw;
-                //x += dx;
-                x = (int)(xmin+(double)(i*dx+dx));
-                g.drawLine(xp, h, xp, h-5);
+                x = xmin+i*dx;
+                xp = xgap + i*dw;
+                g.drawLine((int)xp, h, (int)xp, h-5);
+                g.drawString(String.valueOf((int)x), (int)xp-5, h+gap);
+            }
 
-                g.drawString(String.valueOf(x), xp-5, h+gap);
-
-                yp += dh;
-                y += dy;
-                g.drawLine(2*gap, h-yp, 2*gap+5, h-yp);
+            // draw y labels
+            double yp=0, y=ymin;
+            double dh = (double)h/(double)ynpoints;
+            double dy = (ymax - ymin) /(double)(ynpoints);
+            if (dy > 1) dy = Math.round(dy*10.0)/10.0;
+            for (int i=0; i<=ynpoints; i++)
+            {
+                yp = i*dh;
+                y = i*dy+ymin;
+                g.drawLine(ygap, h-(int)yp, ygap+5, h-(int)yp);
                 if (isInteger)
-                    g.drawString(String.valueOf((int)y), 0, h-yp+8);
+                    g.drawString(String.valueOf((int)y), 0, h-(int)yp+8);
                 else
-                    g.drawString(format.format(y), 0, h-yp+8);//g.drawString(String.valueOf((float)y), 0, h-yp+8);
+                    g.drawString(format.format(y), 0, h-(int)yp+8);
             }
 
             Color c = g.getColor();
+            double x0, y0, x1, y1;
             if (chartStyle == LINEPLOT)
             {
-                // draw lines for selected spreadsheet columns
+                dw = (double)w /(double)(numberOfPoints-1);
 
+                // use y = a + b* x to calculate pixel positions
+                double b = h/(ymin-ymax);
+                double a = -b*ymax;
+
+                // draw lines for selected spreadsheet columns
                 for (int i=0; i<numberOfLines; i++)
                 {
                     if (lineColors != null && lineColors.length>= numberOfLines)
                         g.setColor(lineColors[i]);
 
                     // set up the line data for drawing one line a time
-                    for (int j=0; j<numberOfPoints-1; j++)
+                    x0 = xgap;
+                    y0 = a+b*data[i][0];
+                    for (int j=1; j<numberOfPoints; j++)
                     {
-                        x0 = (int)(w*(j - xmin)/(xmax-xmin)) + 2*gap;
-                        y0 = (int)(h - h*(data[i][j]-ymin)/(ymax-ymin));
-                        x1 = (int)(w*(j+1 - xmin)/(xmax-xmin)) + 2*gap;
-                        y1 = (int)(h - h*(data[i][j+1]-ymin)/(ymax-ymin));
-                        g.drawLine(x0, y0, x1, y1);
+                        x1 = xgap + j*dw;
+                        y1 = a+b*data[i][j];
+                        g.drawLine((int)x0, (int)y0, (int)x1, (int)y1);
+
+                        x0 = x1; y0=y1;
                     }
 
                     // draw line legend
@@ -324,8 +329,8 @@ implements ActionListener
                     {
                         x0 = w+legendSpace;
                         y0 = gap+gap*i;
-                        g.drawLine(x0, y0, x0+7, y0);
-                        g.drawString(lineLabels[i], x0+10, y0+3);
+                        g.drawLine((int)x0, (int)y0, (int)x0+7, (int)y0);
+                        g.drawString(lineLabels[i], (int)x0+10, (int)y0+3);
                     }
                 }
 
@@ -339,7 +344,7 @@ implements ActionListener
             else if (chartStyle == HISTOGRAM)
             {
                 // draw histogram for selected image area
-                xp=2*gap;
+                xp=xgap;
                 yp=0;
                 g.setColor(Color.blue);
                 int barWidth = w/numberOfPoints;
@@ -347,11 +352,11 @@ implements ActionListener
 
                 for (int j=0; j<numberOfPoints; j++)
                 {
-                    xp = 2*gap+(int)(w*(j - xmin)/(xmax-xmin));
+                    xp = xgap+(int)(w*(j - xmin)/(xmax-xmin));
                     yp = h-(int)(h*(data[0][j]-ymin)/(ymax-ymin));
-                    g.drawLine(xp, h, xp, yp);
-                    g.drawLine(xp+1, h, xp+1, yp);
-                    g.drawLine(xp+2, h, xp+2, yp);
+                    g.drawLine((int)xp, h, (int)xp, (int)yp);
+                    g.drawLine((int)xp+1, h, (int)xp+1, (int)yp);
+                    g.drawLine((int)xp+2, h, (int)xp+2, (int)yp);
                 }
 
                 g.setColor(c); // set the color back to its default

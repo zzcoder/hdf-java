@@ -84,6 +84,11 @@ implements Serializable, DataFormat
 
     protected boolean hasAttribute = false;
 
+    public HObject()
+    {
+        this(null, null, null, null);
+    }
+
     /**
      * Constructs an instance of the data object with specific name and path.
      * An HDF data object must have a name. A data object is uniquely identified
@@ -113,7 +118,14 @@ implements Serializable, DataFormat
     public HObject(FileFormat theFileFormat, String theName, String thePath, long[] oid)
     {
         this.fileFormat = theFileFormat;
-        this.fid = fileFormat.getFID();
+
+        if (fileFormat != null) {
+            this.fid = fileFormat.getFID();
+            this.filename = fileFormat.getFilePath();
+        } else {
+            this.fid = -1;
+            this.filename = null;
+        }
 
         // file name is packed in the full path
         if (theName == null && thePath !=null)
@@ -130,7 +142,6 @@ implements Serializable, DataFormat
         this.path = thePath;
         this.oid = oid;
 
-        this.filename = fileFormat.getFilePath();
         this.name = theName;
     }
 

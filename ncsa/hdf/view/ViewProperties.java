@@ -113,7 +113,7 @@ public class ViewProperties extends Properties
         zoominIcon, zoomoutIcon, paletteIcon, chartIcon,
         copyIcon, cutIcon, pasteIcon,
         previousIcon, nextIcon, firstIcon, lastIcon,
-        animationIcon;
+        animationIcon, datatypeIcon, datatypeIconA;
 
     private static String propertyFile;
 
@@ -314,6 +314,10 @@ public class ViewProperties extends Properties
 
     public static Icon getDatasetIconA() { return datasetIconA; }
 
+    public static Icon getDatatypeIcon() { return datatypeIcon; }
+
+    public static Icon getDatatypeIconA() { return datatypeIconA; }
+
     public static Icon getFileopenIcon() { return fileopenIcon; }
 
     public static Icon getFilesaveIcon() { return filesaveIcon; }
@@ -430,6 +434,20 @@ public class ViewProperties extends Properties
             u = classLoader.getResource("ncsa/hdf/view/icons/datasetA.gif");
             if (u != null) {
                 datasetIconA = new ImageIcon (u);
+            }
+        }
+
+        if (datatypeIcon == null) {
+            u = classLoader.getResource("ncsa/hdf/view/icons/datatype.gif");
+            if (u != null) {
+                datatypeIcon = new ImageIcon (u);
+            }
+        }
+
+        if (datatypeIconA == null) {
+            u = classLoader.getResource("ncsa/hdf/view/icons/datatypeA.gif");
+            if (u != null) {
+                datatypeIconA = new ImageIcon (u);
             }
         }
 

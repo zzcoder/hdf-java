@@ -15,12 +15,16 @@ import ncsa.hdf.object.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.awt.image.*;
+import javax.swing.border.*;
+import javax.swing.table.*;
+import javax.swing.event.*;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Dimension;
 import java.awt.Window;
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.Graphics;
 
@@ -28,8 +32,18 @@ import java.awt.Graphics;
  * To view and change palette.
  */
 public class DefaultPaletteView extends JDialog
-implements PaletteView, MouseListener, MouseMotionListener, ActionListener
+implements PaletteView, MouseListener, MouseMotionListener,
+ActionListener, ItemListener
 {
+    private final Color[] lineColors = {Color.red, Color.green, Color.blue};
+    private final String lineLabels[] ={"Red", "Green", "Blue"};
+
+    private static String PALETTE_GRAY = "Gray";
+    private static String PALETTE_GRAY_WAVE = "GrayWave";
+    private static String PALETTE_RAINBOW = "Rainbow";
+    private static String PALETTE_NATURE = "Nature";
+    private static String PALETTE_WAVE = "Wave";
+
     private JRadioButton checkRed, checkGreen, checkBlue;
     /** Panel that draws plot of data values. */
     private ChartPanel chartP;
@@ -40,9 +54,8 @@ implements PaletteView, MouseListener, MouseMotionListener, ActionListener
     private ScalarDS dataset;
     private ImageView imageView;
     private int[][] paletteData;
-
-    private final Color[] lineColors = {Color.red, Color.green, Color.blue};
-    private final String lineLabels[] ={"Red", "Green", "Blue"};
+    private JComboBox choicePalette;
+    private PaletteValueTable paletteValueTable;
 
     public DefaultPaletteView(ImageView theImageView)
     {
@@ -51,6 +64,15 @@ implements PaletteView, MouseListener, MouseMotionListener, ActionListener
         imageView = theImageView;
         dataset = (ScalarDS)imageView.getDataObject();
         setModal(true);
+
+        choicePalette = new JComboBox();
+        choicePalette.addItemListener(this);
+        choicePalette.addItem("Select palette");
+        choicePalette.addItem(PALETTE_GRAY);
+        choicePalette.addItem(PALETTE_GRAY_WAVE);
+        choicePalette.addItem(PALETTE_RAINBOW);
+        choicePalette.addItem(PALETTE_NATURE);
+        choicePalette.addItem(PALETTE_WAVE);
 
         chartP = new ChartPanel();
         chartP.setBackground(Color.white);
@@ -99,7 +121,7 @@ implements PaletteView, MouseListener, MouseMotionListener, ActionListener
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5, 5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        contentPane.setPreferredSize(new Dimension(640, 400));
+        contentPane.setPreferredSize(new Dimension(700, 500));
 
         contentPane.add(chartP, BorderLayout.CENTER);
 
@@ -107,6 +129,7 @@ implements PaletteView, MouseListener, MouseMotionListener, ActionListener
         button.addActionListener(this);
         button.setActionCommand("Ok");
         JPanel buttonP = new JPanel();
+        buttonP.setBorder(new LineBorder(Color.GRAY));
         buttonP.add(button);
         button = new JButton("Cancel");
         button.addActionListener(this);
@@ -118,7 +141,7 @@ implements PaletteView, MouseListener, MouseMotionListener, ActionListener
         buttonP.add(button);
 
         JPanel bottomP = new JPanel();
-        bottomP.setLayout(new BorderLayout());
+        bottomP.setLayout(new BorderLayout(20, 2));
         bottomP.add(buttonP, BorderLayout.EAST);
 
         checkRed = new JRadioButton("Red");
@@ -133,15 +156,26 @@ implements PaletteView, MouseListener, MouseMotionListener, ActionListener
         bgroup.add(checkGreen);
         bgroup.add(checkBlue);
         JPanel checkP = new JPanel();
+        checkP.setBorder(new LineBorder(Color.GRAY));
         checkP.add(checkRed);
         checkP.add(checkGreen);
         checkP.add(checkBlue);
         bottomP.add(checkP, BorderLayout.WEST);
 
+        JPanel valueP = new JPanel();
+        valueP.setLayout(new GridLayout(1, 2));
+        valueP.setBorder(new LineBorder(Color.GRAY));
+        JButton valueButton = new JButton("Show Value");
+        valueButton.setActionCommand("Show palette values");
+        valueButton.addActionListener(this);
+        valueP.add(choicePalette);
+        valueP.add(valueButton);
+        bottomP.add(valueP, BorderLayout.CENTER);
+
         contentPane.add(bottomP, BorderLayout.SOUTH);
 
         Point l = owner.getLocation();
-        l.x += 250;
+        l.x += 350;
         l.y += 200;
         setLocation(l);
         pack();
@@ -167,11 +201,64 @@ implements PaletteView, MouseListener, MouseMotionListener, ActionListener
             imageView.setImage(originalImage);
             super.dispose();
         }
-        if (cmd.equals("Preview"))
+        else if (cmd.equals("Preview"))
         {
             this.updatePalette();
             imageView.setImage(currentImage);
         }
+        else if (cmd.equals("Show palette values"))
+        {
+            if (paletteValueTable == null)
+                paletteValueTable = new PaletteValueTable(this);
+            paletteValueTable.show();
+        }
+        else if (cmd.equals("Hide palette values"))
+        {
+            if (paletteValueTable != null)
+                paletteValueTable.hide();
+        }
+    }
+
+    public void itemStateChanged(ItemEvent e) {
+        Object src = e.getSource();
+
+        if (!src.equals(choicePalette))
+            return;
+
+        int idx = choicePalette.getSelectedIndex();
+        if ( idx<=0)
+            return;
+
+        byte[][] imagePalette = null;
+        Object item = choicePalette.getSelectedItem();
+        if ( item.equals(PALETTE_GRAY) )
+            imagePalette = Tools.createGrayPalette();
+        else if ( item.equals(PALETTE_GRAY_WAVE) )
+            imagePalette = Tools.createGrayWavePalette();
+        else if ( item.equals(PALETTE_RAINBOW) )
+            imagePalette = Tools.createRainbowPalette();
+        else if ( item.equals(PALETTE_NATURE) )
+            imagePalette = Tools.createNaturePalette();
+        else if ( item.equals(PALETTE_WAVE) )
+            imagePalette = Tools.createWavePalette();
+
+        if (imagePalette == null)
+            return;
+
+        int d = 0;
+        for (int i=0; i<3; i++)
+        {
+            for (int j=0; j<256; j++)
+            {
+                d = (int)imagePalette[i][j];
+                if (d < 0) d += 256;
+                paletteData[i][j] = d;
+            }
+        }
+
+        chartP.repaint();
+        isPaletteChanged = true;
+
     }
 
     private void updatePalette()
@@ -247,8 +334,86 @@ implements PaletteView, MouseListener, MouseMotionListener, ActionListener
         isPaletteChanged = true;
     }
 
+    /** The dialog to show the palette values in spreadsheet. */
+    private final class PaletteValueTable extends JDialog
+    {
+        private JTable valueTable;
+        private DefaultTableModel valueTableModel;
+
+        public PaletteValueTable(DefaultPaletteView owner)
+        {
+            super(owner);
+            String[] columnNames = {"Red", "Green", "Blue"};
+            valueTableModel = new DefaultTableModel(columnNames, 256);
+
+            valueTable = new JTable(valueTableModel)
+            {
+                int lastSelectedRow = -1;
+                int lastSelectedCol = -1;
+
+                public Object getValueAt(int row, int col)
+                {
+                    return String.valueOf(paletteData[col][row]);
+                }
+
+                public void editingStopped(ChangeEvent e)
+                {
+                    int row = getEditingRow();
+                    int col = getEditingColumn();
+                    String oldValue = (String)getValueAt(row, col);
+
+                    super.editingStopped(e);
+
+                    Object source = e.getSource();
+
+                    if (source instanceof CellEditor)
+                    {
+                        CellEditor editor = (CellEditor)source;
+                        String newValue = (String)editor.getCellEditorValue();
+                        setValueAt(oldValue, row, col); // set back to what it is
+                        updatePaletteValue(newValue, row, col);
+                    }
+                }
+            };
+
+            valueTable.setRowSelectionAllowed(false);
+            valueTable.setCellSelectionEnabled(true);
+            valueTable.getTableHeader().setReorderingAllowed(false);
+            valueTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+            JScrollPane scroller = new JScrollPane(valueTable);
+
+            JPanel contentPane = (JPanel)getContentPane();
+            contentPane.setPreferredSize(new Dimension(300, 600));
+            contentPane.setLayout(new BorderLayout(5, 5));
+            contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+            contentPane.add(scroller, BorderLayout.CENTER);
+
+            JButton button = new JButton("  Close  ");
+            button.addActionListener(owner);
+            button.setActionCommand("Hide palette values");
+
+            contentPane.add(button, BorderLayout.SOUTH);
+
+            Point l = owner.getLocation();
+            l.x += 100;
+            l.y += 100;
+            setLocation(l);
+            pack();
+        }
+
+        private void updatePaletteValue(String strValue, int row, int col)
+        {
+            int value = Integer.parseInt(strValue);
+            paletteData[col][row] = value;
+            chartP.repaint();
+            isPaletteChanged = true;
+        }
+
+    }
+
     /** The canvas that paints the data lines. */
-    public final class ChartPanel extends JComponent
+    private final class ChartPanel extends JComponent
     {
         /**
         * Paints the plot components.

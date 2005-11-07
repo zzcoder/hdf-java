@@ -539,10 +539,13 @@ public class H5CompoundDS extends CompoundDS
 
                     Object tmpData = member_data;
                     if (H5Datatype.isUnsigned(baseType))
-                        tmpData = convertToUnsignedC(buf);
+                        tmpData = convertToUnsignedC(member_data);
                     else if (member_class == HDF5Constants.H5T_STRING) {
                         tmpData = stringToByte((String[])member_data, member_size);
                     }
+
+                    if (tmpData == null)
+                        continue;
 
                     // BUG!!! does not write nested data and no exception caght
                     // need to check if it is a java error or C library error
@@ -959,6 +962,37 @@ public class H5CompoundDS extends CompoundDS
         int[] memberSizes,
         Object data) throws Exception
     {
+        if (pgroup == null ||
+            name == null ||
+            dims == null ||
+            memberNames == null ||
+            memberDatatypes == null ||
+            memberSizes == null)
+            return null;
+
+        int nMembers = memberNames.length;
+        int memberRanks[] = new int[nMembers];
+        int memberDims[][] = new int[nMembers][1];
+        for (int i=0; i<nMembers; i++)
+        {
+            memberRanks[i] = 1;
+            memberDims[i][0] = memberSizes[i];
+        }
+
+        return H5CompoundDS.create(name, pgroup, dims, memberNames,
+                                    memberDatatypes, memberRanks, memberDims, data);
+    }
+
+    public static Dataset create(
+        String name,
+        Group pgroup,
+        long[] dims,
+        String[] memberNames,
+        Datatype[] memberDatatypes,
+        int[] memberRanks,
+        int[][] memberDims,
+        Object data) throws Exception
+    {
         H5CompoundDS dataset = null;
         String fullPath = null;
         int did = -1;
@@ -968,7 +1002,8 @@ public class H5CompoundDS extends CompoundDS
             dims == null ||
             memberNames == null ||
             memberDatatypes == null ||
-            memberSizes == null)
+            memberRanks == null ||
+            memberDims == null)
             return null;
 
         H5File file = (H5File)pgroup.getFileFormat();
@@ -983,13 +1018,15 @@ public class H5CompoundDS extends CompoundDS
         int typeSize = 0;
         int nMembers = memberNames.length;
         int[] mTypes = new int[nMembers];
+        int memberSize = 1;
         for (int i=0; i<nMembers; i++)
         {
-            if (memberSizes[i] > 1 && (memberDatatypes[i].getDatatypeClass() != Datatype.CLASS_STRING))
-            {
-                int[] mDim = {memberSizes[i]};
-                mTypes[i] = H5.H5Tarray_create(memberDatatypes[i].toNative(),1, mDim, null);
-            }
+            memberSize = 1;
+            for (int j=0; j<memberRanks[i]; j++)
+                memberSize *= memberDims[i][j];
+
+            if (memberSize > 1 && (memberDatatypes[i].getDatatypeClass() != Datatype.CLASS_STRING))
+                mTypes[i] = H5.H5Tarray_create(memberDatatypes[i].toNative(),memberRanks[i], memberDims[i], null);
             else
                 mTypes[i] = memberDatatypes[i].toNative();
             typeSize += H5.H5Tget_size(mTypes[i]);

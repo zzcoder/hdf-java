@@ -347,6 +347,8 @@ implements ActionListener, MetaDataView
                 typeStr = "HDF5 Scalar Dataset";
             else if (hObject instanceof CompoundDS)
                 typeStr = "HDF5 Compound Dataset";
+            else if (hObject instanceof Datatype)
+                typeStr = "HDF5 Named Datatype";
         }
         else if (isH4)
         {
@@ -406,6 +408,8 @@ implements ActionListener, MetaDataView
             infoPanel = createGroupInfoPanel((Group)hObject);
         else if (hObject instanceof Dataset)
             infoPanel= createDatasetInfoPanel((Dataset)hObject);
+        else if (hObject instanceof Datatype)
+            infoPanel= createDatatypeInfoPanel((Datatype)hObject);
 
         panel.add(topPanel, BorderLayout.NORTH);
         if (infoPanel != null) panel.add(infoPanel, BorderLayout.CENTER);
@@ -459,6 +463,18 @@ implements ActionListener, MetaDataView
             " (in memory), "+g.getNumberOfMembersInFile()+" (in file)"), BorderLayout.NORTH);
         panel.add(scroller, BorderLayout.CENTER);
         panel.setBorder(new TitledBorder("Group Members"));
+
+        return panel;
+    }
+
+    private JPanel createDatatypeInfoPanel(Datatype t)
+    {
+        JPanel panel = new JPanel();
+        panel.setLayout (new BorderLayout());
+        JTextArea infoArea = new JTextArea(t.getDatatypeDescription());
+        infoArea.setEditable(false);
+
+        panel.add(infoArea, BorderLayout.CENTER);
 
         return panel;
     }

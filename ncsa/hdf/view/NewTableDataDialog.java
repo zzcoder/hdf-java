@@ -317,7 +317,6 @@ implements ActionListener
             if (orderStr != null)
                 order = Integer.valueOf(orderStr).intValue();
             mOrders[i] = order;
-System.out.println(order);
 
             String typeName = (String)table.getValueAt(i, 1);
             Datatype type = null;

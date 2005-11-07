@@ -11,6 +11,8 @@
 
 package ncsa.hdf.object;
 
+import java.util.List;
+
 /**
  * Datatype encapsulates information of a datatype.
  * Information includes the class, size, endian of a datatype.
@@ -18,7 +20,7 @@ package ncsa.hdf.object;
  * @version 1.0 05/07/2002
  * @author Peter X. Cao, NCSA
  */
-public abstract class Datatype
+public abstract class Datatype extends HObject
 {
     /* native for datatype size, order, and sign */
     final static public int NATIVE = -1;
@@ -72,6 +74,15 @@ public abstract class Datatype
      * Datatype identifier of the implementing class of this datatype.
      */
     protected int nativeID;
+
+    public Datatype(
+        FileFormat fileFormat,
+        String name,
+        String path,
+        long[] oid)
+    {
+        super (fileFormat, name, path, oid);
+    }
 
 
     /**
@@ -245,4 +256,9 @@ public abstract class Datatype
      */
     public abstract boolean isUnsigned();
 
+    public int open() { return -1; }
+    public void close(int id) {};
+    public List getMetadata() throws Exception { return null; }
+    public void writeMetadata(Object info) throws Exception {;}
+    public void removeMetadata(Object info) throws Exception {;}
 }

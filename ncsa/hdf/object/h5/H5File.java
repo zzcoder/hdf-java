@@ -276,6 +276,36 @@ public class H5File extends FileFormat
         return new H5Datatype(tclass, tsize, torder, tsign);
     }
 
+    /* create a name dataype */
+    public Datatype createDatatype(
+        int tclass,
+        int tsize,
+        int torder,
+        int tsign,
+        String name) throws Exception
+    {
+        int tid=-1;
+        H5Datatype dtype = null;
+
+        try {
+            H5Datatype t = (H5Datatype) createDatatype(tclass, tsize, torder, tsign);
+            tid = t.toNative();
+            H5.H5Tcommit(fid, name, tid);
+
+            byte[] ref_buf = H5.H5Rcreate(fid, name, HDF5Constants.H5R_OBJECT, -1);
+            long l = HDFNativeData.byteToLong(ref_buf, 0);
+            long[] oid = new long[1];
+            oid[0] = l; // save the object ID
+
+            dtype = new H5Datatype(this, null, name, oid);
+
+        } finally {
+            if (tid>0) H5.H5Tclose(tid);
+        }
+
+        return dtype;
+    }
+
     // implementign FileFormat
     public Dataset createScalarDS(
         String name,
@@ -395,6 +425,10 @@ public class H5File extends FileFormat
         else if (srcObj instanceof H5Group)
         {
             newNode = copyGroup((H5Group)srcObj, (H5Group)dstGroup);
+        }
+        else if (srcObj instanceof H5Datatype)
+        {
+            newNode = copyDatatype((H5Datatype)srcObj, (H5Group)dstGroup);
         }
 
         return newNode;
@@ -547,6 +581,43 @@ public class H5File extends FileFormat
         }
 
         return theNode;
+    }
+
+    private TreeNode copyDatatype(Datatype srcType, H5Group pgroup)
+         throws Exception
+    {
+        Datatype datatype = null;
+        int tid_src, tid_dst;
+        String tname=null, path=null;
+
+        if (pgroup.isRoot())
+            path = HObject.separator;
+        else
+            path = pgroup.getPath()+pgroup.getName()+HObject.separator;
+
+        tname = path + srcType.getName();
+        tid_src = srcType.open();
+        tid_dst = H5.H5Tcopy(tid_src);
+
+        H5.H5Tcommit(fid, tname, tid_src );
+
+        byte[] ref_buf = H5.H5Rcreate(
+            fid,
+            tname,
+            HDF5Constants.H5R_OBJECT,
+            -1);
+        long l = HDFNativeData.byteToLong(ref_buf, 0);
+        long[] oid = {l};
+
+        datatype = new H5Datatype(this, srcType.getName(), path, oid);
+
+        pgroup.addToMemberList(datatype);
+        DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(datatype);
+
+        try { H5.H5Tclose(tid_src); } catch(Exception ex) {}
+        try { H5.H5Tclose(tid_dst); } catch(Exception ex) {}
+
+        return newNode;
     }
 
     /**
@@ -867,11 +938,7 @@ public class H5File extends FileFormat
                 else
                 {
                     // retrieve the object ID.
-                    ref_buf = H5.H5Rcreate(
-                        fid,
-                        fullPath+obj_name,
-                        HDF5Constants.H5R_OBJECT,
-                        -1);
+                    ref_buf = H5.H5Rcreate(fid, fullPath+obj_name, HDF5Constants.H5R_OBJECT, -1);
                 }
 
                 long l = HDFNativeData.byteToLong(ref_buf, 0);
@@ -966,6 +1033,13 @@ public class H5File extends FileFormat
                 node = new DefaultMutableTreeNode(d);
                 pnode.add( node );
                 pgroup.addToMemberList(d);
+            } else if (obj_type == HDF5Constants.H5G_TYPE)
+            {
+                Datatype t = new H5Datatype( this, obj_name, fullPath, oid);
+
+                node = new DefaultMutableTreeNode(t);
+                pnode.add( node );
+                pgroup.addToMemberList(t);
             }
         } // for ( i = 0; i < nelems; i++)
 
