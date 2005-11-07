@@ -12,7 +12,9 @@
 package ncsa.hdf.object.h5;
 
 import ncsa.hdf.hdf5lib.*;
+import ncsa.hdf.hdf5lib.exceptions.*;
 import ncsa.hdf.object.*;
+import java.util.*;
 
 /**
  * Datatype encapsulates information of a datatype.
@@ -23,6 +25,36 @@ import ncsa.hdf.object.*;
  */
 public class H5Datatype extends Datatype
 {
+    /**
+     * The list of attributes of this data object. Members of the list are
+     * instance of Attribute.
+     */
+     private List attributeList;
+
+    /**
+     * Constructs a named H5Datatype object with specific name and path.
+     * <p>
+     * @param fileFormat the HDF file.
+     * @param name the name of this H5Datatype.
+     * @param path the full path of this H5Datatype.
+     * @param oid the unique identifier of this H5Datatype.
+     */
+    public H5Datatype(
+        FileFormat fileFormat,
+        String name,
+        String path,
+        long[] oid)
+    {
+        super (fileFormat, name, path, oid);
+
+        try
+        {
+            nativeID = H5.H5Topen(getFID(), getPath()+getName());
+            fromNative(nativeID);
+            hasAttribute = (H5.H5Aget_num_attrs(nativeID)>0);
+        } catch (HDF5Exception ex) {}
+    }
+
     /**
      * Create an Datatype with specified class, size, byte order and sign.
      * The following list a few example of how to create a Datatype.
@@ -482,4 +514,77 @@ public class H5Datatype extends Datatype
 
         return (nativeID = tid);
     }
+
+    public int open()
+    {
+        int tid = -1;
+
+        try
+        {
+            tid = H5.H5Topen(getFID(), getPath()+getName());
+        } catch (HDF5Exception ex)
+        {
+            tid = -1;
+        }
+
+        return tid;
+    }
+
+    public void close(int tid)    {
+        try { H5.H5Tclose(tid); }
+        catch (HDF5Exception ex) {;}
+    }
+
+    public List getMetadata() throws HDF5Exception
+    {
+        // load attributes first
+        if (attributeList == null)
+        {
+            int tid = open();
+            attributeList = H5File.getAttribute(tid);
+
+            close(tid);
+        } // if (attributeList == null)
+
+        return attributeList;
+    }
+
+    public void writeMetadata(Object info) throws Exception
+    {
+        // only attribute metadata is supported.
+        if (!(info instanceof Attribute))
+            return;
+
+        boolean attrExisted = false;
+        Attribute attr = (Attribute)info;
+        String name = attr.getName();
+
+        if (attributeList == null)
+            attributeList = new Vector();
+        else
+            attrExisted = attributeList.contains(attr);
+
+        getFileFormat().writeAttribute(this, attr, attrExisted);
+
+        // add the new attribute into attribute list
+        if (!attrExisted) attributeList.add(attr);
+    }
+
+    public void removeMetadata(Object info) throws HDF5Exception
+    {
+        // only attribute metadata is supported.
+        if (!(info instanceof Attribute))
+            return;
+
+        Attribute attr = (Attribute)info;
+        int tid = open();
+        try {
+            H5.H5Adelete(tid, attr.getName());
+            List attrList = getMetadata();
+            attrList.remove(attr);
+        } finally {
+            close(tid);
+        }
+    }
+
 }

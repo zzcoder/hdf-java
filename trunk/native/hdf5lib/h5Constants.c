@@ -107,7 +107,9 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_J2C
         case JH5E_CANTUNLOCK  : return  H5E_CANTUNLOCK;
         case JH5E_CLOSEERROR  : return  H5E_CLOSEERROR;
         case JH5E_COMPLEN  : return  H5E_COMPLEN;
+/* removed from HDF5 1.6.5
         case JH5E_CWG  : return  H5E_CWG;
+*/
         case JH5E_DATASET  : return  H5E_DATASET;
         case JH5E_DATASPACE  : return  H5E_DATASPACE;
         case JH5E_DATATYPE  : return  H5E_DATATYPE;
@@ -202,7 +204,9 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_J2C
         case JH5I_DATASPACE  : return  H5I_DATASPACE;
         case JH5I_DATATYPE  : return  H5I_DATATYPE;
         case JH5I_FILE  : return  H5I_FILE;
+/* removed from HDF5 1.6.5
         case JH5I_FILE_CLOSING  : return  H5I_FILE_CLOSING;
+*/
         case JH5I_GENPROP_CLS  : return  H5I_GENPROP_CLS;
         case JH5I_GENPROP_LST  : return  H5I_GENPROP_LST;
         case JH5I_GROUP  : return  H5I_GROUP;

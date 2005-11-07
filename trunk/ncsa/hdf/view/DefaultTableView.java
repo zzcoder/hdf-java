@@ -731,7 +731,6 @@ null, options, options[0]);
         // rows are selected, otherwise plot data by column
         double[][] data = null;
         int nLines = 0;
-        int[] xRange = {0, 0};
         String title = "Lineplot - "+dataset.getPath()+dataset.getName();
         String[] lineLabels = null;
         double[] yRange = {Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY};
@@ -751,7 +750,6 @@ null, options, options[0]);
             }
             lineLabels = new String[nLines];
             data = new double[nLines][cols.length];
-            xRange[1] = cols.length-1;
             for (int i=0; i<nLines; i++)
             {
                 lineLabels[i] = "Row"+String.valueOf(rows[i]+1);
@@ -785,7 +783,6 @@ null, options, options[0]);
             }
             lineLabels = new String[nLines];
             data = new double[nLines][rows.length];
-            xRange[1] = rows.length-1;
             for (int j=0; j<nLines; j++)
             {
                 lineLabels[j] = table.getColumnName(cols[j]);
@@ -819,13 +816,7 @@ null, options, options[0]);
             return;
         }
 
-        Chart cv = new Chart(
-            (JFrame)viewer,
-            title,
-            Chart.LINEPLOT,
-            data,
-            xRange,
-            yRange);
+        Chart cv = new Chart((JFrame)viewer, title, Chart.LINEPLOT, data, null, yRange);
         cv.setLineLabels(lineLabels);
 
         String cname = dataValue.getClass().getName();

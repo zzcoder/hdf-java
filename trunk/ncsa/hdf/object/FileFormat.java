@@ -308,6 +308,18 @@ public abstract class FileFormat extends File
         int torder,
         int tsign) throws Exception;
 
+    /* create a named datatype. subclass should replace the default
+       implementation. */
+    public Datatype createDatatype(
+        int tclass,
+        int tsize,
+        int torder,
+        int tsign,
+        String name) throws Exception
+    {
+        return createDatatype(tclass, tsize, torder, tsign);
+    }
+
     /**
      * Add a new file format.
      * <p>
