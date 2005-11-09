@@ -239,6 +239,7 @@ implements ImageView, ActionListener
 
         if (image == null) {
             viewer.showStatus("Loading image failed - "+dataset.getName());
+            dataset = null;
             return;
         }
 
@@ -853,7 +854,7 @@ implements ImageView, ActionListener
         String title = "Histogram - " +
             dataset.getPath()+dataset.getName() +
             " - by pixel index";
-        int[] xRange = {0, 255};
+        double[] xRange = {0, 255};
 
         Chart cv = new Chart(
             (JFrame)viewer,
@@ -1157,9 +1158,9 @@ implements ImageView, ActionListener
 
             Vector list = new Vector();
             DefaultMutableTreeNode theNode = null;
-            Enumeration enum = ((DefaultMutableTreeNode)root).depthFirstEnumeration();
-            while(enum.hasMoreElements()) {
-                theNode = (DefaultMutableTreeNode)enum.nextElement();
+            Enumeration local_enum = ((DefaultMutableTreeNode)root).depthFirstEnumeration();
+            while(local_enum.hasMoreElements()) {
+                theNode = (DefaultMutableTreeNode)local_enum.nextElement();
                 list.add(theNode.getUserObject());
             }
 

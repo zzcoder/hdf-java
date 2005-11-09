@@ -185,10 +185,10 @@ public class H5File extends FileFormat
         {
             DefaultMutableTreeNode theNode = null;
             HObject theObj = null;
-            Enumeration enum = ((DefaultMutableTreeNode)rootNode).breadthFirstEnumeration();
-            while(enum.hasMoreElements())
+            Enumeration local_enum = ((DefaultMutableTreeNode)rootNode).breadthFirstEnumeration();
+            while(local_enum.hasMoreElements())
             {
-                theNode = (DefaultMutableTreeNode)enum.nextElement();
+                theNode = (DefaultMutableTreeNode)local_enum.nextElement();
                 theObj = (HObject)theNode.getUserObject();
                 if (theObj instanceof Dataset) ((Dataset)theObj).clearData();
                 theObj = null;
@@ -397,9 +397,9 @@ public class H5File extends FileFormat
         if (g.equals(rootNode.getUserObject()))
             theNode = rootNode;
         else {
-            Enumeration enum = rootNode.breadthFirstEnumeration();
-            while(enum.hasMoreElements()) {
-                theNode = (DefaultMutableTreeNode)enum.nextElement();
+            Enumeration local_enum = rootNode.breadthFirstEnumeration();
+            while(local_enum.hasMoreElements()) {
+                theNode = (DefaultMutableTreeNode)local_enum.nextElement();
                 theObj = (HObject)theNode.getUserObject();
                 if (g.equals(theObj)) break;
             }
@@ -814,10 +814,10 @@ public class H5File extends FileFormat
         MutableTreeNode theRoot = (MutableTreeNode)file.getRootNode();
         if (theRoot == null) return null;
 
-        Enumeration enum = ((DefaultMutableTreeNode)theRoot).breadthFirstEnumeration();
-        while(enum.hasMoreElements())
+        Enumeration local_enum = ((DefaultMutableTreeNode)theRoot).breadthFirstEnumeration();
+        while(local_enum.hasMoreElements())
         {
-            theNode = (DefaultMutableTreeNode)enum.nextElement();
+            theNode = (DefaultMutableTreeNode)local_enum.nextElement();
             theObj = (HObject)theNode.getUserObject();
             if (theObj.equalsOID(oid))
                 break;

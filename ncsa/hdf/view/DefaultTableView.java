@@ -30,6 +30,10 @@ import java.awt.Toolkit;
 import java.awt.Color;
 import java.awt.Insets;
 import java.text.DecimalFormat;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import javax.swing.border.*;
+import java.awt.Point;
 
 /**
  * TableView displays an HDF dataset as a two-dimensional table.
@@ -161,6 +165,7 @@ implements TableView, ActionListener
         if (table == null)
         {
             viewer.showStatus("Creating table failed - "+dataset.getName());
+            dataset = null;
             return;
         }
 
@@ -499,9 +504,9 @@ implements TableView, ActionListener
 
             Vector list = new Vector();
             DefaultMutableTreeNode theNode = null;
-            Enumeration enum = ((DefaultMutableTreeNode)root).depthFirstEnumeration();
-            while(enum.hasMoreElements()) {
-                theNode = (DefaultMutableTreeNode)enum.nextElement();
+            Enumeration local_enum = ((DefaultMutableTreeNode)root).depthFirstEnumeration();
+            while(local_enum.hasMoreElements()) {
+                theNode = (DefaultMutableTreeNode)local_enum.nextElement();
                 list.add(theNode.getUserObject());
             }
 
@@ -701,13 +706,9 @@ implements TableView, ActionListener
             JOptionPane.ERROR_MESSAGE);
             return;
         }
+
 /*
-Object[] options = { "OK", "CANCEL" };
-JOptionPane.showOptionDialog(null, "Click OK to continue", "Warning",
-JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
-null, options, options[0]);
-*/
-        Object[] options = { "Column", "Row", "Cancel" };
+        Object[] options = { "Column", "Row", "X-axis", "Cancel"};
         int option = JOptionPane.showOptionDialog(
                 this,
                 "Do you want to draw line plot by column or row?",
@@ -717,14 +718,22 @@ null, options, options[0]);
                 null,
                 options,
                 options[0]);
-
-        if (option == 2)
+        if (option == 3)
             return; // cancel the line plot action
-
         boolean isRowPlot = (option == 1);
-
+*/
         int nrow = table.getRowCount();
         int ncol = table.getColumnCount();
+
+        LineplotOption lpo = new LineplotOption((JFrame)viewer, title, nrow, ncol);
+        lpo.show();
+
+        int plotType = lpo.getPlotBy();
+        if (plotType == LineplotOption.NO_PLOT)
+            return;
+
+        boolean isRowPlot = (plotType==LineplotOption.ROW_PLOT);
+        int xIndex = lpo.getXindex();
 
         // figure out to plot data by row or by column
         // Plot data by rows if all columns are selected and part of
@@ -734,6 +743,8 @@ null, options, options[0]);
         String title = "Lineplot - "+dataset.getPath()+dataset.getName();
         String[] lineLabels = null;
         double[] yRange = {Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY};
+        double xData[] = null;
+
         if (isRowPlot)
         {
             title +=" - by row";
@@ -750,6 +761,7 @@ null, options, options[0]);
             }
             lineLabels = new String[nLines];
             data = new double[nLines][cols.length];
+
             for (int i=0; i<nLines; i++)
             {
                 lineLabels[i] = "Row"+String.valueOf(rows[i]+1);
@@ -759,6 +771,7 @@ null, options, options[0]);
                         data[i][j] = Double.parseDouble(
                         table.getValueAt(rows[i], cols[j]).toString());
                         yRange[0] = Math.min(yRange[0], data[i][j]);
+
                         yRange[1] = Math.max(yRange[1], data[i][j]);
                     } catch (NumberFormatException ex)
                     {
@@ -766,6 +779,16 @@ null, options, options[0]);
                     }
                 } // for (int j=0; j<ncols; j++)
             } // for (int i=0; i<rows.length; i++)
+
+            if (xIndex >= 0)
+            {
+                xData = new double[cols.length];
+                for (int j=0; j<cols.length; j++)
+                {
+                    try { xData[j] = Double.parseDouble( table.getValueAt(xIndex, j).toString()); }
+                    catch (NumberFormatException ex) { xData[j] = 0; }
+                }
+            }
         } // if (isRowPlot)
         else
         {
@@ -799,6 +822,16 @@ null, options, options[0]);
                     }
                 } // for (int j=0; j<ncols; j++)
             } // for (int i=0; i<rows.length; i++)
+
+            if (xIndex >= 0)
+            {
+                xData = new double[rows.length];
+                for (int j=0; j<rows.length; j++)
+                {
+                    try { xData[j] = Double.parseDouble( table.getValueAt(j, xIndex).toString()); }
+                    catch (NumberFormatException ex) { xData[j] = 0; }
+                }
+            }
         } // else
 
         if (yRange[0] == Double.POSITIVE_INFINITY ||
@@ -816,7 +849,7 @@ null, options, options[0]);
             return;
         }
 
-        Chart cv = new Chart((JFrame)viewer, title, Chart.LINEPLOT, data, null, yRange);
+        Chart cv = new Chart((JFrame)viewer, title, Chart.LINEPLOT, data, xData, yRange);
         cv.setLineLabels(lineLabels);
 
         String cname = dataValue.getClass().getName();
@@ -1304,10 +1337,10 @@ null, options, options[0]);
             // multi-dimension compound dataset
             MultiLineHeaderRenderer renderer = new MultiLineHeaderRenderer(
                     columns, columnNames.length);
-            Enumeration enum = theTable.getColumnModel().getColumns();
-            while (enum.hasMoreElements())
+            Enumeration local_enum = theTable.getColumnModel().getColumns();
+            while (local_enum.hasMoreElements())
             {
-                ((TableColumn)enum.nextElement()).setHeaderRenderer(renderer);
+                ((TableColumn)local_enum.nextElement()).setHeaderRenderer(renderer);
             }
         }
 
@@ -2129,6 +2162,120 @@ null, options, options[0]);
                 break;
             default:
                 isValueChanged = false;
+        }
+    }
+
+    private class LineplotOption extends JDialog implements ActionListener
+    {
+        public static final int NO_PLOT = -1;
+        public static final int ROW_PLOT = 0;
+        public static final int COLUMN_PLOT = 1;
+
+        int idx_xaxis=-1, nRows=0, nCols=0, plotType=-1;
+        JRadioButton rowButton, colButton;
+        JTextField xaxisField;
+
+        public LineplotOption(JFrame owner, String title, int nrow, int ncol)
+        {
+            super(owner, title, true);
+
+            nRows = nrow;
+            nCols = ncol;
+
+            rowButton = new JRadioButton("Row");
+            colButton = new JRadioButton("Column", true);
+            ButtonGroup rgroup = new ButtonGroup();
+            rgroup.add(rowButton);
+            rgroup.add(colButton);
+
+            xaxisField = new JTextField("-1");
+
+            JPanel lp = new JPanel();
+            lp.setLayout(new GridLayout(2,1,5,5));
+            lp.add(new JLabel(" Plot By  "));
+            lp.add(new JLabel(" X-axis   "));
+
+            JPanel rp1 = new JPanel();
+            rp1.setLayout(new GridLayout(1,2,5,5));
+            rp1.add(colButton);
+            rp1.add(rowButton);
+            rp1.setBorder(new LineBorder(Color.darkGray));
+            JPanel rp = new JPanel();
+            rp.setLayout(new GridLayout(2,1, 5, 5));
+            rp.add(rp1);
+            rp.add(xaxisField);
+
+            JPanel bp = new JPanel();
+            JButton okButton = new JButton("Ok");
+            okButton.addActionListener(this);
+            okButton.setActionCommand("Ok");
+            JButton cancelButton = new JButton("Cancel");
+            cancelButton.addActionListener(this);
+            cancelButton.setActionCommand("Cancel");
+            bp.add(okButton);
+            bp.add(cancelButton);
+
+            JPanel contentPane = (JPanel)this.getContentPane();
+            contentPane.setLayout(new BorderLayout());
+            JTextArea info = new JTextArea("Select plot options:\n"+
+                             "    plot by row or column\n"+
+                             "    X-axis -- none(-1) or row/column index\n");
+            info.setEditable(false);
+            contentPane.add(info, BorderLayout.NORTH);
+            contentPane.add(lp, BorderLayout.WEST);
+            contentPane.add(rp, BorderLayout.CENTER);
+            contentPane.add(bp, BorderLayout.SOUTH);
+
+            Point l = getParent().getLocation();
+            l.x += 450;
+            l.y += 200;
+            setLocation(l);
+            pack();
+        }
+
+        int getXindex() { return idx_xaxis; }
+        int getPlotBy() { return plotType; }
+
+        public void actionPerformed(ActionEvent e)
+        {
+            Object source = e.getSource();
+            String cmd = e.getActionCommand();
+
+            if (cmd.equals("Cancel")) {
+                plotType = NO_PLOT;
+                this.dispose();  // terminate the application
+            }
+            else if (cmd.equals("Ok")) {
+                idx_xaxis = Integer.parseInt(xaxisField.getText());
+                if (rowButton.isSelected())
+                {
+                    plotType = ROW_PLOT;
+                    if (idx_xaxis >= nRows)
+                    {
+                        JOptionPane.showMessageDialog(
+                                this,
+                                "X-axis index is greater than  number of rows",
+                                "Line Plot Option",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+                else
+                {
+                    plotType = COLUMN_PLOT;
+                    if (idx_xaxis >= nCols)
+                    {
+                        JOptionPane.showMessageDialog(
+                                this,
+                                "X-axis index is greater than  number of columns",
+                                "Line Plot Option",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+
+                this.dispose();  // terminate the application
+            }
         }
     }
 

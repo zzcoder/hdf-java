@@ -84,6 +84,7 @@ implements TextView, ActionListener, KeyListener
 
         if (!dataset.isText()) {
             viewer.showStatus("Cannot display non-text dataset in text view.");
+            dataset = null;
             return;
         }
 
@@ -98,6 +99,7 @@ implements TextView, ActionListener, KeyListener
 
         if (text == null) {
             viewer.showStatus("Loading text dataset failed - "+dataset.getName());
+            dataset = null;
             return;
         }
 

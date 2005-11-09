@@ -359,10 +359,13 @@ public class HDFView extends JFrame
 
         // set the window size
         //float inset = 0.17f; // for UG only.
-        float inset = 0.07f;
+        float inset = 0.04f;
         Dimension d = toolkit.getScreenSize();
+/*
         d.width = Math.max(400, (int)((1-2*inset)*d.width));
+*/
         d.height = Math.max(300, (int)((1-2*inset)*d.height));
+        d.width = (int)(0.9*(double)d.height);
 
         splitPane.setDividerLocation(d.height-180);
 
@@ -1250,9 +1253,9 @@ public class HDFView extends JFrame
             // check is the file format has been registered or the key is taken.
             String theKey = null;
             String theClassName = null;
-            Enumeration enum = FileFormat.getFileFormatKeys();
-            while (enum.hasMoreElements()) {
-                theKey = (String)enum.nextElement();
+            Enumeration local_enum = FileFormat.getFileFormatKeys();
+            while (local_enum.hasMoreElements()) {
+                theKey = (String)local_enum.nextElement();
                 if (theKey.endsWith(key)) {
                     JOptionPane.showMessageDialog(
                         this,

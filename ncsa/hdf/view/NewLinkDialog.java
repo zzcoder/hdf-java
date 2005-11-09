@@ -38,7 +38,7 @@ import java.net.URLClassLoader;
  * @version 1.3.0 04/25/2002
  * @author Peter X. Cao
  */
-public class NewDatatypeDialog extends JDialog
+public class NewLinkDialog extends JDialog
 implements ActionListener, ItemListener
 {
     private JTextField nameField, stringLengthField;
@@ -58,14 +58,14 @@ implements ActionListener, ItemListener
 
     private final Toolkit toolkit;
 
-    /** Constructs NewDatatypeDialog with specified list of possible parent groups.
+    /** Constructs NewLinkDialog with specified list of possible parent groups.
      *  @param owner the owner of the input
      *  @param pGroup the parent group which the new group is added to.
      *  @param objs the list of all objects.
      */
-    public NewDatatypeDialog(JFrame owner, Group pGroup, List objs)
+    public NewLinkDialog(JFrame owner, Group pGroup, List objs)
     {
-        super (owner, "New Datatype...", true);
+        super (owner, "New Dataset...", true);
 
         newObject = null;
 
