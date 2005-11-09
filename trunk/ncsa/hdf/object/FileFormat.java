@@ -566,9 +566,9 @@ public abstract class FileFormat extends File
 
         int i = 0;
         FileFormat[] fileformats = new FileFormat[n];
-        Enumeration enum = ((Hashtable)FileList).elements();
-        while (enum.hasMoreElements())
-            fileformats[i++] = (FileFormat)enum.nextElement();
+        Enumeration local_enum = ((Hashtable)FileList).elements();
+        while (local_enum.hasMoreElements())
+            fileformats[i++] = (FileFormat)local_enum.nextElement();
 
         return fileformats;
     }

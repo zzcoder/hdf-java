@@ -226,10 +226,10 @@ public class H4File extends FileFormat
         {
             DefaultMutableTreeNode theNode = null;
             HObject theObj = null;
-            Enumeration enum = ((DefaultMutableTreeNode)rootNode).breadthFirstEnumeration();
-            while(enum.hasMoreElements())
+            Enumeration local_enum = ((DefaultMutableTreeNode)rootNode).breadthFirstEnumeration();
+            while(local_enum.hasMoreElements())
             {
-                theNode = (DefaultMutableTreeNode)enum.nextElement();
+                theNode = (DefaultMutableTreeNode)local_enum.nextElement();
                 theObj = (HObject)theNode.getUserObject();
                 if (theObj instanceof Dataset) ((Dataset)theObj).clearData();
                 theObj = null;

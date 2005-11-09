@@ -68,10 +68,10 @@ implements ActionListener
     private double ymin;
 
     /** the maximum value of the X axis */
-    private int xmax;
+    private double xmax;
 
     /** the minumum value of the X axis */
-    private int xmin;
+    private double xmin;
 
     /** line labels */
     private String lineLabels[];
@@ -84,6 +84,9 @@ implements ActionListener
 
     /** number of lines */
     private int numberOfLines;
+
+    /* the data to plot against */
+    private double[] xData=null;
 
     /**
      * True if the original data is integer (byte, short, integer, long).
@@ -107,7 +110,7 @@ implements ActionListener
      *  </ul>
      */
     public Chart (Frame owner, String title, int style,
-        double[][] data, int[] xRange, double[] yRange)
+        double[][] data, double[] xData, double[] yRange)
     {
         super(owner, title, false);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -124,10 +127,25 @@ implements ActionListener
         else
             isInteger = false;
 
-        if (xRange != null)
+        if (xData != null)
         {
-            this.xmin = xRange[0];
-            this.xmax = xRange[1];
+            int len = xData.length;
+            if (len == 2)
+            {
+                this.xmin = xData[0];
+                this.xmax = xData[1];
+            } else {
+                this.xData = xData;
+                xmin = xmax = xData[0];
+                for (int i=0; i<len; i++)
+                {
+                    if (xData[i] < xmin)
+                        xmin = xData[i];
+
+                    if (xData[i] > xmax)
+                        xmax = xData[i];
+                }
+            }
         }
         else
         {
@@ -272,12 +290,16 @@ implements ActionListener
             double xp=0, x=xmin;
             double dw = (double)w/(double)xnpoints;
             double dx = (xmax - xmin)/(double)xnpoints;
+            boolean gtOne = (dx>=1);
             for (int i=0; i<=xnpoints; i++)
             {
                 x = xmin+i*dx;
                 xp = xgap + i*dw;
                 g.drawLine((int)xp, h, (int)xp, h-5);
-                g.drawString(String.valueOf((int)x), (int)xp-5, h+gap);
+                if (gtOne)
+                    g.drawString(String.valueOf((int)x), (int)xp-5, h+gap);
+                else
+                    g.drawString(String.valueOf(x), (int)xp-5, h+gap);
             }
 
             // draw y labels
@@ -305,6 +327,9 @@ implements ActionListener
                 // use y = a + b* x to calculate pixel positions
                 double b = h/(ymin-ymax);
                 double a = -b*ymax;
+                boolean hasXdata = (xData != null && xData.length>=numberOfPoints);
+                double xRatio = (1/(xmax-xmin))*w;
+                double xD = (xmin/(xmax-xmin))*(double)w;
 
                 // draw lines for selected spreadsheet columns
                 for (int i=0; i<numberOfLines; i++)
@@ -313,11 +338,19 @@ implements ActionListener
                         g.setColor(lineColors[i]);
 
                     // set up the line data for drawing one line a time
-                    x0 = xgap;
+                    if (hasXdata)
+                        x0 = xgap + xData[0]*xRatio - xD;
+                    else
+                        x0 = xgap;
                     y0 = a+b*data[i][0];
+
                     for (int j=1; j<numberOfPoints; j++)
                     {
-                        x1 = xgap + j*dw;
+                        if (hasXdata)
+                            x1 = xgap + xData[j]*xRatio - xD;
+                        else
+                            x1 = xgap + j*dw;
+
                         y1 = a+b*data[i][j];
                         g.drawLine((int)x0, (int)y0, (int)x1, (int)y1);
 

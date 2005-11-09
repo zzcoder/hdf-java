@@ -321,10 +321,10 @@ implements ActionListener, MetaDataView
             int groupCount=0, datasetCount=0;
             DefaultMutableTreeNode root = (DefaultMutableTreeNode)theFile.getRootNode();
             DefaultMutableTreeNode theNode = null;
-            Enumeration enum = root.depthFirstEnumeration();
-            while(enum.hasMoreElements())
+            Enumeration local_enum = root.depthFirstEnumeration();
+            while(local_enum.hasMoreElements())
             {
-                theNode = (DefaultMutableTreeNode)enum.nextElement();
+                theNode = (DefaultMutableTreeNode)local_enum.nextElement();
                 if (theNode.getUserObject() instanceof Group)
                     groupCount++;
                 else

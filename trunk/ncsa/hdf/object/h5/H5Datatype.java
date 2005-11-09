@@ -363,7 +363,14 @@ public class H5Datatype extends Datatype
         }
         else if (tclass == HDF5Constants.H5T_REFERENCE)
         {
-            description = "Object reference";
+            boolean is_reg_ref = false;
+            try {is_reg_ref=H5.H5Tequal(tid, HDF5Constants.H5T_STD_REF_DSETREG);}
+            catch (Exception ex) {}
+
+            if (is_reg_ref)
+                description = "Dataset region reference";
+            else
+                description = "Object reference";
         }
         else if (tclass == HDF5Constants.H5T_BITFIELD)
         {

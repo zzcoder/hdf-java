@@ -85,6 +85,8 @@ implements TreeView, ActionListener {
 
     private JMenuItem addDatatypeMenuItem;
 
+    private JMenuItem addLinkMenuItem;
+
     public DefaultTreeView(ViewManager theView) {
         viewer = theView;
 
@@ -102,9 +104,13 @@ implements TreeView, ActionListener {
         addTableMenuItem.addActionListener(this);
         addTableMenuItem.setActionCommand("Add table");
 
-        addDatatypeMenuItem = new JMenuItem( "Datatype", ViewProperties.getTableIcon());
+        addDatatypeMenuItem = new JMenuItem( "Datatype", ViewProperties.getDatatypeIcon());
         addDatatypeMenuItem.addActionListener(this);
         addDatatypeMenuItem.setActionCommand("Add datatype");
+
+        addLinkMenuItem = new JMenuItem( "Link", ViewProperties.getLinkIcon());
+        addLinkMenuItem.addActionListener(this);
+        addLinkMenuItem.setActionCommand("Add link");
 
         // initialize the tree and root
         treeModel = new DefaultTreeModel(root);
@@ -205,6 +211,7 @@ implements TreeView, ActionListener {
 
         newOjbectMenu.add(addTableMenuItem);
         newOjbectMenu.add(addDatatypeMenuItem);
+        newOjbectMenu.add(addLinkMenuItem);
 
         menu.addSeparator();
 
@@ -306,10 +313,12 @@ implements TreeView, ActionListener {
         {
             addTableMenuItem.setVisible(true);
             addDatatypeMenuItem.setVisible(true);
+            addLinkMenuItem.setVisible(true);
         } else
         {
             addTableMenuItem.setVisible(false);
             addDatatypeMenuItem.setVisible(false);
+            addLinkMenuItem.setVisible(false);
         }
 
         popupMenu.show((JComponent)e.getSource(), x, y);
@@ -825,10 +834,10 @@ implements TreeView, ActionListener {
 
         Vector list = new Vector();
         DefaultMutableTreeNode theNode = null;
-        Enumeration enum = ((DefaultMutableTreeNode)node).breadthFirstEnumeration();
-        while(enum.hasMoreElements())
+        Enumeration local_enum = ((DefaultMutableTreeNode)node).breadthFirstEnumeration();
+        while(local_enum.hasMoreElements())
         {
-            theNode = (DefaultMutableTreeNode)enum.nextElement();
+            theNode = (DefaultMutableTreeNode)local_enum.nextElement();
             list.add(theNode.getUserObject());
         }
 
@@ -1005,6 +1014,40 @@ implements TreeView, ActionListener {
         }
     }
 
+    private void addLink()
+    {
+        if (selectedObject == null || selectedNode == null)
+            return;
+
+        Group pGroup = null;
+        if (selectedObject instanceof Group)
+            pGroup = (Group)selectedObject;
+        else
+            pGroup = (Group)((DefaultMutableTreeNode)selectedNode.getParent()).getUserObject();
+
+        NewLinkDialog dialog = new NewLinkDialog(
+            (JFrame)viewer,
+            pGroup,
+            breadthFirstUserObjects(selectedObject.getFileFormat().getRootNode()));
+        dialog.show();
+
+        HObject obj = (HObject)dialog.getObject();
+        if (obj == null)
+            return;
+
+        Group pgroup = dialog.getParentGroup();
+        try { addObject(obj, pgroup); }
+        catch (Exception ex) {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(
+                this,
+                ex,
+                "HDFView",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+    }
+
     private void renameObject()
     {
         if (selectedObject == null)
@@ -1072,6 +1115,9 @@ implements TreeView, ActionListener {
         }
         else if (cmd.equals("Add datatype")) {
             addDatatype();
+        }
+        else if (cmd.equals("Add link")) {
+            addLink();
         }
         else if (cmd.startsWith("Open data"))
         {
@@ -1490,8 +1536,8 @@ implements TreeView, ActionListener {
         ((JFrame)viewer).setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try {
             theView = Tools.newInstance(theClass, initargs);
-            viewer.addDataView((DataView)theView);
-        } finally {
+                viewer.addDataView((DataView)theView);
+        }finally {
             ((JFrame)viewer).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
 
@@ -1594,10 +1640,10 @@ implements TreeView, ActionListener {
 
         DefaultMutableTreeNode theNode = null;
         HObject theObj = null;
-        Enumeration enum = ((DefaultMutableTreeNode)theFileRoot).breadthFirstEnumeration();
-        while(enum.hasMoreElements())
+        Enumeration local_enum = ((DefaultMutableTreeNode)theFileRoot).breadthFirstEnumeration();
+        while(local_enum.hasMoreElements())
         {
-            theNode = (DefaultMutableTreeNode)enum.nextElement();
+            theNode = (DefaultMutableTreeNode)local_enum.nextElement();
             theObj = (HObject)theNode.getUserObject();
             if (theObj == null)
                 continue;

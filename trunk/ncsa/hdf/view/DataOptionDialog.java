@@ -924,6 +924,9 @@ implements ActionListener, ItemListener
             selected[selectedIndex[1]] = (long)(dims[selectedIndex[1]]/steps);
             stride[selectedIndex[0]] = stride[selectedIndex[1]] = steps;
 
+            if (selected[selectedIndex[0]]==0) selected[selectedIndex[0]] = 1;
+            if (selected[selectedIndex[1]]==0) selected[selectedIndex[1]] = 1;
+
             if (isTrueColorImage && start.length > 2)
             {
                 start[selectedIndex[2]] = 0;

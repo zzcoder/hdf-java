@@ -352,6 +352,10 @@ public class H5ScalarDS extends ScalarDS
                     null );   // set block to 1
             }
 
+            /* do not support dataset region references */
+            if (H5.H5Tequal(nativeDatatype, HDF5Constants.H5T_STD_REF_DSETREG))
+                throw new HDF5Exception("Dataset region reference is not supported.");
+
             theData = H5Datatype.allocateArray(nativeDatatype, (int)lsize[0]);
 
             if (theData != null) {

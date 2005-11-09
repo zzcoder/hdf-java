@@ -113,7 +113,7 @@ public class ViewProperties extends Properties
         zoominIcon, zoomoutIcon, paletteIcon, chartIcon,
         copyIcon, cutIcon, pasteIcon,
         previousIcon, nextIcon, firstIcon, lastIcon,
-        animationIcon, datatypeIcon, datatypeIconA;
+        animationIcon, datatypeIcon, datatypeIconA, linkIcon;
 
     private static String propertyFile;
 
@@ -318,6 +318,8 @@ public class ViewProperties extends Properties
 
     public static Icon getDatatypeIconA() { return datatypeIconA; }
 
+    public static Icon getLinkIcon() { return linkIcon; }
+
     public static Icon getFileopenIcon() { return fileopenIcon; }
 
     public static Icon getFilesaveIcon() { return filesaveIcon; }
@@ -448,6 +450,13 @@ public class ViewProperties extends Properties
             u = classLoader.getResource("ncsa/hdf/view/icons/datatypeA.gif");
             if (u != null) {
                 datatypeIconA = new ImageIcon (u);
+            }
+        }
+
+        if (linkIcon == null) {
+            u = classLoader.getResource("ncsa/hdf/view/icons/link.gif");
+            if (u != null) {
+                linkIcon = new ImageIcon (u);
             }
         }
 
@@ -642,11 +651,11 @@ public class ViewProperties extends Properties
         } catch (Exception e) {;}
 
         // add fileformat modules
-        Enumeration enum = this.keys();
+        Enumeration local_enum = this.keys();
         String theKey = null;
         String fExt = null;
-        while (enum.hasMoreElements()) {
-            theKey = (String)enum.nextElement();
+        while (local_enum.hasMoreElements()) {
+            theKey = (String)local_enum.nextElement();
             if (theKey.startsWith("module.fileformat")) {
                 fExt = theKey.substring(18);
                 try {

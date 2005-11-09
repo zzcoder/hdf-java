@@ -21,6 +21,13 @@ import java.lang.reflect.Constructor;
 import javax.swing.tree.DefaultMutableTreeNode;
 import com.sun.image.codec.jpeg.*;
 
+/*
+import javax.imageio.*;
+import javax.imageio.plugins.jpeg.*;
+import javax.imageio.metadata.*;
+import javax.imageio.stream.*;
+*/
+
 /**
  * The "Tools" class contains various of tools for HDF files such as jpeg to
  * HDF converter.
@@ -54,10 +61,29 @@ public final class Tools
              throw new UnsupportedOperationException("Unsupported destination file type.");
 
         BufferedInputStream in = new BufferedInputStream(new FileInputStream(imgFileName));
-
         JPEGImageDecoder decoder = JPEGCodec.createJPEGDecoder(in);
         BufferedImage image = decoder.decodeAsBufferedImage();
         in.close();
+
+/*
+        // FileImageInputStream is about 200 times slower than BufferedInputStream
+        BufferedImage image = null;
+        FileImageInputStream in = new FileImageInputStream(new File(imgFileName));
+        BufferedInputStream in = new BufferedInputStream(new FileImageInputStream(new File(imgFileName)));
+        ImageReader decoder = (ImageReader)ImageIO.getImageReadersByFormatName("JPEG").next();
+
+        if (decoder ==null)
+        {
+            in.close();
+            return;
+        }
+
+
+        JPEGImageReadParam param = new JPEGImageReadParam();
+        decoder.setInput(in, true);
+        image = decoder.read(0, param);
+        in.close();
+*/
 
         int h = image.getHeight();
         int w = image.getWidth();
@@ -134,8 +160,8 @@ public final class Tools
 
         if (!type.equals(FileFormat.FILE_TYPE_JPEG))
             throw new UnsupportedOperationException("Unsupported image type.");
-
         BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
+
         JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
         encoder.encode(image);
 

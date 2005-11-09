@@ -596,7 +596,8 @@ ncsa.hdf.view: ./ncsa/hdf/view/TreeView.class \
 	./ncsa/hdf/view/ViewProperties.class \
 	./ncsa/hdf/view/NewDatasetDialog.class \
 	./ncsa/hdf/view/NewDatatypeDialog.class \
-	./ncsa/hdf/view/NewDatatypeDialog.class \
+	./ncsa/hdf/view/NewLinkDialog.class \
+	./ncsa/hdf/view/NewLinkDialog.class \
 	./ncsa/hdf/view/NewTableDataDialog.class \
 	./ncsa/hdf/view/NewFileDialog.class \
 	./ncsa/hdf/view/UserOptionsDialog.class \
@@ -853,6 +854,7 @@ JAVASRCS= \
 ./ncsa/hdf/view/NewAttributeDialog.java \
 ./ncsa/hdf/view/NewDatasetDialog.java \
 ./ncsa/hdf/view/NewDatatypeDialog.java \
+./ncsa/hdf/view/NewLinkDialog.java \
 ./ncsa/hdf/view/NewTableDataDialog.java \
 ./ncsa/hdf/view/NewFileDialog.java \
 ./ncsa/hdf/view/NewGroupDialog.java \
