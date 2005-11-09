@@ -636,6 +636,11 @@ case $basic_machine in
 	orion105)
 		basic_machine=clipper-highlevel
 		;;
+# Added for the case of a 64-bit architecture machine
+# -- Stephen Aiken 2005.08.29
+        x86_64-pc)
+	       basic_machine=x86_64-pc
+               ;;
 	*)
 		echo Invalid configuration \`$1\': machine \`$basic_machine\' not recognized 1>&2
 		exit 1
