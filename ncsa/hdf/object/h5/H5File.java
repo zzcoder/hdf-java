@@ -306,6 +306,36 @@ public class H5File extends FileFormat
         return dtype;
     }
 
+    public HObject createLink(Group parentGroup, String name, HObject currentObj) throws Exception
+    {
+        HObject obj = null;
+        String current_full_name=null, new_full_name=null, parent_path=null;
+
+        if (currentObj instanceof Group && ((Group)currentObj).isRoot())
+            throw new HDF5Exception("Cannot make a link to the root group.");
+
+        if (parentGroup == null || parentGroup.isRoot())
+            parent_path = HObject.separator;
+        else
+            parent_path = parentGroup.getPath()+HObject.separator+parentGroup.getName()+HObject.separator;
+
+        new_full_name = parent_path+name;
+        current_full_name = currentObj.getPath()+HObject.separator + currentObj.getName();
+
+        H5.H5Glink(fid, HDF5Constants.H5G_LINK_HARD, current_full_name, new_full_name);
+
+        if (currentObj instanceof Group)
+            obj = new H5Group(this, name, parent_path, parentGroup, currentObj.getOID());
+        else if (currentObj instanceof H5Datatype)
+            obj = new H5Datatype(this, name, parent_path, currentObj.getOID());
+        else if (currentObj instanceof H5CompoundDS)
+            obj = new H5CompoundDS(this, name, parent_path, currentObj.getOID());
+        else if (currentObj instanceof H5ScalarDS)
+            obj = new H5ScalarDS(this, name, parent_path, currentObj.getOID());
+
+        return obj;
+    }
+
     // implementign FileFormat
     public Dataset createScalarDS(
         String name,

@@ -222,6 +222,68 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Glink
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Glink
+ * Signature: (IILjava/lang/String;Ljava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Glink2
+  (JNIEnv *env, jclass clss, 
+    jint current_loc_id, jstring current_name, jint link_type, 
+    jint new_loc_id, jstring new_name)
+{
+    herr_t status;
+    char *cName, *nName;
+    jboolean isCopy;
+
+    if (current_name == NULL) {
+        h5nullArgument( env, "H5Glink2:  current_name is NULL");
+        return -1;
+    }
+    if (new_name == NULL) {
+        h5nullArgument( env, "H5Glink2:  new_name is NULL");
+        return -1;
+    }
+#ifdef __cplusplus
+    cName = (char *)env->GetStringUTFChars(current_name,&isCopy);
+#else
+    cName = (char *)(*env)->GetStringUTFChars(env,current_name,&isCopy);
+#endif
+    if (cName == NULL) {
+        h5JNIFatalError( env, "H5Glink2:  current_name not pinned");
+        return -1;
+    }
+#ifdef __cplusplus
+    nName = (char *)env->GetStringUTFChars(new_name,&isCopy);
+#else
+    nName = (char *)(*env)->GetStringUTFChars(env,new_name,&isCopy);
+#endif
+    if (nName == NULL) {
+#ifdef __cplusplus
+        env->ReleaseStringUTFChars(current_name,cName);
+#else
+        (*env)->ReleaseStringUTFChars(env,current_name,cName);
+#endif
+        h5JNIFatalError( env, "H5Glink2:  new_name not pinned");
+        return -1;
+    }
+
+    status = H5Glink2((hid_t)current_loc_id, cName, (H5G_link_t)link_type, (hid_t)new_loc_id, nName);
+
+#ifdef __cplusplus
+    env->ReleaseStringUTFChars(new_name,nName);
+    env->ReleaseStringUTFChars(current_name,cName);
+#else
+    (*env)->ReleaseStringUTFChars(env,new_name,nName);
+    (*env)->ReleaseStringUTFChars(env,current_name,cName);
+#endif
+
+    if (status < 0) {
+        h5libraryError(env);
+    }
+    return (jint)status;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Gunlink
  * Signature: (ILjava/lang/String;)I
  */

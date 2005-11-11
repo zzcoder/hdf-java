@@ -320,6 +320,12 @@ public abstract class FileFormat extends File
         return createDatatype(tclass, tsize, torder, tsign);
     }
 
+    /* sub class should replace this default implementation */
+    public HObject createLink(Group parentGroup, String name, HObject currentObj) throws Exception
+    {
+        throw new UnsupportedOperationException("createLink() is not supported");
+    }
+
     /**
      * Add a new file format.
      * <p>

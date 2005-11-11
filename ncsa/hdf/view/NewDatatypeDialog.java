@@ -99,7 +99,7 @@ implements ActionListener, ItemListener
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
-        contentPane.setPreferredSize(new Dimension(600, 350));
+        contentPane.setPreferredSize(new Dimension(600, 200));
 
         JButton okButton = new JButton("   Ok   ");
         okButton.setActionCommand("Ok");
@@ -122,7 +122,7 @@ implements ActionListener, ItemListener
         namePanel.setLayout(new BorderLayout(5,5));
         JPanel tmpP = new JPanel();
         tmpP.setLayout(new GridLayout(2,1));
-        tmpP.add(new JLabel("Dataset name: "));
+        tmpP.add(new JLabel("Datatype name: "));
         tmpP.add(new JLabel("Parent group: "));
         namePanel.add(tmpP, BorderLayout.WEST);
         tmpP = new JPanel();
@@ -181,11 +181,7 @@ implements ActionListener, ItemListener
         typePanel.add(endianChoice);
         typePanel.add(stringLengthField);
 
-
-        JPanel infoPanel = new JPanel();
-        infoPanel.setLayout(new GridLayout(3,1,5,10));
-        infoPanel.add(typePanel);
-        contentPane.add(infoPanel, BorderLayout.CENTER);
+        contentPane.add(typePanel, BorderLayout.CENTER);
 
         classChoice.addItemListener(this);
         sizeChoice.addItemListener(this);
@@ -193,7 +189,7 @@ implements ActionListener, ItemListener
         // locate the H5Property dialog
         Point l = owner.getLocation();
         l.x += 250;
-        l.y += 80;
+        l.y += 100;
         setLocation(l);
         validate();
         pack();
@@ -316,7 +312,7 @@ implements ActionListener, ItemListener
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                "Dataset name is not specified.",
+                "Datatype name is not specified.",
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             return null;
@@ -326,7 +322,7 @@ implements ActionListener, ItemListener
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                "Dataset name cannot contain path.",
+                "Datatype name cannot contain path.",
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             return null;
