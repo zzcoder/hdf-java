@@ -39,18 +39,19 @@ import java.net.URLClassLoader;
  * @author Peter X. Cao
  */
 public class NewLinkDialog extends JDialog
-implements ActionListener, ItemListener
+implements ActionListener
 {
-    private JTextField nameField, stringLengthField;
+    private JTextField nameField;
 
-    private JComboBox parentChoice, classChoice, sizeChoice, endianChoice;
+    private JComboBox parentChoice, linkToChoice;
 
     private JCheckBox checkUnsigned;
 
-    private boolean isH5;
-
     /** a list of current groups */
     private List groupList;
+
+    /** a list of current objects */
+    private List objList;
 
     private HObject newObject;
 
@@ -71,25 +72,41 @@ implements ActionListener, ItemListener
 
         fileFormat = pGroup.getFileFormat();
         toolkit = Toolkit.getDefaultToolkit();
-        isH5 = pGroup.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
+        objList = objs;
 
         parentChoice = new JComboBox();
+        linkToChoice = new JComboBox();
+
         groupList = new Vector();
-        Object obj = null;
+        HObject obj = null;
         Iterator iterator = objs.iterator();
+        String full_name = null;
+        int idx_root=-1, idx=-1;
         while (iterator.hasNext())
         {
-            obj = iterator.next();
+            obj = (HObject)iterator.next();
+            idx++;
+
             if (obj instanceof Group)
             {
                 Group g = (Group)obj;
                 groupList.add(obj);
                 if (g.isRoot())
-                    parentChoice.addItem(HObject.separator);
-                else
-                    parentChoice.addItem(g.getPath()+g.getName()+HObject.separator);
+                {
+                    full_name = HObject.separator;
+                    idx_root = idx;
+                }
+                else full_name = g.getPath()+g.getName()+HObject.separator;
+                parentChoice.addItem(full_name);
             }
+            else
+                full_name = obj.getPath()+obj.getName();
+
+            linkToChoice.addItem(full_name);
         }
+
+        linkToChoice.removeItemAt(idx_root);
+        objList.remove(idx_root);
 
         if (pGroup.isRoot())
             parentChoice.setSelectedItem(HObject.separator);
@@ -99,7 +116,7 @@ implements ActionListener, ItemListener
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
-        contentPane.setPreferredSize(new Dimension(600, 350));
+        contentPane.setPreferredSize(new Dimension(400, 150));
 
         JButton okButton = new JButton("   Ok   ");
         okButton.setActionCommand("Ok");
@@ -121,79 +138,23 @@ implements ActionListener, ItemListener
         JPanel namePanel = new JPanel();
         namePanel.setLayout(new BorderLayout(5,5));
         JPanel tmpP = new JPanel();
-        tmpP.setLayout(new GridLayout(2,1));
-        tmpP.add(new JLabel("Dataset name: "));
+        tmpP.setLayout(new GridLayout(3,1));
+        tmpP.add(new JLabel("Link name: "));
         tmpP.add(new JLabel("Parent group: "));
+        tmpP.add(new JLabel("Link to: "));
         namePanel.add(tmpP, BorderLayout.WEST);
         tmpP = new JPanel();
-        tmpP.setLayout(new GridLayout(2,1));
+        tmpP.setLayout(new GridLayout(3,1));
         tmpP.add(nameField=new JTextField());
         tmpP.add(parentChoice);
+        tmpP.add(linkToChoice);
         namePanel.add(tmpP, BorderLayout.CENTER);
-        contentPane.add(namePanel, BorderLayout.NORTH);
-
-        // set DATATYPE
-        JPanel typePanel = new JPanel();
-        typePanel.setLayout(new GridLayout(2,4,15,3));
-        TitledBorder border = new TitledBorder("Datatype");
-        border.setTitleColor(Color.blue);
-        typePanel.setBorder(border);
-
-        stringLengthField = new JTextField("String length");
-        stringLengthField.setEnabled(false);
-
-        endianChoice = new JComboBox();
-        classChoice = new JComboBox();
-        sizeChoice = new JComboBox();
-        endianChoice.setEnabled(isH5);
-
-        classChoice.addItem("INTEGER");
-        classChoice.addItem("FLOAT");
-        classChoice.addItem("CHAR");
-
-        if (isH5)
-        {
-            classChoice.addItem("STRING");
-            classChoice.addItem("REFERENCE");
-            sizeChoice.addItem("NATIVE");
-            endianChoice.addItem("NATIVE");
-            endianChoice.addItem("LITTLE ENDIAN");
-            endianChoice.addItem("BIG ENDIAN");
-        }
-        else
-        {
-            sizeChoice.addItem("DEFAULT");
-            endianChoice.addItem("DEFAULT");
-            typePanel.add(new JLabel());
-        }
-        sizeChoice.addItem("8");
-        sizeChoice.addItem("16");
-        sizeChoice.addItem("32");
-        sizeChoice.addItem("64");
-
-        typePanel.add(new JLabel("Datatype class"));
-        typePanel.add(new JLabel("Size (bits)"));
-        typePanel.add(new JLabel("Byte ordering"));
-        typePanel.add(checkUnsigned = new JCheckBox("Unsigned"));
-
-        typePanel.add(classChoice);
-        typePanel.add(sizeChoice);
-        typePanel.add(endianChoice);
-        typePanel.add(stringLengthField);
-
-
-        JPanel infoPanel = new JPanel();
-        infoPanel.setLayout(new GridLayout(3,1,5,10));
-        infoPanel.add(typePanel);
-        contentPane.add(infoPanel, BorderLayout.CENTER);
-
-        classChoice.addItemListener(this);
-        sizeChoice.addItemListener(this);
+        contentPane.add(namePanel, BorderLayout.CENTER);
 
         // locate the H5Property dialog
         Point l = owner.getLocation();
         l.x += 250;
-        l.y += 80;
+        l.y += 100;
         setLocation(l);
         validate();
         pack();
@@ -207,7 +168,7 @@ implements ActionListener, ItemListener
 
         if (cmd.equals("Ok"))
         {
-            newObject = createDatatype();
+            newObject = createLink();
 
             if (newObject != null)
                 dispose();
@@ -219,97 +180,10 @@ implements ActionListener, ItemListener
         }
     }
 
-    public void itemStateChanged(ItemEvent e)
-    {
-        Object source = e.getSource();
-
-        if (source.equals(classChoice))
-        {
-            int idx = classChoice.getSelectedIndex();
-            sizeChoice.setSelectedIndex(0);
-            endianChoice.setSelectedIndex(0);
-            stringLengthField.setEnabled(false);
-
-            if (idx == 0)
-            {
-                sizeChoice.setEnabled(true);
-                endianChoice.setEnabled(isH5);
-                checkUnsigned.setEnabled(true);
-
-                if (sizeChoice.getItemCount() == 3)
-                {
-                    sizeChoice.removeItem("32");
-                    sizeChoice.removeItem("64");
-                    sizeChoice.addItem("8");
-                    sizeChoice.addItem("16");
-                    sizeChoice.addItem("32");
-                    sizeChoice.addItem("64");
-                }
-
-                if (sizeChoice.getSelectedItem().equals("64"))
-                {
-                    // unsigned 64 bit integer is not allowed
-                    checkUnsigned.setSelected(false);
-                    checkUnsigned.setEnabled(false);
-                }
-            }
-            else if (idx == 1)
-            {
-                sizeChoice.setEnabled(true);
-                endianChoice.setEnabled(isH5);
-                checkUnsigned.setEnabled(false);
-
-                if (sizeChoice.getItemCount() == 5)
-                {
-                    sizeChoice.removeItem("16");
-                    sizeChoice.removeItem("8");
-                }
-            }
-            else if (idx == 2)
-            {
-                sizeChoice.setEnabled(false);
-                endianChoice.setEnabled(isH5);
-                checkUnsigned.setEnabled(true);
-            }
-            else if (idx == 3)
-            {
-                sizeChoice.setEnabled(false);
-                endianChoice.setEnabled(false);
-                checkUnsigned.setEnabled(false);
-                stringLengthField.setEnabled(true);
-                stringLengthField.setText("String length");
-            }
-            else if (idx == 4)
-            {
-                sizeChoice.setEnabled(false);
-                endianChoice.setEnabled(false);
-                checkUnsigned.setEnabled(false);
-                stringLengthField.setEnabled(false);
-            }
-        }
-        else if (source.equals(sizeChoice))
-        {
-            if (classChoice.getSelectedIndex() == 0)
-            {
-                if (sizeChoice.getSelectedItem().equals("64"))
-                {
-                    // unsigned 64 bit integer is not allowed
-                    checkUnsigned.setSelected(false);
-                    checkUnsigned.setEnabled(false);
-                }
-                else
-                   checkUnsigned.setEnabled(true);
-            }
-        }
-    }
-
-
-    private HObject createDatatype()
+    private HObject createLink()
     {
         String name = null;
         Group pgroup = null;
-        int rank=-1, gzip=-1, tclass=-1, tsize=-1, torder=-1, tsign=-1;
-        long dims[], maxdims[], chunks[];
 
         name = nameField.getText().trim();
         if (name == null || name.length()<1)
@@ -344,101 +218,32 @@ implements ActionListener, ItemListener
             return null;
         }
 
-        // set datatype class
-        int idx = classChoice.getSelectedIndex();
-        if (idx == 0)
-        {
-            tclass = Datatype.CLASS_INTEGER;
-            if (checkUnsigned.isSelected())
-                tsign = Datatype.SIGN_NONE;
-        }
-        else if (idx == 1)
-            tclass = Datatype.CLASS_FLOAT;
-        else if (idx == 2)
-        {
-            tclass = Datatype.CLASS_CHAR;
-            if (checkUnsigned.isSelected())
-                tsign = Datatype.SIGN_NONE;
-        }
-        else if (idx == 3)
-        {
-            tclass = Datatype.CLASS_STRING;
-        }
-        else if (idx == 4)
-        {
-            tclass = Datatype.CLASS_REFERENCE;
-        }
+        HObject currentObj = (HObject)objList.get(linkToChoice.getSelectedIndex());
 
-        // set datatype size/order
-        idx = sizeChoice.getSelectedIndex();
-        if (tclass == Datatype.CLASS_STRING)
-        {
-            int stringLength = 0;
-            try { stringLength = Integer.parseInt(stringLengthField.getText()); }
-            catch (NumberFormatException ex)
-            {
-                stringLength = -1;
-            }
-
-            if (stringLength<=0)
-            {
-                toolkit.beep();
-                JOptionPane.showMessageDialog(this,
-                    "Invalid string length: "+stringLengthField.getText(),
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
-                return null;
-            }
-
-            tsize = stringLength;
-        }
-        else if (tclass == Datatype.CLASS_REFERENCE)
-        {
-            tsize = 1;
-        }
-        else if (idx == 0)
-        {
-            tsize = Datatype.NATIVE;
-        }
-        else if (tclass == Datatype.CLASS_FLOAT)
-        {
-            tsize = idx*4;
-        }
-        else
-        {
-            tsize = 1 << (idx-1);
-        }
-
-        if (tsize==8 && !isH5 && tclass == Datatype.CLASS_INTEGER)
+        if (currentObj == null)
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-            "HDF4 does not support 64-bit integer.",
-            getTitle(),
-            JOptionPane.ERROR_MESSAGE);
+                "Target object is null.",
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
-        // set order
-        idx = endianChoice.getSelectedIndex();
-        if (idx == 0)
-            torder = Datatype.NATIVE;
-        else if (idx == 1)
-            torder = Datatype.ORDER_LE;
-        else
-            torder = Datatype.ORDER_BE;
+        if (currentObj instanceof Group && ((Group)currentObj).isRoot())
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+                "Cannot make a link to the root group.",
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
 
         HObject obj = null;
         try
         {
-            String fullPath = HObject.separator;
-            if (pgroup.isRoot())
-                fullPath += name;
-            else
-                fullPath = pgroup.getPath()+HObject.separator+pgroup.getName()+
-                           HObject.separator + name;
-            Datatype datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign, fullPath);
-            obj = datatype;
+            obj = fileFormat.createLink(pgroup, name, currentObj);
         } catch (Exception ex)
         {
             toolkit.beep();

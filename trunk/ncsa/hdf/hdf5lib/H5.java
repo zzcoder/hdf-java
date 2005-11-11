@@ -1339,6 +1339,9 @@ public class H5 {
         String current_name, String new_name)
         throws HDF5LibraryException, NullPointerException;
 
+    public synchronized static native int H5Glink2(int curr_loc_id,
+        String current_name, int link_type, int new_loc_id, String new_name )
+        throws HDF5LibraryException, NullPointerException;
 
     /**
      *  H5Gunlink removes an association between a name and an object.
