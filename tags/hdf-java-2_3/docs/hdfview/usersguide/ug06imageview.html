@@ -1,0 +1,279 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.72 [en] (WinNT; U) [Netscape]">
+   <title>HDFView User's Guide -- Image Viewer</title>
+</head>
+
+<!-- BEGIN OF THE BODY -->
+<body text="#000000" bgcolor="#FFFFFF" link="#0000EE" vlink="#551A8B" alink="#FF0000">
+
+<a href="index.html">[Index]</a>
+<a href="ug01introduction.html">[1]</a>
+<a href="ug02start.html">[2]</a>
+<a href="ug03objects.html">[3]</a>
+<a href="ug04treeview.html">[4]</a>
+<a href="ug05spreadsheet.html">[5]</a>
+<a href="ug06imageview.html">[6]</a>
+<a href="ug07textview.html">[7]</a>
+
+
+<h1>
+Chapter 6: Image Viewer</h1>
+
+Image Viewer is a graphical window to display HDF images. HDFView is a simple image
+viewer for HDF4/5 and has very limited function of processing image. 
+
+<p>
+An HDF4 image is raster image of 8-bit pixels with and indexed RGB color table, 
+or a 24-bit true color image. HDF4 library provides image APIs to access image data 
+and color table.
+
+<p>
+An HDF5 image is a dataset that confirms the
+<a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/ADGuide/ImageSpec.html">
+HDF5 Image Specification</a>. HDFView supports two types of images: indexed 
+and true color. Both indexed image and true color image have predefined
+attributes and data layout according to the HDF5 image specification.
+For more details about HDF5 image, see the 
+<a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/ADGuide/ImageSpec.html">
+HDF5 Image Specification</a>.
+
+<dl>
+<dt><a href="ug06imageview.html#ug06image">6.1 Display a 2D or 3D Image</a></dt>
+<dt><a href="ug06imageview.html#ug06zoom">6.2 Zoom/Flip/Contour Image</a></dt>
+<dt><a href="ug06imageview.html#ug06palette">6.3 View and Modify Image Palette/Values</a></dt>
+<dt><a href="ug06imageview.html#ug06histogram">6.4 Show Histogram of Pixel Values</a></dt>
+<dt><a href="ug06imageview.html#ug06import">6.5 Import JPEG Image to HDF4/5</a></dt>
+<dt><a href="ug06imageview.html#ug06save">6.6 Save HDF Image to JPEG File</a></dt>
+</dl>
+
+<hr noshade size=1>
+
+<h2>
+<a NAME="ug06image"></a>
+6.1 Display a 2D or 3D Image</h2>
+HDFView displays HDF4 raster image or HDF5 datasets that follow the HDF5 
+<a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/ADGuide/ImageSpec.html">Image
+and Palette Specification</a> for indexed images with a 8-bit standard 
+RGB color model palette or three-dimensional true color images.
+Other image formats supported by the Image and Palette Specification are
+not supported by this tool. 
+
+<h3>
+6.1.1 Indexed Image (8-bit) </h3>
+<p>An indexed image is one of the following:
+<ul>
+<li>An HDF4 RI8 image</li>
+<li>An HDF5 dataset that conforms to the HDF5 Image specification, and is
+a "IMAGE_SUBCLASS=IMAGE_INDEXED"
+<li>An SDS or HDF5 dataset with data that can be interpreted as an image </li>
+</ul>
+<p>The dataset is displayed as a Java image using IndexColorModel. 
+The dataset is converted to a raster image using 
+the first palette specified by the PALETTE attribute, or the default palette for
+HDF4. 
+Multiple user defined palettes (i.e., the PALETTE attribute may be a list) are 
+not supported in version 1.0.
+
+<p>The dataset of an indexed image holds the values of indices of the color lookup
+table (palette). The dataset is converted into image pixels by looking up the color 
+table. The following figure is an example of mapping dataset values into pixels.
+
+<center>
+<p><img SRC="images/image_indexed_mapping.gif" >
+<br><b>Figure 6.1 Mapping of Dataset Values to Image Pixels</b></center>
+
+<p>
+For a two dimensional indexed image HDFView assumes that the width of the image is 
+the size of second dimension and the height of the image is the first dimension, 
+i.e. dim[0]=height and dim[1]=width.
+
+<p>Although HDFView displays the entire image by the order of (dim[0], dim[1],
+dim[2])=(depth, height, width) by default, you can always change the order
+and select a subset for display as discussed in Chpater 5.
+
+<p>HDFView also displays a three dimensional array as an array of 2D images
+arranged along the third dimension, i.e. dim[0]=depth, dim[1]=height and
+dim[2]=width. You can flip back and forth to look at images at different
+position of the depth dimension. For instance, if the dataset is 20 x 400
+x 600 (dim[0]=20, dim[1]=400, and dim[2]=600), HDFView will display it as
+20 images each with the size of 600 x 400 (width is 600, height is 400).
+However, A three-dimension image of [1][height][width] or [height][width][1]
+is treated as a two-dimension indexed image of [height][width].
+
+
+<p>
+A 2D or 3D SDS or HDF5 dataset with integer or float data can be displayed as
+an indexed image using the "Open As" selection from the Object menu.
+Since the dataset does not have a palette, a default palette is
+used. The palette is chosen from the "Select Palette" menu in the
+"Dataset Selection" window. The predefined palettes include:
+<ul>
+<li>gray
+</li>
+<li>
+rainbow
+</li>
+<li>
+nature 
+</li>
+<li>
+wave 
+</li>
+</ul>
+The default is "gray", a gray scale.
+<h3>
+6.1.2 True Color Image </h3>
+In the case of an image with more than one component per pixel (e.g., Red, 
+Green, and Blue), the data may be arranged in one of two ways.  
+HDFView
+only supports three color components: red, green and blue.
+<p>Following HDF4 
+terminology, the data may be interlaced by <i>pixel</i> or by <i>plane</i>. For an HDF5 Image dataset the interlace should 
+be indicated by the INTERLACE_MODE attribute.  In both cases, the dataset will 
+have a dataspace with three dimensions, <i>height</i>, <i>width</i>, and <i>components</i>. 
+For <i>pixel interlace</i> the 
+data is arranged by the order of [height][width][pixel components]. 
+For <i>plane interlace</i> the data is arranged by the order
+[pixel components][height][width]. 
+
+<p>
+The translation from pixel values to color components for display or processing 
+purposes is a one-to-one correspondence of data values to components. 
+Data of RGB
+color components is converted into byte data, which is packed into 
+single <i>int</i> 
+pixel. The Java Image is created with a DirectColorModel, with masks to define 
+packed samples. This color model is similar to an X11 TrueColor visual. The 
+default RGB ColorModel specified with the following parameters:
+<pre>
+ Number of bits:        32
+ Red mask:              0x00ff0000
+ Green mask:            0x0000ff00
+ Blue mask:             0x000000ff
+ Alpha mask:            0xff000000
+ Color space:           sRGB
+ isAlphaPremultiplied:  False
+ Transparency:          Transparency.TRANSLUCENT
+ transferType:          DataBuffer.TYPE_INT
+</pre> 
+
+The following figure shows examples of true color images. The image on the
+left is pixel interleaving with dimensions of [149][227][3]. The image on the right 
+is plane interleaving with dimensions of [3][149][227].
+
+<center>
+<p><img SRC="images/image_true_color.gif" >
+<br><b>Figure 6.2 True Color Image Displayed in the Image View</b></center>
+
+<h2>
+<a NAME="ug06zoom"></a>6.2 Zoom/Flip/Contour Image</h2>
+HDFView supports only limited image manipulation such as zooming, flipping and 
+contour. You can zoom in and out of an image. The minimum zoom factor
+is 1/8 (reduced to 1/8 the size) and the maximum is 8 (magnified to 8 times
+the size). Reduction (zoom out) is done by sampling pixels, such as a 1/2
+size image is created by selecting every second pixel. Magnification (zoom
+in) is done by replicating pixels.
+<p>
+You can also flip an image horizontally or verticaly. Flipping an image will
+change the coordinates of the image. 
+This can be used to adjust images that may have been created with
+different origins that the defaults.
+<p>
+The "contour" creates a contour plot of the pixel values.
+The contour can have from three to nine contour levels. Level three
+has less details of contour and level nine has more details of the contour. 
+<b>Repeated contour operation shows the accumulated effect of contouring. 
+For example, if you do contouring with level 3 and then do contouring with
+level 4 on the same image, the final image shows the the effect of contouring 
+with level 4 of the contour image with level 3</b>.
+
+<p>
+The following shows an contour image of level nine. 
+
+<center>
+<p><img SRC="images/image_contour.gif" >
+<br><b>Figure 6.3 Contour Image</b></center>
+
+<h2>
+<a NAME="ug06palette"></a>6.3 View and Modify Image Palette/Values</h2>
+A palette is the means by which color is applied to an image and is also
+referred to as a color lookup table. It is a table in which every row contains
+the numerical representation of a particular color. In the example of an
+8-bit standard RGB color model palette, this numerical representation of
+a color is presented as a triplet specifying the intensity of red, green,
+and blue components that make up each color.
+
+<p>Although the HDF5 palette specification allows for variable color length,
+different look-up methods and color models beyond RGB, HDFView only supports
+the indexed RGB color model of 256 colors. Clicking the palette icon from the 
+tool bar or selecting the palette command from the image menu, you can also 
+see the red, green and blue components of the color table are ploted in a
+line plot.
+
+<center>
+<p><img SRC="images/image_palette.gif" >
+<br><b>Figure 6.4 Image Palette (256 Colors)</b></center>
+
+<p>
+To view pixel values of each individual point, check the "Show value" item
+in the "Image" menu. When you move the mouse over the image, the pixel values
+of the mouse point are shown at the bottom of the image.
+
+<p>
+You can modify the values of color table. Select the color (red, green or blue)
+in the palette view and drag line of selected color. The value of selected color
+changes as you move the color line. In the following figure, the image on the
+left is the orginal image and the image on the right is the image with modified
+color table.
+
+<center>
+<p><img SRC="images/image_palette_modify.gif" >
+<br><b>Figure 6.5 Modified Image Palette (256 Colors)</b></center>
+
+<h2>
+<a NAME="ug06histogram"></a>6.4 Show Histogram of Pixel Values</h2>
+The frequency of pixel values of a selected area or the whole image can
+be displayed in a histogram chart. The horizontal axis of the histogram
+chart is the the 256 pixel values. The vertical axis shows the frequency
+of the pixel values.
+<center>
+<p><img SRC="images/chart_histogram.gif" >
+<br><b>Figure 6.6 Histogram of Pixel Values</b></center>
+
+<h2>
+<a NAME="ug06import"></a>6.5 Import JPEG Image to HDF4/5</h2>
+Using HDFView, you can convert an JPEG image into HDF4 or HDF5 image.
+Selec the "Import JPEG To" command in the file menu or the "JPEG To"
+command in the tools menu, a popup window will ask you to choose an JPEG
+image file to convert. Image is converted into 24-bit HDF4 or HDF5 image. The 
+current conversion does not support image with indexed color model or image
+with less than two color components. The image data is saved as 8-bit unsigned 
+integer regardless the data type of the original image.
+
+<h2>
+<a NAME="ug06save"></a>6.6 Save HDF Image to JPEG File</h2>
+Using "Save Imae As" command in the "Image" menu, you can save the
+current image into an JPEG file.
+
+
+<!-- BEGIN OF FOOTER INFO -->
+<p>
+<hr noshade size=1><a href="http://www.ncsa.uiuc.edu/">
+<img SRC="http://www.ncsa.uiuc.edu/Images/NCSAhome/footerlogo.gif" ALT="NCSA" BORDER=0 ></a>
+<br><font face="arial,helvetica" size=-1>
+<a href="http://www.ncsa.uiuc.edu/">
+The National Center for Supercomputing Applications</a></font>
+<br><font face="arial,helvetica" size=-1>
+<a href="http://www.uiuc.edu/">University
+of Illinois at Urbana-Champaign</a></font>
+<br><font face="arial,helvetica" size=-1>
+<a href="mailto:hdfhelp@ncsa.uiuc.edu">hdfhelp@ncsa.uiuc.edu</a></font>
+<p>
+<i><font color="#FF0000" size=-1>Updated 11/5/2002</font></i>
+<!- END OF FOOTER INFO -->
+
+</body>
+</html>
