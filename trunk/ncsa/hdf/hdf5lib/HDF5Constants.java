@@ -177,6 +177,7 @@ public class HDF5Constants
     final private static int JH5F_OBJ_DATATYPE = 2430;
     final private static int JH5F_OBJ_FILE = 2440;
     final private static int JH5F_OBJ_GROUP = 2450;
+    final private static int JH5F_OBJ_LOCAL = 2455; /* 1.6.5 */
     final private static int JH5F_SCOPE_DOWN = 2460;
     final private static int JH5F_SCOPE_GLOBAL = 2470;
     final private static int JH5F_SCOPE_LOCAL = 2480;
@@ -391,6 +392,7 @@ public class HDF5Constants
     final private static int JH5T_NPAD = 4570;
     final private static int JH5T_NSGN = 4580;
     final private static int JH5T_OPAQUE = 4590;
+    final private static int JH5T_OPAQUE_TAG_MAX =4595; /* 1.6.5 */
     final private static int JH5T_ORDER_BE = 4600;
     final private static int JH5T_ORDER_ERROR = 4610;
     final private static int JH5T_ORDER_LE = 4620;
@@ -635,6 +637,7 @@ public class HDF5Constants
     final public static int H5F_OBJ_DATATYPE = H5.J2C( JH5F_OBJ_DATATYPE );
     final public static int H5F_OBJ_FILE = H5.J2C( JH5F_OBJ_FILE );
     final public static int H5F_OBJ_GROUP = H5.J2C( JH5F_OBJ_GROUP );
+    final public static int H5F_OBJ_LOCAL = H5.J2C( JH5F_OBJ_LOCAL ); /* 1.6.5 */
     final public static int H5F_SCOPE_DOWN = H5.J2C( JH5F_SCOPE_DOWN );
     final public static int H5F_SCOPE_GLOBAL = H5.J2C( JH5F_SCOPE_GLOBAL );
     final public static int H5F_SCOPE_LOCAL = H5.J2C( JH5F_SCOPE_LOCAL );
@@ -849,6 +852,7 @@ public class HDF5Constants
     final public static int H5T_NPAD = H5.J2C( JH5T_NPAD );
     final public static int H5T_NSGN = H5.J2C( JH5T_NSGN );
     final public static int H5T_OPAQUE = H5.J2C( JH5T_OPAQUE );
+    final public static int H5T_OPAQUE_TAG_MAX  = H5.J2C( JH5T_OPAQUE_TAG_MAX  ); /* 1.6.5 */
     final public static int H5T_ORDER_BE = H5.J2C( JH5T_ORDER_BE );
     final public static int H5T_ORDER_ERROR = H5.J2C( JH5T_ORDER_ERROR );
     final public static int H5T_ORDER_LE = H5.J2C( JH5T_ORDER_LE );
