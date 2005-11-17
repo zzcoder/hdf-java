@@ -95,7 +95,7 @@ public class HDFView extends JFrame
     private static final String aboutHDFView =
         "HDF Viewer, "+ "Version "+ViewProperties.VERSION+"\n"+
         "For "+System.getProperty("os.name")+"\n\n"+
-        "Copyright "+'\u00a9'+" 2001-2004 University of Illinois.\n"+
+        "Copyright "+'\u00a9'+" 2001-2005 University of Illinois.\n"+
         "All rights reserved.";
 
     private static final String JAVA_COMPILER = "JDK 1.4.1_01-b01";
