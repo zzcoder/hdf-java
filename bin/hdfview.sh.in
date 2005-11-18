@@ -18,28 +18,33 @@ CPATH=$HDFVIEW_HOME"/lib/jhdf.jar:"$HDFVIEW_HOME"/lib/jhdf5.jar:"$HDFVIEW_HOME"/
 
 CPATH=$CPATH":"$HDFVIEW_HOME"/lib/jhdf4obj.jar:"$HDFVIEW_HOME"/lib/jhdf5obj.jar:"$HDFVIEW_HOME"/lib/jhdfview.jar"
 
+TEST=/usr/bin/test
+if [ ! -x /usr/bin/test ] 
+then
+TEST=`which test`
+fi
 
-if /usr/bin/test -z "$CLASSPATH"; then
+if $TEST -z "$CLASSPATH"; then
 	CLASSPATH=""
 fi
 CLASSPATH=$CPATH":"$CLASSPATH
 export CLASSPATH
 
-if /usr/bin/test -n "$JAVAPATH" ; then
+if $TEST -n "$JAVAPATH" ; then
 	PATH=$JAVAPATH":"$PATH
 	export PATH
 fi
 
 
-if /usr/bin/test -e /bin/uname; then
+if $TEST -e /bin/uname; then
    os_name=`/bin/uname -s`
-elif /usr/bin/test -e /usr/bin/uname; then
+elif $TEST -e /usr/bin/uname; then
    os_name=`/usr/bin/uname -s`
 else
    os_name=unknown
 fi
 
-if /usr/bin/test -z "$LD_LIBRARY_PATH" ; then
+if $TEST -z "$LD_LIBRARY_PATH" ; then
         LD_LIBRARY_PATH=""
 fi
 
