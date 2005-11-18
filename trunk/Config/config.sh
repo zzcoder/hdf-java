@@ -5,33 +5,34 @@ set -x
 #INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/linux
 #JAVAINC=/usr/java/j2sdk1.4.2_06/include
 #JAVALIB=/usr/java/j2sdk1.4.2_06/jre/lib
-#HDF4=/afs/ncsa.uiuc.edu/packages/hdf/4.2r1-linux
-#HDF5=/afs/ncsa.uiuc.edu/packages/hdf5/5-1.6.4-linux-gcc
-#SZIP=/afs/ncsa.uiuc.edu/projects/hdf/packages/szip/Linux2.4
-#GZIP=/afs/ncsa.uiuc.edu/projects/hdf/packages/zlib/Linux2.4
-#JPEG=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/jpeg/build
-#export CC=/usr/sdt/bin/gcc-3.3
+#HDF4=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/linux/hdf4
+#HDF5=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/linux/hdf5
+#SZIP=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/linux/szip
+#GZIP=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/linux/zlib
+#JPEG=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/linux/jpeg
 
 # 2 ===================== setting for copper 
 #INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/aix
 #JAVAINC=/usr/java14/include
 #JAVALIB=/usr/java14/jre/lib
-#HDF4=/afs/ncsa.uiuc.edu/packages/hdf/4.2r1-aix5.1-32
-#HDF5=/afs/ncsa.uiuc.edu/packages/hdf5/5-1.6.4-aix
-#SZIP=/afs/.ncsa.uiuc.edu/projects/hdf/packages/szip/AIX5.1
-#GZIP=/afs/.ncsa.uiuc.edu/projects/hdf/packages/zlib/AIX5.1
-#JPEG=/afs/.ncsa.uiuc.edu/projects/hdf/packages/jpeg/AIX5.1
+#HDF4=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/aix/hdf4
+#HDF5=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/aix/hdf5
+#SZIP=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/aix/szip
+#GZIP=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/aix/zlib
+#JPEG=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/aix/jpeg
 #export CC=/usr/vacpp/bin/xlc
 
-# 3 ===================== setting for shanti 
+# 3 ===================== setting for shanti (solaris)
+#   must use short path, otherwise, expr error
 #INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/solaris
 #JAVAINC=/usr/j2se/include
 #JAVALIB=/usr/j2se/jre/lib
-#HDF4=/afs/ncsa.uiuc.edu/packages/hdf/4.2r1-solaris2.8-32
-#HDF5=/afs/ncsa.uiuc.edu/packages/hdf5/5-1.6.4-solaris
-#SZIP=/afs/.ncsa.uiuc.edu/projects/hdf/packages/szip/SunOS-5.9
-#GZIP=/afs/.ncsa.uiuc.edu/projects/hdf/packages/zlib/SunOS-5.9
-#JPEG=/afs/.ncsa.uiuc.edu/projects/hdf/packages/jpeg/SunOS-5.9
+#HDF4=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/solaris/hdf4
+#HDF5=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/solaris/hdf5
+#SZIP=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/solaris/szip
+#GZIP=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/solaris/zlib
+#JPEG=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/solaris/jpeg
+#HDF4=/tmp/solaris/hdf4;HDF5=/tmp/solaris/hdf5;SZIP=/tmp/solaris/szip;GZIP=/tmp/solaris/zlib;JPEG=/tmp/solaris/jpeg
 #CC=/opt/SUNWspro/bin/cc
 #export CC
 
@@ -40,23 +41,23 @@ set -x
 #JAVAINC=/usr/opt/java142/include
 #JAVALIB=/usr/opt/java142/jre/lib
 #HDF4=/usr/users/1/pcao/hdf4.2r1
-#HDF5=/usr/users/1/pcao/hdf5.164
+#HDF5=/usr/users/1/pcao/hdf5.165
 #SZIP=/usr/users/1/pcao/lib_external/szip2.0-osf1-enc
 #GZIP=/usr/users/1/pcao/lib_external/zlib-1.2.1
 #JPEG=/usr/users/1/pcao/lib_external/jpeg-6b
 #CC=/bin/cc
 #export CC
 
-# 5 ===================== setting for modi4 
+# 5 ===================== setting for modi4 (irix)
+#   need build jpeg with "cc -n32" for 32-bit jpeg
 #INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/irix
 #JAVAINC=/usr/java2/include
 #JAVALIB=/usr/java2/jre/lib
-#HDF4=/afs/ncsa.uiuc.edu/packages/hdf/4.2r1-irix64-n32
-#HDF5=/afs/ncsa.uiuc.edu/packages/hdf5/5-1.6.4-irix64-n32
-#SZIP=/afs/ncsa.uiuc.edu/projects/hdf/packages/szip/IRIX64-6.5-32bit
-##SZIP=/afs/ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib-external/szip-2.0
-#GZIP=/afs/ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib-external/zlib-1.2.1
-#JPEG=/afs/ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib-external/jpeg-6b
+#HDF4=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/irix/hdf4
+#HDF5=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/irix/hdf5
+#SZIP=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/irix/szip
+#GZIP=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/irix/zlib
+#JPEG=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/irix/jpeg
 #export CC=/opt/MIPSpro/bin/cc
 
 # 6 ===================== setting for pommier
