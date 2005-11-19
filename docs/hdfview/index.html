@@ -1,461 +1,129 @@
 <HTML>
-<HEAD>
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
-<META NAME="Generator" CONTENT="Microsoft Word 97">
-<TITLE>HDFView</TITLE>
-<META NAME="keywords" CONTENT="java hdf object">
-<META NAME="Description" CONTENT="NCSA Java-based Products Home Page -- Visit this site to get the latest NCSA Java-based Products free.">
-<META NAME="distribution" CONTENT="global">
-<META NAME="Template" CONTENT="D:\apps\Microsoft Office\Office\html.dot">
-</HEAD>
-<BODY TEXT="#000000" LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff" alink="#FF0000">
+<script language="JavaScript" type="text/javascript" src="../header.js"></script>
 
-<P><!doctype html public "-//w3c//dtd html 4.0 transitional//en"><!-- BEGIN MAIN BODY --></P>
-<P ALIGN="CENTER"><CENTER><TABLE CELLSPACING=0 BORDER=0 CELLPADDING=5 WIDTH=624>
-<TR><TD WIDTH="2%" VALIGN="MIDDLE">
-<P><A HREF="http://hdf.ncsa.uiuc.edu/"><IMG SRC="http://hdf.ncsa.uiuc.edu/image/hdf2.jpg" BORDER=0 WIDTH=92 HEIGHT=72 ALT="NCSA HDF home"></A></TD>
-<TD WIDTH="98%" VALIGN="MIDDLE">
-<H1 ALIGN="CENTER">NCSA HDFView</H1>
-<B><FONT FACE="Arial,helvetica" COLOR="#800080"><P ALIGN="CENTER">[</FONT><FONT FACE="Arial,helvetica" COLOR="#0000ff"> </B></FONT><A HREF="../index.html"><B><FONT FACE="Arial,helvetica">HDF Java Products</B></FONT></A><B><FONT FACE="Arial,helvetica" COLOR="#0000ff"> </FONT><FONT FACE="Arial,helvetica" COLOR="#800080">] [</FONT><FONT FACE="Arial,helvetica" COLOR="#0000ff"> </B></FONT><A HREF="#ug01installation"><B><FONT FACE="Arial,helvetica">Download</B></FONT></A><B><FONT FACE="Arial,helvetica" COLOR="#800080"> ] [ </B></FONT><A HREF="UsersGuide/index.html"><B><FONT FACE="Arial,helvetica">User's Guide</B></FONT></A><B><FONT FACE="Arial,helvetica" COLOR="#800080"> ]</B></FONT> </TD>
-</TR>
-</TABLE>
-</CENTER></P>
+<table width="100%">
+  <tr>
+  <td width="60%">
+    <h1>NCSA HDFView<font size="-2" color="#c80028"><i>&nbsp;&nbsp;&nbsp;Version 2.3</i></font></h1>  </td>
+  <td align="leftt"><h3>
+    <a href="UsersGuide/index.html">User's Guide</a></h3></td>
+  <td align="leftt"><h3>
+    <a href="ModularGuide/index.html">Module Guide</a></h3></td>
+  </tr>
+</table>
 
-<P><HR SIZE=0></P>
+<table width="100%">
+  <tr>
+  <td valign="top">
+<b>The HDFView</b> is a visual tool for browsing and editing NCSA HDF4 and HDF5 files.
+Using HDFView, you can
+<UL>
+<li>view a file hierarchy in a tree structure
+<li>create new file, add or delete groups and datasets
+<li>view and modify the content of a dataset
+<li>add, delete and modify attributes
+<li>replace I/O and GUI components such as table view, image view and metadata view
+</UL>
+For information on how to use the HDFViewplease read <br>
+ <a href="UsersGuide/index.html">the User's Guide</a>
+<p>
+To know how to implement HDFView modules, please read<br>
+ <a href="ModularGuide/index.html">the Module Guide</a>
+</td>
+  <td align="right">
+  <img src="hdfview.gif"> </td>
+  </tr>
+</table>
 
-<dl>
-<dt><a href="#ug01overview">1 Overview</a></dt>
-<dt><a href="#ug01features">2 Current Features</a></dt>
-<dl>
-<dt><a href="#ug01browsing">2.1 Browsing Features</a></dt>
-<dt><a href="#ug01editing">2.2 Editing Features</a></dt>
-</dl>
-<dt><a href="#ug01limitations">3 Limitations</a></dt>
-<dt><a href="#ug01requirements">4 System Requirements</a></dt>
-<dt><a href="#ug01installation">5 Installing and Running HDFView</a></dt>
-<dt><a href="#ug1furtherinfo">6 For Further Information</a></dt>
-</dl>
+<h2>Download</h2>
 
-<hr noshade size=1>
+HDFView can be downloaded quickly from here. The Windows, Solaris, Linux
+and AIX versions listed below (that have an asterisk) include JDK 1.4.  If you want a version for these
+platforms that does not include JDK, see the footnote immediately following.
 
-<h2>
-<a NAME="ug01overview"></a>1 Overview</h2>
+<UL type=square>
+<LI><a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_windows_vm.exe">
+Windows 98/NT/2000/XP</A> [15 MB] <B>*</B>
+<LI><a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_solaris_vm.bin">
+Solaris</A> [35 MB] <B>*</B>
+<LI><a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_linux_vm.bin">
+Linux</A> [35 MB] <B>*</B>
+<LI><a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_aix_vm.bin">
+AIX</A> [45 MB] <B>*</B>
+<LI><a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_irix_novm.bin">
+Irix 6.5</A> [10 MB], <font size=-1>JDK1.4 Required</font>
+<LI><a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_macosx_novm.zip">
+MacOSX</A> [7 MB], <font size=-1>JDK1.4 Required, <b>HDF5 only</b> </font>
+<LI><a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_osf1_novm.bin">
+OSF1</A> [8 MB] <font size=-1> JDK1.4 Required, <a href="#osf1_note">Classic VM Only</a></font>
+</UL>
 
-The HDFView is a Java-based tool for browsing and editing NCSA HDF4 and HDF5 files.
-HDFView allows users to browse through any HDF4 and HDF5 file; starting with a tree
-view of all top-level objects in an HDF file's hierarchy. HDFView allows
-a user to descend through the hierarchy and navigate among the file's data
-objects. The content of a data object is loaded only when the object is
-selected, providing interactive and efficient access to HDF4 and HDF5 files. HDFView
-editing features allow a user to create, delete, and modify the value of
-HDF objects and attributes.
+<B>*</B> The versions listed above for Windows, Solaris, Linux, and AIX will
+install
+a standalone version of HDFView where JRE1.4.1 is bundled in the distribution.
+No additional software is needed to run HDFView. If JDK1.4.1 or above is
+already installed on your machine, you may want the non-JRE distribution.
+The file
+size of the HDFView distribution without the Java VM is much smaller. To obtain
+the non-JRE distributions, see: &nbsp; <br><CODE>
+<a href="UsersGuide/ug01introduction.html#ug01installation">HDFView User's Guide, Section 1.5, Installation</A> </CODE>
 
 <p>
-The HDFView user interface is designed to be easy to use and intuitive.
-HDFView was implemented by using Java<sup><font size=-2>TM</font></sup>
-2 Platform that is designed to be machine-independent. The interface and
-features of the HDFView are the same for all platforms. HDFView displays
-the structure of the HDF file in a tree with data groups and data objects
-represented as conventional folders and icons. Users can easily expand
-or collapse folders to navigate the hierarchical structure of an HDF file.
-
-<h2>
-<a NAME="ug01features"></a>2 Features</h2>
-
-HDFView version 1.2 fixed bugs from version 1.1 and added a few new and 
-enhanced features. It includes all the major features of H5View and is
-used to replace the HDFView. The browsing and editing features of HDFView
-are listed  below. Details of the features are discussed in their related 
-chapters.
-
-<h3>
-<a NAME="ug01browsing"></a>2.1 Browsing Features</h3>
-
-<ul>
-
-<li>
-Open multiple HDF4 or HDF5 files.
-
-<li>
-Display file hierarchy in a tree and allow users to navigate among the 
-file's data objects.
-
-<li>
-Show dataset as an image, a table or text.
-
-<li>
-Allow users to select a subset of dataset to display.
-
-<li>
-Show attributes and other general information of data objects.
-
-<li>
-Display line plot for selected table data, and histogram for selected
-image area.
-
-<li>
-Display simple compound dataset (non-nested compound datatype) in a table.
-
-<li>
-Support simple image manipulation: zooming in/out image, flipping image
-horizontally or vertically, and showing palette for index RGB image.
-
-<li> 
-Allow to display any of three dimensions of a multiple dimension data set.
-
-<li>
-Allow users to specify stride of dataset selection.
-
-<li>
-Allow users to selection select fields/members of VData/compound dataet
-to display.
-
-<LI>
-Display file information, such as file size, total number of datasets.
-
-<li>
-<font color="FF0000" size=-1><i>(new)</i></font>
-Open file as read only.
-
-<li>
-<font color="FF0000" size=-1><i>(new)</i></font>
-Show preview image for selecting subset.
-
-<li>
-<font color="FF0000" size=-1><i>(new)</i></font>
-Support multiple color tables for HDF5 images.
-
-<li>
-<font color="FF0000" size=-1><i>(new)</i></font>
-Display color table in separate red/green/blue lines.
-
-</ul>
-
-<h3>
-<a NAME="ug01editing"></a>2.2 Editing Features
-</h3>
-
+<h2>Install/Run Instructions</H2>
 <UL>
+<LI><B>Unix (not including Mac OS X):</B>
+<P>
+  <UL>
+  <LI>To install, type: &nbsp; <CODE>
+    sh ./hdfview_install_{linux, solaris, irix}_{vm, novm}.bin</CODE>
+<LI>To run,  type: &nbsp; <CODE>./hdfview</CODE>
+  <LI>Important Notes:<P>
+<a NAME="osf1_note"></A>
+   OSF1: &nbsp;
+   Before installing and running HDFView on OSF1, make sure that
+      the Java VM works [try "java -version"]. If you have a problem
+      starting the Java VM, you may have to set the Classic Java Virtual
+      Machine Environment Variable, as follows: &nbsp;
+      <CODE>setenv JAVA_CLASSIC_VM "yes"</CODE>
+</UL>
+<P>
+<LI><B>Mac OS X:</B><P>
+<UL>
+  <LI>To install, open <CODE>hdfview_install_macosx_novm.zip</CODE>
+  <LI>To run, click the "HDFView" on the desktop or <br>
+      type: &nbsp; <CODE>open -a /{where_you_install_hdfview}/HDFView.app</CODE>
+  <LI>Important Notes:
+<P>
+      <UL>
+      <LI>After you install HDFView, make sure that
+     <CODE>/{where_you_install_hdfview}/lib/macosx</CODE> is included in
+     <CODE>DYLD_LIBRARY_PATH</CODE>.
+      Run <CODE>source ~/.cshrc</CODE> or logout and login to set the correct
+      <CODE>DYLD_LIBRARY_PATH</CODE>.
+<P>
+      <LI>HDFView does not support HDF4. We are still working on it.
+<P>
+ <LI>See <A HREF="http://hdf.ncsa.uiuc.edu/HDF5/release/known_problems5160.html#macosx">HDFView Problem with Mac OS X and JDK 1.4</A>.
+   </UL>
+<P>
+</UL>
 
-<LI>
-Change and save user options such as recent files, delimiter, and font size.
-
-<LI>
-Save current file into the same type (HDF4 to HDF4, HDF5 to HDF5).
-
-<LI>
-Add/delete object in the file (no deletion for HDF4).
-
-<LI>
-Copy/paste object in the same file.
-
-<LI>
-Copy/paste object between files but the same file format (HDF4 to HDF4, HDF5 to HDF5).
-
-<LI>
-Add/delete a group and all its decendents (no deletion for HDF4).
-
-<LI>
-Modify and save data values in spreadsheet.
-
-<LI>
-Create new dataset with simple datatype such as SDS, atomic data array.
-
-<LI>
-Copy/paste data values of dataset.
-
-<LI>
-Save single dataset into ASCII text file.
-
-<LI>
-Save a single image to JPEG file.
-
-<LI>
-Add/delete attribute (no deletion for HDF4).
-
-<LI>
-Modify and save attibute value.
-
-<li>
-<font color="FF0000" size=-1><i>(new)</i></font>
-Convert JPEG image file into HDF4/HDF5 file.
-
-<li>
-<font color="FF0000" size=-1><i>(new)</i></font>
-Save HDF4/HDF5 imag into JPEG image file.
-
-<li>
-<font color="FF0000" size=-1><i>(new)</i></font>
-Save single data object into HDF file.
-
-<li>
-<font color="FF0000" size=-1><i>(new)</i></font>
-Update datasets of references when a file is saved into a new file.
-
-<li>
-<font color="FF0000" size=-1><i>(new)</i></font>
-Import data values from text file.
-
-<li>
-<font color="FF0000" size=-1><i>(new)</i></font>
-Create new dataset/image out of existing dataset/image.
-
-<li>
-<font color="FF0000" size=-1><i>(new)</i></font>
-Modify string dataset.
-
-<li>
-<font color="FF0000" size=-1><i>(new)</i></font>
-Simple math calculation and statistic summary.
-
-<li>
-<font color="FF0000" size=-1><i>(new)</i></font>
-Create empty image with default image attributes.
-
-<li>
-<font color="FF0000" size=-1><i>(new)</i></font>
-Modify image color table.
+<LI><B>Windows:</B><P>
+<P>
+<UL>
+<LI>To install, type: <CODE> hdfview_install_windows_vm.exe </CODE>
+<LI>To run, select HDFView from the menu, <CODE>Start -> programs -> NCSA HDFView 2.2 -> HDFView 2.2</CODE>
+</UL>
 
 </UL>
 
-<h2>
-<a NAME="ug01limitations"></a>3 Limitations</h2>
+<H2>Documentation</H2>
 
-The current implementation of HDFView has the following limitations.
-<ul>
-
-<LI>
-HDFView does not support undo operation, all the changes will go
-to the physical file, and the editing results cannot be recovered.
-
-<LI>
-HDFView cannot create/modify Vdata or compound dataset.
-
-<LI>
-Deleting object/attribute in HDF4 is not supported.
-
-<LI>
-HDFView does not support conversion between HDF4 and HDf5. 
-
-<li>
-HDFView does not display dataset of nested compound datatypes.</li>
-
-<li>
-HDFView does not display named datatypes.</li>
-
-<li>
-HDFView supports only indexed image with RGB color model or 24-bit true
-color image. It does not support other color model such as CMYK and HSV.</li>
-
-<li>
-Opening a large image or dataset may cause "out of memory" error due to 
-the limitations of the Java virtual machine.</li>
-
-<li>
-HDFView is implemented in Java<sup><font size=-2>TM</font></sup> 2 Platform.
-It runs only at JDK 1.3.x or 1.4.x. It does not work with JDK 1.1.x and JDK 1.2.x.
-</li>
-</ul>
-
-<h2>
-<a NAME="ug01requirements"></a>4 System Requirements</h2>
-
-The HDFView is distributed in two forms: No_VM_bundled and VM_bundled. The No_VM_bundled 
-distribution does not contain the Java Runtime Environment (JRE) while the VM_bundled 
-distribution bundles the JRE.
-
-<p>
-To run HDFView with No_VM_bundled distribution, a Java 2 Virtual Machine, such as JDK1.3.1, 
-or JRE1.3.1 is required. The HDFView does not compile and run with the JDK1.1.x 
-or JDK1.2.x. Although HDFView compiles and runs on JDK1.4.1, it is not tested on JDK1.4.1.
- 
-<p>
-Download Java 2 Platform at:
-<ul>
-<li><a href="http://java.sun.com/j2se">
-Java<sup><font size=-2>TM</font></sup> 2 Platform, Standard Edition</a> 
-(Windows, Solaris, Linux)
-<li><a href="http://www.sgi.com/developers/devtools/languages/java.html">
-Java<sup><font size=-2>TM</font></sup> 2 Platform for SGI</a>
-</ul>
-
-<p>
-HDFView 1.2 has been built and tested on the following platforms:
-
-<ul>
-<li>
-Solaris</li>
-
-<li>
-SGI IRIX 6.5</li>
-
-<li>
-Linux</li>
-
-<li>
-Windows 95/98/2000/NT</li>
-</ul>
-
-The HDFView uses the HDF4 and HDF5 Java Native Interfaces, which calls the
-HDF4 and HDF5 library. These native interfaces are included in the distribution.
-For more information (source and pre-built) on the HDF4/5 Java Native Interface, 
-visit website at <a href="http://hdf.ncsa.uiuc.edu/hdf-java-html/JNI/">
-http://hdf.ncsa.uiuc.edu/hdf-java-html/JNI/ </a>
-
-<h2>
-<a NAME="ug01installation" </a></a>5 Installation</h2>
-
-The source and pre-built binaries for HDFView can be downloaded from:
-<br>
-<a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/">
-ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/</a>
-
-<p>
-The pre-built binaries are available in two forms: No_VM_bundled, and VM_bundled.
-
-<p>
-<center>
-<table border>
-<caption><b>Pre-built Binaries Distribution</b></caption>
-
-<tr>
-<td>
-<center><b>Platform</b></center>
-</td>
-
-<td>
-<center><b>JDK Required</b></center>
-</td>
-
-<td>
-<center><b>JRE Bundled</b></center>
-</td>
-</tr>
-
-<tr>
-<td>Irix 6.5</td>
-
-<td>[ <a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_irix_novm.bin">
-hdfview_install_irix_no_vm_bundled.bin 4 MB</a>]</td>
-
-<td>[Not Available]</td>
-</tr>
-
-<tr>
-<td>Linux</td>
-
-<td>[ <a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_linux_novm.bin">
-hdfview_install_linux_no_vm_bundled.bin 4 MB</a>]</td>
-
-<td>[ <a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_linux_vm.bin">
-hdfview_install_linux_vm_bundled.bin 26 MB</a>]</td>
-</tr>
-
-<tr>
-<td>Solaris</td>
-
-<td>[ <a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_solaris_novm.bin">
-hdfview_install_solaris_no_vm_bundled.bin 4 MB</a>]</td>
-
-<td>[ <a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_solaris_vm.bin">
-hdfview_install_solaris_vm_bundled.bin 26 MB</a>]</td>
-</tr>
-
-<tr>
-<td>Windows 98/NT/2000</td>
-
-<td>[ <a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_windows_novm.exe">
-hdfview_install_windows_novm.exe 4 MB</a>]</td>
-
-<td>[ <a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_windows_vm.exe">
-hdfview_install_windows_vm.exe 10 MB</a>]</td>
-</tr>
-
-</table>
-</center>
-
-<h3>No_VM_bundled distribution</h3>
-
-The No_VM_bundled binary distribution does not contain the Java 2 Runtime Environment. 
-The No_VM_bundled requires JDK1.3.x or JDK1.4.x. Before you install the No_VM_bundled 
-distribution, you must have JDK1.3.x or JDK 1.4.x installed on your machine. If you don't
-have a Java 2 VM, you must download and install one.
-
-<p>
-Download Java 2 Platform at:
-<ul>
-<li><a href="http://java.sun.com/j2se">
-Java<sup><font size=-2>TM</font></sup> 2 Platform, Standard Edition</a> 
-(Windows, Solaris, Linux)
-<li><a href="http://www.sgi.com/developers/devtools/languages/java.html">
-Java<sup><font size=-2>TM</font></sup> 2 Platform for SGI</a>
-</ul>
+The HDFView User's Guide, accessible from the top of this page, contains
+detailed information on installing and using HDFView.  For further
+installation information,  please refer to
+<a href="UsersGuide/ug01introduction.html#ug01installation">Chapter 1.5</a>.
 
 
-<h3>VM_bundled distribution</h3>
-
-JRE1.3.1 is bundled in the VM_bundled distribution. You do not need any aditional
-software to run HDFView. 
-
-<p>
-Sun JRE1.3.1 is Bundled in the HDFView. Download and installation the
-HDFView requires acceptance of the Java 2 Runtime Environment license agreement.
-Please read the 
-<a href="http://java.sun.com/j2se/1.3/jre/j2re-1_3_1_02-license.html">
-Java 2 Runtime Environment Binary Code License Agreement</a> before you
-download the VM_bundled distribution. The installation program will <b>not</b>
-install HDFView unless you accept the Java 2 Runtime Environment 
-License Agreement.
-
-<h3>Install on Unix</h3>
-After downloading installation file and,  cd to the directory where you 
-downloaded the installer. At the prompt type:  
-<br><b>sh ./hdfview-xxx.bin</b>, 
-<br>where xxx is the Unix OS name such as solaris, linux or irix. The installer 
-will guide you to select the Java Virtual Machine and HDFView home directory 
-(where you want to install the HDFView). 
-
-
-<h3>Install on Windows</h3>
-After downloading, double-click 
-<br><b>hdfview-windows.exe</b>. 
-<br>The installer will guide you to select the Java Virtual Machine and 
-HDFView home directory (where you want to install the HDFView). After 
-installing, you can lanuch the HDFView from 
-<br>
-Start -> Program Files -> NCSA HDFView
-
-<h2>
-<a NAME="ug1furtherinfo"></a>6 For Further Information</h2>
-
-General information about HDF and HDF4 and HDF5 are available at:
-<a href="http://hdf.ncsa.uiuc.edu">http://hdf.ncsa.uiuc.edu</a>
-
-<p>
-Information about the HDFView tool and related products is available
-at:
-<blockquote><a href="http://hdf.ncsa.uiuc.edu/hdf-java-html/index.html">
-http://hdf.ncsa.uiuc.edu/hdf-java-html/</a></blockquote>
-
-<p>
-Questions and feedback may be sent to:
-<a href="mailto:hdfhelp@ncsa.uiuc.edu">hdfhelp@ncsa.uiuc.edu</a>
-
-<!-- BEGIN OF FOOTER INFO -->
-<p>
-<hr noshade size=1><a href="http://www.ncsa.uiuc.edu/">
-<img SRC="http://www.ncsa.uiuc.edu/Images/NCSAhome/footerlogo.gif" ALT="NCSA" BORDER=0 ></a>
-<br><font face="arial,helvetica" size=-1>
-<a href="http://www.ncsa.uiuc.edu/">
-The National Center for Supercomputing Applications</a></font>
-<br><font face="arial,helvetica" size=-1>
-<a href="http://www.uiuc.edu/">University
-of Illinois at Urbana-Champaign</a></font>
-<br><font face="arial,helvetica" size=-1>
-<a href="mailto:hdfhelp@ncsa.uiuc.edu">hdfhelp@ncsa.uiuc.edu</a></font>
-<p>
-<i><font color="#FF0000" size=-1>Updated 11/5/2002</font></i>
-<!- END OF FOOTER INFO -->
-
-</body>
-</html>
+<script language="JavaScript" type="text/javascript" src="../footer.js"></script>
+</HTML>

@@ -407,18 +407,18 @@ uninstall-javadocs:
 
 install-ug:
 	-mkdir -p $(DOCDIR);
-	-mkdir -p $(DOCDIR)/hdfview/usersguide;
-	cp docs/hdfview/index.html $(DOCDIR)/hdfview/usersguide;
-	cp docs/hdfview/usersguide/*.html $(DOCDIR)/hdfview/usersguide;
-	-mkdir -p $(DOCDIR)/hdfview/usersguide/images;
-	cp docs/hdfview/usersguide/images/*.gif $(DOCDIR)/hdfview/usersguide/images;
+	-mkdir -p $(DOCDIR)/hdfview/UsersGuide;
+	cp docs/hdfview/index.html $(DOCDIR)/hdfview/UsersGuide;
+	cp docs/hdfview/UsersGuide/*.html $(DOCDIR)/hdfview/UsersGuide;
+	-mkdir -p $(DOCDIR)/hdfview/UsersGuide/images;
+	cp docs/hdfview/UsersGuide/images/*.gif $(DOCDIR)/hdfview/UsersGuide/images;
 	-mkdir -p $(DOCDIR)/hdf-object;
 	cp docs/hdf-object/*.html $(DOCDIR)/hdf-object;
 	cp docs/hdf-object/*.jpg $(DOCDIR)/hdf-object;
 	cp docs/hdf-object/*.h5 $(DOCDIR)/hdf-object;
 
 uninstall-ug:
-	$(RM) -rf $(DOCDIR)/hdfview/usersguide/*
+	$(RM) -rf $(DOCDIR)/hdfview/UsersGuide/*
 	$(RM) -rf $(DOCDIR)/hdf-object/*
 
 distclean: clean-natives clean-classes clean-test clean-testlink

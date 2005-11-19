@@ -1,37 +1,28 @@
-<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <meta name="description" content="NCSA Java-based Products Home Page -- Visit this site to get the latest NCSA Java-based Products free.">
-   <meta name="keywords" content="java hdf 5 interface,">
-   <meta name="distribution" content="global">
-   <meta name="GENERATOR" content="Mozilla/4.72 [en] (Windows NT 5.0; U) [Netscape]">
-   <meta name="Description" content="NCSA Java-based Products Home Page -- Visit this site to get the latest NCSA Java-based Products free.">
-   <meta name="KeyWords" content="java hdf object">
-   <title>HDF Object Package</title>
-<!-- BEGIN MAIN BODY -->
-</head>
-<body text="#000000" bgcolor="#FFFFFF" link="#0000EE" vlink="#551A8B" alink="#FF0000">
-&nbsp;
-<center><table BORDER=0 CELLSPACING=0 CELLPADDING=5 >
-<tr>
-<td><a href="http://hdf.ncsa.uiuc.edu/"><img SRC="http://hdf.ncsa.uiuc.edu/image/hdf2.jpg" ALT="NCSA HDF home" NOSAVE height=72 width=92></a></td>
+<script language="JavaScript" type="text/javascript" src="../header.js"></script>
 
-<td>
-<h1>
-NCSA HDF Object Package</h1>
+<h1>HDF Object Package - How to Use It</h1>
 
-<center><font face="arial,helvetica"><font color="#C80028"><font size=+0><a href="#DOWNLOAD">[Download]</a><a href="javadocs/index.html">[HDF
-Object Javadocs]</a></font></font></font></center>
-</td>
-</tr>
-</table></center>
+<UL>
+    <li><a href="#use">How to use it</a>
+    <li><a href="#classpath">Set CLASSPATH</a>
+    <li><a href="#libpath">Set Library Path</a>
+    <li><a href="#selection">How to select a subset</a>
+    <li><a href="#examples">Examples</a>
+    <UL>
+        <li> <a href="#create_file">Create File</a>
+        <li> <a href="#create_group">Create Group</a>
+        <li> <a href="#create_dataset">Create Datatype/Dataset</a>
+        <li> <a href="#file_structure">Retrieve File Structure</a>
+        <li> <a href="#read_dataset">Read/Write Dataset</a>
+        <li> <a href="#create_attribute">Create Attribute/Read/Write Attribute</a>
+        <li> <a href="#select_subset">Select Subset</a>
+    </UL>
+</UL>
 
-<dd>
+<p>
+<hr>
 
-<hr noshade size=1></dd>
-
-<h2>
+<h2><a NAME="use"></a>
 How to use it</h2>
 The HDF Object Package is used by Java applications to access HDF4 and
 HDF5 files without directly calling the HDF4 and HDF5 library APIs. Library
@@ -41,129 +32,246 @@ requires the
 and
 <a href="../JNI/jhi5/index.html">The Java HDF5 Interface (JHI5)</a>.
 Figure 2 shows the relationship of the packages.
+
+<p>
 <center>
-<p><img SRC="hdf-obj.jpg" height=850 width=700>
-<p><b>Figure 2.&nbsp; The Software packages</b></center>
+<p><img SRC="hdf-obj.jpg" NOSAVE>
+<p><b>Figure 2. The Software packages</b></center>
 
-<p>The following examples show how to retreve the file hierarchy.
-<h3>
-Example 1: retrieve and print HDF5 objects</h3>
-
-<pre>import ncsa.hdf.object.*; // include the HDF object package
-import ncsa.hdf.hdf5lib.*; // include the Java HDF5 interface
-
-/**
-&nbsp;* Retreve and print HDF5 objects from file <a href="hdf5_test.h5">hdf5_test.h5
-</a>&nbsp;* @version 1.3.0 10/26/2001
-&nbsp;* @author Peter X. Cao
-&nbsp;*
-&nbsp;*/
-public class TestH5File
-{
-&nbsp;&nbsp;&nbsp; public static void main(String[] argv)
-&nbsp;&nbsp;&nbsp; {
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // create an H5File object
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; H5File h5file = new H5File("hdf5_test.h5", HDF5Constants.H5F_ACC_RDONLY);
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; try&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // open file and retrieve the file structure
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; h5file.open();&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; catch (Exception ex)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; System.out.println(ex);
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; javax.swing.tree.MutableTreeNode root = h5file.getRootNode();
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (root != null)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printNode(root, "&nbsp;&nbsp;&nbsp; ");
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; try { h5file.close(); }
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; catch (Exception ex ) {}
-&nbsp;&nbsp;&nbsp; }
-
-&nbsp;&nbsp;&nbsp; // print out the data ojbect recusively
-&nbsp;&nbsp;&nbsp; private static void printNode(javax.swing.tree.TreeNode node, String indent)
-&nbsp;&nbsp;&nbsp; {
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; System.out.println(indent+node);
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int n = node.getChildCount();
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for (int i=0; i&lt;n; i++)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printNode(node.getChildAt(i), indent+"&nbsp;&nbsp;&nbsp; ");
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
-&nbsp;&nbsp;&nbsp; }
-}</pre>
+<h2><a NAME="classpath"></a>
+Set CLASSPATH</h2>
+Befor you use the HDF object package, you must set the Java CLASSPATH.
 
 <h3>
-Example 2: retrieve and print HDF4 objects</h3>
+At unix</h3>
+Suppose you install the HDF object package at <B>/home/usr/hdfobj</b>.
+<br>
+setenv CLASSPATH $CLASSPATH:/home/usr/hdfobj/jhdf.jar<br>
+setenv CLASSPATH $CLASSPATH:/home/usr/hdfobj/jhdf5.jar<br>
+setenv CLASSPATH $CLASSPATH:/home/usr/hdfobj/jhdfobj.jar<br>
+setenv CLASSPATH $CLASSPATH:/home/usr/hdfobj/jhdf4obj.jar<br>
+setenv CLASSPATH $CLASSPATH:/home/usr/hdfobj/jhdf5obj.jar<br>
+export CLASSPATH
 
-<pre>import ncsa.hdf.object.*; // include the HDF object package
-import ncsa.hdf.hdflib.*; // include the Java HDF5 interface
+<h3>
+At Windows</h3>
+Suppose you install the HDF object package at <B>c:\apps\hdfobj</b>.
+<br>
+setenv CLASSPATH=%CLASSPATH%;c:\apps\hdfobj\jhdf.jar<br>
+setenv CLASSPATH=%CLASSPATH%;c:\apps\hdfobj\jhdf5.jar<br>
+setenv CLASSPATH=%CLASSPATH%;c:\apps\hdfobj\jhdfobj.jar<br>
+setenv CLASSPATH=%CLASSPATH%;c:\apps\hdfobj\jhdf4obj.jar<br>
+setenv CLASSPATH=%CLASSPATH%;c:\apps\hdfobj\jhdf5obj.jar<br>
 
-/**
-&nbsp;* Retreve and print HDF4 objects from file <a href="annras.hdf">annras.hdf</a>.
-&nbsp;* @version 1.3.0 10/26/2001
-&nbsp;* @author Peter X. Cao
-&nbsp;*
-&nbsp;*/
+<h2><a NAME="libpath"></a>
+Set Library Path</h2>
+The object package should include the HDF4 and HDF5 library.
+To use the object pacakge, you must set the path to the library.
+Otherwise, you will get "java.lang.UnsatisfiedLinkError".
 
-public class TestH4File
-{
-&nbsp;&nbsp;&nbsp; public static void main(String[] argv)
-&nbsp;&nbsp;&nbsp; {
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // create an H4File object
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; H4File h4file = new H4File("annras.hdf", HDFConstants.DFACC_READ);
+<h3>
+At unix</h3>
+Suppose you install the HDF object package at <B>/home/usr/hdfobj</b>.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; try&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // open file and retrieve the file structure
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; h4file.open();&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; catch (Exception ex)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; System.out.println(ex);
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+<p>For Solaris<br>
+setenv PATH $PATH:/home/usr/hdfobj/lib/solaris<br>
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; javax.swing.tree.MutableTreeNode root = h4file.getRootNode();
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (root != null)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printNode(root, "&nbsp;&nbsp;&nbsp; ");
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+<p>For Linux<br>
+setenv PATH $PATH:/home/usr/hdfobj/lib/linux<br>
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; try { h4file.close(); }
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; catch (Exception ex ) {}
-&nbsp;&nbsp;&nbsp; }
+<p>For irix<br>
+setenv PATH $PATH:/home/usr/hdfobj/lib/irix-6.5<br>
 
-&nbsp;&nbsp;&nbsp; // print out the data ojbect recusively
-&nbsp;&nbsp;&nbsp; private static void printNode(javax.swing.tree.TreeNode node, String indent)
-&nbsp;&nbsp;&nbsp; {
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; System.out.println(indent+node);
+<h3>
+At Windows</h3>
+Suppose you install the HDF object package at <B>c:\apps\hdfobj</b>.
+<p>
+setenv PATH=%PATH%;c:\apps\hdfobj\lib\win<br>
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int n = node.getChildCount();
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for (int i=0; i&lt;n; i++)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printNode(node.getChildAt(i), indent+"&nbsp;&nbsp;&nbsp; ");
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
-&nbsp;&nbsp;&nbsp; }
-}
+<h2><a NAME="selection"></a>
+How to select a subset</h2>
+Dataset defines APIs for read, write and subet a dataset. No function is defined
+to select a subset of a data array. The selection is done in an implicit way.
+Function calls to dimension information such as getSelectedDims() return an array
+of dimension values, which is a reference to the array in the dataset object.
+Changes of the array outside the dataset object directly change the values of
+the array in the dataset object. It is like pointers in C.
+<p>
+The following is an example of how to make a subset. In the example, the dataset
+is a 4-dimension with size of [200][100][50][10], i.e.
+dims[0]=200; dims[1]=100; dims[2]=50; dims[3]=10; <br>
+We want to select every other data points in dims[1] and dims[2]
+<pre>
+     int rank = dataset.getRank();   // number of dimension of the dataset
+     long[] dims = dataset.getDims(); // the dimension sizes of the dataset
+     long[] selected = dataset.getSelectedDims(); // the selected size of the dataet
+     long[] start = dataset.getStartDims(); // the off set of the selection
+     long[] stride = dataset.getStride(); // the stride of the dataset
+     int[]  selectedIndex = dataset.getSelectedIndex(); // the selected dimensions for display
 
+     // select dim1 and dim2 as 2D data for display,and slice through dim0
+     selectedIndex[0] = 1;
+     selectedIndex[1] = 2;
+     selectedIndex[1] = 0;
+
+     // reset the selection arrays
+     for (int i=0; i &lt rank; i++) {
+         start[i] = 0;
+         selected[i] = 1;
+         stride[i] = 1;
+    }
+
+    // set stride to 2 on dim1 and dim2 so that every other data points are selected.
+    stride[1] = 2;
+    stride[2] = 2;
+
+    // set the selection size of dim1 and dim2
+    selected[1] = dims[1]/stride[1];
+    selected[2] = dims[1]/stride[2];
+
+    // when dataset.read() is called, the slection above will be used since
+    // the dimension arrays is passed by reference. Changes of these arrays
+    // outside the dataset object directly change the values of these array
+    // in the dataset object.
 </pre>
 
-<p><br>For details of how to the whole hierarchy is retrieved from file,
-read <a href="H4File.java.txt">H4File.java</a> and <a href="H5File.java.txt">H5File.java</a>.
-<br>
-<hr SIZE=1 WIDTH="100%">
-<p><i>December 20, 2001</i>
-<br><!-- BEGIN OF FOOTER INFO -->
-<p><a href="http://www.ncsa.uiuc.edu/"><img SRC="http://www.ncsa.uiuc.edu/Images/NCSAhome/footerlogo.gif" ALT="NCSA" NOSAVE BORDER=0 height=27 width=78></a>
-<br><font face="arial,helvetica"><font size=-1><a href="http://www.ncsa.uiuc.edu/">The
-National Center for Supercomputing Applications</a></font></font>
-<br><font face="arial,helvetica"><font size=-1><a href="http://www.uiuc.edu/">University
-of Illinois at Urbana-Champaign</a></font></font>
-<p><font face="arial,helvetica"><font size=-1><a href="mailto:hdfhelp@ncsa.uiuc.edu">hdfhelp@ncsa.uiuc.edu</a></font></font><!- END OF FOOTER INFO -->
-</body>
-</html>
+<h2><a NAME="examples"></a>
+Examples</h2>
+The following examples show you how to use the object pacakage. The examples
+demonstrate how to access HDF4 and HDF file without any direct function calls
+to the HDF4 or HDF5 library.
+
+<h3><a NAME="create_file"></a> Create File </h3>
+<a href="javaExample/H4FileCreate.java.txt">H4FileCreate.java.txt</a><br>
+<a href="javaExample/H5FileCreate.java.txt">H5FileCreate.java.txt</a>
+<p>
+These two examples show you how to create an empty HDF4/5 file using the
+"NCSA HDF Object Package (Java).
+
+<h3><a NAME="create_group"></a> Create Group </h3>
+<a href="javaExample/H4GroupCreate.java.txt">H4GroupCreate.java.txt</a><br>
+<a href="javaExample/H5GroupCreate.java.txt">H5GroupCreate.java.txt</a><br>
+<p>
+These two examples show you how to create HDF4/5 groups using the
+"NCSA HDF Object Package (Java). The examples create the group structure:
+ <pre>
+      "/" (root)
+          g1
+              g11
+              g12
+          g2
+              g21
+              g22
+ </pre>
+
+<h3><a NAME="create_dataset"></a> Create Datatype/Dataset </h3>
+<a href="javaExample/H4DatasetCreate.java.txt">H4DatasetCreate.java.txt</a><br>
+<a href="javaExample/H5DatasetCreate.java.txt">H5DatasetCreate.java.txt</a><br>
+<p>
+These two examples show you how to create HDF4/5 datasets using the
+"NCSA HDF Object Package (Java)". The examples create the group structure
+and datasets:
+  <pre>
+      "/" (root)
+          integer arrays
+              2D 32-bit integer 20x10
+              3D unsigned 8-bit integer 20x10x5
+          float arrays
+              2D 64-bit double 20x10
+              3D 32-bit float  20x10x5
+  </pre>
+
+
+<h3><a NAME="file_structure"></a> Retrieve File Structure </h3>
+<a href="javaExample/H4FileStructure.java.txt">H4FileStructure.java.txt</a><br>
+<a href="javaExample/H5FileStructure.java.txt">H5FileStructure.java.txt</a><br>
+<p>
+These two examples show you how to retrieve HDF file structure using the
+"NCSA HDF Object Package (Java)". The example created the group structure
+and datasets, and print out the file structure:
+  <pre>
+      "/" (root)
+          integer arrays
+              2D 32-bit integer 20x10
+              3D unsigned 8-bit integer 20x10x5
+          float arrays
+              2D 64-bit double 20x10
+              3D 32-bit float  20x10x5
+  </pre>
+
+
+<h3><a NAME="read_dataset"></a> Read/Write Dataset </h3>
+<a href="javaExample/H4DatasetRead.java.txt">H4DatasetRead.java.txt</a><br>
+<a href="javaExample/H5DatasetRead.java.txt">H5DatasetRead.java.txt</a><br>
+<p>
+These two examples show you how to read/write HDF datasets using the
+"NCSA HDF Object Package (Java)". The example creates an integer dataset,
+and read and write data values:
+<pre>
+    "/" (root)
+            2D 32-bit integer 20x10
+</pre>
+
+
+<h3><a NAME="create_attribute"></a> Create Attribute/Read/Write Attribute </h3>
+<a href="javaExample/H4AttributeCreate.java.txt">H4AttributeCreate.java.txt</a><br>
+<a href="javaExample/H5AttributeCreate.java.txt">H5AttributeCreate.java.txt</a><br>
+<p>
+These two examples show you how to create/read/write HDF attribute using the
+"NCSA HDF Object Package (Java)". The example creates an attribute and,
+read and write the attribute value:
+<pre>
+    "/" (root)
+            2D 32-bit integer 20x10
+            (attribute: name="data range", value=[0, 10000])
+</pre>
+
+
+<h3><a NAME="select_subset"></a> Select Subset </h3>
+<a href="javaExample/H4SubsetSelect.java.txt">H4SubsetSelect.java.txt</a><br>
+<a href="javaExample/H5SubsetSelect.java.txt">H5SubsetSelect.java.txt</a><br>
+These two examples show you how to select a subset using the
+"NCSA HDF Object Package (Java)". The example creates an integer dataset,
+and read subset of the dataset:
+<pre>
+    "/" (root)
+        2D 32-bit integer 20x10
+</pre>
+
+<p>
+The whole 20x10 data set is
+ <pre>
+1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009
+1100, 1101, 1102, 1103, 1104, 1105, 1106, 1107, 1108, 1109
+1200, 1201, 1202, 1203, 1204, 1205, 1206, 1207, 1208, 1209
+1300, 1301, 1302, 1303, 1304, 1305, 1306, 1307, 1308, 1309
+1400, 1401, 1402, 1403, 1404, 1405, 1406, 1407, 1408, 1409
+1500, 1501, 1502, 1503, 1504, 1505, 1506, 1507, 1508, 1509
+1600, 1601, 1602, 1603, 1604, 1605, 1606, 1607, 1608, 1609
+1700, 1701, 1702, 1703, 1704, 1705, 1706, 1707, 1708, 1709
+1800, 1801, 1802, 1803, 1804, 1805, 1806, 1807, 1808, 1809
+1900, 1901, 1902, 1903, 1904, 1905, 1906, 1907, 1908, 1909
+2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
+2100, 2101, 2102, 2103, 2104, 2105, 2106, 2107, 2108, 2109
+2200, 2201, 2202, 2203, 2204, 2205, 2206, 2207, 2208, 2209
+2300, 2301, 2302, 2303, 2304, 2305, 2306, 2307, 2308, 2309
+2400, 2401, 2402, 2403, 2404, 2405, 2406, 2407, 2408, 2409
+2500, 2501, 2502, 2503, 2504, 2505, 2506, 2507, 2508, 2509
+2600, 2601, 2602, 2603, 2604, 2605, 2606, 2607, 2608, 2609
+2700, 2701, 2702, 2703, 2704, 2705, 2706, 2707, 2708, 2709
+2800, 2801, 2802, 2803, 2804, 2805, 2806, 2807, 2808, 2809
+2900, 2901, 2902, 2903, 2904, 2905, 2906, 2907, 2908, 2909
+</pre>
+
+<p>
+Subset: start=(4, 2), size=(5, 3) and stride=(3, 2).
+The subset values are:
+<pre>
+1402,1404,1406
+1702,1704,1706
+2002,2004,2006
+2302,2304,2306
+2602,2604,2606
+</pre>
+
+<script language="JavaScript" type="text/javascript" src="../footer.js"></script>

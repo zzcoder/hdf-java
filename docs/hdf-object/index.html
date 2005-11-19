@@ -1,33 +1,23 @@
-<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <meta name="description" content="NCSA Java-based Products Home Page -- Visit this site to get the latest NCSA Java-based Products free.">
-   <meta name="keywords" content="java hdf 5 interface,">
-   <meta name="distribution" content="global">
-   <meta name="GENERATOR" content="Mozilla/4.72 [en] (Windows NT 5.0; U) [Netscape]">
-   <meta name="Description" content="NCSA Java-based Products Home Page -- Visit this site to get the latest NCSA Java-based Products free.">
-   <meta name="KeyWords" content="java hdf object">
-   <title>HDF Object Package</title>
-<!-- BEGIN MAIN BODY -->
-</head>
-<body text="#000000" bgcolor="#FFFFFF" link="#0000EE" vlink="#551A8B" alink="#FF0000">
+<HTML>
+<script language="JavaScript" type="text/javascript" src="../header.js"></script>
 
-<center><table BORDER=0 CELLSPACING=0 CELLPADDING=5 >
-<tr>
-<td><a href="http://hdf.ncsa.uiuc.edu/"><img SRC="http://hdf.ncsa.uiuc.edu/image/hdf2.jpg" ALT="NCSA HDF home" NOSAVE height=72 width=92></a></td>
+<table width="100%">
+  <tr>
+  <td width="60%">
+    <h1>HDF Object Package</h1>  </td>
+  <td align="leftt"><h3>
+    <a href="##DOWNLOAD">Download</a></h3></td>
+  <td align="leftt"><h3>
+    <A HREF="use.html">How to use it</A></h3></td>
+  </tr>
+</table>
 
-<td>
-<h1>
-NCSA HDF Object Package (java)</h1>
 
-<center><b><font face="arial,helvetica"><font size=+0><font color="#C80028">[</font><font color="#3366FF"><a href="../index.html">HDF
-Java Products</a></font><font color="#C80028">] [</font><font color="#3366FF"><a href="##DOWNLOAD">Download</a></font><font color="#C80028">][<a href="javadocs/index.html">Javadoc</a>]</font></font></font></b></center>
-</td>
-</tr>
-</table></center>
+<p>
+This document describes the design of the <b>HDF Object Package</b> and the class hierarchy.
+To know how to use the package, read <A HREF="use.html">Use and Examples</A> for more details.
 
-<hr noshade size=1>Latest released version: 1.0
+
 <h2>
 What it is</h2>
 The <b>HDF Object Package</b> is a Java package which implement HDF4 and
@@ -44,17 +34,55 @@ interfaces with a higher level object model.
 reflect fundamental conceptual to design of HDF objects. Objects
 of HDF5 (group and dataset) and HDF4 (group, multi-dimension array, raster
 image, vdata and annotation) are presented as Java classes.
-<p>The HDF object package has two major goals. First, it simplifies the
+
+<p>The HDF object package has three major goals. First, it simplifies the
 process of reading information from or writing data to file because the
 details of accessing to the HDF library are encapsulated into respective
 classes. For example, it may take over ten library calls to get an image
 from HDF5 file while the image object provides a single convenient call
 to achieve the same task.
-<p>Second, HDF4 and HDF5 objects are inherited from the same common object
-and interface. Applications can use of the HDF Object Package to access
-objects from either HDF4 or HDF5 in a uniform way, without accessing the
-libraries directly.
-<br>
+
+<p>Second, the HDF object package hides the HDF4 and HDF5 libraries from
+applications. Applications can use of the HDF Object Package to access
+objects from either HDF4 or HDF5 without accessing the libraries directly.
+This will be very useful in the case of client-server application. The
+server machine may have HDF files and the HDF library to access the files
+while the client application which built on the HDF object model doe not
+need the HDF library.
+
+<p>Third, the HDF object package provides modular HDF4 and HDF5 packages.
+Application can be built without requiring the HDF4 or HDF5 library.
+HDF4 and HDF5 objects are inherited from a common object/interface
+layer. Applications can be built by using only the common object/interface
+layer. For example, the HDFView in built on the common object/interface
+layer. It compiles and runs without the HDF4 or HDF5 library.
+
+<h2>
+The Object Package</h2>
+The following diagram explains the structure of the HDF object package
+and how to use it. Package ncsa.hdf.object contains the common object/interface.
+This package only defines interfaces or abstract classes for accessing HDF files.
+The implementation will rely on the HDF4/HDF5 object package. Application classes
+should only include ncsa.hdf.object.
+
+<p>
+The ncsa.hdf.object.h4 is an implementation of the HDF4 objects. It implements
+the interfaces and abstract classes defined at ncsa.hdf.object package. The
+HDF4 object package requires the HDF4 Java Native Interface (ncsa.hdf.hdflib).
+Application should not include this package so that it compiles and runs without
+the HDF4 library.
+
+<p>
+The ncsa.hdf.object.h5 is an implementation of the HDF5 objects. It implements
+the interfaces and abstract classes defined at ncsa.hdf.object package. The
+HDF5 object package requires the HDF5 Java Native Interface (ncsa.hdf.hdf5lib).
+Application should not include this package so that it compiles and runs without
+the HDF5 library.
+
+<center>
+<p><img SRC="hdf-obj.jpg" NOSAVE>
+<br><b>Figure 1. The Object Package.</b></center>
+
 <h2>
 The class hierarchy</h2>
 The HDF Object Package implements an abstract data model, and the objects
@@ -62,40 +90,20 @@ of the HDF4 and HDF5 data models are represented as instances of the abstract
 objects. The abstract class <b>HObject</b> has two fundamental abstract
 classes are <b>Group</b> and <b>Dataset</b>, and all HDF5 and HDF4 objects
 are a sub-type of one of these abstract classes.
-<p>Figure 1 shows the class hierarchy of the HDF Object Package. <i>{Peter
+<p>Figure 1 shows the class hierarchy of the HDF Object Package. <!--<i>{Peter
 -- the dependency to the HDF Library Package is not identical to my diagram
-below. We need to decide on a common way to show it in UML.}</i>
-<p>The classes are explained in "<a href="design.html">Design of the HDF
-object package</a>", and the Java classes are documented in <a href="javadocs/index.html">the
-Javadocs</a>.
+below. We need to decide on a common way to show it in UML.}--></i>
+<p>The classes are explained in the Java class document
+ <a href="../javadocs/index.html">the Javadocs</a>.
+
 <center>
 <p><img SRC="class_diagram_object.jpg" NOSAVE height=897 width=684>
-<br><b>Figure 1. The Class Hierarchy of HDF Objects.</b></center>
+<br><b>Figure 2. The Class Hierarchy of HDF Objects.</b></center>
 
-<h2>
-
-<hr WIDTH="100%">How to use it</h2>
-The HDF Object Package is used by Java applications to access HDF4 and
-HDF5 files without directly calling the HDF4 and HDF5 library APIs. Library
-calls are encapsulated into respective classes. The HDF Object Package
-requires the
-<a href="../JNI/jhi/index.html">The Java HDF Interface (JHI)</a>
-and
-<a href="../JNI/jhi5/index.html">The Java HDF5 Interface (JHI5)</a>.
-Figure 2 shows the relationship of the packages.
-<center>
-<p><img SRC="hdf-obj.jpg" NOSAVE height=850 width=700>
-<p><b>Figure 2. The Software packages</b></center>
-
-<p>Use of the HDF Object Package is explained in "<a href="use.html">How
-to Use It</a>".
 <h2>
 Limitations</h2>
 The current version of the HDF Object Package has the following limitations:
 <ul>
-<li>
-It is read-only. It does not support writing.</li>
-
 <li>
 HDF5 named datatypes are not supported.</li>
 
@@ -121,12 +129,12 @@ JDK 1.3.x). The HDF Object Package no platform specific code, and should
 work on any system with Java JDK 1.2.x or JDK 1.3.x. At the time of the
 release, the code has been tested on Solaris, Linux, Windows 98/NT, and
 SGI IRIX 6.5.
-<h3>
-<a NAME="#DOWNLOAD"></a><u>Download</u></h3>
+<h2>
+<a NAME="#DOWNLOAD"></a>Download</h2>
 The source and pre-built binaries for the HDF Object Package can be downloaded
 from:
-<blockquote><a href="ftp://hdf.ncsa.uiuc.edu/hdf-java/">
-ftp://hdf.ncsa.uiuc.edu/hdf-java/</a></blockquote>
+<blockquote><a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/">
+ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/</a></blockquote>
 <b>Binary release</b>
 <p>The binary release includes jar files for the HDF Object Package, the
 JHI (HDF4 library interface) and JHI5 (HDF5 library interface). The
@@ -149,6 +157,18 @@ native libraries are available for selected platforms.
 <td>lib/jhdfobj.jar</td>
 
 <td>The ncsa.hdf.object package</td>
+</tr>
+
+<tr>
+<td>lib/jhdf4obj.jar</td>
+
+<td>The ncsa.hdf.object.h4 package</td>
+</tr>
+
+<tr>
+<td>lib/jhdf5obj.jar</td>
+
+<td>The ncsa.hdf.object.h5 package</td>
 </tr>
 
 <tr>
@@ -191,22 +211,12 @@ native libraries are available for selected platforms.
 <p>The source distribution includes all the Java source to build the jar
 files, plus the C source for the native methods of the <a href="../JNI/jhi/index.html">JHI</a>
 and <a href="../JNI/jhi5/index.html">JHI5</a>.
-<p>The JHI requires the HDF4.1r3 library (binary) and the JHI5 requires
-the HDF5.1.4.3 library (binary). These are not included in the Java source.
+<p>The JHI requires the HDF4.1r5 library (binary) and the JHI5 requires
+the HDF5.1.4.4 library (binary). These are not included in the Java source.
 They can be obtained from:
 <blockquote><a href="http://hdf.ncsa.uiuc.edu">http://hdf.ncsa.uiuc.edu</a></blockquote>
 or email to:
 <blockquote><a href="mailto:hdfhelp@ncsa.uiuc.edu">hdfhelp@ncsa.uiuc.edu</a></blockquote>
 
-<p>
-<hr SIZE=1 WIDTH="100%">
-<br><i>March 20, 2002</i>
-<br><!-- BEGIN OF FOOTER INFO -->
-<p><a href="http://www.ncsa.uiuc.edu/"><img SRC="http://www.ncsa.uiuc.edu/Images/NCSAhome/footerlogo.gif" ALT="NCSA" NOSAVE BORDER=0 height=27 width=78></a>
-<br><font face="arial,helvetica"><font size=-1><a href="http://www.ncsa.uiuc.edu/">The
-National Center for Supercomputing Applications</a></font></font>
-<br><font face="arial,helvetica"><font size=-1><a href="http://www.uiuc.edu/">University
-of Illinois at Urbana-Champaign</a></font></font>
-<p><font face="arial,helvetica"><font size=-1><a href="mailto:hdfhelp@ncsa.uiuc.edu">hdfhelp@ncsa.uiuc.edu</a></font></font><!- END OF FOOTER INFO -->
-</body>
-</html>
+<script language="JavaScript" type="text/javascript" src="../footerer.js"></script>
+</HTML>
