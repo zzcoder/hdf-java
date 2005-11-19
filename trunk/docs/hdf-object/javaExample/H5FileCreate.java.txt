@@ -1,0 +1,54 @@
+/****************************************************************************
+ * NCSA HDF                                                                 *
+ * National Comptational Science Alliance                                   *
+ * University of Illinois at Urbana-Champaign                               *
+ * 605 E. Springfield, Champaign IL 61820                                   *
+ *                                                                          *
+ * For conditions of distribution and use, see the accompanying             *
+ * hdf-java/COPYING file.                                                   *
+ *                                                                          *
+ ****************************************************************************/
+
+package javaExample;
+
+import ncsa.hdf.object.*;     // the common object package
+import ncsa.hdf.object.h5.*;  // the HDF5 implementation
+
+/**
+ * <p>Title: HDF Object Package (Java) Example</p>
+ * <p>Description: this example shows how to create an empty HDF5 file using the
+ * "NCSA HDF Object Package (Java)".
+ * <p>
+ * For more details, visit the website
+ * <a href="http://hdf.ncsa.uiuc.edu/hdf-java-html/hdf-object/index.html"
+ * NCSA HDF Object Package (Java)</a> </p>
+ * <p>Copyright: Copyright (c) 2003</p>
+ * <p>Company: NCSA</p>
+ * @author Peter X. Cao
+ * @version 1.0
+ */
+public class H5FileCreate
+{
+    private static String fname = "H5FileCreate.h5";
+
+    public static void main( String args[] ) throws Exception
+    {
+        // retrieve an instance of H5File
+        FileFormat fileFormat = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+
+        if (fileFormat == null)
+        {
+            System.err.println("Cannot find HDF5 FileFormat.");
+            return;
+        }
+
+        // create a new file with a given file name.
+        H5File testFile = (H5File)fileFormat.create(fname);
+
+        if (testFile == null)
+        {
+            System.err.println("Failed to create file:"+fname);
+            return;
+        }
+    }
+}
