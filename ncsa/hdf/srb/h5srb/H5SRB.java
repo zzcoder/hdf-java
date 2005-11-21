@@ -42,7 +42,7 @@ public class H5SRB {
                 try {
                    System.load(filename);
                    isLoaded = true;
-                } catch (Throwable err) { isLoaded = false; }
+                } catch (Throwable err) { err.printStackTrace(); isLoaded= false; }
             }
         }
 
