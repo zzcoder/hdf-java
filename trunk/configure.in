@@ -127,10 +127,10 @@ JSLEXT="so";
 COPT="-shared -DUNIX386" ; 
 ;;
 *powerpc-apple*) 
-LD=$CC; LDOPT=-dynamiclib; 
+LD=$CC; LDOPT=-bundle; 
 JSLEXT="jnilib";
+LLEXT="a";
 SLEXT="dylib";
-LLEXT="dylib";
 ;;
 *) LD=$CC; LDOPT=-G; SLEXT="so";
 LLEXT="a";
@@ -709,10 +709,10 @@ JAVAINC2=$JAVAINC/linux;
 JAVATARG=linux;
 ;;
 *powerpc-apple*) 
-LD=$CC; LDOPT=-dynamiclib; 
+LD=$CC; LDOPT=-bundle; 
 JSLEXT="jnilib";
+LLEXT="a";
 SLEXT="dylib";
-LLEXT="dylib";
 JAVAINC2=$JAVAINC/macosx; 
 JAVATARG=macosx;
 ;;
