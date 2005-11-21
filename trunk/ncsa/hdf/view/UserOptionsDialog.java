@@ -406,7 +406,7 @@ implements ActionListener, ListSelectionListener
         p.add(lp, BorderLayout.WEST);
         p.add(sp, BorderLayout.SOUTH);
 
-        if (srbVector !=null)
+        if (srbVector !=null && srbVector.size()>0)
             srbJList.setSelectedIndex(0);
 
         return p;
