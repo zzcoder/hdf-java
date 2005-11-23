@@ -1,8 +1,7 @@
-/* XXXXX for window only. Probably should be changed in Makefile 
+
 #ifndef _WIN32
 #define _WIN32
 #endif
-*/
 
 #include <assert.h>
 #include "jni.h"
@@ -10,7 +9,6 @@
 #include "h5File.h"
 #include "h5Dataset.h"
 #include "clConnectExtern.h"
-#include "hdf5PackDef.h"
 
 
 #define NODEBUG
@@ -218,8 +216,7 @@ jint h5file_request(JNIEnv *env, jobject jobj)
     jint ret_val = 0;
     H5File h5file;
 
-    /* assert(connection);  MW - won't compile with this 9.20.05 */
-    assert (current_connection);
+    assert(connection);
 
     H5File_ctor(&h5file);
 
@@ -264,8 +261,7 @@ jint h5dataset_request(JNIEnv *env, jobject jobj)
     unsigned int npoints=1;
     H5Dataset h5dataset;
 
-    /* assert(connection); MW - won't compile with this 9.20.05 */
-    assert (current_connection);
+    assert(connection);
 
     H5Dataset_ctor(&h5dataset);
 
@@ -310,8 +306,7 @@ jint h5group_request(JNIEnv *env, jobject jobj)
     unsigned int npoints=1;
     H5Group h5group;
 
-    /* assert(connection); MW - won't compile with this 9.20.05 */
-    assert (current_connection);
+    assert(connection);
 
     H5Group_ctor(&h5group);
 
