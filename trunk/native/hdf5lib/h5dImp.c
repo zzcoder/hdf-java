@@ -902,6 +902,7 @@ herr_t H5DreadVL_num (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t fi
 	size_t size;
 
 	n = (*env)->GetArrayLength(env, buf);
+
 	rdata = (hvl_t *)calloc(n, sizeof(hvl_t));
 	if (rdata == NULL) {
         h5JNIFatalError( env, "H5DreadVL:  failed to allocate buff for read");
@@ -923,7 +924,7 @@ herr_t H5DreadVL_num (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t fi
 			max_len = (rdata+i)->len;
 	}
 
-	size = H5Tget_size(tid);
+	size = H5Tget_size(tid)*max_len;
 	memset(&h5str, 0, sizeof(h5str_t));
 	h5str_new(&h5str, 4*size);
 

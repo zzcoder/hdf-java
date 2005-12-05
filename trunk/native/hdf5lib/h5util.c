@@ -196,6 +196,7 @@ int h5str_sprintf(h5str_t *str, hid_t tid, void *ptr)
 			offset = H5Tget_member_offset(tid, i);
             mtid = H5Tget_member_type(tid ,i);
             h5str_sprintf(str, mtid, cptr+offset);
+            if (i<n-1) strcat(str->s, ", ");
             H5Tclose(mtid);
         }
 		h5str_append(str, "} ");
@@ -218,7 +219,7 @@ int h5str_sprintf(h5str_t *str, hid_t tid, void *ptr)
         for (i = 0; i < total_elmts; i++)
 		{
             h5str_sprintf(str, mtid, cptr + i * size);
-			strcat(str->s, ", ");
+			if (i<total_elmts-1) strcat(str->s, ", ");
         }
         H5Tclose(mtid);
 		h5str_append(str, "] ");
@@ -233,7 +234,7 @@ int h5str_sprintf(h5str_t *str, hid_t tid, void *ptr)
         for (i = 0; i < n; i++)
 		{
 			h5str_sprintf(str, mtid, ((char *)(vlptr->p)) + i * size);
-        	strcat(str->s, ", ");
+        	if (i<n-1) strcat(str->s, ", ");
 		}
         H5Tclose(mtid);
     } else /* All other types get printed as hexadecimal */
