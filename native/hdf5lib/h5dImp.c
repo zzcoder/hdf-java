@@ -918,6 +918,7 @@ herr_t H5DreadVL_num (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t fi
 		return -1;
 	}
 
+	max_len = 1;
 	for (i=0; i<n; i++)
 	{
 		if ((rdata+i)->len > max_len)
