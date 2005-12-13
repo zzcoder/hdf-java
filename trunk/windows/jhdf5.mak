@@ -6,32 +6,32 @@
 #============================================================================
 
 # Visual C++ directory, for example
-#VCPPDIR=C:\Program Files\Microsoft Visual Studio\VC98
-VCPPDIR=
+VCPPDIR=C:\Program Files\Microsoft Visual Studio\VC98
+#VCPPDIR=
 
 # directory where JDK is installed (need JDK 1.3.1 or above), for example
-#JAVADIR=D:\java\jdk1.3.1\
-JAVADIR=
+JAVADIR=I:\work\java\jdk142\
+#JAVADIR=
 
 # directory of the HDF Java Products, for example
-#HDFJAVADIR=D:\work\hdf-java\
-HDFJAVADIR=
+HDFJAVADIR=E:\temp\hdf-java\
+#HDFJAVADIR=
 
 # the directory where HDF library is installed, for example
-#HDFDIR=D:\work\5-162-win2k\release\
-HDFDIR=
+HDFDIR=I:\work\hdf5-165-win\
+#HDFDIR=
 
 # the JPEG library, for example
-#JPEGLIB=E:\Work\MyHDFstuff\lib-external\jpeg\libjpeg.lib
-JPEGLIB=
+JPEGLIB=I:\work\lib_external\jpeg-6b\lib\libjpeg.lib
+#JPEGLIB=
 
 # the GZIP library, for example
-#GZIPLIB=E:\Work\MyHDFstuff\lib-external\zlib\bin\windows\zlib114\lib\zlib.lib
-GZIPLIB=
+GZIPLIB=I:\work\lib_external\zlib-121-windows\lib\zlib.lib
+#GZIPLIB=
 
 # SZIP library, for example
-#SZIPLIB=E:\Work\MyHDFstuff\lib-external\szip\bin\windows\szip-msvc++\lib\szlib.lib
-SZIPLIB=
+SZIPLIB=I:\work\lib_external\szip20-win-xp-noenc\lib\szlib.lib
+#SZIPLIB=
 
 
 #===========================================================================
@@ -101,57 +101,6 @@ INTDIR=.\jhdf5\Release
 OUTDIR=$(HDFJAVADIR)\lib\win
 
 INCLUDES =  \
-	"$(JAVADIR)\include\jni.h" \
-	"$(JAVADIR)\include\win32\jni_md.h" \
-	"$(SRCDIR)\h5Constants.h" \
-	"$(HDFDIR)\include\H5ACpublic.h" \
-	"$(HDFDIR)\include\H5api_adpt.h" \
-	"$(HDFDIR)\include\H5Apkg.h" \
-	"$(HDFDIR)\include\H5Apublic.h" \
-	"$(HDFDIR)\include\H5Bpkg.h" \
-	"$(HDFDIR)\include\H5Bpublic.h" \
-	"$(HDFDIR)\include\H5config.h" \
-	"$(HDFDIR)\include\H5Dpkg.h" \
-	"$(HDFDIR)\include\H5Dpublic.h" \
-	"$(HDFDIR)\include\H5Epublic.h" \
-	"$(HDFDIR)\include\H5FDcore.h" \
-	"$(HDFDIR)\include\H5FDfamily.h" \
-	"$(HDFDIR)\include\H5FDfphdf5.h" \
-	"$(HDFDIR)\include\H5FDgass.h" \
-	"$(HDFDIR)\include\H5FDlog.h" \
-	"$(HDFDIR)\include\H5FDmpio.h" \
-	"$(HDFDIR)\include\H5FDmpiposix.h" \
-	"$(HDFDIR)\include\H5FDmulti.h" \
-	"$(HDFDIR)\include\H5FDpublic.h" \
-	"$(HDFDIR)\include\H5FDsec2.h" \
-	"$(HDFDIR)\include\H5FDsrb.h" \
-	"$(HDFDIR)\include\H5FDstdio.h" \
-	"$(HDFDIR)\include\H5FDstream.h" \
-	"$(HDFDIR)\include\H5Fpkg.h" \
-	"$(HDFDIR)\include\H5FPpublic.h" \
-	"$(HDFDIR)\include\H5Fpublic.h" \
-	"$(HDFDIR)\include\H5Gpkg.h" \
-	"$(HDFDIR)\include\H5Gpublic.h" \
-	"$(HDFDIR)\include\H5HGpublic.h" \
-	"$(HDFDIR)\include\H5HLpublic.h" \
-	"$(HDFDIR)\include\H5Ipkg.h" \
-	"$(HDFDIR)\include\H5Ipublic.h" \
-	"$(HDFDIR)\include\H5MMpublic.h" \
-	"$(HDFDIR)\include\H5Opkg.h" \
-	"$(HDFDIR)\include\H5Opublic.h" \
-	"$(HDFDIR)\include\H5Ppkg.h" \
-	"$(HDFDIR)\include\H5Ppublic.h" \
-	"$(HDFDIR)\include\H5pubconf.h" \
-	"$(HDFDIR)\include\H5public.h" \
-	"$(HDFDIR)\include\H5Rpublic.h" \
-	"$(HDFDIR)\include\H5Spkg.h" \
-	"$(HDFDIR)\include\H5Spublic.h" \
-	"$(HDFDIR)\include\H5Tpkg.h" \
-	"$(HDFDIR)\include\H5Tpublic.h" \
-	"$(HDFDIR)\include\H5Zpkg.h" \
-	"$(HDFDIR)\include\H5Zpublic.h" \
- 	"$(HDFDIR)\include\hdf5.h"
-
 
 ALL : "$(OUTDIR)\jhdf5.dll"
 
@@ -202,7 +151,7 @@ BSC32_FLAGS=/nologo /o"$(INTDIR)\jhdf5.bsc"
 BSC32_SBRS= \
 	
 LINK32=link.exe
-LINK32_FLAGS=$(HDFDIR)\lib\hdf5.lib $(SZIPLIB) $(GZIPLIB) /nologo /dll /incremental:no /pdb:"$(INTDIR)\jhdf5.pdb" /machine:I386 /out:"$(OUTDIR)\jhdf5.dll" /implib:"$(INTDIR)\jhdf5.lib" 
+LINK32_FLAGS=$(HDFDIR)\lib\hdf5.lib $(SZIPLIB) $(GZIPLIB) /nologo /dll /incremental:no /pdb:"$(INTDIR)\jhdf5.pdb" /machine:I386 /nodefaultlib:"MSVCRT" /out:"$(OUTDIR)\jhdf5.dll" /implib:"$(INTDIR)\jhdf5.lib" 
 LINK32_OBJS= \
 	"$(INTDIR)\exceptionImp.obj" \
 	"$(INTDIR)\h5aImp.obj" \
@@ -216,6 +165,7 @@ LINK32_OBJS= \
 	"$(INTDIR)\h5rImp.obj" \
 	"$(INTDIR)\h5sImp.obj" \
 	"$(INTDIR)\h5tImp.obj" \
+	"$(INTDIR)\h5util.obj" \
 	"$(INTDIR)\h5zImp.obj" \
 	"$(INTDIR)\nativeData.obj"
 
@@ -224,6 +174,10 @@ LINK32_OBJS= \
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
 
+SOURCE=$(SRCDIR)\h5util.c
+
+"$(INTDIR)\h5util.obj" : $(SOURCE) "$(INTDIR)"
+	$(CPP) $(CPP_PROJ) $(SOURCE)
 
 SOURCE=$(SRCDIR)\exceptionImp.c
 
@@ -308,6 +262,7 @@ SOURCE=$(SRCDIR)\nativeData.c
 "$(INTDIR)\nativeData.obj" : $(SOURCE) $(INCLUDES) "$(INTDIR)"
 	$(CPP) $(CPP_PROJ) $(SOURCE)
 
+
 CLEAN :
 	-@erase "$(INTDIR)\exceptionImp.obj"
 	-@erase "$(INTDIR)\h5aImp.obj"
@@ -321,11 +276,15 @@ CLEAN :
 	-@erase "$(INTDIR)\h5rImp.obj"
 	-@erase "$(INTDIR)\h5sImp.obj"
 	-@erase "$(INTDIR)\h5tImp.obj"
+	-@erase "$(INTDIR)\h5util.obj"
 	-@erase "$(INTDIR)\h5zImp.obj"
 	-@erase "$(INTDIR)\nativeData.obj"
 	-@erase "$(INTDIR)\vc60.idb"
-	-@erase "$(INTDIR)\jhdf5.exp"
-	-@erase "$(INTDIR)\jhdf5.lib"
+	-@erase "$(INTDIR)\vc60.pdb"
 	-@erase "$(OUTDIR)\jhdf5.dll"
+	-@erase "$(OUTDIR)\jhdf5.exp"
+	-@erase "$(OUTDIR)\jhdf5.ilk"
+	-@erase "$(OUTDIR)\jhdf5.lib"
+	-@erase "$(OUTDIR)\jhdf5.pdb"
 
 !ENDIF
