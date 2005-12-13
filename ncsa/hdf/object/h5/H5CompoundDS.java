@@ -256,7 +256,10 @@ public class H5CompoundDS extends CompoundDS
             return null; // this compound dataset does not have any member
 
         /* external files will need this */
-        H5.H5Dchdir_ext(this.getFileFormat().getParent());
+        String pdir = this.getFileFormat().getParent();
+        if (pdir == null)
+            pdir = ".";
+        H5.H5Dchdir_ext(pdir);
 
         int did = open();
 
