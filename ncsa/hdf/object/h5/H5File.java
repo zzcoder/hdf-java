@@ -443,6 +443,12 @@ public class H5File extends FileFormat
     // implementign FileFormat
     public TreeNode copy(HObject srcObj, Group dstGroup) throws Exception
     {
+        return this.copy(srcObj, dstGroup, null);
+    }
+
+    // implementign FileFormat
+    public TreeNode copy(HObject srcObj, Group dstGroup, String dstName) throws Exception
+    {
         TreeNode newNode = null;
 
         if (srcObj == null || dstGroup == null)
@@ -450,19 +456,20 @@ public class H5File extends FileFormat
 
         if (srcObj instanceof Dataset)
         {
-           newNode = copyDataset((Dataset)srcObj, (H5Group)dstGroup);
+           newNode = copyDataset((Dataset)srcObj, (H5Group)dstGroup, dstName);
         }
         else if (srcObj instanceof H5Group)
         {
-            newNode = copyGroup((H5Group)srcObj, (H5Group)dstGroup);
+            newNode = copyGroup((H5Group)srcObj, (H5Group)dstGroup, dstName);
         }
         else if (srcObj instanceof H5Datatype)
         {
-            newNode = copyDatatype((H5Datatype)srcObj, (H5Group)dstGroup);
+            newNode = copyDatatype((H5Datatype)srcObj, (H5Group)dstGroup, dstName);
         }
 
         return newNode;
     }
+
 
     /** copy a dataset into another group.
      * @param srcDataset the dataset to be copied.
@@ -470,7 +477,7 @@ public class H5File extends FileFormat
      * @return the treeNode containing the new copy of the dataset.
      */
 
-    private TreeNode copyDataset(Dataset srcDataset, H5Group pgroup)
+    private TreeNode copyDataset(Dataset srcDataset, H5Group pgroup, String dstName)
          throws Exception
     {
         Dataset dataset = null;
@@ -482,7 +489,10 @@ public class H5File extends FileFormat
         else
             path = pgroup.getPath()+pgroup.getName()+HObject.separator;
 
-        dname = path + srcDataset.getName();
+        if (dstName == null || dstName.equals(HObject.separator) || dstName.length()<1)
+            dstName = srcDataset.getName();
+        dname = path + dstName;
+
         srcdid = srcDataset.open();
         tid = H5.H5Dget_type(srcdid);
         sid = H5.H5Dget_space(srcdid);
@@ -501,7 +511,7 @@ public class H5File extends FileFormat
         copyAttributes(srcdid, dstdid);
 
         byte[] ref_buf = H5.H5Rcreate(
-            fid,
+            pgroup.getFID(),
             dname,
             HDF5Constants.H5R_OBJECT,
             -1);
@@ -512,14 +522,14 @@ public class H5File extends FileFormat
         {
             dataset = new H5ScalarDS(
                 this,
-                srcDataset.getName(),
+                dstName,
                 path,
                 oid);
         } else
         {
             dataset = new H5CompoundDS(
                 this,
-                srcDataset.getName(),
+                dstName,
                 path,
                 oid);
         }
@@ -564,7 +574,7 @@ public class H5File extends FileFormat
         return newNode;
     }
 
-    private TreeNode copyGroup(H5Group srcGroup, H5Group pgroup)
+    private TreeNode copyGroup(H5Group srcGroup, H5Group pgroup, String dstName)
          throws Exception
     {
         H5Group group = null;
@@ -576,17 +586,20 @@ public class H5File extends FileFormat
         else
             path = pgroup.getPath()+pgroup.getName()+HObject.separator;
 
-        gname = path + srcGroup.getName();
+        if (dstName == null || dstName.equals(HObject.separator) || dstName.length()<1)
+            dstName = srcGroup.getName();
+
+        gname = path + dstName;
         srcgid = srcGroup.open();
         dstgid = H5.H5Gcreate(fid, gname, 0);
         byte[] ref_buf = H5.H5Rcreate(
-            fid,
+            pgroup.getFID(),
             gname,
             HDF5Constants.H5R_OBJECT,
             -1);
         long l = HDFNativeData.byteToLong(ref_buf, 0);
         long[] oid = {l};
-        group = new H5Group(this, srcGroup.getName(), path, pgroup, oid);
+        group = new H5Group(this, dstName, path, pgroup, oid);
 
         copyAttributes(srcgid, dstgid);
 
@@ -613,7 +626,7 @@ public class H5File extends FileFormat
         return theNode;
     }
 
-    private TreeNode copyDatatype(Datatype srcType, H5Group pgroup)
+    private TreeNode copyDatatype(Datatype srcType, H5Group pgroup, String dstName)
          throws Exception
     {
         Datatype datatype = null;
@@ -625,21 +638,24 @@ public class H5File extends FileFormat
         else
             path = pgroup.getPath()+pgroup.getName()+HObject.separator;
 
-        tname = path + srcType.getName();
+        if (dstName == null || dstName.equals(HObject.separator) || dstName.length()<1)
+            dstName = srcType.getName();
+
+        tname = path + dstName;
         tid_src = srcType.open();
         tid_dst = H5.H5Tcopy(tid_src);
 
         H5.H5Tcommit(fid, tname, tid_src );
 
         byte[] ref_buf = H5.H5Rcreate(
-            fid,
+            pgroup.getFID(),
             tname,
             HDF5Constants.H5R_OBJECT,
             -1);
         long l = HDFNativeData.byteToLong(ref_buf, 0);
         long[] oid = {l};
 
-        datatype = new H5Datatype(this, srcType.getName(), path, oid);
+        datatype = new H5Datatype(this, dstName, path, oid);
 
         pgroup.addToMemberList(datatype);
         DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(datatype);
