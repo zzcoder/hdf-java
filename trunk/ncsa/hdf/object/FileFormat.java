@@ -408,6 +408,9 @@ public abstract class FileFormat extends File
      */
     public abstract TreeNode copy(HObject srcObj, Group dstGroup) throws Exception;
 
+    public TreeNode copy(HObject srcObj, Group dstGroup, String dstName)
+        throws Exception { return null; /* sub-class have to replace it */}
+
     /**
      * Delete an object from the file.
      * @param obj the data object to delete.
