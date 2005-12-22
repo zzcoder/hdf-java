@@ -2843,7 +2843,7 @@ JSLEXT="so";
 x86_64-pc-linux*) LD=$CC; LDOPT=-shared; SLEXT="so";
 TARGETLIB="linux"
 SLEXT="so";
-LLEXT="so";  # the extension for the HDF and other libraries to link to
+LLEXT="a";  # the extension for the HDF and other libraries to link to
 JSLEXT="so";
 COPT="-shared -Dx86_64 -fPIC" ;
 ;;
@@ -4019,7 +4019,7 @@ JAVAINC2=$JAVAINC/irix; JAVATARG=irix-$OS;
 ;;
 x86_64-pc-linux*) LD=$CC; LDOPT=-shared;
 SLEXT="so";
-LLEXT="so";  # the extension for the HDF and other libraries to link to
+LLEXT="a";  # the extension for the HDF and other libraries to link to
 JSLEXT="so";
 COPT="-shared -Dx86_64 -fPIC" ;
 JAVAINC2=$JAVAINC/linux;
