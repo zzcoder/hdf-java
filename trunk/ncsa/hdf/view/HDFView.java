@@ -98,7 +98,7 @@ public class HDFView extends JFrame
         "Copyright "+'\u00a9'+" 2001-2005 University of Illinois.\n"+
         "All rights reserved.";
 
-    private static final String JAVA_COMPILER = "JDK 1.4.1_01-b01";
+    private static final String JAVA_COMPILER = System.getProperty("java.vm.version");
 
     /** the directory where the HDFView is installed */
     private String rootDir;
