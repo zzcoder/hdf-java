@@ -582,8 +582,11 @@ public abstract class Dataset extends HObject
 
         String[] strArray = new String[n];
         String str = null;
+        int idx = 0;
         for (int i=0; i<n; i++) {
             str = new String(bytes, i*length, length);
+            idx = str.indexOf('\0');
+            if (idx > 0) str = str.substring(0, idx);
             strArray[i] = str.trim();
         }
 

@@ -222,7 +222,7 @@ int h5str_sprintf(h5str_t *str, hid_t tid, void *ptr)
 			if (i<total_elmts-1) strcat(str->s, ", ");
         }
         H5Tclose(mtid);
-	h5str_append(str, "] ");
+		h5str_append(str, "] ");
     } else if (tclass == H5T_VLEN)
 	{
         mtid = H5Tget_super(tid);
