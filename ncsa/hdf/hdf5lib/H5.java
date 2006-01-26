@@ -860,6 +860,10 @@ public class H5 {
         else if (is1D && dname == 'D') {
             status = H5Dread_double(dataset_id, mem_type_id,mem_space_id, file_space_id,
                 xfer_plist_id, (double[])obj);
+        }
+        else if (is1D && cname.equals("[Ljava.lang.String;")) {
+            status = H5Dread_string(dataset_id, mem_type_id,mem_space_id, file_space_id,
+                xfer_plist_id, (String[])obj);
         } else {
             // Create a data buffer to hold the data into a Java Array
             HDFArray theArray = new HDFArray(obj);
@@ -4338,6 +4342,11 @@ public class H5 {
     public synchronized static native int H5Dread_double(int dataset_id, int mem_type_id,
         int mem_space_id, int file_space_id, int xfer_plist_id,
         double[] buf)
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Dread_string(int dataset_id, int mem_type_id,
+        int mem_space_id, int file_space_id, int xfer_plist_id,
+        String[] buf)
         throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pset_fclose_degree(int plist, int degree)

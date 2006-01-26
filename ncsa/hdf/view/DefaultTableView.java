@@ -1411,8 +1411,8 @@ implements TableView, ActionListener
     /** paste data from the system clipboard to the spreadsheet. */
     private void pasteData()
     {
-        if (!(dataset instanceof ScalarDS))
-            return; // does not support compound dataset in this version
+//        if (!(dataset instanceof ScalarDS))
+//            return; // does not support compound dataset in this version
 
         int pasteDataFlag = JOptionPane.showConfirmDialog(this,
             "Do you want to paste selected data ?",
@@ -1437,6 +1437,7 @@ implements TableView, ActionListener
         String line = "";
         try {
             String s =(String)content.getTransferData(DataFlavor.stringFlavor);
+
             StringTokenizer st = new StringTokenizer(s, "\n");
             while (st.hasMoreTokens() && r < rows)
             {

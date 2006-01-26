@@ -372,7 +372,7 @@ public class H5ScalarDS extends ScalarDS
                     H5.H5Dread( did, nativeDatatype, mspace, fspace, HDF5Constants.H5P_DEFAULT, theData);
                     if (isText)
                         theData = byteToString((byte[])theData, H5.H5Tget_size(nativeDatatype));
-                    else if (H5.H5Tget_class(nativeDatatype) == HDF5Constants.H5T_REFERENCE)
+                    else if (H5.H5Tequal(nativeDatatype, HDF5Constants.H5T_STD_REF_OBJ))
                         theData = HDFNativeData.byteToLong((byte[])theData);
                 }
             }

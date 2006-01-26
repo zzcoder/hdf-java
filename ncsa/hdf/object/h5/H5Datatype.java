@@ -200,7 +200,13 @@ public class H5Datatype extends Datatype
             if (tsize == 4) data = new float[size];
             else if (tsize == 8) data = new double[size];
         }
-        else if (tclass == HDF5Constants.H5T_STRING ||
+/*
+        else if (tclass == HDF5Constants.H5T_STRING)
+        {
+            data = new String[size];
+        }
+*/
+        else if ( tclass == HDF5Constants.H5T_STRING ||
             tclass == HDF5Constants.H5T_REFERENCE ||
             tclass == HDF5Constants.H5T_BITFIELD)
         {
