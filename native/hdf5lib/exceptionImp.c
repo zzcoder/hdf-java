@@ -60,6 +60,9 @@ typedef struct H5E_t {
 #ifdef WIN32
 /* windows does not like the 'extern' here */
 H5E_t H5E_stack_g[1];
+#elif defined(__FreeBSD__)
+/* Neither does FreeBSD */
+H5E_t H5E_stack_g[1];
 #else
 extern H5E_t H5E_stack_g[1];
 #endif
