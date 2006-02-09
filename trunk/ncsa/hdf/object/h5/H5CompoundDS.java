@@ -405,7 +405,7 @@ public class H5CompoundDS extends CompoundDS
                 if (!(isVLEN || is_variable_str || isIndexTable))
                 {
                     if (member_class == HDF5Constants.H5T_STRING) {
-                        member_data = byteToString((byte[])member_data, member_size);
+                        ;//member_data = byteToString((byte[])member_data, member_size);
                     }
                     else if (member_class == HDF5Constants.H5T_REFERENCE) {
                         member_data = HDFNativeData.byteToLong((byte[])member_data);
@@ -543,7 +543,8 @@ public class H5CompoundDS extends CompoundDS
                     Object tmpData = member_data;
                     if (H5Datatype.isUnsigned(baseType))
                         tmpData = convertToUnsignedC(member_data);
-                    else if (member_class == HDF5Constants.H5T_STRING) {
+                    else if (member_class == HDF5Constants.H5T_STRING &&
+                             (Array.get(member_data, 0) instanceof String)) {
                         tmpData = stringToByte((String[])member_data, member_size);
                     }
 
@@ -1166,5 +1167,25 @@ the H5INquery() does requires that information
             sid = H5INquery (did, getName(), bound, bound, 1);
 */
         }
+    }
+
+
+    public boolean isString(int tid)
+    {
+        boolean b = false;
+        try { b = (HDF5Constants.H5T_STRING == H5.H5Tget_class(tid) ); }
+        catch (Exception ex) { b = false; }
+
+        return b;
+    }
+
+    public int getSize(int tid)
+    {
+        int tsize = -1;
+
+        try { tsize = H5.H5Tget_size(tid); }
+        catch (Exception ex) { tsize = -1; }
+
+        return tsize;
     }
 }

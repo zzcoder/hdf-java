@@ -249,7 +249,6 @@ public abstract class Datatype extends HObject
         return description;
     }
 
-
     /**
      *  Checks if this datatype is an unsigned integer.
      *  @return True is the datatype is an unsigned integer; otherwise returns false.
@@ -261,4 +260,5 @@ public abstract class Datatype extends HObject
     public List getMetadata() throws Exception { return null; }
     public void writeMetadata(Object info) throws Exception {;}
     public void removeMetadata(Object info) throws Exception {;}
+
 }
