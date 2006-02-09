@@ -2456,7 +2456,7 @@ public class H5 {
      *
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
-    public synchronized static native boolean H5Pset_deflate(int plist, int level)
+    public synchronized static native int H5Pset_deflate(int plist, int level)
         throws HDF5LibraryException;
 
     /**
@@ -4421,5 +4421,13 @@ public class H5 {
 
     public synchronized static native int H5INquery (int dset_id, String keys[],
         Object ubounds, Object lbounds, int nkeys);
+
+
+    ////////////////////////////////////////////////////////////////////
+    //                                                                //
+    //     Generic Properties APIs are more implemented because       //
+    //     there are function pointers, which Java cannot handle      //
+    ////////////////////////////////////////////////////////////////////
+
 }
 

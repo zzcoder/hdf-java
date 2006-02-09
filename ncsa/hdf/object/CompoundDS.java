@@ -255,14 +255,30 @@ public abstract class CompoundDS extends Dataset
             return memberOrders;
 
         int idx = 0;
-        int[] order = new int[getSelectedMemberCount()];
+        int[] orders = new int[getSelectedMemberCount()];
         for (int i=0; i<isMemberSelected.length; i++)
         {
             if (isMemberSelected[i])
-                order[idx++] = memberOrders[i];
+                orders[idx++] = memberOrders[i];
         }
 
-        return order;
+        return orders;
+    }
+
+    public int[] getSelectedMemberTypes()
+    {
+        if (isMemberSelected == null)
+            return memberTypes;
+
+        int idx = 0;
+        int[] types = new int[getSelectedMemberCount()];
+        for (int i=0; i<isMemberSelected.length; i++)
+        {
+            if (isMemberSelected[i])
+                types[idx++] = memberTypes[i];
+        }
+
+        return types;
     }
 
     /**
@@ -273,4 +289,11 @@ public abstract class CompoundDS extends Dataset
             return null;
         return (int[])memberDims[i];
     }
+
+
+    // sub classes need to replace these two functions
+
+    // sub classes need to replace these two functions
+    public boolean isString(int dtype) { return false; }
+    public int getSize(int dtype) { return -1; }
 }

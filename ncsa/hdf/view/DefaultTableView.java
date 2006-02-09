@@ -1225,6 +1225,7 @@ implements TableView, ActionListener
             List list = (List)dataValue;
             CompoundDS compound = (CompoundDS)dataset;
             int orders[] = compound.getSelectedMemberOrders();
+            int types[] = compound.getSelectedMemberTypes();
             StringBuffer stringBuffer = new StringBuffer();
             int nFields = list.size();
             int nRows = getRowCount();
@@ -1252,7 +1253,20 @@ implements TableView, ActionListener
                 stringBuffer.setLength(0); // clear the old string
                 int[] mdim = compound.getMemeberDims(column);
                 if (mdim == null) {
-                    stringBuffer.append(Array.get(colValue, rowIdx));
+                    int strlen = 0;
+
+                    if (orders[column] <= 1 &&
+                        compound.isString(types[column]) &&
+                        (strlen = compound.getSize(types[column]))>0)
+                    {
+                        // original data is a byte array
+                        String str = new String(((byte[])colValue), rowIdx*strlen, strlen);
+                        int idx = str.indexOf('\0');
+                        if (idx > 0) str = str.substring(0, idx);
+                        stringBuffer.append(str.trim());
+                    }
+                    else
+                        stringBuffer.append(Array.get(colValue, rowIdx));
                     for (int i=1; i<orders[column]; i++) {
                         stringBuffer.append(", ");
                         stringBuffer.append(Array.get(colValue, rowIdx+i));
@@ -2058,6 +2072,7 @@ implements TableView, ActionListener
         CompoundDS cds = (CompoundDS)dataset;
         List cdata = (List)cds.getData();
         int orders[] = cds.getSelectedMemberOrders();
+        int types[] = cds.getSelectedMemberTypes();
         int nFields = cdata.size();
         int nSubColumns = table.getColumnCount()/nFields;
         int nRows = table.getRowCount();
@@ -2082,6 +2097,21 @@ implements TableView, ActionListener
         if (Array.get(mdata, 0) instanceof String)
         {
             Array.set(mdata, offset, cellValue);
+            isValueChanged = true;
+            return;
+        } else if (cds.isString(types[column]))
+        {
+            // it is string but not converted, still byte array
+            int strlen = cds.getSize(types[column]);
+            offset *= strlen;
+            byte[] bytes = cellValue.getBytes();
+            byte[] bData = (byte[])mdata;
+            int n = Math.min(strlen, bytes.length);
+            System.arraycopy(bytes, 0, bData, offset, n);
+            offset += n;
+            n = strlen-bytes.length;
+            // space padding
+            for (int i=0; i<n; i++) bData[offset+i] = ' ';
             isValueChanged = true;
             return;
         }

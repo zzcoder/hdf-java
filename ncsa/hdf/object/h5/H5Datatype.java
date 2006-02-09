@@ -599,5 +599,4 @@ public class H5Datatype extends Datatype
             close(tid);
         }
     }
-
 }
