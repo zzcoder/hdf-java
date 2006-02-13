@@ -147,8 +147,6 @@ implements Serializable, DataFormat
 
         if (thePath!=null && !thePath.endsWith(separator))
             thePath += separator;
-        else if (thePath == null)
-            thePath = separator;
 
         this.name = theName;
         this.path = thePath;
