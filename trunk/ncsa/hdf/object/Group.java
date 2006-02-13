@@ -27,11 +27,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public abstract class Group extends HObject
 {
     /**
-     * The parent of this group.
-     */
-    private final Group parent;
-
-    /**
      * The list of members (in memory) of this group.
      */
     private List memberList;
@@ -160,14 +155,6 @@ public abstract class Group extends HObject
     public final boolean isRoot()
     {
         return (parent==null);
-    }
-
-    /**
-     * Returns the parent group.
-     */
-    public final Group getParent()
-    {
-        return parent;
     }
 
     /**

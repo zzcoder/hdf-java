@@ -567,7 +567,8 @@ public class H5ScalarDS extends ScalarDS
                 // try to find out if the image type
                 aid = H5.H5Aopen_name(did, "CLASS");
                 atid = H5.H5Aget_type(aid);
-                byte[] attrValue = new byte[6];
+                int size = H5.H5Tget_size(atid);
+                byte[] attrValue = new byte[size];
                 H5.H5Aread(aid, atid, attrValue);
                 String strValue = new String(attrValue).trim();
                 isImage = strValue.equalsIgnoreCase("IMAGE");
@@ -592,7 +593,8 @@ public class H5ScalarDS extends ScalarDS
                 // try to find out if the image type
                 aid = H5.H5Aopen_name(did, "IMAGE_SUBCLASS");
                 atid = H5.H5Aget_type(aid);
-                byte[] attrValue = new byte[16];
+                int size = H5.H5Tget_size(atid);
+                byte[] attrValue = new byte[size];
                 H5.H5Aread(aid, atid, attrValue);
                 String strValue = new String(attrValue).trim();
                 if (strValue.equalsIgnoreCase("IMAGE_INDEXED"))
@@ -609,7 +611,8 @@ public class H5ScalarDS extends ScalarDS
                 // try to find out interlace mode
                 aid = H5.H5Aopen_name(did, "INTERLACE_MODE");
                 atid = H5.H5Aget_type(aid);
-                byte[] attrValue = new byte[16];
+                int size = H5.H5Tget_size(atid);
+                byte[] attrValue = new byte[size];
                 H5.H5Aread(aid, atid, attrValue);
                 String strValue = new String(attrValue).trim();
                 if (strValue.equalsIgnoreCase("INTERLACE_PLANE"))
