@@ -74,6 +74,14 @@ implements Serializable, DataFormat
      */
     private String path;
 
+    /** The full name of a data object. It is "name + path" */
+    private String fullName;
+
+    /**
+     * The parent of this group.
+     */
+    protected Group parent;
+
     /**
      * array of long integer storing unique identifier for each HDF object.
      * <p>
@@ -118,6 +126,7 @@ implements Serializable, DataFormat
     public HObject(FileFormat theFileFormat, String theName, String thePath, long[] oid)
     {
         this.fileFormat = theFileFormat;
+        this.oid = oid;
 
         if (fileFormat != null) {
             this.fid = fileFormat.getFID();
@@ -138,11 +147,12 @@ implements Serializable, DataFormat
 
         if (thePath!=null && !thePath.endsWith(separator))
             thePath += separator;
-
-        this.path = thePath;
-        this.oid = oid;
+        else if (thePath == null)
+            thePath = separator;
 
         this.name = theName;
+        this.path = thePath;
+        this.fullName = thePath + theName;
     }
 
     // implementing FileFormat
@@ -157,6 +167,14 @@ implements Serializable, DataFormat
     public final String getName()
     {
         return name;
+    }
+
+    /**
+     * Returns the full name of this object.
+     */
+    public final String getFullName()
+    {
+        return fullName;
     }
 
     /**
@@ -258,6 +276,22 @@ implements Serializable, DataFormat
             return null;
 
         return (long[]) oid.clone();
+    }
+
+    /**
+     * Returns the parent group.
+     */
+    public final Group getParent()
+    {
+        return parent;
+    }
+
+    /**
+     * Sets the parent group.
+     */
+    public final void setParent(Group p)
+    {
+        parent = p;
     }
 
     /**
