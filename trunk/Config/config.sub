@@ -641,6 +641,11 @@ case $basic_machine in
         x86_64-pc)
 	       basic_machine=x86_64-pc
                ;;
+# Added for the case of a 64-bit IA architecture machine
+# -- Peter Cao 2006.03.02
+        ia64-pc)
+	       basic_machine=ia64-pc
+               ;;
 	*)
 		echo Invalid configuration \`$1\': machine \`$basic_machine\' not recognized 1>&2
 		exit 1

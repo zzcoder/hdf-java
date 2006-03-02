@@ -119,6 +119,13 @@ LLEXT="a";  # the extension for the HDF and other libraries to link to
 JSLEXT="so";
 COPT="-shared -Dx86_64 -fPIC" ; 
 ;;
+ia64-pc-linux*) LD=$CC; LDOPT=-shared; SLEXT="so";
+TARGETLIB="linux"
+SLEXT="so";
+LLEXT="a";  # the extension for the HDF and other libraries to link to
+JSLEXT="so";
+COPT="-shared -Dia64 -fPIC" ; 
+;;
 *-pc-linux*) LD=$CC; LDOPT=-shared; SLEXT="so";
 TARGETLIB="linux"
 SLEXT="so";
@@ -704,6 +711,14 @@ SLEXT="so";
 LLEXT="a";  # the extension for the HDF and other libraries to link to
 JSLEXT="so";
 COPT="-shared -Dx86_64 -fPIC" ;
+JAVAINC2=$JAVAINC/linux;
+JAVATARG=linux;
+;;
+ia64-pc-linux*) LD=$CC; LDOPT=-shared;
+SLEXT="so";
+LLEXT="a";  # the extension for the HDF and other libraries to link to
+JSLEXT="so";
+COPT="-shared -Dia64 -fPIC" ;
 JAVAINC2=$JAVAINC/linux;
 JAVATARG=linux;
 ;;
