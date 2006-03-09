@@ -31,6 +31,9 @@ public abstract class Group extends HObject
      */
     private List memberList;
 
+    /** The parent group where this objected is loacted. */
+    protected Group parent;
+
     /**
      * Total number of members of this group in file.
      */
@@ -148,6 +151,8 @@ public abstract class Group extends HObject
 
         return memberList;
     }
+
+    public final Group getParent() { return parent; }
 
     /**
      * Checks if it is a root group.

@@ -76,6 +76,14 @@ set -x
 #--with-jdkclasses=/System/Library/Frameworks/JavaVM.framework/Classes \
 #--with-javabin=/System/Library/Frameworks/JavaVM.framework/Commands \
 
+# 8 ===================== setting for cobalt (sgi altix ia64-pc-linux)
+#INSTDIR=/u/ncsa/xcao/java/linux
+#JAVAINC=/usr/local/java/j2sdk1.4.2_05/includue
+#JAVALIB=/usr/local/java/j2sdk1.4.2_05/jre/lib
+#HDF5=/u/ncsa/xcao/_o_direct/build
+#SZIP=/usr
+#GZIP=/usr
+#JPEG=/usr
 
 ./configure --prefix=$INSTDIR \
 --with-jdk=$JAVAINC,$JAVALIB \
