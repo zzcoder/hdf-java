@@ -173,6 +173,7 @@ public class HDF5Constants
     final private static int JH5F_CLOSE_STRONG = 2390;
     final private static int JH5F_CLOSE_WEAK = 2400;
     final private static int JH5F_OBJ_ALL = 2410;
+    final private static int JH5F_OBJ_ATTR = 2415;
     final private static int JH5F_OBJ_DATASET = 2420;
     final private static int JH5F_OBJ_DATATYPE = 2430;
     final private static int JH5F_OBJ_FILE = 2440;
@@ -633,6 +634,7 @@ public class HDF5Constants
     final public static int H5F_CLOSE_STRONG = H5.J2C( JH5F_CLOSE_STRONG );
     final public static int H5F_CLOSE_WEAK = H5.J2C( JH5F_CLOSE_WEAK );
     final public static int H5F_OBJ_ALL = H5.J2C( JH5F_OBJ_ALL );
+    final public static int H5F_OBJ_ATTR = H5.J2C( JH5F_OBJ_ATTR );
     final public static int H5F_OBJ_DATASET = H5.J2C( JH5F_OBJ_DATASET );
     final public static int H5F_OBJ_DATATYPE = H5.J2C( JH5F_OBJ_DATATYPE );
     final public static int H5F_OBJ_FILE = H5.J2C( JH5F_OBJ_FILE );

@@ -956,8 +956,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
     jobjectArray objName, jintArray oType, jint n)
 {
     herr_t status;
-    char *gName;
-    char **oName;
+    char *gName=NULL;
+    char **oName=NULL;
     jboolean isCopy;
     jstring str;
     jint *tarr;
@@ -967,36 +967,22 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
         h5nullArgument( env, "H5Gget_obj_info_all:  group_name is NULL");
         return -1;
     }
-#ifdef __cplusplus
-    gName = (char *)env->GetStringUTFChars(group_name,&isCopy);
-#else
+
     gName = (char *)(*env)->GetStringUTFChars(env,group_name,&isCopy);
-#endif
     if (gName == NULL) {
         h5JNIFatalError( env, "H5Gget_obj_info_all:  group_name not pinned");
         return -1;
     }
+
     if (oType == NULL) {
-#ifdef __cplusplus
-        env->ReleaseStringUTFChars(group_name,gName);
-#else
         (*env)->ReleaseStringUTFChars(env,group_name,gName);
-#endif
         h5nullArgument( env, "H5Gget_obj_info_all:  oType is NULL");
         return -1;
     }
 
-#ifdef __cplusplus
-    tarr = env->GetIntArrayElements(oType,&isCopy);
-#else
     tarr = (*env)->GetIntArrayElements(env,oType,&isCopy);
-#endif
     if (tarr == NULL) {
-#ifdef __cplusplus
-        env->ReleaseStringUTFChars(group_name,gName);
-#else
         (*env)->ReleaseStringUTFChars(env,group_name,gName);
-#endif
         h5JNIFatalError( env, "H5Gget_obj_info_all:  type not pinned");
         return -1;
     }
@@ -1004,51 +990,34 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
     oName = malloc(n * sizeof (*oName));
     status = H5Gget_obj_info_all( (hid_t) loc_id, gName,  oName, (int *)tarr );
 
-#ifdef __cplusplus
-    env->ReleaseStringUTFChars(group_name,gName);
-#else
     (*env)->ReleaseStringUTFChars(env,group_name,gName);
-#endif
-    if (status >= 0) {
-#ifdef __cplusplus
-        env->ReleaseIntArrayElements(oType,tarr,0);
-#else
-        (*env)->ReleaseIntArrayElements(env,oType,tarr,0);
-#endif
-        if (oName != NULL) {
-
-        for (i=0; i<n; i++)
-        {
-            /* may throw OutOfMemoryError */
-#ifdef __cplusplus
-            str = env->NewStringUTF(*(oName+i));
-#else
-            str = (*env)->NewStringUTF(env,*(oName+i));
-#endif
-            if (str == NULL) {
-                /* exception -- fatal JNI error */
-                free(oName);
-                h5JNIFatalError( env, "H5Gget_obj_info_all:  return string not created");
-                return -1;
-            }
-            /*  the SetObjectArrayElement may raise exceptions... */
-#ifdef __cplusplus
-            env->SetObjectArrayElement(objName,i,(jobject)str);
-#else
-            (*env)->SetObjectArrayElement(env,objName,i,(jobject)str);
-#endif
-        } /* for (i=0; i<n; i++)*/
+    if (status < 0) {
+        (*env)->ReleaseIntArrayElements(env,oType,tarr,JNI_ABORT);
+        if (oName) {
+            for (i=0; i<n; i++) {
+                if (*(oName+i))
+                    free (*(oName+i));
+            } /* for (i=0; i<n; i++)*/
             free(oName);
         }
-    } else {
-#ifdef __cplusplus
-        env->ReleaseIntArrayElements(oType,tarr,JNI_ABORT);
-#else
-        (*env)->ReleaseIntArrayElements(env,oType,tarr,JNI_ABORT);
-#endif
         h5libraryError(env);
+    } else {
+        (*env)->ReleaseIntArrayElements(env,oType,tarr,0);
+
+        if (oName) {
+            for (i=0; i<n; i++) {
+                if (*(oName+i)) {
+                    str = (*env)->NewStringUTF(env,*(oName+i));
+                    (*env)->SetObjectArrayElement(env,objName,i,(jobject)str);
+                    free (*(oName+i));
+                }
+            } /* for (i=0; i<n; i++)*/
+            free(oName);
+        }
     }
+
     return (jint)status;
+
 }
 
 herr_t H5Gget_obj_info_all( hid_t loc_id, char *group_name, char **objname, int *type )
@@ -1066,16 +1035,17 @@ herr_t H5Gget_obj_info_all( hid_t loc_id, char *group_name, char **objname, int 
 
 herr_t obj_info_all(hid_t loc_id, const char *name, void *opdata)
 {
-    H5G_stat_t statbuf;
+    int type = -1;
     info_all_t* info = (info_all_t*)opdata;
 
-    if (H5Gget_objinfo(loc_id, name, FALSE, &statbuf) < 0)
+    if ( (type=H5Gget_objtype_by_idx(loc_id, info->count)) <0)
     {
         *(info->type+info->count) = -1;
         *(info->objname+info->count) = NULL;
     } else {
-        *(info->type+info->count) = statbuf.type;
-        *(info->objname+info->count) = (char *)strdup(name);
+        *(info->type+info->count) = type;
+        *(info->objname+info->count) = (char *) malloc(strlen(name)+1);
+        strcpy(*(info->objname+info->count), name);
     }
     info->count++;
 

@@ -196,6 +196,29 @@ public class H5File extends FileFormat
             }
         }
 
+        // close all open objects associated to this file
+        try {
+            int n=0, type=-1, oids[];
+            n = H5.H5Fget_obj_count(fid, HDF5Constants.H5F_OBJ_ALL);
+            if ( n>0) {
+                oids = new int[n];
+                H5.H5Fget_obj_ids(fid, HDF5Constants.H5F_OBJ_ALL, n, oids);
+                for (int i=0; i<n; i++) {
+                    type = H5.H5Iget_type(oids[i]);
+                    if (HDF5Constants.H5I_DATASET == type) {
+                        try { H5.H5Dclose(oids[i]); } catch (Exception ex2) {}
+                    } else if (HDF5Constants.H5I_GROUP == type) {
+                        try { H5.H5Gclose(oids[i]); } catch (Exception ex2) {}
+                    } else if (HDF5Constants.H5I_DATATYPE == type) {
+                        try { H5.H5Tclose(oids[i]); } catch (Exception ex2) {}
+                    } else if (HDF5Constants.H5I_ATTR == type) {
+                        try { H5.H5Aclose(oids[i]); } catch (Exception ex2) {}
+                    }
+                } // for (int i=0; i<n; i++)
+            } // if ( n>0)
+        } catch (Exception ex) {}
+
+/*
         // close all open datasets
         try {
             int n = H5.H5Fget_obj_count(fid, HDF5Constants.H5F_OBJ_DATASET);
@@ -215,7 +238,7 @@ public class H5File extends FileFormat
                 try { H5.H5Gclose(ids[i]); } catch (Exception ex2) {}
             }
         } catch (Exception ex) {}
-
+*/
 
         try { H5.H5Fflush(fid, HDF5Constants.H5F_SCOPE_GLOBAL); } catch (Exception ex) {}
         try { H5.H5Fclose(fid); } catch (Exception ex) {}
@@ -623,6 +646,9 @@ public class H5File extends FileFormat
             }
         }
 
+        try { srcGroup.close(srcgid); } catch (Exception ex) {}
+        try { H5.H5Gclose(dstgid); } catch (Exception ex) {}
+
         return theNode;
     }
 
@@ -915,10 +941,10 @@ public class H5File extends FileFormat
             nelems = (int)nmembers[0];
         } catch (HDF5Exception ex) {
             nelems = -1;
-            gid = -1;
         }
 
         if (nelems <= 0 ) {
+            pgroup.close(gid);
             return;
         }
 
@@ -1450,7 +1476,6 @@ public class H5File extends FileFormat
                 nelems = (int)nmembers[0];
             } catch (HDF5Exception ex) {
                 nelems = -1;
-                gid = -1;
             }
 
             int[] oType = new int[1];

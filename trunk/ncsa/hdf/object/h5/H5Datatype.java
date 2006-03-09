@@ -31,6 +31,8 @@ public class H5Datatype extends Datatype
      */
      private List attributeList;
 
+     private boolean isNamed=false;
+
     /**
      * Constructs a named H5Datatype object with specific name and path.
      * <p>
@@ -52,6 +54,8 @@ public class H5Datatype extends Datatype
             nativeID = H5.H5Topen(getFID(), getPath()+getName());
             fromNative(nativeID);
             hasAttribute = (H5.H5Aget_num_attrs(nativeID)>0);
+            isNamed = true;
+            H5.H5Tclose(nativeID);
         } catch (HDF5Exception ex) {}
     }
 
@@ -466,9 +470,12 @@ public class H5Datatype extends Datatype
     // implementing Datatype
     public int toNative()
     {
-
         if (nativeID >=0 )
             return nativeID;
+        else if (isNamed) {
+            try {nativeID = H5.H5Topen(getFID(), getPath()+getName());}
+            catch (Exception ex) {nativeID = -1; }
+        }
 
         int tid = -1;
 

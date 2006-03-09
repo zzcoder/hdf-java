@@ -78,11 +78,6 @@ implements Serializable, DataFormat
     private String fullName;
 
     /**
-     * The parent of this group.
-     */
-    protected Group parent;
-
-    /**
      * array of long integer storing unique identifier for each HDF object.
      * <p>
      * HDF4 objects are uniquely identified by the (tag_id, ref_id) pairs.
@@ -274,22 +269,6 @@ implements Serializable, DataFormat
             return null;
 
         return (long[]) oid.clone();
-    }
-
-    /**
-     * Returns the parent group.
-     */
-    public final Group getParent()
-    {
-        return parent;
-    }
-
-    /**
-     * Sets the parent group.
-     */
-    public final void setParent(Group p)
-    {
-        parent = p;
     }
 
     /**
