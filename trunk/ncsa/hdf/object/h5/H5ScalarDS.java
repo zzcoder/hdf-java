@@ -94,6 +94,7 @@ public class H5ScalarDS extends ScalarDS
 
      private boolean isVLEN = false;
 
+
     public H5ScalarDS(FileFormat fileFormat, String name, String path)
     {
         this(fileFormat, name, path, null);
@@ -430,16 +431,25 @@ public class H5ScalarDS extends ScalarDS
             int org_tid = H5.H5Dget_type(did);
             tid = H5.H5Tget_native_type(org_tid);
             try { H5.H5Tclose(org_tid); } catch (Exception ex) {}
-            if ( isUnsigned && unsignedConverted) tmpData = convertToUnsignedC(buf);
-            else if (isText) tmpData = stringToByte((String[])buf, H5.H5Tget_size(tid));
-            else tmpData = buf;
+
+            if ( isUnsigned && unsignedConverted)
+            {
+                tmpData = convertToUnsignedC(buf);
+            }
+            else if (isText)
+            {
+                tmpData = stringToByte((String[])buf, H5.H5Tget_size(tid));
+            }
+            else
+                tmpData = buf;
+
             H5.H5Dwrite(did, tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, tmpData);
         } finally {
             tmpData = null;
             if (fspace > 0) try { H5.H5Sclose(fspace); } catch (Exception ex) {}
             if (mspace > 0) try { H5.H5Sclose(mspace); } catch (Exception ex) {}
             try { H5.H5Tclose(tid); } catch (Exception ex) {}
-            try { H5.H5Dclose(did); } catch (Exception ex) {}
+            close(did);
         }
     }
 
@@ -517,6 +527,7 @@ public class H5ScalarDS extends ScalarDS
     // Implementing HObject
     public void close(int did)
     {
+        try { H5.H5Fflush(did, HDF5Constants.H5F_SCOPE_LOCAL); } catch (Exception ex) {}
         try { H5.H5Dclose(did); }
         catch (HDF5Exception ex) {;}
     }
