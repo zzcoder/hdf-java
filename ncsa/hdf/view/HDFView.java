@@ -273,6 +273,7 @@ public class HDFView extends JFrame
         String className = (String)treeViews.get(0);
         // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
         Class theClass = null;
+
         try { theClass = Class.forName(className); }
         catch (Exception ex)
         {
@@ -1812,79 +1813,6 @@ public class HDFView extends JFrame
         statusArea.setText(message.toString());
     }
 
-    /**
-     * The starting point of this application.
-     * <pre>
-     * Usage: java(w)
-     *        -Dncsa.hdf.hdf5lib.H5.hdf5lib="your HDF5 library path"
-     *        -Dncsa.hdf.hdflib.HDFLibrary.hdflib="your HDF4 library path"
-     *        -root "the directory where the HDFView is installed"
-     *        [filename] "the file to open"
-     * </pre>
-     */
-    public static void main( String args[] )
-    {
-        String rootDir = System.getProperty("user.dir");
-/*
-try {
-Group g = (Group)FileFormat.getHObject("e:\\hdf-files\\test.h5#//");
-System.out.println(g);
-if (g != null) {
-    List m = g.getMemberList();
-    Iterator it = m.iterator();
-    while (it.hasNext())
-        System.out.println(it.next());
-}
-} catch (Exception ex) {System.out.println(ex);}
-*/
-
-        boolean backup = false;
-        File tmpFile = null;
-        int i = 0;
-        for ( i = 0; i < args.length; i++)
-        {
-            if ("-root".equalsIgnoreCase(args[i]))
-            {
-                try {
-                    tmpFile = new File(args[++i]);
-                    backup = false;
-                    if (tmpFile.isDirectory())
-                    {
-                        rootDir = tmpFile.getPath();
-                    }
-                    else if (tmpFile.isFile())
-                    {
-                        rootDir = tmpFile.getParent();
-                    }
-                } catch (Exception e) {}
-            } else if ("-java.vm.version".equalsIgnoreCase(args[i]))
-            {
-                String info = "Compiled at "+JAVA_COMPILER+
-                    "\nRunning at "+System.getProperty("java.vm.version");
-                JOptionPane.showMessageDialog(
-                new JFrame(),
-                info,
-                "HDFView",
-                JOptionPane.PLAIN_MESSAGE,
-                ViewProperties.getLargeHdfIcon());
-                System.exit(0);
-            } else {
-                backup = true;
-            }
-        }
-        if (backup)
-            i--;
-
-        String filename = "";
-        if (i>=0 && i < args.length && args[i] != null) {
-            filename = args[i];
-        }
-
-        HDFView frame = new HDFView(rootDir, filename);
-        frame.pack();
-        frame.setVisible(true);
-     }
-
      /** choose local file */
      private String openLocalFile()
      {
@@ -2005,5 +1933,79 @@ if (g != null) {
 
         srbFileDialog.show();
      }
+
+    /**
+     * The starting point of this application.
+     * <pre>
+     * Usage: java(w)
+     *        -Dncsa.hdf.hdf5lib.H5.hdf5lib="your HDF5 library path"
+     *        -Dncsa.hdf.hdflib.HDFLibrary.hdflib="your HDF4 library path"
+     *        -root "the directory where the HDFView is installed"
+     *        [filename] "the file to open"
+     * </pre>
+     */
+    public static void main( String args[] )
+    {
+        String rootDir = System.getProperty("user.dir");
+
+        /*
+        try {
+            Group g = (Group)FileFormat.getHObject("e:\\hdf-files\\hdf5_test.h5#//");
+            System.out.println(g);
+            if (g != null) {
+            List m = g.getMemberList();
+            Iterator it = m.iterator();
+            while (it.hasNext())
+                System.out.println(it.next());
+            }
+        } catch (Exception ex) {System.out.println(ex);}
+        */
+
+        boolean backup = false;
+        File tmpFile = null;
+        int i = 0;
+        for ( i = 0; i < args.length; i++)
+        {
+            if ("-root".equalsIgnoreCase(args[i]))
+            {
+                try {
+                    tmpFile = new File(args[++i]);
+                    backup = false;
+                    if (tmpFile.isDirectory())
+                    {
+                        rootDir = tmpFile.getPath();
+                    }
+                    else if (tmpFile.isFile())
+                    {
+                        rootDir = tmpFile.getParent();
+                    }
+                } catch (Exception e) {}
+            } else if ("-java.vm.version".equalsIgnoreCase(args[i]))
+            {
+                String info = "Compiled at "+JAVA_COMPILER+
+                    "\nRunning at "+System.getProperty("java.vm.version");
+                JOptionPane.showMessageDialog(
+                new JFrame(),
+                info,
+                "HDFView",
+                JOptionPane.PLAIN_MESSAGE,
+                ViewProperties.getLargeHdfIcon());
+                System.exit(0);
+            } else {
+                backup = true;
+            }
+        }
+        if (backup)
+            i--;
+
+        String filename = "";
+        if (i>=0 && i < args.length && args[i] != null) {
+            filename = args[i];
+        }
+
+        HDFView frame = new HDFView(rootDir, filename);
+        frame.pack();
+        frame.setVisible(true);
+    }
 
 }

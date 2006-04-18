@@ -134,14 +134,22 @@ implements Serializable, DataFormat
         // file name is packed in the full path
         if (theName == null && thePath !=null)
         {
-            if (thePath.endsWith(HObject.separator))
-                thePath = thePath.substring(0, thePath.length()-1);
-            theName = thePath.substring(thePath.lastIndexOf(HObject.separator)+1);
-            thePath = thePath.substring(0, thePath.lastIndexOf(HObject.separator));
+            if (thePath.equals(separator)){
+                theName = separator;
+                thePath = null;
+            } else {
+                if (thePath.endsWith(HObject.separator))
+                    thePath = thePath.substring(0, thePath.length()-1);
+                theName = thePath.substring(thePath.lastIndexOf(HObject.separator)+1);
+                thePath = thePath.substring(0, thePath.lastIndexOf(HObject.separator));
+            }
         }
 
-        if (thePath!=null && !thePath.endsWith(separator))
-            thePath += separator;
+        if (thePath!=null) {
+            thePath = thePath.replaceAll("//", "/");
+            if ( !thePath.endsWith(separator))
+                thePath += separator;
+        }
 
         this.name = theName;
         this.path = thePath;

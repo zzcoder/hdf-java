@@ -724,6 +724,7 @@ public class H5CompoundDS extends CompoundDS
     // Implementing HObject
     public void close(int did)
     {
+        try { H5.H5Fflush(did, HDF5Constants.H5F_SCOPE_LOCAL); } catch (Exception ex) {}
         try { H5.H5Dclose(did); }
         catch (HDF5Exception ex) { ; }
     }

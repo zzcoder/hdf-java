@@ -107,11 +107,14 @@ public abstract class Group extends HObject
 
             // find the memberList from the file by check the group path and name
             // group may be created out of the structure tree (H4/5File.loadTree()).
-
             try { theFile.open(); } // load the file structure;
-            catch (Exception ex) {}
+            catch (Exception ex) {;}
 
             DefaultMutableTreeNode root = (DefaultMutableTreeNode)theFile.getRootNode();
+
+            if (root == null)
+                return memberList;
+
             Enumeration emu = root.depthFirstEnumeration();
 
             Group g = null;
@@ -119,20 +122,6 @@ public abstract class Group extends HObject
             while(emu.hasMoreElements())
             {
                 uObj = (HObject)((DefaultMutableTreeNode)emu.nextElement()).getUserObject();
-
-                /* bug in this code reported by Jarom R. Nelson, Lawrence Livermore National
-                if (uObj instanceof Group)
-                {
-                    g = (Group)uObj;
-                    if ((this.isRoot() && g.isRoot()) ||
-                        (g.getPath().equals(thePath) && g.getName().endsWith(theName)))
-                    {
-                        memberList = g.getMemberList();
-                        break;
-                    }
-                }
-                */
-
                 if (uObj instanceof Group)
                 {
                     g = (Group)uObj;
