@@ -77,7 +77,7 @@ set -x
 #--with-javabin=/System/Library/Frameworks/JavaVM.framework/Commands \
 
 # 7 ===================== setting for mir -- AMD 64-bit linux
-#INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/linux64
+#INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/linux64amd
 #JAVAINC=/usr/java/jdk1.5.0_05/include
 #JAVALIB=/usr/java/jdk1.5.0_05/jre/lib
 #HDF4=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib64/linux/hdf4
