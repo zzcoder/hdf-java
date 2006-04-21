@@ -76,6 +76,16 @@ set -x
 #--with-jdkclasses=/System/Library/Frameworks/JavaVM.framework/Classes \
 #--with-javabin=/System/Library/Frameworks/JavaVM.framework/Commands \
 
+# 7 ===================== setting for mir -- AMD 64-bit linux
+#INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/linux64
+#JAVAINC=/usr/java/jdk1.5.0_05/include
+#JAVALIB=/usr/java/jdk1.5.0_05/jre/lib
+#HDF4=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib64/linux/hdf4
+#HDF5=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib64/linux/hdf5
+#SZIP=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib64/linux/szip
+#GZIP=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib64/linux/zlib
+#JPEG=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib64/linux/jpeg
+
 # 8 ===================== setting for cobalt (sgi altix ia64-pc-linux)
 #INSTDIR=/u/ncsa/xcao/java/linux
 #JAVAINC=/usr/local/java/j2sdk1.4.2_05/includue
