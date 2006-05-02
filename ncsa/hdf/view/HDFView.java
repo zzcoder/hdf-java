@@ -475,8 +475,14 @@ public class HDFView extends JFrame
 
         fileMenu.addSeparator();
 
-        item = new JMenuItem( "Save As");
+        item = new JMenuItem( "Save");
         item.setMnemonic(KeyEvent.VK_S);
+        item.addActionListener(this);
+        item.setActionCommand("Save current file");
+        fileMenu.add(item);
+
+        item = new JMenuItem( "Save As");
+        item.setMnemonic(KeyEvent.VK_A);
         item.addActionListener(this);
         item.setActionCommand("Save current file as");
         fileMenu.add(item);
@@ -1093,6 +1099,49 @@ public class HDFView extends JFrame
                     } catch (Exception ex2 ) {}
                 }
                 */
+            }
+            catch (Exception ex) {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(
+                    this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        else if (cmd.equals("Save current file"))
+        {
+            /* save what have been changed in memory into file */
+            try {
+                FileFormat file = treeView.getSelectedFile();
+                List views = getDataViews();
+                Object theView = null;
+                TableView tableView = null;
+                TextView textView = null;
+                FileFormat theFile = null;
+                if (views != null)
+                {
+                    int n = views.size();
+                    for (int i=0; i<n; i++)
+                    {
+                        theView = views.get(i);
+                        if (theView instanceof TableView)
+                        {
+                            tableView = (TableView)theView;
+                            theFile = tableView.getDataObject().getFileFormat();
+                            if (file.equals(theFile))
+                            {
+                                tableView.updateValueInFile();
+                            }
+                        }
+                        else if (theView instanceof TextView)
+                        {
+                            textView = (TextView)theView;
+                            theFile = textView.getDataObject().getFileFormat();
+                            if (file.equals(theFile))
+                            {
+                                textView.updateValueInFile();
+                            }
+                        }
+                    } // for (int i=0; i<n; i++)
+                } // if (views != null)
             }
             catch (Exception ex) {
                 toolkit.beep();

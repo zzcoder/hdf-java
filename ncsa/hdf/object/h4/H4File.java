@@ -642,7 +642,6 @@ public class H4File extends FileFormat
         if (b)
         {
             n = argv[0];
-
             for (int i=0; i<n; i++)
             {
                 // no duplicate object at top level

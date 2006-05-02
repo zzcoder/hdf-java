@@ -233,15 +233,6 @@ implements TextView, ActionListener, KeyListener
         if (!isTextChanged)
             return;
 
-        int op = JOptionPane.showConfirmDialog(this,
-            "\""+ dataset.getName() +"\" has changed.\n"+
-            "you want to save the changes?",
-            getTitle(),
-            JOptionPane.YES_NO_OPTION);
-
-        if (op == JOptionPane.NO_OPTION)
-            return;
-
         for (int i=0; i<text.length; i++)
             text[i] = textAreas[i].getText();
 
@@ -339,7 +330,17 @@ implements TextView, ActionListener, KeyListener
 
     public void dispose()
     {
-        updateValueInFile();
+        if (isTextChanged && !isReadOnly) {
+            int op = JOptionPane.showConfirmDialog(this,
+                    "\""+ dataset.getName() +"\" has changed.\n"+
+                    "Do you want to save the changes?",
+                    getTitle(),
+                    JOptionPane.YES_NO_OPTION);
+
+            if (op == JOptionPane.YES_OPTION)
+                updateValueInFile();
+        }
+
         viewer.removeDataView(this);
 
         super.dispose();
