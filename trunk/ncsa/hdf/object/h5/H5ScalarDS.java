@@ -924,7 +924,9 @@ public class H5ScalarDS extends ScalarDS
             H5.H5Pset_chunk(plist, rank, chunks);
         }
 
-        if (gzip > 0) H5.H5Pset_deflate(plist, gzip);
+        if (gzip > 0) {
+            H5.H5Pset_deflate(plist, gzip);
+        }
         int fid = file.open();
         did = H5.H5Dcreate(fid, fullPath, tid, sid, plist);
 

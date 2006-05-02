@@ -592,7 +592,16 @@ implements TableView, ActionListener
 
     public void dispose()
     {
-        if (isValueChanged) updateValueInFile();
+        if (isValueChanged && !isReadOnly) {
+            int op = JOptionPane.showConfirmDialog(this,
+                    "\""+ dataset.getName() +"\" has changed.\n"+
+                    "Do you want to save the changes?",
+                    getTitle(),
+                    JOptionPane.YES_NO_OPTION);
+
+            if (op == JOptionPane.YES_OPTION)
+                updateValueInFile();
+        }
 
         if (dataset instanceof ScalarDS)
         {
@@ -1678,15 +1687,6 @@ implements TableView, ActionListener
 
         //if (!(dataset instanceof ScalarDS) || !isValueChanged)
         if (!isValueChanged)
-            return;
-
-        int op = JOptionPane.showConfirmDialog(this,
-            "\""+ dataset.getName() +"\" has changed.\n"+
-            "Do you want to save the changes?",
-            getTitle(),
-            JOptionPane.YES_NO_OPTION);
-
-        if (op == JOptionPane.NO_OPTION)
             return;
 
         try { dataset.write(); }
