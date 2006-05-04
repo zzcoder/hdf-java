@@ -22,11 +22,13 @@ set -x
 #JPEG=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/aix/jpeg
 #export CC=/usr/vacpp/bin/xlc
 
-# 3 ===================== setting for shanti (solaris)
+# 3 ===================== setting for shanti (solaris 32bit)
 #   must use short path, otherwise, expr error
 #INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/solaris
 #JAVAINC=/usr/j2se/include
 #JAVALIB=/usr/j2se/jre/lib
+#JAVAINC=/afs/.ncsa.uiuc.edu/projects/hdf/packages/java_1.4.1_01/sparc/j2sdk1.4.1_01/include
+#JAVALIB=/afs/.ncsa.uiuc.edu/projects/hdf/packages/java_1.4.1_01/sparc/j2sdk1.4.1_01/lib
 #HDF4=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/solaris/hdf4
 #HDF5=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/solaris/hdf5
 #SZIP=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib/solaris/szip
@@ -94,6 +96,22 @@ set -x
 #SZIP=/usr
 #GZIP=/usr
 #JPEG=/usr
+
+# 9 ===================== setting for shanti (solaris 64bit)
+#   must use short path, otherwise, expr error
+#INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/solaris64
+#JAVAINC=/usr/jdk1.5.0_06/include
+#JAVALIB=/usr/jdk1.5.0_06/lib
+#JAVABIN=/usr/jdk1.5.0_06/bin/sparcv9
+#HDF4=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib64/solaris/hdf4
+#HDF5=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib64/solaris/hdf5
+#SZIP=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib64/solaris/szip
+#GZIP=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib64/solaris/zlib
+#JPEG=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib64/solaris/jpeg
+#HDF4=/tmp/solaris/hdf4;HDF5=/tmp/solaris/hdf5;SZIP=/tmp/solaris/szip;GZIP=/tmp/solaris/zlib;JPEG=/tmp/solaris/jpeg
+#CC="/opt/SUNWspro/bin/cc -KPIC -xarch=v9"
+#export CC
+#--with-javabin=$JAVABIN \
 
 ./configure --prefix=$INSTDIR \
 --with-jdk=$JAVAINC,$JAVALIB \
