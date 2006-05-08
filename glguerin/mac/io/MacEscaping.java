@@ -317,8 +317,7 @@ public class MacEscaping
     ** Returns a UniCode String of 4 chars length, holding the expression
     ** of the macOSType as converted from MacRoman-bytes to UniCode.
     */
-    public static String
-    getOSTypeString( int macOSType )
+    public static String getOSTypeString( int macOSType )
     {
         byte[] bytes = new byte[ 4 ];
         bytes[ 3 ] = (byte) macOSType;
@@ -326,15 +325,9 @@ public class MacEscaping
         bytes[ 1 ] = (byte) (macOSType >> 16);
         bytes[ 0 ] = (byte) (macOSType >> 24);
 
-        try
-        {  return ( new String( bytes, "MacRoman" ) );  }
-        catch ( UnsupportedEncodingException why )
-        {  /* FALL-THRU */ }
+        try {  return ( new String( bytes, "MacRoman" ) );  }
+        catch ( UnsupportedEncodingException why ) {  /* FALL-THRU */ }
 
-        // Return a String with the bytes kept as-is in low half of zero-extended chars.
-        // This will probably be wrong, but by now, there are few options left.
-        return ( new String( bytes, 0 ) );
+        return ( new String( bytes) );
     }
-
-
 }
