@@ -153,7 +153,17 @@ implements Serializable, DataFormat
 
         this.name = theName;
         this.path = thePath;
-        this.fullName = thePath + theName;
+
+        if (thePath != null)
+            this.fullName = thePath + theName;
+        else {
+            if (theName == null)
+                this.fullName = "/";
+            else if (theName.startsWith("/"))
+                this.fullName = theName;
+            else
+                this.fullName = "/"+theName;
+        }
     }
 
     // implementing FileFormat
