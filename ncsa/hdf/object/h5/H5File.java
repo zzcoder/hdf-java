@@ -1515,8 +1515,12 @@ public class H5File extends FileFormat
         }
         else {
             parentPath = pGroup.getFullName();
-            thisFullName = parentPath +"/" + name;
+            if (parentPath == null || parentPath.equals("/"))
+                thisFullName = "/" + name;
+            else
+                thisFullName = parentPath +"/" + name;
         }
+
         // get rid of any extra "/"
         if (parentPath != null)
             parentPath = parentPath.replaceAll("//", "/");
