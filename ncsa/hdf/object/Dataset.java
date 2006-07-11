@@ -173,6 +173,8 @@ public abstract class Dataset extends HObject
     /** names of dimensions */
     protected String[] dimNames;
 
+    protected boolean convertByteToString = true;
+
     public Dataset(FileFormat fileFormat, String name, String path)
     {
         this(fileFormat, name, path, null);
@@ -293,6 +295,16 @@ public abstract class Dataset extends HObject
         }
 
         return selectedStride;
+    }
+
+    public final void setConvertByteToString(boolean b)
+    {
+        convertByteToString = b;
+    }
+
+    public final boolean getConvertByteToString()
+    {
+        return convertByteToString;
     }
 
     /** Loads and returns the data value from file. */

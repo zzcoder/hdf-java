@@ -371,7 +371,7 @@ public class H5ScalarDS extends ScalarDS
                 else
                 {
                     H5.H5Dread( did, nativeDatatype, mspace, fspace, HDF5Constants.H5P_DEFAULT, theData);
-                    if (isText)
+                    if (isText && convertByteToString)
                         theData = byteToString((byte[])theData, H5.H5Tget_size(nativeDatatype));
                     else if (H5.H5Tequal(nativeDatatype, HDF5Constants.H5T_STD_REF_OBJ))
                         theData = HDFNativeData.byteToLong((byte[])theData);
@@ -436,7 +436,7 @@ public class H5ScalarDS extends ScalarDS
             {
                 tmpData = convertToUnsignedC(buf);
             }
-            else if (isText)
+            else if (isText && convertByteToString)
             {
                 tmpData = stringToByte((String[])buf, H5.H5Tget_size(tid));
             }

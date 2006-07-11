@@ -404,8 +404,8 @@ public class H5CompoundDS extends CompoundDS
 
                 if (!(isVLEN || is_variable_str || isIndexTable))
                 {
-                    if (member_class == HDF5Constants.H5T_STRING) {
-                        ;//member_data = byteToString((byte[])member_data, member_size);
+                    if (member_class == HDF5Constants.H5T_STRING && convertByteToString) {
+                        member_data = byteToString((byte[])member_data, member_size);
                     }
                     else if (member_class == HDF5Constants.H5T_REFERENCE) {
                         member_data = HDFNativeData.byteToLong((byte[])member_data);
