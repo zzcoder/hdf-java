@@ -343,6 +343,43 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Freopen
  * Method:    H5Fget_obj_ids(hid_t file_id, unsigned int types, int maxObjs, hid_t *obj_id_list )
  * Signature: (I[J[J)I
  */
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Fget_obj_ids(hid_t file_id, unsigned int types, int maxObjs, hid_t *obj_id_list )
+ * Signature: (I[J[J)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1obj_1ids
+  (JNIEnv *env, jclass clss, jint file_id, jint types, jint obj_count, jintArray obj_id_list)
+{
+    herr_t status=-1;
+    jint *obj_id_listP;
+    jboolean isCopy;
+    int i;
+
+    if ( obj_id_list == NULL ) {
+        h5nullArgument( env, "H5Fget_obj_ids:  obj_id_list is NULL");
+        return -1;
+    }
+
+    obj_id_listP = (*env)->GetIntArrayElements(env,obj_id_list,&isCopy);
+    if (obj_id_listP == NULL) {
+        h5JNIFatalError( env, "H5Fget_obj_ids:  obj_id_list not pinned");
+        return -1;
+    }
+
+    status = H5Fget_obj_ids((hid_t)file_id, (unsigned int)types, (int)obj_count, (hid_t*)obj_id_listP);
+
+    if (status < 0) {
+        (*env)->ReleaseIntArrayElements(env,obj_id_list,obj_id_listP,JNI_ABORT);
+        h5libraryError(env);
+    } else  {
+        (*env)->ReleaseIntArrayElements(env,obj_id_list,obj_id_listP,0);
+    }
+
+    return (jint)status;
+}
+
+/* bug on 64-bit machines 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1obj_1ids
   (JNIEnv *env, jclass clss, jint file_id, jint types, jint maxObjs, jintArray obj_id_list)
 {
@@ -412,6 +449,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1obj_1ids
 
     return (jint)status;
 }
+*/
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
