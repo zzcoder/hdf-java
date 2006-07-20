@@ -1182,6 +1182,10 @@ implements TableView, ActionListener
         int rank = d.getRank();
         if (rank <=0 ) d.init();
 
+        // use lazy convert for large number of strings
+        if (d.getHeight() > 10000)
+            d.setConvertByteToString(false);
+
         dataValue = null;
         try { dataValue = d.getData(); }
         catch (Exception ex)
@@ -1266,7 +1270,8 @@ implements TableView, ActionListener
 
                     if (orders[column] <= 1 &&
                         compound.isString(types[column]) &&
-                        (strlen = compound.getSize(types[column]))>0)
+                        (strlen = compound.getSize(types[column]))>0 &&
+                        !compound.getConvertByteToString())
                     {
                         // original data is a byte array
                         String str = new String(((byte[])colValue), rowIdx*strlen, strlen);

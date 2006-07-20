@@ -324,10 +324,10 @@ public class H5ScalarDS extends ScalarDS
         // check is fill value is defined
         try {
             int plist = H5.H5Dget_create_plist(did);
-            int[] fillValue = {0};
-            H5.H5Pfill_value_defined(plist, fillValue);
+            int[] fillStatus = {0};
+            H5.H5Pfill_value_defined(plist, fillStatus);
             try { H5.H5Pclose(plist); } catch (Exception ex2) {}
-            if (fillValue[0] == HDF5Constants.H5D_FILL_VALUE_UNDEFINED)
+            if (fillStatus[0] == HDF5Constants.H5D_FILL_VALUE_UNDEFINED)
             {
                 throw new HDF5Exception("Fill value is not defined.");
             }
@@ -537,7 +537,7 @@ public class H5ScalarDS extends ScalarDS
      */
     public void init()
     {
-        int did=-1, sid=-1, tid=-1;
+        int did=-1, sid=-1, tid=-1, pid=-1;
 
         did = open();
         paletteRefs = getPaletteRefs(did);
@@ -648,7 +648,7 @@ public class H5ScalarDS extends ScalarDS
 
         try {
             // get the compresson and chunk information
-            int pid = H5.H5Dget_create_plist(did);
+            pid = H5.H5Dget_create_plist(did);
             if (H5.H5Pget_layout(pid) == HDF5Constants.H5D_CHUNKED)
             {
                 if (rank <= 0) init();
@@ -656,6 +656,18 @@ public class H5ScalarDS extends ScalarDS
                 H5.H5Pget_chunk(pid, rank, chunkSize);
             }
             else chunkSize = null;
+
+            /* see if fill value is defined */
+            int[] fillStatus = {0};
+            if (H5.H5Pfill_value_defined(pid, fillStatus)>=0)
+            {
+                if (fillStatus[0] == HDF5Constants.H5D_FILL_VALUE_USER_DEFINED)
+                {
+                    fillValue = H5Datatype.allocateArray(nativeDatatype, 1);
+                    try { H5.H5Pget_fill_value(pid, nativeDatatype, fillValue ); }
+                    catch (Exception ex2) { fillValue = null; }
+                }
+            }
 
             int[] flags = {0, 0};
             int[] cd_nelmts = {2};
@@ -709,7 +721,7 @@ public class H5ScalarDS extends ScalarDS
             } catch (Exception ex) { ;}
 
             if (pid >0) try {H5.H5Pclose(pid); } catch(Exception ex){}
-        } catch (Exception ex) {}
+        } catch (Exception ex) {if (pid >0) try {H5.H5Pclose(pid); } catch(Exception ex2){}}
 
         close(did);
 

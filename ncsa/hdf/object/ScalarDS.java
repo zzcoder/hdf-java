@@ -140,6 +140,9 @@ public abstract class ScalarDS extends Dataset
      */
     protected boolean unsignedConverted;
 
+    /* fill value */
+    protected Object fillValue = null;
+
     public ScalarDS(FileFormat fileFormat, String name, String path)
     {
         this(fileFormat, name, path, null);
@@ -296,5 +299,11 @@ public abstract class ScalarDS extends Dataset
     {
         return imageDataRange;
     }
+
+    public final Object getFillValue()
+    {
+        return fillValue;
+    }
+
 
 }
