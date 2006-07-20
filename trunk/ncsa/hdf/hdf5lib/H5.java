@@ -982,13 +982,6 @@ public class H5 {
             theArray = null;
         }
 
-        HDFArray theArray = new HDFArray(obj);
-        byte[] buf = theArray.byteify();
-
-        /* will raise exception on error */
-        status = H5Dwrite(dataset_id, mem_type_id,
-            mem_space_id, file_space_id, xfer_plist_id, buf);
-
         return status;
     }
 
