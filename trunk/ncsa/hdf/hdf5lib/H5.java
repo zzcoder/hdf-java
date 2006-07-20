@@ -936,16 +936,59 @@ public class H5 {
         HDF5LibraryException,
         NullPointerException
     {
+        int status = -1;
+        boolean is1D = false;
+
+        Class dataClass = obj.getClass();
+         if (!dataClass.isArray())
+             throw (new HDF5JavaException("H5Dread: data is not an array"));
+
+        String cname = dataClass.getName();
+        is1D = (cname.lastIndexOf('[') ==cname.indexOf('['));
+        char dname = cname.charAt(cname.lastIndexOf("[")+1);
+
+        if (is1D && dname == 'B') {
+            status = H5Dwrite(dataset_id, mem_type_id,mem_space_id, file_space_id,
+                xfer_plist_id, (byte[])obj);
+        }
+        else if (is1D && dname == 'S') {
+            status = H5Dwrite_short(dataset_id, mem_type_id,mem_space_id, file_space_id,
+                xfer_plist_id, (short[])obj);
+        }
+        else if (is1D && dname == 'I') {
+            status = H5Dwrite_int(dataset_id, mem_type_id,mem_space_id, file_space_id,
+                xfer_plist_id, (int[])obj);
+        }
+        else if (is1D && dname == 'J') {
+            status = H5Dwrite_long(dataset_id, mem_type_id,mem_space_id, file_space_id,
+                xfer_plist_id, (long[])obj);
+        }
+        else if (is1D && dname == 'F') {
+            status = H5Dwrite_float(dataset_id, mem_type_id,mem_space_id, file_space_id,
+                xfer_plist_id, (float[])obj);
+        }
+        else if (is1D && dname == 'D') {
+            status = H5Dwrite_double(dataset_id, mem_type_id,mem_space_id, file_space_id,
+                xfer_plist_id, (double[])obj);
+        } else {
+            HDFArray theArray = new HDFArray(obj);
+            byte[] buf = theArray.byteify();
+
+            /* will raise exception on error */
+            status = H5Dwrite(dataset_id, mem_type_id, mem_space_id, file_space_id, xfer_plist_id, buf);
+
+            // clean up these:  assign 'null' as hint to gc() */
+            buf = null;
+            theArray = null;
+        }
+
         HDFArray theArray = new HDFArray(obj);
         byte[] buf = theArray.byteify();
 
         /* will raise exception on error */
-        int status = H5Dwrite(dataset_id, mem_type_id,
+        status = H5Dwrite(dataset_id, mem_type_id,
             mem_space_id, file_space_id, xfer_plist_id, buf);
 
-        /* clean up these:  assign 'null' as hint to gc() */
-        buf = null;
-        theArray = null;
         return status;
     }
 
@@ -4347,6 +4390,31 @@ public class H5 {
     public synchronized static native int H5Dread_string(int dataset_id, int mem_type_id,
         int mem_space_id, int file_space_id, int xfer_plist_id,
         String[] buf)
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Dwrite_short(int dataset_id, int mem_type_id,
+        int mem_space_id, int file_space_id, int xfer_plist_id,
+        short[] buf)
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Dwrite_int(int dataset_id, int mem_type_id,
+        int mem_space_id, int file_space_id, int xfer_plist_id,
+        int[] buf)
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Dwrite_long(int dataset_id, int mem_type_id,
+        int mem_space_id, int file_space_id, int xfer_plist_id,
+        long[] buf)
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Dwrite_float(int dataset_id, int mem_type_id,
+        int mem_space_id, int file_space_id, int xfer_plist_id,
+        float[] buf)
+        throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Dwrite_double(int dataset_id, int mem_type_id,
+        int mem_space_id, int file_space_id, int xfer_plist_id,
+        double[] buf)
         throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pset_fclose_degree(int plist, int degree)

@@ -474,7 +474,15 @@ public final class Tools
      */
     public static byte[] getBytes(Object rawData, double[] minmax)
     {
-        return Tools.getBytes(rawData, minmax, -1, -1, false);
+        return Tools.getBytes(rawData, minmax, -1, -1, false, null);
+    }
+    public static byte[] getBytes(Object rawData, double[] minmax, int w, int h, boolean isTransposed)
+    {
+        return Tools.getBytes(rawData, minmax, w, h, isTransposed, null);
+    }
+    public static byte[] getBytes(Object rawData, double[] minmax, Object fillValue)
+    {
+        return Tools.getBytes(rawData, minmax, -1, -1, false, fillValue);
     }
 
     /**
@@ -486,7 +494,8 @@ public final class Tools
      *  @param isTransposed if the data is transposeed
      *  @return the byte array of pixel data.
      */
-    public static byte[] getBytes(Object rawData, double[] minmax, int w, int h, boolean isTransposed)
+    public static byte[] getBytes(Object rawData, double[] minmax, int w, int h,
+           boolean isTransposed, Object fillValue)
     {
         byte[] byteData = null;
 
@@ -539,6 +548,18 @@ public final class Tools
             case 'S':
                 short[] s = (short[])rawData;
 
+                // set fill value to zero
+                if (fillValue != null)
+                {
+                    short fvalue = ((short[])fillValue)[0];
+                    if (fvalue != 0) {
+                        for (int i=0; i<size; i++) {
+                            if (fvalue == s[i])
+                                s[i] = 0;
+                        }
+                    }
+                }
+
                 if (minmaxFound)
                 {
                     min = minmax[0];
@@ -574,6 +595,18 @@ public final class Tools
 
             case 'I':
                 int[] ia = (int[])rawData;
+
+                // set fill value to zero
+                if (fillValue != null)
+                {
+                    int fvalue = ((int[])fillValue)[0];
+                    if (fvalue != 0) {
+                        for (int i=0; i<size; i++) {
+                            if (fvalue == ia[i])
+                                ia[i] = 0;
+                        }
+                    }
+                }
 
                 if (minmaxFound)
                 {
@@ -611,6 +644,18 @@ public final class Tools
             case 'J':
                 long[] l = (long[])rawData;
 
+                // set fill value to zero
+                if (fillValue != null)
+                {
+                    long fvalue = ((long[])fillValue)[0];
+                    if (fvalue != 0) {
+                        for (int i=0; i<size; i++) {
+                            if (fvalue == l[i])
+                                l[i] = 0;
+                        }
+                    }
+                }
+
                 if (minmaxFound)
                 {
                     min = minmax[0];
@@ -647,6 +692,18 @@ public final class Tools
             case 'F':
                 float[] f = (float[])rawData;
 
+                // set fill value to zero
+                if (fillValue != null)
+                {
+                    float fvalue = ((float[])fillValue)[0];
+                    if (fvalue != 0) {
+                        for (int i=0; i<size; i++) {
+                            if (fvalue == f[i])
+                                f[i] = 0;
+                        }
+                    }
+                }
+
                 if (minmaxFound)
                 {
                     min = minmax[0];
@@ -682,6 +739,18 @@ public final class Tools
 
             case 'D':
                 double[] d = (double[])rawData;
+
+                // set fill value to zero
+                if (fillValue != null)
+                {
+                    double fvalue = ((double[])fillValue)[0];
+                    if (fvalue != 0) {
+                        for (int i=0; i<size; i++) {
+                            if (fvalue == d[i])
+                                d[i] = 0;
+                        }
+                    }
+                }
 
                 if (minmaxFound)
                 {

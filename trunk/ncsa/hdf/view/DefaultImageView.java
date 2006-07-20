@@ -361,7 +361,7 @@ implements ImageView, ActionListener
 
         menu.addSeparator();
 
-        item = new JMenuItem( "Set Threshold Range");
+        item = new JMenuItem( "Set Value Range");
         item.setEnabled(!isTrueColor);
         item.addActionListener(this);
         item.setActionCommand("Set data range");
@@ -691,7 +691,7 @@ implements ImageView, ActionListener
                 data = dataset.getData();
 
                 // converts raw data to image data
-                byte[] imageData = Tools.getBytes(data, dataRange);
+                byte[] imageData = Tools.getBytes(data, dataRange, dataset.getFillValue());
 
                 int w = dataset.getWidth();
                 int h = dataset.getHeight();
@@ -718,9 +718,9 @@ implements ImageView, ActionListener
 
                 // converts raw data to image data
                 if (isTransposed)
-                    indexedImageData = Tools.getBytes(data, dataRange, w, h, true);
+                    indexedImageData = Tools.getBytes(data, dataRange, w, h, true, dataset.getFillValue());
                 else
-                    indexedImageData = Tools.getBytes(data, dataRange);
+                    indexedImageData = Tools.getBytes(data, dataRange, dataset.getFillValue());
 
                 image = createIndexedImage(indexedImageData, imagePalette, w, h);
             }
@@ -1578,7 +1578,7 @@ implements ImageView, ActionListener
     private void changeDataRange(double[] newRange)
     {
        try {
-            indexedImageData = Tools.getBytes(data, newRange);
+            indexedImageData = Tools.getBytes(data, newRange, dataset.getFillValue());
             int w = dataset.getWidth();
             int h = dataset.getHeight();
             image = createIndexedImage(indexedImageData, imagePalette, w, h);
@@ -2536,7 +2536,7 @@ implements ImageView, ActionListener
                     start[selectedIndex[2]] = i;
                     try { data3d = dataset.read(); }
                     catch (Throwable err) { continue;}
-                    byteData = Tools.getBytes(data3d, dataRange);
+                    byteData = Tools.getBytes(data3d, dataRange, dataset.getFillValue());
                     frames[i] = createIndexedImage(byteData, imagePalette, w, h);
                 }
             } finally {
@@ -2658,7 +2658,7 @@ implements ImageView, ActionListener
 
         public DataRangeDialog(JFrame theOwner, double[] dataRange)
         {
-            super(theOwner, "Image Threshold Range", true);
+            super(theOwner, "Image Vaule Range", true);
             minmax = new double[2];
             if (dataRange==null || dataRange.length<=1)
             {
