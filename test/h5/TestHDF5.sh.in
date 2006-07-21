@@ -3,11 +3,11 @@
 # Set up default variable values if not supplied by the user.
 
 # where the HDFView is installed
-HDFVIEW_HOME=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/solaris64
+HDFVIEW_HOME=@JH45INST@
 export HDFVIEW_HOME
 
 # where Java is installed (requires jdk1.4.x)
-JAVAPATH=/usr/jdk1.5.0_06/bin/sparcv9
+JAVAPATH=@JAVABIN@
 export JAVAPATH
 
 ###############################################################################
