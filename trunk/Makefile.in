@@ -78,7 +78,7 @@ SRBDISTFILES= \
         ./ncsa/hdf/srb/native/*.c \
         ./ncsa/hdf/srb/obj/*.java
 
-TESTFILES=./test/Makefile.in ./test/object/*.java ./test/object/*.in ./test/linktest/Makefile.in ./test/linktest/testh4link.in ./test/linktest/testlink.in ./test/linktest/*.java
+TESTFILES=./test/Makefile.in ./test/object/*.java ./test/object/*.in ./test/linktest/Makefile.in ./test/linktest/testh4link.in ./test/linktest/testlink.in ./test/linktest/*.java ./test/h5/*.java ./test/h5/*.sh
 
 DOCFILES=./docs
 
