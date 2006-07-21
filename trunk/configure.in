@@ -812,7 +812,7 @@ fi
 else
 if test -d "./test"; then
 ##  Don't use H4toH5 (but do include some tests)
-OUTPUT_FILES="$OUTPUT_FILES test/linktest/Makefile test/linktest/testlink test/linktest/testh4link test/Makefile test/object/Makefile test/object/testh4file.sh test/object/testh5file.sh test/object/runtests.sh"
+OUTPUT_FILES="$OUTPUT_FILES test/linktest/Makefile test/linktest/testlink test/linktest/testh4link test/Makefile test/object/Makefile test/object/testh4file.sh test/object/testh5file.sh test/object/runtests.sh test/h5/TestHDF5.sh"
 else
 ##  Don't use H4toH5 (no tests)
 OUTPUT_FILES="$OUTPUT_FILES"
