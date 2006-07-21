@@ -1,36 +1,78 @@
-#!/bin/bash
+#!/bin/sh
+
+# Set up default variable values if not supplied by the user.
+
+# where the HDFView is installed
+HDFVIEW_HOME=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/solaris64
+export HDFVIEW_HOME
+
+# where Java is installed (requires jdk1.4.x)
+JAVAPATH=/usr/jdk1.5.0_06/bin/sparcv9
+export JAVAPATH
+
+###############################################################################
+#            DO NOT MODIFY BELOW THIS LINE
+###############################################################################
 
 PRO_NAME=$1
 export PRO_NAME
 
 rm $PRO_NAME.class
 
-# heping (32bit linux)
-#export OS_NAME=linux
-#export JAVA_HOME=/usr/java/jdk1.5.0_05
-#export HDF_HOME=/afs/ncsa.uiuc.edu/projects/hdf/packages/hdfview/linux
-#export JAVA_EXE=$JAVA_HOME/bin/java
-#export JAVA_CC=$JAVA_HOME/bin/javac
-#export LIB_DIR=$HDF_HOME/lib
+CPATH=".:"$HDFVIEW_HOME"/lib/jhdf5.jar:"$HDFVIEW_HOME"/lib/jhdfobj.jar:"$HDFVIEW_HOME"/lib/jhdf5obj.jar"
 
-# mir (64bit Linux)
-#export OS_NAME=linux
-#export JAVA_HOME=/usr/java/jdk1.5.0_05
-#export HDF_HOME=/afs/ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/linux64amd
-#export JAVA_EXE=$JAVA_HOME/bin/java
-#export JAVA_CC=$JAVA_HOME/bin/javac
-#export LIB_DIR=$HDF_HOME/lib
+TEST=/usr/bin/test
+if [ ! -x /usr/bin/test ]
+then
+TEST=`which test`
+fi
 
-# shanti (64bit solaris)
-export OS_NAME=solaris
-export JAVA_HOME=/usr/jdk1.5.0_06
-export HDF_HOME=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/solaris64
-export JAVA_EXE=$JAVA_HOME/bin/sparcv9/java
-export JAVA_CC=$JAVA_HOME/bin/sparcv9/javac
-export LIB_DIR=$HDF_HOME/lib
+if $TEST -z "$CLASSPATH"; then
+        CLASSPATH=""
+fi
+CLASSPATH=$CPATH":"$CLASSPATH
+export CLASSPATH
 
-export CLASSPATH=.:$LIB_DIR/jhdf5.jar:$LIB_DIR/jhdfobj.jar:$LIB_DIR/jhdf5obj.jar
-$JAVA_CC -classpath "$CLASSPATH" $PRO_NAME".java"
-$JAVA_EXE -Xmx1024M -Dncsa.hdf.hdf5lib.H5.hdf5lib=$LIB_DIR/$OS_NAME/libjhdf5.so -classpath "$CLASSPATH" $PRO_NAME 
+if $TEST -n "$JAVAPATH" ; then
+        PATH=$JAVAPATH":"$PATH
+        export PATH
+fi
 
+if $TEST -e /bin/uname; then
+   os_name=`/bin/uname -s`
+elif $TEST -e /usr/bin/uname; then
+   os_name=`/usr/bin/uname -s`
+else
+   os_name=unknown
+fi
+
+case  $os_name in
+    SunOS)
+        OS_NAME=solaris
+        ;;
+    Linux)
+        OS_NAME=linux
+        ;;
+    IRIX*)
+        OS_NAME=irix-6.5
+        ;;
+    OSF1)
+        OS_NAME=alpha
+        ;;
+    AIX)
+        OS_NAME=aix
+        ;;
+    Darwin)
+        OS_NAME=macosx
+        ;;
+    FreeBSD)
+        OS_NAME=freebsd
+        ;;
+    *)
+        echo "Unknown Operating System:  HDFView may not work correctly"
+        ;;
+esac
+
+$JAVAPATH/javac $PRO_NAME".java"
+$JAVAPATH/java -Xmx1024M -Dncsa.hdf.hdf5lib.H5.hdf5lib=$HDFVIEW_HOME"/lib/"$OS_NAME"/libjhdf5.so" $PRO_NAME
 
