@@ -100,43 +100,54 @@ public class H5CompoundDS extends CompoundDS
      * The list of attributes of this data object. Members of the list are
      * instance of Attribute.
      */
-     private List attributeList;
+    private List attributeList;
 
-     /**
-      * A list of names of all fields including nested fields.
-      * The nested names are separated by ".". For example, if
-      * compound dataset "A" has the following nested structure,
-      * <pre>
-      * A --> m01
-      * A --> m02
-      * A --> nest1 --> m11
-      * A --> nest1 --> m12
-      * A --> nest1 --> nest2 --> m21
-      * A --> nest1 --> nest2 --> m22
-      * i.e.
-      * A = { m01, m02, nest1{m11, m12, nest2{ m21, m22}}}
-      * </pre>
-      * The flatNameList of compound dataset "A" will be
-      * {m01, m02, nest1.m11, nest1.m12, nest1.nest2.m21, nest1.nest2.m22}
-      *
-      */
-     private List flatNameList;
+    /**
+     * A list of names of all fields including nested fields.
+     * The nested names are separated by ".". For example, if
+     * compound dataset "A" has the following nested structure,
+     * <pre>
+     * A --> m01
+     * A --> m02
+     * A --> nest1 --> m11
+     * A --> nest1 --> m12
+     * A --> nest1 --> nest2 --> m21
+     * A --> nest1 --> nest2 --> m22
+     * i.e.
+     * A = { m01, m02, nest1{m11, m12, nest2{ m21, m22}}}
+     * </pre>
+     * The flatNameList of compound dataset "A" will be
+     * {m01, m02, nest1.m11, nest1.m12, nest1.nest2.m21, nest1.nest2.m22}
+     *
+     */
+    private List flatNameList;
 
-     /**
-      * A list of datatypes of all fields including nested fields.
-      * @see #flatNameList
-      */
-     private List flatTypeList;
+    /**
+     * A list of datatypes of all fields including nested fields.
+     * @see #flatNameList
+     */
+    private List flatTypeList;
 
-     private boolean isIndexTable;
+    /**
+     * Flag to indicate if this is a compound dataset created by the HDF5
+     *  indexing APIs.
+     */
+    private boolean isIndexTable;
 
+    /**
+     * Constrcuts a H5CompoundDS object with specific name and path.
+     * <p>
+     * @param fileFormat the HDF file.
+     * @param name the name of this H5CompoundDS.
+     * @param path the full path of this H5CompoundDS.
+     */
     public H5CompoundDS(FileFormat fileFormat, String name, String path)
     {
         this(fileFormat, name, path, null);
     }
 
     /**
-     * Creates a H5CompoundDS object with specific name and path.
+     * Constrcuts a H5CompoundDS object with specific name and path.
      * <p>
      * @param fileFormat the HDF file.
      * @param name the name of this H5CompoundDS.
@@ -158,18 +169,25 @@ public class H5CompoundDS extends CompoundDS
         close(did);
     }
 
-    // implementing Dataset
+    /** Returns the datatype of this dataset. */
     public Datatype getDatatype()
     {
         if (datatype == null)
-        {
             datatype = new H5Datatype(-1);
-        }
 
         return datatype;
     }
 
-    // implementing Dataset
+    /** Read data values of this dataset into byte array.
+     * <p>
+     *  readBytes() loads data as arry of bytes instead of array of its datatype.
+     * For example, for an one-dimension 32-bit integer dataset of size 5,
+     * the readBytes() returns of a byte array of size 20 instead of an int array
+     * of 5.
+     * <p>
+     * readBytes() is most used for copy data values, at which case, data do not
+     * need to be changed or displayed. It is efficient for memory space and CPU time.
+     */
     public byte[] readBytes() throws HDF5Exception
     {
         byte[] theData = null;
@@ -205,8 +223,7 @@ public class H5CompoundDS extends CompoundDS
             int size = H5.H5Tget_size(tid)*(int)lsize[0];
             theData = new byte[size];
             H5.H5Dread(did, tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, theData);
-        }
-        finally
+        } finally
         {
             if (fspace > 0) try { H5.H5Sclose(fspace); } catch (Exception ex2) {}
             if (mspace > 0) try { H5.H5Sclose(mspace); } catch (Exception ex2) {}
@@ -218,12 +235,12 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
-     * Loads the content of this data object into memory if the data of the
+     * Reads the content of this data object into memory if the data of the
      * object is not loaded. If the content is already loaded, it returns the
      * content. It returns null if the data object has no content or it fails
      * to load the data content.
      * <p>
-     * Data is read from file member by member and stored into a list by members.
+     * Data is read by compound field members and stored into a list of data objects.
      * Each member data is an one-dimension array. The array type is determined
      * by the datatype of the member. The data list contains only the data of
      * selected members.
@@ -240,8 +257,7 @@ public class H5CompoundDS extends CompoundDS
      * </pre>
      * read() returns a List contains arrays of int, float, char, Stirng, long and double.
      * @return the array of data List.
-     *
-     */
+      */
     public Object read() throws HDF5Exception
     {
         List list = null;
@@ -416,7 +432,7 @@ public class H5CompoundDS extends CompoundDS
                     else if (member_class == HDF5Constants.H5T_ENUM)
                     {
                         try {
-                            String[] strs = enumGetNames(member_tid, (int[])member_data);
+                            String[] strs = enumToNames(member_tid, member_data);
                             if (strs != null) member_data = strs;
                         } catch (Exception ex) {}
                     }
@@ -443,7 +459,12 @@ public class H5CompoundDS extends CompoundDS
         return list;
     }
 
-    //Implementing DataFormat
+    /**
+     * Write the data values of this dataset to file.
+     * <p>
+     * Compound data is written field by field.
+     * @param buf The data to write
+     */
     public void write(Object buf) throws HDF5Exception
     {
         if (buf == null || numberOfMembers <= 0 ||
@@ -583,14 +604,16 @@ public class H5CompoundDS extends CompoundDS
 
     }
 
-    // To do: Implementing Dataset
-    public Dataset copy(Group pgroup, String name, long[] dims, Object data)
-    throws Exception { return null;}
-
-    // Implementing DataFormat
+    /**
+     * Read and returns a list of attributes of from file into memory if the attributes
+     * are not in memory. If the attributes are in memory, it returns the attributes.
+     * The attributes are stored as a collection in a List.
+     *
+     * @return the list of attributes.
+     * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/List.html">java.util.List</a>
+     */
     public List getMetadata() throws HDF5Exception
     {
-
         if (attributeList == null)
         {
             int did = open();
@@ -641,12 +664,13 @@ public class H5CompoundDS extends CompoundDS
             try {
                 int[] at = {0};
                 H5.H5Pget_fill_time(pid, at);
+                compression += ",         Fill value allocation time: ";
                 if (at[0] == HDF5Constants.H5D_ALLOC_TIME_EARLY)
-                    compression += ", Allocation time: Early";
+                    compression += "Early";
                 else if (at[0] == HDF5Constants.H5D_ALLOC_TIME_INCR)
-                    compression += ", Allocation time: Incremental";
+                    compression += "Incremental";
                 else if (at[0] == HDF5Constants.H5D_ALLOC_TIME_LATE)
-                    compression += ", Allocation time: Late";
+                    compression += "Late";
             } catch (Exception ex) { ;}
 
             if (pid >0) try {H5.H5Pclose(pid); } catch(Exception ex){}
@@ -657,11 +681,11 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
-     * Creates a new attribute and attached to this dataset if attribute does
-     * not exist. Otherwise, just update the value of the attribute.
+     * Creates and attaches a new attribute if the attribute does not exist.
+     * Otherwise, writes the value of the attribute in file.
      *
      * <p>
-     * @param info the atribute to attach
+     * @param info the attribute to attach
      */
     public void writeMetadata(Object info) throws Exception
     {
@@ -705,7 +729,11 @@ public class H5CompoundDS extends CompoundDS
         }
     }
 
-    // Implementing HObject
+    /**
+     * Opens access to this dataset. The return value is obtained by H5.H5Dopen().
+     *
+     * @return the dataset identifier if successful; otherwise returns a negative value.
+     */
     public int open()
     {
         int did = -1;
@@ -721,7 +749,10 @@ public class H5CompoundDS extends CompoundDS
         return did;
     }
 
-    // Implementing HObject
+    /**
+     * Closes the specified dataset.
+     * @param did the identifier of the dataset to close access to
+     */
     public void close(int did)
     {
         try { H5.H5Fflush(did, HDF5Constants.H5F_SCOPE_LOCAL); } catch (Exception ex) {}
@@ -730,7 +761,7 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
-     * Retrieve and initialize dimensions and member information.
+     * Retrieve datatype, dataspace and compound member infomatoin from file.
      */
     public void init()
     {
@@ -883,10 +914,12 @@ public class H5CompoundDS extends CompoundDS
         super.setName(newName);
     }
 
-    /** extract compound information into flat structure
+    /**
+     * Extracts compound information into flat structure.
+     * <p>
      * For example, compound data type "nest" has {nest1{a, b, c}, d, e}
      * then extractCompoundInfo() will put the names of nested compound
-     * fields into flat structure of a list as
+     * fields into a flat list as
      * <pre>
      * nest.nest1.a
      * nest.nest1.b
@@ -947,7 +980,8 @@ public class H5CompoundDS extends CompoundDS
     } //extractNestedCompoundInfo
 
     /**
-     * creates a new compound dataset
+     * Creates a new compound dataset
+     *
      * @param name the name of the dataset
      * @param pgroup the parent group
      * @param dims the dimension size
@@ -955,8 +989,7 @@ public class H5CompoundDS extends CompoundDS
      * @param memberDatatypes the datatypes of the compound datatype
      * @param memberSizes the sizes of memeber array
      * @param data the initial data
-     * @return the new compound dataset or null if failed
-     * @throws Exception
+     * @return the new compound dataset if successful; otherwise returns null
      */
     public static Dataset create(
         String name,
@@ -985,13 +1018,59 @@ public class H5CompoundDS extends CompoundDS
         }
 
         return H5CompoundDS.create(name, pgroup, dims, memberNames,
-                                    memberDatatypes, memberRanks, memberDims, data);
+               memberDatatypes, memberRanks, memberDims, data);
     }
 
+    /**
+     * Creates a new compound dataset
+     *
+     * @param name the name of the dataset
+     * @param pgroup the parent group
+     * @param dims the dimension size
+     * @param memberNames the names of compound datatype
+     * @param memberDatatypes the datatypes of the compound datatype
+     * @param memberRanks the ranks of the members
+     * @param memberDims the dim sizes of the members
+     * @param data the initial data
+     * @return the new compound dataset if successful; otherwise returns null
+     */
     public static Dataset create(
         String name,
         Group pgroup,
         long[] dims,
+        String[] memberNames,
+        Datatype[] memberDatatypes,
+        int[] memberRanks,
+        int[][] memberDims,
+        Object data) throws Exception
+    {
+        return H5CompoundDS.create(name, pgroup, dims, null, null, -1,
+               memberNames, memberDatatypes, memberRanks, memberDims, data);
+    }
+
+    /**
+     * Creates a new compound dataset
+     *
+     * @param name the name of the dataset
+     * @param pgroup the parent group
+     * @param dims the dimension size
+     * @param maxdims the max dimension sizes
+     * @param chunks the chunk sizes
+     * @param gzip the gzip compression level
+     * @param memberNames the names of compound datatype
+     * @param memberDatatypes the datatypes of the compound datatype
+     * @param memberRanks the ranks of the members
+     * @param memberDims the dim sizes of the members
+     * @param data the initial data
+     * @return the new compound dataset if successful; otherwise returns null
+     */
+    public static Dataset create(
+        String name,
+        Group pgroup,
+        long[] dims,
+        long[] maxdims,
+        long[] chunks,
+        int gzip,
         String[] memberNames,
         Datatype[] memberDatatypes,
         int[] memberRanks,
@@ -1046,11 +1125,44 @@ public class H5CompoundDS extends CompoundDS
         }
 
         int rank = dims.length;
-        int sid = H5.H5Screate_simple(rank, dims, null);
+        int sid = H5.H5Screate_simple(rank, dims, maxdims);
+
+        // setup chunking and compression
+        boolean isExtentable = false;
+        if (maxdims != null)
+        {
+            for (int i=0; i<maxdims.length; i++)
+            {
+                if (maxdims[i] == 0)
+                    maxdims[i] = dims[i];
+                else if (maxdims[i] < 0)
+                    maxdims[i] = HDF5Constants.H5S_UNLIMITED;
+
+                if (maxdims[i] != dims[i])
+                   isExtentable = true;
+            }
+        }
+        // HDF 5 requires you to use chunking in order to define extendible
+        // datasets. Chunking makes it possible to extend datasets efficiently,
+        // without having to reorganize storage excessively
+        if (chunks == null && isExtentable)
+            chunks = dims;
+
+        int plist = HDF5Constants.H5P_DEFAULT;
+        if (chunks != null)
+        {
+            plist = H5.H5Pcreate (HDF5Constants.H5P_DATASET_CREATE);
+            H5.H5Pset_layout(plist, HDF5Constants.H5D_CHUNKED);
+            H5.H5Pset_chunk(plist, rank, chunks);
+        }
+        if (gzip > 0) {
+            H5.H5Pset_deflate(plist, gzip);
+        }
 
         int fid = file.open();
-        did = H5.H5Dcreate(fid, fullPath, tid, sid, HDF5Constants.H5P_DEFAULT);
+        did = H5.H5Dcreate(fid, fullPath, tid, sid, plist);
 
+        try {H5.H5Pclose(plist);} catch (HDF5Exception ex) {};
         try {H5.H5Sclose(sid);} catch (HDF5Exception ex) {};
         try {H5.H5Dclose(did);} catch (HDF5Exception ex) {};
 
@@ -1078,16 +1190,24 @@ public class H5CompoundDS extends CompoundDS
         return dataset;
     }
 
-    /** converts enum values to string names */
-    private String[] enumGetNames(int tid, int[] in) throws Exception
+    /**
+     * Converts enum values to string names
+     *
+     * @param tid the datatype idenfifier of the enum
+     * @param in the input array of enum values
+     * @return the string array of enum names if successful; otherwise return null;
+     */
+    private String[] enumToNames(int tid, Object in) throws Exception
     {
-        if (in == null || in.length <=0)
+        int size = 0;
+
+        if (in == null || (size = Array.getLength(in)) <=0)
             return null;
 
         int n = H5.H5Tget_nmembers(tid);
         if (n <=0 ) return null;
 
-        String[] out = new String[in.length];
+        String[] out = new String[size];
         String[] names = new String[n];
         int[] values = new int[n];
         int[] theValue = {0};
@@ -1100,9 +1220,10 @@ public class H5CompoundDS extends CompoundDS
         }
 
         int val = -1;
-        for (int i=0; i<in.length; i++)
+        int tsize = H5.H5Tget_size(tid);
+        for (int i=0; i<size; i++)
         {
-            val = in[i];
+            val = Array.getInt(in, i);
             for (int j=0; j<n; j++)
             {
                 if (val == values[j])
@@ -1116,61 +1237,11 @@ public class H5CompoundDS extends CompoundDS
         return out;
     }
 
-    private void queryIndexSpace(int did, List list) throws Exception
-    {
-        if (list == null || list.size()<=0)
-            return;
-
-        Object keys = list.get(0);
-
-        Class data_class = keys.getClass();
-        if (!data_class.isArray())
-            return;
-
-        int size = Array.getLength(keys);
-        if (size <=0)
-            return;
-
-
-        String value[] = new String[size];
-        StringBuffer sb = new StringBuffer();
-
-        Object obj = null;
-        Object bound = null;
-        int npoints = 0;
-        int nblocks = 0;
-        int sid = 0;
-        for (int i=0; i<size; i++) {
-            obj = Array.get(keys, i);
-            if (obj instanceof Byte) {
-                bound = new byte[1];
-                ((byte[])bound)[0] = ((Byte)obj).byteValue();
-            } else if (obj instanceof Short) {
-                bound = new short[1];
-                ((short[])bound)[0] = ((Short)obj).shortValue();
-            } else if (obj instanceof Integer) {
-                bound = new int[1];
-                ((int[])bound)[0] = ((Integer)obj).intValue();
-            } else if (obj instanceof Long) {
-                bound = new long[1];
-                ((long[])bound)[0] = ((Long)obj).longValue();
-            } else if (obj instanceof Float) {
-                bound = new float[1];
-                ((float[])bound)[0] = ((Float)obj).floatValue();
-            } else if (obj instanceof Double) {
-                bound = new double[1];
-                ((double[])bound)[0] = ((Double)obj).doubleValue();
-            } else if (obj instanceof String) {
-                bound = obj;
-            }
-/* TODO: there is no back track to the dataset which is being indexed
-the H5INquery() does requires that information
-            sid = H5INquery (did, getName(), bound, bound, 1);
-*/
-        }
-    }
-
-
+    /**
+     * Checks if a given datatype is a string
+     * @param dtype The data type to check
+     * @return true if the datatype is a string; otherwise returns flase.
+     */
     public boolean isString(int tid)
     {
         boolean b = false;
@@ -1180,6 +1251,11 @@ the H5INquery() does requires that information
         return b;
     }
 
+    /**
+     * Returns the size of a given datatype
+     * @param dtype The data type
+     * @return The size of the datatype
+     */
     public int getSize(int tid)
     {
         int tsize = -1;

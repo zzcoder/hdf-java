@@ -17,7 +17,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 /**
  * Group is an abstract class. Current implementing classes are the H4Group and
  * H5Group. This class includes general information of a group object such as
- * members of a group and common operation on groups for both HDF4 and HDF5.
+ * members of a group and common operations on groups.
  * <p>
  * Members of a group may include other groups, datasets or links.
  * <p>
@@ -31,14 +31,22 @@ public abstract class Group extends HObject
      */
     private List memberList;
 
-    /** The parent group where this objected is loacted. */
+    /** The parent group where this group is loacted. */
     protected Group parent;
 
     /**
-     * Total number of members of this group in file.
+     * Total number of members in this group.
      */
     private int nMembersInFile;
 
+    /**
+     * Creates a group object with specific name, path, and parent.
+     * <p>
+     * @param fileFormat the file which containing the group.
+     * @param name the name of this group.
+     * @param path the full path of this group.
+     * @param parent the parent of this group.
+     */
     public Group(FileFormat fileFormat, String name, String path, Group parent)
     {
         this(fileFormat, name, path, parent, null);
@@ -141,6 +149,7 @@ public abstract class Group extends HObject
         return memberList;
     }
 
+    /** Returns the parent group */
     public final Group getParent() { return parent; }
 
     /**

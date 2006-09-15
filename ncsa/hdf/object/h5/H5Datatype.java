@@ -26,20 +26,20 @@ import java.util.*;
 public class H5Datatype extends Datatype
 {
     /**
-     * The list of attributes of this data object. Members of the list are
-     * instance of Attribute.
+     * The list of attributes of this data object.
      */
      private List attributeList;
 
+     /** Flag to indicate if this datatype is a named datatype */
      private boolean isNamed=false;
 
     /**
-     * Constructs a named H5Datatype object with specific name and path.
+     * Contructs a named datatype with a given file, name and path.
      * <p>
      * @param fileFormat the HDF file.
-     * @param name the name of this H5Datatype.
-     * @param path the full path of this H5Datatype.
-     * @param oid the unique identifier of this H5Datatype.
+     * @param name the name of the datatype.
+     * @param path the full path of the datatype.
+     * @param oid the unique identifier of the datatype.
      */
     public H5Datatype(
         FileFormat fileFormat,
@@ -60,23 +60,22 @@ public class H5Datatype extends Datatype
     }
 
     /**
-     * Create an Datatype with specified class, size, byte order and sign.
+     * Constructs a Datatype with specified class, size, byte order and sign.
      * The following list a few example of how to create a Datatype.
      * <OL>
      * <LI>to create unsigned native integer<br>
-     * H5Datatype type = new H5Dataype(CLASS_INTEGER, NATIVE, NATIVE, SIGN_NONE);
+     * Datatype type = new Dataype(CLASS_INTEGER, NATIVE, NATIVE, SIGN_NONE);
      * <LI>to create 16-bit signed integer with big endian<br>
-     * H5Datatype type = new H5Dataype(CLASS_INTEGER, 2, ORDER_BE, NATIVE);
+     * Datatype type = new Dataype(CLASS_INTEGER, 2, ORDER_BE, NATIVE);
      * <LI>to create native float<br>
-     * H5Datatype type = new H5Dataype(CLASS_FLOAT, NATIVE, NATIVE, -1);
+     * Datatype type = new Dataype(CLASS_FLOAT, NATIVE, NATIVE, -1);
      * <LI>to create 64-bit double<br>
-     * H5Datatype type = new H5Dataype(CLASS_FLOAT, 8, NATIVE, -1);
+     * Datatype type = new Dataype(CLASS_FLOAT, 8, NATIVE, -1);
      * </OL>
-     * <p>
-     * @param tclass the class of the datatype.
-     * @param tsize the size of the datatype in bytes.
-     * @param torder the order of the datatype.
-     * @param tsign the sign of the datatype.
+     * @param tclass the class of the datatype, e.g. CLASS_INTEGER, CLASS_FLOAT and etc.
+     * @param tsize the size of the datatype in bytes, e.g. for a 32-bit integer, the size is 4.
+     * @param torder the order of the datatype. Valid values are ORDER_LE, ORDER_BE, ORDER_VAX and ORDER_NONE
+     * @param tsign the sign of the datatype. Valid values are SIGN_NONE, SIGN_2 and MSGN
      */
     public H5Datatype(int tclass, int tsize, int torder, int tsign)
     {
@@ -84,18 +83,19 @@ public class H5Datatype extends Datatype
     }
 
     /**
-     * Create a Datatype with a given HDF native datatype.
-     * The following example constructs an H5Datatype from an HDF5 32-bit unsigned integer.
-     * <pre>
-     * int user_type = H5.J2C( HDF5CDataTypes.JH5T_NATIVE_UNINT32);
-     * H5Datatype dtype = new H5atatype(user_type);
-     * </pre>
-     * which is equivalent to
-     * <pre>
-     * H5Datatype dtype = new H5atatype(CLASS_INTEGER, 4, NATIVE, SIGN_NONE);
-     * </pre>
+     * Constructs a Datatype with a given native datatype identifier.
      * <p>
-     * @param nativeID the hdf native datatype.
+     * For example, if the datatype identifier is a 32-bit unsigned integer created
+     * from HDF5,
+     * <pre>
+     * int tid = H5.H5Tcopy( HDF5Constants.H5T_NATIVE_UNINT32);
+     * Datatype dtype = new Datatype(tid);
+     * </pre>
+     * will construct a datatype equivalent to
+     * new Datatype(CLASS_INTEGER, 4, NATIVE, SIGN_NONE);
+     * <p>
+     * @see #fromNative(int nativeID)
+     * @param type the native datatype identifier.
      */
     public H5Datatype(int nativeID)
     {
@@ -103,18 +103,18 @@ public class H5Datatype extends Datatype
     }
 
     /**
-     * Translate HDF5 datatype identifier into H5Datatype.
-     * The following example constructs an H5Datatype from an HDF5 32-bit unsigned integer.
-     * <pre>
-     * int user_type = H5.J2C( HDF5CDataTypes.JH5T_NATIVE_UNINT32);
-     * H5Datatype dtype = new H5atatype(user_type);
-     * </pre>
-     * which is equivalent to
-     * <pre>
-     * H5Datatype dtype = new H5atatype(CLASS_INTEGER, 4, NATIVE, SIGN_NONE);
-     * </pre>
+     * Specify this datatype with a given id of a user defined datatype.
+     * Subclasses must implement it so that this datatype will be converted.
      * <p>
-     * @param nativeID the hdf native datatype.
+     * For example, if the type identifier is a 32-bit unsigned integer
+     * <pre>
+     * int tid = H5.H5Tcopy( HDF5Constants.H5T_NATIVE_UNINT32);
+     * Datatype dtype = new Datatype(tid);
+     * </pre>
+     * will construct a datatype equivalent to
+     * new Datatype(CLASS_INTEGER, 4, NATIVE, SIGN_NONE);
+     * <p>
+     * @param nativeID the identifier of user defined datatype.
      */
     public void fromNative(int tid)
     {
@@ -153,9 +153,9 @@ public class H5Datatype extends Datatype
 
     /**
      * Allocate an one-dimensional array of byte, short, int, long, float, double,
-     * or String to store data retrieved from an HDF5 file based on the given
-     * HDF5 datatype and dimension sizes.
-     * <p>
+     * or String to store data retrieved from file based on the given datatype and
+     * dimension sizes.
+     *
      * @param tid the datatype.
      * @param size the total size of the array.
      * @return the array object if successful and null otherwise.
@@ -197,19 +197,17 @@ public class H5Datatype extends Datatype
             else if (tsize == 4) data = new int[size];
             else if (tsize == 8) data = new long[size];
         }
-        else if (tclass == HDF5Constants.H5T_ENUM)
-            data = new int[size];
+        else if (tclass == HDF5Constants.H5T_ENUM) {
+            // can be any integer
+            // data = new int[size];
+            try { data =  allocateArray ( H5.H5Tget_super(tid), size); }
+            catch (Exception ex) {}
+        }
         else if (tclass == HDF5Constants.H5T_FLOAT)
         {
             if (tsize == 4) data = new float[size];
             else if (tsize == 8) data = new double[size];
         }
-/*
-        else if (tclass == HDF5Constants.H5T_STRING)
-        {
-            data = new String[size];
-        }
-*/
         else if ( tclass == HDF5Constants.H5T_STRING ||
             tclass == HDF5Constants.H5T_REFERENCE ||
             tclass == HDF5Constants.H5T_BITFIELD)
@@ -242,20 +240,18 @@ public class H5Datatype extends Datatype
     }
 
     /**
-     * Return the HDF5 native datatype based on the HDF5 datatype on disk
-     * For example, a HDF5 datatype created from<br>
-     * <pre>
-     * H5Dataype dtype = new H5Datatype(CLASS_INTEGER, 4, NATIVE, SIGN_NONE);
-     * int type = dtype.toNative();
-     * </pre>
-     * here "type" will be the HDF5 datatype id of a 32-bit unsigned integer,
-     * which is equivalent to
-     * <pre>
-     * int type = H5.J2C( HDF5CDataTypes.JH5T_NATIVE_UNINT32);
-     * </pre>
+     * Specify this datatype with a given id of a user defined datatype.
      * <p>
-     * @param tid the datatype on disk.
-     * @return the native datatype if successful, and negative otherwise.
+     * For example, if the type identifier is a 32-bit unsigned integer created
+     * from HDF5,
+     * <pre>
+     * int tid = H5.H5Tcopy( HDF5Constants.H5T_NATIVE_UNINT32);
+     * Datatype dtype = new Datatype(tid);
+     * </pre>
+     * will construct a datatype equivalent to
+     * new Datatype(CLASS_INTEGER, 4, NATIVE, SIGN_NONE);
+     * <p>
+     * @param nativeID the identifier of user defined datatype.
      */
     public static int toNative(int tid)
     {
@@ -271,7 +267,7 @@ public class H5Datatype extends Datatype
 
     /**
      *  Returns the size of this datatype in bytes.
-     *  <p>
+     *
      *  @param tid  the data type.
      */
     public static final int getDatatypeSize(int tid)
@@ -288,14 +284,18 @@ public class H5Datatype extends Datatype
          return tsize;
     }
 
-    // implementing Datatype
+    /**
+     *  Returns the short description of the datatype.
+     */
     public String getDatatypeDescription()
     {
         return getDatatypeDescription(toNative());
     }
 
-     /**
-     *  Returns the short description of a given datatype.
+    /**
+     *  Returns the short description of a specific datatype.
+     * @param tid the HDF5 datatype identifier
+     * @return the string description of the datatype
      */
     public static final String getDatatypeDescription(int tid)
     {
@@ -390,7 +390,7 @@ public class H5Datatype extends Datatype
         {
             description = "enum";
             String enames = " (";
-            int evalue[] = {-1};
+            int[] evalue= {0};
             try {
                 int n = H5.H5Tget_nmembers(tid );
                 for (int i=0; i<n; i++)
@@ -439,17 +439,20 @@ public class H5Datatype extends Datatype
         return description;
     }
 
-    // implementing Datatype
+    /**
+     *
+     * @return true if this datatype is unsigned; otherwise returns false.
+     */
     public boolean isUnsigned()
     {
         return isUnsigned(toNative());
     }
 
     /**
-     *  Checks if the datatype is an unsigned integer.
+     *  Checks if a specific datatype is an unsigned integer.
      *  <p>
-     *  @param datatype  the data type.
-     *  @return True is the datatype is an unsigned integer; otherwise returns false.
+     *  @param datatype  the data type to be checked.
+     *  @return true is the datatype is an unsigned integer; otherwise returns false.
      */
     public static final boolean isUnsigned(int datatype)
     {
@@ -467,7 +470,22 @@ public class H5Datatype extends Datatype
         return unsigned;
     }
 
-    // implementing Datatype
+    /**
+     * Converts this datatype to a native datatype.
+     * <p>
+     * For example, a HDF5 datatype created from<br>
+     * <pre>
+     * H5Dataype dtype = new H5Datatype(CLASS_INTEGER, 4, NATIVE, SIGN_NONE);
+     * int tid = dtype.toNative();
+     * </pre>
+     * There "tid" will be the HDF5 datatype id of a 32-bit unsigned integer,
+     * which is equivalent to
+     * <pre>
+     * int tid = H5.H5Tcopy( HDF5Constants.H5T_NATIVE_UNINT32);
+     * </pre>
+     *
+     * @return the identifier of the user defined datatype.
+     */
     public int toNative()
     {
         if (nativeID >=0 )
@@ -484,6 +502,7 @@ public class H5Datatype extends Datatype
             switch (datatypeClass)
             {
                 case CLASS_INTEGER:
+                case CLASS_ENUM:
                     if (datatypeSize == 1)
                         tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT8);
                     else if (datatypeSize == 2)
@@ -532,9 +551,39 @@ public class H5Datatype extends Datatype
             } // switch (tclass)
         } catch (Exception ex) { tid = -1; }
 
+        // set up enum members
+        if (datatypeClass == CLASS_ENUM) {
+            int ptid = tid;
+            try {
+                tid = H5.H5Tenum_create(ptid);
+                String memstr, memname;
+                int memval=0, idx;
+                StringTokenizer token = new StringTokenizer(enumMembers, ",");
+                while (token.hasMoreTokens()) {
+                    memstr = token.nextToken();
+                    if (memstr==null || memstr.length()<1)
+                        continue;
+
+                    idx = memstr.indexOf('=');
+                    if (idx>0) {
+                        memname = memstr.substring(0, idx);
+                        memval = Integer.parseInt(memstr.substring(idx+1));
+                    } else {
+                        memname = memstr;
+                        memval++;
+                    }
+                    H5.H5Tenum_insert(tid, memname, memval);
+                }
+            } catch (Exception ex) { tid = -1; }
+        }
+
         return (nativeID = tid);
     }
 
+    /**
+     * Opens access to this named datatype
+     * @return the datatype identifier if successful; otherwise returns negative value.
+     */
     public int open()
     {
         int tid = -1;
@@ -550,11 +599,23 @@ public class H5Datatype extends Datatype
         return tid;
     }
 
+    /**
+     * Closes a specific datatype
+     * @param tid the datatype to close
+     */
     public void close(int tid)    {
         try { H5.H5Tclose(tid); }
         catch (HDF5Exception ex) {;}
     }
 
+    /**
+     * Read and returns a list of attributes of from file into memory if the attributes
+     * are not in memory. If the attributes are in memory, it returns the attributes.
+     * The attributes are stored as a collection in a List.
+     *
+     * @return the list of attributes.
+     * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/List.html">java.util.List</a>
+     */
     public List getMetadata() throws HDF5Exception
     {
         // load attributes first
@@ -569,6 +630,13 @@ public class H5Datatype extends Datatype
         return attributeList;
     }
 
+    /**
+     * Creates and attaches a new attribute if the attribute does not exist.
+     * Otherwise, writes the value of the attribute in file.
+     *
+     * <p>
+     * @param info the attribute to attach
+     */
     public void writeMetadata(Object info) throws Exception
     {
         // only attribute metadata is supported.
@@ -590,6 +658,11 @@ public class H5Datatype extends Datatype
         if (!attrExisted) attributeList.add(attr);
     }
 
+    /**
+     * Deletes an attribute from this datatype.
+     * <p>
+     * @param info the attribute to delete.
+     */
     public void removeMetadata(Object info) throws HDF5Exception
     {
         // only attribute metadata is supported.

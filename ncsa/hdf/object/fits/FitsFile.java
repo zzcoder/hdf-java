@@ -273,6 +273,23 @@ public class FitsFile extends FileFormat
     }
 
     // implementign FileFormat
+    public Datatype createDatatype(
+        int tclass,
+        int tsize,
+        int torder,
+        int tsign,
+        String name) throws Exception
+    {
+        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+    }
+
+    // implementign FileFormat
+    public HObject createLink(Group parentGroup, String name, HObject currentObj) throws Exception
+    {
+        throw new UnsupportedOperationException("createLink() is not supported");
+    }
+
+    // implementign FileFormat
     public Dataset createScalarDS(
         String name,
         Group pgroup,
@@ -324,6 +341,12 @@ public class FitsFile extends FileFormat
 
     // implementign FileFormat
     public TreeNode copy(HObject srcObj, Group dstGroup) throws Exception {
+        // not supported
+        throw new UnsupportedOperationException("Unsupported operation.");
+    }
+
+    // implementign FileFormat
+    public TreeNode copy(HObject srcObj, Group dstGroup, String dstName) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation.");
     }
@@ -389,13 +412,10 @@ public class FitsFile extends FileFormat
         return ver;
     }
 
-    /**
-     * Get an individual HObject with a given path. It deoes not load the whole
-     * file structure.
-     */
+    // implementign FileFormat
     public HObject get(String path) throws Exception
     {
-        return null; // TO DO To DO@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        throw new UnsupportedOperationException("get() is not supported");
     }
 }
 

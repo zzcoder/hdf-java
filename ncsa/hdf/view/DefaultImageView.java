@@ -440,6 +440,15 @@ implements ImageView, ActionListener
             contourMenu.add(item);
         }
         menu.add(contourMenu);
+
+        menu.addSeparator();
+
+        item = new JMenuItem( "Go to Frame");
+        item.addActionListener(this);
+        item.setActionCommand("Go to frame");
+        item.setEnabled(is3D);
+        menu.add(item);
+
         menu.addSeparator();
 
         item = new JMenuItem( "Show Animation");
@@ -704,15 +713,14 @@ implements ImageView, ActionListener
                     imagePalette = Tools.createGrayPalette();
 
                     viewer.showStatus("\nNo attached palette found, default grey palette is used to display image");
-/*
-                    JOptionPane.showMessageDialog(
-                        (Frame)viewer,
-                        "No attached palette found, default grey palette is used.",
-                        dataset.getName(),
-                        JOptionPane.INFORMATION_MESSAGE);
-*/
                 }
                 data = dataset.getData();
+
+                // Peter Cao, Sept 8, 2006
+                // It seems we need to translate unsigned image data. However, we need to verify it
+                dataset.convertFromUnsignedC();
+                data = dataset.getData();
+
                 int w = dataset.getWidth();
                 int h = dataset.getHeight();
 
@@ -799,9 +807,17 @@ implements ImageView, ActionListener
 
         try {
             Class theClass =  Class.forName(viewName);
-            Object[] initargs = {this};
-            PaletteView theView = (PaletteView)Tools.newInstance(theClass, initargs);
-        } catch (Exception ex) {}
+            if ("ncsa.hdf.view.DefaultPaletteView".equals(viewName))
+            {
+                Object[] initargs = {viewer, this};
+                PaletteView theView = (PaletteView)Tools.newInstance(theClass, initargs);
+            }
+            else
+            {
+                Object[] initargs = {this};
+                PaletteView theView = (PaletteView)Tools.newInstance(theClass, initargs);
+            }
+        } catch (Exception ex) {viewer.showStatus(ex.toString());}
      }
 
     // implementing ImageObserver
@@ -1226,6 +1242,25 @@ implements ImageView, ActionListener
             boolean b = ((JCheckBoxMenuItem)source).getState();
             setValueVisible(b);
         }
+        else if (cmd.startsWith("Go to frame"))
+        {
+            int[] selectedIndex = dataset.getSelectedIndex();
+            long[] dims = dataset.getDims();
+
+            String strPage = (String)JOptionPane.showInputDialog(this,
+                    "Enter frame number [0, "+String.valueOf(dims[selectedIndex[2]]-1)+"]",
+                    "Show Image",
+                    JOptionPane.INFORMATION_MESSAGE, null, null, "0");
+
+            if (strPage == null)
+                return;
+
+            int page = 0;
+            try { page = Integer.parseInt(strPage.trim()); }
+            catch (Exception ex) { page = -1; }
+
+            gotoPage(page);
+        }
         else if (cmd.startsWith("Show animation"))
         {
             new Animation((JFrame)viewer, dataset);
@@ -1436,6 +1471,15 @@ implements ImageView, ActionListener
         int[] selectedIndex = dataset.getSelectedIndex();
         long[] dims = dataset.getDims();
 
+        if (idx <0 || idx >= dims[selectedIndex[2]]) {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+                "Frame number must be between 0 and "+dims[selectedIndex[2]],
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         start[selectedIndex[2]] = idx;
         dataset.clearData();
         image = null;
@@ -1602,21 +1646,23 @@ implements ImageView, ActionListener
         private double[] pixelData = null;
         private Dimension paintSize = null;
         java.text.DecimalFormat format;
-        double[] dataRange = null;
+        double[] dRange = null;
 
         private PaletteComponent (byte[][] palette, double[] range)
         {
             paintSize = new Dimension(25, 2);
             format = new java.text.DecimalFormat("0.00E0");
-            dataRange = range;
+            dRange = range;
+            double unsigned_celling=0;
 
             if (palette != null && range !=null)
             {
-                double ratio = (dataRange[1] - dataRange[0])/255;
+                double ratio = (dRange[1] - dRange[0])/255;
+
                 pixelData = new double[256];
                 for (int i=0; i<256; i++)
                 {
-                    pixelData[i] = (dataRange[0] + ratio*i);
+                    pixelData[i] = (dRange[0] + ratio*i);
                 }
             }
 
@@ -1628,7 +1674,7 @@ implements ImageView, ActionListener
 
         private void updatePalette (byte[][] palette)
         {
-            if (palette != null && dataRange !=null)
+            if (palette != null && dRange !=null)
             {
                 colors = new Color[256];
 
@@ -1654,11 +1700,11 @@ implements ImageView, ActionListener
             if (newRange == null)
                 return;
 
-            dataRange = newRange;
-            double ratio = (dataRange[1] - dataRange[0])/255;
+            dRange = newRange;
+            double ratio = (dRange[1] - dRange[0])/255;
             for (int i=0; i<256; i++)
             {
-                pixelData[i] = (dataRange[0] + ratio*i);
+                pixelData[i] = (dRange[0] + ratio*i);
             }
 
             repaint();

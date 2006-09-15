@@ -79,7 +79,7 @@ implements ActionListener, ItemListener
 
     private boolean isH5;
 
-    private JLabel maxLabels[];
+    private JLabel maxLabels[], selLabel;
 
     private JTextField startFields[], endFields[], strideFields[];
 
@@ -87,7 +87,7 @@ implements ActionListener, ItemListener
 
     private final Toolkit toolkit;
 
-    private final SubsetNavigator navigator;
+    private final PreviewNavigator navigator;
 
     private int numberOfPalettes;
     private boolean isTransposed = false;
@@ -148,7 +148,8 @@ implements ActionListener, ItemListener
         swapOnlyButton = new JRadioButton("Swap Only", false);
         swapOnlyButton.setMnemonic(KeyEvent.VK_T);
 
-        navigator = new SubsetNavigator(w, h);
+        selLabel = new JLabel("", JLabel.CENTER);
+        navigator = new PreviewNavigator(w, h);
 
         currentIndex = new int[Math.min(3, rank)];
 
@@ -180,14 +181,16 @@ implements ActionListener, ItemListener
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5, 5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        contentPane.setPreferredSize(new Dimension(700, 300));
+        contentPane.setPreferredSize(new Dimension(700, 350));
 
         JPanel centerP = new JPanel();
         centerP.setLayout(new BorderLayout());
         centerP.setBorder(new TitledBorder("Dimension and Subset Selection"));
 
         JPanel navigatorP = new JPanel();
-        navigatorP.add(navigator);
+        navigatorP.setLayout(new BorderLayout());
+        navigatorP.add(navigator, BorderLayout.CENTER);
+        navigatorP.add(selLabel, BorderLayout.SOUTH);
         navigatorP.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
         performJComboBoxEvent = true;
 
@@ -348,10 +351,10 @@ implements ActionListener, ItemListener
         }
 
         // add button dimension selection when dimension size >= 4
-        JButton button = new JButton("More...");
-        selectionP.add(new JLabel(" "));
+        JButton button = new JButton("dims...");
+        selectionP.add(new JLabel("", JLabel.RIGHT));
         selectionP.add(button);
-        button.setMnemonic(KeyEvent.VK_M);
+        //button.setMnemonic(KeyEvent.VK_M);
         button.setActionCommand("Select more dimensions");
         button.addActionListener(this);
         button.setEnabled((rank > 3));
@@ -852,7 +855,7 @@ implements ActionListener, ItemListener
     }
 
     /** SubsetNavigator draws selection rectangle of subset. */
-    private class SubsetNavigator extends JComponent
+    private class PreviewNavigator extends JComponent
         implements MouseListener, MouseMotionListener
     {
         private final int NAVIGATOR_SIZE = 150;
@@ -862,7 +865,7 @@ implements ActionListener, ItemListener
         private Rectangle selectedArea;
         private Image previewImage = null;
 
-        private SubsetNavigator(int w, int h)
+        private PreviewNavigator(int w, int h)
         {
             dimX = w;
             dimY = h;
@@ -900,11 +903,11 @@ implements ActionListener, ItemListener
             long[] strideBackup = new long[rank];
             long[] selectedBackup = new long[rank];
             long[] startBackup = new long[rank];
-            int[] selectedIndexBackup = new int[rank];
+            int[] selectedIndexBackup = new int[3];
             System.arraycopy(stride, 0, strideBackup, 0, rank);
             System.arraycopy(selected, 0, selectedBackup, 0, rank);
             System.arraycopy(start, 0, startBackup, 0, rank);
-            System.arraycopy(selectedIndex, 0, selectedIndexBackup, 0, rank);
+            System.arraycopy(selectedIndex, 0, selectedIndexBackup, 0, 3);
 
             // set the selection for preview
             for (int i=0; i<rank; i++)
@@ -955,7 +958,7 @@ implements ActionListener, ItemListener
                 else
                 {
                     byte[][] imagePalette = sd.getPalette();
-                    if (imagePalette == null) imagePalette = Tools.createGrayWavePalette();
+                    if (imagePalette == null) imagePalette = Tools.createGrayPalette();
 
                     if ((isH5 || rank>2) && selectedIndex[0]>selectedIndex[1] && !swapOnlyButton.isSelected())
                     {
@@ -977,7 +980,7 @@ implements ActionListener, ItemListener
                 System.arraycopy(strideBackup, 0, stride, 0, rank);
                 System.arraycopy(selectedBackup, 0, selected, 0, rank);
                 System.arraycopy(startBackup, 0, start, 0, rank);
-                System.arraycopy(selectedIndexBackup, 0, selectedIndex, 0, rank);
+                System.arraycopy(selectedIndexBackup, 0, selectedIndex, 0, 3);
             }
 
             return preImage;
@@ -1037,6 +1040,7 @@ implements ActionListener, ItemListener
         private void updateSelection(int x0, int y0, int w, int h)
         {
             int i0=0, i1=0;
+            String selStr;
 
             i0 = (int)(y0*r);
             if (i0 > dims[currentIndex[0]])
@@ -1044,8 +1048,11 @@ implements ActionListener, ItemListener
             startFields[0].setText(String.valueOf(i0));
 
             i1 = (int)((y0+h)*r);
+
             if (i1 < i0) i1=i0;
             endFields[0].setText(String.valueOf(i1));
+
+            selStr = String.valueOf((int)(h*r));
 
             if (rank > 1)
             {
@@ -1057,7 +1064,11 @@ implements ActionListener, ItemListener
                 i1 = (int)((x0+w)*r);
                 if (i1 < i0) i1=i0;
                 endFields[1].setText(String.valueOf(i1));
+
+                selStr += " x "+ ((int)(w*r));
             }
+
+            selLabel.setText(selStr);
         }
 
         public void mouseReleased(MouseEvent e) {}

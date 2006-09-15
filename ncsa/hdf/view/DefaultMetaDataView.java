@@ -81,6 +81,8 @@ implements ActionListener, MetaDataView
         isH4 = hObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4));
 
         tabbedPane = new JTabbedPane();
+        // get the metadata information before add GUI components */
+        try { hObject.getMetadata(); } catch (Exception ex) {}
         tabbedPane.addTab("General", createGeneralPropertyPanel());
         tabbedPane.addTab("Attributes", createAttributePanel());
 

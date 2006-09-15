@@ -34,6 +34,9 @@ import java.net.URLClassLoader;
 public class NewAttributeDialog extends JDialog
 implements ActionListener, ItemListener, HyperlinkListener
 {
+    /** the default length of a string attribute */
+    public static final int DEFAULT_STRING_ATTRIBUTE_LENGTH = 256;
+
     /** the object which the attribute to be attached to */
     private HObject hObject;
 
@@ -496,7 +499,7 @@ implements ActionListener, ItemListener, HyperlinkListener
 
             //string_length = Math.max(string_length, strValue.length());
             if (string_length <=0)
-                string_length = Attribute.DEFAULT_STRING_ATTRIBUTE_LENGTH;
+                string_length = DEFAULT_STRING_ATTRIBUTE_LENGTH;
 
             if (strValue.length() > string_length)
                 strValue = strValue.substring(0, string_length);

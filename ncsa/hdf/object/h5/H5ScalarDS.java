@@ -86,15 +86,22 @@ public class H5ScalarDS extends ScalarDS
      */
      private List attributeList;
 
-     /** byte array containing references of palettes.
+     /** The byte array containing references of palettes.
       * Each reference requires  eight bytes storage. Therefore, the array length
       * is 8*numberOfPalettes.
      */
      private byte[] paletteRefs;
 
+     /** flag to indicate if the dataset is a variable length */
      private boolean isVLEN = false;
 
-
+    /**
+     * Constructs an H5ScalarDS object with specific name and path.
+     * <p>
+     * @param fileFormat the HDF file.
+     * @param name the name of this H5ScalarDS.
+     * @param path the full path of this H5ScalarDS.
+     */
     public H5ScalarDS(FileFormat fileFormat, String name, String path)
     {
         this(fileFormat, name, path, null);
@@ -199,7 +206,15 @@ public class H5ScalarDS extends ScalarDS
 
     }
 
-    //Implementing Dataset
+    /**
+     * Copy a subset of this dataset to a new dataset.
+     *
+     * @param pgroup the group which the dataset is copied to.
+     * @param name the name of the new dataset.
+     * @param dims the dimension sizes of the the new dataset.
+     * @param data the data values of the subset to be copied.
+     * @return the new dataset.
+     */
     public Dataset copy(Group pgroup, String dstName, long[] dims, Object buff)
     throws Exception
     {
@@ -248,7 +263,16 @@ public class H5ScalarDS extends ScalarDS
         return dataset;
     }
 
-    // implementing Dataset
+    /** Reads data values of this dataset into byte array.
+     * <p>
+     *  readBytes() loads data as arry of bytes instead of array of its datatype.
+     * For example, for an one-dimension 32-bit integer dataset of size 5,
+     * the readBytes() returns of a byte array of size 20 instead of an int array
+     * of 5.
+     * <p>
+     * readBytes() is most used for copy data values, at which case, data do not
+     * need to be changed or displayed. It is efficient for memory space and CPU time.
+     */
     public byte[] readBytes() throws HDF5Exception
     {
         byte[] theData = null;
@@ -296,7 +320,7 @@ public class H5ScalarDS extends ScalarDS
         return theData;
     }
 
-    // Implementing DataFormat
+    /** Loads and returns the data value from file. */
     public Object read() throws HDF5Exception
     {
         Object theData = null;
@@ -386,7 +410,11 @@ public class H5ScalarDS extends ScalarDS
         return theData;
     }
 
-    //Implementing DataFormat
+    /**
+     * Writes data values to file
+     * @param buf the data buf to write
+     * @throws HDF5Exception
+     */
     public void write(Object buf) throws HDF5Exception
     {
         if (buf == null)
@@ -453,7 +481,14 @@ public class H5ScalarDS extends ScalarDS
         }
     }
 
-    // Implementing DataFormat
+    /**
+     * Read and returns a list of attributes of from file into memory if the attributes
+     * are not in memory. If the attributes are in memory, it returns the attributes.
+     * The attributes are stored as a collection in a List.
+     *
+     * @return the list of attributes.
+     * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/List.html">java.util.List</a>
+     */
     public List getMetadata() throws HDF5Exception
     {
         // load attributes first
@@ -462,13 +497,95 @@ public class H5ScalarDS extends ScalarDS
             int did = open();
             attributeList = H5File.getAttribute(did);
 
+            // get the compresson and chunk information
+            int pid = H5.H5Dget_create_plist(did);
+            if (H5.H5Pget_layout(pid) == HDF5Constants.H5D_CHUNKED)
+            {
+                if (rank <= 0) init();
+                chunkSize = new long[rank];
+                H5.H5Pget_chunk(pid, rank, chunkSize);
+            }
+            else chunkSize = null;
+
+            /* see if fill value is defined */
+            int[] fillStatus = {0};
+            if (H5.H5Pfill_value_defined(pid, fillStatus)>=0)
+            {
+                if (fillStatus[0] == HDF5Constants.H5D_FILL_VALUE_USER_DEFINED)
+                {
+                    fillValue = H5Datatype.allocateArray(nativeDatatype, 1);
+                    try { H5.H5Pget_fill_value(pid, nativeDatatype, fillValue ); }
+                    catch (Exception ex2) { fillValue = null; }
+                }
+            }
+
+            int[] flags = {0, 0};
+            int[] cd_nelmts = {2};
+            int[] cd_values = {0,0};
+            String[] cd_name ={"", ""};
+            int nfilt = H5.H5Pget_nfilters(pid);
+            int filter = -1;
+            compression = "";
+
+            for (int i=0; i<nfilt; i++)
+            {
+                if (i>0) compression += ", ";
+                filter = H5.H5Pget_filter(pid, i, flags, cd_nelmts, cd_values, 120, cd_name);
+                if (filter == HDF5Constants.H5Z_FILTER_DEFLATE)
+                {
+                    compression += "GZIP: level = "+cd_values[0];
+                }
+                else if (filter == HDF5Constants.H5Z_FILTER_FLETCHER32)
+                {
+                    compression += "Error detection filter";
+                }
+                else if (filter == HDF5Constants.H5Z_FILTER_SHUFFLE)
+                {
+                    compression += "SHUFFLE: Nbytes = "+cd_values[0];
+                }
+                else if (filter == HDF5Constants.H5Z_FILTER_SZIP)
+                {
+                    compression += "SZIP: Pixels per block = "+cd_values[1];
+                    int flag = -1;
+                    try { flag = H5.H5Zget_filter_info(filter); }
+                    catch (Exception ex) { flag = -1; }
+                    if (flag==HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED)
+                        compression += ": "+Dataset.H5Z_FILTER_CONFIG_DECODE_ENABLED;
+                    else if (flag==HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED ||
+                             flag >= (HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED+HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED))
+                        compression += ": "+Dataset.H5Z_FILTER_CONFIG_ENCODE_ENABLED;
+                }
+            } // for (int i=0; i<nfilt; i++)
+
+            if (compression.length() == 0) compression = "NONE";
+
+            try {
+                int[] at = {0};
+                H5.H5Pget_fill_time(pid, at);
+                compression += ",         Fill value allocation time: ";
+                if (at[0] == HDF5Constants.H5D_ALLOC_TIME_EARLY)
+                    compression += "Early";
+                else if (at[0] == HDF5Constants.H5D_ALLOC_TIME_INCR)
+                    compression += "Incremental";
+                else if (at[0] == HDF5Constants.H5D_ALLOC_TIME_LATE)
+                    compression += "Late";
+            } catch (Exception ex) { ;}
+
+            if (pid >0) try {H5.H5Pclose(pid); } catch(Exception ex){}
+
             close(did);
         } // if (attributeList == null)
 
         return attributeList;
     }
 
-    // implementing DataFormat
+    /**
+     * Creates and attaches a new attribute if the attribute does not exist.
+     * Otherwise, writes the value of the attribute in file.
+     *
+     * <p>
+     * @param info the attribute to attach
+     */
     public void writeMetadata(Object info) throws Exception
     {
         // only attribute metadata is supported.
@@ -490,7 +607,11 @@ public class H5ScalarDS extends ScalarDS
         if (!attrExisted) attributeList.add(attr);
     }
 
-    // implementing DataFormat
+    /**
+     * Deletes an attribute from the dataset
+     * @param info the attribute to delete
+     * @throws HDF5Exception
+     */
     public void removeMetadata(Object info) throws HDF5Exception
     {
         // only attribute metadata is supported.
@@ -508,7 +629,11 @@ public class H5ScalarDS extends ScalarDS
         }
     }
 
-    // Implementing HObject
+    /**
+     * Opens access to this dataset. The return value is obtained by H5.H5Dopen().
+     *
+     * @return the dataset identifier if successful; otherwise returns a negative value.
+     */
     public int open()
     {
         int did = -1;
@@ -524,7 +649,10 @@ public class H5ScalarDS extends ScalarDS
         return did;
     }
 
-    // Implementing HObject
+    /**
+     * Closes the specified dataset.
+     * @param did the identifier of the dataset to close access to
+     */
     public void close(int did)
     {
         try { H5.H5Fflush(did, HDF5Constants.H5F_SCOPE_LOCAL); } catch (Exception ex) {}
@@ -533,7 +661,7 @@ public class H5ScalarDS extends ScalarDS
     }
 
     /**
-     * Retrieve and initialize dimensions and member information.
+     * Retrieve datatype and dataspace infomatoin from file.
      */
     public void init()
     {
@@ -646,84 +774,6 @@ public class H5ScalarDS extends ScalarDS
                 interlace == ScalarDS.INTERLACE_PLANE);
         }
 
-        try {
-            // get the compresson and chunk information
-            pid = H5.H5Dget_create_plist(did);
-            if (H5.H5Pget_layout(pid) == HDF5Constants.H5D_CHUNKED)
-            {
-                if (rank <= 0) init();
-                chunkSize = new long[rank];
-                H5.H5Pget_chunk(pid, rank, chunkSize);
-            }
-            else chunkSize = null;
-
-            /* see if fill value is defined */
-            int[] fillStatus = {0};
-            if (H5.H5Pfill_value_defined(pid, fillStatus)>=0)
-            {
-                if (fillStatus[0] == HDF5Constants.H5D_FILL_VALUE_USER_DEFINED)
-                {
-                    fillValue = H5Datatype.allocateArray(nativeDatatype, 1);
-                    try { H5.H5Pget_fill_value(pid, nativeDatatype, fillValue ); }
-                    catch (Exception ex2) { fillValue = null; }
-                }
-            }
-
-            int[] flags = {0, 0};
-            int[] cd_nelmts = {2};
-            int[] cd_values = {0,0};
-            String[] cd_name ={"", ""};
-            int nfilt = H5.H5Pget_nfilters(pid);
-            int filter = -1;
-            compression = "";
-
-            for (int i=0; i<nfilt; i++)
-            {
-                if (i>0) compression += ", ";
-                filter = H5.H5Pget_filter(pid, i, flags, cd_nelmts, cd_values, 120, cd_name);
-                if (filter == HDF5Constants.H5Z_FILTER_DEFLATE)
-                {
-                    compression += "GZIP: level = "+cd_values[0];
-                }
-                else if (filter == HDF5Constants.H5Z_FILTER_FLETCHER32)
-                {
-                    compression += "Error detection filter";
-                }
-                else if (filter == HDF5Constants.H5Z_FILTER_SHUFFLE)
-                {
-                    compression += "SHUFFLE: Nbytes = "+cd_values[0];
-                }
-                else if (filter == HDF5Constants.H5Z_FILTER_SZIP)
-                {
-                    compression += "SZIP: Pixels per block = "+cd_values[1];
-                    int flag = -1;
-                    try { flag = H5.H5Zget_filter_info(filter); }
-                    catch (Exception ex) { flag = -1; }
-                    if (flag==HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED)
-                        compression += ": "+Dataset.H5Z_FILTER_CONFIG_DECODE_ENABLED;
-                    else if (flag==HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED ||
-                             flag >= (HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED+HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED))
-                        compression += ": "+Dataset.H5Z_FILTER_CONFIG_ENCODE_ENABLED;
-                }
-            } // for (int i=0; i<nfilt; i++)
-
-            if (compression.length() == 0) compression = "NONE";
-
-            try {
-                int[] at = {0};
-                H5.H5Pget_fill_time(pid, at);
-                if (at[0] == HDF5Constants.H5D_ALLOC_TIME_EARLY)
-                    compression += ", Allocation time: Early";
-                else if (at[0] == HDF5Constants.H5D_ALLOC_TIME_INCR)
-                    compression += ", Allocation time: Incremental";
-                else if (at[0] == HDF5Constants.H5D_ALLOC_TIME_LATE)
-                    compression += ", Allocation time: Late";
-            } catch (Exception ex) { ;}
-
-            if (pid >0) try {H5.H5Pclose(pid); } catch(Exception ex){}
-        } catch (Exception ex) {if (pid >0) try {H5.H5Pclose(pid); } catch(Exception ex2){}}
-
-        close(did);
 
         startDims = new long[rank];
         selectedDims = new long[rank];
@@ -799,7 +849,14 @@ public class H5ScalarDS extends ScalarDS
             selectedDims[1] = 1;
     }
 
-    // Implementing ScalarDS
+    /**
+     * Retrieves the palette (color table) from file if there is any. The palette is a separate
+     * dataset in the file pointed by the reference attribute attached to this dataset
+     * <p>
+     * Only 256 color table is supported so far. The palette is stored as a 2-D byte
+     * array of RGB values, i.e. byte[3][256]
+     * @return the palette if there is any; otherwise returns null.
+     */
     public byte[][] getPalette()
     {
         if (palette == null)
@@ -809,9 +866,14 @@ public class H5ScalarDS extends ScalarDS
     }
 
     /**
-     * read specific image palette from file.
-     * @param idx the palette index to read
-     * @return the palette data into two-dimension byte array, byte[3][256]
+     * Retrieves a specific palette (color table) from file. The palette is a separate
+     * dataset in the file pointed by the reference attribute attached to this
+     * image dataset. An image dataset may point to more than one palettes.
+     * <p>
+     * Only 256 color table is supported so far. The palette is stored as a 2-D byte
+     * array of RGB values, i.e. byte[3][256]
+     * @param idx the index of the idx-th palette
+     * @return the palette if successful; otherwise returns null.
      */
     public byte[][] readPalette(int idx)
     {
@@ -960,7 +1022,7 @@ public class H5ScalarDS extends ScalarDS
         return dataset;
     }
 
-    /** returns the byte array of palette refs.
+    /** Returns the byte array of palette refs.
      *  returns null if there is no palette attribute attached to this dataset.
      */
     public byte[] getPaletteRefs()
@@ -1006,7 +1068,7 @@ public class H5ScalarDS extends ScalarDS
         return ref_buf;
     }
 
-    // implementing ScalarDS
+    /** Returns the datatype of this dataset. */
     public Datatype getDatatype()
     {
         if (datatype == null)

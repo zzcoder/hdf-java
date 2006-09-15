@@ -14,24 +14,39 @@
  import java.lang.reflect.*;
 
 /**
-  *An attribute is a (name, value) pair metadata that are attached to primary
- * datasets and groups. The value field can be a scalar data point or an arrya
- * of native datatype or compound data type.
+ * An attribute is a (name, value) pair of metadata that are attached to primary
+ * data objects such as datasets, groups or named datatypes. The value field can
+ * be a scalar data point or an array of native datatype or compound datatype.
  * <p>
- * The following is an example of how to create an attribute of one dimension
+ * The requirement information of an attribute includes the name, datatype and
+ * dataspace. The following is an example of creating an attribute of one dimension
  * integer array of size two.
  *
  * <pre>
- * // Create an attribute
- * String name = "data range";
- * Datatype type = new Datatype(Datatype.CLASS_INTEGER, Datatype.NATIVE,
- *     Datatype.NATIVE, Datatype.NATIVE);
+ * // Example of creatinge a new attribute
+ *
+ * // The name of the new attribute
+ * String name = "Data range";
+ *
+ * // Creating an interger datatype
+ * Datatype type = new Datatype(Datatype.CLASS_INTEGER, // class
+ *                              8,                      // size in bytes
+ *                              Datatype.ORDER_LE,      // byte order
+ *                              Datatype.SIGN_NONE);    // signed or unsigned
+ *
+ * // 1-D array of size two
  * long[] space = {2};
+ *
+ * // The value of the attribute
  * int[] value = {0, 255};
  *
+ * // Create a new attribute
  * Attribute dataRange = new Attribute(name, type, space);
+ *
+ * // Set the attribute value
  * dataRange.setValue(value);
  *
+ * // How to attach an attribute to an object, see FileFormat.writeAttribute()
  * </pre>
  *
  * @see ncsa.hdf.object.Datatype
@@ -41,48 +56,34 @@
  */
 public class Attribute implements Metadata
 {
-    /** the default length of a string attribute */
-    public static final int DEFAULT_STRING_ATTRIBUTE_LENGTH = 256;
-
-    /**
-     * The name of the attribute.
-     */
+    /** The name of the attribute. */
     private final String name;
 
-    /**
-     * The datatype of the attribute.
-     */
+    /** The datatype of the attribute. */
     private final Datatype type;
 
-    /**
-     * The rank of the data value of this attribute.
-     * An attribute can have multi dimensions.
-     */
+    /** The rank of the data value of the attribute. */
     private int rank;
 
-    /**
-     * The dimension sizes of the data value of this attribute.
-     */
+    /** The dimension sizes of the attribute. */
     private long[] dims;
 
-    /**
-     * The data value of this attribute.
-     */
+    /** The value of the attribute. */
     private Object value;
 
-    /** flag to indicate if the data type is an unsigned integer. */
+    /** Flag to indicate if the datatype is an unsigned integer. */
     private boolean isUnsigned;
 
     /**
      * Create an attribute with specified name, data type and dimension sizes.
-     * For scalar attribute, the dimension size can either an array of size one
-     * or null. The rank can be either 1 or zero. Attribute is independent of
-     * dataformat, i.e., this implementation of attribute applies to both HDF4
-     * and HDF5.
+     * For scalar attribute, the dimension size can be either an array of size one
+     * or null, and the rank can be either 1 or zero. Attribute is a general class
+     * and is independent of file format, i.e., the implementation of attribute
+     * applies to both HDF4 and HDF5.
      * <p>
      * @param name the name of the attribute.
-     * @param type the data type of the attribute.
-     * @param dims the dimension sizes of the data of the attribute.
+     * @param type the datatype of the attribute.
+     * @param dims the dimension sizes of the attribute, null for scalar attribute
      *
      * @see ncsa.hdf.object.Datatype
      */
@@ -101,7 +102,7 @@ public class Attribute implements Metadata
     }
 
     /**
-     * Returns the value of this attriubte from file.
+     * Returns the value of the attriubte.
      */
     public Object getValue()
     {
@@ -109,7 +110,9 @@ public class Attribute implements Metadata
     }
 
     /**
-     * Sets the value of this attribute.
+     * Sets the value of the attribute.
+     *
+     * @param theValue The value of the attribute
      */
     public void setValue(Object theValue)
     {
@@ -117,7 +120,7 @@ public class Attribute implements Metadata
     }
 
     /**
-     * Returns the name of this attribute.
+     * Returns the name of the attribute.
      */
     public String getName()
     {
@@ -125,7 +128,7 @@ public class Attribute implements Metadata
     }
 
     /**
-     * Returns the rank of the data value of this attribute.
+     * Returns the rank of the data value of the attribute.
      */
     public int getRank()
     {
@@ -133,7 +136,7 @@ public class Attribute implements Metadata
     }
 
     /**
-     * Returns the dimension sizes of the data value of this attribute.
+     * Returns the dimension sizes of the data value of the attribute.
      */
     public long[] getDataDims()
     {
@@ -149,7 +152,7 @@ public class Attribute implements Metadata
     }
 
     /**
-     * Check the data type of the attribute is unsigned.
+     * Check the datatype of the attribute is an unsigned integer.
      */
     public boolean isUnsigned()
     {
@@ -157,9 +160,10 @@ public class Attribute implements Metadata
     }
 
     /**
-     * Returns the string representation of the value of this attribute.
+     * Returns the string representation of the data value of the attribute.
      * <p>
-     * @param delimiter the delimiter to separate individual data points.
+     * @param delimiter The delimiter to separate individual data points,
+     *        such as comma, semi-comma, tab or space
      */
     public String toString(String delimiter)
     {
@@ -246,8 +250,7 @@ public class Attribute implements Metadata
     }
 
     /**
-     * Returns the string representation of this attribute.
-     * The String consists of the name and path of the data object.
+     * Returns the string representation (the name) of the attribute.
      */
     public String toString()
     {

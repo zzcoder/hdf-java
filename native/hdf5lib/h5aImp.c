@@ -577,6 +577,74 @@ herr_t H5AreadVL_str (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
 	return status;
 }
 
+/*
+ * Copies the content of one dataset to another dataset
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Acopy
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Acopy
+  (JNIEnv *env, jclass clss, jint src_id, jint dst_id)
+{
+    jbyte *buf;
+    herr_t retVal = -1;
+    hid_t src_did = (hid_t)src_id;
+    hid_t dst_did = (hid_t)dst_id;
+    hid_t tid=-1;
+    hid_t sid=-1;
+    hsize_t total_size = 0;
+
+
+    sid = H5Aget_space(src_did);
+    if (sid < 0) {
+        h5libraryError(env);
+        return -1;
+    }
+
+    tid = H5Aget_type(src_did);
+    if (tid < 0) {
+        H5Sclose(sid);
+        h5libraryError(env);
+        return -1;
+    }
+
+    total_size = H5Sget_simple_extent_npoints(sid) * H5Tget_size(tid);
+
+    H5Sclose(sid);
+
+    buf = (jbyte *)malloc( (int) (total_size * sizeof(jbyte)));
+    if (buf == NULL) {
+    H5Tclose(tid);
+        h5outOfMemory( env, "H5Acopy:  malloc failed");
+        return -1;
+    }
+
+    retVal = H5Aread(src_did, tid, buf);
+    H5Tclose(tid);
+
+    if (retVal < 0) {
+        free(buf);
+        h5libraryError(env);
+        return (jint)retVal;
+    }
+
+    tid = H5Aget_type(dst_did);
+    if (tid < 0) {
+        free(buf);
+        h5libraryError(env);
+        return -1;
+    }
+    retVal = H5Awrite(dst_did, tid, buf);
+    H5Tclose(tid);
+    free(buf);
+
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+
+    return (jint)retVal;
+}
+
 #ifdef __cplusplus
 }
 #endif

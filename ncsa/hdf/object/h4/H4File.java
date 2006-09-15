@@ -291,6 +291,16 @@ public class H4File extends FileFormat
         return new H4Datatype(tclass, tsize, torder, tsign);
     }
 
+    public Datatype createDatatype(
+        int tclass,
+        int tsize,
+        int torder,
+        int tsign,
+        String name) throws Exception
+    {
+        throw new UnsupportedOperationException("HDF4 does not support named datatype.");
+    }
+
     public Dataset createScalarDS(
         String name,
         Group pgroup,
@@ -353,21 +363,34 @@ public class H4File extends FileFormat
      */
     public TreeNode copy(HObject srcObj, Group dstGroup) throws Exception
     {
+        return this.copy(srcObj, dstGroup, null);
+    }
+
+    /**
+     * Copy an object to a group.
+     * @param srcObj   the object to copy.
+     * @param dstGroup the destination group.
+     * @return the new node containing the new object.
+     */
+    public TreeNode copy(HObject srcObj, Group dstGroup, String dstName) throws Exception
+    {
         TreeNode newNode = null;
 
-        if (srcObj == null ||
-            dstGroup == null)
+        if (srcObj == null || dstGroup == null)
             return null;
+
+        if (dstName == null)
+            dstName = srcObj.getName();
 
         if (srcObj instanceof H4SDS)
         {
             newNode = new DefaultMutableTreeNode(
-            ((H4SDS)srcObj).copy(dstGroup, srcObj.getName(), null, null));
+            ((H4SDS)srcObj).copy(dstGroup, dstName, null, null));
         }
         else if (srcObj instanceof H4GRImage)
         {
             newNode = new DefaultMutableTreeNode(
-            ((H4GRImage)srcObj).copy(dstGroup, srcObj.getName(), null, null));
+            ((H4GRImage)srcObj).copy(dstGroup, dstName, null, null));
         }
         else if (srcObj instanceof H4Vdata)
         {
@@ -379,6 +402,12 @@ public class H4File extends FileFormat
         }
 
         return newNode;
+    }
+
+    // implementign FileFormat
+    public HObject createLink(Group parentGroup, String name, HObject currentObj) throws Exception
+    {
+        throw new UnsupportedOperationException("createLink() is not supported");
     }
 
     /**
