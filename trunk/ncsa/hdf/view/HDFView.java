@@ -1977,7 +1977,11 @@ public class HDFView extends JFrame
             Constructor constructor = theClass.getConstructor(paramClass);
             Object[] paramObj = {(java.awt.Frame)this};
             srbFileDialog = (JDialog)constructor.newInstance(paramObj);
-        } catch (Exception ex) { srbFileDialog = null;showStatus(ex.toString()); }
+        } catch (Exception ex) {
+            if (srbFileDialog != null) srbFileDialog.dispose();
+            srbFileDialog = null;
+        }
+
         if (srbFileDialog == null) return;
 
         srbFileDialog.show();
@@ -1997,18 +2001,25 @@ public class HDFView extends JFrame
     {
         String rootDir = System.getProperty("user.dir");
 
-        /*
+/*
         try {
             Group g = (Group)FileFormat.getHObject("e:\\hdf-files\\hdf5_test.h5#//");
             System.out.println(g);
             if (g != null) {
-            List m = g.getMemberList();
-            Iterator it = m.iterator();
-            while (it.hasNext())
-                System.out.println(it.next());
+                HObject obj;
+                List m = g.getMemberList();
+                Iterator it = m.iterator();
+                while (it.hasNext()) {
+                    obj = (HObject)it.next();
+                    long[] oid = (long[]) obj.getOID();
+                    if (oid != null)
+                        System.out.print(oid[0] + " -- ");
+                    System.out.println(obj);
+
+                }
             }
         } catch (Exception ex) {System.out.println(ex);}
-        */
+*/
 
         boolean backup = false;
         File tmpFile = null;

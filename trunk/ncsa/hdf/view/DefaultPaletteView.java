@@ -56,14 +56,20 @@ ActionListener, ItemListener
     private int[][] paletteData;
     private JComboBox choicePalette;
     private PaletteValueTable paletteValueTable;
+    private final ViewManager viewer;
 
     public DefaultPaletteView(ImageView theImageView)
     {
-        super();
+        this(null, theImageView);
+    }
+
+    public DefaultPaletteView(ViewManager theViewer, ImageView theImageView)
+    {
+        super((JFrame)theViewer, true);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         imageView = theImageView;
+        viewer = theViewer;
         dataset = (ScalarDS)imageView.getDataObject();
-        setModal(true);
 
         choicePalette = new JComboBox();
         choicePalette.addItemListener(this);
@@ -217,6 +223,11 @@ ActionListener, ItemListener
             if (paletteValueTable != null)
                 paletteValueTable.hide();
         }
+    }
+
+    public void dispose() {
+        imageView.setImage(originalImage);
+        super.dispose();
     }
 
     public void itemStateChanged(ItemEvent e) {

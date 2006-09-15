@@ -95,7 +95,9 @@ implements TableView, ActionListener
 
     private boolean isTransposed;
 
-    private JCheckBoxMenuItem checkScientificNotation;
+    private JCheckBoxMenuItem checkScientificNotation, checkFixedDataLength;
+
+    private int fixedDataLength;
 
      /**
      * Constructs an TableView.
@@ -122,6 +124,7 @@ implements TableView, ActionListener
         isValueChanged = false;
         isReadOnly = false;
         isTransposed = transposed.booleanValue();
+        fixedDataLength = -1;
 
         HObject hobject = (HObject)viewer.getTreeView().getCurrentObject();
         if (hobject == null || !(hobject instanceof Dataset)) {
@@ -288,36 +291,18 @@ implements TableView, ActionListener
         JMenuBar bar = new JMenuBar();
         JButton button;
         boolean isEditable = !isReadOnly;
+        boolean is3D = (dataset.getRank() > 2);
 
         JMenu menu = new JMenu("Table", false);
         menu.setMnemonic('T');
         bar.add(menu);
 
-        JMenuItem item = new JMenuItem( "Save As Text");
-        //item.setMnemonic(KeyEvent.VK_T);
+        JMenuItem item = new JMenuItem( "Export Data to File");
         item.addActionListener(this);
         item.setActionCommand("Save table as text");
         menu.add(item);
 
-        menu.addSeparator();
-
-        item = new JMenuItem( "Copy Data");
-        //item.setMnemonic(KeyEvent.VK_C);
-        item.addActionListener(this);
-        item.setActionCommand("Copy data");
-        menu.add(item);
-
-        item = new JMenuItem( "Paste Data");
-        //item.setMnemonic(KeyEvent.VK_P);
-        item.addActionListener(this);
-        item.setActionCommand("Paste data");
-        item.setEnabled(isEditable);
-        menu.add(item);
-
-        menu.addSeparator();
-
         item = new JMenuItem( "Import Data from File");
-        //item.setMnemonic(KeyEvent.VK_I);
         item.addActionListener(this);
         item.setActionCommand("Import data from file");
         item.setEnabled(isEditable);
@@ -325,27 +310,40 @@ implements TableView, ActionListener
 
         menu.addSeparator();
 
-        item = new JMenuItem( "Write Selection to New Dataset");
-        //item.setMnemonic(KeyEvent.VK_W);
+        item = new JMenuItem( "Copy");
         item.addActionListener(this);
-        item.setActionCommand("Write selection to dataset");
-        item.setEnabled(isEditable && (dataset instanceof ScalarDS));
+        item.setActionCommand("Copy data");
+        item.setAccelerator( KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK, true));
         menu.add(item);
 
-
-        item = new JMenuItem( "Save Change to File");
-        //item.setMnemonic(KeyEvent.VK_U);
+        item = new JMenuItem( "Paste");
         item.addActionListener(this);
-        item.setActionCommand("Save dataset");
+        item.setActionCommand("Paste data");
+        item.setAccelerator( KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_MASK, true));
         item.setEnabled(isEditable);
         menu.add(item);
 
         menu.addSeparator();
 
-        item = new JMenuItem( "Select Whole Page");
-        //item.setMnemonic(KeyEvent.VK_A);
+        item = new JMenuItem( "Copy to New Dataset");
+        item.addActionListener(this);
+        item.setActionCommand("Write selection to dataset");
+        item.setEnabled(isEditable && (dataset instanceof ScalarDS));
+        menu.add(item);
+
+        item = new JMenuItem( "Update File");
+        item.addActionListener(this);
+        item.setActionCommand("Save dataset");
+        item.setEnabled(isEditable);
+        item.setAccelerator( KeyStroke.getKeyStroke(KeyEvent.VK_U, KeyEvent.CTRL_MASK, true));
+        menu.add(item);
+
+        menu.addSeparator();
+
+        item = new JMenuItem( "Select All");
         item.addActionListener(this);
         item.setActionCommand("Select all data");
+        item.setAccelerator( KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_MASK, true));
         menu.add(item);
 
         menu.addSeparator();
@@ -356,28 +354,39 @@ implements TableView, ActionListener
         menu.add(item);
 
         item = new JMenuItem( "Show Statistics");
-        //item.setMnemonic(KeyEvent.VK_S);
         item.addActionListener(this);
         item.setActionCommand("Show statistics");
-//        item.setEnabled(dataset instanceof ScalarDS);
-        menu.add(item);
-
-        item = new JMenuItem( "Math Conversion");
-        //item.setMnemonic(KeyEvent.VK_M);
-        item.addActionListener(this);
-        item.setActionCommand("Math conversion");
-        item.setEnabled(isEditable);
-//        item.setEnabled(isEditable && (dataset instanceof ScalarDS));
         menu.add(item);
 
         menu.addSeparator();
+
+        item = new JMenuItem( "Math Conversion");
+        item.addActionListener(this);
+        item.setActionCommand("Math conversion");
+        item.setEnabled(isEditable);
+        menu.add(item);
+
+        menu.addSeparator();
+
+        item = new JMenuItem( "Go to Page");
+        item.addActionListener(this);
+        item.setActionCommand("Go to page");
+        item.setEnabled(is3D);
+        menu.add(item);
+
+        menu.addSeparator();
+
+        checkFixedDataLength = new JCheckBoxMenuItem("Fixed Data Length", false);
+        item = checkFixedDataLength;
+        item.addActionListener(this);
+        item.setActionCommand("Fixed data length");
+        if (dataset instanceof ScalarDS) menu.add(item);
 
         checkScientificNotation = new JCheckBoxMenuItem("Scientific Notation", false);
         item = checkScientificNotation;
         item.addActionListener(this);
         item.setActionCommand("Scientific Notation");
-        if (dataset instanceof ScalarDS)
-            menu.add(item);
+        if (dataset instanceof ScalarDS) menu.add(item);
 
         menu.addSeparator();
 
@@ -400,7 +409,6 @@ implements TableView, ActionListener
         button.addActionListener( this );
         button.setActionCommand( "Show chart" );
 
-        boolean is3D = (dataset.getRank() > 2);
         if (is3D) {
             bar.add( new JLabel("     ") );
 
@@ -579,9 +587,50 @@ implements TableView, ActionListener
                         JOptionPane.ERROR_MESSAGE);
             }
         }
+        else if (cmd.startsWith("Go to page"))
+        {
+            int[] selectedIndex = dataset.getSelectedIndex();
+            long[] dims = dataset.getDims();
+
+            String strPage = (String)JOptionPane.showInputDialog(this,
+                    "Enter page number [0, "+String.valueOf(dims[selectedIndex[2]]-1)+"]",
+                    "Show Page",
+                    JOptionPane.INFORMATION_MESSAGE, null, null, "0");
+
+            if (strPage == null)
+                return;
+
+            int page = 0;
+            try { page = Integer.parseInt(strPage.trim()); }
+            catch (Exception ex) { page = -1; }
+
+            gotoPage(page);
+        }
         else if (cmd.equals("Scientific Notation"))
         {
              this.updateUI();
+        }
+        else if (cmd.equals("Fixed data length"))
+        {
+            if (!checkFixedDataLength.isSelected()) {
+                fixedDataLength = -1;
+                return;
+            }
+
+            String str = JOptionPane.showInputDialog(this, "Enter fixed data length for text data", "");
+
+            if (str == null || str.length()<1) {
+                checkFixedDataLength.setSelected(false);
+                return;
+            }
+
+            try { fixedDataLength = Integer.parseInt(str); }
+            catch (Exception ex) { fixedDataLength = -1; }
+
+            if (fixedDataLength<1) {
+                checkFixedDataLength.setSelected(false);
+                return;
+            }
         }
     }
 
@@ -1223,8 +1272,9 @@ implements TableView, ActionListener
             int halfIdx = columnNames.length/2;
             for (int i=0; i<columns; i++) {
                 for (int j=0; j<columnNames.length; j++) {
+                    // display column index only once, in the middle of the copound fields
                     if (j == halfIdx)
-                        subColumnNames[i*columnNames.length+j] = i+"\n "+columnNames[j];
+                        subColumnNames[i*columnNames.length+j] = (i+1)+"\n "+columnNames[j];
                     else
                         subColumnNames[i*columnNames.length+j] = " \n "+columnNames[j];
                 }
@@ -1246,34 +1296,36 @@ implements TableView, ActionListener
 
             public Object getValueAt(int row, int col)
             {
-                int column = col;
-                int rowIdx = 0;
+                int fieldIdx = col;
+                int rowIdx = row;
 
                 if (nSubColumns > 1) // multi-dimension compound dataset
                 {
                     int colIdx = col/nFields;
-                    column = col - colIdx*nFields;
-                    int n = orders[column];
-                    rowIdx = row*orders[column] + colIdx*nRows*orders[column];
+                    fieldIdx = col - colIdx*nFields;
+                    //BUG 573: rowIdx = row*orders[fieldIdx] + colIdx*nRows*orders[fieldIdx];
+                    rowIdx = row*orders[fieldIdx]*nSubColumns+colIdx*orders[fieldIdx];;
                 }
                 else {
-                    rowIdx = row*orders[column];
+                    rowIdx = row*orders[fieldIdx];
                 }
 
-                Object colValue = list.get(column);
+                Object colValue = list.get(fieldIdx);
                 if (colValue == null) return "Null";
 
                 stringBuffer.setLength(0); // clear the old string
-                int[] mdim = compound.getMemeberDims(column);
-                if (mdim == null) {
+                int[] mdim = compound.getMemeberDims(fieldIdx);
+                if (mdim == null)
+                {
+                    // member is not an ARRAY datatype
                     int strlen = 0;
 
-                    if (orders[column] <= 1 &&
-                        compound.isString(types[column]) &&
-                        (strlen = compound.getSize(types[column]))>0 &&
+                    if (orders[fieldIdx] <= 1 &&
+                        compound.isString(types[fieldIdx]) &&
+                        (strlen = compound.getSize(types[fieldIdx]))>0 &&
                         !compound.getConvertByteToString())
                     {
-                        // original data is a byte array
+                        // original data is a char array
                         String str = new String(((byte[])colValue), rowIdx*strlen, strlen);
                         int idx = str.indexOf('\0');
                         if (idx > 0) str = str.substring(0, idx);
@@ -1281,11 +1333,14 @@ implements TableView, ActionListener
                     }
                     else
                         stringBuffer.append(Array.get(colValue, rowIdx));
-                    for (int i=1; i<orders[column]; i++) {
+
+                    for (int i=1; i<orders[fieldIdx]; i++) {
                         stringBuffer.append(", ");
                         stringBuffer.append(Array.get(colValue, rowIdx+i));
                     }
-                } else {
+                } else
+                {
+                    // member is an ARRAY datatype
                     int i = 0;
                     for (int j=0; j<mdim.length; j++) {
                         if (j>0) stringBuffer.append("\n");
@@ -1385,6 +1440,15 @@ implements TableView, ActionListener
         int[] selectedIndex = dataset.getSelectedIndex();
         long[] dims = dataset.getDims();
 
+        if (idx <0 || idx >= dims[selectedIndex[2]]) {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+                "Frame number must be between 0 and "+dims[selectedIndex[2]],
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         start[selectedIndex[2]] = idx;
         dataset.clearData();
 
@@ -1467,19 +1531,38 @@ implements TableView, ActionListener
             String s =(String)content.getTransferData(DataFlavor.stringFlavor);
 
             StringTokenizer st = new StringTokenizer(s, "\n");
+            // read line by line
             while (st.hasMoreTokens() && r < rows)
             {
                 line = st.nextToken();
 
-                StringTokenizer lt = new StringTokenizer(line);
-                while (lt.hasMoreTokens() && c < cols)
+                if (fixedDataLength < 1)
                 {
-                    index = r*cols+c;
-                    updateValueInMemory(lt.nextToken(), r, c);
-                    c = c + 1;
+                    // separate by delimiter
+                    StringTokenizer lt = new StringTokenizer(line);
+                    while (lt.hasMoreTokens() && c < cols)
+                    {
+                        index = r*cols+c;
+                        updateValueInMemory(lt.nextToken(), r, c);
+                        c = c + 1;
+                    }
+                    r = r+1;
+                    c = c0;
+                } else
+                {
+                    // the data has fixed length
+                    int n = line.length();
+                    String theVal;
+                    for (int i = 0; i<n; i=i+fixedDataLength)
+                    {
+                        index = r*cols+c;
+                        try {
+                            theVal = line.substring(i, i+fixedDataLength);
+                            updateValueInMemory(theVal, r, c);
+                        } catch (Exception ex) { continue; }
+                        c = c + 1;
+                    }
                 }
-                r = r+1;
-                c = c0;
             }
         }	catch (Throwable ex) {
             toolkit.beep();
@@ -2004,7 +2087,7 @@ implements TableView, ActionListener
         ScalarDS sds = (ScalarDS)dataset;
         boolean isUnsigned = sds.isUnsigned();
 
-        // check data range for undigned datatype
+        // check data range for unsigned datatype
         if (isUnsigned)
         {
             long lvalue = -1;

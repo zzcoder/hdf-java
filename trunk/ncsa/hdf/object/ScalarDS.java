@@ -295,15 +295,16 @@ public abstract class ScalarDS extends Dataset
         return isUnsigned;
     }
 
+    /** Returns the (min, max) pair of image data range */
     public double[] getImageDataRange()
     {
         return imageDataRange;
     }
 
+    /** Returns the fill values for the dataset */
     public final Object getFillValue()
     {
         return fillValue;
     }
-
 
 }

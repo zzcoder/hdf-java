@@ -56,7 +56,7 @@ implements ActionListener
      * @param type the type of the conversion to perform.
      * @param openFiles The list of current open files.
       */
-    public SRBFileDialog(Frame owner)
+    public SRBFileDialog(Frame owner) throws Throwable
     {
         super (owner, "Open File from SRB ...", true);
         treeSrb = null;
@@ -97,8 +97,10 @@ implements ActionListener
                 srbFileSystem = new SRBFileSystem(srbAccount);
             }
 
-            if (srbFileSystem == null)
+            if (srbFileSystem == null) // using default connection at .srb directory
+            {
                 srbFileSystem = new SRBFileSystem();
+            }
 
             GeneralFile root = FileFactory.newFile( srbFileSystem, srbFileSystem.getHomeDirectory() );
             String[] selectFieldNames = {
@@ -115,10 +117,7 @@ implements ActionListener
             JScrollPane pane = new JScrollPane(treeSrb);
             pane.setPreferredSize(new Dimension( 600, 400 ));
             contentPane.add(pane, BorderLayout.CENTER);
-        } catch (Throwable e) {
-            e.printStackTrace();
-            System.out.println(((SRBException)e).getStandardMessage());
-        }
+        } catch (Throwable e) { throw e; }
 
         JButton okButton = new JButton("   Ok   ");
         okButton.setMnemonic(KeyEvent.VK_O);

@@ -42,7 +42,7 @@ import ncsa.hdf.object.*;
  * @author Peter X. Cao
  */
 public class NewTableDataDialog extends JDialog
-implements ActionListener
+implements ActionListener, ItemListener
 {
     private static final String[] DATATYPE_NAMES = {
         "byte (8-bit)",                // 0
@@ -54,12 +54,11 @@ implements ActionListener
         "long (64-bit)",               // 6
         "float",                       // 7
         "double",                      // 8
-        "string"                       // 9
+        "string",                      // 9
+        "enum"                         // 10
     };
 
     private FileFormat fileformat;
-
-    private JTextField nameField, dimsField;
 
     private JComboBox parentChoice;
 
@@ -86,6 +85,11 @@ implements ActionListener
 
     private DefaultCellEditor cellEditor;
 
+    private JTextField nameField, currentSizeField, maxSizeField, chunkSizeField;
+    private JComboBox compressionLevel, rankChoice, memberTypeChoice;
+    private JCheckBox checkCompression;
+    private JRadioButton checkContinguous, checkChunked;
+
     /** Constructs NewTableDataDialog with specified list of possible parent groups.
      *  @param owner the owner of the input
      *  @param pGroup the parent group which the new group is added to.
@@ -97,13 +101,13 @@ implements ActionListener
 
         newObject = null;
         dataView = null;
-        numberOfMembers = 5;
+        numberOfMembers = 2;
         fileformat = pGroup.getFileFormat();
 
-        JComboBox cb = new JComboBox(DATATYPE_NAMES);
-        cellEditor = new DefaultCellEditor(cb);
+        memberTypeChoice = new JComboBox(DATATYPE_NAMES);
+        cellEditor = new DefaultCellEditor(memberTypeChoice);
         rowEditorModel = new RowEditorModel(numberOfMembers, cellEditor);
-        String[] colNames = {"Name", "Datatype", "Array size / String length"};
+        String[] colNames = {"Name", "Datatype", "Array size / String length / Member names"};
         tableModel =  new DefaultTableModel( colNames, numberOfMembers);
         table = new JTable(tableModel)
         {
@@ -159,7 +163,7 @@ implements ActionListener
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
-        contentPane.setPreferredSize(new Dimension(550, 300));
+        contentPane.setPreferredSize(new Dimension(700, 500));
 
         JButton okButton = new JButton("   Ok   ");
         okButton.setActionCommand("Ok");
@@ -185,37 +189,119 @@ implements ActionListener
         tmpP.add(parentChoice);
         namePanel.add(tmpP, BorderLayout.CENTER);
 
-        // table size panel
-        JPanel tabelSizePanel = new JPanel();
-        tabelSizePanel.setLayout(new GridLayout(1,4));
-        tabelSizePanel.add(new JLabel(" Number of Members:"));
-        tabelSizePanel.add(nFieldBox);
-        String labelStr = "    Number of Records:";
-        if (isH5) labelStr = "   Size of Dimensions:";
-        tabelSizePanel.add(new JLabel(labelStr));
-        tabelSizePanel.add(dimsField=new JTextField("e.g., 5, 50x10, etc."));
-        TitledBorder border = new TitledBorder("Dataset Size");
-        border.setTitleColor(new Color(100, 100, 200));
-        tabelSizePanel.setBorder(border);
+        // set DATATSPACE
+        JPanel spacePanel = new JPanel();
+        spacePanel.setLayout(new GridLayout(2,3,15,3));
+        TitledBorder border = new TitledBorder("Dataspace");
+        border.setTitleColor(Color.blue);
+        spacePanel.setBorder(border);
+
+
+        rankChoice = new JComboBox();
+        for (int i=1; i<33; i++) rankChoice.addItem(String.valueOf(i));
+        rankChoice.setSelectedIndex(0);
+
+        currentSizeField = new JTextField("1");
+        maxSizeField = new JTextField("0");
+        spacePanel.add(new JLabel("No. of dimensions"));
+        spacePanel.add(new JLabel("Current size"));
+        spacePanel.add(new JLabel("Max size (-1 for unlimited)"));
+        spacePanel.add(rankChoice);
+        spacePanel.add(currentSizeField);
+        spacePanel.add(maxSizeField);
+
+        // set storage layout and data compression
+        JPanel layoutPanel = new JPanel();
+        layoutPanel.setLayout(new BorderLayout());
+        border = new TitledBorder("Data Layout and Compression");
+        border.setTitleColor(Color.BLUE);
+        layoutPanel.setBorder(border);
+
+        checkContinguous = new JRadioButton("Contiguous");
+        checkContinguous.setSelected(true);
+        checkChunked = new JRadioButton("Chunked");
+        ButtonGroup bgroup = new ButtonGroup();
+        bgroup.add(checkChunked);
+        bgroup.add(checkContinguous);
+        chunkSizeField = new JTextField("1");
+        chunkSizeField.setEnabled(false);
+        checkCompression = new JCheckBox("gzip");
+
+        compressionLevel = new JComboBox();
+        for (int i=0; i<10; i++) compressionLevel.addItem(String.valueOf(i));
+        compressionLevel.setSelectedIndex(6);
+        compressionLevel.setEnabled(false);
 
         tmpP = new JPanel();
+        tmpP.setLayout(new GridLayout(2, 1));
+        tmpP.add(new JLabel("Storage layout:  "));
+        tmpP.add(new JLabel("Compression:  "));
+        layoutPanel.add(tmpP, BorderLayout.WEST);
+
+        tmpP = new JPanel();
+        tmpP.setLayout(new GridLayout(2, 1));
+
+        JPanel tmpP0 = new JPanel();
+        tmpP0.setLayout(new GridLayout(1, 2));
+        tmpP0.add(checkContinguous);
+
+        JPanel tmpP00 = new JPanel();
+        tmpP00.setLayout(new GridLayout(1, 3));
+        tmpP00.add(checkChunked);
+        tmpP00.add(new JLabel("          Size: "));
+        tmpP00.add(chunkSizeField);
+        tmpP0.add(tmpP00);
+
+        tmpP.add(tmpP0);
+
+        tmpP0 = new JPanel();
+        tmpP0.setLayout(new GridLayout(1, 7));
+        tmpP0.add(checkCompression);
+        tmpP0.add(new JLabel("      Level: "));
+        tmpP0.add(compressionLevel);
+        tmpP0.add(new JLabel(""));
+        tmpP0.add(new JLabel(""));
+        tmpP0.add(new JLabel(""));
+        tmpP0.add(new JLabel(""));
+        tmpP.add(tmpP0);
+
+        layoutPanel.add(tmpP, BorderLayout.CENTER);
+
+        // add name, space and layout panels
+        tmpP = new JPanel();
         tmpP.setLayout(new BorderLayout(5,5));
-        tmpP.add(namePanel, BorderLayout.CENTER);
-        tmpP.add(tabelSizePanel, BorderLayout.SOUTH);
+        tmpP.add(namePanel, BorderLayout.NORTH);
+        tmpP.add(spacePanel, BorderLayout.CENTER);
+        tmpP.add(layoutPanel, BorderLayout.SOUTH);
 
         contentPane.add(tmpP, BorderLayout.NORTH);
 
+        // add field table
+        tmpP = new JPanel();
+        tmpP.setLayout(new BorderLayout(5,5));
+        tmpP0 = new JPanel();
+        tmpP0.setLayout(new BorderLayout(5,5));
+        tmpP0.add(new JLabel(" Number of Members:"), BorderLayout.WEST);
+        tmpP0.add(nFieldBox, BorderLayout.CENTER);
+        tmpP.add(tmpP0, BorderLayout.NORTH);
         JScrollPane scroller = new JScrollPane(table);
         border = new TitledBorder("Compound Datatype Properties");
-        border.setTitleColor(new Color(100, 100, 200));
-        scroller.setBorder(border);
-        contentPane.add(scroller, BorderLayout.CENTER);
+        border.setTitleColor(Color.BLUE);
+        tmpP.setBorder(border);
+        tmpP.add(scroller, BorderLayout.CENTER);
+        contentPane.add(tmpP, BorderLayout.CENTER);
 
         // set OK and CANCEL buttons
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
         contentPane.add(buttonPanel, BorderLayout.SOUTH);
+
+        rankChoice.addItemListener(this);
+        checkCompression.addItemListener(this);
+        checkContinguous.addItemListener(this);
+        checkChunked.addItemListener(this);
+        memberTypeChoice.addItemListener(this);
 
         // locate the H5Property dialog
         Point l = owner.getLocation();
@@ -269,10 +355,127 @@ implements ActionListener
         }
     }
 
+    public void itemStateChanged(ItemEvent e)
+    {
+        Object source = e.getSource();
+
+        if (source.equals(rankChoice))
+        {
+            int rank = rankChoice.getSelectedIndex()+1;
+            String currentSizeStr = "1";
+            String maxSizeStr = "0";
+
+            for (int i=1; i<rank; i++)
+            {
+                currentSizeStr += " x 1";
+                maxSizeStr += " x 0";
+            }
+
+            currentSizeField.setText(currentSizeStr);
+            maxSizeField.setText(maxSizeStr);
+
+            String currentStr = currentSizeField.getText();
+            int idx = currentStr.lastIndexOf("x");
+            String chunkStr = "1";
+
+            if (rank <=1)
+                chunkStr = currentStr;
+            else
+            {
+                for (int i=1; i<rank-1; i++)
+                    chunkStr += " x 1";
+                if (idx >0)
+                    chunkStr += " x "+currentStr.substring(idx+1);
+            }
+
+            chunkSizeField.setText(chunkStr);
+        }
+        else if (source.equals(checkContinguous))
+            chunkSizeField.setEnabled(false);
+        else if (source.equals(checkChunked))
+        {
+            chunkSizeField.setEnabled(true);
+            String currentStr = currentSizeField.getText();
+            int idx = currentStr.lastIndexOf("x");
+            String chunkStr = "1";
+
+            int rank = rankChoice.getSelectedIndex()+1;
+            if (rank <=1)
+                chunkStr = currentStr;
+            else
+            {
+                for (int i=1; i<rank-1; i++)
+                    chunkStr += " x 1";
+                if (idx >0)
+                    chunkStr += " x "+currentStr.substring(idx+1);
+            }
+
+            chunkSizeField.setText(chunkStr);
+        }
+        else if (source.equals(checkCompression))
+        {
+            boolean isCompressed = checkCompression.isSelected();
+
+            if (isCompressed)
+            {
+                if (!checkChunked.isSelected())
+                {
+                    String currentStr = currentSizeField.getText();
+                    int idx = currentStr.lastIndexOf("x");
+                    String chunkStr = "1";
+
+                    int rank = rankChoice.getSelectedIndex()+1;
+                    if (rank <=1)
+                        chunkStr = currentStr;
+                    else
+                    {
+                        for (int i=1; i<rank-1; i++)
+                            chunkStr += " x 1";
+                        if (idx >0)
+                            chunkStr += " x "+currentStr.substring(idx+1);
+                    }
+
+                    chunkSizeField.setText(chunkStr);
+                }
+                compressionLevel.setEnabled(true);
+                checkContinguous.setEnabled(false);
+                checkChunked.setSelected(true);
+                chunkSizeField.setEnabled(true);
+            }
+            else
+            {
+                compressionLevel.setEnabled(false);
+                checkContinguous.setEnabled(true);
+            }
+        }
+        else if (source.equals(memberTypeChoice))
+        {
+            String item = (String)memberTypeChoice.getSelectedItem();
+            if (item == null || !item.equals("enum"))
+                return;
+
+            int row = table.getSelectedRow();
+            table.setValueAt("mb1=0,mb=1,...", row, 2);
+        }
+    }
+
     private HObject createCompoundDS() throws Exception
     {
         HObject obj = null;
+        long dims[], maxdims[], chunks[];
+        int rank;
 
+        // stop editing the last selected cell
+        int row = table.getSelectedRow();
+        int col = table.getSelectedColumn();
+        if (row>=0 && col>-0)
+        {
+            TableCellEditor ed = table.getCellEditor(row, col);
+            if (ed != null)
+                ed.stopCellEditing();
+        }
+
+        maxdims= chunks = null;
         String dname = nameField.getText();
         if (dname == null || dname.length()<=0)
             throw new IllegalArgumentException("Dataset name is empty");
@@ -281,24 +484,7 @@ implements ActionListener
         if (pgroup == null)
             throw new IllegalArgumentException("Invalid parent group");
 
-        String dimStr = dimsField.getText();
-        if (dimStr == null || dimStr.length() <=0)
-            throw new IllegalArgumentException("Invalid dimension size");
-
-        StringTokenizer st = new StringTokenizer(dimStr, "x");
-        int n = st.countTokens();
-        int idx = 0;
-        long[] dims = new long[n];
-        while (st.hasMoreTokens())
-        {
-            try { dims[idx++] = Long.valueOf(st.nextToken().trim()).longValue(); }
-            catch (Exception ex)
-            {
-                throw new IllegalArgumentException("Invalid dimension size: "+dimStr);
-            }
-        }
-
-        n = table.getRowCount();
+        int n = table.getRowCount();
         if (n<=0) return null;
 
         String[] mNames = new String[n];
@@ -314,8 +500,10 @@ implements ActionListener
 
             int order = 1;
             String orderStr = (String)table.getValueAt(i, 2);
-            if (orderStr != null)
-                order = Integer.valueOf(orderStr).intValue();
+            if (orderStr != null) {
+                try { order = Integer.parseInt(orderStr); }
+                catch (Exception ex) {}
+            }
             mOrders[i] = order;
 
             String typeName = (String)table.getValueAt(i, 1);
@@ -360,6 +548,21 @@ implements ActionListener
             {
                 type = fileformat.createDatatype(Datatype.CLASS_STRING, order, Datatype.NATIVE, Datatype.NATIVE);
             }
+            else if (DATATYPE_NAMES[10].equals(typeName)) // enum
+            {
+                type = fileformat.createDatatype(Datatype.CLASS_ENUM, 4, Datatype.NATIVE, Datatype.NATIVE);
+                if (orderStr==null || orderStr.length()<1 || orderStr.endsWith("..."))
+                {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog(this,
+                            "Invalid member values: "+orderStr,
+                            getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
+                    return null;
+                }
+                else
+                    type.setEnumMembers(orderStr);
+            }
             else
             {
                 throw new IllegalArgumentException("Invalid data type.");
@@ -367,7 +570,181 @@ implements ActionListener
             mDatatypes[i] = type;
         } // for (int i=0; i<n; i++)
 
-        obj = fileformat.createCompoundDS(dname, pgroup, dims, mNames, mDatatypes, mOrders, null);
+        rank = rankChoice.getSelectedIndex()+1;
+        StringTokenizer st = new StringTokenizer(currentSizeField.getText(), "x");
+        if (st.countTokens() < rank)
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+                "Number of values in the current dimension size is less than "+rank,
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        long l = 0;
+        dims = new long[rank];
+        String token = null;
+        for (int i=0; i<rank; i++)
+        {
+            token = st.nextToken().trim();
+            try { l = Long.parseLong(token); }
+            catch (NumberFormatException ex)
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(this,
+                    "Invalid dimension size: "+currentSizeField.getText(),
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return null;
+            }
+
+            if (l <=0)
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(this,
+                    "Dimension size must be greater than zero.",
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return null;
+            }
+
+            dims[i] = l;
+        }
+
+        st = new StringTokenizer(maxSizeField.getText(), "x");
+        if (st.countTokens() < rank)
+        {
+            toolkit.beep();
+            JOptionPane.showMessageDialog(this,
+                "Number of values in the max dimension size is less than "+rank,
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        l = 0;
+        maxdims = new long[rank];
+        for (int i=0; i<rank; i++)
+        {
+            token = st.nextToken().trim();
+            try { l = Long.parseLong(token); }
+            catch (NumberFormatException ex)
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(this,
+                    "Invalid max dimension size: "+maxSizeField.getText(),
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return null;
+            }
+
+            if (l < -1)
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(this,
+                    "Dimension size cannot be less than -1.",
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return null;
+            }
+            else if ( l == 0)
+                l = dims[i];
+
+            maxdims[i] = l;
+        }
+
+        chunks = null;
+        if (checkChunked.isSelected())
+        {
+            st = new StringTokenizer(chunkSizeField.getText(), "x");
+            if (st.countTokens() < rank)
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(this,
+                    "Number of values in the chunk size is less than "+rank,
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return null;
+            }
+
+            l = 0;
+            chunks = new long[rank];
+            token = null;
+            for (int i=0; i<rank; i++)
+            {
+                token = st.nextToken().trim();
+                try { l = Long.parseLong(token); }
+                catch (NumberFormatException ex)
+                {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog(this,
+                        "Invalid chunk dimension size: "+chunkSizeField.getText(),
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                    return null;
+                }
+
+                if (l < 1)
+                {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog(this,
+                        "Chunk size cannot be less than 1.",
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                    return null;
+                }
+
+                chunks[i] = l;
+            } // for (int i=0; i<rank; i++)
+
+            long tchunksize=1, tdimsize=1;
+            for (int i=0; i<rank; i++)
+            {
+                tchunksize *= chunks[i];
+                tdimsize *= dims[i];
+            }
+
+            if (tchunksize >= tdimsize)
+            {
+                toolkit.beep();
+                int status = JOptionPane.showConfirmDialog(
+                    this,
+                    "Chunk size is equal/greater than the current size. "+
+                    "\nAre you sure you want to set chunk size to "+
+                    chunkSizeField.getText()+"?",
+                    getTitle(),
+                    JOptionPane.YES_NO_OPTION);
+                if (status == JOptionPane.NO_OPTION)
+                    return null;
+            }
+
+            if (tchunksize == 1)
+            {
+                toolkit.beep();
+                int status = JOptionPane.showConfirmDialog(
+                    this,
+                     "Chunk size is one, which may cause large memory overhead for large dataset."+
+                    "\nAre you sure you want to set chunk size to "+
+                    chunkSizeField.getText()+"?",
+                    getTitle(),
+                    JOptionPane.YES_NO_OPTION);
+                if (status == JOptionPane.NO_OPTION)
+                    return null;
+            }
+
+        } // if (checkChunked.isSelected())
+
+        int gzip = 0;
+        if (checkCompression.isSelected())
+            gzip = compressionLevel.getSelectedIndex();
+
+        if (checkChunked.isSelected())
+            obj = fileformat.createCompoundDS(dname, pgroup, dims, maxdims, chunks,
+                gzip, mNames, mDatatypes, mOrders, null);
+        else
+            obj = fileformat.createCompoundDS(dname, pgroup, dims, maxdims, null,
+                -1, mNames, mDatatypes, mOrders, null);
 
         return obj;
     }

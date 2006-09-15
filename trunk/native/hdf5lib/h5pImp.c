@@ -2802,3 +2802,392 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5P1remove_1filter
     return status;
 }
 
+
+/**********************************************************************
+ *                                                                    *
+    Modified by Peter Cao on July 26, 2006:                            
+        Some of the Generic Property APIs have callback function 
+        pointers, which Java does not support. Only the Generic 
+        Property APIs without function pointers are implemented
+ *                                                                    *
+ **********************************************************************/
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pcreate_list
+ * Signature: hid_t H5Pcreate_list( hid_t class)
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pcreate_1list
+  (JNIEnv *env, jclass clss, jint cls)
+{
+    hid_t retVal = -1;
+
+    retVal =  H5Pcopy((hid_t)cls);
+
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+
+    return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset
+ * Signature: herr_t H5Pset( hid_t plid, const char *name, void *value)
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset
+  (JNIEnv *env, jclass clss, jint plid, jstring name, jint val)
+{
+    char* cstr;
+    jboolean isCopy;    
+    hid_t retVal = -1;
+
+    if (name == NULL) {
+        h5nullArgument( env, "H5Pset: name is NULL");
+        return -1;
+    }
+
+    cstr = (char *)(*env)->GetStringUTFChars(env,name,&isCopy);
+    if (cstr == NULL) {
+        h5JNIFatalError( env, "H5Pset: name not pinned");
+        return -1;
+    }
+
+    retVal =  H5Pset((hid_t)plid, cstr, &val);
+
+    (*env)->ReleaseStringUTFChars(env,name,cstr);
+
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+
+    return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pexist
+ * Signature: htri_t H5Pexist( hid_t id, const char *name )
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pexist
+  (JNIEnv *env, jclass clss, jint plid, jstring name)
+{
+    char* cstr;
+    jboolean isCopy;    
+    hid_t retVal = -1;
+
+    if (name == NULL) {
+        h5nullArgument( env, "H5Pexist: name is NULL");
+        return -1;
+    }
+
+    cstr = (char *)(*env)->GetStringUTFChars(env,name,&isCopy);
+    if (cstr == NULL) {
+        h5JNIFatalError( env, "H5Pexist: name not pinned");
+        return -1;
+    }
+
+    retVal =  H5Pexist((hid_t)plid, cstr);
+
+    (*env)->ReleaseStringUTFChars(env,name,cstr);
+
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+
+    return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_size
+ * Signature: int H5Pget_size( hid_t id, const char *name, size_t *size ) 
+ */
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1size
+  (JNIEnv *env, jclass clss, jint plid, jstring name)
+{
+    char* cstr;
+    jboolean isCopy;    
+    hid_t retVal = -1;
+    size_t size;
+
+    if (name == NULL) {
+        h5nullArgument( env, "H5Pget_size: name is NULL");
+        return -1;
+    }
+
+    cstr = (char *)(*env)->GetStringUTFChars(env,name,&isCopy);
+    if (cstr == NULL) {
+        h5JNIFatalError( env, "H5Pget_size: name not pinned");
+        return -1;
+    }
+
+    retVal =  H5Pget_size((hid_t)plid, cstr, &size);
+
+    (*env)->ReleaseStringUTFChars(env,name,cstr);
+
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+
+    return (jlong) size;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_nprops
+ * Signature: int H5Pget_nprops( hid_t id, size_t *nprops )  
+ */
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1nprops
+  (JNIEnv *env, jclass clss, jint plid)
+{
+    hid_t retVal = -1;
+    size_t nprops;
+
+    retVal =  H5Pget_nprops((hid_t)plid, &nprops);
+
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+
+    return (jlong) nprops;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_class_name
+ * Signature: char * H5Pget_class_name( hid_t pcid ) 
+ */
+JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1class_1name
+  (JNIEnv *env, jclass clss, jint plid)
+{
+    char *c_str;
+    jstring j_str;
+
+    c_str =  H5Pget_class_name((hid_t)plid);
+
+    if (c_str < 0) {
+        h5libraryError(env);
+    }
+
+    j_str = (*env)->NewStringUTF(env,c_str);
+    if (j_str == NULL) {
+        h5JNIFatalError( env,"H5Pget_class_name: return string failed");
+    }
+
+    return j_str;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_class_parent
+ * Signature: hid_t H5Pget_class_parent( hid_t pcid )   
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1class_1parent
+  (JNIEnv *env, jclass clss, jint plid)
+{
+    hid_t retVal = -1;
+
+    retVal =  H5Pget_class_parent((hid_t)plid);
+
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+
+    return (jint) retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pisa_class
+ * Signature: htri_t H5Pisa_class( hid_t plist, hid_t pclass )    
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pisa_1class
+  (JNIEnv *env, jclass clss, jint plid, jint pcls)
+{
+    htri_t retVal = -1;
+
+    retVal =  H5Pisa_class((hid_t)plid, (hid_t)pcls);
+
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+
+    return (jint) retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget
+ * Signature: herr_t H5Pget( hid_t plid, const char *name, void *value )
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget
+  (JNIEnv *env, jclass clss, jint plid, jstring name)
+{
+    char* cstr;
+    jboolean isCopy;
+    jint val;    
+    jint retVal = -1;
+
+    if (name == NULL) {
+        h5nullArgument( env, "H5Pget: name is NULL");
+        return -1;
+    }
+
+    cstr = (char *)(*env)->GetStringUTFChars(env,name,&isCopy);
+    if (cstr == NULL) {
+        h5JNIFatalError( env, "H5Pget: name not pinned");
+        return -1;
+    }
+
+    retVal =  H5Pget((hid_t)plid, cstr, &val);
+
+    (*env)->ReleaseStringUTFChars(env,name,cstr);
+
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+
+    return (jint)val;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pequal
+ * Signature: htri_t H5Pequal( hid_t id1, hid_t id2 )    
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pequal
+  (JNIEnv *env, jclass clss, jint plid1, jint plid2)
+{
+    htri_t retVal = -1;
+
+    retVal =  H5Pequal((hid_t)plid1, (hid_t)plid2);
+
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+
+    return (jint) retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pcopy_prop
+ * Signature: herr_t H5Pcopy_prop( hid_t dst_id, hid_t src_id, const char *name ) 
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pcopy_1prop
+  (JNIEnv *env, jclass clss, jint dst_plid, jint src_plid, jstring name)
+{
+    char* cstr;
+    jboolean isCopy;
+    jint retVal = -1;
+
+    if (name == NULL) {
+        h5nullArgument( env, "H5Pcopy_prop: name is NULL");
+        return -1;
+    }
+
+    cstr = (char *)(*env)->GetStringUTFChars(env,name,&isCopy);
+    if (cstr == NULL) {
+        h5JNIFatalError( env, "H5Pcopy_prop: name not pinned");
+        return -1;
+    }
+
+    retVal =  H5Pcopy_prop((hid_t)dst_plid, (hid_t)src_plid, cstr);
+
+    (*env)->ReleaseStringUTFChars(env,name,cstr);
+
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+
+    return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Premove
+ * Signature: herr_t H5Premove( hid_t plid; const char *name ) 
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Premove
+  (JNIEnv *env, jclass clss, jint plid, jstring name)
+{
+    char* cstr;
+    jboolean isCopy;
+    jint retVal = -1;
+
+    if (name == NULL) {
+        h5nullArgument( env, "H5Premove: name is NULL");
+        return -1;
+    }
+
+    cstr = (char *)(*env)->GetStringUTFChars(env,name,&isCopy);
+    if (cstr == NULL) {
+        h5JNIFatalError( env, "H5Premove: name not pinned");
+        return -1;
+    }
+
+    retVal =  H5Premove((hid_t)plid, cstr);
+
+    (*env)->ReleaseStringUTFChars(env,name,cstr);
+
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+
+    return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Punregister
+ * Signature: herr_t H5Punregister( H5P_class_t class, const char *name )  
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Punregister
+  (JNIEnv *env, jclass clss, jint plid, jstring name)
+{
+    char* cstr;
+    jboolean isCopy;
+    jint retVal = -1;
+
+    if (name == NULL) {
+        h5nullArgument( env, "H5Punregister: name is NULL");
+        return -1;
+    }
+
+    cstr = (char *)(*env)->GetStringUTFChars(env,name,&isCopy);
+    if (cstr == NULL) {
+        h5JNIFatalError( env, "H5Punregister: name not pinned");
+        return -1;
+    }
+
+    retVal =  H5Punregister((hid_t)plid, cstr);
+
+    (*env)->ReleaseStringUTFChars(env,name,cstr);
+
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+
+    return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pclose_list
+ * Signature: herr_t H5Pclose_class( hid_t plist )   
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pclose_1class
+  (JNIEnv *env, jclass clss, jint plid)
+{
+    hid_t retVal = -1;
+
+    retVal =  H5Pclose_class((hid_t)plid);
+
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+
+    return (jint) retVal;
+}

@@ -531,6 +531,13 @@ public class H5 {
         return retVal;
     }
 
+    /** H5Acopy copies the content of one attribute to another.
+     *  @param src_did the identifier of the source attribute
+     *  @param dst_did the identifier of the destinaiton attribute
+     */
+    public synchronized static native int H5Acopy(int src_aid, int dst_aid)
+        throws HDF5LibraryException;
+
     /**
      *  H5Aread reads an attribute, specified with attr_id. The
      *  attribute's memory datatype is specified with mem_type_id.
@@ -1041,8 +1048,7 @@ public class H5 {
     public synchronized static native long H5Dget_storage_size(int dataset_id)
         throws HDF5LibraryException;
 
-    /** H5Dcopy copies the content and attributes of one dataset
-     *  to another dataset.
+    /** H5Dcopy copies the content of one dataset to another dataset.
      *  @param src_did the identifier of the source dataset
      *  @param dst_did the identifier of the destinaiton dataset
      */
@@ -2474,7 +2480,7 @@ public class H5 {
      *  @param plist  IN: Identifier for the dataset transfer
      *  property list.
      *
-     *  @return TRUE or FALSE if successful
+     *  @return TRUE or FALSE if successful; otherwise returns a negative value
      *
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
@@ -2488,7 +2494,7 @@ public class H5 {
      *  property list.
      *  @param level  IN: Compression level.
      *
-     *  @return true if successful
+     *  @return non-negative if successful
      *
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
@@ -3924,8 +3930,13 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native int H5Tenum_insert(int type, String name,
-        int[] value)
-        throws HDF5LibraryException, NullPointerException;
+        int[] value) throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static int H5Tenum_insert(int type, String name,
+        int value) throws HDF5LibraryException, NullPointerException {
+        int[] val = {value};
+        return H5Tenum_insert(type, name, val);
+    }
 
     /**
      *  H5Tenum_nameof finds the symbol name that corresponds
@@ -4460,15 +4471,20 @@ public class H5 {
     //                 August 25, 2004                                //
     ////////////////////////////////////////////////////////////////////
 
-    public synchronized static native long H5Fget_name (int obj_id, String name, int size);
+    public synchronized static native long H5Fget_name (int obj_id, String name, int size)
+            throws HDF5LibraryException;
 
-    public synchronized static native long H5Fget_filesize (int file_id);
+    public synchronized static native long H5Fget_filesize (int file_id)
+            throws HDF5LibraryException;
 
-    public synchronized static native int H5Iget_file_id (int obj_id);
+    public synchronized static native int H5Iget_file_id (int obj_id)
+            throws HDF5LibraryException;
 
-    public synchronized static native int H5Premove_filter (int obj_id, int filter);
+    public synchronized static native int H5Premove_filter (int obj_id, int filter)
+            throws HDF5LibraryException;
 
-    public synchronized static native int H5Zget_filter_info (int filter);
+    public synchronized static native int H5Zget_filter_info (int filter)
+            throws HDF5LibraryException;
 
 
     ////////////////////////////////////////////////////////////////////
@@ -4484,11 +4500,166 @@ public class H5 {
         Object ubounds, Object lbounds, int nkeys);
 
 
-    ////////////////////////////////////////////////////////////////////
-    //                                                                //
-    //     Generic Properties APIs are more implemented because       //
-    //     there are function pointers, which Java cannot handle      //
-    ////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
+    //    Modified by Peter Cao on July 26, 2006:                           //
+    //       Some of the Generic Property APIs have callback function       //
+    //       pointers, which Java does not support. Only the Generic        //
+    //       Property APIs without function pointers are implemented        //
+    //////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Creates a new property list class of a given class
+     *
+     * @param cls;     IN: Class of property list to create
+     * @return a valid property list identifier if successful;
+     *         a negative value if failed
+     * @throws HDF5LibraryException
+     */
+    public synchronized static native int H5Pcreate_list( int cls)
+            throws HDF5LibraryException;
+
+    /**
+     * Sets a property list value (support integer only)
+     *
+     * @param plid;  IN: Property list identifier to modify
+     * @param name;  IN: Name of property to modify
+     * @param value; IN: value to set the property to
+     * @return a non-negative value if successful; a negative value if failed
+     * @throws HDF5LibraryException
+     */
+    public synchronized static native int H5Pset( int plid, String name, int value)
+            throws HDF5LibraryException;
+
+    /**
+     * H5Pexist determines whether a property exists within a property list or class
+     *
+     * @param plid; IN: Identifier for the property to query
+     * @param name; IN: Name of property to check for
+     * @return a positive value if the property exists in the property object;
+     *         zero if the property does not exist; a negative value if failed
+     * @throws HDF5LibraryException
+     */
+    public synchronized static native int H5Pexist( int plid, String name )
+            throws HDF5LibraryException;
+
+    /**
+     * H5Pget_size retrieves the size of a property's value in bytes
+     *
+     * @param plid; IN: Identifier of property object to query
+     * @param name; IN: Name of property to query
+     * @return size of a property's value if successful; a negative value if failed
+     * @throws HDF5LibraryException
+     */
+    public synchronized static native long H5Pget_size( int plid, String name )
+            throws HDF5LibraryException;
+
+    /**
+     * H5Pget_nprops retrieves the number of properties in a property list or class
+     *
+     * @param plid; IN: Identifier of property object to query
+     * @return number of properties if successful; a negative value if failed
+     * @throws HDF5LibraryException
+     */
+    public synchronized static native long H5Pget_nprops( int plid)
+            throws HDF5LibraryException;
+
+    /**
+     * H5Pget_class_name retrieves the name of a generic property list class
+     *
+     * @param plid; IN: Identifier of property object to query
+     * @return name of a property list if successful; null if failed
+     * @throws HDF5LibraryException
+     */
+    public synchronized static native String H5Pget_class_name( int plid)
+            throws HDF5LibraryException;
+
+    /**
+     * H5Pget_class_parent retrieves an identifier for the parent class of a property class
+     *
+     * @param plid; IN: Identifier of the property class to query
+     * @return a valid parent class object identifier if successful; a negative value if failed
+     * @throws HDF5LibraryException
+     */
+    public synchronized static native int H5Pget_class_parent( int plid)
+            throws HDF5LibraryException;
+
+    /**
+     * H5Pisa_class checks to determine whether a property list is a member of the specified class
+     *
+     * @param plist; IN: Identifier of the property list
+     * @param pclass; IN: Identifier of the property class
+     * @return a positive value if equal; zero if unequal; a negative value if failed
+     * @throws HDF5LibraryException
+     */
+    public synchronized static native int H5Pisa_class( int plist, int pclass )
+            throws HDF5LibraryException;
+
+    /**
+     * H5Pget retrieves a copy of the value for a property in a property list
+     *     (support integer only)
+     *
+     * @param plid; IN: Identifier of property object to query
+     * @param name; IN: Name of property to query
+     * @return value for a property if successful; a negative value if failed
+     * @throws HDF5LibraryException
+     */
+    public synchronized static native int H5Pget( int plid, String name )
+            throws HDF5LibraryException;
+
+    /**
+     * H5Pequal determines if two property lists or classes are equal
+     *
+     * @param plid1; IN: First property object to be compared
+     * @param plid2; IN: Second property object to be compared
+     * @return positive value if equal; zero if unequal, a negative value if failed
+     * @throws HDF5LibraryException
+     */
+    public synchronized static native int H5Pequal( int plid1, int plid2 )
+            throws HDF5LibraryException;
+
+    /**
+     * H5Pcopy_prop copies a property from one property list or class to another
+     *
+     * @param dst_id; IN: Identifier of the destination property list or class
+     * @param src_id; IN: Identifier of the source property list or class
+     * @param name; IN: Name of the property to copy
+     * @return a non-negative value if successful; a negative value if failed
+     * @throws HDF5LibraryException
+     */
+    public synchronized static native int H5Pcopy_prop( int dst_id, int src_id, String name )
+            throws HDF5LibraryException;
+
+    /**
+     * H5Premove removes a property from a property list
+     *
+     * @param plid; IN: Identifier of the property list to modify
+     * @param name; IN: Name of property to remove
+     * @return a non-negative value if successful; a negative value if failed
+     * @throws HDF5LibraryException
+     */
+    public synchronized static native int H5Premove( int plid, String name )
+            throws HDF5LibraryException;
+
+    /**
+     * H5Punregister removes a property from a property list class
+     *
+     * @param plid; IN: Property list class from which to remove permanent property
+     * @param name; IN: Name of property to remove
+     * @return a non-negative value if successful; a negative value if failed
+     * @throws HDF5LibraryException
+     */
+    public synchronized static native int H5Punregister( int plid, String name )
+            throws HDF5LibraryException;
+
+    /**
+     * Closes an existing property list class
+     *
+     * @param plid; IN: Property list class to close
+     * @return a non-negative value if successful; a negative value if failed
+     * @throws HDF5LibraryException
+     */
+    public synchronized static native int H5Pclose_class( int plid)
+            throws HDF5LibraryException;
 
 }
 

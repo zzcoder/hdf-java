@@ -23,13 +23,53 @@ import ncsa.hdf.hdf5lib.exceptions.*;
  * This class provides file level APIs. File access APIs include retrieving the
  * file hierarchy, opening and closing file, and writing file content to disk.
  * <p>
+ * The HDF5 file structure is stored in a tree that is organlized by DefaultMutableTreeNode.
+ * Each tree node represents an HDF5 object such as Group, Dataset or Named datatype.
+ * Starting from the root, <i>rootNode</i>, one can trace the tree to find a
+ * specific object.
+ *
+ * <p>
+ * The following example show how to fing an object by a given path
+ * <pre>
+    HObject findObject(FileFormat file, String path)
+    {
+        if (file == null || path == null)
+            return null;
+
+        if (!path.endsWith("/"))
+            path = path+"/";
+
+        DefaultMutableTreeNode theRoot = (DefaultMutableTreeNode)file.getRootNode();
+
+        if (theRoot == null)
+            return null;
+        else if (path.equals("/"))
+            return (HObject)theRoot.getUserObject();
+
+        Enumeration local_enum = ((DefaultMutableTreeNode)theRoot).breadthFirstEnumeration();
+        DefaultMutableTreeNode theNode = null;
+        HObject theObj = null;
+        while(local_enum.hasMoreElements())
+        {
+            theNode = (DefaultMutableTreeNode)local_enum.nextElement();
+            theObj = (HObject)theNode.getUserObject();
+            String fullPath = theObj.getFullName()+"/";
+            if (path.equals(fullPath))
+                break;
+        }
+
+        return theObj;
+    }
+ * </pre>
+ *
  * @version 1.0 12/12/2001
  * @author Peter X. Cao, NCSA
  */
 public class H5File extends FileFormat
 {
     /**
-     * the file access flag.
+     * the file access flag. Valid values are HDF5Constants.H5F_ACC_RDONLY,
+     *  HDF5Constants.H5F_ACC_RDWR and HDF5Constants.H5F_ACC_CREAT.
      */
     private int flag;
 
@@ -47,7 +87,7 @@ public class H5File extends FileFormat
     private boolean isReadOnly;
 
     /**
-     * Constructs an empty H5File with read-only access.
+     * Constructs an empty H5File with read/write access.
      */
     public H5File()
     {
@@ -55,7 +95,7 @@ public class H5File extends FileFormat
     }
 
     /**
-     * Constructs an H5File object of given file name with read-only access.
+     * Constructs an H5File object of given file name with read/write access.
      */
     public H5File(String pathname)
     {
@@ -140,22 +180,38 @@ public class H5File extends FileFormat
         return new H5File(pathname, access);
     }
 
-    // Implementing FileFormat
+    /**
+     * Opens access to this file
+     * @return the file identifier if successful; otherwise returns negative value.
+     */
     public int open() throws Exception
     {
         return open(true);
     }
 
-    private int open(boolean openFullTree) throws Exception
+    /**
+     * Opens access to this file.
+     * @param loadFullHierarchy if true, load the full hierarchy into memory;
+     *        otherwise just opens the file idenfitier.
+     * @return the file identifier if successful; otherwise returns negative value.
+     */
+    private int open(boolean loadFullHierarchy) throws Exception
     {
-        int plist = HDF5Constants.H5P_DEFAULT;
-
         if ( fid >0 )
             return fid; // file is openned already
 
         // check for valid file access permission
         if ( flag < 0)
             throw new HDF5Exception("Invalid access identifer -- "+flag);
+         else if (HDF5Constants.H5F_ACC_CREAT == flag)
+        {
+           // create a new file
+            fid = H5.H5Fcreate(fullFileName,  HDF5Constants.H5F_ACC_TRUNC,
+                HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+            H5.H5Fflush(fid, HDF5Constants.H5F_SCOPE_LOCAL);
+            H5.H5Fclose(fid);
+            flag = HDF5Constants.H5F_ACC_RDWR;
+        }
         else if (!exists())
             throw new HDF5Exception("File does not exist -- "+fullFileName);
         else if ((flag == HDF5Constants.H5F_ACC_RDWR ||
@@ -170,17 +226,17 @@ public class H5File extends FileFormat
             //All open objects ramaining in the file are closed then file is closed
             plist = H5.H5Pcreate (HDF5Constants.H5P_FILE_ACCESS);
             H5.H5Pset_fclose_degree ( plist, HDF5Constants.H5F_CLOSE_STRONG);
-        } catch (Exception ex) {ex.printStackTrace();}
+        } catch (Exception ex) {;}
 */
 
         try {
-            fid = H5.H5Fopen( fullFileName, flag, plist);
+            fid = H5.H5Fopen( fullFileName, flag, HDF5Constants.H5P_DEFAULT);
         } catch ( Exception ex) {
             isReadOnly = true;
-            fid = H5.H5Fopen( fullFileName, HDF5Constants.H5F_ACC_RDONLY, plist);
+            fid = H5.H5Fopen( fullFileName, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
         }
 
-        if (fid>=0 && openFullTree)
+        if (fid>=0 && loadFullHierarchy)
         {
             // load the hierearchy of the file
             rootNode = loadTree();
@@ -189,7 +245,10 @@ public class H5File extends FileFormat
         return fid;
     }
 
-    // Implementing FileFormat
+    /**
+     * Closes the file access and all its open objects
+     * @throws HDF5Exception
+     */
     public void close() throws HDF5Exception
     {
         // clean unused objects
@@ -238,26 +297,36 @@ public class H5File extends FileFormat
         fid = -1;
     }
 
-    // Implementing FileFormat
+    /**
+     *
+     * @return the root node of the file
+     */
     public TreeNode getRootNode()
     {
         return rootNode;
     }
 
-    // Implementing FileFormat
+    /**
+     *
+     * @return the full path (path+name) of the file
+     */
     public String getFilePath()
     {
         return fullFileName;
     }
 
-    // Implementing FileFormat
+    /**
+     *
+     * @return true if the file is read-only; otherwise returns false.
+     */
     public boolean isReadOnly()
     {
         return isReadOnly;
     }
 
     /**
-     * Creates a new HDF5 file with given file name.
+     * Creates a new HDF5 file with given a file name. If the file already exists,
+     * erasing all data previously stored in the file.
      * <p>
      * @param pathname the full path name of the file.
      * @return an instance of the new H5File.
@@ -275,13 +344,34 @@ public class H5File extends FileFormat
         return new H5File(fileName, FileFormat.WRITE);
     }
 
-    // implementign FileFormat
+    /**
+     * Create a new group with the given name in a given parent group.
+     *
+     * @param name   The name fo the new group.
+     * @param pgroup The parent group.
+     * @return       The new group if successful; otherwise returns null
+     */
     public Group createGroup(String name, Group pgroup) throws Exception
     {
         return H5Group.create(name, pgroup);
     }
 
-    // implementign FileFormat
+    /**
+     * Creates a new datatype based on this FileFormat.
+     * <p>
+     * For example, the following code creates an instance of H5Datatype.
+     * <pre>
+     * FileFormat file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+     * H5Datatype dtype = file.createDatatype(Datatype.CLASS_INTEGER,
+     *     Datatype.NATIVE, Datatype.NATIVE, Datatype.NATIVE);
+     * </pre>
+     *
+     * @param tclass The class of datatype, such as Integer, Float
+     * @param tsize The size of the datatype in bytes
+     * @param torder The order of the byte endianing
+     * @param tsign The signed or unsinged of an integer
+     * @return  The new datatype if successful; otherwise returns null
+     */
     public Datatype createDatatype(
         int tclass,
         int tsize,
@@ -291,7 +381,16 @@ public class H5File extends FileFormat
         return new H5Datatype(tclass, tsize, torder, tsign);
     }
 
-    /* create a name dataype */
+    /**
+     * Creates a named datatype in file.
+     *
+     * @param tclass The class of datatype, such as Integer, Float
+     * @param tsize The size of the datatype in bytes
+     * @param torder The order of the byte endianing
+     * @param tsign The signed or unsinged of an integer
+     * @param name The name of the datatype to create
+     * @return  The new datatype if successful; otherwise returns null
+     */
     public Datatype createDatatype(
         int tclass,
         int tsize,
@@ -321,10 +420,21 @@ public class H5File extends FileFormat
         return dtype;
     }
 
+    /**
+     * Creates a hard link to an existing object in file.
+     *
+     * @param parentGroup The parent group for the new link
+     * @param name The name of the new link
+     * @param currentObj The object pointed by the new link
+     * @return The an instance of the object pointed by the link if successful; otherwise returns null
+     */
     public HObject createLink(Group parentGroup, String name, HObject currentObj) throws Exception
     {
         HObject obj = null;
         String current_full_name=null, new_full_name=null, parent_path=null;
+
+        if (currentObj == null)
+            throw new HDF5Exception("The object pointed by the link cannot be null.");
 
         if (currentObj instanceof Group && ((Group)currentObj).isRoot())
             throw new HDF5Exception("Cannot make a link to the root group.");
@@ -351,7 +461,37 @@ public class H5File extends FileFormat
         return obj;
     }
 
-    // implementign FileFormat
+    /**
+     * Creates a new dataset in this file.
+     * <p>
+     * The following example creates a 2D integer dataset of size 100X50 at the
+     * root group in an HDF5 file.
+     * <pre>
+     * String name = "2D integer";
+     * Group pgroup = (Group)((DefaultMutableTreeNode)getRootNode).getUserObject();
+     * Datatype dtype = new H5Datatype(Datatype.CLASS_INTEGER, // class
+     *                                 8,                      // size in bytes
+     *                                 Datatype.ORDER_LE,      // byte order
+     *                                 Datatype.SIGN_NONE);    // signed or unsigned
+     * long[] dims = {100, 50};
+     * long[] maxdims = dims;
+     * long[] chunks = null; // no chunking
+     * int gzip = 0; // no compression
+     * Object data = null; // no initial data values
+     *
+     * Dataset d = (H5File)file.createScalarDS(name, pgroup, dtype, dims, maxdims, chunks, gzip, data);
+     * </pre>
+     *
+     * @param name    The name of the new dataset
+     * @param pgroup  The parent group where the new dataset is created.
+     * @param type    The datatype of the new dataset.
+     * @param dims    The dimension sizes of the new dataset.
+     * @param maxdims The maximum dimension sizes of the new dataset.
+     * @param chunks  The chunk sizes of the new dataset.
+     * @param gzip    The compression level.
+     * @param data    The data value of the new dataset.
+     * @return        The new dataset if successful; otherwise returns null
+     */
     public Dataset createScalarDS(
         String name,
         Group pgroup,
@@ -365,7 +505,35 @@ public class H5File extends FileFormat
         return H5ScalarDS.create(name, pgroup, type, dims, maxdims, chunks, gzip, data);
     }
 
-    // implementign FileFormat
+    /**
+     * Create a new compound dataset in this file.
+     * <p>
+     * The following example creates a 2D compound dataset with size of 100X50 and
+     * members x and y at the root group in an HDF5 file. Member x is an interger,
+     * member y is an 1-D float array of size 10.
+     * <pre>
+     * String name = "2D compound";
+     * Group pgroup = (Group)((DefaultMutableTreeNode)getRootNode).getUserObject();
+     * long[] dims = {100, 50};
+     * String[] memberNames = {"x", "y"}
+     * Datatype[] memberDatatypes = {
+     *     new H5Datatype(Datatype.CLASS_INTEGER, Datatype.NATIVE, Datatype.NATIVE, Datatype.NATIVE)
+     *     new H5Datatype(Datatype.CLASS_FLOAT, Datatype.NATIVE, Datatype.NATIVE, Datatype.NATIVE));
+     * int[] memberSizes = {1, 10};
+     * Object data = null; // no initial data values
+     *
+     * Dataset d = (H5File)file.createCompoundDS(name, pgroup, dims, memberNames, memberDatatypes, memberSizes, null);
+     * </pre>
+     *
+     * @param name            The name of the new dataset
+     * @param pgroup          The parent group where the new dataset is created.
+     * @param dims            The dimension sizes of the new dataset.
+     * @param memberNames     The names of the members.
+     * @param memberDatatypes The datatypes of the members.
+     * @param memberSizes     The array sizes of the members.
+     * @param data            The data value of the new dataset.
+     * @return                The new dataset if successful; otherwise returns null
+     */
     public Dataset createCompoundDS(
         String name,
         Group pgroup,
@@ -379,7 +547,95 @@ public class H5File extends FileFormat
         return H5CompoundDS.create(name, pgroup, dims, memberNames, memberDatatypes, memberSizes, data);
     }
 
-    // implementign FileFormat
+    /**
+     * Create a new compound dataset in this file.
+     * <p>
+     * The following example creates a 2D compound dataset with size of 100X50 and
+     * members x and y at the root group in an HDF5 file. Member x is an interger,
+     * member y is an 1-D float array of size 10.
+     * <pre>
+     * String name = "2D compound";
+     * Group pgroup = (Group)((DefaultMutableTreeNode)getRootNode).getUserObject();
+     * long[] dims = {100, 50};
+     * String[] memberNames = {"x", "y"}
+     * Datatype[] memberDatatypes = {
+     *     new H5Datatype(Datatype.CLASS_INTEGER, Datatype.NATIVE, Datatype.NATIVE, Datatype.NATIVE)
+     *     new H5Datatype(Datatype.CLASS_FLOAT, Datatype.NATIVE, Datatype.NATIVE, Datatype.NATIVE));
+     * int[] memberSizes = {1, 10};
+     * Object data = null; // no initial data values
+     *
+     * Dataset d = (H5File)file.createCompoundDS(name, pgroup, dims, memberNames, memberDatatypes, memberSizes, null);
+     * </pre>
+     *
+     * @param name            The name of the new dataset
+     * @param pgroup          The parent group where the new dataset is created.
+     * @param dims            The dimension sizes of the new dataset.
+     * @param maxdims         The maximum dimension sizes of the new dataset.
+     * @param chunks          The chunk sizes of the new dataset.
+     * @param gzip            The compression level.
+     * @param memberNames     The names of the members.
+     * @param memberDatatypes The datatypes of the members.
+     * @param memberSizes     The array sizes of the members.
+     * @param data            The data value of the new dataset.
+     * @return                The new dataset if successful; otherwise returns null
+     */
+    public Dataset createCompoundDS(
+        String name,
+        Group pgroup,
+        long[] dims,
+        long[] maxdims,
+        long[] chunks,
+        int gzip,
+        String[] memberNames,
+        Datatype[] memberDatatypes,
+        int[] memberSizes,
+        Object data) throws Exception
+    {
+        int nMembers = memberNames.length;
+        int memberRanks[] = new int[nMembers];
+        int memberDims[][] = new int[nMembers][1];
+        for (int i=0; i<nMembers; i++)
+        {
+            memberRanks[i] = 1;
+            memberDims[i][0] = memberSizes[i];
+        }
+
+        return H5CompoundDS.create(name, pgroup, dims, maxdims, chunks, gzip,
+            memberNames, memberDatatypes, memberRanks, memberDims, data);
+    }
+
+    /**
+     * Create a new image at given parent group in this file.
+     *
+     * For example, to create a 2D image of size 100X50 at the root in an HDF5 file.
+     * <pre>
+     * String name = "2D image";
+     * Group pgroup = (Group)((DefaultMutableTreeNode)getRootNode).getUserObject();
+     * Datatype dtype = new H5Datatype(Datatype.CLASS_INTEGER, 1, Datatype.NATIVE, Datatype.SIGN_NONE);
+     * long[] dims = {100, 50};
+     * long[] maxdims = dims;
+     * long[] chunks = null; // no chunking
+     * int gzip = 0; // no compression
+     * int ncomp = 2;
+     * int interlace = ScalarDS.INTERLACE_PIXEL;
+     * Object data = null; // no initial data values
+     *
+     * Dataset d = (H5File)file.createScalarDS(name, pgroup, dtype, dims,
+     *     maxdims, chunks, gzip, ncomp, interlace, data);
+     * </pre>
+     *
+     * @param name      The name of the new dataset
+     * @param pgroup    The parent group where the new dataset is created.
+     * @param type      The datatype of the new dataset.
+     * @param dims      The dimension sizes of the new dataset.
+     * @param maxdims   The maximum dimension sizes of the new dataset.
+     * @param chunks    The chunk sizes of the new dataset.
+     * @param gzip      The compression level.
+     * @param ncomp     The number of components of the new image
+     * @param interlace The interlace of this image.
+     * @param data      The data value of the new image.
+     * @return          The new image if successful; otherwise returns null
+     */
     public Dataset createImage(
         String name,
         Group pgroup,
@@ -398,7 +654,10 @@ public class H5File extends FileFormat
         return dataset;
     }
 
-    // implementign FileFormat
+    /**
+     * Delete an object from the file.
+     * @param obj The object to delete.
+     */
     public void delete(HObject obj) throws Exception
     {
         if (obj == null || fid < 0)
@@ -408,7 +667,10 @@ public class H5File extends FileFormat
         H5.H5Gunlink(fid, name);
     }
 
-    // implementign FileFormat
+    /**
+     * Reads the file structure into memory (tree node)
+     * @return the root node of the file structure.
+     */
     private DefaultMutableTreeNode loadTree()
     {
         if (fid <0 ) return null;
@@ -431,7 +693,10 @@ public class H5File extends FileFormat
         return root;
     }
 
-    /** reload the sub-tree structure. Sube-calsses need to replace it */
+    /**
+     * Reloads the sub-tree structure starting a given group
+     * @param g the group to reload
+     */
     public void reloadTree(Group g)
     {
         if (fid < 0 || rootNode == null || g==null) return;
@@ -455,19 +720,82 @@ public class H5File extends FileFormat
         depth_first(theNode);
     }
 
-    // implementign FileFormat
+    /**
+     * Copy a data object to a group. The following example shows how to copy
+     * an object to a given group.
+     * <pre>
+     public static void TestHDF5Copy (String filename, String objName) throws Exception
+        {
+            // Get the source dataset
+            H5File file = new H5File(filename, H5File.READ);
+            file.open();
+
+            // Create a new file
+            H5File newFile = (H5File) file.create(filename+"_new.h5");
+            newFile.open();
+
+            // NOTE: have to use the desitionation file to do the copy
+            // Copy the dataset to the destination's root group
+           Group group = (Group)newFile.get("/");
+           file.copy(file.get(objName), group);
+
+           // Make another copy but with different name
+            file.copy(file.get(objName), group, "another_copy");
+
+            file.close();
+            newFile.close();
+        }
+     * </pre>
+     * @param srcObj   The object to copy.
+     * @param dstGroup The destination group for the new object.
+     * @return The new node containing the new object.
+     */
     public TreeNode copy(HObject srcObj, Group dstGroup) throws Exception
     {
         return this.copy(srcObj, dstGroup, null);
     }
 
-    // implementign FileFormat
+    /**
+     * Copy a data object to a group. The following example shows how to copy
+     * an object to a given group.
+     * <pre>
+     public static void TestHDF5Copy (String filename, String objName) throws Exception
+        {
+            // Get the source dataset
+            H5File file = new H5File(filename, H5File.READ);
+            file.open();
+
+            // Create a new file
+            H5File newFile = (H5File) file.create(filename+"_new.h5");
+            newFile.open();
+
+            // NOTE: have to use the desitionation file to do the copy
+            // Copy the dataset to the destination's root group
+           Group group = (Group)newFile.get("/");
+           file.copy(file.get(objName), group);
+
+           // Make another copy but with different name
+            file.copy(file.get(objName), group, "another_copy");
+
+            file.close();
+            newFile.close();
+        }
+     * </pre>
+     * @param srcObj   The object to copy.
+     * @param dstGroup The destination group for the new object.
+     * @param dstName  The name of the new object. If dstName is null, the name
+     *                 of the new object will be the same as srcObject.
+     * @return The new node containing the new object.
+     */
     public TreeNode copy(HObject srcObj, Group dstGroup, String dstName) throws Exception
     {
         TreeNode newNode = null;
 
         if (srcObj == null || dstGroup == null)
             return null;
+
+        if (dstName == null)
+            dstName = srcObj.getName();
 
         if (srcObj instanceof Dataset)
         {
@@ -486,12 +814,12 @@ public class H5File extends FileFormat
     }
 
 
-    /** copy a dataset into another group.
+    /** Copy a dataset into another group.
      * @param srcDataset the dataset to be copied.
-     * @param pgroup teh group where the dataset is copied to.
+     * @param pgroup the group where the dataset is copied to.
+     * @param dstname the name of the new dataset
      * @return the treeNode containing the new copy of the dataset.
      */
-
     private TreeNode copyDataset(Dataset srcDataset, H5Group pgroup, String dstName)
          throws Exception
     {
@@ -514,10 +842,7 @@ public class H5File extends FileFormat
         plist = H5.H5Dget_create_plist(srcdid);
 
         // @@@@@@@@@ HDF5.1.6 bug at H5Dcreate(fid, dname, tid, sid, plist);
-        try {
-            dstdid = H5.H5Dcreate(fid, dname, tid, sid, plist);
-        } catch (Exception ex) { throw new HDF5LibraryException(
-            "H5ScalarDS.copyDataset(): HDF5.1.6 failed at H5Dcreate(fid, dname, tid, sid, plist)");}
+        dstdid = H5.H5Dcreate(pgroup.getFID(), dname, tid, sid, plist);
 
         // copy data values
         H5.H5Dcopy(srcdid, dstdid);
@@ -536,14 +861,14 @@ public class H5File extends FileFormat
         if (srcDataset instanceof H5ScalarDS)
         {
             dataset = new H5ScalarDS(
-                this,
+                pgroup.getFileFormat(),
                 dstName,
                 path,
                 oid);
         } else
         {
             dataset = new H5CompoundDS(
-                this,
+                pgroup.getFileFormat(),
                 dstName,
                 path,
                 oid);
@@ -567,7 +892,7 @@ public class H5File extends FileFormat
                 try { copy((Dataset)pal, pgroup); }
                 catch (Exception ex2) {}
                 ref_buf = H5.H5Rcreate(
-                    fid,
+                    pgroup.getFID(),
                     path+pal.getName(),
                     HDF5Constants.H5R_OBJECT,
                     -1);
@@ -589,6 +914,13 @@ public class H5File extends FileFormat
         return newNode;
     }
 
+    /**
+     * Copies a group and its members to a new location
+     * @param srcGroup the source group
+     * @param pgroup the location which the new group is located
+     * @param dstName the name of the new group
+     * @return the tree node containing the new group;
+     */
     private TreeNode copyGroup(H5Group srcGroup, H5Group pgroup, String dstName)
          throws Exception
     {
@@ -606,7 +938,7 @@ public class H5File extends FileFormat
 
         gname = path + dstName;
         srcgid = srcGroup.open();
-        dstgid = H5.H5Gcreate(fid, gname, 0);
+        dstgid = H5.H5Gcreate(pgroup.getFID(), gname, 0);
         byte[] ref_buf = H5.H5Rcreate(
             pgroup.getFID(),
             gname,
@@ -614,7 +946,7 @@ public class H5File extends FileFormat
             -1);
         long l = HDFNativeData.byteToLong(ref_buf, 0);
         long[] oid = {l};
-        group = new H5Group(this, dstName, path, pgroup, oid);
+        group = new H5Group(pgroup.getFileFormat(), dstName, path, pgroup, oid);
 
         copyAttributes(srcgid, dstgid);
 
@@ -644,6 +976,14 @@ public class H5File extends FileFormat
         return theNode;
     }
 
+    /**
+     * Copies a named datatype to another location
+     * @param srcType the source datatype
+     * @param pgroup the group which the new datatype is copied to
+     * @param dstName the name of the new dataype
+     * @return the tree node containing the new datatype.
+     * @throws Exception
+     */
     private TreeNode copyDatatype(Datatype srcType, H5Group pgroup, String dstName)
          throws Exception
     {
@@ -663,7 +1003,7 @@ public class H5File extends FileFormat
         tid_src = srcType.open();
         tid_dst = H5.H5Tcopy(tid_src);
 
-        H5.H5Tcommit(fid, tname, tid_src );
+        H5.H5Tcommit(pgroup.getFID(), tname, tid_dst );
 
         byte[] ref_buf = H5.H5Rcreate(
             pgroup.getFID(),
@@ -673,7 +1013,7 @@ public class H5File extends FileFormat
         long l = HDFNativeData.byteToLong(ref_buf, 0);
         long[] oid = {l};
 
-        datatype = new H5Datatype(this, dstName, path, oid);
+        datatype = new H5Datatype(pgroup.getFileFormat(), dstName, path, oid);
 
         pgroup.addToMemberList(datatype);
         DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(datatype);
@@ -685,7 +1025,9 @@ public class H5File extends FileFormat
     }
 
     /**
-     * Copy attributes of the source object to the destination object.
+     * Copies all attributes of the source object to the destionation object.
+     * @param src the source object
+     * @param dst the destination object
      */
     public void copyAttributes(HObject src, HObject dst)
     {
@@ -698,11 +1040,13 @@ public class H5File extends FileFormat
     }
 
     /**
-     * Copy attributes of the source object to the destination object.
+     * Copies all attributes of the source object to the destionation object.
+     * @param src_id the identifier of the source object
+     * @param dst_id the identidier of the destination object
      */
     public void copyAttributes(int src_id, int dst_id)
     {
-        int aid_src=-1, aid_target=-1, atid=-1, asid=-1, num_attr=-1;
+        int aid_src=-1, aid_dst=-1, atid=-1, asid=-1, num_attr=-1;
         String[] aName = {""};
         int aRank = 0;
         long[] aDims = null;
@@ -722,6 +1066,7 @@ public class H5File extends FileFormat
                 aid_src = H5.H5Aopen_idx(src_id, i );
                 H5.H5Aget_name(aid_src, 80, aName );
                 atid = H5.H5Aget_type(aid_src);
+
                 asid = H5.H5Aget_space(aid_src);
                 aRank = H5.H5Sget_simple_extent_ndims(asid);
                 aDims = new long[aRank];
@@ -730,28 +1075,38 @@ public class H5File extends FileFormat
                 for (int j=0; j<aRank; j++)
                     size *= (int)aDims[j];
                 data_attr = H5Datatype.allocateArray(atid, (int)size);
-                aid_target = H5.H5Acreate(
+                aid_dst = H5.H5Acreate(
                     dst_id,
                     aName[0],
                     atid,
                     asid,
                     HDF5Constants.H5P_DEFAULT );
+
+                // use native data copy
+                H5.H5Acopy(aid_src, aid_dst);
+
+                /* does not work for variable length datatype
                 H5.H5Aread(aid_src, atid, data_attr);
-                H5.H5Awrite(aid_target, atid, data_attr);
+                H5.H5Awrite(aid_dst, atid, data_attr);
+                */
             } catch (Exception ex) {}
 
             try { H5.H5Sclose(asid); } catch(Exception ex) {}
             try { H5.H5Tclose(atid); } catch(Exception ex) {}
             try { H5.H5Aclose(aid_src); } catch(Exception ex) {}
-            try { H5.H5Aclose(aid_target); } catch(Exception ex) {}
+            try { H5.H5Aclose(aid_dst); } catch(Exception ex) {}
         } // for (int i=0; i<num_attr; i++)
     }
 
     /**
-     * Update values of reference datasets. When a file is saved into a
-     * new file, the values of reference dataset will not make sense in
-     * the new file and must be updated based on the values of references
-     * in the new file.
+     * Updates the values of all reference datasets. Values of a references dataset
+     * are relative file addresses in HDF5. When a file is saved or copied to a
+     * new file, the values of reference dataset must be updated because the old
+     * address do not make sense in the new file and may cause applications to crash.
+     *
+     * @param srcFile the source file
+     * @param newFile the destinaton file where the references are updated
+     * @throws Exception
      */
     public static void updateReferenceDataset(H5File srcFile, H5File newFile)
     throws Exception
@@ -866,7 +1221,13 @@ public class H5File extends FileFormat
 
     }
 
-    /** find object by its OID. */
+    /**
+     * Finds an object by its object ID
+     *
+     * @param file the file containing the object
+     * @param oid the oid to search for
+     * @return the object that has the given OID; otherwise returns null
+     */
     private HObject findObject(FileFormat file, long[] oid)
     {
         if (file == null || oid == null)
@@ -890,7 +1251,13 @@ public class H5File extends FileFormat
         return theObj;
     }
 
-    /** find object by fullpath. */
+    /**
+     * Finds an object by the full path of the object (path+name)
+     *
+     * @param file the file containing the object
+     * @param oid the path the full path of the object to search for
+     * @return the object that has the given path; otherwise returns null
+     */
     private HObject findObject(FileFormat file, String path)
     {
         if (file == null || path == null)
@@ -980,7 +1347,7 @@ public class H5File extends FileFormat
         int[] objTypes = new int[nelems];
         String[] objNames = new String[nelems];
         try { H5.H5Gget_obj_info_all(fid, fullPath, objNames, objTypes ); }
-        catch (HDF5Exception ex) {ex.printStackTrace(); }
+        catch (HDF5Exception ex) {; }
 
         int i0 = Math.max(0, getStartMembers());
         int i1 = getMaxMembers();
@@ -1143,7 +1510,7 @@ public class H5File extends FileFormat
     } // private depth_first()
 
     /**
-     * Returns a list of attriubtes for the given object location.
+     * Returns the list of attriubtes for the given object location.
      * <p>
      * @param objID the object identifier.
      * @return the list of attriubtes of the object.
@@ -1305,7 +1672,7 @@ public class H5File extends FileFormat
     }
 
     /**
-     * Creates required atriubtes for HDF5 image.
+     * Creates required attributes for HDF5 image.
      *
      * <OL>The basic HDF5 image attributes include:
      * <LI> The image identifier: name="CLASS", value="IMAGE"
@@ -1410,7 +1777,27 @@ public class H5File extends FileFormat
 
     /**
      * Get an individual HObject with a given path. It deoes not load the whole
-     * file structure.
+     * file structure. The following shows an example of how to use get().
+     *
+     */
+    /**
+     * Retrieves an individual object for a given path in the file. If the
+     * request object is a group, it only retrieves the immediate members
+     * of the group. It does not retrieve object in any sub-groups. The following
+     * example shows how to use this function.
+     * <pre>
+         public static void TestHDF5Get (String filename) throws Exception
+        {
+            H5File file = new H5File(filename, H5File.READ);
+            Group group = (Group)file.get("/Group0");
+            System.out.println(group);
+            file.close();
+        }
+     * </pre>
+     *
+     * @param path the full path of the object (path+name)
+     * @return the object if successful; otherwise return false.
+     * @throws Exception
      */
     public HObject get(String path) throws Exception
     {
@@ -1465,7 +1852,15 @@ public class H5File extends FileFormat
             try {
                 H5Group pGroup = null;
                 if (pPath != null) {
-                    pGroup = new H5Group(this, null, pPath, null);
+                    long[] oid = null;
+                    try {
+                        byte[] ref_buf = H5.H5Rcreate(fid, pPath, HDF5Constants.H5R_OBJECT, -1);
+                        long l = HDFNativeData.byteToLong(ref_buf, 0);
+                        oid = new long[1];
+                        oid[0] = l;
+                    } catch (Exception ex) {oid = null;}
+
+                    pGroup = new H5Group(this, null, pPath, null, oid);
                     obj = getGroup(gid, name, pGroup);
                     pGroup.addToMemberList(obj);
                 } else
@@ -1478,6 +1873,14 @@ public class H5File extends FileFormat
         return obj;
     }
 
+    /**
+     * Constructs a dataset for a given dataset idenfitier.
+     * @param did the dataset idenfifier
+     * @param name the name of the dataset
+     * @param path the path of the dataset
+     * @return the dataset if successful; otherwise return null.
+     * @throws HDF5Exception
+     */
     private Dataset getDataset(int did, String name, String path) throws HDF5Exception
     {
         Dataset dataset = null;
@@ -1496,14 +1899,32 @@ public class H5File extends FileFormat
             try { H5.H5Tclose(tid); } catch (HDF5Exception ex) {}
         }
 
+        long[] oid = null;
+        try {
+            byte[] ref_buf = H5.H5Rcreate(fid, path+"/"+name, HDF5Constants.H5R_OBJECT, -1);
+            long l = HDFNativeData.byteToLong(ref_buf, 0);
+            oid = new long[1];
+            oid[0] = l;
+        } catch (Exception ex) { oid = null;}
+
         if (tclass == HDF5Constants.H5T_COMPOUND)
-            dataset = new H5CompoundDS(this, name, path);
+            dataset = new H5CompoundDS(this, name, path, oid);
         else
-            dataset = new H5ScalarDS( this, name, path);
+            dataset = new H5ScalarDS( this, name, path, oid);
 
         return dataset;
     }
 
+    /**
+     * Constructs a group with a given group identifier and retieves the members
+     * of the group.
+     *
+     * @param gid the group identifier
+     * @param name the group name
+     * @param pGroup the parent group
+     * @return the group if successful; otherwise returns false.
+     * @throws HDF5Exception
+     */
     private H5Group getGroup(int gid, String name, Group pGroup) throws HDF5Exception
     {
         String parentPath = null;
@@ -1527,7 +1948,15 @@ public class H5File extends FileFormat
         if (thisFullName !=null)
             thisFullName = thisFullName.replaceAll("//", "/");
 
-        H5Group group = new H5Group(this, name, parentPath, pGroup);
+        long[] oid = null;
+        try {
+            byte[] ref_buf = H5.H5Rcreate(fid, thisFullName, HDF5Constants.H5R_OBJECT, -1);
+            long l = HDFNativeData.byteToLong(ref_buf, 0);
+            oid = new long[1];
+            oid[0] = l;
+        } catch (Exception ex) { oid = null;}
+
+        H5Group group = new H5Group(this, name, parentPath, pGroup, oid);
 
         int nelems = 0;
         try {
@@ -1556,7 +1985,14 @@ public class H5File extends FileFormat
             // create a new group
             if (oType[0] == HDF5Constants.H5G_GROUP)
             {
-                H5Group g = new H5Group(this, oName[0], thisFullName, group);
+                try {
+                    byte[] ref_buf = H5.H5Rcreate(fid, thisFullName+"/"+oName[0], HDF5Constants.H5R_OBJECT, -1);
+                    long l = HDFNativeData.byteToLong(ref_buf, 0);
+                    oid = new long[1];
+                    oid[0] = l;
+                } catch (Exception ex) { oid = null;}
+
+                H5Group g = new H5Group(this, oName[0], thisFullName, group, oid);
                 group.addToMemberList(g);
             } else if (oType[0] == HDF5Constants.H5G_DATASET)
             {

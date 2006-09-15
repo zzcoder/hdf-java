@@ -18,6 +18,7 @@ import ncsa.hdf.object.*;
 
 /**
  * An H5Group represents HDF5 group, inheriting from Group.
+ * <p>
  * Every HDF5 object has at least one name. An HDF5 group is used to store
  * a set of the names together in one place, i.e. a group. The general
  * structure of a group is similar to that of the UNIX file system in
@@ -38,6 +39,14 @@ public class H5Group extends Group
     /** The default object ID for HDF5 objects */
     public final static long[] DEFAULT_OID = {0};
 
+    /**
+     * Constructs an HDF5 group with specific name, path, and parent.
+     * <p>
+     * @param fileFormat the file which containing the group.
+     * @param name the name of this group.
+     * @param path the full path of this group.
+     * @param parent the parent of this group.
+     */
     public H5Group(FileFormat fileFormat, String name, String path, Group parent)
     {
         this(fileFormat, name, path, parent, null);
@@ -67,7 +76,14 @@ public class H5Group extends Group
         close(gid);
     }
 
-    // Implementing DataFormat
+    /**
+     * Read and returns a list of attributes of from file into memory if the attributes
+     * are not in memory. If the attributes are in memory, it returns the attributes.
+     * The attributes are stored as a collection in a List.
+     *
+     * @return the list of attributes.
+     * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/List.html">java.util.List</a>
+     */
     public List getMetadata() throws HDF5Exception
     {
         if (attributeList == null)
@@ -81,11 +97,11 @@ public class H5Group extends Group
     }
 
     /**
-     * Creates a new attribute and attached to this dataset if attribute does
-     * not exist. Otherwise, just update the value of the attribute.
+     * Creates and attaches a new attribute if the attribute does not exist.
+     * Otherwise, writes the value of the attribute in file.
      *
      * <p>
-     * @param info the atribute to attach
+     * @param info the attribute to attach
      */
     public void writeMetadata(Object info) throws Exception
     {
@@ -108,7 +124,7 @@ public class H5Group extends Group
     }
 
     /**
-     * Deletes an attribute from this dataset.
+     * Deletes an attribute from this group.
      * <p>
      * @param info the attribute to delete.
      */
@@ -129,7 +145,10 @@ public class H5Group extends Group
         }
     }
 
-    // Implementing DataFormat
+    /**
+     * Opens access to the group
+     * @return the group idendifier if successful; otherwise returns false.
+     */
     public int open()
     {
         int gid = -1;
@@ -149,7 +168,10 @@ public class H5Group extends Group
         return gid;
     }
 
-    /** close group access */
+    /**
+     * Close group access
+     * @param gid the group to close
+     */
     public void close(int gid)
     {
         try { H5.H5Gclose(gid); }

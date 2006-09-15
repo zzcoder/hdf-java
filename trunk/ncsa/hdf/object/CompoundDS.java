@@ -14,7 +14,7 @@ package ncsa.hdf.object;
 import java.util.*;
 
 /**
- * A CompoundDS is data set of compound datatypes.
+ * A CompoundDS is dataset with compound datatypes.
  * <p>
  * A compound datatype is a collection of one or more atomic types or small
  * arrays of such types. Each member of a compound type has a name which is
@@ -95,7 +95,7 @@ public abstract class CompoundDS extends Dataset
     /**
      * The number of data points of each member of this compound dataset.
      * A member can be an array of atomic or compound data. The member order
-     * is the total size of the array. For scalar data, the member order is one.
+     * is the total number of points of the array. For scalar data, the member order is one.
      */
     protected int[] memberOrders;
 
@@ -105,19 +105,29 @@ public abstract class CompoundDS extends Dataset
     protected Object[] memberDims;
 
     /**
-     * The array to store flags to indicate if a member is selected. If a member
-     * is selected, the read/wirte will perform on the member. Applications such
+     * The array to store flags to indicate if a member is selected for read/write.
+     * If a member is selected, the read/write will perform on the member. Applications such
      * as HDFView will only display the selected members of the compound dataset.
      * <pre>
      * For example, if a compound dataset has four members
      *     String[] memberNames = {"X", "Y", "Z", "TIME"};
      * and
      *     boolean[] isMemberSelected = {true, false, false, true};
-     * only members "X" and "TIME" are selected for read and write.
+     * members "X" and "TIME" are selected for read and write.
      * </pre>
      */
     protected boolean[] isMemberSelected;
 
+    /**
+     * Constructs a CompoundDS object with given file and dataset name and path.
+     * This object is usually constructed at FileFormat.open(), which loads the
+     * file structure and object informatoin into tree structure (TreeNode). It
+     * is rarely used elsewhere.
+     * <p>
+     * @param fileFormat the HDF file.
+     * @param name the name of this CompoundDS.
+     * @param path the full path of this CompoundDS.
+     */
     public CompoundDS(FileFormat fileFormat, String name, String path)
     {
         this(fileFormat, name, path, null);
@@ -167,11 +177,7 @@ public abstract class CompoundDS extends Dataset
     {
         int count = 0;
 
-        if (isMemberSelected == null)
-        {
-            count = 0;
-        }
-        else
+        if (isMemberSelected != null)
         {
             for (int i=0; i<isMemberSelected.length; i++)
             {
@@ -184,7 +190,7 @@ public abstract class CompoundDS extends Dataset
     }
 
     /**
-     * Returns the names of the members of the datasets
+     * Returns the names of the members of the dataset
      */
     public final String[] getMemberNames()
     {
@@ -202,7 +208,7 @@ public abstract class CompoundDS extends Dataset
     }
 
     /**
-     * Returns true if the i-th memeber is selected.
+     * Returns true if the i-th memeber is selected; otherwise returns false
      */
     public final boolean isMemberSelected(int i)
     {
@@ -213,7 +219,7 @@ public abstract class CompoundDS extends Dataset
     }
 
     /**
-     * select the i-th member.
+     * Selects the i-th member for read/write.
      */
     public final void selectMember(int i)
     {
@@ -222,10 +228,10 @@ public abstract class CompoundDS extends Dataset
     }
 
     /**
-     * select/deselect all members.
+     * Select/deselect all members.
      * @param isSelected The indicator to select or deselect all members.
-     *     isSelected=true to select all members. isSelected=false to
-     *     deselect all members.
+     *     If isSelected is true, selects all members. If isSelected is false,
+     *     deselects all members.
      */
     public final void setMemberSelection(boolean isSelected)
     {
@@ -240,7 +246,7 @@ public abstract class CompoundDS extends Dataset
      * Returns the data orders (total array size) of all the members
      * of this compound dataset.
      */
-    public int[] getMemberOrders()
+    public final int[] getMemberOrders()
     {
         return memberOrders;
     }
@@ -249,7 +255,7 @@ public abstract class CompoundDS extends Dataset
      * Returns the data orders (total array size) of the selected members
      * of this compound dataset.
      */
-    public int[] getSelectedMemberOrders()
+    public final int[] getSelectedMemberOrders()
     {
         if (isMemberSelected == null)
             return memberOrders;
@@ -265,7 +271,8 @@ public abstract class CompoundDS extends Dataset
         return orders;
     }
 
-    public int[] getSelectedMemberTypes()
+    /** Returns the data types of the selected members */
+    public final int[] getSelectedMemberTypes()
     {
         if (isMemberSelected == null)
             return memberTypes;
@@ -284,16 +291,33 @@ public abstract class CompoundDS extends Dataset
     /**
      * Returns the dimension sizes of each member.
      */
-    public int[] getMemeberDims(int i) {
+    public final int[] getMemeberDims(int i) {
         if (memberDims == null)
             return null;
         return (int[])memberDims[i];
     }
 
+    /**
+     * Copy a subset of this dataset to a new dataset.
+     * <p>
+     * <b>NOTE: This function is not implemented for compound dataset. It
+     * may be added in future implementation</b>
+     * <p>
+     * However, copying the whole dataset is implemented by its sub-classes.
+     * For example, to copy a H5CompoundDS, one can use
+     * H5File.copy(HObject srcObj, Group dstGroup, String dstName)
+     *
+     * @param pgroup the group which the dataset is copied to.
+     * @param name the name of the new dataset.
+     * @param dims the dimension sizes of the the new dataset.
+     * @param data the data values of the subset to be copied.
+     * @return the new dataset.
+     */
+    public Dataset copy(Group pgroup, String name, long[] dims,
+        Object data) throws Exception
+    {
+        throw new UnsupportedOperationException(
+            "Writing a subset of a compound dataset to a new dataset is not supported.");
+    }
 
-    // sub classes need to replace these two functions
-
-    // sub classes need to replace these two functions
-    public boolean isString(int dtype) { return false; }
-    public int getSize(int dtype) { return -1; }
 }

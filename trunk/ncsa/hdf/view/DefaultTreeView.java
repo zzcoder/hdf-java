@@ -1833,7 +1833,12 @@ implements TreeView, ActionListener {
             // mouseReleased() and e.isPopupTrigger() work on windows and mac but not unix,
             // mouseClicked() and e.isPopupTrigger() work on unix and mac but not windows,
             // to solve the problem, we use both.
-            if (e.isPopupTrigger() || e.getModifiers() == MouseEvent.BUTTON3_MASK)
+            // 7/25/06 bug 517. e.isPopupTrigger does not work on one mouse Mac.
+            // add (MouseEvent.BUTTON1_MASK|MouseEvent.CTRL_MASK) for MAC
+            int eMod = e.getModifiers();
+            if (e.isPopupTrigger() || eMod == MouseEvent.BUTTON3_MASK ||
+                (System.getProperty("os.name").startsWith("Mac") &&
+                (eMod == (MouseEvent.BUTTON1_MASK|MouseEvent.CTRL_MASK))))
             {
                 int selRow = tree.getRowForLocation(e.getX(), e.getY());
 

@@ -169,6 +169,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         {
             classChoice.addItem("STRING");
             classChoice.addItem("REFERENCE");
+            classChoice.addItem("ENUM");
             sizeChoice.addItem("NATIVE");
             endianChoice.addItem("NATIVE");
             endianChoice.addItem("LITTLE ENDIAN");
@@ -425,7 +426,7 @@ implements ActionListener, ItemListener, HyperlinkListener
             endianChoice.setSelectedIndex(0);
             stringLengthField.setEnabled(false);
 
-            if (idx == 0)
+            if (idx == 0) // INTEGER
             {
                 sizeChoice.setEnabled(true);
                 endianChoice.setEnabled(isH5);
@@ -448,7 +449,7 @@ implements ActionListener, ItemListener, HyperlinkListener
                     checkUnsigned.setEnabled(false);
                 }
             }
-            else if (idx == 1)
+            else if (idx == 1) // FLOAT
             {
                 sizeChoice.setEnabled(true);
                 endianChoice.setEnabled(isH5);
@@ -460,13 +461,13 @@ implements ActionListener, ItemListener, HyperlinkListener
                     sizeChoice.removeItem("8");
                 }
             }
-            else if (idx == 2)
+            else if (idx == 2) // CHAR
             {
                 sizeChoice.setEnabled(false);
                 endianChoice.setEnabled(isH5);
                 checkUnsigned.setEnabled(true);
             }
-            else if (idx == 3)
+            else if (idx == 3) // STRING
             {
                 sizeChoice.setEnabled(false);
                 endianChoice.setEnabled(false);
@@ -474,12 +475,19 @@ implements ActionListener, ItemListener, HyperlinkListener
                 stringLengthField.setEnabled(true);
                 stringLengthField.setText("String length");
             }
-            else if (idx == 4)
+            else if (idx == 4) // REFERENCE
             {
                 sizeChoice.setEnabled(false);
                 endianChoice.setEnabled(false);
                 checkUnsigned.setEnabled(false);
                 stringLengthField.setEnabled(false);
+            }
+            else if (idx == 5) // ENUM
+            {
+                sizeChoice.setEnabled(true);
+                checkUnsigned.setEnabled(true);
+                stringLengthField.setEnabled(true);
+                stringLengthField.setText("mb1=0,mb2=1,...");
             }
         }
         else if (source.equals(sizeChoice))
@@ -510,13 +518,44 @@ implements ActionListener, ItemListener, HyperlinkListener
 
             currentSizeField.setText(currentSizeStr);
             maxSizeField.setText(maxSizeStr);
-            chunkSizeField.setText(currentSizeStr);
+
+            String currentStr = currentSizeField.getText();
+            int idx = currentStr.lastIndexOf("x");
+            String chunkStr = "1";
+
+            if (rank <=1)
+                chunkStr = currentStr;
+            else
+            {
+                for (int i=1; i<rank-1; i++)
+                    chunkStr += " x 1";
+                if (idx >0)
+                    chunkStr += " x "+currentStr.substring(idx+1);
+            }
+
+            chunkSizeField.setText(chunkStr);
         }
         else if (source.equals(checkContinguous))
             chunkSizeField.setEnabled(false);
         else if (source.equals(checkChunked))
         {
             chunkSizeField.setEnabled(true);
+            String currentStr = currentSizeField.getText();
+            int idx = currentStr.lastIndexOf("x");
+            String chunkStr = "1";
+
+            int rank = rankChoice.getSelectedIndex()+1;
+            if (rank <=1)
+                chunkStr = currentStr;
+            else
+            {
+                for (int i=1; i<rank-1; i++)
+                    chunkStr += " x 1";
+                if (idx >0)
+                    chunkStr += " x "+currentStr.substring(idx+1);
+            }
+
+            chunkSizeField.setText(chunkStr);
         }
         else if (source.equals(checkCompression))
         {
@@ -524,6 +563,25 @@ implements ActionListener, ItemListener, HyperlinkListener
 
             if (isCompressed)
             {
+                if (!checkChunked.isSelected())
+                {
+                    String currentStr = currentSizeField.getText();
+                    int idx = currentStr.lastIndexOf("x");
+                    String chunkStr = "1";
+
+                    int rank = rankChoice.getSelectedIndex()+1;
+                    if (rank <=1)
+                        chunkStr = currentStr;
+                    else
+                    {
+                        for (int i=1; i<rank-1; i++)
+                            chunkStr += " x 1";
+                        if (idx >0)
+                            chunkStr += " x "+currentStr.substring(idx+1);
+                    }
+
+                    chunkSizeField.setText(chunkStr);
+                }
                 compressionLevel.setEnabled(true);
                 checkContinguous.setEnabled(false);
                 checkChunked.setSelected(true);
@@ -683,6 +741,10 @@ implements ActionListener, ItemListener, HyperlinkListener
         {
             tclass = Datatype.CLASS_REFERENCE;
         }
+        else if (idx == 5)
+        {
+            tclass = Datatype.CLASS_ENUM;
+        }
 
         // set datatype size/order
         idx = sizeChoice.getSelectedIndex();
@@ -704,8 +766,20 @@ implements ActionListener, ItemListener, HyperlinkListener
                     JOptionPane.ERROR_MESSAGE);
                 return null;
             }
-
             tsize = stringLength;
+        }
+        else if (tclass == Datatype.CLASS_ENUM)
+        {
+            String enumStr = stringLengthField.getText();
+            if (enumStr==null || enumStr.length()<1 || enumStr.endsWith("..."))
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(this,
+                    "Invalid member values: "+stringLengthField.getText(),
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return null;
+            }
         }
         else if (tclass == Datatype.CLASS_REFERENCE)
         {
@@ -916,6 +990,8 @@ implements ActionListener, ItemListener, HyperlinkListener
         try
         {
             Datatype datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign);
+            if (tclass == Datatype.CLASS_ENUM)
+               datatype.setEnumMembers(stringLengthField.getText());
             obj = fileFormat.createScalarDS(name, pgroup, datatype,
                 dims, maxdims, chunks, gzip, null);
         } catch (Exception ex)
