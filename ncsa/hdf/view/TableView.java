@@ -16,9 +16,8 @@ import javax.swing.JTable;
 
 /**
  *
- * <p>Title: ncsa.hdf.view.TableView</p>
- * <p>The table view interface for displaying data in table form</p>
- * <p>Company: National Computational Science Alliance</p>
+ * The table view interface for displaying data in table form
+ *
  * @author Peter X. Cao
  * @version 1.0
  */

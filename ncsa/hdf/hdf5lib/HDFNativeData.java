@@ -329,11 +329,11 @@ public class HDFNativeData
     public synchronized static native byte[] longToByte( long data);
 
     /**
-          * Convert a single Long object into an array of 8(?) bytes.
+      * Convert a single Long object into an array of 8 bytes.
       *
       *  @param data  The input Long
       *  @return an array of bytes
-          */
+      */
     public synchronized static byte[] longToByte(Long data){ return longToByte(data.longValue());}
 
     /**
@@ -353,7 +353,7 @@ public class HDFNativeData
     public synchronized static byte[] doubleToByte( Double data){return doubleToByte(data.doubleValue());}
 
     /**
-          * Create a Number object from an array of bytes.
+     * Create a Number object from an array of bytes.
       *
       *  @param barray  The bytes to be converted
       *  @param obj  Input object of the desired output class.  Must be a sub-class of Number.

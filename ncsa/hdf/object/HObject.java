@@ -115,9 +115,9 @@ public abstract class HObject implements Serializable, DataFormat
      * Constructs an instance of the data object with specific name and path.
      * An HDF data object must have a name.
      *
-     * @param fileFormat the file that contains the data object.
-     * @param name the name of the data object.
-     * @param path the full path of the data object.
+     * @param theFileFormat the file that contains the data object.
+     * @param theName the name of the data object.
+     * @param thePath the full path of the data object.
      */
     public HObject(FileFormat theFileFormat, String theName, String thePath)
     {
@@ -129,9 +129,9 @@ public abstract class HObject implements Serializable, DataFormat
      * An HDF data object must have a name. A data object is uniquely identified
      * by its OID.
      *
-     * @param fileFormat the file that contains the data object.
-     * @param name the name of the data object.
-     * @param path the full path of the data object.
+     * @param theFileFormat the file that contains the data object.
+     * @param theName the name of the data object.
+     * @param thePath the full path of the data object.
      * @param oid the unique identifier of the data object.
      */
     public HObject(FileFormat theFileFormat, String theName, String thePath, long[] oid)

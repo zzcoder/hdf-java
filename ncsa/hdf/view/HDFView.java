@@ -33,8 +33,7 @@ import java.awt.Toolkit;
 import java.awt.Image;
 
 /**
- * <p>Title: HDFView</p>
- * <p>Description: HDFView is the main class of this HDF visual tool.
+ * HDFView is the main class of this HDF visual tool.
  * It is used to layout the graphical components of the hdfview. The major GUI
  * components of the HDFView include Menubar, Toolbar, TreeView, ContentView,
  * and MessageArea.
@@ -46,7 +45,6 @@ import java.awt.Image;
  * be complied with the library package (ncsa.hdf.hdflib and ncsa.hdf.hdf5lib).
  * </p>
  *
- * <p>Company: NCSA, University of Illinois at Urbana-Champaign</p>
  * @author Peter X. Cao
  * @version 1.0, 06/20/2003
  */
@@ -1052,6 +1050,9 @@ public class HDFView extends JFrame
                 for (int i=0; i<frames.length; i++)
                 {
                     HObject obj = (HObject)(((DataView)frames[i]).getDataObject());
+                    if (obj == null)
+                        continue;
+
                     if ( obj.getFileFormat().equals(theFile))
                     {
                         frames[i].dispose();

@@ -26,12 +26,17 @@ import java.awt.event.*;
 import java.awt.Cursor;
 
 /**
- * <p>Title: </p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2003</p>
- * <p>Company: </p>
- * @author unascribed
- * @version 1.0
+ *
+ * <p>TreeView defines APIs for open a file and display the file structure in tree structure.</p>
+ *
+ * <p>TreeView uses folders and leaf nodes to represent groups and data objects in the
+ * file. You can expand or collapse folders to navigate data objects in the file.</p>
+ *
+ * <p>From the TreeView, you can open data content or metadata of selected object.
+ * You can selet object(s) to delete or add new object to the file.</p>
+ *
+ * @author Peter X. Cao
+ * @version 1.0, 06/10/2003
  */
 public class DefaultTreeView extends JPanel
 implements TreeView, ActionListener {

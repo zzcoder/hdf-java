@@ -15,9 +15,8 @@ import ncsa.hdf.object.*;
 
 /**
  *
- * <p>Title: ncsa.hdf.view.MetaDataView</p>
- * <p>The metadata view interface for displaying metadata information</p>
- * <p>Company: National Computational Science Alliance</p>
+ *The metadata view interface for displaying metadata information
+ *
  * @author Peter X. Cao
  * @version 1.0
  */

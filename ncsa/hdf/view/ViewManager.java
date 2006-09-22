@@ -15,9 +15,8 @@ import ncsa.hdf.object.*;
 
 /**
  *
- * <p>ViewManager</p>
- * <p>Description: defines a list of APIs for the main HDFView winodows</p>
- * <p>Company: NCSA, University of Illinois at Urbana-Champaign</p>
+ * Defines a list of APIs for the main HDFView winodows
+ *
  * @author Peter X. Cao
  * @version 1.0, 06/10/2003
  */

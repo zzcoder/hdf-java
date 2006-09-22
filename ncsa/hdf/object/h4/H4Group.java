@@ -65,9 +65,9 @@ public class H4Group extends Group
         String name,
         String path,
         Group parent,
-        long[] theID)
+        long[] oid)
     {
-        super (fileFormat, name, path, parent, ((theID == null) ? DEFAULT_OID : theID));
+        super (fileFormat, name, path, parent, ((oid == null) ? DEFAULT_OID : oid));
 
         if (fileFormat instanceof H4File)
         {

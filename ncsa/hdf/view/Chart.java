@@ -99,15 +99,11 @@ implements ActionListener
      *  Constructs a new ChartView given data and data ranges.
      *  <p>
      *  @param owner the owner frame of this dialog.
-     *  @parem title the title of this dialog.
-     *  @param style the style of the chart. Legal values are:
+     *  @param title the title of this dialog.
+     *  @param style the style of the chart. Valid values are: HISTOGRAM and LINE
      *  @param data the two dimensional data array: data[linenumber][datapoints]
-     *  @param xRange the range of the X values, xRange[0]=xmin, xRange[1]=xmax.
+     *  @param xData the range of the X values, xRange[0]=xmin, xRange[1]=xmax.
      *  @param yRange the range of the Y values, yRange[0]=ymin, yRange[1]=ymax.
-     *  <ul>
-     *      <li>ncsa.hdf.view.ChartView.HISTOGRAM
-     *      <li>ncsa.hdf.view.ChartView.LINE
-     *  </ul>
      */
     public Chart (Frame owner, String title, int style,
         double[][] data, double[] xData, double[] yRange)

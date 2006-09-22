@@ -15,9 +15,8 @@ import ncsa.hdf.object.*;
 
 /**
  *
- * <p>Title: ncsa.hdf.view.DataView</p>
- * <p>The helpview interface for displaying user help information</p>
- * <p>Company: National Computational Science Alliance</p>
+ * The helpview interface for displaying user help information
+ *
  * @author Peter X. Cao
  * @version 1.0
  */

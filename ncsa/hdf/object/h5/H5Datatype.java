@@ -95,7 +95,7 @@ public class H5Datatype extends Datatype
      * new Datatype(CLASS_INTEGER, 4, NATIVE, SIGN_NONE);
      * <p>
      * @see #fromNative(int nativeID)
-     * @param type the native datatype identifier.
+     * @param nativeID the native datatype identifier.
      */
     public H5Datatype(int nativeID)
     {
@@ -114,7 +114,7 @@ public class H5Datatype extends Datatype
      * will construct a datatype equivalent to
      * new Datatype(CLASS_INTEGER, 4, NATIVE, SIGN_NONE);
      * <p>
-     * @param nativeID the identifier of user defined datatype.
+     * @param tid the identifier of user defined datatype.
      */
     public void fromNative(int tid)
     {
@@ -251,7 +251,7 @@ public class H5Datatype extends Datatype
      * will construct a datatype equivalent to
      * new Datatype(CLASS_INTEGER, 4, NATIVE, SIGN_NONE);
      * <p>
-     * @param nativeID the identifier of user defined datatype.
+     * @param tid the identifier of user defined datatype.
      */
     public static int toNative(int tid)
     {

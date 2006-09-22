@@ -18,12 +18,12 @@ import ncsa.hdf.object.*;
 
 /**
  * H5ScalarDS describes an multi-dimension array of HDF5 scalar or atomic data
- * types, such as byte, int, short, long, float, double and string,
- * and operations performed on the scalar dataset
+ * types, such as byte, int, short, long, float, double and string, and
+ * operations performed on the scalar dataset.
  * <p>
  * The library predefines a modest number of datatypes. For details, read
  * <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/Datatypes.html">
- * The Datatype Interface (H5T)</a>
+ * The Datatype Interface (H5T).</a>
  * <p>
  * <b>How to Select a Subset</b>
  * <p>
@@ -210,9 +210,9 @@ public class H5ScalarDS extends ScalarDS
      * Copy a subset of this dataset to a new dataset.
      *
      * @param pgroup the group which the dataset is copied to.
-     * @param name the name of the new dataset.
+     * @param dstName the name of the new dataset.
      * @param dims the dimension sizes of the the new dataset.
-     * @param data the data values of the subset to be copied.
+     * @param buff the data values of the subset to be copied.
      * @return the new dataset.
      */
     public Dataset copy(Group pgroup, String dstName, long[] dims, Object buff)
@@ -928,13 +928,13 @@ public class H5ScalarDS extends ScalarDS
      * @param type the datatype of the dataset.
      * @param dims the dimension size of the dataset.
      * @param maxdims the max dimension size of the dataset.
-     * @param chunk the chunk size of the dataset.
+     * @param chunks the chunk size of the dataset.
      * @param gzip the level of the gzip compression.
      * @param data the array of data values.
      * @return the new dataset if successful. Otherwise returns null.
      */
     public static H5ScalarDS create(
-         String name,
+        String name,
         Group pgroup,
         Datatype type,
         long[] dims,

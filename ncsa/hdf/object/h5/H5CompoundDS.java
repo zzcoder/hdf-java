@@ -124,7 +124,6 @@ public class H5CompoundDS extends CompoundDS
 
     /**
      * A list of datatypes of all fields including nested fields.
-     * @see #flatNameList
      */
     private List flatTypeList;
 
@@ -1239,7 +1238,7 @@ public class H5CompoundDS extends CompoundDS
 
     /**
      * Checks if a given datatype is a string
-     * @param dtype The data type to check
+     * @param tid The data type to check
      * @return true if the datatype is a string; otherwise returns flase.
      */
     public boolean isString(int tid)
@@ -1253,7 +1252,7 @@ public class H5CompoundDS extends CompoundDS
 
     /**
      * Returns the size of a given datatype
-     * @param dtype The data type
+     * @param tid The data type
      * @return The size of the datatype
      */
     public int getSize(int tid)

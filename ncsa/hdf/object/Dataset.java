@@ -397,7 +397,7 @@ public abstract class Dataset extends HObject
     }
 
     /**
-     * Returns the height of the dataset, i.e. selectedDims[selectedIndex[0]]
+     * Returns the height of the dataset -- selectedDims[selectedIndex[0]]
      */
     public final int getHeight()
     {
@@ -409,7 +409,7 @@ public abstract class Dataset extends HObject
     }
 
     /**
-     * Returns the width of the dataset, i.e. selectedDims[selectedIndex[1]];
+     * Returns the width of the dataset -- selectedDims[selectedIndex[1]];
      */
     public final int getWidth()
     {

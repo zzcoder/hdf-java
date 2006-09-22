@@ -87,11 +87,11 @@ public class H5File extends FileFormat
     private boolean isReadOnly;
 
     /**
-     * Constructs an empty H5File with read/write access.
+     * Constructs a empty H5File with read access.
      */
     public H5File()
     {
-        this("", WRITE);
+        this("", READ);
     }
 
     /**
@@ -106,7 +106,7 @@ public class H5File extends FileFormat
      * Constructs an H5File object with given file name and access flag.
      * <p>
      * @param pathname the full path name of the file.
-     * @param flag the file access flag, it takes one of two values below:
+     * @param access the file access flag, it takes one of two values below:
      * <DL><DL>
      * <DT> READ <DD> Allow read-only access to file.</DT>
      * <DT> WRITE <DD> Allow read and write access to file.</DT>
@@ -168,7 +168,7 @@ public class H5File extends FileFormat
      * Creates an instance of an H5File with given file name and access flag.
      * <p>
      * @param pathname the full path name of the file.
-     * @param flag the file access flag, it takes one of two values below:
+     * @param access the file access flag, it takes one of two values below:
      * <DL><DL>
      * <DT> READ <DD> Allow read-only access to file.</DT>
      * <DT> WRITE <DD> Allow read and write access to file.</DT>
@@ -271,10 +271,12 @@ public class H5File extends FileFormat
         try {
             int n=0, type=-1, oids[];
             n = H5.H5Fget_obj_count(fid, HDF5Constants.H5F_OBJ_ALL);
+
             if ( n>0)
             {
                 oids = new int[n];
                 H5.H5Fget_obj_ids(fid, HDF5Constants.H5F_OBJ_ALL, n, oids);
+
                 for (int i=0; i<n; i++)
                 {
                     type = H5.H5Iget_type(oids[i]);
@@ -328,7 +330,7 @@ public class H5File extends FileFormat
      * Creates a new HDF5 file with given a file name. If the file already exists,
      * erasing all data previously stored in the file.
      * <p>
-     * @param pathname the full path name of the file.
+     * @param fileName the full path name of the file.
      * @return an instance of the new H5File.
      */
     public FileFormat create(String fileName) throws Exception
@@ -353,6 +355,10 @@ public class H5File extends FileFormat
      */
     public Group createGroup(String name, Group pgroup) throws Exception
     {
+        // create new group at the root
+        if (pgroup == null)
+            pgroup = (Group)this.get("/");
+
         return H5Group.create(name, pgroup);
     }
 
@@ -645,11 +651,11 @@ public class H5File extends FileFormat
         long[] chunks,
         int gzip,
         int ncomp,
-        int intelace,
+        int interlace,
         Object data) throws Exception
     {
         H5ScalarDS dataset = (H5ScalarDS)H5ScalarDS.create(name, pgroup, type, dims, maxdims, chunks, gzip, data);
-        try { H5File.createImageAttributes(dataset, intelace); } catch (Exception ex) {}
+        try { H5File.createImageAttributes(dataset, interlace); } catch (Exception ex) {}
 
         return dataset;
     }

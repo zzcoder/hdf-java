@@ -469,7 +469,6 @@ public final class Tools
      *  <p>
      *  @param rawData The input raw data.
      *  @param minmax the range of the raw data.
-     *  @param isTransposed if the data is transposeed
      *  @return the byte array of pixel data.
      */
     public static byte[] getBytes(Object rawData, double[] minmax)

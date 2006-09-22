@@ -79,7 +79,7 @@ public class HDF5LibraryException extends HDF5Exception {
      * <p>
      *  These messages come from <b>H5Epublic.h</b>.
      *
-     *  @param min_num the minor error number
+     *  @param err_code the error code
      *
      *  @return the string of the minor error
      */

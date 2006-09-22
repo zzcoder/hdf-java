@@ -19,12 +19,7 @@ import ncsa.hdf.hdf5lib.exceptions.*;
 
 
 /**
- *  <p>
- *  <hr>
- *  <p>
- *  <center>
- *  <b>This class is the Java interface for the HDF5 library</b>
- *  </center>
+ *  This class is the Java interface for the HDF5 library.
  *  <p>
  *  This code is the called by Java programs to access the
  *  entry points of the HDF5 1.2 library.
@@ -377,7 +372,6 @@ public class H5 {
      *  @param majnum The major version of the library.
      *  @param minnum The minor version of the library.
      *  @param relnum The release number of the library.
-     *  @param patnum The patch number of the library.
      *  @return a non-negative value if successful.
          *  Upon failure (when the versions do not match), this function
      *  causes the application to abort (i.e., crash)
@@ -532,8 +526,8 @@ public class H5 {
     }
 
     /** H5Acopy copies the content of one attribute to another.
-     *  @param src_did the identifier of the source attribute
-     *  @param dst_did the identifier of the destinaiton attribute
+     *  @param src_aid the identifier of the source attribute
+     *  @param dst_aid the identifier of the destinaiton attribute
      */
     public synchronized static native int H5Acopy(int src_aid, int dst_aid)
         throws HDF5LibraryException;
@@ -1160,14 +1154,7 @@ public class H5 {
      *  the file.  <b>object_id</b> can be any object associated
      *  with the file, including the file itself, a dataset,
      *  a group, an attribute, or a named data type.
-
-    scope specifies whether the scope of the flushing action is global or local. Valid values are
-                    H5F_SCOPE_GLOBAL
-
-                                       Flushes the entire virtual file.
-                    H5F_SCOPE_LOCAL
-                                       Flushes only the specified file.
-     *  @param H5F_scope_t scope Specifies the scope of the
+     *  @param scope specifies the scope of the
      *  flushing action, in the case that the HDF-5 file is not
      *  a single physical file.
      *  <P>
@@ -1363,7 +1350,7 @@ public class H5 {
      *  H5Glink creates a new name for an already existing object.
      *
      *  @param loc_id  File, group, dataset, or datatype identifier.
-     *  @param H5G_link_t link_type Link type. Possible values are:
+     *  @param link_type Link type. Possible values are:
      *  <UL>
      *  <LI>
      *  H5G_LINK_HARD
@@ -1434,7 +1421,7 @@ public class H5 {
      *  be checked.
      *  @param size  IN: Maximum number of characters of value to
      *  be returned.
-     *  @param char *value  OUT: Link value.
+     *  @param value  OUT: Link value.
      *
      *  @return a non-negative value, with the link value in value,
      *  if successful.
@@ -1537,7 +1524,7 @@ public class H5 {
      *  H5Pcreate creates a new property as an instance of some
      *  property list class.
      *
-     *  @param H5P_class_t type  IN: The type of property list
+     *  @param type  IN: The type of property list
      *  to create.
      *
      *  @return a property list identifier (plist) if successful;
@@ -1999,7 +1986,7 @@ public class H5 {
      *  property list.  <b>NOT IMPLEMENTED YET </b>
      *
      *  @param plist_id  IN: Property list identifier.
-     *  @param type_id,  IN: The datatype identifier of value.
+     *  @param type_id  IN: The datatype identifier of value.
      *  @param value  IN: The fill value.
      *
      *  @return a non-negative value if successful
@@ -2015,7 +2002,7 @@ public class H5 {
      *  property list.
      *
      *  @param plist_id  IN: Property list identifier.
-     *  @param type_id,  IN: The datatype identifier of value.
+     *  @param type_id  IN: The datatype identifier of value.
      *  @param obj  IN: The fill value.
      *
      *  @return a non-negative value if successful
@@ -2084,7 +2071,7 @@ public class H5 {
      *  @param flags IN: Bit vector specifying certain general
      *  properties of the filter.
      *  @param cd_nelmts IN: Number of elements in cd_values
-     *  @param cd_values[] IN: Auxiliary data for the filter.
+     *  @param cd_values IN: Auxiliary data for the filter.
      *
      *  @return a non-negative value if successful
      *
@@ -2120,7 +2107,7 @@ public class H5 {
      *  @param cd_nelmts IN/OUT: Number of elements in cd_values
      *  @param cd_values OUT: Auxiliary data for the filter.
      *  @param namelen IN: Anticipated number of characters in name.
-     *  @param name[] OUT: Name of the filter.
+     *  @param name OUT: Name of the filter.
      *
      *  @return the filter identification number if successful. Otherwise
      *    returns H5Z_FILTER_ERROR (-1).
@@ -2434,7 +2421,7 @@ public class H5 {
      *  @exception IllegalArgumentException - plist is invalid.
      **/
     public synchronized static native int H5Pset_buffer(int plist, int size,
-        byte[] tcon, byte[] bkg)
+        byte[] tconv, byte[] bkg)
         throws HDF5LibraryException, IllegalArgumentException;
 
     /**
@@ -2451,7 +2438,7 @@ public class H5 {
      *  @exception IllegalArgumentException - plist is invalid.
      **/
     public synchronized static native int H5Pget_buffer(int plist,
-        byte[] tcon, byte[] bkg)
+        byte[] tconv, byte[] bkg)
         throws HDF5LibraryException, IllegalArgumentException;
 
     /**
@@ -2664,9 +2651,9 @@ public class H5 {
      *  defines a selection in the copy which is the region
      *  pointed to.
      *
-     *  @param loc_id,  IN: loc_id  of the reference object.
-     *  @param ref_type,  IN: The reference type of ref.
-     *  @param reference  OUT: the reference to the object and region
+     *  @param loc_id  IN: loc_id  of the reference object.
+     *  @param ref_type  IN: The reference type of ref.
+     *  @param ref  OUT: the reference to the object and region
      *
      *  @return a valid identifier if successful
      *
@@ -2693,8 +2680,8 @@ public class H5 {
      *  Given a reference to an object ref, H5Rget_obj_type
      *  returns the type of the object pointed to.
      *
-     *  @param loc_id,  IN: loc_id  of the reference object.
-     *  @param ref_type,  IN: Type of reference to query.     *
+     *  @param loc_id  IN: loc_id  of the reference object.
+     *  @param ref_type  IN: Type of reference to query.     *
      *  @param ref  IN: the reference
      *
      *  @return a valid identifier if successful
@@ -2815,7 +2802,7 @@ public class H5 {
      *  @param op operator specifying how the new selection is
      *  combined.
      *  @param num_elements Number of elements to be selected.
-     *  @param coord A 2-dimensional array specifying the
+     *  @param coord2D A 2-dimensional array specifying the
      *  coordinates of the elements.
      *
      *  @return a non-negative value if successful
@@ -3221,7 +3208,7 @@ public class H5 {
      *
      *  @param spaceid  Identifier of dataspace to release.
      *  @param startblock  first block to retrieve
-     *  @param numblock  number of blocks to retrieve
+     *  @param numblocks  number of blocks to retrieve
      *  @param buf  returns blocks startblock to startblock+num-1,
      *  each block is <i>rank</i> * 2 (corners) longs.
      *
@@ -3840,7 +3827,7 @@ public class H5 {
      *  to this data item.
      *
      *  @param type_id  Identifier of datatype to query.
-     *  @param field_idx Field index (0-based) of the field type to
+     *  @param membno Field index (0-based) of the field type to
      *  retrieve.
      *
      *  @return the offset of the member.
@@ -3921,8 +3908,7 @@ public class H5 {
      *
      *  @param type  Identifier of datatype.
      *  @param name  The name of the member
-     *  @param obj  The value of the member,  data of the correct
-     *  type
+     *  @param value  The value of the member,  data of the correct type
      *
      *  @return a non-negative value if successful
      *
@@ -3943,7 +3929,7 @@ public class H5 {
      *  to the specified value of the enumeration datatype type.
      *
      *  @param type  IN: Identifier of datatype.
-     *  @param obj  IN: The value of the member, data of the correct
+     *  @param value  IN: The value of the member, data of the correct
      *  @param name  OUT: The name of the member
      *  @param size  IN:  The max length of the name
      *
@@ -3977,7 +3963,7 @@ public class H5 {
     /**
      *  H5Tvlen_create creates a new variable-length (VL) dataype.
      *
-     *  @param base_id_type  IN: Identifier of parent datatype.
+     *  @param base_id  IN: Identifier of parent datatype.
      *
      *  @return a non-negative value if successful
      *
@@ -4510,7 +4496,7 @@ public class H5 {
     /**
      * Creates a new property list class of a given class
      *
-     * @param cls;     IN: Class of property list to create
+     * @param cls     IN: Class of property list to create
      * @return a valid property list identifier if successful;
      *         a negative value if failed
      * @throws HDF5LibraryException
@@ -4521,9 +4507,9 @@ public class H5 {
     /**
      * Sets a property list value (support integer only)
      *
-     * @param plid;  IN: Property list identifier to modify
-     * @param name;  IN: Name of property to modify
-     * @param value; IN: value to set the property to
+     * @param plid  IN: Property list identifier to modify
+     * @param name  IN: Name of property to modify
+     * @param value IN: value to set the property to
      * @return a non-negative value if successful; a negative value if failed
      * @throws HDF5LibraryException
      */
@@ -4533,8 +4519,8 @@ public class H5 {
     /**
      * H5Pexist determines whether a property exists within a property list or class
      *
-     * @param plid; IN: Identifier for the property to query
-     * @param name; IN: Name of property to check for
+     * @param plid IN: Identifier for the property to query
+     * @param name IN: Name of property to check for
      * @return a positive value if the property exists in the property object;
      *         zero if the property does not exist; a negative value if failed
      * @throws HDF5LibraryException
@@ -4545,8 +4531,8 @@ public class H5 {
     /**
      * H5Pget_size retrieves the size of a property's value in bytes
      *
-     * @param plid; IN: Identifier of property object to query
-     * @param name; IN: Name of property to query
+     * @param plid IN: Identifier of property object to query
+     * @param name IN: Name of property to query
      * @return size of a property's value if successful; a negative value if failed
      * @throws HDF5LibraryException
      */
@@ -4556,7 +4542,7 @@ public class H5 {
     /**
      * H5Pget_nprops retrieves the number of properties in a property list or class
      *
-     * @param plid; IN: Identifier of property object to query
+     * @param plid IN: Identifier of property object to query
      * @return number of properties if successful; a negative value if failed
      * @throws HDF5LibraryException
      */
@@ -4566,7 +4552,7 @@ public class H5 {
     /**
      * H5Pget_class_name retrieves the name of a generic property list class
      *
-     * @param plid; IN: Identifier of property object to query
+     * @param plid IN: Identifier of property object to query
      * @return name of a property list if successful; null if failed
      * @throws HDF5LibraryException
      */
@@ -4576,7 +4562,7 @@ public class H5 {
     /**
      * H5Pget_class_parent retrieves an identifier for the parent class of a property class
      *
-     * @param plid; IN: Identifier of the property class to query
+     * @param plid IN: Identifier of the property class to query
      * @return a valid parent class object identifier if successful; a negative value if failed
      * @throws HDF5LibraryException
      */
@@ -4586,8 +4572,8 @@ public class H5 {
     /**
      * H5Pisa_class checks to determine whether a property list is a member of the specified class
      *
-     * @param plist; IN: Identifier of the property list
-     * @param pclass; IN: Identifier of the property class
+     * @param plist IN: Identifier of the property list
+     * @param pclass IN: Identifier of the property class
      * @return a positive value if equal; zero if unequal; a negative value if failed
      * @throws HDF5LibraryException
      */
@@ -4598,8 +4584,8 @@ public class H5 {
      * H5Pget retrieves a copy of the value for a property in a property list
      *     (support integer only)
      *
-     * @param plid; IN: Identifier of property object to query
-     * @param name; IN: Name of property to query
+     * @param plid IN: Identifier of property object to query
+     * @param name IN: Name of property to query
      * @return value for a property if successful; a negative value if failed
      * @throws HDF5LibraryException
      */
@@ -4609,8 +4595,8 @@ public class H5 {
     /**
      * H5Pequal determines if two property lists or classes are equal
      *
-     * @param plid1; IN: First property object to be compared
-     * @param plid2; IN: Second property object to be compared
+     * @param plid1 IN: First property object to be compared
+     * @param plid2 IN: Second property object to be compared
      * @return positive value if equal; zero if unequal, a negative value if failed
      * @throws HDF5LibraryException
      */
@@ -4620,9 +4606,9 @@ public class H5 {
     /**
      * H5Pcopy_prop copies a property from one property list or class to another
      *
-     * @param dst_id; IN: Identifier of the destination property list or class
-     * @param src_id; IN: Identifier of the source property list or class
-     * @param name; IN: Name of the property to copy
+     * @param dst_id IN: Identifier of the destination property list or class
+     * @param src_id IN: Identifier of the source property list or class
+     * @param name IN: Name of the property to copy
      * @return a non-negative value if successful; a negative value if failed
      * @throws HDF5LibraryException
      */
@@ -4632,8 +4618,8 @@ public class H5 {
     /**
      * H5Premove removes a property from a property list
      *
-     * @param plid; IN: Identifier of the property list to modify
-     * @param name; IN: Name of property to remove
+     * @param plid IN: Identifier of the property list to modify
+     * @param name IN: Name of property to remove
      * @return a non-negative value if successful; a negative value if failed
      * @throws HDF5LibraryException
      */
@@ -4643,8 +4629,8 @@ public class H5 {
     /**
      * H5Punregister removes a property from a property list class
      *
-     * @param plid; IN: Property list class from which to remove permanent property
-     * @param name; IN: Name of property to remove
+     * @param plid IN: Property list class from which to remove permanent property
+     * @param name IN: Name of property to remove
      * @return a non-negative value if successful; a negative value if failed
      * @throws HDF5LibraryException
      */
@@ -4654,7 +4640,7 @@ public class H5 {
     /**
      * Closes an existing property list class
      *
-     * @param plid; IN: Property list class to close
+     * @param plid IN: Property list class to close
      * @return a non-negative value if successful; a negative value if failed
      * @throws HDF5LibraryException
      */
