@@ -1,324 +1,224 @@
-
-/****************************************************************************
- * NCSA HDF                                                                 *
- * National Comptational Science Alliance                                   *
- * University of Illinois at Urbana-Champaign                               *
- * 605 E. Springfield, Champaign IL 61820                                   *
- *                                                                          *
- * For conditions of distribution and use, see the accompanying             *
- * hdf-java/COPYING file.                                                   *
- *                                                                          *
- ****************************************************************************/
-
 package test.object;
 
-import javax.swing.tree.*;
-import java.util.*;
-import java.lang.reflect.*;
+import java.io.*;
 import ncsa.hdf.object.*;
 import ncsa.hdf.object.h5.*;
 import ncsa.hdf.hdf5lib.*;
+import ncsa.hdf.hdf5lib.exceptions.*;
 
 /**
  * Test object at the ncsa.hdf.object package.
  * <p>
  *
- * @version 1.3.0 10/26/2001
+ * @version 1.3.0 9/21/2006
  * @author Peter X. Cao
  *
  */
-public class TestH5File
+public class TestH5Object
 {
+    private final static String FILE_NAME = "G:\\temp\\TestH5Obejct.h5";
+    private final static String LOG_FILE_NAME = "TestH5Obejct.log";
+    private final static String GROUP_NAME = "simple_dataset";
+    private final static String DATASET_NAME_SIMPLE = "simple_dataset";
+    private final static H5File H5FILE = new H5File();
+    private String MESSAGE = null;
+    private PrintStream out = null;
+
     /**
-     * Test tree structure of the HDF5 file.
+     * Constructs an instance of TestH5Object.
+     * @param out_stream the out stream for printing the test results.
+     */
+    public TestH5Object(PrintStream print_stream)
+    {
+        if (print_stream == null)
+            out = System.out;
+        else
+            out = print_stream;
+    }
+
+    public void passed() {
+        out.println("PASSED:\t "+MESSAGE);
+    }
+
+    public void failed(Exception ex) {
+        out.println("FAILED:\t "+MESSAGE +"--"+ex.toString());
+    }
+
+    /**
+     * Main routine for the testing. Use "-f" to save the test result to a log file.
+     * If "-f" flag is specified, the test results will printed to System.out.
      * <p>
-     * Tested with a large file (over 700MB, over 800 datasets) at
-     * \\Eirene\sdt\mcgrath\EOS-Data\MODIS\L3\MOD08_E3.A2000337.002.2001037044240.h5
-     * it takes about 5 seconds to retrieve the tree structure through the network.
-     * Accessing local file can be a lot of faster.
+     * For example, "test.object.TestH5Object -f test.log" to save the test results
+     *     at file test.log.
+     * @param args
      */
-    private static void testTree(String fileName)
+    public static void main(String[] args)
     {
-        H5File h5file = new H5File(fileName, HDF5Constants.H5F_ACC_RDONLY);
+        PrintStream out = null;
+        int numOfFails = 0;
 
-        long t0 = System.currentTimeMillis();
-
-        try {
-            h5file.open();
-        } catch (Exception ex)
+        int n = args.length;
+        if (n > 2 && args[1].equals("-f"))
         {
-            System.out.println(ex);
+            try {
+                out = new PrintStream(new BufferedOutputStream( new FileOutputStream(args[2])));
+            } catch (FileNotFoundException ex)
+            {
+                out = null;
+                ex.printStackTrace();
+            }
         }
 
-        long t = System.currentTimeMillis()-t0;
-        System.out.println("Time of retrieving the tree is "+t);
+        TestH5Object test = new TestH5Object(out);
 
-        TreeNode root = h5file.getRootNode();
-        if (root != null)
-        {
-            printNode(root, "    ");
-        }
+        numOfFails += test.testH5File_create(FILE_NAME);
+        numOfFails += test.testH5File_open(FILE_NAME);
+        numOfFails += test.testH5File_createGroup(FILE_NAME);
+        numOfFails += test.testH5File_createDatatype(FILE_NAME);
 
-	try {
-        h5file.close();
-        } catch (Exception ex)
-        {
-            System.out.println(ex);
-        }
-    }
-
-    private static void printNode(TreeNode node, String indent)
-    {
-        System.out.println(indent+node);
-
-        int n = node.getChildCount();
-        for (int i=0; i<n; i++)
-        {
-            printNode(node.getChildAt(i), indent+"    ");
-        }
+        try { H5FILE.close(); } catch (Exception ex) {}
     }
 
     /**
-     * Test H5CompoundDS.
+     * Test H5File create() function.
+     *
+     * @param fname the name of the file to create
+     * @return zero if successful; otherwise returns one
      */
-    private static void testH5CompoundDS(String fileName)
+    public int testH5File_create(String fname)
     {
-        H5File h5file = new H5File(fileName, HDF5Constants.H5F_ACC_RDONLY);
+        H5File file = null;
 
+        // test create file using the constructor
+        MESSAGE = "new H5File("+fname+", H5File.CREATE)";
         try {
-            h5file.open();
-        } catch (Exception ex)
-        {
-            System.out.println(ex);
-        }
+            file = new H5File(fname, H5File.CREATE);
+            file.open();
+            file.close();
+        } catch (Exception ex) { failed(ex); return 1;}
+        passed();
 
-        DefaultMutableTreeNode root = (DefaultMutableTreeNode)h5file.getRootNode();
-        H5CompoundDS h5DS = null;
-        DefaultMutableTreeNode node = null;
-        if (root != null)
-        {
-            Enumeration nodes = root.depthFirstEnumeration();
-            while (nodes.hasMoreElements())
-            {
-                node = (DefaultMutableTreeNode)nodes.nextElement();
-                Object obj = node.getUserObject();
-                if (obj instanceof H5CompoundDS)
-                {
-                    h5DS = (H5CompoundDS)obj;
-                    System.out.println(h5DS);
 
-                    // test H5CompoundDS attributes
-                    Attribute attr = null;
-                    List info = null;
-                    try { info = h5DS.getMetadata(); }
-                    catch (Exception ex) { System.out.println(ex); }
+        // test create file using the H5File.create
+        MESSAGE = "H5File.create("+fname+")";
+        try {
+            file = (H5File)H5FILE.create(fname);
+            file.close();
+        } catch (Exception ex) { failed(ex); return 1;}
+        passed();
 
-                    int n = 0;
-                    if (info != null)
-                    {
-                        n = info.size();
-                        for (int i=0; i<n; i++)
-                        {
-                            attr = (Attribute)info.get(i);
-                            System.out.println(attr);
-                        }
-                    }
-
-                    // compound members
-                    int rank = h5DS.getRank();
-                    if (rank <=0 ) h5DS.init();
-                    n = h5DS.getMemberCount();
-                    String[] names = h5DS.getMemberNames();
-                    for (int i=0; i<n; i++)
-                    {
-                        System.out.println(names[i]);
-                    }
-
-                    // compound data
-                    List list = null;
-
-                    try {
-                        list = (List)h5DS.read();
-                    } catch (Exception ex) { System.out.println(ex);}
-
-                    if (list != null)
-                    {
-                        n = list.size();
-                        Object mdata = null;
-                        for (int i=0; i<n; i++)
-                        {
-                            mdata = list.get(i);
-                            if (mdata.getClass().isArray())
-                            {
-                                StringBuffer sb = new StringBuffer();
-                                // print out the first 1000 data points
-                                int mn = Math.min(Array.getLength(mdata), 1000);
-                                for (int j=0; j<mn; j++)
-                                {
-                                    sb.append(Array.get(mdata, j));
-                                    sb.append(" ");
-                                }
-                                System.out.println(sb.toString());
-                            }
-                        } // for (int i=0; i<n; i++)
-                    } // if (list != null)
-                } //if (obj instanceof H5CompoundDS
-            } //while (nodes.hasMoreElements())
-        } //if (root != null)
-
-	try {
-        h5file.close();
-        } catch (Exception ex)
-        {
-            System.out.println(ex);
-        }
+        return 0;
     }
 
     /**
-     * Test H5ScalarDS.
+     * Test H5File open() function.
+     *
+     * @param fname the name of the file to open
+     * @return zero if successful; otherwise returns one
      */
-    private static void testH5ScalarDS(String fileName)
+    public int testH5File_open(String fname)
     {
-        H5File h5file = new H5File(fileName, HDF5Constants.H5F_ACC_RDONLY);
+        H5File file = null;
+        int acc_ids[] = {H5File.CREATE, H5File.READ, H5File.WRITE};
+        String msgs[] = { "H5File.open("+fname+", H5File.CREATE)",
+                          "H5File.open("+fname+", H5File.READ)",
+                          "H5File.open("+fname+", H5File.WRITE)"};
 
-        try {
-            h5file.open();
-        } catch (Exception ex)
+        // test create file using the H5File.open
+        for (int i=0; i<3; i++)
         {
-            System.out.println(ex);
+            MESSAGE = msgs[i];
+            try {
+                file = (H5File)H5FILE.open(fname, acc_ids[i]);
+                file.close();
+            } catch (Exception ex) { failed(ex); return 1;}
+            passed();
         }
 
-        DefaultMutableTreeNode root = (DefaultMutableTreeNode)h5file.getRootNode();
-        H5ScalarDS h5DS = null;
-        DefaultMutableTreeNode node = null;
-        if (root != null)
-        {
-            Enumeration nodes = root.depthFirstEnumeration();
-            while (nodes.hasMoreElements())
-            {
-                node = (DefaultMutableTreeNode)nodes.nextElement();
-                Object obj = node.getUserObject();
-                if (obj instanceof H5ScalarDS)
-                {
-                    h5DS = (H5ScalarDS)obj;
-                    System.out.println(h5DS);
-
-                    // test H5CompoundDS attributes
-                    Attribute attr = null;
-                    List info = null;
-
-                    try { info = h5DS.getMetadata(); }
-                    catch (Exception ex) {System.out.println(ex);}
-
-                    int n = 0;
-                    if (info != null)
-                    {
-                        n = info.size();
-                        for (int i=0; i<n; i++)
-                        {
-                            attr = (Attribute)info.get(i);
-                            System.out.println(attr);
-                        }
-                    }
-
-                    // data
-                    Object data = null;
-                    try
-                    {
-                        data = h5DS.read();
-                    } catch (Exception ex) {}
-
-                    if (data != null && data.getClass().isArray())
-                    {
-                        // print out the first 1000 data points
-                        n = Math.min(Array.getLength(data), 1000);
-                        StringBuffer sb = new StringBuffer();
-                        for (int j=0; j<n; j++)
-                        {
-                            sb.append(Array.get(data, j));
-                            sb.append(" ");
-                        }
-                        System.out.println(sb.toString());
-                    }
-                } //if (obj instanceof H5CompoundDS
-            } //while (nodes.hasMoreElements())
-        } //if (root != null)
-
-	try {
-        h5file.close();
-        } catch (Exception ex)
-        {
-            System.out.println(ex);
-        }
+        return 0;
     }
 
     /**
-     * Test H5Group.
+     * Test H5File createGroup() function.
+     *
+     * @param fname the name of the file to open
+     * @return zero if successful; otherwise returns one
      */
-    private static void testH5Group(String fileName)
+    public int testH5File_createGroup(String fname)
     {
-        H5File h5file = new H5File(fileName, HDF5Constants.H5F_ACC_RDONLY);
+        H5File file = null;
+        String grp_names[] = {"/g0", "/g0/g00", "/g0/g01"};
+        String msgs[] = { "H5File.createGroup("+grp_names[0]+", Group pgroup)",
+                          "H5File.createGroup("+grp_names[1]+", Group pgroup)",
+                          "H5File.createGroup("+grp_names[2]+", Group pgroup)"};
 
-        try {
-            h5file.open();
-        } catch (Exception ex)
+        MESSAGE = "H5File.create("+fname+", H5File.CREATE)";
+        try { file = (H5File)H5FILE.open(fname, H5File.CREATE); }
+        catch (Exception ex) {failed(ex); return 1;}
+
+        // create groups
+        Group grp = null;
+        for (int i=0; i<3; i++)
         {
-            System.out.println(ex);
+            MESSAGE = msgs[i];
+            try {
+                grp = file.createGroup(grp_names[i], null);
+            } catch (Exception ex) { grp = null; }
+
+            if (grp == null) {
+                failed(new HDF5LibraryException("cannot create group"));
+                return 1;
+            }
+            passed();
         }
 
-        DefaultMutableTreeNode root = (DefaultMutableTreeNode)h5file.getRootNode();
-        H5Group g = null;
-        DefaultMutableTreeNode node = null;
-        if (root != null)
-        {
-            Enumeration nodes = root.depthFirstEnumeration();
-            while (nodes.hasMoreElements())
-            {
-                node = (DefaultMutableTreeNode)nodes.nextElement();
-                Object obj = node.getUserObject();
-                if (obj instanceof H5Group)
-                {
-                    g = (H5Group)obj;
-                    System.out.println(g);
+        try {file.close();} catch (Exception ex) {}
 
-                    // test H5CompoundDS attributes
-                    Attribute attr = null;
-                    List info = null;
-                    try { g.getMetadata(); }
-                    catch (Exception ex) { System.out.println(ex); }
-
-                    if (info == null)
-                        continue;
-
-                    int n = info.size();
-                    for (int i=0; i<n; i++)
-                    {
-                        attr = (Attribute)info.get(i);
-                        System.out.println(attr);
-                    }
-                } //if (obj instanceof H5Group
-            } //while (nodes.hasMoreElements())
-        } //if (root != null)
-
-	try {
-        h5file.close();
-        } catch (Exception ex)
-        {
-            System.out.println(ex);
-        }
+        return 0;
     }
 
-    public static void main(String[] argv)
+    /**
+     * Test H5File createDatatype() function.
+     *
+     * @param fname the name of the file to open
+     * @return zero if successful; otherwise returns one
+     */
+    public int testH5File_createDatatype(String fname)
     {
-        int argc = argv.length;
+        H5File file = null;
+        int N = 5;
+        int dtype_cls[] = {Datatype.CLASS_INTEGER, Datatype.CLASS_FLOAT,
+            Datatype.CLASS_CHAR, Datatype.CLASS_STRING, Datatype.CLASS_ENUM};
+        String dtype_names[] = {"INTEGER", "FLOAT", "CHAR", "STRING", "ENUM"};
+        String msgs[] = { "H5File.createDatatype(int tclass, int tsize, int torder, int tsign, "+dtype_names[0]+")",
+                          "H5File.createDatatype(int tclass, int tsize, int torder, int tsign, "+dtype_names[1]+")",
+                          "H5File.createDatatype(int tclass, int tsize, int torder, int tsign, "+dtype_names[2]+")",
+                          "H5File.createDatatype(int tclass, int tsize, int torder, int tsign, "+dtype_names[3]+")",
+                          "H5File.createDatatype(int tclass, int tsize, int torder, int tsign, "+dtype_names[4]+")"};
 
-        if (argc <=0)
+        MESSAGE = "H5File.create("+fname+", H5File.CREATE)";
+        try { file = (H5File)H5FILE.open(fname, H5File.CREATE); }
+        catch (Exception ex) {failed(ex); return 1;}
+
+        // create groups
+        Datatype dtype = null;
+        for (int i=0; i<N; i++)
         {
-            System.exit(1);
+            MESSAGE = msgs[i];
+            try {
+                dtype = file.createDatatype(dtype_cls[i], -1, -1, -1, dtype_names[i]);
+            } catch (Exception ex) { dtype = null; }
+
+            if (dtype == null) {
+                failed(new HDF5LibraryException("cannot create named datatype"));
+                return 1;
+            }
+            passed();
         }
 
-	System.out.println("Tree: for: "+argv[0]);
-        TestH5File.testTree(argv[0]);
+        try {file.close();} catch (Exception ex) {}
+
+        return 0;
     }
 
 }
