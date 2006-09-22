@@ -66,9 +66,9 @@ public class H5Group extends Group
         String name,
         String path,
         Group parent,
-        long[] theID)
+        long[] oid)
     {
-        super (fileFormat, name, path, parent, ((theID == null) ? DEFAULT_OID : theID));
+        super (fileFormat, name, path, parent, ((oid == null) ? DEFAULT_OID : oid));
 
         int gid = open();
         try { hasAttribute = (H5.H5Aget_num_attrs(gid)>0); }
@@ -179,8 +179,8 @@ public class H5Group extends Group
     }
 
     /**
-     * Creates a new group.
-     * @param file the file which the group is added to.
+     * Creates a new group with a given name and parent group
+     * .
      * @param name the name of the group to create.
      * @param pgroup the parent group of the new group.
      * @return the new group if successful. Otherwise returns null.

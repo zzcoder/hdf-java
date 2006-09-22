@@ -15,9 +15,8 @@ import ncsa.hdf.object.*;
 
 /**
  *
- * <p>Title: ncsa.hdf.view.PaletteView</p>
- * <p>The palette view interface for displaying image palette</p>
- * <p>Company: National Computational Science Alliance</p>
+ * The palette view interface for displaying image palette
+ *
  * @author Peter X. Cao
  * @version 1.0
  */

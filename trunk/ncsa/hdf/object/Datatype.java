@@ -192,7 +192,7 @@ public abstract class Datatype extends HObject
      *     setEnumMembers("lowTemp=10, highTemp")
      *         will set enum member lowTemp to 10 and highTemp to 11.
      * </pre>
-     * @param enumStr: the name=values pairs of enum members
+     * @param enumStr the name=values pairs of enum members
      */
     public final void setEnumMembers(String enumStr) { enumMembers = enumStr; }
 

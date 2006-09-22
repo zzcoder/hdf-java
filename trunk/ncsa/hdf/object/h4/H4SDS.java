@@ -611,7 +611,7 @@ public class H4SDS extends ScalarDS
      * @param type the datatype of the dataset.
      * @param dims the dimension size of the dataset.
      * @param maxdims the max dimension size of the dataset.
-     * @param chunk the chunk size of the dataset.
+     * @param chunks the chunk size of the dataset.
      * @param gzip the level of the gzip compression.
      * @param data the array of data values.
      * @return the new dataset if successful. Otherwise returns null.

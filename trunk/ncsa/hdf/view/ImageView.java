@@ -16,10 +16,8 @@ import java.awt.Rectangle;
 import java.awt.Image;
 
 /**
+ * The image view interface for displaying image object
  *
- * <p>Title: ncsa.hdf.view.ImageView</p>
- * <p>The image view interface for displaying image object</p>
- * <p>Company: National Computational Science Alliance</p>
  * @author Peter X. Cao
  * @version 1.0
  */

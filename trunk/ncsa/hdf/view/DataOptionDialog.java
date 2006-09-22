@@ -28,7 +28,7 @@ import java.awt.Image;
 import java.awt.image.*;
 import java.util.*;
 
-/**blue
+/**
  * DataOptionDialog is an dialog window used to select display options.
  * Display opotions include selection of subset, display type (image, text, or
  * spreadsheet).

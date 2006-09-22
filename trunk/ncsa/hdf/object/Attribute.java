@@ -81,9 +81,9 @@ public class Attribute implements Metadata
      * and is independent of file format, i.e., the implementation of attribute
      * applies to both HDF4 and HDF5.
      * <p>
-     * @param name the name of the attribute.
-     * @param type the datatype of the attribute.
-     * @param dims the dimension sizes of the attribute, null for scalar attribute
+     * @param attrName the name of the attribute.
+     * @param attrType the datatype of the attribute.
+     * @param attrDims the dimension sizes of the attribute, null for scalar attribute
      *
      * @see ncsa.hdf.object.Datatype
      */

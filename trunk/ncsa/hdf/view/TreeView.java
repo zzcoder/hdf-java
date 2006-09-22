@@ -17,7 +17,6 @@ import javax.swing.tree.TreeNode;
 import ncsa.hdf.object.*;
 
 /**
- * <p>Title: TreeView</p>
  *
  * <p>TreeView defines APIs for open a file and display the file structure in tree structure.</p>
  *
@@ -27,7 +26,6 @@ import ncsa.hdf.object.*;
  * <p>From the TreeView, you can open data content or metadata of selected object.
  * You can selet object(s) to delete or add new object to the file.</p>
  *
- * <p>Company: NCSA, University of Illinois at Urbana-Champaign</p>
  * @author Peter X. Cao
  * @version 1.0, 06/10/2003
  */

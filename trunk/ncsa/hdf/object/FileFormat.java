@@ -111,7 +111,7 @@ public abstract class FileFormat extends File
             FileFormat fileformat = (FileFormat)fileclass.newInstance();
             if (fileformat != null)
                 FileFormat.addFileFormat("HDF", fileformat);
-        } catch (Throwable err ) {;}
+        } catch (Throwable err ) {err.printStackTrace();}
 
         // add default HDF5 modules
         try {
@@ -119,7 +119,7 @@ public abstract class FileFormat extends File
             FileFormat fileformat = (FileFormat)fileclass.newInstance();
             if (fileformat != null)
                 FileFormat.addFileFormat("HDF5", fileformat);
-        } catch (Throwable err ) {;}
+        } catch (Throwable err ) {err.printStackTrace();}
     }
 
     /** Constructs a FileFormat with a given file name.
@@ -141,7 +141,7 @@ public abstract class FileFormat extends File
      * Opens a file and returns an instance of implementing class of the FileFormat.
      *
      * @param pathname The full path name of the file.
-     * @param flag The file access flag, it takes one of two values below:
+     * @param access The file access flag, it takes one of two values below:
      * @return The new file if successful; otherwise returns null
      */
     public abstract FileFormat open(String pathname, int access) throws Exception;
@@ -410,7 +410,7 @@ public abstract class FileFormat extends File
         long[] chunks,
         int gzip,
         int ncomp,
-        int intelace,
+        int interlace,
         Object data) throws Exception;
 
     /**
@@ -642,12 +642,12 @@ public abstract class FileFormat extends File
     public void setStartMembers(int idx) { start_members = idx; }
 
     /**
-     * Returns the maximum number of objects to be loaded into memory
+     * Returns the maximum number of objects to be loaded into memory.
      * <p>
      * Current Java application such as HDFView cannot handle files with large
      * number of objects such 1,000,000 objects due to JVM memory  limitation.
      * The max_members is defined so that applications such as HDFView will load
-     * up to <i>max_members</i> number of objects starting the <i>start_members</i>
+     * up to <b>max_members</b> number of objects starting the <b>start_members</b>
      * -th object.
      *
      * @return The maximum number of objects to be loaded into memory
@@ -655,7 +655,7 @@ public abstract class FileFormat extends File
     protected int getMaxMembers() { return max_members; }
 
     /**
-     * Returns The starting object to be loaded into memory
+     * Returns the starting object to be loaded into memory.
      * <p>
      * Current Java application such as HDFView cannot handle files with large
      * number of objects such 1,000,000 objects due to JVM memory  limitation.

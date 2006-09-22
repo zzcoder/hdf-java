@@ -1014,7 +1014,7 @@ public class ViewProperties extends Properties
      * setStartMember() sets the starting index of objects will be loaded
      * into memory.
      *
-     * @param n the maximum number of objects to load into memory
+     * @param idx the maximum number of objects to load into memory
      */
     public static void setStartMembers(int idx)
     {

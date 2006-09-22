@@ -122,19 +122,19 @@ public class DefaultFileFilter extends FileFilter
      * Files that begin with "." are ignored.
      *
      * @see #getExtension
-     * @see FileFilter#accepts
      */
     public boolean accept(File f) {
-    if(f != null) {
-        if(f.isDirectory()) {
-        return true;
+        if(f != null) {
+            if(f.isDirectory()) {
+                return true;
+            }
+            String extension = getExtension(f);
+            if(extension != null && filters.get(getExtension(f)) != null) {
+                return true;
+            }
         }
-        String extension = getExtension(f);
-        if(extension != null && filters.get(getExtension(f)) != null) {
-        return true;
-        };
-    }
-    return false;
+
+        return false;
     }
 
     /**
@@ -187,11 +187,6 @@ public class DefaultFileFilter extends FileFilter
     /**
      * Returns the human readable description of this filter. For
      * example: "JPEG and GIF Image Files (*.jpg, *.gif)"
-     *
-     * @see setDescription
-     * @see setExtensionListInDescription
-     * @see isExtensionListInDescription
-     * @see FileFilter#getDescription
      */
     public String getDescription() {
         if(fullDescription == null) {
@@ -222,10 +217,6 @@ public class DefaultFileFilter extends FileFilter
     /**
      * Sets the human readable description of this filter. For
      * example: filter.setDescription("Gif and JPG Images");
-     *
-     * @see setDescription
-     * @see setExtensionListInDescription
-     * @see isExtensionListInDescription
      */
     public void setDescription(String description) {
         this.description = description;
@@ -239,9 +230,6 @@ public class DefaultFileFilter extends FileFilter
      * Only relevent if a description was provided in the constructor
      * or using setDescription();
      *
-     * @see getDescription
-     * @see setDescription
-     * @see isExtensionListInDescription
      */
     public void setExtensionListInDescription(boolean b) {
         useExtensionsInDescription = b;
@@ -254,10 +242,6 @@ public class DefaultFileFilter extends FileFilter
      *
      * Only relevent if a description was provided in the constructor
      * or using setDescription();
-     *
-     * @see getDescription
-     * @see setDescription
-     * @see setExtensionListInDescription
      */
     public boolean isExtensionListInDescription() {
         return useExtensionsInDescription;

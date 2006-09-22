@@ -17,11 +17,7 @@ import java.lang.*;
 import java.util.*;
 
 /**
- *  <hr>
- *  <p>
- *  <center>
- *  <b>This is the Java interface for the HDF 4.1 library</b>
- *  </center>
+ *  This is the Java interface for the HDF 4.1 library.
  *  <p>
  *  This code is the called by Java programs to access the
  *  entry points of the HDF 4.1 library.
@@ -221,7 +217,6 @@ import java.util.*;
  *  <p>
  *  <hr>
  */
-
 public class HDFLibrary {
 
     private final static String JHI_VERSION= "2.5";
@@ -372,7 +367,7 @@ public class HDFLibrary {
      *  @param anntype <b>IN</b>: the number type, as defined in HDFConstants
      *  @param tag <b>IN</b>: the HDF tag
      *  @param ref <b>IN</b>: the HDF ref
-     *  @param vers <b>OUT</b>: int[], an array of annotation identifiers.
+     *  @param ann_list <b>OUT</b>: int[], an array of annotation identifiers.
      *  The array must be long enough to hold the number of annotations
      *  returned by ANnumann
      *
@@ -390,10 +385,9 @@ public class HDFLibrary {
     public static native int ANannlen( int ann_id) throws HDFException;
 
     /**
-     *  @param an_id <b>IN</b>: the AN interface id, returned by ANstart
-     *  @param annbuf <b>OUT</b>: String[1], the annotation
-     *  is returned as annbuf[0].
-     *  @param tag <b>IN</b>: int, the maximum length of the string.
+     *  @param ann_id <b>IN</b>: the AN interface id, returned by ANstart
+     *  @param annbuf <b>OUT</b>: String[1], the annotation is returned as annbuf[0].
+     *  @param maxlen <b>IN</b>: int, the maximum length of the string.
      *
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
@@ -523,7 +517,7 @@ public class HDFLibrary {
 
     /**
      *  @param sdsid <b>IN</b>: the SD identifier returned by SDselect
-     *  @param c_info <b>OUT</b>: HDFChunkInfo, the chunking info
+     *  @param chunk_def <b>OUT</b>: HDFChunkInfo, the chunking info
      *  @param flag <b>OUT</b>: int[1], the type of chunking
      *
      *  @exception ncsa.hdf.hdflib.HDFException
@@ -552,7 +546,7 @@ public class HDFLibrary {
      *          interlace mode of the stored image data,
      *          sizes of each image dimension ,
      *          number of attributes assigned to the image
-     *  @param args <b>OUT</b>: int[2], dim_sizes
+     *  @param dim_sizes <b>OUT</b>: int[2], dim_sizes
      *
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
@@ -565,7 +559,7 @@ public class HDFLibrary {
      *  <p><b>NOTE:</b> the parameters for the Java interface are not in
      *  the same order as the C interface.
      */
-    public static native boolean GRgetiminfo( int riid, String[] gr_name, int[] args,
+    public static native boolean GRgetiminfo( int grid, String[] gr_name, int[] args,
     int[] dim_sizes) throws HDFException;
 
     /**
@@ -586,7 +580,7 @@ public class HDFLibrary {
      *  <p><b>NOTE:</b> to read into a Java 2D array use the alternative
      *  routine below.
      */
-    public static native boolean GRreadimage( int riid, int[] start, int[] stride,
+    public static native boolean GRreadimage( int grid, int[] start, int[] stride,
                        int[] count, byte[] data) throws HDFException;
 
     /**
@@ -607,7 +601,7 @@ public class HDFLibrary {
      *  <p><b>Note:</b> reads the data as bytes and converts to
      *  the Java array.
      */
-    public static boolean GRreadimage( int riid, int[] start, int[] stride,
+    public static boolean GRreadimage( int grid, int[] start, int[] stride,
                        int[] count, Object theData)
      throws HDFException{
         byte[] data;
@@ -615,7 +609,7 @@ public class HDFLibrary {
 
         HDFArray theArray = new HDFArray(theData);
         data = theArray.emptyBytes();
-            rval = GRreadimage( riid, start, stride, count, data);
+        rval = GRreadimage( grid, start, stride, count, data);
         theData = theArray.arrayify( data );
         return rval;
     }
@@ -661,7 +655,7 @@ public class HDFLibrary {
      *  args[2] = interlace, args[3] = num_entries
      *
      */
-    public static native boolean  GRgetlutinfo( int lutid, int[] argv) throws HDFException;
+    public static native boolean  GRgetlutinfo( int lutid, int[] args) throws HDFException;
 
     /**
      *  @param lutid <b>IN</b>: the palette identifier returned by GRgetlutid
@@ -773,7 +767,7 @@ public class HDFLibrary {
     public static native short  GRluttoref( int pal_id) throws HDFException;
 
     /**
-     *  @param id <b>IN</b>: the GR identifier returned by GRstart
+     *  @param gr_id <b>IN</b>: the GR identifier returned by GRstart
      *  @param attr_name <b>IN</b>: the name of the attribute
      *  @param data_type <b>IN</b>: the number type of the data (should
      *  be DFNT_CHAR)
@@ -792,7 +786,7 @@ public class HDFLibrary {
         int data_type, int count, String values) throws HDFException;
 
     /**
-     *  @param id <b>IN</b>: the GR identifier returned by GRstart
+     *  @param gr_id <b>IN</b>: the GR identifier returned by GRstart
      *  @param attr_name <b>IN</b>: the name of the attribute
      *  @param data_type <b>IN</b>: the number type of the data
      *  @param count <b>IN</b>: the length the data (lenght of 'values')
@@ -813,11 +807,11 @@ public class HDFLibrary {
         int data_type, int count, byte[] values) throws HDFException;
 
     /**
-     *  @param id <b>IN</b>: the GR identifier returned by GRstart
+     *  @param gr_id <b>IN</b>: the GR identifier returned by GRstart
      *  @param attr_name <b>IN</b>: the name of the attribute
      *  @param data_type <b>IN</b>: the number type of the data
      *  @param count <b>IN</b>: the length the data (lenght of 'values')
-     *  @param values <b>IN</b>: Object -- the value to be written,
+     *  @param theData <b>IN</b>: Object -- the value to be written,
      *  a Java array of numbers.
      *
      *  @exception ncsa.hdf.hdflib.HDFException
@@ -840,7 +834,7 @@ public class HDFLibrary {
     }
     /**
      *  @param sdsid <b>IN</b>: the SD identifier returned by SDselect
-     *  @param c_info <b>IN</b>: HDFChunkInfo, the chunking info
+     *  @param chunk_def <b>IN</b>: HDFChunkInfo, the chunking info
      *  @param flags <b>IN</b>: the type of chunking
      *
      *  @exception ncsa.hdf.hdflib.HDFException
@@ -878,7 +872,7 @@ public class HDFLibrary {
      *  @param grid <b>IN</b>: the GR interface id, returned by GRstart
      *  @param start <b>IN</b>: int[], start
      *  @param stride <b>IN</b>: int[], stride
-     *  @param count <b>IN</b>: int[], count
+     *  @param edge <b>IN</b>: int[], count
      *  @param data <b>IN</b>: byte[], data to be written
      *
      *  @exception ncsa.hdf.hdflib.HDFException
@@ -897,7 +891,7 @@ public class HDFLibrary {
      *  @param grid <b>IN</b>: the GR interface id, returned by GRstart
      *  @param start <b>IN</b>: int[], start
      *  @param stride <b>IN</b>: int[], stride
-     *  @param count <b>IN</b>: int[], count
+     *  @param edge <b>IN</b>: int[], count
      *  @param theData <b>IN</b>: Object, a Java array of appropriate
      *  type, dimensions, and size.
      *
@@ -926,7 +920,7 @@ public class HDFLibrary {
      *  @param data_type <b>IN</b>: int, number type
      *  @param interlace <b>IN</b>: int, interlace
      *  @param num_entries <b>IN</b>: int, number of entries
-     *  @param data <b>IN</b>: byte[], palette data to be written--as bytes
+     *  @param pal_data <b>IN</b>: byte[], palette data to be written--as bytes
      *
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
@@ -946,7 +940,7 @@ public class HDFLibrary {
      *  @param data_type <b>IN</b>: int, number type
      *  @param interlace <b>IN</b>: int, interlace
      *  @param num_entries <b>IN</b>: int, number of entries
-     *  @param data <b>IN</b>: Object, palette data to be written, any
+     *  @param theData <b>IN</b>: Object, palette data to be written, any
      *  number type.
      *
      *  @exception ncsa.hdf.hdflib.HDFException
@@ -970,9 +964,9 @@ public class HDFLibrary {
     }
 
     /**
-     *  @param grid <b>IN</b>: the GR interface id, returned by SDselect
+     *  @param sdsid <b>IN</b>: the GR interface id, returned by SDselect
      *  @param origin <b>IN</b>: int[], origin
-     *  @param data <b>OUT</b>: byte[], the data in an array of bytes
+     *  @param theData <b>OUT</b>: byte[], the data in an array of bytes
      *
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
@@ -985,7 +979,7 @@ public class HDFLibrary {
     public static native boolean GRreadchunk( int sdsid, int[] origin, byte[] theData) throws HDFException;
 
     /**
-     *  @param grsid <b>IN</b>: the GR interface id, returned by SDselect
+     *  @param grid <b>IN</b>: the GR interface id, returned by SDselect
      *  @param origin <b>IN</b>: int[], origin
      *  @param theData <b>IN</b>: Object, a Java array of appropriate
      *  type, dimensions, and size.
@@ -1063,7 +1057,7 @@ public class HDFLibrary {
      *         number of dimensions (rank),
      *         data type for the data stored in the dataset,
      *         number of "netCDF-style" attributes for this dataset
-     *  @param args <b>OUT</b>: int[(rank)], sizes of dimensions
+     *  @param dimsizes <b>OUT</b>: int[(rank)], sizes of dimensions
      *
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
@@ -1077,12 +1071,12 @@ public class HDFLibrary {
      *  the same order as the C interface.
      */
     public static native boolean SDgetinfo( int sdsid, String []name,
-            int [] dimsizes, int[] argv) throws HDFException;
+            int [] dimsizes, int[] args) throws HDFException;
 
 
     /**
      *  @param sdsid <b>IN</b>: the SD interface id, returned by SDselect
-     *  @param args <b>OUT</b>: int[1], 1 if the SDS is empty, 0 if has data
+     *  @param emptySDS <b>OUT</b>: int[1], 1 if the SDS is empty, 0 if has data
      *
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
@@ -1175,7 +1169,7 @@ public class HDFLibrary {
     public static native int  SDgetdimid( int sdsid, int index) throws HDFException;
 
     /**
-     *  @param sdsid <b>IN</b>: the dimension id, returned by SDgetdimid
+     *  @param dimid <b>IN</b>: the dimension id, returned by SDgetdimid
      *  @param name <b>OUT</b>: String[1], the dimension name
      *  @param argv <b>OUT</b>: int[3], size of the name string,
      *  number type of data in the array, # attributes for the dimension
@@ -1310,8 +1304,8 @@ public class HDFLibrary {
     int len) throws HDFException;
 
     /**
-     *  @param sdsid <b>IN</b>: id of the SDS as returned by SDselect
-     *  @param strings <b>OUT</b>: String[4], data information strings:
+     *  @param dimid <b>IN</b>: id of the SDS as returned by SDselect
+     *  @param args <b>OUT</b>: String[4], data information strings:
      *            label
      *            unit
      *            print format
@@ -1326,7 +1320,7 @@ public class HDFLibrary {
      *  @return strings[0] = label, strings[1] = unit,
      *  strings[2] = format
      */
-    public static native boolean  SDgetdimstrs( int dimid, String[] argv,
+    public static native boolean  SDgetdimstrs( int dimid, String[] args,
                       int len) throws HDFException;
 
     /**
@@ -1484,7 +1478,7 @@ public class HDFLibrary {
     /**
      *  @param sdsid <b>IN</b>: id of the SDS as returned by SDselect
      *  @param max <b>OUT</b>: byte[], max value, as bytes
-     *  @param max <b>OUT</b>: byte[], max value, as bytes
+     *  @param min <b>OUT</b>: byte[], min value, as bytes
      *
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
@@ -1711,7 +1705,7 @@ public class HDFLibrary {
 
     /**
      *  @param sds_id <b>IN</b>: id of a dataset
-     *  @param fill_bal <b>IN</b>: byte[], the fill values in an array of
+     *  @param fill_val <b>IN</b>: byte[], the fill values in an array of
      *  bytes.
      *
      *  @exception ncsa.hdf.hdflib.HDFException
@@ -1748,7 +1742,7 @@ public class HDFLibrary {
     }
 
     /**
-     *  @param sds_id <b>IN</b>: id of a dataset
+     *  @param sdsid <b>IN</b>: id of a dataset
      *  @param max <b>IN</b>: byte[], the max value in an array of bytes
      *  @param min <b>IN</b>: byte[], the min value in an array of bytes
      *
@@ -1764,7 +1758,7 @@ public class HDFLibrary {
     public static native boolean  SDsetrange( int sdsid, byte[] max, byte[] min) throws HDFException;
 
     /**
-     *  @param sds_id <b>IN</b>: id of a dataset
+     *  @param sdsid <b>IN</b>: id of a dataset
      *  @param max <b>IN</b>: Object, a Java object of appropriate type
      *  @param min <b>IN</b>: Object, a Java object of appropriate type
      *
@@ -1837,8 +1831,8 @@ public class HDFLibrary {
 
     /**
      *  @param id <b>IN</b>: the SD identifier returned by SDselect
-     *  @param comp_type <b>IN</b>: the type of compression
-     *  @param c_info <b>IN</b>: HDFCompInfo, the compression info
+     *  @param type <b>IN</b>: the type of compression
+     *  @param cinfo <b>IN</b>: HDFCompInfo, the compression info
      *
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
@@ -1857,8 +1851,8 @@ public class HDFLibrary {
     public static native boolean SDsetblocksize( int sdsid, int block_size ) throws HDFException;
 
     /**
-     *  @param sdsid:  <b>IN</b>: the SD id
-     *  @param fill_enable:  <b>IN</b>:  boolean, true calls library with
+     *  @param sdsid  <b>IN</b>: the SD id
+     *  @param fill_enable  <b>IN</b>:  boolean, true calls library with
      *  SD_FILL, false calls library with SD_NOFILL
      *
      *  @exception ncsa.hdf.hdflib.HDFException
@@ -1886,7 +1880,7 @@ public class HDFLibrary {
 
     /**
      *  @param sdsid <b>IN</b>: the SD identifier returned by SDselect
-     *  @param c_info <b>IN</b>: HDFChunkInfo, the chunking info
+     *  @param chunk_def <b>IN</b>: HDFChunkInfo, the chunking info
      *  @param flags <b>IN</b>: the type of chunking
      *
      *  @exception ncsa.hdf.hdflib.HDFException
@@ -1902,8 +1896,8 @@ public class HDFLibrary {
 
     /**
      *  @param sdsid <b>IN</b>: the SD identifier returned by SDselect
-     *  @param c_info <b>OUT</b>: HDFChunkInfo, the chunking info
-     *  @param flags <b>OUT</b>: int[1], the type of chunking
+     *  @param chunk_def <b>OUT</b>: HDFChunkInfo, the chunking info
+     *  @param clflags <b>OUT</b>: int[1], the type of chunking
      *
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
@@ -1911,7 +1905,7 @@ public class HDFLibrary {
      *
      *
      *  @return c_info contains information about the chunking method,
-     *  flags[0] == the chunking flags
+     *  clflags[0] == the chunking flags
      *
      *  <p><b>NOTE:</b>The chunking algorithm-specific information is
      *  passed in an appropriate sub-class of HDFChunkInfo.
@@ -1922,7 +1916,7 @@ public class HDFLibrary {
     /**
      *  @param sdsid <b>IN</b>: the SD interface id, returned by SDselect
      *  @param origin <b>IN</b>: int[], origin
-     *  @param data <b>OUT</b>: byte[], the data in an array of bytes
+     *  @param theData <b>OUT</b>: byte[], the data in an array of bytes
      *
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
@@ -2037,7 +2031,7 @@ public class HDFLibrary {
     /**
      *  @param file_id <b>IN</b>: the SD interface id, returned by SDselect
      *  @param fieldname <b>IN</b>: String, the name of the field to be filled
-     *  @param buf <b>IN</b>: Object, data to be written, in a Java array
+     *  @param thebuf <b>IN</b>: Object, data to be written, in a Java array
      *  of appropriate type and size
      *  @param n_records <b>IN</b>: int, the number of records being written
      *  @param data_type <b>IN</b>: int, the number type of the data
@@ -2121,8 +2115,8 @@ public class HDFLibrary {
     public static native int VQuerytag(int vkey) throws HDFException;
 
    /**
-    *  @param vdata_id, <b>IN</b>, vdata id  as returned by VSattach
-    *  @param n_records, <b>OUT</b>, int[1], the number of records in the vdata
+    *  @param vdata_id <b>IN</b>, vdata id  as returned by VSattach
+    *  @param n_records <b>OUT</b>, int[1], the number of records in the vdata
      *
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
@@ -2134,8 +2128,8 @@ public class HDFLibrary {
     public static native boolean VSQuerycount(int vdata_id, int[] n_records) throws HDFException;
 
    /**
-    *  @param vdata_id, <b>IN</b>, vdata id  as returned by VSattach
-    *  @param fields, <b>OUT</b>, String[1], the names of the fields
+    *  @param vdata_id <b>IN</b>, vdata id  as returned by VSattach
+    *  @param fields <b>OUT</b>, String[1], the names of the fields
      *
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
@@ -2148,8 +2142,8 @@ public class HDFLibrary {
     public static native boolean VSQueryfields(int vdata_id, String[] fields) throws HDFException;
 
    /**
-    *  @param vdata_id, <b>IN</b>, vdata id  as returned by VSattach
-    *  @param interlace, <b>OUT</b>, int[1], the interlace mode,
+    *  @param vdata_id <b>IN</b>, vdata id  as returned by VSattach
+    *  @param interlace <b>OUT</b>, int[1], the interlace mode,
      *
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
@@ -2162,8 +2156,8 @@ public class HDFLibrary {
     public static native boolean VSQueryinterlace(int vdata_id, int[] interlace) throws HDFException;
 
    /**
-    *  @param vdata_id, <b>IN</b>, vdata id  as returned by VSattach
-    *  @param vdata_name, <b>OUT</b>, String[1], the name of the vdata
+    *  @param vdata_id <b>IN</b>, vdata id  as returned by VSattach
+    *  @param vdata_name <b>OUT</b>, String[1], the name of the vdata
      *
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
@@ -2179,8 +2173,8 @@ public class HDFLibrary {
     public static native int VSQuerytag(int vdata_id) throws HDFException;
 
    /**
-    *  @param vdata_id, <b>IN</b>, vdata id  as returned by VSattach
-    *  @param vdata_size, <b>OUT</b>, int[1], the size of the vdata
+    *  @param vdata_id <b>IN</b>, vdata id  as returned by VSattach
+    *  @param vdata_size <b>OUT</b>, int[1], the size of the vdata
      *
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
@@ -2198,8 +2192,8 @@ public class HDFLibrary {
     public  static native  int VSgetid(int file_id, int vdata_ref) throws HDFException;
 
    /**
-    *  @param vdata_id, <b>IN</b>, vdata id  as returned by VSattach
-    *  @param hdfclassname, <b>OUT</b>, String[1], the class name of the vdata
+    *  @param vdata_id <b>IN</b>, vdata id  as returned by VSattach
+    *  @param hdfclassname <b>OUT</b>, String[1], the class name of the vdata
      *
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
@@ -2211,8 +2205,8 @@ public class HDFLibrary {
     public  static native  void VSgetclass(int vdata_id, String[] hdfclassname) throws HDFException;
 
    /**
-    *  @param vdata_id, <b>IN</b>, vdata id  as returned by VSattach
-    *  @param hdfname, <b>OUT</b>, String[1], the name of the vdata
+    *  @param vdata_id <b>IN</b>, vdata id  as returned by VSattach
+    *  @param hdfname <b>OUT</b>, String[1], the name of the vdata
      *
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
@@ -2237,8 +2231,8 @@ public class HDFLibrary {
     public static native int VSsetnumblocks(int vdata_id, int numblocks) throws HDFException;
 
    /**
-    *  @param vdata_id, <b>IN</b>, vdata id  as returned by VSattach
-    *  @param fieldname, <b>OUT</b>, String[1], the names of the fields
+    *  @param vdata_id <b>IN</b>, vdata id  as returned by VSattach
+    *  @param fieldname <b>OUT</b>, String[1], the names of the fields
      *
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
@@ -2253,9 +2247,9 @@ public class HDFLibrary {
     public static native int VSgetinterlace(int vdata_id) throws HDFException;
 
    /**
-    *  @param vdata_id, <b>IN</b>, vdata id  as returned by VSattach
-    *  @param iargs, <b>OUT</b>, int[3], n_records, interlace, vdata_size
-    *  @param sargs, <b>OUT</b>, String[2], names the dataset, fields
+    *  @param vdata_id <b>IN</b>, vdata id  as returned by VSattach
+    *  @param iargs <b>OUT</b>, int[3], n_records, interlace, vdata_size
+    *  @param sargs <b>OUT</b>, String[2], names the dataset, fields
      *
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
@@ -2271,8 +2265,8 @@ public class HDFLibrary {
     public static native boolean VSinquire(int vdata_id, int[] iargs, String[] sargs) throws HDFException;
 
    /**
-    *  @param vdata_id, <b>IN</b>, vdata id  as returned by VSattach
-    *  @param iargs, <b>OUT</b>, int[2], block_size, num_blocks
+    *  @param vdata_id <b>IN</b>, vdata id  as returned by VSattach
+    *  @param iargs <b>OUT</b>, int[2], block_size, num_blocks
      *
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
@@ -2287,9 +2281,9 @@ public class HDFLibrary {
     public static native boolean VSinquire(int vdata_id, int[] iargs ) throws HDFException;
 
    /**
-    *  @param fid, <b>IN</b>, File identifier returned by Hopen
-    *  @param ref_array, <b>OUT</b>, int[?], the refs
-    *  @param buffersize, <b>IN</b>, int, the max number of refs to
+    *  @param fid <b>IN</b>, File identifier returned by Hopen
+    *  @param ref_array <b>OUT</b>, int[?], the refs
+    *  @param buffersize <b>IN</b>, int, the max number of refs to
     *  return.
      *
      *  @exception ncsa.hdf.hdflib.HDFException
@@ -2304,7 +2298,7 @@ public class HDFLibrary {
 
     /**
      *  @param vdata_id <b>IN</b>: the Vdata id
-     *  @param data_buf <b>OUT</b>: byte[], the data in an array of bytes
+     *  @param databuf <b>OUT</b>: byte[], the data in an array of bytes
      *  @param nrecord <b>IN</b>: int, number of records
      *  @param interlace <b>IN</b>: int, interlace
      *
@@ -2371,7 +2365,7 @@ public class HDFLibrary {
 
     /**
      *  @param vdata_id <b>IN</b>: the Vdata id
-     *  @param data_buf <b>IN</b>: byte[], the data in an array of bytes
+     *  @param databuf <b>IN</b>: byte[], the data in an array of bytes
      *  @param n_records <b>IN</b>: int, number of records
      *  @param interlace <b>IN</b>: int, interlace
      *
@@ -2479,7 +2473,7 @@ public class HDFLibrary {
     /**
      *  @param vgroup_id - IN: the Vgroup id
      *  @param index - IN: the index of the object
-     *  @param tagref[] - OUT: tagref[0]=tag, tagref[1]=ref
+     *  @param tagref - OUT: tagref[0]=tag, tagref[1]=ref
      *
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
@@ -2583,7 +2577,7 @@ public class HDFLibrary {
     public static native boolean Vgetattr(int id, int index, byte[] data) throws HDFException;
 
     /**
-     *  @param vdata_id <b>IN</b>: the Vdata id
+     *  @param id <b>IN</b>: the Vdata id
      *  @param index <b>IN</b>: the index of the attribute
      *  @param theData <b>OUT</b>: Object, a Java array of appropriate
      *  type, dimensions, and size.
@@ -2634,7 +2628,7 @@ public class HDFLibrary {
      *  routine below.
      */
    public static native boolean Vsetattr(int id, String attr_name,
-        int data_type, int count, byte[] values) throws HDFException;
+        int data_type, int count, byte[] data) throws HDFException;
 
     /**
      *  @param id <b>IN</b>: the Vdata id
@@ -2665,7 +2659,7 @@ public class HDFLibrary {
     /**
      *  @param id <b>IN</b>: the Vdata id
      *  @param index <b>IN</b>: int, the index of the attribute
-     *  @param index <b>IN</b>: int, the index of the attribute
+     *  @param attr_index <b>IN</b>: int, the index of the attribute
      *  @param name <b>OUT</b>: String[1], the name of the attribute
      *  @param argv <b>OUT</b>: int[3],
      *         Data type of the target attribute,
@@ -2719,7 +2713,7 @@ public class HDFLibrary {
     public static native boolean  VSgetattr( int id, int index, int attr_index, byte[] data) throws HDFException;
 
     /**
-     *  @param vdata_id <b>IN</b>: the Vdata id
+     *  @param id <b>IN</b>: the Vdata id
      *  @param index <b>IN</b>: the index of the vdata
      *  @param attr_index <b>IN</b>: the index of the attribute
      *  @param theData <b>OUT</b>: Object, a Java array of appropriate
@@ -2757,7 +2751,7 @@ public class HDFLibrary {
      *  @param attr_name <b>IN</b>: String, the name of the attribute
      *  @param data_type <b>IN</b>: int, the number_type of the attribute
      *  @param count <b>IN</b>: the number of values
-     *  @param value <b>IN</b>: Strin, the data in an String
+     *  @param values <b>IN</b>: Strin, the data in an String
      *
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
@@ -2836,7 +2830,7 @@ public class HDFLibrary {
     public static native boolean  DF24reqil(int il)  throws HDFException;
 
     /**
-     *  @param filename <b>IN</b>: String, the file
+     *  @param fileName <b>IN</b>: String, the file
      *  @param imagedata <b>OUT</b>: byte[], the image, in an array of
      *  bytes
      *  @param width <b>IN</b>: int, the width of the image
@@ -2861,7 +2855,7 @@ public class HDFLibrary {
             int width, int height) throws HDFException;
 
     /**
-     *  @param filename <b>IN</b>: String, the file
+     *  @param fileName <b>IN</b>: String, the file
      *  @param theImagedata <b>OUT</b>: Object, the image, in a java
      *  array of appropriate size and type
      *  @param width <b>IN</b>: int, the width of the image
@@ -3040,7 +3034,7 @@ public class HDFLibrary {
     private static native boolean _DFR8getdims(String fileName, int[] argv, boolean[] haspalette) throws HDFException;
 
     /**
-     *  @param filename <b>IN</b>: String, the file
+     *  @param fileName <b>IN</b>: String, the file
      *  @param imagedata <b>OUT</b>: byte[], the image, in an array of
      *  bytes
      *  @param width <b>IN</b>: int, the width of the image
@@ -3068,7 +3062,7 @@ public class HDFLibrary {
             int width, int height, byte[] palette) throws HDFException;
 
     /**
-     *  @param filename <b>IN</b>: String, the file
+     *  @param fileName <b>IN</b>: String, the file
      *  @param theImagedata <b>OUT</b>: Object, the image, in a java
      *  array of appropriate size and type
      *  @param width <b>IN</b>: int, the width of the image

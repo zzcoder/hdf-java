@@ -94,7 +94,7 @@ public class H4File extends FileFormat
      * Creates an H4File with specific full file name and access flag.
      * <p>
      * @param pathname the full path of the file name.
-     * @param flag the file access flag, HDF provides several file access
+     * @param access the file access flag, HDF provides several file access
      * code definitions:
      * <DL><DL>
      * <DT> DFACC_READ <DD> Open for read only. If file does not exist,
@@ -417,7 +417,7 @@ public class H4File extends FileFormat
      * <p>
      * @param obj the object which the attribute is to be attached to.
      * @param attr the atribute to attach.
-     * @param attrExisted The indicator if the given attribute exists.
+     * @param isSDglobalAttr The indicator if the given attribute exists.
      * @return true if successful and false otherwise.
      */
     public void writeAttribute(HObject obj, Attribute attr,

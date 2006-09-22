@@ -53,10 +53,13 @@ implements ActionListener
 
     private final Toolkit toolkit;
 
-    /** constructs a FileConversionDialog.
-     * @param owner The owner of the dialog.
-     * @param type the type of the conversion to perform.
-     * @param openFiles The list of current open files.
+     /**
+      * Constructs a FileConversionDialog
+      * @param owner The owner of the dialog.
+      * @param typeFrom source file type
+      * @param typeTo destinatin file type
+      * @param dir current file directory
+      * @param openFiles The list of current open files
       */
     public FileConversionDialog(
         Frame owner,

@@ -173,6 +173,10 @@ implements ImageView, ActionListener
 
     private boolean isTransposed;
 
+    private JTextField frameField;
+
+    private long curFrame=0, maxFrame=1;
+
 
     /**
      * Constructs an ImageView.
@@ -276,6 +280,11 @@ implements ImageView, ActionListener
         long[] start = dataset.getStartDims();
         int n = Math.min(3, rank);
 
+        if (rank>2) {
+            curFrame = start[selectedIndex[2]]+1;
+            maxFrame = dims[selectedIndex[2]];
+        }
+
         sb.append(" [ dims");
         sb.append(selectedIndex[0]);
         for (int i=1; i<n; i++)
@@ -308,24 +317,6 @@ implements ImageView, ActionListener
 
         setJMenuBar(createMenuBar());
         viewer.showStatus(sb.toString());
-
-        if (is3D)
-        {
-            frameTitle = "Image "+String.valueOf(start[selectedIndex[2]]+1)+ " of "+dims[selectedIndex[2]] + "    " + frameTitle;
-            setTitle(frameTitle);
-        }
-
-        // tanspose the image
-/*
-        if (isTransposed) {
-            rotate(ROTATE_CW_90);
-            rotateCount++;
-            n = rotateRelatedItems.size();
-            for (int i=0; i< n; i++) {
-                ((javax.swing.JComponent)rotateRelatedItems.get(i)).setEnabled(false);
-            }
-        }
-*/
     }
 
     private JMenuBar createMenuBar() {
@@ -443,14 +434,6 @@ implements ImageView, ActionListener
 
         menu.addSeparator();
 
-        item = new JMenuItem( "Go to Frame");
-        item.addActionListener(this);
-        item.setActionCommand("Go to frame");
-        item.setEnabled(is3D);
-        menu.add(item);
-
-        menu.addSeparator();
-
         item = new JMenuItem( "Show Animation");
         item.addActionListener(this);
         item.setActionCommand("Show animation");
@@ -488,7 +471,7 @@ implements ImageView, ActionListener
         item.setActionCommand("Close");
         menu.add(item);
 
-        bar.add( new JLabel("     ") );
+        bar.add( new JLabel("       ") );
 
         // add icons to the menubar
 
@@ -545,6 +528,13 @@ implements ImageView, ActionListener
             button.setMargin( margin );
             button.addActionListener( this );
             button.setActionCommand( "Previous page" );
+
+            frameField = new JTextField(curFrame + " of " + maxFrame);
+            frameField.setMaximumSize(new Dimension(75,30));
+            bar.add( frameField );
+            frameField.setMargin( margin );
+            frameField.addActionListener( this );
+            frameField.setActionCommand( "Go to frame" );
 
             // next button
             button = new JButton( ViewProperties.getNextIcon() );
@@ -1244,22 +1234,16 @@ implements ImageView, ActionListener
         }
         else if (cmd.startsWith("Go to frame"))
         {
-            int[] selectedIndex = dataset.getSelectedIndex();
-            long[] dims = dataset.getDims();
-
-            String strPage = (String)JOptionPane.showInputDialog(this,
-                    "Enter frame number [0, "+String.valueOf(dims[selectedIndex[2]]-1)+"]",
-                    "Show Image",
-                    JOptionPane.INFORMATION_MESSAGE, null, null, "0");
-
-            if (strPage == null)
-                return;
+            String strPage = frameField.getText();
+            strPage = strPage.toLowerCase();
+            int idx = strPage.indexOf('o');
+            if (idx > 0) strPage = strPage.substring(0, idx);
 
             int page = 0;
             try { page = Integer.parseInt(strPage.trim()); }
             catch (Exception ex) { page = -1; }
 
-            gotoPage(page);
+            gotoPage(page-1);
         }
         else if (cmd.startsWith("Show animation"))
         {
@@ -1481,11 +1465,12 @@ implements ImageView, ActionListener
         }
 
         start[selectedIndex[2]] = idx;
+        curFrame = idx+1;
         dataset.clearData();
         image = null;
         imageComponent.setImage(getImage());
-        setTitle( frameTitle = "Image "+String.valueOf(idx+1)+ " of "+dims[selectedIndex[2]] + "    " + this.getName());
-        //setTitle( frameTitle+ " - Image "+String.valueOf(idx+1)+ " of "+dims[selectedIndex[2]]);
+        frameField.setText(curFrame + " of " + maxFrame);
+
         updateUI();
     }
 

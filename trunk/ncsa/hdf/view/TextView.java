@@ -15,9 +15,8 @@ import ncsa.hdf.object.*;
 
 /**
  *
- * <p>Title: ncsa.hdf.view.TextView</p>
- * <p>The text view interface for displaying text data</p>
- * <p>Company: National Computational Science Alliance</p>
+ * The text view interface for displaying text data
+ *
  * @author Peter X. Cao
  * @version 1.0
  */
