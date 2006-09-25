@@ -837,4 +837,8 @@ public abstract class FileFormat extends File
 
         return fileformats;
     }
+
+    public final String toString() {
+        return this.getClass().getName();
+    }
 }
