@@ -394,7 +394,7 @@ public class H5File extends FileFormat
      * @param tsize The size of the datatype in bytes
      * @param torder The order of the byte endianing
      * @param tsign The signed or unsinged of an integer
-     * @param name The name of the datatype to create
+     * @param name The full name (path + name) of the datatype to create
      * @return  The new datatype if successful; otherwise returns null
      */
     public Datatype createDatatype(
@@ -410,10 +410,12 @@ public class H5File extends FileFormat
         try {
             H5Datatype t = (H5Datatype) createDatatype(tclass, tsize, torder, tsign);
             tid = t.toNative();
+
             H5.H5Tcommit(fid, name, tid);
 
             byte[] ref_buf = H5.H5Rcreate(fid, name, HDF5Constants.H5R_OBJECT, -1);
             long l = HDFNativeData.byteToLong(ref_buf, 0);
+
             long[] oid = new long[1];
             oid[0] = l; // save the object ID
 
@@ -603,7 +605,10 @@ public class H5File extends FileFormat
         for (int i=0; i<nMembers; i++)
         {
             memberRanks[i] = 1;
-            memberDims[i][0] = memberSizes[i];
+            if (memberSizes==null)
+                memberDims[i][0] = 1;
+            else
+                memberDims[i][0] = memberSizes[i];
         }
 
         return H5CompoundDS.create(name, pgroup, dims, maxdims, chunks, gzip,
@@ -1287,8 +1292,11 @@ public class H5File extends FileFormat
             theNode = (DefaultMutableTreeNode)local_enum.nextElement();
             theObj = (HObject)theNode.getUserObject();
             String fullPath = theObj.getFullName()+"/";
+
             if (path.equals(fullPath))
                 break;
+            else
+                theObj = null;
         }
 
         return theObj;
@@ -1820,6 +1828,7 @@ public class H5File extends FileFormat
         // the whole file tree is loaded. find the object in the tree
         if (rootNode != null)
             obj = findObject(this, path);
+
         if (obj != null)
             return obj;
 

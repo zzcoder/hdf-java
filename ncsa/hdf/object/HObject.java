@@ -154,8 +154,15 @@ public abstract class HObject implements Serializable, DataFormat
                 theName = separator;
                 thePath = null;
             } else {
+                // the path must starts with "/"
+                if (!thePath.startsWith(HObject.separator))
+                    thePath = HObject.separator+thePath;
+
+                // get rid of the last "/"
                 if (thePath.endsWith(HObject.separator))
                     thePath = thePath.substring(0, thePath.length()-1);
+
+                // seperate the name and the path
                 theName = thePath.substring(thePath.lastIndexOf(HObject.separator)+1);
                 thePath = thePath.substring(0, thePath.lastIndexOf(HObject.separator));
             }

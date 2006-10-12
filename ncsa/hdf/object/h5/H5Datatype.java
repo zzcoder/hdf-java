@@ -56,6 +56,7 @@ public class H5Datatype extends Datatype
             hasAttribute = (H5.H5Aget_num_attrs(nativeID)>0);
             isNamed = true;
             H5.H5Tclose(nativeID);
+            nativeID = -1;
         } catch (HDF5Exception ex) {}
     }
 
@@ -309,7 +310,7 @@ public class H5Datatype extends Datatype
             tclass = H5.H5Tget_class(tid);
             tsize = H5.H5Tget_size(tid);
             tsign = H5.H5Tget_sign(tid);
-        } catch (Exception ex) {}
+        } catch (Exception ex) {;}
 
         if (tclass == HDF5Constants.H5T_INTEGER)
         {
@@ -490,10 +491,14 @@ public class H5Datatype extends Datatype
     {
         if (nativeID >=0 )
             return nativeID;
+
         else if (isNamed) {
             try {nativeID = H5.H5Topen(getFID(), getPath()+getName());}
-            catch (Exception ex) {nativeID = -1; }
+            catch (Exception ex) {nativeID = -1;}
         }
+
+        if (nativeID >=0 )
+            return nativeID;
 
         int tid = -1;
 
@@ -558,7 +563,14 @@ public class H5Datatype extends Datatype
                 tid = H5.H5Tenum_create(ptid);
                 String memstr, memname;
                 int memval=0, idx;
-                StringTokenizer token = new StringTokenizer(enumMembers, ",");
+                StringTokenizer token;
+
+                // using "0" and "1" as default
+                if (enumMembers == null)
+                    token = new StringTokenizer("0,1", ",");
+                else
+                    token = new StringTokenizer(enumMembers, ",");
+
                 while (token.hasMoreTokens()) {
                     memstr = token.nextToken();
                     if (memstr==null || memstr.length()<1)
@@ -574,7 +586,9 @@ public class H5Datatype extends Datatype
                     }
                     H5.H5Tenum_insert(tid, memname, memval);
                 }
-            } catch (Exception ex) { tid = -1; }
+            } catch (Exception ex) { tid = -1; ex.printStackTrace();}
+
+            try { H5.H5Tclose(ptid); } catch (Exception ex) {}
         }
 
         return (nativeID = tid);

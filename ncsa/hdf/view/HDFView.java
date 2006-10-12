@@ -586,6 +586,12 @@ public class HDFView extends JFrame
         item.addActionListener(this);
         menu.add(item);
 
+        item = new JMenuItem( "Unregister File Format");
+        item.setMnemonic(KeyEvent.VK_U);
+        item.setActionCommand("Unregister file format");
+        item.addActionListener(this);
+        menu.add(item);
+
         // add help menu
         menu = new JMenu("Help");
         menu.setMnemonic('H');
@@ -1358,6 +1364,23 @@ public class HDFView extends JFrame
                ViewProperties.setFileExtension(ext);
             }
         }
+        else if (cmd.equals("Unregister file format")) {
+            Enumeration keys = FileFormat.getFileFormatKeys();
+            ArrayList keylist = new ArrayList();
+
+            while(keys.hasMoreElements())
+                keylist.add(keys.nextElement());
+
+            String theKey = (String)JOptionPane.showInputDialog(this,
+                "Unregister file format", "Unregister file format",
+                JOptionPane.WARNING_MESSAGE, ViewProperties.getHdfIcon(), keylist.toArray(),
+                null);
+
+            if (theKey == null)
+                return;
+
+            FileFormat.removeFileFormat(theKey);
+        }
         else if (cmd.equals("Users guide"))
         {
             if (usersGuideURL != null)
@@ -2068,5 +2091,4 @@ public class HDFView extends JFrame
         frame.pack();
         frame.setVisible(true);
     }
-
 }

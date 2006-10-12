@@ -659,6 +659,7 @@ public abstract class Dataset extends HObject
         {
             if (strings[i].length() > length)
                 strings[i] = strings[i].substring(0, length);
+
             // padding the string with space
             strBuff.replace(0, length, " ");
             strBuff.replace(0, length, strings[i]);

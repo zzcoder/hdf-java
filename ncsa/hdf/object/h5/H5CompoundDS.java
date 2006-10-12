@@ -1094,8 +1094,15 @@ public class H5CompoundDS extends CompoundDS
             return null;
 
         String path = HObject.separator;
-        if (!pgroup.isRoot())
+        if (!pgroup.isRoot()) {
             path = pgroup.getPath()+pgroup.getName()+HObject.separator;
+            if (name.endsWith("/"))
+                name = name.substring(0, name.length()-1);
+                int idx = name.lastIndexOf("/");
+                if (idx >=0)
+                    name = name.substring(idx+1);
+        }
+
         fullPath = path +  name;
 
         int typeSize = 0;
