@@ -504,7 +504,12 @@ public class H4SDS extends ScalarDS
             sdInfo[1] = sdInfo[1] & (~HDFConstants.DFNT_LITEND);
             hasAttribute = (sdInfo[2]>0);
             rank = sdInfo[0];
-            if (rank <= 0) rank = 1;
+
+            if (rank <= 0) {
+                rank = 1;
+                idims[0] = 1;
+            }
+
             nativeDatatype = sdInfo[1];
             isText = (nativeDatatype == HDFConstants.DFNT_CHAR || nativeDatatype == HDFConstants.DFNT_UCHAR8);
 

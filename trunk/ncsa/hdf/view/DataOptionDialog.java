@@ -899,6 +899,9 @@ implements ActionListener, ItemListener
             Image preImage = null;
             ScalarDS sd = (ScalarDS)dataset;
 
+            if (sd.isText())
+                return null;
+
             // backup the selection
             long[] strideBackup = new long[rank];
             long[] selectedBackup = new long[rank];

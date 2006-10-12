@@ -191,8 +191,7 @@ public class H5Group extends Group
         H5Group group = null;
         String fullPath = null;
 
-        if (pgroup == null ||
-            name == null)
+        if (name == null)
             return null;
 
         H5File file = (H5File)pgroup.getFileFormat();
@@ -200,9 +199,20 @@ public class H5Group extends Group
         if (file == null)
             return null;
 
+        // By default, add the new group to the root
+        if (pgroup == null)
+            pgroup = (Group)file.get("/");
+
         String path = HObject.separator;
-        if (!pgroup.isRoot())
+        if (!pgroup.isRoot()) {
             path = pgroup.getPath()+pgroup.getName()+HObject.separator;
+            if (name.endsWith("/"))
+                name = name.substring(0, name.length()-1);
+                int idx = name.lastIndexOf("/");
+                if (idx >=0)
+                    name = name.substring(idx+1);
+        }
+
         fullPath = path +  name;
 
          // create a new group and add ot to the parent node

@@ -487,6 +487,17 @@ public abstract class FileFormat extends File
     }
 
     /**
+     * Removes a file format from the supported file list.
+     *
+     * @param key the key of the file format to remove
+     * @return the file format to which the key is matched, or null if no file
+     * format has such as a key.
+     */
+    public static FileFormat removeFileFormat(String key) {
+        return (FileFormat) FileList.remove(key);
+    }
+
+    /**
      * Returns the FileFormat for a given key from the supported file list.
      *
      * @param key the unique ID key to identify the file format, such as "HDF5" or "Hdf-Eos5"
@@ -841,4 +852,5 @@ public abstract class FileFormat extends File
     public final String toString() {
         return this.getClass().getName();
     }
+
 }

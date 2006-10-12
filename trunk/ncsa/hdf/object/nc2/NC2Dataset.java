@@ -158,6 +158,7 @@ public class NC2Dataset extends ScalarDS
         isText = nativeDataset.getDataType().equals(DataType.STRING);
 
         rank = nativeDataset.getRank();
+
         if (rank == 0) {
             // a scalar data point
             rank = 1;

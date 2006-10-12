@@ -458,6 +458,7 @@ public class H5ScalarDS extends ScalarDS
 
             int org_tid = H5.H5Dget_type(did);
             tid = H5.H5Tget_native_type(org_tid);
+            isText = (H5.H5Tget_class(tid)==HDF5Constants.H5T_STRING);
             try { H5.H5Tclose(org_tid); } catch (Exception ex) {}
 
             if ( isUnsigned && unsignedConverted)
@@ -846,7 +847,12 @@ public class H5ScalarDS extends ScalarDS
         }
 
         if (rank > 1 && isText)
-            selectedDims[1] = 1;
+        {
+            selectedIndex[0] = 1;
+            selectedIndex[1] = 0;
+            selectedDims[0] = 1;
+            selectedDims[1] = dims[1];
+        }
     }
 
     /**
@@ -958,8 +964,15 @@ public class H5ScalarDS extends ScalarDS
             return null;
 
         String path = HObject.separator;
-        if (!pgroup.isRoot())
+        if (!pgroup.isRoot()) {
             path = pgroup.getPath()+pgroup.getName()+HObject.separator;
+            if (name.endsWith("/"))
+                name = name.substring(0, name.length()-1);
+                int idx = name.lastIndexOf("/");
+                if (idx >=0)
+                    name = name.substring(idx+1);
+        }
+
         fullPath = path +  name;
 
         boolean isExtentable = false;
