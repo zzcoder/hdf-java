@@ -18,7 +18,7 @@ import ncsa.hdf.hdf5lib.exceptions.*;
  */
 public class TestH5Object
 {
-    private final static String FILE_NAME = "G:\\temp\\TestH5Obejct.h5";
+    private final static String FILE_NAME = "TestH5Obejct.h5";
     private final static String LOG_FILE_NAME = "TestH5Obejct.log";
     private final static String GROUP_NAME = "simple_dataset";
     private final static String DATASET_NAME_SIMPLE = "simple_dataset";
@@ -495,9 +495,53 @@ public class TestH5Object
         if ( !dataEquals(idata, data_read.get(0)) ||
              !dataEquals(fdata, data_read.get(1)) ||
              !dataEquals(sdata, data_read.get(2))) {
-                failed(new HDF5LibraryException("Incorrect data values in file"));
+            failed(new HDF5LibraryException("Incorrect data values in file"));
+            return 1;
+        }
+
+        // tests for subset
+        H5CompoundDS compDS = (H5CompoundDS)dset;
+        int rank = compDS.getRank();
+        try { if (rank<=0) compDS.init(); } catch (Exception ex) {}
+        rank = compDS.getRank();
+
+        // read only one column but all rows
+        compDS.setMemberSelection(false); //unselect all members
+        compDS.selectMember(1); // select the second column
+        try {
+            data_read = (List)dset.read();
+        } catch (Exception ex) { failed(ex); return 1;}
+        if ( !dataEquals(fdata, data_read.get(0)) || data_read.size()!=1) {
+            failed(new HDF5LibraryException("incorrect data values from file"));
+            return 1;
+        }
+
+        // read only one row but all columns
+        compDS.setMemberSelection(true); //select all members, it is default
+        int nmembers = compDS.getSelectedMemberCount();
+        long[] count = compDS.getSelectedDims();
+        long[] start = compDS.getStartDims();
+        for (int i=0; i<rank; i++) {
+            start[i] = 2; // start the third data point
+            count[i] = 1; // select only one row (the third row)
+        }
+        try {
+            data_read = (List)dset.read();
+        } catch (Exception ex) { failed(ex); return 1;}
+
+        if (nmembers != compDS.getMemberCount())
+        {
+            failed(new HDF5LibraryException("incorrect members selection"));
+            return 1;
+        }
+
+        for (int i=0; i<nmembers; i++) {
+            if (Array.getLength(data_read.get(i)) != 1)
+            {
+                failed(new HDF5LibraryException("incorrect row selection"));
                 return 1;
             }
+        }
 
         // create dataset at non root group
         Group g0 = null;
