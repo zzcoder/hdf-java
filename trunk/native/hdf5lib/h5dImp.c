@@ -931,17 +931,22 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DreadVL
   (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id,
   jint file_space_id, jint xfer_plist_id, jobjectArray buf)
 {
-	htri_t isStr;
+	htri_t isStr=0;
 
     if ( buf == NULL ) {
         h5nullArgument( env, "H5DreadVL:  buf is NULL");
         return -1;
     }
 
-	if (H5Tget_class((hid_t)mem_type_id) == H5T_COMPOUND)
-		isStr = H5Tis_variable_str(H5Tget_member_type((hid_t)mem_type_id, 0));
+	if (H5Tget_class((hid_t)mem_type_id) == H5T_COMPOUND) {
+        hid_t nested_tid = H5Tget_member_type((hid_t)mem_type_id, 0);
+        while (H5Tget_class(nested_tid) == H5T_COMPOUND)
+            nested_tid = H5Tget_member_type(nested_tid, 0);
+		isStr = H5Tis_variable_str(nested_tid);
+    }
 	else
 		isStr = H5Tis_variable_str((hid_t)mem_type_id);
+
 
 	if (isStr > 0)
 	{
