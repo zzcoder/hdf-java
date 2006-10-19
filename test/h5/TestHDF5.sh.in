@@ -17,6 +17,9 @@ export JAVAPATH
 PRO_NAME=$1
 export PRO_NAME
 
+ARGS=$2
+export ARGS
+
 rm $PRO_NAME.class
 
 CPATH=".:"$HDFVIEW_HOME"/lib/jhdf5.jar:"$HDFVIEW_HOME"/lib/jhdfobj.jar:"$HDFVIEW_HOME"/lib/jhdf5obj.jar"
@@ -74,5 +77,5 @@ case  $os_name in
 esac
 
 $JAVAPATH/javac $PRO_NAME".java"
-$JAVAPATH/java -Xmx1024M -Dncsa.hdf.hdf5lib.H5.hdf5lib=$HDFVIEW_HOME"/lib/"$OS_NAME"/libjhdf5.so" $PRO_NAME
+$JAVAPATH/java -Xmx1024M -Dncsa.hdf.hdf5lib.H5.hdf5lib=$HDFVIEW_HOME"/lib/"$OS_NAME"/libjhdf5.so" $PRO_NAME $ARGS
 
