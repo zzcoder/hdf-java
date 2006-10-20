@@ -116,9 +116,9 @@ implements ImageView, ActionListener
     private float zoomFactor;
 
     /**
-     * The byte data array of an indexed image.
+     * The byte data array of the image.
      */
-    private byte[] indexedImageData;
+    private byte[] imageByteData;
 
     /**
      * The color table of the image.
@@ -202,7 +202,7 @@ implements ImageView, ActionListener
 
         viewer = theView;
         zoomFactor = 1.0f;
-        indexedImageData = null;
+        imageByteData = null;
         imagePalette = null;
         paletteComponent = null;
         isTrueColor = false;
@@ -530,7 +530,7 @@ implements ImageView, ActionListener
             button.setActionCommand( "Previous page" );
 
             frameField = new JTextField(curFrame + " of " + maxFrame);
-            frameField.setMaximumSize(new Dimension(75,30));
+            frameField.setMaximumSize(new Dimension(110,30));
             bar.add( frameField );
             frameField.setMargin( margin );
             frameField.addActionListener( this );
@@ -690,18 +690,16 @@ implements ImageView, ActionListener
                 data = dataset.getData();
 
                 // converts raw data to image data
-                byte[] imageData = Tools.getBytes(data, dataRange, dataset.getFillValue());
+                imageByteData = Tools.getBytes(data, dataRange, dataset.getFillValue(), imageByteData);
 
                 int w = dataset.getWidth();
                 int h = dataset.getHeight();
 
-                image = createTrueColorImage(imageData, isPlaneInterlace, w, h);
-                imageData = null;
+                image = createTrueColorImage(imageByteData, isPlaneInterlace, w, h);
             } else {
                 imagePalette = dataset.getPalette();
                 if (imagePalette == null) {
                     imagePalette = Tools.createGrayPalette();
-
                     viewer.showStatus("\nNo attached palette found, default grey palette is used to display image");
                 }
                 data = dataset.getData();
@@ -716,11 +714,11 @@ implements ImageView, ActionListener
 
                 // converts raw data to image data
                 if (isTransposed)
-                    indexedImageData = Tools.getBytes(data, dataRange, w, h, true, dataset.getFillValue());
+                    imageByteData = Tools.getBytes(data, dataRange, w, h, true, dataset.getFillValue(), imageByteData);
                 else
-                    indexedImageData = Tools.getBytes(data, dataRange, dataset.getFillValue());
+                    imageByteData = Tools.getBytes(data, dataRange, dataset.getFillValue(), imageByteData);
 
-                image = createIndexedImage(indexedImageData, imagePalette, w, h);
+                image = createIndexedImage(imageByteData, imagePalette, w, h);
             }
         }
         catch (Throwable ex) {
@@ -851,7 +849,7 @@ implements ImageView, ActionListener
         {
             for (int j=x0; j<x; j++)
             {
-                arrayIndex = (int)indexedImageData[i*w+j];
+                arrayIndex = (int)imageByteData[i*w+j];
                 if (arrayIndex < 0) arrayIndex += 256;
                 data[0][arrayIndex] += 1.0;
             }
@@ -1319,7 +1317,7 @@ implements ImageView, ActionListener
 
         data = null;
         image = null;
-        indexedImageData = null;
+        imageByteData = null;
         imageComponent = null;
         System.runFinalization();
         System.gc();
@@ -1335,7 +1333,7 @@ implements ImageView, ActionListener
     }
 
     public byte[] getImageByteData() {
-        return indexedImageData;
+        return imageByteData;
     }
 
     /**
@@ -1607,10 +1605,10 @@ implements ImageView, ActionListener
     private void changeDataRange(double[] newRange)
     {
        try {
-            indexedImageData = Tools.getBytes(data, newRange, dataset.getFillValue());
+            imageByteData = Tools.getBytes(data, newRange, dataset.getFillValue(), imageByteData);
             int w = dataset.getWidth();
             int h = dataset.getHeight();
-            image = createIndexedImage(indexedImageData, imagePalette, w, h);
+            image = createIndexedImage(imageByteData, imagePalette, w, h);
             imageComponent.setImage(image);
             zoomTo(zoomFactor);
             paletteComponent.updateRange(newRange);
@@ -2567,7 +2565,7 @@ implements ImageView, ActionListener
                     start[selectedIndex[2]] = i;
                     try { data3d = dataset.read(); }
                     catch (Throwable err) { continue;}
-                    byteData = Tools.getBytes(data3d, dataRange, dataset.getFillValue());
+                    byteData = Tools.getBytes(data3d, dataRange, dataset.getFillValue(), null);
                     frames[i] = createIndexedImage(byteData, imagePalette, w, h);
                 }
             } finally {

@@ -60,14 +60,12 @@ implements ActionListener, ItemListener
 
     private FileFormat fileformat;
 
-    private JComboBox parentChoice;
-
-    private JComboBox nFieldBox;
+    private JComboBox parentChoice, nFieldBox, templateChoice;
 
     private boolean isH5;
 
     /** a list of current groups */
-    private List groupList;
+    private Vector groupList, compoundDSList;
 
     private HObject newObject;
 
@@ -141,6 +139,9 @@ implements ActionListener, ItemListener
         groupList = new Vector();
         Object obj = null;
         Iterator iterator = objs.iterator();
+
+        compoundDSList = new Vector();
+
         while (iterator.hasNext())
         {
             obj = iterator.next();
@@ -153,7 +154,15 @@ implements ActionListener, ItemListener
                 else
                     parentChoice.addItem(g.getPath()+g.getName()+HObject.separator);
             }
+            else if (obj instanceof CompoundDS)
+            {
+                compoundDSList.add(obj);
+            }
         }
+
+        templateChoice = new JComboBox(compoundDSList);
+        templateChoice.setSelectedIndex(-1);
+        templateChoice.addItemListener(this);
 
         if (pGroup.isRoot())
             parentChoice.setSelectedItem(HObject.separator);
@@ -179,14 +188,16 @@ implements ActionListener, ItemListener
         JPanel namePanel = new JPanel();
         namePanel.setLayout(new BorderLayout(5,5));
         JPanel tmpP = new JPanel();
-        tmpP.setLayout(new GridLayout(2,1));
+        tmpP.setLayout(new GridLayout(3,1));
         tmpP.add(new JLabel("   Dataset name: "));
         tmpP.add(new JLabel("   Parent group: "));
+        tmpP.add(new JLabel("Import template: "));
         namePanel.add(tmpP, BorderLayout.WEST);
         tmpP = new JPanel();
-        tmpP.setLayout(new GridLayout(2,1));
+        tmpP.setLayout(new GridLayout(3,1));
         tmpP.add(nameField=new JTextField());
         tmpP.add(parentChoice);
+        tmpP.add(templateChoice);
         namePanel.add(tmpP, BorderLayout.CENTER);
 
         // set DATATSPACE
@@ -456,6 +467,11 @@ implements ActionListener, ItemListener
 
             int row = table.getSelectedRow();
             table.setValueAt("mb1=0,mb=1,...", row, 2);
+        }
+        else if (source.equals(templateChoice))
+        {
+templateChoice.setEnabled(false);
+System.out.println(templateChoice.getSelectedItem().getClass());
         }
     }
 

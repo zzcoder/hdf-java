@@ -391,9 +391,9 @@ public class H5CompoundDS extends CompoundDS
 
                     nested_tid = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND, member_size);
                     H5.H5Tinsert(nested_tid, member_name, 0, tmp_tid);
-                    try { is_variable_str = H5.H5Tis_variable_str(tmp_tid); } catch (Exception ex) {}
-                    try { isVLEN = (H5.H5Tget_class(tmp_tid)==HDF5Constants.H5T_VLEN); } catch (Exception ex) {}
 
+                    try { is_variable_str = H5.H5Tis_variable_str(tmp_tid); } catch (Exception ex) {}
+                    try { isVLEN = (H5.H5Tdetect_class(tmp_tid, HDF5Constants.H5T_VLEN)); } catch (Exception ex) {}
                     try {H5.H5Tclose(tmp_tid);} catch (Exception ex) {}
 
                     if (isVLEN || is_variable_str)
@@ -402,8 +402,6 @@ public class H5CompoundDS extends CompoundDS
                         H5.H5Dread( did, nested_tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, member_data);
                 } catch (HDF5Exception ex2)
                 {
-                    try { H5.H5Tclose(nested_tid); }
-                    catch (HDF5Exception ex3) {}
                     if (fspace > 0) {
                         try { H5.H5Sclose(fspace); }  catch (HDF5Exception ex3) {}
                     }
@@ -411,10 +409,11 @@ public class H5CompoundDS extends CompoundDS
                     String[] nullValues = new String[(int)lsize[0]];
                     for (int j=0; j<lsize[0]; j++) nullValues[j] = "*error*";
                     list.add(nullValues);
-                    //isMemberSelected[i] = false; // do not display memeber without data
+
                     try { H5.H5Tclose(nested_tid); } catch (HDF5Exception ex3) {}
                     continue;
                 }
+
                 try { H5.H5Tclose(nested_tid); } catch (HDF5Exception ex2) {}
 
                 if (!(isVLEN || is_variable_str || isIndexTable))

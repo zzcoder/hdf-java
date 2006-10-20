@@ -107,6 +107,14 @@ implements ActionListener, ItemListener
      */
     public DataOptionDialog(ViewManager theview, Dataset theDataset)
     {
+        this(theview, theDataset, -1);
+    }
+
+    /**
+     * Constructs a DataOptionDialog with the given HDFView.
+     */
+    public DataOptionDialog(ViewManager theview, Dataset theDataset, int viewType)
+    {
         super((JFrame)theview, true);
         setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
 
@@ -164,6 +172,7 @@ implements ActionListener, ItemListener
             choicePalette.addItem("Default "+i);
         }
         choicePalette.addItem("Gray");
+        choicePalette.addItem("ReverseGray");
         choicePalette.addItem("GrayWave");
         choicePalette.addItem("Rainbow");
         choicePalette.addItem("Nature");
@@ -378,6 +387,9 @@ implements ActionListener, ItemListener
         confirmP.add(button);
 
         init();
+
+        if (viewType == DataView.DATAVIEW_IMAGE) imageButton.setSelected(true);
+        else if (viewType == DataView.DATAVIEW_TABLE) spreadsheetButton.setSelected(true);
 
         // locate the H5Property dialog
         Point l = getParent().getLocation();
@@ -729,12 +741,14 @@ implements ActionListener, ItemListener
         if (palChoice == numberOfPalettes+1)
             pal = Tools.createGrayPalette();
         else if (palChoice == numberOfPalettes+2)
-            pal = Tools.createGrayWavePalette();
+            pal = Tools.createReverseGrayPalette();
         else if (palChoice == numberOfPalettes+3)
-            pal = Tools.createRainbowPalette();
+            pal = Tools.createGrayWavePalette();
         else if (palChoice == numberOfPalettes+4)
-            pal = Tools.createNaturePalette();
+            pal = Tools.createRainbowPalette();
         else if (palChoice == numberOfPalettes+5)
+            pal = Tools.createNaturePalette();
+        else if (palChoice == numberOfPalettes+6)
             pal = Tools.createWavePalette();
         else if (palChoice > 0 && palChoice <numberOfPalettes )
         {
@@ -949,7 +963,7 @@ implements ActionListener, ItemListener
             try
             {
                 Object data = sd.read();
-                byte[] bData = Tools.getBytes(data, sd.getImageDataRange(), sd.getFillValue());
+                byte[] bData = Tools.getBytes(data, sd.getImageDataRange(), sd.getFillValue(), null);
                 int h = (int)sd.getHeight();
                 int w = (int)sd.getWidth();
 

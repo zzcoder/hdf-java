@@ -103,6 +103,10 @@ public abstract class ScalarDS extends Dataset
      */
     protected int interlace;
 
+    /**
+     * The range of image data values.
+     * For example, [0, 255]
+     */
     protected double[] imageDataRange;
 
     /**
@@ -143,6 +147,13 @@ public abstract class ScalarDS extends Dataset
     /* fill value */
     protected Object fillValue = null;
 
+    /**
+     * Constructs a ScalarDS with given name and path
+     *
+     * @param fileFormat the HDF file.
+     * @param name the name of this ScalarDS.
+     * @param path the full path of this ScalarDS.
+     */
     public ScalarDS(FileFormat fileFormat, String name, String path)
     {
         this(fileFormat, name, path, null);
@@ -195,9 +206,13 @@ public abstract class ScalarDS extends Dataset
     // Implementing ScalarDS
     public void convertFromUnsignedC()
     {
+        // keep a copy of original buffer and the converted buffer
+        // so that they can be reused later to save memory
         if (data != null && isUnsigned && !unsignedConverted)
         {
-            data = convertFromUnsignedC(data);
+            originalBuf = data;
+            convertedBuf = convertFromUnsignedC(originalBuf, convertedBuf);
+            data = convertedBuf;
             unsignedConverted = true;
         }
     }
@@ -205,9 +220,13 @@ public abstract class ScalarDS extends Dataset
     // Implementing ScalarDS
     public void convertToUnsignedC()
     {
+        // keep a copy of original buffer and the converted buffer
+        // so that they can be reused later to save memory
         if (data != null && isUnsigned)
         {
-            data = convertToUnsignedC(data);
+            convertedBuf = data;
+            originalBuf = convertToUnsignedC(convertedBuf, originalBuf);
+            data = originalBuf;
         }
     }
 

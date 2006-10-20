@@ -13,6 +13,7 @@ package ncsa.hdf.view;
 
 import ncsa.hdf.object.*;
 import java.awt.event.*;
+import java.awt.Rectangle;
 import javax.swing.*;
 import java.awt.image.*;
 import javax.swing.border.*;
@@ -39,6 +40,7 @@ ActionListener, ItemListener
     private final String lineLabels[] ={"Red", "Green", "Blue"};
 
     private static String PALETTE_GRAY = "Gray";
+    private static String PALETTE_REVERSE_GRAY = "Reverse Gray";
     private static String PALETTE_GRAY_WAVE = "GrayWave";
     private static String PALETTE_RAINBOW = "Rainbow";
     private static String PALETTE_NATURE = "Nature";
@@ -244,6 +246,8 @@ ActionListener, ItemListener
         Object item = choicePalette.getSelectedItem();
         if ( item.equals(PALETTE_GRAY) )
             imagePalette = Tools.createGrayPalette();
+        if ( item.equals(PALETTE_REVERSE_GRAY) )
+            imagePalette = Tools.createReverseGrayPalette();
         else if ( item.equals(PALETTE_GRAY_WAVE) )
             imagePalette = Tools.createGrayWavePalette();
         else if ( item.equals(PALETTE_RAINBOW) )
@@ -295,7 +299,11 @@ ActionListener, ItemListener
     }
 
     public void mouseClicked(MouseEvent e){} // MouseListener
-    public void mouseReleased(MouseEvent e) {} // MouseListener
+    public void mouseReleased(MouseEvent e) {
+        if (paletteValueTable != null && paletteValueTable.isVisible()) {
+            paletteValueTable.paletteUpdated();
+        }
+    } // MouseListener
     public void mouseEntered(MouseEvent e) {} // MouseListener
     public void mouseExited(MouseEvent e)  {} // MouseListener
     public void mouseMoved(MouseEvent e) {} // MouseMotionListener
@@ -350,11 +358,12 @@ ActionListener, ItemListener
     {
         private JTable valueTable;
         private DefaultTableModel valueTableModel;
+        String rgbName = "Color";
 
         public PaletteValueTable(DefaultPaletteView owner)
         {
             super(owner);
-            String[] columnNames = {"Red", "Green", "Blue"};
+            String[] columnNames = {"Red", "Green", "Blue", rgbName};
             valueTableModel = new DefaultTableModel(columnNames, 256);
 
             valueTable = new JTable(valueTableModel)
@@ -362,17 +371,27 @@ ActionListener, ItemListener
                 int lastSelectedRow = -1;
                 int lastSelectedCol = -1;
 
+                public boolean isCellEditable(int row, int col)
+                {
+                    return (col < 3);
+                }
+
                 public Object getValueAt(int row, int col)
                 {
-                    return String.valueOf(paletteData[col][row]);
+                    if (col <3)
+                        return String.valueOf(paletteData[col][row]);
+                    else
+                        return "";
                 }
 
                 public void editingStopped(ChangeEvent e)
                 {
                     int row = getEditingRow();
                     int col = getEditingColumn();
-                    String oldValue = (String)getValueAt(row, col);
 
+                    if (col>2) return;
+
+                    String oldValue = (String)getValueAt(row, col);
                     super.editingStopped(e);
 
                     Object source = e.getSource();
@@ -386,6 +405,19 @@ ActionListener, ItemListener
                     }
                 }
             };
+
+            valueTable.getColumn(rgbName).setCellRenderer(new DefaultTableCellRenderer()
+            {
+                Color color = Color.white;
+                public java.awt.Component getTableCellRendererComponent(JTable table,
+                       Object value, boolean isSelected, boolean hasFocus, int row, int col)
+                {
+                    java.awt.Component comp = super.getTableCellRendererComponent(table,  value, isSelected, hasFocus, row, col);;
+                    color = new Color(paletteData[0][row], paletteData[1][row], paletteData[2][row]);
+                    comp.setBackground(color);
+                    return comp;
+                }
+            });
 
             valueTable.setRowSelectionAllowed(false);
             valueTable.setCellSelectionEnabled(true);
@@ -415,12 +447,19 @@ ActionListener, ItemListener
 
         private void updatePaletteValue(String strValue, int row, int col)
         {
+            if (strValue == null)
+                return;
+
             int value = Integer.parseInt(strValue);
             paletteData[col][row] = value;
             chartP.repaint();
             isPaletteChanged = true;
         }
 
+        public void paletteUpdated()
+        {
+            valueTable.updateUI();
+        }
     }
 
     /** The canvas that paints the data lines. */
