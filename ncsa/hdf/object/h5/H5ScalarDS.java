@@ -384,10 +384,12 @@ public class H5ScalarDS extends ScalarDS
             if (H5.H5Tequal(nativeDatatype, HDF5Constants.H5T_STD_REF_DSETREG))
                 throw new HDF5Exception("Dataset region reference is not supported.");
 
-            theData = H5Datatype.allocateArray(nativeDatatype, (int)lsize[0]);
+            if (originalBuf ==null || (originalBuf!=null && lsize[0] !=nPoints)) {
+                theData = H5Datatype.allocateArray(nativeDatatype, (int)lsize[0]);
+            } else
+                theData = originalBuf; // reuse the buffer if the size is the same
 
             if (theData != null) {
-
                 if (isVLEN)
                 {
                     H5.H5DreadVL(did, nativeDatatype, mspace, fspace, HDF5Constants.H5P_DEFAULT, (Object[])theData);

@@ -423,7 +423,7 @@ implements TableView, ActionListener
             button.setActionCommand( "Previous page" );
 
             frameField = new JTextField(curFrame + " of " + maxFrame);
-            frameField.setMaximumSize(new Dimension(75,30));
+            frameField.setMaximumSize(new Dimension(110,30));
             bar.add( frameField );
             frameField.setMargin( margin );
             frameField.addActionListener( this );

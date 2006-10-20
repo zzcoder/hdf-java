@@ -191,6 +191,28 @@ public final class Tools
     }
 
     /**
+     *  Creates the reverse gray palette of the indexed 256-color table.
+     *  <p>
+     *  The palette values are stored in a two-dimensional byte array and arrange
+     *  by color components of red, green and blue. palette[][] = byte[3][256],
+     *  where, palette[0][], palette[1][] and palette[2][] are the red, green and
+     *  blue components respectively.
+     *  @return the gray palette in the form of byte[3][256]
+     */
+    public static final byte[][] createReverseGrayPalette()
+    {
+        byte[][] p = new byte[3][256];
+
+        for (int i=0; i<256; i++)
+        {
+            p[0][i] = p[1][i] = p[2][i] = (byte)(255-i);
+        }
+
+        return p;
+    }
+
+
+    /**
      *  Creates the gray wave palette of the indexed 256-color table.
      *  <p>
      *  The palette values are stored in a two-dimensional byte array and arrange
@@ -471,17 +493,17 @@ public final class Tools
      *  @param minmax the range of the raw data.
      *  @return the byte array of pixel data.
      */
-    public static byte[] getBytes(Object rawData, double[] minmax)
+    public static byte[] getBytes(Object rawData, double[] minmax, byte[] byteData)
     {
-        return Tools.getBytes(rawData, minmax, -1, -1, false, null);
+        return Tools.getBytes(rawData, minmax, -1, -1, false, null, byteData);
     }
-    public static byte[] getBytes(Object rawData, double[] minmax, int w, int h, boolean isTransposed)
+    public static byte[] getBytes(Object rawData, double[] minmax, int w, int h, boolean isTransposed, byte[] byteData)
     {
-        return Tools.getBytes(rawData, minmax, w, h, isTransposed, null);
+        return Tools.getBytes(rawData, minmax, w, h, isTransposed, null, byteData);
     }
-    public static byte[] getBytes(Object rawData, double[] minmax, Object fillValue)
+    public static byte[] getBytes(Object rawData, double[] minmax, Object fillValue, byte[] byteData)
     {
-        return Tools.getBytes(rawData, minmax, -1, -1, false, fillValue);
+        return Tools.getBytes(rawData, minmax, -1, -1, false, fillValue, byteData);
     }
 
     /**
@@ -494,10 +516,8 @@ public final class Tools
      *  @return the byte array of pixel data.
      */
     public static byte[] getBytes(Object rawData, double[] minmax, int w, int h,
-           boolean isTransposed, Object fillValue)
+           boolean isTransposed, Object fillValue, byte[] byteData)
     {
-        byte[] byteData = null;
-
         // no pnput data
         if (rawData == null)
             return null;
@@ -526,7 +546,8 @@ public final class Tools
         }
 
         int size = Array.getLength(rawData);
-        byteData = new byte[size];
+        if (byteData == null || (size != byteData.length))
+            byteData = new byte[size]; // reuse the old buffer
         boolean minmaxFound = !(minmax[0] == minmax[1]);
 
         switch (dname)

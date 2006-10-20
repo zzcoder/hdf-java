@@ -183,6 +183,19 @@ public abstract class Dataset extends HObject
     /** Flag to indicate if the byte[] array is converted to strings */
     protected boolean convertByteToString = true;
 
+    /** Flag to indicate if data values are loaded into memory */
+    protected boolean isDataLoaded = false;
+
+    /** The number of selected data points in memory */
+    protected long nPoints = 1;
+
+    /** The original data buffer. It is useful when unsigned C data is converted */
+    protected Object originalBuf = null;
+
+    /** The converted data buffer. It is useful when unsigned C data is converted */
+    protected Object convertedBuf = null;
+
+
     /**
      * Constructs a Dataset object with a given file and dataset name and path.
      * <p>
@@ -375,8 +388,14 @@ public abstract class Dataset extends HObject
      */
     public final Object getData() throws Exception, OutOfMemoryError
     {
-        if (data == null)
+        if (!isDataLoaded) {
             data = read(); // load the data;
+            originalBuf = data;
+            isDataLoaded = true;
+            nPoints = 1;
+            for (int j=0; j<selectedDims.length; j++)
+                nPoints *= selectedDims[j];
+        }
 
         return data;
     }
@@ -389,11 +408,7 @@ public abstract class Dataset extends HObject
      */
     public void clearData()
     {
-        if (data != null)
-        {
-            data = null;
-            Runtime.getRuntime().gc();
-        }
+        isDataLoaded = false;
     }
 
     /**
@@ -494,6 +509,36 @@ public abstract class Dataset extends HObject
      */
     public static Object convertFromUnsignedC(Object data_in)
     {
+        return Dataset.convertFromUnsignedC(data_in, null);
+    }
+
+    /**
+     * Converts one-dimension array of unsigned C integers to appropriate Java integer.
+     * <p>
+     * Since Java does not support unsigned integer, unsigned C integers must
+     * be converted into its appropriate Java integer. Otherwise, the data value
+     * will not displayed correctly. For example, if an unsigned C byte, x = 200,
+     * is stored into an Java byte y, y will be -56 instead of the correct value 200.
+     * <p>
+     * The following table is used to map the unsigned C integer to Java integer
+     * <TABLE TABLE CELLSPACING=0 BORDER=1 CELLPADDING=5 WIDTH=400>
+     *     <caption><b>Mapping Unsigned C Integers to Java Integers</b></caption>
+     *     <TR> <TD><B>Unsigned C Integer</B></TD> <TD><B>JAVA Intege</B>r</TD> </TR>
+     *     <TR> <TD>unsigned byte</TD> <TD>signed short</TD> </TR>
+     *     <TR> <TD>unsigned short</TD> <TD>signed int</TD> </TR>
+     *     <TR> <TD>unsigned int</TD> <TD>signed long</TD> </TR>
+     *     <TR> <TD>unsigned long</TD> <TD>signed long</TD> </TR>
+     * </TABLE>
+     * <b>NOTE: this conversion cannot deal with unsigned 64-bit integers. For
+     *          unsigned 64-bit dataset, the values can be wrong in Java
+     *          application</b>.
+     * <p>
+     * @param data_in the input 1D array of the unsigned C.
+     * @param data_out the output 1D array of the singed integer
+     * @return the converted 1D array of Java integer data.
+     */
+    public static Object convertFromUnsignedC(Object data_in, Object data_out)
+    {
         if (data_in == null)
             return null;
 
@@ -501,13 +546,22 @@ public abstract class Dataset extends HObject
         if (!data_class.isArray())
             return null;
 
-        Object data_out = null;
+        if (data_out != null) {
+            Class data_class_out = data_out.getClass();
+            if (!data_class_out.isArray() || (Array.getLength(data_in) != Array.getLength(data_out)))
+                data_out = null;
+        }
+
         String cname = data_class.getName();
         char dname = cname.charAt(cname.lastIndexOf("[")+1);
         int size = Array.getLength(data_in);
 
         if (dname == 'B') {
-            short[] sdata = new short[size];
+            short[] sdata = null;
+            if (data_out == null)
+                sdata = new short[size];
+            else
+                sdata = (short[])data_out;
             byte[] bdata = (byte[])data_in;
             short value = 0;
             for (int i=0; i<size; i++)
@@ -519,7 +573,11 @@ public abstract class Dataset extends HObject
             data_out = sdata;
         }
         else if (dname == 'S') {
-            int[] idata = new int[size];
+            int[] idata = null;
+            if (data_out == null)
+                idata = new int[size];
+            else
+                idata = (int[]) data_out;
             short[] sdata = (short[])data_in;
             int value = 0;
             for (int i=0; i<size; i++)
@@ -531,7 +589,11 @@ public abstract class Dataset extends HObject
             data_out = idata;
         }
         else if (dname == 'I') {
-            long[] ldata = new long[size];
+            long[] ldata = null;
+            if (data_out == null)
+                ldata = new long[size];
+            else
+                ldata = (long[])data_out;
             int[] idata = (int[])data_in;
             long value = 0;
             for (int i=0; i<size; i++)
@@ -558,8 +620,20 @@ public abstract class Dataset extends HObject
      */
     public static Object convertToUnsignedC(Object data_in)
     {
-        Object data_out = null;
+        return Dataset.convertToUnsignedC(data_in, null);
+    }
 
+    /**
+     * Convert Java integer data back to unsigned C integer data.
+     * It is used when Java data converted from unsigned C is writen back to file.
+     * <p>
+     * @see #convertFromUnsignedC(Object data_in)
+     * @param data_in the input Java integer to be convert.
+     * @param data_out the converted data of unsigned C integer
+     * @return the converted data of unsigned C integer.
+     */
+    public static Object convertToUnsignedC(Object data_in, Object data_out)
+    {
         if (data_in == null)
             return null;
 
@@ -567,26 +641,44 @@ public abstract class Dataset extends HObject
         if (!data_class.isArray())
             return null;
 
+        if (data_out != null) {
+            Class data_class_out = data_out.getClass();
+            if (!data_class_out.isArray() || (Array.getLength(data_in) != Array.getLength(data_out)))
+                data_out = null;
+        }
+
         String cname = data_class.getName();
         char dname = cname.charAt(cname.lastIndexOf("[")+1);
         int size = Array.getLength(data_in);
 
         if (dname == 'S') {
-            byte[] bdata = new byte[size];
+            byte[] bdata = null;
+            if (data_out == null)
+                bdata = new byte[size];
+            else
+                bdata = (byte[])data_out;
             short[] sdata = (short[])data_in;
             for (int i=0; i<size; i++)
                 bdata[i] = (byte)sdata[i];
             data_out = bdata;
         }
         else if (dname == 'I') {
-            short[] sdata = new short[size];
+            short[] sdata = null;
+            if (data_out == null)
+                sdata = new short[size];
+            else
+                sdata = (short[])data_out;
             int[] idata = (int[])data_in;
             for (int i=0; i<size; i++)
                 sdata[i] = (short)idata[i];
             data_out = sdata;
         }
         else if (dname == 'J') {
-            int[] idata = new int[size];
+            int[] idata = null;
+            if (data_out == null)
+                idata = new int[size];
+            else
+                idata = (int[])data_out;
             long[] ldata = (long[])data_in;
             for (int i=0; i<size; i++)
                 idata[i] = (int)ldata[i];
