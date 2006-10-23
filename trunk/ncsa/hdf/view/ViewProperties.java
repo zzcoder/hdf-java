@@ -86,7 +86,7 @@ public class ViewProperties extends Properties
     private static ClassLoader extClassLoader=null;
 
     /** a list of srb accounts */
-    private static Vector srbAccountList=new Vector();
+    private static Vector srbAccountList=new Vector(5);
 
     /**
      * Current Java application such as HDFView cannot handle files
@@ -118,25 +118,25 @@ public class ViewProperties extends Properties
     private static String propertyFile;
 
     /** a list of treeview module */
-    private static Vector moduleListTreeView = new Vector();
+    private static Vector moduleListTreeView = new Vector(5);
 
     /** a list of metaview module */
-    private static Vector moduleListMetaDataView = new Vector();
+    private static Vector moduleListMetaDataView = new Vector(5);
 
     /** a list of textview module */
-    private static Vector moduleListTextView = new Vector();
+    private static Vector moduleListTextView = new Vector(5);
 
     /** a list of tableview module */
-    private static Vector moduleListTableView = new Vector();
+    private static Vector moduleListTableView = new Vector(5);
 
     /** a list of imageview module */
-    private static Vector moduleListImageView = new Vector();
+    private static Vector moduleListImageView = new Vector(5);
 
     /** a list of paletteview module */
-    private static Vector moduleListPaletteView = new Vector();
+    private static Vector moduleListPaletteView = new Vector(5);
 
     /** a list of helpview module */
-    private static Vector moduleListHelpView = new Vector();
+    private static Vector moduleListHelpView = new Vector(5);
 
     /**
      * Creates a property list with given root directory of the HDFView.
@@ -146,7 +146,7 @@ public class ViewProperties extends Properties
         super();
         rootDir = viewRoot;
 
-        mrf = new Vector(MAX_RECENT_FILES);
+        mrf = new Vector(MAX_RECENT_FILES+5);
 
         // find the property file
         String uh="", ud="", h5v="", fn;
@@ -183,7 +183,7 @@ public class ViewProperties extends Properties
     /* the properties are sorted by keys */
     public synchronized Enumeration keys() {
         Enumeration keysEnum = super.keys();
-        Vector keyList = new Vector();
+        Vector keyList = new Vector(50);
         while(keysEnum.hasMoreElements()){
             keyList.add(keysEnum.nextElement());
         }
@@ -207,8 +207,8 @@ public class ViewProperties extends Properties
         if (jars == null || jars.length <= 0)
             return extClassLoader;
 
-        Vector jarList = new Vector();
-        Vector classList = new Vector();
+        Vector jarList = new Vector(50);
+        Vector classList = new Vector(50);
         for (int i=0; i<jars.length; i++) {
             if (jars[i].endsWith(".jar")) {
                 jarList.add(jars[i]);

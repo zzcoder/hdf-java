@@ -152,6 +152,8 @@ public class FitsDataset extends ScalarDS
         if (nativeDataset == null)
             return;
 
+        if (rank>0)
+            return; // already called. Initialize only once
 
         int[] axes= null;
         try { axes = nativeDataset.getAxes(); }

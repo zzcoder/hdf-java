@@ -126,6 +126,8 @@ public class H5Datatype extends Datatype
         try
         {
             tclass = H5.H5Tget_class(tid);
+            if (tclass == HDF5Constants.H5T_ARRAY)
+                tclass = H5.H5Tget_class(H5.H5Tget_super(tid));
             tsize = H5.H5Tget_size(tid);
         } catch (Exception ex)
         {
@@ -147,6 +149,23 @@ public class H5Datatype extends Datatype
             datatypeClass = CLASS_STRING;
         else if (tclass == HDF5Constants.H5T_REFERENCE)
             datatypeClass = CLASS_REFERENCE;
+        else if (tclass == HDF5Constants.H5T_ENUM)
+        {
+            datatypeClass = CLASS_ENUM;
+            try {
+                int nMember = H5.H5Tget_nmembers(tid);
+                String name = null;
+                int[] val = new int[1];
+                String enumStr = "(";
+                for (int i=0; i<nMember; i++)
+                {
+                    name = H5.H5Tget_member_name(tid, i);
+                    H5.H5Tget_member_value(tid, i, val);
+                    enumStr += name+"="+val[0]+", ";
+                }
+                enumMembers = enumStr+"0";
+            } catch (Exception ex) {}
+        }
 
         datatypeSize = tsize;
         datatypeOrder = NATIVE;
@@ -662,7 +681,7 @@ public class H5Datatype extends Datatype
         String name = attr.getName();
 
         if (attributeList == null)
-            attributeList = new Vector();
+            attributeList = new Vector(10);
         else
             attrExisted = attributeList.contains(attr);
 

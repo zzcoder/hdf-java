@@ -241,6 +241,29 @@ public class H5SrbFile extends FileFormat
         throw new UnsupportedOperationException("H5SrbFile.createDatatype() is not implemented.");
     }
 
+    // implementign FileFormat
+    public Datatype createDatatype(
+        int tclass,
+        int tsize,
+        int torder,
+        int tsign,
+        String name) throws Exception
+    {
+        throw new UnsupportedOperationException("H5SrbFile.createDatatype() is not implemented.");
+    }
+
+    // implementign FileFormat
+    public HObject createLink(Group parentGroup, String name, HObject currentObj) throws Exception
+    {
+        throw new UnsupportedOperationException("createLink() is not supported");
+    }
+
+    // implementign FileFormat
+    public HObject get(String path) throws Exception
+    {
+        throw new UnsupportedOperationException("get() is not supported");
+    }
+
     /**
      *  Returns the version of the HDF5 library.
      */
@@ -266,6 +289,12 @@ public class H5SrbFile extends FileFormat
     public TreeNode copy(HObject srcObj, Group dstGroup) throws Exception
     {
         throw new UnsupportedOperationException("H5SrbFile.copy() is not implemented.");
+    }
+
+    // implementign FileFormat
+    public TreeNode copy(HObject srcObj, Group dstGroup, String dstName) throws Exception {
+        // not supported
+        throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     // Implementing FileFormat

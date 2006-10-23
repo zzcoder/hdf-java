@@ -473,6 +473,9 @@ public class H4GRImage extends ScalarDS
     // Implementing Dataset.
     public void init()
     {
+        if (rank>0)
+            return; // already called. Initialize only once
+
         int id = open();
         String[] objName = {""};
         int[] grInfo = new int[4]; //ncomp, data_type, interlace and num_attrs

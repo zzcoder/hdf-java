@@ -212,7 +212,7 @@ implements ImageView, ActionListener
         data = null;
         NT = 0;
         toolkit = Toolkit.getDefaultToolkit();
-        rotateRelatedItems = new Vector();
+        rotateRelatedItems = new Vector(10);
         imageScroller = null;
         isTransposed = _isTransposed.booleanValue();
 
@@ -1163,6 +1163,7 @@ implements ImageView, ActionListener
             Vector list = new Vector();
             DefaultMutableTreeNode theNode = null;
             Enumeration local_enum = ((DefaultMutableTreeNode)root).depthFirstEnumeration();
+
             while(local_enum.hasMoreElements()) {
                 theNode = (DefaultMutableTreeNode)local_enum.nextElement();
                 list.add(theNode.getUserObject());
