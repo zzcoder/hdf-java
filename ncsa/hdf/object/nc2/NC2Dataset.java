@@ -155,6 +155,9 @@ public class NC2Dataset extends ScalarDS
         if (nativeDataset == null)
             return;
 
+        if (rank>0)
+            return; // already called. Initialize only once
+
         isText = nativeDataset.getDataType().equals(DataType.STRING);
 
         rank = nativeDataset.getRank();

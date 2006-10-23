@@ -298,7 +298,7 @@ public class H5CompoundDS extends CompoundDS
             }
         } catch (Exception ex) {}
 
-        list = new Vector();
+        list = new Vector(flatNameList.size()+2);
 
         try // to match finally for closing resources
         {
@@ -641,7 +641,7 @@ public class H5CompoundDS extends CompoundDS
                 filter = H5.H5Pget_filter(pid, i, flags, cd_nelmts, cd_values, 120, cd_name);
                 if (filter == HDF5Constants.H5Z_FILTER_DEFLATE)
                 {
-                    compression += "Deflate Level = "+cd_values[0];
+                    compression += "GZIP: level = "+cd_values[0];
                 }
                 else if (filter == HDF5Constants.H5Z_FILTER_FLETCHER32)
                 {
@@ -649,11 +649,19 @@ public class H5CompoundDS extends CompoundDS
                 }
                 else if (filter == HDF5Constants.H5Z_FILTER_SHUFFLE)
                 {
-                    compression += "Shuffle Nbytes = "+cd_values[0];
+                    compression += "SHUFFLE: Nbytes = "+cd_values[0];
                 }
                 else if (filter == HDF5Constants.H5Z_FILTER_SZIP)
                 {
                     compression += "SZIP: Pixels per block = "+cd_values[1];
+                    int flag = -1;
+                    try { flag = H5.H5Zget_filter_info(filter); }
+                    catch (Exception ex) { flag = -1; }
+                    if (flag==HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED)
+                        compression += ": "+Dataset.H5Z_FILTER_CONFIG_DECODE_ENABLED;
+                    else if (flag==HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED ||
+                             flag >= (HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED+HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED))
+                        compression += ": "+Dataset.H5Z_FILTER_CONFIG_ENCODE_ENABLED;
                 }
             } // for (int i=0; i<nfilt; i++)
 
@@ -696,7 +704,7 @@ public class H5CompoundDS extends CompoundDS
         String name = attr.getName();
 
         if (attributeList == null)
-            attributeList = new Vector();
+            attributeList = new Vector(10);
         else
             attrExisted = attributeList.contains(attr);
 
@@ -763,6 +771,9 @@ public class H5CompoundDS extends CompoundDS
      */
     public void init()
     {
+        if (rank>0)
+            return; // already called. Initialize only once
+
         int did=-1, sid=-1, tid=-1, tclass=-1;
         int fid = getFID();
         String fullName = getPath()+getName();

@@ -197,6 +197,21 @@ public abstract class Datatype extends HObject
     public final void setEnumMembers(String enumStr) { enumMembers = enumStr; }
 
     /**
+     * Gets the name=values pairs of enum members.
+     * <p>For Example,
+     * <pre>
+     *     setEnumMembers("lowTemp=-40, highTemp=90")
+     *         will set the value of enum member lowTemp to -40 and highTemp to 90.
+     *     setEnumMembers("lowTemp, highTemp")
+     *         will set enum members to defaults, i.e. lowTemp=0 and highTemp=1
+     *     setEnumMembers("lowTemp=10, highTemp")
+     *         will set enum member lowTemp to 10 and highTemp to 11.
+     * </pre>
+     * @return the name=values pairs of enum members
+     */
+    public final String getEnumMembers() { return enumMembers; }
+
+    /**
      * Converts this datatype to a native datatype.
      *
      * Subclasses must implement it so that this datatype will be converted accordingly.

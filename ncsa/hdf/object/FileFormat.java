@@ -704,7 +704,8 @@ public abstract class FileFormat extends File
         }
 
         StringTokenizer currentExt = new StringTokenizer(extensions, ",");
-        List tokens = new Vector();
+        List tokens = new Vector(currentExt.countTokens()+5);
+
         while (currentExt.hasMoreTokens())
         {
             tokens.add(currentExt.nextToken().trim().toLowerCase());

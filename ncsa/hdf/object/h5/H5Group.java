@@ -114,7 +114,7 @@ public class H5Group extends Group
         String name = attr.getName();
 
         if (attributeList == null)
-            attributeList = new Vector();
+            attributeList = new Vector(10);
         else
             attrExisted = attributeList.contains(attr);
 

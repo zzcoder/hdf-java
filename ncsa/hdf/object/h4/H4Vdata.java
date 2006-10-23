@@ -435,6 +435,9 @@ public class H4Vdata extends CompoundDS
      */
     public void init()
     {
+        if (rank>0)
+            return; // already called. Initialize only once
+
         int id = open();
         if (id < 0) return;
 

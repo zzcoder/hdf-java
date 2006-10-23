@@ -600,7 +600,7 @@ public class H5ScalarDS extends ScalarDS
         String name = attr.getName();
 
         if (attributeList == null)
-            attributeList = new Vector();
+            attributeList = new Vector(10);
         else
             attrExisted = attributeList.contains(attr);
 
@@ -668,6 +668,9 @@ public class H5ScalarDS extends ScalarDS
      */
     public void init()
     {
+        if (rank>0)
+            return; // already called. Initialize only once
+
         int did=-1, sid=-1, tid=-1, pid=-1;
 
         did = open();

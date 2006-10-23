@@ -105,7 +105,7 @@ implements ActionListener, ItemListener
         memberTypeChoice = new JComboBox(DATATYPE_NAMES);
         cellEditor = new DefaultCellEditor(memberTypeChoice);
         rowEditorModel = new RowEditorModel(numberOfMembers, cellEditor);
-        String[] colNames = {"Name", "Datatype", "Array size / String length / Member names"};
+        String[] colNames = {"Name", "Datatype", "Array size / String length / Enum names"};
         tableModel =  new DefaultTableModel( colNames, numberOfMembers);
         table = new JTable(tableModel)
         {
@@ -136,11 +136,11 @@ implements ActionListener, ItemListener
         nFieldBox.setActionCommand("Change number of members");
         nFieldBox.setSelectedItem(String.valueOf(numberOfMembers));
 
-        groupList = new Vector();
+        groupList = new Vector(objs.size());
         Object obj = null;
         Iterator iterator = objs.iterator();
 
-        compoundDSList = new Vector();
+        compoundDSList = new Vector(objs.size());
 
         while (iterator.hasNext())
         {
@@ -470,9 +470,124 @@ implements ActionListener, ItemListener
         }
         else if (source.equals(templateChoice))
         {
-templateChoice.setEnabled(false);
-System.out.println(templateChoice.getSelectedItem().getClass());
-        }
+            Object obj = templateChoice.getSelectedItem();
+            if ( !(obj instanceof CompoundDS))
+                return;
+
+            CompoundDS dset = (CompoundDS)obj;
+            Datatype dtype =  null;
+            try { dtype = dset.getFileFormat().createDatatype(Datatype.CLASS_INTEGER, -1, -1, -1);}
+            catch (Exception ex) { dtype = null;}
+            if (dtype == null)
+                return;
+
+            int rank = dset.getRank();
+            if (rank < 1) dset.init();
+
+            rank = dset.getRank();
+            rankChoice.setSelectedIndex(rank-1);
+            long[] dims = dset.getDims();
+            String[] mNames = dset.getMemberNames();
+            int[] mOrders = dset.getMemberOrders();
+            int[] mTypes = dset.getMemberTypes();
+
+            String sizeStr = String.valueOf(dims[0]);
+            for (int i=1; i<rank; i++)
+                sizeStr += "x"+dims[i];
+            currentSizeField.setText(sizeStr);
+
+            try { dset.getMetadata(); } // get chunking and compression info
+            catch (Exception ex) {}
+            long[] chunks = dset.getChunkSize();
+            if (chunks != null) {
+                checkChunked.setSelected(true);
+                sizeStr = String.valueOf(chunks[0]);
+                for (int i=1; i<rank; i++)
+                    sizeStr += "x"+chunks[i];
+                chunkSizeField.setText(sizeStr);
+            }
+
+            String compression = dset.getCompression();
+            if (compression != null) {
+                int idx = compression.indexOf("GZIP: level = ");
+                int clevel = -1;
+                try { clevel = Integer.parseInt(compression.substring(idx+14, idx+15)); }
+                catch (NumberFormatException ex) { clevel = -1; }
+
+                if (clevel>0) {
+                    checkCompression.setSelected(true);
+                    compressionLevel.setSelectedIndex(clevel);
+                }
+            }
+
+            numberOfMembers = dset.getMemberCount();
+            nFieldBox.setSelectedIndex(numberOfMembers-1);
+            tableModel.setRowCount(numberOfMembers);
+            for (int i=0; i<numberOfMembers; i++)
+            {
+                rowEditorModel.addEditorForRow(i, cellEditor);
+
+                tableModel.setValueAt(mNames[i], i, 0);
+                dtype.fromNative(mTypes[i]);
+
+                int typeIdx = -1;
+                int tclass = dtype.getDatatypeClass();
+                int tsize = dtype.getDatatypeSize();
+                if (tclass == Datatype.CLASS_INTEGER)
+                {
+                    int tsigned = dtype.getDatatypeSign();
+                    if (tsigned == dtype.SIGN_NONE)
+                    {
+                        if (tsize == 1)
+                            typeIdx = 3;
+                        else if (tsize == 2)
+                            typeIdx = 4;
+                        else if (tsize == 4)
+                            typeIdx = 5;
+                    }
+                    else
+                    {
+                        if (tsize == 1)
+                            typeIdx = 0;
+                        else if (tsize == 2)
+                            typeIdx = 1;
+                        else if (tsize == 4)
+                            typeIdx = 2;
+                        else
+                            typeIdx = 6;
+                    }
+                }
+                else if (tclass == Datatype.CLASS_FLOAT)
+                {
+                    if (tsize == 4)
+                        typeIdx = 7;
+                    else
+                        typeIdx = 8;
+                }
+                else if (tclass == Datatype.CLASS_STRING)
+                {
+                    typeIdx = 9;
+                }
+                else if (tclass == Datatype.CLASS_ENUM)
+                {
+                    typeIdx = 10;
+                }
+
+                if (typeIdx < 0)
+                    continue;
+
+                memberTypeChoice.setSelectedIndex(typeIdx);
+                tableModel.setValueAt(memberTypeChoice.getSelectedItem(), i, 1);
+
+                if (tclass == Datatype.CLASS_STRING)
+                    tableModel.setValueAt(String.valueOf(tsize), i, 2);
+                else if (tclass == Datatype.CLASS_ENUM)
+                    tableModel.setValueAt(dtype.getEnumMembers(), i, 2);
+                else
+                    tableModel.setValueAt(String.valueOf(mOrders[i]), i, 2);
+
+            } // for (int i=0; i<numberOfMembers; i++)
+        } // else if (source.equals(templateChoice))
     }
 
     private HObject createCompoundDS() throws Exception

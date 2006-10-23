@@ -491,6 +491,9 @@ public class H4SDS extends ScalarDS
      */
     public void init()
     {
+        if (rank>0)
+            return; // already called. Initialize only once
+
         int id = open();
         String[] objName = {""};
         String[] dimName = {""};

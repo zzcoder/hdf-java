@@ -81,7 +81,10 @@ public abstract class Group extends HObject
     public void addToMemberList(HObject object)
     {
         if (memberList == null)
-            memberList = new Vector();
+        {
+            int size = Math.min(getNumberOfMembersInFile(), this.getFileFormat().getMaxMembers());
+            memberList = new Vector(size+5);
+        }
 
         if (object != null)
             memberList.add(object);

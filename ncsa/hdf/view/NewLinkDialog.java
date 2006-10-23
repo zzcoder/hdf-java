@@ -77,7 +77,7 @@ implements ActionListener
         parentChoice = new JComboBox();
         linkToChoice = new JComboBox();
 
-        groupList = new Vector();
+        groupList = new Vector(objs.size());
         HObject obj = null;
         Iterator iterator = objs.iterator();
         String full_name = null;

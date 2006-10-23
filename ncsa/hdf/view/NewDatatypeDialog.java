@@ -74,7 +74,7 @@ implements ActionListener, ItemListener
         isH5 = pGroup.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
 
         parentChoice = new JComboBox();
-        groupList = new Vector();
+        groupList = new Vector(objs.size());
         Object obj = null;
         Iterator iterator = objs.iterator();
         while (iterator.hasNext())

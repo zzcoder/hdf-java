@@ -428,7 +428,7 @@ implements ActionListener, ItemListener
                 return;
 
             int idx = 0;
-            Vector choice4 = new Vector();
+            Vector choice4 = new Vector(rank);
             int[] choice4Index = new int[rank-3];
             for (int i=0; i<rank; i++)
             {
