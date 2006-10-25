@@ -12,21 +12,18 @@
 package ncsa.hdf.view;
 
 import ncsa.hdf.object.*;
+
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
-import javax.swing.text.*;
 import javax.swing.event.*;
-import javax.swing.text.html.*;
-import javax.swing.tree.*;
 import java.net.URL;
 import java.lang.reflect.*;
 import java.awt.Event;
 import java.awt.Insets;
 import java.awt.Dimension;
 import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
@@ -49,8 +46,11 @@ import java.awt.Image;
  * @version 1.0, 06/20/2003
  */
 
-public class HDFView extends JFrame
-    implements ViewManager, ActionListener, HyperlinkListener, ChangeListener {
+public class HDFView extends JFrame implements ViewManager, ActionListener, 
+HyperlinkListener, ChangeListener 
+{
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /** tag for TreeView*/
     public static final int MODULE_TREEVIEW = 100;
 
@@ -214,8 +214,8 @@ public class HDFView extends JFrame
         {
             props.load();
             java.awt.Font font = null;
-            String ftype = props.getFontType();
-            int fsize = props.getFontSize();
+            String ftype = ViewProperties.getFontType();
+            int fsize = ViewProperties.getFontSize();
             try { font = new java.awt.Font(ftype, java.awt.Font.PLAIN, fsize); }
             catch (Exception ex) { font = null; }
 
@@ -229,17 +229,17 @@ public class HDFView extends JFrame
                 uiDefaults.put("TreeNode.font", font);
             }
         } catch (Exception ex){;}
-        //recentFiles = props.getMRF();
+        //recentFiles = ViewProperties.getMRF();
         currentDir = ViewProperties.getWorkDir();
         if (currentDir == null) currentDir = System.getProperty("user.dir");
 
-        treeViews = props.getTreeViewList();
-        metaDataViews = props.getMetaDataViewList();
-        textViews = props.getTextViewList();
-        tableViews = props.getTableViewList();
-        imageViews = props.getImageViewList();
-        paletteViews = props.getPaletteViewList();
-        helpViews = props.getHelpViewList();
+        treeViews = ViewProperties.getTreeViewList();
+        metaDataViews = ViewProperties.getMetaDataViewList();
+        textViews = ViewProperties.getTextViewList();
+        tableViews = ViewProperties.getTableViewList();
+        imageViews = ViewProperties.getImageViewList();
+        paletteViews = ViewProperties.getPaletteViewList();
+        helpViews = ViewProperties.getHelpViewList();
 
         // initialize GUI components
         statusArea = new JTextArea();
@@ -249,7 +249,7 @@ public class HDFView extends JFrame
         message = new StringBuffer();
         metadata = new StringBuffer();
         showStatus("HDFView root - "+rootDir);
-        showStatus("User property file - "+props.getPropertyFile());
+        showStatus("User property file - "+ViewProperties.getPropertyFile());
 
         attributeArea = new JTextArea();
         attributeArea.setEditable(false);
@@ -380,7 +380,7 @@ public class HDFView extends JFrame
         JToolBar toolBar = createToolBar();
 
         /** create URL address bar */
-        urlBar = new JComboBox(props.getMRF());
+        urlBar = new JComboBox(ViewProperties.getMRF());
         urlBar.setMaximumRowCount(ViewProperties.MAX_RECENT_FILES);
         urlBar.setEditable(true);
         urlBar.addActionListener(this);
@@ -664,7 +664,7 @@ public class HDFView extends JFrame
         tbar.setFloatable(false);
 
         // open file button
-        JButton button = new JButton(props.getFileopenIcon() );
+        JButton button = new JButton(ViewProperties.getFileopenIcon() );
         tbar.add( button );
         button.setToolTipText( "Open" );
         button.setMargin( new Insets( 0, 0, 0, 0 ) );
@@ -672,7 +672,7 @@ public class HDFView extends JFrame
         button.setActionCommand( "Open file" );
 
         // close file button
-        button = new JButton(props.getFilecloseIcon() );
+        button = new JButton(ViewProperties.getFilecloseIcon() );
         tbar.add( button );
         button.setToolTipText( "Close" );
         button.setMargin( new Insets( 0, 0, 0, 0 ) );
@@ -682,7 +682,7 @@ public class HDFView extends JFrame
         tbar.addSeparator(new Dimension(20, 20));
 
         // help button
-        button = new JButton( props.getHelpIcon() );
+        button = new JButton( ViewProperties.getHelpIcon() );
         tbar.add( button );
         button.setToolTipText( "Help" );
         button.setMargin( new Insets( 0, 0, 0, 0 ) );
@@ -690,7 +690,7 @@ public class HDFView extends JFrame
         button.setActionCommand( "Users guide" );
 
         // HDF4 Library Version button
-        button = new JButton( props.getH4Icon() );
+        button = new JButton( ViewProperties.getH4Icon() );
         tbar.add( button );
         button.setToolTipText( "HDF4 Library Version" );
         button.setMargin( new Insets( 0, 0, 0, 0 ) );
@@ -700,7 +700,7 @@ public class HDFView extends JFrame
             button.setEnabled(false);
 
         // HDF5 Library Version button
-        button = new JButton( props.getH5Icon() );
+        button = new JButton( ViewProperties.getH5Icon() );
         tbar.add( button );
         button.setToolTipText( "HDF5 Library Version" );
         button.setMargin( new Insets( 0, 0, 0, 0 ) );
@@ -764,7 +764,7 @@ public class HDFView extends JFrame
         JToolBar tbar = new JToolBar();
 
         // home button
-        JButton button = new JButton( props.getFirstIcon() );
+        JButton button = new JButton( ViewProperties.getFirstIcon() );
         tbar.add( button );
         button.setToolTipText( "Home" );
         button.setMargin( new Insets( 0, 0, 0, 0 ) );
@@ -772,7 +772,7 @@ public class HDFView extends JFrame
         button.setActionCommand( "Users guide home" );
 
         // back button
-        button = new JButton( props.getPreviousIcon() );
+        button = new JButton( ViewProperties.getPreviousIcon() );
         tbar.add( button );
         button.setToolTipText( "Back" );
         button.setMargin( new Insets( 0, 0, 0, 0 ) );
@@ -1225,7 +1225,7 @@ public class HDFView extends JFrame
                 typeTo,
                 currentDir,
                 treeView.getCurrentFiles());
-            dialog.show();
+            dialog.setVisible(true);
 
             if (dialog.isFileConverted())
             {
@@ -1254,7 +1254,7 @@ public class HDFView extends JFrame
         else if (cmd.equals("User options"))
         {
             UserOptionsDialog dialog = new UserOptionsDialog(this, rootDir);
-            dialog.show();
+            dialog.setVisible(true);
 
             if (dialog.isWorkDirChanged())
             {
@@ -1384,12 +1384,12 @@ public class HDFView extends JFrame
         else if (cmd.equals("Users guide"))
         {
             if (usersGuideURL != null)
-                usersGuideWindow.show();
+                usersGuideWindow.setVisible(true);
         }
         else if (cmd.equals("Close users guide"))
         {
             if (usersGuideURL != null)
-                usersGuideWindow.hide();
+                usersGuideWindow.setVisible(false);
         }
         else if (cmd.equals("Users guide home"))
         {
@@ -2008,7 +2008,7 @@ public class HDFView extends JFrame
 
         if (srbFileDialog == null) return;
 
-        srbFileDialog.show();
+        srbFileDialog.setVisible(true);
      }
 
     /**

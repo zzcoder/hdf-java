@@ -12,6 +12,7 @@
 package ncsa.hdf.view;
 
 import ncsa.hdf.object.*;
+
 import javax.swing.*;
 import javax.swing.tree.*;
 import java.util.*;
@@ -19,8 +20,6 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.awt.Component;
 import java.awt.BorderLayout;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Toolkit;
 import java.awt.event.*;
 import java.awt.Cursor;
@@ -39,7 +38,10 @@ import java.awt.Cursor;
  * @version 1.0, 06/10/2003
  */
 public class DefaultTreeView extends JPanel
-implements TreeView, ActionListener {
+implements TreeView, ActionListener 
+{
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /** the owner of this treeview */
     private ViewManager viewer;
 
@@ -96,6 +98,8 @@ implements TreeView, ActionListener {
         viewer = theView;
 
         root = new DefaultMutableTreeNode() {
+        	public static final long serialVersionUID = HObject.serialVersionUID;
+
             public boolean isLeaf() { return false; }
         };
 
@@ -864,7 +868,7 @@ implements TreeView, ActionListener {
             (JFrame)viewer,
             pGroup,
             breadthFirstUserObjects(selectedObject.getFileFormat().getRootNode()));
-        dialog.show();
+        dialog.setVisible(true);
 
         HObject obj = (HObject)dialog.getObject();
         if (obj == null)
@@ -898,7 +902,7 @@ implements TreeView, ActionListener {
             (JFrame)viewer,
             pGroup,
             breadthFirstUserObjects(selectedObject.getFileFormat().getRootNode()));
-        dialog.show();
+        dialog.setVisible(true);
 
         HObject obj = (HObject)dialog.getObject();
         if (obj == null)
@@ -932,7 +936,7 @@ implements TreeView, ActionListener {
             (JFrame)viewer,
             pGroup,
             breadthFirstUserObjects(selectedObject.getFileFormat().getRootNode()));
-        dialog.show();
+        dialog.setVisible(true);
 
         HObject obj = (HObject)dialog.getObject();
         if (obj == null)
@@ -966,7 +970,7 @@ implements TreeView, ActionListener {
             (JFrame)viewer,
             pGroup,
             breadthFirstUserObjects(selectedObject.getFileFormat().getRootNode()));
-        dialog.show();
+        dialog.setVisible(true);
 
         HObject obj = (HObject)dialog.getObject();
         if (obj == null)
@@ -1000,7 +1004,7 @@ implements TreeView, ActionListener {
             (JFrame)viewer,
             pGroup,
             breadthFirstUserObjects(selectedObject.getFileFormat().getRootNode()));
-        dialog.show();
+        dialog.setVisible(true);
 
         HObject obj = (HObject)dialog.getObject();
         if (obj == null)
@@ -1034,7 +1038,7 @@ implements TreeView, ActionListener {
             (JFrame)viewer,
             pGroup,
             breadthFirstUserObjects(selectedObject.getFileFormat().getRootNode()));
-        dialog.show();
+        dialog.setVisible(true);
 
         HObject obj = (HObject)dialog.getObject();
         if (obj == null)
@@ -1522,7 +1526,7 @@ implements TreeView, ActionListener {
 
             DataOptionDialog dialog = new DataOptionDialog(viewer, d, viewType);
 
-            dialog.show();
+            dialog.setVisible(true);
             if (dialog.isCancelled())
                 return null;
 
@@ -1618,6 +1622,8 @@ implements TreeView, ActionListener {
         TreeNode newnode = null;
         if (newObject instanceof Group) {
             newnode = new DefaultMutableTreeNode(newObject) {
+            	public static final long serialVersionUID = HObject.serialVersionUID;
+
                 public boolean isLeaf() { return false; }
             };
         } else {
@@ -1677,6 +1683,8 @@ implements TreeView, ActionListener {
      */
     private class HTreeCellRenderer extends DefaultTreeCellRenderer
     {
+    	public static final long serialVersionUID = HObject.serialVersionUID;
+
         private Icon h4Icon, h5Icon,
                 datasetIcon, imageIcon, tableIcon, textIcon,
                 openFolder, closeFolder,

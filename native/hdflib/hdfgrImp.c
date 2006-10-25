@@ -23,7 +23,6 @@
 
 #include "hdf.h"
 #include "mfhdf.h"
-
 #include "jni.h"
 
 extern jboolean h4outOfMemory( JNIEnv *env, char *functName);

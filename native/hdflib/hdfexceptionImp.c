@@ -16,6 +16,7 @@
  */
 
 #include "jni.h"
+#include <stdlib.h>
 
 jboolean h4buildException( JNIEnv *env, jint HDFerr)
 {

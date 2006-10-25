@@ -16,6 +16,9 @@ import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import javax.swing.border.*;
+
+import ncsa.hdf.object.HObject;
+
 import java.awt.Toolkit;
 import java.awt.Color;
 import java.awt.Event;
@@ -47,7 +50,10 @@ import edu.harvard.hul.ois.mets.helper.*;
  * @version 1.0, 06/20/2003
  */
 
-public class H5Ingest extends JFrame implements ActionListener {
+public class H5Ingest extends JFrame implements ActionListener 
+{
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     private static final String VERSION = "1.0";
     private final JTextArea statusArea;
     private static Icon openIcon, closeIcon, newIcon, saveIcon, hdfIcon, textIcon, validateIcon;
@@ -68,13 +74,13 @@ public class H5Ingest extends JFrame implements ActionListener {
 
     private DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT , DateFormat.SHORT);
 
-    /* fields for file headers */
+    // fields for file headers
     private JTextField metsHdr_createdate;
     private JTextField metsHdr_lastmoddate;
     private JTextField metsHdr_recordstatus;
     private JTable metsHdr_agent;
 
-    /* mets content elements */
+    // mets content elements
     private MetsHdr mets_MetsHdr = null;
     private DmdSec mets_DmdSec = null;
     private AmdSec mets_AmdSec = null;

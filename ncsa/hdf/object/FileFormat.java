@@ -13,7 +13,6 @@ package ncsa.hdf.object;
 
 import java.util.*;
 import java.io.File;
-import java.net.*;
 import javax.swing.tree.TreeNode;
 
 /**

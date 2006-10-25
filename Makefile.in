@@ -63,9 +63,7 @@ JH45IDISTFILES=./native/h4toh5lib/Makefile.in \
 
 JHIDISTFILES=./native/hdflib/Makefile.in \
 	./native/hdflib/*.c \
-	./ncsa/hdf/hdflib/*.java  \
-	./glguerin/io/*.java ./glguerin/mac/io/*.java ./glguerin/util/*.java \
-        ./glguerin/README
+	./ncsa/hdf/hdflib/*.java
 
 JHI5DISTFILES= ./native/hdf5lib/Makefile.in \
         ./native/hdf5lib/*.c ./native/hdf5lib/*.h \
@@ -90,10 +88,7 @@ JH45PACKAGES = \
 	ncsa.hdf.h4toh5lib 
 
 JHIPACKAGES = \
-	ncsa.hdf.hdflib \
-	glguerin.io \
-	glguerin.mac.io \
-	glguerin.util
+	ncsa.hdf.hdflib
 
 JHI5PACKAGES = \
 	ncsa.hdf.hdf5lib.exceptions \
@@ -223,7 +218,6 @@ clean: clean-natives clean-classes clean-test clean-testlink
 
 clean-classes:
 	$(FIND) ./ncsa \( -name '#*' -o -name '*~' -o -name '*.class' \) -exec $(RM) -f {} \; ;\
-	$(FIND) ./glguerin \( -name '#*' -o -name '*~' -o -name '*.class' \) -exec $(RM) -f {} \; ;\
 	$(RM) -f ./lib/jh4toh5.jar
 	$(RM) -f ./lib/jhdf.jar
 	$(RM) -f ./lib/jhdf5.jar
@@ -502,13 +496,6 @@ ncsa.hdf.hdf5lib.exceptions: \
 	ncsa/hdf/hdf5lib/exceptions/HDF5ResourceUnavailableException.class \
 	ncsa/hdf/hdf5lib/exceptions/HDF5SymbolTableException.class 
 
-glguerin.io: glguerin/io/FilePathname.class glguerin/io/Path.class
-
-glguerin.mac.io: glguerin/mac/io/MacEscaping.class  \
-	glguerin/mac/io/MacFilePathname.class
-
-glguerin.util: glguerin/util/MacPlatform.class
-
 ncsa.hdf.hdflib: \
 	ncsa/hdf/hdflib/HDFArray.class \
 	ncsa/hdf/hdflib/HDFChunkInfo.class \
@@ -521,7 +508,6 @@ ncsa.hdf.hdflib: \
 	ncsa/hdf/hdflib/HDFJPEGCompInfo.class \
 	ncsa/hdf/hdflib/HDFJavaException.class \
 	ncsa/hdf/hdflib/HDFLibrary.class \
-	ncsa/hdf/hdflib/Native.class \
 	ncsa/hdf/hdflib/HDFLibraryException.class \
 	ncsa/hdf/hdflib/HDFNBITChunkInfo.class \
 	ncsa/hdf/hdflib/HDFNBITCompInfo.class \
@@ -673,7 +659,6 @@ HDFJPEGCompInfo:	ncsa/hdf/hdflib/HDFJPEGCompInfo.class
 HDFSZIPCompInfo:	ncsa/hdf/hdflib/HDFSZIPCompInfo.class
 HDFJavaException:	ncsa/hdf/hdflib/HDFJavaException.class
 HDFLibrary:	ncsa/hdf/hdflib/HDFLibrary.class
-Native:	ncsa/hdf/hdflib/Native.class
 HDFLibraryException:	ncsa/hdf/hdflib/HDFLibraryException.class
 HDFNBITChunkInfo:	ncsa/hdf/hdflib/HDFNBITChunkInfo.class
 HDFNBITCompInfo:	ncsa/hdf/hdflib/HDFNBITCompInfo.class
@@ -685,11 +670,6 @@ HDFOldRLECompInfo:	ncsa/hdf/hdflib/HDFOldRLECompInfo.class
 HDFRLECompInfo:	ncsa/hdf/hdflib/HDFRLECompInfo.class
 HDFSKPHUFFCompInfo:	ncsa/hdf/hdflib/HDFSKPHUFFCompInfo.class
 HDFTable:	ncsa/hdf/hdflib/HDFTable.class
-FilePathname: glguerin/io/FilePathname.class 
-Path: glguerin/io/Path.class
-MacEscaping:	glguerin/mac/io/MacEscaping.class 
-MacFilePathname:	glguerin/mac/io/MacFilePathname.class 
-MacPlatform:	glguerin/util/MacPlatform.class
 Attribute: ncsa/hdf/object/Attribute.class
 CompoundDS: ncsa/hdf/object/CompoundDS.class 
 DataFormat: /ncsa/hdf/object/DataFormat.class 
@@ -741,12 +721,7 @@ JHI5CLASSES= ./ncsa/hdf/hdf5lib/*.class \
         ./ncsa/hdf/hdf5lib/exceptions/*.class
 
 
-JHICLASSES= ./ncsa/hdf/hdflib/*.class \
-        ./glguerin/io/FilePathname.class \
-        ./glguerin/io/Path.class \
-        ./glguerin/mac/io/MacEscaping.class  \
-        ./glguerin/mac/io/MacFilePathname.class \
-        ./glguerin/util/MacPlatform.class
+JHICLASSES= ./ncsa/hdf/hdflib/*.class
 
 HDFOBJCLASSES= ./ncsa/hdf/object/*.class
 
@@ -799,10 +774,6 @@ JAVASRCS= \
 ./ncsa/hdf/hdf5lib/exceptions/HDF5ReferenceException.java  \
 ./ncsa/hdf/hdf5lib/exceptions/HDF5ResourceUnavailableException.java  \
 ./ncsa/hdf/hdf5lib/exceptions/HDF5SymbolTableException.java  \
-./glguerin/io/FilePathname.java glguerin/io/Path.java \
-./glguerin/mac/io/MacEscaping.java   \
-./glguerin/mac/io/MacFilePathname.java \
-./glguerin/util/MacPlatform.java \
 ./ncsa/hdf/hdflib/HDFArray.java  \
 ./ncsa/hdf/hdflib/HDFChunkInfo.java  \
 ./ncsa/hdf/hdflib/HDFCompInfo.java  \
@@ -815,7 +786,6 @@ JAVASRCS= \
 ./ncsa/hdf/hdflib/HDFSZIPCompInfo.java  \
 ./ncsa/hdf/hdflib/HDFJavaException.java  \
 ./ncsa/hdf/hdflib/HDFLibrary.java  \
-./ncsa/hdf/hdflib/Native.java  \
 ./ncsa/hdf/hdflib/HDFLibraryException.java  \
 ./ncsa/hdf/hdflib/HDFNBITChunkInfo.java  \
 ./ncsa/hdf/hdflib/HDFNBITCompInfo.java  \

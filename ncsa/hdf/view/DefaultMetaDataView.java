@@ -12,6 +12,7 @@
 package ncsa.hdf.view;
 
 import ncsa.hdf.object.*;
+
 import javax.swing.*;
 import java.awt.event.*;
 import javax.swing.border.*;
@@ -21,7 +22,6 @@ import javax.swing.tree.*;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
-import java.awt.Font;
 import java.awt.Insets;
 import java.awt.Dimension;
 import java.util.*;
@@ -39,7 +39,9 @@ import java.lang.reflect.Array;
 public class DefaultMetaDataView extends JDialog
 implements ActionListener, MetaDataView
 {
-    /**
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
+	/**
      * The main HDFView.
      */
     private ViewManager viewer;
@@ -116,7 +118,7 @@ implements ActionListener, MetaDataView
         l.y += 80;
         setLocation(l);
         pack();
-        show();
+        setVisible(true);
     }
 
     public void actionPerformed(ActionEvent e)
@@ -184,7 +186,7 @@ implements ActionListener, MetaDataView
         if (obj == null) return null;
 
         NewAttributeDialog  dialog = new NewAttributeDialog(this, obj);
-        dialog.show();
+        dialog.setVisible(true);
 
         Attribute attr = dialog.getAttribute();
         if (attr == null) return null;
@@ -448,6 +450,8 @@ implements ActionListener, MetaDataView
         String[] columnNames = {"Name", "Type"};
         JTable table = new JTable(rowData, columnNames)
         {
+        	public static final long serialVersionUID = HObject.serialVersionUID;
+
             public boolean isCellEditable(int row, int column)
             {
                 return false;
@@ -577,6 +581,8 @@ implements ActionListener, MetaDataView
                 String[] columnNames = {"Name", "Type", "Array Size"};
                 JTable table = new JTable(rowData, columnNames)
                 {
+                	public static final long serialVersionUID = HObject.serialVersionUID;
+
                     public boolean isCellEditable(int row, int column)
                     {
                         return false;
@@ -686,6 +692,8 @@ implements ActionListener, MetaDataView
 
         attrTable = new JTable(attrTableModel)
         {
+        	public static final long serialVersionUID = HObject.serialVersionUID;
+
             int lastSelectedRow = -1;
             int lastSelectedCol = -1;
 

@@ -12,7 +12,6 @@
 package ncsa.hdf.object.h4;
 
 import java.util.*;
-import java.lang.reflect.*;
 import ncsa.hdf.hdflib.*;
 import ncsa.hdf.object.*;
 
@@ -87,6 +86,8 @@ import ncsa.hdf.object.*;
  */
 public class H4GRImage extends ScalarDS
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /**
      * The list of attributes of this data object. Members of the list are
      * instance of Attribute.

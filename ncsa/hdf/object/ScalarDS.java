@@ -11,7 +11,6 @@
 
 package ncsa.hdf.object;
 
-import java.util.*;
 
 /**
  * A scalar dataset is a multiple dimension array of scalar points.

@@ -17,20 +17,23 @@ import java.util.*;
 import java.awt.event.*;
 import javax.swing.event.*;
 import javax.swing.border.*;
+
+import ncsa.hdf.object.HObject;
+
 import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.GraphicsEnvironment;
-import java.awt.Toolkit;
 import java.awt.Point;
-import java.awt.FileDialog;
 
 /** UserOptionsDialog displays components for choosing user options. */
 public class UserOptionsDialog extends JDialog
 implements ActionListener, ListSelectionListener
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /**
      * The main HDFView.
      */

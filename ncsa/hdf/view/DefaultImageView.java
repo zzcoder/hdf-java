@@ -12,32 +12,23 @@
 package ncsa.hdf.view;
 
 import ncsa.hdf.object.*;
+
 import javax.swing.*;
 import javax.swing.tree.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
-import javax.print.*;
-import javax.print.attribute.*;
 import java.awt.image.*;
-import java.awt.Font;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Image;
-import java.awt.Graphics2D;
 import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.Rectangle;
 import java.awt.Point;
-import java.awt.Window;
 import java.awt.Color;
-import java.awt.Frame;
-import java.awt.GraphicsEnvironment;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsConfiguration;
-import java.awt.Transparency;
 import java.awt.Insets;
 import java.awt.GridLayout;
 import java.beans.PropertyChangeListener;
@@ -78,6 +69,8 @@ import javax.swing.text.NumberFormatter;
 public class DefaultImageView extends JInternalFrame
 implements ImageView, ActionListener
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /** Horizontal direction to flip an image. */
     public static final int FLIP_HORIZONTAL = 0;
 
@@ -162,8 +155,6 @@ implements ImageView, ActionListener
     private double[] dataRange;
 
     private PaletteComponent paletteComponent;
-
-    private String palName = null;
 
     private int animationSpeed = 2;
 
@@ -867,7 +858,7 @@ implements ImageView, ActionListener
             data,
             xRange,
             null);
-        cv.show();
+        cv.setVisible(true);
     }
 
     /**
@@ -1174,7 +1165,7 @@ implements ImageView, ActionListener
                 pGroup,
                 list,
                 this);
-            dialog.show();
+            dialog.setVisible(true);
 
             HObject obj = (HObject)dialog.getObject();
             if (obj != null) {
@@ -1626,6 +1617,8 @@ implements ImageView, ActionListener
     /** PaletteComponent draws the palette on the side of the image. */
     private class PaletteComponent extends JComponent
     {
+    	public static final long serialVersionUID = HObject.serialVersionUID;
+
         private Color[] colors = null;
         private double[] pixelData = null;
         private Dimension paintSize = null;
@@ -1718,6 +1711,8 @@ implements ImageView, ActionListener
     private class ImageComponent extends JComponent
         implements MouseListener, MouseMotionListener, MouseWheelListener
     {
+    	public static final long serialVersionUID = HObject.serialVersionUID;
+
         private Dimension originalSize, imageSize;
         private Image image;
         private Point startPosition; // mouse clicked position
@@ -2503,6 +2498,8 @@ implements ImageView, ActionListener
      */
     private class Animation extends JDialog implements ActionListener, Runnable
     {
+    	public static final long serialVersionUID = HObject.serialVersionUID;
+
         private final int MAX_IMAGE_SIZE = 300;
 
         private Image[] frames = null; // a list of images for animation
@@ -2582,6 +2579,8 @@ implements ImageView, ActionListener
             y0 = Math.max((MAX_IMAGE_SIZE-h)/2, 0);
 
             canvas = new JComponent() {
+            	public static final long serialVersionUID = HObject.serialVersionUID;
+
                 public void paint(Graphics g) {
                     if (offScrGC == null || frames==null)
                         return;
@@ -2604,7 +2603,7 @@ implements ImageView, ActionListener
             start();
 
             pack();
-            show();
+            setVisible(true);
         }
 
         public void actionPerformed(ActionEvent e)
@@ -2681,6 +2680,8 @@ implements ImageView, ActionListener
             ChangeListener,
             PropertyChangeListener
     {
+    	public static final long serialVersionUID = HObject.serialVersionUID;
+
         double[] minmax = null;
         JSlider minSlider, maxSlider;
         JFormattedTextField minField, maxField;
@@ -2774,7 +2775,7 @@ implements ImageView, ActionListener
             l.y += 200;
             setLocation(l);
             pack();
-            show();
+            setVisible(true);
         }
 
         public void actionPerformed(ActionEvent e)

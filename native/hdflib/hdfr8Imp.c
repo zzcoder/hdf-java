@@ -27,7 +27,7 @@
 
 extern jboolean getOldCompInfo( JNIEnv *env, jobject ciobj, comp_info *cinf);
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DFR8getdims
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFR8getdims
 ( JNIEnv *env,
 jclass class,
 jstring filename,
@@ -67,7 +67,7 @@ jbooleanArray isp) /* OUT: isp */
     }
 }
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DFR8getimage
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFR8getimage
 ( JNIEnv *env,
 jclass class,
 jstring filename,
@@ -117,7 +117,7 @@ jobject obj)
     return ((short)DFR8lastref());
 }
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DFR8readref
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFR8readref
 ( JNIEnv *env,
 jclass class,
 jstring filename,
@@ -151,7 +151,7 @@ jobject obj)
     }
 }
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DFR8nimages
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFR8nimages
 ( JNIEnv *env,
 jclass class,
 jstring hdfFile)
@@ -162,7 +162,7 @@ jstring hdfFile)
     return(DFR8nimages(hdf_file));
 }
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DFR8addimage
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFR8addimage
 ( JNIEnv *env,
 jclass class,
 jstring filename,
@@ -191,7 +191,7 @@ jshort compress)
     }
 }
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DFR8putimage
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFR8putimage
 ( JNIEnv *env,
 jclass class,
 jstring filename,
@@ -290,7 +290,7 @@ jbyteArray palette) /* IN:  byte[] */
     }
 }
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DFR8writeref
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFR8writeref
 ( JNIEnv *env,
 jclass class,
 jstring filename,

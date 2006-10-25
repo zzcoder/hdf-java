@@ -11,7 +11,6 @@
 
 package ncsa.hdf.view;
 
-import ncsa.hdf.object.*;
 import java.awt.Rectangle;
 import java.awt.Image;
 

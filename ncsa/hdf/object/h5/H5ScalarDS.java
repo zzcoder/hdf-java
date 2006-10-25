@@ -80,6 +80,8 @@ import ncsa.hdf.object.*;
  */
 public class H5ScalarDS extends ScalarDS
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /**
      * The list of attributes of this data object. Members of the list are
      * instance of Attribute.

@@ -28,7 +28,7 @@
 
 extern jboolean h4buildException( JNIEnv *env, jint HDFerr);
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1Hopen
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_Hopen
 (
 JNIEnv *env,
 jclass class,
@@ -103,7 +103,7 @@ jint fid)
     }
 }
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1Hishdf
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_Hishdf
 ( JNIEnv *env,
 jclass class,
 jstring hdfFile)
@@ -304,7 +304,7 @@ jint file_id)
 }
 
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1HDFopen
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_HDFopen
 ( JNIEnv *env,
 jclass class,
 jstring filename,

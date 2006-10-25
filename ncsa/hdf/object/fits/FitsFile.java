@@ -12,9 +12,7 @@
 package ncsa.hdf.object.fits;
 
 import java.io.*;
-import java.util.*;
 import javax.swing.tree.*;
-import java.lang.reflect.Array;
 import ncsa.hdf.object.*;
 import nom.tam.fits.*;
 
@@ -27,16 +25,8 @@ import nom.tam.fits.*;
  */
 public class FitsFile extends FileFormat
 {
-    /**
-     * file identifier for the open file.
-     */
-    private int fid;
-
-    /**
-     * the file access flag.
-     */
-    private int flag;
-
+	public static final long serialVersionUID = HObject.serialVersionUID;
+	
     /**
      * The full name of this file; full path plus name
      */
@@ -168,6 +158,8 @@ public class FitsFile extends FileFormat
             oid);
 
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootGroup) {
+        	public static final long serialVersionUID = HObject.serialVersionUID;
+
             public boolean isLeaf() { return false; }
         };
 

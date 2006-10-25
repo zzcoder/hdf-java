@@ -11,6 +11,8 @@
 
 package ncsa.hdf.hdf5lib.exceptions;
 
+import ncsa.hdf.object.HObject;
+
 /**
  *  <p>
  *  The class HDF5JavaException returns errors from the Java
@@ -19,7 +21,9 @@ package ncsa.hdf.hdf5lib.exceptions;
  *  These errors include Java configuration errors, security
  *  violations, and resource exhaustion.
  */
-public class HDF5JavaException extends HDF5Exception {
+public class HDF5JavaException extends HDF5Exception 
+{
+	public static final long serialVersionUID = HObject.serialVersionUID;
 
     /**
      * Constructs an <code>HDF5JavaException</code> with no

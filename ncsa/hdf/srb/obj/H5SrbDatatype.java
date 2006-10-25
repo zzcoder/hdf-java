@@ -15,7 +15,9 @@ import ncsa.hdf.object.*;
 
 public class H5SrbDatatype extends Datatype
 {
-    /**
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
+   /**
      * Create an Datatype with specified class, size, byte order and sign.
      * The following list a few example of how to create a Datatype.
      * <OL>

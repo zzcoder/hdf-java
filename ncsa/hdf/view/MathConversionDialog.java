@@ -15,14 +15,15 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.border.TitledBorder;
+
+import ncsa.hdf.object.HObject;
+
 import java.awt.Point;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
-import java.util.*;
 import java.lang.reflect.Array;
-import ncsa.hdf.object.*;
 
 /**
  * MathConversionDialog shows a message dialog requesting user input for
@@ -34,6 +35,8 @@ import ncsa.hdf.object.*;
 public class MathConversionDialog extends JDialog
 implements ActionListener, ListSelectionListener
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     private JTextField aField, bField;
 
     private JTextArea infoArea;

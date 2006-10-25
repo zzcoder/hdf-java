@@ -11,7 +11,6 @@
 
 package ncsa.hdf.view;
 
-import ncsa.hdf.object.*;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.io.BufferedInputStream;
@@ -21,9 +20,7 @@ import java.io.FileOutputStream;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.Enumeration;
-import javax.swing.*;
 import javax.swing.filechooser.*;
-import ncsa.hdf.object.FileFormat;
 
 /**
  * A convenience implementation of FileFilter that filters out
@@ -32,9 +29,6 @@ import ncsa.hdf.object.FileFormat;
  */
 public class DefaultFileFilter extends FileFilter
 {
-    private static String TYPE_UNKNOWN = "Type Unknown";
-    private static String HIDDEN_FILE = "Hidden File";
-
     private static FileFilter FILE_FILTER_HDF = null;
     private static FileFilter FILE_FILTER_HDF4 = null;
     private static FileFilter FILE_FILTER_HDF5 = null;

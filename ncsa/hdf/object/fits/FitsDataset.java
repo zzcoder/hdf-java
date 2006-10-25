@@ -13,6 +13,7 @@ package ncsa.hdf.object.fits;
 
 import java.util.*;
 import ncsa.hdf.object.*;
+
 import java.lang.reflect.Array;
 import nom.tam.fits.*;
 
@@ -30,6 +31,8 @@ import nom.tam.fits.*;
  */
 public class FitsDataset extends ScalarDS
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /**
      * The list of attributes of this data object. Members of the list are
      * instance of Attribute.

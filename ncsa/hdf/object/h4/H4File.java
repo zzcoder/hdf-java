@@ -11,7 +11,6 @@
 
 package ncsa.hdf.object.h4;
 
-import java.io.File;
 import java.util.*;
 import java.lang.reflect.Array;
 import javax.swing.tree.*;
@@ -27,6 +26,8 @@ import ncsa.hdf.object.*;
  */
 public class H4File extends FileFormat
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /**
      * the file access flag.
      */
@@ -535,6 +536,8 @@ public class H4File extends FileFormat
 
         DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(group)
         {
+        	public static final long serialVersionUID = HObject.serialVersionUID;
+
             public boolean isLeaf() { return false; }
         };
         pgroup.addToMemberList(group);
@@ -586,6 +589,8 @@ public class H4File extends FileFormat
 
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootGroup)
         {
+        	public static final long serialVersionUID = HObject.serialVersionUID;
+
             public boolean isLeaf() { return false; }
         };
 
@@ -623,6 +628,8 @@ public class H4File extends FileFormat
             {
                 node = new DefaultMutableTreeNode(g)
                 {
+                	public static final long serialVersionUID = HObject.serialVersionUID;
+
                     public boolean isLeaf() { return false; }
                 };
                 root.add( node );
@@ -851,6 +858,8 @@ public class H4File extends FileFormat
                     {
                         node = new DefaultMutableTreeNode(vgroup)
                         {
+                        	public static final long serialVersionUID = HObject.serialVersionUID;
+
                             public boolean isLeaf() { return false; }
                         };
 

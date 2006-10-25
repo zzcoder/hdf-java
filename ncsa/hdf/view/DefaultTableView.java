@@ -12,6 +12,7 @@
 package ncsa.hdf.view;
 
 import ncsa.hdf.object.*;
+
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.event.*;
@@ -30,9 +31,7 @@ import java.awt.Toolkit;
 import java.awt.Color;
 import java.awt.Insets;
 import java.text.DecimalFormat;
-import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import javax.swing.border.*;
 import java.awt.Point;
 
 /**
@@ -44,6 +43,8 @@ import java.awt.Point;
 public class DefaultTableView extends JInternalFrame
 implements TableView, ActionListener
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /**
      * The main HDFView.
      */
@@ -524,7 +525,7 @@ implements TableView, ActionListener
                 pGroup,
                 list,
                 this);
-            dialog.show();
+            dialog.setVisible(true);
 
             HObject obj = (HObject)dialog.getObject();
             if (obj != null) {
@@ -779,7 +780,7 @@ implements TableView, ActionListener
         int ncol = table.getColumnCount();
 
         LineplotOption lpo = new LineplotOption((JFrame)viewer, title, nrow, ncol);
-        lpo.show();
+        lpo.setVisible(true);
 
         int plotType = lpo.getPlotBy();
         if (plotType == LineplotOption.NO_PLOT)
@@ -910,7 +911,7 @@ implements TableView, ActionListener
         if (dname == 'B' || dname == 'S' || dname == 'I' || dname == 'J')
             cv.setTypeToInteger();
 
-        cv.show();
+        cv.setVisible(true);
     }
 
     /**
@@ -1142,6 +1143,8 @@ implements TableView, ActionListener
             columnNames,
             rows)
         {
+        	public static final long serialVersionUID = HObject.serialVersionUID;
+
             Object theValue = null;
             DecimalFormat sf = new DecimalFormat ("0.0###E0#");
 
@@ -1161,6 +1164,8 @@ implements TableView, ActionListener
 
         theTable = new JTable(tableModel)
         {
+        	public static final long serialVersionUID = HObject.serialVersionUID;
+
             public boolean isCellEditable( int row, int col )
             {
                 if (isReadOnly || isDisplayTypeChar)
@@ -1280,6 +1285,8 @@ implements TableView, ActionListener
             subColumnNames,
             rows)
         {
+        	public static final long serialVersionUID = HObject.serialVersionUID;
+
             List list = (List)dataValue;
             CompoundDS compound = (CompoundDS)dataset;
             int orders[] = compound.getSelectedMemberOrders();
@@ -1353,6 +1360,8 @@ implements TableView, ActionListener
 
         theTable = new JTable(tableModel)
         {
+        	public static final long serialVersionUID = HObject.serialVersionUID;
+
             int lastSelectedRow = -1;
             int lastSelectedColumn = -1;
 
@@ -2005,7 +2014,7 @@ implements TableView, ActionListener
         }
 
         MathConversionDialog dialog = new MathConversionDialog((JFrame)viewer, theData);
-        dialog.show();
+        dialog.setVisible(true);
 
         if (dialog.isConverted())
         {
@@ -2282,6 +2291,8 @@ implements TableView, ActionListener
 
     private class LineplotOption extends JDialog implements ActionListener
     {
+    	public static final long serialVersionUID = HObject.serialVersionUID;
+
         public static final int NO_PLOT = -1;
         public static final int ROW_PLOT = 0;
         public static final int COLUMN_PLOT = 1;
@@ -2396,6 +2407,8 @@ implements TableView, ActionListener
 
     private class ColumnHeader extends JTableHeader
     {
+    	public static final long serialVersionUID = HObject.serialVersionUID;
+
         private int currentColumnIndex = -1;
         private int lastColumnIndex = -1;
         private JTable parentTable;
@@ -2486,6 +2499,8 @@ implements TableView, ActionListener
    /** RowHeader defines the row header component of the Spreadsheet. */
     private class RowHeader extends JTable
     {
+    	public static final long serialVersionUID = HObject.serialVersionUID;
+
         private int currentRowIndex = -1;
         private int lastRowIndex = -1;
         private JTable parentTable;
@@ -2604,6 +2619,8 @@ implements TableView, ActionListener
     /** RowHeaderRenderer is a custom cell renderer that displays cells as buttons. */
     private class RowHeaderRenderer extends JLabel implements TableCellRenderer
     {
+    	public static final long serialVersionUID = HObject.serialVersionUID;
+
         public RowHeaderRenderer()
         {
             super();
@@ -2634,6 +2651,8 @@ implements TableView, ActionListener
 
     private class MultiLineHeaderRenderer extends JList implements TableCellRenderer
     {
+    	public static final long serialVersionUID = HObject.serialVersionUID;
+
         private final CompoundBorder subBorder = new CompoundBorder(
                 new MatteBorder(1, 0, 1, 0, java.awt.Color.darkGray),
                 new MatteBorder(1, 0, 1, 0, java.awt.Color.white));

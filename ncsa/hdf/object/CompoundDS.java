@@ -11,8 +11,6 @@
 
 package ncsa.hdf.object;
 
-import java.util.*;
-
 /**
  * A CompoundDS is dataset with compound datatypes.
  * <p>

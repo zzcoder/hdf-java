@@ -11,7 +11,6 @@
 
 package ncsa.hdf.object;
 
-import java.util.*;
 import java.lang.reflect.Array;
 
 /**

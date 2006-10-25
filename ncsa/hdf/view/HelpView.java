@@ -11,8 +11,6 @@
 
 package ncsa.hdf.view;
 
-import ncsa.hdf.object.*;
-
 /**
  *
  * The helpview interface for displaying user help information

@@ -663,7 +663,7 @@ jstring vdata_class)
 }
 
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1VSsetexternalfile
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VSsetexternalfile
 ( JNIEnv *env,
 jclass clss,
 jint vkey,

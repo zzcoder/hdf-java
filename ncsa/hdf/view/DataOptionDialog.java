@@ -12,10 +12,10 @@
 package ncsa.hdf.view;
 
 import ncsa.hdf.object.*;
+
 import javax.swing.*;
 import java.awt.event.*;
 import javax.swing.border.*;
-import javax.swing.table.*;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
@@ -25,7 +25,6 @@ import java.awt.Rectangle;
 import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.Image;
-import java.awt.image.*;
 import java.util.*;
 
 /**
@@ -39,6 +38,8 @@ import java.util.*;
 public class DataOptionDialog extends JDialog
 implements ActionListener, ItemListener
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /**
      * The main HDFView.
      */
@@ -872,6 +873,8 @@ implements ActionListener, ItemListener
     private class PreviewNavigator extends JComponent
         implements MouseListener, MouseMotionListener
     {
+    	public static final long serialVersionUID = HObject.serialVersionUID;
+
         private final int NAVIGATOR_SIZE = 150;
         private int dimX, dimY, x, y;
         private double r;

@@ -17,6 +17,8 @@ import ncsa.hdf.srb.h5srb.*;
 
 public class H5SrbGroup extends Group
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     private int opID;
     private String fullPath; /*path+name*/
 

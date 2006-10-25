@@ -13,21 +13,18 @@ package ncsa.hdf.view;
 
 import java.awt.event.*;
 import javax.swing.event.*;
-import javax.swing.text.*;
 import javax.swing.text.html.*;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.Color;
-import java.awt.Canvas;
-import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
-import java.io.File;
 import java.util.*;
 import ncsa.hdf.object.*;
+
 import java.net.URL;
 import java.net.URLClassLoader;
 
@@ -41,6 +38,8 @@ import java.net.URLClassLoader;
 public class NewDatasetDialog extends JDialog
 implements ActionListener, ItemListener, HyperlinkListener
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     private JTextField nameField, currentSizeField, maxSizeField, chunkSizeField, stringLengthField;
 
     private JComboBox parentChoice, classChoice, sizeChoice, endianChoice, rankChoice, compressionLevel;
@@ -406,12 +405,12 @@ implements ActionListener, ItemListener, HyperlinkListener
         {
             if (helpDialog == null)
                 createHelpDialog();
-            helpDialog.show();
+            helpDialog.setVisible(true);
         }
         else if (cmd.equals("Hide help"))
         {
             if (helpDialog != null)
-                helpDialog.hide();
+                helpDialog.setVisible(false);
         }
     }
 

@@ -33,6 +33,8 @@ import ncsa.hdf.object.*;
 public class NewImageDialog extends JDialog
 implements ActionListener, ItemListener
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     private JTextField nameField, widthField, heightField;
 
     private JComboBox parentChoice;

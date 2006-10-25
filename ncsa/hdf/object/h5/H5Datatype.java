@@ -14,6 +14,7 @@ package ncsa.hdf.object.h5;
 import ncsa.hdf.hdf5lib.*;
 import ncsa.hdf.hdf5lib.exceptions.*;
 import ncsa.hdf.object.*;
+
 import java.util.*;
 
 /**
@@ -25,7 +26,9 @@ import java.util.*;
  */
 public class H5Datatype extends Datatype
 {
-    /**
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
+   /**
      * The list of attributes of this data object.
      */
      private List attributeList;

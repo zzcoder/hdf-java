@@ -11,6 +11,8 @@
 
 package ncsa.hdf.hdflib;
 
+import ncsa.hdf.object.HObject;
+
 /**
  *  <p>
  *  HDFNotImplementedException indicates a function that is part
@@ -23,7 +25,9 @@ package ncsa.hdf.hdflib;
  *  an HDFNotImplementedException.
  */
 
-public class HDFNotImplementedException  extends HDFJavaException {
+public class HDFNotImplementedException  extends HDFJavaException 
+{
+	public static final long serialVersionUID = HObject.serialVersionUID;
 
     String msg;
 
