@@ -13,10 +13,7 @@ package ncsa.hdf.view;
 
 import java.awt.event.*;
 import javax.swing.*;
-import java.awt.Color;
 import java.awt.Frame;
-import java.awt.Canvas;
-import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
@@ -37,6 +34,8 @@ import ncsa.hdf.object.*;
 public class FileConversionDialog extends JDialog
 implements ActionListener
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     private String fileTypeFrom, fileTypeTo;
 
     private JTextField srcFileField, dstFileField;

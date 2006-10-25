@@ -11,11 +11,10 @@
 
 package ncsa.hdf.view;
 
-import ncsa.hdf.view.*;
 import ncsa.hdf.object.*;
+
 import javax.swing.*;
 import javax.print.*;
-import javax.print.attribute.*;
 import java.util.*;
 import java.io.*;
 import javax.swing.border.*;
@@ -32,6 +31,8 @@ import java.awt.Font;
 public class DefaultTextView extends JInternalFrame
 implements TextView, ActionListener, KeyListener
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /**
      * The main HDFView.
      */
@@ -43,11 +44,6 @@ implements TextView, ActionListener, KeyListener
     private ScalarDS dataset;
 
     /**
-     * GUI component: the text area used to dispaly the text content.
-     */
-    private JTextPane textPane;
-
-    /**
      * The string text.
      */
     private String[] text;
@@ -56,9 +52,6 @@ implements TextView, ActionListener, KeyListener
      * text areas to hold the text.
      */
     private JTextArea[] textAreas;
-
-    /** the table to hold the text content */
-    private JTable table;
 
     private boolean isReadOnly = false;
 

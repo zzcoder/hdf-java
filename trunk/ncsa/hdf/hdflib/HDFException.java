@@ -11,6 +11,8 @@
 
 package ncsa.hdf.hdflib;
 
+import ncsa.hdf.object.HObject;
+
 /**
  *  <p>
  *  The class HDFException returns errors from the HDF
@@ -33,8 +35,9 @@ package ncsa.hdf.hdflib;
  *  of the HDF API, but which cannot or will not be implemented
  *  for Java.
  */
-public class HDFException extends Exception {
-
+public class HDFException extends Exception 
+{
+	public static final long serialVersionUID = HObject.serialVersionUID;
 
     static public final String OutOfMemoryMessage="ERROR: HDF Library: Out of memory";
     static public final String HDFExceptionMessage="ERROR: HDF Library Error";

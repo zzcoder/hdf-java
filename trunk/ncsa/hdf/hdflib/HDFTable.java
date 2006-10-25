@@ -11,7 +11,6 @@
 
 package ncsa.hdf.hdflib;
 
-import java.io.*;
 import java.lang.reflect.*;
 /*
  *  This is a class for handling Vdata table records for

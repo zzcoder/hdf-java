@@ -11,14 +11,7 @@
 
 package ncsa.hdf.view;
 
-import java.awt.event.*;
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Canvas;
-import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.Dimension;
-import java.awt.BorderLayout;
 import java.awt.Toolkit;
 import java.io.File;
 import java.util.List;
@@ -35,6 +28,8 @@ import ncsa.hdf.object.*;
 public class NewFileDialog extends JFileChooser //JDialog
 //implements ActionListener
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /** flag if the new file is an HDF5 */
     private String fileType;
 

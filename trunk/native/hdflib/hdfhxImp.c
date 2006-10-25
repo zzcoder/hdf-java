@@ -21,7 +21,6 @@
  *
  */
 #include "hdf.h"
-
 #include "jni.h"
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_HXsetcreatedir

@@ -23,6 +23,8 @@ import ncsa.hdf.object.*;
  */
 public class H4Datatype extends Datatype
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /**
      * Create an Datatype with specified class, size, byte order and sign.
      * <p>

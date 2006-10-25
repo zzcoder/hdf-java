@@ -14,15 +14,13 @@ package ncsa.hdf.view;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
-import java.awt.Color;
-import java.lang.reflect.Array;
-import java.awt.SystemColor;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.MalformedURLException;
 import java.util.jar.JarFile;
 import java.util.jar.JarEntry;
 import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.HObject;
 
 /**
  * The ViewProperties holds all the HDFView static information.
@@ -32,6 +30,8 @@ import ncsa.hdf.object.FileFormat;
  */
 public class ViewProperties extends Properties
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /** the version of the HDFViewer */
     public static final String VERSION = "2.4 B-02";
 

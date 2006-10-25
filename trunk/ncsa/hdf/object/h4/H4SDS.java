@@ -80,6 +80,8 @@ import ncsa.hdf.object.*;
  */
 public class H4SDS extends ScalarDS
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /** tag for netCDF datasets.
      *  HDF4 library supports netCDF version 2.3.2. It only supports SDS APIs.
      */
@@ -465,7 +467,7 @@ public class H4SDS extends ScalarDS
             int index = 0;
             int tag = (int)oid[0];
 
-            if (tag == this.DFTAG_NDG_NETCDF)
+            if (tag == H4SDS.DFTAG_NDG_NETCDF)
                 index = (int)oid[1]; //HDFLibrary.SDidtoref(id) fails for netCDF
             else
                 index = HDFLibrary.SDreftoindex(sdid, (int)oid[1]);

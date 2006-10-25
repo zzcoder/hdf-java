@@ -56,6 +56,8 @@
  */
 public class Attribute implements Metadata
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /** The name of the attribute. */
     private final String name;
 

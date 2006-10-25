@@ -12,9 +12,6 @@
 package ncsa.hdf.hdflib;
 
 import java.io.*;
-import java.net.*;
-import java.lang.*;
-import java.util.*;
 
 public class HDFDeprecated extends HDFLibrary {
 
@@ -171,7 +168,6 @@ public class HDFDeprecated extends HDFLibrary {
     if ((NT & HDFConstants.DFNT_LITEND) != 0) {
         NT -= HDFConstants.DFNT_LITEND;
     }
-        HDFNativeData convert = new HDFNativeData();
         byte[] d1 = new byte[8];
         boolean rval;
         rval = DFSDgetfillvalue( d1 );
@@ -195,12 +191,12 @@ public class HDFDeprecated extends HDFLibrary {
         } else if ((NT == HDFConstants.DFNT_INT16 )
          || (NT == HDFConstants.DFNT_CHAR16 )
             ) {
-            short [] fx = convert.byteToShort(0,1,d1);
+            short [] fx = HDFNativeData.byteToShort(0,1,d1);
             theFillValue[0] = (Object)new Short(fx[0]);
          } else if ( (NT == HDFConstants.DFNT_UINT16 )
          || (NT == HDFConstants.DFNT_UCHAR16 )
             ) {
-            short[] fmx = convert.byteToShort(0,1,d1);
+            short[] fmx = HDFNativeData.byteToShort(0,1,d1);
             Short f = new Short(fmx[0]);
             Integer i;
             if (f.intValue() < 0) {
@@ -210,11 +206,11 @@ public class HDFDeprecated extends HDFLibrary {
             }
         } else if ((NT == HDFConstants.DFNT_INT32 )
             ) {
-            int [] fx = convert.byteToInt(0,1,d1);
+            int [] fx = HDFNativeData.byteToInt(0,1,d1);
             theFillValue[0] = (Object)new Integer(fx[0]);
         } else if ((NT == HDFConstants.DFNT_UINT32 )
             ) {
-            int[] fmx = convert.byteToInt(0,1,d1);
+            int[] fmx = HDFNativeData.byteToInt(0,1,d1);
             Integer i = new Integer(fmx[0]);
             Float f;
         if (i.floatValue() < 0) {
@@ -223,10 +219,10 @@ public class HDFDeprecated extends HDFLibrary {
                 theFillValue[0] = (Object)new Float(i.floatValue());
             }
         } else if (NT == HDFConstants.DFNT_FLOAT32 ) {
-            float [] fx = convert.byteToFloat(0,1,d1);
+            float [] fx = HDFNativeData.byteToFloat(0,1,d1);
             theFillValue[0] = (Object)new Float(fx[0]);
         } else if (NT == HDFConstants.DFNT_FLOAT64 ) {
-            double [] fx = convert.byteToDouble(0,1,d1);
+            double [] fx = HDFNativeData.byteToDouble(0,1,d1);
             theFillValue[0] = (Object)new Double(fx[0]);
         } else {
             System.out.println("Error: DFSDgetfillvalue not converting, type "+NT);
@@ -246,7 +242,6 @@ public class HDFDeprecated extends HDFLibrary {
     if ((NT & HDFConstants.DFNT_LITEND) != 0) {
         NT -= HDFConstants.DFNT_LITEND;
     }
-        HDFNativeData convert = new HDFNativeData();
         byte[] d1 = new byte[8];
         byte[] d2 = new byte[8];
         boolean rval;
@@ -278,8 +273,8 @@ public class HDFDeprecated extends HDFLibrary {
                 } else if ((NT == HDFConstants.DFNT_INT16 )
                  || (NT == HDFConstants.DFNT_CHAR16 )
                         ) {
-                        short [] fmx = convert.byteToShort(0,1,d1);
-                        short [] fmn = convert.byteToShort(0,1,d2);
+                        short [] fmx = HDFNativeData.byteToShort(0,1,d1);
+                        short [] fmn = HDFNativeData.byteToShort(0,1,d2);
                         Short f = new Short(fmx[0]);
                         maxmin[0] = (f.doubleValue());
                         f = new Short(fmn[0]);
@@ -287,7 +282,7 @@ public class HDFDeprecated extends HDFLibrary {
                 } else if ((NT == HDFConstants.DFNT_UINT16 )
                  || (NT == HDFConstants.DFNT_UINT16 )
                         ) {
-                        short[] fmx = convert.byteToShort(0,1,d1);
+                        short[] fmx = HDFNativeData.byteToShort(0,1,d1);
                         Short f = new Short(fmx[0]);
                         Integer i;
                         if (f.intValue() < 0) {
@@ -296,7 +291,7 @@ public class HDFDeprecated extends HDFLibrary {
                                 i = new Integer(f.intValue());
                         }
                         maxmin[0] = (i.doubleValue());
-                        fmx = convert.byteToShort(0,1,d2);
+                        fmx = HDFNativeData.byteToShort(0,1,d2);
                         f = new Short(fmx[0]);
                         if (f.intValue() < 0) {
                                 i = new Integer(f.intValue() + 65536);
@@ -304,7 +299,7 @@ public class HDFDeprecated extends HDFLibrary {
                                 i = new Integer(f.intValue());
             }
                         maxmin[0] = (i.doubleValue());
-                        fmx = convert.byteToShort(0,1,d2);
+                        fmx = HDFNativeData.byteToShort(0,1,d2);
                         f = new Short(fmx[0]);
                         if (f.intValue() < 0) {
                                 i = new Integer(f.intValue() + 65536);
@@ -313,14 +308,14 @@ public class HDFDeprecated extends HDFLibrary {
                         }
                         maxmin[1] = (i.doubleValue());
                 } else if ((NT == HDFConstants.DFNT_INT32 ) ) {
-                        int [] fmx = convert.byteToInt(0,1,d1);
-                        int [] fmn = convert.byteToInt(0,1,d2);
+                        int [] fmx = HDFNativeData.byteToInt(0,1,d1);
+                        int [] fmn = HDFNativeData.byteToInt(0,1,d2);
                         Integer f = new Integer(fmx[0]);
                         maxmin[0] = (f.doubleValue());
                         f = new Integer(fmn[0]);
                         maxmin[1] = (f.doubleValue());
                 } else if ( (NT == HDFConstants.DFNT_UINT32 )) {
-                        int[] fmx = convert.byteToInt(0,1,d1);
+                        int[] fmx = HDFNativeData.byteToInt(0,1,d1);
                         Integer i = new Integer(fmx[0]);
                         Float f;
                         if (i.floatValue() < 0) {
@@ -329,7 +324,7 @@ public class HDFDeprecated extends HDFLibrary {
                                 f = new Float(i.floatValue());
                         }
                         maxmin[0] = (f.doubleValue());
-                        fmx = convert.byteToInt(0,1,d1);
+                        fmx = HDFNativeData.byteToInt(0,1,d1);
                         i = new Integer(fmx[0]);
                         if (i.floatValue() < 0) {
                                 f = new Float((float)(i.floatValue() + 4294967296.0));
@@ -338,15 +333,15 @@ public class HDFDeprecated extends HDFLibrary {
                         }
                         maxmin[1] = (f.doubleValue());
                 } else if (NT == HDFConstants.DFNT_FLOAT32 ) {
-                        float [] fmx = convert.byteToFloat(0,1,d1);
-                        float [] fmn = convert.byteToFloat(0,1,d2);
+                        float [] fmx = HDFNativeData.byteToFloat(0,1,d1);
+                        float [] fmn = HDFNativeData.byteToFloat(0,1,d2);
                         Float f = new Float(fmx[0]);
                         maxmin[0] = (f.doubleValue());
                         f = new Float(fmn[0]);
                         maxmin[1] = (f.doubleValue());
                 } else if (NT == HDFConstants.DFNT_FLOAT64 ) {
-                        double [] fmx = convert.byteToDouble(0,1,d1);
-                        double [] fmn = convert.byteToDouble(0,1,d2);
+                        double [] fmx = HDFNativeData.byteToDouble(0,1,d1);
+                        double [] fmn = HDFNativeData.byteToDouble(0,1,d2);
                         Double f = new Double(fmx[0]);
                         maxmin[0] = (f.doubleValue());
             f = new Double(fmn[0]);

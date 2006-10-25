@@ -11,6 +11,8 @@
 
 package ncsa.hdf.hdf5lib.exceptions;
 
+import ncsa.hdf.object.HObject;
+
 
 
 /**
@@ -20,7 +22,9 @@ package ncsa.hdf.hdf5lib.exceptions;
  *  This sub-class represents HDF-5 major error code
  *       <b>H5E_DATASET</b>
  */
-public class HDF5DatasetInterfaceException extends HDF5LibraryException {
+public class HDF5DatasetInterfaceException extends HDF5LibraryException 
+{
+	public static final long serialVersionUID = HObject.serialVersionUID;
 
     /**
      * Constructs an <code>HDF5DatasetInterfaceException</code> with

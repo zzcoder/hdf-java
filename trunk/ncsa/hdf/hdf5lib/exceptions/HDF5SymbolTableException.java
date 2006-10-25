@@ -11,6 +11,8 @@
 
 package ncsa.hdf.hdf5lib.exceptions;
 
+import ncsa.hdf.object.HObject;
+
 
 /**
  *  The class HDF5LibraryException returns errors raised by the HDF5
@@ -20,7 +22,9 @@ package ncsa.hdf.hdf5lib.exceptions;
  *       <b>H5E_SYM</b>
  */
 
-public class HDF5SymbolTableException extends HDF5LibraryException {
+public class HDF5SymbolTableException extends HDF5LibraryException 
+{
+	public static final long serialVersionUID = HObject.serialVersionUID;
 
     /**
      * Constructs an <code>HDF5SymbolTableException</code> with no

@@ -12,8 +12,8 @@
 package ncsa.hdf.view;
 
 import ncsa.hdf.object.*;
+
 import java.awt.event.*;
-import java.awt.Rectangle;
 import javax.swing.*;
 import java.awt.image.*;
 import javax.swing.border.*;
@@ -36,6 +36,8 @@ public class DefaultPaletteView extends JDialog
 implements PaletteView, MouseListener, MouseMotionListener,
 ActionListener, ItemListener
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     private final Color[] lineColors = {Color.red, Color.green, Color.blue};
     private final String lineLabels[] ={"Red", "Green", "Blue"};
 
@@ -58,7 +60,6 @@ ActionListener, ItemListener
     private int[][] paletteData;
     private JComboBox choicePalette;
     private PaletteValueTable paletteValueTable;
-    private final ViewManager viewer;
 
     public DefaultPaletteView(ImageView theImageView)
     {
@@ -70,7 +71,6 @@ ActionListener, ItemListener
         super((JFrame)theViewer, true);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         imageView = theImageView;
-        viewer = theViewer;
         dataset = (ScalarDS)imageView.getDataObject();
 
         choicePalette = new JComboBox();
@@ -111,7 +111,7 @@ ActionListener, ItemListener
         palette = new byte[3][256];
 
         createUI();
-        show();
+        setVisible(true);
     }
 
     /** returns the data object displayed in this data viewer */
@@ -218,12 +218,12 @@ ActionListener, ItemListener
         {
             if (paletteValueTable == null)
                 paletteValueTable = new PaletteValueTable(this);
-            paletteValueTable.show();
+            paletteValueTable.setVisible(true);
         }
         else if (cmd.equals("Hide palette values"))
         {
             if (paletteValueTable != null)
-                paletteValueTable.hide();
+                paletteValueTable.setVisible(false);
         }
     }
 
@@ -356,6 +356,8 @@ ActionListener, ItemListener
     /** The dialog to show the palette values in spreadsheet. */
     private final class PaletteValueTable extends JDialog
     {
+    	public static final long serialVersionUID = HObject.serialVersionUID;
+
         private JTable valueTable;
         private DefaultTableModel valueTableModel;
         String rgbName = "Color";
@@ -368,6 +370,8 @@ ActionListener, ItemListener
 
             valueTable = new JTable(valueTableModel)
             {
+            	public static final long serialVersionUID = HObject.serialVersionUID;
+
                 int lastSelectedRow = -1;
                 int lastSelectedCol = -1;
 
@@ -408,6 +412,8 @@ ActionListener, ItemListener
 
             valueTable.getColumn(rgbName).setCellRenderer(new DefaultTableCellRenderer()
             {
+            	public static final long serialVersionUID = HObject.serialVersionUID;
+
                 Color color = Color.white;
                 public java.awt.Component getTableCellRendererComponent(JTable table,
                        Object value, boolean isSelected, boolean hasFocus, int row, int col)
@@ -465,6 +471,8 @@ ActionListener, ItemListener
     /** The canvas that paints the data lines. */
     private final class ChartPanel extends JComponent
     {
+    	public static final long serialVersionUID = HObject.serialVersionUID;
+
         /**
         * Paints the plot components.
         */

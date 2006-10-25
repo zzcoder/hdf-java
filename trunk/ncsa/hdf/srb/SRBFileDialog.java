@@ -17,20 +17,15 @@ import java.awt.Frame;
 import java.awt.Point;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.Toolkit;
-import java.util.List;
 import javax.swing.tree.*;
 
-import ncsa.hdf.object.*;
 import ncsa.hdf.view.*;
 
 import edu.sdsc.grid.gui.*;
 import edu.sdsc.grid.io.*;
-import edu.sdsc.grid.io.*;
 import edu.sdsc.grid.io.srb.*;
-import edu.sdsc.grid.io.local.*;
 
+import ncsa.hdf.object.HObject;
 import ncsa.hdf.srb.obj.*;
 
 /**
@@ -43,6 +38,8 @@ import ncsa.hdf.srb.obj.*;
 public class SRBFileDialog extends JDialog
 implements ActionListener
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     private static final boolean DEBUG = true;
 
     private JargonGui treeSrb;

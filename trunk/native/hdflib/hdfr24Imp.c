@@ -21,13 +21,12 @@
  *
  */
 #include "hdf.h"
-
 #include "jni.h"
 
 extern jboolean getOldCompInfo( JNIEnv *env, jobject ciobj, comp_info *cinf);
 
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DF24getdims
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_1DF24getdims
 ( JNIEnv *env,
 jclass class,
 jstring filename,
@@ -56,7 +55,7 @@ jintArray argv) /* OUT: width, height, il */
     }
 }
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DF24getimage
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_1DF24getimage
 ( JNIEnv *env,
 jclass class,
 jstring filename,
@@ -92,7 +91,7 @@ jobject obj)
     return ((short)DF24lastref());
 }
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DF24readref
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_1DF24readref
 ( JNIEnv *env,
 jclass class,
 jstring filename,
@@ -126,7 +125,7 @@ jobject obj)
     }
 }
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DF24nimages
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_1DF24nimages
 ( JNIEnv *env,
 jclass class,
 jstring hdfFile)
@@ -145,7 +144,7 @@ jint interlace)
     return(DF24reqil((intn)interlace));
 }
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DF24addimage
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_1DF24addimage
 ( JNIEnv *env,
 jclass class,
 jstring filename,
@@ -173,7 +172,7 @@ jint height)
 
 }
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1DF24putimage
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_1DF24putimage
 ( JNIEnv *env,
 jclass class,
 jstring filename,

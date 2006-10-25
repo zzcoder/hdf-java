@@ -15,6 +15,7 @@ import java.util.*;
 import ncsa.hdf.hdf5lib.*;
 import ncsa.hdf.hdf5lib.exceptions.*;
 import ncsa.hdf.object.*;
+
 import java.lang.reflect.Array;
 
 /**
@@ -96,6 +97,8 @@ import java.lang.reflect.Array;
  */
 public class H5CompoundDS extends CompoundDS
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /**
      * The list of attributes of this data object. Members of the list are
      * instance of Attribute.

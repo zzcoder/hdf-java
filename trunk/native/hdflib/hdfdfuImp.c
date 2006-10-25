@@ -22,7 +22,6 @@
  */
 
 #include "hdf.h"
-
 #include "jni.h"
 
 extern jboolean h4NotImplemented( JNIEnv *env, char *functName);

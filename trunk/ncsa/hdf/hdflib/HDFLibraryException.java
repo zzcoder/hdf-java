@@ -11,6 +11,8 @@
 
 package ncsa.hdf.hdflib;
 
+import ncsa.hdf.object.HObject;
+
 
 /**
  *  <p>
@@ -27,7 +29,9 @@ package ncsa.hdf.hdflib;
  */
 
 
-public class HDFLibraryException extends HDFException {
+public class HDFLibraryException extends HDFException 
+{
+	public static final long serialVersionUID = HObject.serialVersionUID;
 
     int HDFerror;
     String msg;
@@ -48,10 +52,9 @@ public class HDFLibraryException extends HDFException {
     public String getMessage() {
         if (msg != null) return msg;
 
-        HDFLibrary h = new HDFLibrary();
         String s;
         try {
-            s = h.HEstring(HDFerror);
+            s = HDFLibrary.HEstring(HDFerror);
         } catch (HDFException e) {
             s = new String("HDF error number: "+HDFerror+", HEstring failed");
         }

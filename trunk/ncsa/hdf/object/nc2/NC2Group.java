@@ -28,6 +28,8 @@ import ucar.nc2.*;
  */
 public class NC2Group extends Group
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /**
      * The list of attributes of this data object. Members of the list are
      * instance of Attribute.

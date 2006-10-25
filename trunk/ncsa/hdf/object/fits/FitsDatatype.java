@@ -23,6 +23,8 @@ import nom.tam.fits.*;
  */
 public class FitsDatatype extends Datatype
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     private int nativeType;
 
     /**

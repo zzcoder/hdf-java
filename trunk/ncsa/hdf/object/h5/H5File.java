@@ -11,7 +11,6 @@
 
 package ncsa.hdf.object.h5;
 
-import java.io.File;
 import java.util.*;
 import javax.swing.tree.*;
 import java.lang.reflect.Array;
@@ -67,6 +66,8 @@ import ncsa.hdf.hdf5lib.exceptions.*;
  */
 public class H5File extends FileFormat
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /**
      * the file access flag. Valid values are HDF5Constants.H5F_ACC_RDONLY,
      *  HDF5Constants.H5F_ACC_RDWR and HDF5Constants.H5F_ACC_CREAT.
@@ -696,6 +697,8 @@ public class H5File extends FileFormat
 
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootGroup)
         {
+        	public static final long serialVersionUID = HObject.serialVersionUID;
+
             public boolean isLeaf() { return false; }
         };
 
@@ -963,6 +966,8 @@ public class H5File extends FileFormat
 
         DefaultMutableTreeNode theNode = new DefaultMutableTreeNode(group)
         {
+        	public static final long serialVersionUID = HObject.serialVersionUID;
+
             public boolean isLeaf() { return false; }
         };
         pgroup.addToMemberList(group);
@@ -1436,6 +1441,8 @@ public class H5File extends FileFormat
                     oid);
                 node = new DefaultMutableTreeNode(g)
                 {
+                	public static final long serialVersionUID = HObject.serialVersionUID;
+
                     public boolean isLeaf() { return false; }
                 };
                 pnode.add( node );

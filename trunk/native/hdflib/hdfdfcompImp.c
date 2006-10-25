@@ -21,7 +21,6 @@
  *
  */
 #include "hdf.h"
-
 #include "jni.h"
 
 extern jboolean getOldCompInfo( JNIEnv *env, jobject ciobj, comp_info *cinf);

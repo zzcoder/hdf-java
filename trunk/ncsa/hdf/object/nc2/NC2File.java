@@ -14,7 +14,6 @@ package ncsa.hdf.object.nc2;
 import java.io.*;
 import java.util.*;
 import javax.swing.tree.*;
-import java.lang.reflect.Array;
 import ncsa.hdf.object.*;
 import ucar.nc2.*;
 
@@ -27,6 +26,8 @@ import ucar.nc2.*;
  */
 public class NC2File extends FileFormat
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /**
      * file identifier for the open file.
      */
@@ -164,6 +165,8 @@ public class NC2File extends FileFormat
             oid);
 
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootGroup) {
+        	public static final long serialVersionUID = HObject.serialVersionUID;
+
             public boolean isLeaf() { return false; }
         };
 

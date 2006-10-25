@@ -11,7 +11,6 @@
 
 package ncsa.hdf.view;
 
-import ncsa.hdf.object.*;
 import javax.swing.JTable;
 
 /**

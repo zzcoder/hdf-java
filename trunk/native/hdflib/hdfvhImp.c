@@ -22,7 +22,6 @@
  */
 
 #include "hdf.h"
-
 #include "jni.h"
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VHmakegroup

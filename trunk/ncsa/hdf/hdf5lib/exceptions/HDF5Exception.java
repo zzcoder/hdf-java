@@ -11,6 +11,8 @@
 
 package ncsa.hdf.hdf5lib.exceptions;
 
+import ncsa.hdf.object.HObject;
+
 /**
  *  <p>
  *  The class HDF5Exception returns errors from the
@@ -31,8 +33,9 @@ package ncsa.hdf.hdf5lib.exceptions;
  *  code returned by the HDF5 library.
  *
  */
-public class HDF5Exception extends Exception {
-
+public class HDF5Exception extends Exception 
+{
+	public static final long serialVersionUID = HObject.serialVersionUID;
 
     protected String detailMessage;
 

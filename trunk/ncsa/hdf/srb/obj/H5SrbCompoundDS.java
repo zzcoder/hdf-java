@@ -18,6 +18,8 @@ import ncsa.hdf.srb.h5srb.*;
 
 public class H5SrbCompoundDS extends CompoundDS
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     public static final int H5DATASET_OP_ERROR             = -1;
     public static final int H5DATASET_OP_CREATE            = 0;
     public static final int H5DATASET_OP_DELETE            = 1;

@@ -12,7 +12,6 @@
 package ncsa.hdf.object;
 
 import java.io.*;
-import java.util.*;
 
 /**
  * HObject is the root class of all the HDF data objects. Every data class has
@@ -56,6 +55,8 @@ import java.util.*;
  */
 public abstract class HObject implements Serializable, DataFormat
 {
+	public static final long serialVersionUID = 240L;
+	
     /**
      * The separator of object path.
      */

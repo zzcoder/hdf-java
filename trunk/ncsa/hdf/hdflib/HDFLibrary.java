@@ -12,9 +12,6 @@
 package ncsa.hdf.hdflib;
 
 import java.io.*;
-import java.net.*;
-import java.lang.*;
-import java.util.*;
 
 /**
  *  This is the Java interface for the HDF 4.1 library.
@@ -264,22 +261,14 @@ public class HDFLibrary {
     public  static String getJHIVersion() { return JHI_VERSION; }
 
     public  static int Hopen(String filename) throws HDFException {
-        return _Hopen(Native.nativeFilePath(filename), HDFConstants.DFACC_RDONLY);
+        return Hopen(filename, HDFConstants.DFACC_RDONLY);
     }
 
-    public  static int Hopen(String filename, int access) throws HDFException {
-        return _Hopen(Native.nativeFilePath(filename), access);
-    }
-
-    private static native int _Hopen(String filename, int access) throws HDFException;
+    public static native int Hopen(String filename, int access) throws HDFException;
 
     public static native  boolean Hclose(int fid) throws HDFException;
 
-    public static boolean Hishdf(String fileName)  throws HDFException {
-        return _Hishdf(Native.nativeFilePath(fileName));
-    }
-
-    private static native boolean _Hishdf(String fileName)  throws HDFException;
+    public static native boolean Hishdf(String fileName)  throws HDFException;
 
     public static native int Hnumber(int fid)  throws HDFException;
 
@@ -436,31 +425,15 @@ public class HDFLibrary {
 
     public static native boolean ANwriteann(int ann_id, String label, int ann_length) throws HDFException;
 
-    public static boolean DFPaddpal(String filename, byte[] palette) throws HDFException {
-        return _DFPaddpal(Native.nativeFilePath(filename), palette);
-    }
+    public static native boolean DFPaddpal(String filename, byte[] palette) throws HDFException;
 
-    public static boolean DFPgetpal(String filename, byte[] palette) throws HDFException {
-        return _DFPgetpal(Native.nativeFilePath(filename), palette);
-    }
-
-    private static native boolean _DFPaddpal(String filename, byte[] palette) throws HDFException;
-
-    private static native boolean _DFPgetpal(String filename, byte[] palette) throws HDFException;
+    public static native boolean DFPgetpal(String filename, byte[] palette) throws HDFException;
 
     public static native short DFPlastref( ) throws HDFException;
 
-    public static int DFPnpals(String filename)  throws HDFException {
-        return _DFPnpals(Native.nativeFilePath(filename));
-    }
+    public static native int DFPnpals(String filename)  throws HDFException;
 
-    public static boolean DFPputpal (String filename, byte[] palette, int overwrite, String filemode) throws HDFException {
-        return DFPputpal(Native.nativeFilePath(filename), palette, overwrite, filemode);
-    }
-
-    private static native int _DFPnpals(String filename)  throws HDFException;
-
-    private static native boolean _DFPputpal (String filename, byte[] palette, int overwrite, String filemode) throws HDFException;
+    public static native boolean DFPputpal (String filename, byte[] palette, int overwrite, String filemode) throws HDFException;
 
     /**
      *  @param filename <b>IN</b>: String, the name of the HDF file
@@ -483,19 +456,11 @@ public class HDFLibrary {
     }
 
 
-    public static boolean DFPreadref(String filename, short ref) throws HDFException {
-        return _DFPreadref(Native.nativeFilePath(filename), ref);
-    }
-
-    private static native boolean _DFPreadref(String filename, short ref) throws HDFException;
+    public static native boolean DFPreadref(String filename, short ref) throws HDFException;
 
     public static native short DFPrestart( ) throws HDFException;
 
-    public static boolean DFPwriteref(String filename, short ref) throws HDFException {
-        return _DFPwriteref(Native.nativeFilePath(filename), ref);
-    }
-
-    private static native boolean _DFPwriteref(String filename, short ref) throws HDFException;
+    public static native boolean DFPwriteref(String filename, short ref) throws HDFException;
 
     public static native int GRstart(int fid) throws HDFException;
 
@@ -1005,11 +970,7 @@ public class HDFLibrary {
 
     public static native boolean HDFclose(int file_id) throws HDFException;
 
-    public static int HDFopen(String filename, int access, short n_dds) throws HDFException {
-        return _HDFopen(Native.nativeFilePath(filename), access, n_dds);
-    }
-
-    private static native int _HDFopen(String filename, int access, short n_dds) throws HDFException;
+    public static native int HDFopen(String filename, int access, short n_dds) throws HDFException;
 
     public static native short HEvalue(int level) throws HDFException;
 
@@ -1019,15 +980,7 @@ public class HDFLibrary {
 
     public static native boolean HXsetdir(String dir) throws HDFException ;
 
-    public static int SDstart(String filename, int accessmode) throws HDFException {
-        return _SDstart(Native.nativeFilePath(filename), accessmode);
-    }
-
-    private static native boolean _HXsetcreatedir(String dir) throws HDFException;
-
-    private static native boolean _HXsetdir(String dir) throws HDFException;
-
-    private static native int _SDstart(String filename, int accessmode) throws HDFException;
+    public static native int SDstart(String filename, int accessmode) throws HDFException;
 
     public static native boolean SDend(int sdid) throws HDFException;
 
@@ -1152,7 +1105,7 @@ public class HDFLibrary {
             status = SDreaddata_float(sdsid, start, stride, count, (float[])theData);
         }
         else if (is1D && dname == 'D') {
-            status = status = SDreaddata_double(sdsid, start, stride, count, (double[])theData);
+            status = SDreaddata_double(sdsid, start, stride, count, (double[])theData);
         } else {
             byte[] data;
             HDFArray theArray = new HDFArray(theData);
@@ -1408,7 +1361,6 @@ public class HDFLibrary {
         int  dimsize[]     = new int[16];
         SDgetinfo(sdsid, ss, dimsize, SDInfo );
         datasetname = ss[0];
-        HDFNativeData convert = new HDFNativeData();
         byte[] d1 = new byte[8];
         boolean rval;
         rval = SDgetfillvalue( sdsid, d1 );
@@ -1436,12 +1388,12 @@ public class HDFLibrary {
         } else if ((NT == HDFConstants.DFNT_INT16 )
          || (NT == HDFConstants.DFNT_CHAR16 )
             ) {
-            short [] fx = convert.byteToShort(0,1,d1);
+            short [] fx = HDFNativeData.byteToShort(0,1,d1);
             theFillValue[0] = (Object)new Short(fx[0]);
          } else if ( (NT == HDFConstants.DFNT_UINT16 )
          || (NT == HDFConstants.DFNT_UCHAR16 )
             ) {
-            short[] fmx = convert.byteToShort(0,1,d1);
+            short[] fmx = HDFNativeData.byteToShort(0,1,d1);
             Short f = new Short(fmx[0]);
             Integer i;
             if (f.intValue() < 0) {
@@ -1451,11 +1403,11 @@ public class HDFLibrary {
             }
         } else if ((NT == HDFConstants.DFNT_INT32 )
             ) {
-            int [] fx = convert.byteToInt(0,1,d1);
+            int [] fx = HDFNativeData.byteToInt(0,1,d1);
             theFillValue[0] = (Object)new Integer(fx[0]);
         } else if ((NT == HDFConstants.DFNT_UINT32 )
             ) {
-            int[] fmx = convert.byteToInt(0,1,d1);
+            int[] fmx = HDFNativeData.byteToInt(0,1,d1);
             Integer i = new Integer(fmx[0]);
             Float f;
             if (i.floatValue() < 0) {
@@ -1464,10 +1416,10 @@ public class HDFLibrary {
                 theFillValue[0] = (Object)new Float(i.floatValue());
             }
         } else if (NT == HDFConstants.DFNT_FLOAT32 ) {
-            float [] fx = convert.byteToFloat(0,1,d1);
+            float [] fx = HDFNativeData.byteToFloat(0,1,d1);
             theFillValue[0] = (Object)new Float(fx[0]);
         } else if (NT == HDFConstants.DFNT_FLOAT64 ) {
-            double [] fx = convert.byteToDouble(0,1,d1);
+            double [] fx = HDFNativeData.byteToDouble(0,1,d1);
             theFillValue[0] = (Object)new Double(fx[0]);
         } else {
             System.out.println("Error: SDgetfillvalue not converting, type "+NT);
@@ -1519,7 +1471,6 @@ public class HDFLibrary {
         int  dimsize[]     = new int[16];
         SDgetinfo(sdsid, ss, dimsize, SDInfo);
         datasetname = ss[0];
-        HDFNativeData convert = new HDFNativeData();
         byte[] max = new byte[8];
         byte[] min = new byte[8];
         boolean rval;
@@ -1555,8 +1506,8 @@ public class HDFLibrary {
         } else if ((NT == HDFConstants.DFNT_INT16 )
          || (NT == HDFConstants.DFNT_CHAR16 )
             ) {
-            short [] fmx = convert.byteToShort(0,1,max);
-            short [] fmn = convert.byteToShort(0,1,min);
+            short [] fmx = HDFNativeData.byteToShort(0,1,max);
+            short [] fmn = HDFNativeData.byteToShort(0,1,min);
             Short f = new Short(fmx[0]);
             maxmin[0] = (f.doubleValue());
             f = new Short(fmn[0]);
@@ -1564,7 +1515,7 @@ public class HDFLibrary {
         } else if ((NT == HDFConstants.DFNT_UINT16 )
          || (NT == HDFConstants.DFNT_UINT16 )
             ) {
-            short[] fmx = convert.byteToShort(0,1,max);
+            short[] fmx = HDFNativeData.byteToShort(0,1,max);
             Short f = new Short(fmx[0]);
             Integer i;
             if (f.intValue() < 0) {
@@ -1573,7 +1524,7 @@ public class HDFLibrary {
                 i = new Integer(f.intValue());
             }
             maxmin[0] = (i.doubleValue());
-            fmx = convert.byteToShort(0,1,min);
+            fmx = HDFNativeData.byteToShort(0,1,min);
             f = new Short(fmx[0]);
             if (f.intValue() < 0) {
                 i = new Integer(f.intValue() + 65536);
@@ -1582,14 +1533,14 @@ public class HDFLibrary {
             }
             maxmin[1] = (i.doubleValue());
         } else if ((NT == HDFConstants.DFNT_INT32 ) ) {
-            int [] fmx = convert.byteToInt(0,1,max);
-            int [] fmn = convert.byteToInt(0,1,min);
+            int [] fmx = HDFNativeData.byteToInt(0,1,max);
+            int [] fmn = HDFNativeData.byteToInt(0,1,min);
             Integer f = new Integer(fmx[0]);
             maxmin[0] = (f.doubleValue());
             f = new Integer(fmn[0]);
             maxmin[1] = (f.doubleValue());
         } else if ( (NT == HDFConstants.DFNT_UINT32 )) {
-            int[] fmx = convert.byteToInt(0,1,max);
+            int[] fmx = HDFNativeData.byteToInt(0,1,max);
             Integer i = new Integer(fmx[0]);
             Float f;
             if (i.floatValue() < 0) {
@@ -1598,7 +1549,7 @@ public class HDFLibrary {
                 f = new Float(i.floatValue());
             }
             maxmin[0] = (f.doubleValue());
-            fmx = convert.byteToInt(0,1,max);
+            fmx = HDFNativeData.byteToInt(0,1,max);
             i = new Integer(fmx[0]);
             if (i.floatValue() < 0) {
                 f = new Float((float)(i.floatValue() + 4294967296.0));
@@ -1607,15 +1558,15 @@ public class HDFLibrary {
             }
             maxmin[1] = (f.doubleValue());
         } else if (NT == HDFConstants.DFNT_FLOAT32 ) {
-            float [] fmx = convert.byteToFloat(0,1,max);
-            float [] fmn = convert.byteToFloat(0,1,min);
+            float [] fmx = HDFNativeData.byteToFloat(0,1,max);
+            float [] fmn = HDFNativeData.byteToFloat(0,1,min);
             Float f = new Float(fmx[0]);
             maxmin[0] = (f.doubleValue());
             f = new Float(fmn[0]);
             maxmin[1] = (f.doubleValue());
         } else if (NT == HDFConstants.DFNT_FLOAT64 ) {
-            double [] fmx = convert.byteToDouble(0,1,max);
-            double [] fmn = convert.byteToDouble(0,1,min);
+            double [] fmx = HDFNativeData.byteToDouble(0,1,max);
+            double [] fmn = HDFNativeData.byteToDouble(0,1,min);
             Double f = new Double(fmx[0]);
             maxmin[0] = (f.doubleValue());
             f = new Double(fmn[0]);
@@ -1697,11 +1648,7 @@ public class HDFLibrary {
 
    public static native boolean SDsetdimstrs(int dim_id, String label, String unit, String format) throws HDFException;
 
-   public static boolean SDsetexternalfile(int sds_id, String filename, int offset) throws HDFException {
-        return _SDsetexternalfile(sds_id, Native.nativeFilePath(filename), offset);
-   }
-
-   private static native boolean _SDsetexternalfile(int sds_id, String filename, int offset) throws HDFException;
+   public static native boolean SDsetexternalfile(int sds_id, String filename, int offset) throws HDFException;
 
     /**
      *  @param sds_id <b>IN</b>: id of a dataset
@@ -2347,21 +2294,17 @@ public class HDFLibrary {
 
     public static native int VSsizeof(int vdata_id, String fields) throws HDFException;
 
-   public static native boolean VSappendable(int vkey, int block_size) throws HDFException;
+    public static native boolean VSappendable(int vkey, int block_size) throws HDFException;
 
-   public static native int VSfindclass(int file_id, String vgclass) throws HDFException;
+    public static native int VSfindclass(int file_id, String vgclass) throws HDFException;
 
-   public static native int VSgetversion(int vkey) throws HDFException;
+    public static native int VSgetversion(int vkey) throws HDFException;
 
-   public static native void VSsetclass(int vdata_id, String vdata_class) throws HDFException;
+    public static native void VSsetclass(int vdata_id, String vdata_class) throws HDFException;
 
-   public static boolean VSsetexternalfile(int vkey, String filename, int offset) throws HDFException {
-        return _VSsetexternalfile(vkey, Native.nativeFilePath(filename), offset);
-    }
+    public static native boolean VSsetexternalfile(int vkey, String filename, int offset) throws HDFException;
 
-   private static native boolean _VSsetexternalfile(int vkey, String filename, int offset) throws HDFException;
-
-   public static native void VSsetname(int vdata_id, String vdata_name) throws HDFException;
+    public static native void VSsetname(int vdata_id, String vdata_name) throws HDFException;
 
     /**
      *  @param vdata_id <b>IN</b>: the Vdata id
@@ -2377,7 +2320,7 @@ public class HDFLibrary {
      *  <p><b>NOTE:</b> to write a Java array use the alternative
      *  routine below.
      */
-   public static native int VSwrite(int vdata_id, byte [] databuf, int n_records, int interlace) throws HDFException;
+    public static native int VSwrite(int vdata_id, byte [] databuf, int n_records, int interlace) throws HDFException;
 
     /**
      *  @param vdata_id <b>IN</b>: the Vdata id
@@ -2401,7 +2344,7 @@ public class HDFLibrary {
      *  <p><b>Note:</b> converts the data into a contiguous
      *  array of bytes and then writes it
      */
-   public static int VSwrite(int vdata_id, Object databuf, int n_records, int interlace) throws HDFException
+    public static int VSwrite(int vdata_id, Object databuf, int n_records, int interlace) throws HDFException
     {
         byte[] data;
 
@@ -2821,11 +2764,7 @@ public class HDFLibrary {
      *
      *  @return argv[0] = width, argv[1] = height, argv[2] = interlace
      */
-    public static boolean DF24getdims(String fileName, int[] argv) throws HDFException {
-        return _DF24getdims(Native.nativeFilePath(fileName), argv);
-    }
-
-    private static native boolean _DF24getdims(String fileName, int[] argv) throws HDFException;
+    public static native boolean DF24getdims(String fileName, int[] argv) throws HDFException;
 
     public static native boolean  DF24reqil(int il)  throws HDFException;
 
@@ -2846,12 +2785,7 @@ public class HDFLibrary {
      *
      *  @return data = the image in an array of bytes
      */
-    public  static boolean DF24getimage(String fileName, byte[] imagedata,
-            int width, int height) throws HDFException {
-        return _DF24getimage(Native.nativeFilePath(fileName), imagedata, width, height);
-    }
-
-    private static native boolean _DF24getimage(String fileName, byte[] imagedata,
+    public static native boolean DF24getimage(String fileName, byte[] imagedata,
             int width, int height) throws HDFException;
 
     /**
@@ -2889,17 +2823,9 @@ public class HDFLibrary {
 
      public  static native boolean DF24restart() throws HDFException;
 
-     public  static boolean DF24readref(String filename, int ref) throws HDFException {
-        return _DF24readref(Native.nativeFilePath(filename), ref);
-    }
+     public static native boolean DF24readref(String filename, int ref) throws HDFException;
 
-     public  static int DF24nimages(String fileName) throws HDFException {
-        return _DF24nimages(Native.nativeFilePath(fileName));
-    }
-
-     private static native boolean _DF24readref(String filename, int ref) throws HDFException;
-
-     private static native int _DF24nimages(String fileName) throws HDFException;
+     public static native int DF24nimages(String fileName) throws HDFException;
 
     /**
      *  @param filename <b>IN</b>: String, the file
@@ -2916,12 +2842,7 @@ public class HDFLibrary {
      *  <p><b>NOTE:</b> to write from a Java array use the alternative
      *  routine below.
      */
-     public static boolean DF24addimage(String filename, byte[] image,
-        int width, int height) throws HDFException {
-        return _DF24addimage(Native.nativeFilePath(filename), image, width, height);
-    }
-
-     private static native boolean _DF24addimage(String filename, byte[] image,
+     public static native boolean DF24addimage(String filename, byte[] image,
         int width, int height) throws HDFException;
 
     /**
@@ -2964,12 +2885,7 @@ public class HDFLibrary {
      *  <p><b>NOTE:</b> to write from a Java array use the alternative
      *  routine below.
      */
-     public static boolean DF24putimage(String filename, byte[] image,
-        int width, int height) throws HDFException {
-        return _DF24putimage(Native.nativeFilePath(filename), image, width, height);
-    }
-
-     private static native boolean _DF24putimage(String filename, byte[] image,
+     public static native boolean DF24putimage(String filename, byte[] image,
         int width, int height) throws HDFException;
 
     /**
@@ -3025,13 +2941,7 @@ public class HDFLibrary {
      *
      *  @return argv[0] = width, argv[1] = height, haspalette[0] = palette
      */
-     public static boolean DFR8getdims(String fileName, int[] argv,
-        boolean[] haspalette) throws HDFException {
-
-        return _DFR8getdims(Native.nativeFilePath(fileName), argv, haspalette);
-    }
-
-    private static native boolean _DFR8getdims(String fileName, int[] argv, boolean[] haspalette) throws HDFException;
+     public static native boolean DFR8getdims(String fileName, int[] argv, boolean[] haspalette) throws HDFException;
 
     /**
      *  @param fileName <b>IN</b>: String, the file
@@ -3052,13 +2962,7 @@ public class HDFLibrary {
      *  @return data = imagedata: the image in an array of bytes,
      *  palette:  the look up table, in an array of bytes
      */
-
-    public  static boolean DFR8getimage(String fileName, byte[] imagedata,
-            int width, int height, byte[] palette) throws HDFException {
-        return _DFR8getimage(Native.nativeFilePath(fileName), imagedata, width, height, palette);
-    }
-
-    private static native boolean _DFR8getimage(String fileName, byte[] imagedata,
+    public static native boolean DFR8getimage(String fileName, byte[] imagedata,
             int width, int height, byte[] palette) throws HDFException;
 
     /**
@@ -3098,17 +3002,9 @@ public class HDFLibrary {
 
      public  static native boolean DFR8restart() throws HDFException;
 
-     public  static boolean DFR8readref(String filename, int ref) throws HDFException {
-        return _DFR8readref(Native.nativeFilePath(filename), ref);
-    }
+     public static native boolean DFR8readref(String filename, int ref) throws HDFException;
 
-     public  static int DFR8nimages(String fileName) throws HDFException {
-        return _DFR8nimages(Native.nativeFilePath(fileName));
-    }
-
-     private static native boolean _DFR8readref(String filename, int ref) throws HDFException;
-
-     private static native int _DFR8nimages(String fileName) throws HDFException;
+     public static native int DFR8nimages(String fileName) throws HDFException;
 
     /**
      *  @param filename <b>IN</b>: String, the file
@@ -3126,11 +3022,7 @@ public class HDFLibrary {
      *  <p><b>NOTE:</b> to write from a Java array use the alternative
      *  routine below.
      */
-     public static boolean DFR8addimage(String filename, byte[] image,
-        int width, int height, short compress) throws HDFException {
-        return _DFR8addimage(Native.nativeFilePath(filename), image, width, height, compress);
-    }
-     private static native boolean _DFR8addimage(String filename, byte[] image,
+     public static native boolean DFR8addimage(String filename, byte[] image,
         int width, int height, short compress) throws HDFException;
 
     /**
@@ -3175,11 +3067,7 @@ public class HDFLibrary {
      *  <p><b>NOTE:</b> to write from a Java array use the alternative
      *  routine below.
      */
-     public static boolean DFR8putimage(String filename, byte[] image,
-        int width, int height, short compress) throws HDFException {
-        return _DFR8putimage(Native.nativeFilePath(filename), image, width, height, compress);
-    }
-     private static native boolean _DFR8putimage(String filename, byte[] image,
+     public static native boolean DFR8putimage(String filename, byte[] image,
         int width, int height, short compress) throws HDFException;
 
     /**
@@ -3233,11 +3121,7 @@ public class HDFLibrary {
 
      public static native boolean DFR8setpalette(byte[] palette) throws HDFException;
 
-     public static boolean DFR8writeref(String filename, short ref) throws HDFException {
-        return _DFR8writeref(Native.nativeFilePath(filename), ref);
-    }
-
-     private static native boolean _DFR8writeref(String filename, short ref) throws HDFException;
+     public static native boolean DFR8writeref(String filename, short ref) throws HDFException;
 
     ////////////////////////////////////////////////////////////////////
     //                                                                //

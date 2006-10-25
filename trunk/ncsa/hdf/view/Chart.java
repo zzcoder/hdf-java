@@ -13,6 +13,9 @@ package ncsa.hdf.view;
 
 import java.awt.event.*;
 import javax.swing.*;
+
+import ncsa.hdf.object.HObject;
+
 import java.lang.reflect.Array;
 import java.awt.Color;
 import java.awt.Frame;
@@ -31,7 +34,9 @@ import java.awt.BorderLayout;
  */
 public class Chart extends JDialog
 implements ActionListener
-{
+{	
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /** histogram style chart */
     public static final int HISTOGRAM = 0;
 
@@ -55,12 +60,6 @@ implements ActionListener
     /** the style of chart: histogram or line */
     private int chartStyle;
 
-    /** the text label of Y axis */
-    private String ylabel;
-
-    /** the text label of X axis */
-    private String xlabel;
-
     /** the maximum value of the Y axis */
     private double ymax;
 
@@ -78,9 +77,6 @@ implements ActionListener
 
     /** line colors */
     private Color lineColors[];
-
-    /** maximum width of the x labels */
-    private int xwidth;
 
     /** number of lines */
     private int numberOfLines;
@@ -149,11 +145,6 @@ implements ActionListener
             this.xmax = data[0].length;
         }
 
-        this.xwidth = Math.max(String.valueOf(xmin).length(),
-            String.valueOf(xmax).length()*getFont().getSize());
-
-        this.xlabel = "X";
-        this.ylabel = "Y";
         this.numberOfLines = Array.getLength(data);
         this.numberOfPoints = Array.getLength(data[0]);
         this.lineColors = LINE_COLORS;
@@ -223,12 +214,6 @@ implements ActionListener
     /** Sets the labels of each line. */
     public void setLineLabels(String l[]) { lineLabels = l; }
 
-    /** Sets the label of the X axis. */
-    public void setXlabel(String label) { xlabel = label; }
-
-    /** Sets the label of the Y axis. */
-    public void setYlabel (String label ) { ylabel = label; }
-
     /** Set the data type of the plot data to be integer. */
     public void setTypeToInteger() { isInteger = true; }
 
@@ -255,7 +240,9 @@ implements ActionListener
     /** The canvas that paints the data lines. */
     private class ChartPanel extends JComponent
     {
-        /**
+    	public static final long serialVersionUID = HObject.serialVersionUID;
+
+       /**
         * Paints the plot components.
         */
         public void paint(Graphics g)

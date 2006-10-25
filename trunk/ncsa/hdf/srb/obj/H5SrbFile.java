@@ -11,10 +11,8 @@
 
 package ncsa.hdf.srb.obj;
 
-import java.io.File;
 import java.util.*;
 import javax.swing.tree.*;
-import java.lang.reflect.Array;
 
 import ncsa.hdf.object.*;
 import ncsa.hdf.srb.h5srb.*;
@@ -22,6 +20,8 @@ import ncsa.hdf.srb.h5srb.*;
 
 public class H5SrbFile extends FileFormat
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     public static final int H5FILE_OP_ERROR            = -1;
     public static final int H5FILE_OP_OPEN             = 0;
     public static final int H5FILE_OP_CLOSE            = 1;
@@ -69,6 +69,8 @@ public class H5SrbFile extends FileFormat
         rootGroup = new H5SrbGroup( this, getName(), null, null, oid);
         rootNode = new DefaultMutableTreeNode(rootGroup)
         {
+        	public static final long serialVersionUID = HObject.serialVersionUID;
+
             public boolean isLeaf() { return false; }
         };
     }
@@ -121,7 +123,12 @@ public class H5SrbFile extends FileFormat
 
             if (obj instanceof Group)
             {
-                node = new DefaultMutableTreeNode(obj) { public boolean isLeaf() { return false; } };
+                node = new DefaultMutableTreeNode(obj) { 
+                	public static final long serialVersionUID = HObject.serialVersionUID;
+
+                	public boolean isLeaf() { return false; } 
+                };
+                
                 pnode.add( node );
                 constructTree((Group)obj, node);
             }

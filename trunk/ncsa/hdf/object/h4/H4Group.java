@@ -27,6 +27,8 @@ import ncsa.hdf.object.*;
  */
 public class H4Group extends Group
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /**
      * The list of attributes of this data object. Members of the list are
      * instance of Attribute.
@@ -35,16 +37,6 @@ public class H4Group extends Group
 
     /** The default object ID for HDF4 objects */
     private final static long[] DEFAULT_OID = {0, 0};
-
-    /**
-     * The GR interface identifier obtained from GRstart(file_id)
-     */
-    private int grid;
-
-     /**
-      * The SDS interface identifier obtained from SDstart(filename, access)
-      */
-    private int sdid;
 
     public H4Group(FileFormat fileFormat, String name, String path, Group parent)
     {
@@ -71,9 +63,6 @@ public class H4Group extends Group
 
         if (fileFormat instanceof H4File)
         {
-            this.grid = ((H4File)fileFormat).getGRAccessID();
-            this.sdid = ((H4File)fileFormat).getSDAccessID();
-
             int vgid = open();
             try {  hasAttribute =(HDFLibrary.Vnattrs(vgid)>0);
             } catch (Exception ex) {}

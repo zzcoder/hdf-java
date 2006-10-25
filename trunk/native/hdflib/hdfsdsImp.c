@@ -22,7 +22,6 @@
  */
 #include "hdf.h"
 #include "mfhdf.h"
-
 #include "jni.h"
 
 extern jboolean h4outOfMemory( JNIEnv *env, char *functName);
@@ -34,7 +33,7 @@ extern jboolean getChunkInfo( JNIEnv *env, jobject chunkobj, HDF_CHUNK_DEF *cinf
 
 
 
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1SDstart
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDstart
 ( JNIEnv *env,
 jclass class,
 jstring filename,
@@ -1024,7 +1023,7 @@ jstring format)
 }
 
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary__1SDsetexternalfile
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDsetexternalfile
 ( JNIEnv *env,
 jclass class,
 jint sds_id,

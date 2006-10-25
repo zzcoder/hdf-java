@@ -21,7 +21,6 @@
  *
  */
 #include "hdf.h"
-
 #include <jni.h>
 
 extern jboolean h4outOfMemory( JNIEnv *env, char *functName);

@@ -11,8 +11,6 @@
 
 package ncsa.hdf.view;
 
-import ncsa.hdf.object.*;
-
 /**
  *
  * The palette view interface for displaying image palette

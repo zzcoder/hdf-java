@@ -12,24 +12,14 @@
 package ncsa.hdf.view;
 
 import java.awt.event.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
-import javax.swing.text.html.*;
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
-import java.awt.Color;
-import java.awt.Canvas;
-import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
-import java.io.File;
 import java.util.*;
 import ncsa.hdf.object.*;
-import java.net.URL;
-import java.net.URLClassLoader;
 
 /**
  * NewDatasetDialog shows a message dialog requesting user input for creating
@@ -41,6 +31,8 @@ import java.net.URLClassLoader;
 public class NewLinkDialog extends JDialog
 implements ActionListener
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     private JTextField nameField;
 
     private JComboBox parentChoice, linkToChoice;

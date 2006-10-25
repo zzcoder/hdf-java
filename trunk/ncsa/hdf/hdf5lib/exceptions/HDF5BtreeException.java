@@ -11,6 +11,8 @@
 
 package ncsa.hdf.hdf5lib.exceptions;
 
+import ncsa.hdf.object.HObject;
+
 
 /**
  *  The class HDF5LibraryException returns errors raised by the HDF5
@@ -19,7 +21,9 @@ package ncsa.hdf.hdf5lib.exceptions;
  *  This sub-class represents HDF-5 major error code
  *       <b>H5E_BTREE</b>
  */
-public class HDF5BtreeException extends HDF5LibraryException {
+public class HDF5BtreeException extends HDF5LibraryException 
+{
+	public static final long serialVersionUID = HObject.serialVersionUID;
 
     /**
      * Constructs an <code>HDF5BtreeException</code> with

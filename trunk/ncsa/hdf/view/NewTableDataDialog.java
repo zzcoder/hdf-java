@@ -12,26 +12,16 @@
 package ncsa.hdf.view;
 
 import java.awt.event.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
-import javax.swing.text.html.*;
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.border.TitledBorder;
 import java.awt.Color;
-import java.awt.Canvas;
-import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Dimension;
-import java.awt.Component;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
-import java.io.File;
 import java.util.*;
-import ncsa.hdf.object.*;
-import java.net.URL;
-import java.net.URLClassLoader;
 import ncsa.hdf.object.*;
 
 /**
@@ -44,6 +34,8 @@ import ncsa.hdf.object.*;
 public class NewTableDataDialog extends JDialog
 implements ActionListener, ItemListener
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     private static final String[] DATATYPE_NAMES = {
         "byte (8-bit)",                // 0
         "short (16-bit)",              // 1
@@ -109,6 +101,8 @@ implements ActionListener, ItemListener
         tableModel =  new DefaultTableModel( colNames, numberOfMembers);
         table = new JTable(tableModel)
         {
+        	public static final long serialVersionUID = HObject.serialVersionUID;
+
             RowEditorModel rm = rowEditorModel;
             public TableCellEditor getCellEditor(int row, int col)
             {
@@ -536,7 +530,7 @@ implements ActionListener, ItemListener
                 if (tclass == Datatype.CLASS_INTEGER)
                 {
                     int tsigned = dtype.getDatatypeSign();
-                    if (tsigned == dtype.SIGN_NONE)
+                    if (tsigned == Datatype.SIGN_NONE)
                     {
                         if (tsize == 1)
                             typeIdx = 3;

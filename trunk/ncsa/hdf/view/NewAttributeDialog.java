@@ -13,20 +13,16 @@ package ncsa.hdf.view;
 
 import javax.swing.*;
 import javax.swing.event.*;
-import javax.swing.text.*;
 import javax.swing.text.html.*;
-import java.awt.Frame;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Dimension;
 import java.awt.Dialog;
 import java.util.*;
-import java.lang.reflect.*;
 import java.awt.event.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
 import ncsa.hdf.object.*;
+
 import java.net.URL;
 import java.net.URLClassLoader;
 
@@ -34,6 +30,8 @@ import java.net.URLClassLoader;
 public class NewAttributeDialog extends JDialog
 implements ActionListener, ItemListener, HyperlinkListener
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /** the default length of a string attribute */
     public static final int DEFAULT_STRING_ATTRIBUTE_LENGTH = 256;
 
@@ -190,12 +188,12 @@ implements ActionListener, ItemListener, HyperlinkListener
         {
             if (helpDialog == null)
                 createHelpDialog();
-            helpDialog.show();
+            helpDialog.setVisible(true);
         }
         else if (cmd.equals("Hide help"))
         {
             if (helpDialog != null)
-                helpDialog.hide();
+                helpDialog.setVisible(false);
         }
     }
 

@@ -13,7 +13,6 @@ package ncsa.hdf.object.fits;
 
 import java.util.*;
 import ncsa.hdf.object.*;
-import nom.tam.fits.*;
 
 /**
  * An H5Group represents HDF5 group, inheriting from Group.
@@ -28,6 +27,8 @@ import nom.tam.fits.*;
  */
 public class FitsGroup extends Group
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /**
      * The list of attributes of this data object. Members of the list are
      * instance of Attribute.

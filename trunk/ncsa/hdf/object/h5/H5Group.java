@@ -30,6 +30,8 @@ import ncsa.hdf.object.*;
  */
 public class H5Group extends Group
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     /**
      * The list of attributes of this data object. Members of the list are
      * instance of Attribute.
@@ -39,6 +41,7 @@ public class H5Group extends Group
     /** The default object ID for HDF5 objects */
     public final static long[] DEFAULT_OID = {0};
 
+    
     /**
      * Constructs an HDF5 group with specific name, path, and parent.
      * <p>

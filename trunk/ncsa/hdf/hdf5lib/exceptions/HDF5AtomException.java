@@ -11,6 +11,8 @@
 
 package ncsa.hdf.hdf5lib.exceptions;
 
+import ncsa.hdf.object.HObject;
+
 /**
  *  The class HDF5LibraryException returns errors raised by the HDF5
  *  library.
@@ -19,7 +21,9 @@ package ncsa.hdf.hdf5lib.exceptions;
  *       <b>H5E_ATOM</b>
  */
 
-public class HDF5AtomException extends HDF5LibraryException {
+public class HDF5AtomException extends HDF5LibraryException 
+{
+	public static final long serialVersionUID = HObject.serialVersionUID;
 
     /**
      * Constructs an <code>HDF5AtomException</code> with no

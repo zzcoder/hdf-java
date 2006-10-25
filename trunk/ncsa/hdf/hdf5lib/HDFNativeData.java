@@ -11,7 +11,6 @@
 
 package ncsa.hdf.hdf5lib;
 
-import java.io.*;
 import ncsa.hdf.hdf5lib.exceptions.*;
 
 /**

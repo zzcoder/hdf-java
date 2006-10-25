@@ -23,6 +23,8 @@ import ucar.nc2.*;
  */
 public class NC2Datatype extends Datatype
 {
+	public static final long serialVersionUID = HObject.serialVersionUID;
+
     DataType nativeType = null;
 
     /**
