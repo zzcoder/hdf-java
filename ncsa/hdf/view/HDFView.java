@@ -14,6 +14,7 @@ package ncsa.hdf.view;
 import ncsa.hdf.object.*;
 
 import javax.swing.*;
+
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
@@ -28,6 +29,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.Image;
+import java.awt.Font;
 
 /**
  * HDFView is the main class of this HDF visual tool.
@@ -128,8 +130,11 @@ HyperlinkListener, ChangeListener
     /** GUI component: the text area for quick attribute view */
     private final JTextArea attributeArea;
 
-    // create tab pane to display attributes and status information
+    /* create tab pane to display attributes and status information */
     private final JTabbedPane infoTabbedPane;
+    
+    /** the main menu bar */
+    private JMenuBar menuBar;
 
     /** GUI component: a list of current data windwos */
     private final JMenu windowMenu;
@@ -180,6 +185,8 @@ HyperlinkListener, ChangeListener
 
     /** dialog to display srb files */
     private JDialog srbFileDialog;
+    
+    private UserOptionsDialog userOptionDialog;    
 
     /**
      * Constructs the HDFView with a given root directory, where the
@@ -188,7 +195,7 @@ HyperlinkListener, ChangeListener
      * @param root the directory where the HDFView is installed.
      * @param filename the file to open.
      */
-    public HDFView(String root, String filename)
+    public HDFView(String root, String filename, int width, int height)
     {
         super("HDFView");
 
@@ -200,6 +207,7 @@ HyperlinkListener, ChangeListener
         currentFile = null;
         frameOffset = 0;
         srbFileDialog = null;
+        userOptionDialog = null;
         toolkit = Toolkit.getDefaultToolkit();
         ViewProperties.loadExtClass();
 
@@ -220,14 +228,8 @@ HyperlinkListener, ChangeListener
             catch (Exception ex) { font = null; }
 
             if (font != null)
-            {
-                UIDefaults uiDefaults = UIManager.getDefaults();
-                uiDefaults.put("TextArea.font", font);
-                uiDefaults.put("TextPane.font", font);
-                uiDefaults.put("Table.font", font);
-                uiDefaults.put("Tree.font", font);
-                uiDefaults.put("TreeNode.font", font);
-            }
+            	setDefaultFonts(font);
+            
         } catch (Exception ex){;}
         //recentFiles = ViewProperties.getMRF();
         currentDir = ViewProperties.getWorkDir();
@@ -289,7 +291,7 @@ HyperlinkListener, ChangeListener
             } catch (Exception ex) { treeView = null; }
         }
 
-        createMainWindow();
+        createMainWindow(width, height);
 
         File theFile = new File(filename);
         if (theFile.exists()) {
@@ -320,6 +322,48 @@ HyperlinkListener, ChangeListener
             setEnabled(h5GUIs, false);
 
     }
+    
+    /**
+     * Set default UI fonts.
+     */
+    private void setDefaultFonts(Font font) {
+        UIDefaults uiDefaults = UIManager.getDefaults();
+
+        uiDefaults.put("Button.font", font);
+        uiDefaults.put("CheckBox.font", font);
+        uiDefaults.put("CheckBoxMenuItem.font", font);
+        uiDefaults.put("ColorChooser.font", font);
+        uiDefaults.put("ComboBox.font", font);
+        uiDefaults.put("DesktopIcon.font", font);
+        uiDefaults.put("EditorPane.font", font);
+        uiDefaults.put("FormattedTextField.font", font);
+        uiDefaults.put("Label.font", font);
+        uiDefaults.put("List.font", font);
+        uiDefaults.put("Menu.font", font);
+        uiDefaults.put("MenuBar.font", font);
+        uiDefaults.put("MenuItem.font", font);
+        uiDefaults.put("OptionPane.font", font);
+        uiDefaults.put("Panel.font", font);
+        uiDefaults.put("PasswordField.font", font);
+        uiDefaults.put("PopupMenu.font", font);
+        uiDefaults.put("ProgressBar.font", font);
+        uiDefaults.put("RadioButton.font", font);
+        uiDefaults.put("RadioButtonMenuItem.font", font);
+        uiDefaults.put("ScrollPane.font", font);
+        uiDefaults.put("Spinner.font", font);
+        uiDefaults.put("TabbedPane.font", font);
+        uiDefaults.put("Table.font", font);
+        uiDefaults.put("TableHeader.font", font);
+        uiDefaults.put("TextArea.font", font);
+        uiDefaults.put("TextField.font", font);
+        uiDefaults.put("TextPane.font", font);
+        uiDefaults.put("TitledBorder.font", font);
+        uiDefaults.put("ToggleButton.font", font);
+        uiDefaults.put("ToolBar.font", font);
+        uiDefaults.put("ToolTip.font", font);
+        uiDefaults.put("Tree.font", font);
+        uiDefaults.put("Viewport.font", font);
+    }
 
     /**
      * Creates and lays out GUI compoents.
@@ -334,7 +378,7 @@ HyperlinkListener, ChangeListener
      * ||========================================||
      * </pre>
      */
-    private void createMainWindow()
+    private void createMainWindow(int width, int height)
     {
         // create splitpane to separate treeview and the contentpane
         JScrollPane treeScroller = new JScrollPane((Component)treeView);
@@ -360,11 +404,16 @@ HyperlinkListener, ChangeListener
         //float inset = 0.17f; // for UG only.
         float inset = 0.04f;
         Dimension d = toolkit.getScreenSize();
-/*
-        d.width = Math.max(400, (int)((1-2*inset)*d.width));
-*/
-        d.height = Math.max(300, (int)((1-2*inset)*d.height));
-        d.width = (int)(0.9*(double)d.height);
+
+        if (height > 300)
+        	d.height = height;
+        else
+        	d.height = (int)((1-2*inset)*d.height);
+        
+        if (width > 300)
+        	d.width = width;
+        else
+        	d.width = (int)(0.9*(double)d.height);
 
         splitPane.setDividerLocation(d.height-180);
 
@@ -376,7 +425,7 @@ HyperlinkListener, ChangeListener
             this.setIconImage(((ImageIcon)ViewProperties.getHdfIcon()).getImage());
         } catch (Exception ex ) {}
 
-        this.setJMenuBar(createMenuBar());
+        this.setJMenuBar(menuBar = createMenuBar());
         JToolBar toolBar = createToolBar();
 
         /** create URL address bar */
@@ -496,29 +545,6 @@ HyperlinkListener, ChangeListener
         fileMenu.add(item);
 
         fileMenu.addSeparator();
-
-        // add recent files
-        /*
-        if (recentFiles != null)
-        {
-            String theFile = null;
-            String txtName = null;
-
-            int size = recentFiles.size();
-            for (int i=0; i<size; i++)
-            {
-                theFile = (String)recentFiles.get(i);
-                txtName = theFile;
-                if (txtName.length() > 35)
-                    txtName = txtName.substring(0,10) + "....." + txtName.substring(txtName.length()-20);
-                item = new JMenuItem(txtName);
-                item.setName(theFile);
-                item.addActionListener(this);
-                item.setActionCommand("Open file: recent file");
-                fileMenu.add(item);
-            }
-        }
-        */
 
         // add window menu
         windowMenu.setMnemonic('w');
@@ -1253,15 +1279,17 @@ HyperlinkListener, ChangeListener
         }
         else if (cmd.equals("User options"))
         {
-            UserOptionsDialog dialog = new UserOptionsDialog(this, rootDir);
-            dialog.setVisible(true);
+        	if (userOptionDialog == null)
+        		userOptionDialog = new UserOptionsDialog(this, rootDir);
 
-            if (dialog.isWorkDirChanged())
+        	userOptionDialog.setVisible(true);
+
+            if (userOptionDialog.isWorkDirChanged())
             {
                 currentDir = ViewProperties.getWorkDir();
             }
 
-            if (dialog.isUserGuideChanged())
+            if (userOptionDialog.isUserGuideChanged())
             {
                 //update the UG path
                 String ugPath = ViewProperties.getUsersGuide();
@@ -1279,6 +1307,17 @@ HyperlinkListener, ChangeListener
                 } catch (IOException e2) {
                     showStatus(e2.toString());
                 }
+            }
+
+            if (userOptionDialog.isFontChanged()) {
+            	Font font = null;
+            	try { 
+            		font = new Font(ViewProperties.getFontType(), Font.PLAIN, ViewProperties.getFontSize());
+            	} catch (Exception ex) { font = null; }
+            	
+            	if (font != null) {
+            		setDefaultFonts(font);
+            	}
             }
         }
         else if (cmd.equals("Register file format")) {
@@ -2047,7 +2086,8 @@ HyperlinkListener, ChangeListener
 
         boolean backup = false;
         File tmpFile = null;
-        int i = 0;
+        int i=0, W=0, H=0;
+        
         for ( i = 0; i < args.length; i++)
         {
             if ("-root".equalsIgnoreCase(args[i]))
@@ -2063,6 +2103,16 @@ HyperlinkListener, ChangeListener
                     {
                         rootDir = tmpFile.getParent();
                     }
+                } catch (Exception e) {}
+            } else if ("-g".equalsIgnoreCase(args[i]) || "-geometry".equalsIgnoreCase(args[i]))
+            {
+                try {
+                	String wxh = args[++i];
+                	int idx = wxh.indexOf('x');
+                	if (idx > 0) {
+                		W = Integer.parseInt(wxh.substring(0, idx));
+                		H = Integer.parseInt(wxh.substring(idx+1));
+                	}
                 } catch (Exception e) {}
             } else if ("-java.vm.version".equalsIgnoreCase(args[i]))
             {
@@ -2087,7 +2137,7 @@ HyperlinkListener, ChangeListener
             filename = args[i];
         }
 
-        HDFView frame = new HDFView(rootDir, filename);
+        HDFView frame = new HDFView(rootDir, filename, W, H);
         frame.pack();
         frame.setVisible(true);
     }

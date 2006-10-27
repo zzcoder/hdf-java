@@ -125,7 +125,9 @@ implements ActionListener
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
-        contentPane.setPreferredSize(new Dimension(450, 120));
+        int w = 450 + (ViewProperties.getFontSize()-12)*15;
+        int h = 120 + (ViewProperties.getFontSize()-12)*10;
+        contentPane.setPreferredSize(new Dimension(w, h));
 
         // add the top panel for enter file name
         JPanel p = new JPanel();

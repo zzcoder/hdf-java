@@ -33,7 +33,7 @@ public class ViewProperties extends Properties
 	public static final long serialVersionUID = HObject.serialVersionUID;
 
     /** the version of the HDFViewer */
-    public static final String VERSION = "2.4 B-02";
+    public static final String VERSION = "2.4";
 
     /** the maximum number of most recent files */
     public static final int MAX_RECENT_FILES = 15;
@@ -924,11 +924,9 @@ public class ViewProperties extends Properties
     /** sets the font size */
     public static void setFontSize(int fsize) {
         fontSize = (fsize/2)*2;
-        if (fontSize > 20)
-           fontSize = 20;
 
-       if(fontSize < 10)
-           fontSize = 10;
+       if(fontSize < 8)
+           fontSize = 8;
     }
 
     /** sets the font size */

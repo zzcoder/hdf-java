@@ -49,7 +49,7 @@ implements ActionListener, ListSelectionListener
     private JCheckBox checkCurrentUserDir;
     private JButton currentDirButton;
 
-    private final int fontSize;
+    private int fontSize;
 
     private boolean isFontChanged;
 
@@ -108,7 +108,10 @@ implements ActionListener, ListSelectionListener
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(8,8));
         contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
-        contentPane.setPreferredSize(new Dimension(600, 500));
+        
+        int w = 600 + (ViewProperties.getFontSize()-12)*15;
+        int h = 500 + (ViewProperties.getFontSize()-12)*15;
+        contentPane.setPreferredSize(new Dimension(w, h));
 
         JTabbedPane tabbedPane = new JTabbedPane();
 
@@ -144,8 +147,21 @@ implements ActionListener, ListSelectionListener
         pack();
     }
 
-    private JPanel createGeneralOptionPanel() {
-        String[] fontSizeChoices = {"10", "12", "14", "16", "18", "20"};
+    public void setVisible(boolean b) {
+    	if (b) { // reset flags
+    		isFontChanged = false;
+    		isUserGuideChanged = false;
+    		isWorkDirChanged = false;    
+            fontSize = ViewProperties.getFontSize();
+            workDir = ViewProperties.getWorkDir();
+            if (workDir == null) workDir = rootDir;
+    	}
+    	super.setVisible(b);
+    }
+    
+    private JPanel createGeneralOptionPanel() 
+    {
+        String[] fontSizeChoices = {"12", "14", "16", "18", "20", "22", "24", "26", "28", "30", "32", "34", "36", "48"};
         fontSizeChoice = new JComboBox(fontSizeChoices);
         fontSizeChoice.setSelectedItem(String.valueOf(ViewProperties.getFontSize()));
 
@@ -397,7 +413,9 @@ implements ActionListener, ListSelectionListener
         lpb.add(del);
         lp.add(lpb, BorderLayout.SOUTH);
         JScrollPane listScroller = new JScrollPane(srbJList);
-        listScroller.setPreferredSize(new Dimension(120, 200));
+        int w = 120 + (ViewProperties.getFontSize()-12)*10;
+        int h = 200 + (ViewProperties.getFontSize()-12)*15;
+        listScroller.setPreferredSize(new Dimension(w, h));
         lp.add(listScroller, BorderLayout.CENTER);
 
         /* padding */
@@ -423,12 +441,12 @@ implements ActionListener, ListSelectionListener
         if (cmd.equals("Set options"))
         {
             setUserOptions();
-            dispose();
+            setVisible(false);
         }
         else if (cmd.equals("Cancel"))
         {
             isFontChanged = false;
-            dispose();
+            setVisible(false);
         }
         else if (cmd.equals("Set current dir to user.dir"))
         {
@@ -657,6 +675,7 @@ implements ActionListener, ListSelectionListener
         try {
             fsize = Integer.parseInt((String)fontSizeChoice.getSelectedItem());
             ViewProperties.setFontSize(fsize);
+
             if ((fontSize != ViewProperties.getFontSize()))
                 isFontChanged = true;
         } catch (Exception ex) {}
@@ -668,23 +687,7 @@ implements ActionListener, ListSelectionListener
             isFontChanged = true;
             ViewProperties.setFontType(ftype);
         }
-
-        if (isFontChanged)
-        {
-            java.awt.Font font = null;
-            try { font = new java.awt.Font(ftype, java.awt.Font.PLAIN, fsize); }
-            catch (Exception ex) { font = null; }
-
-            if (font != null)
-            {
-                UIDefaults uiDefaults = UIManager.getDefaults();
-                uiDefaults.put("TextArea.font", font);
-                uiDefaults.put("TextPane.font", font);
-                uiDefaults.put("Table.font", font);
-                uiDefaults.put("TreeNode.font", font);
-            }
-        }
-
+        
         // set data delimiter
         ViewProperties.setDataDelimiter((String)delimiterChoice.getSelectedItem());
 

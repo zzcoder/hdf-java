@@ -129,9 +129,9 @@ implements TreeView, ActionListener
         tree.addMouseListener(new HTreeMouseAdapter());
         tree.setRootVisible(false);
         //tree.setShowsRootHandles(true);
-        tree.setRowHeight(23);
-        //tree.setFont(tree.getFont().deriveFont(16f));
-
+        int rowheight = 23 + (int)((tree.getFont().getSize()-12)*0.5);
+        tree.setRowHeight(rowheight);
+ 
         // create the popupmenu
         popupMenu = createPopupMenu();
 

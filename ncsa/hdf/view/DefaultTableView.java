@@ -195,7 +195,7 @@ implements TableView, ActionListener
         viewp.add( rowHeaders );
         viewp.setPreferredSize( rowHeaders.getPreferredSize() );
         scrollingTable.setRowHeader( viewp );
-
+        
         cellLabel = new JLabel("");
         cellLabel.setBorder(new EtchedBorder(EtchedBorder.LOWERED) );
         Dimension dim = cellLabel.getPreferredSize();
@@ -217,14 +217,6 @@ implements TableView, ActionListener
         valuePane.setLayout(new BorderLayout());
         valuePane.add(cellLabel, BorderLayout.WEST);
         valuePane.add (scrollingcellValue, BorderLayout.CENTER);
-
-/*
-        // add to the main panel
-        JPanel contentPane = (JPanel)getContentPane();
-        contentPane.setLayout(new BorderLayout());
-        contentPane.add(valuePane, BorderLayout.SOUTH);
-        contentPane.add (scroller, BorderLayout.CENTER);
-*/
 
         JSplitPane splitPane = new JSplitPane(
             JSplitPane.VERTICAL_SPLIT,
@@ -288,6 +280,11 @@ implements TableView, ActionListener
 
         setJMenuBar(createMenuBar());
         viewer.showStatus(sb.toString());
+
+        // set cell height for large fonts
+		int cellRowHeight = table.getFontMetrics(table.getFont()).getHeight();
+        rowHeaders.setRowHeight(cellRowHeight);
+        table.setRowHeight(cellRowHeight);
     }
 
     private JMenuBar createMenuBar() {
@@ -1367,8 +1364,6 @@ implements TableView, ActionListener
 
             public boolean isCellEditable(int row, int column)
             {
-                // TODO: disable the editing feature. HDF4 has bug: cannot write vdata by field
-
                 return !isReadOnly;
             }
 
@@ -2448,17 +2443,6 @@ implements TableView, ActionListener
             super.processMouseEvent(e);
 
             int mouseID = e.getID();
-
-/*
-            if (e.getButton() != MouseEvent.BUTTON1)
-            {
-                int idx = columnAtPoint(e.getPoint());
-                if (idx >= 0 && idx < parentTable.getColumnCount())
-                    cellValueField.setText(parentTable.getColumnName(idx));
-
-                return;
-            }
-*/
 
             if (mouseID == MouseEvent.MOUSE_CLICKED)
             {

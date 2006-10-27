@@ -99,7 +99,9 @@ implements ActionListener, ItemListener, HyperlinkListener
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(20,10,0,10));
-        contentPane.setPreferredSize(new Dimension(400, 180));
+        int w = 400 + (ViewProperties.getFontSize()-12)*15;
+        int h = 180 + (ViewProperties.getFontSize()-12)*10;
+        contentPane.setPreferredSize(new Dimension(w, h));
 
         JButton okButton = new JButton("   Ok   ");
         okButton.setActionCommand("Ok");
@@ -565,7 +567,9 @@ implements ActionListener, ItemListener, HyperlinkListener
         JPanel contentPane = (JPanel)helpDialog.getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
-        contentPane.setPreferredSize(new Dimension(500, 400));
+        int w = 500 + (ViewProperties.getFontSize()-12)*15;
+        int h = 400 + (ViewProperties.getFontSize()-12)*10;
+        contentPane.setPreferredSize(new Dimension(w, h));
 
         JButton b = new JButton("  Ok  ");
         b.addActionListener(this);

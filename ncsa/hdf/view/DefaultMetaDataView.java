@@ -458,6 +458,11 @@ implements ActionListener, MetaDataView
             }
         };
         table.setCellSelectionEnabled(false);
+        
+        // set cell height for large fonts
+		int cellRowHeight = Math.max(16, table.getFontMetrics(table.getFont()).getHeight());
+        table.setRowHeight(cellRowHeight);
+
         table.getTableHeader().setReorderingAllowed(false);
         JScrollPane scroller = new JScrollPane(table);
 
@@ -591,6 +596,10 @@ implements ActionListener, MetaDataView
                 table.setCellSelectionEnabled(false);
                 table.getTableHeader().setReorderingAllowed(false);
                 panel.add(new JScrollPane(table), BorderLayout.CENTER);
+
+                // set cell height for large fonts
+        		int cellRowHeight = Math.max(16, table.getFontMetrics(table.getFont()).getHeight());
+                table.setRowHeight(cellRowHeight);
             } // if (n > 0)
         } // if (d instanceof Compound)
 
@@ -743,6 +752,10 @@ implements ActionListener, MetaDataView
         attrTable.setCellSelectionEnabled(true);
         attrTable.getTableHeader().setReorderingAllowed(false);
         attrTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
+        // set cell height for large fonts
+		int cellRowHeight = Math.max(16, attrTable.getFontMetrics(attrTable.getFont()).getHeight());
+		attrTable.setRowHeight(cellRowHeight);
 
         JScrollPane scroller1 = new JScrollPane(attrTable);
         attrContentArea = new JTextArea();
