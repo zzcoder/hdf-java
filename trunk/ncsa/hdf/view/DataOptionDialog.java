@@ -191,7 +191,9 @@ implements ActionListener, ItemListener
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5, 5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        contentPane.setPreferredSize(new Dimension(700, 350));
+        int w1 = 700 + (ViewProperties.getFontSize()-12)*15;
+        int h1 = 350 + (ViewProperties.getFontSize()-12)*10;
+        contentPane.setPreferredSize(new Dimension(w1, h1));
 
         JPanel centerP = new JPanel();
         centerP.setLayout(new BorderLayout());
@@ -212,7 +214,9 @@ implements ActionListener, ItemListener
             fieldList.addSelectionInterval(0, names.length-1);
             JPanel fieldP = new JPanel();
             fieldP.setLayout(new BorderLayout());
-            fieldP.setPreferredSize(new Dimension(150, 250));
+            w1 = 150 + (ViewProperties.getFontSize()-12)*10;
+            h1 = 250 + (ViewProperties.getFontSize()-12)*15;
+            fieldP.setPreferredSize(new Dimension(w1, h1));
             JScrollPane scrollP = new JScrollPane(fieldList);
             fieldP.add(scrollP);
             fieldP.setBorder(new TitledBorder("Select Members"));
@@ -232,7 +236,9 @@ implements ActionListener, ItemListener
             isText = sd.isText();
 
             if (isText) {
-                contentPane.setPreferredSize(new Dimension(600, 280));
+                w1 = 600 + (ViewProperties.getFontSize()-12)*15;
+                h1 = 280 + (ViewProperties.getFontSize()-12)*10;
+                contentPane.setPreferredSize(new Dimension(w1, h1));
                 // add textview selection
                 JPanel txtviewP = new JPanel();
                 txtviewP.setLayout(new BorderLayout());
@@ -242,7 +248,9 @@ implements ActionListener, ItemListener
 
                 centerP.add(txtviewP, BorderLayout.SOUTH);
             } else {
-                contentPane.setPreferredSize(new Dimension(800, 360));
+                w1 = 800 + (ViewProperties.getFontSize()-12)*15;
+                h1 = 360 + (ViewProperties.getFontSize()-12)*10;
+                contentPane.setPreferredSize(new Dimension(w1, h1));
                 if (rank > 1) centerP.add(navigatorP, BorderLayout.WEST);
 
                 // setup GUI components for the display options: table or image

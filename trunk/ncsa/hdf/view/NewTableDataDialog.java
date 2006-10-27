@@ -116,6 +116,10 @@ implements ActionListener, ItemListener
         };
         table.setRowSelectionAllowed(false);
         table.setColumnSelectionAllowed(false);
+        
+        // set cell height for large fonts
+		int cellRowHeight = Math.max(16, table.getFontMetrics(table.getFont()).getHeight());
+        table.setRowHeight(cellRowHeight);
 
         toolkit = Toolkit.getDefaultToolkit();
         isH5 = pGroup.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
@@ -166,7 +170,9 @@ implements ActionListener, ItemListener
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
-        contentPane.setPreferredSize(new Dimension(700, 500));
+        int w = 700 + (ViewProperties.getFontSize()-12)*15;
+        int h = 500 + (ViewProperties.getFontSize()-12)*10;
+        contentPane.setPreferredSize(new Dimension(w, h));
 
         JButton okButton = new JButton("   Ok   ");
         okButton.setActionCommand("Ok");

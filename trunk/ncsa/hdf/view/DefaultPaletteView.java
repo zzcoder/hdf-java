@@ -129,7 +129,9 @@ ActionListener, ItemListener
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5, 5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        contentPane.setPreferredSize(new Dimension(700, 500));
+        int w = 700 + (ViewProperties.getFontSize()-12)*15;
+        int h = 500 + (ViewProperties.getFontSize()-12)*10;
+        contentPane.setPreferredSize(new Dimension(w, h));
 
         contentPane.add(chartP, BorderLayout.CENTER);
 
@@ -429,11 +431,17 @@ ActionListener, ItemListener
             valueTable.setCellSelectionEnabled(true);
             valueTable.getTableHeader().setReorderingAllowed(false);
             valueTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            
+            // set cell height for large fonts
+    		int cellRowHeight = Math.max(16, valueTable.getFontMetrics(valueTable.getFont()).getHeight());
+             valueTable.setRowHeight(cellRowHeight);
 
             JScrollPane scroller = new JScrollPane(valueTable);
 
             JPanel contentPane = (JPanel)getContentPane();
-            contentPane.setPreferredSize(new Dimension(300, 600));
+            int w = 300 + (ViewProperties.getFontSize()-12)*10;
+            int h = 600 + (ViewProperties.getFontSize()-12)*15;
+            contentPane.setPreferredSize(new Dimension(w, h));
             contentPane.setLayout(new BorderLayout(5, 5));
             contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
             contentPane.add(scroller, BorderLayout.CENTER);

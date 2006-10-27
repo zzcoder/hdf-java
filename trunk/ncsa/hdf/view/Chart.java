@@ -180,7 +180,10 @@ implements ActionListener
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5, 5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        contentPane.setPreferredSize(new Dimension(640, 400));
+        int w = 640 + (ViewProperties.getFontSize()-12)*15;
+        int h = 400 + (ViewProperties.getFontSize()-12)*10;
+        
+        contentPane.setPreferredSize(new Dimension(w, h));
 
         contentPane.add(chartP, BorderLayout.CENTER);
 
