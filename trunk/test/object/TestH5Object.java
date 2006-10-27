@@ -1,4 +1,3 @@
-//package test.object;
 
 import java.io.*;
 import java.util.*;
@@ -650,7 +649,7 @@ public class TestH5Object
 
         try {
             int did = dset.open();
-            List attrs = file.getAttribute(did);
+            List attrs = H5File.getAttribute(did);
             try {dset.close(did);} catch (Exception ex2) {}
             if (attrs==null || attrs.size()<1) {
                 failed(new HDF5LibraryException("failed to attached attributes"));
@@ -971,8 +970,8 @@ public class TestH5Object
             dset.setConvertByteToString(false);
             bdata = dset.readBytes();
             bdata_read = (byte[])dset.read();
-            sdata_read = dset.byteToString(bdata_read, STRLEN);
-            bdata_read = dset.stringToByte(sdata, STRLEN);
+            sdata_read = Dataset.byteToString(bdata_read, STRLEN);
+            bdata_read = Dataset.stringToByte(sdata, STRLEN);
         } catch (Exception ex) { failed(ex); return 1;}
 
         if ( !dataEquals(bdata, bdata_read) ) {
@@ -1135,9 +1134,9 @@ public class TestH5Object
         try { H5FILE.close(); } catch (Exception ex) {}
 
         if (numOfFails<=0)
-            test.out.println("\n\nAll tests passed.");
+        	TestH5Object.out.println("\n\nAll tests passed.");
         else
-            test.out.println("\n\n*** "+numOfFails+" tests failed.");
+        	TestH5Object.out.println("\n\n*** "+numOfFails+" tests failed.");
 
     }
 }
