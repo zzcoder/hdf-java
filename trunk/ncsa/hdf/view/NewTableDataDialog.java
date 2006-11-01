@@ -22,6 +22,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.util.*;
+
 import ncsa.hdf.object.*;
 
 /**
@@ -341,11 +342,13 @@ implements ActionListener, ItemListener
 
             if (newObject != null)
                 dispose();
+            ((Vector)groupList).setSize(0);
         }
         else if (cmd.equals("Cancel"))
         {
             newObject = null;
             dispose();
+            ((Vector)groupList).setSize(0);
         }
         else if (cmd.equals("Change number of members"))
         {

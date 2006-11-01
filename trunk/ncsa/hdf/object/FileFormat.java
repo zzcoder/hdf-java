@@ -13,6 +13,8 @@ package ncsa.hdf.object;
 
 import java.util.*;
 import java.io.File;
+
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 /**
@@ -91,6 +93,9 @@ public abstract class FileFormat extends File
      * -th object.
      */
     private int start_members = 0; // 0 by default
+    
+    /* Total number of objects in memory */
+    private int n_members = 0;
 
     /** a list of file extensions for the supported file types */
     private static String extensions = "hdf, h4, hdf5, h5";
@@ -204,6 +209,21 @@ public abstract class FileFormat extends File
         return theFile;
     }
 
+    public final int getNumberOfMembers() {
+    	
+    	if (n_members > 0) // calculate only once
+    		return n_members;
+    	
+        Enumeration local_enum = ((DefaultMutableTreeNode)getRootNode()).depthFirstEnumeration();
+
+        while(local_enum.hasMoreElements()) {
+            local_enum.nextElement();
+            n_members++;
+        }
+        
+        return n_members;
+    }
+    
     /**
      * Closes the access to the file resource.
      */
@@ -703,7 +723,7 @@ public abstract class FileFormat extends File
         }
 
         StringTokenizer currentExt = new StringTokenizer(extensions, ",");
-        List tokens = new Vector(currentExt.countTokens()+5);
+        Vector tokens = new Vector(currentExt.countTokens()+5);
 
         while (currentExt.hasMoreTokens())
         {
@@ -720,6 +740,8 @@ public abstract class FileFormat extends File
 
             extensions = extensions + ", "+ext;
         }
+        
+        tokens.setSize(0); 
     }
 
     /**

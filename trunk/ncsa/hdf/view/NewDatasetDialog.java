@@ -399,11 +399,14 @@ implements ActionListener, ItemListener, HyperlinkListener
 
             if (newObject != null)
                 dispose();
+            
+            ((Vector)groupList).setSize(0);
         }
         if (cmd.equals("Cancel"))
         {
             newObject = null;
             dispose();
+            ((Vector)groupList).setSize(0);
         }
         else if (cmd.equals("Show help"))
         {

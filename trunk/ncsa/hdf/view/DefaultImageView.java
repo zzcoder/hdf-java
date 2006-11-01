@@ -1113,6 +1113,7 @@ implements ImageView, ActionListener
 
         if (cmd.equals("Close")) {
             dispose();  // terminate the application
+            ((Vector)rotateRelatedItems).setSize(0);
         }
         else if (cmd.startsWith("Save image as "))
         {
@@ -1151,7 +1152,7 @@ implements ImageView, ActionListener
             if (root == null)
                 return;
 
-            Vector list = new Vector();
+            Vector list = new Vector(dataset.getFileFormat().getNumberOfMembers()+5);
             DefaultMutableTreeNode theNode = null;
             Enumeration local_enum = ((DefaultMutableTreeNode)root).depthFirstEnumeration();
 
@@ -1173,6 +1174,8 @@ implements ImageView, ActionListener
                 try { treeView.addObject(obj, pgroup); }
                 catch (Exception ex) {}
             }
+            
+            list.setSize(0);
         }
         else if (cmd.equals("Zoom in")) {
             zoomIn();
@@ -1311,6 +1314,7 @@ implements ImageView, ActionListener
         image = null;
         imageByteData = null;
         imageComponent = null;
+        ((Vector)rotateRelatedItems).setSize(0);
         System.runFinalization();
         System.gc();
 

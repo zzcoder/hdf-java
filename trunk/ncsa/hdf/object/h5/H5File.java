@@ -262,7 +262,11 @@ public class H5File extends FileFormat
             {
                 theNode = (DefaultMutableTreeNode)local_enum.nextElement();
                 theObj = (HObject)theNode.getUserObject();
-                if (theObj instanceof Dataset) ((Dataset)theObj).clearData();
+                
+                if (theObj instanceof Dataset) 
+                	((Dataset)theObj).clear();
+                else if (theObj instanceof Group)
+                	((Group)theObj).clear();
                 theObj = null;
                 theNode = null;
             }
@@ -511,6 +515,10 @@ public class H5File extends FileFormat
         int gzip,
         Object data) throws Exception
     {
+    	if (pgroup == null) { // create the new dataset at the root group by default
+    		pgroup = (Group)get("/");
+    	}
+    	
         return H5ScalarDS.create(name, pgroup, type, dims, maxdims, chunks, gzip, data);
     }
 
@@ -552,8 +560,11 @@ public class H5File extends FileFormat
         int[] memberSizes,
         Object data) throws Exception
     {
-        // not supported
-        return H5CompoundDS.create(name, pgroup, dims, memberNames, memberDatatypes, memberSizes, data);
+    	if (pgroup == null) { // create the new dataset at the root group by default
+    		pgroup = (Group)get("/");
+    	}
+
+    	return H5CompoundDS.create(name, pgroup, dims, memberNames, memberDatatypes, memberSizes, data);
     }
 
     /**
@@ -611,6 +622,10 @@ public class H5File extends FileFormat
             else
                 memberDims[i][0] = memberSizes[i];
         }
+        
+    	if (pgroup == null) { // create the new dataset at the root group by default
+    		pgroup = (Group)get("/");
+    	}
 
         return H5CompoundDS.create(name, pgroup, dims, maxdims, chunks, gzip,
             memberNames, memberDatatypes, memberRanks, memberDims, data);
@@ -660,6 +675,10 @@ public class H5File extends FileFormat
         int interlace,
         Object data) throws Exception
     {
+    	if (pgroup == null) { // create the new dataset at the root group by default
+    		pgroup = (Group)get("/");
+    	}
+    	
         H5ScalarDS dataset = (H5ScalarDS)H5ScalarDS.create(name, pgroup, type, dims, maxdims, chunks, gzip, data);
         try { H5File.createImageAttributes(dataset, interlace); } catch (Exception ex) {}
 

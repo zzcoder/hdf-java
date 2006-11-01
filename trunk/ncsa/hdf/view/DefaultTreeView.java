@@ -475,9 +475,9 @@ implements TreeView, ActionListener
 
         String filename = dialog.getFile();
 
-        List objList = new Vector();
-        DefaultMutableTreeNode node = null;
         int n = root.getChildCount();
+        Vector objList = new Vector(n);
+        DefaultMutableTreeNode node = null;
         for (int i=0; i<n; i++)
         {
             node = (DefaultMutableTreeNode)root.getChildAt(i);
@@ -503,6 +503,7 @@ implements TreeView, ActionListener
         TreeNode pnode = newFile.getRootNode();
 
         pasteObject(objList, pnode, newFile);
+        objList.setSize(0);
 
         Group srcGroup = (Group) ((DefaultMutableTreeNode)root).getUserObject();
         Group dstGroup = (Group) ((DefaultMutableTreeNode)newFile.getRootNode()).getUserObject();
@@ -1444,7 +1445,7 @@ implements TreeView, ActionListener
         if (paths == null || paths.length <=0)
             return null;
 
-        List objs = new Vector();
+        List objs = new Vector(paths.length);
         HObject theObject=null, parentObject;
         DefaultMutableTreeNode currentNode=null, parentNode=null;
         for (int i=0; i<paths.length; i++)

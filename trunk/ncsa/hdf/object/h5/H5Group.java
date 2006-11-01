@@ -12,6 +12,7 @@
 package ncsa.hdf.object.h5;
 
 import java.util.*;
+
 import ncsa.hdf.hdf5lib.*;
 import ncsa.hdf.hdf5lib.exceptions.*;
 import ncsa.hdf.object.*;
@@ -77,6 +78,16 @@ public class H5Group extends Group
         try { hasAttribute = (H5.H5Aget_num_attrs(gid)>0); }
         catch (Exception ex ) {}
         close(gid);
+    }
+
+    /**
+     * Clears up the group
+     */
+    public void clear() {
+    		super.clear(); 
+    		
+    	if (attributeList != null)
+    		((Vector)attributeList).setSize(0);
     }
 
     /**

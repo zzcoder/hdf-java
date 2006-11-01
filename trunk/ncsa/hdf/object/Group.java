@@ -72,6 +72,14 @@ public abstract class Group extends HObject
 
         this.parent = parent;
     }
+    
+    /**
+     * Clears up the group
+     */
+    public void clear() {
+    	if (memberList != null)
+    		((Vector)memberList).setSize(0);
+    }
 
     /**
      * Adds an HObject to the member list of this group.
@@ -114,7 +122,8 @@ public abstract class Group extends HObject
 
         if (memberList == null && theFile != null)
         {
-            memberList = new Vector(); // avoid infinite loop search for groups without member
+            int size = Math.min(getNumberOfMembersInFile(), this.getFileFormat().getMaxMembers());
+            memberList = new Vector(size + 5); // avoid infinite loop search for groups without member
 
             // find the memberList from the file by check the group path and name
             // group may be created out of the structure tree (H4/5File.loadTree()).

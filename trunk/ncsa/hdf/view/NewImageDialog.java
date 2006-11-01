@@ -21,6 +21,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.util.*;
+
 import ncsa.hdf.object.*;
 
 /**
@@ -183,11 +184,13 @@ implements ActionListener, ItemListener
             newObject = createHDFimage();
             if (newObject != null)
                 dispose();
+            ((Vector)groupList).setSize(0);
         }
         if (cmd.equals("Cancel"))
         {
             newObject = null;
             dispose();
+            ((Vector)groupList).setSize(0);
         }
     }
 

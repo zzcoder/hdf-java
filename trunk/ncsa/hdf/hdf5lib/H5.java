@@ -1980,7 +1980,7 @@ public class H5 {
 
     /**
      *  H5Pset_fill_value sets the fill value for a dataset creation
-     *  property list.  <b>NOT IMPLEMENTED YET </b>
+     *  property list.
      *
      *  @param plist_id  IN: Property list identifier.
      *  @param type_id  IN: The datatype identifier of value.
