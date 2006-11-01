@@ -12,6 +12,7 @@
 package ncsa.hdf.object;
 
 import java.lang.reflect.Array;
+import java.util.Vector;
 
 /**
  * The abstract class includes general information of a dataset object
@@ -239,6 +240,18 @@ public abstract class Dataset extends HObject
         selectedIndex[2] = 2;
     }
 
+    /**
+     * Clears up the object
+     */
+    public void clear() {
+     	if (data != null) {
+     		if (data instanceof Vector)
+     			((Vector) data).setSize(0);
+     		data = null;
+     	}
+     	isDataLoaded = false;
+    }
+    
     /**
      * Initializes the dataset such as dimension sizes of this dataset.
      * Sub-classes must replace this interface. For each file format, initialization

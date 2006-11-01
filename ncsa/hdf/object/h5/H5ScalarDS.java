@@ -12,6 +12,7 @@
 package ncsa.hdf.object.h5;
 
 import java.util.*;
+
 import ncsa.hdf.hdf5lib.*;
 import ncsa.hdf.hdf5lib.exceptions.*;
 import ncsa.hdf.object.*;
@@ -206,6 +207,16 @@ public class H5ScalarDS extends ScalarDS
         }
         try { H5.H5Dclose(did); } catch (HDF5Exception ex) {;}
 
+    }
+
+    /**
+     * Clears up the object
+     */
+    public void clear() {
+    		super.clear(); 
+    		
+    	if (attributeList != null)
+    		((Vector)attributeList).setSize(0);
     }
 
     /**

@@ -509,7 +509,7 @@ implements TableView, ActionListener
             if (root == null)
                 return;
 
-            Vector list = new Vector();
+            Vector list = new Vector(dataset.getFileFormat().getNumberOfMembers()+5);
             DefaultMutableTreeNode theNode = null;
             Enumeration local_enum = ((DefaultMutableTreeNode)root).depthFirstEnumeration();
             while(local_enum.hasMoreElements()) {
@@ -530,6 +530,8 @@ implements TableView, ActionListener
                 try { treeView.addObject(obj, pgroup); }
                 catch (Exception ex) {}
             }
+            
+            list.setSize(0);
         }
         else if (cmd.equals("Save dataset")) {
             try { updateValueInFile(); }
@@ -659,6 +661,7 @@ implements TableView, ActionListener
         }
 
         viewer.removeDataView(this);
+        
         super.dispose();
     }
 

@@ -12,6 +12,7 @@
 package ncsa.hdf.object.h5;
 
 import java.util.*;
+
 import ncsa.hdf.hdf5lib.*;
 import ncsa.hdf.hdf5lib.exceptions.*;
 import ncsa.hdf.object.*;
@@ -179,6 +180,17 @@ public class H5CompoundDS extends CompoundDS
 
         return datatype;
     }
+    
+    /**
+     * Clears up the object
+     */
+    public void clear() {
+    		super.clear(); 
+    		
+    	if (attributeList != null)
+    		((Vector)attributeList).setSize(0);
+    }
+   
 
     /** Read data values of this dataset into byte array.
      * <p>
