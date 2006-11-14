@@ -2064,7 +2064,22 @@ HyperlinkListener, ChangeListener
     {
         String rootDir = System.getProperty("user.dir");
 
-/*
+/*        
+for (int i=0; i<65535; i++)        
+System.out.print(i +"\t" + (byte)( i) +"\t" + ((int)(i >> 8) & 0xFF)+"\n");
+*/
+
+/*        
+        float[] data = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50};
+        float[] minmax = {0,0};
+        double[] stat = new double[2];
+        Tools.computeStatistics(data, stat);
+        Tools.findMinMax(data, minmax);
+        System.out.println(stat[0]);
+        System.out.println(stat[1]);
+        System.out.println(minmax[0]);
+        System.out.println(minmax[1]);
+
         try {
             Group g = (Group)FileFormat.getHObject("e:\\hdf-files\\hdf5_test.h5#//");
             System.out.println(g);

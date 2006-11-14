@@ -125,7 +125,7 @@ public class H4GRImage extends ScalarDS
     {
         super (fileFormat, name, path, oid);
         palette = null;
-        isImage = true;
+        isImage = isImageDisplay = true;
         unsignedConverted = false;
 
         if (fileFormat instanceof H4File)

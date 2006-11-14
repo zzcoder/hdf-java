@@ -25,6 +25,7 @@ import java.io.*;
 import java.lang.reflect.Array;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.Toolkit;
@@ -449,6 +450,8 @@ implements TableView, ActionListener
 
     public void actionPerformed(ActionEvent e)
     {
+    	try { setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
         Object source = e.getSource();
         String cmd = e.getActionCommand();
 
@@ -569,8 +572,45 @@ implements TableView, ActionListener
             lastPage();
         }
         else if (cmd.equals("Show statistics")) {
-            try { showStatistics(); }
-            catch (Exception ex) {
+            try {
+                Object theData = null;
+
+                if (dataset instanceof CompoundDS)
+                {
+                	theData = getSelectedData();
+                    int cols = table.getSelectedColumnCount();
+                    //if (!(dataset instanceof ScalarDS))  return;
+                    if ((dataset instanceof CompoundDS) && (cols>1))
+                    {
+                        JOptionPane.showMessageDialog(this,
+                                "Please select one colunm a time for compound dataset.",
+                                getTitle(),
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    else if (theData == null)
+                    {
+                        JOptionPane.showMessageDialog(this,
+                                "Select a column to show statistics.",
+                                getTitle(),
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else 
+                    theData = dataValue;
+
+                double[] stat = new double[4];
+                if (Tools.computeStatistics(theData, stat) > 0) {
+                	String statistics = "Min                     = "+stat[0] +
+                                      "\nMax                     = "+stat[1] +
+                	                  "\nMean                    = "+stat[2] +
+                	                  "\nStandard deviaton = "+stat[3];
+                    JOptionPane.showMessageDialog(this, statistics, "Statistics", JOptionPane.INFORMATION_MESSAGE);
+                }
+                
+                theData = null;
+                System.gc();
+            } catch (Exception ex) {
                 toolkit.beep();
                 JOptionPane.showMessageDialog((JFrame)viewer,
                         ex,
@@ -627,6 +667,7 @@ implements TableView, ActionListener
                 return;
             }
         }
+    	}finally { setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)); }
     }
 
     // Implementing DataView.
@@ -1455,6 +1496,8 @@ implements TableView, ActionListener
         curFrame = idx+1;
         dataset.clearData();
 
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
         try {
             dataValue = dataset.getData();
             if (dataset instanceof ScalarDS)
@@ -1465,11 +1508,14 @@ implements TableView, ActionListener
         }
         catch (Exception ex)
         {
+        	setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             dataValue = null;
             JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
             return;
         }
 
+    	setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        
         frameField.setText(curFrame + " of " + maxFrame);
         updateUI();
     }
@@ -1801,183 +1847,6 @@ implements TableView, ActionListener
     private void selectAll() throws Exception
     {
         table.selectAll();
-    }
-
-    /**
-     * Show basic statistics, such as min, max, average and variance.
-     */
-    private void showStatistics() throws Exception
-    {
-        //if (!(dataset instanceof ScalarDS)) return;
-
-        Object theData = getSelectedData();
-
-        if (dataset instanceof CompoundDS)
-        {
-            int cols = table.getSelectedColumnCount();
-            //if (!(dataset instanceof ScalarDS))  return;
-            if ((dataset instanceof CompoundDS) && (cols>1))
-            {
-                JOptionPane.showMessageDialog(this,
-                        "Please select one colunm a time for compound dataset.",
-                        getTitle(),
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            else if (theData == null)
-            {
-                JOptionPane.showMessageDialog(this,
-                        "Select a column to show statistics.",
-                        getTitle(),
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        } else if (theData == null ||
-            Array.getLength(theData)==1)
-            theData = dataValue;
-
-        String statistics = calculateStatistics(theData);
-        theData = null;
-        System.gc();
-
-        JOptionPane.showMessageDialog(this, statistics, "Statistics", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    private String calculateStatistics(Object theData) throws Exception
-    {
-        double min=0, max=0, mean=0, variance = 0, sum=0, sum2=0;
-        int n = Array.getLength(theData);
-        String cName = theData.getClass().getName();
-        int cIndex = cName.lastIndexOf("[");
-        char nt = ' ';
-        if (cIndex >= 0 ) nt = cName.charAt(cIndex+1);
-
-        switch (nt)
-        {
-            case ('B'):
-            {
-                byte[] bvalue = (byte[])theData;
-                min = bvalue[0];
-                max = bvalue[0];
-                sum = bvalue[0];
-                sum2 = bvalue[0]*bvalue[0];
-                for (int i=1; i<n; i++)
-                {
-                    if (min > bvalue[i])
-                        min = bvalue[i];
-                    if (max < bvalue[i])
-                        max = bvalue[i];
-                    sum += bvalue[i];
-                    sum2 += bvalue[i]*bvalue[i];
-                }
-                break;
-            }
-            case ('S'):
-            {
-                short[] svalue = (short[])theData;
-                min = svalue[0];
-                max = svalue[0];
-                sum = svalue[0];
-                sum2 = svalue[0]*svalue[0];
-                for (int i=1; i<n; i++)
-                {
-                    if (min > svalue[i])
-                        min = svalue[i];
-                    if (max < svalue[i])
-                        max = svalue[i];
-                    sum += svalue[i];
-                    sum2 += svalue[i]*svalue[i];
-                }
-                break;
-            }
-            case('I'):
-            {
-                int[] ivalue = (int[])theData;
-                min = ivalue[0];
-                max = ivalue[0];
-                sum = ivalue[0];
-                sum2 = ivalue[0]*ivalue[0];
-                for (int i=1; i<n; i++)
-                {
-                    if (min > ivalue[i])
-                        min = ivalue[i];
-                    if (max < ivalue[i])
-                        max = ivalue[i];
-                    sum += ivalue[i];
-                    sum2 += ivalue[i]*ivalue[i];
-                }
-                break;
-            }
-            case('J'):
-            {
-                long[] lvalue = (long[])theData;
-                min = lvalue[0];
-                max = lvalue[0];
-                sum = lvalue[0];
-                sum2 = lvalue[0]*lvalue[0];
-                for (int i=1; i<n; i++)
-                {
-                    if (min > lvalue[i])
-                        min = lvalue[i];
-                    if (max < lvalue[i])
-                        max = lvalue[i];
-                    sum += lvalue[i];
-                    sum2 += lvalue[i]*lvalue[i];
-                }
-                break;
-            }
-            case('F'):
-            {
-                float[] fvalue = (float[])theData;
-                min = fvalue[0];
-                max = fvalue[0];
-                sum = fvalue[0];
-                sum2 = fvalue[0]*fvalue[0];
-                for (int i=1; i<n; i++)
-                {
-                    if (min > fvalue[i])
-                        min = fvalue[i];
-                    if (max < fvalue[i])
-                        max = fvalue[i];
-                    sum += fvalue[i];
-                    sum2 += fvalue[i]*fvalue[i];
-                }
-                break;
-            }
-            case('D'):
-            {
-                double[] dvalue = (double[])theData;
-                min = dvalue[0];
-                max = dvalue[0];
-                sum = dvalue[0];
-                sum2 = dvalue[0]*dvalue[0];
-                for (int i=1; i<n; i++)
-                {
-                    if (min > dvalue[i])
-                        min = dvalue[i];
-                    if (max < dvalue[i])
-                        max = dvalue[i];
-                    sum += dvalue[i];
-                    sum2 += dvalue[i]*dvalue[i];
-                }
-                break;
-            }
-        }
-
-        mean = sum/n;
-        variance = sum2/n - mean*mean;
-
-        StringBuffer sb = new StringBuffer();
-        sb.append("\nMinimum                 = ");
-        sb.append(Float.toString((float)min));
-        sb.append("\nMaximum                 = ");
-        sb.append(Float.toString((float)max));
-        sb.append("\nMean                         = ");
-        sb.append(Float.toString((float)mean));
-        sb.append("\nStandard deviation = ");
-        sb.append(Float.toString((float)(Math.sqrt(variance))));
-
-        return sb.toString();
     }
 
     /**

@@ -150,6 +150,7 @@ public class H5ScalarDS extends ScalarDS
                 H5.H5Aread(aid, atid, attrValue);
                 String strValue = new String(attrValue).trim();
                 isImage = strValue.equalsIgnoreCase("IMAGE");
+                isImageDisplay = isImage;
             }
         } catch (Exception ex) {}
         finally

@@ -184,7 +184,6 @@ implements ActionListener, ItemListener
             newObject = createHDFimage();
             if (newObject != null)
                 dispose();
-            ((Vector)groupList).setSize(0);
         }
         if (cmd.equals("Cancel"))
         {

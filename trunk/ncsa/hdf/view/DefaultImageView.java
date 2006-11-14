@@ -22,6 +22,7 @@ import java.io.*;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Graphics;
@@ -167,6 +168,10 @@ implements ImageView, ActionListener
     private JTextField frameField;
 
     private long curFrame=0, maxFrame=1;
+    
+    private MemoryImageSource memoryImageSource;
+    
+    private Animation animation;
 
 
     /**
@@ -206,6 +211,8 @@ implements ImageView, ActionListener
         rotateRelatedItems = new Vector(10);
         imageScroller = null;
         isTransposed = _isTransposed.booleanValue();
+        memoryImageSource = null;
+        animation = null;        
 
         HObject hobject = (HObject)viewer.getTreeView().getCurrentObject();
         if (hobject == null || !(hobject instanceof ScalarDS)) {
@@ -447,6 +454,11 @@ implements ImageView, ActionListener
         imageValueCheckBox.setActionCommand("Show image value");
         rotateRelatedItems.add(imageValueCheckBox);
         menu.add(imageValueCheckBox);
+        
+        item = new JMenuItem( "Show Statistics");
+        item.addActionListener(this);
+        item.setActionCommand("Show statistics");
+        menu.add(item);
 
         menu.addSeparator();
 
@@ -688,18 +700,19 @@ implements ImageView, ActionListener
 
                 image = createTrueColorImage(imageByteData, isPlaneInterlace, w, h);
             } else {
+                
                 imagePalette = dataset.getPalette();
                 if (imagePalette == null) {
                     imagePalette = Tools.createGrayPalette();
                     viewer.showStatus("\nNo attached palette found, default grey palette is used to display image");
                 }
                 data = dataset.getData();
-
+                
                 // Peter Cao, Sept 8, 2006
                 // It seems we need to translate unsigned image data. However, we need to verify it
                 dataset.convertFromUnsignedC();
                 data = dataset.getData();
-
+                
                 int w = dataset.getWidth();
                 int h = dataset.getHeight();
 
@@ -708,8 +721,9 @@ implements ImageView, ActionListener
                     imageByteData = Tools.getBytes(data, dataRange, w, h, true, dataset.getFillValue(), imageByteData);
                 else
                     imageByteData = Tools.getBytes(data, dataRange, dataset.getFillValue(), imageByteData);
-
+                
                 image = createIndexedImage(imageByteData, imagePalette, w, h);
+                
             }
         }
         catch (Throwable ex) {
@@ -1108,6 +1122,8 @@ implements ImageView, ActionListener
 
     public void actionPerformed(ActionEvent e)
     {
+    	try { setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+    	
         Object source = e.getSource();
         String cmd = e.getActionCommand();
 
@@ -1240,7 +1256,12 @@ implements ImageView, ActionListener
         }
         else if (cmd.startsWith("Show animation"))
         {
-            new Animation((JFrame)viewer, dataset);
+        	setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        	if (animation == null)
+        		animation = new Animation((JFrame)viewer, dataset);
+        	animation.setVisible(true);
+        	setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            
         }
         else if (cmd.startsWith("Animation speed"))
         {
@@ -1291,6 +1312,24 @@ implements ImageView, ActionListener
         else if (cmd.equals("Last page")) {
             lastPage();
         }
+        else if (cmd.equals("Show statistics")) {
+            try {
+                double[] stat = new double[4];
+                if (Tools.computeStatistics(data, stat) > 0) {
+                	String statistics = "Min                     = "+stat[0] +
+                                      "\nMax                     = "+stat[1] +
+                	                  "\nMean                    = "+stat[2] +
+                	                  "\nStandard deviaton = "+stat[3];
+                    JOptionPane.showMessageDialog(this, statistics, "Statistics", JOptionPane.INFORMATION_MESSAGE);
+                }
+            } catch (Exception ex) {
+                toolkit.beep();
+                JOptionPane.showMessageDialog((JFrame)viewer,
+                        ex,
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
         else if (cmd.equals("Select all data")) {
             try { selectAll(); }
             catch (Exception ex) {
@@ -1301,6 +1340,8 @@ implements ImageView, ActionListener
                         JOptionPane.ERROR_MESSAGE);
             }
         }
+		}finally { setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)); }
+        
     }
 
     public void dispose()
@@ -1458,6 +1499,8 @@ implements ImageView, ActionListener
             return;
         }
 
+    	setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        
         start[selectedIndex[2]] = idx;
         curFrame = idx+1;
         dataset.clearData();
@@ -1465,6 +1508,8 @@ implements ImageView, ActionListener
         imageComponent.setImage(getImage());
         frameField.setText(curFrame + " of " + maxFrame);
 
+    	setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        
         updateUI();
     }
 
@@ -1475,7 +1520,7 @@ implements ImageView, ActionListener
      *  @param h the height of the image.
      *  @return the image.
      */
-    public static Image createIndexedImage(byte[] imageData, byte[][] palette, int w, int h)
+    public Image createIndexedImage(byte[] imageData, byte[][] palette, int w, int h)
     {
         Image theImage = null;
 
@@ -1486,11 +1531,17 @@ implements ImageView, ActionListener
             palette[1],  // g - the array of green color components
             palette[2]); // b - the array of blue color components
 
-        theImage = Toolkit.getDefaultToolkit().createImage (
-            new MemoryImageSource(w, h, colorModel, imageData, 0, w));
+        if (memoryImageSource == null) {
+        	memoryImageSource = new MemoryImageSource(w, h, colorModel, imageData, 0, w);
+        }
+        else 
+        	memoryImageSource.newPixels(imageData, colorModel, 0, w);
+        
+        theImage = Toolkit.getDefaultToolkit().createImage (memoryImageSource);
 
         return theImage;
     }
+    
 
     /**
      *  Creates a true color image.
@@ -1532,7 +1583,7 @@ implements ImageView, ActionListener
      *  @param h the height of the image.
      *  @return the image.
      */
-    public static Image createTrueColorImage(byte[] imageData, boolean planeInterlace, int w, int h)
+    public Image createTrueColorImage(byte[] imageData, boolean planeInterlace, int w, int h)
     {
         Image theImage = null;
         int imgSize = w*h;
@@ -1568,8 +1619,14 @@ implements ImageView, ActionListener
         } // for (int i=0; i<h; i++)
 
         DirectColorModel dcm = (DirectColorModel)ColorModel.getRGBdefault();
-        theImage = Toolkit.getDefaultToolkit().createImage (
-            new MemoryImageSource(w, h, dcm, packedImageData, 0, w));
+        
+        if (memoryImageSource == null) {
+        	memoryImageSource = new MemoryImageSource(w, h, dcm, packedImageData, 0, w);
+        }
+        else 
+        	memoryImageSource.newPixels(packedImageData, dcm, 0, w);
+        	
+        theImage = Toolkit.getDefaultToolkit().createImage (memoryImageSource);
 
         packedImageData = null;
 
@@ -1719,10 +1776,14 @@ implements ImageView, ActionListener
 
         private Dimension originalSize, imageSize;
         private Image image;
-        private Point startPosition; // mouse clicked position
+        private Point startPosition, currentPosition; // mouse clicked position
         private Rectangle selectedArea, originalSelectedArea;
         private StringBuffer strBuff; // to hold display value
         private int yMousePosition=0; /* the vertical position of the current mouse */
+        private Dimension scrollDim = null;
+        private JScrollBar hbar = null;
+        private JScrollBar vbar = null;
+        private double ratio = 1.0/zoomFactor;
 
         private ImageComponent (Image img)
         {
@@ -1742,12 +1803,10 @@ implements ImageView, ActionListener
         public void paint(Graphics g)
         {
             g.drawImage(image, 0, 0, imageSize.width, imageSize.height, this);
-            int w = selectedArea.width;
-            int h = selectedArea.height;
-            if (w>0 && h >0)
+            if (selectedArea.width>0 && selectedArea.height >0)
             {
                 g.setColor(Color.red);
-                g.drawRect(selectedArea.x, selectedArea.y, w, h);
+                g.drawRect(selectedArea.x, selectedArea.y, selectedArea.width, selectedArea.height);
             }
         }
 
@@ -1755,40 +1814,80 @@ implements ImageView, ActionListener
         {
             startPosition = e.getPoint();
             selectedArea.setBounds(startPosition.x, startPosition.y, 0, 0);
+			scrollDim = imageScroller.getSize();
+            hbar = imageScroller.getHorizontalScrollBar();
+            vbar = imageScroller.getVerticalScrollBar();
+            
+            if ( (e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK)
+            	setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+            else
+            	setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));        	
+            
         }
 
         public void mouseClicked(MouseEvent e)
         {
-            startPosition = e.getPoint();
-            selectedArea.setBounds(startPosition.x, startPosition.y, 0, 0);
-            repaint();
+       		startPosition = e.getPoint();
+         	selectedArea.setBounds(startPosition.x, startPosition.y, 0, 0);
+         	
+    		if (hbar.isVisible()) {
+    			hbar.setValue(startPosition.x-scrollDim.width/2);
+    		}
+
+    		if (vbar.isVisible()) {
+    			vbar.setValue(startPosition.y-scrollDim.height/2);
+    		}
+    		
+    		repaint();
         }
 
         public void mouseDragged(MouseEvent e)
         {
-            Point p0 = startPosition;
-            Point p1 = e.getPoint();
+        	// don't update too often. 
+            try { Thread.sleep(20); } catch (Exception ex) {}
+        	
+            currentPosition = e.getPoint();
 
-            int x0 = Math.max(0, Math.min(p0.x, p1.x));
-            int y0 = Math.max(0, Math.min(p0.y, p1.y));
-            int x1 = Math.min(imageSize.width, Math.max(p0.x, p1.x));
-            int y1 = Math.min(imageSize.height, Math.max(p0.y, p1.y));
+			if ( (e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) == InputEvent.CTRL_DOWN_MASK ) 
+			{
+	            int x0 = Math.max(0, Math.min(startPosition.x, currentPosition.x));
+	            int y0 = Math.max(0, Math.min(startPosition.y, currentPosition.y));
+	            int x1 = Math.min(imageSize.width, Math.max(startPosition.x, currentPosition.x));
+	            int y1 = Math.min(imageSize.height, Math.max(startPosition.y, currentPosition.y));
+				
+	            int w = x1 - x0;
+	            int h = y1 - y0;
+	            
+	            selectedArea.setBounds(x0, y0, w, h);
+	            originalSelectedArea.setBounds(
+	                (int)(x0*ratio),
+	                (int)(y0*ratio),
+	                (int)(w*ratio),
+	                (int)(h*ratio));
+	            repaint();
+			} else 
+			{
+	    		if (hbar.isVisible()) {
+					int dx = startPosition.x-currentPosition.x;
+	    			hbar.setValue(hbar.getValue()+dx);
+	    		}
 
-            int w = x1 - x0;
-            int h = y1 - y0;
-            selectedArea.setBounds(x0, y0, w, h);
-            originalSelectedArea.setBounds(
-                (int)(x0/zoomFactor),
-                (int)(y0/zoomFactor),
-                (int)(w/zoomFactor),
-                (int)(h/zoomFactor));
-
-            repaint();
+	    		if (vbar.isVisible()) {
+	    			int dy = startPosition.y-currentPosition.y;
+	    			vbar.setValue(vbar.getValue()+dy);
+	    		}
+			}
         }
 
-        public void mouseReleased(MouseEvent e) {}
-        public void mouseEntered(MouseEvent e) {}
-        public void mouseExited(MouseEvent e)  {}
+        public void mouseReleased(MouseEvent e) {
+        	setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));        	
+        }
+        
+        public void mouseEntered(MouseEvent e) {
+        }
+        
+        public void mouseExited(MouseEvent e)  {
+        }
 
         public void mouseMoved(MouseEvent e)
         {
@@ -2520,7 +2619,7 @@ implements ImageView, ActionListener
         public Animation(JFrame theOwner, ScalarDS dataset) {
             super(theOwner, "Animation", true);
             owner = theOwner;
-            setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
+            setDefaultCloseOperation(JInternalFrame.HIDE_ON_CLOSE);
 
             long[] dims = dataset.getDims();
             long[] stride = dataset.getStride();
@@ -2562,8 +2661,10 @@ implements ImageView, ActionListener
             numberOfImages = (int)dims[selectedIndex[2]];
             frames = new Image[numberOfImages];
             int size = w*h;
+            MemoryImageSource mir = memoryImageSource;            
             try {
                 for (int i=0; i<numberOfImages; i++) {
+                	memoryImageSource = null; // each amimation image has its own image resource
                     start[selectedIndex[2]] = i;
                     try { data3d = dataset.read(); }
                     catch (Throwable err) { continue;}
@@ -2572,6 +2673,7 @@ implements ImageView, ActionListener
                 }
             } finally {
                 // set back to original state
+            	memoryImageSource = mir;
                 System.arraycopy(tstart, 0, start, 0, rank);
                 System.arraycopy(tselected, 0, selected, 0, rank);
                 System.arraycopy(tstride, 0, stride, 0, rank);
@@ -2664,9 +2766,6 @@ implements ImageView, ActionListener
                     if (currentFrame >= numberOfImages)
                         currentFrame = 0;
                 }
-
-
-
             }
         }
 
