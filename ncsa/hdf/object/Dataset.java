@@ -567,8 +567,8 @@ public abstract class Dataset extends HObject
         String cname = data_class.getName();
         char dname = cname.charAt(cname.lastIndexOf("[")+1);
         int size = Array.getLength(data_in);
-
-        if (dname == 'B') {
+        
+		if (dname == 'B') {
             short[] sdata = null;
             if (data_out == null)
                 sdata = new short[size];
@@ -578,9 +578,13 @@ public abstract class Dataset extends HObject
             short value = 0;
             for (int i=0; i<size; i++)
             {
-                value = (short)bdata[i];
-                if (value < 0) value += 256;
-                sdata[i] = value;
+                //value = (short)bdata[i];
+                //if (value < 0) value += 256;
+                //sdata[i] = value;
+                if((bdata[i] & 0x80)==0x80) 
+                	sdata[i] = (short) (128 + (bdata[i] & 0x7f));
+                else 
+                	sdata[i] = (short) bdata[i];
             }
             data_out = sdata;
         }
@@ -618,7 +622,7 @@ public abstract class Dataset extends HObject
         }
         else data_out = data_in;
         // Java does not support unsigned long
-
+		
         return data_out;
     }
 

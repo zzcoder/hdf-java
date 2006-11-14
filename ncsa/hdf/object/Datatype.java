@@ -23,33 +23,48 @@ import java.util.List;
 public abstract class Datatype extends HObject
 {
     /* native for datatype size, order, and sign */
-    final static public int NATIVE = -1;
+    public static final int NATIVE = -1;
 
     /* Classes of datatypes */
-    final static public int CLASS_NO_CLASS         = -1;
-    final static public int CLASS_INTEGER          = 0;
-    final static public int CLASS_FLOAT            = 1;
-    final static public int CLASS_CHAR             = 2;
-    final static public int CLASS_STRING           = 3;
-    final static public int CLASS_BITFIELD         = 4;
-    final static public int CLASS_OPAQUE           = 5;
-    final static public int CLASS_COMPOUND         = 6;
-    final static public int CLASS_REFERENCE        = 7;
-    final static public int CLASS_ENUM             = 8;
-    final static public int CLASS_VLEN             = 9;
-    final static public int CLASS_ARRAY            = 10;
+    public static final int CLASS_NO_CLASS         = -1;
+    public static final int CLASS_INTEGER          = 0;
+    public static final int CLASS_FLOAT            = 1;
+    public static final int CLASS_CHAR             = 2;
+    public static final int CLASS_STRING           = 3;
+    public static final int CLASS_BITFIELD         = 4;
+    public static final int CLASS_OPAQUE           = 5;
+    public static final int CLASS_COMPOUND         = 6;
+    public static final int CLASS_REFERENCE        = 7;
+    public static final int CLASS_ENUM             = 8;
+    public static final int CLASS_VLEN             = 9;
+    public static final int CLASS_ARRAY            = 10;
 
     /* Byte orders of datatype */
-    final static public int ORDER_LE         = 0;
-    final static public int ORDER_BE         = 1;
-    final static public int ORDER_VAX        = 2;
-    final static public int ORDER_NONE       = 3;
+    public static final int ORDER_LE         = 0;
+    public static final int ORDER_BE         = 1;
+    public static final int ORDER_VAX        = 2;
+    public static final int ORDER_NONE       = 3;
 
     /* Sign of integers */
-    final static public int SIGN_NONE         = 0;
-    final static public int SIGN_2            = 1;
-    final static public int NSGN             = 2;
-
+    public static final int SIGN_NONE         = 0;
+    public static final int SIGN_2            = 1;
+    public static final int NSGN              = 2;
+    
+    public static final int  CHAR_BIT   = 8;
+    public static final int  CHAR_MIN   = 0;
+    public static final int  CHAR_MAX   = 255;
+    public static final int  INT_MIN    = -2147483648;
+    public static final int  INT_MAX    = 2147483647;
+    public static final long LONG_MIN   = -9223372036854775808L;
+    public static final long LONG_MAX   = 9223372036854775807L;
+    public static final int  SCHAR_MIN  = -128;
+    public static final int  SCHAR_MAX  = 127;
+    public static final int  SHRT_MIN   = -32768;
+    public static final int  SHRT_MAX   = 32767;
+    public static final int  UCHAR_MAX  = 255;
+    public static final long UINT_MAX   = 4294967295L;
+    public static final int  USHRT_MAX  = 65535;
+    
     /**
      * The class of the datatype.
      */

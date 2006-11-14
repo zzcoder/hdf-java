@@ -342,7 +342,6 @@ implements ActionListener, ItemListener
 
             if (newObject != null)
                 dispose();
-            ((Vector)groupList).setSize(0);
         }
         else if (cmd.equals("Cancel"))
         {

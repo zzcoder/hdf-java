@@ -548,7 +548,11 @@ public final class Tools
         int size = Array.getLength(rawData);
         if (byteData == null || (size != byteData.length))
             byteData = new byte[size]; // reuse the old buffer
-        boolean minmaxFound = !(minmax[0] == minmax[1]);
+        
+        if (minmax[0] == minmax[1])
+            Tools.findMinMax(rawData,  minmax);
+        min = minmax[0]; 
+        max = minmax[1];
 
         switch (dname)
         {
@@ -577,21 +581,6 @@ public final class Tools
                             if (fvalue == s[i])
                                 s[i] = 0;
                         }
-                    }
-                }
-
-                if (minmaxFound)
-                {
-                    min = minmax[0];
-                    max = minmax[1];
-                }
-                else
-                {
-                    // search for the minimum and maximum of the raw data
-                    for (int i=0; i<size; i++)
-                    {
-                        min = Math.min(min, s[i]);
-                        max = Math.max(max, s[i]);
                     }
                 }
 
@@ -628,21 +617,6 @@ public final class Tools
                     }
                 }
 
-                if (minmaxFound)
-                {
-                    min = minmax[0];
-                    max = minmax[1];
-                }
-                else
-                {
-                    // search for the minimum and maximum of the raw data
-                    for (int i=0; i<size; i++)
-                    {
-                        min = Math.min(min, ia[i]);
-                        max = Math.max(max, ia[i]);
-                    }
-                }
-
                 // converts the data based on the ratio to support only 256 colors
                 ratio = (min == max) ? 1.00d : (double)(255.00/(max-min));
                 if (isTransposed)
@@ -673,21 +647,6 @@ public final class Tools
                             if (fvalue == l[i])
                                 l[i] = 0;
                         }
-                    }
-                }
-
-                if (minmaxFound)
-                {
-                    min = minmax[0];
-                    max = minmax[1];
-                }
-                else
-                {
-                    // search for the minimum and maximum of the raw data
-                    for (int i=0; i<size; i++)
-                    {
-                        min = Math.min(min, l[i]);
-                        max = Math.max(max, l[i]);
                     }
                 }
 
@@ -724,21 +683,6 @@ public final class Tools
                     }
                 }
 
-                if (minmaxFound)
-                {
-                    min = minmax[0];
-                    max = minmax[1];
-                }
-                else
-                {
-                    // search for the minimum and maximum of the raw data
-                    for (int i=0; i<size; i++)
-                    {
-                        min = Math.min(min, f[i]);
-                        max = Math.max(max, f[i]);
-                    }
-                }
-
                 // converts the data based on the ratio to support only 256 colors
                 ratio = (min == max) ? 1.00d : (double)(255.00/(max-min));
                 if (isTransposed)
@@ -772,21 +716,6 @@ public final class Tools
                     }
                 }
 
-                if (minmaxFound)
-                {
-                    min = minmax[0];
-                    max = minmax[1];
-                }
-                else
-                {
-                    // search for the minimum and maximum of the raw data
-                    for (int i=0; i<size; i++)
-                    {
-                        min = Math.min(min, d[i]);
-                        max = Math.max(max, d[i]);
-                    }
-                }
-
                 // converts the data based on the ratio to support only 256 colors
                 ratio = (min == max) ? 1.00d : (double)(255.00/(max-min));
                 if (isTransposed)
@@ -809,9 +738,6 @@ public final class Tools
                 byteData = null;
                 break;
         } // switch (dname)
-
-        minmax[0] = min;
-        minmax[1] = max;
 
         return byteData;
     }
@@ -858,6 +784,388 @@ public final class Tools
         }
 
         return instance;
+    }
+    
+    /**
+     * Computes autocontrast parameters for unsigned shorts and signed integers
+     *
+     * @param data the raw data array of signed integers or unsigned shorts
+     * @param params the auto gain parameter. params[0]=gain, params[1]=bias
+     * @param isUS flag to indicate if the orginal data is unsigned shorts
+     * @return non-negative if successful; otherwise, returns negative
+     */
+    public static int computeAutoContrast(int[] data,  double[] params, boolean isUS)
+    {
+        if (!isUS)
+            return -1; // for now, do not support data types other than unsigned shorts
+        
+    	int retval = 1;
+    	double[] minmax = new double[2];
+    	
+    	if (data == null || params == null || data.length<=0 || params.length<2)
+    		return -1;
+    	
+    	retval = computeAutoContrastMinMax(data, minmax);
+    	
+    	// force the min_max method so we can look at the target grids data sets
+    	if ( (retval < 0) || (minmax[1] - minmax[0] < 10) )
+    		retval = findMinMax(data, minmax);
+    	
+        if (retval < 0)
+            return -1;
+        
+        if (minmax[0]==minmax[1]) {
+            params[0] = 1.0;
+            params[1] = 0.0;
+        } else {
+            // This histogram method has a tendency to stretch the 
+            // range of values to be a bit too big, so we can 
+            // account for this by adding and subtracting some percent 
+            // of the difference to the max/min values 
+            // to prevent the gain from going too high. 
+            double diff = minmax[1] - minmax[0]; 
+            int newmax = (int)(minmax[1] + (diff * 0.1)); 
+            int newmin = (int)(minmax[0] - (diff * 0.1)); 
+            
+            if (isUS) {
+                if (newmax <= Datatype.USHRT_MAX)
+                    minmax[1] = newmax;
+                
+                if (newmin >=0)
+                    minmax[0] = newmin;
+
+                params[0] = (double) Datatype.USHRT_MAX / (minmax[1]-minmax[0]);
+                params[1] = (double) -minmax[0];
+                
+            }
+        }
+
+    	return retval;
+    }
+
+    /**
+     * Apply autocontrast parameters in place (destructive)
+     *
+     * @param data the raw data array of signed integers or unsigned shorts
+     * @param params the auto gain parameter. params[0]=gain, params[1]=bias
+     * @param isUS flag to indicate if the orginal data is unsigned shorts
+     * @return non-negative if successful; otherwise, returns negative
+     */
+    public static int applyAutoContrast(int[] data,  double[] params, boolean isUS)
+    {
+        if (!isUS)
+            return -1; // for now, do not support data types other than unsigned shorts
+
+        int retval = 1;
+      
+        if (data == null || params == null || data.length<=0 || params.length<2)
+            return -1;
+      
+        int n = data.length;
+        double gain = params[0]; 
+        double bias = params[1]; 
+        double value; 
+      
+        for( int i = 0; i<n; i++ ) { 
+            value = (double) (data[i] + bias) * gain; 
+            if( value < 0.0 ) 
+              data[i] = 0; 
+            else if( value > Datatype.USHRT_MAX ) 
+              data[i] = Datatype.USHRT_MAX; 
+            else 
+              data[i] = (int) value; 
+        } 
+      
+        return retval; 
+    } 
+
+    /** 
+     * Auto-ranging of gain/bias sliders 
+     * 
+     * Given the results of autogaining an image, compute reasonable 
+     * min and max values for gain/bias sliders. 
+     * 
+     * @param params the auto gain parameter: params[0]=gain, params[1]=bias
+     * @param gain the range of the gain: gain[0]=min, gain[1]=mas
+     * @param bias the range of the bias: bias[0]=min, bias[1]=max
+     * @return non-negative if successful; otherwise, returns negative
+    */ 
+    public static int computerAutoContrastSliderRange( double[] params, double[] gain, double[] bias) 
+    { 
+        if (params == null || gain == null || bias == null ||
+            params.length<2 || gain.length<2 || bias.length<2)
+            return -1;
+        
+        gain[0] = 0; 
+        gain[1] = params[0] * 3.0; 
+      
+        bias[1] = 256.0; 
+        if (params[1] >= 0.001 || params[1] <= -0.001 )
+            bias[1] = Math.abs( params[1] ) * 3.0; 
+        bias[0] = -bias[1]; 
+       
+        return 1; 
+    } 
+
+    /**
+     * Converts image raw data to bytes.
+     * This algorithm throws away the lower 8 bits of an unsigned short data
+     * and cst the higher 8 bits into byte.
+     *
+     * @param src the source data array of signed integers or unsigned shorts
+     * @param dst the destination data array of bytes
+     * @param isUS flag to indicate if the orginal data is unsigned shorts
+     * @return non-negative if successful; otherwise, returns negative
+     */
+    public static int convertImageBuffer(int[] src,  byte[] dst, boolean isUS)
+    {
+        if (src == null || dst == null || dst.length != src.length || !isUS)
+            return -1;
+        
+        for( int i=0; i<dst.length; i++ ) { 
+            dst[i] = (byte)((int)(src[i] >> 8) & 0xFF); 
+        } 
+        
+        return 0; 
+    } 
+    
+    /**
+     * Computes autocontrast parameters by
+     * <pre>
+     *    min = mean - 3 * std.dev 
+	 *    max = mean + 3 * std.dev 
+     * </pre>
+     *
+     * @param data the raw data array
+     * @param minmax the min and max values.
+     * @return non-negative if successful; otherwise, returns negative
+     */
+    public static int computeAutoContrastMinMax(Object data, Object minmax)
+    {
+    	int retval = 1;
+    	double[] avgstd = new double[2];
+
+    	if (data == null || minmax == null || Array.getLength(data)<=0 || Array.getLength(minmax)<2)
+    		return -1;
+    	
+    	retval = computeStatistics(data, avgstd);
+    	if (retval < 0)
+    		return retval;
+    	
+    	double min = avgstd[0] - 3.0*avgstd[1];
+    	double max = avgstd[0] + 3.0*avgstd[1];
+    	
+        String cname = minmax.getClass().getName();
+        char dname = cname.charAt(cname.lastIndexOf("[")+1);
+        switch (dname)
+        {
+        case 'B': 
+            byte[] b = (byte[])minmax;
+            b[0] = (byte)min; b[1] = (byte)max;
+            break;
+        case 'S':
+            short[] s = (short[])minmax;
+            s[0] = (short)min; s[1] = (short)max;
+            break;
+        case 'I':
+            int[] ia = (int[])minmax;
+            ia[0] = (int)min; ia[1] = (int)max;
+            break;
+        case 'J':
+        	long[] l = (long[])minmax;
+            l[0] = (long)min; l[1] = (long)max;
+            break;
+        case 'F':
+            float[] f = (float[])minmax;
+            f[0] = (float)min; f[1] = (float)max;
+            break;
+        case 'D':
+            double[] d = (double[])minmax;
+            d[0] = min; d[1] = max;
+            break;
+        default:
+            	retval = -1;
+                break;
+        } // switch (dname)
+    	
+    	return retval;
+    }
+
+    /**
+     * Finds the min and max values of the data array
+     *
+     * @param data the raw data array
+     * @param minmax the mmin and max values of the array.
+     * @return non-negative if successful; otherwise, returns negative
+     */
+    public static int findMinMax(Object data, double[] minmax)
+    {
+    	int retval = 1;
+    	
+    	if (data == null || minmax == null || Array.getLength(data)<=0 || Array.getLength(minmax)<2)
+    		return -1;
+    	
+        int n = Array.getLength(data);
+
+        String cname = data.getClass().getName();
+        char dname = cname.charAt(cname.lastIndexOf("[")+1);
+         switch (dname)
+        {
+            case 'B': 
+                byte[] b = (byte[])data;
+                minmax[0] = minmax[1] = (double)b[0];
+                for (int i=1; i<n; i++) {
+                	if (minmax[0]>b[i]) minmax[0] = (double)b[i];
+                	if (minmax[1]<b[i]) minmax[1] = (double)b[i];
+                }
+                break;
+            case 'S':
+                short[] s = (short[])data;
+                minmax[0] = minmax[1] = (double)s[0];
+                for (int i=1; i<n; i++) {
+                    if (minmax[0]>s[i]) minmax[0] = (double)s[i];
+                    if (minmax[1]<s[i]) minmax[1] = (double)s[i];
+                }
+                break;
+            case 'I':
+                int[] ia = (int[])data;
+                minmax[0] = minmax[1] = (double)ia[0];
+                for (int i=1; i<n; i++) {
+                    if (minmax[0]>ia[i]) minmax[0] = (double)ia[i];
+                    if (minmax[1]<ia[i]) minmax[1] = (double)ia[i];
+                }
+                break;
+            case 'J':
+            	long[] l = (long[])data;
+                minmax[0] = minmax[1] = (double)l[0];
+                for (int i=1; i<n; i++) {
+                    if (minmax[0]>l[i]) minmax[0] = (double)l[i];
+                    if (minmax[1]<l[i]) minmax[1] = (double)l[i];
+                }
+                break;
+            case 'F':
+                float[] f = (float[])data;
+                minmax[0] = minmax[1] = (double)f[0];
+                for (int i=1; i<n; i++) {
+                    if (minmax[0]>f[i]) minmax[0] = (double)f[i];
+                    if (minmax[1]<f[i]) minmax[1] = (double)f[i];
+                }
+                break;
+            case 'D':
+                double[] d = (double[])data;
+                minmax[0] = minmax[1] = d[0];
+                for (int i=1; i<n; i++) {
+                    if (minmax[0]>d[i]) minmax[0] = d[i];
+                    if (minmax[1]<d[i]) minmax[1] = d[i];
+                }
+                break;
+            default:
+            	retval = -1;
+                break;
+        } // switch (dname)
+        
+    	return retval;
+    }
+    
+    /**
+     * Computes mean and standard deviation of a data array
+     *
+     * @param data the raw data array
+     * @param avgstd the statistics: avgstd[0]=mean and avgstd[1]=stdev.
+     * @return non-negative if successful; otherwise, returns negative
+     */
+    /**
+     * @param data
+     * @param avgstd
+     * @return
+     */
+    public static int computeStatistics(Object data, double[] avgstd)
+    {
+    	int retval = 1;
+    	
+    	double sum=0, avg=0.0, var=0.0, diff=0.0;
+
+    	if (data == null || avgstd == null || Array.getLength(data)<=0 || Array.getLength(avgstd)<2)
+    		return -1;
+    	
+        int n = Array.getLength(data);
+
+        String cname = data.getClass().getName();
+        char dname = cname.charAt(cname.lastIndexOf("[")+1);
+    	
+        switch (dname)
+        {
+            case 'B': 
+                byte[] b = (byte[])data;
+                for (int i=0; i<n; i++)
+                	sum += b[i];
+                avg = (double) sum / (double)n;
+                for (int i=0; i<n; i++) {
+                	diff = (double) b[i] - avg;
+                	var += diff * diff;
+                }
+                break;
+            case 'S':
+                short[] s = (short[])data;
+                for (int i=0; i<n; i++)
+                	sum += s[i];
+                avg = (double) sum / (double)n;
+                for (int i=0; i<n; i++) {
+                	diff = (double) s[i] - avg;
+                	var += diff * diff;
+                }
+                break;
+            case 'I':
+                int[] ia = (int[])data;
+                for (int i=0; i<n; i++)
+                	sum += ia[i];
+                avg = (double) sum / (double)n;
+                for (int i=0; i<n; i++) {
+                	diff = (double) ia[i] - avg;
+                	var += diff * diff;
+                }
+                break;
+            case 'J':
+            	long[] l = (long[])data;
+                for (int i=0; i<n; i++)
+                	sum += l[i];
+                avg = (double) sum / (double)n;
+                for (int i=0; i<n; i++) {
+                	diff = (double) l[i] - avg;
+                	var += diff * diff;
+                }
+                break;
+            case 'F':
+                float[] f = (float[])data;
+                for (int i=0; i<n; i++)
+                	sum += f[i];
+                avg = (double) sum / (double)n;
+                for (int i=0; i<n; i++) {
+                	diff = (double) f[i] - avg;
+                	var += diff * diff;
+                }
+                break;
+            case 'D':
+                double[] d = (double[])data;
+                for (int i=0; i<n; i++)
+                	sum += d[i];
+                avg = (double) sum / (double)n;
+                for (int i=0; i<n; i++) {
+                	diff = (double) d[i] - avg;
+                	var += diff * diff;
+                }
+                break;
+            default:
+            	retval = -1;
+                break;
+        } // switch (dname)
+        
+        var /= (double)n;
+        
+        avgstd[0] = avg;
+        avgstd[1] = Math.sqrt(var);
+    	
+    	return retval;
     }
 
 

@@ -108,14 +108,6 @@ implements ActionListener, ItemListener
      */
     public DataOptionDialog(ViewManager theview, Dataset theDataset)
     {
-        this(theview, theDataset, -1);
-    }
-
-    /**
-     * Constructs a DataOptionDialog with the given HDFView.
-     */
-    public DataOptionDialog(ViewManager theview, Dataset theDataset, int viewType)
-    {
         super((JFrame)theview, true);
         setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
 
@@ -397,9 +389,6 @@ implements ActionListener, ItemListener
 
         init();
 
-        if (viewType == DataView.DATAVIEW_IMAGE) imageButton.setSelected(true);
-        else if (viewType == DataView.DATAVIEW_TABLE) spreadsheetButton.setSelected(true);
-
         // locate the H5Property dialog
         Point l = getParent().getLocation();
         l.x += 250;
@@ -424,6 +413,9 @@ implements ActionListener, ItemListener
 
             if (isSelectionCancelled)
                 return;
+            
+            if (dataset instanceof ScalarDS) 
+             ((ScalarDS)dataset).setIsImageDisplay(imageButton.isSelected());
 
             dispose();
         }
@@ -635,7 +627,7 @@ implements ActionListener, ItemListener
 
         if (dataset instanceof ScalarDS) {
             ScalarDS sd = (ScalarDS)dataset;
-            isImage = sd.isImage();
+            isImage = sd.isImageDisplay();
             isTrueColorImage = sd.isTrueColor();
         }
         else if (dataset instanceof CompoundDS) {

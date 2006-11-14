@@ -1513,19 +1513,7 @@ implements TreeView, ActionListener
                 dataViewName = (String)HDFView.getListOfTableView().get(0);
             }
         } else {
-            // make new selection and reload the dataset
-            int viewType = -1;
-            if (theFrame != null)  // remeber if the previous display is an imageview
-            {
-                if (theFrame instanceof ImageView)
-                    viewType = DataView.DATAVIEW_IMAGE;
-                else if (theFrame instanceof TableView)
-                    viewType = DataView.DATAVIEW_TABLE;
-                else if (theFrame instanceof TextView)
-                    viewType = DataView.DATAVIEW_TEXT;
-            }
-
-            DataOptionDialog dialog = new DataOptionDialog(viewer, d, viewType);
+            DataOptionDialog dialog = new DataOptionDialog(viewer, d);
 
             dialog.setVisible(true);
             if (dialog.isCancelled())

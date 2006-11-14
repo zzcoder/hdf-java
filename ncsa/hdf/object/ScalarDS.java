@@ -143,9 +143,12 @@ public abstract class ScalarDS extends Dataset
      */
     protected boolean unsignedConverted;
 
-    /* fill value */
+    /** fill value */
     protected Object fillValue = null;
-
+    
+    /** Flag to indicate if the dataset is displayed as an image */
+    protected boolean isImageDisplay;
+    
     /**
      * Constructs a ScalarDS with given name and path
      *
@@ -183,6 +186,7 @@ public abstract class ScalarDS extends Dataset
         interlace = -1;
         datatype = null;
         imageDataRange = null;
+        isImageDisplay = false;
     }
 
     /**
@@ -282,8 +286,27 @@ public abstract class ScalarDS extends Dataset
     }
 
     /**
+     * Returns true if this dataset is displayed as an image.
+     */
+    public final boolean isImageDisplay()
+    {
+        return isImageDisplay;
+    }
+   
+    /**
+     * Sets image display mode.
+     * 
+     * @param b if b is true, set display mode to image
+     */
+    public final void setIsImageDisplay(boolean b)
+    {
+        isImageDisplay = b;
+    } 
+    
+    /**
      * Returns true if this dataset is a true color image.
      */
+    
     public final boolean isTrueColor()
     {
         return isTrueColor;

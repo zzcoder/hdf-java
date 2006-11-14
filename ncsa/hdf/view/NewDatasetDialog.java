@@ -399,8 +399,6 @@ implements ActionListener, ItemListener, HyperlinkListener
 
             if (newObject != null)
                 dispose();
-            
-            ((Vector)groupList).setSize(0);
         }
         if (cmd.equals("Cancel"))
         {
