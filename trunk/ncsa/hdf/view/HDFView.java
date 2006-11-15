@@ -195,7 +195,7 @@ HyperlinkListener, ChangeListener
      * @param root the directory where the HDFView is installed.
      * @param filename the file to open.
      */
-    public HDFView(String root, String filename, int width, int height)
+    public HDFView(String root, String filename, int width, int height, int x, int y)
     {
         super("HDFView");
 
@@ -291,7 +291,7 @@ HyperlinkListener, ChangeListener
             } catch (Exception ex) { treeView = null; }
         }
 
-        createMainWindow(width, height);
+        createMainWindow(width, height, x, y);
 
         File theFile = new File(filename);
         if (theFile.exists()) {
@@ -378,7 +378,7 @@ HyperlinkListener, ChangeListener
      * ||========================================||
      * </pre>
      */
-    private void createMainWindow(int width, int height)
+    private void createMainWindow(int width, int height, int x, int y)
     {
         // create splitpane to separate treeview and the contentpane
         JScrollPane treeScroller = new JScrollPane((Component)treeView);
@@ -417,9 +417,9 @@ HyperlinkListener, ChangeListener
 
         splitPane.setDividerLocation(d.height-180);
 
-        int x0 = Math.max(10, (int)(inset*d.width));
-        int y0 = 10;//Math.max(10, (int)(inset*d.height));
-        this.setLocation(x0, y0);
+        //int x0 = Math.max(10, (int)(inset*d.width));
+        //int y0 = 10;//Math.max(10, (int)(inset*d.height));
+        this.setLocation(x, y);
 
         try {
             this.setIconImage(((ImageIcon)ViewProperties.getHdfIcon()).getImage());
@@ -2064,6 +2064,7 @@ HyperlinkListener, ChangeListener
     {
         String rootDir = System.getProperty("user.dir");
 
+
 /*        
 for (int i=0; i<65535; i++)        
 System.out.print(i +"\t" + (byte)( i) +"\t" + ((int)(i >> 8) & 0xFF)+"\n");
@@ -2101,7 +2102,7 @@ System.out.print(i +"\t" + (byte)( i) +"\t" + ((int)(i >> 8) & 0xFF)+"\n");
 
         boolean backup = false;
         File tmpFile = null;
-        int i=0, W=0, H=0;
+        int i=0, W=0, H=0, X=0, Y=0;
         
         for ( i = 0; i < args.length; i++)
         {
@@ -2121,14 +2122,36 @@ System.out.print(i +"\t" + (byte)( i) +"\t" + ((int)(i >> 8) & 0xFF)+"\n");
                 } catch (Exception e) {}
             } else if ("-g".equalsIgnoreCase(args[i]) || "-geometry".equalsIgnoreCase(args[i]))
             {
+                // -geometry WIDTHxHEIGHT+XOFF+YOFF 
                 try {
-                	String wxh = args[++i];
-                	int idx = wxh.indexOf('x');
+                	String geom = args[++i];
+                	int idx = 0;
+                    int idx0 = geom.lastIndexOf('-');
+                    int idx1 = geom.lastIndexOf('+');
+                    
+                    idx = Math.max(idx0, idx1);
+                    if (idx>0) {
+                        Y = Integer.parseInt(geom.substring(idx+1));
+                        if (idx == idx0)
+                            Y =-Y;
+                        geom = geom.substring(0, idx);
+                        idx0 = geom.lastIndexOf('-');
+                        idx1 = geom.lastIndexOf('+');
+                        idx = Math.max(idx0, idx1);
+                        if (idx>0) {
+                            X = Integer.parseInt(geom.substring(idx+1));
+                            if (idx == idx0)
+                                X =-X;
+                            geom = geom.substring(0, idx);
+                        }
+                    }
+                    
+                    idx = geom.indexOf('x');
                 	if (idx > 0) {
-                		W = Integer.parseInt(wxh.substring(0, idx));
-                		H = Integer.parseInt(wxh.substring(idx+1));
+                		W = Integer.parseInt(geom.substring(0, idx));
+                		H = Integer.parseInt(geom.substring(idx+1));
                 	}
-                } catch (Exception e) {}
+                } catch (Exception e) {e.printStackTrace();}
             } else if ("-java.vm.version".equalsIgnoreCase(args[i]))
             {
                 String info = "Compiled at "+JAVA_COMPILER+
@@ -2152,7 +2175,7 @@ System.out.print(i +"\t" + (byte)( i) +"\t" + ((int)(i >> 8) & 0xFF)+"\n");
             filename = args[i];
         }
 
-        HDFView frame = new HDFView(rootDir, filename, W, H);
+        HDFView frame = new HDFView(rootDir, filename, W, H, X, Y);
         frame.pack();
         frame.setVisible(true);
     }

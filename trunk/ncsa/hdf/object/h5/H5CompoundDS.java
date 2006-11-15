@@ -274,13 +274,21 @@ public class H5CompoundDS extends CompoundDS
       */
     public Object read() throws HDF5Exception
     {
+System.out.println("******* Debug random HDF5AtomException ******");
+int debug_line = 0;
+System.out.println("***" + String.valueOf(++debug_line)+": Enter H5CompoundDs.read()");        
+        
         List list = null;
 
         Object member_data = null;
         String member_name = null;
         int member_tid=-1, member_class=-1, member_size=0, fspace=-1, mspace=-1;
 
+System.out.println("***" + String.valueOf(++debug_line)+": Before init() is called: rank = " +rank);System.out.flush();        
+        
         if (rank <= 0 ) init(); // read data informatin into memory
+System.out.println("***" + String.valueOf(++debug_line)+": After init() is called: rank = " +rank);System.out.flush();        
+System.out.println("***" + String.valueOf(++debug_line)+": After init() is called: numberOfMembers = " +numberOfMembers);System.out.flush();        
 
         if (numberOfMembers <= 0)
             return null; // this compound dataset does not have any member
@@ -290,16 +298,34 @@ public class H5CompoundDS extends CompoundDS
         if (pdir == null)
             pdir = ".";
         H5.H5Dchdir_ext(pdir);
+        
+System.out.println("***" + String.valueOf(++debug_line)+": Before open() is called");System.out.flush();        
 
         int did = open();
+System.out.println("***" + String.valueOf(++debug_line)+": After open() is called: did = "+did);System.out.flush(); 
+
+System.out.println("***" + String.valueOf(++debug_line)+": After open() is called: call H5.H5Dget_space(did)");System.out.flush(); 
+try { 
+    fspace = H5.H5Dget_space(did);
+    H5.H5Sclose(fspace);
+} catch (Exception ex) { ex.printStackTrace(); }
+
+System.out.println("***" + String.valueOf(++debug_line)+": Before H5Dget_storage_size() is called: did = "+did);System.out.flush();        
 
         // check is storage space is allocated
         try {
             if (H5.H5Dget_storage_size(did) <=0)
-            {
                 throw new HDF5Exception("Storage space is not allocated.");
-            }
-        } catch (Exception ex) {}
+        } catch (Exception ex) {ex.printStackTrace();}
+        
+System.out.println("***" + String.valueOf(++debug_line)+": After H5Dget_storage_size() is called: did = "+did);System.out.flush();        
+System.out.println("***" + String.valueOf(++debug_line)+": After H5Dget_storage_size() is called: call H5.H5Dget_space(did)");System.out.flush(); 
+try { 
+    fspace = H5.H5Dget_space(did);
+    H5.H5Sclose(fspace);
+} catch (Exception ex) { ex.printStackTrace(); }
+
+System.out.println("***" + String.valueOf(++debug_line)+": Before H5Pfill_value_defined(plist, fillValue) is called: did = "+did);System.out.flush();        
 
         // check is fill value is defined
         try {
@@ -308,20 +334,31 @@ public class H5CompoundDS extends CompoundDS
             H5.H5Pfill_value_defined(plist, fillValue);
             try { H5.H5Pclose(plist); } catch (Exception ex2) {}
             if (fillValue[0] == HDF5Constants.H5D_FILL_VALUE_UNDEFINED)
-            {
                 throw new HDF5Exception("Fill value is not defined.");
-            }
-        } catch (Exception ex) {}
+        } catch (Exception ex) {ex.printStackTrace();}
+        
+System.out.println("***" + String.valueOf(++debug_line)+": After H5Pfill_value_defined(plist, fillValue) is called: did = "+did);System.out.flush();        
+System.out.println("***" + String.valueOf(++debug_line)+": After H5Pfill_value_defined(plist, fillValue) is called: call H5.H5Dget_space(did)");System.out.flush(); 
+try { 
+    fspace = H5.H5Dget_space(did);
+    H5.H5Sclose(fspace);
+} catch (Exception ex) { ex.printStackTrace(); }
 
         list = new Vector(flatNameList.size()+2);
 
         try // to match finally for closing resources
         {
+System.out.println("***" + String.valueOf(++debug_line)+": Before H5.H5Dget_space(did) is called: selectedDims.length = "+selectedDims.length);System.out.flush(); 
+            
             long[] lsize = {1};
             for (int j=0; j<selectedDims.length; j++)
                 lsize[0] *= selectedDims[j];
+System.out.println("***" + String.valueOf(++debug_line)+": Right Before failure on H5.H5Dget_space(did): did = "+did);System.out.flush();        
 
             fspace = H5.H5Dget_space(did);
+System.out.println("***" + String.valueOf(++debug_line)+": Right After failure on H5.H5Dget_space(did): did = "+did);System.out.flush();        
+System.out.println("******* End of Debug: if everything works fine, you should see this line ******");        
+
             mspace = H5.H5Screate_simple(1, lsize, null);
 
             // set the rectangle selection
@@ -777,8 +814,7 @@ public class H5CompoundDS extends CompoundDS
     public void close(int did)
     {
         try { H5.H5Fflush(did, HDF5Constants.H5F_SCOPE_LOCAL); } catch (Exception ex) {}
-        try { H5.H5Dclose(did); }
-        catch (HDF5Exception ex) { ; }
+        try { H5.H5Dclose(did); } catch (HDF5Exception ex) { ; }
     }
 
     /**
