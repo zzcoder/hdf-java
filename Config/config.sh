@@ -111,6 +111,22 @@ set -x
 #export CC
 #--with-javabin=$JAVABIN \
 
+# 10 ===================== setting for sol (solaris 64bit)
+#   must use short path, otherwise, expr error
+#INSTDIR=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/solaris64
+#JAVAINC=/usr/jdk1.5.0_05/include
+#JAVALIB=/usr/jdk1.5.0_05/lib
+#JAVABIN=/usr/jdk1.5.0_05/bin/sparcv9
+#HDF4=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib64/solaris/hdf4
+#HDF5=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib64/solaris/hdf5
+#SZIP=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib64/solaris/szip
+#GZIP=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib64/solaris/zlib
+#JPEG=/afs/.ncsa.uiuc.edu/projects/hdf/java/java8/xcao/java/lib64/solaris/jpeg
+#HDF4=/tmp/solaris/hdf4;HDF5=/tmp/solaris/hdf5;SZIP=/tmp/solaris/szip;GZIP=/tmp/solaris/zlib;JPEG=/tmp/solaris/jpeg
+#CC="/opt/SUNWspro/bin/cc -KPIC -xarch=v9"
+#export CC
+#--with-javabin=$JAVABIN \
+
 ./configure --prefix=$INSTDIR \
 --with-jdk=$JAVAINC,$JAVALIB \
 --with-hdf5=$HDF5/include,$HDF5/lib \
