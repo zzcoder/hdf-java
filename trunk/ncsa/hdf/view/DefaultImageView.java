@@ -715,15 +715,35 @@ implements ImageView, ActionListener
                 
                 int w = dataset.getWidth();
                 int h = dataset.getHeight();
+long t0 = new Date().getTime();                
 
-                // converts raw data to image data
-                if (isTransposed)
-                    imageByteData = Tools.getBytes(data, dataRange, w, h, true, dataset.getFillValue(), imageByteData);
-                else
-                    imageByteData = Tools.getBytes(data, dataRange, dataset.getFillValue(), imageByteData);
+                boolean isDataCOnverted = false;
+/*                
+                boolean isUS = (dataset.isUnsigned() && dataset.getDatatype().getDatatypeSize() ==2);
+                if (isUS) 
+                {
+                    // data is unsigned short. Convert image byte data using HUGS image algorithm 
+                    double[] params = new double[2];
+                    if (Tools.computeAutoContrast((int[])data, params, isUS) >= 0) {
+                        if (Tools.applyAutoContrast((int[])data, params, isUS) >=0) {
+                            if (imageByteData == null || imageByteData.length != Array.getLength(data))
+                                imageByteData = new byte[Array.getLength(data)];
+                            isDataCOnverted = (Tools.convertImageBuffer((int[])data, imageByteData, isUS)>=0);
+                        }
+                    }
+                }
+*/
+                if (!isDataCOnverted) {
+                    // converts raw data to image data
+                    if (isTransposed)
+                        imageByteData = Tools.getBytes(data, dataRange, w, h, true, dataset.getFillValue(), imageByteData);
+                    else
+                        imageByteData = Tools.getBytes(data, dataRange, dataset.getFillValue(), imageByteData);
+                }
                 
+System.out.println(new Date().getTime() -t0);
+
                 image = createIndexedImage(imageByteData, imagePalette, w, h);
-                
             }
         }
         catch (Throwable ex) {
