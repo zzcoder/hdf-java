@@ -444,8 +444,9 @@ distclean: clean-natives clean-classes clean-test clean-testlink
 
 src-dist:
 	-mkdir -p hdf-java
-	tar cvf --exclude '.svn' $(VERSION)-x.tar $(DISTFILES)
+	tar cvf $(VERSION)-x.tar $(DISTFILES)
 	cd hdf-java ; tar xf ../$(VERSION)-x.tar
+	find . -name .svn -exec rm -rf {} \;
 	$(RM) -f $(VERSION)-x.tar
 	tar cvf $(VERSION).tar hdf-java/*
 	$(JAR) cvf $(VERSION).jar hdf-java/*
