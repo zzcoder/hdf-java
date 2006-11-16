@@ -553,7 +553,7 @@ public final class Tools
             Tools.findMinMax(rawData,  minmax);
         min = minmax[0]; 
         max = minmax[1];
-
+        
         switch (dname)
         {
             case 'B':
@@ -594,10 +594,11 @@ public final class Tools
                             byteData[i*w+j] = (byte)((s[j*h+i]-min)*ratio);
                     }
                 }
-                else
-                for (int i=0; i<size; i++)
-                {
-                    byteData[i] = (byte)((s[i]-min)*ratio);
+                else {
+                    for (int i=0; i<size; i++)
+                    {
+                        byteData[i] = (byte)((s[i]-min)*ratio);
+                    }
                 }
 
                 break;
@@ -627,10 +628,9 @@ public final class Tools
                             byteData[i*w+j] = (byte)((ia[j*h+i]-min)*ratio);
                     }
                 }
-                else
-                for (int i=0; i<size; i++)
-                {
-                    byteData[i] = (byte)((ia[i] - min)*ratio);
+                else {
+                    for (int i=0; i<size; i++)
+                        byteData[i] = (byte)((ia[i] - min)*ratio);
                 }
 
                 break;
