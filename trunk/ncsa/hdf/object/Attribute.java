@@ -13,6 +13,7 @@
 
  import java.lang.reflect.*;
 
+
 /**
  * An attribute is a (name, value) pair of metadata that are attached to primary
  * data objects such as datasets, groups or named datatypes. The value field can
@@ -80,9 +81,17 @@ public class Attribute implements Metadata
      * Create an attribute with specified name, data type and dimension sizes.
      * For scalar attribute, the dimension size can be either an array of size one
      * or null, and the rank can be either 1 or zero. Attribute is a general class
-     * and is independent of file format, i.e., the implementation of attribute
+     * and is independent of file format, e.g., the implementation of attribute
      * applies to both HDF4 and HDF5.
-     * <p>
+     * <p>For example,
+     * <pre>
+        long[] attrDims = {1};
+        String attrName = "CLASS";
+        String[] classValue = {"IMAGE"};
+        Datatype attrType = new H5Datatype(Datatype.CLASS_STRING, classValue[0].length()+1, -1, -1);
+        Attribute attr = new Attribute(attrName, attrType, attrDims);
+        attr.setValue(classValue);
+     * </pre>
      * @param attrName the name of the attribute.
      * @param attrType the datatype of the attribute.
      * @param attrDims the dimension sizes of the attribute, null for scalar attribute
@@ -130,7 +139,7 @@ public class Attribute implements Metadata
     }
 
     /**
-     * Returns the rank of the data value of the attribute.
+     * Returns the rank (number of dimensions) of the attribute.
      */
     public int getRank()
     {
@@ -154,7 +163,7 @@ public class Attribute implements Metadata
     }
 
     /**
-     * Check the datatype of the attribute is an unsigned integer.
+     * Returns true if the attribute is an unsigned integer; otherwise returns false.
      */
     public boolean isUnsigned()
     {
@@ -162,10 +171,10 @@ public class Attribute implements Metadata
     }
 
     /**
-     * Returns the string representation of the data value of the attribute.
+     * Returns a string representation of the data value of the attribute.
      * <p>
-     * @param delimiter The delimiter to separate individual data points,
-     *        such as comma, semi-comma, tab or space
+     * @param delimiter The delimiter to separate individual data point,
+     *        such as ",", ";", "\t"or " "
      */
     public String toString(String delimiter)
     {
@@ -252,7 +261,7 @@ public class Attribute implements Metadata
     }
 
     /**
-     * Returns the string representation (the name) of the attribute.
+     * Returns a string representation (the name) of the attribute.
      */
     public String toString()
     {

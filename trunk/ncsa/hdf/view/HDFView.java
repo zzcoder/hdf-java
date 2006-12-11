@@ -2064,7 +2064,6 @@ HyperlinkListener, ChangeListener
     {
         String rootDir = System.getProperty("user.dir");
 
-
 /*        
 for (int i=0; i<65535; i++)        
 System.out.print(i +"\t" + (byte)( i) +"\t" + ((int)(i >> 8) & 0xFF)+"\n");

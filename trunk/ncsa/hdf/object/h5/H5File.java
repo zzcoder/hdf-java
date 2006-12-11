@@ -86,7 +86,7 @@ public class H5File extends FileFormat
 
     /** flag to indicate if the file is readonly. */
     private boolean isReadOnly;
-
+    
     /**
      * Constructs a empty H5File with read access.
      */
@@ -117,7 +117,7 @@ public class H5File extends FileFormat
     public H5File(String pathname, int access)
     {
         super(pathname);
-
+        
         isReadOnly = (access == READ);
         rootNode = null;
 
@@ -200,6 +200,11 @@ public class H5File extends FileFormat
     {
         if ( fid >0 )
             return fid; // file is openned already
+        
+        // The cwd may be changed at Dataset.read() by H5Dchdir_ext()
+        // to make it work for external datasets. We need to set it back
+        // before the file is closed/opened.
+        H5.H5Dchdir_ext(System.getProperty("user.dir"));
 
         // check for valid file access permission
         if ( flag < 0)
@@ -252,6 +257,11 @@ public class H5File extends FileFormat
      */
     public void close() throws HDF5Exception
     {
+        // The cwd may be changed at Dataset.read() by H5Dchdir_ext()
+        // to make it work for external datasets. We need to set it back
+        // before the file is closed/opened.
+        H5.H5Dchdir_ext(System.getProperty("user.dir"));
+        
         // clean unused objects
         if (rootNode != null)
         {

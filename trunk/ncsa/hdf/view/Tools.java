@@ -553,7 +553,7 @@ public final class Tools
             Tools.findMinMax(rawData,  minmax);
         min = minmax[0]; 
         max = minmax[1];
-        
+
         switch (dname)
         {
             case 'B':
@@ -846,34 +846,37 @@ public final class Tools
     /**
      * Apply autocontrast parameters in place (destructive)
      *
-     * @param data the raw data array of signed integers or unsigned shorts
+     * @param data_in the original data array of signed integers or unsigned shorts
+     * @param data_out the converted data array of signed integers or unsigned shorts
      * @param params the auto gain parameter. params[0]=gain, params[1]=bias
      * @param isUS flag to indicate if the orginal data is unsigned shorts
      * @return non-negative if successful; otherwise, returns negative
      */
-    public static int applyAutoContrast(int[] data,  double[] params, boolean isUS)
+    public static int applyAutoContrast(int[] data_in, int[]data_out,  double[] params, boolean isUS)
     {
         if (!isUS)
             return -1; // for now, do not support data types other than unsigned shorts
 
         int retval = 1;
       
-        if (data == null || params == null || data.length<=0 || params.length<2)
+        if (data_in == null || data_in.length<=0  || 
+            data_out == null || data_out.length != data_in.length ||
+            params == null || params.length<2)
             return -1;
       
-        int n = data.length;
+        int n = data_in.length;
         double gain = params[0]; 
         double bias = params[1]; 
         double value; 
       
         for( int i = 0; i<n; i++ ) { 
-            value = (double) (data[i] + bias) * gain; 
+            value = (double) (data_in[i] + bias) * gain; 
             if( value < 0.0 ) 
-              data[i] = 0; 
+              data_out[i] = 0; 
             else if( value > Datatype.USHRT_MAX ) 
-              data[i] = Datatype.USHRT_MAX; 
+              data_out[i] = Datatype.USHRT_MAX; 
             else 
-              data[i] = (int) value; 
+              data_out[i] = (int) value; 
         } 
       
         return retval; 
@@ -1099,9 +1102,9 @@ public final class Tools
                 byte[] b = (byte[])data;
                 for (int i=0; i<n; i++)
                 	sum += b[i];
-                avg = (double) sum / (double)n;
+                avg = sum / n;
                 for (int i=0; i<n; i++) {
-                	diff = (double) b[i] - avg;
+                	diff = b[i] - avg;
                 	var += diff * diff;
                 }
                 break;
@@ -1109,9 +1112,9 @@ public final class Tools
                 short[] s = (short[])data;
                 for (int i=0; i<n; i++)
                 	sum += s[i];
-                avg = (double) sum / (double)n;
+                avg = sum / n;
                 for (int i=0; i<n; i++) {
-                	diff = (double) s[i] - avg;
+                	diff = s[i] - avg;
                 	var += diff * diff;
                 }
                 break;
@@ -1119,9 +1122,9 @@ public final class Tools
                 int[] ia = (int[])data;
                 for (int i=0; i<n; i++)
                 	sum += ia[i];
-                avg = (double) sum / (double)n;
+                avg =  sum / n;
                 for (int i=0; i<n; i++) {
-                	diff = (double) ia[i] - avg;
+                	diff = ia[i] - avg;
                 	var += diff * diff;
                 }
                 break;
@@ -1129,9 +1132,9 @@ public final class Tools
             	long[] l = (long[])data;
                 for (int i=0; i<n; i++)
                 	sum += l[i];
-                avg = (double) sum / (double)n;
+                avg = sum / n;
                 for (int i=0; i<n; i++) {
-                	diff = (double) l[i] - avg;
+                	diff = l[i] - avg;
                 	var += diff * diff;
                 }
                 break;
@@ -1139,9 +1142,9 @@ public final class Tools
                 float[] f = (float[])data;
                 for (int i=0; i<n; i++)
                 	sum += f[i];
-                avg = (double) sum / (double)n;
+                avg = sum / n;
                 for (int i=0; i<n; i++) {
-                	diff = (double) f[i] - avg;
+                	diff = f[i] - avg;
                 	var += diff * diff;
                 }
                 break;
@@ -1149,9 +1152,9 @@ public final class Tools
                 double[] d = (double[])data;
                 for (int i=0; i<n; i++)
                 	sum += d[i];
-                avg = (double) sum / (double)n;
+                avg = sum / n;
                 for (int i=0; i<n; i++) {
-                	diff = (double) d[i] - avg;
+                	diff = d[i] - avg;
                 	var += diff * diff;
                 }
                 break;

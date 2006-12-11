@@ -172,7 +172,21 @@ implements ImageView, ActionListener
     private MemoryImageSource memoryImageSource;
     
     private Animation animation;
-
+    
+    /** flag to indicate that sutocontrast is applied to unsigned short data */
+    private boolean isAutoContrastUS;
+    
+    private AutoContrastSlider autoContrastSlider;
+    
+    /** gainBias[0] = gain, gainBias[1] = bias.
+     *  gain equates to contrast and bias equates to brightness
+     */
+    private double[] gainBias;
+    private double[] minMaxGain;
+    private double[] minMaxBias;
+    
+    /** int array to hold unsigned short or signed int data from applying the autogain */
+    private int[] autoGainData;
 
     /**
      * Constructs an ImageView.
@@ -212,7 +226,13 @@ implements ImageView, ActionListener
         imageScroller = null;
         isTransposed = _isTransposed.booleanValue();
         memoryImageSource = null;
-        animation = null;        
+        animation = null;  
+        isAutoContrastUS = false;
+        autoContrastSlider = null;
+        gainBias = null;
+        minMaxGain = null;
+        minMaxBias = null;
+        autoGainData = null;
 
         HObject hobject = (HObject)viewer.getTreeView().getCurrentObject();
         if (hobject == null || !(hobject instanceof ScalarDS)) {
@@ -715,34 +735,36 @@ implements ImageView, ActionListener
                 
                 int w = dataset.getWidth();
                 int h = dataset.getHeight();
-long t0 = new Date().getTime();                
 
-                boolean isDataCOnverted = false;
-/*                
                 boolean isUS = (dataset.isUnsigned() && dataset.getDatatype().getDatatypeSize() ==2);
                 if (isUS) 
                 {
                     // data is unsigned short. Convert image byte data using HUGS image algorithm 
-                    double[] params = new double[2];
-                    if (Tools.computeAutoContrast((int[])data, params, isUS) >= 0) {
-                        if (Tools.applyAutoContrast((int[])data, params, isUS) >=0) {
+                    gainBias = new double[2];
+                    if (Tools.computeAutoContrast((int[])data, gainBias, isUS) >= 0) {
+                        minMaxGain = new double[2];
+                        minMaxBias = new double[2];
+                        Tools.computerAutoContrastSliderRange( gainBias, minMaxGain, minMaxBias);
+
+                        if (autoGainData == null) 
+                            autoGainData = new int[Array.getLength(data)];
+                        
+                        if (Tools.applyAutoContrast((int[])data, autoGainData, gainBias, true) >=0) {
                             if (imageByteData == null || imageByteData.length != Array.getLength(data))
                                 imageByteData = new byte[Array.getLength(data)];
-                            isDataCOnverted = (Tools.convertImageBuffer((int[])data, imageByteData, isUS)>=0);
+                            isAutoContrastUS = (Tools.convertImageBuffer(autoGainData, imageByteData, true)>=0);
                         }
                     }
                 }
-*/
-                if (!isDataCOnverted) {
+
+                if (!isAutoContrastUS) {
                     // converts raw data to image data
                     if (isTransposed)
                         imageByteData = Tools.getBytes(data, dataRange, w, h, true, dataset.getFillValue(), imageByteData);
                     else
                         imageByteData = Tools.getBytes(data, dataRange, dataset.getFillValue(), imageByteData);
                 }
-                
-System.out.println(new Date().getTime() -t0);
-
+               
                 image = createIndexedImage(imageByteData, imagePalette, w, h);
             }
         }
@@ -1295,6 +1317,28 @@ System.out.println(new Date().getTime() -t0);
         }
         else if (cmd.startsWith("Brightness"))
         {
+            if (isAutoContrastUS) {
+                if (autoContrastSlider == null)
+                    autoContrastSlider = new AutoContrastSlider((JFrame)viewer, dataRange);
+                
+                autoContrastSlider.setVisible(true);
+                
+                if (autoContrastSlider.isValueChanged) {
+                    if (Tools.applyAutoContrast((int[])data, autoGainData, gainBias, true) >=0) {
+                        if (imageByteData == null || imageByteData.length != Array.getLength(data))
+                            imageByteData = new byte[Array.getLength(data)];
+                        if (Tools.convertImageBuffer(autoGainData, imageByteData, true)>=0) {
+                            int w = dataset.getWidth();
+                            int h = dataset.getHeight();
+                            image = createIndexedImage(imageByteData, imagePalette, w, h); 
+                            imageComponent.setImage(image);
+                            zoomTo(zoomFactor);
+                        }
+                    }
+                }
+                return;
+            }
+            
             String strLevel = (String)JOptionPane.showInputDialog(this,
                     "Enter level of brightness [-100, 100]\n-100 is the darkest and 100 is brightest",
                     "Image Brightness",
@@ -1375,6 +1419,7 @@ System.out.println(new Date().getTime() -t0);
         image = null;
         imageByteData = null;
         imageComponent = null;
+        autoGainData = null;
         ((Vector)rotateRelatedItems).setSize(0);
         System.runFinalization();
         System.gc();
@@ -2820,6 +2865,9 @@ System.out.println(new Date().getTime() -t0);
                 minmax[1] = 255;
             } else
             {
+                if (dataRange[0] == dataRange[1])
+                    Tools.findMinMax(data, dataRange);
+                
                 minmax[0] = dataRange[0];
                 minmax[1] = dataRange[1];
             }
@@ -2952,7 +3000,6 @@ System.out.println(new Date().getTime() -t0);
          */
         public void propertyChange(PropertyChangeEvent e)
         {
-/*
             Object source = e.getSource();
             if ("value".equals(e.getPropertyName()))
             {
@@ -2968,7 +3015,7 @@ System.out.println(new Date().getTime() -t0);
                         value = maxValue;
                         minField.setText(String.valueOf(value));
                     }
-                    //minSlider.setValue((int)value);
+                    minSlider.setValue((int)value);
                 }
                 else if (source.equals(maxField) && maxSlider!= null)
                 {
@@ -2978,13 +3025,192 @@ System.out.println(new Date().getTime() -t0);
                         value = minValue;
                         maxField.setText(String.valueOf(value));
                     }
-                    //maxSlider.setValue((int)value);
+                    maxSlider.setValue((int)value);
                 }
             }
-*/
         }
 
         public double[] getRange()  { return minmax; }
     } //private class DataRangeDialog extends JDialog implements ActionListener
+    
+    private class AutoContrastSlider extends JDialog implements 
+    ActionListener, ChangeListener, PropertyChangeListener
+    {
+        public static final long serialVersionUID = HObject.serialVersionUID;
+        private boolean isValueChanged = false;
+        JSlider brightSlider, contrastSlider;
+        JFormattedTextField brightField, contrastField;
+        
+        int[] gain = { (int)minMaxGain[0], (int)minMaxGain[1] };
+        int[] bias = { (int)minMaxBias[0],  (int)minMaxBias[1] };
+          
+        public AutoContrastSlider(JFrame theOwner, double[] dataRange)
+        {
+            super(theOwner, "Brightness/Contrast", true);
 
+            java.text.NumberFormat numberFormat = java.text.NumberFormat.getNumberInstance();
+            NumberFormatter formatter = new NumberFormatter(numberFormat);
+            
+            formatter.setMinimum(Integer.valueOf(bias[0]));
+            formatter.setMaximum(Integer.valueOf(bias[1]));
+            brightField = new JFormattedTextField(formatter);
+            brightField.addPropertyChangeListener(this);
+            brightField.setValue(Integer.valueOf((int)gainBias[1]));
+            
+            brightSlider = new JSlider(JSlider.HORIZONTAL, bias[0], bias[1], (int)gainBias[1]);
+            int tickSpace = (bias[1]-bias[0])/10;
+            if (tickSpace < 1) tickSpace = 1;
+            brightSlider.setMajorTickSpacing(tickSpace);
+            brightSlider.setPaintTicks(true);
+            brightSlider.setPaintLabels(true);
+            brightSlider.addChangeListener(this);
+            brightSlider.setBorder( BorderFactory.createEmptyBorder(0,0,10,0));
+
+            formatter.setMinimum(Integer.valueOf(gain[0]));
+            formatter.setMaximum(Integer.valueOf(gain[1]));
+            contrastField = new JFormattedTextField(formatter);
+            contrastField.addPropertyChangeListener(this);
+            contrastField.setValue(Integer.valueOf((int)gainBias[0]));
+
+
+            contrastSlider = new JSlider(JSlider.HORIZONTAL, gain[0], gain[1], (int)gainBias[0]);
+            tickSpace = (gain[1]-gain[0])/10;
+            if (tickSpace < 1) tickSpace = 1;
+            contrastSlider.setMajorTickSpacing(tickSpace);
+            contrastSlider.setPaintTicks(true);
+            contrastSlider.setPaintLabels(true);
+            contrastSlider.addChangeListener(this);
+            contrastSlider.setBorder( BorderFactory.createEmptyBorder(0,0,10,0));
+
+            JPanel contentPane = (JPanel)getContentPane();
+            contentPane.setLayout(new BorderLayout(5, 5));
+            contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+            contentPane.setPreferredSize(new Dimension(500, 300));
+
+            JPanel brightPane = new JPanel();
+            brightPane.setBorder(new TitledBorder("Brightness"));
+            brightPane.setLayout(new BorderLayout());
+            brightPane.add(brightField, BorderLayout.NORTH);
+            brightPane.add(brightSlider, BorderLayout.CENTER);
+
+            JPanel contrastPane = new JPanel();
+            contrastPane.setBorder(new TitledBorder("Contrast"));
+            contrastPane.setLayout(new BorderLayout());
+            contrastPane.add(contrastField, BorderLayout.NORTH);
+            contrastPane.add(contrastSlider, BorderLayout.CENTER);
+
+            JPanel mainPane = new JPanel();;
+            mainPane.setLayout(new GridLayout(2,1,5,5));
+            mainPane.add(brightPane);
+            mainPane.add(contrastPane);
+            contentPane.add(mainPane, BorderLayout.CENTER);
+
+            // add OK and CANCEL buttons
+            JPanel confirmP = new JPanel();
+            JButton button = new JButton("   Ok   ");
+            button.setMnemonic(KeyEvent.VK_O);
+            button.setActionCommand("Ok_gain_change");
+            button.addActionListener(this);
+            confirmP.add(button);
+            button = new JButton("Cancel");
+            button.setMnemonic(KeyEvent.VK_C);
+            button.setActionCommand("Cancel_gain_change");
+            button.addActionListener(this);
+            confirmP.add(button);
+            contentPane.add(confirmP, BorderLayout.SOUTH);
+            contentPane.add(new JLabel(" "), BorderLayout.NORTH);
+
+            Point l = getParent().getLocation();
+            Dimension d = getParent().getPreferredSize();
+            l.x += 300;
+            l.y += 200;
+            setLocation(l);
+            pack();
+        }
+
+        public void actionPerformed(ActionEvent e)
+        {
+            Object source = e.getSource();
+            String cmd = e.getActionCommand();
+
+            if (cmd.equals("Ok_gain_change"))
+            {
+                int b = ((Number)brightField.getValue()).intValue();
+                int c = ((Number)contrastField.getValue()).intValue();
+                
+                if (b != (int)gainBias[1] || c != (int)gainBias[0]) {
+                    gainBias[1] = (double) b;
+                    gainBias[0] = (double) c;
+                    isValueChanged = true;
+                }
+                else
+                    isValueChanged = false;
+                
+                setVisible(false);
+            }
+            else if (cmd.equals("Cancel_gain_change"))
+            {
+                isValueChanged = false;
+                setVisible(false);
+            }
+        }
+
+        /** Listen to the slider. */
+        public void stateChanged(ChangeEvent e)
+        {
+            Object source = e.getSource();
+
+            if (!(source instanceof JSlider))
+                return;
+
+            JSlider slider = (JSlider)source;
+            int value = slider.getValue();
+            if (slider.equals(brightSlider))
+            {
+                brightField.setValue(new Integer(value));
+            }
+            else if (slider.equals(contrastSlider))
+            {
+                contrastField.setValue(new Integer(value));
+            }
+        }
+        
+        /**
+         * Listen to the text field.  This method detects when the
+         * value of the text field changes.
+         */
+        public void propertyChange(PropertyChangeEvent e)
+        {
+            Object source = e.getSource();
+            if ("value".equals(e.getPropertyName()))
+            {
+                Number num = (Number)e.getNewValue();
+                if (num == null) return;
+                double value = num.doubleValue();
+
+                if (source.equals(brightField) && brightSlider!= null)
+                {
+                    if (value > bias[1])
+                        value = (double) bias[1];
+                    else if (value < bias[0])
+                        value = (double) bias[0];
+                    brightSlider.setValue((int)value);
+                }
+                else if (source.equals(contrastField) && contrastSlider!= null)
+                {
+                    if (value > gain[1])
+                        value = (double) gain[1];
+                    else if (value < gain[0])
+                        value = (double) gain[0];
+                    contrastSlider.setValue((int)value);
+                }
+            }
+        }
+        
+        /**
+         * Returns true if the brightness/constrast is changed; otherwise, returns false;
+         */
+        public boolean isValueChanged() { return isValueChanged; }
+        
+    } //private class AutoContrastSlider extends JDialog implements ActionListener
 }
