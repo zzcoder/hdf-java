@@ -290,15 +290,20 @@ public class H5CompoundDS extends CompoundDS
         if (pdir == null)
             pdir = ".";
         H5.H5Dchdir_ext(pdir);
-        
+
         int did = open();
+        try {
+            fspace = H5.H5Dget_space(did);
+            H5.H5Sclose(fspace);
+        } catch (Exception ex) { ex.printStackTrace(); }
 
         // check is storage space is allocated
-        try {
-            if (H5.H5Dget_storage_size(did) <=0)
-                throw new HDF5Exception("Storage space is not allocated.");
-        } catch (Exception ex) {ex.printStackTrace();}
+        if (H5.H5Dget_storage_size(did) <=0) {
+            close(did);
+            throw new HDF5Exception("Storage space is not allocated.");
+        }
         
+        /*
         // check is fill value is defined
         try {
             int plist = H5.H5Dget_create_plist(did);
@@ -308,7 +313,8 @@ public class H5CompoundDS extends CompoundDS
             if (fillValue[0] == HDF5Constants.H5D_FILL_VALUE_UNDEFINED)
                 throw new HDF5Exception("Fill value is not defined.");
         } catch (Exception ex) {ex.printStackTrace();}
-        
+         */
+
         list = new Vector(flatNameList.size()+2);
 
         try // to match finally for closing resources
@@ -318,7 +324,6 @@ public class H5CompoundDS extends CompoundDS
                 lsize[0] *= selectedDims[j];
 
             fspace = H5.H5Dget_space(did);
-
             mspace = H5.H5Screate_simple(1, lsize, null);
 
             // set the rectangle selection
@@ -451,12 +456,12 @@ public class H5CompoundDS extends CompoundDS
                 list.add(member_data);
             } // end of for (int i=0; i<num_members; i++)
 
-/* TODO:
+            /* TODO:
             if (isIndexTable) {
                 try { queryIndexSpace(did, list); }
                 catch (Exception ex) {}
             }
-*/
+            */
         } finally
         {
             if (fspace > 0)

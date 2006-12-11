@@ -398,7 +398,9 @@ public class H5ScalarDS extends ScalarDS
             if (H5.H5Tequal(nativeDatatype, HDF5Constants.H5T_STD_REF_DSETREG))
                 throw new HDF5Exception("Dataset region reference is not supported.");
 
-            if (originalBuf ==null || (originalBuf!=null && lsize[0] !=nPoints)) {
+            boolean isREF = (H5.H5Tequal(nativeDatatype, HDF5Constants.H5T_STD_REF_OBJ));
+            if ( originalBuf ==null || isText || isREF ||
+                (originalBuf!=null && lsize[0] !=nPoints)) {
                 theData = H5Datatype.allocateArray(nativeDatatype, (int)lsize[0]);
             } else
                 theData = originalBuf; // reuse the buffer if the size is the same
@@ -413,7 +415,7 @@ public class H5ScalarDS extends ScalarDS
                     H5.H5Dread( did, nativeDatatype, mspace, fspace, HDF5Constants.H5P_DEFAULT, theData);
                     if (isText && convertByteToString)
                         theData = byteToString((byte[])theData, H5.H5Tget_size(nativeDatatype));
-                    else if (H5.H5Tequal(nativeDatatype, HDF5Constants.H5T_STD_REF_OBJ))
+                    else if (isREF)
                         theData = HDFNativeData.byteToLong((byte[])theData);
                 }
             }
@@ -838,13 +840,22 @@ public class H5ScalarDS extends ScalarDS
         }
         else if (rank > 2)
         {
-            //in the case of images with only one component, the dataspace may
+            // 3D dataset is arranged in the order of [frame][height][width] by default
+            selectedIndex[1] = rank-1; // width, the fastest dimension
+            selectedIndex[0] = rank-2; // height
+            selectedIndex[2] = rank-3; // frames
+            selectedDims[selectedIndex[0]] = dims[selectedIndex[0]];
+            selectedDims[selectedIndex[1]] = dims[selectedIndex[1]];
+            
+            /*
+            // In the case of images with only one component, the dataspace may
             // be either a two dimensional array, or a three dimensional array
             // with the third dimension of size 1.  For example, a 5 by 10 image
             // with 8 bit color indexes would be an HDF5 dataset with type
             // unsigned 8 bit integer.  The dataspace could be either a two
             // dimensional array, with dimensions [10][5], or three dimensions,
-            // with dimensions either [10][5][1] or [1][10][5].
+            // with dimensions either [10][5][1] ([height][width][1])
+            // or [1][10][5] ([1][height][width]).
             if (dims[0] == 1)
             {
                 // case [1][10][5]
@@ -863,14 +874,15 @@ public class H5ScalarDS extends ScalarDS
                 selectedDims[0] = dims[0];
                 selectedDims[1] = dims[1];
             }
+            */
         }
 
         if (rank > 1 && isText)
         {
-            selectedIndex[0] = 1;
+            selectedIndex[0] = rank-1;
             selectedIndex[1] = 0;
             selectedDims[0] = 1;
-            selectedDims[1] = dims[1];
+            selectedDims[selectedIndex[0]] = dims[selectedIndex[0]];
         }
     }
 

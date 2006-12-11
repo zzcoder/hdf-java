@@ -116,6 +116,42 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dchdir_1ext
     return (jint)status;
 }
 
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Dgetdir_1ext
+ * Signature: (ILjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dgetdir_1ext
+  (JNIEnv *env, jclass clss, jstring dir_name, jint buf_size)
+{
+    char *aName;
+    jstring str;
+
+    if (buf_size <= 0) {
+        h5badArgument( env, "H5Dgetcwd:  buf_size <= 0");
+        return -1;
+    }
+    aName = (char*)malloc(sizeof(char)*buf_size);
+    if (aName == NULL) {
+        h5outOfMemory( env, "H5Dgetcwd:  malloc failed");
+        return -1;
+    }
+    getcwd( (char *)aName, (size_t)buf_size);
+
+    str = (*env)->NewStringUTF(env,aName);
+
+    if (str == NULL) {
+        free(aName);
+        h5JNIFatalError( env,"H5Dgetcwd:  return string failed");
+        return -1;
+    }
+    free(aName);
+
+    (*env)->SetObjectArrayElement(env,dir_name,0,str);
+
+    return 0;
+}
+
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5

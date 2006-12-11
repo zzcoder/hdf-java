@@ -133,7 +133,7 @@ public abstract class Dataset extends HObject
     protected long[] startDims;
 
     /**
-     * Indices of selected dimensions.
+     * Indices of 3D selected dimensions [height]width][frame].
      * <B>selectedIndex[] is provied for two purpose:</B>
      * <OL>
      * <LI>

@@ -117,14 +117,14 @@ public abstract class CompoundDS extends Dataset
     protected boolean[] isMemberSelected;
 
     /**
-     * Constructs a CompoundDS object with given file and dataset name and path.
+     * Constructs a CompoundDS object with given file, dataset name and path.
      * This object is usually constructed at FileFormat.open(), which loads the
      * file structure and object informatoin into tree structure (TreeNode). It
      * is rarely used elsewhere.
      * <p>
-     * @param fileFormat the HDF file.
-     * @param name the name of this CompoundDS.
-     * @param path the full path of this CompoundDS.
+     * @param fileFormat the file that contains the dataset.
+     * @param name the name of this CompoundDS, e.g. "compDS".
+     * @param path the full path of this CompoundDS, e.g. "/g1".
      */
     public CompoundDS(FileFormat fileFormat, String name, String path)
     {
@@ -137,10 +137,10 @@ public abstract class CompoundDS extends Dataset
      * file structure and object informatoin into tree structure (TreeNode). It
      * is rarely used elsewhere.
      * <p>
-     * @param fileFormat the HDF file.
-     * @param name the name of this CompoundDS.
-     * @param path the full path of this CompoundDS.
-     * @param oid the unique identifier of this data object.
+     * @param fileFormat the file that contains the dataset.
+     * @param name the name of this CompoundDS, e.g. "compDS".
+     * @param path the full path of this CompoundDS, e.g. "/g1".
+     * @param oid the unique identifier of this dataset object.
      *    HDF4 objects are uniquely identified by the (tag_id, ref_id) pairs,
      *    i.e. oid[0]=tag, oid[1]=ref.<br>
      *    HDF5 objects uniquely identified by the reference identifier,
@@ -170,6 +170,8 @@ public abstract class CompoundDS extends Dataset
 
     /**
      * Returns the number of selected members of this compound dataset.
+     * Selelcted members are the compound fields which are selected to read
+     * or write. 
      */
     public final int getSelectedMemberCount()
     {
@@ -196,7 +198,7 @@ public abstract class CompoundDS extends Dataset
     }
 
     /**
-     * Returns the data types of the members of this compound dataset.
+     * Returns the ndatatype identifiers of the members of this compound dataset.
      * Each member of a compound dataset has its datatype. The datatype of a
      * member can be atomic or other compound datatype.
      */
@@ -206,7 +208,7 @@ public abstract class CompoundDS extends Dataset
     }
 
     /**
-     * Returns true if the i-th memeber is selected; otherwise returns false
+     * Returns true if the i-th memeber is selected; otherwise returns false.
      */
     public final boolean isMemberSelected(int i)
     {
@@ -226,10 +228,10 @@ public abstract class CompoundDS extends Dataset
     }
 
     /**
-     * Select/deselect all members.
+     * Selects/deselects all members.
      * @param isSelected The indicator to select or deselect all members.
-     *     If isSelected is true, selects all members. If isSelected is false,
-     *     deselects all members.
+     *     If isSelected is true, all members are selected. 
+     *     If isSelected is false, no member is selected.
      */
     public final void setMemberSelection(boolean isSelected)
     {
@@ -241,8 +243,16 @@ public abstract class CompoundDS extends Dataset
     }
 
     /**
-     * Returns the data orders (total array size) of all the members
-     * of this compound dataset.
+     * Returns the dimension sizes of the members of this compound dataset.
+     * <p>For example, a compound dataset COMP has members of A, B and C as
+     * <pre>
+     *     COMP {
+     *         int A;
+     *         float B[5];
+     *         double C[2][3];
+     *     }
+     * </pre>
+     * getMemberOrders() will return an integer array of {1, 5, 6}
      */
     public final int[] getMemberOrders()
     {
@@ -250,9 +260,17 @@ public abstract class CompoundDS extends Dataset
     }
 
     /**
-     * Returns the data orders (total array size) of the selected members
-     * of this compound dataset.
-     */
+     * Returns the dimension sizes of the selected members of this compound dataset.
+     * <p>For example, a compound dataset COMP has members of A, B and C as
+     * <pre>
+     *     COMP {
+     *         int A;
+     *         float B[5];
+     *         double C[2][3];
+     *     }
+     * </pre>
+     * If A and B are selected, getSelectedMemberOrders() returns an array of {1, 5}
+    */
     public final int[] getSelectedMemberOrders()
     {
         if (isMemberSelected == null)
@@ -269,7 +287,7 @@ public abstract class CompoundDS extends Dataset
         return orders;
     }
 
-    /** Returns the data types of the selected members */
+    /** Returns the datatype IDs of the selected members */
     public final int[] getSelectedMemberTypes()
     {
         if (isMemberSelected == null)
@@ -287,7 +305,16 @@ public abstract class CompoundDS extends Dataset
     }
 
     /**
-     * Returns the dimension sizes of each member.
+     * Returns the dimension sizes of of the i-th member.
+     * <p>For example, a compound dataset COMP has members of A, B and C as
+     * <pre>
+     *     COMP {
+     *         int A;
+     *         float B[5];
+     *         double C[2][3];
+     *     }
+     * </pre>
+     * getMemeberDims(2) returns an array of {2, 3}
      */
     public final int[] getMemeberDims(int i) {
         if (memberDims == null)
@@ -311,11 +338,10 @@ public abstract class CompoundDS extends Dataset
      * @param data the data values of the subset to be copied.
      * @return the new dataset.
      */
-    public Dataset copy(Group pgroup, String name, long[] dims,
-        Object data) throws Exception
+    public Dataset copy(Group pgroup, String name, long[] dims, Object data) throws Exception
     {
         throw new UnsupportedOperationException(
-            "Writing a subset of a compound dataset to a new dataset is not supported.");
+            "Writing a subset of a compound dataset to a new dataset is not implemented.");
     }
 
 }

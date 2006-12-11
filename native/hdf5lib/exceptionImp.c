@@ -45,28 +45,29 @@ typedef struct H5E_minor_mesg_t {
     const char  *str;
 } H5E_minor_mesg_t;
 
-/* An error stack */
-typedef struct H5E_t {
-    /*intn*/int        nused;         /*num slots currently used in stack  */
-    H5E_error_t slot[H5E_NSLOTS];       /*array of error records             */
-} H5E_t;
+/* major and minor error numbers */
+typedef struct H5E_num_t {
+    int maj_num;
+    int min_num;
+} H5E_num_t;
 
+int getMajorErrorNumber();
+int getMinorErrorNumber();
 
-/*
- * The error stack.  Eventually we'll have some sort of global table so each
- * thread has it's own stack.  The stacks will be created on demand when the
- * thread first calls H5E_push().
- */
-#ifdef WIN32
-/* windows does not like the 'extern' here */
-H5E_t H5E_stack_g[1];
-#elif defined(__FreeBSD__)
-/* Neither does FreeBSD */
-H5E_t H5E_stack_g[1];
-#else
-extern H5E_t H5E_stack_g[1];
-#endif
-#define H5E_get_my_stack()	(H5E_stack_g+0)
+/* get the major and minor error numbers on the top of the erroe stack */
+static
+herr_t walk_error_callback(int n, H5E_error_t *err_desc, void *_err_nums)
+{
+    H5E_num_t *err_nums = (H5E_num_t *)_err_nums;
+
+    if (err_desc) {
+        err_nums->maj_num = err_desc->maj_num;
+        err_nums->min_num = err_desc->min_num;
+    }
+
+    return 0;
+}
+
 
 char *defineHDF5LibraryException(int maj_num);
 
@@ -117,8 +118,6 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_pri
     }
 }
 
-int getMajorErrorNumber();
-int getMinorErrorNumber();
 /*
  * Class:     ncsa_hdf_hdf5lib_exceptions_HDFLibraryException
  * Method:    getMajorErrorNumber
@@ -133,23 +132,20 @@ int getMinorErrorNumber();
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_getMajorErrorNumber
   (JNIEnv *env, jobject obj)
 {
-    return (jint) getMajorErrorNumber();
+    H5E_num_t err_nums;
+
+    H5Ewalk(H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
+
+    return (int) err_nums.maj_num;
 }
 
 int getMajorErrorNumber()
 {
-    H5E_t	*estack = H5E_get_my_stack ();
-    H5E_error_t *err_desc;
-    H5E_major_t maj_num = H5E_NONE_MAJOR;
+    H5E_num_t err_nums;
 
+    H5Ewalk(H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
 
-    if (estack && estack->nused>0)
-    {
-        err_desc = estack->slot+0;
-        maj_num = err_desc->maj_num;
-    }
-
-    return (int) maj_num;
+    return (int) err_nums.maj_num;
 }
 
 /*
@@ -171,18 +167,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_get
 
 int getMinorErrorNumber()
 {
-    H5E_t	*estack = H5E_get_my_stack ();
-    H5E_error_t *err_desc;
-    H5E_minor_t min_num = H5E_NONE_MINOR;
+    H5E_num_t err_nums;
 
+    H5Ewalk(H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
 
-    if (estack && estack->nused>0)
-    {
-        err_desc = estack->slot+0;
-        min_num = err_desc->min_num;
-    }
-
-    return (int) min_num;
+    return (int) err_nums.min_num;
 }
 
 /*
