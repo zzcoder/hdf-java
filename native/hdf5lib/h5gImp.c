@@ -993,13 +993,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
     (*env)->ReleaseStringUTFChars(env,group_name,gName);
     if (status < 0) {
         (*env)->ReleaseIntArrayElements(env,oType,tarr,JNI_ABORT);
-        if (oName) {
-            for (i=0; i<n; i++) {
-                if (*(oName+i))
-                    free (*(oName+i));
-            } /* for (i=0; i<n; i++)*/
-            free(oName);
-        }
+        h5str_array_free(oName, n);
         h5libraryError(env);
     } else {
         (*env)->ReleaseIntArrayElements(env,oType,tarr,0);
@@ -1009,11 +1003,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
                 if (*(oName+i)) {
                     str = (*env)->NewStringUTF(env,*(oName+i));
                     (*env)->SetObjectArrayElement(env,objName,i,(jobject)str);
-                    free (*(oName+i));
                 }
             } /* for (i=0; i<n; i++)*/
-            free(oName);
         }
+        h5str_array_free(oName, n);
     }
 
     return (jint)status;

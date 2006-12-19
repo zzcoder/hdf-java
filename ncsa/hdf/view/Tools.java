@@ -1077,11 +1077,6 @@ public final class Tools
      * @param avgstd the statistics: avgstd[0]=mean and avgstd[1]=stdev.
      * @return non-negative if successful; otherwise, returns negative
      */
-    /**
-     * @param data
-     * @param avgstd
-     * @return
-     */
     public static int computeStatistics(Object data, double[] avgstd)
     {
     	int retval = 1;

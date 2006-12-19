@@ -18,7 +18,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 /**
- * This FileFormat defines general I/O accessing interfaces to file resources,
+ * The FileFormat defines general I/O accessing interfaces to file resources,
  * such as open/close file, and retrieve file structure.
  * <p>
  * FileFormat is a plugable component. An implementing class of FileFormat can be
@@ -151,7 +151,7 @@ public abstract class FileFormat extends File
     public abstract FileFormat open(String pathname, int access) throws Exception;
 
     /**
-     * Create a new instance of this file. If file exists, delete it, then
+     * Creates a new instance of this file. If file exists, delete it, then
      * create a new file and open the new file for read/write.
      * <p>
      * A subclass must implementing this method to create a file of its type.
@@ -209,6 +209,9 @@ public abstract class FileFormat extends File
         return theFile;
     }
 
+    /** 
+     * Returns the total number of objects in the file
+     */
     public final int getNumberOfMembers() {
     	
     	if (n_members > 0) // calculate only once
@@ -234,24 +237,26 @@ public abstract class FileFormat extends File
      * <p>
      * The root node contains the hierarchy of the file. For file with hierarchical
      * structure such as HDF, the structure is stored in a tree structure. The root
-     * of the tree is the root of the the file.
+     * of the tree represents the root of the file.
      */
     public abstract TreeNode getRootNode();
 
     /**
-     * Returns the full path of the file: file path + file name.
+     * Returns the full path (file path + file name) of the file.
      */
     public abstract String getFilePath();
 
     /**
-     * Returns true if the file is read-only, otherwise returns false.
+     * Checks if the file is read-only.
+     * 
+     * @return true if the file is read-only, otherwise returns false.
      */
     public abstract boolean isReadOnly();
 
     /**
-     * Create a new group with the given name in a given parent group.
+     * Creates a new group for a given name and parent group.
      *
-     * @param name   The name fo the new group.
+     * @param name   The name of the new group.
      * @param pgroup The parent group.
      * @return       The new group if successful; otherwise returns null
      */
@@ -341,7 +346,7 @@ public abstract class FileFormat extends File
     }
 
     /**
-     * Create a new compound dataset in this file.
+     * Creates a new compound dataset in this file.
      * <p>
      * The following example creates a 2D compound dataset with size of 100X50 and
      * members x and y at the root group in an HDF5 file. Member x is an interger,
@@ -389,7 +394,7 @@ public abstract class FileFormat extends File
     }
 
     /**
-     * Create a new image at given parent group in this file.
+     * Creates a new image at given parent group in this file.
      *
      * For example, to create a 2D image of size 100X50 at the root in an HDF5 file.
      * <pre>
@@ -433,7 +438,7 @@ public abstract class FileFormat extends File
         Object data) throws Exception;
 
     /**
-     * Creates a new datatype based on this FileFormat.
+     * Creates a new datatype in memory.
      * <p>
      * For example, the following code creates an instance of H5Datatype.
      * <pre>
@@ -472,7 +477,7 @@ public abstract class FileFormat extends File
         String name) throws Exception;
 
     /**
-     * Creates a hard link to an existing object in file.
+     * Creates a hard link pointing to an existing object in file.
      *
      * @param parentGroup The parent group for the new link
      * @param name The name of the new link
@@ -527,7 +532,9 @@ public abstract class FileFormat extends File
     }
 
     /**
-     * Returns a list of keys of all supported FileFormats.
+     * Returns a list of keys of supported FileFormats.
+     * 
+     * For example, {"HDF", HDF5"}
      *
      * @return An enumeration of keys if successful; otherwise returns null
      */
@@ -543,7 +550,7 @@ public abstract class FileFormat extends File
     public abstract String getLibversion();
 
     /**
-     * Checks if a given file is this type of file.
+     * Checks if a given file is this type of FileFormat.
      * <p>
      * For example, if "test.h5" is an HDF5 file, H5File.isThisType("test.h5") returns
      * true while H4File .isThisType("test.h5") will return false.
@@ -558,7 +565,7 @@ public abstract class FileFormat extends File
     public abstract boolean isThisType(String filename);
 
     /**
-     * Checks if a given file format is this type of file.
+     * Checks if a given file format is this type of FileFormat.
      * <p>
      * @param fileformat the Fileformat to be checked
      * @return true if the file format is this type; otherwise returns false.
@@ -578,8 +585,9 @@ public abstract class FileFormat extends File
         boolean attrExisted) throws Exception;
 
     /**
-     * Copy a data object to a group. The following example shows how to copy
-     * an object to a given group.
+     * Copy an object to a group. 
+     * 
+     * The following example shows how to copy an object to a given group.
      * <pre>
      public static void TestHDF5Copy (String filename, String objName) throws Exception
         {
@@ -644,14 +652,16 @@ public abstract class FileFormat extends File
     public abstract TreeNode copy(HObject srcObj, Group dstGroup, String dstName) throws Exception;
 
     /**
-     * Delete an object from the file.
+     * Deletes an object from the file.
      * @param obj The object to delete.
      */
     public abstract void delete(HObject obj) throws Exception;
 
     /**
+     * Sets the max number of objects to be loaded into memory.
+     * 
      * Current Java application such as HDFView cannot handle files with large
-     * number of objects such 1,000,000 objects due to JVM memory  limitation.
+     * number of objects such 1,000,000 objects due to JVM memory limitation.
      * The max_members is defined so that applications such as HDFView will load
      * up to <i>max_members</i> number of objects starting the <i>start_members</i>
      * -th object.
@@ -661,6 +671,8 @@ public abstract class FileFormat extends File
     public void setMaxMembers(int n) { max_members = n; }
 
     /**
+     * Sets the starting index of objects to be loaded into memory.
+     * 
      * Current Java application such as HDFView cannot handle files with large
      * number of objects such 1,000,000 objects due to JVM memory  limitation.
      * The max_members is defined so that applications such as HDFView will load
@@ -685,7 +697,7 @@ public abstract class FileFormat extends File
     protected int getMaxMembers() { return max_members; }
 
     /**
-     * Returns the starting object to be loaded into memory.
+     * Returns the index of the starting object to be loaded into memory.
      * <p>
      * Current Java application such as HDFView cannot handle files with large
      * number of objects such 1,000,000 objects due to JVM memory  limitation.
@@ -698,21 +710,23 @@ public abstract class FileFormat extends File
     protected int getStartMembers() { return start_members; }
 
     /**
-     * Return a list of file extensions for the supported file formats. The
-     * extensions are separates by comma, such as "hdf, h4, hdf5, h5, hdf4, he4, he5"
+     * Return a list of file extensions for the supported file formats. 
+     * The extensions are separates by comma, such as "hdf, h4, hdf5, h5, hdf4, he4, he5"
      *
      * @return A list of file extensions for the supported file formats
      */
     public static String getFileExtensions() { return extensions; }
 
     /**
-     * Returns the file identifier.
+     * Returns the file identifier of this file.
+     * 
      * @return The file identifer
      */
     public int getFID() { return fid; }
 
     /**
-     * Add file an extension to the file extension list
+     * Add file an extension to the file extension list.
+     * 
      * @param extension The file extension to add
      */
     public static void addFileExtension(String extension)
@@ -745,8 +759,8 @@ public abstract class FileFormat extends File
     }
 
     /**
-     * Constructs a FileFormat corresponding to the data in a file. The fileName
-     *  may be an absolute or a relative file specification. It checks the registered
+     * Creates an instance of a FileFormat corresponding to the data in a file.
+     * The file name may be an absolute or a relative path. This function checks the registered
      * FileFormats and returns an instance of the matched one, or null if none is matched.
      * <p>
      * For example, if "test_hdf5.h5" is an HDF5 file, FileFormat.getInstance("test_hdf5.h5")
@@ -786,9 +800,12 @@ public abstract class FileFormat extends File
     }
 
     /**
-     * Gets the HObject with given file name and object path in the format of filename#//path
+     * Gets the HObject for the given file name and object path.
+     * The file name and object path is in the form of "filename#//obj_path".
      *
-     * @param fullPath the file name and object path in the format of filename#//path
+     * For example, "/tmp/hdf5_test.h5#//images/iceberg"
+     * 
+     * @param fullPath the file name and object path in the form of "filename#//obj_path".
      * @return The object if it exists in the file; otherwise returns null
      */
     public static final HObject getHObject(String fullPath) throws Exception
@@ -840,8 +857,9 @@ public abstract class FileFormat extends File
     }
 
     /**
-     * Gets an individual HObject with a given path from this file. The following
-     * example shows how use the get() to get an group from a file
+     * Gets an individual HObject with a given path from this file. 
+     * 
+     * The following example shows how use the get() to get a group object from file
      * <pre>
          public static void TestHDF5Get (String filename) throws Exception
         {

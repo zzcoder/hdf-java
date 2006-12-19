@@ -162,6 +162,7 @@ public class H5ScalarDS extends ScalarDS
         }
 
         // retrieve the IMAGE_MINMAXRANGE
+        int anativeType = -1;
         try
         {
             // try to find out if the dataset is an image
@@ -169,27 +170,28 @@ public class H5ScalarDS extends ScalarDS
             if (aid > 0)
             {
                 atid = H5.H5Aget_type(aid);
-                int nativeType = H5Datatype.toNative(atid);
+                anativeType = H5Datatype.toNative(atid);
                 asid = H5.H5Aget_space(aid);
-                long dims[] = null;
-                int rank = H5.H5Sget_simple_extent_ndims(asid);
-                if (rank > 0)
+                long adims[] = null;
+
+                int arank = H5.H5Sget_simple_extent_ndims(asid);
+                if (arank > 0)
                 {
-                    dims = new long[rank];
-                    H5.H5Sget_simple_extent_dims(asid, dims, null);
+                    adims = new long[rank];
+                    H5.H5Sget_simple_extent_dims(asid, adims, null);
                 }
 
                 // retrieve the attribute value
                 long lsize = 1;
-                for (int j=0; j<dims.length; j++) lsize *= dims[j];
-                Object value = H5Datatype.allocateArray(nativeType, (int)lsize);
-                if (value != null)
+                for (int j=0; j<adims.length; j++) lsize *= adims[j];
+                Object avalue = H5Datatype.allocateArray(anativeType, (int)lsize);
+                if (avalue != null)
                 {
-                    H5.H5Aread(aid, nativeType, value);
+                    H5.H5Aread(aid, anativeType, avalue);
                     double x0=0, x1=0;
                     try {
-                        x0 = Double.valueOf(java.lang.reflect.Array.get(value, 0).toString()).doubleValue();
-                        x1 = Double.valueOf(java.lang.reflect.Array.get(value, 1).toString()).doubleValue();
+                        x0 = Double.valueOf(java.lang.reflect.Array.get(avalue, 0).toString()).doubleValue();
+                        x1 = Double.valueOf(java.lang.reflect.Array.get(avalue, 1).toString()).doubleValue();
                     } catch (Exception ex2) { x0=x1=0;}
                     if (x1 > x0)
                     {
@@ -198,15 +200,18 @@ public class H5ScalarDS extends ScalarDS
                         imageDataRange[1] = x1;
                     }
                 }
-            }
+
+            } // if (aid > 0)
         } catch (Exception ex) {}
         finally
         {
+            try { H5.H5Tclose(anativeType); } catch (HDF5Exception ex) {;}
             try { H5.H5Tclose(atid); } catch (HDF5Exception ex) {;}
             try { H5.H5Sclose(asid); } catch (HDF5Exception ex) {;}
             try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
         }
-        try { H5.H5Dclose(did); } catch (HDF5Exception ex) {;}
+        
+        close(did);
 
     }
 
@@ -397,14 +402,14 @@ public class H5ScalarDS extends ScalarDS
             /* do not support dataset region references */
             if (H5.H5Tequal(nativeDatatype, HDF5Constants.H5T_STD_REF_DSETREG))
                 throw new HDF5Exception("Dataset region reference is not supported.");
-
             boolean isREF = (H5.H5Tequal(nativeDatatype, HDF5Constants.H5T_STD_REF_OBJ));
+            
             if ( originalBuf ==null || isText || isREF ||
                 (originalBuf!=null && lsize[0] !=nPoints)) {
                 theData = H5Datatype.allocateArray(nativeDatatype, (int)lsize[0]);
             } else
-                theData = originalBuf; // reuse the buffer if the size is the same
-
+                 theData = originalBuf; // reuse the buffer if the size is the same
+            
             if (theData != null) {
                 if (isVLEN)
                 {
@@ -939,8 +944,8 @@ public class H5ScalarDS extends ScalarDS
             p = null;
         } finally {
             try { H5.H5Tclose(tid); } catch (HDF5Exception ex2) {}
-            try { H5.H5Dclose(pal_id); } catch (HDF5Exception ex2) {}
-            try { H5.H5Dclose(did); } catch (HDF5Exception ex2) {}
+            close(pal_id);
+            close(did);
         }
 
         if (p != null)

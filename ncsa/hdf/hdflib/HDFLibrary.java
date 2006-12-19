@@ -2141,26 +2141,20 @@ public class HDFLibrary {
    /**
     *  @param vdata_id <b>IN</b>, vdata id  as returned by VSattach
     *  @param hdfclassname <b>OUT</b>, String[1], the class name of the vdata
-     *
-     *  @exception ncsa.hdf.hdflib.HDFException
-     *             should be thrown for errors in the
-     *             HDF library call, but is not yet implemented.
-     *
     *
-    *  @return  vdata_class[0] == the class name
+    *  @exception ncsa.hdf.hdflib.HDFException
+    *             should be thrown for errors in the
+    *             HDF library call, but is not yet implemented.
     */
     public  static native  void VSgetclass(int vdata_id, String[] hdfclassname) throws HDFException;
 
    /**
     *  @param vdata_id <b>IN</b>, vdata id  as returned by VSattach
     *  @param hdfname <b>OUT</b>, String[1], the name of the vdata
-     *
-     *  @exception ncsa.hdf.hdflib.HDFException
-     *             should be thrown for errors in the
-     *             HDF library call, but is not yet implemented.
-     *
     *
-    *  @return  hdfname[0] == the name
+    *  @exception ncsa.hdf.hdflib.HDFException
+    *             should be thrown for errors in the
+    *             HDF library call, but is not yet implemented.
     */
     public  static native  void VSgetname(int vdata_id, String[] hdfname) throws HDFException;
 
@@ -2371,9 +2365,6 @@ public class HDFLibrary {
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
      *             HDF library call, but is not yet implemented.
-     *
-     *
-     *  @return hdfclassname[0] == the hdf class.
      */
     public  static native  void Vgetclass(int vgroup_id, String[] hdfclassname) throws HDFException;
 
@@ -2385,9 +2376,6 @@ public class HDFLibrary {
      *  @exception ncsa.hdf.hdflib.HDFException
      *             should be thrown for errors in the
      *             HDF library call, but is not yet implemented.
-     *
-     *
-     *  @return hdfname[0] == the name
      */
     public  static native  void Vgetname(int vgroup_id, String[] hdfname) throws HDFException;
 

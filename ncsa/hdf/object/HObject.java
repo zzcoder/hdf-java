@@ -70,7 +70,7 @@ public abstract class HObject implements Serializable, DataFormat
     /**
      * The file identifier of this object. The fid is obtained from FileFormat.open().
      */
-    private final int fid;
+//    private final int fid;
 
     /**
      * The file which contains this object
@@ -141,10 +141,8 @@ public abstract class HObject implements Serializable, DataFormat
         this.oid = oid;
 
         if (fileFormat != null) {
-            this.fid = fileFormat.getFID();
             this.filename = fileFormat.getFilePath();
         } else {
-            this.fid = -1;
             this.filename = null;
         }
 
@@ -213,7 +211,7 @@ public abstract class HObject implements Serializable, DataFormat
     }
 
     /**
-     * Returns the full name of this object.
+     * Returns the full name (path + name) of this object.
      */
     public final String getFullName()
     {
@@ -221,7 +219,7 @@ public abstract class HObject implements Serializable, DataFormat
     }
 
     /**
-     * Returns the full path of this object.
+     * Returns the path of this object.
      */
     public final String getPath()
     {
@@ -229,7 +227,7 @@ public abstract class HObject implements Serializable, DataFormat
     }
 
     /**
-     * Sets the name of the data object.
+     * Sets the name of the object.
      *
      * @param newName The new name of the object.
      */
@@ -239,7 +237,7 @@ public abstract class HObject implements Serializable, DataFormat
     }
 
     /**
-     * Sets the path of the data object.
+     * Sets the path of the object.
      *
      * @param newPath The new path of the object.
      */
@@ -273,11 +271,14 @@ public abstract class HObject implements Serializable, DataFormat
     public abstract void close(int id);
 
     /**
-     * Returns the file identifier of this data object.
+     * Returns the file identifier of this object.
      */
     public final int getFID()
     {
-        return fid;
+        if (fileFormat != null)
+            return fileFormat.getFID();
+        else 
+            return -1;
     }
 
     /**
@@ -309,7 +310,7 @@ public abstract class HObject implements Serializable, DataFormat
     }
 
     /**
-     * Returns the fileformat which contains this object.
+     * Returns the fileformat that contains this object.
      */
     public final FileFormat getFileFormat() { return fileFormat; }
 

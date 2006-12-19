@@ -198,7 +198,8 @@ public abstract class ScalarDS extends Dataset
     }
 
     /**
-     * Removes the data value of this dataset in memory.
+     * Clears the data buffer in memory.
+     * clearData() will force the next getData() call to load the data from file.
      */
     public void clearData()
     {
@@ -206,7 +207,28 @@ public abstract class ScalarDS extends Dataset
         unsignedConverted = false;
     }
 
-    // Implementing ScalarDS
+    /**
+     * Converts one-dimension array of unsigned C integers to appropriate Java integer.
+     * <p>
+     * Since Java does not support unsigned integer, unsigned C integers must
+     * be converted into its appropriate Java integer. Otherwise, the data value
+     * will not displayed correctly. For example, if an unsigned C byte, x = 200,
+     * is stored into an Java byte y, y will be -56 instead of the correct value 200.
+     * <p>
+     * The following table is used to map the unsigned C integer to Java integer
+     * <TABLE TABLE CELLSPACING=0 BORDER=1 CELLPADDING=5 WIDTH=400>
+     *     <caption><b>Mapping Unsigned C Integers to Java Integers</b></caption>
+     *     <TR> <TD><B>Unsigned C Integer</B></TD> <TD><B>JAVA Intege</B>r</TD> </TR>
+     *     <TR> <TD>unsigned byte</TD> <TD>signed short</TD> </TR>
+     *     <TR> <TD>unsigned short</TD> <TD>signed int</TD> </TR>
+     *     <TR> <TD>unsigned int</TD> <TD>signed long</TD> </TR>
+     *     <TR> <TD>unsigned long</TD> <TD>signed long</TD> </TR>
+     * </TABLE>
+     * <b>NOTE: this conversion cannot deal with unsigned 64-bit integers. For
+     *          unsigned 64-bit dataset, the values can be wrong in Java
+     *          application</b>.
+     * <p>
+     */
     public void convertFromUnsignedC()
     {
         // keep a copy of original buffer and the converted buffer
@@ -220,7 +242,12 @@ public abstract class ScalarDS extends Dataset
         }
     }
 
-    // Implementing ScalarDS
+    /**
+     * Converts Java integer data back to unsigned C integer data.
+     * It is used when Java data converted from unsigned C is writen back to file.
+     * <p>
+     * @see #convertFromUnsignedC(Object data_in)
+     */
     public void convertToUnsignedC()
     {
         // keep a copy of original buffer and the converted buffer
@@ -267,8 +294,8 @@ public abstract class ScalarDS extends Dataset
         palette = pal;
     }
 
-    /** read specific image palette from file.
-     *  @param idx the palette index to read.
+    /** Reads specific image palette from file.
+     *  @param idx the index of the palette to read.
      */
     public abstract byte[][] readPalette(int idx);
 
@@ -294,9 +321,9 @@ public abstract class ScalarDS extends Dataset
     }
    
     /**
-     * Sets image display mode.
+     * Sets the flag to display the dataset as an image.
      * 
-     * @param b if b is true, set display mode to image
+     * @param b if b is true, display the dataset as an image
      */
     public final void setIsImageDisplay(boolean b)
     {
@@ -321,7 +348,14 @@ public abstract class ScalarDS extends Dataset
     }
 
     /**
-     * Returns the interlace of data points.
+     * Returns the interlace mode of a true color image (RGB).
+     * 
+     * Valid values:
+     * <pre>
+     *     INTERLACE_PIXEL -- RGB components are contiguous, i.e. rgb, rgb, rgb, ...
+     *     INTERLACE_LINE -- each RGB component is stored as a scan line
+     *     INTERLACE_PLANE -- each RGB component is stored as a plane
+     * </pre>
      */
     public final int getInterlace()
     {

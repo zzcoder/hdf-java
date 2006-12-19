@@ -272,13 +272,11 @@ public class H5File extends FileFormat
             {
                 theNode = (DefaultMutableTreeNode)local_enum.nextElement();
                 theObj = (HObject)theNode.getUserObject();
-                
+
                 if (theObj instanceof Dataset) 
                 	((Dataset)theObj).clear();
                 else if (theObj instanceof Group)
                 	((Group)theObj).clear();
-                theObj = null;
-                theNode = null;
             }
         }
 
@@ -715,6 +713,8 @@ public class H5File extends FileFormat
     private DefaultMutableTreeNode loadTree()
     {
         if (fid <0 ) return null;
+        
+        DefaultMutableTreeNode root = null;
 
         long[] oid = {0};
         H5Group rootGroup = new H5Group(
@@ -724,7 +724,7 @@ public class H5File extends FileFormat
             null, // root node does not have a parent node
             oid);
 
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootGroup)
+        root = new DefaultMutableTreeNode(rootGroup)
         {
         	public static final long serialVersionUID = HObject.serialVersionUID;
 
@@ -737,7 +737,7 @@ public class H5File extends FileFormat
     }
 
     /**
-     * Reloads the sub-tree structure starting a given group
+     * Reloads the sub-tree structure from starting a given group
      * @param g the group to reload
      */
     public void reloadTree(Group g)
@@ -1257,7 +1257,7 @@ public class H5File extends FileFormat
             {
                 try { H5.H5Tclose(tid); } catch (Exception ex) {}
                 try { H5.H5Sclose(sid); } catch (Exception ex) {}
-                try { H5.H5Dclose(did); } catch (Exception ex) {}
+                d.close(did);
             }
 
             refs = null;
@@ -1385,8 +1385,6 @@ public class H5File extends FileFormat
             pgroup.close(gid);
             return;
         }
-
-        pgroup.setNumberOfMembersInFile(nelems);
 
         // since each call of H5.H5Gget_objname_by_idx() takes about one second.
         // 1,000,000 calls take 12 days. Instead of calling it in a loop,
@@ -1663,7 +1661,6 @@ public class H5File extends FileFormat
      * @param obj the object which the attribute is to be attached to.
      * @param attr the atribute to attach.
      * @param attrExisted The indicator if the given attribute exists.
-     * @return true if successful and false otherwise.
      */
     public void writeAttribute(HObject obj, Attribute attr,
         boolean attrExisted) throws HDF5Exception

@@ -18,6 +18,21 @@
 #include "hdf5.h"
 #include "h5util.h"
 
+/** frees memory held by aray of strings */
+void  h5str_array_free(char **strs, size_t len)
+{
+    int i;
+
+    if (!strs || len <=0)
+        return;
+
+    for (i=0; i<len; i++) {
+        if (*(strs+i))
+            free (*(strs+i));
+    } /* for (i=0; i<n; i++)*/
+    free(strs);
+}
+
 /** allocate a new str with given length */
 void h5str_new(h5str_t *str, size_t len)
 {

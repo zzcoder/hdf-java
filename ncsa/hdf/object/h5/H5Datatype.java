@@ -175,7 +175,7 @@ public class H5Datatype extends Datatype
     }
 
     /**
-     * Allocate an one-dimensional array of byte, short, int, long, float, double,
+     * Allocates an one-dimensional array of byte, short, int, long, float, double,
      * or String to store data retrieved from file based on the given datatype and
      * dimension sizes.
      *
