@@ -75,7 +75,12 @@ public class H5Group extends Group
         super (fileFormat, name, path, parent, ((oid == null) ? DEFAULT_OID : oid));
 
         int gid = open();
-        try { hasAttribute = (H5.H5Aget_num_attrs(gid)>0); }
+        try { 
+            hasAttribute = (H5.H5Aget_num_attrs(gid)>0);
+            long[] nmembers = {0};
+            H5.H5Gget_num_objs(gid, nmembers);
+            nMembersInFile = (int)nmembers[0];
+        }
         catch (Exception ex ) {}
         close(gid);
     }

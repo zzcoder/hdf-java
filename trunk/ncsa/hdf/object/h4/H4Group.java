@@ -64,8 +64,10 @@ public class H4Group extends Group
         if (fileFormat instanceof H4File)
         {
             int vgid = open();
-            try {  hasAttribute =(HDFLibrary.Vnattrs(vgid)>0);
-            } catch (Exception ex) {}
+            try {  
+                hasAttribute =(HDFLibrary.Vnattrs(vgid)>0);
+                nMembersInFile = HDFLibrary.Vntagrefs(vgid);
+             } catch (Exception ex) {}
             close(vgid);
         }
     }

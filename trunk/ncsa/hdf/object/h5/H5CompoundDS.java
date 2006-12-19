@@ -181,27 +181,15 @@ public class H5CompoundDS extends CompoundDS
         return datatype;
     }
     
-    /**
-     * Clears up the object
-     */
+    // overwrite Dataset
     public void clear() {
     		super.clear(); 
     		
     	if (attributeList != null)
     		((Vector)attributeList).setSize(0);
     }
-   
 
-    /** Read data values of this dataset into byte array.
-     * <p>
-     *  readBytes() loads data as arry of bytes instead of array of its datatype.
-     * For example, for an one-dimension 32-bit integer dataset of size 5,
-     * the readBytes() returns of a byte array of size 20 instead of an int array
-     * of 5.
-     * <p>
-     * readBytes() is most used for copy data values, at which case, data do not
-     * need to be changed or displayed. It is efficient for memory space and CPU time.
-     */
+    // implementing Dataset
     public byte[] readBytes() throws HDF5Exception
     {
         byte[] theData = null;
@@ -249,7 +237,7 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
-     * Reads the content of this data object into memory if the data of the
+     * Reads the content of this dataset into memory if the data of the
      * object is not loaded. If the content is already loaded, it returns the
      * content. It returns null if the data object has no content or it fails
      * to load the data content.
@@ -475,7 +463,7 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
-     * Write the data values of this dataset to file.
+     * Writes the values of this dataset to file.
      * <p>
      * Compound data is written field by field.
      * @param buf The data to write
@@ -783,7 +771,8 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
-     * Retrieve datatype, dataspace and compound member infomatoin from file.
+     * Retrieve information of the dataset from file.
+     * Information includes datatype, dataspace and members of compound dataset.
      */
     public void init()
     {
@@ -917,7 +906,7 @@ public class H5CompoundDS extends CompoundDS
         {
             try { H5.H5Tclose(tid); } catch (HDF5Exception ex2) {}
             try { H5.H5Sclose(sid); } catch (HDF5Exception ex2) {}
-            try { H5.H5Dclose(did); } catch (HDF5Exception ex2) {}
+            close(did);
         }
     }
 

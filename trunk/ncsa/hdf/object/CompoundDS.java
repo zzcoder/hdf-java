@@ -171,7 +171,7 @@ public abstract class CompoundDS extends Dataset
     /**
      * Returns the number of selected members of this compound dataset.
      * Selelcted members are the compound fields which are selected to read
-     * or write. 
+     * or write.  
      */
     public final int getSelectedMemberCount()
     {
@@ -190,7 +190,7 @@ public abstract class CompoundDS extends Dataset
     }
 
     /**
-     * Returns the names of the members of the dataset
+     * Returns the names of the members of the compound dataset
      */
     public final String[] getMemberNames()
     {
@@ -198,7 +198,7 @@ public abstract class CompoundDS extends Dataset
     }
 
     /**
-     * Returns the ndatatype identifiers of the members of this compound dataset.
+     * Returns the datatype identifiers of the compound members.
      * Each member of a compound dataset has its datatype. The datatype of a
      * member can be atomic or other compound datatype.
      */
@@ -230,8 +230,8 @@ public abstract class CompoundDS extends Dataset
     /**
      * Selects/deselects all members.
      * @param isSelected The indicator to select or deselect all members.
-     *     If isSelected is true, all members are selected. 
-     *     If isSelected is false, no member is selected.
+     *     If isSelected is true, all members are selected for read/write. 
+     *     If isSelected is false, no member is selected for read/write.
      */
     public final void setMemberSelection(boolean isSelected)
     {
@@ -243,7 +243,7 @@ public abstract class CompoundDS extends Dataset
     }
 
     /**
-     * Returns the dimension sizes of the members of this compound dataset.
+     * Returns the dimension sizes of the compound members.
      * <p>For example, a compound dataset COMP has members of A, B and C as
      * <pre>
      *     COMP {
@@ -252,7 +252,8 @@ public abstract class CompoundDS extends Dataset
      *         double C[2][3];
      *     }
      * </pre>
-     * getMemberOrders() will return an integer array of {1, 5, 6}
+     * getMemberOrders() will return an integer array of {1, 5, 6} to indicate that 
+     * member A has one element, member B had 5 elements and member C has 6 elements.
      */
     public final int[] getMemberOrders()
     {

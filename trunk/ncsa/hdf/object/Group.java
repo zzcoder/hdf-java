@@ -37,7 +37,7 @@ public abstract class Group extends HObject
     /**
      * Total number of members in this group.
      */
-    private int nMembersInFile;
+    protected int nMembersInFile;
 
     /**
      * Creates a group object with specific name, path, and parent.
@@ -74,7 +74,7 @@ public abstract class Group extends HObject
     }
     
     /**
-     * Clears up the group
+     * Clears up member list and other resources in memory for the group
      */
     public void clear() {
     	if (memberList != null)
@@ -82,7 +82,7 @@ public abstract class Group extends HObject
     }
 
     /**
-     * Adds an HObject to the member list of this group.
+     * Adds an object to the member list of this group.
      * <p>
      * @param object the HObject to be added to the member list.
      */
@@ -99,7 +99,7 @@ public abstract class Group extends HObject
     }
 
     /**
-     * Removes an HObject from the member list of this group.
+     * Removes an object from the member list of this group.
      * <p>
      * @param object the HObject to be removed from the member list.
      */
@@ -161,11 +161,13 @@ public abstract class Group extends HObject
         return memberList;
     }
 
-    /** Returns the parent group */
+    /** Returns the parent group. */
     public final Group getParent() { return parent; }
 
     /**
      * Checks if it is a root group.
+     * 
+     * @return true if the group is a root group; otherwise, returns false.
      */
     public final boolean isRoot()
     {
@@ -173,14 +175,21 @@ public abstract class Group extends HObject
     }
 
     /**
-     *
+     * Returns the total number of members of this group in file.
+     * 
+     * Current Java application such as HDFView cannot handle files with large
+     * number of objects such 1,000,000 objects due to JVM memory  limitation.
+     * The max_members is used so that applications such as HDFView will load
+     * up to <i>max_members</i> number of objects. If number of objects in file
+     * is larger than the <i>max_members</i> number, only <i>max_members</i> number
+     * is loaded in memory.
+     * <p>
+     * getNumberOfMembersInFile() returns number of objects in this group. The number
+     * of objects in memory is obtained by getMemberList().size().
+     * 
+     * Total number of members in file is larger than  
      * @return total number of members of this group in file.
      */
     public int getNumberOfMembersInFile() { return nMembersInFile; }
 
-    /**
-     * sets total number of members of this group in file.
-     * @param n total number of members of this group in file.
-     */
-    public void setNumberOfMembersInFile(int n) { nMembersInFile = n; }
 }

@@ -166,6 +166,21 @@ public abstract class Datatype extends HObject
 
     /**
      * Returns the class of the datatype.
+     * Valid values: 
+     * <pre>
+        CLASS_NO_CLASS
+        CLASS_INTEGER
+        CLASS_FLOAT
+        CLASS_CHAR
+        CLASS_STRING
+        CLASS_BITFIELD
+        CLASS_OPAQUE
+        CLASS_COMPOUND
+        CLASS_REFERENCE
+        CLASS_ENUM
+        CLASS_VLEN
+        CLASS_ARRAY
+     * </pre>
      */
     public int getDatatypeClass()
     {
@@ -173,7 +188,8 @@ public abstract class Datatype extends HObject
     }
 
     /**
-     * Returns the size of the datatype.
+     * Returns the size of the datatype in bytes.
+     * For example, for a 32-bit integer, the size is 4 (bytes).
      */
     public int getDatatypeSize()
     {
@@ -181,7 +197,8 @@ public abstract class Datatype extends HObject
     }
 
     /**
-     * Returns the Order of the datatype.
+     * Returns the byte order of the datatype.
+     * Valid values include ORDER_LE, ORDER_BE, ORDER_VAX, and ORDER_NONE.
      */
     public int getDatatypeOrder()
     {
@@ -189,7 +206,7 @@ public abstract class Datatype extends HObject
     }
 
     /**
-     * Returns the sign of the datatype.
+     * Returns the sign (signed or unsigned) of an integer datatype.
      */
     public int getDatatypeSign()
     {
@@ -312,7 +329,7 @@ public abstract class Datatype extends HObject
 
     /**
      *  Checks if this datatype is an unsigned integer.
-     *  @return True is the datatype is an unsigned integer; otherwise returns false.
+     *  @return true is the datatype is an unsigned integer; otherwise returns false.
      */
     public abstract boolean isUnsigned();
 

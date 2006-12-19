@@ -419,7 +419,6 @@ public class H4File extends FileFormat
      * @param obj the object which the attribute is to be attached to.
      * @param attr the atribute to attach.
      * @param isSDglobalAttr The indicator if the given attribute exists.
-     * @return true if successful and false otherwise.
      */
     public void writeAttribute(HObject obj, Attribute attr,
         boolean isSDglobalAttr) throws HDFException
@@ -606,8 +605,6 @@ public class H4File extends FileFormat
             n = HDFLibrary.Vlone(fid, refs, n);
         } catch (HDFException ex) { n = 0; }
 
-        rootGroup.setNumberOfMembersInFile(n);
-
         int i0 = Math.max(0, getStartMembers());
         int i1 = getMaxMembers();
         if (i1 >= n)
@@ -780,8 +777,6 @@ public class H4File extends FileFormat
         {
             pgroup.close(gid);
         }
-
-        pgroup.setNumberOfMembersInFile(nelems);
 
         int i0 = Math.max(0, getStartMembers());
         int i1 = getMaxMembers();
