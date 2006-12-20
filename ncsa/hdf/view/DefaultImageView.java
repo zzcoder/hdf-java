@@ -517,6 +517,14 @@ implements ImageView, ActionListener
         button.addActionListener( this );
         button.setActionCommand( "Edit palette" );
         button.setEnabled(!isTrueColor);
+        
+        // brightness button
+        button = new JButton( ViewProperties.getBrightIcon() );
+        bar.add( button );
+        button.setToolTipText( "Brightness" );
+        button.setMargin( margin );
+        button.addActionListener( this );
+        button.setActionCommand( "Brightness" );
 
         button = new JButton(ViewProperties.getZoominIcon());
         bar.add(button);
@@ -973,6 +981,20 @@ implements ImageView, ActionListener
         changeImageFilter(filter);
     }
 
+    /** Apply contrast/brightness to unsigned short integer */
+    private void applyAutoContrast() {
+        if (Tools.applyAutoContrast((int[])data, autoGainData, gainBias, true) >=0) {
+            if (imageByteData == null || imageByteData.length != Array.getLength(data))
+                imageByteData = new byte[Array.getLength(data)];
+            if (Tools.convertImageBuffer(autoGainData, imageByteData, true)>=0) {
+                int w = dataset.getWidth();
+                int h = dataset.getHeight();
+                image = createIndexedImage(imageByteData, imagePalette, w, h); 
+                imageComponent.setImage(image);
+                zoomTo(zoomFactor);
+            }
+        }
+    }
 
     // implementing ImageObserver
     private void setValueVisible(boolean b)
@@ -1324,17 +1346,7 @@ implements ImageView, ActionListener
                 autoContrastSlider.setVisible(true);
                 
                 if (autoContrastSlider.isValueChanged) {
-                    if (Tools.applyAutoContrast((int[])data, autoGainData, gainBias, true) >=0) {
-                        if (imageByteData == null || imageByteData.length != Array.getLength(data))
-                            imageByteData = new byte[Array.getLength(data)];
-                        if (Tools.convertImageBuffer(autoGainData, imageByteData, true)>=0) {
-                            int w = dataset.getWidth();
-                            int h = dataset.getHeight();
-                            image = createIndexedImage(imageByteData, imagePalette, w, h); 
-                            imageComponent.setImage(image);
-                            zoomTo(zoomFactor);
-                        }
-                    }
+                    applyAutoContrast();
                 }
                 return;
             }
@@ -3117,6 +3129,13 @@ implements ImageView, ActionListener
             button.setActionCommand("Cancel_gain_change");
             button.addActionListener(this);
             confirmP.add(button);
+            
+            button = new JButton("Apply");
+            button.setMnemonic(KeyEvent.VK_A);
+            button.setActionCommand("Apply_gain_change");
+            button.addActionListener(this);
+            confirmP.add(button);
+           
             contentPane.add(confirmP, BorderLayout.SOUTH);
             contentPane.add(new JLabel(" "), BorderLayout.NORTH);
 
@@ -3133,7 +3152,7 @@ implements ImageView, ActionListener
             Object source = e.getSource();
             String cmd = e.getActionCommand();
 
-            if (cmd.equals("Ok_gain_change"))
+            if (cmd.equals("Ok_gain_change") || cmd.equals("Apply_gain_change"))
             {
                 int b = ((Number)brightField.getValue()).intValue();
                 int c = ((Number)contrastField.getValue()).intValue();
@@ -3146,12 +3165,24 @@ implements ImageView, ActionListener
                 else
                     isValueChanged = false;
                 
-                setVisible(false);
+                if (cmd.startsWith("Ok"))
+                    setVisible(false);
+                else  if (isValueChanged) { //Apply auto contrast
+                    applyAutoContrast();
+                    isValueChanged = false;
+                }
             }
             else if (cmd.equals("Cancel_gain_change"))
             {
                 isValueChanged = false;
                 setVisible(false);
+            }
+            else if (cmd.equals("Apply_gain_change"))
+            {
+                if (isValueChanged)
+                    applyAutoContrast();
+
+                isValueChanged = false;
             }
         }
 

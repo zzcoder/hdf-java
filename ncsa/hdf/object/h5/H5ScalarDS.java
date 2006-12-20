@@ -214,6 +214,215 @@ public class H5ScalarDS extends ScalarDS
         close(did);
 
     }
+    
+    /**
+     * Retrieve datatype and dataspace infomatoin from file.
+     */
+    public void init()
+    {
+        if (rank>0)
+            return; // already called. Initialize only once
+
+        int did=-1, sid=-1, tid=-1, pid=-1;
+
+        did = open();
+        paletteRefs = getPaletteRefs(did);
+
+        try {
+            sid = H5.H5Dget_space(did);
+            tid= H5.H5Dget_type(did);
+            rank = H5.H5Sget_simple_extent_ndims(sid);
+            isText = (H5.H5Tget_class(tid)==HDF5Constants.H5T_STRING);
+
+            if (rank == 0) {
+                // a scalar data point
+                rank = 1;
+                dims = new long[1];
+                dims[0] = 1;
+            }
+            else
+            {
+                dims = new long[rank];
+                H5.H5Sget_simple_extent_dims(sid, dims, null);
+            }
+        } catch (HDF5Exception ex) {}
+        finally
+        {
+            nativeDatatype = H5Datatype.toNative(tid);
+            try { H5.H5Tclose(tid); } catch (HDF5Exception ex2) {}
+            try { H5.H5Sclose(sid); } catch (HDF5Exception ex2) {}
+        }
+
+        isUnsigned = H5Datatype.isUnsigned(nativeDatatype);
+
+        int aid=-1, atid=-1;
+
+        if (!isImage)
+        {
+            try
+            {
+                // try to find out if the image type
+                aid = H5.H5Aopen_name(did, "CLASS");
+                atid = H5.H5Aget_type(aid);
+                int size = H5.H5Tget_size(atid);
+                byte[] attrValue = new byte[size];
+                H5.H5Aread(aid, atid, attrValue);
+                String strValue = new String(attrValue).trim();
+                isImage = strValue.equalsIgnoreCase("IMAGE");
+            } catch (Exception ex) {}
+            finally
+            {
+                try { H5.H5Tclose(atid); } catch (HDF5Exception ex) {;}
+                try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
+            }
+        }
+
+        // check for the type of image and interlace mode
+        // it is a true color image at one of three cases:
+        // 1) IMAGE_SUBCLASS = IMAGE_TRUECOLOR,
+        // 2) INTERLACE_MODE = INTERLACE_PIXEL,
+        // 3) INTERLACE_MODE = INTERLACE_PLANE
+        if (rank >=3 && isImage)
+        {
+            interlace = INTERLACE_PIXEL;
+            try
+            {
+                // try to find out if the image type
+                aid = H5.H5Aopen_name(did, "IMAGE_SUBCLASS");
+                atid = H5.H5Aget_type(aid);
+                int size = H5.H5Tget_size(atid);
+                byte[] attrValue = new byte[size];
+                H5.H5Aread(aid, atid, attrValue);
+                String strValue = new String(attrValue).trim();
+                if (strValue.equalsIgnoreCase("IMAGE_INDEXED"))
+                    interlace = -1; // default interlace
+            } catch (Exception ex) {}
+            finally
+            {
+                try { H5.H5Tclose(atid); } catch (HDF5Exception ex) {;}
+                try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
+            }
+
+            try
+            {
+                // try to find out interlace mode
+                aid = H5.H5Aopen_name(did, "INTERLACE_MODE");
+                atid = H5.H5Aget_type(aid);
+                int size = H5.H5Tget_size(atid);
+                byte[] attrValue = new byte[size];
+                H5.H5Aread(aid, atid, attrValue);
+                String strValue = new String(attrValue).trim();
+                if (strValue.equalsIgnoreCase("INTERLACE_PLANE"))
+                    interlace = INTERLACE_PLANE;
+            } catch (Exception ex) {}
+            finally
+            {
+                try { H5.H5Tclose(atid); } catch (HDF5Exception ex) {;}
+                try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
+            }
+
+            if ((interlace == INTERLACE_PLANE && dims[0] <3) ||
+                (interlace == INTERLACE_PIXEL && dims[2] <3))
+            {
+                // must have at least three color planes
+                interlace = -1;
+            }
+
+            isTrueColor = (interlace == ScalarDS.INTERLACE_PIXEL ||
+                interlace == ScalarDS.INTERLACE_PLANE);
+        }
+
+
+        startDims = new long[rank];
+        selectedDims = new long[rank];
+        for (int i=0; i<rank; i++) {
+            startDims[i] = 0;
+            selectedDims[i] = 1;
+        }
+
+        if (interlace == INTERLACE_PIXEL)
+        {
+            // 24-bit TRUE color image
+            // [height][width][pixel components]
+            selectedDims[2] = 3;
+            selectedDims[0] = dims[0];
+            selectedDims[1] = dims[1];
+            selectedIndex[0] = 0; // index for height
+            selectedIndex[1] = 1; // index for width
+            selectedIndex[2] = 2; // index for depth
+        }
+        else if (interlace == INTERLACE_PLANE)
+        {
+            // 24-bit TRUE color image
+            // [pixel components][height][width]
+            selectedDims[0] = 3;
+            selectedDims[1] = dims[1];
+            selectedDims[2] = dims[2];
+            selectedIndex[0] = 1; // index for height
+            selectedIndex[1] = 2; // index for width
+            selectedIndex[2] = 0; // index for depth
+        }
+        else if (rank == 1)
+        {
+            selectedIndex[0] = 0;
+            selectedDims[0] = dims[0];
+        }
+        else if (rank == 2)
+        {
+            selectedIndex[0] = 0;
+            selectedIndex[1] = 1;
+            selectedDims[0] = dims[0];
+            selectedDims[1] = dims[1];
+        }
+        else if (rank > 2)
+        {
+            // 3D dataset is arranged in the order of [frame][height][width] by default
+            selectedIndex[1] = rank-1; // width, the fastest dimension
+            selectedIndex[0] = rank-2; // height
+            selectedIndex[2] = rank-3; // frames
+            selectedDims[selectedIndex[0]] = dims[selectedIndex[0]];
+            selectedDims[selectedIndex[1]] = dims[selectedIndex[1]];
+            
+            /*
+            // In the case of images with only one component, the dataspace may
+            // be either a two dimensional array, or a three dimensional array
+            // with the third dimension of size 1.  For example, a 5 by 10 image
+            // with 8 bit color indexes would be an HDF5 dataset with type
+            // unsigned 8 bit integer.  The dataspace could be either a two
+            // dimensional array, with dimensions [10][5], or three dimensions,
+            // with dimensions either [10][5][1] ([height][width][1])
+            // or [1][10][5] ([1][height][width]).
+            if (dims[0] == 1)
+            {
+                // case [1][10][5]
+                selectedIndex[0] = 1;
+                selectedIndex[1] = 2;
+                selectedIndex[2] = 0;
+                selectedDims[1] = dims[1];
+                selectedDims[2] = dims[2];
+            }
+            else
+            {
+                // case [10][5][1]
+                selectedIndex[0] = 0;
+                selectedIndex[1] = 1;
+                selectedIndex[2] = 2;
+                selectedDims[0] = dims[0];
+                selectedDims[1] = dims[1];
+            }
+            */
+        }
+
+        if (rank > 1 && isText)
+        {
+            selectedIndex[0] = rank-1;
+            selectedIndex[1] = 0;
+            selectedDims[0] = 1;
+            selectedDims[selectedIndex[0]] = dims[selectedIndex[0]];
+        }
+        
+        close(did);
+    }
 
     /**
      * Clears up the object
@@ -365,6 +574,7 @@ public class H5ScalarDS extends ScalarDS
         } catch (Exception ex) {}
 
         // check is fill value is defined
+/*        
         try {
             int plist = H5.H5Dget_create_plist(did);
             int[] fillStatus = {0};
@@ -375,14 +585,15 @@ public class H5ScalarDS extends ScalarDS
                 throw new HDF5Exception("Fill value is not defined.");
             }
         } catch (Exception ex) {}
-
+*/
         try {
             long[] lsize = {1};
             for (int j=0; j<selectedDims.length; j++)
                 lsize[0] *= selectedDims[j];
 
-            if (lsize[0] == 0)
+            if (lsize[0] == 0) {
                 throw new HDF5Exception("No data to read.\nEither the dataset or the selected subset is empty.");
+            }
 
             fspace = H5.H5Dget_space(did);
             mspace = H5.H5Screate_simple(1, lsize, null);
@@ -400,8 +611,10 @@ public class H5ScalarDS extends ScalarDS
             }
 
             /* do not support dataset region references */
-            if (H5.H5Tequal(nativeDatatype, HDF5Constants.H5T_STD_REF_DSETREG))
+            if (H5.H5Tequal(nativeDatatype, HDF5Constants.H5T_STD_REF_DSETREG)) {
                 throw new HDF5Exception("Dataset region reference is not supported.");
+             }
+            
             boolean isREF = (H5.H5Tequal(nativeDatatype, HDF5Constants.H5T_STD_REF_OBJ));
             
             if ( originalBuf ==null || isText || isREF ||
@@ -429,7 +642,7 @@ public class H5ScalarDS extends ScalarDS
             if (mspace > 0) try { H5.H5Sclose(mspace); } catch (Exception ex2) {}
             close(did);
         }
-
+        
         return theData;
     }
 
@@ -682,213 +895,6 @@ public class H5ScalarDS extends ScalarDS
         try { H5.H5Fflush(did, HDF5Constants.H5F_SCOPE_LOCAL); } catch (Exception ex) {}
         try { H5.H5Dclose(did); }
         catch (HDF5Exception ex) {;}
-    }
-
-    /**
-     * Retrieve datatype and dataspace infomatoin from file.
-     */
-    public void init()
-    {
-        if (rank>0)
-            return; // already called. Initialize only once
-
-        int did=-1, sid=-1, tid=-1, pid=-1;
-
-        did = open();
-        paletteRefs = getPaletteRefs(did);
-
-        try {
-            sid = H5.H5Dget_space(did);
-            tid= H5.H5Dget_type(did);
-            rank = H5.H5Sget_simple_extent_ndims(sid);
-            isText = (H5.H5Tget_class(tid)==HDF5Constants.H5T_STRING);
-
-            if (rank == 0) {
-                // a scalar data point
-                rank = 1;
-                dims = new long[1];
-                dims[0] = 1;
-            }
-            else
-            {
-                dims = new long[rank];
-                H5.H5Sget_simple_extent_dims(sid, dims, null);
-            }
-        } catch (HDF5Exception ex) {}
-        finally
-        {
-            nativeDatatype = H5Datatype.toNative(tid);
-            try { H5.H5Tclose(tid); } catch (HDF5Exception ex2) {}
-            try { H5.H5Sclose(sid); } catch (HDF5Exception ex2) {}
-        }
-
-        isUnsigned = H5Datatype.isUnsigned(nativeDatatype);
-
-        int aid=-1, atid=-1;
-
-        if (!isImage)
-        {
-            try
-            {
-                // try to find out if the image type
-                aid = H5.H5Aopen_name(did, "CLASS");
-                atid = H5.H5Aget_type(aid);
-                int size = H5.H5Tget_size(atid);
-                byte[] attrValue = new byte[size];
-                H5.H5Aread(aid, atid, attrValue);
-                String strValue = new String(attrValue).trim();
-                isImage = strValue.equalsIgnoreCase("IMAGE");
-            } catch (Exception ex) {}
-            finally
-            {
-                try { H5.H5Tclose(atid); } catch (HDF5Exception ex) {;}
-                try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
-            }
-        }
-
-        // check for the type of image and interlace mode
-        // it is a true color image at one of three cases:
-        // 1) IMAGE_SUBCLASS = IMAGE_TRUECOLOR,
-        // 2) INTERLACE_MODE = INTERLACE_PIXEL,
-        // 3) INTERLACE_MODE = INTERLACE_PLANE
-        if (rank >=3 && isImage)
-        {
-            interlace = INTERLACE_PIXEL;
-            try
-            {
-                // try to find out if the image type
-                aid = H5.H5Aopen_name(did, "IMAGE_SUBCLASS");
-                atid = H5.H5Aget_type(aid);
-                int size = H5.H5Tget_size(atid);
-                byte[] attrValue = new byte[size];
-                H5.H5Aread(aid, atid, attrValue);
-                String strValue = new String(attrValue).trim();
-                if (strValue.equalsIgnoreCase("IMAGE_INDEXED"))
-                    interlace = -1; // default interlace
-            } catch (Exception ex) {}
-            finally
-            {
-                try { H5.H5Tclose(atid); } catch (HDF5Exception ex) {;}
-                try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
-            }
-
-            try
-            {
-                // try to find out interlace mode
-                aid = H5.H5Aopen_name(did, "INTERLACE_MODE");
-                atid = H5.H5Aget_type(aid);
-                int size = H5.H5Tget_size(atid);
-                byte[] attrValue = new byte[size];
-                H5.H5Aread(aid, atid, attrValue);
-                String strValue = new String(attrValue).trim();
-                if (strValue.equalsIgnoreCase("INTERLACE_PLANE"))
-                    interlace = INTERLACE_PLANE;
-            } catch (Exception ex) {}
-            finally
-            {
-                try { H5.H5Tclose(atid); } catch (HDF5Exception ex) {;}
-                try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
-            }
-
-            if ((interlace == INTERLACE_PLANE && dims[0] <3) ||
-                (interlace == INTERLACE_PIXEL && dims[2] <3))
-            {
-                // must have at least three color planes
-                interlace = -1;
-            }
-
-            isTrueColor = (interlace == ScalarDS.INTERLACE_PIXEL ||
-                interlace == ScalarDS.INTERLACE_PLANE);
-        }
-
-
-        startDims = new long[rank];
-        selectedDims = new long[rank];
-        for (int i=0; i<rank; i++) {
-            startDims[i] = 0;
-            selectedDims[i] = 1;
-        }
-
-        if (interlace == INTERLACE_PIXEL)
-        {
-            // 24-bit TRUE color image
-            // [height][width][pixel components]
-            selectedDims[2] = 3;
-            selectedDims[0] = dims[0];
-            selectedDims[1] = dims[1];
-            selectedIndex[0] = 0; // index for height
-            selectedIndex[1] = 1; // index for width
-            selectedIndex[2] = 2; // index for depth
-        }
-        else if (interlace == INTERLACE_PLANE)
-        {
-            // 24-bit TRUE color image
-            // [pixel components][height][width]
-            selectedDims[0] = 3;
-            selectedDims[1] = dims[1];
-            selectedDims[2] = dims[2];
-            selectedIndex[0] = 1; // index for height
-            selectedIndex[1] = 2; // index for width
-            selectedIndex[2] = 0; // index for depth
-        }
-        else if (rank == 1)
-        {
-            selectedIndex[0] = 0;
-            selectedDims[0] = dims[0];
-        }
-        else if (rank == 2)
-        {
-            selectedIndex[0] = 0;
-            selectedIndex[1] = 1;
-            selectedDims[0] = dims[0];
-            selectedDims[1] = dims[1];
-        }
-        else if (rank > 2)
-        {
-            // 3D dataset is arranged in the order of [frame][height][width] by default
-            selectedIndex[1] = rank-1; // width, the fastest dimension
-            selectedIndex[0] = rank-2; // height
-            selectedIndex[2] = rank-3; // frames
-            selectedDims[selectedIndex[0]] = dims[selectedIndex[0]];
-            selectedDims[selectedIndex[1]] = dims[selectedIndex[1]];
-            
-            /*
-            // In the case of images with only one component, the dataspace may
-            // be either a two dimensional array, or a three dimensional array
-            // with the third dimension of size 1.  For example, a 5 by 10 image
-            // with 8 bit color indexes would be an HDF5 dataset with type
-            // unsigned 8 bit integer.  The dataspace could be either a two
-            // dimensional array, with dimensions [10][5], or three dimensions,
-            // with dimensions either [10][5][1] ([height][width][1])
-            // or [1][10][5] ([1][height][width]).
-            if (dims[0] == 1)
-            {
-                // case [1][10][5]
-                selectedIndex[0] = 1;
-                selectedIndex[1] = 2;
-                selectedIndex[2] = 0;
-                selectedDims[1] = dims[1];
-                selectedDims[2] = dims[2];
-            }
-            else
-            {
-                // case [10][5][1]
-                selectedIndex[0] = 0;
-                selectedIndex[1] = 1;
-                selectedIndex[2] = 2;
-                selectedDims[0] = dims[0];
-                selectedDims[1] = dims[1];
-            }
-            */
-        }
-
-        if (rank > 1 && isText)
-        {
-            selectedIndex[0] = rank-1;
-            selectedIndex[1] = 0;
-            selectedDims[0] = 1;
-            selectedDims[selectedIndex[0]] = dims[selectedIndex[0]];
-        }
     }
 
     /**

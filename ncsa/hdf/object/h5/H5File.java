@@ -290,9 +290,16 @@ public class H5File extends FileFormat
                 oids = new int[n];
                 H5.H5Fget_obj_ids(fid, HDF5Constants.H5F_OBJ_ALL, n, oids);
 
+                if (DEBUG_ON)
+                    System.out.println("\n total number object left open = "+n);
+
                 for (int i=0; i<n; i++)
                 {
                     type = H5.H5Iget_type(oids[i]);
+                    
+                    if (DEBUG_ON)
+                        System.out.println(type);
+
                     if (HDF5Constants.H5I_DATASET == type) {
                         try { H5.H5Dclose(oids[i]); } catch (Exception ex2) {}
                     } else if (HDF5Constants.H5I_GROUP == type) {
