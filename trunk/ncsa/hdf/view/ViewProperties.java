@@ -110,7 +110,7 @@ public class ViewProperties extends Properties
         foldercloseIcon, folderopenIcon, foldercloseIconA, folderopenIconA,
         datasetIcon, imageIcon, tableIcon, textIcon,
         datasetIconA, imageIconA, tableIconA, textIconA,
-        zoominIcon, zoomoutIcon, paletteIcon, chartIcon,
+        zoominIcon, zoomoutIcon, paletteIcon, chartIcon, brightIcon,
         copyIcon, cutIcon, pasteIcon,
         previousIcon, nextIcon, firstIcon, lastIcon,
         animationIcon, datatypeIcon, datatypeIconA, linkIcon;
@@ -330,6 +330,8 @@ public class ViewProperties extends Properties
 
     public static Icon getPaletteIcon() { return paletteIcon; }
 
+    public static Icon getBrightIcon() { return brightIcon; }
+
     public static Icon getImageIcon() { return imageIcon; }
 
     public static Icon getTableIcon() { return tableIcon; }
@@ -492,6 +494,12 @@ public class ViewProperties extends Properties
             u = classLoader.getResource("ncsa/hdf/view/icons/palette.gif");
             if (u != null) {
                 paletteIcon = new ImageIcon (u);
+            }
+        }
+        if (brightIcon == null) {
+            u = classLoader.getResource("ncsa/hdf/view/icons/brightness.gif");
+            if (u != null) {
+                brightIcon = new ImageIcon (u);
             }
         }
 

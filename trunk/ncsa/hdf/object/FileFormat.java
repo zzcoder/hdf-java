@@ -39,6 +39,9 @@ import javax.swing.tree.TreeNode;
  */
 public abstract class FileFormat extends File
 {
+    /** Flag to turn on the debug printing. */
+    public final static boolean DEBUG_ON = false;
+    
     /** File access flag for for read only. */
     public final static int READ = 0;
 

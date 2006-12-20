@@ -108,7 +108,7 @@ public class H5CompoundDS extends CompoundDS
 
     /**
      * A list of names of all fields including nested fields.
-     * The nested names are separated by ".". For example, if
+     * The nested names are separated by CompoundDs.separator. For example, if
      * compound dataset "A" has the following nested structure,
      * <pre>
      * A --> m01
@@ -121,7 +121,7 @@ public class H5CompoundDS extends CompoundDS
      * A = { m01, m02, nest1{m11, m12, nest2{ m21, m22}}}
      * </pre>
      * The flatNameList of compound dataset "A" will be
-     * {m01, m02, nest1.m11, nest1.m12, nest1.nest2.m21, nest1.nest2.m22}
+     * {m01, m02, nest1[m11, nest1[m12, nest1[nest2[m21, nest1[nest2[m22}
      *
      */
     private List flatNameList;
@@ -280,14 +280,9 @@ public class H5CompoundDS extends CompoundDS
         H5.H5Dchdir_ext(pdir);
 
         int did = open();
-        try {
-            fspace = H5.H5Dget_space(did);
-            H5.H5Sclose(fspace);
-        } catch (Exception ex) { ex.printStackTrace(); }
 
         // check is storage space is allocated
         if (H5.H5Dget_storage_size(did) <=0) {
-            close(did);
             throw new HDF5Exception("Storage space is not allocated.");
         }
         
@@ -383,7 +378,7 @@ public class H5CompoundDS extends CompoundDS
                     // construct nested compound structure with a single field
                     String theName = member_name;
                     int tmp_tid = H5.H5Tcopy(arrayType);
-                    int sep = member_name.lastIndexOf('.');
+                    int sep = member_name.lastIndexOf(separator);
                     while (sep > 0) {
                         theName = member_name.substring(sep+1);
                         nested_tid = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND, member_size);
@@ -391,7 +386,7 @@ public class H5CompoundDS extends CompoundDS
                         try {H5.H5Tclose(tmp_tid);} catch (Exception ex) {}
                         tmp_tid = nested_tid;
                         member_name = member_name.substring(0, sep);
-                        sep = member_name.lastIndexOf('.');
+                        sep = member_name.lastIndexOf(separator);
                     }
 
                     nested_tid = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND, member_size);
@@ -972,7 +967,7 @@ public class H5CompoundDS extends CompoundDS
             if (mclass == HDF5Constants.H5T_COMPOUND)
             {
                 // nested compound
-                extractCompoundInfo(mtype, mname+".", names, types);
+                extractCompoundInfo(mtype, mname+separator, names, types);
                 continue;
             }
             else if (mclass == HDF5Constants.H5T_ARRAY)

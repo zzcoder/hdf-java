@@ -56,7 +56,9 @@ import java.io.*;
 public abstract class HObject implements Serializable, DataFormat
 {
 	public static final long serialVersionUID = 240L;
-	
+    
+    /** Flag to turn on the debug printing. */
+    public final static boolean DEBUG_ON = false;	
     /**
      * The separator of object path.
      */

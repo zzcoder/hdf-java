@@ -513,7 +513,6 @@ public class H5Datatype extends Datatype
     {
         if (nativeID >=0 )
             return nativeID;
-
         else if (isNamed) {
             try {nativeID = H5.H5Topen(getFID(), getPath()+getName());}
             catch (Exception ex) {nativeID = -1;}
@@ -658,9 +657,13 @@ public class H5Datatype extends Datatype
         if (attributeList == null)
         {
             int tid = open();
-            attributeList = H5File.getAttribute(tid);
-
-            close(tid);
+            
+            try {
+                attributeList = H5File.getAttribute(tid);
+            } catch (Exception ex) {}
+            finally  {
+                close(tid);
+            }
         } // if (attributeList == null)
 
         return attributeList;
