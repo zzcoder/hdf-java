@@ -341,8 +341,8 @@ implements ActionListener, ItemListener
                     choices[i].addItem(dimNames[j]);
             }
             maxLabels[i] = new JLabel("1");
-            startFields[i] = new JTextField("1");
-            endFields[i] = new JTextField("1");
+            startFields[i] = new JTextField("0");
+            endFields[i] = new JTextField("0");
             strideFields[i] = new JTextField("1");
             selectionP.add(dimLabels[i]);
             selectionP.add(choices[i]);
@@ -444,12 +444,12 @@ implements ActionListener, ItemListener
 
             String msg = "Select slice location for dimension(s):\n\""
                        +choice4.get(0)+" [1 .. "+dims[choice4Index[0]]+"]\"";
-            String initValue = String.valueOf(start[choice4Index[0]]+1);
+            String initValue = String.valueOf(start[choice4Index[0]]);
             int n = choice4.size();
             for (int i=1; i<n; i++)
             {
                 msg +=" x \"" + choice4.get(i)+ " [1 .. "+dims[choice4Index[i]]+"]\"";
-                initValue += " x "+String.valueOf(start[choice4Index[i]]+1);
+                initValue += " x "+String.valueOf(start[choice4Index[i]]);
             }
 
             String result = JOptionPane.showInputDialog(this, msg, initValue);
@@ -482,7 +482,7 @@ implements ActionListener, ItemListener
                     return;
                 }
 
-                if (start4[i] < 1 || start4[i] >dims[choice4Index[i]])
+                if (start4[i] < 0 || start4[i] >=dims[choice4Index[i]])
                 {
                     JOptionPane.showMessageDialog(
                         this,
@@ -496,7 +496,7 @@ implements ActionListener, ItemListener
 
             for (int i=0; i<n; i++)
             {
-                start[choice4Index[i]] = start4[i]-1;
+                start[choice4Index[i]] = start4[i];
             }
         }
 
@@ -562,8 +562,8 @@ implements ActionListener, ItemListener
             start[currentIndex[theSelectedChoice]]=0;
 
             // reset the selected dimension choice
-            startFields[theSelectedChoice].setText("1");
-            endFields[theSelectedChoice].setText(String.valueOf(dims[theIndex]));
+            startFields[theSelectedChoice].setText("0");
+            endFields[theSelectedChoice].setText(String.valueOf(dims[theIndex]-1));
             strideFields[theSelectedChoice].setText("1");
             maxLabels[theSelectedChoice].setText(String.valueOf(dims[theIndex]));
 
@@ -576,8 +576,8 @@ implements ActionListener, ItemListener
                 else if (theIndex==choices[i].getSelectedIndex())
                 {
                     setJComboBoxSelectedIndex(choices[i], currentIndex[theSelectedChoice]);
-                    startFields[i].setText("1");
-                    endFields[i].setText(String.valueOf(dims[currentIndex[theSelectedChoice]]));
+                    startFields[i].setText("0");
+                    endFields[i].setText(String.valueOf(dims[currentIndex[theSelectedChoice]]-1));
                     strideFields[i].setText("1");
                     maxLabels[i].setText(String.valueOf(dims[currentIndex[theSelectedChoice]]));
                 }
@@ -655,8 +655,8 @@ implements ActionListener, ItemListener
 
             setJComboBoxSelectedIndex(choices[i], idx);
             maxLabels[i].setText(String.valueOf(dims[idx]));
-            startFields[i].setText(String.valueOf(start[idx]+1));
-            endFields[i].setText(String.valueOf(endIdx));
+            startFields[i].setText(String.valueOf(start[idx]));
+            endFields[i].setText(String.valueOf(endIdx-1));
 
             if (!isH5 && (dataset instanceof CompoundDS))
                 strideFields[i].setEnabled(false);
@@ -680,8 +680,8 @@ implements ActionListener, ItemListener
                 choices[1].setEnabled(false);
                 choices[2].setEnabled(false);
                 startFields[2].setEnabled(false);
-                startFields[2].setText("1");
-                endFields[2].setText("2");
+                startFields[2].setText("0");
+                endFields[2].setText("0");
             }
             else
             {
@@ -689,7 +689,7 @@ implements ActionListener, ItemListener
                 choices[1].setEnabled(true);
                 choices[2].setEnabled(true);
                 startFields[2].setEnabled(true);
-                startFields[2].setText(String.valueOf(start[selectedIndex[2]]+1));
+                startFields[2].setText(String.valueOf(start[selectedIndex[2]]));
                 //endFields[2].setEnabled(!isText);
                 endFields[2].setText(startFields[2].getText());
             }
@@ -762,8 +762,8 @@ implements ActionListener, ItemListener
 
     private boolean setSelection()
     {
-        long[] n0 = {1, 1, 1}; // start
-        long[] n1= {1, 1, 1}; // end
+        long[] n0 = {0, 0, 0}; // start
+        long[] n1= {0, 0, 0}; // end
         long[] n2= {1, 1, 1}; // stride
         int[] sIndex = {0, 1, 2};
 
@@ -789,14 +789,14 @@ implements ActionListener, ItemListener
                 return false;
             }
 
-            // silently correct error
-            if (n0[i] < 1) n0[i] = 1;
-            if (n0[i] > dims[sIndex[i]]) n0[i] = dims[sIndex[i]];
-            if (n1[i] < 1) n1[i] = 1;
-            if (n1[i] > dims[sIndex[i]]) n1[i] = dims[sIndex[i]];
-            if (n0[i] > n1[i]) n1[i] = n0[i];
-            if (n2[i] <= 0) n2[i] = 1;
-            if (n2[i] > dims[sIndex[i]]) n2[i] = dims[sIndex[i]];
+            // silently correct errors
+            if (n0[i] < 0) n0[i] = 0; // start
+            if (n0[i] >= dims[sIndex[i]]) n0[i] = dims[sIndex[i]]-1;
+            if (n1[i] < 0) n1[i] = 0; // end
+            if (n1[i] >= dims[sIndex[i]]) n1[i] = dims[sIndex[i]]-1;
+            if (n0[i] > n1[i]) n1[i] = n0[i]; // end <= start
+            if (n2[i] <= 0) n2[i] = 0; // depth
+            if (n2[i] >= dims[sIndex[i]]) n2[i] = dims[sIndex[i]]-1;
 
         } // for (int i=0; i<n; i++)
 
@@ -831,9 +831,9 @@ implements ActionListener, ItemListener
         for (int i=0; i<n; i++)
         {
             selectedIndex[i] = sIndex[i];
-            start[selectedIndex[i]] = n0[i]-1;
+            start[selectedIndex[i]] = n0[i];
             if (i<2) {
-                selected[selectedIndex[i]] = (int)((n1[i]-n0[i])/n2[i]+1);
+                selected[selectedIndex[i]] = (int)((n1[i]-n0[i])/n2[i]);
                 stride[selectedIndex[i]] = n2[i];
             }
         }
