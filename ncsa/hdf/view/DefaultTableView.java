@@ -18,6 +18,7 @@ import javax.swing.table.*;
 import javax.swing.event.*;
 import javax.swing.tree.*;
 import java.awt.event.*;
+
 import javax.swing.border.*;
 import java.awt.datatransfer.*;
 import java.util.*;
@@ -820,7 +821,7 @@ implements TableView, ActionListener
         int nrow = table.getRowCount();
         int ncol = table.getColumnCount();
 
-        LineplotOption lpo = new LineplotOption((JFrame)viewer, title, nrow, ncol);
+        LineplotOption lpo = new LineplotOption((JFrame)viewer, "Line Plot Options -- "+dataset.getName(), nrow, ncol);
         lpo.setVisible(true);
 
         int plotType = lpo.getPlotBy();
@@ -1177,7 +1178,7 @@ implements TableView, ActionListener
 
         for (int i=0; i<cols; i++)
         {
-            columnNames[i] = String.valueOf(start+(i+1)*stride);
+            columnNames[i] = String.valueOf(start+i*stride);
         }
 
         DefaultTableModel tableModel =  new DefaultTableModel(
@@ -2156,7 +2157,7 @@ implements TableView, ActionListener
         }
     }
 
-    private class LineplotOption extends JDialog implements ActionListener
+    private class LineplotOption extends JDialog implements ActionListener, ItemListener
     {
     	public static final long serialVersionUID = HObject.serialVersionUID;
 
@@ -2164,9 +2165,9 @@ implements TableView, ActionListener
         public static final int ROW_PLOT = 0;
         public static final int COLUMN_PLOT = 1;
 
-        int idx_xaxis=-1, nRows=0, nCols=0, plotType=-1;
-        JRadioButton rowButton, colButton;
-        JTextField xaxisField;
+        private int idx_xaxis=-1, nRows=0, nCols=0, plotType=-1;
+        private JRadioButton rowButton, colButton;
+        private JComboBox rowBox, colBox;
 
         public LineplotOption(JFrame owner, String title, int nrow, int ncol)
         {
@@ -2175,49 +2176,78 @@ implements TableView, ActionListener
             nRows = nrow;
             nCols = ncol;
 
+            rowBox = new JComboBox();
+            rowBox.setEditable(false);
+            colBox = new JComboBox();
+            colBox.setEditable(false);
+
+            JPanel contentPane = (JPanel)this.getContentPane();
+            contentPane.setPreferredSize(new Dimension(350, 120));
+            contentPane.setLayout(new BorderLayout(10, 10));
+            
+            long[] startArray = dataset.getStartDims();
+            long[] strideArray = dataset.getStride();
+            int[] selectedIndex = dataset.getSelectedIndex();
+            int start = (int)startArray[selectedIndex[0]];
+            int stride = (int)strideArray[selectedIndex[0]];
+            
+            rowBox.addItem("Time-scale");
+            for ( int i = 0; i < nrow;  i++ )
+                rowBox.addItem(String.valueOf(start+i*stride));
+
+            colBox.addItem("Time-scale");
+            for (int i=0; i<ncol; i++)
+                colBox.addItem (table.getColumnName(i));
+
             rowButton = new JRadioButton("Row");
             colButton = new JRadioButton("Column", true);
+            rowButton.addItemListener(this);
+            colButton.addItemListener(this);
             ButtonGroup rgroup = new ButtonGroup();
             rgroup.add(rowButton);
             rgroup.add(colButton);
 
-            xaxisField = new JTextField("-1");
-
             JPanel lp = new JPanel();
             lp.setLayout(new GridLayout(2,1,5,5));
-            lp.add(new JLabel(" Plot By  "));
-            lp.add(new JLabel(" X-axis   "));
+            lp.add(new JLabel(" Series in:  "));
+            lp.add(new JLabel(" X values in:   "));
 
             JPanel rp1 = new JPanel();
-            rp1.setLayout(new GridLayout(1,2,5,5));
+            rp1.setLayout(new GridLayout(1,2,10,5));
+            rp1.setBorder(new LineBorder(Color.lightGray));
             rp1.add(colButton);
             rp1.add(rowButton);
-            rp1.setBorder(new LineBorder(Color.darkGray));
+            
+            JPanel rp2 = new JPanel();
+            rp2.setLayout(new GridLayout(1,2,10,5));
+            rp2.setBorder(new LineBorder(Color.lightGray));
+            rp2.add(colBox);
+            rp2.add(rowBox);
+            
             JPanel rp = new JPanel();
             rp.setLayout(new GridLayout(2,1, 5, 5));
             rp.add(rp1);
-            rp.add(xaxisField);
-
+            rp.add(rp2);
+            
             JPanel bp = new JPanel();
+
             JButton okButton = new JButton("Ok");
             okButton.addActionListener(this);
             okButton.setActionCommand("Ok");
+            bp.add(okButton);
+
             JButton cancelButton = new JButton("Cancel");
             cancelButton.addActionListener(this);
             cancelButton.setActionCommand("Cancel");
-            bp.add(okButton);
             bp.add(cancelButton);
-
-            JPanel contentPane = (JPanel)this.getContentPane();
-            contentPane.setLayout(new BorderLayout());
-            JTextArea info = new JTextArea("Select plot options:\n"+
-                             "    plot by row or column\n"+
-                             "    X-axis -- none(-1) or row/column index\n");
-            info.setEditable(false);
-            contentPane.add(info, BorderLayout.NORTH);
+           
+            contentPane.add(new JLabel(" Select plot options:"), BorderLayout.NORTH);
             contentPane.add(lp, BorderLayout.WEST);
             contentPane.add(rp, BorderLayout.CENTER);
             contentPane.add(bp, BorderLayout.SOUTH);
+            
+            colBox.setVisible(colButton.isSelected());
+            rowBox.setVisible(rowButton.isSelected());
 
             Point l = getParent().getLocation();
             l.x += 450;
@@ -2239,35 +2269,26 @@ implements TableView, ActionListener
                 this.dispose();  // terminate the application
             }
             else if (cmd.equals("Ok")) {
-                idx_xaxis = Integer.parseInt(xaxisField.getText());
-                if (rowButton.isSelected())
-                {
-                    plotType = ROW_PLOT;
-                    if (idx_xaxis >= nRows)
-                    {
-                        JOptionPane.showMessageDialog(
-                                this,
-                                "X-axis index is greater than  number of rows",
-                                "Line Plot Option",
-                                JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                }
-                else
-                {
+                if (colButton.isSelected()) {
+                    idx_xaxis = colBox.getSelectedIndex()-1;
                     plotType = COLUMN_PLOT;
-                    if (idx_xaxis >= nCols)
-                    {
-                        JOptionPane.showMessageDialog(
-                                this,
-                                "X-axis index is greater than  number of columns",
-                                "Line Plot Option",
-                                JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
+                }
+                else {
+                    idx_xaxis = rowBox.getSelectedIndex()-1;
+                    plotType = ROW_PLOT;
                 }
 
                 this.dispose();  // terminate the application
+            }
+        }
+        
+        public void itemStateChanged(ItemEvent e)
+        {
+            Object source = e.getSource();
+
+            if (source.equals(colButton) || source.equals(rowButton)) {
+                colBox.setVisible(colButton.isSelected());
+                rowBox.setVisible(rowButton.isSelected());
             }
         }
     }
@@ -2380,7 +2401,7 @@ implements TableView, ActionListener
             int n = parentTable.getRowCount();
             for ( int i = 0; i < n;  i++ )
             {
-                setValueAt( new Integer(start+(i+1)*stride), i, 0 );
+                setValueAt( new Integer(start+i*stride), i, 0 );
             }
 
             // Get the only table column.
