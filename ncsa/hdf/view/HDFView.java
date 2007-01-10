@@ -18,6 +18,7 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
+
 import javax.swing.event.*;
 import java.net.URL;
 import java.lang.reflect.*;
@@ -200,7 +201,7 @@ HyperlinkListener, ChangeListener
         super("HDFView");
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
+        
         // set the module class jar files to the class path
 
         rootDir = root;
@@ -218,19 +219,8 @@ HyperlinkListener, ChangeListener
         // load the view properties
         ViewProperties.loadIcons(rootDir);
         props = new ViewProperties(rootDir);
-        try
-        {
-            props.load();
-            java.awt.Font font = null;
-            String ftype = ViewProperties.getFontType();
-            int fsize = ViewProperties.getFontSize();
-            try { font = new java.awt.Font(ftype, java.awt.Font.PLAIN, fsize); }
-            catch (Exception ex) { font = null; }
-
-            if (font != null)
-            	setDefaultFonts(font);
-            
-        } catch (Exception ex){;}
+        try { props.load();} catch (Exception ex){;}
+        
         //recentFiles = ViewProperties.getMRF();
         currentDir = ViewProperties.getWorkDir();
         if (currentDir == null) currentDir = System.getProperty("user.dir");
@@ -320,49 +310,36 @@ HyperlinkListener, ChangeListener
 
         if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) == null)
             setEnabled(h5GUIs, false);
-
+        
+        try
+        {
+            java.awt.Font font = null;
+            String ftype = ViewProperties.getFontType();
+            int fsize = ViewProperties.getFontSize();
+            try { font = new java.awt.Font(ftype, java.awt.Font.PLAIN, fsize); }
+            catch (Exception ex) { font = null; }
+            if (font != null) {
+                updateFontSize(font);
+             }
+        } catch (Exception ex){;}
     }
     
     /**
      * Set default UI fonts.
      */
-    private void setDefaultFonts(Font font) {
-        UIDefaults uiDefaults = UIManager.getDefaults();
+    private void updateFontSize(Font font) {
+        if (font == null)
+            return;
 
-        uiDefaults.put("Button.font", font);
-        uiDefaults.put("CheckBox.font", font);
-        uiDefaults.put("CheckBoxMenuItem.font", font);
-        uiDefaults.put("ColorChooser.font", font);
-        uiDefaults.put("ComboBox.font", font);
-        uiDefaults.put("DesktopIcon.font", font);
-        uiDefaults.put("EditorPane.font", font);
-        uiDefaults.put("FormattedTextField.font", font);
-        uiDefaults.put("Label.font", font);
-        uiDefaults.put("List.font", font);
-        uiDefaults.put("Menu.font", font);
-        uiDefaults.put("MenuBar.font", font);
-        uiDefaults.put("MenuItem.font", font);
-        uiDefaults.put("OptionPane.font", font);
-        uiDefaults.put("Panel.font", font);
-        uiDefaults.put("PasswordField.font", font);
-        uiDefaults.put("PopupMenu.font", font);
-        uiDefaults.put("ProgressBar.font", font);
-        uiDefaults.put("RadioButton.font", font);
-        uiDefaults.put("RadioButtonMenuItem.font", font);
-        uiDefaults.put("ScrollPane.font", font);
-        uiDefaults.put("Spinner.font", font);
-        uiDefaults.put("TabbedPane.font", font);
-        uiDefaults.put("Table.font", font);
-        uiDefaults.put("TableHeader.font", font);
-        uiDefaults.put("TextArea.font", font);
-        uiDefaults.put("TextField.font", font);
-        uiDefaults.put("TextPane.font", font);
-        uiDefaults.put("TitledBorder.font", font);
-        uiDefaults.put("ToggleButton.font", font);
-        uiDefaults.put("ToolBar.font", font);
-        uiDefaults.put("ToolTip.font", font);
-        uiDefaults.put("Tree.font", font);
-        uiDefaults.put("Viewport.font", font);
+        UIDefaults defaults = UIManager.getLookAndFeelDefaults();
+        
+        for ( Iterator i = defaults.keySet().iterator(); i.hasNext(); )
+        {
+            Object key = i.next();
+            if (defaults.getFont( key ) != null )
+                UIManager.put( key, new javax.swing.plaf.FontUIResource(font) );
+        }
+        SwingUtilities.updateComponentTreeUI( this );
     }
 
     /**
@@ -1316,7 +1293,7 @@ HyperlinkListener, ChangeListener
             	} catch (Exception ex) { font = null; }
             	
             	if (font != null) {
-            		setDefaultFonts(font);
+                    updateFontSize(font);
             	}
             }
         }

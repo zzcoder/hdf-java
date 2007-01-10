@@ -101,7 +101,7 @@ public abstract class HObject implements Serializable, DataFormat
      *  HDF4 objects are uniquely identified by the OID of the (ref_id, tag_id) pair.
      *  HDF5 objects are uniquely identified by the OID of object reference.
      */
-    protected final long[] oid;
+    protected long[] oid;
 
     /* Flag to indicate if the object has any attributes attavhed */
     protected boolean hasAttribute = false;

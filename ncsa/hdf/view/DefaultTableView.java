@@ -2182,7 +2182,7 @@ implements TableView, ActionListener
             colBox.setEditable(false);
 
             JPanel contentPane = (JPanel)this.getContentPane();
-            contentPane.setPreferredSize(new Dimension(350, 120));
+            contentPane.setPreferredSize(new Dimension(360, 150));
             contentPane.setLayout(new BorderLayout(10, 10));
             
             long[] startArray = dataset.getStartDims();
@@ -2207,27 +2207,30 @@ implements TableView, ActionListener
             rgroup.add(rowButton);
             rgroup.add(colButton);
 
-            JPanel lp = new JPanel();
-            lp.setLayout(new GridLayout(2,1,5,5));
-            lp.add(new JLabel(" Series in:  "));
-            lp.add(new JLabel(" X values in:   "));
+            JPanel p1 = new JPanel();
+            p1.setLayout(new GridLayout(2,1,5,5));
+            p1.add(new JLabel(" Series in:", SwingConstants.RIGHT));
+            p1.add(new JLabel(" X values in:", SwingConstants.RIGHT));
 
-            JPanel rp1 = new JPanel();
-            rp1.setLayout(new GridLayout(1,2,10,5));
-            rp1.setBorder(new LineBorder(Color.lightGray));
-            rp1.add(colButton);
-            rp1.add(rowButton);
+
+            JPanel p2 = new JPanel();
+            p2.setLayout(new GridLayout(2,1,5,5));
+            //p2.setBorder(new LineBorder(Color.lightGray));
+            p2.add(colButton);
+            p2.add(colBox);
             
-            JPanel rp2 = new JPanel();
-            rp2.setLayout(new GridLayout(1,2,10,5));
-            rp2.setBorder(new LineBorder(Color.lightGray));
-            rp2.add(colBox);
-            rp2.add(rowBox);
+            JPanel p3 = new JPanel();
+            p3.setLayout(new GridLayout(2,1,5,5));
+            //p3.setBorder(new LineBorder(Color.lightGray));
+            p3.add(rowButton);
+            p3.add(rowBox);
             
-            JPanel rp = new JPanel();
-            rp.setLayout(new GridLayout(2,1, 5, 5));
-            rp.add(rp1);
-            rp.add(rp2);
+            JPanel p = new JPanel();
+            p.setBorder(new LineBorder(Color.lightGray));
+            p.setLayout(new GridLayout(1,3, 20, 5));
+            p.add(p1);
+            p.add(p2);
+            p.add(p3);
             
             JPanel bp = new JPanel();
 
@@ -2242,12 +2245,11 @@ implements TableView, ActionListener
             bp.add(cancelButton);
            
             contentPane.add(new JLabel(" Select plot options:"), BorderLayout.NORTH);
-            contentPane.add(lp, BorderLayout.WEST);
-            contentPane.add(rp, BorderLayout.CENTER);
+            contentPane.add(p, BorderLayout.CENTER);
             contentPane.add(bp, BorderLayout.SOUTH);
             
-            colBox.setVisible(colButton.isSelected());
-            rowBox.setVisible(rowButton.isSelected());
+            colBox.setEnabled(colButton.isSelected());
+            rowBox.setEnabled(rowButton.isSelected());
 
             Point l = getParent().getLocation();
             l.x += 450;
@@ -2287,8 +2289,8 @@ implements TableView, ActionListener
             Object source = e.getSource();
 
             if (source.equals(colButton) || source.equals(rowButton)) {
-                colBox.setVisible(colButton.isSelected());
-                rowBox.setVisible(rowButton.isSelected());
+                colBox.setEnabled(colButton.isSelected());
+                rowBox.setEnabled(rowButton.isSelected());
             }
         }
     }

@@ -20,28 +20,45 @@ import ncsa.hdf.object.*;
 import java.lang.reflect.Array;
 
 /**
- * H5CompoundDS describes a multi-dimension array of HDF5 compound dataset,
- * inheriting CompoundDS.
+ * The H5CompoundDS class defines an HDF5 dataset of compound datatypes.
+ * <p>
+ * An HDF5 dataset is an object composed of a collection of data elements, 
+ * or raw data, and metadata that stores a description of the data elements, 
+ * data layout, and all other information necessary to write, read, and 
+ * interpret the stored data.
  * <p>
  * A HDF5 compound datatype is similar to a struct in C or a common block in
  * Fortran: it is a collection of one or more atomic types or small arrays of
  * such types. Each member of a compound type has a name which is unique within
  * that type, and a byte offset that determines the first byte (smallest byte
- * address) of that member in a compound datum.
+ * address) of that member in a compound datum. 
  * <p>
- * There are two basic types of compound datasets, simple compound data and
- * nested compound data. Members of a simple compound dataset are scalar data or
- * array of scalar data. Members of a nested compound dataset can be compound or
- * array of compound data. <B>The current implementation of H5CompoundDS only
- * supports simple compound datasets.</B>
+ * For more information on HDF5 datasets and datatypes, read the 
+ * <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/UG/index.html">HDF5 User's Guide</a>.
  * <p>
- * A special case of compound dataset is the one-dimension simple compound data.
- * An one-dimension HDF5 compound array is like an HDF5 Vdata table. Members of
- * the compound dataset are similar to fileds of HDF4 VData table.
+ * There are two basic types of compound datasets: simple compound data and
+ * nested compound data. Members of a simple compound dataset have atomic datatyes.
+ * Members of a nested compound dataset are compound or array of compound data. 
  * <p>
- * ARRAY of compound dataset is not supported in this implementation. ARRAY of
- * compound dataset requires to read the whole data structure instead of read
- * field by field.
+ * Since Java does not understand C structures, we cannot directly read/write compound
+ * data values as in the following C example.  
+ * <pre>
+    typedef struct s1_t {
+        int    a;
+        float  b;
+        double c; 
+        } s1_t;
+    s1_t       s1[LENGTH];
+    ...
+    H5Dwrite(..., s1);
+    H5Dread(..., s1);
+ * </pre>
+ * 
+ * Values of compound data fields are stored in java.util.Vector object. We read and write
+ * compound data by fields instead of compound structure. As for the example above, the 
+ * java.util.Vector object has three elements: int[LENGTH], float[LENGTH] and double[LENGTH].
+ * Since Java understands the primitive datatypes of int, float and double, we will be able
+ * to read/write the compound data by field.
  * <p>
  * <b>How to Select a Subset</b>
  * <p>
@@ -138,11 +155,15 @@ public class H5CompoundDS extends CompoundDS
     private boolean isIndexTable;
 
     /**
-     * Constrcuts a H5CompoundDS object with specific name and path.
+     * Constrcuts an HDF5 compound dataset object for a given file, dataset name and group path.
      * <p>
-     * @param fileFormat the HDF file.
-     * @param name the name of this H5CompoundDS.
-     * @param path the full path of this H5CompoundDS.
+     * The dataset object represents an existing dataset in the file. For example, 
+     * new H5CompoundDS(file, "dset1", "/g0/") constructs a dataset object that corresponds to
+     * the dataset,"dset1", at group "/g0/".
+     * <p>
+     * @param fileFormat the file that contains the dataset.
+     * @param name the name of the dataset such as "dset1".
+     * @param path the group path to the dataset such as "/g0/".
      */
     public H5CompoundDS(FileFormat fileFormat, String name, String path)
     {
@@ -150,12 +171,24 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
-     * Constrcuts a H5CompoundDS object with specific name and path.
+     * Constrcuts an HDF5 compound dataset object for a given file, dataset name, group path
+     * and object identifer.
      * <p>
-     * @param fileFormat the HDF file.
-     * @param name the name of this H5CompoundDS.
-     * @param path the full path of this H5CompoundDS.
-     * @param oid the unique identifier of this data object.
+     * The dataset object represents an existing dataset in the file. For example, 
+     * new H5CompoundDS(file, "dset1", "/g0/") constructs a dataset object that corresponds to
+     * the dataset,"dset1", at group "/g0/".
+     * <p>
+     * The object identifier is a one-element long array that holds the object reference of
+     * the dataset. For a given file, object reference uniquely identifies the object.
+     * <p>
+     * For a given name and path, the object ID is obtained from
+     * byte[] ref_buf = H5.H5Rcreate(fid, path+name, HDF5Constants.H5R_OBJECT, -1);
+     * <p>
+     * @param fileFormat the file that contains the dataset.
+     * @param name the name of the dataset such as "dset1".
+     * @param path the group path to the dataset such as "/g0/".
+     * @param oid the unique identifier of this data object. if oid is null, the object ID 
+     *        is automatically obtained by H5.H5Rcreate() for the given name and path.
      */
     public H5CompoundDS(
         FileFormat fileFormat,
@@ -165,6 +198,15 @@ public class H5CompoundDS extends CompoundDS
     {
         super (fileFormat, name, path, oid);
 
+        if (oid == null && fileFormat != null) {
+            // retrieve the object ID
+            try {
+                byte[] ref_buf = H5.H5Rcreate(fileFormat.getFID(), this.getFullName(), HDF5Constants.H5R_OBJECT, -1);
+                this.oid = new long[1];
+                this.oid[0] = HDFNativeData.byteToLong(ref_buf, 0);
+             } catch (Exception ex) {}
+        }
+
         int did = open();
         isIndexTable = false;
         try { hasAttribute = (H5.H5Aget_num_attrs(did)>0); }
@@ -172,7 +214,10 @@ public class H5CompoundDS extends CompoundDS
         close(did);
     }
 
-    /** Returns the datatype of this dataset. */
+    /** 
+     * Returns the datatype object (H5Datatype) of this dataset. 
+     * @return the datatype object (H5Datatype) of this dataset. 
+     */
     public Datatype getDatatype()
     {
         if (datatype == null)
@@ -181,7 +226,10 @@ public class H5CompoundDS extends CompoundDS
         return datatype;
     }
     
-    // overwrite Dataset
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Dataset#clear()
+     */
     public void clear() {
     		super.clear(); 
     		
@@ -189,7 +237,10 @@ public class H5CompoundDS extends CompoundDS
     		((Vector)attributeList).setSize(0);
     }
 
-    // implementing Dataset
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Dataset#readBytes()
+     */
     public byte[] readBytes() throws HDF5Exception
     {
         byte[] theData = null;
@@ -237,15 +288,14 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
-     * Reads the content of this dataset into memory if the data of the
+     * Reads the content (data values) of this dataset into memory if the data of the
      * object is not loaded. If the content is already loaded, it returns the
-     * content. It returns null if the data object has no content or it fails
-     * to load the data content.
+     * memory buffer of the data. It returns null if the data object has no data or it fails
+     * to load the data.
      * <p>
-     * Data is read by compound field members and stored into a list of data objects.
-     * Each member data is an one-dimension array. The array type is determined
-     * by the datatype of the member. The data list contains only the data of
-     * selected members.
+     * Data is read by compound field members and stored into a vector.
+     * Each element of the vector is an one-dimension array that contains the field data.
+     * The array type is determined by the datatype of the compound field.
      * <p>
      * For example, if compound dataset "A" has the following nested structure,
      * and memeber datatypes
@@ -257,7 +307,9 @@ public class H5CompoundDS extends CompoundDS
      * A --> nest1 --> nest2 --> m21 (long)
      * A --> nest1 --> nest2 --> m22 (double)
      * </pre>
-     * read() returns a List contains arrays of int, float, char, Stirng, long and double.
+     * read() returns a Vector that contains six arrays: int[], float[], char[], Stirng[], 
+     *        long[] and double[].
+     * 
      * @return the array of data List.
       */
     public Object read() throws HDF5Exception
@@ -458,10 +510,11 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
-     * Writes the values of this dataset to file.
+     * Writes the given data buffer into this dataset in file.
      * <p>
-     * Compound data is written field by field.
-     * @param buf The data to write
+     * The data buffer is a vector that contains the data values of compound fields. 
+     * The data is written into file field by field.
+     * @param buf The vector that contains the data values of compound fields.
      */
     public void write(Object buf) throws HDF5Exception
     {
@@ -603,11 +656,11 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
-     * Read and returns a list of attributes of from file into memory if the attributes
+     * Reads attributes of this dataset from file into memory if the attributes
      * are not in memory. If the attributes are in memory, it returns the attributes.
-     * The attributes are stored as a collection in a List.
+     * The attributes (@see ncsa.hdf.object.Attribute) are stored in a vector.
      *
-     * @return the list of attributes.
+     * @return the vector that contains the attributes of the dataset.
      * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/List.html">java.util.List</a>
      */
     public List getMetadata() throws HDF5Exception
@@ -687,11 +740,10 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
-     * Creates and attaches a new attribute if the attribute does not exist.
-     * Otherwise, writes the value of the attribute in file.
+     * Creates and attaches a new attribute if the attribute does not exist in file.
+     * If the attribute already exists in file, it writes the value of the attribute in file.
      *
-     * <p>
-     * @param info the attribute to attach
+     * @param info the attribute to write
      */
     public void writeMetadata(Object info) throws Exception
     {
@@ -714,7 +766,7 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
-     * Deletes an attribute from this dataset.
+     * Deletes an attribute from this dataset in file.
      * <p>
      * @param info the attribute to delete.
      */
@@ -736,7 +788,14 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
-     * Opens access to this dataset. The return value is obtained by H5.H5Dopen().
+     * Opens an existing dataset for access in the file. 
+     * The return value is a dataset identifier obtained by H5.H5Dopen(). This function is
+     * needed to allows other objects to be able to access the dataset. For instance, H5File
+     * class uses the open() function to obtain object identifier for 
+     * copyAttributes(int src_id, int dst_id) and other purposes. The open() function should
+     * be used in pair with close(int) function.
+     * 
+     * @see ncsa.hdf.object.h5.H5CompoundDS#close(int)
      *
      * @return the dataset identifier if successful; otherwise returns a negative value.
      */
@@ -754,10 +813,15 @@ public class H5CompoundDS extends CompoundDS
 
         return did;
     }
+    
 
     /**
-     * Closes the specified dataset.
-     * @param did the identifier of the dataset to close access to
+     * Calls H5.H5Dclose(int) to close the specified dataset id.
+     * The specified dataset id is obtained by the open() function.
+     * 
+     * @see ncsa.hdf.object.h5.H5CompoundDS#open()
+     * 
+     * @param did The identifier of the dataset to close access to
      */
     public void close(int did)
     {
@@ -765,9 +829,9 @@ public class H5CompoundDS extends CompoundDS
         try { H5.H5Dclose(did); } catch (HDF5Exception ex) { ; }
     }
 
-    /**
-     * Retrieve information of the dataset from file.
-     * Information includes datatype, dataspace and members of compound dataset.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Dataset#init()
      */
     public void init()
     {
@@ -906,19 +970,23 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
-     * Sets the name of the data object.
+     * Renames the object in file.
      * <p>
+     * This function calls H5.H5Gmove() to rename the object in file.
+     * 
      * @param newName the new name of the object.
      */
     public void setName (String newName) throws Exception
     {
-        int linkType = HDF5Constants.H5G_LINK_HARD;
-
         String currentFullPath = getPath()+getName();
         String newFullPath = getPath()+newName;
 
-        H5.H5Glink(getFID(), linkType, currentFullPath, newFullPath);
+        H5.H5Gmove(getFID(), currentFullPath, newFullPath);
+        
+        /*
+        H5.H5Glink(getFID(), HDF5Constants.H5G_LINK_HARD, currentFullPath, newFullPath);
         H5.H5Gunlink(getFID(), currentFullPath);
+        */
 
         super.setName(newName);
     }
@@ -989,7 +1057,11 @@ public class H5CompoundDS extends CompoundDS
     } //extractNestedCompoundInfo
 
     /**
-     * Creates a new compound dataset
+     * Creates a simple compound dataset in file
+     * <p>
+     * This functoin calls H5.H5Dcreate() to create a simple compound dataset in file.
+     * For details, 
+     * @see ncsa.hdf.object.h5.H5CompoundDS#create(String, Group, long[], long[], long[], int, String[], Datatype[], int[], int[][], Object)
      *
      * @param name the name of the dataset
      * @param pgroup the parent group
@@ -1031,7 +1103,11 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
-     * Creates a new compound dataset
+     * Creates a simple compound dataset in file
+     * <p>
+     * This functoin calls H5.H5Dcreate() to create a simple compound dataset in file.
+     * For details, 
+     * @see ncsa.hdf.object.h5.H5CompoundDS#create(String, Group, long[], long[], long[], int, String[], Datatype[], int[], int[][], Object)
      *
      * @param name the name of the dataset
      * @param pgroup the parent group
@@ -1058,7 +1134,52 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
-     * Creates a new compound dataset
+     * Creates a simple compound dataset in file
+     * <p>
+     * This function provides an easy way to create a simple compound dataset
+     * in file by hiding tedious details of creating a compound dataset from users.  
+     * <p>
+     * This functoin calls H5.H5Dcreate() to create a simple compound dataset in file.
+     * Nested compound dataset is not supported. The required information to create
+     * a compound dataset includes the name, the parent group  and data space of the dataset, 
+     * the names, datatypes and data spaces of the compound fields. Other information such
+     * as chunks, compression and the data buffer is optional.
+     * <p>
+     * The following example shows how to use this function to create a compound dataset
+     * in file.
+     * 
+     * <pre>
+        H5File file=null;
+        String message = "";
+        Group pgroup = null;
+        int[] DATA_INT = new int[DIM_SIZE];
+        float[] DATA_FLOAT = new float[DIM_SIZE];
+        String[] DATA_STR = new String[DIM_SIZE];
+        long[] DIMs = {50, 10};
+        long[] CHUNKs = {25, 5};
+
+        try {
+            file = (H5File)H5FILE.open(fname, H5File.CREATE);
+            file.open();
+            pgroup = (Group)file.get("/");
+        } catch (Exception ex) {}
+
+        Vector data = new Vector();
+        data.add(0, DATA_INT);
+        data.add(1, DATA_FLOAT);
+        data.add(2, DATA_STR);
+
+        // create groups
+        Datatype[]  mdtypes = new H5Datatype[3];
+        String[] mnames = {"int", "float", "string"};
+        Dataset dset = null;
+        try {
+            mdtypes[0] = new H5Datatype(Datatype.CLASS_INTEGER, -1, -1, -1);
+            mdtypes[1] = new H5Datatype(Datatype.CLASS_FLOAT, -1, -1, -1);
+            mdtypes[2] = new H5Datatype(Datatype.CLASS_STRING, STR_LEN, -1, -1);
+            dset = file.createCompoundDS("/CompoundDS", pgroup, DIMs, null, CHUNKs, 9, mnames, mdtypes, null, data);
+        } catch (Exception ex) { failed(message, ex, file); return 1;}
+     * </pre>
      *
      * @param name the name of the dataset
      * @param pgroup the parent group
@@ -1071,6 +1192,7 @@ public class H5CompoundDS extends CompoundDS
      * @param memberRanks the ranks of the members
      * @param memberDims the dim sizes of the members
      * @param data the initial data
+     * 
      * @return the new compound dataset if successful; otherwise returns null
      */
     public static Dataset create(
@@ -1254,8 +1376,13 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
-     * Checks if a given datatype is a string
-     * @param tid The data type to check
+     * Checks if it is a string for the given datatype identifier.
+     * 
+     * This function uses (HDF5Constants.H5T_STRING == H5.H5Tget_class(tid) )
+     * to check if the given datatype is a string.
+     * 
+     * @param tid The data type id to check.
+     * 
      * @return true if the datatype is a string; otherwise returns flase.
      */
     public boolean isString(int tid)
@@ -1268,9 +1395,14 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
-     * Returns the size of a given datatype
-     * @param tid The data type
-     * @return The size of the datatype
+     * Returns the size (in bytes) of a given datatype identifier.
+     * 
+     * This function calls H5.H5Tget_size(tid) to get the size of
+     * the datatype.
+     * 
+     * @param tid The data type identifier.
+     * 
+     * @return The size of the datatype in bytes.
      */
     public int getSize(int tid)
     {
