@@ -1135,22 +1135,25 @@ public class H5ScalarDS extends ScalarDS
     }
 
     /**
-     * Sets the name of the data object.
+     * Renames the object in file.
      * <p>
+     * This function calls H5.H5Gmove() to rename the object in file.
+     * 
      * @param newName the new name of the object.
      */
     public void setName (String newName) throws Exception
     {
-        int linkType = HDF5Constants.H5G_LINK_HARD;
-
         String currentFullPath = getPath()+getName();
         String newFullPath = getPath()+newName;
 
-        H5.H5Glink(getFID(), linkType, currentFullPath, newFullPath);
+        H5.H5Gmove(getFID(), currentFullPath, newFullPath);
+        
+        /*
+        H5.H5Glink(getFID(), HDF5Constants.H5G_LINK_HARD, currentFullPath, newFullPath);
         H5.H5Gunlink(getFID(), currentFullPath);
+        */
 
         super.setName(newName);
     }
-
 
 }

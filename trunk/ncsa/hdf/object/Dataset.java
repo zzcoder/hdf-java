@@ -253,15 +253,13 @@ public abstract class Dataset extends HObject
     }
     
     /**
-     * Initializes the dataset such as dimension sizes of this dataset.
-     * Sub-classes must replace this interface. For each file format, initialization
-     * of a dataset is different.
+     * Initializes the dataset such as datatype and dimension sizes.
      * <p>
-     * The Dataset is designed in a way of "ask and load". When a data object
-     * is retrieved from file, it does not load the datatype and dataspce
-     * information, or data value into memory. When it is asked to open the
-     * data, init() is first called to get the datatype and dataspace information,
-     * then load the data content.
+     * The init() is designed to support lazy operation in dataset object. 
+     * When a data object is retrieved from file, it does not load the datatype 
+     * and dataspace information, or data value into memory. When it is asked 
+     * to load the data content, init() is first called to get the datatype 
+     * and dataspace information, then load the data content.
      */
     public abstract void init();
 
