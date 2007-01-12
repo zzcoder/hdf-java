@@ -226,17 +226,17 @@ public class H5File extends FileFormat
         else if ((flag == HDF5Constants.H5F_ACC_RDONLY) && !canRead())
             throw new HDF5Exception("Cannot read file -- "+fullFileName);
 
-/*
+        int plist = HDF5Constants.H5P_DEFAULT;
+        
         // BUG: HDF5Constants.H5F_CLOSE_STRONG does not flush cache
         try {
-            //All open objects ramaining in the file are closed then file is closed
+            //All open objects remaining in the file are closed then file is closed
             plist = H5.H5Pcreate (HDF5Constants.H5P_FILE_ACCESS);
             H5.H5Pset_fclose_degree ( plist, HDF5Constants.H5F_CLOSE_STRONG);
         } catch (Exception ex) {;}
-*/
 
         try {
-            fid = H5.H5Fopen( fullFileName, flag, HDF5Constants.H5P_DEFAULT);
+            fid = H5.H5Fopen( fullFileName, flag, plist);
         } catch ( Exception ex) {
             isReadOnly = true;
             fid = H5.H5Fopen( fullFileName, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
