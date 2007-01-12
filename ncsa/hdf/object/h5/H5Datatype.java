@@ -18,8 +18,12 @@ import ncsa.hdf.object.*;
 import java.util.*;
 
 /**
- * Datatype encapsulates information of a datatype.
- * Information includes the class, size, endian of a datatype.
+ * H5Datatype defines methods to map between an Datatype object ans an HDF5 dataype identifier.
+ * <p>
+ * This class provides several methods to convert an HDF5 dataype identifier to
+ * a dataype object, and vice versa. A dataype object is described by four basic fields: 
+ * datatype class, size, byte order, and sign while an HDF5 dataype is presented by a datetype
+ * identifier. 
  * <p>
  * @version 1.0 05/07/2002
  * @author Peter X. Cao, NCSA
