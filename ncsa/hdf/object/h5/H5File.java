@@ -191,12 +191,47 @@ public class H5File extends FileFormat
     }
 
     /**
+     * Opens access to this file
+     * @return the file identifier if successful; otherwise returns negative value.
+     */
+    public int open(int plist) throws Exception
+    {
+        return open(true, plist);
+    }
+
+    /**
      * Opens access to this file.
      * @param loadFullHierarchy if true, load the full hierarchy into memory;
      *        otherwise just opens the file idenfitier.
      * @return the file identifier if successful; otherwise returns negative value.
      */
     private int open(boolean loadFullHierarchy) throws Exception
+    {
+        int the_fid = -1;
+        
+        int plist = HDF5Constants.H5P_DEFAULT;
+        
+        // BUG: HDF5Constants.H5F_CLOSE_STRONG does not flush cache
+        try {
+            //All open objects remaining in the file are closed then file is closed
+            plist = H5.H5Pcreate (HDF5Constants.H5P_FILE_ACCESS);
+            H5.H5Pset_fclose_degree ( plist, HDF5Constants.H5F_CLOSE_STRONG);
+        } catch (Exception ex) {;}
+
+        the_fid = open(loadFullHierarchy, plist);
+
+        try { H5.H5Pclose(plist); } catch (Exception ex) {}
+        
+        return the_fid;
+    }
+    
+    /**
+     * Opens access to this file.
+     * @param loadFullHierarchy if true, load the full hierarchy into memory;
+     *        otherwise just opens the file idenfitier.
+     * @return the file identifier if successful; otherwise returns negative value.
+     */
+    private int open(boolean loadFullHierarchy, int plist) throws Exception
     {
         if ( fid >0 )
             return fid; // file is openned already
@@ -225,15 +260,6 @@ public class H5File extends FileFormat
             throw new HDF5Exception("Cannot write file, try open as read-only -- "+fullFileName);
         else if ((flag == HDF5Constants.H5F_ACC_RDONLY) && !canRead())
             throw new HDF5Exception("Cannot read file -- "+fullFileName);
-
-        int plist = HDF5Constants.H5P_DEFAULT;
-        
-        // BUG: HDF5Constants.H5F_CLOSE_STRONG does not flush cache
-        try {
-            //All open objects remaining in the file are closed then file is closed
-            plist = H5.H5Pcreate (HDF5Constants.H5P_FILE_ACCESS);
-            H5.H5Pset_fclose_degree ( plist, HDF5Constants.H5F_CLOSE_STRONG);
-        } catch (Exception ex) {;}
 
         try {
             fid = H5.H5Fopen( fullFileName, flag, plist);
