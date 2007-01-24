@@ -75,8 +75,9 @@ package ncsa.hdf.object;
  */
 public abstract class CompoundDS extends Dataset
 {
-    /** A single character to separate the names of nested compound fields. */
-    public static final String separator = "["; 
+    /** A single character to separate the names of nested compound fields. 
+     * Use EXTENDED ASCII CHARACTER 0x95 */
+    public static final String separator = "\u0095"; 
     
     /**
      * The number of members of this compound dataset.
