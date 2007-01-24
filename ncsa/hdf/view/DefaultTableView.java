@@ -1302,8 +1302,11 @@ implements TableView, ActionListener
         String[] columnNamesAll = d.getMemberNames();
         for (int i=0; i<columnNamesAll.length; i++)
         {
-            if (d.isMemberSelected(i))
-                columnNames[idx++] = columnNamesAll[i];
+            if (d.isMemberSelected(i)) {
+                columnNames[idx] = columnNamesAll[i];
+                columnNames[idx] = columnNames[idx].replaceAll(CompoundDS.separator, "->");
+                idx++;
+            }
         }
 
         String[] subColumnNames = columnNames;
@@ -1314,7 +1317,7 @@ implements TableView, ActionListener
             int halfIdx = columnNames.length/2;
             for (int i=0; i<columns; i++) {
                 for (int j=0; j<columnNames.length; j++) {
-                    // display column index only once, in the middle of the copound fields
+                    // display column index only once, in the middle of the compound fields
                     if (j == halfIdx)
                         subColumnNames[i*columnNames.length+j] = (i+1)+"\n "+columnNames[j];
                     else

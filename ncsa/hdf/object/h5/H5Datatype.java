@@ -18,7 +18,7 @@ import ncsa.hdf.object.*;
 import java.util.*;
 
 /**
- * H5Datatype defines methods to map between an Datatype object ans an HDF5 dataype identifier.
+ * H5Datatype defines methods to map between common Datatype object and a specific HDF5 dataype identifier.
  * <p>
  * This class provides several methods to convert an HDF5 dataype identifier to
  * a dataype object, and vice versa. A dataype object is described by four basic fields: 
@@ -40,14 +40,26 @@ public class H5Datatype extends Datatype
      /** Flag to indicate if this datatype is a named datatype */
      private boolean isNamed=false;
 
-    /**
-     * Contructs a named datatype with a given file, name and path.
-     * <p>
-     * @param fileFormat the HDF file.
-     * @param name the name of the datatype.
-     * @param path the full path of the datatype.
-     * @param oid the unique identifier of the datatype.
-     */
+     /**
+      * Constrcuts an H5Datatype object for a given file, dataset name, group path
+      * and object identifer.
+      * <p>
+      * The datatype object represents an existing named datatype in file. For example, 
+      * new H5Datatype(file, "dtype1", "/g0/") constructs a datatype object that corresponds to
+      * the dataset,"dset1", at group "/g0/".
+      * <p>
+      * The object identifier is a one-element long array that holds the object reference of
+      * the dataset. For a given file, object reference uniquely identifies the object.
+      * <p>
+      * For a given name and path, the object ID is obtained from
+      * byte[] ref_buf = H5.H5Rcreate(fid, path+name, HDF5Constants.H5R_OBJECT, -1);
+      * <p>
+      * @param fileFormat the file that contains the dataset.
+      * @param name the name of the dataset such as "dset1".
+      * @param path the group path to the dataset such as "/g0/".
+      * @param oid the unique identifier of this data object. if oid is null, the object ID 
+      *        is automatically obtained by H5.H5Rcreate() for the given name and path.
+      */
     public H5Datatype(
         FileFormat fileFormat,
         String name,
@@ -109,7 +121,7 @@ public class H5Datatype extends Datatype
     {
         super(nativeID);
     }
-
+    
     /**
      * Specify this datatype with a given id of a user defined datatype.
      * Subclasses must implement it so that this datatype will be converted.

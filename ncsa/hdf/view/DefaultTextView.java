@@ -17,10 +17,13 @@ import javax.swing.*;
 import javax.print.*;
 import java.util.*;
 import java.io.*;
-import javax.swing.border.*;
+import javax.swing.event.ChangeEvent;
 import java.awt.event.*;
-import java.awt.GridLayout;
-import java.awt.Font;
+import java.awt.Color;
+import java.awt.Component;
+import javax.swing.table.*;
+
+
 
 /**
  * TextView displays an HDF string dataset in text.
@@ -47,11 +50,12 @@ implements TextView, ActionListener, KeyListener
      * The string text.
      */
     private String[] text;
+    
+    /** The table to display the text content */
+    private JTable table;
 
-    /**
-     * text areas to hold the text.
-     */
-    private JTextArea[] textAreas;
+    //Text areas to hold the text.
+    //private JTextArea[] textAreas;
 
     private boolean isReadOnly = false;
 
@@ -66,7 +70,7 @@ implements TextView, ActionListener, KeyListener
     {
         viewer = theView;
         text = null;
-        textAreas = null;
+        table = null;
         dataset = null;
 
         HObject obj = viewer.getTreeView().getCurrentObject();
@@ -101,24 +105,19 @@ implements TextView, ActionListener, KeyListener
         this.setTitle("TextView - "+fname+" - " +dataset.getPath()+dataset.getName());
         this.setFrameIcon(ViewProperties.getTextIcon());
 
-        int size = text.length;
-        textAreas = new JTextArea[size];
-        JPanel txtPane = new JPanel();
-        txtPane.setLayout(new GridLayout(size, 1));
+        table = createTable();
+        table.getTableHeader().setReorderingAllowed(false);
+        table.getTableHeader().setBackground(Color.black);
+        
+        TableColumnModel cmodel = table.getColumnModel();
+        TextAreaRenderer textAreaRenderer = new TextAreaRenderer();
 
-        Border txtBorder = new MatteBorder(0, 0, 1, 0, java.awt.Color.BLUE);
-        for (int i=0; i<size; i++)
-        {
-            textAreas[i] = new JTextArea(text[i]);
-            textAreas[i].setEditable(!isReadOnly);
-            textAreas[i].setWrapStyleWord(true);
-            if (!isReadOnly)
-                textAreas[i].addKeyListener(this);
-            textAreas[i].setBorder(txtBorder);
-            txtPane.add(textAreas[i]);
-        }
+        cmodel.getColumn(0).setCellRenderer(textAreaRenderer);
+        TextAreaEditor textEditor = new TextAreaEditor(this);
+        cmodel.getColumn(0).setCellEditor(textEditor);
 
-        ((JPanel)getContentPane()).add (new JScrollPane(txtPane));
+
+        ((JPanel)getContentPane()).add (new JScrollPane(table));
 
         setJMenuBar(createMenuBar());
     }
@@ -130,14 +129,6 @@ implements TextView, ActionListener, KeyListener
 
         if (cmd.equals("Close")) {
             dispose();  // terminate the application
-        } else if (cmd.startsWith("Font size")) {
-            int fsize = Integer.parseInt(cmd.substring(10));
-            Font font = textAreas[0].getFont();
-            if (font != null) {
-                font = new Font(font.getName(), font.getStyle(), fsize);
-                for (int i=0; i<textAreas.length; i++)
-                    textAreas[i].setFont(font);
-            }
         } else if (cmd.equals("Save to text file")) {
             try { saveAsText(); }
             catch (Exception ex) {
@@ -152,6 +143,51 @@ implements TextView, ActionListener, KeyListener
         else if (cmd.equals("Print")) {
             print();
         }
+    }
+
+    /**
+     * Creates a JTable to hold a compound dataset.
+     */
+    private JTable createTable()
+    {
+        JTable theTable = null;
+
+        int rows = text.length;
+        int cols = 1;
+
+        theTable = new JTable(rows, 1)
+        {
+            public static final long serialVersionUID = HObject.serialVersionUID;
+
+            public Object getValueAt(int row, int col)
+            {
+                return text[row];
+            }
+            
+            public boolean isCellEditable(int row, int column)
+            {
+                return !isReadOnly;
+            }
+
+            public void editingStopped(ChangeEvent e)
+            {
+                int row = getEditingRow();
+                int col = getEditingColumn();
+                super.editingStopped(e);
+
+                Object source = e.getSource();
+
+                if (source instanceof CellEditor)
+                {
+                    CellEditor editor = (CellEditor)source;
+                    String cellValue = (String)editor.getCellEditorValue();
+                    text[row] = cellValue;
+                } // if (source instanceof CellEditor)
+            }
+
+        };
+        
+        return theTable;
     }
 
     public void keyPressed(KeyEvent e){}
@@ -185,24 +221,6 @@ implements TextView, ActionListener, KeyListener
 
         menu.addSeparator();
 
-        JMenu subMenu = new JMenu( "Font Size");
-        for (int i=0; i<6; i++) {
-            int fsize = 10+2*i;
-            item = new JMenuItem( String.valueOf(fsize));
-            item.addActionListener(this);
-            item.setActionCommand("Font size "+fsize);
-            subMenu.add(item);
-        }
-        menu.add(subMenu);
-
-/*
-        menu.addSeparator();
-
-        item = new JMenuItem( "Print");
-        item.addActionListener(this);
-        item.setActionCommand("Print");
-        menu.add(item);
-*/
         menu.addSeparator();
 
         item = new JMenuItem( "Close");
@@ -219,15 +237,12 @@ implements TextView, ActionListener, KeyListener
     public void updateValueInFile()
     {
         if (isReadOnly) return;
-
+        
         if (!(dataset instanceof ScalarDS))
             return;
 
         if (!isTextChanged)
             return;
-
-        for (int i=0; i<text.length; i++)
-            text[i] = textAreas[i].getText();
 
         try { dataset.write(); }
         catch (Exception ex)
@@ -241,9 +256,6 @@ implements TextView, ActionListener, KeyListener
         }
         isTextChanged = false;
 
-        // refresh text in memory. After writing, text is cut off to its max string length
-        for (int i=0; i<text.length; i++)
-            textAreas[i].setText(text[i]);
     }
 
     /** Save data as text. */
@@ -303,7 +315,7 @@ implements TextView, ActionListener, KeyListener
         int rows = text.length;
         for (int i=0; i<rows; i++)
         {
-            out.print(textAreas[i].getText().trim());
+            out.print(text[i].trim());
             out.println();
             out.println();
         }
@@ -349,14 +361,14 @@ implements TextView, ActionListener, KeyListener
         return text;
     }
 
-    // print the image
+    // print the table
     private void print() {
-StreamPrintServiceFactory[] spsf = StreamPrintServiceFactory.lookupStreamPrintServiceFactories(null, null);
-for (int i = 0; i<spsf.length; i++)
-    System.out.println(spsf[i]);
-DocFlavor[] docFlavors = spsf[0].getSupportedDocFlavors();
-for (int i = 0; i<docFlavors.length; i++)
-    System.out.println(docFlavors[i]);
+        StreamPrintServiceFactory[] spsf = StreamPrintServiceFactory.lookupStreamPrintServiceFactories(null, null);
+        for (int i = 0; i<spsf.length; i++)
+            System.out.println(spsf[i]);
+        DocFlavor[] docFlavors = spsf[0].getSupportedDocFlavors();
+        for (int i = 0; i<docFlavors.length; i++)
+            System.out.println(docFlavors[i]);
 
         // Get a text DocFlavor
         InputStream is = null;
@@ -374,22 +386,125 @@ for (int i = 0; i<docFlavors.length; i++)
         // Print it
         try { job.print(doc, null); }
         catch (Exception ex) {System.out.println(ex);}
-/*
-        //DocFlavor flavor = DocFlavor.BYTE_ARRAY.STRING.TEXT_PLAIN;//.STRING.TEXT_PLAIN;
-        DocFlavor flavor = DocFlavor.BYTE_ARRAY.JPEG;//.STRING.TEXT_PLAIN;
-System.out.println(flavor);
-        PrintRequestAttributeSet printAttr = new HashPrintRequestAttributeSet();
-        PrintService[] services = PrintServiceLookup.lookupPrintServices( flavor, printAttr);
-System.out.println(services);
-        PrintService service =  ServiceUI.printDialog(null, 50, 50,services, services[0], flavor, printAttr);
-        if (service != null) {
-            HashDocAttributeSet docAttr = new HashDocAttributeSet();
-            SimpleDoc doc = new SimpleDoc("this is a test of Java print", flavor, docAttr);
-            try { service.createPrintJob().print(doc, printAttr); }
-            catch (Exception ex) {}
+    }
+    
+    private class TextAreaRenderer extends JTextArea implements TableCellRenderer 
+    {
+        public static final long serialVersionUID = HObject.serialVersionUID;
+
+        private final DefaultTableCellRenderer adaptee = new DefaultTableCellRenderer();
+        
+        /** map from table to map of rows to map of column heights */
+        private final Map cellSizes = new HashMap();
+
+        public TextAreaRenderer() {
+          setLineWrap(true);
+          setWrapStyleWord(true);
         }
 
-*/
+        public Component getTableCellRendererComponent(//
+                JTable table, Object obj, boolean isSelected,
+                boolean hasFocus, int row, int column) 
+        {
+            // set the colours, etc. using the standard for that platform
+            adaptee.getTableCellRendererComponent(table, obj,
+                isSelected, hasFocus, row, column);
+            setForeground(adaptee.getForeground());
+            setBackground(adaptee.getBackground());
+            setBorder(adaptee.getBorder());
+            setFont(adaptee.getFont());
+            setText(adaptee.getText());
+
+            // This line was very important to get it working with JDK1.4
+            TableColumnModel columnModel = table.getColumnModel();
+            setSize(columnModel.getColumn(column).getWidth(), 100000);
+            int height_wanted = (int) getPreferredSize().getHeight();
+            addSize(table, row, column, height_wanted);
+            height_wanted = findTotalMaximumRowSize(table, row);
+            if (height_wanted != table.getRowHeight(row)) {
+              table.setRowHeight(row, height_wanted);
+            }
+            return this;
+        }
+
+        private void addSize(JTable table, int row, int column, int height) 
+        {
+            Map rows = (Map) cellSizes.get(table);
+            if (rows == null) {
+                cellSizes.put(table, rows = new HashMap());
+            }
+            Map rowheights = (Map) rows.get(new Integer(row));
+            if (rowheights == null) {
+                rows.put(new Integer(row), rowheights = new HashMap());
+            }
+            rowheights.put(new Integer(column), new Integer(height));
+        }
+
+        /**
+         * Look through all columns and get the renderer.  If it is
+         * also a TextAreaRenderer, we look at the maximum height in
+         * its hash table for this row.
+         */
+        private int findTotalMaximumRowSize(JTable table, int row) 
+        {
+            int maximum_height = 0;
+            Enumeration columns = table.getColumnModel().getColumns();
+            while (columns.hasMoreElements()) {
+              TableColumn tc = (TableColumn) columns.nextElement();
+              TableCellRenderer cellRenderer = tc.getCellRenderer();
+              if (cellRenderer instanceof TextAreaRenderer) {
+                TextAreaRenderer tar = (TextAreaRenderer) cellRenderer;
+                maximum_height = Math.max(maximum_height,
+                    tar.findMaximumRowSize(table, row));
+              }
+            }
+            return maximum_height;
+        }
+
+        private int findMaximumRowSize(JTable table, int row) 
+        {
+            Map rows = (Map) cellSizes.get(table);
+            if (rows == null) return 0;
+            Map rowheights = (Map) rows.get(new Integer(row));
+            if (rowheights == null) return 0;
+            int maximum_height = 0;
+            for (Iterator it = rowheights.entrySet().iterator(); it.hasNext();) 
+            {
+                Map.Entry entry = (Map.Entry) it.next();
+                int cellHeight = ((Integer) entry.getValue()).intValue();
+                maximum_height = Math.max(maximum_height, cellHeight);
+            }
+            return maximum_height;
+          }
     }
 
+    private class TextAreaEditor extends DefaultCellEditor 
+    {
+        public static final long serialVersionUID = HObject.serialVersionUID;
+        
+        public TextAreaEditor(KeyListener keyListener) 
+        {
+            super(new JTextField());
+            
+            final JTextArea textArea = new JTextArea();
+            textArea.addKeyListener(keyListener);
+            textArea.setWrapStyleWord(true);
+            textArea.setLineWrap(true);
+            JScrollPane scrollPane = new JScrollPane(textArea);
+            scrollPane.setBorder(null);
+            editorComponent = scrollPane;
+            delegate = new DefaultCellEditor.EditorDelegate() 
+            {
+                public static final long serialVersionUID = HObject.serialVersionUID;
+                public void setValue(Object value) {
+                   textArea.setText((value != null) ? value.toString() : "");
+                 }
+                 public Object getCellEditorValue() {
+                   return textArea.getText();
+                 }
+            };
+        }
+    }
 }
+
+

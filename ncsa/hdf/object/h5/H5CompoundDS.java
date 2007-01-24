@@ -333,10 +333,18 @@ public class H5CompoundDS extends CompoundDS
 
         int did = open();
 
+        /*
+        // we still need to allocate memory space even if the storage space 
+        // is not allocated because applications such as HDFView will need 
+        // to write data into the dataset
+        //
         // check is storage space is allocated
-        if (H5.H5Dget_storage_size(did) <=0) {
-            throw new HDF5Exception("Storage space is not allocated.");
-        }
+        try {
+            if (H5.H5Dget_storage_size(did) <=0) {
+                throw new HDF5Exception("Storage space is not allocated.");
+            }
+        } catch (Exception ex) {;}
+        */
         
         /*
         // check is fill value is defined
@@ -1292,16 +1300,21 @@ public class H5CompoundDS extends CompoundDS
             plist = H5.H5Pcreate (HDF5Constants.H5P_DATASET_CREATE);
             H5.H5Pset_layout(plist, HDF5Constants.H5D_CHUNKED);
             H5.H5Pset_chunk(plist, rank, chunks);
+            
+            // compression requires chunking
+            if (gzip > 0)
+                H5.H5Pset_deflate(plist, gzip);
         }
-        if (gzip > 0) {
-            H5.H5Pset_deflate(plist, gzip);
-        }
-
+        
         int fid = file.open();
         did = H5.H5Dcreate(fid, fullPath, tid, sid, plist);
 
+        //for (int i=0; i<nMembers; i++)
+        //    try { H5.H5Tclose(mTypes[i]);} catch (HDF5Exception ex) {};
+        
         try {H5.H5Pclose(plist);} catch (HDF5Exception ex) {};
         try {H5.H5Sclose(sid);} catch (HDF5Exception ex) {};
+        try {H5.H5Tclose(tid);} catch (HDF5Exception ex) {};
         try {H5.H5Dclose(did);} catch (HDF5Exception ex) {};
 
         byte[] ref_buf = H5.H5Rcreate(
@@ -1413,4 +1426,5 @@ public class H5CompoundDS extends CompoundDS
 
         return tsize;
     }
+   
 }
