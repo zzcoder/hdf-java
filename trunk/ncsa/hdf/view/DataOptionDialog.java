@@ -833,7 +833,7 @@ implements ActionListener, ItemListener
             selectedIndex[i] = sIndex[i];
             start[selectedIndex[i]] = n0[i];
             if (i<2) {
-                selected[selectedIndex[i]] = (int)((n1[i]-n0[i])/n2[i]);
+                selected[selectedIndex[i]] = (int)((n1[i]-n0[i]+1)/n2[i]);
                 stride[selectedIndex[i]] = n2[i];
             }
         }

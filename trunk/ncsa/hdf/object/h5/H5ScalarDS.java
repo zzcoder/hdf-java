@@ -558,9 +558,8 @@ public class H5ScalarDS extends ScalarDS
         if (rank <= 0) init();
 
         /* external files will need this */
-        String pdir = this.getFileFormat().getParent();
-        if (pdir == null)
-            pdir = ".";
+        String pdir = this.getFileFormat().getAbsoluteFile().getParent();
+        if (pdir == null) pdir = ".";
         H5.H5Dchdir_ext(pdir);
 
         int did = open();

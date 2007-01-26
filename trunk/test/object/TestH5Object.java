@@ -293,15 +293,27 @@ public class TestH5Object
              return 1;
 
         try {
+            
+            // test open/close file and open/close dataset
             file = new H5File(fname, H5File.READ);
             Dataset dset = (Dataset)file.get(NAME_DATASET_ATTR);
             dset.getData();
             file.close();
-            
             file = new H5File(fname, H5File.READ);
             dset = (Dataset)file.get(NAME_DATASET_ATTR);
             dset.getData();
             file.close();
+            
+            // test open file and open multiple datasets
+            file = new H5File(fname, H5File.READ);
+            dset = (Dataset)file.get(NAME_DATASET_ATTR);
+            dset.getData();
+            dset = (Dataset)file.get(NAME_DATASET_COMPOUND);
+            dset.getData();
+            dset = (Dataset)file.get(NAME_DATASET_SUB);
+            dset.getData();
+            file.close();
+
          } catch (Exception ex) { failed(message, ex, file); return 1;}
 
         passed(message);
@@ -1405,7 +1417,7 @@ public class TestH5Object
         }
 
         TestH5Object test = new TestH5Object(printStream);
-
+        
         numOfFails += test.test_H5File_create(FILE_NAME);
         numOfFails += test.test_H5File_open(FILE_NAME);
         numOfFails += test.test_H5File_open_relative_path(FILE_NAME2);
