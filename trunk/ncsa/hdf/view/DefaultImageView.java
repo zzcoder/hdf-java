@@ -1531,7 +1531,7 @@ implements ImageView, ActionListener
                 idx_dst += cols;
             }
         }
-
+        
         return selectedData;
     }
 

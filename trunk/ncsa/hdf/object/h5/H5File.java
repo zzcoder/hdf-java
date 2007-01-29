@@ -116,14 +116,15 @@ public class H5File extends FileFormat
      */
     public H5File(String pathname, int access)
     {
-        super(pathname);
+        // use absolute file path. 
+        super( pathname);
         
         isReadOnly = (access == READ);
         rootNode = null;
 
         this.fid = -1;
         this.fullFileName = pathname;
-
+        
         if (access == READ)
             flag = HDF5Constants.H5F_ACC_RDONLY;
         else if (access == WRITE)

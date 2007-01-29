@@ -1125,14 +1125,20 @@ implements ActionListener, ItemListener, HyperlinkListener
         }
 
         ImageView imageView = (ImageView)dataView;
+        ScalarDS dataset = (ScalarDS)imageView.getDataObject();
         Object theData = imageView.getSelectedData();
+        
         if (theData == null)
             return null;
-
+        
+        // in version 2.4, unsigned image data is converted to signed data
+        // to write data, the data needs to converted back to unsigned.
+        if (dataset.isUnsigned())
+            theData = Dataset.convertToUnsignedC(theData);
+        
         int w = imageView.getSelectedArea().width;
         int h = imageView.getSelectedArea().height;
-        Dataset dataset = (Dataset)imageView.getDataObject();
-
+ 
         try
         {
             long[] dims = null;

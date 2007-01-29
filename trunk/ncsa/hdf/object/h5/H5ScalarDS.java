@@ -11,6 +11,7 @@
 
 package ncsa.hdf.object.h5;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 import ncsa.hdf.hdf5lib.*;
@@ -448,7 +449,7 @@ public class H5ScalarDS extends ScalarDS
     {
         if (pgroup == null)
             return null;
-
+        
         Dataset dataset = null;
         int srcdid, dstdid, tid, sid, plist;
         String dname=null, path=null;
@@ -561,7 +562,7 @@ public class H5ScalarDS extends ScalarDS
         String pdir = this.getFileFormat().getAbsoluteFile().getParent();
         if (pdir == null) pdir = ".";
         H5.H5Dchdir_ext(pdir);
-
+        
         int did = open();
 
         // check is storage space is allocated
