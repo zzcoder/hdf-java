@@ -133,7 +133,7 @@ public abstract class FileFormat extends File
      * @param filename The full name of the file.
      */
     public FileFormat(String filename) {
-        super(filename);
+        super( filename);
     }
 
     /**
