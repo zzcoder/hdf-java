@@ -31,7 +31,7 @@ set CLASSPATH=%JNI_CLASSPATH%;%OBJ_CLASSPATH%;%HDFJAVA%/lib/jhdfview.jar
 
 %JAVAHOME%\bin\java -version
 
-%JAVAHOME%\bin\java -mx1000m -Dhdfview.root=%HDFJAVA% -classpath %CLASSPATH% ncsa.hdf.view.HDFView -root %HDFJAVA%
+%JAVAHOME%\bin\java -mx999m -Djava.library.path=%HDFJAVA%\lib\win;%HDFJAVA%\lib\ext -Dhdfview.root=%HDFJAVA% -classpath %CLASSPATH% ncsa.hdf.view.HDFView -root %HDFJAVA%
 :END
 
 
