@@ -13,6 +13,9 @@ package ncsa.hdf.hdflib;
 
 import java.io.*;
 
+import ncsa.hdf.hdf5lib.H5;
+import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
+
 /**
  *  This is the Java interface for the HDF 4.1 library.
  *  <p>
@@ -218,47 +221,44 @@ public class HDFLibrary {
 
     private final static String JHI_VERSION= "2.5";
 
-    public final static String H45PATH_PROPERTY_KEY = "ncsa.hdf.h4toh5lib.h4toh5.h45lib";
-
     public final static String HDFPATH_PROPERTY_KEY = "ncsa.hdf.hdflib.HDFLibrary.hdflib";
 
     static
     {
         boolean done = false;
-        String filename = null;
-        filename = System.getProperty(H45PATH_PROPERTY_KEY,null);
+        String filename = System.getProperty(HDFPATH_PROPERTY_KEY, null);
+        
         if ((filename != null) && (filename.length() > 0))
         {
-            File hdfdll = new File(filename);
-            if (hdfdll.exists() && hdfdll.canRead() && hdfdll.isFile()) {
-                System.load(filename);
-                done = true;
+            File h5dll = new File(filename);
+            if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) {
+                try {
+                    System.load(filename);
+                    done = true;
+                    } catch (Throwable err) { done = false; }
             } else {
                 done = false;
+                throw (new UnsatisfiedLinkError("Invalid HDF4 library, "+filename));
             }
         }
 
-        if (done == false) {
-        filename = System.getProperty(HDFPATH_PROPERTY_KEY,null);
-        if ((filename != null) && (filename.length() > 0))
+        if (!done)
         {
-            File hdfdll = new File(filename);
-            if (hdfdll.exists() && hdfdll.canRead() && hdfdll.isFile()) {
-                System.load(filename);
-            } else {
-                throw (new UnsatisfiedLinkError("Invalid HDF library, "+filename));
-            }
+            try {
+                System.loadLibrary("jhdf");
+                done = true;
+            } catch (Throwable err) { done = false; }
         }
-        else {
-            System.loadLibrary("jhdf");
-        }
+        
+        /* Important!  Exit quietly */
+        try {
+            HDFLibrary.HDdont_atexit();
+        } catch (HDFException e) {
+            System.exit(1);
         }
     }
 
-    public HDFLibrary()  {
-    }
-
-    public  static String getJHIVersion() { return JHI_VERSION; }
+    public static final String getJHIVersion() { return JHI_VERSION; }
 
     public  static int Hopen(String filename) throws HDFException {
         return Hopen(filename, HDFConstants.DFACC_RDONLY);
@@ -267,6 +267,8 @@ public class HDFLibrary {
     public static native int Hopen(String filename, int access) throws HDFException;
 
     public static native  boolean Hclose(int fid) throws HDFException;
+    
+    public static native int HDdont_atexit() throws HDFException;
 
     public static native boolean Hishdf(String fileName)  throws HDFException;
 
@@ -314,8 +316,7 @@ public class HDFLibrary {
      *             should be thrown for errors in the
      *             HDF library call, but is not yet implemented.
      */
-    public static native boolean Hgetlibversion(int[] vers,
-        String []string) throws HDFException;
+    public static native boolean Hgetlibversion(int[] vers,String []string) throws HDFException;
 
     public static native boolean Hsetaccesstype(int h_id, int  access_type) throws HDFException;
 

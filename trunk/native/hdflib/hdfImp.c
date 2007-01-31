@@ -103,6 +103,14 @@ jint fid)
     }
 }
 
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_HDdont_1atexit
+( JNIEnv *env,
+jclass class)
+{
+
+    return (jint) HDdont_atexit();
+}
+
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_Hishdf
 ( JNIEnv *env,
 jclass class,

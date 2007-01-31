@@ -209,43 +209,23 @@ public class H5 {
 
     public final static String H5PATH_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.hdf5lib";
 
-    public final static String H45PATH_PROPERTY_KEY = "ncsa.hdf.h4toh5lib.h4toh5.h45lib";
-
     static
     {
         boolean done = false;
-        String filename = null;
-        filename = System.getProperty(H45PATH_PROPERTY_KEY,null);
+        String filename = System.getProperty(H5PATH_PROPERTY_KEY,null);
+        
         if ((filename != null) && (filename.length() > 0))
         {
             File h5dll = new File(filename);
             if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) {
                 try {
-                   System.load(filename);
-                   done = true;
-                } catch (Throwable err) { done = false; }
+                    System.load(filename);
+                    done = true;
+                    } catch (Throwable err) { done = false; }
             } else {
                 done = false;
+                throw (new UnsatisfiedLinkError("Invalid HDF5 library, "+filename));
             }
-        }
-
-        if (!done)
-        {
-            filename = System.getProperty(H5PATH_PROPERTY_KEY,null);
-            if ((filename != null) && (filename.length() > 0))
-            {
-                File h5dll = new File(filename);
-                if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) {
-                    try {
-                        System.load(filename);
-                        done = true;
-                        } catch (Throwable err) { done = false; }
-                } else {
-                    done = false;
-                    throw (new UnsatisfiedLinkError("Invalid HDF5 library, "+filename));
-                }
-            }
-
         }
 
         if (!done)

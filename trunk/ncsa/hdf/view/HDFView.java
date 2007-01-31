@@ -194,9 +194,9 @@ HyperlinkListener, ChangeListener
      * HDFView is installed, and opens the given file in the viewer.
      * <p>
      * @param root the directory where the HDFView is installed.
-     * @param filename the file to open.
+     * @param List a list of files to open.
      */
-    public HDFView(String root, String filename, int width, int height, int x, int y)
+    public HDFView(String root, List flist, int width, int height, int x, int y)
     {
         super("HDFView");
 
@@ -283,17 +283,19 @@ HyperlinkListener, ChangeListener
 
         createMainWindow(width, height, x, y);
 
-        File theFile = new File(filename);
-        if (theFile.exists()) {
+        int nfiles = flist.size();
+        File theFile = null;
+        for (int i=0; i<nfiles; i++) {
+            theFile = (File)flist.get(i);
             if (theFile.isFile()) {
                 currentDir = theFile.getParentFile().getAbsolutePath();
                 currentFile = theFile.getAbsolutePath();
 
                 try {
-                    treeView.openFile(filename, FileFormat.WRITE);
+                    treeView.openFile(currentFile, FileFormat.WRITE);
                     try {
-                        urlBar.removeItem(filename);
-                        urlBar.insertItemAt(filename, 0);
+                        urlBar.removeItem(currentFile);
+                        urlBar.insertItemAt(currentFile, 0);
                         urlBar.setSelectedIndex(0);
                         } catch (Exception ex2 ) {}
                 } catch (Exception ex) {
@@ -464,7 +466,7 @@ HyperlinkListener, ChangeListener
         item.setActionCommand("Open from srb");
         fileMenu.add(item);
         try { Class.forName("ncsa.hdf.srb.SRBFileDialog"); }
-        catch (Exception ex) {item.setEnabled(false);}
+        catch (Throwable ex) {item.setEnabled(false);}
 
         fileMenu.addSeparator();
 
@@ -2076,9 +2078,8 @@ System.out.print(i +"\t" + (byte)( i) +"\t" + ((int)(i >> 8) & 0xFF)+"\n");
         } catch (Exception ex) {System.out.println(ex);}
 */
 
-        boolean backup = false;
         File tmpFile = null;
-        int i=0, W=0, H=0, X=0, Y=0;
+        int i=0, j=0, W=0, H=0, X=0, Y=0;
         
         for ( i = 0; i < args.length; i++)
         {
@@ -2086,7 +2087,8 @@ System.out.print(i +"\t" + (byte)( i) +"\t" + ((int)(i >> 8) & 0xFF)+"\n");
             {
                 try {
                     tmpFile = new File(args[++i]);
-                    backup = false;
+                    j = i;
+
                     if (tmpFile.isDirectory())
                     {
                         rootDir = tmpFile.getPath();
@@ -2101,6 +2103,8 @@ System.out.print(i +"\t" + (byte)( i) +"\t" + ((int)(i >> 8) & 0xFF)+"\n");
                 // -geometry WIDTHxHEIGHT+XOFF+YOFF 
                 try {
                 	String geom = args[++i];
+                    j = i;
+                    
                 	int idx = 0;
                     int idx0 = geom.lastIndexOf('-');
                     int idx1 = geom.lastIndexOf('+');
@@ -2139,19 +2143,20 @@ System.out.print(i +"\t" + (byte)( i) +"\t" + ((int)(i >> 8) & 0xFF)+"\n");
                 JOptionPane.PLAIN_MESSAGE,
                 ViewProperties.getLargeHdfIcon());
                 System.exit(0);
-            } else {
-                backup = true;
             }
         }
-        if (backup)
-            i--;
 
-        String filename = "";
-        if (i>=0 && i < args.length && args[i] != null) {
-            filename = args[i];
+        Vector flist = new Vector();
+        tmpFile = null;
+        if (j>=0) {
+            for (i = j; i<args.length; i++) {
+                tmpFile = new File(args[i]);
+                if (tmpFile.exists() && tmpFile.isFile())
+                    flist.add(tmpFile);
+            }
         }
 
-        HDFView frame = new HDFView(rootDir, filename, W, H, X, Y);
+        HDFView frame = new HDFView(rootDir, flist, W, H, X, Y);
         frame.pack();
         frame.setVisible(true);
     }
