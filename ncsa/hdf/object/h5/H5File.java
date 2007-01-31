@@ -1448,17 +1448,10 @@ public class H5File extends FileFormat
             oid = null;
             obj_name = objNames[i];
             obj_type = objTypes[i];
-
-            // Comment it out for bad performance. See the notes above
-/*
-            try {
-                H5.H5Gget_objname_by_idx(gid, i, oName, 80);
-                oType[0] = H5.H5Gget_objtype_by_idx(gid, i);
-            } catch (HDF5Exception ex) {
-                // do not stop if accessing one member fails
+            
+            if (obj_name == null)
                 continue;
-            }
-*/
+
             try
             {
                 byte[] ref_buf = null;

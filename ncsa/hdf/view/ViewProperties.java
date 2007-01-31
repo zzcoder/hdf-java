@@ -711,8 +711,6 @@ public class ViewProperties extends Properties
         str = (String)get("work.dir");
         if (str != null && str.length()>0)
             workDir = str;
-        else
-            workDir = rootDir;
 
         str = (String)get("file.extension");
         if (str != null && str.length()>0)
@@ -906,9 +904,9 @@ public class ViewProperties extends Properties
     /** returns the default work directory, where the open file starts.*/
     public static String getWorkDir() {
         if (workDir.equals("user.dir"))
-            return System.getProperty("user.dir");
-        else
-            return workDir;
+            workDir = System.getProperty("user.dir");
+
+        return workDir;
     }
 
     /** returns the maximum number of the most recent file */
