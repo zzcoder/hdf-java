@@ -99,7 +99,7 @@ HyperlinkListener, ChangeListener
         "Copyright "+'\u00a9'+" 2001-2005 University of Illinois.\n"+
         "All rights reserved.";
 
-    private static final String JAVA_COMPILER = System.getProperty("java.vm.version");
+    private static final String JAVA_COMPILER = "1.4.2_05-b04";
 
     /** the directory where the HDFView is installed */
     private String rootDir;
@@ -1909,8 +1909,9 @@ HyperlinkListener, ChangeListener
      {
          JFileChooser fchooser = new JFileChooser(currentDir);
          fchooser.setFileFilter(DefaultFileFilter.getFileFilter());
-
+ 
          int returnVal = fchooser.showOpenDialog(this);
+         
          if(returnVal != JFileChooser.APPROVE_OPTION)
              return null;
 

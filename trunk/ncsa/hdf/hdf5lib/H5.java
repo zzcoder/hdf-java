@@ -233,11 +233,11 @@ public class H5 {
             try {
                 System.loadLibrary("jhdf5");
                 done = true;
-            } catch (Throwable err) { done = false; }
+            } catch (Throwable err) { err.printStackTrace(); done = false; }
         }
 
         /* Important!  Exit quietly */
-        try {
+        try { 
             H5.H5dont_atexit();
         } catch (HDF5LibraryException e) {
             System.exit(1);
