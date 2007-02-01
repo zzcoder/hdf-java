@@ -6,12 +6,11 @@
 @REM
 @REM =======================================================================
 
-@REM set up your java home directory(requires jdk1.4.1 or above), for example
-SET JAVAHOME=C:\Program Files\ncsa\hdfview 2.4\jre
+@REM set up Java home directory (requires jdk1.4.x or above), e.g. D:\java\jdk1.4.2
+SET JAVAHOME=
 
-@REM set up "HDF JAVA Product" home directory, for example
-@REM SET HDFJAVA=D:\work\hdf-java
-SET HDFJAVA=C:\Program Files\ncsa\hdfview 2.4
+@REM set up "HDF JAVA Product" home directory, e.g. D:\hdf-java
+SET HDFJAVA=
 
 @REM Do not make changes under this line unless you know what you are doing.
 @REM =======================================================================
