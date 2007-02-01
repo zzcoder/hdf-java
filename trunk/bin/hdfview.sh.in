@@ -2,11 +2,11 @@
 
 # Set up default variable values if not supplied by the user.
 
-# where the HDFView is installed
+# where the HDFView is installed, e.g. HDFVIEW_HOME=/home/me/hdfview
 HDFVIEW_HOME=@JH45INST@
 export HDFVIEW_HOME
 
-# where Java is installed (requires jdk1.4.x)
+# where Java is installed (requires jdk1.4.x or above), e.g. /usr/jdk1.4.2/bin
 JAVAPATH=@JAVABIN@
 export JAVAPATH
 
