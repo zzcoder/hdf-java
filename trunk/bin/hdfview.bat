@@ -7,31 +7,24 @@
 @REM =======================================================================
 
 @REM set up your java home directory(requires jdk1.4.1 or above), for example
-@REM SET JAVAHOME=d:\java\jdk1.4.2
-SET JAVAHOME=d:\java\jdk1.4.2
+SET JAVAHOME=C:\Program Files\ncsa\hdfview 2.4\jre
 
 @REM set up "HDF JAVA Product" home directory, for example
 @REM SET HDFJAVA=D:\work\hdf-java
-SET HDFJAVA=I:\ModularHDFView\hdfview_for_dave
-
+SET HDFJAVA=C:\Program Files\ncsa\hdfview 2.4
 
 @REM Do not make changes under this line unless you know what you are doing.
 @REM =======================================================================
 
-SET PATH=%HDFJAVA%\lib\win;%HDFJAVA%\lib\ext;%PATH%
+SET PATH="%HDFJAVA%"\lib\win;"%HDFJAVA%"\lib\ext
 
 @REM set the JNI classpath
-set JNI_CLASSPATH=%HDFJAVA%/lib/jhdf.jar;%HDFJAVA%/lib/jhdf5.jar
+set JNI_CLASSPATH="%HDFJAVA%"\lib\jhdf.jar;"%HDFJAVA%"\lib\jhdf5.jar
 
 @REM set the object package classpath
-set OBJ_CLASSPATH=%HDFJAVA%/lib/jhdfobj.jar;%HDFJAVA%/lib/jhdf4obj.jar;%HDFJAVA%/lib/jhdf5obj.jar;%HDFJAVA%\lib\netcdf.jar;%HDFJAVA%\lib\fits.jar
+set OBJ_CLASSPATH="%HDFJAVA%"\lib\jhdfobj.jar;"%HDFJAVA%"\lib\jhdf4obj.jar;"%HDFJAVA%"\lib\jhdf5obj.jar;"%HDFJAVA%"\lib\netcdf.jar;"%HDFJAVA%"\lib\fits.jar
 
 @REM set the CLASSPATH
-set CLASSPATH=%JNI_CLASSPATH%;%OBJ_CLASSPATH%;%HDFJAVA%/lib/jhdfview.jar
+set CLASSPATH=%JNI_CLASSPATH%;%OBJ_CLASSPATH%;"%HDFJAVA%"\lib\jhdfview.jar
 
-%JAVAHOME%\bin\java -version
-
-%JAVAHOME%\bin\java -mx999m -Djava.library.path=%HDFJAVA%\lib\win;%HDFJAVA%\lib\ext -Dhdfview.root=%HDFJAVA% -classpath %CLASSPATH% ncsa.hdf.view.HDFView -root %HDFJAVA%
-:END
-
-
+"%JAVAHOME%\bin\java" -mx999m -Djava.library.path=%PATH% -Dhdfview.root="%HDFJAVA%" -classpath %CLASSPATH% ncsa.hdf.view.HDFView -root "%HDFJAVA%"
