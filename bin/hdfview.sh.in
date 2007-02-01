@@ -2,7 +2,7 @@
 
 # Set up default variable values if not supplied by the user.
 
-# where the HDFView is installed, e.g. HDFVIEW_HOME=/home/me/hdfview
+# where the HDFView is installed, e.g. /home/user1/hdfview
 HDFVIEW_HOME=@JH45INST@
 export HDFVIEW_HOME
 
