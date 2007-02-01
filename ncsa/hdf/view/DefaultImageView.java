@@ -3060,14 +3060,14 @@ implements ImageView, ActionListener
         {
             super(theOwner, "Brightness/Contrast", true);
 
-            java.text.NumberFormat numberFormat = java.text.NumberFormat.getNumberInstance();
-            NumberFormatter formatter = new NumberFormatter(numberFormat);
+           java.text.NumberFormat numberFormat = java.text.NumberFormat.getNumberInstance();
+           NumberFormatter formatter = new NumberFormatter(numberFormat);
             
-            formatter.setMinimum(Integer.valueOf(bias[0]));
-            formatter.setMaximum(Integer.valueOf(bias[1]));
+            formatter.setMinimum(new Integer(bias[0]));
+            formatter.setMaximum(new Integer(bias[1]));
             brightField = new JFormattedTextField(formatter);
             brightField.addPropertyChangeListener(this);
-            brightField.setValue(Integer.valueOf((int)gainBias[1]));
+            brightField.setValue(new Integer((int)gainBias[1]));
             
             brightSlider = new JSlider(JSlider.HORIZONTAL, bias[0], bias[1], (int)gainBias[1]);
             int tickSpace = (bias[1]-bias[0])/10;
@@ -3078,11 +3078,12 @@ implements ImageView, ActionListener
             brightSlider.addChangeListener(this);
             brightSlider.setBorder( BorderFactory.createEmptyBorder(0,0,10,0));
 
-            formatter.setMinimum(Integer.valueOf(gain[0]));
-            formatter.setMaximum(Integer.valueOf(gain[1]));
+            formatter = new NumberFormatter(numberFormat);
+            formatter.setMinimum(new Integer(gain[0]));
+            formatter.setMaximum(new Integer(gain[1]));
             contrastField = new JFormattedTextField(formatter);
             contrastField.addPropertyChangeListener(this);
-            contrastField.setValue(Integer.valueOf((int)gainBias[0]));
+            contrastField.setValue(new Integer((int)gainBias[0]));
 
 
             contrastSlider = new JSlider(JSlider.HORIZONTAL, gain[0], gain[1], (int)gainBias[0]);

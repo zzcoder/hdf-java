@@ -103,13 +103,18 @@ jint fid)
     }
 }
 
+/*
+ * Class:     ncsa_hdf_hdflib_HDFLibrary
+ * Method:    HDdont_atexit
+ * Signature: ()I
+ */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_HDdont_1atexit
-( JNIEnv *env,
-jclass class)
+  (JNIEnv *env, jclass class)
 {
 
     return (jint) HDdont_atexit();
 }
+
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_Hishdf
 ( JNIEnv *env,

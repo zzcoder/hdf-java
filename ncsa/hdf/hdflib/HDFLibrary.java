@@ -241,21 +241,22 @@ public class HDFLibrary {
                 throw (new UnsatisfiedLinkError("Invalid HDF4 library, "+filename));
             }
         }
-
+        
         if (!done)
         {
             try {
                 System.loadLibrary("jhdf");
                 done = true;
-            } catch (Throwable err) { done = false; }
+            } catch (Throwable err) { err.printStackTrace(); done = false; }
         }
-        
-        /* Important!  Exit quietly */
-        try {
+
+        try { 
             HDFLibrary.HDdont_atexit();
         } catch (HDFException e) {
             System.exit(1);
         }
+        
+        /* Important!  Exit quietly */
     }
 
     public static final String getJHIVersion() { return JHI_VERSION; }
