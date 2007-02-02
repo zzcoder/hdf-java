@@ -66,11 +66,11 @@ case  $os_name in
         OS_NAME=freebsd
         ;;
     *)
-        echo "Unknown Operating System:  HDFView may not work correctly"
+        echo "Unknown Operating System:  HDF-Java may not work correctly"
         ;;
 esac
 
 $JAVAPATH/javac TestH5Object".java"
-$JAVAPATH/java -Xmx1024M -Dncsa.hdf.hdf5lib.H5.hdf5lib=$HDFVIEW_HOME"/lib/"$OS_NAME"/libjhdf5.so" TestH5Object
+$JAVAPATH/java -Xmx1024M -Djava.library.path=$HDFVIEW_HOME"/lib/"$OS_NAME TestH5Object
 
 
