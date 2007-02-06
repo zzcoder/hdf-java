@@ -171,7 +171,7 @@ public class H5ScalarDS extends ScalarDS
             if (aid > 0)
             {
                 atid = H5.H5Aget_type(aid);
-                anativeType = H5Datatype.toNative(atid);
+                anativeType = H5.H5Tget_native_type(atid);
                 asid = H5.H5Aget_space(aid);
                 long adims[] = null;
 
@@ -249,7 +249,7 @@ public class H5ScalarDS extends ScalarDS
         } catch (HDF5Exception ex) {}
         finally
         {
-            nativeDatatype = H5Datatype.toNative(tid);
+            try { nativeDatatype = H5.H5Tget_native_type(tid); } catch (HDF5Exception ex2) {}
             try { H5.H5Tclose(tid); } catch (HDF5Exception ex2) {}
             try { H5.H5Sclose(sid); } catch (HDF5Exception ex2) {}
         }

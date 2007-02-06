@@ -18,12 +18,12 @@ import ncsa.hdf.object.*;
 import java.util.*;
 
 /**
- * H5Datatype defines methods to map between common Datatype object and a specific HDF5 dataype identifier.
+ * H5Datatype implements abstract Datatype class.
  * <p>
  * This class provides several methods to convert an HDF5 dataype identifier to
- * a dataype object, and vice versa. A dataype object is described by four basic fields: 
- * datatype class, size, byte order, and sign while an HDF5 dataype is presented by a datetype
- * identifier. 
+ * a dataype object, and vice versa. A dataype object is described by four basic 
+ * fields: datatype class, size, byte order, and sign, while an HDF5 dataype is 
+ * presented by a datetype identifier. 
  * <p>
  * @version 1.0 05/07/2002
  * @author Peter X. Cao, NCSA
@@ -123,18 +123,17 @@ public class H5Datatype extends Datatype
     }
     
     /**
-     * Specify this datatype with a given id of a user defined datatype.
-     * Subclasses must implement it so that this datatype will be converted.
+     * Constructs the four basic datatype fields: datatype class, size, byte order, 
+     * and sign this datatype for a given HDF5 datatype identifier.
      * <p>
      * For example, if the type identifier is a 32-bit unsigned integer
      * <pre>
      * int tid = H5.H5Tcopy( HDF5Constants.H5T_NATIVE_UNINT32);
      * Datatype dtype = new Datatype(tid);
      * </pre>
-     * will construct a datatype equivalent to
-     * new Datatype(CLASS_INTEGER, 4, NATIVE, SIGN_NONE);
+     * will construct a datatype equivalent to new Datatype(CLASS_INTEGER, 4, NATIVE, SIGN_NONE);
      * <p>
-     * @param tid the identifier of user defined datatype.
+     * @param tid the datatype identifier.
      */
     public void fromNative(int tid)
     {
@@ -191,13 +190,144 @@ public class H5Datatype extends Datatype
     }
 
     /**
+     * Translates this datatype object to an HDF5 datatype identifier.
+     * <p>
+     * For example, if a HDF5 datatype object was created from<br>
+     * <pre>
+     * H5Dataype dtype = new H5Datatype(CLASS_INTEGER, 4, NATIVE, SIGN_NONE);
+     * </pre>
+     * <pre>
+     * int tid = dtype.toNative();
+     * </pre>
+     * The "tid" will be an HDF5 datatype identifier of a 32-bit unsigned integer, 
+     * which is equivalent to
+     * <pre>
+     * int tid = H5.H5Tcopy( HDF5Constants.H5T_NATIVE_UNINT32);
+     * </pre>
+     *
+     * @return the HDF5 datatype identifier.
+     */
+    public int toNative()
+    {
+        if (nativeID >=0 )
+            return nativeID;
+        else if (isNamed) {
+            try {nativeID = H5.H5Topen(getFID(), getPath()+getName());}
+            catch (Exception ex) {nativeID = -1;}
+        }
+
+        if (nativeID >=0 )
+            return nativeID;
+
+        int tid = -1;
+
+        // figure the datatype
+        try {
+            switch (datatypeClass)
+            {
+                case CLASS_INTEGER:
+                case CLASS_ENUM:
+                    if (datatypeSize == 1)
+                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT8);
+                    else if (datatypeSize == 2)
+                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT16);
+                    else if (datatypeSize == 4)
+                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT32);
+                    else if (datatypeSize == 8)
+                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT64);
+                    else
+                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT);
+
+                    if (datatypeOrder == Datatype.ORDER_BE)
+                        H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_BE);
+                    else if (datatypeOrder == Datatype.ORDER_LE)
+                        H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_LE);
+
+                    if (datatypeSign == Datatype.SIGN_NONE)
+                        H5.H5Tset_sign(tid, HDF5Constants.H5T_SGN_NONE);
+                    break;
+                case CLASS_FLOAT:
+                    if (datatypeSize == 8)
+                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_DOUBLE);
+                    else
+                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_FLOAT);
+
+                    if (datatypeOrder == Datatype.ORDER_BE)
+                        H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_BE);
+                    else if (datatypeOrder == Datatype.ORDER_LE)
+                        H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_LE);
+
+                    break;
+                case CLASS_CHAR:
+                    if (datatypeSign == Datatype.SIGN_NONE)
+                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_UCHAR);
+                    else
+                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_CHAR);
+                    break;
+                case CLASS_STRING:
+                    tid = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
+                    H5.H5Tset_size(tid, datatypeSize);
+                    H5.H5Tset_strpad(tid, HDF5Constants.H5T_STR_NULLPAD);
+                    break;
+                case CLASS_REFERENCE:
+                    tid = H5.H5Tcopy(HDF5Constants.H5T_STD_REF_OBJ);
+                    break;
+            } // switch (tclass)
+        } catch (Exception ex) { tid = -1; }
+
+        // set up enum members
+        if (datatypeClass == CLASS_ENUM) {
+            int ptid = tid;
+            try {
+                tid = H5.H5Tenum_create(ptid);
+                String memstr, memname;
+                int memval=0, idx;
+                StringTokenizer token;
+
+                // using "0" and "1" as default
+                if (enumMembers == null)
+                    token = new StringTokenizer("0,1", ",");
+                else
+                    token = new StringTokenizer(enumMembers, ",");
+
+                while (token.hasMoreTokens()) {
+                    memstr = token.nextToken();
+                    if (memstr==null || memstr.length()<1)
+                        continue;
+
+                    idx = memstr.indexOf('=');
+                    if (idx>0) {
+                        memname = memstr.substring(0, idx);
+                        memval = Integer.parseInt(memstr.substring(idx+1));
+                    } else {
+                        memname = memstr;
+                        memval++;
+                    }
+                    H5.H5Tenum_insert(tid, memname, memval);
+                }
+            } catch (Exception ex) { tid = -1; ex.printStackTrace();}
+
+            try { H5.H5Tclose(ptid); } catch (Exception ex) {}
+        }
+
+        return (nativeID = tid);
+    }
+
+    /**
      * Allocates an one-dimensional array of byte, short, int, long, float, double,
      * or String to store data retrieved from file based on the given datatype and
      * dimension sizes.
-     *
-     * @param tid the datatype.
-     * @param size the total size of the array.
-     * @return the array object if successful and null otherwise.
+     * 
+     * For example,
+     * <pre>
+     *     int tid = H5.H5Tcopy( HDF5Constants.H5T_NATIVE_INT32);
+     *     int[] data  =(int[])allocateArray(tid, 100);
+     * </pre>
+     * returns a 32-bit integer array of size 100.
+     * 
+     * @param tid the datatype id.
+     * @param size the total number of data points of the array.
+     * @return the array object if successful; otherwise, return null.
      */
     public static Object allocateArray(int tid, int size) throws OutOfMemoryError
     {
@@ -276,32 +406,6 @@ public class H5Datatype extends Datatype
         }
 
         return data;
-    }
-
-    /**
-     * Specify this datatype with a given id of a user defined datatype.
-     * <p>
-     * For example, if the type identifier is a 32-bit unsigned integer created
-     * from HDF5,
-     * <pre>
-     * int tid = H5.H5Tcopy( HDF5Constants.H5T_NATIVE_UNINT32);
-     * Datatype dtype = new Datatype(tid);
-     * </pre>
-     * will construct a datatype equivalent to
-     * new Datatype(CLASS_INTEGER, 4, NATIVE, SIGN_NONE);
-     * <p>
-     * @param tid the identifier of user defined datatype.
-     */
-    public static int toNative(int tid)
-    {
-        // data type information
-        int native_type=-1;
-
-        try {
-            native_type = H5.H5Tget_native_type(tid);
-        } catch (Exception ex) {}
-
-        return native_type;
     }
 
     /**
@@ -507,128 +611,6 @@ public class H5Datatype extends Datatype
         }
 
         return unsigned;
-    }
-
-    /**
-     * Converts this datatype to a native datatype.
-     * <p>
-     * For example, a HDF5 datatype created from<br>
-     * <pre>
-     * H5Dataype dtype = new H5Datatype(CLASS_INTEGER, 4, NATIVE, SIGN_NONE);
-     * int tid = dtype.toNative();
-     * </pre>
-     * There "tid" will be the HDF5 datatype id of a 32-bit unsigned integer,
-     * which is equivalent to
-     * <pre>
-     * int tid = H5.H5Tcopy( HDF5Constants.H5T_NATIVE_UNINT32);
-     * </pre>
-     *
-     * @return the identifier of the user defined datatype.
-     */
-    public int toNative()
-    {
-        if (nativeID >=0 )
-            return nativeID;
-        else if (isNamed) {
-            try {nativeID = H5.H5Topen(getFID(), getPath()+getName());}
-            catch (Exception ex) {nativeID = -1;}
-        }
-
-        if (nativeID >=0 )
-            return nativeID;
-
-        int tid = -1;
-
-        // figure the datatype
-        try {
-            switch (datatypeClass)
-            {
-                case CLASS_INTEGER:
-                case CLASS_ENUM:
-                    if (datatypeSize == 1)
-                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT8);
-                    else if (datatypeSize == 2)
-                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT16);
-                    else if (datatypeSize == 4)
-                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT32);
-                    else if (datatypeSize == 8)
-                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT64);
-                    else
-                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT);
-
-                    if (datatypeOrder == Datatype.ORDER_BE)
-                        H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_BE);
-                    else if (datatypeOrder == Datatype.ORDER_LE)
-                        H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_LE);
-
-                    if (datatypeSign == Datatype.SIGN_NONE)
-                        H5.H5Tset_sign(tid, HDF5Constants.H5T_SGN_NONE);
-                    break;
-                case CLASS_FLOAT:
-                    if (datatypeSize == 8)
-                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_DOUBLE);
-                    else
-                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_FLOAT);
-
-                    if (datatypeOrder == Datatype.ORDER_BE)
-                        H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_BE);
-                    else if (datatypeOrder == Datatype.ORDER_LE)
-                        H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_LE);
-
-                    break;
-                case CLASS_CHAR:
-                    if (datatypeSign == Datatype.SIGN_NONE)
-                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_UCHAR);
-                    else
-                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_CHAR);
-                    break;
-                case CLASS_STRING:
-                    tid = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
-                    H5.H5Tset_size(tid, datatypeSize);
-                    H5.H5Tset_strpad(tid, HDF5Constants.H5T_STR_NULLPAD);
-                    break;
-                case CLASS_REFERENCE:
-                    tid = H5.H5Tcopy(HDF5Constants.H5T_STD_REF_OBJ);
-                    break;
-            } // switch (tclass)
-        } catch (Exception ex) { tid = -1; }
-
-        // set up enum members
-        if (datatypeClass == CLASS_ENUM) {
-            int ptid = tid;
-            try {
-                tid = H5.H5Tenum_create(ptid);
-                String memstr, memname;
-                int memval=0, idx;
-                StringTokenizer token;
-
-                // using "0" and "1" as default
-                if (enumMembers == null)
-                    token = new StringTokenizer("0,1", ",");
-                else
-                    token = new StringTokenizer(enumMembers, ",");
-
-                while (token.hasMoreTokens()) {
-                    memstr = token.nextToken();
-                    if (memstr==null || memstr.length()<1)
-                        continue;
-
-                    idx = memstr.indexOf('=');
-                    if (idx>0) {
-                        memname = memstr.substring(0, idx);
-                        memval = Integer.parseInt(memstr.substring(idx+1));
-                    } else {
-                        memname = memstr;
-                        memval++;
-                    }
-                    H5.H5Tenum_insert(tid, memname, memval);
-                }
-            } catch (Exception ex) { tid = -1; ex.printStackTrace();}
-
-            try { H5.H5Tclose(ptid); } catch (Exception ex) {}
-        }
-
-        return (nativeID = tid);
     }
 
     /**

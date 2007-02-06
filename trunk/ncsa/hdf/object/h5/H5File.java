@@ -1625,7 +1625,7 @@ public class H5File extends FileFormat
                 H5.H5Aget_name(aid, 80, nameA);
 
                 tid = H5.H5Aget_type(aid);
-                int nativeType = H5Datatype.toNative(tid);
+                int nativeType = H5.H5Tget_native_type(tid);
 
                 Attribute attr = new Attribute(nameA[0], new H5Datatype(nativeType), dims);
                 attributeList.add(attr);
@@ -1658,7 +1658,7 @@ public class H5File extends FileFormat
                     if (value == null) continue;
 
                     if (H5.H5Tget_class(nativeType)==HDF5Constants.H5T_ARRAY)
-                        H5.H5Aread(aid, H5Datatype.toNative(H5.H5Tget_super(nativeType)), value);
+                        H5.H5Aread(aid, H5.H5Tget_native_type(H5.H5Tget_super(nativeType)), value);
                     else
                         H5.H5Aread(aid, nativeType, value);
                     int typeClass = H5.H5Tget_class(nativeType);
