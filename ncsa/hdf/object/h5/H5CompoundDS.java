@@ -423,7 +423,7 @@ public class H5CompoundDS extends CompoundDS
                         H5.H5Tget_array_dims(member_tid, marray, null);
                         baseType = H5.H5Tget_super(member_tid);
                         arrayType = H5.H5Tarray_create (
-                            H5Datatype.toNative(baseType),
+                            H5.H5Tget_native_type(baseType),
                             mn,
                             marray,
                             null);
@@ -588,7 +588,7 @@ public class H5CompoundDS extends CompoundDS
                         H5.H5Tget_array_dims(member_tid, marray, null);
                         baseType = H5.H5Tget_super(member_tid);
                         arrayType = H5.H5Tarray_create (
-                            H5Datatype.toNative(baseType),
+                            H5.H5Tget_native_type(baseType),
                             mn,
                             marray,
                             null);
@@ -1014,7 +1014,7 @@ public class H5CompoundDS extends CompoundDS
      */
     private void extractCompoundInfo(int tid, String name, List names, List types)
     {
-        int nMembers=0, mclass, mtype;
+        int nMembers=0, mclass=-1, mtype=-1;
         String mname = null;
 
         try { nMembers = H5.H5Tget_nmembers(tid); }
@@ -1030,7 +1030,7 @@ public class H5CompoundDS extends CompoundDS
             try {tmptid = H5.H5Tget_member_type(tid, i);}
             catch (Exception ex ) { continue; }
 
-            mtype = H5Datatype.toNative(tmptid);
+            try { mtype = H5.H5Tget_native_type(tmptid);} catch (HDF5Exception ex) {}
 
             try { H5.H5Tclose(tmptid); } catch (HDF5Exception ex) {}
 

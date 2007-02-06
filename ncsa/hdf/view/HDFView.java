@@ -96,7 +96,7 @@ HyperlinkListener, ChangeListener
     private static final String aboutHDFView =
         "HDF Viewer, "+ "Version "+ViewProperties.VERSION+"\n"+
         "For "+System.getProperty("os.name")+"\n\n"+
-        "Copyright "+'\u00a9'+" 2001-2005 University of Illinois.\n"+
+        "Copyright "+'\u00a9'+" 2006-2007 The HDF Group.\n"+
         "All rights reserved.";
 
     private static final String JAVA_COMPILER = "1.4.2_05-b04";
