@@ -177,7 +177,9 @@ implements ImageView, ActionListener
     private boolean isAutoContrastUS;
     
     private AutoContrastSlider autoContrastSlider;
-    
+ 
+    private GeneralContrastSlider generalContrastSlider;
+
     /** gainBias[0] = gain, gainBias[1] = bias.
      *  gain equates to contrast and bias equates to brightness
      */
@@ -233,6 +235,7 @@ implements ImageView, ActionListener
         minMaxGain = null;
         minMaxBias = null;
         autoGainData = null;
+        generalContrastSlider = null;
 
         HObject hobject = (HObject)viewer.getTreeView().getCurrentObject();
         if (hobject == null || !(hobject instanceof ScalarDS)) {
@@ -246,6 +249,8 @@ implements ImageView, ActionListener
         {
             dataRange = new double[2];
             dataRange[0] = dataRange[1] = 0;
+            if (dataset.getDatatype().getDatatypeSize() == 1 )
+                dataRange[1] = 255; // byte image data rang = [0, 255]           
         }
 
         JPanel contentPane = (JPanel)getContentPane();
@@ -435,7 +440,7 @@ implements ImageView, ActionListener
 
         menu.addSeparator();
 
-        item = new JMenuItem( "Brightness");
+        item = new JMenuItem( "Brightness/Contrast");
         item.addActionListener(this);
         item.setActionCommand("Brightness");
         menu.add(item);
@@ -971,9 +976,9 @@ implements ImageView, ActionListener
     }
 
     // implementing ImageObserver
-    private void brightness(int level)
+    private void brightness(int blevel, int clevel)
     {
-        ImageFilter filter = new BrightnessFilter(level);
+        ImageFilter filter = new BrightnessFilter(blevel, clevel);
 
         if (filter == null)
             return;
@@ -1351,27 +1356,13 @@ implements ImageView, ActionListener
                 return;
             }
             
-            String strLevel = (String)JOptionPane.showInputDialog(this,
-                    "Enter level of brightness [-100, 100]\n-100 is the darkest and 100 is brightest",
-                    "Image Brightness",
-                    JOptionPane.INFORMATION_MESSAGE, null, null, "0");
-            if (strLevel == null)
-                return;
-
-            int level = 0;
-            try { level = Integer.parseInt(strLevel.trim()); }
-            catch (Exception ex) { level = 0; }
-
-            if (level == 0)
-                return;
-            else if (level > 100 || level < -100) {
-                JOptionPane.showMessageDialog(this,
-                    "Brightness level must be between -100 and 100: "+level,
-                    "Image Brightness",
-                    JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            brightness(level);
+            if (generalContrastSlider == null)
+                generalContrastSlider = new GeneralContrastSlider((JFrame)viewer, image.getSource());
+            generalContrastSlider.setVisible(true);
+            
+            //if (generalContrastSlider.isValueChanged) {
+            //    brightness(generalContrastSlider.getBrightness(), generalContrastSlider.getContrast());
+            //}
         }
         else if (cmd.equals("Show chart")) {
             showHistogram();
@@ -2273,50 +2264,147 @@ implements ImageView, ActionListener
 
 
     /**
-     * Makes an image filter for brightness.
-     * @parma level the leve of brightness [-100 to 100]
+     * Apply general brightness/contrast algorithm. 
+     * For details, visit http://www.developerfusion.co.uk/
+     * 
+     * The general algorithm is represented by: 
+     *     If Brighten = True   
+     *         New_Value = Old_Value + Adjustment_Amount
+     *     Else   New_Value = Old_Value - Adjustment_Amount
+     *     If New_Value < Value_Minimum   
+     *         New_Value = Value_Minimum
+     *     If New_Value > Value_Maximum   
+     *         New_Value = Value_Maximum
+     *         
+     * Contrast is a complicated operation. It is hard to formulate a "general algorithm". 
+     * Here is the closest representation (Contrast_Value=[0, 2]): 
+     * 
+     *     //Converts to a percent
+     *     //[0, 1]
+     *     New_Value = Old_Value / 255
+     *
+     *     //Centers on 0 instead of .5
+     *     //[-.5, .5] 
+     *     New_Value -= 0.5
+     *
+     *     //Adjusts by Contrast_Value
+     *     //[-127.5, 127.5], usually [-1, 1]
+     *     New_Value *= Contrast_Value
+     * 
+     *     //Re-add .5 (un-center over 0)
+     *     //[-127, 128]
+     *     New_Value += 0.5
+     * 
+     *     //Re-multiply by 255 (un-convert to percent)
+     *     //[-32385, 32640], usually [0, 255]
+     *     New_Value *= 255
+     *     //Clamp
+     *     [0, 255]
+     *     If(New_Value > 255)
+     *         New_Value = 255
+     *     If(New_Value < 0)
+     *         New_Value = 0
      */
     private class BrightnessFilter extends RGBImageFilter
     {
-        double level = 1.0;
+        // brightness level = [-200, 200]
+        int brightLevel = 0;
+        
+        // contrast level [0, 4]
+        float contrastLevel = 0;
 
-        public BrightnessFilter(int plevel) {
-            if (plevel == 0)
-            {
-                // the same
-                level = 0;
-            }
-            else if (plevel > 0)
-            {
-                // brighter
-                level = 1 + 2*(plevel/100.0);
-            }
+        public BrightnessFilter(int blevel, int clevel) {
+            if (blevel < -100)
+                brightLevel = -100;
+            else if (blevel > 100)
+                brightLevel = 100;
             else
-            {
-                // darker
-                level = 1/(1 - 2*(plevel/100.0));
-            }
-
+                brightLevel = blevel;
+            brightLevel *= 2;
+            
+            if (clevel < -100)
+                clevel = -100;
+            else if (clevel > 100)
+                clevel = 100;
+            
+            if (clevel>0)
+                contrastLevel = (clevel/100f+1)*2;
+            else if (clevel < 0)
+                contrastLevel = (clevel/100f+1)/2;
+            else
+                contrastLevel = 0;
+ 
             canFilterIndexColorModel = true;
         }
 
         public int filterRGB(int x, int y, int rgb)
         {
-            if (level == 0)
-                return rgb;
+            // adjust brightness first, then adjust contrast
+            // it gives more color depth
+            
+            if (brightLevel != 0) {
+                int r = (rgb & 0x00ff0000) >> 16;
+                int g = (rgb & 0x0000ff00) >> 8;
+                int b = (rgb & 0x000000ff);
+                
+                r += brightLevel;
+                g += brightLevel;
+                b += brightLevel;
+                
+                if (r < 0) r = 0;
+                if (r > 255) r = 255;
+                if (g < 0) g = 0;
+                if (g > 255) g = 255;
+                if (b < 0) b = 0;
+                if (b > 255) b = 255;
+                
+                r = (r << 16) & 0x00ff0000;
+                g = (g <<  8) & 0x0000ff00;
+                b =  b        & 0x000000ff;
+                
+                rgb = ((rgb & 0xff000000) | r | g | b);                
+            }
+            
+            if (contrastLevel > 0.000001) { // do not compare float using !=0 or ==0
+                int r = (rgb & 0x00ff0000) >> 16;
+                int g = (rgb & 0x0000ff00) >> 8;
+                int b = (rgb & 0x000000ff);
+                
+                float f = (float)r/255f;
+                f -= 0.5;
+                f *= contrastLevel;
+                f += 0.5;
+                f *= 255f;
+                if (f < 0) f = 0;
+                if (f > 255) f = 255;
+                r = (int)f;
 
-            int r = (rgb & 0x00ff0000) >> 16;
-            int g = (rgb & 0x0000ff00) >> 8;
-            int b = (rgb & 0x000000ff);
-            r = Math.min(255, (int)(r*level));
-            g = Math.min(255, (int)(g*level));
-            b = Math.min(255, (int)(b*level));
+                f = (float)g/255f;
+                f -= 0.5;
+                f *= contrastLevel;
+                f += 0.5;
+                f *= 255f;
+                if (f < 0) f = 0;
+                if (f > 255) f = 255;
+                g = (int)f;
 
-            r = (r << 16) & 0x00ff0000;
-            g = (g <<  8) & 0x0000ff00;
-            b =  b        & 0x000000ff;
+                f = (float)b/255f;
+                f -= 0.5;
+                f *= contrastLevel;
+                f += 0.5;
+                f *= 255f;
+                if (f < 0) f = 0;
+                if (f > 255) f = 255;
+                b = (int)f;
 
-            return ((rgb & 0xff000000) | r | g | b);
+                r = (r << 16) & 0x00ff0000;
+                g = (g <<  8) & 0x0000ff00;
+                b =  b        & 0x000000ff;
+                
+                rgb = ((rgb & 0xff000000) | r | g | b);                
+            }
+
+            return rgb;
         }
     }
 
@@ -3044,7 +3132,194 @@ implements ImageView, ActionListener
 
         public double[] getRange()  { return minmax; }
     } //private class DataRangeDialog extends JDialog implements ActionListener
-    
+
+    private class GeneralContrastSlider extends JDialog implements 
+    ActionListener, ChangeListener, PropertyChangeListener
+    {
+        public static final long serialVersionUID = HObject.serialVersionUID;
+        private boolean isValueChanged = false;
+        JSlider brightSlider, contrastSlider;
+        JFormattedTextField brightField, contrastField;
+        int brightLevel=0, contrastLevel=0;
+        ImageProducer imageProducer;
+        
+        public GeneralContrastSlider(JFrame theOwner, ImageProducer producer)
+        {
+            super(theOwner, "Brightness/Contrast", true);
+            
+            imageProducer = producer;
+
+           java.text.NumberFormat numberFormat = java.text.NumberFormat.getNumberInstance();
+           NumberFormatter formatter = new NumberFormatter(numberFormat);
+            
+            formatter.setMinimum(new Integer(-100));
+            formatter.setMaximum(new Integer(100));
+            brightField = new JFormattedTextField(formatter);
+            brightField.addPropertyChangeListener(this);
+            brightField.setValue(new Integer(0));
+            
+            brightSlider = new JSlider(JSlider.HORIZONTAL, -100, 100, 0);
+            brightSlider.setMajorTickSpacing(20);
+            brightSlider.setPaintTicks(true);
+            brightSlider.setPaintLabels(true);
+            brightSlider.addChangeListener(this);
+            brightSlider.setBorder( BorderFactory.createEmptyBorder(0,0,10,0));
+
+            formatter = new NumberFormatter(numberFormat);
+            formatter.setMinimum(new Integer(-100));
+            formatter.setMaximum(new Integer(100));
+            contrastField = new JFormattedTextField(formatter);
+            contrastField.addPropertyChangeListener(this);
+            contrastField.setValue(new Integer(0));
+
+
+            contrastSlider = new JSlider(JSlider.HORIZONTAL, -100, 100, 0);
+            contrastSlider.setMajorTickSpacing(20);
+            contrastSlider.setPaintTicks(true);
+            contrastSlider.setPaintLabels(true);
+            contrastSlider.addChangeListener(this);
+            contrastSlider.setBorder( BorderFactory.createEmptyBorder(0,0,10,0));
+
+            JPanel contentPane = (JPanel)getContentPane();
+            contentPane.setLayout(new BorderLayout(5, 5));
+            contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+            contentPane.setPreferredSize(new Dimension(500, 300));
+
+            JPanel brightPane = new JPanel();
+            brightPane.setBorder(new TitledBorder("Brightness"));
+            brightPane.setLayout(new BorderLayout());
+            brightPane.add(brightField, BorderLayout.NORTH);
+            brightPane.add(brightSlider, BorderLayout.CENTER);
+
+            JPanel contrastPane = new JPanel();
+            contrastPane.setBorder(new TitledBorder("Contrast"));
+            contrastPane.setLayout(new BorderLayout());
+            contrastPane.add(contrastField, BorderLayout.NORTH);
+            contrastPane.add(contrastSlider, BorderLayout.CENTER);
+
+            JPanel mainPane = new JPanel();;
+            mainPane.setLayout(new GridLayout(2,1,5,5));
+            mainPane.add(brightPane);
+            mainPane.add(contrastPane);
+            contentPane.add(mainPane, BorderLayout.CENTER);
+
+            // add OK and CANCEL buttons
+            JPanel confirmP = new JPanel();
+            JButton button = new JButton("   Ok   ");
+            button.setMnemonic(KeyEvent.VK_O);
+            button.setActionCommand("Ok_brightness_change");
+            button.addActionListener(this);
+            confirmP.add(button);
+            button = new JButton("Cancel");
+            button.setMnemonic(KeyEvent.VK_C);
+            button.setActionCommand("Cancel_brightness_change");
+            button.addActionListener(this);
+            confirmP.add(button);
+            
+            button = new JButton("Apply");
+            button.setMnemonic(KeyEvent.VK_A);
+            button.setActionCommand("Apply_brightness_change");
+            button.addActionListener(this);
+            confirmP.add(button);
+           
+            contentPane.add(confirmP, BorderLayout.SOUTH);
+            contentPane.add(new JLabel(" "), BorderLayout.NORTH);
+
+            Point l = getParent().getLocation();
+            Dimension d = getParent().getPreferredSize();
+            l.x += 300;
+            l.y += 200;
+            setLocation(l);
+            pack();
+        }
+        
+       public void actionPerformed(ActionEvent e)
+        {
+            Object source = e.getSource();
+            String cmd = e.getActionCommand();
+
+            if (cmd.equals("Ok_brightness_change") || cmd.equals("Apply_brightness_change"))
+            {
+                int b = ((Number)brightField.getValue()).intValue();
+                int c = ((Number)contrastField.getValue()).intValue();
+                
+                isValueChanged = ( (b!=brightLevel) | (c!=contrastLevel) );
+                
+                applyBrightContrast(b, c);
+                
+                brightLevel = b;
+                contrastLevel = c;
+                
+                if (cmd.startsWith("Ok"))
+                    setVisible(false);
+            }
+            else if (cmd.equals("Cancel_brightness_change"))
+            {
+                isValueChanged = false;
+                setVisible(false);
+            }
+        }
+        
+        /** Listen to the slider. */
+        public void stateChanged(ChangeEvent e)
+        {
+            Object source = e.getSource();
+
+            if (!(source instanceof JSlider))
+                return;
+
+            JSlider slider = (JSlider)source;
+            int value = slider.getValue();
+            if (slider.equals(brightSlider))
+            {
+                brightField.setValue(new Integer(value));
+            }
+            else if (slider.equals(contrastSlider))
+            {
+                contrastField.setValue(new Integer(value));
+            }
+        }
+        
+        /**
+         * Listen to the text field.  This method detects when the
+         * value of the text field changes.
+         */
+        public void propertyChange(PropertyChangeEvent e)
+        {
+            Object source = e.getSource();
+            if ("value".equals(e.getPropertyName()))
+            {
+                Number num = (Number)e.getNewValue();
+                if (num == null) return;
+                
+                double value = num.doubleValue();
+                if (value > 100)
+                    value = 100;
+                else if (value < -100)
+                    value = -100;
+
+                if (source.equals(brightField) && brightSlider!= null)
+                    brightSlider.setValue((int)value);
+                else if (source.equals(contrastField) && contrastSlider!= null)
+                    contrastSlider.setValue((int)value);
+           }
+        }
+        
+        private void applyBrightContrast(int blevel, int clevel) {
+            ImageFilter filter = new BrightnessFilter(blevel, clevel);
+
+            if (filter == null)
+                return;
+            try {
+                image = createImage(new FilteredImageSource(imageProducer, filter));
+                imageComponent.setImage(image);
+                zoomTo(zoomFactor);
+            } catch (Throwable err)  {;}
+        }
+        
+     } //private class GeneralContrastSlider extends JDialog implements ActionListener
+
+    // for unsigned short image data only
     private class AutoContrastSlider extends JDialog implements 
     ActionListener, ChangeListener, PropertyChangeListener
     {
@@ -3177,13 +3452,6 @@ implements ImageView, ActionListener
             {
                 isValueChanged = false;
                 setVisible(false);
-            }
-            else if (cmd.equals("Apply_gain_change"))
-            {
-                if (isValueChanged)
-                    applyAutoContrast();
-
-                isValueChanged = false;
             }
         }
 
