@@ -18,13 +18,16 @@ import ncsa.hdf.hdf5lib.exceptions.*;
 import ncsa.hdf.object.*;
 
 /**
- * An H5Group represents HDF5 group, inheriting from Group.
+ * An H5Group object represents an existing HDF5 group in file.
  * <p>
- * Every HDF5 object has at least one name. An HDF5 group is used to store
+ * In HDF5, every object has at least one name. An HDF5 group is used to store
  * a set of the names together in one place, i.e. a group. The general
  * structure of a group is similar to that of the UNIX file system in
  * that the group may contain references to other groups or data objects
  * just as the UNIX directory may contain subdirectories or files.
+ * <p>
+ * For more information on HDF5 Groups, 
+ * @see <a href="http://hdfgroup.com/HDF5/doc/UG/">HDF5 User's Guide</a>
  * <p>
  * @version 1.0 12/12/2001
  * @author Peter X. Cao, NCSA
@@ -85,23 +88,20 @@ public class H5Group extends Group
         close(gid);
     }
 
-    /**
-     * Clears up the group
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Group#clear()
      */
     public void clear() {
-    		super.clear(); 
+    	super.clear(); 
     		
     	if (attributeList != null)
     		((Vector)attributeList).setSize(0);
     }
 
-    /**
-     * Read and returns a list of attributes of from file into memory if the attributes
-     * are not in memory. If the attributes are in memory, it returns the attributes.
-     * The attributes are stored as a collection in a List.
-     *
-     * @return the list of attributes.
-     * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/List.html">java.util.List</a>
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#getMetadata()
      */
     public List getMetadata() throws HDF5Exception
     {
@@ -115,12 +115,9 @@ public class H5Group extends Group
         return attributeList;
     }
 
-    /**
-     * Creates and attaches a new attribute if the attribute does not exist.
-     * Otherwise, writes the value of the attribute in file.
-     *
-     * <p>
-     * @param info the attribute to attach
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#writeMetadata(java.lang.Object)
      */
     public void writeMetadata(Object info) throws Exception
     {
@@ -142,10 +139,9 @@ public class H5Group extends Group
         if (!attrExisted) attributeList.add(attr);
     }
 
-    /**
-     * Deletes an attribute from this group.
-     * <p>
-     * @param info the attribute to delete.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#removeMetadata(java.lang.Object)
      */
     public void removeMetadata(Object info) throws HDF5Exception
     {
@@ -164,9 +160,9 @@ public class H5Group extends Group
         }
     }
 
-    /**
-     * Opens access to the group
-     * @return the group idendifier if successful; otherwise returns false.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.HObject#open()
      */
     public int open()
     {
@@ -187,9 +183,9 @@ public class H5Group extends Group
         return gid;
     }
 
-    /**
-     * Close group access
-     * @param gid the group to close
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.HObject#close(int)
      */
     public void close(int gid)
     {
@@ -201,7 +197,7 @@ public class H5Group extends Group
      * Creates a new group with a given name and parent group
      * .
      * @param name the name of the group to create.
-     * @param pgroup the parent group of the new group.
+     * @param pgroup the parent group where the new group is created
      * @return the new group if successful. Otherwise returns null.
      */
     public static H5Group create(String name, Group pgroup)
@@ -252,10 +248,9 @@ public class H5Group extends Group
         return group;
     }
 
-    /**
-     * Sets the name of the data object.
-     * <p>
-     * @param newName the new name of the object.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.HObject#setName(java.lang.String)
      */
     public void setName (String newName) throws Exception
     {
@@ -281,10 +276,9 @@ public class H5Group extends Group
         }
     }
 
-    /**
-     * Sets the path of the data object.
-     * <p>
-     * @param newPath the new path of the object.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.HObject#setPath(java.lang.String)
      */
     public void setPath (String newPath) throws Exception
     {
@@ -301,5 +295,4 @@ public class H5Group extends Group
             obj.setPath(getPath()+getName()+HObject.separator);
         }
     }
-
 }

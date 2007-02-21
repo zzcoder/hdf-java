@@ -713,17 +713,6 @@ public class TestH5Object
             file.copy(grp, pgroup, "~Group");
         } catch (Exception ex) { failed(message, ex, file); return 1;}
 
-        // load the copied object into memory
-        file.reloadTree(pgroup);
-
-        try {
-            Dataset dset2 = (Dataset) file.get("/~Group/Dataset");
-            if ( !dataEquals(dset.read(), dset2.read()) ) {
-                failed(message, new HDF5LibraryException("Incorrect data values in file"), file);
-                return 1;
-            }
-        } catch (Exception ex) { failed(message, ex, file); return 1;}
-
         passed(message);
         try { file.close(); } catch (Exception ex) {}
         return 0;

@@ -600,12 +600,14 @@ implements TableView, ActionListener
                 } else 
                     theData = dataValue;
 
-                double[] stat = new double[4];
+                double[] minmax = new double[2];
+                double[] stat = new double[2];
+                Tools.findMinMax(theData, minmax);
                 if (Tools.computeStatistics(theData, stat) > 0) {
-                	String statistics = "Min                     = "+stat[0] +
-                                      "\nMax                     = "+stat[1] +
-                	                  "\nMean                    = "+stat[2] +
-                	                  "\nStandard deviaton = "+stat[3];
+                	String statistics = "Min                      = "+minmax[0] +
+                                      "\nMax                      = "+minmax[1] +
+                	                  "\nMean                     = "+stat[0] +
+                	                  "\nStandard deviaton = "+stat[1];
                     JOptionPane.showMessageDialog(this, statistics, "Statistics", JOptionPane.INFORMATION_MESSAGE);
                 }
                 

@@ -14,8 +14,8 @@ package ncsa.hdf.object;
 import java.io.*;
 
 /**
- * HObject is the root class of all the HDF data objects. Every data class has
- * HObject as a superclass. All objects, Groups and Datasets, implement the
+ * The HObject class is the base class of all the HDF data objects. Every data class has
+ * HObject as a superclass. All objects (Groups and Datasets) implement the
  * methods of this class. The following is the class hierarchy of abstract classes
  * that are inherited from HObject.
  *
@@ -195,6 +195,8 @@ public abstract class HObject implements Serializable, DataFormat
     
     /**
      * Returns the full path of the file that contains this data object.
+     * For exmaple, "/samples/test_hdf5.h5".
+     * 
      * The file name is necessary because the file of this data object is
      * uniquely identified when mutilple files are opened by an application
      * at the same time.
@@ -206,6 +208,9 @@ public abstract class HObject implements Serializable, DataFormat
 
     /**
      * Returns the name of this object.
+     * For example, "Raster Image #2".
+     * 
+     * @return the name of this object.
      */
     public final String getName()
     {
@@ -213,7 +218,10 @@ public abstract class HObject implements Serializable, DataFormat
     }
 
     /**
-     * Returns the full name (path + name) of this object.
+     * Returns the full name (group path + object name) of this object.
+     * For example, "/Images/Raster Image #2"
+     * 
+     * @return the full name (group path + object name) of this object.
      */
     public final String getFullName()
     {
@@ -221,7 +229,10 @@ public abstract class HObject implements Serializable, DataFormat
     }
 
     /**
-     * Returns the path of this object.
+     * Returns the group path of this object.
+     * For example, "/Images/".
+     * 
+     * @return the group path of this object.
      */
     public final String getPath()
     {
@@ -230,6 +241,8 @@ public abstract class HObject implements Serializable, DataFormat
 
     /**
      * Sets the name of the object.
+     * <p>
+     * setName (String newName) changes the name of the object in file.
      *
      * @param newName The new name of the object.
      */
@@ -240,7 +253,12 @@ public abstract class HObject implements Serializable, DataFormat
 
     /**
      * Sets the path of the object.
-     *
+     * <p>
+     * setPath() is needed when the name of a group is changed by setName().
+     * The path of the object in memroy under this group should be updated
+     * to the new group name. Unlike setName(), setPath() does not change 
+     * anything in file.
+     * 
      * @param newPath The new path of the object.
      */
     public void setPath (String newPath) throws Exception
@@ -249,14 +267,17 @@ public abstract class HObject implements Serializable, DataFormat
     }
 
     /**
-     * Opens access to this object.
-     * <p>
-     * Sub-classes must implement this interface so that different data objects
-     * have their own ways of how the data resources are opened. For example,
-     * H5Group.open() calls the ncsa.hdf.hdf5lib.H5.H5Gopen() native method and
-     * returns the group identifier.
+     * Opens an existing object such as dataset or group for access. 
+     * 
+     * The return value is an object identifier obtained by implementing classes suas 
+     * H5.H5Dopen(). This function is needed to allows other objects to be able to access 
+     * the object. For instance, H5File class uses the open() function to obtain object 
+     * identifier for copyAttributes(int src_id, int dst_id) and other purposes. The open() 
+     * function should be used in pair with close(int) function.
+     * 
+     * @see ncsa.hdf.object.HObject#close(int)
      *
-     * @return the interface identifier for access this object.
+     * @return the object identifier if successful; otherwise returns a negative value.
      */
     public abstract int open();
 
@@ -265,7 +286,7 @@ public abstract class HObject implements Serializable, DataFormat
      * <p>
      * Sub-classes must implement this interface so that different data
      * objects have their own ways of how the data resources are closed.
-     * For example, H5Group.close() calls the ncsa.hdf.hdf5lib.H5.H5Gclos()
+     * For example, H5Group.close() calls the ncsa.hdf.hdf5lib.H5.H5Gclose()
      * native method and closes the group resource specified by the id.
      *
      * @param id The object identifier.
@@ -274,6 +295,8 @@ public abstract class HObject implements Serializable, DataFormat
 
     /**
      * Returns the file identifier of this object.
+     * 
+     * @return the file identifier of this object.
      */
     public final int getFID()
     {
@@ -313,6 +336,8 @@ public abstract class HObject implements Serializable, DataFormat
 
     /**
      * Returns the fileformat that contains this object.
+     * 
+     * @return the fileformat that contains this object.
      */
     public final FileFormat getFileFormat() { return fileFormat; }
 
@@ -340,10 +365,9 @@ public abstract class HObject implements Serializable, DataFormat
      */
     public boolean hasAttribute () { return hasAttribute; }
 
-    /**
-     * Returns the string representation of this data object.
-     * <p>
-     * The String consists of the name of the data object.
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
      */
     public String toString()
     {

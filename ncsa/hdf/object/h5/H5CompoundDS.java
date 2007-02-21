@@ -214,9 +214,9 @@ public class H5CompoundDS extends CompoundDS
         close(did);
     }
 
-    /** 
-     * Returns the datatype object (H5Datatype) of this dataset. 
-     * @return the datatype object (H5Datatype) of this dataset. 
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Dataset#getDatatype()
      */
     public Datatype getDatatype()
     {
@@ -288,27 +288,24 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
-     * Reads the content (data values) of this dataset into memory if the data of the
-     * object is not loaded. If the content is already loaded, it returns the
-     * memory buffer of the data. It returns null if the data object has no data or it fails
-     * to load the data.
+     * Reads the content (data values) of this dataset into memory.
+     * 
      * <p>
      * Data is read by compound field members and stored into a vector.
      * Each element of the vector is an one-dimension array that contains the field data.
      * The array type is determined by the datatype of the compound field.
      * <p>
-     * For example, if compound dataset "A" has the following nested structure,
+     * For example, if compound dataset "comp" has the following nested structure,
      * and memeber datatypes
      * <pre>
-     * A --> m01 (int)
-     * A --> m02 (float)
-     * A --> nest1 --> m11 (char)
-     * A --> nest1 --> m12 (String)
-     * A --> nest1 --> nest2 --> m21 (long)
-     * A --> nest1 --> nest2 --> m22 (double)
+     * comp --> m01 (int)
+     * comp --> m02 (float)
+     * comp --> nest1 --> m11 (char)
+     * comp --> nest1 --> m12 (String)
+     * comp --> nest1 --> nest2 --> m21 (long)
+     * comp --> nest1 --> nest2 --> m22 (double)
      * </pre>
-     * read() returns a Vector that contains six arrays: int[], float[], char[], Stirng[], 
-     *        long[] and double[].
+     * read() returns a list of six arrays: {int[], float[], char[], Stirng[], long[] and double[]}.
      * 
      * @return the array of data List.
       */
@@ -498,12 +495,6 @@ public class H5CompoundDS extends CompoundDS
                 list.add(member_data);
             } // end of for (int i=0; i<num_members; i++)
 
-            /* TODO:
-            if (isIndexTable) {
-                try { queryIndexSpace(did, list); }
-                catch (Exception ex) {}
-            }
-            */
         } finally
         {
             if (fspace > 0)
@@ -662,13 +653,9 @@ public class H5CompoundDS extends CompoundDS
 
     }
 
-    /**
-     * Reads attributes of this dataset from file into memory if the attributes
-     * are not in memory. If the attributes are in memory, it returns the attributes.
-     * The attributes (@see ncsa.hdf.object.Attribute) are stored in a vector.
-     *
-     * @return the vector that contains the attributes of the dataset.
-     * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/List.html">java.util.List</a>
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#getMetadata()
      */
     public List getMetadata() throws HDF5Exception
     {
@@ -746,11 +733,9 @@ public class H5CompoundDS extends CompoundDS
         return attributeList;
     }
 
-    /**
-     * Creates and attaches a new attribute if the attribute does not exist in file.
-     * If the attribute already exists in file, it writes the value of the attribute in file.
-     *
-     * @param info the attribute to write
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#writeMetadata(java.lang.Object)
      */
     public void writeMetadata(Object info) throws Exception
     {
@@ -772,10 +757,9 @@ public class H5CompoundDS extends CompoundDS
         if (!attrExisted) attributeList.add(attr);
     }
 
-    /**
-     * Deletes an attribute from this dataset in file.
-     * <p>
-     * @param info the attribute to delete.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#removeMetadata(java.lang.Object)
      */
     public void removeMetadata(Object info) throws HDF5Exception
     {
@@ -794,17 +778,9 @@ public class H5CompoundDS extends CompoundDS
         }
     }
 
-    /**
-     * Opens an existing dataset for access in the file. 
-     * The return value is a dataset identifier obtained by H5.H5Dopen(). This function is
-     * needed to allows other objects to be able to access the dataset. For instance, H5File
-     * class uses the open() function to obtain object identifier for 
-     * copyAttributes(int src_id, int dst_id) and other purposes. The open() function should
-     * be used in pair with close(int) function.
-     * 
-     * @see ncsa.hdf.object.h5.H5CompoundDS#close(int)
-     *
-     * @return the dataset identifier if successful; otherwise returns a negative value.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.HObject#open()
      */
     public int open()
     {
@@ -821,14 +797,9 @@ public class H5CompoundDS extends CompoundDS
         return did;
     }
     
-
-    /**
-     * Calls H5.H5Dclose(int) to close the specified dataset id.
-     * The specified dataset id is obtained by the open() function.
-     * 
-     * @see ncsa.hdf.object.h5.H5CompoundDS#open()
-     * 
-     * @param did The identifier of the dataset to close access to
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.HObject#close(int)
      */
     public void close(int did)
     {
@@ -976,12 +947,9 @@ public class H5CompoundDS extends CompoundDS
         }
     }
 
-    /**
-     * Renames the object in file.
-     * <p>
-     * This function calls H5.H5Gmove() to rename the object in file.
-     * 
-     * @param newName the new name of the object.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.HObject#setName(java.lang.String)
      */
     public void setName (String newName) throws Exception
     {
@@ -1387,15 +1355,9 @@ public class H5CompoundDS extends CompoundDS
         return out;
     }
 
-    /**
-     * Checks if it is a string for the given datatype identifier.
-     * 
-     * This function uses (HDF5Constants.H5T_STRING == H5.H5Tget_class(tid) )
-     * to check if the given datatype is a string.
-     * 
-     * @param tid The data type id to check.
-     * 
-     * @return true if the datatype is a string; otherwise returns flase.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Dataset#isString(int)
      */
     public boolean isString(int tid)
     {
@@ -1406,15 +1368,9 @@ public class H5CompoundDS extends CompoundDS
         return b;
     }
 
-    /**
-     * Returns the size (in bytes) of a given datatype identifier.
-     * 
-     * This function calls H5.H5Tget_size(tid) to get the size of
-     * the datatype.
-     * 
-     * @param tid The data type identifier.
-     * 
-     * @return The size of the datatype in bytes.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Dataset#getSize(int)
      */
     public int getSize(int tid)
     {

@@ -18,7 +18,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 /**
- * The FileFormat defines general I/O accessing interfaces to file resources,
+ * The FileFormat defines general I/O interfaces for accessing file resources
  * such as open/close file, and retrieve file structure.
  * <p>
  * FileFormat is a plugable component. An implementing class of FileFormat can be
@@ -130,7 +130,7 @@ public abstract class FileFormat extends File
     }
 
     /** Constructs a FileFormat with a given file name.
-     * @param filename The full name of the file.
+     * @param filename The name of the file such as "/samples/hdf5_test.h5".
      */
     public FileFormat(String filename) {
         super( filename);
@@ -138,18 +138,60 @@ public abstract class FileFormat extends File
 
     /**
      * Opens access to the file resource and returns the file identifier.
-     * If the file is already open, it returns the file access identifier.
+     * <p>
+     * This function also retireves the file structure and basic information (
+     * name, type) of data objects from file. However, it does not load
+     * the content of data object. 
+     * <p>
+     * The structure of the file is stored in a tree starting from the root node. 
+     * @see #getRootNode()
+     * Starting from the root, applications can descend through the hierarchy 
+     * and navigate among the file's data objects.
+     * <p>
+     *  Although the "int open()" and "FileFormat open(String pathname, int access)"
+     *  use the same function name, they are used for completely different purposes.
+     *  "int open()" is used to open file access while "FileFormat open(String pathname, 
+     *  int access)" is used to create an instance of FileFormat. 
+     * @see ncsa.hdf.object.FileFormat#open(java.lang.String, int)
      *
      * @return The file access identifier if successful; otherwise returns a negative value.
      */
     public abstract int open() throws Exception;
 
     /**
-     * Opens a file and returns an instance of implementing class of the FileFormat.
+     * Creates an instance of FileFormat.
      *
-     * @param pathname The full path name of the file.
-     * @param access The file access flag, it takes one of two values below:
-     * @return The new file if successful; otherwise returns null
+     * Unlike "int open()", this function does not open file access and file
+     * structure. It just creates an instance of implementing class of FileFormat.
+     * <p>
+     * The follwoing example explains how the two functions are related and used 
+     * for different purpose.
+     * <pre>
+     *     // Request the implementing class of FileFormat: H5File
+     *     FileFormat h5file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+     *     
+     *     // Creates an instance of H5File object for existing file with read/write access
+     *     H5File test1 =  (H5File) h5file.open("test_hdf5.h5", FileFormat.WRITE);
+     *     
+     *     // Opens file indentifier and load the file structure
+     *     int fid = test1.open;
+     *     
+     *     // Get the root fo the file structure.
+     *     Node root = test1.getRootNode();
+     *     
+     *     // Create a new HDF5 file
+     *     H5File test2 =  (H5File) h5file.open("new_hdf5.h5", FileFormat.CREATE);
+     *     
+     *     // Opens the file structure of the new file
+     *     int fid2 = test2.open();
+     * </pre> 
+     * @param pathname the full path name of the file.
+     * @param access the file access flag, it takes one of two values below:
+     * <DL>
+     * <DT> READ <DD> Allow read-only access to file.</DT>
+     * <DT> WRITE <DD> Allow read and write access to file.</DT>
+     * <DT> CREATE <DD> Create a new file.</DT>
+     * </DL>
      */
     public abstract FileFormat open(String pathname, int access) throws Exception;
 
@@ -213,7 +255,16 @@ public abstract class FileFormat extends File
     }
 
     /** 
-     * Returns the total number of objects in the file
+     * Returns the total number of objects in memory.
+     * <p>
+     * getNumberOfMembers() returns total number of objects loaded into memory, which 
+     * may be different from the toal number of objects in file. For example, if a file
+     * contains 20,000 object, the application only loads the first 10,000 objects into
+     * the tree node in memory. getNumberOfMembers() return 10,000 instead of 20,000.
+     * @see #setMaxMembers(int)
+     * @see #setStartMembers(int)
+     * 
+     * @return the total number of objects in memory.
      */
     public final int getNumberOfMembers() {
     	
@@ -241,16 +292,25 @@ public abstract class FileFormat extends File
      * The root node contains the hierarchy of the file. For file with hierarchical
      * structure such as HDF, the structure is stored in a tree structure. The root
      * of the tree represents the root of the file.
+     * 
+     * @return the root node of the file.
      */
     public abstract TreeNode getRootNode();
 
     /**
      * Returns the full path (file path + file name) of the file.
+     * For example, "/samples/hdf5_test.h5".
+     * 
+     * @return the full path (file path + file name) of the file.
      */
     public abstract String getFilePath();
 
     /**
      * Checks if the file is read-only.
+     * <p>
+     * A file can be open with read-only or read/write. 
+     * 
+     * @see #open(String, int)
      * 
      * @return true if the file is read-only, otherwise returns false.
      */
@@ -553,10 +613,10 @@ public abstract class FileFormat extends File
     public abstract String getLibversion();
 
     /**
-     * Checks if a given file is this type of FileFormat.
+     * Checks if a file is an instance of this file type.
      * <p>
      * For example, if "test.h5" is an HDF5 file, H5File.isThisType("test.h5") returns
-     * true while H4File .isThisType("test.h5") will return false.
+     * true while H4File.isThisType("test.h5") will return false.
      * <pre>
      * FileFormat file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
      * boolean isH5 = file.isThisType("test.h5");
@@ -568,16 +628,38 @@ public abstract class FileFormat extends File
     public abstract boolean isThisType(String filename);
 
     /**
-     * Checks if a given file format is this type of FileFormat.
+     * Checks if a given file format is this file type.
+     * <ol>
+     *     This function is needed for tow main reasons:
+     *     <li> since the hdf-java products were designed in such a way 
+     *     that the GUI components only have access to the abstract object 
+     *     layer, applicationos may need this function to check if a file instance 
+     *     is this file type.
+     *     <li> The hdf-java applications such as HDFView support plug-in file
+     *     formats (file formats are loaded at runtime), The Java "instanceof" call
+     *     will not be able to check a file format loaded at runtime. We have to
+     *     use the registered file format key and this function to check if this file
+     *     is the given file format.
+     * </ol>
+     * For example, in HDFView, we use the following code to check if a file is an HDF5 file.
+     * isH5 is true if thisFile is an HDF5 file; otherwise, isH5 is false.
+     * <pre>
+        HObjet hObject = viewer.getTreeView().getCurrentObject();
+        FileFormat h5file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+        FileFormat thisFile = hObject.getFileFormat();
+        boolean isH5 = thisFile.isThisType();
+     * </pre>  
      * <p>
      * @param fileformat the Fileformat to be checked
-     * @return true if the file format is this type; otherwise returns false.
+     * @return true if the file format is this file type; otherwise returns false.
      */
     public abstract boolean isThisType(FileFormat fileformat);
 
     /**
-     * Creates a new attribute and attached to the object if the attribute does
-     * not exist. If the attribute already exists, just update the value.
+     * Creates and attaches a new attribute.
+     * If the attribute does not exists in file, creates and attches the attribute
+     * to the given object. If the attribute already exists, just update the value 
+     * of the attribute in file.
      *
      * <p>
      * @param obj The object which the attribute is to be attached to.
@@ -763,7 +845,8 @@ public abstract class FileFormat extends File
 
     /**
      * Creates an instance of a FileFormat corresponding to the data in a file.
-     * The file name may be an absolute or a relative path. This function checks the registered
+     * <p>
+     * The file name may be an absolute or a relative path. This function checks the list of registered
      * FileFormats and returns an instance of the matched one, or null if none is matched.
      * <p>
      * For example, if "test_hdf5.h5" is an HDF5 file, FileFormat.getInstance("test_hdf5.h5")
@@ -877,7 +960,10 @@ public abstract class FileFormat extends File
      */
     public abstract HObject get(String path) throws Exception;
 
-    /** Returns a list of supported file formats */
+    /** Returns a list of supported file formats.
+     * 
+     * @return a list of supported file formats.
+     */
     public static FileFormat[] getFileFormats()
     {
         int n = FileList.size();
@@ -892,6 +978,10 @@ public abstract class FileFormat extends File
         return fileformats;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.io.File#toString()
+     */
     public final String toString() {
         return this.getClass().getName();
     }

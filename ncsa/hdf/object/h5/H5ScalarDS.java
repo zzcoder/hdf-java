@@ -11,7 +11,6 @@
 
 package ncsa.hdf.object.h5;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 import ncsa.hdf.hdf5lib.*;
@@ -19,24 +18,22 @@ import ncsa.hdf.hdf5lib.exceptions.*;
 import ncsa.hdf.object.*;
 
 /**
- * H5ScalarDS describes an multi-dimension array of HDF5 scalar or atomic data
+ * H5ScalarDS describes a multi-dimension array of HDF5 scalar or atomic data
  * types, such as byte, int, short, long, float, double and string, and
  * operations performed on the scalar dataset.
  * <p>
  * The library predefines a modest number of datatypes. For details, read
- * <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/Datatypes.html">
- * The Datatype Interface (H5T).</a>
+ * <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/Datatypes.html">The Datatype Interface (H5T).</a>
  * <p>
  * <b>How to Select a Subset</b>
  * <p>
- * Dataset defines APIs for read, write and subet a dataset. No function is defined
+ * Dataset defines APIs for read, write and subset a dataset. No function is defined
  * to select a subset of a data array. The selection is done in an implicit way.
- * Function calls to dimension information such as getSelectedDims() return an array
+ * Function calls to dimension information such as getSelectedDims() returns an array
  * of dimension values, which is a reference to the array in the dataset object.
- * Changes of the array outside the dataset object directly change the values of
+ * Changes of the dimesion array outside the dataset object directly change the values of
  * the array in the dataset object. It is like pointers in C.
  * <p>
- *
  * The following is an example of how to make a subset. In the example, the dataset
  * is a 4-dimension with size of [200][100][50][10], i.e.
  * dims[0]=200; dims[1]=100; dims[2]=50; dims[3]=10; <br>
@@ -112,12 +109,12 @@ public class H5ScalarDS extends ScalarDS
     }
 
     /**
-     * Constructs an H5ScalarDS object with specific name and path.
+     * Constructs an H5ScalarDS object with specific name and group path.
      * <p>
      * @param fileFormat the HDF file.
      * @param name the name of this H5ScalarDS.
      * @param path the full path of this H5ScalarDS.
-     * @param oid the unique identifier of this data object.
+     * @param oid the unique identifier of this data object, or null is the oid is unknown.
      */
     public H5ScalarDS(
         FileFormat fileFormat,
@@ -216,8 +213,10 @@ public class H5ScalarDS extends ScalarDS
 
     }
     
-    /**
-     * Retrieve datatype and dataspace infomatoin from file.
+
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Dataset#init()
      */
     public void init()
     {
@@ -425,8 +424,9 @@ public class H5ScalarDS extends ScalarDS
         close(did);
     }
 
-    /**
-     * Clears up the object
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Dataset#clear()
      */
     public void clear() {
     		super.clear(); 
@@ -435,17 +435,11 @@ public class H5ScalarDS extends ScalarDS
     		((Vector)attributeList).setSize(0);
     }
 
-    /**
-     * Copy a subset of this dataset to a new dataset.
-     *
-     * @param pgroup the group which the dataset is copied to.
-     * @param dstName the name of the new dataset.
-     * @param dims the dimension sizes of the the new dataset.
-     * @param buff the data values of the subset to be copied.
-     * @return the new dataset.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Dataset#copy(ncsa.hdf.object.Group, java.lang.String, long[], java.lang.Object)
      */
-    public Dataset copy(Group pgroup, String dstName, long[] dims, Object buff)
-    throws Exception
+    public Dataset copy(Group pgroup, String dstName, long[] dims, Object buff) throws Exception
     {
         if (pgroup == null)
             return null;
@@ -492,15 +486,9 @@ public class H5ScalarDS extends ScalarDS
         return dataset;
     }
 
-    /** Reads data values of this dataset into byte array.
-     * <p>
-     *  readBytes() loads data as arry of bytes instead of array of its datatype.
-     * For example, for an one-dimension 32-bit integer dataset of size 5,
-     * the readBytes() returns of a byte array of size 20 instead of an int array
-     * of 5.
-     * <p>
-     * readBytes() is most used for copy data values, at which case, data do not
-     * need to be changed or displayed. It is efficient for memory space and CPU time.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Dataset#readBytes()
      */
     public byte[] readBytes() throws HDF5Exception
     {
@@ -549,7 +537,10 @@ public class H5ScalarDS extends ScalarDS
         return theData;
     }
 
-    /** Loads and returns the data value from file. */
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Dataset#read()
+     */
     public Object read() throws HDF5Exception
     {
         Object theData = null;
@@ -646,10 +637,9 @@ public class H5ScalarDS extends ScalarDS
         return theData;
     }
 
-    /**
-     * Writes data values to file
-     * @param buf the data buf to write
-     * @throws HDF5Exception
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Dataset#write(java.lang.Object)
      */
     public void write(Object buf) throws HDF5Exception
     {
@@ -718,13 +708,9 @@ public class H5ScalarDS extends ScalarDS
         }
     }
 
-    /**
-     * Read and returns a list of attributes of from file into memory if the attributes
-     * are not in memory. If the attributes are in memory, it returns the attributes.
-     * The attributes are stored as a collection in a List.
-     *
-     * @return the list of attributes.
-     * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/List.html">java.util.List</a>
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#getMetadata()
      */
     public List getMetadata() throws HDF5Exception
     {
@@ -816,12 +802,9 @@ public class H5ScalarDS extends ScalarDS
         return attributeList;
     }
 
-    /**
-     * Creates and attaches a new attribute if the attribute does not exist.
-     * Otherwise, writes the value of the attribute in file.
-     *
-     * <p>
-     * @param info the attribute to attach
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#writeMetadata(java.lang.Object)
      */
     public void writeMetadata(Object info) throws Exception
     {
@@ -844,10 +827,9 @@ public class H5ScalarDS extends ScalarDS
         if (!attrExisted) attributeList.add(attr);
     }
 
-    /**
-     * Deletes an attribute from the dataset
-     * @param info the attribute to delete
-     * @throws HDF5Exception
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#removeMetadata(java.lang.Object)
      */
     public void removeMetadata(Object info) throws HDF5Exception
     {
@@ -866,10 +848,9 @@ public class H5ScalarDS extends ScalarDS
         }
     }
 
-    /**
-     * Opens access to this dataset. The return value is obtained by H5.H5Dopen().
-     *
-     * @return the dataset identifier if successful; otherwise returns a negative value.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.HObject#open()
      */
     public int open()
     {
@@ -886,9 +867,9 @@ public class H5ScalarDS extends ScalarDS
         return did;
     }
 
-    /**
-     * Closes the specified dataset.
-     * @param did the identifier of the dataset to close access to
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.HObject#close(int)
      */
     public void close(int did)
     {
@@ -897,13 +878,9 @@ public class H5ScalarDS extends ScalarDS
         catch (HDF5Exception ex) {;}
     }
 
-    /**
-     * Retrieves the palette (color table) from file if there is any. The palette is a separate
-     * dataset in the file pointed by the reference attribute attached to this dataset
-     * <p>
-     * Only 256 color table is supported so far. The palette is stored as a 2-D byte
-     * array of RGB values, i.e. byte[3][256]
-     * @return the palette if there is any; otherwise returns null.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.ScalarDS#getPalette()
      */
     public byte[][] getPalette()
     {
@@ -913,15 +890,9 @@ public class H5ScalarDS extends ScalarDS
         return palette;
     }
 
-    /**
-     * Retrieves a specific palette (color table) from file. The palette is a separate
-     * dataset in the file pointed by the reference attribute attached to this
-     * image dataset. An image dataset may point to more than one palettes.
-     * <p>
-     * Only 256 color table is supported so far. The palette is stored as a 2-D byte
-     * array of RGB values, i.e. byte[3][256]
-     * @param idx the index of the idx-th palette
-     * @return the palette if successful; otherwise returns null.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.ScalarDS#readPalette(int)
      */
     public byte[][] readPalette(int idx)
     {
@@ -968,16 +939,37 @@ public class H5ScalarDS extends ScalarDS
         return thePalette;
     }
 
-
     /**
-     * Creates a new dataset.
+     * Creates a new dataset in file.
+     * <p>
+     * The following example shows how to create a string dataset using this function.
+     * <pre>
+        H5File file = new H5File("test.h5", H5File.CREATE);
+        int max_str_len = 120;
+        Datatype strType = new H5Datatype(Datatype.CLASS_STRING, max_str_len, -1, -1);
+        int size = 10000;
+        long dims[] = {size};
+        long chunks[] = {1000};
+        int gzip = 9;
+        String strs[] = new String[size];
+        
+        for (int i=0; i<size; i++)
+            strs[i] = String.valueOf(i);
+
+        file.open();
+        file.createScalarDS("/1D scalar strings", null, strType, dims, null, chunks, 
+                gzip, strs);
+
+        try { file.close(); } catch (Exception ex) {}
+     * </pre>
+     * 
      * @param name the name of the dataset to create.
      * @param pgroup the parent group of the new dataset.
      * @param type the datatype of the dataset.
-     * @param dims the dimension size of the dataset.
-     * @param maxdims the max dimension size of the dataset.
-     * @param chunks the chunk size of the dataset.
-     * @param gzip the level of the gzip compression.
+     * @param dims the dimension size of the dataset. 
+     * @param maxdims the max dimension size of the dataset. maxdims is set to dims if maxdims = null.
+     * @param chunks the chunk size of the dataset. No chunking if chunk = null.
+     * @param gzip the level of the gzip compression. No compression if gzip<=0.
      * @param data the array of data values.
      * @return the new dataset if successful. Otherwise returns null.
      */
@@ -1077,18 +1069,19 @@ public class H5ScalarDS extends ScalarDS
         return dataset;
     }
 
-    /** Returns the byte array of palette refs.
-     *  returns null if there is no palette attribute attached to this dataset.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.ScalarDS#getPaletteRefs()
      */
     public byte[] getPaletteRefs()
     {
         return paletteRefs;
     }
 
-     /** reads references of palettes into a byte array
-      * Each reference requires  eight bytes storage. Therefore, the array length
-      * is 8*numberOfPalettes.
-     */
+    /** reads references of palettes into a byte array
+     * Each reference requires  eight bytes storage. Therefore, the array length
+     * is 8*numberOfPalettes.
+    */
     private byte[] getPaletteRefs(int did)
     {
         int aid=-1, sid=-1, size=0, rank=0, atype=-1;
@@ -1123,7 +1116,10 @@ public class H5ScalarDS extends ScalarDS
         return ref_buf;
     }
 
-    /** Returns the datatype of this dataset. */
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Dataset#getDatatype()
+     */
     public Datatype getDatatype()
     {
         if (datatype == null)
@@ -1134,12 +1130,9 @@ public class H5ScalarDS extends ScalarDS
         return datatype;
     }
 
-    /**
-     * Renames the object in file.
-     * <p>
-     * This function calls H5.H5Gmove() to rename the object in file.
-     * 
-     * @param newName the new name of the object.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.HObject#setName(java.lang.String)
      */
     public void setName (String newName) throws Exception
     {

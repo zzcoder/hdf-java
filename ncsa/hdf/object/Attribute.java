@@ -79,6 +79,7 @@ public class Attribute implements Metadata
 
     /**
      * Create an attribute with specified name, data type and dimension sizes.
+     * 
      * For scalar attribute, the dimension size can be either an array of size one
      * or null, and the rank can be either 1 or zero. Attribute is a general class
      * and is independent of file format, e.g., the implementation of attribute
@@ -92,6 +93,7 @@ public class Attribute implements Metadata
         Attribute attr = new Attribute(attrName, attrType, attrDims);
         attr.setValue(classValue);
      * </pre>
+     * 
      * @param attrName the name of the attribute.
      * @param attrType the datatype of the attribute.
      * @param attrDims the dimension sizes of the attribute, null for scalar attribute
@@ -114,6 +116,8 @@ public class Attribute implements Metadata
 
     /**
      * Returns the value of the attriubte.
+     * 
+     * @return the value of the attribute, or null if no value for the attribute
      */
     public Object getValue()
     {
@@ -123,7 +127,7 @@ public class Attribute implements Metadata
     /**
      * Sets the value of the attribute.
      *
-     * @param theValue The value of the attribute
+     * @param theValue The value of the attribute to set
      */
     public void setValue(Object theValue)
     {
@@ -132,6 +136,8 @@ public class Attribute implements Metadata
 
     /**
      * Returns the name of the attribute.
+     * 
+     * @return the name of the attribute.
      */
     public String getName()
     {
@@ -140,6 +146,8 @@ public class Attribute implements Metadata
 
     /**
      * Returns the rank (number of dimensions) of the attribute.
+     * 
+     * @return the number of dimensions of the attribute
      */
     public int getRank()
     {
@@ -148,6 +156,8 @@ public class Attribute implements Metadata
 
     /**
      * Returns the dimension sizes of the data value of the attribute.
+     * 
+     * @return the dimension sizes of the attribute. 
      */
     public long[] getDataDims()
     {
@@ -156,6 +166,8 @@ public class Attribute implements Metadata
 
     /**
      * Returns the datatype of the attribute.
+     * 
+     * @return the datatype of the attribute.
      */
     public Datatype getType()
     {
@@ -163,7 +175,9 @@ public class Attribute implements Metadata
     }
 
     /**
-     * Returns true if the attribute is an unsigned integer; otherwise returns false.
+     * Checks if this attribute is an unsigned integer.
+     * 
+     * @return true if the attribute is an unsigned integer; otherwise returns false.
      */
     public boolean isUnsigned()
     {
@@ -172,9 +186,12 @@ public class Attribute implements Metadata
 
     /**
      * Returns a string representation of the data value of the attribute.
+     * For example, "0, 255"
      * <p>
      * @param delimiter The delimiter to separate individual data point,
      *        such as ",", ";", "\t"or " "
+     *        
+     * @return the string representation of the data values.
      */
     public String toString(String delimiter)
     {
@@ -260,8 +277,10 @@ public class Attribute implements Metadata
         return sb.toString();
     }
 
-    /**
-     * Returns a string representation (the name) of the attribute.
+
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
      */
     public String toString()
     {

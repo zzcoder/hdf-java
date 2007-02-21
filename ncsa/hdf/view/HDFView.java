@@ -194,7 +194,7 @@ HyperlinkListener, ChangeListener
      * HDFView is installed, and opens the given file in the viewer.
      * <p>
      * @param root the directory where the HDFView is installed.
-     * @param List a list of files to open.
+     * @param flist a list of files to open.
      */
     public HDFView(String root, List flist, int width, int height, int x, int y)
     {

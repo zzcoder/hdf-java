@@ -1277,7 +1277,9 @@ implements ImageView, ActionListener
             DataRangeDialog drd = new DataRangeDialog ((JFrame)viewer, dataRange);
             double[] drange = drd.getRange();
 
-            if (drange == null || (drange[0] == dataRange[0] && drange[1] == dataRange[1]))
+            if (drange == null || 
+                (drange[0] == drange[1]) ||
+                (drange[0] == dataRange[0] && drange[1] == dataRange[1]))
                 return;
 
             changeDataRange(drange);
@@ -1886,11 +1888,10 @@ implements ImageView, ActionListener
             hbar = imageScroller.getHorizontalScrollBar();
             vbar = imageScroller.getVerticalScrollBar();
             
-            if ( (e.getModifiersEx() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK)
+            if ( (e.getModifiersEx() & InputEvent.SHIFT_DOWN_MASK) == InputEvent.SHIFT_DOWN_MASK ) 
             	setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
             else
             	setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));        	
-            
         }
 
         public void mouseClicked(MouseEvent e)
@@ -1916,7 +1917,7 @@ implements ImageView, ActionListener
         	
             currentPosition = e.getPoint();
 
-			if ( (e.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) == InputEvent.CTRL_DOWN_MASK ) 
+			if ( (e.getModifiersEx() & InputEvent.SHIFT_DOWN_MASK) == InputEvent.SHIFT_DOWN_MASK ) 
 			{
 	            int x0 = Math.max(0, Math.min(startPosition.x, currentPosition.x));
 	            int y0 = Math.max(0, Math.min(startPosition.y, currentPosition.y));
@@ -3037,6 +3038,11 @@ implements ImageView, ActionListener
             button.setActionCommand("Cancel");
             button.addActionListener(this);
             confirmP.add(button);
+            button = new JButton("Apply");
+            button.setMnemonic(KeyEvent.VK_A);
+            button.setActionCommand("Apply");
+            button.addActionListener(this);
+            confirmP.add(button);
             contentPane.add(confirmP, BorderLayout.SOUTH);
             contentPane.add(new JLabel(" "), BorderLayout.NORTH);
 
@@ -3060,6 +3066,12 @@ implements ImageView, ActionListener
                 minmax[1] = ((Number)maxField.getValue()).doubleValue();
 
                 this.dispose();
+            } if (cmd.equals("Apply")) {
+                minmax[0] = ((Number)minField.getValue()).doubleValue();
+                minmax[1] = ((Number)maxField.getValue()).doubleValue();
+                
+                changeDataRange(minmax);
+                minmax[0] = minmax[1] = 0;
             }
             else if (cmd.equals("Cancel"))
             {
