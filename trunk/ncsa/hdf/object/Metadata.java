@@ -12,7 +12,7 @@
  package ncsa.hdf.object;
 
 /**
- * Metadata is a general interface about supporting data.
+ * Metadata is a general interface for metadata attached to data objects.
  * Metadata contains supporting information attacehd to a primary data or
  * component. Particular implementations of Metadata often provide additional
  * context-specific objects as well.

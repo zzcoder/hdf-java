@@ -190,16 +190,18 @@ public abstract class ScalarDS extends Dataset
     }
 
     /**
-     * Returns the type of this scalar dataset.
+     * Returns the native datatype identifier of this scalar dataset.
+     * 
+     * @return the native datatype identifier of this scalar dataset.
      */
     public final int getNativeDataType()
     {
         return nativeDatatype;
     }
 
-    /**
-     * Clears the data buffer in memory.
-     * clearData() will force the next getData() call to load the data from file.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Dataset#clearData()
      */
     public void clearData()
     {
@@ -208,27 +210,11 @@ public abstract class ScalarDS extends Dataset
     }
 
     /**
-     * Converts one-dimension array of unsigned C integers to appropriate Java integer.
-     * <p>
-     * Since Java does not support unsigned integer, unsigned C integers must
-     * be converted into its appropriate Java integer. Otherwise, the data value
-     * will not displayed correctly. For example, if an unsigned C byte, x = 200,
-     * is stored into an Java byte y, y will be -56 instead of the correct value 200.
-     * <p>
-     * The following table is used to map the unsigned C integer to Java integer
-     * <TABLE TABLE CELLSPACING=0 BORDER=1 CELLPADDING=5 WIDTH=400>
-     *     <caption><b>Mapping Unsigned C Integers to Java Integers</b></caption>
-     *     <TR> <TD><B>Unsigned C Integer</B></TD> <TD><B>JAVA Intege</B>r</TD> </TR>
-     *     <TR> <TD>unsigned byte</TD> <TD>signed short</TD> </TR>
-     *     <TR> <TD>unsigned short</TD> <TD>signed int</TD> </TR>
-     *     <TR> <TD>unsigned int</TD> <TD>signed long</TD> </TR>
-     *     <TR> <TD>unsigned long</TD> <TD>signed long</TD> </TR>
-     * </TABLE>
-     * <b>NOTE: this conversion cannot deal with unsigned 64-bit integers. For
-     *          unsigned 64-bit dataset, the values can be wrong in Java
-     *          application</b>.
-     * <p>
-     */
+     * Converts the data values of this dataset to appropriate Java integer if it is unsigned integers.
+     * 
+     * @see ncsa.hdf.object.Dataset#convertToUnsignedC(Object)
+     * @see ncsa.hdf.object.Dataset#convertFromUnsignedC(Object, Object)
+      */
     public void convertFromUnsignedC()
     {
         // keep a copy of original buffer and the converted buffer
@@ -243,9 +229,11 @@ public abstract class ScalarDS extends Dataset
     }
 
     /**
-     * Converts Java integer data back to unsigned C integer data.
-     * It is used when Java data converted from unsigned C is writen back to file.
-     * <p>
+     * Converts Java integer data of this dataset back to unsigned C-type integer data
+     * if if is unsigned integer. 
+     * 
+     * @see ncsa.hdf.object.Dataset#convertToUnsignedC(Object)
+     * @see ncsa.hdf.object.Dataset#convertToUnsignedC(Object, Object)
      * @see #convertFromUnsignedC(Object data_in)
      */
     public void convertToUnsignedC()
@@ -283,11 +271,15 @@ public abstract class ScalarDS extends Dataset
      * <p>
      * Sub-classes have to implement this interface. HDF4 and HDF5 images use
      * different library to retrieve the associated palette.
+     * 
+     * @return the 2D byte array of palette.
      */
     public abstract byte[][] getPalette();
 
     /**
      * Sets the palette for this dataset.
+     * 
+     * @param pal the 2D byte array of palette.
      */
     public final void setPalette(byte[][] pal)
     {
@@ -295,17 +287,37 @@ public abstract class ScalarDS extends Dataset
     }
 
     /** Reads specific image palette from file.
+     * <p>
+     * A scalar dataset may have multiple palettes attached to it.
+     * readPalette(int idx) returns specific palette.
+     * 
      *  @param idx the index of the palette to read.
      */
     public abstract byte[][] readPalette(int idx);
 
-    /** returns the byte array of palette refs.
-     *  returns null if there is no palette attribute attached to this dataset.
+    /** 
+     * Returns the byte array of palette refs.
+     * <p>
+     * A palette reference is an object reference that points to the palette 
+     * dataset. 
+     * <p>
+     * For example, Dataset "Iceberge" has an attribute of object
+     * reference "Palette". The arrtibute "Palette" has value "2538" that is
+     * the object reference of the palette data set "Iceberge Palette". 
+     * 
+     * @return null if there is no palette attribute attached to this dataset.
      */
     public abstract byte[] getPaletteRefs();
 
     /**
      * Returns true if this dataset is an image.
+     * <p>
+     * For all Images, they must have an attribute called "CLASS".
+     * The value of this attribute is "IMAGE". For more details, read   
+     * <a href="http://www.hdfgroup.org/HDF5/doc/ADGuide/ImageSpec.html">
+     * HDF5 Image and Palette Specification </a>
+     * 
+     * @return true if the dataset is an image; otherwise, returns false.
      */
     public final boolean isImage()
     {
@@ -314,6 +326,10 @@ public abstract class ScalarDS extends Dataset
 
     /**
      * Returns true if this dataset is displayed as an image.
+     * <p>
+     * A ScalarDS can be displayed as an image or table. 
+     *  
+     * @return true if this dataset is displayed as an image; otherwise, returns false.
      */
     public final boolean isImageDisplay()
     {
@@ -341,6 +357,8 @@ public abstract class ScalarDS extends Dataset
 
     /**
      * Returns true if this dataset is ASCII text.
+     * 
+     * @return true if this dataset is ASCII text.
      */
     public final boolean isText()
     {
@@ -356,6 +374,8 @@ public abstract class ScalarDS extends Dataset
      *     INTERLACE_LINE -- each RGB component is stored as a scan line
      *     INTERLACE_PLANE -- each RGB component is stored as a plane
      * </pre>
+     * 
+     * @return the interlace mode of a true color image (RGB).
      */
     public final int getInterlace()
     {
@@ -364,19 +384,28 @@ public abstract class ScalarDS extends Dataset
 
     /**
      * Returns true if the original C data is unsigned integer.
+     * 
+     * @return true if the original C data is unsigned integer.
      */
     public final boolean isUnsigned()
     {
         return isUnsigned;
     }
 
-    /** Returns the (min, max) pair of image data range */
+    /** Returns the (min, max) pair of image data range.
+     * 
+     * @return the (min, max) pair of image data range.
+     */
     public double[] getImageDataRange()
     {
         return imageDataRange;
     }
 
-    /** Returns the fill values for the dataset */
+    /** 
+     * Returns the fill values for the dataset.
+     * 
+     * @return the fill values for the dataset.
+     */
     public final Object getFillValue()
     {
         return fillValue;

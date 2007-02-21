@@ -1016,42 +1016,42 @@ public final class Tools
         {
             case 'B': 
                 byte[] b = (byte[])data;
-                minmax[0] = minmax[1] = (double)b[0];
+                minmax[0] = minmax[1] = b[0];
                 for (int i=1; i<n; i++) {
-                	if (minmax[0]>b[i]) minmax[0] = (double)b[i];
-                	if (minmax[1]<b[i]) minmax[1] = (double)b[i];
+                	if (minmax[0]>b[i]) minmax[0] = b[i];
+                	if (minmax[1]<b[i]) minmax[1] = b[i];
                 }
                 break;
             case 'S':
                 short[] s = (short[])data;
-                minmax[0] = minmax[1] = (double)s[0];
+                minmax[0] = minmax[1] = s[0];
                 for (int i=1; i<n; i++) {
-                    if (minmax[0]>s[i]) minmax[0] = (double)s[i];
-                    if (minmax[1]<s[i]) minmax[1] = (double)s[i];
+                    if (minmax[0]>s[i]) minmax[0] = s[i];
+                    if (minmax[1]<s[i]) minmax[1] = s[i];
                 }
                 break;
             case 'I':
                 int[] ia = (int[])data;
-                minmax[0] = minmax[1] = (double)ia[0];
+                minmax[0] = minmax[1] = ia[0];
                 for (int i=1; i<n; i++) {
-                    if (minmax[0]>ia[i]) minmax[0] = (double)ia[i];
-                    if (minmax[1]<ia[i]) minmax[1] = (double)ia[i];
+                    if (minmax[0]>ia[i]) minmax[0] = ia[i];
+                    if (minmax[1]<ia[i]) minmax[1] = ia[i];
                 }
                 break;
             case 'J':
             	long[] l = (long[])data;
-                minmax[0] = minmax[1] = (double)l[0];
+                minmax[0] = minmax[1] = l[0];
                 for (int i=1; i<n; i++) {
-                    if (minmax[0]>l[i]) minmax[0] = (double)l[i];
-                    if (minmax[1]<l[i]) minmax[1] = (double)l[i];
+                    if (minmax[0]>l[i]) minmax[0] = l[i];
+                    if (minmax[1]<l[i]) minmax[1] = l[i];
                 }
                 break;
             case 'F':
                 float[] f = (float[])data;
-                minmax[0] = minmax[1] = (double)f[0];
+                minmax[0] = minmax[1] = f[0];
                 for (int i=1; i<n; i++) {
-                    if (minmax[0]>f[i]) minmax[0] = (double)f[i];
-                    if (minmax[1]<f[i]) minmax[1] = (double)f[i];
+                    if (minmax[0]>f[i]) minmax[0] = f[i];
+                    if (minmax[1]<f[i]) minmax[1] = f[i];
                 }
                 break;
             case 'D':
@@ -1095,8 +1095,10 @@ public final class Tools
         {
             case 'B': 
                 byte[] b = (byte[])data;
-                for (int i=0; i<n; i++)
+                for (int i=0; i<n; i++) {
                 	sum += b[i];
+                }
+                
                 avg = sum / n;
                 for (int i=0; i<n; i++) {
                 	diff = b[i] - avg;
@@ -1105,8 +1107,10 @@ public final class Tools
                 break;
             case 'S':
                 short[] s = (short[])data;
-                for (int i=0; i<n; i++)
-                	sum += s[i];
+                for (int i=0; i<n; i++) {
+                    sum += s[i];
+                }
+                
                 avg = sum / n;
                 for (int i=0; i<n; i++) {
                 	diff = s[i] - avg;
@@ -1115,8 +1119,10 @@ public final class Tools
                 break;
             case 'I':
                 int[] ia = (int[])data;
-                for (int i=0; i<n; i++)
-                	sum += ia[i];
+                for (int i=0; i<n; i++) {
+                    sum += ia[i];
+                }
+                
                 avg =  sum / n;
                 for (int i=0; i<n; i++) {
                 	diff = ia[i] - avg;
@@ -1125,8 +1131,10 @@ public final class Tools
                 break;
             case 'J':
             	long[] l = (long[])data;
-                for (int i=0; i<n; i++)
-                	sum += l[i];
+                for (int i=0; i<n; i++) {
+                    sum += l[i];
+                }
+                
                 avg = sum / n;
                 for (int i=0; i<n; i++) {
                 	diff = l[i] - avg;
@@ -1135,8 +1143,10 @@ public final class Tools
                 break;
             case 'F':
                 float[] f = (float[])data;
-                for (int i=0; i<n; i++)
-                	sum += f[i];
+                for (int i=0; i<n; i++) {
+                    sum += f[i];
+                }
+                
                 avg = sum / n;
                 for (int i=0; i<n; i++) {
                 	diff = f[i] - avg;
@@ -1145,8 +1155,10 @@ public final class Tools
                 break;
             case 'D':
                 double[] d = (double[])data;
-                for (int i=0; i<n; i++)
-                	sum += d[i];
+                for (int i=0; i<n; i++) {
+                    sum += d[i];
+                }
+                
                 avg = sum / n;
                 for (int i=0; i<n; i++) {
                 	diff = d[i] - avg;

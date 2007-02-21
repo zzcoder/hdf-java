@@ -102,6 +102,7 @@ public class H5Datatype extends Datatype
         super(tclass, tsize, torder, tsign);
     }
 
+
     /**
      * Constructs a Datatype with a given native datatype identifier.
      * <p>
@@ -315,8 +316,7 @@ public class H5Datatype extends Datatype
 
     /**
      * Allocates an one-dimensional array of byte, short, int, long, float, double,
-     * or String to store data retrieved from file based on the given datatype and
-     * dimension sizes.
+     * or String to store data retrieved from file.
      * 
      * For example,
      * <pre>
@@ -409,9 +409,13 @@ public class H5Datatype extends Datatype
     }
 
     /**
-     *  Returns the size of this datatype in bytes.
+     *  Returns the size of a given datatype ID.
+     *  It basically just calls H5Tget_size(tid).
      *
-     *  @param tid  the data type.
+     *  @param tid  The datatype identifier.
+     *  @return The size of the datatype in bytes.
+     *  
+     *  @see ncsa.hdf.hdf5lib.H5#H5Tget_size(int)
      */
     public static final int getDatatypeSize(int tid)
     {
@@ -428,7 +432,11 @@ public class H5Datatype extends Datatype
     }
 
     /**
-     *  Returns the short description of the datatype.
+     *  Returns a short description of this datatype.
+     *  
+     *  @return a short description of this datatype object.
+     *  
+     *  @see #getDatatypeDescription(int)
      */
     public String getDatatypeDescription()
     {
@@ -436,9 +444,10 @@ public class H5Datatype extends Datatype
     }
 
     /**
-     *  Returns the short description of a specific datatype.
+     *  Returns the short description of a given datatype ID.
+     *  
      * @param tid the HDF5 datatype identifier
-     * @return the string description of the datatype
+     * @return the string description of the given data type.
      */
     public static final String getDatatypeDescription(int tid)
     {
@@ -582,9 +591,10 @@ public class H5Datatype extends Datatype
         return description;
     }
 
-    /**
-     *
-     * @return true if this datatype is unsigned; otherwise returns false.
+
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Datatype#isUnsigned()
      */
     public boolean isUnsigned()
     {
@@ -592,9 +602,9 @@ public class H5Datatype extends Datatype
     }
 
     /**
-     *  Checks if a specific datatype is an unsigned integer.
+     *  Checks if a given datatype identifier is an unsigned integer.
      *  <p>
-     *  @param datatype  the data type to be checked.
+     *  @param datatype  the datatype ID to be checked.
      *  @return true is the datatype is an unsigned integer; otherwise returns false.
      */
     public static final boolean isUnsigned(int datatype)
@@ -614,8 +624,12 @@ public class H5Datatype extends Datatype
     }
 
     /**
-     * Opens access to this named datatype
+     * Opens access to this named datatype.
+     * It calls H5.H5Topen(loc, name). 
+     * 
      * @return the datatype identifier if successful; otherwise returns negative value.
+     * 
+     * @see ncsa.hdf.hdf5lib.H5#H5Topen(int, String)
      */
     public int open()
     {
@@ -633,21 +647,18 @@ public class H5Datatype extends Datatype
     }
 
     /**
-     * Closes a specific datatype
-     * @param tid the datatype to close
+     * Closes a datatype identifier.
+     * 
+     * @param tid the datatype ID to close
      */
     public void close(int tid)    {
         try { H5.H5Tclose(tid); }
         catch (HDF5Exception ex) {;}
     }
 
-    /**
-     * Read and returns a list of attributes of from file into memory if the attributes
-     * are not in memory. If the attributes are in memory, it returns the attributes.
-     * The attributes are stored as a collection in a List.
-     *
-     * @return the list of attributes.
-     * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/List.html">java.util.List</a>
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Datatype#getMetadata()
      */
     public List getMetadata() throws HDF5Exception
     {
@@ -667,12 +678,9 @@ public class H5Datatype extends Datatype
         return attributeList;
     }
 
-    /**
-     * Creates and attaches a new attribute if the attribute does not exist.
-     * Otherwise, writes the value of the attribute in file.
-     *
-     * <p>
-     * @param info the attribute to attach
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Datatype#writeMetadata(java.lang.Object)
      */
     public void writeMetadata(Object info) throws Exception
     {
@@ -695,10 +703,9 @@ public class H5Datatype extends Datatype
         if (!attrExisted) attributeList.add(attr);
     }
 
-    /**
-     * Deletes an attribute from this datatype.
-     * <p>
-     * @param info the attribute to delete.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Datatype#removeMetadata(java.lang.Object)
      */
     public void removeMetadata(Object info) throws HDF5Exception
     {

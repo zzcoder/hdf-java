@@ -201,7 +201,7 @@ implements ActionListener, ListSelectionListener
 
         JPanel p0 = new JPanel();
         p0.setLayout(new BorderLayout());
-        p0.add(checkCurrentUserDir=new JCheckBox("\"user.dir\"         or", false), BorderLayout.WEST);
+        p0.add(checkCurrentUserDir=new JCheckBox("\"Current Working Directory\" or", false), BorderLayout.WEST);
         checkCurrentUserDir.addActionListener(this);
         checkCurrentUserDir.setActionCommand("Set current dir to user.dir");
         p0.add(workField = new JTextField(workDir), BorderLayout.CENTER);

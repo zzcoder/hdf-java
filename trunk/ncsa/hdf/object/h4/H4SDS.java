@@ -356,6 +356,7 @@ public class H4SDS extends ScalarDS
             if ( isUnsigned && unsignedConverted)
                 tmpData = convertToUnsignedC(buf);
             HDFLibrary.SDwritedata(id, start, stride, select, tmpData);
+        //} catch (Exception ex) {ex.printStackTrace(); 
         } finally
         {
             tmpData = null;

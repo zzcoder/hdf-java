@@ -13,9 +13,6 @@ package ncsa.hdf.hdflib;
 
 import java.io.*;
 
-import ncsa.hdf.hdf5lib.H5;
-import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
-
 /**
  *  This is the Java interface for the HDF 4.1 library.
  *  <p>

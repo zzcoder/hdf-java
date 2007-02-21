@@ -180,7 +180,6 @@ implements ActionListener, ItemListener, HyperlinkListener
         {
             sizeChoice.addItem("DEFAULT");
             endianChoice.addItem("DEFAULT");
-            typePanel.add(new JLabel());
         }
         sizeChoice.addItem("8");
         sizeChoice.addItem("16");

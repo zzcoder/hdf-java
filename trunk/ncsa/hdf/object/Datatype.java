@@ -14,8 +14,16 @@ package ncsa.hdf.object;
 import java.util.List;
 
 /**
- * Datatype encapsulates information of a datatype.
- * Information includes the class, size, endian of a datatype.
+ * Datatype is an abstract class that defines basic components and APIs for a data type.
+ * <p>
+ * A data type has four basic components: class, size, byte order and sign.
+ * These components are used for general purpose, i.e. they are applied to any
+ * native or implementing datatypes. A native datatype may have different ways to
+ * describe a datatype. For example, HDF5 uses datatype identifier. 
+ * <p>
+ * Sub-classes classes must implement functions toNative() and fromNative, which
+ * convert common datatype decription (class, size, order and sign) and native
+ * datatype such as HDF5 datatype identifier.
  * <p>
  * @version 1.0 05/07/2002
  * @author Peter X. Cao, NCSA
@@ -166,21 +174,23 @@ public abstract class Datatype extends HObject
 
     /**
      * Returns the class of the datatype.
-     * Valid values: 
-     * <pre>
-        CLASS_NO_CLASS
-        CLASS_INTEGER
-        CLASS_FLOAT
-        CLASS_CHAR
-        CLASS_STRING
-        CLASS_BITFIELD
-        CLASS_OPAQUE
-        CLASS_COMPOUND
-        CLASS_REFERENCE
-        CLASS_ENUM
-        CLASS_VLEN
-        CLASS_ARRAY
-     * </pre>
+     * Valid values are: 
+     * <ol>
+        <li>CLASS_NO_CLASS
+        <li>CLASS_INTEGER
+        <li>CLASS_FLOAT
+        <li>CLASS_CHAR
+        <li>CLASS_STRING
+        <li>CLASS_BITFIELD
+        <li>CLASS_OPAQUE
+        <li>CLASS_COMPOUND
+        <li>CLASS_REFERENCE
+        <li>CLASS_ENUM
+        <li>CLASS_VLEN
+        <li>CLASS_ARRAY
+     * </ol>
+     * 
+     * @return the class of the datatype.
      */
     public int getDatatypeClass()
     {
@@ -190,6 +200,8 @@ public abstract class Datatype extends HObject
     /**
      * Returns the size of the datatype in bytes.
      * For example, for a 32-bit integer, the size is 4 (bytes).
+     * 
+     * @return the size of the datatype.
      */
     public int getDatatypeSize()
     {
@@ -198,7 +210,15 @@ public abstract class Datatype extends HObject
 
     /**
      * Returns the byte order of the datatype.
-     * Valid values include ORDER_LE, ORDER_BE, ORDER_VAX, and ORDER_NONE.
+     * Valid values are
+     * <ol>
+     *   <li> ORDER_LE
+     *   <li> ORDER_BE
+     *   <li> ORDER_VAX
+     *   <li> ORDER_NONE
+     * </ol>
+     * 
+     * @return the byte order of the datatype.
      */
     public int getDatatypeOrder()
     {
@@ -206,7 +226,9 @@ public abstract class Datatype extends HObject
     }
 
     /**
-     * Returns the sign (signed or unsigned) of an integer datatype.
+     * Returns the sign (SIGN_NONE or SIGN_2) of an integer datatype.
+     *
+     * @return the sign of the datatype.
      */
     public int getDatatypeSign()
     {
@@ -214,37 +236,38 @@ public abstract class Datatype extends HObject
     }
 
     /**
-     * Sets the name=values pairs of enum members.
+     * Sets the "name=value" pairs of enum members for enum datatype.
      * <p>For Example,
-     * <pre>
-     *     setEnumMembers("lowTemp=-40, highTemp=90")
-     *         will set the value of enum member lowTemp to -40 and highTemp to 90.
-     *     setEnumMembers("lowTemp, highTemp")
-     *         will set enum members to defaults, i.e. lowTemp=0 and highTemp=1
-     *     setEnumMembers("lowTemp=10, highTemp")
-     *         will set enum member lowTemp to 10 and highTemp to 11.
-     * </pre>
-     * @param enumStr the name=values pairs of enum members
+     * <dl>
+     *     <dt>setEnumMembers("lowTemp=-40, highTemp=90")</dt>
+     *         <dd>sets the value of enum member lowTemp to -40 and highTemp to 90.</dd>
+     *     <dt>setEnumMembers("lowTemp, highTemp")</dt>
+     *         <dd>sets enum members to defaults, i.e. lowTemp=0 and highTemp=1</dd>
+     *     <dt>setEnumMembers("lowTemp=10, highTemp")</dt>
+     *         <dd>sets enum member lowTemp to 10 and highTemp to 11.</dd>
+     * </dl>
+     * @param enumStr the "name=value" pairs of enum members
      */
     public final void setEnumMembers(String enumStr) { enumMembers = enumStr; }
 
     /**
-     * Gets the name=values pairs of enum members.
+     * Returns the "name=value" pairs of enum members for enum datatype.
      * <p>For Example,
-     * <pre>
-     *     setEnumMembers("lowTemp=-40, highTemp=90")
-     *         will set the value of enum member lowTemp to -40 and highTemp to 90.
-     *     setEnumMembers("lowTemp, highTemp")
-     *         will set enum members to defaults, i.e. lowTemp=0 and highTemp=1
-     *     setEnumMembers("lowTemp=10, highTemp")
-     *         will set enum member lowTemp to 10 and highTemp to 11.
-     * </pre>
-     * @return the name=values pairs of enum members
+     * <dl>
+     *     <dt>setEnumMembers("lowTemp=-40, highTemp=90")</dt>
+     *         <dd>sets the value of enum member lowTemp to -40 and highTemp to 90.</dd>
+     *     <dt>setEnumMembers("lowTemp, highTemp")</dt>
+     *         <dd>sets enum members to defaults, i.e. lowTemp=0 and highTemp=1</dd>
+     *     <dt>setEnumMembers("lowTemp=10, highTemp")</dt>
+     *         <dd>sets enum member lowTemp to 10 and highTemp to 11.</dd>
+     * </dl>
+     * 
+     * @return enumStr the "name=value" pairs of enum members
      */
     public final String getEnumMembers() { return enumMembers; }
 
     /**
-     * Converts this datatype to a native datatype.
+     * Converts this datatype object to a native datatype.
      *
      * Subclasses must implement it so that this datatype will be converted accordingly.
      * <p>
@@ -259,12 +282,12 @@ public abstract class Datatype extends HObject
      * int tid = H5.H5Tcopy( HDF5Constants.H5T_NATIVE_UNINT32);
      * </pre>
      *
-     * @return the identifier of the user defined datatype.
+     * @return the identifier of the native datatype.
      */
     public abstract int toNative();
 
     /**
-     * Specify this datatype with a given id of a user defined datatype.
+     * Specify this datatype object with a given datatye identifier.
      * Subclasses must implement it so that this datatype will be converted.
      * <p>
      * For example, if the type identifier is a 32-bit unsigned integer created
@@ -273,7 +296,7 @@ public abstract class Datatype extends HObject
      * int tid = H5.H5Tcopy( HDF5Constants.H5T_NATIVE_UNINT32);
      * Datatype dtype = new Datatype(tid);
      * </pre>
-     * will construct a datatype equivalent to
+     * Where dtype is equivalent to
      * new Datatype(CLASS_INTEGER, 4, NATIVE, SIGN_NONE);
      * <p>
      * @param nativeID the identifier of user defined datatype.
@@ -282,6 +305,8 @@ public abstract class Datatype extends HObject
 
     /**
      *  Returns a short text description of this datatype.
+     *  
+     *  @return a short text description of this datatype
      */
     public String getDatatypeDescription()
     {
@@ -329,45 +354,42 @@ public abstract class Datatype extends HObject
 
     /**
      *  Checks if this datatype is an unsigned integer.
+     *  
      *  @return true is the datatype is an unsigned integer; otherwise returns false.
      */
     public abstract boolean isUnsigned();
 
-    /** Opens a named datatype. Sub-clases must replace this default implementation */
+    /**
+     * Opens access to this named datatype.
+     * Sub-clases must replace this default implementation. For example, in H5Datatype,
+     * open() function H5.H5Topen(loc, name) to get the datatype identifier. 
+     * 
+     * @return the datatype identifier if successful; otherwise returns negative value.
+     */
     public int open() { return -1; }
 
-    /** Closes a named datatype. Sub-clases must replace this default implementation */
+    /** Closes a named datatype. 
+     * Sub-clases must replace this default implementation.
+     * 
+     * @param id the datatype identifier to close.
+     */
     public void close(int id) {};
 
-    /**
-     * Read the metadata such as attributes from file into memory if the metadata
-     * is not in memory. If the metadata is in memory, it returns the metadata.
-     * The metadata is stored as a collection of metadata in a List.
-     *<p>
-     * Sub-clases must replace this default implementation
-     *
-     * @return the list of metadata objects.
-     * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/List.html">java.util.List</a>
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#getMetadata()
      */
     public List getMetadata() throws Exception { return null; }
 
-    /**
-     * Writes a specific metadata into file. If the metadata exists, it
-     * updates its value. If the metadata does not exists in file, it creates
-     * the metadata and attaches it to the object.
-     *<p>
-     * Sub-clases must replace this default implementation
-     *
-     * @param info the metadata to write.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#writeMetadata(java.lang.Object)
      */
     public void writeMetadata(Object info) throws Exception {;}
 
-    /**
-     * Deletes an existing metadata from this data object.
-     *<p>
-     * Sub-clases must replace this default implementation
-     *
-     * @param info the metadata to delete.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#removeMetadata(java.lang.Object)
      */
     public void removeMetadata(Object info) throws Exception {;}
 
