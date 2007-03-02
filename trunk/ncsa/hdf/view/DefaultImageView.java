@@ -414,12 +414,12 @@ implements ImageView, ActionListener
         JMenu imageMenu = new JMenu("Flip");
         menu.add(imageMenu);
 
-        item = new JMenuItem( "Flip Horizontal");
+        item = new JMenuItem( "Horizontal");
         item.addActionListener(this);
         item.setActionCommand("Flip horizontal");
         imageMenu.add(item);
 
-        item = new JMenuItem( "Flip Vertical");
+        item = new JMenuItem( "Vertical");
         item.addActionListener(this);
         item.setActionCommand("Flip vertical");
         imageMenu.add(item);
@@ -1383,12 +1383,14 @@ implements ImageView, ActionListener
         }
         else if (cmd.equals("Show statistics")) {
             try {
-                double[] stat = new double[4];
+                double[] minmax = new double[2];
+                double[] stat = new double[2];
+                Tools.findMinMax(data, minmax);
                 if (Tools.computeStatistics(data, stat) > 0) {
-                	String statistics = "Min                     = "+stat[0] +
-                                      "\nMax                     = "+stat[1] +
-                	                  "\nMean                    = "+stat[2] +
-                	                  "\nStandard deviaton = "+stat[3];
+                    String statistics = "Min                      = "+minmax[0] +
+                                      "\nMax                      = "+minmax[1] +
+                                      "\nMean                     = "+stat[0] +
+                                      "\nStandard deviaton = "+stat[1];
                     JOptionPane.showMessageDialog(this, statistics, "Statistics", JOptionPane.INFORMATION_MESSAGE);
                 }
             } catch (Exception ex) {
@@ -2875,7 +2877,6 @@ implements ImageView, ActionListener
             start();
 
             pack();
-            setVisible(true);
         }
 
         public void actionPerformed(ActionEvent e)

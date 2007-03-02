@@ -57,6 +57,34 @@ public class H5Datatype extends Datatype
       * @param fileFormat the file that contains the dataset.
       * @param name the name of the dataset such as "dset1".
       * @param path the group path to the dataset such as "/g0/".
+      */
+    public H5Datatype(
+        FileFormat fileFormat,
+        String name,
+        String path)
+    {
+        super (fileFormat, name, path, null);
+    }
+     
+     /**
+      * @deprecated, Using {@link #H5Datatype(FileFormat, String, String)}
+      * 
+      * Constrcuts an H5Datatype object for a given file, dataset name, group path
+      * and object identifer.
+      * <p>
+      * The datatype object represents an existing named datatype in file. For example, 
+      * new H5Datatype(file, "dtype1", "/g0/") constructs a datatype object that corresponds to
+      * the dataset,"dset1", at group "/g0/".
+      * <p>
+      * The object identifier is a one-element long array that holds the object reference of
+      * the dataset. For a given file, object reference uniquely identifies the object.
+      * <p>
+      * For a given name and path, the object ID is obtained from
+      * byte[] ref_buf = H5.H5Rcreate(fid, path+name, HDF5Constants.H5R_OBJECT, -1);
+      * <p>
+      * @param fileFormat the file that contains the dataset.
+      * @param name the name of the dataset such as "dset1".
+      * @param path the group path to the dataset such as "/g0/".
       * @param oid the unique identifier of this data object. if oid is null, the object ID 
       *        is automatically obtained by H5.H5Rcreate() for the given name and path.
       */
@@ -68,6 +96,15 @@ public class H5Datatype extends Datatype
     {
         super (fileFormat, name, path, oid);
 
+        if (oid == null && fileFormat != null) {
+            // retrieve the object ID
+            try {
+                byte[] ref_buf = H5.H5Rcreate(fileFormat.getFID(), this.getFullName(), HDF5Constants.H5R_OBJECT, -1);
+                this.oid = new long[1];
+                this.oid[0] = HDFNativeData.byteToLong(ref_buf, 0);
+             } catch (Exception ex) {}
+        }
+        
         try
         {
             nativeID = H5.H5Topen(getFID(), getPath()+getName());

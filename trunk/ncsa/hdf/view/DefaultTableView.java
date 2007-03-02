@@ -99,8 +99,9 @@ implements TableView, ActionListener
     private boolean isTransposed;
 
     private JCheckBoxMenuItem checkScientificNotation, checkFixedDataLength;
-
     private int fixedDataLength;
+
+    private final DecimalFormat scientificFormat = new DecimalFormat ("0.0###E0#");
 
     private JTextField frameField;
 
@@ -303,12 +304,20 @@ implements TableView, ActionListener
         item.addActionListener(this);
         item.setActionCommand("Save table as text");
         menu.add(item);
+        
+        menu.addSeparator();
 
         item = new JMenuItem( "Import Data from File");
         item.addActionListener(this);
         item.setActionCommand("Import data from file");
         item.setEnabled(isEditable);
         menu.add(item);
+        
+        checkFixedDataLength = new JCheckBoxMenuItem("Fixed Data Length", false);
+        item = checkFixedDataLength;
+        item.addActionListener(this);
+        item.setActionCommand("Fixed data length");
+        if (dataset instanceof ScalarDS) menu.add(item);
 
         menu.addSeparator();
 
@@ -369,12 +378,6 @@ implements TableView, ActionListener
         menu.add(item);
 
         menu.addSeparator();
-
-        checkFixedDataLength = new JCheckBoxMenuItem("Fixed Data Length", false);
-        item = checkFixedDataLength;
-        item.addActionListener(this);
-        item.setActionCommand("Fixed data length");
-        if (dataset instanceof ScalarDS) menu.add(item);
 
         checkScientificNotation = new JCheckBoxMenuItem("Scientific Notation", false);
         item = checkScientificNotation;
@@ -652,10 +655,12 @@ implements TableView, ActionListener
         {
             if (!checkFixedDataLength.isSelected()) {
                 fixedDataLength = -1;
+                this.updateUI();
                 return;
             }
 
-            String str = JOptionPane.showInputDialog(this, "Enter fixed data length for text data", "");
+            String str = JOptionPane.showInputDialog(this, "Enter fixed data length when importing text data\n\n"+
+                    "For example, for a text string of \"12345678\"\n\t\tenter 2, the data will be 12, 34, 56, 78\n\t\tenter 4, the data will be 1234, 5678\n", "");
 
             if (str == null || str.length()<1) {
                 checkFixedDataLength.setSelected(false);
@@ -1190,7 +1195,6 @@ implements TableView, ActionListener
         	public static final long serialVersionUID = HObject.serialVersionUID;
 
             Object theValue = null;
-            DecimalFormat sf = new DecimalFormat ("0.0###E0#");
 
             public Object getValueAt(int row, int column)
             {
@@ -1200,7 +1204,7 @@ implements TableView, ActionListener
                     theValue = Array.get(dataValue, row*getColumnCount()+column);
 
                 if (checkScientificNotation.isSelected())
-                    return sf.format(theValue);
+                    return scientificFormat.format(theValue);
                 else
                     return theValue;
             }

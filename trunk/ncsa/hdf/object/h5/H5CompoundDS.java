@@ -171,6 +171,8 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
+     * @deprecated, Using {@link #H5CompoundDS(FileFormat, String, String)}
+     * 
      * Constrcuts an HDF5 compound dataset object for a given file, dataset name, group path
      * and object identifer.
      * <p>

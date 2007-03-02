@@ -15,9 +15,9 @@
 
 
 /**
- * An attribute is a (name, value) pair of metadata that are attached to primary
+ * An attribute is a (name, value) pair of metadata attached to primary
  * data objects such as datasets, groups or named datatypes. The value field can
- * be a scalar data point or an array of native datatype or compound datatype.
+ * be a scalar data point or an array of atomic datatype or compound datatype.
  * <p>
  * The requirement information of an attribute includes the name, datatype and
  * dataspace. The following is an example of creating an attribute of one dimension
@@ -29,25 +29,26 @@
  * // The name of the new attribute
  * String name = "Data range";
  *
- * // Creating an interger datatype
+ * // Creating an unsigned 1-byte integer datatype
  * Datatype type = new Datatype(Datatype.CLASS_INTEGER, // class
- *                              8,                      // size in bytes
+ *                              1,                      // size in bytes
  *                              Datatype.ORDER_LE,      // byte order
  *                              Datatype.SIGN_NONE);    // signed or unsigned
  *
  * // 1-D array of size two
- * long[] space = {2};
+ * long[] dims = {2};
  *
  * // The value of the attribute
  * int[] value = {0, 255};
  *
  * // Create a new attribute
- * Attribute dataRange = new Attribute(name, type, space);
+ * Attribute dataRange = new Attribute(name, type, dims);
  *
  * // Set the attribute value
  * dataRange.setValue(value);
  *
- * // How to attach an attribute to an object, see FileFormat.writeAttribute()
+ * // See FileFormat.writeAttribute() for how to attach an attribute to an object, 
+ * @see ncsa.hdf.object.FileFormat#writeAttribute(HObject, Attribute, boolean)
  * </pre>
  *
  * @see ncsa.hdf.object.Datatype
@@ -84,7 +85,8 @@ public class Attribute implements Metadata
      * or null, and the rank can be either 1 or zero. Attribute is a general class
      * and is independent of file format, e.g., the implementation of attribute
      * applies to both HDF4 and HDF5.
-     * <p>For example,
+     * <p>
+     * The following example creates a string attribute with the name "CLASS" and value "IMAGE".
      * <pre>
         long[] attrDims = {1};
         String attrName = "CLASS";
@@ -115,9 +117,13 @@ public class Attribute implements Metadata
     }
 
     /**
-     * Returns the value of the attriubte.
+     * Returns the value of the attribute.
+     * For atomic datatype, this will be an 1D array of integers, floats and strings.
+     * For compound datatype, it will be an 1D array of strings with field members
+     * separated by comma. For example, "{0, 10.5}, {255, 20.0}, {512, 30.0}" is a cmpound 
+     * attribute of {int, float} of three data points.  
      * 
-     * @return the value of the attribute, or null if no value for the attribute
+     * @return the value of the attribute, or null if failed to retrieve data from file.
      */
     public Object getValue()
     {
@@ -126,6 +132,7 @@ public class Attribute implements Metadata
 
     /**
      * Sets the value of the attribute.
+     * It returns null if failed to retrieve the name from file.
      *
      * @param theValue The value of the attribute to set
      */
@@ -146,8 +153,10 @@ public class Attribute implements Metadata
 
     /**
      * Returns the rank (number of dimensions) of the attribute.
+     * It returns a negative number if failed to retrieve the dimension 
+     * information from file.
      * 
-     * @return the number of dimensions of the attribute
+     * @return the number of dimensions of the attribute.
      */
     public int getRank()
     {
@@ -156,6 +165,7 @@ public class Attribute implements Metadata
 
     /**
      * Returns the dimension sizes of the data value of the attribute.
+     * It returns null if failed to retrieve the dimension information from file.
      * 
      * @return the dimension sizes of the attribute. 
      */
@@ -166,6 +176,7 @@ public class Attribute implements Metadata
 
     /**
      * Returns the datatype of the attribute.
+     * It returns null if failed to retrieve the datatype information from file.
      * 
      * @return the datatype of the attribute.
      */
@@ -175,9 +186,9 @@ public class Attribute implements Metadata
     }
 
     /**
-     * Checks if this attribute is an unsigned integer.
+     * Checks if the data type of this attribute is an unsigned integer.
      * 
-     * @return true if the attribute is an unsigned integer; otherwise returns false.
+     * @return true if the data type of the attribute is an unsigned integer; otherwise returns false.
      */
     public boolean isUnsigned()
     {
@@ -186,10 +197,15 @@ public class Attribute implements Metadata
 
     /**
      * Returns a string representation of the data value of the attribute.
-     * For example, "0, 255"
+     * For example, "0, 255". 
      * <p>
-     * @param delimiter The delimiter to separate individual data point,
-     *        such as ",", ";", "\t"or " "
+     * For compound datatype, it will be an 1D array of strings with field members
+     * separated by comma. For example, "{0, 10.5}, {255, 20.0}, {512, 30.0}" is a cmpound 
+     * attribute of {int, float} of three data points.
+     * <p>
+     * @param delimiter The delimiter to separate individual data point. 
+     *        It can be comma, semicolon, tab or space. 
+     *        For example, to String(",") will separate data by comma.
      *        
      * @return the string representation of the data values.
      */
@@ -276,15 +292,4 @@ public class Attribute implements Metadata
 
         return sb.toString();
     }
-
-
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    public String toString()
-    {
-        return "[Type: Attribute], [Name: "+name+"]";
-    }
-
 }

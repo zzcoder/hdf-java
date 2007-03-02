@@ -13,24 +13,24 @@ package ncsa.hdf.object;
 
 
 /**
- * A scalar dataset is a multiple dimension array of scalar points.
- * Datatype of a scalar dataset must be a atomic datatype. Most common datatypes
- * of a scalar dataset include char, byte, short, int, long, float, double and string.
+ * A scalar dataset is a multiple dimension array of scalar points. The
+ * Datatype of a scalar dataset must be an atomic datatype. Common datatypes
+ * of scalar datasets include char, byte, short, int, long, float, double and string.
  * <p>
  * A ScalarDS can be an image or spreadsheet data. ScalarDS defines few methods
- * to deal with both image and spreadsheet.
+ * to deal with both images and spreadsheets.
  * <p>
  * ScalarDS is an abstract class. Current implementing classes are the H4SDS,
  * H5GRImage and H5ScalarDS.
  * <p>
  * <b>How to Select a Subset</b>
  * <p>
- * Dataset defines APIs for read, write and subet a dataset. No function is defined
- * to select a subset of a data array. The selection is done in an implicit way.
+ * Dataset defines APIs for reading, writing and subetting a dataset. No function is defined
+ * to select a subset of a data array. The selection is done implicitly.
  * Function calls to dimension information such as getSelectedDims() return an array
  * of dimension values, which is a reference to the array in the dataset object.
- * Changes of the array outside the dataset object directly change the values of
- * the array in the dataset object. It is like pointers in C.
+ * Changes to the array outside the dataset object directly change the values of
+ * the array in the dataset object, like pointers in C.
  * <p>
  *
  * The following is an example of how to make a subset. In the example, the dataset
@@ -48,10 +48,10 @@ package ncsa.hdf.object;
      // select dim1 and dim2 as 2D data for display,and slice through dim0
      selectedIndex[0] = 1;
      selectedIndex[1] = 2;
-     selectedIndex[1] = 0;
+     selectedIndex[2] = 0;
 
      // reset the selection arrays
-     for (int i=0; i<rank; i++) {
+     for (int i=0; i&lt;rank; i++) {
          start[i] = 0;
          selected[i] = 1;
          stride[i] = 1;
@@ -82,29 +82,31 @@ public abstract class ScalarDS extends Dataset
     // http://hdf.ncsa.uiuc.edu/HDF5/doc/ADGuide/ImageSpec.html
     // to make the defination consistent with the image specs.
 
-    /** The component value for a pixel are contiguous. */
+    /** 
+     * Indicates that the pixel RGB values are contiguous. 
+     */
     public final static int INTERLACE_PIXEL = 0;
 
-    /** Each component is stored as a scan line. */
+    /** Indicates that each pixel component of RGB is stored as a scan line. */
     public static final int INTERLACE_LINE = 1;
 
-    /** Each component is stored as a plane. */
+    /** Indicates that each pixel component of RGB is stored as a plane. */
     public final static int INTERLACE_PLANE = 2;
 
     /**
-     * The data type of this scalar dataset
-     * such as 32-bit integer, 32-bit float, etc.
+     * The native datatype identifier of this scalar dataset.
      */
     protected int nativeDatatype;
 
     /**
-     * The interlace mode of the stored raster image data
+     * The interlace mode of the stored raster image data.
+     * Valid values are INTERLACE_PIXEL, INTERLACE_LINE and INTERLACE_PLANE.
      */
     protected int interlace;
 
     /**
-     * The range of image data values.
-     * For example, [0, 255]
+     * The min-max range of image data values.
+     * For example, [0, 255] indicates the min is 0, and the max is 255.
      */
     protected double[] imageDataRange;
 
@@ -143,39 +145,55 @@ public abstract class ScalarDS extends Dataset
      */
     protected boolean unsignedConverted;
 
-    /** fill value */
+    /** The fill value of the dataset. */
     protected Object fillValue = null;
     
     /** Flag to indicate if the dataset is displayed as an image */
     protected boolean isImageDisplay;
     
     /**
-     * Constructs a ScalarDS with given name and path
+     * Constructs an instance of a ScalarDS with specific name and path.
+     * An HDF data object must have a name. The path is the group path starting
+     * from the root.
+     * <p>
+     * For example, in H5ScalarDS(h5file, "dset", "/arrays/"), "dset" is the
+     * name of the dataset, "/arrays" is the group path of the dataset.
      *
-     * @param fileFormat the HDF file.
-     * @param name the name of this ScalarDS.
-     * @param path the full path of this ScalarDS.
+     * @param theFileFormat the file that contains the data object.
+     * @param theName the name of the data object, e.g. "dset".
+     * @param thePath the full path of the data object, e.g. "/arrays/".
      */
-    public ScalarDS(FileFormat fileFormat, String name, String path)
+    public ScalarDS(FileFormat fileFormat, String theName, String thePath)
     {
-        this(fileFormat, name, path, null);
+        this(fileFormat, theName, thePath, null);
     }
 
     /**
-     * Creates a ScalarDS object with specific name, path, and parent.
+     * @deprecated. Using {@link #ScalarDS(FileFormat, String, String)} 
+     * 
+     * Constructs an instance of a ScalarDS with specific name, path and OID.
+     * An HDF data object must have a name. The path is the group path starting
+     * from the root. 
      * <p>
-     * @param fileFormat the HDF file.
-     * @param name the name of this ScalarDS.
-     * @param path the full path of this ScalarDS.
+     * For example, in H5ScalarDS(h5file, "dset", "/arrays/"), "dset" is the
+     * name of the dataset, "/arrays" is the group path of the dataset.
+     *
+     * The OID is the object identifier that uniquely identifies the
+     * data object in file. In HDF4, the OID is a two-element array of (ref, tag).
+     * In HDF5, OID is an one-element array of the object reference.
+     * 
+     * @param theFileFormat the file that contains the data object.
+     * @param theName the name of the data object, e.g. "dset".
+     * @param thePath the full path of the data object, e.g. "/arrays/".
      * @param oid the unique identifier of this data object.
      */
-    public ScalarDS(
+    public ScalarDS (
         FileFormat fileFormat,
-        String name,
-        String path,
+        String theName,
+        String thePath,
         long[] oid)
     {
-        super (fileFormat, name, path, oid);
+        super (fileFormat, theName, thePath, oid);
 
         nativeDatatype = -1;
         palette = null;
@@ -210,7 +228,7 @@ public abstract class ScalarDS extends Dataset
     }
 
     /**
-     * Converts the data values of this dataset to appropriate Java integer if it is unsigned integers.
+     * Converts the data values of this dataset to appropriate Java integer if they are unsigned integers.
      * 
      * @see ncsa.hdf.object.Dataset#convertToUnsignedC(Object)
      * @see ncsa.hdf.object.Dataset#convertFromUnsignedC(Object, Object)
@@ -230,7 +248,7 @@ public abstract class ScalarDS extends Dataset
 
     /**
      * Converts Java integer data of this dataset back to unsigned C-type integer data
-     * if if is unsigned integer. 
+     * if they are unsigned integers. 
      * 
      * @see ncsa.hdf.object.Dataset#convertToUnsignedC(Object)
      * @see ncsa.hdf.object.Dataset#convertToUnsignedC(Object, Object)
@@ -270,26 +288,26 @@ public abstract class ScalarDS extends Dataset
      * blue components respectively.
      * <p>
      * Sub-classes have to implement this interface. HDF4 and HDF5 images use
-     * different library to retrieve the associated palette.
+     * different libraries to retrieve the associated palette.
      * 
-     * @return the 2D byte array of palette.
+     * @return the 2D palette byte array.
      */
     public abstract byte[][] getPalette();
 
     /**
      * Sets the palette for this dataset.
      * 
-     * @param pal the 2D byte array of palette.
+     * @param pal the 2D palette byte array.
      */
     public final void setPalette(byte[][] pal)
     {
         palette = pal;
     }
 
-    /** Reads specific image palette from file.
+    /** Reads a specific image palette from file.
      * <p>
      * A scalar dataset may have multiple palettes attached to it.
-     * readPalette(int idx) returns specific palette.
+     * readPalette(int idx) returns a specific palette identified by its index.
      * 
      *  @param idx the index of the palette to read.
      */
@@ -301,9 +319,9 @@ public abstract class ScalarDS extends Dataset
      * A palette reference is an object reference that points to the palette 
      * dataset. 
      * <p>
-     * For example, Dataset "Iceberge" has an attribute of object
+     * For example, Dataset "Iceberg" has an attribute of object
      * reference "Palette". The arrtibute "Palette" has value "2538" that is
-     * the object reference of the palette data set "Iceberge Palette". 
+     * the object reference of the palette data set "Iceberg Palette". 
      * 
      * @return null if there is no palette attribute attached to this dataset.
      */
@@ -383,9 +401,9 @@ public abstract class ScalarDS extends Dataset
     }
 
     /**
-     * Returns true if the original C data is unsigned integer.
+     * Returns true if the original C data are unsigned integers.
      * 
-     * @return true if the original C data is unsigned integer.
+     * @return true if the original C data are unsigned integers.
      */
     public final boolean isUnsigned()
     {
