@@ -820,3 +820,9 @@ fi
 fi
 
 AC_OUTPUT($OUTPUT_FILES)
+
+if test -d "./test"; then
+chmod +x test/object/TestH5Object.sh
+fi
+
+
