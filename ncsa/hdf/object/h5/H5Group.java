@@ -77,6 +77,15 @@ public class H5Group extends Group
     {
         super (fileFormat, name, path, parent, ((oid == null) ? DEFAULT_OID : oid));
 
+        if (oid == null && fileFormat != null) {
+            // retrieve the object ID
+            try {
+                byte[] ref_buf = H5.H5Rcreate(fileFormat.getFID(), this.getFullName(), HDF5Constants.H5R_OBJECT, -1);
+                this.oid = new long[1];
+                this.oid[0] = HDFNativeData.byteToLong(ref_buf, 0);
+             } catch (Exception ex) {}
+        }
+
         int gid = open();
         try { 
             hasAttribute = (H5.H5Aget_num_attrs(gid)>0);

@@ -96,33 +96,49 @@ public class H5ScalarDS extends ScalarDS
      /** flag to indicate if the dataset is a variable length */
      private boolean isVLEN = false;
 
-    /**
-     * Constructs an H5ScalarDS object with specific name and path.
-     * <p>
-     * @param fileFormat the HDF file.
-     * @param name the name of this H5ScalarDS.
-     * @param path the full path of this H5ScalarDS.
-     */
-    public H5ScalarDS(FileFormat fileFormat, String name, String path)
+     /**
+      * Constructs an instance of a H5ScalarDS with specific name and path.
+      * An HDF data object must have a name. The path is the group path starting
+      * from the root.
+      * <p>
+      * For example, in H5ScalarDS(h5file, "dset", "/arrays/"), "dset" is the
+      * name of the dataset, "/arrays" is the group path of the dataset.
+      *
+      * @param theFileFormat the file that contains the data object.
+      * @param theName the name of the data object, e.g. "dset".
+      * @param thePath the full path of the data object, e.g. "/arrays/".
+      */
+    public H5ScalarDS(FileFormat fileFormat, String theName, String thePath)
     {
-        this(fileFormat, name, path, null);
+        this(fileFormat, theName, thePath, null);
     }
 
     /**
-     * Constructs an H5ScalarDS object with specific name and group path.
+     * @deprecated. Using {@link #H5ScalarDS(FileFormat, String, String)} 
+     * 
+     * Constructs an instance of a H5ScalarDS with specific name, path and OID.
+     * An HDF data object must have a name. The path is the group path starting
+     * from the root. 
      * <p>
-     * @param fileFormat the HDF file.
-     * @param name the name of this H5ScalarDS.
-     * @param path the full path of this H5ScalarDS.
-     * @param oid the unique identifier of this data object, or null is the oid is unknown.
+     * For example, in H5ScalarDS(h5file, "dset", "/arrays/"), "dset" is the
+     * name of the dataset, "/arrays" is the group path of the dataset.
+     *
+     * The OID is the object identifier that uniquely identifies the
+     * data object in file. In HDF4, the OID is a two-element array of (ref, tag).
+     * In HDF5, OID is an one-element array of the object reference.
+     * 
+     * @param theFileFormat the file that contains the data object.
+     * @param theName the name of the data object, e.g. "dset".
+     * @param thePath the full path of the data object, e.g. "/arrays/".
+     * @param oid the unique identifier of this data object.
      */
     public H5ScalarDS(
         FileFormat fileFormat,
-        String name,
-        String path,
+        String theName,
+        String thePath,
         long[] oid)
     {
-        super (fileFormat, name, path, oid);
+        super (fileFormat, theName, thePath, oid);
         unsignedConverted = false;
         paletteRefs = null;
 

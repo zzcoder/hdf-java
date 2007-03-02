@@ -931,7 +931,8 @@ public final class Tools
         
         return 0; 
     } 
-    
+
+
     /**
      * Computes autocontrast parameters by
      * <pre>

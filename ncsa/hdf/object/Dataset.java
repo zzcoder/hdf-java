@@ -89,13 +89,13 @@ public abstract class Dataset extends HObject
     public static final String H5Z_FILTER_CONFIG_ENCODE_ENABLED = "H5Z_FILTER_CONFIG_ENCODE_ENABLED";
 
     /**
-     *  The buff which holds the content of this dataset. The type of the data
+     *  The memory buffer that holds the values of this dataset. The type of the data
      * object will be defined by implementing classes.
      */
     protected Object data;
 
     /**
-     * The rank of this dataset.
+     * The number of dimensions of this dataset.
      */
     protected int rank;
 

@@ -27,21 +27,30 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public abstract class Group extends HObject
 {
     /**
-     * The list of members (in memory) of this group.
+     * The list of members (Groups and Datasets) of this group in memory.
      */
     private List memberList;
 
-    /** The parent group where this group is loacted. */
+    /** 
+     * The parent group where this group is located. 
+     * The parent of the root group is null.
+     */
     protected Group parent;
 
     /**
-     * Total number of members in this group.
+     * Total number of (Groups and Datasets) of this group in file.
      */
     protected int nMembersInFile;
 
     /**
-     * Creates a group object with specific name, path, and parent.
+     * Constructs an instance of the group with specific name, path and parent 
+     * group. An HDF data object must have a name. The path is the group path starting
+     * from the root. The parent group is the group where this group is located.
      * <p>
+     * For example, in H5Group(h5file, "grp", "/groups/", pgroup), "grp" is the
+     * name of the group, "/groups/" is the group path of the group, and pgroup
+     * the group where "grp" is located.
+     *
      * @param fileFormat the file which containing the group.
      * @param name the name of this group.
      * @param path the full path of this group.
@@ -53,8 +62,20 @@ public abstract class Group extends HObject
     }
 
     /**
-     * Creates a group object with specific name, path, and parent.
+     * @deprecated. Using {@link #Group(FileFormat, String, String, Group)}
+     * 
+     * Constructs an instance of the group with specific name, path and parent 
+     * group. An HDF data object must have a name. The path is the group path starting
+     * from the root. The parent group is the group where this group is located.
      * <p>
+     * For example, in H5Group(h5file, "grp", "/groups/", pgroup), "grp" is the
+     * name of the group, "/groups/" is the group path of the group, and pgroup
+     * the group where "grp" is located.
+     *
+     * The OID is the object identifier that uniquely identifies the
+     * data object in file. In HDF4, the OID is a two-element array of (ref, tag).
+     * In HDF5, OID is an one-element array of the object reference.
+     * 
      * @param fileFormat the file which containing the group.
      * @param name the name of this group.
      * @param path the full path of this group.
@@ -74,7 +95,9 @@ public abstract class Group extends HObject
     }
     
     /**
-     * Clears up member list and other resources in memory for the group
+     * Clears up member list and other resources in memory for the group.
+     * Since the destructor will clear memory space, the function is usually
+     * not needed. 
      */
     public void clear() {
     	if (memberList != null)
@@ -82,9 +105,9 @@ public abstract class Group extends HObject
     }
 
     /**
-     * Adds an object to the member list of this group.
+     * Adds an object to the member list of this group in memory.
      * <p>
-     * @param object the HObject to be added to the member list.
+     * @param object the HObject (Group or Dataset) to be added to the member list.
      */
     public void addToMemberList(HObject object)
     {
@@ -99,9 +122,9 @@ public abstract class Group extends HObject
     }
 
     /**
-     * Removes an object from the member list of this group.
+     * Removes an object from the member list of this group in memory.
      * <p>
-     * @param object the HObject to be removed from the member list.
+     * @param object the HObject (Group or Dataset) to be removed from the member list.
      */
     public void removeFromMemberList(HObject object)
     {
@@ -113,6 +136,9 @@ public abstract class Group extends HObject
 
     /**
      * Returns the list of members of this group.
+     * The list is an java.awt.List containing Groups and Datasets. 
+     * 
+     * @return the list of members of this group.
      */
     public List getMemberList()
     {
@@ -178,17 +204,15 @@ public abstract class Group extends HObject
      * Returns the total number of members of this group in file.
      * 
      * Current Java application such as HDFView cannot handle files with large
-     * number of objects such 1,000,000 objects due to JVM memory  limitation.
+     * numbers of objects (1,000,000 or more objects) due to JVM memory  limitation.
      * The max_members is used so that applications such as HDFView will load
-     * up to <i>max_members</i> number of objects. If number of objects in file
-     * is larger than the <i>max_members</i> number, only <i>max_members</i> number
-     * is loaded in memory.
+     * up to <i>max_members</i> number of objects. If the number of objects in file
+     * is larger than <i>max_members</i>, only <i>max_members</i> are loaded in memory.
      * <p>
-     * getNumberOfMembersInFile() returns number of objects in this group. The number
+     * getNumberOfMembersInFile() returns the number of objects in this group. The number
      * of objects in memory is obtained by getMemberList().size().
      * 
-     * Total number of members in file is larger than  
-     * @return total number of members of this group in file.
+     * @return Total number of members of this group in the file.
      */
     public int getNumberOfMembersInFile() { return nMembersInFile; }
 

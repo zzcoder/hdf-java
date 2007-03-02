@@ -513,12 +513,24 @@ implements ActionListener, MetaDataView
         long dims[] = d.getDims();
         if (dims != null)
         {
+            String[] dimNames = d.getDimNames();
+            boolean hasDimNames = (dimNames!=null && dimNames.length == dims.length);
             StringBuffer sb = new StringBuffer();
-             sb.append(dims[0]);
+            sb.append(dims[0]);
+            if (hasDimNames) {
+                sb.append(" (");
+                sb.append(dimNames[0]);
+                sb.append(")");
+            }
             for (int i=1; i<dims.length; i++)
             {
                 sb.append(" x ");
                 sb.append(dims[i]);
+                if (hasDimNames) {
+                    sb.append(" (");
+                    sb.append(dimNames[i]);
+                    sb.append(")");
+                }
             }
             dimStr = sb.toString();
         }

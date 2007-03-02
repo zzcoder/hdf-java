@@ -48,7 +48,10 @@ public class H4Datatype extends Datatype
         super(nativeID);
     }
 
-    // implementing Dataset
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Datatype#fromNative(int)
+     */
     public void fromNative(int tid)
     {
         nativeID = tid;
