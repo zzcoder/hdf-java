@@ -1390,7 +1390,7 @@ implements ImageView, ActionListener
                     String statistics = "Min                      = "+minmax[0] +
                                       "\nMax                      = "+minmax[1] +
                                       "\nMean                     = "+stat[0] +
-                                      "\nStandard deviaton = "+stat[1];
+                                      "\nStandard deviation = "+stat[1];
                     JOptionPane.showMessageDialog(this, statistics, "Statistics", JOptionPane.INFORMATION_MESSAGE);
                 }
             } catch (Exception ex) {

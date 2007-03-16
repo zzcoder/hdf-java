@@ -50,8 +50,8 @@ public class H5Group extends Group
      * Constructs an HDF5 group with specific name, path, and parent.
      * <p>
      * @param fileFormat the file which containing the group.
-     * @param name the name of this group.
-     * @param path the full path of this group.
+     * @param name the name of this group, e.g. "grp01".
+     * @param path the full path of this group, e.g. "/groups/".
      * @param parent the parent of this group.
      */
     public H5Group(FileFormat fileFormat, String name, String path, Group parent)
@@ -60,11 +60,14 @@ public class H5Group extends Group
     }
 
     /**
+     * @deprecated  Not for public use in the future.
+     * Using {@link #H5Group(FileFormat, String, String, Group)}
+     * <p>
      * Constructs an HDF5 group with specific name, path, and parent.
      * <p>
      * @param fileFormat the file which containing the group.
-     * @param name the name of this group.
-     * @param path the full path of this group.
+     * @param name the name of this group, e.g. "grp01".
+     * @param path the full path of this group, e.g. "/groups/".
      * @param parent the parent of this group.
      * @param oid the unique identifier of this data object.
      */

@@ -23,56 +23,6 @@ package ncsa.hdf.object;
  * ScalarDS is an abstract class. Current implementing classes are the H4SDS,
  * H5GRImage and H5ScalarDS.
  * <p>
- * <b>How to Select a Subset</b>
- * <p>
- * Dataset defines APIs for reading, writing and subetting a dataset. No function is defined
- * to select a subset of a data array. The selection is done implicitly.
- * Function calls to dimension information such as getSelectedDims() return an array
- * of dimension values, which is a reference to the array in the dataset object.
- * Changes to the array outside the dataset object directly change the values of
- * the array in the dataset object, like pointers in C.
- * <p>
- *
- * The following is an example of how to make a subset. In the example, the dataset
- * is a 4-dimension with size of [200][100][50][10], i.e.
- * dims[0]=200; dims[1]=100; dims[2]=50; dims[3]=10; <br>
- * We want to select every other data points in dims[1] and dims[2]
- * <pre>
-     int rank = dataset.getRank();   // number of dimension of the dataset
-     long[] dims = dataset.getDims(); // the dimension sizes of the dataset
-     long[] selected = dataset.getSelectedDims(); // the selected size of the dataet
-     long[] start = dataset.getStartDims(); // the off set of the selection
-     long[] stride = dataset.getStride(); // the stride of the dataset
-     int[]  selectedIndex = dataset.getSelectedIndex(); // the selected dimensions for display
-
-     // select dim1 and dim2 as 2D data for display,and slice through dim0
-     selectedIndex[0] = 1;
-     selectedIndex[1] = 2;
-     selectedIndex[2] = 0;
-
-     // reset the selection arrays
-     for (int i=0; i&lt;rank; i++) {
-         start[i] = 0;
-         selected[i] = 1;
-         stride[i] = 1;
-    }
-
-    // set stride to 2 on dim1 and dim2 so that every other data points are selected.
-    stride[1] = 2;
-    stride[2] = 2;
-
-    // set the selection size of dim1 and dim2
-    selected[1] = dims[1]/stride[1];
-    selected[2] = dims[1]/stride[2];
-
-    // when dataset.read() is called, the slection above will be used since
-    // the dimension arrays is passed by reference. Changes of these arrays
-    // outside the dataset object directly change the values of these array
-    // in the dataset object.
-
- * </pre>
- *
- * <p>
  * @version 1.0 12/12/2001
  * @author Peter X. Cao, NCSA
  */
@@ -159,7 +109,7 @@ public abstract class ScalarDS extends Dataset
      * For example, in H5ScalarDS(h5file, "dset", "/arrays/"), "dset" is the
      * name of the dataset, "/arrays" is the group path of the dataset.
      *
-     * @param theFileFormat the file that contains the data object.
+     * @param fileFormat the file that contains the data object.
      * @param theName the name of the data object, e.g. "dset".
      * @param thePath the full path of the data object, e.g. "/arrays/".
      */
@@ -169,7 +119,9 @@ public abstract class ScalarDS extends Dataset
     }
 
     /**
-     * @deprecated. Using {@link #ScalarDS(FileFormat, String, String)} 
+     * @deprecated  Not for public use in the future.
+     * Using {@link #ScalarDS(FileFormat, String, String)}
+     * <p>
      * 
      * Constructs an instance of a ScalarDS with specific name, path and OID.
      * An HDF data object must have a name. The path is the group path starting
@@ -182,7 +134,7 @@ public abstract class ScalarDS extends Dataset
      * data object in file. In HDF4, the OID is a two-element array of (ref, tag).
      * In HDF5, OID is an one-element array of the object reference.
      * 
-     * @param theFileFormat the file that contains the data object.
+     * @param fileFormat the file that contains the data object.
      * @param theName the name of the data object, e.g. "dset".
      * @param thePath the full path of the data object, e.g. "/arrays/".
      * @param oid the unique identifier of this data object.

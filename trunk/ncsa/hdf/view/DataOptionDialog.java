@@ -795,9 +795,8 @@ implements ActionListener, ItemListener
             if (n1[i] < 0) n1[i] = 0; // end
             if (n1[i] >= dims[sIndex[i]]) n1[i] = dims[sIndex[i]]-1;
             if (n0[i] > n1[i]) n1[i] = n0[i]; // end <= start
-            if (n2[i] <= 0) n2[i] = 0; // depth
-            if (n2[i] >= dims[sIndex[i]]) n2[i] = dims[sIndex[i]]-1;
-
+            if (n2[i] > dims[sIndex[i]]) n2[i] = dims[sIndex[i]];
+            if (n2[i] <= 0) n2[i] = 1; // stride cannot be zero
         } // for (int i=0; i<n; i++)
 
         if (dataset instanceof CompoundDS)

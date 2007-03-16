@@ -44,10 +44,10 @@ public interface DataFormat
     public abstract List getMetadata() throws Exception;
 
     /**
-     * Writes a specific metadata into file. 
+     * Writes a specific metadata (such as attribute) into file. 
      * 
      * <p>
-     * If the metadata exists, it updates its value. If the metadata 
+     * If metadata exists, the method updates its value. If the metadata 
      * does not exists in file, it creates the metadata in file and attaches 
      * it to the object.
      *
