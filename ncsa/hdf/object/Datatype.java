@@ -14,64 +14,128 @@ package ncsa.hdf.object;
 import java.util.List;
 
 /**
- * Datatype is an abstract class that defines basic components and APIs for a data type.
+ * Datatype is an abstract class that defines datatype characteristics and APIs for a data type.
  * <p>
- * A data type has four basic components: class, size, byte order and sign.
- * These components are used for general purpose, i.e. they are applied to any
- * native or implementing datatypes. A native datatype may have different ways to
- * describe a datatype. For example, HDF5 uses datatype identifier. 
+ * A datatype has four basic characteristics: class, size, byte order and sign.
+ * These charactertics are defeined in the 
+ * <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/UG/index.html">HDF5 User's Guide</a>.
  * <p>
- * Sub-classes classes must implement functions toNative() and fromNative, which
- * convert common datatype decription (class, size, order and sign) and native
- * datatype such as HDF5 datatype identifier.
+ * These charactertics apply to all the sub-classes. The sub-classes may have different 
+ * ways to describe a datatype. We here define the <strong> native datatype</strong> to 
+ * the datatype used by the sub-class. For example, H5Datatype uses a datatype identifier
+ * (hid_t) to specify a datatype. NC2Datatype uses ucar.nc2.DataType object to describe
+ * its dataype. "Native" here is different from the "native" definition in the HDF5 library.
+ * <p>
+ * Two functions, toNative() and fromNative(), are defined to convert the general charactertics
+ * to/form the native datatype. Sub-classes must implement these functions so that the conversion 
+ * will be done correctly.
  * <p>
  * @version 1.0 05/07/2002
  * @author Peter X. Cao, NCSA
  */
 public abstract class Datatype extends HObject
 {
-    /* native for datatype size, order, and sign */
+    /** 
+     * The default definition for datatype size, order, and sign. 
+     */
     public static final int NATIVE = -1;
 
-    /* Classes of datatypes */
+    /**
+     * See {@link <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/UG/index.html">HDF5 User's Guide</a>}
+     */
     public static final int CLASS_NO_CLASS         = -1;
+
+    /**
+     * See {@link <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/UG/index.html">HDF5 User's Guide</a>}
+     */
     public static final int CLASS_INTEGER          = 0;
+
+    /**
+     * See {@link <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/UG/index.html">HDF5 User's Guide</a>}
+     */
     public static final int CLASS_FLOAT            = 1;
+
+    /**
+     * See {@link <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/UG/index.html">HDF5 User's Guide</a>}
+     */
     public static final int CLASS_CHAR             = 2;
+
+    /**
+     * See {@link <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/UG/index.html">HDF5 User's Guide</a>}
+     */
     public static final int CLASS_STRING           = 3;
+
+    /**
+     * See {@link <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/UG/index.html">HDF5 User's Guide</a>}
+     */
     public static final int CLASS_BITFIELD         = 4;
+
+    /**
+     * See {@link <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/UG/index.html">HDF5 User's Guide</a>}
+     */
     public static final int CLASS_OPAQUE           = 5;
+
+    /**
+     * See {@link <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/UG/index.html">HDF5 User's Guide</a>}
+     */
     public static final int CLASS_COMPOUND         = 6;
+
+    /**
+     * See {@link <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/UG/index.html">HDF5 User's Guide</a>}
+     */
     public static final int CLASS_REFERENCE        = 7;
+
+    /**
+     * See {@link <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/UG/index.html">HDF5 User's Guide</a>}
+     */
     public static final int CLASS_ENUM             = 8;
+
+    /**
+     * See {@link <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/UG/index.html">HDF5 User's Guide</a>}
+     */
     public static final int CLASS_VLEN             = 9;
+
+    /**
+     * See {@link <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/UG/index.html">HDF5 User's Guide</a>}
+     */
     public static final int CLASS_ARRAY            = 10;
 
-    /* Byte orders of datatype */
+
+    /**
+     * See {@link <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/UG/index.html">HDF5 User's Guide</a>}
+     */
     public static final int ORDER_LE         = 0;
+
+    /**
+     * See {@link <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/UG/index.html">HDF5 User's Guide</a>}
+     */
     public static final int ORDER_BE         = 1;
+
+    /**
+     * See {@link <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/UG/index.html">HDF5 User's Guide</a>}
+     */
     public static final int ORDER_VAX        = 2;
+
+    /**
+     * See {@link <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/UG/index.html">HDF5 User's Guide</a>}
+     */
     public static final int ORDER_NONE       = 3;
 
-    /* Sign of integers */
+    // sign
+    /**
+     * See {@link <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/UG/index.html">HDF5 User's Guide</a>}
+     */
     public static final int SIGN_NONE         = 0;
+
+    /**
+     * See {@link <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/UG/index.html">HDF5 User's Guide</a>}
+     */
     public static final int SIGN_2            = 1;
+
+    /**
+     * See {@link <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/UG/index.html">HDF5 User's Guide</a>}
+     */
     public static final int NSGN              = 2;
-    
-    public static final int  CHAR_BIT   = 8;
-    public static final int  CHAR_MIN   = 0;
-    public static final int  CHAR_MAX   = 255;
-    public static final int  INT_MIN    = -2147483648;
-    public static final int  INT_MAX    = 2147483647;
-    public static final long LONG_MIN   = -9223372036854775808L;
-    public static final long LONG_MAX   = 9223372036854775807L;
-    public static final int  SCHAR_MIN  = -128;
-    public static final int  SCHAR_MAX  = 127;
-    public static final int  SHRT_MIN   = -32768;
-    public static final int  SHRT_MAX   = 32767;
-    public static final int  UCHAR_MAX  = 255;
-    public static final long UINT_MAX   = 4294967295L;
-    public static final int  USHRT_MAX  = 65535;
     
     /**
      * The class of the datatype.
@@ -85,6 +149,7 @@ public abstract class Datatype extends HObject
 
     /**
      * The byte order of the datatype.
+     * Valid values are ORDER_LE, ORDER_BE, and ORDER_VAX.
      */
     protected int datatypeOrder;
 
@@ -94,12 +159,12 @@ public abstract class Datatype extends HObject
     protected int datatypeSign;
 
     /**
-     * The name=values pairs of enum members
+     * The (name, value) pairs of enum members
      */
     protected String enumMembers;
 
     /**
-     * Datatype identifier of the implementing class of this datatype.
+     * The datatype identifier of the implementing class of this datatype.
      */
     protected int nativeID;
 
@@ -107,8 +172,26 @@ public abstract class Datatype extends HObject
      * Contructs a named datatype with a given file, name and path.
      * <p>
      * @param fileFormat the HDF file.
-     * @param name the name of the datatype.
-     * @param path the full path of the datatype.
+     * @param name the name of the datatype, e.g "12-bit Integer".
+     * @param path the full group path of the datatype, e.g. "/datatypes/".
+     */
+    public Datatype(
+        FileFormat fileFormat,
+        String name,
+        String path)
+    {
+        this (fileFormat, name, path, null);
+    }
+    
+    /**
+     * @deprecated  Not for public use in the future.
+     * Using {@link #Datatype(FileFormat, String, String)}
+     * <p>
+     * Contructs a named datatype with a given file, name and path.
+     * <p>
+     * @param fileFormat the HDF file.
+     * @param name the name of the datatype, e.g "12-bit Integer".
+     * @param path the full group path of the datatype, e.g. "/datatypes/".
      * @param oid the unique identifier of the datatype.
      */
     public Datatype(
@@ -123,20 +206,20 @@ public abstract class Datatype extends HObject
 
     /**
      * Constructs a Datatype with specified class, size, byte order and sign.
-     * The following list a few example of how to create a Datatype.
+     * The following is a list of a few example of H5Datatype.
      * <OL>
      * <LI>to create unsigned native integer<br>
-     * Datatype type = new Dataype(CLASS_INTEGER, NATIVE, NATIVE, SIGN_NONE);
+     * H5Datatype type = new H5Dataype(CLASS_INTEGER, NATIVE, NATIVE, SIGN_NONE);
      * <LI>to create 16-bit signed integer with big endian<br>
-     * Datatype type = new Dataype(CLASS_INTEGER, 2, ORDER_BE, NATIVE);
+     * H5Datatype type = new H5Dataype(CLASS_INTEGER, 2, ORDER_BE, NATIVE);
      * <LI>to create native float<br>
-     * Datatype type = new Dataype(CLASS_FLOAT, NATIVE, NATIVE, -1);
+     * H5Datatype type = new H5Dataype(CLASS_FLOAT, NATIVE, NATIVE, -1);
      * <LI>to create 64-bit double<br>
-     * Datatype type = new Dataype(CLASS_FLOAT, 8, NATIVE, -1);
+     * H5Datatype type = new H5Dataype(CLASS_FLOAT, 8, NATIVE, -1);
      * </OL>
      * @param tclass the class of the datatype, e.g. CLASS_INTEGER, CLASS_FLOAT and etc.
      * @param tsize the size of the datatype in bytes, e.g. for a 32-bit integer, the size is 4.
-     * @param torder the order of the datatype. Valid values are ORDER_LE, ORDER_BE, ORDER_VAX and ORDER_NONE
+     * @param torder the byte order of the datatype. Valid values are ORDER_LE, ORDER_BE, ORDER_VAX and ORDER_NONE
      * @param tsign the sign of the datatype. Valid values are SIGN_NONE, SIGN_2 and MSGN
      */
     public Datatype(int tclass, int tsize, int torder, int tsign)
@@ -175,7 +258,7 @@ public abstract class Datatype extends HObject
     /**
      * Returns the class of the datatype.
      * Valid values are: 
-     * <ol>
+     * <ul>
         <li>CLASS_NO_CLASS
         <li>CLASS_INTEGER
         <li>CLASS_FLOAT
@@ -188,7 +271,7 @@ public abstract class Datatype extends HObject
         <li>CLASS_ENUM
         <li>CLASS_VLEN
         <li>CLASS_ARRAY
-     * </ol>
+     * </ul>
      * 
      * @return the class of the datatype.
      */
@@ -211,12 +294,12 @@ public abstract class Datatype extends HObject
     /**
      * Returns the byte order of the datatype.
      * Valid values are
-     * <ol>
+     * <ul>
      *   <li> ORDER_LE
      *   <li> ORDER_BE
      *   <li> ORDER_VAX
      *   <li> ORDER_NONE
-     * </ol>
+     * </ul>
      * 
      * @return the byte order of the datatype.
      */
@@ -226,7 +309,7 @@ public abstract class Datatype extends HObject
     }
 
     /**
-     * Returns the sign (SIGN_NONE or SIGN_2) of an integer datatype.
+     * Returns the sign (SIGN_NONE, SIGN_2 or NSGN) of an integer datatype.
      *
      * @return the sign of the datatype.
      */
@@ -236,7 +319,7 @@ public abstract class Datatype extends HObject
     }
 
     /**
-     * Sets the "name=value" pairs of enum members for enum datatype.
+     * Sets the (name, value) pairs of enum members for enum datatype.
      * <p>For Example,
      * <dl>
      *     <dt>setEnumMembers("lowTemp=-40, highTemp=90")</dt>
@@ -246,7 +329,7 @@ public abstract class Datatype extends HObject
      *     <dt>setEnumMembers("lowTemp=10, highTemp")</dt>
      *         <dd>sets enum member lowTemp to 10 and highTemp to 11.</dd>
      * </dl>
-     * @param enumStr the "name=value" pairs of enum members
+     * @param enumStr the (name, value) pairs of enum members
      */
     public final void setEnumMembers(String enumStr) { enumMembers = enumStr; }
 
@@ -262,12 +345,12 @@ public abstract class Datatype extends HObject
      *         <dd>sets enum member lowTemp to 10 and highTemp to 11.</dd>
      * </dl>
      * 
-     * @return enumStr the "name=value" pairs of enum members
+     * @return enumStr the (name, value) pairs of enum members
      */
     public final String getEnumMembers() { return enumMembers; }
 
     /**
-     * Converts this datatype object to a native datatype.
+     * Converts the datatype object to a native datatype.
      *
      * Subclasses must implement it so that this datatype will be converted accordingly.
      * <p>
@@ -287,19 +370,19 @@ public abstract class Datatype extends HObject
     public abstract int toNative();
 
     /**
-     * Specify this datatype object with a given datatye identifier.
-     * Subclasses must implement it so that this datatype will be converted.
+     * Set datatype characteristics (class, size, byte order and sign) from a given datatye identifier.
+     * Subclasses must implement it so that this datatype will be converted accordingly.
      * <p>
      * For example, if the type identifier is a 32-bit unsigned integer created
      * from HDF5,
      * <pre>
-     * int tid = H5.H5Tcopy( HDF5Constants.H5T_NATIVE_UNINT32);
-     * Datatype dtype = new Datatype(tid);
+     * H5Datatype dtype = new H5Datatype();
+     * dtype.fromNative(HDF5Constants.H5T_NATIVE_UNINT32);
      * </pre>
-     * Where dtype is equivalent to
-     * new Datatype(CLASS_INTEGER, 4, NATIVE, SIGN_NONE);
+     * Where dtype is equivalent to <br>
+     * new H5Datatype(CLASS_INTEGER, 4, NATIVE, SIGN_NONE);
      * <p>
-     * @param nativeID the identifier of user defined datatype.
+     * @param nativeID the datatype identifier.
      */
     public abstract void fromNative(int nativeID);
 
@@ -355,14 +438,14 @@ public abstract class Datatype extends HObject
     /**
      *  Checks if this datatype is an unsigned integer.
      *  
-     *  @return true is the datatype is an unsigned integer; otherwise returns false.
+     *  @return true if the datatype is an unsigned integer; otherwise, returns false.
      */
     public abstract boolean isUnsigned();
 
     /**
      * Opens access to this named datatype.
      * Sub-clases must replace this default implementation. For example, in H5Datatype,
-     * open() function H5.H5Topen(loc, name) to get the datatype identifier. 
+     * open() function H5.H5Topen(loc_id, name) to get the datatype identifier. 
      * 
      * @return the datatype identifier if successful; otherwise returns negative value.
      */

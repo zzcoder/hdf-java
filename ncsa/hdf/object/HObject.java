@@ -90,17 +90,17 @@ public abstract class HObject implements Serializable, DataFormat
     public final static String separator = "/";
 
     /**
-     * The full path of the file that contains this object.
+     * The full path of the file that contains the object.
      */
     private final String filename;
 
     /**
-     * The file identifier of this object. The fid is obtained from FileFormat.open().
+     * The file identifier of the object. The fid is obtained from FileFormat.open().
      */
 //    private final int fid;
 
     /**
-     * The file which contains this object
+     * The file which contains the object
      */
     private final FileFormat fileFormat;
 
@@ -159,8 +159,9 @@ public abstract class HObject implements Serializable, DataFormat
     }
 
     /**
-     * @deprecated. Using {@link #HObject(FileFormat, String, String)} 
-     * 
+     * @deprecated  Not for public use in the future.
+     * Using {@link #HObject(FileFormat, String, String)}
+     * <p>
      * Constructs an instance of the data object with specific name, path and OID.
      * An HDF data object must have a name. The path is the group path starting
      * from the root. 
@@ -175,7 +176,7 @@ public abstract class HObject implements Serializable, DataFormat
      * @param theFileFormat the file that contains the data object.
      * @param theName the name of the data object, e.g. "dset".
      * @param thePath the full path of the data object, e.g. "/arrays/".
-    * @param oid the unique identifier of this data object.
+     * @param oid the unique identifier of this data object.
      */
     public HObject(FileFormat theFileFormat, String theName, String thePath, long[] oid)
     {
@@ -250,10 +251,10 @@ public abstract class HObject implements Serializable, DataFormat
     }
 
     /**
-     * Returns the name of this object.
+     * Returns the name of the object.
      * For example, "Raster Image #2".
      * 
-     * @return The name of this object.
+     * @return The name of the object.
      */
     public final String getName()
     {
@@ -261,10 +262,10 @@ public abstract class HObject implements Serializable, DataFormat
     }
 
     /**
-     * Returns the full name (group path + object name) of this object.
+     * Returns the full name (group path + object name) of the object.
      * For example, "/Images/Raster Image #2"
      * 
-     * @return The full name (group path + object name) of this object.
+     * @return The full name (group path + object name) of the object.
      */
     public final String getFullName()
     {
@@ -272,10 +273,10 @@ public abstract class HObject implements Serializable, DataFormat
     }
 
     /**
-     * Returns the group path of this object.
+     * Returns the group path of the object.
      * For example, "/Images/".
      * 
-     * @return The group path of this object.
+     * @return The group path of the object.
      */
     public final String getPath()
     {
@@ -325,7 +326,7 @@ public abstract class HObject implements Serializable, DataFormat
     public abstract int open();
 
     /**
-     * Closes access to this object.
+     * Closes access to the object.
      * <p>
      * Sub-classes must implement this interface so that different data
      * objects have their own ways of how the data resources are closed.
@@ -337,9 +338,9 @@ public abstract class HObject implements Serializable, DataFormat
     public abstract void close(int id);
 
     /**
-     * Returns the file identifier of this object.
+     * Returns the file identifier of the object.
      * 
-     * @return the file identifier of this object.
+     * @return the file identifier of the object.
      */
     public final int getFID()
     {
@@ -350,7 +351,7 @@ public abstract class HObject implements Serializable, DataFormat
     }
 
     /**
-     * Checks if the OID of this object is the same as the given object identifier.
+     * Checks if the OID of the object is the same as the given object identifier.
      * <p>
      * HDF4 and HDF5 data objects are identified by their unique OIDs.
      * A data object in a file may have multiple logical names (the full names),
@@ -378,9 +379,9 @@ public abstract class HObject implements Serializable, DataFormat
     }
 
     /**
-     * Returns the FileFormat that contains this object.
+     * Returns the FileFormat that contains the object.
      * 
-     * @return The FileFormat that contains this object.
+     * @return The FileFormat that contains the object.
      */
     public final FileFormat getFileFormat() { return fileFormat; }
 
@@ -402,9 +403,28 @@ public abstract class HObject implements Serializable, DataFormat
     }
 
     /**
-     * Check if this object has any attributes attached.
+     * Check if the object has any attributes attached.
      *
      * @return true if it has any attribute(s), false otherwise.
      */
     public boolean hasAttribute () { return hasAttribute; }
+    
+    /**
+     * Returns the name of the object.
+     * <p>
+     * This method overwrites the toString() method in the Java Object class 
+     * (the root class of all Java objects) so that it returns the name of 
+     * the HObject instead of the name of the class.
+     * <p>
+     * For example, toString() returns "Raster Image #2" instead of
+     * "ncsa.hdf.object.h4.H4SDS".
+     * 
+     * @return The name of the object.
+     */
+    public String toString()
+    {
+        return name;
+    }
+
+    
 }

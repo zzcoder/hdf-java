@@ -36,6 +36,21 @@ import javax.imageio.stream.*;
  */
 public final class Tools
 {
+    public static final int  CHAR_BIT   = 8;
+    public static final int  CHAR_MIN   = 0;
+    public static final int  CHAR_MAX   = 255;
+    public static final int  INT_MIN    = -2147483648;
+    public static final int  INT_MAX    = 2147483647;
+    public static final long LONG_MIN   = -9223372036854775808L;
+    public static final long LONG_MAX   = 9223372036854775807L;
+    public static final int  SCHAR_MIN  = -128;
+    public static final int  SCHAR_MAX  = 127;
+    public static final int  SHRT_MIN   = -32768;
+    public static final int  SHRT_MAX   = 32767;
+    public static final int  UCHAR_MAX  = 255;
+    public static final long UINT_MAX   = 4294967295L;
+    public static final int  USHRT_MAX  = 65535;
+     
     /** Converts an image file into HDF4/5 file.
      *  @param imgFileName the input image file.
      *  @param hFileName the name of the HDF4/5 file.
@@ -828,13 +843,13 @@ public final class Tools
             int newmin = (int)(minmax[0] - (diff * 0.1)); 
             
             if (isUS) {
-                if (newmax <= Datatype.USHRT_MAX)
+                if (newmax <= USHRT_MAX)
                     minmax[1] = newmax;
                 
                 if (newmin >=0)
                     minmax[0] = newmin;
 
-                params[0] = (double) Datatype.USHRT_MAX / (minmax[1]-minmax[0]);
+                params[0] = (double) USHRT_MAX / (minmax[1]-minmax[0]);
                 params[1] = (double) -minmax[0];
                 
             }
@@ -873,8 +888,8 @@ public final class Tools
             value = (double) (data_in[i] + bias) * gain; 
             if( value < 0.0 ) 
               data_out[i] = 0; 
-            else if( value > Datatype.USHRT_MAX ) 
-              data_out[i] = Datatype.USHRT_MAX; 
+            else if( value > USHRT_MAX ) 
+              data_out[i] = USHRT_MAX; 
             else 
               data_out[i] = (int) value; 
         } 

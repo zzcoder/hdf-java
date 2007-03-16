@@ -15,14 +15,17 @@
 
 
 /**
- * An attribute is a (name, value) pair of metadata attached to primary
- * data objects such as datasets, groups or named datatypes. The value field can
- * be a scalar data point or an array of atomic datatype or compound datatype.
+ * An attribute is a (name, value) pair of metadata attached to a primary
+ * data object such as dataset, group or named datatype.
  * <p>
- * The requirement information of an attribute includes the name, datatype and
- * dataspace. The following is an example of creating an attribute of one dimension
- * integer array of size two.
+ * Like a dataset, an attribute has a name, datatype and dataspace. 
+ * 
+ * <p>
+ * For more details on attibutes, see
+ * {@link <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/UG/index.html">HDF5 User's Guide</a>}
+ *<p>
  *
+ * The following code is an example of an attribute with 1D integer array of two elements.
  * <pre>
  * // Example of creatinge a new attribute
  *

@@ -67,7 +67,7 @@ import ncsa.hdf.hdf5lib.exceptions.*;
 public class H5File extends FileFormat
 {
 	public static final long serialVersionUID = HObject.serialVersionUID;
-
+    
     /**
      * the file access flag. Valid values are HDF5Constants.H5F_ACC_RDONLY,
      *  HDF5Constants.H5F_ACC_RDWR and HDF5Constants.H5F_ACC_CREAT.
@@ -279,9 +279,9 @@ public class H5File extends FileFormat
         return fid;
     }
 
-    /**
-     * Closes the file access and all its open objects
-     * @throws HDF5Exception
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.FileFormat#close()
      */
     public void close() throws HDF5Exception
     {
@@ -478,13 +478,13 @@ public class H5File extends FileFormat
         H5.H5Glink(fid, HDF5Constants.H5G_LINK_HARD, current_full_name, new_full_name);
 
         if (currentObj instanceof Group)
-            obj = new H5Group(this, name, parent_path, parentGroup, currentObj.getOID());
+            obj = new H5Group(this, name, parent_path, parentGroup);
         else if (currentObj instanceof H5Datatype)
-            obj = new H5Datatype(this, name, parent_path, currentObj.getOID());
+            obj = new H5Datatype(this, name, parent_path);
         else if (currentObj instanceof H5CompoundDS)
-            obj = new H5CompoundDS(this, name, parent_path, currentObj.getOID());
+            obj = new H5CompoundDS(this, name, parent_path);
         else if (currentObj instanceof H5ScalarDS)
-            obj = new H5ScalarDS(this, name, parent_path, currentObj.getOID());
+            obj = new H5ScalarDS(this, name, parent_path);
 
         return obj;
     }

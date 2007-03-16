@@ -67,7 +67,9 @@ public class H5Datatype extends Datatype
     }
      
      /**
-      * @deprecated, Using {@link #H5Datatype(FileFormat, String, String)}
+     * @deprecated  Not for public use in the future.
+     * Using {@link #H5Datatype(FileFormat, String, String)}
+     * <p>
       * 
       * Constrcuts an H5Datatype object for a given file, dataset name, group path
       * and object identifer.

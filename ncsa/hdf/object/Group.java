@@ -52,8 +52,8 @@ public abstract class Group extends HObject
      * the group where "grp" is located.
      *
      * @param fileFormat the file which containing the group.
-     * @param name the name of this group.
-     * @param path the full path of this group.
+     * @param name the name of this group, e.g. "grp01".
+     * @param path the full path of this group, e.g. "/groups/".
      * @param parent the parent of this group.
      */
     public Group(FileFormat fileFormat, String name, String path, Group parent)
@@ -62,7 +62,9 @@ public abstract class Group extends HObject
     }
 
     /**
-     * @deprecated. Using {@link #Group(FileFormat, String, String, Group)}
+     * @deprecated  Not for public use in the future.
+     * Using {@link #Group(FileFormat, String, String, Group)}
+     * <p>
      * 
      * Constructs an instance of the group with specific name, path and parent 
      * group. An HDF data object must have a name. The path is the group path starting
@@ -77,8 +79,8 @@ public abstract class Group extends HObject
      * In HDF5, OID is an one-element array of the object reference.
      * 
      * @param fileFormat the file which containing the group.
-     * @param name the name of this group.
-     * @param path the full path of this group.
+     * @param name the name of this group, e.g. "grp01".
+     * @param path the full path of this group, e.g. "/groups/".
      * @param parent the parent of this group.
      * @param oid the unique identifier of this data object.
      */

@@ -153,7 +153,7 @@ implements TableView, ActionListener
             String compression = dataset.getCompression();
             if (compression != null && compression.startsWith("SZIP"))
             {
-                if (!compression.endsWith(Dataset.H5Z_FILTER_CONFIG_ENCODE_ENABLED))
+                if (!compression.endsWith("ENCODE_ENABLED"))
                     isReadOnly = true;
             }
         }
@@ -610,7 +610,7 @@ implements TableView, ActionListener
                 	String statistics = "Min                      = "+minmax[0] +
                                       "\nMax                      = "+minmax[1] +
                 	                  "\nMean                     = "+stat[0] +
-                	                  "\nStandard deviaton = "+stat[1];
+                	                  "\nStandard deviation = "+stat[1];
                     JOptionPane.showMessageDialog(this, statistics, "Statistics", JOptionPane.INFORMATION_MESSAGE);
                 }
                 
@@ -1130,9 +1130,11 @@ implements TableView, ActionListener
         dataValue = null;
         try {
             d.getData();
+/*            
             if (d instanceof ScalarDS) {
                 ((ScalarDS)d).convertFromUnsignedC();
             }
+*/            
             dataValue = d.getData();
         }
         catch (Exception ex)
