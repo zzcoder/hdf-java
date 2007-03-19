@@ -842,7 +842,11 @@ public class H5 {
             status = H5Dread_double(dataset_id, mem_type_id,mem_space_id, file_space_id,
                 xfer_plist_id, (double[])obj);
         }
-        else if (is1D && cname.equals("[Ljava.lang.String;")) {
+        else if (H5.H5Tequal(mem_type_id, HDF5Constants.H5T_STD_REF_DSETREG)) {
+            status = H5Dread_reg_ref(dataset_id, mem_type_id,mem_space_id, file_space_id,
+                    xfer_plist_id, (String[])obj);
+        }
+         else if (is1D && cname.equals("[Ljava.lang.String;")) {
             status = H5Dread_string(dataset_id, mem_type_id,mem_space_id, file_space_id,
                 xfer_plist_id, (String[])obj);
         } else {
@@ -4361,6 +4365,11 @@ public class H5 {
         int mem_space_id, int file_space_id, int xfer_plist_id,
         String[] buf)
         throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static native int H5Dread_reg_ref(int dataset_id, int mem_type_id,
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            String[] buf)
+            throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Dwrite_short(int dataset_id, int mem_type_id,
         int mem_space_id, int file_space_id, int xfer_plist_id,

@@ -1048,7 +1048,7 @@ herr_t H5DreadVL_num (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t fi
 	for (i=0; i<n; i++)
 	{
 		h5str.s[0] = '\0';
-		h5str_sprintf(&h5str, tid, rdata+i);
+		h5str_sprintf(&h5str, did, tid, rdata+i);
 		jstr = (*env)->NewStringUTF(env, h5str.s);
 		(*env)->SetObjectArrayElement(env, buf, i, jstr);
 	}
@@ -1096,6 +1096,59 @@ herr_t H5DreadVL_str (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t fi
 
 	return status;
 }
+
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1reg_1ref (JNIEnv *env, jclass clss, 
+    jint dataset_id, jint mem_type_id, jint mem_space_id,
+    jint file_space_id, jint xfer_plist_id, jobjectArray buf)
+{
+    herr_t status;
+	int i, n;
+	h5str_t h5str;
+	jstring jstr;
+
+	hdset_reg_ref_t *ref_data;
+	size_t size;
+
+    hid_t region = -1;
+    hid_t did = (hid_t) dataset_id;
+    hid_t tid = (hid_t) mem_type_id;
+    hid_t mem_sid = (hid_t) mem_space_id;
+    hid_t file_sid = (hid_t) file_space_id;
+
+	n = (*env)->GetArrayLength(env, buf);
+	size = sizeof(hdset_reg_ref_t); /*H5Tget_size(tid);*/
+	ref_data = malloc(size*n);
+
+	if (ref_data == NULL) {
+        h5JNIFatalError( env, "H5Dread_reg_ref:  failed to allocate buff for read");
+        return -1;
+    }
+
+    status = H5Dread(did, tid, mem_sid, file_sid, xfer_plist_id, ref_data);
+
+    if (status < 0) {
+		free(ref_data);
+        h5JNIFatalError(env, "H5Dread_reg_ref: failed to read data");
+		return -1;
+	}
+
+	memset(&h5str, 0, sizeof(h5str_t));
+	h5str_new(&h5str, 1024);
+	for (i=0; i<n; i++)
+	{
+		h5str.s[0] = '\0';
+		h5str_sprintf(&h5str, did, tid, ref_data[i]);
+		jstr = (*env)->NewStringUTF(env, h5str.s);
+
+		(*env)->SetObjectArrayElement(env, buf, i, jstr);
+	}
+
+	h5str_free(&h5str); 
+	free(ref_data);
+
+	return status;
+}
+
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1short
   (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id,

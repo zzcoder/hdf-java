@@ -67,29 +67,9 @@ public class H5Datatype extends Datatype
     }
      
      /**
-     * @deprecated  Not for public use in the future.
+     * @deprecated  Not for public use in the future. <br>
      * Using {@link #H5Datatype(FileFormat, String, String)}
-     * <p>
-      * 
-      * Constrcuts an H5Datatype object for a given file, dataset name, group path
-      * and object identifer.
-      * <p>
-      * The datatype object represents an existing named datatype in file. For example, 
-      * new H5Datatype(file, "dtype1", "/g0/") constructs a datatype object that corresponds to
-      * the dataset,"dset1", at group "/g0/".
-      * <p>
-      * The object identifier is a one-element long array that holds the object reference of
-      * the dataset. For a given file, object reference uniquely identifies the object.
-      * <p>
-      * For a given name and path, the object ID is obtained from
-      * byte[] ref_buf = H5.H5Rcreate(fid, path+name, HDF5Constants.H5R_OBJECT, -1);
-      * <p>
-      * @param fileFormat the file that contains the dataset.
-      * @param name the name of the dataset such as "dset1".
-      * @param path the group path to the dataset such as "/g0/".
-      * @param oid the unique identifier of this data object. if oid is null, the object ID 
-      *        is automatically obtained by H5.H5Rcreate() for the given name and path.
-      */
+     */
     public H5Datatype(
         FileFormat fileFormat,
         String name,
@@ -373,6 +353,7 @@ public class H5Datatype extends Datatype
         Object data = null;
         boolean isVL = false;
         boolean is_variable_str = false;
+        boolean is_reg_ref = false;
 
         if (size < 0) return null;
 
@@ -392,8 +373,9 @@ public class H5Datatype extends Datatype
 
         try { is_variable_str = H5.H5Tis_variable_str(tid); } catch (Exception ex) {}
         try { isVL = (tclass==HDF5Constants.H5T_VLEN); } catch (Exception ex) {}
+        try { is_reg_ref = H5.H5Tequal(tid, HDF5Constants.H5T_STD_REF_DSETREG); } catch (Exception ex) {}
 
-        if (is_variable_str || isVL)
+        if (is_variable_str || isVL || is_reg_ref)
         {
             data = new String[size];
             for (int i=0; i<size; i++) ((String[])data)[i] = "";

@@ -62,27 +62,8 @@ public abstract class Group extends HObject
     }
 
     /**
-     * @deprecated  Not for public use in the future.
+     * @deprecated  Not for public use in the future.<br>
      * Using {@link #Group(FileFormat, String, String, Group)}
-     * <p>
-     * 
-     * Constructs an instance of the group with specific name, path and parent 
-     * group. An HDF data object must have a name. The path is the group path starting
-     * from the root. The parent group is the group where this group is located.
-     * <p>
-     * For example, in H5Group(h5file, "grp", "/groups/", pgroup), "grp" is the
-     * name of the group, "/groups/" is the group path of the group, and pgroup
-     * the group where "grp" is located.
-     *
-     * The OID is the object identifier that uniquely identifies the
-     * data object in file. In HDF4, the OID is a two-element array of (ref, tag).
-     * In HDF5, OID is an one-element array of the object reference.
-     * 
-     * @param fileFormat the file which containing the group.
-     * @param name the name of this group, e.g. "grp01".
-     * @param path the full path of this group, e.g. "/groups/".
-     * @param parent the parent of this group.
-     * @param oid the unique identifier of this data object.
      */
     public Group(
         FileFormat fileFormat,

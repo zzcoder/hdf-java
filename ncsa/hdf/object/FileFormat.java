@@ -201,23 +201,8 @@ public abstract class FileFormat extends File
     public abstract FileFormat open(String pathname, int access) throws Exception;
 
     /**
-     * @deprecated  Not for public use in the future.
+     * @deprecated  Not for public use in the future.<br>
      * Using {@link #create(String, int)}
-     * <p>
-      * Creates a new instance of this file. 
-     * <p>
-     * If file exists, delete it, then create a new file and open the new file for read/write.
-     * <p>
-     * A subclass must implementing this method to create a file of its type.
-     * <p>
-     * For example,
-     * <pre>
-     * FileFormat file = H5File.create("test.h5");
-     * </pre>
-     * creates an HDF5 file "test.h5".
-     *
-     * @param fileName the full path name of the file, e.g. "/usr/local/hdfview/samples/hdf5_test.h5".
-     * @return The new file if successful; otherwise returns null
      */
     public abstract FileFormat create(String fileName) throws Exception;
 
@@ -710,49 +695,8 @@ public abstract class FileFormat extends File
     public abstract void writeAttribute(HObject obj, Attribute attr, boolean attrExisted) throws Exception;
 
     /**
-     * @deprecated  Not for public use in the future.
+     * @deprecated  Not for public use in the future. <br>
      * Using {@link #copy(HObject, Group, String)}
-     * 
-     * Copies a given object to a specific group. 
-     * <p>
-     * This method copies an object (source) to a specific group (destination) within 
-     * a file or cross files. If the destination group is in a different file, the 
-     * FileFormat of the destination group must be the same type as the source file.
-     * Copying object cross FileFormats is not supported. 
-     * <p>
-     * The source object can be a group, a dataset or a named datatype. This method 
-     * copies the object along with all its attributes and other properties. If the source
-     * object is a group, this method also copies all the objects and sub-groups below 
-     * the group.
-     * <p>
-     * The following example shows how to copy an HDF5 object.
-     * <pre>
-        public static void TestHDF5Copy (String filename, String objName) throws Exception
-        {
-            // Get the source dataset
-            H5File file = new H5File(filename, H5File.READ);
-            file.open();
-
-            // Create a new file
-            H5File newFile = (H5File) file.create(filename+"_new.h5");
-            newFile.open();
-
-            // NOTE: have to use the desitionation file to do the copy
-            // Copy the dataset to the destination's root group
-           Group group = (Group)newFile.get("/");
-           file.copy(file.get(objName), group);
-
-           // Make another copy but with different name
-            file.copy(file.get(objName), group, "another_copy");
-
-            file.close();
-            newFile.close();
-        }
-     * </pre>
-     * @param srcObj   The object to copy.
-     * @param dstGroup The destination group for the new object.
-     * 
-     * @return The tree node that contains the new object.
      */
     public abstract TreeNode copy(HObject srcObj, Group dstGroup) throws Exception;
 

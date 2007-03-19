@@ -184,15 +184,8 @@ public abstract class Datatype extends HObject
     }
     
     /**
-     * @deprecated  Not for public use in the future.
+     * @deprecated  Not for public use in the future.<br>
      * Using {@link #Datatype(FileFormat, String, String)}
-     * <p>
-     * Contructs a named datatype with a given file, name and path.
-     * <p>
-     * @param fileFormat the HDF file.
-     * @param name the name of the datatype, e.g "12-bit Integer".
-     * @param path the full group path of the datatype, e.g. "/datatypes/".
-     * @param oid the unique identifier of the datatype.
      */
     public Datatype(
         FileFormat fileFormat,

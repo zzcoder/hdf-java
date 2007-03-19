@@ -18,10 +18,13 @@
 #include "hdf5.h"
 #include "h5util.h"
 
+int h5str_dump_region(h5str_t *str, hid_t region);
+static hbool_t h5tools_is_zero(const void *_mem, size_t size);
+
 /** frees memory held by aray of strings */
 void  h5str_array_free(char **strs, size_t len)
 {
-    int i;
+    size_t i;
 
     if (!strs || len <=0)
         return;
@@ -100,7 +103,7 @@ char* h5str_append (h5str_t *str, const char* cstr)
 		On success, the total number of characters printed is returned.
 		On error, a negative number is returned.
 */
-int h5str_sprintf(h5str_t *str, hid_t tid, void *ptr)
+int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr)
 {
 	unsigned char		tmp_uchar = 0;
 	char				tmp_char = 0;
@@ -210,7 +213,7 @@ int h5str_sprintf(h5str_t *str, hid_t tid, void *ptr)
 		{
 			offset = H5Tget_member_offset(tid, i);
             mtid = H5Tget_member_type(tid ,i);
-            h5str_sprintf(str, mtid, cptr+offset);
+            h5str_sprintf(str, container, mtid, cptr+offset);
             if (i<n-1) strcat(str->s, ", ");
             H5Tclose(mtid);
         }
@@ -233,7 +236,7 @@ int h5str_sprintf(h5str_t *str, hid_t tid, void *ptr)
 
         for (i = 0; i < total_elmts; i++)
 		{
-            h5str_sprintf(str, mtid, cptr + i * size);
+            h5str_sprintf(str, container, mtid, cptr + i * size);
 			if (i<total_elmts-1) strcat(str->s, ", ");
         }
         H5Tclose(mtid);
@@ -248,10 +251,34 @@ int h5str_sprintf(h5str_t *str, hid_t tid, void *ptr)
         n = vlptr->len;
         for (i = 0; i < n; i++)
 		{
-			h5str_sprintf(str, mtid, ((char *)(vlptr->p)) + i * size);
+			h5str_sprintf(str, container, mtid, ((char *)(vlptr->p)) + i * size);
         	if (i<n-1) strcat(str->s, ", ");
 		}
         H5Tclose(mtid);
+    } else if (H5Tequal(tid, H5T_STD_REF_DSETREG)) {
+        /*
+         * Dataset region reference -- show the type and OID of the referenced
+         * object, but we are unable to show the region yet because there
+         * isn't enough support in the data space layer.  - rpm 19990604
+         */
+        if (h5tools_is_zero(ptr, H5Tget_size(tid))) {
+            h5str_append(str, "NULL");
+        } else {
+            char         obj_info[128];
+            hid_t        obj, region;
+            H5G_stat_t   sb;
+
+            /* get name of the dataset the region reference points to using H5Rget_name */
+            obj = H5Rdereference(container, H5R_DATASET_REGION, ptr);
+            H5Gget_objinfo(obj, ".", 0, &sb);
+            sprintf(obj_info, "%lu:%lu ", sb.objno[1], sb.objno[0]);
+            h5str_append(str, obj_info);
+
+            region = H5Rget_region(container, H5R_DATASET_REGION, ptr);
+            h5str_dump_region(str, region);
+            H5Sclose(region);
+            H5Dclose(obj);
+        }
     } else /* All other types get printed as hexadecimal */
 	{
         n = H5Tget_size(tid);
@@ -277,3 +304,103 @@ int h5str_sprintf(h5str_t *str, hid_t tid, void *ptr)
 
 	return this_strlen;
 }
+
+/* dumps region reference information into a string */
+int h5str_dump_region(h5str_t *str, hid_t region)
+{
+    hssize_t    nblocks, npoints;
+    hsize_t     alloc_size;
+    hsize_t     *ptdata;
+    int         ndims = H5Sget_simple_extent_ndims(region);
+    char        tmp_str[256];
+
+    /*
+     * These two functions fail if the region does not have blocks or points,
+     * respectively. They do not currently know how to translate from one to
+     * the other.
+     */
+    H5E_BEGIN_TRY {
+        nblocks = H5Sget_select_hyper_nblocks(region);
+        npoints = H5Sget_select_elem_npoints(region);
+    } H5E_END_TRY;
+
+    h5str_append(str, "{");
+
+    /* Print block information */
+    if (nblocks > 0) {
+        int i;
+
+        alloc_size = nblocks * ndims * 2 * sizeof(ptdata[0]);
+        if (alloc_size == (hsize_t)((size_t)alloc_size)) {
+            ptdata = malloc((size_t)alloc_size);
+            H5Sget_select_hyper_blocklist(region, (hsize_t)0, (hsize_t)nblocks, ptdata);
+
+            for (i = 0; i < nblocks; i++) {
+                int j;
+    
+                h5str_append(str, " ");
+    
+                /* Start coordinates and opposite corner */
+                for (j = 0; j < ndims; j++) {
+                    tmp_str[0] = '\0';
+                    sprintf(tmp_str, "%s%lu", j ? "," : "(", (unsigned long)ptdata[i * 2 * ndims + j]);
+                    h5str_append(str, tmp_str);
+                }
+    
+                for (j = 0; j < ndims; j++) {
+                    tmp_str[0] = '\0';
+                    sprintf(tmp_str, "%s%lu", j ? "," : ")-(", (unsigned long)ptdata[i * 2 * ndims + j + ndims]);
+                    h5str_append(str, tmp_str);
+                }
+                h5str_append(str, ") ");
+                tmp_str[0] = '\0';
+            }
+    
+            free(ptdata);        
+        } /* if (alloc_size == (hsize_t)((size_t)alloc_size)) */
+    } /* if (nblocks > 0) */
+
+    /* Print point information */
+    if (npoints > 0) {
+        int i;
+
+        alloc_size = npoints * ndims * sizeof(ptdata[0]);
+        if (alloc_size == (hsize_t)((size_t)alloc_size)) {
+            ptdata = malloc((size_t)alloc_size);
+            H5Sget_select_elem_pointlist(region, (hsize_t)0, (hsize_t)npoints, ptdata);
+    
+            for (i = 0; i < npoints; i++) {
+                int j;
+    
+                h5str_append(str, " ");
+
+                for (j = 0; j < ndims; j++) {
+                    tmp_str[0] = '\0';
+                    sprintf(tmp_str, "%s%lu", j ? "," : "(", (unsigned long)(ptdata[i * ndims + j]));
+                    h5str_append(str, tmp_str);
+                }
+    
+                h5str_append(str, ") ");
+            }
+    
+            free(ptdata);
+        }
+    }
+
+    h5str_append(str, "}");
+
+    return 0;
+}
+
+
+static hbool_t h5tools_is_zero(const void *_mem, size_t size)
+{
+    const unsigned char *mem = (const unsigned char *)_mem;
+
+    while (size-- > 0)
+        if (mem[size])
+            return 0;
+
+    return 1;
+}
+

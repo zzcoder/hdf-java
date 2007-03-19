@@ -167,15 +167,8 @@ public abstract class Dataset extends HObject
     }
 
     /**
-     * @deprecated  Not for public use in the future.
+     * @deprecated  Not for public use in the future. <br>
      * Using {@link #Dataset(FileFormat, String, String)}
-     * <p>
-     * Constructs a Dataset object with a given file, name and path.
-     * <p>
-     * @param fileFormat the file that contains the dataset.
-     * @param name the name of the Dataset, e.g. "dset1".
-     * @param path the full group path of this Dataset, e.g. "/arrays/".
-     * @param oid the unique identifier of the dataset, null if it is unknown.
      */
     public Dataset(
         FileFormat fileFormat,
@@ -708,38 +701,8 @@ public abstract class Dataset extends HObject
     }
 
     /**
-     * @deprecated  Not for public use in the future.
+     * @deprecated  Not for public use in the future. <br>
      * Using {@link #convertFromUnsignedC(Object, Object)}
-     * <p>
-     * Converts one-dimension array of unsigned C-type integers to appropriate Java integer in memory.
-     * <p>
-     * Since Java does not support unsigned integer, values of unsigned C-type integers must
-     * be converted into its appropriate Java integer. Otherwise, the data value
-     * will not displayed correctly. For example, if an unsigned C byte, x = 200,
-     * is stored into an Java byte y, y will be -56 instead of the correct value of 200.
-     * <p>
-     * Unsigned C integers are upgrade to Java integers according to the following table:
-     * <TABLE CELLSPACING=0 BORDER=1 CELLPADDING=5 WIDTH=400>
-     *     <caption><b>Mapping Unsigned C Integers to Java Integers</b></caption>
-     *     <TR> <TD><B>Unsigned C Integer</B></TD> <TD><B>JAVA Intege</B>r</TD> </TR>
-     *     <TR> <TD>unsigned byte</TD> <TD>signed short</TD> </TR>
-     *     <TR> <TD>unsigned short</TD> <TD>signed int</TD> </TR>
-     *     <TR> <TD>unsigned int</TD> <TD>signed long</TD> </TR>
-     *     <TR> <TD>unsigned long</TD> <TD>signed long</TD> </TR>
-     * </TABLE>
-     * <strong>NOTE: this conversion cannot deal with unsigned 64-bit integers. Therefore,
-     *       the values of unsigned 64-bit dataset may be wrong in Java application</strong>.
-     * <p>
-     * If memory data of unsigned integers is converted by convertFromUnsignedC(),
-     * convertToUnsignedC() must be called to convert the data back to unsigned C before
-     * data is written into file.
-     *  
-     * @see #convertToUnsignedC(Object)
-     * @see #convertToUnsignedC(Object, Object)
-     * 
-     * @param data_in the input 1D array of the unsigned C-type integers.
-     * 
-     * @return the upgraded 1D array of Java integers.
      */
     public static Object convertFromUnsignedC(Object data_in)
     {
@@ -855,18 +818,8 @@ public abstract class Dataset extends HObject
     }
 
     /**
-     * @deprecated  Not for public use in the future.
+     * @deprecated  Not for public use in the future. <br>
      * Using {@link #convertToUnsignedC(Object, Object)}
-     * <p>
-     * Converts the array of converted unsigned integer back to unsigned C-type integer data in memory.
-     * <p>
-     * If memory data of unsigned integers is converted by convertFromUnsignedC(),
-     * convertToUnsignedC() must be called to convert the data back to unsigned C before
-     * data is written into file.
-     * 
-     * @see #convertFromUnsignedC(Object, Object)
-     * 
-     * @param data_in the input array of the Java integer.
      */
     public static Object convertToUnsignedC(Object data_in)
     {
