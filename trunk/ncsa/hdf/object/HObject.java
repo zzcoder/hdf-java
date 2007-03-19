@@ -18,24 +18,24 @@ import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.HDFNativeData;
 
 /**
- * The HObject class is the base class of all the HDF data objects. Every data class has
+ * The HObject class is the root class of all the HDF data objects. Every data class has
  * HObject as a superclass. All objects (Groups and Datasets) implement the
- * methods of this class. The following is the class hierarchy of abstract classes
- * that are inherited from HObject.
+ * methods of this class. The following is the inherited structure of HDF Objects.
  *
  * <pre>
- *                                     HObject
- *                       _________________|_________________
- *                       |                |                |
- *                     Group           Dataset          Datatype
- *                       |         _______|_______         |
- *                       |         |             |         |
- *                       |      ScalarDS     CompoundDS    |
- *                       |         |             |         |
- *      |-------------------------------------------------------------|
- *      |                  Implementing classes such as               |
- *      |              H5Group, H5ScalarDs, H5CompoundDS, H5Datatype  |
- *      |-------------------------------------------------------------|
+ *                                 HObject
+ *          __________________________|________________________________
+ *          |                         |                               |
+ *        Group                    Dataset                        Datatype
+ *          |                _________|___________                    |
+ *          |                |                   |                    |
+ *          |             ScalarDS          CompoundDS                |
+ *          |                |                   |                    |
+ *    ---------------------Implementing classes such as-------------------------
+ *      ____|____       _____|______        _____|_____          _____|_____
+ *      |       |       |          |        |         |          |         |
+ *   H5Group H4Group H5ScalarDS H4SclarDS H5CompDS H4CompDS H5Datatype H4Datatype
+ *     
  * </pre>
  *
  * All HDF4 and HDF5 data objects are inherited from HObject. At the top
@@ -124,6 +124,7 @@ public abstract class HObject implements Serializable, DataFormat
      * Array of long integer storing unique identifier for the object.
      * <p>
      *  HDF4 objects are uniquely identified by the OID of the (ref_id, tag_id) pair.
+     *  i.e. oid[0]=tag, oid[1]=ref.<br>
      *  HDF5 objects are uniquely identified by the OID of object reference.
      */
     protected long[] oid;
@@ -159,24 +160,8 @@ public abstract class HObject implements Serializable, DataFormat
     }
 
     /**
-     * @deprecated  Not for public use in the future.
+     * @deprecated  Not for public use in the future.<br>
      * Using {@link #HObject(FileFormat, String, String)}
-     * <p>
-     * Constructs an instance of the data object with specific name, path and OID.
-     * An HDF data object must have a name. The path is the group path starting
-     * from the root. 
-     * <p>
-     * For example, in H5ScalarDS(h5file, "dset", "/arrays/"), "dset" is the
-     * name of the dataset, "/arrays" is the group path of the dataset.
-     *
-     * The OID is the object identifier that uniquely identifies the
-     * data object in file. In HDF4, the OID is a two-element array of (ref, tag).
-     * In HDF5, OID is an one-element array of the object reference.
-     * 
-     * @param theFileFormat the file that contains the data object.
-     * @param theName the name of the data object, e.g. "dset".
-     * @param thePath the full path of the data object, e.g. "/arrays/".
-     * @param oid the unique identifier of this data object.
      */
     public HObject(FileFormat theFileFormat, String theName, String thePath, long[] oid)
     {

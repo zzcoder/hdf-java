@@ -466,7 +466,7 @@ herr_t H5AreadVL_num (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
 	for (i=0; i<n; i++)
 	{
 		h5str.s[0] = '\0';
-		h5str_sprintf(&h5str, tid, rdata+i);
+		h5str_sprintf(&h5str, aid, tid, rdata+i);
 		jstr = (*env)->NewStringUTF(env, h5str.s);
 		(*env)->SetObjectArrayElement(env, buf, i, jstr);
 	}
@@ -521,7 +521,7 @@ herr_t H5AreadVL_comp (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
 	for (i=0; i<n; i++)
 	{
 		h5str.s[0] = '\0';
-		h5str_sprintf(&h5str, tid, rdata+i*size);
+		h5str_sprintf(&h5str, aid, tid, rdata+i*size);
 		jstr = (*env)->NewStringUTF(env, h5str.s);
 		(*env)->SetObjectArrayElement(env, buf, i, jstr);
 	}

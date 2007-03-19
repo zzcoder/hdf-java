@@ -123,28 +123,8 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
-     * @deprecated  Not for public use in the future.
+     * @deprecated  Not for public use in the future.<br>
      * Using {@link #H5CompoundDS(FileFormat, String, String)}
-     * <p>
-     * 
-     * Constrcuts an HDF5 compound dataset object for a given file, dataset name, group path
-     * and object identifer.
-     * <p>
-     * The dataset object represents an existing dataset in the file. For example, 
-     * new H5CompoundDS(file, "dset1", "/g0/") constructs a dataset object that corresponds to
-     * the dataset,"dset1", at group "/g0/".
-     * <p>
-     * The object identifier is a one-element long array that holds the object reference of
-     * the dataset. For a given file, object reference uniquely identifies the object.
-     * <p>
-     * For a given name and path, the object ID is obtained from
-     * byte[] ref_buf = H5.H5Rcreate(fid, path+name, HDF5Constants.H5R_OBJECT, -1);
-     * <p>
-     * @param fileFormat the file that contains the dataset.
-     * @param name the name of the dataset such as "dset1".
-     * @param path the group path to the dataset such as "/g0/".
-     * @param oid the unique identifier of this data object. if oid is null, the object ID 
-     *        is automatically obtained by H5.H5Rcreate() for the given name and path.
      */
     public H5CompoundDS(
         FileFormat fileFormat,

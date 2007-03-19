@@ -117,22 +117,8 @@ public abstract class CompoundDS extends Dataset
     }
 
     /**
-     * @deprecated  Not for public use in the future.
+     * @deprecated  Not for public use in the future.<br>
      * Using {@link #CompoundDS(FileFormat, String, String)}
-     * <p>
-     * Constructs a CompoundDS object with given file and dataset name and path.
-     * 
-     * This object is usually constructed at FileFormat.open(), which loads the
-     * file structure and object informatoin into tree structure (TreeNode). It
-     * is rarely used elsewhere.
-     * <p>
-     * @param fileFormat the file that contains the dataset.
-     * @param name the name of this CompoundDS, e.g. "compDS".
-     * @param path the path of this CompoundDS, e.g. "/g1".
-     * @param oid the unique identifier of this dataset object.
-     *    HDF4 objects are uniquely identified by the (tag_id, ref_id) pairs,
-     *    i.e. oid[0]=tag, oid[1]=ref.<br>
-     *    HDF5 objects are uniquely identified by the reference identifier.
      */
     public CompoundDS(
         FileFormat fileFormat,
@@ -359,22 +345,6 @@ public abstract class CompoundDS extends Dataset
 
     /**
      * @deprecated  Not implemented for compound dataset.
-     * 
-     * <p>
-     * Copy a selected part of a compound dataset to a new compound dataset.
-     * <p>
-     * <b>NOTE: This function is not implemented for compound dataset. 
-     *          It may be added in future</b>
-     * <p>
-     * However, copying the whole dataset is implemented by all sub-classes.
-     * For example, to copy a H5CompoundDS, one can use
-     * H5File.copy(HObject srcObj, Group dstGroup, String dstName)
-     *
-     * @param pgroup the group which the dataset is copied to.
-     * @param name the name of the new dataset.
-     * @param dims the dimension sizes of the the new dataset.
-     * @param data the data values of the subset to be copied.
-     * @return the new dataset if sucessful; otherwise returns null.
      */
     public Dataset copy(Group pgroup, String name, long[] dims, Object data) throws Exception
     {

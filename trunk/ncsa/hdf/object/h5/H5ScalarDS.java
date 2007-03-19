@@ -65,25 +65,8 @@ public class H5ScalarDS extends ScalarDS
     }
 
     /**
-      * @deprecated  Not for public use in the future.
+     * @deprecated  Not for public use in the future.<br>
      *  Using {@link #H5ScalarDS(FileFormat, String, String)}
-     * <p>
-     * 
-     * Constructs an instance of a H5ScalarDS with specific name, path and OID.
-     * An HDF data object must have a name. The path is the group path starting
-     * from the root. 
-     * <p>
-     * For example, in H5ScalarDS(h5file, "dset", "/arrays/"), "dset" is the
-     * name of the dataset, "/arrays" is the group path of the dataset.
-     *
-     * The OID is the object identifier that uniquely identifies the
-     * data object in file. In HDF4, the OID is a two-element array of (ref, tag).
-     * In HDF5, OID is an one-element array of the object reference.
-     * 
-     * @param fileFormat the file that contains the data object.
-     * @param theName the name of the data object, e.g. "dset".
-     * @param thePath the full path of the data object, e.g. "/arrays/".
-     * @param oid the unique identifier of this data object.
      */
     public H5ScalarDS(
         FileFormat fileFormat,
@@ -570,11 +553,6 @@ public class H5ScalarDS extends ScalarDS
                     null );   // set block to 1
             }
 
-            /* do not support dataset region references */
-            if (H5.H5Tequal(nativeDatatype, HDF5Constants.H5T_STD_REF_DSETREG)) {
-                throw new HDF5Exception("Dataset region reference is not supported.");
-             }
-            
             boolean isREF = (H5.H5Tequal(nativeDatatype, HDF5Constants.H5T_STD_REF_OBJ));
             
             if ( originalBuf ==null || isText || isREF ||
@@ -582,7 +560,7 @@ public class H5ScalarDS extends ScalarDS
                 theData = H5Datatype.allocateArray(nativeDatatype, (int)lsize[0]);
             } else
                  theData = originalBuf; // reuse the buffer if the size is the same
-            
+
             if (theData != null) {
                 if (isVLEN)
                 {
@@ -591,6 +569,7 @@ public class H5ScalarDS extends ScalarDS
                 else
                 {
                     H5.H5Dread( did, nativeDatatype, mspace, fspace, HDF5Constants.H5P_DEFAULT, theData);
+
                     if (isText && convertByteToString)
                         theData = byteToString((byte[])theData, H5.H5Tget_size(nativeDatatype));
                     else if (isREF)
@@ -618,6 +597,10 @@ public class H5ScalarDS extends ScalarDS
         if (isVLEN)
             throw(new HDF5Exception("Writing variable-length data is not supported"));
 
+        if (H5.H5Tequal(nativeDatatype, HDF5Constants.H5T_STD_REF_DSETREG)) {
+            throw new HDF5Exception("Cannot write values of region references.");
+         }
+        
         int fspace=-1, mspace=-1, did=-1, tid=-1, status=-1;
         Object tmpData = null;
 
