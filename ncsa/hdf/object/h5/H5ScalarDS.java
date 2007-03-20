@@ -596,10 +596,6 @@ public class H5ScalarDS extends ScalarDS
 
         if (isVLEN)
             throw(new HDF5Exception("Writing variable-length data is not supported"));
-
-        if (H5.H5Tequal(nativeDatatype, HDF5Constants.H5T_STD_REF_DSETREG)) {
-            throw new HDF5Exception("Cannot write values of region references.");
-         }
         
         int fspace=-1, mspace=-1, did=-1, tid=-1, status=-1;
         Object tmpData = null;
@@ -638,19 +634,17 @@ public class H5ScalarDS extends ScalarDS
             tid = H5.H5Tget_native_type(org_tid);
             isText = (H5.H5Tget_class(tid)==HDF5Constants.H5T_STRING);
             try { H5.H5Tclose(org_tid); } catch (Exception ex) {}
-
-            if ( isUnsigned && unsignedConverted)
-            {
-                tmpData = convertToUnsignedC(buf, null);
+            
+            boolean is_reg_ref = (H5.H5Tequal(tid, HDF5Constants.H5T_STD_REF_DSETREG));
+            if  (!is_reg_ref) {
+                if ( isUnsigned && unsignedConverted)
+                    tmpData = convertToUnsignedC(buf, null);
+                else if (isText && convertByteToString)
+                     tmpData = stringToByte((String[])buf, H5.H5Tget_size(tid));
+                else
+                    tmpData = buf;
+                H5.H5Dwrite(did, tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, tmpData);
             }
-            else if (isText && convertByteToString)
-            {
-                tmpData = stringToByte((String[])buf, H5.H5Tget_size(tid));
-            }
-            else
-                tmpData = buf;
-
-            H5.H5Dwrite(did, tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, tmpData);
         } finally {
             tmpData = null;
             if (fspace > 0) try { H5.H5Sclose(fspace); } catch (Exception ex) {}
@@ -975,7 +969,7 @@ public class H5ScalarDS extends ScalarDS
                    isExtentable = true;
             }
         }
-
+ 
         // HDF 5 requires you to use chunking in order to define extendible
         // datasets. Chunking makes it possible to extend datasets efficiently,
         // without having to reorganize storage excessively
@@ -986,7 +980,7 @@ public class H5ScalarDS extends ScalarDS
         int rank = dims.length;
         int tid = type.toNative();
         int sid = H5.H5Screate_simple(rank, dims, maxdims);
-
+ 
         // figure out creation properties
         int plist = HDF5Constants.H5P_DEFAULT;
 
@@ -1013,8 +1007,8 @@ public class H5ScalarDS extends ScalarDS
         try {H5.H5Dclose(did);} catch (HDF5Exception ex) {};
 
         if (dataset != null) {
-            pgroup.addToMemberList(dataset);
-            if (data != null)
+           pgroup.addToMemberList(dataset);
+           if (data != null)
                 dataset.write(data);
         }
 

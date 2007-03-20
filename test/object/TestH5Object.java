@@ -164,7 +164,7 @@ public class TestH5Object
             file = (H5File)H5FILE.open(fname, H5File.CREATE);
             file.open();
         } catch (Exception ex) {failed(message, ex, file); return false;}
-        
+
         // create groups
         try {
             g0 = file.createGroup(NAME_GROUP, null);
@@ -289,6 +289,7 @@ public class TestH5Object
         String message = "";
 
         message = "H5File open() function with relative file path";
+        
         if (!create_test_file(fname, message))
              return 1;
 
@@ -1406,7 +1407,7 @@ public class TestH5Object
         }
 
         TestH5Object test = new TestH5Object(printStream);
-        
+
         numOfFails += test.test_H5File_create(FILE_NAME);
         numOfFails += test.test_H5File_open(FILE_NAME);
         numOfFails += test.test_H5File_open_relative_path(FILE_NAME2);
