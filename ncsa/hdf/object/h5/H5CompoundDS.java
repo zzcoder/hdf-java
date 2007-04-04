@@ -66,11 +66,13 @@ import java.lang.reflect.Array;
  */
 public class H5CompoundDS extends CompoundDS
 {
+    /**
+     * @see ncsa.hdf.object.HObject#serialVersionUID
+     */
 	public static final long serialVersionUID = HObject.serialVersionUID;
 
     /**
-     * The list of attributes of this data object. Members of the list are
-     * instance of Attribute.
+     * The list of attributes attached data object.
      */
     private List attributeList;
 
@@ -107,19 +109,23 @@ public class H5CompoundDS extends CompoundDS
     private boolean isIndexTable;
 
     /**
-     * Constrcuts an HDF5 compound dataset object for a given file, dataset name and group path.
+     * Constructs an HDF5 compound dataset with given file, dataset name and path.
      * <p>
      * The dataset object represents an existing dataset in the file. For example, 
      * new H5CompoundDS(file, "dset1", "/g0/") constructs a dataset object that corresponds to
      * the dataset,"dset1", at group "/g0/".
      * <p>
-     * @param fileFormat the file that contains the dataset.
-     * @param name the name of the dataset such as "dset1".
-     * @param path the group path to the dataset such as "/g0/".
+     * This object is usually constructed at FileFormat.open(), which loads the
+     * file structure and object informatoin into tree structure (TreeNode). It
+     * is rarely used elsewhere.
+     * <p>
+     * @param theFile the file that contains the dataset.
+     * @param name the name of the CompoundDS, e.g. "compDS".
+     * @param path the path of the CompoundDS, e.g. "/g1".
      */
-    public H5CompoundDS(FileFormat fileFormat, String name, String path)
+    public H5CompoundDS(FileFormat theFile, String name, String path)
     {
-        this(fileFormat, name, path, null);
+        this(theFile, name, path, null);
     }
 
     /**
@@ -127,17 +133,17 @@ public class H5CompoundDS extends CompoundDS
      * Using {@link #H5CompoundDS(FileFormat, String, String)}
      */
     public H5CompoundDS(
-        FileFormat fileFormat,
+        FileFormat theFile,
         String name,
         String path,
         long[] oid)
     {
-        super (fileFormat, name, path, oid);
+        super (theFile, name, path, oid);
 
-        if (oid == null && fileFormat != null) {
+        if (oid == null && theFile != null) {
             // retrieve the object ID
             try {
-                byte[] ref_buf = H5.H5Rcreate(fileFormat.getFID(), this.getFullName(), HDF5Constants.H5R_OBJECT, -1);
+                byte[] ref_buf = H5.H5Rcreate(theFile.getFID(), this.getFullName(), HDF5Constants.H5R_OBJECT, -1);
                 this.oid = new long[1];
                 this.oid[0] = HDFNativeData.byteToLong(ref_buf, 0);
              } catch (Exception ex) {}
@@ -223,28 +229,10 @@ public class H5CompoundDS extends CompoundDS
         return theData;
     }
 
-    /**
-     * Reads the content (data values) of this dataset into memory.
-     * 
-     * <p>
-     * Data is read by compound field members and stored into a vector.
-     * Each element of the vector is an one-dimension array that contains the field data.
-     * The array type is determined by the datatype of the compound field.
-     * <p>
-     * For example, if compound dataset "comp" has the following nested structure,
-     * and memeber datatypes
-     * <pre>
-     * comp --> m01 (int)
-     * comp --> m02 (float)
-     * comp --> nest1 --> m11 (char)
-     * comp --> nest1 --> m12 (String)
-     * comp --> nest1 --> nest2 --> m21 (long)
-     * comp --> nest1 --> nest2 --> m22 (double)
-     * </pre>
-     * read() returns a list of six arrays: {int[], float[], char[], Stirng[], long[] and double[]}.
-     * 
-     * @return the array of data List.
-      */
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Dataset#read()
+     */
     public Object read() throws HDF5Exception
     {
         List list = null;
@@ -444,7 +432,7 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
-     * Writes the given data buffer into this dataset in file.
+     * Writes the given data buffer into this dataset in a file.
      * <p>
      * The data buffer is a vector that contains the data values of compound fields. 
      * The data is written into file field by field.
@@ -968,20 +956,8 @@ public class H5CompoundDS extends CompoundDS
     } //extractNestedCompoundInfo
 
     /**
-     * Creates a simple compound dataset in file
-     * <p>
-     * This functoin calls H5.H5Dcreate() to create a simple compound dataset in file.
-     * For details, 
-     * @see ncsa.hdf.object.h5.H5CompoundDS#create(String, Group, long[], long[], long[], int, String[], Datatype[], int[], int[][], Object)
-     *
-     * @param name the name of the dataset
-     * @param pgroup the parent group
-     * @param dims the dimension size
-     * @param memberNames the names of compound datatype
-     * @param memberDatatypes the datatypes of the compound datatype
-     * @param memberSizes the sizes of memeber array
-     * @param data the initial data
-     * @return the new compound dataset if successful; otherwise returns null
+     * @deprecated  Not for public use in the future. <br>
+     * Using {@link #create(String, Group, long[], long[], long[], int, String[], Datatype[], int[], int[][], Object)}
      */
     public static Dataset create(
         String name,
@@ -1014,21 +990,8 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
-     * Creates a simple compound dataset in file
-     * <p>
-     * This functoin calls H5.H5Dcreate() to create a simple compound dataset in file.
-     * For details, 
-     * @see ncsa.hdf.object.h5.H5CompoundDS#create(String, Group, long[], long[], long[], int, String[], Datatype[], int[], int[][], Object)
-     *
-     * @param name the name of the dataset
-     * @param pgroup the parent group
-     * @param dims the dimension size
-     * @param memberNames the names of compound datatype
-     * @param memberDatatypes the datatypes of the compound datatype
-     * @param memberRanks the ranks of the members
-     * @param memberDims the dim sizes of the members
-     * @param data the initial data
-     * @return the new compound dataset if successful; otherwise returns null
+     * @deprecated  Not for public use in the future. <br>
+     * Using {@link #create(String, Group, long[], long[], long[], int, String[], Datatype[], int[], int[][], Object)}
      */
     public static Dataset create(
         String name,
@@ -1045,7 +1008,7 @@ public class H5CompoundDS extends CompoundDS
     }
 
     /**
-     * Creates a simple compound dataset in file
+     * Creates a simple compound dataset in a file with/without chunking and compression
      * <p>
      * This function provides an easy way to create a simple compound dataset
      * in file by hiding tedious details of creating a compound dataset from users.  
@@ -1085,24 +1048,24 @@ public class H5CompoundDS extends CompoundDS
         String[] mnames = {"int", "float", "string"};
         Dataset dset = null;
         try {
-            mdtypes[0] = new H5Datatype(Datatype.CLASS_INTEGER, -1, -1, -1);
-            mdtypes[1] = new H5Datatype(Datatype.CLASS_FLOAT, -1, -1, -1);
+            mdtypes[0] = new H5Datatype(Datatype.CLASS_INTEGER, 4, -1, -1);
+            mdtypes[1] = new H5Datatype(Datatype.CLASS_FLOAT, 4, -1, -1);
             mdtypes[2] = new H5Datatype(Datatype.CLASS_STRING, STR_LEN, -1, -1);
             dset = file.createCompoundDS("/CompoundDS", pgroup, DIMs, null, CHUNKs, 9, mnames, mdtypes, null, data);
         } catch (Exception ex) { failed(message, ex, file); return 1;}
      * </pre>
      *
-     * @param name the name of the dataset
-     * @param pgroup the parent group
+     * @param name the name of the new dataset
+     * @param pgroup parent group where the new dataset is created.
      * @param dims the dimension size
-     * @param maxdims the max dimension sizes
-     * @param chunks the chunk sizes
-     * @param gzip the gzip compression level
+     * @param maxdims maximum dimension sizes of the new dataset, null if maxdims is the same as dims.
+     * @param chunks chunk sizes of the new dataset, null if no chunking
+     * @param gzip GZIP compression level (1 to 9), 0 or negative values if no compression.
      * @param memberNames the names of compound datatype
      * @param memberDatatypes the datatypes of the compound datatype
      * @param memberRanks the ranks of the members
      * @param memberDims the dim sizes of the members
-     * @param data the initial data
+     * @param data list of data arrays written to the new dataset, null if no data is written to the new dataset.
      * 
      * @return the new compound dataset if successful; otherwise returns null
      */

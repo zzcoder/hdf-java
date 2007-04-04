@@ -61,6 +61,9 @@
  */
 public class Attribute implements Metadata
 {
+    /**
+     * @see ncsa.hdf.object.HObject#serialVersionUID
+     */
 	public static final long serialVersionUID = HObject.serialVersionUID;
 
     /** The name of the attribute. */

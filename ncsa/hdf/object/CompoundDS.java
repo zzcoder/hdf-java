@@ -102,18 +102,22 @@ public abstract class CompoundDS extends Dataset
 
     /**
      * Constructs a CompoundDS object with given file, dataset name and path.
-     * 
+     * <p>
+     * The dataset object represents an existing dataset in the file. For example, 
+     * new H5CompoundDS(file, "dset1", "/g0/") constructs a dataset object that corresponds to
+     * the dataset,"dset1", at group "/g0/".
+     * <p>
      * This object is usually constructed at FileFormat.open(), which loads the
      * file structure and object informatoin into tree structure (TreeNode). It
      * is rarely used elsewhere.
      * <p>
-     * @param fileFormat the file that contains the dataset.
-     * @param name the name of this CompoundDS, e.g. "compDS".
-     * @param path the path of this CompoundDS, e.g. "/g1".
+     * @param theFile the file that contains the dataset.
+     * @param name the name of the CompoundDS, e.g. "compDS".
+     * @param path the path of the CompoundDS, e.g. "/g1".
      */
-    public CompoundDS(FileFormat fileFormat, String name, String path)
+    public CompoundDS(FileFormat theFile, String name, String path)
     {
-        this(fileFormat, name, path, null);
+        this(theFile, name, path, null);
     }
 
     /**
@@ -121,12 +125,12 @@ public abstract class CompoundDS extends Dataset
      * Using {@link #CompoundDS(FileFormat, String, String)}
      */
     public CompoundDS(
-        FileFormat fileFormat,
+        FileFormat theFile,
         String name,
         String path,
         long[] oid)
     {
-        super (fileFormat, name, path, oid);
+        super (theFile, name, path, oid);
 
         numberOfMembers = 0;
         memberNames = null;

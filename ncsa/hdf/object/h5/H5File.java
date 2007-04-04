@@ -22,7 +22,7 @@ import ncsa.hdf.hdf5lib.exceptions.*;
  * This class provides APIs for file access. File access APIs include retrieving the
  * file hierarchy, opening and closing file, writing file content to disk, and etc.
  * <p>
- * The HDF5 file structure is stored in a tree that is organlized by DefaultMutableTreeNode.
+ * The HDF5 file structure is stored in a tree that is organlized by an Java TreeNode object.
  * Each tree node represents an HDF5 object such as Group, Dataset or Named datatype.
  * Starting from the root, <i>rootNode</i>, one can trace the tree to find a
  * specific object.
@@ -66,6 +66,9 @@ import ncsa.hdf.hdf5lib.exceptions.*;
  */
 public class H5File extends FileFormat
 {
+    /**
+     * @see ncsa.hdf.object.HObject#serialVersionUID
+     */
 	public static final long serialVersionUID = HObject.serialVersionUID;
     
     /**
@@ -97,16 +100,18 @@ public class H5File extends FileFormat
 
     /**
      * Constructs an H5File object for given file name with read/write access.
+     * 
+     * @param fileName a valid file name.
      */
-    public H5File(String pathname)
+    public H5File(String fileName)
     {
-        this(pathname, WRITE);
+        this(fileName, WRITE);
     }
 
     /**
      * Constructs an H5File object with given file name and access flag.
      * <p>
-     * @param pathname the full path name of the file such as "/tmp/test.h5"
+     * @param fileName a valid file name, such as "test.h5"
      * @param access the file access flag, it takes one of three values below:
      * <DL>
       *   <DT> READ <DD> Allow read-only access to file.</DT>
@@ -114,16 +119,16 @@ public class H5File extends FileFormat
      *   <DT> CREATE <DD> Create a new file.</DT>
      * </DL>
      */
-    public H5File(String pathname, int access)
+    public H5File(String fileName, int access)
     {
         // use absolute file path. 
-        super( pathname);
+        super( fileName);
         
         isReadOnly = (access == READ);
         rootNode = null;
 
         this.fid = -1;
-        this.fullFileName = pathname;
+        this.fullFileName = fileName;
         
         if (access == READ)
             flag = HDF5Constants.H5F_ACC_RDONLY;
@@ -139,9 +144,9 @@ public class H5File extends FileFormat
      * (non-Javadoc)
      * @see ncsa.hdf.object.FileFormat#isThisType(ncsa.hdf.object.FileFormat)
      */
-    public boolean isThisType(FileFormat fileformat)
+    public boolean isThisType(FileFormat theFile)
     {
-        return (fileformat instanceof H5File);
+        return (theFile instanceof H5File);
     }
 
     /*
@@ -166,9 +171,9 @@ public class H5File extends FileFormat
      * (non-Javadoc)
      * @see ncsa.hdf.object.FileFormat#open(java.lang.String, int)
      */
-    public FileFormat open(String pathname, int access) throws Exception
+    public FileFormat open(String fileName, int access) throws Exception
     {
-        return new H5File(pathname, access);
+        return new H5File(fileName, access);
     }
 
 
@@ -182,10 +187,10 @@ public class H5File extends FileFormat
     }
 
     /**
-     * Opens access to this file.
-     * 
+     * Opens a file with specific file access property list.
+     * <p>
      * This function does the same as "int open()" except the you can also pass
-     * HDF5 file access property to file open. For example, 
+     * an HDF5 file access property to file open. For example, 
      * <pre>
         //All open objects remaining in the file are closed then file is closed
         int plist = H5.H5Pcreate (HDF5Constants.H5P_FILE_ACCESS);
@@ -318,16 +323,10 @@ public class H5File extends FileFormat
                 oids = new int[n];
                 H5.H5Fget_obj_ids(fid, HDF5Constants.H5F_OBJ_ALL, n, oids);
 
-                if (DEBUG_ON)
-                    System.out.println("\n total number object left open = "+n);
-
                 for (int i=0; i<n; i++)
                 {
                     type = H5.H5Iget_type(oids[i]);
                     
-                    if (DEBUG_ON)
-                        System.out.println(type);
-
                     if (HDF5Constants.H5I_DATASET == type) {
                         try { H5.H5Dclose(oids[i]); } catch (Exception ex2) {}
                     } else if (HDF5Constants.H5I_GROUP == type) {
@@ -915,12 +914,16 @@ public class H5File extends FileFormat
     }
 
     /**
-     * Copies all attributes from the source to the destionation.
+     * Copies attributes from one object to another.
+     * <p>
+     * This method copies all attibutes from one object (source object)
+     * to another (the destination). If an attibute already exists in
+     * the destination object, the attribute will not be copied.
      * 
      * @param src_id the identifier of the source object
      * @param dst_id the identidier of the destination object
      */
-    public void copyAttributes(int src_id, int dst_id)
+    private void copyAttributes(int src_id, int dst_id)
     {
         int aid_src=-1, aid_dst=-1, atid=-1, asid=-1, num_attr=-1;
         String[] aName = {""};
@@ -1259,9 +1262,12 @@ public class H5File extends FileFormat
     } // private depth_first()
 
     /**
-     * Retrieves and returns the list of attriubtes for the given object from file.
+     * Returns a list of attriubtes attached to the object for the given identifier.
      * <p>
-     * @param objID the object identifier.
+     * If the attributes are not loaded, this function retrieves the attributes from 
+     * a file and returns the list of attributes.
+     * <p>
+     * @param objID the object identifier of the object for which the attributes are attached to.
      * @return the list of attriubtes of the object.
      */
     public static List getAttribute(int objID) throws HDF5Exception
@@ -1505,8 +1511,9 @@ public class H5File extends FileFormat
         }
     }
 
-    /**
-     *  Returns the version of the HDF5 library.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.FileFormat#getLibversion()
      */
     public String getLibversion()
     {

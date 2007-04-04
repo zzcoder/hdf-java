@@ -199,6 +199,7 @@ public abstract class Datatype extends HObject
 
     /**
      * Constructs a Datatype with specified class, size, byte order and sign.
+     * <p>
      * The following is a list of a few example of H5Datatype.
      * <OL>
      * <LI>to create unsigned native integer<br>
@@ -364,7 +365,8 @@ public abstract class Datatype extends HObject
 
     /**
      * Set datatype characteristics (class, size, byte order and sign) from a given datatye identifier.
-     * Subclasses must implement it so that this datatype will be converted accordingly.
+     * <p>
+     * Sub-classes must implement it so that this datatype will be converted accordingly.
      * <p>
      * For example, if the type identifier is a 32-bit unsigned integer created
      * from HDF5,

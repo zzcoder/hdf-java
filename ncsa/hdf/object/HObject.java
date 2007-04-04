@@ -39,10 +39,9 @@ import ncsa.hdf.hdf5lib.HDFNativeData;
  * </pre>
  *
  * All HDF4 and HDF5 data objects are inherited from HObject. At the top
- * level of hierarchy, both HDF4 and HDF5 have the same super-classes such as
- * Group and Dataset. At bottom level of hierarchy, HDF4 and HDF5 objects have
- * their own implementation such as H5Group, H5ScalarDs, H5CompoundDS, H5Datatype,
- * and etc.
+ * level of the hierarchy, both HDF4 and HDF5 have the same super-classes, such as
+ * Group and Dataset. At the bottom level of the hierarchy, HDF4 and HDF5 objects have
+ * their own implementation, such as H5Group, H5ScalarDs, H5CompoundDS, and H5Datatype.
  * <p>
  * <b>Warning: HDF4 and HDF5 may have multiple links to the same object. Data
  * objects in this model do not deal with multiple links. Users may create
@@ -53,11 +52,11 @@ import ncsa.hdf.hdf5lib.HDFNativeData;
  *  HDF4 objects are uniquely identified by the OID of the (ref_id, tag_id) pair.
  *  The ref_id is the object reference count. tag_id is a pre-defined number to
  *  identify the type of object. For example, DFTAG_RI is for raster image, DFTAG_SD
- *  is for scientific dataset, and DFTAG_VG is for Vgroup
+ *  is for scientific dataset, and DFTAG_VG is for Vgroup.
  *  <p>
- *  HDF5 objects are uniquely identified by the OID of object reference. The OID 
+ *  HDF5 objects are uniquely identified by the OID or object reference. The OID 
  *  is usually obtained by H5Rcreate(). The following example shows how to retrieve
- *  the object from the file.
+ *  an object ID from a file.
  *  <pre>
  *      // retrieve the object ID 
  *      try {
@@ -82,10 +81,8 @@ public abstract class HObject implements Serializable, DataFormat
      */
 	public static final long serialVersionUID = 240L;
     
-    /** Flag to turn on the debug printing. */
-    public final static boolean DEBUG_ON = false;	
     /**
-     * The separator of object path.
+     * The separator of object path, i.e. "/".
      */
     public final static String separator = "/";
 
@@ -123,9 +120,9 @@ public abstract class HObject implements Serializable, DataFormat
     /**
      * Array of long integer storing unique identifier for the object.
      * <p>
-     *  HDF4 objects are uniquely identified by the OID of the (ref_id, tag_id) pair.
+     *  HDF4 objects are uniquely identified by a (ref_id, tag_id) pair.
      *  i.e. oid[0]=tag, oid[1]=ref.<br>
-     *  HDF5 objects are uniquely identified by the OID of object reference.
+     *  HDF5 objects are uniquely identified by an object reference.
      */
     protected long[] oid;
 
@@ -135,7 +132,7 @@ public abstract class HObject implements Serializable, DataFormat
     protected boolean hasAttribute = false;
 
     /**
-     * Constructs an instance of the data object without name and path.
+     * Constructs an instance of a data object without name and path.
      */
     public HObject()
     {
@@ -143,29 +140,27 @@ public abstract class HObject implements Serializable, DataFormat
     }
 
     /**
-     * Constructs an instance of the data object with specific name and path.
-     * An HDF data object must have a name. The path is the group path starting
-     * from the root.
+     * Constructs an instance of a data object with specific name and path.
      * <p>
-     * For example, in H5ScalarDS(h5file, "dset", "/arrays/"), "dset" is the
+     * For example, in H5ScalarDS(h5file, "dset", "/arrays"), "dset" is the
      * name of the dataset, "/arrays" is the group path of the dataset.
      *
-     * @param theFileFormat the file that contains the data object.
+     * @param theFile the file that contains the data object.
      * @param theName the name of the data object, e.g. "dset".
-     * @param thePath the full path of the data object, e.g. "/arrays/".
+     * @param thePath the group path of the data object, e.g. "/arrays".
      */
-    public HObject(FileFormat theFileFormat, String theName, String thePath)
+    public HObject(FileFormat theFile, String theName, String thePath)
     {
-        this(theFileFormat, theName, thePath, null);
+        this(theFile, theName, thePath, null);
     }
 
     /**
      * @deprecated  Not for public use in the future.<br>
      * Using {@link #HObject(FileFormat, String, String)}
      */
-    public HObject(FileFormat theFileFormat, String theName, String thePath, long[] oid)
+    public HObject(FileFormat theFile, String theName, String thePath, long[] oid)
     {
-        this.fileFormat = theFileFormat;
+        this.fileFormat = theFile;
         this.oid = oid;
 
         if (fileFormat != null) {
@@ -220,10 +215,8 @@ public abstract class HObject implements Serializable, DataFormat
     }
     
     /**
-     * Returns the full path (path + name) of the file that contains this data object.
-     * The full path can be an absolute path or relative path. 
-     * For example, "/home/user1/hdfview/samples/test_hdf5.h5" or "test_hdf5.h5"
-     * 
+     * Returns the name of the file that contains this data object.
+     * <p>
      * The file name is necessary because the file of this data object is
      * uniquely identified when mutilple files are opened by an application
      * at the same time.
@@ -259,7 +252,7 @@ public abstract class HObject implements Serializable, DataFormat
 
     /**
      * Returns the group path of the object.
-     * For example, "/Images/".
+     * For example, "/Images".
      * 
      * @return The group path of the object.
      */
@@ -283,9 +276,10 @@ public abstract class HObject implements Serializable, DataFormat
     /**
      * Sets the path of the object.
      * <p>
-     * setPath() is needed when the name of a group is changed by setName().
+     * setPath() is needed to change the path for an object when the name of a group
+     * conatining the object is changed by setName().
      * The path of the object in memory under this group should be updated
-     * to the new group name. Unlike setName(), setPath() does not change 
+     * to the new path to the group. Unlike setName(), setPath() does not change 
      * anything in file.
      * 
      * @param newPath The new path of the object.
@@ -298,8 +292,8 @@ public abstract class HObject implements Serializable, DataFormat
     /**
      * Opens an existing object such as dataset or group for access. 
      * 
-     * The return value is an object identifier obtained by implementing classes suas 
-     * H5.H5Dopen(). This function is needed to allows other objects to be able to access 
+     * The return value is an object identifier obtained by implementing classes such as 
+     * H5.H5Dopen(). This function is needed to allow other objects to be able to access 
      * the object. For instance, H5File class uses the open() function to obtain object 
      * identifier for copyAttributes(int src_id, int dst_id) and other purposes. The open() 
      * function should be used in pair with close(int) function.
@@ -313,19 +307,20 @@ public abstract class HObject implements Serializable, DataFormat
     /**
      * Closes access to the object.
      * <p>
-     * Sub-classes must implement this interface so that different data
+     * Sub-classes must implement this interface because different data
      * objects have their own ways of how the data resources are closed.
+     * <p>
      * For example, H5Group.close() calls the ncsa.hdf.hdf5lib.H5.H5Gclose()
-     * native method and closes the group resource specified by the id.
+     * method and closes the group resource specified by the group id.
      *
      * @param id The object identifier.
      */
     public abstract void close(int id);
 
     /**
-     * Returns the file identifier of the object.
+     * Returns the file identifier of of the file containing the object.
      * 
-     * @return the file identifier of the object.
+     * @return the file identifier of of the file containing the object.
      */
     public final int getFID()
     {
@@ -336,14 +331,17 @@ public abstract class HObject implements Serializable, DataFormat
     }
 
     /**
-     * Checks if the OID of the object is the same as the given object identifier.
+     * Checks if the OID of the object is the same as the given object 
+     * identifier within the same file.
      * <p>
      * HDF4 and HDF5 data objects are identified by their unique OIDs.
-     * A data object in a file may have multiple logical names (the full names),
-     * which are presented in a tree structure as separate objects.
+     * A data object in a file may have multiple logical names ,
+     * which are represented in a graph structure as separate objects.
      * <p>
      * The HObject.equalsOID(long[] theID) can be used to check if two data objects
-     * with different names are pointed to the same object in file.
+     * with different names are pointed to the same object within the same file.
+     * 
+     * @return true if the ID of the object equals the given OID; otherwise, returns false.
      */
     public final boolean equalsOID(long[] theID)
     {
@@ -364,9 +362,9 @@ public abstract class HObject implements Serializable, DataFormat
     }
 
     /**
-     * Returns the FileFormat that contains the object.
+     * Returns the file that contains the object.
      * 
-     * @return The FileFormat that contains the object.
+     * @return The file that contains the object.
      */
     public final FileFormat getFileFormat() { return fileFormat; }
 

@@ -15,23 +15,41 @@ import ncsa.hdf.hdflib.*;
 import ncsa.hdf.object.*;
 
 /**
- * Datatype encapsulates information of a datatype.
- * Information includes the class, size, endian of a datatype.
+ * This class defines HDF4 data type characteristics and APIs for a data type.
+ * <p>
+ * This class provides several methods to convert an HDF4 dataype identifier to
+ * a dataype object, and vice versa. A dataype object is described by four basic 
+ * fields: datatype class, size, byte order, and sign, while an HDF5 dataype is 
+ * presented by a datetype identifier. 
  * <p>
  * @version 1.0 05/07/2002
  * @author Peter X. Cao, NCSA
  */
 public class H4Datatype extends Datatype
 {
+    /**
+     * @see ncsa.hdf.object.HObject#serialVersionUID
+     */
 	public static final long serialVersionUID = HObject.serialVersionUID;
 
     /**
-     * Create an Datatype with specified class, size, byte order and sign.
+     * Constructs a H4Datatype with specified class, size, byte order and sign.
      * <p>
-     * @param tclass the class of the datatype.
-     * @param tsize the size of the datatype.
-     * @param torder the order of the datatype.
-     * @param tsign the sign of the datatype.
+     * The following is a list of a few example of H5Datatype.
+     * <OL>
+     * <LI>to create unsigned native integer<br>
+     * H4Datatype type = new H4Dataype(CLASS_INTEGER, NATIVE, NATIVE, SIGN_NONE);
+     * <LI>to create 16-bit signed integer with big endian<br>
+     * H4Datatype type = new H4Dataype(CLASS_INTEGER, 2, ORDER_BE, NATIVE);
+     * <LI>to create native float<br>
+     * H4Datatype type = new H4Dataype(CLASS_FLOAT, NATIVE, NATIVE, -1);
+     * <LI>to create 64-bit double<br>
+     * H4Datatype type = new H4Dataype(CLASS_FLOAT, 8, NATIVE, -1);
+     * </OL>
+     * @param tclass the class of the datatype, e.g. CLASS_INTEGER, CLASS_FLOAT and etc.
+     * @param tsize the size of the datatype in bytes, e.g. for a 32-bit integer, the size is 4.
+     * @param torder the byte order of the datatype. Valid values are ORDER_LE, ORDER_BE, ORDER_VAX and ORDER_NONE
+     * @param tsign the sign of the datatype. Valid values are SIGN_NONE, SIGN_2 and MSGN
      */
     public H4Datatype(int tclass, int tsize, int torder, int tsign)
     {
@@ -39,9 +57,17 @@ public class H4Datatype extends Datatype
     }
 
     /**
-     * Create a Datatype with a given HDF native datatype.
+     * Constructs a H4Datatype with a given native datatype identifier.
      * <p>
-     * @param nativeID the hdf native datatype.
+     * For example,
+     * <pre>
+     * Datatype dtype = new H4Datatype(HDFConstants.DFNT_INT32);
+     * </pre>
+     * will construct a datatype equivalent to
+     * new H4Datatype(CLASS_INTEGER, 4, NATIVE, SIGN_NONE);
+     * <p>
+     * @see #fromNative(int nativeID)
+     * @param type the native datatype identifier.
      */
     public H4Datatype(int nativeID)
     {
@@ -228,6 +254,10 @@ public class H4Datatype extends Datatype
         return description;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Datatype#isUnsigned()
+     */
     public boolean isUnsigned()
     {
         return isUnsigned(toNative());
@@ -260,6 +290,10 @@ public class H4Datatype extends Datatype
         return unsigned;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Datatype#toNative()
+     */
     public int toNative()
     {
         if (nativeID >=0 )
