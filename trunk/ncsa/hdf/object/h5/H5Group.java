@@ -34,6 +34,9 @@ import ncsa.hdf.object.*;
  */
 public class H5Group extends Group
 {
+    /**
+     * @see ncsa.hdf.object.HObject#serialVersionUID
+     */
 	public static final long serialVersionUID = HObject.serialVersionUID;
 
     /**
@@ -42,10 +45,6 @@ public class H5Group extends Group
      */
     protected List attributeList;
 
-    /** The default object ID for HDF5 objects */
-    public final static long[] DEFAULT_OID = {0};
-
-    
     /**
      * Constructs an HDF5 group with specific name, path, and parent.
      * <p>
@@ -70,7 +69,7 @@ public class H5Group extends Group
         Group parent,
         long[] oid)
     {
-        super (fileFormat, name, path, parent, ((oid == null) ? DEFAULT_OID : oid));
+        super (fileFormat, name, path, parent, oid);
 
         if (oid == null && fileFormat != null) {
             // retrieve the object ID
@@ -78,7 +77,7 @@ public class H5Group extends Group
                 byte[] ref_buf = H5.H5Rcreate(fileFormat.getFID(), this.getFullName(), HDF5Constants.H5R_OBJECT, -1);
                 this.oid = new long[1];
                 this.oid[0] = HDFNativeData.byteToLong(ref_buf, 0);
-             } catch (Exception ex) {}
+            } catch (Exception ex) { this.oid = new long[1]; this.oid[0]=0;}
         }
 
         int gid = open();
@@ -198,13 +197,13 @@ public class H5Group extends Group
     }
 
     /**
-     * Creates a new group with a given name and parent group
-     * .
-     * @param name the name of the group to create.
-     * @param pgroup the parent group where the new group is created
-     * @return the new group if successful. Otherwise returns null.
+     * Creates a new group with a name in a group.
+     *
+     * @param name   The name of a new group.
+     * @param pgroup The parent group object.
+     * @return       The new group if successful; otherwise returns null.
      */
-    public static H5Group create(String name, Group pgroup)
+     public static H5Group create(String name, Group pgroup)
         throws Exception
     {
         H5Group group = null;

@@ -30,6 +30,9 @@ import ncsa.hdf.object.*;
  */
 public class H5ScalarDS extends ScalarDS
 {
+    /**
+     * @see ncsa.hdf.object.HObject#serialVersionUID
+     */
 	public static final long serialVersionUID = HObject.serialVersionUID;
 
     /**
@@ -48,9 +51,7 @@ public class H5ScalarDS extends ScalarDS
      private boolean isVLEN = false;
 
      /**
-      * Constructs an instance of a H5ScalarDS with specific name and path.
-      * An HDF data object must have a name. The path is the group path starting
-      * from the root.
+      * Constructs an instance of a H5ScalarDS object with specific name and path.
       * <p>
       * For example, in H5ScalarDS(h5file, "dset", "/arrays/"), "dset" is the
       * name of the dataset, "/arrays" is the group path of the dataset.
@@ -415,7 +416,58 @@ public class H5ScalarDS extends ScalarDS
             H5.H5Dwrite(dstdid, tid, HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, buff);
 
         // copy attributes from one object to the new object
-        ((H5File)getFileFormat()).copyAttributes(srcdid, dstdid);
+        int num_attr = 0;
+        try {
+            num_attr = H5.H5Aget_num_attrs(srcdid);
+        } catch (Exception ex) { num_attr = -1; }
+        
+        if (num_attr > 0) 
+        {
+            int aid_src=-1, aid_dst=-1, atid=-1, asid=-1;
+            String[] aName = {""};
+            int aRank = 0;
+            long[] aDims = null;
+            Object data_attr = null;
+            int[] native_type = {-1};
+
+            for (int i=0; i<num_attr; i++)
+            {
+                aName[0] = new String("");
+                try {
+                    aid_src = H5.H5Aopen_idx(srcdid, i );
+                    H5.H5Aget_name(aid_src, 80, aName );
+                    atid = H5.H5Aget_type(aid_src);
+    
+                    asid = H5.H5Aget_space(aid_src);
+                    aRank = H5.H5Sget_simple_extent_ndims(asid);
+                    aDims = new long[aRank];
+                    H5.H5Sget_simple_extent_dims(asid, aDims, null);
+                    long size = 1;
+                    for (int j=0; j<aRank; j++)
+                        size *= (int)aDims[j];
+                    data_attr = H5Datatype.allocateArray(atid, (int)size);
+                    aid_dst = H5.H5Acreate(
+                        dstdid,
+                        aName[0],
+                        atid,
+                        asid,
+                        HDF5Constants.H5P_DEFAULT );
+    
+                    // use native data copy
+                    H5.H5Acopy(aid_src, aid_dst);
+    
+                    /* does not work for variable length datatype
+                    H5.H5Aread(aid_src, atid, data_attr);
+                    H5.H5Awrite(aid_dst, atid, data_attr);
+                    */
+                } catch (Exception ex) {}
+    
+                try { H5.H5Sclose(asid); } catch(Exception ex) {}
+                try { H5.H5Tclose(atid); } catch(Exception ex) {}
+                try { H5.H5Aclose(aid_src); } catch(Exception ex) {}
+                try { H5.H5Aclose(aid_dst); } catch(Exception ex) {}
+            } // for (int i=0; i<num_attr; i++)
+        }
 
         byte[] ref_buf = H5.H5Rcreate(
             pgroup.getFID(),
@@ -886,7 +938,7 @@ public class H5ScalarDS extends ScalarDS
     }
 
     /**
-     * Creates a new dataset in file.
+     * Creates a new dataset in a file.
      * <p>
      * The following example shows how to create a string dataset using this function.
      * <pre>
@@ -917,6 +969,7 @@ public class H5ScalarDS extends ScalarDS
      * @param chunks the chunk size of the dataset. No chunking if chunk = null.
      * @param gzip the level of the gzip compression. No compression if gzip<=0.
      * @param data the array of data values.
+     * 
      * @return the new dataset if successful. Otherwise returns null.
      */
     public static H5ScalarDS create(

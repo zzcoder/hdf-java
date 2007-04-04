@@ -18,15 +18,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 /**
- * The FileFormat defines general interfaces for file I/O access.
- * <p>
- * The commmon file I/O access inclues retriving file structure, creating/removing
- * objects to/from file, and etc.
+ * FileFormat class defines general interfaces for retriving file structure from file, 
+ * creating/removing objects in/from file, and etc.
  * <p>
  * FileFormat is a plugable component. An implementing class of FileFormat can be
- * added to the supported file list. The current implementing classes include
- * H5File and H4File. By default, H5File and H4File are added to the list of
- * supported FileFormats.
+ * added to the list of supported file formats. Current implementing classes include
+ * H5File and H4File. By default, H5File and H4File are added to the list of supported 
+ * file formats.
  *
  *  <pre>
  *                                    FileFormat
@@ -41,37 +39,40 @@ import javax.swing.tree.TreeNode;
  */
 public abstract class FileFormat extends File
 {
-    /** Flag to turn on the debug printing. */
-    public final static boolean DEBUG_ON = false;
-    
-    /** File access flag for read only. */
+    /** 
+     * File access flag for read-only permission. 
+     * If a file is open with this flag, no modification will be allowed.
+     */
     public final static int READ = 0;
 
-    /** File access flag for read/write. */
+    /** 
+     * File access flag for read/write permission.
+     * If a file is open with this flag, modification will be allowed.
+     */
     public final static int WRITE = 1;
 
     /** File access flag for creating a new file. */
     public final static int CREATE = 2;
 
-    /** Flag for deleting the file if the file exists when creating a new file.  */
+    /** Flag to overwrite the existing file when creating a file.  */
     public final static int FILE_CREATE_DELETE = 10;
 
-    /** Flag for open the existing file when creating a new file (do not delete). */
+    /** Flag to open the existing file when creating a file. */
     public final static int FILE_CREATE_OPEN = 11;
 
-    /** String tag for JPEG image file type.*/
+    /** Tag for JPEG image file type.*/
     public static final String FILE_TYPE_JPEG = "JPEG";
 
-    /** String tag for TIFF image file type. */
+    /** Tag for TIFF image file type. */
     public static final String FILE_TYPE_TIFF = "TIFF";
 
-    /** String tag for PNG image file type. */
+    /** Tag for PNG image file type. */
     public static final String FILE_TYPE_PNG = "PNG";
 
-    /** String tag for HDF4 file type. */
+    /** Tag for HDF4 file type. */
     public static final String FILE_TYPE_HDF4 = "HDF";
 
-    /** String tag for HDF5 file type. */
+    /** Tag for HDF5 file type. */
     public static final String FILE_TYPE_HDF5 = "HDF5";
 
     /**
@@ -106,7 +107,7 @@ public abstract class FileFormat extends File
     private static String extensions = "hdf, h4, hdf5, h5";
 
     /**
-     * File identifier for the file.
+     * File identifier.
      */
     protected int fid = -1;
 
@@ -132,23 +133,24 @@ public abstract class FileFormat extends File
     }
 
     /** 
-     * Constructs a FileFormat with a given file name.
+     * Constructs a FileFormat object with a given file name.
      * 
-     * @param filename The full name (path + name) of the file such as "/samples/hdf5_test.h5".
+     * @param filename a valid file name, such as "hdf5_test.h5".
      */
     public FileFormat(String filename) {
         super( filename);
     }
 
     /**
-     * Opens access to file and returns the file identifier.
+     * Opens access to file and returns a file identifier.
      * <p>
-     * This function also retireves the file structure and basic information (
-     * name, type) of data objects from file. However, it does not load
-     * the content of data object. 
+     * This function also retrieves the file structure and basic information (
+     * name, type) of data objects from a file. However, it does not load
+     * the content of any data object such as values of datasets. 
      * <p>
-     * The structure of the file is stored in a tree starting from the root node. 
-     * @see #getRootNode()
+     * The structure of the file is stored in a tree starting from the root node. The 
+     * root node is an Java TreeNode object that represents the root group of a file. 
+     * <p>
      * Starting from the root, applications can descend through the hierarchy 
      * and navigate among the file's data objects.
      * <p>
@@ -157,20 +159,21 @@ public abstract class FileFormat extends File
      *  "int open()" is used to open file access while "FileFormat open(String pathname, 
      *  int access)" is used to create an instance of FileFormat. 
      *  
-     * @see ncsa.hdf.object.FileFormat#open(java.lang.String, int)
+     * @see #getRootNode()
+     * @see #open(String, int)
      *
-     * @return The file access identifier if successful; otherwise returns a negative value.
+     * @return file access identifier if successful; otherwise returns a negative value.
      */
     public abstract int open() throws Exception;
 
     /**
-     * Creates an instance of FileFormat.
+     * Creates an instance of FileFormat object that is specified by a given file.
      *<p>
-     * Unlike "int open()", this function does not open file access and file
+     * Unlike "int open()", this function does not open file for accessing file
      * structure. It just creates an instance of implementing class of the FileFormat.
      * <p>
      * The follwoing example explains how the two functions are related and used 
-     * for different purposes.
+     * for different purposes:
      * <pre>
      *     // Request the implementing class of FileFormat: H5File
      *     FileFormat h5file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
@@ -178,19 +181,19 @@ public abstract class FileFormat extends File
      *     // Creates an instance of H5File object for existing file with read/write access
      *     H5File test1 =  (H5File) h5file.open("test_hdf5.h5", FileFormat.WRITE);
      *     
-     *     // Opens file indentifier and load the file structure
+     *     // Opens file and load the file structure; file identifier is returned.
      *     int fid = test1.open;
      *     
-     *     // Get the root fo the file structure.
+     *     // Gets the root of the file structure.
      *     Node root = test1.getRootNode();
      *     
-     *     // Create a new HDF5 file
+     *     // Creates a new HDF5 file
      *     H5File test2 =  (H5File) h5file.open("new_hdf5.h5", FileFormat.CREATE);
      *     
      *     // Opens the file structure of the new file
      *     int fid2 = test2.open();
      * </pre> 
-     * @param pathname the full path name of the file, e.g. "/usr/local/hdfview/samples/hdf5_test.h5".
+     * @param pathname a valid file name, e.g. "hdf5_test.h5".
      * @param access the file access flag, it takes one of following values:
      * <DL>
      * <DT> READ <DD> Allow read-only access to file.</DT>
@@ -207,17 +210,18 @@ public abstract class FileFormat extends File
     public abstract FileFormat create(String fileName) throws Exception;
 
     /**
-     * Create a new instance of the file with creation options. 
+     * Creates a new instance of a file according to creation flag. 
      * <p>
-     * A sub-class must implementing this method to create a file of its type.
+     * A sub-class must implement this method to create a file of a particular 
+     * file format.
      * For example,
      * <pre>
      * FileFormat file = H5File.create("test.h5");
      * </pre>
      * creates an HDF5 file "test.h5".
      *
-     * @param fileName The full path name of the file, e.g. "/usr/local/hdfview/samples/hdf5_test.h5".
-     * @param createFlag The file creation option. Allowable values are:
+     * @param fileName a valid file name, e.g. "hdf5_test.h5".
+     * @param createFlag The file creation flag. Allowable values are:
      * <pre>
      *         FILE_CREATE_DELETE -- If file exists, delete it, then create a new file
      *                               and opens the file for read/write (default).
@@ -229,7 +233,7 @@ public abstract class FileFormat extends File
      *                               and opens the file for read/write (default).
      * </pre>
      *
-     * @return The new file if successful; otherwise returns null
+     * @return new file object if successful; otherwise returns null
      * @throws Exception
      * @see <a href="#open(java.lang.String, int)">open(java.lang.String, int)</a>
      * @see <a href="#create(java.lang.String)">create(java.lang.String)</a>
@@ -248,18 +252,19 @@ public abstract class FileFormat extends File
     }
 
     /** 
-     * Returns the total number of objects in memory.
+     * Returns the total number of hobjects in memory.
      * <p>
-     * getNumberOfMembers() returns total number of objects loaded into memory. The total 
-     * number of objects in memory can be different from the toal number of objects in file. 
+     * getNumberOfMembers() returns the total number of objects loaded into memory. The total 
+     * number of objects in memory may be different from the total number of objects in a file. 
      * <p>
-     * For example, if a file contains 20,000 object, the application only loads the first 
-     * 10,000 objects in memory. getNumberOfMembers() return 10,000 instead of 20,000.
+     * For example, if a file contains 20,000 objects, the application only loads the first 
+     * 10,000 objects in memory. In this case, getNumberOfMembers() returns 10,000 instead 
+     * of 20,000.
      * 
      * @see #setMaxMembers(int)
      * @see #setStartMembers(int)
      * 
-     * @return the total number of objects in memory.
+     * @return The total number of objects in memory.
      */
     public final int getNumberOfMembers() {
     	
@@ -277,28 +282,27 @@ public abstract class FileFormat extends File
     }
     
     /**
-     * Closes the access to the file.
+     * Closes access to a file.
      * <p>
-     * This method closes all the open objects and the file identifier.
-     * The file identifier is obtained by the open() method.
+     * This method closes all open objects including a file.
      * @see #fid 
      * @see #open(String, int)
      */
     public abstract void close() throws Exception;
 
     /**
-     * Returns the root node of the file.
+     * Returns the root node that contains the file structure of a file.
      * <p>
-     * The file structure is stored in a tree constructed by tree nodes 
-     * (javax.swing.tree.DefaultMutableTreeNode). In the tree
+     * A file structure is stored in a tree constructed by tree nodes 
+     * (javax.swing.tree.DefaultMutableTreeNode). In a tree
      * structure, internal nodes represent groups. Leaf nodes represent datasets, named
      * datatypes or empty groups.
      * <p>
-     * The root node represents the noot group. Using the methods provided by
+     * The root node represents the root group. Using the methods provided by
      * javax.swing.tree.DefaultMutableTreeNode, applocations can easily find objects
      * in the tree.
      * 
-     * @return the root node of the file.
+     * @return The root node of the file.
      */
     public abstract TreeNode getRootNode();
 
@@ -314,7 +318,7 @@ public abstract class FileFormat extends File
     /**
      * Checks if the file is read-only.
      * <p>
-     * A file can be open with read-only or read/write. 
+     * Depending on flag, a file can be open with read-only or read/write access. 
      * 
      * @see #open(String, int)
      * 
@@ -323,16 +327,16 @@ public abstract class FileFormat extends File
     public abstract boolean isReadOnly();
 
     /**
-     * Creates a new group for a given name and parent group.
+     * Creates a new group with a name in a group.
      *
-     * @param name   The name of the new group.
-     * @param pgroup The parent group.
-     * @return       The new group if successful; otherwise returns null
+     * @param name   The name of a new group.
+     * @param pgroup The parent group object.
+     * @return       The new group if successful; otherwise returns null.
      */
     public abstract Group createGroup(String name, Group pgroup) throws Exception;
 
     /**
-     * Creates a new dataset in file.
+     * Creates a new dataset in a file with/without chunking/compression.
      * <p>
      * The following example creates a 2D integer dataset of size 100X50 at the
      * root group in an HDF5 file.
@@ -340,7 +344,7 @@ public abstract class FileFormat extends File
      * String name = "2D integer";
      * Group pgroup = (Group)((DefaultMutableTreeNode)getRootNode).getUserObject();
      * Datatype dtype = new H5Datatype(Datatype.CLASS_INTEGER, // class
-     *                                 8,                      // size in bytes
+     *                                 4,                      // size in bytes
      *                                 Datatype.ORDER_LE,      // byte order
      *                                 Datatype.SIGN_NONE);    // signed or unsigned
      * long[] dims = {100, 50};
@@ -352,14 +356,14 @@ public abstract class FileFormat extends File
      * Dataset d = (H5File)file.createScalarDS(name, pgroup, dtype, dims, maxdims, chunks, gzip, data);
      * </pre>
      *
-     * @param name    The name of the new dataset, e.g. "2D integer"
-     * @param pgroup  The parent group where the new dataset is created.
-     * @param type    The datatype of the new dataset.
-     * @param dims    The dimension sizes of the new dataset, e.g. long[] dims = {100, 50}.
-     * @param maxdims The maximum dimension sizes of the new dataset, null if maxdims is the same as dims.
-     * @param chunks  The chunk sizes of the new dataset, null if no chunking.
-     * @param gzip    The GZIP compression level (1 to 9), 0 or negative values if no compression.
-     * @param data    The data written to the new dataset, null if no data is written to the new dataset.
+     * @param name    name of the new dataset, e.g. "2D integer"
+     * @param pgroup  parent group where the new dataset is created.
+     * @param type    datatype of the new dataset.
+     * @param dims    dimension sizes of the new dataset, e.g. long[] dims = {100, 50}.
+     * @param maxdims maximum dimension sizes of the new dataset, null if maxdims is the same as dims.
+     * @param chunks  chunk sizes of the new dataset, null if no chunking.
+     * @param gzip    GZIP compression level (1 to 9), 0 or negative values if no compression.
+     * @param data    data written to the new dataset, null if no data is written to the new dataset.
      * 
      * @return        The new dataset if successful; otherwise returns null
      */
@@ -374,34 +378,8 @@ public abstract class FileFormat extends File
         Object data) throws Exception;
 
     /**
-     * Create a new compound dataset in file.
-     * <p>
-     * The following example creates a 2D compound dataset with size of 100X50 at the root group.
-     * The compound dataset has two members, x and y. Member x is an interger,
-     * member y is an 1-D float array of size 10.
-     * <pre>
-     * String name = "2D compound";
-     * Group pgroup = (Group)((DefaultMutableTreeNode)getRootNode).getUserObject();
-     * long[] dims = {100, 50};
-     * String[] memberNames = {"x", "y"}
-     * Datatype[] memberDatatypes = {
-     *     new H5Datatype(Datatype.CLASS_INTEGER, Datatype.NATIVE, Datatype.NATIVE, Datatype.NATIVE)
-     *     new H5Datatype(Datatype.CLASS_FLOAT, Datatype.NATIVE, Datatype.NATIVE, Datatype.NATIVE));
-     * int[] memberSizes = {1, 10};
-     * Object data = null; // no initial data values
-     *
-     * Dataset d = (H5File)file.createCompoundDS(name, pgroup, dims, memberNames, memberDatatypes, memberSizes, null);
-     * </pre>
-     *
-     * @param name            The name of the new dataset, e.g. "2D compound"
-     * @param pgroup          The parent group where the new dataset is created.
-     * @param dims            The dimension sizes of the new dataset, e.g long[] dims = {100, 50}.
-     * @param memberNames     The names of the members of the compound dataset, e.g. String[] memberNames = {"x", "y"}.
-     * @param memberDatatypes The datatypes of the members of the compound dataset.
-     * @param memberSizes     The array sizes of the members of the compound dataset.
-     * @param data            The data written to the new dataset, null if no data is written to the new dataset.
-     * 
-     * @return                The new dataset if successful; otherwise returns null
+     * @deprecated  Not for public use in the future. <br>
+     * Using {@link #createCompoundDS(String, Group, long[], long[], long[], int, String[], Datatype[], int[], Object)}
      */
     public Dataset createCompoundDS(
         String name,
@@ -417,9 +395,9 @@ public abstract class FileFormat extends File
     }
 
     /**
-     * Creates a new compound dataset in file.
+     * Creates a new compound dataset in a file with/without chunking and compression.
      * <p>
-     * The following example creates a compressed 2D compound dataset with size of 100X50 at the root group.
+     * The following example creates a compressed 2D compound dataset with size of 100X50 in a root group.
      * The compound dataset has two members, x and y. Member x is an interger,
      * member y is an 1-D float array of size 10.
      * <pre>
@@ -440,18 +418,18 @@ public abstract class FileFormat extends File
      * Dataset d = (H5File)file.createCompoundDS(name, pgroup, dims, null, chunks, gzip, memberNames, memberDatatypes, memberSizes, null);
      * </pre>
      *
-     * @param name            The name of the new dataset
-     * @param pgroup          The parent group where the new dataset is created.
-     * @param dims            The dimension sizes of the new dataset.
-     * @param maxdims         The maximum dimension sizes of the new dataset, null if maxdims is the same as dims.
-     * @param chunks          The chunk sizes of the new dataset, null if no chunking.
-     * @param gzip            The GZIP compression level (1 to 9), 0 or negative values if no compression.
-     * @param memberNames     The names of the members.
-     * @param memberDatatypes The datatypes of the members.
-     * @param memberSizes     The array sizes of the members.
-     * @param data            The data written to the new dataset, null if no data is written to the new dataset.
+     * @param name            name of the new dataset
+     * @param pgroup          parent group where the new dataset is created.
+     * @param dims            dimension sizes of the new dataset.
+     * @param maxdims         maximum dimension sizes of the new dataset, null if maxdims is the same as dims.
+     * @param chunks          chunk sizes of the new dataset, null if no chunking.
+     * @param gzip            GZIP compression level (1 to 9), 0 or negative values if no compression.
+     * @param memberNames     names of the members.
+     * @param memberDatatypes datatypes of the members.
+     * @param memberSizes     array sizes of the members.
+     * @param data            data written to the new dataset, null if no data is written to the new dataset.
      * 
-     * @return                The new dataset if successful; otherwise returns null
+     * @return                new dataset object if successful; otherwise returns null
      */
     public Dataset createCompoundDS(
         String name,
@@ -470,9 +448,9 @@ public abstract class FileFormat extends File
     }
 
     /**
-     * Creates a new image in file.
+     * Creates a new image in a file.
      * <p>
-     * The following example creates a 2D image of size 100X50 at the root group.
+     * The following example creates a 2D image of size 100X50 in a root group.
      * <pre>
      * String name = "2D image";
      * Group pgroup = (Group)((DefaultMutableTreeNode)getRootNode).getUserObject();
@@ -489,18 +467,18 @@ public abstract class FileFormat extends File
      *     maxdims, chunks, gzip, ncomp, interlace, data);
      * </pre>
      *
-     * @param name      The name of the new image, "2D image".
-     * @param pgroup    The parent group where the new image is created.
-     * @param type      The datatype of the new image.
-     * @param dims      The dimension sizes of the new dataset, e.g. long[] dims = {100, 50}.
-     * @param maxdims   The maximum dimension sizes of the new dataset, null if maxdims is the same as dims.
-     * @param chunks    The chunk sizes of the new dataset, null if no chunking.
-     * @param gzip      The GZIP compression level (1 to 9), 0 or negative values if no compression.
-     * @param ncomp     The number of components of the new image, e.g. int ncomp = 3; // RGB true color image.
-     * @param interlace The interlace mode of the image, e.g. ScalarDS.INTERLACE_PIXEL.
-     * @param data      The data value of the image, null if no data.
+     * @param name      name of the new image, "2D image".
+     * @param pgroup    parent group where the new image is created.
+     * @param type      datatype of the new image.
+     * @param dims      dimension sizes of the new dataset, e.g. long[] dims = {100, 50}.
+     * @param maxdims   maximum dimension sizes of the new dataset, null if maxdims is the same as dims.
+     * @param chunks    chunk sizes of the new dataset, null if no chunking.
+     * @param gzip      GZIP compression level (1 to 9), 0 or negative values if no compression.
+     * @param ncomp     number of components of the new image, e.g. int ncomp = 3; // RGB true color image.
+     * @param interlace interlace mode of the image. Valid values are ScalarDS.INTERLACE_PIXEL, ScalarDS.INTERLACE_PLANEL and ScalarDS.INTERLACE_LINE.
+     * @param data      data value of the image, null if no data.
      * 
-     * @return          The new image if successful; otherwise returns null
+     * @return          The new image object if successful; otherwise returns null
      */
     public abstract Dataset createImage(
         String name,
@@ -521,15 +499,15 @@ public abstract class FileFormat extends File
      * <pre>
      * FileFormat file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
      * H5Datatype dtype = file.createDatatype(Datatype.CLASS_INTEGER,
-     *     Datatype.NATIVE, Datatype.NATIVE, Datatype.NATIVE);
+     *     4, Datatype.NATIVE, Datatype.NATIVE);
      * </pre>
      *
-     * @param tclass The class of datatype, e.g. Datatype.CLASS_INTEGER
-     * @param tsize  The size of the datatype in bytes, e.g. 4 for 32-bit integer.
-     * @param torder The order of the byte endianing, Datatype.ORDER_LE.
-     * @param tsign  The signed or unsinged of an integer, Datatype.SIGN_NONE.
+     * @param tclass class of datatype, e.g. Datatype.CLASS_INTEGER
+     * @param tsize  size of the datatype in bytes, e.g. 4 for 32-bit integer.
+     * @param torder order of the byte endian, e.g. Datatype.ORDER_LE.
+     * @param tsign  signed or unsinged of an integer, Datatype.SIGN_NONE.
      * 
-     * @return       The new datatype if successful; otherwise returns null.
+     * @return       The new datatype object if successful; otherwise returns null.
      */
     public abstract Datatype createDatatype(
         int tclass,
@@ -538,20 +516,20 @@ public abstract class FileFormat extends File
         int tsign) throws Exception;
 
     /**
-     * Creates a named datatype in file.
+     * Creates a named datatype in a file.
      *<p>
-     * The following code creates a named datatype in file.
+     * The following code creates a named datatype in a file.
      * <pre>
      * FileFormat file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
      * H5Datatype dtype = file.createDatatype(Datatype.CLASS_INTEGER,
-     *     Datatype.NATIVE, Datatype.NATIVE, Datatype.NATIVE, "Native Integer");
+     *     4, Datatype.NATIVE, Datatype.NATIVE, "Native Integer");
      * </pre>
      *
-     * @param tclass The class of datatype, e.g. Datatype.CLASS_INTEGER
-     * @param tsize  The size of the datatype in bytes, e.g. 4 for 32-bit integer.
-     * @param torder The order of the byte endianing, Datatype.ORDER_LE.
-     * @param tsign  The signed or unsinged of an integer, Datatype.SIGN_NONE.
-     * @param name The name of the datatype to create, e.g. "Native Integer".
+     * @param tclass class of datatype, e.g. Datatype.CLASS_INTEGER
+     * @param tsize  size of the datatype in bytes, e.g. 4 for 32-bit integer.
+     * @param torder order of the byte endianing, Datatype.ORDER_LE.
+     * @param tsign  signed or unsinged of an integer, Datatype.SIGN_NONE.
+     * @param name name of the datatype to create, e.g. "Native Integer".
      * 
      * @return  The new datatype if successful; otherwise returns null
      */
@@ -574,7 +552,7 @@ public abstract class FileFormat extends File
     public abstract HObject createLink(Group parentGroup, String name, HObject currentObj) throws Exception;
 
     /**
-     * Adds a new FileFormat to the list of supported FileFormats.
+     * Adds a new FileFormat to the list of supported File Formats.
      * <p>
      * This method is provided for adding new FileFormat dynamically. Applications
      * can add a new FileFormat at runtime. For example, the HDFView allows users
@@ -599,9 +577,9 @@ public abstract class FileFormat extends File
     }
 
     /**
-     * Removes a FileFormat that matches the given key from the supported file list.
+     * Removes a FileFormat specified by a key from the supported file list.
      *
-     * @param key the key of the FileFormat to be removed.
+     * @param key the key of the FileFormat to be removed, such as "HDF5" for HDF5 file format.
      * 
      * @return the FileFormat that is removed, or null if no FileFormat has such as a key.
      */
@@ -612,7 +590,7 @@ public abstract class FileFormat extends File
     /**
      * Returns the FileFormat for a given key from the supported file list.
      *
-     * @param key the unique ID key to identify the FileFormat, such as "HDF5" or "Hdf-Eos5".
+     * @param key the unique key to identify the FileFormat, such as "HDF5" for HDF5 file format.
      * 
      * @return The FileFormat that matches the given key; returns null if no FileFormat matches the key.
      */
@@ -632,7 +610,7 @@ public abstract class FileFormat extends File
     }
 
     /**
-     *  Returns the version of the library for this FileFormat.
+     *  Returns the version of the library for the file.
      *
      * @return The library version if successful; otherwise returns null
      */
@@ -669,7 +647,7 @@ public abstract class FileFormat extends File
      * For example, in HDFView, we use the following code to check if a file is an HDF5 file.
      * <pre>
         FileFormat h5file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-        HObjet hObject = viewer.getTreeView().getCurrentObject();
+        HObject hObject = viewer.getTreeView().getCurrentObject();
         FileFormat thisFile = hObject.getFileFormat();
         boolean isH5 = h5file.isThisType(thisFile);
      * </pre> 
@@ -681,14 +659,14 @@ public abstract class FileFormat extends File
     public abstract boolean isThisType(FileFormat fileformat);
 
     /**
-     * Attaches a given attribute to a specific object.
+     * Attaches a given attribute to an object.
      * <p>
-     * If the attribute does not exists in the object, creates the attibute in file,
+     * If the attribute does not exists, creates an attibute in file,
      * and attches it the object. If the attribute already exists in the object, 
      * just update the value of the attribute attached to the object.
      *
      * <p>
-     * @param obj The object which the attribute is attached to.
+     * @param obj The object to which the attribute is attached to.
      * @param attr The atribute to attach.
      * @param attrExisted The indicator if the given attribute exists.
      */
@@ -705,8 +683,9 @@ public abstract class FileFormat extends File
      * <p>
      * This method copies an object (source) to a specific group (destination) within 
      * a file or cross files. If the destination group is in a different file, the 
-     * FileFormat of the destination group must be the same type as the source file.
-     * Copying object cross FileFormats is not supported. 
+     * file which the destination group is located at must be the same file type as 
+     * the source file. Copying object cross file format is not supported. For example,
+     * an HDF4 dataset cannot be copied to an HDF5 file, and vice versa.
      * <p>
      * The source object can be a group, a dataset or a named datatype. This method 
      * copies the object along with all its attributes and other properties. If the source
@@ -748,20 +727,19 @@ public abstract class FileFormat extends File
     public abstract TreeNode copy(HObject srcObj, Group dstGroup, String dstName) throws Exception;
 
     /**
-     * Deletes a specifc object from file.
+     * Deletes an object from a file.
      * 
      * @param obj The object to delete.
      */
     public abstract void delete(HObject obj) throws Exception;
 
     /**
-     * Sets the max number of objects to be loaded into memory.
+     * Sets the maximum number of objects to be loaded into memory.
      * <p>
      * Current Java application such as HDFView cannot handle files with large
      * number of objects such 1,000,000 objects due to JVM memory limitation.
-     * A max_member is used so that applications such as HDFView will load
-     * up to <i>max_members</i> number of objects starting the <i>start_members</i>
-     * -th object.
+     * A maximum number is used so that applications such as HDFView will load
+     * up to the maximum number of objects.
      *
      * @param n The maximum number of objects to be loaded into memory
      */
@@ -772,11 +750,10 @@ public abstract class FileFormat extends File
      * <p>
      * Current Java application such as HDFView cannot handle files with large
      * number of objects such 1,000,000 objects due to JVM memory limitation.
-     * A max_member is used so that applications such as HDFView will load
-     * up to <i>max_members</i> number of objects starting the <i>start_members</i>
-     * -th object.
+     * A maximum number is used so that applications such as HDFView will load
+     * up to the maximum number of objects.
      *
-     * @param idx The starting object to be loaded into memory
+     * @param idx The starting index of the object to be loaded into memory
      */
     public void setStartMembers(int idx) { start_members = idx; }
 
@@ -786,46 +763,44 @@ public abstract class FileFormat extends File
      * <p>
      * Current Java application such as HDFView cannot handle files with large
      * number of objects such 1,000,000 objects due to JVM memory limitation.
-     * A max_member is used so that applications such as HDFView will load
-     * up to <i>max_members</i> number of objects starting the <i>start_members</i>
-     * -th object.
+     * A maximum number is used so that applications such as HDFView will load
+     * up to the maximum number of objects.
      *
      * @return The maximum number of objects to be loaded into memory
      */
     protected int getMaxMembers() { return max_members; }
 
     /**
-     * Returns the index of the starting object to be loaded into memory.
+     * Returns an index of the starting object to be loaded into memory.
      * <p>
      * <p>
      * Current Java application such as HDFView cannot handle files with large
      * number of objects such 1,000,000 objects due to JVM memory limitation.
-     * A max_member is used so that applications such as HDFView will load
-     * up to <i>max_members</i> number of objects starting the <i>start_members</i>
-     * -th object.
+     * A maximum number is used so that applications such as HDFView will load
+     * up to the maximum number of objects.
      *
-     * @return The starting object to be loaded into memory
+     * @return The index of the starting object to be loaded into memory.
      */
     protected int getStartMembers() { return start_members; }
 
     /**
-     * Return a list of file extensions of all supported FileFormats.
+     * Returns a list of file extensions for all supported file formats.
      * <p> 
      * The extensions are separates by comma, such as "hdf, h4, hdf5, h5, hdf4, he4, he5"
      *
-     * @return A list of file extensions for the supported FileFormats
+     * @return A list of file extensions for all supported file formats.
      */
     public static String getFileExtensions() { return extensions; }
 
     /**
-     * Returns the file identifier of this file.
+     * Returns file identifier of a file.
      * 
      * @return The file identifer
      */
     public int getFID() { return fid; }
 
     /**
-     * Add a file extension to the file extension list.
+     * Adds a file extension to the file extension list.
      * 
      * @param extension The file extension to add
      */
@@ -859,7 +834,7 @@ public abstract class FileFormat extends File
     }
 
     /**
-     * Creates an instance of a FileFormat corresponding to the data in a file.
+     * Creates an instance of a FileFormat object corresponding to the data in a file.
      * <p>
      * The file name may be an absolute or a relative path. This function checks the list of registered
      * FileFormats and returns an instance of the matched one, or null if none is matched.
@@ -867,7 +842,8 @@ public abstract class FileFormat extends File
      * For example, if "test_hdf5.h5" is an HDF5 file, FileFormat.getInstance("test_hdf5.h5")
      * returns an instance of H5File, i.e. H5File f=(H5File)FileFormat.getInstance("test_hdf5.h5");
      *
-     * @param fileName The file to open
+     * @param fileName a valid file name.
+     * 
      * @return an instance of the matched FileFormat; otherwise returns null
      */
     public static FileFormat getInstance(String fileName) throws Exception
@@ -901,9 +877,9 @@ public abstract class FileFormat extends File
     }
 
     /**
-     * Gets the HObject for the given file name and object path.
+     * Gets an HObject with a given full path (file name + object path).
      * <p>
-     * The file name and object path is in the form of "filename#//obj_path".
+     * The full path is in the form of "filename#//obj_path".
      *
      * For example, "/tmp/hdf5_test.h5#//images/iceberg"
      * 
@@ -935,7 +911,20 @@ public abstract class FileFormat extends File
     };
 
     /**
-     * Gets the HObject with given file name and object path
+     * Gets an HObject with given file name and object path.
+     * <p>
+     * <Strong>Warning:</strong> This static method creates an instance of a file.
+     * Since the instance of the file is not returned, the file cannot be closed
+     * directly and may be left for open. The only way to close the file is through
+     * the object returned by this method.
+     * <p>
+     * For example, 
+     * <pre>
+     * Dataset dset = H5File("hdf5_test.h5", "/images/iceburg");
+     * ....
+     * // close the file through dset
+     * dset.getFileFormat().close();
+     * </pre> 
      *
      * @param filename the name of the file to open
      * @param path the path of the data object in the file
@@ -952,14 +941,18 @@ public abstract class FileFormat extends File
         HObject obj = null;
         FileFormat file = FileFormat.getInstance(filename);
 
-        if (file != null)
+        if (file != null) {
             obj = file.get(path);
+            if (obj == null)
+                file.close();
+        }
+        
 
         return obj;
     }
 
     /**
-     * Gets an individual HObject with a given path from this file. 
+     * Gets an HObject with a given path from a file. 
      * <p>
      * The following example shows how use the get() to get a group object from file
      * <pre>
@@ -971,14 +964,14 @@ public abstract class FileFormat extends File
             file.close();
         }
      * </pre>
-     * @param path the path of the data object in the file
+     * @param path full path of a data object in a file
      * @return The object if it exists in the file; otherwise returns null
      */
     public abstract HObject get(String path) throws Exception;
 
-    /** Returns a list of supported FileFormats.
+    /** Returns a list of supported file formats.
      * 
-     * @return a list of supported FileFormats.
+     * @return a list of supported file formats..
      */
     public static FileFormat[] getFileFormats()
     {

@@ -96,7 +96,7 @@ implements TableView, ActionListener
 
     private boolean isDisplayTypeChar;
 
-    private boolean isTransposed;
+    private boolean isDataTransposed;
 
     private JCheckBoxMenuItem checkScientificNotation, checkFixedDataLength;
     private int fixedDataLength;
@@ -131,7 +131,7 @@ implements TableView, ActionListener
         toolkit = Toolkit.getDefaultToolkit();
         isValueChanged = false;
         isReadOnly = false;
-        isTransposed = transposed.booleanValue();
+        isDataTransposed = transposed.booleanValue();
         fixedDataLength = -1;
 
         HObject hobject = (HObject)viewer.getTreeView().getCurrentObject();
@@ -163,7 +163,7 @@ implements TableView, ActionListener
         // create the table and its columnHeader
         if (dataset instanceof CompoundDS)
         {
-            isTransposed = false; // disable transpose for compound dataset
+            isDataTransposed = false; // disable transpose for compound dataset
             this.setFrameIcon(ViewProperties.getTableIcon());
             table = createTable((CompoundDS)dataset);
         }
@@ -1106,7 +1106,7 @@ implements TableView, ActionListener
         long[] dims = d.getSelectedDims();
 
         // put one-dimensional data at one column table
-        if (isTransposed)
+        if (isDataTransposed)
         {
             cols = (int)dims[0];
             rows = 1;
@@ -1200,7 +1200,7 @@ implements TableView, ActionListener
 
             public Object getValueAt(int row, int column)
             {
-                if (isTransposed)
+                if (isDataTransposed)
                     theValue = Array.get(dataValue, column*getRowCount()+row);
                 else
                     theValue = Array.get(dataValue, row*getColumnCount()+column);
@@ -1963,7 +1963,7 @@ implements TableView, ActionListener
             return;
 
         int i = 0;
-        if (isTransposed)
+        if (isDataTransposed)
             i = col*table.getRowCount()+row;
         else
             i = row*table.getColumnCount()+col;
