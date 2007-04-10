@@ -472,6 +472,7 @@ public class H5CompoundDS extends CompoundDS
             int idx = 0;
             boolean is_variable_str = false;
             boolean isVL = false;
+        
             for (int i=0; i<numberOfMembers; i++)
             {
                 if (!isMemberSelected[i])
@@ -545,8 +546,8 @@ public class H5CompoundDS extends CompoundDS
                     if (tmpData == null)
                         continue;
 
-                    // BUG!!! does not write nested data and no exception caght
-                    // need to check if it is a java error or C library error
+                    // BUG!!! does not write nested compound data and no exception was caught
+                    //        need to check if it is a java error or C library error
                     H5.H5Dwrite(
                         did,
                         nested_tid,
@@ -555,7 +556,8 @@ public class H5CompoundDS extends CompoundDS
                         HDF5Constants.H5P_DEFAULT,
                         tmpData);
                 } catch (HDF5Exception ex2)
-                {
+                {   
+                    ex2.printStackTrace();
                     try { H5.H5Tclose(nested_tid); }
                     catch (HDF5Exception ex3) {}
                     if (fspace > 0) {
@@ -737,8 +739,10 @@ public class H5CompoundDS extends CompoundDS
      */
     public void init()
     {
-        if (rank>0)
+        if (rank>0) {
+            resetSelection();
             return; // already called. Initialize only once
+        }
 
         int did=-1, sid=-1, tid=-1, tclass=-1;
         int fid = getFID();
@@ -888,6 +892,43 @@ public class H5CompoundDS extends CompoundDS
         */
 
         super.setName(newName);
+    }
+    
+    /**
+     * Resets selection of dataspace
+     */
+    private void resetSelection() {
+        
+        for (int i=0; i<rank; i++)
+        {
+            startDims[i] = 0;
+            selectedDims[i] = 1;
+            if (selectedStride != null)
+                selectedStride[i] = 1;
+        }
+
+        if (rank == 1)
+        {
+            selectedIndex[0] = 0;
+            selectedDims[0] = dims[0];
+        }
+        else if (rank == 2)
+        {
+            selectedIndex[0] = 0;
+            selectedIndex[1] = 1;
+            selectedDims[0] = dims[0];
+            selectedDims[1] = dims[1];
+        }
+        else if (rank > 2)
+        {
+            selectedIndex[0] = rank-2; // columns
+            selectedIndex[1] = rank-1; // rows
+            selectedIndex[2] = rank-3;
+            selectedDims[rank-1] = dims[rank-1];
+            selectedDims[rank-2] = dims[rank-2];
+        }
+        
+        setMemberSelection(true);
     }
 
     /**
