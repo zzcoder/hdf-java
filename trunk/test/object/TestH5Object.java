@@ -205,7 +205,7 @@ public class TestH5Object
      * @param fname the name of the file to create
      * @return zero if successful; otherwise returns one
      */
-    public int test_H5File_create(String fname)
+    private int test_H5File_create(String fname)
     {
         H5File file=null;
         String message = "";
@@ -244,7 +244,7 @@ public class TestH5Object
      * @param fname the name of the file to open
      * @return zero if successful; otherwise returns one
      */
-    public int test_H5File_open(String fname)
+    private int test_H5File_open(String fname)
     {
         H5File file=null;
         String message = "";
@@ -283,7 +283,7 @@ public class TestH5Object
      * @param fname the name of the file to open
      * @return zero if successful; otherwise returns one
      */
-    public int test_H5File_open_relative_path(String fname)
+    private int test_H5File_open_relative_path(String fname)
     {
         H5File file=null;
         String message = "";
@@ -328,7 +328,7 @@ public class TestH5Object
      * @param fname the name of the file to open
      * @return zero if successful; otherwise returns one
      */
-    public int test_H5File_createGroup(String fname)
+    private int test_H5File_createGroup(String fname)
     {
         H5File file=null;
         String message = "";
@@ -367,7 +367,7 @@ public class TestH5Object
      * @param fname the name of the file to open
      * @return zero if successful; otherwise returns one
      */
-    public int test_H5File_createDatatype(String fname)
+    private int test_H5File_createDatatype(String fname)
     {
         H5File file=null;
         String message = "";
@@ -410,7 +410,7 @@ public class TestH5Object
      * @param fname the name of the file to open
      * @return zero if successful; otherwise returns one
      */
-    public int test_H5File_createScalarDS(String fname)
+    private int test_H5File_createScalarDS(String fname)
     {
         H5File file=null;
         String message = "";
@@ -482,7 +482,7 @@ public class TestH5Object
      * @param fname the name of the file to open
      * @return zero if successful; otherwise returns one
      */
-    public int test_H5File_createLink(String fname)
+    private int test_H5File_createLink(String fname)
     {
         H5File file=null;
         String message = "";
@@ -526,7 +526,7 @@ public class TestH5Object
      * @param fname the name of the file to open
      * @return zero if successful; otherwise returns one
      */
-    public int test_H5File_createImage(String fname)
+    private int test_H5File_createImage(String fname)
     {
         H5File file=null;
         String message = "";
@@ -570,7 +570,7 @@ public class TestH5Object
      * @param fname the name of the file to open
      * @return zero if successful; otherwise returns one
      */
-    public int test_H5File_createCompoundDS(String fname)
+    private int test_H5File_createCompoundDS(String fname)
     {
         H5File file=null;
         String message = "";
@@ -680,7 +680,7 @@ public class TestH5Object
      * @param fname the name of the file to open
      * @return zero if successful; otherwise returns one
      */
-    public int test_H5File_copy(String fname)
+    private int test_H5File_copy(String fname)
     {
         H5File file=null;
         String message = "";
@@ -725,7 +725,7 @@ public class TestH5Object
      * @param fname the name of the file to open
      * @return zero if successful; otherwise returns one
      */
-    public int test_H5File_getAttribute(String fname)
+    private int test_H5File_getAttribute(String fname)
     {
         H5File file=null;
         String message = "";
@@ -768,7 +768,7 @@ public class TestH5Object
      * @param fname the name of the file to open
      * @return zero if successful; otherwise returns one
      */
-    public int test_H5File_getHObject(String fname)
+    private int test_H5File_getHObject(String fname)
     {
         H5File file=null;
         String message = "";
@@ -834,7 +834,7 @@ public class TestH5Object
      * @param fname the name of the file to open
      * @return zero if successful; otherwise returns one
      */
-    public int test_HObject_getFID(String fname)
+    private int test_HObject_getFID(String fname)
     {
         H5File file=null;
         String message = "";
@@ -877,7 +877,7 @@ public class TestH5Object
      * @param fname the name of the file to open
      * @return zero if successful; otherwise returns one
      */
-    public int test_HObject_getName(String fname)
+    private int test_HObject_getName(String fname)
     {
         H5File file=null;
         String message = "";
@@ -950,7 +950,7 @@ public class TestH5Object
      * @param fname the name of the file to open
      * @return zero if successful; otherwise returns one
      */
-    public int test_Group_isRoot(String fname)
+    private int test_Group_isRoot(String fname)
     {
         H5File file=null;
         String message = "";
@@ -998,7 +998,7 @@ public class TestH5Object
      * @param fname the name of the file to open
      * @return zero if successful; otherwise returns one
      */
-    public int test_Group_getParent(String fname)
+    private int test_Group_getParent(String fname)
     {
         H5File file=null;
         String message = "";
@@ -1039,7 +1039,7 @@ public class TestH5Object
      * @param fname the name of the file to open
      * @return zero if successful; otherwise returns one
      */
-    public int test_Dataset_byteToString(String fname)
+    private int test_Dataset_byteToString(String fname)
     {
         H5File file=null;
         String message = "";
@@ -1102,7 +1102,7 @@ public class TestH5Object
      * @param fname the name of the file to open
      * @return zero if successful; otherwise returns one
      */
-    public int test_H5Datatype_toNative(String fname)
+    private int test_H5Datatype_toNative(String fname)
     {
         H5File file=null;
         String message = "";
@@ -1169,7 +1169,7 @@ public class TestH5Object
      * @param fname the name of the file to open
      * @return zero if successful; otherwise returns one
      */
-    public int test_H5CompoundDS_init(String fname)
+    private int test_H5CompoundDS_init(String fname)
     {
         H5File file=null;
         String message = "";
@@ -1213,7 +1213,7 @@ public class TestH5Object
      * @param fname the name of the file to open
      * @return zero if successful; otherwise returns one
      */
-    public int test_H5ScalarDS_write(String fname)
+    private int test_H5ScalarDS_write(String fname)
     {
         H5File file=null;
         String message = "";
@@ -1268,7 +1268,7 @@ public class TestH5Object
      * @param fname the name of the file to open
      * @return zero if successful; otherwise returns one
      */
-    public int test_H5CompoundDS_write(String fname)
+    private int test_H5CompoundDS_write(String fname)
     {
         H5File file=null;
         String message = "";
@@ -1321,12 +1321,111 @@ public class TestH5Object
     }
 
     /**
+     * Updates compound dataset values row by row (bug#847).
+     *
+     * @param fname the name of the file to open
+     * @return zero if successful; otherwise returns one
+     */
+    private int test_H5CompoundDS_write_row_by_row(String fname)
+    {
+        List list=null;
+        final int TEST_INT_VALUE = 999999999;
+        long[] count, start, dims;
+        int rank, nmembers, nrows=1;
+        H5File file=null;
+        CompoundDS dset;
+        String message = "";
+
+        message = "Updates compound dataset values row by row -- H5CompoundDS.write()";
+        if (!create_test_file(fname, message))
+            return 1;
+        
+        try {
+            for (int rowIdx=0; rowIdx<nrows; rowIdx++) {
+                // open the test file
+                file = new H5File(fname, H5File.WRITE);
+                file.open();
+
+                // retrieve the compound dataset
+                dset = (CompoundDS)file.get(NAME_DATASET_COMPOUND);
+                dset.init();
+                
+                // get dataspace information
+                rank = dset.getRank();
+                count = dset.getSelectedDims();
+                start = dset.getStartDims();
+                dims = dset.getDims();
+                nmembers = dset.getMemberCount();
+                nrows = (int)dims[0];
+                
+                // select one row only
+                for (int i=0; i<rank; i++) {
+                    count[i] = 1;
+                }
+                
+                // select different rows
+                start[0] = rowIdx;
+                
+                // 1)  read the table cell (using dataset selection to select only that row of the table)
+                list = (List)dset.read();
+               
+                // 2)  re-initialize the Dataset
+                dset.init();
+                
+                // 3)  call 'Dataset.clearData()'
+                dset.clearData();
+         
+                // 4)  call 'Dataset.getData()'
+                list = (List)dset.read();
+                
+                // 5)  change the correct column/row **, col0/row0
+                int[] read_row_data = (int []) list.get(0);
+                read_row_data[rowIdx] = TEST_INT_VALUE; 
+                 
+                // 6)  call 'Dataset.write()'
+                dset.write(list);
+                
+                // 7)  close the file
+                file.close();
+               
+                // 8)  reopen the file and read the table cell as in step 1
+                file.open();
+                
+                // 9)  assert that the value has been changed and is correct
+                dset = (CompoundDS)file.get(NAME_DATASET_COMPOUND);
+                dset.init();
+                rank = dset.getRank();
+                count = dset.getSelectedDims();
+                start = dset.getStartDims();
+                dims = dset.getDims();
+                nmembers = dset.getMemberCount();
+                for (int i=0; i<rank; i++) {
+                    start[i] = 0;
+                    count[i] = 1;
+                }
+                list = (List)dset.read();
+                
+                int[] write_row_data = (int[]) list.get(0);
+                if (write_row_data[0] != TEST_INT_VALUE) {
+                    failed(message, new HDF5LibraryException("Incorrect data values in file"), file);
+                    return 1;
+                }
+                
+                file.close();
+            }
+        } catch (Exception ex) { failed(message, ex, file); return 1; }
+
+        passed(message);
+        return 0;
+    }
+    
+    /**
      * Test read/re-read String datasets.
      *
      * @param fname the name of the file to open
      * @return zero if successful; otherwise returns one
      */
-    public int test_HDF5ScalarDS_str(String fname)
+    private int test_HDF5ScalarDS_str(String fname)
     {
         H5File file=null;
         String message = "Test read/re-read String datasets";
@@ -1363,7 +1462,7 @@ public class TestH5Object
      * @param fname the name of the file to open
      * @return zero if successful; otherwise returns one
      */
-    public int test_temp(String fname)
+    private int test_temp(String fname)
     {
         H5File file=null;
         String message = "***********func name*********";
@@ -1429,6 +1528,7 @@ public class TestH5Object
         numOfFails += test.test_H5CompoundDS_init(FILE_NAME);
         numOfFails += test.test_H5ScalarDS_write(FILE_NAME);
         numOfFails += test.test_H5CompoundDS_write(FILE_NAME);
+        numOfFails += test.test_H5CompoundDS_write_row_by_row(FILE_NAME);
         numOfFails += test.test_HDF5ScalarDS_str(FILE_NAME);
         
         if (numOfFails<=0)

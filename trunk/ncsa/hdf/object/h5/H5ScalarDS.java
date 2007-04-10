@@ -173,8 +173,10 @@ public class H5ScalarDS extends ScalarDS
      */
     public void init()
     {
-        if (rank>0)
+        if (rank>0) {
+            resetSelection();
             return; // already called. Initialize only once
+        }
 
         int did=-1, sid=-1, tid=-1, pid=-1;
 
@@ -285,6 +287,7 @@ public class H5ScalarDS extends ScalarDS
                 interlace == ScalarDS.INTERLACE_PLANE);
         }
 
+        close(did);
 
         startDims = new long[rank];
         selectedDims = new long[rank];
@@ -335,35 +338,6 @@ public class H5ScalarDS extends ScalarDS
             selectedIndex[2] = rank-3; // frames
             selectedDims[selectedIndex[0]] = dims[selectedIndex[0]];
             selectedDims[selectedIndex[1]] = dims[selectedIndex[1]];
-            
-            /*
-            // In the case of images with only one component, the dataspace may
-            // be either a two dimensional array, or a three dimensional array
-            // with the third dimension of size 1.  For example, a 5 by 10 image
-            // with 8 bit color indexes would be an HDF5 dataset with type
-            // unsigned 8 bit integer.  The dataspace could be either a two
-            // dimensional array, with dimensions [10][5], or three dimensions,
-            // with dimensions either [10][5][1] ([height][width][1])
-            // or [1][10][5] ([1][height][width]).
-            if (dims[0] == 1)
-            {
-                // case [1][10][5]
-                selectedIndex[0] = 1;
-                selectedIndex[1] = 2;
-                selectedIndex[2] = 0;
-                selectedDims[1] = dims[1];
-                selectedDims[2] = dims[2];
-            }
-            else
-            {
-                // case [10][5][1]
-                selectedIndex[0] = 0;
-                selectedIndex[1] = 1;
-                selectedIndex[2] = 2;
-                selectedDims[0] = dims[0];
-                selectedDims[1] = dims[1];
-            }
-            */
         }
 
         if (rank > 1 && isText)
@@ -373,8 +347,72 @@ public class H5ScalarDS extends ScalarDS
             selectedDims[0] = 1;
             selectedDims[selectedIndex[0]] = dims[selectedIndex[0]];
         }
+    }
+    
+    /**
+     * Resets selection of dataspace
+     */
+    private void resetSelection() {
         
-        close(did);
+        for (int i=0; i<rank; i++)
+        {
+            startDims[i] = 0;
+            selectedDims[i] = 1;
+            if (selectedStride != null)
+                selectedStride[i] = 1;
+        }
+
+        if (interlace == INTERLACE_PIXEL)
+        {
+            // 24-bit TRUE color image
+            // [height][width][pixel components]
+            selectedDims[2] = 3;
+            selectedDims[0] = dims[0];
+            selectedDims[1] = dims[1];
+            selectedIndex[0] = 0; // index for height
+            selectedIndex[1] = 1; // index for width
+            selectedIndex[2] = 2; // index for depth
+        }
+        else if (interlace == INTERLACE_PLANE)
+        {
+            // 24-bit TRUE color image
+            // [pixel components][height][width]
+            selectedDims[0] = 3;
+            selectedDims[1] = dims[1];
+            selectedDims[2] = dims[2];
+            selectedIndex[0] = 1; // index for height
+            selectedIndex[1] = 2; // index for width
+            selectedIndex[2] = 0; // index for depth
+        }
+        else if (rank == 1)
+        {
+            selectedIndex[0] = 0;
+            selectedDims[0] = dims[0];
+        }
+        else if (rank == 2)
+        {
+            selectedIndex[0] = 0;
+            selectedIndex[1] = 1;
+            selectedDims[0] = dims[0];
+            selectedDims[1] = dims[1];
+        }
+        else if (rank > 2)
+        {
+            // 3D dataset is arranged in the order of [frame][height][width] by default
+            selectedIndex[1] = rank-1; // width, the fastest dimension
+            selectedIndex[0] = rank-2; // height
+            selectedIndex[2] = rank-3; // frames
+            selectedDims[selectedIndex[0]] = dims[selectedIndex[0]];
+            selectedDims[selectedIndex[1]] = dims[selectedIndex[1]];
+        }
+
+        if (rank > 1 && isText)
+        {
+            selectedIndex[0] = rank-1;
+            selectedIndex[1] = 0;
+            selectedDims[0] = 1;
+            selectedDims[selectedIndex[0]] = dims[selectedIndex[0]];
+        }
     }
 
     /*
