@@ -914,7 +914,28 @@ public class H5File extends FileFormat
     }
 
     /**
-     * Copies attributes from one object to another.
+     * Copies all attributes of one object to another object.
+     * <p>
+     * This method copies all attibutes from one object (source object)
+     * to another (the destination). If an attibute already exists in
+     * the destination object, the attribute will not be copied.
+     * 
+     * @param src the source object
+     * @param dst the destination object
+     * 
+     */
+    public void copyAttributes(HObject src, HObject dst)
+    {
+        int srcID = src.open();
+        int dstID = dst.open();
+        try { copyAttributes(srcID, dstID);
+        } catch (Exception ex) {}
+        src.close(srcID);
+        dst.close(dstID);
+    }
+    
+    /**
+     * Copies all attributes of one object to another object.
      * <p>
      * This method copies all attibutes from one object (source object)
      * to another (the destination). If an attibute already exists in
@@ -923,7 +944,7 @@ public class H5File extends FileFormat
      * @param src_id the identifier of the source object
      * @param dst_id the identidier of the destination object
      */
-    private void copyAttributes(int src_id, int dst_id)
+    public void copyAttributes(int src_id, int dst_id)
     {
         int aid_src=-1, aid_dst=-1, atid=-1, asid=-1, num_attr=-1;
         String[] aName = {""};
@@ -976,6 +997,131 @@ public class H5File extends FileFormat
             try { H5.H5Aclose(aid_dst); } catch(Exception ex) {}
         } // for (int i=0; i<num_attr; i++)
     }
+    
+    /**
+     * Updates values of all reference datasets in a file. 
+     * <p>
+     * When a datast of references (object references or dataset region
+     * references) is copied from one file to another, the references 
+     * in the destination file are invalid. This method updates the values
+     * of reference dataset so that the references point to the correct
+     * object(s) in the destination file.
+     * 
+     * @param srcFile the file to be copied
+     * @param dstFile the destination file.
+     */
+    public static void updateReferenceDataset(H5File srcFile, H5File dstFile)
+    throws Exception
+    {
+        if (srcFile == null || dstFile == null)
+            return;
+
+        DefaultMutableTreeNode srcRoot = (DefaultMutableTreeNode)srcFile.getRootNode();
+        DefaultMutableTreeNode newRoot = (DefaultMutableTreeNode)dstFile.getRootNode();
+
+        Enumeration srcEnum = srcRoot.breadthFirstEnumeration();
+        Enumeration newEnum = newRoot.breadthFirstEnumeration();
+
+        // build one-to-one table of between objects in
+        // the source file and new file
+        int did=-1, tid=-1;
+        HObject srcObj, newObj;
+        Hashtable oidMap = new Hashtable();
+        List refDatasets = new Vector();
+        while(newEnum.hasMoreElements() && srcEnum.hasMoreElements())
+        {
+            srcObj = (HObject)((DefaultMutableTreeNode)srcEnum.nextElement()).getUserObject();
+            newObj = (HObject)((DefaultMutableTreeNode)newEnum.nextElement()).getUserObject();
+            oidMap.put(String.valueOf(((long[])srcObj.getOID())[0]), newObj.getOID());
+            did = -1;
+            tid = -1;
+            if (newObj instanceof ScalarDS)
+            {
+                ScalarDS sd = (ScalarDS)newObj;
+                did = sd.open();
+                if (did > 0)
+                {
+                    try {
+                        tid= H5.H5Dget_type(did);
+                        if (H5.H5Tequal(tid, HDF5Constants.H5T_STD_REF_OBJ))
+                            refDatasets.add(sd);
+                    } catch (Exception ex) {}
+                    finally
+                    { try {H5.H5Tclose(tid);} catch (Exception ex) {}}
+                }
+                sd.close(did);
+            } // if (newObj instanceof ScalarDS)
+        }
+
+        H5ScalarDS d = null;
+        int sid=-1, size=0, rank=0;
+        int n = refDatasets.size();
+        for (int i=0; i<n; i++)
+        {
+            d = (H5ScalarDS)refDatasets.get(i);
+            byte[] buf = null;
+            long[] refs = null;
+
+            try {
+                did = d.open();
+                tid = H5.H5Dget_type(did);
+                sid = H5.H5Dget_space(did);
+                rank = H5.H5Sget_simple_extent_ndims(sid);
+                size = 1;
+                if (rank > 0)
+                {
+                    long[] dims = new long[rank];
+                    H5.H5Sget_simple_extent_dims(sid, dims, null);
+                    for (int j=0; j<rank; j++)
+                        size *= (int)dims[j];
+                    dims = null;
+                }
+
+                buf = new byte[size*8];
+                H5.H5Dread(
+                    did,
+                    tid,
+                    HDF5Constants.H5S_ALL,
+                    HDF5Constants.H5S_ALL,
+                    HDF5Constants.H5P_DEFAULT,
+                    buf);
+
+                // update the ref values
+                refs = HDFNativeData.byteToLong(buf);
+                size = refs.length;
+                for (int j=0; j<size; j++)
+                {
+                    long[] theOID = (long[])oidMap.get(String.valueOf(refs[j]));
+                    if (theOID != null)
+                    {
+                        refs[j] = theOID[0];
+                    }
+                }
+
+                // write back to file
+                H5.H5Dwrite(
+                    did,
+                    tid,
+                    HDF5Constants.H5S_ALL,
+                    HDF5Constants.H5S_ALL,
+                    HDF5Constants.H5P_DEFAULT,
+                    refs);
+
+            } catch (Exception ex)
+            {
+                continue;
+            } finally
+            {
+                try { H5.H5Tclose(tid); } catch (Exception ex) {}
+                try { H5.H5Sclose(sid); } catch (Exception ex) {}
+                try { H5.H5Dclose(did); } catch (Exception ex) {}
+            }
+
+            refs = null;
+            buf = null;
+        } // for (int i=0; i<n; i++)
+    }
+   
 
     /**
      * Finds an object by its object ID

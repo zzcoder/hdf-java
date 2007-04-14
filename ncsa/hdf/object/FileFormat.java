@@ -877,14 +877,23 @@ public abstract class FileFormat extends File
     }
 
     /**
-     * Gets an HObject with a given full path (file name + object path).
-     * <p>
-     * The full path is in the form of "filename#//obj_path".
-     *
-     * For example, "/tmp/hdf5_test.h5#//images/iceberg"
+     * @deprecated  Not for public use in the future.<br>
+     * Using {@link #get(String)}
      * 
-     * @param fullPath the file name and object path in the form of "filename#//obj_path".
-     * @return The object if it exists in the file; otherwise returns null
+     * <p>
+     * This static method causes two problems: 1) It can be very expensive if 
+     * if is called many times or in a loop because each call to the method 
+     * creates an instance of a file. 2)Since the method does not return the 
+     * instance of the file, the file cannot be closed directly and may be left
+     * for open (memory leak). The only way to close the file is through
+     * the object returned by this method, such as,
+     * <p>
+     * <pre>
+     * Dataset dset = H5File.getObject("/tmp/hdf5_test.h5#//images/iceberg");
+     * ....
+     * // close the file through dset
+     * dset.getFileFormat().close();
+     * </pre> 
      */
     public static final HObject getHObject(String fullPath) throws Exception
     {
@@ -911,24 +920,23 @@ public abstract class FileFormat extends File
     };
 
     /**
-     * Gets an HObject with given file name and object path.
+     * @deprecated  Not for public use in the future.<br>
+     * Using {@link #get(String)}
+     * 
      * <p>
-     * <Strong>Warning:</strong> This static method creates an instance of a file.
-     * Since the instance of the file is not returned, the file cannot be closed
-     * directly and may be left for open. The only way to close the file is through
-     * the object returned by this method.
+     * This static method causes two problems: 1) It can be very expensive if 
+     * if is called many times or in a loop because each call to the method 
+     * creates an instance of a file. 2)Since the method does not return the 
+     * instance of the file, the file cannot be closed directly and may be left
+     * for open (memory leak). The only way to close the file is through
+     * the object returned by this method, such as,
      * <p>
-     * For example, 
      * <pre>
-     * Dataset dset = H5File("hdf5_test.h5", "/images/iceburg");
+     * Dataset dset = H5File.getObject("hdf5_test.h5", "/images/iceburg");
      * ....
      * // close the file through dset
      * dset.getFileFormat().close();
      * </pre> 
-     *
-     * @param filename the name of the file to open
-     * @param path the path of the data object in the file
-     * @return The object if it exists in the file; otherwise returns null
      */
     public static final HObject getHObject(String filename, String path) throws Exception
     {
