@@ -3,9 +3,6 @@
  */
 package test.unittests;
 
-import java.util.Vector;
-import ncsa.hdf.object.*;
-import ncsa.hdf.object.h5.*;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
