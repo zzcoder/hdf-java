@@ -1,38 +1,35 @@
-#!/bin/sh
+#/****************************************************************************
+# * NCSA HDF                                                                 *
+# * National Comptational Science Alliance                                   *
+# * University of Illinois at Urbana-Champaign                               *
+# * 605 E. Springfield, Champaign IL 61820                                   *
+# *                                                                          *
+# * For conditions of distribution and use, see the accompanying             *
+# * java-hdf5/COPYING file.                                                  *
+# *                                                                          *
+# ****************************************************************************/
 
-# Set up default variable values if not supplied by the user.
 
-# where the HDFView is installed
-HDFVIEW_HOME=@JH45INST@
-export HDFVIEW_HOME
+JAVAC           = @JAVAC@
+RM           = @RM@
 
-# where Java is installed (requires jdk1.4.x)
-JAVAPATH=@JAVABIN@
-export JAVAPATH
-
-RM=@RM@
-
-###############################################################################
-#            DO NOT MODIFY BELOW THIS LINE
-###############################################################################
-
-JAVAC=$JAVAPATH/javac
-CLASSPATH=".:"$HDFVIEW_HOME"/lib/jhdf5.jar:"$HDFVIEW_HOME"/lib/jhdfobj.jar:"$HDFVIEW_HOME"/lib/jhdf5obj.jar:"$HDFVIEW_HOME"/lib/junit.jar"
+CLASSPATH=@CLASSPATH@:../../lib/junit.jar
 
 .SUFFIXES: .java .class
 
 .java.class:
 	$(JAVAC) -classpath $(CLASSPATH) $<
 
-all:	AllHDFObjectTests.class  \
-	H5CompoundDSTest.class  \
-	H5ScalarDSTest.class
-	
+all:	H5TestFile.class \
+	H5CompoundDSTest.class \
+	AllH5ObjectTests.class  \
 
-check: 
-	./unittests.sh
+
+check: all
+	chmod u+x unittests.sh; ./unittests.sh
 
 clean:
-	$(RM) -f *.class
+	$(RM) *.class
 	$(RM) -f *.hdf
 	$(RM) -f *.h5
+
