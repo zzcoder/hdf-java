@@ -29,8 +29,8 @@ public class H5CompoundDSTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         
-        testFile = (H5File)H5FILE.open(AllHDFObjectTests.NAME_FILE_H5, FileFormat.WRITE);
-        dset = (H5CompoundDS)testFile.get(AllHDFObjectTests.NAME_DATASET_COMPOUND);
+        testFile = (H5File)H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
+        dset = (H5CompoundDS)testFile.get(H5TestFile.NAME_DATASET_COMPOUND);
     }
 
     /* (non-Javadoc)
@@ -83,13 +83,13 @@ public class H5CompoundDSTest extends TestCase {
 
             // test the rank
             int rank = dset.getRank();
-            assertEquals(AllHDFObjectTests.RANK, rank);
+            assertEquals(H5TestFile.RANK, rank);
             
             // test the dimesin sizes
             long[] dims = dset.getDims();
             assertNotNull(dims);
             for (int i=0; i<rank; i++) {
-                assertEquals(AllHDFObjectTests.DIMs[i], dims[i]);
+                assertEquals(H5TestFile.DIMs[i], dims[i]);
             }
             
             // start at 0
