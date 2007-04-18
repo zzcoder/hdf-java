@@ -173,7 +173,7 @@ public class H5CompoundDS extends CompoundDS
      * @see ncsa.hdf.object.Dataset#clear()
      */
     public void clear() {
-    		super.clear(); 
+    	super.clear(); 
     		
     	if (attributeList != null)
     		((Vector)attributeList).setSize(0);
@@ -928,6 +928,7 @@ public class H5CompoundDS extends CompoundDS
             selectedDims[rank-2] = dims[rank-2];
         }
         
+        isDataLoaded = false;
         setMemberSelection(true);
     }
 
