@@ -15,6 +15,7 @@ import ncsa.hdf.object.*;
 
 import java.awt.event.*;
 import javax.swing.*;
+
 import java.awt.image.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
@@ -69,7 +70,7 @@ ActionListener, ItemListener
     public DefaultPaletteView(ViewManager theViewer, ImageView theImageView)
     {
         super((JFrame)theViewer, true);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         imageView = theImageView;
         dataset = (ScalarDS)imageView.getDataObject();
 
@@ -96,7 +97,7 @@ ActionListener, ItemListener
         {
             for (int j=0; j<256; j++)
             {
-                d = (int)imagePalette[i][j];
+                d = imagePalette[i][j];
                 if (d < 0) d += 256;
                 paletteData[i][j] = d;
             }
@@ -267,7 +268,7 @@ ActionListener, ItemListener
         {
             for (int j=0; j<256; j++)
             {
-                d = (int)imagePalette[i][j];
+                d = imagePalette[i][j];
                 if (d < 0) d += 256;
                 paletteData[i][j] = d;
             }
@@ -528,10 +529,10 @@ ActionListener, ItemListener
                 // set up the line data for drawing one line a time
                 for (int j=0; j<255; j++)
                 {
-                    x0 = (int)(w*j/255) + 2*gap;
-                    y0 = (int)(h - h*paletteData[i][j]/255);
-                    x1 = (int)(w*(j+1)/255) + 2*gap;
-                    y1 = (int)(h - h*(paletteData[i][j+1])/255);
+                    x0 = (w*j/255) + 2*gap;
+                    y0 = (h - h*paletteData[i][j]/255);
+                    x1 = (w*(j+1)/255) + 2*gap;
+                    y1 = (h - h*(paletteData[i][j+1])/255);
                     g.drawLine(x0, y0, x1, y1);
                 }
 

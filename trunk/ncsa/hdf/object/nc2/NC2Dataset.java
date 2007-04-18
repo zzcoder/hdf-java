@@ -173,7 +173,7 @@ public class NC2Dataset extends ScalarDS
         else {
             dims = new long[rank];
             for (int i=0; i<rank; i++) {
-                dims[i] = (long) (nativeDataset.getDimension(i).getLength());
+                dims[i] = (nativeDataset.getDimension(i).getLength());
             }
         }
 

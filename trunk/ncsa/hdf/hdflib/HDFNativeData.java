@@ -106,7 +106,7 @@ public class HDFNativeData
         } else {
             /* exception: unsupprted type */
             HDFException ex =
-            (HDFException)new HDFJavaException("byteToNumber: setfield bad type: "+obj+" "+type);
+            new HDFJavaException("byteToNumber: setfield bad type: "+obj+" "+type);
             throw(ex);
         }
         return(retobj);

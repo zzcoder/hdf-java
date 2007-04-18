@@ -104,33 +104,33 @@ public class H4GRImage extends ScalarDS
      */
     private int ncomp;
 
-    public H4GRImage(FileFormat fileFormat, String name, String path)
+    public H4GRImage(FileFormat theFile, String name, String path)
     {
-        this(fileFormat, name, path, null);
+        this(theFile, name, path, null);
     }
 
     /**
      * Creates a H4GRImage object with specific name, path, and object ID.
      * <p>
-     * @param fileFormat the HDF file.
+     * @param theFile the HDF file.
      * @param name the name of this H4GRImage.
      * @param path the full path of this H4GRImage.
      * @param oid the unique identifier of this data object.
      */
     public H4GRImage(
-        FileFormat fileFormat,
+        FileFormat theFile,
         String name,
         String path,
         long[] oid)
     {
-        super (fileFormat, name, path, oid);
+        super (theFile, name, path, oid);
         palette = null;
         isImage = isImageDisplay = true;
         unsignedConverted = false;
 
-        if (fileFormat instanceof H4File)
+        if (theFile instanceof H4File)
         {
-            this.grid = ((H4File)fileFormat).getGRAccessID();
+            this.grid = ((H4File)theFile).getGRAccessID();
 
             int id = open();
             String[] objName = {""};
@@ -515,7 +515,7 @@ public class H4GRImage extends ScalarDS
                 else {
                     chunkSize = new long[rank];
                     for (int i=0; i<rank; i++)
-                        chunkSize[i] = (long)chunkInfo.chunk_lengths[i];
+                        chunkSize[i] = chunkInfo.chunk_lengths[i];
                 }
             } catch (Exception ex) {}
 
@@ -545,8 +545,8 @@ public class H4GRImage extends ScalarDS
         for (int i=0; i<rank; i++)
         {
             startDims[i] = 0;
-            selectedDims[i] = (long)idims[i];
-            dims[i] = (long)idims[i];
+            selectedDims[i] = idims[i];
+            dims[i] = idims[i];
         }
 
     }
@@ -727,7 +727,7 @@ public class H4GRImage extends ScalarDS
         }
 
         int grid, vgid;
-        int gid = ((H4File)file).getGRAccessID();
+        int gid = (file).getGRAccessID();
         int tid = type.toNative();
 
         try {

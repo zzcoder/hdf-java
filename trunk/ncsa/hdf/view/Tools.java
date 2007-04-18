@@ -356,7 +356,7 @@ public final class Tools
         for (int i=1; i<255; i++)
         {
             p[0][i] = (byte) ((Math.sin(((double)i/40-3.2))+1)*128);
-            p[1][i] = (byte) ((1-Math.sin(((double)i/2.55-3.1)))*70+30);
+            p[1][i] = (byte) ((1-Math.sin((i/2.55-3.1)))*70+30);
             p[2][i] = (byte) ((1-Math.sin(((double)i/40-3.1)))*128);
         }
 
@@ -469,15 +469,15 @@ public final class Tools
                 pixel = r = g = b = 0;
                 if (planeInterlace)
                 {
-                    r = (int) imageData[idx];
-                    g = (int) imageData[imgSize+idx];
-                    b = (int) imageData[imgSize*2+idx];
+                    r = imageData[idx];
+                    g = imageData[imgSize+idx];
+                    b = imageData[imgSize*2+idx];
                 }
                 else
                 {
-                    r = (int) imageData[idx*3];
-                    g = (int) imageData[idx*3+1];
-                    b = (int) imageData[idx*3+2];
+                    r = imageData[idx*3];
+                    g = imageData[idx*3+1];
+                    b = imageData[idx*3+2];
                 }
 
                 r = (r << 16) & 0x00ff0000;
@@ -849,8 +849,8 @@ public final class Tools
                 if (newmin >=0)
                     minmax[0] = newmin;
 
-                params[0] = (double) USHRT_MAX / (minmax[1]-minmax[0]);
-                params[1] = (double) -minmax[0];
+                params[0] = USHRT_MAX / (minmax[1]-minmax[0]);
+                params[1] = -minmax[0];
                 
             }
         }
@@ -885,7 +885,7 @@ public final class Tools
         double value; 
       
         for( int i = 0; i<n; i++ ) { 
-            value = (double) (data_in[i] + bias) * gain; 
+            value = (data_in[i] + bias) * gain; 
             if( value < 0.0 ) 
               data_out[i] = 0; 
             else if( value > USHRT_MAX ) 
@@ -941,7 +941,7 @@ public final class Tools
             return -1;
         
         for( int i=0; i<dst.length; i++ ) { 
-            dst[i] = (byte)((int)(src[i] >> 8) & 0xFF); 
+            dst[i] = (byte)((src[i] >> 8) & 0xFF); 
         } 
         
         return 0; 
@@ -1186,7 +1186,7 @@ public final class Tools
                 break;
         } // switch (dname)
         
-        var /= (double)n;
+        var /= n;
         
         avgstd[0] = avg;
         avgstd[1] = Math.sqrt(var);

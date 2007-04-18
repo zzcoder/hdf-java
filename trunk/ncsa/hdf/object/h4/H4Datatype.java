@@ -195,7 +195,10 @@ public class H4Datatype extends Datatype
         return data;
     }
 
-    // implementing Datatype
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Datatype#getDatatypeDescription()
+     */
     public String getDatatypeDescription()
     {
         return getDatatypeDescription(toNative());

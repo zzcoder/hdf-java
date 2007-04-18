@@ -202,7 +202,7 @@ public byte[] byteify() throws HDF5Exception
                 if (index > (ArrayDescriptor.dimlen[i] - 1)) {
                     throw new java.lang.IndexOutOfBoundsException("HDFArray: byteify index OOB?");
                 }
-                oo = java.lang.reflect.Array.get((Object) oo,index);
+                oo = java.lang.reflect.Array.get(oo,index);
                 ArrayDescriptor.currentindex[i] = index;
                 ArrayDescriptor.objs[i] = oo;
             }
@@ -294,7 +294,7 @@ public Object arrayify(byte[] bytes) throws HDF5Exception {
         throw(ex);
     }
 
-    if (java.lang.reflect.Array.getLength((Object) bytes) != ArrayDescriptor.totalSize) {
+    if (java.lang.reflect.Array.getLength(bytes) != ArrayDescriptor.totalSize) {
     /* exception: array not right size */
         HDF5JavaException ex =
         new HDF5JavaException("arrayify: array is wrong size?: ");
@@ -306,7 +306,7 @@ public Object arrayify(byte[] bytes) throws HDF5Exception {
         /* 2 data copies here! */
         try {
         if (ArrayDescriptor.NT == 'I') {
-            int [] x = (int [])HDFNativeData.byteToInt(_barray);
+            int [] x = HDFNativeData.byteToInt(_barray);
             System.arraycopy(x,0,_theArray,0,ArrayDescriptor.dimlen[1]);
             return _theArray;
         } else if (ArrayDescriptor.NT == 'S') {

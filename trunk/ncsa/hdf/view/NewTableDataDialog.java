@@ -347,7 +347,7 @@ implements ActionListener, ItemListener
         {
             newObject = null;
             dispose();
-            ((Vector)groupList).setSize(0);
+            (groupList).setSize(0);
         }
         else if (cmd.equals("Change number of members"))
         {

@@ -36,14 +36,14 @@ public HDFArray(Object anArray) throws HDFException {
 
     if (anArray == null) {
         HDFException ex =
-        (HDFException)new HDFJavaException("HDFArray: array is null?: ");
+        new HDFJavaException("HDFArray: array is null?: ");
 ex.printStackTrace();
     }
     Class tc = anArray.getClass();
         if (tc.isArray() == false) {
                 /* exception: not an array */
         HDFException ex =
-        (HDFException)new HDFJavaException("HDFArray: not an array?: ");
+        new HDFJavaException("HDFArray: not an array?: ");
 ex.printStackTrace();
         throw(ex);
         }

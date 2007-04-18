@@ -86,7 +86,7 @@ implements ActionListener, ListSelectionListener
      */
     public UserOptionsDialog(JFrame view, String viewroot)
     {
-        super ((Frame)view, "User Options", true);
+        super (view, "User Options", true);
 
         viewer = view;
         rootDir = viewroot;
@@ -180,7 +180,7 @@ implements ActionListener, ListSelectionListener
         }
         if (!isFontValid)
         {
-            fname =((JFrame)viewer).getFont().getFamily();
+            fname =(viewer).getFont().getFamily();
             ViewProperties.setFontType(fname);
         }
         fontTypeChoice.setSelectedItem(fname);

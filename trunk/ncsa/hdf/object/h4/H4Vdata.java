@@ -91,26 +91,26 @@ public class H4Vdata extends CompoundDS
      */
     private int numberOfRecords;
 
-    public H4Vdata(FileFormat fileFormat, String name, String path)
+    public H4Vdata(FileFormat theFile, String name, String path)
     {
-        this(fileFormat, name, path, null);
+        this(theFile, name, path, null);
     }
 
     /**
      * Creates an H4Vdata object with specific name and path.
      * <p>
-     * @param fileFormat the HDF file.
+     * @param theFile the HDF file.
      * @param name the name of this H4Vdata.
      * @param path the full path of this H4Vdata.
      * @param oid the unique identifier of this data object.
      */
     public H4Vdata(
-        FileFormat fileFormat,
+        FileFormat theFile,
         String name,
         String path,
         long[] oid)
     {
-        super (fileFormat, name, path, oid);
+        super (theFile, name, path, oid);
         numberOfRecords = 0;
         numberOfMembers = 0;
         memberOrders = null;
@@ -461,9 +461,9 @@ public class H4Vdata extends CompoundDS
         // each record has the same fields
         rank = 1;
         dims = new long[1];
-        dims[0] = (long)numberOfRecords;
+        dims[0] = numberOfRecords;
         selectedDims = new long[1];
-        selectedDims[0] = (long)numberOfRecords;
+        selectedDims[0] = numberOfRecords;
         selectedIndex[0] = 0;
         startDims = new long[1];
         startDims[0] = 0;

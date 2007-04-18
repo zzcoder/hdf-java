@@ -102,9 +102,9 @@ implements ActionListener
             GeneralFile root = FileFactory.newFile( srbFileSystem, srbFileSystem.getHomeDirectory() );
             String[] selectFieldNames = {
                 SRBMetaDataSet.FILE_COMMENTS,
-                SRBMetaDataSet.SIZE,
-                SRBMetaDataSet.ACCESS_CONSTRAINT,
-                SRBMetaDataSet.USER_NAME,
+                GeneralMetaData.SIZE,
+                GeneralMetaData.ACCESS_CONSTRAINT,
+                UserMetaData.USER_NAME,
                 SRBMetaDataSet.DEFINABLE_METADATA_FOR_FILES,
             };
             MetaDataSelect selects[] =	MetaDataSet.newSelection( selectFieldNames );
@@ -195,7 +195,7 @@ implements ActionListener
 
         if (fileRoot != null && treeRoot!=null)
         {
-            treeModel.insertNodeInto(fileRoot, (MutableTreeNode)treeRoot, treeRoot.getChildCount());
+            treeModel.insertNodeInto(fileRoot, treeRoot, treeRoot.getChildCount());
             int currentRowCount = tree.getRowCount();
             if (currentRowCount>0) tree.expandRow(tree.getRowCount()-1);
          }

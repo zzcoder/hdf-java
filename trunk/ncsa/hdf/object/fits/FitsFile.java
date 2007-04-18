@@ -197,7 +197,7 @@ public class FitsFile extends FileFormat
             }
 
             if (hduName != null) {
-                oid[0] = (long)hdu.hashCode();
+                oid[0] = hdu.hashCode();
                 FitsDataset d =  new FitsDataset(this, hdu, hduName, oid);
                 DefaultMutableTreeNode node = new DefaultMutableTreeNode(d);
                 root.add( node );
@@ -213,7 +213,7 @@ public class FitsFile extends FileFormat
         if (fitsFile == null)
             return;
 
-        DataInput di = (DataInput)fitsFile.getStream();
+        DataInput di = fitsFile.getStream();
         if (di instanceof InputStream)
             ((InputStream)di).close();
     }

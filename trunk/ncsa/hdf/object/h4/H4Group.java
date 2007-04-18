@@ -38,30 +38,30 @@ public class H4Group extends Group
     /** The default object ID for HDF4 objects */
     private final static long[] DEFAULT_OID = {0, 0};
 
-    public H4Group(FileFormat fileFormat, String name, String path, Group parent)
+    public H4Group(FileFormat theFile, String name, String path, Group parent)
     {
-        this(fileFormat, name, path, parent, null);
+        this(theFile, name, path, parent, null);
     }
 
     /**
      * Creates a group object with specific name, path, and parent.
      * <p>
-     * @param fileFormat the HDF file.
+     * @param theFile the HDF file.
      * @param name the name of this group.
      * @param path the full path of this group.
      * @param parent the parent of this group.
      * @param oid the unique identifier of this data object.
      */
     public H4Group(
-        FileFormat fileFormat,
+        FileFormat theFile,
         String name,
         String path,
         Group parent,
         long[] oid)
     {
-        super (fileFormat, name, path, parent, ((oid == null) ? DEFAULT_OID : oid));
+        super (theFile, name, path, parent, ((oid == null) ? DEFAULT_OID : oid));
 
-        if (fileFormat instanceof H4File)
+        if (theFile instanceof H4File)
         {
             int vgid = open();
             try {  

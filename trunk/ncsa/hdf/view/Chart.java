@@ -105,7 +105,7 @@ implements ActionListener
         double[][] data, double[] xData, double[] yRange)
     {
         super(owner, title, false);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         format = new java.text.DecimalFormat("0.00E0");
 
         if (data == null)
@@ -275,7 +275,7 @@ implements ActionListener
             // draw x labels
             double xp=0, x=xmin;
             double dw = (double)w/(double)xnpoints;
-            double dx = (xmax - xmin)/(double)xnpoints;
+            double dx = (xmax - xmin)/xnpoints;
             boolean gtOne = (dx>=1);
             for (int i=0; i<=xnpoints; i++)
             {
@@ -291,7 +291,7 @@ implements ActionListener
             // draw y labels
             double yp=0, y=ymin;
             double dh = (double)h/(double)ynpoints;
-            double dy = (ymax - ymin) /(double)(ynpoints);
+            double dy = (ymax - ymin) /(ynpoints);
             if (dy > 1) dy = Math.round(dy*10.0)/10.0;
             for (int i=0; i<=ynpoints; i++)
             {
@@ -315,7 +315,7 @@ implements ActionListener
                 double a = -b*ymax;
                 boolean hasXdata = (xData != null && xData.length>=numberOfPoints);
                 double xRatio = (1/(xmax-xmin))*w;
-                double xD = (xmin/(xmax-xmin))*(double)w;
+                double xD = (xmin/(xmax-xmin))*w;
 
                 // draw lines for selected spreadsheet columns
                 for (int i=0; i<numberOfLines; i++)

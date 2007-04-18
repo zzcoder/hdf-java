@@ -101,7 +101,7 @@ implements TextView, ActionListener, KeyListener
         }
 
         String fname = new java.io.File(dataset.getFile()).getName();
-        this.setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
+        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.setTitle("TextView - "+fname+" - " +dataset.getPath()+dataset.getName());
         this.setFrameIcon(ViewProperties.getTextIcon());
 

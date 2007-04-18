@@ -51,14 +51,14 @@ public abstract class Group extends HObject
      * name of the group, "/groups/" is the group path of the group, and pgroup
      * the group where "grp" is located.
      *
-     * @param fileFormat the file which containing the group.
+     * @param theFile the file which containing the group.
      * @param name the name of this group, e.g. "grp01".
      * @param path the full path of this group, e.g. "/groups/".
      * @param parent the parent of this group.
      */
-    public Group(FileFormat fileFormat, String name, String path, Group parent)
+    public Group(FileFormat theFile, String name, String path, Group parent)
     {
-        this(fileFormat, name, path, parent, null);
+        this(theFile, name, path, parent, null);
     }
 
     /**
@@ -66,13 +66,13 @@ public abstract class Group extends HObject
      * Using {@link #Group(FileFormat, String, String, Group)}
      */
     public Group(
-        FileFormat fileFormat,
+        FileFormat theFile,
         String name,
         String path,
         Group parent,
         long[] oid)
     {
-        super (fileFormat, name, path, oid);
+        super (theFile, name, path, oid);
 
         this.parent = parent;
     }
@@ -150,7 +150,7 @@ public abstract class Group extends HObject
             Object uObj = null;
             while(emu.hasMoreElements())
             {
-                uObj = (HObject)((DefaultMutableTreeNode)emu.nextElement()).getUserObject();
+                uObj = ((DefaultMutableTreeNode)emu.nextElement()).getUserObject();
                 if (uObj instanceof Group)
                 {
                     g = (Group)uObj;

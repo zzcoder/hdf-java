@@ -1372,7 +1372,7 @@ public class HDFLibrary {
          || (NT == HDFConstants.DFNT_CHAR8 )
          || (NT == HDFConstants.DFNT_CHAR )
             ) {
-            theFillValue[0] = (Object)new Byte(d1[0]);
+            theFillValue[0] = new Byte(d1[0]);
         } else if ((NT == HDFConstants.DFNT_UINT8 )
                  || (NT == HDFConstants.DFNT_UCHAR8 )
                  || (NT == HDFConstants.DFNT_UCHAR8 )
@@ -1380,15 +1380,15 @@ public class HDFLibrary {
                         Byte f = new Byte(d1[0]);
                         Short fmx;
                         if (f.shortValue() < 0) {
-                                theFillValue[0] = (Object)new Short((short)(f.intValue() + 256));
+                                theFillValue[0] = new Short((short)(f.intValue() + 256));
                         } else {
-                               theFillValue[0] = (Object)new Short(f.shortValue());
+                               theFillValue[0] = new Short(f.shortValue());
                         }
         } else if ((NT == HDFConstants.DFNT_INT16 )
          || (NT == HDFConstants.DFNT_CHAR16 )
             ) {
             short [] fx = HDFNativeData.byteToShort(0,1,d1);
-            theFillValue[0] = (Object)new Short(fx[0]);
+            theFillValue[0] = new Short(fx[0]);
          } else if ( (NT == HDFConstants.DFNT_UINT16 )
          || (NT == HDFConstants.DFNT_UCHAR16 )
             ) {
@@ -1396,30 +1396,30 @@ public class HDFLibrary {
             Short f = new Short(fmx[0]);
             Integer i;
             if (f.intValue() < 0) {
-                theFillValue[0] = (Object)new Integer(f.intValue() + 65536);
+                theFillValue[0] = new Integer(f.intValue() + 65536);
             } else {
-                theFillValue[0] = (Object)new Integer(f.intValue());
+                theFillValue[0] = new Integer(f.intValue());
             }
         } else if ((NT == HDFConstants.DFNT_INT32 )
             ) {
             int [] fx = HDFNativeData.byteToInt(0,1,d1);
-            theFillValue[0] = (Object)new Integer(fx[0]);
+            theFillValue[0] = new Integer(fx[0]);
         } else if ((NT == HDFConstants.DFNT_UINT32 )
             ) {
             int[] fmx = HDFNativeData.byteToInt(0,1,d1);
             Integer i = new Integer(fmx[0]);
             Float f;
             if (i.floatValue() < 0) {
-                theFillValue[0] = (Object)new Float((float)(i.floatValue() + 4294967296.0));
+                theFillValue[0] = new Float((float)(i.floatValue() + 4294967296.0));
             } else {
-                theFillValue[0] = (Object)new Float(i.floatValue());
+                theFillValue[0] = new Float(i.floatValue());
             }
         } else if (NT == HDFConstants.DFNT_FLOAT32 ) {
             float [] fx = HDFNativeData.byteToFloat(0,1,d1);
-            theFillValue[0] = (Object)new Float(fx[0]);
+            theFillValue[0] = new Float(fx[0]);
         } else if (NT == HDFConstants.DFNT_FLOAT64 ) {
             double [] fx = HDFNativeData.byteToDouble(0,1,d1);
-            theFillValue[0] = (Object)new Double(fx[0]);
+            theFillValue[0] = new Double(fx[0]);
         } else {
             System.out.println("Error: SDgetfillvalue not converting, type "+NT);
         }

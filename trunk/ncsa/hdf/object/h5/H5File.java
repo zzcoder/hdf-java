@@ -300,7 +300,7 @@ public class H5File extends FileFormat
         {
             DefaultMutableTreeNode theNode = null;
             HObject theObj = null;
-            Enumeration local_enum = ((DefaultMutableTreeNode)rootNode).breadthFirstEnumeration();
+            Enumeration local_enum = (rootNode).breadthFirstEnumeration();
             while(local_enum.hasMoreElements())
             {
                 theNode = (DefaultMutableTreeNode)local_enum.nextElement();
@@ -585,7 +585,7 @@ public class H5File extends FileFormat
     		pgroup = (Group)get("/");
     	}
     	
-        H5ScalarDS dataset = (H5ScalarDS)H5ScalarDS.create(name, pgroup, type, dims, maxdims, chunks, gzip, data);
+        H5ScalarDS dataset = H5ScalarDS.create(name, pgroup, type, dims, maxdims, chunks, gzip, data);
         try { H5File.createImageAttributes(dataset, interlace); } catch (Exception ex) {}
 
         return dataset;
@@ -776,7 +776,7 @@ public class H5File extends FileFormat
             HObject pal = findObject(srcDataset.getFileFormat(), oid);
             if (pal != null && pal instanceof Dataset)
             {
-                try { copy((Dataset)pal, pgroup); }
+                try { copy(pal, pgroup); }
                 catch (Exception ex2) {}
                 ref_buf = H5.H5Rcreate(
                     pgroup.getFID(),
@@ -1032,7 +1032,7 @@ public class H5File extends FileFormat
         {
             srcObj = (HObject)((DefaultMutableTreeNode)srcEnum.nextElement()).getUserObject();
             newObj = (HObject)((DefaultMutableTreeNode)newEnum.nextElement()).getUserObject();
-            oidMap.put(String.valueOf(((long[])srcObj.getOID())[0]), newObj.getOID());
+            oidMap.put(String.valueOf((srcObj.getOID())[0]), newObj.getOID());
             did = -1;
             tid = -1;
             if (newObj instanceof ScalarDS)
@@ -1175,7 +1175,7 @@ public class H5File extends FileFormat
         else if (path.equals("/"))
             return (HObject)theRoot.getUserObject();
 
-        Enumeration local_enum = ((DefaultMutableTreeNode)theRoot).breadthFirstEnumeration();
+        Enumeration local_enum = (theRoot).breadthFirstEnumeration();
         DefaultMutableTreeNode theNode = null;
         HObject theObj = null;
         while(local_enum.hasMoreElements())
@@ -1331,7 +1331,7 @@ public class H5File extends FileFormat
                 boolean hasLoop = false;
                 HObject tmpObj = null;
                 long[] tmpOID = null;
-                DefaultMutableTreeNode tmpNode = (DefaultMutableTreeNode)pnode;
+                DefaultMutableTreeNode tmpNode = pnode;
                 while (tmpNode != null)
                 {
                     tmpObj = (HObject)tmpNode.getUserObject();
@@ -1650,7 +1650,7 @@ public class H5File extends FileFormat
         {
             attrName = "PALETTE";
             long[] palRef = {-1};
-            attrType = new H5Datatype(H5Datatype.CLASS_REFERENCE, 1, Datatype.NATIVE, Datatype.SIGN_NONE);
+            attrType = new H5Datatype(Datatype.CLASS_REFERENCE, 1, Datatype.NATIVE, Datatype.SIGN_NONE);
             attr = new Attribute(attrName, attrType, attrDims);
             attr.setValue(palRef);
             dataset.writeMetadata(attr);

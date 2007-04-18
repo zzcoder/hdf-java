@@ -56,13 +56,13 @@ public class H5ScalarDS extends ScalarDS
       * For example, in H5ScalarDS(h5file, "dset", "/arrays/"), "dset" is the
       * name of the dataset, "/arrays" is the group path of the dataset.
       *
-      * @param fileFormat the file that contains the data object.
+      * @param theFile the file that contains the data object.
       * @param theName the name of the data object, e.g. "dset".
       * @param thePath the full path of the data object, e.g. "/arrays/".
       */
-    public H5ScalarDS(FileFormat fileFormat, String theName, String thePath)
+    public H5ScalarDS(FileFormat theFile, String theName, String thePath)
     {
-        this(fileFormat, theName, thePath, null);
+        this(theFile, theName, thePath, null);
     }
 
     /**
@@ -70,12 +70,12 @@ public class H5ScalarDS extends ScalarDS
      *  Using {@link #H5ScalarDS(FileFormat, String, String)}
      */
     public H5ScalarDS(
-        FileFormat fileFormat,
+        FileFormat theFile,
         String theName,
         String thePath,
         long[] oid)
     {
-        super (fileFormat, theName, thePath, oid);
+        super (theFile, theName, thePath, oid);
         unsignedConverted = false;
         paletteRefs = null;
 

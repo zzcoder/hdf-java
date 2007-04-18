@@ -105,7 +105,7 @@ void getfield( Class theType, Object obj, byte[] barray, int offset ) throws HDF
     } else if (type.startsWith("[")) {
         if ((obj.getClass().isArray()) == false) {
             HDFException ex =
-            (HDFException)new HDFJavaException("HDFTable: getfield not an array?: "+theType+" "+type);
+            new HDFJavaException("HDFTable: getfield not an array?: "+theType+" "+type);
             throw(ex);
         }
         HDFArray aa = new HDFArray(obj);
@@ -116,7 +116,7 @@ void getfield( Class theType, Object obj, byte[] barray, int offset ) throws HDF
         return;
     } else {
         HDFException ex =
-        (HDFException)new HDFJavaException("HDFTable: getfield unsupported type?: "+theType+" "+type);
+        new HDFJavaException("HDFTable: getfield unsupported type?: "+theType+" "+type);
         throw(ex);
     }
 }
@@ -166,21 +166,21 @@ Object setfield( String type, Object obj, byte[] barray, int offset, int maxlen 
     } else if (type.equals("java.lang.String")) {
         if ((((String)obj).length()) > maxlen) {
             HDFException ex =
-            (HDFException)new HDFJavaException("HDFTable: setfield string is too big?: "+obj+" "+type);
+            new HDFJavaException("HDFTable: setfield string is too big?: "+obj+" "+type);
             throw(ex);
         }
         String ss = new String( barray, offset, ((String)obj).length());
-        return (Object)ss;
+        return ss;
     } else if (type.startsWith("[")) {
         if ((obj.getClass().isArray()) == false) {
             HDFException ex =
-            (HDFException)new HDFJavaException("HDFTable: setfield type is not array?: "+obj+" "+type);
+            new HDFJavaException("HDFTable: setfield type is not array?: "+obj+" "+type);
             throw(ex);
         }
         HDFArray aa = new HDFArray(obj);
         if (java.lang.reflect.Array.getLength(obj) > maxlen) {
             HDFException ex =
-            (HDFException)new HDFJavaException("HDFTable: setfield array too big?: "+obj+" "+type);
+            new HDFJavaException("HDFTable: setfield array too big?: "+obj+" "+type);
             throw(ex);
         }
         byte b[] = new byte[maxlen];
@@ -190,7 +190,7 @@ Object setfield( String type, Object obj, byte[] barray, int offset, int maxlen 
     } else {
         /* exception: unsupprted type */
         HDFException ex =
-        (HDFException)new HDFJavaException("HDFTable: setfield bad type: "+obj+" "+type);
+        new HDFJavaException("HDFTable: setfield bad type: "+obj+" "+type);
         throw(ex);
     }
 }
@@ -216,7 +216,7 @@ class TabDescriptor {
         theType = theClass.toString();
         int i = 0;
         flds = theClass.getFields();
-        nfields = java.lang.reflect.Array.getLength((Object) flds);
+        nfields = java.lang.reflect.Array.getLength(flds);
         fldType = new Class[nfields];
         fldTypeName = new String[nfields];
         fldLen = new int[nfields];
@@ -227,7 +227,7 @@ class TabDescriptor {
             theFields[i] = flds[i].get(theStruct);
             if (theFields[i] == null) {
                 HDFException ex =
-                (HDFException)new HDFJavaException("HDFTable: Field not defined: "+flds[i].getName());
+                new HDFJavaException("HDFTable: Field not defined: "+flds[i].getName());
                 throw(ex);
             }
             fldLen[i] = calcsize(fldType[i], flds[i].get(theStruct));
@@ -286,7 +286,7 @@ class TabDescriptor {
                 /* exception:  not a numeric type */
                 System.out.println("Error:  array is not numeric?");
                 HDFException ex =
-                (HDFException)new HDFJavaException("HDFTable: Array is not numeric?: "+
+                new HDFJavaException("HDFTable: Array is not numeric?: "+
                     s);
                                 throw(ex);
             }
@@ -298,14 +298,14 @@ class TabDescriptor {
             int size = NTsize;
             int i;
             for ( i = 1; i <= dims; i++) {
-                dimlen= java.lang.reflect.Array.getLength((Object) o);
+                dimlen= java.lang.reflect.Array.getLength(o);
                 size *= dimlen;
-                o = java.lang.reflect.Array.get((Object) o,0);
+                o = java.lang.reflect.Array.get(o,0);
             }
             return(size);
         } else {
             HDFException ex =
-            (HDFException)new HDFJavaException("HDFTable: Unsupported data type: "+
+            new HDFJavaException("HDFTable: Unsupported data type: "+
                 s);
                                 throw(ex);
         }

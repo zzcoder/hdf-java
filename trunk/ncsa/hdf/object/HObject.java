@@ -13,10 +13,6 @@ package ncsa.hdf.object;
 
 import java.io.*;
 
-import ncsa.hdf.hdf5lib.H5;
-import ncsa.hdf.hdf5lib.HDF5Constants;
-import ncsa.hdf.hdf5lib.HDFNativeData;
-
 /**
  * The HObject class is the root class of all the HDF data objects. Every data class has
  * HObject as a superclass. All objects (Groups and Datasets) implement the

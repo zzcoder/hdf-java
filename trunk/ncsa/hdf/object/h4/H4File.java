@@ -227,7 +227,7 @@ public class H4File extends FileFormat
         {
             DefaultMutableTreeNode theNode = null;
             HObject theObj = null;
-            Enumeration local_enum = ((DefaultMutableTreeNode)rootNode).breadthFirstEnumeration();
+            Enumeration local_enum = (rootNode).breadthFirstEnumeration();
             while(local_enum.hasMoreElements())
             {
                 theNode = (DefaultMutableTreeNode)local_enum.nextElement();
@@ -862,7 +862,7 @@ public class H4File extends FileFormat
 
                         // check for loops
                         boolean looped = false;
-                        DefaultMutableTreeNode theNode = (DefaultMutableTreeNode)pnode;
+                        DefaultMutableTreeNode theNode = pnode;
                         while (theNode != null && !looped)
                         {
                             H4Group theGroup = (H4Group)theNode.getUserObject();
