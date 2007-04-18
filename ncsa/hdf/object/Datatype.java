@@ -171,16 +171,16 @@ public abstract class Datatype extends HObject
     /**
      * Contructs a named datatype with a given file, name and path.
      * <p>
-     * @param fileFormat the HDF file.
+     * @param theFile the HDF file.
      * @param name the name of the datatype, e.g "12-bit Integer".
      * @param path the full group path of the datatype, e.g. "/datatypes/".
      */
     public Datatype(
-        FileFormat fileFormat,
+        FileFormat theFile,
         String name,
         String path)
     {
-        this (fileFormat, name, path, null);
+        this (theFile, name, path, null);
     }
     
     /**
@@ -188,12 +188,12 @@ public abstract class Datatype extends HObject
      * Using {@link #Datatype(FileFormat, String, String)}
      */
     public Datatype(
-        FileFormat fileFormat,
+        FileFormat theFile,
         String name,
         String path,
         long[] oid)
     {
-        super (fileFormat, name, path, oid);
+        super (theFile, name, path, oid);
     }
 
 

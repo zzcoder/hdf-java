@@ -99,31 +99,31 @@ public class H4SDS extends ScalarDS
      */
     private int sdid;
 
-    public H4SDS(FileFormat fileFormat, String name, String path)
+    public H4SDS(FileFormat theFile, String name, String path)
     {
-        this(fileFormat, name, path, null);
+        this(theFile, name, path, null);
     }
 
     /**
      * Creates an H4SDS object with specific name and path.
      * <p>
-     * @param fileFormat the HDF file.
+     * @param theFile the HDF file.
      * @param name the name of this H4SDS.
      * @param path the full path of this H4SDS.
      * @param oid the unique identifier of this data object.
      */
     public H4SDS(
-        FileFormat fileFormat,
+        FileFormat theFile,
         String name,
         String path,
         long[] oid)
     {
-        super (fileFormat, name, path, oid);
+        super (theFile, name, path, oid);
         unsignedConverted = false;
 
-        if (fileFormat instanceof H4File)
+        if (theFile instanceof H4File)
         {
-            this.sdid = ((H4File)fileFormat).getSDAccessID();
+            this.sdid = ((H4File)theFile).getSDAccessID();
             init();
 /*
             int id = open();
@@ -565,7 +565,7 @@ public class H4SDS extends ScalarDS
                 else {
                     chunkSize = new long[rank];
                     for (int i=0; i<rank; i++)
-                        chunkSize[i] = (long)chunkInfo.chunk_lengths[i];
+                        chunkSize[i] = chunkInfo.chunk_lengths[i];
                 }
             } catch (Exception ex) {}
 
@@ -586,7 +586,7 @@ public class H4SDS extends ScalarDS
         {
             startDims[i] = 0;
             selectedDims[i] = 1;
-            dims[i] = (long)idims[i];
+            dims[i] = idims[i];
         }
 
         selectedIndex[0] = 0;
@@ -687,7 +687,7 @@ public class H4SDS extends ScalarDS
 
         int sdid, sdsid, vgid;
 
-        sdid = ((H4File)file).getSDAccessID();
+        sdid = (file).getSDAccessID();
         // datatype
         int tid = type.toNative();
 

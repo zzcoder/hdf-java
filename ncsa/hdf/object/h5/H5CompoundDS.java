@@ -833,7 +833,7 @@ public class H5CompoundDS extends CompoundDS
                     H5.H5Tget_array_dims(memberTypes[i], mdim, null);
                     memberDims[i] = mdim;
                     int tmptid = H5.H5Tget_super(memberTypes[i]);
-                    memberOrders[i] = (int)(H5.H5Tget_size(memberTypes[i])/H5.H5Tget_size(tmptid));
+                    memberOrders[i] = (H5.H5Tget_size(memberTypes[i])/H5.H5Tget_size(tmptid));
                     try { H5.H5Tclose(tmptid); } catch (HDF5Exception ex) {}
                 }
             }

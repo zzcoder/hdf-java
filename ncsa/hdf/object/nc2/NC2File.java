@@ -179,7 +179,7 @@ public class NC2File extends FileFormat
         NC2Dataset d = null;
         while (it.hasNext()) {
             ncDataset = (Variable)it.next();
-            oid[0] = (long)ncDataset.hashCode();
+            oid[0] = ncDataset.hashCode();
             d = new NC2Dataset(this, ncDataset, oid);
             node = new DefaultMutableTreeNode(d);
             root.add( node );

@@ -175,7 +175,7 @@ public class FitsDataset extends ScalarDS
         else {
             dims = new long[rank];
             for (int i=0; i<rank; i++) {
-                dims[i] = (long) axes[i];
+                dims[i] = axes[i];
             }
         }
 

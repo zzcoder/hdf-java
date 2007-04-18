@@ -14,6 +14,7 @@ package ncsa.hdf.view;
 import ncsa.hdf.object.*;
 
 import javax.swing.*;
+
 import java.awt.event.*;
 import javax.swing.border.*;
 import java.awt.BorderLayout;
@@ -109,7 +110,7 @@ implements ActionListener, ItemListener
     public DataOptionDialog(ViewManager theview, Dataset theDataset)
     {
         super((JFrame)theview, true);
-        setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         viewer = theview;
         dataset = theDataset;
@@ -149,7 +150,7 @@ implements ActionListener, ItemListener
         swapOnlyButton = new JRadioButton("Swap Only", false);
         swapOnlyButton.setMnemonic(KeyEvent.VK_T);
 
-        selLabel = new JLabel("", JLabel.CENTER);
+        selLabel = new JLabel("", SwingConstants.CENTER);
         navigator = new PreviewNavigator(w, h);
 
         currentIndex = new int[Math.min(3, rank)];
@@ -324,9 +325,9 @@ implements ActionListener, ItemListener
         endFields = new JTextField[3];
         strideFields = new JTextField[3];
         JLabel dimLabels[] = {
-            new JLabel("Height", JLabel.RIGHT),
-            new JLabel("Width", JLabel.RIGHT),
-            new JLabel("Depth", JLabel.RIGHT),
+            new JLabel("Height", SwingConstants.RIGHT),
+            new JLabel("Width", SwingConstants.RIGHT),
+            new JLabel("Depth", SwingConstants.RIGHT),
             };
 
         String[] dimNames = dataset.getDimNames();
@@ -362,7 +363,7 @@ implements ActionListener, ItemListener
 
         // add button dimension selection when dimension size >= 4
         JButton button = new JButton("dims...");
-        selectionP.add(new JLabel("", JLabel.RIGHT));
+        selectionP.add(new JLabel("", SwingConstants.RIGHT));
         selectionP.add(button);
         //button.setMnemonic(KeyEvent.VK_M);
         button.setActionCommand("Select more dimensions");
@@ -942,8 +943,8 @@ implements ActionListener, ItemListener
                 selectedIndex[1] = choices[1].getSelectedIndex();
             }
             long steps = (long)Math.ceil(r);
-            selected[selectedIndex[0]] = (long)(dims[selectedIndex[0]]/steps);
-            selected[selectedIndex[1]] = (long)(dims[selectedIndex[1]]/steps);
+            selected[selectedIndex[0]] = (dims[selectedIndex[0]]/steps);
+            selected[selectedIndex[1]] = (dims[selectedIndex[1]]/steps);
             stride[selectedIndex[0]] = stride[selectedIndex[1]] = steps;
 
             if (selected[selectedIndex[0]]==0) selected[selectedIndex[0]] = 1;
@@ -966,8 +967,8 @@ implements ActionListener, ItemListener
             {
                 Object data = sd.read();
                 byte[] bData = Tools.getBytes(data, sd.getImageDataRange(), sd.getFillValue(), null);
-                int h = (int)sd.getHeight();
-                int w = (int)sd.getWidth();
+                int h = sd.getHeight();
+                int w = sd.getWidth();
 
                 if (isTrueColorImage)
                 {

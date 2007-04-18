@@ -48,14 +48,14 @@ public class H5Group extends Group
     /**
      * Constructs an HDF5 group with specific name, path, and parent.
      * <p>
-     * @param fileFormat the file which containing the group.
+     * @param theFile the file which containing the group.
      * @param name the name of this group, e.g. "grp01".
      * @param path the full path of this group, e.g. "/groups/".
      * @param parent the parent of this group.
      */
-    public H5Group(FileFormat fileFormat, String name, String path, Group parent)
+    public H5Group(FileFormat theFile, String name, String path, Group parent)
     {
-        this(fileFormat, name, path, parent, null);
+        this(theFile, name, path, parent, null);
     }
 
     /**
@@ -63,18 +63,18 @@ public class H5Group extends Group
      * Using {@link #H5Group(FileFormat, String, String, Group)}
      */
     public H5Group(
-        FileFormat fileFormat,
+        FileFormat theFile,
         String name,
         String path,
         Group parent,
         long[] oid)
     {
-        super (fileFormat, name, path, parent, oid);
+        super (theFile, name, path, parent, oid);
 
-        if (oid == null && fileFormat != null) {
+        if (oid == null && theFile != null) {
             // retrieve the object ID
             try {
-                byte[] ref_buf = H5.H5Rcreate(fileFormat.getFID(), this.getFullName(), HDF5Constants.H5R_OBJECT, -1);
+                byte[] ref_buf = H5.H5Rcreate(theFile.getFID(), this.getFullName(), HDF5Constants.H5R_OBJECT, -1);
                 this.oid = new long[1];
                 this.oid[0] = HDFNativeData.byteToLong(ref_buf, 0);
             } catch (Exception ex) { this.oid = new long[1]; this.oid[0]=0;}

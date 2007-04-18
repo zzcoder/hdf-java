@@ -12,7 +12,6 @@
 package ncsa.hdf.object;
 
 import java.lang.reflect.Array;
-import java.util.List;
 import java.util.Vector;
 
 /**
@@ -158,13 +157,13 @@ public abstract class Dataset extends HObject
     /**
      * Constructs a Dataset object with a given file, name and path.
      * <p>
-     * @param fileFormat the file that contains the dataset.
+     * @param theFile the file that contains the dataset.
      * @param name the name of the Dataset, e.g. "dset1".
      * @param path the full group path of this Dataset, e.g. "/arrays/".
      */
-    public Dataset(FileFormat fileFormat, String name, String path)
+    public Dataset(FileFormat theFile, String name, String path)
     {
-        this(fileFormat, name, path, null);
+        this(theFile, name, path, null);
     }
 
     /**
@@ -172,12 +171,12 @@ public abstract class Dataset extends HObject
      * Using {@link #Dataset(FileFormat, String, String)}
      */
     public Dataset(
-        FileFormat fileFormat,
+        FileFormat theFile,
         String name,
         String path,
         long[] oid)
     {
-        super (fileFormat, name, path, oid);
+        super (theFile, name, path, oid);
 
         rank = 0;
         data = null;
@@ -570,6 +569,15 @@ public abstract class Dataset extends HObject
 
         return data;
     }
+    
+    /**
+     * @deprecated  Not for public use in the future.
+     * <p>
+     * setData() is not safe to use because it changes memory buffer
+     * of the dataset object. Dataset operation such as write/read 
+     * will fail if the buffer type or size is changed.
+     */
+    public final void setData(Object d)  { data =d; }
 
     /**
      * Clears the data buffer in memory and to force the next read() to load data from file.
@@ -804,7 +812,7 @@ public abstract class Dataset extends HObject
                 if((bdata[i] & 0x80)==0x80) 
                 	sdata[i] = (short) (128 + (bdata[i] & 0x7f));
                 else 
-                	sdata[i] = (short) bdata[i];
+                	sdata[i] = bdata[i];
             }
             data_out = sdata;
         }
@@ -818,7 +826,7 @@ public abstract class Dataset extends HObject
             int value = 0;
             for (int i=0; i<size; i++)
             {
-                value = (int)sdata[i];
+                value = sdata[i];
                 if (value < 0) value += 65536;
                 idata[i] = value;
             }
@@ -834,7 +842,7 @@ public abstract class Dataset extends HObject
             long value = 0;
             for (int i=0; i<size; i++)
             {
-                value = (long)idata[i];
+                value = idata[i];
                 if (value < 0) value += 4294967296L;
                 ldata[i] = value;
             }
@@ -957,7 +965,7 @@ public abstract class Dataset extends HObject
         if (bytes == null)
             return null;
 
-        int n = (int)bytes.length/length;
+        int n = bytes.length/length;
         String bigstr = new String(bytes);
         String[] strArray = new String[n];
         String str = null;

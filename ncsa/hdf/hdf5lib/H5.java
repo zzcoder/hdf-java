@@ -990,7 +990,7 @@ public class H5 {
         throws HDF5Exception, NullPointerException
     {
         int rval = -1;
-        HDFArray theArray = new HDFArray((Object)size);
+        HDFArray theArray = new HDFArray(size);
         byte[] buf = theArray.byteify();
         rval = H5Dextend(dataset_id, buf);
         buf = null;
@@ -1818,7 +1818,7 @@ public class H5 {
     {
         if (dim == null) return -1;
 
-        HDFArray theArray = new HDFArray((Object)dim);
+        HDFArray theArray = new HDFArray(dim);
         byte[] thedims = theArray.byteify();
 
         int retVal = H5Pset_chunk(plist, ndims, thedims );
@@ -2725,14 +2725,14 @@ public class H5 {
     {
         if (dims == null) return -1;
 
-        HDFArray theArray = new HDFArray((Object)dims);
+        HDFArray theArray = new HDFArray(dims);
         byte[] thedims = theArray.byteify();
 
         byte[] themaxdims = null;
         HDFArray theArr = null;
 
         if (maxdims != null) {
-          theArr = new HDFArray((Object)maxdims);
+          theArr = new HDFArray(maxdims);
           themaxdims = theArr.byteify();
         }
 
@@ -2803,7 +2803,7 @@ public class H5 {
     {
         if (coord2D == null) return -1;
 
-        HDFArray theArray = new HDFArray((Object)coord2D);
+        HDFArray theArray = new HDFArray(coord2D);
         byte[] coord = theArray.byteify();
 
         int retVal = H5Sselect_elements(space_id, op,
@@ -2961,13 +2961,13 @@ public class H5 {
     {
         if (current_size == null) return -1;
 
-        HDFArray theArray = new HDFArray((Object)current_size);
+        HDFArray theArray = new HDFArray(current_size);
         byte[] thecurr = theArray.byteify();
 
         byte[] themax = null;
         HDFArray theArr = null;
         if (maximum_size != null) {
-          theArr = new HDFArray((Object)maximum_size);
+          theArr = new HDFArray(maximum_size);
           themax = theArr.byteify();
         }
         int retVal = H5Screate_simple(rank, thecurr,
@@ -3020,7 +3020,7 @@ public class H5 {
     {
         if (offset == null) return -1;
 
-        HDFArray theArray = new HDFArray((Object)offset);
+        HDFArray theArray = new HDFArray(offset);
         byte[] theArr = theArray.byteify();
 
         int retVal = H5Soffset_simple(space_id, theArr);
@@ -3098,28 +3098,28 @@ public class H5 {
     {
         byte[] thestart = null;
         if (start != null)  {
-            HDFArray theA1 = new HDFArray((Object)start);
+            HDFArray theA1 = new HDFArray(start);
             thestart = theA1.byteify();
             theA1 = null;
         }
 
         byte[] thecount = null;
         if (count != null) {
-            HDFArray theA2 = new HDFArray((Object)count);
+            HDFArray theA2 = new HDFArray(count);
             thecount = theA2.byteify();
             theA2 = null;
         }
 
         byte[] thestride = null;
         if (stride != null)  {
-            HDFArray theA3 = new HDFArray((Object)stride);
+            HDFArray theA3 = new HDFArray(stride);
             thestride = theA3.byteify();
             theA3 = null;
         }
 
         byte[] theblock = null;
         if (block != null) {
-            HDFArray theA4 = new HDFArray((Object)block);
+            HDFArray theA4 = new HDFArray(block);
             theblock = theA4.byteify();
             theA4 = null;
         }
