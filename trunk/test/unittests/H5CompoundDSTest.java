@@ -29,6 +29,11 @@ public class H5CompoundDSTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         
+        try { H5TestFile.createTestFile(); } 
+        catch (Exception ex) {
+            fail("*** Unable to create test file. "+ex);
+        }
+        
         testFile = (H5File)H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
         dset = (H5CompoundDS)testFile.get(H5TestFile.NAME_DATASET_COMPOUND);
     }
