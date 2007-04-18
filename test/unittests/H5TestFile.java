@@ -6,14 +6,12 @@ package test.unittests;
 import java.util.Vector;
 import ncsa.hdf.object.*;
 import ncsa.hdf.object.h5.*;
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 /**
  * @author xcao
  *
  */
-public class AllHDFObjectTests {
+public class H5TestFile {
     public final static String NAME_FILE_H5="TestHDF5.h5";
     public final static String NAME_GROUP = "/g0";
     public final static String NAME_GROUP_ATTR = "/g0_attr";
@@ -60,24 +58,6 @@ public class AllHDFObjectTests {
         DATA_COMP.add(2, DATA_STR);
     }
     
-    public static Test suite() {
-        
-        // create an HDF5 test file
-        try { 
-            createH5TestFile();
-        } catch (Exception ex) { 
-            System.out.println ("Cannot create HDF5 test file. "+ex); 
-            return null;
-        }
-        
-        TestSuite suite = new TestSuite("Test for test.unittests");
-        //$JUnit-BEGIN$
-        suite.addTestSuite(H5ScalarDSTest.class);
-        suite.addTestSuite(H5CompoundDSTest.class);
-        //$JUnit-END$
-        return suite;
-    }
-
     /**
      * Creates an HDF5 test file. 
      * <p>
@@ -98,7 +78,7 @@ public class AllHDFObjectTests {
      * </pre> 
      * @throws Exception
      */
-    private static final void createH5TestFile()  throws Exception
+    public static final void createTestFile()  throws Exception
     {
         H5File file=null;
         Group g0, g1, g00;
@@ -132,9 +112,4 @@ public class AllHDFObjectTests {
 
         try { file.close(); } catch (Exception ex) {}
     }
-    
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(suite());
-    }
-
 }
