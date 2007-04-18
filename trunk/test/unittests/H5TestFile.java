@@ -8,6 +8,8 @@ import ncsa.hdf.object.*;
 import ncsa.hdf.object.h5.*;
 
 /**
+ * Creates an HDF5 file for unit tests.
+ * 
  * @author xcao
  *
  */
@@ -27,6 +29,7 @@ public class H5TestFile {
     public final static String NAME_DATASET_SUB_SUB = "/g0/g00/dataset_float";
     
     // data space information
+    public  final static int DATATYPE_SIZE = 4;
     public  final static int RANK = 2;
     public  final static long DIM1 = 50;
     public  final static long DIM2 = 10;
@@ -98,15 +101,15 @@ public class H5TestFile {
         attr.setValue(attrValue);
         g1.writeMetadata(attr);
 
-        file.createScalarDS(NAME_DATASET_INT, null, new H5Datatype(Datatype.CLASS_INTEGER, -1, -1, -1), DIMs, null, CHUNKs, 9, DATA_INT);
-        file.createScalarDS(NAME_DATASET_FLOAT, null, new H5Datatype(Datatype.CLASS_FLOAT, -1, -1, -1), DIMs, null, CHUNKs, 9, DATA_FLOAT);
-        file.createScalarDS(NAME_DATASET_CHAR, null, new H5Datatype(Datatype.CLASS_CHAR, -1, -1, -1), DIMs, null, CHUNKs, 9, DATA_BYTE);
+        file.createScalarDS(NAME_DATASET_INT, null, new H5Datatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, -1), DIMs, null, CHUNKs, 9, DATA_INT);
+        file.createScalarDS(NAME_DATASET_FLOAT, null, new H5Datatype(Datatype.CLASS_FLOAT, DATATYPE_SIZE, -1, -1), DIMs, null, CHUNKs, 9, DATA_FLOAT);
+        file.createScalarDS(NAME_DATASET_CHAR, null, new H5Datatype(Datatype.CLASS_CHAR, 1, -1, -1), DIMs, null, CHUNKs, 9, DATA_BYTE);
         file.createScalarDS(NAME_DATASET_STR, null, new H5Datatype(Datatype.CLASS_STRING, STR_LEN, -1, -1), DIMs, null, CHUNKs, 9, DATA_STR);
-        file.createScalarDS(NAME_DATASET_ENUM, null, new H5Datatype(Datatype.CLASS_ENUM, -1, -1, -1), DIMs, null, CHUNKs, 9, DATA_ENUM);
-        file.createScalarDS(NAME_DATASET_SUB, g0, new H5Datatype(Datatype.CLASS_INTEGER, -1, -1, -1), DIMs, null, CHUNKs, 9, DATA_INT);
-        file.createScalarDS(NAME_DATASET_SUB_SUB, g00, new H5Datatype(Datatype.CLASS_FLOAT, -1, -1, -1), DIMs, null, CHUNKs, 9, DATA_FLOAT);
-        file.createImage(NAME_DATASET_ATTR, null, new H5Datatype(Datatype.CLASS_INTEGER, 1, -1, -1), DIMs, null, CHUNKs, 9, 1, -1, DATA_BYTE);
-        Datatype[]  mdtypes = {new H5Datatype(Datatype.CLASS_INTEGER, -1, -1, -1), new H5Datatype(Datatype.CLASS_FLOAT, -1, -1, -1), new H5Datatype(Datatype.CLASS_STRING, STR_LEN, -1, -1)};
+        file.createScalarDS(NAME_DATASET_ENUM, null, new H5Datatype(Datatype.CLASS_ENUM, DATATYPE_SIZE, -1, -1), DIMs, null, CHUNKs, 9, DATA_ENUM);
+        file.createScalarDS(NAME_DATASET_SUB, g0, new H5Datatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, -1), DIMs, null, CHUNKs, 9, DATA_INT);
+        file.createScalarDS(NAME_DATASET_SUB_SUB, g00, new H5Datatype(Datatype.CLASS_FLOAT, DATATYPE_SIZE, -1, -1), DIMs, null, CHUNKs, 9, DATA_FLOAT);
+        file.createImage(NAME_DATASET_ATTR, null, new H5Datatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, -1), DIMs, null, CHUNKs, 9, 1, -1, DATA_BYTE);
+        Datatype[]  mdtypes = {new H5Datatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, -1), new H5Datatype(Datatype.CLASS_FLOAT, DATATYPE_SIZE, -1, -1), new H5Datatype(Datatype.CLASS_STRING, STR_LEN, -1, -1)};
         String[] mnames = {"int", "float", "string"};
         file.createCompoundDS(NAME_DATASET_COMPOUND, null, DIMs, null, CHUNKs, 9, mnames, mdtypes, null, DATA_COMP);
 

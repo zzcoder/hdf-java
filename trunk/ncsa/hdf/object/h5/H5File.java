@@ -1423,7 +1423,9 @@ public class H5File extends FileFormat
         int aid=-1, sid=-1, tid=-1, n=0;
 
         n = H5.H5Aget_num_attrs(objID);
-        if (n <= 0) new Vector(0); // no attribute attached to this object
+        
+        if (n <= 0) 
+            return (attributeList = new Vector(0)); // no attribute attached to this object
 
         attributeList = new Vector(n);
         for (int i=0; i<n; i++)
@@ -1501,7 +1503,7 @@ public class H5File extends FileFormat
             try { H5.H5Tclose(tid); } catch (HDF5Exception ex) {}
             try { H5.H5Sclose(sid); } catch (HDF5Exception ex) {}
             try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {}
-        }
+        } // for (int i=0; i<n; i++)
 
         return attributeList;
     }

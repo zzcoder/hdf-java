@@ -413,6 +413,8 @@ public class H5ScalarDS extends ScalarDS
             selectedDims[0] = 1;
             selectedDims[selectedIndex[0]] = dims[selectedIndex[0]];
         }
+        
+        isDataLoaded = false;
     }
 
     /*
