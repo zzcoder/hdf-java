@@ -1533,11 +1533,11 @@ public class TestH5Object
         numOfFails += test.test_HDF5ScalarDS_str(FILE_NAME);
         
         if (numOfFails<=0)
-            TestH5Object.out.println("\n\nAll tests passed.");
+            TestH5Object.out.println("\nAll tests passed.\n");
         else if (numOfFails==1)
-            TestH5Object.out.println("\n\n*** 1 test failed.");
+            TestH5Object.out.println("\n*** 1 test failed.\n");
         else
-            TestH5Object.out.println("\n\n*** "+numOfFails+" tests failed.");
+            TestH5Object.out.println("\n*** "+numOfFails+" tests failed.\n");
 
     }
 }

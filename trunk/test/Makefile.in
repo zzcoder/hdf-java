@@ -10,13 +10,13 @@
 #****************************************************************************/
 
 all:
-	cd object; \
-	$(MAKE);
+	(cd object; $(MAKE);)
+	(cd unittests; $(MAKE);)
 
 check:
-	cd object; \
-	$(MAKE) check;
+	(cd object; $(MAKE) check;)
+	(cd unittests; $(MAKE) check;)
 
 clean:
-	cd object; \
-	$(MAKE) clean;
+	(cd object; $(MAKE) clean;)
+	(cd unittests; $(MAKE) clean;)

@@ -1,0 +1,38 @@
+#!/bin/sh
+
+# Set up default variable values if not supplied by the user.
+
+# where the HDFView is installed
+HDFVIEW_HOME=@JH45INST@
+export HDFVIEW_HOME
+
+# where Java is installed (requires jdk1.4.x)
+JAVAPATH=@JAVABIN@
+export JAVAPATH
+
+RM=@RM@
+
+###############################################################################
+#            DO NOT MODIFY BELOW THIS LINE
+###############################################################################
+
+JAVAC=$JAVAPATH/javac
+CLASSPATH=".:"$HDFVIEW_HOME"/lib/jhdf5.jar:"$HDFVIEW_HOME"/lib/jhdfobj.jar:"$HDFVIEW_HOME"/lib/jhdf5obj.jar:"$HDFVIEW_HOME"/lib/junit.jar"
+
+.SUFFIXES: .java .class
+
+.java.class:
+	$(JAVAC) -classpath $(CLASSPATH) $<
+
+all:	AllHDFObjectTests.class  \
+	H5CompoundDSTest.class  \
+	H5ScalarDSTest.class
+	
+
+check: 
+	./unittests.sh
+
+clean:
+	$(RM) -f *.class
+	$(RM) -f *.hdf
+	$(RM) -f *.h5
