@@ -363,6 +363,7 @@ install-jhdfview: ncsa.hdf.view
 	-mkdir -p $(BINDIR);
 	cp lib/netcdf.jar $(LIBDIR)
 	cp lib/fits.jar $(LIBDIR)
+	cp lib/junit.jar $(LIBDIR)
 	cp bin/hdfview.sh $(BINDIR)
 	chmod a+x $(BINDIR)/hdfview.sh
 	@echo "Install HDFVIEW complete"
