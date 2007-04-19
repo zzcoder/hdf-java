@@ -41,6 +41,7 @@ H5OBJDISTFILES= ./ncsa/hdf/object/h5/*.java
 
 FITSDISTJARFILE = ./lib/fits.jar
 NC2SDISTJARFILE = ./lib/netcdf.jar
+JUNITSDISTJARFILE = ./lib/junit.jar
 
 NC2OBJDISTFILES= ./ncsa/hdf/object/nc2/*.java ./lib/netcdf.jar 
 
@@ -80,7 +81,7 @@ TESTFILES=./test/Makefile.in ./test/object/*.java ./test/object/*.in ./test/link
 
 DOCFILES=./docs/*.html ./docs/*.gif ./docs/*.js ./docs/hdfview/*.html ./docs/hdfview/*.gif ./docs/hdfview/ModularGuide/*.html ./docs/hdfview/ModularGuide/*.gif ./docs/hdfview/UsersGuide/images/*.gif ./docs/hdfview/UsersGuide/images/*.jpg ./docs/hdfview/UsersGuide/*.html
 
-DISTFILES= $(TOPDIST) $(JHI5DISTFILES) $(JHIDISTFILES) $(JH45IDISTFILES) $(HDFDISTFILES) $(HDFVIEWDISTFILES) $(HDFOBJDISTFILES) $(H4OBJDISTFILES) $(H5OBJDISTFILES) $(NC2OBJDISTFILES) $(FITSOBJDISTFILES) $(TESTFILES) $(DOCFILES) $(FITSDISTJARFILE) $(NC2DISTJARFILE) $(SRBDISTFILES)
+DISTFILES= $(TOPDIST) $(JHI5DISTFILES) $(JHIDISTFILES) $(JH45IDISTFILES) $(HDFDISTFILES) $(HDFVIEWDISTFILES) $(HDFOBJDISTFILES) $(H4OBJDISTFILES) $(H5OBJDISTFILES) $(NC2OBJDISTFILES) $(FITSOBJDISTFILES) $(TESTFILES) $(DOCFILES) $(FITSDISTJARFILE) $(NC2DISTJARFILE) $(SRBDISTFILES) $(JUNITSDISTJARFILE)
 
 
 JH45PACKAGES = \
