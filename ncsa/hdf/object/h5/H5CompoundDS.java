@@ -163,7 +163,7 @@ public class H5CompoundDS extends CompoundDS
     public Datatype getDatatype()
     {
         if (datatype == null)
-            datatype = new H5Datatype(-1);
+            datatype = new H5Datatype(Datatype.CLASS_COMPOUND, -1, -1, -1);
 
         return datatype;
     }
