@@ -110,6 +110,35 @@ public class Attribute implements Metadata
      */
     public Attribute(String attrName, Datatype attrType, long[] attrDims)
     {
+        this(attrName, attrType, attrDims, null);        
+    }
+    
+    /**
+     * Create an attribute with specific name and value.
+     * 
+     * For scalar attribute, the dimension size can be either an array of size one
+     * or null, and the rank can be either 1 or zero. Attribute is a general class
+     * and is independent of file format, e.g., the implementation of attribute
+     * applies to both HDF4 and HDF5.
+     * <p>
+     * The following example creates a string attribute with the name "CLASS" and value "IMAGE".
+     * <pre>
+        long[] attrDims = {1};
+        String attrName = "CLASS";
+        String[] classValue = {"IMAGE"};
+        Datatype attrType = new H5Datatype(Datatype.CLASS_STRING, classValue[0].length()+1, -1, -1);
+        Attribute attr = new Attribute(attrName, attrType, attrDims, classValue);
+     * </pre>
+     * 
+     * @param attrName the name of the attribute.
+     * @param attrType the datatype of the attribute.
+     * @param attrDims the dimension sizes of the attribute, null for scalar attribute
+     * @param attrValue the value of the attribute, null if no value
+     *
+     * @see ncsa.hdf.object.Datatype
+     */
+    public Attribute(String attrName, Datatype attrType, long[] attrDims, Object attrValue)
+    {
         name = attrName;
         type = attrType;
         dims = attrDims;
@@ -119,8 +148,12 @@ public class Attribute implements Metadata
         if (dims != null)
             rank = dims.length;
 
+        if (attrValue != null)
+            value = attrValue;
+        
         isUnsigned = (type.getDatatypeSign()==Datatype.SIGN_NONE);
     }
+    
 
     /**
      * Returns the value of the attribute.
