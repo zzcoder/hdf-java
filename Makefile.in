@@ -107,7 +107,7 @@ FITSOBJPACKAGES = ncsa.hdf.object.fits
 
 HDFVIEWPACKAGES= ncsa.hdf.view
 
-TESTPACKAGES = test.h4toh5 test.object
+TESTPACKAGES = test.object
 
 
 .SUFFIXES: .java .class
