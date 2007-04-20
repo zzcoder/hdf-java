@@ -53,7 +53,7 @@ ex.printStackTrace();
     /* extra error checking -- probably not needed */
     if (_desc == null ) {
         HDFException ex =
-        (HDFException)new HDFJavaException("HDFArray: internal error: array description failed?: ");
+        new HDFJavaException("HDFArray: internal error: array description failed?: ");
         throw(ex);
     }
 }
@@ -76,7 +76,7 @@ throws HDFException
     if (b == null) {
                 System.out.println("Error:  HDFArray can't allocate bytes for array");
  HDFException ex =
-        (HDFException)new HDFJavaException("HDFArray: emptyBytes: allocation failed");
+        new HDFJavaException("HDFArray: emptyBytes: allocation failed");
                         throw(ex);
     }
     return (b);

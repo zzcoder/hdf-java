@@ -12,6 +12,7 @@
 package ncsa.hdf.view;
 
 import javax.swing.*;
+
 import java.io.*;
 import java.util.*;
 import java.awt.event.*;
@@ -21,7 +22,6 @@ import javax.swing.border.*;
 import ncsa.hdf.object.HObject;
 
 import java.awt.Color;
-import java.awt.Frame;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -391,7 +391,7 @@ implements ActionListener, ListSelectionListener
 
         JPanel cpl = new JPanel();
         cpl.setLayout(new GridLayout(7,1,5,5));
-        cpl.add(new JLabel("Host Machine: ", JLabel.RIGHT));
+        cpl.add(new JLabel("Host Machine: ", SwingConstants.RIGHT));
         cpl.add(new JLabel("Port Number: ", JLabel.RIGHT));
         cpl.add(new JLabel("User Name: ", JLabel.RIGHT));
         cpl.add(new JLabel("Password: ", JLabel.RIGHT));
