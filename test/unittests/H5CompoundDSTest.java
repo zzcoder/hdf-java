@@ -4,7 +4,6 @@
 package test.unittests;
 
 import java.util.Vector;
-import java.util.Enumeration;
 import java.lang.reflect.Array;
 
 import ncsa.hdf.hdf5lib.H5;
@@ -34,6 +33,10 @@ public class H5CompoundDSTest extends TestCase {
     private static final float TEST_VALUE_FLOAT = Float.MAX_VALUE;
     private static final String TEST_VALUE_STR = "H5CompoundDSTest";
     
+    
+    private H5Datatype typeInt = null;
+    private H5Datatype typeFloat = null;
+    private H5Datatype typeStr = null;
     private H5File testFile = null;
     private H5CompoundDS testDataset = null;
     
@@ -49,6 +52,10 @@ public class H5CompoundDSTest extends TestCase {
      */
     protected void setUp() throws Exception {
         super.setUp();
+        
+        typeInt = new H5Datatype(Datatype.CLASS_INTEGER, H5TestFile.DATATYPE_SIZE, -1, -1);
+        typeFloat = new H5Datatype(Datatype.CLASS_FLOAT, H5TestFile.DATATYPE_SIZE, -1, -1);
+        typeStr = new H5Datatype(Datatype.CLASS_STRING, H5TestFile.STR_LEN, -1, -1);
 
         testFile = (H5File)H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
         assertNotNull(testFile);
@@ -1070,7 +1077,7 @@ public class H5CompoundDSTest extends TestCase {
         // attache a new attribute
         attr = new Attribute(
                 "float attribute", 
-                new H5Datatype(Datatype.CLASS_FLOAT, 4, -1, -1), new long[] {1},
+                typeFloat, new long[] {1},
                 new float[] {TEST_VALUE_FLOAT});
         try  {
             testDataset.writeMetadata(attr);
@@ -1212,23 +1219,443 @@ public class H5CompoundDSTest extends TestCase {
 
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5CompoundDS#create(java.lang.String, ncsa.hdf.object.Group, long[], java.lang.String[], ncsa.hdf.object.Datatype[], int[], java.lang.Object)}.
+     * <p>
+     * Create a simple compound dataset, i.e. compound members can be either a scalar data or 1D array.
+     * <pre>
+        public static Dataset create(
+            String name,
+            Group pgroup,
+            long[] dims,
+            String[] memberNames,
+            Datatype[] memberDatatypes,
+            int[] memberSizes,
+            Object data) throws Exception
+     * </pre>
+     * <p>
+     * Cases tested:
+     * <ul>
+     *   <li> Create new compound datasets
+     *   <ul>
+     *     <li> Compound dataset with one field -- an 1D integer array: {int[]}
+     *     <li> Compound dataset with one field -- an 1D float array: {float[]}
+     *     <li> Compound dataset with one field -- a string: {string}
+     *     <li> Compound dataset with three fields {int[], float[], string}
+     *   </ul>
+     *   <li> Close and reopen the file
+     *   <li> Check the content of the new datasets
+     *   <li> Restore to the orginal file (remove the new datasets)
+     * </ul>
      */
     public final void testCreateStringGroupLongArrayStringArrayDatatypeArrayIntArrayObject() {
-        fail("Not yet implemented"); // TODO
+        H5CompoundDS dset = null;
+        H5Group rootGrp = null;
+        Vector compData = new Vector();
+        String compIntName = "/compoundInt";
+        String compFloatName = "/compoundFloat";
+        String compStrName = "/compoundStr";
+        String compIntFloatStrName = "compoundIntFloatStr";
+        int[] expectedInts = {1,2,3,4,5,6,7,8,9,10};
+        float[] expectedFloats = {.1f,.2f,.3f,.4f,.5f,.6f,.7f,.8f,.9f,.10f};
+        String[] expectedStr = {"Str 1", "Str 2", "Str 3", "Str 4", "Str 5"};
+        long[] dims = {5};
+        int[] memberOrders = {2};
+        
+        try {
+            rootGrp = (H5Group)testFile.get("/");
+        } catch (Exception ex) { 
+            fail("testFile.get(\"/\") failed. "+ ex);
+        }
+        
+        // Compound dataset with one field -- an integer array: {int[]}
+        compData.setSize(0);
+        compData.add(expectedInts);
+        try {
+            dset = (H5CompoundDS)H5CompoundDS.create(
+                    compIntName, 
+                    rootGrp, 
+                    dims, 
+                    new String[] {"int"}, 
+                    new H5Datatype[] {typeInt}, 
+                    memberOrders, 
+                    compData);
+        } catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+        assertNotNull(dset);
+        
+        // Compound dataset with one field -- a float array: {float[}
+        compData.setSize(0);
+        compData.add(expectedFloats);
+        try {
+            dset = (H5CompoundDS)H5CompoundDS.create(
+                    compFloatName, 
+                    rootGrp, 
+                    dims, 
+                    new String[] {"float"}, 
+                    new H5Datatype[] {typeFloat}, 
+                    memberOrders, 
+                    compData);
+        } catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+        assertNotNull(dset);
+        
+        // Compound dataset with one field -- a string: {string}
+        compData.setSize(0);
+        compData.add(expectedStr);
+        try {
+            dset = (H5CompoundDS)H5CompoundDS.create(
+                    compStrName, 
+                    rootGrp, 
+                    dims, 
+                    new String[] {"Str"}, 
+                    new H5Datatype[] {typeStr}, 
+                    new int[] {1}, 
+                    compData);
+        } catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+        assertNotNull(dset);
+        
+        //Compound dataset with three fields {int, float, string}
+        compData.setSize(0);
+        compData.add(expectedInts);
+        compData.add(expectedFloats);
+        compData.add(expectedStr);
+        try {
+            dset = (H5CompoundDS)H5CompoundDS.create(
+                    compIntFloatStrName, 
+                    rootGrp, 
+                    dims, 
+                    new String[] {"int", "float", "Str"}, 
+                    new H5Datatype[] {typeInt, typeFloat, typeStr}, 
+                    new int[] {2, 2, 1}, 
+                    compData);
+        } catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+        assertNotNull(dset);
+
+        // close the file and reopen it
+        try {
+            testFile.close();
+            testFile = (H5File)H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
+        } catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+        
+        // check the content of the new compIntName
+        try {
+            dset.clear();
+            dset = (H5CompoundDS)testFile.get(compIntName);
+        } catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+        assertNotNull(dset);
+        compData = null;
+        dset.init();
+        try {
+            compData = (Vector)dset.getData();
+        }  catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+        assertNotNull(compData);
+        int[] ints = (int[])compData.get(0);
+        for (int i=0; i<expectedInts.length; i++)
+            assertEquals(expectedInts[i], ints[i]);
+        try {
+            testFile.delete(dset); // delete the new datast
+        }  catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+        
+        // check the content of the new compFloatName
+        try {
+            dset.clear();
+            dset = (H5CompoundDS)testFile.get(compFloatName);
+        } catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+        assertNotNull(dset);
+        compData = null;
+        dset.init();
+        try {
+            compData = (Vector)dset.getData();
+        }  catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+        assertNotNull(compData);
+        float[] floats = (float[])compData.get(0);
+        for (int i=0; i<expectedFloats.length; i++)
+            assertEquals(expectedFloats[i], floats[i], Float.MIN_VALUE);
+        try {
+            testFile.delete(dset); // delete the new datast
+        }  catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+       
+        // check the content of the new compStrName
+        try {
+            dset.clear();
+            dset = (H5CompoundDS)testFile.get(compStrName);
+        } catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+        assertNotNull(dset);
+        compData = null;
+        dset.init();
+        try {
+            compData = (Vector)dset.getData();
+        }  catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+        assertNotNull(compData);
+        String[] strs = (String[])compData.get(0);
+        for (int i=0; i<expectedStr.length; i++)
+            assertTrue(expectedStr[i].equals(strs[i]));
+        try {
+            testFile.delete(dset); // delete the new datast
+        }  catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+  
+        // check the content of the new compIntFloatStrName
+        try {
+            dset.clear();
+            dset = (H5CompoundDS)testFile.get(compIntFloatStrName);
+        } catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+        assertNotNull(dset);
+        compData = null;
+        dset.init();
+        try {
+            compData = (Vector)dset.getData();
+        }  catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+        assertNotNull(compData);
+        assertTrue(compData.size()>=3);
+        ints = (int[])compData.get(0);
+        floats = (float[])compData.get(1);
+        strs = (String[])compData.get(2);
+        for (int i=0; i<expectedInts.length; i++)
+            assertEquals(expectedInts[i], ints[i]);
+        for (int i=0; i<expectedFloats.length; i++)
+            assertEquals(expectedFloats[i], floats[i], Float.MIN_VALUE);
+        for (int i=0; i<expectedStr.length; i++)
+            assertTrue(expectedStr[i].equals(strs[i]));
+        try {
+            testFile.delete(dset); // delete the new datast
+        }  catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
     }
 
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5CompoundDS#create(java.lang.String, ncsa.hdf.object.Group, long[], java.lang.String[], ncsa.hdf.object.Datatype[], int[], int[][], java.lang.Object)}.
+     * <p>
+     * Create a simple compound dataset, i.e. compound members can be multiple-dimensional array.
+     * <pre>
+        public static Dataset create(
+            String name,
+            Group pgroup,
+            long[] dims,
+            String[] memberNames,
+            Datatype[] memberDatatypes,
+            int[] memberRanks,
+            int[][] memberDims,
+            Object data) throws Exception
+     * </pre>
+     * <p>
+     * Cases tested:
+     * <ul>
+     *   <li> Create new compound datasets
+     *   <li> Compound dataset with two fields -- {int[][], float[][]}
+     *   <li> Close and reopen the file
+     *   <li> Check the content of the new datasets
+     *   <li> Restore to the orginal file (remove the new dataset)
+     * </ul>
      */
     public final void testCreateStringGroupLongArrayStringArrayDatatypeArrayIntArrayIntArrayArrayObject() {
-        fail("Not yet implemented"); // TODO
+        H5CompoundDS dset = null;
+        H5Group rootGrp = null;
+        Vector compData = new Vector();
+        String compName = "/compound--{int[][], float[][]}";
+        int[] expectedInts = {1,2,3,4,5,6,7,8,9,10,11,12};
+        float[] expectedFloats = {.1f,.2f,.3f,.4f,.5f,.6f,.7f,.8f,.9f,.10f,.11f,.12f};
+        long[] dims = {2};
+        int[] memberRanks = {2, 2};
+        int[][] memberDims = {{3, 2}, {3, 2}};
+        
+        try {
+            rootGrp = (H5Group)testFile.get("/");
+        } catch (Exception ex) { 
+            fail("testFile.get(\"/\") failed. "+ ex);
+        }
+        
+        // create new compound dataset
+        compData.setSize(0);
+        compData.add(expectedInts);
+        compData.add(expectedFloats);
+        try {
+            dset = (H5CompoundDS)H5CompoundDS.create(
+                    compName, 
+                    rootGrp, 
+                    dims, 
+                    new String[] {"int", "float"}, 
+                    new H5Datatype[] {typeInt, typeFloat}, 
+                    memberRanks, 
+                    memberDims,
+                    compData);
+        } catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+        assertNotNull(dset);
+        
+        // close the file and reopen it
+        try {
+            testFile.close();
+            testFile = (H5File)H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
+        } catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+
+        // check the content of the new dataset
+        try {
+            dset.clear();
+            dset = (H5CompoundDS)testFile.get(compName);
+        } catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+        assertNotNull(dset);
+        compData = null;
+        dset.init();
+        try {
+            compData = (Vector)dset.getData();
+        }  catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+        assertNotNull(compData);
+        assertTrue(compData.size()>=2);
+        int[] ints = (int[])compData.get(0);
+        float[] floats = (float[])compData.get(1);
+
+        for (int i=0; i<expectedInts.length; i++)
+            assertEquals(expectedInts[i], ints[i]);
+        for (int i=0; i<expectedFloats.length; i++)
+            assertEquals(expectedFloats[i], floats[i], Float.MIN_VALUE);
+        try {
+            testFile.delete(dset); // delete the new datast
+        }  catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
     }
 
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5CompoundDS#create(java.lang.String, ncsa.hdf.object.Group, long[], long[], long[], int, java.lang.String[], ncsa.hdf.object.Datatype[], int[], int[][], java.lang.Object)}.
+     * <p>
+     * Create a simple compound dataset with compression options, i.e. compound members can be multiple-dimensional array.
+     * <pre>
+        public static Dataset create(
+            String name,
+            Group pgroup,
+            long[] dims,
+            long[] maxdims,
+            long[] chunks,
+            int gzip,
+            String[] memberNames,
+            Datatype[] memberDatatypes,
+            int[] memberRanks,
+            int[][] memberDims,
+            Object data) throws Exception
+     * </pre>
+     * <p>
+     * Cases tested:
+     * <ul>
+     *   <li> Create new compound datasets with level-9 gzip compression
+     *   <li> Compound dataset with three fields -- {int, float, string}
+     *   <li> Close and reopen the file
+     *   <li> Check the content of the new datasets
+     *   <li> Restore to the orginal file (remove the new dataset)
+     * </ul>
      */
     public final void testCreateStringGroupLongArrayLongArrayLongArrayIntStringArrayDatatypeArrayIntArrayIntArrayArrayObject() {
-        fail("Not yet implemented"); // TODO
-    }
+        H5CompoundDS dset = null;
+        H5Group rootGrp = null;
+        Vector compData = new Vector();
+        String compName = "/compound compressed with gzip level 9";
+        long[] maxdims = {H5TestFile.DIMs[0]*5,  H5TestFile.DIMs[1]*5};
+        
+        try {
+            rootGrp = (H5Group)testFile.get("/");
+        } catch (Exception ex) { 
+            fail("testFile.get(\"/\") failed. "+ ex);
+        }
+        
+        // create new compound dataset
+        compData.setSize(0);
+        compData.add(H5TestFile.DATA_INT);
+        compData.add(H5TestFile.DATA_FLOAT);
+        compData.add(H5TestFile.DATA_STR);
+        try {
+            dset = (H5CompoundDS)H5CompoundDS.create(
+                    compName, 
+                    rootGrp, 
+                    H5TestFile.DIMs, 
+                    maxdims,
+                    H5TestFile.CHUNKs,
+                    9,
+                    new String[] {"int", "float", "str"}, 
+                    new H5Datatype[] {typeInt, typeFloat, typeStr}, 
+                    new int[] {1,1,1}, 
+                    new int[][] {{1},{1},{1}},
+                    compData);
+        } catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+        assertNotNull(dset);
+        
+        // close the file and reopen it
+        try {
+            testFile.close();
+            testFile = (H5File)H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
+        } catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+
+        // check the content of the new dataset
+        try {
+            dset.clear();
+            dset = (H5CompoundDS)testFile.get(compName);
+        } catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+        assertNotNull(dset);
+        compData = null;
+        dset.init();
+        try {
+            compData = (Vector)dset.getData();
+        }  catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+        assertNotNull(compData);
+        assertTrue(compData.size()>=3);
+        int[] ints = (int[])compData.get(0);
+        float[] floats = (float[])compData.get(1);
+        String[] strs = (String[])compData.get(2);
+
+        for (int i=0; i<H5TestFile.DATA_INT.length; i++)
+            assertEquals(H5TestFile.DATA_INT[i], ints[i]);
+        for (int i=0; i<H5TestFile.DATA_FLOAT.length; i++)
+            assertEquals(H5TestFile.DATA_FLOAT[i], floats[i], Float.MIN_VALUE);
+        for (int i=0; i<H5TestFile.DATA_STR.length; i++)
+            assertTrue(H5TestFile.DATA_STR[i].equals(strs[i]));
+        try {
+            testFile.delete(dset); // delete the new datast
+        }  catch (Exception ex) { 
+            fail("H5CompoundDS.create() failed. "+ ex);
+        }
+    }       
     
 }

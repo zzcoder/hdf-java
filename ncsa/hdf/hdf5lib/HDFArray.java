@@ -392,7 +392,7 @@ public Object arrayify(byte[] bytes) throws HDF5Exception {
                     System.out.println("out of bounds?");
                     return null;
                 }
-                oo = java.lang.reflect.Array.get((Object) oo,index);
+                oo = java.lang.reflect.Array.get(oo,index);
                 ArrayDescriptor.currentindex[i] = index;
                 ArrayDescriptor.objs[i] = oo;
             }
@@ -403,13 +403,13 @@ public Object arrayify(byte[] bytes) throws HDF5Exception {
         if (ArrayDescriptor.NT == 'J') {
             long [] arow = HDFNativeData.byteToLong(n,ArrayDescriptor.dimlen[ArrayDescriptor.dims],_barray);
             java.lang.reflect.Array.set(ArrayDescriptor.objs[ArrayDescriptor.dims - 2] ,
-                (ArrayDescriptor.currentindex[ArrayDescriptor.dims - 1]), (Object)arow);
+                (ArrayDescriptor.currentindex[ArrayDescriptor.dims - 1]), arow);
             n += ArrayDescriptor.bytetoindex[ArrayDescriptor.dims - 1];
             ArrayDescriptor.currentindex[ArrayDescriptor.dims - 1]++;
         } else if (ArrayDescriptor.NT == 'I') {
             int [] arow = HDFNativeData.byteToInt(n,ArrayDescriptor.dimlen[ArrayDescriptor.dims],_barray);
             java.lang.reflect.Array.set(ArrayDescriptor.objs[ArrayDescriptor.dims - 2] ,
-                (ArrayDescriptor.currentindex[ArrayDescriptor.dims - 1]), (Object)arow);
+                (ArrayDescriptor.currentindex[ArrayDescriptor.dims - 1]), arow);
 
             n += ArrayDescriptor.bytetoindex[ArrayDescriptor.dims - 1];
             ArrayDescriptor.currentindex[ArrayDescriptor.dims - 1]++;
