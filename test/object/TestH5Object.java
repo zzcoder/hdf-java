@@ -1350,7 +1350,7 @@ public class TestH5Object
                 // retrieve the compound dataset
                 dset = (CompoundDS)file.get(NAME_DATASET_COMPOUND);
                 dset.init();
-                
+               
                 // get dataspace information
                 rank = dset.getRank();
                 count = dset.getSelectedDims();
@@ -1363,7 +1363,7 @@ public class TestH5Object
                 for (int i=0; i<rank; i++) {
                     count[i] = 1;
                 }
-                
+               
                 // select different rows
                 start[0] = rowIdx;
                 
@@ -1388,10 +1388,10 @@ public class TestH5Object
                 
                 // 7)  close the file
                 file.close();
-               
+              
                 // 8)  reopen the file and read the table cell as in step 1
                 file.open();
-                
+               
                 // 9)  assert that the value has been changed and is correct
                 dset = (CompoundDS)file.get(NAME_DATASET_COMPOUND);
                 dset.init();
@@ -1411,7 +1411,7 @@ public class TestH5Object
                     failed(message, new HDF5LibraryException("Incorrect data values in file"), file);
                     return 1;
                 }
-                
+               
                 file.close();
             }
         } catch (Exception ex) { failed(message, ex, file); return 1; }

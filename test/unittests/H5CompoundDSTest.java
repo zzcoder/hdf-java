@@ -60,7 +60,10 @@ public class H5CompoundDSTest extends TestCase {
         testFile = (H5File)H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
         assertNotNull(testFile);
 
+        testFile.open();
+
         testDataset = (H5CompoundDS)testFile.get(H5TestFile.NAME_DATASET_COMPOUND);
+        
         assertNotNull(testDataset);
     }
 
@@ -90,22 +93,22 @@ public class H5CompoundDSTest extends TestCase {
      */
     public final void testSetName() {
          String newName = "tmpName";
-        
+       
         try { 
             testDataset.setName(newName); 
         } catch (Exception ex) { 
             fail("setName() failed. "+ ex);
         }
-        
+ 
         // close the file and reopen it
         try {
             testFile.close();
-            testFile = (H5File)H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
+            testFile.open();
             testDataset = (H5CompoundDS)testFile.get(newName);
         } catch (Exception ex) { 
             fail("setName() failed. "+ ex);
         }
-        
+       
         // test the old name
         H5CompoundDS tmpDset = null;
         try {
@@ -285,6 +288,17 @@ public class H5CompoundDSTest extends TestCase {
      */
     public final void testInit() {
         for (int loop=0; loop<NLOOPS; loop++) {
+
+            try { testFile.close(); } catch (Exception ex) { }
+           
+            try {
+                testFile.open();
+                
+                testDataset = (H5CompoundDS)testFile.get(H5TestFile.NAME_DATASET_COMPOUND);
+            } catch (Exception ex) { 
+                fail("setName() failed. "+ ex);
+            }
+           
             testDataset.init();
 
             // test the rank
@@ -347,6 +361,8 @@ public class H5CompoundDSTest extends TestCase {
             for (int i=0; i<nmembers; i++) {
                 testDataset.setMemberSelection(false);
             }
+            
+            try { testFile.close(); } catch (Exception ex) { }
          } //for (int testRound=0; testRound<2; testRound++) {
     } //public final void testInit() {
 
@@ -553,7 +569,7 @@ public class H5CompoundDSTest extends TestCase {
             // close the file and reopen it
             try {
                 testFile.close();
-                testFile = (H5File)H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
+                testFile.open();
                 testDataset = (H5CompoundDS)testFile.get(H5TestFile.NAME_DATASET_COMPOUND);
             } catch (Exception ex) { 
                 fail("write() failed. "+ ex);
@@ -1089,7 +1105,7 @@ public class H5CompoundDSTest extends TestCase {
         try {
             testDataset.clear();
             testFile.close();
-            testFile = (H5File)H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
+            testFile.open();
             testDataset = (H5CompoundDS)testFile.get(H5TestFile.NAME_DATASET_COMPOUND);
         } catch (Exception ex) { 
             fail("write() failed. "+ ex);
@@ -1193,7 +1209,7 @@ public class H5CompoundDSTest extends TestCase {
         try {
             testDataset.clear();
             testFile.close();
-            testFile = (H5File)H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
+            testFile.open();
             testDataset = (H5CompoundDS)testFile.get(H5TestFile.NAME_DATASET_COMPOUND);
         } catch (Exception ex) { 
             fail("write() failed. "+ ex);
@@ -1339,7 +1355,7 @@ public class H5CompoundDSTest extends TestCase {
         // close the file and reopen it
         try {
             testFile.close();
-            testFile = (H5File)H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
+            testFile.open();
         } catch (Exception ex) { 
             fail("H5CompoundDS.create() failed. "+ ex);
         }
@@ -1516,7 +1532,7 @@ public class H5CompoundDSTest extends TestCase {
         // close the file and reopen it
         try {
             testFile.close();
-            testFile = (H5File)H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
+            testFile.open();
         } catch (Exception ex) { 
             fail("H5CompoundDS.create() failed. "+ ex);
         }
@@ -1619,7 +1635,7 @@ public class H5CompoundDSTest extends TestCase {
         // close the file and reopen it
         try {
             testFile.close();
-            testFile = (H5File)H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
+            testFile.open();
         } catch (Exception ex) { 
             fail("H5CompoundDS.create() failed. "+ ex);
         }
