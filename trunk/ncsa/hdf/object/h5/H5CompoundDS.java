@@ -585,6 +585,8 @@ public class H5CompoundDS extends CompoundDS
      */
     public List getMetadata() throws HDF5Exception
     {
+        if (rank <= 0) init();
+
         if (attributeList == null)
         {
             int did = open();
@@ -594,7 +596,6 @@ public class H5CompoundDS extends CompoundDS
             int pid = H5.H5Dget_create_plist(did);
             if (H5.H5Pget_layout(pid) == HDF5Constants.H5D_CHUNKED)
             {
-                if (rank <= 0) init();
                 chunkSize = new long[rank];
                 H5.H5Pget_chunk(pid, rank, chunkSize);
             }
