@@ -99,7 +99,7 @@ HyperlinkListener, ChangeListener
         "Copyright "+'\u00a9'+" 2006-2007 The HDF Group.\n"+
         "All rights reserved.";
 
-    private static final String JAVA_COMPILER = "1.4.2_05-b04";
+    private static final String JAVA_COMPILER = System.getProperty("java.vm.version");
 
     /** the directory where the HDFView is installed */
     private String rootDir;
