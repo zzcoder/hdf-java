@@ -184,7 +184,7 @@ public abstract class HObject implements Serializable, DataFormat
                 theName = thePath.substring(thePath.lastIndexOf(separator)+1);
                 thePath = thePath.substring(0, thePath.lastIndexOf(separator));
             }
-        } else if (theName != null && thePath ==null && theName.contains(separator))
+        } else if (theName != null && thePath ==null && (theName.indexOf(separator)>=0))
         {
             if (theName.equals(separator)){
                 theName = separator;

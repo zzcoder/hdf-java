@@ -792,7 +792,14 @@ public class H5ScalarDS extends ScalarDS
             for (int i=0; i<nfilt; i++)
             {
                 if (i>0) compression += ", ";
-                filter = H5.H5Pget_filter(pid, i, flags, cd_nelmts, cd_values, 120, cd_name);
+                
+                try {
+                    filter = H5.H5Pget_filter(pid, i, flags, cd_nelmts, cd_values, 120, cd_name);
+                } catch (Throwable err) {
+                    compression += "ERROR";
+                    continue;
+                }
+                
                 if (filter == HDF5Constants.H5Z_FILTER_DEFLATE)
                 {
                     compression += "GZIP: level = "+cd_values[0];
