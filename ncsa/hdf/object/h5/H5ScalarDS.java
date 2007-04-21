@@ -752,6 +752,8 @@ public class H5ScalarDS extends ScalarDS
      */
     public List getMetadata() throws HDF5Exception
     {
+        if (rank <= 0) init();
+        
         // load attributes first
         if (attributeList == null)
         {
@@ -762,7 +764,6 @@ public class H5ScalarDS extends ScalarDS
             int pid = H5.H5Dget_create_plist(did);
             if (H5.H5Pget_layout(pid) == HDF5Constants.H5D_CHUNKED)
             {
-                if (rank <= 0) init();
                 chunkSize = new long[rank];
                 H5.H5Pget_chunk(pid, rank, chunkSize);
             }
