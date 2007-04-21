@@ -34,7 +34,7 @@ runtests: all
 	chmod u+x runtests.sh
 
 check: all
-	./runtests.sh
+#	./runtests.sh
 	./TestH5Object.sh
 
 clean:
