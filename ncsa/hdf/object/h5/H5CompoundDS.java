@@ -177,7 +177,7 @@ public class H5CompoundDS extends CompoundDS
     		
     	if (attributeList != null)
     		((Vector)attributeList).setSize(0);
-    }
+     }
 
     /*
      * (non-Javadoc)
@@ -252,54 +252,37 @@ public class H5CompoundDS extends CompoundDS
         H5.H5Dchdir_ext(pdir);
 
         int did = open();
-
-        /*
-        // we still need to allocate memory space even if the storage space 
-        // is not allocated because applications such as HDFView will need 
-        // to write data into the dataset
-        //
-        // check is storage space is allocated
-        try {
-            if (H5.H5Dget_storage_size(did) <=0) {
-                throw new HDF5Exception("Storage space is not allocated.");
-            }
-        } catch (Exception ex) {;}
-        */
-        
-        /*
-        // check is fill value is defined
-        try {
-            int plist = H5.H5Dget_create_plist(did);
-            int[] fillValue = {0};
-            H5.H5Pfill_value_defined(plist, fillValue);
-            try { H5.H5Pclose(plist); } catch (Exception ex2) {}
-            if (fillValue[0] == HDF5Constants.H5D_FILL_VALUE_UNDEFINED)
-                throw new HDF5Exception("Fill value is not defined.");
-        } catch (Exception ex) {ex.printStackTrace();}
-         */
-
         list = new Vector(flatNameList.size()+2);
 
         try // to match finally for closing resources
         {
             long[] lsize = {1};
-            for (int j=0; j<selectedDims.length; j++)
-                lsize[0] *= selectedDims[j];
-
-            fspace = H5.H5Dget_space(did);
-            mspace = H5.H5Screate_simple(1, lsize, null);
-
-            // set the rectangle selection
-            // don't do hyber selection for one point dataset
-            if (rank*dims[0] > 1)
+            boolean isAllSelected = true;
+            for (int i=0; i<rank; i++)
             {
-                H5.H5Sselect_hyperslab(
-                    fspace,
-                    HDF5Constants.H5S_SELECT_SET,
-                    startDims,
-                    selectedStride,
-                    selectedDims,
-                    null );   // set block to 1
+                lsize[0] *= selectedDims[i];
+                if (selectedDims[i] < dims[i])
+                    isAllSelected = false;
+            }
+
+            if (lsize[0] == 0) {
+                throw new HDF5Exception("No data to read.\nEither the dataset or the selected subset is empty.");
+            }
+
+            if (isAllSelected)
+            {
+                mspace = HDF5Constants.H5S_ALL;
+                fspace = HDF5Constants.H5S_ALL;
+            }
+            else
+            {
+                fspace = H5.H5Dget_space(did);
+                
+                // When 1D dataspace is used in chunked dataset, reading is very slow.
+                // It is a known problem on HDF5 library for chunked dataset. 
+                // mspace = H5.H5Screate_simple(1, lsize, null);
+                mspace = H5.H5Screate_simple(rank, selectedDims, null);
+                H5.H5Sselect_hyperslab(fspace, HDF5Constants.H5S_SELECT_SET, startDims, selectedStride, selectedDims, null );
             }
 
             // read each of member data into a byte array, then extract
@@ -453,21 +436,33 @@ public class H5CompoundDS extends CompoundDS
         try
         {
             long[] lsize = {1};
-            for (int j=0; j<selectedDims.length; j++) {
-                lsize[0] *= selectedDims[j];
+            boolean isAllSelected = true;
+            for (int i=0; i<rank; i++)
+            {
+                lsize[0] *= selectedDims[i];
+                if (selectedDims[i] < dims[i])
+                    isAllSelected = false;
             }
 
-            fspace = H5.H5Dget_space(did);
-            mspace = H5.H5Screate_simple(1, lsize, null);
+            if (lsize[0] == 0) {
+                throw new HDF5Exception("No data to read.\nEither the dataset or the selected subset is empty.");
+            }
 
-            // set the rectangle selection
-            H5.H5Sselect_hyperslab(
-                fspace,
-                HDF5Constants.H5S_SELECT_SET,
-                startDims,
-                selectedStride,
-                selectedDims,
-                null );   // set block to 1
+            if (isAllSelected)
+            {
+                mspace = HDF5Constants.H5S_ALL;
+                fspace = HDF5Constants.H5S_ALL;
+            }
+            else
+            {
+                fspace = H5.H5Dget_space(did);
+                
+                // When 1D dataspace is used in chunked dataset, reading is very slow.
+                // It is a known problem on HDF5 library for chunked dataset. 
+                // mspace = H5.H5Screate_simple(1, lsize, null);
+                mspace = H5.H5Screate_simple(rank, selectedDims, null);
+                H5.H5Sselect_hyperslab(fspace, HDF5Constants.H5S_SELECT_SET, startDims, selectedStride, selectedDims, null );
+            }
 
             int idx = 0;
             boolean is_variable_str = false;

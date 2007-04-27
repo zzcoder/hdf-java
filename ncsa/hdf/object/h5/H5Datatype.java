@@ -198,6 +198,27 @@ public class H5Datatype extends Datatype
         datatypeOrder = NATIVE;
     }
 
+    /**
+     * @deprecated  Not for public use in the future.<br>
+     * Using {@link ncsa.hdf.hdf5lib.H5#H5Tget_native_type(int)}
+     * <p>
+     * Return the HDF5 memory datatype identifier based on the HDF5 datatype identifier on disk
+     * <p>
+     * @param tid the datatype identifieron disk.
+     * @return the memory datatype identifier if successful, and negative otherwise.
+     */
+    public static int toNative(int tid)
+    {
+        // data type information
+        int native_type=-1;
+        
+        try {
+            native_type = H5.H5Tget_native_type(tid);
+        } catch (Exception ex) {}
+    
+        return native_type;
+    }
+    
     /*
      * (non-Javadoc)
      * @see ncsa.hdf.object.Datatype#toNative()

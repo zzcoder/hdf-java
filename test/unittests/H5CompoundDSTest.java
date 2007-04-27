@@ -19,12 +19,44 @@ import junit.framework.TestCase;
 /**
  * TestCase for H5CompoundDS.
  * <p>
- * This class tests all public methods in H5CompoundDS.
+ * This class tests all the public methods in H5CompoundDS class.
  * <p>
- * The compound dataset contains three fields: {int, float, string}.
+ * The test file contains the following objects. 
+ * <pre>
+        /dataset_byte            Dataset {50, 10}
+        /dataset_comp            Dataset {50, 10}
+        /dataset_enum            Dataset {50, 10}
+        /dataset_float           Dataset {50, 10}
+        /dataset_image           Dataset {50, 10}
+        /dataset_int             Dataset {50, 10}
+        /dataset_str             Dataset {50, 10}
+        /g0                      Group
+        /g0/dataset_comp         Dataset {50, 10}
+        /g0/dataset_int          Dataset {50, 10}
+        /g0/g00                  Group
+        /g0/g00/dataset_float    Dataset {50, 10}
+        /g0_attr                 Group
+ * </pre>
+ * <p>
+ * We use the following template to test all the methods:
+ * <p>
+     * What to test:
+     * <ul> 
+     *   <li> Test for boundary conditions
+     *   <ul>
+     *     <li>
+     *   </ul>
+     *   <li> Test for failure
+     *   <ul>
+     *     <li>
+     *   </ul>
+     *   <li> Test for general functionality
+     *   <ul>
+     *     <li> 
+     *   </ul>
+     * </ul>
  * 
- * @author xcao
- *
+ * @author Peter Cao, The HDF Group
  */
 public class H5CompoundDSTest extends TestCase {
     private static final H5File H5FILE = new H5File();
@@ -63,7 +95,6 @@ public class H5CompoundDSTest extends TestCase {
         testFile.open();
 
         testDataset = (H5CompoundDS)testFile.get(H5TestFile.NAME_DATASET_COMPOUND);
-        
         assertNotNull(testDataset);
     }
 
@@ -82,18 +113,43 @@ public class H5CompoundDSTest extends TestCase {
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5CompoundDS#setName(java.lang.String)}.
      * <p>
-     * Cases tested:
-     * <ul>
-     *   <li> change the dataset name
-     *   <li> close/re-open the file
-     *   <li> get the dataset with the new name
-     *   <li> failure test: get the dataset with the original name
-     *   <li> set the name back to the original name
+     * What to test:
+     * <ul> 
+     *   <li> Test for boundary conditions
+     *   <ul>
+     *     <li> Set name to null
+     *   </ul>
+     *   <li> Test for failure
+     *   <ul>
+     *     <li> Set a name that already exists in file.
+     *   </ul>
+     *   <li> Test for general functionality
+     *   <ul>
+     *     <li> change the dataset name
+     *     <li> close/re-open the file
+     *     <li> get the dataset with the new name
+     *     <li> failure test: get the dataset with the original name
+     *     <li> set the name back to the original name
+     *   </ul>
      * </ul>
      */
     public final void testSetName() {
-         String newName = "tmpName";
+        String newName = "tmpName";
+         
+        // test set name to null
+        try {
+            testDataset.setName(null);
+        } catch (Exception ex) { 
+            fail("setName() to null failed. "+ ex);
+        }
        
+        // set an existing name
+        try {
+            testDataset.setName(H5TestFile.NAME_DATASET_COMPOUND_SUB);
+        } catch (Exception ex) { 
+            fail("setName() to an existing name failed. "+ ex);
+        }
+        
         try { 
             testDataset.setName(newName); 
         } catch (Exception ex) { 
@@ -137,7 +193,7 @@ public class H5CompoundDSTest extends TestCase {
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5CompoundDS#open()}.
      * <p>
-     * Cases tested:
+     * What to test:
      * <ul>
      *   <li> open a dataset identifier
      *   <li> get datatype and dataspace identifier for the dataset
@@ -176,7 +232,7 @@ public class H5CompoundDSTest extends TestCase {
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5CompoundDS#close(int)}.
      * <p>
-     * Cases tested:
+     * What to test:
      * <ul>
      *   <li> open a dataset identifier
      *   <li> get datatype and dataspace identifier for the dataset
@@ -235,7 +291,7 @@ public class H5CompoundDSTest extends TestCase {
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5CompoundDS#clear()}.
      * <p>
-     * Cases tested:
+     * What to test:
      * <ul>
      *   <li> Read data/attributes from file
      *   <li> clear the dataet
@@ -272,13 +328,13 @@ public class H5CompoundDSTest extends TestCase {
         } catch (Exception ex) { 
             fail("clear() failed. "+ ex);
         }
-        assertTrue(attrs.size() == 0);
+        assertTrue(attrs.size() <= 0);
     }
 
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5CompoundDS#init()}.
      * <p>
-     * Cases tested:
+     * What to test:
      * <ul>
      *   <li> call init()
      *   <li> make that the dataspace is correct
@@ -369,7 +425,7 @@ public class H5CompoundDSTest extends TestCase {
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5CompoundDS#read()}.
      * <p>
-     * Cases tested:
+     * What to test:
      * <ul>
      *   <li> Read the whole dataset
      *   <li> Read data row by row
@@ -490,7 +546,7 @@ public class H5CompoundDSTest extends TestCase {
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5CompoundDS#readBytes()}.
      * <p>
-     * Cases tested:
+     * What to test:
      * <ul>
      *   <li> Read the whole dataset in a byte buffer
      *   <li> check the data size
@@ -515,7 +571,7 @@ public class H5CompoundDSTest extends TestCase {
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5CompoundDS#write(java.lang.Object)}.
      * <p>
-     * Cases tested:
+     * What to test:
      * <ul>
      *   <li> Read/write the whole dataset
      *   <li> Read/write data row by row
@@ -776,7 +832,7 @@ public class H5CompoundDSTest extends TestCase {
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5CompoundDS#getDatatype()}.
      * <p>
-     * Cases tested:
+     * What to test:
      * <ul>
      *   <li> Get the datatype object of the dataset
      *   <li> Make sure that the data types of compound members are correct
@@ -820,7 +876,7 @@ public class H5CompoundDSTest extends TestCase {
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5CompoundDS#isString(int)}.
      * <p>
-     * Cases tested:
+     * What to test:
      * <ul>
      *   <li> Test a string datatype with isString(int tid)
      *   <li> Test a non-string datatype with isString(int tid)
@@ -841,7 +897,7 @@ public class H5CompoundDSTest extends TestCase {
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5CompoundDS#getSize(int)}.
      * <p>
-     * Cases tested:
+     * What to test:
      * <ul>
      *   <li> Test a sizes of member data types
      * </ul>
@@ -861,7 +917,7 @@ public class H5CompoundDSTest extends TestCase {
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5CompoundDS#H5CompoundDS(ncsa.hdf.object.FileFormat, java.lang.String, java.lang.String)}.
      * <p>
-     * Cases tested:
+     * What to test:
      * <ul>
      *   <li> Construct an H5CompoundDS object that exits in file
      *   <ul>
@@ -929,7 +985,7 @@ public class H5CompoundDSTest extends TestCase {
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5CompoundDS#H5CompoundDS(ncsa.hdf.object.FileFormat, java.lang.String, java.lang.String, long[])}.
      * <p>
-     * Cases tested:
+     * What to test:
      * <ul>
      *   <li> Construct an H5CompoundDS object that exits in file
      *   <ul>
@@ -1010,9 +1066,9 @@ public class H5CompoundDSTest extends TestCase {
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5CompoundDS#getMetadata()}.
      * <p>
-     * Cases tested:
+     * What to test:
      * <ul>
-     *   <li> Get the attributes
+     *   <li> Get all the attributes
      *   <li> Check the content of the attributes
      * </ul>
       */
@@ -1049,7 +1105,7 @@ public class H5CompoundDSTest extends TestCase {
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5CompoundDS#writeMetadata(java.lang.Object)}.
      * <p>
-     * Cases tested:
+     * What to test:
      * <ul>
      *   <li> Update the value of an existing attribute
      *   <li> Attach a new attribute
@@ -1175,7 +1231,7 @@ public class H5CompoundDSTest extends TestCase {
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5CompoundDS#removeMetadata(java.lang.Object)}.
      * <p>
-     * Cases tested:
+     * What to test:
      * <ul>
      *   <li> Remove all existing attributes
      *   <li> Close and reopen file to check if all attribute are removed from file
@@ -1248,7 +1304,7 @@ public class H5CompoundDSTest extends TestCase {
             Object data) throws Exception
      * </pre>
      * <p>
-     * Cases tested:
+     * What to test:
      * <ul>
      *   <li> Create new compound datasets
      *   <ul>
@@ -1484,7 +1540,7 @@ public class H5CompoundDSTest extends TestCase {
             Object data) throws Exception
      * </pre>
      * <p>
-     * Cases tested:
+     * What to test:
      * <ul>
      *   <li> Create new compound datasets
      *   <li> Compound dataset with two fields -- {int[][], float[][]}
@@ -1587,7 +1643,7 @@ public class H5CompoundDSTest extends TestCase {
             Object data) throws Exception
      * </pre>
      * <p>
-     * Cases tested:
+     * What to test:
      * <ul>
      *   <li> Create new compound datasets with level-9 gzip compression
      *   <li> Compound dataset with three fields -- {int, float, string}

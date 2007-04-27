@@ -609,40 +609,34 @@ public class H5ScalarDS extends ScalarDS
         } catch (Exception ex) {}
 
         // check is fill value is defined
-/*        
-        try {
-            int plist = H5.H5Dget_create_plist(did);
-            int[] fillStatus = {0};
-            H5.H5Pfill_value_defined(plist, fillStatus);
-            try { H5.H5Pclose(plist); } catch (Exception ex2) {}
-            if (fillStatus[0] == HDF5Constants.H5D_FILL_VALUE_UNDEFINED)
-            {
-                throw new HDF5Exception("Fill value is not defined.");
-            }
-        } catch (Exception ex) {}
-*/
         try {
             long[] lsize = {1};
-            for (int j=0; j<selectedDims.length; j++)
-                lsize[0] *= selectedDims[j];
+            boolean isAllSelected = true;
+            for (int i=0; i<rank; i++)
+            {
+                lsize[0] *= selectedDims[i];
+                if (selectedDims[i] < dims[i])
+                    isAllSelected = false;
+            }
 
             if (lsize[0] == 0) {
                 throw new HDF5Exception("No data to read.\nEither the dataset or the selected subset is empty.");
             }
 
-            fspace = H5.H5Dget_space(did);
-            mspace = H5.H5Screate_simple(1, lsize, null);
-
-            // set the rectangle selection
-            // HDF5 bug: for scalar dataset, H5Sselect_hyperslab gives core dump
-            if (rank*dims[0] > 1) {
-                H5.H5Sselect_hyperslab(
-                    fspace,
-                    HDF5Constants.H5S_SELECT_SET,
-                    startDims,
-                    selectedStride,
-                    selectedDims,
-                    null );   // set block to 1
+            if (isAllSelected)
+            {
+                mspace = HDF5Constants.H5S_ALL;
+                fspace = HDF5Constants.H5S_ALL;
+            }
+            else
+            {
+                fspace = H5.H5Dget_space(did);
+                
+                // When 1D dataspace is used in chunked dataset, reading is very slow.
+                // It is a known problem on HDF5 library for chunked dataset. 
+                //mspace = H5.H5Screate_simple(1, lsize, null);
+                mspace = H5.H5Screate_simple(rank, selectedDims, null);
+                H5.H5Sselect_hyperslab(fspace, HDF5Constants.H5S_SELECT_SET, startDims, selectedStride, selectedDims, null );
             }
 
             boolean isREF = (H5.H5Tequal(nativeDatatype, HDF5Constants.H5T_STD_REF_OBJ));
@@ -712,14 +706,12 @@ public class H5ScalarDS extends ScalarDS
             else
             {
                 fspace = H5.H5Dget_space(did);
+                
+                // When 1D dataspace is used in chunked dataset, reading is very slow.
+                // It is a known problem on HDF5 library for chunked dataset. 
                 mspace = H5.H5Screate_simple(1, lsize, null);
-                H5.H5Sselect_hyperslab(
-                    fspace,
-                    HDF5Constants.H5S_SELECT_SET,
-                    startDims,
-                    selectedStride,
-                    selectedDims,
-                    null );
+                mspace = H5.H5Screate_simple(rank, selectedDims, null);
+                H5.H5Sselect_hyperslab(fspace, HDF5Constants.H5S_SELECT_SET, startDims, selectedStride, selectedDims, null );
             }
 
             int org_tid = H5.H5Dget_type(did);
