@@ -19,6 +19,7 @@ public class AllH5ObjectTests {
         
         // ncsa.hdf.object.h5 package
         suite.addTestSuite(H5CompoundDSTest.class);
+        suite.addTestSuite(H5BugFixTest.class);
         
 /*        
         suite.addTestSuite(H5FileTest.class);
