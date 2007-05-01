@@ -1698,6 +1698,7 @@ public class H5File extends FileFormat
         if (rootNode != null)
             obj = findObject(this, path);
 
+        // found object in memory
         if (obj != null)
             return obj;
 
@@ -1719,32 +1720,28 @@ public class H5File extends FileFormat
         // do not open the full tree structure, only the file handler
         fid = open(false);
         if (fid < 0) return null;
-
-        // check if the requested object is a group or dataset
-        int did=-1, gid=-1;
-        try { did = H5.H5Dopen(fid, path);
-        } catch (Exception ex) { did = -1; }
-        try { gid = H5.H5Gopen(fid, path);
-        } catch (Exception ex) { gid = -1; }
-
-        if (did > 0) {
-            // open a dataet
-            try { obj = getDataset(did, name, pPath); }
-            finally { try { H5.H5Dclose(did); } catch (Exception ex) {} }
-        } else if (gid > 0) {
-            // open a group
+        
+        HDF5GroupInfo info = new HDF5GroupInfo();
+        H5.H5Gget_objinfo(fid, path, false, info);
+        int objType = info.getType();
+        
+        if (objType == HDF5Constants.H5G_DATASET) {
+            int did = -1;
             try {
+                did = H5.H5Dopen(fid, path);
+                obj = getDataset(did, name, pPath); 
+            }
+            finally { 
+                try { H5.H5Dclose(did); } catch (Exception ex) {} 
+            }
+        } 
+        else if (objType == HDF5Constants.H5G_GROUP) {
+            int gid = -1;
+            try {
+                gid = H5.H5Gopen(fid, path);
                 H5Group pGroup = null;
                 if (pPath != null) {
-                    long[] oid = null;
-                    try {
-                        byte[] ref_buf = H5.H5Rcreate(fid, pPath, HDF5Constants.H5R_OBJECT, -1);
-                        long l = HDFNativeData.byteToLong(ref_buf, 0);
-                        oid = new long[1];
-                        oid[0] = l;
-                    } catch (Exception ex) {oid = null;}
-
-                    pGroup = new H5Group(this, null, pPath, null, oid);
+                    pGroup = new H5Group(this, null, pPath, null);
                     obj = getGroup(gid, name, pGroup);
                     pGroup.addToMemberList(obj);
                 } else
@@ -1752,7 +1749,7 @@ public class H5File extends FileFormat
             } finally {
                 try { H5.H5Gclose(gid); } catch (Exception ex) {}
             }
-        } // else if (gid > 0) {
+        }
 
         return obj;
     }

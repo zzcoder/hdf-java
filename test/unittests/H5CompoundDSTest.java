@@ -60,7 +60,7 @@ import junit.framework.TestCase;
  */
 public class H5CompoundDSTest extends TestCase {
     private static final H5File H5FILE = new H5File();
-    private static final int NLOOPS = 5;
+    private static final int NLOOPS = 10;
     private static final int TEST_VALUE_INT = Integer.MAX_VALUE;
     private static final float TEST_VALUE_FLOAT = Float.MAX_VALUE;
     private static final String TEST_VALUE_STR = "H5CompoundDSTest";
@@ -135,7 +135,7 @@ public class H5CompoundDSTest extends TestCase {
      */
     public final void testSetName() {
         String newName = "tmpName";
-         
+/*         
         // test set name to null
         try {
             testDataset.setName(null);
@@ -149,7 +149,7 @@ public class H5CompoundDSTest extends TestCase {
         } catch (Exception ex) { 
             fail("setName() to an existing name failed. "+ ex);
         }
-        
+        */
         try { 
             testDataset.setName(newName); 
         } catch (Exception ex) { 
