@@ -884,16 +884,7 @@ public class H5CompoundDS extends CompoundDS
      */
     public void setName (String newName) throws Exception
     {
-        String currentFullPath = getPath()+getName();
-        String newFullPath = getPath()+newName;
-
-        H5.H5Gmove(getFID(), currentFullPath, newFullPath);
-        
-        /*
-        H5.H5Glink(getFID(), HDF5Constants.H5G_LINK_HARD, currentFullPath, newFullPath);
-        H5.H5Gunlink(getFID(), currentFullPath);
-        */
-
+        H5File.setObjectName(this, newName);
         super.setName(newName);
     }
     
@@ -1325,5 +1316,18 @@ public class H5CompoundDS extends CompoundDS
 
         return tsize;
     }
+    
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#finalize()
+     */
+    protected void finalize () {
+        if (memberTypes != null) {
+            for (int i=0; i<memberTypes.length; i++) {
+                try { H5.H5Tclose(memberTypes[i]); } catch (Exception ex) {}
+            }
+        }
+    }
+    
    
 }

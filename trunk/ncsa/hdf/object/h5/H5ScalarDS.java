@@ -49,7 +49,7 @@ public class H5ScalarDS extends ScalarDS
 
      /** flag to indicate if the dataset is a variable length */
      private boolean isVLEN = false;
-
+     
      /**
       * Constructs an instance of a H5ScalarDS object with specific name and path.
       * <p>
@@ -81,18 +81,22 @@ public class H5ScalarDS extends ScalarDS
 
         // test if it is an image
         int did = open();
-        int aid=-1, atid=-1, tid=0, asid=-1;
+        
+        int aid=-1, atid=-1, tid=0;
         try
         {
             hasAttribute = (H5.H5Aget_num_attrs(did)>0);
             tid= H5.H5Dget_type(did);
+            
             int tclass = H5.H5Tget_class(tid);
             isText = (tclass==HDF5Constants.H5T_STRING);
             isVLEN = (tclass==HDF5Constants.H5T_VLEN || H5.H5Tis_variable_str(tid));
 
             // try to find out if the dataset is an image
             aid = H5.H5Aopen_name(did, "CLASS");
+            
             atid = H5.H5Aget_type(aid);
+            
             int aclass = H5.H5Tget_class(atid);
             if (aclass == HDF5Constants.H5T_STRING)
             {
@@ -106,14 +110,13 @@ public class H5ScalarDS extends ScalarDS
         } catch (Exception ex) {}
         finally
         {
-            try { H5.H5Sclose(asid); } catch (HDF5Exception ex) {;}
             try { H5.H5Tclose(atid); } catch (HDF5Exception ex) {;}
             try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
             try { H5.H5Tclose(tid); } catch (HDF5Exception ex) {;}
         }
 
         // retrieve the IMAGE_MINMAXRANGE
-        int anativeType = -1;
+        int anativeType=-1, asid=-1;
         try
         {
             // try to find out if the dataset is an image
@@ -163,7 +166,6 @@ public class H5ScalarDS extends ScalarDS
         }
         
         close(did);
-
     }
     
 
@@ -178,7 +180,7 @@ public class H5ScalarDS extends ScalarDS
             return; // already called. Initialize only once
         }
 
-        int did=-1, sid=-1, tid=-1, pid=-1;
+        int did=-1, sid=-1, tid=-1;
 
         did = open();
         paletteRefs = getPaletteRefs(did);
@@ -288,65 +290,10 @@ public class H5ScalarDS extends ScalarDS
         }
 
         close(did);
-
+        
         startDims = new long[rank];
         selectedDims = new long[rank];
-        for (int i=0; i<rank; i++) {
-            startDims[i] = 0;
-            selectedDims[i] = 1;
-        }
-
-        if (interlace == INTERLACE_PIXEL)
-        {
-            // 24-bit TRUE color image
-            // [height][width][pixel components]
-            selectedDims[2] = 3;
-            selectedDims[0] = dims[0];
-            selectedDims[1] = dims[1];
-            selectedIndex[0] = 0; // index for height
-            selectedIndex[1] = 1; // index for width
-            selectedIndex[2] = 2; // index for depth
-        }
-        else if (interlace == INTERLACE_PLANE)
-        {
-            // 24-bit TRUE color image
-            // [pixel components][height][width]
-            selectedDims[0] = 3;
-            selectedDims[1] = dims[1];
-            selectedDims[2] = dims[2];
-            selectedIndex[0] = 1; // index for height
-            selectedIndex[1] = 2; // index for width
-            selectedIndex[2] = 0; // index for depth
-        }
-        else if (rank == 1)
-        {
-            selectedIndex[0] = 0;
-            selectedDims[0] = dims[0];
-        }
-        else if (rank == 2)
-        {
-            selectedIndex[0] = 0;
-            selectedIndex[1] = 1;
-            selectedDims[0] = dims[0];
-            selectedDims[1] = dims[1];
-        }
-        else if (rank > 2)
-        {
-            // 3D dataset is arranged in the order of [frame][height][width] by default
-            selectedIndex[1] = rank-1; // width, the fastest dimension
-            selectedIndex[0] = rank-2; // height
-            selectedIndex[2] = rank-3; // frames
-            selectedDims[selectedIndex[0]] = dims[selectedIndex[0]];
-            selectedDims[selectedIndex[1]] = dims[selectedIndex[1]];
-        }
-
-        if (rank > 1 && isText)
-        {
-            selectedIndex[0] = rank-1;
-            selectedIndex[1] = 0;
-            selectedDims[0] = 1;
-            selectedDims[selectedIndex[0]] = dims[selectedIndex[0]];
-        }
+        resetSelection();
     }
     
     /**
@@ -1175,17 +1122,18 @@ public class H5ScalarDS extends ScalarDS
      */
     public void setName (String newName) throws Exception
     {
-        String currentFullPath = getPath()+getName();
-        String newFullPath = getPath()+newName;
-
-        H5.H5Gmove(getFID(), currentFullPath, newFullPath);
-        
-        /*
-        H5.H5Glink(getFID(), HDF5Constants.H5G_LINK_HARD, currentFullPath, newFullPath);
-        H5.H5Gunlink(getFID(), currentFullPath);
-        */
-
+        H5File.setObjectName(this, newName);
         super.setName(newName);
     }
+    
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#finalize()
+     */
+    protected void finalize () {
+        this.clear();
+        try { H5.H5Tclose(nativeDatatype); } catch (Exception ex) {}
+    }
+    
 
 }

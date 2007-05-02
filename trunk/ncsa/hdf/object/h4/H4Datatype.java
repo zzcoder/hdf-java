@@ -362,5 +362,12 @@ public class H4Datatype extends Datatype
 
         return (nativeID = tid);
     }
+    
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Datatype#close(int)
+     */
+    public void close(int id) {;}    
+    
 
 }

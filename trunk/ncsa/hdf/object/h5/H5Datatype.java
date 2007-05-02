@@ -40,6 +40,7 @@ public class H5Datatype extends Datatype
      * The list of attributes of this data object.
      */
      private List attributeList;
+     
 
      /** Flag to indicate if this datatype is a named datatype */
      private boolean isNamed=false;
@@ -90,9 +91,11 @@ public class H5Datatype extends Datatype
             fromNative(nativeID);
             hasAttribute = (H5.H5Aget_num_attrs(nativeID)>0);
             isNamed = true;
-            H5.H5Tclose(nativeID);
+        } catch (Exception ex) {;} 
+        finally {
+            try {H5.H5Tclose(nativeID);} catch (Exception ex){}
             nativeID = -1;
-        } catch (HDF5Exception ex) {}
+        }
     }
 
     /**
@@ -227,7 +230,8 @@ public class H5Datatype extends Datatype
     {
         if (nativeID >=0 )
             return nativeID;
-        else if (isNamed) {
+        
+        if (isNamed) {
             try {nativeID = H5.H5Topen(getFID(), getPath()+getName());}
             catch (Exception ex) {nativeID = -1;}
         }
@@ -674,7 +678,7 @@ public class H5Datatype extends Datatype
         try { H5.H5Tclose(tid); }
         catch (HDF5Exception ex) {;}
     }
-
+    
     /*
      * (non-Javadoc)
      * @see ncsa.hdf.object.Datatype#getMetadata()
@@ -742,4 +746,13 @@ public class H5Datatype extends Datatype
             close(tid);
         }
     }
+    
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#finalize()
+     */
+    protected void finalize () {
+        try { H5.H5Tclose(nativeID); } catch (Exception ex) {}
+    }
+    
 }

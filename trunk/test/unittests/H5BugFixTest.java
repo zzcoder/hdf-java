@@ -7,17 +7,41 @@ import java.util.Vector;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
-import ncsa.hdf.object.FileFormat;
-import ncsa.hdf.object.h5.H5CompoundDS;
-import ncsa.hdf.object.h5.H5File;
+import ncsa.hdf.object.*;
+import ncsa.hdf.object.h5.*;
 import junit.framework.TestCase;
 
 /**
- * @author xcao
+ * TestCase for bug fixes.
+ * <p>
+ * This class tests all the public methods in H5CompoundDS class.
+ * <p>
+ * The test file contains the following objects. 
+ * <pre>
+ * 
+        /dataset_byte            Dataset {50, 10}
+        /dataset_comp            Dataset {50, 10}
+        /dataset_enum            Dataset {50, 10}
+        /dataset_float           Dataset {50, 10}
+        /dataset_image           Dataset {50, 10}
+        /dataset_int             Dataset {50, 10}
+        /dataset_str             Dataset {50, 10}
+        /g0                      Group
+        /g0/dataset_comp         Dataset {50, 10}
+        /g0/dataset_int          Dataset {50, 10}
+        /g0/datatype_float       Type
+        /g0/datatype_int         Type
+        /g0/datatype_str         Type
+        /g0/g00                  Group
+        /g0/g00/dataset_float    Dataset {50, 10}
+        /g0_attr                 Group
+
+ * </pre>
  *
+ *@author Peter Cao, The HDF Group
  */
 public class H5BugFixTest extends TestCase {
-    private static final int NLOOPS = 10;
+    private static final int NLOOPS = 100;
     private static final H5File H5FILE = new H5File();
     private H5File testFile = null;
     
@@ -72,7 +96,7 @@ public class H5BugFixTest extends TestCase {
      * </pre> 
      * <p>
      */
-    public void testBug847() throws Exception {
+    public final void testBug847() throws Exception {
         Vector data = null;
         
         H5CompoundDS dset = (H5CompoundDS)testFile.get(H5TestFile.NAME_DATASET_COMPOUND);
@@ -206,38 +230,48 @@ public class H5BugFixTest extends TestCase {
         }
      * </pre> 
      */
-    public void testBug863() throws Exception {
+    public final void testBug863() throws Exception {
         int nObjs = 0; // number of object left open
-        
+        Dataset dset =null;
+        String dnames[] = {
+                H5TestFile.NAME_DATASET_CHAR, H5TestFile.NAME_DATASET_COMPOUND,
+                H5TestFile.NAME_DATASET_COMPOUND_SUB, H5TestFile.NAME_DATASET_ENUM,
+                H5TestFile.NAME_DATASET_FLOAT, H5TestFile.NAME_DATASET_IMAGE,
+                H5TestFile.NAME_DATASET_INT, H5TestFile.NAME_DATASET_STR,
+                H5TestFile.NAME_DATASET_SUB, H5TestFile.NAME_DATASET_SUB_SUB};
+         
         // test two open options: open full tree or open individual object only
         for (int openOption=0; openOption<2; openOption++){
-            for (int i=0; i<NLOOPS; i++)
+            for (int i=0; i<90000; i++)
             {
                 nObjs = 0;
                 H5File file = new H5File(H5TestFile.NAME_FILE_H5, H5File.READ);
                 
-                if (openOption > 0) {
+                if (openOption == 0) {
                     try { 
                         file.open(); // opent the full tree
                     } catch (Exception ex) { 
                         fail("file.open() failed. "+ ex);
                     }
                 }
+                  
+                try {
+                    // datasets
+                    for (int j=0; j<dnames.length; j++) {
+                        dset = (Dataset)file.get(dnames[j]);
+                        dset.init();
+                    }
                     
-                try { 
-                    file.get(H5TestFile.NAME_DATASET_CHAR);
-                    file.get(H5TestFile.NAME_DATASET_COMPOUND);
-                    file.get(H5TestFile.NAME_DATASET_COMPOUND_SUB);
-                    file.get(H5TestFile.NAME_DATASET_ENUM);
-                    file.get(H5TestFile.NAME_DATASET_FLOAT);
-                    file.get(H5TestFile.NAME_DATASET_IMAGE);
-                    file.get(H5TestFile.NAME_DATASET_INT);
-                    file.get(H5TestFile.NAME_DATASET_STR);
-                    file.get(H5TestFile.NAME_DATASET_SUB);
-                    file.get(H5TestFile.NAME_DATASET_SUB_SUB);
+                    // groups
                     file.get(H5TestFile.NAME_GROUP);
                     file.get(H5TestFile.NAME_GROUP_ATTR);
                     file.get(H5TestFile.NAME_GROUP_SUB);
+                    
+                    // datatypes
+                    file.get(H5TestFile.NAME_DATATYPE_INT);
+                    file.get(H5TestFile.NAME_DATATYPE_FLOAT);
+                    file.get(H5TestFile.NAME_DATATYPE_STR);
+
                 } catch (Exception ex) { 
                      fail("file.get() failed. "+ ex);
                 }

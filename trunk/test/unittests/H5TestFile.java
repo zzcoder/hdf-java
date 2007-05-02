@@ -28,6 +28,9 @@ public class H5TestFile {
     public final static String NAME_DATASET_SUB = NAME_GROUP + "/dataset_int";
     public final static String NAME_DATASET_SUB_SUB = NAME_GROUP_SUB+ "/dataset_float";
     public final static String NAME_DATASET_COMPOUND_SUB = NAME_GROUP + "/dataset_comp";
+    public final static String NAME_DATATYPE_INT = NAME_GROUP + "/datatype_int";
+    public final static String NAME_DATATYPE_FLOAT = NAME_GROUP + "/datatype_float";
+    public final static String NAME_DATATYPE_STR = NAME_GROUP + "/datatype_str";
 
     // data space information
     public  final static int DATATYPE_SIZE = 4;
@@ -137,6 +140,10 @@ public class H5TestFile {
             dsets[i].writeMetadata(ATTRIBUTE_STR);
             dsets[i].writeMetadata(ATTRIBUTE_INT_ARRAY);
         }
+        
+        file.createDatatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, -1, NAME_DATATYPE_INT);
+        file.createDatatype(Datatype.CLASS_FLOAT, DATATYPE_SIZE, -1, -1, NAME_DATATYPE_FLOAT);
+        file.createDatatype(Datatype.CLASS_STRING, STR_LEN, -1, -1, NAME_DATATYPE_STR);
 
         try { file.close(); } catch (Exception ex) {}
     }

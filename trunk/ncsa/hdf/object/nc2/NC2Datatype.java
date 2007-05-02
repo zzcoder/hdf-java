@@ -165,4 +165,11 @@ public class NC2Datatype extends Datatype
 
         return -1;
     }
+    
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Datatype#close(int)
+     */
+    public void close(int id) {;}    
+    
 }

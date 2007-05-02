@@ -12,6 +12,7 @@
 package ncsa.hdf.object.h5;
 
 import java.util.*;
+
 import javax.swing.tree.*;
 import java.lang.reflect.Array;
 import ncsa.hdf.object.*;
@@ -444,7 +445,7 @@ public class H5File extends FileFormat
             long[] oid = new long[1];
             oid[0] = l; // save the object ID
 
-            dtype = new H5Datatype(this, null, name, oid);
+            dtype = new H5Datatype(this, null, name);
 
         } finally {
             if (tid>0) H5.H5Tclose(tid);
@@ -1753,7 +1754,45 @@ public class H5File extends FileFormat
 
         return obj;
     }
+    
+    /**
+     * Sets the name of an object to a new name in file.
+     * <p>
+     *
+     * @param obj     The object which the new name is applied to.
+     * @param newName The new name of the object.
+     */
+    public static final void setObjectName (HObject obj, String newName) throws Exception
+    {
+        String currentFullPath = obj.getPath()+obj.getName();
+        String newFullPath = obj.getPath()+newName;
+        
+        if (newName == null || newName.length()<=0)
+            throw new HDF5LibraryException("The new name is null.");
+        
+        currentFullPath = currentFullPath.replaceAll("//", "/");
+        newFullPath = newFullPath.replaceAll("//", "/");
+        
+        if (currentFullPath.equals(newFullPath))
+            throw new HDF5LibraryException("The new name is the same as the current name.");
+       
+        H5.H5Gmove(obj.getFID(), currentFullPath, newFullPath);
+        
+        if (obj instanceof H5Group) {
+            H5Group grp = (H5Group)obj;
+            List members = grp.getMemberList();
+            if (members == null) return;
 
+            int n = members.size();
+            HObject theObj = null;
+            for (int i=0; i<n; i++)
+            {
+                theObj = (HObject)members.get(i);
+                theObj.setPath(obj.getPath()+newName+HObject.separator);
+            }
+        }
+    }
+ 
     /**
      * Constructs a dataset for a given dataset idenfitier.
      * @param did the dataset idenfifier
