@@ -257,26 +257,8 @@ public class H5Group extends Group
      */
     public void setName (String newName) throws Exception
     {
-        int linkType = HDF5Constants.H5G_LINK_HARD;
-
-        String currentFullPath = getPath()+getName();
-        String newFullPath = getPath()+newName;
-
-        H5.H5Glink(getFID(), linkType, currentFullPath, newFullPath);
-        try { H5.H5Gunlink(getFID(), currentFullPath); } catch (Exception ex) {}
-
+        H5File.setObjectName(this, newName);
         super.setName(newName);
-
-        List members = this.getMemberList();
-        if (members == null) return;
-
-        int n = members.size();
-        HObject obj = null;
-        for (int i=0; i<n; i++)
-        {
-            obj = (HObject)members.get(i);
-            obj.setPath(getPath()+newName+HObject.separator);
-        }
     }
 
     /*

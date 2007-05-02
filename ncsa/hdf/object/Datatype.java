@@ -347,6 +347,7 @@ public abstract class Datatype extends HObject
      * Converts the datatype object to a native datatype.
      *
      * Subclasses must implement it so that this datatype will be converted accordingly.
+     *  Use close() to close the native identifier; otherwise, the datatype will be left open.
      * <p>
      * For example, a HDF5 datatype created from<br>
      * <pre>
@@ -446,12 +447,24 @@ public abstract class Datatype extends HObject
      */
     public int open() { return -1; }
 
-    /** Closes a named datatype. 
+    /** 
+     * Closes a datatype identifier.
+     * <p> 
      * Sub-clases must replace this default implementation.
      * 
      * @param id the datatype identifier to close.
      */
-    public void close(int id) {};
+    public abstract void close(int id);
+    
+    /**
+     * Closes the datatype identifier in a datatype object.
+     */
+    public void close()    {
+        if (nativeID > 0) {
+            this.close(nativeID);
+            nativeID = -1;
+        }
+    }
 
     /*
      * (non-Javadoc)

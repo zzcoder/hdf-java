@@ -23,6 +23,7 @@ import junit.framework.TestCase;
  * <p>
  * The test file contains the following objects. 
  * <pre>
+ * 
         /dataset_byte            Dataset {50, 10}
         /dataset_comp            Dataset {50, 10}
         /dataset_enum            Dataset {50, 10}
@@ -33,9 +34,13 @@ import junit.framework.TestCase;
         /g0                      Group
         /g0/dataset_comp         Dataset {50, 10}
         /g0/dataset_int          Dataset {50, 10}
+        /g0/datatype_float       Type
+        /g0/datatype_int         Type
+        /g0/datatype_str         Type
         /g0/g00                  Group
         /g0/g00/dataset_float    Dataset {50, 10}
         /g0_attr                 Group
+
  * </pre>
  * <p>
  * We use the following template to test all the methods:
@@ -50,7 +55,7 @@ import junit.framework.TestCase;
      *   <ul>
      *     <li>
      *   </ul>
-     *   <li> Test for general functionality
+     *   <li> Test for success on general functionality
      *   <ul>
      *     <li> 
      *   </ul>
@@ -135,21 +140,21 @@ public class H5CompoundDSTest extends TestCase {
      */
     public final void testSetName() {
         String newName = "tmpName";
-/*         
+
         // test set name to null
         try {
             testDataset.setName(null);
         } catch (Exception ex) { 
-            fail("setName() to null failed. "+ ex);
+            ; // Expected - intentional
         }
        
         // set an existing name
         try {
             testDataset.setName(H5TestFile.NAME_DATASET_COMPOUND_SUB);
         } catch (Exception ex) { 
-            fail("setName() to an existing name failed. "+ ex);
+            ; // Expected - intentional
         }
-        */
+
         try { 
             testDataset.setName(newName); 
         } catch (Exception ex) { 
@@ -1729,5 +1734,4 @@ public class H5CompoundDSTest extends TestCase {
             fail("H5CompoundDS.create() failed. "+ ex);
         }
     }       
-    
 }

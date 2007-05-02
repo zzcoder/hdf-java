@@ -148,4 +148,11 @@ public class H5SrbDatatype extends Datatype
         return description;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Datatype#close(int)
+     */
+    public void close(int id) {;}    
+    
+
 }

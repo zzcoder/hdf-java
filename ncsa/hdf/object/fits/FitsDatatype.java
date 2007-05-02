@@ -205,4 +205,10 @@ public class FitsDatatype extends Datatype
 
         return nativeType;
     }
+
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Datatype#close(int)
+     */
+    public void close(int id) {;}    
 }
