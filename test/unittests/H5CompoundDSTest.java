@@ -457,13 +457,16 @@ public class H5CompoundDSTest extends TestCase {
             int[] ints = (int[])data.get(0);
             float[] floats = (float[])data.get(1);
             String[] strs = (String[])data.get(2);
+            long[] longs = (long[])data.get(3);
             assertNotNull(ints);
             assertNotNull(floats);
             assertNotNull(strs);
+            assertNotNull(longs);
             for (int i=0; i<H5TestFile.DIM_SIZE; i++) {
                 assertEquals(H5TestFile.DATA_INT[i], ints[i]);
                 assertEquals(H5TestFile.DATA_FLOAT[i], floats[i], Float.MIN_VALUE);
                 assertTrue(H5TestFile.DATA_STR[i].equals(strs[i]));
+                assertEquals(H5TestFile.DATA_LONG[i], longs[i]);
             }
             
             int rank = testDataset.getRank();
@@ -568,7 +571,7 @@ public class H5CompoundDSTest extends TestCase {
         assertNotNull(data);
         
         int n = Array.getLength(data);
-        int expected = H5TestFile.DIM_SIZE * (4+4+H5TestFile.STR_LEN);
+        int expected = H5TestFile.DIM_SIZE * (4+4+H5TestFile.STR_LEN+4);
         
         assertEquals(expected, n);
     }

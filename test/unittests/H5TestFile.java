@@ -45,6 +45,7 @@ public class H5TestFile {
     
     /* testing data */
     public  final static int[] DATA_INT = new int[DIM_SIZE];
+    public  final static long[] DATA_LONG = new long[DIM_SIZE];
     public  final static float[] DATA_FLOAT = new float[DIM_SIZE];
     public  final static byte[] DATA_BYTE = new byte[DIM_SIZE];
     public  final static String[] DATA_STR = new String[DIM_SIZE];
@@ -52,11 +53,12 @@ public class H5TestFile {
     public  final static Vector DATA_COMP = new Vector(3);
     
     // compound names and datatypes
-    public final static String[] COMPOUND_MEMBER_NAMES = {"int", "float", "string"};
+    public final static String[] COMPOUND_MEMBER_NAMES = {"int32", "float32", "string", "uint32"};
     public final static H5Datatype[] COMPOUND_MEMBER_DATATYPES = {
         new H5Datatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, -1), 
         new H5Datatype(Datatype.CLASS_FLOAT, DATATYPE_SIZE, -1, -1), 
-        new H5Datatype(Datatype.CLASS_STRING, STR_LEN, -1, -1)};
+        new H5Datatype(Datatype.CLASS_STRING, STR_LEN, -1, -1),
+        new H5Datatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, Datatype.SIGN_NONE)}; 
     
     // attributes
     public final static Attribute ATTRIBUTE_STR = new Attribute(
@@ -105,6 +107,7 @@ public class H5TestFile {
        
         for (int i=0; i<DIM_SIZE; i++) {
             DATA_INT[i] = i;
+            DATA_LONG[i] = i;
             DATA_FLOAT[i] = i+i/100.0f;
             DATA_BYTE[i] = (byte)Math.IEEEremainder(i, 127);
             DATA_STR[i] = "str"+i;
@@ -114,6 +117,7 @@ public class H5TestFile {
         DATA_COMP.add(0, DATA_INT);
         DATA_COMP.add(1, DATA_FLOAT);
         DATA_COMP.add(2, DATA_STR);
+        DATA_COMP.add(3, DATA_LONG);
 
         file = new H5File(NAME_FILE_H5, FileFormat.CREATE);
         file.open();
