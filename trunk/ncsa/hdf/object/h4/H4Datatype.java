@@ -80,7 +80,6 @@ public class H4Datatype extends Datatype
      */
     public void fromNative(int tid)
     {
-        nativeID = tid;
         datatypeOrder = NATIVE;
         datatypeSign = NATIVE;
 
@@ -299,9 +298,6 @@ public class H4Datatype extends Datatype
      */
     public int toNative()
     {
-        if (nativeID >=0 )
-            return nativeID;
-
         int tid = -1;
         int tclass = getDatatypeClass();
         int tsize = getDatatypeSize();
@@ -360,7 +356,7 @@ public class H4Datatype extends Datatype
                 break;
         }
 
-        return (nativeID = tid);
+        return tid;
     }
     
     /*

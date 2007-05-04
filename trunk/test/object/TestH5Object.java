@@ -1110,7 +1110,7 @@ public class TestH5Object
 
         Group pgroup = null;
         Datatype dtype = null;
-        int tid;
+        int tid=-1, tid2=-1;
 
         try {
             file = (H5File)H5FILE.open(fname, H5File.CREATE);
@@ -1128,6 +1128,9 @@ public class TestH5Object
                 return 1;
             }
         } catch (Exception ex) { failed(message, ex, file); return 1;}
+        finally {
+            try {H5.H5Tclose(tid); } catch (Exception ex) {}
+        }
 
         try {
             dtype = file.createDatatype(Datatype.CLASS_FLOAT,-1, -1, -1);
@@ -1137,6 +1140,9 @@ public class TestH5Object
                 return 1;
             }
         } catch (Exception ex) { failed(message, ex, file); return 1;}
+        finally {
+            try {H5.H5Tclose(tid); } catch (Exception ex) {}
+        }
 
         try {
             dtype = file.createDatatype(Datatype.CLASS_CHAR, 1, -1, -1);
@@ -1146,11 +1152,14 @@ public class TestH5Object
                 return 1;
             }
         } catch (Exception ex) { failed(message, ex, file); return 1;}
+        finally {
+            try {H5.H5Tclose(tid); } catch (Exception ex) {}
+        }
 
         try {
             dtype = file.createDatatype(Datatype.CLASS_STRING, STR_LEN, -1, -1);
             tid = dtype.toNative();
-            int tid2 = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
+            tid2 = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
             H5.H5Tset_size(tid2, STR_LEN);
             H5.H5Tset_strpad(tid2, HDF5Constants.H5T_STR_NULLPAD);
             if (!H5.H5Tequal(tid, tid2)) {
@@ -1158,6 +1167,10 @@ public class TestH5Object
                 return 1;
             }
         } catch (Exception ex) { failed(message, ex, file); return 1;}
+        finally {
+            try {H5.H5Tclose(tid2); } catch (Exception ex) {}
+            try {H5.H5Tclose(tid); } catch (Exception ex) {}
+        }
         
         passed(message);
         try { file.close(); } catch (Exception ex) {}

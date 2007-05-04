@@ -166,7 +166,7 @@ public abstract class Datatype extends HObject
     /**
      * The datatype identifier of the implementing class of this datatype.
      */
-    protected int nativeID;
+    //protected int nativeID;
 
     /**
      * Contructs a named datatype with a given file, name and path.
@@ -222,7 +222,6 @@ public abstract class Datatype extends HObject
         datatypeSize = tsize;
         datatypeOrder = torder;
         datatypeSign = tsign;
-        nativeID = -1;
         enumMembers = null;
     }
 
@@ -245,8 +244,7 @@ public abstract class Datatype extends HObject
     {
         this(CLASS_NO_CLASS, NATIVE, NATIVE, NATIVE);
 
-        nativeID = type;
-        fromNative(nativeID);
+        fromNative(type);
     }
 
     /**
@@ -456,16 +454,6 @@ public abstract class Datatype extends HObject
      */
     public abstract void close(int id);
     
-    /**
-     * Closes the datatype identifier in a datatype object.
-     */
-    public void close()    {
-        if (nativeID > 0) {
-            this.close(nativeID);
-            nativeID = -1;
-        }
-    }
-
     /*
      * (non-Javadoc)
      * @see ncsa.hdf.object.DataFormat#getMetadata()

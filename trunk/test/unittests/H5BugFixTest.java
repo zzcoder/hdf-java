@@ -41,7 +41,7 @@ import junit.framework.TestCase;
  *@author Peter Cao, The HDF Group
  */
 public class H5BugFixTest extends TestCase {
-    private static final int NLOOPS = 100;
+    private static final int NLOOPS = 10;
     private static final H5File H5FILE = new H5File();
     private H5File testFile = null;
     
@@ -242,10 +242,10 @@ public class H5BugFixTest extends TestCase {
          
         // test two open options: open full tree or open individual object only
         for (int openOption=0; openOption<2; openOption++){
-            for (int i=0; i<90000; i++)
+            for (int i=0; i<NLOOPS; i++)
             {
                 nObjs = 0;
-                H5File file = new H5File(H5TestFile.NAME_FILE_H5, H5File.READ);
+                H5File file = new H5File(H5TestFile.NAME_FILE_H5, H5File.WRITE);
                 
                 if (openOption == 0) {
                     try { 
@@ -260,6 +260,9 @@ public class H5BugFixTest extends TestCase {
                     for (int j=0; j<dnames.length; j++) {
                         dset = (Dataset)file.get(dnames[j]);
                         dset.init();
+                        Object data = dset.getData();
+                        dset.write(data);
+                        dset.getMetadata();
                     }
                     
                     // groups

@@ -85,16 +85,16 @@ public class H5Datatype extends Datatype
              } catch (Exception ex) {}
         }
         
+        int tid = -1;
         try
         {
-            nativeID = H5.H5Topen(getFID(), getPath()+getName());
-            fromNative(nativeID);
-            hasAttribute = (H5.H5Aget_num_attrs(nativeID)>0);
+            tid = H5.H5Topen(getFID(), getPath()+getName());
+            fromNative(tid);
+            hasAttribute = (H5.H5Aget_num_attrs(tid)>0);
             isNamed = true;
         } catch (Exception ex) {;} 
         finally {
-            try {H5.H5Tclose(nativeID);} catch (Exception ex){}
-            nativeID = -1;
+            try {H5.H5Tclose(tid);} catch (Exception ex){}
         }
     }
 
@@ -142,22 +142,29 @@ public class H5Datatype extends Datatype
     {
         super(nativeID);
     }
-
+    
     /*
      * (non-Javadoc)
      * @see ncsa.hdf.object.Datatype#fromNative(int)
      */
     public void fromNative(int tid)
     {
-        nativeID = tid;
-
         int tclass=-1, tsize=-1;
 
         try
         {
             tclass = H5.H5Tget_class(tid);
-            if (tclass == HDF5Constants.H5T_ARRAY)
-                tclass = H5.H5Tget_class(H5.H5Tget_super(tid));
+            if (tclass == HDF5Constants.H5T_ARRAY) {
+                int tmptid = -1;
+                try {
+                    tmptid = H5.H5Tget_super(tid);
+                    tclass = H5.H5Tget_class(tmptid);
+                } catch (Exception ex) {}
+                finally {
+                    try {H5.H5Tclose(tmptid); } catch (Exception ex) {}
+                }
+             }
+            
             tsize = H5.H5Tget_size(tid);
         } catch (Exception ex)
         {
@@ -228,18 +235,15 @@ public class H5Datatype extends Datatype
      */
     public int toNative()
     {
-        if (nativeID >=0 )
-            return nativeID;
+        int tid = -1;
         
         if (isNamed) {
-            try {nativeID = H5.H5Topen(getFID(), getPath()+getName());}
-            catch (Exception ex) {nativeID = -1;}
+            try {tid = H5.H5Topen(getFID(), getPath()+getName());}
+            catch (Exception ex) {;}
         }
 
-        if (nativeID >=0 )
-            return nativeID;
-
-        int tid = -1;
+        if (tid >=0 )
+            return tid;
 
         // figure the datatype
         try {
@@ -330,7 +334,7 @@ public class H5Datatype extends Datatype
             try { H5.H5Tclose(ptid); } catch (Exception ex) {}
         }
 
-        return (nativeID = tid);
+        return tid;
     }
 
     /**
@@ -390,8 +394,14 @@ public class H5Datatype extends Datatype
         else if (tclass == HDF5Constants.H5T_ENUM) {
             // can be any integer
             // data = new int[size];
-            try { data =  allocateArray ( H5.H5Tget_super(tid), size); }
+            int superTid = -1;
+            try { 
+                superTid = H5.H5Tget_super(tid);
+                data =  allocateArray ( superTid, size); }
             catch (Exception ex) {}
+            finally {
+                try { H5.H5Tclose(superTid); } catch (Exception ex) {}
+            }
         }
         else if (tclass == HDF5Constants.H5T_FLOAT)
         {
@@ -407,6 +417,7 @@ public class H5Datatype extends Datatype
         else if (tclass == HDF5Constants.H5T_ARRAY)
         {
             // use the base datatype to define the array
+            int superTid = -1;
             try {
                 int mn = H5.H5Tget_array_ndims(tid);
                 int[] marray = new int[mn];
@@ -417,10 +428,13 @@ public class H5Datatype extends Datatype
                 {
                     asize *= marray[j];
                 }
-                data =  allocateArray (
-                    H5.H5Tget_super(tid),
-                    size *asize);
+                
+                superTid = H5.H5Tget_super(tid);
+                data =  allocateArray (superTid, size*asize);
             } catch (Exception ex) {}
+            finally {
+                try { H5.H5Tclose(superTid); } catch (Exception ex) {}
+            }
         }
         else {
             data = null;
@@ -579,9 +593,14 @@ public class H5Datatype extends Datatype
         {
             description = "Array of ";
             // use the base datatype to define the array
+            int tmptid = -1;
             try {
-                description += getDatatypeDescription(H5.H5Tget_super(tid));
+                tmptid = H5.H5Tget_super(tid);
+                description += getDatatypeDescription(tmptid);
             } catch (Exception ex) {}
+            finally {
+                try {H5.H5Tclose(tmptid); } catch (Exception ex) {}
+            }
         }
         else if (tclass == HDF5Constants.H5T_COMPOUND)
         {
@@ -602,8 +621,15 @@ public class H5Datatype extends Datatype
         }
         else if (tclass == HDF5Constants.H5T_VLEN)
         {
-            try { description = "Variable-length of " +getDatatypeDescription(H5.H5Tget_super(tid));}
+            int tmptid = -1;
+            try { 
+                tmptid = H5.H5Tget_super(tid);
+                description = "Variable-length of " +getDatatypeDescription(tmptid);
+            }
             catch (Exception ex) {description = "Variable-length";}
+            finally {
+                try {H5.H5Tclose(tmptid); } catch (Exception ex) {}
+            }
         }
         else description = "Unknown";
 
@@ -746,13 +772,4 @@ public class H5Datatype extends Datatype
             close(tid);
         }
     }
-    
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#finalize()
-     */
-    protected void finalize () {
-        try { H5.H5Tclose(nativeID); } catch (Exception ex) {}
-    }
-    
 }
