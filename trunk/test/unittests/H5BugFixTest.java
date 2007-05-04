@@ -53,6 +53,18 @@ public class H5BugFixTest extends TestCase {
         super(arg0);
     }
 
+    private static void collectGarbage() {
+        try {
+            System.gc();
+            Thread.sleep(100);
+            System.runFinalization();
+            Thread.sleep(100);
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
+    
     /* (non-Javadoc)
      * @see junit.framework.TestCase#setUp()
      */
@@ -294,7 +306,5 @@ public class H5BugFixTest extends TestCase {
                 assertTrue(nObjs <=1); // file id should be the only this left open
             } //for (int i=0; i<NLOOPS; i++)
         } // for (int openOption=0; openOption<2; openOption++)
-     }
-
-    
+    }
 }
