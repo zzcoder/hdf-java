@@ -10,26 +10,24 @@ import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.h5.H5Datatype;
 import ncsa.hdf.object.h5.H5File;
 
-public class TestH5TableRead {
+public class TestH5Table {
     
     public static void main(String[] args) {
-        long dim1=0, dim2=0;
+        long dim1=1000, dim2=50;
         
-        if (args.length < 2) {
-            System.out.println("Usage: TestH5TableRead dim1 dim2");
-            System.exit(0);
-        }
-        
-        try {
-            dim1 = Long.parseLong(args[0]);
-            dim2 = Long.parseLong(args[1]);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            System.exit(0);
+        if (args.length > 1) 
+        {
+            try {
+                dim1 = Long.parseLong(args[0]);
+                dim2 = Long.parseLong(args[1]);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                System.exit(0);
+            }
         }
         
         try { 
-            testReadTable(dim1, dim2); 
+            testTable(dim1, dim2); 
         } catch (Exception ex) {
             ex.printStackTrace();
             System.exit(0);
@@ -39,11 +37,11 @@ public class TestH5TableRead {
     /**
      * Test the performance of reading a small table data.
      */
-    public static final void testReadTable(long dim1, long dim2) throws Exception 
+    public static final void testTable(long dim1, long dim2) throws Exception 
     {
         int nObjs = 0; // number of object left open
         Dataset dset =null;
-        long t0=0, t1=0, time=0, nbytes=0;
+        long t0=0, t1=0, time=0, nbytes=0, readKBS=0, writeKBS=0;
         String dname = "/table";
         
         String[] COMPOUND_MEMBER_NAMES = {"int32", "float32"};
@@ -67,45 +65,56 @@ public class TestH5TableRead {
         DATA_COMP.add(0, DATA_INT);
         DATA_COMP.add(1, DATA_FLOAT);
         
-        H5File file = new H5File("G:\\temp\\tempH5TestFile.h5", FileFormat.CREATE);
+        H5File file = new H5File("testH5Table.h5", FileFormat.CREATE);
         file.open();
         
         try {
             dset = file.createCompoundDS(dname, null, DIMs, null, null, -1, 
                     COMPOUND_MEMBER_NAMES, COMPOUND_MEMBER_DATATYPES, null, DATA_COMP);
         } catch (Exception ex) { 
-            System.out.println("file.createCompoundDS() System.out.printlned. "+ ex);
+            System.out.println("file.createCompoundDS() failed. "+ ex);
         }
         
         try {
             time = 0;
+            nbytes = (DIM_SIZE*8L*1000000L);            
             dset = (Dataset)file.get(dname);
             dset.clearData();
             collectGarbage();
             
-            t0 = System.currentTimeMillis();
+            // test reading
+            t0 = System.nanoTime();
             try {
                 dset.getData();
             } catch (Exception ex) { 
-                 System.out.println("file.get() System.out.printlned. "+ ex);
+                 System.out.println("dset.getData() failed. "+ ex);
             }
-            t1 = System.currentTimeMillis();
+            t1 = System.nanoTime();
             time = (t1-t0);
+            readKBS = (nbytes)/time;
 
-            nbytes = DIM_SIZE*8;
-            if (time > 0)
-                System.out.println("\nReading a "+DIM1+"x"+DIM2+" table [bytes/ms]: \t"+ (nbytes/time));
+            // test writing
+            t0 = System.nanoTime();
+            try {
+                dset.write();
+            } catch (Exception ex) { 
+                 System.out.println("dset.write() failed. "+ ex);
+            }
+            t1 = System.nanoTime();
+            time = (t1-t0);
+            writeKBS = (nbytes)/time;
+            System.out.println("\nReading/writing a "+DIM1+"x"+DIM2+" table [KB/S]: \t"+ readKBS+"\t"+writeKBS);
             
             try {
                 nObjs = H5.H5Fget_obj_count(file.getFID(), HDF5Constants.H5F_OBJ_LOCAL);
             } catch (Exception ex) { 
-                 System.out.println("H5.H5Fget_obj_count() System.out.printlned. "+ ex);
+                 System.out.println("H5.H5Fget_obj_count() failed. "+ ex);
             }
             
             try {            
                 file.close();
             } catch (Exception ex) { 
-                System.out.println("file.close() System.out.printlned. "+ ex);
+                System.out.println("file.close() failed. "+ ex);
             }
         } finally {
             // delete the testing file
