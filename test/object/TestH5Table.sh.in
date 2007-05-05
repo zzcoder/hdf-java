@@ -14,7 +14,7 @@ export JAVAPATH
 #            DO NOT MODIFY BELOW THIS LINE
 ###############################################################################
 
-rm TestH5TableRead.class
+rm TestH5Table.class
 
 CPATH=".:"$HDFVIEW_HOME"/lib/jhdf5.jar:"$HDFVIEW_HOME"/lib/jhdfobj.jar:"$HDFVIEW_HOME"/lib/jhdf5obj.jar"
 
@@ -70,8 +70,8 @@ case  $os_name in
         ;;
 esac
 
-$JAVAPATH/javac TestH5TableRead".java"
-(cd ../..; $JAVAPATH/java -Xmx1024M -Djava.library.path=$HDFVIEW_HOME"/lib/"$OS_NAME test.object.TestH5TableRead $*)
+$JAVAPATH/javac TestH5Table".java"
+(cd ../..; $JAVAPATH/java -Xmx1024M -Djava.library.path=$HDFVIEW_HOME"/lib/"$OS_NAME test.object.TestH5Table $*)
 
 
 
