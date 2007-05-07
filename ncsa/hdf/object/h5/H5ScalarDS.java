@@ -50,8 +50,11 @@ public class H5ScalarDS extends ScalarDS
      /** flag to indicate if the dataset is a variable length */
      private boolean isVLEN = false;
      
-     /** flag to indicate is the dataset is an external dataset */
+     /** flag to indicate if the dataset is an external dataset */
      private boolean isExternal = false;
+     
+     /** flag to indicate if the datatype in file is the same as dataype in memory*/
+     private boolean isNativeDatatype = true;
      
      /**
       * Constructs an instance of a H5ScalarDS object with specific name and path.
@@ -188,12 +191,33 @@ public class H5ScalarDS extends ScalarDS
 
         did = open();
         paletteRefs = getPaletteRefs(did);
+        
+        // check if it is an external dataset
+        int pid=-1;
+        try {
+            pid = H5.H5Dget_create_plist(did);
+            int nfiles = H5.H5Pget_external_count(pid);
+            isExternal = (nfiles>1);
+        } catch (Exception ex) {}
+        finally {
+            try {H5.H5Pclose(pid);} catch (Exception ex) {}
+        }
 
         try {
             sid = H5.H5Dget_space(did);
             tid= H5.H5Dget_type(did);
             rank = H5.H5Sget_simple_extent_ndims(sid);
             isText = (H5.H5Tget_class(tid)==HDF5Constants.H5T_STRING);
+            isUnsigned = H5Datatype.isUnsigned(tid);
+            
+            // check if datatype in file is ntive datatype
+            int tmptid = 0;
+            try {
+                tmptid = H5.H5Tget_native_type(tid);
+                isNativeDatatype = H5.H5Tequal(tid, tmptid);
+            } finally {
+                try { H5.H5Tclose(tmptid); } catch (HDF5Exception ex) {;}
+            }
 
             if (rank == 0) {
                 // a scalar data point
@@ -209,12 +233,9 @@ public class H5ScalarDS extends ScalarDS
         } catch (HDF5Exception ex) {}
         finally
         {
-            try { nativeDatatype = H5.H5Tget_native_type(tid); } catch (HDF5Exception ex2) {}
             try { H5.H5Tclose(tid); } catch (HDF5Exception ex2) {}
             try { H5.H5Sclose(sid); } catch (HDF5Exception ex2) {}
         }
-
-        isUnsigned = H5Datatype.isUnsigned(nativeDatatype);
 
         int aid=-1, atid=-1;
 
@@ -293,17 +314,6 @@ public class H5ScalarDS extends ScalarDS
                 interlace == ScalarDS.INTERLACE_PLANE);
         }
         
-        // check if it is an external dataset
-        int pid=-1;
-        try {
-            pid = H5.H5Dget_create_plist(did);
-            int nfiles = H5.H5Pget_external_count(pid);
-            isExternal = (nfiles>1);
-        } catch (Exception ex) {}
-        finally {
-            try {H5.H5Pclose(pid);} catch (Exception ex) {}
-        }
-
         close(did);
         
         startDims = new long[rank];
@@ -556,7 +566,7 @@ public class H5ScalarDS extends ScalarDS
     {
         Object theData = null;
 
-        int fspace=-1, mspace=-1;
+        int did=-1, tid=-1, fspace=-1, mspace=-1;
 
         if (rank <= 0) init();
 
@@ -566,7 +576,7 @@ public class H5ScalarDS extends ScalarDS
             H5.H5Dchdir_ext(pdir);
         }
         
-        int did = open();
+        did = open();
 
         // check is storage space is allocated
         try {
@@ -607,25 +617,36 @@ public class H5ScalarDS extends ScalarDS
                 H5.H5Sselect_hyperslab(fspace, HDF5Constants.H5S_SELECT_SET, startDims, selectedStride, selectedDims, null );
             }
 
-            boolean isREF = (H5.H5Tequal(nativeDatatype, HDF5Constants.H5T_STD_REF_OBJ));
+            tid = H5.H5Dget_type(did);
+            if (!isNativeDatatype) {
+                int tmptid = -1;
+                try {
+                    tmptid = tid;
+                    tid = H5.H5Tget_native_type(tmptid);
+                } finally {
+                    try { H5.H5Tclose(tmptid); } catch (Exception ex2) {}
+                }
+            }
+            
+            boolean isREF = (H5.H5Tequal(tid, HDF5Constants.H5T_STD_REF_OBJ));
             
             if ( originalBuf ==null || isText || isREF ||
                 (originalBuf!=null && lsize[0] !=nPoints)) {
-                theData = H5Datatype.allocateArray(nativeDatatype, (int)lsize[0]);
+                theData = H5Datatype.allocateArray(tid, (int)lsize[0]);
             } else
                  theData = originalBuf; // reuse the buffer if the size is the same
 
             if (theData != null) {
                 if (isVLEN)
                 {
-                    H5.H5DreadVL(did, nativeDatatype, mspace, fspace, HDF5Constants.H5P_DEFAULT, (Object[])theData);
+                    H5.H5DreadVL(did, tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, (Object[])theData);
                 }
                 else
                 {
-                    H5.H5Dread( did, nativeDatatype, mspace, fspace, HDF5Constants.H5P_DEFAULT, theData);
+                    H5.H5Dread( did, tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, theData);
 
                     if (isText && convertByteToString)
-                        theData = byteToString((byte[])theData, H5.H5Tget_size(nativeDatatype));
+                        theData = byteToString((byte[])theData, H5.H5Tget_size(tid));
                     else if (isREF)
                         theData = HDFNativeData.byteToLong((byte[])theData);
                 }
@@ -633,6 +654,7 @@ public class H5ScalarDS extends ScalarDS
         } finally {
             try { H5.H5Sclose(fspace); } catch (Exception ex2) {}
             try { H5.H5Sclose(mspace); } catch (Exception ex2) {}
+            try { H5.H5Tclose(tid); } catch (Exception ex2) {}
             close(did);
         }
         
@@ -682,9 +704,17 @@ public class H5ScalarDS extends ScalarDS
                 H5.H5Sselect_hyperslab(fspace, HDF5Constants.H5S_SELECT_SET, startDims, selectedStride, selectedDims, null );
             }
 
-            int tmptid = H5.H5Dget_type(did);
-            tid = H5.H5Tget_native_type(tmptid);
-            try {H5.H5Tclose(tmptid); } catch (Exception ex) {}
+            tid = H5.H5Dget_type(did);
+            if (!isNativeDatatype) {
+                int tmptid = -1;
+                try {
+                    tmptid = tid;
+                    tid = H5.H5Tget_native_type(tmptid);
+                } finally {
+                    try { H5.H5Tclose(tmptid); } catch (Exception ex2) {}
+                }
+            }
+             
             isText = (H5.H5Tget_class(tid)==HDF5Constants.H5T_STRING);
             
             boolean is_reg_ref = (H5.H5Tequal(tid, HDF5Constants.H5T_STD_REF_DSETREG));
@@ -739,9 +769,24 @@ public class H5ScalarDS extends ScalarDS
             {
                 if (fillStatus[0] == HDF5Constants.H5D_FILL_VALUE_USER_DEFINED)
                 {
-                    fillValue = H5Datatype.allocateArray(nativeDatatype, 1);
-                    try { H5.H5Pget_fill_value(pid, nativeDatatype, fillValue ); }
-                    catch (Exception ex2) { fillValue = null; }
+                    int tid = H5.H5Dget_type(did);
+                    if (!isNativeDatatype) {
+                        int tmptid = -1;
+                        try {
+                            tmptid = tid;
+                            tid = H5.H5Tget_native_type(tmptid);
+                        } finally {
+                            try { H5.H5Tclose(tmptid); } catch (Exception ex2) {}
+                        }
+                    }
+                    
+                    fillValue = H5Datatype.allocateArray(tid, 1);
+                    try { 
+                        H5.H5Pget_fill_value(pid, tid, fillValue ); 
+                    }   catch (Exception ex2) { fillValue = null; }
+                    finally {
+                        try { H5.H5Tclose(tid); } catch (Exception ex2) {}
+                    }
                 }
             }
 
@@ -1140,7 +1185,27 @@ public class H5ScalarDS extends ScalarDS
     {
         if (datatype == null)
         {
-            datatype = new H5Datatype(nativeDatatype);
+            int did=-1, tid=-1;
+            
+            did = open();
+
+            try {
+                tid = H5.H5Dget_type(did);
+                if (!isNativeDatatype) {
+                    int tmptid = -1;
+                    try {
+                        tmptid = tid;
+                        tid = H5.H5Tget_native_type(tmptid);
+                    } finally {
+                        try { H5.H5Tclose(tmptid); } catch (Exception ex2) {}
+                    }
+                }  
+                datatype = new H5Datatype(tid);
+            } catch (Exception ex) {} 
+            finally {
+                try {H5.H5Tclose(tid);} catch (HDF5Exception ex) {};
+                try {H5.H5Dclose(did);} catch (HDF5Exception ex) {};
+            }
         }
 
         return datatype;
@@ -1155,15 +1220,4 @@ public class H5ScalarDS extends ScalarDS
         H5File.setObjectName(this, newName);
         super.setName(newName);
     }
-    
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#finalize()
-     */
-    protected void finalize () {
-        this.clear();
-        try { H5.H5Tclose(nativeDatatype); } catch (Exception ex) {}
-    }
-    
-
 }

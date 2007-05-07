@@ -68,7 +68,6 @@ public class H5SrbCompoundDS extends CompoundDS
         {
             numberOfMembers = nmembers;
             memberNames = new String[numberOfMembers];
-            memberTypes = new int[numberOfMembers];
             memberOrders = new int[numberOfMembers];
             isMemberSelected = new boolean[numberOfMembers];
             for (int i=0; i<numberOfMembers; i++)

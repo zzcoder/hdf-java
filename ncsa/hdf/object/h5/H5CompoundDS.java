@@ -75,6 +75,10 @@ public class H5CompoundDS extends CompoundDS
      * The list of attributes attached data object.
      */
     private List attributeList;
+    
+    /** flag to indicate if the datatype in file is the same as dataype in memory*/
+    private boolean isNativeDatatype = true;
+    
 
     /**
      * A list of names of all fields including nested fields.
@@ -102,12 +106,6 @@ public class H5CompoundDS extends CompoundDS
      */
     private List flatTypeList;
 
-    /**
-     * Flag to indicate if this is a compound dataset created by the HDF5
-     *  indexing APIs.
-     */
-    private boolean isIndexTable;
-    
     /** flag to indicate is the dataset is an external dataset */
     private boolean isExternal = false;
     
@@ -154,7 +152,6 @@ public class H5CompoundDS extends CompoundDS
         }
 
         int did = open();
-        isIndexTable = false;
         try { hasAttribute = (H5.H5Aget_num_attrs(did)>0); }
         catch (Exception ex) {}
         close(did);
@@ -243,7 +240,8 @@ public class H5CompoundDS extends CompoundDS
 
         Object member_data = null;
         String member_name = null;
-        int member_tid=-1, member_class=-1, member_size=0, fspace=-1, mspace=-1;
+        int tid=-1, atom_tid=-1, member_class=-1, member_size=0, 
+            fspace=-1, mspace=-1;
 
         if (rank <= 0 ) init(); // read data informatin into memory
 
@@ -257,7 +255,8 @@ public class H5CompoundDS extends CompoundDS
         }
 
         int did = open();
-        list = new Vector(flatNameList.size()+2);
+        list = new Vector(flatNameList.size());
+        Vector atomicList = new Vector();
 
         try // to match finally for closing resources
         {
@@ -293,57 +292,56 @@ public class H5CompoundDS extends CompoundDS
             // read each of member data into a byte array, then extract
             // it into its type such, int, long, float, etc.
             int n = flatNameList.size();
+            tid = H5.H5Dget_type(did);
+            extractCompoundInfo(tid, null, null, atomicList);
+            
             for (int i=0; i<n; i++)
             {
-                // select all members for index table
-                if (isIndexTable)
-                    isMemberSelected[i] = true;
-                else if (!isMemberSelected[i])
+                if (!isMemberSelected[i])
                     continue; // the field is not selected
 
                 member_name = new String(memberNames[i]);
-                member_tid = memberTypes[i];
+                atom_tid = ((Integer)atomicList.get(i)).intValue();
 
                 try {
-                    member_class = H5.H5Tget_class(member_tid);                    
-                    member_size = H5.H5Tget_size(member_tid);
-                    member_data = H5Datatype.allocateArray(member_tid, (int)lsize[0]);
+                    member_class = H5.H5Tget_class(atom_tid);                    
+                    member_size = H5.H5Tget_size(atom_tid);
+                    member_data = H5Datatype.allocateArray(atom_tid, (int)lsize[0]);
                 } catch (Exception ex) {member_data = null; }
 
                 if (member_data == null)
                 {
                     String[] nullValues = new String[(int)lsize[0]];
-                    String errorStr = "not supported: "+ H5Datatype.getDatatypeDescription(member_tid);
+                    String errorStr = "not supported: "+ H5Datatype.getDatatypeDescription(atom_tid);
                     for (int j=0; j<lsize[0]; j++) nullValues[j] = errorStr;
                     list.add(nullValues);
                     continue;
                 }
 
-                int nested_tid = -1;
-                boolean isVLEN = false;
-                boolean is_variable_str = false;
-                int compInfo[] = {member_class, member_size, 0};
-                try {
-                    nested_tid = createCompoundFieldType(member_tid, member_name, compInfo);
-
-                    try { is_variable_str = H5.H5Tis_variable_str(member_tid); } catch (Exception ex) {}
-                    try { isVLEN = (H5.H5Tdetect_class(member_tid, HDF5Constants.H5T_VLEN)); } catch (Exception ex) {}
- 
-                    if (isVLEN || is_variable_str)
-                        H5.H5DreadVL( did, nested_tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, (Object[])member_data);
+                 boolean isVL = false;
+                 int comp_tid=-1;
+                 int compInfo[] = {member_class, member_size, 0};
+                 try {
+                    comp_tid = createCompoundFieldType(atom_tid, member_name, compInfo);                     
+                    try { 
+                        isVL = (H5.H5Tdetect_class(atom_tid, HDF5Constants.H5T_VLEN)); 
+                    } catch (Exception ex) {}
+      
+                    if (isVL)
+                        H5.H5DreadVL( did, comp_tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, (Object[])member_data);
                     else
-                        H5.H5Dread( did, nested_tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, member_data);
+                        H5.H5Dread( did, comp_tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, member_data);
                 } catch (HDF5Exception ex2)
                 {
                     String[] nullValues = new String[(int)lsize[0]];
                     for (int j=0; j<lsize[0]; j++) nullValues[j] = "";
                     list.add(nullValues);
-                    try { H5.H5Tclose(nested_tid); } catch (HDF5Exception ex3) {}
                     continue;
+                } finally {
+                    try { H5.H5Tclose(comp_tid); } catch (Exception ex2) {}
                 }
-                try { H5.H5Tclose(nested_tid); } catch (HDF5Exception ex2) {}
-
-                if (!(isVLEN || is_variable_str || isIndexTable))
+ 
+                if (!isVL)
                 {
                     if (member_class == HDF5Constants.H5T_STRING && convertByteToString) {
                         member_data = byteToString((byte[])member_data, member_size);
@@ -357,7 +355,7 @@ public class H5CompoundDS extends CompoundDS
                     else if (member_class == HDF5Constants.H5T_ENUM)
                     {
                         try {
-                            String[] strs = enumToNames(member_tid, member_data);
+                            String[] strs = enumToNames(atom_tid, member_data);
                             if (strs != null) member_data = strs;
                         } catch (Exception ex) {}
                     }
@@ -370,6 +368,15 @@ public class H5CompoundDS extends CompoundDS
         {
             try { H5.H5Sclose(fspace); } catch (Exception ex2) {}
             try { H5.H5Sclose(mspace); } catch (Exception ex2) {}
+            try { H5.H5Tclose(tid); } catch (Exception ex2) {}
+            
+            // close atomic types
+            int ntypes = atomicList.size();
+            for (int i=0; i<ntypes; i++) {
+                atom_tid = ((Integer)atomicList.get(i)).intValue();
+                try { H5.H5Tclose(atom_tid); } catch (Exception ex2) {}
+             }
+             
             close(did);
         }
 
@@ -385,17 +392,20 @@ public class H5CompoundDS extends CompoundDS
      */
     public void write(Object buf) throws HDF5Exception
     {
-        if (buf == null || numberOfMembers <= 0 ||
-            !(buf instanceof List) || isIndexTable)
+        if (buf == null || numberOfMembers <= 0 || !(buf instanceof List))
             return;
 
         List list = (List)buf;
+
         Object member_data = null;
         String member_name = null;
-        int member_tid=-1, member_class=-1, member_size=0, fspace=-1, mspace=-1;
-        int did = open();
+        int tid=-1, atom_tid=-1, member_class=-1, member_size=0, 
+            fspace=-1, mspace=-1;
 
-        try
+        int did = open();
+        Vector atomicList = new Vector();
+
+        try // to match finally for closing resources
         {
             long[] lsize = {1};
             boolean isAllSelected = true;
@@ -426,145 +436,78 @@ public class H5CompoundDS extends CompoundDS
                 H5.H5Sselect_hyperslab(fspace, HDF5Constants.H5S_SELECT_SET, startDims, selectedStride, selectedDims, null );
             }
 
-            int idx = 0;
-            boolean is_variable_str = false;
-            boolean isVL = false;
-        
-            for (int i=0; i<numberOfMembers; i++)
+            // read each of member data into a byte array, then extract
+            // it into its type such, int, long, float, etc.
+            int idx=0;
+            int n = flatNameList.size();
+            tid = H5.H5Dget_type(did);
+            extractCompoundInfo(tid, null, null, atomicList);
+           
+            for (int i=0; i<n; i++)
             {
                 if (!isMemberSelected[i])
                     continue; // the field is not selected
 
-                member_name = memberNames[i];
-                member_tid = memberTypes[i];
+                member_name = new String(memberNames[i]);
+                atom_tid = ((Integer)atomicList.get(i)).intValue();
                 member_data = list.get(idx++);
-                try { 
-                    member_class = H5.H5Tget_class(member_tid); 
-                    member_size = H5.H5Tget_size(member_tid); 
-                } catch (HDF5Exception ex) {}
 
-                try { is_variable_str = H5.H5Tis_variable_str(member_tid); } catch (Exception ex) {}
-                try { isVL = (member_class==HDF5Constants.H5T_VLEN); } catch (Exception ex) {}
-
-                if ( member_data == null
-                     || is_variable_str
-                     || isVL
-                     || (member_class== HDF5Constants.H5T_ENUM)
-                    )
+                if (member_data == null)
                     continue;
 
-                int nested_tid = -1;
-                try
-                {
-                    int compInfo[] = {member_class, member_size, 0};
-                    nested_tid = createCompoundFieldType(member_tid, member_name, compInfo);
+                try {
+                    member_class = H5.H5Tget_class(atom_tid);                    
+                    member_size = H5.H5Tget_size(atom_tid);
+                } catch (Exception ex) {}
 
-                    Object tmpData = member_data;
-                    if (compInfo[2] != 0) {
+                boolean isVL = false;
+                try { 
+                    isVL = (H5.H5Tdetect_class(atom_tid, HDF5Constants.H5T_VLEN)); 
+                } catch (Exception ex) {}
+
+                if ( member_data == null || isVL || (member_class== HDF5Constants.H5T_ENUM) )
+                    continue;
+
+                Object tmpData = member_data;
+                
+                int comp_tid = -1;
+                int compInfo[] = {member_class, member_size, 0};
+                try {
+                    comp_tid = createCompoundFieldType(atom_tid, member_name, compInfo);                     
+                    if (compInfo[2] !=0)
                         tmpData = convertToUnsignedC(member_data, null);
-                    }
                     else if (member_class == HDF5Constants.H5T_STRING &&
-                             (Array.get(member_data, 0) instanceof String)) {
-                        tmpData = stringToByte((String[])member_data, member_size);
-                    }
-
-                    if (tmpData == null)
-                        continue;
+                         (Array.get(member_data, 0) instanceof String)) 
+                         tmpData = stringToByte((String[])member_data, member_size);
+     
+                    if (tmpData != null)
+                        H5.H5Dwrite(did, comp_tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, tmpData);
 
                     // BUG!!! does not write nested compound data and no exception was caught
                     //        need to check if it is a java error or C library error
-                    H5.H5Dwrite(
-                        did,
-                        nested_tid,
-                        mspace,
-                        fspace,
-                        HDF5Constants.H5P_DEFAULT,
-                        tmpData);
-                } catch (HDF5Exception ex2) {}
-                finally 
-                {   
-                    try { H5.H5Tclose(nested_tid); } catch (HDF5Exception ex3) {}
+                    H5.H5Dwrite(did, comp_tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, tmpData);
+                } finally {
+                    try { H5.H5Tclose(comp_tid); } catch (Exception ex2) {}
                 }
             } // end of for (int i=0; i<num_members; i++)
+
         } finally
         {
             try { H5.H5Sclose(fspace); } catch (Exception ex2) {}
             try { H5.H5Sclose(mspace); } catch (Exception ex2) {}
-            close(did);
+            try { H5.H5Tclose(tid); } catch (Exception ex2) {}
+            
+            // close atomic types
+            int ntypes = atomicList.size();
+            for (int i=0; i<ntypes; i++) {
+                atom_tid = ((Integer)atomicList.get(i)).intValue();
+                try { H5.H5Tclose(atom_tid); } catch (Exception ex2) {}
+            }
         }
+        
+        close(did);
     }
     
-    /**
-     * Creates a datatype of a compound with one field.
-     * <p>
-     * This function is needed to read/write data field by field.
-     * <p>
-     * @param member_tid The datatype identifier of the compound to create
-     * @param member_name The name of the datatype
-     * @param compInfo compInfo[0]--IN: class of member datatype; 
-     *                 compInfo[1]--IN: size of member datatype;
-     *                 compInfo[2]--OUT: non-zero if the base type of the compound field is unsigned; zero, otherwise.
-     * @return the identifier of the compound datatype.
-     */
-    private final int createCompoundFieldType(int member_tid, String member_name,
-            int[] compInfo)  throws HDF5Exception    
-    {
-        int nested_tid = -1;
-
-        int arrayType = member_tid;
-        int baseType = arrayType;
-        int tmp_tid1=-1, tmp_tid2=-1, tmp_tid3=-1, tmp_tid4=-1;
-        
-        try {
-            int member_class = compInfo[0];
-            int member_size = compInfo[1];
-            
-            if (member_class == HDF5Constants.H5T_ARRAY)
-            {
-                int mn = H5.H5Tget_array_ndims(member_tid);
-                int[] marray = new int[mn];
-                H5.H5Tget_array_dims(member_tid, marray, null);
-                baseType = H5.H5Tget_super(member_tid);
-                tmp_tid2 = baseType;
-                tmp_tid4 = H5.H5Tget_native_type(baseType);
-                arrayType = H5.H5Tarray_create (tmp_tid4, mn, marray, null);
-                tmp_tid3 = arrayType;
-            }
-
-            try { 
-                if (H5Datatype.isUnsigned(baseType))
-                    compInfo[2] = 1;
-            }  catch (Exception ex2) {}
-            
-            member_size = H5.H5Tget_size(member_tid);
-            // construct nested compound structure with a single field
-            String theName = member_name;
-            tmp_tid1 = H5.H5Tcopy(arrayType);
-            int sep = member_name.lastIndexOf('.');
-
-            while (sep > 0)
-            {
-                theName = member_name.substring(sep+1);
-                nested_tid = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND, member_size);
-                H5.H5Tinsert(nested_tid, theName, 0, tmp_tid1);
-                try {H5.H5Tclose(tmp_tid1);} catch (Exception ex) {}
-                tmp_tid1 = nested_tid;
-                member_name = member_name.substring(0, sep);
-                sep = member_name.lastIndexOf('.');
-            }
-
-            nested_tid = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND, member_size);
-            H5.H5Tinsert(nested_tid, member_name, 0, tmp_tid1);
-        } finally {
-            try { H5.H5Tclose(tmp_tid1); } catch (HDF5Exception ex3) {}
-            try { H5.H5Tclose(tmp_tid2); } catch (HDF5Exception ex3) {}
-            try { H5.H5Tclose(tmp_tid3); } catch (HDF5Exception ex3) {}
-            try { H5.H5Tclose(tmp_tid4); } catch (HDF5Exception ex3) {}
-        }
-        
-        return nested_tid;
-    }
-
     /*
      * (non-Javadoc)
      * @see ncsa.hdf.object.DataFormat#getMetadata()
@@ -747,8 +690,20 @@ public class H5CompoundDS extends CompoundDS
         String fullName = getPath()+getName();
         flatNameList = new Vector();
         flatTypeList = new Vector();
+        int[] memberTIDs = null;
 
         did = open();
+        
+        // check if it is an external dataset
+        int pid=-1;
+        try {
+            pid = H5.H5Dget_create_plist(did);
+            int nfiles = H5.H5Pget_external_count(pid);
+            isExternal = (nfiles>1);
+        } catch (Exception ex) {}
+        finally {
+            try {H5.H5Pclose(pid);} catch (Exception ex) {}
+        }
 
         try {
             sid = H5.H5Dget_space(did);
@@ -773,10 +728,13 @@ public class H5CompoundDS extends CompoundDS
             // initialize member information
             tid= H5.H5Dget_type(did);
             tclass = H5.H5Tget_class(tid);
+            
+            // check if datatype in file is ntive datatype
+            int tmptid = 0;
             if (tclass == HDF5Constants.H5T_ARRAY)
             {
                 // array of compound
-                int tmptid = tid;
+                tmptid = tid;
                 tid = H5.H5Tget_super(tmptid);
                 try { H5.H5Tclose(tmptid); } catch (HDF5Exception ex) {}
             }
@@ -785,29 +743,31 @@ public class H5CompoundDS extends CompoundDS
             numberOfMembers = flatNameList.size();
 
             memberNames = new String[numberOfMembers];
-            memberTypes = new int[numberOfMembers];
+            memberTIDs = new int[numberOfMembers];
+            memberTypes = new Datatype[numberOfMembers];
             memberOrders = new int[numberOfMembers];
             isMemberSelected = new boolean[numberOfMembers];
             for (int i=0; i<numberOfMembers; i++)
             {
                 isMemberSelected[i] = true;
-                memberTypes[i] = ((Integer)flatTypeList.get(i)).intValue();
+                memberTIDs[i] = ((Integer)flatTypeList.get(i)).intValue();
+                memberTypes[i] = new H5Datatype(memberTIDs[i]);
                 memberNames[i] = (String)flatNameList.get(i);
                 memberOrders[i] = 1;
 
-                try { tclass = H5.H5Tget_class(memberTypes[i]); }
+                try { tclass = H5.H5Tget_class(memberTIDs[i]); }
                 catch (HDF5Exception ex ) {}
 
                 if (tclass == HDF5Constants.H5T_ARRAY)
                 {
-                    int n = H5.H5Tget_array_ndims(memberTypes[i]);
+                    int n = H5.H5Tget_array_ndims(memberTIDs[i]);
                     int mdim[] = new int[n];
                     if (memberDims==null)
                         memberDims = new Object[numberOfMembers];
-                    H5.H5Tget_array_dims(memberTypes[i], mdim, null);
+                    H5.H5Tget_array_dims(memberTIDs[i], mdim, null);
                     memberDims[i] = mdim;
-                    int tmptid = H5.H5Tget_super(memberTypes[i]);
-                    memberOrders[i] = (H5.H5Tget_size(memberTypes[i])/H5.H5Tget_size(tmptid));
+                    tmptid = H5.H5Tget_super(memberTIDs[i]);
+                    memberOrders[i] = (H5.H5Tget_size(memberTIDs[i])/H5.H5Tget_size(tmptid));
                     try { H5.H5Tclose(tmptid); } catch (HDF5Exception ex) {}
                 }
             } //for (int i=0; i<numberOfMembers; i++)
@@ -822,17 +782,13 @@ public class H5CompoundDS extends CompoundDS
         {
             try { H5.H5Tclose(tid); } catch (HDF5Exception ex2) {}
             try { H5.H5Sclose(sid); } catch (HDF5Exception ex2) {}
-        }
-
-        // check if it is an external dataset
-        int pid=-1;
-        try {
-            pid = H5.H5Dget_create_plist(did);
-            int nfiles = H5.H5Pget_external_count(pid);
-            isExternal = (nfiles>1);
-        } catch (Exception ex) {}
-        finally {
-            try {H5.H5Pclose(pid);} catch (Exception ex) {}
+            
+            if (memberTIDs !=null) {
+                for (int i=0; i<memberTIDs.length; i++) {
+                    try { H5.H5Tclose(memberTIDs[i]); } 
+                    catch (Exception ex) {}
+                }
+            }
         }
 
         close(did);
@@ -915,26 +871,31 @@ public class H5CompoundDS extends CompoundDS
 
         for (int i=0; i<nMembers; i++)
         {
-            int tmptid = -1;
-
-            try {tmptid = H5.H5Tget_member_type(tid, i);}
+ 
+            try {mtype = H5.H5Tget_member_type(tid, i);}
             catch (Exception ex ) { continue; }
 
-            try { mtype = H5.H5Tget_native_type(tmptid);} 
-            catch (HDF5Exception ex) {
-                continue;
-            } finally {
-                try { H5.H5Tclose(tmptid); } catch (HDF5Exception ex) {}
+            int tmptid = -1;
+            if (!isNativeDatatype) {
+                try { 
+                    tmptid = mtype;
+                    mtype = H5.H5Tget_native_type(tmptid);
+                    isNativeDatatype = H5.H5Tequal(mtype, tmptid);
+                    } 
+                catch (HDF5Exception ex) { continue; } 
+                finally {
+                    try { H5.H5Tclose(tmptid); } catch (HDF5Exception ex) {}
+                 }
              }
  
             try { mclass = H5.H5Tget_class(mtype); }
             catch (HDF5Exception ex ) { continue; }
 
-            mname = name+H5.H5Tget_member_name(tid, i);
+            if (names !=null)
+                mname = name+H5.H5Tget_member_name(tid, i);
 
             if (mclass == HDF5Constants.H5T_COMPOUND)
             {
-                // nested compound
                 extractCompoundInfo(mtype, mname+separator, names, types);
                 continue;
             }
@@ -955,8 +916,11 @@ public class H5CompoundDS extends CompoundDS
                 }
             }
 
-            names.add(mname);
+            if (names !=null)
+                names.add(mname);
+            
             types.add(new Integer(mtype));
+            
         } //for (int i=0; i<nMembers; i++)
     } //extractNestedCompoundInfo
 
@@ -1127,6 +1091,7 @@ public class H5CompoundDS extends CompoundDS
             for (int j=0; j<memberRanks[i]; j++)
                 memberSize *= memberDims[i][j];
 
+            // the member is an array
             if (memberSize > 1 && (memberDatatypes[i].getDatatypeClass() != Datatype.CLASS_STRING)) {
                 int tmptid = -1;
                 try {
@@ -1192,6 +1157,11 @@ public class H5CompoundDS extends CompoundDS
             try {H5.H5Sclose(sid);} catch (HDF5Exception ex) {};
             try {H5.H5Tclose(tid);} catch (HDF5Exception ex) {};
             try {H5.H5Dclose(did);} catch (HDF5Exception ex) {};
+            
+            for (int i=0; i<nMembers; i++)
+            {
+                try {H5.H5Tclose(mTypes[i]);} catch (HDF5Exception ex) {};
+            }
         }
 
         dataset = new H5CompoundDS(file, name, path);
@@ -1285,17 +1255,75 @@ public class H5CompoundDS extends CompoundDS
         return tsize;
     }
     
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#finalize()
+    /**
+     * Creates a datatype of a compound with one field.
+     * <p>
+     * This function is needed to read/write data field by field.
+     * <p>
+     * @param member_tid The datatype identifier of the compound to create
+     * @param member_name The name of the datatype
+     * @param compInfo compInfo[0]--IN: class of member datatype; 
+     *                 compInfo[1]--IN: size of member datatype;
+     *                 compInfo[2]--OUT: non-zero if the base type of the compound field is unsigned; zero, otherwise.
+     * @return the identifier of the compound datatype.
      */
-    protected void finalize () {
-        if (memberTypes != null) {
-            for (int i=0; i<memberTypes.length; i++) {
-                try { H5.H5Tclose(memberTypes[i]); } catch (Exception ex) {}
+    private final int createCompoundFieldType(int member_tid, String member_name,
+            int[] compInfo)  throws HDF5Exception    
+    {
+        int nested_tid = -1;
+
+        int arrayType = member_tid;
+        int baseType = arrayType;
+        int tmp_tid1=-1, tmp_tid2=-1, tmp_tid3=-1, tmp_tid4=-1;
+        
+        try {
+            int member_class = compInfo[0];
+            int member_size = compInfo[1];
+            
+            if (member_class == HDF5Constants.H5T_ARRAY)
+            {
+                int mn = H5.H5Tget_array_ndims(member_tid);
+                int[] marray = new int[mn];
+                H5.H5Tget_array_dims(member_tid, marray, null);
+                baseType = H5.H5Tget_super(member_tid);
+                tmp_tid2 = baseType;
+                tmp_tid4 = H5.H5Tget_native_type(baseType);
+                arrayType = H5.H5Tarray_create (tmp_tid4, mn, marray, null);
+                tmp_tid3 = arrayType;
             }
+
+            try { 
+                if (H5Datatype.isUnsigned(baseType))
+                    compInfo[2] = 1;
+            }  catch (Exception ex2) {}
+            
+            member_size = H5.H5Tget_size(member_tid);
+            // construct nested compound structure with a single field
+            String theName = member_name;
+            tmp_tid1 = H5.H5Tcopy(arrayType);
+            int sep = member_name.lastIndexOf('.');
+
+            while (sep > 0)
+            {
+                theName = member_name.substring(sep+1);
+                nested_tid = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND, member_size);
+                H5.H5Tinsert(nested_tid, theName, 0, tmp_tid1);
+                try {H5.H5Tclose(tmp_tid1);} catch (Exception ex) {}
+                tmp_tid1 = nested_tid;
+                member_name = member_name.substring(0, sep);
+                sep = member_name.lastIndexOf('.');
+            }
+
+            nested_tid = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND, member_size);
+            H5.H5Tinsert(nested_tid, member_name, 0, tmp_tid1);
+        } finally {
+            try { H5.H5Tclose(tmp_tid1); } catch (HDF5Exception ex3) {}
+            try { H5.H5Tclose(tmp_tid2); } catch (HDF5Exception ex3) {}
+            try { H5.H5Tclose(tmp_tid3); } catch (HDF5Exception ex3) {}
+            try { H5.H5Tclose(tmp_tid4); } catch (HDF5Exception ex3) {}
         }
-    }
+        
+        return nested_tid;
+    }    
     
-   
 }

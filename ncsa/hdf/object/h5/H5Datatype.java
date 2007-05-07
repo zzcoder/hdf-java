@@ -643,7 +643,7 @@ public class H5Datatype extends Datatype
      */
     public boolean isUnsigned()
     {
-        return isUnsigned(toNative());
+        return (datatypeSign == SIGN_NONE);
     }
 
     /**
