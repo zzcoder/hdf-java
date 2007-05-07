@@ -77,7 +77,7 @@ public class H5CompoundDS extends CompoundDS
     private List attributeList;
     
     /** flag to indicate if the datatype in file is the same as dataype in memory*/
-    private boolean isNativeDatatype = true;
+    private boolean isNativeDatatype = false;
     
 
     /**
@@ -441,8 +441,8 @@ public class H5CompoundDS extends CompoundDS
             int idx=0;
             int n = flatNameList.size();
             tid = H5.H5Dget_type(did);
+
             extractCompoundInfo(tid, null, null, atomicList);
-           
             for (int i=0; i<n; i++)
             {
                 if (!isMemberSelected[i])
@@ -473,24 +473,22 @@ public class H5CompoundDS extends CompoundDS
                 int comp_tid = -1;
                 int compInfo[] = {member_class, member_size, 0};
                 try {
-                    comp_tid = createCompoundFieldType(atom_tid, member_name, compInfo);                     
+                    comp_tid = createCompoundFieldType(atom_tid, member_name, compInfo);  
                     if (compInfo[2] !=0)
                         tmpData = convertToUnsignedC(member_data, null);
                     else if (member_class == HDF5Constants.H5T_STRING &&
                          (Array.get(member_data, 0) instanceof String)) 
                          tmpData = stringToByte((String[])member_data, member_size);
      
-                    if (tmpData != null)
+                    if (tmpData != null) {
+                        // BUG!!! does not write nested compound data and no exception was caught
+                        //        need to check if it is a java error or C library error
                         H5.H5Dwrite(did, comp_tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, tmpData);
-
-                    // BUG!!! does not write nested compound data and no exception was caught
-                    //        need to check if it is a java error or C library error
-                    H5.H5Dwrite(did, comp_tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, tmpData);
+                    }
                 } finally {
                     try { H5.H5Tclose(comp_tid); } catch (Exception ex2) {}
                 }
             } // end of for (int i=0; i<num_members; i++)
-
         } finally
         {
             try { H5.H5Sclose(fspace); } catch (Exception ex2) {}
@@ -877,12 +875,12 @@ public class H5CompoundDS extends CompoundDS
 
             int tmptid = -1;
             if (!isNativeDatatype) {
+               
                 try { 
                     tmptid = mtype;
                     mtype = H5.H5Tget_native_type(tmptid);
                     isNativeDatatype = H5.H5Tequal(mtype, tmptid);
-                    } 
-                catch (HDF5Exception ex) { continue; } 
+                } catch (HDF5Exception ex) { continue; } 
                 finally {
                     try { H5.H5Tclose(tmptid); } catch (HDF5Exception ex) {}
                  }

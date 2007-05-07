@@ -54,7 +54,7 @@ public class H5ScalarDS extends ScalarDS
      private boolean isExternal = false;
      
      /** flag to indicate if the datatype in file is the same as dataype in memory*/
-     private boolean isNativeDatatype = true;
+     private boolean isNativeDatatype = false;
      
      /**
       * Constructs an instance of a H5ScalarDS object with specific name and path.
