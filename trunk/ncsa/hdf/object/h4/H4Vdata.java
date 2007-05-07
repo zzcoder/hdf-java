@@ -90,6 +90,12 @@ public class H4Vdata extends CompoundDS
      * Number of records of this Vdata table.
      */
     private int numberOfRecords;
+    
+    /**
+     * The data types of the members of the compound dataset.
+     */
+    private int[] memberTIDs;
+    
 
     public H4Vdata(FileFormat theFile, String name, String path)
     {
@@ -204,7 +210,7 @@ public class H4Vdata extends CompoundDS
             }
 
             int n = memberOrders[i]*(int)selectedDims[0];
-            member_data = H4Datatype.allocateArray(memberTypes[i], n);
+            member_data = H4Datatype.allocateArray(memberTIDs[i], n);
 
             if (member_data == null)
             {
@@ -220,14 +226,14 @@ public class H4Vdata extends CompoundDS
                     member_data,
                     (int)selectedDims[0],
                     HDFConstants.FULL_INTERLACE);
-                if (memberTypes[i] == HDFConstants.DFNT_CHAR ||
-                    memberTypes[i] ==  HDFConstants.DFNT_UCHAR8)
+                if (memberTIDs[i] == HDFConstants.DFNT_CHAR ||
+                    memberTIDs[i] ==  HDFConstants.DFNT_UCHAR8)
                 {
                     // convert characters to string
                     member_data = Dataset.byteToString(
                             (byte[])member_data, memberOrders[i]);
                     memberOrders[i] = 1; //one String
-                } else if (H4Datatype.isUnsigned(memberTypes[i]))
+                } else if (H4Datatype.isUnsigned(memberTIDs[i]))
                 {
                     // convert unsigned integer to appropriate Java integer
                     member_data = Dataset.convertFromUnsignedC(member_data);
@@ -288,11 +294,11 @@ public class H4Vdata extends CompoundDS
             if (member_data == null)
                 continue;
 
-            if (memberTypes[i] == HDFConstants.DFNT_CHAR ||
-                memberTypes[i] ==  HDFConstants.DFNT_UCHAR8)
+            if (memberTIDs[i] == HDFConstants.DFNT_CHAR ||
+                memberTIDs[i] ==  HDFConstants.DFNT_UCHAR8)
             {
                 member_data = Dataset.stringToByte((String[])member_data, memberOrders[i]);
-            } else if (H4Datatype.isUnsigned(memberTypes[i]))
+            } else if (H4Datatype.isUnsigned(memberTIDs[i]))
             {
                 // convert unsigned integer to appropriate Java integer
                 member_data = Dataset.convertToUnsignedC(member_data);
@@ -469,7 +475,8 @@ public class H4Vdata extends CompoundDS
         startDims[0] = 0;
 
         memberNames = new String[numberOfMembers];
-        memberTypes = new int[numberOfMembers];
+        memberTIDs = new int[numberOfMembers];
+        memberTypes = new Datatype[numberOfMembers];
         memberOrders = new int[numberOfMembers];
         isMemberSelected = new boolean[numberOfMembers];
 
@@ -478,9 +485,10 @@ public class H4Vdata extends CompoundDS
             isMemberSelected[i] = true;
             try {
                 memberNames[i] = HDFLibrary.VFfieldname(id, i);
-                memberTypes[i] = HDFLibrary.VFfieldtype(id, i);
+                memberTIDs[i] = HDFLibrary.VFfieldtype(id, i);
+                memberTypes[i] = new H4Datatype(memberTIDs[i]);
                 // mask off the litend bit
-                memberTypes[i] = memberTypes[i] & (~HDFConstants.DFNT_LITEND);
+                memberTIDs[i] = memberTIDs[i] & (~HDFConstants.DFNT_LITEND);
                 memberOrders[i] = HDFLibrary.VFfieldorder(id, i);
             } catch (HDFException ex) {
                 continue;

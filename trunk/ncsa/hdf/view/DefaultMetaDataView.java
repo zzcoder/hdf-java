@@ -574,10 +574,9 @@ implements ActionListener, MetaDataView
             {
                 String rowData[][] = new String[n][3];
                 String names[] = compound.getMemberNames();
-                int types[] = compound.getMemberTypes();
+                Datatype types[] = compound.getMemberTypes();
                 int orders[] = compound.getMemberOrders();
 
-                Datatype datatype = compound.getDatatype();
                 for (int i=0; i<n; i++)
                 {
                     rowData[i][0] = names[i];
@@ -591,8 +590,7 @@ implements ActionListener, MetaDataView
                             mStr +=" x "+mDims[j];
                         rowData[i][2] = mStr;
                     }
-                    datatype.fromNative(types[i]);
-                    rowData[i][1] = datatype.getDatatypeDescription();
+                    rowData[i][1] = types[i].getDatatypeDescription();
                 }
 
                 String[] columnNames = {"Name", "Type", "Array Size"};

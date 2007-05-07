@@ -60,11 +60,6 @@ public abstract class CompoundDS extends Dataset
     protected String[] memberNames;
 
     /**
-     * The data types of the members of the compound dataset.
-     */
-    protected int[] memberTypes;
-
-    /**
      * Returns array containing the total number of elements of the members of compound.
      * <p>
      * For example, a compound dataset COMP has members of A, B and C as
@@ -84,6 +79,12 @@ public abstract class CompoundDS extends Dataset
      * The dimension sizes of each member.
      */
     protected Object[] memberDims;
+    
+    /**
+     * The datatypes of compound members.
+     */
+    protected Datatype[] memberTypes;
+    
 
     /**
      * The array to store flags to indicate if a member of compound dataset is selected for read/write.
@@ -134,8 +135,8 @@ public abstract class CompoundDS extends Dataset
 
         numberOfMembers = 0;
         memberNames = null;
-        memberTypes = null;
         isMemberSelected = null;
+        memberTypes = null;
     }
 
     /**
@@ -187,24 +188,6 @@ public abstract class CompoundDS extends Dataset
     public final String[] getMemberNames()
     {
         return memberNames;
-    }
-
-    /**
-     * Returns the array of datatype identifiers of the compound members.
-     * <p>
-     * Each member of a compound dataset has its own datatype. The datatype of a
-     * member can be atomic or other compound datatype (nested compound). Sub-classes
-     * set up the datatype identifiers at init(). For example, at H5CompoundDS.init()
-     * H5.H5Tget_member_type(tid, i) is called to obtained the datatype identifiers
-     * of members of compound.
-     * <p>
-     * <strong>Applications should never change the values of the array (member datatype identifiers). </strong>
-     * 
-     * @return the array of datatype identifiers of the compound members.
-     */
-    public final int[] getMemberTypes()
-    {
-        return memberTypes;
     }
 
     /**
@@ -302,29 +285,6 @@ public abstract class CompoundDS extends Dataset
         return orders;
     }
 
-    /** 
-     * Returns the datatype identifiers of the selected members.
-     *  
-     * <strong>Applications should never change the values of member datatype identifiers. </strong>
-     * 
-     * @return the datatype identifiers of the selected members.
-     */
-    public final int[] getSelectedMemberTypes()
-    {
-        if (isMemberSelected == null)
-            return memberTypes;
-
-        int idx = 0;
-        int[] types = new int[getSelectedMemberCount()];
-        for (int i=0; i<isMemberSelected.length; i++)
-        {
-            if (isMemberSelected[i])
-                types[idx++] = memberTypes[i];
-        }
-
-        return types;
-    }
-
     /**
      * Returns the dimension sizes of of the i-th member.
      * <p>
@@ -346,6 +306,42 @@ public abstract class CompoundDS extends Dataset
             return null;
         return (int[])memberDims[i];
     }
+    
+    /**
+     * Returns an array of datatype objects of compound members.
+     * <p>
+     * Each member of a compound dataset has its own datatype. The datatype of a
+     * member can be atomic or other compound datatype (nested compound). Sub-classes
+     * set up the datatype objects at init().
+     * <p>
+     * @return the array of datatype objects of the compound members.
+     */
+    public final Datatype[] getMemberTypes()
+    {
+        return memberTypes;
+    }
+    
+    /** 
+     * Returns an array of datatype objects of selected compound members.
+     *  
+     * @return an array of datatype objects of selected compound members.
+     */
+    public final Datatype[] getSelectedMemberTypes()
+    {
+        if (isMemberSelected == null)
+            return memberTypes;
+
+        int idx = 0;
+        Datatype[] types = new Datatype[getSelectedMemberCount()];
+        for (int i=0; i<isMemberSelected.length; i++)
+        {
+            if (isMemberSelected[i])
+                types[idx++] = memberTypes[i];
+        }
+
+        return types;
+    }
+    
 
     /**
      * @deprecated  Not implemented for compound dataset.

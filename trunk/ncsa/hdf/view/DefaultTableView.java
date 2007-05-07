@@ -1343,7 +1343,7 @@ implements TableView, ActionListener
             List list = (List)dataValue;
             CompoundDS compound = (CompoundDS)dataset;
             int orders[] = compound.getSelectedMemberOrders();
-            int types[] = compound.getSelectedMemberTypes();
+            Datatype types[] = compound.getSelectedMemberTypes();
             StringBuffer stringBuffer = new StringBuffer();
             int nFields = list.size();
             int nRows = getRowCount();
@@ -1373,12 +1373,11 @@ implements TableView, ActionListener
                 if (mdim == null)
                 {
                     // member is not an ARRAY datatype
-                    int strlen = 0;
+                    int strlen = types[fieldIdx].getDatatypeSize();
+                    boolean isString = (types[fieldIdx].getDatatypeClass() == Datatype.CLASS_STRING);
+                    
 
-                    if (orders[fieldIdx] <= 1 &&
-                        compound.isString(types[fieldIdx]) &&
-                        (strlen = compound.getSize(types[fieldIdx]))>0 &&
-                        !compound.getConvertByteToString())
+                    if (orders[fieldIdx] <= 1 && isString && strlen>0 && !compound.getConvertByteToString())
                     {
                         // original data is a char array
                         String str = new String(((byte[])colValue), rowIdx*strlen, strlen);
@@ -2041,10 +2040,10 @@ implements TableView, ActionListener
             (cellValue=cellValue.trim()) == null)
             return;
 
-        CompoundDS cds = (CompoundDS)dataset;
-        List cdata = (List)cds.getData();
-        int orders[] = cds.getSelectedMemberOrders();
-        int types[] = cds.getSelectedMemberTypes();
+        CompoundDS compDS = (CompoundDS)dataset;
+        List cdata = (List)compDS.getData();
+        int orders[] = compDS.getSelectedMemberOrders();
+        Datatype types[] = compDS.getSelectedMemberTypes();
         int nFields = cdata.size();
         int nSubColumns = table.getColumnCount()/nFields;
         int nRows = table.getRowCount();
@@ -2071,10 +2070,10 @@ implements TableView, ActionListener
             Array.set(mdata, offset, cellValue);
             isValueChanged = true;
             return;
-        } else if (cds.isString(types[column]))
+        } else if (types[column].getDatatypeClass() == Datatype.CLASS_STRING)
         {
             // it is string but not converted, still byte array
-            int strlen = cds.getSize(types[column]);
+            int strlen = types[column].getDatatypeSize();
             offset *= strlen;
             byte[] bytes = cellValue.getBytes();
             byte[] bData = (byte[])mdata;

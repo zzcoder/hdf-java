@@ -853,32 +853,6 @@ public class H5CompoundDSTest extends TestCase {
         H5Datatype dtype = (H5Datatype)testDataset.getDatatype();
         assertNotNull(dtype);
         assertEquals(H5Datatype.CLASS_COMPOUND, dtype.getDatatypeClass());
-        
-        int[] tids = testDataset.getMemberTypes();
-        assertNotNull(tids);
-        assertTrue(tids.length>0);
-        
-        int tid = -1;
-        H5Datatype[] expectedTypes = H5TestFile.COMPOUND_MEMBER_DATATYPES;
-        for (int i=0; i<expectedTypes.length; i++ ) {
-            tid = -1;
-             try {
-                tid = expectedTypes[i].toNative();
-                assertTrue(H5.H5Tequal(tid, tids[i]));
-            }   catch (Exception ex) { 
-                fail("dtypes[i].toNative() failed. "+ ex);
-            }
-
-            try { H5.H5Tclose(tid);} catch(Exception ex) {}
-        }
-        
-        String[] names = testDataset.getMemberNames();
-        assertNotNull(names);
-        
-        String[] expectedNames = H5TestFile.COMPOUND_MEMBER_NAMES;
-        for (int i=0; i<expectedNames.length; i++ ) {
-            assertTrue(expectedNames[i].equals(names[i]));
-        }
      }
 
     /**
@@ -891,15 +865,9 @@ public class H5CompoundDSTest extends TestCase {
      * </ul>
      */
     public final void testIsString() {
-        testDataset.init();
-        
-        int[] tids = testDataset.getMemberTypes();
-        assertNotNull(tids);
-        assertTrue(tids.length>0);
-        
-        assertFalse(testDataset.isString(tids[0]));
-        assertFalse(testDataset.isString(tids[1]));
-        assertTrue(testDataset.isString(tids[2]));
+        assertFalse(testDataset.isString(HDF5Constants.H5T_NATIVE_INT));
+        assertFalse(testDataset.isString(HDF5Constants.H5T_NATIVE_FLOAT));
+        assertTrue(testDataset.isString(HDF5Constants.H5T_C_S1));
     }
 
     /**
@@ -907,19 +875,14 @@ public class H5CompoundDSTest extends TestCase {
      * <p>
      * What to test:
      * <ul>
-     *   <li> Test a sizes of member data types
+     *   <li> Test a sizes of different defined data types
      * </ul>
      */
     public final void testGetSize() {
-        testDataset.init();
-        
-        int[] tids = testDataset.getMemberTypes();
-        assertNotNull(tids);
-        assertTrue(tids.length>0);
-        
-        assertEquals(H5TestFile.DATATYPE_SIZE, testDataset.getSize(tids[0]));
-        assertEquals(H5TestFile.DATATYPE_SIZE, testDataset.getSize(tids[1]));
-        assertEquals(H5TestFile.STR_LEN, testDataset.getSize(tids[2]));
+        assertEquals(1, testDataset.getSize(HDF5Constants.H5T_NATIVE_INT8));
+        assertEquals(2, testDataset.getSize(HDF5Constants.H5T_NATIVE_INT16));
+        assertEquals(4, testDataset.getSize(HDF5Constants.H5T_NATIVE_INT32));
+        assertEquals(8, testDataset.getSize(HDF5Constants.H5T_NATIVE_INT64));
     }
 
     /**

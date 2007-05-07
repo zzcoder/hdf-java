@@ -477,12 +477,6 @@ implements ActionListener, ItemListener
                 return;
 
             CompoundDS dset = (CompoundDS)obj;
-            Datatype dtype =  null;
-            try { dtype = dset.getFileFormat().createDatatype(Datatype.CLASS_INTEGER, -1, -1, -1);}
-            catch (Exception ex) { dtype = null;}
-            if (dtype == null)
-                return;
-
             int rank = dset.getRank();
             if (rank < 1) dset.init();
 
@@ -491,7 +485,7 @@ implements ActionListener, ItemListener
             long[] dims = dset.getDims();
             String[] mNames = dset.getMemberNames();
             int[] mOrders = dset.getMemberOrders();
-            int[] mTypes = dset.getMemberTypes();
+            Datatype[] mTypes = dset.getMemberTypes();
 
             String sizeStr = String.valueOf(dims[0]);
             for (int i=1; i<rank; i++)
@@ -530,14 +524,13 @@ implements ActionListener, ItemListener
                 rowEditorModel.addEditorForRow(i, cellEditor);
 
                 tableModel.setValueAt(mNames[i], i, 0);
-                dtype.fromNative(mTypes[i]);
 
                 int typeIdx = -1;
-                int tclass = dtype.getDatatypeClass();
-                int tsize = dtype.getDatatypeSize();
+                int tclass = mTypes[i].getDatatypeClass();
+                int tsize = mTypes[i].getDatatypeSize();
                 if (tclass == Datatype.CLASS_INTEGER)
                 {
-                    int tsigned = dtype.getDatatypeSign();
+                    int tsigned = mTypes[i].getDatatypeSign();
                     if (tsigned == Datatype.SIGN_NONE)
                     {
                         if (tsize == 1)
@@ -584,7 +577,7 @@ implements ActionListener, ItemListener
                 if (tclass == Datatype.CLASS_STRING)
                     tableModel.setValueAt(String.valueOf(tsize), i, 2);
                 else if (tclass == Datatype.CLASS_ENUM)
-                    tableModel.setValueAt(dtype.getEnumMembers(), i, 2);
+                    tableModel.setValueAt(mTypes[i].getEnumMembers(), i, 2);
                 else
                     tableModel.setValueAt(String.valueOf(mOrders[i]), i, 2);
 

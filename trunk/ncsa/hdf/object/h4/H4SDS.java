@@ -98,6 +98,10 @@ public class H4SDS extends ScalarDS
      * The SDS interface identifier obtained from SDstart(filename, access)
      */
     private int sdid;
+    
+    /** the datatype identifier */
+    private int datatypeID = -1;
+    
 
     public H4SDS(FileFormat theFile, String name, String path)
     {
@@ -150,7 +154,7 @@ public class H4SDS extends ScalarDS
     {
         if (datatype == null)
         {
-            datatype = new H4Datatype(nativeDatatype);
+            datatype = new H4Datatype(datatypeID);
         }
 
         return datatype;
@@ -200,7 +204,7 @@ public class H4SDS extends ScalarDS
         }
 
         // create the new dataset and attached it to the parent group
-        tid = getNativeDataType();
+        tid = datatypeID;
         dstdid = HDFLibrary.SDcreate(
             ((H4File)pgroup.getFileFormat()).getSDAccessID(),
             dname, tid, theRank, count);
@@ -268,7 +272,7 @@ public class H4SDS extends ScalarDS
         }
 
         try {
-            int size = HDFLibrary.DFKNTsize(nativeDatatype)*datasize;
+            int size = HDFLibrary.DFKNTsize(datatypeID)*datasize;
             theData = new byte[size];
             HDFLibrary.SDreaddata(id, start, stride, select, theData);
         } finally
@@ -308,7 +312,7 @@ public class H4SDS extends ScalarDS
         }
 
         try {
-            theData = H4Datatype.allocateArray(nativeDatatype, datasize);
+            theData = H4Datatype.allocateArray(datatypeID, datasize);
 
             if (theData != null) {
                 // assume external data files are located in the same directory as the main file.
@@ -516,8 +520,8 @@ public class H4SDS extends ScalarDS
                 idims[0] = 1;
             }
 
-            nativeDatatype = sdInfo[1];
-            isText = (nativeDatatype == HDFConstants.DFNT_CHAR || nativeDatatype == HDFConstants.DFNT_UCHAR8);
+            datatypeID = sdInfo[1];
+            isText = (datatypeID == HDFConstants.DFNT_CHAR || datatypeID == HDFConstants.DFNT_UCHAR8);
 
             //idims = new int[rank];
             //HDFLibrary.SDgetinfo(id, objName, idims, sdInfo);
@@ -573,7 +577,7 @@ public class H4SDS extends ScalarDS
         finally {
             close(id);
         }
-        isUnsigned = H4Datatype.isUnsigned(nativeDatatype);
+        isUnsigned = H4Datatype.isUnsigned(datatypeID);
 
         if (idims == null)
             return;

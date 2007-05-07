@@ -103,6 +103,9 @@ public class H4GRImage extends ScalarDS
      * The number of components in the raster image
      */
     private int ncomp;
+    
+    /** the datatype identifier */
+    private int datatypeID = -1;
 
     public H4GRImage(FileFormat theFile, String name, String path)
     {
@@ -243,7 +246,7 @@ public class H4GRImage extends ScalarDS
     {
         if (datatype == null)
         {
-            datatype = new H4Datatype(nativeDatatype);
+            datatype = new H4Datatype(datatypeID);
         }
 
         return datatype;
@@ -264,7 +267,7 @@ public class H4GRImage extends ScalarDS
             // set the interlacing scheme for reading image data
             HDFLibrary.GRreqimageil(id, interlace);
             int datasize = getWidth()*getHeight()*ncomp;
-            int size = HDFLibrary.DFKNTsize(nativeDatatype)*datasize;
+            int size = HDFLibrary.DFKNTsize(datatypeID)*datasize;
             theData = new byte[size];
             int[] start = {(int)startDims[0], (int)startDims[1]};
             int[] select = {(int)selectedDims[0], (int)selectedDims[1]};
@@ -302,7 +305,7 @@ public class H4GRImage extends ScalarDS
             HDFLibrary.GRreqimageil(id, interlace);
             int datasize = getWidth()*getHeight()*ncomp;
 
-            theData = H4Datatype.allocateArray(nativeDatatype, datasize);
+            theData = H4Datatype.allocateArray(datatypeID, datasize);
 
             if (theData != null)
             {
@@ -485,7 +488,7 @@ public class H4GRImage extends ScalarDS
             HDFLibrary.GRgetiminfo(id, objName, grInfo, idims);
             // mask off the litend bit
             grInfo[1] = grInfo[1] & (~HDFConstants.DFNT_LITEND);
-            nativeDatatype = grInfo[1];
+            datatypeID = grInfo[1];
 
             // get compression information
             try {
@@ -524,7 +527,7 @@ public class H4GRImage extends ScalarDS
             close(id);
         }
 
-        isUnsigned = H4Datatype.isUnsigned(nativeDatatype);
+        isUnsigned = H4Datatype.isUnsigned(datatypeID);
 
         if (idims == null)
             return;

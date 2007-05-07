@@ -44,11 +44,6 @@ public abstract class ScalarDS extends Dataset
     public final static int INTERLACE_PLANE = 2;
 
     /**
-     * The native datatype identifier of this scalar dataset.
-     */
-    protected int nativeDatatype;
-
-    /**
      * The interlace mode of the stored raster image data.
      * Valid values are INTERLACE_PIXEL, INTERLACE_LINE and INTERLACE_PLANE.
      */
@@ -130,7 +125,6 @@ public abstract class ScalarDS extends Dataset
     {
         super (theFile, theName, thePath, oid);
 
-        nativeDatatype = -1;
         palette = null;
         isImage = false;
         isTrueColor = false;
@@ -140,16 +134,6 @@ public abstract class ScalarDS extends Dataset
         datatype = null;
         imageDataRange = null;
         isImageDisplay = false;
-    }
-
-    /**
-     * Returns the native datatype identifier of this scalar dataset.
-     * 
-     * @return the native datatype identifier of this scalar dataset.
-     */
-    public final int getNativeDataType()
-    {
-        return nativeDatatype;
     }
 
     /*
