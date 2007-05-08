@@ -416,7 +416,7 @@ public Object arrayify(byte[] bytes) throws HDF5Exception {
         } else if (ArrayDescriptor.NT == 'S') {
             short [] arow = HDFNativeData.byteToShort(n,ArrayDescriptor.dimlen[ArrayDescriptor.dims],_barray);
             java.lang.reflect.Array.set(ArrayDescriptor.objs[ArrayDescriptor.dims - 2] ,
-                (ArrayDescriptor.currentindex[ArrayDescriptor.dims - 1]), (Object)arow);
+                (ArrayDescriptor.currentindex[ArrayDescriptor.dims - 1]), arow);
 
             n += ArrayDescriptor.bytetoindex[ArrayDescriptor.dims - 1];
             ArrayDescriptor.currentindex[ArrayDescriptor.dims - 1]++;
@@ -426,14 +426,14 @@ public Object arrayify(byte[] bytes) throws HDF5Exception {
         } else if (ArrayDescriptor.NT == 'F') {
             float arow[] = HDFNativeData.byteToFloat(n,ArrayDescriptor.dimlen[ArrayDescriptor.dims],_barray);
             java.lang.reflect.Array.set(ArrayDescriptor.objs[ArrayDescriptor.dims - 2] ,
-                (ArrayDescriptor.currentindex[ArrayDescriptor.dims - 1]), (Object)arow);
+                (ArrayDescriptor.currentindex[ArrayDescriptor.dims - 1]), arow);
 
             n += ArrayDescriptor.bytetoindex[ArrayDescriptor.dims - 1];
             ArrayDescriptor.currentindex[ArrayDescriptor.dims - 1]++;
         } else if (ArrayDescriptor.NT == 'D') {
             double [] arow = HDFNativeData.byteToDouble(n,ArrayDescriptor.dimlen[ArrayDescriptor.dims],_barray);
             java.lang.reflect.Array.set(ArrayDescriptor.objs[ArrayDescriptor.dims - 2] ,
-                (ArrayDescriptor.currentindex[ArrayDescriptor.dims - 1]), (Object)arow);
+                (ArrayDescriptor.currentindex[ArrayDescriptor.dims - 1]), arow);
 
             n += ArrayDescriptor.bytetoindex[ArrayDescriptor.dims - 1];
             ArrayDescriptor.currentindex[ArrayDescriptor.dims - 1]++;

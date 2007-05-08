@@ -126,7 +126,7 @@ public class TestH5MemoryLeak
                  for (int openOption=0; openOption<2; openOption++)
                 {
                     nObjs = 0;
-                    H5File file = new H5File(NAME_FILE_H5, H5File.WRITE);
+                    H5File file = new H5File(NAME_FILE_H5, FileFormat.WRITE);
                     
                     if (openOption == 0) {
                         try { 
