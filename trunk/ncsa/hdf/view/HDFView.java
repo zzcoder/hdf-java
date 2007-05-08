@@ -284,6 +284,7 @@ HyperlinkListener, ChangeListener
         createMainWindow(width, height, x, y);
 
         int nfiles = flist.size();
+
         File theFile = null;
         for (int i=0; i<nfiles; i++) {
             theFile = (File)flist.get(i);
