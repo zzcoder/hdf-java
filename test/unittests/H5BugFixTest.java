@@ -254,8 +254,7 @@ public class H5BugFixTest extends TestCase {
          
         // test two open options: open full tree or open individual object only
         for (int openOption=0; openOption<2; openOption++){
-//            for (int i=0; i<NLOOPS; i++)
-while (true)
+            for (int i=0; i<NLOOPS; i++)
             {
                 nObjs = 0;
                 H5File file = new H5File(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
