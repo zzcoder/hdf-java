@@ -1130,11 +1130,9 @@ implements TableView, ActionListener
         dataValue = null;
         try {
             d.getData();
-/*            
             if (d instanceof ScalarDS) {
                 ((ScalarDS)d).convertFromUnsignedC();
             }
-*/            
             dataValue = d.getData();
         }
         catch (Exception ex)
