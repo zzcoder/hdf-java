@@ -257,7 +257,7 @@ public class H5BugFixTest extends TestCase {
             for (int i=0; i<NLOOPS; i++)
             {
                 nObjs = 0;
-                H5File file = new H5File(H5TestFile.NAME_FILE_H5, H5File.WRITE);
+                H5File file = new H5File(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
                 
                 if (openOption == 0) {
                     try { 

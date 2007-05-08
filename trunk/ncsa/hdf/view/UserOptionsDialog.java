@@ -392,8 +392,8 @@ implements ActionListener, ListSelectionListener
         JPanel cpl = new JPanel();
         cpl.setLayout(new GridLayout(7,1,5,5));
         cpl.add(new JLabel("Host Machine: ", SwingConstants.RIGHT));
-        cpl.add(new JLabel("Port Number: ", JLabel.RIGHT));
-        cpl.add(new JLabel("User Name: ", JLabel.RIGHT));
+        cpl.add(new JLabel("Port Number: ", SwingConstants.RIGHT));
+        cpl.add(new JLabel("User Name: ", SwingConstants.RIGHT));
         cpl.add(new JLabel("Password: ", JLabel.RIGHT));
         cpl.add(new JLabel("Home Directory: ", JLabel.RIGHT));
         cpl.add(new JLabel("mdas Domain Name: ", JLabel.RIGHT));

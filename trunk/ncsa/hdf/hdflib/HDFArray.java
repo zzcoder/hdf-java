@@ -97,7 +97,7 @@ public byte[] byteify() throws HDFException{
     if (_theArray == null) {
                 /* exception: not an array */
          HDFException ex =
-        (HDFException)new HDFJavaException("HDFArray: byteify not an array?: ");
+        new HDFJavaException("HDFArray: byteify not an array?: ");
         throw(ex);
         }
 
@@ -149,7 +149,7 @@ public byte[] byteify() throws HDFException{
             return _barray;
             } catch (OutOfMemoryError err) {
                  HDFException ex =
-                (HDFException)new HDFJavaException("HDFArray: byteify array too big?");
+                new HDFJavaException("HDFArray: byteify array too big?");
                 ex.printStackTrace();
                 throw(ex);
             }
