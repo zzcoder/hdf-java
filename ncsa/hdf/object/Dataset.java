@@ -465,7 +465,8 @@ public abstract class Dataset extends HObject
      * 
      * @return the new dataset.
      */
-    public abstract Dataset copy(Group pgroup, String name, long[] dims, Object data) throws Exception;
+    public abstract Dataset copy(Group pgroup, String name, long[] dims, Object data) 
+    throws Exception;
 
     /** 
      * Returns the datatype object of the dataset. 

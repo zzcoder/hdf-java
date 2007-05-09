@@ -442,7 +442,7 @@ public Object arrayify(byte[] bytes) throws HDF5Exception {
                 Byte I[] = ByteToByteObj(n,ArrayDescriptor.dimlen[ArrayDescriptor.dims],_barray);
         java.lang.reflect.Array.set(ArrayDescriptor.objs[ArrayDescriptor.dims - 2] ,
             (ArrayDescriptor.currentindex[ArrayDescriptor.dims - 1]),
-            (Object)I);
+            I);
 
             n += ArrayDescriptor.bytetoindex[ArrayDescriptor.dims - 1];
             ArrayDescriptor.currentindex[ArrayDescriptor.dims - 1]++;
@@ -450,7 +450,7 @@ public Object arrayify(byte[] bytes) throws HDF5Exception {
                 Integer I[] = ByteToInteger(n,ArrayDescriptor.dimlen[ArrayDescriptor.dims],_barray);
         java.lang.reflect.Array.set(ArrayDescriptor.objs[ArrayDescriptor.dims - 2] ,
             (ArrayDescriptor.currentindex[ArrayDescriptor.dims - 1]),
-            (Object)I);
+            I);
 
             n += ArrayDescriptor.bytetoindex[ArrayDescriptor.dims - 1];
             ArrayDescriptor.currentindex[ArrayDescriptor.dims - 1]++;
@@ -458,7 +458,7 @@ public Object arrayify(byte[] bytes) throws HDF5Exception {
                 Short I[] = ByteToShort(n,ArrayDescriptor.dimlen[ArrayDescriptor.dims],_barray);
             java.lang.reflect.Array.set(ArrayDescriptor.objs[ArrayDescriptor.dims - 2] ,
                 (ArrayDescriptor.currentindex[ArrayDescriptor.dims - 1]),
-                (Object)I);
+                I);
 
             n += ArrayDescriptor.bytetoindex[ArrayDescriptor.dims - 1];
             ArrayDescriptor.currentindex[ArrayDescriptor.dims - 1]++;

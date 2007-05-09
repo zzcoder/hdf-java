@@ -25,13 +25,16 @@ public class H5TestFile {
     public final static String NAME_DATASET_ENUM = "/dataset_enum";    
     public final static String NAME_DATASET_IMAGE = "/dataset_image";
     public final static String NAME_DATASET_COMPOUND = "/dataset_comp";
-    public final static String NAME_DATASET_SUB = NAME_GROUP + "/dataset_int";
-    public final static String NAME_DATASET_SUB_SUB = NAME_GROUP_SUB+ "/dataset_float";
+    public final static String NAME_DATASET_INT_SUB = NAME_GROUP + "/dataset_int";
+    public final static String NAME_DATASET_FLOAT_SUB_SUB = NAME_GROUP_SUB+ "/dataset_float";
     public final static String NAME_DATASET_COMPOUND_SUB = NAME_GROUP + "/dataset_comp";
     public final static String NAME_DATATYPE_INT = NAME_GROUP + "/datatype_int";
     public final static String NAME_DATATYPE_FLOAT = NAME_GROUP + "/datatype_float";
     public final static String NAME_DATATYPE_STR = NAME_GROUP + "/datatype_str";
-
+    
+    // image palette
+    public final static String NAME_DATASET_IMAGE_PALETTE = "/wave palete";
+ 
     // data space information
     public  final static int DATATYPE_SIZE = 4;
     public  final static int RANK = 2;
@@ -51,6 +54,7 @@ public class H5TestFile {
     public  final static String[] DATA_STR = new String[DIM_SIZE];
     public  final static int[] DATA_ENUM = new int[DIM_SIZE];
     public  final static Vector DATA_COMP = new Vector(3);
+    public  final static byte[] DATA_PALETTE = createWavePalette();
     
     // compound names and datatypes
     public final static String[] COMPOUND_MEMBER_NAMES = {"int32", "float32", "string", "uint32"};
@@ -100,6 +104,7 @@ public class H5TestFile {
         Dataset[] dsets = new Dataset[10];
         
         H5Datatype typeInt = new H5Datatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, -1);
+        H5Datatype typeByte = new H5Datatype(Datatype.CLASS_INTEGER, 1, -1, Datatype.SIGN_NONE);
         H5Datatype typeFloat = new H5Datatype(Datatype.CLASS_FLOAT, DATATYPE_SIZE, -1, -1);
         H5Datatype typeStr = new H5Datatype(Datatype.CLASS_STRING, STR_LEN, -1, -1);
         H5Datatype typeChar = new H5Datatype(Datatype.CLASS_CHAR, 1, -1, -1);
@@ -134,9 +139,9 @@ public class H5TestFile {
         dsets[2] = file.createScalarDS  (NAME_DATASET_CHAR, null, typeChar, DIMs, null, CHUNKs, 9, DATA_BYTE);
         dsets[3] = file.createScalarDS  (NAME_DATASET_STR, null, typeStr, DIMs, null, CHUNKs, 9, DATA_STR);
         dsets[4] = file.createScalarDS  (NAME_DATASET_ENUM, null, typeEnum, DIMs, null, CHUNKs, 9, DATA_ENUM);
-        dsets[5] = file.createScalarDS  (NAME_DATASET_SUB, g0, typeInt, DIMs, null, CHUNKs, 9, DATA_INT);
-        dsets[6] = file.createScalarDS  (NAME_DATASET_SUB_SUB, g00, typeFloat, DIMs, null, CHUNKs, 9, DATA_FLOAT);
-        dsets[7] = file.createImage     (NAME_DATASET_IMAGE, null, typeInt, DIMs, null, CHUNKs, 9, 1, -1, DATA_BYTE);
+        dsets[5] = file.createScalarDS  (NAME_DATASET_INT_SUB, g0, typeInt, DIMs, null, CHUNKs, 9, DATA_INT);
+        dsets[6] = file.createScalarDS  (NAME_DATASET_FLOAT_SUB_SUB, g00, typeFloat, DIMs, null, CHUNKs, 9, DATA_FLOAT);
+        dsets[7] = file.createImage     (NAME_DATASET_IMAGE, null, typeByte, DIMs, null, CHUNKs, 9, 1, -1, DATA_BYTE);
         dsets[8] = file.createCompoundDS(NAME_DATASET_COMPOUND, null, DIMs, null, CHUNKs, 9, COMPOUND_MEMBER_NAMES, COMPOUND_MEMBER_DATATYPES, null, DATA_COMP);
         dsets[9] = file.createCompoundDS(NAME_DATASET_COMPOUND_SUB, null, DIMs, null, CHUNKs, 9, COMPOUND_MEMBER_NAMES, COMPOUND_MEMBER_DATATYPES, null, DATA_COMP);
         
@@ -145,10 +150,50 @@ public class H5TestFile {
             dsets[i].writeMetadata(ATTRIBUTE_INT_ARRAY);
         }
         
+        // create a wave palette and attach it to the image
+        Dataset pal = file.createScalarDS(NAME_DATASET_IMAGE_PALETTE, null, typeByte, new long[] {256, 3}, null, null, -1, DATA_PALETTE); 
+        long[] oid = pal.getOID();
+        Vector attrs = (Vector)dsets[7].getMetadata();
+        int n = attrs.size();
+        for (int i=0; i<n; i++) {
+            Attribute attr = (Attribute) attrs.get(i);
+            if ("PALETTE".equals(attr.getName())) {
+                attr.setValue(oid);
+                dsets[7].writeMetadata(attr);
+            }
+        }
+        
         file.createDatatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, -1, NAME_DATATYPE_INT);
         file.createDatatype(Datatype.CLASS_FLOAT, DATATYPE_SIZE, -1, -1, NAME_DATATYPE_FLOAT);
         file.createDatatype(Datatype.CLASS_STRING, STR_LEN, -1, -1, NAME_DATATYPE_STR);
 
         try { file.close(); } catch (Exception ex) {}
     }
+    
+    /**
+     *  Creates the wave palette of the indexed 256-color table.
+     *  <p>
+     *  The palette values are stored in a two-dimensional byte array and arrange
+     *  by color components of red, green and blue. palette[][] = byte[3][256],
+     *  where, palette[0][], palette[1][] and palette[2][] are the red, green and
+     *  blue components respectively.
+     *  @return the wave palette in the form of byte[3][256]
+     */
+    private static final byte[] createWavePalette()
+    {
+        byte[] p = new byte[768]; //256*3
+
+        for (int i=1; i<255; i++)
+        {
+            p[3*i] = (byte) ((Math.sin(((double)i/40-3.2))+1)*128);
+            p[3*i+1] = (byte) ((1-Math.sin((i/2.55-3.1)))*70+30);
+            p[3*i+2] = (byte) ((1-Math.sin(((double)i/40-3.1)))*128);
+        }
+
+        p[0] = p[1] = p[2] = 0;
+        p[765] = p[766] = p[767] = (byte)255;
+
+        return p;
+    }
+    
 }

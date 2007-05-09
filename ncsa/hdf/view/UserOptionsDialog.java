@@ -394,8 +394,8 @@ implements ActionListener, ListSelectionListener
         cpl.add(new JLabel("Host Machine: ", SwingConstants.RIGHT));
         cpl.add(new JLabel("Port Number: ", SwingConstants.RIGHT));
         cpl.add(new JLabel("User Name: ", SwingConstants.RIGHT));
-        cpl.add(new JLabel("Password: ", JLabel.RIGHT));
-        cpl.add(new JLabel("Home Directory: ", JLabel.RIGHT));
+        cpl.add(new JLabel("Password: ", SwingConstants.RIGHT));
+        cpl.add(new JLabel("Home Directory: ", SwingConstants.RIGHT));
         cpl.add(new JLabel("mdas Domain Name: ", JLabel.RIGHT));
         cpl.add(new JLabel(" Default Storage Resource: ", JLabel.RIGHT));
         cp.add(cpl, BorderLayout.WEST);
