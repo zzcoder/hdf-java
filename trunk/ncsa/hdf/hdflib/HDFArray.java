@@ -160,7 +160,7 @@ public byte[] byteify() throws HDFException{
         _barray = new byte[ArrayDescriptor.totalSize];
         } catch (OutOfMemoryError err) {
      HDFException ex =
-        (HDFException)new HDFJavaException("HDFArray: byteify array too big?");
+        new HDFJavaException("HDFArray: byteify array too big?");
         ex.printStackTrace();
                         throw(ex);
     }
@@ -187,7 +187,7 @@ public byte[] byteify() throws HDFException{
                     System.out.println("out of bounds?");
                     return null;
                 }
-                oo = java.lang.reflect.Array.get((Object) oo,index);
+                oo = java.lang.reflect.Array.get(oo,index);
                 ArrayDescriptor.currentindex[i] = index;
                 ArrayDescriptor.objs[i] = oo;
             }

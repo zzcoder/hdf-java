@@ -270,7 +270,7 @@ public class H5File extends FileFormat
             throw new HDF5Exception("Cannot write file, try open as read-only -- "+fullFileName);
         else if ((flag == HDF5Constants.H5F_ACC_RDONLY) && !canRead())
             throw new HDF5Exception("Cannot read file -- "+fullFileName);
-
+        
         try {
             fid = H5.H5Fopen( fullFileName, flag, plist);
         } catch ( Exception ex) {
@@ -605,6 +605,7 @@ public class H5File extends FileFormat
             return;
 
         String name = obj.getPath()+obj.getName();
+
         H5.H5Gunlink(fid, name);
     }
 
@@ -930,7 +931,7 @@ public class H5File extends FileFormat
      * @param dst the destination object
      * 
      */
-    public void copyAttributes(HObject src, HObject dst)
+    public static void copyAttributes(HObject src, HObject dst)
     {
         int srcID = src.open();
         int dstID = dst.open();
@@ -950,7 +951,7 @@ public class H5File extends FileFormat
      * @param src_id the identifier of the source object
      * @param dst_id the identidier of the destination object
      */
-    public void copyAttributes(int src_id, int dst_id)
+    public static void copyAttributes(int src_id, int dst_id)
     {
         int aid_src=-1, aid_dst=-1, atid=-1, asid=-1, num_attr=-1;
         String[] aName = {""};

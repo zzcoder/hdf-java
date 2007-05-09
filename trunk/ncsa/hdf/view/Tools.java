@@ -21,13 +21,6 @@ import java.lang.reflect.Constructor;
 import javax.swing.tree.DefaultMutableTreeNode;
 import com.sun.image.codec.jpeg.*;
 
-/*
-import javax.imageio.*;
-import javax.imageio.plugins.jpeg.*;
-import javax.imageio.metadata.*;
-import javax.imageio.stream.*;
-*/
-
 /**
  * The "Tools" class contains various of tools for HDF files such as jpeg to
  * HDF converter.

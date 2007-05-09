@@ -250,7 +250,7 @@ public class H5BugFixTest extends TestCase {
                 H5TestFile.NAME_DATASET_COMPOUND_SUB, H5TestFile.NAME_DATASET_ENUM,
                 H5TestFile.NAME_DATASET_FLOAT, H5TestFile.NAME_DATASET_IMAGE,
                 H5TestFile.NAME_DATASET_INT, H5TestFile.NAME_DATASET_STR,
-                H5TestFile.NAME_DATASET_SUB, H5TestFile.NAME_DATASET_SUB_SUB};
+                H5TestFile.NAME_DATASET_INT_SUB, H5TestFile.NAME_DATASET_FLOAT_SUB_SUB};
          
         // test two open options: open full tree or open individual object only
         for (int openOption=0; openOption<2; openOption++){

@@ -7,6 +7,7 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.object.Attribute;
 import ncsa.hdf.object.Dataset;
+import ncsa.hdf.object.ScalarDS;
 import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.Group;
@@ -109,7 +110,7 @@ public class TestH5MemoryLeak
         DATA_COMP.add(1, DATA_FLOAT);
         DATA_COMP.add(2, DATA_STR);
         DATA_COMP.add(3, DATA_LONG);
-        
+ 
         while(true)
         {
             tmpFile = null;
@@ -137,6 +138,8 @@ public class TestH5MemoryLeak
                     }
                       
                     try {
+                        Group rootGrp = (Group) file.get("/");
+                        
                         // datasets
                         for (int j=0; j<DNAMES.length; j++) {
                             dset = (Dataset)file.get(DNAMES[j]);
@@ -144,13 +147,18 @@ public class TestH5MemoryLeak
                             Object data = dset.getData();
                             dset.write(data);
                             dset.getMetadata();
+                            
+                            // copy data into a new datast
+                            if (dset instanceof ScalarDS) {
+                                dset = dset.copy(rootGrp, DNAMES[j]+"_copy"+openOption, DIMs, data);
+                            }
                         }
                         
                         // groups
                         file.get(NAME_GROUP);
                         file.get(NAME_GROUP_ATTR);
                         file.get(NAME_GROUP_SUB);
-                        
+
                         // datatypes
                         file.get(NAME_DATATYPE_INT);
                         file.get(NAME_DATATYPE_FLOAT);
@@ -159,20 +167,17 @@ public class TestH5MemoryLeak
                          System.err.println("file.get(). "+ ex);
                     }
          
-                    try {
-                        nObjs = H5.H5Fget_obj_count(file.getFID(), HDF5Constants.H5F_OBJ_LOCAL);
-                    } catch (Exception ex) { 
-                         System.err.println("H5.H5Fget_obj_count() failed. "+ ex);
+                    nObjs = 0;
+                    try { nObjs = H5.H5Fget_obj_count(file.getFID(), HDF5Constants.H5F_OBJ_LOCAL); }
+                    catch (Exception ex) { ; }
+                    if (nObjs > 1) {
+                        System.err.println("Possible memory leak. Some objects are still open.");
                     }
                     
                     try {            
                         file.close();
                     } catch (Exception ex) { 
                          System.err.println("file.close() failed. "+ ex);
-                    }
-       
-                    if (nObjs > 1) {
-                        System.err.println("Possible memory leak. Some objects are still open.");
                     }
                 } // for (int openOption=0; openOption<2; openOption++)
             } finally {
