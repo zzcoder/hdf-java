@@ -44,7 +44,6 @@ import junit.framework.TestCase;
         /g0/g00                  Group
         /g0/g00/dataset_float    Dataset {50, 10}
         /g0_attr                 Group
-
  * </pre>
  * <p>
  * We use the following template to test all the methods:

@@ -396,8 +396,8 @@ implements ActionListener, ListSelectionListener
         cpl.add(new JLabel("User Name: ", SwingConstants.RIGHT));
         cpl.add(new JLabel("Password: ", SwingConstants.RIGHT));
         cpl.add(new JLabel("Home Directory: ", SwingConstants.RIGHT));
-        cpl.add(new JLabel("mdas Domain Name: ", JLabel.RIGHT));
-        cpl.add(new JLabel(" Default Storage Resource: ", JLabel.RIGHT));
+        cpl.add(new JLabel("mdas Domain Name: ", SwingConstants.RIGHT));
+        cpl.add(new JLabel(" Default Storage Resource: ", SwingConstants.RIGHT));
         cp.add(cpl, BorderLayout.WEST);
 
         JPanel lp = new JPanel();

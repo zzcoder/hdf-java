@@ -18,7 +18,7 @@ import ncsa.hdf.hdf5lib.exceptions.*;
  */
 public class TestH5Object
 {
-    private final static String FILE_NAME = "TestH5Obejct.h5";
+    private final static String FILE_NAME = "TestH5Object.h5";
     private final static String FILE_NAME2 = "./samples/TestH5Obejct2.h5";
     
     private final static String NAME_GROUP = "/g0";
@@ -139,8 +139,9 @@ public class TestH5Object
             String[] data1 = (String[])buf1;
             String[] data2 = (String[])buf2;
             for (int i=0; i<n; i++) {
-                if (!data1[i].equals(data2[i]))
-                    return false;
+                if (!data1[i].equals(data2[i])) {
+                   return false;
+                }
             }
         }
         else // untested datatype
@@ -461,10 +462,8 @@ public class TestH5Object
                     starts[j] = 0;
                     selectedDims[j] = dims[j];
                 }
-
                 data_read = dset.read();
             } catch (Exception ex) { failed(message, ex, file); return 1;}
-
             if ( !dataEquals(all_data[i], data_read) ) {
                 failed(message, new HDF5LibraryException("Incorrect data values in file"), file);
                 return 1;

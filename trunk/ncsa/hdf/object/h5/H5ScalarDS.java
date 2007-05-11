@@ -182,7 +182,7 @@ public class H5ScalarDS extends ScalarDS
      */
     public void init()
     {
-        if (rank>0) {
+        if (rank > 0) {
             resetSelection();
             return; // already called. Initialize only once
         }
@@ -404,8 +404,7 @@ public class H5ScalarDS extends ScalarDS
      * (non-Javadoc)
      * @see ncsa.hdf.object.Dataset#copy(ncsa.hdf.object.Group, java.lang.String, long[], java.lang.Object)
      */
-    public Dataset copy(Group pgroup, String dstName, long[] dims, Object buff) 
-    throws Exception
+    public Dataset copy(Group pgroup, String dstName, long[] dims, Object buff) throws Exception
     {
         // must give a location to copy
         if (pgroup == null)
@@ -609,23 +608,14 @@ public class H5ScalarDS extends ScalarDS
      */
     public void write(Object buf) throws HDF5Exception
     {
-        Object tmpData = null;
         int fspace=-1, mspace=-1, did=-1, tid=-1, status=-1;
-        
-        // nothing to write
+        Object tmpData = null;
+
         if (buf == null)
             return;
-        
+
         if (isVLEN)
             throw(new HDF5Exception("Writing variable-length data is not supported"));
-        
-        if (rank <= 0) init();
-        
-        if (isExternal) {
-            String pdir = this.getFileFormat().getAbsoluteFile().getParent();
-            if (pdir == null) pdir = ".";
-            H5.H5Dchdir_ext(pdir);
-        }
 
         long[] lsize = {1};
         boolean isAllSelected = true;
@@ -636,9 +626,9 @@ public class H5ScalarDS extends ScalarDS
                 isAllSelected = false;
         }
 
-        did = open();
-        
         try {
+            did = open();
+
             if (isAllSelected)
             {
                 mspace = HDF5Constants.H5S_ALL;
@@ -903,17 +893,20 @@ public class H5ScalarDS extends ScalarDS
     public byte[][] readPalette(int idx)
     {
         byte[][] thePalette = null;
-
-        if (rank <=0) // get the palette refs from init()
-            init();
+        byte[] refs = getPaletteRefs();
+        int did=-1, pal_id=-1, tid=-1;
         
-        if (paletteRefs == null)
+        if (refs == null)
             return null;
 
         byte[] p = null;
         byte[] ref_buf = new byte[8];
-        System.arraycopy(paletteRefs, idx*8, ref_buf, 0, 8);
-        int did=-1, pal_id=-1, tid=-1;
+        
+        try {
+            System.arraycopy(refs, idx*8, ref_buf, 0, 8);
+        } catch (Throwable err) {
+            return null;
+        }
 
         try {
             did = open();
@@ -925,10 +918,8 @@ public class H5ScalarDS extends ScalarDS
                 p = new byte[3*256];
                 H5.H5Dread( pal_id, tid, HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, p);
             }
-        } catch (HDF5Exception ex)
-        {
-            p = null;
-        } finally {
+        } catch (HDF5Exception ex) { p = null; } 
+        finally {
             try { H5.H5Tclose(tid); } catch (HDF5Exception ex2) {}
             close(pal_id);
             close(did);

@@ -24,17 +24,24 @@ public class H5TestFile {
     public final static String NAME_DATASET_STR = "/dataset_str";
     public final static String NAME_DATASET_ENUM = "/dataset_enum";    
     public final static String NAME_DATASET_IMAGE = "/dataset_image";
+    public final static String NAME_DATASET_IMAGE_PALETTE = "/wave_palete";
+    public final static String NAME_DATASET_OBJ_REF = "/dataset_obj_ref";
     public final static String NAME_DATASET_COMPOUND = "/dataset_comp";
     public final static String NAME_DATASET_INT_SUB = NAME_GROUP + "/dataset_int";
     public final static String NAME_DATASET_FLOAT_SUB_SUB = NAME_GROUP_SUB+ "/dataset_float";
     public final static String NAME_DATASET_COMPOUND_SUB = NAME_GROUP + "/dataset_comp";
     public final static String NAME_DATATYPE_INT = NAME_GROUP + "/datatype_int";
+    public final static String NAME_DATATYPE_UINT = NAME_GROUP + "/datatype_uint";
     public final static String NAME_DATATYPE_FLOAT = NAME_GROUP + "/datatype_float";
     public final static String NAME_DATATYPE_STR = NAME_GROUP + "/datatype_str";
+    public final static String NAME_HARD_LINK_TO_IMAGE = "a_link_to_the_image";
     
-    // image palette
-    public final static String NAME_DATASET_IMAGE_PALETTE = "/wave palete";
- 
+    public final static String OBJ_NAMES[] = {NAME_GROUP, NAME_GROUP_ATTR, NAME_GROUP_SUB, 
+        NAME_DATASET_INT, NAME_DATASET_FLOAT, NAME_DATASET_CHAR, NAME_DATASET_STR, 
+        NAME_DATASET_ENUM, NAME_DATASET_IMAGE, NAME_DATASET_COMPOUND, NAME_DATASET_INT_SUB, 
+        NAME_DATASET_FLOAT_SUB_SUB, NAME_DATASET_COMPOUND_SUB, NAME_DATATYPE_INT, 
+        NAME_DATATYPE_UINT, NAME_DATATYPE_FLOAT, NAME_DATATYPE_STR, NAME_DATASET_OBJ_REF};
+    
     // data space information
     public  final static int DATATYPE_SIZE = 4;
     public  final static int RANK = 2;
@@ -66,10 +73,10 @@ public class H5TestFile {
     
     // attributes
     public final static Attribute ATTRIBUTE_STR = new Attribute(
-            "attrName", 
+            "strAttr", 
             new H5Datatype(Datatype.CLASS_STRING, STR_LEN, -1, -1), 
             new long[] {1}, 
-            new String[] {"attrValue"});
+            new String[] {"String attribute."});
     public final static Attribute ATTRIBUTE_INT_ARRAY = new Attribute( 
             "arrayInt", 
             new H5Datatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, -1), 
@@ -97,11 +104,14 @@ public class H5TestFile {
      * </pre> 
      * @throws Exception
      */
-    public static final void createTestFile()  throws Exception
+    public static final H5File createTestFile(String fileName)  throws Exception
     {
         H5File file=null;
         Group g0, g1, g00;
-        Dataset[] dsets = new Dataset[10];
+        Dataset[] dsets = new Dataset[11];
+        
+        if (fileName == null || fileName.length()<1)
+            fileName = NAME_FILE_H5;
         
         H5Datatype typeInt = new H5Datatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, -1);
         H5Datatype typeByte = new H5Datatype(Datatype.CLASS_INTEGER, 1, -1, Datatype.SIGN_NONE);
@@ -109,6 +119,7 @@ public class H5TestFile {
         H5Datatype typeStr = new H5Datatype(Datatype.CLASS_STRING, STR_LEN, -1, -1);
         H5Datatype typeChar = new H5Datatype(Datatype.CLASS_CHAR, 1, -1, -1);
         H5Datatype typeEnum = new H5Datatype(Datatype.CLASS_ENUM, DATATYPE_SIZE, -1, -1);
+        H5Datatype typeRef = new H5Datatype(Datatype.CLASS_REFERENCE, -1, -1, -1);
        
         for (int i=0; i<DIM_SIZE; i++) {
             DATA_INT[i] = i;
@@ -124,7 +135,7 @@ public class H5TestFile {
         DATA_COMP.add(2, DATA_STR);
         DATA_COMP.add(3, DATA_LONG);
 
-        file = new H5File(NAME_FILE_H5, FileFormat.CREATE);
+        file = new H5File(fileName, FileFormat.CREATE);
         file.open();
        
         g0 = file.createGroup(NAME_GROUP, null);
@@ -134,17 +145,19 @@ public class H5TestFile {
         g1.writeMetadata(ATTRIBUTE_STR);
         g1.writeMetadata(ATTRIBUTE_INT_ARRAY);
 
-        dsets[0] = file.createScalarDS  (NAME_DATASET_INT, null, typeInt, DIMs, null, CHUNKs, 9, DATA_INT);
-        dsets[1] = file.createScalarDS  (NAME_DATASET_FLOAT, null, typeFloat, DIMs, null, CHUNKs, 9, DATA_FLOAT);
-        dsets[2] = file.createScalarDS  (NAME_DATASET_CHAR, null, typeChar, DIMs, null, CHUNKs, 9, DATA_BYTE);
-        dsets[3] = file.createScalarDS  (NAME_DATASET_STR, null, typeStr, DIMs, null, CHUNKs, 9, DATA_STR);
-        dsets[4] = file.createScalarDS  (NAME_DATASET_ENUM, null, typeEnum, DIMs, null, CHUNKs, 9, DATA_ENUM);
-        dsets[5] = file.createScalarDS  (NAME_DATASET_INT_SUB, g0, typeInt, DIMs, null, CHUNKs, 9, DATA_INT);
-        dsets[6] = file.createScalarDS  (NAME_DATASET_FLOAT_SUB_SUB, g00, typeFloat, DIMs, null, CHUNKs, 9, DATA_FLOAT);
-        dsets[7] = file.createImage     (NAME_DATASET_IMAGE, null, typeByte, DIMs, null, CHUNKs, 9, 1, -1, DATA_BYTE);
-        dsets[8] = file.createCompoundDS(NAME_DATASET_COMPOUND, null, DIMs, null, CHUNKs, 9, COMPOUND_MEMBER_NAMES, COMPOUND_MEMBER_DATATYPES, null, DATA_COMP);
-        dsets[9] = file.createCompoundDS(NAME_DATASET_COMPOUND_SUB, null, DIMs, null, CHUNKs, 9, COMPOUND_MEMBER_NAMES, COMPOUND_MEMBER_DATATYPES, null, DATA_COMP);
-        
+        dsets[0]  = file.createScalarDS  (NAME_DATASET_INT, null, typeInt, DIMs, null, CHUNKs, 9, DATA_INT);
+        dsets[1]  = file.createScalarDS  (NAME_DATASET_FLOAT, null, typeFloat, DIMs, null, CHUNKs, 9, DATA_FLOAT);
+        dsets[2]  = file.createScalarDS  (NAME_DATASET_CHAR, null, typeChar, DIMs, null, CHUNKs, 9, DATA_BYTE);
+        dsets[3]  = file.createScalarDS  (NAME_DATASET_STR, null, typeStr, DIMs, null, CHUNKs, 9, DATA_STR);
+        dsets[4]  = file.createScalarDS  (NAME_DATASET_ENUM, null, typeEnum, DIMs, null, CHUNKs, 9, DATA_ENUM);
+        dsets[5]  = file.createScalarDS  (NAME_DATASET_INT_SUB, g0, typeInt, DIMs, null, CHUNKs, 9, DATA_INT);
+        dsets[6]  = file.createScalarDS  (NAME_DATASET_FLOAT_SUB_SUB, g00, typeFloat, DIMs, null, CHUNKs, 9, DATA_FLOAT);
+        dsets[7]  = file.createImage     (NAME_DATASET_IMAGE, null, typeByte, DIMs, null, CHUNKs, 9, 1, -1, DATA_BYTE);
+        dsets[8]  = file.createCompoundDS(NAME_DATASET_COMPOUND, null, DIMs, null, CHUNKs, 9, COMPOUND_MEMBER_NAMES, COMPOUND_MEMBER_DATATYPES, null, DATA_COMP);
+        dsets[9]  = file.createCompoundDS(NAME_DATASET_COMPOUND_SUB, null, DIMs, null, CHUNKs, 9, COMPOUND_MEMBER_NAMES, COMPOUND_MEMBER_DATATYPES, null, DATA_COMP);
+        dsets[10] = file.createScalarDS  (NAME_DATASET_OBJ_REF, null, typeRef, DIMs, null, CHUNKs, 9, null);
+
+        // attach attributes to all datasets
         for (int i=0; i<dsets.length; i++) {
             dsets[i].writeMetadata(ATTRIBUTE_STR);
             dsets[i].writeMetadata(ATTRIBUTE_INT_ARRAY);
@@ -163,11 +176,38 @@ public class H5TestFile {
             }
         }
         
-        file.createDatatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, -1, NAME_DATATYPE_INT);
-        file.createDatatype(Datatype.CLASS_FLOAT, DATATYPE_SIZE, -1, -1, NAME_DATATYPE_FLOAT);
-        file.createDatatype(Datatype.CLASS_STRING, STR_LEN, -1, -1, NAME_DATATYPE_STR);
+        Datatype dtype = file.createDatatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, -1, NAME_DATATYPE_INT);
+        dtype.writeMetadata(ATTRIBUTE_STR);
+        dtype.writeMetadata(ATTRIBUTE_INT_ARRAY);
+
+        dtype = file.createDatatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, Datatype.SIGN_NONE, NAME_DATATYPE_UINT);
+        dtype.writeMetadata(ATTRIBUTE_STR);
+        dtype.writeMetadata(ATTRIBUTE_INT_ARRAY);
+        
+        dtype = file.createDatatype(Datatype.CLASS_FLOAT, DATATYPE_SIZE, -1, -1, NAME_DATATYPE_FLOAT);
+        dtype.writeMetadata(ATTRIBUTE_STR);
+        dtype.writeMetadata(ATTRIBUTE_INT_ARRAY);
+        
+        dtype = file.createDatatype(Datatype.CLASS_STRING, STR_LEN, -1, -1, NAME_DATATYPE_STR);
+        dtype.writeMetadata(ATTRIBUTE_STR);
+        dtype.writeMetadata(ATTRIBUTE_INT_ARRAY);
+        
+        file.createLink(g0, NAME_HARD_LINK_TO_IMAGE, dsets[7]);
 
         try { file.close(); } catch (Exception ex) {}
+        
+        // write object refs to the ref dataset
+        file.open();
+        long[] refs = new long[DIM_SIZE];
+        for (int i=0; i<OBJ_NAMES.length; i++) {
+            oid = file.get(OBJ_NAMES[i]).getOID();
+            refs[i] = oid[0];
+        }
+        dsets[10].write(refs);
+        
+        try { file.close(); } catch (Exception ex) {}
+        
+        return file;
     }
     
     /**
