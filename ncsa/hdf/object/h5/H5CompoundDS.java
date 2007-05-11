@@ -79,7 +79,6 @@ public class H5CompoundDS extends CompoundDS
     /** flag to indicate if the datatype in file is the same as dataype in memory*/
     private boolean isNativeDatatype = false;
     
-
     /**
      * A list of names of all fields including nested fields.
      * <p>
@@ -679,7 +678,7 @@ public class H5CompoundDS extends CompoundDS
      */
     public void init()
     {
-        if (rank>0) {
+        if (rank > 0) {
             resetSelection();
             return; // already called. Initialize only once
         }
@@ -790,7 +789,6 @@ public class H5CompoundDS extends CompoundDS
         }
 
         close(did);
-        
         resetSelection();
     }
 

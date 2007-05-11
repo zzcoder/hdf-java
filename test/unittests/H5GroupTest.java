@@ -66,6 +66,20 @@ public class H5GroupTest extends TestCase {
      */
     protected void tearDown() throws Exception {
         super.tearDown();
+        
+        // make sure all objects are closed
+        int fid = testFile.getFID();
+        if (fid > 0) {
+            int nObjs = 0;
+            try { nObjs = H5.H5Fget_obj_count(fid, HDF5Constants.H5F_OBJ_LOCAL); }
+            catch (Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }
+            assertEquals(1, nObjs); // file id should be the only one left open
+         }
+        
+        if (testFile != null) {
+            try { testFile.close(); } catch (Exception ex) {}
+            testFile = null;
+        }
     }
 
     /**
@@ -619,5 +633,5 @@ public class H5GroupTest extends TestCase {
         }
         assertNull(grp);
     }
-
+    
 }
