@@ -657,10 +657,18 @@ public class H5ScalarDS extends ScalarDS
             }
              
             isText = (H5.H5Tget_class(tid)==HDF5Constants.H5T_STRING);
-            
             boolean is_reg_ref = (H5.H5Tequal(tid, HDF5Constants.H5T_STD_REF_DSETREG));
+            
             if  (!is_reg_ref) {
-                if ( isUnsigned && unsignedConverted)
+                // check if need to convert integer data
+                int tsize = H5.H5Tget_size(tid);
+                String cname = buf.getClass().getName();
+                char dname = cname.charAt(cname.lastIndexOf("[")+1);
+                boolean doConversion = ((tsize==1 && dname=='S') || 
+                                        (tsize==2 && dname=='I') || 
+                                        (tsize==4 && dname=='J') ||
+                                        (isUnsigned && unsignedConverted) );
+                if ( doConversion)
                     tmpData = convertToUnsignedC(buf, null);
                 else if (isText && convertByteToString)
                      tmpData = stringToByte((String[])buf, H5.H5Tget_size(tid));
@@ -1068,9 +1076,10 @@ public class H5ScalarDS extends ScalarDS
 
         if (dataset != null) {
            pgroup.addToMemberList(dataset);
-           if (data != null)
-                dataset.write(data);
-        }
+           if (data != null) {
+               dataset.write(data);
+            }
+         }
 
         return dataset;
     }
@@ -1168,4 +1177,5 @@ public class H5ScalarDS extends ScalarDS
         H5File.setObjectName(this, newName);
         super.setName(newName);
     }
+    
 }

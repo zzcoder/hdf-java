@@ -24,6 +24,8 @@ public class AllH5ObjectTests {
         suite.addTestSuite(H5GroupTest.class);
         suite.addTestSuite(H5DatatypeTest.class);
         suite.addTestSuite(H5FileTest.class);
+
+        
         
 /*        
         // ncsa.hdf.object package

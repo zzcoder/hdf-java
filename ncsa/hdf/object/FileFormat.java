@@ -962,7 +962,7 @@ public abstract class FileFormat extends File
     /**
      * Gets an HObject with a given path from a file. 
      * <p>
-     * The way of how the get() method retrives an object depends on 
+     * The way of how the get() method retrieves an object depends on 
      * if {@link #open()} method is called.
      * <ul>
      *   <li> If {@link #open()} is called before get() is called, the
