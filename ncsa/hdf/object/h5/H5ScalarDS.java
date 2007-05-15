@@ -96,7 +96,7 @@ public class H5ScalarDS extends ScalarDS
             
             int tclass = H5.H5Tget_class(tid);
             isText = (tclass==HDF5Constants.H5T_STRING);
-            isVLEN = (tclass==HDF5Constants.H5T_VLEN || H5.H5Tis_variable_str(tid));
+            isVLEN = ((tclass==HDF5Constants.H5T_VLEN) || H5.H5Tis_variable_str(tid));
 
             // try to find out if the dataset is an image
             aid = H5.H5Aopen_name(did, "CLASS");
@@ -146,7 +146,9 @@ public class H5ScalarDS extends ScalarDS
 
                 // retrieve the attribute value
                 long lsize = 1;
-                for (int j=0; j<adims.length; j++) lsize *= adims[j];
+                for (int j=0; j<adims.length; j++) {
+                    lsize *= adims[j];
+                }
                 Object avalue = H5Datatype.allocateArray(atid, (int)lsize);
                 if (avalue != null)
                 {
@@ -264,7 +266,7 @@ public class H5ScalarDS extends ScalarDS
         // 1) IMAGE_SUBCLASS = IMAGE_TRUECOLOR,
         // 2) INTERLACE_MODE = INTERLACE_PIXEL,
         // 3) INTERLACE_MODE = INTERLACE_PLANE
-        if (rank >=3 && isImage)
+        if ((rank >=3) && isImage)
         {
             interlace = INTERLACE_PIXEL;
             try
@@ -276,8 +278,9 @@ public class H5ScalarDS extends ScalarDS
                 byte[] attrValue = new byte[size];
                 H5.H5Aread(aid, atid, attrValue);
                 String strValue = new String(attrValue).trim();
-                if (strValue.equalsIgnoreCase("IMAGE_INDEXED"))
+                if (strValue.equalsIgnoreCase("IMAGE_INDEXED")) {
                     interlace = -1; // default interlace
+                }
             } catch (Exception ex) {}
             finally
             {
@@ -294,8 +297,9 @@ public class H5ScalarDS extends ScalarDS
                 byte[] attrValue = new byte[size];
                 H5.H5Aread(aid, atid, attrValue);
                 String strValue = new String(attrValue).trim();
-                if (strValue.equalsIgnoreCase("INTERLACE_PLANE"))
+                if (strValue.equalsIgnoreCase("INTERLACE_PLANE")) {
                     interlace = INTERLACE_PLANE;
+                }
             } catch (Exception ex) {}
             finally
             {
@@ -303,15 +307,15 @@ public class H5ScalarDS extends ScalarDS
                 try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
             }
 
-            if ((interlace == INTERLACE_PLANE && dims[0] <3) ||
-                (interlace == INTERLACE_PIXEL && dims[2] <3))
+            if (((interlace == INTERLACE_PLANE) && (dims[0] <3)) ||
+                ((interlace == INTERLACE_PIXEL) && (dims[2] <3)))
             {
                 // must have at least three color planes
                 interlace = -1;
             }
 
-            isTrueColor = (interlace == ScalarDS.INTERLACE_PIXEL ||
-                interlace == ScalarDS.INTERLACE_PLANE);
+            isTrueColor = ((interlace == ScalarDS.INTERLACE_PIXEL) ||
+                (interlace == ScalarDS.INTERLACE_PLANE));
         }
         
         close(did);
@@ -330,8 +334,9 @@ public class H5ScalarDS extends ScalarDS
         {
             startDims[i] = 0;
             selectedDims[i] = 1;
-            if (selectedStride != null)
+            if (selectedStride != null) {
                 selectedStride[i] = 1;
+            }
         }
 
         if (interlace == INTERLACE_PIXEL)
@@ -378,7 +383,7 @@ public class H5ScalarDS extends ScalarDS
             selectedDims[selectedIndex[1]] = dims[selectedIndex[1]];
         }
 
-        if (rank > 1 && isText)
+        if ((rank > 1) && isText)
         {
             selectedIndex[0] = rank-1;
             selectedIndex[1] = 0;
@@ -396,8 +401,9 @@ public class H5ScalarDS extends ScalarDS
     public void clear() {
         super.clear(); 
     		
-    	if (attributeList != null)
-    		((Vector)attributeList).setSize(0);
+    	if (attributeList != null) {
+            ((Vector)attributeList).setSize(0);
+        }
     }
 
     /*
@@ -407,15 +413,19 @@ public class H5ScalarDS extends ScalarDS
     public Dataset copy(Group pgroup, String dstName, long[] dims, Object buff) throws Exception
     {
         // must give a location to copy
-        if (pgroup == null)
+        if (pgroup == null) {
             return null;
+        }
         
         Dataset dataset = null;
         int srcdid=-1, dstdid=-1, tid=-1, sid=-1, plist=-1;
         String dname=null, path=null;
 
-        if (pgroup.isRoot()) path = HObject.separator;
-        else path = pgroup.getPath()+pgroup.getName()+HObject.separator;
+        if (pgroup.isRoot()) {
+            path = HObject.separator;
+        } else {
+            path = pgroup.getPath()+pgroup.getName()+HObject.separator;
+        }
         dname = path + dstName;
 
         try {
@@ -431,8 +441,9 @@ public class H5ScalarDS extends ScalarDS
             }
 
             dataset = new H5ScalarDS(pgroup.getFileFormat(), dstName, path);
-            if (buff != null)
+            if (buff != null) {
                 dataset.write(buff);
+            }
             
             dstdid = dataset.open();
             H5File.copyAttributes(srcdid, dstdid);
@@ -457,7 +468,9 @@ public class H5ScalarDS extends ScalarDS
     {
         byte[] theData = null;
 
-        if (rank <= 0) init();
+        if (rank <= 0) {
+            init();
+        }
 
         int did = open();
         int fspace=-1, mspace=-1, tid=-1;
@@ -465,8 +478,9 @@ public class H5ScalarDS extends ScalarDS
         try
         {
             long[] lsize = {1};
-            for (int j=0; j<selectedDims.length; j++)
+            for (int j=0; j<selectedDims.length; j++) {
                 lsize[0] *= selectedDims[j];
+            }
 
             fspace = H5.H5Dget_space(did);
             mspace = H5.H5Screate_simple(rank, selectedDims, null);
@@ -509,11 +523,15 @@ public class H5ScalarDS extends ScalarDS
         Object theData = null;
         int did=-1, tid=-1, fspace=-1, mspace=-1;
 
-        if (rank <= 0) init();
+        if (rank <= 0) {
+            init();
+        }
 
         if (isExternal) {
             String pdir = this.getFileFormat().getAbsoluteFile().getParent();
-            if (pdir == null) pdir = ".";
+            if (pdir == null) {
+                pdir = ".";
+            }
             H5.H5Dchdir_ext(pdir);
         }
         
@@ -522,8 +540,9 @@ public class H5ScalarDS extends ScalarDS
         for (int i=0; i<rank; i++)
         {
             lsize[0] *= selectedDims[i];
-            if (selectedDims[i] < dims[i])
+            if (selectedDims[i] < dims[i]) {
                 isAllSelected = false;
+            }
         }
         
         if (lsize[0] == 0) {
@@ -538,8 +557,9 @@ public class H5ScalarDS extends ScalarDS
             // check is storage space is allocated
             try {
                 long ssize = H5.H5Dget_storage_size(did);
-                if (ssize <=0)
+                if (ssize <=0) {
                     throw new HDF5Exception("Storage space is not allocated.");
+                }
             } catch (Exception ex) {}
 
             if (isAllSelected)
@@ -571,11 +591,12 @@ public class H5ScalarDS extends ScalarDS
             
             boolean isREF = (H5.H5Tequal(tid, HDF5Constants.H5T_STD_REF_OBJ));
             
-            if ( originalBuf ==null || isText || isREF ||
-                (originalBuf!=null && lsize[0] !=nPoints)) {
+            if ( (originalBuf ==null) || isText || isREF ||
+                ((originalBuf!=null) && (lsize[0] !=nPoints))) {
                 theData = H5Datatype.allocateArray(tid, (int)lsize[0]);
-            } else
-                 theData = originalBuf; // reuse the buffer if the size is the same
+            } else {
+                theData = originalBuf; // reuse the buffer if the size is the same
+            }
 
             if (theData != null) {
                 if (isVLEN)
@@ -586,10 +607,11 @@ public class H5ScalarDS extends ScalarDS
                 {
                     H5.H5Dread( did, tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, theData);
 
-                    if (isText && convertByteToString)
+                    if (isText && convertByteToString) {
                         theData = byteToString((byte[])theData, H5.H5Tget_size(tid));
-                    else if (isREF)
+                    } else if (isREF) {
                         theData = HDFNativeData.byteToLong((byte[])theData);
+                    }
                 }
             } // if (theData != null)
         } finally {
@@ -608,22 +630,25 @@ public class H5ScalarDS extends ScalarDS
      */
     public void write(Object buf) throws HDF5Exception
     {
-        int fspace=-1, mspace=-1, did=-1, tid=-1, status=-1;
+        int fspace=-1, mspace=-1, did=-1, tid=-1;
         Object tmpData = null;
 
-        if (buf == null)
+        if (buf == null) {
             return;
+        }
 
-        if (isVLEN)
+        if (isVLEN) {
             throw(new HDF5Exception("Writing variable-length data is not supported"));
+        }
 
         long[] lsize = {1};
         boolean isAllSelected = true;
         for (int i=0; i<rank; i++)
         {
             lsize[0] *= selectedDims[i];
-            if (selectedDims[i] < dims[i])
+            if (selectedDims[i] < dims[i]) {
                 isAllSelected = false;
+            }
         }
 
         try {
@@ -664,16 +689,17 @@ public class H5ScalarDS extends ScalarDS
                 int tsize = H5.H5Tget_size(tid);
                 String cname = buf.getClass().getName();
                 char dname = cname.charAt(cname.lastIndexOf("[")+1);
-                boolean doConversion = ((tsize==1 && dname=='S') || 
-                                        (tsize==2 && dname=='I') || 
-                                        (tsize==4 && dname=='J') ||
+                boolean doConversion = (((tsize==1) && (dname=='S')) || 
+                                        ((tsize==2) && (dname=='I')) || 
+                                        ((tsize==4) && (dname=='J')) ||
                                         (isUnsigned && unsignedConverted) );
-                if ( doConversion)
+                if ( doConversion) {
                     tmpData = convertToUnsignedC(buf, null);
-                else if (isText && convertByteToString)
-                     tmpData = stringToByte((String[])buf, H5.H5Tget_size(tid));
-                else
+                } else if (isText && convertByteToString) {
+                    tmpData = stringToByte((String[])buf, H5.H5Tget_size(tid));
+                } else {
                     tmpData = buf;
+                }
 
                 H5.H5Dwrite(did, tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, tmpData);
             }
@@ -692,10 +718,13 @@ public class H5ScalarDS extends ScalarDS
      */
     public List getMetadata() throws HDF5Exception
     {
-        if (rank <= 0) init();
+        if (rank <= 0) {
+            init();
+        }
         
-        if (attributeList != null)
+        if (attributeList != null) {
             return attributeList;
+        }
         
         // load attributes first
         int did=-1, pid=-1;
@@ -709,8 +738,9 @@ public class H5ScalarDS extends ScalarDS
             {
                 chunkSize = new long[rank];
                 H5.H5Pget_chunk(pid, rank, chunkSize);
+            } else {
+                chunkSize = null;
             }
-            else chunkSize = null;
 
             /* see if fill value is defined */
             int[] fillStatus = {0};
@@ -749,7 +779,9 @@ public class H5ScalarDS extends ScalarDS
 
             for (int i=0; i<nfilt; i++)
             {
-                if (i>0) compression += ", ";
+                if (i>0) {
+                    compression += ", ";
+                }
                 
                 try {
                     filter = H5.H5Pget_filter(pid, i, flags, cd_nelmts, cd_values, 120, cd_name);
@@ -776,26 +808,30 @@ public class H5ScalarDS extends ScalarDS
                     int flag = -1;
                     try { flag = H5.H5Zget_filter_info(filter); }
                     catch (Exception ex) { flag = -1; }
-                    if (flag==HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED)
+                    if (flag==HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED) {
                         compression += ": H5Z_FILTER_CONFIG_DECODE_ENABLED";
-                    else if (flag==HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED ||
-                             flag >= (HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED+HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED))
+                    } else if ((flag==HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED) ||
+                             (flag >= (HDF5Constants.H5Z_FILTER_CONFIG_ENCODE_ENABLED+HDF5Constants.H5Z_FILTER_CONFIG_DECODE_ENABLED))) {
                         compression += ": H5Z_FILTER_CONFIG_ENCODE_ENABLED";
+                    }
                 }
             } // for (int i=0; i<nfilt; i++)
 
-            if (compression.length() == 0) compression = "NONE";
+            if (compression.length() == 0) {
+                compression = "NONE";
+            }
 
             try {
                 int[] at = {0};
                 H5.H5Pget_fill_time(pid, at);
                 compression += ",         Fill value allocation time: ";
-                if (at[0] == HDF5Constants.H5D_ALLOC_TIME_EARLY)
+                if (at[0] == HDF5Constants.H5D_ALLOC_TIME_EARLY) {
                     compression += "Early";
-                else if (at[0] == HDF5Constants.H5D_ALLOC_TIME_INCR)
+                } else if (at[0] == HDF5Constants.H5D_ALLOC_TIME_INCR) {
                     compression += "Incremental";
-                else if (at[0] == HDF5Constants.H5D_ALLOC_TIME_LATE)
+                } else if (at[0] == HDF5Constants.H5D_ALLOC_TIME_LATE) {
                     compression += "Late";
+                }
             } catch (Exception ex) { ;}
         } finally 
         {
@@ -813,22 +849,26 @@ public class H5ScalarDS extends ScalarDS
     public void writeMetadata(Object info) throws Exception
     {
         // only attribute metadata is supported.
-        if (!(info instanceof Attribute))
+        if (!(info instanceof Attribute)) {
             return;
+        }
 
         boolean attrExisted = false;
         Attribute attr = (Attribute)info;
         String name = attr.getName();
 
-        if (attributeList == null)
+        if (attributeList == null) {
             attributeList = new Vector(10);
-        else
+        } else {
             attrExisted = attributeList.contains(attr);
+        }
 
         getFileFormat().writeAttribute(this, attr, attrExisted);
 
         // add the new attribute into attribute list
-        if (!attrExisted) attributeList.add(attr);
+        if (!attrExisted) {
+            attributeList.add(attr);
+        }
     }
 
     /*
@@ -838,8 +878,9 @@ public class H5ScalarDS extends ScalarDS
     public void removeMetadata(Object info) throws HDF5Exception
     {
         // only attribute metadata is supported.
-        if (!(info instanceof Attribute))
+        if (!(info instanceof Attribute)) {
             return;
+        }
 
         Attribute attr = (Attribute)info;
         int did = open();
@@ -888,8 +929,9 @@ public class H5ScalarDS extends ScalarDS
      */
     public byte[][] getPalette()
     {
-        if (palette == null)
+        if (palette == null) {
             palette = readPalette(0);
+        }
 
         return palette;
     }
@@ -904,8 +946,9 @@ public class H5ScalarDS extends ScalarDS
         byte[] refs = getPaletteRefs();
         int did=-1, pal_id=-1, tid=-1;
         
-        if (refs == null)
+        if (refs == null) {
             return null;
+        }
 
         byte[] p = null;
         byte[] ref_buf = new byte[8];
@@ -996,24 +1039,28 @@ public class H5ScalarDS extends ScalarDS
         String fullPath = null;
         int did=-1, tid=-1, sid=-1, plist=-1;
 
-        if (pgroup == null ||
-            name == null ||
-            dims == null ||
-            (gzip>0 && chunks==null))
+        if ((pgroup == null) ||
+            (name == null) ||
+            (dims == null) ||
+            ((gzip>0) && (chunks==null))) {
             return null;
+        }
 
         H5File file = (H5File)pgroup.getFileFormat();
-        if (file == null)
+        if (file == null) {
             return null;
+        }
 
         String path = HObject.separator;
         if (!pgroup.isRoot()) {
             path = pgroup.getPath()+pgroup.getName()+HObject.separator;
-            if (name.endsWith("/"))
+            if (name.endsWith("/")) {
                 name = name.substring(0, name.length()-1);
+            }
                 int idx = name.lastIndexOf("/");
-                if (idx >=0)
+                if (idx >=0) {
                     name = name.substring(idx+1);
+                }
         }
 
         fullPath = path +  name;
@@ -1023,21 +1070,24 @@ public class H5ScalarDS extends ScalarDS
         {
             for (int i=0; i<maxdims.length; i++)
             {
-                if (maxdims[i] == 0)
+                if (maxdims[i] == 0) {
                     maxdims[i] = dims[i];
-                else if (maxdims[i] < 0)
+                } else if (maxdims[i] < 0) {
                     maxdims[i] = HDF5Constants.H5S_UNLIMITED;
+                }
 
-                if (maxdims[i] != dims[i])
-                   isExtentable = true;
+                if (maxdims[i] != dims[i]) {
+                    isExtentable = true;
+                }
             }
         }
  
         // HDF 5 requires you to use chunking in order to define extendible
         // datasets. Chunking makes it possible to extend datasets efficiently,
         // without having to reorganize storage excessively
-        if (chunks == null && isExtentable)
+        if ((chunks == null) && isExtentable) {
             chunks = dims;
+        }
 
         // prepare the dataspace and datatype
         int rank = dims.length;
@@ -1090,8 +1140,9 @@ public class H5ScalarDS extends ScalarDS
      */
     public byte[] getPaletteRefs()
     {
-        if (rank <=0)
+        if (rank <=0) {
             init();
+        }
         
         return paletteRefs;
     }
@@ -1114,8 +1165,9 @@ public class H5ScalarDS extends ScalarDS
             {
                 long[] dims = new long[rank];
                 H5.H5Sget_simple_extent_dims(sid, dims, null);
-                for (int i=0; i<rank; i++)
+                for (int i=0; i<rank; i++) {
                     size *= (int)dims[i];
+                }
             }
 
             ref_buf = new byte[size*8];

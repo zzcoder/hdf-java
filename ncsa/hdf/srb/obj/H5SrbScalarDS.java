@@ -59,8 +59,11 @@ public class H5SrbScalarDS extends ScalarDS
         opID = -1;
         palette = null;
         unsignedConverted = false;
-        if (name == null) fullPath = path;
-        else fullPath = path + HObject.separator + name;
+        if (name == null) {
+            fullPath = path;
+        } else {
+            fullPath = path + HObject.separator + name;
+        }
     }
 
     /*abstract methods inherited from ScalarDS */
@@ -70,8 +73,9 @@ public class H5SrbScalarDS extends ScalarDS
 
     public void setPalette(byte[] pal)
     {
-        if (pal == null || pal.length <768)
+        if ((pal == null) || (pal.length <768)) {
             return;
+        }
 
         palette = new byte[3][256];
         for (int i=0; i<256; i++)
@@ -119,7 +123,9 @@ public class H5SrbScalarDS extends ScalarDS
     public Object read() throws Exception, OutOfMemoryError
     {
         String srbInfo[] = ((H5SrbFile)getFileFormat()).getSrbInfo();
-        if ( srbInfo == null  || srbInfo.length<5) return null;
+        if ( (srbInfo == null)  || (srbInfo.length<5)) {
+            return null;
+        }
 
         opID = H5DATASET_OP_READ;
         H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_DATASET);
@@ -172,7 +178,9 @@ public class H5SrbScalarDS extends ScalarDS
     public List getMetadata() throws Exception
     {
         String srbInfo[] = ((H5SrbFile)getFileFormat()).getSrbInfo();
-        if ( srbInfo == null  || srbInfo.length<5) return null;
+        if ( (srbInfo == null)  || (srbInfo.length<5)) {
+            return null;
+        }
 
         // load attributes first
         if (attributeList == null)
@@ -189,8 +197,9 @@ public class H5SrbScalarDS extends ScalarDS
     void addAttribute(String attrName, Object attrValue, long[] attrDims,
                      int tclass, int tsize, int torder, int tsign)
     {
-        if (attributeList == null)
+        if (attributeList == null) {
             attributeList = new Vector();
+        }
 
         H5SrbDatatype type = new H5SrbDatatype(tclass, tsize, torder, tsign);
         Attribute attr = new Attribute(attrName, type, attrDims);
@@ -217,8 +226,9 @@ public class H5SrbScalarDS extends ScalarDS
 
     public void init(int theRank, long theDims[], int tclass, int tsize, int torder, int tsign)
     {
-        if (theDims == null)
+        if (theDims == null) {
             return;
+        }
 
         isImage = (palette!=null);
         rank = theRank;
@@ -230,9 +240,9 @@ public class H5SrbScalarDS extends ScalarDS
             rank = 1;
             dims = new long[1];
             dims[0] = 1;
-        }
-        else
+        } else {
             dims = new long[rank];
+        }
 
         startDims = new long[rank];
         selectedDims = new long[rank];

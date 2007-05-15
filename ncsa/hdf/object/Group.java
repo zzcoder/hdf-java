@@ -83,8 +83,9 @@ public abstract class Group extends HObject
      * not needed. 
      */
     public void clear() {
-    	if (memberList != null)
-    		((Vector)memberList).setSize(0);
+    	if (memberList != null) {
+            ((Vector)memberList).setSize(0);
+        }
     }
 
     /**
@@ -100,8 +101,9 @@ public abstract class Group extends HObject
             memberList = new Vector(size+5);
         }
 
-        if (object != null)
+        if (object != null) {
             memberList.add(object);
+        }
     }
 
     /**
@@ -129,7 +131,7 @@ public abstract class Group extends HObject
         String thePath = this.getPath();
         String theName = this.getName();
 
-        if (memberList == null && theFile != null)
+        if ((memberList == null) && (theFile != null))
         {
             int size = Math.min(getNumberOfMembersInFile(), this.getFileFormat().getMaxMembers());
             memberList = new Vector(size + 5); // avoid infinite loop search for groups without member
@@ -141,8 +143,9 @@ public abstract class Group extends HObject
 
             DefaultMutableTreeNode root = (DefaultMutableTreeNode)theFile.getRootNode();
 
-            if (root == null)
+            if (root == null) {
                 return memberList;
+            }
 
             Enumeration emu = root.depthFirstEnumeration();
 

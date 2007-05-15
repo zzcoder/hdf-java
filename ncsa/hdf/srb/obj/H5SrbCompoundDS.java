@@ -58,8 +58,11 @@ public class H5SrbCompoundDS extends CompoundDS
         super (fileFormat, name, path, oid);
 
         opID = -1;
-        if (name == null) fullPath = path;
-        else fullPath = path + HObject.separator + name;
+        if (name == null) {
+            fullPath = path;
+        } else {
+            fullPath = path + HObject.separator + name;
+        }
     }
 
     public void setMemberCount(int nmembers)
@@ -119,12 +122,14 @@ public class H5SrbCompoundDS extends CompoundDS
     public Object read() throws Exception, OutOfMemoryError
     {
         String srbInfo[] = ((H5SrbFile)getFileFormat()).getSrbInfo();
-        if ( srbInfo == null || srbInfo.length<5) return null;
+        if ( (srbInfo == null) || (srbInfo.length<5)) {
+            return null;
+        }
 
         opID = H5DATASET_OP_READ;
         H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_DATASET);
 
-        if (data != null && data.getClass().isArray())
+        if ((data != null) && data.getClass().isArray())
         {
             int numberOfpoints = Array.getLength(data);
             String strs[][] = new String[numberOfMembers][numberOfpoints];
@@ -136,16 +141,20 @@ public class H5SrbCompoundDS extends CompoundDS
                 str = (String)Array.get(data, i);
                 str = str.trim();
                 strlen = str.length();
-                if (strlen>1) str = str.substring(1, strlen-1);
+                if (strlen>1) {
+                    str = str.substring(1, strlen-1);
+                }
 
                 StringTokenizer st = new StringTokenizer(str, "||");
-                while (st.hasMoreTokens() && midx<numberOfMembers)
+                while (st.hasMoreTokens() && (midx<numberOfMembers)) {
                     strs[midx++][i] = st.nextToken();
+                }
             }
 
             data = new Vector(numberOfMembers);
-            for (int i=0; i<numberOfMembers; i++)
+            for (int i=0; i<numberOfMembers; i++) {
                 ((Vector)data).add(i, strs[i]);
+            }
         }
 
         return data;
@@ -196,7 +205,9 @@ public class H5SrbCompoundDS extends CompoundDS
     public List getMetadata() throws Exception
     {
         String srbInfo[] = ((H5SrbFile)getFileFormat()).getSrbInfo();
-        if ( srbInfo == null || srbInfo.length<5) return null;
+        if ( (srbInfo == null) || (srbInfo.length<5)) {
+            return null;
+        }
 
         // load attributes first
         if (attributeList == null)
@@ -213,8 +224,9 @@ public class H5SrbCompoundDS extends CompoundDS
     void addAttribute(String attrName, Object attrValue, long[] attrDims,
                      int tclass, int tsize, int torder, int tsign)
     {
-        if (attributeList == null)
+        if (attributeList == null) {
             attributeList = new Vector();
+        }
 
         H5SrbDatatype type = new H5SrbDatatype(tclass, tsize, torder, tsign);
         Attribute attr = new Attribute(attrName, type, attrDims);
@@ -241,8 +253,9 @@ public class H5SrbCompoundDS extends CompoundDS
 
     public void init(int theRank, long theDims[], int tclass, int tsize, int torder, int tsign)
     {
-        if (theDims == null)
+        if (theDims == null) {
             return;
+        }
 
         rank = theRank;
         datatype = new H5SrbDatatype(tclass, tsize, torder, tsign);
@@ -252,9 +265,9 @@ public class H5SrbCompoundDS extends CompoundDS
             rank = 1;
             dims = new long[1];
             dims[0] = 1;
-        }
-        else
+        } else {
             dims = new long[rank];
+        }
 
         startDims = new long[rank];
         selectedDims = new long[rank];

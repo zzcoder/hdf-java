@@ -50,7 +50,9 @@ public class HDFLibraryException extends HDFException
     }
 
     public String getMessage() {
-        if (msg != null) return msg;
+        if (msg != null) {
+            return msg;
+        }
 
         String s;
         try {

@@ -1235,8 +1235,6 @@ public class H5ScalarDSTest extends TestCase {
      */
     public final void testRemoveMetadata() {
         Vector attrs = null;
-        final Attribute attr = null;
-        
         try {
             attrs = (Vector) testDataset.getMetadata();
         } catch (final Exception ex) { 

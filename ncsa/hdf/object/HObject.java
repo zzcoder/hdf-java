@@ -166,38 +166,42 @@ public abstract class HObject implements Serializable, DataFormat
         }
 
         // file name is packed in the full path
-        if (theName == null && thePath !=null)
+        if ((theName == null) && (thePath !=null))
         {
             if (thePath.equals(separator)){
                 theName = separator;
                 thePath = null;
             } else {
                 // the path must starts with "/"
-                if (!thePath.startsWith(HObject.separator))
+                if (!thePath.startsWith(HObject.separator)) {
                     thePath = HObject.separator+thePath;
+                }
 
                 // get rid of the last "/"
-                if (thePath.endsWith(HObject.separator))
+                if (thePath.endsWith(HObject.separator)) {
                     thePath = thePath.substring(0, thePath.length()-1);
+                }
 
                 // seperate the name and the path
                 theName = thePath.substring(thePath.lastIndexOf(separator)+1);
                 thePath = thePath.substring(0, thePath.lastIndexOf(separator));
             }
-        } else if (theName != null && thePath ==null && (theName.indexOf(separator)>=0))
+        } else if ((theName != null) && (thePath ==null) && (theName.indexOf(separator)>=0))
         {
             if (theName.equals(separator)){
                 theName = separator;
                 thePath = null;
             } else {
                 // the full name must starts with "/"
-                if (!theName.startsWith(separator))
+                if (!theName.startsWith(separator)) {
                     theName = separator+theName;
+                }
                 
                 // the fullname must not end with "/"
                 int n = theName.length();
-                if (theName.endsWith(separator))
+                if (theName.endsWith(separator)) {
                     theName = theName.substring(0, n-1);
+                }
                 
                 int idx = theName.lastIndexOf(separator);
                 if (idx < 0) {
@@ -213,23 +217,25 @@ public abstract class HObject implements Serializable, DataFormat
         if (thePath!=null)
         {
             thePath = thePath.replaceAll("//", "/");
-            if ( !thePath.endsWith(separator))
+            if ( !thePath.endsWith(separator)) {
                 thePath += separator;
+            }
         }
 
         this.name = theName;
         this.path = thePath;
 
-        if (thePath != null)
+        if (thePath != null) {
             this.fullName = thePath + theName;
-        else
+        } else
         {
-            if (theName == null) // must be the root group
+            if (theName == null) {
                 this.fullName = "/";
-            else if (theName.startsWith("/"))
+            } else if (theName.startsWith("/")) {
                 this.fullName = theName;
-            else
+            } else {
                 this.fullName = "/"+theName;
+            }
         }
     }
     
@@ -343,10 +349,11 @@ public abstract class HObject implements Serializable, DataFormat
      */
     public final int getFID()
     {
-        if (fileFormat != null)
+        if (fileFormat != null) {
             return fileFormat.getFID();
-        else 
+        } else {
             return -1;
+        }
     }
 
     /**
@@ -364,18 +371,21 @@ public abstract class HObject implements Serializable, DataFormat
      */
     public final boolean equalsOID(long[] theID)
     {
-        if (theID == null || oid == null)
+        if ((theID == null) || (oid == null)) {
             return false;
+        }
 
         int n1 = theID.length;
         int n2 = oid.length;
 
-        if (n1 != n2 )
+        if (n1 != n2 ) {
             return false;
+        }
 
         boolean isMatched = (theID[0]==oid[0]);
-        for (int i=1; isMatched && i<n1; i++)
+        for (int i=1; isMatched && (i<n1); i++) {
             isMatched = (theID[i]==oid[i]);
+        }
 
         return isMatched;
     }
@@ -398,8 +408,9 @@ public abstract class HObject implements Serializable, DataFormat
      */
     public final long[] getOID()
     {
-        if (oid == null)
+        if (oid == null) {
             return null;
+        }
 
         return (long[]) oid.clone();
     }

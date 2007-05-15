@@ -663,7 +663,6 @@ public class H5FileTest extends TestCase {
      *   </ul>
      */
     public final void testH5FileStringInt() {
-        final Group root = null;
         Dataset dset=null;
         final String nameNewFile = "testH5File.h5";
         H5File file = null;

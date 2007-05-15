@@ -68,7 +68,7 @@ public byte[] emptyBytes()
 throws HDFException
 {
     byte[] b = null;
-    if (ArrayDescriptor.dims == 1 && ArrayDescriptor.NT == 'B') {
+    if ((ArrayDescriptor.dims == 1) && (ArrayDescriptor.NT == 'B')) {
         b = (byte [])_theArray;
     } else {
         b = new byte[ArrayDescriptor.totalSize];
@@ -93,7 +93,9 @@ throws HDFException
  */
 public byte[] byteify() throws HDFException{
 
-    if (_barray != null) return _barray;
+    if (_barray != null) {
+        return _barray;
+    }
     if (_theArray == null) {
                 /* exception: not an array */
          HDFException ex =
@@ -277,7 +279,7 @@ public Object arrayify(byte[] bytes) throws HDFException {
         throw(ex);
     }
 
-    if (java.lang.reflect.Array.getLength((Object) bytes) != ArrayDescriptor.totalSize) {
+    if (java.lang.reflect.Array.getLength(bytes) != ArrayDescriptor.totalSize) {
         /* exception: array not right size */
          HDFException ex =
         (HDFException)new HDFJavaException("arrayify: array is wrong size?: ");

@@ -88,12 +88,13 @@ implements ActionListener
                 {
                     full_name = HObject.separator;
                     idx_root = idx;
+                } else {
+                    full_name = g.getPath()+g.getName()+HObject.separator;
                 }
-                else full_name = g.getPath()+g.getName()+HObject.separator;
                 parentChoice.addItem(full_name);
-            }
-            else
+            } else {
                 full_name = obj.getPath()+obj.getName();
+            }
 
             linkToChoice.addItem(full_name);
         }
@@ -101,10 +102,11 @@ implements ActionListener
         linkToChoice.removeItemAt(idx_root);
         objList.remove(idx_root);
 
-        if (pGroup.isRoot())
+        if (pGroup.isRoot()) {
             parentChoice.setSelectedItem(HObject.separator);
-        else
+        } else {
             parentChoice.setSelectedItem(pGroup.getPath()+pGroup.getName()+HObject.separator);
+        }
 
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
@@ -165,8 +167,9 @@ implements ActionListener
         {
             newObject = createLink();
 
-            if (newObject != null)
+            if (newObject != null) {
                 dispose();
+            }
         }
         if (cmd.equals("Cancel"))
         {
@@ -182,7 +185,7 @@ implements ActionListener
         Group pgroup = null;
 
         name = nameField.getText().trim();
-        if (name == null || name.length()<1)
+        if ((name == null) || (name.length()<1))
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
@@ -226,7 +229,7 @@ implements ActionListener
             return null;
         }
 
-        if (currentObj instanceof Group && ((Group)currentObj).isRoot())
+        if ((currentObj instanceof Group) && ((Group)currentObj).isRoot())
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,

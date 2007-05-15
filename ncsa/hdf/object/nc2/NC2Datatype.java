@@ -74,7 +74,9 @@ public class NC2Datatype extends Datatype
     {
         Object data = null;
 
-        if (size <= 0 || dtype == null) return null;
+        if ((size <= 0) || (dtype == null)) {
+            return null;
+        }
 
         if (dtype.equals(DataType.BYTE)) {
             data = new byte[size];
@@ -102,8 +104,9 @@ public class NC2Datatype extends Datatype
      */
     public void fromNative(int tid)
     {
-        if (nativeType == null)
+        if (nativeType == null) {
             return;
+        }
 
         datatypeOrder = NATIVE;
         if (nativeType.equals(DataType.BYTE)) {
@@ -132,8 +135,9 @@ public class NC2Datatype extends Datatype
 
     // implementing Datatype
     public String getDatatypeDescription() {
-        if (nativeType == null)
+        if (nativeType == null) {
             return "Unknown data type.";
+        }
 
         return nativeType.toString();
     }
@@ -146,19 +150,21 @@ public class NC2Datatype extends Datatype
     // implementing Datatype
     public int toNative() {
         if (datatypeClass == CLASS_INTEGER) {
-            if (datatypeSize == 1)
+            if (datatypeSize == 1) {
                 nativeType = DataType.BYTE;
-            else if (datatypeSize == 2)
+            } else if (datatypeSize == 2) {
                 nativeType = DataType.SHORT;
-            else if (datatypeSize == 4)
+            } else if (datatypeSize == 4) {
                 nativeType = DataType.INT;
-            else if (datatypeSize == 8)
+            } else if (datatypeSize == 8) {
                 nativeType = DataType.LONG;
+            }
         } else if (datatypeClass == CLASS_FLOAT) {
-            if (datatypeSize == 4)
+            if (datatypeSize == 4) {
                 nativeType = DataType.FLOAT;
-            else if (datatypeSize == 8)
+            } else if (datatypeSize == 8) {
                 nativeType = DataType.DOUBLE;
+            }
         } else if (datatypeClass == CLASS_STRING) {
             nativeType = DataType.STRING;
         }

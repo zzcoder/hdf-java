@@ -115,13 +115,14 @@ public class NC2File extends FileFormat
         {
             if (
                 // netCDF
-               (header[0]==67 &&
-                header[1]==68 &&
-                header[2]==70 &&
-                header[3]==1) )
+               ((header[0]==67) &&
+                (header[1]==68) &&
+                (header[2]==70) &&
+                (header[3]==1)) ) {
                 is_netcdf = true;
-            else
+            } else {
                 is_netcdf = false;
+            }
         }
 
         try { raf.close();} catch (Exception ex) {}
@@ -170,8 +171,9 @@ public class NC2File extends FileFormat
             public boolean isLeaf() { return false; }
         };
 
-        if (ncFile == null)
+        if (ncFile == null) {
             return root;
+        }
 
         Iterator it = ncFile.getVariableIterator();
         Variable ncDataset = null;
@@ -191,8 +193,9 @@ public class NC2File extends FileFormat
 
     // Implementing FileFormat
     public void close() throws IOException {
-        if  (ncFile != null)
+        if  (ncFile != null) {
             ncFile.close();
+        }
     }
 
     // Implementing FileFormat
@@ -373,8 +376,9 @@ public class NC2File extends FileFormat
     public static ncsa.hdf.object.Attribute convertAttribute(ucar.nc2.Attribute netcdfAttr) {
         ncsa.hdf.object.Attribute ncsaAttr = null;
 
-        if (netcdfAttr == null)
+        if (netcdfAttr == null) {
             return null;
+        }
 
         String attrName = netcdfAttr.getName();
         long[] attrDims = {netcdfAttr.getLength()};
@@ -390,7 +394,6 @@ public class NC2File extends FileFormat
      */
     public String getLibversion()
     {
-        int[] vers = new int[3];
         String ver = "NetCDF Java (version 2.1)";
 
         return ver;

@@ -57,8 +57,11 @@ public class H5SrbGroup extends Group
         super (fileFormat, name, path, parent, theID);
 
         opID = -1;
-        if (name == null) fullPath = path;
-        else fullPath = path + HObject.separator + name;
+        if (name == null) {
+            fullPath = path;
+        } else {
+            fullPath = path + HObject.separator + name;
+        }
     }
 
     /**
@@ -106,7 +109,9 @@ public class H5SrbGroup extends Group
     public List getMetadata() throws Exception
     {
         String srbInfo[] = ((H5SrbFile)getFileFormat()).getSrbInfo();
-        if ( srbInfo == null || srbInfo.length<5) return null;
+        if ( (srbInfo == null) || (srbInfo.length<5)) {
+            return null;
+        }
 
         // load attributes first
         if (attributeList == null)
@@ -122,8 +127,9 @@ public class H5SrbGroup extends Group
     void addAttribute(String attrName, Object attrValue, long[] attrDims,
                      int tclass, int tsize, int torder, int tsign)
     {
-        if (attributeList == null)
+        if (attributeList == null) {
             attributeList = new Vector();
+        }
 
         H5SrbDatatype type = new H5SrbDatatype(tclass, tsize, torder, tsign);
         Attribute attr = new Attribute(attrName, type, attrDims);

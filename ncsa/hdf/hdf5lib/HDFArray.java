@@ -86,7 +86,7 @@ throws HDF5Exception
 {
     byte[] b = null;
 
-    if (ArrayDescriptor.dims == 1 && ArrayDescriptor.NT == 'B') {
+    if ((ArrayDescriptor.dims == 1) && (ArrayDescriptor.NT == 'B')) {
         b = (byte [])_theArray;
     } else {
         b = new byte[ArrayDescriptor.totalSize];
@@ -111,7 +111,9 @@ throws HDF5Exception
 public byte[] byteify() throws HDF5Exception
 {
 
-    if (_barray != null) return _barray;
+    if (_barray != null) {
+        return _barray;
+    }
 
     if (_theArray == null) {
          /* exception: not an array */
@@ -534,7 +536,7 @@ public Object arrayify(byte[] bytes) throws HDF5Exception {
 }
 
 private byte[] IntegerToByte( Integer in[] ) {
-    int nelems = java.lang.reflect.Array.getLength((Object)in);
+    int nelems = java.lang.reflect.Array.getLength(in);
     int[] out = new int[nelems];
 
     for (int i = 0; i < nelems; i++) {
@@ -544,7 +546,7 @@ private byte[] IntegerToByte( Integer in[] ) {
 }
 
 private Integer[] ByteToInteger( byte[] bin ) {
-    int in[] = (int [])HDFNativeData.byteToInt(bin);
+    int in[] = HDFNativeData.byteToInt(bin);
     int nelems = java.lang.reflect.Array.getLength((Object)in);
     Integer[] out = new Integer[nelems];
 

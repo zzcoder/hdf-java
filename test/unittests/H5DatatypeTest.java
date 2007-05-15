@@ -283,7 +283,6 @@ public class H5DatatypeTest extends TestCase {
      */
     public final void testFromNative() {
         int tid=-1;
-        final int tclass=-1, tsize=-1;
         final H5Datatype type = new H5Datatype(-1);
         
         assertFalse(Datatype.CLASS_INTEGER==type.getDatatypeClass());
@@ -501,8 +500,6 @@ public class H5DatatypeTest extends TestCase {
      */
     public final void testRemoveMetadata() {
         Vector attrs = null;
-        final Attribute attr = null;
-        
         try {
             attrs = (Vector) testDatatype.getMetadata();
         } catch (final Exception ex) { 

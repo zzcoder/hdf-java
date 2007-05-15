@@ -99,17 +99,19 @@ public class HDF5GroupInfo
      */
     public boolean equals(Object obj)
     {
-        if ( !(obj instanceof HDF5GroupInfo))
+        if ( !(obj instanceof HDF5GroupInfo)) {
             return false;
+        }
 
         HDF5GroupInfo target = (HDF5GroupInfo) obj;
-        if( fileno[0] == target.fileno[0] &&
-            fileno[1] == target.fileno[1] &&
-            objno[0] == target.objno[0] &&
-            objno[1] == target.objno[1] )
+        if( (fileno[0] == target.fileno[0]) &&
+            (fileno[1] == target.fileno[1]) &&
+            (objno[0] == target.objno[0]) &&
+            (objno[1] == target.objno[1]) ) {
             return true;
-        else
+        } else {
             return false;
+        }
     }
 
     /** Returns the object id.
@@ -127,11 +129,13 @@ public class HDF5GroupInfo
         String fileStr="fileno=null";
         String objStr="objno=null";
 
-        if (fileno != null)
+        if (fileno != null) {
             fileStr = "fileno[0]="+fileno[0]+",fileno[1]="+fileno[1];
+        }
 
-        if (objno != null)
+        if (objno != null) {
             objStr = "objno[0]="+objno[0]+",objno[1]="+objno[1];
+        }
 
         return getClass().getName() + "[" + fileStr +"," +objStr+
             ",type="+type+",nlink="+nlink+",mtime="+mtime+",linklen="+

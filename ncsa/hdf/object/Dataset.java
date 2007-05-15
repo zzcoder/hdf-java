@@ -199,8 +199,9 @@ public abstract class Dataset extends HObject
      */
     public void clear() {
      	if (data != null) {
-     		if (data instanceof Vector)
-     			((Vector) data).setSize(0);
+     		if (data instanceof Vector) {
+                ((Vector) data).setSize(0);
+            }
      		data = null;
      	}
      	isDataLoaded = false;
@@ -364,13 +365,16 @@ public abstract class Dataset extends HObject
      */
     public final long[] getStride()
     {
-        if (rank <=0) return null;
+        if (rank <=0) {
+            return null;
+        }
 
         if (selectedStride == null)
         {
             selectedStride = new long[rank];
-            for (int i=0; i<rank; i++)
+            for (int i=0; i<rank; i++) {
                 selectedStride[i] = 1;
+            }
         }
 
         return selectedStride;
@@ -444,8 +448,9 @@ public abstract class Dataset extends HObject
      */
     public final void write() throws Exception
     {
-        if (data != null)
+        if (data != null) {
             write(data);
+        }
     }
 
     /**
@@ -564,8 +569,9 @@ public abstract class Dataset extends HObject
             originalBuf = data;
             isDataLoaded = true;
             nPoints = 1;
-            for (int j=0; j<selectedDims.length; j++)
+            for (int j=0; j<selectedDims.length; j++) {
                 nPoints *= selectedDims[j];
+            }
         }
 
         return data;
@@ -631,9 +637,10 @@ public abstract class Dataset extends HObject
      */
     public final int getHeight()
     {
-        if (selectedDims == null ||
-            selectedIndex == null )
+        if ((selectedDims == null) ||
+            (selectedIndex == null) ) {
             return 0;
+        }
 
         return (int)selectedDims[selectedIndex[0]];
     }
@@ -669,13 +676,15 @@ public abstract class Dataset extends HObject
      */
     public final int getWidth()
     {
-        if (selectedDims == null ||
-            selectedIndex == null )
+        if ((selectedDims == null) ||
+            (selectedIndex == null) ) {
             return 0;
+        }
 
-        if (selectedDims.length < 2 ||
-            selectedIndex.length < 2)
+        if ((selectedDims.length < 2) ||
+            (selectedIndex.length < 2)) {
             return 1;
+        }
 
         return (int)selectedDims[selectedIndex[1]];
     }
@@ -780,17 +789,20 @@ public abstract class Dataset extends HObject
      */
     public static Object convertFromUnsignedC(Object data_in, Object data_out)
     {
-        if (data_in == null)
+        if (data_in == null) {
             return null;
+        }
 
         Class data_class = data_in.getClass();
-        if (!data_class.isArray())
+        if (!data_class.isArray()) {
             return null;
+        }
 
         if (data_out != null) {
             Class data_class_out = data_out.getClass();
-            if (!data_class_out.isArray() || (Array.getLength(data_in) != Array.getLength(data_out)))
+            if (!data_class_out.isArray() || (Array.getLength(data_in) != Array.getLength(data_out))) {
                 data_out = null;
+            }
         }
 
         String cname = data_class.getName();
@@ -799,58 +811,66 @@ public abstract class Dataset extends HObject
         
 		if (dname == 'B') {
             short[] sdata = null;
-            if (data_out == null)
+            if (data_out == null) {
                 sdata = new short[size];
-            else
+            } else {
                 sdata = (short[])data_out;
+            }
             byte[] bdata = (byte[])data_in;
-            short value = 0;
             for (int i=0; i<size; i++)
             {
                 //value = (short)bdata[i];
                 //if (value < 0) value += 256;
                 //sdata[i] = value;
-                if((bdata[i] & 0x80)==0x80) 
-                	sdata[i] = (short) (128 + (bdata[i] & 0x7f));
-                else 
-                	sdata[i] = bdata[i];
+                if((bdata[i] & 0x80)==0x80) {
+                    sdata[i] = (short) (128 + (bdata[i] & 0x7f));
+                } else {
+                    sdata[i] = bdata[i];
+                }
             }
             data_out = sdata;
         }
         else if (dname == 'S') {
             int[] idata = null;
-            if (data_out == null)
+            if (data_out == null) {
                 idata = new int[size];
-            else
+            } else {
                 idata = (int[]) data_out;
+            }
             short[] sdata = (short[])data_in;
             int value = 0;
             for (int i=0; i<size; i++)
             {
                 value = sdata[i];
-                if (value < 0) value += 65536;
+                if (value < 0) {
+                    value += 65536;
+                }
                 idata[i] = value;
             }
             data_out = idata;
         }
         else if (dname == 'I') {
             long[] ldata = null;
-            if (data_out == null)
+            if (data_out == null) {
                 ldata = new long[size];
-            else
+            } else {
                 ldata = (long[])data_out;
+            }
             int[] idata = (int[])data_in;
             long value = 0;
             for (int i=0; i<size; i++)
             {
                 value = idata[i];
-                if (value < 0) value += 4294967296L;
+                if (value < 0) {
+                    value += 4294967296L;
+                }
                 ldata[i] = value;
             }
             data_out = ldata;
+        } else {
+            data_out = data_in;
+            // Java does not support unsigned long
         }
-        else data_out = data_in;
-        // Java does not support unsigned long
 		
         return data_out;
     }
@@ -880,17 +900,20 @@ public abstract class Dataset extends HObject
      */
     public static Object convertToUnsignedC(Object data_in, Object data_out)
     {
-        if (data_in == null)
+        if (data_in == null) {
             return null;
+        }
 
         Class data_class = data_in.getClass();
-        if (!data_class.isArray())
+        if (!data_class.isArray()) {
             return null;
+        }
 
         if (data_out != null) {
             Class data_class_out = data_out.getClass();
-            if (!data_class_out.isArray() || (Array.getLength(data_in) != Array.getLength(data_out)))
+            if (!data_class_out.isArray() || (Array.getLength(data_in) != Array.getLength(data_out))) {
                 data_out = null;
+            }
         }
 
         String cname = data_class.getName();
@@ -899,39 +922,46 @@ public abstract class Dataset extends HObject
 
         if (dname == 'S') {
             byte[] bdata = null;
-            if (data_out == null)
+            if (data_out == null) {
                 bdata = new byte[size];
-            else
+            } else {
                 bdata = (byte[])data_out;
+            }
             short[] sdata = (short[])data_in;
-            for (int i=0; i<size; i++)
+            for (int i=0; i<size; i++) {
                 bdata[i] = (byte)sdata[i];
+            }
             data_out = bdata;
         }
         else if (dname == 'I') {
             short[] sdata = null;
-            if (data_out == null)
+            if (data_out == null) {
                 sdata = new short[size];
-            else
+            } else {
                 sdata = (short[])data_out;
+            }
             int[] idata = (int[])data_in;
-            for (int i=0; i<size; i++)
+            for (int i=0; i<size; i++) {
                 sdata[i] = (short)idata[i];
+            }
             data_out = sdata;
         }
         else if (dname == 'J') {
             int[] idata = null;
-            if (data_out == null)
+            if (data_out == null) {
                 idata = new int[size];
-            else
+            } else {
                 idata = (int[])data_out;
+            }
             long[] ldata = (long[])data_in;
-            for (int i=0; i<size; i++)
+            for (int i=0; i<size; i++) {
                 idata[i] = (int)ldata[i];
+            }
             data_out = idata;
+        } else {
+            data_out = data_in;
+            // Java does not support unsigned long
         }
-        else data_out = data_in;
-        // Java does not support unsigned long
 
         return data_out;
     }
@@ -963,8 +993,9 @@ public abstract class Dataset extends HObject
      */
     public static final String[] byteToString(byte[] bytes, int length)
     {
-        if (bytes == null)
+        if (bytes == null) {
             return null;
+        }
 
         int n = bytes.length/length;
         String bigstr = new String(bytes);
@@ -977,7 +1008,9 @@ public abstract class Dataset extends HObject
             offset = i*length;
             str = bigstr.substring(offset, offset+length);
             idx = str.indexOf('\0');
-            if (idx > 0) str = str.substring(0, idx);
+            if (idx > 0) {
+                str = str.substring(0, idx);
+            }
             strArray[i] = str.trim();
         }
 
@@ -1000,8 +1033,9 @@ public abstract class Dataset extends HObject
      */
     public static final byte[] stringToByte(String[] strings, int length)
     {
-        if (strings == null)
+        if (strings == null) {
             return null;
+        }
 
         int size = strings.length;
         byte[] bytes = new byte[size*length];
@@ -1009,8 +1043,9 @@ public abstract class Dataset extends HObject
         StringBuffer strBuff = new StringBuffer(length);
         for (int i=0; i<size; i++)
         {
-            if (strings[i].length() > length)
+            if (strings[i].length() > length) {
                 strings[i] = strings[i].substring(0, length);
+            }
 
             // padding the string with space
             strBuff.replace(0, length, " ");

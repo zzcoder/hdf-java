@@ -106,8 +106,6 @@ public class HDFDeprecated extends HDFLibrary {
 
      public boolean DFSDadddata(String filename, int rank, int[] dimsizes, Object theData)  throws HDFException{
         byte[] data;
-        int rval;
-
         HDFArray theArray = new HDFArray(theData);
         data = theArray.byteify();
         return DFSDadddata(filename, rank, dimsizes, data);
@@ -171,7 +169,9 @@ public class HDFDeprecated extends HDFLibrary {
         byte[] d1 = new byte[8];
         boolean rval;
         rval = DFSDgetfillvalue( d1 );
-        if (rval == false) return (rval);
+        if (rval == false) {
+            return (rval);
+        }
         if ((NT == HDFConstants.DFNT_INT8 )
          || (NT == HDFConstants.DFNT_CHAR8 )
          || (NT == HDFConstants.DFNT_CHAR )
@@ -182,7 +182,6 @@ public class HDFDeprecated extends HDFLibrary {
          || (NT == HDFConstants.DFNT_UCHAR8 )
             ) {
             Byte f = new Byte(d1[0]);
-            Short fmx;
             if (f.shortValue() < 0) {
                 theFillValue[0] = new Short((short)(f.intValue() + 256));
             } else {
@@ -198,7 +197,6 @@ public class HDFDeprecated extends HDFLibrary {
             ) {
             short[] fmx = HDFNativeData.byteToShort(0,1,d1);
             Short f = new Short(fmx[0]);
-            Integer i;
             if (f.intValue() < 0) {
                 theFillValue[0] = new Integer(f.intValue() + 65536);
             } else {
@@ -212,8 +210,7 @@ public class HDFDeprecated extends HDFLibrary {
             ) {
             int[] fmx = HDFNativeData.byteToInt(0,1,d1);
             Integer i = new Integer(fmx[0]);
-            Float f;
-        if (i.floatValue() < 0) {
+            if (i.floatValue() < 0) {
                 theFillValue[0] = new Float((float)(i.floatValue() + 4294967296.0));
             } else {
                 theFillValue[0] = new Float(i.floatValue());
@@ -246,7 +243,9 @@ public class HDFDeprecated extends HDFLibrary {
         byte[] d2 = new byte[8];
         boolean rval;
         rval = DFSDgetrange( d1, d2);
-        if (rval == false) return(rval);
+        if (rval == false) {
+            return(rval);
+        }
         if ((NT == HDFConstants.DFNT_INT8 )
                  || (NT == HDFConstants.DFNT_CHAR8 )
                  || (NT == HDFConstants.DFNT_CHAR )
@@ -393,8 +392,6 @@ public class HDFDeprecated extends HDFLibrary {
 
      public boolean DFSDputdata(String filename, int rank, int [] dimsizes, Object theData)  throws HDFException{
         byte[] data;
-                 int rval;
-
                  HDFArray theArray = new HDFArray(theData);
                  data = theArray.byteify();
                  return DFSDputdata(filename, rank, dimsizes, data);
@@ -405,8 +402,6 @@ public class HDFDeprecated extends HDFLibrary {
 
      public boolean DFSDputslice(int [] windims, Object source, int [] dims)  throws HDFException{
         byte[] data;
-                 int rval;
-
                  HDFArray theArray = new HDFArray(source);
                  data = theArray.byteify();
                  return DFSDputslice(windims, data, dims);
@@ -422,8 +417,6 @@ public class HDFDeprecated extends HDFLibrary {
         int [] stride, Object theData, int [] buffer_size)
     throws HDFException {
         byte[] data;
-                 int rval;
-
                  HDFArray theArray = new HDFArray(theData);
                  data = theArray.byteify();
                  return DFSDreadslab(filename, start, slab_size, stride, data, buffer_size);
@@ -444,8 +437,6 @@ public class HDFDeprecated extends HDFLibrary {
 
      public boolean DFSDsetdimscale (int dim, int dimsize, Object theScale) throws HDFException {
         byte[] data;
-                 int rval;
-
                  HDFArray theArray = new HDFArray(theScale);
                  data = theArray.byteify();
                  return DFSDsetdimscale (dim, dimsize, data);
@@ -465,8 +456,7 @@ public class HDFDeprecated extends HDFLibrary {
     public boolean  DFSDsetrange( Object max, Object min) throws HDFException {
                 byte[] d1 = null;
                 byte[] d2 = null;
-                boolean rval;
-        Class mincl = min.getClass();
+                Class mincl = min.getClass();
         String mncn = mincl.getName();
         Class nc = mincl.getSuperclass();
         String s = nc.getName();
@@ -533,8 +523,6 @@ public class HDFDeprecated extends HDFLibrary {
      public boolean DFSDwriteslab(int [] start, int [] stride, int[] count,
     Object theData)  throws HDFException{
         byte[] data;
-                 int rval;
-
                  HDFArray theArray = new HDFArray(theData);
                  data = theArray.byteify();
                  return DFSDwriteslab(start, stride, count, data);

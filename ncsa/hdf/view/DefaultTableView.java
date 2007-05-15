@@ -135,7 +135,7 @@ implements TableView, ActionListener
         fixedDataLength = -1;
 
         HObject hobject = (HObject)viewer.getTreeView().getCurrentObject();
-        if (hobject == null || !(hobject instanceof Dataset)) {
+        if ((hobject == null) || !(hobject instanceof Dataset)) {
              return;
         }
 
@@ -144,21 +144,23 @@ implements TableView, ActionListener
 
         // cannot edit hdf4 vdata
         if (dataset.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4)) &&
-            dataset instanceof CompoundDS)
+            (dataset instanceof CompoundDS)) {
             isReadOnly = true;
+        }
 
         // disable edit feature for szip compression when encode is not enabled
         if (!isReadOnly)
         {
             String compression = dataset.getCompression();
-            if (compression != null && compression.startsWith("SZIP"))
+            if ((compression != null) && compression.startsWith("SZIP"))
             {
-                if (!compression.endsWith("ENCODE_ENABLED"))
+                if (!compression.endsWith("ENCODE_ENABLED")) {
                     isReadOnly = true;
+                }
             }
         }
 
-        isDisplayTypeChar = (isDisplayChar.booleanValue() && dataset.getDatatype().getDatatypeSize()==1);
+        isDisplayTypeChar = (isDisplayChar.booleanValue() && (dataset.getDatatype().getDatatypeSize()==1));
 
         // create the table and its columnHeader
         if (dataset instanceof CompoundDS)
@@ -317,7 +319,9 @@ implements TableView, ActionListener
         item = checkFixedDataLength;
         item.addActionListener(this);
         item.setActionCommand("Fixed data length");
-        if (dataset instanceof ScalarDS) menu.add(item);
+        if (dataset instanceof ScalarDS) {
+            menu.add(item);
+        }
 
         menu.addSeparator();
 
@@ -383,7 +387,9 @@ implements TableView, ActionListener
         item = checkScientificNotation;
         item.addActionListener(this);
         item.setActionCommand("Scientific Notation");
-        if (dataset instanceof ScalarDS) menu.add(item);
+        if (dataset instanceof ScalarDS) {
+            menu.add(item);
+        }
 
         menu.addSeparator();
 
@@ -484,12 +490,14 @@ implements TableView, ActionListener
             fchooser.setFileFilter(DefaultFileFilter.getFileFilterText());
             int returnVal = fchooser.showOpenDialog(this);
 
-            if(returnVal != JFileChooser.APPROVE_OPTION)
+            if(returnVal != JFileChooser.APPROVE_OPTION) {
                 return;
+            }
 
             File choosedFile = fchooser.getSelectedFile();
-            if (choosedFile == null)
+            if (choosedFile == null) {
                 return;
+            }
 
             String txtFile = choosedFile.getAbsolutePath();
             importTextData(txtFile);
@@ -497,8 +505,8 @@ implements TableView, ActionListener
         else if (cmd.equals("Write selection to dataset"))
         {
             JTable jtable = getTable();
-            if (jtable.getSelectedColumnCount() <=0 ||
-                jtable.getSelectedRowCount() <=0 )
+            if ((jtable.getSelectedColumnCount() <=0) ||
+                (jtable.getSelectedRowCount() <=0) )
             {
                 JOptionPane.showMessageDialog(
                         this,
@@ -513,8 +521,9 @@ implements TableView, ActionListener
             Group pGroup = (Group)((DefaultMutableTreeNode)node.getParent()).getUserObject();
             TreeNode root = dataset.getFileFormat().getRootNode();
 
-            if (root == null)
+            if (root == null) {
                 return;
+            }
 
             Vector list = new Vector(dataset.getFileFormat().getNumberOfMembers()+5);
             DefaultMutableTreeNode theNode = null;
@@ -600,8 +609,9 @@ implements TableView, ActionListener
                                 JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                } else 
+                } else {
                     theData = dataValue;
+                }
 
                 double[] minmax = new double[2];
                 double[] stat = new double[2];
@@ -639,7 +649,9 @@ implements TableView, ActionListener
             String strPage = frameField.getText();
             strPage = strPage.toLowerCase();
             int idx = strPage.indexOf('o');
-            if (idx > 0) strPage = strPage.substring(0, idx);
+            if (idx > 0) {
+                strPage = strPage.substring(0, idx);
+            }
 
             int page = 0;
             try { page = Integer.parseInt(strPage.trim()); }
@@ -662,7 +674,7 @@ implements TableView, ActionListener
             String str = JOptionPane.showInputDialog(this, "Enter fixed data length when importing text data\n\n"+
                     "For example, for a text string of \"12345678\"\n\t\tenter 2, the data will be 12, 34, 56, 78\n\t\tenter 4, the data will be 1234, 5678\n", "");
 
-            if (str == null || str.length()<1) {
+            if ((str == null) || (str.length()<1)) {
                 checkFixedDataLength.setSelected(false);
                 return;
             }
@@ -692,8 +704,9 @@ implements TableView, ActionListener
                     getTitle(),
                     JOptionPane.YES_NO_OPTION);
 
-            if (op == JOptionPane.YES_OPTION)
+            if (op == JOptionPane.YES_OPTION) {
                 updateValueInFile();
+            }
         }
 
         if (dataset instanceof ScalarDS)
@@ -703,7 +716,9 @@ implements TableView, ActionListener
             // because the display type (table or image) may be
             // different.
 
-            if (sds.isImage()) sds.clearData();
+            if (sds.isImage()) {
+                sds.clearData();
+            }
 
             dataValue = null;
             table = null;
@@ -719,15 +734,17 @@ implements TableView, ActionListener
     {
         int rank = dataset.getRank();
 
-        if (rank < 3)
+        if (rank < 3) {
             return;
+        }
 
         long[] start = dataset.getStartDims();
         long[] dims = dataset.getDims();
         int[] selectedIndex = dataset.getSelectedIndex();
         long idx = start[selectedIndex[2]];
-        if (idx == 0)
+        if (idx == 0) {
             return; // current page is the first page
+        }
 
         gotoPage(start[selectedIndex[2]]-1);
     }
@@ -737,15 +754,17 @@ implements TableView, ActionListener
     {
         int rank = dataset.getRank();
 
-        if (rank < 3)
+        if (rank < 3) {
             return;
+        }
 
         long[] start = dataset.getStartDims();
         int[] selectedIndex = dataset.getSelectedIndex();
         long[] dims = dataset.getDims();
         long idx = start[selectedIndex[2]];
-        if (idx == dims[selectedIndex[2]]-1)
+        if (idx == dims[selectedIndex[2]]-1) {
             return; // current page is the last page
+        }
 
         gotoPage(start[selectedIndex[2]]+1);
     }
@@ -755,15 +774,17 @@ implements TableView, ActionListener
     {
         int rank = dataset.getRank();
 
-        if (rank < 3)
+        if (rank < 3) {
             return;
+        }
 
         long[] start = dataset.getStartDims();
         int[] selectedIndex = dataset.getSelectedIndex();
         long[] dims = dataset.getDims();
         long idx = start[selectedIndex[2]];
-        if (idx == 0)
+        if (idx == 0) {
             return; // current page is the first page
+        }
 
         gotoPage(0);
     }
@@ -773,15 +794,17 @@ implements TableView, ActionListener
     {
         int rank = dataset.getRank();
 
-        if (rank < 3)
+        if (rank < 3) {
             return;
+        }
 
         long[] start = dataset.getStartDims();
         int[] selectedIndex = dataset.getSelectedIndex();
         long[] dims = dataset.getDims();
         long idx = start[selectedIndex[2]];
-        if (idx == dims[selectedIndex[2]]-1)
+        if (idx == dims[selectedIndex[2]]-1) {
             return; // current page is the last page
+        }
 
         gotoPage(dims[selectedIndex[2]]-1);
     }
@@ -797,10 +820,10 @@ implements TableView, ActionListener
         int[] rows = table.getSelectedRows();
         int[] cols = table.getSelectedColumns();
 
-        if (rows == null ||
-            cols == null ||
-            rows.length <=0 ||
-            cols.length  <=0 )
+        if ((rows == null) ||
+            (cols == null) ||
+            (rows.length <=0) ||
+            (cols.length  <=0) )
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
@@ -832,8 +855,9 @@ implements TableView, ActionListener
         lpo.setVisible(true);
 
         int plotType = lpo.getPlotBy();
-        if (plotType == LineplotOption.NO_PLOT)
+        if (plotType == LineplotOption.NO_PLOT) {
             return;
+        }
 
         boolean isRowPlot = (plotType==LineplotOption.ROW_PLOT);
         int xIndex = lpo.getXindex();
@@ -937,9 +961,9 @@ implements TableView, ActionListener
             }
         } // else
 
-        if (yRange[0] == Double.POSITIVE_INFINITY ||
-            yRange[1] == Double.NEGATIVE_INFINITY ||
-            yRange[0] == yRange[1])
+        if ((yRange[0] == Double.POSITIVE_INFINITY) ||
+            (yRange[1] == Double.NEGATIVE_INFINITY) ||
+            (yRange[0] == yRange[1]))
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(
@@ -957,8 +981,9 @@ implements TableView, ActionListener
 
         String cname = dataValue.getClass().getName();
         char dname = cname.charAt(cname.lastIndexOf("[")+1);
-        if (dname == 'B' || dname == 'S' || dname == 'I' || dname == 'J')
+        if ((dname == 'B') || (dname == 'S') || (dname == 'I') || (dname == 'J')) {
             cv.setTypeToInteger();
+        }
 
         cv.setVisible(true);
     }
@@ -968,10 +993,11 @@ implements TableView, ActionListener
      */
     public Object getSelectedData()
     {
-        if (dataset instanceof CompoundDS)
+        if (dataset instanceof CompoundDS) {
             return getSelectedCompoundData();
-        else
+        } else {
             return getSelectedScalarData();
+        }
     }
 
     /**
@@ -984,30 +1010,31 @@ implements TableView, ActionListener
         int cols = table.getSelectedColumnCount();
         int rows = table.getSelectedRowCount();
 
-        if (cols <=0 || rows <= 0)
+        if ((cols <=0) || (rows <= 0))
         {
             return null;
         }
 
-        if (table.getColumnCount() == cols &&
-            table.getRowCount() == rows)
+        if ((table.getColumnCount() == cols) &&
+            (table.getRowCount() == rows)) {
             return dataValue;
+        }
 
         int size = cols*rows;
         int nt = NT;
-        if (nt == 'B')
+        if (nt == 'B') {
             selectedData = new byte[size];
-        else if (nt == 'S')
+        } else if (nt == 'S') {
             selectedData = new short[size];
-        else if (nt == 'I')
+        } else if (nt == 'I') {
             selectedData = new int[size];
-        else if (nt == 'J')
+        } else if (nt == 'J') {
             selectedData = new long[size];
-        else if (nt == 'F')
+        } else if (nt == 'F') {
             selectedData = new float[size];
-        else if (nt == 'D')
+        } else if (nt == 'D') {
             selectedData = new double[size];
-        else
+        } else
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
@@ -1041,7 +1068,7 @@ implements TableView, ActionListener
         int cols = table.getSelectedColumnCount();
         int rows = table.getSelectedRowCount();
 
-        if (cols <=0 || rows <= 0)
+        if ((cols <=0) || (rows <= 0))
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
@@ -1060,21 +1087,23 @@ implements TableView, ActionListener
         String cName = colData.getClass().getName();
         int cIndex = cName.lastIndexOf("[");
         char nt = ' ';
-        if (cIndex >= 0 ) nt = cName.charAt(cIndex+1);
+        if (cIndex >= 0 ) {
+            nt = cName.charAt(cIndex+1);
+        }
 
-        if (nt == 'B')
+        if (nt == 'B') {
             selectedData = new byte[size];
-        else if (nt == 'S')
+        } else if (nt == 'S') {
             selectedData = new short[size];
-        else if (nt == 'I')
+        } else if (nt == 'I') {
             selectedData = new int[size];
-        else if (nt == 'J')
+        } else if (nt == 'J') {
             selectedData = new long[size];
-        else if (nt == 'F')
+        } else if (nt == 'F') {
             selectedData = new float[size];
-        else if (nt == 'D')
+        } else if (nt == 'D') {
             selectedData = new double[size];
-        else
+        } else
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
@@ -1145,26 +1174,30 @@ implements TableView, ActionListener
             dataValue = null;
         }
 
-        if (dataValue == null)
+        if (dataValue == null) {
             return null;
+        }
 
         String cName = dataValue.getClass().getName();
         int cIndex = cName.lastIndexOf("[");
-        if (cIndex >= 0 ) NT = cName.charAt(cIndex+1);
+        if (cIndex >= 0 ) {
+            NT = cName.charAt(cIndex+1);
+        }
         boolean isVL = cName.startsWith("[Ljava.lang.String;");
 
         // convert nubmerical data into char
         // only possible cases are byte[] and short[] (converted from unsigned byte)
-        if (isDisplayTypeChar && (NT == 'B' || NT == 'S'))
+        if (isDisplayTypeChar && ((NT == 'B') || (NT == 'S')))
         {
             int n = Array.getLength(dataValue);
             char[] charData = new char[n];
             for (int i=0; i<n; i++)
             {
-                if (NT == 'B')
+                if (NT == 'B') {
                     charData[i] = (char)Array.getByte(dataValue, i);
-                else if (NT == 'S')
+                } else if (NT == 'S') {
                     charData[i] = (char)Array.getShort(dataValue, i);
+                }
             }
 
             dataValue = charData;
@@ -1198,15 +1231,17 @@ implements TableView, ActionListener
 
             public Object getValueAt(int row, int column)
             {
-                if (isDataTransposed)
+                if (isDataTransposed) {
                     theValue = Array.get(dataValue, column*getRowCount()+row);
-                else
+                } else {
                     theValue = Array.get(dataValue, row*getColumnCount()+column);
+                }
 
-                if (checkScientificNotation.isSelected())
+                if (checkScientificNotation.isSelected()) {
                     return scientificFormat.format(theValue);
-                else
+                } else {
                     return theValue;
+                }
             }
         };
 
@@ -1216,10 +1251,11 @@ implements TableView, ActionListener
 
             public boolean isCellEditable( int row, int col )
             {
-                if (isReadOnly || isDisplayTypeChar)
+                if (isReadOnly || isDisplayTypeChar) {
                     return false;
-                else
+                } else {
                     return true;
+                }
             }
 
             public void editingStopped(ChangeEvent e)
@@ -1252,7 +1288,7 @@ implements TableView, ActionListener
 
             public boolean isCellSelected(int row, int column)
             {
-                if (getSelectedRow()==row && getSelectedColumn()==column)
+                if ((getSelectedRow()==row) && (getSelectedColumn()==column))
                 {
                     cellLabel.setText(
                         String.valueOf(row+1)+
@@ -1277,11 +1313,14 @@ implements TableView, ActionListener
         JTable theTable = null;
 
         int rank = d.getRank();
-        if (rank <=0 ) d.init();
+        if (rank <=0 ) {
+            d.init();
+        }
 
         // use lazy convert for large number of strings
-        if (d.getHeight() > 10000)
+        if (d.getHeight() > 10000) {
             d.setConvertByteToString(false);
+        }
 
         dataValue = null;
         try { dataValue = d.getData(); }
@@ -1296,9 +1335,10 @@ implements TableView, ActionListener
             dataValue = null;
         }
 
-        if (dataValue == null ||
-           !(dataValue instanceof List) )
+        if ((dataValue == null) ||
+           !(dataValue instanceof List) ) {
             return null;
+        }
 
         int rows = d.getHeight();
         int cols = d.getSelectedMemberCount();
@@ -1324,10 +1364,11 @@ implements TableView, ActionListener
             for (int i=0; i<columns; i++) {
                 for (int j=0; j<columnNames.length; j++) {
                     // display column index only once, in the middle of the compound fields
-                    if (j == halfIdx)
+                    if (j == halfIdx) {
                         subColumnNames[i*columnNames.length+j] = (i+1)+"\n "+columnNames[j];
-                    else
+                    } else {
                         subColumnNames[i*columnNames.length+j] = " \n "+columnNames[j];
+                    }
                 }
             }
         }
@@ -1364,7 +1405,9 @@ implements TableView, ActionListener
                 }
 
                 Object colValue = list.get(fieldIdx);
-                if (colValue == null) return "Null";
+                if (colValue == null) {
+                    return "Null";
+                }
 
                 stringBuffer.setLength(0); // clear the old string
                 int[] mdim = compound.getMemeberDims(fieldIdx);
@@ -1375,16 +1418,18 @@ implements TableView, ActionListener
                     boolean isString = (types[fieldIdx].getDatatypeClass() == Datatype.CLASS_STRING);
                     
 
-                    if (orders[fieldIdx] <= 1 && isString && strlen>0 && !compound.getConvertByteToString())
+                    if ((orders[fieldIdx] <= 1) && isString && (strlen>0) && !compound.getConvertByteToString())
                     {
                         // original data is a char array
                         String str = new String(((byte[])colValue), rowIdx*strlen, strlen);
                         int idx = str.indexOf('\0');
-                        if (idx > 0) str = str.substring(0, idx);
+                        if (idx > 0) {
+                            str = str.substring(0, idx);
+                        }
                         stringBuffer.append(str.trim());
-                    }
-                    else
+                    } else {
                         stringBuffer.append(Array.get(colValue, rowIdx));
+                    }
 
                     for (int i=1; i<orders[fieldIdx]; i++) {
                         stringBuffer.append(", ");
@@ -1395,7 +1440,9 @@ implements TableView, ActionListener
                     // member is an ARRAY datatype
                     int i = 0;
                     for (int j=0; j<mdim.length; j++) {
-                        if (j>0) stringBuffer.append("\n");
+                        if (j>0) {
+                            stringBuffer.append("\n");
+                        }
                         stringBuffer.append(Array.get(colValue, rowIdx+i++));
                         for (int k=1; k<mdim[j]; k++) {
                             stringBuffer.append(", ");
@@ -1448,13 +1495,14 @@ implements TableView, ActionListener
 
             public boolean isCellSelected(int row, int column)
             {
-                if (lastSelectedRow == row &&
-                    lastSelectedColumn == column)
+                if ((lastSelectedRow == row) &&
+                    (lastSelectedColumn == column)) {
                     return super.isCellSelected(row, column);
+                }
 
                 lastSelectedRow = row;
                 lastSelectedColumn = column;
-                if (getSelectedRow()==row && getSelectedColumn()==column)
+                if ((getSelectedRow()==row) && (getSelectedColumn()==column))
                 {
                     cellLabel.setText(
                         String.valueOf(row+1)+
@@ -1484,15 +1532,19 @@ implements TableView, ActionListener
 
     private void gotoPage(long idx)
     {
-        if (dataset.getRank() < 3) return;
+        if (dataset.getRank() < 3) {
+            return;
+        }
 
-        if (isValueChanged) updateValueInFile();
+        if (isValueChanged) {
+            updateValueInFile();
+        }
 
         long[] start = dataset.getStartDims();
         int[] selectedIndex = dataset.getSelectedIndex();
         long[] dims = dataset.getDims();
 
-        if (idx <0 || idx >= dims[selectedIndex[2]]) {
+        if ((idx <0) || (idx >= dims[selectedIndex[2]])) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
                 "Frame number must be between 0 and "+dims[selectedIndex[2]],
@@ -1537,7 +1589,9 @@ implements TableView, ActionListener
         int r0 = table.getSelectedRow();     // starting row
         int c0 = table.getSelectedColumn();  // starting column
 
-        if (r0<0 || c0 <0) return;
+        if ((r0<0) || (c0 <0)) {
+            return;
+        }
 
         int r1 = r0 + table.getSelectedRowCount();     // finish row
         int c1 = c0 + table.getSelectedColumnCount();  // finshing column
@@ -1568,16 +1622,21 @@ implements TableView, ActionListener
             "Do you want to paste selected data ?",
             this.getTitle(),
             JOptionPane.YES_NO_OPTION);
-        if (pasteDataFlag == JOptionPane.NO_OPTION)
+        if (pasteDataFlag == JOptionPane.NO_OPTION) {
             return;
+        }
 
         int cols = table.getColumnCount();
         int rows = table.getRowCount();
         int r0 = table.getSelectedRow();
         int c0 = table.getSelectedColumn();
 
-        if (c0 < 0) c0 = 0;
-        if (r0 < 0) r0 = 0;
+        if (c0 < 0) {
+            c0 = 0;
+        }
+        if (r0 < 0) {
+            r0 = 0;
+        }
         int r = r0;
         int c = c0;
         int index = r*cols+c;
@@ -1590,7 +1649,7 @@ implements TableView, ActionListener
 
             StringTokenizer st = new StringTokenizer(s, "\n");
             // read line by line
-            while (st.hasMoreTokens() && r < rows)
+            while (st.hasMoreTokens() && (r < rows))
             {
                 line = st.nextToken();
 
@@ -1598,7 +1657,7 @@ implements TableView, ActionListener
                 {
                     // separate by delimiter
                     StringTokenizer lt = new StringTokenizer(line);
-                    while (lt.hasMoreTokens() && c < cols)
+                    while (lt.hasMoreTokens() && (c < cols))
                     {
                         index = r*cols+c;
                         updateValueInMemory(lt.nextToken(), r, c);
@@ -1639,23 +1698,29 @@ implements TableView, ActionListener
      */
     private void importTextData(String fname)
     {
-        if (!(dataset instanceof ScalarDS))
+        if (!(dataset instanceof ScalarDS)) {
             return; // does not support compound dataset in this version
+        }
 
         int pasteDataFlag = JOptionPane.showConfirmDialog(this,
             "Do you want to paste selected data ?",
             this.getTitle(),
             JOptionPane.YES_NO_OPTION);
-        if (pasteDataFlag == JOptionPane.NO_OPTION)
+        if (pasteDataFlag == JOptionPane.NO_OPTION) {
             return;
+        }
 
         int cols = table.getColumnCount();
         int rows = table.getRowCount();
         int r0 = table.getSelectedRow();
         int c0 = table.getSelectedColumn();
 
-        if (c0 < 0) c0 = 0;
-        if (r0 < 0) r0 = 0;
+        if (c0 < 0) {
+            c0 = 0;
+        }
+        if (r0 < 0) {
+            r0 = 0;
+        }
         int r = r0;
         int c = c0;
         int index = r*cols+c;
@@ -1676,27 +1741,28 @@ implements TableView, ActionListener
 
         int size = Array.getLength(dataValue);
         String delimiter = ViewProperties.getDataDelimiter();
-        if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_TAB))
+        if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_TAB)) {
             delimiter = "\t";
-        else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_SPACE))
+        } else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_SPACE)) {
             delimiter = " ";
-        else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_COMMA))
+        } else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_COMMA)) {
             delimiter = ",";
-        else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_COLON))
+        } else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_COLON)) {
             delimiter = ":";
-        else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_SEMI_COLON))
+        } else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_SEMI_COLON)) {
             delimiter = ";";
-        else
+        } else {
             delimiter = "\t";
+        }
 
         String token=null;
-        while (line != null && index < size)
+        while ((line != null) && (index < size))
         {
             tokenizer1 = new StringTokenizer(line);
-            while (tokenizer1.hasMoreTokens() && index < size)
+            while (tokenizer1.hasMoreTokens() && (index < size))
             {
                 tokenizer2 = new StringTokenizer(tokenizer1.nextToken(), delimiter);
-                while (tokenizer2.hasMoreTokens() && index < size)
+                while (tokenizer2.hasMoreTokens() && (index < size))
                 {
                     token = tokenizer2.nextToken();
                     try { updateValueInMemory(token, r, c); }
@@ -1741,12 +1807,14 @@ implements TableView, ActionListener
         fchooser.setSelectedFile(choosedFile);
         int returnVal = fchooser.showSaveDialog(this);
 
-        if(returnVal != JFileChooser.APPROVE_OPTION)
+        if(returnVal != JFileChooser.APPROVE_OPTION) {
             return;
+        }
 
         choosedFile = fchooser.getSelectedFile();
-        if (choosedFile == null)
+        if (choosedFile == null) {
             return;
+        }
         String fname = choosedFile.getAbsolutePath();
 
         // check if the file is in use
@@ -1776,26 +1844,28 @@ implements TableView, ActionListener
                 "File exists. Do you want to replace it ?",
                 this.getTitle(),
                 JOptionPane.YES_NO_OPTION);
-            if (newFileFlag == JOptionPane.NO_OPTION)
+            if (newFileFlag == JOptionPane.NO_OPTION) {
                 return;
+            }
         }
 
         PrintWriter out = new PrintWriter(
             new BufferedWriter(new FileWriter(choosedFile)));
 
         String delimiter = ViewProperties.getDataDelimiter();
-        if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_TAB))
+        if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_TAB)) {
             delimiter = "\t";
-        else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_SPACE))
+        } else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_SPACE)) {
             delimiter = " ";
-        else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_COMMA))
+        } else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_COMMA)) {
             delimiter = ",";
-        else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_COLON))
+        } else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_COLON)) {
             delimiter = ":";
-        else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_SEMI_COLON))
+        } else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_SEMI_COLON)) {
             delimiter = ";";
-        else
+        } else {
             delimiter = "\t";
+        }
 
         int cols = table.getColumnCount();
         int rows = table.getRowCount();
@@ -1829,11 +1899,14 @@ implements TableView, ActionListener
      */
     public void updateValueInFile()
     {
-        if (isReadOnly) return;
+        if (isReadOnly) {
+            return;
+        }
 
         //if (!(dataset instanceof ScalarDS) || !isValueChanged)
-        if (!isValueChanged)
+        if (!isValueChanged) {
             return;
+        }
 
         try { dataset.write(); }
         catch (Exception ex)
@@ -1863,8 +1936,9 @@ implements TableView, ActionListener
      */
     private void mathConversion() throws Exception
     {
-        if (isReadOnly)
+        if (isReadOnly) {
             return;
+        }
 
         int cols = table.getSelectedColumnCount();
         //if (!(dataset instanceof ScalarDS))  return;
@@ -1939,10 +2013,11 @@ implements TableView, ActionListener
     private void updateValueInMemory(String cellValue, int row, int col)
     throws Exception
     {
-        if (dataset instanceof ScalarDS)
+        if (dataset instanceof ScalarDS) {
             updateScalarData(cellValue, row, col);
-        else if (dataset instanceof CompoundDS)
+        } else if (dataset instanceof CompoundDS) {
             updateCompoundData(cellValue, row, col);
+        }
     }
 
     /** update cell value in memory.
@@ -1955,15 +2030,17 @@ implements TableView, ActionListener
     throws Exception
     {
         if (!(dataset instanceof ScalarDS) ||
-            cellValue == null ||
-            (cellValue=cellValue.trim()) == null)
+            (cellValue == null) ||
+            ((cellValue=cellValue.trim()) == null)) {
             return;
+        }
 
         int i = 0;
-        if (isDataTransposed)
+        if (isDataTransposed) {
             i = col*table.getRowCount()+row;
-        else
+        } else {
             i = row*table.getColumnCount()+col;
+        }
 
         ScalarDS sds = (ScalarDS)dataset;
         boolean isUnsigned = sds.isUnsigned();
@@ -1980,11 +2057,15 @@ implements TableView, ActionListener
                 throw new NumberFormatException("Negative value for unsigned integer: "+lvalue);
             }
 
-            if (NT=='S') maxValue = 255;
-            else if (NT=='I') maxValue = 65535;
-            else if (NT=='J') maxValue = 4294967295L;
+            if (NT=='S') {
+                maxValue = 255;
+            } else if (NT=='I') {
+                maxValue = 65535;
+            } else if (NT=='J') {
+                maxValue = 4294967295L;
+            }
 
-            if (lvalue < 0 || lvalue > maxValue)
+            if ((lvalue < 0) || (lvalue > maxValue))
             {
                 throw new NumberFormatException("Data value is out of range: "+lvalue);
             }
@@ -2034,9 +2115,10 @@ implements TableView, ActionListener
     throws Exception
     {
         if (!(dataset instanceof CompoundDS) ||
-            cellValue == null ||
-            (cellValue=cellValue.trim()) == null)
+            (cellValue == null) ||
+            ((cellValue=cellValue.trim()) == null)) {
             return;
+        }
 
         CompoundDS compDS = (CompoundDS)dataset;
         List cdata = (List)compDS.getData();
@@ -2080,7 +2162,9 @@ implements TableView, ActionListener
             offset += n;
             n = strlen-bytes.length;
             // space padding
-            for (int i=0; i<n; i++) bData[offset+i] = ' ';
+            for (int i=0; i<n; i++) {
+                bData[offset+i] = ' ';
+            }
             isValueChanged = true;
             return;
         }
@@ -2089,7 +2173,9 @@ implements TableView, ActionListener
         char mNT = ' ';
         String cName = mdata.getClass().getName();
         int cIndex = cName.lastIndexOf("[");
-        if (cIndex >= 0 ) mNT = cName.charAt(cIndex+1);
+        if (cIndex >= 0 ) {
+            mNT = cName.charAt(cIndex+1);
+        }
 
         StringTokenizer st = new StringTokenizer(cellValue, ",");
         if (st.countTokens() < morder)
@@ -2200,12 +2286,14 @@ implements TableView, ActionListener
             int stride = (int)strideArray[selectedIndex[0]];
             
             rowBox.addItem("Time-scale");
-            for ( int i = 0; i < nrow;  i++ )
+            for ( int i = 0; i < nrow;  i++ ) {
                 rowBox.addItem(String.valueOf(start+i*stride));
+            }
 
             colBox.addItem("Time-scale");
-            for (int i=0; i<ncol; i++)
+            for (int i=0; i<ncol; i++) {
                 colBox.addItem (table.getColumnName(i));
+            }
 
             rowButton = new JRadioButton("Row");
             colButton = new JRadioButton("Column", true);
@@ -2327,15 +2415,20 @@ implements TableView, ActionListener
             {
                 int colEnd = columnAtPoint(e.getPoint());
 
-                if (colEnd < 0) colEnd = 0;
-                if (currentColumnIndex < 0 ) currentColumnIndex = 0;
+                if (colEnd < 0) {
+                    colEnd = 0;
+                }
+                if (currentColumnIndex < 0 ) {
+                    currentColumnIndex = 0;
+                }
 
                 parentTable.clearSelection();
 
-                if (colEnd > currentColumnIndex)
+                if (colEnd > currentColumnIndex) {
                     parentTable.setColumnSelectionInterval(currentColumnIndex, colEnd);
-                else
+                } else {
                     parentTable.setColumnSelectionInterval(colEnd, currentColumnIndex);
+                }
 
                 parentTable.setRowSelectionInterval(0, parentTable.getRowCount()-1);
             }
@@ -2349,7 +2442,9 @@ implements TableView, ActionListener
 
             if (mouseID == MouseEvent.MOUSE_CLICKED)
             {
-                if (currentColumnIndex < 0 )  return;
+                if (currentColumnIndex < 0 ) {
+                    return;
+                }
 
                 if(e.isControlDown())
                 {
@@ -2359,12 +2454,13 @@ implements TableView, ActionListener
                 else if (e.isShiftDown())
                 {
                     // select continguous columns
-                    if (lastColumnIndex < 0)
+                    if (lastColumnIndex < 0) {
                         parentTable.addColumnSelectionInterval(0, currentColumnIndex);
-                    else if (lastColumnIndex < currentColumnIndex)
-                       parentTable.addColumnSelectionInterval(lastColumnIndex, currentColumnIndex);
-                    else
-                       parentTable.addColumnSelectionInterval(currentColumnIndex, lastColumnIndex);
+                    } else if (lastColumnIndex < currentColumnIndex) {
+                        parentTable.addColumnSelectionInterval(lastColumnIndex, currentColumnIndex);
+                    } else {
+                        parentTable.addColumnSelectionInterval(currentColumnIndex, lastColumnIndex);
+                    }
                 }
                 else
                 {
@@ -2430,12 +2526,14 @@ implements TableView, ActionListener
         /** This is called when the selection changes in the row headers. */
         public void valueChanged( ListSelectionEvent e )
         {
-            if (parentTable == null)
+            if (parentTable == null) {
                 return;
+            }
 
             int rows[] = getSelectedRows();
-            if (rows== null || rows.length == 0)
+            if ((rows== null) || (rows.length == 0)) {
                 return;
+            }
 
             parentTable.clearSelection();
             parentTable.setRowSelectionInterval(rows[0], rows[rows.length-1]);
@@ -2448,15 +2546,20 @@ implements TableView, ActionListener
             {
                 int colEnd = rowAtPoint(e.getPoint());
 
-                if (colEnd < 0) colEnd = 0;
-                if (currentRowIndex < 0 ) currentRowIndex = 0;
+                if (colEnd < 0) {
+                    colEnd = 0;
+                }
+                if (currentRowIndex < 0 ) {
+                    currentRowIndex = 0;
+                }
 
                 parentTable.clearSelection();
 
-                if (colEnd > currentRowIndex)
+                if (colEnd > currentRowIndex) {
                     parentTable.setRowSelectionInterval(currentRowIndex, colEnd);
-                else
+                } else {
                     parentTable.setRowSelectionInterval(colEnd, currentRowIndex);
+                }
 
                 parentTable.setColumnSelectionInterval(0, parentTable.getColumnCount()-1);
             }
@@ -2468,7 +2571,9 @@ implements TableView, ActionListener
 
             if (mouseID == MouseEvent.MOUSE_CLICKED)
             {
-                if (currentRowIndex < 0 )  return;
+                if (currentRowIndex < 0 ) {
+                    return;
+                }
 
                 if(e.isControlDown())
                 {
@@ -2478,12 +2583,13 @@ implements TableView, ActionListener
                 else if (e.isShiftDown())
                 {
                     // select continguous columns
-                    if (lastRowIndex < 0)
+                    if (lastRowIndex < 0) {
                         parentTable.addRowSelectionInterval(0, currentRowIndex);
-                    else if (lastRowIndex < currentRowIndex)
-                       parentTable.addRowSelectionInterval(lastRowIndex, currentRowIndex);
-                    else
-                       parentTable.addRowSelectionInterval(currentRowIndex, lastRowIndex);
+                    } else if (lastRowIndex < currentRowIndex) {
+                        parentTable.addRowSelectionInterval(lastRowIndex, currentRowIndex);
+                    } else {
+                        parentTable.addRowSelectionInterval(currentRowIndex, lastRowIndex);
+                    }
                 }
                 else
                 {
@@ -2529,8 +2635,9 @@ implements TableView, ActionListener
         {
             setFont(table.getFont());
 
-            if ( value != null )
+            if ( value != null ) {
                 setText( value.toString() );
+            }
 
             return this;
         }

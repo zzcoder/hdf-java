@@ -109,8 +109,9 @@ implements ActionListener, ItemListener
             {
                 TableCellEditor cellEditor = rm.getEditor(row);
 
-                if (cellEditor==null || !(col==1))
-                   cellEditor =  super.getCellEditor(row,col);
+                if ((cellEditor==null) || !(col==1)) {
+                    cellEditor =  super.getCellEditor(row,col);
+                }
 
                 return cellEditor;
             }
@@ -127,7 +128,9 @@ implements ActionListener, ItemListener
 
         parentChoice = new JComboBox();
         String[] memberSizes = new String[100];
-        for (int i=0; i<100; i++) memberSizes[i] = String.valueOf(i+1);
+        for (int i=0; i<100; i++) {
+            memberSizes[i] = String.valueOf(i+1);
+        }
 
         nFieldBox = new JComboBox(memberSizes);
         nFieldBox.setEditable(true);
@@ -148,10 +151,11 @@ implements ActionListener, ItemListener
             {
                 Group g = (Group)obj;
                 groupList.add(obj);
-                if (g.isRoot())
+                if (g.isRoot()) {
                     parentChoice.addItem(HObject.separator);
-                else
+                } else {
                     parentChoice.addItem(g.getPath()+g.getName()+HObject.separator);
+                }
             }
             else if (obj instanceof CompoundDS)
             {
@@ -163,10 +167,11 @@ implements ActionListener, ItemListener
         templateChoice.setSelectedIndex(-1);
         templateChoice.addItemListener(this);
 
-        if (pGroup.isRoot())
+        if (pGroup.isRoot()) {
             parentChoice.setSelectedItem(HObject.separator);
-        else
+        } else {
             parentChoice.setSelectedItem(pGroup.getPath()+pGroup.getName()+HObject.separator);
+        }
 
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
@@ -210,7 +215,9 @@ implements ActionListener, ItemListener
 
 
         rankChoice = new JComboBox();
-        for (int i=1; i<33; i++) rankChoice.addItem(String.valueOf(i));
+        for (int i=1; i<33; i++) {
+            rankChoice.addItem(String.valueOf(i));
+        }
         rankChoice.setSelectedIndex(0);
 
         currentSizeField = new JTextField("1");
@@ -240,7 +247,9 @@ implements ActionListener, ItemListener
         checkCompression = new JCheckBox("gzip");
 
         compressionLevel = new JComboBox();
-        for (int i=0; i<10; i++) compressionLevel.addItem(String.valueOf(i));
+        for (int i=0; i<10; i++) {
+            compressionLevel.addItem(String.valueOf(i));
+        }
         compressionLevel.setSelectedIndex(6);
         compressionLevel.setEnabled(false);
 
@@ -340,8 +349,9 @@ implements ActionListener, ItemListener
                     JOptionPane.ERROR_MESSAGE);
             }
 
-            if (newObject != null)
+            if (newObject != null) {
                 dispose();
+            }
         }
         else if (cmd.equals("Cancel"))
         {
@@ -356,8 +366,9 @@ implements ActionListener, ItemListener
             try { n = Integer.valueOf((String)nFieldBox.getSelectedItem()).intValue(); }
             catch (Exception ex) {}
 
-            if (n == numberOfMembers)
+            if (n == numberOfMembers) {
                 return;
+            }
 
             tableModel.setRowCount(n);
             for (int i=numberOfMembers; i<n; i++)
@@ -391,21 +402,23 @@ implements ActionListener, ItemListener
             int idx = currentStr.lastIndexOf("x");
             String chunkStr = "1";
 
-            if (rank <=1)
+            if (rank <=1) {
                 chunkStr = currentStr;
-            else
+            } else
             {
-                for (int i=1; i<rank-1; i++)
+                for (int i=1; i<rank-1; i++) {
                     chunkStr += " x 1";
-                if (idx >0)
+                }
+                if (idx >0) {
                     chunkStr += " x "+currentStr.substring(idx+1);
+                }
             }
 
             chunkSizeField.setText(chunkStr);
         }
-        else if (source.equals(checkContinguous))
+        else if (source.equals(checkContinguous)) {
             chunkSizeField.setEnabled(false);
-        else if (source.equals(checkChunked))
+        } else if (source.equals(checkChunked))
         {
             chunkSizeField.setEnabled(true);
             String currentStr = currentSizeField.getText();
@@ -413,14 +426,16 @@ implements ActionListener, ItemListener
             String chunkStr = "1";
 
             int rank = rankChoice.getSelectedIndex()+1;
-            if (rank <=1)
+            if (rank <=1) {
                 chunkStr = currentStr;
-            else
+            } else
             {
-                for (int i=1; i<rank-1; i++)
+                for (int i=1; i<rank-1; i++) {
                     chunkStr += " x 1";
-                if (idx >0)
+                }
+                if (idx >0) {
                     chunkStr += " x "+currentStr.substring(idx+1);
+                }
             }
 
             chunkSizeField.setText(chunkStr);
@@ -438,14 +453,16 @@ implements ActionListener, ItemListener
                     String chunkStr = "1";
 
                     int rank = rankChoice.getSelectedIndex()+1;
-                    if (rank <=1)
+                    if (rank <=1) {
                         chunkStr = currentStr;
-                    else
+                    } else
                     {
-                        for (int i=1; i<rank-1; i++)
+                        for (int i=1; i<rank-1; i++) {
                             chunkStr += " x 1";
-                        if (idx >0)
+                        }
+                        if (idx >0) {
                             chunkStr += " x "+currentStr.substring(idx+1);
+                        }
                     }
 
                     chunkSizeField.setText(chunkStr);
@@ -464,8 +481,9 @@ implements ActionListener, ItemListener
         else if (source.equals(memberTypeChoice))
         {
             String item = (String)memberTypeChoice.getSelectedItem();
-            if (item == null || !item.equals("enum"))
+            if ((item == null) || !item.equals("enum")) {
                 return;
+            }
 
             int row = table.getSelectedRow();
             table.setValueAt("mb1=0,mb=1,...", row, 2);
@@ -473,12 +491,15 @@ implements ActionListener, ItemListener
         else if (source.equals(templateChoice))
         {
             Object obj = templateChoice.getSelectedItem();
-            if ( !(obj instanceof CompoundDS))
+            if ( !(obj instanceof CompoundDS)) {
                 return;
+            }
 
             CompoundDS dset = (CompoundDS)obj;
             int rank = dset.getRank();
-            if (rank < 1) dset.init();
+            if (rank < 1) {
+                dset.init();
+            }
 
             rank = dset.getRank();
             rankChoice.setSelectedIndex(rank-1);
@@ -488,8 +509,9 @@ implements ActionListener, ItemListener
             Datatype[] mTypes = dset.getMemberTypes();
 
             String sizeStr = String.valueOf(dims[0]);
-            for (int i=1; i<rank; i++)
+            for (int i=1; i<rank; i++) {
                 sizeStr += "x"+dims[i];
+            }
             currentSizeField.setText(sizeStr);
 
             try { dset.getMetadata(); } // get chunking and compression info
@@ -498,8 +520,9 @@ implements ActionListener, ItemListener
             if (chunks != null) {
                 checkChunked.setSelected(true);
                 sizeStr = String.valueOf(chunks[0]);
-                for (int i=1; i<rank; i++)
+                for (int i=1; i<rank; i++) {
                     sizeStr += "x"+chunks[i];
+                }
                 chunkSizeField.setText(sizeStr);
             }
 
@@ -533,31 +556,34 @@ implements ActionListener, ItemListener
                     int tsigned = mTypes[i].getDatatypeSign();
                     if (tsigned == Datatype.SIGN_NONE)
                     {
-                        if (tsize == 1)
+                        if (tsize == 1) {
                             typeIdx = 3;
-                        else if (tsize == 2)
+                        } else if (tsize == 2) {
                             typeIdx = 4;
-                        else if (tsize == 4)
+                        } else if (tsize == 4) {
                             typeIdx = 5;
+                        }
                     }
                     else
                     {
-                        if (tsize == 1)
+                        if (tsize == 1) {
                             typeIdx = 0;
-                        else if (tsize == 2)
+                        } else if (tsize == 2) {
                             typeIdx = 1;
-                        else if (tsize == 4)
+                        } else if (tsize == 4) {
                             typeIdx = 2;
-                        else
+                        } else {
                             typeIdx = 6;
+                        }
                     }
                 }
                 else if (tclass == Datatype.CLASS_FLOAT)
                 {
-                    if (tsize == 4)
+                    if (tsize == 4) {
                         typeIdx = 7;
-                    else
+                    } else {
                         typeIdx = 8;
+                    }
                 }
                 else if (tclass == Datatype.CLASS_STRING)
                 {
@@ -568,18 +594,20 @@ implements ActionListener, ItemListener
                     typeIdx = 10;
                 }
 
-                if (typeIdx < 0)
+                if (typeIdx < 0) {
                     continue;
+                }
 
                 memberTypeChoice.setSelectedIndex(typeIdx);
                 tableModel.setValueAt(memberTypeChoice.getSelectedItem(), i, 1);
 
-                if (tclass == Datatype.CLASS_STRING)
+                if (tclass == Datatype.CLASS_STRING) {
                     tableModel.setValueAt(String.valueOf(tsize), i, 2);
-                else if (tclass == Datatype.CLASS_ENUM)
+                } else if (tclass == Datatype.CLASS_ENUM) {
                     tableModel.setValueAt(mTypes[i].getEnumMembers(), i, 2);
-                else
+                } else {
                     tableModel.setValueAt(String.valueOf(mOrders[i]), i, 2);
+                }
 
             } // for (int i=0; i<numberOfMembers; i++)
         } // else if (source.equals(templateChoice))
@@ -594,24 +622,29 @@ implements ActionListener, ItemListener
         // stop editing the last selected cell
         int row = table.getSelectedRow();
         int col = table.getSelectedColumn();
-        if (row>=0 && col>-0)
+        if ((row>=0) && (col>-0))
         {
             TableCellEditor ed = table.getCellEditor(row, col);
-            if (ed != null)
+            if (ed != null) {
                 ed.stopCellEditing();
+            }
         }
 
         maxdims= chunks = null;
         String dname = nameField.getText();
-        if (dname == null || dname.length()<=0)
+        if ((dname == null) || (dname.length()<=0)) {
             throw new IllegalArgumentException("Dataset name is empty");
+        }
 
         Group pgroup = (Group)groupList.get(parentChoice.getSelectedIndex());
-        if (pgroup == null)
+        if (pgroup == null) {
             throw new IllegalArgumentException("Invalid parent group");
+        }
 
         int n = table.getRowCount();
-        if (n<=0) return null;
+        if (n<=0) {
+            return null;
+        }
 
         String[] mNames = new String[n];
         Datatype[] mDatatypes = new Datatype[n];
@@ -620,8 +653,9 @@ implements ActionListener, ItemListener
         for (int i=0; i<n; i++)
         {
             String name = (String)table.getValueAt(i, 0);
-            if (name == null || name.length() <=0)
+            if ((name == null) || (name.length() <=0)) {
                 throw new IllegalArgumentException("Member name is empty");
+            }
             mNames[i] = name;
 
             int order = 1;
@@ -677,7 +711,7 @@ implements ActionListener, ItemListener
             else if (DATATYPE_NAMES[10].equals(typeName)) // enum
             {
                 type = fileformat.createDatatype(Datatype.CLASS_ENUM, 4, Datatype.NATIVE, Datatype.NATIVE);
-                if (orderStr==null || orderStr.length()<1 || orderStr.endsWith("..."))
+                if ((orderStr==null) || (orderStr.length()<1) || orderStr.endsWith("..."))
                 {
                     toolkit.beep();
                     JOptionPane.showMessageDialog(this,
@@ -685,9 +719,9 @@ implements ActionListener, ItemListener
                             getTitle(),
                             JOptionPane.ERROR_MESSAGE);
                     return null;
-                }
-                else
+                } else {
                     type.setEnumMembers(orderStr);
+                }
             }
             else
             {
@@ -774,8 +808,9 @@ implements ActionListener, ItemListener
                     JOptionPane.ERROR_MESSAGE);
                 return null;
             }
-            else if ( l == 0)
+            else if ( l == 0) {
                 l = dims[i];
+            }
 
             maxdims[i] = l;
         }
@@ -841,8 +876,9 @@ implements ActionListener, ItemListener
                     chunkSizeField.getText()+"?",
                     getTitle(),
                     JOptionPane.YES_NO_OPTION);
-                if (status == JOptionPane.NO_OPTION)
+                if (status == JOptionPane.NO_OPTION) {
                     return null;
+                }
             }
 
             if (tchunksize == 1)
@@ -855,22 +891,25 @@ implements ActionListener, ItemListener
                     chunkSizeField.getText()+"?",
                     getTitle(),
                     JOptionPane.YES_NO_OPTION);
-                if (status == JOptionPane.NO_OPTION)
+                if (status == JOptionPane.NO_OPTION) {
                     return null;
+                }
             }
 
         } // if (checkChunked.isSelected())
 
         int gzip = 0;
-        if (checkCompression.isSelected())
+        if (checkCompression.isSelected()) {
             gzip = compressionLevel.getSelectedIndex();
+        }
 
-        if (checkChunked.isSelected())
+        if (checkChunked.isSelected()) {
             obj = fileformat.createCompoundDS(dname, pgroup, dims, maxdims, chunks,
                 gzip, mNames, mDatatypes, mOrders, null);
-        else
+        } else {
             obj = fileformat.createCompoundDS(dname, pgroup, dims, maxdims, null,
                 -1, mNames, mDatatypes, mOrders, null);
+        }
 
         return obj;
     }
@@ -896,8 +935,9 @@ implements ActionListener, ItemListener
         public RowEditorModel(int rows, TableCellEditor ed)
         {
             data = new Hashtable();
-            for (int i=0; i<rows; i++)
+            for (int i=0; i<rows; i++) {
                 data.put(new Integer(i), ed);
+            }
         }
 
         public void addEditorForRow(int row, TableCellEditor e )

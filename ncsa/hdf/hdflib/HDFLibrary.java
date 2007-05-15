@@ -790,8 +790,6 @@ public class HDFLibrary {
     public static boolean GRsetattr(int gr_id, String attr_name,
         int data_type, int count, Object theData) throws HDFException {
         byte[] data;
-        int rval;
-
         HDFArray theArray = new HDFArray(theData);
         data = theArray.byteify();
         return GRsetattr(gr_id, attr_name, data_type, count, data);
@@ -871,8 +869,6 @@ public class HDFLibrary {
         int[] edge, Object theData) throws HDFException
     {
         byte[] data;
-        int rval;
-
         HDFArray theArray = new HDFArray(theData);
         data = theArray.byteify();
         return GRwriteimage(grid, start, stride, edge, data);
@@ -919,8 +915,6 @@ public class HDFLibrary {
         int interlace, int num_entries, Object theData) throws HDFException
         {
         byte[] data;
-        int rval;
-
         HDFArray theArray = new HDFArray(theData);
         data = theArray.byteify();
         return GRwritelut(pal_id, ncomp, data_type, interlace, num_entries,
@@ -1081,29 +1075,30 @@ public class HDFLibrary {
         boolean is1D = false;
 
         Class dataClass = theData.getClass();
-         if (!dataClass.isArray())
-             throw (new HDFJavaException("SDreaddata: data is not an array"));
+         if (!dataClass.isArray()) {
+            throw (new HDFJavaException("SDreaddata: data is not an array"));
+        }
 
         String cname = dataClass.getName();
         is1D = (cname.lastIndexOf('[') ==cname.indexOf('['));
         char dname = cname.charAt(cname.lastIndexOf("[")+1);
 
-        if (is1D && dname == 'B') {
+        if (is1D && (dname == 'B')) {
             status = SDreaddata(sdsid, start, stride, count, (byte[])theData);
         }
-        else if (is1D && dname == 'S') {
+        else if (is1D && (dname == 'S')) {
             status = SDreaddata_short(sdsid, start, stride, count, (short[])theData);
         }
-        else if (is1D && dname == 'I') {
+        else if (is1D && (dname == 'I')) {
             status = SDreaddata_int(sdsid, start, stride, count, (int[])theData);
         }
-        else if (is1D && dname == 'J') {
+        else if (is1D && (dname == 'J')) {
             status = SDreaddata_long(sdsid, start, stride, count, (long[])theData);
         }
-        else if (is1D && dname == 'F') {
+        else if (is1D && (dname == 'F')) {
             status = SDreaddata_float(sdsid, start, stride, count, (float[])theData);
         }
-        else if (is1D && dname == 'D') {
+        else if (is1D && (dname == 'D')) {
             status = SDreaddata_double(sdsid, start, stride, count, (double[])theData);
         } else {
             byte[] data;
@@ -1363,7 +1358,9 @@ public class HDFLibrary {
         byte[] d1 = new byte[8];
         boolean rval;
         rval = SDgetfillvalue( sdsid, d1 );
-        if (rval == false) return(rval);
+        if (rval == false) {
+            return(rval);
+        }
         NT = SDInfo[1];
         if ((NT & HDFConstants.DFNT_LITEND) != 0) {
             NT -= HDFConstants.DFNT_LITEND;
@@ -1378,7 +1375,6 @@ public class HDFLibrary {
                  || (NT == HDFConstants.DFNT_UCHAR8 )
                         ) {
                         Byte f = new Byte(d1[0]);
-                        Short fmx;
                         if (f.shortValue() < 0) {
                                 theFillValue[0] = new Short((short)(f.intValue() + 256));
                         } else {
@@ -1394,7 +1390,6 @@ public class HDFLibrary {
             ) {
             short[] fmx = HDFNativeData.byteToShort(0,1,d1);
             Short f = new Short(fmx[0]);
-            Integer i;
             if (f.intValue() < 0) {
                 theFillValue[0] = new Integer(f.intValue() + 65536);
             } else {
@@ -1408,7 +1403,6 @@ public class HDFLibrary {
             ) {
             int[] fmx = HDFNativeData.byteToInt(0,1,d1);
             Integer i = new Integer(fmx[0]);
-            Float f;
             if (i.floatValue() < 0) {
                 theFillValue[0] = new Float((float)(i.floatValue() + 4294967296.0));
             } else {
@@ -1474,7 +1468,9 @@ public class HDFLibrary {
         byte[] min = new byte[8];
         boolean rval;
         rval = SDgetrange( sdsid, max, min);
-        if (rval == false) return(rval);
+        if (rval == false) {
+            return(rval);
+        }
         NT = SDInfo[1];
         if ((NT & HDFConstants.DFNT_LITEND) != 0) {
             NT -= HDFConstants.DFNT_LITEND;
@@ -1587,8 +1583,6 @@ public class HDFLibrary {
     public static boolean SDsetattr(int s_id, String attr_name, int num_type, int count,
     Object theValues) throws HDFException {
         byte[] data;
-        boolean rval;
-
         HDFArray theArray = new HDFArray(theValues);
         data = theArray.byteify();
             return SDsetattr(s_id, attr_name, num_type, count, data);
@@ -1638,8 +1632,6 @@ public class HDFLibrary {
    public static boolean SDsetdimscale(int dim_id, int count, int number_type, Object theData) throws HDFException
     {
         byte[] data;
-        boolean rval;
-
         HDFArray theArray = new HDFArray(theData);
         data = theArray.byteify();
             return  SDsetdimscale(dim_id, count, number_type, data) ;
@@ -1680,8 +1672,6 @@ public class HDFLibrary {
      */
     public static boolean SDsetfillvalue(int sds_id, Object the_fill_val) throws HDFException {
         byte[] data;
-        boolean rval;
-
         HDFArray theArray = new HDFArray(the_fill_val);
         data = theArray.byteify();
         return  SDsetfillvalue(sds_id, data) ;
@@ -1719,8 +1709,6 @@ public class HDFLibrary {
     public static boolean  SDsetrange( int sdsid, Object max, Object min) throws HDFException {
         byte[] d1;
         byte[] d2;
-        boolean rval;
-
         HDFArray theArray1 = new HDFArray(max);
         d1 = theArray1.byteify();
         HDFArray theArray2 = new HDFArray(min);
@@ -2579,8 +2567,6 @@ public class HDFLibrary {
    public static boolean Vsetattr(int id, String attr_name,
         int data_type, int count, Object theData) throws HDFException {
         byte[] data;
-        int rval;
-
         HDFArray theArray = new HDFArray(theData);
         data = theArray.byteify();
         return Vsetattr(id, attr_name, data_type, count, data);
@@ -2733,8 +2719,6 @@ public class HDFLibrary {
     public static boolean VSsetattr(int id, int index, String attr_name,
         int data_type, int count, Object theData) throws HDFException {
         byte[] data;
-        int rval;
-
         HDFArray theArray = new HDFArray(theData);
         data = theArray.byteify();
         return VSsetattr(id, index, attr_name, data_type, count, data);
@@ -2850,8 +2834,6 @@ public class HDFLibrary {
      public static boolean DF24addimage(String filename, Object theImage, int width,
         int height) throws HDFException {
                  byte[] data;
-                 boolean rval;
-
                  HDFArray theArray = new HDFArray(theImage);
                  data = theArray.byteify();
                  return DF24addimage(filename, data, width, height);
@@ -2894,8 +2876,6 @@ public class HDFLibrary {
      public static boolean DF24putimage(String filename, Object theImage, int width,
          int height) throws HDFException {
                  byte[] data;
-                 boolean rval;
-
                  HDFArray theArray = new HDFArray(theImage);
                  data = theArray.byteify();
                  return DF24putimage(filename, data, width, height);
@@ -3031,8 +3011,6 @@ public class HDFLibrary {
      public static boolean DFR8addimage(String filename, Object theImage, int width, int height,
         short compress) throws HDFException {
                  byte[] data;
-                 boolean rval;
-
                  HDFArray theArray = new HDFArray(theImage);
                  data = theArray.byteify();
                  return DFR8addimage(filename, data, width, height, compress);
@@ -3076,8 +3054,6 @@ public class HDFLibrary {
      public static boolean DFR8putimage(String filename, Object theImage, int width, int height,
         short compress) throws HDFException {
                  byte[] data;
-                 boolean rval;
-
                  HDFArray theArray = new HDFArray(theImage);
                  data = theArray.byteify();
                  return DFR8putimage(filename, data, width, height, compress);

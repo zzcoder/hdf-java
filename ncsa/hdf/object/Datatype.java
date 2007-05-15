@@ -392,10 +392,11 @@ public abstract class Datatype extends HObject
         switch (datatypeClass)
         {
             case CLASS_INTEGER:
-                if (datatypeSign == SIGN_NONE)
+                if (datatypeSign == SIGN_NONE) {
                     description = String.valueOf(datatypeSize*8) + "-bit unsigned integer";
-                else
+                } else {
                     description = String.valueOf(datatypeSize*8) + "-bit integer";
+                }
                 break;
             case CLASS_FLOAT:
                 description = String.valueOf(datatypeSize*8) + "-bit floating-point";

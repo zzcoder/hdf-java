@@ -238,7 +238,7 @@ implements ImageView, ActionListener
         generalContrastSlider = null;
 
         HObject hobject = (HObject)viewer.getTreeView().getCurrentObject();
-        if (hobject == null || !(hobject instanceof ScalarDS)) {
+        if ((hobject == null) || !(hobject instanceof ScalarDS)) {
             viewer.showStatus("Display data in image failed for - "+hobject);
             return;
         }
@@ -249,8 +249,9 @@ implements ImageView, ActionListener
         {
             dataRange = new double[2];
             dataRange[0] = dataRange[1] = 0;
-            if (dataset.getDatatype().getDatatypeSize() == 1 )
+            if (dataset.getDatatype().getDatatypeSize() == 1 ) {
                 dataRange[1] = 255; // byte image data rang = [0, 255]           
+            }
         }
 
         JPanel contentPane = (JPanel)getContentPane();
@@ -261,8 +262,9 @@ implements ImageView, ActionListener
         valueField.setEditable(false);
         valueField.setVisible(false);
 
-        if (image == null)
+        if (image == null) {
             getImage();
+        }
 
         if (image == null) {
             viewer.showStatus("Loading image failed - "+dataset.getName());
@@ -384,8 +386,9 @@ implements ImageView, ActionListener
         try {
             String cname = data.getClass().getName();
             char dname = cname.charAt(cname.lastIndexOf("[")+1);
-            if (dname == 'B')
+            if (dname == 'B') {
                 item.setEnabled(false);
+            }
         } catch (Exception ex) {}
 
        menu.addSeparator();
@@ -604,20 +607,23 @@ implements ImageView, ActionListener
     {
         int rank = dataset.getRank();
 
-        if (rank < 3)
+        if (rank < 3) {
             return;
+        }
 
         int[] selectedIndex = dataset.getSelectedIndex();
         long[] selectedDims = dataset.getSelectedDims();
 
-        if (selectedDims[selectedIndex[2]] >1 )
+        if (selectedDims[selectedIndex[2]] >1 ) {
             return; // it is a true color image with three color components
+        }
 
         long[] start = dataset.getStartDims();
         long[] dims = dataset.getDims();
         long idx = start[selectedIndex[2]];
-        if (idx == 0)
+        if (idx == 0) {
             return; // current page is the first page
+        }
 
         gotoPage(start[selectedIndex[2]]-1);
     }
@@ -627,20 +633,23 @@ implements ImageView, ActionListener
     {
         int rank = dataset.getRank();
 
-        if (rank < 3)
+        if (rank < 3) {
             return;
+        }
 
         int[] selectedIndex = dataset.getSelectedIndex();
         long[] selectedDims = dataset.getSelectedDims();
 
-        if (selectedDims[selectedIndex[2]] >1 )
+        if (selectedDims[selectedIndex[2]] >1 ) {
             return; // it is a true color image with three color components
+        }
 
         long[] start = dataset.getStartDims();
         long[] dims = dataset.getDims();
         long idx = start[selectedIndex[2]];
-        if (idx == dims[selectedIndex[2]]-1)
+        if (idx == dims[selectedIndex[2]]-1) {
             return; // current page is the last page
+        }
 
         gotoPage(start[selectedIndex[2]]+1);
     }
@@ -650,20 +659,23 @@ implements ImageView, ActionListener
     {
         int rank = dataset.getRank();
 
-        if (rank < 3)
+        if (rank < 3) {
             return;
+        }
 
         int[] selectedIndex = dataset.getSelectedIndex();
         long[] selectedDims = dataset.getSelectedDims();
 
-        if (selectedDims[selectedIndex[2]] >1 )
+        if (selectedDims[selectedIndex[2]] >1 ) {
             return; // it is a true color image with three color components
+        }
 
         long[] start = dataset.getStartDims();
         long[] dims = dataset.getDims();
         long idx = start[selectedIndex[2]];
-        if (idx == 0)
+        if (idx == 0) {
             return; // current page is the first page
+        }
 
         gotoPage(0);
     }
@@ -673,31 +685,37 @@ implements ImageView, ActionListener
     {
         int rank = dataset.getRank();
 
-        if (rank < 3)
+        if (rank < 3) {
             return;
+        }
 
         int[] selectedIndex = dataset.getSelectedIndex();
         long[] selectedDims = dataset.getSelectedDims();
 
-        if (selectedDims[selectedIndex[2]] >1 )
+        if (selectedDims[selectedIndex[2]] >1 ) {
             return; // it is a true color image with three color components
+        }
 
         long[] start = dataset.getStartDims();
         long[] dims = dataset.getDims();
         long idx = start[selectedIndex[2]];
-        if (idx == dims[selectedIndex[2]]-1)
+        if (idx == dims[selectedIndex[2]]-1) {
             return; // current page is the last page
+        }
 
         gotoPage(dims[selectedIndex[2]]-1);
     }
 
     public Image getImage()
     {
-        if (image != null)
+        if (image != null) {
             return image;
+        }
 
         int rank = dataset.getRank();
-        if (rank <=0) dataset.init();
+        if (rank <=0) {
+            dataset.init();
+        }
         isTrueColor = dataset.isTrueColor();
         is3D = (dataset.getRank() > 2) && !((ScalarDS)dataset).isTrueColor();
 
@@ -759,12 +777,14 @@ implements ImageView, ActionListener
                         minMaxBias = new double[2];
                         Tools.computerAutoContrastSliderRange( gainBias, minMaxGain, minMaxBias);
 
-                        if (autoGainData == null) 
+                        if (autoGainData == null) {
                             autoGainData = new int[Array.getLength(data)];
+                        }
                         
                         if (Tools.applyAutoContrast(data, autoGainData, gainBias, isUnsigned) >=0) {
-                            if (imageByteData == null || imageByteData.length != Array.getLength(data))
+                            if ((imageByteData == null) || (imageByteData.length != Array.getLength(data))) {
                                 imageByteData = new byte[Array.getLength(data)];
+                            }
                             isAutoContrastUS = (Tools.convertImageBuffer(autoGainData, imageByteData, true)>=0);
                         }
                     }
@@ -772,10 +792,11 @@ implements ImageView, ActionListener
 
                 if (!isAutoContrastUS) {
                     // converts raw data to image data
-                    if (isTransposed)
+                    if (isTransposed) {
                         imageByteData = Tools.getBytes(data, dataRange, w, h, true, dataset.getFillValue(), imageByteData);
-                    else
+                    } else {
                         imageByteData = Tools.getBytes(data, dataRange, dataset.getFillValue(), imageByteData);
+                    }
                 }
                
                 image = createIndexedImage(imageByteData, imagePalette, w, h);
@@ -804,30 +825,33 @@ implements ImageView, ActionListener
     // implementing ImageObserver
     private void zoomIn()
     {
-        if (zoomFactor >= 1)
+        if (zoomFactor >= 1) {
             zoomTo(zoomFactor+1.0f);
-        else
+        } else {
             zoomTo(zoomFactor +0.125f);
+        }
     }
 
     // implementing ImageObserver
     private void zoomOut()
     {
-        if (zoomFactor > 1)
+        if (zoomFactor > 1) {
             zoomTo(zoomFactor-1.0f);
-        else
+        } else {
             zoomTo(zoomFactor-0.125f);
+        }
     }
 
     // implementing ImageObserver
     private void zoomTo(float zf)
     {
-        if (zf > 8)
+        if (zf > 8) {
             zoomFactor = 8;
-        else if (zf < 0.125)
+        } else if (zf < 0.125) {
             zoomFactor = 0.125f;
-        else
+        } else {
             zoomFactor = zf;
+        }
 
         Dimension imageSize = new Dimension(
                 (int)(imageComponent.originalSize.width*zoomFactor),
@@ -839,17 +863,19 @@ implements ImageView, ActionListener
         this.validate();
         //updateUI();
 
-         if (zoomFactor>0.99 && zoomFactor<1.01)
+         if ((zoomFactor>0.99) && (zoomFactor<1.01)) {
             setTitle(frameTitle);
-        else
+        } else {
             setTitle(frameTitle+ " - "+100*zoomFactor+"%");
+        }
     }
 
     // implementing ImageObserver
     private void showColorTable()
     {
-        if (imagePalette == null)
+        if (imagePalette == null) {
             return;
+        }
 
         String viewName = (String)HDFView.getListOfPaletteView().get(0);
 
@@ -883,9 +909,9 @@ implements ImageView, ActionListener
         }
 
 
-        if( rec == null ||
-            rec.getWidth()<=0 ||
-            rec.getHeight()<= 0)
+        if( (rec == null) ||
+            (rec.getWidth()<=0) ||
+            (rec.getHeight()<= 0))
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
@@ -896,8 +922,9 @@ implements ImageView, ActionListener
         }
 
         double data[][] = new double[1][256];
-        for (int i=0; i<256; i++)
+        for (int i=0; i<256; i++) {
             data[0][i] = 0.0;
+        }
 
         int w = dataset.getWidth();
         int x0 = (int)(rec.x/zoomFactor);
@@ -910,7 +937,9 @@ implements ImageView, ActionListener
             for (int j=x0; j<x; j++)
             {
                 arrayIndex = (int)imageByteData[i*w+j];
-                if (arrayIndex < 0) arrayIndex += 256;
+                if (arrayIndex < 0) {
+                    arrayIndex += 256;
+                }
                 data[0][arrayIndex] += 1.0;
             }
         }
@@ -943,16 +972,18 @@ implements ImageView, ActionListener
     {
         ImageFilter filter = new FlipFilter(direction);
 
-        if (filter == null)
+        if (filter == null) {
             return;
+        }
 
         if (changeImageFilter(filter))
         {
             // taggle flip flag
-            if (direction == FLIP_HORIZONTAL)
+            if (direction == FLIP_HORIZONTAL) {
                 isHorizontalFlipped = !isHorizontalFlipped;
-            else
+            } else {
                 isVerticalFlipped = !isVerticalFlipped;
+            }
         }
     }
 
@@ -969,8 +1000,9 @@ implements ImageView, ActionListener
     {
         ImageFilter filter = new ContourFilter(level);
 
-        if (filter == null)
+        if (filter == null) {
             return;
+        }
 
         changeImageFilter(filter);
     }
@@ -980,8 +1012,9 @@ implements ImageView, ActionListener
     {
         ImageFilter filter = new BrightnessFilter(blevel, clevel);
 
-        if (filter == null)
+        if (filter == null) {
             return;
+        }
 
         changeImageFilter(filter);
     }
@@ -989,8 +1022,9 @@ implements ImageView, ActionListener
     /** Apply contrast/brightness to unsigned short integer */
     private void applyAutoContrast() {
         if (Tools.applyAutoContrast((int[])data, autoGainData, gainBias, true) >=0) {
-            if (imageByteData == null || imageByteData.length != Array.getLength(data))
+            if ((imageByteData == null) || (imageByteData.length != Array.getLength(data))) {
                 imageByteData = new byte[Array.getLength(data)];
+            }
             if (Tools.convertImageBuffer(autoGainData, imageByteData, true)>=0) {
                 int w = dataset.getWidth();
                 int h = dataset.getHeight();
@@ -1018,8 +1052,9 @@ implements ImageView, ActionListener
      */
     private boolean hasAlpha(Image image)
     {
-        if (image == null)
+        if (image == null) {
             return false;
+        }
 
         // If buffered image, the color model is readily available
         if (image instanceof BufferedImage)
@@ -1044,11 +1079,13 @@ implements ImageView, ActionListener
      */
     private BufferedImage toBufferedImage(Image image)
     {
-        if (image == null)
+        if (image == null) {
             return null;
+        }
 
-        if (image instanceof BufferedImage)
+        if (image instanceof BufferedImage) {
             return (BufferedImage)image;
+        }
 
         // !!!!!!!!!!!!!!!!!! NOTICE !!!!!!!!!!!!!!!!!!!!!
         // the following way of creating a buffered image is using
@@ -1127,16 +1164,18 @@ implements ImageView, ActionListener
      */
     private void saveImageAs(String type) throws Exception
     {
-        if (image == null)
+        if (image == null) {
             return;
+        }
 
         final JFileChooser fchooser = new JFileChooser(dataset.getFile());
-        if (type.equals(FileFormat.FILE_TYPE_JPEG))
+        if (type.equals(FileFormat.FILE_TYPE_JPEG)) {
             fchooser.setFileFilter(DefaultFileFilter.getFileFilterJPEG());
-        else if (type.equals(FileFormat.FILE_TYPE_TIFF))
+        } else if (type.equals(FileFormat.FILE_TYPE_TIFF)) {
             fchooser.setFileFilter(DefaultFileFilter.getFileFilterTIFF());
-        else if (type.equals(FileFormat.FILE_TYPE_PNG))
+        } else if (type.equals(FileFormat.FILE_TYPE_PNG)) {
             fchooser.setFileFilter(DefaultFileFilter.getFileFilterPNG());
+        }
 
         fchooser.changeToParentDirectory();
         fchooser.setDialogTitle("Save Current Image To "+type+" File --- "+dataset.getName());
@@ -1145,11 +1184,14 @@ implements ImageView, ActionListener
         fchooser.setSelectedFile(choosedFile);
 
         int returnVal = fchooser.showSaveDialog(this);
-        if(returnVal != JFileChooser.APPROVE_OPTION)
+        if(returnVal != JFileChooser.APPROVE_OPTION) {
             return;
+        }
 
         choosedFile = fchooser.getSelectedFile();
-        if (choosedFile == null) return;
+        if (choosedFile == null) {
+            return;
+        }
         String fname = choosedFile.getAbsolutePath();
 
         if (choosedFile.exists())
@@ -1158,8 +1200,9 @@ implements ImageView, ActionListener
                 "File exists. Do you want to replace it ?",
                 this.getTitle(),
                 JOptionPane.YES_NO_OPTION);
-            if (newFileFlag == JOptionPane.NO_OPTION)
+            if (newFileFlag == JOptionPane.NO_OPTION) {
                 return;
+            }
         }
 
         BufferedImage bi = null;
@@ -1203,12 +1246,13 @@ implements ImageView, ActionListener
         else if (cmd.startsWith("Save image as "))
         {
             String filetype = null;
-            if (cmd.equals("Save image as jpeg"))
+            if (cmd.equals("Save image as jpeg")) {
                 filetype = FileFormat.FILE_TYPE_JPEG;
-            else if (cmd.equals("Save image as tiff"))
+            } else if (cmd.equals("Save image as tiff")) {
                 filetype = FileFormat.FILE_TYPE_TIFF;
-            else if (cmd.equals("Save image as png"))
+            } else if (cmd.equals("Save image as png")) {
                 filetype = FileFormat.FILE_TYPE_PNG;
+            }
 
             try { saveImageAs(filetype); }
             catch (Exception ex) {
@@ -1218,8 +1262,8 @@ implements ImageView, ActionListener
         }
         else if (cmd.equals("Write selection to image"))
         {
-            if (getSelectedArea().width <=0 ||
-                getSelectedArea().height <= 0)
+            if ((getSelectedArea().width <=0) ||
+                (getSelectedArea().height <= 0))
             {
                 JOptionPane.showMessageDialog(
                         this,
@@ -1234,8 +1278,9 @@ implements ImageView, ActionListener
             Group pGroup = (Group)((DefaultMutableTreeNode)node.getParent()).getUserObject();
             TreeNode root = dataset.getFileFormat().getRootNode();
 
-            if (root == null)
+            if (root == null) {
                 return;
+            }
 
             Vector list = new Vector(dataset.getFileFormat().getNumberOfMembers()+5);
             DefaultMutableTreeNode theNode = null;
@@ -1277,10 +1322,11 @@ implements ImageView, ActionListener
             DataRangeDialog drd = new DataRangeDialog ((JFrame)viewer, dataRange);
             double[] drange = drd.getRange();
 
-            if (drange == null || 
+            if ((drange == null) || 
                 (drange[0] == drange[1]) ||
-                (drange[0] == dataRange[0] && drange[1] == dataRange[1]))
+                ((drange[0] == dataRange[0]) && (drange[1] == dataRange[1]))) {
                 return;
+            }
 
             changeDataRange(drange);
         }
@@ -1294,12 +1340,16 @@ implements ImageView, ActionListener
             if (cmd.equals("Rotate clockwise")) {
                 rotate(ROTATE_CW_90);
                 rotateCount++;
-                if (rotateCount == 4) rotateCount = 0;
+                if (rotateCount == 4) {
+                    rotateCount = 0;
+                }
             }
             else {
                 rotate(ROTATE_CCW_90);
                 rotateCount--;
-                if (rotateCount == -4) rotateCount = 0;
+                if (rotateCount == -4) {
+                    rotateCount = 0;
+                }
             }
 
             int n = rotateRelatedItems.size();
@@ -1317,7 +1367,9 @@ implements ImageView, ActionListener
             String strPage = frameField.getText();
             strPage = strPage.toLowerCase();
             int idx = strPage.indexOf('o');
-            if (idx > 0) strPage = strPage.substring(0, idx);
+            if (idx > 0) {
+                strPage = strPage.substring(0, idx);
+            }
 
             int page = 0;
             try { page = Integer.parseInt(strPage.trim()); }
@@ -1328,8 +1380,9 @@ implements ImageView, ActionListener
         else if (cmd.startsWith("Show animation"))
         {
         	setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        	if (animation == null)
-        		animation = new Animation((JFrame)viewer, dataset);
+        	if (animation == null) {
+                animation = new Animation((JFrame)viewer, dataset);
+            }
         	animation.setVisible(true);
         	setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             
@@ -1347,8 +1400,9 @@ implements ImageView, ActionListener
         else if (cmd.startsWith("Brightness"))
         {
             if (isAutoContrastUS) {
-                if (autoContrastSlider == null)
+                if (autoContrastSlider == null) {
                     autoContrastSlider = new AutoContrastSlider((JFrame)viewer, dataRange);
+                }
                 
                 autoContrastSlider.setVisible(true);
                 
@@ -1358,8 +1412,9 @@ implements ImageView, ActionListener
                 return;
             }
             
-            if (generalContrastSlider == null)
+            if (generalContrastSlider == null) {
                 generalContrastSlider = new GeneralContrastSlider((JFrame)viewer, image.getSource());
+            }
             generalContrastSlider.setVisible(true);
             
             //if (generalContrastSlider.isValueChanged) {
@@ -1420,7 +1475,9 @@ implements ImageView, ActionListener
         // reload the data when it is displayed next time
         // because the display type (table or image) may be
         // different.
-        if (!dataset.isImage()) dataset.clearData();
+        if (!dataset.isImage()) {
+            dataset.clearData();
+        }
 
         data = null;
         image = null;
@@ -1456,26 +1513,30 @@ implements ImageView, ActionListener
         int cols = imageComponent.originalSelectedArea.width;
         int rows = imageComponent.originalSelectedArea.height;
 
-        if (cols <=0 || rows <= 0)
+        if ((cols <=0) || (rows <= 0)) {
             return null; // no data is selected
+        }
 
         int size = cols*rows;
-        if (isTrueColor) size *= 3;
+        if (isTrueColor) {
+            size *= 3;
+        }
 
-        if (NT == 'B')
+        if (NT == 'B') {
             selectedData = new byte[size];
-        else if (NT == 'S')
+        } else if (NT == 'S') {
             selectedData = new short[size];
-        else if (NT == 'I')
+        } else if (NT == 'I') {
             selectedData = new int[size];
-        else if (NT == 'J')
+        } else if (NT == 'J') {
             selectedData = new long[size];
-        else if (NT == 'F')
+        } else if (NT == 'F') {
             selectedData = new float[size];
-        else if (NT == 'D')
+        } else if (NT == 'D') {
             selectedData = new double[size];
-        else
+        } else {
             return null;
+        }
 
         int r0 = imageComponent.originalSelectedArea.y;
         int c0 = imageComponent.originalSelectedArea.x;
@@ -1483,11 +1544,13 @@ implements ImageView, ActionListener
         int h = imageComponent.originalSize.height;
 
         // transfer location to the original coordinator
-        if (isHorizontalFlipped)
+        if (isHorizontalFlipped) {
             c0 = w - 1 - c0 - cols;
+        }
 
-        if (isVerticalFlipped)
+        if (isVerticalFlipped) {
             r0 = h - 1 - r0 - rows;
+        }
 
         int idx_src=0, idx_dst=0;
         if (isTrueColor)
@@ -1556,13 +1619,15 @@ implements ImageView, ActionListener
 
     private void gotoPage(long idx)
     {
-        if (dataset.getRank() < 3) return;
+        if (dataset.getRank() < 3) {
+            return;
+        }
 
         long[] start = dataset.getStartDims();
         int[] selectedIndex = dataset.getSelectedIndex();
         long[] dims = dataset.getDims();
 
-        if (idx <0 || idx >= dims[selectedIndex[2]]) {
+        if ((idx <0) || (idx >= dims[selectedIndex[2]])) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
                 "Frame number must be between 0 and "+dims[selectedIndex[2]],
@@ -1605,9 +1670,9 @@ implements ImageView, ActionListener
 
         if (memoryImageSource == null) {
         	memoryImageSource = new MemoryImageSource(w, h, colorModel, imageData, 0, w);
+        } else {
+            memoryImageSource.newPixels(imageData, colorModel, 0, w);
         }
-        else 
-        	memoryImageSource.newPixels(imageData, colorModel, 0, w);
         
         theImage = Toolkit.getDefaultToolkit().createImage (memoryImageSource);
 
@@ -1694,9 +1759,9 @@ implements ImageView, ActionListener
         
         if (memoryImageSource == null) {
         	memoryImageSource = new MemoryImageSource(w, h, dcm, packedImageData, 0, w);
+        } else {
+            memoryImageSource.newPixels(packedImageData, dcm, 0, w);
         }
-        else 
-        	memoryImageSource.newPixels(packedImageData, dcm, 0, w);
         	
         theImage = Toolkit.getDefaultToolkit().createImage (memoryImageSource);
 
@@ -1765,7 +1830,7 @@ implements ImageView, ActionListener
             dRange = range;
             double unsigned_celling=0;
 
-            if (palette != null && range !=null)
+            if ((palette != null) && (range !=null))
             {
                 double ratio = (dRange[1] - dRange[0])/255;
 
@@ -1784,7 +1849,7 @@ implements ImageView, ActionListener
 
         private void updatePalette (byte[][] palette)
         {
-            if (palette != null && dRange !=null)
+            if ((palette != null) && (dRange !=null))
             {
                 colors = new Color[256];
 
@@ -1792,11 +1857,17 @@ implements ImageView, ActionListener
                 for (int i=0; i<256; i++)
                 {
                     r = (int)palette[0][i];
-                    if (r < 0) r += 256;
+                    if (r < 0) {
+                        r += 256;
+                    }
                     g = (int)palette[1][i];
-                    if (g < 0) g += 256;
+                    if (g < 0) {
+                        g += 256;
+                    }
                     b = (int)palette[2][i];
-                    if (b < 0) b += 256;
+                    if (b < 0) {
+                        b += 256;
+                    }
 
                     colors[i] = new Color(r, g, b);
                 }
@@ -1807,8 +1878,9 @@ implements ImageView, ActionListener
 
         private void updateRange(double[] newRange)
         {
-            if (newRange == null)
+            if (newRange == null) {
                 return;
+            }
 
             dRange = newRange;
             double ratio = (dRange[1] - dRange[0])/255;
@@ -1822,8 +1894,9 @@ implements ImageView, ActionListener
 
         public void paint(Graphics g)
         {
-            if (colors == null && pixelData == null)
+            if ((colors == null) && (pixelData == null)) {
                 return;
+            }
 
             for (int i=0; i<256; i++)
             {
@@ -1875,7 +1948,7 @@ implements ImageView, ActionListener
         public void paint(Graphics g)
         {
             g.drawImage(image, 0, 0, imageSize.width, imageSize.height, this);
-            if (selectedArea.width>0 && selectedArea.height >0)
+            if ((selectedArea.width>0) && (selectedArea.height >0))
             {
                 g.setColor(Color.red);
                 g.drawRect(selectedArea.x, selectedArea.y, selectedArea.width, selectedArea.height);
@@ -1890,10 +1963,11 @@ implements ImageView, ActionListener
             hbar = imageScroller.getHorizontalScrollBar();
             vbar = imageScroller.getVerticalScrollBar();
             
-            if ( (e.getModifiersEx() & InputEvent.SHIFT_DOWN_MASK) == InputEvent.SHIFT_DOWN_MASK ) 
-            	setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-            else
-            	setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));        	
+            if ( (e.getModifiersEx() & InputEvent.SHIFT_DOWN_MASK) == InputEvent.SHIFT_DOWN_MASK ) {
+                setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+            } else {
+                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            }        	
         }
 
         public void mouseClicked(MouseEvent e)
@@ -1974,8 +2048,9 @@ implements ImageView, ActionListener
             int n = us*jb.getUnitIncrement();
             int y = jb.getValue();
 
-            if ((y<=0 && wr<0) || (y+jb.getVisibleAmount()*wr >= zoomFactor*originalSize.height))
+            if (((y<=0) && (wr<0)) || (y+jb.getVisibleAmount()*wr >= zoomFactor*originalSize.height)) {
                 return;
+            }
 
             yMousePosition += n;
             jb.setValue(jb.getValue()+n);
@@ -1985,28 +2060,34 @@ implements ImageView, ActionListener
 
         private void showPixelValue(int x, int y)
         {
-            if (!valueField.isVisible())
+            if (!valueField.isVisible()) {
                 return;
+            }
 
-            if (data == null)
+            if (data == null) {
                 return;
+            }
 
             x = (int) (x/zoomFactor);
             int w = originalSize.width;
-            if (x < 0 || x >= w)
+            if ((x < 0) || (x >= w)) {
                 return; // out of image bound
+            }
 
             y = (int) (y/zoomFactor);
             int h = originalSize.height;
-            if (y < 0 || y >= h)
+            if ((y < 0) || (y >= h)) {
                 return; // out of image bound
+            }
 
             // transfer location to the original coordinator
-            if (isHorizontalFlipped)
+            if (isHorizontalFlipped) {
                 x = w - 1 - x;
+            }
 
-            if (isVerticalFlipped)
+            if (isVerticalFlipped) {
                 y = h - 1 - y;
+            }
 
             strBuff.setLength(0); // reset the string buffer
             strBuff.append("x=");
@@ -2060,10 +2141,11 @@ implements ImageView, ActionListener
             }
             else
             {
-                if (isUnsigned)
+                if (isUnsigned) {
                     strBuff.append(convertUnsignedPoint(y*w+x));
-                else
+                } else {
                     strBuff.append(Array.get(data, y*w+x));
+                }
             }
 
             valueField.setText(strBuff.toString());
@@ -2083,26 +2165,29 @@ implements ImageView, ActionListener
             if (NT == 'B')
             {
                 byte b = Array.getByte(data, idx);
-                if (b<0)
+                if (b<0) {
                     l = b+256;
-                else
+                } else {
                     l = b;
+                }
             }
             else if (NT == 'S')
             {
                 short s = Array.getShort(data, idx);
-                if (s<0)
+                if (s<0) {
                     l = s+65536;
-                else
+                } else {
                     l = s;
+                }
             }
             else if (NT == 'I')
             {
                 int i = Array.getInt(data, idx);
-                if (i<0)
+                if (i<0) {
                     l = i+4294967296L;
-                else
+                } else {
                     l = i;
+                }
             }
 
             return l;
@@ -2115,7 +2200,7 @@ implements ImageView, ActionListener
 
             int w = selectedArea.width;
             int h = selectedArea.height;
-            if (w>0 && h >0)
+            if ((w>0) && (h >0))
             {
                 // use fixed aelected area to reduce the rounding error
                 selectedArea.setBounds(
@@ -2167,10 +2252,11 @@ implements ImageView, ActionListener
          */
         private FlipFilter(int d)
         {
-            if (d < FLIP_HORIZONTAL)
+            if (d < FLIP_HORIZONTAL) {
                 d = FLIP_HORIZONTAL;
-            else if (d > FLIP_VERTICAL)
+            } else if (d > FLIP_VERTICAL) {
                 d = FLIP_VERTICAL;
+            }
 
             direction = d;
         }
@@ -2181,8 +2267,9 @@ implements ImageView, ActionListener
             imageHeight = h;
 
             // specify the raster
-            if (raster == null)
+            if (raster == null) {
                 raster = new int[imageWidth*imageHeight];
+            }
 
             consumer.setDimensions(imageWidth, imageHeight);
         }
@@ -2223,7 +2310,7 @@ implements ImageView, ActionListener
 
         public void imageComplete(int status)
         {
-            if (status == IMAGEERROR || status == IMAGEABORTED)
+            if ((status == IMAGEERROR) || (status == IMAGEABORTED))
             {
                 consumer.imageComplete(status);
                 return;
@@ -2236,14 +2323,16 @@ implements ImageView, ActionListener
                 {
                     // grab pixel values of the target line ...
                     int pos = (imageHeight-1-y)*imageWidth;
-                    for (int kk=0; kk<imageWidth; kk++)
+                    for (int kk=0; kk<imageWidth; kk++) {
                         pixels[kk] = raster[pos+kk];
+                    }
                 }
                 else
                 {
                     int pos = y*imageWidth;
-                    for (int kk=0; kk<imageWidth; kk++)
+                    for (int kk=0; kk<imageWidth; kk++) {
                         pixels[kk] = raster[pos+kk];
+                    }
 
                     // swap the pixel values of the target line
                     int hw = imageWidth/2;
@@ -2317,25 +2406,28 @@ implements ImageView, ActionListener
         float contrastLevel = 0;
 
         public BrightnessFilter(int blevel, int clevel) {
-            if (blevel < -100)
+            if (blevel < -100) {
                 brightLevel = -100;
-            else if (blevel > 100)
+            } else if (blevel > 100) {
                 brightLevel = 100;
-            else
+            } else {
                 brightLevel = blevel;
+            }
             brightLevel *= 2;
             
-            if (clevel < -100)
+            if (clevel < -100) {
                 clevel = -100;
-            else if (clevel > 100)
+            } else if (clevel > 100) {
                 clevel = 100;
+            }
             
-            if (clevel>0)
+            if (clevel>0) {
                 contrastLevel = (clevel/100f+1)*2;
-            else if (clevel < 0)
+            } else if (clevel < 0) {
                 contrastLevel = (clevel/100f+1)/2;
-            else
+            } else {
                 contrastLevel = 0;
+            }
  
             canFilterIndexColorModel = true;
         }
@@ -2354,12 +2446,24 @@ implements ImageView, ActionListener
                 g += brightLevel;
                 b += brightLevel;
                 
-                if (r < 0) r = 0;
-                if (r > 255) r = 255;
-                if (g < 0) g = 0;
-                if (g > 255) g = 255;
-                if (b < 0) b = 0;
-                if (b > 255) b = 255;
+                if (r < 0) {
+                    r = 0;
+                }
+                if (r > 255) {
+                    r = 255;
+                }
+                if (g < 0) {
+                    g = 0;
+                }
+                if (g > 255) {
+                    g = 255;
+                }
+                if (b < 0) {
+                    b = 0;
+                }
+                if (b > 255) {
+                    b = 255;
+                }
                 
                 r = (r << 16) & 0x00ff0000;
                 g = (g <<  8) & 0x0000ff00;
@@ -2378,8 +2482,12 @@ implements ImageView, ActionListener
                 f *= contrastLevel;
                 f += 0.5;
                 f *= 255f;
-                if (f < 0) f = 0;
-                if (f > 255) f = 255;
+                if (f < 0) {
+                    f = 0;
+                }
+                if (f > 255) {
+                    f = 255;
+                }
                 r = (int)f;
 
                 f = (float)g/255f;
@@ -2387,8 +2495,12 @@ implements ImageView, ActionListener
                 f *= contrastLevel;
                 f += 0.5;
                 f *= 255f;
-                if (f < 0) f = 0;
-                if (f > 255) f = 255;
+                if (f < 0) {
+                    f = 0;
+                }
+                if (f > 255) {
+                    f = 255;
+                }
                 g = (int)f;
 
                 f = (float)b/255f;
@@ -2396,8 +2508,12 @@ implements ImageView, ActionListener
                 f *= contrastLevel;
                 f += 0.5;
                 f *= 255f;
-                if (f < 0) f = 0;
-                if (f > 255) f = 255;
+                if (f < 0) {
+                    f = 0;
+                }
+                if (f > 255) {
+                    f = 255;
+                }
                 b = (int)f;
 
                 r = (r << 16) & 0x00ff0000;
@@ -2446,8 +2562,11 @@ implements ImageView, ActionListener
 
             levelColors = new int[9];
 
-            if (theLevel < 1) theLevel = 1;
-            else if (theLevel > 9) theLevel = 9;
+            if (theLevel < 1) {
+                theLevel = 1;
+            } else if (theLevel > 9) {
+                theLevel = 9;
+            }
 
             level = theLevel;
             levels = new int[level];
@@ -2463,8 +2582,9 @@ implements ImageView, ActionListener
             levelColors[8] = Color.gray.getRGB();
 
             int dx  = 255/level;
-            for (int i=0; i<level; i++)
+            for (int i=0; i<level; i++) {
                 levels[i] = (i+1)*dx;
+            }
         }
 
         public void setDimensions(int width, int height)
@@ -2473,8 +2593,9 @@ implements ImageView, ActionListener
             this.imageHeight= height;
 
             // specify the raster
-            if (raster == null)
+            if (raster == null) {
                 raster = new int[imageWidth*imageHeight];
+            }
 
             consumer.setDimensions(width, height);
         }
@@ -2525,8 +2646,8 @@ implements ImageView, ActionListener
 
         public void imageComplete(int status)
         {
-            if (status == IMAGEERROR ||
-                status == IMAGEABORTED)
+            if ((status == IMAGEERROR) ||
+                (status == IMAGEABORTED))
             {
                 consumer.imageComplete(status);
                 return;
@@ -2544,8 +2665,9 @@ implements ImageView, ActionListener
             int line[] = new int[imageWidth];
             for (int y = 0; y < imageHeight; y++)
             {
-                for (int x=0; x < imageWidth; x++)
+                for (int x=0; x < imageWidth; x++) {
                     line[x] = pixels[y*imageWidth+x];
+                }
 
                 consumer.setPixels(0, y, imageWidth, 1, defaultRGB, line, 0, imageWidth);
             }  // for (int y = 0; y < imageHeight; y++) {
@@ -2577,30 +2699,36 @@ implements ImageView, ActionListener
                     int rgb = raster[p];
                     if (rgb < level)
                     {
-                        while ((raster[p] < level)&&(p < u))
+                        while ((raster[p] < level)&&(p < u)) {
                             p++;
-                        if (raster[p] >= level)
-                        pixels[p] = color;
+                        }
+                        if (raster[p] >= level) {
+                            pixels[p] = color;
+                        }
                     }
                     else if (rgb == level)
                     {
-                        while ((raster[p] == level)&&(p < u))
+                        while ((raster[p] == level)&&(p < u)) {
                             p++;
-                        if ((raster[p] < level)  || (raster[p] > level))
+                        }
+                        if ((raster[p] < level)  || (raster[p] > level)) {
                             pixels[p] = color;
+                        }
                     }
                     else
                     {
-                        while ((raster[p] > level)&&(p < u))
+                        while ((raster[p] > level)&&(p < u)) {
                             p++;
-                        if ((raster[p] <= level))
+                        }
+                        if ((raster[p] <= level)) {
                             pixels[p] = color;
+                        }
                     }
                 }
 
-                if (u == q)
+                if (u == q) {
                     break;
-                else
+                } else
                 {
                     u += w;
                     p++;
@@ -2733,7 +2861,7 @@ implements ImageView, ActionListener
         }
 
         public void imageComplete(int status) {
-            if (status == IMAGEERROR || status == IMAGEABORTED) {
+            if ((status == IMAGEERROR) || (status == IMAGEABORTED)) {
                 consumer.imageComplete(status);
                 return;
             }
@@ -2750,7 +2878,7 @@ implements ImageView, ActionListener
                 for (int dx = 0; dx < dstW; dx++) {
                     int sx = (int) Math.round(x1);
                     int sy = (int) Math.round(y1);
-                    if (sx < 0 || sy < 0 || sx >= srcW || sy >= srcH) {
+                    if ((sx < 0) || (sy < 0) || (sx >= srcW) || (sy >= srcH)) {
                         pixels[dx] = 0;
                     } else {
                         pixels[dx] = raster[sy * srcW + sx];
@@ -2795,8 +2923,9 @@ implements ImageView, ActionListener
             long[] selected = dataset.getSelectedDims();
             int[] selectedIndex = dataset.getSelectedIndex();
             int rank = dataset.getRank();
-            if (animationSpeed != 0)
+            if (animationSpeed != 0) {
                 sleepTime = 1000/animationSpeed;
+            }
 
             // back up the sart and selected size
             long[] tstart = new long[rank];
@@ -2856,8 +2985,9 @@ implements ImageView, ActionListener
             	public static final long serialVersionUID = HObject.serialVersionUID;
 
                 public void paint(Graphics g) {
-                    if (offScrGC == null || frames==null)
+                    if ((offScrGC == null) || (frames==null)) {
                         return;
+                    }
                     offScrGC.drawImage(frames[currentFrame],0,0,owner);
                     g.drawImage(offScrImage,x0,y0,owner);
                 }
@@ -2916,8 +3046,9 @@ implements ImageView, ActionListener
         public void run() {
             Thread me = Thread.currentThread();
 
-            if (frames == null || canvas == null)
+            if ((frames == null) || (canvas == null)) {
                 return;
+            }
 
             while (me == engine) {
 
@@ -2930,8 +3061,9 @@ implements ImageView, ActionListener
                     } catch (InterruptedException e) {}
 
                     currentFrame++;
-                    if (currentFrame >= numberOfImages)
+                    if (currentFrame >= numberOfImages) {
                         currentFrame = 0;
+                    }
                 }
             }
         }
@@ -2961,14 +3093,15 @@ implements ImageView, ActionListener
         {
             super(theOwner, "Image Vaule Range", true);
             minmax = new double[2];
-            if (dataRange==null || dataRange.length<=1)
+            if ((dataRange==null) || (dataRange.length<=1))
             {
                 minmax[0] =0;
                 minmax[1] = 255;
             } else
             {
-                if (dataRange[0] == dataRange[1])
+                if (dataRange[0] == dataRange[1]) {
                     Tools.findMinMax(data, dataRange);
+                }
                 
                 minmax[0] = dataRange[0];
                 minmax[1] = dataRange[1];
@@ -3086,22 +3219,27 @@ implements ImageView, ActionListener
         {
             Object source = e.getSource();
 
-            if (!(source instanceof JSlider))
+            if (!(source instanceof JSlider)) {
                 return;
+            }
 
             JSlider slider = (JSlider)source;
             int value = slider.getValue();
             if (slider.equals(minSlider))
             {
                 int maxValue = maxSlider.getValue();
-                if (value > maxValue) value = maxValue;
+                if (value > maxValue) {
+                    value = maxValue;
+                }
                 //minField.setText(String.valueOf(value));
                 minField.setValue(new Integer(value));
             }
             else if (slider.equals(maxSlider))
             {
                 int minValue = minSlider.getValue();
-                if (value < minValue) value = minValue;
+                if (value < minValue) {
+                    value = minValue;
+                }
                 //maxField.setText(String.valueOf(value));
                 maxField.setValue(new Integer(value));
             }
@@ -3117,10 +3255,12 @@ implements ImageView, ActionListener
             if ("value".equals(e.getPropertyName()))
             {
                 Number num = (Number)e.getNewValue();
-                if (num == null) return;
+                if (num == null) {
+                    return;
+                }
                 double value = num.doubleValue();
 
-                if (source.equals(minField) && minSlider!= null)
+                if (source.equals(minField) && (minSlider!= null))
                 {
                     int maxValue = maxSlider.getValue();
                     if (value > maxValue)
@@ -3130,7 +3270,7 @@ implements ImageView, ActionListener
                     }
                     minSlider.setValue((int)value);
                 }
-                else if (source.equals(maxField) && maxSlider!= null)
+                else if (source.equals(maxField) && (maxSlider!= null))
                 {
                     int minValue = minSlider.getValue();
                     if (value < minValue)
@@ -3263,8 +3403,9 @@ implements ImageView, ActionListener
                 brightLevel = b;
                 contrastLevel = c;
                 
-                if (cmd.startsWith("Ok"))
+                if (cmd.startsWith("Ok")) {
                     setVisible(false);
+                }
             }
             else if (cmd.equals("Cancel_brightness_change"))
             {
@@ -3278,8 +3419,9 @@ implements ImageView, ActionListener
         {
             Object source = e.getSource();
 
-            if (!(source instanceof JSlider))
+            if (!(source instanceof JSlider)) {
                 return;
+            }
 
             JSlider slider = (JSlider)source;
             int value = slider.getValue();
@@ -3303,26 +3445,31 @@ implements ImageView, ActionListener
             if ("value".equals(e.getPropertyName()))
             {
                 Number num = (Number)e.getNewValue();
-                if (num == null) return;
+                if (num == null) {
+                    return;
+                }
                 
                 double value = num.doubleValue();
-                if (value > 100)
+                if (value > 100) {
                     value = 100;
-                else if (value < -100)
+                } else if (value < -100) {
                     value = -100;
+                }
 
-                if (source.equals(brightField) && brightSlider!= null)
+                if (source.equals(brightField) && (brightSlider!= null)) {
                     brightSlider.setValue((int)value);
-                else if (source.equals(contrastField) && contrastSlider!= null)
+                } else if (source.equals(contrastField) && (contrastSlider!= null)) {
                     contrastSlider.setValue((int)value);
+                }
            }
         }
         
         private void applyBrightContrast(int blevel, int clevel) {
             ImageFilter filter = new BrightnessFilter(blevel, clevel);
 
-            if (filter == null)
+            if (filter == null) {
                 return;
+            }
             try {
                 image = createImage(new FilteredImageSource(imageProducer, filter));
                 imageComponent.setImage(image);
@@ -3359,7 +3506,9 @@ implements ImageView, ActionListener
             
             brightSlider = new JSlider(JSlider.HORIZONTAL, bias[0], bias[1], (int)gainBias[1]);
             int tickSpace = (bias[1]-bias[0])/10;
-            if (tickSpace < 1) tickSpace = 1;
+            if (tickSpace < 1) {
+                tickSpace = 1;
+            }
             brightSlider.setMajorTickSpacing(tickSpace);
             brightSlider.setPaintTicks(true);
             brightSlider.setPaintLabels(true);
@@ -3376,7 +3525,9 @@ implements ImageView, ActionListener
 
             contrastSlider = new JSlider(JSlider.HORIZONTAL, gain[0], gain[1], (int)gainBias[0]);
             tickSpace = (gain[1]-gain[0])/10;
-            if (tickSpace < 1) tickSpace = 1;
+            if (tickSpace < 1) {
+                tickSpace = 1;
+            }
             contrastSlider.setMajorTickSpacing(tickSpace);
             contrastSlider.setPaintTicks(true);
             contrastSlider.setPaintLabels(true);
@@ -3446,17 +3597,17 @@ implements ImageView, ActionListener
                 int b = ((Number)brightField.getValue()).intValue();
                 int c = ((Number)contrastField.getValue()).intValue();
                 
-                if (b != (int)gainBias[1] || c != (int)gainBias[0]) {
+                if ((b != (int)gainBias[1]) || (c != (int)gainBias[0])) {
                     gainBias[1] = (double) b;
                     gainBias[0] = (double) c;
                     isValueChanged = true;
-                }
-                else
+                } else {
                     isValueChanged = false;
+                }
                 
-                if (cmd.startsWith("Ok"))
+                if (cmd.startsWith("Ok")) {
                     setVisible(false);
-                else  if (isValueChanged) { //Apply auto contrast
+                } else  if (isValueChanged) { //Apply auto contrast
                     applyAutoContrast();
                     isValueChanged = false;
                 }
@@ -3473,8 +3624,9 @@ implements ImageView, ActionListener
         {
             Object source = e.getSource();
 
-            if (!(source instanceof JSlider))
+            if (!(source instanceof JSlider)) {
                 return;
+            }
 
             JSlider slider = (JSlider)source;
             int value = slider.getValue();
@@ -3498,23 +3650,27 @@ implements ImageView, ActionListener
             if ("value".equals(e.getPropertyName()))
             {
                 Number num = (Number)e.getNewValue();
-                if (num == null) return;
+                if (num == null) {
+                    return;
+                }
                 double value = num.doubleValue();
 
-                if (source.equals(brightField) && brightSlider!= null)
+                if (source.equals(brightField) && (brightSlider!= null))
                 {
-                    if (value > bias[1])
+                    if (value > bias[1]) {
                         value = (double) bias[1];
-                    else if (value < bias[0])
+                    } else if (value < bias[0]) {
                         value = (double) bias[0];
+                    }
                     brightSlider.setValue((int)value);
                 }
-                else if (source.equals(contrastField) && contrastSlider!= null)
+                else if (source.equals(contrastField) && (contrastSlider!= null))
                 {
-                    if (value > gain[1])
+                    if (value > gain[1]) {
                         value = (double) gain[1];
-                    else if (value < gain[0])
+                    } else if (value < gain[0]) {
                         value = (double) gain[0];
+                    }
                     contrastSlider.setValue((int)value);
                 }
             }

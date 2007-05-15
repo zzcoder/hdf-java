@@ -197,18 +197,20 @@ public class ViewProperties extends Properties
     /** load module classes */
     public static ClassLoader loadExtClass()
     {
-        if (extClassLoader != null)
+        if (extClassLoader != null) {
             return extClassLoader;
-        else
-             extClassLoader = ClassLoader.getSystemClassLoader(); // default classloader
+        } else {
+            extClassLoader = ClassLoader.getSystemClassLoader(); // default classloader
+        }
 
         String rootPath = System.getProperty("hdfview.root");
         String dirname = rootPath+File.separator+"lib"+File.separator+"ext"+File.separator;
         File extdir = new File(dirname);
         String[] jars = extdir.list();
 
-        if (jars == null || jars.length <= 0)
+        if ((jars == null) || (jars.length <= 0)) {
             return extClassLoader;
+        }
 
         Vector jarList = new Vector(50);
         Vector classList = new Vector(50);
@@ -224,7 +226,7 @@ public class ViewProperties extends Properties
                         JarEntry jarEntry = (JarEntry)emu.nextElement();
                         String entryName = jarEntry.getName();
                         int idx = entryName.indexOf(".class");
-                        if (idx>0 && entryName.indexOf('$')<=0)
+                        if ((idx>0) && (entryName.indexOf('$')<=0))
                         {
                             entryName = entryName.replace('/','.');
                             classList.add(entryName.substring(0, idx));
@@ -235,8 +237,9 @@ public class ViewProperties extends Properties
         } // for (int i=0; i<jars.length; i++) {
 
         int n = jarList.size();
-        if (n <= 0)
+        if (n <= 0) {
             return extClassLoader;
+        }
 
         URL[] urls = new URL[n];
         for (int i=0; i<n; i++) {
@@ -650,8 +653,9 @@ public class ViewProperties extends Properties
     /** Load user properties from property file */
     public void load() throws Exception
     {
-        if (propertyFile == null)
+        if (propertyFile == null) {
             return;
+        }
 
         loadExtClass();
 
@@ -681,8 +685,9 @@ public class ViewProperties extends Properties
                 }
 
                     Object theObject = theClass.newInstance();
-                    if (theObject instanceof FileFormat)
+                    if (theObject instanceof FileFormat) {
                         FileFormat.addFileFormat(fExt, (FileFormat)theObject);
+                    }
                 } catch (Throwable err) {;}
             }
         }
@@ -691,55 +696,60 @@ public class ViewProperties extends Properties
         if (str != null)
         {
             String tmpUG = str.toLowerCase();
-            if (tmpUG.startsWith("file:") || tmpUG.startsWith("http:"))
+            if (tmpUG.startsWith("file:") || tmpUG.startsWith("http:")) {
                 usersGuide = str;
-            else
+            } else
             {
                 File tmpFile = new File(str);
-                if (tmpFile.exists())
+                if (tmpFile.exists()) {
                     usersGuide = "file:"+str;
-                else
+                } else {
                     usersGuide = "http://"+str;
+                }
             }
         }
         
         str = (String)get("image.autocontrast");
-        if (str != null)
+        if (str != null) {
             isAutoContrast = ("true".equalsIgnoreCase(str));
+        }
 
         str = (String)get("data.delimiter");
-        if (str != null && str.length()>0)
+        if ((str != null) && (str.length()>0)) {
             delimiter = str;
+        }
 
         str = (String)get("h4toh5.converter");
-        if (str != null && str.length()>0)
+        if ((str != null) && (str.length()>0)) {
             h4toh5 = str;
+        }
 
         str = (String)get("work.dir");
-        if (str != null && str.length()>0)
+        if ((str != null) && (str.length()>0)) {
             workDir = str;
+        }
 
         str = (String)get("file.extension");
-        if (str != null && str.length()>0)
+        if ((str != null) && (str.length()>0))
         {
             fileExt = str;
             FileFormat.addFileExtension(fileExt);
         }
 
         str = (String)get("font.size");
-        if (str != null && str.length()>0)
+        if ((str != null) && (str.length()>0))
         {
             try { fontSize = Integer.parseInt(str); }
             catch (Exception ex) {}
         }
 
         str = (String)get("font.type");
-        if (str != null && str.length()>0) {
+        if ((str != null) && (str.length()>0)) {
             fontType = str.trim();
         }
 
         str = (String)get("max.members");
-        if (str != null && str.length()>0) {
+        if ((str != null) && (str.length()>0)) {
             try { max_members = Integer.parseInt(str); }
             catch (Exception ex) {}
         }
@@ -748,13 +758,14 @@ public class ViewProperties extends Properties
         String theFile = null;
         for (int i=0; i<MAX_RECENT_FILES; i++) {
             theFile = getProperty("recent.file"+i);
-            if (theFile != null &&
+            if ((theFile != null) &&
                 !mrf.contains(theFile))
             {
                 if (theFile.startsWith("http://") ||
                     theFile.startsWith("ftp://") ||
-                    (new File(theFile)).exists())
-                mrf.addElement(theFile);
+                    (new File(theFile)).exists()) {
+                    mrf.addElement(theFile);
+                }
             }
             else {
                 this.remove("recent.file"+i);
@@ -766,13 +777,27 @@ public class ViewProperties extends Properties
         String srbaccount[] = new String[7];
         for (int i=0; i<MAX_RECENT_FILES; i++)
         {
-            if ( null == (srbaccount[0] = getProperty("srbaccount"+i+".host"))) continue;
-            if ( null == (srbaccount[1] = getProperty("srbaccount"+i+".port"))) continue;
-            if ( null == (srbaccount[2] = getProperty("srbaccount"+i+".user"))) continue;
-            if ( null == (srbaccount[3] = getProperty("srbaccount"+i+".password"))) continue;
-            if ( null == (srbaccount[4] = getProperty("srbaccount"+i+".home"))) continue;
-            if ( null == (srbaccount[5] = getProperty("srbaccount"+i+".domain"))) continue;
-            if ( null == (srbaccount[6] = getProperty("srbaccount"+i+".resource"))) continue;
+            if ( null == (srbaccount[0] = getProperty("srbaccount"+i+".host"))) {
+                continue;
+            }
+            if ( null == (srbaccount[1] = getProperty("srbaccount"+i+".port"))) {
+                continue;
+            }
+            if ( null == (srbaccount[2] = getProperty("srbaccount"+i+".user"))) {
+                continue;
+            }
+            if ( null == (srbaccount[3] = getProperty("srbaccount"+i+".password"))) {
+                continue;
+            }
+            if ( null == (srbaccount[4] = getProperty("srbaccount"+i+".home"))) {
+                continue;
+            }
+            if ( null == (srbaccount[5] = getProperty("srbaccount"+i+".domain"))) {
+                continue;
+            }
+            if ( null == (srbaccount[6] = getProperty("srbaccount"+i+".resource"))) {
+                continue;
+            }
             srbAccountList.add(srbaccount);
             srbaccount = new String[7];
         }
@@ -788,16 +813,18 @@ public class ViewProperties extends Properties
 
         // add default implementation of modules
         for (int i=0; i<6; i++) {
-            if (!moduleList[i].contains(moduleNames[i]))
+            if (!moduleList[i].contains(moduleNames[i])) {
                 moduleList[i].addElement(moduleNames[i]);
+            }
         }
 
         // set default selection of data views
         for (int i=0; i<6; i++) {
             Vector theList = moduleList[i];
             str = (String)get(keys[i]);
-            if (!theList.contains(str))
+            if (!theList.contains(str)) {
                 str = moduleNames[i];
+            }
             theList.remove(str);
             theList.add(0, str);
         }
@@ -806,31 +833,40 @@ public class ViewProperties extends Properties
     /** Save user properties into property file */
     public void save()
     {
-        if (propertyFile == null)
+        if (propertyFile == null) {
             return;
-        else clear();
+        } else {
+            clear();
+        }
 
         // update data saving options
-        if (delimiter == null)
+        if (delimiter == null) {
             put("data.delimiter", DELIMITER_TAB);
-        else
+        } else {
             put("data.delimiter", delimiter);
+        }
 
-        if (usersGuide != null)
+        if (usersGuide != null) {
             put("users.guide", usersGuide);
+        }
 
-        if (workDir != null)
+        if (workDir != null) {
             put("work.dir", workDir);
+        }
 
-        if (fileExt != null)
+        if (fileExt != null) {
             put("file.extension", fileExt);
+        }
 
-        if (h4toh5 != null)
+        if (h4toh5 != null) {
             put("h4toh5.converter", h4toh5);
+        }
 
         put("font.size", String.valueOf(fontSize));
 
-        if (fontType != null) put("font.type", fontType);
+        if (fontType != null) {
+            put("font.type", fontType);
+        }
 
         put("max.members", String.valueOf(max_members));
         
@@ -842,8 +878,9 @@ public class ViewProperties extends Properties
         int minSize = Math.min(size, MAX_RECENT_FILES);
         for (int i=0; i<minSize; i++) {
             theFile = (String)mrf.elementAt(i);
-            if (theFile != null && theFile.length()>0)
+            if ((theFile != null) && (theFile.length()>0)) {
                 put("recent.file"+i, theFile);
+            }
         }
 
         // save srb account
@@ -852,9 +889,9 @@ public class ViewProperties extends Properties
         minSize = Math.min(size, MAX_RECENT_FILES);
         for (int i=0; i<minSize; i++) {
             srbaccount = (String[]) srbAccountList.get(i);
-            if (srbaccount[0]!=null && srbaccount[1]!=null && srbaccount[2]!=null &&
-                srbaccount[3]!=null && srbaccount[4]!=null && srbaccount[5]!=null &&
-                srbaccount[6]!=null)
+            if ((srbaccount[0]!=null) && (srbaccount[1]!=null) && (srbaccount[2]!=null) &&
+                (srbaccount[3]!=null) && (srbaccount[4]!=null) && (srbaccount[5]!=null) &&
+                (srbaccount[6]!=null))
             {
                 put("srbaccount"+i+".host", srbaccount[0]);
                 put("srbaccount"+i+".port", srbaccount[1]);
@@ -868,28 +905,34 @@ public class ViewProperties extends Properties
 
         // save default modules
         String moduleName = (String)moduleListTreeView.elementAt(0);
-        if (moduleName !=null && moduleName.length()>0)
+        if ((moduleName !=null) && (moduleName.length()>0)) {
             put("module.treeview", moduleName);
+        }
 
         moduleName = (String)moduleListMetaDataView.elementAt(0);
-        if (moduleName !=null && moduleName.length()>0)
+        if ((moduleName !=null) && (moduleName.length()>0)) {
             put("module.metadataview", moduleName);
+        }
 
         moduleName = (String)moduleListTextView.elementAt(0);
-        if (moduleName !=null && moduleName.length()>0)
+        if ((moduleName !=null) && (moduleName.length()>0)) {
             put("module.textview", moduleName);
+        }
 
         moduleName = (String)moduleListTableView.elementAt(0);
-        if (moduleName !=null && moduleName.length()>0)
+        if ((moduleName !=null) && (moduleName.length()>0)) {
             put("module.tableview", moduleName);
+        }
 
         moduleName = (String)moduleListImageView.elementAt(0);
-        if (moduleName !=null && moduleName.length()>0)
+        if ((moduleName !=null) && (moduleName.length()>0)) {
             put("module.imageview", moduleName);
+        }
 
         moduleName = (String)moduleListPaletteView.elementAt(0);
-        if (moduleName !=null && moduleName.length()>0)
+        if ((moduleName !=null) && (moduleName.length()>0)) {
             put("module.paletteview", moduleName);
+        }
 
         //save the currenent supported fileformat
         Enumeration keys = FileFormat.getFileFormatKeys();
@@ -912,8 +955,9 @@ public class ViewProperties extends Properties
 
     /** returns the default work directory, where the open file starts.*/
     public static String getWorkDir() {
-        if (workDir.equals("user.dir"))
+        if (workDir.equals("user.dir")) {
             workDir = System.getProperty("user.dir");
+        }
 
         return workDir;
     }
@@ -940,15 +984,17 @@ public class ViewProperties extends Properties
     public static void setFontSize(int fsize) {
         fontSize = (fsize/2)*2;
 
-       if(fontSize < 8)
-           fontSize = 8;
+       if(fontSize < 8) {
+        fontSize = 8;
+    }
     }
 
     /** sets the font size */
     public static void setFontType(String ftype)
     {
-        if (ftype != null)
+        if (ftype != null) {
             fontType = ftype.trim();
+        }
     }
 
     /** returns the path of the H5toH5 converter */
@@ -983,19 +1029,21 @@ public class ViewProperties extends Properties
     /** set the path of H5View User's guide */
     public static void setUsersGuide( String str)
     {
-        if (str == null || str.length()<=0)
+        if ((str == null) || (str.length()<=0)) {
             return;
+        }
 
         String tmpUG = str.toLowerCase();
-        if (tmpUG.startsWith("file:") || tmpUG.startsWith("http:"))
+        if (tmpUG.startsWith("file:") || tmpUG.startsWith("http:")) {
             usersGuide = str;
-        else
+        } else
         {
             File tmpFile = new File(str);
-            if (tmpFile.exists())
+            if (tmpFile.exists()) {
                 usersGuide = "file:"+str;
-            else
+            } else {
                 usersGuide = "http://"+str;
+            }
         }
     }
 
@@ -1031,7 +1079,9 @@ public class ViewProperties extends Properties
      */
     public static void setStartMembers(int idx)
     {
-        if (idx < 0) idx = 0;
+        if (idx < 0) {
+            idx = 0;
+        }
 
         start_members = idx;
     }

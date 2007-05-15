@@ -528,8 +528,6 @@ public class H5GroupTest extends TestCase {
      */
     public final void testRemoveMetadata() {
         Vector attrs = null;
-        final Attribute attr = null;
-        
         try {
             attrs = (Vector) testGroup.getMetadata();
         } catch (final Exception ex) { 
@@ -591,8 +589,6 @@ public class H5GroupTest extends TestCase {
     public final void testCreate() {
         Group grp = null;
         final String nameNew = "/tmpH5Group";
-        final float[] data = null;
-        
         try {
             final Group rootGrp = (Group)testFile.get("/");
             grp = H5Group.create(nameNew, rootGrp);

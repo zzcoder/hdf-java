@@ -69,13 +69,14 @@ implements ActionListener
         try {
             java.util.Vector srbList = ViewProperties.getSrbAccount();
             int n = 0;
-            if (srbList != null && (n=srbList.size())>0)
+            if ((srbList != null) && ((n=srbList.size())>0))
             {
                 int idx = 0;
                 if (n > 1) {
                     String srb_hosts[] = new String[n];
-                    for (int i=0; i<n; i++)
+                    for (int i=0; i<n; i++) {
                         srb_hosts[i] = ((String[])srbList.get(i))[0];
+                    }
                     String selection = (String)JOptionPane.showInputDialog(
                         this, "Select SRB Server Connection",
                         "SRB Connection", JOptionPane.PLAIN_MESSAGE, null,
@@ -147,12 +148,14 @@ implements ActionListener
 
         if (cmd.equals("Ok"))
         {
-            if (treeSrb == null)
+            if (treeSrb == null) {
                 return;
+            }
 
             Object obj = treeSrb.getSelectionPath().getLastPathComponent();
-            if ( (obj instanceof SRBFile) && (openFile((SRBFile)obj)) )
+            if ( (obj instanceof SRBFile) && (openFile((SRBFile)obj)) ) {
                 dispose();
+            }
         }
         else if (cmd.equals("Cancel"))
         {
@@ -193,11 +196,13 @@ implements ActionListener
         MutableTreeNode fileRoot = (MutableTreeNode)fileFormat.getRootNode();
         MutableTreeNode treeRoot = (MutableTreeNode)treeModel.getRoot();
 
-        if (fileRoot != null && treeRoot!=null)
+        if ((fileRoot != null) && (treeRoot!=null))
         {
             treeModel.insertNodeInto(fileRoot, treeRoot, treeRoot.getChildCount());
             int currentRowCount = tree.getRowCount();
-            if (currentRowCount>0) tree.expandRow(tree.getRowCount()-1);
+            if (currentRowCount>0) {
+                tree.expandRow(tree.getRowCount()-1);
+            }
          }
 
         return retVal;

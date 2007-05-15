@@ -73,8 +73,9 @@ public class NC2Dataset extends ScalarDS
     {
         Object theData = null;
 
-        if (nativeDataset == null)
+        if (nativeDataset == null) {
             return null;
+        }
 
         int[] origin = new int[rank];
         int[] shape = new int[rank];
@@ -90,15 +91,17 @@ public class NC2Dataset extends ScalarDS
         catch (Exception ex) { ncArray = nativeDataset.read(); }
         Object oneD = ncArray.copyTo1DJavaArray();
 
-        if (oneD == null)
+        if (oneD == null) {
             return null;
+        }
 
         if (oneD.getClass().getName().startsWith("[C")) {
             char[] charA = (char[])oneD;
             String[] strA = {new String(charA)};
             theData = strA;
-        } else
+        } else {
             theData = oneD;
+        }
 
         return theData;
     }
@@ -111,15 +114,18 @@ public class NC2Dataset extends ScalarDS
 
     // Implementing DataFormat
     public List getMetadata() throws Exception {
-        if (attributeList != null)
+        if (attributeList != null) {
             return attributeList;
+        }
 
-        if (nativeDataset == null)
+        if (nativeDataset == null) {
             return (attributeList=null);
+        }
 
         List ncAttrList = nativeDataset.getAttributes();
-        if (ncAttrList == null)
+        if (ncAttrList == null) {
             return (attributeList=null);
+        }
 
         int n = ncAttrList.size();
         attributeList = new Vector(n);
@@ -154,11 +160,13 @@ public class NC2Dataset extends ScalarDS
      * Retrieve and initialize dimensions and member information.
      */
     public void init() {
-        if (nativeDataset == null)
+        if (nativeDataset == null) {
             return;
+        }
 
-        if (rank>0)
+        if (rank>0) {
             return; // already called. Initialize only once
+        }
 
         isText = nativeDataset.getDataType().equals(DataType.STRING);
 
@@ -202,15 +210,17 @@ public class NC2Dataset extends ScalarDS
             selectedDims[1] = dims[1];
         }
 
-        if (rank > 1 && isText)
+        if ((rank > 1) && isText) {
             selectedDims[1] = 1;
+        }
     }
 
     // Implementing ScalarDS
     public byte[][] getPalette()
     {
-        if (palette == null)
+        if (palette == null) {
             palette = readPalette(0);
+        }
 
         return palette;
     }

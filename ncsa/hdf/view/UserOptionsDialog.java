@@ -96,7 +96,9 @@ implements ActionListener, ListSelectionListener
         srbJList = null;
         fontSize = ViewProperties.getFontSize();
         workDir = ViewProperties.getWorkDir();
-        if (workDir == null) workDir = rootDir;
+        if (workDir == null) {
+            workDir = rootDir;
+        }
         treeViews = ViewProperties.getTreeViewList();
         metaDataViews = ViewProperties.getMetaDataViewList();
         textViews = ViewProperties.getTextViewList();
@@ -154,7 +156,9 @@ implements ActionListener, ListSelectionListener
     		isWorkDirChanged = false;    
             fontSize = ViewProperties.getFontSize();
             workDir = ViewProperties.getWorkDir();
-            if (workDir == null) workDir = rootDir;
+            if (workDir == null) {
+                workDir = rootDir;
+            }
     	}
     	super.setVisible(b);
     }
@@ -174,8 +178,9 @@ implements ActionListener, ListSelectionListener
         {
             for (int i=0; i<fontNames.length; i++)
             {
-                if (fontNames[i].equalsIgnoreCase(fname))
+                if (fontNames[i].equalsIgnoreCase(fname)) {
                     isFontValid = true;
+                }
             }
         }
         if (!isFontValid)
@@ -381,8 +386,9 @@ implements ActionListener, ListSelectionListener
             String srbaccount[] = null;
             for (int i=0; i<n; i++) {
                 srbaccount = (String[])srbVector.get(i);
-                if (srbaccount != null)
+                if (srbaccount != null) {
                     listModel.addElement(srbaccount[0]);
+                }
             }
         }
 
@@ -438,8 +444,9 @@ implements ActionListener, ListSelectionListener
         p.add(lp, BorderLayout.WEST);
         p.add(sp, BorderLayout.SOUTH);
 
-        if (srbVector !=null && srbVector.size()>0)
+        if ((srbVector !=null) && (srbVector.size()>0)) {
             srbJList.setSelectedIndex(0);
+        }
 
         return p;
     }
@@ -470,15 +477,19 @@ implements ActionListener, ListSelectionListener
             final JFileChooser fchooser = new JFileChooser(rootDir);
             int returnVal = fchooser.showOpenDialog(this);
 
-            if(returnVal != JFileChooser.APPROVE_OPTION)
+            if(returnVal != JFileChooser.APPROVE_OPTION) {
                 return;
+            }
 
             File choosedFile = fchooser.getSelectedFile();
-            if (choosedFile == null)
+            if (choosedFile == null) {
                 return;
+            }
 
             String fname = choosedFile.getAbsolutePath();
-            if (fname == null) return;
+            if (fname == null) {
+                return;
+            }
             UGField.setText(fname);
         }
         else if (cmd.equals("Browse current dir"))
@@ -487,15 +498,19 @@ implements ActionListener, ListSelectionListener
             fchooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             int returnVal = fchooser.showDialog(this, "Select");
 
-            if(returnVal != JFileChooser.APPROVE_OPTION)
+            if(returnVal != JFileChooser.APPROVE_OPTION) {
                 return;
+            }
 
             File choosedFile = fchooser.getSelectedFile();
-            if (choosedFile == null)
+            if (choosedFile == null) {
                 return;
+            }
 
             String fname = choosedFile.getAbsolutePath();
-            if (fname == null) return;
+            if (fname == null) {
+                return;
+            }
             workField.setText(fname);
         }
         else if (cmd.equals("Browse h4toh5"))
@@ -503,15 +518,19 @@ implements ActionListener, ListSelectionListener
             final JFileChooser fchooser = new JFileChooser(rootDir);
             int returnVal = fchooser.showOpenDialog(this);
 
-            if(returnVal != JFileChooser.APPROVE_OPTION)
+            if(returnVal != JFileChooser.APPROVE_OPTION) {
                 return;
+            }
 
             File choosedFile = fchooser.getSelectedFile();
-            if (choosedFile == null)
+            if (choosedFile == null) {
                 return;
+            }
 
             String fname = choosedFile.getAbsolutePath();
-            if (fname == null) return;
+            if (fname == null) {
+                return;
+            }
             H4toH5Path = fname;
             H4toH5Field.setText(fname);
         }
@@ -521,8 +540,9 @@ implements ActionListener, ListSelectionListener
                 cmd,
                 JOptionPane.PLAIN_MESSAGE);
 
-            if (newModule == null || newModule.length()<1)
+            if ((newModule == null) || (newModule.length()<1)) {
                 return;
+            }
 
             // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
             try { Class.forName(newModule); }
@@ -579,8 +599,9 @@ implements ActionListener, ListSelectionListener
                 "Do you want to delete the selected module?",
                 cmd,
                 JOptionPane.YES_NO_OPTION);
-            if (reply == JOptionPane.NO_OPTION)
+            if (reply == JOptionPane.NO_OPTION) {
                 return;
+            }
 
             String moduleName = (String)theChoice.getSelectedItem();
             theChoice.removeItem(moduleName);
@@ -608,7 +629,9 @@ implements ActionListener, ListSelectionListener
             String srbaccount[] = new String[7];
             for (int i=0; i<7; i++) {
                 srbaccount[i] = srbFields[i].getText();
-                if (srbaccount[i] == null) return;
+                if (srbaccount[i] == null) {
+                    return;
+                }
             }
             DefaultListModel lm = (DefaultListModel)srbJList.getModel();
             if (!lm.contains(srbaccount[0]))
@@ -621,18 +644,24 @@ implements ActionListener, ListSelectionListener
         else if (cmd.equals("Delete srb connsction"))
         {
             int n = srbJList.getSelectedIndex();
-            if (n<0) return;
+            if (n<0) {
+                return;
+            }
 
             int resp = JOptionPane.showConfirmDialog(this,
                     "Are you sure you want to delete the following SRB connection?\n"+
                     "            \""+srbJList.getSelectedValue()+"\"",
                     "Delete SRB Connection", JOptionPane.YES_NO_OPTION);
-            if (resp == JOptionPane.NO_OPTION) return;
+            if (resp == JOptionPane.NO_OPTION) {
+                return;
+            }
 
             DefaultListModel lm = (DefaultListModel)srbJList.getModel();
             lm.removeElementAt(n);
             srbVector.remove(n);
-            for (int i=0; i<7; i++) srbFields[i].setText("");
+            for (int i=0; i<7; i++) {
+                srbFields[i].setText("");
+            }
         }
     }
 
@@ -640,24 +669,30 @@ implements ActionListener, ListSelectionListener
     {
         Object src = e.getSource();
 
-        if (!src.equals(srbJList))
+        if (!src.equals(srbJList)) {
             return;
+        }
 
         int n = srbJList.getSelectedIndex();
-        if ( n<0 ) return;
+        if ( n<0 ) {
+            return;
+        }
 
         String srbaccount[] = (String[])srbVector.get(n);
-        if (srbaccount == null) return;
+        if (srbaccount == null) {
+            return;
+        }
 
         n = Math.min(7, srbaccount.length);
-        for (int i=0; i<n; i++)
+        for (int i=0; i<n; i++) {
             srbFields[i].setText(srbaccount[i]);
+        }
     }
 
     private void setUserOptions()
     {
         String UGPath = UGField.getText();
-        if (UGPath != null && UGPath.length()>0)
+        if ((UGPath != null) && (UGPath.length()>0))
         {
             UGPath = UGPath.trim();
             isUserGuideChanged = !UGPath.equals(ViewProperties.getUsersGuide());
@@ -665,9 +700,10 @@ implements ActionListener, ListSelectionListener
         }
 
         String workPath = workField.getText();
-        if (checkCurrentUserDir.isSelected())
+        if (checkCurrentUserDir.isSelected()) {
             workPath = "user.dir";
-        if (workPath != null && workPath.length()>0)
+        }
+        if ((workPath != null) && (workPath.length()>0))
         {
             workPath = workPath.trim();
             isWorkDirChanged = !workPath.equals(ViewProperties.getWorkDir());
@@ -675,7 +711,7 @@ implements ActionListener, ListSelectionListener
         }
 
         String ext = fileExtField.getText();
-        if (ext != null && ext.length()>0)
+        if ((ext != null) && (ext.length()>0))
         {
             ext = ext.trim();
             ViewProperties.setFileExtension(ext);
@@ -687,8 +723,9 @@ implements ActionListener, ListSelectionListener
             fsize = Integer.parseInt((String)fontSizeChoice.getSelectedItem());
             ViewProperties.setFontSize(fsize);
 
-            if ((fontSize != ViewProperties.getFontSize()))
+            if ((fontSize != ViewProperties.getFontSize())) {
                 isFontChanged = true;
+            }
         } catch (Exception ex) {}
 
         // set font type

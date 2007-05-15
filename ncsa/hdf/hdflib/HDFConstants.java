@@ -282,24 +282,43 @@ public class HDFConstants
      */
     public static String getType(int type)
     {
-        if   (type == HDFConstants.DFNT_UCHAR8) return HDFConstants.UCHAR8;
-        else if (type == HDFConstants.DFNT_CHAR8) return HDFConstants.CHAR8;
-        else if (type == HDFConstants.DFNT_UCHAR16) return HDFConstants.UCHAR16;
-        else if (type == HDFConstants.DFNT_CHAR16) return HDFConstants.CHAR16;
-        else if (type == HDFConstants.DFNT_FLOAT32) return HDFConstants.FLOAT32;
-        else if (type == HDFConstants.DFNT_FLOAT64) return HDFConstants.FLOAT64;
-        else if (type == HDFConstants.DFNT_FLOAT128) return HDFConstants.FLOAT128;
-        else if (type == HDFConstants.DFNT_INT8) return HDFConstants.INT8;
-        else if (type == HDFConstants. DFNT_UINT8) return HDFConstants.UINT8;
-        else if (type == HDFConstants.DFNT_INT16) return HDFConstants.INT16;
-        else if (type == HDFConstants.DFNT_UINT16) return HDFConstants.UINT16;
-        else if (type == HDFConstants.DFNT_INT32) return HDFConstants.INT32;
-        else if (type == HDFConstants.DFNT_UINT32) return HDFConstants.UINT32;
-        else if (type == HDFConstants.DFNT_INT64) return HDFConstants.INT64;
-        else if (type == HDFConstants.DFNT_UINT64) return HDFConstants.UINT64;
-        else if (type == HDFConstants.DFNT_INT128) return HDFConstants.INT128;
-        else if (type == HDFConstants.DFNT_UINT128) return HDFConstants.UINT128;
-        else return "Undefined Data Type";
+        if   (type == HDFConstants.DFNT_UCHAR8) {
+            return HDFConstants.UCHAR8;
+        } else if (type == HDFConstants.DFNT_CHAR8) {
+            return HDFConstants.CHAR8;
+        } else if (type == HDFConstants.DFNT_UCHAR16) {
+            return HDFConstants.UCHAR16;
+        } else if (type == HDFConstants.DFNT_CHAR16) {
+            return HDFConstants.CHAR16;
+        } else if (type == HDFConstants.DFNT_FLOAT32) {
+            return HDFConstants.FLOAT32;
+        } else if (type == HDFConstants.DFNT_FLOAT64) {
+            return HDFConstants.FLOAT64;
+        } else if (type == HDFConstants.DFNT_FLOAT128) {
+            return HDFConstants.FLOAT128;
+        } else if (type == HDFConstants.DFNT_INT8) {
+            return HDFConstants.INT8;
+        } else if (type == HDFConstants. DFNT_UINT8) {
+            return HDFConstants.UINT8;
+        } else if (type == HDFConstants.DFNT_INT16) {
+            return HDFConstants.INT16;
+        } else if (type == HDFConstants.DFNT_UINT16) {
+            return HDFConstants.UINT16;
+        } else if (type == HDFConstants.DFNT_INT32) {
+            return HDFConstants.INT32;
+        } else if (type == HDFConstants.DFNT_UINT32) {
+            return HDFConstants.UINT32;
+        } else if (type == HDFConstants.DFNT_INT64) {
+            return HDFConstants.INT64;
+        } else if (type == HDFConstants.DFNT_UINT64) {
+            return HDFConstants.UINT64;
+        } else if (type == HDFConstants.DFNT_INT128) {
+            return HDFConstants.INT128;
+        } else if (type == HDFConstants.DFNT_UINT128) {
+            return HDFConstants.UINT128;
+        } else {
+            return "Undefined Data Type";
+        }
     }
 
     /**
@@ -309,24 +328,43 @@ public class HDFConstants
      */
     public static int getType(String type)
     {
-        if   (type.equalsIgnoreCase(HDFConstants.UCHAR8)) return HDFConstants.DFNT_UCHAR8;
-        else if (type.equalsIgnoreCase(HDFConstants.CHAR8)) return HDFConstants.DFNT_CHAR8;
-        else if (type.equalsIgnoreCase(HDFConstants.UCHAR16)) return HDFConstants.DFNT_UCHAR16;
-        else if (type.equalsIgnoreCase(HDFConstants.CHAR16)) return HDFConstants.DFNT_CHAR16;
-        else if (type.equalsIgnoreCase(HDFConstants.FLOAT32)) return HDFConstants.DFNT_FLOAT32;
-        else if (type.equalsIgnoreCase(HDFConstants.FLOAT64)) return HDFConstants.DFNT_FLOAT64;
-        else if (type.equalsIgnoreCase(HDFConstants.FLOAT128)) return HDFConstants.DFNT_FLOAT128;
-        else if (type.equalsIgnoreCase(HDFConstants.INT8)) return HDFConstants.DFNT_INT8;
-        else if (type.equalsIgnoreCase(HDFConstants. UINT8)) return HDFConstants.DFNT_UINT8;
-        else if (type.equalsIgnoreCase(HDFConstants.INT16)) return HDFConstants.DFNT_INT16;
-        else if (type.equalsIgnoreCase(HDFConstants.UINT16)) return HDFConstants.DFNT_UINT16;
-        else if (type.equalsIgnoreCase(HDFConstants.INT32)) return HDFConstants.DFNT_INT32;
-        else if (type.equalsIgnoreCase(HDFConstants.UINT32)) return HDFConstants.DFNT_UINT32;
-        else if (type.equalsIgnoreCase(HDFConstants.INT64)) return HDFConstants.DFNT_INT64;
-        else if (type.equalsIgnoreCase(HDFConstants.UINT64)) return HDFConstants.DFNT_UINT64;
-        else if (type.equalsIgnoreCase(HDFConstants.INT128)) return HDFConstants.DFNT_INT128;
-        else if (type.equalsIgnoreCase(HDFConstants.UINT128)) return HDFConstants.DFNT_UINT128;
-        else return -1;
+        if   (type.equalsIgnoreCase(HDFConstants.UCHAR8)) {
+            return HDFConstants.DFNT_UCHAR8;
+        } else if (type.equalsIgnoreCase(HDFConstants.CHAR8)) {
+            return HDFConstants.DFNT_CHAR8;
+        } else if (type.equalsIgnoreCase(HDFConstants.UCHAR16)) {
+            return HDFConstants.DFNT_UCHAR16;
+        } else if (type.equalsIgnoreCase(HDFConstants.CHAR16)) {
+            return HDFConstants.DFNT_CHAR16;
+        } else if (type.equalsIgnoreCase(HDFConstants.FLOAT32)) {
+            return HDFConstants.DFNT_FLOAT32;
+        } else if (type.equalsIgnoreCase(HDFConstants.FLOAT64)) {
+            return HDFConstants.DFNT_FLOAT64;
+        } else if (type.equalsIgnoreCase(HDFConstants.FLOAT128)) {
+            return HDFConstants.DFNT_FLOAT128;
+        } else if (type.equalsIgnoreCase(HDFConstants.INT8)) {
+            return HDFConstants.DFNT_INT8;
+        } else if (type.equalsIgnoreCase(HDFConstants. UINT8)) {
+            return HDFConstants.DFNT_UINT8;
+        } else if (type.equalsIgnoreCase(HDFConstants.INT16)) {
+            return HDFConstants.DFNT_INT16;
+        } else if (type.equalsIgnoreCase(HDFConstants.UINT16)) {
+            return HDFConstants.DFNT_UINT16;
+        } else if (type.equalsIgnoreCase(HDFConstants.INT32)) {
+            return HDFConstants.DFNT_INT32;
+        } else if (type.equalsIgnoreCase(HDFConstants.UINT32)) {
+            return HDFConstants.DFNT_UINT32;
+        } else if (type.equalsIgnoreCase(HDFConstants.INT64)) {
+            return HDFConstants.DFNT_INT64;
+        } else if (type.equalsIgnoreCase(HDFConstants.UINT64)) {
+            return HDFConstants.DFNT_UINT64;
+        } else if (type.equalsIgnoreCase(HDFConstants.INT128)) {
+            return HDFConstants.DFNT_INT128;
+        } else if (type.equalsIgnoreCase(HDFConstants.UINT128)) {
+            return HDFConstants.DFNT_UINT128;
+        } else {
+            return -1;
+        }
     }
 
     /**

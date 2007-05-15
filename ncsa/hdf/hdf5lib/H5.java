@@ -811,34 +811,35 @@ public class H5 {
         boolean is1D = false;
 
         Class dataClass = obj.getClass();
-         if (!dataClass.isArray())
-             throw (new HDF5JavaException("H5Dread: data is not an array"));
+         if (!dataClass.isArray()) {
+            throw (new HDF5JavaException("H5Dread: data is not an array"));
+        }
 
         String cname = dataClass.getName();
         is1D = (cname.lastIndexOf('[') ==cname.indexOf('['));
         char dname = cname.charAt(cname.lastIndexOf("[")+1);
 
-        if (is1D && dname == 'B') {
+        if (is1D && (dname == 'B')) {
             status = H5Dread(dataset_id, mem_type_id,mem_space_id, file_space_id,
                 xfer_plist_id, (byte[])obj);
         }
-        else if (is1D && dname == 'S') {
+        else if (is1D && (dname == 'S')) {
             status = H5Dread_short(dataset_id, mem_type_id,mem_space_id, file_space_id,
                 xfer_plist_id, (short[])obj);
         }
-        else if (is1D && dname == 'I') {
+        else if (is1D && (dname == 'I')) {
             status = H5Dread_int(dataset_id, mem_type_id,mem_space_id, file_space_id,
                 xfer_plist_id, (int[])obj);
         }
-        else if (is1D && dname == 'J') {
+        else if (is1D && (dname == 'J')) {
             status = H5Dread_long(dataset_id, mem_type_id,mem_space_id, file_space_id,
                 xfer_plist_id, (long[])obj);
         }
-        else if (is1D && dname == 'F') {
+        else if (is1D && (dname == 'F')) {
             status = H5Dread_float(dataset_id, mem_type_id,mem_space_id, file_space_id,
                 xfer_plist_id, (float[])obj);
         }
-        else if (is1D && dname == 'D') {
+        else if (is1D && (dname == 'D')) {
             status = H5Dread_double(dataset_id, mem_type_id,mem_space_id, file_space_id,
                 xfer_plist_id, (double[])obj);
         }
@@ -925,34 +926,35 @@ public class H5 {
         boolean is1D = false;
 
         Class dataClass = obj.getClass();
-         if (!dataClass.isArray())
-             throw (new HDF5JavaException("H5Dread: data is not an array"));
+         if (!dataClass.isArray()) {
+            throw (new HDF5JavaException("H5Dread: data is not an array"));
+        }
 
         String cname = dataClass.getName();
         is1D = (cname.lastIndexOf('[') ==cname.indexOf('['));
         char dname = cname.charAt(cname.lastIndexOf("[")+1);
 
-        if (is1D && dname == 'B') {
+        if (is1D && (dname == 'B')) {
             status = H5Dwrite(dataset_id, mem_type_id,mem_space_id, file_space_id,
                 xfer_plist_id, (byte[])obj);
         }
-        else if (is1D && dname == 'S') {
+        else if (is1D && (dname == 'S')) {
             status = H5Dwrite_short(dataset_id, mem_type_id,mem_space_id, file_space_id,
                 xfer_plist_id, (short[])obj);
         }
-        else if (is1D && dname == 'I') {
+        else if (is1D && (dname == 'I')) {
             status = H5Dwrite_int(dataset_id, mem_type_id,mem_space_id, file_space_id,
                 xfer_plist_id, (int[])obj);
         }
-        else if (is1D && dname == 'J') {
+        else if (is1D && (dname == 'J')) {
             status = H5Dwrite_long(dataset_id, mem_type_id,mem_space_id, file_space_id,
                 xfer_plist_id, (long[])obj);
         }
-        else if (is1D && dname == 'F') {
+        else if (is1D && (dname == 'F')) {
             status = H5Dwrite_float(dataset_id, mem_type_id,mem_space_id, file_space_id,
                 xfer_plist_id, (float[])obj);
         }
-        else if (is1D && dname == 'D') {
+        else if (is1D && (dname == 'D')) {
             status = H5Dwrite_double(dataset_id, mem_type_id,mem_space_id, file_space_id,
                 xfer_plist_id, (double[])obj);
         } else {
@@ -1816,7 +1818,9 @@ public class H5 {
         NullPointerException,
         IllegalArgumentException
     {
-        if (dim == null) return -1;
+        if (dim == null) {
+            return -1;
+        }
 
         HDFArray theArray = new HDFArray(dim);
         byte[] thedims = theArray.byteify();
@@ -2040,7 +2044,9 @@ public class H5 {
         byte[] buf = theArray.emptyBytes();
 
         int status = H5Pget_fill_value(plist_id, type_id, buf);
-        if (status >= 0) obj = theArray.arrayify( buf);
+        if (status >= 0) {
+            obj = theArray.arrayify( buf);
+        }
 
         return status;
     }
@@ -2723,7 +2729,9 @@ public class H5 {
         throws HDF5Exception,
         NullPointerException
     {
-        if (dims == null) return -1;
+        if (dims == null) {
+            return -1;
+        }
 
         HDFArray theArray = new HDFArray(dims);
         byte[] thedims = theArray.byteify();
@@ -2801,7 +2809,9 @@ public class H5 {
         HDF5LibraryException,
         NullPointerException
     {
-        if (coord2D == null) return -1;
+        if (coord2D == null) {
+            return -1;
+        }
 
         HDFArray theArray = new HDFArray(coord2D);
         byte[] coord = theArray.byteify();
@@ -2959,7 +2969,9 @@ public class H5 {
         throws HDF5Exception,
         NullPointerException
     {
-        if (current_size == null) return -1;
+        if (current_size == null) {
+            return -1;
+        }
 
         HDFArray theArray = new HDFArray(current_size);
         byte[] thecurr = theArray.byteify();
@@ -3018,7 +3030,9 @@ public class H5 {
         throws HDF5Exception,
         NullPointerException
     {
-        if (offset == null) return -1;
+        if (offset == null) {
+            return -1;
+        }
 
         HDFArray theArray = new HDFArray(offset);
         byte[] theArr = theArray.byteify();
@@ -4147,17 +4161,21 @@ public class H5 {
         String name, String[] oname, int[]type)
         throws HDF5LibraryException, NullPointerException
     {
-        if (oname == null)
+        if (oname == null) {
             throw new NullPointerException("H5Gget_obj_info_all(): name array is null");
+        }
 
-        if (type == null)
+        if (type == null) {
             throw new NullPointerException("H5Gget_obj_info_all(): type array is null");
+        }
 
-        if (oname.length == 0)
+        if (oname.length == 0) {
             throw new HDF5LibraryException("H5Gget_obj_info_all(): array size is zero");
+        }
 
-        if (oname.length != type.length)
+        if (oname.length != type.length) {
             throw new HDF5LibraryException("H5Gget_obj_info_all(): name and type array sizes are different");
+        }
 
         return H5Gget_obj_info_all( loc_id, name, oname, type, oname.length);
     }

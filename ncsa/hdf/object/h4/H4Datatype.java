@@ -155,8 +155,9 @@ public class H4Datatype extends Datatype
     public static final Object allocateArray(int datatype, int datasize)
     throws OutOfMemoryError
     {
-        if (datasize <= 0)
+        if (datasize <= 0) {
             return null;
+        }
 
         Object data = null;
 
@@ -310,46 +311,52 @@ public class H4Datatype extends Datatype
             case Datatype.CLASS_INTEGER:
                 if (tsize == 1)
                 {
-                    if (tsign == Datatype.SIGN_NONE)
+                    if (tsign == Datatype.SIGN_NONE) {
                         tid = HDFConstants.DFNT_UINT8;
-                    else
+                    } else {
                         tid = HDFConstants.DFNT_INT8;
+                    }
                 }
                 else if (tsize == 2)
                 {
-                    if (tsign == Datatype.SIGN_NONE)
+                    if (tsign == Datatype.SIGN_NONE) {
                         tid = HDFConstants.DFNT_UINT16;
-                    else
+                    } else {
                         tid = HDFConstants.DFNT_INT16;
+                    }
                 }
-                else if (tsize == 4 || tsize == NATIVE)
+                else if ((tsize == 4) || (tsize == NATIVE))
                 {
-                    if (tsign == Datatype.SIGN_NONE)
+                    if (tsign == Datatype.SIGN_NONE) {
                         tid = HDFConstants.DFNT_UINT32;
-                    else
+                    } else {
                         tid = HDFConstants.DFNT_INT32;
+                    }
                 }
                 else if (tsize == 8)
                 {
-                    if (tsign == Datatype.SIGN_NONE)
+                    if (tsign == Datatype.SIGN_NONE) {
                         tid = HDFConstants.DFNT_UINT64;
-                    else
+                    } else {
                         tid = HDFConstants.DFNT_INT64;
+                    }
                 }
                 break;
             case Datatype.CLASS_FLOAT:
-                if (tsize == Datatype.NATIVE)
+                if (tsize == Datatype.NATIVE) {
                     tid = HDFConstants.DFNT_FLOAT;
-                else if (tsize == 4)
+                } else if (tsize == 4) {
                     tid = HDFConstants.DFNT_FLOAT32;
-                else if (tsize == 8)
+                } else if (tsize == 8) {
                     tid = HDFConstants.DFNT_FLOAT64;
+                }
                 break;
             case Datatype.CLASS_CHAR:
-                if (tsign == Datatype.SIGN_NONE)
+                if (tsign == Datatype.SIGN_NONE) {
                     tid = HDFConstants.DFNT_UCHAR;
-                else
+                } else {
                     tid = HDFConstants.DFNT_CHAR;
+                }
                 break;
             case Datatype.CLASS_STRING:
                     tid = HDFConstants.DFNT_CHAR;

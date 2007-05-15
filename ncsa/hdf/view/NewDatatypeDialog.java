@@ -78,17 +78,19 @@ implements ActionListener, ItemListener
             {
                 Group g = (Group)obj;
                 groupList.add(obj);
-                if (g.isRoot())
+                if (g.isRoot()) {
                     parentChoice.addItem(HObject.separator);
-                else
+                } else {
                     parentChoice.addItem(g.getPath()+g.getName()+HObject.separator);
+                }
             }
         }
 
-        if (pGroup.isRoot())
+        if (pGroup.isRoot()) {
             parentChoice.setSelectedItem(HObject.separator);
-        else
+        } else {
             parentChoice.setSelectedItem(pGroup.getPath()+pGroup.getName()+HObject.separator);
+        }
 
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
@@ -201,8 +203,9 @@ implements ActionListener, ItemListener
         {
             newObject = createDatatype();
 
-            if (newObject != null)
+            if (newObject != null) {
                 dispose();
+            }
         }
         if (cmd.equals("Cancel"))
         {
@@ -288,9 +291,9 @@ implements ActionListener, ItemListener
                     // unsigned 64 bit integer is not allowed
                     checkUnsigned.setSelected(false);
                     checkUnsigned.setEnabled(false);
+                } else {
+                    checkUnsigned.setEnabled(true);
                 }
-                else
-                   checkUnsigned.setEnabled(true);
             }
         }
     }
@@ -300,11 +303,9 @@ implements ActionListener, ItemListener
     {
         String name = null;
         Group pgroup = null;
-        int rank=-1, gzip=-1, tclass=-1, tsize=-1, torder=-1, tsign=-1;
-        long dims[], maxdims[], chunks[];
-
+        int tclass=-1, tsize=-1, torder=-1, tsign=-1;
         name = nameField.getText().trim();
-        if (name == null || name.length()<1)
+        if ((name == null) || (name.length()<1))
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
@@ -341,16 +342,18 @@ implements ActionListener, ItemListener
         if (idx == 0)
         {
             tclass = Datatype.CLASS_INTEGER;
-            if (checkUnsigned.isSelected())
+            if (checkUnsigned.isSelected()) {
                 tsign = Datatype.SIGN_NONE;
+            }
         }
-        else if (idx == 1)
+        else if (idx == 1) {
             tclass = Datatype.CLASS_FLOAT;
-        else if (idx == 2)
+        } else if (idx == 2)
         {
             tclass = Datatype.CLASS_CHAR;
-            if (checkUnsigned.isSelected())
+            if (checkUnsigned.isSelected()) {
                 tsign = Datatype.SIGN_NONE;
+            }
         }
         else if (idx == 3)
         {
@@ -401,7 +404,7 @@ implements ActionListener, ItemListener
             tsize = 1 << (idx-1);
         }
 
-        if (tsize==8 && !isH5 && tclass == Datatype.CLASS_INTEGER)
+        if ((tsize==8) && !isH5 && (tclass == Datatype.CLASS_INTEGER))
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
@@ -413,22 +416,24 @@ implements ActionListener, ItemListener
 
         // set order
         idx = endianChoice.getSelectedIndex();
-        if (idx == 0)
+        if (idx == 0) {
             torder = Datatype.NATIVE;
-        else if (idx == 1)
+        } else if (idx == 1) {
             torder = Datatype.ORDER_LE;
-        else
+        } else {
             torder = Datatype.ORDER_BE;
+        }
 
         HObject obj = null;
         try
         {
             String fullPath = HObject.separator;
-            if (pgroup.isRoot())
+            if (pgroup.isRoot()) {
                 fullPath += name;
-            else
+            } else {
                 fullPath = pgroup.getPath()+HObject.separator+pgroup.getName()+
                            HObject.separator + name;
+            }
             Datatype datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign, fullPath);
             obj = datatype;
         } catch (Exception ex)

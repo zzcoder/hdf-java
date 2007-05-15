@@ -94,7 +94,9 @@ implements ActionListener, ItemListener, HyperlinkListener
         typeChoice.addItem("long (64-bit)");
         typeChoice.addItem("float");
         typeChoice.addItem("double");
-        if (isH5) typeChoice.addItem("object reference");
+        if (isH5) {
+            typeChoice.addItem("object reference");
+        }
 
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
@@ -145,8 +147,11 @@ implements ActionListener, ItemListener, HyperlinkListener
         p2 = new JPanel();
         p2.setLayout(new GridLayout(4,1,3,3));
         p2.add(nameField=new JTextField("",30));
-        if (!isH5 && (obj instanceof Group) && ((Group)obj).isRoot()) p2.add(typePane);
-        else p2.add(typeChoice);
+        if (!isH5 && (obj instanceof Group) && ((Group)obj).isRoot()) {
+            p2.add(typePane);
+        } else {
+            p2.add(typeChoice);
+        }
         p2.add(lengthField=new JTextField("1"));
         p2.add(valueField=new JTextField("0"));
         p.add("Center", p2);
@@ -178,8 +183,9 @@ implements ActionListener, ItemListener, HyperlinkListener
 
         if (cmd.equals("Ok"))
         {
-            if (createAttribute())
+            if (createAttribute()) {
                 dispose();
+            }
         }
         else if (cmd.equals("Cancel"))
         {
@@ -188,14 +194,16 @@ implements ActionListener, ItemListener, HyperlinkListener
         }
         else if (cmd.equals("Show help"))
         {
-            if (helpDialog == null)
+            if (helpDialog == null) {
                 createHelpDialog();
+            }
             helpDialog.setVisible(true);
         }
         else if (cmd.equals("Hide help"))
         {
-            if (helpDialog != null)
+            if (helpDialog != null) {
                 helpDialog.setVisible(false);
+            }
         }
     }
 
@@ -207,10 +215,11 @@ implements ActionListener, ItemListener, HyperlinkListener
         {
             int idx = typeChoice.getSelectedIndex();
 
-            if (idx == 0)
+            if (idx == 0) {
                 arrayLengthLabel.setText("Max String Length: ");
-            else
+            } else {
                 arrayLengthLabel.setText("Array Size: ");
+            }
         }
     }
 
@@ -224,9 +233,11 @@ implements ActionListener, ItemListener, HyperlinkListener
         String strValue = valueField.getText();
 
         String attrName = nameField.getText();
-        if (attrName != null) attrName = attrName.trim();
+        if (attrName != null) {
+            attrName = attrName.trim();
+        }
 
-        if (attrName == null || attrName.length()<1)
+        if ((attrName == null) || (attrName.length()<1))
         {
             JOptionPane.showMessageDialog(this,
                 "No attribute name.",
@@ -238,7 +249,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         String lengthStr = lengthField.getText();
 
         int arraySize = 0;
-        if (lengthStr == null || lengthStr.length() <=0)
+        if ((lengthStr == null) || (lengthStr.length() <=0))
         {
             arraySize = 1;
         }
@@ -342,8 +353,11 @@ implements ActionListener, ItemListener, HyperlinkListener
                         JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
-                if (sv <0 ) sv = 0;
-                else if ( sv > 255) sv = 255;
+                if (sv <0 ) {
+                    sv = 0;
+                } else if ( sv > 255) {
+                    sv = 255;
+                }
                 b[j] = (byte) sv;
             }
             value = b;
@@ -369,8 +383,11 @@ implements ActionListener, ItemListener, HyperlinkListener
                         JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
-                if (iv <0 ) iv = 0;
-                else if ( iv > 65535) iv = 65535;
+                if (iv <0 ) {
+                    iv = 0;
+                } else if ( iv > 65535) {
+                    iv = 65535;
+                }
                 s[j] = (short)iv;
             }
             value = s;
@@ -395,8 +412,12 @@ implements ActionListener, ItemListener, HyperlinkListener
                         JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
-                if (lv <0 ) lv = 0;
-                if ( lv > 4294967295L) lv = 4294967295L;
+                if (lv <0 ) {
+                    lv = 0;
+                }
+                if ( lv > 4294967295L) {
+                    lv = 4294967295L;
+                }
                 i[j] = (int)lv;
             }
             value = i;
@@ -441,7 +462,9 @@ implements ActionListener, ItemListener, HyperlinkListener
                         JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
-                if (Float.isInfinite(f[j]) || Float.isNaN(f[j])) f[j] = 0;
+                if (Float.isInfinite(f[j]) || Float.isNaN(f[j])) {
+                    f[j] = 0;
+                }
             }
             value = f;
             tclass = Datatype.CLASS_FLOAT;
@@ -463,7 +486,9 @@ implements ActionListener, ItemListener, HyperlinkListener
                         JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
-                if (Double.isInfinite(d[j]) || Double.isNaN(d[j])) d[j] = 0;
+                if (Double.isInfinite(d[j]) || Double.isNaN(d[j])) {
+                    d[j] = 0;
+                }
             }
             value = d;
             tclass = Datatype.CLASS_FLOAT;
@@ -498,11 +523,13 @@ implements ActionListener, ItemListener, HyperlinkListener
             } catch (Exception e) { string_length = 0; }
 
             //string_length = Math.max(string_length, strValue.length());
-            if (string_length <=0)
+            if (string_length <=0) {
                 string_length = DEFAULT_STRING_ATTRIBUTE_LENGTH;
+            }
 
-            if (strValue.length() > string_length)
+            if (strValue.length() > string_length) {
                 strValue = strValue.substring(0, string_length);
+            }
 
             tclass = Datatype.CLASS_STRING;
             tsize = string_length;
@@ -510,8 +537,11 @@ implements ActionListener, ItemListener, HyperlinkListener
             String[] strArray = {strValue};
             value = strArray;
 
-            if (isH5) arraySize = 1; // support string type
-            else arraySize = string_length; // array of characters
+            if (isH5) {
+                arraySize = 1; // support string type
+            } else {
+                arraySize = string_length; // array of characters
+            }
         }
 
         Datatype datatype = null;
@@ -540,10 +570,12 @@ implements ActionListener, ItemListener, HyperlinkListener
                 // attribute. Use the isExisted to separate the
                 // global attribute is GR or SD
                 hObject.getFileFormat().writeAttribute(hObject, attr, false);
-                if (hObject.getMetadata() == null)
+                if (hObject.getMetadata() == null) {
                     hObject.getMetadata().add(attr);
-            } else
+                }
+            } else {
                 hObject.writeMetadata(attr);
+            }
         }
         catch (Exception ex )
         {

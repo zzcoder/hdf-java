@@ -75,8 +75,9 @@ public class FitsDataset extends ScalarDS
     public Object read() throws Exception {
         Object theData = null;
 
-        if (nativeDataset == null)
+        if (nativeDataset == null) {
             return null;
+        }
 
         Object fitsData = nativeDataset.getData().getData();
         int n = get1DLength(fitsData);
@@ -96,15 +97,18 @@ public class FitsDataset extends ScalarDS
 
     // Implementing DataFormat
     public List getMetadata() throws Exception {
-        if (attributeList != null)
+        if (attributeList != null) {
             return attributeList;
+        }
 
-        if (nativeDataset == null)
+        if (nativeDataset == null) {
             return null;
+        }
 
         Header header = nativeDataset.getHeader();
-        if (header == null)
+        if (header == null) {
             return null;
+        }
 
         attributeList = new Vector();
         HeaderCard hc = null;
@@ -118,11 +122,13 @@ public class FitsDataset extends ScalarDS
             hc = (HeaderCard)it.next();
             attr = new Attribute(hc.getKey(), dtype, dims);
             String tvalue = hc.getValue();
-            if (tvalue != null)
+            if (tvalue != null) {
                 value += tvalue;
+            }
             tvalue = hc.getComment();
-            if (tvalue != null)
+            if (tvalue != null) {
                 value += " / " + tvalue;
+            }
             attr.setValue(value);
             attributeList.add(attr);
         }
@@ -152,18 +158,21 @@ public class FitsDataset extends ScalarDS
      * Retrieve and initialize dimensions and member information.
      */
     public void init() {
-        if (nativeDataset == null)
+        if (nativeDataset == null) {
             return;
+        }
 
-        if (rank>0)
+        if (rank>0) {
             return; // already called. Initialize only once
+        }
 
         int[] axes= null;
         try { axes = nativeDataset.getAxes(); }
         catch (Exception ex) {}
 
-        if (axes == null)
+        if (axes == null) {
             return;
+        }
 
         rank = axes.length;
         if (rank == 0) {
@@ -204,15 +213,17 @@ public class FitsDataset extends ScalarDS
             selectedDims[1] = dims[1];
         }
 
-        if (rank > 1 && isText)
+        if ((rank > 1) && isText) {
             selectedDims[1] = 1;
+        }
     }
 
     // Implementing ScalarDS
     public byte[][] getPalette()
     {
-        if (palette == null)
+        if (palette == null) {
             palette = readPalette(0);
+        }
 
         return palette;
     }
