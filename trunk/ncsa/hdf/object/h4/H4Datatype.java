@@ -67,7 +67,7 @@ public class H4Datatype extends Datatype
      * new H4Datatype(CLASS_INTEGER, 4, NATIVE, SIGN_NONE);
      * <p>
      * @see #fromNative(int nativeID)
-     * @param type the native datatype identifier.
+     * @param nativeID the native datatype identifier.
      */
     public H4Datatype(int nativeID)
     {

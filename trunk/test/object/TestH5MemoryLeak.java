@@ -91,7 +91,7 @@ public class TestH5MemoryLeak
      * <p>
      * @param args
      */
-    public static void main(String[] args) 
+    public static void main(final String[] args) 
     {
         int nObjs = 0; // number of object left open
         Dataset dset =null;
@@ -117,7 +117,7 @@ public class TestH5MemoryLeak
             try {
                 try {
                     tmpFile = createTestFile();
-                } catch (Exception ex) {
+                } catch (final Exception ex) {
                     System.err.print("createTestFile() failed.");
                     tmpFile = null;
                     break;
@@ -127,24 +127,24 @@ public class TestH5MemoryLeak
                  for (int openOption=0; openOption<2; openOption++)
                 {
                     nObjs = 0;
-                    H5File file = new H5File(NAME_FILE_H5, FileFormat.WRITE);
+                    final H5File file = new H5File(NAME_FILE_H5, FileFormat.WRITE);
                     
                     if (openOption == 0) {
                         try { 
                             file.open(); // opent the full tree
-                        } catch (Exception ex) { 
+                        } catch (final Exception ex) { 
                             System.err.println("file.open(). "+ ex);
                         }
                     }
                       
                     try {
-                        Group rootGrp = (Group) file.get("/");
+                        final Group rootGrp = (Group) file.get("/");
                         
                         // datasets
                         for (int j=0; j<DNAMES.length; j++) {
                             dset = (Dataset)file.get(DNAMES[j]);
                             dset.init();
-                            Object data = dset.getData();
+                            final Object data = dset.getData();
                             dset.write(data);
                             dset.getMetadata();
                             
@@ -163,27 +163,28 @@ public class TestH5MemoryLeak
                         file.get(NAME_DATATYPE_INT);
                         file.get(NAME_DATATYPE_FLOAT);
                         file.get(NAME_DATATYPE_STR);
-                    } catch (Exception ex) { 
+                    } catch (final Exception ex) { 
                          System.err.println("file.get(). "+ ex);
                     }
          
                     nObjs = 0;
                     try { nObjs = H5.H5Fget_obj_count(file.getFID(), HDF5Constants.H5F_OBJ_LOCAL); }
-                    catch (Exception ex) { ; }
+                    catch (final Exception ex) { ; }
                     if (nObjs > 1) {
                         System.err.println("Possible memory leak. Some objects are still open.");
                     }
                     
                     try {            
                         file.close();
-                    } catch (Exception ex) { 
+                    } catch (final Exception ex) { 
                          System.err.println("file.close() failed. "+ ex);
                     }
                 } // for (int openOption=0; openOption<2; openOption++)
             } finally {
                 // delete the testing file
-                if (tmpFile != null)
+                if (tmpFile != null) {
                     tmpFile.delete();
+                }
             }
         } // while (true)
     }
@@ -198,7 +199,7 @@ public class TestH5MemoryLeak
             System.runFinalization();
             Thread.sleep(100);
         }
-        catch (Exception ex){
+        catch (final Exception ex){
             ex.printStackTrace();
         }
     }
@@ -227,13 +228,13 @@ public class TestH5MemoryLeak
     {
         H5File file=null;
         Group g0, g1, g00;
-        Dataset[] dsets = new Dataset[10];
+        final Dataset[] dsets = new Dataset[10];
         
-        H5Datatype typeInt = new H5Datatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, -1);
-        H5Datatype typeFloat = new H5Datatype(Datatype.CLASS_FLOAT, DATATYPE_SIZE, -1, -1);
-        H5Datatype typeStr = new H5Datatype(Datatype.CLASS_STRING, STR_LEN, -1, -1);
-        H5Datatype typeChar = new H5Datatype(Datatype.CLASS_CHAR, 1, -1, -1);
-        H5Datatype typeEnum = new H5Datatype(Datatype.CLASS_ENUM, DATATYPE_SIZE, -1, -1);
+        final H5Datatype typeInt = new H5Datatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, -1);
+        final H5Datatype typeFloat = new H5Datatype(Datatype.CLASS_FLOAT, DATATYPE_SIZE, -1, -1);
+        final H5Datatype typeStr = new H5Datatype(Datatype.CLASS_STRING, STR_LEN, -1, -1);
+        final H5Datatype typeChar = new H5Datatype(Datatype.CLASS_CHAR, 1, -1, -1);
+        final H5Datatype typeEnum = new H5Datatype(Datatype.CLASS_ENUM, DATATYPE_SIZE, -1, -1);
        
 
         file = new H5File(NAME_FILE_H5, FileFormat.CREATE);
@@ -266,7 +267,7 @@ public class TestH5MemoryLeak
         file.createDatatype(Datatype.CLASS_FLOAT, DATATYPE_SIZE, -1, -1, NAME_DATATYPE_FLOAT);
         file.createDatatype(Datatype.CLASS_STRING, STR_LEN, -1, -1, NAME_DATATYPE_STR);
 
-        try { file.close(); } catch (Exception ex) {}
+        try { file.close(); } catch (final Exception ex) {}
         
         return file;
     }

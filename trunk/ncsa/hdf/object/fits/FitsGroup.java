@@ -58,10 +58,13 @@ public class FitsGroup extends Group
 
     // Implementing DataFormat
     public List getMetadata() throws Exception {
-        if (!isRoot()) return null; // there is only one group in the file: the root
+        if (!isRoot()) {
+            return null; // there is only one group in the file: the root
+        }
 
-        if (attributeList != null)
+        if (attributeList != null) {
             return attributeList;
+        }
 
         return attributeList;
     }

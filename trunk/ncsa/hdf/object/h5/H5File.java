@@ -1735,36 +1735,50 @@ public class H5File extends FileFormat
         }
 
         // do not open the full tree structure, only the file handler
+        int fid_before_open = fid;
         fid = open(false);
         if (fid < 0) return null;
         
-        HDF5GroupInfo info = new HDF5GroupInfo();
-        H5.H5Gget_objinfo(fid, path, false, info);
-        int objType = info.getType();
-        
-        if (objType == HDF5Constants.H5G_DATASET) {
-            int did = -1;
-            try {
-                did = H5.H5Dopen(fid, path);
-                obj = getDataset(did, name, pPath); 
+        try {
+            HDF5GroupInfo info = new HDF5GroupInfo();
+            H5.H5Gget_objinfo(fid, path, false, info);
+            int objType = info.getType();
+            
+            if (objType == HDF5Constants.H5G_DATASET) {
+                int did = -1;
+                try {
+                    did = H5.H5Dopen(fid, path);
+                    obj = getDataset(did, name, pPath); 
+                }
+                finally { 
+                    try { H5.H5Dclose(did); } catch (Exception ex) {} 
+                }
+            } 
+            else if (objType == HDF5Constants.H5G_GROUP) {
+                int gid = -1;
+                try {
+                    gid = H5.H5Gopen(fid, path);
+                    H5Group pGroup = null;
+                    if (pPath != null) {
+                        pGroup = new H5Group(this, null, pPath, null);
+                        obj = getGroup(gid, name, pGroup);
+                        pGroup.addToMemberList(obj);
+                    } else
+                        obj = getGroup(gid, name, pGroup);
+                } finally {
+                    try { H5.H5Gclose(gid); } catch (Exception ex) {}
+                }
             }
-            finally { 
-                try { H5.H5Dclose(did); } catch (Exception ex) {} 
+            else if (objType == HDF5Constants.H5G_TYPE) {
+                obj = new H5Datatype( this, name, pPath);
             }
-        } 
-        else if (objType == HDF5Constants.H5G_GROUP) {
-            int gid = -1;
-            try {
-                gid = H5.H5Gopen(fid, path);
-                H5Group pGroup = null;
-                if (pPath != null) {
-                    pGroup = new H5Group(this, null, pPath, null);
-                    obj = getGroup(gid, name, pGroup);
-                    pGroup.addToMemberList(obj);
-                } else
-                    obj = getGroup(gid, name, pGroup);
-            } finally {
-                try { H5.H5Gclose(gid); } catch (Exception ex) {}
+        } catch (Exception ex) {
+            obj = null;
+        } finally {
+            if (fid_before_open<=0 && obj ==null) {
+                // close the fid that is not attached to any object
+                try { H5.H5Fclose(fid); } catch (Exception ex) {}
+                fid = fid_before_open;
             }
         }
 

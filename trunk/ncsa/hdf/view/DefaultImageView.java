@@ -749,12 +749,12 @@ implements ImageView, ActionListener
                 int w = dataset.getWidth();
                 int h = dataset.getHeight();
 
-                boolean isUS = (dataset.isUnsigned() && dataset.getDatatype().getDatatypeSize() ==2);
-                if (isUS) 
+                if (ViewProperties.isAutoContrast()) 
                 {
-                    // data is unsigned short. Convert image byte data using HUGS image algorithm 
+                    // data is unsigned short. Convert image byte data using auto-contrast image algorithm 
+                    boolean isUnsigned = dataset.isUnsigned();
                     gainBias = new double[2];
-                    if (Tools.computeAutoContrast((int[])data, gainBias, isUS) >= 0) {
+                    if (Tools.computeAutoContrast(data, gainBias, isUnsigned) >= 0) {
                         minMaxGain = new double[2];
                         minMaxBias = new double[2];
                         Tools.computerAutoContrastSliderRange( gainBias, minMaxGain, minMaxBias);
@@ -762,7 +762,7 @@ implements ImageView, ActionListener
                         if (autoGainData == null) 
                             autoGainData = new int[Array.getLength(data)];
                         
-                        if (Tools.applyAutoContrast((int[])data, autoGainData, gainBias, true) >=0) {
+                        if (Tools.applyAutoContrast(data, autoGainData, gainBias, isUnsigned) >=0) {
                             if (imageByteData == null || imageByteData.length != Array.getLength(data))
                                 imageByteData = new byte[Array.getLength(data)];
                             isAutoContrastUS = (Tools.convertImageBuffer(autoGainData, imageByteData, true)>=0);

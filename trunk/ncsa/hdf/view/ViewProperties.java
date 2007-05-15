@@ -87,6 +87,9 @@ public class ViewProperties extends Properties
 
     /** a list of srb accounts */
     private static Vector srbAccountList=new Vector(5);
+    
+    /** floag to indicate if auto contrast is used in image process. */
+    private static boolean isAutoContrast = false;
 
     /**
      * Current Java application such as HDFView cannot handle files
@@ -699,6 +702,10 @@ public class ViewProperties extends Properties
                     usersGuide = "http://"+str;
             }
         }
+        
+        str = (String)get("image.autocontrast");
+        if (str != null)
+            isAutoContrast = ("true".equalsIgnoreCase(str));
 
         str = (String)get("data.delimiter");
         if (str != null && str.length()>0)
@@ -826,6 +833,8 @@ public class ViewProperties extends Properties
         if (fontType != null) put("font.type", fontType);
 
         put("max.members", String.valueOf(max_members));
+        
+        put("image.autocontrast", String.valueOf(isAutoContrast));
 
         // save the list of most recent files
         String theFile;
@@ -1042,5 +1051,19 @@ public class ViewProperties extends Properties
      * into memory.
      */
     public static int getStartMembers() { return start_members; }
+    
+    /**
+     * Returns true if auto contrast is used in image process.
+     * 
+     * @return true if auto contrast is used in image process; otherwise, returns false.
+     */
+    public static boolean isAutoContrast() { return isAutoContrast; }
 
+    /**
+     * Set the flag to indicate if auto contrast is used in image process.
+     * 
+     * @param b the flag to indicate if auto contrast is used in image process.
+     */
+    public static void setAutoContrast(boolean b) { isAutoContrast = b; }
+    
 }

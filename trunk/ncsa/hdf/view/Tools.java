@@ -29,20 +29,13 @@ import com.sun.image.codec.jpeg.*;
  */
 public final class Tools
 {
-    public static final int  CHAR_BIT   = 8;
-    public static final int  CHAR_MIN   = 0;
-    public static final int  CHAR_MAX   = 255;
-    public static final int  INT_MIN    = -2147483648;
-    public static final int  INT_MAX    = 2147483647;
-    public static final long LONG_MIN   = -9223372036854775808L;
-    public static final long LONG_MAX   = 9223372036854775807L;
-    public static final int  SCHAR_MIN  = -128;
-    public static final int  SCHAR_MAX  = 127;
-    public static final int  SHRT_MIN   = -32768;
-    public static final int  SHRT_MAX   = 32767;
-    public static final int  UCHAR_MAX  = 255;
-    public static final long UINT_MAX   = 4294967295L;
-    public static final int  USHRT_MAX  = 65535;
+    public static final long MAX_INT8    = 127;
+    public static final long MAX_UINT8   = 255;
+    public static final long MAX_INT16   = 32767;
+    public static final long MAX_UINT16  = 65535;
+    public static final long MAX_INT32   = 2147483647;
+    public static final long MAX_UINT32  = 4294967295L;
+    public static final long MAX_INT64   = 9223372036854775807L;
      
     /** Converts an image file into HDF4/5 file.
      *  @param imgFileName the input image file.
@@ -795,22 +788,36 @@ public final class Tools
     }
     
     /**
-     * Computes autocontrast parameters for unsigned shorts and signed integers
+     * Computes autocontrast parameters for integers.
+     * <p>
+     * The computation is based on the following scaling
+     * <pre>
+     *      int_8       [0, 127]
+     *      uint_8      [0, 255]
+     *      int_16      [0, 32767]
+     *      uint_16     [0, 65535]
+     *      int_32      [0, 2147483647]
+     *      uint_32     [0, 4294967295]
+     *      int_64      [0, 9223372036854775807]
+     *      uint_64     [0, 18446744073709551615] // Not supported.
+     * </pre>
      *
-     * @param data the raw data array of signed integers or unsigned shorts
+     * @param data the raw data array of signed/unsigned integers
      * @param params the auto gain parameter. params[0]=gain, params[1]=bias
-     * @param isUS flag to indicate if the orginal data is unsigned shorts
+     * @param isUnsigned the flag to indicate if the data array is unsiged integer
      * @return non-negative if successful; otherwise, returns negative
      */
-    public static int computeAutoContrast(int[] data,  double[] params, boolean isUS)
+    public static int computeAutoContrast(Object data,  double[] params, boolean isUnsigned)
     {
-        if (!isUS)
-            return -1; // for now, do not support data types other than unsigned shorts
-        
     	int retval = 1;
+        long maxDataValue = 255;
     	double[] minmax = new double[2];
     	
-    	if (data == null || params == null || data.length<=0 || params.length<2)
+        // check parameters
+    	if (data == null || 
+            params == null || 
+            Array.getLength(data)<=0 || 
+            params.length<2)
     		return -1;
     	
     	retval = computeAutoContrastMinMax(data, minmax);
@@ -821,6 +828,33 @@ public final class Tools
     	
         if (retval < 0)
             return -1;
+        
+        String cname = data.getClass().getName();
+        char dname = cname.charAt(cname.lastIndexOf("[")+1);
+        switch (dname)
+        {
+            case 'B': 
+                maxDataValue = MAX_INT8;
+                break;
+            case 'S':
+                maxDataValue = MAX_INT16;
+                if (isUnsigned)
+                    maxDataValue = MAX_UINT8; // upgaded from unsigned byte
+                 break;
+            case 'I':
+                maxDataValue = MAX_INT32;
+                if (isUnsigned)
+                    maxDataValue = MAX_UINT16; // upgaded from unsigned short
+                break;
+            case 'J':
+                maxDataValue = MAX_INT64;
+                if (isUnsigned)
+                    maxDataValue = MAX_UINT32; // upgaded from unsigned int
+                 break;
+            default:
+                retval = -1;
+                break;
+        } // switch (dname)
         
         if (minmax[0]==minmax[1]) {
             params[0] = 1.0;
@@ -835,18 +869,15 @@ public final class Tools
             int newmax = (int)(minmax[1] + (diff * 0.1)); 
             int newmin = (int)(minmax[0] - (diff * 0.1)); 
             
-            if (isUS) {
-                if (newmax <= USHRT_MAX)
-                    minmax[1] = newmax;
-                
-                if (newmin >=0)
-                    minmax[0] = newmin;
+            if (newmax <= maxDataValue)
+                minmax[1] = newmax;
+            
+            if (newmin >=0)
+                minmax[0] = newmin;
 
-                params[0] = USHRT_MAX / (minmax[1]-minmax[0]);
-                params[1] = -minmax[0];
-                
-            }
-        }
+            params[0] = maxDataValue / (minmax[1]-minmax[0]);
+            params[1] = -minmax[0];
+         }
 
     	return retval;
     }
@@ -854,39 +885,103 @@ public final class Tools
     /**
      * Apply autocontrast parameters in place (destructive)
      *
-     * @param data_in the original data array of signed integers or unsigned shorts
-     * @param data_out the converted data array of signed integers or unsigned shorts
+     * @param data_in the original data array of signed/unsigned integers
+     * @param data_out the converted data array of signed/unsigned integers
      * @param params the auto gain parameter. params[0]=gain, params[1]=bias
-     * @param isUS flag to indicate if the orginal data is unsigned shorts
+     * @param isUnsigned the flag to indicate if the data array is unsiged integer
      * @return non-negative if successful; otherwise, returns negative
      */
-    public static int applyAutoContrast(int[] data_in, int[]data_out,  double[] params, boolean isUS)
+    public static int applyAutoContrast(Object data_in, Object data_out,  double[] params, boolean isUnsigned)
     {
-        if (!isUS)
-            return -1; // for now, do not support data types other than unsigned shorts
-
-        int retval = 1;
+        int retval=1, size=0;
       
-        if (data_in == null || data_in.length<=0  || 
-            data_out == null || data_out.length != data_in.length ||
-            params == null || params.length<2)
+        if (data_in==null || data_out==null || params==null || params.length<2)
             return -1;
-      
-        int n = data_in.length;
+        
+        // input and output array must be the same size
+        size = Array.getLength(data_in);
+        if (size != Array.getLength(data_out))
+            return -1;
+        
         double gain = params[0]; 
         double bias = params[1]; 
         double value; 
-      
-        for( int i = 0; i<n; i++ ) { 
-            value = (data_in[i] + bias) * gain; 
-            if( value < 0.0 ) 
-              data_out[i] = 0; 
-            else if( value > USHRT_MAX ) 
-              data_out[i] = USHRT_MAX; 
-            else 
-              data_out[i] = (int) value; 
-        } 
-      
+        
+        String cname = data_in.getClass().getName();
+        char dname = cname.charAt(cname.lastIndexOf("[")+1);
+        switch (dname)
+        {
+            case 'B': 
+                byte[] b_in = (byte[])data_in;
+                byte[] b_out = (byte[])data_out;
+                byte b_max = (byte)MAX_INT8;
+                
+                for( int i = 0; i<size; i++ ) { 
+                    value = (b_in[i] + bias) * gain; 
+                    if( value < 0.0 ) 
+                      b_out[i] = 0; 
+                    else if( value > b_max ) 
+                      b_out[i] = b_max; 
+                    else 
+                      b_out[i] = (byte)value; 
+                }
+                break;
+            case 'S':
+                short[] s_in = (short[])data_in;
+                short[] s_out = (short[])data_out;
+                short s_max = (short)MAX_INT16;
+                if (isUnsigned)
+                    s_max = (short)MAX_UINT8; // upgaded from unsigned byte
+                
+                for( int i = 0; i<size; i++ ) { 
+                    value = (s_in[i] + bias) * gain; 
+                    if( value < 0.0 ) 
+                      s_out[i] = 0; 
+                    else if( value > s_max ) 
+                      s_out[i] = s_max; 
+                    else 
+                      s_out[i] = (short)value; 
+                }
+                 break;
+            case 'I':
+                int[] i_in = (int[])data_in;
+                int[] i_out = (int[])data_out;
+                int i_max = (int)MAX_INT32;
+                if (isUnsigned)
+                    i_max = (int)MAX_UINT16; // upgaded from unsigned short
+                
+                for( int i = 0; i<size; i++ ) { 
+                    value = (i_in[i] + bias) * gain; 
+                    if( value < 0.0 ) 
+                      i_out[i] = 0; 
+                    else if( value > i_max ) 
+                      i_out[i] = i_max; 
+                    else 
+                      i_out[i] = (int)value; 
+                }
+                break;
+            case 'J':
+                long[] l_in = (long[])data_in;
+                long[] l_out = (long[])data_out;
+                long l_max = (long)MAX_INT64;
+                if (isUnsigned)
+                    l_max = (long)MAX_UINT32; // upgaded from unsigned int
+                
+                for( int i = 0; i<size; i++ ) { 
+                    value = (l_in[i] + bias) * gain; 
+                    if( value < 0.0 ) 
+                      l_out[i] = 0; 
+                    else if( value > l_max ) 
+                      l_out[i] = l_max; 
+                    else 
+                      l_out[i] = (long)value; 
+                }
+                 break;
+            default:
+                retval = -1;
+                break;
+        } // switch (dname)
+        
         return retval; 
     } 
 
@@ -920,24 +1015,77 @@ public final class Tools
 
     /**
      * Converts image raw data to bytes.
-     * This algorithm throws away the lower 8 bits of an unsigned short data
-     * and cst the higher 8 bits into byte.
+     * <p>
+     * The integer data is converted to byte data based on the following rule
+     * <pre>       
+        uint_8       x
+        int_8       (x & 0x7F) << 1
+        uint_16     (x >> 8) & 0xFF
+        int_16      (x >> 7) & 0xFF
+        uint_32     (x >> 24) & 0xFF
+        int_32      (x >> 23) & 0xFF
+        uint_64     (x >> 56) & 0xFF
+        int_64      (x >> 55) & 0xFF
+     * </pre>
      *
      * @param src the source data array of signed integers or unsigned shorts
      * @param dst the destination data array of bytes
-     * @param isUS flag to indicate if the orginal data is unsigned shorts
+     * @param isUnsigned the flag to indicate if the data array is unsiged integer
      * @return non-negative if successful; otherwise, returns negative
      */
-    public static int convertImageBuffer(int[] src,  byte[] dst, boolean isUS)
+    public static int convertImageBuffer(Object src,  byte[] dst, boolean isUnsigned)
     {
-        if (src == null || dst == null || dst.length != src.length || !isUS)
+        int retval=0;
+        
+        if (src==null || dst==null || dst.length != Array.getLength(src))
             return -1;
         
-        for( int i=0; i<dst.length; i++ ) { 
-            dst[i] = (byte)((src[i] >> 8) & 0xFF); 
-        } 
+        int size = dst.length;
+        String cname = src.getClass().getName();
+        char dname = cname.charAt(cname.lastIndexOf("[")+1);
+        switch (dname)
+        {
+            case 'B': 
+                byte[] b_src = (byte[])src;
+                for( int i = 0; i<size; i++ )
+                    dst[i] = (byte) ((b_src[i] & 0x7F) << 1);
+                break;
+            case 'S':
+                short[] s_src = (short[])src;
+                if (isUnsigned) { // upgaded from unsigned byte
+                    for( int i = 0; i<size; i++ )
+                        dst[i] = (byte) s_src[i]; 
+                } else {
+                    for( int i = 0; i<size; i++ )
+                        dst[i] = (byte) ((s_src[i] >> 7) & 0xFF); 
+                }
+                 break;
+            case 'I':
+                int[] i_src = (int[])src;
+                if (isUnsigned) { // upgaded from unsigned short
+                    for( int i = 0; i<size; i++ )
+                        dst[i] = (byte) ((i_src[i] >> 8) & 0xFF); 
+                } else {
+                    for( int i = 0; i<size; i++ )
+                        dst[i] = (byte) ((i_src[i] >> 23) & 0xFF); 
+                }
+                break;
+            case 'J':
+                long[] l_src = (long[])src;
+                if (isUnsigned) { // upgaded from unsigned int
+                    for( int i = 0; i<size; i++ )
+                        dst[i] = (byte) ((l_src[i] >> 24) & 0xFF); 
+                } else {
+                    for( int i = 0; i<size; i++ )
+                        dst[i] = (byte) ((l_src[i] >> 55) & 0xFF); 
+                }
+                break;
+            default:
+                retval = -1;
+                break;
+        } // switch (dname)
         
-        return 0; 
+        return retval; 
     } 
 
 
@@ -971,33 +1119,33 @@ public final class Tools
         char dname = cname.charAt(cname.lastIndexOf("[")+1);
         switch (dname)
         {
-        case 'B': 
-            byte[] b = (byte[])minmax;
-            b[0] = (byte)min; b[1] = (byte)max;
-            break;
-        case 'S':
-            short[] s = (short[])minmax;
-            s[0] = (short)min; s[1] = (short)max;
-            break;
-        case 'I':
-            int[] ia = (int[])minmax;
-            ia[0] = (int)min; ia[1] = (int)max;
-            break;
-        case 'J':
-        	long[] l = (long[])minmax;
-            l[0] = (long)min; l[1] = (long)max;
-            break;
-        case 'F':
-            float[] f = (float[])minmax;
-            f[0] = (float)min; f[1] = (float)max;
-            break;
-        case 'D':
-            double[] d = (double[])minmax;
-            d[0] = min; d[1] = max;
-            break;
-        default:
-            	retval = -1;
+            case 'B': 
+                byte[] b = (byte[])minmax;
+                b[0] = (byte)min; b[1] = (byte)max;
                 break;
+            case 'S':
+                short[] s = (short[])minmax;
+                s[0] = (short)min; s[1] = (short)max;
+                break;
+            case 'I':
+                int[] ia = (int[])minmax;
+                ia[0] = (int)min; ia[1] = (int)max;
+                break;
+            case 'J':
+                long[] l = (long[])minmax;
+                l[0] = (long)min; l[1] = (long)max;
+                break;
+            case 'F':
+                float[] f = (float[])minmax;
+                f[0] = (float)min; f[1] = (float)max;
+                break;
+            case 'D':
+                double[] d = (double[])minmax;
+                d[0] = min; d[1] = max;
+                break;
+            default:
+                    retval = -1;
+                    break;
         } // switch (dname)
     	
     	return retval;

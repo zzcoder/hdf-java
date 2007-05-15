@@ -962,6 +962,40 @@ public abstract class FileFormat extends File
     /**
      * Gets an HObject with a given path from a file. 
      * <p>
+     * The way of how the get() method retrives an object depends on 
+     * if {@link #open()} method is called.
+     * <ul>
+     *   <li> If {@link #open()} is called before get() is called, the
+     *        full structure of file is loaded into memory. The get() 
+     *        finds and returns the object in memory. For a group, the get()
+     *        method returns the group and all the members under the group.
+     *        In the following example, get("/g0") returns the group "/g0" 
+     *        and everything below.
+     *        <pre>
+              /g0                      Group
+              /g0/dataset_comp         Dataset {50, 10}
+              /g0/dataset_int          Dataset {50, 10}
+              /g0/g00                  Group
+              /g0/g00/dataset_float    Dataset {50, 10}
+              /g0/g01                  Group
+              /g0/g01/dataset_string   Dataset {50, 10}
+              </pre>
+     *   <li> If {@link #open()} is not called, the get() method retrieves
+     *        the requested object from a file. For a group, the get() method
+     *        only loads the group and its immediate members. It does not follow
+     *        its sub-groups. In the following example, get("/g0") will 
+     *        return the group "/g0" with its immediate members: two datasets (
+     *        dataset_comp, dataset_int) and two empty groups (g00, g01).
+     *        <pre>
+              /g0                      Group
+              /g0/dataset_comp         Dataset {50, 10}
+              /g0/dataset_int          Dataset {50, 10}
+              /g0/g00                  Group
+              /g0/g00/dataset_float    Dataset {50, 10}
+              /g0/g01                  Group
+              /g0/g01/dataset_string   Dataset {50, 10}
+              </pre>
+     * <p>
      * The following example shows how use the get() to get a group object from file
      * <pre>
          public static void TestHDF5Get (String filename) throws Exception
