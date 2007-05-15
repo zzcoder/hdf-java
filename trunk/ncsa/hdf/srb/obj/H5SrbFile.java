@@ -84,7 +84,9 @@ public class H5SrbFile extends FileFormat
      */
     public int open() throws Exception
     {
-        if ( srbInfo == null || srbInfo.length<5) return -1;
+        if ( (srbInfo == null) || (srbInfo.length<5)) {
+            return -1;
+        }
 
         int status = -1;
         opID = H5FILE_OP_OPEN;
@@ -114,8 +116,9 @@ public class H5SrbFile extends FileFormat
         List list = pgroup.getMemberList();
         DefaultMutableTreeNode node;
 
-        if (list == null || (n=list.size())<=0)
+        if ((list == null) || ((n=list.size())<=0)) {
             return;
+        }
 
         for (int i=0; i<n; i++)
         {
@@ -156,7 +159,9 @@ public class H5SrbFile extends FileFormat
      */
     public void close() throws Exception
     {
-        if ( srbInfo == null || srbInfo.length<5) return;
+        if ( (srbInfo == null) || (srbInfo.length<5)) {
+            return;
+        }
 
         opID = H5FILE_OP_CLOSE;
         H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_FILE);

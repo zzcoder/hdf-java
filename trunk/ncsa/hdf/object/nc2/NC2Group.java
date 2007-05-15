@@ -60,17 +60,21 @@ public class NC2Group extends Group
     // Implementing DataFormat
     public List getMetadata() throws Exception
     {
-        if (!isRoot()) return null;
+        if (!isRoot()) {
+            return null;
+        }
 
-        if (attributeList != null)
+        if (attributeList != null) {
             return attributeList;
+        }
 
         NC2File theFile = (NC2File)getFileFormat();
         NetcdfFile ncFile = theFile.getNetcdfFile();
 
         List netcdfAttributeList = ncFile.getGlobalAttributes();
-        if (netcdfAttributeList == null)
+        if (netcdfAttributeList == null) {
             return null;
+        }
 
         int n = netcdfAttributeList.size();
         attributeList = new Vector(n);

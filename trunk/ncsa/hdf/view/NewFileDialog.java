@@ -87,8 +87,11 @@ public class NewFileDialog extends JFileChooser //JDialog
             setFileFilter(DefaultFileFilter.getFileFilterHDF5());
         }
 
-        if (currentDir != null) currentDir += File.separator;
-        else currentDir = "";
+        if (currentDir != null) {
+            currentDir += File.separator;
+        } else {
+            currentDir = "";
+        }
 
         this.showSaveDialog(owner);
     }
@@ -97,18 +100,20 @@ public class NewFileDialog extends JFileChooser //JDialog
     {
         super.fireActionPerformed(command);
 
-        if (command.equals("ApproveSelection"))
+        if (command.equals("ApproveSelection")) {
             fileCreated = createNewFile();
-        else
+        } else {
             fileCreated = false;
+        }
     }
 
     /** create a new HDF file with default file creation properties */
     private boolean createNewFile()
     {
         File f = this.getSelectedFile();
-        if (f == null)
+        if (f == null) {
             return false;
+        }
 
         String fname = f.getAbsolutePath();
 
@@ -118,7 +123,7 @@ public class NewFileDialog extends JFileChooser //JDialog
         }
 
         fname = fname.trim();
-        if (fname == null || fname.length()==0)
+        if ((fname == null) || (fname.length()==0))
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
@@ -130,7 +135,7 @@ public class NewFileDialog extends JFileChooser //JDialog
 
         String extensions = FileFormat.getFileExtensions();
         boolean noExtension = true;
-        if (extensions != null && extensions.length() >0)
+        if ((extensions != null) && (extensions.length() >0))
         {
             java.util.StringTokenizer currentExt = new java.util.StringTokenizer(extensions, ",");
             String extension = "";
@@ -210,8 +215,9 @@ public class NewFileDialog extends JFileChooser //JDialog
                 "File exists. Do you want to replace it ?",
                 viewer.getTitle(),
                 JOptionPane.YES_NO_OPTION);
-            if (newFileFlag == JOptionPane.NO_OPTION)
+            if (newFileFlag == JOptionPane.NO_OPTION) {
                 return false;
+            }
         }
 
         currentDir = f.getParent();
@@ -240,8 +246,9 @@ public class NewFileDialog extends JFileChooser //JDialog
     {
         String fname = null;
         File f = this.getSelectedFile();
-        if (f != null)
+        if (f != null) {
             fname = f.getAbsolutePath();
+        }
 
         return fname;
     }

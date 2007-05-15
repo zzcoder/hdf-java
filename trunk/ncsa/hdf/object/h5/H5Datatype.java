@@ -76,7 +76,7 @@ public class H5Datatype extends Datatype
     {
         super (theFile, name, path, oid);
 
-        if (oid == null && theFile != null) {
+        if ((oid == null) && (theFile != null)) {
             // retrieve the object ID
             try {
                 byte[] ref_buf = H5.H5Rcreate(theFile.getFID(), this.getFullName(), HDF5Constants.H5R_OBJECT, -1);
@@ -176,17 +176,18 @@ public class H5Datatype extends Datatype
             datatypeClass = CLASS_INTEGER;
             try {
                 int tsign = H5.H5Tget_sign(tid);
-                if (tsign == HDF5Constants.H5T_SGN_NONE)
+                if (tsign == HDF5Constants.H5T_SGN_NONE) {
                     datatypeSign = SIGN_NONE;
+                }
             } catch (Exception ex) {}
         }
-        else if (tclass == HDF5Constants.H5T_FLOAT)
+        else if (tclass == HDF5Constants.H5T_FLOAT) {
             datatypeClass = CLASS_FLOAT;
-        else if (tclass == HDF5Constants.H5T_STRING)
+        } else if (tclass == HDF5Constants.H5T_STRING) {
             datatypeClass = CLASS_STRING;
-        else if (tclass == HDF5Constants.H5T_REFERENCE)
+        } else if (tclass == HDF5Constants.H5T_REFERENCE) {
             datatypeClass = CLASS_REFERENCE;
-        else if (tclass == HDF5Constants.H5T_ENUM)
+        } else if (tclass == HDF5Constants.H5T_ENUM)
         {
             datatypeClass = CLASS_ENUM;
             try {
@@ -242,8 +243,9 @@ public class H5Datatype extends Datatype
             catch (Exception ex) {;}
         }
 
-        if (tid >=0 )
+        if (tid >=0 ) {
             return tid;
+        }
 
         // figure the datatype
         try {
@@ -251,42 +253,48 @@ public class H5Datatype extends Datatype
             {
                 case CLASS_INTEGER:
                 case CLASS_ENUM:
-                    if (datatypeSize == 1)
+                    if (datatypeSize == 1) {
                         tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT8);
-                    else if (datatypeSize == 2)
+                    } else if (datatypeSize == 2) {
                         tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT16);
-                    else if (datatypeSize == 4)
+                    } else if (datatypeSize == 4) {
                         tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT32);
-                    else if (datatypeSize == 8)
+                    } else if (datatypeSize == 8) {
                         tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT64);
-                    else
+                    } else {
                         tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT);
+                    }
 
-                    if (datatypeOrder == Datatype.ORDER_BE)
+                    if (datatypeOrder == Datatype.ORDER_BE) {
                         H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_BE);
-                    else if (datatypeOrder == Datatype.ORDER_LE)
+                    } else if (datatypeOrder == Datatype.ORDER_LE) {
                         H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_LE);
+                    }
 
-                    if (datatypeSign == Datatype.SIGN_NONE)
+                    if (datatypeSign == Datatype.SIGN_NONE) {
                         H5.H5Tset_sign(tid, HDF5Constants.H5T_SGN_NONE);
+                    }
                     break;
                 case CLASS_FLOAT:
-                    if (datatypeSize == 8)
+                    if (datatypeSize == 8) {
                         tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_DOUBLE);
-                    else
+                    } else {
                         tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_FLOAT);
+                    }
 
-                    if (datatypeOrder == Datatype.ORDER_BE)
+                    if (datatypeOrder == Datatype.ORDER_BE) {
                         H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_BE);
-                    else if (datatypeOrder == Datatype.ORDER_LE)
+                    } else if (datatypeOrder == Datatype.ORDER_LE) {
                         H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_LE);
+                    }
 
                     break;
                 case CLASS_CHAR:
-                    if (datatypeSign == Datatype.SIGN_NONE)
+                    if (datatypeSign == Datatype.SIGN_NONE) {
                         tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_UCHAR);
-                    else
+                    } else {
                         tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_CHAR);
+                    }
                     break;
                 case CLASS_STRING:
                     tid = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
@@ -309,15 +317,17 @@ public class H5Datatype extends Datatype
                 StringTokenizer token;
 
                 // using "0" and "1" as default
-                if (enumMembers == null)
+                if (enumMembers == null) {
                     token = new StringTokenizer("0,1", ",");
-                else
+                } else {
                     token = new StringTokenizer(enumMembers, ",");
+                }
 
                 while (token.hasMoreTokens()) {
                     memstr = token.nextToken();
-                    if (memstr==null || memstr.length()<1)
+                    if ((memstr==null) || (memstr.length()<1)) {
                         continue;
+                    }
 
                     idx = memstr.indexOf('=');
                     if (idx>0) {
@@ -359,11 +369,15 @@ public class H5Datatype extends Datatype
         boolean is_variable_str = false;
         boolean is_reg_ref = false;
 
-        if (size < 0) return null;
+        if (size < 0) {
+            return null;
+        }
 
         // Scalar members have dimensionality zero, i.e. size =0
         // what can we do about it, set the size to 1
-        if (size == 0) size = 1;
+        if (size == 0) {
+            size = 1;
+        }
 
         // data type information
         int tclass=-1, tsize=-1, tsign=-1;
@@ -382,14 +396,21 @@ public class H5Datatype extends Datatype
         if (is_variable_str || isVL || is_reg_ref)
         {
             data = new String[size];
-            for (int i=0; i<size; i++) ((String[])data)[i] = "";
+            for (int i=0; i<size; i++) {
+                ((String[])data)[i] = "";
+            }
         }
         else if (tclass == HDF5Constants.H5T_INTEGER)
         {
-            if (tsize == 1) data = new byte[size];
-            else if (tsize == 2) data = new short[size];
-            else if (tsize == 4) data = new int[size];
-            else if (tsize == 8) data = new long[size];
+            if (tsize == 1) {
+                data = new byte[size];
+            } else if (tsize == 2) {
+                data = new short[size];
+            } else if (tsize == 4) {
+                data = new int[size];
+            } else if (tsize == 8) {
+                data = new long[size];
+            }
         }
         else if (tclass == HDF5Constants.H5T_ENUM) {
             // can be any integer
@@ -405,12 +426,15 @@ public class H5Datatype extends Datatype
         }
         else if (tclass == HDF5Constants.H5T_FLOAT)
         {
-            if (tsize == 4) data = new float[size];
-            else if (tsize == 8) data = new double[size];
+            if (tsize == 4) {
+                data = new float[size];
+            } else if (tsize == 8) {
+                data = new double[size];
+            }
         }
-        else if ( tclass == HDF5Constants.H5T_STRING ||
-            tclass == HDF5Constants.H5T_REFERENCE ||
-            tclass == HDF5Constants.H5T_BITFIELD)
+        else if ( (tclass == HDF5Constants.H5T_STRING) ||
+            (tclass == HDF5Constants.H5T_REFERENCE) ||
+            (tclass == HDF5Constants.H5T_BITFIELD))
         {
             data = new byte[size*tsize];
         }
@@ -455,8 +479,6 @@ public class H5Datatype extends Datatype
      */
     public static final int getDatatypeSize(int tid)
     {
-        String description = "Unknown";
-
         // data type information
         int tsize=-1;
 
@@ -501,35 +523,40 @@ public class H5Datatype extends Datatype
             if (tsize == 1)
             {
                 try {
-                if (H5.H5Tequal(tid, HDF5Constants.H5T_NATIVE_UCHAR))
+                if (H5.H5Tequal(tid, HDF5Constants.H5T_NATIVE_UCHAR)) {
                     description = "8-bit unsigned character";
-                else if (H5.H5Tequal(tid, HDF5Constants.H5T_NATIVE_CHAR))
+                } else if (H5.H5Tequal(tid, HDF5Constants.H5T_NATIVE_CHAR)) {
                     description = "8-bit character";
-                else if (tsign == HDF5Constants.H5T_SGN_NONE)
+                } else if (tsign == HDF5Constants.H5T_SGN_NONE) {
                     description = "8-bit unsigned integer";
-                else  description = "8-bit integer";
+                } else {
+                    description = "8-bit integer";
+                }
                 } catch (Exception ex) { description = "Unknown"; }
             }
             else if (tsize == 2)
             {
-                if (tsign == HDF5Constants.H5T_SGN_NONE)
+                if (tsign == HDF5Constants.H5T_SGN_NONE) {
                     description = "16-bit unsigned integer";
-                else
+                } else {
                     description = "16-bit integer";
+                }
             }
             else if (tsize == 4)
             {
-                if (tsign == HDF5Constants.H5T_SGN_NONE)
+                if (tsign == HDF5Constants.H5T_SGN_NONE) {
                     description = "32-bit unsigned integer";
-                else
+                } else {
                     description = "32-bit integer";
+                }
             }
             else if (tsize == 8)
             {
-                if (tsign == HDF5Constants.H5T_SGN_NONE)
+                if (tsign == HDF5Constants.H5T_SGN_NONE) {
                     description = "64-bit unsigned integer";
-                else
+                } else {
                     description = "64-bit integer";
+                }
             }
         }
         else if (tclass == HDF5Constants.H5T_FLOAT)
@@ -546,10 +573,11 @@ public class H5Datatype extends Datatype
         else if (tclass == HDF5Constants.H5T_STRING)
         {
             try {
-                if ( H5.H5Tis_variable_str(tid ))
+                if ( H5.H5Tis_variable_str(tid )) {
                     description = "String, length = variable";
-                else
+                } else {
                     description = "String, length = "+H5.H5Tget_size(tid);
+                }
             }
             catch (Exception ex)
             {
@@ -562,10 +590,11 @@ public class H5Datatype extends Datatype
             try {is_reg_ref=H5.H5Tequal(tid, HDF5Constants.H5T_STD_REF_DSETREG);}
             catch (Exception ex) {}
 
-            if (is_reg_ref)
+            if (is_reg_ref) {
                 description = "Dataset region reference";
-            else
+            } else {
                 description = "Object reference";
+            }
         }
         else if (tclass == HDF5Constants.H5T_BITFIELD)
         {
@@ -630,8 +659,9 @@ public class H5Datatype extends Datatype
             finally {
                 try {H5.H5Tclose(tmptid); } catch (Exception ex) {}
             }
+        } else {
+            description = "Unknown";
         }
-        else description = "Unknown";
 
         return description;
     }
@@ -660,8 +690,9 @@ public class H5Datatype extends Datatype
         try
         {
             int tsign = H5.H5Tget_sign(datatype);
-            if (tsign == HDF5Constants.H5T_SGN_NONE)
+            if (tsign == HDF5Constants.H5T_SGN_NONE) {
                 unsigned = true;
+            }
         } catch (Exception ex) {
             unsigned = false;
         }
@@ -734,22 +765,26 @@ public class H5Datatype extends Datatype
     public void writeMetadata(Object info) throws Exception
     {
         // only attribute metadata is supported.
-        if (!(info instanceof Attribute))
+        if (!(info instanceof Attribute)) {
             return;
+        }
 
         boolean attrExisted = false;
         Attribute attr = (Attribute)info;
         String name = attr.getName();
 
-        if (attributeList == null)
+        if (attributeList == null) {
             attributeList = new Vector(10);
-        else
+        } else {
             attrExisted = attributeList.contains(attr);
+        }
 
         getFileFormat().writeAttribute(this, attr, attrExisted);
 
         // add the new attribute into attribute list
-        if (!attrExisted) attributeList.add(attr);
+        if (!attrExisted) {
+            attributeList.add(attr);
+        }
     }
 
     /*
@@ -759,8 +794,9 @@ public class H5Datatype extends Datatype
     public void removeMetadata(Object info) throws HDF5Exception
     {
         // only attribute metadata is supported.
-        if (!(info instanceof Attribute))
+        if (!(info instanceof Attribute)) {
             return;
+        }
 
         Attribute attr = (Attribute)info;
         int tid = open();

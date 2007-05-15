@@ -168,8 +168,9 @@ public abstract class CompoundDS extends Dataset
         {
             for (int i=0; i<isMemberSelected.length; i++)
             {
-                if (isMemberSelected[i])
+                if (isMemberSelected[i]) {
                     count++;
+                }
             }
         }
 
@@ -199,10 +200,11 @@ public abstract class CompoundDS extends Dataset
      */
     public final boolean isMemberSelected(int idx)
     {
-        if (isMemberSelected != null && isMemberSelected.length>idx)
+        if ((isMemberSelected != null) && (isMemberSelected.length>idx)) {
             return isMemberSelected[idx];
-        else
+        } else {
             return false;
+        }
     }
 
     /**
@@ -212,8 +214,9 @@ public abstract class CompoundDS extends Dataset
      */
     public final void selectMember(int idx)
     {
-        if (isMemberSelected != null && isMemberSelected.length>idx)
+        if ((isMemberSelected != null) && (isMemberSelected.length>idx)) {
             isMemberSelected[idx] = true;
+        }
     }
 
     /**
@@ -225,11 +228,13 @@ public abstract class CompoundDS extends Dataset
      */
     public final void setMemberSelection(boolean isSelected)
     {
-        if (isMemberSelected == null)
+        if (isMemberSelected == null) {
             return;
+        }
 
-        for (int i=0; i<isMemberSelected.length; i++)
+        for (int i=0; i<isMemberSelected.length; i++) {
             isMemberSelected[i] = isSelected;
+        }
     }
 
     /**
@@ -271,15 +276,17 @@ public abstract class CompoundDS extends Dataset
     */
     public final int[] getSelectedMemberOrders()
     {
-        if (isMemberSelected == null)
+        if (isMemberSelected == null) {
             return memberOrders;
+        }
 
         int idx = 0;
         int[] orders = new int[getSelectedMemberCount()];
         for (int i=0; i<isMemberSelected.length; i++)
         {
-            if (isMemberSelected[i])
+            if (isMemberSelected[i]) {
                 orders[idx++] = memberOrders[i];
+            }
         }
 
         return orders;
@@ -302,8 +309,9 @@ public abstract class CompoundDS extends Dataset
      * @return the dimension sizes of of the i-th member.
      */
     public final int[] getMemeberDims(int i) {
-        if (memberDims == null)
+        if (memberDims == null) {
             return null;
+        }
         return (int[])memberDims[i];
     }
     
@@ -328,15 +336,17 @@ public abstract class CompoundDS extends Dataset
      */
     public final Datatype[] getSelectedMemberTypes()
     {
-        if (isMemberSelected == null)
+        if (isMemberSelected == null) {
             return memberTypes;
+        }
 
         int idx = 0;
         Datatype[] types = new Datatype[getSelectedMemberCount()];
         for (int i=0; i<isMemberSelected.length; i++)
         {
-            if (isMemberSelected[i])
+            if (isMemberSelected[i]) {
                 types[idx++] = memberTypes[i];
+            }
         }
 
         return types;

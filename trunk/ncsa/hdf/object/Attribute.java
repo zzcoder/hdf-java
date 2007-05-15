@@ -145,11 +145,13 @@ public class Attribute implements Metadata
         value = null;
         rank = 0;
 
-        if (dims != null)
+        if (dims != null) {
             rank = dims.length;
+        }
 
-        if (attrValue != null)
+        if (attrValue != null) {
             value = attrValue;
+        }
         
         isUnsigned = (type.getDatatypeSign()==Datatype.SIGN_NONE);
     }
@@ -250,21 +252,21 @@ public class Attribute implements Metadata
      */
     public String toString(String delimiter)
     {
-        if (value == null)
+        if (value == null) {
             return null;
+        }
 
         Class valClass = value.getClass();
 
-        if (!valClass.isArray())
+        if (!valClass.isArray()) {
             return value.toString();
+        }
 
         // attribute value is an array
         StringBuffer sb = new StringBuffer();
         int n = Array.getLength(value);
         if (isUnsigned)
         {
-            long maxValue = 0;
-
             String cname = valClass.getName();
             char dname = cname.charAt(cname.lastIndexOf("[")+1);
 
@@ -273,39 +275,51 @@ public class Attribute implements Metadata
                 case 'B':
                     byte[] barray = (byte[])value;
                     short sValue = barray[0];
-                    if (sValue < 0) sValue += 256;
+                    if (sValue < 0) {
+                        sValue += 256;
+                    }
                     sb.append(sValue);
                     for (int i=1; i<n; i++)
                     {
                         sb.append(delimiter);
                         sValue = barray[i];
-                        if (sValue < 0) sValue += 256;
+                        if (sValue < 0) {
+                            sValue += 256;
+                        }
                         sb.append(sValue);
                     }
                     break;
                 case 'S':
                     short[] sarray = (short[])value;
                     int iValue = sarray[0];
-                    if (iValue < 0) iValue += 65536;
+                    if (iValue < 0) {
+                        iValue += 65536;
+                    }
                     sb.append(iValue);
                     for (int i=1; i<n; i++)
                     {
                         sb.append(delimiter);
                         iValue = sarray[i];
-                        if (iValue < 0) iValue += 65536;
+                        if (iValue < 0) {
+                            iValue += 65536;
+                        }
                         sb.append(iValue);
                     }
                     break;
                 case 'I':
                     int[] iarray = (int[])value;
                     long lValue = iarray[0];
-                    if (lValue < 0) lValue += 4294967296L;
+                    if (lValue < 0) {
+                        lValue += 4294967296L;
+                    }
                     sb.append(lValue);
                     for (int i=1; i<n; i++)
                     {
                         sb.append(delimiter);
                         lValue = iarray[i];
-                        if (lValue < 0) lValue += 4294967296L;
+                        if (lValue < 0) {
+                            lValue += 4294967296L;
+                        }
                         sb.append(lValue);
                     }
                     break;

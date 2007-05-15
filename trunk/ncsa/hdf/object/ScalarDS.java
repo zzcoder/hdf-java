@@ -156,7 +156,7 @@ public abstract class ScalarDS extends Dataset
     {
         // keep a copy of original buffer and the converted buffer
         // so that they can be reused later to save memory
-        if (data != null && isUnsigned && !unsignedConverted)
+        if ((data != null) && isUnsigned && !unsignedConverted)
         {
             originalBuf = data;
             convertedBuf = convertFromUnsignedC(originalBuf, convertedBuf);
@@ -177,7 +177,7 @@ public abstract class ScalarDS extends Dataset
     {
         // keep a copy of original buffer and the converted buffer
         // so that they can be reused later to save memory
-        if (data != null && isUnsigned)
+        if ((data != null) && isUnsigned)
         {
             convertedBuf = data;
             originalBuf = convertToUnsignedC(convertedBuf, originalBuf);

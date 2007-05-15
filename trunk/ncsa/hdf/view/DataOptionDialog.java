@@ -120,20 +120,24 @@ implements ActionListener, ItemListener
         numberOfPalettes = 1;
         toolkit = Toolkit.getDefaultToolkit();
 
-        if (dataset == null)
+        if (dataset == null) {
             dispose();
-        else
+        } else {
             setTitle("Dataset Selection - "+dataset.getPath()+dataset.getName());
+        }
 
         isH5 = dataset.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
 
         rank = dataset.getRank();
-        if (rank <=0 ) dataset.init();
+        if (rank <=0 ) {
+            dataset.init();
+        }
         if (isH5 && (dataset instanceof ScalarDS))
         {
             byte[] palRefs = ((ScalarDS)dataset).getPaletteRefs();
-            if (palRefs != null && palRefs.length > 8)
+            if ((palRefs != null) && (palRefs.length > 8)) {
                 numberOfPalettes = palRefs.length/8;
+            }
         }
         rank = dataset.getRank();
         dims = dataset.getDims();
@@ -145,7 +149,9 @@ implements ActionListener, ItemListener
 
         int h=1, w=1;
         h = (int)dims[selectedIndex[0]];
-        if (rank > 1) w = (int)dims[selectedIndex[1]];
+        if (rank > 1) {
+            w = (int)dims[selectedIndex[1]];
+        }
 
         swapOnlyButton = new JRadioButton("Swap Only", false);
         swapOnlyButton.setMnemonic(KeyEvent.VK_T);
@@ -244,7 +250,9 @@ implements ActionListener, ItemListener
                 w1 = 800 + (ViewProperties.getFontSize()-12)*15;
                 h1 = 360 + (ViewProperties.getFontSize()-12)*10;
                 contentPane.setPreferredSize(new Dimension(w1, h1));
-                if (rank > 1) centerP.add(navigatorP, BorderLayout.WEST);
+                if (rank > 1) {
+                    centerP.add(navigatorP, BorderLayout.WEST);
+                }
 
                 // setup GUI components for the display options: table or image
                 imageButton.addItemListener(this);
@@ -336,10 +344,11 @@ implements ActionListener, ItemListener
             choices[i] = new JComboBox();
             choices[i].addItemListener(this);
             for (int j=0; j<rank; j++) {
-                if (dimNames == null)
+                if (dimNames == null) {
                     choices[i].addItem("dim "+j);
-                else
+                } else {
                     choices[i].addItem(dimNames[j]);
+                }
             }
             maxLabels[i] = new JLabel("1");
             startFields[i] = new JTextField("0");
@@ -406,17 +415,20 @@ implements ActionListener, ItemListener
         if (cmd.equals("Ok"))
         {
             // set palette for image view
-            if (dataset instanceof ScalarDS &&
-                imageButton.isSelected())
+            if ((dataset instanceof ScalarDS) &&
+                imageButton.isSelected()) {
                 setPalette();
+            }
 
             isSelectionCancelled = !setSelection();
 
-            if (isSelectionCancelled)
+            if (isSelectionCancelled) {
                 return;
+            }
             
-            if (dataset instanceof ScalarDS) 
-             ((ScalarDS)dataset).setIsImageDisplay(imageButton.isSelected());
+            if (dataset instanceof ScalarDS) {
+                ((ScalarDS)dataset).setIsImageDisplay(imageButton.isSelected());
+            }
 
             dispose();
         }
@@ -426,8 +438,9 @@ implements ActionListener, ItemListener
         }
         else if (cmd.equals("Select more dimensions"))
         {
-            if (rank < 4)
+            if (rank < 4) {
                 return;
+            }
 
             int idx = 0;
             Vector choice4 = new Vector(rank);
@@ -454,8 +467,9 @@ implements ActionListener, ItemListener
             }
 
             String result = JOptionPane.showInputDialog(this, msg, initValue);
-            if (result==null || (result = result.trim())== null || result.length()<1)
+            if ((result==null) || ((result = result.trim())== null) || (result.length()<1)) {
                 return;
+            }
 
             StringTokenizer st = new StringTokenizer(result, "x");
             if ( st.countTokens() < n)
@@ -483,7 +497,7 @@ implements ActionListener, ItemListener
                     return;
                 }
 
-                if (start4[i] < 0 || start4[i] >=dims[choice4Index[i]])
+                if ((start4[i] < 0) || (start4[i] >=dims[choice4Index[i]]))
                 {
                     JOptionPane.showMessageDialog(
                         this,
@@ -522,7 +536,7 @@ implements ActionListener, ItemListener
 
             // reset show char button
             if (spreadsheetButton.isSelected() &&
-                dataset.getDatatype().getDatatypeSize()==1)
+                (dataset.getDatatype().getDatatypeSize()==1))
             {
                 charButton.setEnabled(true);
             }
@@ -536,11 +550,13 @@ implements ActionListener, ItemListener
         }
         else if (source instanceof JComboBox)
         {
-            if (!performJComboBoxEvent)
+            if (!performJComboBoxEvent) {
                 return;
+            }
 
-            if (e.getStateChange() == ItemEvent.DESELECTED)
+            if (e.getStateChange() == ItemEvent.DESELECTED) {
                 return; // don't care about the deselect
+            }
 
             JComboBox theChoice = (JComboBox)source;
 
@@ -549,16 +565,19 @@ implements ActionListener, ItemListener
             int n = Math.min(3, rank);
             for (int i=0; i<n; i++)
             {
-                if (theChoice.equals(choices[i]))
+                if (theChoice.equals(choices[i])) {
                     theSelectedChoice = i;
+                }
             }
 
-            if (theSelectedChoice < 0)
+            if (theSelectedChoice < 0) {
                 return; // the selected JComboBox is not a dimension choice
+            }
 
             int theIndex = theChoice.getSelectedIndex();
-            if (theIndex == currentIndex[theSelectedChoice])
+            if (theIndex == currentIndex[theSelectedChoice]) {
                 return; // select the same item, no change
+            }
 
             start[currentIndex[theSelectedChoice]]=0;
 
@@ -572,9 +591,9 @@ implements ActionListener, ItemListener
             // other dimension choice, exchange the dimensions
             for (int i=0; i<n; i++)
             {
-                if (i==theSelectedChoice)
+                if (i==theSelectedChoice) {
                     continue; // don't exchange itself
-                else if (theIndex==choices[i].getSelectedIndex())
+                } else if (theIndex==choices[i].getSelectedIndex())
                 {
                     setJComboBoxSelectedIndex(choices[i], currentIndex[theSelectedChoice]);
                     startFields[i].setText("0");
@@ -584,15 +603,16 @@ implements ActionListener, ItemListener
                 }
             }
 
-            for (int i=0; i<n; i++)
+            for (int i=0; i<n; i++) {
                 currentIndex[i] = choices[i].getSelectedIndex();
+            }
 
             // update the navigator
             if (rank > 1)
             {
-                if (isText)
+                if (isText) {
                     endFields[1].setText(startFields[1].getText());
-                else
+                } else
                 {
                     int hIdx = choices[0].getSelectedIndex();
                     int wIdx = choices[1].getSelectedIndex();
@@ -604,8 +624,9 @@ implements ActionListener, ItemListener
                 }
             }
 
-            if (rank > 2)
+            if (rank > 2) {
                 endFields[2].setText(startFields[2].getText());
+            }
         } // else if (source instanceof JComboBox)
     }
 
@@ -652,20 +673,23 @@ implements ActionListener, ItemListener
 
             int idx = selectedIndex[i];
             endIdx = start[idx]+selected[idx]*stride[idx];
-            if (endIdx >= dims[idx]) endIdx = dims[idx];
+            if (endIdx >= dims[idx]) {
+                endIdx = dims[idx];
+            }
 
             setJComboBoxSelectedIndex(choices[i], idx);
             maxLabels[i].setText(String.valueOf(dims[idx]));
             startFields[i].setText(String.valueOf(start[idx]));
             endFields[i].setText(String.valueOf(endIdx-1));
 
-            if (!isH5 && (dataset instanceof CompoundDS))
+            if (!isH5 && (dataset instanceof CompoundDS)) {
                 strideFields[i].setEnabled(false);
-            else
+            } else {
                 strideFields[i].setText(String.valueOf(stride[idx]));
+            }
         }
 
-        if (rank > 1 && isText)
+        if ((rank > 1) && isText)
         {
             endFields[1].setEnabled(false);
             endFields[1].setText(startFields[1].getText());
@@ -703,7 +727,7 @@ implements ActionListener, ItemListener
 
         // reset show char button
         if (spreadsheetButton.isSelected() &&
-            dataset.getDatatype().getDatatypeSize()==1)
+            (dataset.getDatatype().getDatatypeSize()==1))
         {
             charButton.setEnabled(true);
         }
@@ -731,28 +755,30 @@ implements ActionListener, ItemListener
 
     private void setPalette()
     {
-        if (!(dataset instanceof ScalarDS))
+        if (!(dataset instanceof ScalarDS)) {
             return;
+        }
 
         byte[][] pal = null;
         int palChoice = choicePalette.getSelectedIndex();
 
-        if (palChoice == 0)
+        if (palChoice == 0) {
             return; /* using default palette */
+        }
 
-        if (palChoice == numberOfPalettes+1)
+        if (palChoice == numberOfPalettes+1) {
             pal = Tools.createGrayPalette();
-        else if (palChoice == numberOfPalettes+2)
+        } else if (palChoice == numberOfPalettes+2) {
             pal = Tools.createReverseGrayPalette();
-        else if (palChoice == numberOfPalettes+3)
+        } else if (palChoice == numberOfPalettes+3) {
             pal = Tools.createGrayWavePalette();
-        else if (palChoice == numberOfPalettes+4)
+        } else if (palChoice == numberOfPalettes+4) {
             pal = Tools.createRainbowPalette();
-        else if (palChoice == numberOfPalettes+5)
+        } else if (palChoice == numberOfPalettes+5) {
             pal = Tools.createNaturePalette();
-        else if (palChoice == numberOfPalettes+6)
+        } else if (palChoice == numberOfPalettes+6) {
             pal = Tools.createWavePalette();
-        else if (palChoice > 0 && palChoice <numberOfPalettes )
+        } else if ((palChoice > 0) && (palChoice <numberOfPalettes) )
         {
             // multuple palettes attached
             pal = ((ScalarDS)dataset).readPalette(palChoice-1);
@@ -791,20 +817,34 @@ implements ActionListener, ItemListener
             }
 
             // silently correct errors
-            if (n0[i] < 0) n0[i] = 0; // start
-            if (n0[i] >= dims[sIndex[i]]) n0[i] = dims[sIndex[i]]-1;
-            if (n1[i] < 0) n1[i] = 0; // end
-            if (n1[i] >= dims[sIndex[i]]) n1[i] = dims[sIndex[i]]-1;
-            if (n0[i] > n1[i]) n1[i] = n0[i]; // end <= start
-            if (n2[i] > dims[sIndex[i]]) n2[i] = dims[sIndex[i]];
-            if (n2[i] <= 0) n2[i] = 1; // stride cannot be zero
+            if (n0[i] < 0) {
+                n0[i] = 0; // start
+            }
+            if (n0[i] >= dims[sIndex[i]]) {
+                n0[i] = dims[sIndex[i]]-1;
+            }
+            if (n1[i] < 0) {
+                n1[i] = 0; // end
+            }
+            if (n1[i] >= dims[sIndex[i]]) {
+                n1[i] = dims[sIndex[i]]-1;
+            }
+            if (n0[i] > n1[i]) {
+                n1[i] = n0[i]; // end <= start
+            }
+            if (n2[i] > dims[sIndex[i]]) {
+                n2[i] = dims[sIndex[i]];
+            }
+            if (n2[i] <= 0) {
+                n2[i] = 1; // stride cannot be zero
+            }
         } // for (int i=0; i<n; i++)
 
         if (dataset instanceof CompoundDS)
         {
             CompoundDS d = (CompoundDS)dataset;
             int[] selectedFieldIndices = fieldList.getSelectedIndices();
-            if (selectedFieldIndices==null || selectedFieldIndices.length<1)
+            if ((selectedFieldIndices==null) || (selectedFieldIndices.length<1))
             {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
@@ -816,8 +856,9 @@ implements ActionListener, ItemListener
             }
 
             d.setMemberSelection(false); // deselect all members
-            for (int i=0; i<selectedFieldIndices.length; i++)
+            for (int i=0; i<selectedFieldIndices.length; i++) {
                 d.selectMember(selectedFieldIndices[i]);
+            }
         }
 
         // reset selected size
@@ -838,22 +879,22 @@ implements ActionListener, ItemListener
             }
         }
 
-        if (rank > 1 && isText) {
+        if ((rank > 1) && isText) {
             selected[selectedIndex[1]] = 1;
             stride[selectedIndex[1]] = 1;
-        } else if (rank >2 &&
+        } else if ((rank >2) &&
             isTrueColorImage &&
             imageButton.isSelected()) {
                 start[selectedIndex[2]] = 0;
                 selected[selectedIndex[2]] = 3;
-        } else if (rank >1 &&
-                   selectedIndex[0]>selectedIndex[1] &&
+        } else if ((rank >1) &&
+                   (selectedIndex[0]>selectedIndex[1]) &&
                    !swapOnlyButton.isSelected() &&
                    !(dataset instanceof CompoundDS)) {
             // do not transpose data for 2D HDF4 image
-            if (rank < 3 && !isH5)
+            if ((rank < 3) && !isH5) {
                 isTransposed = false;
-            else {
+            } else {
                 // transpose data
                 isTransposed = true;
                 if (!imageButton.isSelected()) {
@@ -910,14 +951,16 @@ implements ActionListener, ItemListener
 
         private Image createPreviewImage() throws Exception
         {
-            if (rank <=1 || !(dataset instanceof ScalarDS))
+            if ((rank <=1) || !(dataset instanceof ScalarDS)) {
                 return null;
+            }
 
             Image preImage = null;
             ScalarDS sd = (ScalarDS)dataset;
 
-            if (sd.isText())
+            if (sd.isText()) {
                 return null;
+            }
 
             // backup the selection
             long[] strideBackup = new long[rank];
@@ -947,10 +990,14 @@ implements ActionListener, ItemListener
             selected[selectedIndex[1]] = (dims[selectedIndex[1]]/steps);
             stride[selectedIndex[0]] = stride[selectedIndex[1]] = steps;
 
-            if (selected[selectedIndex[0]]==0) selected[selectedIndex[0]] = 1;
-            if (selected[selectedIndex[1]]==0) selected[selectedIndex[1]] = 1;
+            if (selected[selectedIndex[0]]==0) {
+                selected[selectedIndex[0]] = 1;
+            }
+            if (selected[selectedIndex[1]]==0) {
+                selected[selectedIndex[1]] = 1;
+            }
 
-            if (isTrueColorImage && start.length > 2)
+            if (isTrueColorImage && (start.length > 2))
             {
                 start[selectedIndex[2]] = 0;
                 selected[selectedIndex[2]] = 3;
@@ -978,9 +1025,11 @@ implements ActionListener, ItemListener
                 else
                 {
                     byte[][] imagePalette = sd.getPalette();
-                    if (imagePalette == null) imagePalette = Tools.createGrayPalette();
+                    if (imagePalette == null) {
+                        imagePalette = Tools.createGrayPalette();
+                    }
 
-                    if ((isH5 || rank>2) && selectedIndex[0]>selectedIndex[1] && !swapOnlyButton.isSelected())
+                    if ((isH5 || (rank>2)) && (selectedIndex[0]>selectedIndex[1]) && !swapOnlyButton.isSelected())
                     {
                         // transpose data
                         int n = bData.length;
@@ -1010,14 +1059,15 @@ implements ActionListener, ItemListener
         {
             g.setColor(Color.blue);
 
-            if (previewImage != null)
+            if (previewImage != null) {
                 g.drawImage(previewImage, 0, 0, this);
-            else
+            } else {
                 g.fillRect(0, 0, x, y);
+            }
 
             int w = selectedArea.width;
             int h = selectedArea.height;
-            if (w>0 && h >0)
+            if ((w>0) && (h >0))
             {
                 g.setColor(Color.red);
                 g.drawRect(selectedArea.x, selectedArea.y, w, h);
@@ -1063,13 +1113,16 @@ implements ActionListener, ItemListener
             String selStr;
 
             i0 = (int)(y0*r);
-            if (i0 > dims[currentIndex[0]])
+            if (i0 > dims[currentIndex[0]]) {
                 i0 = (int)dims[currentIndex[0]];
+            }
             startFields[0].setText(String.valueOf(i0));
 
             i1 = (int)((y0+h)*r);
 
-            if (i1 < i0) i1=i0;
+            if (i1 < i0) {
+                i1=i0;
+            }
             endFields[0].setText(String.valueOf(i1));
 
             selStr = String.valueOf((int)(h*r));
@@ -1077,12 +1130,15 @@ implements ActionListener, ItemListener
             if (rank > 1)
             {
                 i0 = (int)(x0*r);
-                if (i0 > dims[currentIndex[1]])
+                if (i0 > dims[currentIndex[1]]) {
                     i0 = (int)dims[currentIndex[1]];
+                }
                 startFields[1].setText(String.valueOf(i0));
 
                 i1 = (int)((x0+w)*r);
-                if (i1 < i0) i1=i0;
+                if (i1 < i0) {
+                    i1=i0;
+                }
                 endFields[1].setText(String.valueOf(i1));
 
                 selStr += " x "+ ((int)(w*r));
@@ -1128,12 +1184,13 @@ implements ActionListener, ItemListener
     public String getDataViewName() {
         String viewName = null;
 
-        if (isText)
+        if (isText) {
             viewName = (String) choiceTextView.getSelectedItem();
-        else if (isImageDisplay())
+        } else if (isImageDisplay()) {
             viewName = (String) choiceImageView.getSelectedItem();
-        else
+        } else {
             viewName = (String) choiceTableView.getSelectedItem();
+        }
 
         return viewName;
     }

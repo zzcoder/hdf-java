@@ -119,16 +119,18 @@ public abstract class FileFormat extends File
         try {
             Class fileclass = Class.forName("ncsa.hdf.object.h4.H4File");
             FileFormat fileformat = (FileFormat)fileclass.newInstance();
-            if (fileformat != null)
+            if (fileformat != null) {
                 FileFormat.addFileFormat("HDF", fileformat);
+            }
         } catch (Throwable err ) {;}
 
         // add default HDF5 modules
         try {
             Class fileclass = Class.forName("ncsa.hdf.object.h5.H5File");
             FileFormat fileformat = (FileFormat)fileclass.newInstance();
-            if (fileformat != null)
+            if (fileformat != null) {
                 FileFormat.addFileFormat("HDF5", fileformat);
+            }
         } catch (Throwable err ) {;}
     }
 
@@ -243,10 +245,11 @@ public abstract class FileFormat extends File
         FileFormat theFile = null;
 
         File f = new File(fileName);
-        if (f.exists() && (FILE_CREATE_OPEN == createFlag))
+        if (f.exists() && (FILE_CREATE_OPEN == createFlag)) {
             theFile = open(fileName, WRITE);
-        else
+        } else {
             theFile = create(fileName);
+        }
 
         return theFile;
     }
@@ -268,8 +271,9 @@ public abstract class FileFormat extends File
      */
     public final int getNumberOfMembers() {
     	
-    	if (n_members > 0) // calculate only once
-    		return n_members;
+    	if (n_members > 0) {
+            return n_members;
+        }
     	
         Enumeration local_enum = ((DefaultMutableTreeNode)getRootNode()).depthFirstEnumeration();
 
@@ -567,13 +571,15 @@ public abstract class FileFormat extends File
      *    ncsa.hdf.object.h5.H5File.
      */
     public static void addFileFormat(String key, FileFormat fileformat) {
-        if (fileformat == null || key == null)
+        if ((fileformat == null) || (key == null)) {
             return;
+        }
 
         key = key.trim();
 
-        if (!FileList.containsKey(key))
+        if (!FileList.containsKey(key)) {
             FileList.put(key, fileformat);
+        }
     }
 
     /**
@@ -806,7 +812,7 @@ public abstract class FileFormat extends File
      */
     public static void addFileExtension(String extension)
     {
-        if (extensions == null || extensions.length() <=0)
+        if ((extensions == null) || (extensions.length() <=0))
         {
             extensions = extension;
         }
@@ -824,8 +830,9 @@ public abstract class FileFormat extends File
         while (currentExt.hasMoreTokens())
         {
             ext = currentExt.nextToken().trim().toLowerCase();
-            if (tokens.contains(ext))
+            if (tokens.contains(ext)) {
                 continue;
+            }
 
             extensions = extensions + ", "+ext;
         }
@@ -848,11 +855,13 @@ public abstract class FileFormat extends File
      */
     public static FileFormat getInstance(String fileName) throws Exception
     {
-        if (fileName == null || fileName.length()<=0)
+        if ((fileName == null) || (fileName.length()<=0)) {
             throw new IllegalArgumentException("Invalid file name. "+fileName);
+        }
 
-        if (!(new File(fileName)).exists())
+        if (!(new File(fileName)).exists()) {
             throw new IllegalArgumentException("File does not exists");
+        }
 
         FileFormat fileformat = null;
         FileFormat theformat = null;
@@ -897,8 +906,9 @@ public abstract class FileFormat extends File
      */
     public static final HObject getHObject(String fullPath) throws Exception
     {
-        if (fullPath == null || fullPath.length() <=0)
+        if ((fullPath == null) || (fullPath.length() <=0)) {
             return null;
+        }
 
         String filename=null, path=null;
         int idx = fullPath.indexOf("#//");
@@ -907,8 +917,9 @@ public abstract class FileFormat extends File
         {
             filename = fullPath.substring(0, idx);
             path = fullPath.substring(idx+3);
-            if (path == null || path.length() == 0)
+            if ((path == null) || (path.length() == 0)) {
                 path = "/";
+            }
         }
         else
         {
@@ -940,19 +951,22 @@ public abstract class FileFormat extends File
      */
     public static final HObject getHObject(String filename, String path) throws Exception
     {
-        if (filename == null || filename.length()<=0)
+        if ((filename == null) || (filename.length()<=0)) {
             throw new IllegalArgumentException("Invalid file name. "+filename);
+        }
 
-        if (!(new File(filename)).exists())
+        if (!(new File(filename)).exists()) {
             throw new IllegalArgumentException("File does not exists");
+        }
 
         HObject obj = null;
         FileFormat file = FileFormat.getInstance(filename);
 
         if (file != null) {
             obj = file.get(path);
-            if (obj == null)
+            if (obj == null) {
                 file.close();
+            }
         }
         
 
@@ -1018,13 +1032,16 @@ public abstract class FileFormat extends File
     public static FileFormat[] getFileFormats()
     {
         int n = FileList.size();
-        if ( n <=0 ) return null;
+        if ( n <=0 ) {
+            return null;
+        }
 
         int i = 0;
         FileFormat[] fileformats = new FileFormat[n];
         Enumeration local_enum = ((Hashtable)FileList).elements();
-        while (local_enum.hasMoreElements())
+        while (local_enum.hasMoreElements()) {
             fileformats[i++] = (FileFormat)local_enum.nextElement();
+        }
 
         return fileformats;
     }

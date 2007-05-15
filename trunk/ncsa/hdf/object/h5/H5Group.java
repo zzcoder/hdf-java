@@ -71,7 +71,7 @@ public class H5Group extends Group
     {
         super (theFile, name, path, parent, oid);
 
-        if (oid == null && theFile != null) {
+        if ((oid == null) && (theFile != null)) {
             // retrieve the object ID
             try {
                 byte[] ref_buf = H5.H5Rcreate(theFile.getFID(), this.getFullName(), HDF5Constants.H5R_OBJECT, -1);
@@ -98,8 +98,9 @@ public class H5Group extends Group
     public void clear() {
     	super.clear(); 
     		
-    	if (attributeList != null)
-    		((Vector)attributeList).setSize(0);
+    	if (attributeList != null) {
+            ((Vector)attributeList).setSize(0);
+        }
     }
 
     /*
@@ -125,21 +126,25 @@ public class H5Group extends Group
     public void writeMetadata(Object info) throws Exception
     {
         // only attribute metadata is supported.
-        if (!(info instanceof Attribute))
+        if (!(info instanceof Attribute)) {
             return;
+        }
 
         boolean attrExisted = false;
         Attribute attr = (Attribute)info;
         String name = attr.getName();
 
-        if (attributeList == null)
+        if (attributeList == null) {
             attributeList = new Vector(10);
-        else
+        } else {
             attrExisted = attributeList.contains(attr);
+        }
 
         getFileFormat().writeAttribute(this, attr, attrExisted);
         // add the new attribute into attribute list
-        if (!attrExisted) attributeList.add(attr);
+        if (!attrExisted) {
+            attributeList.add(attr);
+        }
     }
 
     /*
@@ -149,8 +154,9 @@ public class H5Group extends Group
     public void removeMetadata(Object info) throws HDF5Exception
     {
         // only attribute metadata is supported.
-        if (!(info instanceof Attribute))
+        if (!(info instanceof Attribute)) {
             return;
+        }
 
         Attribute attr = (Attribute)info;
         int gid = open();
@@ -173,10 +179,11 @@ public class H5Group extends Group
 
         try
         {
-            if (isRoot())
+            if (isRoot()) {
                 gid = H5.H5Gopen(getFID(), separator);
-            else
+            } else {
                 gid = H5.H5Gopen(getFID(), getPath()+getName());
+            }
 
         } catch (HDF5Exception ex)
         {
@@ -209,26 +216,31 @@ public class H5Group extends Group
         H5Group group = null;
         String fullPath = null;
 
-        if (name == null)
+        if (name == null) {
             return null;
+        }
 
         H5File file = (H5File)pgroup.getFileFormat();
 
-        if (file == null)
+        if (file == null) {
             return null;
+        }
 
         // By default, add the new group to the root
-        if (pgroup == null)
+        if (pgroup == null) {
             pgroup = (Group)file.get("/");
+        }
 
         String path = HObject.separator;
         if (!pgroup.isRoot()) {
             path = pgroup.getPath()+pgroup.getName()+HObject.separator;
-            if (name.endsWith("/"))
+            if (name.endsWith("/")) {
                 name = name.substring(0, name.length()-1);
+            }
                 int idx = name.lastIndexOf("/");
-                if (idx >=0)
+                if (idx >=0) {
                     name = name.substring(idx+1);
+                }
         }
 
         fullPath = path +  name;
@@ -245,8 +257,9 @@ public class H5Group extends Group
 
         group = new H5Group(file, name, path, pgroup, oid);
 
-        if (group != null)
+        if (group != null) {
             pgroup.addToMemberList(group);
+        }
 
         return group;
     }
@@ -270,7 +283,9 @@ public class H5Group extends Group
         super.setPath(newPath);
 
         List members = this.getMemberList();
-        if (members == null) return;
+        if (members == null) {
+            return;
+        }
 
         int n = members.size();
         HObject obj = null;

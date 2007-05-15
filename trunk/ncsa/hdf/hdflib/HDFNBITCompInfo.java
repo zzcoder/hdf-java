@@ -43,12 +43,6 @@ public class HDFNBITCompInfo extends HDFNewCompInfo {
     int    Start_bit,
     int    Bit_len) {
                 ctype = HDFConstants.COMP_CODE_NBIT;
-
-        int   nt = Nt;
-        int    sign_ext = Sign_ext;
-        int    fill_one = Fill_one;
-        int    start_bit = Start_bit;
-        int    bit_len = Bit_len;
     }
 
 }

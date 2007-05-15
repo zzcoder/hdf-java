@@ -223,7 +223,9 @@ HyperlinkListener, ChangeListener
         
         //recentFiles = ViewProperties.getMRF();
         currentDir = ViewProperties.getWorkDir();
-        if (currentDir == null) currentDir = System.getProperty("user.dir");
+        if (currentDir == null) {
+            currentDir = System.getProperty("user.dir");
+        }
 
         treeViews = ViewProperties.getTreeViewList();
         metaDataViews = ViewProperties.getMetaDataViewList();
@@ -308,11 +310,13 @@ HyperlinkListener, ChangeListener
             }
         }
 
-        if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4) == null)
+        if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4) == null) {
             setEnabled(h4GUIs, false);
+        }
 
-        if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) == null)
+        if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) == null) {
             setEnabled(h5GUIs, false);
+        }
         
         try
         {
@@ -331,16 +335,18 @@ HyperlinkListener, ChangeListener
      * Set default UI fonts.
      */
     private void updateFontSize(Font font) {
-        if (font == null)
+        if (font == null) {
             return;
+        }
 
         UIDefaults defaults = UIManager.getLookAndFeelDefaults();
         
         for ( Iterator i = defaults.keySet().iterator(); i.hasNext(); )
         {
             Object key = i.next();
-            if (defaults.getFont( key ) != null )
+            if (defaults.getFont( key ) != null ) {
                 UIManager.put( key, new javax.swing.plaf.FontUIResource(font) );
+            }
         }
         SwingUtilities.updateComponentTreeUI( this );
     }
@@ -385,15 +391,17 @@ HyperlinkListener, ChangeListener
         float inset = 0.04f;
         Dimension d = toolkit.getScreenSize();
 
-        if (height > 300)
-        	d.height = height;
-        else
-        	d.height = (int)((1-2*inset)*d.height);
+        if (height > 300) {
+            d.height = height;
+        } else {
+            d.height = (int)((1-2*inset)*d.height);
+        }
         
-        if (width > 300)
-        	d.width = width;
-        else
-        	d.width = (int)(0.9*(double)d.height);
+        if (width > 300) {
+            d.width = width;
+        } else {
+            d.width = (int)(0.9*(double)d.height);
+        }
 
         splitPane.setDividerLocation(d.height-180);
 
@@ -611,7 +619,7 @@ HyperlinkListener, ChangeListener
 
         menu.addSeparator();
 
-        if (helpViews != null && helpViews.size() > 0)
+        if ((helpViews != null) && (helpViews.size() > 0))
         {
             int n = helpViews.size();
             for (int i=0; i<n; i++)
@@ -702,8 +710,9 @@ HyperlinkListener, ChangeListener
         button.setMargin( new Insets( 0, 0, 0, 0 ) );
         button.addActionListener( this );
         button.setActionCommand( "HDF4 library" );
-        if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4) == null)
+        if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4) == null) {
             button.setEnabled(false);
+        }
 
         // HDF5 Library Version button
         button = new JButton( ViewProperties.getH5Icon() );
@@ -712,8 +721,9 @@ HyperlinkListener, ChangeListener
         button.setMargin( new Insets( 0, 0, 0, 0 ) );
         button.addActionListener( this );
         button.setActionCommand( "HDF5 library" );
-        if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) == null)
+        if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) == null) {
             button.setEnabled(false);
+        }
 
         return tbar;
     }
@@ -748,10 +758,11 @@ HyperlinkListener, ChangeListener
             }
         }
 
-        if (usersGuideURL == null)
+        if (usersGuideURL == null) {
             return;
-        else
+        } else {
             showStatus(usersGuideURL.toString());
+        }
 
         previousUsersGuideURL = usersGuideURL;
         visitedUsersGuideURLs = new Stack();
@@ -811,7 +822,9 @@ HyperlinkListener, ChangeListener
         northP.add(tbar);
         northP.add(ugField = new JTextField());
         ugField.setEditable(false);
-        if (usersGuideURL != null) ugField.setText(usersGuideURL.toString());
+        if (usersGuideURL != null) {
+            ugField.setText(usersGuideURL.toString());
+        }
         contentPane.add (northP, BorderLayout.NORTH);
         contentPane.add (editorScrollPane, BorderLayout.CENTER);
     }
@@ -824,7 +837,9 @@ HyperlinkListener, ChangeListener
     {
         JInternalFrame jif = null;
         Component[] clist = contentPane.getComponents();
-        if (clist == null)  return;
+        if (clist == null) {
+            return;
+        }
 
         for (int i=0; i<clist.length; i++)
         {
@@ -845,8 +860,9 @@ HyperlinkListener, ChangeListener
         JInternalFrame jif = null;
         Component[] clist = contentPane.getComponents();
 
-        if (clist == null || clist.length <=0 )
+        if ((clist == null) || (clist.length <=0) ) {
             return;
+        }
 
         Dimension d = contentPane.getSize();
         int w = Math.max(50, d.width-100);
@@ -869,8 +885,9 @@ HyperlinkListener, ChangeListener
         JInternalFrame jif = null;
         Component[] clist = contentPane.getComponents();
 
-        if (clist == null || clist.length <=0 )
+        if ((clist == null) || (clist.length <=0) ) {
             return;
+        }
 
         int n = clist.length;
         int cols = (int)Math.sqrt(n);
@@ -886,7 +903,9 @@ HyperlinkListener, ChangeListener
             for (int j=0; j<cols; j++)
             {
                 idx = i*cols+j;
-                if (idx >= n) return;
+                if (idx >= n) {
+                    return;
+                }
 
                 jif = (JInternalFrame)clist[idx];
                 jif.setBounds(x, y, w, h);
@@ -902,8 +921,9 @@ HyperlinkListener, ChangeListener
         JInternalFrame jif = null;
         Component[] clist = contentPane.getComponents();
 
-        if (clist == null || clist.length <=0 )
+        if ((clist == null) || (clist.length <=0) ) {
             return;
+        }
 
         for (int i=0; i<clist.length; i++)
         {
@@ -941,8 +961,9 @@ HyperlinkListener, ChangeListener
             if (cmd.equals("Open file: from file bar"))
             {
                 filename = (String) urlBar.getSelectedItem();
-                if (filename == null)
-                   return;
+                if (filename == null) {
+                    return;
+                }
 
                 // local file
                 if (!(filename.startsWith("http://") || filename.startsWith("ftp://")))
@@ -963,22 +984,24 @@ HyperlinkListener, ChangeListener
             else if (cmd.startsWith("Open file://"))
             {
                 filename = cmd.substring(12);
-            }
-            else
+            } else {
                 filename = openLocalFile();
+            }
 
-            if (filename == null)
+            if (filename == null) {
                 return;
+            }
 
             if (filename.startsWith("http://") || filename.startsWith("ftp://") )
             {
                 filename = openRemoteFile(filename);
             }
 
-            if (filename == null ||
-                filename.length() < 1 ||
-                filename.equals(currentFile))
+            if ((filename == null) ||
+                (filename.length() < 1) ||
+                filename.equals(currentFile)) {
                 return;
+            }
 
             currentFile = filename;
             try {
@@ -1017,15 +1040,20 @@ HyperlinkListener, ChangeListener
         else if (cmd.startsWith("New HDF"))
         {
             String ftype = FileFormat.FILE_TYPE_HDF5;
-            if (cmd.equals("New HDF4 file"))
+            if (cmd.equals("New HDF4 file")) {
                 ftype = FileFormat.FILE_TYPE_HDF4;
+            }
 
             NewFileDialog dialog = new NewFileDialog(this, currentDir, ftype, treeView.getCurrentFiles());
             //dialog.show();
 
-            if (!dialog.isFileCreated()) return;
+            if (!dialog.isFileCreated()) {
+                return;
+            }
             String filename = dialog.getFile();
-            if (filename == null) return;
+            if (filename == null) {
+                return;
+            }
 
             try {
                 treeView.openFile(filename, FileFormat.WRITE);
@@ -1062,8 +1090,9 @@ HyperlinkListener, ChangeListener
                 for (int i=0; i<frames.length; i++)
                 {
                     HObject obj = (HObject)(((DataView)frames[i]).getDataObject());
-                    if (obj == null)
+                    if (obj == null) {
                         continue;
+                    }
 
                     if ( obj.getFileFormat().equals(theFile))
                     {
@@ -1221,9 +1250,9 @@ HyperlinkListener, ChangeListener
             {
                 typeFrom = FileFormat.FILE_TYPE_PNG;
                 typeTo = FileFormat.FILE_TYPE_HDF4;
-            }
-            else
+            } else {
                 return;
+            }
 
             FileConversionDialog dialog = new FileConversionDialog(
                 this,
@@ -1238,8 +1267,9 @@ HyperlinkListener, ChangeListener
                 String filename = dialog.getConvertedFile();
                 File theFile = new File(filename);
 
-                if (!theFile.exists() || !theFile.exists())
+                if (!theFile.exists() || !theFile.exists()) {
                     return;
+                }
 
                 currentDir = theFile.getParentFile().getAbsolutePath();
                 currentFile = theFile.getAbsolutePath();
@@ -1259,8 +1289,9 @@ HyperlinkListener, ChangeListener
         }
         else if (cmd.equals("User options"))
         {
-        	if (userOptionDialog == null)
-        		userOptionDialog = new UserOptionsDialog(this, rootDir);
+        	if (userOptionDialog == null) {
+                userOptionDialog = new UserOptionsDialog(this, rootDir);
+            }
 
         	userOptionDialog.setVisible(true);
 
@@ -1308,13 +1339,14 @@ HyperlinkListener, ChangeListener
                 "\n\nFor example, the following line registers HDF4 file format:"+
                 "\nHDF:ncsa.hdf.object.h4.H4File:hdf\n\n";
             String str = JOptionPane.showInputDialog(this, msg);
-            if (str == null || str.length()<1)
+            if ((str == null) || (str.length()<1)) {
                 return;
+            }
 
             int idx1 = str.indexOf(':');
             int idx2 = str.lastIndexOf(':');
 
-            if (idx1<0 || idx2<=idx1) {
+            if ((idx1<0) || (idx2<=idx1)) {
                 JOptionPane.showMessageDialog(
                         this, "Failed to register "+str +"\n\nMust in the form of KEY:FILE_FORMAT:FILE_EXTENSION",
                         "Register File Format",
@@ -1360,13 +1392,15 @@ HyperlinkListener, ChangeListener
                 try { theClass = ViewProperties.loadExtClass().loadClass(className); }
                 catch (Exception ex2) {theClass = null;}
             }
-            if (theClass == null)
+            if (theClass == null) {
                 return;
+            }
 
             try {
                 Object theObject = theClass.newInstance();
-                if (theObject instanceof FileFormat)
+                if (theObject instanceof FileFormat) {
                     FileFormat.addFileFormat(key, (FileFormat)theObject);
+                }
             } catch (Throwable ex) {
                 JOptionPane.showMessageDialog(
                         this, "Failed to register "+str +"\n\n"+ex,
@@ -1375,7 +1409,7 @@ HyperlinkListener, ChangeListener
                 return;
             }
 
-            if (extension != null && extension.length()>0)
+            if ((extension != null) && (extension.length()>0))
             {
                extension = extension.trim();
                String ext = ViewProperties.getFileExtension();
@@ -1387,28 +1421,32 @@ HyperlinkListener, ChangeListener
             Enumeration keys = FileFormat.getFileFormatKeys();
             ArrayList keylist = new ArrayList();
 
-            while(keys.hasMoreElements())
+            while(keys.hasMoreElements()) {
                 keylist.add(keys.nextElement());
+            }
 
             String theKey = (String)JOptionPane.showInputDialog(this,
                 "Unregister file format", "Unregister file format",
                 JOptionPane.WARNING_MESSAGE, ViewProperties.getHdfIcon(), keylist.toArray(),
                 null);
 
-            if (theKey == null)
+            if (theKey == null) {
                 return;
+            }
 
             FileFormat.removeFileFormat(theKey);
         }
         else if (cmd.equals("Users guide"))
         {
-            if (usersGuideURL != null)
+            if (usersGuideURL != null) {
                 usersGuideWindow.setVisible(true);
+            }
         }
         else if (cmd.equals("Close users guide"))
         {
-            if (usersGuideURL != null)
+            if (usersGuideURL != null) {
                 usersGuideWindow.setVisible(false);
+            }
         }
         else if (cmd.equals("Users guide home"))
         {
@@ -1439,8 +1477,9 @@ HyperlinkListener, ChangeListener
         else if (cmd.equals("HDF4 library"))
         {
             FileFormat thefile = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4);
-            if (thefile == null)
+            if (thefile == null) {
                 return;
+            }
 
             JOptionPane.showMessageDialog(
                 this,
@@ -1452,8 +1491,9 @@ HyperlinkListener, ChangeListener
         else if (cmd.equals("HDF5 library"))
         {
             FileFormat thefile = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-            if (thefile == null)
+            if (thefile == null) {
                 return;
+            }
 
             JOptionPane.showMessageDialog(
                 this,
@@ -1476,12 +1516,14 @@ HyperlinkListener, ChangeListener
         else if (cmd.equals("File format list"))
         {
             FileFormat[] fileformats = FileFormat.getFileFormats();
-            if (fileformats == null || fileformats.length <=0)
+            if ((fileformats == null) || (fileformats.length <=0)) {
                 return;
+            }
 
             String str = "\nSupported File Formats: \n";
-            for (int i=0; i<fileformats.length; i++)
+            for (int i=0; i<fileformats.length; i++) {
                 str += "        "+fileformats[i].getClass().getName() + "\n";
+            }
 
             JOptionPane.showMessageDialog(
                 this,
@@ -1504,8 +1546,9 @@ HyperlinkListener, ChangeListener
             urlBar.setPopupVisible(true);
         } else
         {
-            if (helpViews == null || helpViews.size() <= 0)
+            if ((helpViews == null) || (helpViews.size() <= 0)) {
                 return;
+            }
 
             // try if one of the user help information;
             int n = helpViews.size();
@@ -1531,14 +1574,16 @@ HyperlinkListener, ChangeListener
                 htmlDoc = htmlDoc.toLowerCase();
 
                 // only support html files
-                if (htmlDoc.length()<=1 ||
+                if ((htmlDoc.length()<=1) ||
                     !(htmlDoc.endsWith("html") ||
-                    htmlDoc.endsWith("htm")))
-                return;
+                    htmlDoc.endsWith("htm"))) {
+                    return;
+                }
 
                 pane.setPage(currentURL);
-                if(visitedUsersGuideURLs.isEmpty())
+                if(visitedUsersGuideURLs.isEmpty()) {
                     usersGuideBackButton.setEnabled(true);
+                }
                 visitedUsersGuideURLs.push(previousUsersGuideURL);
                 previousUsersGuideURL = currentURL;
                 ugField.setText(currentURL.toString());
@@ -1577,7 +1622,7 @@ HyperlinkListener, ChangeListener
         // close all open files
         try {
         List filelist = treeView.getCurrentFiles();
-        if (filelist != null && filelist.size()>0) {
+        if ((filelist != null) && (filelist.size()>0)) {
             Object[] files = filelist.toArray();
             int n = files.length;
             for (int i=0; i<n; i++) {
@@ -1595,8 +1640,9 @@ HyperlinkListener, ChangeListener
 
     /** data content is displayed, and add the dataview to the main windows */
     public void addDataView(DataView dataView) {
-        if (dataView == null)
+        if (dataView == null) {
             return;
+        }
 
         if (!(dataView instanceof JInternalFrame))
         {
@@ -1661,8 +1707,11 @@ HyperlinkListener, ChangeListener
         windowMenu.add(item);
 
         frame.setLocation(frameOffset, frameOffset);
-        if (frameOffset < 60) frameOffset += 15;
-        else frameOffset = 0;
+        if (frameOffset < 60) {
+            frameOffset += 15;
+        } else {
+            frameOffset = 0;
+        }
 
         Dimension d = contentPane.getSize();
         frame.setSize(d.width-60, d.height-60);
@@ -1692,7 +1741,9 @@ HyperlinkListener, ChangeListener
         {
             theItem = windowMenu.getItem(i);
 
-            if (theItem == null) continue;
+            if (theItem == null) {
+                continue;
+            }
 
             if (theItem.getActionCommand().equals(name))
             {
@@ -1718,11 +1769,12 @@ HyperlinkListener, ChangeListener
     public void mouseEventFired(java.awt.event.MouseEvent e)
     {
         Object src = e.getSource();
-        if ((src instanceof JTree) && infoTabbedPane.getSelectedIndex()==1)
+        if ((src instanceof JTree) && (infoTabbedPane.getSelectedIndex()==1))
         {
             HObject obj = treeView.getCurrentObject();
-            if (obj == null)
+            if (obj == null) {
                 return;
+            }
 
             urlBar.setSelectedItem(obj.getFile());
             showMetaData(obj);
@@ -1731,8 +1783,9 @@ HyperlinkListener, ChangeListener
 
     private void showMetaData(HObject obj)
     {
-        if (obj == null)
+        if (obj == null) {
             return;
+        }
 
         metadata.setLength(0);
         metadata.append(obj.getName());
@@ -1746,14 +1799,16 @@ HyperlinkListener, ChangeListener
         else if (obj instanceof Dataset)
         {
             Dataset d = (Dataset)obj;
-            if (d.getRank() <= 0)
+            if (d.getRank() <= 0) {
                 d.init();
+            }
 
             metadata.append("\n    ");
-            if (d instanceof ScalarDS)
+            if (d instanceof ScalarDS) {
                 metadata.append(((ScalarDS)d).getDatatype().getDatatypeDescription());
-            else if (d instanceof CompoundDS)
+            } else if (d instanceof CompoundDS) {
                 metadata.append("Compound/Vdata");
+            }
             metadata.append(",    ");
 
             long dims[] = d.getDims();
@@ -1772,9 +1827,9 @@ HyperlinkListener, ChangeListener
         List attrList = null;
         try { attrList = obj.getMetadata(); } catch (Exception ex) {}
 
-        if (attrList == null)
+        if (attrList == null) {
             metadata.append("\n    Number of attributes = 0");
-        else
+        } else
         {
             int n = attrList.size();
             metadata.append("\n    Number of attributes = ");
@@ -1783,8 +1838,9 @@ HyperlinkListener, ChangeListener
             for (int i=0; i<n; i++)
             {
                 Object attrObj = attrList.get(i);
-                if (!(attrObj instanceof Attribute))
+                if (!(attrObj instanceof Attribute)) {
                     continue;
+                }
                 Attribute attr = (Attribute)attrObj;
                 metadata.append("\n        ");
                 metadata.append(attr.getName());
@@ -1804,20 +1860,23 @@ HyperlinkListener, ChangeListener
      * is not displayed.
      */
     public DataView getDataView(HObject dataObject) {
-        if (dataObject == null)
+        if (dataObject == null) {
             return null;
+        }
 
         // check if the data content is already displayed
         JInternalFrame[] frames = contentPane.getAllFrames();
         JInternalFrame theFrame = null;
 
-        if (frames == null)
+        if (frames == null) {
             return null;
+        }
 
         HObject obj = null;
         for (int i=0; i<frames.length; i++) {
-            if ( !(frames[i] instanceof DataView) )
+            if ( !(frames[i] instanceof DataView) ) {
                 continue;
+            }
 
             obj = (HObject)(((DataView)frames[i]).getDataObject());
             if (dataObject.equals(obj)) {
@@ -1837,17 +1896,19 @@ HyperlinkListener, ChangeListener
         JInternalFrame[] frames = contentPane.getAllFrames();
         JInternalFrame theFrame = null;
 
-        if (frames == null || frames.length<=0)
+        if ((frames == null) || (frames.length<=0)) {
             return null;
+        }
 
         Vector views = new Vector(frames.length);
         HObject obj = null;
         for (int i=0; i<frames.length; i++)
         {
-            if ( !(frames[i] instanceof DataView) )
+            if ( !(frames[i] instanceof DataView) ) {
                 continue;
-            else
+            } else {
                 views.add(frames[i]);
+            }
         }
 
         return views;
@@ -1913,17 +1974,20 @@ HyperlinkListener, ChangeListener
  
          int returnVal = fchooser.showOpenDialog(this);
          
-         if(returnVal != JFileChooser.APPROVE_OPTION)
-             return null;
+         if(returnVal != JFileChooser.APPROVE_OPTION) {
+            return null;
+        }
 
         File choosedFile = fchooser.getSelectedFile();
-        if (choosedFile == null)
+        if (choosedFile == null) {
             return null;
+        }
 
-        if (choosedFile.isDirectory())
+        if (choosedFile.isDirectory()) {
             currentDir = choosedFile.getPath();
-        else
+        } else {
             currentDir = choosedFile.getParent();
+        }
 
         return choosedFile.getAbsolutePath();
     }
@@ -1934,15 +1998,17 @@ HyperlinkListener, ChangeListener
      {
          String localFile = null;
 
-         if (urlStr == null)
-             return null;
+         if (urlStr == null) {
+            return null;
+        }
 
-         if (urlStr.startsWith("http://"))
-             localFile = urlStr.substring(7);
-         else if (urlStr.startsWith("ftp://"))
-             localFile = urlStr.substring(6);
-         else
-             return null;
+         if (urlStr.startsWith("http://")) {
+            localFile = urlStr.substring(7);
+        } else if (urlStr.startsWith("ftp://")) {
+            localFile = urlStr.substring(6);
+        } else {
+            return null;
+        }
 
          localFile = localFile.replace('/', '@');
          localFile = localFile.replace('\\', '@');
@@ -1952,8 +2018,9 @@ HyperlinkListener, ChangeListener
         localFile =   tmpDir + localFile;
 
         File tmpFile = new File( localFile);
-        if (tmpFile.exists())
+        if (tmpFile.exists()) {
             return localFile;
+        }
 
         URL url = null;
 
@@ -1995,8 +2062,9 @@ HyperlinkListener, ChangeListener
         byte[] buff = new byte[512]; // set the default buff size to 512
         try {
             int n = 0;
-            while ((n = in.read(buff)) > 0)
+            while ((n = in.read(buff)) > 0) {
                 out.write(buff, 0, n);
+            }
         } catch (Exception ex) {}
 
         try { in.close();} catch (Exception ex2) {}
@@ -2013,7 +2081,9 @@ HyperlinkListener, ChangeListener
         Class theClass = null;
         try { theClass = Class.forName("ncsa.hdf.srb.SRBFileDialog"); }
         catch (Exception ex) {theClass = null;showStatus(ex.toString());}
-        if (theClass == null) return;
+        if (theClass == null) {
+            return;
+        }
 
         try {
             boolean mode = true;
@@ -2022,11 +2092,15 @@ HyperlinkListener, ChangeListener
             Object[] paramObj = {(java.awt.Frame)this};
             srbFileDialog = (JDialog)constructor.newInstance(paramObj);
         } catch (Exception ex) {
-            if (srbFileDialog != null) srbFileDialog.dispose();
+            if (srbFileDialog != null) {
+                srbFileDialog.dispose();
+            }
             srbFileDialog = null;
         }
 
-        if (srbFileDialog == null) return;
+        if (srbFileDialog == null) {
+            return;
+        }
 
         srbFileDialog.setVisible(true);
      }
@@ -2079,16 +2153,18 @@ HyperlinkListener, ChangeListener
                     idx = Math.max(idx0, idx1);
                     if (idx>0) {
                         Y = Integer.parseInt(geom.substring(idx+1));
-                        if (idx == idx0)
+                        if (idx == idx0) {
                             Y =-Y;
+                        }
                         geom = geom.substring(0, idx);
                         idx0 = geom.lastIndexOf('-');
                         idx1 = geom.lastIndexOf('+');
                         idx = Math.max(idx0, idx1);
                         if (idx>0) {
                             X = Integer.parseInt(geom.substring(idx+1));
-                            if (idx == idx0)
+                            if (idx == idx0) {
                                 X =-X;
+                            }
                             geom = geom.substring(0, idx);
                         }
                     }
@@ -2118,8 +2194,9 @@ HyperlinkListener, ChangeListener
         if (j>=0) {
             for (i = j; i<args.length; i++) {
                 tmpFile = new File(args[i]);
-                if (tmpFile.exists() && tmpFile.isFile())
+                if (tmpFile.exists() && tmpFile.isFile()) {
                     flist.add(tmpFile);
+                }
             }
         }
 

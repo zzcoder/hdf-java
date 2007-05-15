@@ -74,8 +74,9 @@ implements TextView, ActionListener, KeyListener
         dataset = null;
 
         HObject obj = viewer.getTreeView().getCurrentObject();
-        if (!(obj instanceof ScalarDS))
+        if (!(obj instanceof ScalarDS)) {
             return;
+        }
 
         dataset = (ScalarDS)obj;
 
@@ -153,8 +154,6 @@ implements TextView, ActionListener, KeyListener
         JTable theTable = null;
 
         int rows = text.length;
-        int cols = 1;
-
         theTable = new JTable(rows, 1)
         {
             public static final long serialVersionUID = HObject.serialVersionUID;
@@ -199,9 +198,6 @@ implements TextView, ActionListener, KeyListener
 
     private JMenuBar createMenuBar() {
         JMenuBar bar = new JMenuBar();
-        JButton button;
-        boolean isEditable = !dataset.getFileFormat().isReadOnly();
-
         JMenu menu = new JMenu("Text", false);
         menu.setMnemonic('T');
         bar.add(menu);
@@ -236,13 +232,17 @@ implements TextView, ActionListener, KeyListener
      */
     public void updateValueInFile()
     {
-        if (isReadOnly) return;
+        if (isReadOnly) {
+            return;
+        }
         
-        if (!(dataset instanceof ScalarDS))
+        if (!(dataset instanceof ScalarDS)) {
             return;
+        }
 
-        if (!isTextChanged)
+        if (!isTextChanged) {
             return;
+        }
 
         try { dataset.write(); }
         catch (Exception ex)
@@ -270,12 +270,14 @@ implements TextView, ActionListener, KeyListener
         fchooser.setSelectedFile(choosedFile);
         int returnVal = fchooser.showSaveDialog(this);
 
-        if(returnVal != JFileChooser.APPROVE_OPTION)
+        if(returnVal != JFileChooser.APPROVE_OPTION) {
             return;
+        }
 
         choosedFile = fchooser.getSelectedFile();
-        if (choosedFile == null)
+        if (choosedFile == null) {
             return;
+        }
 
         String fname = choosedFile.getAbsolutePath();
 
@@ -305,8 +307,9 @@ implements TextView, ActionListener, KeyListener
                 "File exists. Do you want to replace it ?",
                 this.getTitle(),
                 JOptionPane.YES_NO_OPTION);
-            if (newFileFlag == JOptionPane.NO_OPTION)
+            if (newFileFlag == JOptionPane.NO_OPTION) {
                 return;
+            }
         }
 
         PrintWriter out = new PrintWriter(
@@ -342,8 +345,9 @@ implements TextView, ActionListener, KeyListener
                     getTitle(),
                     JOptionPane.YES_NO_OPTION);
 
-            if (op == JOptionPane.YES_OPTION)
+            if (op == JOptionPane.YES_OPTION) {
                 updateValueInFile();
+            }
         }
 
         viewer.removeDataView(this);
@@ -364,11 +368,13 @@ implements TextView, ActionListener, KeyListener
     // print the table
     private void print() {
         StreamPrintServiceFactory[] spsf = StreamPrintServiceFactory.lookupStreamPrintServiceFactories(null, null);
-        for (int i = 0; i<spsf.length; i++)
+        for (int i = 0; i<spsf.length; i++) {
             System.out.println(spsf[i]);
+        }
         DocFlavor[] docFlavors = spsf[0].getSupportedDocFlavors();
-        for (int i = 0; i<docFlavors.length; i++)
+        for (int i = 0; i<docFlavors.length; i++) {
             System.out.println(docFlavors[i]);
+        }
 
         // Get a text DocFlavor
         InputStream is = null;
@@ -464,9 +470,13 @@ implements TextView, ActionListener, KeyListener
         private int findMaximumRowSize(JTable table, int row) 
         {
             Map rows = (Map) cellSizes.get(table);
-            if (rows == null) return 0;
+            if (rows == null) {
+                return 0;
+            }
             Map rowheights = (Map) rows.get(new Integer(row));
-            if (rowheights == null) return 0;
+            if (rowheights == null) {
+                return 0;
+            }
             int maximum_height = 0;
             for (Iterator it = rowheights.entrySet().iterator(); it.hasNext();) 
             {

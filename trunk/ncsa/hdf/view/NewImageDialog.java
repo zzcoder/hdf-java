@@ -79,17 +79,19 @@ implements ActionListener, ItemListener
             {
                 groupList.add(obj);
                 Group g = (Group)obj;
-                if (g.isRoot())
+                if (g.isRoot()) {
                     parentChoice.addItem(HObject.separator);
-                else
+                } else {
                     parentChoice.addItem(g.getPath()+g.getName()+HObject.separator);
+                }
             }
         }
 
-        if (pGroup.isRoot())
+        if (pGroup.isRoot()) {
             parentChoice.setSelectedItem(HObject.separator);
-        else
+        } else {
             parentChoice.setSelectedItem(pGroup.getPath()+pGroup.getName()+HObject.separator);
+        }
 
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
@@ -182,8 +184,9 @@ implements ActionListener, ItemListener
         if (cmd.equals("Ok"))
         {
             newObject = createHDFimage();
-            if (newObject != null)
+            if (newObject != null) {
                 dispose();
+            }
         }
         if (cmd.equals("Cancel"))
         {
@@ -215,8 +218,10 @@ implements ActionListener, ItemListener
         Dataset dataset = null;
 
         String name = nameField.getText();
-        if (name != null) name = name.trim();
-        if (name == null || name.length()<=0)
+        if (name != null) {
+            name = name.trim();
+        }
+        if ((name == null) || (name.length()<=0))
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
@@ -307,8 +312,9 @@ implements ActionListener, ItemListener
                 ncomp = 3;
                 long[] tmpdims = {w, h};
                 dims = tmpdims;
-                if (checkInterlacePlane.isSelected())
+                if (checkInterlacePlane.isSelected()) {
                     interlace = ScalarDS.INTERLACE_PLANE;
+                }
             }
         }
 

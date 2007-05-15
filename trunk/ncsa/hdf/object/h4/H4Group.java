@@ -78,11 +78,14 @@ public class H4Group extends Group
         if (attributeList != null)
         {
             return attributeList;
-        } else
+        } else {
             attributeList = new Vector();
+        }
 
         int vgid = open();
-        if (vgid <= 0) return attributeList;
+        if (vgid <= 0) {
+            return attributeList;
+        }
 
         int n = -1;
 
@@ -103,7 +106,9 @@ public class H4Group extends Group
                     b = false;
                 }
 
-                if (!b) continue;
+                if (!b) {
+                    continue;
+                }
 
                 long[] attrDims = {attrInfo[1]};
                 Attribute attr = new Attribute(attrName[0], new H4Datatype(attrInfo[0]), attrDims);;
@@ -119,8 +124,8 @@ public class H4Group extends Group
 
                 if (buf != null)
                 {
-                    if (attrInfo[0] == HDFConstants.DFNT_CHAR ||
-                        attrInfo[0] ==  HDFConstants.DFNT_UCHAR8)
+                    if ((attrInfo[0] == HDFConstants.DFNT_CHAR) ||
+                        (attrInfo[0] ==  HDFConstants.DFNT_UCHAR8))
                     {
                         buf = Dataset.byteToString((byte[])buf, attrInfo[1]);
                     }
@@ -140,13 +145,15 @@ public class H4Group extends Group
     public void writeMetadata(Object info) throws Exception
     {
         // only attribute metadata is supported.
-        if (!(info instanceof Attribute))
+        if (!(info instanceof Attribute)) {
             return;
+        }
 
         getFileFormat().writeAttribute(this, (Attribute)info, true);
 
-        if (attributeList == null)
+        if (attributeList == null) {
             attributeList = new Vector();
+        }
 
         attributeList.add(info);
     }
@@ -199,29 +206,30 @@ public class H4Group extends Group
         throws Exception
     {
         H4Group group = null;
-        String fullPath = null;
-
-        if (pgroup == null ||
-            name == null)
+        if ((pgroup == null) ||
+            (name == null)) {
             return null;
+        }
 
         H4File file = (H4File)pgroup.getFileFormat();
 
-        if (file == null)
+        if (file == null) {
             return null;
+        }
 
         String path = HObject.separator;
-        if (!pgroup.isRoot())
+        if (!pgroup.isRoot()) {
             path = pgroup.getPath()+pgroup.getName()+HObject.separator;
-        fullPath = path +  name;
-
+        }
         int fileid = file.open();
-        if (fileid < 0)
+        if (fileid < 0) {
             return null;
+        }
 
         int gid = HDFLibrary.Vattach(fileid, -1, "w");
-        if (gid < 0)
+        if (gid < 0) {
             return null;
+        }
 
         HDFLibrary.Vsetname(gid, name);
         int ref = HDFLibrary.VQueryref(gid);
@@ -231,8 +239,9 @@ public class H4Group extends Group
         {
             // add the dataset to the parent group
             int pid = pgroup.open();
-            if (pid < 0)
+            if (pid < 0) {
                 throw (new HDFException("Unable to open the parent group."));
+            }
 
             HDFLibrary.Vinsert(pid, gid);
 
@@ -245,8 +254,9 @@ public class H4Group extends Group
         long[] oid = {tag, ref};
         group = new H4Group(file, name, path, pgroup, oid);
 
-        if (group != null)
+        if (group != null) {
             pgroup.addToMemberList(group);
+        }
 
         return group;
     }

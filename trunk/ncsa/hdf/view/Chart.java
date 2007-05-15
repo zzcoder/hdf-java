@@ -108,16 +108,18 @@ implements ActionListener
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         format = new java.text.DecimalFormat("0.00E0");
 
-        if (data == null)
+        if (data == null) {
             return;
+        }
 
         this.chartStyle = style;
         this.data = data;
 
-        if (style == HISTOGRAM)
+        if (style == HISTOGRAM) {
             isInteger = true;
-        else
+        } else {
             isInteger = false;
+        }
 
         if (xData != null)
         {
@@ -131,11 +133,13 @@ implements ActionListener
                 xmin = xmax = xData[0];
                 for (int i=0; i<len; i++)
                 {
-                    if (xData[i] < xmin)
+                    if (xData[i] < xmin) {
                         xmin = xData[i];
+                    }
 
-                    if (xData[i] > xmax)
+                    if (xData[i] > xmax) {
                         xmax = xData[i];
+                    }
                 }
             }
         }
@@ -161,8 +165,9 @@ implements ActionListener
             findDataRange();
         }
 
-        if ( ymax > 0.000001 && ymax < 1000000)
+        if ( (ymax > 0.000001) && (ymax < 1000000)) {
             format = new java.text.DecimalFormat("0.######");
+        }
 
         chartP = new ChartPanel();
         chartP.setBackground(Color.white);
@@ -223,19 +228,22 @@ implements ActionListener
     /** find and set the minimum and maximum values of the data */
     private void findDataRange()
     {
-        if (data == null)
+        if (data == null) {
             return;
+        }
 
         ymin = ymax = data[0][0];
         for (int i=0; i<numberOfLines; i++)
         {
             for (int j=0; j<numberOfPoints; j++)
             {
-                if (data[i][j] < ymin)
+                if (data[i][j] < ymin) {
                     ymin = data[i][j];
+                }
 
-                if (data[i][j] > ymax)
+                if (data[i][j] > ymax) {
                     ymax = data[i][j];
+                }
             }
         }
     }
@@ -250,16 +258,18 @@ implements ActionListener
         */
         public void paint(Graphics g)
         {
-            if ( numberOfLines <= 0 )
+            if ( numberOfLines <= 0 ) {
                 return; // no data
+            }
 
             Dimension d = getSize();
             int gap = 20;
             int xgap = 2*gap;
             int ygap = 2*gap;
             int legendSpace=0;
-            if (chartStyle == LINEPLOT && lineLabels != null)
+            if ((chartStyle == LINEPLOT) && (lineLabels != null)) {
                 legendSpace = 60;
+            }
 
             int h = d.height - gap;
             int w = d.width - (3*gap + legendSpace);
@@ -282,26 +292,30 @@ implements ActionListener
                 x = xmin+i*dx;
                 xp = xgap + i*dw;
                 g.drawLine((int)xp, h, (int)xp, h-5);
-                if (gtOne)
+                if (gtOne) {
                     g.drawString(String.valueOf((int)x), (int)xp-5, h+gap);
-                else
+                } else {
                     g.drawString(String.valueOf(x), (int)xp-5, h+gap);
+                }
             }
 
             // draw y labels
             double yp=0, y=ymin;
             double dh = (double)h/(double)ynpoints;
             double dy = (ymax - ymin) /(ynpoints);
-            if (dy > 1) dy = Math.round(dy*10.0)/10.0;
+            if (dy > 1) {
+                dy = Math.round(dy*10.0)/10.0;
+            }
             for (int i=0; i<=ynpoints; i++)
             {
                 yp = i*dh;
                 y = i*dy+ymin;
                 g.drawLine(ygap, h-(int)yp, ygap+5, h-(int)yp);
-                if (isInteger)
+                if (isInteger) {
                     g.drawString(String.valueOf((int)y), 0, h-(int)yp+8);
-                else
+                } else {
                     g.drawString(format.format(y), 0, h-(int)yp+8);
+                }
             }
 
             Color c = g.getColor();
@@ -313,29 +327,32 @@ implements ActionListener
                 // use y = a + b* x to calculate pixel positions
                 double b = h/(ymin-ymax);
                 double a = -b*ymax;
-                boolean hasXdata = (xData != null && xData.length>=numberOfPoints);
+                boolean hasXdata = ((xData != null) && (xData.length>=numberOfPoints));
                 double xRatio = (1/(xmax-xmin))*w;
                 double xD = (xmin/(xmax-xmin))*w;
 
                 // draw lines for selected spreadsheet columns
                 for (int i=0; i<numberOfLines; i++)
                 {
-                    if (lineColors != null && lineColors.length>= numberOfLines)
+                    if ((lineColors != null) && (lineColors.length>= numberOfLines)) {
                         g.setColor(lineColors[i]);
+                    }
 
                     // set up the line data for drawing one line a time
-                    if (hasXdata)
+                    if (hasXdata) {
                         x0 = xgap + xData[0]*xRatio - xD;
-                    else
+                    } else {
                         x0 = xgap;
+                    }
                     y0 = a+b*data[i][0];
 
                     for (int j=1; j<numberOfPoints; j++)
                     {
-                        if (hasXdata)
+                        if (hasXdata) {
                             x1 = xgap + xData[j]*xRatio - xD;
-                        else
+                        } else {
                             x1 = xgap + j*dw;
+                        }
 
                         y1 = a+b*data[i][j];
                         g.drawLine((int)x0, (int)y0, (int)x1, (int)y1);
@@ -344,7 +361,7 @@ implements ActionListener
                     }
 
                     // draw line legend
-                    if (lineLabels != null && lineLabels.length>= numberOfLines)
+                    if ((lineLabels != null) && (lineLabels.length>= numberOfLines))
                     {
                         x0 = w+legendSpace;
                         y0 = gap+gap*i;
@@ -356,8 +373,9 @@ implements ActionListener
                 g.setColor(c); // set the color back to its default
 
                 // draw a box on the legend
-                if (lineLabels != null && lineLabels.length>= numberOfLines)
+                if ((lineLabels != null) && (lineLabels.length>= numberOfLines)) {
                     g.drawRect(w+legendSpace-10, 10, legendSpace, 10*gap);
+                }
 
             } // if (chartStyle == LINEPLOT)
             else if (chartStyle == HISTOGRAM)
@@ -367,7 +385,9 @@ implements ActionListener
                 yp=0;
                 g.setColor(Color.blue);
                 int barWidth = w/numberOfPoints;
-                if (barWidth <=0 ) barWidth = 1;
+                if (barWidth <=0 ) {
+                    barWidth = 1;
+                }
 
                 for (int j=0; j<numberOfPoints; j++)
                 {

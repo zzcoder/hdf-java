@@ -177,8 +177,9 @@ public class H5Ingest extends JFrame implements ActionListener
 
     private void getContentMets(Mets parent)
     {
-        if (parent == null)
+        if (parent == null) {
             return;
+        }
 
         List content = parent.getContent();
         int n = content.size();
@@ -186,23 +187,25 @@ public class H5Ingest extends JFrame implements ActionListener
         for (int i =0; i<n; i++)
         {
             elm = content.get(i);
-            if (elm instanceof MetsHdr)
+            if (elm instanceof MetsHdr) {
                 mets_MetsHdr = (MetsHdr)elm;
-            else if (elm instanceof DmdSec)
+            } else if (elm instanceof DmdSec) {
                 mets_DmdSec = (DmdSec)elm;
-            else if (elm instanceof AmdSec)
+            } else if (elm instanceof AmdSec) {
                 mets_AmdSec = (AmdSec)elm;
-            else if (elm instanceof FileSec)
+            } else if (elm instanceof FileSec) {
                 mets_FileSec = (FileSec)elm;
-            else if (elm instanceof StructMap)
+            } else if (elm instanceof StructMap) {
                 mets_StructMap = (StructMap)elm;
+            }
         }
     }
 
     private void getContentMetsHdr(MetsHdr parent)
     {
-        if (parent == null)
+        if (parent == null) {
             return;
+        }
 
         List content = parent.getContent();
         int n = content.size();
@@ -213,10 +216,11 @@ public class H5Ingest extends JFrame implements ActionListener
             elm = content.get(i);
             if (elm instanceof Agent) {
                 agent = (Agent)elm;
-                if (agent.getROLE()==Role.CREATOR)
+                if (agent.getROLE()==Role.CREATOR) {
                     mets_MetsHdr_Agent_Creator = agent;
-                else if (agent.getROLE()==Role.EDITOR)
+                } else if (agent.getROLE()==Role.EDITOR) {
                     mets_MetsHdr_Agent_Editor = agent;
+                }
             }
         }
     }
@@ -416,8 +420,9 @@ public class H5Ingest extends JFrame implements ActionListener
         String strLine = null;
         try {
             in = new BufferedReader(new FileReader(metsFileName));
-            while ( (strLine=in.readLine()) != null)
+            while ( (strLine=in.readLine()) != null) {
                 textViewer.append("\n"+strLine);
+            }
         } catch (Exception ex) {ex.printStackTrace();}
         finally { try {in.close();} catch (Exception ex) {;} }
 
@@ -466,11 +471,13 @@ public class H5Ingest extends JFrame implements ActionListener
         PCData unknownData = new PCData("UNKNOWN");
         edu.harvard.hul.ois.mets.File xmlFile = null;
 
-        if (xmlFileName == null)
+        if (xmlFileName == null) {
             xmlFileName = "UNKNOWN_XML_Header_File";
+        }
 
-        if (h5FileName == null)
+        if (h5FileName == null) {
             h5FileName = "UNKNOWN_HDF5_File";
+        }
 
         Mets mets = new Mets();
         mets.setOBJID("_H5METS"+strID);
@@ -715,25 +722,30 @@ public class H5Ingest extends JFrame implements ActionListener
 
         for ( i = 0; i < args.length; i++)
         {
-            if ("-help".equalsIgnoreCase(args[i]) || "-h".equalsIgnoreCase(args[i]))
+            if ("-help".equalsIgnoreCase(args[i]) || "-h".equalsIgnoreCase(args[i])) {
                 isHelp = true;
-            else if ("-template".equalsIgnoreCase(args[i]) || "-t".equalsIgnoreCase(args[i]))
+            } else if ("-template".equalsIgnoreCase(args[i]) || "-t".equalsIgnoreCase(args[i])) {
                 isTemplate = true;
-            else if ("-validate".equalsIgnoreCase(args[i]) || "-v".equalsIgnoreCase(args[i]))
+            } else if ("-validate".equalsIgnoreCase(args[i]) || "-v".equalsIgnoreCase(args[i])) {
                 isValidate = true;
-            else if ("-xml".equalsIgnoreCase(args[i]) || "-x".equalsIgnoreCase(args[i]))
+            } else if ("-xml".equalsIgnoreCase(args[i]) || "-x".equalsIgnoreCase(args[i])) {
                 xmlFile = args[++i];
-            else if ("-hdf5".equalsIgnoreCase(args[i]) || "-5".equalsIgnoreCase(args[i]))
+            } else if ("-hdf5".equalsIgnoreCase(args[i]) || "-5".equalsIgnoreCase(args[i])) {
                 h5File = args[++i];
-            else
+            } else {
                 backup = true;
+            }
         }
 
-        if (backup)
+        if (backup) {
             i--;
+        }
 
-        if (i<0) isHelp = true;
-        else metsFile = args[i];
+        if (i<0) {
+            isHelp = true;
+        } else {
+            metsFile = args[i];
+        }
 
         if (isHelp) {
             help();

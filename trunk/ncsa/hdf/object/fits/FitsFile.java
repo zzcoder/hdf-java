@@ -109,7 +109,7 @@ public class FitsFile extends FileFormat
 
             String back = new String(header, 9, 70);
             back = back.trim();
-            if (back.length() < 1 || back.charAt(0) != 'T') {
+            if ((back.length() < 1) || (back.charAt(0) != 'T')) {
                 try { raf.close();} catch (Exception ex) {}
                 return false;
             }
@@ -163,16 +163,18 @@ public class FitsFile extends FileFormat
             public boolean isLeaf() { return false; }
         };
 
-        if (fitsFile == null)
+        if (fitsFile == null) {
             return root;
+        }
 
         BasicHDU[] hdus = null;
 
         try { hdus = fitsFile.read(); }
         catch (Exception ex) {}
 
-        if (hdus == null)
+        if (hdus == null) {
             return root;
+        }
 
         int n = hdus.length;
         int nImageHDU = 0;
@@ -183,17 +185,18 @@ public class FitsFile extends FileFormat
             hdu = hdus[i];
             hduName = null;
             // only deal with ImageHDU and TableHDU
-            if (hdu instanceof ImageHDU)
+            if (hdu instanceof ImageHDU) {
                 hduName = "ImageHDU #"+nImageHDU++;
-            else if (hdu instanceof RandomGroupsHDU)
+            } else if (hdu instanceof RandomGroupsHDU) {
                 hduName = "RandomGroupsHDU #"+nImageHDU++;
-            else if (hdu instanceof TableHDU) {
-                if (hdu instanceof AsciiTableHDU)
+            } else if (hdu instanceof TableHDU) {
+                if (hdu instanceof AsciiTableHDU) {
                     hduName = "AsciiTableHDU #"+nTableHDU++;
-                else if (hdu instanceof BinaryTableHDU)
+                } else if (hdu instanceof BinaryTableHDU) {
                     hduName = "BinaryTableHDU #"+nTableHDU++;
-                else
+                } else {
                     hduName = "TableHDU #"+nTableHDU++;
+                }
             }
 
             if (hduName != null) {
@@ -210,12 +213,14 @@ public class FitsFile extends FileFormat
 
     // Implementing FileFormat
     public void close() throws IOException {
-        if (fitsFile == null)
+        if (fitsFile == null) {
             return;
+        }
 
         DataInput di = fitsFile.getStream();
-        if (di instanceof InputStream)
+        if (di instanceof InputStream) {
             ((InputStream)di).close();
+        }
     }
 
     // Implementing FileFormat
@@ -398,7 +403,6 @@ public class FitsFile extends FileFormat
      */
     public String getLibversion()
     {
-        int[] vers = new int[3];
         String ver = "NetCDF Java (version 2.1)";
 
         return ver;

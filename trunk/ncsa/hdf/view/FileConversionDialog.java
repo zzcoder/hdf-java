@@ -192,8 +192,9 @@ implements ActionListener
         {
             isConverted = convert();
 
-            if (isConverted)
+            if (isConverted) {
                 dispose();
+            }
         }
         else if (cmd.equals("Cancel"))
         {
@@ -204,25 +205,30 @@ implements ActionListener
         else if (cmd.equals("Browse source file"))
         {
             JFileChooser fchooser = new JFileChooser(currentDir);
-            if (fileTypeFrom.equals(FileFormat.FILE_TYPE_JPEG))
+            if (fileTypeFrom.equals(FileFormat.FILE_TYPE_JPEG)) {
                 fchooser.setFileFilter(DefaultFileFilter.getFileFilterJPEG());
-            else if (fileTypeFrom.equals(FileFormat.FILE_TYPE_TIFF))
+            } else if (fileTypeFrom.equals(FileFormat.FILE_TYPE_TIFF)) {
                 fchooser.setFileFilter(DefaultFileFilter.getFileFilterTIFF());
-            else if (fileTypeFrom.equals(FileFormat.FILE_TYPE_PNG))
+            } else if (fileTypeFrom.equals(FileFormat.FILE_TYPE_PNG)) {
                 fchooser.setFileFilter(DefaultFileFilter.getFileFilterPNG());
+            }
 
             int returnVal = fchooser.showOpenDialog(this);
 
-            if(returnVal != JFileChooser.APPROVE_OPTION)
+            if(returnVal != JFileChooser.APPROVE_OPTION) {
                 return;
+            }
 
             File choosedFile = fchooser.getSelectedFile();
-            if (choosedFile == null)
+            if (choosedFile == null) {
                 return;
+            }
 
             String fname = choosedFile.getAbsolutePath();
 
-            if (fname == null) return;
+            if (fname == null) {
+                return;
+            }
 
             currentDir = choosedFile.getParent();
             srcFileField.setText(fname);
@@ -233,16 +239,20 @@ implements ActionListener
             JFileChooser fchooser = new JFileChooser();
             int returnVal = fchooser.showOpenDialog(this);
 
-            if(returnVal != JFileChooser.APPROVE_OPTION)
+            if(returnVal != JFileChooser.APPROVE_OPTION) {
                 return;
+            }
 
             File choosedFile = fchooser.getSelectedFile();
-            if (choosedFile == null)
+            if (choosedFile == null) {
                 return;
+            }
 
             String fname = choosedFile.getAbsolutePath();
 
-            if (fname == null) return;
+            if (fname == null) {
+                return;
+            }
 
             dstFileField.setText(fname);
         }
@@ -255,15 +265,15 @@ implements ActionListener
         String srcFile = srcFileField.getText();
         String dstFile = dstFileField.getText();
 
-        if (srcFile == null || dstFile == null)
+        if ((srcFile == null) || (dstFile == null))
         {
             return false;
         }
 
         srcFile = srcFile.trim();
         dstFile = dstFile.trim();
-        if (srcFile == null || srcFile.length()<=0 ||
-            dstFile == null || dstFile.length()<=0)
+        if ((srcFile == null) || (srcFile.length()<=0) ||
+            (dstFile == null) || (dstFile.length()<=0))
         {
             return false;
         }
@@ -335,8 +345,9 @@ implements ActionListener
                 "Destination file exists. Do you want to replace it ?",
                 this.getTitle(),
                 JOptionPane.YES_NO_OPTION);
-            if (newFileFlag == JOptionPane.NO_OPTION)
+            if (newFileFlag == JOptionPane.NO_OPTION) {
                 return false;
+            }
         }
 
         try

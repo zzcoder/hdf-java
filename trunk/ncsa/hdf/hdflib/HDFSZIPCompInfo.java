@@ -41,11 +41,6 @@ public class HDFSZIPCompInfo extends HDFNewCompInfo {
     int pixels_per_block_in,
     int pixels_per_scanline_in) {
         ctype = HDFConstants.COMP_CODE_SZIP;
-        int bits_per_pixel = bits_per_pixel_in;
-        int options_mask = options_mask_in;
-        int pixels = pixels_in;
-        int pixels_per_block = pixels_per_block_in;
-        int pixels_per_scanline = pixels_per_scanline_in;
     } ;
 }
 

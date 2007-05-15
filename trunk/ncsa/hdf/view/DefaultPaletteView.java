@@ -88,8 +88,6 @@ ActionListener, ItemListener
 
         paletteData = new int[3][256];
         byte[][] imagePalette = imageView.getPalette();
-        int[] xRange = {0, 255};
-        double[] yRange = {0, 255};
         this.setTitle("Image Palette for - "+dataset.getPath()+dataset.getName());
 
         int d = 0;
@@ -98,7 +96,9 @@ ActionListener, ItemListener
             for (int j=0; j<256; j++)
             {
                 d = imagePalette[i][j];
-                if (d < 0) d += 256;
+                if (d < 0) {
+                    d += 256;
+                }
                 paletteData[i][j] = d;
             }
         }
@@ -219,14 +219,16 @@ ActionListener, ItemListener
         }
         else if (cmd.equals("Show palette values"))
         {
-            if (paletteValueTable == null)
+            if (paletteValueTable == null) {
                 paletteValueTable = new PaletteValueTable(this);
+            }
             paletteValueTable.setVisible(true);
         }
         else if (cmd.equals("Hide palette values"))
         {
-            if (paletteValueTable != null)
+            if (paletteValueTable != null) {
                 paletteValueTable.setVisible(false);
+            }
         }
     }
 
@@ -238,30 +240,35 @@ ActionListener, ItemListener
     public void itemStateChanged(ItemEvent e) {
         Object src = e.getSource();
 
-        if (!src.equals(choicePalette))
+        if (!src.equals(choicePalette)) {
             return;
+        }
 
         int idx = choicePalette.getSelectedIndex();
-        if ( idx<=0)
+        if ( idx<=0) {
             return;
+        }
 
         byte[][] imagePalette = null;
         Object item = choicePalette.getSelectedItem();
-        if ( item.equals(PALETTE_GRAY) )
+        if ( item.equals(PALETTE_GRAY) ) {
             imagePalette = Tools.createGrayPalette();
-        if ( item.equals(PALETTE_REVERSE_GRAY) )
+        }
+        if ( item.equals(PALETTE_REVERSE_GRAY) ) {
             imagePalette = Tools.createReverseGrayPalette();
-        else if ( item.equals(PALETTE_GRAY_WAVE) )
+        } else if ( item.equals(PALETTE_GRAY_WAVE) ) {
             imagePalette = Tools.createGrayWavePalette();
-        else if ( item.equals(PALETTE_RAINBOW) )
+        } else if ( item.equals(PALETTE_RAINBOW) ) {
             imagePalette = Tools.createRainbowPalette();
-        else if ( item.equals(PALETTE_NATURE) )
+        } else if ( item.equals(PALETTE_NATURE) ) {
             imagePalette = Tools.createNaturePalette();
-        else if ( item.equals(PALETTE_WAVE) )
+        } else if ( item.equals(PALETTE_WAVE) ) {
             imagePalette = Tools.createWavePalette();
+        }
 
-        if (imagePalette == null)
+        if (imagePalette == null) {
             return;
+        }
 
         int d = 0;
         for (int i=0; i<3; i++)
@@ -269,7 +276,9 @@ ActionListener, ItemListener
             for (int j=0; j<256; j++)
             {
                 d = imagePalette[i][j];
-                if (d < 0) d += 256;
+                if (d < 0) {
+                    d += 256;
+                }
                 paletteData[i][j] = d;
             }
         }
@@ -303,7 +312,7 @@ ActionListener, ItemListener
 
     public void mouseClicked(MouseEvent e){} // MouseListener
     public void mouseReleased(MouseEvent e) {
-        if (paletteValueTable != null && paletteValueTable.isVisible()) {
+        if ((paletteValueTable != null) && paletteValueTable.isVisible()) {
             paletteValueTable.paletteUpdated();
         }
     } // MouseListener
@@ -323,7 +332,9 @@ ActionListener, ItemListener
     public void mouseDragged(MouseEvent e)
     {
         int x1 = e.getX()-40;// takes the vertical gap
-        if (x1< 0) x1 = 0;
+        if (x1< 0) {
+            x1 = 0;
+        }
         int y1 = e.getY()+20;
 
         Dimension d = chartP.getSize();
@@ -331,10 +342,11 @@ ActionListener, ItemListener
         double rx = 255/(double)d.width;
 
         int lineIdx = 0;
-        if (checkGreen.isSelected())
+        if (checkGreen.isSelected()) {
             lineIdx = 1;
-        else if (checkBlue.isSelected())
+        } else if (checkBlue.isSelected()) {
             lineIdx = 2;
+        }
 
         int idx = 0;
         double b = (double)(y1-y0)/(double)(x1-x0);
@@ -345,10 +357,15 @@ ActionListener, ItemListener
         for (int i=i0; i<i1; i++)
         {
             idx = (int)(rx*i);
-            if (idx > 255) continue;
+            if (idx > 255) {
+                continue;
+            }
             value = 255-(a+b*i)*ry;
-            if (value < 0) value = 0;
-            else if (value > 255) value = 255;
+            if (value < 0) {
+                value = 0;
+            } else if (value > 255) {
+                value = 255;
+            }
             paletteData[lineIdx][idx] = (int)value;
         }
 
@@ -385,10 +402,11 @@ ActionListener, ItemListener
 
                 public Object getValueAt(int row, int col)
                 {
-                    if (col <3)
+                    if (col <3) {
                         return String.valueOf(paletteData[col][row]);
-                    else
+                    } else {
                         return "";
+                    }
                 }
 
                 public void editingStopped(ChangeEvent e)
@@ -396,7 +414,9 @@ ActionListener, ItemListener
                     int row = getEditingRow();
                     int col = getEditingColumn();
 
-                    if (col>2) return;
+                    if (col>2) {
+                        return;
+                    }
 
                     String oldValue = (String)getValueAt(row, col);
                     super.editingStopped(e);
@@ -462,8 +482,9 @@ ActionListener, ItemListener
 
         private void updatePaletteValue(String strValue, int row, int col)
         {
-            if (strValue == null)
+            if (strValue == null) {
                 return;
+            }
 
             int value = Integer.parseInt(strValue);
             paletteData[col][row] = value;

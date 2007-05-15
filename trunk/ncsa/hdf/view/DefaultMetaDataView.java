@@ -73,11 +73,13 @@ implements ActionListener, MetaDataView
         userBlock = null;
         userBlockArea = null;
 
-        if (hObject == null) dispose();
-        else if ( hObject.getPath()== null)
+        if (hObject == null) {
+            dispose();
+        } else if ( hObject.getPath()== null) {
             setTitle("Properties - "+hObject.getName());
-        else
+        } else {
             setTitle("Properties - "+hObject.getPath()+hObject.getName());
+        }
 
         isH5 = hObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
         isH4 = hObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4));
@@ -88,7 +90,7 @@ implements ActionListener, MetaDataView
         tabbedPane.addTab("General", createGeneralPropertyPanel());
         tabbedPane.addTab("Attributes", createAttributePanel());
 
-        boolean isRoot = (hObject instanceof Group && ((Group)hObject).isRoot());
+        boolean isRoot = ((hObject instanceof Group) && ((Group)hObject).isRoot());
         if (isH5 && isRoot)
         {
             // add panel to display user block
@@ -183,13 +185,17 @@ implements ActionListener, MetaDataView
 
     /** add an attribute to a data object.*/
     public Attribute addAttribute(HObject obj) {
-        if (obj == null) return null;
+        if (obj == null) {
+            return null;
+        }
 
         NewAttributeDialog  dialog = new NewAttributeDialog(this, obj);
         dialog.setVisible(true);
 
         Attribute attr = dialog.getAttribute();
-        if (attr == null) return null;
+        if (attr == null) {
+            return null;
+        }
 
         String rowData[] = new String[4]; // name, value, type, size
         boolean isUnsigned = false;
@@ -203,8 +209,9 @@ implements ActionListener, MetaDataView
         long dims[] = attr.getDataDims();
 
         rowData[3] = String.valueOf(dims[0]);
-        for (int j=1; j<dims.length; j++)
+        for (int j=1; j<dims.length; j++) {
             rowData[3] += " x " + dims[j];
+        }
 
         attrTableModel.addRow(rowData);
         attrTableModel.fireTableRowsInserted(
@@ -219,8 +226,9 @@ implements ActionListener, MetaDataView
     /** delete an attribribute from a data object.*/
     public Attribute deleteAttribute(HObject obj)
     {
-        if (obj == null)
+        if (obj == null) {
             return null;
+        }
 
         int idx = attrTable.getSelectedRow();
         if (idx < 0)
@@ -246,8 +254,9 @@ implements ActionListener, MetaDataView
         try { attrList = obj.getMetadata(); }
         catch (Exception ex) { attrList = null; }
 
-        if (attrList == null)
+        if (attrList == null) {
             return null;
+        }
 
         Attribute attr = (Attribute)attrList.get(idx);
         try { obj.removeMetadata(attr); }
@@ -271,7 +280,7 @@ implements ActionListener, MetaDataView
         JPanel panel = new JPanel();
         panel.setLayout (new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10,0,0,0));
-        boolean isRoot = (hObject instanceof Group && ((Group)hObject).isRoot());
+        boolean isRoot = ((hObject instanceof Group) && ((Group)hObject).isRoot());
         FileFormat theFile = hObject.getFileFormat();
 
         JPanel topPanel = new JPanel();
@@ -293,10 +302,11 @@ implements ActionListener, MetaDataView
             lp.add(new JLabel("Type: "));
         }
 
-        if (isH4)
+        if (isH4) {
             lp.add(new JLabel("Tag, Ref: "));
-        else
+        } else {
             lp.add(new JLabel("Object ID: "));
+        }
 
         JPanel rp = new JPanel();
         rp.setLayout(new GridLayout(4,1));
@@ -306,10 +316,11 @@ implements ActionListener, MetaDataView
         rp.add(nameField);
 
         JTextField pathField = new JTextField();
-        if (isRoot)
+        if (isRoot) {
             pathField.setText((new File(hObject.getFile())).getParent());
-        else
+        } else {
             pathField.setText(hObject.getPath());
+        }
         pathField.setEditable(false);
         rp.add(pathField);
 
@@ -329,57 +340,66 @@ implements ActionListener, MetaDataView
             while(local_enum.hasMoreElements())
             {
                 theNode = (DefaultMutableTreeNode)local_enum.nextElement();
-                if (theNode.getUserObject() instanceof Group)
+                if (theNode.getUserObject() instanceof Group) {
                     groupCount++;
-                else
+                } else {
                     datasetCount++;
+                }
             }
             fileInfo = "size="+size+"K,  groups="+groupCount+ ",  datasets="+datasetCount;
         }
 
         if (isRoot)
         {
-            if (isH5) typeStr = "HDF5,  "+fileInfo;
-            else if (isH4) typeStr = "HDF4,  "+fileInfo;
-            else typeStr = fileInfo;
+            if (isH5) {
+                typeStr = "HDF5,  "+fileInfo;
+            } else if (isH4) {
+                typeStr = "HDF4,  "+fileInfo;
+            } else {
+                typeStr = fileInfo;
+            }
         }
         else if (isH5)
         {
-            if (hObject instanceof Group)
+            if (hObject instanceof Group) {
                 typeStr = "HDF5 Group";
-            else if (hObject instanceof ScalarDS)
+            } else if (hObject instanceof ScalarDS) {
                 typeStr = "HDF5 Scalar Dataset";
-            else if (hObject instanceof CompoundDS)
+            } else if (hObject instanceof CompoundDS) {
                 typeStr = "HDF5 Compound Dataset";
-            else if (hObject instanceof Datatype)
+            } else if (hObject instanceof Datatype) {
                 typeStr = "HDF5 Named Datatype";
+            }
         }
         else if (isH4)
         {
-            if (hObject instanceof Group)
+            if (hObject instanceof Group) {
                 typeStr = "HDF4 Group";
-            else if (hObject instanceof ScalarDS)
+            } else if (hObject instanceof ScalarDS)
             {
                 ScalarDS ds = (ScalarDS)hObject;
-                if (ds.isImage())
+                if (ds.isImage()) {
                     typeStr = "HDF4 Raster Image";
-                else
+                } else {
                     typeStr = "HDF4 SDS";
+                }
             }
-            else if (hObject instanceof CompoundDS)
+            else if (hObject instanceof CompoundDS) {
                 typeStr = "HDF4 Vdata";
+            }
         }
         else
         {
-            if (hObject instanceof Group)
+            if (hObject instanceof Group) {
                 typeStr = "Group";
-            else if (hObject instanceof ScalarDS)
+            } else if (hObject instanceof ScalarDS)
             {
                 ScalarDS ds = (ScalarDS)hObject;
                 typeStr = "Scalar Dataset";
             }
-            else if (hObject instanceof CompoundDS)
+            else if (hObject instanceof CompoundDS) {
                 typeStr = "Compound Dataset";
+            }
         }
 
         JTextField typeField = new JTextField(typeStr);
@@ -391,8 +411,9 @@ implements ActionListener, MetaDataView
         if (OID != null)
         {
             oidStr = String.valueOf(OID[0]);
-            for (int i=1; i<OID.length; i++)
+            for (int i=1; i<OID.length; i++) {
                 oidStr += ", "+ OID[i];
+            }
         }
         JTextField oidField = new JTextField(oidStr);
         oidField.setEditable(false);
@@ -408,15 +429,18 @@ implements ActionListener, MetaDataView
         topPanel.add("Center", tmpP);
 
         JPanel infoPanel = null;
-        if (hObject instanceof Group)
+        if (hObject instanceof Group) {
             infoPanel = createGroupInfoPanel((Group)hObject);
-        else if (hObject instanceof Dataset)
+        } else if (hObject instanceof Dataset) {
             infoPanel= createDatasetInfoPanel((Dataset)hObject);
-        else if (hObject instanceof Datatype)
+        } else if (hObject instanceof Datatype) {
             infoPanel= createDatatypeInfoPanel((Datatype)hObject);
+        }
 
         panel.add(topPanel, BorderLayout.NORTH);
-        if (infoPanel != null) panel.add(infoPanel, BorderLayout.CENTER);
+        if (infoPanel != null) {
+            panel.add(infoPanel, BorderLayout.CENTER);
+        }
 
         return panel;
     }
@@ -429,22 +453,25 @@ implements ActionListener, MetaDataView
         JPanel panel = new JPanel();
 
         List mlist = g.getMemberList();
-        if (mlist == null)
+        if (mlist == null) {
             return panel;
+        }
 
         int n = mlist.size();
-        if (n<=0)
+        if (n<=0) {
             return panel;
+        }
 
         String rowData[][] = new String[n][2];
         for (int i=0; i<n; i++)
         {
             HObject theObj = (HObject)mlist.get(i);
             rowData[i][0] = theObj.getName();
-            if (theObj instanceof Group)
+            if (theObj instanceof Group) {
                 rowData[i][1] = "Group";
-            else if (theObj instanceof Dataset)
+            } else if (theObj instanceof Dataset) {
                 rowData[i][1] = "Dataset";
+            }
         }
 
         String[] columnNames = {"Name", "Type"};
@@ -467,11 +494,12 @@ implements ActionListener, MetaDataView
         JScrollPane scroller = new JScrollPane(table);
 
         panel.setLayout (new BorderLayout());
-        if (g.getNumberOfMembersInFile() < ViewProperties.getMaxMembers())
+        if (g.getNumberOfMembersInFile() < ViewProperties.getMaxMembers()) {
             panel.add(new JLabel("Number of members: "+n), BorderLayout.NORTH);
-        else
+        } else {
             panel.add(new JLabel("Number of members: "+n+
             " (in memory), "+g.getNumberOfMembersInFile()+" (in file)"), BorderLayout.NORTH);
+        }
         panel.add(scroller, BorderLayout.CENTER);
         panel.setBorder(new TitledBorder("Group Members"));
 
@@ -504,7 +532,9 @@ implements ActionListener, MetaDataView
         JPanel rp = new JPanel();
         rp.setLayout(new GridLayout(3,1));
 
-        if (d.getRank() <= 0) d.init();
+        if (d.getRank() <= 0) {
+            d.init();
+        }
         JTextField txtf = new JTextField(""+d.getRank());
         txtf.setEditable(false);
         rp.add(txtf);
@@ -514,7 +544,7 @@ implements ActionListener, MetaDataView
         if (dims != null)
         {
             String[] dimNames = d.getDimNames();
-            boolean hasDimNames = (dimNames!=null && dimNames.length == dims.length);
+            boolean hasDimNames = ((dimNames!=null) && (dimNames.length == dims.length));
             StringBuffer sb = new StringBuffer();
             sb.append(dims[0]);
             if (hasDimNames) {
@@ -545,8 +575,11 @@ implements ActionListener, MetaDataView
             typeStr = sd.getDatatype().getDatatypeDescription();
         } else if (d instanceof CompoundDS)
         {
-            if (isH4)  typeStr = "Vdata";
-            else typeStr = "Compound";
+            if (isH4) {
+                typeStr = "Vdata";
+            } else {
+                typeStr = "Compound";
+            }
         }
 
         txtf = new JTextField(typeStr);
@@ -581,13 +614,14 @@ implements ActionListener, MetaDataView
                 {
                     rowData[i][0] = names[i];
                     int mDims[] = compound.getMemeberDims(i);
-                    if (mDims == null)
+                    if (mDims == null) {
                         rowData[i][2] = String.valueOf(orders[i]);
-                    else {
+                    } else {
                         String mStr = String.valueOf(mDims[0]);
                         int m = mDims.length;
-                        for (int j=1; j<m; j++)
+                        for (int j=1; j<m; j++) {
                             mStr +=" x "+mDims[j];
+                        }
                         rowData[i][2] = mStr;
                     }
                     rowData[i][1] = types[i].getDatatypeDescription();
@@ -617,9 +651,9 @@ implements ActionListener, MetaDataView
         //try { d.getMetadata(); } catch (Exception ex) {}
         String chunkInfo = "";
         long[] chunks = d.getChunkSize();
-        if (chunks == null)
+        if (chunks == null) {
             chunkInfo = "NONE";
-        else
+        } else
         {
             int n = chunks.length;
             chunkInfo = String.valueOf(chunks[0]);
@@ -704,7 +738,9 @@ implements ActionListener, MetaDataView
         } catch (Exception ex) {
              attrList = null;
         }
-        if (attrList != null) numAttributes = attrList.size();
+        if (attrList != null) {
+            numAttributes = attrList.size();
+        }
 
         String[] columnNames = {"Name", "Value", "Type", "Array Size"};
         attrTableModel = new DefaultTableModel(columnNames, numAttributes);
@@ -743,13 +779,15 @@ implements ActionListener, MetaDataView
             public boolean isCellSelected(int row, int col)
             {
 
-                if (getSelectedRow()==row
-                    && getSelectedColumn()==col &&
-                    !(lastSelectedRow == row && lastSelectedCol== col))
+                if ((getSelectedRow()==row)
+                    && (getSelectedColumn()==col) &&
+                    !((lastSelectedRow == row) && (lastSelectedCol== col)))
                 {
                     // selection is changed
                     Object attrV = getValueAt(row, col);
-                    if (attrV != null) attrContentArea.setText(attrV.toString());
+                    if (attrV != null) {
+                        attrContentArea.setText(attrV.toString());
+                    }
                     lastSelectedRow = row;
                     lastSelectedCol = col;
                 }
@@ -786,8 +824,9 @@ implements ActionListener, MetaDataView
         splitPane.setDividerLocation(h);
         panel.add(splitPane, BorderLayout.CENTER);
 
-        if (attrList == null)
+        if (attrList == null) {
             return panel;
+        }
 
         Attribute attr = null;
         String name, type, size;
@@ -803,8 +842,9 @@ implements ActionListener, MetaDataView
 
             long dims[] = attr.getDataDims();
             size = String.valueOf(dims[0]);
-            for (int j=1; j<dims.length; j++)
+            for (int j=1; j<dims.length; j++) {
                 size += " x " + dims[j];
+            }
             attrTable.setValueAt(name, i, 0);
             attrTable.setValueAt(attr.toString(", "), i, 1);
             attrTable.setValueAt(type, i, 2);
@@ -861,9 +901,9 @@ implements ActionListener, MetaDataView
         {
             headSize = showUserBlockAs(0);
             sizeLabel.setText("Header Size (Bytes): "+headSize);
-        }
-        else
+        } else {
             userBlockDisplayChoice.setEnabled(false);
+        }
 
         return panel;
     }
@@ -872,20 +912,22 @@ implements ActionListener, MetaDataView
     {
         int headerSize = 0;
 
-        if (userBlock == null)
+        if (userBlock == null) {
             return 0;
+        }
 
         String userBlockInfo = null;
-        if (radix==2|| radix==8 || radix ==16 || radix==10)
+        if ((radix==2)|| (radix==8) || (radix ==16) || (radix==10))
         {
             StringBuffer sb = new StringBuffer();
             for (headerSize=0; headerSize<userBlock.length; headerSize++)
             {
                 int intValue = (int)userBlock[headerSize];
-                if (intValue<0)
+                if (intValue<0) {
                     intValue +=256;
-                else if (intValue == 0)
+                } else if (intValue == 0) {
                     break; // null end
+                }
                 sb.append(Integer.toString(intValue, radix));
                 sb.append(" ");
             }
@@ -893,8 +935,9 @@ implements ActionListener, MetaDataView
         } else
         {
             userBlockInfo = new String(userBlock).trim();
-            if (userBlockInfo != null)
+            if (userBlockInfo != null) {
                 headerSize = userBlockInfo.length();
+            }
         }
 
         userBlockArea.setText(userBlockInfo);
@@ -909,8 +952,9 @@ implements ActionListener, MetaDataView
      */
     private void updateAttributeValue(String newValue, int row, int col)
     {
-        if (col != 1)
+        if (col != 1) {
             return; // can only change attribute value
+        }
 
         String attrName = (String)attrTable.getValueAt(row, 0);
 
@@ -927,7 +971,9 @@ implements ActionListener, MetaDataView
 
         Attribute attr = (Attribute)attrList.get(row);
         Object data = attr.getValue();
-        if (data == null) return;
+        if (data == null) {
+            return;
+        }
 
         int array_length = Array.getLength(data);
         StringTokenizer st = new StringTokenizer(newValue, ",");
@@ -943,7 +989,9 @@ implements ActionListener, MetaDataView
         char NT = ' ';
         String cName = data.getClass().getName();
         int cIndex = cName.lastIndexOf("[");
-        if (cIndex >= 0 ) NT = cName.charAt(cIndex+1);
+        if (cIndex >= 0 ) {
+            NT = cName.charAt(cIndex+1);
+        }
         boolean isUnsigned = attr.isUnsigned();
 
         double d = 0;
@@ -955,8 +1003,9 @@ implements ActionListener, MetaDataView
 
             theToken = st.nextToken().trim();
             try {
-                if (!(Array.get(data, i) instanceof String))
+                if (!(Array.get(data, i) instanceof String)) {
                     d = Double.parseDouble(theToken);
+                }
             }
             catch (NumberFormatException ex)
             {
@@ -968,7 +1017,7 @@ implements ActionListener, MetaDataView
                 return;
             }
 
-            if (isUnsigned && d < 0)
+            if (isUnsigned && (d < 0))
             {
                 JOptionPane.showMessageDialog(
                     getOwner(),
@@ -993,14 +1042,15 @@ implements ActionListener, MetaDataView
                         max = Byte.MAX_VALUE;
                     }
 
-                    if (d > max || d < min)
+                    if ((d > max) || (d < min)) {
                         JOptionPane.showMessageDialog(
                             getOwner(),
                             "Data is out of range["+min+", "+max+"]: "+newValue,
                             getTitle(),
                             JOptionPane.ERROR_MESSAGE);
-                    else
+                    } else {
                         Array.setByte  (data, i, (byte)d);
+                    }
                     break;
                 }
                 case 'S':
@@ -1016,14 +1066,15 @@ implements ActionListener, MetaDataView
                         max = Short.MAX_VALUE;
                     }
 
-                    if (d > max || d < min)
+                    if ((d > max) || (d < min)) {
                         JOptionPane.showMessageDialog(
                             getOwner(),
                             "Data is out of range["+min+", "+max+"]: "+newValue,
                             getTitle(),
                             JOptionPane.ERROR_MESSAGE);
-                    else
+                    } else {
                         Array.setShort (data, i, (short)d);
+                    }
                     break;
                 }
                 case 'I':
@@ -1039,14 +1090,15 @@ implements ActionListener, MetaDataView
                         max = Integer.MAX_VALUE;
                     }
 
-                    if (d > max || d < min)
+                    if ((d > max) || (d < min)) {
                         JOptionPane.showMessageDialog(
                             getOwner(),
                             "Data is out of range["+min+", "+max+"]: "+newValue,
                             getTitle(),
                             JOptionPane.ERROR_MESSAGE);
-                    else
+                    } else {
                         Array.setInt   (data, i, (int)d);
+                    }
                     break;
                 }
                 case 'J':
@@ -1077,8 +1129,9 @@ implements ActionListener, MetaDataView
 
     private void writeUserBlock()
     {
-        if (!isH5) // only for h5
+        if (!isH5) {
             return;
+        }
 
         int blkSize0 = 0;
         if (userBlock != null)
@@ -1088,8 +1141,9 @@ implements ActionListener, MetaDataView
             if (blkSize0>0)
             {
                 int offset = 512;
-                while (offset < blkSize0)
+                while (offset < blkSize0) {
                     offset *= 2;
+                }
                 blkSize0 = offset;
             }
         }
@@ -1098,10 +1152,11 @@ implements ActionListener, MetaDataView
         String userBlockStr = userBlockArea.getText();
         if (userBlockStr == null )
         {
-            if (blkSize0<=0)
+            if (blkSize0<=0) {
                 return; // nothing to write
-            else
+            } else {
                 userBlockStr = " "; // want to wipe out old userblock content
+            }
         }
         byte buf[] = null;
         buf = userBlockStr.getBytes();
@@ -1154,16 +1209,18 @@ implements ActionListener, MetaDataView
                     JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.WARNING_MESSAGE);
 
-            if (op == JOptionPane.CANCEL_OPTION)
+            if (op == JOptionPane.CANCEL_OPTION) {
                 return;
+            }
 
             String fin = hObject.getFile();
 
             String fout = fin+"~copy.h5";
-            if (fin.endsWith(".h5"))
+            if (fin.endsWith(".h5")) {
                 fout = fin.substring(0, fin.length()-3)+"~copy.h5";
-            else if (fin.endsWith(".hdf5"))
+            } else if (fin.endsWith(".hdf5")) {
                 fout = fin.substring(0, fin.length()-5)+"~copy.h5";
+            }
 
             File outFile = null;
 
@@ -1174,12 +1231,14 @@ implements ActionListener, MetaDataView
                 fchooser.setSelectedFile(new File(fout));
 
                 int returnVal = fchooser.showSaveDialog(this);
-                if(returnVal != JFileChooser.APPROVE_OPTION)
+                if(returnVal != JFileChooser.APPROVE_OPTION) {
                     return;
+                }
 
                 File choosedFile = fchooser.getSelectedFile();
-                if (choosedFile == null)
+                if (choosedFile == null) {
                     return ;
+                }
 
                 outFile = choosedFile;
                 fout = outFile.getAbsolutePath();
@@ -1209,15 +1268,15 @@ implements ActionListener, MetaDataView
 
             if (DefaultFileFilter.setHDF5UserBlock(fin, fout, buf))
             {
-                if (op == JOptionPane.NO_OPTION)
+                if (op == JOptionPane.NO_OPTION) {
                     fin = fout; // open the new file
-                else
+                } else
                 {
                     File oldFile = new File(fin);
                     boolean status = oldFile.delete();
-                    if (status)
+                    if (status) {
                         outFile.renameTo(oldFile);
-                    else
+                    } else
                     {
                         JOptionPane.showMessageDialog(
                                 this,

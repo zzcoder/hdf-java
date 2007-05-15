@@ -68,7 +68,9 @@ implements ActionListener, ListSelectionListener
 
         String cName = data.getClass().getName();
         int cIndex = cName.lastIndexOf("[");
-        if (cIndex >= 0 ) NT = cName.charAt(cIndex+1);
+        if (cIndex >= 0 ) {
+            NT = cName.charAt(cIndex+1);
+        }
 
         String[] functionNames = {
             "[a, b]",
@@ -181,13 +183,12 @@ implements ActionListener, ListSelectionListener
 
     private boolean convertData()
     {
-        boolean status = false;
         double a=0, b=1;
 
         int index = functionList.getSelectedIndex();
         try
         {
-            if (index==0 || index == 2)
+            if ((index==0) || (index == 2))
             {
                 a = Double.parseDouble(aField.getText().trim());
                 b = Double.parseDouble(bField.getText().trim());
@@ -230,7 +231,7 @@ implements ActionListener, ListSelectionListener
                 {
                     x = bdata[i];
                     value = y(index, x, a, b);
-                    if (value > Byte.MAX_VALUE || value < Byte.MIN_VALUE)
+                    if ((value > Byte.MAX_VALUE) || (value < Byte.MIN_VALUE))
                     {
                         JOptionPane.showMessageDialog(this,
                             "Invalid byte value: "+(long)value,
@@ -248,7 +249,7 @@ implements ActionListener, ListSelectionListener
                 {
                     x = sdata[i];
                     value = y(index, x, a, b);
-                    if (value > Short.MAX_VALUE || value < Short.MIN_VALUE)
+                    if ((value > Short.MAX_VALUE) || (value < Short.MIN_VALUE))
                     {
                         JOptionPane.showMessageDialog(this,
                             "Invalid short value: "+(long)value,
@@ -266,7 +267,7 @@ implements ActionListener, ListSelectionListener
                 {
                     x = idata[i];
                     value = y(index, x, a, b);
-                    if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE)
+                    if ((value > Integer.MAX_VALUE) || (value < Integer.MIN_VALUE))
                     {
                         JOptionPane.showMessageDialog(this,
                             "Invalid int value: "+(long)value,
@@ -284,7 +285,7 @@ implements ActionListener, ListSelectionListener
                 {
                     x = ldata[i];
                     value = y(index, x, a, b);
-                    if (value > Long.MAX_VALUE || value < Long.MIN_VALUE)
+                    if ((value > Long.MAX_VALUE) || (value < Long.MIN_VALUE))
                     {
                         JOptionPane.showMessageDialog(this,
                             "Invalid long value: "+(long)value,
@@ -302,7 +303,7 @@ implements ActionListener, ListSelectionListener
                 {
                     x = fdata[i];
                     value = y(index, x, a, b);
-                    if (value > Float.MAX_VALUE || value < -Float.MAX_VALUE || value == Float.NaN)
+                    if ((value > Float.MAX_VALUE) || (value < -Float.MAX_VALUE) || (value == Float.NaN))
                     {
                         JOptionPane.showMessageDialog(this,
                             "Invalid float value: "+value,
@@ -320,7 +321,7 @@ implements ActionListener, ListSelectionListener
                 {
                     x = ddata[i];
                     value = y(index, x, a, b);
-                    if (value > Double.MAX_VALUE || value < -Double.MAX_VALUE || value == Double.NaN)
+                    if ((value > Double.MAX_VALUE) || (value < -Double.MAX_VALUE) || (value == Double.NaN))
                     {
                         JOptionPane.showMessageDialog(this,
                             "Invalid double value: "+value,
@@ -359,24 +360,27 @@ implements ActionListener, ListSelectionListener
 
     public void valueChanged(ListSelectionEvent e)
     {
-        if (e.getValueIsAdjusting())
+        if (e.getValueIsAdjusting()) {
             return;
+        }
 
-        if (!e.getSource().equals(functionList))
+        if (!e.getSource().equals(functionList)) {
             return;
+        }
 
-        if (functionList.isSelectionEmpty())
+        if (functionList.isSelectionEmpty()) {
             return;
+        }
 
         int index = functionList.getSelectedIndex();
         infoArea.setText(functionDescription[index]);
 
-        if (index==0 || index == 2)
+        if ((index==0) || (index == 2))
         {
             aField.setEnabled(true);
             bField.setEnabled(true);
         }
-        else if (index == 3 || index == 6)
+        else if ((index == 3) || (index == 6))
         {
             aField.setEnabled(true);
             bField.setEnabled(false);
@@ -393,7 +397,11 @@ implements ActionListener, ListSelectionListener
         double y = x;
         switch (index)
         {
-            case 0: if (x < a) y = a; else if (x > b) y = b; break;
+            case 0: if (x < a) {
+                y = a;
+            } else if (x > b) {
+                y = b;
+            } break;
             case 1: y = Math.abs(x);  break;
             case 2: y = (a+b*x); break;
             case 3: y = Math.pow(x, a); break;

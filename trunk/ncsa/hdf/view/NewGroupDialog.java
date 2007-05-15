@@ -74,17 +74,19 @@ implements ActionListener
             {
                 groupList.add(obj);
                 Group g = (Group)obj;
-                if (g.isRoot())
+                if (g.isRoot()) {
                     parentChoice.addItem(HObject.separator);
-                else
+                } else {
                     parentChoice.addItem(g.getPath()+g.getName()+HObject.separator);
+                }
             }
         }
 
-        if (pGroup.isRoot())
+        if (pGroup.isRoot()) {
             parentChoice.setSelectedItem(HObject.separator);
-        else
+        } else {
             parentChoice.setSelectedItem(pGroup.getPath()+pGroup.getName()+HObject.separator);
+        }
 
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
@@ -141,8 +143,9 @@ implements ActionListener
         if (cmd.equals("Ok"))
         {
             newObject = create();
-            if (newObject != null)
+            if (newObject != null) {
                 dispose();
+            }
         }
         if (cmd.equals("Cancel"))
         {

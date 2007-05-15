@@ -91,17 +91,19 @@ implements ActionListener, ItemListener, HyperlinkListener
             {
                 Group g = (Group)obj;
                 groupList.add(obj);
-                if (g.isRoot())
+                if (g.isRoot()) {
                     parentChoice.addItem(HObject.separator);
-                else
+                } else {
                     parentChoice.addItem(g.getPath()+g.getName()+HObject.separator);
+                }
             }
         }
 
-        if (pGroup.isRoot())
+        if (pGroup.isRoot()) {
             parentChoice.setSelectedItem(HObject.separator);
-        else
+        } else {
             parentChoice.setSelectedItem(pGroup.getPath()+pGroup.getName()+HObject.separator);
+        }
 
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
@@ -205,7 +207,9 @@ implements ActionListener, ItemListener, HyperlinkListener
 
 
         rankChoice = new JComboBox();
-        for (int i=1; i<33; i++) rankChoice.addItem(String.valueOf(i));
+        for (int i=1; i<33; i++) {
+            rankChoice.addItem(String.valueOf(i));
+        }
         rankChoice.setSelectedIndex(1);
 
         currentSizeField = new JTextField("1 x 1");
@@ -235,7 +239,9 @@ implements ActionListener, ItemListener, HyperlinkListener
         checkCompression = new JCheckBox("gzip");
 
         compressionLevel = new JComboBox();
-        for (int i=0; i<10; i++) compressionLevel.addItem(String.valueOf(i));
+        for (int i=0; i<10; i++) {
+            compressionLevel.addItem(String.valueOf(i));
+        }
         compressionLevel.setSelectedIndex(6);
         compressionLevel.setEnabled(false);
 
@@ -324,17 +330,19 @@ implements ActionListener, ItemListener, HyperlinkListener
             {
                 Group g = (Group)obj;
                 groupList.add(obj);
-                if (g.isRoot())
+                if (g.isRoot()) {
                     parentChoice.addItem(HObject.separator);
-                else
+                } else {
                     parentChoice.addItem(g.getPath()+g.getName()+HObject.separator);
+                }
             }
         }
 
-        if (pGroup.isRoot())
+        if (pGroup.isRoot()) {
             parentChoice.setSelectedItem(HObject.separator);
-        else
+        } else {
             parentChoice.setSelectedItem(pGroup.getPath()+pGroup.getName()+HObject.separator);
+        }
 
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
@@ -389,15 +397,17 @@ implements ActionListener, ItemListener, HyperlinkListener
 
         if (cmd.equals("Ok"))
         {
-            if (dataView instanceof TableView)
+            if (dataView instanceof TableView) {
                 newObject = createFromTable();
-            else if (dataView instanceof ImageView)
+            } else if (dataView instanceof ImageView) {
                 newObject = createFromImage();
-            else if (dataView == null)
+            } else if (dataView == null) {
                 newObject = createFromScratch();
+            }
 
-            if (newObject != null)
+            if (newObject != null) {
                 dispose();
+            }
         }
         if (cmd.equals("Cancel"))
         {
@@ -407,14 +417,16 @@ implements ActionListener, ItemListener, HyperlinkListener
         }
         else if (cmd.equals("Show help"))
         {
-            if (helpDialog == null)
+            if (helpDialog == null) {
                 createHelpDialog();
+            }
             helpDialog.setVisible(true);
         }
         else if (cmd.equals("Hide help"))
         {
-            if (helpDialog != null)
+            if (helpDialog != null) {
                 helpDialog.setVisible(false);
+            }
         }
     }
 
@@ -502,9 +514,9 @@ implements ActionListener, ItemListener, HyperlinkListener
                     // unsigned 64 bit integer is not allowed
                     checkUnsigned.setSelected(false);
                     checkUnsigned.setEnabled(false);
+                } else {
+                    checkUnsigned.setEnabled(true);
                 }
-                else
-                   checkUnsigned.setEnabled(true);
             }
         }
         else if (source.equals(rankChoice))
@@ -526,21 +538,23 @@ implements ActionListener, ItemListener, HyperlinkListener
             int idx = currentStr.lastIndexOf("x");
             String chunkStr = "1";
 
-            if (rank <=1)
+            if (rank <=1) {
                 chunkStr = currentStr;
-            else
+            } else
             {
-                for (int i=1; i<rank-1; i++)
+                for (int i=1; i<rank-1; i++) {
                     chunkStr += " x 1";
-                if (idx >0)
+                }
+                if (idx >0) {
                     chunkStr += " x "+currentStr.substring(idx+1);
+                }
             }
 
             chunkSizeField.setText(chunkStr);
         }
-        else if (source.equals(checkContinguous))
+        else if (source.equals(checkContinguous)) {
             chunkSizeField.setEnabled(false);
-        else if (source.equals(checkChunked))
+        } else if (source.equals(checkChunked))
         {
             chunkSizeField.setEnabled(true);
             String currentStr = currentSizeField.getText();
@@ -548,14 +562,16 @@ implements ActionListener, ItemListener, HyperlinkListener
             String chunkStr = "1";
 
             int rank = rankChoice.getSelectedIndex()+1;
-            if (rank <=1)
+            if (rank <=1) {
                 chunkStr = currentStr;
-            else
+            } else
             {
-                for (int i=1; i<rank-1; i++)
+                for (int i=1; i<rank-1; i++) {
                     chunkStr += " x 1";
-                if (idx >0)
+                }
+                if (idx >0) {
                     chunkStr += " x "+currentStr.substring(idx+1);
+                }
             }
 
             chunkSizeField.setText(chunkStr);
@@ -573,14 +589,16 @@ implements ActionListener, ItemListener, HyperlinkListener
                     String chunkStr = "1";
 
                     int rank = rankChoice.getSelectedIndex()+1;
-                    if (rank <=1)
+                    if (rank <=1) {
                         chunkStr = currentStr;
-                    else
+                    } else
                     {
-                        for (int i=1; i<rank-1; i++)
+                        for (int i=1; i<rank-1; i++) {
                             chunkStr += " x 1";
-                        if (idx >0)
+                        }
+                        if (idx >0) {
                             chunkStr += " x "+currentStr.substring(idx+1);
+                        }
                     }
 
                     chunkSizeField.setText(chunkStr);
@@ -690,7 +708,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         long dims[], maxdims[], chunks[];
 
         name = nameField.getText().trim();
-        if (name == null || name.length()<1)
+        if ((name == null) || (name.length()<1))
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
@@ -727,16 +745,18 @@ implements ActionListener, ItemListener, HyperlinkListener
         if (idx == 0)
         {
             tclass = Datatype.CLASS_INTEGER;
-            if (checkUnsigned.isSelected())
+            if (checkUnsigned.isSelected()) {
                 tsign = Datatype.SIGN_NONE;
+            }
         }
-        else if (idx == 1)
+        else if (idx == 1) {
             tclass = Datatype.CLASS_FLOAT;
-        else if (idx == 2)
+        } else if (idx == 2)
         {
             tclass = Datatype.CLASS_CHAR;
-            if (checkUnsigned.isSelected())
+            if (checkUnsigned.isSelected()) {
                 tsign = Datatype.SIGN_NONE;
+            }
         }
         else if (idx == 3)
         {
@@ -776,7 +796,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         else if (tclass == Datatype.CLASS_ENUM)
         {
             String enumStr = stringLengthField.getText();
-            if (enumStr==null || enumStr.length()<1 || enumStr.endsWith("..."))
+            if ((enumStr==null) || (enumStr.length()<1) || enumStr.endsWith("..."))
             {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(this,
@@ -803,7 +823,7 @@ implements ActionListener, ItemListener, HyperlinkListener
             tsize = 1 << (idx-1);
         }
 
-        if (tsize==8 && !isH5 && tclass == Datatype.CLASS_INTEGER)
+        if ((tsize==8) && !isH5 && (tclass == Datatype.CLASS_INTEGER))
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
@@ -815,12 +835,13 @@ implements ActionListener, ItemListener, HyperlinkListener
 
         // set order
         idx = endianChoice.getSelectedIndex();
-        if (idx == 0)
+        if (idx == 0) {
             torder = Datatype.NATIVE;
-        else if (idx == 1)
+        } else if (idx == 1) {
             torder = Datatype.ORDER_LE;
-        else
+        } else {
             torder = Datatype.ORDER_BE;
+        }
 
         rank = rankChoice.getSelectedIndex()+1;
         StringTokenizer st = new StringTokenizer(currentSizeField.getText(), "x");
@@ -900,8 +921,9 @@ implements ActionListener, ItemListener, HyperlinkListener
                     JOptionPane.ERROR_MESSAGE);
                 return null;
             }
-            else if ( l == 0)
+            else if ( l == 0) {
                 l = dims[i];
+            }
 
             maxdims[i] = l;
         }
@@ -966,8 +988,9 @@ implements ActionListener, ItemListener, HyperlinkListener
                     chunkSizeField.getText()+"?",
                     getTitle(),
                     JOptionPane.YES_NO_OPTION);
-                if (status == JOptionPane.NO_OPTION)
+                if (status == JOptionPane.NO_OPTION) {
                     return null;
+                }
             }
 
             if (tchunksize == 1)
@@ -980,23 +1003,26 @@ implements ActionListener, ItemListener, HyperlinkListener
                     chunkSizeField.getText()+"?",
                     getTitle(),
                     JOptionPane.YES_NO_OPTION);
-                if (status == JOptionPane.NO_OPTION)
+                if (status == JOptionPane.NO_OPTION) {
                     return null;
+                }
             }
 
         } // if (checkChunked.isSelected())
 
-        if (checkCompression.isSelected())
+        if (checkCompression.isSelected()) {
             gzip = compressionLevel.getSelectedIndex();
-        else
+        } else {
             gzip = 0;
+        }
 
         HObject obj = null;
         try
         {
             Datatype datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign);
-            if (tclass == Datatype.CLASS_ENUM)
-               datatype.setEnumMembers(stringLengthField.getText());
+            if (tclass == Datatype.CLASS_ENUM) {
+                datatype.setEnumMembers(stringLengthField.getText());
+            }
             obj = fileFormat.createScalarDS(name, pgroup, datatype,
                 dims, maxdims, chunks, gzip, null);
         } catch (Exception ex)
@@ -1053,8 +1079,9 @@ implements ActionListener, ItemListener, HyperlinkListener
 
         TableView tableView = (TableView)dataView;
         Object theData = tableView.getSelectedData();
-        if (theData == null)
+        if (theData == null) {
             return null;
+        }
 
         int w = tableView.getTable().getSelectedColumnCount();
         int h = tableView.getTable().getSelectedRowCount();
@@ -1062,8 +1089,9 @@ implements ActionListener, ItemListener, HyperlinkListener
         if (dataset instanceof ScalarDS)
         {
             ScalarDS sd = (ScalarDS)dataset;
-            if (sd.isUnsigned())
+            if (sd.isUnsigned()) {
                 theData = Dataset.convertToUnsignedC(theData);
+            }
         }
 
         try
@@ -1127,13 +1155,15 @@ implements ActionListener, ItemListener, HyperlinkListener
         ScalarDS dataset = (ScalarDS)imageView.getDataObject();
         Object theData = imageView.getSelectedData();
         
-        if (theData == null)
+        if (theData == null) {
             return null;
+        }
         
         // in version 2.4, unsigned image data is converted to signed data
         // to write data, the data needs to converted back to unsigned.
-        if (dataset.isUnsigned())
+        if (dataset.isUnsigned()) {
             theData = Dataset.convertToUnsignedC(theData);
+        }
         
         int w = imageView.getSelectedArea().width;
         int h = imageView.getSelectedArea().height;

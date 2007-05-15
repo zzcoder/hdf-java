@@ -148,8 +148,9 @@ implements TreeView, ActionListener
      */
     private void insertNode(TreeNode node, TreeNode pnode)
     {
-        if (node == null || pnode==null)
+        if ((node == null) || (pnode==null)) {
             return;
+        }
 
         treeModel.insertNodeInto((DefaultMutableTreeNode)node,
             (DefaultMutableTreeNode)pnode,
@@ -317,7 +318,7 @@ implements TreeView, ActionListener
         }
 
         // adding table is only supported by HDF5
-        if (selectedFile != null &&
+        if ((selectedFile != null) &&
             selectedFile.isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5)))
         {
             addTableMenuItem.setVisible(true);
@@ -367,8 +368,9 @@ implements TreeView, ActionListener
         NewFileDialog dialog = new NewFileDialog(owner, currentDir, FileFormat.FILE_TYPE_HDF4, getCurrentFiles());
         //dialog.show();
 
-        if (!dialog.isFileCreated())
+        if (!dialog.isFileCreated()) {
             return;
+        }
 
         String filename = dialog.getFile();
 
@@ -470,8 +472,9 @@ implements TreeView, ActionListener
             FileFormat.FILE_TYPE_HDF5, getCurrentFiles());
         //dialog.show();
 
-        if (!dialog.isFileCreated())
+        if (!dialog.isFileCreated()) {
             return;
+        }
 
         String filename = dialog.getFile();
 
@@ -497,8 +500,9 @@ implements TreeView, ActionListener
             return;
         }
 
-        if (newFile == null)
+        if (newFile == null) {
             return;
+        }
 
         TreeNode pnode = newFile.getRootNode();
 
@@ -557,10 +561,11 @@ implements TreeView, ActionListener
     {
         TreeNode pnode = selectedNode;
 
-        if (objectsToCopy == null ||
-            objectsToCopy.size() <=0 ||
-            pnode == null)
+        if ((objectsToCopy == null) ||
+            (objectsToCopy.size() <=0) ||
+            (pnode == null)) {
             return;
+        }
 
         FileFormat srcFile = ((HObject)objectsToCopy.get(0)).getFileFormat();
         FileFormat dstFile = getSelectedFile();
@@ -608,10 +613,14 @@ implements TreeView, ActionListener
             return;
         }
 
-        if (pnode.isLeaf()) pnode = pnode.getParent();
+        if (pnode.isLeaf()) {
+            pnode = pnode.getParent();
+        }
         Group pgroup = (Group)((DefaultMutableTreeNode)pnode).getUserObject();
         String fullPath = pgroup.getPath()+pgroup.getName();
-        if (pgroup.isRoot()) fullPath = HObject.separator;
+        if (pgroup.isRoot()) {
+            fullPath = HObject.separator;
+        }
 
         String msg = "";
         int msgType = JOptionPane.QUESTION_MESSAGE;
@@ -630,8 +639,9 @@ implements TreeView, ActionListener
             JOptionPane.YES_NO_OPTION,
             msgType);
 
-        if (op == JOptionPane.NO_OPTION)
+        if (op == JOptionPane.NO_OPTION) {
             return;
+        }
 
         pasteObject(objectsToCopy, pnode, dstFile);
 
@@ -641,10 +651,11 @@ implements TreeView, ActionListener
     /** paste selected objects */
     private void pasteObject(List objList, TreeNode pnode, FileFormat dstFile)
     {
-        if (objList == null ||
-            objList.size() <=0 ||
-            pnode == null)
+        if ((objList == null) ||
+            (objList.size() <=0) ||
+            (pnode == null)) {
             return;
+        }
 
         FileFormat srcFile = ((HObject)objList.get(0)).getFileFormat();
         Group pgroup = (Group)((DefaultMutableTreeNode)pnode).getUserObject();
@@ -699,8 +710,9 @@ implements TreeView, ActionListener
             }
 
             // add the node to the tree
-            if (newNode != null)
+            if (newNode != null) {
                 insertNode(newNode, pnode);
+            }
 
         } // while (iterator.hasNext())
     }
@@ -720,16 +732,18 @@ implements TreeView, ActionListener
         }
 
         TreePath[] currentSelections = tree.getSelectionPaths();
-        if (currentSelections == null || currentSelections.length <=0)
+        if ((currentSelections == null) || (currentSelections.length <=0)) {
             return;
+        }
 
         int op = JOptionPane.showConfirmDialog(this,
             "Do you want to remove all the selected object(s) ?",
             "Remove object",
             JOptionPane.YES_NO_OPTION);
 
-        if (op == JOptionPane.NO_OPTION)
+        if (op == JOptionPane.NO_OPTION) {
             return;
+        }
 
         String frameName = "";
         HObject theObj = null;
@@ -775,8 +789,9 @@ implements TreeView, ActionListener
                 continue;
             }
 
-            if (theObj.equals(selectedObject))
+            if (theObj.equals(selectedObject)) {
                 selectedObject = null;
+            }
 
             removeNode(currentNode);
         } //for (int i=0; i< currentSelections.length; i++) {
@@ -784,8 +799,9 @@ implements TreeView, ActionListener
 
     private void removeNode(DefaultMutableTreeNode node)
     {
-        if (node == null)
+        if (node == null) {
             return;
+        }
 
         DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) (node.getParent());
         if (parentNode != null) {
@@ -810,23 +826,25 @@ implements TreeView, ActionListener
         if (obj instanceof Group) {
             Group g = (Group) obj;
             List members = g.getMemberList();
-            if (members == null || members.size() == 0)
+            if ((members == null) || (members.size() == 0)) {
                 isOpen = false;
-            else {
+            } else {
                 int n = members.size();
                 for (int i=0; i<n; i++) {
                     HObject theObj = (HObject) members.get(i);
                     isOpen = (viewer.getDataView(theObj) != null);
-                    if (isOpen)
+                    if (isOpen) {
                         break;
+                    }
                 }
             }
         }
         else {
-            if (viewer.getDataView(obj) == null)
+            if (viewer.getDataView(obj) == null) {
                 isOpen = false;
-            else
+            } else {
                 isOpen = true;
+            }
         }
 
         return isOpen;
@@ -839,8 +857,9 @@ implements TreeView, ActionListener
      */
     private final List breadthFirstUserObjects(TreeNode node)
     {
-        if (node == null)
+        if (node == null) {
             return null;
+        }
 
         Vector list = new Vector();
         DefaultMutableTreeNode theNode = null;
@@ -856,14 +875,16 @@ implements TreeView, ActionListener
 
     private void addGroup()
     {
-        if (selectedObject == null || selectedNode == null)
+        if ((selectedObject == null) || (selectedNode == null)) {
             return;
+        }
 
        Group pGroup = null;
-        if (selectedObject instanceof Group)
+        if (selectedObject instanceof Group) {
             pGroup = (Group)selectedObject;
-        else
+        } else {
             pGroup = (Group)((DefaultMutableTreeNode)selectedNode.getParent()).getUserObject();
+        }
 
         NewGroupDialog dialog = new NewGroupDialog(
             (JFrame)viewer,
@@ -872,8 +893,9 @@ implements TreeView, ActionListener
         dialog.setVisible(true);
 
         HObject obj = (HObject)dialog.getObject();
-        if (obj == null)
+        if (obj == null) {
             return;
+        }
 
         Group pgroup = dialog.getParentGroup();
         try { this.addObject(obj, pgroup); }
@@ -890,14 +912,16 @@ implements TreeView, ActionListener
 
     private void addDataset()
     {
-        if (selectedObject == null || selectedNode == null)
+        if ((selectedObject == null) || (selectedNode == null)) {
             return;
+        }
 
         Group pGroup = null;
-        if (selectedObject instanceof Group)
+        if (selectedObject instanceof Group) {
             pGroup = (Group)selectedObject;
-        else
+        } else {
             pGroup = (Group)((DefaultMutableTreeNode)selectedNode.getParent()).getUserObject();
+        }
 
         NewDatasetDialog dialog = new NewDatasetDialog(
             (JFrame)viewer,
@@ -906,8 +930,9 @@ implements TreeView, ActionListener
         dialog.setVisible(true);
 
         HObject obj = (HObject)dialog.getObject();
-        if (obj == null)
+        if (obj == null) {
             return;
+        }
 
         Group pgroup = dialog.getParentGroup();
         try { addObject(obj, pgroup); }
@@ -924,14 +949,16 @@ implements TreeView, ActionListener
 
     private void addImage()
     {
-        if (selectedObject == null || selectedNode == null)
+        if ((selectedObject == null) || (selectedNode == null)) {
             return;
+        }
 
         Group pGroup = null;
-        if (selectedObject instanceof Group)
+        if (selectedObject instanceof Group) {
             pGroup = (Group)selectedObject;
-        else
+        } else {
             pGroup = (Group)((DefaultMutableTreeNode)selectedNode.getParent()).getUserObject();
+        }
 
         NewImageDialog dialog = new NewImageDialog(
             (JFrame)viewer,
@@ -940,8 +967,9 @@ implements TreeView, ActionListener
         dialog.setVisible(true);
 
         HObject obj = (HObject)dialog.getObject();
-        if (obj == null)
+        if (obj == null) {
             return;
+        }
 
         Group pgroup = dialog.getParentGroup();
         try { this.addObject(obj, pgroup); }
@@ -958,14 +986,16 @@ implements TreeView, ActionListener
 
     private void addTable()
     {
-        if (selectedObject == null || selectedNode == null)
+        if ((selectedObject == null) || (selectedNode == null)) {
             return;
+        }
 
         Group pGroup = null;
-        if (selectedObject instanceof Group)
+        if (selectedObject instanceof Group) {
             pGroup = (Group)selectedObject;
-        else
+        } else {
             pGroup = (Group)((DefaultMutableTreeNode)selectedNode.getParent()).getUserObject();
+        }
 
         NewTableDataDialog dialog = new NewTableDataDialog(
             (JFrame)viewer,
@@ -974,8 +1004,9 @@ implements TreeView, ActionListener
         dialog.setVisible(true);
 
         HObject obj = (HObject)dialog.getObject();
-        if (obj == null)
+        if (obj == null) {
             return;
+        }
 
         Group pgroup = dialog.getParentGroup();
         try { addObject(obj, pgroup); }
@@ -992,14 +1023,16 @@ implements TreeView, ActionListener
 
     private void addDatatype()
     {
-        if (selectedObject == null || selectedNode == null)
+        if ((selectedObject == null) || (selectedNode == null)) {
             return;
+        }
 
         Group pGroup = null;
-        if (selectedObject instanceof Group)
+        if (selectedObject instanceof Group) {
             pGroup = (Group)selectedObject;
-        else
+        } else {
             pGroup = (Group)((DefaultMutableTreeNode)selectedNode.getParent()).getUserObject();
+        }
 
         NewDatatypeDialog dialog = new NewDatatypeDialog(
             (JFrame)viewer,
@@ -1008,8 +1041,9 @@ implements TreeView, ActionListener
         dialog.setVisible(true);
 
         HObject obj = (HObject)dialog.getObject();
-        if (obj == null)
+        if (obj == null) {
             return;
+        }
 
         Group pgroup = dialog.getParentGroup();
         try { addObject(obj, pgroup); }
@@ -1026,14 +1060,16 @@ implements TreeView, ActionListener
 
     private void addLink()
     {
-        if (selectedObject == null || selectedNode == null)
+        if ((selectedObject == null) || (selectedNode == null)) {
             return;
+        }
 
         Group pGroup = null;
-        if (selectedObject instanceof Group)
+        if (selectedObject instanceof Group) {
             pGroup = (Group)selectedObject;
-        else
+        } else {
             pGroup = (Group)((DefaultMutableTreeNode)selectedNode.getParent()).getUserObject();
+        }
 
         NewLinkDialog dialog = new NewLinkDialog(
             (JFrame)viewer,
@@ -1042,8 +1078,9 @@ implements TreeView, ActionListener
         dialog.setVisible(true);
 
         HObject obj = (HObject)dialog.getObject();
-        if (obj == null)
+        if (obj == null) {
             return;
+        }
 
         Group pgroup = dialog.getParentGroup();
         try { addObject(obj, pgroup); }
@@ -1060,10 +1097,11 @@ implements TreeView, ActionListener
 
     private void renameObject()
     {
-        if (selectedObject == null)
+        if (selectedObject == null) {
             return;
+        }
 
-        if (selectedObject instanceof Group &&
+        if ((selectedObject instanceof Group) &&
             ((Group)selectedObject).isRoot())
         {
             toolkit.beep();
@@ -1086,14 +1124,16 @@ implements TreeView, ActionListener
         String newName = JOptionPane.showInputDialog(this, "Rename \""+ oldName + "\" to:",
                 "Rename...", JOptionPane.INFORMATION_MESSAGE);
 
-        if (newName == null)
+        if (newName == null) {
             return;
+        }
 
         newName = newName.trim();
-        if (newName == null ||
-            newName.length()==0 ||
-            newName.equals(oldName))
-         return;
+        if ((newName == null) ||
+            (newName.length()==0) ||
+            newName.equals(oldName)) {
+            return;
+        }
 
         try { selectedObject.setName(newName); }
         catch (Exception ex)
@@ -1131,10 +1171,11 @@ implements TreeView, ActionListener
         }
         else if (cmd.startsWith("Open data"))
         {
-            if (cmd.equals("Open data"))
+            if (cmd.equals("Open data")) {
                 isDefaultDisplay = true;
-            else
+            } else {
                 isDefaultDisplay = false;
+            }
 
             try { showDataContent(selectedObject); }
             catch (Throwable err)
@@ -1157,10 +1198,11 @@ implements TreeView, ActionListener
             removeSelectedObjects();
         }
         else if (cmd.equals("Save object to file")) {
-            if (selectedObject == null)
+            if (selectedObject == null) {
                 return;
+            }
 
-            if (selectedObject instanceof Group &&
+            if ((selectedObject instanceof Group) &&
                 ((Group)selectedObject).isRoot()) {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
@@ -1173,7 +1215,9 @@ implements TreeView, ActionListener
 
             String filetype = FileFormat.FILE_TYPE_HDF4;
             boolean isH5 = selectedObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
-            if (isH5) filetype = FileFormat.FILE_TYPE_HDF5;
+            if (isH5) {
+                filetype = FileFormat.FILE_TYPE_HDF5;
+            }
 
             NewFileDialog dialog = new NewFileDialog(
                 (JFrame)viewer,
@@ -1207,10 +1251,11 @@ implements TreeView, ActionListener
             renameObject();
         }
         else if (cmd.startsWith("Show object properties")) {
-            if (cmd.equals("Show object properties"))
+            if (cmd.equals("Show object properties")) {
                 isDefaultDisplay = true;
-            else
+            } else {
                 isDefaultDisplay = false;
+            }
 
             try {
                 MetaDataView theView = showMetaData(selectedObject);
@@ -1260,11 +1305,13 @@ implements TreeView, ActionListener
         }
 
         File tmpFile = new File(filename);
-        if (!tmpFile.exists())
+        if (!tmpFile.exists()) {
             throw new UnsupportedOperationException("File does not exist.");
+        }
 
-        if (!tmpFile.canWrite())
+        if (!tmpFile.canWrite()) {
             accessID = FileFormat.READ;
+        }
 
         Enumeration keys = FileFormat.getFileFormatKeys();
 
@@ -1275,15 +1322,17 @@ implements TreeView, ActionListener
             if (theKey.equals(FileFormat.FILE_TYPE_HDF4))
             {
                 FileFormat h4format = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4);
-                if (h4format !=null && h4format.isThisType(filename))
+                if ((h4format !=null) && h4format.isThisType(filename)) {
                     fileFormat = h4format.open(filename, accessID);
+                }
                 continue;
             }
             else if (theKey.equals(FileFormat.FILE_TYPE_HDF5))
             {
                 FileFormat h5format = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-                if (h5format !=null && h5format.isThisType(filename))
+                if ((h5format !=null) && h5format.isThisType(filename)) {
                     fileFormat = h5format.open(filename, accessID);
+                }
                 continue;
             }
             else
@@ -1315,7 +1364,9 @@ implements TreeView, ActionListener
             insertNode(fileRoot, root);
 
             int currentRowCount = tree.getRowCount();
-            if (currentRowCount>0) tree.expandRow(tree.getRowCount()-1);
+            if (currentRowCount>0) {
+                tree.expandRow(tree.getRowCount()-1);
+            }
 
             fileList.add(fileFormat);
         }
@@ -1329,8 +1380,9 @@ implements TreeView, ActionListener
      */
     public void closeFile(FileFormat file) throws Exception
     {
-        if (file == null)
+        if (file == null) {
             return;
+        }
 
         // find the file node in the tree and removed it from the tree first
         FileFormat theFile = null;
@@ -1417,8 +1469,11 @@ implements TreeView, ActionListener
             }
         }
 
-        if (isH5) saveAsHDF5(file);
-        else if (isH4) saveAsHDF4(file);
+        if (isH5) {
+            saveAsHDF5(file);
+        } else if (isH4) {
+            saveAsHDF4(file);
+        }
     }
 
 
@@ -1442,8 +1497,9 @@ implements TreeView, ActionListener
      */
     public List getSelectedObjects() {
         TreePath[] paths = tree.getSelectionPaths();
-        if (paths == null || paths.length <=0)
+        if ((paths == null) || (paths.length <=0)) {
             return null;
+        }
 
         List objs = new Vector(paths.length);
         HObject theObject=null, parentObject;
@@ -1483,13 +1539,16 @@ implements TreeView, ActionListener
     public DataView showDataContent(HObject dataObject)
         throws Exception
     {
-        if (dataObject == null ||!(dataObject instanceof Dataset))
+        if ((dataObject == null) ||!(dataObject instanceof Dataset)) {
             return null; // can only display dataset
+        }
 
         Dataset d = (Dataset)dataObject;
-        if (d.getRank() <= 0) d.init();
-        boolean isText = (d instanceof ScalarDS && ((ScalarDS)d).isText());
-        boolean isImage = (d instanceof ScalarDS && ((ScalarDS)d).isImage());
+        if (d.getRank() <= 0) {
+            d.init();
+        }
+        boolean isText = ((d instanceof ScalarDS) && ((ScalarDS)d).isText());
+        boolean isImage = ((d instanceof ScalarDS) && ((ScalarDS)d).isImage());
         boolean isDisplayTypeChar = false;
         boolean isTransposed = false;
         String dataViewName = null;
@@ -1516,11 +1575,13 @@ implements TreeView, ActionListener
             DataOptionDialog dialog = new DataOptionDialog(viewer, d);
 
             dialog.setVisible(true);
-            if (dialog.isCancelled())
+            if (dialog.isCancelled()) {
                 return null;
+            }
 
-            if (theFrame != null) // discard the displayed data
+            if (theFrame != null) {
                 ((DataView)theFrame).dispose();
+            }
             isImage = dialog.isImageDisplay();
             isDisplayTypeChar = dialog.isDisplayTypeChar();
             isTransposed = dialog.isTransposed();
@@ -1563,18 +1624,20 @@ implements TreeView, ActionListener
     public MetaDataView showMetaData(HObject dataObject)
         throws Exception
     {
-        if (dataObject == null)
+        if (dataObject == null) {
             return null;
+        }
 
         List metaDataViewList = HDFView.getListOfMetaDataView();
-        if (metaDataViewList == null || metaDataViewList.size() <=0)
+        if ((metaDataViewList == null) || (metaDataViewList.size() <=0)) {
             return null;
+        }
 
         int n = metaDataViewList.size();
         Class viewClass = null;
         String className = (String)metaDataViewList.get(0);
 
-        if (!isDefaultDisplay && n>1) {
+        if (!isDefaultDisplay && (n>1)) {
             className = (String) JOptionPane.showInputDialog (
                 this,
                 "Select MetaDataView",
@@ -1604,8 +1667,9 @@ implements TreeView, ActionListener
      */
     public void addObject(HObject newObject, Group parentGroup)
         throws Exception {
-        if (newObject == null || parentGroup==null)
+        if ((newObject == null) || (parentGroup==null)) {
             return;
+        }
 
         TreeNode pnode = findTreeNode(parentGroup);
         TreeNode newnode = null;
@@ -1643,12 +1707,14 @@ implements TreeView, ActionListener
      */
     public TreeNode findTreeNode(HObject obj)
     {
-        if (obj == null)
+        if (obj == null) {
             return null;
+        }
 
         TreeNode theFileRoot = obj.getFileFormat().getRootNode();
-        if (theFileRoot == null)
+        if (theFileRoot == null) {
             return null;
+        }
 
         DefaultMutableTreeNode theNode = null;
         HObject theObj = null;
@@ -1657,10 +1723,11 @@ implements TreeView, ActionListener
         {
             theNode = (DefaultMutableTreeNode)local_enum.nextElement();
             theObj = (HObject)theNode.getUserObject();
-            if (theObj == null)
+            if (theObj == null) {
                 continue;
-            else if (theObj.equals(obj))
+            } else if (theObj.equals(obj)) {
                 return theNode;
+            }
         }
 
         return null;
@@ -1702,31 +1769,61 @@ implements TreeView, ActionListener
             datatypeIcon = ViewProperties.getDatatypeIcon();
             datatypeIconA = ViewProperties.getDatatypeIconA();
 
-            if (openFolder != null)
+            if (openFolder != null) {
                 openIcon = openFolder;
-            else
+            } else {
                 openFolder = this.openIcon;
+            }
 
-            if (closeFolder != null)
+            if (closeFolder != null) {
                 closedIcon = closeFolder;
-            else
+            } else {
                 closeFolder = closedIcon;
+            }
 
-            if (datasetIcon == null) datasetIcon = leafIcon;
-            if (imageIcon == null) imageIcon = leafIcon;
-            if (tableIcon == null) tableIcon = leafIcon;
-            if (textIcon == null) textIcon = leafIcon;
-            if (h4Icon == null) h4Icon = leafIcon;
-            if (h5Icon == null) h5Icon = leafIcon;
-            if (datatypeIcon == null) datatypeIcon = leafIcon;
+            if (datasetIcon == null) {
+                datasetIcon = leafIcon;
+            }
+            if (imageIcon == null) {
+                imageIcon = leafIcon;
+            }
+            if (tableIcon == null) {
+                tableIcon = leafIcon;
+            }
+            if (textIcon == null) {
+                textIcon = leafIcon;
+            }
+            if (h4Icon == null) {
+                h4Icon = leafIcon;
+            }
+            if (h5Icon == null) {
+                h5Icon = leafIcon;
+            }
+            if (datatypeIcon == null) {
+                datatypeIcon = leafIcon;
+            }
 
-            if (openFolderA == null) openFolderA = openFolder;
-            if (closeFolderA == null) closeFolderA = closeFolder;
-            if (datasetIconA == null) datasetIconA = datasetIcon;
-            if (imageIconA == null) imageIconA = imageIcon;
-            if (tableIconA == null) tableIconA = tableIcon;
-            if (textIconA == null) textIconA = textIcon;
-            if (datatypeIconA == null) datatypeIconA = datatypeIcon;
+            if (openFolderA == null) {
+                openFolderA = openFolder;
+            }
+            if (closeFolderA == null) {
+                closeFolderA = closeFolder;
+            }
+            if (datasetIconA == null) {
+                datasetIconA = datasetIcon;
+            }
+            if (imageIconA == null) {
+                imageIconA = imageIcon;
+            }
+            if (tableIconA == null) {
+                tableIconA = tableIcon;
+            }
+            if (textIconA == null) {
+                textIconA = textIcon;
+            }
+            if (datatypeIconA == null) {
+                datatypeIconA = datatypeIcon;
+            }
         }
 
         public Component getTreeCellRendererComponent(
@@ -1742,31 +1839,39 @@ implements TreeView, ActionListener
 
             if (theObject instanceof Dataset)
             {
-                if (((Dataset)theObject).hasAttribute())
+                if (((Dataset)theObject).hasAttribute()) {
                     leafIcon = datasetIconA;
-                else
+                } else {
                     leafIcon = datasetIcon;
+                }
 
                 if (theObject instanceof ScalarDS)
                 {
                     ScalarDS sd = (ScalarDS)theObject;
                     if (sd.isImage())
                     {
-                        if (sd.hasAttribute()) leafIcon = imageIconA;
-                        else leafIcon = imageIcon;
+                        if (sd.hasAttribute()) {
+                            leafIcon = imageIconA;
+                        } else {
+                            leafIcon = imageIcon;
+                        }
                     }
                     else if (sd.isText())
                     {
-                        if (sd.hasAttribute()) leafIcon = textIconA;
-                        else leafIcon = textIcon;
+                        if (sd.hasAttribute()) {
+                            leafIcon = textIconA;
+                        } else {
+                            leafIcon = textIcon;
+                        }
                     }
                 }
                 else if (theObject instanceof CompoundDS)
                 {
-                    if (theObject.hasAttribute())
+                    if (theObject.hasAttribute()) {
                         leafIcon = tableIconA;
-                    else
+                    } else {
                         leafIcon = tableIcon;
+                    }
                 }
             }
             else if (theObject instanceof Group)
@@ -1785,20 +1890,22 @@ implements TreeView, ActionListener
 
                 if (g.isRoot())
                 {
-                    if ( g.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5)))
+                    if ( g.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5))) {
                         openIcon = closedIcon = h5Icon;
-                    else if ( g.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4)))
+                    } else if ( g.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4))) {
                         openIcon = closedIcon = h4Icon;
+                    }
                 }
             }
             else if (theObject instanceof Datatype)
             {
                 Datatype t = (Datatype)theObject;
 
-                if (t.hasAttribute())
+                if (t.hasAttribute()) {
                     leafIcon = datatypeIconA;
-                else
-                    leafIcon = datatypeIcon;            }
+                } else {
+                    leafIcon = datatypeIcon;
+                }            }
 
             return super.getTreeCellRendererComponent(
                 tree,
@@ -1823,7 +1930,9 @@ implements TreeView, ActionListener
         public void mouseReleased(MouseEvent e)
         {
             TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
-            if (selPath == null) return;
+            if (selPath == null) {
+                return;
+            }
 
             DefaultMutableTreeNode theNode = (DefaultMutableTreeNode)selPath.getLastPathComponent();
             if (!theNode.equals(selectedNode))
@@ -1831,7 +1940,7 @@ implements TreeView, ActionListener
                 selectedNode = theNode;
                 selectedObject = ((HObject)(selectedNode.getUserObject()));
                 FileFormat theFile = selectedObject.getFileFormat();
-                if (theFile!= null && !theFile.equals(selectedFile))
+                if ((theFile!= null) && !theFile.equals(selectedFile))
                 {
                     // a different file is selected, handle only one file a time
                     selectedFile = theFile;
@@ -1850,7 +1959,7 @@ implements TreeView, ActionListener
             // 7/25/06 bug 517. e.isPopupTrigger does not work on one mouse Mac.
             // add (MouseEvent.BUTTON1_MASK|MouseEvent.CTRL_MASK) for MAC
             int eMod = e.getModifiers();
-            if (e.isPopupTrigger() || eMod == MouseEvent.BUTTON3_MASK ||
+            if (e.isPopupTrigger() || (eMod == MouseEvent.BUTTON3_MASK) ||
                 (System.getProperty("os.name").startsWith("Mac") &&
                 (eMod == (MouseEvent.BUTTON1_MASK|MouseEvent.CTRL_MASK))))
             {
