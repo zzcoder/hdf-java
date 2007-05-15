@@ -14,7 +14,7 @@ import junit.framework.TestSuite;
  */
 public class AllH5ObjectTests {
     public static Test suite() {
-        TestSuite suite = new TestSuite("Test for test.unittests");
+        final TestSuite suite = new TestSuite("Test for test.unittests");
         //$JUnit-BEGIN$
         
         // ncsa.hdf.object.h5 package
@@ -24,11 +24,8 @@ public class AllH5ObjectTests {
         suite.addTestSuite(H5GroupTest.class);
         suite.addTestSuite(H5DatatypeTest.class);
         suite.addTestSuite(H5FileTest.class);
- 
         
 /*        
-        suite.addTestSuite(H5FileTest.class);
-         
         // ncsa.hdf.object package
         suite.addTestSuite(AttributeTest.class);
         suite.addTestSuite(CompoundDSTest.class);
@@ -46,10 +43,10 @@ public class AllH5ObjectTests {
         return suite;
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         
         try { H5TestFile.createTestFile(null); } 
-        catch (Exception ex) {
+        catch (final Exception ex) {
             System.out.println("*** Unable to create HDF5 test file. "+ex);
             System.exit(-1);
         }

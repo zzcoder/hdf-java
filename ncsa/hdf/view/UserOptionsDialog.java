@@ -46,7 +46,7 @@ implements ActionListener, ListSelectionListener
     private JComboBox choiceTreeView, choiceMetaDataView, choiceTextView,
             choiceTableView, choiceImageView, choicePaletteView;
     private String rootDir, workDir;
-    private JCheckBox checkCurrentUserDir;
+    private JCheckBox checkCurrentUserDir, checkAutoContrast;
     private JButton currentDirButton;
 
     private int fontSize;
@@ -109,8 +109,8 @@ implements ActionListener, ListSelectionListener
         contentPane.setLayout(new BorderLayout(8,8));
         contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
         
-        int w = 600 + (ViewProperties.getFontSize()-12)*15;
-        int h = 500 + (ViewProperties.getFontSize()-12)*15;
+        int w = 700 + (ViewProperties.getFontSize()-12)*15;
+        int h = 600 + (ViewProperties.getFontSize()-12)*15;
         contentPane.setPreferredSize(new Dimension(w, h));
 
         JTabbedPane tabbedPane = new JTabbedPane();
@@ -196,7 +196,7 @@ implements ActionListener, ListSelectionListener
         delimiterChoice.setSelectedItem(ViewProperties.getDataDelimiter());
 
         JPanel centerP = new JPanel();
-        centerP.setLayout(new GridLayout(7,1,10,10));
+        centerP.setLayout(new GridLayout(8,1,10,10));
         centerP.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
 
         JPanel p0 = new JPanel();
@@ -259,6 +259,17 @@ implements ActionListener, ListSelectionListener
         p0.add(new JLabel("Data Delimiter:  "), BorderLayout.WEST);
         p0.add(delimiterChoice, BorderLayout.CENTER);
         tborder = new TitledBorder("Text Data Input/Output");
+        tborder.setTitleColor(Color.darkGray);
+        p0.setBorder(tborder);
+        centerP.add(p0);
+        
+        p0 = new JPanel();
+        p0.setLayout(new BorderLayout());
+        p0.add(new JLabel(" "), BorderLayout.WEST);
+        checkAutoContrast = new JCheckBox("Auto Contrast");
+        checkAutoContrast.setSelected(ViewProperties.isAutoContrast());
+        p0.add(checkAutoContrast, BorderLayout.CENTER);
+        tborder = new TitledBorder("Image Brightness/Contrast");
         tborder.setTitleColor(Color.darkGray);
         p0.setBorder(tborder);
         centerP.add(p0);
@@ -710,6 +721,8 @@ implements ActionListener, ListSelectionListener
             moduleList[i].remove(theModule);
             moduleList[i].add(0, theModule);
         }
+        
+        ViewProperties.setAutoContrast(checkAutoContrast.isSelected());
     }
 
     public boolean isFontChanged() { return isFontChanged; }

@@ -84,7 +84,7 @@ public class H5ScalarDSTest extends TestCase {
     /**
      * @param arg0
      */
-    public H5ScalarDSTest(String arg0) {
+    public H5ScalarDSTest(final String arg0) {
         super(arg0);
     }
 
@@ -114,16 +114,16 @@ public class H5ScalarDSTest extends TestCase {
         super.tearDown();
 
         // make sure all objects are closed
-        int fid = testFile.getFID();
+        final int fid = testFile.getFID();
         if (fid > 0) {
             int nObjs = 0;
             try { nObjs = H5.H5Fget_obj_count(fid, HDF5Constants.H5F_OBJ_LOCAL); }
-            catch (Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }
+            catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }
             assertEquals(1, nObjs); // file id should be the only one left open
          }
         
         if (testFile != null) {
-            try { testFile.close(); } catch (Exception ex) {}
+            try { testFile.close(); } catch (final Exception ex) {}
             testFile = null;
         }
     }
@@ -152,25 +152,25 @@ public class H5ScalarDSTest extends TestCase {
      * </ul>
      */
     public final void testSetName() {
-        String newName = "tmpName";
+        final String newName = "tmpName";
 
         // test set name to null
         try {
             testDataset.setName(null);
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             ; // Expected - intentional
         }
        
         // set to an existing name
         try {
             testDataset.setName(H5TestFile.NAME_DATASET_FLOAT);
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             ; // Expected - intentional
         }
 
         try { 
             testDataset.setName(newName); 
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             fail("setName() failed. "+ ex);
         }
  
@@ -179,7 +179,7 @@ public class H5ScalarDSTest extends TestCase {
             testFile.close();
             testFile.open();
             testDataset = (H5ScalarDS)testFile.get(newName);
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             fail("setName() failed. "+ ex);
         }
        
@@ -187,7 +187,7 @@ public class H5ScalarDSTest extends TestCase {
         H5ScalarDS tmpDset = null;
         try {
             tmpDset = (H5ScalarDS)testFile.get(DNAME);
-         } catch (Exception ex) { 
+         } catch (final Exception ex) { 
              tmpDset = null; // Expected - intentional
         }
         assertNull("The dataset should be null because it has been renamed", tmpDset);
@@ -195,14 +195,14 @@ public class H5ScalarDSTest extends TestCase {
         // set back the original name
         try { 
             testDataset.setName(DNAME); 
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             fail("setName() failed. "+ ex);
         }
         
         // make sure the dataset is OK
         try {
             testDataset = (H5ScalarDS)testFile.get(DNAME);
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             fail("setName() failed. "+ ex);
         }
         assertNotNull(testDataset);
@@ -227,7 +227,7 @@ public class H5ScalarDSTest extends TestCase {
                 did = testDataset.open();
                 tid = H5.H5Dget_type(did);
                 sid = H5.H5Dget_space(did);
-            } catch (Exception ex) { 
+            } catch (final Exception ex) { 
                 fail("open() failed. "+ ex);
             }
             
@@ -237,13 +237,13 @@ public class H5ScalarDSTest extends TestCase {
             
             try {
                 H5.H5Tclose(tid);
-            } catch (Exception ex) {}
+            } catch (final Exception ex) {}
             try {
                 H5.H5Sclose(sid);
-            } catch (Exception ex) {}
+            } catch (final Exception ex) {}
             try {
                 H5.H5Dclose(did);
-            } catch (Exception ex) {}
+            } catch (final Exception ex) {}
          }
      }
     
@@ -268,7 +268,7 @@ public class H5ScalarDSTest extends TestCase {
                 did = testDataset.open();
                 tid = H5.H5Dget_type(did);
                 sid = H5.H5Dget_space(did);
-            } catch (Exception ex) { 
+            } catch (final Exception ex) { 
                 fail("open() failed. "+ ex);
             }
             
@@ -278,28 +278,28 @@ public class H5ScalarDSTest extends TestCase {
             
             try {
                 H5.H5Tclose(tid);
-            } catch (Exception ex) {}
+            } catch (final Exception ex) {}
             try {
                 H5.H5Sclose(sid);
-            } catch (Exception ex) {}
+            } catch (final Exception ex) {}
             
             try { 
                 testDataset.close(did);
-            } catch (Exception ex) { 
+            } catch (final Exception ex) { 
                 fail("close() failed. "+ ex);
             }
             
             // dataset is closed, expect to fail
             try {
                 tid = H5.H5Dget_type(did);
-            } catch (Exception ex) { 
+            } catch (final Exception ex) { 
                 tid = -1; // Expected - intentional
             }
             assertTrue(tid < 0);
             
             try {
                 sid = H5.H5Dget_space(did);
-            } catch (Exception ex) { 
+            } catch (final Exception ex) { 
                 sid = -1; // Expected - intentional
             }
             assertTrue(sid < 0);
@@ -322,7 +322,7 @@ public class H5ScalarDSTest extends TestCase {
         
         try {
             data = testDataset.getData();
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             fail("getData() failed. "+ ex);
         }
         assertNotNull(data);
@@ -331,7 +331,7 @@ public class H5ScalarDSTest extends TestCase {
         Vector attrs = null;
         try { 
             attrs = (Vector)testDataset.getMetadata();
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             fail("clear() failed. "+ ex);
         }
 
@@ -341,7 +341,7 @@ public class H5ScalarDSTest extends TestCase {
         // attribute is empty
         try { 
             attrs = (Vector)testDataset.getMetadata();
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             fail("clear() failed. "+ ex);
         }
         assertTrue(attrs.size() <= 0);
@@ -360,39 +360,39 @@ public class H5ScalarDSTest extends TestCase {
     public final void testInit() {
         for (int loop=0; loop<NLOOPS; loop++) {
 
-            try { testFile.close(); } catch (Exception ex) { }
+            try { testFile.close(); } catch (final Exception ex) { }
            
             try {
                 testFile.open();
                 
                 testDataset = (H5ScalarDS)testFile.get(DNAME);
-            } catch (Exception ex) { 
+            } catch (final Exception ex) { 
                 fail("setName() failed. "+ ex);
             }
            
             testDataset.init();
 
             // test the rank
-            int rank = testDataset.getRank();
+            final int rank = testDataset.getRank();
             assertEquals(H5TestFile.RANK, rank);
             
             // test the dimesin sizes
-            long[] dims = testDataset.getDims();
+            final long[] dims = testDataset.getDims();
             assertNotNull(dims);
             for (int i=0; i<rank; i++) {
                 assertEquals(H5TestFile.DIMs[i], dims[i]);
             }
             
             // start at 0
-            long[] start = testDataset.getStartDims();
+            final long[] start = testDataset.getStartDims();
             assertNotNull(start);
             for (int i=0; i<rank; i++) {
                 assertEquals(0, start[i]);
             }
            
             // test selection
-            long[] selectedDims = testDataset.getSelectedDims();
-            int[] selectedIndex = testDataset.getSelectedIndex();
+            final long[] selectedDims = testDataset.getSelectedDims();
+            final int[] selectedIndex = testDataset.getSelectedIndex();
             assertNotNull(selectedDims);
             assertNotNull(selectedIndex);
             if (rank == 1)
@@ -418,10 +418,10 @@ public class H5ScalarDSTest extends TestCase {
             
             int nObjs = 0;
             try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_LOCAL); }
-            catch (Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }
+            catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }
             assertEquals(1, nObjs); // file id should be the only one left open
             
-            try { testFile.close(); } catch (Exception ex) {}
+            try { testFile.close(); } catch (final Exception ex) {}
             
          } //for (int loop=0; loop<NLOOPS; loop++)
     } //public final void testInit() {
@@ -449,7 +449,7 @@ public class H5ScalarDSTest extends TestCase {
             // read the whole dataset
             try {
                 ints = (int[])testDataset.getData();
-            } catch (Exception ex) {
+            } catch (final Exception ex) {
                 fail("testDataset.getData() failed. "+ex);
             }
             assertNotNull(ints);
@@ -462,11 +462,11 @@ public class H5ScalarDSTest extends TestCase {
         
         try { 
             testFile.close();
-        } catch (Exception ex) {}
+        } catch (final Exception ex) {}
         
         // read all types of scalar datasets
         Dataset dset =null;
-        String dnames[] = {
+        final String dnames[] = {
                 H5TestFile.NAME_DATASET_CHAR, H5TestFile.NAME_DATASET_ENUM,
                 H5TestFile.NAME_DATASET_FLOAT, H5TestFile.NAME_DATASET_IMAGE,
                 H5TestFile.NAME_DATASET_INT, H5TestFile.NAME_DATASET_STR,
@@ -474,26 +474,26 @@ public class H5ScalarDSTest extends TestCase {
         
         for (int i=0; i<NLOOPS; i++)
         {
-            H5File file = new H5File(H5TestFile.NAME_FILE_H5, FileFormat.READ);
+            final H5File file = new H5File(H5TestFile.NAME_FILE_H5, FileFormat.READ);
             
             try {
                 // datasets
                 for (int j=0; j<dnames.length; j++) {
                     dset = (Dataset)file.get(dnames[j]);
-                    Object data = dset.getData();
+                    final Object data = dset.getData();
                 }
-            } catch (Exception ex) { 
+            } catch (final Exception ex) { 
                  fail("file.get() failed. "+ ex);
             }
             
             int nObjs = 0;
             try { nObjs = H5.H5Fget_obj_count(file.getFID(), HDF5Constants.H5F_OBJ_LOCAL); }
-            catch (Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }
+            catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }
             assertEquals(1, nObjs); // file id should be the only one left open
             
             try {            
                 file.close();
-            } catch (Exception ex) { 
+            } catch (final Exception ex) { 
                  fail("file.close() failed. "+ ex);
             }
         } // for (int i=0; i<NLOOPS; i++)
@@ -515,16 +515,16 @@ public class H5ScalarDSTest extends TestCase {
             testDataset.init();
 
             // read data row by row
-            int nrows = testDataset.getHeight();
+            final int nrows = testDataset.getHeight();
             for (int i=0; i<nrows; i++) {
                 testDataset.clearData();
                 testDataset.init();
                 
-                int rank = testDataset.getRank();
-                long[] dims = testDataset.getDims();
-                long[] start = testDataset.getStartDims();
-                long[] count = testDataset.getSelectedDims();
-                int[] selectedIndex = testDataset.getSelectedIndex();
+                final int rank = testDataset.getRank();
+                final long[] dims = testDataset.getDims();
+                final long[] start = testDataset.getStartDims();
+                final long[] count = testDataset.getSelectedDims();
+                final int[] selectedIndex = testDataset.getSelectedIndex();
                
                 // select one row only
                 for (int j=0; j<rank; j++) {
@@ -536,12 +536,12 @@ public class H5ScalarDSTest extends TestCase {
                 
                 try {
                     data = (int[])testDataset.getData();
-                } catch (Exception ex) { 
+                } catch (final Exception ex) { 
                     fail("getData() failed. "+ ex);
                 }
                 assertNotNull(data);
                 
-                int idx = (int)H5TestFile.DIM2*i;
+                final int idx = (int)H5TestFile.DIM2*i;
                 assertEquals(H5TestFile.DATA_INT[idx], data[0]);
              } // for (int i=0; i<nrows; i++) {
         } //for (int loop=0; loop<NLOOPS; loop++) {
@@ -561,13 +561,13 @@ public class H5ScalarDSTest extends TestCase {
         
         try {
             data = testDataset.readBytes();
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             fail("readBytes() failed. "+ ex);
         }
         assertNotNull(data);
         
-        int n = Array.getLength(data);
-        int expected = H5TestFile.DIM_SIZE * 4;
+        final int n = Array.getLength(data);
+        final int expected = H5TestFile.DIM_SIZE * 4;
         
         assertEquals(expected, n);
     }
@@ -591,7 +591,7 @@ public class H5ScalarDSTest extends TestCase {
 
             try {
                 data = (int[])testDataset.getData();
-            } catch (Exception ex) { 
+            } catch (final Exception ex) { 
                 fail("getData() failed. "+ ex);
             }
             assertNotNull(data);
@@ -605,7 +605,7 @@ public class H5ScalarDSTest extends TestCase {
             // write the data to file
             try { 
                 testDataset.write(data);
-            }  catch (Exception ex) { 
+            }  catch (final Exception ex) { 
                 fail("write() failed. "+ ex);
             }
             
@@ -614,7 +614,7 @@ public class H5ScalarDSTest extends TestCase {
                 testFile.close();
                 testFile.open();
                 testDataset = (H5ScalarDS)testFile.get(DNAME);
-            } catch (Exception ex) { 
+            } catch (final Exception ex) { 
                 fail("write() failed. "+ ex);
             }
             
@@ -624,7 +624,7 @@ public class H5ScalarDSTest extends TestCase {
             
             try {
                 data = (int[])testDataset.getData();
-            } catch (Exception ex) { 
+            } catch (final Exception ex) { 
                 fail("getData() failed. "+ ex);
             }
             assertNotNull(data);
@@ -638,7 +638,7 @@ public class H5ScalarDSTest extends TestCase {
             // write the original data into file
             try { 
                 testDataset.write(H5TestFile.DATA_INT);
-            }  catch (Exception ex) { 
+            }  catch (final Exception ex) { 
                 fail("write() failed. "+ ex);
             }
         } //for (int loop=0; loop<NLOOPS; loop++) {
@@ -662,11 +662,11 @@ public class H5ScalarDSTest extends TestCase {
             testDataset.init();
 
             // write a subset: the first half of the dataset
-            int rank = testDataset.getRank();
-            long[] dims = testDataset.getDims();
-            long[] start = testDataset.getStartDims();
+            final int rank = testDataset.getRank();
+            final long[] dims = testDataset.getDims();
+            final long[] start = testDataset.getStartDims();
             long[] count = testDataset.getSelectedDims();
-            int[] selectedIndex = testDataset.getSelectedIndex();
+            final int[] selectedIndex = testDataset.getSelectedIndex();
             
             // select the first 1/2 of the datast
             long size = 1;
@@ -676,13 +676,14 @@ public class H5ScalarDSTest extends TestCase {
             }
             
             data = new int[(int)size];
-            for (int j=0; j<size; j++)
+            for (int j=0; j<size; j++) {
                 data[j] = TEST_VALUE_INT;
+            }
 
             // write the data to file
             try { 
                 testDataset.write(data);
-            }  catch (Exception ex) { 
+            }  catch (final Exception ex) { 
                 fail("write() failed. "+ ex);
             }
             
@@ -691,7 +692,7 @@ public class H5ScalarDSTest extends TestCase {
                 testFile.close();
                 testFile.open();
                 testDataset = (H5ScalarDS)testFile.get(DNAME);
-            } catch (Exception ex) { 
+            } catch (final Exception ex) { 
                 fail("write() failed. "+ ex);
             }
             
@@ -707,7 +708,7 @@ public class H5ScalarDSTest extends TestCase {
             
             try {
                 data = (int[])testDataset.getData();
-            } catch (Exception ex) { 
+            } catch (final Exception ex) { 
                 fail("getData() failed. "+ ex);
             }
             assertNotNull(data);
@@ -724,7 +725,7 @@ public class H5ScalarDSTest extends TestCase {
             }
             try { 
                 testDataset.write(H5TestFile.DATA_INT);
-            }  catch (Exception ex) { 
+            }  catch (final Exception ex) { 
                 fail("write() failed. "+ ex);
             }
         } //for (int loop=0; loop<NLOOPS; loop++) {
@@ -745,12 +746,12 @@ public class H5ScalarDSTest extends TestCase {
         Dataset dset=null, dsetNew=null;
         H5File tmpFile = null;
         
-        String DNAMES[] = {
+        final String DNAMES[] = {
                 H5TestFile.NAME_DATASET_CHAR, H5TestFile.NAME_DATASET_ENUM,
                 H5TestFile.NAME_DATASET_FLOAT, H5TestFile.NAME_DATASET_IMAGE,
                 H5TestFile.NAME_DATASET_INT, H5TestFile.NAME_DATASET_STR};
        
-        try { testFile.close(); } catch (Exception ex) { ; }
+        try { testFile.close(); } catch (final Exception ex) { ; }
         
         for (int loop=0; loop<NLOOPS; loop++)
         {
@@ -764,19 +765,19 @@ public class H5ScalarDSTest extends TestCase {
                     if (openOption == 0) {
                         try { 
                             testFile.open(); // opent the full tree
-                        } catch (Exception ex) { 
+                        } catch (final Exception ex) { 
                             System.err.println("file.open(). "+ ex);
                         }
                     }
                       
                     try {
-                        Group rootGrp = (Group) tmpFile.get("/");
+                        final Group rootGrp = (Group) tmpFile.get("/");
                         
                         // datasets
                         for (int j=0; j<DNAMES.length; j++) {
                             dset = (Dataset)testFile.get(DNAMES[j]);
                             dset.init();
-                            Object data = dset.getData();
+                            final Object data = dset.getData();
                             dset.write(data);
                             dset.getMetadata();
                             
@@ -784,34 +785,35 @@ public class H5ScalarDSTest extends TestCase {
                             if (dset instanceof ScalarDS) {
                                 dsetNew = dset.copy(rootGrp, DNAMES[j]+"_copy"+openOption, H5TestFile.DIMs, data);
                                 assertNotNull(dsetNew);
-                                Object dataCopy = dsetNew.getData();
-                                int size = Array.getLength(data);
+                                final Object dataCopy = dsetNew.getData();
+                                final int size = Array.getLength(data);
                                 for (int k=0; k<size; k++) {
                                     assertEquals(Array.get(data, k), Array.get(dataCopy, k));
                                 }
                             }
                         }
-                    } catch (Exception ex) { 
+                    } catch (final Exception ex) { 
                          fail("file.get(). "+ ex);
                     }
          
                     nObjs = 0;
                     try { nObjs = H5.H5Fget_obj_count(tmpFile.getFID(), HDF5Constants.H5F_OBJ_LOCAL); }
-                    catch (Exception ex) { ; }
+                    catch (final Exception ex) { ; }
                     if (nObjs > 1) {
                         fail("Possible memory leak. Some objects are still open.");
                     }
                     
                     try {            
                         tmpFile.close();
-                    } catch (Exception ex) { 
+                    } catch (final Exception ex) { 
                          System.err.println("file.close() failed. "+ ex);
                     }
                 } // for (int openOption=0; openOption<2; openOption++)
             } finally {
                 // delete the testing file
-                if (tmpFile != null)
+                if (tmpFile != null) {
                     tmpFile.delete();
+                }
             }
         } //for (int loop=0; loop<NLOOPS; loop++) {
     }
@@ -830,7 +832,7 @@ public class H5ScalarDSTest extends TestCase {
         
         try {
             dtype = (H5Datatype) testDataset.getDatatype();
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             fail("testDataset.getDatatype() failed. "+ex);
         }
         
@@ -853,12 +855,12 @@ public class H5ScalarDSTest extends TestCase {
         
         try {
             img = (ScalarDS)testFile.get(H5TestFile.NAME_DATASET_IMAGE);
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             fail("testFile.get failed. "+ex);
         }
         assertNotNull(img);
         
-        byte[][] pal = img.getPalette();
+        final byte[][] pal = img.getPalette();
         assertNotNull(pal);
         
         for (int i=0; i<256; i++) {
@@ -882,12 +884,12 @@ public class H5ScalarDSTest extends TestCase {
         
         try {
             img = (ScalarDS)testFile.get(H5TestFile.NAME_DATASET_IMAGE);
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             fail("testFile.get failed. "+ex);
         }
         assertNotNull(img);
         
-        byte[][] pal = img.readPalette(0);
+        final byte[][] pal = img.readPalette(0);
         assertNotNull(pal);
         
         for (int i=0; i<256; i++) {
@@ -911,12 +913,12 @@ public class H5ScalarDSTest extends TestCase {
         
         try {
             img = (ScalarDS)testFile.get(H5TestFile.NAME_DATASET_IMAGE);
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             fail("testFile.get failed. "+ex);
         }
         assertNotNull(img);
         
-        byte[] refs = img.getPaletteRefs();
+        final byte[] refs = img.getPaletteRefs();
         assertNotNull(refs);
     }
 
@@ -936,10 +938,10 @@ public class H5ScalarDSTest extends TestCase {
      */
     public final void testH5ScalarDSFileFormatStringString() {
         int[] data = null;
-        String[] names = {null, DNAME_SUB, DNAME.substring(1)};
-        String[] paths = {DNAME_SUB, null, H5TestFile.NAME_GROUP};
+        final String[] names = {null, DNAME_SUB, DNAME.substring(1)};
+        final String[] paths = {DNAME_SUB, null, H5TestFile.NAME_GROUP};
 
-        H5File file = (H5File)testDataset.getFileFormat();
+        final H5File file = (H5File)testDataset.getFileFormat();
         assertNotNull(file);
         
         // test existing dataset in file
@@ -950,13 +952,14 @@ public class H5ScalarDSTest extends TestCase {
             // make sure that the data content is correct
             try {
                 data = (int[])dset.getData();
-            } catch (Exception ex) { 
+            } catch (final Exception ex) { 
                 fail("getData() failed. "+ ex);
             }
             assertNotNull(data);
             
-            for (int i=0; i<H5TestFile.DIM_SIZE; i++)
+            for (int i=0; i<H5TestFile.DIM_SIZE; i++) {
                 assertEquals(H5TestFile.DATA_INT[i], data[i]);
+            }
             
             // check the name and path
             assertTrue(DNAME_SUB.equals(dset.getFullName()));
@@ -967,13 +970,13 @@ public class H5ScalarDSTest extends TestCase {
         }
         
         // test a non-existing dataset
-        H5ScalarDS dset = new H5ScalarDS(file, "NO_SUCH_DATASET", "NO_SUCH_PATH");
+        final H5ScalarDS dset = new H5ScalarDS(file, "NO_SUCH_DATASET", "NO_SUCH_PATH");
         dset.init();
         dset.clearData();
         data = null;
         try {
             data = (int[])dset.getData();
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             data = null; // Expected - intentional
         }
         assertNull(data);
@@ -995,10 +998,10 @@ public class H5ScalarDSTest extends TestCase {
      */
     public final void testH5ScalarDSFileFormatStringStringLongArray() {
         int[] data = null;
-        String[] names = {null, DNAME_SUB, DNAME.substring(1)};
-        String[] paths = {DNAME_SUB, null, H5TestFile.NAME_GROUP};
+        final String[] names = {null, DNAME_SUB, DNAME.substring(1)};
+        final String[] paths = {DNAME_SUB, null, H5TestFile.NAME_GROUP};
 
-        H5File file = (H5File)testDataset.getFileFormat();
+        final H5File file = (H5File)testDataset.getFileFormat();
         assertNotNull(file);
         
         // test existing dataset in file
@@ -1007,11 +1010,11 @@ public class H5ScalarDSTest extends TestCase {
             
             try
             {
-                byte[] ref_buf = H5.H5Rcreate(file.getFID(), DNAME_SUB, HDF5Constants.H5R_OBJECT, -1);
-                long l = HDFNativeData.byteToLong(ref_buf, 0);
+                final byte[] ref_buf = H5.H5Rcreate(file.getFID(), DNAME_SUB, HDF5Constants.H5R_OBJECT, -1);
+                final long l = HDFNativeData.byteToLong(ref_buf, 0);
                 oid = new long[1];
                 oid[0] = l; // save the object ID
-            } catch (HDF5Exception ex) { 
+            } catch (final HDF5Exception ex) { 
                 fail("H5.H5Rcreate() failed. "+ ex);
             }
             assertNotNull(oid);
@@ -1022,13 +1025,14 @@ public class H5ScalarDSTest extends TestCase {
             // make sure that the data content is correct
             try {
                 data = (int[])dset.getData();
-            } catch (Exception ex) { 
+            } catch (final Exception ex) { 
                 fail("getData() failed. "+ ex);
             }
             assertNotNull(data);
             
-            for (int i=0; i<H5TestFile.DIM_SIZE; i++)
+            for (int i=0; i<H5TestFile.DIM_SIZE; i++) {
                 assertEquals(H5TestFile.DATA_INT[i], data[i]);
+            }
             
             // check the name and path
             assertTrue(DNAME_SUB.equals(dset.getFullName()));
@@ -1039,13 +1043,13 @@ public class H5ScalarDSTest extends TestCase {
         }
         
         // test a non-existing dataset
-        H5ScalarDS dset = new H5ScalarDS(file, "NO_SUCH_DATASET", "NO_SUCH_PATH", null);
+        final H5ScalarDS dset = new H5ScalarDS(file, "NO_SUCH_DATASET", "NO_SUCH_PATH", null);
         dset.init();
         dset.clearData();
         data = null;
         try {
             data = (int[])dset.getData();
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             data = null; // Expected - intentional
         }
         assertNull(data);
@@ -1065,27 +1069,28 @@ public class H5ScalarDSTest extends TestCase {
         
         try {
             attrs = (Vector) testDataset.getMetadata();
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             fail("getMetadata() failed. "+ ex);
         }
         assertNotNull(attrs);
         assertTrue(attrs.size() > 0);
         
-        int n = attrs.size();
+        final int n = attrs.size();
         for (int i=0; i<n; i++) {
-            Attribute attr = (Attribute) attrs.get(i);
-            H5Datatype dtype = (H5Datatype)attr.getType();
+            final Attribute attr = (Attribute) attrs.get(i);
+            final H5Datatype dtype = (H5Datatype)attr.getType();
             if (dtype.getDatatypeClass() == Datatype.CLASS_STRING) {
                 assertTrue(H5TestFile.ATTRIBUTE_STR.getName().equals(attr.getName()));
                 assertTrue(((String[]) H5TestFile.ATTRIBUTE_STR.getValue())[0].equals(((String[])attr.getValue())[0]));
             } else if (dtype.getDatatypeClass() == Datatype.CLASS_INTEGER) {
                 assertTrue(H5TestFile.ATTRIBUTE_INT_ARRAY.getName().equals(attr.getName()));
-                int[] expected = (int [])H5TestFile.ATTRIBUTE_INT_ARRAY.getValue();
+                final int[] expected = (int [])H5TestFile.ATTRIBUTE_INT_ARRAY.getValue();
                 assertNotNull(expected);
-                int[] ints = (int[]) attr.getValue();
+                final int[] ints = (int[]) attr.getValue();
                 assertNotNull(ints);
-                for (int j =0; j<expected.length; j++) 
+                for (int j =0; j<expected.length; j++) {
                     assertEquals(expected[j], ints[j]);
+                }
             }
         } //for (int i=0; i<n; i++) {
     }
@@ -1107,7 +1112,7 @@ public class H5ScalarDSTest extends TestCase {
         
         try {
             attrs = (Vector) testDataset.getMetadata();
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             fail("getMetadata() failed. "+ ex);
         }
         assertNotNull(attrs);
@@ -1117,19 +1122,20 @@ public class H5ScalarDSTest extends TestCase {
         int n = attrs.size();
         for (int i=0; i<n; i++) {
             attr = (Attribute) attrs.get(i);
-            H5Datatype dtype = (H5Datatype)attr.getType();
+            final H5Datatype dtype = (H5Datatype)attr.getType();
             if (dtype.getDatatypeClass() == Datatype.CLASS_STRING) {
-                String[] strs = (String[]) attr.getValue();
+                final String[] strs = (String[]) attr.getValue();
                 strs[0] = TEST_VALUE_STR;
             } else if (dtype.getDatatypeClass() == Datatype.CLASS_INTEGER) {
-                int[] ints = (int[]) attr.getValue();
+                final int[] ints = (int[]) attr.getValue();
                 assertNotNull(ints);
-                for (int j =0; j<ints.length; j++) 
+                for (int j =0; j<ints.length; j++) {
                     ints[j] = TEST_VALUE_INT;
+                }
             }
             try  {
                 testDataset.writeMetadata(attr);
-            } catch (Exception ex) { 
+            } catch (final Exception ex) { 
                 fail("writeMetadata() failed. "+ ex);
             }
         } //for (int i=0; i<n; i++) {
@@ -1141,7 +1147,7 @@ public class H5ScalarDSTest extends TestCase {
                 new float[] {TEST_VALUE_FLOAT});
         try  {
             testDataset.writeMetadata(attr);
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             fail("writeMetadata() failed. "+ ex);
         }
 
@@ -1151,14 +1157,14 @@ public class H5ScalarDSTest extends TestCase {
             testFile.close();
             testFile.open();
             testDataset = (H5ScalarDS)testFile.get(DNAME);
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             fail("write() failed. "+ ex);
         }
         
         // check the change in file
         try {
             attrs = (Vector) testDataset.getMetadata();
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             fail("getMetadata() failed. "+ ex);
         }
         assertNotNull(attrs);
@@ -1168,19 +1174,20 @@ public class H5ScalarDSTest extends TestCase {
         Attribute newAttr = null;
         for (int i=0; i<n; i++) {
             attr = (Attribute) attrs.get(i);
-            H5Datatype dtype = (H5Datatype)attr.getType();
+            final H5Datatype dtype = (H5Datatype)attr.getType();
             if (dtype.getDatatypeClass() == Datatype.CLASS_STRING) {
                 assertTrue(H5TestFile.ATTRIBUTE_STR.getName().equals(attr.getName()));
                 assertTrue(TEST_VALUE_STR.equals(((String[])attr.getValue())[0]));
             } else if (dtype.getDatatypeClass() == Datatype.CLASS_INTEGER) {
                 assertTrue(H5TestFile.ATTRIBUTE_INT_ARRAY.getName().equals(attr.getName()));
-                int[] ints = (int[]) attr.getValue();
+                final int[] ints = (int[]) attr.getValue();
                 assertNotNull(ints);
-                for (int j =0; j<ints.length; j++) 
+                for (int j =0; j<ints.length; j++) {
                     assertEquals(TEST_VALUE_INT, ints[j]);
+                }
             } else if (dtype.getDatatypeClass() == Datatype.CLASS_FLOAT) {
                 newAttr = attr;
-                float[] floats = (float[]) attr.getValue();
+                final float[] floats = (float[]) attr.getValue();
                 assertEquals(TEST_VALUE_FLOAT, floats[0], Float.MIN_VALUE);
             }
         } //for (int i=0; i<n; i++) {
@@ -1188,7 +1195,7 @@ public class H5ScalarDSTest extends TestCase {
         // remove the new attribute
         try {
             testDataset.removeMetadata(newAttr);
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             fail("removeMetadata() failed. "+ ex);
         }
         
@@ -1196,21 +1203,21 @@ public class H5ScalarDSTest extends TestCase {
         n = attrs.size();
         for (int i=0; i<n; i++) {
             attr = (Attribute) attrs.get(i);
-            H5Datatype dtype = (H5Datatype)attr.getType();
+            final H5Datatype dtype = (H5Datatype)attr.getType();
             if (dtype.getDatatypeClass() == Datatype.CLASS_STRING) {
-                String[] strs = (String[]) attr.getValue();
+                final String[] strs = (String[]) attr.getValue();
                 strs[0] = ((String[]) H5TestFile.ATTRIBUTE_STR.getValue())[0];
             } else if (dtype.getDatatypeClass() == Datatype.CLASS_INTEGER) {
-                int[] ints = (int[]) attr.getValue();
+                final int[] ints = (int[]) attr.getValue();
                 assertNotNull(ints);
                 for (int j =0; j<ints.length; j++) {
-                    int[] expected = (int [])H5TestFile.ATTRIBUTE_INT_ARRAY.getValue();
+                    final int[] expected = (int [])H5TestFile.ATTRIBUTE_INT_ARRAY.getValue();
                     ints[j] = expected[j];
                 }
             }
             try  {
                 testDataset.writeMetadata(attr);
-            } catch (Exception ex) { 
+            } catch (final Exception ex) { 
                 fail("writeMetadata() failed. "+ ex);
             }
         } //for (int i=0; i<n; i++) {
@@ -1228,23 +1235,23 @@ public class H5ScalarDSTest extends TestCase {
      */
     public final void testRemoveMetadata() {
         Vector attrs = null;
-        Attribute attr = null;
+        final Attribute attr = null;
         
         try {
             attrs = (Vector) testDataset.getMetadata();
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             fail("getMetadata() failed. "+ ex);
         }
         assertNotNull(attrs);
         assertTrue(attrs.size() > 0);
         
         // remove all attributes
-        int n = attrs.size();
-        Object[] arrayAttr = attrs.toArray();
+        final int n = attrs.size();
+        final Object[] arrayAttr = attrs.toArray();
         for (int i=0; i<n; i++) {
             try {
                 testDataset.removeMetadata(arrayAttr[i]);
-            } catch (Exception ex) { 
+            } catch (final Exception ex) { 
                 fail("removeMetadata() failed. "+ ex);
             }
          }
@@ -1255,14 +1262,14 @@ public class H5ScalarDSTest extends TestCase {
             testFile.close();
             testFile.open();
             testDataset = (H5ScalarDS)testFile.get(DNAME);
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             fail("write() failed. "+ ex);
         }
         attrs = null;
         
         try {
             attrs = (Vector) testDataset.getMetadata();
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             fail("getMetadata() failed. "+ ex);
         }
         assertNotNull(attrs);
@@ -1272,7 +1279,7 @@ public class H5ScalarDSTest extends TestCase {
         try  {
             testDataset.writeMetadata(H5TestFile.ATTRIBUTE_STR);
             testDataset.writeMetadata(H5TestFile.ATTRIBUTE_INT_ARRAY);
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             fail("writeMetadata() failed. "+ ex);
         }
      }
@@ -1290,31 +1297,32 @@ public class H5ScalarDSTest extends TestCase {
      */
     public final void testCreate() {
         ScalarDS dset = null;
-        String nameNew = "/tmpH5ScalarDS";
+        final String nameNew = "/tmpH5ScalarDS";
         float[] data = null;
         
-        H5Datatype typeFloat = new H5Datatype(Datatype.CLASS_FLOAT, 4, -1, -1);
+        final H5Datatype typeFloat = new H5Datatype(Datatype.CLASS_FLOAT, 4, -1, -1);
         
         try {
-            Group rootGrp = (Group)testFile.get("/");
+            final Group rootGrp = (Group)testFile.get("/");
             dset = H5ScalarDS.create(nameNew, rootGrp, typeFloat, H5TestFile.DIMs, null, H5TestFile.CHUNKs, 9, H5TestFile.DATA_FLOAT);
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             fail("H5ScalarDS.create() failed. "+ ex);
         }
         
         // check the data content
         try {
             data = (float[])dset.getData();
-        } catch (Exception ex) { 
+        } catch (final Exception ex) { 
             fail("dset.getData() failed. "+ ex);
         }
         assertNotNull(data);
-         for (int i=0; i<H5TestFile.DIM_SIZE; i++)
+         for (int i=0; i<H5TestFile.DIM_SIZE; i++) {
             assertEquals(H5TestFile.DATA_FLOAT[i], data[i], Float.MIN_VALUE);
+        }
         
          try {
              testFile.delete(dset); // delete the new datast
-         }  catch (Exception ex) { 
+         }  catch (final Exception ex) { 
              fail("testFile.delete failed. "+ ex);
          }
     }

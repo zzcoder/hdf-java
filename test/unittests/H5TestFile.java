@@ -108,18 +108,19 @@ public class H5TestFile {
     {
         H5File file=null;
         Group g0, g1, g00;
-        Dataset[] dsets = new Dataset[11];
+        final Dataset[] dsets = new Dataset[11];
         
-        if (fileName == null || fileName.length()<1)
+        if ((fileName == null) || (fileName.length()<1)) {
             fileName = NAME_FILE_H5;
+        }
         
-        H5Datatype typeInt = new H5Datatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, -1);
-        H5Datatype typeByte = new H5Datatype(Datatype.CLASS_INTEGER, 1, -1, Datatype.SIGN_NONE);
-        H5Datatype typeFloat = new H5Datatype(Datatype.CLASS_FLOAT, DATATYPE_SIZE, -1, -1);
-        H5Datatype typeStr = new H5Datatype(Datatype.CLASS_STRING, STR_LEN, -1, -1);
-        H5Datatype typeChar = new H5Datatype(Datatype.CLASS_CHAR, 1, -1, -1);
-        H5Datatype typeEnum = new H5Datatype(Datatype.CLASS_ENUM, DATATYPE_SIZE, -1, -1);
-        H5Datatype typeRef = new H5Datatype(Datatype.CLASS_REFERENCE, -1, -1, -1);
+        final H5Datatype typeInt = new H5Datatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, -1);
+        final H5Datatype typeByte = new H5Datatype(Datatype.CLASS_INTEGER, 1, -1, Datatype.SIGN_NONE);
+        final H5Datatype typeFloat = new H5Datatype(Datatype.CLASS_FLOAT, DATATYPE_SIZE, -1, -1);
+        final H5Datatype typeStr = new H5Datatype(Datatype.CLASS_STRING, STR_LEN, -1, -1);
+        final H5Datatype typeChar = new H5Datatype(Datatype.CLASS_CHAR, 1, -1, -1);
+        final H5Datatype typeEnum = new H5Datatype(Datatype.CLASS_ENUM, DATATYPE_SIZE, -1, -1);
+        final H5Datatype typeRef = new H5Datatype(Datatype.CLASS_REFERENCE, -1, -1, -1);
        
         for (int i=0; i<DIM_SIZE; i++) {
             DATA_INT[i] = i;
@@ -164,12 +165,12 @@ public class H5TestFile {
         }
         
         // create a wave palette and attach it to the image
-        Dataset pal = file.createScalarDS(NAME_DATASET_IMAGE_PALETTE, null, typeByte, new long[] {256, 3}, null, null, -1, DATA_PALETTE); 
+        final Dataset pal = file.createScalarDS(NAME_DATASET_IMAGE_PALETTE, null, typeByte, new long[] {256, 3}, null, null, -1, DATA_PALETTE); 
         long[] oid = pal.getOID();
-        Vector attrs = (Vector)dsets[7].getMetadata();
-        int n = attrs.size();
+        final Vector attrs = (Vector)dsets[7].getMetadata();
+        final int n = attrs.size();
         for (int i=0; i<n; i++) {
-            Attribute attr = (Attribute) attrs.get(i);
+            final Attribute attr = (Attribute) attrs.get(i);
             if ("PALETTE".equals(attr.getName())) {
                 attr.setValue(oid);
                 dsets[7].writeMetadata(attr);
@@ -194,18 +195,18 @@ public class H5TestFile {
         
         file.createLink(g0, NAME_HARD_LINK_TO_IMAGE, dsets[7]);
 
-        try { file.close(); } catch (Exception ex) {}
+        try { file.close(); } catch (final Exception ex) {}
         
         // write object refs to the ref dataset
         file.open();
-        long[] refs = new long[DIM_SIZE];
+        final long[] refs = new long[DIM_SIZE];
         for (int i=0; i<OBJ_NAMES.length; i++) {
             oid = file.get(OBJ_NAMES[i]).getOID();
             refs[i] = oid[0];
         }
         dsets[10].write(refs);
         
-        try { file.close(); } catch (Exception ex) {}
+        try { file.close(); } catch (final Exception ex) {}
         
         return file;
     }
@@ -221,7 +222,7 @@ public class H5TestFile {
      */
     private static final byte[] createWavePalette()
     {
-        byte[] p = new byte[768]; //256*3
+        final byte[] p = new byte[768]; //256*3
 
         for (int i=1; i<255; i++)
         {
