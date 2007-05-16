@@ -49,8 +49,8 @@ public class AllH5ObjectTests {
         
         try { H5TestFile.createTestFile(null); } 
         catch (final Exception ex) {
-            System.out.println("*** Unable to create HDF5 test file. "+ex);
-            System.exit(-1);
+             ex.printStackTrace();
+             System.exit(-1);
         }
         
         junit.textui.TestRunner.run(suite());

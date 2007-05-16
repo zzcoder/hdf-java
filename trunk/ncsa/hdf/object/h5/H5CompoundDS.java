@@ -76,9 +76,6 @@ public class H5CompoundDS extends CompoundDS
      */
     private List attributeList;
     
-    /** flag to indicate if the datatype in file is the same as dataype in memory*/
-    private boolean isNativeDatatype = false;
-    
     /**
      * A list of names of all fields including nested fields.
      * <p>
@@ -908,23 +905,19 @@ public class H5CompoundDS extends CompoundDS
             return;
         }
 
+        int tmptid = -1;
         for (int i=0; i<nMembers; i++)
         {
  
             try {mtype = H5.H5Tget_member_type(tid, i);}
             catch (Exception ex ) { continue; }
 
-            int tmptid = -1;
-            if (!isNativeDatatype) {
-               
-                try { 
-                    tmptid = mtype;
-                    mtype = H5.H5Tget_native_type(tmptid);
-                    isNativeDatatype = H5.H5Tequal(mtype, tmptid);
-                } catch (HDF5Exception ex) { continue; } 
-                finally {
-                    try { H5.H5Tclose(tmptid); } catch (HDF5Exception ex) {}
-                 }
+            try { 
+                tmptid = mtype;
+                mtype = H5.H5Tget_native_type(tmptid);
+            } catch (HDF5Exception ex) { continue; } 
+            finally {
+                try { H5.H5Tclose(tmptid); } catch (HDF5Exception ex) {}
              }
  
             try { mclass = H5.H5Tget_class(mtype); }
