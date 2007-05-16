@@ -772,20 +772,20 @@ implements ImageView, ActionListener
                     // data is unsigned short. Convert image byte data using auto-contrast image algorithm 
                     boolean isUnsigned = dataset.isUnsigned();
                     gainBias = new double[2];
-                    if (Tools.computeAutoContrast(data, gainBias, isUnsigned) >= 0) {
+                    if (Tools.autoContrastCompute(data, gainBias, isUnsigned) >= 0) {
                         minMaxGain = new double[2];
                         minMaxBias = new double[2];
-                        Tools.computerAutoContrastSliderRange( gainBias, minMaxGain, minMaxBias);
+                        Tools.autoContrastComputeSliderRange( gainBias, minMaxGain, minMaxBias);
 
                         if (autoGainData == null) {
                             autoGainData = new int[Array.getLength(data)];
                         }
                         
-                        if (Tools.applyAutoContrast(data, autoGainData, gainBias, isUnsigned) >=0) {
+                        if (Tools.autoContrastApply(data, autoGainData, gainBias, isUnsigned) >=0) {
                             if ((imageByteData == null) || (imageByteData.length != Array.getLength(data))) {
                                 imageByteData = new byte[Array.getLength(data)];
                             }
-                            isAutoContrastUS = (Tools.convertImageBuffer(autoGainData, imageByteData, true)>=0);
+                            isAutoContrastUS = (Tools.autoContrastConvertImageBuffer(autoGainData, imageByteData, true)>=0);
                         }
                     }
                 }
@@ -1021,11 +1021,11 @@ implements ImageView, ActionListener
 
     /** Apply contrast/brightness to unsigned short integer */
     private void applyAutoContrast() {
-        if (Tools.applyAutoContrast((int[])data, autoGainData, gainBias, true) >=0) {
+        if (Tools.autoContrastApply((int[])data, autoGainData, gainBias, true) >=0) {
             if ((imageByteData == null) || (imageByteData.length != Array.getLength(data))) {
                 imageByteData = new byte[Array.getLength(data)];
             }
-            if (Tools.convertImageBuffer(autoGainData, imageByteData, true)>=0) {
+            if (Tools.autoContrastConvertImageBuffer(autoGainData, imageByteData, true)>=0) {
                 int w = dataset.getWidth();
                 int h = dataset.getHeight();
                 image = createIndexedImage(imageByteData, imagePalette, w, h); 
@@ -1102,57 +1102,6 @@ implements ImageView, ActionListener
         BufferedImage bimage = (BufferedImage)createImage(w, h);
         Graphics g = bimage.createGraphics();
         g.drawImage(image, 0, 0, null);
-
-/*
-        // !!!!!!!!!!!!!!!!!! NOTICE !!!!!!!!!!!!!!!!!!!!!
-        // An Image object cannot be converted to a BufferedImage object. The
-        // closest equivalent is to create a buffered image and then draw the
-        // image on the buffered image. The following way defines a method that
-        // does this.
-        // The buffered image created by this way does works with JavaTM Advanced Imaging
-        // com.sun.media.jai.codec.*;
-        // It does not work for the package
-        // com.sun.image.codec.jpeg.*
-        // if the image is a 24-bit true color image
-
-        // Determine if the image has transparent pixels; for this method's
-        boolean hasAlpha = hasAlpha(image);
-
-        // Create a buffered image with a format that's compatible with the screen
-        BufferedImage bimage = null;
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        try {
-            // Determine the type of transparency of the new buffered image
-            int transparency = Transparency.OPAQUE;
-            if (hasAlpha) {
-                transparency = Transparency.BITMASK;
-            }
-
-            // Create the buffered image
-            GraphicsDevice gs = ge.getDefaultScreenDevice();
-            GraphicsConfiguration gc = gs.getDefaultConfiguration();
-            bimage = gc.createCompatibleImage(
-                image.getWidth(null), image.getHeight(null), transparency);
-            } catch (Exception e) {
-            // The system does not have a screen
-        }
-        if (bimage == null)
-        {
-            // Create a buffered image using the default color model
-            int type = BufferedImage.TYPE_INT_RGB;
-            if (hasAlpha)
-                type = BufferedImage.TYPE_INT_ARGB;
-
-            bimage = new BufferedImage(image.getWidth(null), image.getHeight(null), type);
-        }
-
-        // Copy image to buffered image
-        Graphics2D g = bimage.createGraphics();
-
-        // Paint the image onto the buffered image
-        g.drawImage(image, 0, 0, this);
-
-*/
 
         g.dispose();
         return bimage;

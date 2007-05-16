@@ -68,26 +68,6 @@ public final class Tools
         BufferedImage image = decoder.decodeAsBufferedImage();
         in.close();
 
-/*
-        // FileImageInputStream is about 200 times slower than BufferedInputStream
-        BufferedImage image = null;
-        FileImageInputStream in = new FileImageInputStream(new File(imgFileName));
-        BufferedInputStream in = new BufferedInputStream(new FileImageInputStream(new File(imgFileName)));
-        ImageReader decoder = (ImageReader)ImageIO.getImageReadersByFormatName("JPEG").next();
-
-        if (decoder ==null)
-        {
-            in.close();
-            return;
-        }
-
-
-        JPEGImageReadParam param = new JPEGImageReadParam();
-        decoder.setInput(in, true);
-        image = decoder.read(0, param);
-        in.close();
-*/
-
         int h = image.getHeight();
         int w = image.getWidth();
         byte[] data = null;
@@ -135,7 +115,7 @@ public final class Tools
 
         if (thefile != null)
         {
-            newfile = thefile.create(hFileName);
+            newfile = thefile.create(hFileName, FileFormat.FILE_CREATE_DELETE);
             fid = newfile.open();
             pgroup = (Group)((DefaultMutableTreeNode) newfile.getRootNode()).getUserObject();
             type = newfile.createDatatype(Datatype.CLASS_CHAR, 1, Datatype.NATIVE, Datatype.SIGN_NONE);
@@ -830,7 +810,7 @@ public final class Tools
      * @param isUnsigned the flag to indicate if the data array is unsiged integer
      * @return non-negative if successful; otherwise, returns negative
      */
-    public static int computeAutoContrast(Object data,  double[] params, boolean isUnsigned)
+    public static int autoContrastCompute(Object data,  double[] params, boolean isUnsigned)
     {
     	int retval = 1;
         long maxDataValue = 255;
@@ -844,7 +824,7 @@ public final class Tools
             return -1;
         }
     	
-    	retval = computeAutoContrastMinMax(data, minmax);
+    	retval = autoContrastComputeMinMax(data, minmax);
     	
     	// force the min_max method so we can look at the target grids data sets
     	if ( (retval < 0) || (minmax[1] - minmax[0] < 10) ) {
@@ -922,7 +902,7 @@ public final class Tools
      * @param isUnsigned the flag to indicate if the data array is unsiged integer
      * @return non-negative if successful; otherwise, returns negative
      */
-    public static int applyAutoContrast(Object data_in, Object data_out,  double[] params, boolean isUnsigned)
+    public static int autoContrastApply(Object data_in, Object data_out,  double[] params, boolean isUnsigned)
     {
         int retval=1, size=0;
       
@@ -1036,7 +1016,7 @@ public final class Tools
      * @param bias the range of the bias: bias[0]=min, bias[1]=max
      * @return non-negative if successful; otherwise, returns negative
     */ 
-    public static int computerAutoContrastSliderRange( double[] params, double[] gain, double[] bias) 
+    public static int autoContrastComputeSliderRange( double[] params, double[] gain, double[] bias) 
     { 
         if ((params == null) || (gain == null) || (bias == null) ||
             (params.length<2) || (gain.length<2) || (bias.length<2)) {
@@ -1075,7 +1055,7 @@ public final class Tools
      * @param isUnsigned the flag to indicate if the data array is unsiged integer
      * @return non-negative if successful; otherwise, returns negative
      */
-    public static int convertImageBuffer(Object src,  byte[] dst, boolean isUnsigned)
+    public static int autoContrastConvertImageBuffer(Object src,  byte[] dst, boolean isUnsigned)
     {
         int retval=0;
         
@@ -1150,7 +1130,7 @@ public final class Tools
      * @param minmax the min and max values.
      * @return non-negative if successful; otherwise, returns negative
      */
-    public static int computeAutoContrastMinMax(Object data, Object minmax)
+    private static int autoContrastComputeMinMax(Object data, Object minmax)
     {
     	int retval = 1;
     	double[] avgstd = new double[2];
