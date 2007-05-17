@@ -919,7 +919,7 @@ public class H5CompoundDS extends CompoundDS
             finally {
                 try { H5.H5Tclose(tmptid); } catch (HDF5Exception ex) {}
              }
- 
+
             try { mclass = H5.H5Tget_class(mtype); }
             catch (HDF5Exception ex ) { continue; }
 

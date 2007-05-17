@@ -47,7 +47,9 @@ public class AllH5ObjectTests {
 
     public static void main(final String[] args) {
         
-        try { H5TestFile.createTestFile(null); } 
+        try { 
+            H5TestFile.createTestFile(null); 
+        }
         catch (final Exception ex) {
              ex.printStackTrace();
              System.exit(-1);

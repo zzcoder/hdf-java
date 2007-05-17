@@ -173,9 +173,6 @@ implements ImageView, ActionListener
     
     private Animation animation;
     
-    /** flag to indicate that sutocontrast is applied to unsigned short data */
-    private boolean isAutoContrastUS;
-    
     private AutoContrastSlider autoContrastSlider;
  
     private GeneralContrastSlider generalContrastSlider;
@@ -188,7 +185,7 @@ implements ImageView, ActionListener
     private double[] minMaxBias;
     
     /** int array to hold unsigned short or signed int data from applying the autogain */
-    private int[] autoGainData;
+    private Object autoGainData;
 
     /**
      * Constructs an ImageView.
@@ -229,7 +226,6 @@ implements ImageView, ActionListener
         isTransposed = _isTransposed.booleanValue();
         memoryImageSource = null;
         animation = null;  
-        isAutoContrastUS = false;
         autoContrastSlider = null;
         gainBias = null;
         minMaxGain = null;
@@ -767,6 +763,7 @@ implements ImageView, ActionListener
                 int w = dataset.getWidth();
                 int h = dataset.getHeight();
 
+                boolean isAutoContrastFailed = true;
                 if (ViewProperties.isAutoContrast()) 
                 {
                     // data is unsigned short. Convert image byte data using auto-contrast image algorithm 
@@ -776,21 +773,18 @@ implements ImageView, ActionListener
                         minMaxGain = new double[2];
                         minMaxBias = new double[2];
                         Tools.autoContrastComputeSliderRange( gainBias, minMaxGain, minMaxBias);
-
-                        if (autoGainData == null) {
-                            autoGainData = new int[Array.getLength(data)];
-                        }
+                        autoGainData=Tools.autoContrastApply(data, autoGainData, gainBias, isUnsigned);
                         
-                        if (Tools.autoContrastApply(data, autoGainData, gainBias, isUnsigned) >=0) {
+                        if (autoGainData != null) {
                             if ((imageByteData == null) || (imageByteData.length != Array.getLength(data))) {
                                 imageByteData = new byte[Array.getLength(data)];
                             }
-                            isAutoContrastUS = (Tools.autoContrastConvertImageBuffer(autoGainData, imageByteData, true)>=0);
+                            isAutoContrastFailed = (Tools.autoContrastConvertImageBuffer(autoGainData, imageByteData, true)<0);
                         }
                     }
                 }
 
-                if (!isAutoContrastUS) {
+                if (isAutoContrastFailed) {
                     // converts raw data to image data
                     if (isTransposed) {
                         imageByteData = Tools.getBytes(data, dataRange, w, h, true, dataset.getFillValue(), imageByteData);
@@ -1021,7 +1015,8 @@ implements ImageView, ActionListener
 
     /** Apply contrast/brightness to unsigned short integer */
     private void applyAutoContrast() {
-        if (Tools.autoContrastApply((int[])data, autoGainData, gainBias, true) >=0) {
+        autoGainData = Tools.autoContrastApply((int[])data, autoGainData, gainBias, true);
+        if (autoGainData != null) {
             if ((imageByteData == null) || (imageByteData.length != Array.getLength(data))) {
                 imageByteData = new byte[Array.getLength(data)];
             }
@@ -1348,7 +1343,7 @@ implements ImageView, ActionListener
         }
         else if (cmd.startsWith("Brightness"))
         {
-            if (isAutoContrastUS) {
+            if (ViewProperties.isAutoContrast()) {
                 if (autoContrastSlider == null) {
                     autoContrastSlider = new AutoContrastSlider((JFrame)viewer, dataRange);
                 }
