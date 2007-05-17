@@ -26,6 +26,7 @@ import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.GraphicsEnvironment;
+import java.awt.Insets;
 import java.awt.Point;
 
 /** UserOptionsDialog displays components for choosing user options. */
@@ -269,11 +270,16 @@ implements ActionListener, ListSelectionListener
         centerP.add(p0);
         
         p0 = new JPanel();
-        p0.setLayout(new BorderLayout());
-        p0.add(new JLabel(" "), BorderLayout.WEST);
+        p0.setLayout(new BorderLayout(20,0));
         checkAutoContrast = new JCheckBox("Auto Contrast");
         checkAutoContrast.setSelected(ViewProperties.isAutoContrast());
         p0.add(checkAutoContrast, BorderLayout.CENTER);
+        JButton button = new JButton(ViewProperties.getHelpIcon() );
+        button.setToolTipText( "Help on Auto Contrast" );
+        button.setMargin( new Insets(0, 0, 0, 0) );
+        button.addActionListener( this );
+        button.setActionCommand( "Help on Auto Contrast" );
+        p0.add(button, BorderLayout.WEST);
         tborder = new TitledBorder("Image Brightness/Contrast");
         tborder.setTitleColor(Color.darkGray);
         p0.setBorder(tborder);
@@ -663,6 +669,35 @@ implements ActionListener, ListSelectionListener
                 srbFields[i].setText("");
             }
         }
+        else if (cmd.equals("Help on Auto Contrast")) {
+            final String msg = 
+                "Auto Contrast does the following to compute a gain/bias \n"+
+                "that will stretch the pixels in the image to fit the pixel \n"+
+                "values of the graphics system. For example, it stretches unsigned\n"+
+                "short data to fit the full range of an unsigned short. Later \n"+
+                "code simply takes the high order byte and passes it to the graphics\n"+
+                "system (which expects 0-255). It uses some statistics on the pixels \n"+
+                "to prevent outliers from throwing off the gain/bias calculations much.\n\n"+
+                "To compute the gain/bias we... \n"+
+                "Find the mean and std. deviation of the pixels in the image \n"+
+                "min = mean - 3 * std.dev. \n"+
+                "max = mean + 3 * std.dev. \n"+
+                "small fudge factor because this tends to overshoot a bit \n"+
+                "Stretch to 0-USHRT_MAX \n"+
+                "        gain = USHRT_MAX / (max-min) \n"+
+                "        bias = -min \n"+
+                "\n"+
+                "To apply the gain/bias to a pixel, use the formula \n"+
+                "data[i] = (data[i] + bias) * gain \n"+
+                "\n"+
+                "Finally, for auto-ranging the sliders for gain/bias, we do the following \n"+
+                "gain_min = 0 \n"+
+                "gain_max = gain * 3.0 \n"+
+                "bias_min = -fabs(bias) * 3.0 \n"+
+                "bias_max = fabs(bias) * 3.0 \n\n\n";
+            JOptionPane.showMessageDialog(this, msg);
+        }
+        
     }
 
     public void valueChanged(ListSelectionEvent e)

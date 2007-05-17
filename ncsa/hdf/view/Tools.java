@@ -791,7 +791,7 @@ public final class Tools
     }
     
     /**
-     * Computes autocontrast parameters for integers.
+     * Computes autocontrast parameters (gain equates to contrast and bias equates to brightness) for integers.
      * <p>
      * The computation is based on the following scaling
      * <pre>
@@ -875,8 +875,8 @@ public final class Tools
             // of the difference to the max/min values 
             // to prevent the gain from going too high. 
             double diff = minmax[1] - minmax[0]; 
-            int newmax = (int)(minmax[1] + (diff * 0.1)); 
-            int newmin = (int)(minmax[0] - (diff * 0.1)); 
+            double newmax = (minmax[1] + (diff * 0.1)); 
+            double newmin = (minmax[0] - (diff * 0.1)); 
             
             if (newmax <= maxDataValue) {
                 minmax[1] = newmax;
@@ -900,20 +900,20 @@ public final class Tools
      * @param data_out the converted data array of signed/unsigned integers
      * @param params the auto gain parameter. params[0]=gain, params[1]=bias
      * @param isUnsigned the flag to indicate if the data array is unsiged integer
-     * @return non-negative if successful; otherwise, returns negative
+     * @return the data array with the auto contrast conversion; otherwise, returns null
      */
-    public static int autoContrastApply(Object data_in, Object data_out,  double[] params, boolean isUnsigned)
+    public static Object autoContrastApply(Object data_in, Object data_out,  double[] params, boolean isUnsigned)
     {
         int retval=1, size=0;
       
-        if ((data_in==null) || (data_out==null) || (params==null) || (params.length<2)) {
-            return -1;
+        if ((data_in==null) || (params==null) || (params.length<2)) {
+            return null;
         }
         
         // input and output array must be the same size
         size = Array.getLength(data_in);
-        if (size != Array.getLength(data_out)) {
-            return -1;
+        if ( (data_out != null) && (size != Array.getLength(data_out))) {
+            return null;
         }
         
         double gain = params[0]; 
@@ -926,6 +926,9 @@ public final class Tools
         {
             case 'B': 
                 byte[] b_in = (byte[])data_in;
+                if (data_out == null) {
+                    data_out = new byte[size];
+                }
                 byte[] b_out = (byte[])data_out;
                 byte b_max = (byte)MAX_INT8;
                 
@@ -942,6 +945,9 @@ public final class Tools
                 break;
             case 'S':
                 short[] s_in = (short[])data_in;
+                if (data_out == null) {
+                    data_out = new short[size];
+                }
                 short[] s_out = (short[])data_out;
                 short s_max = (short)MAX_INT16;
                 if (isUnsigned) {
@@ -961,6 +967,9 @@ public final class Tools
                  break;
             case 'I':
                 int[] i_in = (int[])data_in;
+                if (data_out == null) {
+                    data_out = new int[size];
+                }
                 int[] i_out = (int[])data_out;
                 int i_max = (int)MAX_INT32;
                 if (isUnsigned) {
@@ -980,6 +989,9 @@ public final class Tools
                 break;
             case 'J':
                 long[] l_in = (long[])data_in;
+                if (data_out == null) {
+                    data_out = new long[size];
+                }
                 long[] l_out = (long[])data_out;
                 long l_max = MAX_INT64;
                 if (isUnsigned) {
@@ -1002,7 +1014,7 @@ public final class Tools
                 break;
         } // switch (dname)
         
-        return retval; 
+        return data_out; 
     } 
 
     /** 
@@ -1130,7 +1142,7 @@ public final class Tools
      * @param minmax the min and max values.
      * @return non-negative if successful; otherwise, returns negative
      */
-    private static int autoContrastComputeMinMax(Object data, Object minmax)
+    public static int autoContrastComputeMinMax(Object data, Object minmax)
     {
     	int retval = 1;
     	double[] avgstd = new double[2];
@@ -1385,10 +1397,8 @@ public final class Tools
                 break;
         } // switch (dname)
         
-        var /= n;
-        
         avgstd[0] = avg;
-        avgstd[1] = Math.sqrt(var);
+        avgstd[1] = Math.sqrt(var/(n-1));
     	
     	return retval;
     }
