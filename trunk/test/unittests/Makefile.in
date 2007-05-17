@@ -22,6 +22,10 @@ CLASSPATH=@CLASSPATH@:../../lib/junit.jar
 
 all:	H5TestFile.class \
 	H5CompoundDSTest.class \
+	H5DatatypeTest.class \
+	H5FileTest.class \
+	H5GroupTest.class \
+	H5ScalarDSTest.class \
 	H5BugFixTest.class \
 	AllH5ObjectTests.class  \
 
