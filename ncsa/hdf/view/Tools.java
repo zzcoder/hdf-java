@@ -1082,9 +1082,16 @@ public final class Tools
         {
             case 'B': 
                 byte[] b_src = (byte[])src;
-                for( int i = 0; i<size; i++ ) {
-                    dst[i] = (byte) ((b_src[i] & 0x7F) << 1);
+                if (isUnsigned) {
+                    for( int i = 0; i<size; i++ ) {
+                        dst[i] = b_src[i];
+                    }
                 }
+                else {
+                    for( int i = 0; i<size; i++ ) {
+                        dst[i] = (byte) ((b_src[i] & 0x7F) << 1);
+                    }
+                 }
                 break;
             case 'S':
                 short[] s_src = (short[])src;

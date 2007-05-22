@@ -237,12 +237,6 @@ public class FitsDataset extends ScalarDS
         return null;
     }
 
-    // Implementing ScalarDS
-    public void convertFromUnsignedC() {}
-
-    // Implementing ScalarDS
-    public void convertToUnsignedC() {}
-
     /**
      * Creates a new dataset.
      * @param name the name of the dataset to create.
