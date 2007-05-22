@@ -663,25 +663,6 @@ public class H4GRImage extends ScalarDS
         return palette;
     }
 
-    // Implementing ScalarDS
-    public void convertFromUnsignedC()
-    {
-        if ((data != null) && isUnsigned && !unsignedConverted)
-        {
-            data = convertFromUnsignedC(data);
-            unsignedConverted = true;
-        }
-    }
-
-    // Implementing ScalarDS
-    public void convertToUnsignedC()
-    {
-        if ((data != null) && isUnsigned)
-        {
-            data = convertToUnsignedC(data);
-        }
-    }
-
     /**
      * Returns the number of components of this image data.
      */

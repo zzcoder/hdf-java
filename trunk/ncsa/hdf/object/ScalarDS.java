@@ -54,7 +54,7 @@ public abstract class ScalarDS extends Dataset
      * For example, [0, 255] indicates the min is 0, and the max is 255.
      */
     protected double[] imageDataRange;
-
+    
     /**
      * The indexed RGB color model with 256 colors.
      * <p>
@@ -96,6 +96,14 @@ public abstract class ScalarDS extends Dataset
     /** Flag to indicate if the dataset is displayed as an image */
     protected boolean isImageDisplay;
     
+    /**
+     * Flag to indicate if data is read into unsigned byte for image.
+     * <p> 
+     * Applications take a long time to create an image from integer data other than byte.
+     * If data is read into bytes, creating image is much fast.  
+     */
+    protected boolean isUnsignedByteForImage = false;
+
     /**
      * Constructs an instance of a ScalarDS with specific name and path.
      * An HDF data object must have a name. The path is the group path starting
@@ -151,8 +159,10 @@ public abstract class ScalarDS extends Dataset
      * 
      * @see ncsa.hdf.object.Dataset#convertToUnsignedC(Object)
      * @see ncsa.hdf.object.Dataset#convertFromUnsignedC(Object, Object)
+     * 
+     * @return the converted data buffer.
       */
-    public void convertFromUnsignedC()
+    public Object convertFromUnsignedC()
     {
         // keep a copy of original buffer and the converted buffer
         // so that they can be reused later to save memory
@@ -163,6 +173,8 @@ public abstract class ScalarDS extends Dataset
             data = convertedBuf;
             unsignedConverted = true;
         }
+        
+        return data;
     }
 
     /**
@@ -172,8 +184,10 @@ public abstract class ScalarDS extends Dataset
      * @see ncsa.hdf.object.Dataset#convertToUnsignedC(Object)
      * @see ncsa.hdf.object.Dataset#convertToUnsignedC(Object, Object)
      * @see #convertFromUnsignedC(Object data_in)
+     * 
+     * @return the converted data buffer.
      */
-    public void convertToUnsignedC()
+    public Object convertToUnsignedC()
     {
         // keep a copy of original buffer and the converted buffer
         // so that they can be reused later to save memory
@@ -183,6 +197,8 @@ public abstract class ScalarDS extends Dataset
             originalBuf = convertToUnsignedC(convertedBuf, originalBuf);
             data = originalBuf;
         }
+        
+        return data;
     }
 
     /**
@@ -348,4 +364,56 @@ public abstract class ScalarDS extends Dataset
         return fillValue;
     }
 
+   /**    
+    * Set flag that indicate if data is read into unsigned byte for image.
+    * <p> 
+    * Applications take a long time to create an image from integer data other than byte.
+    * If data is directly read into bytes from file, it saves memory space and time for
+    * converting raw data to image byte data. For example, ceating an image from unsigned 
+    * short takes the following steps: 
+    * <ul>
+    *   <li> A) Read unsigned short from file
+    *   <li> B) Convert unsigned short to signed integer in Java since Java does not support unsigned integer
+    *   <li> D) Create image byte data from signed integer
+    * </ul>
+    * A performance test on Windows shows the following i/o time (in second) for an image 
+    * of 8kx8k unsigned short:
+    * <ul>
+    *   <li> A) Eeading data = 0.499 
+    *   <li> B) Converting unsigned data = 0.54
+    *   <li> C) Converting image data (general contrast) = 0.982
+    * <ul>
+    * If data is directly read into byte, the same test shows that
+    * <ul>
+    *   <li> A) reading data = 0.484
+    *   <li> B) Converting unsigned data = 0
+    *   <li> Converting image data (general contrast) = 0
+    * </ul>
+    * 
+    * @param b true if directly read unsigned byte for image; otherwise, false.
+    */
+    public void setIsUnsignedByteForImage(boolean b) {
+        isUnsignedByteForImage = b;
+    }
+    
+    /**    
+     * Set flag that indicate if data is read into unsigned byte for image.
+     * <p> 
+     * Applications take a long time to create an image from integer data other than byte.
+     * If data is directly read into bytes from file, it saves memory space and time for
+     * converting raw data to image byte data. For example, ceating an image from unsigned 
+     * short takes the following steps: 
+     * <ul>
+     *   <li> A) Read unsigned short from file
+     *   <li> B) Convert unsigned short to signed integer in Java since Java does not support unsigned integer
+     *   <li> D) Create image byte data from signed integer
+     * </ul>
+     * 
+     * @see #setIsUnsignedByteForImage(boolean)
+     * @return b true if directly read unsigned byte for image; otherwise, false.
+     */
+     public boolean getIsUnsignedByteForImage() {
+         return isUnsignedByteForImage;
+     }
+ 
 }

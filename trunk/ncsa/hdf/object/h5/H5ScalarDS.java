@@ -578,14 +578,20 @@ public class H5ScalarDS extends ScalarDS
                 H5.H5Sselect_hyperslab(fspace, HDF5Constants.H5S_SELECT_SET, startDims, selectedStride, selectedDims, null );
             }
 
-            tid = H5.H5Dget_type(did);
-            if (!isNativeDatatype) {
-                int tmptid = -1;
-                try {
-                    tmptid = tid;
-                    tid = H5.H5Tget_native_type(tmptid);
-                } finally {
-                    try { H5.H5Tclose(tmptid); } catch (Exception ex2) {}
+            if (isUnsignedByteForImage && 
+                    isImageDisplay && 
+                    (getDatatype().getDatatypeClass() == Datatype.CLASS_INTEGER)) {
+                tid = HDF5Constants.H5T_NATIVE_UINT8;
+            } else {
+                tid = H5.H5Dget_type(did);
+                if (!isNativeDatatype) {
+                    int tmptid = -1;
+                    try {
+                        tmptid = tid;
+                        tid = H5.H5Tget_native_type(tmptid);
+                    } finally {
+                        try { H5.H5Tclose(tmptid); } catch (Exception ex2) {}
+                    }
                 }
             }
             

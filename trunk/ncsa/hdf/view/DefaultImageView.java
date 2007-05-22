@@ -753,12 +753,17 @@ implements ImageView, ActionListener
                     imagePalette = Tools.createGrayPalette();
                     viewer.showStatus("\nNo attached palette found, default grey palette is used to display image");
                 }
-                data = dataset.getData();
                 
+                data = dataset.getData();
+
                 // Peter Cao, Sept 8, 2006
                 // It seems we need to translate unsigned image data. However, we need to verify it
-                dataset.convertFromUnsignedC();
-                data = dataset.getData();
+                String cname = data.getClass().getName();
+                char dname = cname.charAt(cname.lastIndexOf("[")+1);
+                if ( dname != 'B') {
+                    // do not need to convert unsigned byte for image
+                    data =  dataset.convertFromUnsignedC();
+                }
                 
                 int w = dataset.getWidth();
                 int h = dataset.getHeight();
@@ -815,7 +820,7 @@ implements ImageView, ActionListener
 
         return image;
     }
-
+    
     // implementing ImageObserver
     private void zoomIn()
     {
@@ -1015,7 +1020,7 @@ implements ImageView, ActionListener
 
     /** Apply contrast/brightness to unsigned short integer */
     private void applyAutoContrast() {
-        autoGainData = Tools.autoContrastApply((int[])data, autoGainData, gainBias, true);
+        autoGainData = Tools.autoContrastApply(data, autoGainData, gainBias, true);
         if (autoGainData != null) {
             if ((imageByteData == null) || (imageByteData.length != Array.getLength(data))) {
                 imageByteData = new byte[Array.getLength(data)];
@@ -1343,6 +1348,7 @@ implements ImageView, ActionListener
         }
         else if (cmd.startsWith("Brightness"))
         {
+            // auto contrast is not needed for byte data
             if (ViewProperties.isAutoContrast()) {
                 if (autoContrastSlider == null) {
                     autoContrastSlider = new AutoContrastSlider((JFrame)viewer, dataRange);
@@ -1353,17 +1359,12 @@ implements ImageView, ActionListener
                 if (autoContrastSlider.isValueChanged) {
                     applyAutoContrast();
                 }
-                return;
-            }
-            
-            if (generalContrastSlider == null) {
-                generalContrastSlider = new GeneralContrastSlider((JFrame)viewer, image.getSource());
-            }
-            generalContrastSlider.setVisible(true);
-            
-            //if (generalContrastSlider.isValueChanged) {
-            //    brightness(generalContrastSlider.getBrightness(), generalContrastSlider.getContrast());
-            //}
+             } else {
+                 if (generalContrastSlider == null) {
+                     generalContrastSlider = new GeneralContrastSlider((JFrame)viewer, image.getSource());
+                 }
+                 generalContrastSlider.setVisible(true);
+             }
         }
         else if (cmd.equals("Show chart")) {
             showHistogram();
