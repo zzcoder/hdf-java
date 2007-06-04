@@ -103,7 +103,7 @@ implements TextView, ActionListener, KeyListener
 
         String fname = new java.io.File(dataset.getFile()).getName();
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        this.setTitle("TextView - "+fname+" - " +dataset.getPath()+dataset.getName());
+        this.setTitle("TextView  -  "+dataset.getName()+"  -  "+ dataset.getPath()+"  -  "+  fname);
         this.setFrameIcon(ViewProperties.getTextIcon());
 
         table = createTable();
