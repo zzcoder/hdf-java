@@ -282,11 +282,13 @@ implements ImageView, ActionListener
         }
 
         // set title
-        StringBuffer sb = new StringBuffer("ImageView - ");
-        sb.append(dataset.getFile());
-        sb.append(" - ");
-        sb.append(hobject.getPath());
+        StringBuffer sb = new StringBuffer("ImageView  -  ");
         sb.append(hobject.getName());
+        sb.append("  -  ");
+        sb.append(hobject.getPath());
+        sb.append("  -  ");
+        sb.append(dataset.getFile());
+        setTitle(sb.toString());
 
         frameTitle = sb.toString();
         setTitle(frameTitle);

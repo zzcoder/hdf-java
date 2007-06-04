@@ -1464,7 +1464,7 @@ public class H5File extends FileFormat
 
         n = H5.H5Aget_num_attrs(objID);
          if (n <= 0) {
-            return (attributeList = new Vector(0)); // no attribute attached to this object
+            return (attributeList = new Vector()); // no attribute attached to this object
         }
 
         attributeList = new Vector(n);
@@ -1597,32 +1597,36 @@ public class H5File extends FileFormat
 
             // update value of the attribute
             Object attrValue = attr.getValue();
-            if (Array.get(attrValue, 0) instanceof String)
-            {
-                String strValue = (String)Array.get(attrValue, 0);
-                int size = H5.H5Tget_size(tid);
+            if (attrValue != null) {
+                if (Array.get(attrValue, 0) instanceof String)
+                {
+                    String strValue = (String)Array.get(attrValue, 0);
+                    int size = H5.H5Tget_size(tid);
 
-                if (strValue.length() > size)
-                {
-                    // truncate the extra characters
-                    strValue = strValue.substring(0, size);
-                    Array.set(attrValue, 0, strValue);
-                }
-                else
-                {
-                    // pad space to the unused space
-                    for (int i=strValue.length(); i<size; i++) {
-                        strValue += " ";
+                    if (strValue.length() > size)
+                    {
+                        // truncate the extra characters
+                        strValue = strValue.substring(0, size);
+                        Array.set(attrValue, 0, strValue);
                     }
+                    else
+                    {
+                        // pad space to the unused space
+                        for (int i=strValue.length(); i<size; i++) {
+                            strValue += " ";
+                        }
+                    }
+
+                    byte[] bval = strValue.getBytes();
+                    // add null to the end to get rid of the junks
+                    bval[(strValue.length() - 1)] = 0;
+                    attrValue = bval;
                 }
 
-                byte[] bval = strValue.getBytes();
-                // add null to the end to get rid of the junks
-                bval[(strValue.length() - 1)] = 0;
-                attrValue = bval;
-            }
-
-            H5.H5Awrite(aid, tid, attrValue);
+                try {
+                    H5.H5Awrite(aid, tid, attrValue);
+                } catch (Exception ex) {}
+            } //if (attrValue != null) {
         } finally
         {
             try { H5.H5Tclose(tid); } catch (HDF5Exception ex) {}

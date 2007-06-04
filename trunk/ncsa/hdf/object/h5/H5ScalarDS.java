@@ -864,7 +864,7 @@ public class H5ScalarDS extends ScalarDS
         String name = attr.getName();
 
         if (attributeList == null) {
-            attributeList = new Vector(10);
+            this.getMetadata();
         } else {
             attrExisted = attributeList.contains(attr);
         }

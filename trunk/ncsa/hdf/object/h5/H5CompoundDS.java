@@ -646,7 +646,7 @@ public class H5CompoundDS extends CompoundDS
         String name = attr.getName();
 
         if (attributeList == null) {
-            attributeList = new Vector(10);
+            this.getMetadata();
         } else {
             attrExisted = attributeList.contains(attr);
         }

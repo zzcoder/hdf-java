@@ -83,11 +83,6 @@ implements TableView, ActionListener
     /** Text field to display the value of of the current cell. */
     private JTextArea cellValueField;
 
-    /**
-     * The title of this imageview.
-     */
-    private String frameTitle;
-
     private boolean isValueChanged;
 
     private final Toolkit toolkit;
@@ -231,14 +226,13 @@ implements TableView, ActionListener
         contentPane.add(splitPane);
 
         // set title
-        StringBuffer sb = new StringBuffer("TableView - ");
-        sb.append(dataset.getFile());
-        sb.append(" - ");
-        sb.append(hobject.getPath());
+        StringBuffer sb = new StringBuffer("TableView  -  ");
         sb.append(hobject.getName());
-
-        frameTitle = sb.toString();
-        setTitle(frameTitle);
+        sb.append("  -  ");
+        sb.append(hobject.getPath());
+        sb.append("  -  ");
+        sb.append(dataset.getFile());
+        setTitle(sb.toString());
 
         // setup subset information
         int rank = dataset.getRank();
@@ -1438,16 +1432,9 @@ implements TableView, ActionListener
                 } else
                 {
                     // member is an ARRAY datatype
-                    int i = 0;
-                    for (int j=0; j<mdim.length; j++) {
-                        if (j>0) {
-                            stringBuffer.append("\n");
-                        }
-                        stringBuffer.append(Array.get(colValue, rowIdx+i++));
-                        for (int k=1; k<mdim[j]; k++) {
-                            stringBuffer.append(", ");
-                            stringBuffer.append(Array.get(colValue, rowIdx+i++));
-                        }
+                    for (int i=0; i<orders[fieldIdx]; i++) {
+                        stringBuffer.append(Array.get(colValue, rowIdx+i));
+                        stringBuffer.append(", ");
                     }
                 }
 
