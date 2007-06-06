@@ -64,12 +64,12 @@ public class H5TestFile {
     public  final static byte[] DATA_PALETTE = createWavePalette();
     
     // compound names and datatypes
-    public final static String[] COMPOUND_MEMBER_NAMES = {"int32LE", "float32", "string", "uint32BE"};
+    public final static String[] COMPOUND_MEMBER_NAMES = {"int32", "float32", "string", "uint32"};
     public final static H5Datatype[] COMPOUND_MEMBER_DATATYPES = {
-        new H5Datatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, Datatype.ORDER_LE, -1), 
+        new H5Datatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, -1), 
         new H5Datatype(Datatype.CLASS_FLOAT, DATATYPE_SIZE, -1, -1), 
         new H5Datatype(Datatype.CLASS_STRING, STR_LEN, -1, -1),
-        new H5Datatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, Datatype.ORDER_BE, Datatype.SIGN_NONE)}; 
+        new H5Datatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, Datatype.SIGN_NONE)}; 
     
     // attributes
     public final static Attribute ATTRIBUTE_STR = new Attribute(
@@ -115,7 +115,6 @@ public class H5TestFile {
         }
         
         final H5Datatype typeInt = new H5Datatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, -1);
-        final H5Datatype typeUInt = new H5Datatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, Datatype.SIGN_NONE);
         final H5Datatype typeByte = new H5Datatype(Datatype.CLASS_INTEGER, 1, -1, Datatype.SIGN_NONE);
         final H5Datatype typeFloat = new H5Datatype(Datatype.CLASS_FLOAT, DATATYPE_SIZE, -1, -1);
         final H5Datatype typeStr = new H5Datatype(Datatype.CLASS_STRING, STR_LEN, -1, -1);

@@ -306,16 +306,17 @@ public class H5GroupTest extends TestCase {
      * </ul>
      */
     public final void testH5GroupFileFormatStringStringGroupLongArray() {
+    	// RISHI SINHA Why are we testing a deprecated API.
         Group pgroup = null;
         final String[] names = {null, GNAME_SUB, GNAME_SUB.substring(4)};
         final String[] paths = {GNAME_SUB, null, H5TestFile.NAME_GROUP};
 
         
-        final H5File file = (H5File)testGroup.getFileFormat();
+        final H5File file = (H5File)testGroup.getFileFormat(); // RISHI SINHA Why recreating these objects as we have these objects in this class already.
         assertNotNull(file);
         
         try {
-            pgroup = (Group)testFile.get(H5TestFile.NAME_GROUP);
+            pgroup = (Group) testFile.get(H5TestFile.NAME_GROUP);
         } catch (final Exception ex) {
             fail("testFile.get() failed. "+ex);
         }
@@ -528,6 +529,8 @@ public class H5GroupTest extends TestCase {
      */
     public final void testRemoveMetadata() {
         Vector attrs = null;
+        final Attribute attr = null;
+        
         try {
             attrs = (Vector) testGroup.getMetadata();
         } catch (final Exception ex) { 
@@ -589,6 +592,8 @@ public class H5GroupTest extends TestCase {
     public final void testCreate() {
         Group grp = null;
         final String nameNew = "/tmpH5Group";
+        final float[] data = null;
+        
         try {
             final Group rootGrp = (Group)testFile.get("/");
             grp = H5Group.create(nameNew, rootGrp);
