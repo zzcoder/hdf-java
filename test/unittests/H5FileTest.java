@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package test.unittests;
 
@@ -22,9 +22,9 @@ import junit.framework.TestCase;
  * <p>
  * This class tests all the public methods in H5ScalarDS class.
  * <p>
- * The test file contains the following objects. 
+ * The test file contains the following objects.
  * <pre>
- * 
+ *
         /dataset_byte            Dataset {50, 10}
         /dataset_comp            Dataset {50, 10}
         /dataset_enum            Dataset {50, 10}
@@ -46,7 +46,7 @@ import junit.framework.TestCase;
  * We use the following template to test all the methods:
  * <p>
      * What to test:
-     * <ul> 
+     * <ul>
      *   <li> Test for boundary conditions
      *   <ul>
      *     <li>
@@ -57,10 +57,10 @@ import junit.framework.TestCase;
      *   </ul>
      *   <li> Test for success on general functionality
      *   <ul>
-     *     <li> 
+     *     <li>
      *   </ul>
      * </ul>
- * 
+ *
  * @author Peter Cao, The HDF Group
  */
 public class H5FileTest extends TestCase {
@@ -71,7 +71,7 @@ public class H5FileTest extends TestCase {
     private static final String TEST_VALUE_STR = "H5ScalarDSTest";
     private static final String DNAME = H5TestFile.NAME_DATASET_INT;
     private static final String DNAME_SUB = H5TestFile.NAME_DATASET_INT_SUB;
-    
+
     private H5Datatype typeInt = null;
     private H5Datatype typeFloat = null;
     private H5Datatype typeStr = null;
@@ -118,7 +118,7 @@ public class H5FileTest extends TestCase {
             catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }
             assertEquals(1, nObjs); // file id should be the only one left open
          }
-        
+
         if (testFile != null) {
             try { testFile.close(); } catch (final Exception ex) {}
             testFile = null;
@@ -143,37 +143,37 @@ public class H5FileTest extends TestCase {
             int nObjs = 0;
             int fid = -1;
             final H5File file = new H5File(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
-            
-            try { 
+
+            try {
                 fid = file.open(); // opent the full tree
-            } catch (final Exception ex) { 
+            } catch (final Exception ex) {
                 fail("file.open() failed. "+ ex);
             }
             assertTrue(fid>0);
-               
+
             // try to get all object in the file
             try {
                  for (int j=0; j<H5TestFile.OBJ_NAMES.length; j++) {
                     assertNotNull(file.get(H5TestFile.OBJ_NAMES[j]));
                 }
-            } catch (final Exception ex) { 
+            } catch (final Exception ex) {
                  fail("file.get() failed. "+ ex);
             }
- 
+
             try {
                 nObjs = H5.H5Fget_obj_count(file.getFID(), HDF5Constants.H5F_OBJ_LOCAL);
-            } catch (final Exception ex) { 
+            } catch (final Exception ex) {
                  fail("H5.H5Fget_obj_count() failed. "+ ex);
             }
-            assertTrue(nObjs <=1); // file id should be the only this left open
-           
-            try {            
+            assertTrue(nObjs <=1); // file id should be the only this left open. IS THIS BECAUSE THE ONLY THING WE HAVE DONE IS OPEN THE FILE?
+
+            try {
                 file.close();
-            } catch (final Exception ex) { 
+            } catch (final Exception ex) {
                  fail("file.close() failed. "+ ex);
             }
         } //for (int i=0; i<NLOOPS; i++)
-        
+
         try { testFile.open(); } catch (final Exception ex) {}
      }
 
@@ -190,13 +190,13 @@ public class H5FileTest extends TestCase {
     public final void testCreateString() {
         final String nameNew = "testH5File.h5";
         H5File file = null;
-        
+
         try {
             file = (H5File)H5FILE.create(nameNew);
         } catch (final Exception ex) {
             fail("file.create() failed. " +ex);
         }
-        
+
         int fid = -1;
         try {
             fid = file.open();
@@ -204,11 +204,11 @@ public class H5FileTest extends TestCase {
             fail("file.open() failed. " +ex);
         }
         assertTrue(fid > 0);
-        
+
         try { file.close(); } catch (final Exception ex) {}
         file.delete();
     }
-   
+
 
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5File#getRootNode()}.
@@ -247,13 +247,13 @@ public class H5FileTest extends TestCase {
     public final void testCreateGroup() {
         final String nameNew = "testH5File.h5";
         H5File file = null;
-        
+
         try {
             file = (H5File)H5FILE.create(nameNew);
         } catch (final Exception ex) {
             fail("file.create() failed. " +ex);
         }
-        
+
         int fid = -1;
         try {
             fid = file.open();
@@ -261,7 +261,7 @@ public class H5FileTest extends TestCase {
             fail("file.open() failed. " +ex);
         }
         assertTrue(fid > 0);
-        
+
         Group grp = null;
         try {
             grp = file.createGroup("new group", null);
@@ -269,7 +269,7 @@ public class H5FileTest extends TestCase {
             fail("file.createGroup() failed. " +ex);
         }
         assertNotNull(grp);
-        
+
         int gid = -1;
         try {
             gid = grp.open();
@@ -278,7 +278,7 @@ public class H5FileTest extends TestCase {
         }
         assertTrue(gid > 0);
         grp.close(gid);
-         
+
         try { file.close(); } catch (final Exception ex) {}
         file.delete();
     }
@@ -306,7 +306,7 @@ public class H5FileTest extends TestCase {
     public final void testCreateObjects() {
         final String nameNew = "testH5File.h5";
         H5File file = null;
-        
+
         try {
             file = H5TestFile.createTestFile(nameNew);
             file.open();
@@ -320,21 +320,21 @@ public class H5FileTest extends TestCase {
              for (int j=0; j<H5TestFile.OBJ_NAMES.length; j++) {
                 assertNotNull(file.get(H5TestFile.OBJ_NAMES[j]));
              }
-        } catch (final Exception ex) { 
+        } catch (final Exception ex) {
              fail("file.get() failed. "+ ex);
         }
 
         int nObjs = 0;
         try {
             nObjs = H5.H5Fget_obj_count(file.getFID(), HDF5Constants.H5F_OBJ_LOCAL);
-        } catch (final Exception ex) { 
+        } catch (final Exception ex) {
              fail("H5.H5Fget_obj_count() failed. "+ ex);
         }
         assertTrue(nObjs <=1); // file id should be the only this left open
-       
-        try {            
+
+        try {
             file.close();
-        } catch (final Exception ex) { 
+        } catch (final Exception ex) {
              fail("file.close() failed. "+ ex);
         }
 
@@ -396,7 +396,7 @@ public class H5FileTest extends TestCase {
         final List members = root.getMemberList();
         final int n = members.size();
         assertTrue(n>0);
-        
+
         try {
             file = (H5File)H5FILE.create(nameNewFile);
             file.open();
@@ -404,14 +404,14 @@ public class H5FileTest extends TestCase {
             fail("file.create() failed. " +ex);
         }
         assertNotNull(file);
-        
+
         try {
             root = (Group)file.get("/");
         } catch (final Exception ex) {
             fail("file.get() failed. "+ex);
         }
         assertNotNull(root);
-        
+
         // copy all the objects to the new file
         for (int i=0; i<n; i++) {
             dstName = null;
@@ -425,20 +425,20 @@ public class H5FileTest extends TestCase {
                 if (H5TestFile.NAME_DATASET_IMAGE_PALETTE.equals(srcObj.getFullName())) {
                     continue;
                 }
-                
+
                 fail("file.copy() failed on "+srcObj.getFullName() + ". " + ex);
             }
             assertNotNull(dstObj);
             dstName = dstObj.getFullName();
-            
+
             // re-open the file to make sure the object is writen to file
-            try {            
+            try {
                 file.close();
                 file.open();
-            } catch (final Exception ex) { 
+            } catch (final Exception ex) {
                  fail("file.close() failed. "+ ex);
             }
-            
+
             try {
                 dstObj = file.get(dstName);
             } catch (final Exception ex) {
@@ -447,9 +447,9 @@ public class H5FileTest extends TestCase {
             assertNotNull(dstObj);
         }
 
-        try {            
+        try {
             file.close();
-        } catch (final Exception ex) { 
+        } catch (final Exception ex) {
              fail("file.close() failed. "+ ex);
         }
 
@@ -481,18 +481,18 @@ public class H5FileTest extends TestCase {
             fail("H5TestFile.createTestFile() failed. " +ex);
         }
         assertNotNull(file);
-        
+
         try {
             root = (Group)file.get("/");
         } catch (final Exception ex) {
             fail("file.get() failed. "+ex);
         }
         assertNotNull(root);
-        
+
         final List members = root.getMemberList();
         final int n = members.size();
         assertTrue(n>0);
-        
+
         final Object[] objs = members.toArray();
         for (int i=0; i<n; i++) {
             obj = (HObject)objs[i];
@@ -502,15 +502,15 @@ public class H5FileTest extends TestCase {
             } catch (final Exception ex) {
                 fail("file.copy() failed on "+obj.getFullName() + ". " + ex);
             }
-            
+
             // re-open the file to make sure the object is writen to file
-            try {            
+            try {
                 file.close();
                 file.open();
-            } catch (final Exception ex) { 
+            } catch (final Exception ex) {
                  fail("file.close() failed. "+ ex);
             }
-            
+
             try {
                 obj = file.get(obj.getFullName());
             } catch (final Exception ex) {
@@ -520,9 +520,9 @@ public class H5FileTest extends TestCase {
             assertNull(obj);
         }
 
-        try {            
+        try {
             file.close();
-        } catch (final Exception ex) { 
+        } catch (final Exception ex) {
              fail("file.close() failed. "+ ex);
         }
 
@@ -544,7 +544,7 @@ public class H5FileTest extends TestCase {
     public final void testGet() {
         int nObjs = 0; // number of object left open
         HObject obj = null;
-        
+
         final String nameNewFile = "testH5File.h5";
         H5File file = null;
 
@@ -555,7 +555,7 @@ public class H5FileTest extends TestCase {
         }
 
         file = new H5File(nameNewFile);
-        
+
         // get object that does not exist in file
         try {
             obj = file.get("/_INVALID_OBJECT_PATH_SHOULD_RETURN_NULL_");
@@ -563,7 +563,7 @@ public class H5FileTest extends TestCase {
             fail("file.get() failed on invalid path. "+ex);
         }
         assertNull(obj);
-        
+
         // get all object in file
         for (int i=0; i<H5TestFile.OBJ_NAMES.length; i++) {
             try {
@@ -573,20 +573,20 @@ public class H5FileTest extends TestCase {
             }
             assertNotNull(obj);
         }
-       
+
         try { nObjs = H5.H5Fget_obj_count(file.getFID(), HDF5Constants.H5F_OBJ_LOCAL); }
         catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }
         assertEquals(1, nObjs); // file id should be the only one left open
 
-        try {            
+        try {
             file.close();
-        } catch (final Exception ex) { 
+        } catch (final Exception ex) {
              fail("file.close() failed. "+ ex);
         }
-        
+
         file.delete();
-    } 
-    
+    }
+
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5File#get(java.lang.String)}.
      * <p>
@@ -602,7 +602,7 @@ public class H5FileTest extends TestCase {
     public final void testGetFromOpen() {
         int nObjs = 0; // number of object left open
         HObject obj = null;
-        
+
         final String nameNewFile = "testH5File.h5";
         H5File file = null;
 
@@ -613,13 +613,13 @@ public class H5FileTest extends TestCase {
         }
 
         file = new H5File(nameNewFile);
-        
+
         try {
             file.open();
         } catch (final Exception ex) {
             fail("file.open failed. "+ex);
         }
-        
+
         // get object that does not exist in file
         try {
             obj = file.get("/_INVALID_OBJECT_PATH_SHOULD_RETURN_NULL_");
@@ -627,7 +627,7 @@ public class H5FileTest extends TestCase {
             fail("file.get() failed on invalid path. "+ex);
         }
         assertNull(obj);
-        
+
         // get all object in file
         for (int i=0; i<H5TestFile.OBJ_NAMES.length; i++) {
             try {
@@ -637,21 +637,21 @@ public class H5FileTest extends TestCase {
             }
             assertNotNull(obj);
         }
-       
+
         try { nObjs = H5.H5Fget_obj_count(file.getFID(), HDF5Constants.H5F_OBJ_LOCAL); }
         catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }
         assertEquals(1, nObjs); // file id should be the only one left open
 
-        try {            
+        try {
             file.close();
-        } catch (final Exception ex) { 
+        } catch (final Exception ex) {
              fail("file.close() failed. "+ ex);
         }
-        
+
         file.delete();
-    }    
-    
-    
+    }
+
+
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5File#H5File(java.lang.String, int)}.
      * <p>
@@ -663,10 +663,11 @@ public class H5FileTest extends TestCase {
      *   </ul>
      */
     public final void testH5FileStringInt() {
+        final Group root = null;
         Dataset dset=null;
         final String nameNewFile = "testH5File.h5";
         H5File file = null;
- 
+
         try {
             file = H5TestFile.createTestFile(nameNewFile);
             file.open();
@@ -674,9 +675,9 @@ public class H5FileTest extends TestCase {
             fail("H5TestFile.createTestFile() failed. " +ex);
         }
         assertNotNull(file);
-        try {            
+        try {
             file.close();
-        } catch (final Exception ex) { 
+        } catch (final Exception ex) {
              fail("file.close() failed. "+ ex);
         }
 
@@ -688,29 +689,29 @@ public class H5FileTest extends TestCase {
             fail("new H5File(nameNewFile, H5File.READ) failed. " +ex);
         }
         assertTrue(file.isReadOnly());
-        
+
         try {
             dset = (Dataset)file.get(H5TestFile.NAME_DATASET_FLOAT);
-            dset.getData(); 
-        }  catch (final Exception ex) { 
+            dset.getData();
+        }  catch (final Exception ex) {
              fail("file.get() failed. "+ ex);
         }
         assertNotNull(dset);
-        
+
         boolean isWrittenFailed = false;
-        try { 
+        try {
             dset.write();
          } catch (final Exception ex) {
              isWrittenFailed = true; // Expected.
          }
          assertTrue(isWrittenFailed);
 
-        try {            
+        try {
             file.close();
-        } catch (final Exception ex) { 
+        } catch (final Exception ex) {
              fail("file.close() failed. "+ ex);
         }
-        
+
         // make sure the file is read/write
         try {
             file = new H5File(nameNewFile, FileFormat.WRITE);
@@ -718,27 +719,27 @@ public class H5FileTest extends TestCase {
         } catch (final Exception ex) {
             fail("new H5File(nameNewFile, H5File.READ) failed. " +ex);
         }
-        
+
         try {
             dset = (Dataset)file.get(H5TestFile.NAME_DATASET_FLOAT);
-            dset.getData(); 
-        }  catch (final Exception ex) { 
+            dset.getData();
+        }  catch (final Exception ex) {
              fail("file.get() failed. "+ ex);
         }
         assertNotNull(dset);
-        
-        try { 
+
+        try {
             dset.write();
-         } catch (final Exception ex) { 
+         } catch (final Exception ex) {
              fail("file.write() failed. "+ ex);
          }
-         
-        try {            
+
+        try {
             file.close();
-        } catch (final Exception ex) { 
+        } catch (final Exception ex) {
              fail("file.close() failed. "+ ex);
         }
-        
+
         // create a new file
         try {
             file = new H5File(nameNewFile, FileFormat.CREATE);
@@ -746,17 +747,17 @@ public class H5FileTest extends TestCase {
         } catch (final Exception ex) {
             fail("new H5File(nameNewFile, H5File.READ) failed. " +ex);
         }
-        
+
         try {
             dset = (Dataset)file.get(H5TestFile.NAME_DATASET_FLOAT);
-            dset.getData(); 
-        }  catch (final Exception ex) { 
+            dset.getData();
+        }  catch (final Exception ex) {
              ; // Expected. The file is empty.
         }
-         
-        try {            
+
+        try {
             file.close();
-        } catch (final Exception ex) { 
+        } catch (final Exception ex) {
              fail("file.close() failed. "+ ex);
         }
 
@@ -778,46 +779,46 @@ public class H5FileTest extends TestCase {
 
         int nObjs = 0;
         int fid=-1, plist=-1;;
-        
+
         final H5File file = new H5File(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
-        
+
         try {
             plist = H5.H5Pcreate (HDF5Constants.H5P_FILE_ACCESS);
             H5.H5Pset_fclose_degree ( plist, HDF5Constants.H5F_CLOSE_STRONG);
-        } catch (final Exception ex) { 
+        } catch (final Exception ex) {
             fail("H5.H5Pcreate() failed. "+ ex);
         }
-        
-        try { 
+
+        try {
             fid = file.open(plist); // opent the full tree
-        } catch (final Exception ex) { 
+        } catch (final Exception ex) {
             fail("file.open() failed. "+ ex);
         }
         try { H5.H5Pclose(plist); } catch (final Exception ex) {}
-           
+
         // try to get all object in the file
         try {
              for (int j=0; j<H5TestFile.OBJ_NAMES.length; j++) {
                 assertNotNull(file.get(H5TestFile.OBJ_NAMES[j]));
             }
-        } catch (final Exception ex) { 
+        } catch (final Exception ex) {
              fail("file.get() failed. "+ ex);
         }
-        
+
         try {
             nObjs = H5.H5Fget_obj_count(file.getFID(), HDF5Constants.H5F_OBJ_LOCAL);
-        } catch (final Exception ex) { 
+        } catch (final Exception ex) {
              fail("H5.H5Fget_obj_count() failed. "+ ex);
         }
-        
-        try {            
+
+        try {
             file.close();
-        } catch (final Exception ex) { 
+        } catch (final Exception ex) {
              fail("file.close() failed. "+ ex);
         }
 
         assertTrue(nObjs <=1); // file id should be the only this left open
-        
+
         try { testFile.open(); } catch (final Exception ex) {}
     }
 
@@ -849,7 +850,7 @@ public class H5FileTest extends TestCase {
         final List members = root.getMemberList();
         final int n = members.size();
         assertTrue(n>0);
-        
+
         try {
             file = (H5File)H5FILE.create(nameNewFile);
             file.open();
@@ -857,14 +858,14 @@ public class H5FileTest extends TestCase {
             fail("file.create() failed. " +ex);
         }
         assertNotNull(file);
-        
+
         try {
             root = (Group)file.get("/");
         } catch (final Exception ex) {
             fail("file.get() failed. "+ex);
         }
         assertNotNull(root);
-        
+
         // copy all the objects to the new file
         for (int i=0; i<n; i++) {
             dstName = null;
@@ -878,20 +879,20 @@ public class H5FileTest extends TestCase {
                 if (H5TestFile.NAME_DATASET_IMAGE_PALETTE.equals(srcObj.getFullName())) {
                     continue;
                 }
-                
+
                 fail("file.copy() failed on "+srcObj.getFullName() + ". " + ex);
             }
             assertNotNull(dstObj);
             dstName = dstObj.getFullName();
-            
+
             // re-open the file to make sure the object is writen to file
-            try {            
+            try {
                 file.close();
                 file.open();
-            } catch (final Exception ex) { 
+            } catch (final Exception ex) {
                  fail("file.close() failed. "+ ex);
             }
-            
+
             try {
                 dstObj = file.get(dstName);
             } catch (final Exception ex) {
@@ -899,13 +900,13 @@ public class H5FileTest extends TestCase {
             }
             assertNotNull(dstObj);
         }
-        
+
         try {
             H5File.updateReferenceDataset(testFile, file);
         } catch (final Exception ex) {
             fail("H5File.updateReferenceDataset() failed. "+ ex);
         }
-        
+
         long[] refs = null;
         try {
             refs = (long[]) ((Dataset)file.get(H5TestFile.NAME_DATASET_OBJ_REF)).getData();
@@ -927,9 +928,9 @@ public class H5FileTest extends TestCase {
             assertEquals(oid[0], refs[i]);
         }
 
-        try {            
+        try {
             file.close();
-        } catch (final Exception ex) { 
+        } catch (final Exception ex) {
              fail("file.close() failed. "+ ex);
         }
 
@@ -941,7 +942,7 @@ public class H5FileTest extends TestCase {
      */
     public final void testCreateImageAttributes() {
         H5ScalarDS img = null;
-        
+
         try {
             img = (H5ScalarDS)testFile.get(H5TestFile.NAME_DATASET_IMAGE);
         } catch (final Exception ex) {
@@ -951,5 +952,4 @@ public class H5FileTest extends TestCase {
         assertTrue(img.isImage());
     }
 
-    
 }
