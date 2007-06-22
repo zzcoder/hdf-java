@@ -239,28 +239,6 @@ public class H5ScalarDS extends ScalarDS
             try { H5.H5Sclose(sid); } catch (HDF5Exception ex2) {}
         }
 
-        int aid=-1, atid=-1;
-
-        if (!isImage)
-        {
-            try
-            {
-                // try to find out if the image type
-                aid = H5.H5Aopen_name(did, "CLASS");
-                atid = H5.H5Aget_type(aid);
-                int size = H5.H5Tget_size(atid);
-                byte[] attrValue = new byte[size];
-                H5.H5Aread(aid, atid, attrValue);
-                String strValue = new String(attrValue).trim();
-                isImage = strValue.equalsIgnoreCase("IMAGE");
-            } catch (Exception ex) {}
-            finally
-            {
-                try { H5.H5Tclose(atid); } catch (HDF5Exception ex) {;}
-                try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
-            }
-        }
-
         // check for the type of image and interlace mode
         // it is a true color image at one of three cases:
         // 1) IMAGE_SUBCLASS = IMAGE_TRUECOLOR,
@@ -268,54 +246,14 @@ public class H5ScalarDS extends ScalarDS
         // 3) INTERLACE_MODE = INTERLACE_PLANE
         if ((rank >=3) && isImage)
         {
-            interlace = INTERLACE_PIXEL;
-            try
-            {
-                // try to find out if the image type
-                aid = H5.H5Aopen_name(did, "IMAGE_SUBCLASS");
-                atid = H5.H5Aget_type(aid);
-                int size = H5.H5Tget_size(atid);
-                byte[] attrValue = new byte[size];
-                H5.H5Aread(aid, atid, attrValue);
-                String strValue = new String(attrValue).trim();
-                if (strValue.equalsIgnoreCase("IMAGE_INDEXED")) {
-                    interlace = -1; // default interlace
-                }
-            } catch (Exception ex) {}
-            finally
-            {
-                try { H5.H5Tclose(atid); } catch (HDF5Exception ex) {;}
-                try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
-            }
+            interlace = -1;
+            isTrueColor = isStringAttributeOf(did, "IMAGE_SUBCLASS", "IMAGE_TRUECOLOR");            
 
-            try
-            {
-                // try to find out interlace mode
-                aid = H5.H5Aopen_name(did, "INTERLACE_MODE");
-                atid = H5.H5Aget_type(aid);
-                int size = H5.H5Tget_size(atid);
-                byte[] attrValue = new byte[size];
-                H5.H5Aread(aid, atid, attrValue);
-                String strValue = new String(attrValue).trim();
-                if (strValue.equalsIgnoreCase("INTERLACE_PLANE")) {
+            if (isTrueColor) {
+                interlace = INTERLACE_PIXEL;
+                if (isStringAttributeOf(did, "INTERLACE_MODE", "INTERLACE_PLANE"))
                     interlace = INTERLACE_PLANE;
-                }
-            } catch (Exception ex) {}
-            finally
-            {
-                try { H5.H5Tclose(atid); } catch (HDF5Exception ex) {;}
-                try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
             }
-
-            if (((interlace == INTERLACE_PLANE) && (dims[0] <3)) ||
-                ((interlace == INTERLACE_PIXEL) && (dims[2] <3)))
-            {
-                // must have at least three color planes
-                interlace = -1;
-            }
-
-            isTrueColor = ((interlace == ScalarDS.INTERLACE_PIXEL) ||
-                (interlace == ScalarDS.INTERLACE_PLANE));
         }
         
         close(did);
@@ -323,6 +261,30 @@ public class H5ScalarDS extends ScalarDS
         startDims = new long[rank];
         selectedDims = new long[rank];
         resetSelection();
+    }
+    
+    private boolean isStringAttributeOf(int objID, String name, String value) {
+        boolean retValue = false;
+        int aid=-1, atid=-1;
+       
+        try
+        {
+            // try to find out interlace mode
+            aid = H5.H5Aopen_name(objID, name);
+            atid = H5.H5Aget_type(aid);
+            int size = H5.H5Tget_size(atid);
+            byte[] attrValue = new byte[size];
+            H5.H5Aread(aid, atid, attrValue);
+            String strValue = new String(attrValue).trim();
+            retValue = strValue.equalsIgnoreCase(value);
+        } catch (Exception ex) {}
+        finally
+        {
+            try { H5.H5Tclose(atid); } catch (HDF5Exception ex) {;}
+            try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
+        }
+
+        return retValue;
     }
     
     /**

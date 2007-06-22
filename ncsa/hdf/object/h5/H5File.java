@@ -1757,7 +1757,7 @@ public class H5File extends FileFormat
         if ((path == null) || (path.length() <= 0)) {
             return null;
         }
-
+ 
         // replace the wrong slash and get rid of "//"
         path = path.replace('\\', '/');
         path = "/"+path;
@@ -1792,7 +1792,7 @@ public class H5File extends FileFormat
                 pPath = path.substring(0, idx);
             }
         }
-
+ 
         // do not open the full tree structure, only the file handler
         int fid_before_open = fid;
         fid = open(false);
