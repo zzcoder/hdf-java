@@ -24,7 +24,47 @@ public class DatatypeTest extends TestCase {
 	private int n_signs = 3;
 	private int n_orders = 4;
 	private int[] sizes = {32, 64, 8, 16};
-	private boolean set;
+	private String[] descriptions = {"Unknown",	"Unknown", "Unknown",
+	"Unknown", "Unknown", "Unknown", "Unknown",	"Unknown", "Unknown",
+	"Unknown", "Unknown", "Unknown", "8-bit character",	"8-bit unsigned character",
+	"8-bit character", "8-bit character", "8-bit unsigned character", "8-bit character",
+	"8-bit character", "8-bit unsigned character", "8-bit character", "8-bit character",
+	"8-bit unsigned character", "8-bit character", "Unknown", "Unknown", "Unknown", "Unknown",
+	"Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",
+	"Unknown", "enum (0=1  1=2  )", "enum (0=1  1=2  )", "enum (0=1  1=2  )",
+	"enum (0=1  1=2  )", "enum (0=1  1=2  )", "enum (0=1  1=2  )", 
+	"enum (0=1  1=2  )", "enum (0=1  1=2  )", "enum (0=1  1=2  )", "enum (0=1  1=2  )", 
+	"enum (0=1  1=2  )", "enum (0=1  1=2  )", "32-bit floating-point",
+	"32-bit floating-point", "32-bit floating-point", "32-bit floating-point",
+	"32-bit floating-point", "32-bit floating-point", "32-bit floating-point",
+	"32-bit floating-point", "32-bit floating-point", "32-bit floating-point",
+	"32-bit floating-point", "32-bit floating-point", "32-bit floating-point",
+	"32-bit floating-point", "32-bit floating-point", "32-bit floating-point",
+	"32-bit floating-point", "32-bit floating-point", "32-bit floating-point",
+	"32-bit floating-point", "32-bit floating-point", "32-bit floating-point",
+	"32-bit floating-point", "32-bit floating-point", "32-bit integer",
+	"32-bit integer", "64-bit integer", "32-bit integer", "32-bit unsigned integer",
+	"32-bit unsigned integer", "64-bit unsigned integer", "32-bit unsigned integer",
+	"32-bit integer", "32-bit integer", "64-bit integer", "32-bit integer", "32-bit integer",
+	"32-bit integer", "64-bit integer", "32-bit integer", "32-bit unsigned integer",
+	"32-bit unsigned integer", "64-bit unsigned integer", "32-bit unsigned integer",
+	"32-bit integer", "32-bit integer", "64-bit integer", "32-bit integer", "32-bit integer",
+	"32-bit integer", "64-bit integer", "32-bit integer", "32-bit unsigned integer",
+	"32-bit unsigned integer", "64-bit unsigned integer", "32-bit unsigned integer",
+	"32-bit integer", "32-bit integer", "64-bit integer", "32-bit integer", "32-bit integer",
+	"32-bit integer", "64-bit integer", "32-bit integer", "32-bit unsigned integer",
+	"32-bit unsigned integer", "64-bit unsigned integer", "32-bit unsigned integer",
+	"32-bit integer", "32-bit integer", "64-bit integer", "32-bit integer",
+	"Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",
+	"Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",
+	"Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Object reference", "Object reference",
+	"Object reference", "Object reference", "Object reference", "Object reference", "Object reference",
+	"Object reference", "Object reference", "Object reference", "Object reference", "Object reference",
+	"String, length = 32", "String, length = 32", "String, length = 32", "String, length = 32",
+	"String, length = 32", "String, length = 32", "String, length = 32", "String, length = 32",
+	"String, length = 32", "String, length = 32", "String, length = 32", "String, length = 32",
+	"Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",
+	"Unknown", "Unknown", "Unknown"};
 	
 	/**
 	 * @param arg0
@@ -59,7 +99,6 @@ public class DatatypeTest extends TestCase {
 						baseTypes[counter++] = new H5Datatype(classes[i], sizes[l], 
 								orders[j], signs[k]);
 						assertNotNull(baseTypes[i]);
-						//arrayTypes[counter++] = new H5Dtype();
 					}
 				}
 			}
@@ -73,20 +112,6 @@ public class DatatypeTest extends TestCase {
 		super.tearDown();
 	}
 
-	/**
-	 * Test method for {@link ncsa.hdf.object.Datatype#open()}.
-	 */
-	public final void testOpen() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	/**
-	 * Test method for {@link ncsa.hdf.object.Datatype#close(int)}.
-	 */
-	public final void testClose() {
-		fail("Not yet implemented"); // TODO
-	}
-	
 	/**
 	 * Test method for {@link ncsa.hdf.object.Datatype#getDatatypeClass()}.
 	 */
@@ -172,7 +197,6 @@ public class DatatypeTest extends TestCase {
 				}
 			}
 		}
-		fail("Not yet implemented"); // TODO
 	}
 
 	/**
@@ -212,7 +236,6 @@ public class DatatypeTest extends TestCase {
 		ed.setEnumMembers("low=20, high=40");
 		if (!ed.getEnumMembers().equals("low=20, high=40"))
 			fail("setEnumMembers() or getEnumMembers() failed\n");
-		fail("Not yet implemented"); // TODO
 	}
 
 	/**
@@ -262,37 +285,61 @@ public class DatatypeTest extends TestCase {
 */
 	/**
 	 * Test method for {@link ncsa.hdf.object.Datatype#getDatatypeDescription()}.
+	 * RISHI SINHA - THE METHOD CALLED IS ONE FOR H5 WHICH OVERRIDES THE BASE CALL.
 	 */
 	public final void testGetDatatypeDescription() {
-		fail("Not yet implemented"); // TODO
+		int counter = 0;
+		for (int i = 0; i < n_classes; i++) {
+			for (int j = 0; j < n_orders; j++) {
+				for (int k = 0; k < n_signs; k++) {
+					int n_sizes;
+					switch(classes[i]) {
+					case Datatype.CLASS_INTEGER:
+						n_sizes = 4;
+						break;
+					case Datatype.CLASS_FLOAT:
+						n_sizes = 2;
+						break;
+					default:
+						n_sizes = 1;
+						break;
+					}
+					for (int l = 0; l < n_sizes; l++) {
+						if (!baseTypes[counter].getDatatypeDescription().equals(descriptions[counter]))
+							fail("getDatatypeDescription() fails on " + descriptions[counter] + " + " + baseTypes[counter].getDatatypeDescription() + " + " + counter);
+						counter++;
+					}
+				}
+			}
+		}
 	}
-/*
-	*//** ABSTRACT METHOD
+	/** ABSTRACT METHOD
 	 * Test method for {@link ncsa.hdf.object.Datatype#isUnsigned()}.
-	 *//*
+	 */
 	public final void testIsUnsigned() {
-		fail("Not yet implemented"); // TODO
+		int counter = 0;
+		for (int i = 0; i < n_classes; i++) {
+			for (int j = 0; j < n_orders; j++) {
+				for (int k = 0; k < n_signs; k++) {
+					int n_sizes;
+					switch(classes[i]) {
+					case Datatype.CLASS_INTEGER:
+						n_sizes = 4;
+						break;
+					case Datatype.CLASS_FLOAT:
+						n_sizes = 2;
+						break;
+					default:
+						n_sizes = 1;
+						break;
+					}
+					for (int l = 0; l < n_sizes; l++) {
+						 boolean isSigned = baseTypes[counter++].isUnsigned();
+						 if (isSigned && (signs[k] != Datatype.SIGN_NONE))
+							 fail("isUnsigned Failed.");
+					}
+				}
+			}
+		}
 	}
-*/
-	/**
-	 * Test method for {@link ncsa.hdf.object.Datatype#getMetadata()}.
-	 */
-	public final void testGetMetadata() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	/**
-	 * Test method for {@link ncsa.hdf.object.Datatype#writeMetadata(java.lang.Object)}.
-	 */
-	public final void testWriteMetadata() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	/**
-	 * Test method for {@link ncsa.hdf.object.Datatype#removeMetadata(java.lang.Object)}.
-	 */
-	public final void testRemoveMetadata() {
-		fail("Not yet implemented"); // TODO
-	}
-
 }

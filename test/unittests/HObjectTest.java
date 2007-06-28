@@ -6,9 +6,7 @@ package test.unittests;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.object.FileFormat;
-import ncsa.hdf.object.Group;
 import ncsa.hdf.object.h5.H5File;
-import ncsa.hdf.object.h5.H5Group;
 import ncsa.hdf.object.h5.H5ScalarDS;
 import junit.framework.TestCase;
 import ncsa.hdf.object.HObject;
@@ -20,8 +18,7 @@ import ncsa.hdf.object.HObject;
 public class HObjectTest extends TestCase {
 	private static final H5File H5FILE = new H5File();
     private static final String GNAME = H5TestFile.NAME_GROUP;
-    private static final String GNAME_SUB = H5TestFile.NAME_GROUP_SUB;
-    
+ 
     private H5File testFile = null;
     private HObject testObj = null;
     private long testOID;
@@ -41,7 +38,7 @@ public class HObjectTest extends TestCase {
 		
         testFile = (H5File)H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
         assertNotNull(testFile);
-        testObj = (HObject) testFile.get(GNAME);
+        testObj = testFile.get(GNAME);
         assertNotNull(testObj);
         testOID = testObj.getOID()[0];
 	}
@@ -150,7 +147,7 @@ public class HObjectTest extends TestCase {
         try {
             testFile.close();
             testFile.open();
-            testObj = (HObject) testFile.get(newName);
+            testObj = testFile.get(newName);
         } catch (final Exception ex) { 
             fail("setName() failed. "+ ex);
         }
@@ -158,7 +155,7 @@ public class HObjectTest extends TestCase {
         HObject tmpObj;
         // test the old name
         try {
-            tmpObj = (H5ScalarDS)testFile.get(GNAME);
+            tmpObj = testFile.get(GNAME);
          } catch (final Exception ex) { 
              tmpObj = null; // Expected - intentional
         }
@@ -173,7 +170,7 @@ public class HObjectTest extends TestCase {
         
         // make sure the dataset is OK
         try {
-            testObj = (HObject)testFile.get(GNAME);
+            testObj = testFile.get(GNAME);
         } catch (final Exception ex) { 
             fail("setName() failed. "+ ex);
         }

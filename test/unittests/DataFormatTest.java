@@ -37,7 +37,7 @@ public class DataFormatTest extends TestCase {
 		super.setUp();
 		testFile = (H5File)H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
         assertNotNull(testFile);
-        testGroup = (DataFormat) testFile.get(H5TestFile.NAME_GROUP_ATTR);
+        testGroup = testFile.get(H5TestFile.NAME_GROUP_ATTR);
         assertNotNull(testGroup);
 	}
 
