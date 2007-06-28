@@ -4,16 +4,14 @@
 package test.unittests;
 
 import junit.framework.TestCase;
+import ncsa.hdf.hdf5lib.H5;
+import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.h5.H5File;
 import ncsa.hdf.object.Group;
 import ncsa.hdf.object.Datatype;
-import ncsa.hdf.object.ScalarDS;
 import java.util.Enumeration;
-import java.util.Iterator;
-
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
 
 /**
  * @author rsinha
@@ -35,7 +33,7 @@ public class FileFormatTest extends TestCase {
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		testFile = (FileFormat)H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
+		testFile = H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
         assertNotNull(testFile);
         testFile.open();
 	}
@@ -45,6 +43,18 @@ public class FileFormatTest extends TestCase {
 	 */
 	protected void tearDown() throws Exception {
 		super.tearDown();
+		 final int fid = testFile.getFID();
+	        if (fid > 0) {
+	            int nObjs = 0;
+	            try { nObjs = H5.H5Fget_obj_count(fid, HDF5Constants.H5F_OBJ_LOCAL); }
+	            catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }
+	            assertEquals(1, nObjs); // file id should be the only one left open
+	         }
+	        
+	        if (testFile != null) {
+	            try { testFile.close(); } catch (final Exception ex) {}
+	            testFile = null;
+	        }
 	}
 
 	/**
@@ -112,6 +122,7 @@ public class FileFormatTest extends TestCase {
 		}
 		try {
 			FileFormat test1 = f.create(H5TestFile.NAME_FILE_H5, FileFormat.FILE_CREATE_DELETE);
+			assertNotNull(test1);
 		} catch (Exception ex) {
 			; //Expected to fail.
 		}
@@ -226,7 +237,7 @@ public class FileFormatTest extends TestCase {
 		String keys[] = {"HDF5", "HDF"};
 		int pos = 0;
 		while (e.hasMoreElements()) {
-			if (!keys[pos++].equals((String)e.nextElement()))
+			if (!keys[pos++].equals(e.nextElement()))
 				fail("getFileFormatKeys() failed.");
 		}
 	}
