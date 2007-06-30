@@ -521,10 +521,8 @@ public class H5ScalarDSTest extends TestCase {
                 testDataset.init();
                 
                 final int rank = testDataset.getRank();
-                final long[] dims = testDataset.getDims();
                 final long[] start = testDataset.getStartDims();
                 final long[] count = testDataset.getSelectedDims();
-                final int[] selectedIndex = testDataset.getSelectedIndex();
                
                 // select one row only
                 for (int j=0; j<rank; j++) {
@@ -664,9 +662,7 @@ public class H5ScalarDSTest extends TestCase {
             // write a subset: the first half of the dataset
             final int rank = testDataset.getRank();
             final long[] dims = testDataset.getDims();
-            final long[] start = testDataset.getStartDims();
             long[] count = testDataset.getSelectedDims();
-            final int[] selectedIndex = testDataset.getSelectedIndex();
             
             // select the first 1/2 of the datast
             long size = 1;
@@ -1235,8 +1231,6 @@ public class H5ScalarDSTest extends TestCase {
      */
     public final void testRemoveMetadata() {
         Vector attrs = null;
-        final Attribute attr = null;
-        
         try {
             attrs = (Vector) testDataset.getMetadata();
         } catch (final Exception ex) { 

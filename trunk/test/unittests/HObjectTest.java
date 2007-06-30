@@ -181,7 +181,26 @@ public class HObjectTest extends TestCase {
 	 * Test method for {@link ncsa.hdf.object.HObject#setPath(java.lang.String)}.
 	 */
 	public final void testSetPath() {
-		fail("Not yet implemented"); // TODO
+		String path = testObj.getPath();
+		try {
+		testObj.setPath(null);
+		} catch (Exception e) {;}
+		if (!path.equals(testObj.getPath())) {
+			fail("testPath changed the path name even though null was passed to it.");
+		}
+		try {
+			testObj.setPath("testPath");
+		} catch (Exception e) {
+			fail("testPath failed when trying to set it to testPath");
+		}
+		if (!testObj.getPath().equals("testPath")) {
+			fail("testPath failed when trying to set it to testPath");
+		}
+		try  {
+		testObj.setPath(path);
+		} catch (Exception e) {
+			fail("testPath failed when trying to reset the path to " + path);
+		}
 	}
 
 	/**

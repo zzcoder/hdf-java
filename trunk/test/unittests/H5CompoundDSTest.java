@@ -244,6 +244,7 @@ public class H5CompoundDSTest extends TestCase {
          }
      }
 
+    
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5CompoundDS#close(int)}.
      * <p>
@@ -506,10 +507,8 @@ public class H5CompoundDSTest extends TestCase {
                 testDataset.init();
                 
                 final int rank = testDataset.getRank();
-                final long[] dims = testDataset.getDims();
                 final long[] start = testDataset.getStartDims();
                 final long[] count = testDataset.getSelectedDims();
-                final int[] selectedIndex = testDataset.getSelectedIndex();
                 
                 // select one row only
                 for (int j=0; j<rank; j++) {
@@ -559,12 +558,6 @@ public class H5CompoundDSTest extends TestCase {
             for (int i=0; i<nmembers; i++) {
                 testDataset.clearData();
                 testDataset.init();
-                
-                final int rank = testDataset.getRank();
-                final long[] dims = testDataset.getDims();
-                final long[] start = testDataset.getStartDims();
-                final long[] count = testDataset.getSelectedDims();
-                final int[] selectedIndex = testDataset.getSelectedIndex();
  
                 testDataset.setMemberSelection(false);
                 testDataset.selectMember(i);
@@ -747,10 +740,8 @@ public class H5CompoundDSTest extends TestCase {
             testDataset.init();
 
             final int rank = testDataset.getRank();
-            final long[] dims = testDataset.getDims();
             final long[] start = testDataset.getStartDims();
             final long[] count = testDataset.getSelectedDims();
-            final int[] selectedIndex = testDataset.getSelectedIndex();
             
             // read data row by row
             for (int i=0; i<rank; i++) {
@@ -846,11 +837,6 @@ public class H5CompoundDSTest extends TestCase {
         for (int loop=0; loop<NLOOPS; loop++) {
             testDataset.init();
 
-            final int rank = testDataset.getRank();
-            final long[] dims = testDataset.getDims();
-            final long[] start = testDataset.getStartDims();
-            final long[] count = testDataset.getSelectedDims();
-            final int[] selectedIndex = testDataset.getSelectedIndex();
             
             // read field by field
             final int nmembers = testDataset.getMemberCount();

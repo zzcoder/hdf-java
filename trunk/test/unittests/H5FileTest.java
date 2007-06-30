@@ -663,7 +663,6 @@ public class H5FileTest extends TestCase {
      *   </ul>
      */
     public final void testH5FileStringInt() {
-        final Group root = null;
         Dataset dset=null;
         final String nameNewFile = "testH5File.h5";
         H5File file = null;
@@ -778,7 +777,7 @@ public class H5FileTest extends TestCase {
         try { testFile.close(); } catch (final Exception ex) {}
 
         int nObjs = 0;
-        int fid=-1, plist=-1;;
+        int plist=-1;;
 
         final H5File file = new H5File(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
 
@@ -790,7 +789,7 @@ public class H5FileTest extends TestCase {
         }
 
         try {
-            fid = file.open(plist); // opent the full tree
+            file.open(plist); // opent the full tree
         } catch (final Exception ex) {
             fail("file.open() failed. "+ ex);
         }
