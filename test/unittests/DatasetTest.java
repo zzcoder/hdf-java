@@ -74,7 +74,6 @@ public class DatasetTest extends TestCase {
 	 */
 	public final void testMetadataAssociatedWithDataset() {
 		for (int i =0; i < dsetNames.length; i++) {
-			System.out.println(i);
 			assertNull(dSets[i].getChunkSize());
 			assertTrue(dSets[i].getCompression().equals("NONE"));
 			//assertFalse(dSets[i].getConvertByteToString());
@@ -113,4 +112,37 @@ public class DatasetTest extends TestCase {
 				assertEquals(dSets[i].getWidth(), H5TestFile.DIM2);
 		}
 	}
+	
+    /**
+     *   Test converting the following unsigned values to signed values.
+     *   <ul>
+     *     <li> byte[] int8 = { - 1, - 128, 127, 0};
+     *     <li> short[] int16 = { - 1, - 32768, 32767, 0};
+     *     <li> int[] int32 = { - 1, - 2147483648, 2147483647, 0};
+     * </ul>
+     * Expected values
+     *   <ul>
+     *     <li> short[] uint8 = {255, 128, 127, 0};
+     *     <li> int[] uint16 = {65535, 32768, 32767, 0};
+     *     <li> long[] uint32 = {4294967295L, 2147483648L, 2147483647, 0};
+     * </ul>
+     */
+    public final void testConvertFromUnsignedC() {
+        byte [] int8 = {-1, -128, 127, 0};
+        short [] int16 = {-1, -32768, 32767, 0};
+        int [] int32 = {-1, -2147483648, 2147483647, 0};
+        
+        short [] uint8 = {255, 128, 127, 0};
+        int [] uint16 = {65535, 32768, 32767, 0};
+        long [] uint32 = {4294967295L, 2147483648L, 2147483647, 0};
+
+        short [] expected8 = (short [])Dataset. convertFromUnsignedC(int8, null );
+        assertTrue(Arrays.equals(expected8, uint8));
+
+        int [] expected16 = (int [])Dataset. convertFromUnsignedC(int16, null );
+        assertTrue(Arrays.equals(expected16, uint16));
+
+        long [] expected32 = (long [])Dataset. convertFromUnsignedC(int32, null );
+        assertTrue(Arrays.equals(expected32, uint32));
+    }
 }

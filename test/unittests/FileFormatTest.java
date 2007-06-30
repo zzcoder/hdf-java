@@ -115,8 +115,7 @@ public class FileFormatTest extends TestCase {
 		
 		try {
 			FileFormat test1 = f.create(H5TestFile.NAME_FILE_H5, FileFormat.FILE_CREATE_OPEN);
-			Group g1 = (Group) test1.get(H5TestFile.NAME_GROUP);
-			assertNotNull(g1);
+			assertNotNull(test1);
 		} catch (Exception ex) {
 			fail("Create Failed " + ex.getMessage());
 		}
@@ -202,26 +201,11 @@ public class FileFormatTest extends TestCase {
 		} catch (Exception ex) {
 			fail("createDatatype() failed" + ex.getMessage());
 		}
-		System.out.println(dt.getDatatypeDescription());
-		if (!dt.getDatatypeDescription().equals("32-bit integer"))
+		if (!dt.getDatatypeDescription().equals("32-bit unsigned integer"))
 			fail("createDatatype(int, int, int, int, string) created wrong datatype");
 	}
 
-	/**
-	 * Test method for {@link ncsa.hdf.object.FileFormat#addFileFormat(java.lang.String, ncsa.hdf.object.FileFormat)}.
-	 *//*
-	public final void testAddFileFormat() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	*//**
-	 * Test method for {@link ncsa.hdf.object.FileFormat#removeFileFormat(java.lang.String)}.
-	 *//*
-	public final void testRemoveFileFormat() {
-		fail("Not yet implemented"); // TODO
-	}*/
-
-	/**
+		/**
 	 * Test method for {@link ncsa.hdf.object.FileFormat#getFileFormat(java.lang.String)}.
 	 */
 	public final void testGetFileFormat() {
@@ -266,37 +250,7 @@ public class FileFormatTest extends TestCase {
 			fail("isThisType(FileFormat) failed."); // TODO
 	}
 
-	// CANNOT BE TESTED AS THE get methods here are protected.
-/*	*//**
-	 * Test method for {@link ncsa.hdf.object.FileFormat#setMaxMembers(int)}.
-	 *//*
-	public final void testSetMaxMembers() {
-		testFile.setMaxMembers(1000);
-		if ()
-		fail("Not yet implemented"); // TODO
-	}
-
-	*//**
-	 * Test method for {@link ncsa.hdf.object.FileFormat#setStartMembers(int)}.
-	 *//*
-	public final void testSetStartMembers() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	*//**
-	 * Test method for {@link ncsa.hdf.object.FileFormat#getMaxMembers()}.
-	 *//*
-	public final void testGetMaxMembers() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	*//**
-	 * Test method for {@link ncsa.hdf.object.FileFormat#getStartMembers()}.
-	 *//*
-	public final void testGetStartMembers() {
-		fail("Not yet implemented"); // TODO
-	}*/
-
+	
 	/**
 	 * Test method for {@link ncsa.hdf.object.FileFormat#getFileExtensions()}.
 	 */
@@ -343,21 +297,6 @@ public class FileFormatTest extends TestCase {
 			fail("getInstance() failed" + ex.getMessage());
 		}
 		assertNotNull(f);
-	}
-
-	/**
-	 * Test method for {@link ncsa.hdf.object.FileFormat#get(java.lang.String)}.
-	 */
-	public final void testGet() {
-		Group group = null;
-		try {
-			group = (Group) testFile.get(H5TestFile.NAME_GROUP);
-			assertNotNull(group);
-		} catch (Exception ex) {
-			fail("get() failed " + ex.getMessage());
-		}
-		if (!group.getName().equals("g0"))
-			fail("get() got the wrong group" + group.getName());
 	}
 
 	/**

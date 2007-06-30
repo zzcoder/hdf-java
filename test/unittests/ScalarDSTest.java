@@ -101,21 +101,21 @@ public class ScalarDSTest extends TestCase {
 			fail("Image Dataset is being returned as an non image dataset by isImage.");
 		if (!imageDset.isImageDisplay())
 			fail("Image Dataset is being returned as having non image display by isImageDisplay.");
-		/*double[] min_max = imageDset.getImageDataRange();
+		double[] min_max = imageDset.getImageDataRange();
 		if (min_max == null)
 			fail("getImageDataRange returns null for the Image.");
 		if (min_max[0] != 0.0 || min_max[1] != 256.0)
-			fail("Min is 0.0 and Max is 256.0 while getImageDataRange returns Min as " + min_max[0] + "and Max as " + min_max[1]);*/
+			fail("Min is 0.0 and Max is 256.0 while getImageDataRange returns Min as " + min_max[0] + "and Max as " + min_max[1]);
 		if (imageDset.getInterlace() != -1)
 			fail("Interlace should be -1 while getInterlace reports it as " + imageDset.getInterlace());
-		/*if (!imageDset.getIsUnsignedByteForImage())
-			fail("isUnsignedByteForImage is returned as false for an Image.");*/
+		if (!imageDset.getIsUnsignedByteForImage())
+			fail("isUnsignedByteForImage is returned as false for an Image.");
 		imageDset.setIsUnsignedByteForImage(true);
 		if (!imageDset.getIsUnsignedByteForImage())
 			fail("isUnsignedByteForImage returns false after an explicity setIsUnsignedByteForImage(true).");
-		/*imageDset.setIsUnsignedByteForImage(false);
+		imageDset.setIsUnsignedByteForImage(false);
 		if (imageDset.getIsUnsignedByteForImage())
-			fail("isUnsignedByteForImage returns true after an explicity setIsUnsignedByteForImage(false).");*/
+			fail("isUnsignedByteForImage returns true after an explicity setIsUnsignedByteForImage(false).");
 		if (imageDset.isTrueColor())
 			fail("isTrueColor returns true for Image Dataset.");
 		if (intDset.isImage())
