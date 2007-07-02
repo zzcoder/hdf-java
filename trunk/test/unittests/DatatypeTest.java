@@ -245,44 +245,6 @@ public class DatatypeTest extends TestCase {
 		testSetEnumMembers();
 	}
 
-/*	*//** ABSTRACT METHOD.
-	 * Test method for {@link ncsa.hdf.object.Datatype#toNative()}.
-	 *//*
-	public final void testToNative() {
-		int counter = 0;
-		for (int i = 0; i < n_classes; i++) {
-			for (int j = 0; j < n_orders; j++) {
-				for (int k = 0; k < n_signs; k++) {
-					int n_sizes;
-					switch(classes[i]) {
-					case Datatype.CLASS_INTEGER:
-						n_sizes = 4;
-						break;
-					case Datatype.CLASS_FLOAT:
-						n_sizes = 2;
-						break;
-					default:
-						n_sizes = 1;
-						break;
-					}
-					for (int l = 0; l < n_sizes; l++) {
-						int dt = baseTypes[counter++].toNative();
-						if (dt != )
-					}
-				}
-			}
-		}
-		
-		fail("Not yet implemented"); // TODO
-	}*/
-
-	/** ABSTRACT METHOD.
-	 * Test method for {@link ncsa.hdf.object.Datatype#fromNative(int)}.
-	 *//*
-	public final void testFromNative() {
-		fail("Not yet implemented"); // TODO
-	}
-*/
 	/**
 	 * Test method for {@link ncsa.hdf.object.Datatype#getDatatypeDescription()}.
 	 * RISHI SINHA - THE METHOD CALLED IS ONE FOR H5 WHICH OVERRIDES THE BASE CALL.

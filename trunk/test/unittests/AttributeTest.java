@@ -80,6 +80,7 @@ public class AttributeTest extends TestCase {
         Attribute attr = new Attribute(attrName, attrType, attrDims);
         attr.setValue(classValue);
         assertNotNull(attr);
+        assertTrue(classValue[0].equals(attr.toString("|")));
 	}
 
 	/**
