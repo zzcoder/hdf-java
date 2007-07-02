@@ -22,7 +22,6 @@ public class GroupTest extends TestCase {
 	
     private static final H5File H5FILE = new H5File();
     private static final String GNAME = H5TestFile.NAME_GROUP;
-    private static final String GNAME_SUB = H5TestFile.NAME_GROUP_SUB;
     
     private H5File testFile = null;
     private Group testGroup = null;
@@ -67,29 +66,15 @@ public class GroupTest extends TestCase {
         }
 	}
 
-	/**
-	 * Test method for {@link ncsa.hdf.object.Group#Group(ncsa.hdf.object.FileFormat, java.lang.String, java.lang.String, ncsa.hdf.object.Group)}.
-	 */
-	public void testGroupFileFormatStringStringGroup() {
-        final String[] names = {null, GNAME_SUB, GNAME_SUB.substring(4)};
-        final String[] paths = {GNAME_SUB, null, H5TestFile.NAME_GROUP};
-
-        
-        for (int idx=0; idx<names.length; idx++) {
-            final Group grp = new H5Group(testFile, names[idx], paths[idx], testGroup);
-            final int gid = grp.open();
-            assertTrue(gid>0);
-            grp.close(gid);
-        }
-        
-        final H5Group grp = new H5Group(testFile, "NO_SUCH_DATASET", "NO_SUCH_PATH", testGroup);
-        final int gid = grp.open();
-        assertTrue(gid <=0);
-	}
-
 	
 	/**
 	 * Test method for {@link ncsa.hdf.object.Group#clear()}.
+     * <p>
+     * What to test:
+     * <ul> 
+     *   <li> For the root group clear the list.
+     *   </ul>
+     * </ul>
 	 */
 	public void testClear() {
 		testGroup.clear();
@@ -99,35 +84,86 @@ public class GroupTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.Group#addToMemberList(ncsa.hdf.object.HObject)}.
+	 * <p>
+     * What to test:
+     * <ul> 
+     *   <li> Test for boundary conditions
+     *   <ul>
+     *     <li> Add null to the member list.
+     *   </ul>
+     *   <li> Test for failure
+     *   <ul>
+     *     <li> Add an already existing object to the list.
+     *   </ul>
+     *   <li> Test for general functionality
+     *   <ul>
+     *     <li> add a group to it.
+     *   </ul>
+     * </ul>
 	 */
 	public void testAddToMemberList() {
-		
-		
 		int previous_size = testGroup.getMemberList().size();
+		testGroup.addToMemberList(null);
+		if (testGroup.getMemberList().size() != previous_size)
+			fail("addToMemberList adds a null to the member list.");
 		Group tmp = new H5Group(testFile, "tmp", "/grp0/", testGroup);
-		testGroup.addToMemberList(tmp);
-		int current_size = testGroup.getMemberList().size();
 		
-		if (current_size != previous_size + 1)
-			fail("Add to member list not working");
+		testGroup.addToMemberList((HObject)testGroup.getMemberList().get(0));
+		if (testGroup.getMemberList().size() != previous_size)
+			fail("addToMemberList adds an existing member to the member list.");
+		
+		testGroup.addToMemberList(tmp);
+		if (!testGroup.getMemberList().get(previous_size).equals(tmp))
+			fail("Add to member list does not add to the end.");
+		if (testGroup.getMemberList().size() != previous_size + 1)
+			fail("Add to member list not working.");
 	}
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.Group#removeFromMemberList(ncsa.hdf.object.HObject)}.
+	 * <p>
+     * What to test:
+     * <ul> 
+     *   <li> Test for boundary conditions
+     *   <ul>
+     *     <li> Remove a null from the member list.
+     *   </ul>
+     *   <li> Test for failure
+     *   <ul>
+     *     <li> Remove a non existing object to the list.
+     *   </ul>
+     *   <li> Test for general functionality
+     *   <ul>
+     *     <li> Remove a group from it.
+     *   </ul>
+     * </ul>
 	 */
 	public void testRemoveFromMemberList() {
+		int previous_size = testGroup.getMemberList().size();
 		List memberList = testGroup.getMemberList();
 		Iterator it = memberList.iterator();
+		testGroup.removeFromMemberList(null);
+		if (testGroup.getMemberList().size() != previous_size)
+			fail("removeFromMemberList removes a null from the member list.");
+		
+		Group tmp = new H5Group(testFile, "tmp", "/grp0/", testGroup);
+		testGroup.removeFromMemberList(tmp);
+		if (testGroup.getMemberList().size() != previous_size)
+			fail("removeFromMemberList removes a non existing member from the member list.");
 		
 		HObject obj = (HObject) it.next();
 		testGroup.removeFromMemberList(obj);
 		
-		if (memberList.size() != 3)
-			fail("The Number of members in list should be 3");
+		if (memberList.size() != previous_size - 1)
+			fail("The Number of members in list should be " + (previous_size - 1));
 	}
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.Group#getMemberList()}.
+	 * <p>
+	 * <ul>
+	 *   <li> testing the member list for the root group.
+	 * <ul>
 	 */
 	public void testGetMemberList() {
 		String objs[] = {"a_link_to_the_image", "dataset_comp", "dataset_int", "g00"};
@@ -145,6 +181,10 @@ public class GroupTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.Group#getParent()}.
+	 * <p>
+	 * <ul>
+	 *   <li> Test to get the parent of group g0.
+	 * </ul>
 	 */
 	public void testGetParent() {
 		HObject parent = testGroup.getParent();
@@ -155,6 +195,10 @@ public class GroupTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.Group#isRoot()}.
+	 * 
+	 * <ul>
+	 *   <li> Test for not root.
+	 * </ul>  
 	 */
 	public void testIsRoot() {
 		if (testGroup.isRoot())
@@ -163,9 +207,12 @@ public class GroupTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.Group#getNumberOfMembersInFile()}.
+	 * 
+	 * <ul>
+	 *    <li> Test for the number of members in the file.
+	 * <ul>
 	 */
 	public void testGetNumberOfMembersInFile() {
-		
 		int nmf = testGroup.getNumberOfMembersInFile();
 		
 		if (nmf != 8)

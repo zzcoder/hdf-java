@@ -67,10 +67,17 @@ public class DatasetTest extends TestCase {
 	}
 	
 	/*
+	 * What to test:
+	 * <ul>
+	 * 	 <li> Getting the chunk size for the datasets.
+	 * 	 <li> Getting details about compression.
+	 *   <li> 
+	 * 
 	 * This method tests the setting and getting of basic metadata associated with a dataset like chunksize, datatype,
 	 * compression, is it byte to be converted to string, dimension names, dimensions, rank, height, size, selectedDims
 	 * selectedIndex, stride, width. In order to test all these methods I run them for each of the different 
 	 * datasets that are found in the test file.
+	 * 
 	 */
 	public final void testMetadataAssociatedWithDataset() {
 		for (int i =0; i < dsetNames.length; i++) {

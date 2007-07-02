@@ -7,7 +7,6 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.h5.H5File;
-import ncsa.hdf.object.h5.H5ScalarDS;
 import junit.framework.TestCase;
 import ncsa.hdf.object.HObject;
 
@@ -65,29 +64,13 @@ public class HObjectTest extends TestCase {
 	}
 
 	/**
-	 * Test method for {@link ncsa.hdf.object.HObject#HObject()}.
-	 */
-	public final void testHObject() {
-		//I cannot instantiate using this constructor so how can I test it.
-	}
-
-	/**
-	 * Test method for {@link ncsa.hdf.object.HObject#HObject(ncsa.hdf.object.FileFormat, java.lang.String, java.lang.String)}.
-	 */
-	public final void testHObjectFileFormatStringString() {
-		//I cannot instantiate using this constructor so how can I test it.
-	}
-
-	/**
-	 * Test method for {@link ncsa.hdf.object.HObject#HObject(ncsa.hdf.object.FileFormat, java.lang.String, java.lang.String, long[])}.
-	 */
-	public final void testHObjectFileFormatStringStringLongArray() {
-		//I cannot instantiate using this constructor so how can I test it.
-	}
-
-	/**
 	 * Test method for {@link ncsa.hdf.object.HObject#getFile()}.
-	 */
+	 * <p>
+     * What to test:
+     * <ul> 
+     *   <li> Get the file name for the testfile from an object in the file.      
+     * </ul>
+     */
 	public final void testGetFile() {
 		if (!testObj.getFile().equals(H5TestFile.NAME_FILE_H5))
 			fail("Wrong File");
@@ -95,6 +78,11 @@ public class HObjectTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.HObject#getName()}.
+	 * <p>
+	 * What to test:
+	 * <ul>
+	 * 	 <li> For the base group, find the name of the group and test it against the standard.
+	 * </ul>
 	 */
 	public final void testGetName() {
 		if (!testObj.getName().equals(GNAME.substring(1)))
@@ -103,6 +91,11 @@ public class HObjectTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.HObject#getFullName()}.
+	 * <p>
+	 * What to test:
+	 * <ul>
+	 * 	 <li> For the base group, find the full name of the group and test it against the standard.
+	 * </ul>
 	 */
 	public final void testGetFullName() {
 		if (!testObj.getFullName().equals(GNAME))
@@ -111,6 +104,11 @@ public class HObjectTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.HObject#getPath()}.
+	 * * <p>
+	 * What to test:
+	 * <ul>
+	 * 	 <li> For the base group, find the path of the group and test it against the standard.
+	 * </ul>
 	 */
 	public final void testGetPath() {
 		if (!testObj.getPath().equals("/"))
@@ -119,6 +117,13 @@ public class HObjectTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.HObject#setName(java.lang.String)}.
+	 * <p>
+	 * What to test:
+	 * <ul>
+	 * 	 <li> Test setting the name to null. It should not be set.
+	 * 	 <li> Test setting the name to another existing name in the same group.
+	 *   <li> Test setting the name to a new name.
+	 * </ul>
 	 */
 	public final void testSetName() {
         final String newName = "tmpName";
@@ -179,11 +184,18 @@ public class HObjectTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.HObject#setPath(java.lang.String)}.
+	 * <p>
+	 * What to test:
+	 * <ul>
+	 * 	 <li> Test setting the path to null. It should not be set.
+	 * 	 <li> Test setting the path to another existing name in the same group.
+	 *   <li> Test setting the path to a new name.
+	 * </ul>
 	 */
 	public final void testSetPath() {
 		String path = testObj.getPath();
 		try {
-		testObj.setPath(null);
+			testObj.setPath(null);
 		} catch (Exception e) {;}
 		if (!path.equals(testObj.getPath())) {
 			fail("testPath changed the path name even though null was passed to it.");
@@ -197,7 +209,7 @@ public class HObjectTest extends TestCase {
 			fail("testPath failed when trying to set it to testPath");
 		}
 		try  {
-		testObj.setPath(path);
+			testObj.setPath(path);
 		} catch (Exception e) {
 			fail("testPath failed when trying to reset the path to " + path);
 		}
@@ -205,6 +217,11 @@ public class HObjectTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.HObject#open()}.
+	 *  <p>
+	 * What to test:
+	 * <ul>
+	 * 	 <li> Open the Group and check that the gid returned is less than 1.
+	 * </ul>
 	 */
 	public final void testOpen() {
         int gid=-1;
@@ -216,15 +233,18 @@ public class HObjectTest extends TestCase {
             } catch (final Exception ex) { 
                 fail("open() failed. "+ ex);
             }
-            
             assertTrue(gid > 0);
-            
             testObj.close(gid);
          }
 	}
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.HObject#close(int)}.
+	 * <p>
+	 * What to test:
+	 * <ul>
+	 * 	 <li> Run the tests for opening the group.
+	 * </ul>
 	 */
 	public final void testClose() {
 		testOpen();
@@ -232,6 +252,11 @@ public class HObjectTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.HObject#getFID()}.
+	 * <p>
+	 * What to test:
+	 * <ul>
+	 * 	 <li> get the FID for the group and make sure that it is the same as the FID for the file.
+	 * </ul>
 	 */
 	public final void testGetFID() {
 		if (testObj.getFID() != testFile.getFID())
@@ -240,43 +265,82 @@ public class HObjectTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.HObject#equalsOID(long[])}.
+	 * <p>
+	 * What to test:
+	 * <ul>
+	 * 	 <li> Check against null. It should fail.
+	 * 	 <li> Check against the OID that we have already extraced.
+	 * </ul>
 	 */
 	public final void testEqualsOID() {
 		long[] oid = new long[1];
 		oid[0] = testOID;
 		
-		if (testObj.equalsOID(null) == true)
+		if (testObj.equalsOID(null))
 			fail("equalsOID() fails");
-		if (testObj.equalsOID(oid) == false)
+		if (!testObj.equalsOID(oid))
 			fail("equalsOID() fails");
 	}
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.HObject#getFileFormat()}.
+	 * <p>
+	 * What to test:
+	 * <ul>
+	 * 	 <li> For the group, check against null. 
+	 *   <li> For the group, check against the testFile.
+	 * </ul>
 	 */
 	public final void testGetFileFormat() {
+		if (testObj.getFileFormat().equals(null))
+			fail("getFileFormat() failed.");
 		if (!testObj.getFileFormat().equals(testFile))
 			fail("getFileFormat() failed.");
 	}
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.HObject#getOID()}.
+	 * <p>
+	 * What to test:
+	 * <ul>
+	 *   <li> Check that OIDlist is not null.
+	 *   <li> Check that OID[0] is correct. 
+	 * </ul>
 	 */
 	public final void testGetOID() {
+		if (testObj.getOID() == null)
+			fail("getOID fails.");
 		if (testObj.getOID()[0] != testOID)
-		fail("getOID fails");
+			fail("getOID fails");
 	}
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.HObject#hasAttribute()}.
+	 * <p>
+	 * What to test:
+	 * <ul>
+	 *   <li> Check for Image dataset which has an attribute.
+	 *   <li> Check for base group which has no attributes.
+	 * </ul>
 	 */
 	public final void testHasAttribute() {
-		if (testObj.hasAttribute() != false)
+		try {
+			if (!testFile.get(H5TestFile.NAME_DATASET_IMAGE).hasAttribute())
+				fail("hasAttribute() fails.");
+		} catch (Exception e) {
+			fail("get() fails.");
+		}
+		if (testObj.hasAttribute())
 			fail("testAttribute() fails.");
 	}
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.HObject#toString()}.
+	 * <p>
+	 * What to test:
+	 * <ul>
+	 *   <li> Check for the group.
+	 * </ul>  
 	 */
 	public final void testToString() {
 		if (!testObj.toString().equals(GNAME.substring(1)))

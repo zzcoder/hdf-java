@@ -16,6 +16,8 @@ import junit.framework.TestCase;
 
 /**
  * @author Rishi R. Sinha
+ * This has to be removed because both the methods tested here are actually abstract methods and should be 
+ * tested elsewhere.
  *
  */
 public class MetadataTest extends TestCase {
