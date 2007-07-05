@@ -289,7 +289,7 @@ implements ActionListener, ItemListener
                 imageP.setLayout(new BorderLayout(5,5));
                 imageP.add(imageButton, BorderLayout.WEST);
                 imageP.add(choicePalette, BorderLayout.CENTER);
-                imageP.add(checkUnsignedByte=new JCheckBox("Read as Unsigned Byte", false), BorderLayout.EAST);
+                imageP.add(checkUnsignedByte=new JCheckBox("Read as Byte", false), BorderLayout.EAST);
                 imageP.setBorder(new TitledBorder(""));
 
                 // add imageview selection
@@ -656,7 +656,7 @@ implements ActionListener, ItemListener
             isImage = sd.isImageDisplay();
             isTrueColorImage = sd.isTrueColor();
             checkUnsignedByte.setEnabled(isImage);
-            checkUnsignedByte.setSelected(isImage && sd.getIsUnsignedByteForImage());
+            checkUnsignedByte.setSelected(isImage && sd.getIsImageByteData());
         }
         else if (dataset instanceof CompoundDS) {
             imageButton.setEnabled(false);
@@ -912,7 +912,7 @@ implements ActionListener, ItemListener
 
         if (dataset instanceof ScalarDS) {
             ScalarDS sd = (ScalarDS)dataset;
-            sd.setIsUnsignedByteForImage(imageButton.isSelected() && checkUnsignedByte.isSelected());
+            sd.setIsImageByteData(imageButton.isSelected() && checkUnsignedByte.isSelected());
         }
         
         //clear the old data
@@ -949,7 +949,6 @@ implements ActionListener, ItemListener
                 r = dimY/(double)y;
                 x = (int)(dimX/r);
             }
-
 
             selectedArea = new Rectangle();
             setPreferredSize(new Dimension(NAVIGATOR_SIZE, NAVIGATOR_SIZE));

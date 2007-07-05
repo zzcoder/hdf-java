@@ -90,10 +90,7 @@ public class CompoundDSTest extends TestCase {
 				fail("Member Order at position " + i + "should be " + 1 + ", while getMemberOrders returns " + orders[i]);
 		}
 		for (int i = 0; i < correctMemberCount; i++) {
-			assertNotNull(testDS.getMemeberDims(i));
-			if (testDS.getMemeberDims(i)[0] != 1)
-				fail("Member Dims at position " + i + "should be {" + 1 + 
-						"}, while getMemberOrders returns {" + testDS.getMemeberDims(i)[0]+ "}");
+			assertNull(testDS.getMemeberDims(i)); // all scalar data
 		}
 	}
 	

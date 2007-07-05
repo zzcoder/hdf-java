@@ -241,8 +241,8 @@ public class H5CompoundDS extends CompoundDS
 
         Object member_data = null;
         String member_name = null;
-        int tid=-1, atom_tid=-1, member_class=-1, member_size=0, 
-            fspace=-1, mspace=-1;
+        int tid=-1, atom_tid=-1, member_class=-1, member_size=0;
+        int spaceIDs[] = {-1, -1}; // spaceIDs[0]=mspace, spaceIDs[1]=fspace
 
         if (rank <= 0 ) {
             init(); // read data informatin into memory
@@ -263,38 +263,10 @@ public class H5CompoundDS extends CompoundDS
         int did = open();
         list = new Vector(flatNameList.size());
         Vector atomicList = new Vector();
-
         try // to match finally for closing resources
         {
             long[] lsize = {1};
-            boolean isAllSelected = true;
-            for (int i=0; i<rank; i++)
-            {
-                lsize[0] *= selectedDims[i];
-                if (selectedDims[i] < dims[i]) {
-                    isAllSelected = false;
-                }
-            }
-
-            if (lsize[0] == 0) {
-                throw new HDF5Exception("No data to read.\nEither the dataset or the selected subset is empty.");
-            }
-
-            if (isAllSelected)
-            {
-                mspace = HDF5Constants.H5S_ALL;
-                fspace = HDF5Constants.H5S_ALL;
-            }
-            else
-            {
-                fspace = H5.H5Dget_space(did);
-                
-                // When 1D dataspace is used in chunked dataset, reading is very slow.
-                // It is a known problem on HDF5 library for chunked dataset. 
-                // mspace = H5.H5Screate_simple(1, lsize, null);
-                mspace = H5.H5Screate_simple(rank, selectedDims, null);
-                H5.H5Sselect_hyperslab(fspace, HDF5Constants.H5S_SELECT_SET, startDims, selectedStride, selectedDims, null );
-            }
+            lsize[0] = selectHyperslab(did, spaceIDs);
 
             // read each of member data into a byte array, then extract
             // it into its type such, int, long, float, etc.
@@ -338,9 +310,9 @@ public class H5CompoundDS extends CompoundDS
                     } catch (Exception ex) {}
       
                     if (isVL) {
-                        H5.H5DreadVL( did, comp_tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, (Object[])member_data);
+                        H5.H5DreadVL( did, comp_tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, (Object[])member_data);
                     } else {
-                        H5.H5Dread( did, comp_tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, member_data);
+                        H5.H5Dread( did, comp_tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, member_data);
                     }
                 } catch (HDF5Exception ex2)
                 {
@@ -381,8 +353,8 @@ public class H5CompoundDS extends CompoundDS
 
         } finally
         {
-            try { H5.H5Sclose(fspace); } catch (Exception ex2) {}
-            try { H5.H5Sclose(mspace); } catch (Exception ex2) {}
+            try { H5.H5Sclose(spaceIDs[0]); } catch (Exception ex2) {}
+            try { H5.H5Sclose(spaceIDs[1]); } catch (Exception ex2) {}
             try { H5.H5Tclose(tid); } catch (Exception ex2) {}
             
             // close atomic types
@@ -415,43 +387,15 @@ public class H5CompoundDS extends CompoundDS
 
         Object member_data = null;
         String member_name = null;
-        int tid=-1, atom_tid=-1, member_class=-1, member_size=0, 
-            fspace=-1, mspace=-1;
+        int tid=-1, atom_tid=-1, member_class=-1, member_size=0; 
+        int spaceIDs[] = {-1, -1}; // spaceIDs[0]=mspace, spaceIDs[1]=fspace
 
         int did = open();
         Vector atomicList = new Vector();
-
         try // to match finally for closing resources
         {
             long[] lsize = {1};
-            boolean isAllSelected = true;
-            for (int i=0; i<rank; i++)
-            {
-                lsize[0] *= selectedDims[i];
-                if (selectedDims[i] < dims[i]) {
-                    isAllSelected = false;
-                }
-            }
-
-            if (lsize[0] == 0) {
-                throw new HDF5Exception("No data to read.\nEither the dataset or the selected subset is empty.");
-            }
-
-            if (isAllSelected)
-            {
-                mspace = HDF5Constants.H5S_ALL;
-                fspace = HDF5Constants.H5S_ALL;
-            }
-            else
-            {
-                fspace = H5.H5Dget_space(did);
-                
-                // When 1D dataspace is used in chunked dataset, reading is very slow.
-                // It is a known problem on HDF5 library for chunked dataset. 
-                // mspace = H5.H5Screate_simple(1, lsize, null);
-                mspace = H5.H5Screate_simple(rank, selectedDims, null);
-                H5.H5Sselect_hyperslab(fspace, HDF5Constants.H5S_SELECT_SET, startDims, selectedStride, selectedDims, null );
-            }
+            lsize[0] = selectHyperslab(did, spaceIDs);
 
             // read each of member data into a byte array, then extract
             // it into its type such, int, long, float, etc.
@@ -504,7 +448,7 @@ public class H5CompoundDS extends CompoundDS
                     if (tmpData != null) {
                         // BUG!!! does not write nested compound data and no exception was caught
                         //        need to check if it is a java error or C library error
-                        H5.H5Dwrite(did, comp_tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, tmpData);
+                        H5.H5Dwrite(did, comp_tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, tmpData);
                     }
                 } finally {
                     try { H5.H5Tclose(comp_tid); } catch (Exception ex2) {}
@@ -512,8 +456,8 @@ public class H5CompoundDS extends CompoundDS
             } // end of for (int i=0; i<num_members; i++)
         } finally
         {
-            try { H5.H5Sclose(fspace); } catch (Exception ex2) {}
-            try { H5.H5Sclose(mspace); } catch (Exception ex2) {}
+            try { H5.H5Sclose(spaceIDs[0]); } catch (Exception ex2) {}
+            try { H5.H5Sclose(spaceIDs[1]); } catch (Exception ex2) {}
             try { H5.H5Tclose(tid); } catch (Exception ex2) {}
             
             // close atomic types
@@ -525,6 +469,43 @@ public class H5CompoundDS extends CompoundDS
         }
         
         close(did);
+    }
+    
+    /**
+     * Set up the selection of hyperslab
+     * @param did IN dataset ID
+     * @param spaceIDs IN/OUT memory and file space IDs -- spaceIDs[0]=mspace, spaceIDs[1]=fspace
+     * @return total number of data point selected
+     */
+    private long selectHyperslab (int did, int[] spaceIDs) throws HDF5Exception {
+        long lsize = 1;
+        
+        boolean isAllSelected = true;
+        for (int i=0; i<rank; i++)
+        {
+            lsize *= selectedDims[i];
+            if (selectedDims[i] < dims[i]) {
+                isAllSelected = false;
+            }
+        }
+
+        if (isAllSelected)
+        {
+            spaceIDs[0] = HDF5Constants.H5S_ALL;
+            spaceIDs[1] = HDF5Constants.H5S_ALL;
+        }
+        else
+        {
+            spaceIDs[1] = H5.H5Dget_space(did);
+            
+            // When 1D dataspace is used in chunked dataset, reading is very slow.
+            // It is a known problem on HDF5 library for chunked dataset. 
+            //mspace = H5.H5Screate_simple(1, lsize, null);
+            spaceIDs[0] = H5.H5Screate_simple(rank, selectedDims, null);
+            H5.H5Sselect_hyperslab(spaceIDs[1], HDF5Constants.H5S_SELECT_SET, startDims, selectedStride, selectedDims, null );
+        }
+
+        return lsize;
     }
     
     /*
@@ -781,6 +762,8 @@ public class H5CompoundDS extends CompoundDS
             memberTypes = new Datatype[numberOfMembers];
             memberOrders = new int[numberOfMembers];
             isMemberSelected = new boolean[numberOfMembers];
+            memberDims = new Object[numberOfMembers];
+            
             for (int i=0; i<numberOfMembers; i++)
             {
                 isMemberSelected[i] = true;
@@ -788,6 +771,7 @@ public class H5CompoundDS extends CompoundDS
                 memberTypes[i] = new H5Datatype(memberTIDs[i]);
                 memberNames[i] = (String)flatNameList.get(i);
                 memberOrders[i] = 1;
+                memberDims[i] = null;
 
                 try { tclass = H5.H5Tget_class(memberTIDs[i]); }
                 catch (HDF5Exception ex ) {}
@@ -796,9 +780,6 @@ public class H5CompoundDS extends CompoundDS
                 {
                     int n = H5.H5Tget_array_ndims(memberTIDs[i]);
                     int mdim[] = new int[n];
-                    if (memberDims==null) {
-                        memberDims = new Object[numberOfMembers];
-                    }
                     H5.H5Tget_array_dims(memberTIDs[i], mdim, null);
                     memberDims[i] = mdim;
                     tmptid = H5.H5Tget_super(memberTIDs[i]);

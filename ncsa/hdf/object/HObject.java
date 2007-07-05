@@ -311,6 +311,9 @@ public abstract class HObject implements Serializable, DataFormat
      */
     public void setPath (String newPath) throws Exception
     {
+        if (newPath == null)
+            newPath = "/";
+        
         path = newPath;
     }
 

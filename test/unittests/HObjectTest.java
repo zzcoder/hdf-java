@@ -197,9 +197,11 @@ public class HObjectTest extends TestCase {
 		try {
 			testObj.setPath(null);
 		} catch (Exception e) {;}
+        
 		if (!path.equals(testObj.getPath())) {
 			fail("testPath changed the path name even though null was passed to it.");
 		}
+        
 		try {
 			testObj.setPath("testPath");
 		} catch (Exception e) {
