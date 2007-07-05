@@ -101,7 +101,7 @@ public abstract class Group extends HObject
             memberList = new Vector(size+5);
         }
 
-        if (object != null) {
+        if ( object != null && !memberList.contains(object) ) {
             memberList.add(object);
         }
     }
