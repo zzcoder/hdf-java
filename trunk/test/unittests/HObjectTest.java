@@ -259,8 +259,7 @@ public class HObjectTest extends TestCase {
 	 * </ul>
 	 */
 	public final void testGetFID() {
-		if (testObj.getFID() != testFile.getFID())
-			fail("getFID failed");
+		assertEquals(testObj.getFID(), testFile.getFID());
 	}
 
 	/**
@@ -273,13 +272,8 @@ public class HObjectTest extends TestCase {
 	 * </ul>
 	 */
 	public final void testEqualsOID() {
-		long[] oid = new long[1];
-		oid[0] = testOID;
-		
-		if (testObj.equalsOID(null))
-			fail("equalsOID() fails");
-		if (!testObj.equalsOID(oid))
-			fail("equalsOID() fails");
+		assertNotNull(testObj);
+		assertTrue(testObj.equalsOID(new long[] {testOID}));
 	}
 
 	/**
@@ -292,10 +286,8 @@ public class HObjectTest extends TestCase {
 	 * </ul>
 	 */
 	public final void testGetFileFormat() {
-		if (testObj.getFileFormat().equals(null))
-			fail("getFileFormat() failed.");
-		if (!testObj.getFileFormat().equals(testFile))
-			fail("getFileFormat() failed.");
+		assertNotNull(testObj.getFileFormat());
+		assertEquals(testObj.getFileFormat(), testFile);
 	}
 
 	/**
@@ -308,10 +300,8 @@ public class HObjectTest extends TestCase {
 	 * </ul>
 	 */
 	public final void testGetOID() {
-		if (testObj.getOID() == null)
-			fail("getOID fails.");
-		if (testObj.getOID()[0] != testOID)
-			fail("getOID fails");
+		assertNotNull(testObj.getOID());
+		assertEquals(testObj.getOID()[0], testOID);
 	}
 
 	/**
@@ -325,13 +315,11 @@ public class HObjectTest extends TestCase {
 	 */
 	public final void testHasAttribute() {
 		try {
-			if (!testFile.get(H5TestFile.NAME_DATASET_IMAGE).hasAttribute())
-				fail("hasAttribute() fails.");
+			assertTrue(testFile.get(H5TestFile.NAME_DATASET_IMAGE).hasAttribute());
 		} catch (Exception e) {
 			fail("get() fails.");
 		}
-		if (testObj.hasAttribute())
-			fail("testAttribute() fails.");
+		assertFalse(testObj.hasAttribute());
 	}
 
 	/**
@@ -343,8 +331,7 @@ public class HObjectTest extends TestCase {
 	 * </ul>  
 	 */
 	public final void testToString() {
-		if (!testObj.toString().equals(GNAME.substring(1)))
-			fail("toString() fails");
+		assertEquals(testObj.toString(), GNAME.substring(1));
 	}
 
 }

@@ -90,85 +90,76 @@ public class ScalarDSTest extends TestCase {
 		}
 	}
 
-	/*
-	 * This method tests whether the getInterlace, getImageDataRange, isImage, isImageDisplay, 
-	 * setIsImageDisplay, getIsunsignedByteForImage, setIsUnsignedByteForImage
-	 * I am testing the various functionalities specific to images on the image dataset.
-	 * For non image specific functionalities like isImage I test them on all available datasets.
-	 */
+	/*/
+	 * 
+	 * WWhat to test:
+     * <ul> 
+     *   <li> Test for general functionality
+     *   <ul>
+     *     <li> Check for all datasets whether it is an image or not (only image should return true).
+     *     <li> Check for all datasets whether imageDisplay is set (only image should return true).
+     *     <li> Get Image Data Range from image dataset and check if it is valid.
+     *     <li> Check the interlace value for the image dataset.
+     *     <li> Check if the image is unsigned byte.
+     *     <li> Check setting the image to unsigned byte.
+     *     <li> Check true color for the image dataset.
+     *   </ul>
+     * </ul>
+     */ 
 	public final void testImageFunctionality() {
-		if (!imageDset.isImage())
-			fail("Image Dataset is being returned as an non image dataset by isImage.");
-		if (!imageDset.isImageDisplay())
-			fail("Image Dataset is being returned as having non image display by isImageDisplay.");
-		double[] min_max = imageDset.getImageDataRange();
-		if (min_max == null)
-			fail("getImageDataRange returns null for the Image.");
-		if (min_max[0] != 0.0 || min_max[1] != 256.0)
-			fail("Min is 0.0 and Max is 256.0 while getImageDataRange returns Min as " + min_max[0] + "and Max as " + min_max[1]);
-		if (imageDset.getInterlace() != -1)
-			fail("Interlace should be -1 while getInterlace reports it as " + imageDset.getInterlace());
-		if (!imageDset.getIsUnsignedByteForImage())
-			fail("isUnsignedByteForImage is returned as false for an Image.");
+		assertTrue(imageDset.isImage());
+		assertTrue(imageDset.isImageDisplay());
+	
+		assertNotNull(imageDset.getImageDataRange());
+		assertEquals(imageDset.getImageDataRange()[0], 0.0);
+		assertEquals(imageDset.getImageDataRange()[1], 256.0);
+		
+		assertEquals(imageDset.getInterlace(), -1);
+		
+		assertFalse(imageDset.getIsUnsignedByteForImage());
 		imageDset.setIsUnsignedByteForImage(true);
-		if (!imageDset.getIsUnsignedByteForImage())
-			fail("isUnsignedByteForImage returns false after an explicity setIsUnsignedByteForImage(true).");
+		assertTrue(imageDset.getIsUnsignedByteForImage());
 		imageDset.setIsUnsignedByteForImage(false);
-		if (imageDset.getIsUnsignedByteForImage())
-			fail("isUnsignedByteForImage returns true after an explicity setIsUnsignedByteForImage(false).");
-		if (imageDset.isTrueColor())
-			fail("isTrueColor returns true for Image Dataset.");
-		if (intDset.isImage())
-			fail("Integer Dataset is being returned as an image dataset by isImage.");
-		if (floatDset.isImage())
-			fail("Float Dataset is being returned as an image dataset by isImage.");
-		if (charDset.isImage())
-			fail("Character Dataset is being returned as an image dataset by isImage.");
-		if (enumDset.isImage())
-			fail("Enumeration Dataset is being returned as an image dataset by isImage.");
-		if (imagePalete.isImage())
-			fail("Image Palete is being returned as an image dataset by isImage.");
-		if (ORDset.isImage())
-			fail("Object Reference Dataset is being returned as an image dataset by isImage.");
-		if (intDset.isImageDisplay())
-			fail("Integer Dataset is being returned as an image display dataset by isImageDisplay.");
-		if (floatDset.isImageDisplay())
-			fail("Float Dataset is being returned as an image dispay dataset by isImageDisplay.");
-		if (charDset.isImageDisplay())
-			fail("Character Dataset is being returned as an image dispay dataset by isImageDisplay.");
-		if (enumDset.isImageDisplay())
-			fail("Enumeration Dataset is being returned as an image dispay dataset by isImageDisplay.");
-		if (imagePalete.isImageDisplay())
-			fail("Image Palete is being returned as an image dispay dataset by isImageDisplay.");
-		if (ORDset.isImageDisplay())
-			fail("Object Reference Dataset is being returned as an image dispay dataset by isImageDisplay.");
+		assertFalse(imageDset.getIsUnsignedByteForImage());
+		
+		assertFalse(imageDset.isTrueColor());
+		
+		assertFalse(intDset.isImage());
+		assertFalse(floatDset.isImage());
+		assertFalse(charDset.isImage());
+		assertFalse(enumDset.isImage());
+		assertFalse(imagePalete.isImage());
+		assertFalse(ORDset.isImage());
+	
+		assertFalse(intDset.isImageDisplay());
+		assertFalse(floatDset.isImageDisplay());
+		assertFalse(charDset.isImageDisplay());
+		assertFalse(enumDset.isImageDisplay());
+		assertFalse(imagePalete.isImageDisplay());
+		assertFalse(ORDset.isImageDisplay());
+	
 		intDset.setIsImageDisplay(true);
-		if (!intDset.isImageDisplay())
-			fail("isImageDisplay returns false after an explicity setIsImageDisplay(true).");
+		assertTrue(intDset.isImageDisplay());
 		intDset.setIsImageDisplay(false);
-		if (intDset.isImageDisplay())
-			fail("isImageDisplay returns true after an explicity setIsImageDisplay(false).");
+		assertFalse(intDset.isImageDisplay());
 	}
 	
-	/*
-	 * Testing to make sure isText() method works. I test it against all available datasets. 
-	 */
+	 /* What to test:
+	  * <ul> 
+	  *   <li> Test for general functionality
+	  *   <ul>
+	  *     <li> For all datasets in the file check if it is text. Only string dataset should return true.
+	  *   </ul>
+	  * </ul>
+	  */ 
 	public final void testIsText() {
-		if (!strDset.isText())
-			fail("isText returns false for the string dataset.");
-		if (imageDset.isText())
-			fail("isText returns true for Image Dataset.");
-		if (intDset.isText())
-			fail("isText returns true for an Integer Dataset.");
-		if (floatDset.isText())
-			fail("isText returns true for a Float Dataset.");
-		if (charDset.isText())
-			fail("isText returns true for a Character Dataset.");
-		if (enumDset.isText())
-			fail("isText returns true for an Enumeration Dataset.");
-		if (imagePalete.isText())
-			fail("isText returns true for an Image Palete Dataset.");
-		if (ORDset.isText())
-			fail("isText returns true for an Object Reference Dataset.");
+		assertTrue(strDset.isText());
+		assertFalse(imageDset.isText());
+		assertFalse(intDset.isText());
+		assertFalse(floatDset.isText());
+		assertFalse(charDset.isText());
+		assertFalse(enumDset.isText());
+		assertFalse(ORDset.isText());
+		assertFalse(imagePalete.isText());
 	}
 }

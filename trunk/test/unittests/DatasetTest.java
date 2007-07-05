@@ -67,23 +67,26 @@ public class DatasetTest extends TestCase {
 	}
 	
 	/*
-	 * What to test:
+	 * For each dataset in the file we are:
 	 * <ul>
-	 * 	 <li> Getting the chunk size for the datasets.
-	 * 	 <li> Getting details about compression.
-	 *   <li> 
-	 * 
-	 * This method tests the setting and getting of basic metadata associated with a dataset like chunksize, datatype,
-	 * compression, is it byte to be converted to string, dimension names, dimensions, rank, height, size, selectedDims
-	 * selectedIndex, stride, width. In order to test all these methods I run them for each of the different 
-	 * datasets that are found in the test file.
-	 * 
+	 * 	 <li> checking the chunk size for the datasets.
+	 * 	 <li> checking details about compression.
+	 *   <li> cheking whether the byte array is to be converted to string.
+	 *   <li> checking the dimension names.
+	 *   <li> checking the dimension sizes.
+	 *   <li> checking the rank.
+	 *   <li> checking the selected dimensions.
+	 *   <li> checking the selected indexes.
+	 *   <li> checking the startdims.
+	 *   <li> checking the stride.
+	 *   <li> checking the width.
+	 *  </ul>
 	 */
 	public final void testMetadataAssociatedWithDataset() {
 		for (int i =0; i < dsetNames.length; i++) {
 			assertNull(dSets[i].getChunkSize());
 			assertTrue(dSets[i].getCompression().equals("NONE"));
-			//assertFalse(dSets[i].getConvertByteToString());
+			assertFalse(dSets[i].getConvertByteToString());
 			assertNull(dSets[i].getDimNames());
 			assertTrue(Arrays.equals(dSets[i].getDims(), H5TestFile.DIMs));
 			if (H5TestFile.NAME_DATASET_STR.equals("/" + dSets[i].getName()))

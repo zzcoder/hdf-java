@@ -59,14 +59,18 @@ public class CompoundDSTest extends TestCase {
 	}
 
 	/*
-	 * This method uses the testDS generated in the setUp method tests to see if each of the fields have the correct
-	 * type, name, order and dims or not.
+	 * For the Compund Dataset in the Test File, we are checking
+	 * <ul>
+	 *		<li> geting the memberCount.
+	 *		<li> the names of each member in the dataset.
+	 *		<li> the types of each member in the dataset.
+	 *		<li> the orders of each member in the dataset.
+	 *		<li> the dims of each member in the dataset.
+	 * </ul>
 	 */
 	public final void testFieldsHaveCorrectNameTypeOrderAndDims() {
 		int correctMemberCount = H5TestFile.COMPOUND_MEMBER_NAMES.length;
-		if (testDS.getMemberCount() != correctMemberCount)
-			fail("getMemberCount returns member count at " + testDS.getMemberCount() + 
-					"while the correct answer is" + correctMemberCount);
+		assertEquals(testDS.getMemberCount(), correctMemberCount);
 		String[] names = testDS.getMemberNames();
 		for (int i = 0; i < correctMemberCount; i++) {
 			if (!names[i].equals(H5TestFile.COMPOUND_MEMBER_NAMES[i]))
@@ -86,8 +90,7 @@ public class CompoundDSTest extends TestCase {
 				fail("Member Order at position " + i + "should be " + 1 + ", while getMemberOrders returns " + orders[i]);
 		}
 		for (int i = 0; i < correctMemberCount; i++) {
-			if (testDS.getMemeberDims(i) == null)
-				fail("getMemberDims returns a null.");
+			assertNotNull(testDS.getMemeberDims(i));
 			if (testDS.getMemeberDims(i)[0] != 1)
 				fail("Member Dims at position " + i + "should be {" + 1 + 
 						"}, while getMemberOrders returns {" + testDS.getMemeberDims(i)[0]+ "}");
@@ -95,8 +98,13 @@ public class CompoundDSTest extends TestCase {
 	}
 	
 	/*
-	 * This method tests the methods for selections for correctness and makes sure that selection, deselection and counts
-	 * are working properly.
+	 * For the Compund Dataset in the Test File, we are checking
+	 * <ul>
+	 *		<li> Geting the selectMemberCount method on the default selection.
+	 *		<li> setting ths member selection so that no member is selected.
+	 *		<li> setting the member selection so that all members are exlplicitly selected.
+	 *		<li> Adding one member at a time and checking if the addition is working properly.
+	 * </ul>
 	 */
 	public final void testSelectionDeselectionCountWorks() {
 		if (testDS.getSelectedMemberCount() != H5TestFile.COMPOUND_MEMBER_NAMES.length)
@@ -104,14 +112,12 @@ public class CompoundDSTest extends TestCase {
 					+ ", when it should return " + H5TestFile.COMPOUND_MEMBER_NAMES.length);
 		
 		testDS.setMemberSelection(false);
-		if (testDS.getSelectedMemberCount() != 0)
-			fail("setMemberSelection was set false yet getSelectedMemberCount returned " + testDS.getSelectedMemberCount());
+		assertEquals(testDS.getSelectedMemberCount(), 0);
 		testDS.setMemberSelection(true);
-		if (testDS.getSelectedMemberCount() != H5TestFile.COMPOUND_MEMBER_NAMES.length)
-			fail("setMemberSelection was set true yet getSelectedMemberCount returned " + testDS.getSelectedMemberCount());
+		assertEquals(testDS.getSelectedMemberCount(), H5TestFile.COMPOUND_MEMBER_NAMES.length);
 		testDS.setMemberSelection(false);
-		if (testDS.getSelectedMemberCount() != 0)
-			fail("setMemberSelection was set false yet getSelectedMemberCount returned " + testDS.getSelectedMemberCount());
+		assertEquals(testDS.getSelectedMemberCount(), 0);
+		
 		for (int i = 0; i < testDS.getMemberCount(); i++) {
 			testDS.selectMember(i);
 			int[] orders = testDS.getSelectedMemberOrders();
