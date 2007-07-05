@@ -138,19 +138,6 @@ public class FileFormatTest extends TestCase {
 	}
 
 	/**
-	 * Test method for {@link ncsa.hdf.object.FileFormat#getLibversion()}.
-	 * <p>
-	 * <ul>
-	 *   <li> current Version is NCSA HDF5 1.6.6. Would need to be modified if a new version is tested.
-	 * </ul>
-	 */
-	public final void testGetLibversion() {
-		assertEquals(testFile.getLibversion(), "NCSA HDF5 1.6.6");
-	}
-
-
-	
-	/**
 	 * Test method for {@link ncsa.hdf.object.FileFormat#getFileExtensions()}.
 	 * <p>
 	 * <ul>
