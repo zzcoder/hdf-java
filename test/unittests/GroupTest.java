@@ -19,10 +19,7 @@ import java.util.List;
  *
  */
 public class GroupTest extends TestCase {
-	
-    private static final H5File H5FILE = new H5File();
-    private static final String GNAME = H5TestFile.NAME_GROUP;
-    
+	    
     private H5File testFile = null;
     private Group testGroup = null;
     
@@ -38,10 +35,10 @@ public class GroupTest extends TestCase {
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		
+		H5File H5FILE = new H5File();
         testFile = (H5File)H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
         assertNotNull(testFile);
-        testGroup = (Group) testFile.get(GNAME);
+        testGroup = (Group) testFile.get(H5TestFile.NAME_GROUP);
         assertNotNull(testGroup);
 	}
 
@@ -78,8 +75,7 @@ public class GroupTest extends TestCase {
 	 */
 	public void testClear() {
 		testGroup.clear();
-		if (testGroup.getMemberList().size() != 0)
-			fail("Clear Not Functional");
+		assertEquals(testGroup.getMemberList().size(), 0);
 	}
 
 	/**
@@ -104,10 +100,10 @@ public class GroupTest extends TestCase {
 	public void testAddToMemberList() {
 		int previous_size = testGroup.getMemberList().size();
 		testGroup.addToMemberList(null);
-		if (testGroup.getMemberList().size() != previous_size)
-			fail("addToMemberList adds a null to the member list.");
-		Group tmp = new H5Group(testFile, "tmp", "/grp0/", testGroup);
+		assertEquals(testGroup.getMemberList().size(), previous_size);
 		
+		
+		Group tmp = new H5Group(testFile, "tmp", "/grp0/", testGroup);
 		testGroup.addToMemberList((HObject)testGroup.getMemberList().get(0));
 		if (testGroup.getMemberList().size() != previous_size)
 			fail("addToMemberList adds an existing member to the member list.");
@@ -142,6 +138,7 @@ public class GroupTest extends TestCase {
 		int previous_size = testGroup.getMemberList().size();
 		List memberList = testGroup.getMemberList();
 		Iterator it = memberList.iterator();
+		
 		testGroup.removeFromMemberList(null);
 		if (testGroup.getMemberList().size() != previous_size)
 			fail("removeFromMemberList removes a null from the member list.");
@@ -172,10 +169,7 @@ public class GroupTest extends TestCase {
 		int position = 0;
 		while (it.hasNext()) {
 			HObject obj = (HObject) it.next();
-			if (!objs[position].equals(obj.getName())) {
-				fail("Objects inside the Group Dont Match\n");
-			}
-			position++;
+			assertEquals(objs[position++], obj.getName());
 		}
 	}
 
@@ -187,10 +181,7 @@ public class GroupTest extends TestCase {
 	 * </ul>
 	 */
 	public void testGetParent() {
-		HObject parent = testGroup.getParent();
-	
-		if (!parent.getName().equals("/"))
-			fail("Incorrect Parent Name");
+		assertEquals(testGroup.getParent().getName(), "/");
 	}
 
 	/**
@@ -201,8 +192,7 @@ public class GroupTest extends TestCase {
 	 * </ul>  
 	 */
 	public void testIsRoot() {
-		if (testGroup.isRoot())
-			fail("This node is not root");
+		assertFalse(testGroup.isRoot());
 	}
 
 	/**
@@ -213,10 +203,7 @@ public class GroupTest extends TestCase {
 	 * <ul>
 	 */
 	public void testGetNumberOfMembersInFile() {
-		int nmf = testGroup.getNumberOfMembersInFile();
-		
-		if (nmf != 8)
-			fail("Wrong number of members");
+		assertEquals(testGroup.getNumberOfMembersInFile(), 8);
 	}
 
 }

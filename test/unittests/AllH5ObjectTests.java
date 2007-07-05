@@ -18,24 +18,21 @@ public class AllH5ObjectTests {
         //$JUnit-BEGIN$
         
         // ncsa.hdf.object.h5 package
-        suite.addTestSuite(H5CompoundDSTest.class);
+        /*suite.addTestSuite(H5CompoundDSTest.class);
         suite.addTestSuite(H5BugFixTest.class);
         suite.addTestSuite(H5ScalarDSTest.class);
         suite.addTestSuite(H5GroupTest.class);
         suite.addTestSuite(H5DatatypeTest.class);
         suite.addTestSuite(H5FileTest.class);
-        suite.addTestSuite(CompoundDSTest.class);
+        suite.addTestSuite(CompoundDSTest.class);*/
         suite.addTestSuite(DatasetTest.class);
-        suite.addTestSuite(ScalarDSTest.class);
+        /*suite.addTestSuite(ScalarDSTest.class);
         suite.addTestSuite(AttributeTest.class);
-        suite.addTestSuite(DataFormatTest.class);
         suite.addTestSuite(DatatypeTest.class);
         suite.addTestSuite(FileFormatTest.class);
         suite.addTestSuite(GroupTest.class);
         suite.addTestSuite(HObjectTest.class);
-        suite.addTestSuite(H5CompoundDSTest.class);
-       	suite.addTestSuite(MetadataTest.class);
-        
+        suite.addTestSuite(H5CompoundDSTest.class);*/
         //$JUnit-END$
         return suite;
     }

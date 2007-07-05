@@ -12,6 +12,8 @@ import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.h5.H5File;
 import junit.framework.TestCase;
+
+import java.util.Arrays;
 import java.util.List;
 /**
  * @author Rishi R. Sinha
@@ -71,6 +73,13 @@ public class AttributeTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.Attribute#Attribute(java.lang.String, ncsa.hdf.object.Datatype, long[])}.
+	 * <p>
+	 * Here we test:
+	 * 	<ul>
+	 * 		<li> Creating a new attribute with no value.
+	 * 		<li> Setting the attribute value.
+	 * 	</ul>
+	 * 
 	 */
 	public final void testAttributeStringDatatypeLongArray() {
 		long[] attrDims = {1};
@@ -80,11 +89,16 @@ public class AttributeTest extends TestCase {
         Attribute attr = new Attribute(attrName, attrType, attrDims);
         attr.setValue(classValue);
         assertNotNull(attr);
-        assertTrue(classValue[0].equals(attr.toString("|")));
+        assertEquals(classValue[0], attr.toString("|"));
 	}
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.Attribute#Attribute(java.lang.String, ncsa.hdf.object.Datatype, long[], java.lang.Object)}.
+	 * <p>
+	 * Here we test:
+	 * 	<ul>
+	 * 		<li> Creating a new attribute with a value.
+	 * 	</ul>
 	 */
 	public final void testAttributeStringDatatypeLongArrayObject() {
 		long[] attrDims = {1};
@@ -93,93 +107,101 @@ public class AttributeTest extends TestCase {
         Datatype attrType = new H5Datatype(Datatype.CLASS_STRING, classValue[0].length()+1, -1, -1);
         Attribute attr = new Attribute(attrName, attrType, attrDims, classValue);
         assertNotNull(attr);
+        assertEquals(classValue[0], attr.toString("|"));
 	}
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.Attribute#getValue()}.
+	 * 
+	 * Here we test:
+	 * 	<ul>
+	 * 		<li> Getting the value for the two attributes (the string attribute and the int array attribute).
+	 * 	</ul>
 	 */
 	public final void testGetValue() {
-		String[] value = (String[]) strAttr.getValue();
-		if (!value[0].equals("String attribute."))
-			fail("getValue() fails.");
-		
-		int[] intValue = (int[]) arrayIntAttr.getValue();
-		long[] dims = arrayIntAttr.getDataDims();
-		
-		for (int i = 0; i < dims[0]; i++) {
-			if (intValue[i] != i+1)
-				fail("getValue() fails");
-		}
+		assertEquals(((String[]) strAttr.getValue())[0], "String attribute.");
+		assertTrue(Arrays.equals((int []) arrayIntAttr.getValue(), new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}));
 	}
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.Attribute#setValue(java.lang.Object)}.
+	 * <p>
+	 *  Here we test:
+	 * 	<ul>
+	 * 		<li> Setting new value for the two attributes (the string attribute and the int array attribute).
+	 * 	</ul>
 	 */
 	public final void testSetValue() {
-		String[] tempValue = {"Temp String Value"};
 		String[] prevValue = (String[]) strAttr.getValue();
-		strAttr.setValue(tempValue);
-		String[] value = (String[]) strAttr.getValue();
-		if (!value[0].equals("Temp String Value"))
-			fail("setValue() fails.");
+		strAttr.setValue("Temp String Value");
+		assertEquals(((String) strAttr.getValue()), "Temp String Value");
 		strAttr.setValue(prevValue);
 		
-		int[] tempIntArray = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 		int[] intPrevValue = (int[]) arrayIntAttr.getValue();
-		arrayIntAttr.setValue(tempIntArray);
-		
-		int[] intValue = (int[]) arrayIntAttr.getValue();
-		long[] dims = arrayIntAttr.getDataDims();
-		
-		for (int i = 0; i < dims[0]; i++) {
-			if (intValue[i] != i)
-				fail("getValue() fails");
-		}
+		arrayIntAttr.setValue(new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+		assertTrue(Arrays.equals((int [])arrayIntAttr.getValue(), new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}));
 		arrayIntAttr.setValue(intPrevValue);
 	}
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.Attribute#getName()}.
+	 * <p>
+	 * Here we test:
+	 * 	<ul>
+	 * 		<li> Getting the names of the two attributes (the string attribute and the int array attribute).
+	 * 	</ul>
 	 */
 	public final void testGetName() {
-		if (!strAttr.getName().equals("strAttr"))
-			fail("getName() fails.");
-		if (!arrayIntAttr.getName().equals("arrayInt"))
-			fail("getName() fails");
+		assertTrue(strAttr.getName().equals("strAttr"));
+		assertTrue(arrayIntAttr.getName().equals("arrayInt"));
 	}
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.Attribute#getRank()}.
+	 * <p>
+	 * Here we test:
+	 * 	<ul>
+	 * 		<li> Getting the rank for the two attributes (the string attribute and the int array attribute).
+	 * 	</ul>
 	 */
 	public final void testGetRank() {
-		if (strAttr.getRank() != 1)
-			fail("getRank() fails.");
-		if (arrayIntAttr.getRank() != 1)
-			fail("getRank() fails");
+		assertEquals(strAttr.getRank(), 1);
+		assertEquals(arrayIntAttr.getRank(), 1);
 	}
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.Attribute#getDataDims()}.
+	 * <p>
+	 * Here we test:
+	 * 	<ul>
+	 * 		<li> Getting the dimensionalities for the two attributes (the string attribute and the int array attribute).
+	 * 	</ul>
 	 */
 	public final void testGetDataDims() {
-		if ((strAttr.getDataDims())[0] != 1)
-			fail("getDataDims() fails.");
-		if (arrayIntAttr.getDataDims()[0] != 10)
-			fail("getDataDims() fails");
+		assertEquals(strAttr.getDataDims()[0], 1);
+		assertEquals(arrayIntAttr.getDataDims()[0], 10);
 	}
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.Attribute#getType()}.
+	 * <p>
+	 * Here we test:
+	 * 	<ul>
+	 * 		<li> Getting the value for the two attributes (the string attribute and the int array attribute).
+	 * 	</ul>
 	 */
 	public final void testGetType() {
-		if (!strAttr.getType().getDatatypeDescription().equals("String, length = 20"))
-			fail("getType() fails.");
-		if (!arrayIntAttr.getType().getDatatypeDescription().equals("32-bit integer"))
-			fail("getType() fails");
+		assertTrue(strAttr.getType().getDatatypeDescription().equals("String, length = 20"));
+		assertTrue(arrayIntAttr.getType().getDatatypeDescription().equals("32-bit integer"));
 	}
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.Attribute#isUnsigned()}.
+	 * <p>
+	 * Here we test:
+	 * 	<ul>
+	 * 		<li> Check if the two attributes (the string attribute and the int array attribute) are unsigned.
+	 * 	</ul>
 	 */
 	public final void testIsUnsigned() {
 		assertFalse(strAttr.isUnsigned());
@@ -188,12 +210,15 @@ public class AttributeTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.Attribute#toString(java.lang.String)}.
+	 * <p>
+	 * Here we test:
+	 * 	<ul>
+	 * 		<li> the toString method for the two attributes (the string attribute and the int array attribute).
+	 * 	</ul>
 	 */
 	public final void testToStringString() {
-		if (!strAttr.toString(",").equals("String attribute."))
-			fail("toString(string) fails for string.");
-		if (!arrayIntAttr.toString(",").equals("1,2,3,4,5,6,7,8,9,10"))
-			fail("toString(string) fails for integer array.");
+		assertTrue(strAttr.toString(",").equals("String attribute."));
+		assertTrue(arrayIntAttr.toString(",").equals("1,2,3,4,5,6,7,8,9,10"));
 	}
 
 }

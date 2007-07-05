@@ -114,6 +114,8 @@ public class DatatypeTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.Datatype#getDatatypeClass()}.
+	 * <p>
+	 * We test for every combination of class, size and possible signs.
 	 */
 	public final void testGetDatatypeClass() {
 		int counter = 0;
@@ -133,8 +135,7 @@ public class DatatypeTest extends TestCase {
 						break;
 					}
 					for (int l = 0; l < n_sizes; l++) {
-						if (baseTypes[counter++].getDatatypeClass() != classes[i])
-							fail("getDatatypeClass() failed for Class" + classes[i]);
+						assertEquals(baseTypes[counter++].getDatatypeClass(), classes[i]);
 					}
 				}
 			}
@@ -143,6 +144,8 @@ public class DatatypeTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.Datatype#getDatatypeSize()}.
+	 * <p>
+	 * We test for every combination of class, size and possible signs.
 	 */
 	public final void testGetDatatypeSize() {
 		int counter = 0;
@@ -162,8 +165,7 @@ public class DatatypeTest extends TestCase {
 						break;
 					}
 					for (int l = 0; l < n_sizes; l++) {
-						if (baseTypes[counter++].getDatatypeSize() != sizes[l])
-							fail("getDatatypeClass() failed for size" + sizes[l]);
+						assertEquals(baseTypes[counter++].getDatatypeSize(), sizes[l]);
 					}
 				}
 			}
@@ -172,6 +174,8 @@ public class DatatypeTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.Datatype#getDatatypeOrder()}.
+	 * <p>
+	 * We test for every combination of class, size and possible signs.
 	 */
 	public final void testGetDatatypeOrder() {
 		int counter = 0;
@@ -191,8 +195,7 @@ public class DatatypeTest extends TestCase {
 						break;
 					}
 					for (int l = 0; l < n_sizes; l++) {
-						if (baseTypes[counter++].getDatatypeOrder() != orders[j])
-							fail("getDatatypeOrder() failed for Order" + orders[j]);
+						assertEquals(baseTypes[counter++].getDatatypeOrder(), orders[j]);
 					}
 				}
 			}
@@ -201,6 +204,8 @@ public class DatatypeTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.Datatype#getDatatypeSign()}.
+	 * <p>
+	 * We test for every combination of class, size and possible signs.
 	 */
 	public final void testGetDatatypeSign() {
 		int counter = 0;
@@ -220,8 +225,7 @@ public class DatatypeTest extends TestCase {
 						break;
 					}
 					for (int l = 0; l < n_sizes; l++) {
-						if (baseTypes[counter++].getDatatypeSign() != signs[k])
-							fail("getDatatypeSigns() failed for Order" + signs[k]);
+						assertEquals(baseTypes[counter++].getDatatypeSign(), signs[k]);
 					}
 				}
 			}
@@ -230,16 +234,19 @@ public class DatatypeTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.Datatype#setEnumMembers(java.lang.String)}.
+	 * <p>
+	 * create a new enum data type set it to two different values and check it.
 	 */
 	public final void testSetEnumMembers() {
 		Datatype ed = new H5Datatype(Datatype.CLASS_ENUM, 2, Datatype.ORDER_NONE, Datatype.NSGN);
 		ed.setEnumMembers("low=20, high=40");
-		if (!ed.getEnumMembers().equals("low=20, high=40"))
-			fail("setEnumMembers() or getEnumMembers() failed\n");
+		assertEquals(ed.getEnumMembers(), "low=20, high=40");
 	}
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.Datatype#getEnumMembers()}.
+	 * <p>
+	 * look at {@link ncsa.hdf.object.Datatype#setEnumMembers(java.lang.String)}.
 	 */
 	public final void testGetEnumMembers() {
 		testSetEnumMembers();
@@ -248,6 +255,8 @@ public class DatatypeTest extends TestCase {
 	/**
 	 * Test method for {@link ncsa.hdf.object.Datatype#getDatatypeDescription()}.
 	 * RISHI SINHA - THE METHOD CALLED IS ONE FOR H5 WHICH OVERRIDES THE BASE CALL.
+	 * <p>
+	 * We test for every combination of class, size and possible signs.
 	 */
 	public final void testGetDatatypeDescription() {
 		int counter = 0;
@@ -267,9 +276,7 @@ public class DatatypeTest extends TestCase {
 						break;
 					}
 					for (int l = 0; l < n_sizes; l++) {
-						if (!baseTypes[counter].getDatatypeDescription().equals(descriptions[counter]))
-							fail("getDatatypeDescription() fails on " + descriptions[counter] + " + " + baseTypes[counter].getDatatypeDescription() + " + " + counter);
-						counter++;
+						assertEquals(baseTypes[counter].getDatatypeDescription(), descriptions[counter]);
 					}
 				}
 			}
@@ -277,6 +284,8 @@ public class DatatypeTest extends TestCase {
 	}
 	/** ABSTRACT METHOD
 	 * Test method for {@link ncsa.hdf.object.Datatype#isUnsigned()}.
+	 * <p>
+	 * We test for every combination of class, size and possible signs.
 	 */
 	public final void testIsUnsigned() {
 		int counter = 0;

@@ -3,15 +3,13 @@
  */
 package test.unittests;
 
+import java.util.Enumeration;
+
 import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.h5.H5File;
-import ncsa.hdf.object.Group;
-import ncsa.hdf.object.Datatype;
-import java.util.Enumeration;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  * @author rsinha
@@ -58,155 +56,65 @@ public class FileFormatTest extends TestCase {
 	}
 
 	/**
-	 * Test method for {@link ncsa.hdf.object.FileFormat#FileFormat(java.lang.String)}.
-	 */
-	public final void testFileFormat() {
-		FileFormat f = new H5File(H5TestFile.NAME_FILE_H5);
-		assertNotNull(f);
-	}
-
-	/**
-	 * Test method for {@link ncsa.hdf.object.FileFormat#open()}.
-	 */
-	public final void testOpen() {
-		int fid = 0;
-		try {
-			fid = testFile.open();
-		} catch (Exception ex) {
-			fail("open() failed " + ex.getMessage());
-		}
-		if (fid < 0)
-			fail("open() failed");
-		try {
-		testFile.close();
-		} catch (Exception ex) {
-			fail("close() failed" + ex.getMessage());
-		}
-		try {
-			testFile.open();
-		} catch (Exception ex) {
-			fail("open() failed " + ex.getMessage());
-		}
-        assertNotNull(testFile);
-	}
-
-	/**
-	 * Test method for {@link ncsa.hdf.object.FileFormat#open(java.lang.String, int)}.
-	 */
-	public final void testOpenStringInt() {
-	    // Request the implementing class of FileFormat: H5File
-	    FileFormat h5file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-	         
-	    try {
-	     FileFormat test1 =  h5file.open(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
-	     assertNotNull(test1);
-	     test1.close();
-	    } catch (Exception ex) {
-	    	fail("open(String, Int) failed " + ex.getMessage());
-	    }
-	    
-	}
-
-	/**
 	 * Test method for {@link ncsa.hdf.object.FileFormat#create(java.lang.String, int)}.
+	 * <p>
+	 * What to test:
+     * <ul> 
+     *   <li> Create a file that is already created with option FILE_CREATE_OPEN.
+     *   <li> Create a file that is already created and opened with option FILE_CREATE_DELETE.
+     *   <li> Create a file that is already created and not opened with FILE_CREATE_DELETE.
+     *   <li> Create a file that is new with FILE_CREATE_DELETE.
+     *   <li> Create a file that is new with FILE_CREATE_OPEN.
+     * </ul>
+     * 
 	 */
 	public final void testCreateStringInt() {
 		FileFormat f = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-		
+
 		try {
-			FileFormat test1 = f.create(H5TestFile.NAME_FILE_H5, FileFormat.FILE_CREATE_OPEN);
-			assertNotNull(test1);
+			f.create(H5TestFile.NAME_FILE_H5, FileFormat.FILE_CREATE_OPEN);
 		} catch (Exception ex) {
 			fail("Create Failed " + ex.getMessage());
 		}
 		try {
-			FileFormat test1 = f.create(H5TestFile.NAME_FILE_H5, FileFormat.FILE_CREATE_DELETE);
-			assertNotNull(test1);
+			f.create(H5TestFile.NAME_FILE_H5, FileFormat.FILE_CREATE_DELETE);
 		} catch (Exception ex) {
 			; //Expected to fail.
+		}
+		try {
+			f.create("simpleFile", FileFormat.FILE_CREATE_DELETE);
+		} catch (Exception ex) {
+			fail("Create failed " + ex.getMessage());
+		}
+		try {
+			f.create("testFile", FileFormat.FILE_CREATE_DELETE);
+		} catch (Exception ex) {
+			fail("Create failed " + ex.getMessage());
+		}
+		try {
+			f.create("testFile", FileFormat.FILE_CREATE_OPEN);
+		} catch (Exception ex) {
+			fail("Create failed " + ex.getMessage());
 		}
 	}
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.FileFormat#getNumberOfMembers()}.
+	 * <p>
+	 * <ul>
+	 * 		<li> Test the number of compements.
+	 *  </ul>
 	 */
 	public final void testGetNumberOfMembers() {
-		int n = testFile.getNumberOfMembers();
-		if (n != 21)
-			fail("getNumberOfMembers() fails\n");
+		assertEquals(testFile.getNumberOfMembers(), 21);
 	}
 
 	/**
-	 * Test method for {@link ncsa.hdf.object.FileFormat#close()}.
-	 */
-	public final void testClose() {
-		testOpen();
-	}
-
-	/**
-	 * Test method for {@link ncsa.hdf.object.FileFormat#getRootNode()}.
-	 */
-	public final void testGetRootNode() {
-		assertNotNull(testFile);
-		try {
-		testFile.open();
-		}
-		catch (Exception e) {
-			;
-		}
-		DefaultMutableTreeNode theNode = (DefaultMutableTreeNode) testFile.getRootNode();
-		assertNotNull(theNode);
-		Group grp = (Group) theNode.getUserObject();
-		if (!grp.getFullName().equals("/" + H5TestFile.NAME_FILE_H5))
-			fail("getRootNode() fails");
-	}
-
-	/**
-	 * Test method for {@link ncsa.hdf.object.FileFormat#getFilePath()}.
-	 */
-	public final void testGetFilePath() {
-		if (!testFile.getFilePath().equals("TestHDF5.h5"))
-			fail("getFilePath() fails");
-	}
-
-	/**
-	 * Test method for {@link ncsa.hdf.object.FileFormat#isReadOnly()}.
-	 */
-	public final void testIsReadOnly() {
-		if (testFile.isReadOnly())
-			fail("isReady() fails."); // TODO
-	}
-
-	/**
-	 * Test method for {@link ncsa.hdf.object.FileFormat#createDatatype(int, int, int, int)}.
-	 */
-	public final void testCreateDatatypeIntIntIntInt() {
-		Datatype dt = null;
-		try {
-		dt = testFile.createDatatype(Datatype.CLASS_INTEGER, 32, Datatype.ORDER_NONE, Datatype.NSGN);
-		} catch (Exception ex) {
-			fail("createDatatype() failed" + ex.getMessage());
-		}
-		if (!dt.getDatatypeDescription().equals("32-bit integer"))
-			fail("createDatatype(int, int, int, int) created wrong datatype"); // TODO
-	}
-
-	/**
-	 * Test method for {@link ncsa.hdf.object.FileFormat#createDatatype(int, int, int, int, java.lang.String)}.
-	 */
-	public final void testCreateDatatypeIntIntIntIntString() {
-		Datatype dt = null;
-		try {
-		dt = testFile.createDatatype(Datatype.CLASS_INTEGER, 32, Datatype.ORDER_NONE, Datatype.NSGN, "INTEGER");
-		} catch (Exception ex) {
-			fail("createDatatype() failed" + ex.getMessage());
-		}
-		if (!dt.getDatatypeDescription().equals("32-bit unsigned integer"))
-			fail("createDatatype(int, int, int, int, string) created wrong datatype");
-	}
-
-		/**
 	 * Test method for {@link ncsa.hdf.object.FileFormat#getFileFormat(java.lang.String)}.
+	 * <p>
+	 * <ul>
+	 *   <li> Test for HDF5.
+	 * </ul>  
 	 */
 	public final void testGetFileFormat() {
 		FileFormat f = FileFormat.getFileFormat("HDF5");
@@ -215,70 +123,74 @@ public class FileFormatTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.FileFormat#getFileFormatKeys()}.
+	 * <p>
+	 * <ul>
+	 *   <li> current file formats are HDF5, HDF.
+	 * </ul>  
 	 */
 	public final void testGetFileFormatKeys() {
 		Enumeration e = FileFormat.getFileFormatKeys();
 		String keys[] = {"HDF5", "HDF"};
 		int pos = 0;
 		while (e.hasMoreElements()) {
-			if (!keys[pos++].equals(e.nextElement()))
-				fail("getFileFormatKeys() failed.");
+			assertEquals(keys[pos++], e.nextElement());
 		}
 	}
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.FileFormat#getLibversion()}.
+	 * <p>
+	 * <ul>
+	 *   <li> current Version is NCSA HDF5 1.6.6. Would need to be modified if a new version is tested.
+	 * </ul>
 	 */
 	public final void testGetLibversion() {
-		if (!testFile.getLibversion().equals("NCSA HDF5 1.6.6"))
-			fail("getLibVersion() fails."); // TODO
+		assertEquals(testFile.getLibversion(), "NCSA HDF5 1.6.6");
 	}
 
-	/**
-	 * Test method for {@link ncsa.hdf.object.FileFormat#isThisType(java.lang.String)}.
-	 */
-	public final void testIsThisTypeString() {
-		if (!testFile.isThisType(H5TestFile.NAME_FILE_H5))
-			fail("isThisType(FileName) failed."); // TODO
-	}
-
-	/**
-	 * Test method for {@link ncsa.hdf.object.FileFormat#isThisType(ncsa.hdf.object.FileFormat)}.
-	 */
-	public final void testIsThisTypeFileFormat() {
-		if (!testFile.isThisType(testFile))
-			fail("isThisType(FileFormat) failed."); // TODO
-	}
 
 	
 	/**
 	 * Test method for {@link ncsa.hdf.object.FileFormat#getFileExtensions()}.
+	 * <p>
+	 * <ul>
+	 *   <li> current file extensions are hdf, h4, hdf5, h5.
+	 * </ul>
 	 */
 	public final void testGetFileExtensions() {
-		if (!FileFormat.getFileExtensions().equals("hdf, h4, hdf5, h5"))
-			fail("getFileExtensions() fails");
+		assertEquals(FileFormat.getFileExtensions(), "hdf, h4, hdf5, h5");
 	}
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.FileFormat#getFID()}.
+	 * <p>
+	 * <ul>
+	 *   <li> Make sure the fid is not -1.
+	 * </ul>
 	 */
 	public final void testGetFID() {
-		int fid = testFile.getFID();
-		if (fid == -1)
-			fail("getFID() fails.");
+		assertNotSame(testFile.getFID(), -1);
 	}
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.FileFormat#addFileExtension(java.lang.String)}.
+	 * <p>
+	 * <ul>
+	 *   <li> Add file extension he5.
+	 * </ul>
 	 */
 	public final void testAddFileExtension() {
 		FileFormat.addFileExtension("he5");
-		if (!FileFormat.getFileExtensions().equals("hdf, h4, hdf5, h5, he5"))
-			fail("addFileExtension() fails");
+		assertEquals(FileFormat.getFileExtensions(), "hdf, h4, hdf5, h5, he5");
 	}
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.FileFormat#getInstance(java.lang.String)}.
+	 * <p>
+	 * <ul>
+	 *   <li> Open an non existing file.
+	 *   <li> Open an exisiting file.
+	 * </ul>
 	 */
 	public final void testGetInstance() {
 		H5File f = null;
@@ -301,10 +213,16 @@ public class FileFormatTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.FileFormat#getFileFormats()}.
+	 * <p>
+	 * <ul>
+	 *   <li> Test that the FileFormat object is formed for HDF5.
+	 * </ul>
 	 */
 	public final void testGetFileFormats() {
 		FileFormat f = FileFormat.getFileFormat("HDF5");
 		assertNotNull(f);
+		FileFormat f1 = FileFormat.getFileFormat("ALL");
+		assertNull(f1);
 	}
 
 }
