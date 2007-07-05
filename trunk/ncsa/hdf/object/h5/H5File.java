@@ -693,39 +693,6 @@ public class H5File extends FileFormat
         return newNode;
     }
 
-
-    /**
-     * Copy a data object to a group. The following example shows how to copy
-     * an object to a given group.
-     * <pre>
-     public static void TestHDF5Copy (String filename, String objName) throws Exception
-        {
-            // Get the source dataset
-            H5File file = new H5File(filename, H5File.READ);
-            file.open();
-
-            // Create a new file
-            H5File newFile = (H5File) file.create(filename+"_new.h5");
-            newFile.open();
-
-            // NOTE: have to use the desitionation file to do the copy
-            // Copy the dataset to the destination's root group
-           Group group = (Group)newFile.get("/");
-           file.copy(file.get(objName), group);
-
-           // Make another copy but with different name
-            file.copy(file.get(objName), group, "another_copy");
-
-            file.close();
-            newFile.close();
-        }
-     * </pre>
-     * @param srcObj   The object to copy.
-     * @param dstGroup The destination group for the new object.
-     * @param dstName  The name of the new object. If dstName is null, the name
-     *                 of the new object will be the same as srcObject.
-     * @return The new node containing the new object.
-     */
     private TreeNode copyDataset(Dataset srcDataset, H5Group pgroup, String dstName)
          throws Exception
     {

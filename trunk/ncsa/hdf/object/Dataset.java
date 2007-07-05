@@ -203,6 +203,8 @@ public abstract class Dataset extends HObject
                 ((Vector) data).setSize(0);
             }
      		data = null;
+            originalBuf = null;
+            convertedBuf = null;
      	}
      	isDataLoaded = false;
     }
@@ -816,18 +818,13 @@ public abstract class Dataset extends HObject
             } else {
                 sdata = (short[])data_out;
             }
+            
             byte[] bdata = (byte[])data_in;
-            for (int i=0; i<size; i++)
-            {
-                //value = (short)bdata[i];
-                //if (value < 0) value += 256;
-                //sdata[i] = value;
-                if((bdata[i] & 0x80)==0x80) {
-                    sdata[i] = (short) (128 + (bdata[i] & 0x7f));
-                } else {
-                    sdata[i] = bdata[i];
-                }
-            }
+            for (int i=0; i<size; i++) 
+            { 
+                sdata[i] = (short) (((short)bdata[i] + 256) & 0xFF); 
+            } 
+
             data_out = sdata;
         }
         else if (dname == 'S') {
@@ -837,16 +834,13 @@ public abstract class Dataset extends HObject
             } else {
                 idata = (int[]) data_out;
             }
+            
             short[] sdata = (short[])data_in;
-            int value = 0;
-            for (int i=0; i<size; i++)
-            {
-                value = sdata[i];
-                if (value < 0) {
-                    value += 65536;
-                }
-                idata[i] = value;
-            }
+            for (int i=0; i<size; i++) 
+            { 
+                idata[i] = ((int)sdata[i] + 65536) & 0xFFFF; 
+            } 
+
             data_out = idata;
         }
         else if (dname == 'I') {
@@ -856,22 +850,19 @@ public abstract class Dataset extends HObject
             } else {
                 ldata = (long[])data_out;
             }
+
             int[] idata = (int[])data_in;
-            long value = 0;
-            for (int i=0; i<size; i++)
-            {
-                value = idata[i];
-                if (value < 0) {
-                    value += 4294967296L;
-                }
-                ldata[i] = value;
-            }
+            for (int i=0; i<size; i++) 
+            { 
+                ldata[i] = ((long)idata[i] + 4294967296L) & 0xFFFFFFFFL; 
+            } 
+            
             data_out = ldata;
         } else {
             data_out = data_in;
             // Java does not support unsigned long
         }
-		
+
         return data_out;
     }
 

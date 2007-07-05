@@ -251,8 +251,9 @@ public class H5ScalarDS extends ScalarDS
 
             if (isTrueColor) {
                 interlace = INTERLACE_PIXEL;
-                if (isStringAttributeOf(did, "INTERLACE_MODE", "INTERLACE_PLANE"))
+                if (isStringAttributeOf(did, "INTERLACE_MODE", "INTERLACE_PLANE")) {
                     interlace = INTERLACE_PLANE;
+                }
             }
         }
         
@@ -483,8 +484,9 @@ public class H5ScalarDS extends ScalarDS
     public Object read() throws HDF5Exception
     {
         Object theData = null;
-        int did=-1, tid=-1, fspace=-1, mspace=-1;
-
+        int did=-1, tid=-1;
+        int spaceIDs[] = {-1, -1}; // spaceIDs[0]=mspace, spaceIDs[1]=fspace
+        
         if (rank <= 0) {
             init();
         }
@@ -496,25 +498,16 @@ public class H5ScalarDS extends ScalarDS
             }
             H5.H5Dchdir_ext(pdir);
         }
-        
-        long[] lsize = {1};
-        boolean isAllSelected = true;
-        for (int i=0; i<rank; i++)
-        {
-            lsize[0] *= selectedDims[i];
-            if (selectedDims[i] < dims[i]) {
-                isAllSelected = false;
-            }
-        }
-        
-        if (lsize[0] == 0) {
-            throw new HDF5Exception("No data to read.\nEither the dataset or the selected subset is empty.");
-        }
-        
-        did = open();
 
+        long[] lsize = {1};
         // check is fill value is defined
         try {
+            did = open();
+            lsize[0] = selectHyperslab(did, spaceIDs);
+ 
+            if (lsize[0] == 0) {
+                throw new HDF5Exception("No data to read.\nEither the dataset or the selected subset is empty.");
+            }
             
             // check is storage space is allocated
             try {
@@ -524,26 +517,10 @@ public class H5ScalarDS extends ScalarDS
                 }
             } catch (Exception ex) {}
 
-            if (isAllSelected)
-            {
-                mspace = HDF5Constants.H5S_ALL;
-                fspace = HDF5Constants.H5S_ALL;
-            }
-            else
-            {
-                fspace = H5.H5Dget_space(did);
-                
-                // When 1D dataspace is used in chunked dataset, reading is very slow.
-                // It is a known problem on HDF5 library for chunked dataset. 
-                //mspace = H5.H5Screate_simple(1, lsize, null);
-                mspace = H5.H5Screate_simple(rank, selectedDims, null);
-                H5.H5Sselect_hyperslab(fspace, HDF5Constants.H5S_SELECT_SET, startDims, selectedStride, selectedDims, null );
-            }
-
-            if (isUnsignedByteForImage && 
+            if (isImageByteData && 
                     isImageDisplay && 
                     (getDatatype().getDatatypeClass() == Datatype.CLASS_INTEGER)) {
-                tid = HDF5Constants.H5T_NATIVE_UINT8;
+                tid = HDF5Constants.H5T_NATIVE_INT8;
             } else {
                 tid = H5.H5Dget_type(did);
                 if (!isNativeDatatype) {
@@ -569,11 +546,11 @@ public class H5ScalarDS extends ScalarDS
             if (theData != null) {
                 if (isVLEN)
                 {
-                    H5.H5DreadVL(did, tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, (Object[])theData);
+                    H5.H5DreadVL(did, tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, (Object[])theData);
                 }
                 else
                 {
-                    H5.H5Dread( did, tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, theData);
+                    H5.H5Dread( did, tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, theData);
 
                     if (isText && convertByteToString) {
                         theData = byteToString((byte[])theData, H5.H5Tget_size(tid));
@@ -583,12 +560,12 @@ public class H5ScalarDS extends ScalarDS
                 }
             } // if (theData != null)
         } finally {
-            try { H5.H5Sclose(fspace); } catch (Exception ex2) {}
-            try { H5.H5Sclose(mspace); } catch (Exception ex2) {}
+            try { H5.H5Sclose(spaceIDs[0]); } catch (Exception ex) {}
+            try { H5.H5Sclose(spaceIDs[1]); } catch (Exception ex) {}
             try { H5.H5Tclose(tid); } catch (Exception ex2) {}
             close(did);
         }
-
+        
         return theData;
     }
 
@@ -598,7 +575,8 @@ public class H5ScalarDS extends ScalarDS
      */
     public void write(Object buf) throws HDF5Exception
     {
-        int fspace=-1, mspace=-1, did=-1, tid=-1;
+        int did=-1, tid=-1;
+        int spaceIDs[] = {-1, -1}; // spaceIDs[0]=mspace, spaceIDs[1]=fspace
         Object tmpData = null;
 
         if (buf == null) {
@@ -610,35 +588,11 @@ public class H5ScalarDS extends ScalarDS
         }
 
         long[] lsize = {1};
-        boolean isAllSelected = true;
-        for (int i=0; i<rank; i++)
-        {
-            lsize[0] *= selectedDims[i];
-            if (selectedDims[i] < dims[i]) {
-                isAllSelected = false;
-            }
-        }
-
-        try {
+         try  {
             did = open();
-
-            if (isAllSelected)
-            {
-                mspace = HDF5Constants.H5S_ALL;
-                fspace = HDF5Constants.H5S_ALL;
-            }
-            else
-            {
-                fspace = H5.H5Dget_space(did);
-                
-                // When 1D dataspace is used in chunked dataset, reading is very slow.
-                // It is a known problem on HDF5 library for chunked dataset. 
-                //mspace = H5.H5Screate_simple(1, lsize, null);
-                mspace = H5.H5Screate_simple(rank, selectedDims, null);
-                H5.H5Sselect_hyperslab(fspace, HDF5Constants.H5S_SELECT_SET, startDims, selectedStride, selectedDims, null );
-            }
-
+            lsize[0] = selectHyperslab(did, spaceIDs);
             tid = H5.H5Dget_type(did);
+            
             if (!isNativeDatatype) {
                 int tmptid = -1;
                 try {
@@ -669,17 +623,54 @@ public class H5ScalarDS extends ScalarDS
                     tmpData = buf;
                 }
 
-                H5.H5Dwrite(did, tid, mspace, fspace, HDF5Constants.H5P_DEFAULT, tmpData);
+                H5.H5Dwrite(did, tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, tmpData);
             }
         } finally {
             tmpData = null;
-            try { H5.H5Sclose(fspace); } catch (Exception ex) {}
-            try { H5.H5Sclose(mspace); } catch (Exception ex) {}
+            try { H5.H5Sclose(spaceIDs[0]); } catch (Exception ex) {}
+            try { H5.H5Sclose(spaceIDs[1]); } catch (Exception ex) {}
             try { H5.H5Tclose(tid); } catch (Exception ex) {}
             close(did);
         }
     }
 
+    /**
+     * Set up the selection of hyperslab
+     * @param did IN dataset ID
+     * @param spaceIDs IN/OUT memory and file space IDs -- spaceIDs[0]=mspace, spaceIDs[1]=fspace
+     * @return total number of data point selected
+     */
+    private long selectHyperslab (int did, int[] spaceIDs) throws HDF5Exception {
+        long lsize = 1;
+        
+        boolean isAllSelected = true;
+        for (int i=0; i<rank; i++)
+        {
+            lsize *= selectedDims[i];
+            if (selectedDims[i] < dims[i]) {
+                isAllSelected = false;
+            }
+        }
+
+        if (isAllSelected)
+        {
+            spaceIDs[0] = HDF5Constants.H5S_ALL;
+            spaceIDs[1] = HDF5Constants.H5S_ALL;
+        }
+        else
+        {
+            spaceIDs[1] = H5.H5Dget_space(did);
+            
+            // When 1D dataspace is used in chunked dataset, reading is very slow.
+            // It is a known problem on HDF5 library for chunked dataset. 
+            //mspace = H5.H5Screate_simple(1, lsize, null);
+            spaceIDs[0] = H5.H5Screate_simple(rank, selectedDims, null);
+            H5.H5Sselect_hyperslab(spaceIDs[1], HDF5Constants.H5S_SELECT_SET, startDims, selectedStride, selectedDims, null );
+        }
+
+        return lsize;
+    }
+    
     /*
      * (non-Javadoc)
      * @see ncsa.hdf.object.DataFormat#getMetadata()

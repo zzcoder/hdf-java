@@ -102,7 +102,7 @@ public abstract class ScalarDS extends Dataset
      * Applications take a long time to create an image from integer data other than byte.
      * If data is read into bytes, creating image is much fast.  
      */
-    protected boolean isUnsignedByteForImage = false;
+    protected boolean isImageByteData = false;
 
     /**
      * Constructs an instance of a ScalarDS with specific name and path.
@@ -392,8 +392,12 @@ public abstract class ScalarDS extends Dataset
     * 
     * @param b true if directly read unsigned byte for image; otherwise, false.
     */
-    public void setIsUnsignedByteForImage(boolean b) {
-        isUnsignedByteForImage = b;
+    public void setIsImageByteData(boolean b) {
+        
+        // type of memory buffer is changed
+        originalBuf = convertedBuf = null;
+        
+        isImageByteData = b;
     }
     
     /**    
@@ -412,8 +416,8 @@ public abstract class ScalarDS extends Dataset
      * @see #setIsUnsignedByteForImage(boolean)
      * @return b true if directly read unsigned byte for image; otherwise, false.
      */
-     public boolean getIsUnsignedByteForImage() {
-         return isUnsignedByteForImage;
+     public boolean getIsImageByteData() {
+         return isImageByteData;
      }
  
 }

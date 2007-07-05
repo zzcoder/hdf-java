@@ -86,7 +86,7 @@ public class DatasetTest extends TestCase {
 		for (int i =0; i < dsetNames.length; i++) {
 			assertNull(dSets[i].getChunkSize());
 			assertTrue(dSets[i].getCompression().equals("NONE"));
-			assertFalse(dSets[i].getConvertByteToString());
+			assertTrue(dSets[i].getConvertByteToString()); // by default, strings are converted
 			assertNull(dSets[i].getDimNames());
 			assertTrue(Arrays.equals(dSets[i].getDims(), H5TestFile.DIMs));
 			if (H5TestFile.NAME_DATASET_STR.equals("/" + dSets[i].getName()))

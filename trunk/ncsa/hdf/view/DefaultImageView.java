@@ -723,84 +723,10 @@ implements ImageView, ActionListener
         {
             if (isTrueColor)
             {
-                isPlaneInterlace = (dataset.getInterlace() ==ScalarDS.INTERLACE_PLANE);
-
-                long[] selected = dataset.getSelectedDims();
-                long[] start = dataset.getStartDims();
-                int[] selectedIndex = dataset.getSelectedIndex();
-                long[] stride = dataset.getStride();
-
-                if (start.length > 2)
-                {
-                    start[selectedIndex[2]] = 0;
-                    selected[selectedIndex[2]] = 3;
-                    stride[selectedIndex[2]] = 1;
-                }
-
-                // reload data
-                dataset.clearData();
-                data = dataset.getData();
-
-                // converts raw data to image data
-                imageByteData = Tools.getBytes(data, dataRange, dataset.getFillValue(), imageByteData);
-
-                int w = dataset.getWidth();
-                int h = dataset.getHeight();
-
-                image = createTrueColorImage(imageByteData, isPlaneInterlace, w, h);
+                getTrueColorImage();
             } else {
                 
-                imagePalette = dataset.getPalette();
-                if (imagePalette == null) {
-                    imagePalette = Tools.createGrayPalette();
-                    viewer.showStatus("\nNo attached palette found, default grey palette is used to display image");
-                }
-                
-                data = dataset.getData();
-
-                // Peter Cao, Sept 8, 2006
-                // It seems we need to translate unsigned image data. However, we need to verify it
-                String cname = data.getClass().getName();
-                char dname = cname.charAt(cname.lastIndexOf("[")+1);
-                if ( dname != 'B') {
-                    // do not need to convert unsigned byte for image
-                    data =  dataset.convertFromUnsignedC();
-                }
-                
-                int w = dataset.getWidth();
-                int h = dataset.getHeight();
-
-                boolean isAutoContrastFailed = true;
-                if (ViewProperties.isAutoContrast()) 
-                {
-                    // data is unsigned short. Convert image byte data using auto-contrast image algorithm 
-                    boolean isUnsigned = dataset.isUnsigned();
-                    gainBias = new double[2];
-                    if (Tools.autoContrastCompute(data, gainBias, isUnsigned) >= 0) {
-                        minMaxGain = new double[2];
-                        minMaxBias = new double[2];
-                        Tools.autoContrastComputeSliderRange( gainBias, minMaxGain, minMaxBias);
-                        autoGainData=Tools.autoContrastApply(data, autoGainData, gainBias, isUnsigned);
-                        
-                        if (autoGainData != null) {
-                            if ((imageByteData == null) || (imageByteData.length != Array.getLength(data))) {
-                                imageByteData = new byte[Array.getLength(data)];
-                            }
-                            isAutoContrastFailed = (Tools.autoContrastConvertImageBuffer(autoGainData, imageByteData, true)<0);
-                        }
-                    }
-                }
-
-                if (isAutoContrastFailed) {
-                    // converts raw data to image data
-                    if (isTransposed) {
-                        imageByteData = Tools.getBytes(data, dataRange, w, h, true, dataset.getFillValue(), imageByteData);
-                    } else {
-                        imageByteData = Tools.getBytes(data, dataRange, dataset.getFillValue(), imageByteData);
-                    }
-                }
-               
-                image = createIndexedImage(imageByteData, imagePalette, w, h);
+                getIndexedImage();
             }
         }
         catch (Throwable ex) {
@@ -821,6 +747,107 @@ implements ImageView, ActionListener
         }
 
         return image;
+    }
+
+    /**
+     * @throws Exception
+     * @throws OutOfMemoryError
+     */
+    private void getIndexedImage() throws Exception, OutOfMemoryError {
+        imagePalette = dataset.getPalette();
+        if (imagePalette == null) {
+            imagePalette = Tools.createGrayPalette();
+            viewer.showStatus("\nNo attached palette found, default grey palette is used to display image");
+        }
+            
+        long t0 = System.currentTimeMillis();        
+        data = dataset.getData();
+        long t1 = System.currentTimeMillis();        
+        data =  dataset.convertFromUnsignedC();
+        long t2 = System.currentTimeMillis();        
+
+        boolean isAutoContrastFailed = true;
+        if (ViewProperties.isAutoContrast()) 
+        {
+            isAutoContrastFailed = appyAutoGain(isAutoContrastFailed);
+        }
+
+        int w = dataset.getWidth();
+        int h = dataset.getHeight();
+        if (isAutoContrastFailed) {
+            // converts raw data to image data
+            if (isTransposed) {
+                imageByteData = Tools.getBytes(data, dataRange, w, h, true, dataset.getFillValue(), imageByteData);
+            } else {
+                imageByteData = Tools.getBytes(data, dataRange, dataset.getFillValue(), imageByteData);
+            }
+        }
+        long t3 = System.currentTimeMillis();        
+           
+        image = createIndexedImage(imageByteData, imagePalette, w, h);
+         
+        System.out.println("Reading data = "+(t1-t0));        
+        System.out.println("Converting unsigned = "+(t2-t1));        
+        System.out.println("Calculating image data = "+(t3-t2));        
+    }
+
+    /**
+     * @throws Exception
+     * @throws OutOfMemoryError
+     */
+    private void getTrueColorImage() throws Exception, OutOfMemoryError {
+        isPlaneInterlace = (dataset.getInterlace() ==ScalarDS.INTERLACE_PLANE);
+
+        long[] selected = dataset.getSelectedDims();
+        long[] start = dataset.getStartDims();
+        int[] selectedIndex = dataset.getSelectedIndex();
+        long[] stride = dataset.getStride();
+
+        if (start.length > 2)
+        {
+            start[selectedIndex[2]] = 0;
+            selected[selectedIndex[2]] = 3;
+            stride[selectedIndex[2]] = 1;
+        }
+
+        // reload data
+        dataset.clearData();
+        data = dataset.getData();
+
+        // converts raw data to image data
+        imageByteData = Tools.getBytes(data, dataRange, dataset.getFillValue(), imageByteData);
+
+        int w = dataset.getWidth();
+        int h = dataset.getHeight();
+
+        image = createTrueColorImage(imageByteData, isPlaneInterlace, w, h);
+    }
+
+    /**
+     * @param isAutoContrastFailed
+     * @return
+     */
+    private boolean appyAutoGain(boolean isAutoContrastFailed) {
+        // data is unsigned short. Convert image byte data using auto-contrast image algorithm 
+        boolean isUnsigned = dataset.isUnsigned();
+        
+        if (gainBias == null) { // calculate auto_gain only once
+            gainBias = new double[2];
+            minMaxGain = new double[2];
+            minMaxBias = new double[2];
+            Tools.autoContrastCompute(data, gainBias, isUnsigned);
+            Tools.autoContrastComputeSliderRange( gainBias, minMaxGain, minMaxBias);
+         }
+        
+        autoGainData=Tools.autoContrastApply(data, autoGainData, gainBias, isUnsigned);
+        
+        if (autoGainData != null) {
+            if ((imageByteData == null) || (imageByteData.length != Array.getLength(data))) {
+                imageByteData = new byte[Array.getLength(data)];
+            }
+            isAutoContrastFailed = (Tools.autoContrastConvertImageBuffer(autoGainData, imageByteData, true)<0);
+        }
+        return isAutoContrastFailed;
     }
     
     // implementing ImageObserver

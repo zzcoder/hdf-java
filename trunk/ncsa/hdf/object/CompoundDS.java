@@ -76,7 +76,10 @@ public abstract class CompoundDS extends Dataset
     protected int[] memberOrders;
 
     /**
-     * The dimension sizes of each member.
+     * The dimension sizes of each member. 
+     * <p>
+     * The i-th element of the Object[] is an integer array (int[]) that
+     * contains the dimension sizes of the i-th member. 
      */
     protected Object[] memberDims;
     
@@ -304,9 +307,10 @@ public abstract class CompoundDS extends Dataset
      *     }
      * </pre>
      * getMemeberDims(2) returns an array of {2, 3}, while getMemeberDims(1)
-     * returns an array of {5}.
+     * returns an array of {5}, getMemeberDims(0) returns null.
      * 
-     * @return the dimension sizes of of the i-th member.
+     * @return the dimension sizes of of the i-th member, null if the compound 
+     *         member is not an array.
      */
     public final int[] getMemeberDims(int i) {
         if (memberDims == null) {
