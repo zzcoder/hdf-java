@@ -110,17 +110,13 @@ public class ScalarDSTest extends TestCase {
 		assertTrue(imageDset.isImage());
 		assertTrue(imageDset.isImageDisplay());
 	
-		assertNotNull(imageDset.getImageDataRange());
-		assertEquals(imageDset.getImageDataRange()[0], 0.0);
-		assertEquals(imageDset.getImageDataRange()[1], 256.0);
-		
 		assertEquals(imageDset.getInterlace(), -1);
 		
-		assertFalse(imageDset.getIsUnsignedByteForImage());
-		imageDset.setIsUnsignedByteForImage(true);
-		assertTrue(imageDset.getIsUnsignedByteForImage());
-		imageDset.setIsUnsignedByteForImage(false);
-		assertFalse(imageDset.getIsUnsignedByteForImage());
+		assertFalse(imageDset.getIsImageByteData());
+		imageDset.setIsImageByteData(true);
+		assertTrue(imageDset.getIsImageByteData());
+		imageDset.setIsImageByteData(false);
+		assertFalse(imageDset.getIsImageByteData());
 		
 		assertFalse(imageDset.isTrueColor());
 		

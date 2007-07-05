@@ -102,9 +102,9 @@ public class GroupTest extends TestCase {
 		testGroup.addToMemberList(null);
 		assertEquals(testGroup.getMemberList().size(), previous_size);
 		
-		
 		Group tmp = new H5Group(testFile, "tmp", "/grp0/", testGroup);
 		testGroup.addToMemberList((HObject)testGroup.getMemberList().get(0));
+
 		if (testGroup.getMemberList().size() != previous_size)
 			fail("addToMemberList adds an existing member to the member list.");
 		
@@ -137,7 +137,6 @@ public class GroupTest extends TestCase {
 	public void testRemoveFromMemberList() {
 		int previous_size = testGroup.getMemberList().size();
 		List memberList = testGroup.getMemberList();
-		Iterator it = memberList.iterator();
 		
 		testGroup.removeFromMemberList(null);
 		if (testGroup.getMemberList().size() != previous_size)
@@ -148,6 +147,7 @@ public class GroupTest extends TestCase {
 		if (testGroup.getMemberList().size() != previous_size)
 			fail("removeFromMemberList removes a non existing member from the member list.");
 		
+        Iterator it = memberList.iterator();
 		HObject obj = (HObject) it.next();
 		testGroup.removeFromMemberList(obj);
 		
