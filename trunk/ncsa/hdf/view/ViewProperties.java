@@ -88,8 +88,11 @@ public class ViewProperties extends Properties
     /** a list of srb accounts */
     private static Vector srbAccountList=new Vector(5);
     
-    /** floag to indicate if auto contrast is used in image process. */
+    /** flag to indicate if auto contrast is used in image process. */
     private static boolean isAutoContrast = false;
+    
+    /** flag to indicate if enum data is converted to strings */
+    private static boolean convertEnum = false;
 
     /**
      * Current Java application such as HDFView cannot handle files
@@ -713,6 +716,11 @@ public class ViewProperties extends Properties
         if (str != null) {
             isAutoContrast = ("true".equalsIgnoreCase(str));
         }
+        
+        str = (String)get("enum.conversion");
+        if (str != null) {
+            convertEnum = ("true".equalsIgnoreCase(str));
+        }
 
         str = (String)get("data.delimiter");
         if ((str != null) && (str.length()>0)) {
@@ -872,6 +880,8 @@ public class ViewProperties extends Properties
         
         put("image.autocontrast", String.valueOf(isAutoContrast));
 
+        put("enum.conversion", String.valueOf(convertEnum));
+        
         // save the list of most recent files
         String theFile;
         int size = mrf.size();
@@ -1115,5 +1125,19 @@ public class ViewProperties extends Properties
      * @param b the flag to indicate if auto contrast is used in image process.
      */
     public static void setAutoContrast(boolean b) { isAutoContrast = b; }
+
+    /**
+     * @return the convertEnum
+     */
+    public static boolean isConvertEnum() {
+        return convertEnum;
+    }
+
+    /**
+     * @param convertEnum the convertEnum to set
+     */
+    public static void setConvertEnum(boolean convertEnum) {
+        ViewProperties.convertEnum = convertEnum;
+    }
     
 }

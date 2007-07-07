@@ -167,7 +167,7 @@ implements TableView, ActionListener
         else /*if (dataset instanceof ScalarDS) */
         {
             this.setFrameIcon(ViewProperties.getDatasetIcon());
-            table = createTable(dataset);
+            table = createTable( (ScalarDS)dataset);
         }
 
         if (table == null)
@@ -1115,7 +1115,7 @@ implements TableView, ActionListener
     /**
      * Creates a JTable to hold a scalar dataset.
      */
-    private JTable createTable(Dataset d)
+    private JTable createTable(ScalarDS d)
     {
         JTable theTable = null;
         int rows=0, cols=0;
@@ -1152,10 +1152,9 @@ implements TableView, ActionListener
 
         dataValue = null;
         try {
+            d.setEnumConverted(ViewProperties.isConvertEnum());
             d.getData();
-            if (d instanceof ScalarDS) {
-                ((ScalarDS)d).convertFromUnsignedC();
-            }
+            d.convertFromUnsignedC();
             dataValue = d.getData();
         }
         catch (Exception ex)

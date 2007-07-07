@@ -760,11 +760,8 @@ implements ImageView, ActionListener
             viewer.showStatus("\nNo attached palette found, default grey palette is used to display image");
         }
             
-        long t0 = System.currentTimeMillis();        
         data = dataset.getData();
-        long t1 = System.currentTimeMillis();        
         data =  dataset.convertFromUnsignedC();
-        long t2 = System.currentTimeMillis();        
 
         boolean isAutoContrastFailed = true;
         if (ViewProperties.isAutoContrast()) 
@@ -782,13 +779,8 @@ implements ImageView, ActionListener
                 imageByteData = Tools.getBytes(data, dataRange, dataset.getFillValue(), imageByteData);
             }
         }
-        long t3 = System.currentTimeMillis();        
            
         image = createIndexedImage(imageByteData, imagePalette, w, h);
-         
-        System.out.println("Reading data = "+(t1-t0));        
-        System.out.println("Converting unsigned = "+(t2-t1));        
-        System.out.println("Calculating image data = "+(t3-t2));        
     }
 
     /**

@@ -105,6 +105,11 @@ public abstract class ScalarDS extends Dataset
     protected boolean isImageByteData = false;
 
     /**
+     * Flag to indicate if the enum data is converted to strings.
+     */
+    private boolean enumConverted = false;
+    
+    /**
      * Constructs an instance of a ScalarDS with specific name and path.
      * An HDF data object must have a name. The path is the group path starting
      * from the root.
@@ -297,6 +302,9 @@ public abstract class ScalarDS extends Dataset
     public final void setIsImageDisplay(boolean b)
     {
         isImageDisplay = b;
+        
+        if (isImageDisplay)
+            enumConverted = false;
     } 
     
     /**
@@ -379,13 +387,13 @@ public abstract class ScalarDS extends Dataset
     * A performance test on Windows shows the following i/o time (in second) for an image 
     * of 8kx8k unsigned short:
     * <ul>
-    *   <li> A) Eeading data = 0.499 
+    *   <li> A) Eeading data = 2.499 
     *   <li> B) Converting unsigned data = 0.54
     *   <li> C) Converting image data (general contrast) = 0.982
     * <ul>
     * If data is directly read into byte, the same test shows that
     * <ul>
-    *   <li> A) reading data = 0.484
+    *   <li> A) reading data = 2.484
     *   <li> B) Converting unsigned data = 0
     *   <li> Converting image data (general contrast) = 0
     * </ul>
@@ -395,13 +403,16 @@ public abstract class ScalarDS extends Dataset
     public void setIsImageByteData(boolean b) {
         
         // type of memory buffer is changed
-        originalBuf = convertedBuf = null;
+         if (isImageByteData != b) {
+            originalBuf = convertedBuf = null;
+            this.clearData();
+         }
         
         isImageByteData = b;
     }
     
     /**    
-     * Set flag that indicate if data is read into unsigned byte for image.
+     * Get flag that indicate if data is read into unsigned byte for image.
      * <p> 
      * Applications take a long time to create an image from integer data other than byte.
      * If data is directly read into bytes from file, it saves memory space and time for
@@ -413,11 +424,34 @@ public abstract class ScalarDS extends Dataset
      *   <li> D) Create image byte data from signed integer
      * </ul>
      * 
-     * @see #setIsUnsignedByteForImage(boolean)
+     * @see #setIsImageByteData(boolean)
      * @return b true if directly read unsigned byte for image; otherwise, false.
      */
-     public boolean getIsImageByteData() {
-         return isImageByteData;
-     }
- 
+    public boolean getIsImageByteData() {
+        return isImageByteData;
+    }
+
+    /**
+     * Get flag that indicate if enum data is converted to strings.
+     * 
+     * @return the enumConverted
+     */
+    public boolean isEnumConverted() {
+        return enumConverted;
+    }
+
+    /**
+     * Set flag that indicate if enum data is converted to strings.
+     * 
+     * @param b the enumConverted to set
+     */
+    public void setEnumConverted(boolean b) {
+        if (enumConverted != b) {
+            originalBuf = convertedBuf = null;
+            this.clearData();
+        }
+        
+        enumConverted = b;
+    }
+     
 }
