@@ -11,6 +11,7 @@
 
 package ncsa.hdf.object.h5;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 import ncsa.hdf.hdf5lib.*;
@@ -49,6 +50,9 @@ public class H5ScalarDS extends ScalarDS
 
      /** flag to indicate if the dataset is a variable length */
      private boolean isVLEN = false;
+
+     /** flag to indicate if the dataset is enum */
+     private boolean isEnum = false;
      
      /** flag to indicate if the dataset is an external dataset */
      private boolean isExternal = false;
@@ -97,6 +101,7 @@ public class H5ScalarDS extends ScalarDS
             int tclass = H5.H5Tget_class(tid);
             isText = (tclass==HDF5Constants.H5T_STRING);
             isVLEN = ((tclass==HDF5Constants.H5T_VLEN) || H5.H5Tis_variable_str(tid));
+            isEnum = (tclass==HDF5Constants.H5T_ENUM);
 
             // try to find out if the dataset is an image
             aid = H5.H5Aopen_name(did, "CLASS");
@@ -520,7 +525,7 @@ public class H5ScalarDS extends ScalarDS
             if (isImageByteData && 
                     isImageDisplay && 
                     (getDatatype().getDatatypeClass() == Datatype.CLASS_INTEGER)) {
-                tid = HDF5Constants.H5T_NATIVE_INT8;
+                tid = HDF5Constants.H5T_NATIVE_UINT8;
             } else {
                 tid = H5.H5Dget_type(did);
                 if (!isNativeDatatype) {
@@ -557,6 +562,10 @@ public class H5ScalarDS extends ScalarDS
                     } else if (isREF) {
                         theData = HDFNativeData.byteToLong((byte[])theData);
                     }
+                    else if (isEnum && isEnumConverted())
+                    {
+                        theData = H5File.convertEnumValueToName(tid, theData, null);
+                    }
                 }
             } // if (theData != null)
         } finally {
@@ -585,6 +594,8 @@ public class H5ScalarDS extends ScalarDS
 
         if (isVLEN) {
             throw(new HDF5Exception("Writing variable-length data is not supported"));
+        } else if (isEnum && isEnumConverted()) {
+            throw(new HDF5Exception("Writing converted enum data is not supported"));
         }
 
         long[] lsize = {1};

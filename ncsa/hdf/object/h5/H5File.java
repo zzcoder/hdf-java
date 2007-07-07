@@ -2005,5 +2005,57 @@ public class H5File extends FileFormat
        return group;
     }
 
+    /**
+     * Converts enum values to string names.
+     *
+     * @param tid the datatype idenfifier of the enum
+     * @param in the input array of enum values
+     * @return the string array of enum names if successful; otherwise return null;
+     */
+    public static final String[] convertEnumValueToName(int tid, Object in, String[] out) throws HDF5Exception
+    {
+        int size = 0;
+
+        if ((in == null) || ((size = Array.getLength(in)) <=0) ||
+            (out !=null && size != Array.getLength(out))) {
+            return null;
+        }
+
+        int n = H5.H5Tget_nmembers(tid);
+        if (n <=0 ) {
+            return null;
+        }
+
+        if (out == null)
+            out = new String[size];
+        
+        String[] names = new String[n];
+        int[] values = new int[n];
+        int[] theValue = {0};
+
+        for (int i=0; i<n; i++)
+        {
+            names[i] = H5.H5Tget_member_name(tid, i);
+            H5.H5Tget_member_value(tid, i, theValue);
+            values[i] = theValue[0];
+        }
+
+        int val = -1;
+        int tsize = H5.H5Tget_size(tid);
+        for (int i=0; i<size; i++)
+        {
+            val = Array.getInt(in, i);
+            for (int j=0; j<n; j++)
+            {
+                if (val == values[j])
+                {
+                    out[i] = names[j];
+                    break;
+                }
+            }
+        } //for (int i=0; i<values.length; i++)
+
+        return out;
+    }
 }
 

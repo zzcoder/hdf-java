@@ -502,7 +502,7 @@ implements ActionListener, ItemListener, HyperlinkListener
                 sizeChoice.setEnabled(true);
                 checkUnsigned.setEnabled(true);
                 stringLengthField.setEnabled(true);
-                stringLengthField.setText("mb1=0,mb2=1,...");
+                stringLengthField.setText("R=0,G=1,B=2,...");
             }
         }
         else if (source.equals(sizeChoice))

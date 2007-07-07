@@ -194,14 +194,14 @@ public class H5Datatype extends Datatype
                 int nMember = H5.H5Tget_nmembers(tid);
                 String name = null;
                 int[] val = new int[1];
-                String enumStr = "(";
+                String enumStr = "";
                 for (int i=0; i<nMember; i++)
                 {
                     name = H5.H5Tget_member_name(tid, i);
                     H5.H5Tget_member_value(tid, i, val);
-                    enumStr += name+"="+val[0]+", ";
+                    enumStr += name+"="+val[0]+",";
                 }
-                enumMembers = enumStr+"0";
+                enumMembers = enumStr;;
             } catch (Exception ex) {}
         }
 
@@ -325,6 +325,10 @@ public class H5Datatype extends Datatype
 
                 while (token.hasMoreTokens()) {
                     memstr = token.nextToken();
+                    
+                    if (memstr != null)
+                        memstr = memstr.trim();
+                    
                     if ((memstr==null) || (memstr.length()<1)) {
                         continue;
                     }
@@ -603,7 +607,7 @@ public class H5Datatype extends Datatype
         else if (tclass == HDF5Constants.H5T_ENUM)
         {
             description = "enum";
-            String enames = " (";
+            String enames = " ( ";
             int[] evalue= {0};
             try {
                 int n = H5.H5Tget_nmembers(tid );

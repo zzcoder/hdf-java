@@ -156,7 +156,7 @@ public class FileFormatTest extends TestCase {
 	 * </ul>
 	 */
 	public final void testGetFID() {
-		assertNotSame(testFile.getFID(), -1);
+		assertTrue((testFile.getFID() != -1));
 	}
 
 	/**

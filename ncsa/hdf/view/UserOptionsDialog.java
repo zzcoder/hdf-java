@@ -47,7 +47,7 @@ implements ActionListener, ListSelectionListener
     private JComboBox choiceTreeView, choiceMetaDataView, choiceTextView,
             choiceTableView, choiceImageView, choicePaletteView;
     private String rootDir, workDir;
-    private JCheckBox checkCurrentUserDir, checkAutoContrast;
+    private JCheckBox checkCurrentUserDir, checkAutoContrast, checkConvertEnum;
     private JButton currentDirButton;
 
     private int fontSize;
@@ -113,7 +113,7 @@ implements ActionListener, ListSelectionListener
         contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
         
         int w = 700 + (ViewProperties.getFontSize()-12)*15;
-        int h = 600 + (ViewProperties.getFontSize()-12)*15;
+        int h = 650 + (ViewProperties.getFontSize()-12)*15;
         contentPane.setPreferredSize(new Dimension(w, h));
 
         JTabbedPane tabbedPane = new JTabbedPane();
@@ -202,7 +202,7 @@ implements ActionListener, ListSelectionListener
         delimiterChoice.setSelectedItem(ViewProperties.getDataDelimiter());
 
         JPanel centerP = new JPanel();
-        centerP.setLayout(new GridLayout(8,1,10,10));
+        centerP.setLayout(new GridLayout(9,1,10,10));
         centerP.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
 
         JPanel p0 = new JPanel();
@@ -285,6 +285,22 @@ implements ActionListener, ListSelectionListener
         p0.setBorder(tborder);
         centerP.add(p0);
 
+        p0 = new JPanel();
+        p0.setLayout(new BorderLayout(20,0));
+        checkConvertEnum = new JCheckBox("Convert Enum");
+        checkConvertEnum.setSelected(ViewProperties.isConvertEnum());
+        p0.add(checkConvertEnum, BorderLayout.CENTER);
+        button = new JButton(ViewProperties.getHelpIcon() );
+        button.setToolTipText( "Help on Convert Enum" );
+        button.setMargin( new Insets(0, 0, 0, 0) );
+        button.addActionListener( this );
+        button.setActionCommand( "Help on Convert Enum" );
+        p0.add(button, BorderLayout.WEST);
+        tborder = new TitledBorder("Convert Enum Data");
+        tborder.setTitleColor(Color.darkGray);
+        p0.setBorder(tborder);
+        centerP.add(p0);
+        
         p0 = new JPanel();
         p0.setLayout(new GridLayout(1,2,8,8));
         p00 = new JPanel();
@@ -697,7 +713,14 @@ implements ActionListener, ListSelectionListener
                 "bias_max = fabs(bias) * 3.0 \n\n\n";
             JOptionPane.showMessageDialog(this, msg);
         }
-        
+        else if (cmd.equals("Help on Convert Enum")) {
+            final String msg = 
+                "Convert enum data to strings. \n"+
+                "For example, a dataset of an enum type of (R=0, G=, B=2) \n"+
+                "has values of (0, 2, 2, 2, 1, 1). With conversion, the data values are \n"+
+                "shown as (R, B, B, B, G, G).\n\n\n";
+            JOptionPane.showMessageDialog(this, msg);
+        }
     }
 
     public void valueChanged(ListSelectionEvent e)
@@ -795,6 +818,7 @@ implements ActionListener, ListSelectionListener
         }
         
         ViewProperties.setAutoContrast(checkAutoContrast.isSelected());
+        ViewProperties.setConvertEnum(checkConvertEnum.isSelected());
     }
 
     public boolean isFontChanged() { return isFontChanged; }
