@@ -760,14 +760,34 @@ implements ImageView, ActionListener
             viewer.showStatus("\nNo attached palette found, default grey palette is used to display image");
         }
             
+/*        
+long t0, t1;
+t0 = System.currentTimeMillis();
+*/
         data = dataset.getData();
+        
+/*        
+t1 = System.currentTimeMillis();
+System.out.println("Time on reading data from file = "+(t1-t0));
+t0 = System.currentTimeMillis();
+*/
         data =  dataset.convertFromUnsignedC();
 
+/*        
+t1 = System.currentTimeMillis();
+System.out.println("Time on converting signed data = "+(t1-t0));
+t0 = System.currentTimeMillis();
+*/
         boolean isAutoContrastFailed = true;
         if (ViewProperties.isAutoContrast()) 
         {
-            isAutoContrastFailed = appyAutoGain(isAutoContrastFailed);
+            isAutoContrastFailed = (!computeAutoGainImageData());
         }
+/*
+t1 = System.currentTimeMillis();
+System.out.println("Time on computing autogain image data = "+(t1-t0));
+t0 = System.currentTimeMillis();
+*/
 
         int w = dataset.getWidth();
         int h = dataset.getHeight();
@@ -816,13 +836,16 @@ implements ImageView, ActionListener
     }
 
     /**
-     * @param isAutoContrastFailed
+     * Compute image data from autogain
      * @return
      */
-    private boolean appyAutoGain(boolean isAutoContrastFailed) {
+    private boolean computeAutoGainImageData() {
+        
+        boolean retValue = true;
+        
         // data is unsigned short. Convert image byte data using auto-contrast image algorithm 
         boolean isUnsigned = dataset.isUnsigned();
-        
+
         if (gainBias == null) { // calculate auto_gain only once
             gainBias = new double[2];
             minMaxGain = new double[2];
@@ -830,16 +853,17 @@ implements ImageView, ActionListener
             Tools.autoContrastCompute(data, gainBias, isUnsigned);
             Tools.autoContrastComputeSliderRange( gainBias, minMaxGain, minMaxBias);
          }
-        
+
         autoGainData=Tools.autoContrastApply(data, autoGainData, gainBias, isUnsigned);
-        
+       
         if (autoGainData != null) {
             if ((imageByteData == null) || (imageByteData.length != Array.getLength(data))) {
                 imageByteData = new byte[Array.getLength(data)];
             }
-            isAutoContrastFailed = (Tools.autoContrastConvertImageBuffer(autoGainData, imageByteData, true)<0);
+            retValue = (Tools.autoContrastConvertImageBuffer(autoGainData, imageByteData, true)>=0);
         }
-        return isAutoContrastFailed;
+        
+        return retValue;
     }
     
     // implementing ImageObserver
@@ -1040,19 +1064,14 @@ implements ImageView, ActionListener
     }
 
     /** Apply contrast/brightness to unsigned short integer */
-    private void applyAutoContrast() {
-        autoGainData = Tools.autoContrastApply(data, autoGainData, gainBias, true);
-        if (autoGainData != null) {
-            if ((imageByteData == null) || (imageByteData.length != Array.getLength(data))) {
-                imageByteData = new byte[Array.getLength(data)];
-            }
-            if (Tools.autoContrastConvertImageBuffer(autoGainData, imageByteData, true)>=0) {
-                int w = dataset.getWidth();
-                int h = dataset.getHeight();
-                image = createIndexedImage(imageByteData, imagePalette, w, h); 
-                imageComponent.setImage(image);
-                zoomTo(zoomFactor);
-            }
+    private void applyAutoGain() {
+        
+        if (computeAutoGainImageData()) {
+            int w = dataset.getWidth();
+            int h = dataset.getHeight();
+            image = createIndexedImage(imageByteData, imagePalette, w, h); 
+            imageComponent.setImage(image);
+            zoomTo(zoomFactor);
         }
     }
 
@@ -1378,7 +1397,7 @@ implements ImageView, ActionListener
                 autoContrastSlider.setVisible(true);
                 
                 if (autoContrastSlider.isValueChanged) {
-                    applyAutoContrast();
+                    applyAutoGain();
                 }
              } else {
                  if (generalContrastSlider == null) {
@@ -3447,7 +3466,7 @@ implements ImageView, ActionListener
 
     // for unsigned short image data only
     private class AutoContrastSlider extends JDialog implements 
-    ActionListener, ChangeListener, PropertyChangeListener
+        ActionListener, ChangeListener, PropertyChangeListener
     {
         public static final long serialVersionUID = HObject.serialVersionUID;
         private boolean isValueChanged = false;
@@ -3469,7 +3488,7 @@ implements ImageView, ActionListener
             brightField = new JFormattedTextField(formatter);
             brightField.addPropertyChangeListener(this);
             brightField.setValue(new Integer((int)gainBias[1]));
-            
+           
             brightSlider = new JSlider(JSlider.HORIZONTAL, bias[0], bias[1], (int)gainBias[1]);
             int tickSpace = (bias[1]-bias[0])/10;
             if (tickSpace < 1) {
@@ -3488,7 +3507,6 @@ implements ImageView, ActionListener
             contrastField.addPropertyChangeListener(this);
             contrastField.setValue(new Integer((int)gainBias[0]));
 
-
             contrastSlider = new JSlider(JSlider.HORIZONTAL, gain[0], gain[1], (int)gainBias[0]);
             tickSpace = (gain[1]-gain[0])/10;
             if (tickSpace < 1) {
@@ -3501,9 +3519,9 @@ implements ImageView, ActionListener
             contrastSlider.setBorder( BorderFactory.createEmptyBorder(0,0,10,0));
 
             JPanel contentPane = (JPanel)getContentPane();
-            contentPane.setLayout(new BorderLayout(5, 5));
+            contentPane.setLayout(new BorderLayout(10, 10));
             contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-            contentPane.setPreferredSize(new Dimension(500, 300));
+            contentPane.setPreferredSize(new Dimension(500, 350));
 
             JPanel brightPane = new JPanel();
             brightPane.setBorder(new TitledBorder("Brightness"));
@@ -3543,7 +3561,15 @@ implements ImageView, ActionListener
             confirmP.add(button);
            
             contentPane.add(confirmP, BorderLayout.SOUTH);
-            contentPane.add(new JLabel(" "), BorderLayout.NORTH);
+            
+            button = new JButton("Calculate AutoGain");
+            button.setActionCommand("Calculate AutoGain");
+            button.addActionListener(this);
+            JPanel tmpPane = new JPanel();
+            tmpPane.setLayout(new BorderLayout());
+            tmpPane.add(button, BorderLayout.EAST);
+            
+            contentPane.add(tmpPane, BorderLayout.NORTH);
 
             Point l = getParent().getLocation();
             Dimension d = getParent().getPreferredSize();
@@ -3574,7 +3600,7 @@ implements ImageView, ActionListener
                 if (cmd.startsWith("Ok")) {
                     setVisible(false);
                 } else  if (isValueChanged) { //Apply auto contrast
-                    applyAutoContrast();
+                    applyAutoGain();
                     isValueChanged = false;
                 }
             }
@@ -3582,6 +3608,13 @@ implements ImageView, ActionListener
             {
                 isValueChanged = false;
                 setVisible(false);
+            }
+            else if (cmd.equals("Calculate AutoGain")) {
+                gainBias = null;
+                applyAutoGain();
+                isValueChanged = false;
+                brightField.setValue(new Integer((int)gainBias[1]));
+                contrastField.setValue(new Integer((int)gainBias[0]));
             }
         }
 
