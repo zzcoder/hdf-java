@@ -682,7 +682,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1short
     jshort *buffP;
     jboolean isCopy;
 
-    if ( buf == NULL ) {
+	if ( buf == NULL ) {
         h5nullArgument( env, "H5Dread:  buf is NULL");
         return -1;
     }

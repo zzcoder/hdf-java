@@ -66,7 +66,7 @@ public class DatasetTest extends TestCase {
 
 	}
 	
-	/*
+	/**
 	 * For each dataset in the file we are:
 	 * <ul>
 	 * 	 <li> checking the chunk size for the datasets.

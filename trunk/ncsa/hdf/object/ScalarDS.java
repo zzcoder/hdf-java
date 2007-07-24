@@ -97,14 +97,6 @@ public abstract class ScalarDS extends Dataset
     protected boolean isImageDisplay;
     
     /**
-     * Flag to indicate if data is read into unsigned byte for image.
-     * <p> 
-     * Applications take a long time to create an image from integer data other than byte.
-     * If data is read into bytes, creating image is much fast.  
-     */
-    protected boolean isImageByteData = false;
-
-    /**
      * Flag to indicate if the enum data is converted to strings.
      */
     private boolean enumConverted = false;
@@ -370,65 +362,6 @@ public abstract class ScalarDS extends Dataset
     public final Object getFillValue()
     {
         return fillValue;
-    }
-
-   /**    
-    * Set flag that indicate if data is read into unsigned byte for image.
-    * <p> 
-    * Applications take a long time to create an image from integer data other than byte.
-    * If data is directly read into bytes from file, it saves memory space and time for
-    * converting raw data to image byte data. For example, ceating an image from unsigned 
-    * short takes the following steps: 
-    * <ul>
-    *   <li> A) Read unsigned short from file
-    *   <li> B) Convert unsigned short to signed integer in Java since Java does not support unsigned integer
-    *   <li> D) Create image byte data from signed integer
-    * </ul>
-    * A performance test on Windows shows the following i/o time (in second) for an image 
-    * of 8kx8k unsigned short:
-    * <ul>
-    *   <li> A) Eeading data = 2.499 
-    *   <li> B) Converting unsigned data = 0.54
-    *   <li> C) Converting image data (general contrast) = 0.982
-    * <ul>
-    * If data is directly read into byte, the same test shows that
-    * <ul>
-    *   <li> A) reading data = 2.484
-    *   <li> B) Converting unsigned data = 0
-    *   <li> Converting image data (general contrast) = 0
-    * </ul>
-    * 
-    * @param b true if directly read unsigned byte for image; otherwise, false.
-    */
-    public void setIsImageByteData(boolean b) {
-        
-        // type of memory buffer is changed
-         if (isImageByteData != b) {
-            originalBuf = convertedBuf = null;
-            this.clearData();
-         }
-        
-        isImageByteData = b;
-    }
-    
-    /**    
-     * Get flag that indicate if data is read into unsigned byte for image.
-     * <p> 
-     * Applications take a long time to create an image from integer data other than byte.
-     * If data is directly read into bytes from file, it saves memory space and time for
-     * converting raw data to image byte data. For example, ceating an image from unsigned 
-     * short takes the following steps: 
-     * <ul>
-     *   <li> A) Read unsigned short from file
-     *   <li> B) Convert unsigned short to signed integer in Java since Java does not support unsigned integer
-     *   <li> D) Create image byte data from signed integer
-     * </ul>
-     * 
-     * @see #setIsImageByteData(boolean)
-     * @return b true if directly read unsigned byte for image; otherwise, false.
-     */
-    public boolean getIsImageByteData() {
-        return isImageByteData;
     }
 
     /**

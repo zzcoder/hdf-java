@@ -62,6 +62,9 @@ public class DataFormatTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.DataFormat#getFile()}.
+     * <ul>
+     *     <li>Test if the file name is correct
+     * </ul>
 	 */
 	public final void testGetFile() {
 		if (!testGroup.getFile().equals(H5TestFile.NAME_FILE_H5))
@@ -70,6 +73,10 @@ public class DataFormatTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.DataFormat#getMetadata()}.
+     * <ul>
+     *     <li> Reading the attributes
+     *     <li> Checking the values of attributes
+     * </ul>
 	 */
 	public final void testGetMetadata() {
 		Attribute strAttr = null;
@@ -98,6 +105,10 @@ public class DataFormatTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.DataFormat#writeMetadata(java.lang.Object)}.
+     * <ul>
+     *     <li> Writing new attributes
+     *     <li> Checking that the new attributes are written in file
+     * </ul>
 	 */
 	public final void testWriteMetadata() {
 		long[] attrDims = {1};
@@ -150,6 +161,9 @@ public class DataFormatTest extends TestCase {
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.DataFormat#removeMetadata(java.lang.Object)}.
+     * <ul>
+     *     <li> Remove an attribute
+     * </ul>
 	 */
 	public final void testRemoveMetadata() {
 		List mdataList = null;

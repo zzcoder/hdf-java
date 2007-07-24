@@ -325,6 +325,9 @@ public class H4GRImage extends ScalarDS
 
             if (theData != null)
             {
+                // assume external data files are located in the same directory as the main file.
+                HDFLibrary.HXsetdir(getFileFormat().getParent());
+                
                 int[] start = {(int)startDims[0], (int)startDims[1]};
                 int[] select = {(int)selectedDims[0], (int)selectedDims[1]};
 
@@ -381,6 +384,9 @@ public class H4GRImage extends ScalarDS
             if ( isUnsigned && unsignedConverted) {
                 tmpData = convertToUnsignedC(buf);
             }
+            // assume external data files are located in the same directory as the main file.
+            HDFLibrary.HXsetdir(getFileFormat().getParent());
+            
             HDFLibrary.GRwriteimage(id, start, stride, select, tmpData);
         } finally
         {

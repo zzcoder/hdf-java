@@ -93,7 +93,6 @@ implements ActionListener, ItemListener
 
     private int numberOfPalettes;
     private boolean isTransposed = false;
-    private JCheckBox checkUnsignedByte;   
 
     /** JComboBox.setSelectedItem() or setSelectedIndex() always fires
      * action event. If you call setSelectedItem() or setSelectedIndex()
@@ -289,7 +288,6 @@ implements ActionListener, ItemListener
                 imageP.setLayout(new BorderLayout(5,5));
                 imageP.add(imageButton, BorderLayout.WEST);
                 imageP.add(choicePalette, BorderLayout.CENTER);
-                imageP.add(checkUnsignedByte=new JCheckBox("Read as Byte", false), BorderLayout.EAST);
                 imageP.setBorder(new TitledBorder(""));
 
                 // add imageview selection
@@ -531,11 +529,9 @@ implements ActionListener, ItemListener
             if (imageButton.isSelected()) {
                 choiceImageView.setEnabled(true);
                 choiceTableView.setEnabled(false);
-                checkUnsignedByte.setEnabled(true);
             } else {
                 choiceImageView.setEnabled(false);
                 choiceTableView.setEnabled(true);
-                checkUnsignedByte.setEnabled(false);
             }
 
             // reset show char button
@@ -655,8 +651,6 @@ implements ActionListener, ItemListener
             ScalarDS sd = (ScalarDS)dataset;
             isImage = sd.isImageDisplay();
             isTrueColorImage = sd.isTrueColor();
-            checkUnsignedByte.setEnabled(isImage);
-            checkUnsignedByte.setSelected(isImage && sd.getIsImageByteData());
         }
         else if (dataset instanceof CompoundDS) {
             imageButton.setEnabled(false);
@@ -910,11 +904,6 @@ implements ActionListener, ItemListener
             }
         }
 
-        if (dataset instanceof ScalarDS) {
-            ScalarDS sd = (ScalarDS)dataset;
-            sd.setIsImageByteData(imageButton.isSelected() && checkUnsignedByte.isSelected());
-        }
-        
         //clear the old data
         dataset.clearData();
 

@@ -58,7 +58,7 @@ public class CompoundDSTest extends TestCase {
 		}
 	}
 
-	/*
+	/**
 	 * For the Compund Dataset in the Test File, we are checking
 	 * <ul>
 	 *		<li> geting the memberCount.
@@ -94,7 +94,7 @@ public class CompoundDSTest extends TestCase {
 		}
 	}
 	
-	/*
+	/**
 	 * For the Compund Dataset in the Test File, we are checking
 	 * <ul>
 	 *		<li> Geting the selectMemberCount method on the default selection.
