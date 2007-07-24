@@ -201,6 +201,9 @@ public class H4Vdata extends CompoundDS
 
         list = new Vector();
 
+        // assume external data files are located in the same directory as the main file.
+        HDFLibrary.HXsetdir(getFileFormat().getParent());
+
         Object member_data = null;
         for (int i=0; i<numberOfMembers; i++)
         {

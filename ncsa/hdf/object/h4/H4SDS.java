@@ -386,6 +386,9 @@ public class H4SDS extends ScalarDS
             if ( isUnsigned && unsignedConverted) {
                 tmpData = convertToUnsignedC(buf);
             }
+            // assume external data files are located in the same directory as the main file.
+            HDFLibrary.HXsetdir(getFileFormat().getParent());
+            
             HDFLibrary.SDwritedata(id, start, stride, select, tmpData);
         //} catch (Exception ex) {ex.printStackTrace(); 
         } finally

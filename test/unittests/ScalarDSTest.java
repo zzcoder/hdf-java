@@ -90,9 +90,9 @@ public class ScalarDSTest extends TestCase {
 		}
 	}
 
-	/*/
+	/**
 	 * 
-	 * WWhat to test:
+	 * What to test:
      * <ul> 
      *   <li> Test for general functionality
      *   <ul>
@@ -111,12 +111,6 @@ public class ScalarDSTest extends TestCase {
 		assertTrue(imageDset.isImageDisplay());
 	
 		assertEquals(imageDset.getInterlace(), -1);
-		
-		assertFalse(imageDset.getIsImageByteData());
-		imageDset.setIsImageByteData(true);
-		assertTrue(imageDset.getIsImageByteData());
-		imageDset.setIsImageByteData(false);
-		assertFalse(imageDset.getIsImageByteData());
 		
 		assertFalse(imageDset.isTrueColor());
 		
@@ -140,7 +134,7 @@ public class ScalarDSTest extends TestCase {
 		assertFalse(intDset.isImageDisplay());
 	}
 	
-	 /* What to test:
+	 /** What to test:
 	  * <ul> 
 	  *   <li> Test for general functionality
 	  *   <ul>

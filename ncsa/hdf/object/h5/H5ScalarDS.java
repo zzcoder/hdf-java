@@ -522,23 +522,17 @@ public class H5ScalarDS extends ScalarDS
                 }
             } catch (Exception ex) {}
 
-            if (isImageByteData && 
-                    isImageDisplay && 
-                    (getDatatype().getDatatypeClass() == Datatype.CLASS_INTEGER)) {
-                tid = HDF5Constants.H5T_NATIVE_UINT8;
-            } else {
-                tid = H5.H5Dget_type(did);
-                if (!isNativeDatatype) {
-                    int tmptid = -1;
-                    try {
-                        tmptid = tid;
-                        tid = H5.H5Tget_native_type(tmptid);
-                    } finally {
-                        try { H5.H5Tclose(tmptid); } catch (Exception ex2) {}
-                    }
+            tid = H5.H5Dget_type(did);
+            if (!isNativeDatatype) {
+                int tmptid = -1;
+                try {
+                    tmptid = tid;
+                    tid = H5.H5Tget_native_type(tmptid);
+                } finally {
+                    try { H5.H5Tclose(tmptid); } catch (Exception ex2) {}
                 }
             }
-            
+
             boolean isREF = (H5.H5Tequal(tid, HDF5Constants.H5T_STD_REF_OBJ));
             
             if ( (originalBuf ==null) || isText || isREF ||
