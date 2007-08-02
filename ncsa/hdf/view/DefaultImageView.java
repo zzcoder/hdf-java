@@ -154,6 +154,7 @@ implements ImageView, ActionListener
     private final Toolkit toolkit;
 
     private double[] dataRange;
+    private double[] originalRange;
 
     private PaletteComponent paletteComponent;
 
@@ -267,6 +268,10 @@ implements ImageView, ActionListener
             dataset = null;
             return;
         }
+        
+        originalRange = new double[2];
+        originalRange[0] = dataRange[0];
+        originalRange[1] = dataRange[1];
 
         imageComponent = new ImageComponent(image);
         JScrollPane scroller = new JScrollPane(imageComponent);
@@ -760,34 +765,14 @@ implements ImageView, ActionListener
             viewer.showStatus("\nNo attached palette found, default grey palette is used to display image");
         }
             
-/*        
-long t0, t1;
-t0 = System.currentTimeMillis();
-*/
         data = dataset.getData();
-        
-/*        
-t1 = System.currentTimeMillis();
-System.out.println("Time on reading data from file = "+(t1-t0));
-t0 = System.currentTimeMillis();
-*/
         data =  dataset.convertFromUnsignedC();
 
-/*        
-t1 = System.currentTimeMillis();
-System.out.println("Time on converting signed data = "+(t1-t0));
-t0 = System.currentTimeMillis();
-*/
         boolean isAutoContrastFailed = true;
         if (ViewProperties.isAutoContrast()) 
         {
             isAutoContrastFailed = (!computeAutoGainImageData());
         }
-/*
-t1 = System.currentTimeMillis();
-System.out.println("Time on computing autogain image data = "+(t1-t0));
-t0 = System.currentTimeMillis();
-*/
 
         int w = dataset.getWidth();
         int h = dataset.getHeight();
@@ -799,7 +784,7 @@ t0 = System.currentTimeMillis();
                 imageByteData = Tools.getBytes(data, dataRange, dataset.getFillValue(), imageByteData);
             }
         }
-           
+
         image = createIndexedImage(imageByteData, imagePalette, w, h);
     }
 
@@ -1307,8 +1292,8 @@ t0 = System.currentTimeMillis();
         }
         else if (cmd.equals("Set data range"))
         {
-            //double[] drange = dataset.getImageDataRange();
-            DataRangeDialog drd = new DataRangeDialog ((JFrame)viewer, dataRange);
+            DataRangeDialog drd = new DataRangeDialog ((JFrame)viewer, dataRange, 
+                    (int)originalRange[0], (int)originalRange[1]);
             double[] drange = drd.getRange();
 
             if ((drange == null) || 
@@ -1795,6 +1780,8 @@ t0 = System.currentTimeMillis();
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
         }
+        dataRange[0] = newRange[0];
+        dataRange[1] = newRange[1];
     }
 
     /** PaletteComponent draws the palette on the side of the image. */
@@ -3072,11 +3059,11 @@ t0 = System.currentTimeMillis();
         double[] minmax = null;
         JSlider minSlider, maxSlider;
         JFormattedTextField minField, maxField;
-        int iMin=0, iMax=0;
-
-        public DataRangeDialog(JFrame theOwner, double[] dataRange)
+ 
+        public DataRangeDialog(JFrame theOwner, double[] dataRange, int iMin, int iMax)
         {
             super(theOwner, "Image Vaule Range", true);
+            
             minmax = new double[2];
             if ((dataRange==null) || (dataRange.length<=1))
             {
@@ -3092,8 +3079,6 @@ t0 = System.currentTimeMillis();
                 minmax[1] = dataRange[1];
             }
 
-            iMin = (int)minmax[0];
-            iMax = (int)minmax[1];
             int tickSpace = (iMax-iMin)/10;
 
             java.text.NumberFormat numberFormat = java.text.NumberFormat.getNumberInstance();
@@ -3108,14 +3093,14 @@ t0 = System.currentTimeMillis();
             maxField.addPropertyChangeListener(this);
             maxField.setValue(new Double(minmax[1]));
 
-            minSlider = new JSlider(JSlider.HORIZONTAL, iMin, iMax, iMin);
+            minSlider = new JSlider(JSlider.HORIZONTAL, iMin, iMax, (int)minmax[0]);
             minSlider.setMajorTickSpacing(tickSpace);
             minSlider.setPaintTicks(true);
             minSlider.setPaintLabels(true);
             minSlider.addChangeListener(this);
             minSlider.setBorder( BorderFactory.createEmptyBorder(0,0,10,0));
 
-            maxSlider = new JSlider(JSlider.HORIZONTAL,iMin, iMax, iMax);
+            maxSlider = new JSlider(JSlider.HORIZONTAL,iMin, iMax, (int)minmax[1]);
             maxSlider.setMajorTickSpacing(tickSpace);
             maxSlider.setPaintTicks(true);
             maxSlider.setPaintLabels(true);
@@ -3216,8 +3201,9 @@ t0 = System.currentTimeMillis();
                 if (value > maxValue) {
                     value = maxValue;
                 }
-                //minField.setText(String.valueOf(value));
-                minField.setValue(new Integer(value));
+                
+                if (value != (int)minmax[0])
+                    minField.setValue(new Integer(value));
             }
             else if (slider.equals(maxSlider))
             {
@@ -3225,8 +3211,8 @@ t0 = System.currentTimeMillis();
                 if (value < minValue) {
                     value = minValue;
                 }
-                //maxField.setText(String.valueOf(value));
-                maxField.setValue(new Integer(value));
+                if (value != (int)minmax[1])
+                    maxField.setValue(new Integer(value));
             }
         }
 
@@ -3253,6 +3239,8 @@ t0 = System.currentTimeMillis();
                         value = maxValue;
                         minField.setText(String.valueOf(value));
                     }
+                    minmax[0] = value;
+                    
                     minSlider.setValue((int)value);
                 }
                 else if (source.equals(maxField) && (maxSlider!= null))
@@ -3263,6 +3251,7 @@ t0 = System.currentTimeMillis();
                         value = minValue;
                         maxField.setText(String.valueOf(value));
                     }
+                    minmax[1] = value;
                     maxSlider.setValue((int)value);
                 }
             }
