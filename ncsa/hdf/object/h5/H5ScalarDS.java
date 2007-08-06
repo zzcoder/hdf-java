@@ -145,7 +145,7 @@ public class H5ScalarDS extends ScalarDS
                 int arank = H5.H5Sget_simple_extent_ndims(asid);
                 if (arank > 0)
                 {
-                    adims = new long[rank];
+                    adims = new long[arank];
                     H5.H5Sget_simple_extent_dims(asid, adims, null);
                 }
 
