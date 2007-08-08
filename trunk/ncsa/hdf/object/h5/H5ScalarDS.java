@@ -88,7 +88,16 @@ public class H5ScalarDS extends ScalarDS
         super (theFile, theName, thePath, oid);
         unsignedConverted = false;
         paletteRefs = null;
-
+        
+        if ((oid == null) && (theFile != null)) {
+            // retrieve the object ID
+            try {
+                byte[] ref_buf = H5.H5Rcreate(theFile.getFID(), this.getFullName(), HDF5Constants.H5R_OBJECT, -1);
+                this.oid = new long[1];
+                this.oid[0] = HDFNativeData.byteToLong(ref_buf, 0);
+             } catch (Exception ex) {}
+        }
+ 
         // test if it is an image
         int did = open();
         
