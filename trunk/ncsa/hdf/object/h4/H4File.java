@@ -219,7 +219,7 @@ public class H4File extends FileFormat
             grid = HDFLibrary.GRstart(fid);
         }
         sdid = HDFLibrary.SDstart(fullFileName, flag);
-
+        
         // load the file hierarchy
         rootNode = loadTree();
 
