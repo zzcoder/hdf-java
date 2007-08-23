@@ -22,7 +22,7 @@ public class AllHDFViewTests {
     
     public static void main(final String[] args) {
         
-        try { TestFile.createH5File(null); } 
+        try { test.view.TestFile.createH5File(null); } 
         catch (final Exception ex) {
             ex.printStackTrace();
             System.exit(-1);

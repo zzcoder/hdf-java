@@ -287,7 +287,7 @@ implements ActionListener, MetaDataView
         topPanel.setLayout(new BorderLayout());
 
         JPanel lp = new JPanel();
-        lp.setLayout(new GridLayout(4,1));
+        lp.setLayout(new GridLayout(3,1));
 
         if (isRoot)
         {
@@ -302,14 +302,16 @@ implements ActionListener, MetaDataView
             lp.add(new JLabel("Type: "));
         }
 
+        /* See bug #926
         if (isH4) {
             lp.add(new JLabel("Tag, Ref: "));
         } else {
             lp.add(new JLabel("Object ID: "));
         }
+        */
 
         JPanel rp = new JPanel();
-        rp.setLayout(new GridLayout(4,1));
+        rp.setLayout(new GridLayout(3,1));
 
         JTextField nameField = new JTextField(hObject.getName());
         nameField.setEditable(false);
@@ -406,6 +408,7 @@ implements ActionListener, MetaDataView
         typeField.setEditable(false);
         rp.add(typeField);
 
+        /* See bug #926
         String oidStr = null;
         long[] OID = hObject.getOID();
         if (OID != null)
@@ -418,6 +421,7 @@ implements ActionListener, MetaDataView
         JTextField oidField = new JTextField(oidStr);
         oidField.setEditable(false);
         rp.add(oidField);
+        */
 
         JPanel tmpP = new JPanel();
         tmpP.setLayout(new BorderLayout());

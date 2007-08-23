@@ -11,7 +11,6 @@
 
 package ncsa.hdf.object.h5;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 import ncsa.hdf.hdf5lib.*;

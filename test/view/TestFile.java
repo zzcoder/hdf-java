@@ -1,6 +1,3 @@
-/**
- * 
- */
 package test.view;
 
 import ncsa.hdf.object.*;
@@ -95,6 +92,7 @@ public class TestFile {
             DATA_UINT32[i] = _DATA[i];
             DATA_INT64[i] = _DATA[i];
         }
+        
         
         file = new H5File(fileName, FileFormat.CREATE);
         file.open();
