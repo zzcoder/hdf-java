@@ -127,6 +127,20 @@ set -x
 #export CC
 #--with-javabin=$JAVABIN \
 
+# 11 ===================== setting for tejeda (mac intel)
+#INSTDIR=/Users/xcao/work/build/hdf-java
+#JAVAINC=/System/Library/Frameworks/JavaVM.framework/Headers
+#JAVALIB=/System/Library/Frameworks/JavaVM.framework/Libraries
+#HDF4=/Users/xcao/work/build/hdf4
+#HDF5=/Users/xcao/work/build/hdf5
+#SZIP=/Users/xcao/lib-external/szip-2.0
+#JPEG=/Users/xcao/lib-external/jpeg-6b
+#GZIP=/Users/xcao/lib-external/zlib-1.2.1
+#--with-jdkclasses=/System/Library/Frameworks/JavaVM.framework/Classes \
+#--with-javabin=/System/Library/Frameworks/JavaVM.framework/Commands \
+#-build=powerpc-apple \
+
+
 ./configure --prefix=$INSTDIR \
 --with-jdk=$JAVAINC,$JAVALIB \
 --with-hdf5=$HDF5/include,$HDF5/lib \
