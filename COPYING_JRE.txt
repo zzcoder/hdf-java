@@ -1,32 +1,27 @@
-Copyright Notice and Statement for NCSA Hierarchical Data Format (HDF)
-Software Library and Utilities
+Copyright Notice and License Terms for 
+Hierarchical Data Format (HDF) Software Library and Utilities
+-----------------------------------------------------------------------------
 
-NCSA Hierarchical Data Format (HDF) Software Library and Utilities 
-Copyright 1988-2004, the Board of Trustees of the University of Illinois. 
+Hierarchical Data Format (HDF) Software Library and Utilities
+Copyright 2006-2007 by The HDF Group (THG).
+
+NCSA Hierarchical Data Format (HDF) Software Library and Utilities
+Copyright 1988-2005 by the Board of Trustees of the University of Illinois.
+
 All rights reserved.
 
 Contributors to the library: National Center for Supercomputing 
 Applications (NCSA) at the University of Illinois, Lawrence 
-Livermore Nat'l Laboratory (LLNL), Sandia National Laboratories (SNL), 
+Livermore National Laboratory (LLNL), Sandia National Laboratories (SNL), 
 Los Alamos National Laboratory (LANL). Fortner Software, Unidata 
 Program Center (netCDF), The Independent JPEG Group (JPEG), 
 Jean-loup Gailly and Mark Adler (gzip), and Digital Equipment 
-Corporation (DEC). Macintosh support contributed by Gregory L. Guerin.
+Corporation (DEC). 
 
 Sun JRE 1.3.1 (or later) is Bundled in this product. Download and installation 
 the product requires acceptance of the Java 2 Runtime Environment 
 license agreement. Please read the Java Binary Code License Agreement at 
 http://java.sun.com/j2se/1.3/jre/j2re-1_3_1_02-license.html
-
-The package 'glguerin':
-Copyright 1998, 1999 by Gregory L. Guerin.
-Redistribute or reuse only as described below.
-These files are from the MacBinary Toolkit for Java:
-   <http://www.amug.org/~glguerin/sw/#macbinary>
-and are redistributed by NCSA with permission of the author.
-
-This work was supported in part by a Cooperative Agreement with 
-NASA under NASA grant NAG 5-2040 and NAG NCC5-599.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted for any purpose (including commercial purposes)
