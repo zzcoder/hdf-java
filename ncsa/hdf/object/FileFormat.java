@@ -1,12 +1,15 @@
-/****************************************************************************
- * NCSA HDF                                                                 *
- * National Comptational Science Alliance                                   *
- * University of Illinois at Urbana-Champaign                               *
- * 605 E. Springfield, Champaign IL 61820                                   *
- *                                                                          *
- * For conditions of distribution and use, see the accompanying             *
- * hdf-java/COPYING file.                                                   *
- *                                                                          *
+/*****************************************************************************
+ * Copyright by The HDF Group.                                               *
+ * Copyright by the Board of Trustees of the University of Illinois.         *
+ * All rights reserved.                                                      *
+ *                                                                           *
+ * This file is part of the HDF Java Products distribution.                  *
+ * The full copyright notice, including terms governing use, modification,   *
+ * and redistribution, is contained in the files COPYING and Copyright.html. *
+ * COPYING can be found at the root of the source code distribution tree.    *
+ * Or, see http://hdfgroup.org/products/hdf-java/doc/Copyright.html.         *
+ * If you do not have access to either file, you may request a copy from     *
+ * help@hdfgroup.org.                                                        *
  ****************************************************************************/
 
 package ncsa.hdf.object;
@@ -18,13 +21,14 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 /**
- * FileFormat class defines general interfaces for retriving file structure from file, 
- * creating/removing objects in/from file, and etc.
+ * FileFormat class defines general interfaces for retriving file structure 
+ * from file,  creating/removing objects in/from file, and etc.
  * <p>
- * FileFormat is a plugable component. An implementing class of FileFormat can be
- * added to the list of supported file formats. Current implementing classes include
- * H5File and H4File. By default, H5File and H4File are added to the list of supported 
- * file formats.
+ * FileFormat is a pluggable component. An implementing class of FileFormat 
+ * can be added to the list of supported file formats. Current implementing 
+ * classes include
+ * H5File and H4File. By default, H5File and H4File are added to the list of 
+ * supported file formats.
  *
  *  <pre>
  *                                    FileFormat
@@ -34,7 +38,7 @@ import javax.swing.tree.TreeNode;
  * </pre>
  *
  * <p>
- * @version 1.0 12/12/2001
+ * @version 2.4 8/31/2007
  * @author Peter X. Cao, NCSA
  */
 public abstract class FileFormat extends File
@@ -182,10 +186,10 @@ public abstract class FileFormat extends File
      *     
      *     // Creates an instance of H5File object for existing file with read/write access
      *     H5File test1 =  (H5File) h5file.open("test_hdf5.h5", FileFormat.WRITE);
-     *     
+     *
      *     // Opens file and load the file structure; file identifier is returned.
      *     int fid = test1.open;
-     *     
+     *
      *     // Gets the root of the file structure.
      *     Node root = test1.getRootNode();
      *     
@@ -206,33 +210,31 @@ public abstract class FileFormat extends File
     public abstract FileFormat open(String pathname, int access) throws Exception;
 
     /**
-     * @deprecated  Not for public use in the future.<br>
-     * Using {@link #create(String, int)}
+     * @deprecated  As of 2.4, replaced by 
+     *              {@link #create(String, int)}
+     *    The replacement method has an additional parameter
+     *    that controls the behavior if the file already exists.
+     *    Use FILE_CREATE_DELETE as the second argument in the replacement
+     *    method achieve the result originally provided by this method.
      */
-    public abstract FileFormat create(String fileName) throws Exception;
+    @Deprecated public abstract FileFormat create(String fileName) throws Exception;
 
     /**
-     * Creates a new instance of a file according to creation flag. 
-     * <p>
-     * A sub-class must implement this method to create a file of a particular 
-     * file format.
-     * For example,
-     * <pre>
-     * FileFormat file = H5File.create("test.h5");
-     * </pre>
-     * creates an HDF5 file "test.h5".
+     * Creates a new instance of a file or opens an existing file 
+     * (with or without truncation.)
      *
-     * @param fileName a valid file name, e.g. "hdf5_test.h5".
+     * @param fileName A valid file name, e.g. "hdf5_test.h5".
      * @param createFlag The file creation flag. Allowable values are:
      * <pre>
-     *         FILE_CREATE_DELETE -- If file exists, delete it, then create a new file
-     *                               and opens the file for read/write (default).
-     *                               If file does not exist, create a new file,
-     *                               and opens the file for read/write (default).
+     *   FILE_CREATE_DELETE -- If file exists, delete it, then create a new file
+     *                         and open the file for read/write.
+     *                         If file does not exist, create a new file,
+     *                         and open the file for read/write.
      *
-     *         FILE_CREATE_OPEN   -- If file exists, do not delete it, just open the file.
-     *                               If file does not exist, create a new file,
-     *                               and opens the file for read/write (default).
+     *   FILE_CREATE_OPEN   -- If file exists, do not delete it, just open 
+     *                         the file for read/write.  
+     *                         If file does not exist, create a new file,
+     *                         and open the file for read/write.
      * </pre>
      *
      * @return new file object if successful; otherwise returns null
@@ -252,6 +254,7 @@ public abstract class FileFormat extends File
         }
 
         return theFile;
+    // TODO:  Add check for valid values of createFlag
     }
 
     /** 
