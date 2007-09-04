@@ -38,8 +38,8 @@ import javax.swing.tree.TreeNode;
  * </pre>
  *
  * <p>
- * @version 2.4 8/31/2007
- * @author Peter X. Cao, NCSA
+ * @version 2.4 9/4/2007
+ * @author Peter X. Cao
  */
 public abstract class FileFormat extends File
 {
