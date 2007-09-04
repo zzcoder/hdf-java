@@ -64,25 +64,35 @@ public abstract class FileFormat extends File
     /** Flag to open the existing file when creating a file. */
     public final static int FILE_CREATE_OPEN = 11;
 
-    /** Tag for JPEG image file type.*/
+    /** Key for JPEG image file type.*/
     public static final String FILE_TYPE_JPEG = "JPEG";
 
-    /** Tag for TIFF image file type. */
+    /** Key for TIFF image file type. */
     public static final String FILE_TYPE_TIFF = "TIFF";
 
-    /** Tag for PNG image file type. */
+    /** Key for PNG image file type. */
     public static final String FILE_TYPE_PNG = "PNG";
 
-    /** Tag for HDF4 file type. */
+    /**
+     * These keys are used to add file formats to the list of
+     * supported file formats.  (FileList)
+     */
+
+    /** Key for HDF4 file format. */
     public static final String FILE_TYPE_HDF4 = "HDF";
 
-    /** Tag for HDF5 file type. */
+    /** Key for HDF5 file format. */
     public static final String FILE_TYPE_HDF5 = "HDF5";
 
     /**
-     *  FileList keeps a list current supported FileFormats.
-     *  The FileList contains <key, fileFormat> pairs, such as
-     *  <"HDF5", ncsa.hdf.object.h5.H5File>
+     *  FileList keeps a list of supported FileFormats.
+     *  This list can be updated and queried at runtime.
+     *
+     *  @see #addFileFormat(String,FileFormat)
+     *  @see #getFileFormat(String)
+     *  @see #getFileFormatKeys()
+     *  @see #getFileFormats()
+     *  @see #removeFileFormat(String)
      */
     private static final Map FileList = new Hashtable(10);
 
@@ -116,7 +126,8 @@ public abstract class FileFormat extends File
     protected int fid = -1;
 
     /**
-     * By default, we add HDF4 and HDF5 file types to the supported file list
+     * By default, we add HDF4 and HDF5 file formats to the supported formats 
+     * list.   
      */
     static {
         // add default HDF4 modules
@@ -138,13 +149,17 @@ public abstract class FileFormat extends File
         } catch (Throwable err ) {;}
     }
 
+    /*****************************************************************
+     * Public methods start here
+     *****************************************************************/
+
     /** 
      * Constructs a FileFormat object with a given file name.
      * 
      * @param filename a valid file name, such as "hdf5_test.h5".
      */
     public FileFormat(String filename) {
-        super( filename);
+        super(filename);
     }
 
     /**
@@ -558,20 +573,35 @@ public abstract class FileFormat extends File
      */
     public abstract HObject createLink(Group parentGroup, String name, HObject currentObj) throws Exception;
 
+    /*****************************************************************
+     * Methods related to the FileList.
+     *****************************************************************/
+
     /**
-     * Adds a new FileFormat to the list of supported File Formats.
+     * Adds a FileFormat with specified key to the list of supported formats.
      * <p>
-     * This method is provided for adding new FileFormat dynamically. Applications
-     * can add a new FileFormat at runtime. For example, the HDFView allows users
-     * to regiter a new FileFormat and saves it in the HDFView properties file.
-     * When the HDFView starts, it calls FileFormat.addFileFormat() to add all
-     * the FileFormats listed in the property file.
+     * This method allows a new FileFormat, tagged with a unique identifying
+     * key, to be added dynamically to the list of supported File Formats.  
+     * Using it, applications can add new File Formats at runtime. 
+     * <p>
+     * For example, to add a new File Format with the key "xyz" that is
+     * implemented by the class xyzFile in the package companyC.files,
+     * an application would make the following calls:
+     * <pre>
+     *    Class fileClass = Class.forName( "companyC.files.xyzFile" );
+     *    FileFormat ff = (FileFormat) fileClass.newInstance();
+     *    if ( ff != null ) {
+     *       ff.addFileFormat ("xyz", ff )
+     *    }
+     * </pre>
+     * <p>
+     * If either the key or fileformat parameters are null, or if the
+     * key is already in use, the method returns without updating the list
+     * of supported File Formats.
      *
-     * @param key the unique ID key to identify the FileFormat, such as<br>
-     *   "HDF5" for ncsa.hdf.object.h5.HDF5 FileFormat and<br>
-     *   "Hdf-Eos5" for hdfeos.he5.HE5File FileFormat.
-     * @param fileformat the new FileFormat to be added, e.g. 
-     *    ncsa.hdf.object.h5.H5File.
+     * @param 	key        a unique string that identifies the FileFormat.
+     * @param 	fileformat an instance of the FileFormat to be added.
+     * 
      */
     public static void addFileFormat(String key, FileFormat fileformat) {
         if ((fileformat == null) || (key == null)) {
@@ -586,37 +616,93 @@ public abstract class FileFormat extends File
     }
 
     /**
-     * Removes a FileFormat specified by a key from the supported file list.
+     * Returns the FileFormat with specified key from list of supported formats.
+     * <p>
+     * This method returns a FileFormat instance, as identified by a unique
+     * identifying key, from the list of supported File Formats.
+     * <p>
+     * If the specified key does appear in the list of supported formats, 
+     * the instance of the associated FileFormat object is returned.
+     * If the specified key does not appear in the list of supported formats,
+     * null is returned.
      *
-     * @param key the key of the FileFormat to be removed, such as "HDF5" for HDF5 file format.
+     * @param 	key 	a unique string that identifies the FileFormat.
      * 
-     * @return the FileFormat that is removed, or null if no FileFormat has such as a key.
-     */
-    public static FileFormat removeFileFormat(String key) {
-        return (FileFormat) FileList.remove(key);
-    }
-
-    /**
-     * Returns the FileFormat for a given key from the supported file list.
-     *
-     * @param key the unique key to identify the FileFormat, such as "HDF5" for HDF5 file format.
-     * 
-     * @return The FileFormat that matches the given key; returns null if no FileFormat matches the key.
+     * @return the FileFormat that matches the given key, or null if the key
+     *         is not found in the list of supported File Formats.
      */
     public static FileFormat getFileFormat(String key) {
         return (FileFormat)FileList.get(key);
     }
 
     /**
-     * Returns a list of keys of all FileFormats.
-     * 
-     * For example, {"HDF", HDF5"}
+     * Returns a list of keys for all supported formats.
+     * <p>
+     * This method returns an Enumeration containing the unique keys (Strings)
+     * for the all File Formats in the list of supported File Formats.
      *
-     * @return An enumeration of keys if successful; otherwise returns null
+     * @return an enumeration of keys in the list of supported formats; null 
+     *         the list is empty.
      */
     public static final Enumeration getFileFormatKeys() {
         return ((Hashtable)FileList).keys();
     }
+
+
+    /** Returns an array of all FileFormat instances in the list of supported 
+     * formats.
+     * <p> 
+     * This method returns an array of FileFormat instances that appear in 
+     * the list of supported File Formats.
+     * <p>
+     * If the list of supported formats is empty, null is returned.
+     *
+     * @return an array of all FileFormat instances in the list of supported
+     *         File Formats, or null if the list is empty.
+     */
+    public static FileFormat[] getFileFormats()
+    {
+        int n = FileList.size();
+        if ( n <=0 ) {
+            return null;
+        }
+
+        int i = 0;
+        FileFormat[] fileformats = new FileFormat[n];
+        Enumeration local_enum = ((Hashtable)FileList).elements();
+        while (local_enum.hasMoreElements()) {
+            fileformats[i++] = (FileFormat)local_enum.nextElement();
+        }
+
+        return fileformats;
+    }
+
+    /**
+     * Removes the FileFormat with specified key from the list of supported 
+     * formats.
+     * <p>
+     * This method removes a FileFormat, as identified by a unique
+     * identifying key, from the list of supported File Formats.
+     * <p>
+     * If the specified key does appear in the list of supported formats, 
+     * the instance of the FileFormat object that is being removed from 
+     * the list is returned.
+     * If the key does not appear in the list of supported formats,
+     * null is returned.   
+     *
+     * @param key 	a unique string that identifies the FileFormat to 
+     *                  be removed.
+     *
+     * @return the FileFormat that is removed, or null if the key is not
+     *			found in the list of supported File Formats.
+     */
+    public static FileFormat removeFileFormat(String key) {
+        return (FileFormat) FileList.remove(key);
+    }
+
+    /*****************************************************************
+     * End of Methods related to the FileList.
+     *****************************************************************/
 
     /**
      *  Returns the version of the library for the file.
@@ -941,6 +1027,8 @@ public abstract class FileFormat extends File
      * This static method causes two problems: 1) It can be very expensive if 
      * if is called many times or in a loop because each call to the method 
      * creates an instance of a file. 2)Since the method does not return the 
+     * if is called many times or in a loop because each call to the method 
+     * creates an instance of a file. 2)Since the method does not return the 
      * instance of the file, the file cannot be closed directly and may be left
      * for open (memory leak). The only way to close the file is through
      * the object returned by this method, such as,
@@ -998,10 +1086,6 @@ public abstract class FileFormat extends File
               /g0/g01/dataset_string   Dataset {50, 10}
               </pre>
      *   <li> If {@link #open()} is not called, the get() method retrieves
-     *        the requested object from a file. For a group, the get() method
-     *        only loads the group and its immediate members. It does not follow
-     *        its sub-groups. In the following example, get("/g0") will 
-     *        return the group "/g0" with its immediate members: two datasets (
      *        dataset_comp, dataset_int) and two empty groups (g00, g01).
      *        <pre>
               /g0                      Group
@@ -1028,38 +1112,4 @@ public abstract class FileFormat extends File
      */
     public abstract HObject get(String path) throws Exception;
 
-    /** Returns a list of supported file formats.
-     * 
-     * @return a list of supported file formats..
-     */
-    public static FileFormat[] getFileFormats()
-    {
-        int n = FileList.size();
-        if ( n <=0 ) {
-            return null;
-        }
-
-        int i = 0;
-        FileFormat[] fileformats = new FileFormat[n];
-        Enumeration local_enum = ((Hashtable)FileList).elements();
-        while (local_enum.hasMoreElements()) {
-            fileformats[i++] = (FileFormat)local_enum.nextElement();
-        }
-
-        return fileformats;
-    }
-    
-    /**
-     * Returns the name of the file.
-     * <p>
-     * This method overwrites the toString() method in the Java Object class 
-     * (the root class of all Java objects) so that it returns the name of 
-     * the file instead of the name of the class.
-     * <p>
-     * For example, toString() returns "hdf5_test.h5" instead of
-     * "ncsa.hdf.object.h5.H5File".
-     * 
-     * @return The name of the object.
-     */
-    
 }
