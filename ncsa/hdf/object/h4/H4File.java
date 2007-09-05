@@ -37,11 +37,6 @@ public class H4File extends FileFormat
     private int flag;
 
     /**
-     * The full name of this file, path+name
-     */
-    private final String fullFileName;
-
-    /**
      * The root node of the tree structure of this file.
      */
     private DefaultMutableTreeNode rootNode;
@@ -60,8 +55,6 @@ public class H4File extends FileFormat
      * a loop should be avoided.
      */
     private int grid;
-
-    private boolean isReadOnly;
 
     private boolean isNetCDF = false;
 
@@ -117,7 +110,7 @@ public class H4File extends FileFormat
         objList = new Vector();
 
         this.fid = -1;
-        this.fullFileName = pathname;
+        // this.fullFileName = pathname;  VERIFY now set in super()
 
         if (access == READ) {
             flag = HDFConstants.DFACC_READ;
@@ -175,7 +168,12 @@ public class H4File extends FileFormat
         return isH4;
     }
 
-    public FileFormat open(String pathname, int access) throws Exception
+    public FileFormat newInstance(String pathname, int access) throws Exception
+    {
+        return new H4File(pathname, access);
+    }
+
+    @Deprecated public FileFormat open(String pathname, int access) throws Exception
     {
         return new H4File(pathname, access);
     }
@@ -266,17 +264,6 @@ public class H4File extends FileFormat
         return rootNode;
     }
 
-    // Implementing FileFormat
-    public String getFilePath()
-    {
-        return fullFileName;
-    }
-
-    // Implementing FileFormat
-    public boolean isReadOnly()
-    {
-        return isReadOnly;
-    }
 
     /**
      * Creates a new HDF4 file.
