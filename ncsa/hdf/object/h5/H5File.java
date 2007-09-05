@@ -82,18 +82,10 @@ public class H5File extends FileFormat
     private int flag;
 
     /**
-     * The full name of this file; full path plus name
-     */
-    private final String fullFileName;
-
-    /**
      * The root node of the file hierearchy.
      */
     private DefaultMutableTreeNode rootNode;
 
-    /** flag to indicate if the file is readonly. */
-    private boolean isReadOnly;
-    
     /**
      * Constructs an H5File with empty file name and read-only access.
      */
@@ -132,7 +124,7 @@ public class H5File extends FileFormat
         rootNode = null;
 
         this.fid = -1;
-        this.fullFileName = fileName;
+        // this.fullFileName = fileName;  VERIFY - now set in super()
         
         if (access == READ) {
             flag = HDF5Constants.H5F_ACC_RDONLY;
@@ -174,9 +166,18 @@ public class H5File extends FileFormat
 
     /*
      * (non-Javadoc)
+     * @see ncsa.hdf.object.FileFormat#newInstance(java.lang.String, int)
+     */
+    public FileFormat newInstance(String fileName, int access) throws Exception
+    {
+        return new H5File(fileName, access);
+    }
+
+    /*
+     * (non-Javadoc)
      * @see ncsa.hdf.object.FileFormat#open(java.lang.String, int)
      */
-    public FileFormat open(String fileName, int access) throws Exception
+    @Deprecated public FileFormat open(String fileName, int access) throws Exception
     {
         return new H5File(fileName, access);
     }
@@ -363,24 +364,6 @@ public class H5File extends FileFormat
     public TreeNode getRootNode()
     {
         return rootNode;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ncsa.hdf.object.FileFormat#getFilePath()
-     */
-    public String getFilePath()
-    {
-        return fullFileName;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ncsa.hdf.object.FileFormat#isReadOnly()
-     */
-    public boolean isReadOnly()
-    {
-        return isReadOnly;
     }
 
     /*
