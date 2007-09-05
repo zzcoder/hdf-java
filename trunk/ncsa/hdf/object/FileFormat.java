@@ -43,26 +43,35 @@ import javax.swing.tree.TreeNode;
  */
 public abstract class FileFormat extends File
 {
+    /***************************************************************************
+     * These file access flags are used in calls to newInstance( String, flag );
+     **************************************************************************/
+
     /** 
      * File access flag for read-only permission. 
-     * If a file is open with this flag, no modification will be allowed.
+     * With this access flag, modifications to the file will not be allowed.
      */
     public final static int READ = 0;
 
     /** 
      * File access flag for read/write permission.
-     * If a file is open with this flag, modification will be allowed.
+     * With this access flag, modifications to the file will be allowed.
      */
     public final static int WRITE = 1;
 
-    /** File access flag for creating a new file. */
+    /** 
+     * File access flag for creating/truncating with read-write permission.
+     * If the file already exists, it will be truncated when opened.
+     * With this access flag, modifications to the file will be allowed.
+     */
     public final static int CREATE = 2;
 
-    /** Flag to overwrite the existing file when creating a file.  */
-    public final static int FILE_CREATE_DELETE = 10;
-
-    /** Flag to open the existing file when creating a file. */
-    public final static int FILE_CREATE_OPEN = 11;
+    /** 
+     * File access flag for creating/opening with read-write permission.
+     * If the file already exists, it will not be truncated when opened.
+     * With this access flag, modifications to the file will be allowed.
+     */
+    public final static int CREATE_OPEN = 3;
 
     /** Key for JPEG image file type.*/
     public static final String FILE_TYPE_JPEG = "JPEG";
@@ -73,10 +82,9 @@ public abstract class FileFormat extends File
     /** Key for PNG image file type. */
     public static final String FILE_TYPE_PNG = "PNG";
 
-    /**
-     * These keys are used to add file formats to the list of
-     * supported file formats.  (FileList)
-     */
+    /***************************************************************************
+     * These keys are used in the list of supported file formats.  (FileList)
+     **************************************************************************/
 
     /** Key for HDF4 file format. */
     public static final String FILE_TYPE_HDF4 = "HDF";
@@ -94,36 +102,57 @@ public abstract class FileFormat extends File
      *  @see #getFileFormats()
      *  @see #removeFileFormat(String)
      */
-    private static final Map<String,FileFormat> FileList = new Hashtable<String,FileFormat>(10);
+    private static final Map<String,FileFormat> FileList = 
+					new Hashtable<String,FileFormat>(10);
 
     /**
-     * Current Java application such as HDFView cannot handle files with large
-     * number of objects such 1,000,000 objects due to JVM memory  limitation.
-     * The max_members is defined so that applications such as HDFView will load
-     * up to <i>max_members</i> number of objects starting the <i>start_members</i>
+     * Current Java applications, such as HDFView, cannot handle files with 
+     * large numbers of objects due to JVM memory limitations.  
+     * For example, 1,000,000 objects is too many.
+     * max_members is defined so that applications such as HDFView will load
+     * up to <i>max_members</i> objects starting with the <i>start_members</i>
      * -th object.
      */
-    private int max_members = 10000; // 10,000 by default
+    private int max_members = 10000;		 // 10,000 by default
 
     /**
-     * Current Java application such as HDFView cannot handle files with large
-     * number of objects such 1,000,000 objects due to JVM memory  limitation.
-     * The max_members is defined so that applications such as HDFView will load
-     * up to <i>max_members</i> number of objects starting the <i>start_members</i>
+     * Current Java applications, such as HDFView, cannot handle files with 
+     * large numbers of objects due to JVM memory limitations.
+     * For example, 1,000,000 objects is too many.
+     * max_members is defined so that applications such as HDFView will load
+     * up to <i>max_members</i> objects starting with the <i>start_members</i>
      * -th object.
      */
-    private int start_members = 0; // 0 by default
+    private int start_members = 0; 		// 0 by default
     
-    /* Total number of objects in memory */
+    /** 
+     * Total number of objects in memory 
+     */
     private int n_members = 0;
 
-    /** a list of file extensions for the supported file types */
+    /** 
+     * A list of file extensions for the supported file types. 
+     */
     private static String extensions = "hdf, h4, hdf5, h5";
 
     /**
      * File identifier.
      */
     protected int fid = -1;
+
+    /**
+     * The absolute pathname of the file.
+     */
+    protected String fullFileName = null;
+
+    /** 
+     * Flag indicating if the file is open read only. 
+     */
+    protected boolean isReadOnly = false;
+
+    /***************************************************************************
+     * Static initialization methods start here
+     **************************************************************************/
 
     /**
      * By default, we add HDF4 and HDF5 file formats to the supported formats 
@@ -149,128 +178,124 @@ public abstract class FileFormat extends File
         } catch (Throwable err ) {;}
     }
 
-    /*****************************************************************
+    /***************************************************************************
      * Public methods start here
-     *****************************************************************/
+     **************************************************************************/
 
     /** 
-     * Constructs a FileFormat object with a given file name.
+     * Creates a new FileFormat instance by converting the given pathname
+     * string into an abstract pathname.
+     * <p>
+     * As with the java.io.File class, the pathname corresponds to the 
+     * file name.
      * 
-     * @param filename a valid file name, such as "hdf5_test.h5".
+     * @param pathname A pathname string.
+     * @throws NullPointerException If the <code>pathname</code> argument 
+     *                              is <code>null</code>.
+     * @see java.io.File#File(String)
      */
-    public FileFormat(String filename) {
-        super(filename);
+    public FileFormat(String pathname) {
+        super(pathname);
+	fullFileName = getAbsolutePath();
     }
 
     /**
-     * Opens access to file and returns a file identifier.
+     * Creates a FileFormat instance with specified pathname and access.
      * <p>
-     * This function also retrieves the file structure and basic information (
-     * name, type) of data objects from a file. However, it does not load
-     * the content of any data object such as values of datasets. 
+     * This method creates an instance of the FileFormat implementing class
+     * and sets the pathname and file access parameters.  
+     * As with the java.io.File class, the pathname corresponds to the 
+     * file name.
      * <p>
-     * The structure of the file is stored in a tree starting from the root node. The 
-     * root node is an Java TreeNode object that represents the root group of a file. 
+     * The file is not opened as part of this call.  
+     * The file open is carried out by the open() call.
+     * <p>
+     * For example (ignoring possible exceptions):
+     * <pre>
+     *  // Request the implementing class of FileFormat: H5File
+     *  FileFormat h5file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+     *     
+     *  // Create an instance of H5File object with read/write access
+     *  H5File test1 = (H5File)h5file.newInstance("test_hdf5.h5", 
+     *                                             FileFormat.WRITE);
+     *
+     *  // Open the file and load the file structure; file id is returned.
+     *  int fid = test1.open;
+     *
+     *  // Create an instance of H5File object with create/truncate access
+     *  H5File test2 = (H5File)h5file.newInstance("new_hdf5.h5", 
+     *                                             FileFormat.CREATE);
+     *   
+     *  // Create the file, or open with truncate if file already exists,  
+     *  // and load the file structure of the file; file id is returned.
+     *  int fid2 = test2.open();
+     * </pre> 
+     *
+     * @param pathname A pathname string.
+     * @param access The file access flag, which determines behavior when file
+     *               is opened.  
+     * <p>
+     * The flag takes one of following values:
+     * <DL>
+     * <DT> READ <DD> Read-only access; fail if file doesn't exist.</DT>
+     * <DT> WRITE <DD> Read/Write access; fail if file doesn't exist.</DT>
+     * <DT> CREATE <DD> Read/Write access; create a new file or truncate 
+     *                  an existing one. </DT>
+     * <DT> CREATE_OPEN <DD> Read/Write access; create a new file or open 
+     *                  an existing one. </DT>
+     * </DL>
+     * @see #FileFormat(String)
+     */
+    public abstract FileFormat newInstance(String pathname, int access) throws Exception;
+
+    /**
+     * Opens file and returns a file identifier.
+     * <p>
+     * This method uses the <code>pathname</code> and <code>access</code>
+     * parameters specified in the {@link #newInstance(String, int)} call
+     * to open the file.  It returns the file identifier if successful,
+     * or a negative value in case of failure.
+     * <p> 
+     * The method also loads the file structure and basic information 
+     * (name, type) for data objects in the file into the FileFormat instance.
+     * It does not load the contents of any data object.
+     * <p>
+     * The structure of the file is stored in a tree starting from the 
+     * root node. The root node is a Java TreeNode object that represents 
+     * the root group of a file. 
      * <p>
      * Starting from the root, applications can descend through the hierarchy 
      * and navigate among the file's data objects.
-     * <p>
-     *  Although the "int open()" and "FileFormat open(String pathname, int access)"
-     *  have the same name, they are used for completely different purposes.
-     *  "int open()" is used to open file access while "FileFormat open(String pathname, 
-     *  int access)" is used to create an instance of FileFormat. 
      *  
+     * @see #newInstance(String, int)
      * @see #getRootNode()
-     * @see #open(String, int)
      *
-     * @return file access identifier if successful; otherwise returns a negative value.
+     * @return File access identifier if successful; otherwise -1.
      */
     public abstract int open() throws Exception;
 
     /**
-     * Creates an instance of FileFormat object that is specified by a given file.
-     *<p>
-     * Unlike "int open()", this function does not open file for accessing file
-     * structure. It just creates an instance of implementing class of the FileFormat.
+     * Returns File identifier of open file associated with this instance.
+     * 
+     * @return The file identifer or -1 if no file open.
+     */
+    public int getFID() { return fid; }
+
+    /**
+     * Closes access to file associated with this instance.
      * <p>
-     * The follwoing example explains how the two functions are related and used 
-     * for different purposes:
-     * <pre>
-     *     // Request the implementing class of FileFormat: H5File
-     *     FileFormat h5file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-     *     
-     *     // Creates an instance of H5File object for existing file with read/write access
-     *     H5File test1 =  (H5File) h5file.open("test_hdf5.h5", FileFormat.WRITE);
+     * This method closes the file associated with this FileFormat instance,
+     * as well as all objects associated with the file.
+     * <p>
+     * COME BACK AND TALK ABOUT EXCEPTIONS, ETC.  Why do we try to close if
+     * fid is -1 when called?   Also, make sure we set isReadOnly to false
+     * when file is closed... or maybe not.
      *
-     *     // Opens file and load the file structure; file identifier is returned.
-     *     int fid = test1.open;
-     *
-     *     // Gets the root of the file structure.
-     *     Node root = test1.getRootNode();
-     *     
-     *     // Creates a new HDF5 file
-     *     H5File test2 =  (H5File) h5file.open("new_hdf5.h5", FileFormat.CREATE);
-     *     
-     *     // Opens the file structure of the new file
-     *     int fid2 = test2.open();
-     * </pre> 
-     * @param pathname a valid file name, e.g. "hdf5_test.h5".
-     * @param access the file access flag, it takes one of following values:
-     * <DL>
-     * <DT> READ <DD> Allow read-only access to file.</DT>
-     * <DT> WRITE <DD> Allow read and write access to file.</DT>
-     * <DT> CREATE <DD> Create a new file.</DT>
-     * </DL>
+     * @see #fid 
+     * @see #getInstance(String, int)
+     * @see #open()
      */
-    public abstract FileFormat open(String pathname, int access) throws Exception;
-
-    /**
-     * @deprecated  As of 2.4, replaced by 
-     *              {@link #create(String, int)}
-     *    The replacement method has an additional parameter
-     *    that controls the behavior if the file already exists.
-     *    Use FILE_CREATE_DELETE as the second argument in the replacement
-     *    method achieve the result originally provided by this method.
-     */
-    @Deprecated public abstract FileFormat create(String fileName) throws Exception;
-
-    /**
-     * Creates a new instance of a file or opens an existing file 
-     * (with or without truncation.)
-     *
-     * @param fileName A valid file name, e.g. "hdf5_test.h5".
-     * @param createFlag The file creation flag. Allowable values are:
-     * <pre>
-     *   FILE_CREATE_DELETE -- If file exists, delete it, then create a new file
-     *                         and open the file for read/write.
-     *                         If file does not exist, create a new file,
-     *                         and open the file for read/write.
-     *
-     *   FILE_CREATE_OPEN   -- If file exists, do not delete it, just open 
-     *                         the file for read/write.  
-     *                         If file does not exist, create a new file,
-     *                         and open the file for read/write.
-     * </pre>
-     *
-     * @return new file object if successful; otherwise returns null
-     * @throws Exception
-     * @see <a href="#open(java.lang.String, int)">open(java.lang.String, int)</a>
-     * @see <a href="#create(java.lang.String)">create(java.lang.String)</a>
-     */
-    public final FileFormat create(String fileName, int createFlag) throws Exception
-    {
-        FileFormat theFile = null;
-
-        File f = new File(fileName);
-        if (f.exists() && (FILE_CREATE_OPEN == createFlag)) {
-            theFile = open(fileName, WRITE);
-        } else {
-            theFile = create(fileName);
-        }
-
-        return theFile;
-    // TODO:  Add check for valid values of createFlag
-    }
+    public abstract void close() throws Exception;
 
     /** 
      * Returns the total number of hobjects in memory.
@@ -304,15 +329,6 @@ public abstract class FileFormat extends File
     }
     
     /**
-     * Closes access to a file.
-     * <p>
-     * This method closes all open objects including a file.
-     * @see #fid 
-     * @see #open(String, int)
-     */
-    public abstract void close() throws Exception;
-
-    /**
      * Returns the root node that contains the file structure of a file.
      * <p>
      * A file structure is stored in a tree constructed by tree nodes 
@@ -329,24 +345,30 @@ public abstract class FileFormat extends File
     public abstract TreeNode getRootNode();
 
     /**
-     * Returns the full path (file path + file name) of the file.
+     * Returns the absolute path for the file.
      * <p>
      * For example, "/samples/hdf5_test.h5".
      * 
-     * @return the full path (file path + file name) of the file.
+     * @return The full path (file path + file name) of the file.
      */
-    public abstract String getFilePath();
+    public final String getFilePath() {
+	return fullFileName;
+    } 
 
     /**
-     * Checks if the file is read-only.
-     * <p>
-     * Depending on flag, a file can be open with read-only or read/write access. 
+     * Returns true if the file is open read-only.
+     *
+     * If the file is open read-write, or if the file is not open,
+     * false will be returned.  VERIFY
      * 
-     * @see #open(String, int)
+     * @see #getInstance(String, int)
+     * @see #open()
      * 
      * @return true if the file is read-only, otherwise returns false.
      */
-    public abstract boolean isReadOnly();
+    public final boolean isReadOnly() {
+    	return isReadOnly;
+    }
 
     /**
      * Creates a new group with a name in a group.
@@ -580,7 +602,7 @@ public abstract class FileFormat extends File
     /**
      * Adds a FileFormat with specified key to the list of supported formats.
      * <p>
-     * This method allows a new FileFormat, tagged with a unique identifying
+     * This method allows a new FileFormat, tagged with an identifying
      * key, to be added dynamically to the list of supported File Formats.  
      * Using it, applications can add new File Formats at runtime. 
      * <p>
@@ -596,11 +618,11 @@ public abstract class FileFormat extends File
      * </pre>
      * <p>
      * If either <code>key</code> or <code>fileformat</code> are null, or if 
-     * <code>key</code> is already in use, the method returns without updating the 
-     * list of supported File Formats.
+     * <code>key</code> is already in use, the method returns without updating  
+     * the list of supported File Formats.
      *
-     * @param 	key        a unique string that identifies the FileFormat.
-     * @param 	fileformat an instance of the FileFormat to be added.
+     * @param 	key        A string that identifies the FileFormat.
+     * @param 	fileformat An instance of the FileFormat to be added.
      * 
      */
     public static void addFileFormat(String key, FileFormat fileformat) {
@@ -616,9 +638,10 @@ public abstract class FileFormat extends File
     }
 
     /**
-     * Returns the FileFormat with specified key from the list of supported formats.
+     * Returns the FileFormat with specified key from the list of supported 
+     * formats.
      * <p>
-     * This method returns a FileFormat instance, as identified by a unique
+     * This method returns a FileFormat instance, as identified by an
      * identifying key, from the list of supported File Formats.
      * <p>
      * If the specified key is in the list of supported formats, 
@@ -626,7 +649,7 @@ public abstract class FileFormat extends File
      * If the specified key is not in the list of supported formats,
      * null is returned.
      *
-     * @param 	key 	a unique string that identifies the FileFormat.
+     * @param 	key 	A string that identifies the FileFormat.
      * 
      * @return The FileFormat that matches the given key, or null if the key
      *         is not found in the list of supported File Formats.
@@ -680,7 +703,7 @@ public abstract class FileFormat extends File
      * Removes the FileFormat with specified key from the list of supported 
      * formats.
      * <p>
-     * This method removes a FileFormat, as identified by a unique
+     * This method removes a FileFormat, as identified by an
      * identifying key, from the list of supported File Formats.
      * <p>
      * If the specified key is in the list of supported formats, 
@@ -689,7 +712,7 @@ public abstract class FileFormat extends File
      * If the key is not in the list of supported formats,
      * null is returned.   
      *
-     * @param key 	a unique string that identifies the FileFormat to 
+     * @param key 	A string that identifies the FileFormat to 
      *                  be removed.
      *
      * @return The FileFormat that is removed, or null if the key is not
@@ -885,13 +908,6 @@ public abstract class FileFormat extends File
      * @return A list of file extensions for all supported file formats.
      */
     public static String getFileExtensions() { return extensions; }
-
-    /**
-     * Returns file identifier of a file.
-     * 
-     * @return The file identifer
-     */
-    public int getFID() { return fid; }
 
     /**
      * Adds a file extension to the file extension list.
@@ -1110,5 +1126,30 @@ public abstract class FileFormat extends File
      * @return The object if it exists in the file; otherwise returns null
      */
     public abstract HObject get(String path) throws Exception;
+
+    /***************************************************************************
+     * Deprecated methods.
+     **************************************************************************/
+
+    /**
+     * @deprecated  As of 2.4, replaced by 
+     *                         {@link #newInstance(String, int)}
+     *   The replacement method has an additional parameter
+     *   that controls the behavior if the file already exists.
+     *   Use FileFormat.CREATE as the second argument in the replacement
+     *   method to mimic the behavior originally provided by this method.
+     *   The newInstance() method does not attempt to create the actual file
+     *   until the open() method is called.
+     */
+    @Deprecated public abstract FileFormat create(String fileName) throws Exception;
+
+    /**
+     * @deprecated  As of 2.4, replaced by 
+     *                         {@link #newInstance(String, int)}
+     *   
+     *   The replacement method has identical functionality and a more
+     *   descriptive name.
+     */
+    @Deprecated public abstract FileFormat open(String pathname, int access) throws Exception;
 
 }
