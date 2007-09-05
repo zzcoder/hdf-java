@@ -94,7 +94,7 @@ public abstract class FileFormat extends File
      *  @see #getFileFormats()
      *  @see #removeFileFormat(String)
      */
-    private static final Map FileList = new Hashtable(10);
+    private static final Map<String,FileFormat> FileList = new Hashtable<String,FileFormat>(10);
 
     /**
      * Current Java application such as HDFView cannot handle files with large
@@ -595,9 +595,9 @@ public abstract class FileFormat extends File
      *    }
      * </pre>
      * <p>
-     * If either the key or fileformat parameters are null, or if the
-     * key is already in use, the method returns without updating the list
-     * of supported File Formats.
+     * If either <code>key</code> or <code>fileformat</code> are null, or if 
+     * <code>key</code> is already in use, the method returns without updating the 
+     * list of supported File Formats.
      *
      * @param 	key        a unique string that identifies the FileFormat.
      * @param 	fileformat an instance of the FileFormat to be added.
@@ -609,26 +609,26 @@ public abstract class FileFormat extends File
         }
 
         key = key.trim();
-
+   
         if (!FileList.containsKey(key)) {
             FileList.put(key, fileformat);
         }
     }
 
     /**
-     * Returns the FileFormat with specified key from list of supported formats.
+     * Returns the FileFormat with specified key from the list of supported formats.
      * <p>
      * This method returns a FileFormat instance, as identified by a unique
      * identifying key, from the list of supported File Formats.
      * <p>
-     * If the specified key does appear in the list of supported formats, 
+     * If the specified key is in the list of supported formats, 
      * the instance of the associated FileFormat object is returned.
-     * If the specified key does not appear in the list of supported formats,
+     * If the specified key is not in the list of supported formats,
      * null is returned.
      *
      * @param 	key 	a unique string that identifies the FileFormat.
      * 
-     * @return the FileFormat that matches the given key, or null if the key
+     * @return The FileFormat that matches the given key, or null if the key
      *         is not found in the list of supported File Formats.
      */
     public static FileFormat getFileFormat(String key) {
@@ -636,13 +636,12 @@ public abstract class FileFormat extends File
     }
 
     /**
-     * Returns a list of keys for all supported formats.
+     * Returns an Enumeration of keys for all supported formats.
      * <p>
      * This method returns an Enumeration containing the unique keys (Strings)
      * for the all File Formats in the list of supported File Formats.
      *
-     * @return an enumeration of keys in the list of supported formats; null 
-     *         the list is empty.
+     * @return An Enumeration of keys that are in the list of supported formats.
      */
     public static final Enumeration getFileFormatKeys() {
         return ((Hashtable)FileList).keys();
@@ -657,7 +656,7 @@ public abstract class FileFormat extends File
      * <p>
      * If the list of supported formats is empty, null is returned.
      *
-     * @return an array of all FileFormat instances in the list of supported
+     * @return An array of all FileFormat instances in the list of supported
      *         File Formats, or null if the list is empty.
      */
     public static FileFormat[] getFileFormats()
@@ -684,16 +683,16 @@ public abstract class FileFormat extends File
      * This method removes a FileFormat, as identified by a unique
      * identifying key, from the list of supported File Formats.
      * <p>
-     * If the specified key does appear in the list of supported formats, 
+     * If the specified key is in the list of supported formats, 
      * the instance of the FileFormat object that is being removed from 
      * the list is returned.
-     * If the key does not appear in the list of supported formats,
+     * If the key is not in the list of supported formats,
      * null is returned.   
      *
      * @param key 	a unique string that identifies the FileFormat to 
      *                  be removed.
      *
-     * @return the FileFormat that is removed, or null if the key is not
+     * @return The FileFormat that is removed, or null if the key is not
      *			found in the list of supported File Formats.
      */
     public static FileFormat removeFileFormat(String key) {
