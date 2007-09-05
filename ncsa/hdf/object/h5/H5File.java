@@ -1706,7 +1706,7 @@ public class H5File extends FileFormat
     public String getLibversion()
     {
         int[] vers = new int[3];
-        String ver = "NCSA HDF5 ";
+        String ver = "HDF5 ";
 
         try { H5.H5get_libversion(vers); }
         catch (Throwable ex) {}
