@@ -1446,7 +1446,7 @@ public class H4File extends FileFormat
     public String getLibversion()
     {
         int[] vers = new int[3];
-        String ver = "NCSA HDF ";
+        String ver = "HDF ";
         String[] verStr = {""};
 
         try { HDFLibrary.Hgetlibversion(vers, verStr); }
