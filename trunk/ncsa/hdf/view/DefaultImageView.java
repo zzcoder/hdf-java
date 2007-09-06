@@ -1,12 +1,15 @@
-/****************************************************************************
- * NCSA HDF                                                                 *
- * National Comptational Science Alliance                                   *
- * University of Illinois at Urbana-Champaign                               *
- * 605 E. Springfield, Champaign IL 61820                                   *
- *                                                                          *
- * For conditions of distribution and use, see the accompanying             *
- * hdf-java/COPYING file.                                                   *
- *                                                                          *
+/*****************************************************************************
+ * Copyright by The HDF Group.                                               *
+ * Copyright by the Board of Trustees of the University of Illinois.         *
+ * All rights reserved.                                                      *
+ *                                                                           *
+ * This file is part of the HDF Java Products distribution.                  *
+ * The full copyright notice, including terms governing use, modification,   *
+ * and redistribution, is contained in the files COPYING and Copyright.html. *
+ * COPYING can be found at the root of the source code distribution tree.    *
+ * Or, see http://hdfgroup.org/products/hdf-java/doc/Copyright.html.         *
+ * If you do not have access to either file, you may request a copy from     *
+ * help@hdfgroup.org.                                                        *
  ****************************************************************************/
 
 package ncsa.hdf.view;
@@ -61,11 +64,11 @@ import javax.swing.text.NumberFormatter;
  * A default color table is provided for images without palette attached to it.
  * Current choice of default palettes include Gray, Rainbow, Nature and Wave.
  * For more infomation on palette, read
- * <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/ADGuide/ImageSpec.html">
+ * <a href="http://hdfgroup.org/HDF5/doc/ADGuide/ImageSpec.html">
  * HDF5 Image and Palette Specification </a>
- * <p>
- * @version 1.3.0 01/28/2002
+ *    
  * @author Peter X. Cao
+ * @version 2.4 9/6/2007
  */
 public class DefaultImageView extends JInternalFrame
 implements ImageView, ActionListener

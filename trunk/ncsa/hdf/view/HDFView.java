@@ -1,12 +1,15 @@
-/****************************************************************************
- * NCSA HDF                                                                 *
- * National Comptational Science Alliance                                   *
- * University of Illinois at Urbana-Champaign                               *
- * 605 E. Springfield, Champaign IL 61820                                   *
- *                                                                          *
- * For conditions of distribution and use, see the accompanying             *
- * hdf-java/COPYING file.                                                   *
- *                                                                          *
+/*****************************************************************************
+ * Copyright by The HDF Group.                                               *
+ * Copyright by the Board of Trustees of the University of Illinois.         *
+ * All rights reserved.                                                      *
+ *                                                                           *
+ * This file is part of the HDF Java Products distribution.                  *
+ * The full copyright notice, including terms governing use, modification,   *
+ * and redistribution, is contained in the files COPYING and Copyright.html. *
+ * COPYING can be found at the root of the source code distribution tree.    *
+ * Or, see http://hdfgroup.org/products/hdf-java/doc/Copyright.html.         *
+ * If you do not have access to either file, you may request a copy from     *
+ * help@hdfgroup.org.                                                        *
  ****************************************************************************/
 
 package ncsa.hdf.view;
@@ -37,16 +40,15 @@ import java.awt.Font;
  * It is used to layout the graphical components of the hdfview. The major GUI
  * components of the HDFView include Menubar, Toolbar, TreeView, ContentView,
  * and MessageArea.
- *
+ * <p>
  * The HDFView is designed in such a way that it does not have direct access to
  * the HDF library. All the HDF library access is done through HDF objects.
  * Therefore, the HDFView package depends on the object package but not the
  * library package. The source code of the view package (ncsa.hdf.view) should
  * be complied with the library package (ncsa.hdf.hdflib and ncsa.hdf.hdf5lib).
- * </p>
  *
  * @author Peter X. Cao
- * @version 1.0, 06/20/2003
+ * @version 2.4 9/6/2007
  */
 
 public class HDFView extends JFrame implements ViewManager, ActionListener, 
@@ -423,7 +425,6 @@ HyperlinkListener, ChangeListener
         urlBar.addActionListener(this);
         urlBar.setActionCommand("Open file: from file bar");
         urlBar.setSelectedIndex(-1);
-        //urlBar.addItem("http://hdf.ncsa.uiuc.edu/hdf-java-html/hdf5_test.h5");
 
         JPanel urlPane = new JPanel();
         urlPane.setLayout(new BorderLayout());
