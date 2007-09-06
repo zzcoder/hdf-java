@@ -115,7 +115,7 @@ public final class Tools
 
         if (thefile != null)
         {
-            newfile = thefile.create(hFileName, FileFormat.FILE_CREATE_DELETE);
+            newfile = thefile.newInstance(hFileName, FileFormat.CREATE);
             fid = newfile.open();
             pgroup = (Group)((DefaultMutableTreeNode) newfile.getRootNode()).getUserObject();
             type = newfile.createDatatype(Datatype.CLASS_CHAR, 1, Datatype.NATIVE, Datatype.SIGN_NONE);
