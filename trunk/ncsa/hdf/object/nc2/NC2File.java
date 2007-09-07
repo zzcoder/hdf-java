@@ -24,7 +24,7 @@ import ucar.nc2.*;
  * This class provides file level APIs. File access APIs include retrieving the
  * file hierarchy, opening and closing file, and writing file content to disk.
  * <p>
- * @version 1.1 9/4/2007
+ * @version 2.4 9/4/2007
  * @author Peter X. Cao
  */
 public class NC2File extends FileFormat
@@ -259,20 +259,6 @@ public class NC2File extends FileFormat
     }
 
     // implementign FileFormat
-    public Dataset createCompoundDS(
-        String name,
-        Group pgroup,
-        long[] dims,
-        String[] memberNames,
-        Datatype[] memberDatatypes,
-        int[] memberSizes,
-        Object data) throws Exception
-    {
-        // not supported
-        throw new UnsupportedOperationException("Unsupported operation.");
-    }
-
-    // implementign FileFormat
     public Dataset createImage(
         String name,
         Group pgroup,
@@ -290,12 +276,6 @@ public class NC2File extends FileFormat
 
     // implementign FileFormat
     public void delete(HObject obj) throws Exception {
-        // not supported
-        throw new UnsupportedOperationException("Unsupported operation.");
-    }
-
-    // implementign FileFormat
-    public TreeNode copy(HObject srcObj, Group dstGroup) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation.");
     }
@@ -378,7 +358,7 @@ public class NC2File extends FileFormat
      */
     public String getLibversion()
     {
-        String ver = "NetCDF Java (version 2.1)";
+        String ver = "NetCDF Java (version 2.4)";
 
         return ver;
     }

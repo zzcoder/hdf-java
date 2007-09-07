@@ -24,7 +24,7 @@ import ncsa.hdf.object.*;
  * This class provides file level APIs. File access APIs include retrieving the
  * file hierarchy, opening and closing file, and writing file content to disk.
  * <p>
- * @version 1.1 9/4/2007
+ * @version 2.4 9/4/2007
  * @author Peter X. Cao
  */
 public class H4File extends FileFormat
@@ -309,19 +309,6 @@ public class H4File extends FileFormat
         return H4SDS.create(name, pgroup, type, dims, maxdims, chunks, gzip, data);
     }
 
-    // implementign FileFormat
-    public Dataset createCompoundDS(
-        String name,
-        Group pgroup,
-        long[] dims,
-        String[] memberNames,
-        Datatype[] memberDatatypes,
-        int[] memberSizes,
-        Object data) throws Exception
-    {
-        // not supported
-        throw new UnsupportedOperationException("Unsupported operation.");
-    }
 
     public Dataset createImage(
         String name,
@@ -348,17 +335,6 @@ public class H4File extends FileFormat
     {
         throw (new UnsupportedOperationException(
             "Cannot delete HDF4 object."));
-    }
-
-    /**
-     * Copy an object to a group.
-     * @param srcObj   the object to copy.
-     * @param dstGroup the destination group.
-     * @return the new node containing the new object.
-     */
-    public TreeNode copy(HObject srcObj, Group dstGroup) throws Exception
-    {
-        return this.copy(srcObj, dstGroup, null);
     }
 
     /**
