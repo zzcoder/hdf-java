@@ -25,8 +25,6 @@ package ncsa.hdf.hdflib;
 
 public class HDFNotImplementedException  extends HDFJavaException 
 {
-	public static final long serialVersionUID = HObject.serialVersionUID;
-
     String msg;
 
     public HDFNotImplementedException() {

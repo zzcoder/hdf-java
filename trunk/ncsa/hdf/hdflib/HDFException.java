@@ -35,8 +35,6 @@ package ncsa.hdf.hdflib;
  */
 public class HDFException extends Exception 
 {
-	public static final long serialVersionUID = HObject.serialVersionUID;
-
     static public final String OutOfMemoryMessage="ERROR: HDF Library: Out of memory";
     static public final String HDFExceptionMessage="ERROR: HDF Library Error";
     static public final String HDFMessage="ERROR: Unknown HDF Error";
