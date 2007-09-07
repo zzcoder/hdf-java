@@ -74,20 +74,20 @@ public class NC2File extends FileFormat
 
 
     /**
-     * Checks if the given file format is an HDF5 file.
+     * Checks if the given file format is a NetCDF file.
      * <p>
      * @param fileformat the fileformat to be checked.
-     * @return true if the given file is an HDF5 file; otherwise returns false.
+     * @return true if the given file is an  NetCDF file; otherwise returns false.
      */
     public boolean isThisType(FileFormat fileformat) {
         return (fileformat instanceof NC2File);
     }
 
     /**
-     * Checks if a given file is an HDF5 file.
+     * Checks if a given file is a NetCDF file.
      * <p>
      * @param filename the file to be checked.
-     * @return true if the given file is an HDF5 file; otherwise returns false.
+     * @return true if the given file is an NetCDF file; otherwise returns false.
      */
     public boolean isThisType(String filename)
     {
@@ -202,7 +202,7 @@ public class NC2File extends FileFormat
     }
 
     /**
-     * Creates a new HDF5 file with given file name.
+     * Creates a new NetCDF file with given file name.
      * <p>
      * @param pathname the full path name of the file.
      * @return an instance of the new NC2File.
@@ -354,7 +354,7 @@ public class NC2File extends FileFormat
     }
 
     /**
-     *  Returns the version of the HDF5 library.
+     *  Returns the version of the library.
      */
     public String getLibversion()
     {
