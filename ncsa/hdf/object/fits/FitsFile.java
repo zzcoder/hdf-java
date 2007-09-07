@@ -131,14 +131,6 @@ public class FitsFile extends FileFormat
         return new FitsFile(pathname);
     }
 
-    /*
-     * @deprecated  As of 2.4, replaced by
-     *                         {@link #createInstance(String, int)}
-     */
-    @Deprecated public FileFormat open(String fileName, int access) throws Exception
-    {
-        return new FitsFile(fileName);
-    }
 
     // Implementing FileFormat
     public int open() throws Exception {

@@ -138,14 +138,6 @@ public class NC2File extends FileFormat
         return new NC2File(pathname);
     }
 
-    /*
-     * @deprecated  As of 2.4, replaced by
-     *                         {@link #createInstance(String, int)}
-     */
-    @Deprecated public FileFormat open(String fileName, int access) throws Exception
-    {
-        return new NC2File(fileName);
-    }
 
     // Implementing FileFormat
     public int open() throws Exception {
