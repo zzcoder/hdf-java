@@ -63,18 +63,20 @@ public class HObjectTest extends TestCase {
         }
 	}
 
-	/**
-	 * Test method for {@link ncsa.hdf.object.HObject#getFile()}.
-	 * <p>
-     * What to test:
-     * <ul> 
-     *   <li> Get the file name for the testfile from an object in the file.      
-     * </ul>
-     */
-	public final void testGetFile() {
-		if (!testObj.getFile().equals(H5TestFile.NAME_FILE_H5))
-			fail("Wrong File");
-	}
+        /**
+         * Test method for {@link ncsa.hdf.object.HObject#getFile()}.
+         * <p>
+         * What to test:
+         * <ul>
+         *   <li> Make sure file name in object yields same file as filename
+         * </ul>
+         */
+        public final void testGetFile() {
+            String fullFileName = testObj.getFile();
+            if ( ! fullFileName.endsWith( H5TestFile.NAME_FILE_H5 ) )
+                        fail("Wrong File");
+        }
+
 
 	/**
 	 * Test method for {@link ncsa.hdf.object.HObject#getName()}.
