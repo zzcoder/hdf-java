@@ -37,14 +37,14 @@ import javax.swing.tree.TreeNode;
  *                     H5File          H4File           Other...
  * </pre>
  *
- * <p>
- * @version 2.4 9/4/2007
+ * 
  * @author Peter X. Cao
+ * @version 2.4 9/4/2007
  */
 public abstract class FileFormat extends File
 {
     /***************************************************************************
-     * These file access flags are used in calls to newInstance( String, flag );
+     * File access flags used in calls to createInstance( String, flag );
      **************************************************************************/
 
     /** 
@@ -124,7 +124,8 @@ public abstract class FileFormat extends File
      * For example, 1,000,000 objects is too many.
      * max_members is defined so that applications such as HDFView will load
      * up to <i>max_members</i> objects starting with the <i>start_members</i>
-     * -th object.
+     * -th object.  The implementing class has freedom in its
+     * interpretation of now to "count" objects in the file.
      */
     private int max_members = 10000;		 // 10,000 by default
 
@@ -134,15 +135,11 @@ public abstract class FileFormat extends File
      * For example, 1,000,000 objects is too many.
      * max_members is defined so that applications such as HDFView will load
      * up to <i>max_members</i> objects starting with the <i>start_members</i>
-     * -th object.
+     * -th object.  The implementing class has freedom in its
+     * interpretation of how to index the objects in the file.
      */
     private int start_members = 0; 		// 0 by default
     
-    /** 
-     * Total number of objects in memory.
-     */
-    private int n_members = 0;
-
     /**
      * File identifier.  -1 indicates the file is not open.
      */
@@ -159,11 +156,11 @@ public abstract class FileFormat extends File
     protected boolean isReadOnly = false;
 
     /***************************************************************************
-     * Static initialization methods start here
+     * Static initialization method
      **************************************************************************/
 
     /**
-     * By default, we add HDF4 and HDF5 file formats to the supported formats 
+     * By default, HDF4 and HDF5 file formats are added to the supported formats
      * list.   
      */
     static {
@@ -187,9 +184,9 @@ public abstract class FileFormat extends File
     }
 
 
-    /*****************************************************************
-     * Methods related to the supported file formats.
-     *****************************************************************/
+    /***************************************************************************
+     * Static methods related to the supported file formats.  
+     **************************************************************************/
 
     /**
      * Adds a FileFormat with specified key to the list of supported formats.
@@ -215,7 +212,6 @@ public abstract class FileFormat extends File
      *
      * @param 	key        A string that identifies the FileFormat.
      * @param 	fileformat An instance of the FileFormat to be added.
-     * 
      */
     public static final void addFileFormat(String key, FileFormat fileformat) {
         if ((fileformat == null) || (key == null)) {
@@ -242,7 +238,6 @@ public abstract class FileFormat extends File
      * null is returned.
      *
      * @param 	key 	A string that identifies the FileFormat.
-     * 
      * @return The FileFormat that matches the given key, or null if the key
      *         is not found in the list of supported File Formats.
      */
@@ -306,7 +301,6 @@ public abstract class FileFormat extends File
      *
      * @param key 	A string that identifies the FileFormat to 
      *                  be removed.
-     *
      * @return The FileFormat that is removed, or null if the key is not
      *			found in the list of supported File Formats.
      */
@@ -380,12 +374,64 @@ public abstract class FileFormat extends File
 	return extensions; 
     }
 
-    /*****************************************************************
-     * End of Methods related to the supported file formats.
-     *****************************************************************/
+    /**
+     * Creates a FileFormat instance for the specified file.
+     * <p>
+     * This method checks the list of supported file formats to find one
+     * that matches the format of the specified file.  
+     * If a match is found, the method returns an instance of the 
+     * associated FileFormat object. 
+     * If no match is found, null is returned.
+     * <p>
+     * For example, if "test_hdf5.h5" is an HDF5 file, 
+     * FileFormat.getInstance("test_hdf5.h5") will return an instance 
+     * of H5File.
+     * <p>
+     * The file is not opened as part of this call.  
+     * The Read/Write file access is associated with the FileFormat instance.
+     * <p>
+     * RUTH: Verfify R/W access and also if there are other exceptions.
+     *
+     * @param fileName A valid file name, with a relative or absolute path.
+     * @return An instance of the matched FileFormat; null if no match.
+     * @throws IllegalArgumentException If the <code>fileName</code> argument 
+     *                 is <code>null</code> or does not specify 
+     *                 an existing file.
+     */
+    public static FileFormat getInstance(String fileName) throws Exception
+    {
+        if ((fileName == null) || (fileName.length()<=0)) {
+            throw new IllegalArgumentException("Invalid file name. "+fileName);
+        }
+
+        if (!(new File(fileName)).exists()) {
+            throw new IllegalArgumentException("File " + fileName + 
+					       "does not exist");
+        }
+
+        FileFormat fileFormat = null;
+        FileFormat knownFormat = null;
+        Enumeration elms = ((Hashtable)FileList).elements();
+
+        while(elms.hasMoreElements())
+        {
+            knownFormat = (FileFormat)elms.nextElement();
+            if (knownFormat.isThisType(fileName)) {
+                try {
+                    fileFormat = knownFormat.createInstance(fileName, WRITE);
+                } catch (Exception ex) {}
+                break;
+            }
+        }
+
+        return fileFormat;
+    }
+    /***************************************************************************
+     * End of static methods related to the supported file formats.
+     **************************************************************************/
 
     /***************************************************************************
-     * Public methods start here
+     * Non-static, non-abstract methods start here
      **************************************************************************/
 
     /** 
@@ -404,6 +450,129 @@ public abstract class FileFormat extends File
         super(pathname);
 	fullFileName = getAbsolutePath();
     }
+
+    /**
+     * Returns the absolute path for the file.
+     * <p>
+     * For example, "/samples/hdf5_test.h5".
+     * 
+     * @return The full path (file path + file name) of the file.
+     */
+    public final String getFilePath() {
+	return fullFileName;
+    } 
+
+    /**
+     * Returns file identifier of open file associated with this instance.
+     * 
+     * @return The file identifer or -1 if file isn't open.
+     */
+    public final int getFID() { 
+	return fid; 
+    }
+
+    /**
+     * Returns true if the file is open read-only.
+     * <p>
+     * If the file is open read-write, or if the file is not open,
+     * false will be returned.  RUTH-VERIFY
+     * 
+     * @return True if the file is open with read-only access, 
+     * otherwise returns false.
+     * @see #createInstance(String, int)
+     * @see #open()
+     */
+    public final boolean isReadOnly() {
+    	return isReadOnly;
+    }
+
+    /**
+     * Sets the maximum number of objects to be loaded into memory.
+     * <p>
+     * Current Java applications, such as HDFView, cannot handle files with 
+     * large numbers of objects due to JVM memory limitations.  
+     * The maximum number limits the number of objects that will be loaded 
+     * for a given FileFormat instance. 
+     * <p>
+     * The implementing FileFormat class has freedom in how it interprets the 
+     * maximum number.  H5File, for example, will load the maximum number 
+     * of objects for each group in the file.
+     *
+     * @param n The maximum number of objects to be loaded into memory.
+     */
+    public final void setMaxMembers(int n) { 
+	max_members = n; 
+    }
+
+    /**
+     * Returns the maximum number of objects that can be loaded into memory.
+     *
+     * @return The maximum number of objects that can be loaded into memory.
+     * @see #setMaxMembers(int)
+     */
+    public final int getMaxMembers() { 
+	return max_members; 
+    }
+
+    /**
+     * Sets the starting index of objects to be loaded into memory.
+     * <p>
+     * The implementing FileFormat class has freedom in how it interprets 
+     * indexes objects in the file.
+     *
+     * @param idx The starting index of the object to be loaded into memory
+     * @see #setMaxMembers(int)
+     */
+    public final void setStartMembers(int idx) { 
+	start_members = idx; 
+    }
+
+    /**
+     * Returns the index of the starting object to be loaded into memory.
+     *
+     * @return The index of the starting object to be loaded into memory.
+     * @see #setStartMembers(int)
+     */
+    public final int getStartMembers() { 
+	return start_members; 
+    }
+
+    /** 
+     * Returns the number of objects in memory.
+     * <p>
+     * This method returns the total number of objects loaded into memory
+     * for this FileFormat instance. The method counts the objects that
+     * are loaded, which can take some time for a large number of objects. 
+     * <p>
+     * It is worth noting that the total number of objects in memory 
+     * may be different than the total number of objects in the file.
+     * For example, if a file contains 20,000 objects and the maximum number
+     * of members allowed by this instance is 10,000, then only 10,000
+     * objects will be in memory and the method will return 10,000.
+     * On the other hand, since implementing classes have freedom in the
+     * way they interpret and use the maximum number of members value, there
+     * are cases where the number of objects in memory may exceed the 
+     * maxiumum number of members value.   H5File, for example, loads
+     * up to the maxiumum number of members objects for each group in the file. 
+     * 
+     * @return The number of objects in memory.
+     * @see #getMaxMembers()
+     * @see #setMaxMembers(int)
+     * @see #getStartMembers()
+     * @see #setStartMembers(int)
+     */
+    public final int getNumberOfMembers() {
+        int n_members = 0;
+	Enumeration local_enum = 
+	    ((DefaultMutableTreeNode) getRootNode()).depthFirstEnumeration();
+
+        while(local_enum.hasMoreElements()) {
+            local_enum.nextElement();
+            n_members++;
+        }
+        return n_members;
+    }
+
     /**
      * Creates a FileFormat instance with specified pathname and access.
      * <p>
@@ -436,14 +605,14 @@ public abstract class FileFormat extends File
      *  FileFormat h5file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
      *     
      *  // Create an instance of H5File object with read/write access
-     *  H5File test1 = (H5File)h5file.newInstance("test_hdf5.h5", 
+     *  H5File test1 = (H5File)h5file.createInstance("test_hdf5.h5", 
      *                                             FileFormat.WRITE);
      *
      *  // Open the file and load the file structure; file id is returned.
      *  int fid = test1.open;
      *
      *  // Create an instance of H5File object with create/truncate access
-     *  H5File test2 = (H5File)h5file.newInstance("new_hdf5.h5", 
+     *  H5File test2 = (H5File)h5file.createInstance("new_hdf5.h5", 
      *                                             FileFormat.CREATE);
      *   
      *  // Create the file, or open with truncate if file already exists,  
@@ -456,16 +625,19 @@ public abstract class FileFormat extends File
      *               is opened.  
      *               Acceptable values are <code> READ, WRITE, CREATE, </code>
      *               and <code> CREATE_OPEN</code>.
+     * @throws RUTH DOCUMENT EXCEPTION
      * @see #FileFormat(String)
      * @see #open()
      */
-    public abstract FileFormat newInstance(String pathname, int access) throws Exception;
+
+    public abstract FileFormat createInstance( String pathname, 
+					       int access) throws Exception;
 
     /**
      * Opens file and returns a file identifier.
      * <p>
      * This method uses the <code>pathname</code> and <code>access</code>
-     * parameters specified in the {@link #newInstance(String, int)} call
+     * parameters specified in the {@link #createInstance(String, int)} call
      * to open the file.  It returns the file identifier if successful,
      * or a negative value in case of failure.
      * <p> 
@@ -474,114 +646,53 @@ public abstract class FileFormat extends File
      * It does not load the contents of any data object.
      * <p>
      * The structure of the file is stored in a tree starting from the 
-     * root node. The root node is a Java TreeNode object that represents 
-     * the root group of a file. 
+     * root node. 
      * <p>
-     * Starting from the root, applications can descend through the hierarchy 
-     * and navigate among the file's data objects.
+     * RUTH.  What if this is a new file.   Is the root group created by 
+     * default?
      *  
-     * @see #newInstance(String, int)
-     * @see #getRootNode()
-     *
      * @return File access identifier if successful; otherwise -1.
+     * @throws RUTH DOCUMENT EXCEPTION
+     * @see #createInstance(String, int)
+     * @see #getRootNode()
      */
     public abstract int open() throws Exception;
 
     /**
-     * Returns File identifier of open file associated with this instance.
-     * 
-     * @return The file identifer or -1 if no file open.
-     */
-    public final int getFID() { return fid; }
-
-    /**
-     * Closes access to file associated with this instance.
+     * Closes file associated with this instance.
+     * <p>
      * <p>
      * This method closes the file associated with this FileFormat instance,
      * as well as all objects associated with the file.
      * <p>
-     * COME BACK AND TALK ABOUT EXCEPTIONS, ETC.  Why do we try to close if
+     * RUTH COME BACK AND TALK ABOUT EXCEPTIONS, ETC.  Why do we try to close if
      * fid is -1 when called?   Also, make sure we set isReadOnly to false
-     * when file is closed... or maybe not.
+     * when file is closed... or maybe not.  And set fid to -1.  What if not
+     * open?   Are the structures and root node still loaded?
      *
-     * @see #fid 
-     * @see #newInstance(String, int)
+     * @throws RUTH DOCUMENT EXCEPTION
+     * @see #createInstance(String, int)
      * @see #open()
      */
     public abstract void close() throws Exception;
 
-    /** 
-     * Returns the total number of hobjects in memory.
-     * <p>
-     * getNumberOfMembers() returns the total number of objects loaded into memory. The total 
-     * number of objects in memory may be different from the total number of objects in a file. 
-     * <p>
-     * For example, if a file contains 20,000 objects, the application only loads the first 
-     * 10,000 objects in memory. In this case, getNumberOfMembers() returns 10,000 instead 
-     * of 20,000.
-     * 
-     * @see #setMaxMembers(int)
-     * @see #setStartMembers(int)
-     * 
-     * @return The total number of objects in memory.
-     */
-    public final int getNumberOfMembers() {
-    	
-    	if (n_members > 0) {
-            return n_members;
-        }
-    	
-        Enumeration local_enum = ((DefaultMutableTreeNode)getRootNode()).depthFirstEnumeration();
-
-        while(local_enum.hasMoreElements()) {
-            local_enum.nextElement();
-            n_members++;
-        }
-        
-        return n_members;
-    }
-    
     /**
-     * Returns the root node that contains the file structure of a file.
+     * Returns the root node for the open file.
      * <p>
-     * A file structure is stored in a tree constructed by tree nodes 
-     * (javax.swing.tree.DefaultMutableTreeNode). In a tree
-     * structure, internal nodes represent groups. Leaf nodes represent datasets, named
-     * datatypes or empty groups.
+     * The root node is a Java TreeNode object 
+     * (javax.swing.tree.DefaultMutableTreeNode) that represents 
+     * the root group of a file. 
      * <p>
-     * The root node represents the root group. Using the methods provided by
-     * javax.swing.tree.DefaultMutableTreeNode, applocations can easily find objects
-     * in the tree.
+     * Starting from the root, applications can descend through the tree 
+     * structure and navigate among the file's objects.
+     * In the tree structure, internal nodes represent groups. 
+     * Leaf nodes represent datasets, named datatypes, or empty groups.
+     * <p>
+     * RUTH - come back.  What if file not open?   Any Exceptions?
      * 
      * @return The root node of the file.
      */
     public abstract TreeNode getRootNode();
-
-    /**
-     * Returns the absolute path for the file.
-     * <p>
-     * For example, "/samples/hdf5_test.h5".
-     * 
-     * @return The full path (file path + file name) of the file.
-     */
-    public final String getFilePath() {
-	return fullFileName;
-    } 
-
-    /**
-     * Returns true if the file is open read-only.
-     *
-     * If the file is open read-write, or if the file is not open,
-     * false will be returned.  RUTH-VERIFY
-     * 
-     * @see #newInstance(String, int)
-     * @see #open()
-     * 
-     * @return true if the file is read-only, otherwise returns false.
-     */
-    public final boolean isReadOnly() {
-    	return isReadOnly;
-    }
 
     /**
      * Creates a new group with a name in a group.
@@ -590,7 +701,8 @@ public abstract class FileFormat extends File
      * @param pgroup The parent group object.
      * @return       The new group if successful; otherwise returns null.
      */
-    public abstract Group createGroup(String name, Group pgroup) throws Exception;
+    public abstract Group createGroup(String name, 
+				      Group pgroup) throws Exception;
 
     /**
      * Creates a new dataset in a file with/without chunking/compression.
@@ -932,101 +1044,6 @@ public abstract class FileFormat extends File
      */
     public abstract void delete(HObject obj) throws Exception;
 
-    /**
-     * Sets the maximum number of objects to be loaded into memory.
-     * <p>
-     * Current Java application such as HDFView cannot handle files with large
-     * number of objects such 1,000,000 objects due to JVM memory limitation.
-     * A maximum number is used so that applications such as HDFView will load
-     * up to the maximum number of objects.
-     *
-     * @param n The maximum number of objects to be loaded into memory
-     */
-    public final void setMaxMembers(int n) { max_members = n; }
-
-    /**
-     * Sets the starting index of objects to be loaded into memory.
-     * <p>
-     * Current Java application such as HDFView cannot handle files with large
-     * number of objects such 1,000,000 objects due to JVM memory limitation.
-     * A maximum number is used so that applications such as HDFView will load
-     * up to the maximum number of objects.
-     *
-     * @param idx The starting index of the object to be loaded into memory
-     */
-    public final void setStartMembers(int idx) { start_members = idx; }
-
-    /**
-     * Returns the maximum number of objects to be loaded into memory.
-     * <p>
-     * <p>
-     * Current Java application such as HDFView cannot handle files with large
-     * number of objects such 1,000,000 objects due to JVM memory limitation.
-     * A maximum number is used so that applications such as HDFView will load
-     * up to the maximum number of objects.
-     *
-     * @return The maximum number of objects to be loaded into memory
-     */
-    public final int getMaxMembers() { return max_members; }
-
-    /**
-     * Returns an index of the starting object to be loaded into memory.
-     * <p>
-     * <p>
-     * Current Java application such as HDFView cannot handle files with large
-     * number of objects such 1,000,000 objects due to JVM memory limitation.
-     * A maximum number is used so that applications such as HDFView will load
-     * up to the maximum number of objects.
-     *
-     * @return The index of the starting object to be loaded into memory.
-     */
-    public final int getStartMembers() { return start_members; }
-
-
-    /**
-     * Creates an instance of a FileFormat object corresponding to the data in a file.
-     * <p>
-     * The file name may be an absolute or a relative path. This function checks the list of registered
-     * FileFormats and returns an instance of the matched one, or null if none is matched.
-     * <p>
-     * For example, if "test_hdf5.h5" is an HDF5 file, FileFormat.getInstance("test_hdf5.h5")
-     * returns an instance of H5File, i.e. H5File f=(H5File)FileFormat.getInstance("test_hdf5.h5");
-     *
-     * @param fileName a valid file name.
-     * 
-     * @return an instance of the matched FileFormat; otherwise returns null
-     */
-    public static FileFormat getInstance(String fileName) throws Exception
-    {
-        if ((fileName == null) || (fileName.length()<=0)) {
-            throw new IllegalArgumentException("Invalid file name. "+fileName);
-        }
-
-        if (!(new File(fileName)).exists()) {
-            throw new IllegalArgumentException("File does not exists");
-        }
-
-        FileFormat fileformat = null;
-        FileFormat theformat = null;
-        Enumeration elms = ((Hashtable)FileList).elements();
-        while(elms.hasMoreElements())
-        {
-            theformat = (FileFormat)elms.nextElement();
-            if (theformat.isThisType(fileName))
-            {
-                Class fileclass = theformat.getClass();
-                Object[] intiargs = {fileName};
-                Class[] paramClass = {fileName.getClass()};
-                try {
-                    java.lang.reflect.Constructor  constructor = fileclass.getConstructor(paramClass);
-                    fileformat = (FileFormat)constructor.newInstance(intiargs);
-                } catch (Exception ex) {}
-                break;
-            }
-        }
-
-        return fileformat;
-    }
 
     /**
      * @deprecated  Not for public use in the future.<br>
@@ -1172,19 +1189,18 @@ public abstract class FileFormat extends File
 
     /**
      * @deprecated  As of 2.4, replaced by 
-     *                         {@link #newInstance(String, int)}
+     *                         {@link #createInstance(String, int)}
      *   The replacement method has an additional parameter
      *   that controls the behavior if the file already exists.
-     *   Use FileFormat.CREATE as the second argument in the replacement
      *   method to mimic the behavior originally provided by this method.
-     *   The newInstance() method does not attempt to create the actual file
+     *   The createInstance() method does not attempt to create the actual file
      *   until the open() method is called.
      */
     @Deprecated public abstract FileFormat create(String fileName) throws Exception;
 
     /**
      * @deprecated  As of 2.4, replaced by 
-     *                         {@link #newInstance(String, int)}
+     *                         {@link #createInstance(String, int)}
      *   
      *   The replacement method has identical functionality and a more
      *   descriptive name.
