@@ -694,7 +694,7 @@ public abstract class FileFormat extends File
 					       int access) throws Exception;
 
     /***************************************************************************
-     * Abstract methods related to an open file and its structure.
+     * Abstract methods related to an open file, its structure and objects.
      **************************************************************************/
 
     /**
@@ -764,6 +764,7 @@ public abstract class FileFormat extends File
      * @param name   The name of a new group.
      * @param pgroup The parent group object.
      * @return       The new group if successful; otherwise returns null.
+     * @throws	     RUTH ADD EXCEPTIONS
      */
     public abstract Group createGroup(String name, 
 				      Group pgroup) throws Exception;
@@ -782,34 +783,174 @@ public abstract class FileFormat extends File
 				       HObject currentObj) throws Exception;
 
     /**
+     * Copies a given object to a specific group with a new name. 
+     * <p>
+     * RUTH_VERIFY
+     * <p>
+     * This method copies an object (source) to a specific group (destination) 
+     * within a file or cross files. If the destination group is in a different
+     * file, the file which the destination group is located at must be the 
+     * same file type as the source file. Copying object cross file format is 
+     * not supported. For example, an HDF4 dataset cannot be copied to an HDF5 
+     * file, and vice versa.
+     * <p>
+     * The source object can be a group, a dataset or a named datatype. 
+     * This method copies the object along with all its attributes and other 
+     * properties. If the source object is a group, this method also copies 
+     * all the objects and sub-groups below  the group.
+     * <p>
+     * The following example shows how to copy an HDF5 object.
+     * <pre>
+     *  public static void TestHDF5Copy (String filename, 
+     *                                   String objName) throws Exception
+     *  {
+     *      // Get the source dataset
+     *      H5File file = new H5File(filename, H5File.READ);
+     *      file.open();
+     *
+     *      // Create a new file
+     *      H5File newFile = (H5File) file.create(filename+"_new.h5");
+     *      newFile.open();
+     *
+     *      // NOTE: have to use the desitionation file to do the copy
+     *      // Copy the dataset to the destination's root group
+     *     Group group = (Group)newFile.get("/");
+     *     file.copy(file.get(objName), group);
+     *
+     *     // Make another copy but with different name
+     *      file.copy(file.get(objName), group, "another_copy");
+     *
+     *      file.close();
+     *      newFile.close();
+     *  }
+     * </pre>
+     * 
+     * @param srcObj   The object to copy.
+     * @param dstGroup The destination group for the new object.
+     * @param dstName  The name of the new object. If dstName is null, the name
+     *                 of the new object will be the same as srcObject.
+     *                 
+     * @return The tree node that contains the new object.
+     */
+    public abstract TreeNode copy(HObject srcObj, Group dstGroup, 
+	String dstName) throws Exception;
+
+    /**
+     * Gets an HObject with a given path from a file. 
+     * <p>
+     * RUTH_VERIFY
+     * <p>
+     * The way of how the get() method retrieves an object depends on 
+     * if {@link #open()} method is called.
+     * <ul>
+     *   <li> If {@link #open()} is called before get() is called, the
+     *        full structure of file is loaded into memory. The get() 
+     *        finds and returns the object in memory. For a group, the get()
+     *        method returns the group and all the members under the group.
+     *        In the following example, get("/g0") returns the group "/g0" 
+     *        and everything below.
+     *        <pre>
+     *        /g0                      Group
+     *        /g0/dataset_comp         Dataset {50, 10}
+     *        /g0/dataset_int          Dataset {50, 10}
+     *        /g0/g00                  Group
+     *        /g0/g00/dataset_float    Dataset {50, 10}
+     *        /g0/g01                  Group
+     *        /g0/g01/dataset_string   Dataset {50, 10}
+     *        </pre>
+     *   <li> If {@link #open()} is not called, the get() method retrieves
+     *        dataset_comp, dataset_int) and two empty groups (g00, g01).
+     *        <pre>
+     *        /g0                      Group
+     *        /g0/dataset_comp         Dataset {50, 10}
+     *        /g0/dataset_int          Dataset {50, 10}
+     *        /g0/g00                  Group
+     *        /g0/g00/dataset_float    Dataset {50, 10}
+     *        /g0/g01                  Group
+     *        /g0/g01/dataset_string   Dataset {50, 10}
+     *        </pre>
+     * <p>
+     * The following example shows how use the get() to get a group object 
+     * from file
+     * <pre>
+     *   public static void TestHDF5Get (String filename) throws Exception
+     *  {
+     *      H5File file = new H5File(filename, H5File.READ);
+     *      Group group = (Group)file.get("/Group0");
+     *      System.out.println(group);
+     *      file.close();
+     *  }
+     * </pre>
+     *
+     * @param path full path of a data object in a file
+     * @return The object if it exists in the file; otherwise returns null
+     */
+    public abstract HObject get(String path) throws Exception;
+
+    /**
+     * Deletes an object from a file.
+     * 
+     * @param obj The object to delete.
+     */
+    public abstract void delete(HObject obj) throws Exception;
+
+    /**
+     * Attaches a given attribute to an object.
+     * <p>
+     * RUTH_VERIFY
+     * <p>
+     * If the attribute does not exists, creates an attibute in file,
+     * and attches it the object. If the attribute already exists in the object,
+     * just update the value of the attribute attached to the object.
+     *    
+     * @param obj The object to which the attribute is attached to.
+     * @param attr The atribute to attach.
+     * @param attrExisted The indicator if the given attribute exists.
+     */
+    public abstract void writeAttribute(HObject obj, Attribute attr, 
+	boolean attrExisted) throws Exception;
+
+    /***************************************************************************
+     * Abstract methods related to Datasets and Datatypes
+     **************************************************************************/
+    /**
      * Creates a new dataset in a file with/without chunking/compression.
+     * <p>
+     * RUTH_VERIFY
      * <p>
      * The following example creates a 2D integer dataset of size 100X50 at the
      * root group in an HDF5 file.
      * <pre>
      * String name = "2D integer";
-     * Group pgroup = (Group)((DefaultMutableTreeNode)getRootNode).getUserObject();
-     * Datatype dtype = new H5Datatype(Datatype.CLASS_INTEGER, // class
-     *                                 4,                      // size in bytes
-     *                                 Datatype.ORDER_LE,      // byte order
-     *                                 Datatype.SIGN_NONE);    // signed or unsigned
+     * Group pgroup = 
+     *             (Group)((DefaultMutableTreeNode)getRootNode).getUserObject();
+     * Datatype dtype = new H5Datatype(
+     *                           Datatype.CLASS_INTEGER, // class
+     *                           4,                      // size in bytes
+     *                           Datatype.ORDER_LE,      // byte order
+     *                           Datatype.SIGN_NONE);    // signed or unsigned
      * long[] dims = {100, 50};
      * long[] maxdims = dims;
      * long[] chunks = null; // no chunking
      * int gzip = 0; // no compression
      * Object data = null; // no initial data values
      *
-     * Dataset d = (H5File)file.createScalarDS(name, pgroup, dtype, dims, maxdims, chunks, gzip, data);
+     * Dataset d = (H5File)file.createScalarDS(name, pgroup, dtype, dims,
+     *                                         maxdims, chunks, gzip, data);
      * </pre>
      *
      * @param name    name of the new dataset, e.g. "2D integer"
      * @param pgroup  parent group where the new dataset is created.
      * @param type    datatype of the new dataset.
-     * @param dims    dimension sizes of the new dataset, e.g. long[] dims = {100, 50}.
-     * @param maxdims maximum dimension sizes of the new dataset, null if maxdims is the same as dims.
+     * @param dims    dimension sizes of the new dataset, 
+     *                e.g. long[] dims = {100, 50}.
+     * @param maxdims maximum dimension sizes of the new dataset, 
+     *                null if maxdims is the same as dims.
      * @param chunks  chunk sizes of the new dataset, null if no chunking.
-     * @param gzip    GZIP compression level (1 to 9), 0 or negative values if no compression.
-     * @param data    data written to the new dataset, null if no data is written to the new dataset.
+     * @param gzip    GZIP compression level (1 to 9), 
+     *                0 or negative values if no compression.
+     * @param data    data written to the new dataset, 
+     *                null if no data is written to the new dataset.
      * 
      * @return        The new dataset if successful; otherwise returns null
      */
@@ -824,41 +965,54 @@ public abstract class FileFormat extends File
         Object data) throws Exception;
 
     /**
-     * Creates a new compound dataset in a file with/without chunking and compression.
+     * Creates a new compound dataset in a file with/without chunking and 
+     * compression.
      * <p>
-     * The following example creates a compressed 2D compound dataset with size of 100X50 in a root group.
+     * RUTH_VERIFY
+     * <p>
+     * The following example creates a compressed 2D compound dataset with 
+     * size of 100X50 in a root group.
      * The compound dataset has two members, x and y. Member x is an interger,
      * member y is an 1-D float array of size 10.
      * <pre>
      * String name = "2D compound";
-     * Group pgroup = (Group)((DefaultMutableTreeNode)getRootNode).getUserObject();
+     * Group pgroup = 
+     *           (Group)((DefaultMutableTreeNode)getRootNode).getUserObject();
      * long[] dims = {100, 50};
      * long[] chunks = {1, 50};
      * int gzip = 9;
      * String[] memberNames = {"x", "y"};
      * 
      * Datatype[] memberDatatypes = {
-     *     new H5Datatype(Datatype.CLASS_INTEGER, Datatype.NATIVE, Datatype.NATIVE, Datatype.NATIVE)
-     *     new H5Datatype(Datatype.CLASS_FLOAT, Datatype.NATIVE, Datatype.NATIVE, Datatype.NATIVE));
+     *     new H5Datatype(Datatype.CLASS_INTEGER, Datatype.NATIVE, 
+     *                    Datatype.NATIVE, Datatype.NATIVE)
+     *     new H5Datatype(Datatype.CLASS_FLOAT, Datatype.NATIVE, 
+     *                    Datatype.NATIVE, Datatype.NATIVE));
      *     
      * int[] memberSizes = {1, 10};
      * Object data = null; // no initial data values
      *
-     * Dataset d = (H5File)file.createCompoundDS(name, pgroup, dims, null, chunks, gzip, memberNames, memberDatatypes, memberSizes, null);
+     * Dataset d = (H5File)file.createCompoundDS(name, pgroup, dims, null, 
+     *           chunks, gzip, memberNames, memberDatatypes, memberSizes, null);
      * </pre>
      *
      * @param name            name of the new dataset
      * @param pgroup          parent group where the new dataset is created.
      * @param dims            dimension sizes of the new dataset.
-     * @param maxdims         maximum dimension sizes of the new dataset, null if maxdims is the same as dims.
-     * @param chunks          chunk sizes of the new dataset, null if no chunking.
-     * @param gzip            GZIP compression level (1 to 9), 0 or negative values if no compression.
+     * @param maxdims         maximum dimension sizes of the new dataset, 
+     *                        null if maxdims is the same as dims.
+     * @param chunks          chunk sizes of the new dataset, 
+     *                        null if no chunking.
+     * @param gzip            GZIP compression level (1 to 9), 
+     *                        0 or negative values if no compression.
      * @param memberNames     names of the members.
      * @param memberDatatypes datatypes of the members.
      * @param memberSizes     array sizes of the members.
-     * @param data            data written to the new dataset, null if no data is written to the new dataset.
+     * @param data            data written to the new dataset, 
+     *                        null if no data is written to the new dataset.
      * 
-     * @return                new dataset object if successful; otherwise returns null
+     * @return                new dataset object if successful; 
+     *                        otherwise returns null
      */
     public Dataset createCompoundDS(
         String name,
@@ -873,17 +1027,22 @@ public abstract class FileFormat extends File
         Object data) throws Exception
     {
         // subclass to implement it
-        throw new UnsupportedOperationException("Dataset FileFormat.createCompoundDS(...) is not implemented.");
+        throw new UnsupportedOperationException(
+               "Dataset FileFormat.createCompoundDS(...) is not implemented.");
     }
 
     /**
      * Creates a new image in a file.
      * <p>
+     * RUTH_VERIFY
+     * <p>
      * The following example creates a 2D image of size 100X50 in a root group.
      * <pre>
      * String name = "2D image";
-     * Group pgroup = (Group)((DefaultMutableTreeNode)getRootNode).getUserObject();
-     * Datatype dtype = new H5Datatype(Datatype.CLASS_INTEGER, 1, Datatype.NATIVE, Datatype.SIGN_NONE);
+     * Group pgroup = 
+     *          (Group)((DefaultMutableTreeNode)getRootNode).getUserObject();
+     * Datatype dtype = new H5Datatype(Datatype.CLASS_INTEGER, 1, 
+     *          Datatype.NATIVE, Datatype.SIGN_NONE);
      * long[] dims = {100, 50};
      * long[] maxdims = dims;
      * long[] chunks = null; // no chunking
@@ -899,15 +1058,22 @@ public abstract class FileFormat extends File
      * @param name      name of the new image, "2D image".
      * @param pgroup    parent group where the new image is created.
      * @param type      datatype of the new image.
-     * @param dims      dimension sizes of the new dataset, e.g. long[] dims = {100, 50}.
-     * @param maxdims   maximum dimension sizes of the new dataset, null if maxdims is the same as dims.
+     * @param dims      dimension sizes of the new dataset, 
+     *                  e.g. long[] dims = {100, 50}.
+     * @param maxdims   maximum dimension sizes of the new dataset, 
+     *                  null if maxdims is the same as dims.
      * @param chunks    chunk sizes of the new dataset, null if no chunking.
-     * @param gzip      GZIP compression level (1 to 9), 0 or negative values if no compression.
-     * @param ncomp     number of components of the new image, e.g. int ncomp = 3; // RGB true color image.
-     * @param interlace interlace mode of the image. Valid values are ScalarDS.INTERLACE_PIXEL, ScalarDS.INTERLACE_PLANEL and ScalarDS.INTERLACE_LINE.
+     * @param gzip      GZIP compression level (1 to 9), 
+     *                  0 or negative values if no compression.
+     * @param ncomp     number of components of the new image, 
+     *                  e.g. int ncomp = 3; // RGB true color image.
+     * @param interlace interlace mode of the image. 
+     *                  Valid values are ScalarDS.INTERLACE_PIXEL, 
+     *                  ScalarDS.INTERLACE_PLANEL and ScalarDS.INTERLACE_LINE.
      * @param data      data value of the image, null if no data.
      * 
-     * @return          The new image object if successful; otherwise returns null
+     * @return          The new image object if successful; 
+     *                  otherwise returns null
      */
     public abstract Dataset createImage(
         String name,
@@ -924,6 +1090,8 @@ public abstract class FileFormat extends File
     /**
      * Creates a new datatype in memory.
      * <p>
+     * RUTH_VERIFY
+     * <p>
      * The following code creates an instance of H5Datatype in memory.
      * <pre>
      * FileFormat file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
@@ -936,7 +1104,7 @@ public abstract class FileFormat extends File
      * @param torder order of the byte endian, e.g. Datatype.ORDER_LE.
      * @param tsign  signed or unsinged of an integer, Datatype.SIGN_NONE.
      * 
-     * @return       The new datatype object if successful; otherwise returns null.
+     * @return    The new datatype object if successful; otherwise returns null.
      */
     public abstract Datatype createDatatype(
         int tclass,
@@ -946,6 +1114,8 @@ public abstract class FileFormat extends File
 
     /**
      * Creates a named datatype in a file.
+     * <p>
+     * RUTH_VERIFY
      *<p>
      * The following code creates a named datatype in a file.
      * <pre>
@@ -968,213 +1138,7 @@ public abstract class FileFormat extends File
         int torder,
         int tsign,
         String name) throws Exception;
-    /**
-     * Attaches a given attribute to an object.
-     * <p>
-     * If the attribute does not exists, creates an attibute in file,
-     * and attches it the object. If the attribute already exists in the object, 
-     * just update the value of the attribute attached to the object.
-     *
-     * <p>
-     * @param obj The object to which the attribute is attached to.
-     * @param attr The atribute to attach.
-     * @param attrExisted The indicator if the given attribute exists.
-     */
-    public abstract void writeAttribute(HObject obj, Attribute attr, boolean attrExisted) throws Exception;
 
-    /**
-     * Copies a given object to a specific group with a new name. 
-     * <p>
-     * This method copies an object (source) to a specific group (destination) within 
-     * a file or cross files. If the destination group is in a different file, the 
-     * file which the destination group is located at must be the same file type as 
-     * the source file. Copying object cross file format is not supported. For example,
-     * an HDF4 dataset cannot be copied to an HDF5 file, and vice versa.
-     * <p>
-     * The source object can be a group, a dataset or a named datatype. This method 
-     * copies the object along with all its attributes and other properties. If the source
-     * object is a group, this method also copies all the objects and sub-groups below 
-     * the group.
-     * <p>
-     * The following example shows how to copy an HDF5 object.
-     * <pre>
-        public static void TestHDF5Copy (String filename, String objName) throws Exception
-        {
-            // Get the source dataset
-            H5File file = new H5File(filename, H5File.READ);
-            file.open();
-
-            // Create a new file
-            H5File newFile = (H5File) file.create(filename+"_new.h5");
-            newFile.open();
-
-            // NOTE: have to use the desitionation file to do the copy
-            // Copy the dataset to the destination's root group
-           Group group = (Group)newFile.get("/");
-           file.copy(file.get(objName), group);
-
-           // Make another copy but with different name
-            file.copy(file.get(objName), group, "another_copy");
-
-            file.close();
-            newFile.close();
-        }
-     * </pre>
-     * 
-     * @param srcObj   The object to copy.
-     * @param dstGroup The destination group for the new object.
-     * @param dstName  The name of the new object. If dstName is null, the name
-     *                 of the new object will be the same as srcObject.
-     *                 
-     * @return The tree node that contains the new object.
-     */
-    public abstract TreeNode copy(HObject srcObj, Group dstGroup, String dstName) throws Exception;
-
-    /**
-     * Deletes an object from a file.
-     * 
-     * @param obj The object to delete.
-     */
-    public abstract void delete(HObject obj) throws Exception;
-
-
-    /**
-     * @deprecated  Not for public use in the future.<br>
-     * Using {@link #get(String)}
-     * 
-     * <p>
-     * This static method causes two problems: 1) It can be very expensive if 
-     * if is called many times or in a loop because each call to the method 
-     * creates an instance of a file. 2)Since the method does not return the 
-     * instance of the file, the file cannot be closed directly and may be left
-     * for open (memory leak). The only way to close the file is through
-     * the object returned by this method, such as,
-     * <p>
-     * <pre>
-     * Dataset dset = H5File.getObject("/tmp/hdf5_test.h5#//images/iceberg");
-     * ....
-     * // close the file through dset
-     * dset.getFileFormat().close();
-     * </pre> 
-     */
-    public static final HObject getHObject(String fullPath) throws Exception
-    {
-        if ((fullPath == null) || (fullPath.length() <=0)) {
-            return null;
-        }
-
-        String filename=null, path=null;
-        int idx = fullPath.indexOf("#//");
-
-        if (idx >0 )
-        {
-            filename = fullPath.substring(0, idx);
-            path = fullPath.substring(idx+3);
-            if ((path == null) || (path.length() == 0)) {
-                path = "/";
-            }
-        }
-        else
-        {
-            filename = fullPath;
-            path = "/";
-        }
-
-        return FileFormat.getHObject(filename, path);
-    };
-
-    /**
-     * @deprecated  Not for public use in the future.<br>
-     * Using {@link #get(String)}
-     * 
-     * <p>
-     * This static method causes two problems: 1) It can be very expensive if 
-     * if is called many times or in a loop because each call to the method 
-     * creates an instance of a file. 2)Since the method does not return the 
-     * if is called many times or in a loop because each call to the method 
-     * creates an instance of a file. 2)Since the method does not return the 
-     * instance of the file, the file cannot be closed directly and may be left
-     * for open (memory leak). The only way to close the file is through
-     * the object returned by this method, such as,
-     * <p>
-     * <pre>
-     * Dataset dset = H5File.getObject("hdf5_test.h5", "/images/iceburg");
-     * ....
-     * // close the file through dset
-     * dset.getFileFormat().close();
-     * </pre> 
-     */
-    public static final HObject getHObject(String filename, String path) throws Exception
-    {
-        if ((filename == null) || (filename.length()<=0)) {
-            throw new IllegalArgumentException("Invalid file name. "+filename);
-        }
-
-        if (!(new File(filename)).exists()) {
-            throw new IllegalArgumentException("File does not exists");
-        }
-
-        HObject obj = null;
-        FileFormat file = FileFormat.getInstance(filename);
-
-        if (file != null) {
-            obj = file.get(path);
-            if (obj == null) {
-                file.close();
-            }
-        }
-        
-
-        return obj;
-    }
-
-    /**
-     * Gets an HObject with a given path from a file. 
-     * <p>
-     * The way of how the get() method retrieves an object depends on 
-     * if {@link #open()} method is called.
-     * <ul>
-     *   <li> If {@link #open()} is called before get() is called, the
-     *        full structure of file is loaded into memory. The get() 
-     *        finds and returns the object in memory. For a group, the get()
-     *        method returns the group and all the members under the group.
-     *        In the following example, get("/g0") returns the group "/g0" 
-     *        and everything below.
-     *        <pre>
-              /g0                      Group
-              /g0/dataset_comp         Dataset {50, 10}
-              /g0/dataset_int          Dataset {50, 10}
-              /g0/g00                  Group
-              /g0/g00/dataset_float    Dataset {50, 10}
-              /g0/g01                  Group
-              /g0/g01/dataset_string   Dataset {50, 10}
-              </pre>
-     *   <li> If {@link #open()} is not called, the get() method retrieves
-     *        dataset_comp, dataset_int) and two empty groups (g00, g01).
-     *        <pre>
-              /g0                      Group
-              /g0/dataset_comp         Dataset {50, 10}
-              /g0/dataset_int          Dataset {50, 10}
-              /g0/g00                  Group
-              /g0/g00/dataset_float    Dataset {50, 10}
-              /g0/g01                  Group
-              /g0/g01/dataset_string   Dataset {50, 10}
-              </pre>
-     * <p>
-     * The following example shows how use the get() to get a group object from file
-     * <pre>
-         public static void TestHDF5Get (String filename) throws Exception
-        {
-            H5File file = new H5File(filename, H5File.READ);
-            Group group = (Group)file.get("/Group0");
-            System.out.println(group);
-            file.close();
-        }
-     * </pre>
-     * @param path full path of a data object in a file
-     * @return The object if it exists in the file; otherwise returns null
-     */
-    public abstract HObject get(String path) throws Exception;
 
     /***************************************************************************
      * Deprecated methods.
@@ -1188,6 +1152,7 @@ public abstract class FileFormat extends File
      *   method to mimic the behavior originally provided by this method.
      *   The createInstance() method does not attempt to create the actual file
      *   until the open() method is called.
+     * RUTH CAN THIS BE FINAL?
      */
     @Deprecated public abstract FileFormat create(String fileName) 
 	throws Exception;
@@ -1228,7 +1193,7 @@ public abstract class FileFormat extends File
 	throws Exception
     {
         return createCompoundDS( name, pgroup, dims, null, null, -1,
-                              memberNames, memberDatatypes, memberSizes, data);
+                             memberNames, memberDatatypes, memberSizes, data);
     }
 
     /**
@@ -1242,6 +1207,99 @@ public abstract class FileFormat extends File
 	throws Exception
     {
 	return copy( srcObj, dstGroup, null );
+    }
+
+    /**
+     * @deprecated  Not for public use in the future.<br>
+     * Using {@link #get(String)}
+     * <p>
+     * RUTH _ UPDATE
+     * <p>
+     * This static method causes two problems: 1) It can be very expensive if 
+     * if is called many times or in a loop because each call to the method 
+     * creates an instance of a file. 2)Since the method does not return the 
+     * instance of the file, the file cannot be closed directly and may be left
+     * for open (memory leak). The only way to close the file is through
+     * the object returned by this method, such as,
+     * <p>
+     * <pre>
+     * Dataset dset = H5File.getObject("/tmp/hdf5_test.h5#//images/iceberg");
+     * ....
+     * // close the file through dset
+     * dset.getFileFormat().close();
+     * </pre> 
+     */
+    @Deprecated public static final HObject getHObject(String fullPath) 
+	throws Exception
+    {
+        if ((fullPath == null) || (fullPath.length() <=0)) {
+            return null;
+        }
+
+        String filename=null, path=null;
+        int idx = fullPath.indexOf("#//");
+
+        if (idx >0 )
+        {
+            filename = fullPath.substring(0, idx);
+            path = fullPath.substring(idx+3);
+            if ((path == null) || (path.length() == 0)) {
+                path = "/";
+            }
+        }
+        else
+        {
+            filename = fullPath;
+            path = "/";
+        }
+
+        return FileFormat.getHObject(filename, path);
+    };
+
+    /**
+     * @deprecated  Not for public use in the future.<br>
+     * Using {@link #get(String)}
+     * <p>
+     * RUTH _ UPDATE
+     * <p>
+     * This static method causes two problems: 1) It can be very expensive if 
+     * if is called many times or in a loop because each call to the method 
+     * creates an instance of a file. 2)Since the method does not return the 
+     * if is called many times or in a loop because each call to the method 
+     * creates an instance of a file. 2)Since the method does not return the 
+     * instance of the file, the file cannot be closed directly and may be left
+     * for open (memory leak). The only way to close the file is through
+     * the object returned by this method, such as,
+     * <p>
+     * <pre>
+     * Dataset dset = H5File.getObject("hdf5_test.h5", "/images/iceburg");
+     * ....
+     * // close the file through dset
+     * dset.getFileFormat().close();
+     * </pre> 
+     */
+    @Deprecated public static final HObject getHObject(String filename, 
+	String path) throws Exception
+    {
+        if ((filename == null) || (filename.length()<=0)) {
+            throw new IllegalArgumentException("Invalid file name. "+filename);
+        }
+
+        if (!(new File(filename)).exists()) {
+            throw new IllegalArgumentException("File does not exists");
+        }
+
+        HObject obj = null;
+        FileFormat file = FileFormat.getInstance(filename);
+
+        if (file != null) {
+            obj = file.get(path);
+            if (obj == null) {
+                file.close();
+            }
+        }
+
+        return obj;
     }
 
 
