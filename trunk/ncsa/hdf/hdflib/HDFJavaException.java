@@ -11,8 +11,6 @@
 
 package ncsa.hdf.hdflib;
 
-import ncsa.hdf.object.HObject;
-
 /**
  *  <p>
  *  The class HDFJavaException returns errors from the Java
