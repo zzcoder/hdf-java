@@ -63,20 +63,20 @@ public class FitsFile extends FileFormat
 
 
     /**
-     * Checks if the given file format is an HDF5 file.
+     * Checks if the given file format is a Fits file.
      * <p>
      * @param fileformat the fileformat to be checked.
-     * @return true if the given file is an HDF5 file; otherwise returns false.
+     * @return true if the given file is an Fits file; otherwise returns false.
      */
     public boolean isThisType(FileFormat fileformat) {
         return (fileformat instanceof FitsFile);
     }
 
     /**
-     * Checks if a given file is an HDF5 file.
+     * Checks if a given file is a Fits file.
      * <p>
      * @param filename the file to be checked.
-     * @return true if the given file is an HDF5 file; otherwise returns false.
+     * @return true if the given file is an Fits file; otherwise returns false.
      */
     public boolean isThisType(String filename)
     {
@@ -228,7 +228,7 @@ public class FitsFile extends FileFormat
     }
 
     /**
-     * Creates a new HDF5 file with given file name.
+     * Creates a new Fits file with given file name.
      * <p>
      * @param pathname the full path name of the file.
      * @return an instance of the new FitsFile.
@@ -241,7 +241,7 @@ public class FitsFile extends FileFormat
     // implementign FileFormat
     public Group createGroup(String name, Group pgroup) throws Exception {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException("Unsupported operation for Fits.");
     }
 
     // implementign FileFormat
@@ -251,7 +251,7 @@ public class FitsFile extends FileFormat
         int torder,
         int tsign) throws Exception {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException("Unsupported operation for Fits.");
     }
 
     // implementign FileFormat
@@ -262,7 +262,7 @@ public class FitsFile extends FileFormat
         int tsign,
         String name) throws Exception
     {
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException("Unsupported operation for Fits.");
     }
 
     // implementign FileFormat
@@ -364,11 +364,11 @@ public class FitsFile extends FileFormat
     }
 
     /**
-     *  Returns the version of the HDF5 library.
+     *  Returns the version of the library.
      */
     public String getLibversion()
     {
-        String ver = "NetCDF Java (version 2.4)";
+        String ver = "Fits Java (version 2.4)";
 
         return ver;
     }
