@@ -168,7 +168,7 @@ public class H4File extends FileFormat
         return isH4;
     }
 
-    public FileFormat newInstance(String pathname, int access) throws Exception
+    public FileFormat createInstance(String pathname, int access) throws Exception
     {
         return new H4File(pathname, access);
     }
