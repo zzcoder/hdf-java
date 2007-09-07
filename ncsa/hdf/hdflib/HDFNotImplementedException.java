@@ -11,8 +11,6 @@
 
 package ncsa.hdf.hdflib;
 
-import ncsa.hdf.object.HObject;
-
 /**
  *  <p>
  *  HDFNotImplementedException indicates a function that is part
