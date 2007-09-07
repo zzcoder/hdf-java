@@ -166,9 +166,9 @@ public class H5File extends FileFormat
 
     /*
      * (non-Javadoc)
-     * @see ncsa.hdf.object.FileFormat#newInstance(java.lang.String, int)
+     * @see ncsa.hdf.object.FileFormat#createInstance(java.lang.String, int)
      */
-    public FileFormat newInstance(String fileName, int access) throws Exception
+    public FileFormat createInstance(String fileName, int access) throws Exception
     {
         return new H5File(fileName, access);
     }
