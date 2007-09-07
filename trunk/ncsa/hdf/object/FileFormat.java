@@ -589,47 +589,50 @@ public abstract class FileFormat extends File
     public abstract String getLibversion();
 
     /**
-     * Checks if a file is an instance of the FileFormat.
+     * Checks if this instance implements the specified FileFormat.
+     * <p> 
+     * The Java "instanceof" operation is unable to check if an object
+     * is an instance of a FileFormat that is loaded at runtime.  
+     * This method provides the "instanceof" functionality, and works for
+     * implementing classes that are loaded at runtime.
      * <p>
-     * For example, if "test.h5" is an HDF5 file, H5File.isThisType("test.h5") returns
-     * true while H4File.isThisType("test.h5") will return false.
+     * This method lets applications that only access the abstract
+     * object layer (for example, FileFormat instead of H5File) determine
+     * the format of a given instance of the abstract class.
+     * <p>
+     * For example, HDFView uses the following code to determine if a file is 
+     * an HDF5 file:
      * <pre>
-     * FileFormat file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-     * boolean isH5 = file.isThisType("test.h5");
-     * </pre>
-     *
-     * @param filename The name of the file to be checked.
-     * @return true if the file is this type; otherwise returns false.
+     *  FileFormat h5F = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+     *  HObject hObject = viewer.getTreeView().getCurrentObject();
+     *  FileFormat thisF = hObject.getFileFormat();
+     *  boolean isH5 = h5F.isThisType(thisF);
+     * </pre> 
+     * 
+     * @param fileFormat The Fileformat to be checked.
+     * @return True if this instance implements the specified FileFormat; 
+     *        otherwise returns false.
      */
-    public abstract boolean isThisType(String filename);
+    public abstract boolean isThisType(FileFormat fileFormat);
 
     /**
-     * Checks if a given FileFormat is an instance of this FileFormat.
-     * <ul>
-     *     This function is needed for tow main reasons:
-     *     <li> since hdf-java products were designed in such a way 
-     *     that the GUI components only have access to the abstract object 
-     *     layer, applications need this function to check if a file instance 
-     *     is this file type.
-     *     <li> hdf-java applications such as HDFView support plug-in file
-     *     formats (FileFormats are loaded at runtime), The Java "instanceof" operation
-     *     cannot check if an object is an instance of a FileFormat that is loaded at runtime.
-     *     Instead, we use this method to perform the "instanceof" operation.
-     * </ul>
-     * For example, in HDFView, we use the following code to check if a file is an HDF5 file.
-     * <pre>
-        FileFormat h5file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-        HObject hObject = viewer.getTreeView().getCurrentObject();
-        FileFormat thisFile = hObject.getFileFormat();
-        boolean isH5 = h5file.isThisType(thisFile);
-     * </pre> 
-     * where, isH5 is true if thisFile is an HDF5 file; otherwise, isH5 is false.
+     * Checks if this instance matches the format of the specified file.
      * <p>
-     * @param fileformat the Fileformat to be checked.
-     * @return true if the given FileFormat is an instance of this FileFormat; otherwise returns false.
+     * For example, if "test.h5" is an HDF5 file, the first call to 
+     * isThisType() in the code fragment shown will return <code>false</code>,
+     * and the second call will return <code>true</code>.
+     * <pre>
+     *  FileFormat h4F = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4);
+     *  FileFormat h5F = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+     *  boolean isH4 = h4F.isThisType("test.h5");	// false
+     *  boolean isH5 = h5F.isThisType("test.h5");	// true
+     * </pre>
+     *
+     * @param fileName The name of the file to be checked.
+     * @return True if the format of the file matches the format of this
+     *         instance; otherwise returns false.
      */
-    public abstract boolean isThisType(FileFormat fileformat);
-
+    public abstract boolean isThisType(String fileName);
 
     /**
      * Creates a FileFormat instance with specified pathname and access.
@@ -687,7 +690,6 @@ public abstract class FileFormat extends File
      * @see #FileFormat(String)
      * @see #open()
      */
-
     public abstract FileFormat createInstance( String pathname, 
 					       int access) throws Exception;
 
@@ -778,6 +780,7 @@ public abstract class FileFormat extends File
      */
     public abstract HObject createLink(Group parentGroup, String name, 
 				       HObject currentObj) throws Exception;
+
     /**
      * Creates a new dataset in a file with/without chunking/compression.
      * <p>
@@ -819,23 +822,6 @@ public abstract class FileFormat extends File
         long[] chunks,
         int gzip,
         Object data) throws Exception;
-
-    /**
-     * @deprecated  Not for public use in the future. <br>
-     * Using {@link #createCompoundDS(String, Group, long[], long[], long[], int, String[], Datatype[], int[], Object)}
-     */
-    public Dataset createCompoundDS(
-        String name,
-        Group pgroup,
-        long[] dims,
-        String[] memberNames,
-        Datatype[] memberDatatypes,
-        int[] memberSizes,
-        Object data) throws Exception
-    {
-        return createCompoundDS(name, pgroup, dims, null, null, -1,
-               memberNames, memberDatatypes, memberSizes, data);
-    }
 
     /**
      * Creates a new compound dataset in a file with/without chunking and compression.
@@ -995,12 +981,6 @@ public abstract class FileFormat extends File
      * @param attrExisted The indicator if the given attribute exists.
      */
     public abstract void writeAttribute(HObject obj, Attribute attr, boolean attrExisted) throws Exception;
-
-    /**
-     * @deprecated  Not for public use in the future. <br>
-     * Using {@link #copy(HObject, Group, String)}
-     */
-    public abstract TreeNode copy(HObject srcObj, Group dstGroup) throws Exception;
 
     /**
      * Copies a given object to a specific group with a new name. 
@@ -1210,7 +1190,7 @@ public abstract class FileFormat extends File
      *   until the open() method is called.
      */
     @Deprecated public abstract FileFormat create(String fileName) 
-							throws Exception;
+	throws Exception;
 
     /**
      * @deprecated  As of 2.4, replaced by 
@@ -1220,9 +1200,49 @@ public abstract class FileFormat extends File
      *   descriptive name.
      */
     @Deprecated public final FileFormat open(String pathname, int access) 
-							throws Exception
+	throws Exception
     {
 	return createInstance( pathname, access );
     }
+
+    /**
+     * @deprecated  As of 2.4, replaced by 
+     *     {@link #createCompoundDS(String, Group, long[], long[], long[], 
+     *        int, String[], Datatype[], int[], Object)}
+     * <p>
+     * The replacement method has additional parameters: 
+     * <code>maxdims, chunks,</code> and <code>gzip</code>.
+     * To mimic the behavior originally provided by this method, call
+     * the replacement method with the following parameter list:
+     * <code> ( name, pgroup, dims, null, null, -1, 
+     * memberNames, memberDatatypes, memberSizes, data );
+     */
+    @Deprecated public final Dataset createCompoundDS(
+        String name,
+        Group pgroup,
+        long[] dims,
+        String[] memberNames,
+        Datatype[] memberDatatypes,
+        int[] memberSizes,
+        Object data) 
+	throws Exception
+    {
+        return createCompoundDS( name, pgroup, dims, null, null, -1,
+                              memberNames, memberDatatypes, memberSizes, data);
+    }
+
+    /**
+     * @deprecated  As of 2.4, replaced by 
+     * 		{@link #copy(HObject, Group, String)}
+     * <p>
+     * To mimic the behavior originally provided by this method, call the
+     * replacement method with <code>null</code> as the 3rd parameter.
+     */
+    @Deprecated public final TreeNode copy(HObject srcObj, Group dstGroup) 
+	throws Exception
+    {
+	return copy( srcObj, dstGroup, null );
+    }
+
 
 }
