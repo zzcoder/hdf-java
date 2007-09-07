@@ -175,16 +175,6 @@ public class H5File extends FileFormat
 
     /*
      * (non-Javadoc)
-     * @see ncsa.hdf.object.FileFormat#open(java.lang.String, int)
-     */
-    @Deprecated public FileFormat open(String fileName, int access) throws Exception
-    {
-        return new H5File(fileName, access);
-    }
-
-
-    /*
-     * (non-Javadoc)
      * @see ncsa.hdf.object.FileFormat#open()
      */
     public int open() throws Exception

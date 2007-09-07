@@ -173,11 +173,6 @@ public class H4File extends FileFormat
         return new H4File(pathname, access);
     }
 
-    @Deprecated public FileFormat open(String pathname, int access) throws Exception
-    {
-        return new H4File(pathname, access);
-    }
-
     // Implementing FileFormat
     public int open() throws Exception
     {
