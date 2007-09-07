@@ -65,7 +65,7 @@ import ncsa.hdf.hdf5lib.exceptions.*;
     }
  * </pre>
  *
- * @version 1.1 9/4/2007
+ * @version 2.4 9/4/2007
  * @author Peter X. Cao
  */
 public class H5File extends FileFormat
@@ -497,25 +497,6 @@ public class H5File extends FileFormat
         return H5ScalarDS.create(name, pgroup, type, dims, maxdims, chunks, gzip, data);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see ncsa.hdf.object.FileFormat#createCompoundDS(java.lang.String, ncsa.hdf.object.Group, long[], java.lang.String[], ncsa.hdf.object.Datatype[], int[], java.lang.Object)
-     */
-    public Dataset createCompoundDS(
-        String name,
-        Group pgroup,
-        long[] dims,
-        String[] memberNames,
-        Datatype[] memberDatatypes,
-        int[] memberSizes,
-        Object data) throws Exception
-    {
-    	if (pgroup == null) { // create the new dataset at the root group by default
-    		pgroup = (Group)get("/");
-    	}
-
-    	return H5CompoundDS.create(name, pgroup, dims, memberNames, memberDatatypes, memberSizes, data);
-    }
 
     /*
      * (non-Javadoc)
@@ -626,15 +607,6 @@ public class H5File extends FileFormat
         depth_first(root);
 
         return root;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ncsa.hdf.object.FileFormat#copy(ncsa.hdf.object.HObject, ncsa.hdf.object.Group)
-     */
-    public TreeNode copy(HObject srcObj, Group dstGroup) throws Exception
-    {
-        return this.copy(srcObj, dstGroup, null);
     }
 
     /*
