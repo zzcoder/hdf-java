@@ -68,6 +68,8 @@ public class FileFormatTest extends TestCase {
      * </ul>
      * 
 	 */
+/*
+ * RUTH - come back and update this with new method, createInstance
 	public final void testCreateStringInt() {
 		FileFormat f = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
 
@@ -98,6 +100,7 @@ public class FileFormatTest extends TestCase {
 		}
 	}
 
+*/
 	/**
 	 * Test method for {@link ncsa.hdf.object.FileFormat#getNumberOfMembers()}.
 	 * <p>
