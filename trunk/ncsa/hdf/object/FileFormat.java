@@ -426,9 +426,6 @@ public abstract class FileFormat extends File
 
         return fileFormat;
     }
-    /***************************************************************************
-     * End of static methods related to the supported file formats.
-     **************************************************************************/
 
     /***************************************************************************
      * Non-static, non-abstract methods start here
@@ -573,6 +570,67 @@ public abstract class FileFormat extends File
         return n_members;
     }
 
+    /***************************************************************************
+     * Abstract methods related to FileFormat, but not to an open file.
+     **************************************************************************/
+
+    /**
+     * Returns the version of the library for the implementing FileFormat.
+     * <p>
+     * The implementing FileFormat classes have freedom in how they
+     * obtain or generate the version number that is returned by this
+     * method. The H5File and H4File implementations query the underlying
+     * HDF libraries and return the reported version numbers.  Other
+     * implementing classes may generate the version string directly within the
+     * called method.
+     *
+     * @return The library version.
+     */
+    public abstract String getLibversion();
+
+    /**
+     * Checks if a file is an instance of the FileFormat.
+     * <p>
+     * For example, if "test.h5" is an HDF5 file, H5File.isThisType("test.h5") returns
+     * true while H4File.isThisType("test.h5") will return false.
+     * <pre>
+     * FileFormat file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+     * boolean isH5 = file.isThisType("test.h5");
+     * </pre>
+     *
+     * @param filename The name of the file to be checked.
+     * @return true if the file is this type; otherwise returns false.
+     */
+    public abstract boolean isThisType(String filename);
+
+    /**
+     * Checks if a given FileFormat is an instance of this FileFormat.
+     * <ul>
+     *     This function is needed for tow main reasons:
+     *     <li> since hdf-java products were designed in such a way 
+     *     that the GUI components only have access to the abstract object 
+     *     layer, applications need this function to check if a file instance 
+     *     is this file type.
+     *     <li> hdf-java applications such as HDFView support plug-in file
+     *     formats (FileFormats are loaded at runtime), The Java "instanceof" operation
+     *     cannot check if an object is an instance of a FileFormat that is loaded at runtime.
+     *     Instead, we use this method to perform the "instanceof" operation.
+     * </ul>
+     * For example, in HDFView, we use the following code to check if a file is an HDF5 file.
+     * <pre>
+        FileFormat h5file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+        HObject hObject = viewer.getTreeView().getCurrentObject();
+        FileFormat thisFile = hObject.getFileFormat();
+        boolean isH5 = h5file.isThisType(thisFile);
+     * </pre> 
+     * where, isH5 is true if thisFile is an HDF5 file; otherwise, isH5 is false.
+     * <p>
+     * @param fileformat the Fileformat to be checked.
+     * @return true if the given FileFormat is an instance of this FileFormat; otherwise returns false.
+     */
+    public abstract boolean isThisType(FileFormat fileformat);
+
+
     /**
      * Creates a FileFormat instance with specified pathname and access.
      * <p>
@@ -632,6 +690,10 @@ public abstract class FileFormat extends File
 
     public abstract FileFormat createInstance( String pathname, 
 					       int access) throws Exception;
+
+    /***************************************************************************
+     * Abstract methods related to an open file and its structure.
+     **************************************************************************/
 
     /**
      * Opens file and returns a file identifier.
@@ -704,6 +766,18 @@ public abstract class FileFormat extends File
     public abstract Group createGroup(String name, 
 				      Group pgroup) throws Exception;
 
+    /**
+     * Creates a link to an existing object in the open file.
+     *
+     * @param parentGroup The parent group for the link.
+     * @param name The name of the link.
+     * @param currentObj The object pointed to by the link.
+     * @return The object pointed to by the new link if successful; 
+     *         otherwise returns null.
+     * @throws RUTH ADD EXCEPTIONS
+     */
+    public abstract HObject createLink(Group parentGroup, String name, 
+				       HObject currentObj) throws Exception;
     /**
      * Creates a new dataset in a file with/without chunking/compression.
      * <p>
@@ -908,67 +982,6 @@ public abstract class FileFormat extends File
         int torder,
         int tsign,
         String name) throws Exception;
-
-    /**
-     * Creates a hard link pointing to an existing object in file.
-     *<p>
-     * @param parentGroup The parent group for the new link.
-     * @param name The name of the new link.
-     * @param currentObj The object pointed by the new link.
-     * 
-     * @return The object pointed by the new link if successful; otherwise returns null
-     */
-    public abstract HObject createLink(Group parentGroup, String name, HObject currentObj) throws Exception;
-
-    /**
-     *  Returns the version of the library for the file.
-     *
-     * @return The library version if successful; otherwise returns null
-     */
-    public abstract String getLibversion();
-
-    /**
-     * Checks if a file is an instance of the FileFormat.
-     * <p>
-     * For example, if "test.h5" is an HDF5 file, H5File.isThisType("test.h5") returns
-     * true while H4File.isThisType("test.h5") will return false.
-     * <pre>
-     * FileFormat file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-     * boolean isH5 = file.isThisType("test.h5");
-     * </pre>
-     *
-     * @param filename The name of the file to be checked.
-     * @return true if the file is this type; otherwise returns false.
-     */
-    public abstract boolean isThisType(String filename);
-
-    /**
-     * Checks if a given FileFormat is an instance of this FileFormat.
-     * <ul>
-     *     This function is needed for tow main reasons:
-     *     <li> since hdf-java products were designed in such a way 
-     *     that the GUI components only have access to the abstract object 
-     *     layer, applications need this function to check if a file instance 
-     *     is this file type.
-     *     <li> hdf-java applications such as HDFView support plug-in file
-     *     formats (FileFormats are loaded at runtime), The Java "instanceof" operation
-     *     cannot check if an object is an instance of a FileFormat that is loaded at runtime.
-     *     Instead, we use this method to perform the "instanceof" operation.
-     * </ul>
-     * For example, in HDFView, we use the following code to check if a file is an HDF5 file.
-     * <pre>
-        FileFormat h5file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-        HObject hObject = viewer.getTreeView().getCurrentObject();
-        FileFormat thisFile = hObject.getFileFormat();
-        boolean isH5 = h5file.isThisType(thisFile);
-     * </pre> 
-     * where, isH5 is true if thisFile is an HDF5 file; otherwise, isH5 is false.
-     * <p>
-     * @param fileformat the Fileformat to be checked.
-     * @return true if the given FileFormat is an instance of this FileFormat; otherwise returns false.
-     */
-    public abstract boolean isThisType(FileFormat fileformat);
-
     /**
      * Attaches a given attribute to an object.
      * <p>
@@ -1196,7 +1209,8 @@ public abstract class FileFormat extends File
      *   The createInstance() method does not attempt to create the actual file
      *   until the open() method is called.
      */
-    @Deprecated public abstract FileFormat create(String fileName) throws Exception;
+    @Deprecated public abstract FileFormat create(String fileName) 
+							throws Exception;
 
     /**
      * @deprecated  As of 2.4, replaced by 
@@ -1205,6 +1219,10 @@ public abstract class FileFormat extends File
      *   The replacement method has identical functionality and a more
      *   descriptive name.
      */
-    @Deprecated public abstract FileFormat open(String pathname, int access) throws Exception;
+    @Deprecated public final FileFormat open(String pathname, int access) 
+							throws Exception
+    {
+	return createInstance( pathname, access );
+    }
 
 }
