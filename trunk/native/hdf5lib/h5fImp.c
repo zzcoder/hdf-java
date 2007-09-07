@@ -343,11 +343,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Freopen
  * Method:    H5Fget_obj_ids(hid_t file_id, unsigned int types, int maxObjs, hid_t *obj_id_list )
  * Signature: (I[J[J)I
  */
-/*
- * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Fget_obj_ids(hid_t file_id, unsigned int types, int maxObjs, hid_t *obj_id_list )
- * Signature: (I[J[J)I
- */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1obj_1ids
   (JNIEnv *env, jclass clss, jint file_id, jint types, jint obj_count, jintArray obj_id_list)
 {

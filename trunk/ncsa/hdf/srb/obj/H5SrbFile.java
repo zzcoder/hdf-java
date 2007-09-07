@@ -143,19 +143,18 @@ public class H5SrbFile extends FileFormat
         }
     }
 
-    /**
-     * Open a file and returns an instance of implementing class of the FileFormat.
-     * <p>
-     * @param pathname the full path name of the file.
-     * @param flag the file access flag, it takes one of two values below:
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.FileFormat#createInstance(java.lang.String, int)
      */
-    public FileFormat open(String pathname, int access) throws Exception
+    public FileFormat createInstance(String pathname, int access) throws Exception
     {
         return new H5SrbFile(pathname);
     }
 
-    /**
-     * Closes access to the file resource.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.FileFormat#close()
      */
     public void close() throws Exception
     {
@@ -167,7 +166,10 @@ public class H5SrbFile extends FileFormat
         H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_FILE);
     }
 
-    // Implementing FileFormat
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.FileFormat#getRootNode()
+     */
     public TreeNode getRootNode()
     {
         return rootNode;
@@ -177,16 +179,6 @@ public class H5SrbFile extends FileFormat
      *  srbHost, srbPort, srbAuth, userName, domainName
      */
     public String[] getSrbInfo() { return srbInfo; }
-
-    /**
-     * Returns the full path of the file: file path + file name.
-     */
-    public String getFilePath() { return fullFileName; }
-
-    /**
-     * Returns the true if the file is read-only, otherwise returns false.
-     */
-    public boolean isReadOnly() { return true; }
 
     // Implementing FileFormat
     public FileFormat create(String fileName) throws Exception
@@ -212,19 +204,6 @@ public class H5SrbFile extends FileFormat
         Object data) throws Exception
     {
         throw new UnsupportedOperationException("H5SrbFile.createScalarDS() is not implemented.");
-    }
-
-    // Implementing FileFormat
-    public Dataset createCompoundDS(
-        String name,
-        Group pgroup,
-        long[] dims,
-        String[] memberNames,
-        Datatype[] memberDatatypes,
-        int[] memberSizes,
-        Object data) throws Exception
-    {
-        throw new UnsupportedOperationException("H5SrbFile.createCompoundDS(...) is not implemented.");
     }
 
     // Implementing FileFormat
@@ -295,12 +274,6 @@ public class H5SrbFile extends FileFormat
         boolean attrExisted) throws Exception
     {
          throw new UnsupportedOperationException("H5SrbFile.writeAttribute() is not implemented.");
-    }
-
-    // Implementing FileFormat
-    public TreeNode copy(HObject srcObj, Group dstGroup) throws Exception
-    {
-        throw new UnsupportedOperationException("H5SrbFile.copy() is not implemented.");
     }
 
     // implementign FileFormat
