@@ -31,17 +31,9 @@ public class FitsFile extends FileFormat
 	public static final long serialVersionUID = HObject.serialVersionUID;
 	
     /**
-     * The full name of this file; full path plus name
-     */
-    private final String fullFileName;
-
-    /**
      * The root node of the file hierearchy.
      */
     private MutableTreeNode rootNode;
-
-    /** flag to indicate if the file is readonly. */
-    private boolean isReadOnly;
 
     /** the netcdf file */
     private Fits fitsFile;
@@ -125,19 +117,27 @@ public class FitsFile extends FileFormat
         return is_fits;
     }
 
+
     /**
-     * Creates an instance of an FitsFile with given file name and access flag.
+     * Creates an instance of a FitsFile with given file name and access flag.
      * <p>
      * @param pathname the full path name of the file.
-     * @param flag the file access flag, it takes one of two values below:
+     * @param flag the file access flag, must be READ for this file format.
      * <DL><DL>
      * <DT> READ <DD> Allow read-only access to file.</DT>
-     * <DT> WRITE <DD> Allow read and write access to file.</DT>
-     * <DT> CREATE <DD> Create a new file.</DT>
      * </DL></DL>
      */
-    public FileFormat open(String pathname, int access) throws Exception {
+    public FileFormat createInstance(String pathname, int access) throws Exception {
         return new FitsFile(pathname);
+    }
+
+    /*
+     * @deprecated  As of 2.4, replaced by
+     *                         {@link #createInstance(String, int)}
+     */
+    @Deprecated public FileFormat open(String fileName, int access) throws Exception
+    {
+        return new FitsFile(fileName);
     }
 
     // Implementing FileFormat
@@ -229,16 +229,6 @@ public class FitsFile extends FileFormat
     // Implementing FileFormat
     public TreeNode getRootNode() {
         return rootNode;
-    }
-
-    // Implementing FileFormat
-    public String getFilePath() {
-        return fullFileName;
-    }
-
-    // Implementing FileFormat
-    public boolean isReadOnly() {
-        return isReadOnly;
     }
 
     public Fits getFitsFile() {
