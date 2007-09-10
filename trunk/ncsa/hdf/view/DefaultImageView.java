@@ -1146,11 +1146,11 @@ implements ImageView, ActionListener
         }
 
         final JFileChooser fchooser = new JFileChooser(dataset.getFile());
-        if (type.equals(FileFormat.FILE_TYPE_JPEG)) {
+        if (type.equals(Tools.FILE_TYPE_JPEG)) {
             fchooser.setFileFilter(DefaultFileFilter.getFileFilterJPEG());
-        } else if (type.equals(FileFormat.FILE_TYPE_TIFF)) {
+        } else if (type.equals(Tools.FILE_TYPE_TIFF)) {
             fchooser.setFileFilter(DefaultFileFilter.getFileFilterTIFF());
-        } else if (type.equals(FileFormat.FILE_TYPE_PNG)) {
+        } else if (type.equals(Tools.FILE_TYPE_PNG)) {
             fchooser.setFileFilter(DefaultFileFilter.getFileFilterPNG());
         }
 
@@ -1224,11 +1224,11 @@ implements ImageView, ActionListener
         {
             String filetype = null;
             if (cmd.equals("Save image as jpeg")) {
-                filetype = FileFormat.FILE_TYPE_JPEG;
+                filetype = Tools.FILE_TYPE_JPEG;
             } else if (cmd.equals("Save image as tiff")) {
-                filetype = FileFormat.FILE_TYPE_TIFF;
+                filetype = Tools.FILE_TYPE_TIFF;
             } else if (cmd.equals("Save image as png")) {
-                filetype = FileFormat.FILE_TYPE_PNG;
+                filetype = Tools.FILE_TYPE_PNG;
             }
 
             try { saveImageAs(filetype); }

@@ -1224,32 +1224,32 @@ HyperlinkListener, ChangeListener
 
             if (cmd.equals("Convert image file: JPEG to HDF5"))
             {
-                typeFrom = FileFormat.FILE_TYPE_JPEG;
+                typeFrom = Tools.FILE_TYPE_JPEG;
                 typeTo = FileFormat.FILE_TYPE_HDF5;
             }
             else if (cmd.equals("Convert image file: TIFF to HDF5"))
             {
-                typeFrom = FileFormat.FILE_TYPE_TIFF;
+                typeFrom = Tools.FILE_TYPE_TIFF;
                 typeTo = FileFormat.FILE_TYPE_HDF5;
             }
             else if (cmd.equals("Convert image file: PNG to HDF5"))
             {
-                typeFrom = FileFormat.FILE_TYPE_PNG;
+                typeFrom = Tools.FILE_TYPE_PNG;
                 typeTo = FileFormat.FILE_TYPE_HDF5;
             }
             else if (cmd.equals("Convert image file: JPEG to HDF4"))
             {
-                typeFrom = FileFormat.FILE_TYPE_JPEG;
+                typeFrom = Tools.FILE_TYPE_JPEG;
                 typeTo = FileFormat.FILE_TYPE_HDF4;
             }
             else if (cmd.equals("Convert image file: TIFF to HDF4"))
             {
-                typeFrom = FileFormat.FILE_TYPE_TIFF;
+                typeFrom = Tools.FILE_TYPE_TIFF;
                 typeTo = FileFormat.FILE_TYPE_HDF4;
             }
             else if (cmd.equals("Convert image file: PNG to HDF4"))
             {
-                typeFrom = FileFormat.FILE_TYPE_PNG;
+                typeFrom = Tools.FILE_TYPE_PNG;
                 typeTo = FileFormat.FILE_TYPE_HDF4;
             } else {
                 return;
