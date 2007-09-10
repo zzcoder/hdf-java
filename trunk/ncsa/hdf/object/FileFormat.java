@@ -21,22 +21,26 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 /**
- * FileFormat class defines general interfaces for retriving file structure 
- * from file,  creating/removing objects in/from file, and etc.
+ * FileFormat defines general interfaces for working with a file whose
+ * data is organized according to a supported format.
  * <p>
- * FileFormat is a pluggable component. An implementing class of FileFormat 
+ * FileFormat is a pluggable component. New implementing classes of FileFormat 
  * can be added to the list of supported file formats. Current implementing 
- * classes include
- * H5File and H4File. By default, H5File and H4File are added to the list of 
- * supported file formats.
- *
+ * classes include H5File and H4File. By default, H5File and H4File are 
+ * added to the list of supported file formats maintained by the static
+ * FileFormat instance.
  *  <pre>
  *                                    FileFormat
  *                       _________________|_________________
  *                       |                |                |
  *                     H5File          H4File           Other...
  * </pre>
- *
+ * <p>
+ * A FileFormat instance may exist without being associated with a given file.
+ * A FileFormat instance may be associated with a file that is not open.
+ * Most typically, the FileFormat instance is used to open the associated file 
+ * and perform operations such as retrieval and manipulation (if the
+ * file access is read-write) of the file structure and objects.
  * 
  * @author Peter X. Cao
  * @version 2.4 9/4/2007
@@ -72,15 +76,6 @@ public abstract class FileFormat extends File
      * With this access flag, modifications to the file will be allowed.
      */
     public static final int CREATE_OPEN = 3;
-
-    /** Key for JPEG image file type.*/
-    public static final String FILE_TYPE_JPEG = "JPEG";
-
-    /** Key for TIFF image file type. */
-    public static final String FILE_TYPE_TIFF = "TIFF";
-
-    /** Key for PNG image file type. */
-    public static final String FILE_TYPE_PNG = "PNG";
 
     /***************************************************************************
      * Keys and fields related to supported file formats. 
@@ -644,12 +639,12 @@ public abstract class FileFormat extends File
      * <p>
      * The access parameter values and corresponding behaviors at file open:
      * <UL>
-     * <LI> READ: Read-only access; fail if file doesn't exist.</DT>
-     * <LI> WRITE: Read/Write access; fail if file doesn't exist.</DT>
+     * <LI> READ: Read-only access; fail if file doesn't exist.
+     * <LI> WRITE: Read/Write access; fail if file doesn't exist.
      * <LI> CREATE: Read/Write access; create a new file or truncate 
-     *                  an existing one. </DT>
+     *                  an existing one. 
      * <LI> CREATE_OPEN: Read/Write access; create a new file or open 
-     *                  an existing one. </DT>
+     *                  an existing one. 
      * </UL>
      * <p>
      * Some FileFormat implementing classes may only support READ access.
@@ -686,7 +681,8 @@ public abstract class FileFormat extends File
      *               is opened.  
      *               Acceptable values are <code> READ, WRITE, CREATE, </code>
      *               and <code> CREATE_OPEN</code>.
-     * @throws RUTH DOCUMENT EXCEPTION
+     * @throws RUTH DOCUMENT EXCEPTION... also, what if READ ONLY for impl?
+     *         RUTH WHAT IF file already open?
      * @see #FileFormat(String)
      * @see #open()
      */
@@ -869,6 +865,7 @@ public abstract class FileFormat extends File
      *        /g0/g01                  Group
      *        /g0/g01/dataset_string   Dataset {50, 10}
      *        </pre>
+     * </ul>
      * <p>
      * The following example shows how use the get() to get a group object 
      * from file
@@ -889,6 +886,8 @@ public abstract class FileFormat extends File
 
     /**
      * Deletes an object from a file.
+     * <p>
+     * RUTH-VERIFY... what about exceptions?
      * 
      * @param obj The object to delete.
      */
@@ -1210,24 +1209,17 @@ public abstract class FileFormat extends File
     }
 
     /**
-     * @deprecated  Not for public use in the future.<br>
-     * Using {@link #get(String)}
+     * @deprecated  As of 2.4, replaced by
+     *          {@link #get(String)}
      * <p>
-     * RUTH _ UPDATE
-     * <p>
-     * This static method causes two problems: 1) It can be very expensive if 
-     * if is called many times or in a loop because each call to the method 
-     * creates an instance of a file. 2)Since the method does not return the 
-     * instance of the file, the file cannot be closed directly and may be left
-     * for open (memory leak). The only way to close the file is through
-     * the object returned by this method, such as,
-     * <p>
-     * <pre>
-     * Dataset dset = H5File.getObject("/tmp/hdf5_test.h5#//images/iceberg");
-     * ....
-     * // close the file through dset
-     * dset.getFileFormat().close();
-     * </pre> 
+     * This static method, which as been deprecated, causes two problems:
+     * <ul>
+     * <li>It can be very expensive if it is called many times or in a
+     * loop because each call to the method creates an instance of a file.
+     * <li> Since the method does not return the instance of the file, the
+     * file cannot be closed directly and may be left open (memory leak).
+     * The only way to close the file is through the object returned by
+     * this method. 
      */
     @Deprecated public static final HObject getHObject(String fullPath) 
 	throws Exception
@@ -1257,26 +1249,24 @@ public abstract class FileFormat extends File
     };
 
     /**
-     * @deprecated  Not for public use in the future.<br>
-     * Using {@link #get(String)}
+     * @deprecated  As of 2.4, replaced by 
+     * 		{@link #get(String)}
      * <p>
-     * RUTH _ UPDATE
-     * <p>
-     * This static method causes two problems: 1) It can be very expensive if 
-     * if is called many times or in a loop because each call to the method 
-     * creates an instance of a file. 2)Since the method does not return the 
-     * if is called many times or in a loop because each call to the method 
-     * creates an instance of a file. 2)Since the method does not return the 
-     * instance of the file, the file cannot be closed directly and may be left
-     * for open (memory leak). The only way to close the file is through
-     * the object returned by this method, such as,
-     * <p>
+     * This static method, which as been deprecated, causes two problems: 
+     * <ul>
+     * <li>It can be very expensive if it is called many times or in a 
+     * loop because each call to the method creates an instance of a file. 
+     * <li> Since the method does not return the instance of the file, the 
+     * file cannot be closed directly and may be left open (memory leak). 
+     * The only way to close the file is through the object returned by 
+     * this method, for example:
      * <pre>
      * Dataset dset = H5File.getObject("hdf5_test.h5", "/images/iceburg");
-     * ....
+     * ...
      * // close the file through dset
      * dset.getFileFormat().close();
      * </pre> 
+     * </li>
      */
     @Deprecated public static final HObject getHObject(String filename, 
 	String path) throws Exception
@@ -1301,6 +1291,5 @@ public abstract class FileFormat extends File
 
         return obj;
     }
-
 
 }
