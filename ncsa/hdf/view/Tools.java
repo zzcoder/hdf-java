@@ -40,6 +40,15 @@ public final class Tools
     public static final long MAX_INT32   = 2147483647;
     public static final long MAX_UINT32  = 4294967295L;
     public static final long MAX_INT64   = 9223372036854775807L;
+
+    /** Key for JPEG image file type.*/
+    public static final String FILE_TYPE_JPEG = "JPEG";
+
+    /** Key for TIFF image file type. */
+    public static final String FILE_TYPE_TIFF = "TIFF";
+
+    /** Key for PNG image file type. */
+    public static final String FILE_TYPE_PNG = "PNG";
      
     /** Converts an image file into HDF4/5 file.
      *  @param imgFileName the input image file.
@@ -60,7 +69,7 @@ public final class Tools
             throw new NullPointerException("The target HDF file is null.");
         }
 
-        if (!fromType.equals(FileFormat.FILE_TYPE_JPEG)) {
+        if (!fromType.equals(FILE_TYPE_JPEG)) {
             throw new UnsupportedOperationException("Unsupported image type.");
         } else if ( !(toType.equals(FileFormat.FILE_TYPE_HDF4)
              || toType.equals(FileFormat.FILE_TYPE_HDF5 ))) {
@@ -146,7 +155,7 @@ public final class Tools
             throw new NullPointerException("The source image is null.");
         }
 
-        if (!type.equals(FileFormat.FILE_TYPE_JPEG)) {
+        if (!type.equals(FILE_TYPE_JPEG)) {
             throw new UnsupportedOperationException("Unsupported image type.");
         }
         BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
