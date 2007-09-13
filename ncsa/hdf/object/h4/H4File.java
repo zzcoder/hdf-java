@@ -15,6 +15,8 @@
 package ncsa.hdf.object.h4;
 
 import java.util.*;
+import java.io.File;
+
 import java.lang.reflect.Array;
 import javax.swing.tree.*;
 import ncsa.hdf.hdflib.*;
@@ -29,7 +31,7 @@ import ncsa.hdf.object.*;
  */
 public class H4File extends FileFormat
 {
-	public static final long serialVersionUID = HObject.serialVersionUID;
+    public static final long serialVersionUID = HObject.serialVersionUID;
 
     /**
      * the file access flag.
@@ -61,9 +63,9 @@ public class H4File extends FileFormat
     /**
      * The SDS interface identifier.
      * The identifier is returned by SDstart(fname, flag), which initializes the
-     * SD interface for the file specified by the parameter. SDstart(fname, flag)
-     * is an expensive call. It should be called only once. Calling
-     * SDstart(fname, flag) in a loop should be avoided.
+     * SD interface for the file specified by the parameter. 
+     * SDstart(fname, flag) is an expensive call. It should be called only once
+     * Calling SDstart(fname, flag) in a loop should be avoided.
      */
     private int sdid;
 
@@ -88,29 +90,40 @@ public class H4File extends FileFormat
     }
 
     /**
-     * Creates an H4File with specific full file name and access flag.
+     * Creates an H4File instance with specified file name and access.
      * <p>
-     * @param pathname the full path of the file name.
-     * @param access the file access flag, HDF provides several file access
-     * code definitions:
-     * <DL><DL>
-     * <DT> DFACC_READ <DD> Open for read only. If file does not exist,
-     *      an error condition results.</DT>
-     * <DT> DFACC_CREATE <DD> If file exists, delete it, then open a new file
-     *      for read/write.</DT>
-     * <DT> DFACC_WRITE <DD> Open for read/write. If file does not exist,
-     *      create it.</DT>
-     * </DL></DL>
+     * The access parameter values and corresponding behaviors:
+     * <ul>
+     * <li> READ: Read-only access; open() will fail file doesn't exist.
+     * <li> WRITE: Read/Write access; if file doesn't exist, open() will 
+     *      create it; open() will fail if read/write access not allowed.
+     * <li> CREATE: Read/Write access; create a new file or truncate
+     *      an existing one; open() will fail if file can't be created or if
+     *      file exists but can't be opened read/write.
+     * </ul>
+     * <p>
+     * This constructor does not open the file for access, nor does it
+     * confirm that the file can later be opened read/write or created.
+     * <p>
+     * The flag returned by {@link #isReadOnly()} is set to true if the access
+     * parameter value is READ, even though the file isn't yet open.
+     *
+     * @param fileName A valid file name, with a relative or absolute path.
+     * @param access The file access flag, which determines behavior when file
+     *               is opened.
+     *               Acceptable values are <code> READ, WRITE, </code>
+     *               and <code>CREATE</code>.
+     * @throws NullPointerException If the <code>fileName</code> argument is
+     *         <code>null</code>.
      */
-    public H4File(String pathname, int access)
+    public H4File(String fileName, int access)
     {
-        super(pathname);
+        super(fileName);
 
         isReadOnly = (access == READ);
         objList = new Vector();
 
         this.fid = -1;
-        // this.fullFileName = pathname;  VERIFY now set in super()
 
         if (access == READ) {
             flag = HDFConstants.DFACC_READ;
@@ -122,14 +135,13 @@ public class H4File extends FileFormat
             flag = access;
         }
 
-
-    String shwAll = System.getProperty("h4showall");
-    if (shwAll != null) {
-        showAll = true;
-        //System.err.println("show all is on");
-    } else {
-        //System.err.println("show all is off");
-    }
+        String shwAll = System.getProperty("h4showall");
+        if (shwAll != null) {
+            showAll = true;
+            //System.err.println("show all is on");
+        } else {
+            //System.err.println("show all is off");
+        }
     }
 
     /**
@@ -168,9 +180,50 @@ public class H4File extends FileFormat
         return isH4;
     }
 
-    public FileFormat createInstance(String pathname, int access) throws Exception
+
+    /**
+     * Creates an HDF4 file with the specified name and returns a new
+     * H4File instance associated with the file.
+     *
+     * @throws HDFException If the file cannot be created or if createFlag
+     *          has unexpected value.
+     * @see ncsa.hdf.object.FileFormat#createFile(java.lang.String, int)
+     * @see #H4File(String, int)
+     */
+    public FileFormat createFile(String filename, int createFlag)
+                                                        throws Exception
     {
-        return new H4File(pathname, access);
+        // Flag if we need to create or truncate the file.
+        Boolean doCreateFile = true;
+
+        // Won't create or truncate if CREATE_OPEN specified and file exists
+        if (createFlag == FILE_CREATE_OPEN) {
+            File f = new File( filename );
+            if ( f.exists() ) {
+                doCreateFile = false;
+            }
+        }
+
+        if (doCreateFile) {
+            int fileid = HDFLibrary.Hopen(filename, HDFConstants.DFACC_CREATE);
+            try { 
+		HDFLibrary.Hclose(fileid); 
+	    } catch (HDFException ex) {}
+	}
+
+        return new H4File(filename, WRITE);
+    }
+
+    /**
+     * Creates an H4File instance with specified file name and access.
+     * <p>
+     * @see ncsa.hdf.object.FileFormat#createInstance(java.lang.String, int)
+     * @see #H4File(String, int)
+     */
+    public FileFormat createInstance(String filename, int access) 
+							throws Exception
+    {
+        return new H4File(filename, access);
     }
 
     // Implementing FileFormat
@@ -259,18 +312,6 @@ public class H4File extends FileFormat
         return rootNode;
     }
 
-
-    /**
-     * Creates a new HDF4 file.
-     * @param fileName the name of the file to create.
-     */
-    public FileFormat create(String fileName) throws Exception
-    {
-        int fileid = HDFLibrary.Hopen(fileName, HDFConstants.DFACC_CREATE);
-        try { HDFLibrary.Hclose(fileid); } catch (HDFException ex) {}
-
-        return new H4File(fileName, FileFormat.WRITE);
-    }
 
     public Group createGroup(String name, Group pgroup) throws Exception
     {
