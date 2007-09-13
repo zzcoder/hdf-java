@@ -28,14 +28,14 @@ import nom.tam.fits.*;
  */
 public class FitsFile extends FileFormat
 {
-	public static final long serialVersionUID = HObject.serialVersionUID;
+    public static final long serialVersionUID = HObject.serialVersionUID;
 	
     /**
      * The root node of the file hierearchy.
      */
     private MutableTreeNode rootNode;
 
-    /** the netcdf file */
+    /** the fits file */
     private Fits fitsFile;
 
     private static boolean isFileOpen;
@@ -56,7 +56,6 @@ public class FitsFile extends FileFormat
         isReadOnly = true;
         isFileOpen = false;
         this.fid = -1;
-        this.fullFileName = pathname;
         try { fitsFile = new Fits(fullFileName); }
         catch (Exception ex) {}
     }
@@ -119,16 +118,17 @@ public class FitsFile extends FileFormat
 
 
     /**
-     * Creates an instance of a FitsFile with given file name and access flag.
+     * Creates a FitsFile instance with specified file name and READ access.
      * <p>
      * @param pathname the full path name of the file.
-     * @param flag the file access flag, must be READ for this file format.
-     * <DL><DL>
-     * <DT> READ <DD> Allow read-only access to file.</DT>
-     * </DL></DL>
+     * Regardless of specified access, the FitsFile implementation uses
+     * READ.
+     *
+     * @see ncsa.hdf.object.FileFormat@createInstance(java.lang.String, int)
      */
-    public FileFormat createInstance(String pathname, int access) throws Exception {
-        return new FitsFile(pathname);
+    public FileFormat createInstance(String filename, int access) 
+							  throws Exception {
+        return new FitsFile(filename);
     }
 
 
@@ -225,17 +225,6 @@ public class FitsFile extends FileFormat
 
     public Fits getFitsFile() {
         return fitsFile;
-    }
-
-    /**
-     * Creates a new Fits file with given file name.
-     * <p>
-     * @param pathname the full path name of the file.
-     * @return an instance of the new FitsFile.
-     */
-    public FileFormat create(String fileName) throws Exception {
-        // not supported
-        return new FitsFile(fileName);
     }
 
     // implementign FileFormat

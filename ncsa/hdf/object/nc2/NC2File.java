@@ -29,7 +29,7 @@ import ucar.nc2.*;
  */
 public class NC2File extends FileFormat
 {
-	public static final long serialVersionUID = HObject.serialVersionUID;
+    public static final long serialVersionUID = HObject.serialVersionUID;
 
     /**
      * file identifier for the open file.
@@ -67,7 +67,6 @@ public class NC2File extends FileFormat
         isReadOnly = true;
         isFileOpen = false;
         this.fid = -1;
-        this.fullFileName = pathname;
         try { ncFile = new NetcdfFile(fullFileName); }
         catch (Exception ex) {}
     }
@@ -126,16 +125,17 @@ public class NC2File extends FileFormat
     }
 
     /**
-     * Creates an instance of an NC2File with given file name and access flag.
+     * Creates an NC2File instance with specified file name and READ access.
      * <p>
-     * @param pathname the full path name of the file.
-     * @param flag the file access flag, must be READ for this file format.
-     * <DL><DL>
-     * <DT> READ <DD> Allow read-only access to file.</DT>
-     * </DL></DL>
+     * Regardless of specified access, the NC2File implementation uses
+     * READ.
+     *
+     * @see ncsa.hdf.object.FileFormat#createInstance(java.lang.String, int)
      */
-    public FileFormat createInstance(String pathname, int access) throws Exception {
-        return new NC2File(pathname);
+    public FileFormat createInstance(String filename, int access) 
+							  throws Exception 
+    {
+        return new NC2File(filename);
     }
 
 
@@ -201,24 +201,13 @@ public class NC2File extends FileFormat
         return ncFile;
     }
 
-    /**
-     * Creates a new NetCDF file with given file name.
-     * <p>
-     * @param pathname the full path name of the file.
-     * @return an instance of the new NC2File.
-     */
-    public FileFormat create(String fileName) throws Exception {
-        // not supported
-        return new NC2File(fileName);
-    }
-
-    // implementign FileFormat
+    // implementing FileFormat
     public Group createGroup(String name, Group pgroup) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation.");
     }
 
-    // implementign FileFormat
+    // implementing FileFormat
     public Datatype createDatatype(
         int tclass,
         int tsize,
@@ -238,13 +227,13 @@ public class NC2File extends FileFormat
         throw new UnsupportedOperationException("Unsupported operation.");
     }
 
-    // implementign FileFormat
+    // implementing FileFormat
     public HObject createLink(Group parentGroup, String name, HObject currentObj) throws Exception
     {
         throw new UnsupportedOperationException("createLink() is not supported");
     }
 
-    // implementign FileFormat
+    // implementing FileFormat
     public Dataset createScalarDS(
         String name,
         Group pgroup,
@@ -258,7 +247,7 @@ public class NC2File extends FileFormat
         throw new UnsupportedOperationException("Unsupported operation.");
     }
 
-    // implementign FileFormat
+    // implementing FileFormat
     public Dataset createImage(
         String name,
         Group pgroup,
@@ -274,13 +263,13 @@ public class NC2File extends FileFormat
         throw new UnsupportedOperationException("Unsupported operation.");
     }
 
-    // implementign FileFormat
+    // implementing FileFormat
     public void delete(HObject obj) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation.");
     }
 
-    // implementign FileFormat
+    // implementing FileFormat
     public TreeNode copy(HObject srcObj, Group dstGroup, String dstName) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation.");
@@ -363,7 +352,7 @@ public class NC2File extends FileFormat
         return ver;
     }
 
-    // implementign FileFormat
+    // implementing FileFormat
     public HObject get(String path) throws Exception
     {
         throw new UnsupportedOperationException("get() is not supported");
