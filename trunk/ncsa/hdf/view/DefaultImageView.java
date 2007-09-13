@@ -539,6 +539,15 @@ implements ImageView, ActionListener
         button.setMargin( margin );
         button.addActionListener( this );
         button.setActionCommand( "Brightness" );
+        
+        // brightness button
+        button = new JButton( ViewProperties.getAutocontrastIcon() );
+        bar.add( button );
+        button.setToolTipText( "Calculate AutoGain" );
+        button.setMargin( margin );
+        button.addActionListener( this );
+        button.setActionCommand( "Calculate AutoGain" );
+        button.setEnabled(ViewProperties.isAutoContrast());
 
         button = new JButton(ViewProperties.getZoominIcon());
         bar.add(button);
@@ -763,7 +772,10 @@ implements ImageView, ActionListener
      */
     private void getIndexedImage() throws Exception, OutOfMemoryError {
         imagePalette = dataset.getPalette();
+        boolean noPalette = false;
+        
         if (imagePalette == null) {
+            noPalette = true;
             imagePalette = Tools.createGrayPalette();
             viewer.showStatus("\nNo attached palette found, default grey palette is used to display image");
         }
@@ -772,8 +784,9 @@ implements ImageView, ActionListener
         data =  dataset.convertFromUnsignedC();
 
         boolean isAutoContrastFailed = true;
-        if (ViewProperties.isAutoContrast()) 
+        if (ViewProperties.isAutoContrast() && noPalette) 
         {
+            // do not do autoContrast for images with palette
             isAutoContrastFailed = (!computeAutoGainImageData());
         }
 
@@ -1377,7 +1390,9 @@ implements ImageView, ActionListener
         else if (cmd.startsWith("Brightness"))
         {
             // auto contrast is not needed for byte data
-            if (ViewProperties.isAutoContrast()) {
+            boolean doAutoContrast = (ViewProperties.isAutoContrast() && 
+                                     minMaxGain != null && minMaxBias != null);
+            if (doAutoContrast) {
                 if (autoContrastSlider == null) {
                     autoContrastSlider = new AutoContrastSlider((JFrame)viewer, dataRange);
                 }
@@ -1394,6 +1409,15 @@ implements ImageView, ActionListener
                  generalContrastSlider.setVisible(true);
              }
         }
+        else if (cmd.equals("Calculate AutoGain")) {
+            boolean doAutoContrast = (ViewProperties.isAutoContrast() && 
+                    minMaxGain != null && minMaxBias != null);
+            if (doAutoContrast) {
+                gainBias = null;
+                applyAutoGain();
+            }
+        }
+        
         else if (cmd.equals("Show chart")) {
             showHistogram();
         }
@@ -1786,7 +1810,7 @@ implements ImageView, ActionListener
         dataRange[0] = newRange[0];
         dataRange[1] = newRange[1];
     }
-
+    
     /** PaletteComponent draws the palette on the side of the image. */
     private class PaletteComponent extends JComponent
     {
@@ -3569,6 +3593,12 @@ implements ImageView, ActionListener
             l.y += 200;
             setLocation(l);
             pack();
+        }
+        
+        public void setVisible(boolean aFlag) {
+            brightField.setValue(new Integer((int)gainBias[1]));
+            contrastField.setValue(new Integer((int)gainBias[0]));
+            super.setVisible(aFlag);
         }
 
         public void actionPerformed(ActionEvent e)
