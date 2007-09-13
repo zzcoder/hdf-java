@@ -91,8 +91,10 @@ public class ViewProperties extends Properties
     /** a list of srb accounts */
     private static Vector srbAccountList=new Vector(5);
     
-    /** flag to indicate if auto contrast is used in image process. */
-    private static boolean isAutoContrast = false;
+    /** flag to indicate if auto contrast is used in image process. 
+     * Use autocontrast by default.
+     */
+    private static boolean isAutoContrast = true;
     
     /** flag to indicate if enum data is converted to strings */
     private static boolean convertEnum = false;
@@ -119,7 +121,7 @@ public class ViewProperties extends Properties
         foldercloseIcon, folderopenIcon, foldercloseIconA, folderopenIconA,
         datasetIcon, imageIcon, tableIcon, textIcon,
         datasetIconA, imageIconA, tableIconA, textIconA,
-        zoominIcon, zoomoutIcon, paletteIcon, chartIcon, brightIcon,
+        zoominIcon, zoomoutIcon, paletteIcon, chartIcon, brightIcon, autocontrastIcon,
         copyIcon, cutIcon, pasteIcon,
         previousIcon, nextIcon, firstIcon, lastIcon,
         animationIcon, datatypeIcon, datatypeIconA, linkIcon;
@@ -344,6 +346,8 @@ public class ViewProperties extends Properties
 
     public static Icon getBrightIcon() { return brightIcon; }
 
+    public static Icon getAutocontrastIcon() { return autocontrastIcon; }
+    
     public static Icon getImageIcon() { return imageIcon; }
 
     public static Icon getTableIcon() { return tableIcon; }
@@ -508,10 +512,18 @@ public class ViewProperties extends Properties
                 paletteIcon = new ImageIcon (u);
             }
         }
+        
         if (brightIcon == null) {
             u = classLoader.getResource("ncsa/hdf/view/icons/brightness.gif");
             if (u != null) {
                 brightIcon = new ImageIcon (u);
+            }
+        }
+
+        if (autocontrastIcon == null) {
+            u = classLoader.getResource("ncsa/hdf/view/icons/autocontrast.gif");
+            if (u != null) {
+                autocontrastIcon = new ImageIcon (u);
             }
         }
 
@@ -715,9 +727,9 @@ public class ViewProperties extends Properties
             }
         }
         
-        str = (String)get("image.autocontrast");
+        str = (String)get("image.contrast");
         if (str != null) {
-            isAutoContrast = ("true".equalsIgnoreCase(str));
+            isAutoContrast = ("auto".equalsIgnoreCase(str));
         }
         
         str = (String)get("enum.conversion");
@@ -881,7 +893,10 @@ public class ViewProperties extends Properties
 
         put("max.members", String.valueOf(max_members));
         
-        put("image.autocontrast", String.valueOf(isAutoContrast));
+        if (isAutoContrast)
+            put("image.contrast", "auto");
+        else
+            put("image.contrast", "general");
 
         put("enum.conversion", String.valueOf(convertEnum));
         
