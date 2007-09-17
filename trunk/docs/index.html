@@ -1,273 +1,145 @@
 <?php
 include ("../links.php"); 
 include ("../includes/header.html"); 
-?><fieldset><h1>Product Description</h1></fieldset>
-
+?>
+<fieldset>
+<h1>HDF Java Products</h1>
+</fieldset>
 
 <p>
-<table BORDER=0 CELLSPACING=0 COLS=1 BGCOLOR="#FFFDDD" >
+<table BORDER=0 CELLSPACING=0 COLS=1>
 <td>
-The HDF Java Products are revised and reorganized from the earlier Java
-HDF products. It replaces the old HDF viewer (JHV) and the HDF5
-viewer (H5View).
-
+The <b>HDF Java Products</b> include 
+a visual tool for browsing and editing HDF files, 
+a Java package providing an object-oriented interface to HDF data objects,
+and Java Native Interfaces to the standard HDF libraries.    
+The HDF Java Products work with both HDF4 and HDF5 files.
 <p>
-JHV is no longer supported.<!-- anymore but you can still obtain it from
-<a href="/java-hdf-html/">Java HDF4 Products</a>.-->
-
-<br>
-H5View is no longer supported.<!--, but you can access it at:
-<a href="/java-hdf5-html/">Java HDF5 Products</a>.-->
+The HDF Java Products were revised and reorganized beginning with version 2.0. 
+HDFView replaced JHV and H5View, the original HDF4 and HDF5 viewers. 
 
 </td>
 </table>
-
 
 <p>
 <table WIDTH=100% BORDER COLS=2>
 
 <tr>
 <th width=25% BGCOLOR="#CCDFF">Product</th>
-
 <th width=75% BGCOLOR="#CCDDFF">Description</th>
-</tr>
-
-<tr>
-<td><a href="JNI/jhi/index.html">Java HDF Interface (JHI)</a></td>
-
-<td>The Java Native Interface that wraps the HDF4 library.
-The Java HDF Interface (JHI) is used to access the HDF4 library only</td>
-</tr>
-
-<tr>
-<td><a href="JNI/jhi5/index.html">Java HDF5 Interface (JHI5)</a></td>
-
-<td>The Java Native Interface that wraps the HDF5 library.
-The Java HDF5 Interface (JHI5) is used to access the HDF5 library only</td>
-</tr>
-
-<tr>
-<td><a href="hdf-object/index.html">hdf-object package</a></td>
-
-<td>A Java package that implements HDF4 and HDF5 data objects in an object-oriented form.
-The HDF Java Object Package provides a common standard Java API to access both HDF4 and HDF5 files.</td>
 </tr>
 
 <tr>
 <td><a href="hdfview/index.html">HDFView</a></td>
 
 <td>A visual tool for browsing and editing HDF4 and HDF5 files.
-<!--The HDFView 2.0
-or above is built on modules. Components of the HDFView are replacable. For
-more information about HDFView modules, please visit
-<a href="modular-hdfview/index.html">Modular HDFView</a>.</td>
+<!--
+HDFView version 2.0 and above is built on modules. 
+Components of HDFView are replacable. 
+For more information about HDFView modules, see
+<a href="modular-hdfview/index.html">Modular HDFView</a>.
 -->
+</td>
+</tr>
+
+<tr>
+<td><a href="hdf-object/index.html">Java HDF Object Package</a></td>
+
+<td>A Java package that implements HDF4 and HDF5 data objects in 
+an object-oriented form.
+The Java HDF Object Package provides a common Java API 
+for accessing HDF4 and HDF5 files.</td>
+</tr>
+
+<tr>
+<td><a href="JNI/jhi/index.html">Java HDF Interface (JHI)</a></td>
+
+<td>The Java Native Interface to the standard HDF4 library.
+Java HDF Interface (JHI) is used to access the HDF4 library.</td>
+</tr>
+
+<tr>
+<td><a href="JNI/jhi5/index.html">Java HDF5 Interface (JHI5)</a></td>
+
+<td>The Java Native Interface to the standard HDF5 library.
+Java HDF5 Interface (JHI5) is used to access the HDF5 library.</td>
 </tr>
 
 </table>
+
+<hr>
+
+<p>
 <a name="downloads"></a>
-<p>
-
-<h2>
-Download All HDF Java Products</h2>
-
-The source and pre-built binaries for all of the HDF Java Products can be downloaded
-from <a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/">ftp://ftp.hdfgroup.org/HDF5/hdf-java/</a>.
-Files at the ftp site are not well documented. To download a specific HDF Java Product,
-go to its related web pages stated above.
+<h2>Download HDF Java Products</h2>
 
 <p>
-The ftp directory contains the source code for the HDF Java Products, as well as
-pre-built code for platforms supported and HDFView. Below is a list of files at
-the hdf-java products ftp site.
-
-<pre>
-Full Source:
-   src/
-      hdf-java/    -- unpacked
-      hdf-java-2.3-src.jar
-      hdf-java-2.3-src.tar
-
-Pre-built:
-   bin/
-      aix/
-          hdf-java/  -- unpacked
-          hdf-java-2.3.jar
-          hdf-java-2.3.tar
-      alpha/
-          hdf-java/  -- unpacked
-          hdf-java-2.3.jar
-          hdf-java-2.3.tar
-      irix/
-          hdf-java/  -- unpacked
-          hdf-java-2.3.jar
-          hdf-java-2.3.tar
-      linux/
-          hdf-java/  -- unpacked
-          hdf-java-2.3.jar
-          hdf-java-2.3.tar
-      macosx/
-          hdf-java/  -- unpacked
-          hdf-java-2.3.jar
-          hdf-java-2.3.tar
-      solaris/
-          hdf-java/  -- unpacked
-          hdf-java-2.3.jar
-          hdf-java-2.3.tar
-      win/
-          hdf-java/  -- unpacked
-          hdf-java-2.3.jar
-          hdf-java-2.3.tar
-
-HDFView Binaries:
-   hdfview/
-          hdfview_install_aix_novm.bin
-          hdfview_install_aix_vm.bin
-          hdfview_install_irix_novm.bin
-          hdfview_install_linux_novm.bin
-          hdfview_install_linux_vm.bin
-          hdfview_install_macosx_novm.bin
-          hdfview_install_macosx_novm.zip
-          hdfview_install_osf1_novm.bin
-          hdfview_install_solaris_novm.bin
-          hdfview_install_solaris_vm.bin
-          hdfview_install_windows_novm.exe
-          hdfview_install_windows_vm.exe
-</pre>
-<hr>
-<h3>
-Binary release</h3>
-<p>The binary release includes jar files for the view package,
-for the HDF Object Package, the JHI (HDF4 library interface) and
-JHI5 (HDF5 library interface). The native libraries are available
-for selected platforms. You can download the packed tar file from:
-<UL>
-ftp://ftp.hdfgroup.org/HDF5/hdf-java/bin/{linux,macosx,solaris,windows}
-<P>
-</UL>
-Or the individual file from:
-<UL>
-ftp://ftp.hdfgroup.org/HDF5/hdf-java/bin/{linux,macosx,solaris,windows}/hdf-java
-</UL>
+To download a specific HDF Java Product, follow the Product link in the 
+table above and select Download from the product page.
 
 <p>
-<table WIDTH=100% BORDER COLS=2 >
+Source code for all HDF Java Products, 
+as well as pre-built binaries for many platforms,
+can be downloaded from 
+<a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/">
+ftp://ftp.hdfgroup.org/HDF5/hdf-java/</a>.
 
-<tr>
-<th width=25% BGCOLOR="#CCDFF">Binary file</th>
-
-<th width=75% BGCOLOR="#CCDDFF" colspan="2">Description</th>
-</tr>
-
-<tr>
-<td>lib/jhdf.jar</td>
-
-<td colspan="2">The Java HDF Interface, accesses the native HDF4 library</td>
-</tr>
-
-<tr>
-<td>lib/jhdf5.jar</td>
-
-<td colspan="2">The Java HDF5 Interface, accesses the native HDF5 library</td>
-</tr>
-
-<tr>
-<td>lib/jhdfobj.jar</td>
-
-<td colspan="2">The common HDF object package, ncsa.hdf.object</td>
-</tr>
-
-<tr>
-<td>lib/jhdf4obj.jar</td>
-
-<td colspan="2">The HDF4 object package, ncsa.hdf.object.h4</td>
-</tr>
-
-<tr>
-<td>lib/jhdf5obj.jar</td>
-
-<td colspan="2">The HDF5 object package, ncsa.hdf.object.h5</td>
-</tr>
-
-<tr>
-<td>lib/jhdfview.jar</td>
-
-<td colspan="2">The ncsa.hdf.view package, for HDFView only.</td>
-</tr>
-
-<tr>
-<td>lib/{solaris,linux, irix}/</td>
-
-<td colspan="2"></td>
-</tr>
-
-<tr>
-<td> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; libjhdf.so</td>
-
-<td colspan="2">The native HDF4 library and JNI implementation (called by jhdf.jar)</td>
-</tr>
-
-<tr>
-<td > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; libjhdf5.so</td>
-
-<td colspan="2">The native HDF5 library and JNI implementation (called by jhdf5.jar)</td>
-</tr>
-
-<tr>
-<td>lib/macosx/</td>
-
-<td colspan="2"></td>
-</tr>
-
-<tr>
-<td> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; libjhdf5.jnilib</td>
-
-<td colspan="2">The native HDF5 library and JNI implementation (called by jhdf5.jar)</td>
-</tr>
-
-<tr>
-<td> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; libjhdf5.dylib</td>
-
-<td colspan="2">The HDF5 dynamic link library (called by jhdf5.jar)</td>
-</tr>
-
-<tr>
-<td>lib/win/</td><td colspan="2">&nbsp;</td>
-
-</tr>
-<tr>
-<td > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; jhdf.dll</td>
-
-<td colspan="2">The native HDF4 library and JNI implementation (called by jhdf.jar)</td>
-</tr>
-
-<tr>
-<td> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; jhdf5.dll</td>
-
-<td colspan="2">The native HDF5 library and JNI implementation (called by jhdf5.jar)</td>
-
-
-</tr>
-</table>
-<hr>
 <p>
 <h3>Source</h3>
-<p>The source distribution includes all of the Java source to build the jar
-files, plus the C source for the native methods of the <a href="./JNI/jhi/index.html">JHI</a>
-and <a href="./JNI/jhi5/index.html">JHI5</a>.
-<p>The JHI requires the HDF4.2r1 library (binary) and the JHI5 requires
-the HDF5 1.6.5 library (binary). The HDF libraries are not included in
-the Java source. They can be obtained from:
-<b><a href="/">/</a></b>
 
-<P>
-Compiling the HDF Java Products from the source is not an easy task. Please
-read the following the instructions for more details.
+<p>
+The source distribution, found under the <b>src</b> directory at the ftp site,  
+includes the Java code to build
+<a href="hdfview/index.html">HDFView</a>,
+the <a href="./hdf-object/index.html">Java HDF Object Package</a>,
+and related HDF4 and HDF5 Object Packages.
+
+<p>
+The source distribution also includes Java classes that 
+declare the native methods for 
+<a href="./JNI/jhi/index.html">Java HDF Interface (JHI)</a>
+and <a href="./JNI/jhi5/index.html">Java HDF5 Interface (JHI5)</a>,
+and C code that implements the native methods.
+JHI requires the HDF4 4.2r1 library (binary) 
+and JHI5 requires the HDF5 1.6.5 library (binary), 
+which are not included in the HDF Java Products source distribution.
+The HDF libraries can be obtained from the 
+<a href="http://www.hdfgroup.org/downloads/index.html"> HDF Downloads</a> page.
+
+<p>
+Building the HDF Java Products from the source distribution is not an
+easy endeavor.
+Refer to the following the instructions for more details:
 <UL>
- <LI><A HREF="./build_src_unix.html">How to build from source on Unix and MacOSX</A>
- <LI><A HREF="./build_src_windows.html">How to build from source on Windows</A>
+ <LI><A HREF="./build_src_unix.html">Building from source on Unix and MacOSX</A>
+ <LI><A HREF="./build_src_windows.html">Building from source on Windows</A>
 </UL>
+
+<p>
+<h3>Pre-Built Binaries</h3>
+
+<p>
+The pre-built binaries, found under the <b>bin</b> directory at the ftp site, 
+include all of the HDF Java Products listed in the table above, 
+as well as the HDF4 and HDF5 libraries required by JHI and JHI5.   
+
+<p>
+The binary files are distributed in several formats including
+.jar files, .tar files, and packaged with an installer program.
+
+<p>
+Binaries are provided for 
+<b>linux, macosx, solaris,</b> and <b>windows</b> 
+in the corresonding <b>platform</b> subdirectories of 
+<a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/bin">ftp://ftp.hdfgroup.org/HDF5/hdf-java/bin</a>.
+README files in the platform directories on the ftp site 
+describe the packaging formats and corresponding files for each
+specific platform.
+<hr>
 <P>
 <?php 
 include ("../includes/footer.html"); 
 ?>
+<!--
+Last update 8/29/07 - RA
+-->
