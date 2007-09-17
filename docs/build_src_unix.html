@@ -1,7 +1,9 @@
-<HTML>
-<script language="JavaScript" type="text/javascript" src="header.js"></script>
+<?php
+include ("../links.php"); 
+include ("../includes/header.html"); 
+?>
 
-<h1>Compiling HDF-JAVA Source on Unix</h1>
+<fieldset><h1>Compiling HDF-JAVA Source on Unix</h1></fieldset>
 
 <p>
 <h2>
@@ -14,7 +16,7 @@ instructions tell you how to build the C source in Visual C++ and the Java
 source from batch file.
 
 <p>
-<table WIDTH=100% BORDER COLS=2>
+<table WIDTH=100% BORDER COLS=2 bgcolor="#f4f4f4">
 <caption><b>HDF Java Product Source</b></caption>
 <tr>
 <th> Source directory</th>
@@ -52,26 +54,26 @@ source from batch file.
 </tr>
 
 </table>
-
-<h2>
-Requirements</h2>
+<hr>
+<h3>
+Requirements</h3>
 You need the following libraries in order to compile the HDF Java products.
 <UL>
   <LI>The Pre-Compiled HDF4 Binaries: obtain from
-    <a href="http://hdf.ncsa.uiuc.edu/release4/obtain.html">http://hdf.ncsa.uiuc.edu/release4/obtain.html</a>
+    <a href="/release4/obtain.html">/release4/obtain.html</a>
   <LI>The Pre-Compiled HDF5 Binaries: obtain from
-    <a href="http://hdf.ncsa.uiuc.edu/HDF5/release/obtain5.html">http://hdf.ncsa.uiuc.edu/HDF5/release/obtain5.html</a>
+    <a href="/HDF5/release/obtain5.html">/HDF5/release/obtain5.html</a>
     <LI> JPEG Library: obtain from
-    <a href="ftp://ftp.ncsa.uiuc.edu/HDF/lib-external/">ftp://ftp.ncsa.uiuc.edu/HDF/lib-external/</a>
+    <a href="ftp://ftp.hdfgroup.org/lib-external/jpeg/">ftp://ftp.hdfgroup.org/lib-external/jpeg/</a>
     <LI> GZIP Library: obtain from
-    <a href="ftp://ftp.ncsa.uiuc.edu/HDF/lib-external/">ftp://ftp.ncsa.uiuc.edu/HDF/lib-external/</a>
+    <a href="ftp://ftp.hdfgroup.org/lib-external/zlib/">ftp://ftp.hdfgroup.org/lib-external/zlib/</a>
     <LI> SZIP Library: obtain from
-    <a href="ftp://ftp.ncsa.uiuc.edu/HDF/lib-external/">ftp://ftp.ncsa.uiuc.edu/HDF/lib-external/</a>
+    <a href="ftp://ftp.hdfgroup.org/lib-external/szip/">ftp://ftp.hdfgroup.org/lib-external/szip/</a>
     <LI> JDK 1.4.1 or above
 </UL>
-
-<h2>
-Unix</h2>
+<hr>
+<h3>
+Unix</h3>
 The HDF Java products source includes configure and make files to build the
 Java products. The source code includes the Java code for the HDF native
 interface to HDF4 and HDF5, the ncsa.hdf.objects package, ncsa.hdf.io packages,
@@ -80,9 +82,9 @@ source does not include the HDF4 or HDF5 libraries or any dependent libraries.<b
 <br>
 To build from source requires a C compiler and a Java compiler, JDK1.4 or
 equivalent. The autoconf and make files work with&nbsp;Gnu tools and gmake.<br>
-
-<h2>
-Configure script</h2>
+<hr>
+<h3>
+Configure script</h3>
 The first step is to run the configure script. The configure script checks
 the dependent libraries and other requirements, and generates Makefiles.
 <br>
@@ -97,7 +99,7 @@ file shows an example for how to set the paths and call configure. (<a href="#fi
 <br>
 <br>
 
-<table cellpadding="4" cellspacing="2" border="1" width="80%" align="center">
+<table cellpadding="4" cellspacing="2" border="1" width="80%" align="center" bgcolor="#f4f4f4">
 
   <tbody>
     <tr>
@@ -185,16 +187,16 @@ file shows an example for how to set the paths and call configure. (<a href="#fi
 </table>
 <div align="center"><b>Figure 1.</b><a name="figx"></a><br>
 </div>
-
-<h2>
-Build</h2>
+<hr>
+<h3>
+Build</h3>
 After configure runs successfully, the source is build with 'make'. <br>
 <br>
 By default make builds all the Java classes and all the C code for the HDF4
 and/or HDF5 library if selected. The Java classes are organized into six
 jar files:<br>
 <br>
-<table cellpadding="2" cellspacing="2" border="1" width="80%" align="center">
+<table cellpadding="2" cellspacing="2" border="1" width="80%" align="center"  bgcolor="#f4f4f4">
   <tbody>
     <tr>
       <td valign="top">
@@ -238,7 +240,7 @@ jhdf.jar<br>
 <br>
 <br>
 The C code is organized into two libraries:<br><br>
-<table cellpadding="2" cellspacing="2" border="1" width="80%" align="center">
+<table cellpadding="2" cellspacing="2" border="1" width="80%" align="center"  bgcolor="#f4f4f4">
   <tbody>
     <tr>
       <td valign="top">
@@ -263,9 +265,9 @@ In this case, the corresponding library and jar files will not be built.<br>
 The 'make install' installs the jar files and the C libraries in the directory specified by "--prefix" parameter in configure.<br>
 <br>
 See the Makefile for other options.<br>
-
-<h2>
-Running the HDF Java code</h2>
+<hr>
+<h3>
+Running the HDF Java code</h3>
 <br>
 The Java HDF has two parts, the Java classes and the C libraries. The Java
 classes are executed with a Java VM, just as any Java classes. The C libraries
@@ -281,7 +283,7 @@ procedure, with details differing for each platform.<br>
 <br>
 <div align="center"><br>
 </div>
-<table cellpadding="4" cellspacing="2" border="1" width="80%" align="center">
+<table cellpadding="4" cellspacing="2" border="1" width="80%" align="center"  bgcolor="#f4f4f4">
   <tbody>
     <tr>
       <td valign="top">
@@ -317,6 +319,7 @@ $JAVAPATH/java -mx512m ncsa.hdf.view.HDFView -root $HDFVIEW_HOME<br><br>
     </tr>
   </tbody>
 </table>
+<p>
 <div align="center"><b><a name="fig2"></a>Figure 2. Example shell script to launch the hdfview</b><br>
 </div>
 
@@ -325,9 +328,9 @@ In order to use the JNI interfaces in other products, the jhdf.jar and/or
 jhdf5.jar (HDF4, HDF5) archives must be in the class path for the Java compilation
 and run time. &nbsp;The libjhdf.so and/or libjhdf5.so must be in the LD_LIBRARY_PATH
 for running.<br>
-
-<h2>
-Problems</h2>
+<hr>
+<h3>
+Problems</h3>
 The configure and make process has many dependencies, so it is prone to problems.<br>
 <br>
 First, compiling the C into the libjhdf and libhdf5 must use the correct
@@ -353,7 +356,7 @@ directory, type 'make'. The 'testlink' program runs the TestHDF5Link.java
 program, and 'testlink4' runs TestHDF5Link.java. These Java program check
 the loading and invokation of the HDF library. If the link test succeeds,
 the paths in the script are correct for using the Java HDF products.<br>
+<?php 
+include ("../includes/footer.html"); 
+?>
 
-
-<script language="JavaScript" type="text/javascript" src="footer.js"></script>
-</HTML>

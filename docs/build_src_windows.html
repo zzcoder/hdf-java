@@ -1,7 +1,9 @@
-<HTML>
-<script language="JavaScript" type="text/javascript" src="header.js"></script>
+<?php
+include ("../links.php"); 
+include ("../includes/header.html"); 
+?>
 
-<h1>Compiling HDF-JAVA Source on Windows</h1>
+<fieldset><h1>Compiling HDF-JAVA Source on Windows</h1></fieldset>
 
 <p>
 <h2>
@@ -52,26 +54,26 @@ source from batch file.
 </tr>
 
 </table>
-
-<h2>
-Requirements</h2>
+<hr>
+<h3>
+Requirements</h3>
 You need the following libraries in order to compile the HDF Java products.
 <UL>
   <LI>The Pre-Compiled HDF4 Binaries: obtain from
-    <a href="http://hdf.ncsa.uiuc.edu/release4/obtain.html">http://hdf.ncsa.uiuc.edu/release4/obtain.html</a>
+    <a href="/release4/obtain.html">/release4/obtain.html</a>
   <LI>The Pre-Compiled HDF5 Binaries: obtain from
-    <a href="http://hdf.ncsa.uiuc.edu/HDF5/release/obtain5.html">http://hdf.ncsa.uiuc.edu/HDF5/release/obtain5.html</a>
+    <a href="/HDF5/release/obtain5.html">/HDF5/release/obtain5.html</a>
     <LI> JPEG Library: obtain from
-    <a href="ftp://ftp.ncsa.uiuc.edu/HDF/lib-external/">ftp://ftp.ncsa.uiuc.edu/HDF/lib-external/</a>
+    <a href="ftp://ftp.hdfgroup.org/lib-external/jpeg/">ftp://ftp.hdfgroup.org/lib-external/jpeg/</a>
     <LI> GZIP Library: obtain from
-    <a href="ftp://ftp.ncsa.uiuc.edu/HDF/lib-external/">ftp://ftp.ncsa.uiuc.edu/HDF/lib-external/</a>
+    <a href="ftp://ftp.hdfgroup.org/lib-external/zlib/">ftp://ftp.hdfgroup.org/lib-external/zlib/</a>
     <LI> SZIP Library: obtain from
-    <a href="ftp://ftp.ncsa.uiuc.edu/HDF/lib-external/">ftp://ftp.ncsa.uiuc.edu/HDF/lib-external/</a>
+    <a href="ftp://ftp.hdfgroup.org/lib-external/szip/">ftp://ftp.hdfgroup.org/lib-external/szip/</a>
     <LI> JDK 1.4.1 or above
 </UL>
-
-<h2>
-Compile the HDF Java Native C</h2>
+<hr>
+<h3>
+Compile the HDF Java Native C</h3>
 To compile the HDF Java Native C code, you need to have <b>Microsoft Visual C++</b>
 installed on your machine. Two Windows Makefiles hdf-java/windows are provided
 to help you to build the C source code.
@@ -128,9 +130,9 @@ SZIPLIB=<br>
 </td>
 </tr>
 </table>
-
-<h2>
-Compile the HDF Java Source Code</h2>
+<hr>
+<h3>
+Compile the HDF Java Source Code</h3>
 To compile the HDF Java Source Code, you need to have JDK1.4.1 or above
 installed on your machine. A batch file under hdf-java/windows is provided to
 help you to build the Java source code.
@@ -143,7 +145,7 @@ You will need to configure the batch file before you run it. Edit the batch file
 to set the dependent libraries and other requirements.
 
 <p>
-<table cellpadding="4" cellspacing="2" border="1" width="80%" align="center">
+<table cellpadding="4" cellspacing="2" border="1"  align="center">
 <tr>
 <td>
         @ECHO OFF<br>
@@ -163,81 +165,79 @@ to set the dependent libraries and other requirements.
         SET HDFJAVA=<br></td>
 </tr>
 </table>
-
-<h2>
-Running the HDF Java code</h2>
+<hr>
+<h3>
+Running the HDF Java code</h3>
 After successfully run the makefile and batch file, the binaries of the HDF Java
 products are packed and put at $(JAVAHOME)\lib.
 
 <p>
-<table WIDTH=100% BORDER COLS=2 >
+<table BORDER COLS=2 >
 
 <tr>
 <th width=25% BGCOLOR="#CCDFF">Binary file</th>
 
-<th width=75% BGCOLOR="#CCDDFF">Description</th>
+<th width=75% BGCOLOR="#CCDDFF" colspan="2">Description</th>
 </tr>
 
 <tr>
 <td>lib/jhdf.jar</td>
 
-<td>The Java HDF Interface, accesses the native HDF4 library</td>
+<td colspan="2">The Java HDF Interface, accesses the native HDF4 library</td>
 </tr>
 
 <tr>
 <td>lib/jhdf5.jar</td>
 
-<td>The Java HDF5 Interface, accesses the native HDF5 library</td>
+<td colspan="2">The Java HDF5 Interface, accesses the native HDF5 library</td>
 </tr>
 
 <tr>
 <td>lib/jhdfobj.jar</td>
 
-<td>The common HDF object package, ncsa.hdf.object</td>
+<td colspan="2">The common HDF object package, ncsa.hdf.object</td>
 </tr>
 
 <tr>
 <td>lib/jhdf4obj.jar</td>
 
-<td>The HDF4 object package, ncsa.hdf.object.h4</td>
+<td colspan="2">The HDF4 object package, ncsa.hdf.object.h4</td>
 </tr>
 
 <tr>
 <td>lib/jhdf5obj.jar</td>
 
-<td>The HDF5 object package, ncsa.hdf.object.h5</td>
+<td colspan="2">The HDF5 object package, ncsa.hdf.object.h5</td>
 </tr>
 
 <tr>
 <td>lib/jhdfview.jar</td>
 
-<td>The ncsa.hdf.view package, for HDFView only.</td>
+<td colspan="2">The ncsa.hdf.view package, for HDFView only.</td>
 </tr>
 
 <tr>
-<td>lib/win/</td>
+<td>&nbsp;</td>
+<td colspan="2" >lib/win/</td>
 </tr>
 <tr>
 <td> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; jhdf.dll</td>
 
-<td>The native HDF4 library and JNI implementation (called by jhdf.jar)</td>
+<td colspan="2">The native HDF4 library and JNI implementation (called by jhdf.jar)</td>
 </tr>
 
 <tr>
 <td> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; jhdf5.dll</td>
 
-<td>The native HDF5 library and JNI implementation (called by jhdf5.jar)</td>
+<td colspan="2">The native HDF5 library and JNI implementation (called by jhdf5.jar)</td>
 
-<td></td>
 </tr>
 </table>
 
 <p>
 Set the following batch file to run the HDFView
 <p>
-<table cellpadding="4" cellspacing="2" border="1" width="80%" align="center">
-<tr>
-<td>
+<code>
         @ECHO OFF<br>
         <br>
         @REM =======================================================================<br>
@@ -264,7 +264,8 @@ Set the following batch file to run the HDFView
         set JNI_CLASSPATH=%HDFJAVA%/lib/jhdf.jar;%HDFJAVA%/lib/jhdf5.jar<br>
         <br>
         @REM set the object package classpath<br>
-        set OBJ_CLASSPATH=%HDFJAVA%/lib/jhdfobj.jar;%HDFJAVA%/lib/jhdf4obj.jar;%HDFJAVA%/lib/jhdf5obj.jar;%HDFJAVA%\lib\netcdf.jar;%HDFJAVA%\lib\fits.jar<br>
+        set OBJ_CLASSPATH=%HDFJAVA%/lib/jhdfobj.jar;%HDFJAVA%/lib/jhdf4obj.jar;<br>
+	(continued)%HDFJAVA%/lib/jhdf5obj.jar;%HDFJAVA%\lib\netcdf.jar;%HDFJAVA%\lib\fits.jar<br>
         <br>
         @REM set the CLASSPATH<br>
         set CLASSPATH=%JNI_CLASSPATH%;%OBJ_CLASSPATH%;%HDFJAVA%/lib/jhdfview.jar<br>
@@ -272,9 +273,8 @@ Set the following batch file to run the HDFView
         %JAVAHOME%\bin\java -mx512m -classpath %CLASSPATH% ncsa.hdf.view.HDFView -root %HDFJAVA%<br>
         pause<br>
         :END<br>
-</td>
-</tr>
-</table>
+</code>
+<?php 
+include ("../includes/footer.html"); 
+?>
 
-<script language="JavaScript" type="text/javascript" src="footer.js"></script>
-</HTML>
