@@ -1,15 +1,9 @@
-<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <meta name="GENERATOR" content="Mozilla/4.72 [en] (WinNT; U) [Netscape]">
-   <meta name="Author" content="Robert E. McGrath">
-   <title>HDFView User's Guide -- Tree Viewer</title>
-</head>
-
-<!-- BEGIN OF THE BODY -->
-<body text="#000000" bgcolor="#FFFFFF" link="#0000EE" vlink="#551A8B" alink="#FF0000">
-
+<?php 
+$page_title = "HDFView User's Guide -- Tree Viewer"; 
+include ("../../../links.php"); 
+include ("../../../includes/header.html"); 
+?>
+<p>
 <a href="index.html">[Index]</a>
 <a href="ug01introduction.html">[1]</a>
 <a href="ug02start.html">[2]</a>
@@ -18,10 +12,10 @@
 <a href="ug05spreadsheet.html">[5]</a>
 <a href="ug06imageview.html">[6]</a>
 <a href="ug07textview.html">[7]</a>
+</p>
+<fieldset><h1>Chapter 4: The Tree Viewer</h1></fieldset>
 
-
-<h1>
-Chapter 4: The Tree Viewer</h1>
+<p>
 The Tree shows the objects in each open file, and supports navigation and
 editing of the objects. Muliple files can be viewed and edited, and both
 HDF4 and HDF5 files can be opened. The viewing and editing operations work
@@ -53,7 +47,7 @@ represent HDF objects:
 <LI><img SRC="images/icon_image.gif"> --- HDF4 GR image or HDF5 image
 <LI><img SRC="images/icon_table.gif"> --- HDF4 Vdata or HDF5 compound dataset
 </UL>
-
+<p>
 <UL>
 <LI><a href="ug04treeview.html#ug04tree">4.1 Tree Viewer</a></LI>
 <LI><a href="ug04treeview.html#ug04data">4.2 View Data Content</a></LI>
@@ -65,6 +59,7 @@ represent HDF objects:
 <LI><a href="ug04treeview.html#ug04copy">4.4.3 Copy and Paste Object</a></LI>
 <LI><a href="ug04treeview.html#ug04attribute">4.4.4 Add, Delete and Modify Attribute</a></LI>
 </UL>
+</p>
 </UL>
 
 <hr noshade size=1><a NAME="ug04tree"></a>
@@ -302,22 +297,6 @@ by the section <a href="ug05spreadsheet.html#ug05change">5.4 Change Data Value</
 <P>
 To delete an attribute, you select the attribute and click the "Delete" button.
 <b>Deleting an attribute of an HDF4 object is not supported</b>.
-
-<!-- BEGIN OF FOOTER INFO -->
-<p>
-<hr noshade size=1><a href="http://www.ncsa.uiuc.edu/">
-<img SRC="http://hdf.ncsa.uiuc.edu/image/footer-ncsalogo.gif" ALT="NCSA" BORDER=0 ></a>
-<br><font face="arial,helvetica">
-<a href="http://www.ncsa.uiuc.edu/">
-The National Center for Supercomputing Applications</a></font>
-<br><font face="arial,helvetica">
-<a href="http://www.uiuc.edu/">University
-of Illinois at Urbana-Champaign</a></font>
-<br><font face="arial,helvetica"></font>
-<P>
-<IMG SRC="http://hdf.ncsa.uiuc.edu/image/hdfhelp.gif" alt="HDF Helpdesk">
-<H5>Last Modified: &nbsp; 11/21/2005</H5>
-<!-- END OF FOOTER INFO -->
-
-</body>
-</html>
+<?php 
+include ("../../../includes/footer.html"); 
+?>

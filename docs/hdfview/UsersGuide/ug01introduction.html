@@ -1,14 +1,9 @@
-<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <meta name="GENERATOR" content="Mozilla/4.72 [en] (WinNT; U) [Netscape]">
-   <title>HDFView User's Guide -- Introduction</title>
-</head>
-
-<!-- BEGIN OF THE BODY -->
-<body text="#000000" bgcolor="#FFFFFF" link="#0000EE" vlink="#551A8B" alink="#FF0000">
-
+<?php
+$page_title = "HDFView User's Guide -- Introduction"; 
+include ("../../../links.php"); 
+include ("../../../includes/header.html"); 
+?>
+<p>
 <a href="index.html">[Index]</a>
 <a href="ug01introduction.html">[1]</a>
 <a href="ug02start.html">[2]</a>
@@ -17,10 +12,11 @@
 <a href="ug05spreadsheet.html">[5]</a>
 <a href="ug06imageview.html">[6]</a>
 <a href="ug07textview.html">[7]</a>
+</p>
 
 <h1>
-Chapter 1: Introduction</h1>
-
+<fieldset>Chapter 1: Introduction</h1></fieldset>
+<p>
 <UL>
 <LI><a href="ug01introduction.html#ug01overview">1.0 What It Is</a></LI>
 <LI><a href="ug01introduction.html#ug01release">1.1 About This Release</a></LI>
@@ -39,7 +35,7 @@ Chapter 1: Introduction</h1>
 
 <h2>
 <a NAME="ug01overview"></a>1.0 What It Is</h2>
-
+<p>
 The HDFView is a Java-based tool for browsing and editing NCSA HDF4 and HDF5 files.
 HDFView allows users to browse through any HDF4 and HDF5 file; starting with a tree
 view of all top-level objects in an HDF file's hierarchy. HDFView allows
@@ -60,33 +56,36 @@ or collapse folders to navigate the hierarchical structure of an HDF file.
 
 <h2>
 <a NAME="ug01release"></a>1.1 About This Release</h2>
-This release includes bug fixes and a few new features. The following
-is a list of major changes.
+<p>
+This release includes bug fixes and a few new features. <strong>The following
+is a list of major changes.</strong>
+<p>
 <UL>
     <li>Fix bugs
-    <li>Support for HDF-SRB (Windows only)
+    <li>Support for HDF-SRB (Windows and Linux)
+    <li>Update HDF5 library to release 1.6.5
     <Li>Support for compound datatypes containing 2D arrays (or greater)
     <Li>Create/display named datatypes in HDF5
     <li>Create link in hdf5
     <li>Improve ability to manipulate palette
     <li>Select row/colunm data as X axis for xy plot in the table view
 </UL>
-
+<p>
 The <b>HDF-SRB model</b> is a client-server model that provides interactive and efficient
 access to remote HDF5 files. Like most client/server model, the HDF-SRB model is
 implemented on a set of client and server APIs and message passing scheme. Unlike
 other client/server model, the HDF-SRB model is object oriented. The client can
 access datasets or subsets of datasets in large files without bringing entire files
 into local machines. For more details, please read the
-<a href="http://hdf.ncsa.uiuc.edu/hdf-srb-html/HDF-SRB-UG.html">HDF-SRB User's Guide</a>.
+<a href="/hdf-srb-html/HDF-SRB-UG.html">HDF-SRB User's Guide</a>.
 
 <p>
 HDFView version 2.0 is the first release of the modular HDFView. It includes bug fixes
 and new features. The main difference between version 2.0 and its previous releases is that
 this version is built on replaceable I/O and GUI modules. For more information
 about HDFView modules, please read "A User's Guide on How to Implement HDFView Modules"
-at <a href="http://hdf.ncsa.uiuc.edu/hdf-java-html/hdfview/ModularGuide/">
-http://hdf.ncsa.uiuc.edu/hdf-java-html/hdfview/ModularGuide/</a>
+at <a href="/hdf-java-html/hdfview/ModularGuide/">
+/hdf-java-html/hdfview/ModularGuide/</a>
 
 <p>
 Early versions of HDFView (version 1.3 or earlier) are implemented with standard
@@ -117,7 +116,7 @@ dataset are presented as Java classes. The package includes abstract classes
 for users to build their implementation subclasses. Two default implementations
 for HDF4 and HDF5, ncsa.hdf.object.h4 and ncsa.hdf.object.h5, are included in
 the distribution.For more details, read<br>
-<a href="http://hdf.ncsa.uiuc.edu/hdf-java-html/hdf-object">the HDF Object Package</A>.
+<a href="/hdf-java-html/hdf-object">the HDF Object Package</A>.
 
 <p>
 The abstract GUI components include the TreeView, ImageView, TableView, TextView,
@@ -152,7 +151,7 @@ of the features are discussed in their related chapters.
 <h3>
 <a NAME="ug01browsing"></a>1.2.1 Browsing Features</h3>
 
-<ul>
+<ul style="list-style:disc;" class="ul">
 <li>
 Display data with optional GUI modules.
 
@@ -266,7 +265,7 @@ Slider bar for modifying image threshold range
 <a NAME="ug01editing"></a>1.2.2 Editing Features
 </h3>
 
-<UL>
+<ul style="list-style:disc;" class="ul">
 
 <li>
 Add more user options such as default starting directory or file extension.
@@ -356,31 +355,25 @@ Create empty HDF5 compound dataset.
 <h2>
 <a NAME="ug01limitations"></a>1.3 Limitations</h2>
 
-The current implementation of HDFView has the following limitations.
+<strong>The current implementation of HDFView has the following limitations.</strong><p>
 <ul>
-
+<p>
 <LI>
 HDFView does not support undo operation; all the changes will go
 to the physical file, and the editing results cannot be recovered.
-
-<LI>
+<p><LI>
 Deleting object/attribute in HDF4 is not supported.
-
-<LI>
+<p><LI>
 HDFView does not support conversion between HDF4 and HDF5.
-
-<li>
+<p><li>
 HDFView does not display named datatypes.</li>
-
-<li>
+<p><li>
 HDFView supports only indexed image with RGB color model or 24-bit true
 color image. It does not support other color models such as CMYK and HSV.</li>
-
-<li>
+<p><li>
 Opening a large image or dataset may cause an "out of memory" error due to
 the limitations of the Java virtual machine.</li>
-
-<li>
+<p><li>
 HDFView is implemented in Java<sup><font size=-2>TM</font></sup> 2 Platform.
 It builds and runs on jdk1.4.x. It does not buid on jdk1.3.x or earlier version.
 It may run on jdk1.3.x but it is not tested on jdk1.3.x.
@@ -434,16 +427,16 @@ MAC OS X</li>
 The HDFView uses the HDF4 and HDF5 Java Native Interfaces, which calls the
 HDF4 and HDF5 library. These native interfaces are included in the distribution.
 For more information (source and pre-built) on the HDF4/5 Java Native Interface,
-visit website at <a href="http://hdf.ncsa.uiuc.edu/hdf-java-html/JNI/">
-http://hdf.ncsa.uiuc.edu/hdf-java-html/JNI/ </a>
+visit website at <a href="/hdf-java-html/JNI/">
+/hdf-java-html/JNI/ </a>
 
 <h2>
 <a NAME="ug01installation" ></a>1.5 Installation</h2>
 
 The source and pre-built binaries for HDFView can be downloaded from:
 <br>
-<a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/">
-ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java</a>
+<a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/">
+ftp://ftp.hdfgroup.org/HDF5/hdf-java</a>
 
 <p>
 The pre-built binaries are available in two forms: No_VM_bundled, and VM_bundled.
@@ -461,46 +454,45 @@ The pre-built binaries are available in two forms: No_VM_bundled, and VM_bundled
 <th>
 <center><a href="#JVM_required">Java Virtual Machine Required</a></center>
 </th>
-
-<th>
+<p><th>
 <center><a href="#No_JVM_required">StandAlone Application [JRE Bundled]</a></center>
 </th>
 </tr>
-
+<p>
 <tr>
 <td>Linux</td>
 
-<td>[ <a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_linux_novm.bin">
+<td>[ <a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_linux_novm.bin">
 hdfview_install_linux_no_vm_bundled.bin 5 MB</a>]</td>
 
-<td>[ <a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_linux_vm.bin">
+<td>[ <a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_linux_vm.bin">
 hdfview_install_linux_vm_bundled.bin 35 MB</a>]</td>
 </tr>
 
 <tr>
 <td>Solaris</td>
 
-<td>[ <a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_solaris_novm.bin">
+<td>[ <a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_solaris_novm.bin">
 hdfview_install_solaris_no_vm_bundled.bin 5 MB</a>]</td>
 
-<td>[ <a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_solaris_vm.bin">
+<td>[ <a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_solaris_vm.bin">
 hdfview_install_solaris_vm_bundled.bin 35 MB</a>]</td>
 </tr>
 
 <tr>
 <td>Windows</td>
 
-<td>[ <a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_windows_novm.exe">
+<td>[ <a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_windows_novm.exe">
 hdfview_install_windows_novm.exe 5 MB</a>]</td>
 
-<td>[ <a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_windows_vm.exe">
+<td>[ <a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_windows_vm.exe">
 hdfview_install_windows_vm.exe 15 MB</a>]</td>
 </tr>
 
 <tr>
 <td>Irix 6.5</td>
 
-<td>[<a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_irix_novm.bin">
+<td>[<a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_irix_novm.bin">
 hdfview_install_irix_novm.bin 10 MB</a>]
 </td>
 
@@ -510,8 +502,8 @@ hdfview_install_irix_novm.bin 10 MB</a>]
 <tr>
 <td>Mac os x</td>
 
-<td>[<a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_macosx_novm.zip">
-hdfview_install_macosx_novm.zip</a> or <a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_macosx_novm.bin">
+<td>[<a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_macosx_novm.zip">
+hdfview_install_macosx_novm.zip</a> or <a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_macosx_novm.bin">
 .bin 7 MB</a>]
 </td>
 
@@ -521,7 +513,7 @@ hdfview_install_macosx_novm.zip</a> or <a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5
 <tr>
 <td>OSF1</td>
 
-<td>[<a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_osf1_novm.bin">
+<td>[<a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_osf1_novm.bin">
 hdfview_install_osf1_novm.bin 8 MB</a>]
 </td>
 
@@ -531,10 +523,10 @@ hdfview_install_osf1_novm.bin 8 MB</a>]
 <tr>
 <td>AIX</td>
 
-<td>[ <a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_aix_novm.bin">
+<td>[ <a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_aix_novm.bin">
 hdfview_install_aix_no_vm_bundled.bin 7 MB</a>]</td>
 
-<td>[ <a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_aix_vm.bin">
+<td>[ <a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_aix_vm.bin">
 hdfview_install_aix_vm_bundled.bin 45 MB</a>]</td>
 </tr>
 
@@ -556,11 +548,14 @@ Download Java 2 Platform at:
 <li><a href="http://java.sun.com/j2se">
 Java<sup><font size=-2>TM</font></sup> 2 Platform, Standard Edition</a>
 (Windows, Solaris, Linux)
+<!--
 <li><a href="http://www.sgi.com/developers/devtools/languages/java.html">
+-->
+<li><a href="http://www.sgi.com/products/evaluation/6.5_java2_1.4.1_06/">
 Java<sup><font size=-2>TM</font></sup> 2 Platform for SGI</a>
 </ul>
 
-
+<p>
 <a NAME="No_JVM_required" ></a>
 <h3>StandAlone Application [JRE Bundled]</h3>
 JRE1.4.1 is bundled in the VM_bundled distribution. You do not need any aditional
@@ -574,7 +569,7 @@ Java 2 Runtime Environment Binary Code License Agreement</a> before you
 download the VM_bundled distribution. The installation program will <b>not</b>
 install HDFView unless you accept the Java 2 Runtime Environment
 License Agreement.
-
+<p>
 <h3>Install on Unix or MAC OS X</h3>
 After downloading the installation file,  cd to the directory where you
 downloaded the installer. At the prompt type:
@@ -582,46 +577,36 @@ downloaded the installer. At the prompt type:
 <br>where xxx is the Unix OS name such as solaris, linux or macosx. The installer
 will guide you to select the Java Virtual Machine and HDFView home directory
 (where you want to install the HDFView).
-
-
+<p>
 <h3>Install on Windows</h3>
 After downloading, double-click
-<br><b>hdfview-windows.exe</b>.
-<br>The installer will guide you to select the Java Virtual Machine and
+<br><b>hdfview-windows.exe</b>.<p>
+The installer will guide you to select the Java Virtual Machine and
 HDFView home directory (where you want to install the HDFView). After
 installing, you can launch the HDFView from
 <br>
 Start -> Program Files -> NCSA HDFView
-
+<p>
 <h2>
 <a NAME="ug1furtherinfo"></a>1.6 For Further Information</h2>
 
 General information about HDF (HDF4 and HDF5) is available at:
-<a href="http://hdf.ncsa.uiuc.edu/">http://hdf.ncsa.uiuc.edu/</a>
+<a href="/">http://www.hdfgroup.org/</a>
 
 <p>
 Information about the HDFView tool and related products is available
 at:
-<blockquote><a href="http://hdf.ncsa.uiuc.edu/hdf-java-html/index.html">
-http://hdf.ncsa.uiuc.edu/hdf-java-html/</a></blockquote>
+<blockquote><a href="/hdf-java-html/index.html">
+/hdf-java-html/</a></blockquote>
 
 <p>
 Questions and feedback may be sent to the HDF Helpdesk.
 
 <!-- BEGIN OF FOOTER INFO -->
 <p>
-<hr noshade size=1><a href="http://www.ncsa.uiuc.edu/">
-<img SRC="http://hdf.ncsa.uiuc.edu/image/footer-ncsalogo.gif" ALT="NCSA" BORDER=0 ></a>
-<br><font face="arial,helvetica">
-<a href="http://www.ncsa.uiuc.edu/">
-The National Center for Supercomputing Applications</a></font>
-<br><font face="arial,helvetica">
-<a href="http://www.uiuc.edu/">University
-of Illinois at Urbana-Champaign</a></font>
-<br><font face="arial,helvetica"></font>
+<hr noshade size=1>
 <P>
-<IMG SRC="http://hdf.ncsa.uiuc.edu/image/hdfhelp.gif" alt="HDF Helpdesk">
-<H5>Last Modified: &nbsp; 11/21/2005</H5>
+<H5>Last Modified: &nbsp; February 20, 2007</H5>
 <!- END OF FOOTER INFO -->
 
 </body>
