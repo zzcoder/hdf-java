@@ -1,17 +1,7 @@
-<HTML>
-<script language="JavaScript" type="text/javascript" src="../header.js"></script>
-
-<table width="100%">
-  <tr>
-  <td width="60%">
-    <h1>NCSA HDFView<font size="-2" color="#c80028"><i>&nbsp;&nbsp;&nbsp;Version 2.3</i></font></h1>  </td>
-  <td align="leftt"><h3>
-    <a href="UsersGuide/index.html">User's Guide</a></h3></td>
-  <td align="leftt"><h3>
-    <a href="ModularGuide/index.html">Module Guide</a></h3></td>
-  </tr>
-</table>
-
+<?php 
+include ("../../links.php"); 
+include ("../../includes/header.html"); 
+?>
 <table width="100%">
   <tr>
   <td valign="top">
@@ -34,27 +24,27 @@ To know how to implement HDFView modules, please read<br>
   <img src="hdfview.gif"> </td>
   </tr>
 </table>
-
-<h2>Download</h2>
+<hr>
+<h3>Download</h3>
 
 HDFView can be downloaded quickly from here. The Windows, Solaris, Linux
 and AIX versions listed below (that have an asterisk) include JDK 1.4.  If you want a version for these
 platforms that does not include JDK, see the footnote immediately following.
 
 <UL type=square>
-<LI><a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_windows_vm.exe">
+<LI><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_windows_vm.exe">
 Windows 98/NT/2000/XP</A> [15 MB] <B>*</B>
-<LI><a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_solaris_vm.bin">
+<LI><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_solaris_vm.bin">
 Solaris</A> [35 MB] <B>*</B>
-<LI><a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_linux_vm.bin">
+<LI><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_linux_vm.bin">
 Linux</A> [35 MB] <B>*</B>
-<LI><a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_aix_vm.bin">
+<LI><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_aix_vm.bin">
 AIX</A> [45 MB] <B>*</B>
-<LI><a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_irix_novm.bin">
+<LI><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_irix_novm.bin">
 Irix 6.5</A> [10 MB], <font size=-1>JDK1.4 Required</font>
-<LI><a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_macosx_novm.zip">
-MacOSX</A> [7 MB], <font size=-1>JDK1.4 Required, <b>HDF5 only</b> </font>
-<LI><a href="ftp://ftp.ncsa.uiuc.edu/HDF/HDF5/hdf-java/hdfview/hdfview_install_osf1_novm.bin">
+<LI><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_macosx_novm.zip">
+MacOSX</A> [7 MB], <font size=-1>JDK1.4 Required </font>
+<LI><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_osf1_novm.bin">
 OSF1</A> [8 MB] <font size=-1> JDK1.4 Required, <a href="#osf1_note">Classic VM Only</a></font>
 </UL>
 
@@ -67,9 +57,9 @@ The file
 size of the HDFView distribution without the Java VM is much smaller. To obtain
 the non-JRE distributions, see: &nbsp; <br><CODE>
 <a href="UsersGuide/ug01introduction.html#ug01installation">HDFView User's Guide, Section 1.5, Installation</A> </CODE>
-
+<hr>
 <p>
-<h2>Install/Run Instructions</H2>
+<h3>Install/Run Instructions</H3>
 <UL>
 <LI><B>Unix (not including Mac OS X):</B>
 <P>
@@ -90,6 +80,26 @@ the non-JRE distributions, see: &nbsp; <br><CODE>
 <LI><B>Mac OS X:</B><P>
 <UL>
   <LI>To install, open <CODE>hdfview_install_macosx_novm.zip</CODE>
+  <LI>To run, {where_you_install_hdfview}/hdfview.sh <br>
+              or click on the HDFView Icon on the desktop
+<P>
+<!--
+  <LI>Important Notes:
+      <UL>
+      <LI>Known problem: the installer may pick up the jdk1.3 instead of
+          jdk1.4 on your machine. Click on the HDFView icon may not work.
+          Using the hdfview.sh to start HDFView.
+      <LI> Make sure the Java version running HDFView is 1.4.x or 1.5.x.
+           TO check Java version from HDFView, "Help->Java Version"
+      </UL>
+<P>
+-->
+
+</UL>
+
+<!--
+<UL>
+  <LI>To install, open <CODE>hdfview_install_macosx_novm.zip</CODE>
   <LI>To run, click the "HDFView" on the desktop or <br>
       type: &nbsp; <CODE>open -a /{where_you_install_hdfview}/HDFView.app</CODE>
   <LI>Important Notes:
@@ -103,10 +113,11 @@ the non-JRE distributions, see: &nbsp; <br><CODE>
 <P>
       <LI>HDFView does not support HDF4. We are still working on it.
 <P>
- <LI>See <A HREF="http://hdf.ncsa.uiuc.edu/HDF5/release/known_problems5160.html#macosx">HDFView Problem with Mac OS X and JDK 1.4</A>.
+ <LI>See <A HREF="/HDF5/release/known_problems5160.html#macosx">HDFView Problem with Mac OS X and JDK 1.4</A>.
    </UL>
 <P>
 </UL>
+-->
 
 <LI><B>Windows:</B><P>
 <P>
@@ -116,14 +127,13 @@ the non-JRE distributions, see: &nbsp; <br><CODE>
 </UL>
 
 </UL>
-
-<H2>Documentation</H2>
+<hr>
+<H3>Documentation</H3>
 
 The HDFView User's Guide, accessible from the top of this page, contains
 detailed information on installing and using HDFView.  For further
 installation information,  please refer to
 <a href="UsersGuide/ug01introduction.html#ug01installation">Chapter 1.5</a>.
-
-
-<script language="JavaScript" type="text/javascript" src="../footer.js"></script>
-</HTML>
+<?php 
+include ("../../includes/footer.html"); 
+?>
