@@ -1,32 +1,24 @@
-<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <meta name="GENERATOR" content="Mozilla/4.61 [en] (WinNT; I) [Netscape]">
-   <title>iterator</title>
-</head>
-<body bgcolor="#ffffff">
+<?php
+include ("../../../links.php"); 
+include ("../../../includes/header.html"); 
+?>
 
-<center>
-<h2>
-Navigating HDF-5 Groups with the Iterator</h2></center>
 
-<center>
-<hr WIDTH="100%"></center>
+<fieldset><h1>Navigating HDF-5 Groups with the Iterator</h1></fieldset>
 
 <p>The HDF-5 C API provides the H5GIterate function, which requires a the
 calling program to pass a C function to be called for each member of the
 group. For languages other than C, two utilities have been
 provided which "wrap" this function, providing a simple generic enumeration
 of an HDF 5 group. The Java HDF-5 Interface provides these utilities.
-<p>The two C functions are:
+<p><strong>The two C functions are:</strong>
 <pre> <b>int H5Gn_members( hid_t locid, char *name )</b></pre>
  where,
 <blockquote>
 <blockquote><i>locid:</i> (IN) the id of the file or parent group
 <br><i>name:</i> (IN) the name of the group</blockquote>
 
-<p><br>This function returns the number of objects in the group, as would
+<p>This function returns the number of objects in the group, as would
 be found by <b><i>H5Ginterate()</i></b>. This includes all the hard
 and soft links. In the case where an object has more than one link
 to it in the same group (essentially, the object has more than one name),
@@ -86,14 +78,9 @@ for (int i = 0; i &lt; nelems; i++) {
 }</b></pre>
 </blockquote>
 
-<hr WIDTH="100%">
-<br><i>JHI5 10/99</i>
-<p><font face="arial,helvetica"><font size=-1><a href="http://www.ncsa.uiuc.edu/">The
-National Center for Supercomputing Applications</a></font></font>
-<br><font face="arial,helvetica"><font size=-1><a href="http://www.uiuc.edu/">University
-of Illinois at Urbana-Champaign</a></font></font>
-<br>
-<pre><font face="arial,helvetica"><font size=-1><a href="mailto:hdfhelp@ncsa.uiuc.edu">hdfhelp@ncsa.uiuc.edu</a></font></font></pre>
+<?php
+include ("../../../includes/footer.html"); 
+?>
 
-</body>
-</html>
+
+

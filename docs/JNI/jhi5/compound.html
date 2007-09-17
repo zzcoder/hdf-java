@@ -1,17 +1,9 @@
-<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <meta name="GENERATOR" content="Mozilla/4.61 [en] (WinNT; I) [Netscape]">
-   <title>compound</title>
-</head>
-<body bgcolor="#ffffff">
+<?php
+include ("../../../links.php"); 
+include ("../../../includes/header.html"); 
+?>
+<fieldset><h1>Using Compound Data Types</h1></fieldset>
 
-<center>
-<h2>
-Using Compound Data Types</h2></center>
-
-<hr WIDTH="100%">
 <p>HDF-5 Compound Datatypes are records of heterogeneous elements (possibly
 including arrays and other compound data types). These are essentially
 like C 'structs', and are stored and retrieved as packed arrays of bytes.
@@ -152,12 +144,11 @@ field is read into a second array.
 <p>In this approach, the HDF-5 Library assures that the correct data is
 read as long as the compound Datatype is correct.
 <p>
-<hr WIDTH="100%">
+<hr noshade size="1">
 <br><i>JHI5 10/99</i>
-<p><font face="arial,helvetica"><font size=-1><a href="http://www.ncsa.uiuc.edu/">The
-National Center for Supercomputing Applications</a></font></font>
-<br><font face="arial,helvetica"><font size=-1><a href="http://www.uiuc.edu/">University
-of Illinois at Urbana-Champaign</a></font></font>
-<p><font face="arial,helvetica"><font size=-1><a href="mailto:hdfhelp@ncsa.uiuc.edu">hdfhelp@ncsa.uiuc.edu</a></font></font>
-</body>
-</html>
+
+<?php
+include ("../../../includes/footer.html"); 
+?>
+
+

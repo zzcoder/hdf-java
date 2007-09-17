@@ -1,16 +1,15 @@
-<HTML>
-<script language="JavaScript" type="text/javascript" src="../../header.js"></script>
+<?php
+include ("../../../links.php"); 
+include ("../../../includes/header.html"); 
+?>
 
-<h1>
-NCSA Java HDF5 Interface (JHI5) Design</h1></center>
-
+<fieldset><h1>NCSA Java HDF5 Interface (JHI5) Design</h1></fieldset>
 <p>
-<h3>
-1. Overview</h3>
+<h3>1. Overview</h3>
 
-<p><br>The <b>Java HDF5 Interface (JHI5)</b> is a Java package (<b>ncsa.hdf.hdf5lib</b>)
+<p>The <b>Java HDF5 Interface (JHI5)</b> is a Java package (<b>ncsa.hdf.hdf5lib</b>)
 that ``wraps'' the NCSA HDF-5 library. For general information about
-HDF5 file format and library, please see: <a href="http://hdf.ncsa.uiuc.edu/HDF5/">http://hdf.ncsa.uiuc.edu/HDF5/</a>.
+HDF5 file format and library, please see: <a href="/HDF5/">/HDF5/</a>.
 The JHI5 may be used by any Java application that needs to access HDF5
 files. This product cannot be used in most network browsers because it
 accesses the local disk using native code.
@@ -20,7 +19,7 @@ The H5<i> </i>class calls the standard (<i>i.e.</i>, `native' code) HDF5
 library, with native methods for most of the HDF5 functions. In general,
 there is one native method call for each function in the HDF-5 API, with
 similar arguments. Consult the HDF-5 reference manual for details
-of the C API. (<a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/RM_H5Front.html">http://hdf.ncsa.uiuc.edu/HDF5/doc/RM_H5Front.html</a>)
+of the C API. (<a href="/HDF5/doc/RM_H5Front.html">/HDF5/doc/RM_H5Front.html</a>)
 <p>The Java HDF5 Interface consists of Java classes and dynamically linked
 native libraries. The Java classes declare native methods, and the library
 contains C functions which implement the native methods. The C functions
@@ -190,7 +189,7 @@ The Java application uses both types of constants the same way, the only
 difference is that the <b><i>HDF5CDataTypes</i></b> may have different
 values on different platforms.
 <p><b><i>Error handling</i></b>
-<p>The HDF5 error API (<a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/RM_H5E.html">H5E</a>)
+<p>The HDF5 error API (<a href="/HDF5/doc/RM_H5E.html">H5E</a>)
 manages the behavior of the error stack in the HDF-5 library. This
 API is omitted from the JHI5. Instead, errors are converted into
 Java exceptions. This is totally different from the C interface, but is
@@ -478,5 +477,8 @@ example.
 
 <p>
 
-<script language="JavaScript" type="text/javascript" src="../../footer.js"></script>
-</HTML>
+<?php
+include ("../../../includes/footer.html"); 
+?>
+
+
