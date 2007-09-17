@@ -1,19 +1,19 @@
-<HTML>
-<script language="JavaScript" type="text/javascript" src="../../header.js"></script>
+<?php
+include ("../../../links.php"); 
+include ("../../../includes/header.html"); 
+?>
 
 <p>
-<h1>
-Design and Implementation</h1>
+<fieldset><h1>
+Design and Implementation</h1></fieldset>
+<p>
 
 Robert E. McGrath
 <a href="mailto:mcgrath@ncsa.uiuc.edu">(mcgrath@ncsa.uiuc.edu)</a>
 <br>NCSA
 <br>26 March 1997
-
-<h3>
-</h3>
-
-<table BORDER=2 CELLSPACING=2 CELLPADDING=4 BGCOLOR="#CCFFFF" >
+<p>
+<table BORDER=1 CELLSPACING=2 CELLPADDING=4 BGCOLOR="#DBEAF5" align="center" >
 <tr>
 <td>
 
@@ -25,9 +25,6 @@ for important changes
 <p><i>11/19/99</i></td>
 </tr>
 </table>
-
-<h3>
-</h3>
 
 <h3>
 Abstract</h3>
@@ -72,7 +69,7 @@ This HDF Java Interface forms a solid foundation for constructing and--more
 importantly--sharing problem specific data models, as part of the HDF distribution
 or from other parties.
 <h4>
-1.1 Previous work</h4>
+1.1 Previous work</h4><p>
 In previous work, we have implemented a Java based browser for HDF files,
 called the Java HDF Viewer (JHV). [<a href="#REF4">4</a>] Java applets
 generally cannot access files or use native code libraries (such as HDF),
@@ -93,7 +90,7 @@ were included, specifically, routines needed by the JHV to inquire about
 metadata and to read data. No write functions were implemented, and many
 miscellaneous access functions were omitted because they were not needed.
 <h4>
-1.2 The Java Development Kit (JDK)</h4>
+1.2 The Java Development Kit (JDK)</h4><p>
 The first implementation of the JHV was based on the JDK 1.0.2. [<a href="#REF5">5</a>]
 This early release of the Java environment did not support Java-to-C interfaces
 very well. The interfacing mechanism was incomplete, poorly documented,
@@ -120,7 +117,7 @@ array objects, and also supports the creation and manipulation of Java
 array objects. This package makes it possible to store and retrieve multi-dimensional
 Java array objects using HDF.
 <h3>
-2. The Object Model</h3>
+2. The Object Model</h3><p>
 As noted, there are potentially many ways to model access to the data object
 of HDF. [<a href="#REF10">10</a>,
 <a href="#REF11">11</a>] The model described
@@ -135,39 +132,39 @@ HDF to manage and access storage. This is analogous to the role of HDF-EOS:
 programs create and manipulate HDF-EOS data objects, not the HDF representations
 underlying them. [<a href="#REF12">12</a>]
 <h4>
-2.1 The principle objects</h4>
+2.1 The principle objects</h4><p>
 [...need O diagram here]
-<p>The objects of the model are:
+<p>The objects of the model are:<p>
 <ul>
 <li>
 <b>HDF</b> -- The HDF library, with a native method for each HDF entry
 point. This is a very simple object, it provides almost one-for-one methods
 for the operations and constants of the HDF API. As such, this object has
 a very large number of native methods, and practally nothing else.</li>
-
+<p>
 <li>
 <b>HDFArray</b> -- Support for converting between arbitrary shaped java
 arrays and native code one dimensional arrays of bytes, and vice versa.
 This supports the <b>VOIDP</b> data type, which is crucial to HDF's ability
 to store and retrieve arbitrary data types. The <b>HDFArray</b> class defines
 two important methods:</li>
-
+<p>
 <ul>
 <li>
 <i>byteify()</i> -- given a multi-dimensional Java Array object, the equivalent
 C array is constructed as a one dimensional array of bytes.</li>
-
+<p>
 <li>
 <i>arrayify()</i> -- given a multi-dimensional array from C, construct
 the appropriate Java Array object.</li>
 </ul>
-
+<p>
 <li>
 <b>HDFCompInfo</b> -- support for the HDF compression ``comp_info'' union.
 Different compression schemes require specific auxillary parameters, which
 are modelled by sub-classes of <b>HDFCompInfo</b>. An example subclass
 is:</li>
-
+<p>
 <ul>
 <li>
 <b>HDFJPEGCompInfo</b> -- The parameters for JPEG compression: ``quality''
@@ -175,18 +172,18 @@ and ``force_baseline''. [<a href="#REF13">13</a>,
 <a href="#REF14">14</a>]</li>
 </ul>
 Other compression (such as Run Length Encoding (RLE)) can be added by creating
-another sub-class of HDFCompInfo.
+another sub-class of HDFCompInfo.<p>
 <li>
 <b>HDFCompModel</b> -- support for the HDF compression ``comp_model'' union.</li>
-
+<p>
 <li>
 <b>HDFChunkInfo</b> -- support for the HDF chunking ``chunk_info'' union.</li>
-
+<p>
 <li>
 <b>HDFException</b> -- error conditions from HDF operations. There are
 two main sub-classes, which may in turn be specialized to reflect specific
 error conditions.</li>
-
+<p>
 <ul>
 <li>
 <b>HDFLibraryException </b>-- represents errors reported by the HDF library
@@ -195,7 +192,7 @@ and raise an appropriate exception. Subclasses represent different error
 conditions, which may be caught and handled by Java applications. The exception
 may include an HDF error code, and other appropriate information, to be
 used by an exception handler.</li>
-
+<p>
 <li>
 <b>HDFJavaException</b> -- represents errors in the Java interface to HDF,
 <i>e.g.</i>, run time exceptions such as out of memory or inability to
@@ -208,7 +205,7 @@ to perform essentially any operation that is supported by the HDF library.
 The Java code to access HDF is very similar to Fortran or C -- a sequence
 of calls to the routines of the HDF interface. Of course, Java programs
 will generally want to encapsulate these code sequences in more abstract
-classes, which represent the data objects of interest.
+classes, which represent the data objects of interest.<p>
 <h4>
 2.2 Use of the HDF Java classes</h4>
 The HDF Java Interface classes are intended to be used in two ways:
@@ -222,7 +219,7 @@ be modelled as subclasses of <b>HDF</b>. (This can be seen as effectively
 providing an easy way to extend and customize the HDF API--for better or
 worse.)</li>
 
-<p><br>For instance, an ``SDS object'' could be a sub class of <b>HDF</b>,
+<p>For instance, an ``SDS object'' could be a sub class of <b>HDF</b>,
 which provides methods to access a specific representation of the meta-data
 and data of an <b>SDS</b> object from an HDF file. The methods of the <b>SDS</b>
 object would use the appropriate native code methods of the <b>HDF</b>
@@ -236,14 +233,13 @@ instantiate HDF objects and invoke appropriate methods to store and retrieve
 data. In this model, HDF storage can be used in combination with other
 services in complex objects.</li>
 
-<p><br>There have been many ideas for both general and application specific
+<p>There have been many ideas for both general and application specific
 object models for data and images. For instance, [<a href="#REF19">19</a>]
 is an example of a generic object model for scientific data, and the HDF
 EOS model [<a href="#REF12">12</a>] is an application specific data model.
 The HDF Java classes described here are the necessary foundation that allows
 these kinds of models to be implemented quickly and portably using Java,
 with the ability to create and use data stored in HDF.
-<br>
 <br></ol>
 
 <h3>
@@ -266,9 +262,9 @@ Garbage collection and memory management</li>
 Exceptions and errors, translating C error conditions into appropriate
 Java exceptions.</li>
 </ol>
-These issues are discussed in this section.
+These issues are discussed in this section.<p>
 <h4>
-3.1 Data Transfer and Translation Issues</h4>
+3.1 Data Transfer and Translation Issues</h4><p>
 Many HDF functions return several data items in addition to a return value.
 That is, many of the parameters to the routines of the HDF library are
 ``OUT'' or ``IN/OUT'' parameters. In C this is expressed by call-by-reference
@@ -482,9 +478,9 @@ especially if reasonable error checking is added. It should be noted that
 this is scarcely an unprecedented problem: the Fortran interface to HDF
 has had to implement similar translations, as Fortran cannot directly many
 C data structures. Aside from changing the HDF API, there is no alternative
-to this kind of translation when attempting to provide multi-language support.
+to this kind of translation when attempting to provide multi-language support.<p>
 <h4>
-3.2 Performance</h4>
+3.2 Performance</h4><p>
 All the data conversions discussed above involve data copying. As far as
 I can determine, these copies are unavoidable. In fact, the majority of
 the data read or written through the Java HDF API is copied by the Java-to-C
@@ -589,9 +585,9 @@ is designed to be simple, secure, and portable. This works acceptably for
 reasonable numbers of reasonable sized objects, but becomes a performance
 problem for data intensive programs handling large amounts of memory. So
 again, this work has shown how important positive assets of Java have inherent
-performance consequences.
+performance consequences.<p>
 <h4>
-3.4 Exceptions</h4>
+3.4 Exceptions</h4><p>
 The Java language provides a clean, state of the art, mechanism for raising
 and handling exceptions. C has no such mechanism, but the JNI provides
 access to the Java model. [<a href="#REF7">7</a>] This support allows the
@@ -683,9 +679,9 @@ through retries or reasonable defaults) or raising very specific exceptions.
 This would reduce the need for the application itself to process the exceptions
 returned.</li>
 </ol>
-
+<p>
 <h3>
-4. Summary and Conclusions</h3>
+4. Summary and Conclusions</h3><p>
 The implementation described in this paper shows that the JDK 1.1 contains
 most of the features needed to interface even to a complex, non-object
 oriented native library such as HDF. However, the HDF Java Interface is
@@ -754,7 +750,6 @@ applications and libraries for efficient computation. Here again, the ability
 to use HDF will be valuable as a means to exchange data among programs
 written in different languages, as well as running on different networks.
 <p>
-<hr>
 <h3>
 Acknowledgements</h3>
 <b><i>This work was supported by Project Horizon, a cooperative agreement
@@ -776,14 +771,13 @@ of Illinois, Urbana-Champaign</a>. NCSA is funded in part by the National
 Science Foundation, the Advance Research Projects Agency, corporate partners
 and the state and University of Illinois.</i></b>
 <p>
-<hr>
 <h3>
 References</h3>
 
 <ol>
 <li>
 <a NAME="REF1"></a>NCSA, ``The HDF Home Page'',
-<a href="http://hdf.ncsa.uiuc.edu/">http://hdf.ncsa.uiuc.edu/</a></li>
+<a href="/">/</a></li>
 
 <li>
 <a NAME="REF2"></a>NCSA, ``The <a href="ftp://ftp.ncsa.uiuc.edu/HDF/Documentation/HDF4.0r2/Compressed_Files/">HDF
@@ -797,7 +791,7 @@ format.</li>
 
 <li>
 <a NAME="REF4"></a>NCSA, ``NCSA Java-based HDF Viewer'',
-<a href="http://hdf.ncsa.uiuc.edu/hdf/java/docs/">http://hdf.ncsa.uiuc.edu/hdf/java/docs/</a></li>
+<a href="/hdf/java/docs/">/hdf/java/docs/</a></li>
 
 <li>
 <a NAME="REF5"></a>JavaSoft, ``The Java Development Kit, Version 1.0.2''
@@ -827,12 +821,12 @@ API and Specification</b><a href="ftp://ftp.javasoft.com/docs/jdk1.1/java-reflec
 
 <li>
 <a NAME="REF10"></a>Robert E. McGrath, ``How does HDF mix with Java?'',
-<a href="http://hdf.ncsa.uiuc.edu/horizon/java-and-hdf.html">http://hdf.ncsa.uiuc.edu/horizon/java-and-hdf.html</a></li>
+<a href="/horizon/java-and-hdf.html">/horizon/java-and-hdf.html</a></li>
 
 <li>
 <a NAME="REF11"></a>Robert E. McGrath, ``A Scientific Data Server: The
 Conceptual Design'',
-<a href="http://hdf.ncsa.uiuc.edu/horizon/DataServer/sds_design.html">http://hdf.ncsa.uiuc.edu/horizon/DataServer/sds_design.html</a></li>
+<a href="/horizon/DataServer/sds_design.html">/horizon/DataServer/sds_design.html</a></li>
 
 <li>
 <a NAME="REF12"></a>NASA EOSDIS, ``EOSDIS Information Architecture Documents'',
@@ -880,7 +874,6 @@ of Graphic File Formats</i>, O'Reilly &amp; Associates, Sebastopol, CA,
 <br>
 <p></ol>
 
-<hr>
 <h3>
 Figures</h3>
 
@@ -909,7 +902,6 @@ where the parameters are:
 <p><b>Figure 1. The HDF function SDfileinfo which had two pass by reference
 parameters.</b>
 <p>
-<hr>
 <table BORDER WIDTH="650" >
 <tr>
 <td>
@@ -939,7 +931,6 @@ parameters.</b>
 
 <p><b>Figure 2. Java code to call the native method shown in Figure 1.</b>
 <p>
-<hr>
 <table BORDER WIDTH="650" >
 <tr>
 <td>
@@ -997,7 +988,6 @@ int args[2];
 are read from HDF, and the appropriate Java Integer objects are initialized
 to the returned values.</b>
 <p>
-<hr>
 <table BORDER WIDTH="650" >
 <tr>
 <td>
@@ -1033,7 +1023,6 @@ where the parameters are:
 
 <p><b>Figure 4. The HDF function SDreaddata().</b>
 <p>
-<hr>
 <table BORDER WIDTH="650" >
 <tr>
 <td>
@@ -1069,7 +1058,6 @@ public boolean SDreaddata(&nbsp; int sdsid, int[] start,&nbsp;
 <p><b>Figure 5. A Java interface for the The HDF function SDreaddata().</b>
 The second version discovers the shape of the array at run time.
 <p>
-<hr>
 <table BORDER WIDTH="650" >
 <tr>
 <td>
@@ -1103,7 +1091,6 @@ The second version discovers the shape of the array at run time.
 <p><b>Figure 6. A sample of Java code to call the HDF function SDreaddata()
 using the interface in Figure 2.</b>
 <p>
-<hr>
 <table BORDER WIDTH="650" >
 <tr>
 <td>
@@ -1171,7 +1158,6 @@ jarray data)&nbsp;&nbsp;&nbsp; /* OUT: byte[], data for a multidimensional&nbsp;
 <p><b>Figure 7. The Java-C interface code to call the HDF function SDreaddata()
 using the Java Native Method Interface.</b>
 <p>
-<hr>
 <table BORDER WIDTH="650" >
 <tr>
 <td>
@@ -1260,7 +1246,6 @@ using the Java Native Method Interface.</b>
 <p><b>Figure 8. Java code to discover the shape and type of an arbitrary
 array using the <i>java.reflect.Array</i> package.</b>
 <p>
-<hr>
 <table BORDER WIDTH="650" >
 <tr>
 <td>
@@ -1333,7 +1318,6 @@ array using the <i>java.reflect.Array</i> package.</b>
 <p><b>Figure 9. Java code to convert an arbitrary array to a contiguous
 array of bytes a la C. This code uses the <i>java.reflect.Array</i> package.</b>
 <p>
-<hr>
 <table BORDER WIDTH="650" >
 <tr>
 <td>
@@ -1412,7 +1396,6 @@ array of bytes a la C. This code uses the <i>java.reflect.Array</i> package.</b>
 C) into an appropriate Java array object. This code uses the <i>java.reflect.Array</i>
 package.</b>
 <p>
-<hr>
 <table BORDER WIDTH="650" >
 <tr>
 <td>
@@ -1520,7 +1503,6 @@ package.</b>
 <p><b>Figure 11. Example C code to copy from C to Java. This uses the Java
 Native Interface (JNI) to manipulate the Java array.</b>
 <p>
-<hr>
 <table BORDER WIDTH="650" >
 <tr>
 <td>
@@ -1561,7 +1543,6 @@ comp_info;</pre>
 <p><b>Figure 12. The HDF ``comp_info'' union, used to pass parameters required
 by different compression algorithms. (From hcomp.h)</b>
 <p>
-<hr>
 <table BORDER WIDTH="650" >
 <tr>
 <td>
@@ -1582,7 +1563,6 @@ public class HDFCompInfo {
 
 <p><b>Figure 13. A Java class for generic compression information.</b>
 <p>
-<hr>
 <table BORDER WIDTH="650" >
 <tr>
 <td>
@@ -1611,7 +1591,6 @@ public class HDFJPEGCompInfo extends HDFCompInfo {
 <p><b>Figure 14. A Java class encapsulating the input parameters used byt
 JPEG compression.</b>
 <p>
-<hr>
 <table BORDER WIDTH="650" >
 <tr>
 <td>
@@ -1690,7 +1669,6 @@ JPEG compression.</b>
 <p><b>Figure 15. A sketch of C-code to translate from a Java CompInfo object
 to a C comp_info union.</b>
 <p>
-<hr>
 <table BORDER WIDTH="650" >
 <tr>
 <td>
@@ -1733,7 +1711,6 @@ to a C comp_info union.</b>
 <p><b>Figure 16. Example of a native method that uses a CompInfo object,
 and passes a comp_info union to HDF.</b>
 <p>
-<hr>
 <table BORDER WIDTH="650" >
 <tr>
 <td>
@@ -1765,7 +1742,6 @@ public class HDFLibraryException extends HDFException {
 
 <p><b>Figure 17. A simple implementation of the Java Class HDFLibraryException</b>
 <p>
-<hr>
 <table BORDER WIDTH="650" >
 <tr>
 <td>
@@ -1825,7 +1801,6 @@ jint access)
 
 <p><b>Figure 18. Example of a native code method that raises exceptions.</b>
 <p>
-<hr>
 <table BORDER WIDTH="650" >
 <tr>
 <td>
@@ -1852,5 +1827,7 @@ jint access)
 <p><b>Figure 19. Example of Java code that calls a native method with exception
 handling.</b>
 
-<script language="JavaScript" type="text/javascript" src="../../footer.js"></script>
-</HTML>
+
+<?php
+include ("../../../includes/footer.html"); 
+?>
