@@ -1,17 +1,10 @@
-<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <meta name="GENERATOR" content="Mozilla/4.61 [en] (WinNT; I) [Netscape]">
-   <title>exceptions</title>
-</head>
-<body bgcolor="#ffffff">
+<?php
+include ("../../../links.php"); 
+include ("../../../includes/header.html"); 
+?>
+<fieldset><h1>Java HDF-5 Exceptions</h1></fieldset>
+<p>
 
-<center>
-<h2>
-Java HDF-5 Exceptions</h2></center>
-
-<hr WIDTH="100%">
 <p>The Java HDF-5 Interface replaces the error return codes of the HDF-5
 C library with Java Exceptions. There are two sub-classes of
 <b><i>HDF5Exception:
@@ -21,11 +14,11 @@ represent exceptions in the Java HDF-5 Interface. The class <b><i>HDF5Exception<
 overrides the standard method <b><i>printStackTrace()</i></b>, to
 print the HDF 5 library error stack, as described in the HDF-5 <b><i>H5Eprint</i></b>
 routine.
-<p><b><i>HDF5LibraryException</i></b>
+<h2>HDF5LibraryException</h2>
 <p>An <b><i>HDF5LibraryException</i></b> is raised from errors caused by
 the HDF5 library calls. When an error occurs in an HDF5 library call, the
 JHI5 retrieves the major error code and minor code from the HDF5 library
-error stack. An instance of <b><i>ncsa.hdf.hdf5.exceptions.HDF5LibraryException</i></b>
+error stack.</p><p> An instance of <b><i>ncsa.hdf.hdf5.exceptions.HDF5LibraryException</i></b>
 is raised based on the major error code and the error message is put into
 the exception according to the minor error code. There is a sub-class of
 HDF5LibraryException for each HDF-5 major error code (in the file <b>H5Epublic.h</b>).
@@ -62,9 +55,9 @@ might look something like this:
  at ncsa.hdf.hdf5lib.test.TestException.runTest(TestException.java:76)
  at ncsa.hdf.hdf5lib.test.TestHDF5Library.main(TestHDF5Library.java:575)</b></pre>
 Alternatively, the exception handling code could generate an alert dialog
-or other appropriate action instead of printing the stack.
+or other appropriate action instead of printing the stack.<p>
 <h4>
-<b><i>HDF5JavaException</i></b></h4>
+HDF5JavaException</h4><p>
 If errors or exceptions occur in the JHI5 wrapper code itself, these are
 raised either as standard Java exceptions (e.g., <b><i>NullPointerException</i></b>)
 or as sub-classes of <b><i>HDF5JavaException</i></b>. The former
@@ -281,13 +274,9 @@ method would be called.
 }</b></pre>
 </blockquote>
 
-<p><br>
-<hr noshade size=1>
-<br><i>JHI5 10/99</i>
-<br><font face="arial,helvetica"><font size=-1><a href="http://www.ncsa.uiuc.edu/">The
-National Center for Supercomputing Applications</a></font></font>
-<br><font face="arial,helvetica"><font size=-1><a href="http://www.uiuc.edu/">University
-of Illinois at Urbana-Champaign</a></font></font>
-<p><font face="arial,helvetica"><font size=-1><a href="mailto:hdfhelp@ncsa.uiuc.edu">hdfhelp@ncsa.uiuc.edu</a></font></font>
-</body>
-</html>
+<?php
+include ("../../../includes/footer.html"); 
+?>
+
+
+

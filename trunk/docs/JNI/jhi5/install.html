@@ -1,20 +1,21 @@
-<HTML>
-<script language="JavaScript" type="text/javascript" src="../../header.js"></script>
-
+<?php
+include ("../../../links.php"); 
+include ("../../../includes/header.html"); 
+?>
 <table width="100%">
   <tr>
-  <td width="60%">
+  <td width="60%" bgcolor="#dbeaf5">
     <h1>NCSA Java HDF5 Interface (JHI5)</h1>  </td>
-  <td align="leftt"><h3>
+  <td align="center"><h3>
     <a href="#download">Download</a></h3></td>
-  <td align="leftt"><h3>
+  <td align="center"><h3>
     <a href="jhi5.html">JHI5 Design Notes</a></h3></td>
   </tr>
 </table>
-
-<h1>Installing NCSA Java HDF-5 Interface (JHI5)</h1>
-<h2>
-Installation Instructions</h2>
+<hr>
+<p><h2>Installing NCSA Java HDF-5 Interface (JHI5)</h2></p>
+<h3>
+Installation Instructions</h3>
 The Java HDF-5 Interface is distributed as source code and as pre-built
 binaries for selected platforms.
 <p>When installed on a system, the JHI5 consists of two parts, the Java
@@ -34,7 +35,7 @@ Other platforms would have the same JAR file, but a different <tt>libjhdf5.a</tt
 JAR file in <tt>CLASSPATH</tt>, and the dynamically loaded library in <tt>LD_LIBRARY_PATH</tt>
 (on Unix) or <tt>PATH</tt> (Windows98/NT).
 <p>
-<hr WIDTH="100%">
+<hr noshade size="1">
 <h2>
 Building From Source</h2>
 
@@ -57,7 +58,7 @@ work with small adjustments to the Makefiles.
 <b>The HDF-5 library, Version 1.4.2-patch1.</b> The JHI5 requires the
 <i>static</i>
 HDF-5 Library, <b>libhdf5.a</b>.* If HDF-5 is not installed, obtain
-pre-compiled binaries or full source from: <a href="http://hdf.ncsa.uiuc.edu/register5.html">http://hdf.ncsa.uiuc.edu/register5.html</a></li>
+pre-compiled binaries or full source from: <a href="/register5.html">/register5.html</a></li>
 
 <br>Install HDF5 according to the instructions.
 <ul>
@@ -66,8 +67,8 @@ The HDF-5 library requires the GZIP library (<b>libz.a</b>). If this is
 not installed, it can be obtained from the HDF FTP site.</li>
 </ul>
 </ul>
-
-<table BORDER >
+<p>
+<table BORDER bgcolor="#f4f4f4">
 <tr>
 <td>* <b>Note</b>: The Java HDF-5 Interface builds a dynamically loaded
 C library (e.g., <i>libjhdf5.so</i>), which is loaded by the Java Virtual
@@ -81,12 +82,12 @@ and then create a <b><i>dynamic</i></b> library, <b>libjhdf5.so</b>. The
 script and <i>Makefile</i> implement this requirement.</td>
 </tr>
 </table>
-
-<h3>
-Building:</h3>
+<p><hr>
+<h2>
+Building:</h2>
 The Java HDF-5 Interface consists of Java classes and C code to implement
 native methods. The C code links to the HDF-5 library.
-<hr>
+
 <p><b><i>Unix:</i></b>
 <p>For a Unix system, run the automatic configuration program:
 <blockquote><i>./configure</i></blockquote>
@@ -100,11 +101,11 @@ are generated.
 To install the Java HDF-5 Interface library and JAR file, type:
 <blockquote><i>make install</i></blockquote>
 
-<hr><b><i>Windows:</i></b>
+<b><i>Windows:</i></b>
 <p>For a Windows 95/98/NT system, there will be two steps to build the
-JHI5.
+JHI5.<hr>
 <h4>
-Build the dynamic link library jhdf5.dll</h4>
+Build the dynamic link library jhdf5.dll</h4><p>
 The building procedure depends on what C/C++ compiler you are using. You
 will need two things to build the <i>jhdf5.dll</i>,
 <ol>
@@ -117,9 +118,9 @@ are located at <i>your_jhi5_root/native</i>.</li>
 </ol>
 Afer you compile the dynamic link library <b>jhdf5.dll</b>, move or copy
 it to <i>your_jhi5_root/lib/win</i>. <i>your_jhi5_root/lib/win/jhdf5.dll</i>
-is loaded by the HDF5 Java native functions.
-<h4>
-Build the Java package of JHI5</h4>
+is loaded by the HDF5 Java native functions.<p>
+<h4><hr>
+Build the Java package of JHI5</h4><p>
 A batch file to compile the JHI5 Java classes is provided at <i>your_jhi5_root/win32_make.bat</i>
 to compile and pack the JHI5.
 <p>Before you run the batch, edit <i>win32_make.bat</i> to set the JDK
@@ -131,7 +132,7 @@ The JHI5 root should be set to the directory in which the JHI5 will be
 built.
 <p>Then execute <i>win32_make.bat</i>.
 <p>
-<hr WIDTH="100%">
+<hr noshade size="1">
 <h2>
 Checking the installation: loading the library</h2>
 The JHI5 dynamically loads the Java HDF-5 library containing the native
@@ -148,7 +149,7 @@ build and run the <b>TestHDF5Link</b> program. The output will report the
 loaded. If the <b>TestHDF5Link</b> program works, then its configuration
 can be used by any program that needs to use the JHI5.
 <p>
-<hr WIDTH="100%">
+<hr noshade size="1">
 <h2>
 Sample Files and Programs</h2>
 
@@ -156,10 +157,14 @@ The JHI5 distribution includes some simple HDF5 files in the directory
 <b>samples</b> and some examples programs in <b>tutorial</b>.
 The example programs are Java versions of the example programs from the
 HDF5 Tutorial and can also be found in the HDF5 Tutorial:
-<ul><a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/Tutor/">http://hdf.ncsa.uiuc.edu/
+<ul><a href="/HDF5/doc/Tutor/">/
 HDF5/doc/Tutor/</a></ul>
 The java programs illustrate how to call the Java HDF5 Interface, and should
 produce identical HDF5 files as the example C programs in the HDF5 Tutorial.
 
-<script language="JavaScript" type="text/javascript" src="../../footer.js"></script>
-</HTML>
+
+<?php
+include ("../../../includes/footer.html"); 
+?>
+
+

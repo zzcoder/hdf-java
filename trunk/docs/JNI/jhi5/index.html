@@ -1,28 +1,17 @@
-<HTML>
-<script language="JavaScript" type="text/javascript" src="../../header.js"></script>
+<?php
+include ("../../../links.php"); 
+include ("../../../includes/header.html"); 
+?> 
+   <fieldset><h1>NCSA Java HDF5 Interface (JHI5)</h1> </fieldset>
+   <h2> <a href="jhi5.html">JHI5 Design Notes</a></h2>
 
-<table width="100%">
-  <tr>
-  <td width="60%">
-    <h1>NCSA Java HDF5 Interface (JHI5)</h1>  </td>
-  <td align="leftt"><h3>
-<!--
-    <a href="#download">Download</a></h3></td>
--->
-  <td align="leftt"><h3>
-    <a href="jhi5.html">JHI5 Design Notes</a></h3></td>
-  </tr>
-</table>
-
-<p>
-<h3>
-<u>What it is</u></h3>
+<h2><u>What it is</u></h2>
 The <b>Java HD5 Interface (JHI5)</b> is a Java package (
 <a href="../../javadocs/ncsa/hdf/hdf5lib/package-summary.html">ncsa.hdf.hdf5lib</a>)
 that ``wraps around'' the NCSA HDF5 library.
 <br>&nbsp;
 <br>&nbsp;
-<center><table BORDER=2 COLS=1 WIDTH="71%" BGCOLOR="#66FFFF" >
+<center><table BORDER=1 COLS=1 WIDTH="71%" BGCOLOR="#dbeaf5" >
 <tr>
 <td>
 <center>Note: The JHI5 does not support HDF4 or earlier.&nbsp; See the
@@ -104,7 +93,7 @@ and the HDF-5 library.
 <h3>
 <a NAME="DOWNLOAD"></a>To Obtain</h3>
 The JHI5 is included with the HDF-Java Products, which can be downloaded from the following page: &nbsp; &nbsp;    
-<A HREF="http://hdf.ncsa.uiuc.edu/hdf-java-html/">http://hdf.ncsa.uiuc.edu/hdf-java-html/</A> 
+<A HREF="/hdf-java-html/">/hdf-java-html/</A> 
 <!--
 The Java HDF5 Interface is freely available, as a full source release.&nbsp;
 Pre-built binaries are available for selected platforms.
@@ -116,7 +105,7 @@ ftp://hdf.ncsa.uiuc.edu/HDF5/hdf-java</a>
 <p><br><i>Prerequisites</i>
 <p>The Java HDF5 Interface requires the HDF5 library, Version 1.6.2 or
 higher. HDF-5 is available in binary or source from:
-<blockquote><a href="http://hdf.ncsa.uiuc.edu/register5.html">http://hdf.ncsa.uiuc.edu/register5.html</a></blockquote>
+<blockquote><a href="/register5.html">/register5.html</a></blockquote>
 The JHI5 was developed using Java JDK 1.3. The JHI5 contains no platform
 specific code, and should work on any system with Java JDK 1.2 or above.
 <p>At the time of the release, the code has been tested on Solaris, Linux,
@@ -194,5 +183,8 @@ is still under investigation.
 <br>&nbsp;
 -->
 
-<script language="JavaScript" type="text/javascript" src="../../footer.js"></script>
-</HTML>
+<?php
+include ("../../../includes/footer.html"); 
+?>
+
+
