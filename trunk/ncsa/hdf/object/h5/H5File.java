@@ -175,42 +175,63 @@ public class H5File extends FileFormat
      **************************************************************************/
 
     /**
-     * Converts enum values to string names.
+     * Converts values in an Enumeration Datatype to names.
+     * <p>
+     * This method searches the identified enumeration datatype for 
+     * the values appearing in <code>inValues</code> and returns the
+     * names corresponding to those values.  If a given value is not
+     * found in the enumeration datatype, the name corresponding to that
+     * value will be set to <code>null</code> in the string array that is
+     * returned.
+     * <p>
+     * If the method fails in general, null will be returned instead
+     * of a String array.   An empty <code>inValues</code> parameter,
+     * an <code>outNames</code> array with a different number of entries 
+     * than the <code>inValues</code> array, or an invalid <code>tid</code>
+     * would all cause general failure.
      *
-     * @param tid The datatype idenfifier of the enum.
-     * @param in The input array of enum values.
-     * @param out The string array of enum values.  If null, it will be
-     *         created.  If <code>out</code> is not null, the number of entries
-     *         must be the same as the number of entries in <code>in</code>.
-     * @return The string array of enum names if successful; 
+     * @param tid The identifier of the enumeration datatype.
+     * @param inValues The array of enumerations values to be converted.
+     * @param outNames The array of names to be populated.  If null, the array 
+     *         will be created.  If <code>outNames</code> is not null, the 
+     *         number of entries must be the same as the number of values in 
+     *         <code>inValues</code>.  
+     * @return The string array of names if successful; 
      *         otherwise return null.
-     * @throws RUTH DOCUMENT
+     * @throws HDF5Exception If there is an error at the HDF5 library level.
      */
     public static final String[] convertEnumValueToName(
-		    int tid, Object in, String[] out) throws HDF5Exception
+		    int tid, Object inValues, String[] outNames) throws HDF5Exception
     {
-        int size = 0;
+        int inSize = 0;
 
-        if ((in == null) || 
-	    	((size = Array.getLength(in)) <=0) || 
-            	( (out !=null)  && (size != Array.getLength(out))) ) {
+        if ( (inValues == null) || 
+	    	 ( (inSize = Array.getLength(inValues)) <=0) || 
+             ( (outNames != null) && (inSize != Array.getLength(outNames))) ) {
            return null;
         }
 
-        int n = H5.H5Tget_nmembers(tid);
-        if (n <=0 ) {
+        int nMembers = H5.H5Tget_nmembers(tid);
+        if (nMembers <=0 ) {
             return null;
         }
 
-        if (out == null) {
-            out = new String[size];
+        if (outNames == null) {
+            outNames = new String[inSize];
+        } else {
+            // set values in existing array to null in case no match found
+            for ( int i = 0; i < inSize; i++ ) {
+                outNames[i] = null;
+            }
         }
         
-        String[] names = new String[n];
-        int[] values = new int[n];
+        String[] names = new String[nMembers];
+        int[] values = new int[nMembers];
         int[] theValue = {0};
 
-        for (int i=0; i<n; i++)
+        // Loop through the enumeration datatype and extract the names & 
+        // values.
+        for (int i=0; i<nMembers; i++)
         {
             names[i] = H5.H5Tget_member_name(tid, i);
             H5.H5Tget_member_value(tid, i, theValue);
@@ -218,21 +239,21 @@ public class H5File extends FileFormat
         }
 
         int val = -1;
-        int tsize = H5.H5Tget_size(tid);
-        for (int i=0; i<size; i++)
+        // Look for matches
+        for (int i=0; i<inSize; i++)
         {
-            val = Array.getInt(in, i);
-            for (int j=0; j<n; j++)
+            val = Array.getInt(inValues, i);
+            for (int j=0; j<nMembers; j++)
             {
                 if (val == values[j])
                 {
-                    out[i] = names[j];
+                    outNames[i] = names[j];
                     break;
                 }
             }
-        } //for (int i=0; i<values.length; i++)
+        } //for (int i=0; i<inValues.length; i++)
 
-        return out;
+        return outNames;
     }
 
     /**
