@@ -1,14 +1,16 @@
-<HTML>
-<script language="JavaScript" type="text/javascript" src="../header.js"></script>
+<?php
+include ("../../links.php"); 
+include ("../../includes/header.html"); 
+?>
 
 <table width="100%">
   <tr>
-  <td width="60%">
+  <td width="60%" bgcolor="#dbeaf5">
     <h1>HDF Object Package</h1>  </td>
+  <td align="leftt" ><h3>
+    <a href="##DOWNLOAD"><center>Download</center></a></h3></td>
   <td align="leftt"><h3>
-    <a href="##DOWNLOAD">Download</a></h3></td>
-  <td align="leftt"><h3>
-    <A HREF="use.html">How to use it</A></h3></td>
+    <A HREF="use.html"><center>How to use it</center></A></h3></td>
   </tr>
 </table>
 
@@ -17,6 +19,7 @@
 This document describes the design of the <b>HDF Object Package</b> and the class hierarchy.
 To know how to use the package, read <A HREF="use.html">Use and Examples</A> for more details.
 
+<hr>
 
 <h2>
 What it is</h2>
@@ -25,10 +28,10 @@ HDF5 data objects in an object-oriented form. The HDF Java Object Package
 provides a common standard Java API to access both HDF4 and HDF5 files.
 <p>The HDF Object Package is <b>NOT</b> a "wrapper" for the native HDF
 libraries; The HDF4 and HDF5 wrappers are separate HDF Java products. For
-details of the HDF4 and HDF5 native interfaces, read 
-<a href="../JNI/jhi/index.html">Java HDF Interface (JHI)</a> and
-<a href="../JNI/jhi5/index.html"> Java HDF5 Interface (JHI5)</a>. 
-The HDF Object Package wraps these
+details of the HDF4 and HDF5 native interfaces, read <a href="../JNI/jhi/index.html">NCSA
+Java HDF Interface (JHI)</a> and
+<a href="../JNI/jhi5/index.html">NCSA
+Java HDF5 Interface (JHI5)</a>. The HDF Object Package wraps these
 interfaces with a higher level object model.
 <p>The HDF Object Package, <i>ncsa.hdf.object</i>, provides classes that
 reflect fundamental conceptual to design of HDF objects. Objects
@@ -56,7 +59,7 @@ HDF4 and HDF5 objects are inherited from a common object/interface
 layer. Applications can be built by using only the common object/interface
 layer. For example, the HDFView in built on the common object/interface
 layer. It compiles and runs without the HDF4 or HDF5 library.
-
+<hr>
 <h2>
 The Object Package</h2>
 The following diagram explains the structure of the HDF object package
@@ -82,7 +85,7 @@ the HDF5 library.
 <center>
 <p><img SRC="hdf-obj.jpg" NOSAVE>
 <br><b>Figure 1. The Object Package.</b></center>
-
+<hr>
 <h2>
 The class hierarchy</h2>
 The HDF Object Package implements an abstract data model, and the objects
@@ -98,7 +101,7 @@ below. We need to decide on a common way to show it in UML.}--></i>
 
 <center>
 <p><img SRC="class_diagram_object.jpg" NOSAVE height=897 width=684>
-<br><b>Figure 2. The Class Hierarchy of HDF Objects.</b></center>
+<br><b>Figure 2. The Class Hierarchy of HDF Objects.</b></center><hr>
 
 <h2>
 Limitations</h2>
@@ -113,9 +116,9 @@ HDF5 ARRAY datatype with compound member is not supported.</li>
 <li>
 Nested compound datatype is not supported.</li>
 </ul>
-
-<h2>
-To Obtain</h2>
+<hr>
+<h3>
+To Obtain</h3>
 The HDF Object Package is freely available, as a full source release. Compiled
 jar files are available, and compiled native libraries are available for
 selected platforms.
@@ -128,9 +131,9 @@ HDF5 Interface (JHI5)</a>. These are included in the distribution.
 JDK 1.3.x). The HDF Object Package no platform specific code, and should
 work on any system with Java JDK 1.2.x or JDK 1.3.x. At the time of the
 release, the code has been tested on Solaris, Linux, Windows 98/NT, and
-SGI IRIX 6.5.
-<h2>
-<a NAME="#DOWNLOAD"></a>Download</h2>
+SGI IRIX 6.5.<hr>
+<h3>
+<a NAME="#DOWNLOAD"></a>Download</h3>
 The source and pre-built binaries for the HDF Object Package can be downloaded
 from:
 <blockquote><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/">
@@ -148,7 +151,7 @@ native libraries are available for selected platforms.
 </tr>
 
 <tr>
-<td>lib/jhdf5.jar</td>
+<td >lib/jhdf5.jar</td>
 
 <td>The Java HDF5 Interface, accesses the native HDF5 library</td>
 </tr>
@@ -191,6 +194,7 @@ native libraries are available for selected platforms.
 
 <tr>
 <td>lib/win/</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
 <td> jhdf.dll</td>
@@ -203,20 +207,16 @@ native libraries are available for selected platforms.
 
 <td>The native HDF5 library and JNI implementation (called by jhdf5.jar)</td>
 
-<td></td>
 </tr>
 </table></center>
-</blockquote>
-<b>Source</b>
+</blockquote><hr>
+<h3>Source</h3>
 <p>The source distribution includes all the Java source to build the jar
 files, plus the C source for the native methods of the <a href="../JNI/jhi/index.html">JHI</a>
 and <a href="../JNI/jhi5/index.html">JHI5</a>.
 <p>The JHI requires the HDF4.1r5 library (binary) and the JHI5 requires
 the HDF5.1.4.4 library (binary). These are not included in the Java source.
 They can be obtained from:
-<blockquote><a href="http://hdf.ncsa.uiuc.edu">http://hdf.ncsa.uiuc.edu</a></blockquote>
-or email to:
-<blockquote><a href="mailto:hdfhelp@ncsa.uiuc.edu">hdfhelp@ncsa.uiuc.edu</a></blockquote>
-
-<script language="JavaScript" type="text/javascript" src="../footerer.js"></script>
-</HTML>
+<?php 
+include ("../../includes/footer.html"); 
+?>
