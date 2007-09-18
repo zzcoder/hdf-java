@@ -10,50 +10,70 @@ include ("../../includes/header.html");
   <td align="leftt" ><h3>
     <a href="##DOWNLOAD"><center>Download</center></a></h3></td>
   <td align="leftt"><h3>
-    <A HREF="use.html"><center>How to use it</center></A></h3></td>
+    <A HREF="use.html"><center>Use and Examples</center></A></h3></td>
   </tr>
 </table>
 
-
 <p>
-This document describes the design of the <b>HDF Object Package</b> and the class hierarchy.
-To know how to use the package, read <A HREF="use.html">Use and Examples</A> for more details.
+The design and class hierarchy of the <b>HDF Object Package</b> are 
+described in this document.
+Refer to 
+<A HREF="use.html">Use and Examples</A> 
+for information on using the package.
 
 <hr>
 
-<h2>
-What it is</h2>
-The <b>HDF Object Package</b> is a Java package which implement HDF4 and
-HDF5 data objects in an object-oriented form. The HDF Java Object Package
-provides a common standard Java API to access both HDF4 and HDF5 files.
-<p>The HDF Object Package is <b>NOT</b> a "wrapper" for the native HDF
-libraries; The HDF4 and HDF5 wrappers are separate HDF Java products. For
-details of the HDF4 and HDF5 native interfaces, read <a href="../JNI/jhi/index.html">NCSA
-Java HDF Interface (JHI)</a> and
-<a href="../JNI/jhi5/index.html">NCSA
-Java HDF5 Interface (JHI5)</a>. The HDF Object Package wraps these
-interfaces with a higher level object model.
-<p>The HDF Object Package, <i>ncsa.hdf.object</i>, provides classes that
-reflect fundamental conceptual to design of HDF objects. Objects
-of HDF5 (group and dataset) and HDF4 (group, multi-dimension array, raster
-image, vdata and annotation) are presented as Java classes.
+<h2>Overview</h2>
 
-<p>The HDF object package has three major goals. First, it simplifies the
-process of reading information from or writing data to file because the
-details of accessing to the HDF library are encapsulated into respective
-classes. For example, it may take over ten library calls to get an image
-from HDF5 file while the image object provides a single convenient call
-to achieve the same task.
+<p>
+The HDF Object Package is a Java package that provides an 
+object-oriented interface to HDF data objects. 
+The package offers a common API to access both HDF4 and HDF5 files.
 
-<p>Second, the HDF object package hides the HDF4 and HDF5 libraries from
-applications. Applications can use of the HDF Object Package to access
-objects from either HDF4 or HDF5 without accessing the libraries directly.
-This will be very useful in the case of client-server application. The
-server machine may have HDF files and the HDF library to access the files
-while the client application which built on the HDF object model doe not
-need the HDF library.
+<p>
+The HDF Object Package <u>does not</u> provide a one-to-one mapping from Java
+methods to routines in the standard HDF4 and HDF5 libraries.
+The one-to-one mappings are provided 
+via the HDF Java Native Interface products 
+<a href="../JNI/jhi/index.html">Java HDF Interface (JHI)</a> 
+and 
+<a href="../JNI/jhi5/index.html">Java HDF5 Inteface (JHI5)</a>. 
+The HDF Object Package wraps these direct mappings with 
+a higher level object model.
 
-<p>Third, the HDF object package provides modular HDF4 and HDF5 packages.
+<p>
+The HDF Object Package, <i>ncsa.hdf.object</i>, provides classes that
+reflect the fundamental objects of the two HDF formats. 
+Fundamental objects from 
+HDF4 (group, multi-dimension array, raster image, vdata, and annotation) 
+and 
+HDF5 (group and dataset) 
+are presented as Java classes in the HDF Object Package.
+
+<p>
+There are three major advantages offered by the HDF Object Package:
+
+<ul> 
+<li>
+First, the package simplifies accesses to HDF files by encapsulating 
+the details of calls to the HDF library in higher-level classes and methods.
+For example, the <i>image</i> object provides a method to read an 
+image from an HDF5 file.   
+This method may invoke more that ten calls to the HDF5 library to 
+accomplish this task.
+
+<li>
+Second, the package allows applications to make requests to access HDF files 
+without directly linking to the HDF4 and HDF5 libraries.   
+This capability is very useful for client-server architectures.
+The server machine can host the HDF files and libraries.
+The client application can be built using the HDF Object model and route
+requests to the server for access to the HDF files.  
+The client does not need a local copy of the HDF libraries and, by virtue
+of being written in Java, is portable to many different platforms.
+
+<li>
+Third, the HDF object package provides modular HDF4 and HDF5 packages.
 Application can be built without requiring the HDF4 or HDF5 library.
 HDF4 and HDF5 objects are inherited from a common object/interface
 layer. Applications can be built by using only the common object/interface
