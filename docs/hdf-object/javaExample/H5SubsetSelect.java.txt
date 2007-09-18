@@ -63,7 +63,7 @@ import ncsa.hdf.object.h5.*;  // the HDF5 implementation
  * </p>
  *
  * @author Peter X. Cao
- * @version 1.1
+ * @version 2.4
  */
 public class H5SubsetSelect
 {

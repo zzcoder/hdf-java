@@ -23,7 +23,7 @@ import ncsa.hdf.object.h4.*;  // the HDF4 implementation
  * "HDF Object Package (Java)".</p>
  *
  * @author Peter X. Cao
- * @version 1.1
+ * @version 2.4
  */
 public class H4FileCreate
 {

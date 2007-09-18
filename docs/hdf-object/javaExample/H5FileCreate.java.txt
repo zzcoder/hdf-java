@@ -49,7 +49,7 @@ public class H5FileCreate
         // If the specified file already exists, it is truncated.
         // The default HDF5 file creation and access properties are used.
         // 
-        H5File testFile = (H5File)fileFormat.create(fname, 
+        H5File testFile = (H5File)fileFormat.createFile(fname, 
 					         FileFormat.FILE_CREATE_DELETE);
 
         // Check for error condition and report.
