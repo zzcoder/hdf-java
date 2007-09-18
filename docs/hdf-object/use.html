@@ -1,14 +1,16 @@
-<script language="JavaScript" type="text/javascript" src="../header.js"></script>
-
-<h1>HDF Object Package - How to Use It</h1>
-
-<UL>
-    <li><a href="#use">How to use it</a>
-    <li><a href="#classpath">Set CLASSPATH</a>
-    <li><a href="#libpath">Set Library Path</a>
-    <li><a href="#selection">How to select a subset</a>
-    <li><a href="#examples">Examples</a>
-    <UL>
+<?php
+include ("../../links.php"); 
+include ("../../includes/header.html"); 
+?>
+<fieldset><h1>HDF Object Package - How to Use It</h1></fieldset>
+<p
+<UL class="ul">
+    <li class="li3"><a href="#use">How to use it</a>
+    <li class="li3"><a href="#classpath">Set CLASSPATH</a>
+    <li class="li3"><a href="#libpath">Set Library Path</a>
+    <li class="li3"><a href="#selection">How to select a subset</a>
+    <li class="li3"><a href="#examples">Examples</a><p>
+    <UL class="ul">
         <li> <a href="#create_file">Create File</a>
         <li> <a href="#create_group">Create Group</a>
         <li> <a href="#create_dataset">Create Datatype/Dataset</a>
@@ -37,6 +39,7 @@ Figure 2 shows the relationship of the packages.
 <center>
 <p><img SRC="hdf-obj.jpg" NOSAVE>
 <p><b>Figure 2. The Software packages</b></center>
+<hr>
 
 <h2><a NAME="classpath"></a>
 Set CLASSPATH</h2>
@@ -62,6 +65,7 @@ setenv CLASSPATH=%CLASSPATH%;c:\apps\hdfobj\jhdf5.jar<br>
 setenv CLASSPATH=%CLASSPATH%;c:\apps\hdfobj\jhdfobj.jar<br>
 setenv CLASSPATH=%CLASSPATH%;c:\apps\hdfobj\jhdf4obj.jar<br>
 setenv CLASSPATH=%CLASSPATH%;c:\apps\hdfobj\jhdf5obj.jar<br>
+<hr>
 
 <h2><a NAME="libpath"></a>
 Set Library Path</h2>
@@ -87,6 +91,7 @@ At Windows</h3>
 Suppose you install the HDF object package at <B>c:\apps\hdfobj</b>.
 <p>
 setenv PATH=%PATH%;c:\apps\hdfobj\lib\win<br>
+<hr>
 
 <h2><a NAME="selection"></a>
 How to select a subset</h2>
@@ -134,6 +139,7 @@ We want to select every other data points in dims[1] and dims[2]
     // outside the dataset object directly change the values of these array
     // in the dataset object.
 </pre>
+<hr>
 
 <h2><a NAME="examples"></a>
 Examples</h2>
@@ -273,5 +279,6 @@ The subset values are:
 2302,2304,2306
 2602,2604,2606
 </pre>
-
-<script language="JavaScript" type="text/javascript" src="../footer.js"></script>
+<?php 
+include ("../../includes/footer.html"); 
+?>
