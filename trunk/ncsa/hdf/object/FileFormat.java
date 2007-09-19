@@ -61,7 +61,8 @@ public abstract class FileFormat extends File
     /** 
      * File access flag for read/write permission.
      * With this access flag, modifications to the file will be allowed.
-     * Behavior if the file does not exist depends on the implementing class.
+     * Behavior if the file does not exist or cannot be opened for read/write
+     * access depends on the implementing class.
      */
     public static final int WRITE = 1;
 
@@ -69,6 +70,8 @@ public abstract class FileFormat extends File
      * File access flag for creating/truncating with read-write permission.
      * If the file already exists, it will be truncated when opened.
      * With this access flag, modifications to the file will be allowed.
+     * Behavior if file can't be created, or if it exists but can't be
+     * opened for read/write access depends on the implementing class.
      */
     public static final int CREATE = 2;
 
@@ -158,7 +161,7 @@ public abstract class FileFormat extends File
     protected boolean isReadOnly = false;
 
     /***************************************************************************
-     * Static initialization method
+     * Class initialization method
      **************************************************************************/
 
     /**
@@ -223,7 +226,7 @@ public abstract class FileFormat extends File
     }
 
     /***************************************************************************
-     * Static methods 
+     * Class methods 
      **************************************************************************/
 
     /**
@@ -436,12 +439,12 @@ public abstract class FileFormat extends File
     public static final FileFormat getInstance(String filename) throws Exception
     {
         if ((filename == null) || (filename.length()<=0)) {
-            throw new IllegalArgumentException("Invalid file name. "+filename);
+            throw new IllegalArgumentException("Invalid file name: "+filename);
         }
 
         if (!(new File(filename)).exists()) {
             throw new IllegalArgumentException("File " + filename + 
-                                               "does not exist");
+                                               " does not exist.");
         }
 
         FileFormat fileFormat = null;
@@ -463,7 +466,7 @@ public abstract class FileFormat extends File
     }
 
     /***************************************************************************
-     * Per-instance, final methods 
+     * Instance, final methods 
      **************************************************************************/
 
     /**
@@ -736,10 +739,11 @@ public abstract class FileFormat extends File
      * The access parameter values and corresponding behaviors at file open:
      * <ul>
      * <li> READ: Read-only access; fail if file doesn't exist.
-     * <li> WRITE: Read/Write access; Behavior if file doesn't exist depends
-     *      on the implmenting class.
-     * <li> CREATE: Read/Write access; create a new file or truncate 
-     *                  an existing one. 
+     * <li> WRITE: Read/Write access; Behavior if file doesn't exist or can't
+     *      be opened for read/write access depends on the implementing class.
+     * <li> CREATE: Read/Write access; create a new file or truncate an 
+     *      existing one.   Behavior if file can't be created, or if it exists
+     *      but can't be opened read/write depends on the implementing class.
      * </ul>
      * <p>
      * Some FileFormat implementing classes may only support READ access and
@@ -774,6 +778,7 @@ public abstract class FileFormat extends File
      *                              is <code>null</code>.
      * @see #FileFormat(String)
      * @see #createFile(String, int)
+     * @see #getInstance(String)
      * @see #open()
      */
     public abstract FileFormat createInstance( String filename, 
@@ -858,7 +863,7 @@ public abstract class FileFormat extends File
      * @throws RUTH ADD EXCEPTIONS
      */
     public abstract Group createGroup(String name, 
-                                            Group parentGroup) throws Exception;
+                                      Group parentGroup) throws Exception;
 
     /**
      * Creates a link to an existing object in the open file.
