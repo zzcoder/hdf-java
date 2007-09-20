@@ -171,7 +171,7 @@ public class H5File extends FileFormat
     }
 
     /***************************************************************************
-     * Class methods.
+     * Class methods
      **************************************************************************/
 
     /**
@@ -840,8 +840,12 @@ DEBUGGING */
         } // for (int i=0; i<n; i++)
     }
    
+
     /***************************************************************************
-     * Implementation methods related to File Format, but not to an open file.
+     * Implementation Class methods.    These methods are related to the
+     * implementing H5File class, but not to a particular instance of
+     * the class.   Since we can't override class methods (they can only be
+     * shadowed in Java), these are instance methods.
      **************************************************************************/
 
     /**
@@ -941,7 +945,10 @@ DEBUGGING */
 
 
     /***************************************************************************
-     * Implementation methods related to open file, its structure and objects.
+     * Instance Methods
+     *
+     * These methods are related to the H5File class and to particular
+     * instances of objects with this class type.
      **************************************************************************/
 
     /**
@@ -1034,104 +1041,6 @@ DEBUGGING */
     public TreeNode getRootNode()
     {
         return rootNode;
-    }
-
-    /***
-     * Creates a new group with specified name in exisiting group.
-     *
-     * @see ncsa.hdf.object.FileFormat#createGroup(java.lang.String, 
-     *                                                   ncsa.hdf.object.Group)
-     */
-    public Group createGroup(String name, Group pgroup) throws Exception
-    {
-        // create new group at the root
-        if (pgroup == null) {
-            pgroup = (Group)this.get("/");
-        }
-
-        return H5Group.create(name, pgroup);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ncsa.hdf.object.FileFormat#createLink(ncsa.hdf.object.Group, 
-     * java.lang.String, ncsa.hdf.object.HObject)
-     */
-    public HObject createLink(Group parentGroup, String name, 
-                              HObject currentObj) throws Exception
-    {
-        HObject obj = null;
-        String current_full_name=null, new_full_name=null, parent_path=null;
-
-        if (currentObj == null) {
-            throw new HDF5Exception(
-                        "The object pointed by the link cannot be null.");
-        }
-
-        if ((currentObj instanceof Group) && ((Group)currentObj).isRoot()) {
-            throw new HDF5Exception("Cannot make a link to the root group.");
-        }
-
-        if ((parentGroup == null) || parentGroup.isRoot()) {
-            parent_path = HObject.separator;
-        } else {
-            parent_path = parentGroup.getPath()+HObject.separator
-                          +parentGroup.getName()+HObject.separator;
-        }
-
-        new_full_name = parent_path+name;
-        current_full_name = currentObj.getPath()+HObject.separator + 
-                            currentObj.getName();
-
-        H5.H5Glink(fid, HDF5Constants.H5G_LINK_HARD, current_full_name, 
-                                                     new_full_name);
-
-        if (currentObj instanceof Group) {
-            obj = new H5Group(this, name, parent_path, parentGroup);
-        } else if (currentObj instanceof H5Datatype) {
-            obj = new H5Datatype(this, name, parent_path);
-        } else if (currentObj instanceof H5CompoundDS) {
-            obj = new H5CompoundDS(this, name, parent_path);
-        } else if (currentObj instanceof H5ScalarDS) {
-            obj = new H5ScalarDS(this, name, parent_path);
-        }
-
-        return obj;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ncsa.hdf.object.FileFormat#copy(ncsa.hdf.object.HObject, 
-     * ncsa.hdf.object.Group, java.lang.String)
-     */
-    public TreeNode copy(HObject srcObj, Group dstGroup, String dstName) 
-                throws Exception
-    {
-        TreeNode newNode = null;
-
-        if ((srcObj == null) || (dstGroup == null)) {
-            return null;
-        }
-
-        if (dstName == null) {
-            dstName = srcObj.getName();
-        }
-
-        if (srcObj instanceof Dataset)
-        {
-           newNode = copyDataset((Dataset)srcObj, (H5Group)dstGroup, dstName);
-        }
-        else if (srcObj instanceof H5Group)
-        {
-            newNode = copyGroup((H5Group)srcObj, (H5Group)dstGroup, dstName);
-        }
-        else if (srcObj instanceof H5Datatype)
-        {
-            newNode = copyDatatype((H5Datatype)srcObj, (H5Group)dstGroup, 
-                                                        dstName);
-        }
-
-        return newNode;
     }
 
     /*
@@ -1237,6 +1146,275 @@ DEBUGGING */
 
     /*
      * (non-Javadoc)
+     * @see ncsa.hdf.object.FileFormat#createDatatype(int, int, 
+     * int, int, java.lang.String)
+     */
+    public Datatype createDatatype(
+        int tclass,
+        int tsize,
+        int torder,
+        int tsign,
+        String name) throws Exception
+    {
+        int tid=-1;
+        H5Datatype dtype = null;
+
+        try {
+            H5Datatype t = (H5Datatype) createDatatype(tclass, tsize, 
+                                                       torder, tsign);
+            tid = t.toNative();
+
+            H5.H5Tcommit(fid, name, tid);
+
+            byte[] ref_buf = H5.H5Rcreate(fid, name, 
+                                HDF5Constants.H5R_OBJECT, -1);
+            long l = HDFNativeData.byteToLong(ref_buf, 0);
+
+            long[] oid = new long[1];
+            oid[0] = l; // save the object ID
+
+            dtype = new H5Datatype(this, null, name);
+
+        } finally {
+            if (tid>0) {
+                H5.H5Tclose(tid);
+            }
+        }
+
+        return dtype;
+    }
+
+
+
+
+
+    /***************************************************************************
+     * Methods related to Datatypes and HObjects in HDF5 Files.
+     * Strictly speaking, these methods aren't related to H5File
+     * and the actions coudl be carried out through the H5Group, 
+     * H5Datatype and H5*DS classes.  But, in some cases they allow a
+     * null input and expect the generated object to be of HDF5 type.
+     * So, we put them in the H5File class so that we create the proper 
+     * type of  HObject... H5Group for example.
+     *
+     * Here again, if there could be Implementation Class methods we'd
+     * use those.  But, since we can't override class methods (they can only
+     * be shadowed in Java), these are instance methods.
+     *
+     **************************************************************************/
+
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.FileFormat#createDatatype(int, int, int, int)
+     */
+    public Datatype createDatatype(
+        int tclass,
+        int tsize,
+        int torder,
+        int tsign) throws Exception
+    {
+        return new H5Datatype(tclass, tsize, torder, tsign);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.FileFormat#createScalarDS(java.lang.String, 
+     * ncsa.hdf.object.Group, ncsa.hdf.object.Datatype, long[], 
+     * long[], long[], int, java.lang.Object)
+     */
+    public Dataset createScalarDS(
+        String name,
+        Group pgroup,
+        Datatype type,
+        long[] dims,
+        long[] maxdims,
+        long[] chunks,
+        int gzip,
+        Object data) throws Exception
+    {
+        if (pgroup == null) { 
+            // create new dataset at the root group by default
+            pgroup = (Group)get("/");
+        }
+            
+        return H5ScalarDS.create(name, pgroup, type, dims, maxdims, 
+                                 chunks, gzip, data);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.FileFormat#createCompoundDS(java.lang.String, 
+     * ncsa.hdf.object.Group, long[], long[], long[], int, java.lang.String[], 
+     * ncsa.hdf.object.Datatype[], int[], java.lang.Object)
+     */
+    public Dataset createCompoundDS(
+        String name,
+        Group pgroup,
+        long[] dims,
+        long[] maxdims,
+        long[] chunks,
+        int gzip,
+        String[] memberNames,
+        Datatype[] memberDatatypes,
+        int[] memberSizes,
+        Object data) throws Exception
+    {
+        int nMembers = memberNames.length;
+        int memberRanks[] = new int[nMembers];
+        int memberDims[][] = new int[nMembers][1];
+        for (int i=0; i<nMembers; i++)
+        {
+            memberRanks[i] = 1;
+            if (memberSizes==null) {
+                memberDims[i][0] = 1;
+            } else {
+                memberDims[i][0] = memberSizes[i];
+            }
+        }
+        
+        if (pgroup == null) { 
+            // create new dataset at the root group by default
+            pgroup = (Group)get("/");
+        }
+
+        return H5CompoundDS.create(name, pgroup, dims, maxdims, chunks, gzip,
+            memberNames, memberDatatypes, memberRanks, memberDims, data);
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.FileFormat#createImage(java.lang.String, 
+     * ncsa.hdf.object.Group, ncsa.hdf.object.Datatype, long[], long[], 
+     * long[], int, int, int, java.lang.Object)
+     */
+    public Dataset createImage(
+        String name,
+        Group pgroup,
+        Datatype type,
+        long[] dims,
+        long[] maxdims,
+        long[] chunks,
+        int gzip,
+        int ncomp,
+        int interlace,
+        Object data) throws Exception
+    {
+        if (pgroup == null) {         // create at the root group by default
+            pgroup = (Group)get("/");
+        }
+            
+        H5ScalarDS dataset = H5ScalarDS.create(name, pgroup, type, 
+                                        dims, maxdims, chunks, gzip, data);
+        try { 
+            H5File.createImageAttributes(dataset, interlace); 
+        } catch (Exception ex) {}
+
+        return dataset;
+    }
+
+
+    /***
+     * Creates a new group with specified name in exisiting group.
+     *
+     * @see ncsa.hdf.object.FileFormat#createGroup(java.lang.String, 
+     *                                                   ncsa.hdf.object.Group)
+     */
+    public Group createGroup(String name, Group pgroup) throws Exception
+    {
+        // create new group at the root
+        if (pgroup == null) {
+            pgroup = (Group)this.get("/");
+        }
+
+        return H5Group.create(name, pgroup);
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.FileFormat#createLink(ncsa.hdf.object.Group, 
+     * java.lang.String, ncsa.hdf.object.HObject)
+     */
+    public HObject createLink(Group parentGroup, String name, 
+                              HObject currentObj) throws Exception
+    {
+        HObject obj = null;
+        String current_full_name=null, new_full_name=null, parent_path=null;
+
+        if (currentObj == null) {
+            throw new HDF5Exception(
+                        "The object pointed by the link cannot be null.");
+        }
+
+        if ((currentObj instanceof Group) && ((Group)currentObj).isRoot()) {
+            throw new HDF5Exception("Cannot make a link to the root group.");
+        }
+
+        if ((parentGroup == null) || parentGroup.isRoot()) {
+            parent_path = HObject.separator;
+        } else {
+            parent_path = parentGroup.getPath()+HObject.separator
+                          +parentGroup.getName()+HObject.separator;
+        }
+
+        new_full_name = parent_path+name;
+        current_full_name = currentObj.getPath()+HObject.separator + 
+                            currentObj.getName();
+
+        H5.H5Glink(fid, HDF5Constants.H5G_LINK_HARD, current_full_name, 
+                                                     new_full_name);
+
+        if (currentObj instanceof Group) {
+            obj = new H5Group(this, name, parent_path, parentGroup);
+        } else if (currentObj instanceof H5Datatype) {
+            obj = new H5Datatype(this, name, parent_path);
+        } else if (currentObj instanceof H5CompoundDS) {
+            obj = new H5CompoundDS(this, name, parent_path);
+        } else if (currentObj instanceof H5ScalarDS) {
+            obj = new H5ScalarDS(this, name, parent_path);
+        }
+
+        return obj;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.FileFormat#copy(ncsa.hdf.object.HObject, 
+     * ncsa.hdf.object.Group, java.lang.String)
+     */
+    public TreeNode copy(HObject srcObj, Group dstGroup, String dstName) 
+                throws Exception
+    {
+        TreeNode newNode = null;
+
+        if ((srcObj == null) || (dstGroup == null)) {
+            return null;
+        }
+
+        if (dstName == null) {
+            dstName = srcObj.getName();
+        }
+
+        if (srcObj instanceof Dataset)
+        {
+           newNode = copyDataset((Dataset)srcObj, (H5Group)dstGroup, dstName);
+        }
+        else if (srcObj instanceof H5Group)
+        {
+            newNode = copyGroup((H5Group)srcObj, (H5Group)dstGroup, dstName);
+        }
+        else if (srcObj instanceof H5Datatype)
+        {
+            newNode = copyDatatype((H5Datatype)srcObj, (H5Group)dstGroup, 
+                                                        dstName);
+        }
+
+        return newNode;
+    }
+
+    /*
+     * (non-Javadoc)
      * @see ncsa.hdf.object.FileFormat#delete(ncsa.hdf.object.HObject)
      */
     public void delete(HObject obj) throws Exception
@@ -1249,7 +1427,6 @@ DEBUGGING */
 
         H5.H5Gunlink(fid, name);
     }
-
 
     /*
      * (non-Javadoc)
@@ -1320,162 +1497,6 @@ DEBUGGING */
 
         obj.close(objID);
     }
-
-
-    /***************************************************************************
-     * Implementations for FileFormat abstract methods.
-     * Related to datasets and datatypes
-     **************************************************************************/
-
-    /*
-     * (non-Javadoc)
-     * @see ncsa.hdf.object.FileFormat#createScalarDS(java.lang.String, 
-     * ncsa.hdf.object.Group, ncsa.hdf.object.Datatype, long[], 
-     * long[], long[], int, java.lang.Object)
-     */
-    public Dataset createScalarDS(
-        String name,
-        Group pgroup,
-        Datatype type,
-        long[] dims,
-        long[] maxdims,
-        long[] chunks,
-        int gzip,
-        Object data) throws Exception
-    {
-            if (pgroup == null) { // create new dataset at the root group by default
-                    pgroup = (Group)get("/");
-            }
-            
-        return H5ScalarDS.create(name, pgroup, type, dims, maxdims, 
-                                 chunks, gzip, data);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ncsa.hdf.object.FileFormat#createCompoundDS(java.lang.String, 
-     * ncsa.hdf.object.Group, long[], long[], long[], int, java.lang.String[], 
-     * ncsa.hdf.object.Datatype[], int[], java.lang.Object)
-     */
-    public Dataset createCompoundDS(
-        String name,
-        Group pgroup,
-        long[] dims,
-        long[] maxdims,
-        long[] chunks,
-        int gzip,
-        String[] memberNames,
-        Datatype[] memberDatatypes,
-        int[] memberSizes,
-        Object data) throws Exception
-    {
-        int nMembers = memberNames.length;
-        int memberRanks[] = new int[nMembers];
-        int memberDims[][] = new int[nMembers][1];
-        for (int i=0; i<nMembers; i++)
-        {
-            memberRanks[i] = 1;
-            if (memberSizes==null) {
-                memberDims[i][0] = 1;
-            } else {
-                memberDims[i][0] = memberSizes[i];
-            }
-        }
-        
-            if (pgroup == null) { // create new dataset at the root group by default
-                    pgroup = (Group)get("/");
-            }
-
-        return H5CompoundDS.create(name, pgroup, dims, maxdims, chunks, gzip,
-            memberNames, memberDatatypes, memberRanks, memberDims, data);
-    }
-
-
-    /*
-     * (non-Javadoc)
-     * @see ncsa.hdf.object.FileFormat#createImage(java.lang.String, 
-     * ncsa.hdf.object.Group, ncsa.hdf.object.Datatype, long[], long[], 
-     * long[], int, int, int, java.lang.Object)
-     */
-    public Dataset createImage(
-        String name,
-        Group pgroup,
-        Datatype type,
-        long[] dims,
-        long[] maxdims,
-        long[] chunks,
-        int gzip,
-        int ncomp,
-        int interlace,
-        Object data) throws Exception
-    {
-            if (pgroup == null) {         // create at the root group by default
-                    pgroup = (Group)get("/");
-            }
-            
-        H5ScalarDS dataset = H5ScalarDS.create(name, pgroup, type, 
-                                        dims, maxdims, chunks, gzip, data);
-        try { 
-            H5File.createImageAttributes(dataset, interlace); 
-        } catch (Exception ex) {}
-
-        return dataset;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ncsa.hdf.object.FileFormat#createDatatype(int, int, int, int)
-     */
-    public Datatype createDatatype(
-        int tclass,
-        int tsize,
-        int torder,
-        int tsign) throws Exception
-    {
-        return new H5Datatype(tclass, tsize, torder, tsign);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see ncsa.hdf.object.FileFormat#createDatatype(int, int, 
-     * int, int, java.lang.String)
-     */
-    public Datatype createDatatype(
-        int tclass,
-        int tsize,
-        int torder,
-        int tsign,
-        String name) throws Exception
-    {
-        int tid=-1;
-        H5Datatype dtype = null;
-
-        try {
-            H5Datatype t = (H5Datatype) createDatatype(tclass, tsize, 
-                                                       torder, tsign);
-            tid = t.toNative();
-
-            H5.H5Tcommit(fid, name, tid);
-
-            byte[] ref_buf = H5.H5Rcreate(fid, name, 
-                                HDF5Constants.H5R_OBJECT, -1);
-            long l = HDFNativeData.byteToLong(ref_buf, 0);
-
-            long[] oid = new long[1];
-            oid[0] = l; // save the object ID
-
-            dtype = new H5Datatype(this, null, name);
-
-        } finally {
-            if (tid>0) {
-                H5.H5Tclose(tid);
-            }
-        }
-
-        return dtype;
-    }
-
-
 
     /***************************************************************************
      * Implementations for methods specific to H5File
