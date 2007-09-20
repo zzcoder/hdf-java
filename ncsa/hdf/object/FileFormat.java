@@ -466,7 +466,193 @@ public abstract class FileFormat extends File
     }
 
     /***************************************************************************
-     * Instance, final methods 
+     * Implementation Class methods.    These methods are related to the 
+     * implementing FileFormat class, but not to a particular instance of
+     * that class.   Since we can't override class methods (they can only be
+     * shadowed in Java), these are instance methods.
+     *
+     * The non-abstract methods just throw an exception indicating that 
+     * the implementing class doesn't support the functionality.
+     **************************************************************************/
+
+    /**
+     * Returns the version of the library for the implementing FileFormat class.
+     * <p>
+     * The implementing FileFormat classes have freedom in how they
+     * obtain or generate the version number that is returned by this
+     * method. The H5File and H4File implementations query the underlying
+     * HDF libraries and return the reported version numbers.  Other
+     * implementing classes may generate the version string directly within the
+     * called method.
+     *
+     * @return The library version.
+     */
+    public abstract String getLibversion();
+
+    /**
+     * Checks if the class implements the specified FileFormat.
+     * <p> 
+     * The Java "instanceof" operation is unable to check if an object
+     * is an instance of a FileFormat that is loaded at runtime.  
+     * This method provides the "instanceof" functionality, and works for
+     * implementing classes that are loaded at runtime.
+     * <p>
+     * This method lets applications that only access the abstract
+     * object layer determine the format of a given instance of 
+     * the abstract class.
+     * <p>
+     * For example, HDFView uses the following code to determine if a file is 
+     * an HDF5 file:
+     * <pre>
+     *  FileFormat h5F = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+     *  HObject hObject = viewer.getTreeView().getCurrentObject();
+     *  FileFormat thisF = hObject.getFileFormat();
+     *  boolean isH5 = h5F.isThisType(thisF);
+     * </pre> 
+     * 
+     * @param fileFormat The FileFormat to be checked.
+     * @return True if this instance implements the specified FileFormat; 
+     *         otherwise returns false.
+     */
+    public abstract boolean isThisType(FileFormat fileFormat);
+
+    /**
+     * Checks if the implementing FileFormat class matches the format of the 
+     * specified file.
+     * <p>
+     * For example, if "test.h5" is an HDF5 file, the first call to 
+     * isThisType() in the code fragment shown will return <code>false</code>,
+     * and the second call will return <code>true</code>.
+     * <pre>
+     *  FileFormat h4F = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4);
+     *  FileFormat h5F = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+     *  boolean isH4 = h4F.isThisType("test.h5");        // false
+     *  boolean isH5 = h5F.isThisType("test.h5");        // true
+     * </pre>
+     *
+     * @param filename The name of the file to be checked.
+     * @return True if the format of the file matches the format of this
+     *         instance; otherwise returns false.
+     */
+    public abstract boolean isThisType(String filename);
+
+    /**
+     * Creates a file with the specified name and returns a new
+     * FileFormat implementation instance associated with the file.
+     * <p>
+     * This method creates a file whose format is the same as that of the
+     * implementing class.
+     * <p>
+     * The filename in this method call is equivalent to the pathname in the
+     * java.io.File class.   The filename is converted
+     * into an abstract pathname by the File class.
+     * <p>
+     * A flag controls the behavior if the named file
+     * already exists. The flag values and corresponding behaviors are:
+     * <ul>
+     * <li> FILE_CREATE_DELETE: Create a new file or truncate an existing one.  
+     * <li> FILE_CREATE_OPEN: Create a new file or open an existing one.
+     * </ul>
+     * If the flag is FILE_CREATE_DELETE, the method will create
+     * a new file or truncate an existing file.
+     * If the access parameter is FILE_CREATE_OPEN and the file does not exist,
+     * the method will create a new file.
+     * <p> 
+     * This method does not open the file for access, nor does it
+     * confirm that the file can later be opened read/write. 
+     * The file open is carried out by the <i>open()</i> call.
+     * <p>
+     * An instance of the FileFormat implementing class is created and
+     * associated with the file.   That instance is returned by the method.
+     *
+     * @param filename The filename; a pathname string.
+     * @param createFlag The creation flag, which determines behavior when 
+     *               the file already exists.
+     *               Acceptable values are <code>FILE_CREATE_DELETE</code>
+     *               and <code>FILE_CREATE_OPEN</code>.
+     * @throws NullPointerException If the <code>filename</code> argument
+     *               is <code>null</code>.
+     * @throws UnsupportedOperationException If the implementing class does
+     *               not support the file creation operation.
+     * @throws Exception If the file cannot be created or if the creation
+     *               flag has an unexpected value. 
+     *               The exceptions thrown vary based on the implementing class.
+     * @see #createInstance(String, int)
+     * @see #open()
+     */
+    public FileFormat createFile( String filename, 
+                                  int createFlag ) throws Exception
+    {
+        // If the implementing subclass doesn't have this method then that
+        // format doesn't support File Creation and we throw an exception. 
+        throw new UnsupportedOperationException(
+               "FileFormat FileFormat.createFile(...) is not implemented.");
+    }
+
+    /**
+     * Creates a FileFormat implementation instance with specified filename 
+     * and access.
+     * <p>
+     * This method creates an instance of the FileFormat implementing class
+     * and sets the filename and file access parameters.  
+     * <p>
+     * The filename in this method call is equivalent to the pathname in the
+     * java.io.File class.   The filename is converted
+     * into an abstract pathname by the File class.
+     * <p>
+     * The access parameter values and corresponding behaviors at file open:
+     * <ul>
+     * <li> READ: Read-only access; fail if file doesn't exist.
+     * <li> WRITE: Read/Write access; Behavior if file doesn't exist or can't
+     *      be opened for read/write access depends on the implementing class.
+     * <li> CREATE: Read/Write access; create a new file or truncate an 
+     *      existing one.   Behavior if file can't be created, or if it exists
+     *      but can't be opened read/write depends on the implementing class.
+     * </ul>
+     * <p>
+     * Some FileFormat implementing classes may only support READ access and
+     * will use READ regardless of the value specified in the call.  
+     * Refer to the implementing class documentation on this method for details.
+     * <p>
+     * This method does not open the file for access, nor does it 
+     * confirm that the file can later be opened read/write or created.
+     * The file open is carried out by the <i>open()</i> call.
+     * <p>
+     * Example (without exception handling):
+     * <pre>
+     *  // Request the implementing class of FileFormat: H5File
+     *  FileFormat h5file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+     *     
+     *  // Create an instance of H5File object with read/write access
+     *  H5File test1 = (H5File)h5file.createInstance("test_hdf5.h5", 
+     *                                               FileFormat.WRITE);
+     *
+     *  // Open the file and load the file structure; file id is returned.
+     *  int fid = test1.open();
+     * </pre> 
+     *
+     * @param filename The filename; a pathname string.
+     * @param access The file access flag, which determines behavior when file
+     *               is opened.  
+     *               Acceptable values are <code> READ, WRITE, </code>
+     *               and <code>CREATE</code>.
+     * @throws RUTH DOCUMENT EXCEPTION... also, what if READ ONLY for impl?
+     *         RUTH WHAT IF file already open?
+     * @throws NullPointerException If the <code>filename</code> argument
+     *                              is <code>null</code>.
+     * @see #FileFormat(String)
+     * @see #createFile(String, int)
+     * @see #getInstance(String)
+     * @see #open()
+     */
+    public abstract FileFormat createInstance( String filename, 
+                                               int access) throws Exception;
+
+    /***************************************************************************
+     * Final instance methods 
+     *
+     * Related to a given instance of the class, but at the FileFormat level,
+     * not at the implementing class level.
      **************************************************************************/
 
     /**
@@ -606,186 +792,10 @@ public abstract class FileFormat extends File
     }
 
     /***************************************************************************
-     * Abstract (and other) methods related to FileFormat, but not to an
-     * open file.
-     * 
-     * The non-abstract methods just throw an exception indicating that 
-     * the implementing class doesn't support the functionality.
-     **************************************************************************/
-
-    /**
-     * Returns the version of the library for the implementing FileFormat.
-     * <p>
-     * The implementing FileFormat classes have freedom in how they
-     * obtain or generate the version number that is returned by this
-     * method. The H5File and H4File implementations query the underlying
-     * HDF libraries and return the reported version numbers.  Other
-     * implementing classes may generate the version string directly within the
-     * called method.
+     * Abstract Instance methods 
      *
-     * @return The library version.
-     */
-    public abstract String getLibversion();
-
-    /**
-     * Checks if this instance implements the specified FileFormat.
-     * <p> 
-     * The Java "instanceof" operation is unable to check if an object
-     * is an instance of a FileFormat that is loaded at runtime.  
-     * This method provides the "instanceof" functionality, and works for
-     * implementing classes that are loaded at runtime.
-     * <p>
-     * This method lets applications that only access the abstract
-     * object layer determine the format of a given instance of 
-     * the abstract class.
-     * <p>
-     * For example, HDFView uses the following code to determine if a file is 
-     * an HDF5 file:
-     * <pre>
-     *  FileFormat h5F = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-     *  HObject hObject = viewer.getTreeView().getCurrentObject();
-     *  FileFormat thisF = hObject.getFileFormat();
-     *  boolean isH5 = h5F.isThisType(thisF);
-     * </pre> 
-     * 
-     * @param fileFormat The FileFormat to be checked.
-     * @return True if this instance implements the specified FileFormat; 
-     *         otherwise returns false.
-     */
-    public abstract boolean isThisType(FileFormat fileFormat);
-
-    /**
-     * Checks if this instance matches the format of the specified file.
-     * <p>
-     * For example, if "test.h5" is an HDF5 file, the first call to 
-     * isThisType() in the code fragment shown will return <code>false</code>,
-     * and the second call will return <code>true</code>.
-     * <pre>
-     *  FileFormat h4F = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4);
-     *  FileFormat h5F = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-     *  boolean isH4 = h4F.isThisType("test.h5");        // false
-     *  boolean isH5 = h5F.isThisType("test.h5");        // true
-     * </pre>
-     *
-     * @param filename The name of the file to be checked.
-     * @return True if the format of the file matches the format of this
-     *         instance; otherwise returns false.
-     */
-    public abstract boolean isThisType(String filename);
-
-    /**
-     * Creates a file with the specified name and returns a new
-     * FileFormat instance associated with the file.
-     * <p>
-     * This method creates a file whose format is the same as that of the
-     * implementing class.
-     * <p>
-     * The filename in this method call is equivalent to the pathname in the
-     * java.io.File class.   The filename is converted
-     * into an abstract pathname by the File class.
-     * <p>
-     * A flag controls the behavior if the named file
-     * already exists. The flag values and corresponding behaviors are:
-     * <ul>
-     * <li> FILE_CREATE_DELETE: Create a new file or truncate an existing one.  
-     * <li> FILE_CREATE_OPEN: Create a new file or open an existing one.
-     * </ul>
-     * If the flag is FILE_CREATE_DELETE, the method will create
-     * a new file or truncate an existing file.
-     * If the access parameter is FILE_CREATE_OPEN and the file does not exist,
-     * the method will create a new file.
-     * <p> 
-     * This method does not open the file for access, nor does it
-     * confirm that the file can later be opened read/write. 
-     * The file open is carried out by the <i>open()</i> call.
-     * <p>
-     * An instance of the FileFormat implementing class is created and
-     * associated with the file.   That instance is returned by the method.
-     *
-     * @param filename The filename; a pathname string.
-     * @param createFlag The creation flag, which determines behavior when 
-     *               the file already exists.
-     *               Acceptable values are <code>FILE_CREATE_DELETE</code>
-     *               and <code>FILE_CREATE_OPEN</code>.
-     * @throws NullPointerException If the <code>filename</code> argument
-     *               is <code>null</code>.
-     * @throws UnsupportedOperationException If the implementing class does
-     *               not support the file creation operation.
-     * @throws Exception If the file cannot be created or if the creation
-     *               flag has an unexpected value. 
-     *               The exceptions thrown vary based on the implementing class.
-     * @see #createInstance(String, int)
-     * @see #open()
-     */
-    public FileFormat createFile( String filename, 
-                                  int createFlag ) throws Exception
-    {
-        // If the implementing subclass doesn't have this method then that
-        // format doesn't support File Creation and we throw an exception. 
-        throw new UnsupportedOperationException(
-               "FileFormat FileFormat.createFile(...) is not implemented.");
-    }
-
-    /**
-     * Creates a FileFormat instance with specified filename and access.
-     * <p>
-     * This method creates an instance of the FileFormat implementing class
-     * and sets the filename and file access parameters.  
-     * <p>
-     * The filename in this method call is equivalent to the pathname in the
-     * java.io.File class.   The filename is converted
-     * into an abstract pathname by the File class.
-     * <p>
-     * The access parameter values and corresponding behaviors at file open:
-     * <ul>
-     * <li> READ: Read-only access; fail if file doesn't exist.
-     * <li> WRITE: Read/Write access; Behavior if file doesn't exist or can't
-     *      be opened for read/write access depends on the implementing class.
-     * <li> CREATE: Read/Write access; create a new file or truncate an 
-     *      existing one.   Behavior if file can't be created, or if it exists
-     *      but can't be opened read/write depends on the implementing class.
-     * </ul>
-     * <p>
-     * Some FileFormat implementing classes may only support READ access and
-     * will use READ regardless of the value specified in the call.  
-     * Refer to the implementing class documentation on this method for details.
-     * <p>
-     * This method does not open the file for access, nor does it 
-     * confirm that the file can later be opened read/write or created.
-     * The file open is carried out by the <i>open()</i> call.
-     * <p>
-     * Example (without exception handling):
-     * <pre>
-     *  // Request the implementing class of FileFormat: H5File
-     *  FileFormat h5file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-     *     
-     *  // Create an instance of H5File object with read/write access
-     *  H5File test1 = (H5File)h5file.createInstance("test_hdf5.h5", 
-     *                                               FileFormat.WRITE);
-     *
-     *  // Open the file and load the file structure; file id is returned.
-     *  int fid = test1.open();
-     * </pre> 
-     *
-     * @param filename The filename; a pathname string.
-     * @param access The file access flag, which determines behavior when file
-     *               is opened.  
-     *               Acceptable values are <code> READ, WRITE, </code>
-     *               and <code>CREATE</code>.
-     * @throws RUTH DOCUMENT EXCEPTION... also, what if READ ONLY for impl?
-     *         RUTH WHAT IF file already open?
-     * @throws NullPointerException If the <code>filename</code> argument
-     *                              is <code>null</code>.
-     * @see #FileFormat(String)
-     * @see #createFile(String, int)
-     * @see #getInstance(String)
-     * @see #open()
-     */
-    public abstract FileFormat createInstance( String filename, 
-                                               int access) throws Exception;
-
-    /***************************************************************************
-     * Abstract methods related to an open file, its structure and objects.
+     * These methods are related to the Implementing FileFormat class and 
+     * to particular instances of objects with those classes.
      **************************************************************************/
 
     /**
@@ -852,95 +862,6 @@ public abstract class FileFormat extends File
     public abstract TreeNode getRootNode();
 
     /**
-     * Creates a new group with specified name in existing group.
-     * <p>
-     * If the parent group is null, the new group will be created
-     * in the root group.   
-     *
-     * @param name The name of the new group.
-     * @param parentGroup The parent group, or null.
-     * @return The new group if successful; otherwise returns null.
-     * @throws RUTH ADD EXCEPTIONS
-     */
-    public abstract Group createGroup(String name, 
-                                      Group parentGroup) throws Exception;
-
-    /**
-     * Creates a link to an existing object in the open file.
-     * <p>
-     * If linkGroup is null, the new link is created in the root group.
-     * 
-     * @param linkGroup The group where the link is created.
-     * @param name The name of the link.
-     * @param currentObj The existing object the new link will reference.
-     * @return The object pointed to by the new link if successful; 
-     *         otherwise returns null.
-     * @throws Exceptions are specific to the implementing class.
-     * RUTH- Verify Implementing classes document these and also
-     * 'do the right thing' if fid is -1, currentObj is non-null, if 
-     * object is null, or the root group then what?  document & verify!
-     */
-    public abstract HObject createLink(Group linkGroup, String name, 
-                                       HObject currentObj) throws Exception;
-
-    /**
-     * Copies the source object to a new destination.
-     * <p>
-     * This method copies the source object to a destination group, 
-     * and assigns the specified name to the new object.  
-     * <p>
-     * The copy may take place within a single or across files.
-     * If the source object and destination group are in different files, 
-     * the files must have the same file format (both HDF5 for example).
-     * <p>
-     * The source object can be a group, a dataset, or a named datatype. 
-     * This method copies the object along with all of its attributes and other 
-     * properties. If the source object is a group, this method also copies 
-     * all objects and sub-groups below the group.
-     * <p>
-     * The following example shows how to use the copy method to create two
-     * copies of an existing HDF5 file structure in a new HDF5 file.  
-     * One copy will be under /copy1 and the other under /copy2 in the new file.
-     * <pre>
-     * // Open the exisiting file with the source object.
-     * H5File existingFile = new H5File( "existingFile.h5", FileFormat.READ );
-     * existingFile.open();
-     *
-     * // Our source object will be the root group. 
-     * HObject srcObj = existingFile.get("/");
-     *
-     * // Create a new file.
-     * H5File newFile = new H5File( "newFile.h5", FileFormat.CREATE );
-     * newFile.open();
-     *
-     * // Both copies in the new file will have the root group as their
-     * // destination group.
-     * Group dstGroup = (Group)newFile.get( "/" );
-     *
-     * // First copy goes to "/copy1" and second goes to "/copy2".
-     * // Notice that we can use either H5File instance to perform the copy.
-     * TreeNode copy1 = existingFile.copy( srcObj, dstGroup, "copy1" );
-     * TreeNode copy2 = newFile.copy( srcObj, dstGroup, "copy2" );
-     *
-     * // Close both the files.
-     * file.close();
-     * newFile.close();
-     * </pre>
-     * 
-     * @param srcObj   The object to copy.
-     * @param dstGroup The destination group for the new object.
-     * @param dstName  The name of the new object. If dstName is null, the name
-     *                 of srcObj will be used.
-     * @return The tree node that contains the new object, or null if the
-     *         copy fails. 
-     * @throws Exceptions are specific to the implementing class.
-     * RUTH CONFIRM USE SRC.copy not DEST.copy.  Also what is returned on 
-     * failure.  ALSO exceptions. ALSO, does it copy data or just structure?
-     */
-    public abstract TreeNode copy(HObject srcObj, Group dstGroup, 
-                                  String dstName) throws Exception;
-
-    /**
      * Gets an HObject with a given path from a file. 
      * <p>
      * RUTH_VERIFY;  And, document the perf tradeoffs if file is not open and
@@ -995,36 +916,72 @@ public abstract class FileFormat extends File
     public abstract HObject get(String path) throws Exception;
 
     /**
-     * Deletes an object from a file.
+     * Creates a named datatype in a file.
      * <p>
-     * RUTH-VERIFY... what about exceptions?
-     * 
-     * @param obj The object to delete.
+     * RUTH_VERIFY - Check & Document exceptions
+     *<p>
+     * The following code creates a named datatype in a file.
+     * <pre>
+     * FileFormat file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+     * H5Datatype dtype = file.createDatatype(Datatype.CLASS_INTEGER,
+     *     4, Datatype.NATIVE, Datatype.NATIVE, "Native Integer");
+     * </pre>
+     *
+     * @param tclass class of datatype, e.g. Datatype.CLASS_INTEGER
+     * @param tsize  size of the datatype in bytes, e.g. 4 for 32-bit integer.
+     * @param torder order of the byte endianing, Datatype.ORDER_LE.
+     * @param tsign  signed or unsinged of an integer, Datatype.SIGN_NONE.
+     * @param name name of the datatype to create, e.g. "Native Integer".
+     * @return  The new datatype if successful; otherwise returns null.
      */
-    public abstract void delete(HObject obj) throws Exception;
-
-    /**
-     * Attaches a given attribute to an object.
-     * <p>
-     * RUTH_VERIFY - check exception 
-     * <p>
-     * If the attribute does not exists, creates an attibute in file,
-     * and attches it the object. If the attribute already exists in the object,
-     * just update the value of the attribute attached to the object.
-     *    
-     * @param obj The object to which the attribute is attached to.
-     * @param attr The atribute to attach.
-     * @param attrExisted The indicator if the given attribute exists.
-     */
-    public abstract void writeAttribute(HObject obj, Attribute attr, 
-        boolean attrExisted) throws Exception;
+    public abstract Datatype createDatatype(
+        int tclass,
+        int tsize,
+        int torder,
+        int tsign,
+        String name) throws Exception;
 
     /***************************************************************************
-     * Abstract (and other) methods related to Datasets and Datatypes.
+     * Methods related to HObjects and Datatypes in the implementing 
+     * FileFormat.   Strictly speaking, these methods aren't related to
+     * FileFormat and the actions coudl be carried out through the 
+     * HObject and Datatype classes.  But, in some cases they allow a
+     * null input and expect the generated object to be of a type that 
+     * has particular FileFormat.    So, we put them in the 
+     * implementing FileFormat class so that we create the proper type of  
+     * HObject... H5Group or H4Group for example.
      * 
-     * The non-abstract methods just throw an exception indicating that 
+     * Here again, if there could be Implementation Class methods we'd 
+     * use those.  But, since we can't override class methods (they can only 
+     * be shadowed in Java), these are instance methods.
+     * 
+     * The non-abstract methods just throw an exception indicating that
      * the implementing class doesn't support the functionality.
      **************************************************************************/
+
+    /**
+     * Creates a new datatype in memory.
+     * <p>
+     * RUTH_VERIFY - document exceptions
+     * <p>
+     * The following code creates an instance of H5Datatype in memory.
+     * <pre>
+     * FileFormat file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+     * H5Datatype dtype = file.createDatatype(Datatype.CLASS_INTEGER,
+     *     4, Datatype.NATIVE, Datatype.NATIVE);
+     * </pre>
+     *
+     * @param tclass class of datatype, e.g. Datatype.CLASS_INTEGER
+     * @param tsize  size of the datatype in bytes, e.g. 4 for 32-bit integer.
+     * @param torder order of the byte endian, e.g. Datatype.ORDER_LE.
+     * @param tsign  signed or unsinged of an integer, Datatype.SIGN_NONE.
+     * @return    The new datatype object if successful; otherwise returns null.
+     */
+    public abstract Datatype createDatatype(
+        int tclass,
+        int tsize,
+        int torder,
+        int tsign) throws Exception;
 
     /**
      * Creates a new dataset in a file with/without chunking/compression.
@@ -1190,6 +1147,7 @@ public abstract class FileFormat extends File
      *                  otherwise returns null
      */
     public abstract Dataset createImage(
+
         String name,
         Group pgroup,
         Datatype type,
@@ -1202,54 +1160,118 @@ public abstract class FileFormat extends File
         Object data) throws Exception;
 
     /**
-     * Creates a new datatype in memory.
+     * Creates a new group with specified name in existing group.
      * <p>
-     * RUTH_VERIFY - document exceptions
-     * <p>
-     * The following code creates an instance of H5Datatype in memory.
-     * <pre>
-     * FileFormat file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-     * H5Datatype dtype = file.createDatatype(Datatype.CLASS_INTEGER,
-     *     4, Datatype.NATIVE, Datatype.NATIVE);
-     * </pre>
+     * If the parent group is null, the new group will be created
+     * in the root group.   
      *
-     * @param tclass class of datatype, e.g. Datatype.CLASS_INTEGER
-     * @param tsize  size of the datatype in bytes, e.g. 4 for 32-bit integer.
-     * @param torder order of the byte endian, e.g. Datatype.ORDER_LE.
-     * @param tsign  signed or unsinged of an integer, Datatype.SIGN_NONE.
-     * @return    The new datatype object if successful; otherwise returns null.
+     * @param name The name of the new group.
+     * @param parentGroup The parent group, or null.
+     * @return The new group if successful; otherwise returns null.
+     * @throws RUTH ADD EXCEPTIONS
      */
-    public abstract Datatype createDatatype(
-        int tclass,
-        int tsize,
-        int torder,
-        int tsign) throws Exception;
+    public abstract Group createGroup(String name, 
+                                      Group parentGroup) throws Exception;
 
     /**
-     * Creates a named datatype in a file.
+     * Creates a link to an existing object in the open file.
      * <p>
-     * RUTH_VERIFY - Check & Document exceptions
-     *<p>
-     * The following code creates a named datatype in a file.
-     * <pre>
-     * FileFormat file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-     * H5Datatype dtype = file.createDatatype(Datatype.CLASS_INTEGER,
-     *     4, Datatype.NATIVE, Datatype.NATIVE, "Native Integer");
-     * </pre>
-     *
-     * @param tclass class of datatype, e.g. Datatype.CLASS_INTEGER
-     * @param tsize  size of the datatype in bytes, e.g. 4 for 32-bit integer.
-     * @param torder order of the byte endianing, Datatype.ORDER_LE.
-     * @param tsign  signed or unsinged of an integer, Datatype.SIGN_NONE.
-     * @param name name of the datatype to create, e.g. "Native Integer".
-     * @return  The new datatype if successful; otherwise returns null.
+     * If linkGroup is null, the new link is created in the root group.
+     * 
+     * @param linkGroup The group where the link is created.
+     * @param name The name of the link.
+     * @param currentObj The existing object the new link will reference.
+     * @return The object pointed to by the new link if successful; 
+     *         otherwise returns null.
+     * @throws Exceptions are specific to the implementing class.
+     * RUTH- Verify Implementing classes document these and also
+     * 'do the right thing' if fid is -1, currentObj is non-null, if 
+     * object is null, or the root group then what?  document & verify!
      */
-    public abstract Datatype createDatatype(
-        int tclass,
-        int tsize,
-        int torder,
-        int tsign,
-        String name) throws Exception;
+    public abstract HObject createLink(Group linkGroup, String name, 
+                                       HObject currentObj) throws Exception;
+
+    /**
+     * Copies the source object to a new destination.
+     * <p>
+     * This method copies the source object to a destination group, 
+     * and assigns the specified name to the new object.  
+     * <p>
+     * The copy may take place within a single or across files.
+     * If the source object and destination group are in different files, 
+     * the files must have the same file format (both HDF5 for example).
+     * <p>
+     * The source object can be a group, a dataset, or a named datatype. 
+     * This method copies the object along with all of its attributes and other 
+     * properties. If the source object is a group, this method also copies 
+     * all objects and sub-groups below the group.
+     * <p>
+     * The following example shows how to use the copy method to create two
+     * copies of an existing HDF5 file structure in a new HDF5 file.  
+     * One copy will be under /copy1 and the other under /copy2 in the new file.
+     * <pre>
+     * // Open the exisiting file with the source object.
+     * H5File existingFile = new H5File( "existingFile.h5", FileFormat.READ );
+     * existingFile.open();
+     *
+     * // Our source object will be the root group. 
+     * HObject srcObj = existingFile.get("/");
+     *
+     * // Create a new file.
+     * H5File newFile = new H5File( "newFile.h5", FileFormat.CREATE );
+     * newFile.open();
+     *
+     * // Both copies in the new file will have the root group as their
+     * // destination group.
+     * Group dstGroup = (Group)newFile.get( "/" );
+     *
+     * // First copy goes to "/copy1" and second goes to "/copy2".
+     * // Notice that we can use either H5File instance to perform the copy.
+     * TreeNode copy1 = existingFile.copy( srcObj, dstGroup, "copy1" );
+     * TreeNode copy2 = newFile.copy( srcObj, dstGroup, "copy2" );
+     *
+     * // Close both the files.
+     * file.close();
+     * newFile.close();
+     * </pre>
+     * 
+     * @param srcObj   The object to copy.
+     * @param dstGroup The destination group for the new object.
+     * @param dstName  The name of the new object. If dstName is null, the name
+     *                 of srcObj will be used.
+     * @return The tree node that contains the new object, or null if the
+     *         copy fails. 
+     * @throws Exceptions are specific to the implementing class.
+     * RUTH CONFIRM USE SRC.copy not DEST.copy.  Also what is returned on 
+     * failure.  ALSO exceptions. ALSO, does it copy data or just structure?
+     */
+    public abstract TreeNode copy(HObject srcObj, Group dstGroup, 
+                                  String dstName) throws Exception;
+
+    /**
+     * Deletes an object from a file.
+     * <p>
+     * RUTH-VERIFY... what about exceptions?
+     * 
+     * @param obj The object to delete.
+     */
+    public abstract void delete(HObject obj) throws Exception;
+
+    /**
+     * Attaches a given attribute to an object.
+     * <p>
+     * RUTH_VERIFY - check exception 
+     * <p>
+     * If the attribute does not exists, creates an attibute in file,
+     * and attches it the object. If the attribute already exists in the object,
+     * just update the value of the attribute attached to the object.
+     *    
+     * @param obj The object to which the attribute is attached to.
+     * @param attr The atribute to attach.
+     * @param attrExisted The indicator if the given attribute exists.
+     */
+    public abstract void writeAttribute(HObject obj, Attribute attr, 
+        boolean attrExisted) throws Exception;
 
 
     /***************************************************************************
