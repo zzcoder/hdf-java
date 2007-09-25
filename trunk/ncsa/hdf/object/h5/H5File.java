@@ -89,6 +89,11 @@ public class H5File extends FileFormat
      * The root node of the file hierearchy.
      */
     private DefaultMutableTreeNode rootNode;
+
+    /**
+     * How many characters maximum in an attribute name?
+     */
+    private static final int attrNameLen = 256;
  
     /***************************************************************************
      * Constructor 
@@ -151,12 +156,12 @@ public class H5File extends FileFormat
         // Call FileFormat ctor to set absolute path name
         super(fileName);
 
-            // set metadata for the instance
+        // set metadata for the instance
         rootNode = null;
         this.fid = -1;
         isReadOnly = (access == READ);
 
-            // At this point we just set up the flags for what happens later.
+        // At this point we just set up the flags for what happens later.
         // We just pass unexpected access values on... subclasses may have
         // their own values.
         if (access == READ) {
@@ -176,6 +181,7 @@ public class H5File extends FileFormat
 
     /**
      * Converts values in an Enumeration Datatype to names.
+     * RUTH  -- move to Datatype;  
      * <p>
      * This method searches the identified enumeration datatype for 
      * the values appearing in <code>inValues</code> and returns the
@@ -200,7 +206,6 @@ public class H5File extends FileFormat
      *         otherwise return null.
      * @throws HDF5Exception If there is an error at the HDF5 library level.
      *
-     * RUTH  -- move to Datatype;  Throw HDF5LibException if really in library.
      */
     public static final String[] convertEnumValueToName(
         int tid, Object inValues, String[] outNames) throws HDF5Exception
@@ -257,6 +262,10 @@ public class H5File extends FileFormat
 
     /**
      * Renames a Group or Dataset in an HDF5 file.
+     * RUTH:  Move this to H5Group:setName() and H5CompoundDF:setName() and
+     * H5ScalarDS:setName().  We don't want users to call this directly on
+     * any HObject.  We don't want to allow / in  the new name.  Peter to do
+     * this.
      * <p>
      * This method renames an H5Group, an H5CompoundDS, or an H5ScalarDS object.
      * The new name must not contain the HObject separater character, 
@@ -368,13 +377,15 @@ DEBUGGING */
     /**
      * Copies the attributes of one object to another object.
      * <p>
-     * This method copies all the attibutes from one object (source object)
-     * to another (destination object). If an attibute already exists in
-     * the destination object, the attribute will not be copied.
+     * This method copies all the attributes from one object (source object)
+     * to another (destination object). If an attribute already exists in
+     * the destination object, the attribute will not be copied.  Attribute
+     * names exceeding 256 characters will be truncated in the destination
+     * object.
      * <p>
      * The object can be an H5Group, an H5Dataset, or a named H5Datatype.
-     * This method is in the H5File class because there is no H5Object and
-     * it's specific to HDF5 objects.
+     * This method is in the H5File class because there is no H5Object class 
+     * and it is specific to HDF5 objects.
      * <p>
      * The call can fail for a number of reasons, including an invalid
      * source or destination object, but no exceptions are thrown.
@@ -397,55 +408,57 @@ DEBUGGING */
 
             if (srcID >= 0 ) { 
                 src.close( srcID ); 
-            }
+            } 
+
             if (dstID >= 0 ) { 
                 dst.close( dstID ); 
-            }
-        }
-    }
+            } 
+        } 
+    } 
 
-    /**
-     * Copies all attributes of one object to another object.
+    /** 
+     * Copies the attributes of one object to another object.  
+     * <p> 
+     * This method copies all the attributes from one object (source object)
+     * to another (destination object). If an attribute already exists in
+     * the destination object, the attribute will not be copied.  Attribute
+     * names exceeding 256 characters will be truncated in the destination
+     * object.
+     * <p> 
+     * The object can be an H5Group, an H5Dataset, or a named H5Datatype.
+     * This method is in the H5File class because there is no H5Object class 
+     * and it is specific to HDF5 objects.
      * <p>
-     * This method copies all attibutes from one object (source object)
-     * to another (the destination). If an attibute already exists in
-     * the destination object, the attribute will not be copied.
+     * The call can fail for a number of reasons, including an invalid
+     * source or destination object identifier, but no exceptions are thrown.
      * 
-     * @param src_id the identifier of the source object
-     * @param dst_id the identidier of the destination object
+     * @param src_id The identifier of the source object.
+     * @param dst_id The identidier of the destination object.
      */
-    public static void copyAttributes(int src_id, int dst_id)
+    public static final void copyAttributes(int src_id, int dst_id)
     {
         int aid_src=-1, aid_dst=-1, atid=-1, asid=-1, num_attr=-1;
         String[] aName = {""};
-        int aRank = 0;
-        long[] aDims = null;
-        Object data_attr = null;
+
         try {
             num_attr = H5.H5Aget_num_attrs(src_id);
-        } catch (Exception ex) { num_attr = -1; }
+        } catch (Exception ex) { 
+            num_attr = -1; 
+        }
 
         if (num_attr < 0) {
             return;
         }
 
-        for (int i=0; i<num_attr; i++)
-        {
+        for (int i=0; i<num_attr; i++) {
             aName[0] = new String("");
+
             try {
                 aid_src = H5.H5Aopen_idx(src_id, i );
-                H5.H5Aget_name(aid_src, 80, aName );
+                H5.H5Aget_name(aid_src, H5File.attrNameLen, aName );
                 atid = H5.H5Aget_type(aid_src);
-
                 asid = H5.H5Aget_space(aid_src);
-                aRank = H5.H5Sget_simple_extent_ndims(asid);
-                aDims = new long[aRank];
-                H5.H5Sget_simple_extent_dims(asid, aDims, null);
-                long size = 1;
-                for (int j=0; j<aRank; j++) {
-                    size *= (int)aDims[j];
-                }
-                data_attr = H5Datatype.allocateArray(atid, (int)size);
+
                 aid_dst = H5.H5Acreate(
                     dst_id,
                     aName[0],
@@ -456,23 +469,26 @@ DEBUGGING */
                 // use native data copy
                 H5.H5Acopy(aid_src, aid_dst);
 
-                /* does not work for variable length datatype
-                H5.H5Aread(aid_src, atid, data_attr);
-                H5.H5Awrite(aid_dst, atid, data_attr);
-                */
             } catch (Exception ex) {}
 
             try { H5.H5Sclose(asid); } catch(Exception ex) {}
             try { H5.H5Tclose(atid); } catch(Exception ex) {}
             try { H5.H5Aclose(aid_src); } catch(Exception ex) {}
             try { H5.H5Aclose(aid_dst); } catch(Exception ex) {}
+
         } // for (int i=0; i<num_attr; i++)
     }
 
     /**
-     * Returns a list of attriubtes attached to the object for the 
-     * given identifier.
+     * Returns a list of attributes for the specified object.
      * <p>
+     * This method returns a list containing the attributes
+     * associated with the identified object.  If there are no
+     * associated attributes, an empty list will be returned.
+     * <p>
+     * Attribute names exceeding 256 characters will be 
+     * truncated in the list.
+     *
      * If the attributes are not loaded, this function retrieves 
      * the attributes from 
      * a file and returns the list of attributes.
@@ -480,50 +496,54 @@ DEBUGGING */
      * @param objID the object identifier of the object for which the 
      * attributes are attached to.
      * @return the list of attriubtes of the object.
+     * @throws HDF5Exception If unable to determine the number of
+     *         attributes for the specified object.
      */
-    public static List getAttribute(int objID) throws HDF5Exception
+    public static final List getAttribute(int objID) throws HDF5Exception
     {
-        List attributeList = null;
+        List<Attribute> attributeList = null;
         int aid=-1, sid=-1, tid=-1, n=0;
 
         n = H5.H5Aget_num_attrs(objID);
-         if (n <= 0) {
-            return (attributeList = new Vector()); // no attr attached to object
-        }
+        if ( n <= 0 ) {
+            return (attributeList = new Vector<Attribute>()); 
+        } 
 
-        attributeList = new Vector(n);
-        for (int i=0; i<n; i++)
-        {
-            try
-            {
+        attributeList = new Vector<Attribute>(n);
+        for (int i=0; i<n; i++) {
+            try {
                 aid = H5.H5Aopen_idx(objID, i);
                 sid = H5.H5Aget_space(aid);
-                
+                 
                 long dims[] = null;
                 int rank = H5.H5Sget_simple_extent_ndims(sid);
-                if (rank == 0)
-                {
+
+                if (rank == 0) {
                     // for scalar data, rank=0
                     rank = 1;
                     dims = new long[1];
                     dims[0] = 1;
-                }
-                else
-                {
+                } else {
                     dims = new long[rank];
                     H5.H5Sget_simple_extent_dims(sid, dims, null);
                 }
-
+        
                 String[] nameA = {""};
-                H5.H5Aget_name(aid, 80, nameA);
+                H5.H5Aget_name(aid, H5File.attrNameLen, nameA);
 
-                int tmptid = H5.H5Aget_type(aid);
-                tid = H5.H5Tget_native_type(tmptid);
-                try {H5.H5Tclose(tmptid); } catch (Exception ex) {}
+                int tmptid = -1;
+                try {
+                    tmptid = H5.H5Aget_type(aid);
+                    tid = H5.H5Tget_native_type(tmptid);
+                }
+                finally {
+                    try { H5.H5Tclose(tmptid); } catch (Exception ex) {}
+                }
 
-                Attribute attr = new Attribute(nameA[0], new H5Datatype(tid), 
-                                                        dims);
+                Attribute attr = new Attribute( nameA[0], new H5Datatype(tid), 
+                                                dims );
                 attributeList.add(attr);
+
                 boolean is_variable_str = false;
                 boolean isVLEN = false;
                 boolean isCompound = false;
@@ -531,11 +551,11 @@ DEBUGGING */
                     is_variable_str = H5.H5Tis_variable_str(tid); 
                 } catch (Exception ex) {}
                 try { 
-                    isVLEN = (H5.H5Tget_class(tid)==HDF5Constants.H5T_VLEN); 
-                        } catch (Exception ex) {}
+                    isVLEN = (H5.H5Tget_class(tid)==HDF5Constants.H5T_VLEN);
+                } catch (Exception ex) {}
                 try { 
-                    isCompound = 
-                        (H5.H5Tget_class(tid)==HDF5Constants.H5T_COMPOUND); 
+                    isCompound =    
+                             (H5.H5Tget_class(tid)==HDF5Constants.H5T_COMPOUND);
                 } catch (Exception ex) {}
 
                 // retrieve the attribute value
@@ -550,17 +570,14 @@ DEBUGGING */
 
                 Object value = null;
 
-                if (isVLEN || is_variable_str || isCompound)
-                {
+                if (isVLEN || is_variable_str || isCompound) {
                     String[] strs = new String[(int)lsize];
                     for (int j=0; j<lsize; j++) {
                         strs[j] = "";
                     }
                     H5.H5AreadVL(aid, tid, strs);
                     value = strs;
-                }
-                else
-                {
+                } else {
                     value = H5Datatype.allocateArray(tid, (int)lsize);
                     if (value == null) {
                         continue;
@@ -1980,6 +1997,7 @@ DEBUGGING */
             oName[0] = "";
             oType[0] = -1;
             try {
+                // PETER - why 80l?
                 H5.H5Gget_objname_by_idx(gid, i, oName, 80l);
                 oType[0] = H5.H5Gget_objtype_by_idx(gid, i);
             } catch (HDF5Exception ex) {
