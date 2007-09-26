@@ -309,9 +309,10 @@ public class H5CompoundDS extends CompoundDS
                  try {
                     comp_tid = createCompoundFieldType(atom_tid, member_name, compInfo);                     
                     try { 
-                        isVL = (H5.H5Tdetect_class(atom_tid, HDF5Constants.H5T_VLEN)); 
+                        // See BUG#951 isVL = H5.H5Tdetect_class(atom_tid, HDF5Constants.H5T_VLEN); 
+                        isVL = H5.H5Tis_variable_str(atom_tid);
                     } catch (Exception ex) {}
-      
+  
                     if (isVL) {
                         H5.H5DreadVL( did, comp_tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, (Object[])member_data);
                     } else {
@@ -328,7 +329,7 @@ public class H5CompoundDS extends CompoundDS
                 } finally {
                     try { H5.H5Tclose(comp_tid); } catch (Exception ex2) {}
                 }
- 
+
                 if (!isVL)
                 {
                     if ((member_class == HDF5Constants.H5T_STRING) && convertByteToString) {

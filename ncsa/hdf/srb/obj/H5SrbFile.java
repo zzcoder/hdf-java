@@ -181,12 +181,6 @@ public class H5SrbFile extends FileFormat
     public String[] getSrbInfo() { return srbInfo; }
 
     // Implementing FileFormat
-    public FileFormat create(String fileName) throws Exception
-    {
-        throw new UnsupportedOperationException("H5SrbFile.create() is not implemented.");
-    }
-
-    // Implementing FileFormat
     public Group createGroup(String name, Group pgroup) throws Exception
     {
         throw new UnsupportedOperationException("H5SrbFile.createGroup() is not implemented.");
