@@ -387,9 +387,9 @@ DEBUGGING */
      * This method is in the H5File class because there is no H5Object class 
      * and it is specific to HDF5 objects.
      * <p>
-     * The call can fail for a number of reasons, including an invalid
+     * The copy can fail for a number of reasons, including an invalid
      * source or destination object, but no exceptions are thrown.
-     * The actual copy is carried out by the method.
+     * The actual copy is carried out by the method:
      * {@link #copyAttributes(int, int)}
      *
      * @param src The source object.
@@ -429,7 +429,7 @@ DEBUGGING */
      * This method is in the H5File class because there is no H5Object class 
      * and it is specific to HDF5 objects.
      * <p>
-     * The call can fail for a number of reasons, including an invalid
+     * The copy can fail for a number of reasons, including an invalid
      * source or destination object identifier, but no exceptions are thrown.
      * 
      * @param src_id The identifier of the source object.
@@ -487,17 +487,15 @@ DEBUGGING */
      * associated attributes, an empty list will be returned.
      * <p>
      * Attribute names exceeding 256 characters will be 
-     * truncated in the list.
-     *
-     * If the attributes are not loaded, this function retrieves 
-     * the attributes from 
-     * a file and returns the list of attributes.
-     * <p>
-     * @param objID the object identifier of the object for which the 
-     * attributes are attached to.
-     * @return the list of attriubtes of the object.
-     * @throws HDF5Exception If unable to determine the number of
-     *         attributes for the specified object.
+     * truncated in the returned list.
+     * 
+     * @param objID The identifier for the object whose attributes
+     *          are to be returned.
+     * @return The list of the object's attributes.
+     * @throws HDF5Exception If an underlying HDF library routine
+     *          is unable to perform a step necessary to retrieve
+     *          the attributes.  A variety of failures throw this
+     *          exception.
      */
     public static final List getAttribute(int objID) throws HDF5Exception
     {
@@ -621,51 +619,73 @@ DEBUGGING */
     }
 
     /**
-     * Creates attributes required for an HDF5 image based on the 
-     * HDF5 image specification.
-     *
-     * <OL>The required HDF5 image attributes include:
-     * <LI> The image identifier: name="CLASS", value="IMAGE"
-     * <LI> The type of the image: name="IMAGE_SUBCLASS", 
-     * value="IMAGE_TRUECOLOR" or "IMAGE_INDEXED"
-     * <LI> The version of image: name="IMAGE_VERSION", value="1.2"
-     * <LI> The range of data value: name="IMAGE_MINMAXRANGE", value=[0, 255]
-     * <LI> The interlace mode: name="INTERLACE_MODE", 
-     * value="INTERLACE_PIXEL" or "INTERLACE_PLANE"
-     * <LI> The pointer to the palette dataset: name="PALETTE", 
-     * value=reference id of the palette dataset
-     * </OL>
-     * For more information about HDF5 image attributes, please read the
-     * <a href="http://hdfgroup.org/HDF5/doc/ADGuide/ImageSpec.html">
-     *    HDF5 Image and Palette Specification</a>
+     * Creates attributes for an HDF5 image dataset.
      * <p>
-     * @param dataset the image dataset which the attributes are added to.
-     * @param interlace the interlace mode of 24-bit true color image. 
-     * Valid values are
-     * <ul>
-     *   <li>ScalarDS.INTERLACE_PIXEL: the component value for a pixel are 
-     *       contiguous. 
-     *   <li>ScalarDS.INTERLACE_PLANE: each component is stored as a plane. 
+     * This method creates attributes for two common types of
+     * HDF5 images.  It provides a way of adding multiple attributes 
+     * to an HDF5 image dataset with a single call.  The 
+     * {@link #writeAttribute(HObject, Attribute)} method may be used
+     * to write image attributes that are not handled by this method.
+     * <p> 
+     * For more information about HDF5 image attributes, see the
+     * <a href="http://hdfgroup.org/HDF5/doc/ADGuide/ImageSpec.html">
+     *    HDF5 Image and Palette Specification</a>.
+     * <p>
+     * This method can be called to create attributes for 24-bit true color
+     * and indexed images.  The <code>selectionFlag</code> parameter controls
+     * whether this will be an indexed or true color image.  If 
+     * <code>selectionFlag</code> is <code>-1</code>, this will be an 
+     * indexed image.
+     * If the value is <code>ScalarDS.INTERLACE_PIXEL</code> or 
+     * <code>ScalarDS.INTERLACE_PLANE</code>, it will be a 24-bit true
+     * color image with the indicated interlace mode.
+     * <p>
+     * <ul>The created attribute descriptions, names, and values are:
+     * <li>The image identifier: name="CLASS", value="IMAGE"
+     * <li>The version of image: name="IMAGE_VERSION", value="1.2"
+     * <li>The range of data values: name="IMAGE_MINMAXRANGE", value=[0, 255]
+     * <li>The type of the image: name="IMAGE_SUBCLASS", 
+     * value="IMAGE_TRUECOLOR" or "IMAGE_INDEXED"
+     * <li>For IMAGE_TRUECOLOR, the interlace mode: name="INTERLACE_MODE", 
+     * value="INTERLACE_PIXEL" or "INTERLACE_PLANE"
+     * <li>For IMAGE_INDEXED, the palettes to use in viewing the image: 
+     * name="PALETTE", value= 1-d array of references to the palette datasets, 
+     * with initial value of {-1}
      * </ul>
-     * @throws Exception
+     * <p>
+     * This method is in the H5File class rather than H5ScalarDS because 
+     * images are typically thought of at the File Format implementation level.
+     * 
+     * @param dataset The image dataset the attributes are added to.
+     * @param selectionFlag Selects the image type and,  for 24-bit true 
+     * color images, the interlace mode.
+     * Valid values are:
+     * <ul>
+     *   <li>-1: Indexed Image.
+     *   <li>ScalarDS.INTERLACE_PIXEL: True Color Image. The component values 
+     *       for a pixel are stored contiguously. 
+     *   <li>ScalarDS.INTERLACE_PLANE: True Color Image. Each component is 
+     *       stored in a separate plane. 
+     * </ul>
+     * @throws Exception If there is a problem creating the attributes, or if
+     *      the selectionFlag is invalid.
      */
-    public static void createImageAttributes(Dataset dataset, int interlace) 
-        throws Exception
+    public static final void createImageAttributes(
+        Dataset dataset, int selectionFlag) throws Exception
     {
         String subclass = null;
         String interlaceMode = null;
 
-        if (interlace == ScalarDS.INTERLACE_PIXEL)
-        {
+        if (selectionFlag == ScalarDS.INTERLACE_PIXEL) {
             subclass = "IMAGE_TRUECOLOR";
             interlaceMode = "INTERLACE_PIXEL";
-        } else if (interlace == ScalarDS.INTERLACE_PLANE)
-        {
+        } else if (selectionFlag == ScalarDS.INTERLACE_PLANE) {
             subclass = "IMAGE_TRUECOLOR";
             interlaceMode = "INTERLACE_PLANE";
-        } else
-        {
+        } else if (selectionFlag == -1) {
             subclass = "IMAGE_INDEXED";
+        } else {
+            throw new HDF5Exception( "The selectionFlag is invalid." );
         }
 
         long[] attrDims = {1};
@@ -703,8 +723,8 @@ DEBUGGING */
         attr.setValue(subclassValue);
         dataset.writeMetadata(attr);
 
-        if ((interlace == ScalarDS.INTERLACE_PIXEL) 
-            || (interlace == ScalarDS.INTERLACE_PLANE))
+        if ((selectionFlag == ScalarDS.INTERLACE_PIXEL) 
+            || (selectionFlag == ScalarDS.INTERLACE_PLANE)) 
         {
             attrName = "INTERLACE_MODE";
             String[] interlaceValue = {interlaceMode};
@@ -713,9 +733,7 @@ DEBUGGING */
             attr = new Attribute(attrName, attrType, attrDims);
             attr.setValue(interlaceValue);
             dataset.writeMetadata(attr);
-        }
-        else
-        {
+        } else {
             attrName = "PALETTE";
             long[] palRef = {-1};
             attrType = new H5Datatype(Datatype.CLASS_REFERENCE, 1, 
