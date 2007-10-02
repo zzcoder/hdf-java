@@ -181,7 +181,7 @@ public class H5File extends FileFormat
 
     /**
      * Converts values in an Enumeration Datatype to names.
-     * RUTH  -- move to Datatype;  
+     * PETER  -- move to Datatype;  
      * <p>
      * This method searches the identified enumeration datatype for 
      * the values appearing in <code>inValues</code> and returns the
@@ -262,7 +262,7 @@ public class H5File extends FileFormat
 
     /**
      * Renames a Group or Dataset in an HDF5 file.
-     * RUTH:  Move this to H5Group:setName() and H5CompoundDF:setName() and
+     * PETER:  Move this to H5Group:setName() and H5CompoundDF:setName() and
      * H5ScalarDS:setName().  We don't want users to call this directly on
      * any HObject.  We don't want to allow / in  the new name.  Peter to do
      * this.
@@ -275,7 +275,7 @@ public class H5File extends FileFormat
      * @param newName The new name of the object.
      * @throws HDF5Exception If the rename can't be performed.
      *
-     * RUTH:  This method has problems.  It's not in the previous release
+     * PETER:  This method has problems.  It's not in the previous release
      * but my guess is it was added so there was a common place for the 
      * H5Group, H5CompoundDS, and H5ScalarDS to get this rename / move done.
      * The problem (or one problem) is that if you call this directly
@@ -320,7 +320,7 @@ System.out.println( "in setObjectName, new name is " + newName );
 */
 
 /***
-*RUTH COME BACK HERE.... DON"T THINK WE CAN HAVE / BUT CAUSES UNITESTS TO FAIL
+* PETER COME BACK HERE.... DON"T THINK WE CAN HAVE / BUT CAUSES UNITESTS TO FAIL
 *IF WE DON"T ALLOW IT. - DOESN"T MAKE SENSE!
         if ( newName.contains( HObject.separator ) ) {
             throw new HDF5Exception( 
@@ -745,18 +745,39 @@ DEBUGGING */
     }
     
     /**
-     * Updates values of all reference datasets in a file. 
+     * Updates values of scalar dataste object references in copied file. 
      * <p>
-     * When a datast of references (object references or dataset region
-     * references) is copied from one file to another, the references 
-     * in the destination file are invalid. This method updates the values
-     * of reference dataset so that the references point to the correct
-     * object(s) in the destination file.
+     * This method has very specific functionality as documented below,
+     * and the user is advised to pay close attention when dealing with
+     * files that contain references.
+     * <p>
+     * When a copy is made from one HDF file to another, object references and
+     * dataset region references are copied, but the references in the 
+     * destination file are not updated by the copy and are therefore
+     * invalid. 
+     * <p>
+     * When an entire file is copied, this method updates the values of 
+     * the object references and dataset region references that are in 
+     * scalar datasets in the  destination file so that they point to 
+     * the correct object(s) in the destination file. 
+     * The method does not update references that occur in objects 
+     * other than scalar datasets.
+     * <p>
+     * In the current release, the updating of object references is not
+     * handled completely as it was not required by the projects that
+     * funded development. There is no support for updates when the copy does
+     * not include the entire file.  Nor is there support for updating objects 
+     * other than scalar datasets in full-file copies.  This functionality 
+     * will be extended as funding becomes available or, possibly, when the 
+     * underlying HDF library supports the reference updates itself.
      * 
-     * @param srcFile the file to be copied
-     * @param dstFile the destination file.
+     * @param srcFile The file that was copied.
+     * @param dstFile The destination file where the object references will 
+     *                be updated.
+     * @throws Exception If there is a problem in the update process.
      */
-    public static void updateReferenceDataset(H5File srcFile, H5File dstFile)
+    public static final void updateReferenceDataset(H5File srcFile, 
+                                                    H5File dstFile)
     throws Exception
     {
         if ((srcFile == null) || (dstFile == null)) {
@@ -775,8 +796,8 @@ DEBUGGING */
         // the source file and new file
         int did=-1, tid=-1;
         HObject srcObj, newObj;
-        Hashtable oidMap = new Hashtable();
-        List refDatasets = new Vector();
+        Hashtable <String, long[]> oidMap = new Hashtable<String, long[]>();
+        List <ScalarDS> refDatasets = new Vector<ScalarDS>();
         while(newEnum.hasMoreElements() && srcEnum.hasMoreElements())
         {
             srcObj = (HObject)
@@ -786,6 +807,10 @@ DEBUGGING */
             oidMap.put(String.valueOf((srcObj.getOID())[0]), newObj.getOID());
             did = -1;
             tid = -1;
+
+            // for Scalar DataSets in destination, if there is an object 
+            // reference in the dataset, add it to the refDatasets list for 
+            // later updating.
             if (newObj instanceof ScalarDS)
             {
                 ScalarDS sd = (ScalarDS)newObj;
@@ -805,10 +830,12 @@ DEBUGGING */
             } // if (newObj instanceof ScalarDS)
         }
 
+
+        // Update the references in the scalar datasets in the dest file.
         H5ScalarDS d = null;
         int sid=-1, size=0, rank=0;
         int n = refDatasets.size();
-        for (int i=0; i<n; i++)
+        for (int i=0; i<n; i++) 
         {
             d = (H5ScalarDS)refDatasets.get(i);
             byte[] buf = null;
@@ -860,11 +887,9 @@ DEBUGGING */
                     HDF5Constants.H5P_DEFAULT,
                     refs);
 
-            } catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 continue;
-            } finally
-            {
+            } finally {
                 try { H5.H5Tclose(tid); } catch (Exception ex) {}
                 try { H5.H5Sclose(sid); } catch (Exception ex) {}
                 try { H5.H5Dclose(did); } catch (Exception ex) {}
@@ -1415,6 +1440,8 @@ DEBUGGING */
 
     /*
      * (non-Javadoc)
+     * NOTE:  Object references are copied but not updated by this
+     * method.
      * @see ncsa.hdf.object.FileFormat#copy(ncsa.hdf.object.HObject, 
      * ncsa.hdf.object.Group, java.lang.String)
      */
@@ -1661,13 +1688,12 @@ DEBUGGING */
         
         DefaultMutableTreeNode root = null;
 
-        long[] oid = {0};
         H5Group rootGroup = new H5Group(
             this,
             getName(), // set the node name to the file name
             null, // root node does not have a parent path
-            null, // root node does not have a parent node
-            oid);
+            null  // root node does not have a parent node
+            );
 
         root = new DefaultMutableTreeNode(rootGroup)
         {
@@ -1731,14 +1757,14 @@ DEBUGGING */
                     pgroup.getFileFormat(),
                     dstName,
                     path,
-                    oid);
+                    oid);           // deprecated!
             } else
             {
                 dataset = new H5CompoundDS(
                     pgroup.getFileFormat(),
                     dstName,
                     path,
-                    oid);
+                    oid);           // deprecated!
             }
 
             pgroup.addToMemberList(dataset);
@@ -1757,7 +1783,7 @@ DEBUGGING */
                 HObject pal = findObject(srcDataset.getFileFormat(), oid);
                 if ((pal != null) && (pal instanceof Dataset))
                 {
-                    try { copy(pal, pgroup); }
+                    try { copy(pal, pgroup, null); }
                     catch (Exception ex2) {}
                     ref_buf = H5.H5Rcreate(
                         pgroup.getFID(),
@@ -1819,9 +1845,9 @@ DEBUGGING */
         } catch (Exception ex) { oid = null;}
 
         if (tclass == HDF5Constants.H5T_COMPOUND) {
-            dataset = new H5CompoundDS(this, name, path, oid);
+            dataset = new H5CompoundDS(this, name, path, oid); // deprecated!
         } else {
-            dataset = new H5ScalarDS( this, name, path, oid);
+            dataset = new H5ScalarDS( this, name, path, oid);  // deprecated!
         }
 
         return dataset;
@@ -1871,7 +1897,7 @@ DEBUGGING */
             long[] oid = {l};
 
             datatype = new H5Datatype(pgroup.getFileFormat(), dstName, 
-                                      path, oid);
+                                      path, oid); // deprecated!
 
             pgroup.addToMemberList(datatype);
             newNode = new DefaultMutableTreeNode(datatype);
@@ -1936,7 +1962,7 @@ DEBUGGING */
                 {
                     HObject mObj = (HObject)iterator.next();
                     try {
-                        newNode.add((MutableTreeNode)copy(mObj, group));
+                        newNode.add((MutableTreeNode)copy(mObj, group, null));
                     } catch (Exception ex) {}
                 }
             }
@@ -1995,7 +2021,8 @@ DEBUGGING */
             oid[0] = l;
         } catch (Exception ex) { oid = null;}
 
-        H5Group group = new H5Group(this, name, parentPath, pGroup, oid);
+        H5Group group = new H5Group(this, name, parentPath, pGroup, 
+                                    oid); // deprecated!
 
         int nelems = 0;
         try {
@@ -2035,7 +2062,7 @@ DEBUGGING */
                 } catch (Exception ex) { oid = null;}
 
                 H5Group g = new H5Group(this, oName[0], thisFullName, group, 
-                                        oid);
+                                        oid);  // deprecated!
                 group.addToMemberList(g);
             } else if (oType[0] == HDF5Constants.H5G_DATASET) {
                 int did=-1;
@@ -2271,7 +2298,7 @@ DEBUGGING */
                     obj_name,
                     fullPath,
                     pgroup,
-                    oid);
+                    oid);       // deprecated!
                 node = new DefaultMutableTreeNode(g)
                 {
                     public static final long serialVersionUID = 
@@ -2334,7 +2361,7 @@ DEBUGGING */
                         this,
                         obj_name,
                         fullPath,
-                        oid);
+                        oid);       // deprecated!
                 }
                 else
                 {
@@ -2343,7 +2370,7 @@ DEBUGGING */
                         this,
                         obj_name,
                         fullPath,
-                        oid);
+                        oid);       // deprecated!
                 }
 
                 node = new DefaultMutableTreeNode(d);
@@ -2351,7 +2378,9 @@ DEBUGGING */
                 pgroup.addToMemberList(d);
             } else if (obj_type == HDF5Constants.H5G_TYPE)
             {
-                Datatype t = new H5Datatype( this, obj_name, fullPath, oid);
+                Datatype t = new H5Datatype( this, obj_name, fullPath, 
+                                             oid); // deprecated!
+
 
                 node = new DefaultMutableTreeNode(t);
                 pnode.add( node );
