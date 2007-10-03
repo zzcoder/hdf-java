@@ -514,8 +514,8 @@ public final class Tools
      *  @param isTransposed if the data is transposeed
      *  @return the byte array of pixel data.
      */
-    public static byte[] getBytes(Object rawData, double[] minmax, int w, int h,
-           boolean isTransposed, Object fillValue, byte[] byteData)
+     public static byte[] getBytes(Object rawData, double[] minmax, int w, int h,
+             boolean isTransposed, Object fillValue, byte[] byteData)
     {
         // no pnput data
         if (rawData == null) {
@@ -546,9 +546,12 @@ public final class Tools
             return byteData;
         }
 
-        int size = Array.getLength(rawData);
-        if ((byteData == null) || (size != byteData.length)) {
-            byteData = new byte[size]; // reuse the old buffer
+        int size = w*h;
+        if (size <=0)
+            size = Array.getLength(rawData);
+        
+        if ((byteData == null)) {
+            byteData = new byte[size]; // otherwise, reuse the old buffer
         }
         
         if (minmax[0] == minmax[1]) {
