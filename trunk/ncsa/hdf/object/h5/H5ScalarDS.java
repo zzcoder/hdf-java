@@ -798,8 +798,8 @@ public class H5ScalarDS extends ScalarDS
 
             try {
                 int[] at = {0};
-                H5.H5Pget_fill_time(pid, at);
-                compression += ",         Fill value allocation time: ";
+                H5.H5Pget_alloc_time(pid, at);
+                compression += ",         Storage allocation time: ";
                 if (at[0] == HDF5Constants.H5D_ALLOC_TIME_EARLY) {
                     compression += "Early";
                 } else if (at[0] == HDF5Constants.H5D_ALLOC_TIME_INCR) {

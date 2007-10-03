@@ -175,8 +175,6 @@ implements ImageView, ActionListener
     
     private MemoryImageSource memoryImageSource;
     
-    private Animation animation;
-    
     private AutoContrastSlider autoContrastSlider;
  
     private GeneralContrastSlider generalContrastSlider;
@@ -229,7 +227,6 @@ implements ImageView, ActionListener
         imageScroller = null;
         isTransposed = _isTransposed.booleanValue();
         memoryImageSource = null;
-        animation = null;  
         autoContrastSlider = null;
         gainBias = null;
         minMaxGain = null;
@@ -1370,12 +1367,9 @@ implements ImageView, ActionListener
         else if (cmd.startsWith("Show animation"))
         {
         	setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        	if (animation == null) {
-                animation = new Animation((JFrame)viewer, dataset);
-            }
-        	animation.setVisible(true);
+            Animation animation = new Animation((JFrame)viewer, dataset);
+            animation.setVisible(true);
         	setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            
         }
         else if (cmd.startsWith("Animation speed"))
         {
@@ -2898,14 +2892,14 @@ implements ImageView, ActionListener
     {
     	public static final long serialVersionUID = HObject.serialVersionUID;
 
-        private final int MAX_IMAGE_SIZE = 300;
+        private final int MAX_ANIMATION_IMAGE_SIZE = 300;
 
         private Image[] frames = null; // a list of images for animation
         private JComponent canvas = null; // canvas to draw the image
         private Thread engine = null; // Thread animating the images
         private int numberOfImages = 0;
         private int currentFrame = 0;
-        private int sleepTime = 500;
+        private int sleepTime = 200;
         private Image offScrImage;  // Offscreen image
         private Graphics offScrGC; // Offscreen graphics context
         private JFrame owner;
@@ -2914,7 +2908,7 @@ implements ImageView, ActionListener
         public Animation(JFrame theOwner, ScalarDS dataset) {
             super(theOwner, "Animation", true);
             owner = theOwner;
-            setDefaultCloseOperation(JInternalFrame.HIDE_ON_CLOSE);
+            setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
 
             long[] dims = dataset.getDims();
             long[] stride = dataset.getStride();
@@ -2936,8 +2930,8 @@ implements ImageView, ActionListener
 
             int stride_n = 1;
             int max_size = (int)Math.max(selected[selectedIndex[0]], selected[selectedIndex[1]]);
-            if (max_size > MAX_IMAGE_SIZE) {
-                stride_n = max_size/MAX_IMAGE_SIZE;
+            if (max_size > MAX_ANIMATION_IMAGE_SIZE) {
+                stride_n = max_size/MAX_ANIMATION_IMAGE_SIZE;
             }
 
             start[selectedIndex[0]] = 0;
@@ -2956,16 +2950,20 @@ implements ImageView, ActionListener
             int w = (int)selected[selectedIndex[1]];
             numberOfImages = (int)dims[selectedIndex[2]];
             frames = new Image[numberOfImages];
-            int size = w*h;
-            MemoryImageSource mir = memoryImageSource;            
+            MemoryImageSource mir = memoryImageSource;
+            
             try {
                 for (int i=0; i<numberOfImages; i++) {
                 	memoryImageSource = null; // each amimation image has its own image resource
                     start[selectedIndex[2]] = i;
+
+                    dataset.clearData();
                     try { data3d = dataset.read(); }
-                    catch (Throwable err) { continue;}
-                    byteData = Tools.getBytes(data3d, dataRange, dataset.getFillValue(), null);
+                    catch (Throwable err) {continue;}
+
+                    byteData = Tools.getBytes(data3d, dataRange, w, h, false, null, null);
                     frames[i] = createIndexedImage(byteData, imagePalette, w, h);
+
                 }
             } finally {
                 // set back to original state
@@ -2977,8 +2975,8 @@ implements ImageView, ActionListener
 
             offScrImage = owner.createImage(w, h);
             offScrGC = offScrImage.getGraphics();
-            x0 = Math.max((MAX_IMAGE_SIZE-w)/2, 0);
-            y0 = Math.max((MAX_IMAGE_SIZE-h)/2, 0);
+            x0 = Math.max((MAX_ANIMATION_IMAGE_SIZE-w)/2, 0);
+            y0 = Math.max((MAX_ANIMATION_IMAGE_SIZE-h)/2, 0);
 
             canvas = new JComponent() {
             	public static final long serialVersionUID = HObject.serialVersionUID;
@@ -2993,18 +2991,21 @@ implements ImageView, ActionListener
             };
 
             JPanel contentPane = (JPanel)getContentPane();
-            contentPane.add(canvas);
-            contentPane.setPreferredSize(new Dimension(MAX_IMAGE_SIZE, MAX_IMAGE_SIZE));
+            contentPane.setLayout(new BorderLayout());
+            contentPane.add(canvas, BorderLayout.CENTER);
+            contentPane.setPreferredSize(new Dimension(MAX_ANIMATION_IMAGE_SIZE, MAX_ANIMATION_IMAGE_SIZE));
 
+            JButton b = new JButton("Close");
+            b.setActionCommand("Close animation");
+            b.addActionListener(this);
+            contentPane.add(b, BorderLayout.SOUTH);
+            
             Point l = getParent().getLocation();
-            Dimension d = getParent().getPreferredSize();
-
             l.x += 300;
             l.y += 200;
             setLocation(l);
 
             start();
-
             pack();
         }
 
@@ -3050,10 +3051,10 @@ implements ImageView, ActionListener
             }
 
             while (me == engine) {
+                repaint();
 
                 synchronized(this) {
-                    repaint();
-
+ 
                     // Pause for duration or longer if user paused
                     try {
                         Thread.sleep(sleepTime);
