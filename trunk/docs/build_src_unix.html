@@ -69,7 +69,7 @@ You need the following libraries in order to compile the HDF Java products.
     <a href="ftp://ftp.hdfgroup.org/lib-external/zlib/">ftp://ftp.hdfgroup.org/lib-external/zlib/</a>
     <LI> SZIP Library: obtain from
     <a href="ftp://ftp.hdfgroup.org/lib-external/szip/">ftp://ftp.hdfgroup.org/lib-external/szip/</a>
-    <LI> JDK 1.4.1 or above
+    <LI> JDK 1.5.0 or above
 </UL>
 <hr>
 <h3>
@@ -80,8 +80,8 @@ interface to HDF4 and HDF5, the ncsa.hdf.objects package, ncsa.hdf.io packages,
 and the HDFView packages. HDF4 and HDF5 can be selected or deselected. The
 source does not include the HDF4 or HDF5 libraries or any dependent libraries.<br>
 <br>
-To build from source requires a C compiler and a Java compiler, JDK1.4 or
-equivalent. The autoconf and make files work with&nbsp;Gnu tools and gmake.<br>
+To build from source requires a C compiler and a Java compiler, JDK1.5.x or
+above. The autoconf and make files work with&nbsp;Gnu tools and gmake.<br>
 <hr>
 <h3>
 Configure script</h3>
@@ -290,8 +290,8 @@ procedure, with details differing for each platform.<br>
       #!/bin/sh<br><br>
 # where the HDFView is installed<br>
 HDFVIEW_HOME=/programs/java/hdf<br>export HDFVIEW_HOME<br><br>
-# where Java is installed (requires jdk1.3 or above)<br>
-JAVAPATH=/opt/jdk1.4.1/bin<br>export JAVAPATH<br><br>
+# where Java is installed (requires jdk1.5.0 or above)<br>
+JAVAPATH=/opt/jdk1.5.0/bin<br>export JAVAPATH<br><br>
 # all the jar files<br>CPATH=$HDFVIEW_HOME"/lib/jhdf.jar"<br>
 CPATH=$CPATH":"$HDFVIEW_HOME"/lib/jhdf5.jar"<br>
 CPATH=$CPATH":"$HDFVIEW_HOME"/lib/jhdfobj.jar"<br>

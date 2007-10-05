@@ -46,7 +46,7 @@ an HDF-5 file. The Java interface is the class <i>
 which has a method:
 <pre><b>static native int H5Fopen(String filename, int flags, int access );</b></pre>
 The native method is implemented in C using the
-<a href="http://java.sun.com/j2se/1.3/docs/guide/jni/index.html">Java
+<a href="http://java.sun.com/javase/6/docs/technotes/guides/jni/index.html">Java
 Native Method Interface </a>(JNI). This is written something like the following:
 <pre><b>JNIEXPORT jint
 JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fopen
@@ -92,96 +92,9 @@ and the HDF-5 library.
 
 <h3>
 <a NAME="DOWNLOAD"></a>To Obtain</h3>
-The JHI5 is included with the HDF-Java Products, which can be downloaded from the following page: &nbsp; &nbsp;    
-<A HREF="/hdf-java-html/">/hdf-java-html/</A> 
-<!--
-The Java HDF5 Interface is freely available, as a full source release.&nbsp;
-Pre-built binaries are available for selected platforms.
-<br>
-<b>Download from:</b>&nbsp;
-<a href="ftp://hdf.ncsa.uiuc.edu/HDF5/hdf-java">
-ftp://hdf.ncsa.uiuc.edu/HDF5/hdf-java</a>
+The JHI5 is included with the HDF-Java Products, which can be downloaded from the following page: &nbsp;   
+<A HREF="../../index.html">the hdf-java home page</A> 
 
-<p><br><i>Prerequisites</i>
-<p>The Java HDF5 Interface requires the HDF5 library, Version 1.6.2 or
-higher. HDF-5 is available in binary or source from:
-<blockquote><a href="/register5.html">/register5.html</a></blockquote>
-The JHI5 was developed using Java JDK 1.3. The JHI5 contains no platform
-specific code, and should work on any system with Java JDK 1.2 or above.
-<p>At the time of the release, the code has been tested on Solaris, Linux,
-Windows NT, and SGI IRIX 6.5.
-<br>&nbsp;
-<table BORDER WIDTH="100%" >
-<caption><b>Summary of Tested Platforms</b></caption>
-
-<tr>
-<td>
-<center><b>Platform</b></center>
-</td>
-
-<td>
-<center><b>JHI5 Available?</b></center>
-</td>
-
-<td>
-<center><b>Notes</b></center>
-</td>
-</tr>
-
-<tr>
-<td>Solaris 2.7</td>
-
-<td>Yes</td>
-
-<td>JDK 1.1.x also works</td>
-</tr>
-
-<tr>
-<td>Windows 98, NT, 2000</td>
-
-<td>Yes</td>
-
-<td></td>
-</tr>
-
-<tr>
-<td>SGI Irix 6.5</td>
-
-<td>Yes</td>
-
-<td></td>
-</tr>
-
-<tr>
-<td>Linux 2.2</td>
-
-<td>Yes</td>
-
-<td>JDK 1.1.7 also works*</td>
-</tr>
-
-<tr>
-<td>Mac</td>
-
-<td>Yes</td>
-
-<td>HDF-5 not available</td>
-</tr>
-
-<tr>
-<td>Other Unix</td>
-
-<td>?</td>
-
-<td>Not tested.</td>
-</tr>
-</table>
-
-<p>*The Linux version may have problems with data of type 'long'. This
-is still under investigation.
-<br><a href="ftp://hdf.ncsa.uiuc.edu/HDF5/java-hdf5/src/"></a>&nbsp;
-<br>&nbsp;
--->
 
 <?php
 include ("../../../includes/footer.html"); 
