@@ -9,8 +9,8 @@
 #VCPPDIR=C:\Program Files\Microsoft Visual Studio\VC98
 VCPPDIR=
 
-# directory where JDK is installed (need JDK 1.3.1 or above), for example
-#JAVADIR=D:\java\jdk1.3.1\
+# directory where JDK is installed (need JDK1.3.1 or above), for example
+#JAVADIR=D:\java\jdk1.5.0\
 JAVADIR=
 
 # directory of the HDF Java Products, for example
