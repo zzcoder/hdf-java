@@ -33,7 +33,6 @@ import ncsa.hdf.hdf5lib.exceptions.*;
  * Starting from the root of the tree, <i>rootNode</i>, 
  * the tree can be traversed to find a specific object.
  * <p>
- * RUTH - I DON't THINK THIS EXAMPLE BELONGS IN THE DOCS FOR THE CLASS...
  * The following example shows how to find an object by a given path
  * <pre>
  *  HObject findObject(FileFormat file, String path)
@@ -624,8 +623,8 @@ DEBUGGING */
      * This method creates attributes for two common types of
      * HDF5 images.  It provides a way of adding multiple attributes 
      * to an HDF5 image dataset with a single call.  The 
-     * {@link #writeAttribute(HObject, Attribute)} method may be used
-     * to write image attributes that are not handled by this method.
+     * {@link #writeAttribute(HObject, Attribute, boolean)} method may be
+     * used to write image attributes that are not handled by this method.
      * <p> 
      * For more information about HDF5 image attributes, see the
      * <a href="http://hdfgroup.org/HDF5/doc/ADGuide/ImageSpec.html">
@@ -1743,28 +1742,18 @@ DEBUGGING */
             // copy attributes from one object to the new object
             copyAttributes(srcdid, dstdid);
 
-            byte[] ref_buf = H5.H5Rcreate(
-                pgroup.getFID(),
-                dname,
-                HDF5Constants.H5R_OBJECT,
-                -1);
-            long l = HDFNativeData.byteToLong(ref_buf, 0);
-            long[] oid = {l};
-
             if (srcDataset instanceof H5ScalarDS)
             {
                 dataset = new H5ScalarDS(
                     pgroup.getFileFormat(),
                     dstName,
-                    path,
-                    oid);           // deprecated!
+                    path);
             } else
             {
                 dataset = new H5CompoundDS(
                     pgroup.getFileFormat(),
                     dstName,
-                    path,
-                    oid);           // deprecated!
+                    path);
             }
 
             pgroup.addToMemberList(dataset);
@@ -1776,7 +1765,7 @@ DEBUGGING */
                 srcaid = H5.H5Aopen_name(srcdid, "PALETTE");
                 dstaid = H5.H5Aopen_name(dstdid, "PALETTE");
                 atid = H5.H5Aget_type(srcaid);
-                oid = new long[1];
+                long[] oid = new long[1];
                 H5.H5Aread(srcaid, atid, oid);
 
                 // search and copy palette
@@ -1785,11 +1774,11 @@ DEBUGGING */
                 {
                     try { copy(pal, pgroup, null); }
                     catch (Exception ex2) {}
-                    ref_buf = H5.H5Rcreate(
-                        pgroup.getFID(),
-                        path+pal.getName(),
-                        HDF5Constants.H5R_OBJECT,
-                        -1);
+                    byte[] ref_buf = H5.H5Rcreate(
+                                        pgroup.getFID(),
+                                        path+pal.getName(),
+                                        HDF5Constants.H5R_OBJECT,
+                                        -1);
                     H5.H5Awrite(dstaid, atid, ref_buf);
                 }
             } catch (Exception ex) {;}
@@ -1835,19 +1824,10 @@ DEBUGGING */
             try { H5.H5Tclose(tid); } catch (HDF5Exception ex) {}
         }
 
-        long[] oid = null;
-        try {
-            byte[] ref_buf = H5.H5Rcreate(fid, path+"/"+name, 
-                                          HDF5Constants.H5R_OBJECT, -1);
-            long l = HDFNativeData.byteToLong(ref_buf, 0);
-            oid = new long[1];
-            oid[0] = l;
-        } catch (Exception ex) { oid = null;}
-
         if (tclass == HDF5Constants.H5T_COMPOUND) {
-            dataset = new H5CompoundDS(this, name, path, oid); // deprecated!
+            dataset = new H5CompoundDS(this, name, path); 
         } else {
-            dataset = new H5ScalarDS( this, name, path, oid);  // deprecated!
+            dataset = new H5ScalarDS( this, name, path); 
         }
 
         return dataset;
@@ -1888,16 +1868,7 @@ DEBUGGING */
         try {
             H5.H5Tcommit(pgroup.getFID(), tname, tid_dst );
 
-            byte[] ref_buf = H5.H5Rcreate(
-                pgroup.getFID(),
-                tname,
-                HDF5Constants.H5R_OBJECT,
-                -1);
-            long l = HDFNativeData.byteToLong(ref_buf, 0);
-            long[] oid = {l};
-
-            datatype = new H5Datatype(pgroup.getFileFormat(), dstName, 
-                                      path, oid); // deprecated!
+            datatype = new H5Datatype(pgroup.getFileFormat(), dstName, path);
 
             pgroup.addToMemberList(datatype);
             newNode = new DefaultMutableTreeNode(datatype);
@@ -2012,17 +1983,7 @@ DEBUGGING */
             thisFullName = thisFullName.replaceAll("//", "/");
         }
 
-        long[] oid = null;
-        try {
-            byte[] ref_buf = H5.H5Rcreate(fid, thisFullName, 
-                                          HDF5Constants.H5R_OBJECT, -1);
-            long l = HDFNativeData.byteToLong(ref_buf, 0);
-            oid = new long[1];
-            oid[0] = l;
-        } catch (Exception ex) { oid = null;}
-
-        H5Group group = new H5Group(this, name, parentPath, pGroup, 
-                                    oid); // deprecated!
+        H5Group group = new H5Group(this, name, parentPath, pGroup);
 
         int nelems = 0;
         try {
@@ -2053,16 +2014,7 @@ DEBUGGING */
             // create a new group
             if (oType[0] == HDF5Constants.H5G_GROUP)
             {
-                try {
-                    byte[] ref_buf = H5.H5Rcreate(fid, 
-                       thisFullName+"/"+oName[0], HDF5Constants.H5R_OBJECT, -1);
-                    long l = HDFNativeData.byteToLong(ref_buf, 0);
-                    oid = new long[1];
-                    oid[0] = l;
-                } catch (Exception ex) { oid = null;}
-
-                H5Group g = new H5Group(this, oName[0], thisFullName, group, 
-                                        oid);  // deprecated!
+                H5Group g = new H5Group(this, oName[0], thisFullName, group);
                 group.addToMemberList(g);
             } else if (oType[0] == HDF5Constants.H5G_DATASET) {
                 int did=-1;
@@ -2286,6 +2238,7 @@ DEBUGGING */
                 oid[0] = l; // save the object ID
             } catch (HDF5Exception ex) {System.out.println(ex);}
 
+//PETER LOOK AT THIS TOO
             if (oid == null) {
                 continue; // do the next one, if the object is not identified.
             }
