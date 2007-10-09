@@ -298,6 +298,24 @@ public abstract class HObject implements Serializable, DataFormat
      */
     public void setName (String newName) throws Exception
     {
+        if (newName != null) {
+            if (newName.equals(HObject.separator)) {
+                throw new IllegalArgumentException( "The new name cannot be the root");
+            }
+
+            if (newName.startsWith(HObject.separator))
+                newName = newName.substring(1);
+            
+            if (newName.endsWith(HObject.separator))
+                newName = newName.substring(0, newName.length()-2);
+            
+            if ( newName.contains( HObject.separator ) ) {
+                throw new IllegalArgumentException( 
+                    "The new name contains the separator character: " + 
+                    HObject.separator );
+            }
+        }
+        
         name = newName;
     }
 

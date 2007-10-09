@@ -15,7 +15,10 @@
 package ncsa.hdf.object;
 
 import java.util.*;
+
 import javax.swing.tree.DefaultMutableTreeNode;
+
+import ncsa.hdf.object.h5.H5Group;
 
 /**
  * Group is an abstract class. Current implementing classes are the H4Group and
@@ -175,7 +178,31 @@ public abstract class Group extends HObject
 
         return memberList;
     }
-
+    
+    /**
+     * Sets the name of the group.
+     * <p>
+     * setName (String newName) changes the name of the group in memory and file.
+     * <p>
+     * setName() updates the path in memory for all the objects that are under the
+     * group with the new name.  
+     *
+     * @param newName The new name of the group.
+     */
+    public void setName (String newName) throws Exception
+    {
+        super.setName(newName);
+        
+        if (memberList != null) {
+            int n = memberList.size();
+            HObject theObj = null;
+            for (int i=0; i<n; i++) {
+                theObj = (HObject)memberList.get(i);
+                theObj.setPath(this.getPath()+newName+HObject.separator);
+            }
+        }
+    }
+ 
     /** Returns the parent group. */
     public final Group getParent() { return parent; }
 
