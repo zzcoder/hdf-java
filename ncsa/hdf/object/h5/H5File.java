@@ -179,120 +179,6 @@ public class H5File extends FileFormat
      **************************************************************************/
 
     /**
-     * Renames a Group or Dataset in an HDF5 file.
-     * PETER:  Move this to H5Group:setName() and H5CompoundDF:setName() and
-     * H5ScalarDS:setName().  We don't want users to call this directly on
-     * any HObject.  We don't want to allow / in  the new name.  Peter to do
-     * this.
-     * <p>
-     * This method renames an H5Group, an H5CompoundDS, or an H5ScalarDS object.
-     * The new name must not contain the HObject separater character, 
-     * typically  "/".   The root group cannot be renamed.
-     *
-     * @param obj     The object to be renamed.
-     * @param newName The new name of the object.
-     * @throws HDF5Exception If the rename can't be performed.
-     *
-     * PETER:  This method has problems.  It's not in the previous release
-     * but my guess is it was added so there was a common place for the 
-     * H5Group, H5CompoundDS, and H5ScalarDS to get this rename / move done.
-     * The problem (or one problem) is that if you call this directly
-     * rather than through setName() of those classes you don't update the
-     * name in memory... only on disk.
-     * I tried to fix this but calling setName() of HObject but am getting
-     * problems with that so have commented it out.
-     * Another issue is I can't figure out what it means to rename an
-     * object to something new with slashes in the new name
-     * Say we have /a/b/c/d and we want to rename /a/b/c and specify our
-     * new name as /x/y/c.  What happens to d?  is it now /a/b/x/y/c/d?
-     * But, when I put in the checks for / in the newName it causes unit
-     * tests to fail.  I think this needs some serious attention.   Likely
-     * get rid of this method, or make and H5Object and move it there.  Or,
-     * go back to individual classes & put code in those and do what makes
-     * sense at that level.   I think this is trying to do much and not making
-     * sure it all works for all possible callers... including user apps
-     * if we leave the method here.
-     */
-    public static final void setObjectName(HObject obj, 
-                                           String newName) throws Exception
-    {
-
-        if ( obj == null ) {
-            throw new HDF5Exception( "The object to be renamed is null.");
-        }
-
-        if ( ( !(obj instanceof H5Group) )  &&
-             ( !(obj instanceof H5ScalarDS) ) &&
-             ( !(obj instanceof H5CompoundDS) ) ) {
-            throw new HDF5Exception( 
-                "The object to be renamed must be an H5Group, an H5ScalarDS, " +
-                "or an H5CompoundDS." );
-        }
-
-        if ((newName == null) || (newName.length()<=0)) {
-            throw new HDF5Exception( "The new name is null." );
-        }
-/*  Debugging
-System.out.println( "in setObjectName, original name is " + obj.getName() );
-System.out.println( "in setObjectName, new name is " + newName );
-*/
-
-/***
-* PETER COME BACK HERE.... DON"T THINK WE CAN HAVE / BUT CAUSES UNITESTS TO FAIL
-*IF WE DON"T ALLOW IT. - DOESN"T MAKE SENSE!
-        if ( newName.contains( HObject.separator ) ) {
-            throw new HDF5Exception( 
-                "The new name contains the separator character: " + 
-                HObject.separator );
-        }
-*/
-
-        String currentFullPath = obj.getPath()+obj.getName();
-        String newFullPath = obj.getPath()+newName;
-        
-        currentFullPath = currentFullPath.replaceAll("//", "/");
-        newFullPath = newFullPath.replaceAll("//", "/");
-
-        if ( currentFullPath.equals("/") ) {
-            throw new HDF5Exception( "Can't rename the root group." );
-        }
-             
-        if ( currentFullPath.equals(newFullPath) ) {
-            throw new HDF5Exception( 
-                "The new name is the same as the current name." );
-        }
-       
-        // Call the library to move things in the file
-        H5.H5Gmove(obj.getFID(), currentFullPath, newFullPath);
-        
-        // Here we adjust paths in memory if this object is a Group
-        if (obj instanceof H5Group) {
-            H5Group grp = (H5Group)obj;
-            List members = grp.getMemberList();
-
-            if (members != null) {
-                int n = members.size();
-                HObject theObj = null;
-                for (int i=0; i<n; i++) {
-                    theObj = (HObject)members.get(i);
-                    theObj.setPath(obj.getPath()+newName+HObject.separator);
-                }
-            }
-        }
-
-/* attempt to fix name in memory fails.   But, without this we don't change
-our name if this method is called directly.
-        // Finally, adjust the name of the object in memory.
-        ((HObject)obj).setName(newName);
-*/
-
-/* DEBUGGING
-System.out.println( "in setObjectName, final name is " + obj.getName() );
-DEBUGGING */
-
-    }
- 
-    /**
      * Copies the attributes of one object to another object.
      * <p>
      * This method copies all the attributes from one object (source object)
@@ -943,14 +829,16 @@ DEBUGGING */
      * Closes file associated with this H5File instance.
      *
      * @see ncsa.hdf.object.FileFormat#close()
-     * PETER, PLEASE EXPLAIN EXCEPTIONS
+     * @throws HDF5Exception
      */
     public void close() throws HDF5Exception
     {
-        // PETER _ I DON"T UNDERSTAND THIS COMMENT.
-        // The cwd may be changed at Dataset.read() by H5Dchdir_ext()
-        // to make it work for external datasets. We need to set it back
-        // before the file is closed/opened.
+        // The current working directory may be changed at Dataset.read() 
+        // by H5Dchdir_ext()by this file to make it work for external 
+        // datasets. We need to set it back to the orginal current working
+        // directory (when hdf-java application started) before the file 
+        // is closed/opened. Otherwise, relative path, e.g. "./test.h5" may
+        // not work
         H5.H5Dchdir_ext(System.getProperty("user.dir"));
         
         // clean up unused objects
@@ -1913,8 +1801,8 @@ DEBUGGING */
             nelems = -1;
         }
 
-        // get only one level objects in the group
-        // PETER - WHAT DOES THIS MEAN?
+        // retrive only the immediate members of the group,
+        // do not follow the subgroups
         int[] oType = new int[1];
         String [] oName = new String[1];
         for ( int i = 0; i <nelems; i++)
@@ -1922,8 +1810,7 @@ DEBUGGING */
             oName[0] = "";
             oType[0] = -1;
             try {
-                // PETER - why 80l?
-                H5.H5Gget_objname_by_idx(gid, i, oName, 80l);
+                H5.H5Gget_objname_by_idx(gid, i, oName, 256);
                 oType[0] = H5.H5Gget_objtype_by_idx(gid, i);
             } catch (HDF5Exception ex) {
                 // do not stop if accessing one member fails
@@ -2111,6 +1998,7 @@ DEBUGGING */
         long[] oid = null;
         String obj_name;
         int obj_type;
+        
         //Iterate through the file to see members of the group
         for ( int i = i0; i < i1; i++)
         {
@@ -2157,7 +2045,9 @@ DEBUGGING */
                 oid[0] = l; // save the object ID
             } catch (HDF5Exception ex) {System.out.println(ex);}
 
-//PETER LOOK AT THIS TOO
+            // we need to use the OID for this release. we will rewrite this so
+            // that we do not use the deprecated constructor
+            
             if (oid == null) {
                 continue; // do the next one, if the object is not identified.
             }
