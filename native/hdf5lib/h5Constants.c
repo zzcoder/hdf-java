@@ -459,6 +459,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_J2C
         case JH5T_UNIX_D32LE  : return  H5T_UNIX_D32LE;
         case JH5T_UNIX_D64BE  : return  H5T_UNIX_D64BE;
         case JH5T_UNIX_D64LE  : return  H5T_UNIX_D64LE;
+        case JH5T_VARIABLE  : return H5T_VARIABLE;
         case JH5T_VLEN  : return  H5T_VLEN;
         case JH5Z_CB_CONT  : return  H5Z_CB_CONT;
         case JH5Z_CB_ERROR  : return  H5Z_CB_ERROR;

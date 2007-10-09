@@ -569,7 +569,7 @@ public class H5ScalarDS extends ScalarDS
                     }
                     else if (isEnum && isEnumConverted())
                     {
-                        theData = H5File.convertEnumValueToName(tid, theData, null);
+                        theData = H5Datatype.convertEnumValueToName(tid, theData, null);
                     }
                 }
             } // if (theData != null)

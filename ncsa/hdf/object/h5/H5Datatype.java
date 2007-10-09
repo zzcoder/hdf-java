@@ -18,6 +18,7 @@ import ncsa.hdf.hdf5lib.*;
 import ncsa.hdf.hdf5lib.exceptions.*;
 import ncsa.hdf.object.*;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 
@@ -144,6 +145,87 @@ public class H5Datatype extends Datatype
     public H5Datatype(int nativeID)
     {
         super(nativeID);
+    }
+    
+
+    /**
+     * Converts values in an Enumeration Datatype to names.
+     * <p>
+     * This method searches the identified enumeration datatype for 
+     * the values appearing in <code>inValues</code> and returns the
+     * names corresponding to those values.  If a given value is not
+     * found in the enumeration datatype, the name corresponding to that
+     * value will be set to <code>null</code> in the string array that is
+     * returned.
+     * <p>
+     * If the method fails in general, null will be returned instead
+     * of a String array.   An empty <code>inValues</code> parameter,
+     * an <code>outNames</code> array with a different number of entries 
+     * than the <code>inValues</code> array, or an invalid <code>tid</code>
+     * would all cause general failure.
+     *
+     * @param tid The identifier of the enumeration datatype.
+     * @param inValues The array of enumerations values to be converted.
+     * @param outNames The array of names to be populated.  If null, the array 
+     *         will be created.  If <code>outNames</code> is not null, the 
+     *         number of entries must be the same as the number of values in 
+     *         <code>inValues</code>.  
+     * @return The string array of names if successful; 
+     *         otherwise return null.
+     * @throws HDF5Exception If there is an error at the HDF5 library level.
+     *
+     */
+    public static final String[] convertEnumValueToName(
+        int tid, Object inValues, String[] outNames) throws HDF5Exception
+    {
+        int inSize = 0;
+
+        if ( (inValues == null) || 
+                     ( (inSize = Array.getLength(inValues)) <=0) || 
+             ( (outNames != null) && (inSize != Array.getLength(outNames))) ) {
+           return null;
+        }
+
+        int nMembers = H5.H5Tget_nmembers(tid);
+        if (nMembers <=0 ) {
+            return null;
+        }
+
+        if (outNames == null) {
+            outNames = new String[inSize];
+        } else {
+            // set values in existing array to null in case no match found
+            for ( int i = 0; i < inSize; i++ ) {
+                outNames[i] = null;
+            }
+        }
+        
+        String[] names = new String[nMembers];
+        int[] values = new int[nMembers];
+        int[] theValue = {0};
+
+        // Loop through the enumeration datatype and extract the names and
+        // values.
+        for (int i=0; i<nMembers; i++) {
+            names[i] = H5.H5Tget_member_name(tid, i);
+            H5.H5Tget_member_value(tid, i, theValue);
+            values[i] = theValue[0];
+        }
+
+        int val = -1;
+
+        // Look for matches
+        for (int i=0; i<inSize; i++) {
+            val = Array.getInt(inValues, i);
+            for (int j=0; j<nMembers; j++) {
+                if (val == values[j]) {
+                    outNames[i] = names[j];
+                    break;
+                }
+            }
+        } 
+
+        return outNames;
     }
     
     /*

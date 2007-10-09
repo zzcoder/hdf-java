@@ -1342,6 +1342,87 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1double
     return (jint)status;
 }
 
+// Rosetta Biosoftware 
+/* 
+ * Class:     ncsa_hdf_hdf5lib_H5 
+ * Method:    H5DwriteString 
+ * Signature: (IIIII[B)I 
+ */ 
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DwriteString 
+  (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id, 
+  jint file_space_id, jint xfer_plist_id, jobjectArray buf) 
+{ 
+    herr_t status; 
+    jboolean isCopy; 
+        char* * wdata; 
+        jsize size; 
+        jint i, j; 
+
+    if ( buf == NULL ) { 
+        h5nullArgument( env, "H5Dwrite:  buf is NULL"); 
+        return -1; 
+    } 
+
+        size = (*env)->GetArrayLength(env, (jarray) buf); 
+        wdata = malloc(size * sizeof (char *)); 
+
+        if (!wdata) { 
+        h5JNIFatalError( env, "H5DwriteString:  cannot allocate buffer"); 
+        return -1; 
+        } 
+
+        memset(wdata, 0, size * sizeof(char *)); 
+
+        for (i = 0; i < size; ++i) { 
+                jstring obj = (jstring) (*env)->GetObjectArrayElement(env, (jobjectArray) buf, i); 
+                if (obj != 0) { 
+                        jsize length = (*env)->GetStringUTFLength(env, obj); 
+                        const char * utf8 = (*env)->GetStringUTFChars(env, obj, 0); 
+                        
+                        if (utf8) { 
+                                wdata[i] = malloc(strlen(utf8)+1); 
+                                if (!wdata[i]) { 
+                                        status = -1; 
+                                        // can't allocate memory, cleanup 
+                                        for (j = 0; j < i; ++i) { 
+                                                if(wdata[j]) { 
+                                                        free(wdata[j]); 
+                                                } 
+                                        } 
+                                        free(wdata); 
+
+                        (*env)->ReleaseStringUTFChars(env, obj, utf8); 
+                        (*env)->DeleteLocalRef(env, obj); 
+
+                                        h5JNIFatalError( env, "H5DwriteString:  cannot allocate buffer"); 
+                                        return -1; 
+                                } 
+
+                                strcpy(wdata[i], utf8); 
+                        } 
+
+                        (*env)->ReleaseStringUTFChars(env, obj, utf8); 
+                        (*env)->DeleteLocalRef(env, obj); 
+                } 
+        } 
+
+    status = H5Dwrite((hid_t)dataset_id, (hid_t)mem_type_id, (hid_t)mem_space_id, 
+        (hid_t)file_space_id, (hid_t)xfer_plist_id, wdata); 
+
+        // now free memory 
+        for (i = 0; i < size; ++i) { 
+                if(wdata[i]) { 
+                        free(wdata[i]); 
+                } 
+        } 
+        free(wdata); 
+
+    if (status < 0) { 
+        h5libraryError(env); 
+    } 
+    return (jint)status; 
+} 
+
 
 #ifdef __cplusplus
 }
