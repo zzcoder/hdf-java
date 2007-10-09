@@ -847,9 +847,13 @@ public class H5 {
             status = H5Dread_reg_ref(dataset_id, mem_type_id,mem_space_id, file_space_id,
                     xfer_plist_id, (String[])obj);
         }
-         else if (is1D && cname.equals("[Ljava.lang.String;")) {
+        else if (is1D && cname.equals("[Ljava.lang.String;")) {
             status = H5Dread_string(dataset_id, mem_type_id,mem_space_id, file_space_id,
                 xfer_plist_id, (String[])obj);
+            // Rosetta Biosoftware - add support for Strings (variable length) 
+         } else if (is1D && dataClass.getComponentType() == String.class) {      // already know it is an array 
+                 status = H5DreadVL(dataset_id, mem_type_id,mem_space_id, file_space_id, 
+                     xfer_plist_id, (Object[])obj); 
         } else {
             // Create a data buffer to hold the data into a Java Array
             HDFArray theArray = new HDFArray(obj);
@@ -870,6 +874,34 @@ public class H5 {
 
         return status;
     }
+
+    /** 
+     *  H5DwriteString writes a (partial) variable length String dataset, specified by its 
+     *  identifier dataset_id, from the application memory buffer 
+     *  buf into the file. 
+     * 
+     *  @param dataset_id  Identifier of the dataset read from. 
+     *  @param mem_type_id  Identifier of the memory datatype. 
+     *  @param mem_space_id  Identifier of the memory dataspace. 
+     *  @param file_space_id  Identifier of the dataset's dataspace 
+     *  in the file. 
+     *  @param xfer_plist_id  Identifier of a transfer property 
+     *  list for this I/O operation. 
+     *  @param buf Buffer with data to be written to the file. 
+     * 
+     *  @return a non-negative value if successful 
+     *  
+     *  @author contributed by Rosetta Biosoftware
+     * 
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library. 
+     *  @exception NullPointerException - name is null. 
+     **/ 
+    
+    
+    public synchronized static native int H5DwriteString(int dataset_id, 
+        int mem_type_id, int mem_space_id, 
+        int file_space_id, int xfer_plist_id, String[] buf) 
+        throws HDF5LibraryException, NullPointerException; 
 
 
     /**
@@ -957,6 +989,14 @@ public class H5 {
         else if (is1D && (dname == 'D')) {
             status = H5Dwrite_double(dataset_id, mem_type_id,mem_space_id, file_space_id,
                 xfer_plist_id, (double[])obj);
+        }
+            
+        // Rosetta Biosoftware - call into H5DwriteString for variable length Strings 
+        else if (H5.H5Tget_class(mem_type_id) == HDF5Constants.H5T_STRING && H5.H5Tis_variable_str(mem_type_id) 
+                        && dataClass.isArray() && dataClass.getComponentType() == String.class && is1D) { 
+                status = H5DwriteString(dataset_id, mem_type_id, 
+                                mem_space_id, file_space_id, xfer_plist_id, (String[])obj); 
+                    
         } else {
             HDFArray theArray = new HDFArray(obj);
             byte[] buf = theArray.byteify();

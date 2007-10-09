@@ -459,6 +459,7 @@ public class HDF5Constants
     final private static int JH5T_UNIX_D32LE = 5220;
     final private static int JH5T_UNIX_D64BE = 5230;
     final private static int JH5T_UNIX_D64LE = 5240;
+    final private static int JH5T_VARIABLE = 5245;
     final private static int JH5T_VLEN = 5250;
     final private static int JH5Z_CB_CONT = 5260;
     final private static int JH5Z_CB_ERROR = 5270;
@@ -920,6 +921,7 @@ public class HDF5Constants
     final public static int H5T_UNIX_D32LE = H5.J2C( JH5T_UNIX_D32LE );
     final public static int H5T_UNIX_D64BE = H5.J2C( JH5T_UNIX_D64BE );
     final public static int H5T_UNIX_D64LE = H5.J2C( JH5T_UNIX_D64LE );
+    final public static int H5T_VARIABLE = H5.J2C( JH5T_VARIABLE );     // Rosetta Biosoftware 
     final public static int H5T_VLEN = H5.J2C( JH5T_VLEN );
     final public static int H5Z_CB_CONT = H5.J2C( JH5Z_CB_CONT );
     final public static int H5Z_CB_ERROR = H5.J2C( JH5Z_CB_ERROR );

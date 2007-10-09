@@ -344,7 +344,7 @@ public class H5CompoundDS extends CompoundDS
                     else if (member_class == HDF5Constants.H5T_ENUM)
                     {
                         try {
-                            String[] strs = H5File.convertEnumValueToName(atom_tid, member_data, null);
+                            String[] strs = H5Datatype.convertEnumValueToName(atom_tid, member_data, null);
                             if (strs != null) {
                                 member_data = strs;
                             }
