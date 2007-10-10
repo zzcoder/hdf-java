@@ -999,8 +999,6 @@ public abstract class FileFormat extends File
      // documented properly.
 
     /**
-     * PETER:  THIS COMMENT IS WRONG _ NOT IN A FILE!  OF A PARTICULAR
-     * FILE TYPE.  A NAMED DATATYPE BUT NOT YET "IN" A FILE.
      * Creates a named datatype in a file.
      * <p>
      * The following code creates a named datatype in a file.
