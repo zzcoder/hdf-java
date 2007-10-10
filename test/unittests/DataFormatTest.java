@@ -67,8 +67,9 @@ public class DataFormatTest extends TestCase {
      * </ul>
 	 */
 	public final void testGetFile() {
-		if (!testGroup.getFile().equals(H5TestFile.NAME_FILE_H5))
-			fail("getFile() fails.");
+		if (!testGroup.getFile().equals(H5TestFile.NAME_FILE_H5)) {
+            fail("getFile() fails.");
+        }
 	}
 
 	/**
@@ -91,15 +92,17 @@ public class DataFormatTest extends TestCase {
 		strAttr = (Attribute) mdataList.get(0);
 		arrayIntAttr = (Attribute) mdataList.get(1);
 		String[] value = (String[]) strAttr.getValue();
-		if (!value[0].equals("String attribute."))
-			fail("getMdata() failed.");
+		if (!value[0].equals("String attribute.")) {
+            fail("getMdata() failed.");
+        }
 
 		int[] intValue = (int[]) arrayIntAttr.getValue();
 		long[] dims = arrayIntAttr.getDataDims();
 
 		for (int i = 0; i < dims[0]; i++) {
-			if (intValue[i] != i+1)
-				fail("getValue() failed");
+			if (intValue[i] != i+1) {
+                fail("getValue() failed");
+            }
 		}
 	}
 
@@ -143,20 +146,23 @@ public class DataFormatTest extends TestCase {
 		String[] value = (String[]) strAttr.getValue();
 		
 
-		if (!value[0].equals("String attribute."))
-			fail("writeMdata() failed.");
+		if (!value[0].equals("String attribute.")) {
+            fail("writeMdata() failed.");
+        }
 
 		int[] intValue = (int[]) arrayIntAttr.getValue();
 		long[] dims = arrayIntAttr.getDataDims();
 
 		for (int i = 0; i < dims[0]; i++) {
-			if (intValue[i] != i+1)
-				fail("writeValue() failed");
+			if (intValue[i] != i+1) {
+                fail("writeValue() failed");
+            }
 		}
 		strAttr = (Attribute) mdataList.get(2);
 		value = (String[]) strAttr.getValue();
-		if (!value[0].equals("IMAGE"))
-			fail("writeMetadata() failed.");
+		if (!value[0].equals("IMAGE")) {
+            fail("writeMetadata() failed.");
+        }
 	}
 
 	/**

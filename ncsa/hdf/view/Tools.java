@@ -547,8 +547,9 @@ public final class Tools
         }
 
         int size = w*h;
-        if (size <=0)
+        if (size <=0) {
             size = Array.getLength(rawData);
+        }
         
         if ((byteData == null)) {
             byteData = new byte[size]; // otherwise, reuse the old buffer
@@ -920,7 +921,7 @@ public final class Tools
      */
     public static Object autoContrastApply(Object data_in, Object data_out,  double[] params, boolean isUnsigned)
     {
-        int retval=1, size=0;
+        int size=0;
       
         if ((data_in==null) || (params==null) || (params.length<2)) {
             return null;
@@ -1026,7 +1027,6 @@ public final class Tools
                 }
                  break;
             default:
-                retval = -1;
                 break;
         } // switch (dname)
         

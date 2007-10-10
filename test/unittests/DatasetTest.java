@@ -89,10 +89,11 @@ public class DatasetTest extends TestCase {
 			assertTrue(dSets[i].getConvertByteToString()); // by default, strings are converted
 			assertNull(dSets[i].getDimNames());
 			assertTrue(Arrays.equals(dSets[i].getDims(), H5TestFile.DIMs));
-			if (H5TestFile.NAME_DATASET_STR.equals("/" + dSets[i].getName()))
-				assertEquals(dSets[i].getHeight(), H5TestFile.DIM2);
-			else
-				assertEquals(dSets[i].getHeight(), H5TestFile.DIM1);
+			if (H5TestFile.NAME_DATASET_STR.equals("/" + dSets[i].getName())) {
+                assertEquals(dSets[i].getHeight(), H5TestFile.DIM2);
+            } else {
+                assertEquals(dSets[i].getHeight(), H5TestFile.DIM1);
+            }
 			assertEquals(dSets[i].getRank(), H5TestFile.RANK);
 			long[] array = new long[2];
 			if (H5TestFile.NAME_DATASET_STR.equals("/" + dSets[i].getName())) {
@@ -116,10 +117,11 @@ public class DatasetTest extends TestCase {
 			assertTrue(Arrays.equals(dSets[i].getStartDims(), array));
 			array[0] = 1; array[1] = 1;
 			assertTrue(Arrays.equals(dSets[i].getStride(), array));
-			if (H5TestFile.NAME_DATASET_STR.equals("/" + dSets[i].getName()))
-				assertEquals(dSets[i].getWidth(), 1);
-			else
-				assertEquals(dSets[i].getWidth(), H5TestFile.DIM2);
+			if (H5TestFile.NAME_DATASET_STR.equals("/" + dSets[i].getName())) {
+                assertEquals(dSets[i].getWidth(), 1);
+            } else {
+                assertEquals(dSets[i].getWidth(), H5TestFile.DIM2);
+            }
 		}
 	}
 	

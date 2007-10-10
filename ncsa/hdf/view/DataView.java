@@ -18,12 +18,11 @@ import ncsa.hdf.object.*;
 
 /**
  * The data view interface for displaying data object
- *
+ * 
  * @author Peter X. Cao
  * @version 2.4 9/6/2007
  */
-public abstract interface DataView
-{
+public abstract interface DataView {
     /** The unknown view type */
     public final static int DATAVIEW_UNKNOWN = -1;
 

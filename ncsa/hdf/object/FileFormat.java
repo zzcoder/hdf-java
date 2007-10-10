@@ -303,7 +303,7 @@ public abstract class FileFormat extends File
      * @see #removeFileFormat(String)
      */
     public static final FileFormat getFileFormat(String key) {
-        return (FileFormat)FileList.get(key);
+        return FileList.get(key);
     }
 
     /**
@@ -374,7 +374,7 @@ public abstract class FileFormat extends File
      *  @see #getFileFormats()
      */
     public static final FileFormat removeFileFormat(String key) {
-        return (FileFormat) FileList.remove(key);
+        return FileList.remove(key);
     }
 
     /**

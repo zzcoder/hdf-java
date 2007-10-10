@@ -114,8 +114,9 @@ public class TestH4File
                     try { info = g.getMetadata(); }
                     catch (Exception ex) {}
 
-                    if (info == null)
+                    if (info == null) {
                         continue;
+                    }
 
                     int n = info.size();
                     for (int i=0; i<n; i++)
@@ -190,7 +191,7 @@ public class TestH4File
                         data = sds.read();
                     } catch (Exception ex) {System.out.println(ex);}
 
-                    if (data != null && data.getClass().isArray())
+                    if ((data != null) && data.getClass().isArray())
                     {
                         // print out the first 1000 data points
                         n = Math.min(Array.getLength(data), 1000);
@@ -264,7 +265,9 @@ public class TestH4File
 
                     // compound members
                     int rank = vdata.getRank();
-                    if (rank <=0 ) vdata.init();
+                    if (rank <=0 ) {
+                        vdata.init();
+                    }
                     n = vdata.getMemberCount();
                     String[] names = vdata.getMemberNames();
                     for (int i=0; i<n; i++)
@@ -367,7 +370,7 @@ public class TestH4File
                         data = sds.read();
                     } catch (Exception ex) {System.out.println(ex);}
 
-                    if (data != null && data.getClass().isArray())
+                    if ((data != null) && data.getClass().isArray())
                     {
                         // print out the first 1000 data points
                         n = Math.min(Array.getLength(data), 1000);

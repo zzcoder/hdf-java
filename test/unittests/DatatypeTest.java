@@ -306,8 +306,9 @@ public class DatatypeTest extends TestCase {
 					}
 					for (int l = 0; l < n_sizes; l++) {
 						 boolean isSigned = baseTypes[counter++].isUnsigned();
-						 if (isSigned && (signs[k] != Datatype.SIGN_NONE))
-							 fail("isUnsigned Failed.");
+						 if (isSigned && (signs[k] != Datatype.SIGN_NONE)) {
+                            fail("isUnsigned Failed.");
+                        }
 					}
 				}
 			}

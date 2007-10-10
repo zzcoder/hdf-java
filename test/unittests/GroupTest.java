@@ -105,14 +105,17 @@ public class GroupTest extends TestCase {
 		Group tmp = new H5Group(testFile, "tmp", "/grp0/", testGroup);
 		testGroup.addToMemberList((HObject)testGroup.getMemberList().get(0));
 
-		if (testGroup.getMemberList().size() != previous_size)
-			fail("addToMemberList adds an existing member to the member list.");
+		if (testGroup.getMemberList().size() != previous_size) {
+            fail("addToMemberList adds an existing member to the member list.");
+        }
 		
 		testGroup.addToMemberList(tmp);
-		if (!testGroup.getMemberList().get(previous_size).equals(tmp))
-			fail("Add to member list does not add to the end.");
-		if (testGroup.getMemberList().size() != previous_size + 1)
-			fail("Add to member list not working.");
+		if (!testGroup.getMemberList().get(previous_size).equals(tmp)) {
+            fail("Add to member list does not add to the end.");
+        }
+		if (testGroup.getMemberList().size() != previous_size + 1) {
+            fail("Add to member list not working.");
+        }
 	}
 
 	/**
@@ -139,20 +142,23 @@ public class GroupTest extends TestCase {
 		List memberList = testGroup.getMemberList();
 		
 		testGroup.removeFromMemberList(null);
-		if (testGroup.getMemberList().size() != previous_size)
-			fail("removeFromMemberList removes a null from the member list.");
+		if (testGroup.getMemberList().size() != previous_size) {
+            fail("removeFromMemberList removes a null from the member list.");
+        }
 		
 		Group tmp = new H5Group(testFile, "tmp", "/grp0/", testGroup);
 		testGroup.removeFromMemberList(tmp);
-		if (testGroup.getMemberList().size() != previous_size)
-			fail("removeFromMemberList removes a non existing member from the member list.");
+		if (testGroup.getMemberList().size() != previous_size) {
+            fail("removeFromMemberList removes a non existing member from the member list.");
+        }
 		
         Iterator it = memberList.iterator();
 		HObject obj = (HObject) it.next();
 		testGroup.removeFromMemberList(obj);
 		
-		if (memberList.size() != previous_size - 1)
-			fail("The Number of members in list should be " + (previous_size - 1));
+		if (memberList.size() != previous_size - 1) {
+            fail("The Number of members in list should be " + (previous_size - 1));
+        }
 	}
 
 	/**

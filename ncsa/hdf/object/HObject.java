@@ -303,11 +303,13 @@ public abstract class HObject implements Serializable, DataFormat
                 throw new IllegalArgumentException( "The new name cannot be the root");
             }
 
-            if (newName.startsWith(HObject.separator))
+            if (newName.startsWith(HObject.separator)) {
                 newName = newName.substring(1);
+            }
             
-            if (newName.endsWith(HObject.separator))
+            if (newName.endsWith(HObject.separator)) {
                 newName = newName.substring(0, newName.length()-2);
+            }
             
             if ( newName.contains( HObject.separator ) ) {
                 throw new IllegalArgumentException( 
@@ -332,8 +334,9 @@ public abstract class HObject implements Serializable, DataFormat
      */
     public void setPath (String newPath) throws Exception
     {
-        if (newPath == null)
+        if (newPath == null) {
             newPath = "/";
+        }
         
         path = newPath;
     }
@@ -436,7 +439,7 @@ public abstract class HObject implements Serializable, DataFormat
             return null;
         }
 
-        return (long[]) oid.clone();
+        return oid.clone();
     }
 
     /**

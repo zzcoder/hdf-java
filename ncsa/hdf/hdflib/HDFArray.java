@@ -282,7 +282,7 @@ public Object arrayify(byte[] bytes) throws HDFException {
     if (java.lang.reflect.Array.getLength(bytes) != ArrayDescriptor.totalSize) {
         /* exception: array not right size */
          HDFException ex =
-        (HDFException)new HDFJavaException("arrayify: array is wrong size?: ");
+        new HDFJavaException("arrayify: array is wrong size?: ");
     }
     _barray = bytes; /* hope that the bytes are correct.... */
     if (ArrayDescriptor.dims == 1) {

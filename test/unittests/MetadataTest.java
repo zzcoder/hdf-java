@@ -77,14 +77,16 @@ public class MetadataTest extends TestCase {
 	 */
 	public final void testGetValue() {
 		String[] value = (String[]) strAttr.getValue();
-		if (!value[0].equals("String attribute."))
-			fail("getValue() fails.");
+		if (!value[0].equals("String attribute.")) {
+            fail("getValue() fails.");
+        }
 		
 		int[] intValue = (int[]) arrayIntAttr.getValue();
 		
 		for (int i = 0; i < 10; i++) {
-			if (intValue[i] != i+1)
-				fail("getValue() fails");
+			if (intValue[i] != i+1) {
+                fail("getValue() fails");
+            }
 		}
 	}
 
@@ -96,8 +98,9 @@ public class MetadataTest extends TestCase {
 		String[] prevValue = (String[]) strAttr.getValue();
 		strAttr.setValue(tempValue);
 		String[] value = (String[]) strAttr.getValue();
-		if (!value[0].equals("Temp String Value"))
-			fail("setValue() fails.");
+		if (!value[0].equals("Temp String Value")) {
+            fail("setValue() fails.");
+        }
 		strAttr.setValue(prevValue);
 		
 		int[] tempIntArray = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
@@ -107,8 +110,9 @@ public class MetadataTest extends TestCase {
 		int[] intValue = (int[]) arrayIntAttr.getValue();
 		
 		for (int i = 0; i < 10; i++) {
-			if (intValue[i] != i)
-				fail("getValue() fails");
+			if (intValue[i] != i) {
+                fail("getValue() fails");
+            }
 		}
 		arrayIntAttr.setValue(intPrevValue);
 	}
