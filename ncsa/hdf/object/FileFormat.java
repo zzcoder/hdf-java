@@ -999,10 +999,10 @@ public abstract class FileFormat extends File
      // documented properly.
 
     /**
+     * PETER:  THIS COMMENT IS WRONG _ NOT IN A FILE!  OF A PARTICULAR
+     * FILE TYPE.  A NAMED DATATYPE BUT NOT YET "IN" A FILE.
      * Creates a named datatype in a file.
      * <p>
-     * RUTH_VERIFY - Check & Document exceptions
-     *<p>
      * The following code creates a named datatype in a file.
      * <pre>
      * FileFormat file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
@@ -1016,6 +1016,9 @@ public abstract class FileFormat extends File
      * @param tsign  signed or unsinged of an integer, Datatype.SIGN_NONE.
      * @param name name of the datatype to create, e.g. "Native Integer".
      * @return  The new datatype if successful; otherwise returns null.
+     * @throws Exception 
+     *               The exceptions thrown vary depending on the 
+     *               implementing class.
      */
     public abstract Datatype createDatatype(
         int tclass,
@@ -1023,6 +1026,7 @@ public abstract class FileFormat extends File
         int torder,
         int tsign,
         String name) throws Exception;
+     // REVIEW DOCS for createDatatype().   Check and document exceptions.
 
     /***************************************************************************
      * Methods related to Datatypes and HObjects in the implementing 
@@ -1047,8 +1051,6 @@ public abstract class FileFormat extends File
     /**
      * Creates a new datatype in memory.
      * <p>
-     * RUTH_VERIFY - document exceptions
-     * <p>
      * The following code creates an instance of H5Datatype in memory.
      * <pre>
      * FileFormat file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
@@ -1061,17 +1063,19 @@ public abstract class FileFormat extends File
      * @param torder order of the byte endian, e.g. Datatype.ORDER_LE.
      * @param tsign  signed or unsinged of an integer, Datatype.SIGN_NONE.
      * @return    The new datatype object if successful; otherwise returns null.
+     * @throws Exception 
+     *               The exceptions thrown vary depending on the 
+     *               implementing class.
      */
     public abstract Datatype createDatatype(
         int tclass,
         int tsize,
         int torder,
         int tsign) throws Exception;
+     // REVIEW DOCS for createDatatype().   Check and document exceptions.
 
     /**
      * Creates a new dataset in a file with/without chunking/compression.
-     * <p>
-     * RUTH_VERIFY - document exception
      * <p>
      * The following example creates a 2D integer dataset of size 100X50 at the
      * root group in an HDF5 file.
@@ -1108,6 +1112,9 @@ public abstract class FileFormat extends File
      *                null if no data is written to the new dataset.
      * 
      * @return        The new dataset if successful; otherwise returns null
+     * @throws Exception 
+     *               The exceptions thrown vary depending on the 
+     *               implementing class.
      */
     public abstract Dataset createScalarDS(
         String name,
@@ -1118,12 +1125,11 @@ public abstract class FileFormat extends File
         long[] chunks,
         int gzip,
         Object data) throws Exception;
+     // REVIEW DOCS for createScalarDS().   Check and document exceptions.
 
     /**
      * Creates a new compound dataset in a file with/without chunking and 
      * compression.
-     * <p>
-     * RUTH_VERIFY - Document exception
      * <p>
      * The following example creates a compressed 2D compound dataset with 
      * size of 100X50 in a root group.
@@ -1168,6 +1174,11 @@ public abstract class FileFormat extends File
      * 
      * @return                new dataset object if successful; 
      *                        otherwise returns null
+     * @throws UnsupportedOperationException  If the implementing class does
+     *                        not support compound datasets.
+     * @throws Exception 
+     *               The exceptions thrown vary depending on the 
+     *               implementing class.
      */
     public Dataset createCompoundDS(
         String name,
@@ -1180,6 +1191,7 @@ public abstract class FileFormat extends File
         Datatype[] memberDatatypes,
         int[] memberSizes,
         Object data) throws Exception
+     // REVIEW DOCS for createCompoundDS().   Check and document exceptions.
     {
         // If the implementing subclass doesn't have this method then that
         // format doesn't support Compound DataSets and we throw an
@@ -1190,8 +1202,6 @@ public abstract class FileFormat extends File
 
     /**
      * Creates a new image in a file.
-     * <p>
-     * RUTH_VERIFY - Document exception
      * <p>
      * The following example creates a 2D image of size 100X50 in a root group.
      * <pre>
@@ -1230,6 +1240,9 @@ public abstract class FileFormat extends File
      * @param data      data value of the image, null if no data.
      * @return          The new image object if successful; 
      *                  otherwise returns null
+     * @throws Exception 
+     *               The exceptions thrown vary depending on the 
+     *               implementing class.
      */
     public abstract Dataset createImage(
 
@@ -1243,6 +1256,7 @@ public abstract class FileFormat extends File
         int ncomp,
         int interlace,
         Object data) throws Exception;
+     // REVIEW DOCS for createImage().   Check and document exceptions.
 
     /**
      * Creates a new group with specified name in existing group.
@@ -1253,10 +1267,13 @@ public abstract class FileFormat extends File
      * @param name The name of the new group.
      * @param parentGroup The parent group, or null.
      * @return The new group if successful; otherwise returns null.
-     * @throws RUTH ADD EXCEPTIONS
+     * @throws Exception 
+     *               The exceptions thrown vary depending on the 
+     *               implementing class.
      */
     public abstract Group createGroup(String name, 
                                       Group parentGroup) throws Exception;
+     // REVIEW DOCS for createGroup().   Check and document exceptions.
 
     /**
      * Creates a link to an existing object in the open file.
@@ -1268,13 +1285,16 @@ public abstract class FileFormat extends File
      * @param currentObj The existing object the new link will reference.
      * @return The object pointed to by the new link if successful; 
      *         otherwise returns null.
-     * @throws Exceptions are specific to the implementing class.
-     * RUTH- Verify Implementing classes document these and also
-     * 'do the right thing' if fid is -1, currentObj is non-null, if 
-     * object is null, or the root group then what?  document & verify!
+     * @throws Exception 
+     *               The exceptions thrown vary depending on the 
+     *               implementing class.
      */
     public abstract HObject createLink(Group linkGroup, String name, 
                                        HObject currentObj) throws Exception;
+     // REVIEW DOCS for createLink().   
+     // Verify Implementing classes document these and also
+     // 'do the right thing' if fid is -1, currentObj is non-null, if 
+     // object is null, or the root group then what?  document & verify!
 
     /**
      * Copies the source object to a new destination.
@@ -1332,20 +1352,23 @@ public abstract class FileFormat extends File
      */
     public abstract TreeNode copy(HObject srcObj, Group dstGroup, 
                                   String dstName) throws Exception;
+     // REVIEW DOCS for copy().  
+     // CONFIRM USE SRC.copy not DEST.copy.  Also what is returned on 
+     // failure.  ALSO exceptions. ALSO, does it copy data or just structure?
 
     /**
      * Deletes an object from a file.
-     * <p>
-     * RUTH-VERIFY... what about exceptions?
      * 
      * @param obj The object to delete.
+     * @throws Exception 
+     *               The exceptions thrown vary depending on the 
+     *               implementing class.
      */
     public abstract void delete(HObject obj) throws Exception;
+     // REVIEW DOCS for delete().   Check and document exceptions.
 
     /**
      * Attaches a given attribute to an object.
-     * <p>
-     * RUTH_VERIFY - check exception 
      * <p>
      * If the attribute does not exists, creates an attibute in file,
      * and attches it the object. If the attribute already exists in the object,
@@ -1354,9 +1377,13 @@ public abstract class FileFormat extends File
      * @param obj The object to which the attribute is attached to.
      * @param attr The atribute to attach.
      * @param attrExisted The indicator if the given attribute exists.
+     * @throws Exception 
+     *               The exceptions thrown vary depending on the 
+     *               implementing class.
      */
     public abstract void writeAttribute(HObject obj, Attribute attr, 
         boolean attrExisted) throws Exception;
+     // REVIEW DOCS for writeAttribute().   Check and document exceptions.
 
 
     /***************************************************************************
