@@ -851,7 +851,7 @@ public class H5 {
             status = H5Dread_string(dataset_id, mem_type_id,mem_space_id, file_space_id,
                 xfer_plist_id, (String[])obj);
             // Rosetta Biosoftware - add support for Strings (variable length) 
-         } else if (is1D && dataClass.getComponentType() == String.class) {      // already know it is an array 
+         } else if (is1D && (dataClass.getComponentType() == String.class)) {      // already know it is an array 
                  status = H5DreadVL(dataset_id, mem_type_id,mem_space_id, file_space_id, 
                      xfer_plist_id, (Object[])obj); 
         } else {
@@ -992,8 +992,8 @@ public class H5 {
         }
             
         // Rosetta Biosoftware - call into H5DwriteString for variable length Strings 
-        else if (H5.H5Tget_class(mem_type_id) == HDF5Constants.H5T_STRING && H5.H5Tis_variable_str(mem_type_id) 
-                        && dataClass.isArray() && dataClass.getComponentType() == String.class && is1D) { 
+        else if ((H5.H5Tget_class(mem_type_id) == HDF5Constants.H5T_STRING) && H5.H5Tis_variable_str(mem_type_id) 
+                        && dataClass.isArray() && (dataClass.getComponentType() == String.class) && is1D) { 
                 status = H5DwriteString(dataset_id, mem_type_id, 
                                 mem_space_id, file_space_id, xfer_plist_id, (String[])obj); 
                     

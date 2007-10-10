@@ -73,8 +73,9 @@ public class HObjectTest extends TestCase {
          */
         public final void testGetFile() {
             String fullFileName = testObj.getFile();
-            if ( ! fullFileName.endsWith( H5TestFile.NAME_FILE_H5 ) )
-                        fail("Wrong File");
+            if ( ! fullFileName.endsWith( H5TestFile.NAME_FILE_H5 ) ) {
+                fail("Wrong File");
+            }
         }
 
 
@@ -87,8 +88,9 @@ public class HObjectTest extends TestCase {
 	 * </ul>
 	 */
 	public final void testGetName() {
-		if (!testObj.getName().equals(GNAME.substring(1)))
-			fail("GetName returns wrong name");
+		if (!testObj.getName().equals(GNAME.substring(1))) {
+            fail("GetName returns wrong name");
+        }
 	}
 
 	/**
@@ -100,8 +102,9 @@ public class HObjectTest extends TestCase {
 	 * </ul>
 	 */
 	public final void testGetFullName() {
-		if (!testObj.getFullName().equals(GNAME))
-			fail("GetFullName returns wrong name");
+		if (!testObj.getFullName().equals(GNAME)) {
+            fail("GetFullName returns wrong name");
+        }
 	}
 
 	/**
@@ -113,8 +116,9 @@ public class HObjectTest extends TestCase {
 	 * </ul>
 	 */
 	public final void testGetPath() {
-		if (!testObj.getPath().equals("/"))
-			fail("GetPath returns wrong path");
+		if (!testObj.getPath().equals("/")) {
+            fail("GetPath returns wrong path");
+        }
 	}
 
 	/**

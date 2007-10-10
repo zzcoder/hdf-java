@@ -126,7 +126,9 @@ public class TestH5File
 
                     // compound members
                     int rank = h5DS.getRank();
-                    if (rank <=0 ) h5DS.init();
+                    if (rank <=0 ) {
+                        h5DS.init();
+                    }
                     n = h5DS.getMemberCount();
                     String[] names = h5DS.getMemberNames();
                     for (int i=0; i<n; i++)
@@ -228,7 +230,7 @@ public class TestH5File
                         data = h5DS.read();
                     } catch (Exception ex) {}
 
-                    if (data != null && data.getClass().isArray())
+                    if ((data != null) && data.getClass().isArray())
                     {
                         // print out the first 1000 data points
                         n = Math.min(Array.getLength(data), 1000);
@@ -287,8 +289,9 @@ public class TestH5File
                     try { g.getMetadata(); }
                     catch (Exception ex) { System.out.println(ex); }
 
-                    if (info == null)
+                    if (info == null) {
                         continue;
+                    }
 
                     int n = info.size();
                     for (int i=0; i<n; i++)

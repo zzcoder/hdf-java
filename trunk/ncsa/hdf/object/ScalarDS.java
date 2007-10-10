@@ -298,8 +298,9 @@ public abstract class ScalarDS extends Dataset
     {
         isImageDisplay = b;
         
-        if (isImageDisplay)
+        if (isImageDisplay) {
             enumConverted = false;
+        }
     } 
     
     /**

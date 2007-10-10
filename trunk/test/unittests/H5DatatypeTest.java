@@ -500,8 +500,6 @@ public class H5DatatypeTest extends TestCase {
      */
     public final void testRemoveMetadata() {
         Vector attrs = null;
-        final Attribute attr = null;
-        
         try {
             attrs = (Vector) testDatatype.getMetadata();
         } catch (final Exception ex) { 

@@ -675,7 +675,7 @@ public class H5File extends FileFormat
                 size = refs.length;
                 for (int j=0; j<size; j++)
                 {
-                    long[] theOID = (long[])oidMap.get(String.valueOf(refs[j]));
+                    long[] theOID = oidMap.get(String.valueOf(refs[j]));
                     if (theOID != null)
                     {
                         refs[j] = theOID[0];

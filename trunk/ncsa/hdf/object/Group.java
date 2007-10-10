@@ -18,8 +18,6 @@ import java.util.*;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import ncsa.hdf.object.h5.H5Group;
-
 /**
  * Group is an abstract class. Current implementing classes are the H4Group and
  * H5Group. This class includes general information of a group object such as
@@ -107,7 +105,7 @@ public abstract class Group extends HObject
             memberList = new Vector(size+5);
         }
 
-        if ( object != null && !memberList.contains(object) ) {
+        if ( (object != null) && !memberList.contains(object) ) {
             memberList.add(object);
         }
     }

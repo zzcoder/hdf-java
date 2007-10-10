@@ -411,8 +411,9 @@ public class H5Datatype extends Datatype
                 while (token.hasMoreTokens()) {
                     memstr = token.nextToken();
                     
-                    if (memstr != null)
+                    if (memstr != null) {
                         memstr = memstr.trim();
+                    }
                     
                     if ((memstr==null) || (memstr.length()<1)) {
                         continue;

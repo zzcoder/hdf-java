@@ -1385,7 +1385,7 @@ implements ImageView, ActionListener
         {
             // auto contrast is not needed for byte data
             boolean doAutoContrast = (ViewProperties.isAutoContrast() && 
-                                     minMaxGain != null && minMaxBias != null);
+                                     (minMaxGain != null) && (minMaxBias != null));
             if (doAutoContrast) {
                 if (autoContrastSlider == null) {
                     autoContrastSlider = new AutoContrastSlider((JFrame)viewer, dataRange);
@@ -1405,7 +1405,7 @@ implements ImageView, ActionListener
         }
         else if (cmd.equals("Calculate AutoGain")) {
             boolean doAutoContrast = (ViewProperties.isAutoContrast() && 
-                    minMaxGain != null && minMaxBias != null);
+                    (minMaxGain != null) && (minMaxBias != null));
             if (doAutoContrast) {
                 gainBias = null;
                 applyAutoGain();
@@ -3230,8 +3230,9 @@ implements ImageView, ActionListener
                     value = maxValue;
                 }
                 
-                if (value != (int)minmax[0])
+                if (value != (int)minmax[0]) {
                     minField.setValue(new Integer(value));
+                }
             }
             else if (slider.equals(maxSlider))
             {
@@ -3239,8 +3240,9 @@ implements ImageView, ActionListener
                 if (value < minValue) {
                     value = minValue;
                 }
-                if (value != (int)minmax[1])
+                if (value != (int)minmax[1]) {
                     maxField.setValue(new Integer(value));
+                }
             }
         }
 

@@ -73,21 +73,24 @@ public class CompoundDSTest extends TestCase {
 		assertEquals(testDS.getMemberCount(), correctMemberCount);
 		String[] names = testDS.getMemberNames();
 		for (int i = 0; i < correctMemberCount; i++) {
-			if (!names[i].equals(H5TestFile.COMPOUND_MEMBER_NAMES[i]))
-				fail("Member Name at position " + i + "should be " + H5TestFile.COMPOUND_MEMBER_NAMES[i] + 
+			if (!names[i].equals(H5TestFile.COMPOUND_MEMBER_NAMES[i])) {
+                fail("Member Name at position " + i + "should be " + H5TestFile.COMPOUND_MEMBER_NAMES[i] + 
 						", while getMemberNames returns " + names[i]);
+            }
 		}
 		Datatype[] types = testDS.getMemberTypes();
 		for (int i = 0; i < correctMemberCount; i++) {
-			if (!types[i].getDatatypeDescription().equals(H5TestFile.COMPOUND_MEMBER_DATATYPES[i].getDatatypeDescription()))
-				fail("Member Type at position " + i + "should be " + 
+			if (!types[i].getDatatypeDescription().equals(H5TestFile.COMPOUND_MEMBER_DATATYPES[i].getDatatypeDescription())) {
+                fail("Member Type at position " + i + "should be " + 
 						H5TestFile.COMPOUND_MEMBER_DATATYPES[i].getDatatypeDescription() + 
 						", while getMemberTypes returns " + types[i].getDatatypeDescription());
+            }
 		}
 		int[] orders = testDS.getMemberOrders();
 		for (int i = 0; i < correctMemberCount; i++) {
-			if (orders[i] != 1)
-				fail("Member Order at position " + i + "should be " + 1 + ", while getMemberOrders returns " + orders[i]);
+			if (orders[i] != 1) {
+                fail("Member Order at position " + i + "should be " + 1 + ", while getMemberOrders returns " + orders[i]);
+            }
 		}
 		for (int i = 0; i < correctMemberCount; i++) {
 			assertNull(testDS.getMemeberDims(i)); // all scalar data
@@ -104,9 +107,10 @@ public class CompoundDSTest extends TestCase {
 	 * </ul>
 	 */
 	public final void testSelectionDeselectionCountWorks() {
-		if (testDS.getSelectedMemberCount() != H5TestFile.COMPOUND_MEMBER_NAMES.length)
-			fail("Right after init getSelectedMemberCount returns" + testDS.getSelectedMemberCount() 
+		if (testDS.getSelectedMemberCount() != H5TestFile.COMPOUND_MEMBER_NAMES.length) {
+            fail("Right after init getSelectedMemberCount returns" + testDS.getSelectedMemberCount() 
 					+ ", when it should return " + H5TestFile.COMPOUND_MEMBER_NAMES.length);
+        }
 		
 		testDS.setMemberSelection(false);
 		assertEquals(testDS.getSelectedMemberCount(), 0);
@@ -120,14 +124,17 @@ public class CompoundDSTest extends TestCase {
 			int[] orders = testDS.getSelectedMemberOrders();
 			Datatype[] types = testDS.getMemberTypes();
 			for (int j = 0; j <= i; j++) {
-				if (!testDS.isMemberSelected(j))
-					fail("Member " + j + "was selected while isMemberSelected says it wasnt.");
-				if (orders[j] != 1)
-					fail("Member Order at position " + j + "should be " + 1 + ", while getMemberOrders returns " + orders[j]);
-				if (!types[j].getDatatypeDescription().equals(H5TestFile.COMPOUND_MEMBER_DATATYPES[j].getDatatypeDescription()))
-					fail("Member Type at position " + i + "should be " + 
+				if (!testDS.isMemberSelected(j)) {
+                    fail("Member " + j + "was selected while isMemberSelected says it wasnt.");
+                }
+				if (orders[j] != 1) {
+                    fail("Member Order at position " + j + "should be " + 1 + ", while getMemberOrders returns " + orders[j]);
+                }
+				if (!types[j].getDatatypeDescription().equals(H5TestFile.COMPOUND_MEMBER_DATATYPES[j].getDatatypeDescription())) {
+                    fail("Member Type at position " + i + "should be " + 
 							H5TestFile.COMPOUND_MEMBER_DATATYPES[j].getDatatypeDescription() + 
 							", while getMemberTypes returns " + types[j].getDatatypeDescription());
+                }
 			}
 		}
 	}

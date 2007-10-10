@@ -893,10 +893,11 @@ public class ViewProperties extends Properties
 
         put("max.members", String.valueOf(max_members));
         
-        if (isAutoContrast)
+        if (isAutoContrast) {
             put("image.contrast", "auto");
-        else
+        } else {
             put("image.contrast", "general");
+        }
 
         put("enum.conversion", String.valueOf(convertEnum));
         

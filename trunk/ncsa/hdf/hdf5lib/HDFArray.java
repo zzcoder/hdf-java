@@ -547,7 +547,7 @@ private byte[] IntegerToByte( Integer in[] ) {
 
 private Integer[] ByteToInteger( byte[] bin ) {
     int in[] = HDFNativeData.byteToInt(bin);
-    int nelems = java.lang.reflect.Array.getLength((Object)in);
+    int nelems = java.lang.reflect.Array.getLength(in);
     Integer[] out = new Integer[nelems];
 
     for (int i = 0; i < nelems; i++) {
@@ -557,7 +557,7 @@ private Integer[] ByteToInteger( byte[] bin ) {
 }
 
 private Integer[] ByteToInteger( int start, int len, byte[] bin ) {
-    int in[] = (int [])HDFNativeData.byteToInt(start,len,bin);
+    int in[] = HDFNativeData.byteToInt(start,len,bin);
     int nelems = java.lang.reflect.Array.getLength((Object)in);
     Integer[] out = new Integer[nelems];
 

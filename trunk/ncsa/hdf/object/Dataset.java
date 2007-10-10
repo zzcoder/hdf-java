@@ -904,7 +904,7 @@ public abstract class Dataset extends HObject
             byte[] bdata = (byte[])data_in;
             for (int i=0; i<size; i++) 
             { 
-                sdata[i] = (short) (((short)bdata[i] + 256) & 0xFF); 
+                sdata[i] = (short) ((bdata[i] + 256) & 0xFF); 
             } 
 
             data_out = sdata;
@@ -920,7 +920,7 @@ public abstract class Dataset extends HObject
             short[] sdata = (short[])data_in;
             for (int i=0; i<size; i++) 
             { 
-                idata[i] = ((int)sdata[i] + 65536) & 0xFFFF; 
+                idata[i] = (sdata[i] + 65536) & 0xFFFF; 
             } 
 
             data_out = idata;
@@ -936,7 +936,7 @@ public abstract class Dataset extends HObject
             int[] idata = (int[])data_in;
             for (int i=0; i<size; i++) 
             { 
-                ldata[i] = ((long)idata[i] + 4294967296L) & 0xFFFFFFFFL; 
+                ldata[i] = (idata[i] + 4294967296L) & 0xFFFFFFFFL; 
             } 
             
             data_out = ldata;
