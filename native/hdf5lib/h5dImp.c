@@ -411,8 +411,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dextend
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dclose
   (JNIEnv *env, jclass clss, jint dataset_id)
 {
-    hid_t retVal = -1;
-    retVal =  H5Dclose((hid_t)dataset_id );
+    hid_t retVal = 0;
+
+	if (dataset_id > 0)
+	    retVal =  H5Dclose((hid_t)dataset_id );
+
     if (retVal < 0) {
         h5libraryError(env);
     }

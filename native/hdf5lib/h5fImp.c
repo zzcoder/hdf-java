@@ -228,11 +228,15 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1access_1plist
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fclose
   (JNIEnv *env, jclass clss, jint file_id)
 {
-    herr_t status = -1;
-    status = H5Fclose((hid_t) file_id );
+    herr_t status = 0;
+
+	if (file_id > 0)
+        status = H5Fclose((hid_t) file_id );
+
     if (status < 0) {
         h5libraryError(env);
     }
+
     return (jint)status;
 }
 
