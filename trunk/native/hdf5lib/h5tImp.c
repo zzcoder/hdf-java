@@ -845,11 +845,15 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tpack
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tclose
   (JNIEnv *env, jclass clss, jint type_id)
 {
-    herr_t retVal = -1;
-    retVal =  H5Tclose(type_id);
+    herr_t retVal = 0;
+
+	if (type_id > 0)
+        retVal =  H5Tclose(type_id);
+
     if (retVal < 0) {
         h5libraryError(env);
     }
+
     return (jint)retVal;
 }
 

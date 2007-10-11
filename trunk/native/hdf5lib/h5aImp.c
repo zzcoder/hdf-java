@@ -373,12 +373,15 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Adelete
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aclose
   (JNIEnv *env, jclass clss, jint attr_id)
 {
-    herr_t retVal = -1;
-    retVal =  H5Aclose((hid_t)attr_id);
+    herr_t retVal = 0;
+
+	if (attr_id > 0)
+	    retVal =  H5Aclose((hid_t)attr_id);
+
     if (retVal < 0) {
-        /* throw exception */
         h5libraryError(env);
     }
+
     return (jint)retVal;
 }
 

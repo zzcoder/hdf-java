@@ -995,11 +995,15 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sselect_1hyperslab
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sclose
   (JNIEnv *env, jclass clss, jint space_id)
 {
-    herr_t retVal = -1;
-    retVal =  H5Sclose(space_id);
+    herr_t retVal = 0;
+
+	if (space_id > 0)
+        retVal =  H5Sclose(space_id);
+
     if (retVal < 0) {
         h5libraryError(env);
     }
+
     return (jint)retVal;
 }
 
