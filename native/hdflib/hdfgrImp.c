@@ -25,6 +25,9 @@
 #include "mfhdf.h"
 #include "jni.h"
 
+/* Name changed from MAX_GR_NAME to H4_MAX_GR_NAME in hdf4.2r2 */
+#define MAX_GR_NAME H4_MAX_GR_NAME
+
 extern jboolean h4outOfMemory( JNIEnv *env, char *functName);
 extern jboolean makeChunkInfo( JNIEnv *env, jobject chunkobj, int32 flgs, HDF_CHUNK_DEF *cinf);
 extern jboolean getNewCompInfo( JNIEnv *env, jobject ciobj, comp_info *cinf);
