@@ -57,28 +57,98 @@ or collapse folders to navigate the hierarchical structure of an HDF file.
 <h2>
 <a NAME="ug01release"></a>1.1 About This Release</h2>
 <p>
-This release includes bug fixes and a few new features. <strong>The following
-is a list of major changes.</strong>
-<p>
-<UL>
-    <li>Fix bugs
-    <li>Support for HDF-SRB (Windows and Linux)
-    <li>Update HDF5 library to release 1.6.5
-    <Li>Support for compound datatypes containing 2D arrays (or greater)
-    <Li>Create/display named datatypes in HDF5
-    <li>Create link in hdf5
-    <li>Improve ability to manipulate palette
-    <li>Select row/colunm data as X axis for xy plot in the table view
-</UL>
-<p>
-The <b>HDF-SRB model</b> is a client-server model that provides interactive and efficient
-access to remote HDF5 files. Like most client/server model, the HDF-SRB model is
-implemented on a set of client and server APIs and message passing scheme. Unlike
-other client/server model, the HDF-SRB model is object oriented. The client can
-access datasets or subsets of datasets in large files without bringing entire files
-into local machines. For more details, please read the
-<a href="/hdf-srb-html/HDF-SRB-UG.html">HDF-SRB User's Guide</a>.
+This release includes bug fixes, new features, test suite, and improved documentation.
+<h4>Platforms</h4>
+This release was built and tested for the follwing platforms:
 
+<h5>32-bit Java 2 SDK</h5>
+<ul>
+  <li> Linux </li>
+  <li> Solaris </li>
+  <li> Mac PowerPC </li>
+  <li> Mac Intel </li>
+  <li> Windows (Vista/XP/2000) </li>
+</ul>
+
+<h5>64-bit Java 2 SDK</h5>
+<ul>
+  <li> Linux 64-bit AMD </li>
+  <li> Solaris 64-bit </li>
+</ul>
+
+<h5>The following platforms are droped from this release</h5>
+<ul>
+  <li> AIX </li>
+  <li> Irix </li>
+  <li> OSF1 </li>
+</ul>
+
+<h4>New features</h4>
+There are a lot of new features added to the release. The following is a list
+of major new features.
+<ul>
+  <li>Support for compound datatypes containing 2D arrays (or greater) </li>
+  <li>Create/display named datatypes in an HDF5 file </li>
+  <li>Copy object to same group w/different name </li>
+  <li>Allow creation of dataset with enum type/named datatype </li>
+  <li>Support for "filtering fillvalue" to Image Viewer </li>
+  <li>Show actual palette that results from palette manipulation </li>
+  <li>Add ability to create a chunked dataset with compound datatype </li>
+  <li>Deal with large number of 8kx8k 3D images by reuse the memory data buffer</li>
+  <li>Add -geometry switch to set the window size and location</li>
+  <li>Support large Fonts in GUI components</li>
+  <li>Grad and drag to move/browse a image </li>
+  <li>Add autogain algorithm for image Brightness/Contrast </li>
+</ul>
+
+
+<h4>Bug fix</h4>
+There are many bug fixes in HDF-Java 2.4. One of the major bugs is the <strong>
+memory leak</strong> as explained in the follwoing.
+
+<p>
+In HDF-Java 2.3 or earlier version, an attribute and datatype were left open when
+the file structure was retrieved from a file. The following code will build up the 
+memory leak until the machine is out of memory.
+
+<pre>
+while (true) 
+{
+    H5File f=new H5File(fname, H5File.READ);
+    f.open();
+    f.close();
+}
+</pre>
+
+Another memory leak is at compound datasets. When a compound dataset is open, we
+keep the datatypes of the compound fields in memory so that we can reuse them for
+better perfomance. However, these datatypes were not closed when the file is closed. 
+The following code will make the JVM run out of memory.
+
+<pre>
+while (true)
+{
+    final H5File file = new H5File(fname, H5File.READ);
+    final Dataset dset = (Dataset)file.get("/Table0");
+    dset.init();
+
+    file.close();
+}
+</pre>
+
+<h4>Other enhancements</h4>
+
+<dl>
+<dt>Test suite</dt>
+<dd>Using the junit test frame, we build a test suite to test all the public APIs 
+in the object package (ncsa.hdf.object) and the HDF5 object package (ncsa.hdf.object.h5).
+The test suite is added into the source configuration to make it easy to run by "make check"</dd>
+<dt>Improved documentation</dt>
+<dd>All the public APIs in the object package (ncsa.hdf.object) and the HDF5 object package 
+(ncsa.hdf.object.h5) are fully documented.</dd>
+</dl>
+
+<h3>Modular components</h3>
 <p>
 HDFView version 2.0 is the first release of the modular HDFView. It includes bug fixes
 and new features. The main difference between version 2.0 and its previous releases is that
