@@ -1,12 +1,17 @@
 
 The hdf-java product has been built and tested on:
-    Windows 98/NT/2000/XP 
-    Solaris 
-    Linux 
-    AIX 
-    Irix 6.5 
-    Mac OS X 
-    OSF1 
+
+32-bit Java 2 SDK
+    * Linux
+    * Solaris
+    * Mac PowerPC
+    * Mac Intel
+    * Windows (Vista/XP/2000)
+
+64-bit Java 2 SDK
+    * Linux 64-bit AMD
+    * Solaris 64-bit
+
 
 This code will likely work on most platforms that support HDF and Java,
 although the configure and Makefile may need to be adjusted.
