@@ -60,7 +60,7 @@ public class ViewProperties extends Properties
     public static final String DELIMITER_SEMI_COLON = "Semi-Colon";
 
     /** user's guide */
-    private static String usersGuide = "http://hdfgroup.org/hdf-java-html/hdfview/UsersGuide/index.html";
+    private static String usersGuide = System.getProperty("user.dir")+"/UsersGuide/index.html";
 
     /** the font size */
     private static int fontSize = 12;
