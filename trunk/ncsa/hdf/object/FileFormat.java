@@ -1003,7 +1003,7 @@ public abstract class FileFormat extends File
      * <p>
      * The following code creates a named datatype in a file.
      * <pre>
-     * FileFormat file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+     * H5File file = (H5File)h5file.createInstance("test_hdf5.h5",FileFormat.WRITE);
      * H5Datatype dtype = file.createDatatype(Datatype.CLASS_INTEGER,
      *     4, Datatype.NATIVE, Datatype.NATIVE, "Native Integer");
      * </pre>
@@ -1051,7 +1051,7 @@ public abstract class FileFormat extends File
      * <p>
      * The following code creates an instance of H5Datatype in memory.
      * <pre>
-     * FileFormat file = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+     * H5File file = (H5File)h5file.createInstance("test_hdf5.h5",FileFormat.WRITE);
      * H5Datatype dtype = file.createDatatype(Datatype.CLASS_INTEGER,
      *     4, Datatype.NATIVE, Datatype.NATIVE);
      * </pre>
