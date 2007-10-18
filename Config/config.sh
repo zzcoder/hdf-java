@@ -20,7 +20,7 @@ EXTRA_FLAGS=
 ############################################################
 #                     solaris32 (linew)                    #
 ############################################################
-#INSTDIR=/mnt/scr1/xcao/hdf_java/bin/sollaris32
+#INSTDIR=/mnt/scr1/xcao/hdf_java/bin/solaris32
 #JAVAINC=/usr/jdk/instances/jdk1.5.0/include
 #JAVALIB=/usr/jdk/instances/jdk1.5.0/lib
 #HDF4=/mnt/scr1/xcao/hdf_java/lib/solaris32/hdf4
@@ -33,15 +33,15 @@ EXTRA_FLAGS=
 ############################################################
 #                     macintel (tejeda)                    #
 ############################################################
-INSTDIR=/Users/xcao/work/build/hdf-java
-JAVAINC=/System/Library/Frameworks/JavaVM.framework/Headers
-JAVALIB=/System/Library/Frameworks/JavaVM.framework/Libraries
-HDF4=/Users/xcao/work/build/hdf4
-HDF5=/Users/xcao/work/build/hdf5
-JPEG=/Users/xcao/work/lib-external/jpeg-6b
-SZIP=/Users/xcao/work/lib-external/szip-2.1
-ZLIB=/Users/xcao/work/lib-external/zlib-1.2.1
-EXTRA_FLAGS="-build=powerpc-apple --with-jdkclasses=/System/Library/Frameworks/JavaVM.framework/Classes --with-javabin=/System/Library/Frameworks/JavaVM.framework/Commands"
+#INSTDIR=/Users/xcao/work/build/hdf-java
+#JAVAINC=/System/Library/Frameworks/JavaVM.framework/Headers
+#JAVALIB=/System/Library/Frameworks/JavaVM.framework/Libraries
+#HDF4=/Users/xcao/work/build/hdf4
+#HDF5=/Users/xcao/work/build/hdf5
+#JPEG=/Users/xcao/work/lib-external/jpeg-6b
+#SZIP=/Users/xcao/work/lib-external/szip-2.1
+#ZLIB=/Users/xcao/work/lib-external/zlib-1.2.1
+#EXTRA_FLAGS="-build=powerpc-apple --with-jdkclasses=/System/Library/Frameworks/JavaVM.framework/Classes --with-javabin=/System/Library/Frameworks/JavaVM.framework/Commands"
 
 ############################################################
 #                     solaris64 (linew)                    #
