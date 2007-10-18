@@ -770,6 +770,7 @@ implements ImageView, ActionListener
     private void getIndexedImage() throws Exception, OutOfMemoryError {
         imagePalette = dataset.getPalette();
         boolean noPalette = false;
+        boolean doAutoContrast = false;
         
         if (imagePalette == null) {
             noPalette = true;
@@ -778,15 +779,17 @@ implements ImageView, ActionListener
         }
             
         data = dataset.getData();
-        data =  dataset.convertFromUnsignedC();
+        if (dataset.getDatatype().getDatatypeClass() == Datatype.CLASS_INTEGER) {
+            data =  dataset.convertFromUnsignedC();
+            doAutoContrast = (ViewProperties.isAutoContrast() && noPalette);
+        }
+        else
+            doAutoContrast = false;
 
         boolean isAutoContrastFailed = true;
-        if (ViewProperties.isAutoContrast() && noPalette) 
-        {
-            // do not do autoContrast for images with palette
+        if (doAutoContrast) 
             isAutoContrastFailed = (!computeAutoGainImageData());
-        }
-
+ 
         int w = dataset.getWidth();
         int h = dataset.getHeight();
         if (isAutoContrastFailed) {
@@ -853,13 +856,15 @@ implements ImageView, ActionListener
          }
 
         autoGainData=Tools.autoContrastApply(data, autoGainData, gainBias, isUnsigned);
-       
+
         if (autoGainData != null) {
             if ((imageByteData == null) || (imageByteData.length != Array.getLength(data))) {
                 imageByteData = new byte[Array.getLength(data)];
             }
             retValue = (Tools.autoContrastConvertImageBuffer(autoGainData, imageByteData, true)>=0);
         }
+        else
+            retValue = false;
         
         return retValue;
     }

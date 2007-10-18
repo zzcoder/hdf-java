@@ -34,15 +34,15 @@ import nom.tam.fits.*;
  */
 public class FitsDataset extends ScalarDS
 {
-	public static final long serialVersionUID = HObject.serialVersionUID;
+    public static final long serialVersionUID = HObject.serialVersionUID;
 
     /**
      * The list of attributes of this data object. Members of the list are
      * instance of Attribute.
      */
-     private List attributeList;
+    private List attributeList;
 
-     private BasicHDU nativeDataset;
+    private BasicHDU nativeDataset;
 
     /**
      * Constructs an FitsDataset object with specific netcdf variable.
@@ -52,37 +52,53 @@ public class FitsDataset extends ScalarDS
      * @param oid the unique identifier for this dataset.
      */
     public FitsDataset(
-        FileFormat fileFormat,
-        BasicHDU hdu,
-        String dName,
-        long[] oid) {
+            FileFormat fileFormat,
+            BasicHDU hdu,
+            String dName,
+            long[] oid) {
         super (fileFormat, dName, HObject.separator, oid);
         unsignedConverted = false;
         nativeDataset = hdu;
     }
 
-    //Implementing Dataset
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Dataset#copy(ncsa.hdf.object.Group, java.lang.String, long[], java.lang.Object)
+     */
     public Dataset copy(Group pgroup, String dstName, long[] dims, Object buff)
     throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
     }
 
-    // implementing Dataset
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Dataset#readBytes()
+     */
     public byte[] readBytes() throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
     }
 
-    // Implementing DataFormat
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Dataset#read()
+     */
     public Object read() throws Exception {
         Object theData = null;
+        Object fitsData = null;
 
         if (nativeDataset == null) {
             return null;
         }
 
-        Object fitsData = nativeDataset.getData().getData();
+        try { 
+            fitsData = nativeDataset.getData().getData();
+        } catch (Exception ex) {
+            throw new UnsupportedOperationException("This implementation only supports integer and float dataset. " +
+                    "It may not work for other datatypes. \n"+ex);
+        }
+
         int n = get1DLength(fitsData);
 
         theData = FitsDatatype.allocateArray(nativeDataset.getBitPix(), n);
@@ -92,13 +108,19 @@ public class FitsDataset extends ScalarDS
         return theData;
     }
 
-    //Implementing DataFormat
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Dataset#write(java.lang.Object)
+     */
     public void write(Object buf) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
     }
 
-    // Implementing DataFormat
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#getMetadata()
+     */
     public List getMetadata() throws Exception {
         if (attributeList != null) {
             return attributeList;
@@ -139,26 +161,39 @@ public class FitsDataset extends ScalarDS
         return attributeList;
     }
 
-    // implementing DataFormat
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#writeMetadata(java.lang.Object)
+     */
     public void writeMetadata(Object info) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
     }
 
-    // implementing DataFormat
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#removeMetadata(java.lang.Object)
+     */
     public void removeMetadata(Object info) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
     }
 
-    // Implementing HObject
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.HObject#open()
+     */
     public int open() { return -1;}
 
-    // Implementing HObject
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.HObject#close(int)
+     */
     public void close(int did) {}
 
-    /**
-     * Retrieve and initialize dimensions and member information.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Dataset#init()
      */
     public void init() {
         if (nativeDataset == null) {
@@ -176,6 +211,7 @@ public class FitsDataset extends ScalarDS
         if (axes == null) {
             return;
         }
+
 
         rank = axes.length;
         if (rank == 0) {
@@ -221,7 +257,10 @@ public class FitsDataset extends ScalarDS
         }
     }
 
-    // Implementing ScalarDS
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.ScalarDS#getPalette()
+     */
     public byte[][] getPalette()
     {
         if (palette == null) {
@@ -231,10 +270,9 @@ public class FitsDataset extends ScalarDS
         return palette;
     }
 
-    /**
-     * read specific image palette from file.
-     * @param idx the palette index to read
-     * @return the palette data into two-dimension byte array, byte[3][256]
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.ScalarDS#readPalette(int)
      */
     public byte[][] readPalette(int idx) {
         return null;
@@ -253,26 +291,30 @@ public class FitsDataset extends ScalarDS
      * @return the new dataset if successful. Otherwise returns null.
      */
     public static FitsDataset create(
-         String name,
-        Group pgroup,
-        Datatype type,
-        long[] dims,
-        long[] maxdims,
-        long[] chunks,
-        int gzip,
-        Object data) throws Exception {
+            String name,
+            Group pgroup,
+            Datatype type,
+            long[] dims,
+            long[] maxdims,
+            long[] chunks,
+            int gzip,
+            Object data) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
     }
 
-    /** returns the byte array of palette refs.
-     *  returns null if there is no palette attribute attached to this dataset.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.ScalarDS#getPaletteRefs()
      */
     public byte[] getPaletteRefs() {
         return null;
     }
 
-    // implementing ScalarDS
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Dataset#getDatatype()
+     */
     public Datatype getDatatype() {
         if (datatype == null) {
             try {datatype = new FitsDatatype(nativeDataset.getBitPix());}
@@ -282,10 +324,9 @@ public class FitsDataset extends ScalarDS
         return datatype;
     }
 
-    /**
-     * Sets the name of the data object.
-     * <p>
-     * @param newName the new name of the object.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.HObject#setName(java.lang.String)
      */
     public void setName (String newName) throws Exception {
         // not supported
@@ -293,6 +334,7 @@ public class FitsDataset extends ScalarDS
     }
 
     private int get1DLength(Object data) throws Exception {
+
         if (!data.getClass().isArray()) {
             return 1;
         }
