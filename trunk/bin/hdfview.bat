@@ -6,7 +6,7 @@
 @REM
 @REM =======================================================================
 
-@REM set up Java home directory (requires jdk1.4.x or above), e.g. D:\java\jdk1.4.2
+@REM set up Java home directory (requires jdk1.5.0 or above), e.g. D:\java\jdk1.5.0
 SET JAVAHOME=
 
 @REM set up "HDF JAVA Product" home directory, e.g. D:\hdf-java
@@ -26,4 +26,4 @@ set OBJ_CLASSPATH="%HDFJAVA%"\lib\jhdfobj.jar;"%HDFJAVA%"\lib\jhdf4obj.jar;"%HDF
 @REM set the CLASSPATH
 set CLASSPATH=%JNI_CLASSPATH%;%OBJ_CLASSPATH%;"%HDFJAVA%"\lib\jhdfview.jar
 
-"%JAVAHOME%\bin\java" -mx999m -Djava.library.path=%PATH% -Dhdfview.root="%HDFJAVA%" -classpath %CLASSPATH% ncsa.hdf.view.HDFView -root "%HDFJAVA%"
+"%JAVAHOME%\bin\java" -mx1024m -Djava.library.path=%PATH% -Dhdfview.root="%HDFJAVA%" -classpath %CLASSPATH% ncsa.hdf.view.HDFView -root "%HDFJAVA%"
