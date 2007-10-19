@@ -3,6 +3,8 @@ $page_title = "HDFView User's Guide -- Introduction";
 include ("../../../links.php"); 
 include ("../../../includes/header.html"); 
 ?>
+
+
 <p>
 <a href="index.html">[Index]</a>
 <a href="ug01introduction.html">[1]</a>
@@ -17,11 +19,11 @@ include ("../../../includes/header.html");
 <h1>
 <fieldset>Chapter 1: Introduction</h1></fieldset>
 <p>
-<UL>
+<ul class="ul">
 <LI><a href="ug01introduction.html#ug01overview">1.0 What It Is</a></LI>
 <LI><a href="ug01introduction.html#ug01release">1.1 About This Release</a></LI>
 <LI><a href="ug01introduction.html#ug01features">1.2 Current Features</a></LI>
-<UL>
+<ul class="ul">
 <LI><a href="ug01introduction.html#ug01browsing">1.2.1 Browsing Features</a></LI>
 <LI><a href="ug01introduction.html#ug01editing">1.2.2 Editing Features</a></LI>
 </UL>
@@ -62,7 +64,7 @@ This release includes bug fixes, new features, test suite, and improved document
 This release was built and tested for the follwing platforms:
 
 <h5>32-bit Java 2 SDK</h5>
-<ul>
+<ul class="ul">
   <li> Linux </li>
   <li> Solaris </li>
   <li> Mac PowerPC </li>
@@ -71,13 +73,13 @@ This release was built and tested for the follwing platforms:
 </ul>
 
 <h5>64-bit Java 2 SDK</h5>
-<ul>
+<ul class="ul">
   <li> Linux 64-bit AMD </li>
   <li> Solaris 64-bit </li>
 </ul>
 
 <h5>The following platforms are droped from this release</h5>
-<ul>
+<ul class="ul">
   <li> AIX </li>
   <li> Irix </li>
   <li> OSF1 </li>
@@ -86,7 +88,7 @@ This release was built and tested for the follwing platforms:
 <h4>New features</h4>
 There are a lot of new features added to the release. The following is a list
 of major new features.
-<ul>
+<ul class="ul">
   <li>Support for compound datatypes containing 2D arrays (or greater) </li>
   <li>Create/display named datatypes in an HDF5 file </li>
   <li>Copy object to same group w/different name </li>
@@ -168,7 +170,7 @@ Modular HDFView is an improved HDFView where I/O and GUI components are
 replaceable modules. It consists of several interfaces that enable users to write
 and use alternative implementations to replace default modules. The current
 replaceable modules include:
-<ul>
+<ul class="ul">
 <li>File I/O (already implemented)
 <li>Image view
 <li>Table view (a spreadsheet-like layout)
@@ -426,7 +428,7 @@ Create empty HDF5 compound dataset.
 <a NAME="ug01limitations"></a>1.3 Limitations</h2>
 
 <strong>The current implementation of HDFView has the following limitations.</strong><p>
-<ul>
+<ul class="ul">
 <p>
 <LI>
 HDFView does not support undo operation; all the changes will go
@@ -462,7 +464,7 @@ does not compile on jdk1.4.x or earlier version.
 
 <p>
 Download Java 2 Platform at:
-<ul>
+<ul class="ul">
 <li><a href="http://java.sun.com/j2se">
 Java<sup><font size=-2>TM</font></sup> 2 Platform, Standard Edition</a>
 (Windows, Solaris, Linux)
@@ -472,7 +474,7 @@ Java<sup><font size=-2>TM</font></sup> 2 Platform, Standard Edition</a>
 <p>
 HDFView 1.3 has been built and tested on the following platforms:
 
-<ul>
+<ul class="ul">
 
 <li>
 Linux</li>
@@ -507,94 +509,108 @@ The pre-built binaries are available in two forms: No_VM_bundled, and VM_bundled
 
 <p>
 <center>
-<table border>
-<caption><b>Pre-built Binaries Distribution</b></caption>
 
-<tr>
-<th>
-<center>Platform</center>
-</th>
+<table border width="600">
+    <caption><h3>32-bit Java Pre-built Binaries Distribution</h3></caption>
 
-<th>
-<center><a href="#JVM_required">Java Virtual Machine Required</a></center>
-</th>
-<p><th>
-<center><a href="#No_JVM_required">StandAlone Application [JRE Bundled]</a></center>
-</th>
-</tr>
-<p>
-<tr>
-<td>Linux</td>
-
-<td>[ <a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_linux_novm.bin">
-hdfview_install_linux_no_vm_bundled.bin 5 MB</a>]</td>
-
-<td>[ <a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_linux_vm.bin">
-hdfview_install_linux_vm_bundled.bin 35 MB</a>]</td>
-</tr>
-
-<tr>
-<td>Solaris</td>
-
-<td>[ <a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_solaris_novm.bin">
-hdfview_install_solaris_no_vm_bundled.bin 5 MB</a>]</td>
-
-<td>[ <a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_solaris_vm.bin">
-hdfview_install_solaris_vm_bundled.bin 35 MB</a>]</td>
-</tr>
-
-<tr>
-<td>Windows</td>
-
-<td>[ <a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_windows_novm.exe">
-hdfview_install_windows_novm.exe 5 MB</a>]</td>
-
-<td>[ <a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_windows_vm.exe">
-hdfview_install_windows_vm.exe 15 MB</a>]</td>
-</tr>
-
-<tr>
-<td>Irix 6.5</td>
-
-<td>[<a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_irix_novm.bin">
-hdfview_install_irix_novm.bin 10 MB</a>]
-</td>
-
-<td>No Virtual Machine is bundled into InstallAnywhere for SGI. </td>
-</tr>
-
-<tr>
-<td>Mac os x</td>
-
-<td>[<a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_macosx_novm.zip">
-hdfview_install_macosx_novm.zip</a> or <a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_macosx_novm.bin">
-.bin 7 MB</a>]
-</td>
-
-<td>Macintosh OS X includes Java 2 VM. There is no need for JRE. </td>
-</tr>
-
-<tr>
-<td>OSF1</td>
-
-<td>[<a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_osf1_novm.bin">
-hdfview_install_osf1_novm.bin 8 MB</a>]
-</td>
-
-<td>No Virtual Machine is bundled into InstallAnywhere for OSF1 </td>
-</tr>
-
-<tr>
-<td>AIX</td>
-
-<td>[ <a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_aix_novm.bin">
-hdfview_install_aix_no_vm_bundled.bin 7 MB</a>]</td>
-
-<td>[ <a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_aix_vm.bin">
-hdfview_install_aix_vm_bundled.bin 45 MB</a>]</td>
-</tr>
-
+    <th width="100">Platform</th>
+    <th>Download</th>
+    <th>File size</th>
+    
+    <tr>
+    	<td colspan="3" bgcolor="#FFFFCC"><br>Java Virtual Machine Bundled</td>
+    </tr>
+    
+    <tr>
+    	<td>Linux</td>
+    	<td><a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/hdf-java/v24/hdfview/hdfview_install_linux_vm.bin">hdfview_install_linux_vm.bin</a></td>
+    	<td>60M</td>
+    </tr>
+    
+    <tr>	
+    	<td>Solaris	</td>
+    	<td><a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/hdf-java/v24/hdfview/hdfview_install_solaris_vm.bin">hdfview_install_solaris_vm.bin</a></td>
+    	<td> 61M</td>
+    </tr>
+    
+    <tr>	
+    	<td>Windows</td>
+    	<td><a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/hdf-java/v24/hdfview/hdfview_install_windows_vm.exe">hdfview_install_windows_vm.exe</a></td>
+    	<td>34M</td>
+    </tr>
+    
+    <tr>
+    	<td colspan="3" bgcolor="#FFFFCC"><br>Java Virtual Machine Required</td>
+    </tr>
+    
+    <tr>	
+    	<td>Linux</td>
+    	<td><a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/hdf-java/v24/hdfview/hdfview_install_linux_novm.bin">hdfview_install_linux_novm.bin</a></td>
+    	<td> 11M</td>
+    </tr>
+    
+    <tr>	
+    	<td>Mac Intel</td>
+    	<td><a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/hdf-java/v24/hdfview/hdfview_install_macosx_intel_novm.zip">hdfview_install_macosx_intel_novm.zip</a></td>
+    	<td>7.3M</td>
+    </tr>
+    
+    <tr>	
+    	<td>Mac PowerPC</td>
+    	<td><a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/hdf-java/v24/hdfview/hdfview_install_macosx_novm.zip">hdfview_install_macosx_novm.zip</a></td>
+    	<td>8.2M</td>
+    </tr>
+    
+    <tr>	
+    	<td>Solaris	</td>
+    	<td><a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/hdf-java/v24/hdfview/hdfview_install_solaris_novm.bin">hdfview_install_solaris_novm.bin</a></td>
+    	<td>17M</td>
+    </tr>
+    
+    <tr>	
+    	<td>Windows</td>
+    	<td><a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/hdf-java/v24/hdfview/hdfview_install_windows_novm.exe">hdfview_install_windows_novm.exe</a></td>
+    	<td>7.9M</td>
+    </tr>
 </table>
+
+<p>
+    
+<table border width="600">
+    <caption class="top"><h3>64-bit Java Pre-built Binaries Distribution</h3></caption>
+
+    <th width="100">Platform</th>
+    <th>Download</th>
+    <th>File size</th>
+
+    <tr>
+    	<td colspan="3" bgcolor="#FFFFCC"><br>Java Virtual Machine Bundled</td>
+    </tr>
+    
+    <tr>
+    	<td>Linux</td>
+    	<td><a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/hdf-java/v24/hdfview/hdfview_install_linux64amd_vm.bin"> 64-bit AMD hdfview_install_linux64amd_vm.bin</a></td>
+    	<td> 49M</td>
+    </tr>
+    
+    <tr>
+    	<td colspan="3" bgcolor="#FFFFCC"><br>Java Virtual Machine Required</a></td>
+    </tr>
+
+    
+    <tr>
+    	<td>Linux</td>
+    	<td><a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/hdf-java/v24/hdfview/hdfview_install_linux64amd_novm.bin"> 64-bit AMD hdfview_install_linux64amd_novm.bin</a></td>
+    	<td>9.0M</td>
+    </tr>
+    
+    <tr>
+    	<td>Solaris</td>
+    	<td><a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/hdf-java/v24/hdfview/hdfview_install_solaris64_novm.bin"> 64-bit SPARC hdfview_install_solaris64_novm.bin</a></td>
+    	<td> 11M</td>
+    </tr>
+</table>
+
 </center>
 
 <a NAME="JVM_required" ></a>
@@ -608,7 +624,7 @@ Mac OS X JRE.
 
 <p>
 Download Java 2 Platform at:
-<ul>
+<ul class="ul">
 <li><a href="http://java.sun.com/j2se">
 Java<sup><font size=-2>TM</font></sup> 2 Platform, Standard Edition</a>
 (Windows, Solaris, Linux)
