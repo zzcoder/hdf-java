@@ -7,13 +7,13 @@ include ("../../includes/header.html");
   <td valign="top">
 <b>The HDFView</b> is a visual tool for browsing and editing NCSA HDF4 and HDF5 files.
 Using HDFView, you can
-<UL>
+<ul>
 <li>view a file hierarchy in a tree structure
 <li>create new file, add or delete groups and datasets
 <li>view and modify the content of a dataset
 <li>add, delete and modify attributes
 <li>replace I/O and GUI components such as table view, image view and metadata view
-</UL>
+</ul>
 For information on how to use the HDFViewplease read <br>
  <a href="UsersGuide/index.html">the User's Guide</a>
 <p>
@@ -31,109 +31,63 @@ HDFView can be downloaded quickly from here. The Windows, Solaris, Linux
 and AIX versions listed below (that have an asterisk) include JDK 1.4.  If you want a version for these
 platforms that does not include JDK, see the footnote immediately following.
 
-<UL type=square>
-<LI><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_windows_vm.exe">
-Windows 98/NT/2000/XP</A> [15 MB] <B>*</B>
-<LI><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_solaris_vm.bin">
-Solaris</A> [35 MB] <B>*</B>
-<LI><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_linux_vm.bin">
-Linux</A> [35 MB] <B>*</B>
-<LI><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_aix_vm.bin">
-AIX</A> [45 MB] <B>*</B>
-<LI><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_irix_novm.bin">
-Irix 6.5</A> [10 MB], <font size=-1>JDK1.4 Required</font>
-<LI><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_macosx_novm.zip">
-MacOSX</A> [7 MB], <font size=-1>JDK1.4 Required </font>
-<LI><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_osf1_novm.bin">
-OSF1</A> [8 MB] <font size=-1> JDK1.4 Required, <a href="#osf1_note">Classic VM Only</a></font>
-</UL>
+<ul>
+  <li><a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/hdf-java/v24/hdfview/hdfview_install_windows_vm.exe">Windows Vista/98/NT/2000/XP</A> [34 MB] <strong>*</strong>
+  <li><a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/hdf-java/v24/hdfview/hdfview_install_solaris_vm.bin">Solaris</A> [61 MB] <strong>*</strong>
+  <li><a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/hdf-java/v24/hdfview/hdfview_install_linux_vm.bin">Linux</A> [60 MB] <strong>*</strong>
+  <li><a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/hdf-java/v24/hdfview/hdfview_install_macosx_intel_novm.zip">Mac Intel</A> [7.3 MB]
+  <li><a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/hdf-java/v24/hdfview/hdfview_install_macosx_novm.zip">Mac Power PC</A> [8.2 MB]
+  <li><a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/hdf-java/v24/hdfview/hdfview_install_linux64amd_vm.bin">Linux 64-bit AMD</A> [49 MB] <strong>*</strong>
+  <li><a href="ftp://ftp.hdfgroup.uiuc.edu/pub/outgoing/hdf-java/v24/hdfview/hdfview_install_solaris64_novm.bin">Solaris 64-bit SPARC</A> [11 MB] <font size=-1> JDK1.5+ Required</font>
+</ul>
 
 <B>*</B> The versions listed above for Windows, Solaris, Linux, and AIX will
 install
-a standalone version of HDFView where JRE1.4.1 is bundled in the distribution.
-No additional software is needed to run HDFView. If JDK1.4.1 or above is
+a standalone version of HDFView where JRE1.5.0 is bundled in the distribution.
+No additional software is needed to run HDFView. If JDK1.5.0 or above is
 already installed on your machine, you may want the non-JRE distribution.
-The file
-size of the HDFView distribution without the Java VM is much smaller. To obtain
-the non-JRE distributions, see: &nbsp; <br><CODE>
-<a href="UsersGuide/ug01introduction.html#ug01installation">HDFView User's Guide, Section 1.5, Installation</A> </CODE>
+The file size of the HDFView distribution without the Java VM is much smaller. 
+<p>
+To obtain the non-JRE distributions, see: &nbsp; 
+<a href="UsersGuide/ug01introduction.html#ug01installation">
+<strong>HDFView User's Guide, Section 1.5, Installation</strong></A>
+
 <hr>
 <p>
 <h3>Install/Run Instructions</H3>
-<UL>
-<LI><B>Unix (not including Mac OS X):</B>
+<ul>
+<li><B>Unix:</B>
 <P>
-  <UL>
-  <LI>To install, type: &nbsp; <CODE>
+  <ul>
+  <li>To install, type: &nbsp; <CODE>
     sh ./hdfview_install_{linux, solaris, irix}_{vm, novm}.bin</CODE>
-<LI>To run,  type: &nbsp; <CODE>./hdfview</CODE>
-  <LI>Important Notes:<P>
-<a NAME="osf1_note"></A>
-   OSF1: &nbsp;
-   Before installing and running HDFView on OSF1, make sure that
-      the Java VM works [try "java -version"]. If you have a problem
-      starting the Java VM, you may have to set the Classic Java Virtual
-      Machine Environment Variable, as follows: &nbsp;
-      <CODE>setenv JAVA_CLASSIC_VM "yes"</CODE>
-</UL>
+  <li>To run,  type: &nbsp; <CODE>./hdfview</CODE>
+  </ul>
 <P>
-<LI><B>Mac OS X:</B><P>
-<UL>
-  <LI>To install, open <CODE>hdfview_install_macosx_novm.zip</CODE>
-  <LI>To run, {where_you_install_hdfview}/hdfview.sh <br>
+<li><B>Mac OS X:</B><P>
+<ul>
+  <li>To install, open <CODE>hdfview_install_macosx_novm.zip</CODE>
+  <li>To run, {where_you_install_hdfview}/hdfview.sh <br>
               or click on the HDFView Icon on the desktop
-<P>
-<!--
-  <LI>Important Notes:
-      <UL>
-      <LI>Known problem: the installer may pick up the jdk1.3 instead of
-          jdk1.4 on your machine. Click on the HDFView icon may not work.
-          Using the hdfview.sh to start HDFView.
-      <LI> Make sure the Java version running HDFView is 1.4.x or 1.5.x.
-           TO check Java version from HDFView, "Help->Java Version"
-      </UL>
-<P>
--->
 
-</UL>
+  </ul>
+<p>
+<li><B>Windows:</B><P>
+<P>
+  <ul>
+  <li>To install, type: <CODE> hdfview_install_windows_vm.exe </CODE>
+  <li>To run, select HDFView from the menu, <CODE>Start -> programs -> THG HDFView 2.4 -> HDFView 2.4</CODE>
+  </ul>
+</ul>
 
-<!--
-<UL>
-  <LI>To install, open <CODE>hdfview_install_macosx_novm.zip</CODE>
-  <LI>To run, click the "HDFView" on the desktop or <br>
-      type: &nbsp; <CODE>open -a /{where_you_install_hdfview}/HDFView.app</CODE>
-  <LI>Important Notes:
-<P>
-      <UL>
-      <LI>After you install HDFView, make sure that
-     <CODE>/{where_you_install_hdfview}/lib/macosx</CODE> is included in
-     <CODE>DYLD_LIBRARY_PATH</CODE>.
-      Run <CODE>source ~/.cshrc</CODE> or logout and login to set the correct
-      <CODE>DYLD_LIBRARY_PATH</CODE>.
-<P>
-      <LI>HDFView does not support HDF4. We are still working on it.
-<P>
- <LI>See <A HREF="/HDF5/release/known_problems5160.html#macosx">HDFView Problem with Mac OS X and JDK 1.4</A>.
-   </UL>
-<P>
-</UL>
--->
-
-<LI><B>Windows:</B><P>
-<P>
-<UL>
-<LI>To install, type: <CODE> hdfview_install_windows_vm.exe </CODE>
-<LI>To run, select HDFView from the menu, <CODE>Start -> programs -> NCSA HDFView 2.2 -> HDFView 2.2</CODE>
-</UL>
-
-</UL>
 <hr>
 <H3>Documentation</H3>
 
 The HDFView User's Guide, accessible from the top of this page, contains
 detailed information on installing and using HDFView.  For further
 installation information,  please refer to
-<a href="UsersGuide/ug01introduction.html#ug01installation">Chapter 1.5</a>.
+<a href="UsersGuide/ug01introduction.html#ug01installation">Chapter 1.5</a>.<p>
+
 <?php 
 include ("../../includes/footer.html"); 
 ?>
