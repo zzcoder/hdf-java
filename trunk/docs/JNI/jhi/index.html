@@ -58,15 +58,15 @@ to
 </table></center>
 
 <p>Other changes include:
-<ul>
-<li>
+<ul class="ul">
+<li class="li2">
 Support for Macintosh and PC path names, e.g., in <i>Hopen()</i>.</li>
 
-<li>
+<li class="li2">
 A separate distribution of the JHI. This contains everything from the full
 source distribution, omitting all the packages not used by the JHI.</li>
 
-<li>
+<li class="li2">
 The <b>HDFArray</b> class was extended to support more types Java arrays,
 including arrays of any sub-class of <b>Number </b>(<b>Integer</b>, <b>Float</b>,
 etc.)<b> </b>, and arrays of <b>String</b>.</li>
@@ -134,8 +134,8 @@ the JHI
 </tr>
 </table></center>
 <p>
-<ul>
-<li>
+<ul class="ul">
+<li class="li2">
 <b>Data conversion and copying.</b> The Java HDF Interface must translate
 data between C data types and Java data types. For instance, when a Java
 program reads a two dimensional array of floating point numbers (<b>float
@@ -147,7 +147,7 @@ to convert the bytes from native (C) order to the correct Java object(s).
 This data conversion is platform specific and clearly adds overhead to
 the program.</li>
 
-<li>
+<li class="li2">
 <b>The JHI Interface to HDF.</b> The Java HDF interface follows the HDF
 C interface as closely as possible. However, Java does not support pass-by-reference
 parameters, so all parameters that must be returned to the caller require
@@ -160,7 +160,7 @@ function</li>
 would be rendered in Java as:
 <pre><b>static public native void foo( int inVar, int []outVar )</b></pre>
 where the value of 'outVar' would be returned as 'outVar[0]'.
-<li>
+<li class="li2">
 <b>Exceptions.</b> The JHI declares all the methods of HDF to throw Java
 exceptions of type `<i>HDFLibraryException</i>'. Errors returned by the
 native HDF library will be detected and the appropriate <i>Exception </i>raised,
