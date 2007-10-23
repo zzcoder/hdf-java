@@ -34,13 +34,13 @@ For more details about HDF5 image, see the
 <a href="/HDF5/doc/ADGuide/ImageSpec.html">
 HDF5 Image Specification</a>.
 
-<UL>
-<LI><a href="ug06imageview.html#ug06image">6.1 Display a 2D or 3D Image</a></LI>
-<LI><a href="ug06imageview.html#ug06zoom">6.2 Zoom/Flip/Contour Image</a></LI>
-<LI><a href="ug06imageview.html#ug06palette">6.3 View and Modify Image Palette/Values</a></LI>
-<LI><a href="ug06imageview.html#ug06histogram">6.4 Show Histogram of Pixel Values</a></LI>
-<LI><a href="ug06imageview.html#ug06import">6.5 Import JPEG Image to HDF4/5</a></LI>
-<LI><a href="ug06imageview.html#ug06save">6.6 Save HDF Image to JPEG File</a></LI>
+<ul class="ul">
+<li class="li2"><a href="ug06imageview.html#ug06image">6.1 Display a 2D or 3D Image</a></li>
+<li class="li2"><a href="ug06imageview.html#ug06zoom">6.2 Zoom/Flip/Contour Image</a></li>
+<li class="li2"><a href="ug06imageview.html#ug06palette">6.3 View and Modify Image Palette/Values</a></li>
+<li class="li2"><a href="ug06imageview.html#ug06histogram">6.4 Show Histogram of Pixel Values</a></li>
+<li class="li2"><a href="ug06imageview.html#ug06import">6.5 Import JPEG Image to HDF4/5</a></li>
+<li class="li2"><a href="ug06imageview.html#ug06save">6.6 Save HDF Image to JPEG File</a></li>
 </UL>
 
 <hr noshade size=1>
@@ -58,11 +58,11 @@ not supported by this tool.
 <h3>
 6.1.1 Indexed Image (8-bit) </h3>
 <p>An indexed image is one of the following:
-<ul>
-<li>An HDF4 RI8 image</li>
-<li>An HDF5 dataset that conforms to the HDF5 Image specification, and is
+<ul class="ul">
+<li class="li2">An HDF4 RI8 image</li>
+<li class="li2">An HDF5 dataset that conforms to the HDF5 Image specification, and is
 a "IMAGE_SUBCLASS=IMAGE_INDEXED"
-<li>An SDS or HDF5 dataset with data that can be interpreted as an image </li>
+<li class="li2">An SDS or HDF5 dataset with data that can be interpreted as an image </li>
 </ul>
 <p>The dataset is displayed as a Java image using IndexColorModel.
 The dataset is converted to a raster image using
@@ -104,16 +104,16 @@ an indexed image using the "Open As" selection from the Object menu.
 Since the dataset does not have a palette, a default palette is
 used. The palette is chosen from the "Select Palette" menu in the
 "Dataset Selection" window. The predefined palettes include:
-<ul>
-<li>gray
+<ul class="ul">
+<li class="li2">gray
 </li>
-<li>
+<li class="li2">
 rainbow
 </li>
-<li>
+<li class="li2">
 nature
 </li>
-<li>
+<li class="li2">
 wave
 </li>
 </ul>

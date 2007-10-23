@@ -131,57 +131,57 @@ underlying them. [<a href="#REF12">12</a>]
 2.1 The principle objects</h4><p>
 [...need O diagram here]
 <p>The objects of the model are:<p>
-<ul>
-<li>
+<ul class="ul">
+<li class="li2">
 <b>HDF</b> -- The HDF library, with a native method for each HDF entry
 point. This is a very simple object, it provides almost one-for-one methods
 for the operations and constants of the HDF API. As such, this object has
 a very large number of native methods, and practally nothing else.</li>
 <p>
-<li>
+<li class="li2">
 <b>HDFArray</b> -- Support for converting between arbitrary shaped java
 arrays and native code one dimensional arrays of bytes, and vice versa.
 This supports the <b>VOIDP</b> data type, which is crucial to HDF's ability
 to store and retrieve arbitrary data types. The <b>HDFArray</b> class defines
 two important methods:</li>
 <p>
-<ul>
-<li>
+<ul class="ul">
+<li class="li2">
 <i>byteify()</i> -- given a multi-dimensional Java Array object, the equivalent
 C array is constructed as a one dimensional array of bytes.</li>
 <p>
-<li>
+<li class="li2">
 <i>arrayify()</i> -- given a multi-dimensional array from C, construct
 the appropriate Java Array object.</li>
 </ul>
 <p>
-<li>
+<li class="li2">
 <b>HDFCompInfo</b> -- support for the HDF compression ``comp_info'' union.
 Different compression schemes require specific auxillary parameters, which
 are modelled by sub-classes of <b>HDFCompInfo</b>. An example subclass
 is:</li>
 <p>
-<ul>
-<li>
+<ul class="ul">
+<li class="li2">
 <b>HDFJPEGCompInfo</b> -- The parameters for JPEG compression: ``quality''
 and ``force_baseline''. [<a href="#REF13">13</a>,
 <a href="#REF14">14</a>]</li>
 </ul>
 Other compression (such as Run Length Encoding (RLE)) can be added by creating
 another sub-class of HDFCompInfo.<p>
-<li>
+<li class="li2">
 <b>HDFCompModel</b> -- support for the HDF compression ``comp_model'' union.</li>
 <p>
-<li>
+<li class="li2">
 <b>HDFChunkInfo</b> -- support for the HDF chunking ``chunk_info'' union.</li>
 <p>
-<li>
+<li class="li2">
 <b>HDFException</b> -- error conditions from HDF operations. There are
 two main sub-classes, which may in turn be specialized to reflect specific
 error conditions.</li>
 <p>
-<ul>
-<li>
+<ul class="ul">
+<li class="li2">
 <b>HDFLibraryException </b>-- represents errors reported by the HDF library
 code. The Java wrapper code must detect the error from the native library
 and raise an appropriate exception. Subclasses represent different error
@@ -189,7 +189,7 @@ conditions, which may be caught and handled by Java applications. The exception
 may include an HDF error code, and other appropriate information, to be
 used by an exception handler.</li>
 <p>
-<li>
+<li class="li2">
 <b>HDFJavaException</b> -- represents errors in the Java interface to HDF,
 <i>e.g.</i>, run time exceptions such as out of memory or inability to
 load required Java classes. Subclasses represent different error conditions,
@@ -206,7 +206,7 @@ classes, which represent the data objects of interest.<p>
 2.2 Use of the HDF Java classes</h4>
 The HDF Java Interface classes are intended to be used in two ways:
 <ol>
-<li>
+<li class="li2">
 The <b>HDF</b> object can be sub-classed to provide the desired interface.
 For instance, the Java HDF Viewer models the data of an HDF file as a tree,
 with each node containing an abstract representation of the array, image,
@@ -220,7 +220,7 @@ which provides methods to access a specific representation of the meta-data
 and data of an <b>SDS</b> object from an HDF file. The methods of the <b>SDS</b>
 object would use the appropriate native code methods of the <b>HDF</b>
 superclass to access the HDF file to construct the required representation.
-<li>
+<li class="li2">
 Alternatively, any Java class can use the <b>HDF</b> class to obtain or
 create data in any way desired, in combination with any other code. For
 instance, a ``HDF-EOS Grid object'' could be implemented as a Java class
@@ -244,17 +244,17 @@ An initial implementation of the HDF Java classes has been completed. The
 implementation required solution of a number of important problems that
 are of general interest to any effort to interface Java and C. These include:
 <ol>
-<li>
+<li class="li2">
 Data transfer and translation between Java and C, particularly of arbitrary
 multidimensional arrays of numbers.</li>
 
-<li>
+<li class="li2">
 Performance issues, especially data copying</li>
 
-<li>
+<li class="li2">
 Garbage collection and memory management</li>
 
-<li>
+<li class="li2">
 Exceptions and errors, translating C error conditions into appropriate
 Java exceptions.</li>
 </ol>
@@ -389,12 +389,12 @@ of the array. This table is then used when needed to traverse the array,
 extracting or inserting data as appropriate, using data type specific methods.
 Figure 8 illustrates how this table can be constructed.
 <p>The <b>HDFArray</b> object has two main methods:
-<ul>
-<li>
+<ul class="ul">
+<li class="li2">
 <i>byteify()</i> which converts a Java array into a one dimensional array
 of bytes to be used by C (Figure 9), and</li>
 
-<li>
+<li class="li2">
 <i>arrayify()</i> which copies from a one dimensional array of bytes into
 a Java array object (Figure 10).</li>
 </ul>
@@ -488,25 +488,25 @@ machine.)
 <p>For large datasets, this data copying is a serious performance problem.
 There are three major concerns:
 <ol>
-<li>
+<li class="li2">
 The processor is occupied doing useless work. Regardless of how ``efficiently''
 this is done, data copying is still not a good use of CPU time.</li>
 
-<li>
+<li class="li2">
 Memory to memory copies impact the whole system:</li>
 
 <ol>
-<li>
+<li class="li2">
 uses up large amounts of memory, as the data is in memory at least twice.</li>
 
-<li>
+<li class="li2">
 floods the memory bus</li>
 
-<li>
+<li class="li2">
 flushes memory caches</li>
 </ol>
 
-<li>
+<li class="li2">
 The Java VM dynamic memory management system may not support large memory
 operations especially well. For instance, it may be necessary to increase
 the Java VM heap size, and to manually run the garbage collector. These
@@ -517,11 +517,11 @@ specific behavior.</li>
 It is important to note that there are two key reasons why a data copy
 is needed:
 <ol>
-<li>
+<li class="li2">
 to defeat Java type checking (<i>i.e.</i>, to convert from bytes and pointers
 to objects and vice versa).</li>
 
-<li>
+<li class="li2">
 to assume correct data representation for the Java VM or native code, <i>i.e.</i>,
 native byte order.</li>
 </ol>
@@ -561,15 +561,15 @@ amounts to many times that total size of the data.
 collector should run as the large arrays are processed. There are three
 options here:
 <ol>
-<li>
+<li class="li2">
 manually invoke garbage collection at strategic places in the HDF Java
 wrapper code, such as at the end of a memory intensive method.</li>
 
-<li>
+<li class="li2">
 create and start a separate Java thread to periodically invoke the garbage
 collector, and</li>
 
-<li>
+<li class="li2">
 create an alternative garbage collector to install in the Java runtime.</li>
 </ol>
 The HDF Java interface will experiment with a combination the first two
@@ -593,22 +593,22 @@ elegant solution, allowing the Java code to be written in a natural style,
 despite the fact that native code is involved.
 <p>Implementation requires two steps:
 <ol>
-<li>
+<li class="li2">
 a model of the exception conditions must be constructed, defining the exceptions
 that may occur, and what they mean.</li>
 
-<li>
+<li class="li2">
 implement code to detect errors from the native code, and then raise the
 appropriate exception.</li>
 </ol>
 The HDF Java API defines an exception model with two main subclasses of
 exceptions,
 <ol>
-<li>
+<li class="li2">
 <b>HDFLibraryException</b> -- exceptions that indicate error conditions
 reported by the native HDF library.</li>
 
-<li>
+<li class="li2">
 <b>HDFJavaException</b> -- Exceptions that indicate errors in the Java
 HDF wrapper code itself.</li>
 </ol>
@@ -657,17 +657,17 @@ the Java exception handling and JNI. These mechanisms are very flexible
 and powerful, so there are many possibilities which have yet to be explored
 in the HDF Java Interface. Future extensions may include:
 <ol>
-<li>
+<li class="li2">
 A more elaborate exception model, with more subclasses of Exceptions reflecting
 different categories of errors. This is especially attractive if some classes
 of errors can be automatically handled by some programs, perhaps adjusting
 the parameters to fit the actual range, breaking up large requests into
 a series of smaller ones.</li>
 
-<li>
+<li class="li2">
 Perhaps add code to handle some exceptions in Java interface code itself.</li>
 
-<li>
+<li class="li2">
 More elaborate reporting, especially when HDF returns a stack of errors.
 In general, the error conditions from HDF could be analyzed and filtered,
 with the HDF Java Interface either masking some failures (<i>e.g.</i>,
@@ -771,99 +771,99 @@ and the state and University of Illinois.</i></b>
 References</h3>
 
 <ol>
-<li>
+<li class="li2">
 <a NAME="REF1"></a>NCSA, ``The HDF Home Page'',
 <a href="/">/</a></li>
 
-<li>
+<li class="li2">
 <a NAME="REF2"></a>NCSA, ``The <a href="ftp://ftp.ncsa.uiuc.edu/HDF/Documentation/HDF4.0r2/Compressed_Files/">HDF
 User's Guide'' in Postscript, MIF, and PDF</a>* format</li>
 
-<li>
+<li class="li2">
 <a NAME="REF3"></a>NCSA, ``The HDF Reference Manual'' in
 <a href="ftp://ftp.ncsa.uiuc.edu/HDF/Documentation/HDF4.0r2/Ref_Manual/">Postscript,
 MIF, PDF</a>*, and <a href="ftp://ftp.ncsa.uiuc.edu/HDF/Documentation/HDF4.0r2/Ref_Manual/html">HTML</a>
 format.</li>
 
-<li>
+<li class="li2">
 <a NAME="REF4"></a>NCSA, ``NCSA Java-based HDF Viewer'',
 <a href="/hdf/java/docs/">/hdf/java/docs/</a></li>
 
-<li>
+<li class="li2">
 <a NAME="REF5"></a>JavaSoft, ``The Java Development Kit, Version 1.0.2''
 <a href="http://java.sun.com/products/jdk/1.0.2/index.html">http://java.sun.com/products/jdk/1.0.2/index.html</a></li>
 
-<li>
+<li class="li2">
 <a NAME="REF6"></a>JavaSoft, ``The Java(TM) Development Kit, Version 1.1''
 <a href="http://java.sun.com/products/jdk1.1/index.html">http://java.sun.com/products/jdk1.1/index.html</a></li>
 
-<li>
+<li class="li2">
 <a NAME="REF7"></a>JavaSoft,
 <b>Java Native Interface Specification: Release
 1.1</b><a href="ftp://ftp.javasoft.com/docs/jdk1.1/jni.pdf">(ftp://ftp.javasoft.com/docs/jdk1.1/jni.pdf)
 (PDF)</a><a href="ftp://ftp.javasoft.com/docs/jdk1.1/jni.ps">(ftp://ftp.javasoft.com/docs/jdk1.1/jni.ps)
 (PS)</a></li>
 
-<li>
+<li class="li2">
 <a NAME="REF8"></a>JavaSoft,
 <b>Java(TM) Core Reflection Specification:
 API and Specification</b><a href="ftp://ftp.javasoft.com/docs/jdk1.1/java-reflection.pdf">(ftp://ftp.javasoft.com/docs/jdk1.1/java-reflection.pdf)
 (PDF)</a><a href="ftp://ftp.javasoft.com/docs/jdk1.1/java-reflection.ps">(ftp://ftp.javasoft.com/docs/jdk1.1/java-reflection.ps)
 (PS)</a></li>
 
-<li>
+<li class="li2">
 <a NAME="REF9"></a>JavaSoft, ``JavaBeans(TM) Component APIs for Java'',
 <a href="http://splash.javasoft.com/beans/index.html">http://splash.javasoft.com/beans/index.html</a></li>
 
-<li>
+<li class="li2">
 <a NAME="REF10"></a>Robert E. McGrath, ``How does HDF mix with Java?'',
 <a href="/horizon/java-and-hdf.html">/horizon/java-and-hdf.html</a></li>
 
-<li>
+<li class="li2">
 <a NAME="REF11"></a>Robert E. McGrath, ``A Scientific Data Server: The
 Conceptual Design'',
 <a href="/horizon/DataServer/sds_design.html">/horizon/DataServer/sds_design.html</a></li>
 
-<li>
+<li class="li2">
 <a NAME="REF12"></a>NASA EOSDIS, ``EOSDIS Information Architecture Documents'',
 <a href="http://spsosun.gsfc.nasa.gov/InfoArch_docs.html">http://spsosun.gsfc.nasa.gov/InfoArch_docs.html</a></li>
 
-<li>
+<li class="li2">
 <a NAME="REF13"></a>International Standards Organization
 ,
 <i>Digital Compression
 and Coding of Continuous Still Images, Part 1</i>, Document number ISO/IEC
 IS 10918-1.</li>
 
-<li>
+<li class="li2">
 <a NAME="REF14"></a>James A. Murray and William vanRyper,
 <i>Encyclopedia
 of Graphic File Formats</i>, O'Reilly &amp; Associates, Sebastopol, CA,
 1994.</li>
 
-<li>
+<li class="li2">
 <a NAME="REF15"></a>W3C, ``Jigsaw Overview'',
 <a href="http://www.w3.org/pub/WWW/Jigsaw/">http://www.w3.org/pub/WWW/Jigsaw/</a></li>
 
-<li>
+<li class="li2">
 <a NAME="REF16"></a>JavaSoft,
 <b>Java(TM) RMI Tutorial</b><a href="ftp://ftp.javasoft.com/docs/jdk1.1/rmi-getstart.pdf">(ftp://ftp.javasoft.com/docs/jdk1.1/rmi-getstart.pdf)
 (PDF)</a><a href="ftp://ftp.javasoft.com/docs/jdk1.1/rmi-getstart.ps">(ftp://ftp.javasoft.com/docs/jdk1.1/rmi-getstart.ps)
 (PS)</a></li>
 
-<li>
+<li class="li2">
 <a NAME="REF17"></a>JavaSoft,
 <b>Java(TM) Remote Method Invocation Specification</b><a href="ftp://ftp.javasoft.com/docs/jdk1.1/rmi-spec.pdf">(ftp://ftp.javasoft.com/docs/jdk1.1/rmi-spec.pdf)
 (PDF)</a><a href="ftp://ftp.javasoft.com/docs/jdk1.1/rmi-spec.ps">(ftp://ftp.javasoft.com/docs/jdk1.1/rmi-spec.ps)
 (PS)</a></li>
 
-<li>
+<li class="li2">
 <a NAME="REF18"></a>JavaSoft,
 <b>Java(TM) Object Serialization Specification</b><a href="ftp://ftp.javasoft.com/docs/jdk1.1/serial-spec.pdf">(ftp://ftp.javasoft.com/docs/jdk1.1/serial-spec.pdf)
 (PDF)</a><a href="ftp://ftp.javasoft.com/docs/jdk1.1/serial-spec.ps">(ftp://ftp.javasoft.com/docs/jdk1.1/serial-spec.ps)
 (PS)</a></li>
 
-<li>
+<li class="li2">
 <a NAME="REF19"></a>Russ Rew, ``NetCDF C++ Interface'',
 <a href="http://www.unidata.ucar.edu/packages/netcdf/cxxdoc_toc.html">http://www.unidata.ucar.edu/packages/netcdf/cxxdoc_toc.html</a></li>
 

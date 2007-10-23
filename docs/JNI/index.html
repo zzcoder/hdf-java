@@ -126,7 +126,7 @@ If successful, the link step is invisible to the application and user.</p><p>
 This
 link step will fail if:<br>
 <p>
-<ul>
+<ul class="ul">
   <li class="li3">the library is not found in the paths configured at runtime</li>
   <li class="li3">the library is not compatible with the JVM</li>
   <li class="li3">a required symbol cannot be resolved</li>
@@ -223,7 +223,7 @@ a sketch of the dependencies. A Java program will access HDF4 through the
 class ncsa.hdf.hdflib.HDFLibrary. When this Java class is loaded, the HDF4
 JNI library is loaded. This library must contain:
 <p>
-<ul>
+<ul class="ul">
   <li class="li3">the JNI entry points, one for each native method</li>
   <li class="li3">the HDF4 library (libdf, libmfhdf)</li>
   <li class="li3">the external compression required by HDF (libz, libjpeg, libsz)</li>
@@ -232,7 +232,7 @@ JNI library is loaded. This library must contain:
 </p>
 <p>
 Similarly, HDF5 is accessed through ncsa.hdf.hdf5lib.H5, which loads the HDF5 JNI:<br>
-<ul>
+<ul class="ul">
 <li>the JNI entry points, one for each native method</li><li>the HDF5 library (libhdf5)</li><li>the external compression required by HDF (libz, libsz)</li><li>possibly other system libraries, e.g., libm</li>
 </ul>
 <br>
