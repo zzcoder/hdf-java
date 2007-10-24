@@ -436,6 +436,9 @@ public class H5ScalarDS extends ScalarDS
         }
 
         pgroup.addToMemberList(dataset);
+        
+        ((ScalarDS)dataset).setIsImage(isImage);
+        
         return dataset;
     }
 

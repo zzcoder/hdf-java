@@ -1926,7 +1926,6 @@ implements ImageView, ActionListener
         private Dimension scrollDim = null;
         private JScrollBar hbar = null;
         private JScrollBar vbar = null;
-        private double ratio = 1.0/zoomFactor;
 
         private ImageComponent (Image img)
         {
@@ -2002,11 +2001,14 @@ implements ImageView, ActionListener
 	            int h = y1 - y0;
 	            
 	            selectedArea.setBounds(x0, y0, w, h);
+	            double ratio = 1.0/zoomFactor;
+
 	            originalSelectedArea.setBounds(
 	                (int)(x0*ratio),
 	                (int)(y0*ratio),
 	                (int)(w*ratio),
 	                (int)(h*ratio));
+
 	            repaint();
 			} else 
 			{
@@ -2914,6 +2916,7 @@ implements ImageView, ActionListener
             super(theOwner, "Animation", true);
             owner = theOwner;
             setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
+            
 
             long[] dims = dataset.getDims();
             long[] stride = dataset.getStride();
@@ -2953,6 +2956,8 @@ implements ImageView, ActionListener
             byte[] byteData = null;
             int h = (int)selected[selectedIndex[0]];
             int w = (int)selected[selectedIndex[1]];
+            int size = w*h;
+            
             numberOfImages = (int)dims[selectedIndex[2]];
             frames = new Image[numberOfImages];
             MemoryImageSource mir = memoryImageSource;
@@ -2966,9 +2971,9 @@ implements ImageView, ActionListener
                     try { data3d = dataset.read(); }
                     catch (Throwable err) {continue;}
 
-                    byteData = Tools.getBytes(data3d, dataRange, w, h, false, null, null);
+                    byteData = new byte[size];
+                    Tools.getBytes(data3d, dataRange, byteData);
                     frames[i] = createIndexedImage(byteData, imagePalette, w, h);
-
                 }
             } finally {
                 // set back to original state
@@ -2987,6 +2992,7 @@ implements ImageView, ActionListener
             	public static final long serialVersionUID = HObject.serialVersionUID;
 
                 public void paint(Graphics g) {
+
                     if ((offScrGC == null) || (frames==null)) {
                         return;
                     }
@@ -2996,22 +3002,22 @@ implements ImageView, ActionListener
             };
 
             JPanel contentPane = (JPanel)getContentPane();
-            contentPane.setLayout(new BorderLayout());
-            contentPane.add(canvas, BorderLayout.CENTER);
             contentPane.setPreferredSize(new Dimension(MAX_ANIMATION_IMAGE_SIZE, MAX_ANIMATION_IMAGE_SIZE));
-
+            contentPane.setLayout(new BorderLayout());
             JButton b = new JButton("Close");
             b.setActionCommand("Close animation");
             b.addActionListener(this);
-            contentPane.add(b, BorderLayout.SOUTH);
-            
+            //contentPane.add(b, BorderLayout.SOUTH);
+
+            contentPane.add(canvas, BorderLayout.CENTER);
+             
             Point l = getParent().getLocation();
             l.x += 300;
             l.y += 200;
             setLocation(l);
-
-            start();
+            
             pack();
+            start();
         }
 
         public void actionPerformed(ActionEvent e)
@@ -3034,7 +3040,7 @@ implements ImageView, ActionListener
          * No need to clear anything; just paint.
          */
         public void update(Graphics g) {
-            paint(g);
+             paint(g);
         }
 
         /**
@@ -3066,6 +3072,7 @@ implements ImageView, ActionListener
                     } catch (InterruptedException e) {}
 
                     currentFrame++;
+                    
                     if (currentFrame >= numberOfImages) {
                         currentFrame = 0;
                     }
