@@ -474,7 +474,7 @@ public class H5File extends FileFormat
      * @throws Exception If there is a problem creating the attributes, or if
      *      the selectionFlag is invalid.
      */
-    public static final void createImageAttributes(
+    private static final void createImageAttributes(
         Dataset dataset, int selectionFlag) throws Exception
     {
         String subclass = null;
@@ -1172,10 +1172,12 @@ public class H5File extends FileFormat
             
         H5ScalarDS dataset = H5ScalarDS.create(name, pgroup, type, 
                                         dims, maxdims, chunks, gzip, data);
+        
         try { 
             H5File.createImageAttributes(dataset, interlace); 
+            dataset.setIsImage(true);
         } catch (Exception ex) {}
-
+        
         return dataset;
     }
 

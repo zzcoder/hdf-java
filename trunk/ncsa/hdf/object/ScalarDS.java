@@ -304,6 +304,20 @@ public abstract class ScalarDS extends Dataset
     } 
     
     /**
+     * Sets the flag to indicate this dataset is an image.
+     * 
+     * @param b if b is true, the dataset is an image.
+     */
+    public final void setIsImage(boolean b)
+    {
+        isImage = b;
+        
+        if (isImage) {
+            enumConverted = false;
+        }
+    }    
+    
+    /**
      * Returns true if this dataset is a true color image.
      */
     

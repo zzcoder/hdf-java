@@ -530,6 +530,7 @@ public final class Tools
         double min=Double.MAX_VALUE, max=-Double.MAX_VALUE, ratio=1.0d;
         String cname = rawData.getClass().getName();
         char dname = cname.charAt(cname.lastIndexOf("[")+1);
+        int size = Array.getLength(rawData);
 
         if (minmax == null)
         {
@@ -540,13 +541,17 @@ public final class Tools
         // no need for conversion
         if ((dname == 'B') && !isTransposed)
         {
-            byteData = (byte[]) rawData;
+            if (byteData == null)
+                byteData = (byte[]) rawData;
+            else
+                System.arraycopy(rawData, 0, byteData, 0, size);
+            
             minmax[0] = 0;
             minmax[1] = 255;
+            
             return byteData;
         }
 
-        int size = Array.getLength(rawData);
         if ((byteData == null) || (size != byteData.length)) {
             byteData = new byte[size]; // reuse the old buffer
         }

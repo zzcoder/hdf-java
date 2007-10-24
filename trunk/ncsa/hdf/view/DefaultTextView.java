@@ -63,6 +63,8 @@ implements TextView, ActionListener, KeyListener
     private boolean isReadOnly = false;
 
     private boolean isTextChanged = false;
+    
+    private TextAreaEditor textEditor = null;
 
     /**
      * Constructs an TextView.
@@ -75,7 +77,8 @@ implements TextView, ActionListener, KeyListener
         text = null;
         table = null;
         dataset = null;
-
+        textEditor = new TextAreaEditor(this);
+        
         HObject obj = viewer.getTreeView().getCurrentObject();
         if (!(obj instanceof ScalarDS)) {
             return;
@@ -117,7 +120,6 @@ implements TextView, ActionListener, KeyListener
         TextAreaRenderer textAreaRenderer = new TextAreaRenderer();
 
         cmodel.getColumn(0).setCellRenderer(textAreaRenderer);
-        TextAreaEditor textEditor = new TextAreaEditor(this);
         cmodel.getColumn(0).setCellEditor(textEditor);
 
 
@@ -245,6 +247,13 @@ implements TextView, ActionListener, KeyListener
 
         if (!isTextChanged) {
             return;
+        }
+        
+        int row = table.getEditingRow();
+        if (row >= 0 ) {
+            // make sure to update the current row
+            String cellValue = (String)textEditor.getCellEditorValue();
+            text[row] = cellValue;
         }
 
         try { dataset.write(); }
@@ -500,6 +509,7 @@ implements TextView, ActionListener, KeyListener
             super(new JTextField());
             
             final JTextArea textArea = new JTextArea();
+
             textArea.addKeyListener(keyListener);
             textArea.setWrapStyleWord(true);
             textArea.setLineWrap(true);
