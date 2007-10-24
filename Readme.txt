@@ -27,7 +27,7 @@ Unix Build Instructions
 Prerequisites:
     1. HDF4 binary distribution (source is not needed)
     2. HDF5 binary distribution (source is not needed)
-    3. Java Development Kit 1.4.x or above
+    3. Java Development Kit 1.5.x or above
 
 Build:
 
@@ -70,7 +70,7 @@ Prerequisites:
 
     1. HDF4 binary distribution (source is not needed)
     2. HDF5 binary distribution (source is not needed)
-    3. Java Development Kit 1.4.x or above
+    3. Java Development Kit 1.5.x or above
     4. Microsfot Visual C++
 
 Build:
@@ -79,7 +79,7 @@ Build:
     a) configure/modify the batch file, windows/Makefile_java.bat
         i) set the %JAVAHOME% in the batch file. 
            %JAVAHOME% is the home directory of the Java Development Kit, 
-           such as SET JAVAHOME=d:\java\jdk1.4.1
+           such as SET JAVAHOME=d:\java\jdk1.5.0
         ii) set the %HDFJAVA% in the batch file. 
            %HDFJAVA% is the directory of this HDF object source code, 
            such as SET HDFJAVA=D:\work\hdf-java
