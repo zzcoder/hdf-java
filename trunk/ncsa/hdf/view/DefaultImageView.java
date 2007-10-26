@@ -1373,7 +1373,6 @@ implements ImageView, ActionListener
         {
         	setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             Animation animation = new Animation((JFrame)viewer, dataset);
-            animation.setVisible(true);
         	setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
         else if (cmd.startsWith("Animation speed"))
@@ -3007,17 +3006,19 @@ implements ImageView, ActionListener
             JButton b = new JButton("Close");
             b.setActionCommand("Close animation");
             b.addActionListener(this);
-            //contentPane.add(b, BorderLayout.SOUTH);
+            contentPane.add(b, BorderLayout.SOUTH);
 
             contentPane.add(canvas, BorderLayout.CENTER);
              
+            start();
+
             Point l = getParent().getLocation();
             l.x += 300;
             l.y += 200;
             setLocation(l);
             
             pack();
-            start();
+            setVisible(true);
         }
 
         public void actionPerformed(ActionEvent e)
@@ -3026,14 +3027,14 @@ implements ImageView, ActionListener
             String cmd = e.getActionCommand();
 
             if (cmd.equals("Close animation")) {
-                this.dispose();  // terminate the animation
+                dispose();  // terminate the animation
             }
         }
 
         public void dispose() {
-            super.dispose();
             engine = null;
             frames = null;
+            super.dispose();
         }
 
         /**
@@ -3062,9 +3063,10 @@ implements ImageView, ActionListener
             }
 
             while (me == engine) {
-                repaint();
 
-                synchronized(this) {
+//                synchronized(this) {
+                    repaint();
+this.getToolkit().sync();  // Force it to be drawn *now*.
  
                     // Pause for duration or longer if user paused
                     try {
@@ -3077,7 +3079,7 @@ implements ImageView, ActionListener
                         currentFrame = 0;
                     }
                 }
-            }
+ //           }
         }
 
         /**
