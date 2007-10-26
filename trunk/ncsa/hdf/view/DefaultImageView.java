@@ -2915,8 +2915,7 @@ implements ImageView, ActionListener
             super(theOwner, "Animation", true);
             owner = theOwner;
             setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
-            
-
+ 
             long[] dims = dataset.getDims();
             long[] stride = dataset.getStride();
             long[] start = dataset.getStartDims();
@@ -2991,10 +2990,12 @@ implements ImageView, ActionListener
             	public static final long serialVersionUID = HObject.serialVersionUID;
 
                 public void paint(Graphics g) {
+                    g.clearRect(0,0,MAX_ANIMATION_IMAGE_SIZE,MAX_ANIMATION_IMAGE_SIZE);
 
                     if ((offScrGC == null) || (frames==null)) {
                         return;
                     }
+                    
                     offScrGC.drawImage(frames[currentFrame],0,0,owner);
                     g.drawImage(offScrImage,x0,y0,owner);
                 }
@@ -3052,6 +3053,14 @@ implements ImageView, ActionListener
         }
 
         /**
+         * Start the applet by forking an animation thread.
+         */
+        private void start() {
+            engine = new Thread(this);
+            engine.start();
+        }
+
+        /**
          * Run the animation. This method is called by class Thread.
          * @see java.lang.Thread
          */
@@ -3063,32 +3072,12 @@ implements ImageView, ActionListener
             }
 
             while (me == engine) {
-
-//                synchronized(this) {
-                    repaint();
-this.getToolkit().sync();  // Force it to be drawn *now*.
- 
-                    // Pause for duration or longer if user paused
-                    try {
-                        Thread.sleep(sleepTime);
-                    } catch (InterruptedException e) {}
-
-                    currentFrame++;
-                    
-                    if (currentFrame >= numberOfImages) {
-                        currentFrame = 0;
-                    }
-                }
- //           }
-        }
-
-        /**
-         * Start the applet by forking an animation thread.
-         */
-        private void start() {
-            engine = new Thread(this);
-            engine.start();
-        }
+                if (++currentFrame >= numberOfImages)  currentFrame = 0;
+                repaint();
+                this.getToolkit().sync();  // Force it to be drawn *now*.
+                try { Thread.sleep(sleepTime); } catch (InterruptedException e) {}
+            }
+        } // public void run() {
     } // private class Animation extends JDialog
 
     private class DataRangeDialog extends JDialog implements
