@@ -59,7 +59,7 @@ EXTRA_FLAGS=
 #EXTRA_FLAGS=--with-javabin=$JAVABIN 
 
 ############################################################
-#                     solaris64 (linew)                    #
+#                     linux64 (smirom)                     #
 ############################################################
 #INSTDIR=/mnt/scr1/xcao/hdf_java/bin/linux64amd
 #JAVAINC=/usr/java/jdk1.5.0_10/include
