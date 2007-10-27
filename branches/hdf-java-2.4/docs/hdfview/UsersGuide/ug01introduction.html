@@ -1,0 +1,688 @@
+<?php
+$page_title = "HDFView User's Guide -- Introduction"; 
+include ("../../../links.php"); 
+include ("../../../includes/header.html"); 
+?>
+
+
+<p>
+<a href="index.html">[Index]</a>
+<a href="ug01introduction.html">[1]</a>
+<a href="ug02start.html">[2]</a>
+<a href="ug03objects.html">[3]</a>
+<a href="ug04treeview.html">[4]</a>
+<a href="ug05spreadsheet.html">[5]</a>
+<a href="ug06imageview.html">[6]</a>
+<a href="ug07textview.html">[7]</a>
+</p>
+
+<h1>
+<fieldset>Chapter 1: Introduction</h1></fieldset>
+<p>
+<ul class="ul">
+<LI><a href="ug01introduction.html#ug01overview">1.0 What It Is</a></LI>
+<LI><a href="ug01introduction.html#ug01release">1.1 About This Release</a></LI>
+<LI><a href="ug01introduction.html#ug01features">1.2 Current Features</a></LI>
+<ul class="ul">
+<LI><a href="ug01introduction.html#ug01browsing">1.2.1 Browsing Features</a></LI>
+<LI><a href="ug01introduction.html#ug01editing">1.2.2 Editing Features</a></LI>
+</UL>
+<LI><a href="ug01introduction.html#ug01limitations">1.3 Limitations</a></LI>
+<LI><a href="ug01introduction.html#ug01requirements">1.4 System Requirements</a></LI>
+<LI><a href="ug01introduction.html#ug01installation">1.5 Installing and Running HDFView</a></LI>
+<LI><a href="ug01introduction.html#ug1furtherinfo">1.6 For Further Information</a></LI>
+</UL>
+
+<hr noshade size=1>
+
+<h2>
+<a NAME="ug01overview"></a>1.0 What It Is</h2>
+<p>
+The HDFView is a Java-based tool for browsing and editing NCSA HDF4 and HDF5 files.
+HDFView allows users to browse through any HDF4 and HDF5 file; starting with a tree
+view of all top-level objects in an HDF file's hierarchy. HDFView allows
+a user to descend through the hierarchy and navigate among the file's data
+objects. The content of a data object is loaded only when the object is
+selected, providing interactive and efficient access to HDF4 and HDF5 files. HDFView
+editing features allow a user to create, delete, and modify the value of
+HDF objects and attributes.
+
+<p>
+The HDFView user interface is designed to be easy to use and intuitive.
+HDFView was implemented by using Java<sup><font size=-2>TM</font></sup>
+2 Platform that is designed to be machine-independent. The interface and
+features of the HDFView are the same for all platforms. HDFView displays
+the structure of the HDF file in a tree with data groups and data objects
+represented as conventional folders and icons. Users can easily expand
+or collapse folders to navigate the hierarchical structure of an HDF file.
+
+<h2>
+<a NAME="ug01release"></a>1.1 About This Release</h2>
+<p>
+This release includes bug fixes, new features, test suite, and improved documentation.
+<h4>Platforms</h4>
+This release was built and tested for the follwing platforms:
+
+<h5>32-bit Java 2 SDK</h5>
+<ul class="ul">
+  <li> Linux </li>
+  <li> Solaris </li>
+  <li> Mac PowerPC </li>
+  <li> Mac Intel </li>
+  <li> Windows (Vista/XP/2000) </li>
+</ul>
+
+<h5>64-bit Java 2 SDK</h5>
+<ul class="ul">
+  <li> Linux 64-bit AMD </li>
+  <li> Solaris 64-bit </li>
+</ul>
+
+<h5>The following platforms are droped from this release</h5>
+<ul class="ul">
+  <li> AIX </li>
+  <li> Irix </li>
+  <li> OSF1 </li>
+</ul>
+
+<h4>New features</h4>
+There are a lot of new features added to the release. The following is a list
+of major new features.
+<ul class="ul">
+  <li>Support for compound datatypes containing 2D arrays (or greater) </li>
+  <li>Create/display named datatypes in an HDF5 file </li>
+  <li>Copy object to same group w/different name </li>
+  <li>Allow creation of dataset with enum type/named datatype </li>
+  <li>Support for "filtering fillvalue" to Image Viewer </li>
+  <li>Show actual palette that results from palette manipulation </li>
+  <li>Add ability to create a chunked dataset with compound datatype </li>
+  <li>Deal with large number of 8kx8k 3D images by reuse the memory data buffer</li>
+  <li>Add -geometry switch to set the window size and location</li>
+  <li>Support large Fonts in GUI components</li>
+  <li>Grad and drag to move/browse a image </li>
+  <li>Add autogain algorithm for image Brightness/Contrast </li>
+</ul>
+
+
+<h4>Bug fix</h4>
+There are many bug fixes in HDF-Java 2.4. One of the major bugs is the <strong>
+memory leak</strong> as explained in the follwoing.
+
+<p>
+In HDF-Java 2.3 or earlier version, an attribute and datatype were left open when
+the file structure was retrieved from a file. The following code will build up the 
+memory leak until the machine is out of memory.
+
+<pre>
+while (true) 
+{
+    H5File f=new H5File(fname, H5File.READ);
+    f.open();
+    f.close();
+}
+</pre>
+
+Another memory leak is at compound datasets. When a compound dataset is open, we
+keep the datatypes of the compound fields in memory so that we can reuse them for
+better perfomance. However, these datatypes were not closed when the file is closed. 
+The following code will make the JVM run out of memory.
+
+<pre>
+while (true)
+{
+    final H5File file = new H5File(fname, H5File.READ);
+    final Dataset dset = (Dataset)file.get("/Table0");
+    dset.init();
+
+    file.close();
+}
+</pre>
+
+<h4>Other enhancements</h4>
+
+<dl>
+<dt>Test suite</dt>
+<dd>Using the junit test frame, we build a test suite to test all the public APIs 
+in the object package (ncsa.hdf.object) and the HDF5 object package (ncsa.hdf.object.h5).
+The test suite is added into the source configuration to make it easy to run by "make check"</dd>
+<dt>Improved documentation</dt>
+<dd>All the public APIs in the object package (ncsa.hdf.object) and the HDF5 object package 
+(ncsa.hdf.object.h5) are fully documented.</dd>
+</dl>
+
+<h3>Modular components</h3>
+<p>
+HDFView version 2.0 is the first release of the modular HDFView. It includes bug fixes
+and new features. The main difference between version 2.0 and its previous releases is that
+this version is built on replaceable I/O and GUI modules. For more information
+about HDFView modules, please read "A User's Guide on How to Implement HDFView Modules"
+at <a href="/hdf-java-html/hdfview/ModularGuide/">
+/hdf-java-html/hdfview/ModularGuide/</a>
+
+<p>
+Early versions of HDFView (version 1.3 or earlier) are implemented with standard
+GUI components such as tree view, table, and image view. These components cannot
+be replaced. There is no optional tree view, table view, and etc for users to
+display the data the way they want.  version  or modular HDFView is built
+on modules of I/O and GUI components.
+<p>
+Modular HDFView is an improved HDFView where I/O and GUI components are
+replaceable modules. It consists of several interfaces that enable users to write
+and use alternative implementations to replace default modules. The current
+replaceable modules include:
+<ul class="ul">
+<li>File I/O (already implemented)
+<li>Image view
+<li>Table view (a spreadsheet-like layout)
+<li>Text view
+<li>Metadata (metadata and attributes) view
+<li>Tree view
+<li>Palette view
+</ul>
+
+<P>
+HDFView 2.3 is build on the common object package or the abstract I/O layer,
+<i>ncsa.hdf.object</i>, which provides classes that reflect fundamental design
+of object-oriented data objects. Objects of file elements such as groups and
+dataset are presented as Java classes. The package includes abstract classes
+for users to build their implementation subclasses. Two default implementations
+for HDF4 and HDF5, ncsa.hdf.object.h4 and ncsa.hdf.object.h5, are included in
+the distribution.For more details, read<br>
+<a href="/hdf-java-html/hdf-object">the HDF Object Package</A>.
+
+<p>
+The abstract GUI components include the TreeView, ImageView, TableView, TextView,
+and MetadataView (for metadata and attributes).  More GUI components may be
+added by user request in the future. Default implementation of the GUI modules
+are provided. The TreeView defines the interfaces that manipulate the file
+structure such as read data content, and add/delete data object. The ImageView,
+TableView, and TextView define APIs that display and manipulate data values.
+MetadataView defines interfaces to display and modify metadata and attributes.
+
+<center>
+<p><img SRC="images/design_components.gif">
+<br><b>HDFView Class Packages</b></center>
+
+
+<h2>
+<a NAME="ug01features"></a>1.2 Features</h2>
+
+This version  fixed bugs from previous versions and added a few new and
+enhanced features. It is a continuous work from previous HDFView with a major
+new feature: replaceable I/O and GUI modules.
+
+<P>
+ version  is user-configurable to support HDF4 or HDF5 or both. Users
+can choose HDFView features to support HDF4 or HDF5 or both when installing
+HDFView or compiling from the source code.
+
+<P>
+The following is a list of the browsing and editing features of HDFView. Details
+of the features are discussed in their related chapters.
+
+<h3>
+<a NAME="ug01browsing"></a>1.2.1 Browsing Features</h3>
+
+<ul style="list-style:disc;" class="ul">
+<li>
+Display data with optional GUI modules.
+
+<li>
+Support netCDF and fits file format with read-only.
+
+<li>
+Animation display of 3D images.
+
+<li>
+Display HDF5 user block in text, oct, hex and etc.
+
+<li>
+Option to show char dataset as text.
+
+<li>
+Display nested compound dataset.
+
+<li>
+Show multi-dimension compound dataset.
+
+<li>
+Show text attributes and text dataset in selected fonts.
+
+<li>
+Change image brightness
+
+<li>
+Open multiple HDF4 or HDF5 files.
+
+<li>
+Display file hierarchy in a tree and allow users to navigate among the
+file's data objects.
+
+<li>
+Show dataset as an image, a table or text.
+
+<li>
+Allow users to select a subset of dataset to display.
+
+<li>
+Show attributes and other general information of data objects.
+
+<li>
+Display line plot for selected table data, and histogram for selected
+image area.
+
+<li>
+Display simple compound dataset (non-nested compound datatype) in a table.
+
+<li>
+Support simple image manipulation: zooming image in/out, flipping image
+horizontally or vertically, and showing palette for index RGB image.
+
+<li>
+Allow displaying any of three dimensions of a multiple dimension dataset.
+
+<li>
+Allow users to specify stride of dataset selection.
+
+<li>
+Allow users to selection select fields/members of VData/compound dataset
+to display.
+
+<LI>
+Display file information, such as file size, total number of datasets.
+
+<li>
+Open file as read only.
+
+<li>
+Show preview image for selecting subset.
+
+<li>
+Support multiple color tables for HDF5 images.
+
+<li>
+Display color table in separate red/green/blue lines.
+
+<li>
+Quick view of metadata.
+
+<li>
+View variable-length datasets (in compound or nested compound)
+
+<Li>
+View ENUM dataset
+
+<Li>
+View compound/varaible-length attributes
+
+<li>
+Show indicator of attributes (objects with attribute attached)
+
+<li>
+Slider bar for modifying image threshold range
+
+<!-- NEW in 2.3 -->
+
+    <li>Support for HDF5-SRB (object level access to remote files on distributed system)
+    <Li>Support for compound datatypes containing 2D arrays (or greater)
+    <Li>Create/display named datatypes in HDF5
+    <li>Create link in hdf5
+    <li>Improve ability to manipulate palette
+    <li>Select row/colunm data as X axis for xy plot in the table view
+
+
+</ul>
+
+<h3>
+<a NAME="ug01editing"></a>1.2.2 Editing Features
+</h3>
+
+<ul style="list-style:disc;" class="ul">
+
+<li>
+Add more user options such as default starting directory or file extension.
+
+<li>
+Rename HDF5 object.
+
+<li>
+Edit HDF5 compound dataset.
+
+<LI>
+Change and save user options such as recent files, delimiter, and font size.
+
+<LI>
+Save current file into the same type (HDF4 to HDF4, HDF5 to HDF5).
+
+<LI>
+Add/delete object in the file (no deletion for HDF4).
+
+<LI>
+Copy/paste object in the same file.
+
+<LI>
+Copy/paste object between files of the same file format (HDF4 to HDF4, HDF5 to HDF5).
+
+<LI>
+Add/delete a group and all its decendents (no deletion for HDF4).
+
+<LI>
+Modify and save data values in spreadsheet.
+
+<LI>
+Create new dataset with simple datatype such as SDS, atomic data array.
+
+<LI>
+Copy/paste data values of dataset.
+
+<LI>
+Save single dataset into ASCII text file.
+
+<LI>
+Save a single image to JPEG file.
+
+<LI>
+Add/delete attribute (no deletion for HDF4).
+
+<LI>
+Modify and save attibute value.
+
+<li>
+Convert JPEG image file into HDF4/HDF5 file.
+
+<li>
+Save HDF4/HDF5 image into JPEG image file.
+
+<li>
+Save single data object into HDF file.
+
+<li>
+Update datasets of references when a file is saved into a new file.
+
+<li>
+Import data values from text file.
+
+<li>
+Create new dataset/image out of existing dataset/image.
+
+<li>
+Modify string dataset.
+
+<li>
+Simple math calculation and statistic summary.
+
+<li>
+Create empty image with default image attributes.
+
+<li>
+Modify image color table.
+
+<li>
+Create empty HDF5 compound dataset.
+
+<LI> Add and modify user blocks.
+
+</UL>
+
+<h2>
+<a NAME="ug01limitations"></a>1.3 Limitations</h2>
+
+<strong>The current implementation of HDFView has the following limitations.</strong><p>
+<ul class="ul">
+<p>
+<LI>
+HDFView does not support undo operation; all the changes will go
+to the physical file, and the editing results cannot be recovered.
+<p><LI>
+Deleting object/attribute in HDF4 is not supported.
+<p><LI>
+HDFView does not support conversion between HDF4 and HDF5.
+<p><li>
+HDFView does not display named datatypes.</li>
+<p><li>
+HDFView supports only indexed image with RGB color model or 24-bit true
+color image. It does not support other color models such as CMYK and HSV.</li>
+<p><li>
+Opening a large image or dataset may cause an "out of memory" error due to
+the limitations of the Java virtual machine.</li>
+<p><li>
+HDFView is implemented in Java<sup><font size=-2>TM</font></sup> 2 Platform.
+It builds and runs on jdk1.5.x. It does not buid on jdk1.4.x or earlier version.
+</li>
+</ul>
+
+<h2>
+<a NAME="ug01requirements"></a>1.4 System Requirements</h2>
+
+The HDFView is distributed in two forms: No_VM_bundled and VM_bundled. The No_VM_bundled
+distribution does not contain the Java Runtime Environment (JRE) while the VM_bundled
+distribution bundles the JRE.
+
+<p>
+To run HDFView with No_VM_bundled distribution, JDK1.5+ is required. The HDFView
+does not compile on jdk1.4.x or earlier version.
+
+<p>
+Download Java 2 Platform at:
+<ul class="ul">
+<li><a href="http://java.sun.com/j2se">
+Java<sup><font size=-2>TM</font></sup> 2 Platform, Standard Edition</a>
+(Windows, Solaris, Linux)
+
+</ul>
+
+<p>
+HDFView 1.3 has been built and tested on the following platforms:
+
+<ul class="ul">
+
+<li>
+Linux</li>
+
+<li>
+Solaris</li>
+
+<li>
+Windows 95/98/2000/NT/XP</li>
+
+<li>
+MAC OS X</li>
+
+</ul>
+
+The HDFView uses the HDF4 and HDF5 Java Native Interfaces, which calls the
+HDF4 and HDF5 library. These native interfaces are included in the distribution.
+For more information (source and pre-built) on the HDF4/5 Java Native Interface,
+visit website at <a href="/hdf-java-html/JNI/">
+/hdf-java-html/JNI/ </a>
+
+<h2>
+<a NAME="ug01installation" ></a>1.5 Installation</h2>
+
+The source and pre-built binaries for HDFView can be downloaded from:
+<br>
+<a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/">
+ftp://ftp.hdfgroup.org/HDF5/hdf-java</a>
+
+<p>
+The pre-built binaries are available in two forms: No_VM_bundled, and VM_bundled.
+
+<p>
+<center>
+
+<table border width="600">
+    <caption><h3>32-bit Java Pre-built Binaries Distribution</h3></caption>
+
+    <th width="100">Platform</th>
+    <th>Download</th>
+    <th>File size</th>
+    
+    <tr>
+    	<td colspan="3" bgcolor="#FFFFCC"><br>Java Virtual Machine Bundled</td>
+    </tr>
+    
+    <tr>
+    	<td>Linux</td>
+    	<td><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_linux_vm.bin">hdfview_install_linux_vm.bin</a></td>
+    	<td>60M</td>
+    </tr>
+    
+    <tr>	
+    	<td>Solaris	</td>
+    	<td><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_solaris_vm.bin">hdfview_install_solaris_vm.bin</a></td>
+    	<td> 61M</td>
+    </tr>
+    
+    <tr>	
+    	<td>Windows</td>
+    	<td><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_windows_vm.exe">hdfview_install_windows_vm.exe</a></td>
+    	<td>34M</td>
+    </tr>
+    
+    <tr>
+    	<td colspan="3" bgcolor="#FFFFCC"><br>Java Virtual Machine Required</td>
+    </tr>
+    
+    <tr>	
+    	<td>Linux</td>
+    	<td><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_linux_novm.bin">hdfview_install_linux_novm.bin</a></td>
+    	<td> 11M</td>
+    </tr>
+    
+    <tr>	
+    	<td>Mac Intel</td>
+    	<td><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_macosx_intel_novm.zip">hdfview_install_macosx_intel_novm.zip</a></td>
+    	<td>7.3M</td>
+    </tr>
+    
+    <tr>	
+    	<td>Mac PowerPC</td>
+    	<td><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_macosx_novm.zip">hdfview_install_macosx_novm.zip</a></td>
+    	<td>8.2M</td>
+    </tr>
+    
+    <tr>	
+    	<td>Solaris	</td>
+    	<td><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_solaris_novm.bin">hdfview_install_solaris_novm.bin</a></td>
+    	<td>17M</td>
+    </tr>
+    
+    <tr>	
+    	<td>Windows</td>
+    	<td><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_windows_novm.exe">hdfview_install_windows_novm.exe</a></td>
+    	<td>7.9M</td>
+    </tr>
+</table>
+
+<p>
+    
+<table border width="600">
+    <caption class="top"><h3>64-bit Java Pre-built Binaries Distribution</h3></caption>
+
+    <th width="100">Platform</th>
+    <th>Download</th>
+    <th>File size</th>
+
+    <tr>
+    	<td colspan="3" bgcolor="#FFFFCC"><br>Java Virtual Machine Bundled</td>
+    </tr>
+    
+    <tr>
+    	<td>Linux</td>
+    	<td><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_linux64amd_vm.bin"> 64-bit AMD hdfview_install_linux64amd_vm.bin</a></td>
+    	<td> 49M</td>
+    </tr>
+    
+    <tr>
+    	<td colspan="3" bgcolor="#FFFFCC"><br>Java Virtual Machine Required</a></td>
+    </tr>
+
+    
+    <tr>
+    	<td>Linux</td>
+    	<td><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_linux64amd_novm.bin"> 64-bit AMD hdfview_install_linux64amd_novm.bin</a></td>
+    	<td>9.0M</td>
+    </tr>
+    
+    <tr>
+    	<td>Solaris</td>
+    	<td><a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/hdfview/hdfview_install_solaris64_novm.bin"> 64-bit SPARC hdfview_install_solaris64_novm.bin</a></td>
+    	<td> 11M</td>
+    </tr>
+</table>
+
+</center>
+
+<a NAME="JVM_required" ></a>
+<h3>Java Virtual Machine Required</h3>
+The NoVM_bundled binary distribution does not contain the Java 2 Runtime Environment.
+The NoVM_bundled requires JDK1.5.0 or above. Before you install the NoVM_bundled
+distribution, you must have JDK1.5.0 or above installed on your machine. If you don't
+have a Java 2 VM, you must download and install one. As all releases of <B>Macintosh
+OS X </B>include a fully functional Java 2 Virtual Machine, there is no need for a
+Mac OS X JRE.
+
+<p>
+Download Java 2 Platform at:
+<ul class="ul">
+<li><a href="http://java.sun.com/j2se">
+Java<sup><font size=-2>TM</font></sup> 2 Platform, Standard Edition</a>
+(Windows, Solaris, Linux)
+</ul>
+
+<p>
+<a NAME="No_JVM_required" ></a>
+<h3>StandAlone Application [JRE Bundled]</h3>
+JRE1.5.0 is bundled in the VM_bundled distribution. You do not need any aditional
+software to run HDFView.
+
+<p>
+Download and installation of HDFView requires acceptance of the Java 2 Runtime
+Environment license agreement. Please read the
+<a href="http://java.sun.com/j2se/1.3/jre/j2re-1_3_1_02-license.html">
+Java 2 Runtime Environment Binary Code License Agreement</a> before you
+download the VM_bundled distribution. The installation program will <b>not</b>
+install HDFView unless you accept the Java 2 Runtime Environment
+License Agreement.
+<p>
+<h3>Install on Unix or MAC OS X</h3>
+After downloading the installation file,  cd to the directory where you
+downloaded the installer. At the prompt type:
+<br><b>sh ./hdfview-xxx.bin</b>,
+<br>where xxx is the Unix OS name such as solaris, linux or macosx. The installer
+will guide you to select the Java Virtual Machine and HDFView home directory
+(where you want to install the HDFView).
+<p>
+<h3>Install on Windows</h3>
+After downloading, double-click
+<br><b>hdfview-windows.exe</b>.<p>
+The installer will guide you to select the Java Virtual Machine and
+HDFView home directory (where you want to install the HDFView). After
+installing, you can launch the HDFView from
+<br>
+Start -> Program Files -> NCSA HDFView
+<p>
+<h2>
+<a NAME="ug1furtherinfo"></a>1.6 For Further Information</h2>
+
+General information about HDF (HDF4 and HDF5) is available at:
+<a href="/">http://www.hdfgroup.org/</a>
+
+<p>
+Information about the HDFView tool and related products is available
+at:
+<blockquote><a href="/hdf-java-html/index.html">
+/hdf-java-html/</a></blockquote>
+
+<p>
+Questions and feedback may be sent to the HDF Helpdesk.
+
+<!-- BEGIN OF FOOTER INFO -->
+<p>
+<hr noshade size=1>
+<P>
+<H5>Last Modified: &nbsp; February 20, 2007</H5>
+<!- END OF FOOTER INFO -->
+
+</body>
+</html>

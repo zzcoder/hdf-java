@@ -1,0 +1,34 @@
+#/****************************************************************************
+# * NCSA HDF                                                                 *
+# * National Comptational Science Alliance                                   *
+# * University of Illinois at Urbana-Champaign                               *
+# * 605 E. Springfield, Champaign IL 61820                                   *
+# *                                                                          *
+# * For conditions of distribution and use, see the accompanying             *
+# * java-hdf5/COPYING file.                                                  *
+# *                                                                          *
+# ****************************************************************************/
+
+
+JAVAC        = @JAVAC@
+RM           = @RM@
+
+CLASSPATH=@CLASSPATH@:../../lib/junit.jar
+
+.SUFFIXES: .java .class
+
+.java.class:
+	$(JAVAC) -classpath $(CLASSPATH) $<
+
+all:	TestFile.class \
+	ToolsTest.class \
+	AllHDFViewTests.class
+
+check: all
+	chmod u+x unittests.sh; ./viewtest.sh
+
+clean:
+	$(RM) *.class
+	$(RM) -f *.hdf
+	$(RM) -f *.h5
+
