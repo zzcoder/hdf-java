@@ -1246,6 +1246,35 @@ public class H5File extends FileFormat
         return obj;
     }
 
+	/** reload the sub-tree structure from file. 
+     *  <p>
+     *  reloadTree(Group g) is useful when the structure of the group in file
+	 *  is changed while the group structure in memory is not changed. 
+	 *  @param g the group where the structure is to be reloaded in memeory
+	 */
+    public void reloadTree(Group g)
+    {
+        if (fid < 0 || rootNode == null || g==null) return;
+
+        HObject theObj = null;
+        DefaultMutableTreeNode theNode = null;
+
+        if (g.equals(rootNode.getUserObject()))
+            theNode = rootNode;
+        else {
+            Enumeration local_enum = rootNode.breadthFirstEnumeration();
+            while(local_enum.hasMoreElements()) {
+                theNode = (DefaultMutableTreeNode)local_enum.nextElement();
+                theObj = (HObject)theNode.getUserObject();
+                if (g.equals(theObj)) break;
+            }
+        }
+
+        theNode.removeAllChildren();
+        depth_first(theNode);
+    }
+
+
     /*
      * (non-Javadoc)
      * NOTE:  Object references are copied but not updated by this
