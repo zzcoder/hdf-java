@@ -46,7 +46,7 @@ EXTRA_FLAGS=
 ############################################################
 #                     solaris64 (linew)                    #
 ############################################################
-#INSTDIR=/mnt/scr1/xcao/hdf_java/bin/sollaris64
+#INSTDIR=/mnt/scr1/xcao/hdf_java/bin/solaris64
 #JAVAINC=/usr/jdk/instances/jdk1.5.0/include
 #JAVALIB=/usr/jdk/instances/jdk1.5.0/lib
 #JAVABIN=/usr/jdk/instances/jdk1.5.0/bin/sparcv9
