@@ -502,7 +502,8 @@ jobject compinfo;
     }
 
     switch (flgs) {
-        case HDF_CHUNK:
+		case HDF_CHUNK:
+		default:
         jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFCompInfo");
         if (jc == NULL) {
             return JNI_FALSE;
