@@ -144,7 +144,7 @@ public class H4GRImage extends ScalarDS
             int[] idims = new int[2];
             try {
                 HDFLibrary.GRgetiminfo(id, objName, grInfo, idims);
-                hasAttribute = (grInfo[3]>0);
+                nAttributes = grInfo[3];
             } catch (Exception ex) {}
             close(id);
         }

@@ -125,7 +125,7 @@ public class H4Vdata extends CompoundDS
         memberOrders = null;
 
         int id = open();
-        try { hasAttribute = (HDFLibrary.VSnattrs(id)>0); }
+        try { nAttributes = HDFLibrary.VSnattrs(id); }
         catch (Exception ex ) {}
         close(id);
     }

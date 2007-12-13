@@ -126,9 +126,9 @@ public abstract class HObject implements Serializable, DataFormat
     protected long[] oid;
 
     /**
-     *  Flag to indicate if the object has any attributes. 
+     *  Number of attributes attached to the object. 
      */
-    protected boolean hasAttribute = false;
+    protected int nAttributes = 0;
 
     /**
      * Constructs an instance of a data object without name and path.
@@ -447,7 +447,8 @@ public abstract class HObject implements Serializable, DataFormat
      *
      * @return true if it has any attribute(s), false otherwise.
      */
-    public boolean hasAttribute () { return hasAttribute; }
+    public boolean hasAttribute () { return (nAttributes>0); }
+    
     
     /**
      * Returns the name of the object.

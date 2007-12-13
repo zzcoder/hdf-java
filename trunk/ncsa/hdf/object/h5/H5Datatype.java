@@ -94,7 +94,7 @@ public class H5Datatype extends Datatype
         {
             tid = H5.H5Topen(getFID(), getPath()+getName());
             fromNative(tid);
-            hasAttribute = (H5.H5Aget_num_attrs(tid)>0);
+            nAttributes = H5.H5Aget_num_attrs(tid);
             isNamed = true;
         } catch (Exception ex) {;} 
         finally {
@@ -874,6 +874,7 @@ public class H5Datatype extends Datatype
         // add the new attribute into attribute list
         if (!attrExisted) {
             attributeList.add(attr);
+            nAttributes = attributeList.size();
         }
     }
 
@@ -894,6 +895,7 @@ public class H5Datatype extends Datatype
             H5.H5Adelete(tid, attr.getName());
             List attrList = getMetadata();
             attrList.remove(attr);
+            nAttributes = attributeList.size();
         } finally {
             close(tid);
         }

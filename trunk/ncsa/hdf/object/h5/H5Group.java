@@ -85,7 +85,7 @@ public class H5Group extends Group
 
         int gid = open();
         try { 
-            hasAttribute = (H5.H5Aget_num_attrs(gid)>0);
+            nAttributes = H5.H5Aget_num_attrs(gid);
             long[] nmembers = {0};
             H5.H5Gget_num_objs(gid, nmembers);
             nMembersInFile = (int)nmembers[0];
@@ -147,6 +147,7 @@ public class H5Group extends Group
         // add the new attribute into attribute list
         if (!attrExisted) {
             attributeList.add(attr);
+            nAttributes = attributeList.size();
         }
     }
 
@@ -167,6 +168,7 @@ public class H5Group extends Group
             H5.H5Adelete(gid, attr.getName());
             List attrList = getMetadata();
             attrList.remove(attr);
+            nAttributes = attributeList.size();
         } finally {
             close(gid);
         }
