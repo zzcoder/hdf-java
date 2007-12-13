@@ -553,7 +553,7 @@ public class H4SDS extends ScalarDS
             HDFLibrary.SDgetinfo(id, objName, idims, sdInfo);
             // mask off the litend bit
             sdInfo[1] = sdInfo[1] & (~HDFConstants.DFNT_LITEND);
-            hasAttribute = (sdInfo[2]>0);
+            nAttributes = sdInfo[2];
             rank = sdInfo[0];
 
             if (rank <= 0) {

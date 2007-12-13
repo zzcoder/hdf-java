@@ -244,7 +244,7 @@ implements ActionListener, MetaDataView
         }
 
         int option = JOptionPane.showConfirmDialog(this,
-                "Do you want to delete selected attributes?",
+                "Do you want to delete the selected attribute?",
                 getTitle(),
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE);
@@ -723,17 +723,6 @@ implements ActionListener, MetaDataView
             bPanel.add(b);
             b.setEnabled(!theFile.isReadOnly());
         }
-/*
-        else
-        {
-            // cannot add attribute to HDF4 root group
-            if (hObject instanceof Group &&
-                ((Group)hObject).isRoot())
-            {
-                b.setEnabled(false);
-            }
-        }
-*/
         topPanel.add(bPanel, BorderLayout.EAST);
 
         panel.add(topPanel, BorderLayout.NORTH);

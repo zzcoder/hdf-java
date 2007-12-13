@@ -151,7 +151,7 @@ public class H5CompoundDS extends CompoundDS
         }
 
         int did = open();
-        try { hasAttribute = (H5.H5Aget_num_attrs(did)>0); }
+        try { nAttributes = H5.H5Aget_num_attrs(did); }
         catch (Exception ex) {}
         close(did);
     }
@@ -640,6 +640,7 @@ public class H5CompoundDS extends CompoundDS
         // add the new attribute into attribute list
         if (!attrExisted) {
             attributeList.add(attr);
+            nAttributes = attributeList.size();
         }
     }
 
@@ -660,6 +661,7 @@ public class H5CompoundDS extends CompoundDS
             H5.H5Adelete(did, attr.getName());
             List attrList = getMetadata();
             attrList.remove(attr);
+            nAttributes = attrList.size();
         } finally {
             close(did);
         }

@@ -106,7 +106,7 @@ public class H5ScalarDS extends ScalarDS
         int aid=-1, atid=-1, tid=0;
         try
         {
-            hasAttribute = (H5.H5Aget_num_attrs(did)>0);
+            nAttributes = H5.H5Aget_num_attrs(did);
             tid= H5.H5Dget_type(did);
             
             int tclass = H5.H5Tget_class(tid);
@@ -846,6 +846,7 @@ public class H5ScalarDS extends ScalarDS
         // add the new attribute into attribute list
         if (!attrExisted) {
             attributeList.add(attr);
+            nAttributes = attributeList.size();
         }
     }
 
@@ -866,6 +867,7 @@ public class H5ScalarDS extends ScalarDS
             H5.H5Adelete(did, attr.getName());
             List attrList = getMetadata();
             attrList.remove(attr);
+            nAttributes = attributeList.size();
         } finally {
             close(did);
         }
