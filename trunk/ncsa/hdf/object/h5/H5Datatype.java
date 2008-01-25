@@ -235,28 +235,38 @@ public class H5Datatype extends Datatype
     public void fromNative(int tid)
     {
         int tclass=-1, tsize=-1;
+        boolean isChar=false, isUchar=false;
 
-        try
-        {
+        try { 
             tclass = H5.H5Tget_class(tid);
-            if (tclass == HDF5Constants.H5T_ARRAY) {
-                int tmptid = -1;
-                try {
-                    tmptid = H5.H5Tget_super(tid);
-                    tclass = H5.H5Tget_class(tmptid);
-                } catch (Exception ex) {}
-                finally {
-                    try {H5.H5Tclose(tmptid); } catch (Exception ex) {}
-                }
-             }
-            
             tsize = H5.H5Tget_size(tid);
-        } catch (Exception ex)
-        {
-            datatypeClass = CLASS_NO_CLASS;
+        } catch (Exception ex) { datatypeClass = CLASS_NO_CLASS; };
+ 
+        try { 
+            isUchar = H5.H5Tequal(tid, HDF5Constants.H5T_NATIVE_UCHAR);
+            isChar = (H5.H5Tequal(tid, HDF5Constants.H5T_NATIVE_CHAR) || isUchar);
+        } catch (Exception ex) {};
+        
+        if (tclass == HDF5Constants.H5T_ARRAY) {
+            int tmptid = -1;
+            datatypeClass = CLASS_ARRAY;
+            try {
+                int ndims = H5.H5Tget_array_ndims(tid);
+                dims = new int[ndims];
+                H5.H5Tget_array_dims(tid, dims, null);
+                tmptid = H5.H5Tget_super(tid);
+                baseType = new H5Datatype(tmptid);
+            } catch (Exception ex) {}
+            finally {
+                try {H5.H5Tclose(tmptid); } catch (Exception ex) {}
+            }
         }
-
-        if (tclass == HDF5Constants.H5T_INTEGER)
+        else if (isChar) {
+            datatypeClass = CLASS_CHAR;
+            if (isUchar)
+                datatypeSign = SIGN_NONE;
+        } 
+        else if (tclass == HDF5Constants.H5T_INTEGER)
         {
             datatypeClass = CLASS_INTEGER;
             try {
@@ -321,7 +331,7 @@ public class H5Datatype extends Datatype
      */
     public int toNative()
     {
-        int tid = -1;
+        int tid=-1, tmptid=-1;
         
         if (isNamed) {
             try {tid = H5.H5Topen(getFID(), getPath()+getName());}
@@ -336,6 +346,12 @@ public class H5Datatype extends Datatype
         try {
             switch (datatypeClass)
             {
+                case CLASS_ARRAY:
+                    try {
+                        tmptid = baseType.toNative();
+                        tid = H5.H5Tarray_create(tmptid, dims.length, dims, null);
+                    } finally { close(tmptid); }
+                    break;
                 case CLASS_INTEGER:
                 case CLASS_ENUM:
                     if (datatypeSize == 1) {
@@ -372,7 +388,6 @@ public class H5Datatype extends Datatype
                     } else if (datatypeOrder == Datatype.ORDER_LE) {
                         H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_LE);
                     }
-
                     break;
                 case CLASS_CHAR:
                     if (datatypeSign == Datatype.SIGN_NONE) {
@@ -390,7 +405,7 @@ public class H5Datatype extends Datatype
                     tid = H5.H5Tcopy(HDF5Constants.H5T_STD_REF_OBJ);
                     break;
             } // switch (tclass)
-        } catch (Exception ex) { tid = -1; }
+        } catch (Exception ex) { tid = -1;}
 
         // set up enum members
         if (datatypeClass == CLASS_ENUM) {
@@ -429,10 +444,10 @@ public class H5Datatype extends Datatype
                     }
                     H5.H5Tenum_insert(tid, memname, memval);
                 }
-            } catch (Exception ex) { tid = -1; ex.printStackTrace();}
+            } catch (Exception ex) { tid = -1;}
 
             try { H5.H5Tclose(ptid); } catch (Exception ex) {}
-        }
+        } // if (datatypeClass == CLASS_ENUM) {
 
         return tid;
     }
@@ -585,7 +600,11 @@ public class H5Datatype extends Datatype
      */
     public String getDatatypeDescription()
     {
-        return getDatatypeDescription(toNative());
+        int tid = toNative();
+        String str = getDatatypeDescription(tid);
+        close(tid);
+        
+        return str;
     }
 
     /**
@@ -716,6 +735,14 @@ public class H5Datatype extends Datatype
             try {
                 tmptid = H5.H5Tget_super(tid);
                 description += getDatatypeDescription(tmptid);
+                int ndims = H5.H5Tget_array_ndims(tid);
+                int adims[] = new int[ndims];
+                try { H5.H5Tget_array_dims(tid, adims, null);}
+                catch (Exception ex) {}
+                description += " ("+adims[0];
+                for (int j=1; j<ndims; j++)
+                    description += "x"+adims[j];
+                description += ")";
             } catch (Exception ex) {}
             finally {
                 try {H5.H5Tclose(tmptid); } catch (Exception ex) {}
