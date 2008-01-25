@@ -1222,32 +1222,65 @@ implements TableView, ActionListener
             rows)
         {
         	public static final long serialVersionUID = HObject.serialVersionUID;
-
-            Object theValue = null;
+            private final StringBuffer stringBuffer = new StringBuffer();
+            private final Datatype dtype = dataset.getDatatype();
+            private final Datatype btype = dtype.getBasetype();
+            private final boolean isArray = (dtype.getDatatypeClass()==Datatype.CLASS_ARRAY);
+ 
+            private Object theValue = null;
+            private char aChar;
 
             public Object getValueAt(int row, int column)
             {
-                if (isDataTransposed) {
-                    theValue = Array.get(dataValue, column*getRowCount()+row);
-                } else {
-                    theValue = Array.get(dataValue, row*getColumnCount()+column);
-                }
+                if (isArray) {
+                    // ARRAY dataset
+                    int arraySize = dtype.getDatatypeSize()/btype.getDatatypeSize();
+                    boolean isChar = (btype.getDatatypeClass()==Datatype.CLASS_CHAR);
+                    stringBuffer.setLength(0); // clear the old string
+                    int i0 = (row*getColumnCount()+column)*arraySize;
+                    int i1 = i0+arraySize;
 
-                if (checkScientificNotation.isSelected()) {
-                    return scientificFormat.format(theValue);
-                } else {
-                    return theValue;
+                    if (isChar) {
+                        for (int i=i0; i<i1; i++) {
+                            if (NT == 'B') {
+                                aChar = (char)Array.getByte(dataValue, i);
+                            } else if (NT == 'S') {
+                                aChar = (char)Array.getShort(dataValue, i);
+                            }
+
+                            stringBuffer.append(aChar);
+                            stringBuffer.append(", ");
+                        }
+                    } else {
+                        for (int i=i0; i<i1; i++) {
+                            stringBuffer.append(Array.get(dataValue, i));
+                            stringBuffer.append(", ");
+                        }
+                    }
+                    theValue = stringBuffer;
+               } else {
+                    if (isDataTransposed) {
+                        theValue = Array.get(dataValue, column*getRowCount()+row);
+                    } else {
+                        theValue = Array.get(dataValue, row*getColumnCount()+column);
+                    }
+                    if (checkScientificNotation.isSelected()) {
+                        theValue = scientificFormat.format(theValue);
+                    }
                 }
-            }
+                return theValue;
+            } // getValueAt(int row, int column)
         };
 
         theTable = new JTable(tableModel)
         {
         	public static final long serialVersionUID = HObject.serialVersionUID;
+            private final Datatype dtype = dataset.getDatatype();
+            private final boolean isArray = (dtype.getDatatypeClass()==Datatype.CLASS_ARRAY);
 
             public boolean isCellEditable( int row, int col )
             {
-                if (isReadOnly || isDisplayTypeChar) {
+                if (isReadOnly || isDisplayTypeChar || isArray) {
                     return false;
                 } else {
                     return true;

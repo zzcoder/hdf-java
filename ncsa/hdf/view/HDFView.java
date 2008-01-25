@@ -1769,16 +1769,17 @@ HyperlinkListener, ChangeListener
     /** Tree mouse event fired */
     public void mouseEventFired(java.awt.event.MouseEvent e)
     {
+        HObject obj = treeView.getCurrentObject();
+        if (obj == null) {
+            return;
+        }
+        
         Object src = e.getSource();
-        if ((src instanceof JTree) && (infoTabbedPane.getSelectedIndex()==1))
+        if ((src instanceof JTree))
         {
-            HObject obj = treeView.getCurrentObject();
-            if (obj == null) {
-                return;
-            }
-
             urlBar.setSelectedItem(obj.getFile());
-            showMetaData(obj);
+            if (infoTabbedPane.getSelectedIndex()==1)
+                showMetaData(obj);
         }
     }
 

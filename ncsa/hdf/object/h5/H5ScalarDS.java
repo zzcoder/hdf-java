@@ -582,7 +582,6 @@ public class H5ScalarDS extends ScalarDS
             try { H5.H5Tclose(tid); } catch (Exception ex2) {}
             close(did);
         }
-        
         return theData;
     }
 

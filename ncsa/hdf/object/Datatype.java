@@ -103,7 +103,6 @@ public abstract class Datatype extends HObject
      */
     public static final int CLASS_ARRAY            = 10;
 
-
     /**
      * See {@link <a href="http://hdfgroup.org/HDF5/doc/UG/index.html">HDF5 User's Guide</a>}
      */
@@ -167,9 +166,14 @@ public abstract class Datatype extends HObject
     protected String enumMembers;
 
     /**
-     * The datatype identifier of the implementing class of this datatype.
+     * The base datatype of every element of the array (for CLASS_ARRAY datatype).
      */
-    //protected int nativeID;
+    protected Datatype baseType;
+    
+    /*
+     * The dimension of the ARRAY element. For ARRAY datatype only
+     */
+    protected int[] dims;
 
     /**
      * Contructs a named datatype with a given file, name and path.
@@ -226,6 +230,8 @@ public abstract class Datatype extends HObject
         datatypeOrder = torder;
         datatypeSign = tsign;
         enumMembers = null;
+        baseType = null;
+        dims = null;
     }
 
     /**
@@ -311,6 +317,19 @@ public abstract class Datatype extends HObject
     public int getDatatypeSign()
     {
         return datatypeSign;
+    }
+    
+    /**
+     * Returns the datatype of array element for ARRAY datatype.
+     * <p>
+     * For example, a dataset set of ARRAY of inteter, The datatype
+     * of the dataset is ARRAY. The datatype of the base type is integer.
+     *
+     * @return the the datatype of array element for ARRAY datatype.
+     */
+    public Datatype getBasetype()
+    {
+        return baseType;
     }
 
     /**
@@ -475,5 +494,4 @@ public abstract class Datatype extends HObject
      * @see ncsa.hdf.object.DataFormat#removeMetadata(java.lang.Object)
      */
     public void removeMetadata(Object info) throws Exception {;}
-
 }

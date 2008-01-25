@@ -1268,7 +1268,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tarray_1create
     jint *dimsP;
     jint *permP;
     int dlen;
-    hsize_t *cdims;
+    hsize_t *cdims=NULL;
     jboolean isCopy;
     int i;
 
@@ -1304,7 +1304,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tarray_1create
 #endif
         return -1;
     }
-    cdims = (hsize_t *)malloc(dlen * sizeof(hsize_t));
 
     if (perms == NULL) {
         permP = NULL;
@@ -1325,6 +1324,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tarray_1create
         }
     }
 
+    cdims = (hsize_t *)malloc(dlen * sizeof(hsize_t));
     for (i = 0; i < dlen; i++) {
         cdims[i] = (hsize_t)dimsP[i];
     }
@@ -1343,6 +1343,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tarray_1create
         (*env)->ReleaseIntArrayElements(env,perms,permP,JNI_ABORT);
 #endif
     }
+
+	free (cdims);
     if (status < 0) {
         h5libraryError(env);
     }
