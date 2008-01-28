@@ -158,7 +158,11 @@ implements TableView, ActionListener
             }
         }
 
-        isDisplayTypeChar = (isDisplayChar.booleanValue() && (dataset.getDatatype().getDatatypeSize()==1));
+        Datatype dtype = dataset.getDatatype();
+        isDisplayTypeChar = (isDisplayChar.booleanValue() && 
+                (dtype.getDatatypeSize()==1 || 
+                (dtype.getDatatypeClass() == Datatype.CLASS_ARRAY &&
+                dtype.getBasetype().getDatatypeClass()==Datatype.CLASS_CHAR)));
 
         // create the table and its columnHeader
         if (dataset instanceof CompoundDS)
@@ -1228,27 +1232,18 @@ implements TableView, ActionListener
             private final boolean isArray = (dtype.getDatatypeClass()==Datatype.CLASS_ARRAY);
  
             private Object theValue = null;
-            private char aChar;
-
             public Object getValueAt(int row, int column)
             {
                 if (isArray) {
                     // ARRAY dataset
                     int arraySize = dtype.getDatatypeSize()/btype.getDatatypeSize();
-                    boolean isChar = (btype.getDatatypeClass()==Datatype.CLASS_CHAR);
                     stringBuffer.setLength(0); // clear the old string
                     int i0 = (row*getColumnCount()+column)*arraySize;
                     int i1 = i0+arraySize;
 
-                    if (isChar) {
+                    if (isDisplayTypeChar) {
                         for (int i=i0; i<i1; i++) {
-                            if (NT == 'B') {
-                                aChar = (char)Array.getByte(dataValue, i);
-                            } else if (NT == 'S') {
-                                aChar = (char)Array.getShort(dataValue, i);
-                            }
-
-                            stringBuffer.append(aChar);
+                            stringBuffer.append(Array.getChar(dataValue, i));
                             stringBuffer.append(", ");
                         }
                     } else {

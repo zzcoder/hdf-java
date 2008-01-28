@@ -538,8 +538,11 @@ implements ActionListener, ItemListener
             }
 
             // reset show char button
+            Datatype dtype = dataset.getDatatype();
             if (spreadsheetButton.isSelected() &&
-                (dataset.getDatatype().getDatatypeSize()==1))
+                ( (dtype.getDatatypeSize()==1) ||
+                  (dtype.getDatatypeClass() == Datatype.CLASS_ARRAY &&
+                   dtype.getBasetype().getDatatypeClass()==Datatype.CLASS_CHAR) ) )
             {
                 charButton.setEnabled(true);
             }
@@ -729,8 +732,11 @@ implements ActionListener, ItemListener
         }
 
         // reset show char button
+        Datatype dtype = dataset.getDatatype();
         if (spreadsheetButton.isSelected() &&
-            (dataset.getDatatype().getDatatypeSize()==1))
+            ( (dtype.getDatatypeSize()==1) ||
+              (dtype.getDatatypeClass() == Datatype.CLASS_ARRAY &&
+               dtype.getBasetype().getDatatypeClass()==Datatype.CLASS_CHAR) ) )
         {
             charButton.setEnabled(true);
         }
