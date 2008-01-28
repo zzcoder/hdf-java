@@ -1201,6 +1201,11 @@ implements TableView, ActionListener
             }
 
             dataValue = charData;
+        } else if ((NT == 'B') && dataset.getDatatype().getDatatypeClass()==Datatype.CLASS_ARRAY) {
+            Datatype baseType = dataset.getDatatype().getBasetype();
+            if (baseType.getDatatypeClass()==Datatype.CLASS_STRING) {
+                dataValue = Dataset.byteToString((byte[])dataValue, baseType.getDatatypeSize());
+            }
         }
 
         String columnNames[] = new String[cols];
@@ -1244,12 +1249,14 @@ implements TableView, ActionListener
                     if (isDisplayTypeChar) {
                         for (int i=i0; i<i1; i++) {
                             stringBuffer.append(Array.getChar(dataValue, i));
+                            if(stringBuffer.length()>0 && i<(i1-1))
                             stringBuffer.append(", ");
                         }
                     } else {
                         for (int i=i0; i<i1; i++) {
                             stringBuffer.append(Array.get(dataValue, i));
-                            stringBuffer.append(", ");
+                            if(stringBuffer.length()>0 && i<(i1-1))
+                                stringBuffer.append(", ");
                         }
                     }
                     theValue = stringBuffer;
