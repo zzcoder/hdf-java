@@ -638,54 +638,50 @@ char *defineHDF5LibraryException(int maj_num)
 {
     H5E_major_t err_num = (H5E_major_t) maj_num;
 
-    switch (err_num)
-    {
-        case H5E_ARGS:
-             return "ncsa/hdf/hdf5lib/exceptions/HDF5FunctionArgumentException";
-        case H5E_RESOURCE:
-             return "ncsa/hdf/hdf5lib/exceptions/HDF5ResourceUnavailableException";
-        case H5E_INTERNAL:
-             return "ncsa/hdf/hdf5lib/exceptions/HDF5InternalErrorException";
-        case H5E_FILE:
-             return "ncsa/hdf/hdf5lib/exceptions/HDF5FileInterfaceException";
-        case H5E_IO:
-             return "ncsa/hdf/hdf5lib/exceptions/HDF5LowLevelIOException";
-        case H5E_FUNC:
-             return "ncsa/hdf/hdf5lib/exceptions/HDF5FunctionEntryExitException";
-        case H5E_ATOM:
-             return "ncsa/hdf/hdf5lib/exceptions/HDF5AtomException";
-        case H5E_CACHE:
-             return "ncsa/hdf/hdf5lib/exceptions/HDF5MetaDataCacheException";
-        case H5E_BTREE:
-             return "ncsa/hdf/hdf5lib/exceptions/HDF5BtreeException";
-        case H5E_SYM:
-             return "ncsa/hdf/hdf5lib/exceptions/HDF5SymbolTableException";
-        case H5E_HEAP:
-             return "ncsa/hdf/hdf5lib/exceptions/HDF5HeapException";
-        case H5E_OHDR:
-             return "ncsa/hdf/hdf5lib/exceptions/HDF5ObjectHeaderException";
-        case H5E_DATATYPE:
-             return "ncsa/hdf/hdf5lib/exceptions/HDF5DatatypeInterfaceException";
-        case H5E_DATASPACE:
-             return "ncsa/hdf/hdf5lib/exceptions/HDF5DataspaceInterfaceException";
-        case H5E_DATASET:
-             return "ncsa/hdf/hdf5lib/exceptions/HDF5DatasetInterfaceException";
-        case H5E_STORAGE:
-             return "ncsa/hdf/hdf5lib/exceptions/HDF5DataStorageException";
-        case H5E_PLIST:
-             return "ncsa/hdf/hdf5lib/exceptions/HDF5PropertyListInterfaceException";
-        case H5E_ATTR:
-             return "ncsa/hdf/hdf5lib/exceptions/HDF5AttributeException";
-        case H5E_PLINE:
-             return "ncsa/hdf/hdf5lib/exceptions/HDF5DataFiltersException";
-        case H5E_EFL:
-             return "ncsa/hdf/hdf5lib/exceptions/HDF5ExternalFileListException";
-        case H5E_REFERENCE:
-             return "ncsa/hdf/hdf5lib/exceptions/HDF5ReferenceException";
-        default:
-             return "ncsa/hdf/hdf5lib/exceptions/HDF5LibraryException";
-    }
+    if (H5E_ARGS == err_num)
+        return "ncsa/hdf/hdf5lib/exceptions/HDF5FunctionArgumentException";
+    else if (H5E_RESOURCE == err_num)
+        return "ncsa/hdf/hdf5lib/exceptions/HDF5ResourceUnavailableException";
+    else if (H5E_INTERNAL == err_num)
+        return "ncsa/hdf/hdf5lib/exceptions/HDF5InternalErrorException";
+    else if (H5E_FILE == err_num)
+        return "ncsa/hdf/hdf5lib/exceptions/HDF5FileInterfaceException";
+    else if (H5E_IO == err_num)
+        return "ncsa/hdf/hdf5lib/exceptions/HDF5LowLevelIOException";
+    else if (H5E_FUNC == err_num)
+        return "ncsa/hdf/hdf5lib/exceptions/HDF5FunctionEntryExitException";
+    else if (H5E_ATOM == err_num)
+        return "ncsa/hdf/hdf5lib/exceptions/HDF5AtomException";
+    else if (H5E_CACHE == err_num)
+        return "ncsa/hdf/hdf5lib/exceptions/HDF5MetaDataCacheException";
+    else if (H5E_BTREE == err_num)
+        return "ncsa/hdf/hdf5lib/exceptions/HDF5BtreeException";
+    else if (H5E_SYM == err_num)
+        return "ncsa/hdf/hdf5lib/exceptions/HDF5SymbolTableException";
+    else if (H5E_HEAP == err_num)
+        return "ncsa/hdf/hdf5lib/exceptions/HDF5HeapException";
+    else if (H5E_OHDR == err_num)
+        return "ncsa/hdf/hdf5lib/exceptions/HDF5ObjectHeaderException";
+    else if (H5E_DATATYPE == err_num)
+        return "ncsa/hdf/hdf5lib/exceptions/HDF5DatatypeInterfaceException";
+    else if (H5E_DATASPACE == err_num)
+        return "ncsa/hdf/hdf5lib/exceptions/HDF5DataspaceInterfaceException";
+    else if (H5E_DATASET == err_num)
+        return "ncsa/hdf/hdf5lib/exceptions/HDF5DatasetInterfaceException";
+    else if (H5E_STORAGE == err_num)
+        return "ncsa/hdf/hdf5lib/exceptions/HDF5DataStorageException";
+    else if (H5E_PLIST == err_num)
+        return "ncsa/hdf/hdf5lib/exceptions/HDF5PropertyListInterfaceException";
+    else if (H5E_ATTR == err_num)
+        return "ncsa/hdf/hdf5lib/exceptions/HDF5AttributeException";
+    else if (H5E_PLINE == err_num)
+        return "ncsa/hdf/hdf5lib/exceptions/HDF5DataFiltersException";
+    else if (H5E_EFL == err_num)
+        return "ncsa/hdf/hdf5lib/exceptions/HDF5ExternalFileListException";
+    else if (H5E_REFERENCE == err_num)
+        return "ncsa/hdf/hdf5lib/exceptions/HDF5ReferenceException";
 
+    return "ncsa/hdf/hdf5lib/exceptions/HDF5LibraryException";
 }
 
 #ifdef __cplusplus

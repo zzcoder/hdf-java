@@ -25,6 +25,37 @@ extern "C" {
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_J2C
   (JNIEnv *env, jclass clss, jint java_constant)
 {
+/* 
+        CASES removed from 1.6.4
+        case JH5E_CANTALLOC  : return  H5E_CANTALLOC; 
+        case JH5E_CANTCHANGE  : return  H5E_CANTCHANGE; removed from 1.6.4
+        case JH5E_CANTRECV  : return  H5E_CANTRECV; removed from 1.6.4
+        case JH5E_CANTSENDMDATA  : return  H5E_CANTSENDMDATA; removed from 1.6.4
+        case JH5E_FPHDF5  : return  H5E_FPHDF5; removed from 1.6.4
+        case JH5I_TEMPBUF  : return  H5I_TEMPBUF; removed from 1.6.4
+*/        
+
+/* 
+        CASES removed from HDF5 1.6.5
+        case JH5E_CWG  : return  H5E_CWG;
+        case JH5I_FILE_CLOSING  : return  H5I_FILE_CLOSING;
+        case JH5G_USERTYPE  : return  H5G_USERTYPE;
+*/
+
+/* 
+        CASES emoved from 1.8
+        case JH5E_CANTMAKETREE  : return  H5E_CANTMAKETREE;
+        case JH5E_SLINK  : return  H5E_SLINK;
+        case JH5E_TBBT  : return  H5E_TBBT;
+        case JH5G_RESERVED_4  : return  H5G_RESERVED_4;
+        case JH5I_NGROUPS  : return  H5I_NGROUPS;
+        case JH5P_MOUNT  : return  H5P_MOUNT;
+        case JH5P_MOUNT_DEFAULT  : return  H5P_MOUNT_DEFAULT;
+        case JH5P_NO_CLASS_DEFAULT  : return  H5P_NO_CLASS_DEFAULT;
+        case JH5R_INTERNAL  : return  H5R_INTERNAL;
+        case JH5S_COMPLEX  : return  H5S_COMPLEX;
+        case JH5T_CSET_RESERVED_1  : return  H5T_CSET_RESERVED_1;
+*/
     switch (java_constant)
     {
         case JH5_SZIP_MAX_PIXELS_PER_BLOCK  : return  H5_SZIP_MAX_PIXELS_PER_BLOCK;
@@ -72,8 +103,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_J2C
         case JH5E_CACHE  : return  H5E_CACHE;
         case JH5E_CALLBACK  : return  H5E_CALLBACK;
         case JH5E_CANAPPLY  : return  H5E_CANAPPLY;
-        /*case JH5E_CANTALLOC  : return  H5E_CANTALLOC; 
-        case JH5E_CANTCHANGE  : return  H5E_CANTCHANGE; removed from 1.6.4*/
         case JH5E_CANTCLIP  : return  H5E_CANTCLIP;
         case JH5E_CANTCLOSEFILE  : return  H5E_CANTCLOSEFILE;
         case JH5E_CANTCONVERT  : return  H5E_CANTCONVERT;
@@ -93,23 +122,17 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_J2C
         case JH5E_CANTLIST  : return  H5E_CANTLIST;
         case JH5E_CANTLOAD  : return  H5E_CANTLOAD;
         case JH5E_CANTLOCK  : return  H5E_CANTLOCK;
-        case JH5E_CANTMAKETREE  : return  H5E_CANTMAKETREE;
         case JH5E_CANTNEXT  : return  H5E_CANTNEXT;
         case JH5E_CANTOPENFILE  : return  H5E_CANTOPENFILE;
         case JH5E_CANTOPENOBJ  : return  H5E_CANTOPENOBJ;
-        /* case JH5E_CANTRECV  : return  H5E_CANTRECV; removed from 1.6.4*/
         case JH5E_CANTREGISTER  : return  H5E_CANTREGISTER;
         case JH5E_CANTRELEASE  : return  H5E_CANTRELEASE;
         case JH5E_CANTSELECT  : return  H5E_CANTSELECT;
-        /* case JH5E_CANTSENDMDATA  : return  H5E_CANTSENDMDATA; removed from 1.6.4*/
         case JH5E_CANTSET  : return  H5E_CANTSET;
         case JH5E_CANTSPLIT  : return  H5E_CANTSPLIT;
         case JH5E_CANTUNLOCK  : return  H5E_CANTUNLOCK;
         case JH5E_CLOSEERROR  : return  H5E_CLOSEERROR;
         case JH5E_COMPLEN  : return  H5E_COMPLEN;
-/* removed from HDF5 1.6.5
-        case JH5E_CWG  : return  H5E_CWG;
-*/
         case JH5E_DATASET  : return  H5E_DATASET;
         case JH5E_DATASPACE  : return  H5E_DATASPACE;
         case JH5E_DATATYPE  : return  H5E_DATATYPE;
@@ -120,7 +143,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_J2C
         case JH5E_FILE  : return  H5E_FILE;
         case JH5E_FILEEXISTS  : return  H5E_FILEEXISTS;
         case JH5E_FILEOPEN  : return  H5E_FILEOPEN;
-        /* case JH5E_FPHDF5  : return  H5E_FPHDF5; removed from 1.6.4*/
         case JH5E_FUNC  : return  H5E_FUNC;
         case JH5E_HEAP  : return  H5E_HEAP;
         case JH5E_INTERNAL  : return  H5E_INTERNAL;
@@ -149,10 +171,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_J2C
         case JH5E_RS  : return  H5E_RS;
         case JH5E_SEEKERROR  : return  H5E_SEEKERROR;
         case JH5E_SETLOCAL  : return  H5E_SETLOCAL;
-        case JH5E_SLINK  : return  H5E_SLINK;
         case JH5E_STORAGE  : return  H5E_STORAGE;
         case JH5E_SYM  : return  H5E_SYM;
-        case JH5E_TBBT  : return  H5E_TBBT;
         case JH5E_TRUNCATED  : return  H5E_TRUNCATED;
         case JH5E_TST  : return  H5E_TST;
         case JH5E_UNINITIALIZED  : return  H5E_UNINITIALIZED;
@@ -191,30 +211,23 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_J2C
         case JH5G_NLIBTYPES  : return  H5G_NLIBTYPES;
         case JH5G_NTYPES  : return  H5G_NTYPES;
         case JH5G_NUSERTYPES  : return  H5G_NUSERTYPES;
-        case JH5G_RESERVED_4  : return  H5G_RESERVED_4;
         case JH5G_RESERVED_5  : return  H5G_RESERVED_5;
         case JH5G_RESERVED_6  : return  H5G_RESERVED_6;
         case JH5G_RESERVED_7  : return  H5G_RESERVED_7;
         case JH5G_SAME_LOC  : return  H5G_SAME_LOC;
         case JH5G_TYPE  : return  H5G_TYPE;
         case JH5G_UNKNOWN  : return  H5G_UNKNOWN;
-        /*case JH5G_USERTYPE  : return  H5G_USERTYPE;*/
         case JH5I_ATTR  : return  H5I_ATTR;
         case JH5I_BADID  : return  H5I_BADID;
         case JH5I_DATASET  : return  H5I_DATASET;
         case JH5I_DATASPACE  : return  H5I_DATASPACE;
         case JH5I_DATATYPE  : return  H5I_DATATYPE;
         case JH5I_FILE  : return  H5I_FILE;
-/* removed from HDF5 1.6.5
-        case JH5I_FILE_CLOSING  : return  H5I_FILE_CLOSING;
-*/
         case JH5I_GENPROP_CLS  : return  H5I_GENPROP_CLS;
         case JH5I_GENPROP_LST  : return  H5I_GENPROP_LST;
         case JH5I_GROUP  : return  H5I_GROUP;
         case JH5I_INVALID_HID  : return  H5I_INVALID_HID;
-        case JH5I_NGROUPS  : return  H5I_NGROUPS;
         case JH5I_REFERENCE  : return  H5I_REFERENCE;
-        /* case JH5I_TEMPBUF  : return  H5I_TEMPBUF; removed from 1.6.4*/
         case JH5I_VFL  : return  H5I_VFL;
         case JH5P_DATASET_CREATE  : return  H5P_DATASET_CREATE;
         case JH5P_DATASET_CREATE_DEFAULT  : return  H5P_DATASET_CREATE_DEFAULT;
@@ -225,18 +238,13 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_J2C
         case JH5P_FILE_CREATE  : return  H5P_FILE_CREATE;
         case JH5P_FILE_CREATE_DEFAULT  : return  H5P_FILE_CREATE_DEFAULT;
         case JH5P_DEFAULT  : return  H5P_DEFAULT;
-        case JH5P_MOUNT  : return  H5P_MOUNT;
-        case JH5P_MOUNT_DEFAULT  : return  H5P_MOUNT_DEFAULT;
         case JH5P_NO_CLASS  : return  H5P_NO_CLASS;
-        case JH5P_NO_CLASS_DEFAULT  : return  H5P_NO_CLASS_DEFAULT;
         case JH5R_BADTYPE  : return  H5R_BADTYPE;
         case JH5R_DATASET_REGION  : return  H5R_DATASET_REGION;
-        case JH5R_INTERNAL  : return  H5R_INTERNAL;
         case JH5R_MAXTYPE  : return  H5R_MAXTYPE;
         case JH5R_OBJ_REF_BUF_SIZE  : return  H5R_OBJ_REF_BUF_SIZE;
         case JH5R_OBJECT  : return  H5R_OBJECT;
         case JH5S_ALL  : return  H5S_ALL;
-        case JH5S_COMPLEX  : return  H5S_COMPLEX;
         case JH5S_MAX_RANK  : return  H5S_MAX_RANK;
         case JH5S_NO_CLASS  : return  H5S_NO_CLASS;
         case JH5S_SCALAR  : return  H5S_SCALAR;
@@ -283,7 +291,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_J2C
         case JH5T_CONV_INIT  : return  H5T_CONV_INIT;
         case JH5T_CSET_ASCII  : return  H5T_CSET_ASCII;
         case JH5T_CSET_ERROR  : return  H5T_CSET_ERROR;
-        case JH5T_CSET_RESERVED_1  : return  H5T_CSET_RESERVED_1;
         case JH5T_CSET_RESERVED_10  : return  H5T_CSET_RESERVED_10;
         case JH5T_CSET_RESERVED_11  : return  H5T_CSET_RESERVED_11;
         case JH5T_CSET_RESERVED_12  : return  H5T_CSET_RESERVED_12;
