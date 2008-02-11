@@ -1212,6 +1212,8 @@ implements TableView, ActionListener
         long[] startArray = dataset.getStartDims();
         long[] strideArray = dataset.getStride();
         int[] selectedIndex = dataset.getSelectedIndex();
+        final int rowStart = (int)startArray[selectedIndex[0]];
+        final int rowStride = (int)strideArray[selectedIndex[0]];
         int start = 0;
         int stride = 1;
 
@@ -1322,7 +1324,7 @@ implements TableView, ActionListener
                 if ((getSelectedRow()==row) && (getSelectedColumn()==column))
                 {
                     cellLabel.setText(
-                        String.valueOf(row+1)+
+                        String.valueOf(rowStart+row*rowStride)+
                         ", "+
                         table.getColumnName(column)+
                         "  =  ");
@@ -1347,6 +1349,12 @@ implements TableView, ActionListener
         if (rank <=0 ) {
             d.init();
         }
+
+        long[] startArray = d.getStartDims();
+        long[] strideArray = d.getStride();
+        int[] selectedIndex = d.getSelectedIndex();
+        final int rowStart = (int)startArray[selectedIndex[0]];
+        final int rowStride = (int)strideArray[selectedIndex[0]];
 
         // use lazy convert for large number of strings
         if (d.getHeight() > 10000) {
@@ -1529,9 +1537,8 @@ implements TableView, ActionListener
                 if ((getSelectedRow()==row) && (getSelectedColumn()==column))
                 {
                     cellLabel.setText(
-                        String.valueOf(row+1)+
-                        ", "+
-                        String.valueOf(column+1)+
+                        String.valueOf(rowStart+row*rowStride)+
+                        ", "+ table.getColumnName(column)+
                         "  =  ");
                     cellValueField.setText(getValueAt(row, column).toString());
                 }
