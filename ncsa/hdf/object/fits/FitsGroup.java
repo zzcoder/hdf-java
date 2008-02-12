@@ -59,6 +59,12 @@ public class FitsGroup extends Group
         super (fileFormat, name, path, parent, ((theID == null) ? DEFAULT_OID : theID));
     }
 
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#hasAttribute()
+     */
+    public boolean hasAttribute () { return false; }
+
     // Implementing DataFormat
     public List getMetadata() throws Exception {
         if (!isRoot()) {

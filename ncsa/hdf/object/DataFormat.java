@@ -64,5 +64,12 @@ public interface DataFormat
      * @param info the metadata to delete.
      */
     public abstract void removeMetadata(Object info) throws Exception;
+    
+    /**
+     * Check if the object has any attributes attached.
+     *
+     * @return true if it has any attribute(s), false otherwise.
+     */
+    public abstract boolean hasAttribute ();
 
 }

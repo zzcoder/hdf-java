@@ -99,6 +99,8 @@ public class H4Vdata extends CompoundDS
      */
     private int[] memberTIDs;
     
+    private int nAttributes = -1;
+    
 
     public H4Vdata(FileFormat theFile, String name, String path)
     {
@@ -124,12 +126,24 @@ public class H4Vdata extends CompoundDS
         numberOfMembers = 0;
         memberOrders = null;
 
-        int id = open();
-        try { nAttributes = HDFLibrary.VSnattrs(id); }
-        catch (Exception ex ) {}
-        close(id);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#hasAttribute()
+     */
+    public boolean hasAttribute () 
+    { 
+        if (nAttributes < 0) {
+            int id = open();
+            try { nAttributes = HDFLibrary.VSnattrs(id); }
+            catch (Exception ex ) { nAttributes = 0;}
+            close(id);
+        }
+        
+        return (nAttributes>0);
+    }
+    
     // implementing Dataset
     public Datatype getDatatype()
     {

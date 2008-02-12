@@ -37,6 +37,8 @@ public class H4Group extends Group
      * instance of Attribute.
      */
     private List attributeList;
+    
+    private int nAttributes = -1;
 
     /** The default object ID for HDF4 objects */
     private final static long[] DEFAULT_OID = {0, 0};
@@ -63,18 +65,26 @@ public class H4Group extends Group
         long[] oid)
     {
         super (theFile, name, path, parent, ((oid == null) ? DEFAULT_OID : oid));
+    }
 
-        if (theFile instanceof H4File)
-        {
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#hasAttribute()
+     */
+    public boolean hasAttribute () 
+    { 
+        if (nAttributes < 0) {
             int vgid = open();
             try {  
                 nAttributes =HDFLibrary.Vnattrs(vgid);
                 nMembersInFile = HDFLibrary.Vntagrefs(vgid);
-             } catch (Exception ex) {}
+             } catch (Exception ex) {nAttributes = 0;}
             close(vgid);
         }
+        
+        return (nAttributes>0);
     }
-
+    
     // Implementing DataFormat
     public List getMetadata() throws HDFException
     {

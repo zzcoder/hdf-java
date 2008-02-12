@@ -948,6 +948,7 @@ public class H5FileTest extends TestCase {
             fail("file.get() failed. "+ex);
         }
         assertNotNull(img);
+        assertTrue(img.hasAttribute());
         assertTrue(img.isImage());
     }
 

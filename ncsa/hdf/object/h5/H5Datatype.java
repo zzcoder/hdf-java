@@ -48,6 +48,8 @@ public class H5Datatype extends Datatype
 
      /** Flag to indicate if this datatype is a named datatype */
      private boolean isNamed=false;
+     
+     private int nAttributes = -1;
 
      /**
       * Constrcuts an named HDF5 data type object for a given file, dataset name and group path.
@@ -88,18 +90,29 @@ public class H5Datatype extends Datatype
                 this.oid[0] = HDFNativeData.byteToLong(ref_buf, 0);
              } catch (Exception ex) {}
         }
-        
-        int tid = -1;
-        try
-        {
-            tid = H5.H5Topen(getFID(), getPath()+getName());
-            fromNative(tid);
-            nAttributes = H5.H5Aget_num_attrs(tid);
-            isNamed = true;
-        } catch (Exception ex) {;} 
-        finally {
-            try {H5.H5Tclose(tid);} catch (Exception ex){}
+     }
+
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#hasAttribute()
+     */
+    public boolean hasAttribute () 
+    { 
+        if (nAttributes < 0) {
+            int tid = -1;
+            try
+            {
+                tid = H5.H5Topen(getFID(), getPath()+getName());
+                fromNative(tid);
+                nAttributes = H5.H5Aget_num_attrs(tid);
+                isNamed = true;
+            } catch (Exception ex) { nAttributes = 0;} 
+            finally {
+                try {H5.H5Tclose(tid);} catch (Exception ex){}
+            }
         }
+        
+        return (nAttributes>0);
     }
 
     /**
