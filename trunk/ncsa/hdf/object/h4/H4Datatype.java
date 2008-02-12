@@ -79,6 +79,12 @@ public class H4Datatype extends Datatype
 
     /*
      * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#hasAttribute()
+     */
+    public boolean hasAttribute () { return false; }
+
+    /*
+     * (non-Javadoc)
      * @see ncsa.hdf.object.Datatype#fromNative(int)
      */
     public void fromNative(int tid)

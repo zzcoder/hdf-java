@@ -62,6 +62,8 @@ public class H5ScalarDS extends ScalarDS
      /** flag to indicate if the datatype in file is the same as dataype in memory*/
      private boolean isNativeDatatype = false;
      
+     private int nAttributes = -1;
+     
      /**
       * Constructs an instance of a H5ScalarDS object with specific name and path.
       * <p>
@@ -99,100 +101,112 @@ public class H5ScalarDS extends ScalarDS
                 this.oid[0] = HDFNativeData.byteToLong(ref_buf, 0);
              } catch (Exception ex) {}
         }
- 
-        // test if it is an image
-        int did = open();
-        
-        int aid=-1, atid=-1, tid=0;
-        try
-        {
-            nAttributes = H5.H5Aget_num_attrs(did);
-            tid= H5.H5Dget_type(did);
-            
-            int tclass = H5.H5Tget_class(tid);
-            isText = (tclass==HDF5Constants.H5T_STRING);
-            isVLEN = ((tclass==HDF5Constants.H5T_VLEN) || H5.H5Tis_variable_str(tid));
-            isEnum = (tclass==HDF5Constants.H5T_ENUM);
-
-            // try to find out if the dataset is an image
-            aid = H5.H5Aopen_name(did, "CLASS");
-            
-            atid = H5.H5Aget_type(aid);
-            
-            int aclass = H5.H5Tget_class(atid);
-            if (aclass == HDF5Constants.H5T_STRING)
-            {
-                int size = H5.H5Tget_size(atid);
-                byte[] attrValue = new byte[size];
-                H5.H5Aread(aid, atid, attrValue);
-                String strValue = new String(attrValue).trim();
-                isImage = strValue.equalsIgnoreCase("IMAGE");
-                isImageDisplay = isImage;
-            }
-        } catch (Exception ex) {}
-        finally
-        {
-            try { H5.H5Tclose(atid); } catch (HDF5Exception ex) {;}
-            try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
-            try { H5.H5Tclose(tid); } catch (HDF5Exception ex) {;}
-        }
-
-        // retrieve the IMAGE_MINMAXRANGE
-        int asid=-1;
-        try
-        {
-            // try to find out if the dataset is an image
-            aid = H5.H5Aopen_name(did, "IMAGE_MINMAXRANGE");
-            if (aid > 0)
-            {
-                atid = H5.H5Aget_type(aid);
-                int tmptid = atid;
-                atid = H5.H5Tget_native_type(tmptid);
-                try {H5.H5Tclose(tmptid); } catch (Exception ex) {}
-                
-                asid = H5.H5Aget_space(aid);
-                long adims[] = null;
-
-                int arank = H5.H5Sget_simple_extent_ndims(asid);
-                if (arank > 0)
-                {
-                    adims = new long[arank];
-                    H5.H5Sget_simple_extent_dims(asid, adims, null);
-                }
-
-                // retrieve the attribute value
-                long lsize = 1;
-                for (int j=0; j<adims.length; j++) {
-                    lsize *= adims[j];
-                }
-                Object avalue = H5Datatype.allocateArray(atid, (int)lsize);
-                if (avalue != null)
-                {
-                    H5.H5Aread(aid, atid, avalue);
-                    double x0=0, x1=0;
-                    try {
-                        x0 = Double.valueOf(java.lang.reflect.Array.get(avalue, 0).toString()).doubleValue();
-                        x1 = Double.valueOf(java.lang.reflect.Array.get(avalue, 1).toString()).doubleValue();
-                    } catch (Exception ex2) { x0=x1=0;}
-                    if (x1 > x0)
-                    {
-                        imageDataRange = new double[2];
-                        imageDataRange[0] = x0;
-                        imageDataRange[1] = x1;
-                    }
-                }
-            } // if (aid > 0)
-        } catch (Exception ex) {}
-        finally
-        {
-            try { H5.H5Tclose(atid); } catch (HDF5Exception ex) {;}
-            try { H5.H5Sclose(asid); } catch (HDF5Exception ex) {;}
-            try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
-        }
-        
-        close(did);
     }
-    
+
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#hasAttribute()
+     */
+    public boolean hasAttribute () 
+    { 
+        if (nAttributes < 0) {
+            
+            // test if it is an image
+            int did = open();
+            
+            int aid=-1, atid=-1, tid=0;
+            try
+            {
+                nAttributes = H5.H5Aget_num_attrs(did);
+                tid= H5.H5Dget_type(did);
+                
+                int tclass = H5.H5Tget_class(tid);
+                isText = (tclass==HDF5Constants.H5T_STRING);
+                isVLEN = ((tclass==HDF5Constants.H5T_VLEN) || H5.H5Tis_variable_str(tid));
+                isEnum = (tclass==HDF5Constants.H5T_ENUM);
+
+                // try to find out if the dataset is an image
+                aid = H5.H5Aopen_name(did, "CLASS");
+                
+                atid = H5.H5Aget_type(aid);
+                
+                int aclass = H5.H5Tget_class(atid);
+                if (aclass == HDF5Constants.H5T_STRING)
+                {
+                    int size = H5.H5Tget_size(atid);
+                    byte[] attrValue = new byte[size];
+                    H5.H5Aread(aid, atid, attrValue);
+                    String strValue = new String(attrValue).trim();
+                    isImage = strValue.equalsIgnoreCase("IMAGE");
+                    isImageDisplay = isImage;
+                }
+            } catch (Exception ex) { nAttributes = 0;}
+            finally
+            {
+                try { H5.H5Tclose(atid); } catch (HDF5Exception ex) {;}
+                try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
+                try { H5.H5Tclose(tid); } catch (HDF5Exception ex) {;}
+            }
+
+            // retrieve the IMAGE_MINMAXRANGE
+            int asid=-1;
+            try
+            {
+                // try to find out if the dataset is an image
+                aid = H5.H5Aopen_name(did, "IMAGE_MINMAXRANGE");
+                if (aid > 0)
+                {
+                    atid = H5.H5Aget_type(aid);
+                    int tmptid = atid;
+                    atid = H5.H5Tget_native_type(tmptid);
+                    try {H5.H5Tclose(tmptid); } catch (Exception ex) {}
+                    
+                    asid = H5.H5Aget_space(aid);
+                    long adims[] = null;
+
+                    int arank = H5.H5Sget_simple_extent_ndims(asid);
+                    if (arank > 0)
+                    {
+                        adims = new long[arank];
+                        H5.H5Sget_simple_extent_dims(asid, adims, null);
+                    }
+
+                    // retrieve the attribute value
+                    long lsize = 1;
+                    for (int j=0; j<adims.length; j++) {
+                        lsize *= adims[j];
+                    }
+                    Object avalue = H5Datatype.allocateArray(atid, (int)lsize);
+                    if (avalue != null)
+                    {
+                        H5.H5Aread(aid, atid, avalue);
+                        double x0=0, x1=0;
+                        try {
+                            x0 = Double.valueOf(java.lang.reflect.Array.get(avalue, 0).toString()).doubleValue();
+                            x1 = Double.valueOf(java.lang.reflect.Array.get(avalue, 1).toString()).doubleValue();
+                        } catch (Exception ex2) { x0=x1=0;}
+                        if (x1 > x0)
+                        {
+                            imageDataRange = new double[2];
+                            imageDataRange[0] = x0;
+                            imageDataRange[1] = x1;
+                        }
+                    }
+                } // if (aid > 0)
+            } catch (Exception ex) {}
+            finally
+            {
+                try { H5.H5Tclose(atid); } catch (HDF5Exception ex) {;}
+                try { H5.H5Sclose(asid); } catch (HDF5Exception ex) {;}
+                try { H5.H5Aclose(aid); } catch (HDF5Exception ex) {;}
+            }
+            
+            close(did);
+        }
+        
+        return (nAttributes>0);
+    }
+
 
     /*
      * (non-Javadoc)

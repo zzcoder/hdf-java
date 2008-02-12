@@ -64,6 +64,12 @@ public class FitsDatatype extends Datatype
         fromNative(0);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#hasAttribute()
+     */
+    public boolean hasAttribute () { return false; }
+
     /**
      * Allocate an one-dimensional array of byte, short, int, long, float, double,
      * or String to store data retrieved from an fits file based on the given

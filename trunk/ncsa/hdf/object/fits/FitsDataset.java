@@ -60,6 +60,12 @@ public class FitsDataset extends ScalarDS
         unsignedConverted = false;
         nativeDataset = hdu;
     }
+    
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#hasAttribute()
+     */
+    public boolean hasAttribute () { return false; }
 
     /*
      * (non-Javadoc)

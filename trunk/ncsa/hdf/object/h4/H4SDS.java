@@ -105,6 +105,8 @@ public class H4SDS extends ScalarDS
     /** the datatype identifier */
     private int datatypeID = -1;
     
+    private int nAttributes = -1;
+    
 
     public H4SDS(FileFormat theFile, String name, String path)
     {
@@ -127,23 +129,29 @@ public class H4SDS extends ScalarDS
     {
         super (theFile, name, path, oid);
         unsignedConverted = false;
+    }
 
-        if (theFile instanceof H4File)
-        {
-            this.sdid = ((H4File)theFile).getSDAccessID();
-            init();
-/*
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#hasAttribute()
+     */
+    public boolean hasAttribute () 
+    { 
+        if (nAttributes < 0) {
+            this.sdid = ((H4File)getFileFormat()).getSDAccessID();
+
             int id = open();
             try { // retireve attributes of the dataset
                 String[] objName = {""};
                 int[] sdInfo = {0, 0, 0};
                 int[] tmpDim = new int[HDFConstants.MAX_VAR_DIMS];
                 HDFLibrary.SDgetinfo(id, objName, tmpDim, sdInfo);
-                hasAttribute = (sdInfo[2]>0);
-            } catch (Exception ex) {}
+                nAttributes = sdInfo[2];
+            } catch (Exception ex) {nAttributes=0;}
             close(id);
-*/
         }
+        
+        return (nAttributes>0);
     }
 
     // ***** need to implement from ScalarDS *****

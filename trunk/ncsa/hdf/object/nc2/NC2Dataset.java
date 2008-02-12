@@ -58,6 +58,12 @@ public class NC2Dataset extends ScalarDS
         nativeDataset = ncDataset;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#hasAttribute()
+     */
+    public boolean hasAttribute () { return false; }
+
     //Implementing Dataset
     public Dataset copy(Group pgroup, String dstName, long[] dims, Object buff)
     throws Exception {

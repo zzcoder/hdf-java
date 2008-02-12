@@ -91,11 +91,6 @@ public abstract class HObject implements Serializable, DataFormat
     private final String filename;
 
     /**
-     * The file identifier of the object. The fid is obtained from FileFormat.open().
-     */
-//    private final int fid;
-
-    /**
      * The file which contains the object
      */
     private final FileFormat fileFormat;
@@ -128,7 +123,7 @@ public abstract class HObject implements Serializable, DataFormat
     /**
      *  Number of attributes attached to the object. 
      */
-    protected int nAttributes = 0;
+    //protected int nAttributes = -1;
 
     /**
      * Constructs an instance of a data object without name and path.
@@ -442,14 +437,6 @@ public abstract class HObject implements Serializable, DataFormat
         return oid.clone();
     }
 
-    /**
-     * Check if the object has any attributes attached.
-     *
-     * @return true if it has any attribute(s), false otherwise.
-     */
-    public boolean hasAttribute () { return (nAttributes>0); }
-    
-    
     /**
      * Returns the name of the object.
      * <p>

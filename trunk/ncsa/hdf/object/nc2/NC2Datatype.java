@@ -53,6 +53,12 @@ public class NC2Datatype extends Datatype
         super(tclass, tsize, torder, tsign);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#hasAttribute()
+     */
+    public boolean hasAttribute () { return false; }
+
     /**
      * Create a Datatype with a given Netcdf native datatype.
      * <p>

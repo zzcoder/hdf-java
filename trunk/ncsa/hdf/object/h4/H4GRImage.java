@@ -109,7 +109,10 @@ public class H4GRImage extends ScalarDS
     
     /** the datatype identifier */
     private int datatypeID = -1;
-
+    
+    private int nAttributes = -1;
+    
+    
     public H4GRImage(FileFormat theFile, String name, String path)
     {
         this(theFile, name, path, null);
@@ -133,10 +136,16 @@ public class H4GRImage extends ScalarDS
         palette = null;
         isImage = isImageDisplay = true;
         unsignedConverted = false;
-
-        if (theFile instanceof H4File)
-        {
-            this.grid = ((H4File)theFile).getGRAccessID();
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#hasAttribute()
+     */
+    public boolean hasAttribute () 
+    { 
+        if (nAttributes < 0) {
+            this.grid = ((H4File)getFileFormat()).getGRAccessID();
 
             int id = open();
             String[] objName = {""};
@@ -145,9 +154,11 @@ public class H4GRImage extends ScalarDS
             try {
                 HDFLibrary.GRgetiminfo(id, objName, grInfo, idims);
                 nAttributes = grInfo[3];
-            } catch (Exception ex) {}
+            } catch (Exception ex) { nAttributes = 0;}
             close(id);
         }
+        
+        return (nAttributes>0);
     }
 
     // To do: Implementing Dataset

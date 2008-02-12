@@ -18,6 +18,7 @@ import java.util.*;
 
 import ncsa.hdf.hdf5lib.*;
 import ncsa.hdf.hdf5lib.exceptions.*;
+import ncsa.hdf.hdflib.HDFLibrary;
 import ncsa.hdf.object.*;
 
 import java.lang.reflect.Array;
@@ -78,6 +79,8 @@ public class H5CompoundDS extends CompoundDS
      * The list of attributes attached data object.
      */
     private List attributeList;
+    
+    private int nAttributes = -1;
     
     /**
      * A list of names of all fields including nested fields.
@@ -149,11 +152,24 @@ public class H5CompoundDS extends CompoundDS
                 this.oid[0] = HDFNativeData.byteToLong(ref_buf, 0);
              } catch (Exception ex) {}
         }
+    }
 
-        int did = open();
-        try { nAttributes = H5.H5Aget_num_attrs(did); }
-        catch (Exception ex) {}
-        close(did);
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#hasAttribute()
+     */
+    public boolean hasAttribute () 
+    { 
+        if (nAttributes < 0) {
+            int did = -1;
+            try { 
+                did = H5.H5Dopen(getFID(), getPath()+getName());
+                nAttributes = H5.H5Aget_num_attrs(did); 
+            } catch (Exception ex) { nAttributes = 0;}
+            close(did);
+        }
+        
+        return (nAttributes>0);
     }
 
     /*

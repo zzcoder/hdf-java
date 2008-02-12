@@ -47,6 +47,8 @@ public class H5Group extends Group
      * instance of Attribute.
      */
     protected List attributeList;
+    
+    private int nAttributes = -1;
 
     /**
      * Constructs an HDF5 group with specific name, path, and parent.
@@ -73,6 +75,7 @@ public class H5Group extends Group
         long[] oid)
     {
         super (theFile, name, path, parent, oid);
+        nMembersInFile = -1;
 
         if ((oid == null) && (theFile != null)) {
             // retrieve the object ID
@@ -82,17 +85,47 @@ public class H5Group extends Group
                 this.oid[0] = HDFNativeData.byteToLong(ref_buf, 0);
             } catch (Exception ex) { this.oid = new long[1]; this.oid[0]=0;}
         }
-
-        int gid = open();
-        try { 
-            nAttributes = H5.H5Aget_num_attrs(gid);
-            long[] nmembers = {0};
-            H5.H5Gget_num_objs(gid, nmembers);
-            nMembersInFile = (int)nmembers[0];
-        }
-        catch (Exception ex ) {}
-        close(gid);
     }
+
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#hasAttribute()
+     */
+    public boolean hasAttribute () 
+    { 
+        if (nAttributes < 0) {
+            int gid = open();
+            if (gid > 0) {
+                try { 
+                    nAttributes = H5.H5Aget_num_attrs(gid);
+                } catch (Exception ex ) {nAttributes = 0;}
+            close(gid);
+            }
+        }
+        
+        return (nAttributes>0);
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Group#getNumberOfMembersInFile()
+     */
+    public int getNumberOfMembersInFile() 
+    { 
+        if (nMembersInFile < 0) {
+            int gid = open();
+            if (gid > 0) {
+                try { 
+                    long[] nmembers = {0};
+                    H5.H5Gget_num_objs(gid, nmembers);
+                    nMembersInFile = (int)nmembers[0];
+                } catch (Exception ex ) {nMembersInFile = 0;}
+            close(gid);
+            }
+        }
+        return nMembersInFile; 
+    }
+    
 
     /*
      * (non-Javadoc)

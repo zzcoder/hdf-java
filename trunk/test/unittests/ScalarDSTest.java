@@ -107,6 +107,7 @@ public class ScalarDSTest extends TestCase {
      * </ul>
      */ 
 	public final void testImageFunctionality() {
+        assertTrue(imageDset.hasAttribute());
 		assertTrue(imageDset.isImage());
 		assertTrue(imageDset.isImageDisplay());
 	
