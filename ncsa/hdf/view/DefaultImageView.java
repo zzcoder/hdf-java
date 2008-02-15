@@ -309,7 +309,7 @@ implements ImageView, ActionListener
         int n = Math.min(3, rank);
 
         if (rank>2) {
-            curFrame = start[selectedIndex[2]]+1;
+            curFrame = start[selectedIndex[2]];
             maxFrame = dims[selectedIndex[2]];
         }
 
@@ -580,13 +580,17 @@ implements ImageView, ActionListener
             button.addActionListener( this );
             button.setActionCommand( "Previous page" );
 
-            frameField = new JTextField(curFrame + " of " + maxFrame);
-            frameField.setMaximumSize(new Dimension(110,30));
+            frameField = new JTextField(String.valueOf(curFrame));
+            frameField.setMaximumSize(new Dimension(50,30));
             bar.add( frameField );
             frameField.setMargin( margin );
             frameField.addActionListener( this );
             frameField.setActionCommand( "Go to frame" );
 
+            JLabel tmpField = new JLabel(String.valueOf(maxFrame),SwingConstants.CENTER);
+            tmpField.setMaximumSize(new Dimension(50,30));
+            bar.add( tmpField );
+            
             // next button
             button = new JButton( ViewProperties.getNextIcon() );
             bar.add( button );
@@ -609,7 +613,8 @@ implements ImageView, ActionListener
             button.setMargin( margin );
             button.addActionListener( this );
             button.setActionCommand( "Show animation" );
-        }
+            
+       }
 
         return bar;
     }
@@ -1356,18 +1361,11 @@ implements ImageView, ActionListener
         }
         else if (cmd.startsWith("Go to frame"))
         {
-            String strPage = frameField.getText();
-            strPage = strPage.toLowerCase();
-            int idx = strPage.indexOf('o');
-            if (idx > 0) {
-                strPage = strPage.substring(0, idx);
-            }
-
             int page = 0;
-            try { page = Integer.parseInt(strPage.trim()); }
+            try { page = Integer.parseInt(frameField.getText().trim()); }
             catch (Exception ex) { page = -1; }
 
-            gotoPage(page-1);
+            gotoPage(page);
         }
         else if (cmd.startsWith("Show animation"))
         {
@@ -1625,7 +1623,7 @@ implements ImageView, ActionListener
         if ((idx <0) || (idx >= dims[selectedIndex[2]])) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                "Frame number must be between 0 and "+dims[selectedIndex[2]],
+                "Frame number must be between 0 and "+(dims[selectedIndex[2]]-1),
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             return;
@@ -1634,11 +1632,11 @@ implements ImageView, ActionListener
     	setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         
         start[selectedIndex[2]] = idx;
-        curFrame = idx+1;
+        curFrame = idx;
         dataset.clearData();
         image = null;
         imageComponent.setImage(getImage());
-        frameField.setText(curFrame + " of " + maxFrame);
+        frameField.setText(String.valueOf(curFrame));
 
     	setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         
