@@ -141,17 +141,6 @@ public class FileFormatTest extends TestCase {
 	}
 
 	/**
-	 * Test method for {@link ncsa.hdf.object.FileFormat#getFileExtensions()}.
-	 * <p>
-	 * <ul>
-	 *   <li> current file extensions are hdf, h4, hdf5, h5.
-	 * </ul>
-	 */
-	public final void testGetFileExtensions() {
-		assertEquals(FileFormat.getFileExtensions(), "hdf, h4, hdf5, h5");
-	}
-
-	/**
 	 * Test method for {@link ncsa.hdf.object.FileFormat#getFID()}.
 	 * <p>
 	 * <ul>
@@ -160,18 +149,6 @@ public class FileFormatTest extends TestCase {
 	 */
 	public final void testGetFID() {
 		assertTrue((testFile.getFID() != -1));
-	}
-
-	/**
-	 * Test method for {@link ncsa.hdf.object.FileFormat#addFileExtension(java.lang.String)}.
-	 * <p>
-	 * <ul>
-	 *   <li> Add file extension he5.
-	 * </ul>
-	 */
-	public final void testAddFileExtension() {
-		FileFormat.addFileExtension("he5");
-		assertEquals(FileFormat.getFileExtensions(), "hdf, h4, hdf5, h5, he5");
 	}
 
 	/**
