@@ -613,7 +613,7 @@ public class H5ScalarDS extends ScalarDS
             return;
         }
 
-        if (isVLEN) {
+        if (isVLEN && !isText) {    // Rosetta Biosoftware VLEN Strings are supported now...
             throw(new HDF5Exception("Writing variable-length data is not supported"));
         } else if (isEnum && isEnumConverted()) {
             throw(new HDF5Exception("Writing converted enum data is not supported"));

@@ -204,16 +204,16 @@ import ncsa.hdf.hdf5lib.exceptions.*;
  *  ncsa.hdf.hdf5lib.HDF5Exception<BR>
  *  <a href="http://hdf.ncsa.uiuc.edu/HDF5/">
  *  http://hdf.ncsa.uiuc.edu/HDF5"</a>
-**/
+ **/
 public class H5 {
 
     public final static String H5PATH_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.hdf5lib";
-    
+
     static
     {
         boolean done = false;
         String filename = System.getProperty(H5PATH_PROPERTY_KEY,null);
-        
+
         if ((filename != null) && (filename.length() > 0))
         {
             File h5dll = new File(filename);
@@ -221,7 +221,7 @@ public class H5 {
                 try {
                     System.load(filename);
                     done = true;
-                    } catch (Throwable err) { done = false; }
+                } catch (Throwable err) { done = false; }
             } else {
                 done = false;
                 throw (new UnsatisfiedLinkError("Invalid HDF5 library, "+filename));
@@ -247,8 +247,8 @@ public class H5 {
         H5.H5error_off();
 
         /*  Optional:  confirm the version
-                 *     This will crash immediately if not the
-                 *     specified version.
+         *     This will crash immediately if not the
+         *     specified version.
          */
         Integer majnum = Integer.getInteger("ncsa.hdf.hdf5lib.H5.hdf5maj",null);
         Integer minnum = Integer.getInteger("ncsa.hdf.hdf5lib.H5.hdf5min",null);
@@ -258,21 +258,21 @@ public class H5 {
         }
     }
 
-       //////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////
 
     /**
      *  J2C converts a Java constant to an HDF5 constant determined at runtime
      *
      *  @param java_constant The value of Java constant
      *  @return the value of an HDF5 constant determined at runtime
-    **/
+     **/
     public synchronized static native int J2C(int java_constant);
 
     /** Turn off error handling
-          * By default, the C library prints the error stack
-          * of the HDF-5 C library on stdout.  This behavior
-          * may be disabled by calling H5error_off().
-          */
+     * By default, the C library prints the error stack
+     * of the HDF-5 C library on stdout.  This behavior
+     * may be disabled by calling H5error_off().
+     */
     public synchronized static native int H5error_off();
 
 
@@ -308,14 +308,14 @@ public class H5 {
 
     /**
      *  H5dont_atexit indicates to the library that an atexit()
-         *  cleanup routine should not be installed.  In order to be
-         *  effective, this routine must be called before any other HDF
+     *  cleanup routine should not be installed.  In order to be
+     *  effective, this routine must be called before any other HDF
      *  function calls, and must be called each time the library
-         *  is loaded/linked into the application (the first time and
-         *  after it's been un-loaded).
+     *  is loaded/linked into the application (the first time and
+     *  after it's been un-loaded).
      *  <P>
      *  This is called by the static initializer, so this should
-         *  never need to be explicitly called by a Java program.
+     *  never need to be explicitly called by a Java program.
      *
      *  @return a non-negative value if successful
      *
@@ -325,8 +325,8 @@ public class H5 {
 
     /**
      *  H5get_libversion retrieves the major, minor, and release
-         *  numbers of the version of the HDF library which is linked
-         *  to the application.
+     *  numbers of the version of the HDF library which is linked
+     *  to the application.
      *
      *  @param libversion The version information of the HDF library.
      *    <pre>
@@ -350,7 +350,7 @@ public class H5 {
      *  @param minnum The minor version of the library.
      *  @param relnum The release number of the library.
      *  @return a non-negative value if successful.
-         *  Upon failure (when the versions do not match), this function
+     *  Upon failure (when the versions do not match), this function
      *  causes the application to abort (i.e., crash)
      *
      *  See C API function: herr_t H5check_version()
@@ -402,7 +402,7 @@ public class H5 {
 
     /**
      *  H5Acreate creates an attribute which is attached to the
-         *  object specified with loc_id.
+     *  object specified with loc_id.
      *
      *  @param loc_id IN: Object (dataset, group, or named datatype) to be attached to.
      *  @param name IN: Name of attribute to create.
@@ -417,8 +417,8 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native int H5Acreate(int loc_id, String name,
-        int type_id, int space_id, int create_plist)
-        throws HDF5LibraryException, NullPointerException;
+            int type_id, int space_id, int create_plist)
+    throws HDF5LibraryException, NullPointerException;
 
     /**
      *  H5Aopen_name opens an attribute specified by its name,
@@ -433,7 +433,7 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native int H5Aopen_name(int loc_id, String name)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
 
     /**
@@ -451,7 +451,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Aopen_idx(int loc_id, int idx)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -470,8 +470,8 @@ public class H5 {
      *  @exception NullPointerException - data is null.
      **/
     public synchronized static native int H5Awrite(int attr_id, int mem_type_id,
-        byte[] buf)
-        throws HDF5LibraryException, NullPointerException;
+            byte[] buf)
+    throws HDF5LibraryException, NullPointerException;
 
     /**
      *  H5Awrite writes an attribute, specified with attr_id. The
@@ -490,8 +490,8 @@ public class H5 {
      *  See public synchronized static native int H5Awrite(int attr_id, int mem_type_id, byte[] buf);
      **/
     public synchronized static int H5Awrite(int attr_id, int mem_type_id,
-     Object obj )
-     throws HDF5Exception, NullPointerException
+            Object obj )
+    throws HDF5Exception, NullPointerException
     {
         HDFArray theArray = new HDFArray(obj);
         byte[] buf = theArray.byteify();
@@ -507,7 +507,7 @@ public class H5 {
      *  @param dst_aid the identifier of the destinaiton attribute
      */
     public synchronized static native int H5Acopy(int src_aid, int dst_aid)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Aread reads an attribute, specified with attr_id. The
@@ -525,7 +525,7 @@ public class H5 {
      *  @exception NullPointerException - data buffer is null.
      **/
     public synchronized static native int H5Aread(int attr_id, int mem_type_id, byte[] buf)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     /**
      *  H5Aread reads an attribute, specified with attr_id. The
@@ -542,9 +542,9 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - data buffer is null.
      *  See public synchronized static native int H5Aread( )
-    **/
+     **/
     public synchronized static int H5Aread(int attr_id, int mem_type_id, Object obj)
-     throws HDF5Exception, NullPointerException
+    throws HDF5Exception, NullPointerException
     {
         HDFArray theArray = new HDFArray(obj);
         byte[] buf = theArray.emptyBytes();
@@ -561,11 +561,11 @@ public class H5 {
     }
 
     public synchronized static native int H5AreadVL(int attr_id, int mem_type_id, String[] buf)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     /**
      *  H5Aget_space retrieves a copy of the dataspace for an
-         *  attribute.
+     *  attribute.
      *
      *  @param attr_id IN: Identifier of an attribute.
      *
@@ -607,12 +607,12 @@ public class H5 {
      *  @return the length of the attribute's name if successful.
      **/
     public synchronized static native long H5Aget_name(int attr_id, long buf_size,
-        String[] name)
-        throws ArrayIndexOutOfBoundsException,
-        ArrayStoreException,
-        HDF5LibraryException,
-        NullPointerException,
-        IllegalArgumentException;
+            String[] name)
+    throws ArrayIndexOutOfBoundsException,
+    ArrayStoreException,
+    HDF5LibraryException,
+    NullPointerException,
+    IllegalArgumentException;
 
     /**
      *  H5Aget_num_attrs returns the number of attributes attached
@@ -626,7 +626,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Aget_num_attrs(int loc_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Adelete removes the attribute specified by its name, name,
@@ -642,7 +642,7 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native int H5Adelete(int loc_id, String name)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
 
     /**
@@ -656,7 +656,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Aclose(int attr_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     //////////////////////////////////////////////////////////////
@@ -685,8 +685,8 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native int H5Dcreate(int loc_id, String name,
-        int type_id, int space_id, int create_plist_id)
-        throws HDF5LibraryException, NullPointerException;
+            int type_id, int space_id, int create_plist_id)
+    throws HDF5LibraryException, NullPointerException;
 
 
     /**
@@ -701,16 +701,16 @@ public class H5 {
      *
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - name is null.
-    **/
+     **/
     public synchronized static native int H5Dopen(int loc_id, String name)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Dchdir_ext(String dir_name)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Dgetdir_ext(String[] dir_name, int size)
     throws HDF5LibraryException, NullPointerException;
-    
+
     /**
      *  H5Dget_space returns an identifier for a copy of the
      *  dataspace for a dataset.
@@ -722,7 +722,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Dget_space(int dataset_id)
-        throws HDF5LibraryException ;
+    throws HDF5LibraryException ;
 
 
     /**
@@ -736,7 +736,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Dget_type(int dataset_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -750,7 +750,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Dget_create_plist(int dataset_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Dread reads a (partial) dataset, specified by its
@@ -772,13 +772,13 @@ public class H5 {
      *  @exception NullPointerException - data buffer is null.
      **/
     public synchronized static native int H5Dread(int dataset_id, int mem_type_id,
-        int mem_space_id, int file_space_id, int xfer_plist_id,
-        byte[] buf)
-        throws HDF5LibraryException, NullPointerException;
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            byte[] buf)
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5DreadVL(int dataset_id, int mem_type_id,
-        int mem_space_id, int file_space_id, int xfer_plist_id, Object[] buf)
-        throws HDF5LibraryException, NullPointerException;
+            int mem_space_id, int file_space_id, int xfer_plist_id, Object[] buf)
+    throws HDF5LibraryException, NullPointerException;
 
     /**
      *  H5Dread reads a (partial) dataset, specified by its
@@ -801,17 +801,17 @@ public class H5 {
      *  @exception NullPointerException - data object is null.
      **/
     public synchronized static int H5Dread(int dataset_id, int mem_type_id,
-        int mem_space_id, int file_space_id,
-        int xfer_plist_id, Object obj )
-        throws HDF5Exception,
-        HDF5LibraryException,
-        NullPointerException
+            int mem_space_id, int file_space_id,
+            int xfer_plist_id, Object obj )
+    throws HDF5Exception,
+    HDF5LibraryException,
+    NullPointerException
     {
         int status = -1;
         boolean is1D = false;
 
         Class dataClass = obj.getClass();
-         if (!dataClass.isArray()) {
+        if (!dataClass.isArray()) {
             throw (new HDF5JavaException("H5Dread: data is not an array"));
         }
 
@@ -821,39 +821,41 @@ public class H5 {
 
         if (is1D && (dname == 'B')) {
             status = H5Dread(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                xfer_plist_id, (byte[])obj);
+                    xfer_plist_id, (byte[])obj);
         }
         else if (is1D && (dname == 'S')) {
             status = H5Dread_short(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                xfer_plist_id, (short[])obj);
+                    xfer_plist_id, (short[])obj);
         }
         else if (is1D && (dname == 'I')) {
             status = H5Dread_int(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                xfer_plist_id, (int[])obj);
+                    xfer_plist_id, (int[])obj);
         }
         else if (is1D && (dname == 'J')) {
             status = H5Dread_long(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                xfer_plist_id, (long[])obj);
+                    xfer_plist_id, (long[])obj);
         }
         else if (is1D && (dname == 'F')) {
             status = H5Dread_float(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                xfer_plist_id, (float[])obj);
+                    xfer_plist_id, (float[])obj);
         }
         else if (is1D && (dname == 'D')) {
             status = H5Dread_double(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                xfer_plist_id, (double[])obj);
+                    xfer_plist_id, (double[])obj);
         }
         else if (H5.H5Tequal(mem_type_id, HDF5Constants.H5T_STD_REF_DSETREG)) {
             status = H5Dread_reg_ref(dataset_id, mem_type_id,mem_space_id, file_space_id,
                     xfer_plist_id, (String[])obj);
         }
-        else if (is1D && cname.equals("[Ljava.lang.String;")) {
-            status = H5Dread_string(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                xfer_plist_id, (String[])obj);
+        else if (is1D && (dataClass.getComponentType() == String.class)) { 
             // Rosetta Biosoftware - add support for Strings (variable length) 
-         } else if (is1D && (dataClass.getComponentType() == String.class)) {      // already know it is an array 
-                 status = H5DreadVL(dataset_id, mem_type_id,mem_space_id, file_space_id, 
-                     xfer_plist_id, (Object[])obj); 
+            if (H5.H5Tis_variable_str(mem_type_id)) {
+                status = H5DreadVL(dataset_id, mem_type_id,mem_space_id, file_space_id, 
+                        xfer_plist_id, (Object[])obj);
+            } else {
+                status = H5Dread_string(dataset_id, mem_type_id,mem_space_id, file_space_id,
+                        xfer_plist_id, (String[])obj);
+            }
         } else {
             // Create a data buffer to hold the data into a Java Array
             HDFArray theArray = new HDFArray(obj);
@@ -861,7 +863,7 @@ public class H5 {
 
             // will raise exception if read fails
             status = H5Dread(dataset_id, mem_type_id, mem_space_id,
-                file_space_id, xfer_plist_id, buf);
+                    file_space_id, xfer_plist_id, buf);
             if (status >= 0) {
                 // convert the data into a Java Array */
                 obj = theArray.arrayify( buf);
@@ -896,12 +898,12 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library. 
      *  @exception NullPointerException - name is null. 
      **/ 
-    
-    
+
+
     public synchronized static native int H5DwriteString(int dataset_id, 
-        int mem_type_id, int mem_space_id, 
-        int file_space_id, int xfer_plist_id, String[] buf) 
-        throws HDF5LibraryException, NullPointerException; 
+            int mem_type_id, int mem_space_id, 
+            int file_space_id, int xfer_plist_id, String[] buf) 
+    throws HDF5LibraryException, NullPointerException; 
 
 
     /**
@@ -924,9 +926,9 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native int H5Dwrite(int dataset_id,
-        int mem_type_id, int mem_space_id,
-        int file_space_id, int xfer_plist_id, byte[] buf)
-        throws HDF5LibraryException, NullPointerException;
+            int mem_type_id, int mem_space_id,
+            int file_space_id, int xfer_plist_id, byte[] buf)
+    throws HDF5LibraryException, NullPointerException;
 
     /**
      *  H5Dwrite writes a (partial) dataset, specified by its
@@ -949,16 +951,16 @@ public class H5 {
      *  @exception NullPointerException - data object is null.
      **/
     public synchronized static int H5Dwrite(int dataset_id, int mem_type_id, int mem_space_id,
-        int file_space_id, int xfer_plist_id, Object obj )
-        throws HDF5Exception,
-        HDF5LibraryException,
-        NullPointerException
+            int file_space_id, int xfer_plist_id, Object obj )
+    throws HDF5Exception,
+    HDF5LibraryException,
+    NullPointerException
     {
         int status = -1;
         boolean is1D = false;
 
         Class dataClass = obj.getClass();
-         if (!dataClass.isArray()) {
+        if (!dataClass.isArray()) {
             throw (new HDF5JavaException("H5Dread: data is not an array"));
         }
 
@@ -968,35 +970,35 @@ public class H5 {
 
         if (is1D && (dname == 'B')) {
             status = H5Dwrite(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                xfer_plist_id, (byte[])obj);
+                    xfer_plist_id, (byte[])obj);
         }
         else if (is1D && (dname == 'S')) {
             status = H5Dwrite_short(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                xfer_plist_id, (short[])obj);
+                    xfer_plist_id, (short[])obj);
         }
         else if (is1D && (dname == 'I')) {
             status = H5Dwrite_int(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                xfer_plist_id, (int[])obj);
+                    xfer_plist_id, (int[])obj);
         }
         else if (is1D && (dname == 'J')) {
             status = H5Dwrite_long(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                xfer_plist_id, (long[])obj);
+                    xfer_plist_id, (long[])obj);
         }
         else if (is1D && (dname == 'F')) {
             status = H5Dwrite_float(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                xfer_plist_id, (float[])obj);
+                    xfer_plist_id, (float[])obj);
         }
         else if (is1D && (dname == 'D')) {
             status = H5Dwrite_double(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                xfer_plist_id, (double[])obj);
+                    xfer_plist_id, (double[])obj);
         }
-            
+
         // Rosetta Biosoftware - call into H5DwriteString for variable length Strings 
         else if ((H5.H5Tget_class(mem_type_id) == HDF5Constants.H5T_STRING) && H5.H5Tis_variable_str(mem_type_id) 
-                        && dataClass.isArray() && (dataClass.getComponentType() == String.class) && is1D) { 
-                status = H5DwriteString(dataset_id, mem_type_id, 
-                                mem_space_id, file_space_id, xfer_plist_id, (String[])obj); 
-                    
+                && dataClass.isArray() && (dataClass.getComponentType() == String.class) && is1D) { 
+            status = H5DwriteString(dataset_id, mem_type_id, 
+                    mem_space_id, file_space_id, xfer_plist_id, (String[])obj); 
+
         } else {
             HDFArray theArray = new HDFArray(obj);
             byte[] buf = theArray.byteify();
@@ -1026,10 +1028,10 @@ public class H5 {
      *  @exception NullPointerException - size array is null.
      **/
     public synchronized static native int H5Dextend(int dataset_id, byte[] size)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static int H5Dextend(int dataset_id, long[] size)
-        throws HDF5Exception, NullPointerException
+    throws HDF5Exception, NullPointerException
     {
         int rval = -1;
         HDFArray theArray = new HDFArray(size);
@@ -1052,7 +1054,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Dclose(int dataset_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     // following synchronized static native functions are missing from HDF5 RM version 1.0.1
 
@@ -1066,20 +1068,20 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native long H5Dget_storage_size(int dataset_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /** H5Dcopy copies the content of one dataset to another dataset.
      *  @param src_did the identifier of the source dataset
      *  @param dst_did the identifier of the destinaiton dataset
      */
     public synchronized static native int H5Dcopy(int src_did, int dst_did)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /*
      *
-         */
+     */
     public synchronized static native int H5Dvlen_get_buf_size( int dataset_id, int type_id, int space_id, int[]size)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *
@@ -1090,9 +1092,9 @@ public class H5 {
      *  @exception NullPointerException - buf is null.
      **/
     public synchronized static native int H5Dvlen_reclaim(
-        int type_id, int space_id,
-        int xfer_plist_id, byte[] buf)
-        throws HDF5LibraryException, NullPointerException;
+            int type_id, int space_id,
+            int xfer_plist_id, byte[] buf)
+    throws HDF5LibraryException, NullPointerException;
 
 
     //////////////////////////////////////////////////////////////
@@ -1116,8 +1118,8 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native int H5Fopen(String name, int flags,
-        int access_id)
-        throws HDF5LibraryException, NullPointerException;
+            int access_id)
+    throws HDF5LibraryException, NullPointerException;
 
 
     /**
@@ -1163,8 +1165,8 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native int H5Fcreate(String name, int flags,
-        int create_id, int access_id)
-        throws HDF5LibraryException, NullPointerException;
+            int create_id, int access_id)
+    throws HDF5LibraryException, NullPointerException;
 
 
     /**
@@ -1187,12 +1189,12 @@ public class H5 {
      *  Valid values are:
      *  <UL>
      *  <LI>
-         *           H5F_SCOPE_GLOBAL
-         *                               Flushes the entire virtual file.
+     *           H5F_SCOPE_GLOBAL
+     *                               Flushes the entire virtual file.
      *  </LI>
      *  <LI>
-         *          H5F_SCOPE_LOCAL
-         *                             Flushes only the specified file.
+     *          H5F_SCOPE_LOCAL
+     *                             Flushes only the specified file.
      *  </LI>
      *  </UL>
      *
@@ -1201,7 +1203,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Fflush(int object_id, int scope)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -1215,7 +1217,7 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native boolean H5Fis_hdf5(String name)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
 
     /**
@@ -1231,7 +1233,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Fget_create_plist(int file_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -1246,7 +1248,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Fget_access_plist(int file_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -1259,7 +1261,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Fclose(int file_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -1280,8 +1282,8 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native int H5Fmount(int loc_id, String name,
-        int child_id, int plist_id)
-        throws HDF5LibraryException, NullPointerException;
+            int child_id, int plist_id)
+    throws HDF5LibraryException, NullPointerException;
 
 
     /**
@@ -1298,7 +1300,7 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native int H5Funmount(int loc_id, String name)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
 
     /**
@@ -1311,7 +1313,7 @@ public class H5 {
      *  @return a new file identifier if successful
      **/
     public synchronized static native int H5Freopen(int file_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     //////////////////////////////////////////////////////////////
@@ -1337,8 +1339,8 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native int H5Gcreate(int loc_id, String name,
-        int size_hint)
-        throws HDF5LibraryException, NullPointerException;
+            int size_hint)
+    throws HDF5LibraryException, NullPointerException;
 
 
     /**
@@ -1355,7 +1357,7 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native int H5Gopen(int loc_id, String name)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
 
     /**
@@ -1369,7 +1371,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Gclose(int group_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -1395,12 +1397,12 @@ public class H5 {
      *  @exception NullPointerException - current_name or name is null.
      **/
     public synchronized static native int H5Glink(int loc_id, int link_type,
-        String current_name, String new_name)
-        throws HDF5LibraryException, NullPointerException;
+            String current_name, String new_name)
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Glink2(int curr_loc_id,
-        String current_name, int link_type, int new_loc_id, String new_name )
-        throws HDF5LibraryException, NullPointerException;
+            String current_name, int link_type, int new_loc_id, String new_name )
+    throws HDF5LibraryException, NullPointerException;
 
     /**
      *  H5Gunlink removes an association between a name and an object.
@@ -1414,7 +1416,7 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native int H5Gunlink(int loc_id, String name)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     /**
      *  H5Gmove renames an object within an HDF5 file.
@@ -1433,8 +1435,8 @@ public class H5 {
      *  @exception NullPointerException - src or dst is null.
      **/
     public synchronized static native int H5Gmove(int loc_id, String src,
-        String dst)
-        throws HDF5LibraryException, NullPointerException;
+            String dst)
+    throws HDF5LibraryException, NullPointerException;
 
     /**
      *  H5Gget_linkval returns size characters of the link value
@@ -1459,12 +1461,12 @@ public class H5 {
      *  @exception IllegalArgumentException - size is invalid
      **/
     public synchronized static native int H5Gget_linkval(int loc_id, String name,
-        int size, String[] value)
-        throws ArrayIndexOutOfBoundsException,
-        ArrayStoreException,
-        HDF5LibraryException,
-        NullPointerException,
-        IllegalArgumentException;
+            int size, String[] value)
+    throws ArrayIndexOutOfBoundsException,
+    ArrayStoreException,
+    HDF5LibraryException,
+    NullPointerException,
+    IllegalArgumentException;
 
 
     /**
@@ -1483,8 +1485,8 @@ public class H5 {
      *  @exception NullPointerException - name or comment is null.
      **/
     public synchronized static native int H5Gset_comment(int loc_id, String name,
-        String comment)
-        throws HDF5LibraryException, NullPointerException;
+            String comment)
+    throws HDF5LibraryException, NullPointerException;
 
 
     /**
@@ -1511,13 +1513,13 @@ public class H5 {
      *  comment is invalid.
      **/
     public synchronized static native int H5Gget_comment(int loc_id, String name,
-        int bufsize,
-        String[] comment)
-        throws ArrayIndexOutOfBoundsException,
-        ArrayStoreException,
-        HDF5LibraryException,
-        NullPointerException,
-        IllegalArgumentException;
+            int bufsize,
+            String[] comment)
+    throws ArrayIndexOutOfBoundsException,
+    ArrayStoreException,
+    HDF5LibraryException,
+    NullPointerException,
+    IllegalArgumentException;
 
     //////////////////////////////////////////////////////////////
     //                                                          //
@@ -1537,7 +1539,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Iget_type(int obj_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     //////////////////////////////////////////////////////////////
@@ -1559,7 +1561,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Pcreate(int type)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -1572,7 +1574,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Pclose(int plist)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Pget_class returns the property list class for the
@@ -1585,7 +1587,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Pget_class(int plist)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Pcopy copies an existing property list to create a
@@ -1598,7 +1600,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Pcopy(int plist)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Pget_version retrieves the version information of various
@@ -1621,10 +1623,10 @@ public class H5 {
      *  @exception IllegalArgumentException - version_info is illegal.
      **/
     public synchronized static native int H5Pget_version(int plist,
-        int[] version_info)
-        throws HDF5LibraryException,
-        NullPointerException,
-        IllegalArgumentException;
+            int[] version_info)
+    throws HDF5LibraryException,
+    NullPointerException,
+    IllegalArgumentException;
 
     /**
      *  H5Pset_userblock sets the user block size of a file
@@ -1638,7 +1640,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Pset_userblock(int plist, long size)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Pget_userblock retrieves the size of a user block in a
@@ -1655,8 +1657,8 @@ public class H5 {
      *  @exception NullPointerException - size is null.
      **/
     public synchronized static native int H5Pget_userblock(int plist, long[] size)
-        throws HDF5LibraryException,
-        NullPointerException;
+    throws HDF5LibraryException,
+    NullPointerException;
 
     /**
      *  H5Pset_small_data_block_size reserves blocks of size bytes for the
@@ -1670,7 +1672,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Pset_small_data_block_size(int plist, long size)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Pget_small_data_block_size retrieves the size of a block of small
@@ -1687,8 +1689,8 @@ public class H5 {
      *  @exception NullPointerException - size is null.
      **/
     public synchronized static native int H5Pget_small_data_block_size(int plist, long[] size)
-        throws HDF5LibraryException,
-        NullPointerException;
+    throws HDF5LibraryException,
+    NullPointerException;
 
     /**
      *  H5Pset_sizes sets the byte size of the offsets and lengths
@@ -1703,8 +1705,8 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Pset_sizes(int plist, int sizeof_addr,
-        int sizeof_size)
-        throws HDF5LibraryException;
+            int sizeof_size)
+    throws HDF5LibraryException;
 
     /**
      *  H5Pget_sizes retrieves the size of the offsets and lengths
@@ -1725,9 +1727,9 @@ public class H5 {
      *  @exception IllegalArgumentException - size is invalid.
      **/
     public synchronized static native int H5Pget_sizes(int plist, int[] size)
-        throws HDF5LibraryException,
-        NullPointerException,
-        IllegalArgumentException;
+    throws HDF5LibraryException,
+    NullPointerException,
+    IllegalArgumentException;
 
     /**
      *  H5Pset_sym_k sets the size of parameters used to control the
@@ -1742,7 +1744,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Pset_sym_k(int plist, int ik, int lk)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -1764,9 +1766,9 @@ public class H5 {
      *  @exception IllegalArgumentException - size is invalid.
      **/
     public synchronized static native int H5Pget_sym_k(int plist, int[] size)
-        throws HDF5LibraryException,
-        NullPointerException,
-        IllegalArgumentException;
+    throws HDF5LibraryException,
+    NullPointerException,
+    IllegalArgumentException;
 
 
     /**
@@ -1781,7 +1783,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Pset_istore_k(int plist, int ik)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -1798,8 +1800,8 @@ public class H5 {
      *  @exception NullPointerException - ik array is null.
      **/
     public synchronized static native int H5Pget_istore_k(int plist, int[] ik)
-        throws HDF5LibraryException,
-        NullPointerException;
+    throws HDF5LibraryException,
+    NullPointerException;
 
 
     /**
@@ -1814,7 +1816,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Pset_layout(int plist, int layout)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -1829,7 +1831,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Pget_layout(int plist)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -1845,18 +1847,18 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - dims array is null.
      *  @exception IllegalArgumentException - dims <=0
-    **/
+     **/
     public synchronized static native int H5Pset_chunk(int plist, int ndims,
-        byte[] dim)
-        throws HDF5LibraryException,
-        NullPointerException,
-        IllegalArgumentException;
+            byte[] dim)
+    throws HDF5LibraryException,
+    NullPointerException,
+    IllegalArgumentException;
 
     public synchronized static int H5Pset_chunk(int plist, int ndims,
-        long[] dim)
-        throws HDF5Exception,
-        NullPointerException,
-        IllegalArgumentException
+            long[] dim)
+    throws HDF5Exception,
+    NullPointerException,
+    IllegalArgumentException
     {
         if (dim == null) {
             return -1;
@@ -1888,10 +1890,10 @@ public class H5 {
      *  @exception IllegalArgumentException - max_ndims <=0
      **/
     public synchronized static native int H5Pget_chunk(int plist, int max_ndims,
-        long[] dims)
-        throws HDF5LibraryException,
-        NullPointerException,
-        IllegalArgumentException;
+            long[] dims)
+    throws HDF5LibraryException,
+    NullPointerException,
+    IllegalArgumentException;
 
 
     /**
@@ -1909,8 +1911,8 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Pset_alignment(int plist,
-        long threshold, long alignment)
-        throws HDF5LibraryException;
+            long threshold, long alignment)
+    throws HDF5LibraryException;
 
 
     /**
@@ -1931,10 +1933,10 @@ public class H5 {
      *  invalid.
      **/
     public synchronized static native int H5Pget_alignment(int plist,
-        long[] alignment)
-        throws HDF5LibraryException,
-        NullPointerException,
-        IllegalArgumentException;
+            long[] alignment)
+    throws HDF5LibraryException,
+    NullPointerException,
+    IllegalArgumentException;
 
     /**
      *  H5Pset_external adds an external file to the list of
@@ -1955,8 +1957,8 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native int H5Pset_external(int plist, String name,
-        long offset, long size)
-        throws HDF5LibraryException, NullPointerException;
+            long offset, long size)
+    throws HDF5LibraryException, NullPointerException;
 
 
     /**
@@ -1971,7 +1973,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Pget_external_count(int plist)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -2001,12 +2003,12 @@ public class H5 {
      *
      **/
     public synchronized static native int H5Pget_external(int plist, int idx,
-        int name_size, String[] name, long[] size)
-        throws ArrayIndexOutOfBoundsException,
-        ArrayStoreException,
-        HDF5LibraryException,
-        NullPointerException,
-        IllegalArgumentException;
+            int name_size, String[] name, long[] size)
+    throws ArrayIndexOutOfBoundsException,
+    ArrayStoreException,
+    HDF5LibraryException,
+    NullPointerException,
+    IllegalArgumentException;
 
 
     /**
@@ -2022,8 +2024,8 @@ public class H5 {
      *  @exception HDF5Exception - Error converting data array
      **/
     public synchronized static native int H5Pset_fill_value(int plist_id,
-        int type_id, byte[] value)
-        throws HDF5Exception;
+            int type_id, byte[] value)
+    throws HDF5Exception;
 
     /**
      *  H5Pset_fill_value sets the fill value for a dataset creation
@@ -2038,8 +2040,8 @@ public class H5 {
      *  @exception HDF5Exception - Error converting data array
      **/
     public synchronized static int H5Pset_fill_value(int plist_id,
-        int type_id, Object obj)
-        throws HDF5Exception
+            int type_id, Object obj)
+    throws HDF5Exception
     {
         HDFArray theArray = new HDFArray(obj);
         byte[] buf = theArray.byteify();
@@ -2063,8 +2065,8 @@ public class H5 {
      *
      **/
     public synchronized static native int H5Pget_fill_value(int plist_id,
-        int type_id, byte[] value)
-        throws HDF5Exception;
+            int type_id, byte[] value)
+    throws HDF5Exception;
 
     /**
      *  H5Pget_fill_value queries the fill value property of a dataset
@@ -2078,7 +2080,7 @@ public class H5 {
      *
      **/
     public synchronized static int H5Pget_fill_value(int plist_id, int type_id, Object obj)
-        throws HDF5Exception
+    throws HDF5Exception
     {
         HDFArray theArray = new HDFArray(obj);
         byte[] buf = theArray.emptyBytes();
@@ -2108,8 +2110,8 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Pset_filter(int plist, int filter,
-        int flags, int cd_nelmts, int[] cd_values)
-        throws HDF5LibraryException;
+            int flags, int cd_nelmts, int[] cd_values)
+    throws HDF5LibraryException;
 
     /**
      *  H5Pget_nfilters returns the number of filters defined in
@@ -2122,7 +2124,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Pget_nfilters(int plist)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Pget_filter returns information about a filter, specified
@@ -2149,231 +2151,231 @@ public class H5 {
      *
      **/
     public synchronized static native int H5Pget_filter(int plist,
-        int filter_number, int[] flags,
-        int[] cd_nelmts, int[] cd_values,
-        int namelen, String[] name)
-        throws ArrayIndexOutOfBoundsException,
-        ArrayStoreException,
-        HDF5LibraryException,
-        NullPointerException ;
+            int filter_number, int[] flags,
+            int[] cd_nelmts, int[] cd_values,
+            int namelen, String[] name)
+    throws ArrayIndexOutOfBoundsException,
+    ArrayStoreException,
+    HDF5LibraryException,
+    NullPointerException ;
 
 //  REMOVED in HDF5.1.4
-//
-// 	/**
-// 	 *  H5Pget_driver returns the identifier of the low-level
-// 	 *  file driver.
-// 	 *  <p>
-// 	 *  Valid identifiers are:
-// 	 *  <UL>
-// 	 *  <LI>
-// 	 *       H5F_LOW_STDIO (0)
-// 	 *  </LI>
-// 	 *  <LI>
-// 	 *       H5F_LOW_SEC2 (1)
-// 	 *  </LI>
-// 	 *  <LI>
-// 	 *       H5F_LOW_MPIO (2)
-// 	 *  </LI>
-// 	 *  <LI>
-// 	 *       H5F_LOW_CORE (3)
-// 	 *  </LI>
-// 	 *  <LI>
-// 	 *       H5F_LOW_SPLIT (4)
-// 	 *  </LI>
-// 	 *  <LI>
-// 	 *       H5F_LOW_FAMILY (5)
-// 	 *  </LI>
-// 	 *  </UL>
-// 	 *
-// 	 *  @param plist IN: Identifier of a file access property list.
-// 	 *
-// 	 *  @return a low-level driver identifier if successful. Otherwise returns
-// 	 *  H5F_LOW_ERROR (-1).
-// 	 *
-// 	 *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-// 	 **/
-// 	public synchronized static native int H5Pget_driver(int plist)
-// 		throws HDF5LibraryException;
-//
-// 	/**
-// 	 *  H5Pset_stdio sets the low level file driver to use the
-// 	 *  functions declared in the stdio.h file: fopen(), fseek()
-// 	 *  or fseek64(), fread(), fwrite(), and fclose().
-// 	 *
-// 	 *  @param plist IN: Identifier of a file access property list.
-// 	 *
-// 	 *  @return a non-negative value if successful
-// 	 *
-// 	 **/
-// 	public synchronized static native int H5Pset_stdio(int plist)
-// 		throws HDF5LibraryException;
-//
-// 	/**
-// 	 *  H5Pget_stdio checks to determine whether the file access
-// 	 *  property list is set to the stdio driver.
-// 	 *
-// 	 *  @param plist IN: Identifier of a file access property list.
-// 	 *  @return true if the file access property list is set to
-// 	 *    the stdio driver. Otherwise returns a negative value.
-// 	 *
-// 	 **/
-// 	public synchronized static native boolean H5Pget_stdio(int plist);
-//
-// 	/**
-// 	 *  H5Pset_sec2 sets the low-level file driver to use the
-// 	 *  functions declared in the unistd.h file: open(), lseek()
-// 	 *  or lseek64(), read(), write(), and close().
-// 	 *
-// 	 *  @param plist IN: Identifier of a file access property list.
-// 	 *  @return a non-negative value if successful
-// 	 *
-// 	 *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-// 	 **/
-// 	public synchronized static native int H5Pset_sec2(int plist)
-// 		throws HDF5LibraryException;
-//
-//
-// 	/**
-// 	 *  H5Pget_sec2 checks to determine whether the file access
-// 	 *  property list is set to the sec2 driver.
-// 	 *
-// 	 *  @param plist IN: Identifier of a file access property list.
-// 	 *  @return true if the file access property list is set to
-// 	 *  the sec2 driver. Otherwise returns a negative value.
-// 	 *
-// 	 *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-// 	 **/
-// 	public synchronized static native boolean H5Pget_sec2(int plist)
-// 		throws HDF5LibraryException;
-//
-// 	/**
-// 	 *  H5Pset_core sets the low-level file driver to use malloc() and
-// 	 *  free().
-// 	 *
-// 	 *  @param plist IN: Identifier of a file access property list.
-// 	 *  @param increment IN: File block size in bytes.
-// 	 *
-// 	 *  @return a non-negative value if successful
-// 	 *
-// 	 *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-// 	 **/
-// 	public synchronized static native int H5Pset_core(int plist, int increment)
-// 		throws HDF5LibraryException;
-//
-//
-// 	/**
-// 	 *  H5Pget_core checks to determine whether the file access
-// 	 *  property list is set to the core driver.
-// 	 *
-// 	 *  @param plist IN: Identifier of the file access property list.
-// 	 *  @param increment OUT: A location to return the file block size
-// 	 *  @return true if the file access property list is set to
-// 	 *    the core driver.
-// 	 *
-// 	 *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-// 	 **/
-// 	public synchronized static native boolean H5Pget_core(int plist,
-// 		int[] increment)
-// 		throws HDF5LibraryException;
-//
-//
-// 	/**
-// 	 *  H5Pset_split sets the low-level driver to split meta data
-// 	 *  from raw data, storing meta data in one file and raw data
-// 	 *  in another file.
-// 	 *
-// 	 *  @param plist  IN: Identifier of the file access property list.
-// 	 *  @param meta_ext  IN: Name of the extension for the metafile
-// 	 *  filename.   Recommended default value: <i>.meta</i>.
-// 	 *  @param meta_plist  IN: Identifier of the meta file access
-// 	 *  property list.
-// 	 *  @param raw_ext  IN: Name extension for the raw file filename.
-// 	 *  Recommended default value: <i>.raw</i>.
-// 	 *  @param raw_plist  IN: Identifier of the raw file access
-// 	 *  property list.
-// 	 *  @return a non-negative value if successful
-// 	 *
-// 	 *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-// 	 *  @exception NullPointerException - a string is null.
-// 	 **/
-// 	public synchronized static native int H5Pset_split(int plist, String meta_ext,
-// 		int meta_plist, String raw_ext, int raw_plist)
-// 		throws HDF5LibraryException,
-// 		NullPointerException;
-//
-//
-// 	/**
-// 	 *  H5Pget_split checks to determine whether the file access
-// 	 *  property list is set to the split driver.
-// 	 *
-// 	 *  @param plist  IN: Identifier of the file access property list.
-// 	 *  @param meta_ext_size  IN: Number of characters of the
-// 	 *  meta file extension to be copied to the meta_ext buffer.
-// 	 *  @param meta_ext  IN: Meta file extension.
-// 	 *  @param *meta_properties OUT: A copy of the meta file
-// 	 *  access property list.
-// 	 *  @param raw_ext_size  IN: Number of characters of the
-// 	 *  raw file extension to be copied to the raw_ext buffer.
-// 	 *  @param raw_ext OUT: Raw file extension.
-// 	 *  @param *raw_properties OUT: A copy of the raw file
-// 	 *  access property list.
-// 	 *
-// 	 *  @return true if the file access property list is set to
-// 	 *      the split driver.
-// 	 *
-//          *  @exception ArrayIndexOutOfBoundsException  JNI error
-// 	 *  writing back array
-//          *  @exception ArrayStoreException   JNI error writing back array
-// 	 *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-// 	 *  @exception NullPointerException - a string or array is null.
-// 	 **/
-// 	public synchronized static native boolean H5Pget_split(int plist,
-// 		int meta_ext_size, String[] meta_ext,
-// 		int[] meta_properties, int raw_ext_size,
-// 		String[] raw_ext, int[] raw_properties)
-// 		throws ArrayIndexOutOfBoundsException,
-// 		ArrayStoreException,
-// 		HDF5LibraryException,
-// 		NullPointerException;
-//
-// 	/**
-// 	 *  H5Pset_family sets the file access properties to use the
-// 	 *  family driver; any previously defined driver properties
-// 	 *  are erased from the  property list.
-// 	 *
-// 	 *  @param plist  IN: Identifier of the file access property list.
-// 	 *  @param memb_size  IN: Logical size, in bytes, of each
-// 	 *  family member.
-// 	 *  @param memb_plist  IN: Identifier of the file access
-// 	 *  property list for each member of the family.
-// 	 *  @return a non-negative value if successful
-// 	 *
-// 	 *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-// 	 **/
-// 	public synchronized static native int H5Pset_family(int plist, long memb_size,
-// 		int memb_plist)
-// 		throws HDF5LibraryException;
-//
-//
-// 	/**
-// 	 *  H5Pget_family checks to determine whether the file access
-// 	 *  property list is set to the family driver.
-// 	 *
-// 	 *  @param plist  IN: Identifier of the file access property list.
-// 	 *  @param memb_size OUT: Logical size, in bytes, of each
-// 	 *  family member.
-// 	 *  @param *memb_plist OUT: Identifier of the file access
-// 	 *  property list for each member of the family.
-// 	 *
-// 	 *  @return a non-negative value if the file access property
-// 	 *  list is set to the family driver.
-// 	 *
-// 	 *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-// 	 *  @exception NullPointerException - an array is null.
-// 	 **/
-// 	public synchronized static native int H5Pget_family(int tid, long[] memb_size,
-// 		int[] memb_plist)
-// 		throws HDF5LibraryException, NullPointerException;
+
+//  /**
+//  *  H5Pget_driver returns the identifier of the low-level
+//  *  file driver.
+//  *  <p>
+//  *  Valid identifiers are:
+//  *  <UL>
+//  *  <LI>
+//  *       H5F_LOW_STDIO (0)
+//  *  </LI>
+//  *  <LI>
+//  *       H5F_LOW_SEC2 (1)
+//  *  </LI>
+//  *  <LI>
+//  *       H5F_LOW_MPIO (2)
+//  *  </LI>
+//  *  <LI>
+//  *       H5F_LOW_CORE (3)
+//  *  </LI>
+//  *  <LI>
+//  *       H5F_LOW_SPLIT (4)
+//  *  </LI>
+//  *  <LI>
+//  *       H5F_LOW_FAMILY (5)
+//  *  </LI>
+//  *  </UL>
+//  *
+//  *  @param plist IN: Identifier of a file access property list.
+//  *
+//  *  @return a low-level driver identifier if successful. Otherwise returns
+//  *  H5F_LOW_ERROR (-1).
+//  *
+//  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+//  **/
+//  public synchronized static native int H5Pget_driver(int plist)
+//  throws HDF5LibraryException;
+
+//  /**
+//  *  H5Pset_stdio sets the low level file driver to use the
+//  *  functions declared in the stdio.h file: fopen(), fseek()
+//  *  or fseek64(), fread(), fwrite(), and fclose().
+//  *
+//  *  @param plist IN: Identifier of a file access property list.
+//  *
+//  *  @return a non-negative value if successful
+//  *
+//  **/
+//  public synchronized static native int H5Pset_stdio(int plist)
+//  throws HDF5LibraryException;
+
+//  /**
+//  *  H5Pget_stdio checks to determine whether the file access
+//  *  property list is set to the stdio driver.
+//  *
+//  *  @param plist IN: Identifier of a file access property list.
+//  *  @return true if the file access property list is set to
+//  *    the stdio driver. Otherwise returns a negative value.
+//  *
+//  **/
+//  public synchronized static native boolean H5Pget_stdio(int plist);
+
+//  /**
+//  *  H5Pset_sec2 sets the low-level file driver to use the
+//  *  functions declared in the unistd.h file: open(), lseek()
+//  *  or lseek64(), read(), write(), and close().
+//  *
+//  *  @param plist IN: Identifier of a file access property list.
+//  *  @return a non-negative value if successful
+//  *
+//  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+//  **/
+//  public synchronized static native int H5Pset_sec2(int plist)
+//  throws HDF5LibraryException;
+
+
+//  /**
+//  *  H5Pget_sec2 checks to determine whether the file access
+//  *  property list is set to the sec2 driver.
+//  *
+//  *  @param plist IN: Identifier of a file access property list.
+//  *  @return true if the file access property list is set to
+//  *  the sec2 driver. Otherwise returns a negative value.
+//  *
+//  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+//  **/
+//  public synchronized static native boolean H5Pget_sec2(int plist)
+//  throws HDF5LibraryException;
+
+//  /**
+//  *  H5Pset_core sets the low-level file driver to use malloc() and
+//  *  free().
+//  *
+//  *  @param plist IN: Identifier of a file access property list.
+//  *  @param increment IN: File block size in bytes.
+//  *
+//  *  @return a non-negative value if successful
+//  *
+//  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+//  **/
+//  public synchronized static native int H5Pset_core(int plist, int increment)
+//  throws HDF5LibraryException;
+
+
+//  /**
+//  *  H5Pget_core checks to determine whether the file access
+//  *  property list is set to the core driver.
+//  *
+//  *  @param plist IN: Identifier of the file access property list.
+//  *  @param increment OUT: A location to return the file block size
+//  *  @return true if the file access property list is set to
+//  *    the core driver.
+//  *
+//  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+//  **/
+//  public synchronized static native boolean H5Pget_core(int plist,
+//  int[] increment)
+//  throws HDF5LibraryException;
+
+
+//  /**
+//  *  H5Pset_split sets the low-level driver to split meta data
+//  *  from raw data, storing meta data in one file and raw data
+//  *  in another file.
+//  *
+//  *  @param plist  IN: Identifier of the file access property list.
+//  *  @param meta_ext  IN: Name of the extension for the metafile
+//  *  filename.   Recommended default value: <i>.meta</i>.
+//  *  @param meta_plist  IN: Identifier of the meta file access
+//  *  property list.
+//  *  @param raw_ext  IN: Name extension for the raw file filename.
+//  *  Recommended default value: <i>.raw</i>.
+//  *  @param raw_plist  IN: Identifier of the raw file access
+//  *  property list.
+//  *  @return a non-negative value if successful
+//  *
+//  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+//  *  @exception NullPointerException - a string is null.
+//  **/
+//  public synchronized static native int H5Pset_split(int plist, String meta_ext,
+//  int meta_plist, String raw_ext, int raw_plist)
+//  throws HDF5LibraryException,
+//  NullPointerException;
+
+
+//  /**
+//  *  H5Pget_split checks to determine whether the file access
+//  *  property list is set to the split driver.
+//  *
+//  *  @param plist  IN: Identifier of the file access property list.
+//  *  @param meta_ext_size  IN: Number of characters of the
+//  *  meta file extension to be copied to the meta_ext buffer.
+//  *  @param meta_ext  IN: Meta file extension.
+//  *  @param *meta_properties OUT: A copy of the meta file
+//  *  access property list.
+//  *  @param raw_ext_size  IN: Number of characters of the
+//  *  raw file extension to be copied to the raw_ext buffer.
+//  *  @param raw_ext OUT: Raw file extension.
+//  *  @param *raw_properties OUT: A copy of the raw file
+//  *  access property list.
+//  *
+//  *  @return true if the file access property list is set to
+//  *      the split driver.
+//  *
+//  *  @exception ArrayIndexOutOfBoundsException  JNI error
+//  *  writing back array
+//  *  @exception ArrayStoreException   JNI error writing back array
+//  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+//  *  @exception NullPointerException - a string or array is null.
+//  **/
+//  public synchronized static native boolean H5Pget_split(int plist,
+//  int meta_ext_size, String[] meta_ext,
+//  int[] meta_properties, int raw_ext_size,
+//  String[] raw_ext, int[] raw_properties)
+//  throws ArrayIndexOutOfBoundsException,
+//  ArrayStoreException,
+//  HDF5LibraryException,
+//  NullPointerException;
+
+//  /**
+//  *  H5Pset_family sets the file access properties to use the
+//  *  family driver; any previously defined driver properties
+//  *  are erased from the  property list.
+//  *
+//  *  @param plist  IN: Identifier of the file access property list.
+//  *  @param memb_size  IN: Logical size, in bytes, of each
+//  *  family member.
+//  *  @param memb_plist  IN: Identifier of the file access
+//  *  property list for each member of the family.
+//  *  @return a non-negative value if successful
+//  *
+//  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+//  **/
+//  public synchronized static native int H5Pset_family(int plist, long memb_size,
+//  int memb_plist)
+//  throws HDF5LibraryException;
+
+
+//  /**
+//  *  H5Pget_family checks to determine whether the file access
+//  *  property list is set to the family driver.
+//  *
+//  *  @param plist  IN: Identifier of the file access property list.
+//  *  @param memb_size OUT: Logical size, in bytes, of each
+//  *  family member.
+//  *  @param *memb_plist OUT: Identifier of the file access
+//  *  property list for each member of the family.
+//  *
+//  *  @return a non-negative value if the file access property
+//  *  list is set to the family driver.
+//  *
+//  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+//  *  @exception NullPointerException - an array is null.
+//  **/
+//  public synchronized static native int H5Pget_family(int tid, long[] memb_size,
+//  int[] memb_plist)
+//  throws HDF5LibraryException, NullPointerException;
 
 
     /**
@@ -2393,8 +2395,8 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Pset_cache(int plist, int mdc_nelmts,
-        int rdcc_nelmts, int rdcc_nbytes, double rdcc_w0)
-        throws HDF5LibraryException;
+            int rdcc_nelmts, int rdcc_nbytes, double rdcc_w0)
+    throws HDF5LibraryException;
 
     /**
      *  Retrieves the maximum possible number of elements in the meta
@@ -2414,8 +2416,8 @@ public class H5 {
      *  @exception NullPointerException - an array is null.
      **/
     public synchronized static native int H5Pget_cache(int plist, int[] mdc_nelmts,
-        int[] rdcc_nelmts, int[] rdcc_nbytes, double[] rdcc_w0)
-        throws HDF5LibraryException, NullPointerException;
+            int[] rdcc_nelmts, int[] rdcc_nbytes, double[] rdcc_w0)
+    throws HDF5LibraryException, NullPointerException;
 
     /**
      *  H5Pset_buffer sets type conversion and background buffers.
@@ -2451,8 +2453,8 @@ public class H5 {
      *  @exception IllegalArgumentException - plist is invalid.
      **/
     public synchronized static native int H5Pset_buffer(int plist, int size,
-        byte[] tconv, byte[] bkg)
-        throws HDF5LibraryException, IllegalArgumentException;
+            byte[] tconv, byte[] bkg)
+    throws HDF5LibraryException, IllegalArgumentException;
 
     /**
      *  HH5Pget_buffer gets type conversion and background buffers.
@@ -2468,8 +2470,8 @@ public class H5 {
      *  @exception IllegalArgumentException - plist is invalid.
      **/
     public synchronized static native int H5Pget_buffer(int plist,
-        byte[] tconv, byte[] bkg)
-        throws HDF5LibraryException, IllegalArgumentException;
+            byte[] tconv, byte[] bkg)
+    throws HDF5LibraryException, IllegalArgumentException;
 
     /**
      *  H5Pset_preserve sets the dataset transfer property list
@@ -2486,8 +2488,8 @@ public class H5 {
      *  @exception IllegalArgumentException - plist is invalid.
      **/
     public synchronized static native int H5Pset_preserve(int plist,
-        boolean status)
-        throws HDF5LibraryException, IllegalArgumentException;
+            boolean status)
+    throws HDF5LibraryException, IllegalArgumentException;
 
 
     /**
@@ -2502,7 +2504,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Pget_preserve(int plist)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Pset_deflate sets the compression method for a dataset.
@@ -2516,7 +2518,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Pset_deflate(int plist, int level)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      * H5Pset_gc_references Sets the flag for garbage collecting
@@ -2531,8 +2533,8 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int  H5Pset_gc_references(int fapl_id,
-        boolean gc_ref)
-        throws HDF5LibraryException;
+            boolean gc_ref)
+    throws HDF5LibraryException;
 
     /**
      *  H5Pget_gc_references Returns the current setting for the
@@ -2553,21 +2555,21 @@ public class H5 {
      *  @exception NullPointerException - array is null.
      **/
     public synchronized static native int H5Pget_gc_references(int fapl_id,
-        boolean[] gc_ref)
-        throws HDF5LibraryException,
-        NullPointerException;
+            boolean[] gc_ref)
+    throws HDF5LibraryException,
+    NullPointerException;
 
     /*
      *  Earlier versions of the HDF5 library had a different
      *  name.  This is included as an alias.
-         */
+     */
     public synchronized static int H5Pget_gc_reference(int fapl_id,
-        boolean[] gc_ref)
-        throws HDF5LibraryException,
-        NullPointerException
+            boolean[] gc_ref)
+    throws HDF5LibraryException,
+    NullPointerException
     {
         return H5Pget_gc_references(fapl_id,
-        gc_ref);
+                gc_ref);
     }
 
     /**
@@ -2585,8 +2587,8 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Pset_btree_ratios(int plist_id,
-        double left, double middle, double right)
-        throws HDF5LibraryException;
+            double left, double middle, double right)
+    throws HDF5LibraryException;
 
     /**
      *  H5Pget_btree_ratio Get the B-tree split ratios for a dataset
@@ -2603,8 +2605,8 @@ public class H5 {
      *  @exception NullPointerException - an input array is null.
      **/
     public synchronized static native int H5Pget_btree_ratios(int plist_id,
-        double[] left, double[] middle, double[] right)
-        throws HDF5LibraryException, NullPointerException;
+            double[] left, double[] middle, double[] right)
+    throws HDF5LibraryException, NullPointerException;
 
 
     //////////////////////////////////////////////////////////////
@@ -2614,10 +2616,10 @@ public class H5 {
     //////////////////////////////////////////////////////////////
 
     private synchronized static native int H5Rcreate(byte[] ref,
-        int loc_id, String name, int ref_type, int space_id)
-        throws HDF5LibraryException,
-        NullPointerException,
-        IllegalArgumentException;
+            int loc_id, String name, int ref_type, int space_id)
+    throws HDF5LibraryException,
+    NullPointerException,
+    IllegalArgumentException;
 
     /**
      *  H5Rcreate creates the reference, ref, of the type specified in
@@ -2637,10 +2639,10 @@ public class H5 {
      *  invalid.
      **/
     public synchronized static byte[] H5Rcreate(
-        int loc_id, String name, int ref_type, int space_id)
-        throws HDF5LibraryException,
-        NullPointerException,
-        IllegalArgumentException
+            int loc_id, String name, int ref_type, int space_id)
+    throws HDF5LibraryException,
+    NullPointerException,
+    IllegalArgumentException
     {
         /*  These sizes are correct for HDF5.1.2 */
         int ref_size = 8;
@@ -2668,12 +2670,12 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - output array is null.
      *  @exception IllegalArgumentException - output array is invalid.
-    **/
+     **/
     public synchronized static native int H5Rdereference(int dataset,
-        int ref_type, byte[] ref)
-        throws HDF5LibraryException,
-        NullPointerException,
-        IllegalArgumentException;
+            int ref_type, byte[] ref)
+    throws HDF5LibraryException,
+    NullPointerException,
+    IllegalArgumentException;
 
     /**
      *  Given a reference to an object ref, H5Rget_region creates
@@ -2692,12 +2694,12 @@ public class H5 {
      *  @exception IllegalArgumentException - output array is invalid.
      **/
     public synchronized static native int H5Rget_region(int loc_id, int ref_type,
-        byte[] ref )
-        throws HDF5LibraryException,
-        NullPointerException,
-        IllegalArgumentException;
+            byte[] ref )
+    throws HDF5LibraryException,
+    NullPointerException,
+    IllegalArgumentException;
 
-/*
+    /*
     [NOTE: This function is only supported in HDF5 Releases 1.4.x. It has been
     replaced in Release 1.6 by the function H5Rget_obj_type
     public synchronized static native int H5Rget_object_type(int loc_id,
@@ -2705,7 +2707,7 @@ public class H5 {
         throws HDF5LibraryException,
         NullPointerException,
         IllegalArgumentException;
-*/
+     */
     /**
      *  Given a reference to an object ref, H5Rget_obj_type
      *  returns the type of the object pointed to.
@@ -2721,11 +2723,11 @@ public class H5 {
      *  @exception IllegalArgumentException - array is invalid.
      **/
     public synchronized static native int H5Rget_obj_type(int loc_id,
-        int ref_type,
-        byte ref[])
-        throws HDF5LibraryException,
-        NullPointerException,
-        IllegalArgumentException;
+            int ref_type,
+            byte ref[])
+    throws HDF5LibraryException,
+    NullPointerException,
+    IllegalArgumentException;
 
     //////////////////////////////////////////////////////////////
     //                                                          //
@@ -2743,7 +2745,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Screate(int type)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -2760,14 +2762,14 @@ public class H5 {
      *  @exception NullPointerException - dims or maxdims is null.
      **/
     public synchronized static native int H5Screate_simple(int rank, byte[] dims,
-        byte[] maxdims)
-        throws HDF5LibraryException,
-        NullPointerException;
+            byte[] maxdims)
+    throws HDF5LibraryException,
+    NullPointerException;
 
     public synchronized static int H5Screate_simple(int rank, long[] dims,
-        long[] maxdims)
-        throws HDF5Exception,
-        NullPointerException
+            long[] maxdims)
+    throws HDF5Exception,
+    NullPointerException
     {
         if (dims == null) {
             return -1;
@@ -2780,12 +2782,12 @@ public class H5 {
         HDFArray theArr = null;
 
         if (maxdims != null) {
-          theArr = new HDFArray(maxdims);
-          themaxdims = theArr.byteify();
+            theArr = new HDFArray(maxdims);
+            themaxdims = theArr.byteify();
         }
 
         int retVal = H5Screate_simple(rank, thedims,
-            themaxdims);
+                themaxdims);
 
         thedims = null;
         themaxdims = null;
@@ -2804,7 +2806,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Scopy(int space_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Sselect_elements selects array elements to be included in the
@@ -2822,9 +2824,9 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     private synchronized static native int H5Sselect_elements(int space_id, int op,
-        int num_elements, byte[] coord)
-        throws HDF5LibraryException,
-        NullPointerException;
+            int num_elements, byte[] coord)
+    throws HDF5LibraryException,
+    NullPointerException;
 
     /**
      *  H5Sselect_elements selects array elements to be included in the
@@ -2844,10 +2846,10 @@ public class H5 {
      *  @exception NullPointerException - cord array is
      **/
     public synchronized static int H5Sselect_elements(int space_id, int op,
-        int num_elements, long[][] coord2D)
-        throws HDF5Exception,
-        HDF5LibraryException,
-        NullPointerException
+            int num_elements, long[][] coord2D)
+    throws HDF5Exception,
+    HDF5LibraryException,
+    NullPointerException
     {
         if (coord2D == null) {
             return -1;
@@ -2857,7 +2859,7 @@ public class H5 {
         byte[] coord = theArray.byteify();
 
         int retVal = H5Sselect_elements(space_id, op,
-            num_elements, coord);
+                num_elements, coord);
 
         coord = null;
         theArray = null;
@@ -2876,7 +2878,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Sselect_all(int space_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -2890,7 +2892,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Sselect_none(int space_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Sselect_valid verifies that the selection for the dataspace.
@@ -2904,7 +2906,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native boolean H5Sselect_valid(int space_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -2917,8 +2919,8 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native long H5Sget_simple_extent_npoints(
-        int space_id)
-        throws HDF5LibraryException;
+            int space_id)
+    throws HDF5LibraryException;
 
 
     /**
@@ -2932,7 +2934,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native long H5Sget_select_npoints(int space_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Sget_simple_extent_ndims determines the dimensionality
@@ -2945,7 +2947,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Sget_simple_extent_ndims(int space_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -2967,9 +2969,9 @@ public class H5 {
      *  @exception NullPointerException - dims or maxdims is null.
      **/
     public synchronized static native int H5Sget_simple_extent_dims(int space_id,
-        long[] dims, long[] maxdims)
-        throws HDF5LibraryException,
-        NullPointerException;
+            long[] dims, long[] maxdims)
+    throws HDF5LibraryException,
+    NullPointerException;
 
 
     /**
@@ -2983,7 +2985,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Sget_simple_extent_type(int space_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -3000,14 +3002,14 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Sset_extent_simple(int space_id,
-        int rank, byte[] current_size, byte[] maximum_size)
-        throws HDF5LibraryException,
-        NullPointerException;
+            int rank, byte[] current_size, byte[] maximum_size)
+    throws HDF5LibraryException,
+    NullPointerException;
 
     public synchronized static int H5Sset_extent_simple(int space_id,
-        int rank, long[] current_size, long[] maximum_size)
-        throws HDF5Exception,
-        NullPointerException
+            int rank, long[] current_size, long[] maximum_size)
+    throws HDF5Exception,
+    NullPointerException
     {
         if (current_size == null) {
             return -1;
@@ -3019,11 +3021,11 @@ public class H5 {
         byte[] themax = null;
         HDFArray theArr = null;
         if (maximum_size != null) {
-          theArr = new HDFArray(maximum_size);
-          themax = theArr.byteify();
+            theArr = new HDFArray(maximum_size);
+            themax = theArr.byteify();
         }
         int retVal = H5Screate_simple(rank, thecurr,
-            themax);
+                themax);
 
         thecurr = null;
         themax = null;
@@ -3043,7 +3045,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native boolean H5Sis_simple(int space_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -3061,14 +3063,14 @@ public class H5 {
      *  @exception NullPointerException - offset array is null.
      **/
     public synchronized static native int H5Soffset_simple(int space_id,
-        byte[] offset)
-        throws HDF5LibraryException,
-        NullPointerException;
+            byte[] offset)
+    throws HDF5LibraryException,
+    NullPointerException;
 
     public synchronized static int H5Soffset_simple(int space_id,
-        long[] offset)
-        throws HDF5Exception,
-        NullPointerException
+            long[] offset)
+    throws HDF5Exception,
+    NullPointerException
     {
         if (offset == null) {
             return -1;
@@ -3099,8 +3101,8 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Sextent_copy(int dest_space_id,
-        int source_space_id)
-        throws HDF5LibraryException;
+            int source_space_id)
+    throws HDF5LibraryException;
 
     /**
      *  H5Sset_extent_none removes the extent from a dataspace and
@@ -3114,7 +3116,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Sset_extent_none(int space_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Sselect_hyperslab selects a hyperslab region to add to
@@ -3137,18 +3139,18 @@ public class H5 {
      *  @exception NullPointerException - an input array is invalid.
      **/
     public synchronized static native int H5Sselect_hyperslab(int space_id,
-        int op, byte[] start,
-        byte[] stride, byte[] count, byte[] block)
-        throws HDF5LibraryException,
-        NullPointerException,
-        IllegalArgumentException;
+            int op, byte[] start,
+            byte[] stride, byte[] count, byte[] block)
+    throws HDF5LibraryException,
+    NullPointerException,
+    IllegalArgumentException;
 
     public synchronized static int H5Sselect_hyperslab(int space_id,
-        int op, long[] start,
-        long[] stride, long[] count, long[] block)
-        throws HDF5Exception,
-        NullPointerException,
-        IllegalArgumentException
+            int op, long[] start,
+            long[] stride, long[] count, long[] block)
+    throws HDF5Exception,
+    NullPointerException,
+    IllegalArgumentException
     {
         byte[] thestart = null;
         if (start != null)  {
@@ -3179,7 +3181,7 @@ public class H5 {
         }
 
         int retVal = H5Sselect_hyperslab(space_id,
-            op, thestart, thestride, thecount, theblock);
+                op, thestart, thestride, thecount, theblock);
 
         thestart = null;
         thestride = null;
@@ -3198,9 +3200,9 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Sclose(int space_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
-//--//
+//  --//
 
     // following synchronized static native functions are missing from HDF5 (version 1.0.1) RM
 
@@ -3215,7 +3217,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native long H5Sget_select_hyper_nblocks(int spaceid)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Sget_select_elem_npoints returns the number of
@@ -3228,7 +3230,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native long H5Sget_select_elem_npoints(int spaceid)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Sget_select_hyper_blocklist returns an array of
@@ -3237,11 +3239,11 @@ public class H5 {
      *  are located within. The list of blocks is formatted
      *  as follows:
      *  <pre>
-         *    <"start" coordinate>, immediately followed by
-         *    <"opposite" corner coordinate>, followed by
-         *   the next "start" and "opposite" coordinates,
-         *   etc.
-         *   until all of the selected blocks have been listed.
+     *    <"start" coordinate>, immediately followed by
+     *    <"opposite" corner coordinate>, followed by
+     *   the next "start" and "opposite" coordinates,
+     *   etc.
+     *   until all of the selected blocks have been listed.
      * </pre>
      *
      *  @param spaceid  Identifier of dataspace to release.
@@ -3256,9 +3258,9 @@ public class H5 {
      *  @exception NullPointerException - buf is null.
      **/
     public synchronized static native int H5Sget_select_hyper_blocklist(int spaceid,
-        long startblock, long numblocks, long[] buf)
-        throws HDF5LibraryException,
-        NullPointerException;
+            long startblock, long numblocks, long[] buf)
+    throws HDF5LibraryException,
+    NullPointerException;
 
     /**
      *  H5Sget_select_elem_pointlist returns an array of
@@ -3279,14 +3281,14 @@ public class H5 {
      *  @exception NullPointerException - buf is null.
      **/
     public synchronized static native int H5Sget_select_elem_pointlist(int spaceid,
-        long startpoint, long numpoints, long[] buf)
-        throws HDF5LibraryException,
-        NullPointerException;
+            long startpoint, long numpoints, long[] buf)
+    throws HDF5LibraryException,
+    NullPointerException;
 
     /**
      *  H5Sget_select_bounds retrieves the coordinates of
      *  the bounding box containing the current
-         *  selection and places them into user-supplied buffers.
+     *  selection and places them into user-supplied buffers.
      *  <P>
      *  The start and end buffers must be large enough to
      *  hold the dataspace rank number of coordinates.
@@ -3302,9 +3304,9 @@ public class H5 {
      *  @exception NullPointerException - start or end is null.
      **/
     public synchronized static native int H5Sget_select_bounds(int spaceid,
-        long[] start, long[] end)
-        throws HDF5LibraryException,
-        NullPointerException;
+            long[] start, long[] end)
+    throws HDF5LibraryException,
+    NullPointerException;
 
 
     //////////////////////////////////////////////////////////////
@@ -3326,7 +3328,7 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native int H5Topen(int loc_id, String name)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     /**
      *  H5Tcommit commits a transient datatype (not immutable)
@@ -3342,8 +3344,8 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native int H5Tcommit(int loc_id, String name,
-        int type)
-        throws HDF5LibraryException, NullPointerException;
+            int type)
+    throws HDF5LibraryException, NullPointerException;
 
     /**
      *  H5Tcommitted queries a type to determine whether the type
@@ -3357,7 +3359,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native boolean H5Tcommitted(int type)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tcreate creates a new dataype of the specified class with
@@ -3371,7 +3373,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tcreate(int dclass, int size)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tcopy copies an existing datatype. The returned type is
@@ -3386,7 +3388,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tcopy(int type_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -3402,7 +3404,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native boolean H5Tequal(int type_id1, int type_id2)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tlock locks the datatype specified by the type_id
@@ -3416,7 +3418,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tlock(int type_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tget_class returns the datatype class identifier.
@@ -3429,7 +3431,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_class(int type_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tget_size returns the size of a datatype in bytes.
@@ -3441,7 +3443,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_size(int type_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tset_size sets the total size in bytes, size, for an
@@ -3456,7 +3458,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tset_size(int type_id, int size)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tget_order returns the byte order of an atomic datatype.
@@ -3468,7 +3470,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_order(int type_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tset_order sets the byte ordering of an atomic datatype.
@@ -3481,7 +3483,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tset_order(int type_id, int order)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tget_precision returns the precision of an atomic datatype.
@@ -3493,7 +3495,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_precision(int type_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tset_precision sets the precision of an atomic datatype.
@@ -3506,8 +3508,8 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tset_precision(int type_id,
-        int precision)
-        throws HDF5LibraryException;
+            int precision)
+    throws HDF5LibraryException;
 
     /**
      *  H5Tget_offset retrieves the bit offset of the first
@@ -3519,7 +3521,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_offset(int type_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -3534,7 +3536,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tset_offset(int type_id, int offset)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tget_pad retrieves the padding type of the least and
@@ -3554,7 +3556,7 @@ public class H5 {
      *  @exception NullPointerException - pad is null.
      **/
     public synchronized static native int H5Tget_pad(int type_id, int[] pad)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     /**
      *  H5Tset_pad sets the least and most-significant bits
@@ -3569,7 +3571,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tset_pad(int type_id, int lsb, int msb)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tget_sign retrieves the sign type for an integer type.
@@ -3581,7 +3583,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_sign(int type_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tset_sign sets the sign proprety for an integer type.
@@ -3594,7 +3596,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tset_sign(int type_id, int sign)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tget_fields retrieves information about the locations of
@@ -3621,9 +3623,9 @@ public class H5 {
      *  @exception IllegalArgumentException - fileds array is invalid.
      **/
     public synchronized static native int H5Tget_fields(int type_id, int[] fields)
-        throws HDF5LibraryException,
-        NullPointerException,
-        IllegalArgumentException;
+    throws HDF5LibraryException,
+    NullPointerException,
+    IllegalArgumentException;
 
 
     /**
@@ -3642,8 +3644,8 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tset_fields(int type_id, int spos,
-        int epos, int esize,
-        int mpos, int msize) throws HDF5LibraryException;
+            int epos, int esize,
+            int mpos, int msize) throws HDF5LibraryException;
 
     /**
      *  H5Tget_ebias retrieves the exponent bias of a
@@ -3656,7 +3658,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_ebias(int type_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tset_ebias sets the exponent bias of a floating-point type.
@@ -3669,7 +3671,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tset_ebias(int type_id, int ebias)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tget_norm retrieves the mantissa normalization of a
@@ -3682,7 +3684,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_norm(int type_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tset_norm sets the mantissa normalization of a
@@ -3696,7 +3698,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tset_norm(int type_id, int norm)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tget_inpad retrieves the internal padding type for unused
@@ -3709,7 +3711,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_inpad(int type_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -3727,7 +3729,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tset_inpad(int type_id, int inpad)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tget_cset retrieves the character set type of a
@@ -3740,7 +3742,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_cset(int type_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tset_cset the character set to be used.
@@ -3753,7 +3755,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tset_cset(int type_id, int cset)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -3767,7 +3769,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_strpad(int type_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tset_strpad defines the storage mechanism for the string.
@@ -3780,7 +3782,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tset_strpad(int type_id, int strpad)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tget_nmembers retrieves the number of fields a
@@ -3793,7 +3795,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_nmembers(int type_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tget_member_name retrieves the name of a field of a compound
@@ -3807,7 +3809,7 @@ public class H5 {
      *
      **/
     public synchronized static native String H5Tget_member_name(int type_id,
-        int field_idx);
+            int field_idx);
 
     /**
      *  H5Tget_member_index retrieves the index of a field of a compound
@@ -3821,7 +3823,7 @@ public class H5 {
      *
      **/
     public synchronized static native int H5Tget_member_index(int type_id,
-        String field_name);
+            String field_name);
 
     /**
      *  H5Tget_member_class returns the datatype of the specified
@@ -3837,8 +3839,8 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_member_class(int type_id,
-        int field_idx)
-        throws HDF5LibraryException;
+            int field_idx)
+    throws HDF5LibraryException;
 
     /**
      *  H5Tget_member_type returns the datatype of the specified
@@ -3854,8 +3856,8 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_member_type(int type_id,
-        int field_idx)
-        throws HDF5LibraryException;
+            int field_idx)
+    throws HDF5LibraryException;
 
     /**
      *  H5Tget_member_offset returns the byte offset of the
@@ -3873,8 +3875,8 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native long H5Tget_member_offset(int type_id,
-        int membno)
-        throws HDF5LibraryException;
+            int membno)
+    throws HDF5LibraryException;
 
     /**
      *  H5Tinsert adds another member to the compound datatype type_id.
@@ -3891,8 +3893,8 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native int H5Tinsert(int type_id, String name,
-        long offset, int field_id)
-        throws HDF5LibraryException, NullPointerException;
+            long offset, int field_id)
+    throws HDF5LibraryException, NullPointerException;
 
 
     /**
@@ -3911,7 +3913,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tpack(int type_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tclose releases a datatype.
@@ -3923,7 +3925,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tclose(int type_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     /**
@@ -3938,7 +3940,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tenum_create(int base_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tenum_insert inserts a new enumeration datatype member
@@ -3954,10 +3956,10 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native int H5Tenum_insert(int type, String name,
-        int[] value) throws HDF5LibraryException, NullPointerException;
+            int[] value) throws HDF5LibraryException, NullPointerException;
 
     public synchronized static int H5Tenum_insert(int type, String name,
-        int value) throws HDF5LibraryException, NullPointerException {
+            int value) throws HDF5LibraryException, NullPointerException {
         int[] val = {value};
         return H5Tenum_insert(type, name, val);
     }
@@ -3977,8 +3979,8 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native int H5Tenum_nameof(int type,
-        int[] value, String[] name, int size)
-        throws HDF5LibraryException, NullPointerException;
+            int[] value, String[] name, int size)
+    throws HDF5LibraryException, NullPointerException;
 
 
     /**
@@ -3995,8 +3997,8 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native int H5Tenum_valueof(int type,
-        String name, int[] value)
-        throws HDF5LibraryException, NullPointerException;
+            String name, int[] value)
+    throws HDF5LibraryException, NullPointerException;
 
     /**
      *  H5Tvlen_create creates a new variable-length (VL) dataype.
@@ -4008,7 +4010,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tvlen_create(int base_id)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tset_tag tags an opaque datatype type_id with a
@@ -4023,7 +4025,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tset_tag(int type, String tag)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tget_tag returns the tag associated with datatype type_id.
@@ -4035,7 +4037,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native String H5Tget_tag(int type)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tget_super returns the type from which TYPE is derived.
@@ -4047,7 +4049,7 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_super(int type)
-        throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      *  H5Tget_member_value returns the value of the enumeration
@@ -4063,23 +4065,23 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native int H5Tget_member_value(int type_id,
-        int membno, int[] value)
-        throws HDF5LibraryException, NullPointerException;
+            int membno, int[] value)
+    throws HDF5LibraryException, NullPointerException;
 
 
     /**
      **  Array data types, new in HDF5.1.4.
      **/
     public synchronized static native int H5Tarray_create(int base,
-        int rank, int[] dims, int[] perms)
-        throws HDF5LibraryException, NullPointerException;
+            int rank, int[] dims, int[] perms)
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Tget_array_ndims(int dt)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Tget_array_dims(int dt,
-        int[] dims, int[] perms)
-        throws HDF5LibraryException, NullPointerException;
+            int[] dims, int[] perms)
+    throws HDF5LibraryException, NullPointerException;
 
 
     //////////////////////////////////////////////////////////////
@@ -4098,7 +4100,7 @@ public class H5 {
      * @throws NullPointerException
      */
     public synchronized static native int H5Gget_num_objs(int loc_id, long[] num_obj)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     /**
      * Returns a name of an object specified by an index.
@@ -4113,8 +4115,8 @@ public class H5 {
      * @throws NullPointerException
      */
     public synchronized static native long H5Gget_objname_by_idx(int group_id,
-        long idx, String[] name, long size )
-        throws HDF5LibraryException, NullPointerException;
+            long idx, String[] name, long size )
+    throws HDF5LibraryException, NullPointerException;
 
     /**
      * Returns the type of an object specified by an index.
@@ -4126,41 +4128,41 @@ public class H5 {
      * @throws NullPointerException
      */
     public synchronized static native int H5Gget_objtype_by_idx(int group_id, long idx)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Tget_native_type(int tid, int alloc_time )
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
-//
-//   Backward compatibility:
-//   These functions have been replaced by new HDF5 library calls.
-//   The interface is preserved as a convenience to existing code.
-//
+
+//  Backward compatibility:
+//  These functions have been replaced by new HDF5 library calls.
+//  The interface is preserved as a convenience to existing code.
+
     /**
-      *  H5Gn_members  report the number of objects in
-      *        a Group.  The 'objects' include everything that
-      *        will be visited by H5Giterate.  Each link is
-      *        returned, so objects with multiple links will
-      *        be counted once for each link.
-      *
-      *  @param loc_id  file or group ID.
-      *  @param name   name of the group to iterate, relative to
-      *  the loc_id
-      *
-      *  @return the number of members in the group or -1 if error.
-      *
-      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-      *  @exception NullPointerException - name is null.
-      */
-     public synchronized static int H5Gn_members( int loc_id, String name)
-         throws HDF5LibraryException, NullPointerException {
+     *  H5Gn_members  report the number of objects in
+     *        a Group.  The 'objects' include everything that
+     *        will be visited by H5Giterate.  Each link is
+     *        returned, so objects with multiple links will
+     *        be counted once for each link.
+     *
+     *  @param loc_id  file or group ID.
+     *  @param name   name of the group to iterate, relative to
+     *  the loc_id
+     *
+     *  @return the number of members in the group or -1 if error.
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - name is null.
+     */
+    public synchronized static int H5Gn_members( int loc_id, String name)
+    throws HDF5LibraryException, NullPointerException {
         int grp_id = H5Gopen(loc_id, name);
         long [] nobj = new long[1];
         nobj[0] = -1;
         int ret = H5Gget_num_objs(grp_id, nobj);
         int r = (new Long(nobj[0])).intValue();
         return (r);
-     }
+    }
 
     /**
      *   H5Gget_obj_info_idx   report the name and type of
@@ -4182,10 +4184,10 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      */
     public synchronized static int H5Gget_obj_info_idx( int loc_id,
-        String name, int idx, String[] oname, int[]type)
-        throws HDF5LibraryException, NullPointerException
- {
-         long default_buf_size = 4096;
+            String name, int idx, String[] oname, int[]type)
+    throws HDF5LibraryException, NullPointerException
+    {
+        long default_buf_size = 4096;
         String n[] = new String[1];
         n[0] = new String("");
         int grp_id = H5Gopen(loc_id, name);
@@ -4198,8 +4200,8 @@ public class H5 {
     }
 
     public synchronized static int H5Gget_obj_info_all( int loc_id,
-        String name, String[] oname, int[]type)
-        throws HDF5LibraryException, NullPointerException
+            String name, String[] oname, int[]type)
+    throws HDF5LibraryException, NullPointerException
     {
         if (oname == null) {
             throw new NullPointerException("H5Gget_obj_info_all(): name array is null");
@@ -4221,15 +4223,15 @@ public class H5 {
     }
 
     public synchronized static native int H5Gget_obj_info_all( int loc_id,
-        String name, String[] oname, int[]type, int n)
-        throws HDF5LibraryException, NullPointerException;
+            String name, String[] oname, int[]type, int n)
+    throws HDF5LibraryException, NullPointerException;
 
-//
+
 //  This function is denegrated.  It is recommended that the new
 //  library calls should be used,
-//	H5Gget_objname_by_idx
-//	H5Gget_objtype_by_idx
-//
+//  H5Gget_objname_by_idx
+//  H5Gget_objtype_by_idx
+
     /**
      *  H5Gget_objinfo returns information about the specified
      *  object.
@@ -4257,11 +4259,11 @@ public class H5 {
      *  @exception IllegalArgumentException - bad argument.
      **/
     public synchronized static native int H5Gget_objinfo(int loc_id, String name,
-        boolean follow_link, long[] fileno, long[] objno,
-        int[] link_info, long[] mtime)
-        throws HDF5LibraryException,
-        NullPointerException,
-        IllegalArgumentException;
+            boolean follow_link, long[] fileno, long[] objno,
+            int[] link_info, long[] mtime)
+    throws HDF5LibraryException,
+    NullPointerException,
+    IllegalArgumentException;
 
     /**
      *  H5Gget_objinfo returns information about the specified
@@ -4285,9 +4287,9 @@ public class H5 {
      *  See public synchronized static native int H5Gget_objinfo();
      **/
     public synchronized static int H5Gget_objinfo(int loc_id, String name,
-        boolean follow_link,
-        HDF5GroupInfo info)
-        throws HDF5LibraryException, NullPointerException
+            boolean follow_link,
+            HDF5GroupInfo info)
+    throws HDF5LibraryException, NullPointerException
     {
         int status = -1;
         long[] fileno = new long[2];
@@ -4296,93 +4298,93 @@ public class H5 {
         long[] mtime = new long[1];
 
         status = H5Gget_objinfo(loc_id, name, follow_link,
-            fileno, objno, link_info, mtime);
+                fileno, objno, link_info, mtime);
 
         if (status >=0 ) {
             info.setGroupInfo(fileno, objno, link_info[0],
-            link_info[1], mtime[0], link_info[2]);
+                    link_info[1], mtime[0], link_info[2]);
         }
         return status;
     }
 
 
     public synchronized static int H5Tget_native_type(int tid)
-        throws HDF5LibraryException, NullPointerException
+    throws HDF5LibraryException, NullPointerException
     {
         return H5Tget_native_type(tid, HDF5Constants.H5T_DIR_ASCEND);
     }
 
     public synchronized static native int H5Pset_alloc_time(int plist_id, int alloc_time )
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pget_alloc_time(int plist_id, int[] alloc_time )
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pset_fill_time(int plist_id, int fill_time )
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pget_fill_time(int plist_id, int[] fill_time )
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pfill_value_defined(int plist_id, int[] status )
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pset_fletcher32(int plist)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pset_edc_check(int plist, int check)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pget_edc_check(int plist)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pset_shuffle(int plist_id)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pset_szip(int plist, int options_mask, int pixels_per_block)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Dget_space_status(int dset_id, int[] status )
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native long H5Iget_name(int obj_id, String[] name, long size )
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5set_free_list_limits(int reg_global_lim, int reg_list_lim, int arr_global_lim, int arr_list_lim, int blk_global_lim, int blk_list_lim )
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Fget_obj_ids(int file_id, int types, int max, int[] obj_id_list )
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Fget_obj_count(int file_id, int types)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native boolean H5Tis_variable_str(int dtype_id )
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Zfilter_avail(int filter)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Zunregister(int filter)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pmodify_filter(int plist, int filter, int flags, long cd_nelmts, int[] cd_values )
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pget_filter_by_id( int plist_id, int filter, int[] flags, long[] cd_nelmts, int[] cd_values, long namelen, String[] name )
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native boolean H5Pall_filters_avail(int dcpl_id)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pset_hyper_vector_size(int dxpl_id, long vector_size )
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pget_hyper_vector_size(int dxpl_id, long[] vector_size )
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native boolean H5Tdetect_class(int dtype_id, int dtype_class )
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     ////////////////////////////////////////////////////////////////////
     //                                                                //
@@ -4395,70 +4397,70 @@ public class H5 {
     ////////////////////////////////////////////////////////////////////
 
     public synchronized static native int H5Dread_short(int dataset_id, int mem_type_id,
-        int mem_space_id, int file_space_id, int xfer_plist_id,
-        short[] buf)
-        throws HDF5LibraryException, NullPointerException;
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            short[] buf)
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Dread_int(int dataset_id, int mem_type_id,
-        int mem_space_id, int file_space_id, int xfer_plist_id,
-        int[] buf)
-        throws HDF5LibraryException, NullPointerException;
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            int[] buf)
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Dread_long(int dataset_id, int mem_type_id,
-        int mem_space_id, int file_space_id, int xfer_plist_id,
-        long[] buf)
-        throws HDF5LibraryException, NullPointerException;
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            long[] buf)
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Dread_float(int dataset_id, int mem_type_id,
-        int mem_space_id, int file_space_id, int xfer_plist_id,
-        float[] buf)
-        throws HDF5LibraryException, NullPointerException;
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            float[] buf)
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Dread_double(int dataset_id, int mem_type_id,
-        int mem_space_id, int file_space_id, int xfer_plist_id,
-        double[] buf)
-        throws HDF5LibraryException, NullPointerException;
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            double[] buf)
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Dread_string(int dataset_id, int mem_type_id,
-        int mem_space_id, int file_space_id, int xfer_plist_id,
-        String[] buf)
-        throws HDF5LibraryException, NullPointerException;
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            String[] buf)
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Dread_reg_ref(int dataset_id, int mem_type_id,
             int mem_space_id, int file_space_id, int xfer_plist_id,
             String[] buf)
-            throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Dwrite_short(int dataset_id, int mem_type_id,
-        int mem_space_id, int file_space_id, int xfer_plist_id,
-        short[] buf)
-        throws HDF5LibraryException, NullPointerException;
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            short[] buf)
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Dwrite_int(int dataset_id, int mem_type_id,
-        int mem_space_id, int file_space_id, int xfer_plist_id,
-        int[] buf)
-        throws HDF5LibraryException, NullPointerException;
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            int[] buf)
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Dwrite_long(int dataset_id, int mem_type_id,
-        int mem_space_id, int file_space_id, int xfer_plist_id,
-        long[] buf)
-        throws HDF5LibraryException, NullPointerException;
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            long[] buf)
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Dwrite_float(int dataset_id, int mem_type_id,
-        int mem_space_id, int file_space_id, int xfer_plist_id,
-        float[] buf)
-        throws HDF5LibraryException, NullPointerException;
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            float[] buf)
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Dwrite_double(int dataset_id, int mem_type_id,
-        int mem_space_id, int file_space_id, int xfer_plist_id,
-        double[] buf)
-        throws HDF5LibraryException, NullPointerException;
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            double[] buf)
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pset_fclose_degree(int plist, int degree)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pget_fclose_degree(int plist_id)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
 
     ////////////////////////////////////////////////////////////////////
@@ -4468,34 +4470,34 @@ public class H5 {
     ////////////////////////////////////////////////////////////////////
 
     public synchronized static native int H5Iget_ref(int obj_id)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Iinc_ref(int obj_id)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Idec_ref(int obj_id)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pset_fapl_family ( int fapl_id, long memb_size, int memb_fapl_id )
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pget_fapl_family ( int fapl_id, long[] memb_size, int[] memb_fapl_id )
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pset_fapl_core( int fapl_id, int increment, boolean backing_store )
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pget_fapl_core( int fapl_id, int[] increment, boolean[] backing_store )
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pset_family_offset ( int fapl_id, long offset )
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native long H5Pget_family_offset ( int fapl_id)
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native int H5Pset_fapl_log( int fapl_id, String logfile, int flags, int buf_size )
-        throws HDF5LibraryException, NullPointerException;
+    throws HDF5LibraryException, NullPointerException;
 
 
     ////////////////////////////////////////////////////////////////////
@@ -4505,19 +4507,19 @@ public class H5 {
     ////////////////////////////////////////////////////////////////////
 
     public synchronized static native long H5Fget_name (int obj_id, String name, int size)
-            throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     public synchronized static native long H5Fget_filesize (int file_id)
-            throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     public synchronized static native int H5Iget_file_id (int obj_id)
-            throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     public synchronized static native int H5Premove_filter (int obj_id, int filter)
-            throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     public synchronized static native int H5Zget_filter_info (int filter)
-            throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 
     ////////////////////////////////////////////////////////////////////
@@ -4527,10 +4529,10 @@ public class H5 {
     ////////////////////////////////////////////////////////////////////
 
     public synchronized static native int H5INcreate (String grp_name, int grp_loc_id,
-        int property_list, int data_loc_id, String data_loc_name, String field_name, long max_mem_size);
+            int property_list, int data_loc_id, String data_loc_name, String field_name, long max_mem_size);
 
     public synchronized static native int H5INquery (int dset_id, String keys[],
-        Object ubounds, Object lbounds, int nkeys);
+            Object ubounds, Object lbounds, int nkeys);
 
 
     //////////////////////////////////////////////////////////////////////////
@@ -4549,7 +4551,7 @@ public class H5 {
      * @throws HDF5LibraryException
      */
     public synchronized static native int H5Pcreate_list( int cls)
-            throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      * Sets a property list value (support integer only)
@@ -4561,7 +4563,7 @@ public class H5 {
      * @throws HDF5LibraryException
      */
     public synchronized static native int H5Pset( int plid, String name, int value)
-            throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      * H5Pexist determines whether a property exists within a property list or class
@@ -4573,7 +4575,7 @@ public class H5 {
      * @throws HDF5LibraryException
      */
     public synchronized static native int H5Pexist( int plid, String name )
-            throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      * H5Pget_size retrieves the size of a property's value in bytes
@@ -4584,7 +4586,7 @@ public class H5 {
      * @throws HDF5LibraryException
      */
     public synchronized static native long H5Pget_size( int plid, String name )
-            throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      * H5Pget_nprops retrieves the number of properties in a property list or class
@@ -4594,7 +4596,7 @@ public class H5 {
      * @throws HDF5LibraryException
      */
     public synchronized static native long H5Pget_nprops( int plid)
-            throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      * H5Pget_class_name retrieves the name of a generic property list class
@@ -4604,7 +4606,7 @@ public class H5 {
      * @throws HDF5LibraryException
      */
     public synchronized static native String H5Pget_class_name( int plid)
-            throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      * H5Pget_class_parent retrieves an identifier for the parent class of a property class
@@ -4614,7 +4616,7 @@ public class H5 {
      * @throws HDF5LibraryException
      */
     public synchronized static native int H5Pget_class_parent( int plid)
-            throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      * H5Pisa_class checks to determine whether a property list is a member of the specified class
@@ -4625,7 +4627,7 @@ public class H5 {
      * @throws HDF5LibraryException
      */
     public synchronized static native int H5Pisa_class( int plist, int pclass )
-            throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      * H5Pget retrieves a copy of the value for a property in a property list
@@ -4637,7 +4639,7 @@ public class H5 {
      * @throws HDF5LibraryException
      */
     public synchronized static native int H5Pget( int plid, String name )
-            throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      * H5Pequal determines if two property lists or classes are equal
@@ -4648,7 +4650,7 @@ public class H5 {
      * @throws HDF5LibraryException
      */
     public synchronized static native int H5Pequal( int plid1, int plid2 )
-            throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      * H5Pcopy_prop copies a property from one property list or class to another
@@ -4660,7 +4662,7 @@ public class H5 {
      * @throws HDF5LibraryException
      */
     public synchronized static native int H5Pcopy_prop( int dst_id, int src_id, String name )
-            throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      * H5Premove removes a property from a property list
@@ -4671,7 +4673,7 @@ public class H5 {
      * @throws HDF5LibraryException
      */
     public synchronized static native int H5Premove( int plid, String name )
-            throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      * H5Punregister removes a property from a property list class
@@ -4682,7 +4684,7 @@ public class H5 {
      * @throws HDF5LibraryException
      */
     public synchronized static native int H5Punregister( int plid, String name )
-            throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
     /**
      * Closes an existing property list class
@@ -4692,7 +4694,7 @@ public class H5 {
      * @throws HDF5LibraryException
      */
     public synchronized static native int H5Pclose_class( int plid)
-            throws HDF5LibraryException;
+    throws HDF5LibraryException;
 
 }
 
