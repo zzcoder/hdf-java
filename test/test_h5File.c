@@ -1,5 +1,6 @@
 #include "h5File.h"
 #include "h5Handler.h"
+#include "hdf5.h"
 #if 0	/* XXXX rm for irods */
 #include "hdf5PackDef.h"
 #endif
@@ -13,9 +14,16 @@
 #define TEST_SUBSET 1
 #define HDF5_LOCAL 1
 
+#define FILENAME "dset.h5"
+#define DSET_NAME "dset"
+#define RANK 2
+#define DIM0 100
+#define DIM1 1000
+
 int print_group(rcComm_t *conn, const H5Group *pg);
 int print_dataset(const H5Dataset *d);
 int print_attribute(const H5Attribute *a);
+int create_test_file(const char *filename);
 
 int main(int argc, char* argv[])
 {
@@ -31,6 +39,12 @@ int main(int argc, char* argv[])
  *    actual physical file and the resource identifier.
  ******************************************************************************/
 
+#ifdef HDF5_LOCAL
+    strcpy(fname, FILENAME);
+    create_test_file(FILENAME);
+    printf("\n..... test file: %s\n", fname);
+    fflush(stdout);
+#else
     if (argc <=1 )
     {
         printf("Enter file name: ");
@@ -41,7 +55,6 @@ int main(int argc, char* argv[])
     printf("\n..... test file: %s\n", fname);
     fflush(stdout);
 
-#ifndef HDF5_LOCAL
     conn = rcConnect (NULL, NULL, NULL,
      NULL, NULL, NULL, NULL);
     if (clStatus(conn) != CLI_CONNECTION_OK) {
@@ -108,18 +121,11 @@ int main(int argc, char* argv[])
  * suppose we want to read the data value  of the first dataset from the file
  ******************************************************************************/
     d = NULL;
-    /* print out one dataset */
-    for (i=0; i<f->root->ndatasets; i++)
-    {
-        d = (H5Dataset *) &f->root->datasets[i];
-        if (strcmp(d->fullpath, "/Vdata with mixed types") == 0)
-        /*if (strcmp(d->fullpath, "/A note") == 0)*/
-            break;
-    }
-    
+    if (f->root->ndatasets>0)
+	d = (H5Dataset *) &f->root->datasets[0];
+
     if (d)
     {
-
 /******************************************************************************
  *  In real application, the client program should make this call andi
  *      a) pack message
@@ -423,4 +429,43 @@ int print_attribute(const H5Attribute *a)
 
     return ret_value;
 }
+
+int create_test_file(const char *filename)
+{
+   hid_t       file_id, did, sid;  /* identifiers */
+   hsize_t     dims[] = {DIM0, DIM1};
+   int         i, j, buf[DIM0][DIM1];
+   int      status;
+
+
+   /* Initialize the dataset. */
+   for (i = 0; i < DIM0; i++) {
+      for (j = 0; j < DIM1; j++)
+         buf[i][j] = i * 6 + j + 1;
+   }
+
+   /* Create a new file using default properties. */
+   file_id = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+
+   /* Create the data space for the dataset. */
+   sid = H5Screate_simple(RANK, dims, NULL);
+
+   /* Create the dataset. */
+   did = H5Dcreate(file_id, DSET_NAME, H5T_NATIVE_INT, sid, H5P_DEFAULT);
+
+   /* Write the dataset. */
+   status = H5Dwrite(did, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, buf);
+
+   /* End access to the dataset and release resources used by it. */
+   status = H5Dclose(did);
+
+   /* Terminate access to the data space. */
+   status = H5Sclose(sid);
+
+   /* Close the file. */
+   status = H5Fclose(file_id);
+
+   return status; 
+}
+
 
