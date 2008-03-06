@@ -1,101 +1,84 @@
 # Makefile - This is the makefile for libjh5srb.so, jh5srb.class. 
 SHELL=/bin/csh
 
-include ../../../mk/mk.config
-include ../../../mk/mk.common
+ifndef buildDir
+buildDir =      $(CURDIR)/../../..
+endif
 
-buildDir = ../../..
+include $(buildDir)/config/config.mk
+include $(buildDir)/config/platform.mk
+include $(buildDir)/config/directories.mk
+include $(buildDir)/config/common.mk
+
+hdf5MSObjDir =      $(modulesDir)/hdf5/microservices/obj
+hdf5MSSrcDir =      $(modulesDir)/hdf5/microservices/src
+hdf5MSIncDir =      $(modulesDir)/hdf5/microservices/include
+
+hdf5TestDir =   $(modulesDir)/hdf5/test
+hdf5LibIncDir = $(modulesDir)/hdf5/lib/include
+hdf5LibObjDir = $(modulesDir)/hdf5/lib/obj
+hdf5LibSrcDir = $(modulesDir)/hdf5/lib/src
+
 LIBDIR = .
 
 SLIB = $(LIBDIR)/libjh5srb.so
 OBJ  = $(LIBDIR)/jh5srb.o
 
-srbObjDir = $(buildDir)/obj
-hdf5srbObjDir = $(buildDir)/proxy/hdf5/obj
-utilObjDir = $(buildDir)/utilities/obj
-OBJS = \
-	$(srbObjDir)/clAuth.o \
-	$(srbObjDir)/clConnect.o \
-	$(srbObjDir)/clExec.o \
-	$(srbObjDir)/clMisc.o \
-	$(srbObjDir)/clStub.o \
-        $(srbObjDir)/packMsg.o \
-	$(srbObjDir)/clGlobal.o	\
-	$(srbObjDir)/clChksum.o	\
-	$(srbObjDir)/mcatgeneral.o	\
-	$(srbObjDir)/srb_perror.o $(srbObjDir)/crypt1.o	\
-	$(srbObjDir)/srbSecureComm.o \
-	$(srbObjDir)/obf.o \
-	$(hdf5srbObjDir)/clH5Dataset.o $(hdf5srbObjDir)/clH5File.o 	\
-	$(hdf5srbObjDir)/clH5Group.o $(hdf5srbObjDir)/h5ClHandler.o	\
-	$(hdf5srbObjDir)/h5Ctor.o $(hdf5srbObjDir)/h5Dtor.o	\
-	$(LIB_GSI_AUTH) $(KRB_LIBS)
+INCLUDE_FLAGS = -I$(hdf5TestDir) -I$(hdf5Dir)/src -I$(hdf5LibIncDir)    \
+    -I$(hdf5MSIncDir)
+HDF_LIB_OBJECTS = $(hdf5LibObjDir)/h5Ctor.o $(hdf5LibObjDir)/h5Dtor.o
+HDF_LIB_OBJECTS+=$(hdf5LibObjDir)/h5File.o \
+$(hdf5LibObjDir)/h5Dataset.o $(hdf5LibObjDir)/h5String.o        \
+$(hdf5LibObjDir)/h5Group.o $(hdf5LibObjDir)/h5Object.o  \
+$(hdf5LibObjDir)/h5Attribute.o
 
-#        $(utilObjDir)/srbClientUtil.o   \
-#        $(utilObjDir)/bloadLib.o        \
-#        $(utilObjDir)/bunloadLib.o      \
-
-ifdef GSI_AUTH
-OBJS+=$(srbObjDir)/aid.o
-endif
-
-# CC = /opt/SUNWspro/bin/cc -DPORTNAME_solaris -DDEBUG
-# CC = /opt/SUNWspro/bin/cc -DPORTNAME_solaris
-# ifeq ($(PORTNAME), PORTNAME_solaris)
-# CC=gcc
-# endif
-
-CFLAGS=$(MY_CFLAG)
-
-ifeq ($(PORTNAME), PORTNAME_solaris)
+ifeq ($(OS_platform), solaris_platform)
 PLATFORM=solaris
 endif 
 
-ifeq ($(PORTNAME), PORTNAME_linux)
+ifeq ($(OS_platform), linux_platform)
 PLATFORM=linux
 endif
 
-ifeq ($(PORTNAME), PORTNAME_aix)
+ifeq ($(OS_platform), aix_platform)
 PLATFORM=aix
 CFLAGS+=-c -M -I.
 endif
 
-ifeq ($(PORTNAME), PORTNAME_sgi)
+ifeq ($(OS_platform), sgi_platform)
 PLATFORM=irix
 endif
 
-INC =	-I$(buildDir)/src/include \
-		-I$(buildDir)/src/catalog/include \
-		-I$(buildDir)/utilities/include \
-		-I$(buildDir)/proxy/hdf5/include \
-		-I$(javaDir)/include \
-		-I$(javaDir)/include/$(PLATFORM)
+CFLAGS = $(MY_CFLAG) $(LIB_INCLUDES) $(SVR_INCLUDES) 	\
+	-I$(javaDir)/include -I$(javaDir)/include/$(PLATFORM)	\
+	$(MODULE_CFLAGS) $(INCLUDE_FLAGS)
+
+LDFLAGS +=      $(LDADD) $(LIBRARY) $(MODULE_LDFLAGS)
 
 .SUFFIXES: .c .o .so .java .class .h
-
 
 all: $(SLIB)
 	@ echo $(SLIB) is to date.
 
 $(SLIB): $(OBJ)
-ifeq ($(PORTNAME), PORTNAME_aix)
+ifeq ($(OS_platform), aix_platform)
 	grep " JNICALL " *.c|sed "s/.* JNICALL //g">$@.exp
-	$(LDR) -lm -bnoentry -bM:SRE -bE:$@.exp -lc_r -blibpath:/usr/lib/threads:/usr/lib:/lib -L/usr/local/apps/Java/lib/aix/native_threads -o $(SLIB) $(OBJS) $(OBJ)
+	$(LDR) -lm -bnoentry -bM:SRE -bE:$@.exp -lc_r -blibpath:/usr/lib/threads:/usr/lib:/lib -L/usr/local/apps/Java/lib/aix/native_threads -o $(SLIB) $(LDFLAGS) $(HDF_LIB_OBJECTS) $(OBJ)
 	rm $@.exp
 else
-ifeq ($(PORTNAME), PORTNAME_sgi)
-	$(LDR) -shared -o $(SLIB) $(OBJS) $(OBJ)
+ifeq ($(OS_platform), sgi_platform)
+	$(LDR) -shared -o $(SLIB) $(LDFLAGS) $(HDF_LIB_OBJECTS) $(OBJ)
 else
-ifeq ($(PORTNAME), PORTNAME_linux)
-	$(LDR) -shared -lm -lpthread -o $(SLIB) $(OBJS) $(OBJ)
+ifeq ($(OS_platform), linux_platform)
+	$(LDR) -shared -lm -lpthread -o $(SLIB) $(LDFLAGS) $(HDF_LIB_OBJECTS) $(OBJ)
 else
-	$(LDR) -G -o $(SLIB) $(OBJS) $(OBJ)
+	$(LDR) -G -o $(SLIB) $(LDFLAGS) $(HDF_LIB_OBJECTS) $(OBJ)
 endif
 endif
 endif
 
 $(LIBDIR)/jh5srb.o: jh5srb.c 
-	$(CC) -c $(CFLAGS) $(INC) -o $@ $<
+	$(CC) -c $(CFLAGS) -o $@ $<
 clean:
 	rm -f $(OBJ) $(SLIB) $(SLIB).exp
 
