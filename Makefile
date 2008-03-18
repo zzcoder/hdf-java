@@ -6,7 +6,7 @@
 
 # MAKE_LOCAL_TEST specifies that build the test program using local hdf5
 # library routine instead of the irods client library. Normal it is off
-MAKE_LOCAL_TEST = 1
+# MAKE_LOCAL_TEST = 1
 
 #
 # Source files
@@ -17,7 +17,6 @@ MAKE_LOCAL_TEST = 1
 hdf5Dir=/mnt/scr1/xcao/hdf_java/lib/linux32/hdf5
 szlibDir=/home/srb/ext_lib/szip
 zlibDir=/home/srb/ext_lib/zlib
-
 
 ifndef buildDir
 buildDir = $(CURDIR)/../..
@@ -41,28 +40,36 @@ hdf5LibObjDir =	$(modulesDir)/hdf5/lib/obj
 hdf5LibSrcDir =	$(modulesDir)/hdf5/lib/src
 
 ifdef hdf5Dir
-OBJECTS	=
+MS_OBJECTS	=  $(hdf5MSObjDir)/hdf5MS.o
 TEST_OBJECT = $(hdf5TestDir)/test_h5File.o
-INCLUDE_FLAGS = -I$(zlibDir)/include -I$(szlibDir)/include -I$(hdf5TestDir) -I$(hdf5Dir)/include -I$(hdf5LibIncDir)
-HDF_LIB_OBJECT = $(hdf5LibObjDir)/h5Ctor.o $(hdf5LibObjDir)/h5Dtor.o
-HDF_LIB_OBJECT+=$(hdf5LibObjDir)/h5File.o \
+INCLUDE_FLAGS = -I$(hdf5TestDir) -I$(hdf5Dir)/src -I$(hdf5LibIncDir)	\
+    -I$(hdf5MSIncDir) 	\
+    -I$(zlibDir)/include -I$(szlibDir)/include
+HDF_LIB_OBJECTS = $(hdf5LibObjDir)/h5Ctor.o $(hdf5LibObjDir)/h5Dtor.o
+HDF_LIB_OBJECTS+=$(hdf5LibObjDir)/h5File.o \
 $(hdf5LibObjDir)/h5Dataset.o $(hdf5LibObjDir)/h5String.o        \
 $(hdf5LibObjDir)/h5Group.o $(hdf5LibObjDir)/h5Object.o  \
 $(hdf5LibObjDir)/h5Attribute.o
 
+INCLUDE_FLAGS+=-DHDF5_MODULE
 ifdef MAKE_LOCAL_TEST
 TEST_PROG = $(hdf5TestDir)/tl5
 INCLUDE_FLAGS+=-DHDF5_LOCAL
-HDF_LIB_OBJECT+=$(hdf5LibObjDir)/h5LocalHandler.o
+HDF_LIB_OBJECTS+=$(hdf5LibObjDir)/h5LocalHandler.o
+TEST_LDADD=
 else
 TEST_PROG = $(hdf5TestDir)/t5
-HDF_LIB_OBJECT+=$(hdf5LibObjDir)/h5ClHandler.o
+HDF_LIB_OBJECTS+=$(hdf5LibObjDir)/h5ClHandler.o
+HDF_LIB_OBJECTS+=$(hdf5LibObjDir)/clH5Dataset.o 	\
+    $(hdf5LibObjDir)/clH5File.o $(hdf5LibObjDir)/clH5Group.o
 endif
-LIBS = -L$(zlibDir)/lib -L$(szlibDir)/lib -L$(hdf5Dir)/lib -lhdf5 -lm -lz -lsz
+HDF5_LD_LIBS = -L$(hdf5Dir)/src/.libs -L$(hdf5Dir)/lib -L$(hdf5Dir)/hl/src/.libs -lhdf5 -lhdf5_hl	\
+    -L$(zlibDir)/lib -L$(szlibDir)/lib -lz -lsz
+TEST_LDADD=$(LDADD) $(LIBRARY)
 else
-OBJECTS =
+MS_OBJECTS =
 INCLUDE_FLAGS =
-LIBS =
+HDF5_LD_LIBS =
 endif
 
 #
@@ -83,22 +90,24 @@ all:	test
 # List module's objects and needed libs for inclusion in clients
 client_ldflags:
 	@true
+#	@echo $(HDF5_LD_LIBS) $(HDF_LIB_OBJECTS)
 
 # List module's includes for inclusion in the clients
 client_cflags:
 	@true
+#	@echo $(INCLUDE_FLAGS)
 
 # List module's objects and needed libs for inclusion in the server
 server_ldflags:
-	@echo $(OBJECTS) $(LIBS)
+	@echo $(HDF5_LD_LIBS) $(MS_OBJECTS) $(HDF_LIB_OBJECTS)
 
 # List module's includes for inclusion in the server
 server_cflags:
-	@echo $(INCLUDE_FLAGS)
+	@echo $(INCLUDE_FLAGS) -DRODS_SERVER
 
 # Build microservices
 ifdef hdf5Dir
-microservices:	print_cflags $(OBJECTS)
+microservices:	print_cflags $(MS_OBJECTS) $(HDF_LIB_OBJECTS)
 	@true
 test:	$(TEST_PROG)
 else
@@ -124,7 +133,7 @@ rules:
 ifdef hdf5Dir
 clean:
 	@echo "Clean hdf5 module..."
-	@rm -f $(OBJECTS) $(HDF_LIB_OBJECT) $(TEST_OBJECT) $(TEST_PROG)
+	@rm -f $(MS_OBJECTS) $(HDF_LIB_OBJECTS) $(TEST_OBJECT) $(TEST_PROG)
 else
 clean:
 	@echo "Clean hdf5 module..."
@@ -134,12 +143,12 @@ endif
 # Show compile flags
 print_cflags:
 	@echo "Compile flags:"
-	@echo "    $(CFLAGS_OPTIONS)"
+	@echo "    $(CFLAGS)"
 
 #
 # Compile targets
 #
-$(OBJECTS): $(hdf5MSObjDir)/%.o: $(hdf5MSSrcDir)/%.c $(DEPEND)
+$(MS_OBJECTS): $(hdf5MSObjDir)/%.o: $(hdf5MSSrcDir)/%.c $(DEPEND)
 	@echo "Compile hdf5 module `basename $@`..."
 	@$(CC) -c $(CFLAGS) -o $@ $<
 
@@ -147,11 +156,11 @@ $(TEST_OBJECT): $(hdf5TestDir)/%.o: $(hdf5TestDir)/%.c $(DEPEND)
 	@echo "Compile  $(TEST_OBJECT) `basename $@`..."
 	@$(CC) -c $(CFLAGS) -o $@ $<
 
-$(HDF_LIB_OBJECT): $(hdf5LibObjDir)/%.o: $(hdf5LibSrcDir)/%.c $(DEPEND)
-	@echo "Compile  $(HDF_LIB_OBJECT) `basename $@`..."
+$(HDF_LIB_OBJECTS): $(hdf5LibObjDir)/%.o: $(hdf5LibSrcDir)/%.c $(DEPEND)
+	@echo "Compile  $(HDF_LIB_OBJECTS) `basename $@`..."
 	@$(CC) -c $(CFLAGS) -o $@ $<
 
 # rule to link the program
-$(TEST_PROG): $(OBJS) $(TEST_OBJECT) $(HDF_LIB_OBJECT)
-	$(CC) $(TEST_OBJECT) $(HDF_LIB_OBJECT) $(LIBS) -o $(TEST_PROG)
+$(TEST_PROG): $(OBJS) $(TEST_OBJECT) $(HDF_LIB_OBJECTS)
+	$(CC) $(TEST_OBJECT) $(HDF_LIB_OBJECTS) $(HDF5_LD_LIBS) $(TEST_LDADD) -o $(TEST_PROG)
 
