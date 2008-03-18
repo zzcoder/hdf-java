@@ -1,9 +1,5 @@
 #include "h5File.h"
-#include "h5Handler.h"
-#include "hdf5.h"
-#if 0	/* XXXX rm for irods */
-#include "hdf5PackDef.h"
-#endif
+#include "clH5Handler.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -12,18 +8,13 @@
 #define NO_TEST_ATTRI	1
 #define NO_TEST_PALETTE	1
 #define TEST_SUBSET 1
+#if 0
 #define HDF5_LOCAL 1
-
-#define FILENAME "dset.h5"
-#define DSET_NAME "dset"
-#define RANK 2
-#define DIM0 100
-#define DIM1 1000
+#endif
 
 int print_group(rcComm_t *conn, const H5Group *pg);
 int print_dataset(const H5Dataset *d);
 int print_attribute(const H5Attribute *a);
-int create_test_file(const char *filename);
 
 int main(int argc, char* argv[])
 {
@@ -31,7 +22,12 @@ int main(int argc, char* argv[])
     char fname[80];
     H5File *f=0;
     H5Dataset *d=0;
+#ifndef HDF5_LOCAL
+    int status;
+    rodsEnv myEnv;
+    rErrMsg_t errMsg;
     rcComm_t *conn = NULL;
+#endif
 
 /******************************************************************************
  *    In real application, the filename should be obtained from the SRB server. 
@@ -39,12 +35,6 @@ int main(int argc, char* argv[])
  *    actual physical file and the resource identifier.
  ******************************************************************************/
 
-#ifdef HDF5_LOCAL
-    strcpy(fname, FILENAME);
-    create_test_file(FILENAME);
-    printf("\n..... test file: %s\n", fname);
-    fflush(stdout);
-#else
     if (argc <=1 )
     {
         printf("Enter file name: ");
@@ -55,13 +45,26 @@ int main(int argc, char* argv[])
     printf("\n..... test file: %s\n", fname);
     fflush(stdout);
 
-    conn = rcConnect (NULL, NULL, NULL,
-     NULL, NULL, NULL, NULL);
-    if (clStatus(conn) != CLI_CONNECTION_OK) {
-      fprintf(stderr,"Connection to rodsMaster failed.\n");
-      fprintf(stderr,"%s",clErrorMessage(conn));
-      rods_perror (2, clStatus(conn), "", SRB_RCMD_ACTION|SRB_LONG_MSG);
-      clFinish(conn); exit(3);
+#ifndef HDF5_LOCAL
+    status = getRodsEnv (&myEnv);
+
+    if (status < 0) {
+        rodsLogError (LOG_ERROR, status, "main: getRodsEnv error. ");
+        exit (1);
+    }
+    conn = rcConnect (myEnv.rodsHost, myEnv.rodsPort, myEnv.rodsUserName,
+      myEnv.rodsZone, 1, &errMsg);
+
+    if (conn == NULL) {
+        rodsLogError (LOG_ERROR, errMsg.status, "rcConnect failure %s",
+               errMsg.msg);
+        exit (2);
+    }
+
+    status = clientLogin(conn);
+    if (status != 0) {
+        rcDisconnect(conn);
+        exit (7);
     }
 #endif
 
@@ -121,11 +124,18 @@ int main(int argc, char* argv[])
  * suppose we want to read the data value  of the first dataset from the file
  ******************************************************************************/
     d = NULL;
-    if (f->root->ndatasets>0)
-	d = (H5Dataset *) &f->root->datasets[0];
-
+    /* print out one dataset */
+    for (i=0; i<f->root->ndatasets; i++)
+    {
+        d = (H5Dataset *) &f->root->datasets[i];
+        if (strcmp(d->fullpath, "/Vdata with mixed types") == 0)
+        /*if (strcmp(d->fullpath, "/A note") == 0)*/
+            break;
+    }
+    
     if (d)
     {
+
 /******************************************************************************
  *  In real application, the client program should make this call andi
  *      a) pack message
@@ -188,6 +198,7 @@ exit:
     H5File_dtor(f);
     if (f) free(f);
 
+    rcDisconnect (conn);
     return ret_value;
 }
 
@@ -429,43 +440,4 @@ int print_attribute(const H5Attribute *a)
 
     return ret_value;
 }
-
-int create_test_file(const char *filename)
-{
-   hid_t       file_id, did, sid;  /* identifiers */
-   hsize_t     dims[] = {DIM0, DIM1};
-   int         i, j, buf[DIM0][DIM1];
-   int      status;
-
-
-   /* Initialize the dataset. */
-   for (i = 0; i < DIM0; i++) {
-      for (j = 0; j < DIM1; j++)
-         buf[i][j] = i * 6 + j + 1;
-   }
-
-   /* Create a new file using default properties. */
-   file_id = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
-
-   /* Create the data space for the dataset. */
-   sid = H5Screate_simple(RANK, dims, NULL);
-
-   /* Create the dataset. */
-   did = H5Dcreate(file_id, DSET_NAME, H5T_NATIVE_INT, sid, H5P_DEFAULT);
-
-   /* Write the dataset. */
-   status = H5Dwrite(did, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, buf);
-
-   /* End access to the dataset and release resources used by it. */
-   status = H5Dclose(did);
-
-   /* Terminate access to the data space. */
-   status = H5Sclose(sid);
-
-   /* Close the file. */
-   status = H5Fclose(file_id);
-
-   return status; 
-}
-
 
