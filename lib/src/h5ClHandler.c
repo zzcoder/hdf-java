@@ -42,18 +42,18 @@ int h5ObjRequest(rcComm_t *conn, void *obj, int objID)
 
         f = (H5File *)obj;
         if (H5FILE_OP_OPEN == f->opID) 
-            ret_value = H5File_open (f, NULL);
+            ret_value = clH5File_open(conn, f);
         else if (H5FILE_OP_CLOSE == f->opID)
-            ret_value = H5File_close (f, NULL);
+            ret_value = clH5File_close(conn, f);
         /* TODO at h5Handler -- more actions needs to be added here */
     }
     else if (H5OBJECT_DATASET == objID)
     {
         d = (H5Dataset *)obj;
         if (H5DATASET_OP_READ == d->opID)
-            ret_value = H5Dataset_read (d, NULL);
+            ret_value = clH5Dataset_read (conn, d);
         else if (H5DATASET_OP_READ_ATTRIBUTE == d->opID)
-	    ret_value = H5Dataset_read_attribute (d, NULL);
+	    ret_value = clH5Dataset_read_attribute(conn, d);
 
         /* TODO at h5Handler -- more actions needs to be added here */
     }
@@ -61,7 +61,7 @@ int h5ObjRequest(rcComm_t *conn, void *obj, int objID)
     {
         g = (H5Group *)obj;
         if (H5GROUP_OP_READ_ATTRIBUTE == g->opID)
-            ret_value = H5Group_read_attribute(g, NULL);
+            ret_value = clH5Group_read_attribute(conn, g);
     }
 
     return ret_value;
