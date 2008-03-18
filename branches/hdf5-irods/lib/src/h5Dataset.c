@@ -16,9 +16,6 @@
 #include "h5Dataset.h"
 #include "h5Object.h"
 #include "h5String.h"
-#if 0	/* XXXX rm for irods */ 
-#include "hdf5PackDefExtern.h"
-#endif
 #include "hdf5.h"
 #include <malloc.h>
 #include <assert.h>

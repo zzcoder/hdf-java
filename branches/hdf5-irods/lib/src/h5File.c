@@ -17,9 +17,6 @@
 #include "hdf5.h"
 #include <malloc.h>
 #include <assert.h>
-#if 0	/* XXXXXX mod for iRods */
-#include "hdf5PackDefExtern.h"
-#endif
 
 /* retrieve the file structure and store it in the root group */
 int H5File_get_structure(H5File* f);
