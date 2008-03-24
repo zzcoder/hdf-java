@@ -42,7 +42,7 @@ hdf5LibSrcDir =	$(modulesDir)/hdf5/lib/src
 ifdef hdf5Dir
 MS_OBJECTS	=  $(hdf5MSObjDir)/hdf5MS.o
 TEST_OBJECT = $(hdf5TestDir)/test_h5File.o
-INCLUDE_FLAGS = -I$(hdf5TestDir) -I$(hdf5Dir)/src -I$(hdf5LibIncDir)	\
+INCLUDE_FLAGS = -I$(hdf5TestDir) -I$(hdf5Dir)/include -I$(hdf5LibIncDir)	\
     -I$(hdf5MSIncDir) 	\
     -I$(zlibDir)/include -I$(szlibDir)/include
 HDF_LIB_OBJECTS = $(hdf5LibObjDir)/h5Ctor.o $(hdf5LibObjDir)/h5Dtor.o
@@ -63,7 +63,7 @@ HDF_LIB_OBJECTS+=$(hdf5LibObjDir)/h5ClHandler.o
 HDF_LIB_OBJECTS+=$(hdf5LibObjDir)/clH5Dataset.o 	\
     $(hdf5LibObjDir)/clH5File.o $(hdf5LibObjDir)/clH5Group.o
 endif
-HDF5_LD_LIBS = -L$(hdf5Dir)/src/.libs -L$(hdf5Dir)/lib -L$(hdf5Dir)/hl/src/.libs -lhdf5 -lhdf5_hl	\
+HDF5_LD_LIBS = -L$(hdf5Dir)/lib -lhdf5 -lhdf5_hl	\
     -L$(zlibDir)/lib -L$(szlibDir)/lib -lz -lsz
 TEST_LDADD=$(LDADD) $(LIBRARY)
 else
