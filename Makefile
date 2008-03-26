@@ -63,8 +63,8 @@ HDF_LIB_OBJECTS+=$(hdf5LibObjDir)/h5ClHandler.o
 HDF_LIB_OBJECTS+=$(hdf5LibObjDir)/clH5Dataset.o 	\
     $(hdf5LibObjDir)/clH5File.o $(hdf5LibObjDir)/clH5Group.o
 endif
-HDF5_LD_LIBS = -L$(hdf5Dir)/lib -lhdf5 -lhdf5_hl	\
-    -L$(zlibDir)/lib -L$(szlibDir)/lib -lz -lsz
+HDF5_LD_LIBS = -L$(hdf5Dir)/lib -lhdf5 	\
+    -L$(zlibDir)/lib -lz -L$(szlibDir)/lib -lsz
 TEST_LDADD=$(LDADD) $(LIBRARY)
 else
 MS_OBJECTS =
