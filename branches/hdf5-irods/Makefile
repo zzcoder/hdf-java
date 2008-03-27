@@ -63,8 +63,8 @@ HDF_LIB_OBJECTS+=$(hdf5LibObjDir)/h5ClHandler.o
 HDF_LIB_OBJECTS+=$(hdf5LibObjDir)/clH5Dataset.o 	\
     $(hdf5LibObjDir)/clH5File.o $(hdf5LibObjDir)/clH5Group.o
 endif
-HDF5_LD_LIBS = -L$(hdf5Dir)/lib -lhdf5 	\
-    -L$(zlibDir)/lib -lz -L$(szlibDir)/lib -lsz
+HDF5_LD_LIBS = -L$(zlibDir)/lib -L$(szlibDir)/lib -L$(hdf5Dir)/lib -lhdf5 -lz -lsz
+
 TEST_LDADD=$(LDADD) $(LIBRARY)
 else
 MS_OBJECTS =
@@ -99,7 +99,9 @@ client_cflags:
 
 # List module's objects and needed libs for inclusion in the server
 server_ldflags:
-	@echo $(HDF5_LD_LIBS) $(MS_OBJECTS) $(HDF_LIB_OBJECTS)
+	@echo $(MS_OBJECTS) $(HDF_LIB_OBJECTS)  $(HDF5_LD_LIBS)
+
+#	@echo $(HDF5_LD_LIBS) $(MS_OBJECTS) $(HDF_LIB_OBJECTS)
 
 # List module's includes for inclusion in the server
 server_cflags:
