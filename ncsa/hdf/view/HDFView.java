@@ -836,20 +836,26 @@ HyperlinkListener, ChangeListener
      */
     private void showWindow(String name)
     {
-        JInternalFrame jif = null;
-        Component[] clist = contentPane.getComponents();
-        if (clist == null) {
+        int n  = contentPane.getComponentCount();
+        if (n<=0) {
             return;
         }
+        System.out.println(n);            
 
-        for (int i=0; i<clist.length; i++)
+        Component comp = null;
+        JInternalFrame jif = null;
+        for (int i=0; i<n; i++)
         {
-            jif = (JInternalFrame)clist[i];
+            comp = contentPane.getComponent(i);
+            if (!(comp instanceof JInternalFrame))
+                continue;
+
+            jif = (JInternalFrame)contentPane.getComponent(i);
+            
             if (jif.getName().equals(name))
             {
-                contentPane.setSelectedFrame(jif);
-                jif.toFront();//.show();
-                break;
+                 jif.toFront();
+                return;
             }
         }
     }
@@ -1791,6 +1797,19 @@ HyperlinkListener, ChangeListener
 
         metadata.setLength(0);
         metadata.append(obj.getName());
+        
+        String oidStr = null;
+        long[] OID = obj.getOID();
+        if (OID != null)
+        {
+            oidStr = String.valueOf(OID[0]);
+            for (int i=1; i<OID.length; i++) {
+                oidStr += ", "+ OID[i];
+            }
+        }
+        metadata.append(" (");
+        metadata.append(oidStr);
+        metadata.append(")");
 
         if (obj instanceof Group)
         {
@@ -2081,8 +2100,14 @@ HyperlinkListener, ChangeListener
      private void openFromSRB()
      {
         Class theClass = null;
-        try { theClass = Class.forName("ncsa.hdf.srb.SRBFileDialog"); }
-        catch (Exception ex) {theClass = null;showStatus(ex.toString());}
+        
+        try { 
+            theClass = Class.forName("ncsa.hdf.srb.SRBFileDialog"); 
+        } catch (Exception ex) {
+            theClass = null;
+            showStatus(ex.toString());
+        }
+        
         if (theClass == null) {
             return;
         }
@@ -2103,8 +2128,6 @@ HyperlinkListener, ChangeListener
         if (srbFileDialog == null) {
             return;
         }
-
-        srbFileDialog.setVisible(true);
      }
 
     /**

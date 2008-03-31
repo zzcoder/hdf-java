@@ -12,8 +12,9 @@
 package ncsa.hdf.srb.obj;
 
 import ncsa.hdf.object.*;
+import ncsa.hdf.object.h5.*;
 
-public class H5SrbDatatype extends Datatype
+public class H5SrbDatatype extends H5Datatype
 {
 	public static final long serialVersionUID = HObject.serialVersionUID;
 

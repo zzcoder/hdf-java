@@ -17,6 +17,8 @@ package ncsa.hdf.view;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.html.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
@@ -55,6 +57,9 @@ implements ActionListener, ItemListener, HyperlinkListener
 
     /** TextField for entering the attribute value. */
     private JTextField valueField;
+    
+    /** The Choice of the boject list */
+    private JComboBox objChoice;
 
     private FileFormat fileFormat;
 
@@ -80,7 +85,7 @@ implements ActionListener, ItemListener, HyperlinkListener
      *  @param owner the owner of the input
      *  @param obj the object which the attribute to be attached to.
      */
-    public NewAttributeDialog(Dialog owner, HObject obj)
+    public NewAttributeDialog(Dialog owner, HObject obj, Enumeration objList)
     {
         super (owner, "New Attribute...", true);
 
@@ -127,7 +132,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         JPanel p = new JPanel();
         p.setLayout(new BorderLayout(5,5));
         JPanel p2 = new JPanel();
-        p2.setLayout(new GridLayout(4,1,3,3));
+        p2.setLayout(new GridLayout(5,1,3,3));
         p2.add(new JLabel("Name: "));
         p2.add(new JLabel("Type: "));
         p2.add(arrayLengthLabel= new JLabel("Max String Length: "));
@@ -152,7 +157,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         h4SdAttrRadioButton = sdAttr;
 
         p2 = new JPanel();
-        p2.setLayout(new GridLayout(4,1,3,3));
+        p2.setLayout(new GridLayout(5,1,3,3));
         p2.add(nameField=new JTextField("",30));
         if (!isH5 && (obj instanceof Group) && ((Group)obj).isRoot()) {
             p2.add(typePane);
@@ -161,6 +166,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         }
         p2.add(lengthField=new JTextField("1"));
         p2.add(valueField=new JTextField("0"));
+        p2.add(objChoice=new JComboBox());
         p.add("Center", p2);
 
         contentPane.add("Center", p);
@@ -175,6 +181,22 @@ implements ActionListener, ItemListener, HyperlinkListener
         okButton.addActionListener(this);
         cancelButton.addActionListener(this);
         helpButton.addActionListener(this);
+        objChoice.addItemListener(this);
+        objChoice.setEnabled(false);
+        
+        String str;
+        HObject hobj;
+        DefaultMutableTreeNode theNode;
+        while (objList.hasMoreElements()) {
+            theNode = (DefaultMutableTreeNode)objList.nextElement();
+            hobj = (HObject)theNode.getUserObject();
+            if (hobj instanceof Group) {
+                if ( ((Group)hobj).isRoot()) 
+                    continue;
+            }
+            str = hobj.getFullName();
+            objChoice.addItem(str);
+        }
 
         Point l = owner.getLocation();
         l.x += 50;
@@ -221,12 +243,19 @@ implements ActionListener, ItemListener, HyperlinkListener
         if (source.equals(typeChoice))
         {
             int idx = typeChoice.getSelectedIndex();
+            objChoice.setEnabled(false);
 
             if (idx == 0) {
                 arrayLengthLabel.setText("Max String Length: ");
+            } else if (typeChoice.getSelectedItem().equals("object reference")){
+                objChoice.setEnabled(true);
+                valueField.setText((String)objChoice.getSelectedItem());
             } else {
                 arrayLengthLabel.setText("Array Size: ");
             }
+        } else if (source.equals(objChoice))
+        {
+            valueField.setText((String)objChoice.getSelectedItem());
         }
     }
 
@@ -504,6 +533,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         }
         else if (dt.startsWith("object reference"))
         {
+            /*
             long[] ref = new long[arraySize];
             for (int j=0; j<count; j++)
             {
@@ -518,7 +548,8 @@ implements ActionListener, ItemListener, HyperlinkListener
                     return false;
                 }
             }
-            value = ref;
+            */
+            value = strValue;
             tclass = Datatype.CLASS_REFERENCE;
             tsize = 8;
             torder = Datatype.NATIVE;

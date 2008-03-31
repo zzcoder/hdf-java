@@ -24,6 +24,7 @@ import ncsa.hdf.view.*;
 import edu.sdsc.grid.gui.*;
 import edu.sdsc.grid.io.*;
 import edu.sdsc.grid.io.srb.*;
+import edu.sdsc.grid.io.irods.*;
 
 import ncsa.hdf.object.HObject;
 import ncsa.hdf.srb.obj.*;
@@ -42,11 +43,11 @@ implements ActionListener
 
     private static final boolean DEBUG = true;
 
-    private JargonGui treeSrb;
+    private JargonTree jargonTree;
     private ViewManager viewer;
     private TreeView treeView;
-    private SRBFileSystem srbFileSystem;
-    private String srbInfo[];
+    private GeneralFileSystem fileSystem;
+    private String accountInfo[];
 
     /** constructs a SRBFileDialog.
      * @param owner The owner of the dialog.
@@ -56,10 +57,10 @@ implements ActionListener
     public SRBFileDialog(Frame owner) throws Throwable
     {
         super (owner, "Open File from SRB ...", true);
-        treeSrb = null;
+        jargonTree = null;
         viewer = (ViewManager) owner;
         treeView = viewer.getTreeView();
-        srbFileSystem = null;
+        fileSystem = null;
 
         // layout the components
         JPanel contentPane = (JPanel)getContentPane();
@@ -67,20 +68,27 @@ implements ActionListener
         contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
 
         try {
-            java.util.Vector srbList = ViewProperties.getSrbAccount();
+            java.util.Vector remoteAccountList = ViewProperties.getSrbAccount();
             int n = 0;
-            if ((srbList != null) && ((n=srbList.size())>0))
+            
+            if ((remoteAccountList != null) && ((n=remoteAccountList.size())>0))
             {
                 int idx = 0;
                 if (n > 1) {
                     String srb_hosts[] = new String[n];
                     for (int i=0; i<n; i++) {
-                        srb_hosts[i] = ((String[])srbList.get(i))[0];
+                        srb_hosts[i] = ((String[])remoteAccountList.get(i))[0];
                     }
                     String selection = (String)JOptionPane.showInputDialog(
-                        this, "Select SRB Server Connection",
-                        "SRB Connection", JOptionPane.PLAIN_MESSAGE, null,
+                        this, "Select SRB/iRODS Server",
+                        "SRB/iRODS Connection", JOptionPane.PLAIN_MESSAGE, null,
                         srb_hosts, srb_hosts[0]);
+                    
+                    if (selection == null || selection.length()<1) {
+                        dispose();
+                        return;
+                    }
+                        
                     for (int i=0; i<n; i++) {
                         if (srb_hosts[i].equals(selection)) {
                             idx = i;
@@ -88,19 +96,51 @@ implements ActionListener
                         }
                     }
                 } /* if (n > 1) */
-                String srbInfo[] = (String[])srbList.get(idx);
-                int port = Integer.parseInt(srbInfo[1]);
-                SRBAccount srbAccount = new SRBAccount(srbInfo[0], port,
-                    srbInfo[2], srbInfo[3], srbInfo[4], srbInfo[5], srbInfo[6]);
-                srbFileSystem = new SRBFileSystem(srbAccount);
+                
+                accountInfo = (String[])remoteAccountList.get(idx);
+            }
+                
+            int port = Integer.parseInt(accountInfo[1]);
+            
+            /*
+                SRBAccount/IRODSAccount:
+                    String host,                    // accountInfo[0]
+                    int port,                       // accountInfo[1]
+                    String userName,                // accountInfo[2]
+                    String password,                // accountInfo[3]
+                    String homeDirectory,           // accountInfo[4]
+                    String mdasDomainNamee/Zone,    // accountInfo[5]
+                    String defaultStorageResource   // accountInfo[6]
+            */
+            //IRODSAccount remoteAccount = new IRODSAccount(
+            RemoteAccount remoteAccounts[] = {
+                new IRODSAccount(
+                    accountInfo[0], 
+                    port,
+                    accountInfo[2], 
+                    accountInfo[3], 
+                    accountInfo[4], 
+                    accountInfo[5], 
+                    accountInfo[6]),
+                new SRBAccount(
+                    accountInfo[0], 
+                    port,
+                    accountInfo[2], 
+                    accountInfo[3], 
+                    accountInfo[4], 
+                    accountInfo[5], 
+                    accountInfo[6])};
+            
+            for (int i=0; i<remoteAccounts.length; i++) {
+                try {
+                    fileSystem = FileFactory.newFileSystem(remoteAccounts[i]);
+                } catch (Exception ex) { continue; }
+                break;
             }
 
-            if (srbFileSystem == null) // using default connection at .srb directory
-            {
-                srbFileSystem = new SRBFileSystem();
-            }
-
-            GeneralFile root = FileFactory.newFile( srbFileSystem, srbFileSystem.getHomeDirectory() );
+            GeneralFile root = FileFactory.newFile( fileSystem, fileSystem.getHomeDirectory() );
+         
+            /* metadata does not work for iRODS
             String[] selectFieldNames = {
                 SRBMetaDataSet.FILE_COMMENTS,
                 GeneralMetaData.SIZE,
@@ -108,14 +148,19 @@ implements ActionListener
                 UserMetaData.USER_NAME,
                 SRBMetaDataSet.DEFINABLE_METADATA_FOR_FILES,
             };
+            
             MetaDataSelect selects[] =	MetaDataSet.newSelection( selectFieldNames );
-            treeSrb = new JargonGui(root, selects);
-            treeSrb.useDefaultPopupMenu(false);
-            treeSrb.setLargeModel(true);
-            JScrollPane pane = new JScrollPane(treeSrb);
+            jargonTree = new JargonTree(root, selects);
+            */
+
+            jargonTree = new JargonTree(root);
+            jargonTree.useDefaultPopupMenu(false);
+            jargonTree.setLargeModel(true);
+            
+            JScrollPane pane = new JScrollPane(jargonTree);
             pane.setPreferredSize(new Dimension( 600, 400 ));
             contentPane.add(pane, BorderLayout.CENTER);
-        } catch (Throwable e) { throw e; }
+        } catch (Throwable e) { e.printStackTrace(); throw e; }
 
         JButton okButton = new JButton("   Ok   ");
         okButton.setMnemonic(KeyEvent.VK_O);
@@ -139,6 +184,7 @@ implements ActionListener
         l.y += 120;
         setLocation(l);
         pack();
+        setVisible(true);
     }
 
     public void actionPerformed(ActionEvent e)
@@ -148,14 +194,19 @@ implements ActionListener
 
         if (cmd.equals("Ok"))
         {
-            if (treeSrb == null) {
+            if (jargonTree == null) {
                 return;
             }
 
-            Object obj = treeSrb.getSelectionPath().getLastPathComponent();
-            if ( (obj instanceof SRBFile) && (openFile((SRBFile)obj)) ) {
-                dispose();
+            try { 
+                Object obj = jargonTree.getSelectionPath().getLastPathComponent();
+                openFile((RemoteFile)obj);
+            } catch (Exception ex) { 
+                ex.printStackTrace(); 
+                JOptionPane.showMessageDialog( (JFrame)viewer, "Invalid remote file",
+                        getTitle(), JOptionPane.ERROR_MESSAGE);
             }
+            dispose();
         }
         else if (cmd.equals("Cancel"))
         {
@@ -163,25 +214,18 @@ implements ActionListener
         }
     }
 
-    private boolean openFile(SRBFile srbFile)
+    private boolean openFile(RemoteFile remoteFile)
     {
         boolean retVal = true;
-        if (srbFile == null)
+        
+        if (remoteFile == null)
         {
             JOptionPane.showMessageDialog( (JFrame)viewer, "File is null",
                 getTitle(), JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
-        String srbInfo[] = new String[5];
-        SRBAccount srbAccount = (SRBAccount)srbFile.getFileSystem().getAccount();
-        srbInfo[0] = srbAccount.getHost();
-        srbInfo[1] = String.valueOf(srbAccount.getPort());
-        srbInfo[2] = srbAccount.getPassword();
-        srbInfo[3] = srbAccount.getUserName();
-        srbInfo[4] = srbAccount.getDomainName();
-
-        H5SrbFile fileFormat = new H5SrbFile(srbInfo, srbFile.getAbsolutePath());
+        H5SrbFile fileFormat = new H5SrbFile(accountInfo, remoteFile.getAbsolutePath());
 
         try {
             fileFormat.open();

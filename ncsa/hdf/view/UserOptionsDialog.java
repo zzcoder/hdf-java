@@ -442,14 +442,14 @@ implements ActionListener, ListSelectionListener
         cpl.add(new JLabel("User Name: ", SwingConstants.RIGHT));
         cpl.add(new JLabel("Password: ", SwingConstants.RIGHT));
         cpl.add(new JLabel("Home Directory: ", SwingConstants.RIGHT));
-        cpl.add(new JLabel("mdas Domain Name: ", SwingConstants.RIGHT));
+        cpl.add(new JLabel("Domain Name/Zone: ", SwingConstants.RIGHT));
         cpl.add(new JLabel(" Default Storage Resource: ", SwingConstants.RIGHT));
         cp.add(cpl, BorderLayout.WEST);
 
         JPanel lp = new JPanel();
         lp.setLayout(new BorderLayout(5,5));
         JPanel lpb = new JPanel();
-        JButton add = new JButton("Add");
+        JButton add = new JButton("Save");
         add.addActionListener(this);
         add.setActionCommand("Add srb connsction");
         lpb.add(add);
@@ -663,8 +663,14 @@ implements ActionListener, ListSelectionListener
                 }
             }
             DefaultListModel lm = (DefaultListModel)srbJList.getModel();
-            if (!lm.contains(srbaccount[0]))
-            {
+            
+            if (lm.contains(srbaccount[0])) {
+                int n = srbJList.getSelectedIndex();
+                if ( n<0 )  return;
+                String srbaccountOld[] = (String[])srbVector.get(n);
+                for (int i=0; i<7; i++)
+                    srbaccountOld[i] = srbaccount[i];
+            } else {
                 srbVector.add(srbaccount);
                 lm.addElement(srbaccount[0]);
                 srbJList.setSelectedValue(srbaccount[0], true);
