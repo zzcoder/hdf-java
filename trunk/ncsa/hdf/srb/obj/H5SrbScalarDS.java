@@ -13,9 +13,11 @@ package ncsa.hdf.srb.obj;
 
 import java.util.*;
 import ncsa.hdf.object.*;
+import ncsa.hdf.object.h5.*;
+import ncsa.hdf.hdf5lib.exceptions.*;
 import ncsa.hdf.srb.h5srb.*;
 
-public class H5SrbScalarDS extends ScalarDS
+public class H5SrbScalarDS extends H5ScalarDS
 {
 	public static final long serialVersionUID = HObject.serialVersionUID;
 
@@ -120,7 +122,7 @@ public class H5SrbScalarDS extends ScalarDS
     public void init() {;}
 
     /** Loads and returns the data value from file. */
-    public Object read() throws Exception, OutOfMemoryError
+    public Object read() throws HDF5Exception
     {
         String srbInfo[] = ((H5SrbFile)getFileFormat()).getSrbInfo();
         if ( (srbInfo == null)  || (srbInfo.length<5)) {
@@ -128,7 +130,9 @@ public class H5SrbScalarDS extends ScalarDS
         }
 
         opID = H5DATASET_OP_READ;
-        H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_DATASET);
+        try {
+            H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_DATASET);
+        } catch (Exception ex) { throw new HDF5Exception (ex.toString()); }
 
         return data;
     }
@@ -142,14 +146,14 @@ public class H5SrbScalarDS extends ScalarDS
      * readBytes() is most used for copy data values, at which case, data do not
      * need to be changed or displayed.
      */
-    public byte[] readBytes() throws Exception { return null; }
+    public byte[] readBytes() throws HDF5Exception { return null; }
 
     /**
      * Write data values into file.
      * @param buf the data to write
      * @throws Exception
      */
-    public void write(Object buf) throws Exception {;}
+    public void write(Object buf) throws HDF5Exception {;}
 
     /** Copy this dataset to another group.
      * @param pgroup the group which the dataset is copied to.
@@ -175,7 +179,7 @@ public class H5SrbScalarDS extends ScalarDS
      * @see java.util.List
      */
     // Implementing DataFormat
-    public List getMetadata() throws Exception
+    public List getMetadata() throws HDF5Exception
     {
         String srbInfo[] = ((H5SrbFile)getFileFormat()).getSrbInfo();
         if ( (srbInfo == null)  || (srbInfo.length<5)) {
@@ -188,7 +192,9 @@ public class H5SrbScalarDS extends ScalarDS
             attributeList = new Vector();
 
             opID = H5DATASET_OP_READ_ATTRIBUTE;
-            H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_DATASET);
+            try {
+                H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_DATASET);
+            } catch (Exception ex) { throw new HDF5Exception (ex.toString()); }
         } // if (attributeList == null)
 
         return attributeList;
@@ -222,77 +228,6 @@ public class H5SrbScalarDS extends ScalarDS
      * <p>
      * @param info the metadata to delete.
      */
-    public void removeMetadata(Object info) throws Exception {;}
-
-    public void init(int theRank, long theDims[], int tclass, int tsize, int torder, int tsign)
-    {
-        if (theDims == null) {
-            return;
-        }
-
-        isImage = (palette!=null);
-        rank = theRank;
-        datatype = new H5SrbDatatype(tclass, tsize, torder, tsign);
-        isUnsigned = (tsign==Datatype.SIGN_NONE);
-
-        if (rank == 0) {
-            // a scalar data point
-            rank = 1;
-            dims = new long[1];
-            dims[0] = 1;
-        } else {
-            dims = new long[rank];
-        }
-
-        startDims = new long[rank];
-        selectedDims = new long[rank];
-        selectedStride = new long[rank];
-        for (int i=0; i<rank; i++) {
-            dims[i] = theDims[i];
-            startDims[i] = 0;
-            selectedDims[i] = selectedStride[i] = 1;
-        }
-
-        if (rank == 1)
-        {
-            selectedIndex[0] = 0;
-            selectedDims[0] = dims[0];
-        }
-        else if (rank == 2)
-        {
-            selectedIndex[0] = 0;
-            selectedIndex[1] = 1;
-            selectedDims[0] = dims[0];
-            selectedDims[1] = dims[1];
-        }
-        else if (rank > 2)
-        {
-            //in the case of images with only one component, the dataspace may
-            // be either a two dimensional array, or a three dimensional array
-            // with the third dimension of size 1.  For example, a 5 by 10 image
-            // with 8 bit color indexes would be an HDF5 dataset with type
-            // unsigned 8 bit integer.  The dataspace could be either a two
-            // dimensional array, with dimensions [10][5], or three dimensions,
-            // with dimensions either [10][5][1] or [1][10][5].
-            if (dims[0] == 1)
-            {
-                // case [1][10][5]
-                selectedIndex[0] = 1;
-                selectedIndex[1] = 2;
-                selectedIndex[2] = 0;
-                selectedDims[0] = dims[1];
-                selectedDims[1] = dims[2];
-            }
-            else
-            {
-                // case [10][5][1]
-                selectedIndex[0] = 0;
-                selectedIndex[1] = 1;
-                selectedIndex[2] = 2;
-                selectedDims[0] = dims[0];
-                selectedDims[1] = dims[1];
-            }
-        }
-    }
+    public void removeMetadata(Object info) throws HDF5Exception {;}
 
 }

@@ -13,9 +13,11 @@ package ncsa.hdf.srb.obj;
 
 import java.util.*;
 import ncsa.hdf.object.*;
+import ncsa.hdf.object.h5.*;
+import ncsa.hdf.hdf5lib.exceptions.*;
 import ncsa.hdf.srb.h5srb.*;
 
-public class H5SrbGroup extends Group
+public class H5SrbGroup extends H5Group
 {
 	public static final long serialVersionUID = HObject.serialVersionUID;
 
@@ -106,7 +108,7 @@ public class H5SrbGroup extends Group
      * @see java.util.List
      */
     // Implementing DataFormat
-    public List getMetadata() throws Exception
+    public List getMetadata() throws HDF5Exception
     {
         String srbInfo[] = ((H5SrbFile)getFileFormat()).getSrbInfo();
         if ( (srbInfo == null) || (srbInfo.length<5)) {
@@ -118,7 +120,9 @@ public class H5SrbGroup extends Group
         {
             attributeList = new Vector();
             opID = H5GROUP_OP_READ_ATTRIBUTE;
-            H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_GROUP);
+            try {
+                H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_GROUP);
+            } catch (Exception ex) { throw new HDF5Exception (ex.toString()); }
         } // if (attributeList == null)
 
         return attributeList;
@@ -152,7 +156,7 @@ public class H5SrbGroup extends Group
      * <p>
      * @param info the metadata to delete.
      */
-    public void removeMetadata(Object info) throws Exception {;}
+    public void removeMetadata(Object info) throws HDF5Exception {;}
 
 
 }

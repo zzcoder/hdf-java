@@ -1354,11 +1354,15 @@ public class H5File extends FileFormat
                 aid = H5.H5Acreate(objID, name, tid, sid, 
                                    HDF5Constants.H5P_DEFAULT);
             }
-
+            
             // update value of the attribute
             Object attrValue = attr.getValue();
             if (attrValue != null) {
-                if (Array.get(attrValue, 0) instanceof String)
+                if (attr.getType().getDatatypeClass() == Datatype.CLASS_REFERENCE && 
+                    attrValue instanceof String) { // reference is a path+name to the object
+                    attrValue = H5.H5Rcreate(getFID(), (String)attrValue, HDF5Constants.H5R_OBJECT, -1);
+                }
+                else if (Array.get(attrValue, 0) instanceof String)
                 {
                     String strValue = (String)Array.get(attrValue, 0);
                     int size = H5.H5Tget_size(tid);

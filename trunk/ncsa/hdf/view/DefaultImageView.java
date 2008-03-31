@@ -967,7 +967,7 @@ implements ImageView, ActionListener
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-            "Select image area to draw histogram.",
+            "No data for histogram.\nUse Shift+Mouse_drag to select an image area.",
             getTitle(),
             JOptionPane.ERROR_MESSAGE);
             return;
@@ -1264,7 +1264,7 @@ implements ImageView, ActionListener
             {
                 JOptionPane.showMessageDialog(
                         this,
-                        "Select image area to write.",
+                        "No data to write.\nUse Shift+Mouse_drag to select an image area.",
                         "HDFView",
                         JOptionPane.INFORMATION_MESSAGE);
                 return;

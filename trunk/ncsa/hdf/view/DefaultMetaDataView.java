@@ -22,6 +22,7 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 import javax.swing.tree.*;
+
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
@@ -192,7 +193,9 @@ implements ActionListener, MetaDataView
             return null;
         }
 
-        NewAttributeDialog  dialog = new NewAttributeDialog(this, obj);
+         
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode)obj.getFileFormat().getRootNode();
+        NewAttributeDialog  dialog = new NewAttributeDialog(this, obj, node.breadthFirstEnumeration());
         dialog.setVisible(true);
 
         Attribute attr = dialog.getAttribute();
