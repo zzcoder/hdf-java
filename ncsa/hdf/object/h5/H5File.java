@@ -1550,8 +1550,7 @@ public class H5File extends FileFormat
     }
 
 
-    private TreeNode copyDataset(Dataset srcDataset, H5Group pgroup, 
-                                 String dstName)
+    private TreeNode copyDataset(Dataset srcDataset, H5Group pgroup, String dstName)
          throws Exception
     {
         Dataset dataset = null;
@@ -1586,16 +1585,10 @@ public class H5File extends FileFormat
 
             if (srcDataset instanceof H5ScalarDS)
             {
-                dataset = new H5ScalarDS(
-                    pgroup.getFileFormat(),
-                    dstName,
-                    path);
+                dataset = new H5ScalarDS(pgroup.getFileFormat(), dstName, path);
             } else
             {
-                dataset = new H5CompoundDS(
-                    pgroup.getFileFormat(),
-                    dstName,
-                    path);
+                dataset = new H5CompoundDS(pgroup.getFileFormat(), dstName, path);
             }
 
             pgroup.addToMemberList(dataset);
@@ -1607,21 +1600,23 @@ public class H5File extends FileFormat
                 srcaid = H5.H5Aopen_name(srcdid, "PALETTE");
                 dstaid = H5.H5Aopen_name(dstdid, "PALETTE");
                 atid = H5.H5Aget_type(srcaid);
-                long[] oid = new long[1];
-                H5.H5Aread(srcaid, atid, oid);
+                if (H5.H5Tget_class(atid) == HDF5Constants.H5T_REFERENCE) {
+                    long[] oid = new long[1];
+                    H5.H5Aread(srcaid, atid, oid);
 
-                // search and copy palette
-                HObject pal = findObject(srcDataset.getFileFormat(), oid);
-                if ((pal != null) && (pal instanceof Dataset))
-                {
-                    try { copy(pal, pgroup, null); }
-                    catch (Exception ex2) {}
-                    byte[] ref_buf = H5.H5Rcreate(
-                                        pgroup.getFID(),
-                                        path+pal.getName(),
-                                        HDF5Constants.H5R_OBJECT,
-                                        -1);
-                    H5.H5Awrite(dstaid, atid, ref_buf);
+                    // search and copy palette
+                    HObject pal = findObject(srcDataset.getFileFormat(), oid);
+                    if ((pal != null) && (pal instanceof Dataset))
+                    {
+                        try { copy(pal, pgroup, null); }
+                        catch (Exception ex2) {}
+                        byte[] ref_buf = H5.H5Rcreate(
+                                            pgroup.getFID(),
+                                            path+pal.getName(),
+                                            HDF5Constants.H5R_OBJECT,
+                                            -1);
+                        H5.H5Awrite(dstaid, atid, ref_buf);
+                    }
                 }
             } catch (Exception ex) {;}
             finally {

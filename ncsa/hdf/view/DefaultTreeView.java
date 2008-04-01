@@ -1840,20 +1840,16 @@ implements TreeView, ActionListener
         {
             HObject theObject = (HObject)((DefaultMutableTreeNode)value).getUserObject();
 
+            boolean hasAttribute = false;
             if (theObject instanceof Dataset)
             {
-                if (((Dataset)theObject).hasAttribute()) {
-                    leafIcon = datasetIconA;
-                } else {
-                    leafIcon = datasetIcon;
-                }
-
                 if (theObject instanceof ScalarDS)
                 {
                     ScalarDS sd = (ScalarDS)theObject;
+                    hasAttribute = sd.hasAttribute();
                     if (sd.isImage())
                     {
-                        if (sd.hasAttribute()) {
+                        if (hasAttribute) {
                             leafIcon = imageIconA;
                         } else {
                             leafIcon = imageIcon;
@@ -1861,11 +1857,20 @@ implements TreeView, ActionListener
                     }
                     else if (sd.isText())
                     {
-                        if (sd.hasAttribute()) {
+                        if (hasAttribute) {
                             leafIcon = textIconA;
                         } else {
                             leafIcon = textIcon;
                         }
+                    }
+                    else
+                    {
+                        if (hasAttribute) {
+                            leafIcon = datasetIconA;
+                        } else {
+                            leafIcon = datasetIcon;
+                        }
+                   
                     }
                 }
                 else if (theObject instanceof CompoundDS)
