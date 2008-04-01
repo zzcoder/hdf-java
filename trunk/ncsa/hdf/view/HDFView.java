@@ -2220,7 +2220,7 @@ HyperlinkListener, ChangeListener
             for (i = j; i<args.length; i++) {
                 tmpFile = new File(args[i]);
                 if (tmpFile.exists() && tmpFile.isFile()) {
-                    flist.add(tmpFile);
+                    flist.add(new File (tmpFile.getAbsolutePath()));
                 }
             }
         }

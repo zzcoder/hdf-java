@@ -196,7 +196,7 @@ implements TableView, ActionListener
         scrollingTable.getHorizontalScrollBar().setUnitIncrement(100);
 
         // create row headers and add it to the scroller
-        RowHeader rowHeaders = new RowHeader( table );
+        RowHeader rowHeaders = new RowHeader( table, dataset );
 
         JViewport viewp = new JViewport();
         viewp.add( rowHeaders );
@@ -2304,7 +2304,7 @@ implements TableView, ActionListener
             colBox.setEditable(false);
 
             JPanel contentPane = (JPanel)this.getContentPane();
-            contentPane.setPreferredSize(new Dimension(360, 150));
+            contentPane.setPreferredSize(new Dimension(400, 150));
             contentPane.setLayout(new BorderLayout(10, 10));
             
             long[] startArray = dataset.getStartDims();
@@ -2313,14 +2313,14 @@ implements TableView, ActionListener
             int start = (int)startArray[selectedIndex[0]];
             int stride = (int)strideArray[selectedIndex[0]];
             
-            rowBox.addItem("Time-scale");
+            rowBox.addItem("array index");
             for ( int i = 0; i < nrow;  i++ ) {
-                rowBox.addItem(String.valueOf(start+i*stride));
+                rowBox.addItem("row "+(start+i*stride));
             }
 
-            colBox.addItem("Time-scale");
+            colBox.addItem("array index");
             for (int i=0; i<ncol; i++) {
-                colBox.addItem (table.getColumnName(i));
+                colBox.addItem ("column "+table.getColumnName(i));
             }
 
             rowButton = new JRadioButton("Row");
@@ -2334,7 +2334,7 @@ implements TableView, ActionListener
             JPanel p1 = new JPanel();
             p1.setLayout(new GridLayout(2,1,5,5));
             p1.add(new JLabel(" Series in:", SwingConstants.RIGHT));
-            p1.add(new JLabel(" X values in:", SwingConstants.RIGHT));
+            p1.add(new JLabel(" For abscissa use:", SwingConstants.RIGHT));
 
 
             JPanel p2 = new JPanel();
@@ -2507,7 +2507,7 @@ implements TableView, ActionListener
         }
     } // private class ColumnHeader
 
-   /** RowHeader defines the row header component of the Spreadsheet. */
+    /** RowHeader defines the row header component of the Spreadsheet. */
     private class RowHeader extends JTable
     {
     	public static final long serialVersionUID = HObject.serialVersionUID;
@@ -2516,15 +2516,15 @@ implements TableView, ActionListener
         private int lastRowIndex = -1;
         private JTable parentTable;
 
-        public RowHeader( JTable pTable )
+        public RowHeader(JTable pTable, Dataset dset)
         {
             // Create a JTable with the same number of rows as
             // the parent table and one column.
             super( pTable.getRowCount(), 1 );
 
-            long[] startArray = dataset.getStartDims();
-            long[] strideArray = dataset.getStride();
-            int[] selectedIndex = dataset.getSelectedIndex();
+            long[] startArray = dset.getStartDims();
+            long[] strideArray = dset.getStride();
+            int[] selectedIndex = dset.getSelectedIndex();
             int start = (int)startArray[selectedIndex[0]];
             int stride = (int)strideArray[selectedIndex[0]];
 
@@ -2635,7 +2635,7 @@ implements TableView, ActionListener
                 currentRowIndex = rowAtPoint(e.getPoint());
             }
         }
-    }
+    } // private class RowHeader extends JTable
 
     /** RowHeaderRenderer is a custom cell renderer that displays cells as buttons. */
     private class RowHeaderRenderer extends JLabel implements TableCellRenderer
@@ -2669,7 +2669,7 @@ implements TableView, ActionListener
 
             return this;
         }
-    }
+    } //private class RowHeaderRenderer extends JLabel implements TableCellRenderer
 
     private class MultiLineHeaderRenderer extends JList implements TableCellRenderer
     {

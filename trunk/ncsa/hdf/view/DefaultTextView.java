@@ -21,6 +21,8 @@ import javax.print.*;
 import java.util.*;
 import java.io.*;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
+
 import java.awt.event.*;
 import java.awt.Color;
 import java.awt.Component;
@@ -65,6 +67,8 @@ implements TextView, ActionListener, KeyListener
     private boolean isTextChanged = false;
     
     private TextAreaEditor textEditor = null;
+    
+    private RowHeader rowHeaders = null;
 
     /**
      * Constructs an TextView.
@@ -115,6 +119,18 @@ implements TextView, ActionListener, KeyListener
         table = createTable();
         table.getTableHeader().setReorderingAllowed(false);
         table.getTableHeader().setBackground(Color.black);
+        rowHeaders = new RowHeader( table, dataset );
+        
+        // add the table to a scroller
+        JScrollPane scrollingTable = new JScrollPane(table);
+        scrollingTable.getVerticalScrollBar().setUnitIncrement(100);
+        scrollingTable.getHorizontalScrollBar().setUnitIncrement(100);
+
+        JViewport viewp = new JViewport();
+        viewp.add( rowHeaders );
+        viewp.setPreferredSize( rowHeaders.getPreferredSize() );
+        scrollingTable.setRowHeader( viewp );
+        
         
         TableColumnModel cmodel = table.getColumnModel();
         TextAreaRenderer textAreaRenderer = new TextAreaRenderer();
@@ -123,7 +139,7 @@ implements TextView, ActionListener, KeyListener
         cmodel.getColumn(0).setCellEditor(textEditor);
 
 
-        ((JPanel)getContentPane()).add (new JScrollPane(table));
+        ((JPanel)getContentPane()).add (scrollingTable);
 
         setJMenuBar(createMenuBar());
     }
@@ -441,6 +457,8 @@ implements TextView, ActionListener, KeyListener
             height_wanted = findTotalMaximumRowSize(table, row);
             if (height_wanted != table.getRowHeight(row)) {
               table.setRowHeight(row, height_wanted);
+              rowHeaders.setRowHeight(row, height_wanted)   ;     
+              
             }
             return this;
         }
@@ -528,6 +546,171 @@ implements TextView, ActionListener, KeyListener
             };
         }
     }
+
+    /** RowHeader defines the row header component of the Spreadsheet. */
+    private class RowHeader extends JTable
+    {
+        public static final long serialVersionUID = HObject.serialVersionUID;
+
+        private int currentRowIndex = -1;
+        private int lastRowIndex = -1;
+        private JTable parentTable;
+
+        public RowHeader(JTable pTable, Dataset dset)
+        {
+            // Create a JTable with the same number of rows as
+            // the parent table and one column.
+            super( pTable.getRowCount(), 1 );
+
+            long[] startArray = dset.getStartDims();
+            long[] strideArray = dset.getStride();
+            int[] selectedIndex = dset.getSelectedIndex();
+            int start = (int)startArray[selectedIndex[0]];
+            int stride = (int)strideArray[selectedIndex[0]];
+
+            // Store the parent table.
+            parentTable = pTable;
+
+            // Set the values of the row headers starting at 0.
+            int n = parentTable.getRowCount();
+            for ( int i = 0; i < n;  i++ )
+            {
+                setValueAt( new Integer(start+i*stride), i, 0 );
+            }
+
+            // Get the only table column.
+            TableColumn col = getColumnModel().getColumn( 0 );
+
+            // Use the cell renderer in the column.
+            col.setCellRenderer( new RowHeaderRenderer() );
+        }
+
+        /** Overridden to return false since the headers are not editable. */
+        public boolean isCellEditable( int row, int col )
+        {
+            return false;
+        }
+
+        /** This is called when the selection changes in the row headers. */
+        public void valueChanged( ListSelectionEvent e )
+        {
+            if (parentTable == null) {
+                return;
+            }
+
+            int rows[] = getSelectedRows();
+            if ((rows== null) || (rows.length == 0)) {
+                return;
+            }
+
+            parentTable.clearSelection();
+            parentTable.setRowSelectionInterval(rows[0], rows[rows.length-1]);
+            parentTable.setColumnSelectionInterval(0, parentTable.getColumnCount()-1);
+        }
+
+        protected void processMouseMotionEvent(MouseEvent e)
+        {
+            if (e.getID() == MouseEvent.MOUSE_DRAGGED)
+            {
+                int colEnd = rowAtPoint(e.getPoint());
+
+                if (colEnd < 0) {
+                    colEnd = 0;
+                }
+                if (currentRowIndex < 0 ) {
+                    currentRowIndex = 0;
+                }
+
+                parentTable.clearSelection();
+
+                if (colEnd > currentRowIndex) {
+                    parentTable.setRowSelectionInterval(currentRowIndex, colEnd);
+                } else {
+                    parentTable.setRowSelectionInterval(colEnd, currentRowIndex);
+                }
+
+                parentTable.setColumnSelectionInterval(0, parentTable.getColumnCount()-1);
+            }
+        }
+
+        protected void processMouseEvent(MouseEvent e)
+        {
+            int mouseID = e.getID();
+
+            if (mouseID == MouseEvent.MOUSE_CLICKED)
+            {
+                if (currentRowIndex < 0 ) {
+                    return;
+                }
+
+                if(e.isControlDown())
+                {
+                    // select discontinguous rows
+                    parentTable.addRowSelectionInterval(currentRowIndex, currentRowIndex);
+                }
+                else if (e.isShiftDown())
+                {
+                    // select continguous columns
+                    if (lastRowIndex < 0) {
+                        parentTable.addRowSelectionInterval(0, currentRowIndex);
+                    } else if (lastRowIndex < currentRowIndex) {
+                        parentTable.addRowSelectionInterval(lastRowIndex, currentRowIndex);
+                    } else {
+                        parentTable.addRowSelectionInterval(currentRowIndex, lastRowIndex);
+                    }
+                }
+                else
+                {
+                    // clear old selection and set new column selection
+                    parentTable.clearSelection();
+                    parentTable.setRowSelectionInterval(currentRowIndex, currentRowIndex);
+                }
+
+                lastRowIndex = currentRowIndex;
+
+                parentTable.setColumnSelectionInterval(0, parentTable.getColumnCount()-1);
+            }
+            else if (mouseID == MouseEvent.MOUSE_PRESSED)
+            {
+                currentRowIndex = rowAtPoint(e.getPoint());
+            }
+        }
+    } // private class RowHeader extends JTable
+
+    /** RowHeaderRenderer is a custom cell renderer that displays cells as buttons. */
+    private class RowHeaderRenderer extends JLabel implements TableCellRenderer
+    {
+        public static final long serialVersionUID = HObject.serialVersionUID;
+
+        public RowHeaderRenderer()
+        {
+            super();
+            setHorizontalAlignment(JLabel.CENTER);
+
+            setOpaque(true);
+            setBorder(UIManager.getBorder("TableHeader.cellBorder"));
+            setBackground(Color.lightGray);
+        }
+
+        /** Configures the button for the current cell, and returns it. */
+        public Component getTableCellRendererComponent (
+            JTable table,
+            Object value,
+            boolean isSelected,
+            boolean hasFocus,
+            int row,
+            int column )
+        {
+            setFont(table.getFont());
+
+            if ( value != null ) {
+                setText( value.toString() );
+            }
+
+            return this;
+        }
+    } //private class RowHeaderRenderer extends JLabel implements TableCellRenderer
+    
 }
 
 

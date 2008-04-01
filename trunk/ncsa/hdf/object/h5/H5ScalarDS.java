@@ -113,6 +113,7 @@ public class H5ScalarDS extends ScalarDS
             
             // test if it is an image
             int did = open();
+            nAttributes = 0;
             
             int aid=-1, atid=-1, tid=0;
             try
@@ -140,7 +141,7 @@ public class H5ScalarDS extends ScalarDS
                     isImage = strValue.equalsIgnoreCase("IMAGE");
                     isImageDisplay = isImage;
                 }
-            } catch (Exception ex) { nAttributes = 0;}
+            } catch (Exception ex) { ;}
             finally
             {
                 try { H5.H5Tclose(atid); } catch (HDF5Exception ex) {;}
