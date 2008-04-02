@@ -55,7 +55,7 @@ typedef struct H5Dataset
     unsigned int nvalue;       /* the number of bytes in the buffer *value */
     void*    value;            /* the data read from file or write to file */
     H5Error error;             /* strings used to carry error report from server operation */
-    long  time;                /* number of microseconds used to finish the hdf5 request on server */
+    long  time;                /* number of seconds used to finish the hdf5 request on server */
 } H5Dataset;
 
 #ifdef __cplusplus
