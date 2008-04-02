@@ -20,6 +20,7 @@
 #include <malloc.h>
 #include <assert.h>
 #include <stdio.h>
+#include <time.h>
 
 /* Retrive dataspace and datatype information for this dataset */
 int H5Dataset_init(H5Dataset *d);
@@ -85,10 +86,13 @@ int H5Dataset_read(H5Dataset* ind, H5Dataset* outd)
     hid_t did=-1, sid=-1, tid=-1, msid=-1, ftid=-1;
     unsigned int npoints=1;
     hsize_t start[H5S_MAX_RANK], stride[H5S_MAX_RANK], count[H5S_MAX_RANK], mdims[1];
+    time_t t0=0, t1=0;
     H5Eclear();
 
     if (ind->space.rank <=0 )
         H5Dataset_init(ind);
+
+    t0 = time(NULL);
 
     if ( (did = H5Dopen(ind->fid, ind->fullpath)) < 0)
         THROW_H5LIBRARY_ERROR(ind->error,ret_value, done);
@@ -171,6 +175,8 @@ done:
     if (tid > 0 ) H5Tclose(tid);
     if (did > 0 ) H5Dclose(did);
 
+    t1 = time(NULL);
+
 #ifndef HDF5_LOCAL
     memset (outd, 0, sizeof (H5Dataset));
 
@@ -180,6 +186,7 @@ done:
     outd->value = ind->value;
     outd->class = ind->class;
     outd->error = ind->error;
+    outd->time = t1-t0;
 
     ind->value = NULL;
     ind->nvalue = 0;
