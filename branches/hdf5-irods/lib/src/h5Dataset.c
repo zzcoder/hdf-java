@@ -180,13 +180,12 @@ done:
 #ifndef HDF5_LOCAL
     memset (outd, 0, sizeof (H5Dataset));
 
-
     /* pass on the value */
     outd->nvalue = ind->nvalue;
     outd->value = ind->value;
     outd->class = ind->class;
     outd->error = ind->error;
-    outd->time = t1-t0;
+    outd->time = (long)(t1-t0);
 
     ind->value = NULL;
     ind->nvalue = 0;
