@@ -9,7 +9,6 @@
 #define NODEBUG
 
 #define MAX_CONNECTIONS 50
-#define MAX_NAME_LEN    256
 
 #ifdef _WIN32
 #pragma comment(lib,"ws2_32")
@@ -219,7 +218,10 @@ jint h5file_request(JNIEnv *env, jobject jobj)
 
     /* send the request to the server to process */
     if (h5ObjRequest(current_connection, &h5file, H5OBJECT_FILE) < 0)
+    {
+        H5File_dtor(&h5file);
         THROW_JNI_ERROR("java/lang/RuntimeException", "file h5ObjRequest() failed");
+    }
 
 #ifdef DEBUG
     print_group(connection, h5file.root);fflush(stdout);
@@ -267,8 +269,10 @@ jint h5dataset_request(JNIEnv *env, jobject jobj)
         goto done;
 
     /* send the request to the server to process */
-    if (h5ObjRequest(current_connection, &h5dataset, H5OBJECT_DATASET) < 0)
+    if (h5ObjRequest(current_connection, &h5dataset, H5OBJECT_DATASET) < 0) {
+        H5Dataset_dtor(&h5dataset);
         THROW_JNI_ERROR("java/lang/RuntimeException", "dataset h5ObjRequest() failed");
+    }
 
     if (h5dataset.value && h5dataset.space.npoints==0) {
         h5dataset.space.npoints = 1;
@@ -306,8 +310,10 @@ jint h5group_request(JNIEnv *env, jobject jobj)
         goto done;
 
     /* send the request to the server to process */
-    if (h5ObjRequest(current_connection, &h5group, H5OBJECT_GROUP) < 0)
+    if (h5ObjRequest(current_connection, &h5group, H5OBJECT_GROUP) < 0) {
+        H5Group_dtor(&h5group);
         THROW_JNI_ERROR("java/lang/RuntimeException", "group h5ObjRequest() failed");
+    }
 
     if ( h5group.opID == H5GROUP_OP_READ_ATTRIBUTE)
         ret_val = c2j_h5group_read_attribute (env, jobj, &h5group);

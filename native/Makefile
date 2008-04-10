@@ -22,7 +22,7 @@ hdf5LibSrcDir = $(modulesDir)/hdf5/lib/src
 LIBDIR = .
 
 SLIB = $(LIBDIR)/libjh5srb.so
-OBJ  = $(LIBDIR)/jh5srb.o $(LIBDIR)/jh5srb_test.o
+OBJ  = $(LIBDIR)/jh5srb.o
 
 INCLUDE_FLAGS = -I$(hdf5TestDir) -I$(hdf5Dir)/src -I$(hdf5LibIncDir)    \
     -I$(hdf5MSIncDir)
@@ -78,8 +78,6 @@ endif
 endif
 
 $(LIBDIR)/jh5srb.o: jh5srb.c 
-	$(CC) -c $(CFLAGS) -o $@ $<
-$(LIBDIR)/jh5srb_test.o: jh5srb_test.c 
 	$(CC) -c $(CFLAGS) -o $@ $<
 clean:
 	rm -f $(OBJ) $(SLIB) $(SLIB).exp
