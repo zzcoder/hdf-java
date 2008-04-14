@@ -15,7 +15,6 @@ import java.util.*;
 import ncsa.hdf.object.*;
 import ncsa.hdf.object.h5.*;
 import ncsa.hdf.hdf5lib.exceptions.*;
-import ncsa.hdf.srb.h5srb.*;
 
 public class H5SrbScalarDS extends H5ScalarDS
 {

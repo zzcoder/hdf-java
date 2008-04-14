@@ -16,7 +16,6 @@ import java.lang.reflect.Array;
 import ncsa.hdf.object.*;
 import ncsa.hdf.object.h5.*;
 import ncsa.hdf.hdf5lib.exceptions.*;
-import ncsa.hdf.srb.h5srb.*;
 
 public class H5SrbCompoundDS extends H5CompoundDS
 {
