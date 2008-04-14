@@ -15,7 +15,6 @@ import java.util.*;
 import javax.swing.tree.*;
 
 import ncsa.hdf.object.*;
-import ncsa.hdf.srb.h5srb.*;
 
 
 public class H5SrbFile extends FileFormat

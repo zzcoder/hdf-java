@@ -9,7 +9,7 @@
  *                                                                          *
  ****************************************************************************/
 
-package ncsa.hdf.srb.h5srb;
+package ncsa.hdf.srb.obj;
 
 import java.io.*;
 //import edu.sdsc.grid.io.srb.*;
