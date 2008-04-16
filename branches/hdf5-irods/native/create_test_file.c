@@ -110,7 +110,6 @@ int create_ds_comp(hid_t loc_id)
     herr_t     status;
     hsize_t    dim[] = {DIM0};   /* Dataspace dimensions */
 
-
     /*
      * Initialize the data
      */
@@ -121,15 +120,13 @@ int create_ds_comp(hid_t loc_id)
     }
 
     sid = H5Screate_simple(1, dim, NULL);
-
     tid = H5Tcreate (H5T_COMPOUND, sizeof(comp_t));
+
     H5Tinsert(tid, "int", HOFFSET(comp_t, a), H5T_NATIVE_INT);
     H5Tinsert(tid, "double", HOFFSET(comp_t, c), H5T_NATIVE_DOUBLE);
     H5Tinsert(tid, "float", HOFFSET(comp_t, b), H5T_NATIVE_FLOAT);
-
     did = H5Dcreate(loc_id, DSET_NAME_COMP, tid, sid, H5P_DEFAULT);
     status = H5Dwrite(did, tid, H5S_ALL, H5S_ALL, H5P_DEFAULT, buf);
-
     attach_attribute(did);
 
     H5Tclose(tid);
