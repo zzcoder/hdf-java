@@ -13,10 +13,8 @@ package ncsa.hdf.srb;
 
 import java.util.*;
 import ncsa.hdf.object.*;
-import ncsa.hdf.object.h5.*;
-import ncsa.hdf.hdf5lib.exceptions.*;
 
-public class H5SrbScalarDS extends H5ScalarDS
+public class H5SrbScalarDS extends ScalarDS
 {
 	public static final long serialVersionUID = HObject.serialVersionUID;
 
@@ -119,9 +117,22 @@ public class H5SrbScalarDS extends H5ScalarDS
      * dataspace information, then load the data content.
      */
     public void init() {;}
+    
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#hasAttribute()
+     */
+    public boolean hasAttribute () 
+    { 
+        if (attributeList == null) {
+            return false;
+        }
+        
+        return (attributeList.size()>0);
+    }
 
     /** Loads and returns the data value from file. */
-    public Object read() throws HDF5Exception
+    public Object read() throws Exception
     {
         String srbInfo[] = ((H5SrbFile)getFileFormat()).getSrbInfo();
         if ( (srbInfo == null)  || (srbInfo.length<5)) {
@@ -131,28 +142,23 @@ public class H5SrbScalarDS extends H5ScalarDS
         opID = H5DATASET_OP_READ;
         try {
             H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_DATASET);
-        } catch (Exception ex) { throw new HDF5Exception (ex.toString()); }
+        } catch (Exception ex) { throw new Exception (ex.toString()); }
 
         return data;
     }
 
-    /** Read data values of this dataset into byte array.
-     *  readBytes() loads data as arry of bytes instead of array of its datatype.
-     * For example, for an one-dimension 32-bit integer dataset of size 5,
-     * the readBytes() returns of a byte array of size 20 instead of a int array
-     * of 5.
-     * <p>
-     * readBytes() is most used for copy data values, at which case, data do not
-     * need to be changed or displayed.
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Dataset#readBytes()
      */
-    public byte[] readBytes() throws HDF5Exception { return null; }
+    public byte[] readBytes() throws Exception { return null; }
 
     /**
      * Write data values into file.
      * @param buf the data to write
      * @throws Exception
      */
-    public void write(Object buf) throws HDF5Exception {;}
+    public void write(Object buf) throws Exception {;}
 
     /** Copy this dataset to another group.
      * @param pgroup the group which the dataset is copied to.
@@ -178,7 +184,7 @@ public class H5SrbScalarDS extends H5ScalarDS
      * @see java.util.List
      */
     // Implementing DataFormat
-    public List getMetadata() throws HDF5Exception
+    public List getMetadata() throws Exception
     {
         String srbInfo[] = ((H5SrbFile)getFileFormat()).getSrbInfo();
         if ( (srbInfo == null)  || (srbInfo.length<5)) {
@@ -193,7 +199,7 @@ public class H5SrbScalarDS extends H5ScalarDS
             opID = H5DATASET_OP_READ_ATTRIBUTE;
             try {
                 H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_DATASET);
-            } catch (Exception ex) { throw new HDF5Exception (ex.toString()); }
+            } catch (Exception ex) { throw new Exception (ex.toString()); }
         } // if (attributeList == null)
 
         return attributeList;
@@ -227,6 +233,6 @@ public class H5SrbScalarDS extends H5ScalarDS
      * <p>
      * @param info the metadata to delete.
      */
-    public void removeMetadata(Object info) throws HDF5Exception {;}
+    public void removeMetadata(Object info) throws Exception {;}
 
 }
