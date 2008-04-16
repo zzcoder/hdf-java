@@ -14,10 +14,8 @@ package ncsa.hdf.srb;
 import java.util.*;
 import java.lang.reflect.Array;
 import ncsa.hdf.object.*;
-import ncsa.hdf.object.h5.*;
-import ncsa.hdf.hdf5lib.exceptions.*;
 
-public class H5SrbCompoundDS extends H5CompoundDS
+public class H5SrbCompoundDS extends CompoundDS
 {
 	public static final long serialVersionUID = HObject.serialVersionUID;
 
@@ -120,7 +118,7 @@ public class H5SrbCompoundDS extends H5CompoundDS
     public void init() {;}
 
     /** Loads and returns the data value from file. */
-    public Object read() throws HDF5Exception
+    public Object read() throws Exception
     {
         String srbInfo[] = ((H5SrbFile)getFileFormat()).getSrbInfo();
         if ( (srbInfo == null) || (srbInfo.length<5)) {
@@ -131,7 +129,7 @@ public class H5SrbCompoundDS extends H5CompoundDS
         
         try {
             H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_DATASET);
-        } catch (Exception ex) { throw new HDF5Exception (ex.toString()); }
+        } catch (Exception ex) { throw new Exception (ex.toString()); }
 
         if ((data != null) && data.getClass().isArray())
         {
@@ -169,7 +167,7 @@ public class H5SrbCompoundDS extends H5CompoundDS
      * @param buf the data to write
      * @throws Exception
      */
-    public void write(Object buf) throws HDF5Exception {;}
+    public void write(Object buf) throws Exception {;}
 
     /** Copy this dataset to another group.
      * @param pgroup the group which the dataset is copied to.
@@ -195,7 +193,7 @@ public class H5SrbCompoundDS extends H5CompoundDS
      * @see java.util.List
      */
     // Implementing DataFormat
-    public List getMetadata() throws HDF5Exception
+    public List getMetadata() throws Exception
     {
         String srbInfo[] = ((H5SrbFile)getFileFormat()).getSrbInfo();
         if ( (srbInfo == null) || (srbInfo.length<5)) {
@@ -210,11 +208,30 @@ public class H5SrbCompoundDS extends H5CompoundDS
             opID = H5DATASET_OP_READ_ATTRIBUTE;
             try {
                 H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_DATASET);
-            } catch (Exception ex) { throw new HDF5Exception (ex.toString()); }
+            } catch (Exception ex) { throw new Exception (ex.toString()); }
         } // if (attributeList == null)
 
         return attributeList;
     }
+    
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#hasAttribute()
+     */
+    public boolean hasAttribute () 
+    { 
+        if (attributeList == null) {
+            return false;
+        }
+        
+        return (attributeList.size()>0);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.Dataset#readBytes()
+     */
+    public byte[] readBytes() throws Exception { return null; }
 
     /**
      * Saves a specific metadata into file. If the metadata exists, it
@@ -230,6 +247,6 @@ public class H5SrbCompoundDS extends H5CompoundDS
      * <p>
      * @param info the metadata to delete.
      */
-    public void removeMetadata(Object info) throws HDF5Exception {;}
+    public void removeMetadata(Object info) throws Exception {;}
 
 }

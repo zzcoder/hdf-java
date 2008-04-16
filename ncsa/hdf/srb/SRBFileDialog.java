@@ -27,7 +27,6 @@ import edu.sdsc.grid.io.srb.*;
 import edu.sdsc.grid.io.irods.*;
 
 import ncsa.hdf.object.HObject;
-import ncsa.hdf.srb.obj.*;
 
 /**
  * FileConversionDialog shows a message dialog requesting user input for converting
@@ -84,7 +83,7 @@ implements ActionListener
                         "SRB/iRODS Connection", JOptionPane.PLAIN_MESSAGE, null,
                         srb_hosts, srb_hosts[0]);
                     
-                    if (selection == null || selection.length()<1) {
+                    if ((selection == null) || (selection.length()<1)) {
                         dispose();
                         return;
                     }

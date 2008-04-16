@@ -12,11 +12,10 @@
 package ncsa.hdf.srb;
 
 import java.util.*;
-import ncsa.hdf.object.*;
-import ncsa.hdf.object.h5.*;
-import ncsa.hdf.hdf5lib.exceptions.*;
 
-public class H5SrbGroup extends H5Group
+import ncsa.hdf.object.*;
+
+public class H5SrbGroup extends Group
 {
 	public static final long serialVersionUID = HObject.serialVersionUID;
 
@@ -107,7 +106,7 @@ public class H5SrbGroup extends H5Group
      * @see java.util.List
      */
     // Implementing DataFormat
-    public List getMetadata() throws HDF5Exception
+    public List getMetadata() throws Exception
     {
         String srbInfo[] = ((H5SrbFile)getFileFormat()).getSrbInfo();
         if ( (srbInfo == null) || (srbInfo.length<5)) {
@@ -121,7 +120,7 @@ public class H5SrbGroup extends H5Group
             opID = H5GROUP_OP_READ_ATTRIBUTE;
             try {
                 H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_GROUP);
-            } catch (Exception ex) { throw new HDF5Exception (ex.toString()); }
+            } catch (Exception ex) { throw ex; }
         } // if (attributeList == null)
 
         return attributeList;
@@ -140,6 +139,19 @@ public class H5SrbGroup extends H5Group
 
         attributeList.add(attr);
     }
+    
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#hasAttribute()
+     */
+    public boolean hasAttribute () 
+    { 
+        if (attributeList == null) {
+            return false;
+        }
+        
+        return (attributeList.size()>0);
+    }
 
     /**
      * Saves a specific metadata into file. If the metadata exists, it
@@ -155,7 +167,7 @@ public class H5SrbGroup extends H5Group
      * <p>
      * @param info the metadata to delete.
      */
-    public void removeMetadata(Object info) throws HDF5Exception {;}
+    public void removeMetadata(Object info) throws Exception {;}
 
 
 }
