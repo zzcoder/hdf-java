@@ -1,6 +1,9 @@
 # Makefile - This is the makefile for libjh5srb.so, jh5srb.class. 
 SHELL=/bin/csh
 
+echo $LIBDIR
+echo $(buildDir)
+
 include ../../../mk/mk.config
 include ../../../mk/mk.common
 
