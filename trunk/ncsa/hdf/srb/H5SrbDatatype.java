@@ -9,7 +9,7 @@
  *                                                                          *
  ****************************************************************************/
 
-package ncsa.hdf.srb.obj;
+package ncsa.hdf.srb;
 
 import ncsa.hdf.object.*;
 import ncsa.hdf.object.h5.*;
