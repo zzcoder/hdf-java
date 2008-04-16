@@ -373,6 +373,12 @@ install-jhdfview: ncsa.hdf.view
 	chmod a+x $(BINDIR)/hdfview.sh
 	@echo "Install HDFVIEW complete"
 
+install-h5srb: ncsa.hdf.srb
+	$(JAR) cf $(JH45INSTALLDIR)/lib/h5srb.jar $(H5SRBCLASSES)
+
+uninstall-h5srb:
+	$(RM) -f $(JH45INSTALLDIR)/lib/h5srb.jar
+
 uninstall-jhi5: 
 	$(RM) -f $(JH45INSTALLDIR)/lib/jhdf5.jar
 
