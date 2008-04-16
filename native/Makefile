@@ -10,6 +10,8 @@ include $(buildDir)/config/platform.mk
 include $(buildDir)/config/directories.mk
 include $(buildDir)/config/common.mk
 
+irodsLibObjDir = $(buildDir)/lib/core/obj
+
 hdf5MSObjDir =      $(modulesDir)/hdf5/microservices/obj
 hdf5MSSrcDir =      $(modulesDir)/hdf5/microservices/src
 hdf5MSIncDir =      $(modulesDir)/hdf5/microservices/include
@@ -24,13 +26,11 @@ LIBDIR = .
 SLIB = $(LIBDIR)/libjh5srb.so
 OBJ  = $(LIBDIR)/jh5srb.o
 
-INCLUDE_FLAGS = -I$(hdf5TestDir) -I$(hdf5Dir)/src -I$(hdf5LibIncDir)    \
-    -I$(hdf5MSIncDir)
-HDF_LIB_OBJECTS = $(hdf5LibObjDir)/h5Ctor.o $(hdf5LibObjDir)/h5Dtor.o
-HDF_LIB_OBJECTS+=$(hdf5LibObjDir)/h5File.o \
-$(hdf5LibObjDir)/h5Dataset.o $(hdf5LibObjDir)/h5String.o        \
-$(hdf5LibObjDir)/h5Group.o $(hdf5LibObjDir)/h5Object.o  \
-$(hdf5LibObjDir)/h5Attribute.o
+INCLUDE_FLAGS = -I$(hdf5TestDir) -I$(hdf5Dir)/src -I$(hdf5LibIncDir) -I$(hdf5MSIncDir)
+HDF_LIB_OBJECTS = $(hdf5LibObjDir)/h5Ctor.o $(hdf5LibObjDir)/h5Dtor.o \
+	$(hdf5LibObjDir)/h5ClHandler.o $(hdf5LibObjDir)/clH5Dataset.o  \
+	$(hdf5LibObjDir)/clH5File.o  $(hdf5LibObjDir)/clH5Group.o \
+	$(irodsLibObjDir)/stringOpr.o $(irodsLibObjDir)/msParam.o
 
 ifeq ($(OS_platform), solaris_platform)
 PLATFORM=solaris
@@ -57,7 +57,7 @@ LDFLAGS +=      $(LDADD) $(LIBRARY) $(MODULE_LDFLAGS)
 
 .SUFFIXES: .c .o .so .java .class .h
 
-all: $(SLIB)
+all: $(SLIB) 
 	@ echo $(SLIB) is to date.
 
 $(SLIB): $(OBJ)
@@ -79,6 +79,7 @@ endif
 
 $(LIBDIR)/jh5srb.o: jh5srb.c 
 	$(CC) -c $(CFLAGS) -o $@ $<
+
 clean:
 	rm -f $(OBJ) $(SLIB) $(SLIB).exp
 
