@@ -73,9 +73,7 @@ JHI5DISTFILES= ./native/hdf5lib/Makefile.in \
 
 SRBDISTFILES= \
         ./ncsa/hdf/srb/*.java \
-        ./ncsa/hdf/srb/h5srb/*.java \
-        ./ncsa/hdf/srb/native/*.c \
-        ./ncsa/hdf/srb/obj/*.java
+        ./ncsa/hdf/srb/native/*.c 
 
 TESTFILES=./test/Makefile.in ./test/object/*.java ./test/object/*.in ./test/linktest/Makefile.in ./test/linktest/testh4link.in ./test/linktest/testlink.in ./test/linktest/*.java ./test/h5/*.java ./test/h5/*.in ./test/h5/*.h5 ./test/unittests/*.in ./test/unittests/*.java ./test/view/*.in ./test/view/*.java
 
@@ -103,6 +101,8 @@ H5OBJPACKAGES = ncsa.hdf.object.h5
 
 NC2OBJPACKAGES = ncsa.hdf.object.nc2
 
+H5SRBPACKAGES = ncsa.hdf.srb
+
 FITSOBJPACKAGES = ncsa.hdf.object.fits
 
 HDFVIEWPACKAGES= ncsa.hdf.view
@@ -125,7 +125,7 @@ install-just-hdf4: install-hdflib install-jhdf
 
 install-just-hdf5: install-hdf5lib install-jhdf5
 
-packages: jhdf-packages jhdf5-packages nc2-packages fits-packages jh4toh5-packages jhdfobj-packages jhdfview-packages
+packages: jhdf-packages jhdf5-packages nc2-packages fits-packages jh4toh5-packages jhdfobj-packages jhdfview-packages h5srb-packages
 
 jh4toh5-packages: 
 	@if test -n "$(H45INC)" ; then $(MAKE) do-jh4toh5-packages ; fi
@@ -149,6 +149,9 @@ nc2-packages: $(NC2OBJPACKAGES)
 fits-packages: $(FITSOBJPACKAGES)
 	-mkdir -p ./lib/ext 
 	$(JAR) cf ./lib/ext/fitsobj.jar $(FITSOBJCLASSES)
+
+h5srb-packages: $(H5SRBPACKAGES)
+	$(JAR) cf ./lib/h5srb.jar $(H5SRBCLASSES)
 
 jhdfobj-packages: $(HDFOBJPACKAGES)  
 	$(JAR) cf ./lib/jhdfobj.jar $(HDFOBJCLASSES)
@@ -226,6 +229,7 @@ clean-classes:
 	$(RM) -f ./lib/jhdf4obj.jar
 	$(RM) -f ./lib/jhdf5obj.jar
 	$(RM) -f ./lib/jhdfview.jar
+	$(RM) -f ./lib/h5srb.jar
 	$(RM) -f ./lib/ext/nc2obj.jar
 	$(RM) -f ./lib/ext/fitsobj.jar
 
@@ -557,6 +561,14 @@ ncsa.hdf.object.fits: ncsa/hdf/object/fits/FitsDataset.class \
 	ncsa/hdf/object/fits/FitsFile.class \
 	ncsa/hdf/object/fits/FitsGroup.class
 
+ncsa.hdf.srb: ncsa/hdf/srb/H5SrbCompoundDS.class \
+	ncsa/hdf/srb/H5SrbDatatype.class \
+	ncsa/hdf/srb/H5SrbFile.class \
+	ncsa/hdf/srb/H5SrbGroup.class \
+	ncsa/hdf/srb/H5SrbScalarDS.class \
+	ncsa/hdf/srb/H5SRB.class
+
+
 #
 # The test files are not included in the preliminary source release
 #
@@ -710,6 +722,12 @@ NC2Dataset: ncsa/hdf/object/nc2/NC2Dataset.class
 NC2Datatype: ncsa/hdf/object/nc2/NC2Datatype.class
 NC2File: ncsa/hdf/object/nc2/NC2File.class
 NC2Group: ncsa/hdf/object/nc2/NC2Group.class
+H5SrbCompoundDS: ncsa/hdf/srb/H5SrbCompoundDS.class
+H5SrbDatatype: ncsa/hdf/srb/H5SrbDatatype.class
+H5SrbFile: ncsa/hdf/srb/H5SrbFile.class
+H5SrbGroup: ncsa/hdf/srb/H5SrbGroup.class
+H5SRB: ncsa/hdf/srb/H5SRB.class
+H5SrbScalarDS: ncsa/hdf/srb/H5SrbScalarDS.class
 
 #  All classes that are built, including private classes:
 #     This is what is loaded into the 'jar' file.
@@ -734,6 +752,8 @@ H5OBJCLASSES= ./ncsa/hdf/object/h5/*.class
 NC2OBJCLASSES= ./ncsa/hdf/object/nc2/*.class
 
 FITSOBJCLASSES= ./ncsa/hdf/object/fits/*.class
+
+H5SRBCLASSES= ./ncsa/hdf/srb/*.class
 
 HDFVIEWCLASSES=./ncsa/hdf/view/*.class
 

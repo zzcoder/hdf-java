@@ -9,7 +9,7 @@
  *                                                                          *
  ****************************************************************************/
 
-package ncsa.hdf.srb.obj;
+package ncsa.hdf.srb;
 
 import java.util.*;
 import javax.swing.tree.*;
