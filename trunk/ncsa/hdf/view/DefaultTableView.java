@@ -104,6 +104,8 @@ implements TableView, ActionListener
     private JTextField frameField;
 
     private long curFrame=0, maxFrame=1;
+    
+    private Object fillValue = null;
 
      /**
      * Constructs an TableView.
@@ -620,8 +622,8 @@ implements TableView, ActionListener
 
                 double[] minmax = new double[2];
                 double[] stat = new double[2];
-                Tools.findMinMax(theData, minmax);
-                if (Tools.computeStatistics(theData, stat) > 0) {
+                Tools.findMinMax(theData, minmax, fillValue);
+                if (Tools.computeStatistics(theData, stat, fillValue) > 0) {
                 	String statistics = "Min                      = "+minmax[0] +
                                       "\nMax                      = "+minmax[1] +
                 	                  "\nMean                     = "+stat[0] +
@@ -1170,11 +1172,13 @@ implements TableView, ActionListener
                 JOptionPane.ERROR_MESSAGE);
             dataValue = null;
         }
-
+        
         if (dataValue == null) {
             return null;
         }
 
+        fillValue = d.getFillValue();
+        
         String cName = dataValue.getClass().getName();
         int cIndex = cName.lastIndexOf("[");
         if (cIndex >= 0 ) {

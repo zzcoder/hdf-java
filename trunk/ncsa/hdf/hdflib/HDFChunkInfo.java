@@ -37,11 +37,10 @@ public class HDFChunkInfo {
     } ;
 
     public HDFChunkInfo( int[] cl, int ct, HDFCompInfo ci ) {
-
         if (ct == HDFConstants.COMP_CODE_NONE) {
-            ctype = HDFConstants.HDF_CHUNK;
+		ctype = HDFConstants.HDF_CHUNK;
         } else {
-            ctype = HDFConstants.HDF_COMP | HDFConstants.HDF_CHUNK;
+		ctype = HDFConstants.HDF_COMP | HDFConstants.HDF_CHUNK;
         }
         chunk_lengths = cl;
         comp_type = ct;
