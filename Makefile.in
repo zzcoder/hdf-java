@@ -267,10 +267,10 @@ checklink: install linktest
 	linkh4test; \
 
 
-install: install-lib install-jhdf install-jhdf5 install-jh4toh5 install-jhdfobj install-jhdfview
+install: install-lib install-jhdf install-jhdf5 install-jh4toh5 install-jhdfobj install-jhdfview install-h5srb
 	@echo "Install complete"
 
-uninstall: uninstall-jhdfview uninstall-jhdfobj uninstall-lib uninstall-jh45 uninstall-jhi uninstall-jhi5
+uninstall: uninstall-jhdfview uninstall-jhdfobj uninstall-lib uninstall-jh45 uninstall-jhi uninstall-jhi5 uninstall-h5srb
 
 install-lib: natives
 	-mkdir -p $(LIBDIR);
