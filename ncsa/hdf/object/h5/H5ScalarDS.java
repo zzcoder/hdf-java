@@ -225,17 +225,7 @@ public class H5ScalarDS extends ScalarDS
         did = open();
         paletteRefs = getPaletteRefs(did);
         
-        // check if it is an external dataset
         int pid=-1;
-        try {
-            pid = H5.H5Dget_create_plist(did);
-            int nfiles = H5.H5Pget_external_count(pid);
-            isExternal = (nfiles>1);
-        } catch (Exception ex) {}
-        finally {
-            try {H5.H5Pclose(pid);} catch (Exception ex) {}
-        }
-
         try {
             sid = H5.H5Dget_space(did);
             tid= H5.H5Dget_type(did);
@@ -243,13 +233,34 @@ public class H5ScalarDS extends ScalarDS
             isText = (H5.H5Tget_class(tid)==HDF5Constants.H5T_STRING);
             isUnsigned = H5Datatype.isUnsigned(tid);
             
+            // check if it is an external dataset
+           try {
+                pid = H5.H5Dget_create_plist(did);
+                int nfiles = H5.H5Pget_external_count(pid);
+                isExternal = (nfiles>1);
+            } catch (Exception ex) {}
+
             // check if datatype in file is ntive datatype
             int tmptid = 0;
             try {
                 tmptid = H5.H5Tget_native_type(tid);
                 isNativeDatatype = H5.H5Tequal(tid, tmptid);
+                
+                /* see if fill value is defined */
+                int[] fillStatus = {0};
+                if (H5.H5Pfill_value_defined(pid, fillStatus)>=0)
+                {
+                    if (fillStatus[0] == HDF5Constants.H5D_FILL_VALUE_USER_DEFINED)
+                    {
+                        fillValue = H5Datatype.allocateArray(tmptid, 1);
+                        try { 
+                            H5.H5Pget_fill_value(pid, tmptid, fillValue ); 
+                        }   catch (Exception ex2) { fillValue = null; }
+                    }
+                }
             } finally {
                 try { H5.H5Tclose(tmptid); } catch (HDF5Exception ex) {;}
+                try {H5.H5Pclose(pid);} catch (Exception ex) {;}
             }
 
             if (rank == 0) {
@@ -534,7 +545,6 @@ public class H5ScalarDS extends ScalarDS
         }
 
         long[] lsize = {1};
-        // check is fill value is defined
         try {
             did = open();
             lsize[0] = selectHyperslab(did, spaceIDs);
@@ -732,33 +742,6 @@ public class H5ScalarDS extends ScalarDS
                 H5.H5Pget_chunk(pid, rank, chunkSize);
             } else {
                 chunkSize = null;
-            }
-
-            /* see if fill value is defined */
-            int[] fillStatus = {0};
-            if (H5.H5Pfill_value_defined(pid, fillStatus)>=0)
-            {
-                if (fillStatus[0] == HDF5Constants.H5D_FILL_VALUE_USER_DEFINED)
-                {
-                    int tid = H5.H5Dget_type(did);
-                    if (!isNativeDatatype) {
-                        int tmptid = -1;
-                        try {
-                            tmptid = tid;
-                            tid = H5.H5Tget_native_type(tmptid);
-                        } finally {
-                            try { H5.H5Tclose(tmptid); } catch (Exception ex2) {}
-                        }
-                    }
-                    
-                    fillValue = H5Datatype.allocateArray(tid, 1);
-                    try { 
-                        H5.H5Pget_fill_value(pid, tid, fillValue ); 
-                    }   catch (Exception ex2) { fillValue = null; }
-                    finally {
-                        try { H5.H5Tclose(tid); } catch (Exception ex2) {}
-                    }
-                }
             }
 
             int[] flags = {0, 0};

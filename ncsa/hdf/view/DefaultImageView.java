@@ -794,7 +794,7 @@ implements ImageView, ActionListener
         boolean isAutoContrastFailed = true;
         if (doAutoContrast) 
             isAutoContrastFailed = (!computeAutoGainImageData());
- 
+        
         int w = dataset.getWidth();
         int h = dataset.getHeight();
         if (isAutoContrastFailed) {
@@ -1433,8 +1433,8 @@ implements ImageView, ActionListener
             try {
                 double[] minmax = new double[2];
                 double[] stat = new double[2];
-                Tools.findMinMax(data, minmax);
-                if (Tools.computeStatistics(data, stat) > 0) {
+                Tools.findMinMax(data, minmax, dataset.getFillValue());
+                if (Tools.computeStatistics(data, stat, dataset.getFillValue()) > 0) {
                     String statistics = "Min                      = "+minmax[0] +
                                       "\nMax                      = "+minmax[1] +
                                       "\nMean                     = "+stat[0] +
@@ -3101,7 +3101,7 @@ implements ImageView, ActionListener
             } else
             {
                 if (dataRange[0] == dataRange[1]) {
-                    Tools.findMinMax(data, dataRange);
+                    Tools.findMinMax(data, dataRange, dataset.getFillValue());
                 }
                 
                 minmax[0] = dataRange[0];

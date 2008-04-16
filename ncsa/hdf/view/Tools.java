@@ -557,11 +557,12 @@ public final class Tools
         }
         
         if (minmax[0] == minmax[1]) {
-            Tools.findMinMax(rawData,  minmax);
+            Tools.findMinMax(rawData,  minmax, fillValue);
         }
         min = minmax[0]; 
         max = minmax[1];
-
+        ratio = (min == max) ? 1.00d : (double)(255.00/(max-min));
+        
         switch (dname)
         {
             case 'B':
@@ -594,8 +595,6 @@ public final class Tools
                     }
                 }
 
-                // converts the data based on the ratio to support only 256 colors
-                ratio = (min == max) ? 1.00d : (double)(255.00/(max-min));
                 if (isTransposed)
                 {
                     for (int i=0; i<h; i++)
@@ -630,8 +629,6 @@ public final class Tools
                     }
                 }
 
-                // converts the data based on the ratio to support only 256 colors
-                ratio = (min == max) ? 1.00d : (double)(255.00/(max-min));
                 if (isTransposed)
                 {
                     for (int i=0; i<h; i++)
@@ -665,8 +662,6 @@ public final class Tools
                     }
                 }
 
-                // converts the data based on the ratio to support only 256 colors
-                ratio = (min == max) ? 1.00d : (double)(255.00/(max-min));
                 if (isTransposed)
                 {
                     for (int i=0; i<h; i++)
@@ -691,6 +686,7 @@ public final class Tools
                 if (fillValue != null)
                 {
                     float fvalue = ((float[])fillValue)[0];
+
                     if (fvalue != 0) {
                         for (int i=0; i<size; i++) {
                             if (fvalue == f[i]) {
@@ -700,8 +696,6 @@ public final class Tools
                     }
                 }
 
-                // converts the data based on the ratio to support only 256 colors
-                ratio = (min == max) ? 1.00d : (double)(255.00/(max-min));
                 if (isTransposed)
                 {
                     for (int i=0; i<h; i++)
@@ -735,8 +729,6 @@ public final class Tools
                     }
                 }
 
-                // converts the data based on the ratio to support only 256 colors
-                ratio = (min == max) ? 1.00d : (double)(255.00/(max-min));
                 if (isTransposed)
                 {
                     for (int i=0; i<h; i++)
@@ -845,7 +837,7 @@ public final class Tools
     	
     	// force the min_max method so we can look at the target grids data sets
     	if ( (retval < 0) || (minmax[1] - minmax[0] < 10) ) {
-            retval = findMinMax(data, minmax);
+            retval = findMinMax(data, minmax, null);
         }
     	
         if (retval < 0) {
@@ -1174,7 +1166,7 @@ public final class Tools
             return -1;
         }
     	
-    	retval = computeStatistics(data, avgstd);
+    	retval = computeStatistics(data, avgstd, null);
     	if (retval < 0) {
             return retval;
         }
@@ -1223,9 +1215,10 @@ public final class Tools
      *
      * @param data the raw data array
      * @param minmax the mmin and max values of the array.
+     * @param fillValue the missing value or fill value. Exclude this value when check for min/max
      * @return non-negative if successful; otherwise, returns negative
      */
-    public static int findMinMax(Object data, double[] minmax)
+    public static int findMinMax(Object data, double[] minmax, Object fillValue)
     {
     	int retval = 1;
     	
@@ -1234,15 +1227,22 @@ public final class Tools
         }
     	
         int n = Array.getLength(data);
+        double fill = 0.0;
+        boolean hasFillValue = (fillValue!=null && fillValue.getClass().isArray());
 
         String cname = data.getClass().getName();
         char dname = cname.charAt(cname.lastIndexOf("[")+1);
-         switch (dname)
+        minmax[0] = Float.MAX_VALUE;
+        minmax[1] = -Float.MAX_VALUE;
+        
+        switch (dname)
         {
             case 'B': 
                 byte[] b = (byte[])data;
-                minmax[0] = minmax[1] = b[0];
-                for (int i=1; i<n; i++) {
+                if (hasFillValue)
+                    fill = ((byte[])fillValue)[0];
+                 for (int i=1; i<n; i++) {
+                    if (hasFillValue && b[i] == fill) continue;
                 	if (minmax[0]>b[i]) {
                         minmax[0] = b[i];
                     }
@@ -1253,8 +1253,11 @@ public final class Tools
                 break;
             case 'S':
                 short[] s = (short[])data;
-                minmax[0] = minmax[1] = s[0];
+                if (hasFillValue)
+                    fill = ((short[])fillValue)[0];
+                
                 for (int i=1; i<n; i++) {
+                    if (hasFillValue && s[i] == fill) continue;
                     if (minmax[0]>s[i]) {
                         minmax[0] = s[i];
                     }
@@ -1265,8 +1268,11 @@ public final class Tools
                 break;
             case 'I':
                 int[] ia = (int[])data;
-                minmax[0] = minmax[1] = ia[0];
+                if (hasFillValue)
+                    fill = ((int[])fillValue)[0];
+                
                 for (int i=1; i<n; i++) {
+                    if (hasFillValue && ia[i] == fill) continue;
                     if (minmax[0]>ia[i]) {
                         minmax[0] = ia[i];
                     }
@@ -1277,8 +1283,10 @@ public final class Tools
                 break;
             case 'J':
             	long[] l = (long[])data;
-                minmax[0] = minmax[1] = l[0];
+                if (hasFillValue)
+                    fill = ((long[])fillValue)[0];
                 for (int i=1; i<n; i++) {
+                    if (hasFillValue && l[i] == fill) continue;
                     if (minmax[0]>l[i]) {
                         minmax[0] = l[i];
                     }
@@ -1289,8 +1297,10 @@ public final class Tools
                 break;
             case 'F':
                 float[] f = (float[])data;
-                minmax[0] = minmax[1] = f[0];
+                if (hasFillValue)
+                    fill = ((float[])fillValue)[0];
                 for (int i=1; i<n; i++) {
+                    if (hasFillValue && f[i] == fill) continue;
                     if (minmax[0]>f[i]) {
                         minmax[0] = f[i];
                     }
@@ -1301,8 +1311,10 @@ public final class Tools
                 break;
             case 'D':
                 double[] d = (double[])data;
-                minmax[0] = minmax[1] = d[0];
+                if (hasFillValue)
+                    fill = ((double[])fillValue)[0];
                 for (int i=1; i<n; i++) {
+                    if (hasFillValue && d[i] == fill) continue;
                     if (minmax[0]>d[i]) {
                         minmax[0] = d[i];
                     }
@@ -1324,104 +1336,126 @@ public final class Tools
      *
      * @param data the raw data array
      * @param avgstd the statistics: avgstd[0]=mean and avgstd[1]=stdev.
+     * @param fillValue the missing value or fill value. Exclude this value when compute statistics
      * @return non-negative if successful; otherwise, returns negative
      */
-    public static int computeStatistics(Object data, double[] avgstd)
+    public static int computeStatistics(Object data, double[] avgstd, Object fillValue)
     {
-    	int retval = 1;
-    	
-    	double sum=0, avg=0.0, var=0.0, diff=0.0;
+    	int retval=1, npoints=0;
+    	double sum=0, avg=0.0, var=0.0, diff=0.0, fill=0.0;
 
     	if ((data == null) || (avgstd == null) || (Array.getLength(data)<=0) || (Array.getLength(avgstd)<2)) {
             return -1;
         }
     	
         int n = Array.getLength(data);
+        boolean hasFillValue = (fillValue!=null && fillValue.getClass().isArray());
 
         String cname = data.getClass().getName();
         char dname = cname.charAt(cname.lastIndexOf("[")+1);
-    	
+
+        npoints = 0;
         switch (dname)
         {
             case 'B': 
                 byte[] b = (byte[])data;
+                fill = ((byte[])fillValue)[0];
                 for (int i=0; i<n; i++) {
-                	sum += b[i];
+                    if (hasFillValue && b[i] == fill) continue;
+                    sum += b[i];
+                    npoints++;
                 }
-                
-                avg = sum / n;
+                avg = sum / npoints;
                 for (int i=0; i<n; i++) {
-                	diff = b[i] - avg;
-                	var += diff * diff;
+                    if (hasFillValue && b[i] == fill) continue;
+                    diff = b[i] - avg;
+                    var += diff * diff;
                 }
                 break;
             case 'S':
                 short[] s = (short[])data;
+                fill = ((short[])fillValue)[0];
                 for (int i=0; i<n; i++) {
+                    if (hasFillValue && s[i] == fill) continue;
                     sum += s[i];
+                    npoints++;
                 }
-                
-                avg = sum / n;
+                avg = sum / npoints;
                 for (int i=0; i<n; i++) {
-                	diff = s[i] - avg;
-                	var += diff * diff;
+                    if (hasFillValue && s[i] == fill) continue;
+                    diff = s[i] - avg;
+                    var += diff * diff;
                 }
                 break;
             case 'I':
                 int[] ia = (int[])data;
+                fill = ((int[])fillValue)[0];
                 for (int i=0; i<n; i++) {
+                    if (hasFillValue &&  ia[i] == fill) continue;
                     sum += ia[i];
+                    npoints++;
                 }
-                
-                avg =  sum / n;
+                avg =  sum / npoints;
                 for (int i=0; i<n; i++) {
-                	diff = ia[i] - avg;
-                	var += diff * diff;
+                    if (hasFillValue &&  ia[i] == fill) continue;
+                    diff = ia[i] - avg;
+                    var += diff * diff;
                 }
                 break;
             case 'J':
-            	long[] l = (long[])data;
+                long[] l = (long[])data;
+                fill = ((long[])fillValue)[0];
                 for (int i=0; i<n; i++) {
+                    if (hasFillValue &&  l[i] == fill) continue;
                     sum += l[i];
+                    npoints++;
                 }
                 
-                avg = sum / n;
+                avg = sum / npoints;
                 for (int i=0; i<n; i++) {
-                	diff = l[i] - avg;
-                	var += diff * diff;
+                    if (hasFillValue &&  l[i] == fill) continue;
+                    diff = l[i] - avg;
+                    var += diff * diff;
                 }
                 break;
             case 'F':
                 float[] f = (float[])data;
+                fill = ((float[])fillValue)[0];
                 for (int i=0; i<n; i++) {
+                    if (hasFillValue &&  f[i] == fill) continue;
                     sum += f[i];
+                    npoints++;
                 }
                 
-                avg = sum / n;
+                avg = sum / npoints;
                 for (int i=0; i<n; i++) {
-                	diff = f[i] - avg;
-                	var += diff * diff;
+                    if (hasFillValue &&  f[i] == fill) continue;
+                    diff = f[i] - avg;
+                    var += diff * diff;
                 }
                 break;
             case 'D':
                 double[] d = (double[])data;
+                fill = ((double[])fillValue)[0];
                 for (int i=0; i<n; i++) {
+                    if (hasFillValue &&  d[i] == fill) continue;
                     sum += d[i];
+                    npoints++;
                 }
-                
-                avg = sum / n;
+                avg = sum / npoints;
                 for (int i=0; i<n; i++) {
-                	diff = d[i] - avg;
-                	var += diff * diff;
+                    if (hasFillValue &&  d[i] == fill) continue;
+                    diff = d[i] - avg;
+                    var += diff * diff;
                 }
                 break;
             default:
-            	retval = -1;
+                retval = -1;
                 break;
         } // switch (dname)
         
         avgstd[0] = avg;
-        avgstd[1] = Math.sqrt(var/(n-1));
+        avgstd[1] = Math.sqrt(var/(npoints-1));
     	
     	return retval;
     }
