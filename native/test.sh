@@ -2,6 +2,8 @@
 
 export HDFVIEW_HOME=/home/srb/hdf-java/build
 export JAVAPATH=/usr/java/jdk1.5.0_07/bin
+
+##################################################################################
 export CLASSPATH=$HDFVIEW_HOME"/lib/jhdfobj.jar:"$HDFVIEW_HOME"/lib/h5srb.jar:."
 
 TEST=/usr/bin/test
@@ -50,7 +52,7 @@ case  $os_name in
         ;;
 esac
 
-export LD_LIBRARY_PATH="/home/srb/h5mod/native:"$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=".:"$LD_LIBRARY_PATH
 
 $JAVAPATH/javac H5SRBTest.java 
 $JAVAPATH/java -Djava.library.path=$LD_LIBRARY_PATH H5SRBTest /tempZone/home/rods/test.h5 $1
