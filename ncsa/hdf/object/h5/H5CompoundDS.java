@@ -949,7 +949,7 @@ public class H5CompoundDS extends CompoundDS
 
             if (mclass == HDF5Constants.H5T_COMPOUND)
             {
-                extractCompoundInfo(mtype, mname+separator, names, types);
+                extractCompoundInfo(mtype, mname+CompoundDS.separator, names, types);
                 continue;
             }
             else if (mclass == HDF5Constants.H5T_ARRAY)
@@ -1322,7 +1322,7 @@ public class H5CompoundDS extends CompoundDS
             // construct nested compound structure with a single field
             String theName = member_name;
             tmp_tid1 = H5.H5Tcopy(arrayType);
-            int sep = member_name.lastIndexOf('.');
+            int sep = member_name.lastIndexOf(CompoundDS.separator);
 
             while (sep > 0)
             {
@@ -1332,7 +1332,7 @@ public class H5CompoundDS extends CompoundDS
                 try {H5.H5Tclose(tmp_tid1);} catch (Exception ex) {}
                 tmp_tid1 = nested_tid;
                 member_name = member_name.substring(0, sep);
-                sep = member_name.lastIndexOf('.');
+                sep = member_name.lastIndexOf(CompoundDS.separator);
             }
 
             nested_tid = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND, member_size);
