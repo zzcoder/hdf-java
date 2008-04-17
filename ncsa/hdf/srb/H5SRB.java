@@ -51,13 +51,23 @@ public class H5SRB {
             try {
                 System.loadLibrary("jh5srb");
                 isLoaded = true;
-            } catch (Throwable err) { isLoaded = false; }
+            } catch (Throwable err) { err.printStackTrace(); isLoaded = false; }
         }
     }
 
     /**
+     *  Get file/directory names from server
+     *  @param server_info information of the server to be connected
+     *  @param fileList the list of all files in the server
+     *  @return the number of file in the server
+     */
+    public synchronized static native int listCollection(String server_info[], 
+        String fileList[]) throws Exception;
+
+    /**
+     *   Process a data request
      **/
-    public synchronized static native int h5ObjRequest
-        (String srb_info[], Object obj, int obj_type) throws Exception;
+    public synchronized static native int h5ObjRequest (String server_info[], 
+        Object obj, int obj_type) throws Exception;
 }
 
