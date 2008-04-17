@@ -29,8 +29,7 @@ OBJ  = $(LIBDIR)/jh5srb.o
 INCLUDE_FLAGS = -I$(hdf5TestDir) -I$(hdf5Dir)/src -I$(hdf5LibIncDir) -I$(hdf5MSIncDir)
 HDF_LIB_OBJECTS = $(hdf5LibObjDir)/h5Ctor.o $(hdf5LibObjDir)/h5Dtor.o \
 	$(hdf5LibObjDir)/h5ClHandler.o $(hdf5LibObjDir)/clH5Dataset.o  \
-	$(hdf5LibObjDir)/clH5File.o  $(hdf5LibObjDir)/clH5Group.o \
-	$(irodsLibObjDir)/stringOpr.o $(irodsLibObjDir)/msParam.o
+	$(hdf5LibObjDir)/clH5File.o  $(hdf5LibObjDir)/clH5Group.o
 
 ifeq ($(OS_platform), solaris_platform)
 PLATFORM=solaris
