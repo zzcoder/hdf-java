@@ -52,7 +52,8 @@ CFLAGS = $(MY_CFLAG) $(LIB_INCLUDES) $(SVR_INCLUDES) 	\
 	-I$(javaDir)/include -I$(javaDir)/include/$(PLATFORM)	\
 	$(MODULE_CFLAGS) $(INCLUDE_FLAGS)
 
-LDFLAGS +=      $(LDADD) $(LIBRARY) $(MODULE_LDFLAGS)
+# LDFLAGS +=      $(LDADD) $(LIBRARY) $(MODULE_LDFLAGS)
+LDFLAGS +=      $(LDADD) -L$(irodsLibObjDir) -lRodsAPIs $(MODULE_LDFLAGS)
 
 .SUFFIXES: .c .o .so .java .class .h
 
