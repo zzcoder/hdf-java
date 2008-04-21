@@ -92,11 +92,9 @@ public class H5SrbFile extends FileFormat
 
        /* there is bug somewhere in the code. This open() is called
           in a infinite loop if thereis more there one groups at the
-          root level.
-          cannot figure out where is the bug.
-          --- Peter Cao
+          root level.  cannot figure out where is the bug. 
+                                                       --- Peter Cao
         */
-
         if (!isFileOpen) /* make sure it is called only once */
         {
             isFileOpen = true;
