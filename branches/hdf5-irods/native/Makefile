@@ -57,8 +57,8 @@ LIB_CORE_OBJS = \
                 $(libCoreObjDir)/rsyncUtil.o \
                 $(libCoreObjDir)/sockComm.o \
                 $(libCoreObjDir)/stringOpr.o \
-                $(libCoreObjDir)/trimUtil.o     \
-                $(libCoreObjDir)/mcollUtil.o
+                $(libCoreObjDir)/trimUtil.o 
+#                $(libCoreObjDir)/mcollUtil.o
 
 INCLUDE_FLAGS = -I$(hdf5TestDir) -I$(hdf5Dir)/src -I$(hdf5LibIncDir) -I$(hdf5MSIncDir)
 HDF_LIB_OBJECTS = $(hdf5LibObjDir)/h5Ctor.o $(hdf5LibObjDir)/h5Dtor.o \
