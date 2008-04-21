@@ -10,7 +10,7 @@ include $(buildDir)/config/platform.mk
 include $(buildDir)/config/directories.mk
 include $(buildDir)/config/common.mk
 
-irodsLibObjDir = $(buildDir)/lib/core/obj
+libCoreObjDir = $(buildDir)/lib/core/obj
 
 hdf5MSObjDir =      $(modulesDir)/hdf5/microservices/obj
 hdf5MSSrcDir =      $(modulesDir)/hdf5/microservices/src
@@ -25,6 +25,40 @@ LIBDIR = .
 
 SLIB = $(LIBDIR)/libjh5srb.so
 OBJ  = $(LIBDIR)/jh5srb.o
+
+# this is taken from lib/Makefile. Should be merged
+LIB_CORE_OBJS = \
+                $(libCoreObjDir)/base64.o \
+                $(libCoreObjDir)/chksumUtil.o \
+                $(libCoreObjDir)/clientLogin.o \
+                $(libCoreObjDir)/cpUtil.o \
+                $(libCoreObjDir)/getRodsEnv.o \
+                $(libCoreObjDir)/getUtil.o \
+                $(libCoreObjDir)/lsUtil.o \
+                $(libCoreObjDir)/miscUtil.o \
+                $(libCoreObjDir)/mkdirUtil.o \
+                $(libCoreObjDir)/msParam.o \
+                $(libCoreObjDir)/mvUtil.o \
+                $(libCoreObjDir)/obf.o \
+                $(libCoreObjDir)/packStruct.o \
+                $(libCoreObjDir)/parseCommandLine.o \
+                $(libCoreObjDir)/phymvUtil.o \
+                $(libCoreObjDir)/procApiRequest.o \
+                $(libCoreObjDir)/putUtil.o \
+                $(libCoreObjDir)/rcConnect.o \
+                $(libCoreObjDir)/rcMisc.o \
+                $(libCoreObjDir)/rcPortalOpr.o \
+                $(libCoreObjDir)/regUtil.o \
+                $(libCoreObjDir)/replUtil.o \
+                $(libCoreObjDir)/rmUtil.o \
+                $(libCoreObjDir)/rmtrashUtil.o \
+                $(libCoreObjDir)/rodsLog.o \
+                $(libCoreObjDir)/rodsPath.o \
+                $(libCoreObjDir)/rsyncUtil.o \
+                $(libCoreObjDir)/sockComm.o \
+                $(libCoreObjDir)/stringOpr.o \
+                $(libCoreObjDir)/trimUtil.o     \
+                $(libCoreObjDir)/mcollUtil.o
 
 INCLUDE_FLAGS = -I$(hdf5TestDir) -I$(hdf5Dir)/src -I$(hdf5LibIncDir) -I$(hdf5MSIncDir)
 HDF_LIB_OBJECTS = $(hdf5LibObjDir)/h5Ctor.o $(hdf5LibObjDir)/h5Dtor.o \
@@ -53,7 +87,7 @@ CFLAGS = $(MY_CFLAG) $(LIB_INCLUDES) $(SVR_INCLUDES) 	\
 	$(MODULE_CFLAGS) $(INCLUDE_FLAGS)
 
 # LDFLAGS +=      $(LDADD) $(LIBRARY) $(MODULE_LDFLAGS)
-LDFLAGS +=      $(LDADD) -L$(irodsLibObjDir) -lRodsAPIs $(MODULE_LDFLAGS)
+LDFLAGS +=      $(LDADD) $(LIB_CORE_OBJS) $(MODULE_LDFLAGS)
 
 .SUFFIXES: .c .o .so .java .class .h
 
