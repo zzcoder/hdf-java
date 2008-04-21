@@ -56,6 +56,12 @@ public class H5SRB {
     }
 
     /**
+     * Get seperator for individual fied of file list 
+     */
+    public synchronized static native String getFileFieldSeparator() throws Exception;
+
+
+    /**
      *  Get file/directory names from server
      *  @param server_info information of the server to be connected
      *  @param fileList the list of all files in the server
