@@ -37,8 +37,7 @@ import java.awt.Point;
  * @author Peter X. Cao
  * @version 2.4 9/6/2007
  */
-public class UserOptionsDialog extends JDialog
-implements ActionListener, ListSelectionListener
+public class UserOptionsDialog extends JDialog implements ActionListener
 {
 	public static final long serialVersionUID = HObject.serialVersionUID;
 
@@ -83,11 +82,9 @@ implements ActionListener, ListSelectionListener
     /** a list of palette view implementation. */
     private static Vector paletteViews;
 
-    private JList srbJList;
-
-    private JTextField srbFields[];
-
-    private Vector srbVector;
+    //private JList srbJList;
+    //private JTextField srbFields[];
+    //private Vector srbVector;
 
     /** constructs an UserOptionsDialog.
      * @param view The HDFView.
@@ -101,7 +98,7 @@ implements ActionListener, ListSelectionListener
         isFontChanged = false;
         isUserGuideChanged = false;
         isWorkDirChanged = false;
-        srbJList = null;
+        //srbJList = null;
         fontSize = ViewProperties.getFontSize();
         workDir = ViewProperties.getWorkDir();
         if (workDir == null) {
@@ -113,7 +110,7 @@ implements ActionListener, ListSelectionListener
         tableViews = ViewProperties.getTableViewList();
         imageViews = ViewProperties.getImageViewList();
         paletteViews = ViewProperties.getPaletteViewList();
-        srbVector = ViewProperties.getSrbAccount();
+        //srbVector = ViewProperties.getSrbAccount();
 
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(8,8));
@@ -128,10 +125,12 @@ implements ActionListener, ListSelectionListener
         tabbedPane.addTab("General Setting", createGeneralOptionPanel());
         tabbedPane.addTab("Default Module", createModuleOptionPanel());
 
+        /*
         try {
              Class.forName("ncsa.hdf.srb.SRBFileDialog");
              tabbedPane.addTab("SRB Connection", createSrbConnectionPanel());
         } catch (Exception ex) {;}
+        */
 
         tabbedPane.setSelectedIndex(0);
 
@@ -395,6 +394,7 @@ implements ActionListener, ListSelectionListener
         return moduleP;
     }
 
+    /*
     private JPanel createSrbConnectionPanel() {
         JPanel p = new JPanel();
         p.setLayout(new BorderLayout(5,5));
@@ -464,7 +464,6 @@ implements ActionListener, ListSelectionListener
         listScroller.setPreferredSize(new Dimension(w, h));
         lp.add(listScroller, BorderLayout.CENTER);
 
-        /* padding */
         JPanel sp = new JPanel();
         sp.setLayout(new GridLayout(3,1,5,15));
         sp.add(new JLabel(" "));
@@ -479,6 +478,7 @@ implements ActionListener, ListSelectionListener
 
         return p;
     }
+*/
 
     public void actionPerformed(ActionEvent e)
     {
@@ -653,6 +653,7 @@ implements ActionListener, ListSelectionListener
                 paletteViews.remove(moduleName);
             }
         }
+        /*
         else if (cmd.equals("Add srb connsction"))
         {
             String srbaccount[] = new String[7];
@@ -698,6 +699,7 @@ implements ActionListener, ListSelectionListener
                 srbFields[i].setText("");
             }
         }
+        */
         else if (cmd.equals("Help on Auto Contrast")) {
             final String msg = 
                 "Auto Contrast does the following to compute a gain/bias \n"+
@@ -736,6 +738,7 @@ implements ActionListener, ListSelectionListener
         }
     }
 
+    /*
     public void valueChanged(ListSelectionEvent e)
     {
         Object src = e.getSource();
@@ -759,6 +762,7 @@ implements ActionListener, ListSelectionListener
             srbFields[i].setText(srbaccount[i]);
         }
     }
+    */
 
     private void setUserOptions()
     {

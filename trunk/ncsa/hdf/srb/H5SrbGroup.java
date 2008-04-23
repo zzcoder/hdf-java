@@ -108,18 +108,13 @@ public class H5SrbGroup extends Group
     // Implementing DataFormat
     public List getMetadata() throws Exception
     {
-        String srbInfo[] = ((H5SrbFile)getFileFormat()).getSrbInfo();
-        if ( (srbInfo == null) || (srbInfo.length<5)) {
-            return null;
-        }
-
         // load attributes first
         if (attributeList == null)
         {
             attributeList = new Vector();
             opID = H5GROUP_OP_READ_ATTRIBUTE;
             try {
-                H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_GROUP);
+                H5SRB.h5ObjRequest (this, H5SRB.H5OBJECT_GROUP);
             } catch (Exception ex) { throw ex; }
         } // if (attributeList == null)
 

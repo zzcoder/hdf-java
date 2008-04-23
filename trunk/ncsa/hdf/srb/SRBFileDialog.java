@@ -224,7 +224,7 @@ implements ActionListener
             return false;
         }
 
-        H5SrbFile fileFormat = new H5SrbFile(accountInfo, remoteFile.getAbsolutePath());
+        H5SrbFile fileFormat = new H5SrbFile(remoteFile.getAbsolutePath());
 
         try {
             fileFormat.open();
