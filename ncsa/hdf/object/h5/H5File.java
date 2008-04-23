@@ -2012,8 +2012,9 @@ public class H5File extends FileFormat
         // two seconds
         int[] objTypes = new int[nelems];
         String[] objNames = new String[nelems];
+        
         try { H5.H5Gget_obj_info_all(fid, fullPath, objNames, objTypes ); }
-        catch (HDF5Exception ex) {; }
+        catch (HDF5Exception ex) {;}
 
         int i0 = Math.max(0, getStartMembers());
         int i1 = getMaxMembers();
@@ -2170,8 +2171,7 @@ public class H5File extends FileFormat
                 pgroup.addToMemberList(d);
             } else if (obj_type == HDF5Constants.H5G_TYPE)
             {
-                Datatype t = new H5Datatype( this, obj_name, fullPath, 
-                                             oid); // deprecated!
+                Datatype t = new H5Datatype( this, obj_name, fullPath, oid); // deprecated!
 
 
                 node = new DefaultMutableTreeNode(t);

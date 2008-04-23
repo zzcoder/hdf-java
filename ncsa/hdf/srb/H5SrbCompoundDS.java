@@ -120,15 +120,10 @@ public class H5SrbCompoundDS extends CompoundDS
     /** Loads and returns the data value from file. */
     public Object read() throws Exception
     {
-        String srbInfo[] = ((H5SrbFile)getFileFormat()).getSrbInfo();
-        if ( (srbInfo == null) || (srbInfo.length<5)) {
-            return null;
-        }
-
         opID = H5DATASET_OP_READ;
         
         try {
-            H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_DATASET);
+            H5SRB.h5ObjRequest (this, H5SRB.H5OBJECT_DATASET);
         } catch (Exception ex) { throw new Exception (ex.toString()); }
 
         if ((data != null) && data.getClass().isArray())
@@ -195,11 +190,6 @@ public class H5SrbCompoundDS extends CompoundDS
     // Implementing DataFormat
     public List getMetadata() throws Exception
     {
-        String srbInfo[] = ((H5SrbFile)getFileFormat()).getSrbInfo();
-        if ( (srbInfo == null) || (srbInfo.length<5)) {
-            return null;
-        }
-
         // load attributes first
         if (attributeList == null)
         {
@@ -207,7 +197,7 @@ public class H5SrbCompoundDS extends CompoundDS
 
             opID = H5DATASET_OP_READ_ATTRIBUTE;
             try {
-                H5SRB.h5ObjRequest (srbInfo, this, H5SRB.H5OBJECT_DATASET);
+                H5SRB.h5ObjRequest (this, H5SRB.H5OBJECT_DATASET);
             } catch (Exception ex) { throw new Exception (ex.toString()); }
         } // if (attributeList == null)
 
