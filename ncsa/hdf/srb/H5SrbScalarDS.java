@@ -32,7 +32,6 @@ public class H5SrbScalarDS extends ScalarDS
     private List attributeList;
 
     private int opID;
-    private String fullPath; /*path+name*/
 
     public H5SrbScalarDS(FileFormat fileFormat, String name, String path)
     {
@@ -58,11 +57,6 @@ public class H5SrbScalarDS extends ScalarDS
         opID = -1;
         palette = null;
         unsignedConverted = false;
-        if (name == null) {
-            fullPath = path;
-        } else {
-            fullPath = path + HObject.separator + name;
-        }
     }
 
     /*abstract methods inherited from ScalarDS */

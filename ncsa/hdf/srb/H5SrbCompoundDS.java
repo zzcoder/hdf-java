@@ -33,7 +33,6 @@ public class H5SrbCompoundDS extends CompoundDS
      private List attributeList;
 
     private int opID;
-    private String fullPath; /*path+name*/
 
     public H5SrbCompoundDS(FileFormat fileFormat, String name, String path)
     {
@@ -57,11 +56,6 @@ public class H5SrbCompoundDS extends CompoundDS
         super (fileFormat, name, path, oid);
 
         opID = -1;
-        if (name == null) {
-            fullPath = path;
-        } else {
-            fullPath = path + HObject.separator + name;
-        }
     }
 
     public void setMemberCount(int nmembers)
