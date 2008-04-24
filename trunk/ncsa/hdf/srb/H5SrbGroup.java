@@ -20,7 +20,6 @@ public class H5SrbGroup extends Group
 	public static final long serialVersionUID = HObject.serialVersionUID;
 
     private int opID;
-    private String fullPath; /*path+name*/
 
     public static final int H5GROUP_OP_ERROR          = -1;
     public static final int H5GROUP_OP_CREATE         = 0;
@@ -57,11 +56,6 @@ public class H5SrbGroup extends Group
         super (fileFormat, name, path, parent, theID);
 
         opID = -1;
-        if (name == null) {
-            fullPath = path;
-        } else {
-            fullPath = path + HObject.separator + name;
-        }
     }
 
     /**
