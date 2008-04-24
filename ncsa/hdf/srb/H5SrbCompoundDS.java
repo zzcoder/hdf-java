@@ -210,6 +210,20 @@ public class H5SrbCompoundDS extends CompoundDS
         
         return (attributeList.size()>0);
     }
+    
+    void addAttribute(String attrName, Object attrValue, long[] attrDims,
+            int tclass, int tsize, int torder, int tsign)
+    {
+        if (attributeList == null) {
+            attributeList = new Vector();
+         }
+
+         H5SrbDatatype type = new H5SrbDatatype(tclass, tsize, torder, tsign);
+         Attribute attr = new Attribute(attrName, type, attrDims);
+         attr.setValue(attrValue);
+
+         attributeList.add(attr);
+     }
 
     /*
      * (non-Javadoc)
