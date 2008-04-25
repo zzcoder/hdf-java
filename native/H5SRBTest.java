@@ -16,6 +16,7 @@ public class H5SRBTest {
     */
     private final String accountInfo[] = new String[7];
     private H5SrbFile srbFile;
+    private int       fid;
 
     public H5SRBTest(String filename) {
         accountInfo[0] = "kagiso.hdfgroup.uiuc.edu";
@@ -26,14 +27,12 @@ public class H5SRBTest {
         accountInfo[5] = "tempZone";
         accountInfo[6] = "demoResc";
         
-System.out.println(filename);
-
-       srbFile = new H5SrbFile(accountInfo, filename);
+       srbFile = new H5SrbFile(filename);
 
         try {
-            srbFile.open();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            int fid = srbFile.open();
+        } catch (Throwable err) {
+            err.printStackTrace();
         }
     }
 
