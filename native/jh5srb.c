@@ -4,6 +4,7 @@
 #include "h5File.h"
 #include "h5Dataset.h"
 #include "rcConnect.h"
+#include "miscUtil.h"
 
 
 #define NODEBUG
@@ -29,9 +30,10 @@ extern int h5ObjRequest(rcComm_t *conn, void *obj, int objID);
 /* count of open files */
 static int file_count = 0;
 
-rcComm_t *current_connection = NULL;
+rcComm_t *server_connection = NULL;
 rcComm_t *make_connection(JNIEnv *env);
 void     close_connection(rcComm_t *conn_t);
+rodsEnv  rodsServerEnv;
 
 jint h5file_request(JNIEnv *env, jobject jobj);
 jint h5dataset_request(JNIEnv *env, jobject jobj);
@@ -59,6 +61,7 @@ void print_datatype(H5Datatype *type);
 void print_dataspace(H5Dataspace *space);
 void print_attribute(H5Attribute *a);
 
+jint getFileList(JNIEnv *env, jobject flist, jmethodID addElement, rcComm_t *conn, collHandle_t *coll);
 
 /**
  * Caching in the Defining Class's Initializer
@@ -126,19 +129,50 @@ JNIEXPORT jstring JNICALL Java_ncsa_hdf_srb_H5SRB_getFileFieldSeparator
 {
     return (*env)->NewStringUTF(env,FILE_FIELD_SEPARATOR);
 }
- 
+
 /*
  * Class:     ncsa_hdf_srb_H5SRB
- * Method:    listCollection
- * Signature: ([Ljava/lang/String;[Ljava/lang/String;)I
+ * Method:    getFileList
+ * Signature: (Ljava/util/Vector;)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_srb_H5SRB_listCollection
-  (JNIEnv *env, jclass cls, jobjectArray jfileList)
+JNIEXPORT jint JNICALL Java_ncsa_hdf_srb_H5SRB_getFileList
+  (JNIEnv *env, jclass cls, jobject flist)
 {
-    jint ret_val = 0;
+    int ret_val = 0;
+    int flag = 0;
+    collHandle_t collHandle;
+    jclass vectClass = NULL;
+    jmethodID method_vector_addElement = NULL;
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                              HObject                                  //
+    ///////////////////////////////////////////////////////////////////////////
+    vectClass = (*env)->FindClass(env, "java/util/Vector");
+    if (!vectClass)
+        THROW_JNI_ERROR ("java/lang/ClassNotFoundException", "java/util/Vector");
+
+    method_vector_addElement = (*env)->GetMethodID(env, vectClass, "addElement", "(Ljava/lang/Object;)V");
+    if (!method_vector_addElement)
+        THROW_JNI_ERROR ("java/lang/NoSuchMethodException","java/util/Vector.method_vector_addElement()");
 
 
-    return ret_val;
+    if (server_connection == NULL) {
+        if ( (server_connection = make_connection(env)) == NULL )
+            THROW_JNI_ERROR("java/lang/RuntimeException", "Cannot make connection to the server");
+    }
+
+    flag |= LONG_METADATA_FG;
+    ret_val = rclOpenCollection (server_connection, rodsServerEnv.rodsHome, flag, &collHandle);
+    if (ret_val <0)
+        THROW_JNI_ERROR("java/lang/RuntimeException", "rclOpenCollection() failed");
+
+    getFileList(env, flist, method_vector_addElement, server_connection, &collHandle);
+
+done:
+
+    rclCloseCollection (&collHandle);
+
+    return (jint)ret_val;
 }
 
 /*
@@ -151,8 +185,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_srb_H5SRB_h5ObjRequest
 {
     int ret_val=0;
 
-    if (current_connection == NULL) {
-        if ( (current_connection = make_connection(env)) == NULL )
+    if (server_connection == NULL) {
+        if ( (server_connection = make_connection(env)) == NULL )
             THROW_JNI_ERROR("java/lang/RuntimeException", "Cannot make connection to the server");
     }
 
@@ -177,6 +211,39 @@ done:
     return ret_val;
 }
 
+jint getFileList(JNIEnv *env, jobject flist, jmethodID addElement, 
+    rcComm_t *conn, collHandle_t *collHandle) 
+{
+    int ret_val = 0;
+    collEnt_t collEnt;
+    char fname[MAX_NAME_LEN];
+    
+    while ((ret_val = rclReadCollection (conn, collHandle, &collEnt)) >= 0) {
+        fname[0] = '\0';
+        if (collEnt.objType == DATA_OBJ_T) {
+            sprintf(fname, "%s/%s%s%lld%s%s", collEnt.collName, collEnt.dataName, 
+                FILE_FIELD_SEPARATOR, collEnt.dataSize, FILE_FIELD_SEPARATOR,collEnt.modifyTime);
+            (*env)->CallVoidMethod(env, flist, addElement, (*env)->NewStringUTF(env, fname));
+	} else if (collEnt.objType == COLL_OBJ_T) {
+	    collHandle_t subCollhandle;
+            sprintf(fname, "%s", collEnt.collName);
+            (*env)->CallVoidMethod(env, flist, addElement, (*env)->NewStringUTF(env, fname));
+
+            ret_val = rclOpenCollection (conn, collEnt.collName, collHandle->flag, &subCollhandle);
+            if (ret_val < 0)
+                THROW_JNI_ERROR("java/lang/RuntimeException", "rclOpenCollection() failed");
+
+	    /* recursively retrieve file list  */
+	    getFileList(env, flist, addElement, conn, &subCollhandle);
+	    rclCloseCollection (&subCollhandle);
+	}
+    }
+
+done:
+    
+    return (jint)ret_val;
+}
+
 /* process HDF5-SRB file request: 
  * 1) decode Java message to C, 
  * 2) send request to the server
@@ -187,7 +254,7 @@ jint h5file_request(JNIEnv *env, jobject jobj)
     jint ret_val = 0;
     H5File h5file;
 
-    assert(current_connection);
+    assert(server_connection);
 
     H5File_ctor(&h5file);
 
@@ -200,14 +267,14 @@ jint h5file_request(JNIEnv *env, jobject jobj)
 #endif
 
     /* send the request to the server to process */
-    if (h5ObjRequest(current_connection, &h5file, H5OBJECT_FILE) < 0)
+    if (h5ObjRequest(server_connection, &h5file, H5OBJECT_FILE) < 0)
     {
         H5File_dtor(&h5file);
         THROW_JNI_ERROR("java/lang/RuntimeException", "file h5ObjRequest() failed");
     }
 
 #ifdef DEBUG
-    print_group(current_connection, h5file.root);fflush(stdout);
+    print_group(server_connection, h5file.root);fflush(stdout);
 #endif
 
     if ( (ret_val = c2j_h5file (env, jobj, &h5file)) < 0)
@@ -221,7 +288,7 @@ jint h5file_request(JNIEnv *env, jobject jobj)
 done:
 
     if (file_count <=0 ) {
-        close_connection(current_connection);
+        close_connection(server_connection);
     }
 
     H5File_dtor(&h5file);
@@ -239,7 +306,7 @@ jint h5dataset_request(JNIEnv *env, jobject jobj)
     jint ret_val=0, i=0;
     H5Dataset h5dataset;
 
-    assert(current_connection);
+    assert(server_connection);
 
     H5Dataset_ctor(&h5dataset);
 
@@ -252,7 +319,7 @@ jint h5dataset_request(JNIEnv *env, jobject jobj)
         goto done;
 
     /* send the request to the server to process */
-    if (h5ObjRequest(current_connection, &h5dataset, H5OBJECT_DATASET) < 0) {
+    if (h5ObjRequest(server_connection, &h5dataset, H5OBJECT_DATASET) < 0) {
         H5Dataset_dtor(&h5dataset);
         THROW_JNI_ERROR("java/lang/RuntimeException", "dataset h5ObjRequest() failed");
     }
@@ -285,7 +352,7 @@ jint h5group_request(JNIEnv *env, jobject jobj)
     jint ret_val=0;
     H5Group h5group;
 
-    assert(current_connection);
+    assert(server_connection);
 
     H5Group_ctor(&h5group);
 
@@ -293,7 +360,7 @@ jint h5group_request(JNIEnv *env, jobject jobj)
         goto done;
 
     /* send the request to the server to process */
-    if (h5ObjRequest(current_connection, &h5group, H5OBJECT_GROUP) < 0) {
+    if (h5ObjRequest(server_connection, &h5group, H5OBJECT_GROUP) < 0) {
         H5Group_dtor(&h5group);
         THROW_JNI_ERROR("java/lang/RuntimeException", "group h5ObjRequest() failed");
     }
@@ -763,7 +830,8 @@ int load_field_method_IDs(JNIEnv *env)
     if (!method_group_addToMemberList)
         THROW_JNI_ERROR ("java/lang/NoSuchMethodException","ncsa/hdf/srb/H5SrbGroup.addToMemberList()");
 
-    method_group_addAttribute = (*env)->GetMethodID(env, cls, "addAttribute", "(Ljava/lang/String;Ljava/lang/Object;[JIIII)V");
+    method_group_addAttribute = (*env)->GetMethodID(env, cls, "addAttribute", 
+        "(Ljava/lang/String;Ljava/lang/Object;[JIIII)V");
     if (!method_group_addAttribute)
         THROW_JNI_ERROR ("java/lang/NoSuchMethodException","ncsa/hdf/srb/H5SrbGroup.addAttribute()");
 
@@ -926,28 +994,31 @@ void set_field_method_IDs_compound()
     method_dataset_addAttribute = method_dataset_compound_addAttribute;
 }
 
+/* 
+ *  Make connection to the server
+ */
 rcComm_t *make_connection(JNIEnv *env) {
     rcComm_t *conn_t;
-    rodsEnv rEnv;
     rErrMsg_t errMsg;
-    int status;
+    int ret_val;
 
-    status = getRodsEnv(&rEnv);
-    if (status<0) {
+    ret_val = getRodsEnv(&rodsServerEnv);
+    if (ret_val<0) {
         (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/RuntimeException"), "getRodsEnv() failed");
         return NULL;
     }
 
-    conn_t = rcConnect (rEnv.rodsHost, rEnv.rodsPort, rEnv.rodsUserName, rEnv.rodsZone, 1, &errMsg);
+    conn_t = rcConnect (rodsServerEnv.rodsHost, rodsServerEnv.rodsPort, 
+        rodsServerEnv.rodsUserName, rodsServerEnv.rodsZone, 1, &errMsg);
 
     if ( (NULL == conn_t) ) {
         (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/RuntimeException"), errMsg.msg);
         return NULL;
     }
 
-    status = clientLogin(conn_t);
+    ret_val = clientLogin(conn_t);
 
-    if (status != 0) {
+    if (ret_val != 0) {
         rcDisconnect(conn_t);
         (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/RuntimeException"), "Client login failed");
         return NULL;
