@@ -66,7 +66,7 @@ public class H5SRB {
      *  @param fileList the list of all files in the server
      *  @return the number of file in the server
      */
-    public synchronized static native int listCollection(String fileList[]) throws Exception;
+    public synchronized static native int getFileList(java.util.ArrayList fileList) throws Exception;
 
     /**
      *   Process a data request
