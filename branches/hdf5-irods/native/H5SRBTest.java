@@ -1,22 +1,11 @@
 import java.io.*;
+import java.util.*;
 import ncsa.hdf.srb.*;
 
 /**
 **/
 public class H5SRBTest {
-    /*
-        IRODSAccount:
-            String host,                    // accountInfo[0]
-            int port,                       // accountInfo[1]
-            String userName,                // accountInfo[2]
-            String password,                // accountInfo[3]
-            String homeDirectory,           // accountInfo[4]
-            String mdasDomainNamee/Zone,    // accountInfo[5]
-            String defaultStorageResource   // accountInfo[6]
-    */
     private final String accountInfo[] = new String[7];
-    private H5SrbFile srbFile;
-    private int       fid;
 
     public H5SRBTest(String filename) {
         accountInfo[0] = "kagiso.hdfgroup.uiuc.edu";
@@ -26,8 +15,30 @@ public class H5SRBTest {
         accountInfo[4] = "/tempZone/home/rods";
         accountInfo[5] = "tempZone";
         accountInfo[6] = "demoResc";
-        
-       srbFile = new H5SrbFile(filename);
+
+        try {
+            testFileList();
+ 	} catch (Exception ex) {
+            ex.printStackTrace();
+        } 
+    }
+
+    public void testFileList() throws Exception
+    {
+        Vector flist = new Vector(50);
+
+        System.out.println(H5SRB.getFileFieldSeparator());
+
+        H5SRB.getFileList(flist);
+        int n = flist.size();
+
+        for (int i=0; i<n; i++)
+            System.out.println(flist.elementAt(i));
+    }
+
+    public void testFileContent(String filename) throws Exception
+    {
+       H5SrbFile srbFile = new H5SrbFile(filename);
 
         try {
             int fid = srbFile.open();
