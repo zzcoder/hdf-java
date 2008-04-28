@@ -54,7 +54,33 @@ public class H5SRB {
             } catch (Throwable err) { err.printStackTrace(); isLoaded = false; }
         }
     }
+  
+    /**
+     *  Returns server information.
+     *  <p>
+        srvInfo[0] = rodsUserName
+        srvInfo[1] = rodsHost
+        srvInfo[2] = rodsPort
+        srvInfo[3] = xmsgHost
+        srvInfo[4] = xmsgPort
+        srvInfo[5] = rodsHome
+        srvInfo[6] = rodsCwd
+        srvInfo[7] = rodsAuthScheme
+        srvInfo[8] = rodsDefResource
+        srvInfo[9] = rodsZone
+     */
+    public static String[] getServerInfo() throws Exception
+    {
+        String srvInfo[] = new String[10];
 
+        _getServerInfo(srvInfo);
+
+        return srvInfo;
+    }
+    
+    private synchronized static native void _getServerInfo(String srvInfo[]) throws Exception;
+  
+    
     /**
      * Get seperator for individual fied of file list 
      */
