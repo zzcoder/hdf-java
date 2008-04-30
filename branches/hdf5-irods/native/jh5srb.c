@@ -132,6 +132,65 @@ JNIEXPORT jstring JNICALL Java_ncsa_hdf_srb_H5SRB_getFileFieldSeparator
 
 /*
  * Class:     ncsa_hdf_srb_H5SRB
+ * Method:    _getServerInfo
+ * Signature: ([Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_ncsa_hdf_srb_H5SRB__1getServerInfo
+  (JNIEnv *env, jclass cls, jobjectArray jInfo)
+{
+    int n;
+    jstring jstr;
+    char str[NAME_LEN];
+
+    if (server_connection == NULL) {
+        if ( (server_connection = make_connection(env)) == NULL )
+            (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/RuntimeException"), 
+                 "Cannot make connection to the server");
+    }
+ 
+    n = (*env)->GetArrayLength(env, jInfo);
+    if (n<10) {
+        (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/IllegalArgumentException"), 
+             "Array size for server information is less than 10");
+    }
+
+    jstr = (*env)->NewStringUTF(env, rodsServerEnv.rodsUserName);
+    (*env)->SetObjectArrayElement(env, jInfo, 0, jstr);
+
+    jstr = (*env)->NewStringUTF(env, rodsServerEnv.rodsHost);
+    (*env)->SetObjectArrayElement(env, jInfo, 1, jstr);
+
+    str[0] = '\0';
+    sprintf(str, "%d",  rodsServerEnv.rodsPort);
+    jstr = (*env)->NewStringUTF(env, str);
+    (*env)->SetObjectArrayElement(env, jInfo, 2, jstr);
+
+    jstr = (*env)->NewStringUTF(env, rodsServerEnv.xmsgHost);
+    (*env)->SetObjectArrayElement(env, jInfo, 3, jstr);
+
+    str[0] = '\0';
+    sprintf(str, "%d",  rodsServerEnv.xmsgPort);
+    jstr = (*env)->NewStringUTF(env, str);
+    (*env)->SetObjectArrayElement(env, jInfo, 4, jstr);
+
+    jstr = (*env)->NewStringUTF(env, rodsServerEnv.rodsHome);
+    (*env)->SetObjectArrayElement(env, jInfo, 5, jstr);
+
+    jstr = (*env)->NewStringUTF(env, rodsServerEnv.rodsCwd);
+    (*env)->SetObjectArrayElement(env, jInfo, 6, jstr);
+
+    jstr = (*env)->NewStringUTF(env, rodsServerEnv.rodsAuthScheme);
+    (*env)->SetObjectArrayElement(env, jInfo, 7, jstr);
+
+    jstr = (*env)->NewStringUTF(env, rodsServerEnv.rodsDefResource);
+    (*env)->SetObjectArrayElement(env, jInfo, 8, jstr);
+
+    jstr = (*env)->NewStringUTF(env, rodsServerEnv.rodsZone);
+    (*env)->SetObjectArrayElement(env, jInfo, 9, jstr);
+}
+
+/*
+ * Class:     ncsa_hdf_srb_H5SRB
  * Method:    getFileList
  * Signature: (Ljava/util/Vector;)I
  */
