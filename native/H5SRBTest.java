@@ -29,6 +29,13 @@ public class H5SRBTest {
 
         System.out.println(H5SRB.getFileFieldSeparator());
 
+        System.out.println("Server information:");
+        String srvInfo[] = H5SRB.getServerInfo();
+        for (int i=0; i<srvInfo.length; i++) {
+            System.out.println("\t"+srvInfo[i]);
+        }
+        System.out.println();
+
         H5SRB.getFileList(flist);
         int n = flist.size();
 
