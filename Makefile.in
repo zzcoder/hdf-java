@@ -572,6 +572,7 @@ ncsa.hdf.srb: ncsa/hdf/srb/H5SrbCompoundDS.class \
 	ncsa/hdf/srb/H5SrbFile.class \
 	ncsa/hdf/srb/H5SrbGroup.class \
 	ncsa/hdf/srb/H5SrbScalarDS.class \
+	ncsa/hdf/srb/SRBFileDialog.class \
 	ncsa/hdf/srb/H5SRB.class
 
 
@@ -734,6 +735,7 @@ H5SrbFile: ncsa/hdf/srb/H5SrbFile.class
 H5SrbGroup: ncsa/hdf/srb/H5SrbGroup.class
 H5SRB: ncsa/hdf/srb/H5SRB.class
 H5SrbScalarDS: ncsa/hdf/srb/H5SrbScalarDS.class
+SRBFileDialog: ncsa/hdf/srb/SRBFileDialog.class
 
 #  All classes that are built, including private classes:
 #     This is what is loaded into the 'jar' file.
