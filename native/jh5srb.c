@@ -293,14 +293,16 @@ jint getFileList(JNIEnv *env, jobject flist, jmethodID addElement,
                 dsize_unit = 'K';
             }
 
-            sprintf(fname, "%s/%s %s %.1f%c", collEnt.collName, collEnt.dataName, 
-                FILE_FIELD_SEPARATOR, dsize, dsize_unit);
             /*
             sprintf(fname, "%s/%s%s%lld%s%s", collEnt.collName, collEnt.dataName, 
                 FILE_FIELD_SEPARATOR, collEnt.dataSize, FILE_FIELD_SEPARATOR,collEnt.modifyTime);
             */
 
-            (*env)->CallVoidMethod(env, flist, addElement, (*env)->NewStringUTF(env, fname));
+            if (collEnt.dataSize>0) {
+                sprintf(fname, "%s/%s %s %.1f%c", collEnt.collName, collEnt.dataName, 
+                    FILE_FIELD_SEPARATOR, dsize, dsize_unit);
+                (*env)->CallVoidMethod(env, flist, addElement, (*env)->NewStringUTF(env, fname));
+            }
 	} else if (collEnt.objType == COLL_OBJ_T) {
 	    collHandle_t subCollhandle;
             /*
