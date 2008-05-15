@@ -253,13 +253,13 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_srb_H5SRB_h5ObjRequest
 
     switch (obj_type) {
         case H5OBJECT_FILE:
-            h5file_request(env, jobj);
+            ret_val = h5file_request(env, jobj);
             break;
         case H5OBJECT_DATASET:
-            h5dataset_request(env, jobj);
+            ret_val = h5dataset_request(env, jobj);
             break;
         case H5OBJECT_GROUP:
-            h5group_request(env, jobj);
+            ret_val = h5group_request(env, jobj);
             break;
         default:
             THROW_JNI_ERROR("java/lang/UnsupportedOperationException", "Unsupported client request");
@@ -601,6 +601,7 @@ jint c2j_h5file(JNIEnv *env, jobject jobj, H5File *cobj)
 
     assert(cobj);
 
+
     if (H5FILE_OP_CLOSE == cobj->opID)
         goto  done;
 
@@ -615,7 +616,7 @@ jint c2j_h5file(JNIEnv *env, jobject jobj, H5File *cobj)
         THROW_JNI_ERROR("java/lang/RuntimeException", jni_name);
 
 done:
-    return ret_val;
+    return (jint)cobj->fid;
 }
 
 /* construct Java group object from C group structure */
