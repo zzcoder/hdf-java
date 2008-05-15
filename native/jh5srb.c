@@ -280,13 +280,33 @@ jint getFileList(JNIEnv *env, jobject flist, jmethodID addElement,
     while ((ret_val = rclReadCollection (conn, collHandle, &collEnt)) >= 0) {
         fname[0] = '\0';
         if (collEnt.objType == DATA_OBJ_T) {
+            char dsize_unit = ' ';
+            double dsize = (double)collEnt.dataSize;
+            if ((collEnt.dataSize>>30) > 0) {
+                dsize = (double)(collEnt.dataSize/1073741824.0);
+                dsize_unit = 'G';
+            } else if ((collEnt.dataSize>>20) > 0) {
+                dsize = (double)(collEnt.dataSize/1048576.0);
+                dsize_unit = 'M';
+            } else if ((collEnt.dataSize>>10) > 0) {
+                dsize = (double)(collEnt.dataSize/1024.0);
+                dsize_unit = 'K';
+            }
+
+            sprintf(fname, "%s/%s %s %.1f%c", collEnt.collName, collEnt.dataName, 
+                FILE_FIELD_SEPARATOR, dsize, dsize_unit);
+            /*
             sprintf(fname, "%s/%s%s%lld%s%s", collEnt.collName, collEnt.dataName, 
                 FILE_FIELD_SEPARATOR, collEnt.dataSize, FILE_FIELD_SEPARATOR,collEnt.modifyTime);
+            */
+
             (*env)->CallVoidMethod(env, flist, addElement, (*env)->NewStringUTF(env, fname));
 	} else if (collEnt.objType == COLL_OBJ_T) {
 	    collHandle_t subCollhandle;
+            /*
             sprintf(fname, "%s", collEnt.collName);
             (*env)->CallVoidMethod(env, flist, addElement, (*env)->NewStringUTF(env, fname));
+            */
 
             ret_val = rclOpenCollection (conn, collEnt.collName, collHandle->flag, &subCollhandle);
             if (ret_val < 0)
