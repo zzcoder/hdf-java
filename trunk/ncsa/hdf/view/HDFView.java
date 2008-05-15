@@ -2107,7 +2107,7 @@ HyperlinkListener, ChangeListener
             theClass = null;
             showStatus(ex.toString());
         }
-        
+
         if (theClass == null) {
             return;
         }
