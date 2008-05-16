@@ -186,10 +186,9 @@ HyperlinkListener, ChangeListener
     /** to add and display url */
     private JComboBox urlBar;
 
-    /** dialog to display srb files */
-    private JDialog srbFileDialog;
-    
     private UserOptionsDialog userOptionDialog;    
+    
+    private Constructor ctrSrbFileDialog;
 
     /**
      * Constructs the HDFView with a given root directory, where the
@@ -209,8 +208,8 @@ HyperlinkListener, ChangeListener
         rootDir = root;
         currentFile = null;
         frameOffset = 0;
-        srbFileDialog = null;
         userOptionDialog = null;
+        ctrSrbFileDialog = null;
         toolkit = Toolkit.getDefaultToolkit();
         ViewProperties.loadExtClass();
 
@@ -470,13 +469,19 @@ HyperlinkListener, ChangeListener
         item.setActionCommand("Open file read-only");
         fileMenu.add(item);
 
-        item = new JMenuItem( "Open from SRB");
-        item.setMnemonic(KeyEvent.VK_S);
-        item.addActionListener(this);
-        item.setActionCommand("Open from srb");
-        fileMenu.add(item);
-        try { Class.forName("ncsa.hdf.srb.SRBFileDialog"); }
-        catch (Throwable ex) {item.setEnabled(false);}
+        boolean isSrbSupported = true;
+        try { 
+            System.loadLibrary("jh5srb");
+            Class.forName("ncsa.hdf.srb.SRBFileDialog"); 
+        } catch (Throwable ex) {isSrbSupported = false;}
+       
+        if (isSrbSupported) {
+            item = new JMenuItem( "Open from SRB");
+            item.setMnemonic(KeyEvent.VK_S);
+            item.addActionListener(this);
+            item.setActionCommand("Open from srb");
+            fileMenu.add(item);
+        }
 
         fileMenu.addSeparator();
 
@@ -2094,30 +2099,38 @@ HyperlinkListener, ChangeListener
         setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR));
 
          return localFile;
-     }
+    }
 
-     /** open file from SRB server */
-     private void openFromSRB()
-     {
-        Class theClass = null;
-        
-        try { 
-            theClass = Class.forName("ncsa.hdf.srb.SRBFileDialog"); 
-        } catch (Exception ex) {
-            theClass = null;
-            showStatus(ex.toString());
+    /** open file from SRB server */
+    private void openFromSRB()
+    {
+        if (ctrSrbFileDialog == null) {
+            Class theClass = null;
+            
+            try { 
+                theClass = Class.forName("ncsa.hdf.srb.SRBFileDialog"); 
+            } catch (Exception ex) {
+                theClass = null;
+                showStatus(ex.toString());
+            }
+
+            if (theClass == null) {
+                return;
+            }
+
+            try {
+                Class[] paramClass = {Class.forName("java.awt.Frame")};
+                ctrSrbFileDialog = theClass.getConstructor(paramClass);
+            } catch (Exception ex) {
+                ctrSrbFileDialog = null;
+                return;
+            }
         }
 
-        if (theClass == null) {
-            return;
-        }
-
+        JDialog srbFileDialog = null;
         try {
-            boolean mode = true;
-            Class[] paramClass = {Class.forName("java.awt.Frame")};
-            Constructor constructor = theClass.getConstructor(paramClass);
             Object[] paramObj = {(java.awt.Frame)this};
-            srbFileDialog = (JDialog)constructor.newInstance(paramObj);
+            srbFileDialog = (JDialog)ctrSrbFileDialog.newInstance(paramObj);
         } catch (Exception ex) {
             if (srbFileDialog != null) {
                 srbFileDialog.dispose();
