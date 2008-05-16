@@ -125,7 +125,7 @@ install-just-hdf4: install-hdflib install-jhdf
 
 install-just-hdf5: install-hdf5lib install-jhdf5
 
-packages: jhdf-packages jhdf5-packages nc2-packages fits-packages jh4toh5-packages jhdfobj-packages jhdfview-packages h5srb-packages
+packages: jhdf-packages jhdf5-packages nc2-packages fits-packages jh4toh5-packages jhdfobj-packages h5srb-packages jhdfview-packages
 
 jh4toh5-packages: 
 	@if test -n "$(H45INC)" ; then $(MAKE) do-jh4toh5-packages ; fi
