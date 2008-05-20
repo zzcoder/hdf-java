@@ -2786,8 +2786,8 @@ implements ImageView, ActionListener
             }
             rect.x = (int) Math.floor(minx);
             rect.y = (int) Math.floor(miny);
-            rect.width = (int) Math.ceil(maxx) - rect.x + 1;
-            rect.height = (int) Math.ceil(maxy) - rect.y + 1;
+            rect.width = (int) Math.ceil(maxx) - rect.x;
+            rect.height = (int) Math.ceil(maxy) - rect.y;
         }
 
         public void setDimensions(int width, int height) {
