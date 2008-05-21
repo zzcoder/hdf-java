@@ -2057,7 +2057,7 @@ implements ImageView, ActionListener
 
         private void showPixelValue(int x, int y)
         {
-            if (!valueField.isVisible()) {
+            if (!valueField.isVisible() || rotateCount!=0) {
                 return;
             }
 
@@ -2076,7 +2076,7 @@ implements ImageView, ActionListener
             if ((y < 0) || (y >= h)) {
                 return; // out of image bound
             }
-
+            
             // transfer location to the original coordinator
             if (isHorizontalFlipped) {
                 x = w - 1 - x;
