@@ -1547,6 +1547,7 @@ implements TreeView, ActionListener
         }
 
         Dataset d = (Dataset)dataObject;
+
         if (d.getRank() <= 0) {
             d.init();
         }
@@ -1610,7 +1611,7 @@ implements TreeView, ActionListener
         ((JFrame)viewer).setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try {
             theView = Tools.newInstance(theClass, initargs);
-                viewer.addDataView((DataView)theView);
+            viewer.addDataView((DataView)theView);
         }finally {
             ((JFrame)viewer).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }

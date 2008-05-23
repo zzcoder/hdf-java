@@ -110,7 +110,26 @@ public class H5SrbScalarDS extends ScalarDS
      * data, teh data object first call init() to fill the datatype and
      * dataspace information, then load the data content.
      */
-    public void init() {;}
+    public void init() {
+        if (rank == 0)
+            rank = 1;
+
+        if (startDims == null)
+            startDims = new long[rank];
+
+        if (selectedDims == null)
+            selectedDims = new long[rank];
+
+        if (selectedStride == null)
+        {
+            selectedStride = new long[rank];
+            for (int i=0; i<rank; i++) {
+                selectedStride[i] = 1;
+            }
+        }
+
+        resetSelection();
+    }
     
     /*
      * (non-Javadoc)
@@ -189,20 +208,6 @@ public class H5SrbScalarDS extends ScalarDS
         return attributeList;
     }
 
-    void addAttribute(String attrName, Object attrValue, long[] attrDims,
-                     int tclass, int tsize, int torder, int tsign)
-    {
-        if (attributeList == null) {
-            attributeList = new Vector();
-        }
-
-        H5SrbDatatype type = new H5SrbDatatype(tclass, tsize, torder, tsign);
-        Attribute attr = new Attribute(attrName, type, attrDims);
-        attr.setValue(attrValue);
-
-        attributeList.add(attr);
-    }
-
     /**
      * Saves a specific metadata into file. If the metadata exists, it
      * updates its value. If the metadata does not exists, it creates
@@ -218,5 +223,89 @@ public class H5SrbScalarDS extends ScalarDS
      * @param info the metadata to delete.
      */
     public void removeMetadata(Object info) throws Exception {;}
+
+    private void addAttribute(String attrName, Object attrValue, long[] attrDims,
+                     int tclass, int tsize, int torder, int tsign)
+    {
+        if (attributeList == null) {
+            attributeList = new Vector();
+        }
+
+        H5SrbDatatype type = new H5SrbDatatype(tclass, tsize, torder, tsign);
+        Attribute attr = new Attribute(attrName, type, attrDims);
+        attr.setValue(attrValue);
+
+        attributeList.add(attr);
+    }
+
+    /**
+     * Resets selection of dataspace
+     */
+    private void resetSelection() {
+
+        for (int i=0; i<rank; i++)
+        {
+            startDims[i] = 0;
+            selectedDims[i] = 1;
+            if (selectedStride != null) {
+                selectedStride[i] = 1;
+            }
+        }
+
+        if (interlace == INTERLACE_PIXEL)
+        {
+            // 24-bit TRUE color image
+            // [height][width][pixel components]
+            selectedDims[2] = 3;
+            selectedDims[0] = dims[0];
+            selectedDims[1] = dims[1];
+            selectedIndex[0] = 0; // index for height
+            selectedIndex[1] = 1; // index for width
+            selectedIndex[2] = 2; // index for depth
+        }
+        else if (interlace == INTERLACE_PLANE)
+        {
+            // 24-bit TRUE color image
+            // [pixel components][height][width]
+            selectedDims[0] = 3;
+            selectedDims[1] = dims[1];
+            selectedDims[2] = dims[2];
+            selectedIndex[0] = 1; // index for height
+            selectedIndex[1] = 2; // index for width
+            selectedIndex[2] = 0; // index for depth
+        }
+        else if (rank == 1)
+        {
+            selectedIndex[0] = 0;
+            selectedDims[0] = dims[0];
+        }
+        else if (rank == 2)
+        {
+            selectedIndex[0] = 0;
+            selectedIndex[1] = 1;
+            selectedDims[0] = dims[0];
+            selectedDims[1] = dims[1];
+        }
+        else if (rank > 2)
+        {
+            // 3D dataset is arranged in the order of [frame][height][width] by default
+            selectedIndex[1] = rank-1; // width, the fastest dimension
+            selectedIndex[0] = rank-2; // height
+            selectedIndex[2] = rank-3; // frames
+            selectedDims[selectedIndex[0]] = dims[selectedIndex[0]];
+            selectedDims[selectedIndex[1]] = dims[selectedIndex[1]];
+        }
+
+        if ((rank > 1) && isText)
+        {
+            selectedIndex[0] = rank-1;
+            selectedIndex[1] = 0;
+            selectedDims[0] = 1;
+            selectedDims[selectedIndex[0]] = dims[selectedIndex[0]];
+        }
+        
+        isDataLoaded = false;
+    }
+
 
 }

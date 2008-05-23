@@ -173,10 +173,10 @@ implements ActionListener
             JOptionPane.showMessageDialog( (JFrame)viewer, "File is null",
                 getTitle(), JOptionPane.ERROR_MESSAGE);
             return false;
-        }
+        } else
+        remoteFile = remoteFile.trim();
 
         H5SrbFile fileFormat = new H5SrbFile(remoteFile);
-
         try {
             fileFormat.open();
         } catch (Exception ex) {
@@ -202,7 +202,58 @@ implements ActionListener
         return retVal;
     }
 
+    public @interface Test { }
 
+    @Test
+    public void testFileList() throws Exception
+    {
+        Vector flist = new Vector(50);
+
+        System.out.println(H5SRB.getFileFieldSeparator());
+
+        System.out.println("Server information:");
+        String srvInfo[] = H5SRB.getServerInfo();
+        for (int i=0; i<srvInfo.length; i++) {
+            System.out.println("\t"+srvInfo[i]);
+        }
+        System.out.println();
+
+        H5SRB.getFileList(flist);
+        int n = flist.size();
+
+        for (int i=0; i<n; i++)
+            System.out.println(flist.elementAt(i));
+    }
+
+    @Test
+    public void testFileContent(String filename) throws Exception
+    {
+       int fid = 0;
+       H5SrbFile srbFile = new H5SrbFile(filename);
+        System.out.println(filename);
+
+        try {
+            fid = srbFile.open();
+        } catch (Throwable err) {
+            err.printStackTrace();
+        }
+
+        if (fid <=0) {
+            System.out.println("Failed to open file from server: fid="+fid);
+            return;
+        }
+
+        TreeNode root = srbFile.getRootNode();
+        if (root == null)  {
+            System.out.println("Failed to open file from server: root=nul: root=nulll");
+            return;
+        }
+
+        java.util.Enumeration objs = root.children() ;
+        while(objs.hasMoreElements())
+            System.out.println(objs.nextElement());
+
+    }
 }
 
 
