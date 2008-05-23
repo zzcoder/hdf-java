@@ -65,6 +65,7 @@ public class H5SrbCompoundDS extends CompoundDS
             numberOfMembers = nmembers;
             memberNames = new String[numberOfMembers];
             memberOrders = new int[numberOfMembers];
+            memberTypes = new H5SrbDatatype[numberOfMembers];
             isMemberSelected = new boolean[numberOfMembers];
             for (int i=0; i<numberOfMembers; i++)
             {
@@ -109,7 +110,26 @@ public class H5SrbCompoundDS extends CompoundDS
      * data, teh data object first call init() to fill the datatype and
      * dataspace information, then load the data content.
      */
-    public void init() {;}
+    public void init() {
+        if (rank == 0)
+            rank = 1;
+
+        if (startDims == null)
+            startDims = new long[rank];
+
+        if (selectedDims == null)
+            selectedDims = new long[rank];
+
+        if (selectedStride == null)
+        {
+            selectedStride = new long[rank];
+            for (int i=0; i<rank; i++) {
+                selectedStride[i] = 1;
+            }
+        }
+
+        resetSelection();
+    }
 
     /** Loads and returns the data value from file. */
     public Object read() throws Exception
@@ -211,20 +231,6 @@ public class H5SrbCompoundDS extends CompoundDS
         return (attributeList.size()>0);
     }
     
-    void addAttribute(String attrName, Object attrValue, long[] attrDims,
-            int tclass, int tsize, int torder, int tsign)
-    {
-        if (attributeList == null) {
-            attributeList = new Vector();
-         }
-
-         H5SrbDatatype type = new H5SrbDatatype(tclass, tsize, torder, tsign);
-         Attribute attr = new Attribute(attrName, type, attrDims);
-         attr.setValue(attrValue);
-
-         attributeList.add(attr);
-     }
-
     /*
      * (non-Javadoc)
      * @see ncsa.hdf.object.Dataset#readBytes()
@@ -246,5 +252,58 @@ public class H5SrbCompoundDS extends CompoundDS
      * @param info the metadata to delete.
      */
     public void removeMetadata(Object info) throws Exception {;}
+
+    private void addAttribute(String attrName, Object attrValue, long[] attrDims,
+            int tclass, int tsize, int torder, int tsign)
+    {
+        if (attributeList == null) {
+            attributeList = new Vector();
+         }
+
+         H5SrbDatatype type = new H5SrbDatatype(tclass, tsize, torder, tsign);
+         Attribute attr = new Attribute(attrName, type, attrDims);
+         attr.setValue(attrValue);
+
+         attributeList.add(attr);
+    }
+
+    /**
+     * Resets selection of dataspace
+     */
+    private void resetSelection() {
+        
+        for (int i=0; i<rank; i++)
+        {
+            startDims[i] = 0;
+            selectedDims[i] = 1;
+            if (selectedStride != null) {
+                selectedStride[i] = 1;
+            }
+        }
+
+        if (rank == 1)
+        {
+            selectedIndex[0] = 0;
+            selectedDims[0] = dims[0];
+        }
+        else if (rank == 2)
+        {
+            selectedIndex[0] = 0;
+            selectedIndex[1] = 1;
+            selectedDims[0] = dims[0];
+            selectedDims[1] = dims[1];
+        }
+        else if (rank > 2)
+        {
+            selectedIndex[0] = rank-2; // columns
+            selectedIndex[1] = rank-1; // rows
+            selectedIndex[2] = rank-3;
+            selectedDims[rank-1] = dims[rank-1];
+            selectedDims[rank-2] = dims[rank-2];
+        }
+        
+        isDataLoaded = false;
+        setMemberSelection(true);
+    }    
 
 }

@@ -236,6 +236,15 @@ public abstract class HObject implements Serializable, DataFormat
             }
         }
     }
+
+    /** Print out debug information 
+     *  <p>
+     *  @param msg the debug message to print
+     */
+    protected final void debug(Object msg)
+    {
+        System.out.println("*** "+this.getClass().getName()+": "+msg);
+    }
     
     /**
      * Returns the name of the file that contains this data object.

@@ -52,6 +52,7 @@ public class H5SrbFile extends FileFormat
         super(pathname);
         opID = -1;
         rootGroup = null;
+        isReadOnly = true;
         fullFileName = pathname;
 
         long[] oid = {0};
@@ -62,6 +63,14 @@ public class H5SrbFile extends FileFormat
 
             public boolean isLeaf() { return false; }
         };
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see java.io.File#getPath()
+     */
+    public String getPath() {
+        return fullFileName;
     }
 
     /**
@@ -110,9 +119,7 @@ public class H5SrbFile extends FileFormat
             if (obj instanceof Group)
             {
                 node = new DefaultMutableTreeNode(obj) { 
-                	public static final long serialVersionUID = HObject.serialVersionUID;
-
-                	public boolean isLeaf() { return false; } 
+                    public boolean isLeaf() { return false; } 
                 };
                 
                 pnode.add( node );

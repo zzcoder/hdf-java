@@ -49,7 +49,14 @@ public final class Tools
 
     /** Key for PNG image file type. */
     public static final String FILE_TYPE_PNG = "PNG";
-     
+
+    /** Print out debug information */
+    public static final void debug(Object caller, Object msg)
+    {
+        if (caller != null)
+            System.out.println("*** "+caller.getClass().getName()+": "+msg);
+    }
+
     /** Converts an image file into HDF4/5 file.
      *  @param imgFileName the input image file.
      *  @param hFileName the name of the HDF4/5 file.

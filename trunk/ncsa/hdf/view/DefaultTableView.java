@@ -142,6 +142,7 @@ implements TableView, ActionListener
         dataset = (Dataset)hobject;
         isReadOnly = dataset.getFileFormat().isReadOnly();
 
+
         // cannot edit hdf4 vdata
         if (dataset.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4)) &&
             (dataset instanceof CompoundDS)) {
@@ -1413,11 +1414,9 @@ implements TableView, ActionListener
             }
         }
 
-        DefaultTableModel tableModel =  new DefaultTableModel(
-            subColumnNames,
-            rows)
+        DefaultTableModel tableModel =  new DefaultTableModel( subColumnNames, rows)
         {
-        	public static final long serialVersionUID = HObject.serialVersionUID;
+            public static final long serialVersionUID = HObject.serialVersionUID;
 
             List list = (List)dataValue;
             CompoundDS compound = (CompoundDS)dataset;
@@ -1490,7 +1489,7 @@ implements TableView, ActionListener
 
         theTable = new JTable(tableModel)
         {
-        	public static final long serialVersionUID = HObject.serialVersionUID;
+            public static final long serialVersionUID = HObject.serialVersionUID;
 
             int lastSelectedRow = -1;
             int lastSelectedColumn = -1;
@@ -1560,7 +1559,7 @@ implements TableView, ActionListener
         }
 
         return theTable;
-    }
+    } /* createTable */
 
     private void gotoPage(long idx)
     {

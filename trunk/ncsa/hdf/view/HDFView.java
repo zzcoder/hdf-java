@@ -1831,7 +1831,9 @@ HyperlinkListener, ChangeListener
 
             metadata.append("\n    ");
             if (d instanceof ScalarDS) {
-                metadata.append(((ScalarDS)d).getDatatype().getDatatypeDescription());
+                Datatype dtype = d.getDatatype();
+                if (dtype != null)
+                    metadata.append(dtype.getDatatypeDescription());
             } else if (d instanceof CompoundDS) {
                 metadata.append("Compound/Vdata");
             }
