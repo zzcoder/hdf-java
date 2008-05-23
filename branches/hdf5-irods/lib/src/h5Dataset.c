@@ -263,8 +263,11 @@ int H5Dataset_init(H5Dataset *d)
         d->type.mnames = (char **)malloc(d->type.nmembers*sizeof(char*));
         d->type.mtypes = (int *)malloc(d->type.nmembers*sizeof(int));
         for (i=0; i<d->type.nmembers; i++) {
+            hid_t mtid = -1;
             d->type.mnames[i] = H5Tget_member_name(tid, i);
-            d->type.mtypes[i] = H5Tget_class(H5Tget_member_type(tid, i));
+            mtid = H5Tget_member_type(tid, i); 
+            d->type.mtypes[i] = H5Tget_class(mtid);
+            H5Tclose(mtid);
         }
     }
 
