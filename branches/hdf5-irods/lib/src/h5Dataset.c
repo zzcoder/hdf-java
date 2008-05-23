@@ -264,9 +264,14 @@ int H5Dataset_init(H5Dataset *d)
         d->type.mtypes = (int *)malloc(d->type.nmembers*sizeof(int));
         for (i=0; i<d->type.nmembers; i++) {
             hid_t mtid = -1;
+            int mtype = 0, mclass, msign, msize;
             d->type.mnames[i] = H5Tget_member_name(tid, i);
             mtid = H5Tget_member_type(tid, i); 
-            d->type.mtypes[i] = H5Tget_class(mtid);
+            mclass = H5Tget_class(mtid);
+            msign = H5Tget_sign(mtid);
+            msize = H5Tget_size(mtid);
+            mtype = mtype = mclass<<28 | msign<<24 | msize;
+            d->type.mtypes[i] = mtype;
             H5Tclose(mtid);
         }
     }
