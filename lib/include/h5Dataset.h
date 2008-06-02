@@ -24,6 +24,9 @@
 #include "h5Attribute.h"
 #include "rodsClient.h"
 
+#define  H5D_IMAGE_FLAG 0x0001
+#define  H5D_IMAGE_TRUECOLOR_FLAG 0x0002
+
 /* operation id for H5Dataset */
 typedef enum H5Dataset_op_t
 {
