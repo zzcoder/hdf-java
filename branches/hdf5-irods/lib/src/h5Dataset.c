@@ -377,7 +377,7 @@ hobj_ref_t* H5Dataset_get_paletteRef(H5Dataset *d, hid_t did)
     n = H5Aget_num_attrs(did);
 
     for (idx=0; idx<n; idx++) {
-        unsigned in checkPalette=0, checkImage=0, checkTrueColor=0;
+        unsigned int checkPalette=0, checkImage=0, checkTrueColor=0;
 
         name[0] = '\0';
         aid = H5Aopen_idx(did, idx);
