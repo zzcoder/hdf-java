@@ -28,8 +28,8 @@ int H5Dataset_init(H5Dataset *d);
 /* converts data value to strings */
 int H5Dataset_value_to_string(H5Dataset *d, hid_t tid, hid_t sid);
 
-hobj_ref_t* H5Dataset_get_paletteRef(H5Dataset *d, hid_t did);
 void  H5Dataset_readPalette(H5Dataset *d, hid_t did);
+void  H5Dataset_check_image(H5Dataset *d, hid_t did);
 
 /*------------------------------------------------------------------------------
  * Purpose: Create a new dataset
@@ -256,6 +256,8 @@ int H5Dataset_init(H5Dataset *d)
 
             /* check palette for image */
             H5Dataset_readPalette(d, did);
+
+            H5Dataset_check_image(d, did);
         }
     }
     else if (d->type.class == H5DATATYPE_COMPOUND) {
@@ -270,7 +272,7 @@ int H5Dataset_init(H5Dataset *d)
             mclass = H5Tget_class(mtid);
             msign = H5Tget_sign(mtid);
             msize = H5Tget_size(mtid);
-            mtype = mtype = mclass<<28 | msign<<24 | msize;
+            mtype = mclass<<28 | msign<<24 | msize;
             d->type.mtypes[i] = mtype;
             H5Tclose(mtid);
         }
@@ -360,77 +362,103 @@ int H5Dataset_value_to_string(H5Dataset *d, hid_t tid, hid_t sid)
     return ret_value;
 }
 
+/* read attribute value */
+char* H5Dataset_read_attr_value(hid_t aid)
+{
+    hid_t asid=-1, atid=-1;
+    int i, rank;
+    hsize_t *dims;
+    size_t size=1;
+    char *attr_buf=NULL;
+  
+    asid = H5Aget_space(aid);
+    atid = H5Aget_type(aid);
+    rank = H5Sget_simple_extent_ndims(asid);
+
+    if (rank > 0) {
+        dims = (hsize_t *)malloc(rank * sizeof(hsize_t));
+        H5Sget_simple_extent_dims(asid, dims, NULL);
+        for (i=0; i<rank; i++) {
+            size *= (size_t)dims[i];
+            free(dims);
+        }
+        size *= H5Tget_size(atid);
+        attr_buf = (char *)malloc(size);
+
+        if (H5Aread( aid, atid, attr_buf) < 0) {
+            free(attr_buf);
+            attr_buf = NULL;
+        }
+
+    }
+    
+    if( atid > 0) H5Tclose(atid);
+    if (asid > 0) H5Sclose(asid);
+ 
+    return attr_buf;
+}
+/* 
+ * check if the dataset is an image
+*/
+void H5Dataset_check_image(H5Dataset *d, hid_t did)
+{
+    hid_t aid=-1;
+    char *buf;
+
+    if (!d)
+        return;
+
+    aid = H5Aopen_name(did, "CLASS");
+    if (aid > 0) {
+        buf = (char *) H5Dataset_read_attr_value(aid);
+        if (buf) {
+            if(strncmp(buf, "IMAGE", 5)==0)
+                d->time |= H5D_IMAGE_FLAG;
+            free(buf);
+        }
+        H5Aclose(aid);
+    }
+
+    aid = H5Aopen_name(did, "IMAGE_SUBCLASS");
+    if (aid > 0) {
+        buf = (char *) H5Dataset_read_attr_value(aid);
+        if (buf) {
+            if(strncmp(buf, "IMAGE_TRUECOLOR", 15)==0)
+                d->time |= H5D_IMAGE_TRUECOLOR_FLAG;
+            free(buf);
+        }
+        H5Aclose(aid);
+    }
+
+    aid = H5Aopen_name(did, "INTERLACE_MODE");
+    if (aid > 0) {
+        buf = (char *) H5Dataset_read_attr_value(aid);
+        if (buf) {
+            if(strncmp(buf, "INTERLACE_PIXEL", 15)==0)
+                d->time |= H5D_IMAGE_INTERLACE_PIXEL_FLAG;
+            else if(strncmp(buf, "INTERLACE_PLANE", 15)==0)
+                d->time |= H5D_IMAGE_INTERLACE_PLANE_FLAG;
+            free(buf);
+        }
+        H5Aclose(aid);
+    }
+}
+
 /* reads the references of palettes into an array
  * Each reference requires  eight bytes storage. Therefore, the array length
  * is 8*numberOfPalettes.
 */
-hobj_ref_t* H5Dataset_get_paletteRef(H5Dataset *d, hid_t did)
+hobj_ref_t* H5Dataset_get_paletteRef(hid_t did)
 {
     hid_t aid=-1;
-    int n, idx;
-    char  name[256];
-    hobj_ref_t *ref_buf = NULL;
+    hobj_ref_t *ref_buf=NULL;
+ 
+    aid = H5Aopen_name(did, "PALETTE");
 
-    if (!d)
-        return NULL;
-   
-    n = H5Aget_num_attrs(did);
+    if (aid > 0) {
 
-    for (idx=0; idx<n; idx++) {
-        unsigned int checkPalette=0, checkImage=0, checkTrueColor=0;
-
-        name[0] = '\0';
-        aid = H5Aopen_idx(did, idx);
-        H5Aget_name(aid, 256, name);
-
-        if (strcmp(name, "PALETTE") == 0)
-            checkPalette = 1;
-        else if (strcmp(name, "CLASS") == 0)
-            checkImage = 1;
-        else if (strcmp(name, "IMAGE_SUBCLASS") == 0)
-            checkTrueColor = 1;
-
-        if (  checkPalette || checkImage || checkTrueColor) {
-            hsize_t *dims;
-            hid_t sid=-1, atid=-1;
-            size_t size=1;
-            int i, rank;
-            char *attr_buf;
-
-            sid = H5Aget_space(aid);
-            rank = H5Sget_simple_extent_ndims(sid);
-
-            if (rank > 0) {
-                dims = (hsize_t *)malloc(rank * sizeof(hsize_t));
-                H5Sget_simple_extent_dims(sid, dims, NULL);
-                for (i=0; i<rank; i++)
-                    size *= (size_t)dims[i];
-                free (dims);
-            }
-
-            attr_buf = (char *)malloc(size*sizeof(hobj_ref_t));
-            atid = H5Aget_type(aid);
-            if (H5Aread( aid, atid, attr_buf) < 0)
-            {
-                free(attr_buf);
-                attr_buf = NULL;
-            }
-            if( atid > 0) H5Tclose(atid);
-            if (sid > 0) H5Sclose(sid);
-
-            if (checkImage && strncmp(attr_buf, "IMAGE", 5)==0)
-                d->time |= H5D_IMAGE_FLAG;
-
-            if (checkTrueColor && strncmp(attr_buf, "IMAGE_TRUECOLOR", 15)==0)
-                d->time |= H5D_IMAGE_TRUECOLOR_FLAG;
-          
-            if (checkPalette)
-                ref_buf = (hobj_ref_t *) attr_buf;
-            else
-                free(attr_buf);
-        }
-    
-        if (aid > 0) H5Aclose(aid);
+        ref_buf = (hobj_ref_t *) H5Dataset_read_attr_value(aid);
+        H5Aclose(aid);
     }
  
     return ref_buf;
@@ -441,12 +469,9 @@ void  H5Dataset_readPalette(H5Dataset *d, hid_t did)
     hid_t pal_id=-1, tid=-1;
     hobj_ref_t *refs;
 
-    int i;
-    unsigned char *pv;
-
     if (!d || did<=0 ) return;
 
-    refs = H5Dataset_get_paletteRef(d, did);
+    refs = H5Dataset_get_paletteRef(did);
     if (refs) {
         // use the fist palette
         pal_id =  H5Rdereference(d->fid, H5R_OBJECT, refs);
@@ -468,8 +493,7 @@ void  H5Dataset_readPalette(H5Dataset *d, hid_t did)
 
         if (tid > 0) H5Tclose(tid);
         if (pal_id > 0) H5Dclose(pal_id);
-
-        free (refs);
+        free(refs);
     }
 
 }
