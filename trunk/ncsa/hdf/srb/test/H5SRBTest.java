@@ -2,6 +2,7 @@ import java.io.*;
 import java.util.*;
 import javax.swing.tree.*;
 import ncsa.hdf.srb.*;
+import ncsa.hdf.object.*;
 
 /**
 **/
@@ -64,10 +65,34 @@ public class H5SRBTest {
             return;
         }
 
-        Enumeration objs = root.children() ;
-        while(objs.hasMoreElements())
-            System.out.println(objs.nextElement());
+        printGroup(root, "");
 
+    }
+
+    private void printGroup(TreeNode pNode, String indent) {
+        if (pNode == null)
+            return;
+
+        HObject obj = null;
+        DefaultMutableTreeNode node = null;
+        Enumeration objs = pNode.children() ;
+        while(objs.hasMoreElements())
+        {
+            node = (DefaultMutableTreeNode) objs.nextElement();
+            obj = (HObject)node.getUserObject();
+            System.out.println(indent+obj);
+
+            if (obj instanceof ScalarDS) {
+                ScalarDS sds = (ScalarDS)obj;
+                if ( sds.isImage())
+                    System.out.println(indent+"(***This is an image***)");
+                if ( sds.isTrueColor())
+                    System.out.println(indent+"(***This is a true color image***)");
+            }
+
+            if (obj instanceof Group)
+                 printGroup(node, indent+"\t");
+        }
     }
 
     public static void main(final String[] args) {
@@ -78,7 +103,6 @@ public class H5SRBTest {
 
          H5SRBTest test = new H5SRBTest(args[0]);
     }
-
 }
 
 
