@@ -737,7 +737,6 @@ implements ImageView, ActionListener
         is3D = (dataset.getRank() > 2) && !((ScalarDS)dataset).isTrueColor();
 
         String strValue = null;
-
         try
         {
             if (isTrueColor)
@@ -776,17 +775,18 @@ implements ImageView, ActionListener
         imagePalette = dataset.getPalette();
         boolean noPalette = false;
         boolean doAutoContrast = false;
-        
+        boolean isLocalFile = dataset.getFileFormat().exists();
+
         if (imagePalette == null) {
             noPalette = true;
             imagePalette = Tools.createGrayPalette();
             viewer.showStatus("\nNo attached palette found, default grey palette is used to display image");
         }
-            
+
         data = dataset.getData();
         if (dataset.getDatatype().getDatatypeClass() == Datatype.CLASS_INTEGER) {
             data =  dataset.convertFromUnsignedC();
-            doAutoContrast = (ViewProperties.isAutoContrast() && noPalette);
+            doAutoContrast = (ViewProperties.isAutoContrast() && noPalette && isLocalFile);
         }
         else
             doAutoContrast = false;
@@ -845,12 +845,13 @@ implements ImageView, ActionListener
      * Compute image data from autogain
      * @return
      */
-    private boolean computeAutoGainImageData() {
-        
+    private boolean computeAutoGainImageData() 
+    {
         boolean retValue = true;
         
         // data is unsigned short. Convert image byte data using auto-contrast image algorithm 
         boolean isUnsigned = dataset.isUnsigned();
+
 
         if (gainBias == null) { // calculate auto_gain only once
             gainBias = new double[2];
