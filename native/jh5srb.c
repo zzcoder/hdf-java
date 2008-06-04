@@ -100,6 +100,10 @@ jmethodID method_dataset_addAttribute=NULL;
 
 jclass    cls_dataset_scalar=NULL;
 jfieldID  field_dataset_scalar_opID=NULL;
+jfieldID  field_dataset_scalar_isImage=NULL;
+jfieldID  field_dataset_scalar_isImageDisplay=NULL;
+jfieldID  field_dataset_scalar_isTrueColor=NULL;
+jfieldID  field_dataset_scalar_interlace=NULL;
 jmethodID method_dataset_scalar_ctr=NULL;
 jmethodID method_dataset_scalar_init=NULL;
 jmethodID method_dataset_scalar_addAttribute=NULL;
@@ -256,6 +260,22 @@ int load_field_method_IDs(JNIEnv *env)
     field_dataset_scalar_opID = (*env)->GetFieldID(env, cls, "opID", "I");
     if (!field_dataset_scalar_opID)
         THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/srb/H5SrbScalarDS.opID");
+
+    field_dataset_scalar_isImage = (*env)->GetFieldID(env, cls, "isImage", "Z");
+    if (!field_dataset_scalar_isImage)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/srb/H5SrbScalarDS.isImage");
+
+    field_dataset_scalar_isImageDisplay = (*env)->GetFieldID(env, cls, "isImageDisplay", "Z");
+    if (!field_dataset_scalar_isImageDisplay)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/srb/H5SrbScalarDS.isImageDisplay");
+
+    field_dataset_scalar_isTrueColor = (*env)->GetFieldID(env, cls, "isTrueColor", "Z");
+    if (!field_dataset_scalar_isTrueColor)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/srb/H5SrbScalarDS.isTrueColor");
+
+    field_dataset_scalar_interlace = (*env)->GetFieldID(env, cls, "interlace", "I");
+    if (!field_dataset_scalar_interlace)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/srb/H5SrbScalarDS.interlace");
 
     method_dataset_scalar_ctr = (*env)->GetMethodID(env, cls, "<init>", 
         "(Lncsa/hdf/object/FileFormat;Ljava/lang/String;Ljava/lang/String;[J)V");
@@ -1065,11 +1085,32 @@ jint c2j_h5group(JNIEnv *env, jobject jfile, jobject jgroup, H5Group *cgroup)
                 cd->type.class, cd->type.size, cd->type.order, cd->type.sign);
             (*env)->SetObjectField(env, jd, field_dataset_datatype, jdtype);
 
+            /* set image indicator */
+            if ((cd->time & H5D_IMAGE_FLAG)>0) {
+		(*env)->SetBooleanField(env, jd, field_dataset_scalar_isImage, JNI_TRUE);
+		(*env)->SetBooleanField(env, jd, field_dataset_scalar_isImageDisplay, JNI_TRUE);
+            }
+
+            if ((cd->time & H5D_IMAGE_TRUECOLOR_FLAG)>0) {
+		(*env)->SetBooleanField(env, jd, field_dataset_scalar_isTrueColor, JNI_TRUE);
+		(*env)->SetIntField(env, jd, field_dataset_scalar_interlace, 0);
+            }
+
+            if ((cd->time & H5D_IMAGE_INTERLACE_PIXEL_FLAG)>0) {
+	        (*env)->SetIntField(env, jd, field_dataset_scalar_interlace, 0);
+		(*env)->SetBooleanField(env, jd, field_dataset_scalar_isTrueColor, JNI_TRUE);
+            }
+            else if ((cd->time & H5D_IMAGE_INTERLACE_PLANE_FLAG)>0) {
+	        (*env)->SetIntField(env, jd, field_dataset_scalar_interlace, 2);
+		(*env)->SetBooleanField(env, jd, field_dataset_scalar_isTrueColor, JNI_TRUE);
+            }
+
             /* call init() method */
             (*env)->CallVoidMethod(env, jd, method_dataset_init);
 
             /* add the dataset into its parant */
             (*env)->CallVoidMethod(env, jgroup, method_group_addToMemberList, jd);
+
         }
     }
 
