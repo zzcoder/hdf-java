@@ -54,7 +54,12 @@ public class H5SRB {
             } catch (Throwable err) { err.printStackTrace(); isLoaded = false; }
         }
     }
-  
+
+    /**
+     *  Make a server connection 
+     */
+     public synchronized static native void makeConnection(String passwd) throws Exception;
+ 
     /**
      *  Returns server information.
      *  <p>
@@ -68,10 +73,14 @@ public class H5SRB {
         srvInfo[7] = rodsAuthScheme
         srvInfo[8] = rodsDefResource
         srvInfo[9] = rodsZone
+        srvInfo[10] = rodsServerDn 
+        srvInfo[11] = rodsLogLevel 
+        srvInfo[12] = rodsAuthFileName 
+        srvInfo[13] = rodsDebug 
      */
     public static String[] getServerInfo() throws Exception
     {
-        String srvInfo[] = new String[10];
+        String srvInfo[] = new String[14];
 
         _getServerInfo(srvInfo);
 
