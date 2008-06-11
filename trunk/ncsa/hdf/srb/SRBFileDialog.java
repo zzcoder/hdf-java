@@ -34,7 +34,7 @@ import ncsa.hdf.object.HObject;
 public class SRBFileDialog extends JDialog
 implements ActionListener
 {
-	public static final long serialVersionUID = HObject.serialVersionUID;
+    public static final long serialVersionUID = HObject.serialVersionUID;
 
     private static final boolean DEBUG = true;
 
@@ -74,13 +74,47 @@ implements ActionListener
 
         fileFieldSeparator = "::";
         remoteHomeDir = "/tempZone/home/rods";
-        
+
         try {
             fileFieldSeparator = H5SRB.getFileFieldSeparator();
             srvInfo = H5SRB.getServerInfo();
             remoteHomeDir = srvInfo[5];
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(owner, "Cannot get server information.", 
+                "Server Error", JOptionPane.ERROR_MESSAGE);
+            dispose();
+            return;
+        }
+
+        boolean isConnected = false;
+        try {
+            H5SRB.makeConnection(null);
+            isConnected = true;
+        } catch (Exception ex ) { isConnected = false; }
+
+        if (!isConnected) {
+            String passwd = JOptionPane.showInputDialog(owner, "Please enter the password for "+ srvInfo[0]);
+            if (passwd!= null && passwd.length()>0) {
+                try {
+                    H5SRB.makeConnection(passwd);
+                } catch (Exception ex ) { 
+                    isConnected = false; 
+                }
+            }
+        }
+        
+        if (!isConnected) {
+            JOptionPane.showMessageDialog(owner, "Cannot make connection to "+srvInfo[1], 
+                "Server Error", JOptionPane.ERROR_MESSAGE);
+            dispose();
+            return;
+        }
+
+        try {
             H5SRB.getFileList(fileList);
         } catch (Exception ex) {
+            JOptionPane.showMessageDialog(owner, "Cannot get file list from "+srvInfo[1], 
+                "Server Error", JOptionPane.ERROR_MESSAGE);
             dispose();
             return;
         }
