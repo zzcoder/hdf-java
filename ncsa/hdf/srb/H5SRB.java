@@ -58,7 +58,7 @@ public class H5SRB {
     /**
      *  Make a server connection 
      */
-     public synchronized static native void makeConnection(String passwd) throws Exception;
+     public synchronized static native void callServerInit(String passwd) throws Exception;
  
     /**
      *  Returns server information.
