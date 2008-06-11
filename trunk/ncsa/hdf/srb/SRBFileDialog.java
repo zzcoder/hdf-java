@@ -12,6 +12,8 @@
 package ncsa.hdf.srb;
 
 import java.awt.event.*;
+import java.io.RandomAccessFile;
+import java.io.FileNotFoundException;
 import javax.swing.*;
 import java.awt.Frame;
 import java.awt.Point;
@@ -86,24 +88,31 @@ implements ActionListener
             return;
         }
 
-        boolean isConnected = false;
-        try {
-            H5SRB.makeConnection(null);
-            isConnected = true;
-        } catch (Exception ex ) { isConnected = false; }
+        boolean isServerInitialized = false;
+        try { 
+            if (srvInfo[12] == null || srvInfo[12].length() < 1)
+                srvInfo[12] = System.getProperty("user.home")+"/.irods/.irodsA";
 
-        if (!isConnected) {
+            RandomAccessFile raf = new RandomAccessFile(srvInfo[12], "r");
+
+            if (raf.length() > 1)
+                isServerInitialized = true;
+        } catch (FileNotFoundException ex) { isServerInitialized = false; }
+
+        if (!isServerInitialized) {
             String passwd = JOptionPane.showInputDialog(owner, "Please enter the password for "+ srvInfo[0]);
             if (passwd!= null && passwd.length()>0) {
+                passwd = passwd.trim();
                 try {
-                    H5SRB.makeConnection(passwd);
+                    H5SRB.callServerInit(passwd);
+                    isServerInitialized = true;
                 } catch (Exception ex ) { 
-                    isConnected = false; 
+                    isServerInitialized = false; 
                 }
             }
         }
         
-        if (!isConnected) {
+        if (!isServerInitialized) {
             JOptionPane.showMessageDialog(owner, "Cannot make connection to "+srvInfo[1], 
                 "Server Error", JOptionPane.ERROR_MESSAGE);
             dispose();
