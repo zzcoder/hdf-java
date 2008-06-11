@@ -28,8 +28,8 @@ int main(int argc, char* argv[])
     int status;
     rodsEnv myEnv;
     rErrMsg_t errMsg;
-    rcComm_t *conn = NULL;
 #endif
+    rcComm_t *conn = NULL;
 
 /******************************************************************************
  *    In real application, the filename should be obtained from the SRB server. 
