@@ -677,15 +677,33 @@ implements ActionListener, MetaDataView
         bPanel.setBorder(new TitledBorder(""));
         bPanel.setLayout(new BorderLayout());
         lp = new JPanel();
-        lp.setLayout(new GridLayout(2,1));
+        lp.setLayout(new GridLayout(3,1));
         lp.add(new JLabel("Chunking: "));
         lp.add(new JLabel("Compression: "));
+        lp.add(new JLabel("Fill value: "));
         bPanel.add(lp, BorderLayout.WEST);
 
+        Object fillValue = null;
+        String fillValueInfo = "NONE";
+        if (d instanceof ScalarDS)
+            fillValue = ((ScalarDS)d).getFillValue();
+        if (fillValue != null) {
+            if (fillValue.getClass().isArray()) {
+                int len = Array.getLength(fillValue);
+                fillValueInfo = Array.get(fillValue, 0).toString();
+                for (int i=1; i<len; i++) {
+                    fillValueInfo += ", ";
+                    fillValueInfo += Array.get(fillValue, i).toString();
+                }
+            }
+            else fillValueInfo = fillValue.toString();
+        }
+            
         rp = new JPanel();
-        rp.setLayout(new GridLayout(2,1));
+        rp.setLayout(new GridLayout(3,1));
         rp.add(new JLabel(chunkInfo));
         rp.add(new JLabel(d.getCompression()));
+        rp.add(new JLabel(fillValueInfo));
         bPanel.add(rp, BorderLayout.CENTER);
 
         panel.add(bPanel, BorderLayout.SOUTH);
