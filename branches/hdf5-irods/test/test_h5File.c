@@ -6,7 +6,7 @@
 #include <malloc.h>
 #include <time.h>
 
-#define NO_PRINT_ALL 1
+#define PRINT_ALL 1
 #define NO_TEST_ATTRI	1
 #define NO_TEST_PALETTE	1
 #define TEST_SUBSET 1
