@@ -2157,8 +2157,12 @@ HyperlinkListener, ChangeListener
      */
     public static void main( String args[] )
     {
+        try {
+            UIManager.setLookAndFeel(
+                    UIManager.getCrossPlatformLookAndFeelClassName());
+        } catch (Exception e) { }
+
         String rootDir = System.getProperty("user.dir");
-        
         File tmpFile = null;
         int i=0, j=0, W=0, H=0, X=0, Y=0;
         
