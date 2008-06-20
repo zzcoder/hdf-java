@@ -10,7 +10,7 @@
 #define NO_TEST_ATTRI	1
 #define NO_TEST_PALETTE	1
 #define TEST_SUBSET 1
-#if 0
+#if 1
 #define HDF5_LOCAL 1
 #endif
 
