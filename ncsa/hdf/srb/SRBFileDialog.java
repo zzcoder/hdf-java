@@ -14,11 +14,16 @@ package ncsa.hdf.srb;
 import java.awt.event.*;
 import java.io.RandomAccessFile;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.File;
 import javax.swing.*;
 import java.awt.Frame;
 import java.awt.Point;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import javax.swing.tree.*;
 import java.util.Vector;
 
@@ -82,10 +87,36 @@ implements ActionListener
             srvInfo = H5SRB.getServerInfo();
             remoteHomeDir = srvInfo[5];
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(owner, "Cannot get server information.", 
-                "Server Error", JOptionPane.ERROR_MESSAGE);
-            dispose();
-            return;
+            int answer = JOptionPane.showConfirmDialog(owner,
+                "Cannot find iRODS server.\nDo you want to enter server information?\n\n",
+                "Server Error",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.ERROR_MESSAGE);
+            if (answer == JOptionPane.YES_OPTION) {
+                DefaultServerDialog dsd = new DefaultServerDialog(owner);
+                if (dsd.getHost() != null) {
+                    try {(new File(System.getProperty("user.home")+"/.irods")).mkdir();}
+                    catch (Exception ex2) {}
+                    PrintWriter out = new PrintWriter(new BufferedWriter
+                       (new FileWriter(System.getProperty("user.home")+"/.irods/.irodsEnv")));
+                    out.println("irodsHost '"+dsd.getHost()+"'");
+                    out.println("irodsPort " +dsd.getPort());
+                    out.println("irodsUserName '"+dsd.getUser()+"'");
+                    out.println("irodsHome '"+dsd.getHome()+"'");
+                    out.println("irodsCwd '"+dsd.getHome()+"'");
+                    out.println("irodsZone '"+dsd.getZone()+"'");
+                    out.println("irodsDefResource '"+dsd.getResource()+"'");
+                    out.flush();
+                    out.close();
+                    H5SRB.callServerInit(dsd.getPassword());
+                    srvInfo = H5SRB.getServerInfo();
+                    remoteHomeDir = srvInfo[5];
+                }
+            }
+            else {
+                dispose();
+                return;
+            }
         }
 
         boolean isServerInitialized = false;
@@ -128,28 +159,29 @@ implements ActionListener
             return;
         }
         
-        /* for test only 
-        fileList.add("/tempZone/home/rods/comp3.h5 :: 2.3K");
-        fileList.add("/tempZone/home/rods/hdf5_test.h5 :: 1.7M");
-        fileList.add("/tempZone/home/rods/linktst.h5 :: 1.3K");
-        fileList.add("/tempZone/home/rods/test.h5 :: 23.4K");
-        fileList.add("/tempZone/home/rods/weather.h5 :: 5.1M");
-        fileList.add("/tempZone/home/rods/willowfire_ca.h5 :: 349.8K");
-        fileList.add("/tempZone/home/rods/large_files/MOD021KM.A2001062.1835.002.2001066052702.h5 :: 327.5M");
-        fileList.add("/tempZone/home/rods/large_files/all_maps.h5 :: 864.2M");
-        fileList.add("/tempZone/home/rods/large_files/flash_io_test.h5 :: 60.3M");
-        */
-        
         // layout the components
         JPanel contentPane = (JPanel)getContentPane();
         contentPane.setLayout(new BorderLayout(5,5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
 
-       fileTree = new JTree(fileList);
-            
-       JScrollPane pane = new JScrollPane(fileTree);
-       pane.setPreferredSize(new Dimension( 600, 400 ));
-       contentPane.add(pane, BorderLayout.CENTER);
+        if (fileList.size() > 0) {
+            String remoteFile = null;
+            Object[] remoteFiles = fileList.toArray();
+            int idx0 = remoteHomeDir.length();
+            for (int i=0; i<remoteFiles.length; i++) {
+                remoteFile = (String)remoteFiles[i];
+                if (remoteFile.startsWith(remoteHomeDir))
+                    remoteFile = remoteFile.substring(idx0);
+                    remoteFiles[i] = remoteFile;
+            }
+            fileTree = new JTree(remoteFiles);
+        }
+        else
+            fileTree = new JTree(fileList);
+
+        JScrollPane pane = new JScrollPane(fileTree);
+        pane.setPreferredSize(new Dimension( 600, 400 ));
+        contentPane.add(pane, BorderLayout.CENTER);
 
         JButton okButton = new JButton("   Ok   ");
         okButton.setMnemonic(KeyEvent.VK_O);
@@ -161,6 +193,8 @@ implements ActionListener
         cancelButton.setActionCommand("Cancel");
         cancelButton.addActionListener(this);
 
+        if (remoteHomeDir != null)
+            setTitle("Open File from SRB ... "+remoteHomeDir);
 
         JPanel p = new JPanel();
         p.add(okButton);
@@ -190,10 +224,13 @@ implements ActionListener
             try { 
                 DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode)fileTree.getSelectionPath().getLastPathComponent();
                 String fname = (String) treeNode.getUserObject();
-                int index = fname.indexOf(fileFieldSeparator);
-                if (index > 0)
-                    fname = fname.substring(0, index);
-                openFile(fname);
+                if (fname != null && fname.length()>0) {
+                    int index = fname.indexOf(fileFieldSeparator);
+                    if (index > 0)
+                        fname = fname.substring(0, index);
+                    fname = remoteHomeDir+fname;
+                    openFile(fname);
+                }
             } catch (Exception ex) { 
                 ex.printStackTrace(); 
                 JOptionPane.showMessageDialog( (JFrame)viewer, "Invalid remote file",
@@ -297,6 +334,141 @@ implements ActionListener
             System.out.println(objs.nextElement());
 
     }
+
+    private class DefaultServerDialog extends JDialog implements ActionListener
+    {
+        Frame owner;
+        JTextField[] srbFields = null;
+        String[] serverInfo = null;
+
+        public DefaultServerDialog(Frame owner) throws Throwable
+        {
+            super (owner, "Default iRODS Server ...", true);
+            this.owner = owner;
+        
+            srbFields = new JTextField[7];
+
+            JPanel contentPane = (JPanel)getContentPane();
+            contentPane.setLayout(new BorderLayout(5,5));
+            contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
+
+            JPanel cpl = new JPanel(); /* left panel */
+            cpl.setLayout(new GridLayout(7,1,5,5));
+            cpl.add(new JLabel("Host Machine: ", JLabel.RIGHT));
+            cpl.add(new JLabel("Port Number: ", JLabel.RIGHT));
+            cpl.add(new JLabel("User Name: ", JLabel.RIGHT));
+            cpl.add(new JLabel("Password: ", JLabel.RIGHT));
+            cpl.add(new JLabel("Home Directory: ", JLabel.RIGHT));
+            cpl.add(new JLabel("Zone Name: ", JLabel.RIGHT));
+            cpl.add(new JLabel(" Default Storage Resource: ", JLabel.RIGHT));
+            contentPane.add(cpl, BorderLayout.WEST);
+
+            JPanel cpc = new JPanel(); /* center panel */
+            cpc.setLayout(new GridLayout(7,1,5,5));
+            cpc.add(srbFields[0] = new JTextField());
+            cpc.add(srbFields[1] = new JTextField("1247"));
+            cpc.add(srbFields[2] = new JTextField("rods"));
+            cpc.add(srbFields[3] = new JTextField(""));
+            cpc.add(srbFields[4] = new JTextField("/tempZone/home/rods"));
+            cpc.add(srbFields[5] = new JTextField("tempZone"));
+            cpc.add(srbFields[6] = new JTextField("demoResc"));
+            contentPane.add(cpc, BorderLayout.CENTER);
+
+            JPanel cpb = new JPanel(); /* bottom panel */
+            JButton rodsButton = new JButton("Ok");
+            rodsButton.addActionListener(this);
+            rodsButton.setActionCommand("Add iRODS connection");
+            cpb.add(rodsButton);
+            rodsButton = new JButton("Cancel");
+            rodsButton.addActionListener(this);
+            rodsButton.setActionCommand("Cancel iRODS connection");
+            cpb.add(rodsButton);
+            contentPane.add(cpb, BorderLayout.SOUTH);
+            contentPane.setPreferredSize(new Dimension(500, 300));
+
+            Point l = owner.getLocation();
+            l.x += 100;
+            l.y += 60;
+            setLocation(l);
+
+            pack();
+            setVisible(true);
+        }
+
+        public void actionPerformed(ActionEvent e)
+        {
+            Object source = e.getSource();
+            String cmd = e.getActionCommand();
+           
+            if (cmd.equals("Add iRODS connection")) {
+                serverInfo = new String[7];
+                for (int i = 0; i<7; i++) {
+                    serverInfo[i] = srbFields[i].getText();
+                    if (serverInfo[i] != null)
+                        serverInfo[i] = serverInfo[i].trim();
+                    if (serverInfo[i] == null || serverInfo[i].length() <1) {
+                        JOptionPane.showMessageDialog(owner, "Invalid server information.\n", "Server Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+                dispose();
+            } 
+            else if (cmd.equals("Cancel iRODS connection")) {
+                serverInfo = null;
+                dispose();
+            }
+        }
+
+        public String getHost() {
+            if (serverInfo!= null)
+                return serverInfo[0];
+            else 
+                return null;
+        }
+
+        public String getPort() {
+            if (serverInfo!= null)
+                return serverInfo[1];
+            else 
+                return null;
+        }
+
+        public String getUser() {
+            if (serverInfo!= null)
+                return serverInfo[2];
+            else
+                return null;
+        }
+
+        public String getPassword() {
+            if (serverInfo!= null)
+                return serverInfo[3];
+            else
+                return null;
+        }
+
+        public String getHome() {
+            if (serverInfo!= null)
+                return serverInfo[4];
+            else
+                return null;
+        }
+
+        public String getZone() {
+            if (serverInfo!= null)
+                return serverInfo[5];
+            else
+                return null;
+        }
+
+        public String getResource() {
+            if (serverInfo!= null)
+                return serverInfo[6];
+            else
+                return null;
+        }
+
+    } /* private class DefaultServerDialog */
 }
 
 
