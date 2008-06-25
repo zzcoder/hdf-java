@@ -82,4 +82,4 @@ esac
 
 export LD_LIBRARY_PATH
 
-$JAVAPATH/java -mx1000m -Djava.library.path=$LD_LIBRARY_PATH ncsa.hdf.view.HDFView -root $HDFVIEW_HOME $*
+$JAVAPATH/java -Xmx1000m -Djava.library.path=$LD_LIBRARY_PATH ncsa.hdf.view.HDFView -root $HDFVIEW_HOME $*

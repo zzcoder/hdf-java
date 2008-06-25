@@ -26,4 +26,4 @@ set OBJ_CLASSPATH="%HDFJAVA%"\lib\jhdfobj.jar;"%HDFJAVA%"\lib\jhdf4obj.jar;"%HDF
 @REM set the CLASSPATH
 set CLASSPATH=%JNI_CLASSPATH%;%OBJ_CLASSPATH%;"%HDFJAVA%"\lib\jhdfview.jar
 
-"%JAVAHOME%\bin\java" -mx1024m -Djava.library.path=%PATH% -Dhdfview.root="%HDFJAVA%" -classpath %CLASSPATH% ncsa.hdf.view.HDFView -root "%HDFJAVA%"
+"%JAVAHOME%\bin\java" -Xmx1024m -Djava.library.path=%PATH% -Dhdfview.root="%HDFJAVA%" -classpath %CLASSPATH% ncsa.hdf.view.HDFView -root "%HDFJAVA%"
