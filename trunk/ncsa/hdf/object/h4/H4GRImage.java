@@ -360,6 +360,11 @@ public class H4GRImage extends ScalarDS
         {
             close(id);
         }
+        
+        if ( (rank >1) && (selectedIndex[1]>selectedIndex[0]))
+            isDefaultImageOrder = false;
+        else
+            isDefaultImageOrder = true;        
 
         return theData;
     }

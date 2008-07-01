@@ -99,6 +99,9 @@ public abstract class ScalarDS extends Dataset
     /** Flag to indicate if the dataset is displayed as an image */
     protected boolean isImageDisplay;
     
+    /** Flag to indicate if the dataset is displayed as an image with default order of dimensions */
+    protected boolean isDefaultImageOrder;
+    
     /**
      * Flag to indicate if the enum data is converted to strings.
      */
@@ -142,6 +145,7 @@ public abstract class ScalarDS extends Dataset
         datatype = null;
         imageDataRange = null;
         isImageDisplay = false;
+        isDefaultImageOrder = true;
     }
 
     /*
@@ -288,7 +292,19 @@ public abstract class ScalarDS extends Dataset
     {
         return isImageDisplay;
     }
-   
+
+    /**
+     * Returns true if this dataset is displayed as an image with default image order.
+     * <p>
+     * A ScalarDS can be displayed as an image with different orders of dimensions. 
+     *  
+     * @return true if this dataset is displayed as an image with default image order; otherwise, returns false.
+     */
+    public final boolean isDefaultImageOrder()
+    {
+        return isDefaultImageOrder;
+    }
+
     /**
      * Sets the flag to display the dataset as an image.
      * 

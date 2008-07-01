@@ -1588,7 +1588,6 @@ implements TreeView, ActionListener
             }
             isImage = dialog.isImageDisplay();
             isDisplayTypeChar = dialog.isDisplayTypeChar();
-            isTransposed = dialog.isTransposed();
             dataViewName = dialog.getDataViewName();
         }
 
@@ -1604,7 +1603,7 @@ implements TreeView, ActionListener
             initargs = tmpargs;
         }
         else if (dataViewName.startsWith("ncsa.hdf.view.DefaultImageView")) {
-            Object[] tmpargs = {viewer, new Boolean(isTransposed)};
+            Object[] tmpargs = {viewer};
             initargs = tmpargs;
         }
 

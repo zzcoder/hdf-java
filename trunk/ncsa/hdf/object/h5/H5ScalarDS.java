@@ -397,6 +397,7 @@ public class H5ScalarDS extends ScalarDS
         }
         
         isDataLoaded = false;
+        isDefaultImageOrder = true;
     }
 
     /*
@@ -710,7 +711,12 @@ public class H5ScalarDS extends ScalarDS
             spaceIDs[0] = H5.H5Screate_simple(rank, selectedDims, null);
             H5.H5Sselect_hyperslab(spaceIDs[1], HDF5Constants.H5S_SELECT_SET, startDims, selectedStride, selectedDims, null );
         }
-
+        
+        if ( (rank >1) && (selectedIndex[0]>selectedIndex[1]))
+            isDefaultImageOrder = false;
+        else
+            isDefaultImageOrder = true;
+        
         return lsize;
     }
     
