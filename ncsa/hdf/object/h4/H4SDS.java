@@ -591,17 +591,32 @@ public class H4SDS extends ScalarDS
 
                 boolean status = HDFLibrary.SDgetcompress(id, compInfo);
                 if (compInfo.ctype == HDFConstants.COMP_CODE_DEFLATE) {
-                    compression = "GZIP";
+                    HDFDeflateCompInfo comp = new HDFDeflateCompInfo();
+                    HDFLibrary.SDgetcompress(id, comp);
+                    compression = "GZIP(level="+comp.level+")";
                 } else if (compInfo.ctype == HDFConstants.COMP_CODE_SZIP) {
-                    compression = "SZIP";
+                    HDFSZIPCompInfo comp = new HDFSZIPCompInfo();
+                    HDFLibrary.SDgetcompress(id, comp);
+                    compression = "SZIP(bits_per_pixel="+comp.bits_per_pixel+",options_mask="+comp.options_mask+
+                                  ",pixels="+comp.pixels+",pixels_per_block="+comp.pixels_per_block+
+                                  ",pixels_per_scanline="+comp.pixels_per_scanline+")";
                 } else if (compInfo.ctype == HDFConstants.COMP_CODE_JPEG) {
-                    compression = "JPEG";
+                    HDFJPEGCompInfo comp = new HDFJPEGCompInfo();
+                    HDFLibrary.SDgetcompress(id, comp);
+                    compression = "JPEG(quality="+comp.quality+",options_mask="+
+                                  ",force_baseline="+comp.force_baseline+")";
                 } else if (compInfo.ctype == HDFConstants.COMP_CODE_SKPHUFF) {
-                    compression = "SKPHUFF";
+                    HDFSKPHUFFCompInfo comp = new HDFSKPHUFFCompInfo();
+                    HDFLibrary.SDgetcompress(id, comp);
+                    compression = "SKPHUFF(skp_size="+comp.skp_size+")";
                 } else if (compInfo.ctype == HDFConstants.COMP_CODE_RLE) {
                     compression = "RLE";
                 } else if (compInfo.ctype == HDFConstants.COMP_CODE_NBIT) {
-                    compression = "NBIT";
+                    HDFNBITCompInfo comp = new HDFNBITCompInfo();
+                    HDFLibrary.SDgetcompress(id, comp);
+                    compression = "NBIT(nt="+comp.nt+",bit_len="+comp.bit_len+",ctype="+comp.ctype+
+                                  ",fill_one="+comp.fill_one+",sign_ext="+comp.sign_ext+
+                                  ",start_bit="+comp.start_bit+")";
                 }
             } catch (Exception ex) {}
 

@@ -1601,6 +1601,7 @@ implements ImageView, ActionListener
     public boolean isPlaneInterlace() { return isPlaneInterlace; }
 
     public void setImage(Image img) {
+        image = img;
         imageComponent.setImage(img);
     }
 

@@ -208,8 +208,8 @@ ActionListener, ItemListener
             {
                 this.updatePalette();
                 isPaletteChanged = false;
-                imageView.setImage(currentImage);
                 imageView.setPalette(palette);
+                imageView.setImage(currentImage);
             }
             super.dispose();
         }
