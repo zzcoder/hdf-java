@@ -167,8 +167,6 @@ implements ImageView, ActionListener
 
     private JScrollPane imageScroller;
 
-    private boolean isTransposed;
-
     private JTextField frameField;
 
     private long curFrame=0, maxFrame=1;
@@ -196,16 +194,6 @@ implements ImageView, ActionListener
      */
     public DefaultImageView(ViewManager theView)
     {
-        this(theView, Boolean.FALSE);
-    }
-
-    /**
-     * Constructs an ImageView.
-     * <p>
-     * @param theView the main HDFView.
-     */
-    public DefaultImageView(ViewManager theView, Boolean _isTransposed)
-    {
         super();
 
         setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
@@ -225,7 +213,6 @@ implements ImageView, ActionListener
         toolkit = Toolkit.getDefaultToolkit();
         rotateRelatedItems = new Vector(10);
         imageScroller = null;
-        isTransposed = _isTransposed.booleanValue();
         memoryImageSource = null;
         autoContrastSlider = null;
         gainBias = null;
@@ -797,12 +784,13 @@ implements ImageView, ActionListener
         
         int w = dataset.getWidth();
         int h = dataset.getHeight();
+        
         if (isAutoContrastFailed) {
             // converts raw data to image data
-            if (isTransposed) {
-                imageByteData = Tools.getBytes(data, dataRange, w, h, true, dataset.getFillValue(), imageByteData);
+            if (dataset.isDefaultImageOrder()) {
+               imageByteData = Tools.getBytes(data, dataRange, dataset.getFillValue(), imageByteData);
             } else {
-                imageByteData = Tools.getBytes(data, dataRange, dataset.getFillValue(), imageByteData);
+                imageByteData = Tools.getBytes(data, dataRange, w, h, true, dataset.getFillValue(), imageByteData);
             }
         }
 

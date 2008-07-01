@@ -95,7 +95,6 @@ implements ActionListener, ItemListener
     private final PreviewNavigator navigator;
 
     private int numberOfPalettes;
-    private boolean isTransposed = false;
 
     /** JComboBox.setSelectedItem() or setSelectedIndex() always fires
      * action event. If you call setSelectedItem() or setSelectedIndex()
@@ -896,21 +895,6 @@ implements ActionListener, ItemListener
             imageButton.isSelected()) {
                 start[selectedIndex[2]] = 0;
                 selected[selectedIndex[2]] = 3;
-        } else if ((rank >1) &&
-                   (selectedIndex[0]>selectedIndex[1]) &&
-                   !swapOnlyButton.isSelected() &&
-                   !(dataset instanceof CompoundDS)) {
-            // do not transpose data for 2D HDF4 image
-            if ((rank < 3) && !isH5) {
-                isTransposed = false;
-            } else {
-                // transpose data
-                isTransposed = true;
-                if (!imageButton.isSelected()) {
-                    selectedIndex[0] = sIndex[1];
-                    selectedIndex[1] = sIndex[0];
-                }
-            }
         }
 
         //clear the old data
@@ -1185,8 +1169,6 @@ implements ActionListener, ItemListener
     } // private class SubsetNavigator extends JComponent
 
     public boolean isDisplayTypeChar() { return charButton.isSelected(); }
-
-    public boolean isTransposed() { return isTransposed; }
 
     /** return the name of selected dataview*/
     public String getDataViewName() {
