@@ -47,6 +47,11 @@ public abstract class Dataset extends HObject
      * The current dimension sizes of the dataset
      */
     protected long[] dims;
+    
+    /**
+     * The max dimension sizes of the dataset
+     */
+    protected long[] maxDims;    
 
     /**
      * Array that contains the number of data points selected (for read/write) in each dimension.
@@ -184,6 +189,7 @@ public abstract class Dataset extends HObject
         rank = 0;
         data = null;
         dims = null;
+        maxDims = null;
         selectedDims = null;
         startDims = null;
         selectedStride = null;
@@ -279,6 +285,19 @@ public abstract class Dataset extends HObject
         return dims;
     }
 
+    /**
+     * Returns the array that contins the max dimension sizes of the dataset.
+     * 
+     * @return the max dimension sizes of the dataset.
+     */
+    public final long[] getMaxDims()
+    {
+        if (maxDims == null)
+            return dims;
+        
+        return maxDims;
+    }
+    
     /**
      * Returns the dimension sizes of the selected subset.
      * <p>

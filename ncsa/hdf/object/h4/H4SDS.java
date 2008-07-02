@@ -555,6 +555,7 @@ public class H4SDS extends ScalarDS
         String[] dimName = {""};
         int[] dimInfo = {0, 0, 0};
         int[] sdInfo = {0, 0, 0};
+        boolean isUnlimited = false;
 
         int[] idims = new int[HDFConstants.MAX_VAR_DIMS];
         try {
@@ -569,6 +570,8 @@ public class H4SDS extends ScalarDS
                 idims[0] = 1;
             }
 
+            isUnlimited = HDFLibrary.SDisrecord(id);
+            
             datatypeID = sdInfo[1];
             isText = ((datatypeID == HDFConstants.DFNT_CHAR) || (datatypeID == HDFConstants.DFNT_UCHAR8));
 
@@ -650,6 +653,7 @@ public class H4SDS extends ScalarDS
         }
 
         dims = new long[rank];
+        maxDims = new long[rank];
         startDims = new long[rank];
         selectedDims = new long[rank];
 
@@ -657,8 +661,11 @@ public class H4SDS extends ScalarDS
         {
             startDims[i] = 0;
             selectedDims[i] = 1;
-            dims[i] = idims[i];
+            dims[i] = maxDims[i] = idims[i];
         }
+        
+        if (isUnlimited)
+            maxDims[0] = -1;
 
         selectedIndex[0] = 0;
         selectedIndex[1] = 1;

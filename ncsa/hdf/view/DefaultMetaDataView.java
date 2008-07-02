@@ -534,13 +534,14 @@ implements ActionListener, MetaDataView
     private JPanel createDatasetInfoPanel(Dataset d)
     {
         JPanel lp = new JPanel();
-        lp.setLayout(new GridLayout(3,1));
+        lp.setLayout(new GridLayout(4,1));
         lp.add(new JLabel("No. of Dimension(s): "));
         lp.add(new JLabel("Dimension Size(s): "));
+        lp.add(new JLabel("Max Dimension Size(s): "));
         lp.add(new JLabel("Data Type: "));
 
         JPanel rp = new JPanel();
-        rp.setLayout(new GridLayout(3,1));
+        rp.setLayout(new GridLayout(4,1));
 
         if (d.getRank() <= 0) {
             d.init();
@@ -550,18 +551,28 @@ implements ActionListener, MetaDataView
         rp.add(txtf);
 
         String dimStr = null;
+        String maxDimStr = null;
         long dims[] = d.getDims();
+        long maxDims[] = d.getMaxDims();
         if (dims != null)
         {
             String[] dimNames = d.getDimNames();
             boolean hasDimNames = ((dimNames!=null) && (dimNames.length == dims.length));
             StringBuffer sb = new StringBuffer();
+            StringBuffer sb2 = new StringBuffer();
+            
             sb.append(dims[0]);
             if (hasDimNames) {
                 sb.append(" (");
                 sb.append(dimNames[0]);
                 sb.append(")");
             }
+            
+            if (maxDims[0] < 0)
+                sb2.append("Unlimited");
+            else
+                sb2.append(maxDims[0]);
+
             for (int i=1; i<dims.length; i++)
             {
                 sb.append(" x ");
@@ -571,10 +582,22 @@ implements ActionListener, MetaDataView
                     sb.append(dimNames[i]);
                     sb.append(")");
                 }
+                
+                sb2.append(" x ");
+                if (maxDims[i] < 0)
+                    sb2.append("Unlimited");
+                else
+                    sb2.append(maxDims[i]);
+
             }
             dimStr = sb.toString();
+            maxDimStr = sb2.toString();
         }
         txtf = new JTextField(dimStr);
+        txtf.setEditable(false);
+        rp.add(txtf);
+        
+        txtf = new JTextField(maxDimStr);
         txtf.setEditable(false);
         rp.add(txtf);
 

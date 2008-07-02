@@ -756,7 +756,8 @@ public class H5CompoundDS extends CompoundDS
             else
             {
                 dims = new long[rank];
-                H5.H5Sget_simple_extent_dims(sid, dims, null);
+                maxDims = new long[rank];
+                H5.H5Sget_simple_extent_dims(sid, dims, maxDims);
             }
 
             startDims = new long[rank];
