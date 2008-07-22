@@ -4,8 +4,7 @@ SHELL=/bin/csh
 
 # these parameters needs to be changed
 OS_platform=linux_platform
-irodsDir = /data/mwan/rods/iRODS
-hdf5Dir = /data/mwan/hdf5/hdf5-1.8.0/hdf5
+irodsDir = /home/srb/iRODS
 PROG = islice
 
 include $(irodsDir)/config/config.mk
@@ -28,7 +27,7 @@ HDF_LIB_OBJECTS=$(hdf5LibObjDir)/h5ClHandler.o 	\
 
 #   $(hdf5LibObjDir)/h5LocalHandler.o	\
 
-INCLUDES = -I$(hdf5Dir)/include -I$(hdf5LibIncDir)
+INCLUDES = -I$(hdf5LibIncDir)
 INCLUDES +=     -I$(irodsDir)/lib/core/include -I$(irodsDir)/lib/api/include
 INCLUDES +=     -I$(irodsDir)/lib/md5/include
 INCLUDES +=     -I$(irodsDir)/server/core/include
