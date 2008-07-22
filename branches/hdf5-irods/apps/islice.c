@@ -5,12 +5,8 @@
  * (UIUC/NCSA).
  *
  * Typical usage from the command line might be:
- *      "islice infile outfile pos var coor", where
+ *      "islice [options] infile outfile pos var coor", where
  *          infile  -- the name of the FLASH file to read
- *          outfile -- the name of the output file to create
- *          pos     -- the orientation of the slice (0 = xy, 1 = xz, 2 = yz)
- *          var     -- the name of the FLASH mesh variable
- *          coor    -- the value of the coordinate perpendicular to the slice
  *
  * Output is an unformatted file containing the slice data, uniformly
  * sampled at the highest resolution in the dataset.  Blocks at lower
@@ -35,7 +31,15 @@
 #include "h5Dataset.h"
 #include "h5Group.h"
 
+#define JPEG
+
+#ifdef JPEG
+#include "jpeglib.h"
+#include "jerror.h"
+#endif
+
 #define DEBUG
+#define NAME_LENGTH 120
 
 #define DNAME_REFINE_LEVEL "refine level"
 #define DNAME_NODE_TYPE "node type"
@@ -51,7 +55,7 @@
 static void 
 help(char *name)
 {
-    (void) printf("NAME:\n\thislice -- Extract a slice from a FLASH output file\n\n");
+    (void) printf("\n\nNAME:\n\tislice -- Extract a slice from a FLASH output file\n\n");
 
     (void) printf("DESCRIPTION:\n\tislice -- Extract a slice, perpendicular to one of the coordinate axes,\n");
     (void) printf(              "\tfrom a FLASH output file stored at iRODS server. Selection of a slice is\n");
@@ -60,25 +64,25 @@ help(char *name)
 
     (void) fprintf (stdout, "SYNOPSIS:");
     (void) fprintf (stdout, "\n\t%s -h[elp], OR", name);
-    (void) fprintf (stdout, "\n\t%s infile outfile pos var coor", name);
+    (void) fprintf (stdout, "\n\t%s [options] infile", name);
 
     (void) fprintf (stdout, "\n\n\t-h[elp]:");
     (void) fprintf (stdout, "\n\t\tPrint this summary of usage, and exit.");
 
-    (void) fprintf (stdout, "\n\t\t");
     (void) fprintf (stdout, "\n\n\tinfile:");
     (void) fprintf (stdout, "\n\t\tName of the FLASH file to read");
 
-    (void) fprintf (stdout, "\n\n\toutfile:");
+    (void) fprintf (stdout, "\n\nOPTIONS:");
+    (void) fprintf (stdout, "\n\t-o outfile:");
     (void) fprintf (stdout, "\n\t\tName of the output file to create");
 
-    (void) fprintf (stdout, "\n\n\tpos:");
+    (void) fprintf (stdout, "\n\n\t-p position:");
     (void) fprintf (stdout, "\n\t\tOrientation of the slice (0 = xy, 1 = xz, 2 = yz)");
 
-    (void) fprintf (stdout, "\n\n\tvar:");
+    (void) fprintf (stdout, "\n\n\t-m mesh_variable:");
     (void) fprintf (stdout, "\n\t\tName of the FLASH mesh variable");
 
-    (void) fprintf (stdout, "\n\n\tcoor:");
+    (void) fprintf (stdout, "\n\n\t-c coordinate:");
     (void) fprintf (stdout, "\n\t\tValue of the coordinate perpendicular to the slice\n\n");
 }
 
@@ -93,7 +97,7 @@ static void
 usage(char *name)
 {
     (void) fprintf(stderr, "\nUsage:\t%s -h[elp], OR\n", name);
-    (void) fprintf(stderr, "\t%s infile outfile pos var coor\n", name);
+    (void) fprintf(stderr, "\t%s [options] infile\n", name);
 }
 
 /*
@@ -159,14 +163,151 @@ rodsConnect()
     return conn;
 }
 
+#ifdef JPEG
+/*
+ * Sample routine for JPEG compression.  
+ *
+ * IMAGE DATA FORMATS:
+ *
+ * The standard input image format is a rectangular array of pixels, with
+ * each pixel having the same number of "component" values (color channels).
+ * Each pixel row is an array of JSAMPLEs (which typically are unsigned chars).
+ * If you are working with color data, then the color values for each pixel
+ * must be adjacent in the row; for example, R,G,B,R,G,B,R,G,B,... for 24-bit
+ * RGB color.
+ *
+ * For this example, we'll assume that this data structure matches the way
+ * our application has stored the image in memory, so we can just pass a
+ * pointer to our image buffer. 
+ */
+static 
+void write_JPEG_file(char *filename, 
+                     JSAMPLE *image_buffer, /* Points to large array of R,G,B-order data */
+                     int image_height,      /* Number of rows in image */
+                     int image_width,       /* Number of columns in image */
+                     int planes)            /* # of color components per pixel */           
+{
+    /* This struct contains the JPEG compression parameters and pointers to
+    * working space (which is allocated as needed by the JPEG library).
+    * It is possible to have several such structures, representing multiple
+    * compression/decompression processes, in existence at once.  We refer
+    * to any one struct (and its associated working data) as a "JPEG object".
+    */
+    struct jpeg_compress_struct cinfo;
+    /* This struct represents a JPEG error handler.  It is declared separately
+    * because applications often want to supply a specialized error handler
+    * (see the second half of this file for an example).  But here we just
+    * take the easy way out and use the standard error handler, which will
+    * print a message on stderr and call exit() if compression fails.
+    * Note that this struct must live as long as the main JPEG parameter
+    * struct, to avoid dangling-pointer problems.
+    */
+    struct jpeg_error_mgr jerr;
+    /* More stuff */
+    FILE * outfile;		/* target file */
+    JSAMPROW row_pointer[1];	/* pointer to JSAMPLE row[s] */
+    int row_stride;		/* physical row width in image buffer */
+    
+    /* Step 1: allocate and initialize JPEG compression object */
+    
+    /* We have to set up the error handler first, in case the initialization
+    * step fails.  (Unlikely, but it could happen if you are out of memory.)
+    * This routine fills in the contents of struct jerr, and returns jerr's
+    * address which we place into the link field in cinfo.
+    */
+    cinfo.err = jpeg_std_error(&jerr);
+    /* Now we can initialize the JPEG compression object. */
+    jpeg_create_compress(&cinfo);
+    
+    /* Step 2: specify data destination (eg, a file) */
+    /* Note: steps 2 and 3 can be done in either order. */
+    
+    /* Here we use the library-supplied code to send compressed data to a
+    * stdio stream.  You can also write your own code to do something else.
+    * VERY IMPORTANT: use "b" option to fopen() if you are on a machine that
+    * requires it in order to write binary files.
+    */
+    if ((outfile = fopen(filename, "wb")) == NULL) {
+        fprintf(stderr, "can't open %s\n", filename);
+        exit(1);
+    }
+    jpeg_stdio_dest(&cinfo, outfile);
+    
+    /* Step 3: set parameters for compression */
+    
+    /* First we supply a description of the input image.
+    * Four fields of the cinfo struct must be filled in:
+    */
+    cinfo.image_width = image_width; 	/* image width and height, in pixels */
+    cinfo.image_height = image_height;
+    cinfo.input_components = planes;		/* # of color components per pixel */
+    
+    /* colorspace of input image */
+    if (planes == 3)
+        cinfo.in_color_space = JCS_RGB; 
+    else if (planes == 1)
+        cinfo.in_color_space = JCS_GRAYSCALE; 
+    
+    /* Now use the library's routine to set default compression parameters.
+    * (You must set at least cinfo.in_color_space before calling this,
+    * since the defaults depend on the source color space.)
+    */
+    jpeg_set_defaults(&cinfo);
+    /* Now you can set any non-default parameters you wish to.
+    * Here we just illustrate the use of quality (quantization table) scaling:
+    */
+    jpeg_set_quality(&cinfo, 100, TRUE /* limit to baseline-JPEG values */);
+    
+    /* Step 4: Start compressor */
+    
+    /* TRUE ensures that we will write a complete interchange-JPEG file.
+    * Pass TRUE unless you are very sure of what you're doing.
+    */
+    jpeg_start_compress(&cinfo, TRUE);
+    
+    /* Step 5: while (scan lines remain to be written) */
+    /*           jpeg_write_scanlines(...); */
+    
+    /* Here we use the library's state variable cinfo.next_scanline as the
+    * loop counter, so that we don't have to keep track ourselves.
+    * To keep things simple, we pass one scanline per call; you can pass
+    * more if you wish, though.
+    */
+    row_stride = image_width * planes;	/* JSAMPLEs per row in image_buffer */
+    
+    while (cinfo.next_scanline < cinfo.image_height) {
+    /* jpeg_write_scanlines expects an array of pointers to scanlines.
+    * Here the array is only one element long, but you could pass
+    * more than one scanline at a time if that's more convenient.
+        */
+        row_pointer[0] = & image_buffer[cinfo.next_scanline * row_stride];
+        (void) jpeg_write_scanlines(&cinfo, row_pointer, 1);
+    }
+    
+    /* Step 6: Finish compression */
+    
+    jpeg_finish_compress(&cinfo);
+    /* After finish_compress, we can close the output file. */
+    fclose(outfile);
+    
+    /* Step 7: release JPEG compression object */
+    
+    /* This is an important step since it will release a good deal of memory. */
+    jpeg_destroy_compress(&cinfo);
+    
+    /* And we're done! */
+}
+#endif
+
+
 int main(int argc, char* argv[])
 {
     /* input parameters from commandline */
-    char   infile[80];
-    char   outfile[80];
-    int    pos;
+    char   infile[NAME_LENGTH];
+    char   outfile[NAME_LENGTH];
+    int    pos=0;
     char   var[5];
-    float  coor;
+    float  coor=0.0;
 
     /* slcice parameter */
     int    c, b, select;
@@ -199,30 +340,35 @@ int main(int argc, char* argv[])
         exit(1);
     }
 
-    if (argc==2 && strncmp(argv[1], "-h", 2) == 0) {
-        help(argv[0]);
-        exit(1);
-    }
-
     /*
      * validate the number of command line arguments
      */
-    if (argc < 6) {
+    if (argc < 2) {
         (void) fprintf(stderr, "Invalid command line arguments.\n");
         usage(argv[0]);
         exit(1);
     }
 
-    /* input parameters */
-    strcpy(infile, argv[1]);
-    strcpy(outfile, argv[2]);
-    pos = atoi(argv[3]);
-    strncpy(var, argv[4], 5);
-    coor = atof(argv[5]);
+    outfile[0] = infile[0] = '\0';
+    strcpy(var, "dens");
+    for (i=1; i<argc; i++) {
+        if (strncmp(argv[i], "-h", 2) == 0) {
+            help(argv[0]);
+            exit(1);
+        } else if (strncmp(argv[i], "-o", 2) == 0) {
+            strcpy(outfile, argv[++i]);     
+        } else if (strncmp(argv[i], "-p", 2) == 0) {
+            pos = atoi(argv[++i]); 
+        } else if (strncmp(argv[i], "-m", 2) == 0) {
+            strncpy(var, argv[++i], 5);
+        } else if (strncmp(argv[i], "-c", 2) == 0) {
+            coor = atof(argv[++i]);
+        } 
+    }
+    strcpy(infile, argv[--i]);
 
-    trim(infile, 80);
-    trim(outfile, 80);
-    trim(var, 80);
+    trim(infile, NAME_LENGTH);
+    trim(var, 5);
 
     /* initialize file object */
     h5file = (H5File*)malloc(sizeof(H5File));
@@ -534,6 +680,28 @@ int main(int argc, char* argv[])
      }
      puts("\n");
 #endif
+
+    if (strlen(outfile)<1) {
+        char *tmpfile = strrchr(infile, '/');
+        if (tmpfile == NULL)
+            tmpfile = infile;
+        else
+            tmpfile++; 
+
+        switch (pos) {
+           case 1:
+               sprintf(outfile, "%s_%s_xz_%f_%dx%d.out", tmpfile, var, coor, N1, N2);
+               break;
+           case 2:
+               sprintf(outfile, "%s_%s_yz_%f_%dx%d.out", tmpfile, var, coor, N1, N2);
+               break;
+           default:
+               sprintf(outfile, "%s_%s_xy_%f_%dx%d.out", tmpfile, var, coor, N1, N2);
+               break;
+        }
+    }
+
+    trim(outfile, NAME_LENGTH);
 
     outfilePtr = fopen(outfile, "w");
     fwrite(slice, N1*N2*sizeof(float), 1, outfilePtr);

@@ -490,7 +490,16 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_srb_H5SRB__1getServerInfo
     }
 
     status = getRodsEnv(&rodsServerEnv);
+
     if (status<0) {
+        (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/RuntimeException"), "getRodsEnv() failed");
+    }
+
+    /* check if server information is valid */
+    if ( (rodsServerEnv.rodsUserName == NULL || strlen(rodsServerEnv.rodsUserName) < 1) || 
+         (rodsServerEnv.rodsHost == NULL || strlen (rodsServerEnv.rodsHost) <1) ||
+         (rodsServerEnv.rodsPort < 1) ||
+         (rodsServerEnv.rodsHome == NULL || strlen(rodsServerEnv.rodsHome) < 1) ) {
         (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/RuntimeException"), "getRodsEnv() failed");
     }
  

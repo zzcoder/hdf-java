@@ -24,9 +24,6 @@
 
 void H5Attribute_dtor(H5Attribute* a)
 {
-    unsigned int i;
-    char **strs;
-
     assert(a);
 
     if (a->name)
@@ -50,7 +47,6 @@ void H5Attribute_dtor(H5Attribute* a)
 void H5Dataset_dtor(H5Dataset* d)
 {
     unsigned int i;
-    char **strs;
 
     assert(d);
 
