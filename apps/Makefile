@@ -18,6 +18,9 @@ hdf5LibIncDir = $(irodsDir)/modules/hdf5/lib/include
 hdf5LibObjDir = $(irodsDir)/modules/hdf5/lib/obj
 hdf5LibSrcDir = $(irodsDir)/modules/hdf5/lib/src
 
+# required only for jpeg output
+jpegLibDir=/home/srb/ext_lib/jpeg
+
 PROG_OBJECTS = $(PROG).o
 PROG_SRC = $(PROG).c
 HDF_LIB_OBJECTS=$(hdf5LibObjDir)/h5ClHandler.o 	\
@@ -34,10 +37,12 @@ INCLUDES +=     -I$(irodsDir)/server/core/include
 INCLUDES +=     -I$(irodsDir)/server/icat/include
 INCLUDES +=     -I$(irodsDir)/server/drivers/include
 INCLUDES +=     -I$(irodsDir)/server/re/include
+INCLUDES +=     -I$(jpegLibDir)/include
 
 CFLAGS = $(MY_CFLAG) $(INCLUDES)
 
 LDFLAGS =      -L$(irodsLibDir) -lRodsAPIs -lpthread -lm
+LDFLAGS +=     $(jpegLibDir)/lib/libjpeg.a
 
 
 all:: $(PROG) 
