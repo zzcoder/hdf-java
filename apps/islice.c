@@ -40,10 +40,17 @@
 
 #define DEBUG
 #define NAME_LENGTH 120
+#define NCOLOR 256
 
 #define DNAME_REFINE_LEVEL "refine level"
 #define DNAME_NODE_TYPE "node type"
 #define DNAME_BOUNDING_BOX "bounding box"
+
+#define THROW_ERROR(_msg) { \
+    fprintf(stderr, _msg); \
+     ret_val = -1; \
+     goto done; \
+}
 
 /*
  * Name:
@@ -83,7 +90,13 @@ help(char *name)
     (void) fprintf (stdout, "\n\t\tName of the FLASH mesh variable");
 
     (void) fprintf (stdout, "\n\n\t-c coordinate:");
-    (void) fprintf (stdout, "\n\t\tValue of the coordinate perpendicular to the slice\n\n");
+    (void) fprintf (stdout, "\n\t\tValue of the coordinate perpendicular to the slice");
+
+    (void) fprintf (stdout, "\n\n\t-j jpegfile:");
+    (void) fprintf (stdout, "\n\t\tName of the output jpeg file");
+
+    (void) fprintf (stdout, "\n\n\t-t color_table:");
+    (void) fprintf (stdout, "\n\t\tName of the file of the color table. The table must be a 256x3 2D array of RGB values\n\n");
 }
 
 /*
@@ -163,157 +176,106 @@ rodsConnect()
     return conn;
 }
 
+/* get default outfile name. */
+static void 
+get_defualt_outfile_name(const char *infile, char *outfile, int pos, 
+    const char *var, float coor, int dims[], const char *ext)
+{
+    char   infile_cp[NAME_LENGTH];
+
+    if (outfile==NULL || strlen(outfile) > 0)
+        return;
+
+    strcpy(infile_cp, infile);
+
+    char *tmpfile = strrchr(infile, '/');
+    if (tmpfile == NULL)
+        tmpfile = infile_cp;
+    else
+        tmpfile++;
+
+    switch (pos) {
+       case 1:
+           sprintf(outfile, "%s_%s_xz_%f_%dx%d.%s", tmpfile, var, coor, dims[0], dims[1], ext);
+           break;
+       case 2:
+           sprintf(outfile, "%s_%s_yz_%f_%dx%d.%s", tmpfile, var, coor, dims[0], dims[1], ext);
+           break;
+       default:
+           sprintf(outfile, "%s_%s_xy_%f_%dx%d.%s", tmpfile, var, coor, dims[0], dims[1], ext);
+           break;
+    }
+
+    trim(outfile, NAME_LENGTH);
+}
+
+
 #ifdef JPEG
 /*
- * Sample routine for JPEG compression.  
- *
- * IMAGE DATA FORMATS:
- *
- * The standard input image format is a rectangular array of pixels, with
- * each pixel having the same number of "component" values (color channels).
- * Each pixel row is an array of JSAMPLEs (which typically are unsigned chars).
- * If you are working with color data, then the color values for each pixel
- * must be adjacent in the row; for example, R,G,B,R,G,B,R,G,B,... for 24-bit
- * RGB color.
- *
- * For this example, we'll assume that this data structure matches the way
- * our application has stored the image in memory, so we can just pass a
- * pointer to our image buffer. 
+ * Write data into a JPEG file
  */
-static 
-void write_JPEG_file(char *filename, 
-                     JSAMPLE *image_buffer, /* Points to large array of R,G,B-order data */
-                     int image_height,      /* Number of rows in image */
-                     int image_width,       /* Number of columns in image */
-                     int planes)            /* # of color components per pixel */           
+static void
+write_jpeg_file(const char *fname, JSAMPLE *buf, int height, 
+     int width, int ncomp, int quality)
 {
-    /* This struct contains the JPEG compression parameters and pointers to
-    * working space (which is allocated as needed by the JPEG library).
-    * It is possible to have several such structures, representing multiple
-    * compression/decompression processes, in existence at once.  We refer
-    * to any one struct (and its associated working data) as a "JPEG object".
-    */
+    /* jpeg file */
+    FILE *jpeg_file;
+
+    /* JPEG compression parameters */
     struct jpeg_compress_struct cinfo;
-    /* This struct represents a JPEG error handler.  It is declared separately
-    * because applications often want to supply a specialized error handler
-    * (see the second half of this file for an example).  But here we just
-    * take the easy way out and use the standard error handler, which will
-    * print a message on stderr and call exit() if compression fails.
-    * Note that this struct must live as long as the main JPEG parameter
-    * struct, to avoid dangling-pointer problems.
-    */
+
+    /* JPEG error handler. */
     struct jpeg_error_mgr jerr;
-    /* More stuff */
-    FILE * outfile;		/* target file */
-    JSAMPROW row_pointer[1];	/* pointer to JSAMPLE row[s] */
-    int row_stride;		/* physical row width in image buffer */
+
+    /* pointer to JSAMPLE row[s] */
+    JSAMPROW row_pointer[1];
+
+    /* physical row width in image buffer */
+    int row_stride;
     
-    /* Step 1: allocate and initialize JPEG compression object */
-    
-    /* We have to set up the error handler first, in case the initialization
-    * step fails.  (Unlikely, but it could happen if you are out of memory.)
-    * This routine fills in the contents of struct jerr, and returns jerr's
-    * address which we place into the link field in cinfo.
-    */
+    /* allocate and initialize JPEG compression object */
     cinfo.err = jpeg_std_error(&jerr);
-    /* Now we can initialize the JPEG compression object. */
     jpeg_create_compress(&cinfo);
     
-    /* Step 2: specify data destination (eg, a file) */
-    /* Note: steps 2 and 3 can be done in either order. */
-    
-    /* Here we use the library-supplied code to send compressed data to a
-    * stdio stream.  You can also write your own code to do something else.
-    * VERY IMPORTANT: use "b" option to fopen() if you are on a machine that
-    * requires it in order to write binary files.
-    */
-    if ((outfile = fopen(filename, "wb")) == NULL) {
-        fprintf(stderr, "can't open %s\n", filename);
+    /* create a jpeg file */
+    if ((jpeg_file = fopen(fname, "wb")) == NULL) {
+        fprintf(stderr, "can't open %s\n", fname);
         exit(1);
     }
-    jpeg_stdio_dest(&cinfo, outfile);
+    jpeg_stdio_dest(&cinfo, jpeg_file);
     
-    /* Step 3: set parameters for compression */
-    
-    /* First we supply a description of the input image.
-    * Four fields of the cinfo struct must be filled in:
-    */
-    cinfo.image_width = image_width; 	/* image width and height, in pixels */
-    cinfo.image_height = image_height;
-    cinfo.input_components = planes;		/* # of color components per pixel */
-    
-    /* colorspace of input image */
-    if (planes == 3)
-        cinfo.in_color_space = JCS_RGB; 
-    else if (planes == 1)
-        cinfo.in_color_space = JCS_GRAYSCALE; 
-    
-    /* Now use the library's routine to set default compression parameters.
-    * (You must set at least cinfo.in_color_space before calling this,
-    * since the defaults depend on the source color space.)
-    */
+    /* set parameters for compression */
+    cinfo.image_width = width;
+    cinfo.image_height = height;
+    cinfo.input_components = ncomp;
+    cinfo.in_color_space = JCS_RGB; 
     jpeg_set_defaults(&cinfo);
-    /* Now you can set any non-default parameters you wish to.
-    * Here we just illustrate the use of quality (quantization table) scaling:
-    */
-    jpeg_set_quality(&cinfo, 100, TRUE /* limit to baseline-JPEG values */);
+    jpeg_set_quality(&cinfo, quality, TRUE);
     
-    /* Step 4: Start compressor */
-    
-    /* TRUE ensures that we will write a complete interchange-JPEG file.
-    * Pass TRUE unless you are very sure of what you're doing.
-    */
+    /* write image by scan lines */
     jpeg_start_compress(&cinfo, TRUE);
-    
-    /* Step 5: while (scan lines remain to be written) */
-    /*           jpeg_write_scanlines(...); */
-    
-    /* Here we use the library's state variable cinfo.next_scanline as the
-    * loop counter, so that we don't have to keep track ourselves.
-    * To keep things simple, we pass one scanline per call; you can pass
-    * more if you wish, though.
-    */
-    row_stride = image_width * planes;	/* JSAMPLEs per row in image_buffer */
+    row_stride = width * ncomp;
     
     while (cinfo.next_scanline < cinfo.image_height) {
-    /* jpeg_write_scanlines expects an array of pointers to scanlines.
-    * Here the array is only one element long, but you could pass
-    * more than one scanline at a time if that's more convenient.
-        */
-        row_pointer[0] = & image_buffer[cinfo.next_scanline * row_stride];
+        row_pointer[0] = & buf[cinfo.next_scanline * row_stride];
         (void) jpeg_write_scanlines(&cinfo, row_pointer, 1);
     }
-    
-    /* Step 6: Finish compression */
-    
     jpeg_finish_compress(&cinfo);
-    /* After finish_compress, we can close the output file. */
-    fclose(outfile);
-    
-    /* Step 7: release JPEG compression object */
-    
-    /* This is an important step since it will release a good deal of memory. */
+
+    fclose(jpeg_file);
     jpeg_destroy_compress(&cinfo);
-    
-    /* And we're done! */
 }
 #endif
 
-
-int main(int argc, char* argv[])
+static float *
+get_slice(const char *infile, int pos, const char *var, 
+          float coor, int *sizes)
 {
-    /* input parameters from commandline */
-    char   infile[NAME_LENGTH];
-    char   outfile[NAME_LENGTH];
-    int    pos=0;
-    char   var[5];
-    float  coor=0.0;
-
     /* slcice parameter */
     int    c, b, select;
     int    i1, i2, j1, j2, i, j, k, ii, jj;
     int    tot_blocks, lrefmin, lrefmax;
-    int    Nx, Ny, Nz, N1, N2, N1b, N2b, N1r, N2r, nxb, nyb, nzb;
+    int    Nx, Ny, N1, N2, Nz, N1b, N2b, N1r, N2r, nxb, nyb, nzb;
     float  dx1, dx2, xm1, xm2;
     float  xmin, xmax, ymin, ymax, zmin, zmax;
     float  dx, dy, dz;
@@ -322,7 +284,6 @@ int main(int argc, char* argv[])
     float  *slice=NULL;
     double *data, *bnd_box;
 
-    FILE*  outfilePtr;
     size_t *dims, *start, *stride, *count;
 
     /* iRODS connection */
@@ -335,40 +296,8 @@ int main(int argc, char* argv[])
     int ret_val = 0;
 
     conn = rodsConnect();
-    if (conn == NULL) {
-        (void) fprintf(stderr, "Failed to make connection to iRODS server.\n");
-        exit(1);
-    }
-
-    /*
-     * validate the number of command line arguments
-     */
-    if (argc < 2) {
-        (void) fprintf(stderr, "Invalid command line arguments.\n");
-        usage(argv[0]);
-        exit(1);
-    }
-
-    outfile[0] = infile[0] = '\0';
-    strcpy(var, "dens");
-    for (i=1; i<argc; i++) {
-        if (strncmp(argv[i], "-h", 2) == 0) {
-            help(argv[0]);
-            exit(1);
-        } else if (strncmp(argv[i], "-o", 2) == 0) {
-            strcpy(outfile, argv[++i]);     
-        } else if (strncmp(argv[i], "-p", 2) == 0) {
-            pos = atoi(argv[++i]); 
-        } else if (strncmp(argv[i], "-m", 2) == 0) {
-            strncpy(var, argv[++i], 5);
-        } else if (strncmp(argv[i], "-c", 2) == 0) {
-            coor = atof(argv[++i]);
-        } 
-    }
-    strcpy(infile, argv[--i]);
-
-    trim(infile, NAME_LENGTH);
-    trim(var, 5);
+    if (conn == NULL)
+        THROW_ERROR("Failed to make connection to iRODS server.");
 
     /* initialize file object */
     h5file = (H5File*)malloc(sizeof(H5File));
@@ -379,10 +308,8 @@ int main(int argc, char* argv[])
     /* open the file at the server and get the file structure */
     h5file->opID = H5FILE_OP_OPEN;
     ret_val = h5ObjRequest(conn, h5file, H5OBJECT_FILE);
-    if (ret_val < 0 || h5file->fid < 0) {
-        fprintf (stderr, "H5FILE_OP_OPEN failed, status = %d\n", ret_val);
-        goto done;
-    }
+    if (ret_val < 0 || h5file->fid < 0) 
+        THROW_ERROR ("H5FILE_OP_OPEN failed.");
 
     /* get refine level */
     for (i=0; i<h5file->root->ndatasets; i++) {
@@ -392,16 +319,14 @@ int main(int argc, char* argv[])
         else 
             h5dset = NULL;
     }
-    if (h5dset == NULL) {
-        fprintf(stderr, "Failed to open dataset: %s.\n", DNAME_REFINE_LEVEL);
-        goto done;
-    }
+    if (h5dset == NULL)
+        THROW_ERROR("Failed to open dataset: REFINE_LEVEL.");
+
     h5dset->opID = H5DATASET_OP_READ;
     ret_val = h5ObjRequest(conn, h5dset, H5OBJECT_DATASET);
-    if (ret_val < 0) {
-        fprintf (stderr, "H5DATASET_OP_READ failed, status = %d\n", ret_val);
-        goto done;
-    }
+    if (ret_val < 0)
+        THROW_ERROR("H5DATASET_OP_READ failed.");
+
     tot_blocks = h5dset->space.dims[0];
     lrefine   = (int *)h5dset->value;
 
@@ -420,16 +345,13 @@ int main(int argc, char* argv[])
         else 
             h5dset = NULL;
     }
-    if (h5dset == NULL) {
-        fprintf(stderr, "Failed to open dataset: %s.\n", DNAME_NODE_TYPE);
-        goto done;
-    }
+    if (h5dset == NULL)
+        THROW_ERROR("Failed to open dataset: NODE_TYPE.");
+
     h5dset->opID = H5DATASET_OP_READ;
     ret_val = h5ObjRequest(conn, h5dset, H5OBJECT_DATASET);
-    if (ret_val < 0) {
-        fprintf (stderr, "H5DATASET_OP_READ failed, status = %d\n", ret_val);
-        goto done;
-    }
+    if (ret_val < 0)
+        THROW_ERROR("H5DATASET_OP_READ failed.");
     nodetype   = (int *)h5dset->value;
     
 #ifdef DEBUG
@@ -447,16 +369,13 @@ int main(int argc, char* argv[])
         else 
             h5dset = NULL;
     }
-    if (h5dset == NULL) {
-        fprintf(stderr, "Failed to open dataset: %s.\n", DNAME_BOUNDING_BOX);
-        goto done;
-    }
+    if (h5dset == NULL)
+        THROW_ERROR("Failed to open dataset: BOUNDING_BOX.");
+
     h5dset->opID = H5DATASET_OP_READ;
     ret_val = h5ObjRequest(conn, h5dset, H5OBJECT_DATASET);
-    if (ret_val < 0) {
-        fprintf (stderr, "H5DATASET_OP_READ failed, status = %d\n", ret_val);
-        goto done;
-    }
+    if (ret_val < 0)
+        THROW_ERROR("H5DATASET_OP_READ failed.");
     bnd_box   = (double *)h5dset->value;
 
     xmin =  1.E99;
@@ -499,10 +418,8 @@ int main(int argc, char* argv[])
         else 
             h5dset = NULL;
     }
-    if (h5dset == NULL) {
-        fprintf(stderr, "Failed to open dataset: %s.\n", var);
-        goto done;
-    }
+    if (h5dset == NULL)
+        THROW_ERROR("Failed to open dataset.");
 
     dims = h5dset->space.dims;
     start = h5dset->space.start;
@@ -617,10 +534,8 @@ int main(int argc, char* argv[])
         start[0] = b;
         h5dset->opID = H5DATASET_OP_READ;
         ret_val = h5ObjRequest(conn, h5dset, H5OBJECT_DATASET);
-        if (ret_val < 0) {
-            fprintf (stderr, "H5DATASET_OP_READ failed, status = %d\n", ret_val);
-            goto done;
-        }
+        if (ret_val < 0)
+            THROW_ERROR("H5DATASET_OP_READ failed.");
         data = (double *)h5dset->value;
     
         switch (pos) {
@@ -670,6 +585,9 @@ int main(int argc, char* argv[])
         } /* switch (pos) */
     } /* for (b = 0; b < tot_blocks; b++) */
 
+    sizes[0] = N1;
+    sizes[1] = N2;
+
 #ifdef DEBUG
     puts("slice data:");
     for (i=0; i<10; i++) {
@@ -680,32 +598,6 @@ int main(int argc, char* argv[])
      }
      puts("\n");
 #endif
-
-    if (strlen(outfile)<1) {
-        char *tmpfile = strrchr(infile, '/');
-        if (tmpfile == NULL)
-            tmpfile = infile;
-        else
-            tmpfile++; 
-
-        switch (pos) {
-           case 1:
-               sprintf(outfile, "%s_%s_xz_%f_%dx%d.out", tmpfile, var, coor, N1, N2);
-               break;
-           case 2:
-               sprintf(outfile, "%s_%s_yz_%f_%dx%d.out", tmpfile, var, coor, N1, N2);
-               break;
-           default:
-               sprintf(outfile, "%s_%s_xy_%f_%dx%d.out", tmpfile, var, coor, N1, N2);
-               break;
-        }
-    }
-
-    trim(outfile, NAME_LENGTH);
-
-    outfilePtr = fopen(outfile, "w");
-    fwrite(slice, N1*N2*sizeof(float), 1, outfilePtr);
-    fclose(outfilePtr);
 
 done:
 
@@ -719,11 +611,183 @@ done:
         free(h5file);
     }
 
-    if (slice)
+    if (ret_val<0 && slice) {
         free (slice);
+        slice = NULL;
+    }
 
     rcDisconnect(conn);
 
-    return ret_val;
+    return slice;
 
 }
+
+/* write data into raw float data to file */
+static void
+write_float(const char *infile, char *outfile, int pos, const char *var, 
+          float coor, int dims[], float *slice)
+{
+    FILE*  outfilePtr;
+
+    if (strlen(outfile)<1)
+        get_defualt_outfile_name (infile, outfile, pos, var, coor, dims, "out");
+
+    outfilePtr = fopen(outfile, "w");
+    fwrite(slice, dims[0]*dims[1]*sizeof(float), 1, outfilePtr);
+    fclose(outfilePtr);
+}
+
+#ifdef JPEG
+/* write data to jpeg file */
+static void
+write_jpeg(const char *infile, char *outfile, int pos, const char *var,
+          float coor, int dims[], float *slice, const char *palfile)
+{
+    float min, max, ratio;
+    int i, idx, npoints;
+    unsigned char pal[NCOLOR*3]; /* color table of RGB */
+    unsigned char *idx_values=NULL;
+    unsigned char *pixel_values=NULL;
+    unsigned char is_log_scaling=0;
+    unsigned char has_color_table=0;
+
+    if (dims == NULL || slice==NULL || (npoints = dims[0] * dims[1])<1 )
+        goto done;
+
+    if (strlen(outfile)<1)
+        get_defualt_outfile_name (infile, outfile, pos, var, coor, dims, "jpeg");
+ 
+    /* read R, G, B color table */
+    if (palfile) {
+        FILE * pFile;
+        int r, g, b;
+
+        pFile = fopen (palfile,"r");
+        if (pFile != NULL) {
+            idx = 0; 
+            while (fscanf(pFile, "%d %d %d", &r, &g, &b) == 3) {
+                pal[3*idx] = (unsigned char)r;
+                pal[3*idx+1] = (unsigned char)g;
+                pal[3*idx+2] = (unsigned char)b;
+                idx++;
+                if (idx > 255)
+                    break;
+            }
+            if (idx > 255)
+                has_color_table = 1;
+
+            fclose(pFile);
+        }
+    }
+
+    /* find min and max */
+    min = max = slice[0];
+    for (i=0; i<npoints; i++) {
+        min = fminf(min, slice[i]);
+        max = fmaxf(max, slice[i]);
+    }
+
+    if (max < min)
+        max = (2.0 * fabs(min)) + 1.0;  // Make something up ...
+
+    /* using log10 scaling */
+    if (min>=0) {
+        is_log_scaling = 1;
+        min = log10f(min);
+        max = log10f(max);
+    }
+
+    /* convert float value to image data */
+    idx_values = (unsigned char*)malloc(npoints);
+    pixel_values = (unsigned char*)malloc(npoints*3);
+    ratio = (min==max) ? 1.0f : (float)(255.0/(max-min));
+    for (i=0; i<npoints; i++) {
+        if (is_log_scaling)
+            idx_values[i] = idx = (unsigned char) ((log10f(slice[i])-min)*ratio);
+        else
+            idx_values[i] = idx = (unsigned char) ((slice[i]-min)*ratio);
+
+        if (has_color_table) {
+            pixel_values[i*3] = pal[idx*3];
+            pixel_values[i*3+1] = pal[idx*3+1];
+            pixel_values[i*3+2] = pal[idx*3+2];
+        } else {
+            /* use defualt grey scale */
+            pixel_values[i*3] = pixel_values[i*3+1] = pixel_values[i*3+2] = idx_values[i];
+        }
+    }
+
+    write_jpeg_file(outfile, (JSAMPLE *)pixel_values, dims[0], dims[1], 3, 100);
+
+done:
+    if (idx_values) 
+        free(idx_values);
+
+    if (pixel_values)
+        free(pixel_values);
+}
+#endif
+
+int main(int argc, char* argv[])
+{
+    /* input parameters from commandline */
+    char   infile[NAME_LENGTH];
+    char   outfile[NAME_LENGTH];
+    char   jpgfile[NAME_LENGTH];     /* jpeg output file */
+    char   palfile[NAME_LENGTH];     /* palette file     */
+    int    i, pos=0, dims[2];
+    char   var[5];
+    float  coor=0.0, *slice=NULL;
+    int ret_val = 0;
+
+    /*
+     * validate the number of command line arguments
+     */
+    if (argc < 2) {
+        (void) fprintf(stderr, "Invalid command line arguments.\n");
+        usage(argv[0]);
+        exit(1);
+    }
+
+    outfile[0] = infile[0] = jpgfile[0] = palfile[0] = '\0';
+    strcpy(var, "dens");
+    for (i=1; i<argc; i++) {
+        if (strncmp(argv[i], "-h", 2) == 0) {
+            help(argv[0]);
+            exit(1);
+        } else if (strncmp(argv[i], "-o", 2) == 0) {
+            strcpy(outfile, argv[++i]);     
+        } else if (strncmp(argv[i], "-p", 2) == 0) {
+            pos = atoi(argv[++i]); 
+        } else if (strncmp(argv[i], "-m", 2) == 0) {
+            strncpy(var, argv[++i], 5);
+        } else if (strncmp(argv[i], "-c", 2) == 0) {
+            coor = atof(argv[++i]);
+        } else if (strncmp(argv[i], "-j", 2) == 0) {
+            strcpy(jpgfile, argv[++i]);     
+        } else if (strncmp(argv[i], "-t", 2) == 0) {
+            strcpy(palfile, argv[++i]);     
+        } 
+    }
+    strcpy(infile, argv[--i]);
+
+    trim(infile, NAME_LENGTH);
+    trim(var, 5);
+
+    if ( (slice=get_slice(infile, pos, var, coor, dims)) ) {
+        write_float(infile, outfile, pos, var, coor, dims, slice);
+
+        /* write data into an image file */
+    }
+
+#ifdef JPEG
+    if (slice)
+        write_jpeg(infile, jpgfile, pos, var, coor, dims, slice, palfile);
+#endif
+
+    if (slice)
+        free (slice);
+
+    return ret_val;
+}
+
