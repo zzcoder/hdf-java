@@ -31,7 +31,7 @@
 #include "h5Dataset.h"
 #include "h5Group.h"
 
-#define JPEG
+#define NOJPEG
 
 #ifdef JPEG
 #include "jpeglib.h"
@@ -40,6 +40,7 @@
 
 #define DEBUG
 #define NAME_LENGTH 120
+#define VAR_LENGTH 5 
 #define NCOLOR 256
 
 #define DNAME_REFINE_LEVEL "refine level"
@@ -47,9 +48,9 @@
 #define DNAME_BOUNDING_BOX "bounding box"
 
 #define THROW_ERROR(_msg) { \
-    fprintf(stderr, _msg); \
-     ret_val = -1; \
-     goto done; \
+    fprintf(stderr, "%s\n", _msg);\
+    ret_val = -1; \
+    goto done; \
 }
 
 /*
@@ -413,11 +414,13 @@ get_slice(const char *infile, int pos, const char *var,
 
     for (i=0; i<h5file->root->ndatasets; i++) {
         h5dset = (H5Dataset *) &(h5file->root->datasets[i]);
-        if (strcmp(h5dset->fullpath+1, var) == 0)
+        if (strncmp(h5dset->fullpath+1, var, strlen(var)) == 0)
             break;
         else 
             h5dset = NULL;
     }
+
+
     if (h5dset == NULL)
         THROW_ERROR("Failed to open dataset.");
 
@@ -736,7 +739,7 @@ int main(int argc, char* argv[])
     char   jpgfile[NAME_LENGTH];     /* jpeg output file */
     char   palfile[NAME_LENGTH];     /* palette file     */
     int    i, pos=0, dims[2];
-    char   var[5];
+    char   var[VAR_LENGTH];
     float  coor=0.0, *slice=NULL;
     int ret_val = 0;
 
@@ -760,7 +763,8 @@ int main(int argc, char* argv[])
         } else if (strncmp(argv[i], "-p", 2) == 0) {
             pos = atoi(argv[++i]); 
         } else if (strncmp(argv[i], "-m", 2) == 0) {
-            strncpy(var, argv[++i], 5);
+            memset(var, 0, VAR_LENGTH);
+            strcpy(var, argv[++i]);
         } else if (strncmp(argv[i], "-c", 2) == 0) {
             coor = atof(argv[++i]);
         } else if (strncmp(argv[i], "-j", 2) == 0) {

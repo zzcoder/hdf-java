@@ -2,10 +2,14 @@
 # client application. 
 SHELL=/bin/csh
 
-# these parameters needs to be changed
-IRODSDIR = /home/srb/iRODS
-JPEGDIR = /home/srb/ext_lib/jpeg
+# name of the application program
 PROG = islice
+
+# iRODS home direcotry 
+IRODSDIR = /home/srb/iRODS
+
+# only need if you need jpeg image output file
+JPEGDIR = /home/srb/ext_lib/jpeg
 
 #################################################################
 #                 do not change below this line                 #
