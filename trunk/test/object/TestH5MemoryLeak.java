@@ -93,6 +93,37 @@ public class TestH5MemoryLeak
      */
     public static void main(final String[] args) 
     {
+        boolean is_userfile = false;
+
+        if (args.length > 0)
+        {
+            File tmpFile = new File(args[0]);
+            is_userfile = (tmpFile.exists() && tmpFile.isFile());
+        }
+
+        try {
+            if (is_userfile)
+                test_user_file(args[0]);
+            else
+                test_default_file();
+        } catch (Throwable err) { err.printStackTrace(); }
+    }
+ 
+    private static final void test_user_file(String fname) throws Exception
+    {
+        H5File testFile = null;
+        
+        while(true) {
+            testFile = new H5File(fname, H5File.READ);
+            testFile.open();
+            testFile.getRootNode();
+            try { Thread.sleep(100); } catch (Exception ex) {;}
+            testFile.close();
+        }
+    }
+
+    private static final void test_default_file()
+    {
         int nObjs = 0; // number of object left open
         Dataset dset =null;
         File tmpFile = null;
