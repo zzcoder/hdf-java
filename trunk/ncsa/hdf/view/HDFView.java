@@ -476,7 +476,7 @@ HyperlinkListener, ChangeListener
         } catch (Throwable ex) {isSrbSupported = false;}
        
         if (isSrbSupported) {
-            item = new JMenuItem( "Open from SRB");
+            item = new JMenuItem( "Open from iRODS");
             item.setMnemonic(KeyEvent.VK_S);
             item.addActionListener(this);
             item.setActionCommand("Open from srb");
