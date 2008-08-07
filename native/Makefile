@@ -1,8 +1,15 @@
 # Makefile - This is the makefile for libjh5srb.so, jh5srb.class. 
 SHELL=/bin/csh
 
+# iRODS home direcotry
+IRODSDIR = /home/srb/iRODS
+
+#################################################################
+#                 do not change below this line                 #
+#################################################################
+
 ifndef buildDir
-buildDir =      $(CURDIR)/../../..
+buildDir =      $(IRODSDIR)
 endif
 
 include $(buildDir)/config/config.mk
