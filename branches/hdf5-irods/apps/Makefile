@@ -1,4 +1,4 @@
-# Makefile - This is the makefile for build standalone HDF5/iRods 
+# Makefile - This is the makefile for building standalone HDF5/iRods 
 # client application. 
 SHELL=/bin/csh
 
