@@ -32,6 +32,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.Graphics;
+import java.util.Vector;
 
 /**
  * To view and change palette.
@@ -49,6 +50,7 @@ ActionListener, ItemListener
     private final String lineLabels[] ={"Red", "Green", "Blue"};
 
     private static String PALETTE_GRAY = "Gray";
+    private static String PALETTE_DEFAULT = "Default";
     private static String PALETTE_REVERSE_GRAY = "Reverse Gray";
     private static String PALETTE_GRAY_WAVE = "GrayWave";
     private static String PALETTE_RAINBOW = "Rainbow";
@@ -82,12 +84,18 @@ ActionListener, ItemListener
 
         choicePalette = new JComboBox();
         choicePalette.addItemListener(this);
+         
         choicePalette.addItem("Select palette");
+        choicePalette.addItem(PALETTE_DEFAULT);
         choicePalette.addItem(PALETTE_GRAY);
         choicePalette.addItem(PALETTE_GRAY_WAVE);
         choicePalette.addItem(PALETTE_RAINBOW);
         choicePalette.addItem(PALETTE_NATURE);
         choicePalette.addItem(PALETTE_WAVE);
+        Vector plist = ViewProperties.getPaletteList();
+        int n = plist.size();
+        for (int i=0; i<n; i++)
+        	choicePalette.addItem(plist.get(i));
 
         chartP = new ChartPanel();
         chartP.setBackground(Color.white);
@@ -257,10 +265,14 @@ ActionListener, ItemListener
 
         byte[][] imagePalette = null;
         Object item = choicePalette.getSelectedItem();
-        if ( item.equals(PALETTE_GRAY) ) {
+        
+        if ( item.equals(PALETTE_DEFAULT) ) {
+            imagePalette = dataset.getPalette();
+        }
+        else if ( item.equals(PALETTE_GRAY) ) {
             imagePalette = Tools.createGrayPalette();
         }
-        if ( item.equals(PALETTE_REVERSE_GRAY) ) {
+        else if ( item.equals(PALETTE_REVERSE_GRAY) ) {
             imagePalette = Tools.createReverseGrayPalette();
         } else if ( item.equals(PALETTE_GRAY_WAVE) ) {
             imagePalette = Tools.createGrayWavePalette();
@@ -270,8 +282,12 @@ ActionListener, ItemListener
             imagePalette = Tools.createNaturePalette();
         } else if ( item.equals(PALETTE_WAVE) ) {
             imagePalette = Tools.createWavePalette();
+        } else {
+        	byte[][] pal = Tools.readPalette((String)item);
+        	if (pal != null)
+        		imagePalette = pal;
         }
-
+        
         if (imagePalette == null) {
             return;
         }

@@ -72,9 +72,10 @@ implements ActionListener, ItemListener
 
     private int currentIndex[];
 
-    private JRadioButton spreadsheetButton, imageButton, charButton, swapOnlyButton;
+    private JRadioButton spreadsheetButton, imageButton, charButton;
 
     private JComboBox choiceTextView, choiceTableView, choiceImageView, choicePalette, choices[];
+    private JComboBox transposeChoice;
 
     private boolean isSelectionCancelled;
 
@@ -83,7 +84,7 @@ implements ActionListener, ItemListener
     private boolean isText;
 
     private boolean isH5;
-
+    
     private JLabel maxLabels[], selLabel;
 
     private JTextField startFields[], endFields[], strideFields[];
@@ -155,8 +156,9 @@ implements ActionListener, ItemListener
             w = (int)dims[selectedIndex[1]];
         }
 
-        swapOnlyButton = new JRadioButton("Swap Only", false);
-        swapOnlyButton.setMnemonic(KeyEvent.VK_T);
+        transposeChoice = new JComboBox();
+        transposeChoice.addItem("Reshape");
+        transposeChoice.addItem("Transpose");
 
         selLabel = new JLabel("", SwingConstants.CENTER);
         navigator = new PreviewNavigator(w, h);
@@ -319,7 +321,11 @@ implements ActionListener, ItemListener
         contentPane.add(centerP, BorderLayout.CENTER);
 
         selectionP.add(new JLabel(" "));
-        selectionP.add(swapOnlyButton);
+        if (rank > 1)
+        	selectionP.add(transposeChoice);
+        else 
+            selectionP.add(new JLabel(" "));
+        	
         JLabel label = new JLabel("Start:");
         selectionP.add(label);
         label = new JLabel("End: ");
@@ -376,7 +382,7 @@ implements ActionListener, ItemListener
         JButton button = new JButton("dims...");
         selectionP.add(new JLabel("", SwingConstants.RIGHT));
         selectionP.add(button);
-        //button.setMnemonic(KeyEvent.VK_M);
+        
         button.setActionCommand("Select more dimensions");
         button.addActionListener(this);
         button.setEnabled((rank > 3));
@@ -621,6 +627,14 @@ implements ActionListener, ItemListener
                 {
                     int hIdx = choices[0].getSelectedIndex();
                     int wIdx = choices[1].getSelectedIndex();
+                    transposeChoice.setSelectedIndex(0);
+                    
+                    // Use transpose option only if the dims are not in original order 
+                    if (hIdx < wIdx)
+                    	transposeChoice.setEnabled(false);
+                    else
+                    	transposeChoice.setEnabled(true);
+                    
                     long dims[] = dataset.getDims();
                     int w = (int)dims[wIdx];
                     int h = (int)dims[hIdx];
@@ -694,10 +708,14 @@ implements ActionListener, ItemListener
             }
         }
 
-        if ((rank > 1) && isText)
+        if (rank > 1)
         {
-            endFields[1].setEnabled(false);
-            endFields[1].setText(startFields[1].getText());
+    		transposeChoice.setEnabled((choices[0].getSelectedIndex() > choices[1].getSelectedIndex()));
+        	
+        	if (isText) {
+        		endFields[1].setEnabled(false);
+            	endFields[1].setText(startFields[1].getText());
+        	}
         }
 
         if (rank > 2 )
@@ -1021,7 +1039,7 @@ implements ActionListener, ItemListener
                         imagePalette = Tools.createGrayPalette();
                     }
 
-                    if ((isH5 || (rank>2)) && (selectedIndex[0]>selectedIndex[1]) && !swapOnlyButton.isSelected())
+                    if ((isH5 || (rank>2)) && (selectedIndex[0]>selectedIndex[1]))
                     {
                         // transpose data
                         int n = bData.length;
@@ -1168,7 +1186,17 @@ implements ActionListener, ItemListener
         }
     } // private class SubsetNavigator extends JComponent
 
+    /** 
+     * 
+     * @return true if display the data as characters; otherwise, display as numbers.
+     */
     public boolean isDisplayTypeChar() { return charButton.isSelected(); }
+    
+    /**
+     * 
+     * @return true if transpose the data in 2D table; otherwise, do not transpose the data. 
+     */
+    public boolean isTransposed() { return (transposeChoice.getSelectedIndex()==1); }
 
     /** return the name of selected dataview*/
     public String getDataViewName() {

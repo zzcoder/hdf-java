@@ -96,6 +96,9 @@ public class ViewProperties extends Properties
      */
     private static boolean isAutoContrast = true;
     
+    /** a list of palette files */
+    private static Vector paletteList = new Vector(5);
+    
     /** flag to indicate if enum data is converted to strings */
     private static boolean convertEnum = false;
 
@@ -795,6 +798,21 @@ public class ViewProperties extends Properties
             }
         }
 
+        // load the most recent palette file list from the property file
+        theFile = null;
+        for (int i=0; i<MAX_RECENT_FILES; i++) {
+            theFile = getProperty("palette.file"+i);
+            if ((theFile != null) && !paletteList.contains(theFile))
+            {
+                if ((new File(theFile)).exists()) {
+                    paletteList.addElement(theFile);
+                }
+            }
+            else {
+                this.remove("palette.file"+i);
+            }
+        }
+        
         // load srb account
         str=null;
         String srbaccount[] = new String[7];
@@ -912,6 +930,16 @@ public class ViewProperties extends Properties
             }
         }
 
+        // save the list of most recent palette files
+        size = paletteList.size();
+        minSize = Math.min(size, MAX_RECENT_FILES);
+        for (int i=0; i<minSize; i++) {
+            theFile = (String)paletteList.elementAt(i);
+            if ((theFile != null) && (theFile.length()>0)) {
+                put("palette.file"+i, theFile);
+            }
+        }
+        
         // save srb account
         String srbaccount[]=null;
         size = srbAccountList.size();
@@ -1031,6 +1059,9 @@ public class ViewProperties extends Properties
 
     /** returns the list of most recent files */
     public static Vector getMRF(){ return mrf;}
+    
+    /** returns the list of palette files */
+    public static Vector getPaletteList(){ return paletteList;}
 
     public static Vector getSrbAccount() { return srbAccountList; }
 

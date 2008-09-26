@@ -411,7 +411,10 @@ public class H5Datatype extends Datatype
                     break;
                 case CLASS_STRING:
                     tid = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
-                    H5.H5Tset_size(tid, datatypeSize);
+                    if (datatypeSize < 0)
+                        H5.H5Tset_size (tid, HDF5Constants.H5T_VARIABLE);
+                    else
+                        H5.H5Tset_size(tid, datatypeSize);
                     H5.H5Tset_strpad(tid, HDF5Constants.H5T_STR_NULLPAD);
                     break;
                 case CLASS_REFERENCE:

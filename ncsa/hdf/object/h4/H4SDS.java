@@ -359,6 +359,11 @@ public class H4SDS extends ScalarDS
         {
             close(id);
         }
+        
+        if (fillValue==null && isImageDisplay) {
+        	try { getMetadata(); } // need to set fillValue for images
+        	catch (Exception ex) {}
+        }
 
         return theData;
     }
@@ -467,10 +472,13 @@ public class H4SDS extends ScalarDS
                         (attrInfo[0] ==  HDFConstants.DFNT_UCHAR8))
                     {
                         buf = Dataset.byteToString((byte[])buf, attrInfo[1]);
+                    } else if (attrName[0].equalsIgnoreCase("fillValue")) {
+                    	fillValue = buf;
                     }
 
                     attr.setValue(buf);
                 }
+                
             } // for (int i=0; i<n; i++)
 
             // retrieve attribute of dimension
@@ -774,11 +782,11 @@ public class H4SDS extends ScalarDS
             sdsid = HDFLibrary.SDcreate(sdid, name, tid, rank, idims);
             // set fill value to zero.
             int vsize = HDFLibrary.DFKNTsize(tid);
-            byte[] fillValue = new byte[vsize];
+            byte[] fill = new byte[vsize];
             for (int i=0; i<vsize; i++) {
-                fillValue[i] = 0;
+                fill[i] = 0;
             }
-            HDFLibrary.SDsetfillvalue(sdsid, fillValue);
+            HDFLibrary.SDsetfillvalue(sdsid, fill);
 
             // when we create a new dataset with unlimited dimension,
             // we have to write some data into the dataset or otherwise

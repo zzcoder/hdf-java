@@ -137,6 +137,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         p2.add(new JLabel("Type: "));
         p2.add(arrayLengthLabel= new JLabel("Max String Length: "));
         p2.add(new JLabel("Value: "));
+        p2.add(new JLabel("Object List: "));
         p.add("West", p2);
 
         JPanel typePane = new JPanel();
@@ -244,10 +245,14 @@ implements ActionListener, ItemListener, HyperlinkListener
         {
             int idx = typeChoice.getSelectedIndex();
             objChoice.setEnabled(false);
+            lengthField.setEnabled(true);
 
             if (idx == 0) {
                 arrayLengthLabel.setText("Max String Length: ");
             } else if (typeChoice.getSelectedItem().equals("object reference")){
+                lengthField.setText("1");
+                lengthField.setEnabled(false);
+                arrayLengthLabel.setText("Array Size: ");
                 objChoice.setEnabled(true);
                 valueField.setText((String)objChoice.getSelectedItem());
             } else {

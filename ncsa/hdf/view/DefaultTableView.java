@@ -1135,26 +1135,12 @@ implements TableView, ActionListener
         }
         long[] dims = d.getSelectedDims();
 
-        // put one-dimensional data at one column table
-        if (isDataTransposed)
+        rows = (int)dims[0];
+        cols = 1;
+        if (rank > 1)
         {
-            cols = (int)dims[0];
-            rows = 1;
-            if (rank > 1)
-            {
-                cols = d.getHeight();
-                rows = d.getWidth();
-            }
-        }
-        else
-        {
-            rows = (int)dims[0];
-            cols = 1;
-            if (rank > 1)
-            {
-                rows = d.getHeight();
-                cols = d.getWidth();
-            }
+            rows = d.getHeight();
+            cols = d.getWidth();
         }
 
         dataValue = null;

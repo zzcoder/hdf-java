@@ -21,6 +21,7 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
+import java.util.StringTokenizer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import com.sun.image.codec.jpeg.*;
 
@@ -189,7 +190,7 @@ public final class Tools
 
         for (int i=0; i<256; i++)
         {
-            p[0][i] = p[1][i] = p[2][i] = (byte)i;
+            p[0][i] = p[1][i] = p[2][i] = (byte)(i);
         }
 
         return p;
@@ -355,7 +356,138 @@ public final class Tools
 
         return p;
     }
+    
+    /**
+     * read an image palette from a file.
+     *
+     * A palette file has format of (value, red, green, blue). The color value
+     * in palette file can be either unsigned char [0..255] or float [0..1]. Float
+     * value will be converted to [0..255].
+     *
+     * The color table in file can have any number of entries between 2 to 256.
+     * It will be converted to a color table of 256 entries. Any missing index will
+     * calculated by linear interpolation between the neighboring index values.
+     * For example, index 11 is missing in the following table
+     *             10  200 60  20
+     *             12  100 100 60
+     * Index 11 will be calculated based on index 10 and index 12, i.e.
+     *             11  150 80  40
+     *
+     *  @param filename the name of the palette file.
+     *             
+     *  @return the wave palette in the form of byte[3][256]
+     */
+    public static final byte[][] readPalette(String filename)
+    {
+    	int ncolors = 256;
+        byte[][] p = new byte[3][ncolors];
+        BufferedReader in = null;
+        String line = null;
+        int nentries=0, i, j, idx;
+        float v, r, g, b, ratio, max_v, min_v, max_color, min_color;
+        float[][] tbl = new float[ncolors][4]; /* value, red, green, blue */
+        
+        if (filename == null)
+        	return null;
+        
+        try { in = new BufferedReader(new FileReader(filename)); }
+        catch (Exception ex) { in = null;}
 
+        if (in == null)
+        	return null;
+        
+        idx = 0;
+        v=r=g=b=ratio=max_v=min_v=max_color=min_color=0;
+        do {
+            try { line = in.readLine(); }
+            catch (Exception ex) { line = null; }
+
+			if (line == null)
+				continue;
+            
+        	StringTokenizer st = new StringTokenizer(line);
+        	
+        	// invalid line
+        	if (st.countTokens() != 4) {
+        		continue;
+        	}
+    
+        	try {
+        		v = Float.valueOf(st.nextToken());
+        		r = Float.valueOf(st.nextToken());
+        		g = Float.valueOf(st.nextToken());
+        		b = Float.valueOf(st.nextToken());
+        	} catch (NumberFormatException ex) { continue; }
+    		
+            tbl[idx][0] = v;
+            tbl[idx][1] = r;
+            tbl[idx][2] = g;
+            tbl[idx][3] = b;
+
+            if (idx==0) {
+                max_v = min_v = v;
+                max_color = min_color = r;
+            }
+
+            max_v = Math.max(max_v, v);
+            max_color = Math.max(max_color, r);
+            max_color = Math.max(max_color, g);
+            max_color = Math.max(max_color, b);
+            
+            min_v = Math.min(min_v, v);
+            min_color = Math.min(min_color, r);
+            min_color = Math.min(min_color, g);
+            min_color = Math.min(min_color, b);
+
+            idx++;
+            if (idx >= ncolors)
+                break;  /* only support to 256 colors */
+        } while ( line != null);
+        
+        nentries = idx; 
+        if (nentries <=1) // must have more than one entries
+        	return null;
+        
+        // convert color table to byte
+        nentries = idx;
+        if (max_color <= 1) {
+            ratio = (min_color==max_color) ? 1.0f : ((ncolors-1.0f)/(max_color-min_color));
+
+            for (i=0; i<nentries; i++) {
+                for (j=1; j<4; j++)
+                    tbl[i][j] = (tbl[i][j]-min_color)*ratio-128;
+            }
+        }        
+        
+        // convert table to 256 entries
+        idx = 0;
+        ratio = (min_v==max_v) ? 1.0f : ((ncolors-1.0f)/(max_v-min_v));
+
+        for (i=0; i<nentries; i++) {
+            idx = (int) ((tbl[i][0]-min_v)*ratio);
+            for (j=0; j<3; j++)
+                p[j][idx] = (byte) tbl[i][j+1];
+        }
+        
+        /* linear interpolating missing values in the color table */
+        for (i=1; i<ncolors; i++) {
+           if ( (p[0][i]+p[1][i]+p[2][i]) == 0 ) {
+               j = i+1;
+               while ( (p[0][j]+p[1][j]+p[2][j]) == 0 ) {
+                   j++;
+                   if (j>=ncolors)
+                       return p;   /* nothing in the table to interpolating */
+                }
+
+                p[0][i] = (byte) (p[0][i-1] + (float)(p[0][j]-p[0][i-1])/(j-i));
+                p[1][i] = (byte) (p[1][i-1] + (float)(p[1][j]-p[1][i-1])/(j-i));
+                p[2][i] = (byte) (p[2][i-1] + (float)(p[2][j]-p[2][i-1])/(j-i));
+            }
+        }
+        
+        return p;
+	}
+    
     /**
      * This method returns true if the specified image has transparent pixels.
      * @param image the image to be check if has alpha.
@@ -524,7 +656,7 @@ public final class Tools
     public static byte[] getBytes(Object rawData, double[] minmax, int w, int h,
            boolean isTransposed, Object fillValue, byte[] byteData)
     {
-        // no pnput data
+        // no input data
         if (rawData == null) {
             return null;
         }
@@ -607,14 +739,14 @@ public final class Tools
                     for (int i=0; i<h; i++)
                     {
                         for (int j=0; j<w; j++) {
-                            byteData[i*w+j] = (byte)((s[j*h+i]-min)*ratio);
+                            byteData[i*w+j] = (byte)((s[j*h+i]-min)*ratio-128);
                         }
                     }
                 }
                 else {
                     for (int i=0; i<size; i++)
                     {
-                        byteData[i] = (byte)((s[i]-min)*ratio);
+                        byteData[i] = (byte)((s[i]-min)*ratio-128);
                     }
                 }
 
@@ -641,13 +773,13 @@ public final class Tools
                     for (int i=0; i<h; i++)
                     {
                         for (int j=0; j<w; j++) {
-                            byteData[i*w+j] = (byte)((ia[j*h+i]-min)*ratio);
+                            byteData[i*w+j] = (byte)((ia[j*h+i]-min)*ratio-128);
                         }
                     }
                 }
                 else {
                     for (int i=0; i<size; i++) {
-                        byteData[i] = (byte)((ia[i] - min)*ratio);
+                        byteData[i] = (byte)((ia[i] - min)*ratio-128);
                     }
                 }
 
@@ -674,13 +806,13 @@ public final class Tools
                     for (int i=0; i<h; i++)
                     {
                         for (int j=0; j<w; j++) {
-                            byteData[i*w+j] = (byte)((l[j*h+i]-min)*ratio);
+                            byteData[i*w+j] = (byte)((l[j*h+i]-min)*ratio-128);
                         }
                     }
                 } else {
                     for (int i=0; i<size; i++)
                     {
-                        byteData[i] = (byte)((l[i]-min)*ratio);
+                        byteData[i] = (byte)((l[i]-min)*ratio-128);
                     }
                 }
 
@@ -697,24 +829,23 @@ public final class Tools
                     if (fvalue != 0) {
                         for (int i=0; i<size; i++) {
                             if (fvalue == f[i]) {
-                                f[i] = 0;
+								f[i] = 0;
                             }
                         }
                     }
                 }
-
                 if (isTransposed)
                 {
                     for (int i=0; i<h; i++)
                     {
                         for (int j=0; j<w; j++) {
-                            byteData[i*w+j] = (byte)((f[j*h+i]-min)*ratio);
+                            byteData[i*w+j] = (byte)((f[j*h+i]-min)*ratio-128);
                         }
                     }
                 } else {
                     for (int i=0; i<size; i++)
                     {
-                        byteData[i] = (byte)((f[i]-min)*ratio);
+                        byteData[i] = (byte)((f[i]-min)*ratio-128);
                     }
                 }
 
@@ -741,13 +872,13 @@ public final class Tools
                     for (int i=0; i<h; i++)
                     {
                         for (int j=0; j<w; j++) {
-                            byteData[i*w+j] = (byte)((d[j*h+i]-min)*ratio);
+                            byteData[i*w+j] = (byte)((d[j*h+i]-min)*ratio-128);
                         }
                     }
                 } else {
                     for (int i=0; i<size; i++)
                     {
-                        byteData[i] = (byte)((d[i]-min)*ratio);
+                        byteData[i] = (byte)((d[i]-min)*ratio-128);
                     }
                 }
 
@@ -1315,6 +1446,7 @@ public final class Tools
                         minmax[1] = f[i];
                     }
                 }
+               
                 break;
             case 'D':
                 double[] d = (double[])data;

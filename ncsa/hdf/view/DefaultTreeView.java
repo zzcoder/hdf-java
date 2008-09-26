@@ -1589,6 +1589,7 @@ implements TreeView, ActionListener
             isImage = dialog.isImageDisplay();
             isDisplayTypeChar = dialog.isDisplayTypeChar();
             dataViewName = dialog.getDataViewName();
+            isTransposed = dialog.isTransposed();
         }
 
         // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.

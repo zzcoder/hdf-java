@@ -667,7 +667,6 @@ public class H5ScalarDS extends ScalarDS
                 } else {
                     tmpData = buf;
                 }
-
                 H5.H5Dwrite(did, tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, tmpData);
             }
         } finally {
