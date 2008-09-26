@@ -35,6 +35,7 @@ import java.awt.Point;
 import java.awt.Color;
 import java.awt.Insets;
 import java.awt.GridLayout;
+import java.awt.Font;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import java.awt.event.*;
@@ -362,6 +363,12 @@ implements ImageView, ActionListener
         item = new JMenuItem( "Change Palette");
         item.addActionListener(this);
         item.setActionCommand("Edit palette");
+        item.setEnabled(!isTrueColor);
+        menu.add(item);
+        
+        item = new JMenuItem( "Import Palette");
+        item.addActionListener(this);
+        item.setActionCommand("Import palette");
         item.setEnabled(!isTrueColor);
         menu.add(item);
 
@@ -784,7 +791,7 @@ implements ImageView, ActionListener
         
         int w = dataset.getWidth();
         int h = dataset.getHeight();
-        
+
         if (isAutoContrastFailed) {
             // converts raw data to image data
             if (dataset.isDefaultImageOrder()) {
@@ -1302,6 +1309,21 @@ implements ImageView, ActionListener
         else if (cmd.equals("Edit palette")) {
             showColorTable();
         }
+        else if (cmd.equals("Import palette")) {
+            JFileChooser fchooser = new JFileChooser(ViewProperties.getWorkDir());
+            int returnVal = fchooser.showOpenDialog(this);
+            
+            if(returnVal != JFileChooser.APPROVE_OPTION) {
+               return;
+           }
+
+           File choosedFile = fchooser.getSelectedFile();
+           if (choosedFile == null || choosedFile.isDirectory()) {
+               return;
+           }
+           
+           (ViewProperties.getPaletteList()).addElement(choosedFile.getAbsolutePath());
+        }        
         else if (cmd.equals("Set data range"))
         {
             DataRangeDialog drd = new DataRangeDialog ((JFrame)viewer, dataRange, 
@@ -1828,7 +1850,7 @@ implements ImageView, ActionListener
 
             updatePalette (palette);
 
-            setPreferredSize(new Dimension(paintSize.width+50, paintSize.height*256));
+            setPreferredSize(new Dimension(paintSize.width+60, paintSize.height*256));
             setVisible(true);
         }
 
@@ -1883,6 +1905,8 @@ implements ImageView, ActionListener
                 return;
             }
 
+            Font font = g.getFont();
+            g.setFont(new Font(font.getName(), font.getStyle(), 12));
             for (int i=0; i<256; i++)
             {
                 g.setColor(colors[i]);

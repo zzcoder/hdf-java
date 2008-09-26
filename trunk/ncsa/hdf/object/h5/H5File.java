@@ -24,7 +24,7 @@ import ncsa.hdf.hdf5lib.*;
 import ncsa.hdf.hdf5lib.exceptions.*;
 
 /**
- * H5File is an implemention of the FileFormat class for HDF5 files.
+ * H5File is an implementation of the FileFormat class for HDF5 files.
  * <p>
  * The HDF5 file structure is stored in a tree that is made up of 
  * Java TreeNode objects. 
@@ -1351,8 +1351,7 @@ public class H5File extends FileFormat
             if (attrExisted) {
                 aid = H5.H5Aopen_name(objID, name);
             } else {
-                aid = H5.H5Acreate(objID, name, tid, sid, 
-                                   HDF5Constants.H5P_DEFAULT);
+                aid = H5.H5Acreate(objID, name, tid, sid, HDF5Constants.H5P_DEFAULT);
             }
             
             // update value of the attribute
@@ -1388,6 +1387,10 @@ public class H5File extends FileFormat
                 }
 
                 try {
+                	/* must use native type to write attribute data to file (see bug 1069) */
+                	int tmptid = tid;
+                	tid = H5.H5Tget_native_type(tmptid);
+                    try { H5.H5Tclose(tmptid); } catch (HDF5Exception ex) {}
                     H5.H5Awrite(aid, tid, attrValue);
                 } catch (Exception ex) {}
             } //if (attrValue != null) {
