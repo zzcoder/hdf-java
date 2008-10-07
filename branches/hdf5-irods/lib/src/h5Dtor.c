@@ -175,9 +175,9 @@ int nvalue)
 
     if (value)
     {
-        if (    ( H5DATATYPE_VLEN == type.class )
-             || ( H5DATATYPE_COMPOUND == type.class )
-             || ( H5DATATYPE_STRING == type.class )
+        if (    ( H5DATATYPE_VLEN == type.tclass )
+             || ( H5DATATYPE_COMPOUND == type.tclass )
+             || ( H5DATATYPE_STRING == type.tclass )
            )
         {
             strs = (char **)value;
