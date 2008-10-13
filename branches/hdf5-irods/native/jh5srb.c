@@ -673,7 +673,7 @@ jint getFileList(JNIEnv *env, jobject flist, jmethodID addElement,
             (*env)->CallVoidMethod(env, flist, addElement, (*env)->NewStringUTF(env, fname));
             */
 
-            ret_val = rclOpenCollection (conn, collEnt.collName, collHandle->flag, &subCollhandle);
+            ret_val = rclOpenCollection (conn, collEnt.collName, collHandle->flags, &subCollhandle);
             if (ret_val < 0)
                 THROW_JNI_ERROR("java/lang/RuntimeException", "rclOpenCollection() failed");
 

@@ -8,17 +8,15 @@
 # library routine instead of the irods client library. Normal it is off
 # MAKE_LOCAL_TEST = 1
 
-# the directoy where hdf5 library is installed
-#hdf5Dir = /data/mwan/hdf5/hdf5-1.8.0
+#
+# Source files
+#
+# Set hdf5Dir to the top-level directory of the
+# hdf5 installation.
+# hdf5Dir is the hdf5 install directory
 hdf5Dir = /home/srb/hdf5_1_8/build
-
-# set up zlib ans szlib directory if they are not in the default library path
 szlibDir=/home/srb/ext_lib/szip
 zlibDir=/home/srb/ext_lib/zlib
-
-#################################################################
-#                 do not change below this line                 #
-#################################################################
 
 ifndef buildDir
 buildDir = $(CURDIR)/../..
@@ -44,7 +42,7 @@ hdf5LibSrcDir =	$(modulesDir)/hdf5/lib/src
 ifdef hdf5Dir
 MS_OBJECTS	=  $(hdf5MSObjDir)/hdf5MS.o
 TEST_OBJECT = $(hdf5TestDir)/test_h5File.o
-INCLUDE_FLAGS = -I$(hdf5TestDir) -I$(hdf5Dir)/include -I$(hdf5LibIncDir)	\
+INCLUDE_FLAGS = -I$(hdf5TestDir) -I$(hdf5Dir)/include -I$(hdf5LibIncDir)  \
     -I$(hdf5MSIncDir) 
 ifdef zlibDir
 INCLUDE_FLAGS+=  -I$(zlibDir)/include
@@ -70,7 +68,7 @@ HDF_LIB_OBJECTS+=$(hdf5LibObjDir)/h5ClHandler.o
 HDF_LIB_OBJECTS+=$(hdf5LibObjDir)/clH5Dataset.o 	\
     $(hdf5LibObjDir)/clH5File.o $(hdf5LibObjDir)/clH5Group.o
 endif
-HDF5_LD_LIBS = -L$(hdf5Dir)/lib -lhdf5
+HDF5_LD_LIBS = -L$(hdf5Dir)/lib -lhdf5 -lhdf5_hl
 ifdef zlibDir
 HDF5_LD_LIBS+= -L$(zlibDir)/lib -lz
 endif
@@ -111,7 +109,7 @@ client_cflags:
 
 # List module's objects and needed libs for inclusion in the server
 server_ldflags:
-	@echo $(HDF5_LD_LIBS) $(MS_OBJECTS) $(HDF_LIB_OBJECTS)
+	@echo $(MS_OBJECTS) $(HDF_LIB_OBJECTS) $(HDF5_LD_LIBS)
 
 # List module's includes for inclusion in the server
 server_cflags:
@@ -119,7 +117,7 @@ server_cflags:
 
 # Build microservices
 ifdef hdf5Dir
-microservices:	print_cflags $(MS_OBJECTS) $(HDF_LIB_OBJECTS) $(TEST_PROG)
+microservices:	print_cflags $(MS_OBJECTS) $(HDF_LIB_OBJECTS)
 	@true
 test:	$(TEST_PROG)
 else
