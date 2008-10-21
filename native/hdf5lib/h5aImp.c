@@ -423,7 +423,7 @@ herr_t H5AreadVL_num (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
 	size_t max_len=0;
 	h5str_t h5str;
 	jstring jstr;
-	hvl_t *rdata;
+	hvl_t *rdata=NULL;
 	size_t size;
 	hid_t sid;
 	hsize_t dims[H5S_MAX_RANK];
