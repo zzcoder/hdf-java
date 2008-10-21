@@ -999,9 +999,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DreadVL
 
 	if (H5Tget_class((hid_t)mem_type_id) == H5T_COMPOUND) {
         hid_t nested_tid = H5Tget_member_type((hid_t)mem_type_id, 0);
-        while (H5Tget_class(nested_tid) == H5T_COMPOUND)
-            nested_tid = H5Tget_member_type(nested_tid, 0);
 		isStr = H5Tis_variable_str(nested_tid);
+		H5Tclose(nested_tid);
     }
 	else
 		isStr = H5Tis_variable_str((hid_t)mem_type_id);
@@ -1111,9 +1110,16 @@ herr_t H5DreadVL_str (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t fi
 	{
 		jstr = (*env)->NewStringUTF(env, strs[i]);
 		(*env)->SetObjectArrayElement(env, buf, i, jstr);
+		free (strs[i]);
 	}
-		
+
+	/*
+	for repeatly reading a dataset with a large number of strs (e.g., 1,000,000 strings, 
+	H5Dvlen_reclaim() may crash on Windows because the Java GC will not be able to collect
+	free space in time. Instead, use "free(strs[i])" above to free individual strings
+	after it is done.
 	H5Dvlen_reclaim(tid, mem_sid, H5P_DEFAULT, strs);
+	*/
 	free(strs);
 
 	return status;
