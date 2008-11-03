@@ -8,7 +8,7 @@
 
 
 #define NODEBUG
-#define DEBUG_CONN
+#define NODEBUG_CONN
 #define FILE_FIELD_SEPARATOR "::"
 
 #ifdef _WIN32
@@ -94,12 +94,18 @@ jfieldID  field_dataset_selectedIndex=NULL;
 jfieldID  field_dataset_selectedStride=NULL;
 jfieldID  field_dataset_datatype=NULL;
 jmethodID method_dataset_ctr=NULL;
+jmethodID method_dataset_init=NULL;
 jmethodID method_dataset_setData=NULL;
 jmethodID method_dataset_addAttribute=NULL;
 
 jclass    cls_dataset_scalar=NULL;
 jfieldID  field_dataset_scalar_opID=NULL;
+jfieldID  field_dataset_scalar_isImage=NULL;
+jfieldID  field_dataset_scalar_isImageDisplay=NULL;
+jfieldID  field_dataset_scalar_isTrueColor=NULL;
+jfieldID  field_dataset_scalar_interlace=NULL;
 jmethodID method_dataset_scalar_ctr=NULL;
+jmethodID method_dataset_scalar_init=NULL;
 jmethodID method_dataset_scalar_addAttribute=NULL;
 
 /* unique for scalar dataset */
@@ -108,10 +114,12 @@ jmethodID method_dataset_scalar_setPalette=NULL;
 jclass    cls_dataset_compound=NULL;
 jfieldID  field_dataset_compound_opID=NULL;
 jmethodID method_dataset_compound_ctr=NULL;
+jmethodID method_dataset_compound_init=NULL;
 jmethodID method_dataset_compound_addAttribute=NULL;
 
 /* unique for compound */
 jfieldID  field_dataset_compound_memberNames=NULL;
+jfieldID  field_dataset_compound_memberTypes=NULL;
 jmethodID method_dataset_compound_setMemberCount=NULL;
 
 jclass    cls_datatype=NULL;
@@ -119,7 +127,321 @@ jfieldID  field_datatype_class=NULL;
 jfieldID  field_datatype_size=NULL;
 jfieldID  field_datatype_order=NULL;
 jfieldID  field_datatype_sign=NULL;
+jmethodID method_datatype_ctr = NULL;
 
+int load_field_method_IDs(JNIEnv *env) 
+{
+    int ret_val = -1;
+    jclass cls;
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                              FileFormat                               //
+    ///////////////////////////////////////////////////////////////////////////
+    cls = (*env)->FindClass(env, "ncsa/hdf/object/FileFormat");
+    if (!cls)
+        THROW_JNI_ERROR ("java/lang/ClassNotFoundException", "ncsa/hdf/object/FileFormat");
+    
+    /* fields and methods for FileFormat */    
+    field_file_fid = (*env)->GetFieldID(env, cls, "fid", "I");
+    if (!field_file_fid)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/FileFormat.fid");
+ 
+    ///////////////////////////////////////////////////////////////////////////
+    //                              H5SrbFile                                //
+    ///////////////////////////////////////////////////////////////////////////
+    cls = (*env)->FindClass(env, "ncsa/hdf/srb/H5SrbFile");
+    if (!cls)
+        THROW_JNI_ERROR ("java/lang/ClassNotFoundException", "ncsa/hdf/srb/H5SrbFile");
+
+    cls_file = cls;
+
+    field_file_opID = (*env)->GetFieldID(env, cls, "opID", "I");
+    if (!field_file_opID)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/srb/H5SrbFile.opID");
+
+    field_file_fullFileName = (*env)->GetFieldID(env, cls, "fullFileName", "Ljava/lang/String;");
+    if (!field_file_fullFileName)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/srb/H5SrbFile.fullFileName");
+
+    field_file_rootGroup = (*env)->GetFieldID(env, cls, "rootGroup", "Lncsa/hdf/srb/H5SrbGroup;");
+    if (!field_file_rootGroup)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/srb/H5SrbFile.rootGroup");
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                              HObject                                  //
+    ///////////////////////////////////////////////////////////////////////////
+    cls = (*env)->FindClass(env, "ncsa/hdf/object/HObject");
+    if (!cls)
+        THROW_JNI_ERROR ("java/lang/ClassNotFoundException", "ncsa/hdf/object/HObject");
+
+    field_hobject_fullName = (*env)->GetFieldID(env, cls, "fullName", "Ljava/lang/String;");
+    if (!field_hobject_fullName)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/HObject.fullName");
+
+    method_hobject_getFID = (*env)->GetMethodID(env, cls, "getFID", "()I");
+    if (!method_hobject_getFID)
+        THROW_JNI_ERROR ("java/lang/NoSuchMethodException","ncsa/hdf/oject/HObject.getFID");
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                              H5SrbGroup                               //
+    ///////////////////////////////////////////////////////////////////////////
+    cls = (*env)->FindClass(env, "ncsa/hdf/srb/H5SrbGroup");
+    if (!cls)
+        THROW_JNI_ERROR ("java/lang/ClassNotFoundException", "ncsa/hdf/srb/H5SrbGroup");
+
+    cls_group = cls;
+
+    field_group_opID = (*env)->GetFieldID(env, cls, "opID", "I");
+    if (!field_group_opID)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/srb/H5SrbGroup.opID");
+
+    method_group_ctr = (*env)->GetMethodID(env, cls, "<init>", 
+        "(Lncsa/hdf/object/FileFormat;Ljava/lang/String;Ljava/lang/String;Lncsa/hdf/object/Group;[J)V");
+     if (!method_group_ctr)
+        THROW_JNI_ERROR ("java/lang/NoSuchMethodException","ncsa/hdf/srb/H5SrbGroup.<init>");
+
+    method_group_addToMemberList = (*env)->GetMethodID(env, cls, "addToMemberList", "(Lncsa/hdf/object/HObject;)V");
+    if (!method_group_addToMemberList)
+        THROW_JNI_ERROR ("java/lang/NoSuchMethodException","ncsa/hdf/srb/H5SrbGroup.addToMemberList()");
+
+    method_group_addAttribute = (*env)->GetMethodID(env, cls, "addAttribute", 
+        "(Ljava/lang/String;Ljava/lang/Object;[JIIII)V");
+    if (!method_group_addAttribute)
+        THROW_JNI_ERROR ("java/lang/NoSuchMethodException","ncsa/hdf/srb/H5SrbGroup.addAttribute()");
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                 Dataset                               //
+    ///////////////////////////////////////////////////////////////////////////
+    cls = (*env)->FindClass(env, "ncsa/hdf/object/Dataset");
+    if (!cls)
+        THROW_JNI_ERROR ("java/lang/ClassNotFoundException", "ncsa/hdf/object/Dataset");
+    
+    field_dataset_rank = (*env)->GetFieldID(env, cls, "rank", "I");
+    if (!field_dataset_rank)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/Dataset.rank");
+
+    field_dataset_dims = (*env)->GetFieldID(env, cls, "dims", "[J");
+    if (!field_dataset_dims)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/Dataset.dims");
+
+    field_dataset_selectedDims = (*env)->GetFieldID(env, cls, "selectedDims", "[J");
+    if (!field_dataset_selectedDims)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/Dataset.selectedDims");
+
+    field_dataset_startDims = (*env)->GetFieldID(env, cls, "startDims", "[J");
+    if (!field_dataset_startDims)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/Dataset.startDims");
+
+    field_dataset_selectedIndex = (*env)->GetFieldID(env, cls, "selectedIndex", "[I");
+    if (!field_dataset_selectedIndex)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/Dataset.selectedIndex");
+
+    field_dataset_selectedStride = (*env)->GetFieldID(env, cls, "selectedStride", "[J");
+    if (!field_dataset_selectedStride)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/Dataset.selectedStride");
+
+    field_dataset_datatype = (*env)->GetFieldID(env, cls, "datatype", "Lncsa/hdf/object/Datatype;");
+    if (!field_dataset_datatype)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/Dataset.datatype");
+
+    method_dataset_setData = (*env)->GetMethodID(env, cls, "setData", "(Ljava/lang/Object;)V");
+    if (!method_dataset_setData)
+        THROW_JNI_ERROR ("java/lang/NoSuchMethodException", "ncsa/hdf/object/Dataset.setData");
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                               H5SrbScalarDS                           //
+    ///////////////////////////////////////////////////////////////////////////
+    cls = (*env)->FindClass(env, "ncsa/hdf/srb/H5SrbScalarDS");
+    if (!cls)
+        THROW_JNI_ERROR ("java/lang/ClassNotFoundException", "ncsa/hdf/srb/H5SrbScalarDS");
+
+    cls_dataset_scalar = cls;
+
+    field_dataset_scalar_opID = (*env)->GetFieldID(env, cls, "opID", "I");
+    if (!field_dataset_scalar_opID)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/srb/H5SrbScalarDS.opID");
+
+    field_dataset_scalar_isImage = (*env)->GetFieldID(env, cls, "isImage", "Z");
+    if (!field_dataset_scalar_isImage)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/srb/H5SrbScalarDS.isImage");
+
+    field_dataset_scalar_isImageDisplay = (*env)->GetFieldID(env, cls, "isImageDisplay", "Z");
+    if (!field_dataset_scalar_isImageDisplay)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/srb/H5SrbScalarDS.isImageDisplay");
+
+    field_dataset_scalar_isTrueColor = (*env)->GetFieldID(env, cls, "isTrueColor", "Z");
+    if (!field_dataset_scalar_isTrueColor)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/srb/H5SrbScalarDS.isTrueColor");
+
+    field_dataset_scalar_interlace = (*env)->GetFieldID(env, cls, "interlace", "I");
+    if (!field_dataset_scalar_interlace)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/srb/H5SrbScalarDS.interlace");
+
+    method_dataset_scalar_ctr = (*env)->GetMethodID(env, cls, "<init>", 
+        "(Lncsa/hdf/object/FileFormat;Ljava/lang/String;Ljava/lang/String;[J)V");
+    if (!method_dataset_scalar_ctr)
+        THROW_JNI_ERROR ("java/lang/NoSuchMethodException", "ncsa/hdf/srb/H5SrbScalarDS.<init>");
+    
+    method_dataset_scalar_init = (*env)->GetMethodID(env, cls, "init", "()V");
+    if (! method_dataset_scalar_init)
+        THROW_JNI_ERROR ("java/lang/NoSuchMethodException", "ncsa/hdf/srb/H5SrbCompoundDS.init");
+
+    method_dataset_scalar_addAttribute = (*env)->GetMethodID(env, cls, "addAttribute", 
+        "(Ljava/lang/String;Ljava/lang/Object;[JIIII)V");
+    if (!method_dataset_scalar_addAttribute)
+        THROW_JNI_ERROR ("java/lang/NoSuchMethodException", "ncsa/hdf/srb/H5SrbScalarDS.addAttribute()");
+
+    method_dataset_scalar_setPalette = (*env)->GetMethodID(env, cls, "setPalette", "([B)V"); 
+    if (!method_dataset_scalar_setPalette)
+        THROW_JNI_ERROR ("java/lang/NoSuchMethodException", "ncsa/hdf/srb/H5SrbScalarDS.setPalette()");
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                  CompoundDS                           //
+    ///////////////////////////////////////////////////////////////////////////
+    cls = (*env)->FindClass(env, "ncsa/hdf/object/CompoundDS");
+    if (!cls)
+        THROW_JNI_ERROR ("java/lang/ClassNotFoundException", "ncsa/hdf/object/CompoundDS");
+
+    field_dataset_compound_memberNames = (*env)->GetFieldID(env, cls, "memberNames", "[Ljava/lang/String;");
+    if (!field_dataset_compound_memberNames)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/CompoundDS.memberNames");
+
+    field_dataset_compound_memberTypes = (*env)->GetFieldID(env, cls, "memberTypes", "[Lncsa/hdf/object/Datatype;");
+    if (!field_dataset_compound_memberTypes)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/CompoundDS.memberTypes");
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                               H5SrbCompoundDS                         //
+    ///////////////////////////////////////////////////////////////////////////
+    cls = (*env)->FindClass(env, "ncsa/hdf/srb/H5SrbCompoundDS");
+    if (!cls)
+        THROW_JNI_ERROR ("java/lang/ClassNotFoundException", "ncsa/hdf/srb/H5SrbCompoundDS");
+
+    cls_dataset_compound = cls;
+
+    field_dataset_compound_opID = (*env)->GetFieldID(env, cls, "opID", "I");
+    if (!field_dataset_compound_opID)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/srb/H5SrbCompoundDS.opID");
+
+    method_dataset_compound_ctr = (*env)->GetMethodID(env, cls, "<init>", 
+        "(Lncsa/hdf/object/FileFormat;Ljava/lang/String;Ljava/lang/String;[J)V");
+    if (! method_dataset_compound_ctr)
+        THROW_JNI_ERROR ("java/lang/NoSuchMethodException", "ncsa/hdf/srb/H5SrbCompoundDS.<init>");
+
+    method_dataset_compound_init = (*env)->GetMethodID(env, cls, "init", "()V");
+    if (! method_dataset_compound_init)
+        THROW_JNI_ERROR ("java/lang/NoSuchMethodException", "ncsa/hdf/srb/H5SrbCompoundDS.init");
+
+    method_dataset_compound_addAttribute = (*env)->GetMethodID(env, cls, "addAttribute", 
+        "(Ljava/lang/String;Ljava/lang/Object;[JIIII)V");
+    if (!method_dataset_compound_addAttribute)
+        THROW_JNI_ERROR ("java/lang/NoSuchMethodException", "ncsa/hdf/srb/H5SrbCompoundDS.addAttribute");
+
+    method_dataset_compound_setMemberCount = (*env)->GetMethodID(env, cls_dataset_compound,"setMemberCount", "(I)V");
+    if (!method_dataset_compound_setMemberCount)
+        THROW_JNI_ERROR ("java/lang/NoSuchMethodException", "ncsa/hdf/srb/H5SrbCompoundDS.setMemberCount");
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                                    Datatype                           //
+    ///////////////////////////////////////////////////////////////////////////
+    cls = (*env)->FindClass(env, "ncsa/hdf/object/Datatype");
+    if (!cls)
+        THROW_JNI_ERROR ("java/lang/ClassNotFoundException", "ncsa/hdf/object/Datatype");
+
+    field_datatype_class = (*env)->GetFieldID(env, cls, "datatypeClass", "I");
+    if (!field_datatype_class)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/Datatype.datatypeClass");
+
+    field_datatype_size = (*env)->GetFieldID(env, cls, "datatypeSize", "I");
+    if (!field_datatype_size)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/Datatype.datatypeSize");
+
+    field_datatype_order = (*env)->GetFieldID(env, cls, "datatypeOrder", "I");
+    if (!field_datatype_order)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/Datatype.datatypeOrder");
+
+    field_datatype_sign = (*env)->GetFieldID(env, cls, "datatypeSign", "I");
+    if (!field_datatype_sign)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/Datatype.datatypeSign");
+
+    ///////////////////////////////////////////////////////////////////////////
+    //                               H5SrbDatatype                           //
+    ///////////////////////////////////////////////////////////////////////////
+    cls = (*env)->FindClass(env, "ncsa/hdf/srb/H5SrbDatatype");
+    if (!cls)
+         THROW_JNI_ERROR ("java/lang/ClassNotFoundException", "ncsa/hdf/srb/H5SrbDatatype");
+
+    cls_datatype = cls;
+
+    method_datatype_ctr = (*env)->GetMethodID(env, cls, "<init>", "(IIII)V");
+    if (!method_datatype_ctr)
+        THROW_JNI_ERROR ("java/lang/NoSuchMethodException", "ncsa/hdf/srb/H5SrbDatatype.<init>");
+
+    ret_val = 0;
+
+done:
+
+    return ret_val;
+}
+
+void set_field_method_IDs_scalar()
+{
+    cls_dataset = cls_dataset_scalar;
+    field_dataset_opID = field_dataset_scalar_opID;
+    method_dataset_ctr = method_dataset_scalar_ctr;
+    method_dataset_init = method_dataset_scalar_init;
+    method_dataset_addAttribute = method_dataset_scalar_addAttribute;
+}
+
+void set_field_method_IDs_compound()
+{
+    cls_dataset = cls_dataset_compound;
+    field_dataset_opID = field_dataset_compound_opID;
+    method_dataset_ctr = method_dataset_compound_ctr;
+    method_dataset_init = method_dataset_compound_init;
+    method_dataset_addAttribute = method_dataset_compound_addAttribute;
+}
+
+/* 
+ *  Make connection to the server
+ */
+rcComm_t *make_connection(JNIEnv *env) {
+    rcComm_t *conn_t;
+    rErrMsg_t errMsg;
+    int ret_val;
+
+    ret_val = getRodsEnv(&rodsServerEnv);
+    if (ret_val<0) {
+        (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/RuntimeException"), "getRodsEnv() failed");
+        return NULL;
+    }
+
+    conn_t = rcConnect (rodsServerEnv.rodsHost, rodsServerEnv.rodsPort, 
+        rodsServerEnv.rodsUserName, rodsServerEnv.rodsZone, 1, &errMsg);
+
+    if ( (NULL == conn_t) ) {
+        (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/RuntimeException"), errMsg.msg);
+        return NULL;
+    }
+
+    ret_val = clientLogin(conn_t); /* try default login first */
+
+    if (ret_val != 0) {
+        rcDisconnect(conn_t);
+        (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/RuntimeException"), "Client login failed");
+        return NULL;
+    }
+
+    return conn_t;
+}
+
+void close_connection(rcComm_t *conn_t) 
+{
+    if (conn_t != NULL) {
+        rcDisconnect (conn_t);
+        conn_t = NULL;
+    }
+}   
 /*
  * Class:     ncsa_hdf_srb_H5SRB
  * Method:    getFileFieldSeparator
@@ -133,28 +455,54 @@ JNIEXPORT jstring JNICALL Java_ncsa_hdf_srb_H5SRB_getFileFieldSeparator
 
 /*
  * Class:     ncsa_hdf_srb_H5SRB
+ * Method:    callServerInit
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_ncsa_hdf_srb_H5SRB_callServerInit
+  (JNIEnv *env, jclass cls, jstring jpasswd) 
+{
+    char *passwd;
+    jboolean isCopy;
+
+    passwd = (char *)(*env)->GetStringUTFChars(env,jpasswd,&isCopy);
+    if (passwd != NULL && strlen(passwd)>0) {
+        obfSavePw(0, 0, 0, passwd); 
+    }
+} 
+
+
+/*
+ * Class:     ncsa_hdf_srb_H5SRB
  * Method:    _getServerInfo
  * Signature: ([Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_ncsa_hdf_srb_H5SRB__1getServerInfo
   (JNIEnv *env, jclass cls, jobjectArray jInfo)
 {
-    int n;
+    int n, status;
     jstring jstr;
     char str[NAME_LEN];
 
-    if (server_connection == NULL) {
-        if ( (server_connection = make_connection(env)) == NULL )
-            (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/RuntimeException"), 
-                 "Cannot make connection to the server");
-    }
- 
     n = (*env)->GetArrayLength(env, jInfo);
-    if (n<10) {
+    if (n<14) {
         (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/IllegalArgumentException"), 
-             "Array size for server information is less than 10");
+             "Array size for server information is less than 14");
     }
 
+    status = getRodsEnv(&rodsServerEnv);
+
+    if (status<0) {
+        (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/RuntimeException"), "getRodsEnv() failed");
+    }
+
+    /* check if server information is valid */
+    if ( (rodsServerEnv.rodsUserName == NULL || strlen(rodsServerEnv.rodsUserName) < 1) || 
+         (rodsServerEnv.rodsHost == NULL || strlen (rodsServerEnv.rodsHost) <1) ||
+         (rodsServerEnv.rodsPort < 1) ||
+         (rodsServerEnv.rodsHome == NULL || strlen(rodsServerEnv.rodsHome) < 1) ) {
+        (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/RuntimeException"), "getRodsEnv() failed");
+    }
+ 
     jstr = (*env)->NewStringUTF(env, rodsServerEnv.rodsUserName);
     (*env)->SetObjectArrayElement(env, jInfo, 0, jstr);
 
@@ -188,6 +536,20 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_srb_H5SRB__1getServerInfo
 
     jstr = (*env)->NewStringUTF(env, rodsServerEnv.rodsZone);
     (*env)->SetObjectArrayElement(env, jInfo, 9, jstr);
+
+    jstr = (*env)->NewStringUTF(env, rodsServerEnv.rodsServerDn);
+    (*env)->SetObjectArrayElement(env, jInfo, 10, jstr);
+
+    str[0] = '\0';
+    sprintf(str, "%d",  rodsServerEnv.rodsLogLevel);
+    jstr = (*env)->NewStringUTF(env, str);
+    (*env)->SetObjectArrayElement(env, jInfo, 11, jstr);
+
+    jstr = (*env)->NewStringUTF(env, rodsServerEnv.rodsAuthFileName);
+    (*env)->SetObjectArrayElement(env, jInfo, 12, jstr);
+
+    jstr = (*env)->NewStringUTF(env, rodsServerEnv.rodsDebug);
+    (*env)->SetObjectArrayElement(env, jInfo, 13, jstr);
 }
 
 /*
@@ -250,7 +612,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_srb_H5SRB_h5ObjRequest
             THROW_JNI_ERROR("java/lang/RuntimeException", "Cannot make connection to the server");
     }
 
-    load_field_method_IDs(env);
+   load_field_method_IDs(env);
 
     switch (obj_type) {
         case H5OBJECT_FILE:
@@ -265,7 +627,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_srb_H5SRB_h5ObjRequest
         default:
             THROW_JNI_ERROR("java/lang/UnsupportedOperationException", "Unsupported client request");
             break;
-    } /* end of switch */
+    } /*  end of switch */
 
 done:
     return ret_val;
@@ -311,7 +673,7 @@ jint getFileList(JNIEnv *env, jobject flist, jmethodID addElement,
             (*env)->CallVoidMethod(env, flist, addElement, (*env)->NewStringUTF(env, fname));
             */
 
-            ret_val = rclOpenCollection (conn, collEnt.collName, collHandle->flag, &subCollhandle);
+            ret_val = rclOpenCollection (conn, collEnt.collName, collHandle->flags, &subCollhandle);
             if (ret_val < 0)
                 THROW_JNI_ERROR("java/lang/RuntimeException", "rclOpenCollection() failed");
 
@@ -362,7 +724,7 @@ jint h5file_request(JNIEnv *env, jobject jobj)
     printf("flag = %d\n", server_connection->flag);
     printf("status = %d\n", server_connection->status);
     printf("\nfilename = %s\n", h5file.filename);
-    printf("opID = %d\n", h5file.opID);
+    printf("opID = %d\n\n", h5file.opID);
 #endif
 
     /* send the request to the server to process */
@@ -530,7 +892,7 @@ jint j2c_h5dataset(JNIEnv *env, jobject jobj, H5Dataset *cobj)
     {
         /* set datatype information */
         jtype = (*env)->GetObjectField(env, jobj, field_dataset_datatype);
-        cobj->type.class = (H5Datatype_class_t) (*env)->GetIntField(env, jtype, field_datatype_class);
+        cobj->type.tclass = (H5Datatype_class_t) (*env)->GetIntField(env, jtype, field_datatype_class);
         cobj->type.size = (unsigned int) (*env)->GetIntField(env, jtype, field_datatype_size);
         /*cobj->type.order = (H5Datatype_order_t) (*env)->GetIntField(env, jtype, field_datatype_order);*/
         cobj->type.sign = (H5Datatype_sign_t) (*env)->GetIntField(env, jtype, field_datatype_sign);
@@ -649,7 +1011,7 @@ jint c2j_h5group(JNIEnv *env, jobject jfile, jobject jgroup, H5Group *cgroup)
     H5Group *cg;
     H5Dataset *cd;
     jobject jg;
-    jobject jd;
+    jobject jd, jdtype;
     jlong *jptr;
 
     if (NULL==jfile || NULL == jgroup || NULL == cgroup)
@@ -685,7 +1047,7 @@ jint c2j_h5group(JNIEnv *env, jobject jfile, jobject jgroup, H5Group *cgroup)
             cd = &cgroup->datasets[i];
             if (NULL == cd) continue;
 
-            if (H5DATATYPE_COMPOUND == cd->type.class)
+            if (H5DATATYPE_COMPOUND == cd->type.tclass)
                 set_field_method_IDs_compound();
             else
                 set_field_method_IDs_scalar();            
@@ -703,17 +1065,32 @@ jint c2j_h5group(JNIEnv *env, jobject jfile, jobject jgroup, H5Group *cgroup)
             jd = (*env)->NewObject(env, cls_dataset, method_dataset_ctr, jfile, NULL, jpath, joid);
 
             /* for compound only */
-            if (H5DATATYPE_COMPOUND == cd->type.class && cd->type.nmembers>0 && cd->type.mnames) {
-                jobjectArray jmnames;
+            if (H5DATATYPE_COMPOUND == cd->type.tclass && cd->type.nmembers>0 && cd->type.mnames) {
+                jobjectArray jmnames, jmtypes;
                 jstring jname;
+                jobject jmtype;
 
                 /* set the names of the compound fields (the order of the calls are very important */
                 (*env)->CallVoidMethod(env, jd, method_dataset_compound_setMemberCount, (jint)cd->type.nmembers);
+
+                /* set member names */
                 jmnames = (jobjectArray)(*env)->GetObjectField(env, jd, field_dataset_compound_memberNames);
                 for (j=0; j<cd->type.nmembers; j++) {
 	            jname = (*env)->NewStringUTF(env, cd->type.mnames[j]);
 	            (*env)->SetObjectArrayElement(env, jmnames, j, jname);
 	        }
+
+                /* set member types */
+                jmtypes = (jobjectArray)(*env)->GetObjectField(env, jd, field_dataset_compound_memberTypes);
+                for (j=0; j<cd->type.nmembers; j++) {
+                    int mtype = cd->type.mtypes[i];
+                    int mclass = (0XFFFFFFF & mtype)>>28;
+                    int msign = (0XFFFFFFF & mtype)>>24;
+                    int msize = (0XFFFFFF & mtype);
+                    jmtype = (*env)->NewObject(env, cls_datatype, method_datatype_ctr,
+                        mclass, msize, H5DATATYPE_ORDER_LE, msign);
+                    (*env)->SetObjectArrayElement(env, jmtypes, j, jmtype);
+                }
             }
             else if (cd->attributes && 
                 strcmp(PALETTE_VALUE, (cd->attributes)[0].name)==0 &&
@@ -735,14 +1112,45 @@ jint c2j_h5group(JNIEnv *env, jobject jfile, jobject jgroup, H5Group *cgroup)
                 (*env)->CallVoidMethod(env, jd, method_dataset_scalar_setPalette, jbytes);
             }
 
-            /* get the dims */
+            /* set dimension informaiton */
             jdims = (*env)->NewLongArray(env, cd->space.rank);
             jptr = (*env)->GetLongArrayElements(env, jdims, 0);
             for (j=0; j<cd->space.rank; j++) jptr[j] = (jlong)cd->space.dims[j];
+            (*env)->SetIntField(env, jd, field_dataset_rank, (jint)cd->space.rank);
+            (*env)->SetObjectField(env, jd, field_dataset_dims, jdims);
             (*env)->ReleaseLongArrayElements(env, jdims, jptr, 0);
+
+            /* set datatype information */
+            jdtype = (*env)->NewObject(env, cls_datatype, method_datatype_ctr, 
+                cd->type.tclass, cd->type.size, cd->type.order, cd->type.sign);
+            (*env)->SetObjectField(env, jd, field_dataset_datatype, jdtype);
+
+            /* set image indicator */
+            if ((cd->time & H5D_IMAGE_FLAG)>0) {
+		(*env)->SetBooleanField(env, jd, field_dataset_scalar_isImage, JNI_TRUE);
+		(*env)->SetBooleanField(env, jd, field_dataset_scalar_isImageDisplay, JNI_TRUE);
+            }
+
+            if ( (cd->time & H5D_IMAGE_TRUECOLOR_FLAG)>0 && cd->space.rank>2) {
+		(*env)->SetBooleanField(env, jd, field_dataset_scalar_isTrueColor, JNI_TRUE);
+		(*env)->SetIntField(env, jd, field_dataset_scalar_interlace, 0);
+            }
+
+            if ((cd->time & H5D_IMAGE_INTERLACE_PIXEL_FLAG)>0 && cd->space.rank>2) {
+	        (*env)->SetIntField(env, jd, field_dataset_scalar_interlace, 0);
+		(*env)->SetBooleanField(env, jd, field_dataset_scalar_isTrueColor, JNI_TRUE);
+            }
+            else if ((cd->time & H5D_IMAGE_INTERLACE_PLANE_FLAG)>0 && cd->space.rank>2) {
+	        (*env)->SetIntField(env, jd, field_dataset_scalar_interlace, 2);
+		(*env)->SetBooleanField(env, jd, field_dataset_scalar_isTrueColor, JNI_TRUE);
+            }
+
+            /* call init() method */
+            (*env)->CallVoidMethod(env, jd, method_dataset_init);
 
             /* add the dataset into its parant */
             (*env)->CallVoidMethod(env, jgroup, method_group_addToMemberList, jd);
+
         }
     }
 
@@ -759,7 +1167,7 @@ jint c2j_h5dataset_read(JNIEnv *env, jobject jobj, H5Dataset *cobj)
 
     assert(cobj);
 
-    jdata = c2j_data_value (env, cobj->value, cobj->space.npoints, cobj->type.class, cobj->type.size);
+    jdata = c2j_data_value (env, cobj->value, cobj->space.npoints, cobj->type.tclass, cobj->type.size);
     
     if (NULL == jdata)
         GOTO_JNI_ERROR();
@@ -794,7 +1202,7 @@ jint c2j_h5dataset_read_attribute(JNIEnv *env, jobject jobj, H5Dataset *cobj)
         attr = cobj->attributes[i];
 
         attr_name = (*env)->NewStringUTF(env, attr.name);
-        attr_value = c2j_data_value (env, attr.value, attr.space.npoints, attr.type.class, attr.type.size);
+        attr_value = c2j_data_value (env, attr.value, attr.space.npoints, attr.type.tclass, attr.type.size);
 
         /* get the dims */
         jdims = (*env)->NewLongArray(env, attr.space.rank);
@@ -804,7 +1212,7 @@ jint c2j_h5dataset_read_attribute(JNIEnv *env, jobject jobj, H5Dataset *cobj)
 
         /* add the attribute */
         (*env)->CallVoidMethod(env, jobj, method_dataset_addAttribute, 
-            attr_name, attr_value, jdims, attr.type.class, attr.type.size, 
+            attr_name, attr_value, jdims, attr.type.tclass, attr.type.size, 
             attr.type.order, attr.type.sign);
      }
 
@@ -836,7 +1244,7 @@ jint c2j_h5group_read_attribute(JNIEnv *env, jobject jobj, H5Group *cobj)
         attr = cobj->attributes[i];
 
         attr_name = (*env)->NewStringUTF(env, attr.name);
-        attr_value = c2j_data_value (env, attr.value, attr.space.npoints, attr.type.class, attr.type.size);
+        attr_value = c2j_data_value (env, attr.value, attr.space.npoints, attr.type.tclass, attr.type.size);
 
         /* get the dims */
         jdims = (*env)->NewLongArray(env, attr.space.rank);
@@ -846,7 +1254,7 @@ jint c2j_h5group_read_attribute(JNIEnv *env, jobject jobj, H5Group *cobj)
 
         /* add the attribute */
         (*env)->CallVoidMethod(env, jobj, method_group_addAttribute, 
-            attr_name, attr_value, jdims, attr.type.class, attr.type.size, 
+            attr_name, attr_value, jdims, attr.type.tclass, attr.type.size, 
             attr.type.order, attr.type.sign);
      }
 
@@ -854,286 +1262,6 @@ jint c2j_h5group_read_attribute(JNIEnv *env, jobject jobj, H5Group *cobj)
 done:
     return ret_val;
 }
-
-int load_field_method_IDs(JNIEnv *env) 
-{
-    int ret_val = -1;
-    jclass cls;
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                              FileFormat                               //
-    ///////////////////////////////////////////////////////////////////////////
-    cls = (*env)->FindClass(env, "ncsa/hdf/object/FileFormat");
-    if (!cls)
-        THROW_JNI_ERROR ("java/lang/ClassNotFoundException", "ncsa/hdf/object/FileFormat");
-    
-    /* fields and methods for FileFormat */    
-    field_file_fid = (*env)->GetFieldID(env, cls, "fid", "I");
-    if (!field_file_fid)
-        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/FileFormat.fid");
- 
-    ///////////////////////////////////////////////////////////////////////////
-    //                              H5SrbFile                                //
-    ///////////////////////////////////////////////////////////////////////////
-    cls = (*env)->FindClass(env, "ncsa/hdf/srb/H5SrbFile");
-    if (!cls)
-        THROW_JNI_ERROR ("java/lang/ClassNotFoundException", "ncsa/hdf/srb/H5SrbFile");
-
-    cls_file = cls;
-
-    field_file_opID = (*env)->GetFieldID(env, cls, "opID", "I");
-    if (!field_file_opID)
-        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/srb/H5SrbFile.opID");
-
-    field_file_fullFileName = (*env)->GetFieldID(env, cls, "fullFileName", "Ljava/lang/String;");
-    if (!field_file_fullFileName)
-        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/srb/H5SrbFile.fullFileName");
-
-    field_file_rootGroup = (*env)->GetFieldID(env, cls, "rootGroup", "Lncsa/hdf/srb/H5SrbGroup;");
-    if (!field_file_rootGroup)
-        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/srb/H5SrbFile.rootGroup");
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                              HObject                                  //
-    ///////////////////////////////////////////////////////////////////////////
-    cls = (*env)->FindClass(env, "ncsa/hdf/object/HObject");
-    if (!cls)
-        THROW_JNI_ERROR ("java/lang/ClassNotFoundException", "ncsa/hdf/object/HObject");
-
-    field_hobject_fullName = (*env)->GetFieldID(env, cls, "fullName", "Ljava/lang/String;");
-    if (!field_hobject_fullName)
-        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/HObject.fullName");
-
-    method_hobject_getFID = (*env)->GetMethodID(env, cls, "getFID", "()I");
-    if (!method_hobject_getFID)
-        THROW_JNI_ERROR ("java/lang/NoSuchMethodException","ncsa/hdf/oject/HObject.getFID");
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                              H5SrbGroup                               //
-    ///////////////////////////////////////////////////////////////////////////
-    cls = (*env)->FindClass(env, "ncsa/hdf/srb/H5SrbGroup");
-    if (!cls)
-        THROW_JNI_ERROR ("java/lang/ClassNotFoundException", "ncsa/hdf/srb/H5SrbGroup");
-
-    cls_group = cls;
-
-    field_group_opID = (*env)->GetFieldID(env, cls, "opID", "I");
-    if (!field_group_opID)
-        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/srb/H5SrbGroup.opID");
-
-    method_group_ctr = (*env)->GetMethodID(env, cls, "<init>", 
-        "(Lncsa/hdf/object/FileFormat;Ljava/lang/String;Ljava/lang/String;Lncsa/hdf/object/Group;[J)V");
-     if (!method_group_ctr)
-        THROW_JNI_ERROR ("java/lang/NoSuchMethodException","ncsa/hdf/srb/H5SrbGroup.<init>");
-
-    method_group_addToMemberList = (*env)->GetMethodID(env, cls, "addToMemberList", "(Lncsa/hdf/object/HObject;)V");
-    if (!method_group_addToMemberList)
-        THROW_JNI_ERROR ("java/lang/NoSuchMethodException","ncsa/hdf/srb/H5SrbGroup.addToMemberList()");
-
-    method_group_addAttribute = (*env)->GetMethodID(env, cls, "addAttribute", 
-        "(Ljava/lang/String;Ljava/lang/Object;[JIIII)V");
-    if (!method_group_addAttribute)
-        THROW_JNI_ERROR ("java/lang/NoSuchMethodException","ncsa/hdf/srb/H5SrbGroup.addAttribute()");
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                                 Dataset                               //
-    ///////////////////////////////////////////////////////////////////////////
-    cls = (*env)->FindClass(env, "ncsa/hdf/object/Dataset");
-    if (!cls)
-        THROW_JNI_ERROR ("java/lang/ClassNotFoundException", "ncsa/hdf/object/Dataset");
-    
-    field_dataset_rank = (*env)->GetFieldID(env, cls, "rank", "I");
-    if (!field_dataset_rank)
-        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/Dataset.rank");
-
-    field_dataset_dims = (*env)->GetFieldID(env, cls, "dims", "[J");
-    if (!field_dataset_dims)
-        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/Dataset.dims");
-
-    field_dataset_selectedDims = (*env)->GetFieldID(env, cls, "selectedDims", "[J");
-    if (!field_dataset_selectedDims)
-        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/Dataset.selectedDims");
-
-    field_dataset_startDims = (*env)->GetFieldID(env, cls, "startDims", "[J");
-    if (!field_dataset_startDims)
-        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/Dataset.startDims");
-
-    field_dataset_selectedIndex = (*env)->GetFieldID(env, cls, "selectedIndex", "[I");
-    if (!field_dataset_selectedIndex)
-        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/Dataset.selectedIndex");
-
-    field_dataset_selectedStride = (*env)->GetFieldID(env, cls, "selectedStride", "[J");
-    if (!field_dataset_selectedStride)
-        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/Dataset.selectedStride");
-
-    field_dataset_datatype = (*env)->GetFieldID(env, cls, "datatype", "Lncsa/hdf/object/Datatype;");
-    if (!field_dataset_datatype)
-        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/Dataset.datatype");
-
-    method_dataset_setData = (*env)->GetMethodID(env, cls, "setData", "(Ljava/lang/Object;)V");
-    if (!method_dataset_setData)
-        THROW_JNI_ERROR ("java/lang/NoSuchMethodException", "ncsa/hdf/object/Dataset.setData");
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                               H5SrbScalarDS                           //
-    ///////////////////////////////////////////////////////////////////////////
-    cls = (*env)->FindClass(env, "ncsa/hdf/srb/H5SrbScalarDS");
-    if (!cls)
-        THROW_JNI_ERROR ("java/lang/ClassNotFoundException", "ncsa/hdf/srb/H5SrbScalarDS");
-
-    cls_dataset_scalar = cls;
-
-    field_dataset_scalar_opID = (*env)->GetFieldID(env, cls, "opID", "I");
-    if (!field_dataset_scalar_opID)
-        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/srb/H5SrbScalarDS.opID");
-
-    method_dataset_scalar_ctr = (*env)->GetMethodID(env, cls, "<init>", 
-        "(Lncsa/hdf/object/FileFormat;Ljava/lang/String;Ljava/lang/String;[J)V");
-    if (!method_dataset_scalar_ctr)
-        THROW_JNI_ERROR ("java/lang/NoSuchMethodException", "ncsa/hdf/srb/H5SrbScalarDS.<init>");
-    
-    method_dataset_scalar_addAttribute = (*env)->GetMethodID(env, cls, "addAttribute", 
-        "(Ljava/lang/String;Ljava/lang/Object;[JIIII)V");
-    if (!method_dataset_scalar_addAttribute)
-        THROW_JNI_ERROR ("java/lang/NoSuchMethodException", "ncsa/hdf/srb/H5SrbScalarDS.addAttribute()");
-
-    method_dataset_scalar_setPalette = (*env)->GetMethodID(env, cls, "setPalette", "([B)V"); 
-    if (!method_dataset_scalar_setPalette)
-        THROW_JNI_ERROR ("java/lang/NoSuchMethodException", "ncsa/hdf/srb/H5SrbScalarDS.setPalette()");
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                                  CompoundDS                           //
-    ///////////////////////////////////////////////////////////////////////////
-    cls = (*env)->FindClass(env, "ncsa/hdf/object/CompoundDS");
-    if (!cls)
-        THROW_JNI_ERROR ("java/lang/ClassNotFoundException", "ncsa/hdf/object/CompoundDS");
-
-    field_dataset_compound_memberNames = (*env)->GetFieldID(env, cls, "memberNames", "[Ljava/lang/String;");
-    if (!field_dataset_compound_memberNames)
-        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/CompoundDS.memberNames");
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                               H5SrbCompoundDS                         //
-    ///////////////////////////////////////////////////////////////////////////
-    cls = (*env)->FindClass(env, "ncsa/hdf/srb/H5SrbCompoundDS");
-    if (!cls)
-        THROW_JNI_ERROR ("java/lang/ClassNotFoundException", "ncsa/hdf/srb/H5SrbCompoundDS");
-
-    cls_dataset_compound = cls;
-
-    field_dataset_compound_opID = (*env)->GetFieldID(env, cls, "opID", "I");
-    if (!field_dataset_compound_opID)
-        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/srb/H5SrbCompoundDS.opID");
-
-    method_dataset_compound_ctr = (*env)->GetMethodID(env, cls, "<init>", 
-        "(Lncsa/hdf/object/FileFormat;Ljava/lang/String;Ljava/lang/String;[J)V");
-    if (! method_dataset_compound_ctr)
-        THROW_JNI_ERROR ("java/lang/NoSuchMethodException", "ncsa/hdf/srb/H5SrbCompoundDS.<init>");
-
-    method_dataset_compound_addAttribute = (*env)->GetMethodID(env, cls, "addAttribute", 
-        "(Ljava/lang/String;Ljava/lang/Object;[JIIII)V");
-    if (!method_dataset_compound_addAttribute)
-        THROW_JNI_ERROR ("java/lang/NoSuchMethodException", "ncsa/hdf/srb/H5SrbCompoundDS.addAttribute");
-
-    method_dataset_compound_setMemberCount = (*env)->GetMethodID(env, cls_dataset_compound,"setMemberCount", "(I)V");
-    if (!method_dataset_compound_setMemberCount)
-        THROW_JNI_ERROR ("java/lang/NoSuchMethodException", "ncsa/hdf/srb/H5SrbCompoundDS.setMemberCount");
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                                    Datatype                           //
-    ///////////////////////////////////////////////////////////////////////////
-    cls = (*env)->FindClass(env, "ncsa/hdf/object/Datatype");
-    if (!cls)
-        THROW_JNI_ERROR ("java/lang/ClassNotFoundException", "ncsa/hdf/object/Datatype");
-
-    field_datatype_class = (*env)->GetFieldID(env, cls, "datatypeClass", "I");
-    if (!field_datatype_class)
-        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/Datatype.datatypeClass");
-
-    field_datatype_size = (*env)->GetFieldID(env, cls, "datatypeSize", "I");
-    if (!field_datatype_size)
-        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/Datatype.datatypeSize");
-
-    field_datatype_order = (*env)->GetFieldID(env, cls, "datatypeOrder", "I");
-    if (!field_datatype_order)
-        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/Datatype.datatypeOrder");
-
-    field_datatype_sign = (*env)->GetFieldID(env, cls, "datatypeSign", "I");
-    if (!field_datatype_sign)
-        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/Datatype.datatypeSign");
-
-    ///////////////////////////////////////////////////////////////////////////
-    //                               H5SrbDatatype                           //
-    ///////////////////////////////////////////////////////////////////////////
-    cls = (*env)->FindClass(env, "ncsa/hdf/srb/H5SrbDatatype");
-    if (!cls)
-         THROW_JNI_ERROR ("java/lang/ClassNotFoundException", "ncsa/hdf/srb/H5SrbDatatype");
-
-    cls_datatype = cls;
-
-    ret_val = 0;
-
-done:
-
-    return ret_val;
-}
-
-void set_field_method_IDs_scalar()
-{
-    cls_dataset = cls_dataset_scalar;
-    field_dataset_opID = field_dataset_scalar_opID;
-    method_dataset_ctr = method_dataset_scalar_ctr;
-    method_dataset_addAttribute = method_dataset_scalar_addAttribute;
-}
-
-void set_field_method_IDs_compound()
-{
-    cls_dataset = cls_dataset_compound;
-    field_dataset_opID = field_dataset_compound_opID;
-    method_dataset_ctr = method_dataset_compound_ctr;
-    method_dataset_addAttribute = method_dataset_compound_addAttribute;
-}
-
-/* 
- *  Make connection to the server
- */
-rcComm_t *make_connection(JNIEnv *env) {
-    rcComm_t *conn_t;
-    rErrMsg_t errMsg;
-    int ret_val;
-
-    ret_val = getRodsEnv(&rodsServerEnv);
-    if (ret_val<0) {
-        (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/RuntimeException"), "getRodsEnv() failed");
-        return NULL;
-    }
-
-    conn_t = rcConnect (rodsServerEnv.rodsHost, rodsServerEnv.rodsPort, 
-        rodsServerEnv.rodsUserName, rodsServerEnv.rodsZone, 1, &errMsg);
-
-    if ( (NULL == conn_t) ) {
-        (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/RuntimeException"), errMsg.msg);
-        return NULL;
-    }
-
-    ret_val = clientLogin(conn_t);
-
-    if (ret_val != 0) {
-        rcDisconnect(conn_t);
-        (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/RuntimeException"), "Client login failed");
-        return NULL;
-    }
-
-    return conn_t;
-}
-
-void close_connection(rcComm_t *conn_t) 
-{
-    if (conn_t != NULL) {
-        rcDisconnect (conn_t);
-        conn_t = NULL;
-    }
-}   
 
 /* write data value from c to java */
 jobject c2j_data_value (JNIEnv *env, void *value, unsigned int npoints, int tclass, int tsize)
@@ -1279,7 +1407,7 @@ void print_datatype(H5Datatype *type)
 
     assert(type);
 
-    printf("\ntype class = %d\n", type->class);
+    printf("\ntype class = %d\n", type->tclass);
     printf(  "type order = %d\n", type->order);
     printf(  "type sign  = %d\n", type->sign);
     printf(  "type size  = %d\n", type->size);
@@ -1361,14 +1489,14 @@ void print_dataset_value(H5Dataset *d)
         pv = (char*)d->value;
         for (i=0; i<d->space.rank; i++) size *= d->space.count[i];
         if (size > 10 ) size = 10; /* print only the first 10 values */
-        if (d->type.class == H5DATATYPE_VLEN
-            || d->type.class == H5DATATYPE_COMPOUND
-            || d->type.class == H5DATATYPE_STRING)
+        if (d->type.tclass == H5DATATYPE_VLEN
+            || d->type.tclass == H5DATATYPE_COMPOUND
+            || d->type.tclass == H5DATATYPE_STRING)
             strs = (char **)d->value;
 
         for (i=0; i<size; i++)
         {
-            if (d->type.class == H5DATATYPE_INTEGER)
+            if (d->type.tclass == H5DATATYPE_INTEGER)
             {
                 if (d->type.sign == H5DATATYPE_SGN_NONE)
                 {
@@ -1392,18 +1520,18 @@ void print_dataset_value(H5Dataset *d)
                     else if (d->type.size == 8)
                         printf("%d\t", *((long*)(pv+i*8)));
                 }
-            } else if (d->type.class == H5DATATYPE_FLOAT)
+            } else if (d->type.tclass == H5DATATYPE_FLOAT)
             {
                 if (d->type.size == 4)
                     printf("%f\t", *((float *)(pv+i*4)));
                 else if (d->type.size == 8)
                     printf("%f\t", *((double *)(pv+i*8)));
-            } else if (d->type.class == H5DATATYPE_VLEN
-                    || d->type.class == H5DATATYPE_COMPOUND)
+            } else if (d->type.tclass == H5DATATYPE_VLEN
+                    || d->type.tclass == H5DATATYPE_COMPOUND)
             {
                 if (strs[i])
                     printf("%s\t", strs[i]);
-            } else if (d->type.class == H5DATATYPE_STRING)
+            } else if (d->type.tclass == H5DATATYPE_STRING)
             {
                 if (strs[i])
                     printf("%s\t", strs[i]);
@@ -1431,14 +1559,14 @@ void print_attribute(H5Attribute *a)
         pv = (char*)a->value;
         for (i=0; i<a->space.rank; i++) size *= a->space.count[i];
         if (size > 10 ) size = 10; /* print only the first 10 values */
-        if (a->type.class == H5DATATYPE_VLEN
-            || a->type.class == H5DATATYPE_COMPOUND
-            || a->type.class == H5DATATYPE_STRING)
+        if (a->type.tclass == H5DATATYPE_VLEN
+            || a->type.tclass == H5DATATYPE_COMPOUND
+            || a->type.tclass == H5DATATYPE_STRING)
             strs = (char **)a->value;
 
         for (i=0; i<size; i++)
         {
-            if (a->type.class == H5DATATYPE_INTEGER)
+            if (a->type.tclass == H5DATATYPE_INTEGER)
             {
                 if (a->type.sign == H5DATATYPE_SGN_NONE)
                 {
@@ -1462,18 +1590,18 @@ void print_attribute(H5Attribute *a)
                     else if (a->type.size == 8)
                         printf("%d\t", *((long *)(pv+i*8)));
                 }
-            } else if (a->type.class == H5DATATYPE_FLOAT)
+            } else if (a->type.tclass == H5DATATYPE_FLOAT)
             {
                 if (a->type.size == 4)
                     printf("%f\t", *((float *)(pv+i*4)));
                 else if (a->type.size == 8)
                     printf("%f\t", *((double *)(pv+i*8)));
-            } else if (a->type.class == H5DATATYPE_VLEN
-                    || a->type.class == H5DATATYPE_COMPOUND)
+            } else if (a->type.tclass == H5DATATYPE_VLEN
+                    || a->type.tclass == H5DATATYPE_COMPOUND)
             {
                 if (strs[i])
                     printf("%s\t", strs[i]);
-            } else if (a->type.class == H5DATATYPE_STRING)
+            } else if (a->type.tclass == H5DATATYPE_STRING)
             {
                 if (strs[i]) printf("%s\t", strs[i]);
             }
