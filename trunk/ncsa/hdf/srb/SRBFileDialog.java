@@ -12,12 +12,7 @@
 package ncsa.hdf.srb;
 
 import java.awt.event.*;
-import java.io.RandomAccessFile;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.File;
+import java.io.*;
 import javax.swing.*;
 import java.awt.Frame;
 import java.awt.Point;
@@ -71,9 +66,17 @@ implements ActionListener
      * @param type the type of the conversion to perform.
      * @param openFiles The list of current open files.
       */
-    public SRBFileDialog(Frame owner) throws Throwable
+    public SRBFileDialog(Frame owner)
     {
         super (owner, "Open File from SRB ...", true);
+        
+        if (!H5SRB.isSupported) {
+            JOptionPane.showMessageDialog(owner, "iRODS is not supported.", 
+                "Server Error", JOptionPane.ERROR_MESSAGE);
+            dispose();
+            return;
+        }
+        
         fileTree = null;
         viewer = (ViewManager) owner;
         treeView = viewer.getTreeView();
@@ -82,23 +85,33 @@ implements ActionListener
         fileFieldSeparator = "::";
         remoteHomeDir = "/tempZone/home/rods";
 
+        boolean isServerSetup = true;
         try {
             fileFieldSeparator = H5SRB.getFileFieldSeparator();
             srvInfo = H5SRB.getServerInfo();
             remoteHomeDir = srvInfo[5];
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
+        	isServerSetup = false;
+        }
+        
+        if (!isServerSetup) {
             int answer = JOptionPane.showConfirmDialog(owner,
                 "Cannot find iRODS server.\nDo you want to enter server information?\n\n",
                 "Server Error",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.ERROR_MESSAGE);
-            if (answer == JOptionPane.YES_OPTION) {
-                DefaultServerDialog dsd = new DefaultServerDialog(owner);
-                if (dsd.getHost() != null) {
-                    try {(new File(System.getProperty("user.home")+"/.irods")).mkdir();}
-                    catch (Exception ex2) {}
-                    PrintWriter out = new PrintWriter(new BufferedWriter
-                       (new FileWriter(System.getProperty("user.home")+"/.irods/.irodsEnv")));
+            if (answer == JOptionPane.NO_OPTION) {
+                dispose();
+            	return;
+            }
+
+            DefaultServerDialog dsd = new DefaultServerDialog(owner);
+            if (dsd.getHost() != null) {
+                try {
+                	File irodsdir = new File(System.getProperty("user.home")+"/.irods");
+                	if (!irodsdir.exists())
+                		irodsdir.mkdir();
+                    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(System.getProperty("user.home")+"/.irods/.irodsEnv")));
                     out.println("irodsHost '"+dsd.getHost()+"'");
                     out.println("irodsPort " +dsd.getPort());
                     out.println("irodsUserName '"+dsd.getUser()+"'");
@@ -108,14 +121,11 @@ implements ActionListener
                     out.println("irodsDefResource '"+dsd.getResource()+"'");
                     out.flush();
                     out.close();
+                    
                     H5SRB.callServerInit(dsd.getPassword());
                     srvInfo = H5SRB.getServerInfo();
                     remoteHomeDir = srvInfo[5];
-                }
-            }
-            else {
-                dispose();
-                return;
+                } catch (Exception ex2) { }
             }
         }
 
@@ -128,8 +138,8 @@ implements ActionListener
 
             if (raf.length() > 1)
                 isServerInitialized = true;
-        } catch (FileNotFoundException ex) { isServerInitialized = false; }
-
+        } catch (Exception ex) { isServerInitialized = false; }
+        
         if (!isServerInitialized) {
             String passwd = JOptionPane.showInputDialog(owner, "Please enter the password for "+ srvInfo[0]);
             if (passwd!= null && passwd.length()>0) {
@@ -142,6 +152,7 @@ implements ActionListener
                 }
             }
         }
+
         
         if (!isServerInitialized) {
             JOptionPane.showMessageDialog(owner, "Cannot make connection to "+srvInfo[1], 
@@ -339,15 +350,48 @@ implements ActionListener
     {
         Frame owner;
         JTextField[] srbFields = null;
-        String[] serverInfo = null;
+        String[] serverInfo = {
+        		"server.machine.name",
+        		"1247",
+        		"rods",
+        		"",
+        		"/tempZone/home/rods",
+        		"tempZone",
+        		"demoResc"};
 
-        public DefaultServerDialog(Frame owner) throws Throwable
+        public DefaultServerDialog(Frame owner)
         {
             super (owner, "Default iRODS Server ...", true);
             this.owner = owner;
         
+            serverInfo = new String[7];
             srbFields = new JTextField[7];
-
+            
+            String tmpFname = System.getProperty("user.home")+"/.irods/.irodsEnv";
+            File tmpFile = new File (tmpFname);
+            if (tmpFile.exists() && tmpFile.isFile()) {
+            	try {
+                	BufferedReader in = new BufferedReader(new FileReader(tmpFile));
+                	String line = in.readLine();
+                	while (line != null) {
+                		line = line.replace('\'', ' ');
+                		if (line.startsWith("irodsHost "))
+                			serverInfo[0] = line.substring("irodsHost ".length());
+                		else if (line.startsWith("irodsPort "))
+                			serverInfo[1] = line.substring("irodsPort ".length());
+                		else if (line.startsWith("irodsUserName "))
+                			serverInfo[2] = line.substring("irodsUserName ".length());
+                		else if (line.startsWith("irodsHome "))
+                			serverInfo[4] = line.substring("irodsHome ".length());
+                		else if (line.startsWith("irodsZone "))
+                			serverInfo[5] = line.substring("irodsZone ".length());
+                		else if (line.startsWith("irodsDefResource "))
+                			serverInfo[6] = line.substring("irodsDefResource ".length());
+                		line = in.readLine();
+                	}
+            	} catch (Exception ex) {}
+            }
+            
             JPanel contentPane = (JPanel)getContentPane();
             contentPane.setLayout(new BorderLayout(5,5));
             contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
@@ -360,18 +404,18 @@ implements ActionListener
             cpl.add(new JLabel("Password: ", JLabel.RIGHT));
             cpl.add(new JLabel("Home Directory: ", JLabel.RIGHT));
             cpl.add(new JLabel("Zone Name: ", JLabel.RIGHT));
-            cpl.add(new JLabel(" Default Storage Resource: ", JLabel.RIGHT));
+            cpl.add(new JLabel("Default Storage Resource: ", JLabel.RIGHT));
             contentPane.add(cpl, BorderLayout.WEST);
 
             JPanel cpc = new JPanel(); /* center panel */
             cpc.setLayout(new GridLayout(7,1,5,5));
-            cpc.add(srbFields[0] = new JTextField());
-            cpc.add(srbFields[1] = new JTextField("1247"));
-            cpc.add(srbFields[2] = new JTextField("rods"));
-            cpc.add(srbFields[3] = new JTextField(""));
-            cpc.add(srbFields[4] = new JTextField("/tempZone/home/rods"));
-            cpc.add(srbFields[5] = new JTextField("tempZone"));
-            cpc.add(srbFields[6] = new JTextField("demoResc"));
+            cpc.add(srbFields[0] = new JTextField(serverInfo[0]));
+            cpc.add(srbFields[1] = new JTextField(serverInfo[1]));
+            cpc.add(srbFields[2] = new JTextField(serverInfo[2]));
+            cpc.add(srbFields[3] = new JTextField(serverInfo[3]));
+            cpc.add(srbFields[4] = new JTextField(serverInfo[4]));
+            cpc.add(srbFields[5] = new JTextField(serverInfo[5]));
+            cpc.add(srbFields[6] = new JTextField(serverInfo[6]));
             contentPane.add(cpc, BorderLayout.CENTER);
 
             JPanel cpb = new JPanel(); /* bottom panel */
@@ -401,7 +445,6 @@ implements ActionListener
             String cmd = e.getActionCommand();
            
             if (cmd.equals("Add iRODS connection")) {
-                serverInfo = new String[7];
                 for (int i = 0; i<7; i++) {
                     serverInfo[i] = srbFields[i].getText();
                     if (serverInfo[i] != null)

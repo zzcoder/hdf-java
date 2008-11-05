@@ -98,7 +98,7 @@ HyperlinkListener, ChangeListener
     private static final String aboutHDFView =
         "HDF Viewer, "+ "Version "+ViewProperties.VERSION+"\n"+
         "For "+System.getProperty("os.name")+"\n\n"+
-        "Copyright "+'\u00a9'+" 2006-2007 The HDF Group.\n"+
+        "Copyright "+'\u00a9'+" 2006-2008 The HDF Group.\n"+
         "All rights reserved.";
 
     private static final String JAVA_COMPILER = System.getProperty("java.vm.version");
@@ -471,15 +471,15 @@ HyperlinkListener, ChangeListener
 
         boolean isSrbSupported = true;
         try { 
-            System.loadLibrary("jh5srb");
+            Class.forName("ncsa.hdf.srb.H5SRB");
             Class.forName("ncsa.hdf.srb.SRBFileDialog"); 
-        } catch (Throwable ex) {isSrbSupported = false;}
+        } catch (Throwable ex) {ex.printStackTrace();isSrbSupported = false;}
        
         if (isSrbSupported) {
             item = new JMenuItem( "Open from iRODS");
             item.setMnemonic(KeyEvent.VK_S);
             item.addActionListener(this);
-            item.setActionCommand("Open from srb");
+            item.setActionCommand("Open from irods");
             fileMenu.add(item);
         }
 
@@ -775,7 +775,7 @@ HyperlinkListener, ChangeListener
 
         // set up the usersGuide window
         usersGuideWindow.setLocation(20, 20);
-        usersGuideWindow.setSize(600, 650);
+        usersGuideWindow.setSize(800, 850);
         ((JPanel)usersGuideWindow.getContentPane()).setPreferredSize(new Dimension(500, 600));
 
         try {
@@ -1036,7 +1036,7 @@ HyperlinkListener, ChangeListener
                 }
             }
         }
-        else if (cmd.equals ("Open from srb"))
+        else if (cmd.equals ("Open from irods"))
         {
             try { openFromSRB(); }
             catch (Exception ex)
@@ -2104,7 +2104,7 @@ HyperlinkListener, ChangeListener
     }
 
     /** open file from SRB server */
-    private void openFromSRB()
+    private void openFromSRB() throws Exception
     {
         if (ctrSrbFileDialog == null) {
             Class theClass = null;
@@ -2114,10 +2114,7 @@ HyperlinkListener, ChangeListener
             } catch (Exception ex) {
                 theClass = null;
                 showStatus(ex.toString());
-            }
-
-            if (theClass == null) {
-                return;
+                throw (new ClassNotFoundException("Cannot find SRBFileDialog"));
             }
 
             try {
@@ -2125,7 +2122,7 @@ HyperlinkListener, ChangeListener
                 ctrSrbFileDialog = theClass.getConstructor(paramClass);
             } catch (Exception ex) {
                 ctrSrbFileDialog = null;
-                return;
+                throw (new InstantiationException("Cannot construct SRBFileDialog"));
             }
         }
 
@@ -2137,11 +2134,10 @@ HyperlinkListener, ChangeListener
             if (srbFileDialog != null) {
                 srbFileDialog.dispose();
             }
+            ex.printStackTrace();                
+            
             srbFileDialog = null;
-        }
-
-        if (srbFileDialog == null) {
-            return;
+            throw (new InstantiationException("Cannot create instance of SRBFileDialog"));
         }
      }
 

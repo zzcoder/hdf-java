@@ -219,10 +219,14 @@ implements ActionListener, ItemListener, HyperlinkListener
         maxSizeField = new JTextField("0 x 0");
         spacePanel.add(new JLabel("No. of dimensions"));
         spacePanel.add(new JLabel("Current size"));
-        spacePanel.add(new JLabel("Max size (-1 for unlimited)"));
+        spacePanel.add(new JLabel(""));
         spacePanel.add(rankChoice);
         spacePanel.add(currentSizeField);
-        spacePanel.add(maxSizeField);
+        JButton jb = new JButton("Set Max Size");
+        jb.setActionCommand("Set max size");
+        jb.addActionListener(this);
+        spacePanel.add(jb);
+        //spacePanel.add(maxSizeField);
 
         // set storage layout and data compression
         JPanel layoutPanel = new JPanel();
@@ -430,6 +434,18 @@ implements ActionListener, ItemListener, HyperlinkListener
             if (helpDialog != null) {
                 helpDialog.setVisible(false);
             }
+        }
+        else if (cmd.equals("Set max size")) {
+        	String msg = JOptionPane.showInputDialog(this, 
+                "Enter max dimension sizes. \n" +
+                "Use \"unlimited\" for unlimited dimension size.\n\n" +
+                "For example,\n" +
+                "    200 x 100\n"+
+                "    100 x unlimited\n\n", currentSizeField.getText());
+        	if (msg == null || msg.length()<1)
+        		maxSizeField.setText(currentSizeField.getText());
+        	else
+        		maxSizeField.setText(msg);
         }
     }
 
@@ -904,16 +920,22 @@ implements ActionListener, ItemListener, HyperlinkListener
         for (int i=0; i<rank; i++)
         {
             token = st.nextToken().trim();
-            try { l = Long.parseLong(token); }
-            catch (NumberFormatException ex)
-            {
-                toolkit.beep();
-                JOptionPane.showMessageDialog(this,
-                    "Invalid max dimension size: "+maxSizeField.getText(),
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
-                return null;
-            }
+
+			token = token.toLowerCase();
+			if (token.startsWith("unl"))
+				l = -1;
+			else {
+	            try { l = Long.parseLong(token); }
+	            catch (NumberFormatException ex)
+	            {
+	                toolkit.beep();
+	                JOptionPane.showMessageDialog(this,
+	                    "Invalid max dimension size: "+maxSizeField.getText(),
+	                    getTitle(),
+	                    JOptionPane.ERROR_MESSAGE);
+	                return null;
+	            }
+			}
 
             if (l < -1)
             {

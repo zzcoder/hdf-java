@@ -26,10 +26,10 @@ public class H5SRB {
     public final static int H5OBJECT_DATASPACE=4;
     public final static int H5OBJECT_ATTRIBUTE=5;
     public final static int H5OBJECT_FILE=6;
+    public static boolean isSupported = false;
 
     static
     {
-        boolean isLoaded = false;
         String filename = null;
         filename = System.getProperty(H5SRBPATH_PROPERTY_KEY,null);
 
@@ -40,18 +40,18 @@ public class H5SRB {
             if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) {
                 try {
                    System.load(filename);
-                   isLoaded = true;
-                } catch (Throwable err) { err.printStackTrace(); isLoaded= false; }
+                   isSupported = true;
+                } catch (Throwable err) { err.printStackTrace(); isSupported= false; }
             }
         }
 
         /* load the hdf5-srb client lib from default path */
-        if (!isLoaded)
+        if (!isSupported)
         {
             try {
                 System.loadLibrary("jh5srb");
-                isLoaded = true;
-            } catch (Throwable err) { err.printStackTrace(); isLoaded = false; }
+                isSupported = true;
+            } catch (Throwable err) { err.printStackTrace(); isSupported = false; }
         }
     }
 
