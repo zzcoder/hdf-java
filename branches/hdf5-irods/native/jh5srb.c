@@ -6,7 +6,6 @@
 #include "rcConnect.h"
 #include "miscUtil.h"
 
-
 #define NODEBUG
 #define NODEBUG_CONN
 #define FILE_FIELD_SEPARATOR "::"
@@ -1609,5 +1608,4 @@ void print_attribute(H5Attribute *a)
         printf("\n\n");
     }
 }
-
 
