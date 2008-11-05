@@ -229,8 +229,11 @@ public class H5ScalarDS extends ScalarDS
         try {
             sid = H5.H5Dget_space(did);
             tid= H5.H5Dget_type(did);
+            int tclass = H5.H5Tget_class(tid);
             rank = H5.H5Sget_simple_extent_ndims(sid);
-            isText = (H5.H5Tget_class(tid)==HDF5Constants.H5T_STRING);
+            isText = (tclass==HDF5Constants.H5T_STRING);
+            isVLEN = ((tclass==HDF5Constants.H5T_VLEN) || H5.H5Tis_variable_str(tid));
+            isEnum = (tclass==HDF5Constants.H5T_ENUM);
             isUnsigned = H5Datatype.isUnsigned(tid);
             
             // check if it is an external dataset
@@ -537,8 +540,8 @@ public class H5ScalarDS extends ScalarDS
         if (rank <= 0) {
             init();
         }
-
-        if (isExternal) {
+        
+         if (isExternal) {
             String pdir = this.getFileFormat().getAbsoluteFile().getParent();
             if (pdir == null) {
                 pdir = ".";
@@ -578,7 +581,7 @@ public class H5ScalarDS extends ScalarDS
             
             if ( (originalBuf ==null) || isText || isREF ||
                 ((originalBuf!=null) && (lsize[0] !=nPoints))) {
-                theData = H5Datatype.allocateArray(tid, (int)lsize[0]);
+            	theData = H5Datatype.allocateArray(tid, (int)lsize[0]);            	
             } else {
                 theData = originalBuf; // reuse the buffer if the size is the same
             }

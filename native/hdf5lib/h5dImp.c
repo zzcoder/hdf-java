@@ -1120,6 +1120,7 @@ herr_t H5DreadVL_str (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t fi
 	after it is done.
 	H5Dvlen_reclaim(tid, mem_sid, H5P_DEFAULT, strs);
 	*/
+
 	free(strs);
 
 	return status;
