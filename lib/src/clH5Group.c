@@ -73,9 +73,9 @@ int _clH5Group_read_attribute(rcComm_t *conn, H5Group* ing, H5Group** outg)
           "_clH5Group_read_attribute: outParamArray does not contain OUTG for %s.",
           ing->fullpath);
     } else {
-        *outg = outMsParam->inOutStruct;
+        *outg = (H5Group*)outMsParam->inOutStruct;
         clearMsParamArray (outParamArray, 0);
-	free (outParamArray);
+	    free (outParamArray);
     }
 
     clearMsParamArray (execMyRuleInp.inpParamArray, 0);

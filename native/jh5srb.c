@@ -22,7 +22,14 @@
 #define ENV_PAR env,
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern int h5ObjRequest(rcComm_t *conn, void *obj, int objID);
+#ifdef __cplusplus
+}
+#endif
+
 
 #define THROW_JNI_ERROR(_ex, _msg) { \
     ENV_PTR->ThrowNew(ENV_PAR ENV_PTR->FindClass(ENV_PAR _ex), _msg); \
