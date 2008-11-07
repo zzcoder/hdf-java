@@ -66,7 +66,7 @@ jint j2c_h5group(JNIEnv *env, jobject jobj, H5Group *cobj);
 jint c2j_h5file(JNIEnv *env, jobject jobj, H5File *cobj);
 jint c2j_h5dataset_read(JNIEnv *env, jobject jdataset, H5Dataset *cobj);
 jint c2j_h5dataset_read_attribute(JNIEnv *env, jobject jdataset, H5Dataset *cobj);
-jint c2j_h5group(JNIEnv *env, jobject jfile, jobject jgroup, H5Group *cgroup);
+jint c2j_h5group(JNIEnv *env, jobject jfile, jobject jgroup, H5Group *cgroup, const char *filename);
 jobject c2j_data_value (JNIEnv *env, void *value, unsigned int npoints, int tclass, int tsize);
 jint c2j_h5group_read_attribute(JNIEnv *env, jobject jobj, H5Group *cobj);
 
@@ -97,6 +97,7 @@ jfieldID  field_file_rootGroup=NULL;
 jfieldID  field_file_fullFileName=NULL;
 
 jfieldID  field_hobject_fullName=NULL;
+jfieldID  field_hobject_filename=NULL;
 jmethodID method_hobject_getFID=NULL;
 
 jclass    cls_group=NULL;
@@ -198,6 +199,10 @@ int load_field_method_IDs(JNIEnv *env)
     field_hobject_fullName = ENV_PTR->GetFieldID(ENV_PAR cls, "fullName", "Ljava/lang/String;");
     if (!field_hobject_fullName)
         THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/HObject.fullName");
+
+    field_hobject_filename = ENV_PTR->GetFieldID(ENV_PAR cls, "filename", "Ljava/lang/String;");
+    if (!field_hobject_filename)
+        THROW_JNI_ERROR ("java/lang/NoSuchFieldException", "ncsa/hdf/object/HObject.filename");
 
     method_hobject_getFID = ENV_PTR->GetMethodID(ENV_PAR cls, "getFID", "()I");
     if (!method_hobject_getFID)
@@ -1015,7 +1020,7 @@ jint c2j_h5file(JNIEnv *env, jobject jobj, H5File *cobj)
     if (NULL == (jroot = ENV_PTR->GetObjectField(ENV_PAR jobj, field_file_rootGroup)) )
         THROW_JNI_ERROR("java/lang/NoSuchFieldException", jni_name);
 
-    if ( c2j_h5group(env, jobj, jroot, cobj->root) < 0)
+    if ( c2j_h5group(env, jobj, jroot, cobj->root, cobj->filename) < 0)
         THROW_JNI_ERROR("java/lang/RuntimeException", jni_name);
 
 done:
@@ -1023,12 +1028,12 @@ done:
 }
 
 /* construct Java group object from C group structure */
-jint c2j_h5group(JNIEnv *env, jobject jfile, jobject jgroup, H5Group *cgroup)
+jint c2j_h5group(JNIEnv *env, jobject jfile, jobject jgroup, H5Group *cgroup, const char *filename)
 {
     jint ret_val = 0;
     char jni_name[] = "c2j_h5group";
     int i=0,j=0;
-    jstring jpath;
+    jstring jpath, jfilename;
     jlongArray joid;
     jlongArray jdims;
     H5Group *cg;
@@ -1037,8 +1042,10 @@ jint c2j_h5group(JNIEnv *env, jobject jfile, jobject jgroup, H5Group *cgroup)
     jobject jd, jdtype;
     jlong *jptr;
 
-    if (NULL==jfile || NULL == jgroup || NULL == cgroup)
+    if (NULL==jfile || NULL == jgroup || NULL == cgroup || NULL==filename)
         THROW_JNI_ERROR("java/lang/NullPointerException", jni_name);
+
+    jfilename = ENV_PTR->NewStringUTF(ENV_PAR filename);
 
     if (cgroup->groups && cgroup->ngroups>0) {
         for (i=0; i<cgroup->ngroups; i++) {
@@ -1056,12 +1063,13 @@ jint c2j_h5group(JNIEnv *env, jobject jfile, jobject jgroup, H5Group *cgroup)
 
             /* create a new group */
             jg = ENV_PTR->NewObject(ENV_PAR cls_group, method_group_ctr, jfile, NULL, jpath, jgroup, joid);
+            ENV_PTR->SetObjectField(ENV_PAR jg, field_hobject_filename, jfilename);
 
             /* add the new group into its parant */
             ENV_PTR->CallVoidMethod(ENV_PAR jgroup, method_group_addToMemberList, jg);
 
             /* recursively call c2j_h5group to contruct the subtree */
-            c2j_h5group(env, jfile, jg, cg);
+            c2j_h5group(env, jfile, jg, cg, filename);
         }
     }
 
@@ -1086,6 +1094,7 @@ jint c2j_h5group(JNIEnv *env, jobject jfile, jobject jgroup, H5Group *cgroup)
 
             /* create a new dataset */
             jd = ENV_PTR->NewObject(ENV_PAR cls_dataset, method_dataset_ctr, jfile, NULL, jpath, joid);
+            ENV_PTR->SetObjectField(ENV_PAR jd, field_hobject_filename, jfilename);
 
             /* for compound only */
             if (H5DATATYPE_COMPOUND == cd->type.tclass && cd->type.nmembers>0 && cd->type.mnames) {
@@ -1150,22 +1159,22 @@ jint c2j_h5group(JNIEnv *env, jobject jfile, jobject jgroup, H5Group *cgroup)
 
             /* set image indicator */
             if ((cd->time & H5D_IMAGE_FLAG)>0) {
-		ENV_PTR->SetBooleanField(ENV_PAR jd, field_dataset_scalar_isImage, JNI_TRUE);
-		ENV_PTR->SetBooleanField(ENV_PAR jd, field_dataset_scalar_isImageDisplay, JNI_TRUE);
+		        ENV_PTR->SetBooleanField(ENV_PAR jd, field_dataset_scalar_isImage, JNI_TRUE);
+		        ENV_PTR->SetBooleanField(ENV_PAR jd, field_dataset_scalar_isImageDisplay, JNI_TRUE);
             }
 
             if ( (cd->time & H5D_IMAGE_TRUECOLOR_FLAG)>0 && cd->space.rank>2) {
-		ENV_PTR->SetBooleanField(ENV_PAR jd, field_dataset_scalar_isTrueColor, JNI_TRUE);
-		ENV_PTR->SetIntField(ENV_PAR jd, field_dataset_scalar_interlace, 0);
+		        ENV_PTR->SetBooleanField(ENV_PAR jd, field_dataset_scalar_isTrueColor, JNI_TRUE);
+		        ENV_PTR->SetIntField(ENV_PAR jd, field_dataset_scalar_interlace, 0);
             }
 
             if ((cd->time & H5D_IMAGE_INTERLACE_PIXEL_FLAG)>0 && cd->space.rank>2) {
-	        ENV_PTR->SetIntField(ENV_PAR jd, field_dataset_scalar_interlace, 0);
-		ENV_PTR->SetBooleanField(ENV_PAR jd, field_dataset_scalar_isTrueColor, JNI_TRUE);
+	            ENV_PTR->SetIntField(ENV_PAR jd, field_dataset_scalar_interlace, 0);
+		        ENV_PTR->SetBooleanField(ENV_PAR jd, field_dataset_scalar_isTrueColor, JNI_TRUE);
             }
             else if ((cd->time & H5D_IMAGE_INTERLACE_PLANE_FLAG)>0 && cd->space.rank>2) {
-	        ENV_PTR->SetIntField(ENV_PAR jd, field_dataset_scalar_interlace, 2);
-		ENV_PTR->SetBooleanField(ENV_PAR jd, field_dataset_scalar_isTrueColor, JNI_TRUE);
+	            ENV_PTR->SetIntField(ENV_PAR jd, field_dataset_scalar_interlace, 2);
+		        ENV_PTR->SetBooleanField(ENV_PAR jd, field_dataset_scalar_isTrueColor, JNI_TRUE);
             }
 
             /* call init() method */
