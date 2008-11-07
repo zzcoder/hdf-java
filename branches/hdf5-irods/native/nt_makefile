@@ -25,7 +25,7 @@ IRODS_UTIL_LIB = G:\Projects\NCSA_iRODS\h5mod\irods_lib\iRODSNtUtilLib.lib
 CC=cl.exe
 LINKER = link.exe
 
-CFLAGS = /Od  \
+CFLAGS = \
 /I "..\lib\include" \
 /I $(IRODS_HOME)"\nt\include" \
 /I $(IRODS_HOME)"\lib\core\include" \
@@ -35,14 +35,16 @@ CFLAGS = /Od  \
 /I $(IRODS_HOME)"\server\core\include" \
 /I $(IRODS_HOME)"\server\icat\include" \
 /I $(IRODS_HOME)"\server\re\include" \
-/I $(JPEG_LIB)"\include" \
 /I $(JAVA_HOME)"\include" /I $(JAVA_HOME)"\include\win32" \
-/D "_WIN32" /D "windows_platform" /D "_LARGEFILE_SOURCE" /D "_FILE_OFFSET_BITS=64" /D "_LARGEFILE64_SOURCE" \
+/D "_WIN32" /D "windows_platform" /D "_LARGEFILE_SOURCE"  \
 /D "_MBCS" /U "__cplusplus" \
 /D "_CRT_SECURE_NO_WARNINGS" \
-/Gm /EHsc /RTC1 /MTd /W3 /nologo /c /Wp64 /ZI /TP /errorReport:prompt
+/D "_WIN32" /D "windows_platform"  \
+/U "__cplusplus" \
+/nologo /W3 /EHsc /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /FD /c /TP \
 
-LINK_FLAG = /INCREMENTAL /nologo /DLL /SUBSYSTEM:WINDOWS /machine:X86
+LINK_FLAG = /nologo /dll /incremental:no /machine:i386
+
 
 srcDir = .
 objDir = .
@@ -55,7 +57,7 @@ hd5f_OBJS = $(hdf5_libDir)\obj\clH5Dataset.obj $(hdf5_libDir)\obj\clH5File.obj \
 
 MSDEV_LIBS= ws2_32.lib advapi32.lib winmm.lib \
 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib \
-oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:"libc.lib" 
+oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:"libc.lib" /NODEFAULTLIB:"libcmt.lib"
 
 all: $(objDir)\jh5srb.obj
 	$(LINKER) /OUT:".\jh5srb.dll" $(LINK_FLAG) $(objDir)\jh5srb.obj $(hd5f_OBJS) $(IRODS_LIB) $(IRODS_UTIL_LIB) $(MSDEV_LIBS)
