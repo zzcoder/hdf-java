@@ -772,6 +772,7 @@ done:
 
     if (file_count <=0 ) {
         close_connection(server_connection);
+        server_connection = NULL;
     }
 
     H5File_dtor(&h5file);
