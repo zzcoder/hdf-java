@@ -1,3 +1,8 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include <assert.h>
 #include "jni.h"
 #include "h5Object.h"
@@ -25,7 +30,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 extern int h5ObjRequest(rcComm_t *conn, void *obj, int objID);
+
 #ifdef __cplusplus
 }
 #endif
@@ -455,7 +462,8 @@ void close_connection(rcComm_t *conn_t)
         rcDisconnect (conn_t);
         conn_t = NULL;
     }
-}   
+}  
+
 /*
  * Class:     ncsa_hdf_srb_H5SRB
  * Method:    getFileFieldSeparator
@@ -614,7 +622,7 @@ done:
 /*
  * Class:     ncsa_hdf_srb_H5SRB
  * Method:    h5ObjRequest
- * Signature: ([Ljava/lang/String;Ljava/lang/Object;I)I
+ * Signature: (Ljava/lang/Object;I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_srb_H5SRB_h5ObjRequest
   (JNIEnv *env, jclass cls, jobject jobj, jint obj_type)
@@ -1623,4 +1631,10 @@ void print_attribute(H5Attribute *a)
         printf("\n\n");
     }
 }
+
+
+
+#ifdef __cplusplus
+}
+#endif
 
