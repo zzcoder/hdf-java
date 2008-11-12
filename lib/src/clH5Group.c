@@ -43,7 +43,6 @@ int _clH5Group_read_attribute(rcComm_t *conn, H5Group* ing, H5Group** outg)
     msParam_t *outMsParam;
     int status = 0;
 
-
     memset (&execMyRuleInp, 0, sizeof (execMyRuleInp));
     memset (&msParamArray, 0, sizeof (msParamArray));
     execMyRuleInp.inpParamArray = &msParamArray;

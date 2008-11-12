@@ -161,6 +161,8 @@ H5Dataset** outd)
     } else {
         *outd = (H5Dataset *)outMsParam->inOutStruct;
         clearMsParamArray (outParamArray, 0);
+        /* XXXXXX free outParamArray */
+        free (outParamArray);
     }
 
     clearMsParamArray (execMyRuleInp.inpParamArray, 0);
