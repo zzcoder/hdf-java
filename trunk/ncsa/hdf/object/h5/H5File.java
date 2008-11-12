@@ -2077,7 +2077,7 @@ public class H5File extends FileFormat
                 long l = HDFNativeData.byteToLong(ref_buf, 0);
                 oid = new long[1];
                 oid[0] = l; // save the object ID
-            } catch (HDF5Exception ex) {System.out.println(ex);}
+            } catch (HDF5Exception ex) {ex.printStackTrace();}
 
             // we need to use the OID for this release. we will rewrite this so
             // that we do not use the deprecated constructor

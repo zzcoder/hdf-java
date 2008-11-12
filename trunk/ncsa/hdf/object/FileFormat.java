@@ -229,8 +229,12 @@ public abstract class FileFormat extends File
     public FileFormat(String filename) {
         super(filename);
 
-        if ( (filename != null) && (filename.length() > 0) ){
-            fullFileName = getAbsolutePath();
+        fullFileName = filename;
+        
+        if ( (filename != null) && (filename.length() > 0) ) {
+        	try {
+        		fullFileName = this.getAbsolutePath();
+        	} catch (Exception ex) {}
         }
         isReadOnly = false;
     }

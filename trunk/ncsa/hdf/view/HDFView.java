@@ -188,8 +188,10 @@ HyperlinkListener, ChangeListener
 
     private UserOptionsDialog userOptionDialog;    
     
-    private Constructor ctrSrbFileDialog;
-
+    private Constructor ctrSrbFileDialog = null;
+    
+    private JDialog srbFileDialog = null;
+    
     /**
      * Constructs the HDFView with a given root directory, where the
      * HDFView is installed, and opens the given file in the viewer.
@@ -845,7 +847,6 @@ HyperlinkListener, ChangeListener
         if (n<=0) {
             return;
         }
-        System.out.println(n);            
 
         Component comp = null;
         JInternalFrame jif = null;
@@ -973,7 +974,7 @@ HyperlinkListener, ChangeListener
             if (cmd.equals("Open file: from file bar"))
             {
                 filename = (String) urlBar.getSelectedItem();
-                if (filename == null) {
+                if (filename == null || filename.length()<1) {
                     return;
                 }
 
@@ -981,7 +982,11 @@ HyperlinkListener, ChangeListener
                 if (!(filename.startsWith("http://") || filename.startsWith("ftp://")))
                 {
                     File tmpFile = new File(filename);
-                    if (tmpFile.exists() && tmpFile.isDirectory())
+                    
+                    if (!tmpFile.exists())
+                    	return;
+                    
+                    if (tmpFile.isDirectory())
                     {
                         currentDir = filename;
                         filename = openLocalFile();
@@ -1141,18 +1146,6 @@ HyperlinkListener, ChangeListener
         {
             try {
                 treeView.saveFile(treeView.getSelectedFile());
-                /*
-                List list = treeView.getCurrentFiles();
-                if (list != null && list.size()>0) {
-                    FileFormat newFile = (FileFormat)list.get(list.size()-1);
-                    try {
-                        String filename = newFile.getFilePath();
-                        urlBar.removeItem(filename);
-                        urlBar.insertItemAt(filename, 0);
-                        urlBar.setSelectedIndex(0);
-                    } catch (Exception ex2 ) {}
-                }
-                */
             }
             catch (Exception ex) {
                 toolkit.beep();
@@ -1784,11 +1777,13 @@ HyperlinkListener, ChangeListener
         if (obj == null) {
             return;
         }
-        
+       
         Object src = e.getSource();
         if ((src instanceof JTree))
         {
-            urlBar.setSelectedItem(obj.getFile());
+            String filename = obj.getFile();
+            urlBar.setSelectedItem(filename);
+           
             if (infoTabbedPane.getSelectedIndex()==1)
                 showMetaData(obj);
         }
@@ -1796,7 +1791,7 @@ HyperlinkListener, ChangeListener
 
     private void showMetaData(HObject obj)
     {
-        if (obj == null) {
+        if (obj == null ||  currentFile == null) {
             return;
         }
 
@@ -1853,7 +1848,7 @@ HyperlinkListener, ChangeListener
         } // else if (obj instanceof Dataset)
 
         List attrList = null;
-        try { attrList = obj.getMetadata(); } catch (Exception ex) {}
+        try { attrList = obj.getMetadata(); } catch (Exception ex) {ex.printStackTrace();}
 
         if (attrList == null) {
             metadata.append("\n    Number of attributes = 0");
@@ -2043,9 +2038,14 @@ HyperlinkListener, ChangeListener
 
          // search the local file cache
         String tmpDir = System.getProperty("java.io.tmpdir");
+        
+        File tmpFile = new File (tmpDir);
+        if (!tmpFile.canWrite())
+        	tmpDir = System.getProperty("user.home");
+        	
         localFile =   tmpDir + localFile;
 
-        File tmpFile = new File( localFile);
+        tmpFile = new File( localFile);
         if (tmpFile.exists()) {
             return localFile;
         }
@@ -2126,20 +2126,19 @@ HyperlinkListener, ChangeListener
             }
         }
 
-        JDialog srbFileDialog = null;
-        try {
-            Object[] paramObj = {(java.awt.Frame)this};
-            srbFileDialog = (JDialog)ctrSrbFileDialog.newInstance(paramObj);
-        } catch (Exception ex) {
-            if (srbFileDialog != null) {
-                srbFileDialog.dispose();
+        if (srbFileDialog == null) {
+            try {
+                Object[] paramObj = {(java.awt.Frame)this};
+                srbFileDialog = (JDialog)ctrSrbFileDialog.newInstance(paramObj);
+            } catch (Exception ex) {
+            	throw ex;
             }
-            ex.printStackTrace();                
-            
-            srbFileDialog = null;
-            throw (new InstantiationException("Cannot create instance of SRBFileDialog"));
+        } else {
+        	srbFileDialog.setVisible(true);
         }
-     }
+        
+        currentFile = srbFileDialog.getName();
+    }
 
     /**
      * The starting point of this application.

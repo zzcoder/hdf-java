@@ -26,7 +26,7 @@ public class H5SRB {
     public final static int H5OBJECT_DATASPACE=4;
     public final static int H5OBJECT_ATTRIBUTE=5;
     public final static int H5OBJECT_FILE=6;
-    public static boolean isSupported = false;
+    private static boolean isIRODSSupported = false;
 
     static
     {
@@ -40,20 +40,20 @@ public class H5SRB {
             if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) {
                 try {
                    System.load(filename);
-                   isSupported = true;
-                } catch (Throwable err) { err.printStackTrace(); isSupported= false; }
+                   isIRODSSupported = true;
+                } catch (Throwable err) { err.printStackTrace(); isIRODSSupported= false; }
             }
         }
 
         /* load the hdf5-srb client lib from default path */
-        if (!isSupported)
+        if (!isIRODSSupported)
         {
             try {
                 System.loadLibrary("jh5srb");
-                isSupported = true;
-            } catch (Throwable err) { err.printStackTrace(); isSupported = false; }
+                isIRODSSupported = true;
+            } catch (Throwable err) { err.printStackTrace(); isIRODSSupported = false; }
         }
-    }
+     }
 
     /**
      *  Make a server connection 
@@ -85,6 +85,14 @@ public class H5SRB {
         _getServerInfo(srvInfo);
 
         return srvInfo;
+    }
+    
+    /**
+     * Check if iRODS is supported
+     * @return true if iRODS is supported; otherwise, returns false;
+     */
+    public static boolean isSupported() {
+    	return isIRODSSupported;
     }
     
     private synchronized static native void _getServerInfo(String srvInfo[]) throws Exception;

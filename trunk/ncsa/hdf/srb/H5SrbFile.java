@@ -28,7 +28,6 @@ public class H5SrbFile extends FileFormat
 
     private int opID;
     private H5SrbGroup rootGroup;
-    private final String fullFileName;
     private boolean isFileOpen = false;
 
     /**
@@ -50,6 +49,7 @@ public class H5SrbFile extends FileFormat
     public H5SrbFile(String pathname)
     {
         super(pathname);
+
         opID = -1;
         rootGroup = null;
         isReadOnly = true;
@@ -70,14 +70,15 @@ public class H5SrbFile extends FileFormat
      * @see java.io.File#getPath()
      */
     public String getPath() {
+    	
         return fullFileName;
     }
-
+    
     /**
      * Opens access to the file resource and returns the file identifier.
      * If the file is already open, it returns the file access identifier.
      * <p>
-     * @return the file access identifier if opening the file is succsessful;
+     * @return the file access identifier if opening the file is successful;
      * otherwise returns a negative value.
      */
     public int open() throws Exception
@@ -99,7 +100,7 @@ public class H5SrbFile extends FileFormat
 
         return status;
     }
-
+    
     /* construct the tree structure from groups */
     private void constructTree(Group pgroup, DefaultMutableTreeNode pnode)
     {

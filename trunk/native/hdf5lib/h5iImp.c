@@ -24,8 +24,17 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 #include "hdf5.h"
 #include <jni.h>
+
+#ifdef __cplusplus
+#define ENV_PTR (env)
+#define ENV_PAR 
+#else
+#define ENV_PTR (*env)
+#define ENV_PAR env,
+#endif
 
 extern jboolean h5libraryError( JNIEnv *env );
 
@@ -82,25 +91,10 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1name
         /*  exception, returns immediately */
     }
     /* successful return -- save the string; */
-#ifdef __cplusplus
-    str = env->NewStringUTF(aName);
-#else
-    str = (*env)->NewStringUTF(env,aName);
-#endif
-    if (str == NULL) {
-        free(aName);
-        h5JNIFatalError( env,"H5Iget_name:  return string failed");
-        return -1;
-    }
-    free(aName);
-    /*  Note: throws ArrayIndexOutOfBoundsException,
-        ArrayStoreException */
-#ifdef __cplusplus
-    env->SetObjectArrayElement(name,0,str);
-#else
-    (*env)->SetObjectArrayElement(env,name,0,str);
-#endif
+	str = ENV_PTR->NewStringUTF(ENV_PAR aName);
+    ENV_PTR->SetObjectArrayElement(ENV_PAR name,0,str);
 
+	free(aName);
     return (jlong)size;
 }
 

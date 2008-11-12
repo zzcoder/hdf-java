@@ -127,6 +127,7 @@ implements TreeView, ActionListener
         // initialize the tree and root
         treeModel = new DefaultTreeModel(root);
         tree = new JTree(treeModel);
+
         tree.setLargeModel(true);
         tree.setCellRenderer(new HTreeCellRenderer());
         tree.addMouseListener(new HTreeMouseAdapter());
@@ -134,7 +135,7 @@ implements TreeView, ActionListener
         //tree.setShowsRootHandles(true);
         int rowheight = 23 + (int)((tree.getFont().getSize()-12)*0.5);
         tree.setRowHeight(rowheight);
- 
+        
         // create the popupmenu
         popupMenu = createPopupMenu();
 
@@ -1956,6 +1957,7 @@ implements TreeView, ActionListener
                     tree.clearSelection();
                     tree.setSelectionPath(selPath);
                 }
+                
                 viewer.mouseEventFired(e);
             }
 
