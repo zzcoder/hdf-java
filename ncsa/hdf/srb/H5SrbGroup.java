@@ -107,9 +107,18 @@ public class H5SrbGroup extends Group
         {
             attributeList = new Vector();
             opID = H5GROUP_OP_READ_ATTRIBUTE;
-            try {
-                H5SRB.h5ObjRequest (this, H5SRB.H5OBJECT_GROUP);
-            } catch (Exception ex) { throw ex; }
+            
+            /* TODO: there is a bug in the HDF5-iRODS C code. The following code crashes HDFView. 
+                int _clH5Group_read_attribute(rcComm_t *conn, H5Group* ing, H5Group** outg)
+                {
+                    ....
+                    status = rcExecMyRule (conn, &execMyRuleInp, &outParamArray);
+                    ....   
+                }
+            */         
+            //try {
+            //    H5SRB.h5ObjRequest (this, H5SRB.H5OBJECT_GROUP);
+            //} catch (Exception ex) { throw ex; }
         } // if (attributeList == null)
 
         return attributeList;

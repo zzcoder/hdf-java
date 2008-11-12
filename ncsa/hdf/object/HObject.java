@@ -88,7 +88,7 @@ public abstract class HObject implements Serializable, DataFormat
     /**
      * The full path of the file that contains the object.
      */
-    private final String filename;
+    private String filename;
 
     /**
      * The file which contains the object
@@ -250,7 +250,7 @@ public abstract class HObject implements Serializable, DataFormat
      * Returns the name of the file that contains this data object.
      * <p>
      * The file name is necessary because the file of this data object is
-     * uniquely identified when mutilple files are opened by an application
+     * uniquely identified when multiple files are opened by an application
      * at the same time.
      * 
      * @return The full path (path + name) of the file.

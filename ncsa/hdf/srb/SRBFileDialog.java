@@ -69,8 +69,8 @@ implements ActionListener
     public SRBFileDialog(Frame owner)
     {
         super (owner, "Open File from SRB ...", true);
-        
-        if (!H5SRB.isSupported) {
+
+        if (!H5SRB.isSupported()) {
             JOptionPane.showMessageDialog(owner, "iRODS is not supported.", 
                 "Server Error", JOptionPane.ERROR_MESSAGE);
             dispose();
@@ -91,6 +91,7 @@ implements ActionListener
             srvInfo = H5SRB.getServerInfo();
             remoteHomeDir = srvInfo[5];
         } catch (Throwable ex) {
+        	ex.printStackTrace();
         	isServerSetup = false;
         }
         
@@ -125,7 +126,7 @@ implements ActionListener
                     H5SRB.callServerInit(dsd.getPassword());
                     srvInfo = H5SRB.getServerInfo();
                     remoteHomeDir = srvInfo[5];
-                } catch (Exception ex2) { }
+                } catch (Exception ex2) { ex2.printStackTrace();}
             }
         }
 
@@ -175,20 +176,7 @@ implements ActionListener
         contentPane.setLayout(new BorderLayout(5,5));
         contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
 
-        if (fileList.size() > 0) {
-            String remoteFile = null;
-            Object[] remoteFiles = fileList.toArray();
-            int idx0 = remoteHomeDir.length();
-            for (int i=0; i<remoteFiles.length; i++) {
-                remoteFile = (String)remoteFiles[i];
-                if (remoteFile.startsWith(remoteHomeDir))
-                    remoteFile = remoteFile.substring(idx0);
-                    remoteFiles[i] = remoteFile;
-            }
-            fileTree = new JTree(remoteFiles);
-        }
-        else
-            fileTree = new JTree(fileList);
+        fileTree = createFileTree(fileList, remoteHomeDir);
 
         JScrollPane pane = new JScrollPane(fileTree);
         pane.setPreferredSize(new Dimension( 600, 400 ));
@@ -247,12 +235,44 @@ implements ActionListener
                 JOptionPane.showMessageDialog( (JFrame)viewer, "Invalid remote file",
                         getTitle(), JOptionPane.ERROR_MESSAGE);
             }
-            dispose();
+            this.setVisible(false);
         }
         else if (cmd.equals("Cancel"))
         {
-            dispose();
+            this.setVisible(false);
         }
+    }
+    
+    private JTree createFileTree(Vector<String> list, String iHomeDir) 
+    {
+    	JTree tree = null;
+    	int n = 0;
+        int idx = iHomeDir.length();
+    	
+    	if (list == null || (n=list.size())<1)
+    		return (new JTree()); // empty tree
+    	
+    	/*
+        String remoteFile = null;
+        for (int i=0; i<n; i++) {
+        	remoteFile = list.get(i);
+        }
+        */
+    	
+        Object[] remoteFiles = list.toArray();
+
+        if (list.size() > 0) {
+            String remoteFile = null;
+             for (int i=0; i<remoteFiles.length; i++) {
+                remoteFile = (String)remoteFiles[i];
+                if (remoteFile.startsWith(iHomeDir))
+                    remoteFile = remoteFile.substring(idx);
+                    remoteFiles[i] = remoteFile;
+            }
+            tree = new JTree(remoteFiles);
+        }
+        
+        return tree;
     }
     
     private boolean openFile(String remoteFile)
@@ -268,6 +288,7 @@ implements ActionListener
         remoteFile = remoteFile.trim();
 
         H5SrbFile fileFormat = new H5SrbFile(remoteFile);
+        
         try {
             fileFormat.open();
         } catch (Exception ex) {
@@ -288,62 +309,12 @@ implements ActionListener
             if (currentRowCount>0) {
                 tree.expandRow(tree.getRowCount()-1);
             }
+            
+            treeView.getCurrentFiles().add(fileFormat);
+            this.setName(remoteFile);
          }
 
         return retVal;
-    }
-
-    public @interface Test { }
-
-    @Test
-    public void testFileList() throws Exception
-    {
-        Vector flist = new Vector(50);
-
-        System.out.println(H5SRB.getFileFieldSeparator());
-
-        System.out.println("Server information:");
-        String srvInfo[] = H5SRB.getServerInfo();
-        for (int i=0; i<srvInfo.length; i++) {
-            System.out.println("\t"+srvInfo[i]);
-        }
-        System.out.println();
-
-        H5SRB.getFileList(flist);
-        int n = flist.size();
-
-        for (int i=0; i<n; i++)
-            System.out.println(flist.elementAt(i));
-    }
-
-    @Test
-    public void testFileContent(String filename) throws Exception
-    {
-       int fid = 0;
-       H5SrbFile srbFile = new H5SrbFile(filename);
-        System.out.println(filename);
-
-        try {
-            fid = srbFile.open();
-        } catch (Throwable err) {
-            err.printStackTrace();
-        }
-
-        if (fid <=0) {
-            System.out.println("Failed to open file from server: fid="+fid);
-            return;
-        }
-
-        TreeNode root = srbFile.getRootNode();
-        if (root == null)  {
-            System.out.println("Failed to open file from server: root=nul: root=nulll");
-            return;
-        }
-
-        java.util.Enumeration objs = root.children() ;
-        while(objs.hasMoreElements())
-            System.out.println(objs.nextElement());
-
     }
 
     private class DefaultServerDialog extends JDialog implements ActionListener
