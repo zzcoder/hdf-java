@@ -7,10 +7,11 @@
 #include <time.h>
 
 #define PRINT_ALL 1
-#define NO_TEST_ATTRI	1
-#define NO_TEST_PALETTE	1
+#define TEST_ATTRI	1
+#define TEST_PALETTE	1
 #define TEST_SUBSET 1
-#if 1
+
+#if 0
 #define HDF5_LOCAL 1
 #endif
 
