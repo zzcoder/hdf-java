@@ -1,0 +1,28 @@
+#****************************************************************************
+#* NCSA HDF                                                                 *
+#* National Comptational Science Alliance                                   *
+#* University of Illinois at Urbana-Champaign                               *
+#* 605 E. Springfield, Champaign IL 61820                                   *
+#*                                                                          *
+#* For conditions of distribution and use, see the accompanying             *
+#* COPYING file.                                                            *
+#*                                                                          *
+#****************************************************************************/
+
+all:
+	(cd intro; $(MAKE);)
+	(cd groups; $(MAKE);)
+	(cd datasets; $(MAKE);)
+	(cd datatypes; $(MAKE);)
+
+#check:
+# (cd intro; $(MAKE) check;)
+# (cd groups; $(MAKE) check;)
+# (cd datasets; $(MAKE) check;)
+# (cd datatypes; $(MAKE) check;)
+
+clean:
+	(cd intro; $(MAKE) clean;)
+	(cd groups; $(MAKE) clean;)
+	(cd datasets; $(MAKE) clean;)
+	(cd datatypes; $(MAKE) clean;)
