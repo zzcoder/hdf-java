@@ -75,6 +75,8 @@ SRBDISTFILES= \
         ./ncsa/hdf/srb/*.java \
         ./ncsa/hdf/srb/native/*.c 
 
+EXAMPLESFILES=./examples/Makefile.in ./examples/intro/*.java ./examples/intro/Makefile.in ./examples/groups/*.java ./examples/groups/Makefile.in ./examples/datasets/*.java ./examples/datasets/Makefile.in ./examples/datatypes/*.java ./examples/datatypes/Makefile.in
+
 TESTFILES=./test/Makefile.in ./test/object/*.java ./test/object/*.in ./test/linktest/Makefile.in ./test/linktest/testh4link.in ./test/linktest/testlink.in ./test/linktest/*.java ./test/h5/*.java ./test/h5/*.in ./test/h5/*.h5 ./test/unittests/*.in ./test/unittests/*.java ./test/view/*.in ./test/view/*.java
 
 DOCFILES=./docs/*.html ./docs/*.gif ./docs/*.js ./docs/hdfview/*.html ./docs/hdfview/*.gif ./docs/hdfview/ModularGuide/*.html ./docs/hdfview/ModularGuide/*.gif ./docs/hdfview/UsersGuide/images/*.gif ./docs/hdfview/UsersGuide/images/*.jpg ./docs/hdfview/UsersGuide/*.html
@@ -212,13 +214,19 @@ linktest:
 tests:
 	@if test -d "test"; then cd test; $(MAKE); fi
 
+examples:
+	@if test -d "examples"; then cd examples; $(MAKE); fi
+
+clean-examples:
+	@if test -d "examples"; then cd examples; $(MAKE) clean; fi
+
 clean-test:
 	@if test -d "test/Makefile"; then  cd test; $(MAKE) clean; fi
 
 clean-testlink:
 	@if test -d "test/testlink/Makefile"; then  cd test/linktest; $(MAKE) clean; fi
 
-clean: clean-natives clean-classes clean-test clean-testlink
+clean: clean-natives clean-classes clean-test clean-testlink clean-examples
 
 clean-classes:
 	$(FIND) ./ncsa \( -name '#*' -o -name '*~' -o -name '*.class' \) -exec $(RM) -f {} \; ;\
@@ -448,6 +456,11 @@ distclean: clean-natives clean-classes clean-test clean-testlink
 	$(RM) -rf ./test/linktest/Makefile
 	$(RM) -rf ./test/linktest/testh4link
 	$(RM) -rf ./test/linktest/testlink
+	$(RM) -rf ./examples/Makefile
+	$(RM) -rf ./examples/intro/Makefile
+	$(RM) -rf ./examples/groups/Makefile
+	$(RM) -rf ./examples/datasets/Makefile
+	$(RM) -rf ./examples/datatypes/Makefile
 	$(RM) -rf ./Makefile
 
 #build_package:
