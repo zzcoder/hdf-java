@@ -45,6 +45,9 @@ int main(int argc, char* argv[])
     } else
         strcpy(fname, argv[1]);
 
+    if (strlen(fname)<=1)
+        strcpy (fname, "/tempZone/home/rods/hdf5_test.h5"); 
+
     printf("\n..... test file: %s\n", fname);
     fflush(stdout);
 
