@@ -388,7 +388,10 @@ implements ActionListener, ItemListener
         button.setEnabled((rank > 3));
         selectionP.add(new JLabel(" "));
         selectionP.add(new JLabel(" "));
-        selectionP.add(new JLabel(" "));
+        button = new JButton("Reset");
+        button.setActionCommand("Reset data range");
+        button.addActionListener(this);
+        selectionP.add(button);
         selectionP.add(new JLabel(" "));
 
         // add OK and CANCEL buttons
@@ -417,7 +420,6 @@ implements ActionListener, ItemListener
 
     public void actionPerformed(ActionEvent e)
     {
-        Object source = e.getSource();
         String cmd = e.getActionCommand();
 
         if (cmd.equals("Ok"))
@@ -443,6 +445,16 @@ implements ActionListener, ItemListener
         else if (cmd.equals("Cancel"))
         {
             dispose();
+        }
+        else if (cmd.equals("Reset data range")) {
+        	int n = startFields.length;
+        	
+        	for (int i=0; i<n; i++) {
+            	startFields[i].setText("0");
+            	strideFields[i].setText("1");
+            	long l = Long.valueOf(maxLabels[i].getText())-1;
+            	endFields[i].setText(String.valueOf(l));
+        	}
         }
         else if (cmd.equals("Select more dimensions"))
         {

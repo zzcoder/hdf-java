@@ -41,7 +41,7 @@ import java.awt.Cursor;
  * @version 2.4 9/6/2007
  */
 public class DefaultTreeView extends JPanel
-implements TreeView, ActionListener 
+	implements TreeView, ActionListener 
 {
 	public static final long serialVersionUID = HObject.serialVersionUID;
 

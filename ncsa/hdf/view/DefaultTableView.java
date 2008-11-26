@@ -100,6 +100,9 @@ implements TableView, ActionListener
     private int fixedDataLength;
 
     private final DecimalFormat scientificFormat = new DecimalFormat ("0.0###E0#");
+    private final DecimalFormat normalFormat = new DecimalFormat ("#.#");
+    private DecimalFormat numberFormat = normalFormat;
+    private final boolean startEditing[] = {false};
 
     private JTextField frameField;
 
@@ -662,6 +665,10 @@ implements TableView, ActionListener
         }
         else if (cmd.equals("Scientific Notation"))
         {
+        	if (checkScientificNotation.isSelected())
+        		numberFormat = scientificFormat;
+        	else 
+        		numberFormat = normalFormat;
              this.updateUI();
         }
         else if (cmd.equals("Fixed data length"))
@@ -1216,9 +1223,7 @@ implements TableView, ActionListener
             columnNames[i] = String.valueOf(start+i*stride);
         }
 
-        DefaultTableModel tableModel =  new DefaultTableModel(
-            columnNames,
-            rows)
+        DefaultTableModel tableModel =  new DefaultTableModel(columnNames, rows)
         {
         	public static final long serialVersionUID = HObject.serialVersionUID;
             private final StringBuffer stringBuffer = new StringBuffer();
@@ -1229,6 +1234,9 @@ implements TableView, ActionListener
             private Object theValue = null;
             public Object getValueAt(int row, int column)
             {
+            	if (startEditing[0])
+            		return "";
+            	
                 if (isArray) {
                     // ARRAY dataset
                     int arraySize = dtype.getDatatypeSize()/btype.getDatatypeSize();
@@ -1256,9 +1264,7 @@ implements TableView, ActionListener
                     } else {
                         theValue = Array.get(dataValue, row*getColumnCount()+column);
                     }
-                    if (checkScientificNotation.isSelected()) {
-                        theValue = scientificFormat.format(theValue);
-                    }
+                    theValue = numberFormat.format(theValue);
                 }
                 return theValue;
             } // getValueAt(int row, int column)
@@ -1279,12 +1285,29 @@ implements TableView, ActionListener
                 }
             }
 
+            public boolean editCellAt(int row, int column, java.util.EventObject e) 
+            {
+            	
+                if (!isCellEditable(row, column)) {
+                    return super.editCellAt(row, column, e);
+                }
+                
+				if (e instanceof KeyEvent) {
+					KeyEvent ke = (KeyEvent)e;
+					if (ke.getID()==KeyEvent.KEY_PRESSED) 
+						startEditing[0] = true;
+				}
+				
+                return super.editCellAt(row, column, e);
+            }
+            
             public void editingStopped(ChangeEvent e)
             {
                 int row = getEditingRow();
                 int col = getEditingColumn();
                 super.editingStopped(e);
-
+ 				startEditing[0] = false;
+ 
                 Object source = e.getSource();
 
                 if (source instanceof CellEditor)
@@ -1415,6 +1438,9 @@ implements TableView, ActionListener
 
             public Object getValueAt(int row, int col)
             {
+            	if (startEditing[0])
+            		return "";
+            	
                 int fieldIdx = col;
                 int rowIdx = row;
 
@@ -1485,11 +1511,28 @@ implements TableView, ActionListener
                 return !isReadOnly;
             }
 
+            public boolean editCellAt(int row, int column, java.util.EventObject e) 
+            {
+            	
+                if (!isCellEditable(row, column)) {
+                    return super.editCellAt(row, column, e);
+                }
+                
+				if (e instanceof KeyEvent) {
+					KeyEvent ke = (KeyEvent)e;
+					if (ke.getID()==KeyEvent.KEY_PRESSED) 
+						startEditing[0] = true;
+				}
+				
+                return super.editCellAt(row, column, e);
+            }
+
             public void editingStopped(ChangeEvent e)
             {
                 int row = getEditingRow();
                 int col = getEditingColumn();
                 super.editingStopped(e);
+                startEditing[0] = false;
 
                 Object source = e.getSource();
 

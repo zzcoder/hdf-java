@@ -213,6 +213,7 @@ HyperlinkListener, ChangeListener
         userOptionDialog = null;
         ctrSrbFileDialog = null;
         toolkit = Toolkit.getDefaultToolkit();
+        ViewProperties.loadIcons(rootDir);
         ViewProperties.loadExtClass();
 
         editGUIs = new Vector();
@@ -220,10 +221,9 @@ HyperlinkListener, ChangeListener
         h5GUIs = new Vector();
 
         // load the view properties
-        ViewProperties.loadIcons(rootDir);
         props = new ViewProperties(rootDir);
-        try { props.load();} catch (Exception ex){;}
-        
+       try { props.load();} catch (Exception ex){;}
+      
         //recentFiles = ViewProperties.getMRF();
         currentDir = ViewProperties.getWorkDir();
         if (currentDir == null) {
@@ -405,11 +405,16 @@ HyperlinkListener, ChangeListener
         } else {
             d.width = (int)(0.9*(double)d.height);
         }
+        
+        // TEST
+        if (treeView.getClass().getName().startsWith("erdc")) {
+        	System.out.println("TEST ERDC: HDFView.createMainWindow()");
+            topSplitPane.setDividerLocation(500);
+            d.width = (int)(0.9*toolkit.getScreenSize().width);
+            d.height = (int)(d.width*0.618);
+        }
 
         splitPane.setDividerLocation(d.height-180);
-
-        //int x0 = Math.max(10, (int)(inset*d.width));
-        //int y0 = 10;//Math.max(10, (int)(inset*d.height));
         this.setLocation(x, y);
 
         try {
