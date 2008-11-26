@@ -39,6 +39,7 @@ import java.awt.Font;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import java.awt.event.*;
+
 import javax.swing.text.NumberFormatter;
 
 /**
@@ -248,9 +249,9 @@ implements ImageView, ActionListener
         valueField.setVisible(false);
 
         if (image == null) {
-            getImage();
+           getImage();
         }
-
+ 
         if (image == null) {
             viewer.showStatus("Loading image failed - "+dataset.getName());
             dataset = null;
@@ -744,7 +745,7 @@ implements ImageView, ActionListener
         catch (Throwable ex) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                ex.getMessage(),
+                ex,
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             return null;
@@ -770,7 +771,7 @@ implements ImageView, ActionListener
         boolean noPalette = false;
         boolean doAutoContrast = false;
         boolean isLocalFile = dataset.getFileFormat().exists();
-
+ 
         if (imagePalette == null) {
             noPalette = true;
             imagePalette = Tools.createGrayPalette();
@@ -791,7 +792,7 @@ implements ImageView, ActionListener
         
         int w = dataset.getWidth();
         int h = dataset.getHeight();
-
+ 
         if (isAutoContrastFailed) {
             // converts raw data to image data
             if (dataset.isDefaultImageOrder()) {
@@ -847,7 +848,6 @@ implements ImageView, ActionListener
         // data is unsigned short. Convert image byte data using auto-contrast image algorithm 
         boolean isUnsigned = dataset.isUnsigned();
 
-
         if (gainBias == null) { // calculate auto_gain only once
             gainBias = new double[2];
             minMaxGain = new double[2];
@@ -857,7 +857,7 @@ implements ImageView, ActionListener
          }
 
         autoGainData=Tools.autoContrastApply(data, autoGainData, gainBias, isUnsigned);
-
+ 
         if (autoGainData != null) {
             if ((imageByteData == null) || (imageByteData.length != Array.getLength(data))) {
                 imageByteData = new byte[Array.getLength(data)];

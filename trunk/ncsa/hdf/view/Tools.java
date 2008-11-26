@@ -970,14 +970,14 @@ public final class Tools
             (params.length<2)) {
             return -1;
         }
-    	
+
     	retval = autoContrastComputeMinMax(data, minmax);
-    	
-    	// force the min_max method so we can look at the target grids data sets
+
+     	// force the min_max method so we can look at the target grids data sets
     	if ( (retval < 0) || (minmax[1] - minmax[0] < 10) ) {
             retval = findMinMax(data, minmax, null);
         }
-    	
+   	
         if (retval < 0) {
             return -1;
         }
@@ -1308,7 +1308,7 @@ public final class Tools
     	if (retval < 0) {
             return retval;
         }
-    	
+  	
     	double min = avgstd[0] - 3.0*avgstd[1];
     	double max = avgstd[0] + 3.0*avgstd[1];
     	
@@ -1344,7 +1344,7 @@ public final class Tools
                     retval = -1;
                     break;
         } // switch (dname)
-    	
+   	
     	return retval;
     }
 
@@ -1498,7 +1498,7 @@ public final class Tools
         {
             case 'B': 
                 byte[] b = (byte[])data;
-                fill = ((byte[])fillValue)[0];
+                if (hasFillValue) fill = ((byte[])fillValue)[0];
                 for (int i=0; i<n; i++) {
                     if (hasFillValue && b[i] == fill) continue;
                     sum += b[i];
@@ -1513,7 +1513,7 @@ public final class Tools
                 break;
             case 'S':
                 short[] s = (short[])data;
-                fill = ((short[])fillValue)[0];
+                if (hasFillValue) fill = ((short[])fillValue)[0];
                 for (int i=0; i<n; i++) {
                     if (hasFillValue && s[i] == fill) continue;
                     sum += s[i];
@@ -1528,7 +1528,7 @@ public final class Tools
                 break;
             case 'I':
                 int[] ia = (int[])data;
-                fill = ((int[])fillValue)[0];
+                if (hasFillValue) fill = ((int[])fillValue)[0];
                 for (int i=0; i<n; i++) {
                     if (hasFillValue &&  ia[i] == fill) continue;
                     sum += ia[i];
@@ -1543,7 +1543,7 @@ public final class Tools
                 break;
             case 'J':
                 long[] l = (long[])data;
-                fill = ((long[])fillValue)[0];
+                if (hasFillValue) fill = ((long[])fillValue)[0];
                 for (int i=0; i<n; i++) {
                     if (hasFillValue &&  l[i] == fill) continue;
                     sum += l[i];
@@ -1559,7 +1559,7 @@ public final class Tools
                 break;
             case 'F':
                 float[] f = (float[])data;
-                fill = ((float[])fillValue)[0];
+                if (hasFillValue) fill = ((float[])fillValue)[0];
                 for (int i=0; i<n; i++) {
                     if (hasFillValue &&  f[i] == fill) continue;
                     sum += f[i];
@@ -1575,7 +1575,7 @@ public final class Tools
                 break;
             case 'D':
                 double[] d = (double[])data;
-                fill = ((double[])fillValue)[0];
+                if (hasFillValue) fill = ((double[])fillValue)[0];
                 for (int i=0; i<n; i++) {
                     if (hasFillValue &&  d[i] == fill) continue;
                     sum += d[i];

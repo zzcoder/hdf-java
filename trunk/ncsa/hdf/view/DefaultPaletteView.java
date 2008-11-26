@@ -17,6 +17,7 @@ package ncsa.hdf.view;
 import ncsa.hdf.object.*;
 
 import java.awt.event.*;
+
 import javax.swing.*;
 
 import java.awt.image.*;
@@ -32,6 +33,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.Graphics;
+import java.io.IOException;
 import java.util.Vector;
 
 /**
@@ -190,7 +192,7 @@ ActionListener, ItemListener
         JPanel valueP = new JPanel();
         valueP.setLayout(new GridLayout(1, 2));
         valueP.setBorder(new LineBorder(Color.GRAY));
-        JButton valueButton = new JButton("Show Value");
+        JButton valueButton = new JButton("Show Values");
         valueButton.setActionCommand("Show palette values");
         valueButton.addActionListener(this);
         valueP.add(choicePalette);
@@ -403,45 +405,66 @@ ActionListener, ItemListener
         private JTable valueTable;
         private DefaultTableModel valueTableModel;
         String rgbName = "Color";
+        String idxName = "Index";
+        private final boolean startEditing[] = {false};
 
         public PaletteValueTable(DefaultPaletteView owner)
         {
             super(owner);
-            String[] columnNames = {"Red", "Green", "Blue", rgbName};
+            String[] columnNames = {idxName, "Red", "Green", "Blue", rgbName};
             valueTableModel = new DefaultTableModel(columnNames, 256);
 
             valueTable = new JTable(valueTableModel)
             {
             	public static final long serialVersionUID = HObject.serialVersionUID;
 
-                int lastSelectedRow = -1;
-                int lastSelectedCol = -1;
-
                 public boolean isCellEditable(int row, int col)
                 {
-                    return (col < 3);
+                    return (col > 0 && col < 4);
                 }
 
                 public Object getValueAt(int row, int col)
                 {
-                    if (col <3) {
-                        return String.valueOf(paletteData[col][row]);
+                	if (startEditing[0])
+                		return "";
+                	
+                	if (col==0)
+                		return String.valueOf(row);
+                	else if (col <4) {
+                        return String.valueOf(paletteData[col-1][row]);
                     } else {
                         return "";
                     }
                 }
-
+                
+                public boolean editCellAt(int row, int column, java.util.EventObject e) 
+                {
+                	
+                    if (!isCellEditable(row, column)) {
+                        return super.editCellAt(row, column, e);
+                    }
+                    
+    				if (e instanceof KeyEvent) {
+    					KeyEvent ke = (KeyEvent)e;
+    					if (ke.getID()==KeyEvent.KEY_PRESSED) 
+    						startEditing[0] = true;
+    				}
+    				
+                    return super.editCellAt(row, column, e);
+                }
+                
                 public void editingStopped(ChangeEvent e)
                 {
                     int row = getEditingRow();
                     int col = getEditingColumn();
 
-                    if (col>2) {
+                    if (!isCellEditable(row, col)) {
                         return;
                     }
 
                     String oldValue = (String)getValueAt(row, col);
                     super.editingStopped(e);
+                    startEditing[0] = false;
 
                     Object source = e.getSource();
 
@@ -450,7 +473,7 @@ ActionListener, ItemListener
                         CellEditor editor = (CellEditor)source;
                         String newValue = (String)editor.getCellEditorValue();
                         setValueAt(oldValue, row, col); // set back to what it is
-                        updatePaletteValue(newValue, row, col);
+                        updatePaletteValue(newValue, row, col-1);
                     }
                 }
             };
@@ -463,9 +486,21 @@ ActionListener, ItemListener
                 public java.awt.Component getTableCellRendererComponent(JTable table,
                        Object value, boolean isSelected, boolean hasFocus, int row, int col)
                 {
-                    java.awt.Component comp = super.getTableCellRendererComponent(table,  value, isSelected, hasFocus, row, col);;
+                    java.awt.Component comp = super.getTableCellRendererComponent(table,  value, isSelected, hasFocus, row, col);
                     color = new Color(paletteData[0][row], paletteData[1][row], paletteData[2][row]);
                     comp.setBackground(color);
+                    return comp;
+                }
+            });
+            
+            valueTable.getColumn(idxName).setCellRenderer(new DefaultTableCellRenderer()
+            {
+            	public static final long serialVersionUID = HObject.serialVersionUID;
+                public java.awt.Component getTableCellRendererComponent(JTable table,
+                       Object value, boolean isSelected, boolean hasFocus, int row, int col)
+                {
+                    java.awt.Component comp = super.getTableCellRendererComponent(table,  value, isSelected, hasFocus, row, col);
+                    comp.setBackground(Color.LIGHT_GRAY);
                     return comp;
                 }
             });
@@ -489,7 +524,7 @@ ActionListener, ItemListener
             contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
             contentPane.add(scroller, BorderLayout.CENTER);
 
-            JButton button = new JButton("  Close  ");
+            JButton button = new JButton("  Ok  ");
             button.addActionListener(owner);
             button.setActionCommand("Hide palette values");
 
@@ -508,7 +543,23 @@ ActionListener, ItemListener
                 return;
             }
 
-            int value = Integer.parseInt(strValue);
+            int value = 0;
+            
+            try { 
+            	value = Integer.parseInt(strValue);
+            } catch (Exception ex) { 
+            	return;
+            }
+            
+            if (value < 0 || value > 255) {
+                JOptionPane.showMessageDialog(
+                this,
+                "Value is out of range [0, 255]\n",
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
             paletteData[col][row] = value;
             chartP.repaint();
             isPaletteChanged = true;

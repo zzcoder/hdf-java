@@ -17,6 +17,7 @@ package ncsa.hdf.view;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
+
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.MalformedURLException;
@@ -118,7 +119,7 @@ public class ViewProperties extends Properties
      */
     private static int start_members = 0; // 0 by default
 
-    private static Icon hdfIcon, h4Icon, h5Icon, largeHdfIcon,
+    private static ImageIcon hdfIcon, h4Icon, h5Icon, largeHdfIcon,
         blankIcon, helpIcon,
         fileopenIcon, filesaveIcon, filenewIcon, filecloseIcon,
         foldercloseIcon, folderopenIcon, foldercloseIconA, folderopenIconA,
@@ -127,7 +128,8 @@ public class ViewProperties extends Properties
         zoominIcon, zoomoutIcon, paletteIcon, chartIcon, brightIcon, autocontrastIcon,
         copyIcon, cutIcon, pasteIcon,
         previousIcon, nextIcon, firstIcon, lastIcon,
-        animationIcon, datatypeIcon, datatypeIconA, linkIcon;
+        animationIcon, datatypeIcon, datatypeIconA, linkIcon,
+        iconAPPS, iconURL, iconVIDEO, iconXLS, iconPDF, iconAUDIO;
 
     private static String propertyFile;
 
@@ -151,7 +153,7 @@ public class ViewProperties extends Properties
 
     /** a list of helpview module */
     private static Vector moduleListHelpView = new Vector(5);
-
+    
     /**
      * Creates a property list with given root directory of the HDFView.
      */
@@ -214,6 +216,14 @@ public class ViewProperties extends Properties
             extClassLoader = ClassLoader.getSystemClassLoader(); // default classloader
         }
 
+        // test only 
+        try { 
+        	//System.out.println("TEST ERDC: ViewProperties.loadExtClass()");
+        	String theName = "erdc.TreeViewERDC";
+        	Class cls = extClassLoader.loadClass(theName); 
+        	moduleListTreeView.add(theName);
+        }  catch (Exception ex) {;}
+        
         String rootPath = System.getProperty("hdfview.root");
         String dirname = rootPath+File.separator+"lib"+File.separator+"ext"+File.separator;
         File extdir = new File(dirname);
@@ -306,7 +316,9 @@ public class ViewProperties extends Properties
                     } // for (int j=0; j<interfaces.length; j++) {
                 } // if (interfaces != null) {
             } catch (Exception ex) {;}
-        }
+        } //for (int i=0; i<n; i++) 
+        
+        
         return extClassLoader;
     }
 
@@ -390,7 +402,15 @@ public class ViewProperties extends Properties
     public static Icon getChartIcon() { return chartIcon; }
 
     public static Icon getAnimationIcon() { return animationIcon; }
-
+    
+    public static ImageIcon getAppsIcon() { return iconAPPS; }
+    public static ImageIcon getUrlIcon() { return iconURL; }
+    public static ImageIcon getVideoIcon() { return iconVIDEO; }
+    public static ImageIcon getXlsIcon() { return iconXLS; }
+    public static ImageIcon getPdfIcon() { return iconPDF; }
+    public static ImageIcon getAudioIcon() { return iconAUDIO; }
+    
+    
     public static void loadIcons(String rootPath)
     {
         URL u = null;
@@ -669,6 +689,36 @@ public class ViewProperties extends Properties
                 animationIcon = new ImageIcon (u);
             }
         }
+        
+		try { 
+			u = classLoader.getResource("ncsa/hdf/view/icons/audio.gif");
+			iconAUDIO = new ImageIcon(u);
+		} catch (Exception ex) { iconAUDIO = null; }
+		
+		try { 
+			u = classLoader.getResource("ncsa/hdf/view/icons/xls.gif");
+			iconXLS = new ImageIcon(u);
+		} catch (Exception ex) { iconXLS = null; }
+
+		try { 
+			u = classLoader.getResource("ncsa/hdf/view/icons/pdf.gif");
+			iconPDF = new ImageIcon(u);
+		} catch (Exception ex) { iconPDF = null; }
+		
+		try { 
+			u = classLoader.getResource("ncsa/hdf/view/icons/apps.gif");
+			iconAPPS = new ImageIcon(u);
+		} catch (Exception ex) { iconAPPS = null; }
+		
+		try { 
+			u = classLoader.getResource("ncsa/hdf/view/icons/url.gif");
+			iconURL = new ImageIcon(u);
+		} catch (Exception ex) { iconURL = null; }
+
+		try { 
+			u = classLoader.getResource("ncsa/hdf/view/icons/video.gif");
+			iconVIDEO = new ImageIcon(u);
+		} catch (Exception ex) { iconVIDEO = null; }        
     }
 
     /** Load user properties from property file */

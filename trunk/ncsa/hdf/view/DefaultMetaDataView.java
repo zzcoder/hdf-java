@@ -293,7 +293,7 @@ implements ActionListener, MetaDataView
         topPanel.setLayout(new BorderLayout());
 
         JPanel lp = new JPanel();
-        lp.setLayout(new GridLayout(3,1));
+        lp.setLayout(new GridLayout(4,1));
 
         if (isRoot)
         {
@@ -308,28 +308,25 @@ implements ActionListener, MetaDataView
             lp.add(new JLabel("Type: "));
         }
 
-        /* See bug #926
+        /* bug #926 to remove the OID, put it back on Nov. 20, 2008, --PC */
         if (isH4) {
-            lp.add(new JLabel("Tag, Ref: "));
+            lp.add(new JLabel("Tag, Ref:        "));
         } else {
-            lp.add(new JLabel("Object ID: "));
+            lp.add(new JLabel("Object Ref:       "));
         }
-        */
 
         JPanel rp = new JPanel();
-        rp.setLayout(new GridLayout(3,1));
+        rp.setLayout(new GridLayout(4,1));
 
-        JTextField nameField = new JTextField(hObject.getName());
-        nameField.setEditable(false);
+        JLabel nameField = new JLabel(hObject.getName());
         rp.add(nameField);
 
-        JTextField pathField = new JTextField();
+        JLabel pathField = new JLabel();
         if (isRoot) {
             pathField.setText((new File(hObject.getFile())).getParent());
         } else {
             pathField.setText(hObject.getPath());
         }
-        pathField.setEditable(false);
         rp.add(pathField);
 
         String typeStr = "Unknown";
@@ -410,11 +407,10 @@ implements ActionListener, MetaDataView
             }
         }
 
-        JTextField typeField = new JTextField(typeStr);
-        typeField.setEditable(false);
+        JLabel typeField = new JLabel(typeStr);
         rp.add(typeField);
 
-        /* See bug #926
+        /* bug #926 to remove the OID, put it back on Nov. 20, 2008, --PC */
         String oidStr = null;
         long[] OID = hObject.getOID();
         if (OID != null)
@@ -424,10 +420,8 @@ implements ActionListener, MetaDataView
                 oidStr += ", "+ OID[i];
             }
         }
-        JTextField oidField = new JTextField(oidStr);
-        oidField.setEditable(false);
+        JLabel oidField = new JLabel(oidStr);
         rp.add(oidField);
-        */
 
         JPanel tmpP = new JPanel();
         tmpP.setLayout(new BorderLayout());
