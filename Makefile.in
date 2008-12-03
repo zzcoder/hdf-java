@@ -117,7 +117,7 @@ TESTPACKAGES = test.object
 .java.class:
 	$(JAVAC) -classpath $(CLASSPATH) $<
 
-all: natives packages
+all: natives packages do-examples
 
 just-hdf4: hdflib jhdf-packages
 
@@ -214,7 +214,7 @@ linktest:
 tests:
 	@if test -d "test"; then cd test; $(MAKE); fi
 
-examples:
+do-examples:
 	@if test -d "examples"; then cd examples; $(MAKE); fi
 
 clean-examples:
@@ -267,6 +267,8 @@ clean-docs:
 
 check: install $(TESTPACKAGES)
 	cd test; \
+	$(MAKE) check;
+	cd examples; \
 	$(MAKE) check;
 
 checklink: install linktest
@@ -435,7 +437,7 @@ uninstall-ug:
 	$(RM) -rf $(DOCDIR)/hdfview/UsersGuide/*
 	$(RM) -rf $(DOCDIR)/hdf-object/*
 
-distclean: clean-natives clean-classes clean-test clean-testlink
+distclean: clean-natives clean-classes clean-test clean-testlink clean-examples
 	$(RM) -f config.cache config.status config.log 
 	$(RM) -rf ./lib/@JAVATARG@
 	$(RM) -rf ./lib/jhdf.jar
@@ -461,6 +463,7 @@ distclean: clean-natives clean-classes clean-test clean-testlink
 	$(RM) -rf ./examples/groups/Makefile
 	$(RM) -rf ./examples/datasets/Makefile
 	$(RM) -rf ./examples/datatypes/Makefile
+	$(RM) -rf ./examples/datatypes/runExample.sh
 	$(RM) -rf ./Makefile
 
 #build_package:
