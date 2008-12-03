@@ -57,4 +57,3 @@ check: all
 clean:
 	$(RM) -f *.class
 	$(RM) -f *.hdf
-	$(RM) -f *.h5

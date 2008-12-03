@@ -4608,7 +4608,7 @@ fi
 else
 if test -d "./test"; then
 ##  Don't use H4toH5 (but do include some tests)
-OUTPUT_FILES="$OUTPUT_FILES test/linktest/Makefile test/linktest/testlink test/linktest/testh4link test/Makefile test/object/Makefile test/object/testh4file.sh test/object/testh5file.sh test/object/runtests.sh test/h5/TestHDF5.sh test/object/TestH5Object.sh test/object/TestH5Table.sh test/object/TestH5MemoryLeak.sh test/unittests/Makefile test/unittests/unittests.sh test/view/Makefile test/view/viewtest.sh examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile"
+OUTPUT_FILES="$OUTPUT_FILES test/linktest/Makefile test/linktest/testlink test/linktest/testh4link test/Makefile test/object/Makefile test/object/testh4file.sh test/object/testh5file.sh test/object/runtests.sh test/h5/TestHDF5.sh test/object/TestH5Object.sh test/object/TestH5Table.sh test/object/TestH5MemoryLeak.sh test/unittests/Makefile test/unittests/unittests.sh test/view/Makefile test/view/viewtest.sh examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile examples/runExample.sh"
 else
 ##  Don't use H4toH5 (no tests)
 OUTPUT_FILES="$OUTPUT_FILES"
