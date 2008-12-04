@@ -21,6 +21,8 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.util.Arrays;
 
+import datatypes.H5Ex_T_Compound.Sensor_Datatype;
+
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
@@ -271,9 +273,10 @@ public class H5Ex_T_CompoundAttribute {
 			baos.close();
 			dset_data = baos.toByteArray();
 
-			byte[] write_data = Arrays.copyOfRange(dset_data,
-					Sensor_Datatype.MAGICNUMBER, dset_data.length);// new
-																												 // byte[dset_data.length
+			byte[] write_data = new byte[dset_data.length-Sensor_Datatype.MAGICNUMBER];
+			for(int indx=0; indx<dset_data.length-Sensor_Datatype.MAGICNUMBER;indx++)
+				write_data[indx] = dset_data[indx+Sensor_Datatype.MAGICNUMBER];
+
 			if ((attribute_id >= 0) && (memtype_id >= 0))
 				H5.H5Awrite(attribute_id, memtype_id, write_data);
 		}
