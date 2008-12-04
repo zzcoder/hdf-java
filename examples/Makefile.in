@@ -38,7 +38,6 @@ clean:
 	$(RM) *.h5;
 	$(RM) h5ex_d_extern.data;
 	$(RM) *.out;
-	$(RM) *.sh;
 
 run-intro:
 	@if ./runExample.sh intro.H5_CreateDataset; then \

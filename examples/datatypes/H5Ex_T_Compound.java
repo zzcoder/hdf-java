@@ -253,8 +253,9 @@ public class H5Ex_T_Compound {
 			oout.close();
 			baos.close();
 			dset_data = baos.toByteArray();
-			byte[] write_data = Arrays.copyOfRange(dset_data,
-					Sensor_Datatype.MAGICNUMBER, dset_data.length);
+			byte[] write_data = new byte[dset_data.length-Sensor_Datatype.MAGICNUMBER];
+			for(int indx=0; indx<dset_data.length-Sensor_Datatype.MAGICNUMBER;indx++)
+				write_data[indx] = dset_data[indx+Sensor_Datatype.MAGICNUMBER];
 
 			if ((dataset_id >= 0) && (memtype_id >= 0))
 				H5.H5Dwrite(dataset_id, memtype_id, HDF5Constants.H5S_ALL,
