@@ -411,7 +411,7 @@ uninstall-jhdfobj:
 
 uninstall-jhdfview: 
 	$(RM) -f $(JH45INSTALLDIR)/lib/jhdfview.jar;
-	$(RM) -f $(UGDIR)
+	$(RM) -rf $(UGDIR)
 
 install-docs: install-javadocs install-ug
 
