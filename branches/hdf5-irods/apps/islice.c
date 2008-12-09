@@ -941,7 +941,7 @@ int main(int argc, char* argv[])
     t1 = time(NULL);
 
 
-    printf("Time to load data = %d\n", (t1-t0));
+    printf("Total time for loading data (seconds) = %d\n\n", (t1-t0));
 
 
 #ifdef JPEG
