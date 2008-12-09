@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
 
 #ifndef windows_platform
 #include <unistd.h>
@@ -459,7 +460,7 @@ get_slice(const char *infile, int pos, const char *var,
             h5dset = NULL;
     }
 
-printf("\ndataset: %s\n", var);
+    printf("\nLoading dataset %s .", var);
 
     if (h5dset == NULL)
         PRINT_ERROR("Failed to open dataset.");
@@ -574,6 +575,8 @@ printf("\ndataset: %s\n", var);
         N1r = N1b * rebin_factor;
         N2r = N2b * rebin_factor;
     
+        printf(".");
+
         start[0] = b;
         h5dset->opID = H5DATASET_OP_READ;
         ret_val = h5ObjRequest(conn, h5dset, H5OBJECT_DATASET);
@@ -640,6 +643,7 @@ printf("\ndataset: %s\n", var);
                 break;
         } /* switch (pos) */
     } /* for (b = 0; b < tot_blocks; b++) */
+    puts("\n");
 
     sizes[0] = N1;
     sizes[1] = N2;
@@ -891,6 +895,7 @@ int main(int argc, char* argv[])
     int    i, pos=0, dims[2];
     char   var[VAR_LENGTH];
     float  coor=0.0, *slice=NULL;
+    time_t t0, t1;
     int ret_val = 0;
 
     /*
@@ -928,13 +933,19 @@ int main(int argc, char* argv[])
     trim(infile, NAME_LENGTH);
     trim(var, 5);
 
+    t0 = time(NULL);
+
     if ( (slice=get_slice(infile, pos, var, coor, dims)) ) {
         write_float(infile, outfile, pos, var, coor, dims, slice);
-
-        /* write data into an image file */
     }
+    t1 = time(NULL);
+
+
+    printf("Time to load data = %d\n", (t1-t0));
+
 
 #ifdef JPEG
+    /* write data into an image file */
     if (slice)
         write_jpeg(infile, jpgfile, pos, var, coor, dims, slice, palfile);
 #endif
