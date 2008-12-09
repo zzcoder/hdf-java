@@ -575,7 +575,7 @@ get_slice(const char *infile, int pos, const char *var,
         N1r = N1b * rebin_factor;
         N2r = N2b * rebin_factor;
     
-        printf(".");
+        printf(".");fflush(stdout);
 
         start[0] = b;
         h5dset->opID = H5DATASET_OP_READ;
