@@ -1051,8 +1051,19 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter
         return -1;
     }
 
-    status = H5Pget_filter((hid_t)plist, (int)filter_number, (unsigned int *)flagsArray,
+	{
+		/* direct cast (size_t *)cd_nelmtsArray fails on 64-bit environment, see bug #1369
+		status = H5Pget_filter((hid_t)plist, (int)filter_number, (unsigned int *)flagsArray,
           (size_t *)cd_nelmtsArray, (unsigned int *)cd_valuesArray, (size_t)namelen, filter);
+	    */
+		int cd_nelmts_temp = *(cd_nelmtsArray);
+		size_t cd_nelmts_t = cd_nelmts_temp;
+
+		status = H5Pget_filter((hid_t)plist, (int)filter_number, 
+			(unsigned int *)flagsArray, &cd_nelmts_t, (unsigned int *)cd_valuesArray,
+			(size_t)namelen, filter);
+		*cd_nelmtsArray = cd_nelmts_t;
+	}
 
     if (status < 0)
     {

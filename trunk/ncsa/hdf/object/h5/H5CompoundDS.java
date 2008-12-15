@@ -323,7 +323,7 @@ public class H5CompoundDS extends CompoundDS
                  int comp_tid=-1;
                  int compInfo[] = {member_class, member_size, 0};
                  try {
-                    comp_tid = createCompoundFieldType(atom_tid, member_name, compInfo);                     
+                    comp_tid = createCompoundFieldType(atom_tid, member_name, compInfo);  
                     try { 
                         // See BUG#951 isVL = H5.H5Tdetect_class(atom_tid, HDF5Constants.H5T_VLEN); 
                         isVL = H5.H5Tis_variable_str(atom_tid);
@@ -1320,6 +1320,7 @@ public class H5CompoundDS extends CompoundDS
             }  catch (Exception ex2) {}
             
             member_size = H5.H5Tget_size(member_tid);
+
             // construct nested compound structure with a single field
             String theName = member_name;
             tmp_tid1 = H5.H5Tcopy(arrayType);
