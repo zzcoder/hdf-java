@@ -12,6 +12,8 @@
 package ncsa.hdf.srb;
 
 import java.util.*;
+
+import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.object.*;
 
 public class H5SrbScalarDS extends ScalarDS
@@ -126,6 +128,10 @@ public class H5SrbScalarDS extends ScalarDS
             for (int i=0; i<rank; i++) {
                 selectedStride[i] = 1;
             }
+        }
+        
+        if (datatype != null) {
+        	isText = (datatype.getDatatypeClass() == Datatype.CLASS_STRING);
         }
 
         resetSelection();

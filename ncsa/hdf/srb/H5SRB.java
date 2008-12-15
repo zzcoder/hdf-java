@@ -78,7 +78,7 @@ public class H5SRB {
         srvInfo[12] = rodsAuthFileName 
         srvInfo[13] = rodsDebug 
      */
-    public static String[] getServerInfo() throws Exception
+    public static String[] getServerInfo() throws Throwable
     {
         String srvInfo[] = new String[14];
 
@@ -95,7 +95,7 @@ public class H5SRB {
     	return isIRODSSupported;
     }
     
-    private synchronized static native void _getServerInfo(String srvInfo[]) throws Exception;
+    private synchronized static native void _getServerInfo(String srvInfo[]) throws Throwable;
   
     
     /**

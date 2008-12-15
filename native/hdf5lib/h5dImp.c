@@ -878,10 +878,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1double
     jdouble *buffP;
     jboolean isCopy;
 
-    if ( buf == NULL ) {
+	if ( buf == NULL ) {
         h5nullArgument( env, "H5Dread:  buf is NULL");
         return -1;
     }
+
 #ifdef __cplusplus
     buffP = env->GetDoubleArrayElements(buf,&isCopy);
 #else
@@ -891,7 +892,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1double
         h5JNIFatalError( env, "H5Dread:  buf not pinned");
         return -1;
     }
-
     status = H5Dread((hid_t)dataset_id, (hid_t)mem_type_id, (hid_t)mem_space_id,
         (hid_t)file_space_id, (hid_t)xfer_plist_id, buffP);
 

@@ -126,7 +126,7 @@ implements ActionListener
                     H5SRB.callServerInit(dsd.getPassword());
                     srvInfo = H5SRB.getServerInfo();
                     remoteHomeDir = srvInfo[5];
-                } catch (Exception ex2) { ex2.printStackTrace();}
+                } catch (Throwable ex2) { ex2.printStackTrace();}
             }
         }
 
