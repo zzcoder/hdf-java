@@ -32,7 +32,7 @@ export LD_LIBRARY_PATH
 export DYLD_LIBRARY_PATH
 
 @JAVA@ -Djava.library.path=$LD_LIBRARY_PATH "$1" > "$1".out
-if diff -q "$1".out testfiles/"$1".txt; 
+if diff "$1".out testfiles/"$1".txt > /dev/nul; 
 then exit 0
 else exit 1
 fi
