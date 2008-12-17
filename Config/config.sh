@@ -6,16 +6,17 @@
 EXTRA_FLAGS=
 
 ############################################################
-#                     linux32 (kagiso)                     #
+#                     linux32 (jam)                        #
 ############################################################
 #INSTDIR=/mnt/scr1/xcao/hdf_java/bin/linux32
-#JAVAINC=/usr/java/jdk1.5.0_07/include
-#JAVALIB=/usr/java/jdk1.5.0_07/jre/lib
+#JAVAINC=/usr/java/jdk-106/jdk/include
+#JAVALIB=/usr/java/jdk-106/jdk/jre/lib
 #HDF4=/mnt/scr1/xcao/hdf_java/lib/linux32/hdf4
 #HDF5=/mnt/scr1/xcao/hdf_java/lib/linux32/hdf5
 #JPEG=/mnt/scr1/xcao/hdf_java/lib/linux32/jpeg
 #SZIP=/mnt/scr1/xcao/hdf_java/lib/linux32/szip
 #ZLIB=/mnt/scr1/xcao/hdf_java/lib/linux32/zlib
+
 
 ############################################################
 #                     solaris32 (linew)                    #
@@ -52,6 +53,8 @@ EXTRA_FLAGS=
 #JAVABIN=/usr/jdk/instances/jdk1.5.0/bin/sparcv9
 #HDF4=/mnt/scr1/xcao/hdf_java/lib/solaris64/hdf4
 #HDF5=/mnt/scr1/xcao/hdf_java/lib/solaris64/hdf5
+#HDF5 1.8
+#HDF5=/mnt/scr1/xcao/hdf5_1_8/build/sol64
 #JPEG=/mnt/scr1/xcao/hdf_java/lib/solaris64/jpeg
 #SZIP=/mnt/scr1/xcao/hdf_java/lib/solaris64/szip
 #ZLIB=/mnt/scr1/xcao/hdf_java/lib/solaris64/zlib
