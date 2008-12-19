@@ -1090,15 +1090,18 @@ public abstract class Dataset extends HObject
         }
 
         int n = bytes.length/length;
-        String bigstr = new String(bytes);
+        //String bigstr = new String(bytes);
         String[] strArray = new String[n];
         String str = null;
         int idx = 0, offset=0;
         for (int i=0; i<n; i++) {
-            //str = new String(bytes, i*length, length)
+            str = new String(bytes, i*length, length);
             // bigstr.substring uses less memory space
-            offset = i*length;
-            str = bigstr.substring(offset, offset+length);
+            // NOTE: bigstr does not work on linus if bytes.length is very large
+            //       see bug 1091
+            //offset = i*length;
+            //str = bigstr.substring(offset, offset+length);
+            
             idx = str.indexOf('\0');
             if (idx > 0) {
                 str = str.substring(0, idx);

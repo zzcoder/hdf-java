@@ -18,6 +18,15 @@ import ncsa.hdf.object.*;
 
 import javax.swing.*;
 
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
@@ -52,7 +61,7 @@ import java.awt.Font;
  */
 
 public class HDFView extends JFrame implements ViewManager, ActionListener, 
-HyperlinkListener, ChangeListener 
+HyperlinkListener, ChangeListener, DropTargetListener
 {
 	public static final long serialVersionUID = HObject.serialVersionUID;
 
@@ -287,6 +296,9 @@ HyperlinkListener, ChangeListener
         }
 
         createMainWindow(width, height, x, y);
+        
+        /* add support for drag and drop file */
+        new DropTarget(this, this) ;
 
         int nfiles = flist.size();
 
@@ -377,7 +389,6 @@ HyperlinkListener, ChangeListener
             treeScroller,
             contentScroller);
         topSplitPane.setDividerLocation(200);
-
 
         infoTabbedPane.addTab("Log Info", new JScrollPane(statusArea));
         infoTabbedPane.addTab("Metadata ", new JScrollPane(attributeArea));
@@ -1619,6 +1630,76 @@ HyperlinkListener, ChangeListener
                 showMetaData(treeView.getCurrentObject());
             }
         }
+    }
+    
+    public void dragEnter(DropTargetDragEvent evt)
+    {
+    }
+
+    public void drop(DropTargetDropEvent evt)
+    {
+        try {
+            final Transferable tr = evt.getTransferable();
+
+            if (tr.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+                evt.acceptDrop(DnDConstants.ACTION_COPY);
+
+                final List fileList = (List) tr.getTransferData(DataFlavor.javaFileListFlavor);
+                int n = fileList.size();
+                for (int i=0; i<n; i++) {
+                	File file = (File)fileList.get(i);
+                	if (file.isDirectory())
+                		continue;
+
+                	String filename = file.getAbsolutePath();
+                	
+                    currentFile = filename;
+                    try {
+                        treeView.openFile(filename, FileFormat.WRITE);
+                    } catch (Throwable ex)
+                    {
+                        try {
+                            treeView.openFile(filename, FileFormat.READ);
+                        } catch (Throwable ex2)
+                        {
+                            String msg = "Failed to open file "+filename+"\n"+ex2;
+                            toolkit.beep();
+                            JOptionPane.showMessageDialog( this, msg, getTitle(), JOptionPane.ERROR_MESSAGE);
+                            continue;
+                        }
+                    }
+                    
+                    try {
+                        urlBar.removeItem(filename);
+                        urlBar.insertItemAt(filename, 0);
+                        urlBar.setSelectedIndex(0);
+                    } catch (Exception ex ) {}
+                    
+                }
+                evt.getDropTargetContext().dropComplete(true);
+            }
+            else {
+                evt.rejectDrop();
+            }
+        }
+        catch (final IOException io) {
+            evt.rejectDrop();
+        }
+        catch (final UnsupportedFlavorException ufe) {
+            evt.rejectDrop();
+        }
+    }
+
+    public void dragExit(DropTargetEvent evt)
+    {
+    }
+
+    public void dropActionChanged(DropTargetDragEvent evt)
+    {
+    }
+
+    public void dragOver(DropTargetDragEvent dtde)
+    {
     }
 
     public void dispose()

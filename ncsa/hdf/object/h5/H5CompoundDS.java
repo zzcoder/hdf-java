@@ -345,11 +345,17 @@ public class H5CompoundDS extends CompoundDS
                 } finally {
                     try { H5.H5Tclose(comp_tid); } catch (Exception ex2) {}
                 }
-
+                
+				if (member_class == HDF5Constants.H5T_ARRAY) {
+					int tmptid = H5.H5Tget_super(atom_tid);
+					member_class = H5.H5Tget_class(tmptid);
+					try { H5.H5Tclose(tmptid); } catch (Exception ex) {}
+				}
+                
                 if (!isVL)
                 {
                     if ((member_class == HDF5Constants.H5T_STRING) && convertByteToString) {
-                        member_data = byteToString((byte[])member_data, member_size);
+                        member_data = byteToString((byte[])member_data, member_size/memberOrders[i]);
                     }
                     else if (member_class == HDF5Constants.H5T_REFERENCE) {
                         member_data = HDFNativeData.byteToLong((byte[])member_data);
@@ -367,7 +373,7 @@ public class H5CompoundDS extends CompoundDS
                         } catch (Exception ex) {}
                     }
                 }
-
+                
                 list.add(member_data);
             } // end of for (int i=0; i<num_members; i++)
 
@@ -959,7 +965,7 @@ public class H5CompoundDS extends CompoundDS
                     tmptid = H5.H5Tget_super(mtype);
                     int tmpclass = H5.H5Tget_class(tmptid);
 
-                    // cannot deal with ARRAY of COMPOUND or ARRAY
+                    // cannot deal with ARRAY of COMPOUND or ARRAY of ARRAY
                     // support only ARRAY of atomic types
                     if ((tmpclass == HDF5Constants.H5T_COMPOUND) ||
                         (tmpclass == HDF5Constants.H5T_ARRAY)) {

@@ -795,7 +795,7 @@ public class H5Datatype extends Datatype
         } else {
             description = "Unknown";
         }
-
+        
         return description;
     }
 
