@@ -306,13 +306,13 @@ implements ActionListener, MetaDataView
             lp.add(new JLabel("Name: "));
             lp.add(new JLabel("Path: "));
             lp.add(new JLabel("Type: "));
-        }
-
-        /* bug #926 to remove the OID, put it back on Nov. 20, 2008, --PC */
-        if (isH4) {
-            lp.add(new JLabel("Tag, Ref:        "));
-        } else {
-            lp.add(new JLabel("Object Ref:       "));
+            
+            /* bug #926 to remove the OID, put it back on Nov. 20, 2008, --PC */
+            if (isH4) {
+                lp.add(new JLabel("Tag, Ref:        "));
+            } else {
+                lp.add(new JLabel("Object Ref:       "));
+            }
         }
 
         JPanel rp = new JPanel();
@@ -420,9 +420,12 @@ implements ActionListener, MetaDataView
                 oidStr += ", "+ OID[i];
             }
         }
-        JLabel oidField = new JLabel(oidStr);
-        rp.add(oidField);
-
+        
+        if (!isRoot) {
+            JLabel oidField = new JLabel(oidStr);
+            rp.add(oidField);
+        }
+ 
         JPanel tmpP = new JPanel();
         tmpP.setLayout(new BorderLayout());
         tmpP.add("West", lp);
@@ -438,7 +441,7 @@ implements ActionListener, MetaDataView
         } else if (hObject instanceof Dataset) {
             infoPanel= createDatasetInfoPanel((Dataset)hObject);
         } else if (hObject instanceof Datatype) {
-            infoPanel= createDatatypeInfoPanel((Datatype)hObject);
+            infoPanel= createNamedDatatypeInfoPanel((Datatype)hObject);
         }
 
         panel.add(topPanel, BorderLayout.NORTH);
@@ -510,7 +513,7 @@ implements ActionListener, MetaDataView
         return panel;
     }
 
-    private JPanel createDatatypeInfoPanel(Datatype t)
+    private JPanel createNamedDatatypeInfoPanel(Datatype t)
     {
         JPanel panel = new JPanel();
         panel.setLayout (new BorderLayout());
@@ -642,7 +645,11 @@ implements ActionListener, MetaDataView
                     rowData[i][0] = names[i];
                     int mDims[] = compound.getMemeberDims(i);
                     if (mDims == null) {
-                        rowData[i][2] = String.valueOf(orders[i]);
+                    	rowData[i][2] = String.valueOf(orders[i]);
+                    	
+                    	if (isH4 && types[i].getDatatypeClass()==Datatype.CLASS_STRING) {
+                    		rowData[i][2] = String.valueOf(types[i].getDatatypeSize());
+                    	}
                     } else {
                         String mStr = String.valueOf(mDims[0]);
                         int m = mDims.length;

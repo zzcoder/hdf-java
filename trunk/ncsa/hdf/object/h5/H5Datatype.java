@@ -418,7 +418,11 @@ public class H5Datatype extends Datatype
                     H5.H5Tset_strpad(tid, HDF5Constants.H5T_STR_NULLPAD);
                     break;
                 case CLASS_REFERENCE:
-                    tid = H5.H5Tcopy(HDF5Constants.H5T_STD_REF_OBJ);
+                	if (datatypeSize > H5.H5Tget_size(HDF5Constants.H5T_STD_REF_OBJ)) {
+                        tid = H5.H5Tcopy(HDF5Constants.H5T_STD_REF_DSETREG);
+                	} else {
+                        tid = H5.H5Tcopy(HDF5Constants.H5T_STD_REF_OBJ);
+                	}
                     break;
             } // switch (tclass)
         } catch (Exception ex) { tid = -1;}
