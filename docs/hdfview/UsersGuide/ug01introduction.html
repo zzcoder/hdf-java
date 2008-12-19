@@ -314,7 +314,7 @@ to display.</li>
 </ul>
 
 <h2>
-<a NAME="ug01limitations"></a>1.3 Limitations</h2>
+<a NAME="ug01limitations"></a>1.3 Limitations / Known Problems</h2>
 
 <strong>The current implementation of HDFView has the following limitations.</strong>
 <ul class="ul">
@@ -330,6 +330,10 @@ color image. It does not support other color models such as CMYK and HSV.</li>
 the limitations of the Java virtual machine.</li>
 <li>HDFView is implemented in Java<sup><font size=-2>TM</font></sup> 2 Platform.
 It builds and runs on jdk1.5.x. It does not build on jdk1.4.x or earlier version.</li>
+<li> HDView cannot modify compressed HDF4 SDS if rank > 2. When SDS has more than 2 
+dimensions, HDFview reads and displays only a hyperslab (say first plane). If user 
+tries to modify a value and save the file, new data is not saved because HDF4 
+cannot do partial I/O on a compressed datasets. It can only overwrite the whole dataset</li>
 </ul>
 
 <h2>
