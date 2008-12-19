@@ -582,7 +582,11 @@ public class H5ScalarDS extends ScalarDS
             
             if ( (originalBuf ==null) || isText || isREF ||
                 ((originalBuf!=null) && (lsize[0] !=nPoints))) {
-            	theData = H5Datatype.allocateArray(tid, (int)lsize[0]);            	
+            	try {
+                	theData = H5Datatype.allocateArray(tid, (int)lsize[0]);            	
+            	} catch (OutOfMemoryError err) {
+            		throw new HDF5Exception("Out Of Memory.");
+            	}
             } else {
                 theData = originalBuf; // reuse the buffer if the size is the same
             }
@@ -607,6 +611,7 @@ public class H5ScalarDS extends ScalarDS
                     }
                 }
             } // if (theData != null)
+            
         } finally {
             try { H5.H5Sclose(spaceIDs[0]); } catch (Exception ex) {}
             try { H5.H5Sclose(spaceIDs[1]); } catch (Exception ex) {}

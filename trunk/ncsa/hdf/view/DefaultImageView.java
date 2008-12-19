@@ -969,9 +969,9 @@ implements ImageView, ActionListener
             return;
         }
 
-        double data[][] = new double[1][256];
+        double chartData[][] = new double[1][256];
         for (int i=0; i<256; i++) {
-            data[0][i] = 0.0;
+        	chartData[0][i] = 0.0;
         }
 
         int w = dataset.getWidth();
@@ -988,20 +988,24 @@ implements ImageView, ActionListener
                 if (arrayIndex < 0) {
                     arrayIndex += 256;
                 }
-                data[0][arrayIndex] += 1.0;
+                chartData[0][arrayIndex] += 1.0;
             }
         }
 
-        String title = "Histogram - " +
-            dataset.getPath()+dataset.getName() +
-            " - by pixel index";
-        double[] xRange = {0, 255};
+        /*
+        double[] xRange = dataset.getImageDataRange();
+        if (xRange == null || xRange[0] == xRange[1]) {
+        	xRange = new double[2];
+        	Tools.findMinMax(data, xRange, null);
+        }
+        */
 
+        double[] xRange = {0, 255};
         Chart cv = new Chart(
             (JFrame)viewer,
-            title,
+            "Histogram - " + dataset.getPath()+dataset.getName() + " - by pixel index",
             Chart.HISTOGRAM,
-            data,
+            chartData,
             xRange,
             null);
         cv.setVisible(true);

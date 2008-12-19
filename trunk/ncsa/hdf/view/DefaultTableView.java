@@ -48,7 +48,7 @@ import java.awt.Point;
 public class DefaultTableView extends JInternalFrame
 implements TableView, ActionListener
 {
-	public static final long serialVersionUID = HObject.serialVersionUID;
+	private static final long serialVersionUID = HObject.serialVersionUID;
 
     /**
      * The main HDFView.
@@ -189,7 +189,7 @@ implements TableView, ActionListener
             dataset = null;
             return;
         }
-
+        
         ColumnHeader columnHeaders = new ColumnHeader(table);
         table.setTableHeader(columnHeaders);
         table.setCellSelectionEnabled(true);
@@ -208,7 +208,7 @@ implements TableView, ActionListener
         viewp.add( rowHeaders );
         viewp.setPreferredSize( rowHeaders.getPreferredSize() );
         scrollingTable.setRowHeader( viewp );
-        
+         
         cellLabel = new JLabel("");
         cellLabel.setBorder(new EtchedBorder(EtchedBorder.LOWERED) );
         Dimension dim = cellLabel.getPreferredSize();
@@ -230,6 +230,7 @@ implements TableView, ActionListener
         valuePane.setLayout(new BorderLayout());
         valuePane.add(cellLabel, BorderLayout.WEST);
         valuePane.add (scrollingcellValue, BorderLayout.CENTER);
+       
 
         JSplitPane splitPane = new JSplitPane(
             JSplitPane.VERTICAL_SPLIT,
@@ -1203,9 +1204,11 @@ implements TableView, ActionListener
             }
         }
 
-        String columnNames[] = new String[cols];
-        long[] startArray = dataset.getStartDims();
-        long[] strideArray = dataset.getStride();
+        final String columnNames[] = new String[cols];
+        final int rowCount = rows;
+        final int colCount = cols;
+        final long[] startArray = dataset.getStartDims();
+        final long[] strideArray = dataset.getStride();
         int[] selectedIndex = dataset.getSelectedIndex();
         final int rowStart = (int)startArray[selectedIndex[0]];
         final int rowStride = (int)strideArray[selectedIndex[0]];
@@ -1223,15 +1226,27 @@ implements TableView, ActionListener
             columnNames[i] = String.valueOf(start+i*stride);
         }
 
-        DefaultTableModel tableModel =  new DefaultTableModel(columnNames, rows)
+        AbstractTableModel tm =  new AbstractTableModel()
         {
-        	public static final long serialVersionUID = HObject.serialVersionUID;
+        	private static final long serialVersionUID = HObject.serialVersionUID;
             private final StringBuffer stringBuffer = new StringBuffer();
             private final Datatype dtype = dataset.getDatatype();
             private final Datatype btype = dtype.getBasetype();
             private final boolean isArray = (dtype.getDatatypeClass()==Datatype.CLASS_ARRAY);
- 
-            private Object theValue = null;
+            Object theValue;
+            
+            public int getColumnCount() {
+            	return columnNames.length;
+            }
+
+            public int getRowCount() {
+            	return rowCount;
+            }
+
+            public String getColumnName(int col) {
+            	return columnNames[col];
+            }
+
             public Object getValueAt(int row, int column)
             {
             	if (startEditing[0])
@@ -1241,7 +1256,7 @@ implements TableView, ActionListener
                     // ARRAY dataset
                     int arraySize = dtype.getDatatypeSize()/btype.getDatatypeSize();
                     stringBuffer.setLength(0); // clear the old string
-                    int i0 = (row*getColumnCount()+column)*arraySize;
+                    int i0 = (row*colCount+column)*arraySize;
                     int i1 = i0+arraySize;
 
                     if (isDisplayTypeChar) {
@@ -1260,34 +1275,34 @@ implements TableView, ActionListener
                     theValue = stringBuffer;
                } else {
                     if (isDataTransposed) {
-                        theValue = Array.get(dataValue, column*getRowCount()+row);
+                        theValue = Array.get(dataValue, column*rowCount+row);
                     } else {
-                        theValue = Array.get(dataValue, row*getColumnCount()+column);
+                        theValue = Array.get(dataValue, row*colCount+column);
                     }
                     theValue = numberFormat.format(theValue);
                 }
                 return theValue;
             } // getValueAt(int row, int column)
         };
-
-        theTable = new JTable(tableModel)
+        
+        theTable = new JTable(tm)
         {
-        	public static final long serialVersionUID = HObject.serialVersionUID;
-            private final Datatype dtype = dataset.getDatatype();
-            private final boolean isArray = (dtype.getDatatypeClass()==Datatype.CLASS_ARRAY);
+        	private static final long serialVersionUID = HObject.serialVersionUID;
+        	private final Datatype dtype = dataset.getDatatype();
+        	private final boolean isArray = (dtype.getDatatypeClass()==Datatype.CLASS_ARRAY);
 
-            public boolean isCellEditable( int row, int col )
-            {
-                if (isReadOnly || isDisplayTypeChar || isArray) {
-                    return false;
-                } else {
-                    return true;
-                }
-            }
+        	public boolean isCellEditable( int row, int col )
+        	{
+        		if (isReadOnly || isDisplayTypeChar || isArray) {
+        			return false;
+        		} else {
+        			return true;
+        		}
+        	}
 
-            public boolean editCellAt(int row, int column, java.util.EventObject e) 
-            {
-            	
+        	public boolean editCellAt(int row, int column, java.util.EventObject e) 
+        	{
+
                 if (!isCellEditable(row, column)) {
                     return super.editCellAt(row, column, e);
                 }
@@ -1390,7 +1405,7 @@ implements TableView, ActionListener
             return null;
         }
 
-        int rows = d.getHeight();
+        final int rows = d.getHeight();
         int cols = d.getSelectedMemberCount();
         String[] columnNames = new String[cols];
 
@@ -1423,9 +1438,10 @@ implements TableView, ActionListener
             }
         }
 
-        DefaultTableModel tableModel =  new DefaultTableModel( subColumnNames, rows)
+        final String[] allColumnNames = subColumnNames;
+        AbstractTableModel tm =  new AbstractTableModel()
         {
-            public static final long serialVersionUID = HObject.serialVersionUID;
+            private static final long serialVersionUID = HObject.serialVersionUID;
 
             List list = (List)dataValue;
             CompoundDS compound = (CompoundDS)dataset;
@@ -1435,7 +1451,19 @@ implements TableView, ActionListener
             int nFields = list.size();
             int nRows = getRowCount();
             int nSubColumns = (nFields>0) ? getColumnCount()/nFields : 0;
+            
+            public int getColumnCount() {
+            	return allColumnNames.length;
+            }
 
+            public int getRowCount() {
+            	return rows;
+            }
+
+            public String getColumnName(int col) {
+            	return allColumnNames[col];
+            }
+            
             public Object getValueAt(int row, int col)
             {
             	if (startEditing[0])
@@ -1489,6 +1517,7 @@ implements TableView, ActionListener
                 } else
                 {
                     // member is an ARRAY datatype
+
                     for (int i=0; i<orders[fieldIdx]; i++) {
                         stringBuffer.append(Array.get(colValue, rowIdx+i));
                         stringBuffer.append(", ");
@@ -1499,9 +1528,9 @@ implements TableView, ActionListener
             }
         };
 
-        theTable = new JTable(tableModel)
+        theTable = new JTable(tm)
         {
-            public static final long serialVersionUID = HObject.serialVersionUID;
+            private static final long serialVersionUID = HObject.serialVersionUID;
 
             int lastSelectedRow = -1;
             int lastSelectedColumn = -1;
@@ -2313,7 +2342,7 @@ implements TableView, ActionListener
 
     private class LineplotOption extends JDialog implements ActionListener, ItemListener
     {
-    	public static final long serialVersionUID = HObject.serialVersionUID;
+    	private static final long serialVersionUID = HObject.serialVersionUID;
 
         public static final int NO_PLOT = -1;
         public static final int ROW_PLOT = 0;
@@ -2453,7 +2482,7 @@ implements TableView, ActionListener
 
     private class ColumnHeader extends JTableHeader
     {
-    	public static final long serialVersionUID = HObject.serialVersionUID;
+    	private static final long serialVersionUID = HObject.serialVersionUID;
 
         private int currentColumnIndex = -1;
         private int lastColumnIndex = -1;
@@ -2542,7 +2571,7 @@ implements TableView, ActionListener
     /** RowHeader defines the row header component of the Spreadsheet. */
     private class RowHeader extends JTable
     {
-    	public static final long serialVersionUID = HObject.serialVersionUID;
+    	private static final long serialVersionUID = HObject.serialVersionUID;
 
         private int currentRowIndex = -1;
         private int lastRowIndex = -1;
@@ -2552,23 +2581,36 @@ implements TableView, ActionListener
         {
             // Create a JTable with the same number of rows as
             // the parent table and one column.
-            super( pTable.getRowCount(), 1 );
+            //super( pTable.getRowCount(), 1 );
 
-            long[] startArray = dset.getStartDims();
-            long[] strideArray = dset.getStride();
-            int[] selectedIndex = dset.getSelectedIndex();
-            int start = (int)startArray[selectedIndex[0]];
-            int stride = (int)strideArray[selectedIndex[0]];
-
-            // Store the parent table.
+            final long[] startArray = dset.getStartDims();
+            final long[] strideArray = dset.getStride();
+            final int[] selectedIndex = dset.getSelectedIndex();
+            final int start = (int)startArray[selectedIndex[0]];
+            final int stride = (int)strideArray[selectedIndex[0]];
+            final int rowCount = pTable.getRowCount();
             parentTable = pTable;
-
-            // Set the values of the row headers starting at 0.
-            int n = parentTable.getRowCount();
-            for ( int i = 0; i < n;  i++ )
+            
+            AbstractTableModel tm =  new AbstractTableModel()
             {
-                setValueAt( new Integer(start+i*stride), i, 0 );
-            }
+                public int getColumnCount() {
+                	return 1;
+                }
+
+                public int getRowCount() {
+                	return rowCount;
+                }
+
+                public String getColumnName(int col) {
+                	return " ";
+                }
+				public Object getValueAt(int row, int column)
+                {
+                	return String.valueOf(start+row*stride);
+                }
+            };
+           
+            this.setModel(tm);
 
             // Get the only table column.
             TableColumn col = getColumnModel().getColumn( 0 );
@@ -2672,7 +2714,7 @@ implements TableView, ActionListener
     /** RowHeaderRenderer is a custom cell renderer that displays cells as buttons. */
     private class RowHeaderRenderer extends JLabel implements TableCellRenderer
     {
-    	public static final long serialVersionUID = HObject.serialVersionUID;
+    	private static final long serialVersionUID = HObject.serialVersionUID;
 
         public RowHeaderRenderer()
         {
@@ -2705,7 +2747,7 @@ implements TableView, ActionListener
 
     private class MultiLineHeaderRenderer extends JList implements TableCellRenderer
     {
-    	public static final long serialVersionUID = HObject.serialVersionUID;
+    	private static final long serialVersionUID = HObject.serialVersionUID;
 
         private final CompoundBorder subBorder = new CompoundBorder(
                 new MatteBorder(1, 0, 1, 0, java.awt.Color.darkGray),
