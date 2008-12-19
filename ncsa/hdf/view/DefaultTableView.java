@@ -1233,6 +1233,7 @@ implements TableView, ActionListener
             private final Datatype dtype = dataset.getDatatype();
             private final Datatype btype = dtype.getBasetype();
             private final boolean isArray = (dtype.getDatatypeClass()==Datatype.CLASS_ARRAY);
+            private final boolean isStr = (NT == 'L');
             Object theValue;
             
             public int getColumnCount() {
@@ -1279,8 +1280,11 @@ implements TableView, ActionListener
                     } else {
                         theValue = Array.get(dataValue, row*colCount+column);
                     }
-                    theValue = numberFormat.format(theValue);
+                    
+                    if (!isStr)
+                    	theValue = numberFormat.format(theValue);
                 }
+                
                 return theValue;
             } // getValueAt(int row, int column)
         };
@@ -1517,7 +1521,6 @@ implements TableView, ActionListener
                 } else
                 {
                     // member is an ARRAY datatype
-
                     for (int i=0; i<orders[fieldIdx]; i++) {
                         stringBuffer.append(Array.get(colValue, rowIdx+i));
                         stringBuffer.append(", ");

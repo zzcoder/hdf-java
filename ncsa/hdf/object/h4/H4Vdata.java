@@ -261,8 +261,8 @@ public class H4Vdata extends CompoundDS
                     (memberTIDs[i] ==  HDFConstants.DFNT_UCHAR8))
                 {
                     // convert characters to string
-                    member_data = Dataset.byteToString(
-                            (byte[])member_data, memberOrders[i]);
+                    member_data = Dataset.byteToString((byte[])member_data, memberOrders[i]);
+                    memberTypes[i] = new H4Datatype(Datatype.CLASS_STRING, memberOrders[i], -1, -1);
                     memberOrders[i] = 1; //one String
                 } else if (H4Datatype.isUnsigned(memberTIDs[i]))
                 {
