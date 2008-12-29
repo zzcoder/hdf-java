@@ -28,6 +28,7 @@ extern "C" {
 #include "hdf5.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "jni.h"
 
 extern jboolean h5JNIFatalError( JNIEnv *env, char *functName);
