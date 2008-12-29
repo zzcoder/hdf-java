@@ -29,6 +29,7 @@ extern "C" {
 #include "h5util.h"
 #include <jni.h>
 #include <stdlib.h>
+#include <string.h>
 
 extern jboolean h5outOfMemory( JNIEnv *env, char *functName);
 extern jboolean h5JNIFatalError( JNIEnv *env, char *functName);
@@ -454,7 +455,7 @@ herr_t H5AreadVL_num (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
 	}
 
 	size = H5Tget_size(tid);
-	memset(&h5str, 0, sizeof(h5str_t));
+	memset((void *)&h5str, (int)0, (size_t)sizeof(h5str_t));
 	h5str_new(&h5str, 4*size);
 
 	if (h5str.s == NULL)

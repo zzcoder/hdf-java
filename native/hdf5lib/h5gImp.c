@@ -39,6 +39,7 @@ extern "C" {
 
 #include <jni.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef __cplusplus
 herr_t obj_info_all(hid_t loc_id, const char *name, void *opdata);

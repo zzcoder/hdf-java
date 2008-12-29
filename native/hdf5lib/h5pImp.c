@@ -1513,8 +1513,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1cache
         }
     }
 
-    status = H5Pget_cache((hid_t)plist, (int *)mdc_nelmtsArray, (int *)rdcc_nelmtsArray, (size_t *)nbytesArray,
-        w0Array);
+    status = H5Pget_cache((hid_t)plist, (int *)mdc_nelmtsArray, (size_t *)rdcc_nelmtsArray, (size_t *)nbytesArray,
+        (double *)w0Array);
 
     if (status < 0) {
         mode = JNI_ABORT;

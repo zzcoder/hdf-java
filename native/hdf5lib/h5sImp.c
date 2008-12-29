@@ -275,7 +275,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sselect_1elements
         jlp++;
     }
 
-    status = H5Sselect_elements (space_id, (H5S_seloper_t)op, num_elemn, (const hsize_t **)llp);
+    status = H5Sselect_elements (space_id, (H5S_seloper_t)op, num_elemn, (const hsize_t *)llp);
 
 #ifdef __cplusplus
     env->ReleaseByteArrayElements(coord, P, JNI_ABORT);
