@@ -237,8 +237,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sselect_1elements
   (JNIEnv *env, jclass clss, jint space_id, jint op, jint num_elemn, jbyteArray coord)
 {
     int ii;
-    hssize_t *lp;
-    hssize_t *llp;
+    hsize_t *lp=NULL;
+    hsize_t *llp;
     jlong *jlp;
     herr_t status;
     jbyte *P;
@@ -266,16 +266,16 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sselect_1elements
     size = (int) (*env)->GetArrayLength(env,coord);
 #endif
     nlongs = size / sizeof(jlong);
-    lp = (hssize_t *)malloc(nlongs * sizeof(hssize_t));
+    lp = (hsize_t *)malloc(nlongs * sizeof(hsize_t));
     jlp = (jlong *)P;
     llp = lp;
     for (ii = 0; ii < nlongs; ii++) {
-        *lp = (hssize_t)*jlp;
+        *lp = (hsize_t)*jlp;
         lp++;
         jlp++;
     }
 
-    status = H5Sselect_elements (space_id, (H5S_seloper_t)op, num_elemn, (const hssize_t **)llp);
+    status = H5Sselect_elements (space_id, (H5S_seloper_t)op, num_elemn, (const hsize_t **)llp);
 
 #ifdef __cplusplus
     env->ReleaseByteArrayElements(coord, P, JNI_ABORT);
@@ -284,8 +284,12 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sselect_1elements
 #endif
 
     if (status < 0) {
+        if (lp) free (lp);
         h5libraryError(env);
     }
+
+    if (lp) free (lp);
+
     return (jint)status;
 }
 
