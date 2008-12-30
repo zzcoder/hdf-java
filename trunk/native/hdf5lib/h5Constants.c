@@ -25,37 +25,6 @@ extern "C" {
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_J2C
   (JNIEnv *env, jclass clss, jint java_constant)
 {
-/* 
-        CASES removed from 1.6.4
-        case JH5E_CANTALLOC  : return  H5E_CANTALLOC; 
-        case JH5E_CANTCHANGE  : return  H5E_CANTCHANGE; removed from 1.6.4
-        case JH5E_CANTRECV  : return  H5E_CANTRECV; removed from 1.6.4
-        case JH5E_CANTSENDMDATA  : return  H5E_CANTSENDMDATA; removed from 1.6.4
-        case JH5E_FPHDF5  : return  H5E_FPHDF5; removed from 1.6.4
-        case JH5I_TEMPBUF  : return  H5I_TEMPBUF; removed from 1.6.4
-*/        
-
-/* 
-        CASES removed from HDF5 1.6.5
-        case JH5E_CWG  : return  H5E_CWG;
-        case JH5I_FILE_CLOSING  : return  H5I_FILE_CLOSING;
-        case JH5G_USERTYPE  : return  H5G_USERTYPE;
-*/
-
-/* 
-        CASES emoved from 1.8
-        case JH5E_CANTMAKETREE  : return  H5E_CANTMAKETREE;
-        case JH5E_SLINK  : return  H5E_SLINK;
-        case JH5E_TBBT  : return  H5E_TBBT;
-        case JH5G_RESERVED_4  : return  H5G_RESERVED_4;
-        case JH5I_NGROUPS  : return  H5I_NGROUPS;
-        case JH5P_MOUNT  : return  H5P_MOUNT;
-        case JH5P_MOUNT_DEFAULT  : return  H5P_MOUNT_DEFAULT;
-        case JH5P_NO_CLASS_DEFAULT  : return  H5P_NO_CLASS_DEFAULT;
-        case JH5R_INTERNAL  : return  H5R_INTERNAL;
-        case JH5S_COMPLEX  : return  H5S_COMPLEX;
-        case JH5T_CSET_RESERVED_1  : return  H5T_CSET_RESERVED_1;
-*/
     switch (java_constant)
     {
         case JH5_SZIP_MAX_PIXELS_PER_BLOCK  : return  H5_SZIP_MAX_PIXELS_PER_BLOCK;
