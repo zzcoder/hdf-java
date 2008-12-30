@@ -204,7 +204,7 @@ jboolean h5outOfMemory( JNIEnv *env, char *functName)
         return JNI_FALSE;
     }
 
-    str = (env)->NewStringUTF(functName);
+    str = ENVPTR->NewStringUTF(ENVPAR functName);
     args[0] = (char *)str;
     args[1] = 0;
 
