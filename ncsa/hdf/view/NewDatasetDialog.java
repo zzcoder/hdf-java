@@ -576,23 +576,14 @@ implements ActionListener, ItemListener, HyperlinkListener
         } else if (source.equals(checkChunked))
         {
             chunkSizeField.setEnabled(true);
-            String currentStr = currentSizeField.getText();
-            int idx = currentStr.lastIndexOf("x");
-            String chunkStr = "1";
-
+            String chunkStr = "";
+            StringTokenizer st = new StringTokenizer (currentSizeField.getText(), "x");
             int rank = rankChoice.getSelectedIndex()+1;
-            if (rank <=1) {
-                chunkStr = currentStr;
-            } else
-            {
-                for (int i=1; i<rank-1; i++) {
-                    chunkStr += " x 1";
-                }
-                if (idx >0) {
-                    chunkStr += " x "+currentStr.substring(idx+1);
-                }
+            while (st.hasMoreTokens()) {
+            	long l = Math.max(1, Long.valueOf(st.nextToken().trim())/(2*rank));
+            	chunkStr += String.valueOf(l) + "x";
             }
-
+            chunkStr = chunkStr.substring(0, chunkStr.lastIndexOf('x'));
             chunkSizeField.setText(chunkStr);
         }
         else if (source.equals(checkCompression))

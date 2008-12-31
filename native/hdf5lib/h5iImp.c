@@ -30,14 +30,18 @@ extern "C" {
 #include <jni.h>
 
 #ifdef __cplusplus
-#define ENV_PTR (env)
-#define ENV_PAR 
+#define ENVPTR (env)
+#define ENVPAR 
 #else
-#define ENV_PTR (*env)
-#define ENV_PAR env,
+#define ENVPTR (*env)
+#define ENVPAR env,
 #endif
 
+extern jboolean h5outOfMemory( JNIEnv *env, char *functName);
+extern jboolean h5JNIFatalError( JNIEnv *env, char *functName);
+extern jboolean h5nullArgument( JNIEnv *env, char *functName);
 extern jboolean h5libraryError( JNIEnv *env );
+extern jboolean h5badArgument( JNIEnv *env, char *functName);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5Header
@@ -92,8 +96,8 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1name
         /*  exception, returns immediately */
     }
     /* successful return -- save the string; */
-	str = ENV_PTR->NewStringUTF(ENV_PAR aName);
-    ENV_PTR->SetObjectArrayElement(ENV_PAR name,0,str);
+	str = ENVPTR->NewStringUTF(ENVPAR aName);
+    ENVPTR->SetObjectArrayElement(ENVPAR name,0,str);
 
 	free(aName);
     return (jlong)size;

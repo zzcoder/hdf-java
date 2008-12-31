@@ -367,7 +367,7 @@ implements ImageView, ActionListener
         item.setEnabled(!isTrueColor);
         menu.add(item);
         
-        item = new JMenuItem( "Import Palette");
+        item = new JMenuItem( "Import Palette from File");
         item.addActionListener(this);
         item.setActionCommand("Import palette");
         item.setEnabled(!isTrueColor);

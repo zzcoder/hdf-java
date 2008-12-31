@@ -1,8 +1,14 @@
-# Makefile for building HDF5 JNI interface for Windows .
-#
+# Makefile for building HDF5 JNI interface for Windows.
+# 
 # Author: Peter Cao
 #           The HDF Group
 #           Dec 30, 2008
+#
+# Notes: 
+#   To comiple the source code, run 'nmake -f nt_makefile'
+#   You may have add your VS studio bin path to your system path, e.g.
+#   set path=%path";"C:\Program Files\Microsoft Visual Studio 8\VC\bin"
+#
 
 JAVAHOME=D:\Java\jdk1.6.0_01
 HDF5INC=G:\HDF\lib\hdf5166\include
@@ -19,11 +25,8 @@ LINKER = link.exe
 
 CFLAGS = \
 /I $(HDF5INC) /I $(JAVAHOME)"\include" /I $(JAVAHOME)"\include\win32" \
-/D "_WIN32" /D "windows_platform" /D "_LARGEFILE_SOURCE"  \
 /D "_MBCS" /U "__cplusplus" \
-/D "_CRT_SECURE_NO_WARNINGS" \
-/D "_WIN32" /D "windows_platform"  \
-/U "__cplusplus" \
+/D "_CRT_SECURE_NO_WARNINGS" /D "_LARGEFILE_SOURCE" \
 /nologo /W3 /EHsc /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /FD /c /TP \
 
 LINKFLAG=/nologo /dll /incremental:no /machine:i386
@@ -37,7 +40,8 @@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32
 oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:"libc.lib" /NODEFAULTLIB:"libcmt.lib"
 
 all: $(OBJECTS)
-	$(LINKER) /OUT:"jhdf5.dll" $(LINKFLAG) $(OBJECTS) $(HDF5LIB) $(SZLIB) $(ZLIB) $(MSDEV_LIBS)
+	$(LINKER) /OUT:"jhdf5.dll" $(LINKFLAG) $(OBJECTS) $(HDF5LIB) $(SZLIB) $(ZLIB) $(MSDEV_LIBS) \
+    /implib:"jhdf5.lib"
 
 exceptionImp.obj: exceptionImp.c
 	$(CC) $(CFLAGS) /Fo$@ $?
@@ -93,6 +97,4 @@ clean:
 	@del *.ilk
 	@del *.pdb
 	@del *.exp
-
-
 

@@ -4506,7 +4506,7 @@ public class H5 {
     //                 August 25, 2004                                //
     ////////////////////////////////////////////////////////////////////
 
-    public synchronized static native long H5Fget_name (int obj_id, String name, int size)
+    public synchronized static native String H5Fget_name (int obj_id, int size)
     throws HDF5LibraryException;
 
     public synchronized static native long H5Fget_filesize (int file_id)

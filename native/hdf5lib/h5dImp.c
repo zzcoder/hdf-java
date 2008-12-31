@@ -31,10 +31,19 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef __cplusplus
 #ifdef _WINDOWS
 #include <direct.h>
 #endif
+#endif
 
+#ifdef _WINDOWS
+#define CHDIR _chdir
+#define GETCWD _getcwd
+#else
+#define CHDIR chdir
+#define GETCWD getcwd
+#endif
 
 #ifdef __cplusplus
 #define ENVPTR (env)
@@ -106,7 +115,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dchdir_1ext
         h5JNIFatalError( env, "H5Dchdir_ext:  file dir not pinned");
         return -1;
     }
-    status = _chdir ( file );
+    status = CHDIR( file );
 
     ENVPTR->ReleaseStringUTFChars(ENVPAR dir_name,file);
     if (status < 0) {
@@ -135,7 +144,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dgetdir_1ext
         h5outOfMemory( env, "H5Dgetcwd:  malloc failed");
         return -1;
     }
-    _getcwd( (char *)aName, (size_t)buf_size);
+    GETCWD( (char *)aName, (size_t)buf_size);
 
     str = ENVPTR->NewStringUTF(ENVPAR aName);
 
@@ -1187,10 +1196,9 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DwriteString
   jint file_space_id, jint xfer_plist_id, jobjectArray buf)
 {
     herr_t status;
-    jboolean isCopy;
-        char ** wdata;
-        jsize size;
-        jint i, j;
+    char ** wdata;
+    jsize size;
+    jint i, j;
 
     if ( buf == NULL ) {
         h5nullArgument( env, "H5Dwrite:  buf is NULL");
