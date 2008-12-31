@@ -30,10 +30,19 @@ extern "C" {
 
 #define GOTO_H5IN_ERROR(error) {h5JNIFatalError(env, error); ret_value=-1; goto done;}
 
+#ifdef __cplusplus
+#define ENVPTR (env)
+#define ENVPAR 
+#else
+#define ENVPTR (*env)
+#define ENVPAR env,
+#endif
+
+extern jboolean h5outOfMemory( JNIEnv *env, char *functName);
 extern jboolean h5JNIFatalError( JNIEnv *env, char *functName);
 extern jboolean h5nullArgument( JNIEnv *env, char *functName);
-extern jboolean h5badArgument( JNIEnv *env, char *functName);
 extern jboolean h5libraryError( JNIEnv *env );
+extern jboolean h5badArgument( JNIEnv *env, char *functName);
 
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5INcreate
@@ -49,18 +58,18 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5INcreate
     if (grp_name == NULL)
         GOTO_H5IN_ERROR ("H5INcreate: name of the index group is NULL");
 
-    if ( NULL == (gname = (char *)(*env)->GetStringUTFChars(env, grp_name, NULL)))
+    if ( NULL == (gname = (char *)ENVPTR->GetStringUTFChars(ENVPAR grp_name, NULL)))
         GOTO_H5IN_ERROR ("H5INcreate: name of the index group not pinned");
 
     if (data_loc_name == NULL)
         GOTO_H5IN_ERROR ("H5INcreate: name of the index dataset is NULL");
 
-    if ( NULL == (dname = (char *)(*env)->GetStringUTFChars(env, data_loc_name, NULL)))
+    if ( NULL == (dname = (char *)ENVPTR->GetStringUTFChars(ENVPAR  data_loc_name, NULL)))
         GOTO_H5IN_ERROR ("H5INcreate: name of the index dataset not pinned");
 
     if (field_name != NULL)
     {
-        if ( NULL == (fldname = (char *)(*env)->GetStringUTFChars(env, field_name, NULL)))
+        if ( NULL == (fldname = (char *)ENVPTR->GetStringUTFChars(ENVPAR  field_name, NULL)))
             GOTO_H5IN_ERROR ("H5INcreate: name of the index field not pinned");
     }
 
@@ -70,13 +79,13 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5INcreate
 done:
 
     if (gname)
-        (*env)->ReleaseStringUTFChars(env, grp_name, gname);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR  grp_name, gname);
 
     if (dname)
-        (*env)->ReleaseStringUTFChars(env, data_loc_name, dname);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR  data_loc_name, dname);
 
     if (fldname)
-        (*env)->ReleaseStringUTFChars(env, field_name, fldname);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR  field_name, fldname);
 
     return (jint)ret_value;
 
@@ -107,124 +116,124 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5INquery
     for (i=0; i<nkeys; i++) {
         jstring theKey;
         char *cstr;
-        theKey = (jstring)(*env)->GetObjectArrayElement(env, keys, i);
-        cstr = (char *)(*env)->GetStringUTFChars(env, theKey, 0);
+        theKey = (jstring)ENVPTR->GetObjectArrayElement(ENVPAR  keys, i);
+        cstr = (char *)ENVPTR->GetStringUTFChars(ENVPAR  theKey, 0);
         cKeys[i] = (char *)malloc(strlen(cstr)+1);
         strcpy(cKeys[i], cstr);
-        (*env)->ReleaseStringUTFChars(env, theKey, cstr);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR  theKey, cstr);
     }
 
-    if ( (*env)->IsInstanceOf(env, ubounds, (*env)->FindClass(env, "[Z")) ) {
+    if ( ENVPTR->IsInstanceOf(ENVPAR  ubounds, ENVPTR->FindClass(ENVPAR  "[Z")) ) {
         jboolean up, low, *ptr;
         jbooleanArray ja;
         ja =(jbooleanArray)ubounds;
-        ptr = (*env)->GetBooleanArrayElements(env, ja, 0);
+        ptr = ENVPTR->GetBooleanArrayElements(ENVPAR  ja, 0);
         up = ptr[0];
         ub = &up;
-        (*env)->ReleaseBooleanArrayElements(env, ja, ptr, 0);
+        ENVPTR->ReleaseBooleanArrayElements(ENVPAR  ja, ptr, 0);
         ja = (jbooleanArray)lbounds;
-        ptr = (*env)->GetBooleanArrayElements(env, ja, 0);
+        ptr = ENVPTR->GetBooleanArrayElements(ENVPAR  ja, 0);
         low = ptr[0];
         lb = &low;
-        (*env)->ReleaseBooleanArrayElements(env, ja, ptr, 0);
+        ENVPTR->ReleaseBooleanArrayElements(ENVPAR  ja, ptr, 0);
     }
-    else if ( (*env)->IsInstanceOf(env, ubounds, (*env)->FindClass(env, "[B")) ) {
+    else if ( ENVPTR->IsInstanceOf(ENVPAR  ubounds, ENVPTR->FindClass(ENVPAR  "[B")) ) {
         jbyte up, low, *ptr;
         jbyteArray ja;
         ja =(jbyteArray)ubounds;
-        ptr = (*env)->GetByteArrayElements(env, ja, 0);
+        ptr = ENVPTR->GetByteArrayElements(ENVPAR  ja, 0);
         up = ptr[0];
         ub = &up;
-        (*env)->ReleaseByteArrayElements(env, ja, ptr, 0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR  ja, ptr, 0);
         ja = (jbyteArray)lbounds;
-        ptr = (*env)->GetByteArrayElements(env, ja, 0);
+        ptr = ENVPTR->GetByteArrayElements(ENVPAR  ja, 0);
         low = ptr[0];
         lb = &low;
-        (*env)->ReleaseByteArrayElements(env, ja, ptr, 0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR  ja, ptr, 0);
     }
-    else if ( (*env)->IsInstanceOf(env, ubounds, (*env)->FindClass(env, "[S")) ) {
+    else if ( ENVPTR->IsInstanceOf(ENVPAR  ubounds, ENVPTR->FindClass(ENVPAR  "[S")) ) {
         jshort up, low, *ptr;
         jshortArray ja;
         ja =(jshortArray)ubounds;
-        ptr = (*env)->GetShortArrayElements(env, ja, 0);
+        ptr = ENVPTR->GetShortArrayElements(ENVPAR  ja, 0);
         up = ptr[0];
         ub = &up;
-        (*env)->ReleaseShortArrayElements(env, ja, ptr, 0);
+        ENVPTR->ReleaseShortArrayElements(ENVPAR  ja, ptr, 0);
         ja = (jshortArray)lbounds;
-        ptr = (*env)->GetShortArrayElements(env, ja, 0);
+        ptr = ENVPTR->GetShortArrayElements(ENVPAR  ja, 0);
         low = ptr[0];
         lb = &low;
-        (*env)->ReleaseShortArrayElements(env, ja, ptr, 0);
+        ENVPTR->ReleaseShortArrayElements(ENVPAR  ja, ptr, 0);
     }
-    else if ( (*env)->IsInstanceOf(env, ubounds, (*env)->FindClass(env, "[I")) ) {
+    else if ( ENVPTR->IsInstanceOf(ENVPAR  ubounds, ENVPTR->FindClass(ENVPAR  "[I")) ) {
         jint up, low, *ptr;
         jintArray ja;
         ja =(jintArray)ubounds;
-        ptr = (*env)->GetIntArrayElements(env, ja, 0);
+        ptr = ENVPTR->GetIntArrayElements(ENVPAR  ja, 0);
         up = ptr[0];
         ub = &up;
-        (*env)->ReleaseIntArrayElements(env, ja, ptr, 0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR  ja, ptr, 0);
         ja = (jintArray)lbounds;
-        ptr = (*env)->GetIntArrayElements(env, ja, 0);
+        ptr = ENVPTR->GetIntArrayElements(ENVPAR  ja, 0);
         low = ptr[0];
         lb = &low;
-        (*env)->ReleaseIntArrayElements(env, ja, ptr, 0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR  ja, ptr, 0);
     }
-    else if ( (*env)->IsInstanceOf(env, ubounds, (*env)->FindClass(env, "[J")) ) {
+    else if ( ENVPTR->IsInstanceOf(ENVPAR  ubounds, ENVPTR->FindClass(ENVPAR  "[J")) ) {
         jlong up, low, *ptr;
         jlongArray ja;
         ja =(jlongArray)ubounds;
-        ptr = (*env)->GetLongArrayElements(env, ja, 0);
+        ptr = ENVPTR->GetLongArrayElements(ENVPAR  ja, 0);
         up = ptr[0];
         ub = &up;
-        (*env)->ReleaseLongArrayElements(env, ja, ptr, 0);
+        ENVPTR->ReleaseLongArrayElements(ENVPAR  ja, ptr, 0);
         ja = (jlongArray)lbounds;
-        ptr = (*env)->GetLongArrayElements(env, ja, 0);
+        ptr = ENVPTR->GetLongArrayElements(ENVPAR  ja, 0);
         low = ptr[0];
         lb = &low;
-        (*env)->ReleaseLongArrayElements(env, ja, ptr, 0);
+        ENVPTR->ReleaseLongArrayElements(ENVPAR  ja, ptr, 0);
     }
-    else if ( (*env)->IsInstanceOf(env, ubounds, (*env)->FindClass(env, "[F")) ) {
+    else if ( ENVPTR->IsInstanceOf(ENVPAR  ubounds, ENVPTR->FindClass(ENVPAR  "[F")) ) {
         jfloat up, low, *ptr;
         jfloatArray ja;
         ja =(jfloatArray)ubounds;
-        ptr = (*env)->GetFloatArrayElements(env, ja, 0);
+        ptr = ENVPTR->GetFloatArrayElements(ENVPAR  ja, 0);
         up = ptr[0];
         ub = &up;
-        (*env)->ReleaseFloatArrayElements(env, ja, ptr, 0);
+        ENVPTR->ReleaseFloatArrayElements(ENVPAR  ja, ptr, 0);
         ja = (jfloatArray)lbounds;
-        ptr = (*env)->GetFloatArrayElements(env, ja, 0);
+        ptr = ENVPTR->GetFloatArrayElements(ENVPAR  ja, 0);
         low = ptr[0];
         lb = &low;
-        (*env)->ReleaseFloatArrayElements(env, ja, ptr, 0);
+        ENVPTR->ReleaseFloatArrayElements(ENVPAR  ja, ptr, 0);
     }
-    else if ( (*env)->IsInstanceOf(env, ubounds, (*env)->FindClass(env, "[D")) ) {
+    else if ( ENVPTR->IsInstanceOf(ENVPAR  ubounds, ENVPTR->FindClass(ENVPAR  "[D")) ) {
         jdouble up, low, *ptr;
         jdoubleArray ja;
         ja =(jdoubleArray)ubounds;
-        ptr = (*env)->GetDoubleArrayElements(env, ja, 0);
+        ptr = ENVPTR->GetDoubleArrayElements(ENVPAR  ja, 0);
         up = ptr[0];
         ub = &up;
-        (*env)->ReleaseDoubleArrayElements(env, ja, ptr, 0);
+        ENVPTR->ReleaseDoubleArrayElements(ENVPAR  ja, ptr, 0);
         ja = (jdoubleArray)lbounds;
-        ptr = (*env)->GetDoubleArrayElements(env, ja, 0);
+        ptr = ENVPTR->GetDoubleArrayElements(ENVPAR  ja, 0);
         low = ptr[0];
         lb = &low;
-        (*env)->ReleaseDoubleArrayElements(env, ja, ptr, 0);
+        ENVPTR->ReleaseDoubleArrayElements(ENVPAR  ja, ptr, 0);
     }
-    else if ( (*env)->IsInstanceOf(env, ubounds, (*env)->FindClass(env, "java/lang/String;")) ) {
+    else if ( ENVPTR->IsInstanceOf(ENVPAR  ubounds, ENVPTR->FindClass(ENVPAR  "java/lang/String;")) ) {
         jstring jstr;
         char *cstr;
         jstr = (jstring)ubounds;
-        cstr = (char *)(*env)->GetStringUTFChars(env, jstr, 0);
+        cstr = (char *)ENVPTR->GetStringUTFChars(ENVPAR  jstr, 0);
         upstr = (char *)malloc(strlen(cstr)+1);
         strcpy(upstr, cstr);
-        (*env)->ReleaseStringUTFChars(env, jstr, cstr);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR  jstr, cstr);
         jstr = (jstring)lbounds;
-        cstr = (char *)(*env)->GetStringUTFChars(env, jstr, 0);
+        cstr = (char *)ENVPTR->GetStringUTFChars(ENVPAR  jstr, 0);
         lowstr = (char *)malloc(strlen(cstr)+1);
         strcpy(lowstr, cstr);
-        (*env)->ReleaseStringUTFChars(env, jstr, cstr);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR  jstr, cstr);
 
         ub = upstr;
         lb = lowstr;

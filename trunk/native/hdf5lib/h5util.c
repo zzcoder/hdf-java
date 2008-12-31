@@ -12,6 +12,10 @@
  * access to either file, you may request a copy from hdfhelp@ncsa.uiuc.edu. *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -332,7 +336,7 @@ int h5str_dump_region(h5str_t *str, hid_t region)
 
         alloc_size = nblocks * ndims * 2 * sizeof(ptdata[0]);
         if (alloc_size == (hsize_t)((size_t)alloc_size)) {
-            ptdata = malloc((size_t)alloc_size);
+            ptdata = (hsize_t *)malloc((size_t)alloc_size);
             H5Sget_select_hyper_blocklist(region, (hsize_t)0, (hsize_t)nblocks, ptdata);
 
             for (i = 0; i < nblocks; i++) {
@@ -366,7 +370,7 @@ int h5str_dump_region(h5str_t *str, hid_t region)
 
         alloc_size = npoints * ndims * sizeof(ptdata[0]);
         if (alloc_size == (hsize_t)((size_t)alloc_size)) {
-            ptdata = malloc((size_t)alloc_size);
+            ptdata = (hsize_t *)malloc((size_t)alloc_size);
             H5Sget_select_elem_pointlist(region, (hsize_t)0, (hsize_t)npoints, ptdata);
     
             for (i = 0; i < npoints; i++) {
@@ -404,4 +408,6 @@ static hbool_t h5tools_is_zero(const void *_mem, size_t size)
     return 1;
 }
 
-
+#ifdef __cplusplus
+}
+#endif

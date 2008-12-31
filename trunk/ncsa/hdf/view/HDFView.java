@@ -392,6 +392,7 @@ HyperlinkListener, ChangeListener, DropTargetListener
 
         infoTabbedPane.addTab("Log Info", new JScrollPane(statusArea));
         infoTabbedPane.addTab("Metadata ", new JScrollPane(attributeArea));
+        infoTabbedPane.setSelectedIndex(1);
 
         // create splitpane to separate message area and treeview-contentpane
         topSplitPane.setBorder(null); // refer to Java bug #4131528
