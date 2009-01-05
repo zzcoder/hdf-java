@@ -20,12 +20,16 @@
  *     http://hdf.ncsa.uiuc.edu
  *
  */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "hdf.h"
 #include "jni.h"
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VQueryref
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint vkey)
 {
     return VQueryref((int32) vkey);
@@ -33,9 +37,13 @@ jint vkey)
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VQuerytag
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint vkey)
 {
     return VQuerytag((int32) vkey);
 
 }
+
+#ifdef __cplusplus
+}
+#endif

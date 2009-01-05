@@ -20,6 +20,10 @@
  *     http://hdf.ncsa.uiuc.edu
  *
  */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 #include "hdf.h"
 #include "jni.h"
@@ -28,7 +32,7 @@ extern jboolean h4NotImplemented( JNIEnv *env, char *functName);
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFUfptoimage
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint hdim,
 jint vdim,
 jfloat max,
@@ -98,3 +102,8 @@ jint compress) /* IN */
     return JNI_TRUE;
 #endif
 }
+
+
+#ifdef __cplusplus
+}
+#endif

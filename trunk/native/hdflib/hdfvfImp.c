@@ -20,13 +20,25 @@
  *     http://hdf.ncsa.uiuc.edu
  *
  */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 #include "hdf.h"
 #include "jni.h"
 
+#ifdef __cplusplus
+#define ENVPTR (env)
+#define ENVPAR 
+#else
+#define ENVPTR (*env)
+#define ENVPAR env,
+#endif
+
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VFfieldesize
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint vdata_id,
 int field_index)
 {
@@ -35,7 +47,7 @@ int field_index)
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VFfieldisize
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint vdata_id,
 int field_index)
 {
@@ -45,7 +57,7 @@ int field_index)
 
 JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VFfieldname
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint vdata_id,
 int field_index)
 {
@@ -57,14 +69,14 @@ int field_index)
     /* check for error */
 
     /* convert it to java string */
-    rstring = (*env)->NewStringUTF(env,str);
+    rstring = ENVPTR->NewStringUTF(ENVPAR str);
 
     return rstring;
 }
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VFfieldorder
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint vdata_id,
 int field_index)
 {
@@ -74,7 +86,7 @@ int field_index)
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VFfieldtype
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint vdata_id,
 int field_index)
 {
@@ -84,8 +96,12 @@ int field_index)
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VFnfields
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint key)
 {
     return (VFnfields((int32) key));
 }
+
+#ifdef __cplusplus
+}
+#endif

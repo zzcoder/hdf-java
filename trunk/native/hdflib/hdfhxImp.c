@@ -20,19 +20,31 @@
  *     http://hdf.ncsa.uiuc.edu
  *
  */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "hdf.h"
 #include "jni.h"
 
+#ifdef __cplusplus
+#define ENVPTR (env)
+#define ENVPAR 
+#else
+#define ENVPTR (*env)
+#define ENVPAR env,
+#endif
+
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_HXsetcreatedir
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jstring dir)
 {
     intn rval;
     char *str;
 
     if (dir != NULL) {
-        str =(char *) (*env)->GetStringUTFChars(env,dir,0);
+        str =(char *) ENVPTR->GetStringUTFChars(ENVPAR dir,0);
     } else {
         str = NULL;
     }
@@ -40,7 +52,7 @@ jstring dir)
     rval = HXsetcreatedir((char *)str);
 
     if (str != NULL) {
-        (*env)->ReleaseStringUTFChars(env,dir,str);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR dir,str);
     }
 
     if (rval == FAIL) {
@@ -52,14 +64,14 @@ jstring dir)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_HXsetdir
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jstring dir)
 {
     intn rval;
     char *str;
 
     if (dir != NULL) {
-        str =(char *) (*env)->GetStringUTFChars(env,dir,0);
+        str =(char *) ENVPTR->GetStringUTFChars(ENVPAR dir,0);
     } else {
         str = NULL;
     }
@@ -67,7 +79,7 @@ jstring dir)
     rval = HXsetdir(str);
 
     if (str != NULL) {
-        (*env)->ReleaseStringUTFChars(env,dir,str);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR dir,str);
     }
 
     if (rval == FAIL) {
@@ -76,3 +88,7 @@ jstring dir)
         return JNI_TRUE;
     }
 }
+
+#ifdef __cplusplus
+}
+#endif

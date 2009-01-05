@@ -1325,28 +1325,36 @@ public class DefaultTreeView extends JPanel
             theKey = (String)keys.nextElement();
             if (theKey.equals(FileFormat.FILE_TYPE_HDF4))
             {
-                FileFormat h4format = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4);
-                if ((h4format !=null) && h4format.isThisType(filename)) {
-                    fileFormat = h4format.open(filename, accessID);
-                }
+            	try {
+                    FileFormat h4format = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4);
+                    if ((h4format !=null) && h4format.isThisType(filename)) {
+                        fileFormat = h4format.open(filename, accessID);
+                        break;
+                    }
+            	} catch (Throwable err) {}
                 continue;
             }
             else if (theKey.equals(FileFormat.FILE_TYPE_HDF5))
             {
-                FileFormat h5format = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-                if ((h5format !=null) && h5format.isThisType(filename)) {
-                    fileFormat = h5format.open(filename, accessID);
-                }
+            	try {
+                	FileFormat h5format = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+                    if ((h5format !=null) && h5format.isThisType(filename)) {
+                        fileFormat = h5format.open(filename, accessID);
+                        break;
+                    }
+            	} catch (Throwable err) {}
                 continue;
             }
             else
             {
+            	try {
 
-                FileFormat theformat = FileFormat.getFileFormat(theKey);
-                if (theformat.isThisType(filename)) {
-                    fileFormat = theformat.open(filename, accessID);
-                    break;
-                }
+                    FileFormat theformat = FileFormat.getFileFormat(theKey);
+                    if (theformat.isThisType(filename)) {
+                        fileFormat = theformat.open(filename, accessID);
+                        break;
+                    }
+            	} catch (Throwable err) {}
             }
         }
 

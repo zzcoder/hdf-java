@@ -14,9 +14,20 @@
  *  Java-C interface.
  *
  */
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "jni.h"
 #include <stdlib.h>
+
+#ifdef __cplusplus
+#define ENVPTR (env)
+#define ENVPAR 
+#else
+#define ENVPTR (*env)
+#define ENVPAR env,
+#endif
 
 jboolean h4buildException( JNIEnv *env, jint HDFerr)
 {
@@ -27,20 +38,20 @@ jobject ex;
 int rval;
 
 
-    jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFLibraryException");
+    jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFLibraryException");
     if (jc == NULL) {
         return JNI_FALSE;
     }
-    jm = (*env)->GetMethodID(env, jc, "<init>", "(I)V");
+    jm = ENVPTR->GetMethodID(ENVPAR  jc, "<init>", "(I)V");
     if (jm == NULL) {
         return JNI_FALSE;
     }
     args[0] = HDFerr;
     args[1] = 0;
 
-    ex = (*env)->NewObjectA ( env, jc, jm, (jvalue *)args );
+    ex = ENVPTR->NewObjectA (ENVPAR jc, jm, (jvalue *)args );
 
-    rval = (*env)->Throw(env, ex );
+    rval = ENVPTR->Throw(ENVPAR  (jthrowable)ex );
 
     return JNI_TRUE;
 }
@@ -55,21 +66,21 @@ jstring str;
 int rval;
 
 
-    jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFNotImplementedException");
+    jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFNotImplementedException");
     if (jc == NULL) {
         return JNI_FALSE;
     }
-    jm = (*env)->GetMethodID(env, jc, "<init>", "(Ljava/lang/String;)V");
+    jm = ENVPTR->GetMethodID(ENVPAR  jc, "<init>", "(Ljava/lang/String;)V");
     if (jm == NULL) {
         return JNI_FALSE;
     }
 
-    str = (*env)->NewStringUTF(env,functName);
+    str = ENVPTR->NewStringUTF(ENVPAR functName);
     args[0] = (char *)str;
     args[1] = 0;
-    ex = (*env)->NewObjectA ( env, jc, jm, (jvalue *)args );
+    ex = ENVPTR->NewObjectA (ENVPAR jc, jm, (jvalue *)args );
 
-    rval = (*env)->Throw(env, ex );
+    rval = ENVPTR->Throw(ENVPAR  (jthrowable)ex );
 
     return JNI_TRUE;
 }
@@ -83,21 +94,21 @@ jobject ex;
 jstring str;
 int rval;
 
-    jc = (*env)->FindClass(env, "java/lang/OutOfMemoryError");
+    jc = ENVPTR->FindClass(ENVPAR  "java/lang/OutOfMemoryError");
     if (jc == NULL) {
         return JNI_FALSE;
     }
-    jm = (*env)->GetMethodID(env, jc, "<init>", "(Ljava/lang/String;)V");
+    jm = ENVPTR->GetMethodID(ENVPAR  jc, "<init>", "(Ljava/lang/String;)V");
     if (jm == NULL) {
         return JNI_FALSE;
     }
 
-    str = (*env)->NewStringUTF(env,functName);
+    str = ENVPTR->NewStringUTF(ENVPAR functName);
     args[0] = (char *)str;
     args[1] = 0;
-    ex = (*env)->NewObjectA ( env, jc, jm, (jvalue *)args );
+    ex = ENVPTR->NewObjectA (ENVPAR jc, jm, (jvalue *)args );
 
-    rval = (*env)->Throw(env, ex );
+    rval = ENVPTR->Throw(ENVPAR  (jthrowable)ex );
 
     return JNI_TRUE;
 }
@@ -114,21 +125,21 @@ jobject ex;
 jstring str;
 int rval;
 
-    jc = (*env)->FindClass(env, "java/lang/InternalError");
+    jc = ENVPTR->FindClass(ENVPAR  "java/lang/InternalError");
     if (jc == NULL) {
         return JNI_FALSE;
     }
-    jm = (*env)->GetMethodID(env, jc, "<init>", "(Ljava/lang/String;)V");
+    jm = ENVPTR->GetMethodID(ENVPAR  jc, "<init>", "(Ljava/lang/String;)V");
     if (jm == NULL) {
         return JNI_FALSE;
     }
 
-    str = (*env)->NewStringUTF(env,functName);
+    str = ENVPTR->NewStringUTF(ENVPAR functName);
     args[0] = (char *)str;
     args[1] = 0;
-    ex = (*env)->NewObjectA ( env, jc, jm, (jvalue *)args );
+    ex = ENVPTR->NewObjectA (ENVPAR jc, jm, (jvalue *)args );
 
-    rval = (*env)->Throw(env, ex );
+    rval = ENVPTR->Throw(ENVPAR  (jthrowable)ex );
 
     return JNI_TRUE;
 }
@@ -142,21 +153,25 @@ jobject ex;
 jstring str;
 int rval;
 
-    jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFLibraryException");
+    jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFLibraryException");
     if (jc == NULL) {
         return JNI_FALSE;
     }
-    jm = (*env)->GetMethodID(env, jc, "<init>", "(Ljava/lang/String;)V");
+    jm = ENVPTR->GetMethodID(ENVPAR  jc, "<init>", "(Ljava/lang/String;)V");
     if (jm == NULL) {
         return JNI_FALSE;
     }
 
-    str = (*env)->NewStringUTF(env,message);
+    str = ENVPTR->NewStringUTF(ENVPAR message);
     args[0] = (char *)str;
     args[1] = 0;
-    ex = (*env)->NewObjectA ( env, jc, jm, (jvalue *)args );
+    ex = ENVPTR->NewObjectA (ENVPAR jc, jm, (jvalue *)args );
 
-    rval = (*env)->Throw(env, ex );
+    rval = ENVPTR->Throw(ENVPAR  (jthrowable)ex );
 
     return JNI_TRUE;
 }
+
+#ifdef __cplusplus
+}
+#endif

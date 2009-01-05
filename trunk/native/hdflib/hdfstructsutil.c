@@ -15,8 +15,20 @@
  *  This is nasty and ugly and probably buggy.
  *
  */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "hdf.h"
 #include "jni.h"
+
+#ifdef __cplusplus
+#define ENVPTR (env)
+#define ENVPAR 
+#else
+#define ENVPTR (*env)
+#define ENVPAR env,
+#endif
 
 extern jboolean h4outOfMemory( JNIEnv *env, char *functName);
 
@@ -33,15 +45,15 @@ jfieldID jf;
 jclass jc;
 jint ctype;
 
-    jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFNewCompInfo");
+    jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFNewCompInfo");
     if (jc == NULL) {
         return JNI_FALSE;
     }
-    jf = (*env)->GetFieldID(env, jc, "ctype", "I");
+    jf = ENVPTR->GetFieldID(ENVPAR  jc, "ctype", "I");
     if (jf == NULL) {
         return JNI_FALSE;
     }
-    ctype = (*env)->GetIntField(env, ciobj, jf);
+    ctype = ENVPTR->GetIntField(ENVPAR  ciobj, jf);
 
     switch(ctype) {
     case COMP_CODE_NONE:
@@ -50,105 +62,105 @@ jint ctype;
         break;
 
     case COMP_CODE_SKPHUFF:
-        jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFSKPHUFFCompInfo");
+        jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFSKPHUFFCompInfo");
         if (jc == NULL) {
             return JNI_FALSE;
         }
-        jf = (*env)->GetFieldID(env, jc, "skp_size", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "skp_size", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        cinf->skphuff.skp_size = (*env)->GetIntField(env, ciobj, jf);
+        cinf->skphuff.skp_size = ENVPTR->GetIntField(ENVPAR  ciobj, jf);
         break;
 
     case COMP_CODE_DEFLATE:
-        jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFDeflateCompInfo");
+        jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFDeflateCompInfo");
         if (jc == NULL) {
             return JNI_FALSE;
         }
-        jf = (*env)->GetFieldID(env, jc, "level", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "level", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        cinf->deflate.level = (*env)->GetIntField(env, ciobj, jf);
+        cinf->deflate.level = ENVPTR->GetIntField(ENVPAR  ciobj, jf);
         break;
     case COMP_CODE_SZIP:
-        jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFSZIPCompInfo");
+        jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFSZIPCompInfo");
         if (jc == NULL) {
             return JNI_FALSE;
         }
-        jf = (*env)->GetFieldID(env, jc, "bits_per_pixel", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "bits_per_pixel", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
 
-        cinf->szip.bits_per_pixel = (*env)->GetIntField(env, ciobj, jf);
-        jf = (*env)->GetFieldID(env, jc, "options_mask", "I");
+        cinf->szip.bits_per_pixel = ENVPTR->GetIntField(ENVPAR  ciobj, jf);
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "options_mask", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        cinf->szip.options_mask = (*env)->GetIntField(env, ciobj, jf);
+        cinf->szip.options_mask = ENVPTR->GetIntField(ENVPAR  ciobj, jf);
 
 /*      changes from hdf-42r0 to hdf-42r1
-        jf = (*env)->GetFieldID(env, jc, "compression_mode", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "compression_mode", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        cinf->szip.compression_mode = (*env)->GetIntField(env, ciobj, jf);
+        cinf->szip.compression_mode = ENVPTR->GetIntField(ENVPAR  ciobj, jf);
 */
 
-        jf = (*env)->GetFieldID(env, jc, "pixels", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "pixels", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        cinf->szip.pixels = (*env)->GetIntField(env, ciobj, jf);
+        cinf->szip.pixels = ENVPTR->GetIntField(ENVPAR  ciobj, jf);
 
-        jf = (*env)->GetFieldID(env, jc, "pixels_per_block", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "pixels_per_block", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        cinf->szip.pixels_per_block = (*env)->GetIntField(env, ciobj, jf);
+        cinf->szip.pixels_per_block = ENVPTR->GetIntField(ENVPAR  ciobj, jf);
 
-        jf = (*env)->GetFieldID(env, jc, "pixels_per_scanline", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "pixels_per_scanline", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        cinf->szip.pixels_per_scanline = (*env)->GetIntField(env, ciobj, jf);
+        cinf->szip.pixels_per_scanline = ENVPTR->GetIntField(ENVPAR  ciobj, jf);
         break;
     case COMP_CODE_NBIT:
-        jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFNBITCompInfo");
+        jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFNBITCompInfo");
         if (jc == NULL) {
             return JNI_FALSE;
         }
-        jf = (*env)->GetFieldID(env, jc, "nt", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "nt", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        cinf->nbit.nt = (*env)->GetIntField(env, ciobj, jf);
+        cinf->nbit.nt = ENVPTR->GetIntField(ENVPAR  ciobj, jf);
 
-        jf = (*env)->GetFieldID(env, jc, "sign_ext", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "sign_ext", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        cinf->nbit.sign_ext = (*env)->GetIntField(env, ciobj, jf);
+        cinf->nbit.sign_ext = ENVPTR->GetIntField(ENVPAR  ciobj, jf);
 
-        jf = (*env)->GetFieldID(env, jc, "fill_one", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "fill_one", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        cinf->nbit.fill_one = (*env)->GetIntField(env, ciobj, jf);
+        cinf->nbit.fill_one = ENVPTR->GetIntField(ENVPAR  ciobj, jf);
 
-        jf = (*env)->GetFieldID(env, jc, "start_bit", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "start_bit", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        cinf->nbit.start_bit = (*env)->GetIntField(env, ciobj, jf);
+        cinf->nbit.start_bit = ENVPTR->GetIntField(ENVPAR  ciobj, jf);
 
-        jf = (*env)->GetFieldID(env, jc, "bit_len", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "bit_len", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        cinf->nbit.bit_len = (*env)->GetIntField(env, ciobj, jf);
+        cinf->nbit.bit_len = ENVPTR->GetIntField(ENVPAR  ciobj, jf);
         break;
     }
 
@@ -166,16 +178,16 @@ comp_info *cinf)
 jfieldID jf;
 jclass jc;
 
-    jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFCompInfo");
+    jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFCompInfo");
 
     if (jc == NULL) {
         return JNI_FALSE;
     } else {
-        jf = (*env)->GetFieldID(env, jc, "ctype", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "ctype", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        (*env)->SetIntField(env, ciobj, jf, coder);
+        ENVPTR->SetIntField(ENVPAR  ciobj, jf, coder);
     }
 
 
@@ -185,127 +197,127 @@ jclass jc;
     default:
         break;
     case COMP_CODE_SKPHUFF:
-        jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFSKPHUFFCompInfo");
+        jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFSKPHUFFCompInfo");
         if (jc == NULL) {
             return JNI_FALSE;
         }
-        jf = (*env)->GetFieldID(env, jc, "ctype", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "ctype", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        (*env)->SetIntField(env, ciobj, jf, COMP_CODE_SKPHUFF);
-        jf = (*env)->GetFieldID(env, jc, "skp_size", "I");
+        ENVPTR->SetIntField(ENVPAR  ciobj, jf, COMP_CODE_SKPHUFF);
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "skp_size", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        (*env)->SetIntField(env, ciobj, jf, cinf->skphuff.skp_size );
+        ENVPTR->SetIntField(ENVPAR  ciobj, jf, cinf->skphuff.skp_size );
         break;
 
     case COMP_CODE_DEFLATE:
-        jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFDeflateCompInfo");
+        jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFDeflateCompInfo");
         if (jc == NULL) {
             return JNI_FALSE;
         }
-        jf = (*env)->GetFieldID(env, jc, "ctype", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "ctype", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        (*env)->SetIntField(env, ciobj, jf, COMP_CODE_DEFLATE);
-        jf = (*env)->GetFieldID(env, jc, "level", "I");
+        ENVPTR->SetIntField(ENVPAR  ciobj, jf, COMP_CODE_DEFLATE);
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "level", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        (*env)->SetIntField(env, ciobj, jf, cinf->deflate.level );
+        ENVPTR->SetIntField(ENVPAR  ciobj, jf, cinf->deflate.level );
         break;
     case COMP_CODE_SZIP:
-        jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFSZIPCompInfo");
+        jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFSZIPCompInfo");
         if (jc == NULL) {
             return JNI_FALSE;
         }
-        jf = (*env)->GetFieldID(env, jc, "ctype", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "ctype", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        (*env)->SetIntField(env, ciobj, jf, COMP_CODE_SZIP);
+        ENVPTR->SetIntField(ENVPAR  ciobj, jf, COMP_CODE_SZIP);
 
-        jf = (*env)->GetFieldID(env, jc, "bits_per_pixel", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "bits_per_pixel", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        (*env)->SetIntField(env, ciobj, jf, cinf->szip.bits_per_pixel);
+        ENVPTR->SetIntField(ENVPAR  ciobj, jf, cinf->szip.bits_per_pixel);
 
-        jf = (*env)->GetFieldID(env, jc, "options_mask", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "options_mask", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        (*env)->SetIntField(env, ciobj, jf, cinf->szip.options_mask);
+        ENVPTR->SetIntField(ENVPAR  ciobj, jf, cinf->szip.options_mask);
 
 /*   changes from hdf-42r0 to hdf-42r1
-        jf = (*env)->GetFieldID(env, jc, "compression_mode", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "compression_mode", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        (*env)->SetIntField(env, ciobj, jf, cinf->szip.compression_mode);
+        ENVPTR->SetIntField(ENVPAR  ciobj, jf, cinf->szip.compression_mode);
 */
 
-        jf = (*env)->GetFieldID(env, jc, "pixels", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "pixels", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        (*env)->SetIntField(env, ciobj, jf, cinf->szip.pixels);
+        ENVPTR->SetIntField(ENVPAR  ciobj, jf, cinf->szip.pixels);
 
-        jf = (*env)->GetFieldID(env, jc, "pixels_per_block", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "pixels_per_block", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        (*env)->SetIntField(env, ciobj, jf, cinf->szip.pixels_per_block);
+        ENVPTR->SetIntField(ENVPAR  ciobj, jf, cinf->szip.pixels_per_block);
 
-        jf = (*env)->GetFieldID(env, jc, "pixels_per_scanline", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "pixels_per_scanline", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        (*env)->SetIntField(env, ciobj, jf, cinf->szip.pixels_per_scanline);
+        ENVPTR->SetIntField(ENVPAR  ciobj, jf, cinf->szip.pixels_per_scanline);
         break;
     case COMP_CODE_NBIT:
-        jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFNBITCompInfo");
+        jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFNBITCompInfo");
         if (jc == NULL) {
             return JNI_FALSE;
         }
 
-        jf = (*env)->GetFieldID(env, jc, "ctype", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "ctype", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        (*env)->SetIntField(env, ciobj, jf, COMP_CODE_NBIT);
-        jf = (*env)->GetFieldID(env, jc, "nt", "I");
+        ENVPTR->SetIntField(ENVPAR  ciobj, jf, COMP_CODE_NBIT);
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "nt", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        (*env)->SetIntField(env, ciobj, jf, cinf->nbit.nt);
+        ENVPTR->SetIntField(ENVPAR  ciobj, jf, cinf->nbit.nt);
 
-        jf = (*env)->GetFieldID(env, jc, "sign_ext", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "sign_ext", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        (*env)->SetIntField(env, ciobj, jf, cinf->nbit.sign_ext );
+        ENVPTR->SetIntField(ENVPAR  ciobj, jf, cinf->nbit.sign_ext );
 
-        jf = (*env)->GetFieldID(env, jc, "fill_one", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "fill_one", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        (*env)->SetIntField(env, ciobj, jf, cinf->nbit.fill_one);
+        ENVPTR->SetIntField(ENVPAR  ciobj, jf, cinf->nbit.fill_one);
 
-        jf = (*env)->GetFieldID(env, jc, "start_bit", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "start_bit", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        (*env)->SetIntField(env, ciobj, jf, cinf->nbit.start_bit );
+        ENVPTR->SetIntField(ENVPAR  ciobj, jf, cinf->nbit.start_bit );
 
-        jf = (*env)->GetFieldID(env, jc, "bit_len", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "bit_len", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        (*env)->SetIntField(env, ciobj, jf, cinf->nbit.bit_len);
+        ENVPTR->SetIntField(ENVPAR  ciobj, jf, cinf->nbit.bit_len);
         break;
     }
 
@@ -322,15 +334,15 @@ jfieldID jf;
 jclass jc;
 jint ctype;
 
-    jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFOldCompInfo");
+    jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFOldCompInfo");
     if (jc == NULL) {
         return JNI_FALSE;
     }
-    jf = (*env)->GetFieldID(env, jc, "ctype", "I");
+    jf = ENVPTR->GetFieldID(ENVPAR  jc, "ctype", "I");
     if (jf == NULL) {
         return JNI_FALSE;
     }
-    ctype = (*env)->GetIntField(env, ciobj, jf);
+    ctype = ENVPTR->GetIntField(ENVPAR  ciobj, jf);
 
     switch(ctype) {
     case COMP_NONE:
@@ -340,21 +352,21 @@ jint ctype;
         break;
 
     case COMP_JPEG:
-        jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFJPEGCompInfo");
+        jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFJPEGCompInfo");
         if (jc == NULL) {
             return JNI_FALSE;
         }
-        jf = (*env)->GetFieldID(env, jc, "quality", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "quality", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        cinf->jpeg.quality = (*env)->GetIntField(env, ciobj, jf);
+        cinf->jpeg.quality = ENVPTR->GetIntField(ENVPAR  ciobj, jf);
 
-        jf = (*env)->GetFieldID(env, jc, "force_baseline", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "force_baseline", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        cinf->jpeg.force_baseline = (*env)->GetIntField(env, ciobj, jf);
+        cinf->jpeg.force_baseline = ENVPTR->GetIntField(ENVPAR  ciobj, jf);
         break;
     }
 
@@ -376,100 +388,100 @@ int i;
 jboolean bval;
 jboolean bb;
 
-    jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFChunkInfo");
+    jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFChunkInfo");
     if (jc == NULL) {
         return JNI_FALSE;
     }
-    jf = (*env)->GetFieldID(env, jc, "ctype", "I");
+    jf = ENVPTR->GetFieldID(ENVPAR  jc, "ctype", "I");
     if (jf == NULL) {
         return JNI_FALSE;
     }
-    ctype = (*env)->GetIntField(env, chunkobj, jf);
+    ctype = ENVPTR->GetIntField(ENVPAR  chunkobj, jf);
 
-    jf = (*env)->GetFieldID(env, jc, "chunk_lengths", "[I");
+    jf = ENVPTR->GetFieldID(ENVPAR  jc, "chunk_lengths", "[I");
     if (jf == NULL) {
         return JNI_FALSE;
     }
-    larr = (*env)->GetObjectField(env,chunkobj,jf);
+    larr = ENVPTR->GetObjectField(ENVPAR chunkobj,jf);
     if (larr == NULL) {
         return JNI_FALSE;
     }
 
-    lens = (jint *)(*env)->GetIntArrayElements(env,(jintArray)larr,&bb);
+    lens = (jint *)ENVPTR->GetIntArrayElements(ENVPAR (jintArray)larr,&bb);
 
     for (i = 0; i < MAX_VAR_DIMS; i++) {
         cinf->comp.chunk_lengths[i] = (int32)lens[i];
     }
 
-    (*env)->ReleaseIntArrayElements(env,(jintArray)larr,(jint *)lens,JNI_ABORT);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR (jintArray)larr,(jint *)lens,JNI_ABORT);
 
     if (ctype == (HDF_CHUNK | HDF_COMP)) {
-        jf = (*env)->GetFieldID(env, jc, "comp_type", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "comp_type", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-                cinf->comp.comp_type = (*env)->GetIntField(env, chunkobj, jf);
+                cinf->comp.comp_type = ENVPTR->GetIntField(ENVPAR  chunkobj, jf);
 
-        jf = (*env)->GetFieldID(env, jc, "model_type", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "model_type", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-                cinf->comp.model_type = (*env)->GetIntField(env, chunkobj, jf);
+                cinf->comp.model_type = ENVPTR->GetIntField(ENVPAR  chunkobj, jf);
 
-        jf = (*env)->GetFieldID(env, jc, "cinfo", "Lncsa/hdf/hdflib/HDFCompInfo;");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "cinfo", "Lncsa/hdf/hdflib/HDFCompInfo;");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        larr = (*env)->GetObjectField(env,chunkobj,jf);
+        larr = ENVPTR->GetObjectField(ENVPAR chunkobj,jf);
         if (larr == NULL) {
             return JNI_FALSE;
         }
-        bval = getNewCompInfo(env,(jobject)larr,&(cinf->comp.cinfo));
+        bval = getNewCompInfo(env, (jobject)larr,&(cinf->comp.cinfo));
      } else if (ctype == (HDF_CHUNK | HDF_NBIT)) {
-        jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFNBITChunkInfo");
+        jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFNBITChunkInfo");
         if (jc == NULL) {
             return JNI_FALSE;
         }
-        jf = (*env)->GetFieldID(env, jc, "chunk_lengths", "[I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "chunk_lengths", "[I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-        larr = (*env)->GetObjectField(env,chunkobj,jf);
+        larr = ENVPTR->GetObjectField(ENVPAR chunkobj,jf);
         if (larr == NULL) {
             return JNI_FALSE;
         }
 
-        lens = (jint *)(*env)->GetIntArrayElements(env,(jintArray)larr,&bb);
+        lens = (jint *)ENVPTR->GetIntArrayElements(ENVPAR (jintArray)larr,&bb);
 
         for (i = 0; i < MAX_VAR_DIMS; i++) {
             cinf->nbit.chunk_lengths[i] = (int32)lens[i];
         }
 
-        (*env)->ReleaseIntArrayElements(env,(jintArray)larr,(jint *)lens,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR (jintArray)larr,(jint *)lens,JNI_ABORT);
 
-        jf = (*env)->GetFieldID(env, jc, "start_bit", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "start_bit", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-                cinf->nbit.start_bit = (*env)->GetIntField(env, chunkobj, jf);
+                cinf->nbit.start_bit = ENVPTR->GetIntField(ENVPAR  chunkobj, jf);
 
-        jf = (*env)->GetFieldID(env, jc, "bit_len", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "bit_len", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-                cinf->nbit.bit_len = (*env)->GetIntField(env, chunkobj, jf);
+                cinf->nbit.bit_len = ENVPTR->GetIntField(ENVPAR  chunkobj, jf);
 
-        jf = (*env)->GetFieldID(env, jc, "sign_ext", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "sign_ext", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-                cinf->nbit.sign_ext = (*env)->GetIntField(env, chunkobj, jf);
+                cinf->nbit.sign_ext = ENVPTR->GetIntField(ENVPAR  chunkobj, jf);
 
-        jf = (*env)->GetFieldID(env, jc, "fill_one", "I");
+        jf = ENVPTR->GetFieldID(ENVPAR  jc, "fill_one", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-                cinf->nbit.fill_one = (*env)->GetIntField(env, chunkobj, jf);
+                cinf->nbit.fill_one = ENVPTR->GetIntField(ENVPAR  chunkobj, jf);
     }
     return JNI_TRUE;
 }
@@ -488,15 +500,15 @@ jmethodID jmi;
 jintArray rarray;
 jobject compinfo;
 
-    rarray = (*env)->NewIntArray(env,MAX_VAR_DIMS);
+    rarray = ENVPTR->NewIntArray(ENVPAR MAX_VAR_DIMS);
     if (rarray == NULL) {
         return JNI_FALSE;
     }
-    (*env)->SetIntArrayRegion(env,rarray,0,MAX_VAR_DIMS,(jint *)cinf->chunk_lengths);
+    ENVPTR->SetIntArrayRegion(ENVPAR rarray,0,MAX_VAR_DIMS,(jint *)cinf->chunk_lengths);
 
         /* release rarray? */
 
-    jci = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFChunkInfo");
+    jci = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFChunkInfo");
     if (jci == NULL) {
         return JNI_FALSE;
     }
@@ -504,65 +516,65 @@ jobject compinfo;
     switch (flgs) {
 		case HDF_CHUNK:
 		default:
-        jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFCompInfo");
+        jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFCompInfo");
         if (jc == NULL) {
             return JNI_FALSE;
         }
-        jmi = (*env)->GetMethodID(env, jc, "<init>", "()V");
+        jmi = ENVPTR->GetMethodID(ENVPAR  jc, "<init>", "()V");
         if (jmi == NULL) {
             return JNI_FALSE;
         }
-        compinfo = (*env)->NewObject(env,jc,jmi);
+        compinfo = ENVPTR->NewObject(ENVPAR jc,jmi);
         break;
         case (HDF_CHUNK | HDF_COMP):
         switch (cinf->comp.comp_type) {
             case COMP_CODE_NONE:
             default:
-                jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFCompInfo");
+                jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFCompInfo");
                 if (jc == NULL) {
                     return JNI_FALSE;
                 }
-                jmi = (*env)->GetMethodID(env, jc, "<init>", "()V");
+                jmi = ENVPTR->GetMethodID(ENVPAR  jc, "<init>", "()V");
                 if (jmi == NULL) {
                     return JNI_FALSE;
                 }
-                compinfo = (*env)->NewObject(env,jc,jmi);
+                compinfo = ENVPTR->NewObject(ENVPAR jc,jmi);
                 break;
             case COMP_CODE_JPEG:
                 /* new HDFJPEGCompInfo() */
-                jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFJPEGCompInfo");
+                jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFJPEGCompInfo");
                 if (jc == NULL) {
                     return JNI_FALSE;
                 }
-                jmi = (*env)->GetMethodID(env, jc, "<init>", "(II)V");
+                jmi = ENVPTR->GetMethodID(ENVPAR  jc, "<init>", "(II)V");
                 if (jmi == NULL) {
                     return JNI_FALSE;
                 }
-                compinfo = (*env)->NewObject(env,jc,jmi,
+                compinfo = ENVPTR->NewObject(ENVPAR jc,jmi,
                     cinf->comp.cinfo.jpeg.quality,
                     cinf->comp.cinfo.jpeg.force_baseline);
                 break;
             case COMP_CODE_DEFLATE:
-                jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFDeflateCompInfo");
+                jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFDeflateCompInfo");
                 if (jc == NULL) {
                     return JNI_FALSE;
                 }
-                jmi = (*env)->GetMethodID(env, jc, "<init>", "(I)V");
+                jmi = ENVPTR->GetMethodID(ENVPAR  jc, "<init>", "(I)V");
                 if (jmi == NULL) {
                     return JNI_FALSE;
                 }
-                compinfo = (*env)->NewObject(env,jc,jmi, cinf->comp.cinfo.deflate.level);
+                compinfo = ENVPTR->NewObject(ENVPAR jc,jmi, cinf->comp.cinfo.deflate.level);
                 break;
             case COMP_CODE_SZIP:
-                jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFSZIPCompInfo");
+                jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFSZIPCompInfo");
                 if (jc == NULL) {
                     return JNI_FALSE;
                 }
-                jmi = (*env)->GetMethodID(env, jc, "<init>", "(IIIIII)V");
+                jmi = ENVPTR->GetMethodID(ENVPAR  jc, "<init>", "(IIIIII)V");
                 if (jmi == NULL) {
                     return JNI_FALSE;
                 }
-                compinfo = (*env)->NewObject(env,jc,jmi,
+                compinfo = ENVPTR->NewObject(ENVPAR jc,jmi,
                         cinf->comp.cinfo.szip.bits_per_pixel,
                         cinf->comp.cinfo.szip.options_mask,
                         cinf->comp.cinfo.szip.pixels,
@@ -573,16 +585,16 @@ jobject compinfo;
         break;
         case (HDF_CHUNK | HDF_NBIT):
         /* new HDFCompInfo() */
-        jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFNBITChunkInfo");
+        jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFNBITChunkInfo");
         if (jc == NULL) {
             return JNI_FALSE;
         }
-        jmi = (*env)->GetMethodID(env, jc, "<init>",
+        jmi = ENVPTR->GetMethodID(ENVPAR  jc, "<init>",
             "([IIIII;)V");
         if (jmi == NULL) {
             return JNI_FALSE;
         }
-        (*env)->CallVoidMethod(env,chunkobj,jmi, rarray,
+        ENVPTR->CallVoidMethod(ENVPAR chunkobj,jmi, rarray,
             cinf->nbit.start_bit,
             cinf->nbit.bit_len,
             cinf->nbit.sign_ext,
@@ -591,12 +603,12 @@ jobject compinfo;
         break;
         }
 
-    jmi = (*env)->GetMethodID(env, jci, "<init>",
+    jmi = ENVPTR->GetMethodID(ENVPAR  jci, "<init>",
         "([IILncsa/hdf/hdflib/HDFCompInfo;)V");
     if (jmi == NULL) {
         return JNI_FALSE;
     }
-    (*env)->CallVoidMethod(env,chunkobj,jmi, rarray, cinf->comp.comp_type,
+    ENVPTR->CallVoidMethod(ENVPAR chunkobj,jmi, rarray, cinf->comp.comp_type,
             compinfo);
 
     return JNI_TRUE;
@@ -604,7 +616,7 @@ jobject compinfo;
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_HCget_1config_1info
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint coder_type) /* out: CompInfo */
 {
 	intn rval;
@@ -620,4 +632,7 @@ jint coder_type) /* out: CompInfo */
 }
 
 
+#ifdef __cplusplus
+}
+#endif
 

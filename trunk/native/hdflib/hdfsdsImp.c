@@ -20,12 +20,23 @@
  *     http://hdf.ncsa.uiuc.edu
  *
  */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "hdf.h"
 #include "mfhdf.h"
 #include "jni.h"
 
-extern jboolean h4outOfMemory( JNIEnv *env, char *functName);
+#ifdef __cplusplus
+#define ENVPTR (env)
+#define ENVPAR 
+#else
+#define ENVPTR (*env)
+#define ENVPAR env,
+#endif
 
+extern jboolean h4outOfMemory( JNIEnv *env, char *functName);
 extern jboolean makeChunkInfo( JNIEnv *env, jobject chunkobj, int32 flgs, HDF_CHUNK_DEF *cinf);
 extern jboolean getNewCompInfo( JNIEnv *env, jobject ciobj, comp_info *cinf);
 extern jboolean setNewCompInfo( JNIEnv *env, jobject ciobj, comp_coder_t coder, comp_info *cinf);
@@ -35,25 +46,25 @@ extern jboolean getChunkInfo( JNIEnv *env, jobject chunkobj, HDF_CHUNK_DEF *cinf
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDstart
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jstring filename,
 jint access)
 {
     int32 sdid;
     char  *fname;
 
-    fname =(char *) (*env)->GetStringUTFChars(env,filename,0);
+    fname =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
 
     sdid = SDstart(fname, (int32)access);
 
-    (*env)->ReleaseStringUTFChars(env,filename,fname);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,fname);
 
     return sdid;
 }
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDend
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdid)
 {
     int32 retVal;
@@ -69,7 +80,7 @@ jint sdid)
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDfileinfo
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdid,
 jintArray argv)  /* OUT: ndatasets, nglobalattr */
 {
@@ -77,15 +88,15 @@ jintArray argv)  /* OUT: ndatasets, nglobalattr */
     int32 * theArray;
     jboolean bb;
 
-    theArray = (int32 *)(*env)->GetIntArrayElements(env,argv,&bb);
+    theArray = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR argv,&bb);
 
     retVal = SDfileinfo((int32)sdid, &(theArray[0]), &(theArray[1]));
 
     if (retVal == FAIL) {
-        (*env)->ReleaseIntArrayElements(env,argv,(jint *)theArray,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,(jint *)theArray,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseIntArrayElements(env,argv,(jint *)theArray,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,(jint *)theArray,0);
         return JNI_TRUE;
     }
 }
@@ -93,7 +104,7 @@ jintArray argv)  /* OUT: ndatasets, nglobalattr */
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDselect
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdid,
 jint index)
 {
@@ -102,28 +113,28 @@ jint index)
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDnametoindex
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdid,
 jstring name)
 {
     int32 retVal;
     char  *cname;
 
-    cname =(char *) (*env)->GetStringUTFChars(env,name,0);
+    cname =(char *) ENVPTR->GetStringUTFChars(ENVPAR name,0);
 
     /* select the dataset */
     retVal = SDnametoindex((int32)sdid, cname);
 
-    (*env)->ReleaseStringUTFChars(env,name,cname);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR name,cname);
 
     return retVal;
 }
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDgetinfo
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid,
-jarray name,  /* OUT: String */
+jobjectArray name,  /* OUT: String */
 jintArray dimsizes, /* OUT: int[] */
 jintArray argv)  /* OUT: rank, NT, nattr */
 {
@@ -144,40 +155,40 @@ jintArray argv)  /* OUT: rank, NT, nattr */
         return FAIL;
     }
 
-    dims = (int32 *)(*env)->GetIntArrayElements(env,dimsizes,&bb);
-    theArgs = (int32 *)(*env)->GetIntArrayElements(env,argv,&bb);
+    dims = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR dimsizes,&bb);
+    theArgs = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR argv,&bb);
 
     retVal = SDgetinfo((int32)sdsid, cname, &(theArgs[0]), dims,
             &(theArgs[1]), &(theArgs[2]));
     cname[MAX_NC_NAME] = '\0';
 
     if (retVal == FAIL) {
-        (*env)->ReleaseIntArrayElements(env,dimsizes,(jint *)dims,JNI_ABORT);
-        (*env)->ReleaseIntArrayElements(env,argv,(jint *)theArgs,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR dimsizes,(jint *)dims,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,(jint *)theArgs,JNI_ABORT);
         free(cname);
         return JNI_FALSE;
     } else {
 
-        (*env)->ReleaseIntArrayElements(env,dimsizes,(jint *)dims,0);
-        (*env)->ReleaseIntArrayElements(env,argv,(jint *)theArgs,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR dimsizes,(jint *)dims,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,(jint *)theArgs,0);
 
-        str = (*env)->NewStringUTF(env,cname);
-        o = (*env)->GetObjectArrayElement(env,name,0);
+        str = ENVPTR->NewStringUTF(ENVPAR cname);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR name,0);
         if (o == NULL) {
             free(cname);
             return JNI_FALSE;
         }
-        jc = (*env)->FindClass(env, "java/lang/String");
+        jc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
         if (jc == NULL) {
             free(cname);
             return JNI_FALSE;
         }
-        bb = (*env)->IsInstanceOf(env,o,jc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR o,jc);
         if (bb == JNI_FALSE) {
             free(cname);
             return JNI_FALSE;
         }
-        (*env)->SetObjectArrayElement(env,name,0,(jobject)str);
+        ENVPTR->SetObjectArrayElement(ENVPAR name,0,(jobject)str);
         free(cname);
         return JNI_TRUE;
     }
@@ -185,7 +196,7 @@ jintArray argv)  /* OUT: rank, NT, nattr */
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDreaddata
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid,
 jintArray start,
 jintArray stride,
@@ -199,41 +210,41 @@ jbyteArray data)
     jbyte *d;
     jboolean bb;
 
-    strt = (int32 *)(*env)->GetIntArrayElements(env,start,&bb);
+    strt = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR start,&bb);
     if (stride != NULL) {
-        strd = (int32 *)(*env)->GetIntArrayElements(env,stride,&bb);
+        strd = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR stride,&bb);
     } else {
         strd = (int32 *)NULL;
     }
-    cnt = (int32 *)(*env)->GetIntArrayElements(env,count,&bb);
+    cnt = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR count,&bb);
 
     /* assume that 'data' is big enough */
-    d = (*env)->GetByteArrayElements(env,data,&bb);
+    d = ENVPTR->GetByteArrayElements(ENVPAR data,&bb);
 
     retVal = SDreaddata((int32)sdsid, strt, strd, cnt, d);
 
     if (retVal == FAIL) {
-        (*env)->ReleaseIntArrayElements(env,start,(jint *)strt,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR start,(jint *)strt,JNI_ABORT);
         if (stride != NULL) {
-            (*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,JNI_ABORT);
+            ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,JNI_ABORT);
         }
-        (*env)->ReleaseIntArrayElements(env,count,(jint *)cnt,JNI_ABORT);
-        (*env)->ReleaseByteArrayElements(env,data,d,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR data,d,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseIntArrayElements(env,start,(jint *)strt,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR start,(jint *)strt,0);
         if (stride != NULL) {
-            (*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,0);
+            ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,0);
         }
-        (*env)->ReleaseIntArrayElements(env,count,(jint *)cnt,0);
-        (*env)->ReleaseByteArrayElements(env,data,d,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR data,d,0);
         return JNI_TRUE;
     }
 }
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDendaccess
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid)
 {
     int32 retVal;
@@ -249,7 +260,7 @@ jint sdsid)
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDgetdimid
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid,
 jint index)
 {
@@ -258,9 +269,9 @@ jint index)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDdiminfo
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint dimid,
-jarray dimname, /* OUT: String */
+jobjectArray dimname, /* OUT: String */
 jintArray argv)  /* OUT: count, NT, nattrs */
 {
     int32 retVal;
@@ -272,7 +283,7 @@ jintArray argv)  /* OUT: count, NT, nattrs */
     jobject o;
 
 
-    theArgs = (*env)->GetIntArrayElements(env,argv,&bb);
+    theArgs = ENVPTR->GetIntArrayElements(ENVPAR argv,&bb);
 
     retVal = SDdiminfo((int32)dimid, name, (int32 *)&(theArgs[0]),
         (int32 *)&(theArgs[1]),(int32 *)&(theArgs[2]));
@@ -280,33 +291,33 @@ jintArray argv)  /* OUT: count, NT, nattrs */
     name[255] = '\0';
 
     if (retVal == FAIL) {
-        (*env)->ReleaseIntArrayElements(env,argv,theArgs,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,JNI_ABORT);
         return JNI_FALSE;
     } else {
 
-        (*env)->ReleaseIntArrayElements(env,argv,theArgs,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,0);
 
-        str = (*env)->NewStringUTF(env,name);
-        o = (*env)->GetObjectArrayElement(env,dimname,0);
+        str = ENVPTR->NewStringUTF(ENVPAR name);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR dimname,0);
         if (o == NULL) {
             return JNI_FALSE;
         }
-        Sjc = (*env)->FindClass(env, "java/lang/String");
+        Sjc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
         if (Sjc == NULL) {
             return JNI_FALSE;
         }
-        bb = (*env)->IsInstanceOf(env,o,Sjc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
         if (bb == JNI_FALSE) {
             return JNI_FALSE;
         }
-        (*env)->SetObjectArrayElement(env,dimname,0,(jobject)str);
+        ENVPTR->SetObjectArrayElement(ENVPAR dimname,0,(jobject)str);
         return JNI_TRUE;
     }
 }
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDidtoref
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid)
 {
     return(SDidtoref((int32)sdsid));
@@ -314,7 +325,7 @@ jint sdsid)
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDreftoindex
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdid,
 jint ref)
 {
@@ -323,10 +334,10 @@ jint ref)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDattrinfo
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint id,
 jint index,
-jarray name,  /* OUT:  String */
+jobjectArray name,  /* OUT:  String */
 jintArray argv)  /* OUT:  NT, count */
 {
     int32 retVal;
@@ -337,7 +348,7 @@ jintArray argv)  /* OUT:  NT, count */
     jobject o;
     char  nam[256];  /* what is the correct constant??? */
 
-    theArgs = (*env)->GetIntArrayElements(env,argv,&bb);
+    theArgs = ENVPTR->GetIntArrayElements(ENVPAR argv,&bb);
 
     retVal = SDattrinfo((int32)id, (int32)index, nam,
         (int32 *)&(theArgs[0]), (int32 *)&(theArgs[1]));
@@ -345,33 +356,33 @@ jintArray argv)  /* OUT:  NT, count */
     nam[255] = '\0';
 
     if (retVal == FAIL) {
-        (*env)->ReleaseIntArrayElements(env,argv,theArgs,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,JNI_ABORT);
         return JNI_FALSE;
     } else {
 
-        (*env)->ReleaseIntArrayElements(env,argv,theArgs,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,0);
 
-        str = (*env)->NewStringUTF(env,nam);
-        o = (*env)->GetObjectArrayElement(env,name,0);
+        str = ENVPTR->NewStringUTF(ENVPAR nam);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR name,0);
         if (o == NULL) {
             return JNI_FALSE;
         }
-        Sjc = (*env)->FindClass(env, "java/lang/String");
+        Sjc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
         if (Sjc == NULL) {
             return JNI_FALSE;
         }
-        bb = (*env)->IsInstanceOf(env,o,Sjc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
         if (bb == JNI_FALSE) {
             return JNI_FALSE;
         }
-        (*env)->SetObjectArrayElement(env,name,0,(jobject)str);
+        ENVPTR->SetObjectArrayElement(ENVPAR name,0,(jobject)str);
         return JNI_TRUE;
     }
 }
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDreadattr
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint id,
 jint index,
 jbyteArray dat)
@@ -380,40 +391,40 @@ jbyteArray dat)
     jbyte * s;
     jboolean bb;
 
-    s = (*env)->GetByteArrayElements(env,dat,&bb);
+    s = ENVPTR->GetByteArrayElements(ENVPAR dat,&bb);
 
     retVal = SDreadattr((int32)id,(int32)index,s);
 
     if (retVal == FAIL) {
-        (*env)->ReleaseByteArrayElements(env,dat,s,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR dat,s,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseByteArrayElements(env,dat,s,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR dat,s,0);
         return JNI_TRUE;
     }
 }
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDfindattr
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint id,
 jstring name)
 {
     int32 retVal;
     char  *cname;
 
-    cname =(char *) (*env)->GetStringUTFChars(env,name,0);
+    cname =(char *) ENVPTR->GetStringUTFChars(ENVPAR name,0);
 
     retVal = SDfindattr((int32)id, cname);
 
-    (*env)->ReleaseStringUTFChars(env,name,cname);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR name,cname);
 
     return retVal;
 }
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDiscoordvar
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid)
 {
     int32 retVal;
@@ -429,7 +440,7 @@ jint sdsid)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDgetcal
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid,
 jdoubleArray argv, /* OUT:  Cal, Cal_err, Offset, Offset_err */
 jintArray nt)  /* OUT:  NT */
@@ -439,27 +450,27 @@ jintArray nt)  /* OUT:  NT */
     jint *theNT;
     jboolean bb;
 
-    theArgs = (*env)->GetDoubleArrayElements(env,argv,&bb);
-    theNT = (*env)->GetIntArrayElements(env,nt,&bb);
+    theArgs = ENVPTR->GetDoubleArrayElements(ENVPAR argv,&bb);
+    theNT = ENVPTR->GetIntArrayElements(ENVPAR nt,&bb);
 
     retVal = SDgetcal((int32)sdsid, (float64 *)&(theArgs[0]),
         (float64 *)&(theArgs[1]), (float64 *)&(theArgs[2]),
         (float64 *)&(theArgs[3]), (int32 *)&(theNT[0]));
 
     if (retVal==FAIL) {
-        (*env)->ReleaseDoubleArrayElements(env,argv,theArgs,JNI_ABORT);
-        (*env)->ReleaseIntArrayElements(env,nt,theNT,JNI_ABORT);
+        ENVPTR->ReleaseDoubleArrayElements(ENVPAR argv,theArgs,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR nt,theNT,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseDoubleArrayElements(env,argv,theArgs,0);
-        (*env)->ReleaseIntArrayElements(env,nt,theNT,0);
+        ENVPTR->ReleaseDoubleArrayElements(ENVPAR argv,theArgs,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR nt,theNT,0);
         return JNI_TRUE;
     }
 }
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDgetdatastrs
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid,
 jobjectArray strings, /* OUT: label, unit, format, coordsys */
 jint len)  /* IN */
@@ -476,46 +487,46 @@ jint len)  /* IN */
     char *coordsysVal;
     int i;
 
-    Sjc = (*env)->FindClass(env, "java/lang/String");
+    Sjc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
     if (Sjc == NULL) {
         return JNI_FALSE;
     }
     for (i = 0; i < 4; i++) {
-        o = (*env)->GetObjectArrayElement(env,strings,i);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR strings,i);
         if (o == NULL) {
             continue;
         }
-        bb = (*env)->IsInstanceOf(env,o,Sjc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
         if (bb == JNI_FALSE) {
             /* exception */
             return JNI_FALSE;
         }
     }
 
-    label = (jstring)(*env)->GetObjectArrayElement(env,strings,0);
+    label = (jstring)ENVPTR->GetObjectArrayElement(ENVPAR strings,0);
     /* allocate space */
     if (label == NULL) {
         labVal = NULL; /* don't read label */
     } else {
         labVal =  (char *)HDmalloc(len+1);
         if (labVal == NULL) {
-            h4outOfMemory(env, "SDgetdatastrs");
+            h4outOfMemory(env,  "SDgetdatastrs");
             return JNI_FALSE;
         }
     }
-    unit = (jstring)(*env)->GetObjectArrayElement(env,strings,1);
+    unit = (jstring)ENVPTR->GetObjectArrayElement(ENVPAR strings,1);
     if (unit == NULL) {
         unitVal = NULL;
     } else {
         unitVal =  (char *)HDmalloc(len+1);
         if (unitVal == NULL) {
             if (labVal != NULL) HDfree(labVal);
-            h4outOfMemory(env, "SDgetdatastrs");
+            h4outOfMemory(env,  "SDgetdatastrs");
             return JNI_FALSE;
         }
     }
 
-    format = (jstring)(*env)->GetObjectArrayElement(env,strings,2);
+    format = (jstring)ENVPTR->GetObjectArrayElement(ENVPAR strings,2);
     if (format == NULL) {
         fmtVal = NULL;
     } else {
@@ -523,11 +534,11 @@ jint len)  /* IN */
         if (fmtVal == NULL) {
             if (labVal != NULL) HDfree(labVal);
             if (unitVal != NULL) HDfree(unitVal);
-            h4outOfMemory(env, "SDgetdatastrs");
+            h4outOfMemory(env,  "SDgetdatastrs");
             return JNI_FALSE;
         }
     }
-    coordsys = (jstring)(*env)->GetObjectArrayElement(env,strings,3);
+    coordsys = (jstring)ENVPTR->GetObjectArrayElement(ENVPAR strings,3);
     if (coordsys == NULL) {
         coordsysVal = NULL;
     } else {
@@ -536,7 +547,7 @@ jint len)  /* IN */
             if (labVal != NULL) HDfree(labVal);
             if (unitVal != NULL) HDfree(unitVal);
             if (fmtVal != NULL) HDfree(fmtVal);
-            h4outOfMemory(env, "SDgetdatastrs");
+            h4outOfMemory(env,  "SDgetdatastrs");
             return JNI_FALSE;
         }
     }
@@ -550,44 +561,44 @@ jint len)  /* IN */
         if (coordsysVal != NULL) HDfree(coordsysVal);
         return JNI_FALSE;
     } else {
-        Sjc = (*env)->FindClass(env, "java/lang/String");
+        Sjc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
         if (Sjc == NULL) {
             if (labVal != NULL) HDfree(labVal);
             if (unitVal != NULL) HDfree(unitVal);
             if (fmtVal != NULL) HDfree(fmtVal);
             if (coordsysVal != NULL) HDfree(coordsysVal);
-            h4outOfMemory(env, "SDgetdatastrs");
+            h4outOfMemory(env,  "SDgetdatastrs");
             return JNI_FALSE;
         }
         if (labVal != NULL) {
             labVal[len] = '\0';
-            str = (*env)->NewStringUTF(env,labVal);
+            str = ENVPTR->NewStringUTF(ENVPAR labVal);
             if (str != NULL) {
-                (*env)->SetObjectArrayElement(env,strings,0,(jobject)str);
+                ENVPTR->SetObjectArrayElement(ENVPAR strings,0,(jobject)str);
             }
             HDfree(labVal);
         }
         if (unitVal != NULL) {
             unitVal[len] = '\0';
-            str = (*env)->NewStringUTF(env,unitVal);
+            str = ENVPTR->NewStringUTF(ENVPAR unitVal);
             if (str != NULL) {
-            (*env)->SetObjectArrayElement(env,strings,1,(jobject)str);
+            ENVPTR->SetObjectArrayElement(ENVPAR strings,1,(jobject)str);
             }
             HDfree(unitVal);
         }
         if (fmtVal != NULL) {
             fmtVal[len] = '\0';
-            str = (*env)->NewStringUTF(env,fmtVal);
+            str = ENVPTR->NewStringUTF(ENVPAR fmtVal);
             if (str != NULL) {
-            (*env)->SetObjectArrayElement(env,strings,2,(jobject)str);
+            ENVPTR->SetObjectArrayElement(ENVPAR strings,2,(jobject)str);
             }
             HDfree(fmtVal);
         }
         if (coordsysVal != NULL) {
             coordsysVal[len] = '\0';
-            str = (*env)->NewStringUTF(env,coordsysVal);
+            str = ENVPTR->NewStringUTF(ENVPAR coordsysVal);
             if (str != NULL) {
-            (*env)->SetObjectArrayElement(env,strings,3,(jobject)str);
+            ENVPTR->SetObjectArrayElement(ENVPAR strings,3,(jobject)str);
             }
             HDfree(coordsysVal);
         }
@@ -598,7 +609,7 @@ jint len)  /* IN */
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDgetdimstrs
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint dimid,
 jobjectArray argv, /* OUT: String label, unit, format, */
 jint len)
@@ -610,29 +621,29 @@ jint len)
     jobject o;
     jboolean bb;
 
-    o = (*env)->GetObjectArrayElement(env,argv,0);
+    o = ENVPTR->GetObjectArrayElement(ENVPAR argv,0);
     if (o == NULL) {
         labVal = NULL; /* don't read label */
     } else {
         labVal =  (char *)HDmalloc(len+1);
         if (labVal == NULL) {
-            h4outOfMemory(env, "SDgetdimstrs");
+            h4outOfMemory(env,  "SDgetdimstrs");
             return JNI_FALSE;
         }
     }
-    o = (*env)->GetObjectArrayElement(env,argv,1);
+    o = ENVPTR->GetObjectArrayElement(ENVPAR argv,1);
     if (o == NULL) {
         unitVal = NULL;
     } else {
         unitVal =  (char *)HDmalloc(len+1);
         if (unitVal == NULL) {
             if (labVal != NULL) HDfree(labVal);
-            h4outOfMemory(env, "SDgetdimstrs");
+            h4outOfMemory(env,  "SDgetdimstrs");
             return JNI_FALSE;
         }
     }
 
-    o = (*env)->GetObjectArrayElement(env,argv,2);
+    o = ENVPTR->GetObjectArrayElement(ENVPAR argv,2);
     if (o == NULL) {
         fmtVal = NULL;
     } else {
@@ -640,7 +651,7 @@ jint len)
         if (fmtVal == NULL) {
             if (labVal != NULL) HDfree(labVal);
             if (unitVal != NULL) HDfree(unitVal);
-            h4outOfMemory(env, "SDgetdimstrs");
+            h4outOfMemory(env,  "SDgetdimstrs");
             return JNI_FALSE;
         }
     }
@@ -653,7 +664,7 @@ jint len)
         if (fmtVal != NULL) HDfree(fmtVal);
         return JNI_FALSE;
     } else {
-        Sjc = (*env)->FindClass(env, "java/lang/String");
+        Sjc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
         if (Sjc == NULL) {
             if (labVal != NULL) HDfree(labVal);
             if (unitVal != NULL) HDfree(unitVal);
@@ -662,14 +673,14 @@ jint len)
         }
 
         if (labVal != NULL) {
-            o = (*env)->GetObjectArrayElement(env,argv,0);
+            o = ENVPTR->GetObjectArrayElement(ENVPAR argv,0);
             if (o == NULL) {
                 if (labVal != NULL) HDfree(labVal);
                 if (unitVal != NULL) HDfree(unitVal);
                 if (fmtVal != NULL) HDfree(fmtVal);
                 return JNI_FALSE;
             }
-            bb = (*env)->IsInstanceOf(env,o,Sjc);
+            bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
             if (bb == JNI_FALSE) {
                 if (labVal != NULL) HDfree(labVal);
                 if (unitVal != NULL) HDfree(unitVal);
@@ -677,18 +688,18 @@ jint len)
                 return JNI_FALSE;
             }
             labVal[len] = '\0';
-            str = (*env)->NewStringUTF(env,labVal);
-            (*env)->SetObjectArrayElement(env,argv,0,(jobject)str);
+            str = ENVPTR->NewStringUTF(ENVPAR labVal);
+            ENVPTR->SetObjectArrayElement(ENVPAR argv,0,(jobject)str);
         }
         if (unitVal != NULL) {
-            o = (*env)->GetObjectArrayElement(env,argv,1);
+            o = ENVPTR->GetObjectArrayElement(ENVPAR argv,1);
             if (o == NULL) {
                 if (labVal != NULL) HDfree(labVal);
                 if (unitVal != NULL) HDfree(unitVal);
                 if (fmtVal != NULL) HDfree(fmtVal);
                 return JNI_FALSE;
             }
-            bb = (*env)->IsInstanceOf(env,o,Sjc);
+            bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
             if (bb == JNI_FALSE) {
                 if (labVal != NULL) HDfree(labVal);
                 if (unitVal != NULL) HDfree(unitVal);
@@ -696,18 +707,18 @@ jint len)
                 return JNI_FALSE;
             }
             unitVal[len] = '\0';
-            str = (*env)->NewStringUTF(env,unitVal);
-            (*env)->SetObjectArrayElement(env,argv,1,(jobject)str);
+            str = ENVPTR->NewStringUTF(ENVPAR unitVal);
+            ENVPTR->SetObjectArrayElement(ENVPAR argv,1,(jobject)str);
         }
         if (fmtVal != NULL) {
-            o = (*env)->GetObjectArrayElement(env,argv,2);
+            o = ENVPTR->GetObjectArrayElement(ENVPAR argv,2);
             if (o == NULL) {
                 if (labVal != NULL) HDfree(labVal);
                 if (unitVal != NULL) HDfree(unitVal);
                 if (fmtVal != NULL) HDfree(fmtVal);
                 return JNI_FALSE;
             }
-            bb = (*env)->IsInstanceOf(env,o,Sjc);
+            bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
             if (bb == JNI_FALSE) {
                 if (labVal != NULL) HDfree(labVal);
                 if (unitVal != NULL) HDfree(unitVal);
@@ -715,8 +726,8 @@ jint len)
                 return JNI_FALSE;
             }
             fmtVal[len] = '\0';
-            str = (*env)->NewStringUTF(env,fmtVal);
-            (*env)->SetObjectArrayElement(env,argv,2,(jobject)str);
+            str = ENVPTR->NewStringUTF(ENVPAR fmtVal);
+            ENVPTR->SetObjectArrayElement(ENVPAR argv,2,(jobject)str);
         }
         if (labVal != NULL) HDfree(labVal);
         if (unitVal != NULL) HDfree(unitVal);
@@ -730,7 +741,7 @@ jint len)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDgetdimscale
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint dimid,
 jbyteArray data) /* OUT: byte? */
 {
@@ -738,15 +749,15 @@ jbyteArray data) /* OUT: byte? */
     jbyte *datVal;
     jboolean bb;
 
-    datVal = (*env)->GetByteArrayElements(env,data,&bb);
+    datVal = ENVPTR->GetByteArrayElements(ENVPAR data,&bb);
 
     retVal = SDgetdimscale((int32)dimid, (char *)datVal);
     if (retVal==FAIL) {
-        (*env)->ReleaseByteArrayElements(env,data,datVal,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR data,datVal,JNI_ABORT);
         return JNI_FALSE;
     }
     else {
-        (*env)->ReleaseByteArrayElements(env,data,datVal,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR data,datVal,0);
         return JNI_TRUE;
     }
 
@@ -754,7 +765,7 @@ jbyteArray data) /* OUT: byte? */
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDgetfillvalue
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid,
 jbyteArray data)  /* OUT: byte? */
 {
@@ -762,22 +773,22 @@ jbyteArray data)  /* OUT: byte? */
     jbyte *datVal;
     jboolean bb;
 
-    datVal = (*env)->GetByteArrayElements(env,data,&bb);
+    datVal = ENVPTR->GetByteArrayElements(ENVPAR data,&bb);
 
     retVal = SDgetfillvalue((int32)sdsid, (char *)datVal);
     if (retVal==FAIL) {
-        (*env)->ReleaseByteArrayElements(env,data,datVal,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR data,datVal,JNI_ABORT);
         return JNI_FALSE;
     }
     else {
-        (*env)->ReleaseByteArrayElements(env,data,datVal,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR data,datVal,0);
         return JNI_TRUE;
     }
 }
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDgetrange
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid,
 jbyteArray max,  /* OUT:  byte[]? */
 jbyteArray min)  /* OUT:  byte[] ? */
@@ -786,25 +797,25 @@ jbyteArray min)  /* OUT:  byte[] ? */
     jbyte *minp, *maxp;
     jboolean bb;
 
-    maxp = (*env)->GetByteArrayElements(env,max,&bb);
-    minp = (*env)->GetByteArrayElements(env,min,&bb);
+    maxp = ENVPTR->GetByteArrayElements(ENVPAR max,&bb);
+    minp = ENVPTR->GetByteArrayElements(ENVPAR min,&bb);
 
     retVal = SDgetrange((int32)sdsid, maxp, minp);
     if (retVal==FAIL) {
-        (*env)->ReleaseByteArrayElements(env,max,maxp,JNI_ABORT);
-        (*env)->ReleaseByteArrayElements(env,min,minp,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR max,maxp,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR min,minp,JNI_ABORT);
         return JNI_FALSE;
     }
     else {
-        (*env)->ReleaseByteArrayElements(env,max,maxp,0);
-        (*env)->ReleaseByteArrayElements(env,min,minp,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR max,maxp,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR min,minp,0);
         return JNI_TRUE;
     }
 }
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDcreate
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sd_id,
 jstring name,
 jint number_type,
@@ -816,24 +827,24 @@ jintArray dimsizes) /* IN: int[] */
     jint * dims;
     jboolean bb;
 
-    s =(char *) (*env)->GetStringUTFChars(env,name,0);
-    dims = (*env)->GetIntArrayElements(env,dimsizes,&bb);
+    s =(char *) ENVPTR->GetStringUTFChars(ENVPAR name,0);
+    dims = ENVPTR->GetIntArrayElements(ENVPAR dimsizes,&bb);
 
 
     rval = SDcreate((int32) sd_id, (char *)s, (int32) number_type, (int32) rank, (int32 *)dims);
 
-    (*env)->ReleaseStringUTFChars(env,name,s);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR name,s);
     if (rval==FAIL) {
-        (*env)->ReleaseIntArrayElements(env,dimsizes,dims,JNI_ABORT); /* no write back */
+        ENVPTR->ReleaseIntArrayElements(ENVPAR dimsizes,dims,JNI_ABORT); /* no write back */
     } else {
-        (*env)->ReleaseIntArrayElements(env,dimsizes,dims,0); /* do write back */
+        ENVPTR->ReleaseIntArrayElements(ENVPAR dimsizes,dims,0); /* do write back */
     }
     return rval;
 }
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDisrecord
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid)
 {
     int32 rval;
@@ -849,7 +860,7 @@ jint sdsid)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDsetattr
 (JNIEnv *env,
-jclass class,
+jclass clss,
 jint s_id,
 jstring attr_name,
 jint num_type,
@@ -862,18 +873,18 @@ jbyteArray values) /* IN:  byte[]??? */
     char * s;
     jbyte * v;
 
-    s =(char *) (*env)->GetStringUTFChars(env,attr_name,0);
-    v = (*env)->GetByteArrayElements(env,values,&bb);
+    s =(char *) ENVPTR->GetStringUTFChars(ENVPAR attr_name,0);
+    v = ENVPTR->GetByteArrayElements(ENVPAR values,&bb);
 
     rval = SDsetattr((int32) s_id, (char *)s, (int32) num_type,
         (int32) count, (VOIDP) v);
 
-    (*env)->ReleaseStringUTFChars(env,attr_name,s);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR attr_name,s);
     if (rval==FAIL) {
-        (*env)->ReleaseByteArrayElements(env,values,v,JNI_ABORT); /* no write back */
+        ENVPTR->ReleaseByteArrayElements(ENVPAR values,v,JNI_ABORT); /* no write back */
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseByteArrayElements(env,values,v,0); /* do write back */
+        ENVPTR->ReleaseByteArrayElements(ENVPAR values,v,0); /* do write back */
         return JNI_TRUE;
     }
 }
@@ -881,7 +892,7 @@ jbyteArray values) /* IN:  byte[]??? */
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDsetcal
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sds_id,
 jdouble cal,
 jdouble cal_err,
@@ -903,7 +914,7 @@ jint number_type)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDsetdatastrs
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sds_id,
 jstring label,
 jstring unit,
@@ -919,30 +930,30 @@ jstring coordsys)
     if (label == NULL) {
         labstr = NULL;
     } else {
-        labstr =(char *) (*env)->GetStringUTFChars(env,label,0);
+        labstr =(char *) ENVPTR->GetStringUTFChars(ENVPAR label,0);
     }
     if (unit == NULL) {
         unstr = NULL;
     } else {
-        unstr =(char *) (*env)->GetStringUTFChars(env,unit,0);
+        unstr =(char *) ENVPTR->GetStringUTFChars(ENVPAR unit,0);
     }
     if (format == NULL) {
         formstr = NULL;
     } else {
-        formstr =(char *) (*env)->GetStringUTFChars(env,format,0);
+        formstr =(char *) ENVPTR->GetStringUTFChars(ENVPAR format,0);
     }
     if (coordsys == NULL) {
         csstr = NULL;
     } else {
-        csstr =(char *) (*env)->GetStringUTFChars(env,coordsys,0);
+        csstr =(char *) ENVPTR->GetStringUTFChars(ENVPAR coordsys,0);
     }
 
     rval = SDsetdatastrs((int32) sds_id, labstr, unstr, formstr, csstr);
 
-    if (labstr != NULL) (*env)->ReleaseStringUTFChars(env,label,labstr);
-    if (unstr != NULL) (*env)->ReleaseStringUTFChars(env,unit,unstr);
-    if (formstr != NULL) (*env)->ReleaseStringUTFChars(env,format,formstr);
-    if (csstr != NULL) (*env)->ReleaseStringUTFChars(env,coordsys,csstr);
+    if (labstr != NULL) ENVPTR->ReleaseStringUTFChars(ENVPAR label,labstr);
+    if (unstr != NULL) ENVPTR->ReleaseStringUTFChars(ENVPAR unit,unstr);
+    if (formstr != NULL) ENVPTR->ReleaseStringUTFChars(ENVPAR format,formstr);
+    if (csstr != NULL) ENVPTR->ReleaseStringUTFChars(ENVPAR coordsys,csstr);
     if (rval==FAIL) {
         return JNI_FALSE;
     } else {
@@ -952,16 +963,16 @@ jstring coordsys)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDsetdimname
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint dim_id,
 jstring dim_name)
 {
     intn rval;
     char * str;
 
-    str =(char *) (*env)->GetStringUTFChars(env,dim_name,0);
+    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR dim_name,0);
     rval = SDsetdimname((int32) dim_id, str) ;
-    (*env)->ReleaseStringUTFChars(env,dim_name,str);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR dim_name,str);
     if (rval==FAIL) {
         return JNI_FALSE;
     } else {
@@ -972,7 +983,7 @@ jstring dim_name)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDsetdimscale
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint dim_id,
 jint count,
 jint number_type,
@@ -982,21 +993,21 @@ jbyteArray data) /*  IN:  byte[]???*/
     jbyte *d;
     jboolean bb;
 
-    d = (*env)->GetByteArrayElements(env,data,&bb);
+    d = ENVPTR->GetByteArrayElements(ENVPAR data,&bb);
 
     rval = SDsetdimscale((int32) dim_id, (int32) count, (int32) number_type, d) ;
     if (rval==FAIL) {
-        (*env)->ReleaseByteArrayElements(env,data,d,JNI_ABORT); /* no write back */
+        ENVPTR->ReleaseByteArrayElements(ENVPAR data,d,JNI_ABORT); /* no write back */
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseByteArrayElements(env,data,d,0); /* do write back */
+        ENVPTR->ReleaseByteArrayElements(ENVPAR data,d,0); /* do write back */
         return JNI_TRUE;
     }
 }
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDsetdimstrs
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint dim_id,
 jstring label,
 jstring unit,
@@ -1008,13 +1019,13 @@ jstring format)
     char * f;
 
 
-    l =(char *) (*env)->GetStringUTFChars(env,label,0);
-    u =(char *) (*env)->GetStringUTFChars(env,unit,0);
-    f =(char *) (*env)->GetStringUTFChars(env,format,0);
+    l =(char *) ENVPTR->GetStringUTFChars(ENVPAR label,0);
+    u =(char *) ENVPTR->GetStringUTFChars(ENVPAR unit,0);
+    f =(char *) ENVPTR->GetStringUTFChars(ENVPAR format,0);
     rval = SDsetdimstrs((int32) dim_id, l, u, f);
-    (*env)->ReleaseStringUTFChars(env,label,l);
-    (*env)->ReleaseStringUTFChars(env,unit,u);
-    (*env)->ReleaseStringUTFChars(env,format,f);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR label,l);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR unit,u);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR format,f);
     if (rval==FAIL) {
         return JNI_FALSE;
     } else {
@@ -1025,7 +1036,7 @@ jstring format)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDsetexternalfile
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sds_id,
 jstring filename,
 jint offset)
@@ -1033,10 +1044,10 @@ jint offset)
     intn rval;
     char * f;
 
-    f =(char *) (*env)->GetStringUTFChars(env,filename,0);
+    f =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
 
     rval =  SDsetexternalfile((int32) sds_id, f, (int32) offset);
-    (*env)->ReleaseStringUTFChars(env,filename,f);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,f);
     if (rval==FAIL) {
         return JNI_FALSE;
     } else {
@@ -1046,7 +1057,7 @@ jint offset)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDsetfillvalue
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sds_id,
 jbyteArray fill_val)  /* IN:  ?? byte[] */
 {
@@ -1054,13 +1065,13 @@ jbyteArray fill_val)  /* IN:  ?? byte[] */
     jboolean bb;
     jbyte * d;
 
-    d = (*env)->GetByteArrayElements(env,fill_val,&bb);
+    d = ENVPTR->GetByteArrayElements(ENVPAR fill_val,&bb);
     rval = SDsetfillvalue((int32) sds_id, (VOIDP) d) ;
     if (rval==FAIL) {
-        (*env)->ReleaseByteArrayElements(env,fill_val,d,JNI_ABORT); /* no write back */
+        ENVPTR->ReleaseByteArrayElements(ENVPAR fill_val,d,JNI_ABORT); /* no write back */
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseByteArrayElements(env,fill_val,d,0); /* do write back */
+        ENVPTR->ReleaseByteArrayElements(ENVPAR fill_val,d,0); /* do write back */
         return JNI_TRUE;
     }
 }
@@ -1068,7 +1079,7 @@ jbyteArray fill_val)  /* IN:  ?? byte[] */
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDsetrange
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid,
 jbyteArray max,  /* IN:  byte[]? */
 jbyteArray min)  /* IN:  byte[] ? */
@@ -1077,18 +1088,18 @@ jbyteArray min)  /* IN:  byte[] ? */
     jboolean bb;
     jbyte *minp, *maxp;
 
-    maxp = (*env)->GetByteArrayElements(env,max,&bb);
-    minp = (*env)->GetByteArrayElements(env,min,&bb);
+    maxp = ENVPTR->GetByteArrayElements(ENVPAR max,&bb);
+    minp = ENVPTR->GetByteArrayElements(ENVPAR min,&bb);
 
     retVal = SDsetrange((int32)sdsid, maxp, minp);
     if (retVal==FAIL) {
-        (*env)->ReleaseByteArrayElements(env,max,maxp,JNI_ABORT);
-        (*env)->ReleaseByteArrayElements(env,min,minp,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR max,maxp,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR min,minp,JNI_ABORT);
         return JNI_FALSE;
     }
     else {
-        (*env)->ReleaseByteArrayElements(env,max,maxp,0);
-        (*env)->ReleaseByteArrayElements(env,min,minp,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR max,maxp,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR min,minp,0);
         return JNI_TRUE;
     }
 }
@@ -1096,7 +1107,7 @@ jbyteArray min)  /* IN:  byte[] ? */
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDwritedata
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid,
 jintArray start,
 jintArray stride,
@@ -1111,34 +1122,34 @@ jbyteArray data)
     jboolean bb;
 
 
-    strt = (int32 *)(*env)->GetIntArrayElements(env,start,&bb);
+    strt = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR start,&bb);
     if (stride != NULL ) {
-        strd = (int32 *)(*env)->GetIntArrayElements(env,stride,&bb);
+        strd = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR stride,&bb);
     } else {
         strd = (int32 *)NULL;
     }
-    e = (int32 *)(*env)->GetIntArrayElements(env,edge,&bb);
+    e = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR edge,&bb);
 
     /* assume that 'data' is big enough */
-    d = (*env)->GetByteArrayElements(env,data,&bb);
+    d = ENVPTR->GetByteArrayElements(ENVPAR data,&bb);
 
     retVal = SDwritedata((int32)sdsid, strt, strd, e, d);
 
     if (retVal == FAIL) {
-        (*env)->ReleaseIntArrayElements(env,start,(jint *)strt,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR start,(jint *)strt,JNI_ABORT);
         if (stride != NULL ) {
-            (*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,JNI_ABORT);
+            ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,JNI_ABORT);
         }
-        (*env)->ReleaseIntArrayElements(env,edge,(jint *)e,JNI_ABORT);
-        (*env)->ReleaseByteArrayElements(env,data,d,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR edge,(jint *)e,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR data,d,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseIntArrayElements(env,start,(jint *)strt,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR start,(jint *)strt,0);
         if (stride != NULL ) {
-            (*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,0);
+            ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,0);
         }
-        (*env)->ReleaseIntArrayElements(env,edge,(jint *)e,0);
-        (*env)->ReleaseByteArrayElements(env,data,d,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR edge,(jint *)e,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR data,d,0);
         return JNI_TRUE;
     }
 }
@@ -1147,7 +1158,7 @@ jbyteArray data)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDsetnbitdataset
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint id,
 jint start_bit,
 jint bit_len,
@@ -1168,7 +1179,7 @@ intn rval;
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDsetcompress
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint id,
 jint type,
 jobject cinfo) /* IN: CompInfo */
@@ -1181,7 +1192,7 @@ jobject cinfo) /* IN: CompInfo */
     bzero((char *)&cinf, sizeof(cinf));
 */
 
-        bval = getNewCompInfo(env,cinfo,&cinf); /* or is it New ? */
+        bval = getNewCompInfo(env, cinfo,&cinf); /* or is it New ? */
 
         /* check for success... */
 
@@ -1196,7 +1207,7 @@ jobject cinfo) /* IN: CompInfo */
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDgetcompress
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint id,
 jobject cinfo) /* out: CompInfo */
 {
@@ -1213,13 +1224,13 @@ jobject cinfo) /* out: CompInfo */
         if (rval == FAIL) {
                 return JNI_FALSE;
         } else {
-            return setNewCompInfo(env,cinfo, coder, &cinf);
+            return setNewCompInfo(env, cinfo, coder, &cinf);
          }
 }
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDsetaccesstype
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint id,
 jint accesstype )
 {
@@ -1236,7 +1247,7 @@ intn rval;
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDsetblocksize
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid,
 jint block_size)
 {
@@ -1253,7 +1264,7 @@ intn rval;
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDsetfillmode
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid,
 jint fillmode )
 {
@@ -1270,7 +1281,7 @@ intn rval;
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDsetdimval_comp
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid,
 jint comp_mode )
 {
@@ -1287,7 +1298,7 @@ intn rval;
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDisdimval_bwcomp
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint dimid )
 {
 intn rval;
@@ -1305,7 +1316,7 @@ intn rval;
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDsetchunk
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid,
 jobject chunk_def, /* IN: HDFChunkInfo */
 jint flags)
@@ -1318,7 +1329,7 @@ jboolean bval;
     bzero((char *)&c_def, sizeof(c_def));
 */
 
-    bval = getChunkInfo(env,chunk_def,&c_def);
+    bval = getChunkInfo(env, chunk_def,&c_def);
 
     /* check results */
 
@@ -1334,7 +1345,7 @@ jboolean bval;
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDgetchunkinfo
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid,
 jobject chunk_def, /* Out: HDFChunkInfo */
 jintArray cflags)              /* OUT: Integer */
@@ -1348,16 +1359,16 @@ jboolean bb;
 /*
     bzero((char *)&cdef, sizeof(cdef));
 */
-    flgs = (*env)->GetIntArrayElements(env,cflags,&bb);
+    flgs = ENVPTR->GetIntArrayElements(ENVPAR cflags,&bb);
     rval = SDgetchunkinfo( (int32)sdsid, &cdef, (int32 *)&(flgs[0]));
 
     /* convert cdef to HDFchunkinfo */
     if (rval == FAIL) {
-        (*env)->ReleaseIntArrayElements(env,cflags,(jint *)flgs,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR cflags,(jint *)flgs,JNI_ABORT);
         return JNI_FALSE;
     } else {
         stat = makeChunkInfo( env, chunk_def, (int32)*flgs, &cdef);
-        (*env)->ReleaseIntArrayElements(env,cflags,(jint *)flgs,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR cflags,(jint *)flgs,0);
 
         return stat/*JNI_TRUE*/;
     }
@@ -1366,7 +1377,7 @@ jboolean bb;
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDreadchunk
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdid,
 jintArray origin, /* IN: int[] */
 jbyteArray dat)  /* OUT: byte[] */
@@ -1376,24 +1387,24 @@ jbyte * s;
 jint *arr;
     jboolean bb;
 
-    arr = (*env)->GetIntArrayElements(env,origin,&bb);
-    s = (*env)->GetByteArrayElements(env,dat,&bb);
+    arr = ENVPTR->GetIntArrayElements(ENVPAR origin,&bb);
+    s = ENVPTR->GetByteArrayElements(ENVPAR dat,&bb);
 
     retVal = SDreadchunk((int32)sdid,(int32 *)arr,s);
 
-    (*env)->ReleaseIntArrayElements(env,origin,arr,JNI_ABORT);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR origin,arr,JNI_ABORT);
     if (retVal == FAIL) {
-        (*env)->ReleaseByteArrayElements(env,dat,s,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR dat,s,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseByteArrayElements(env,dat,s,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR dat,s,0);
         return JNI_TRUE;
     }
 }
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDsetchunkcache
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid,
 jint maxcache,
 jint flags)
@@ -1403,7 +1414,7 @@ jint flags)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDwritechunk
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdid,
 jintArray index, /* IN: int[] */
 jbyteArray dat)  /* IN: byte[] */
@@ -1413,13 +1424,13 @@ jbyte * s;
 jint * arr;
     jboolean bb;
 
-    s = (*env)->GetByteArrayElements(env,dat,&bb);
-    arr = (*env)->GetIntArrayElements(env,index,&bb);
+    s = ENVPTR->GetByteArrayElements(ENVPAR dat,&bb);
+    arr = ENVPTR->GetIntArrayElements(ENVPAR index,&bb);
 
     retVal = SDwritechunk((int32)sdid,(int32 *)arr,(char *)s);
 
-    (*env)->ReleaseByteArrayElements(env,dat,s,JNI_ABORT);
-    (*env)->ReleaseIntArrayElements(env,index,arr,JNI_ABORT);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR dat,s,JNI_ABORT);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR index,arr,JNI_ABORT);
 
     if (retVal == FAIL) {
         return JNI_FALSE;
@@ -1431,7 +1442,7 @@ jint * arr;
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDcheckempty
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid,
 jintArray emptySDS)  /* OUT: 1 if sds is empty */
 {
@@ -1441,11 +1452,11 @@ jintArray emptySDS)  /* OUT: 1 if sds is empty */
     /* variables of  infomation */
     intn *isempty;
 
-    isempty = (intn *)(*env)->GetIntArrayElements(env,emptySDS,&bb);
+    isempty = (intn *)ENVPTR->GetIntArrayElements(ENVPAR emptySDS,&bb);
 
     retVal = SDcheckempty((int32)sdsid, (intn *)isempty );
 
-    (*env)->ReleaseIntArrayElements(env,emptySDS,(jint *)isempty,0);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR emptySDS,(jint *)isempty,0);
     if (retVal == FAIL) {
         return JNI_FALSE;
     } else {
@@ -1468,7 +1479,7 @@ jintArray emptySDS)  /* OUT: 1 if sds is empty */
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDreaddata_1short
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid,
 jintArray start,
 jintArray stride,
@@ -1482,41 +1493,41 @@ jshortArray data)
     jshort *d;
     jboolean bb;
 
-    strt = (int32 *)(*env)->GetIntArrayElements(env,start,&bb);
+    strt = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR start,&bb);
     if (stride != NULL) {
-        strd = (int32 *)(*env)->GetIntArrayElements(env,stride,&bb);
+        strd = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR stride,&bb);
     } else {
         strd = (int32 *)NULL;
     }
-    cnt = (int32 *)(*env)->GetIntArrayElements(env,count,&bb);
+    cnt = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR count,&bb);
 
     /* assume that 'data' is big enough */
-    d = (*env)->GetShortArrayElements(env,data,&bb);
+    d = ENVPTR->GetShortArrayElements(ENVPAR data,&bb);
 
     retVal = SDreaddata((int32)sdsid, strt, strd, cnt, d);
 
     if (retVal == FAIL) {
-        (*env)->ReleaseIntArrayElements(env,start,(jint *)strt,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR start,(jint *)strt,JNI_ABORT);
         if (stride != NULL) {
-            (*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,JNI_ABORT);
+            ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,JNI_ABORT);
         }
-        (*env)->ReleaseIntArrayElements(env,count,(jint *)cnt,JNI_ABORT);
-        (*env)->ReleaseShortArrayElements(env,data,d,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,JNI_ABORT);
+        ENVPTR->ReleaseShortArrayElements(ENVPAR data,d,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseIntArrayElements(env,start,(jint *)strt,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR start,(jint *)strt,0);
         if (stride != NULL) {
-            (*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,0);
+            ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,0);
         }
-        (*env)->ReleaseIntArrayElements(env,count,(jint *)cnt,0);
-        (*env)->ReleaseShortArrayElements(env,data,d,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,0);
+        ENVPTR->ReleaseShortArrayElements(ENVPAR data,d,0);
         return JNI_TRUE;
     }
 }
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDreaddata_1int
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid,
 jintArray start,
 jintArray stride,
@@ -1530,41 +1541,41 @@ jintArray data)
     jint *d;
     jboolean bb;
 
-    strt = (int32 *)(*env)->GetIntArrayElements(env,start,&bb);
+    strt = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR start,&bb);
     if (stride != NULL) {
-        strd = (int32 *)(*env)->GetIntArrayElements(env,stride,&bb);
+        strd = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR stride,&bb);
     } else {
         strd = (int32 *)NULL;
     }
-    cnt = (int32 *)(*env)->GetIntArrayElements(env,count,&bb);
+    cnt = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR count,&bb);
 
     /* assume that 'data' is big enough */
-    d = (*env)->GetIntArrayElements(env,data,&bb);
+    d = ENVPTR->GetIntArrayElements(ENVPAR data,&bb);
 
     retVal = SDreaddata((int32)sdsid, strt, strd, cnt, d);
 
     if (retVal == FAIL) {
-        (*env)->ReleaseIntArrayElements(env,start,(jint *)strt,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR start,(jint *)strt,JNI_ABORT);
         if (stride != NULL) {
-            (*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,JNI_ABORT);
+            ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,JNI_ABORT);
         }
-        (*env)->ReleaseIntArrayElements(env,count,(jint *)cnt,JNI_ABORT);
-        (*env)->ReleaseIntArrayElements(env,data,d,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR data,d,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseIntArrayElements(env,start,(jint *)strt,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR start,(jint *)strt,0);
         if (stride != NULL) {
-            (*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,0);
+            ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,0);
         }
-        (*env)->ReleaseIntArrayElements(env,count,(jint *)cnt,0);
-        (*env)->ReleaseIntArrayElements(env,data,d,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR data,d,0);
         return JNI_TRUE;
     }
 }
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDreaddata_1long
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid,
 jintArray start,
 jintArray stride,
@@ -1578,41 +1589,41 @@ jlongArray data)
     jlong *d;
     jboolean bb;
 
-    strt = (int32 *)(*env)->GetIntArrayElements(env,start,&bb);
+    strt = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR start,&bb);
     if (stride != NULL) {
-        strd = (int32 *)(*env)->GetIntArrayElements(env,stride,&bb);
+        strd = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR stride,&bb);
     } else {
         strd = (int32 *)NULL;
     }
-    cnt = (int32 *)(*env)->GetIntArrayElements(env,count,&bb);
+    cnt = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR count,&bb);
 
     /* assume that 'data' is big enough */
-    d = (*env)->GetLongArrayElements(env,data,&bb);
+    d = ENVPTR->GetLongArrayElements(ENVPAR data,&bb);
 
     retVal = SDreaddata((int32)sdsid, strt, strd, cnt, d);
 
     if (retVal == FAIL) {
-        (*env)->ReleaseIntArrayElements(env,start,(jint *)strt,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR start,(jint *)strt,JNI_ABORT);
         if (stride != NULL) {
-            (*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,JNI_ABORT);
+            ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,JNI_ABORT);
         }
-        (*env)->ReleaseIntArrayElements(env,count,(jint *)cnt,JNI_ABORT);
-        (*env)->ReleaseLongArrayElements(env,data,d,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,JNI_ABORT);
+        ENVPTR->ReleaseLongArrayElements(ENVPAR data,d,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseIntArrayElements(env,start,(jint *)strt,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR start,(jint *)strt,0);
         if (stride != NULL) {
-            (*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,0);
+            ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,0);
         }
-        (*env)->ReleaseIntArrayElements(env,count,(jint *)cnt,0);
-        (*env)->ReleaseLongArrayElements(env,data,d,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,0);
+        ENVPTR->ReleaseLongArrayElements(ENVPAR data,d,0);
         return JNI_TRUE;
     }
 }
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDreaddata_1float
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid,
 jintArray start,
 jintArray stride,
@@ -1626,41 +1637,41 @@ jfloatArray data)
     jfloat *d;
     jboolean bb;
 
-    strt = (int32 *)(*env)->GetIntArrayElements(env,start,&bb);
+    strt = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR start,&bb);
     if (stride != NULL) {
-        strd = (int32 *)(*env)->GetIntArrayElements(env,stride,&bb);
+        strd = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR stride,&bb);
     } else {
         strd = (int32 *)NULL;
     }
-    cnt = (int32 *)(*env)->GetIntArrayElements(env,count,&bb);
+    cnt = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR count,&bb);
 
     /* assume that 'data' is big enough */
-    d = (*env)->GetFloatArrayElements(env,data,&bb);
+    d = ENVPTR->GetFloatArrayElements(ENVPAR data,&bb);
 
     retVal = SDreaddata((int32)sdsid, strt, strd, cnt, d);
 
     if (retVal == FAIL) {
-        (*env)->ReleaseIntArrayElements(env,start,(jint *)strt,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR start,(jint *)strt,JNI_ABORT);
         if (stride != NULL) {
-            (*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,JNI_ABORT);
+            ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,JNI_ABORT);
         }
-        (*env)->ReleaseIntArrayElements(env,count,(jint *)cnt,JNI_ABORT);
-        (*env)->ReleaseFloatArrayElements(env,data,d,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,JNI_ABORT);
+        ENVPTR->ReleaseFloatArrayElements(ENVPAR data,d,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseIntArrayElements(env,start,(jint *)strt,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR start,(jint *)strt,0);
         if (stride != NULL) {
-            (*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,0);
+            ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,0);
         }
-        (*env)->ReleaseIntArrayElements(env,count,(jint *)cnt,0);
-        (*env)->ReleaseFloatArrayElements(env,data,d,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,0);
+        ENVPTR->ReleaseFloatArrayElements(ENVPAR data,d,0);
         return JNI_TRUE;
     }
 }
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDreaddata_1double
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint sdsid,
 jintArray start,
 jintArray stride,
@@ -1674,35 +1685,38 @@ jdoubleArray data)
     jdouble *d;
     jboolean bb;
 
-    strt = (int32 *)(*env)->GetIntArrayElements(env,start,&bb);
+    strt = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR start,&bb);
     if (stride != NULL) {
-        strd = (int32 *)(*env)->GetIntArrayElements(env,stride,&bb);
+        strd = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR stride,&bb);
     } else {
         strd = (int32 *)NULL;
     }
-    cnt = (int32 *)(*env)->GetIntArrayElements(env,count,&bb);
+    cnt = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR count,&bb);
 
     /* assume that 'data' is big enough */
-    d = (*env)->GetDoubleArrayElements(env,data,&bb);
+    d = ENVPTR->GetDoubleArrayElements(ENVPAR data,&bb);
 
     retVal = SDreaddata((int32)sdsid, strt, strd, cnt, d);
 
     if (retVal == FAIL) {
-        (*env)->ReleaseIntArrayElements(env,start,(jint *)strt,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR start,(jint *)strt,JNI_ABORT);
         if (stride != NULL) {
-            (*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,JNI_ABORT);
+            ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,JNI_ABORT);
         }
-        (*env)->ReleaseIntArrayElements(env,count,(jint *)cnt,JNI_ABORT);
-        (*env)->ReleaseDoubleArrayElements(env,data,d,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,JNI_ABORT);
+        ENVPTR->ReleaseDoubleArrayElements(ENVPAR data,d,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseIntArrayElements(env,start,(jint *)strt,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR start,(jint *)strt,0);
         if (stride != NULL) {
-            (*env)->ReleaseIntArrayElements(env,stride,(jint *)strd,0);
+            ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,0);
         }
-        (*env)->ReleaseIntArrayElements(env,count,(jint *)cnt,0);
-        (*env)->ReleaseDoubleArrayElements(env,data,d,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,0);
+        ENVPTR->ReleaseDoubleArrayElements(ENVPAR data,d,0);
         return JNI_TRUE;
     }
 }
 
+#ifdef __cplusplus
+}
+#endif

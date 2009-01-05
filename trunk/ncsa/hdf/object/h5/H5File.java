@@ -723,7 +723,7 @@ public class H5File extends FileFormat
         String ver = "HDF5 ";
 
         try { H5.H5get_libversion(vers); }
-        catch (Throwable ex) {}
+        catch (Throwable ex) {ex.printStackTrace();}
 
         ver += vers[0] + "."+ vers[1] +"."+vers[2];
 

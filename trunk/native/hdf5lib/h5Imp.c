@@ -31,6 +31,14 @@ extern "C" {
 #include <signal.h>
 */
 
+#ifdef __cplusplus
+#define ENVPTR (env)
+#define ENVPAR 
+#else
+#define ENVPTR (*env)
+#define ENVPAR env,
+#endif
+
 extern jboolean h5JNIFatalError( JNIEnv *env, char *functName);
 extern jboolean h5nullArgument( JNIEnv *env, char *functName);
 extern jboolean h5libraryError( JNIEnv *env );
@@ -97,11 +105,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5get_1libversion
     if (libversion == NULL) {
         h5nullArgument( env, "H5get_version:  libversion is NULL");
     }
-#ifdef __cplusplus
-    theArray = (unsigned *)env->GetIntArrayElements(libversion,&isCopy);
-#else
-    theArray = (unsigned *)(*env)->GetIntArrayElements(env,libversion,&isCopy);
-#endif
+    theArray = (unsigned *)ENVPTR->GetIntArrayElements(ENVPAR libversion,&isCopy);
     if (theArray == NULL) {
         h5JNIFatalError( env, "H5get_libversion:  input not pinned");
         return -1;
@@ -110,18 +114,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5get_1libversion
     status =  H5get_libversion(&(theArray[0]), &(theArray[1]), &(theArray[2]));
 
     if (status < 0) {
-#ifdef __cplusplus
-        env->ReleaseIntArrayElements(libversion,(jint *)theArray,JNI_ABORT);
-#else
-        (*env)->ReleaseIntArrayElements(env,libversion,(jint *)theArray,JNI_ABORT);
-#endif
+        ENVPTR->ReleaseIntArrayElements(ENVPAR libversion,(jint *)theArray,JNI_ABORT);
         h5libraryError(env);
     } else {
-#ifdef __cplusplus
-        env->ReleaseIntArrayElements(libversion,(jint *)theArray,JNI_ABORT);
-#else
-        (*env)->ReleaseIntArrayElements(env,libversion,(jint *)theArray,0);
-#endif
+        ENVPTR->ReleaseIntArrayElements(ENVPAR libversion,(jint *)theArray,0);
     }
     return (jint)status;
 }
@@ -134,7 +130,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5get_1libversion
      sigset_t sa_mask;
      void (*sa_sigaction)(int, siginfo_t *, void *);
 };
-int sigaction(int sig, struct sigaction *act,                                                        struct sigaction *oact);
+int sigaction(int sig, struct sigaction *act, struct sigaction *oact);
 */
 void catch_abrt()
 {
