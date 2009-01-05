@@ -304,8 +304,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite
     status = H5Dwrite((hid_t)dataset_id, (hid_t)mem_type_id, (hid_t)mem_space_id,
         (hid_t)file_space_id, (hid_t)xfer_plist_id, byteP);
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR buf,byteP,JNI_ABORT);
-
     if (status < 0) {
         h5libraryError(env);
     }
@@ -359,7 +357,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dextend
 
     status = H5Dextend((hid_t)dataset_id, (hsize_t *)sa);
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR size,P,JNI_ABORT);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR size,P,0);
     free(sa);
 
     if (status < 0) {
@@ -543,7 +541,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dvlen_1reclaim
     status = H5Dvlen_reclaim((hid_t)type_id,
         (hid_t)space_id, (hid_t)xfer_plist_id, byteP);
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR buf,byteP,JNI_ABORT);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR buf,byteP,0);
 
     if (status < 0) {
         h5libraryError(env);
@@ -1054,8 +1052,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1short
     status = H5Dwrite((hid_t)dataset_id, (hid_t)mem_type_id, (hid_t)mem_space_id,
         (hid_t)file_space_id, (hid_t)xfer_plist_id, buffP);
 
-    ENVPTR->ReleaseShortArrayElements(ENVPAR buf,buffP,JNI_ABORT);
-
     if (status < 0) {
         h5libraryError(env);
     }
@@ -1083,8 +1079,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1int
 
     status = H5Dwrite((hid_t)dataset_id, (hid_t)mem_type_id, (hid_t)mem_space_id,
         (hid_t)file_space_id, (hid_t)xfer_plist_id, buffP);
-
-    ENVPTR->ReleaseIntArrayElements(ENVPAR buf,buffP,JNI_ABORT);
 
     if (status < 0) {
         h5libraryError(env);
@@ -1115,8 +1109,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1long
     status = H5Dwrite((hid_t)dataset_id, (hid_t)mem_type_id, (hid_t)mem_space_id,
         (hid_t)file_space_id, (hid_t)xfer_plist_id, buffP);
 
-    ENVPTR->ReleaseLongArrayElements(ENVPAR buf,buffP,JNI_ABORT);
-
     if (status < 0) {
         h5libraryError(env);
     }
@@ -1144,8 +1136,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1float
 
     status = H5Dwrite((hid_t)dataset_id, (hid_t)mem_type_id, (hid_t)mem_space_id,
         (hid_t)file_space_id, (hid_t)xfer_plist_id, buffP);
-
-        ENVPTR->ReleaseFloatArrayElements(ENVPAR buf,buffP,JNI_ABORT);
 
     if (status < 0) {
         h5libraryError(env);
@@ -1175,8 +1165,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1double
 
     status = H5Dwrite((hid_t)dataset_id, (hid_t)mem_type_id, (hid_t)mem_space_id,
         (hid_t)file_space_id, (hid_t)xfer_plist_id, buffP);
-
-        ENVPTR->ReleaseDoubleArrayElements(ENVPAR buf,buffP,JNI_ABORT);
 
     if (status < 0) {
         h5libraryError(env);

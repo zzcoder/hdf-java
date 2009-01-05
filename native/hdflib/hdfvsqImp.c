@@ -21,15 +21,27 @@
  *     http://hdf.ncsa.uiuc.edu
  *
  */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 #include "hdf.h"
 #include "jni.h"
+
+#ifdef __cplusplus
+#define ENVPTR (env)
+#define ENVPAR 
+#else
+#define ENVPTR (*env)
+#define ENVPAR env,
+#endif
 
 extern jboolean h4outOfMemory( JNIEnv *env, char *functName);
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VSQuerycount
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint vdata_id,
 jintArray n_records) /* OUT: int */
 {
@@ -37,15 +49,15 @@ jintArray n_records) /* OUT: int */
     jint * theArg;
         jboolean bb;
 
-        theArg = (*env)->GetIntArrayElements(env,n_records,&bb);
+        theArg = ENVPTR->GetIntArrayElements(ENVPAR n_records,&bb);
 
     rval = VSQuerycount((int32) vdata_id, (int32 *)&(theArg[0]));
 
         if (rval == FAIL) {
-        (*env)->ReleaseIntArrayElements(env,n_records,theArg,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR n_records,theArg,JNI_ABORT);
                 return JNI_FALSE;
         } else {
-        (*env)->ReleaseIntArrayElements(env,n_records,theArg,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR n_records,theArg,0);
                 return JNI_TRUE;
         }
 
@@ -54,7 +66,7 @@ jintArray n_records) /* OUT: int */
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VSQueryfields
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint vdata_id,
 jobjectArray fields)  /* OUT: String */
 {
@@ -72,29 +84,29 @@ jobjectArray fields)  /* OUT: String */
         return JNI_FALSE;
     } else {
         /* convert it to java string */
-        rstring = (*env)->NewStringUTF(env,flds);
+        rstring = ENVPTR->NewStringUTF(ENVPAR flds);
 
         /*  create a Java String object in the calling environment... */
-        jc = (*env)->FindClass(env, "java/lang/String");
+        jc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
         if (jc == NULL) {
             return JNI_FALSE; /* exception is raised */
         }
-        o = (*env)->GetObjectArrayElement(env,fields,0);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR fields,0);
         if (o == NULL) {
             return JNI_FALSE;
         }
-        bb = (*env)->IsInstanceOf(env,o,jc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR o,jc);
         if (bb == JNI_FALSE) {
             return JNI_FALSE;
         }
-        (*env)->SetObjectArrayElement(env,fields,0,(jobject)rstring);
+        ENVPTR->SetObjectArrayElement(ENVPAR fields,0,(jobject)rstring);
         return JNI_TRUE;
     }
 }
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VSQueryinterlace
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint vdata_id,
 jintArray interlace) /* OUT: int */
 {
@@ -102,15 +114,15 @@ jintArray interlace) /* OUT: int */
     jint * theArg;
         jboolean bb;
 
-        theArg = (*env)->GetIntArrayElements(env,interlace,&bb);
+        theArg = ENVPTR->GetIntArrayElements(ENVPAR interlace,&bb);
 
     rval = VSQueryinterlace((int32) vdata_id, (int32 *)&(theArg[0]));
 
         if (rval == FAIL) {
-        (*env)->ReleaseIntArrayElements(env,interlace,theArg,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR interlace,theArg,JNI_ABORT);
                 return JNI_FALSE;
         } else {
-        (*env)->ReleaseIntArrayElements(env,interlace,theArg,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR interlace,theArg,0);
         return JNI_TRUE;
         }
 
@@ -120,9 +132,9 @@ jintArray interlace) /* OUT: int */
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VSQueryname
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint vdata_id,
-jstring vdata_name)  /* OUT: String */
+jobjectArray vdata_name)  /* OUT: String */
 {
     intn rval;
     char *nm;
@@ -133,7 +145,7 @@ jstring vdata_name)  /* OUT: String */
 
     nm = (char *)malloc(VSNAMELENMAX+1);
     if (nm == NULL) {
-        h4outOfMemory(env, "VSQueryname");
+        h4outOfMemory(env,  "VSQueryname");
         return JNI_FALSE;
     }
     rval = VSQueryname((int32) vdata_id, (char *)nm);
@@ -144,25 +156,25 @@ jstring vdata_name)  /* OUT: String */
         return JNI_FALSE;
     } else {
         /* convert it to java string */
-        rstring = (*env)->NewStringUTF(env,nm);
+        rstring = ENVPTR->NewStringUTF(ENVPAR nm);
 
         /*  create a Java String object in the calling environment... */
-        jc = (*env)->FindClass(env, "java/lang/String");
+        jc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
         if (jc == NULL) {
             free(nm);
             return JNI_FALSE; /* exception is raised */
         }
-        o = (*env)->GetObjectArrayElement(env,vdata_name,0);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR vdata_name,0);
         if (o == NULL) {
             free(nm);
             return JNI_FALSE;
         }
-        bb = (*env)->IsInstanceOf(env,o,jc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR o,jc);
         if (bb == JNI_FALSE) {
             free(nm);
             return JNI_FALSE;
         }
-        (*env)->SetObjectArrayElement(env,vdata_name,0,(jobject)rstring);
+        ENVPTR->SetObjectArrayElement(ENVPAR vdata_name,0,(jobject)rstring);
         free(nm);
         return JNI_TRUE;
     }
@@ -170,7 +182,7 @@ jstring vdata_name)  /* OUT: String */
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VSQueryref
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint vdata_id)
 {
     return (VSQueryref((int32)vdata_id));
@@ -178,7 +190,7 @@ jint vdata_id)
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VSQuerytag
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint vdata_id)
 {
     return (VSQuerytag((int32)vdata_id));
@@ -186,7 +198,7 @@ jint vdata_id)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VSQueryvsize
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint vdata_id,
 jintArray vdata_size) /* OUT: int */
 {
@@ -194,15 +206,19 @@ jintArray vdata_size) /* OUT: int */
     jint * theArg;
         jboolean bb;
 
-        theArg = (*env)->GetIntArrayElements(env,vdata_size,&bb);
+        theArg = ENVPTR->GetIntArrayElements(ENVPAR vdata_size,&bb);
 
     rval = VSQueryvsize((int32) vdata_id, (int32 *)&(theArg[0]));
 
         if (rval == FAIL) {
-        (*env)->ReleaseIntArrayElements(env,vdata_size,theArg,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR vdata_size,theArg,JNI_ABORT);
                 return JNI_FALSE;
         } else {
-        (*env)->ReleaseIntArrayElements(env,vdata_size,theArg,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR vdata_size,theArg,0);
                 return JNI_TRUE;
         }
 }
+
+#ifdef __cplusplus
+}
+#endif

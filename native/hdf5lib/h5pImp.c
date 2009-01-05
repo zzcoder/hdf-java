@@ -453,7 +453,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1chunk
 
     status = H5Pset_chunk((hid_t)plist, (int)ndims, da);
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR dim,theArray,JNI_ABORT);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR dim,theArray,0);
     free(da);
 
     if (status < 0) {
@@ -718,7 +718,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fill_1value
 
     byteP = ENVPTR->GetByteArrayElements(ENVPAR value,&isCopy);
     status = H5Pset_fill_value((hid_t)plist_id, (hid_t)type_id, byteP);
-    ENVPTR->ReleaseByteArrayElements(ENVPAR value,byteP,JNI_ABORT);
 
     return status;
 }
@@ -1317,9 +1316,9 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1buffer
     status = H5Pset_buffer((hid_t)plist, (size_t)size, tconvP, bkgP);
 
     if (tconv != NULL)
-        ENVPTR->ReleaseByteArrayElements(ENVPAR tconv,tconvP,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR tconv,tconvP,0);
     if (bkg != NULL)
-        ENVPTR->ReleaseByteArrayElements(ENVPAR bkg,bkgP,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR bkg,bkgP,0);
 
     return status;
 }
@@ -1979,7 +1978,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pmodify_1filter
     status = H5Pmodify_filter((hid_t)plist, (H5Z_filter_t)filter,(const unsigned int)flags,
         (size_t)cd_nelmts, (unsigned int *)cd_valuesP);
 
-    ENVPTR->ReleaseIntArrayElements(ENVPAR cd_values, cd_valuesP, JNI_ABORT);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR cd_values, cd_valuesP, 0);
 
     if (status < 0) {
         h5libraryError(env);

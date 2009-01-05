@@ -133,7 +133,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Screate_1simple
         free (msa);
     }
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR dims,dimsP,0);
     free (sa);
 
     if (status < 0) {
@@ -203,7 +203,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sselect_1elements
     }
 
     status = H5Sselect_elements (space_id, (H5S_seloper_t)op, num_elemn, (const hssize_t **)&sa);
-    ENVPTR->ReleaseLongArrayElements(ENVPAR env, coord, P, JNI_ABORT);
+    ENVPTR->ReleaseLongArrayElements(ENVPAR env, coord, P, 0);
     free(sa);
 
     if (status < 0) {
@@ -249,7 +249,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sselect_1elements
 
     status = H5Sselect_elements (space_id, (H5S_seloper_t)op, num_elemn, (const hsize_t **)llp);
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR coord, P, JNI_ABORT);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR coord, P, 0);
 
     if (status < 0) {
         if (lp) free (lp);

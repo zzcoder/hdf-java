@@ -40,8 +40,7 @@ advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
 /NODEFAULTLIB:"MSVCRT" /NODEFAULTLIB:"LIBC.LIB"
 
 all: $(OBJECTS)
-	$(LINKER) /OUT:"jhdf5.dll" $(LINKFLAG) $(OBJECTS) $(HDF5LIB) $(SZLIB) $(ZLIB) $(MSDEV_LIBS) \
-    /implib:"jhdf5.lib"
+	$(LINKER) /OUT:"jhdf5.dll" $(LINKFLAG) $(OBJECTS) $(HDF5LIB) $(SZLIB) $(ZLIB) $(MSDEV_LIBS)
 
 exceptionImp.obj: exceptionImp.c
 	$(CC) $(CFLAGS) /Fo$@ $?

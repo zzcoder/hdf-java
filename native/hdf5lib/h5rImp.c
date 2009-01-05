@@ -136,7 +136,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rdereference
 
     status = H5Rdereference((hid_t)dataset, (H5R_type_t)ref_type, refP);
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,JNI_ABORT);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,0);
 
     if (status < 0) {
         h5libraryError(env);
@@ -177,7 +177,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1region
 
     status = H5Rget_region((hid_t)dataset, (H5R_type_t)ref_type, refP);
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,JNI_ABORT);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,0);
 
     if (status < 0) {
         h5libraryError(env);
@@ -212,7 +212,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type
 
     status = H5Rget_obj_type((hid_t)loc_id, (H5R_type_t)ref_type, refP);
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,JNI_ABORT);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,0);
 
     if (status < 0) {
         h5libraryError(env);

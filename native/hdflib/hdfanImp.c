@@ -20,15 +20,26 @@
  *     http://hdf.ncsa.uiuc.edu
  *
  */
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "hdf.h"
 #include "jni.h"
+
+#ifdef __cplusplus
+#define ENVPTR (env)
+#define ENVPAR 
+#else
+#define ENVPTR (*env)
+#define ENVPAR env,
+#endif
 
 extern jboolean h4outOfMemory( JNIEnv *env, char *functName);
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANstart
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint file_id)
 {
     return ANstart((int32)file_id);
@@ -36,7 +47,7 @@ jint file_id)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANend
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint anid)
 {
     int32 retVal;
@@ -53,7 +64,7 @@ jint anid)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANfileinfo
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint anid,
 jintArray info)  /* OUT: n_file_label, n_file_desc, n_data_label, n_data_desc */
 {
@@ -61,17 +72,17 @@ jintArray info)  /* OUT: n_file_label, n_file_desc, n_data_label, n_data_desc */
     jint *theArgs;
     jboolean bb;
 
-    theArgs = (*env)->GetIntArrayElements(env,info,&bb);
+    theArgs = ENVPTR->GetIntArrayElements(ENVPAR info,&bb);
 
     retVal = ANfileinfo((int32)anid, (int32 *)&(theArgs[0]),
         (int32 *)&(theArgs[1]), (int32 *)&(theArgs[2]),
         (int32 *)&(theArgs[3]));
 
     if (retVal == FAIL) {
-        (*env)->ReleaseIntArrayElements(env,info,theArgs,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR info,theArgs,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseIntArrayElements(env,info,theArgs,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR info,theArgs,0);
         return JNI_TRUE;
     }
 }
@@ -79,7 +90,7 @@ jintArray info)  /* OUT: n_file_label, n_file_desc, n_data_label, n_data_desc */
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANselect
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint anid,
 jint index,
 jint anntype)
@@ -90,7 +101,7 @@ jint anntype)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANendaccess
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint ann_id)
 {
     int32 retVal;
@@ -106,7 +117,7 @@ jint ann_id)
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANnumann
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint an_id,
 jint anntype,
 jshort tag,
@@ -117,7 +128,7 @@ jshort ref)
 
 JNIEXPORT jshort JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANatype2tag
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint antype)
 {
     return (jshort)ANatype2tag((ann_type)antype);
@@ -125,7 +136,7 @@ jint antype)
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANtag2atype
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint antag)
 {
     return (jint)ANtag2atype((uint16)antag);
@@ -134,7 +145,7 @@ jint antag)
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANannlist
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint an_id,
 jint anntype,
 jshort tag,
@@ -146,22 +157,22 @@ jintArray annlist  /* OUT: int[] */
     jint *iarr;
     jboolean bb;
 
-    iarr = (*env)->GetIntArrayElements(env,annlist,&bb);
+    iarr = ENVPTR->GetIntArrayElements(ENVPAR annlist,&bb);
 
     retVal = ANannlist((int32)an_id, (ann_type)anntype,
         (uint16)tag,(uint16)ref,(int32 *)iarr);
 
     if (retVal == FAIL) {
-        (*env)->ReleaseIntArrayElements(env,annlist,iarr,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR annlist,iarr,JNI_ABORT);
     } else {
-        (*env)->ReleaseIntArrayElements(env,annlist,iarr,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR annlist,iarr,0);
     }
     return (jint)retVal;
 }
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANannlen
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint ann_id)
 {
     return ANannlen((int32)ann_id);
@@ -169,7 +180,7 @@ jint ann_id)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANreadann
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint ann_id,
 jobjectArray annbuf, /* OUT: string */
 jint maxlen)
@@ -185,7 +196,7 @@ jint maxlen)
 
     if (data == NULL) {
         /* Exception */
-        h4outOfMemory(env,"ANreadan");
+        h4outOfMemory(env, "ANreadan");
         return JNI_FALSE;
     }
 
@@ -198,24 +209,24 @@ jint maxlen)
         return JNI_FALSE;
     } else {
 
-        o = (*env)->GetObjectArrayElement(env,annbuf,0);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR annbuf,0);
         if (o == NULL) {
             if (data != NULL) HDfree((char *)data);
             return JNI_FALSE;
         }
-        Sjc = (*env)->FindClass(env, "java/lang/String");
+        Sjc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
         if (Sjc == NULL) {
             if (data != NULL) HDfree((char *)data);
             return JNI_FALSE;
         }
-        bb = (*env)->IsInstanceOf(env,o,Sjc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
         if (bb == JNI_FALSE) {
             if (data != NULL) HDfree((char *)data);
             return JNI_FALSE;
         }
 
-        rstring = (*env)->NewStringUTF(env, data);
-        (*env)->SetObjectArrayElement(env,annbuf,0,(jobject)rstring);
+        rstring = ENVPTR->NewStringUTF(ENVPAR  data);
+        ENVPTR->SetObjectArrayElement(ENVPAR annbuf,0,(jobject)rstring);
 
         if (data != NULL)
             HDfree((char *)data);
@@ -226,7 +237,7 @@ jint maxlen)
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANcreate
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint an_id,
 jshort tag,
 jshort ref,
@@ -237,7 +248,7 @@ jint type)
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANcreatef
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint an_id,
 jint type)
 {
@@ -259,7 +270,7 @@ jobject obj)
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANget_1tagref
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint an_id,
 jint index,
 jint type,
@@ -269,21 +280,21 @@ jshortArray tagref) /* OUT: short tag, ref */
     short *theArgs;
     jboolean bb;
 
-    theArgs = (*env)->GetShortArrayElements(env,tagref,&bb);
+    theArgs = ENVPTR->GetShortArrayElements(ENVPAR tagref,&bb);
 
     rval = ANget_tagref((int32) an_id, (int32) index,  (ann_type) type, (uint16 *)&(theArgs[0]), (uint16 *)&(theArgs[1]));
 
     if (rval == FAIL) {
-        (*env)->ReleaseShortArrayElements(env,tagref,theArgs,JNI_ABORT);
+        ENVPTR->ReleaseShortArrayElements(ENVPAR tagref,theArgs,JNI_ABORT);
     } else {
-        (*env)->ReleaseShortArrayElements(env,tagref,theArgs,0);
+        ENVPTR->ReleaseShortArrayElements(ENVPAR tagref,theArgs,0);
     }
     return rval;
 }
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANid2tagref
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint an_id,
 jshortArray tagref) /* OUT: short tag, ref */
 {
@@ -291,23 +302,23 @@ jshortArray tagref) /* OUT: short tag, ref */
     short *theArgs;
     jboolean bb;
 
-    theArgs = (*env)->GetShortArrayElements(env,tagref,&bb);
+    theArgs = ENVPTR->GetShortArrayElements(ENVPAR tagref,&bb);
 
     rval =  ANid2tagref((int32) an_id, (uint16 *)&(theArgs[0]),
         (uint16 *)&(theArgs[1]));
 
     if (rval == FAIL) {
-        (*env)->ReleaseShortArrayElements(env,tagref,theArgs,JNI_ABORT);
+        ENVPTR->ReleaseShortArrayElements(ENVPAR tagref,theArgs,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseShortArrayElements(env,tagref,theArgs,0);
+        ENVPTR->ReleaseShortArrayElements(ENVPAR tagref,theArgs,0);
         return JNI_TRUE;
     }
 }
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANtagref2id
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint an_id,
 jshort tag,
 jshort ref
@@ -318,7 +329,7 @@ jshort ref
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANwriteann
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint ann_id,
 jstring label,
 jint ann_length)
@@ -327,13 +338,13 @@ jint ann_length)
     intn rval;
     char * str;
 
-    str =(char *) (*env)->GetStringUTFChars(env,label,0);
+    str =(char *) ENVPTR->GetStringUTFChars(ENVPAR label,0);
 
     /* should check that str is as long as ann_length.... */
 
     rval = ANwriteann((int32) ann_id, str, (int32) ann_length);
 
-    (*env)->ReleaseStringUTFChars(env,label,str);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR label,str);
 
     if (rval == FAIL) {
         return JNI_FALSE;
@@ -341,3 +352,8 @@ jint ann_length)
         return JNI_TRUE;
     }
 }
+
+
+#ifdef __cplusplus
+}
+#endif

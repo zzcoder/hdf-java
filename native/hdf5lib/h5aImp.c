@@ -161,8 +161,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Awrite
     }
     status = H5Awrite((hid_t)attr_id, (hid_t)mem_type_id, byteP);
 
-    ENVPTR->ReleaseByteArrayElements(ENVPAR buf,byteP,JNI_ABORT);
-
     if (status < 0) {
         h5libraryError(env);
     }

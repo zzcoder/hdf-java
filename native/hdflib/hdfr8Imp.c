@@ -20,16 +20,27 @@
  *     http://hdf.ncsa.uiuc.edu
  *
  */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 #include "hdf.h"
-
 #include "jni.h"
+
+#ifdef __cplusplus
+#define ENVPTR (env)
+#define ENVPAR 
+#else
+#define ENVPTR (*env)
+#define ENVPAR env,
+#endif
 
 extern jboolean getOldCompInfo( JNIEnv *env, jobject ciobj, comp_info *cinf);
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFR8getdims
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jstring filename,
 jintArray argv,  /* OUT: w, h */
 jbooleanArray isp) /* OUT: isp */
@@ -41,35 +52,35 @@ jbooleanArray isp) /* OUT: isp */
     jboolean *theB;
         jboolean bb;
 
-        theArgs = (*env)->GetIntArrayElements(env,argv,&bb);
-        theB = (*env)->GetBooleanArrayElements(env,isp,&bb);
-    hdf_file =(char *) (*env)->GetStringUTFChars(env,filename,0);
+        theArgs = ENVPTR->GetIntArrayElements(ENVPAR argv,&bb);
+        theB = ENVPTR->GetBooleanArrayElements(ENVPAR isp,&bb);
+    hdf_file =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
 
     /* get image dimension information */
     rval = DFR8getdims(hdf_file, (int32 *)&(theArgs[0]),
         (int32 *)&(theArgs[1]), (intn *)&ispal);
 
-    (*env)->ReleaseStringUTFChars(env,filename,hdf_file);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,hdf_file);
     if (rval == FAIL) {
-        (*env)->ReleaseIntArrayElements(env,argv,theArgs,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,JNI_ABORT);
         theB[0] = JNI_FALSE;
-        (*env)->ReleaseBooleanArrayElements(env,isp,theB,JNI_ABORT);
+        ENVPTR->ReleaseBooleanArrayElements(ENVPAR isp,theB,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseIntArrayElements(env,argv,theArgs,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,0);
         if (ispal) {
             theB[0] = JNI_TRUE;
         } else {
             theB[0] = JNI_FALSE;
         }
-        (*env)->ReleaseBooleanArrayElements(env,isp,theB,0);
+        ENVPTR->ReleaseBooleanArrayElements(ENVPAR isp,theB,0);
         return JNI_TRUE;
     }
 }
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFR8getimage
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jstring filename,
 jbyteArray image, /* OUT: image data width X height X 3 */
 jint width,
@@ -82,28 +93,28 @@ jbyteArray pallete) /* OUT: byte[] */
     jbyte *p;
     jboolean bb;
 
-    hdf_file =(char *) (*env)->GetStringUTFChars(env,filename,0);
-    dat = (*env)->GetByteArrayElements(env,image,&bb);
+    hdf_file =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    dat = ENVPTR->GetByteArrayElements(ENVPAR image,&bb);
     if (pallete == NULL) {
-        rval =  DFR8getimage((char *)hdf_file, (VOIDP) dat, (int32) width, (int32) height,
+        rval =  DFR8getimage((char *)hdf_file, (uint8 *) dat, (int32) width, (int32) height,
             (uint8 *)NULL);
     } else {
-        p = (*env)->GetByteArrayElements(env,pallete,&bb);
-        rval =  DFR8getimage((char *)hdf_file, (VOIDP) dat, (int32) width, (int32) height,
+        p = ENVPTR->GetByteArrayElements(ENVPAR pallete,&bb);
+        rval =  DFR8getimage((char *)hdf_file, (uint8 *) dat, (int32) width, (int32) height,
             (uint8 *)p);
     }
 
-    (*env)->ReleaseStringUTFChars(env,filename,hdf_file);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,hdf_file);
     if (rval == FAIL) {
-        (*env)->ReleaseByteArrayElements(env,image,dat,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR image,dat,JNI_ABORT);
         if (pallete != NULL) {
-            (*env)->ReleaseByteArrayElements(env,pallete,p,JNI_ABORT);
+            ENVPTR->ReleaseByteArrayElements(ENVPAR pallete,p,JNI_ABORT);
         }
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseByteArrayElements(env,image,dat,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR image,dat,0);
         if (pallete != NULL) {
-            (*env)->ReleaseByteArrayElements(env,pallete,p,0);
+            ENVPTR->ReleaseByteArrayElements(ENVPAR pallete,p,0);
         }
         return JNI_TRUE;
     }
@@ -119,17 +130,17 @@ jobject obj)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFR8readref
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jstring filename,
 jshort ref)
 {
     int  retVal;
     char *filePtr;
-    filePtr =(char *) (*env)->GetStringUTFChars(env,filename,0);
+    filePtr =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
 
     retVal = DFR8readref(filePtr, (short)ref);
 
-    (*env)->ReleaseStringUTFChars(env,filename,filePtr);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,filePtr);
     if (retVal == FAIL) {
         return JNI_FALSE;
     } else {
@@ -153,18 +164,18 @@ jobject obj)
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFR8nimages
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jstring hdfFile)
 {
     char  *hdf_file;
 
-    hdf_file =(char *) (*env)->GetStringUTFChars(env,hdfFile,0);
+    hdf_file =(char *) ENVPTR->GetStringUTFChars(ENVPAR hdfFile,0);
     return(DFR8nimages(hdf_file));
 }
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFR8addimage
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jstring filename,
 jbyteArray image, /* IN: image data width X height X 3 */
 jint width,
@@ -176,14 +187,14 @@ jshort compress)
     jbyte *dat;
     jboolean bb;
 
-    f =(char *) (*env)->GetStringUTFChars(env,filename,0);
-    dat = (*env)->GetByteArrayElements(env,image,&bb);
+    f =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    dat = ENVPTR->GetByteArrayElements(ENVPAR image,&bb);
 
     rval = DFR8addimage((char *)f, (VOIDP) dat, (int32) width, (int32) height,
         (uint16)compress);
 
-    (*env)->ReleaseStringUTFChars(env,filename,f);
-    (*env)->ReleaseByteArrayElements(env,image,dat,JNI_ABORT);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,f);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR image,dat,JNI_ABORT);
     if (rval == FAIL) {
         return JNI_FALSE;
     } else {
@@ -193,7 +204,7 @@ jshort compress)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFR8putimage
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jstring filename,
 jbyteArray image, /* IN: image data width X height X 3 */
 jint width,
@@ -205,14 +216,14 @@ jint compress)
     jbyte *dat;
     jboolean bb;
 
-    f =(char *) (*env)->GetStringUTFChars(env,filename,0);
-    dat = (*env)->GetByteArrayElements(env,image,&bb);
+    f =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    dat = ENVPTR->GetByteArrayElements(ENVPAR image,&bb);
 
     rval = DFR8putimage((char *)f, (VOIDP) dat, (int32) width, (int32) height,
         (uint16)compress);
 
-    (*env)->ReleaseStringUTFChars(env,filename,f);
-    (*env)->ReleaseByteArrayElements(env,image,dat,JNI_ABORT);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,f);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR image,dat,JNI_ABORT);
     if (rval == FAIL) {
         return JNI_FALSE;
     } else {
@@ -222,7 +233,7 @@ jint compress)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFR8setcompress
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint type,
 jobject cinfo)
 {
@@ -230,7 +241,7 @@ jobject cinfo)
     comp_info cinf;
     jboolean bval;
 
-    bval = getOldCompInfo(env,cinfo,&cinf);
+    bval = getOldCompInfo(env, cinfo,&cinf);
 
     /* check for success... */
 
@@ -247,22 +258,22 @@ jobject cinfo)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFR8getpalref
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jshortArray palref) /* OUT: Short */
 {
     int rval;
     short *theArgs;
         jboolean bb;
 
-        theArgs = (*env)->GetShortArrayElements(env,palref,&bb);
+        theArgs = ENVPTR->GetShortArrayElements(ENVPAR palref,&bb);
 
     rval = DFR8getpalref((uint16 *)&(theArgs[0]));
 
     if (rval == FAIL) {
-        (*env)->ReleaseShortArrayElements(env,palref,theArgs,JNI_ABORT);
+        ENVPTR->ReleaseShortArrayElements(ENVPAR palref,theArgs,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseShortArrayElements(env,palref,theArgs,0);
+        ENVPTR->ReleaseShortArrayElements(ENVPAR palref,theArgs,0);
         return JNI_TRUE;
     }
 }
@@ -271,18 +282,18 @@ jshortArray palref) /* OUT: Short */
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFR8setpalette
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jbyteArray palette) /* IN:  byte[] */
 {
     int  rval;
     jbyte *p;
     jboolean bb;
 
-    p = (*env)->GetByteArrayElements(env,palette,&bb);
+    p = ENVPTR->GetByteArrayElements(ENVPAR palette,&bb);
 
     rval = DFR8setpalette((uint8 *)p);
 
-    (*env)->ReleaseByteArrayElements(env,palette,p,JNI_ABORT);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR palette,p,JNI_ABORT);
     if (rval == FAIL) {
         return JNI_FALSE;
     } else {
@@ -292,20 +303,24 @@ jbyteArray palette) /* IN:  byte[] */
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFR8writeref
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jstring filename,
 jshort ref)
 {
     int  retVal;
     char *filePtr;
-    filePtr =(char *) (*env)->GetStringUTFChars(env,filename,0);
+    filePtr =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
 
     retVal = DFR8writeref(filePtr, (short)ref);
 
-    (*env)->ReleaseStringUTFChars(env,filename,filePtr);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,filePtr);
     if (retVal == FAIL) {
         return JNI_FALSE;
     } else {
         return JNI_TRUE;
     }
 }
+
+#ifdef __cplusplus
+}
+#endif

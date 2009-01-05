@@ -20,14 +20,26 @@
  *     http://hdf.ncsa.uiuc.edu
  *
  */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "hdf.h"
 #include "jni.h"
+
+#ifdef __cplusplus
+#define ENVPTR (env)
+#define ENVPAR 
+#else
+#define ENVPTR (*env)
+#define ENVPAR env,
+#endif
 
 extern jboolean getOldCompInfo( JNIEnv *env, jobject ciobj, comp_info *cinf);
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFDeprecated_DFgetcomp
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint file_id,
 jshort tag,
 jshort ref,
@@ -40,15 +52,15 @@ jint method)
     jbyte *im;
     jboolean bb;
 
-    im = (*env)->GetByteArrayElements(env,image,&bb);
+    im = ENVPTR->GetByteArrayElements(ENVPAR image,&bb);
 
     rval = DFgetcomp((int32) file_id, (uint16) tag, (uint16) ref,
         (uint8 *)image, (int32) xdim, (int32) ydim,  (int16) method);
     if (rval == FAIL) {
-        (*env)->ReleaseByteArrayElements(env,image,im,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR image,im,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseByteArrayElements(env,image,im,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR image,im,0);
         return JNI_TRUE;
     }
 }
@@ -56,7 +68,7 @@ jint method)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFDeprecated_DFputcomp
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint file_id,
 jshort tag,
 jshort ref,
@@ -80,9 +92,9 @@ jobject c_info)  /* IN: HDFCompInfo c_info */
 
     /* check for success... */
 
-    im = (*env)->GetByteArrayElements(env,image,&bb);
-    p = (*env)->GetByteArrayElements(env,palette,&bb);
-    np = (*env)->GetByteArrayElements(env,newpal,&bb);
+    im = ENVPTR->GetByteArrayElements(ENVPAR image,&bb);
+    p = ENVPTR->GetByteArrayElements(ENVPAR palette,&bb);
+    np = ENVPTR->GetByteArrayElements(ENVPAR newpal,&bb);
 
 
     rval = DFputcomp((int32) file_id, (uint16) tag, (uint16) ref,
@@ -90,14 +102,19 @@ jobject c_info)  /* IN: HDFCompInfo c_info */
         (uint8 *)np, (int16) scheme, (comp_info *)&cinf);
 
     if (rval == FAIL) {
-        (*env)->ReleaseByteArrayElements(env,image,im,JNI_ABORT);
-        (*env)->ReleaseByteArrayElements(env,palette,p,JNI_ABORT);
-        (*env)->ReleaseByteArrayElements(env,newpal,np,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR image,im,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR palette,p,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR newpal,np,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseByteArrayElements(env,image,im,0);
-        (*env)->ReleaseByteArrayElements(env,palette,p,0);
-        (*env)->ReleaseByteArrayElements(env,newpal,np,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR image,im,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR palette,p,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR newpal,np,0);
         return JNI_TRUE;
     }
 }
+
+
+#ifdef __cplusplus
+}
+#endif

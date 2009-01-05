@@ -20,9 +20,21 @@
  *     http://hdf.ncsa.uiuc.edu
  *
  */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 #include "hdf.h"
 #include "jni.h"
+
+#ifdef __cplusplus
+#define ENVPTR (env)
+#define ENVPAR 
+#else
+#define ENVPTR (*env)
+#define ENVPAR env,
+#endif
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VHmakegroup
 ( JNIEnv *env,
@@ -38,24 +50,24 @@ int32 rval;
 jint *tags;
 jint *refs;
 char *name;
-char *class;
+char *cls;
     jboolean bb;
 
-    tags = (*env)->GetIntArrayElements(env,tag_array,&bb);
+    tags = ENVPTR->GetIntArrayElements(ENVPAR tag_array,&bb);
 
-    refs = (*env)->GetIntArrayElements(env,ref_array,&bb);
+    refs = ENVPTR->GetIntArrayElements(ENVPAR ref_array,&bb);
 
-    name = (char *)(*env)->GetStringUTFChars(env,vgroup_name,0);
+    name = (char *)ENVPTR->GetStringUTFChars(ENVPAR vgroup_name,0);
 
-    class = (char *)(*env)->GetStringUTFChars(env,vgroup_class,0);
+    cls = (char *)ENVPTR->GetStringUTFChars(ENVPAR vgroup_class,0);
 
     rval = VHmakegroup((int32) file_id, (int32 *) tags, (int32 *)refs,
-        (int32) n_objects, (char *)name, (char *)class);
+        (int32) n_objects, (char *)name, (char *)cls);
 
-    (*env)->ReleaseIntArrayElements(env,tag_array,tags,JNI_ABORT);
-    (*env)->ReleaseIntArrayElements(env,ref_array,refs,JNI_ABORT);
-    (*env)->ReleaseStringUTFChars(env,vgroup_name,name);
-    (*env)->ReleaseStringUTFChars(env,vgroup_class,class);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR tag_array,tags,JNI_ABORT);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR ref_array,refs,JNI_ABORT);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR vgroup_name,name);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR vgroup_class,cls);
 
     return rval;
 }
@@ -65,7 +77,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_VHstoredata
 jclass oclass,
 jint file_id,
 jstring fieldname,
-jintArray buf, /* IN: byte[] */
+jbyteArray buf, /* IN: byte[] */
 jint n_records,
 jint data_type,
 jstring vdata_name,
@@ -75,26 +87,26 @@ int32 rval;
 jbyte *buffer;
 char *fldname;
 char *name;
-char *class;
+char *cls;
     jboolean bb;
 
-    buffer = (*env)->GetByteArrayElements(env,buf,&bb);
+    buffer = ENVPTR->GetByteArrayElements(ENVPAR buf,&bb);
 
-    fldname = (char *)(*env)->GetStringUTFChars(env,fieldname,0);
+    fldname = (char *)ENVPTR->GetStringUTFChars(ENVPAR fieldname,0);
 
-    name = (char *)(*env)->GetStringUTFChars(env,vdata_name,0);
+    name = (char *)ENVPTR->GetStringUTFChars(ENVPAR vdata_name,0);
 
-    class = (char *)(*env)->GetStringUTFChars(env,vdata_class,0);
+    cls = (char *)ENVPTR->GetStringUTFChars(ENVPAR vdata_class,0);
 
 
     rval = VHstoredata((int32) file_id, (char *)fldname,
         (uint8 *) buffer, (int32) n_records, (int32) data_type,
-        (char *)name, (char *)class);
+        (char *)name, (char *)cls);
 
-    (*env)->ReleaseByteArrayElements(env,buf,buffer,JNI_ABORT);
-    (*env)->ReleaseStringUTFChars(env,vdata_name,name);
-    (*env)->ReleaseStringUTFChars(env,vdata_class,class);
-    (*env)->ReleaseStringUTFChars(env,fieldname,fldname);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR buf,buffer,JNI_ABORT);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR vdata_name,name);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR vdata_class,cls);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR fieldname,fldname);
 
     return rval;
 }
@@ -115,25 +127,29 @@ int32 rval;
 jbyte *buffer;
 char *fldname;
 char *name;
-char *class;
+char *cls;
 jboolean bb;
 
-    buffer = (*env)->GetByteArrayElements(env,buf,&bb);
+    buffer = ENVPTR->GetByteArrayElements(ENVPAR buf,&bb);
 
-    fldname = (char *)(*env)->GetStringUTFChars(env,fieldname,0);
+    fldname = (char *)ENVPTR->GetStringUTFChars(ENVPAR fieldname,0);
 
-    name = (char *)(*env)->GetStringUTFChars(env,vdata_name,0);
+    name = (char *)ENVPTR->GetStringUTFChars(ENVPAR vdata_name,0);
 
-    class = (char *)(*env)->GetStringUTFChars(env,vdata_class,0);
+    cls = (char *)ENVPTR->GetStringUTFChars(ENVPAR vdata_class,0);
 
     rval = VHstoredatam((int32) file_id, (char *)fldname,
         (uint8 *) buffer, (int32) n_records, (int32) data_type,
-        (char *)name, (char *)class, (int32) order);
+        (char *)name, (char *)cls, (int32) order);
 
-    (*env)->ReleaseByteArrayElements(env,buf,buffer,JNI_ABORT);
-    (*env)->ReleaseStringUTFChars(env,vdata_name,name);
-    (*env)->ReleaseStringUTFChars(env,vdata_class,class);
-    (*env)->ReleaseStringUTFChars(env,fieldname,fldname);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR buf,buffer,JNI_ABORT);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR vdata_name,name);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR vdata_class,cls);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR fieldname,fldname);
 
     return rval;
 }
+
+#ifdef __cplusplus
+}
+#endif

@@ -20,18 +20,28 @@
  *     http://hdf.ncsa.uiuc.edu
  *
  */
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "hdf.h"
 #include "hfile.h"
-
 #include "jni.h"
+
+#ifdef __cplusplus
+#define ENVPTR (env)
+#define ENVPAR 
+#else
+#define ENVPTR (*env)
+#define ENVPAR env,
+#endif
 
 extern jboolean h4buildException( JNIEnv *env, jint HDFerr);
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_Hopen
 (
 JNIEnv *env,
-jclass class,
+jclass clss,
 jstring hdfFile,
 jint access)
 
@@ -42,21 +52,21 @@ jint access)
     int errval;
     jclass jc;
 
-    file =(char *) (*env)->GetStringUTFChars(env,hdfFile,0);
+    file =(char *) ENVPTR->GetStringUTFChars(ENVPAR hdfFile,0);
 
     if (file == NULL) {
         /* call failed? */
-        jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFJavaException");
+        jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFJavaException");
         if (jc == NULL) {
             return -1; /* exception is raised */
         }
-        (*env)->ThrowNew(env,jc,"Hopen: GetStringUTFChars failed");
+        ENVPTR->ThrowNew(ENVPAR jc,"Hopen: GetStringUTFChars failed");
     }
 
     /* open HDF file specified by ncsa_hdf_HDF_file */
     retVal = Hopen((char *)file, access, 0);
 
-    (*env)->ReleaseStringUTFChars(env,hdfFile,file);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR hdfFile,file);
 
     if (retVal == FAIL) {
         /* check for error */
@@ -65,11 +75,11 @@ jint access)
         errval = HEvalue(1);
         if (errval != DFE_NONE) {
             h4buildException( env, errval );
-            jc = (*env)->FindClass(env, "ncsa/hdf/hdflib/HDFLibraryException");
+            jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFLibraryException");
             if (jc == NULL) {
                 return -1; /* exception is raised */
             }
-            (*env)->ThrowNew(env,jc,HEstring((hdf_err_code_t)errval));
+            ENVPTR->ThrowNew(ENVPAR jc,HEstring((hdf_err_code_t)errval));
         }
         return -1;
     }
@@ -80,7 +90,7 @@ jint access)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_Hclose
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint fid)
 {
     int status = 0;
@@ -109,7 +119,7 @@ jint fid)
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_HDdont_1atexit
-  (JNIEnv *env, jclass class)
+  (JNIEnv *env, jclass clss)
 {
 
     return (jint) HDdont_atexit();
@@ -118,18 +128,18 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_HDdont_1atexit
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_Hishdf
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jstring hdfFile)
 {
 
     char * hfile;
     int  retVal;
 
-    hfile = (char *)(*env)->GetStringUTFChars(env,hdfFile,0);
+    hfile = (char *)ENVPTR->GetStringUTFChars(ENVPAR hdfFile,0);
 
     /* open HDF file specified by ncsa_hdf_HDF_file */
     retVal = Hishdf((char *)hfile);
-    (*env)->ReleaseStringUTFChars(env,hdfFile,hfile);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR hdfFile,hfile);
     if (retVal == FALSE) {
         return JNI_FALSE;
     } else {
@@ -141,7 +151,7 @@ jstring hdfFile)
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_Hnumber
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint fid)
 {
     return (Hnumber(fid, DFTAG_WILDCARD));
@@ -149,7 +159,7 @@ jint fid)
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DFKNTsize
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint numbertype)
 {
     return (DFKNTsize(numbertype));
@@ -159,7 +169,7 @@ jint numbertype)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_Hcache
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint file_id,
 jint cache_switch)
 {
@@ -177,7 +187,7 @@ jint cache_switch)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_Hgetfileversion
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint file_id,
 jintArray vers,  /* OUT: int major_v, minor_v, release */
 jobjectArray string)  /* OUT: String[] */
@@ -190,33 +200,33 @@ jobjectArray string)  /* OUT: String[] */
     jboolean bb;
     jobject o;
 
-    theArgs = (*env)->GetIntArrayElements(env,vers,&bb);
+    theArgs = ENVPTR->GetIntArrayElements(ENVPAR vers,&bb);
 
     rval = Hgetfileversion((int32) file_id, (uint32 *)&(theArgs[0]),
         (uint32 *)&(theArgs[1]), (uint32 *)&(theArgs[2]), s);
     s[LIBVSTR_LEN] = '\0';
 
     if (rval == FAIL) {
-        (*env)->ReleaseIntArrayElements(env,vers,theArgs,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR vers,theArgs,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseIntArrayElements(env,vers,theArgs,0);
-        Sjc = (*env)->FindClass(env, "java/lang/String");
+        ENVPTR->ReleaseIntArrayElements(ENVPAR vers,theArgs,0);
+        Sjc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
         if (Sjc == NULL) {
             return JNI_FALSE;
         }
-        o = (*env)->GetObjectArrayElement(env,string,0);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR string,0);
         if (o == NULL) {
             return JNI_FALSE;
         }
-        bb = (*env)->IsInstanceOf(env,o,Sjc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
         if (bb == JNI_FALSE) {
             /* exception */
             return JNI_FALSE;
         }
-        name = (*env)->NewStringUTF(env,s);
+        name = ENVPTR->NewStringUTF(ENVPAR s);
         if (name != NULL) {
-                        (*env)->SetObjectArrayElement(env,string,0,(jobject)name);
+                        ENVPTR->SetObjectArrayElement(ENVPAR string,0,(jobject)name);
         }
         return JNI_TRUE;
     }
@@ -224,7 +234,7 @@ jobjectArray string)  /* OUT: String[] */
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_Hgetlibversion
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jintArray vers,  /* OUT: int major_v, minor_v, release */
 jobjectArray string)  /* OUT: String[] */
 {
@@ -236,33 +246,33 @@ jobjectArray string)  /* OUT: String[] */
     jobject o;
     jboolean bb;
 
-    theArgs = (*env)->GetIntArrayElements(env,vers,&bb);
+    theArgs = ENVPTR->GetIntArrayElements(ENVPAR vers,&bb);
     s[LIBVSTR_LEN] = '\0';
 
     rval = Hgetlibversion((uint32 *)&(theArgs[0]),
         (uint32 *)&(theArgs[1]), (uint32 *)&(theArgs[2]), s);
 
     if (rval == FAIL) {
-        (*env)->ReleaseIntArrayElements(env,vers,theArgs,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR vers,theArgs,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseIntArrayElements(env,vers,theArgs,0);
-        Sjc = (*env)->FindClass(env, "java/lang/String");
+        ENVPTR->ReleaseIntArrayElements(ENVPAR vers,theArgs,0);
+        Sjc = ENVPTR->FindClass(ENVPAR  "java/lang/String");
         if (Sjc == NULL) {
             return JNI_FALSE;
         }
-        o = (*env)->GetObjectArrayElement(env,string,0);
+        o = ENVPTR->GetObjectArrayElement(ENVPAR string,0);
         if (o == NULL) {
             return JNI_FALSE;
         }
-        bb = (*env)->IsInstanceOf(env,o,Sjc);
+        bb = ENVPTR->IsInstanceOf(ENVPAR o,Sjc);
         if (bb == JNI_FALSE) {
             /* exception */
             return JNI_FALSE;
         }
-        name = (*env)->NewStringUTF(env,s);
+        name = ENVPTR->NewStringUTF(ENVPAR s);
         if (name != NULL) {
-                        (*env)->SetObjectArrayElement(env,string,0,(jobject)name);
+                        ENVPTR->SetObjectArrayElement(ENVPAR string,0,(jobject)name);
         }
         return JNI_TRUE;
     }
@@ -271,7 +281,7 @@ jobjectArray string)  /* OUT: String[] */
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_Hsetaccesstype
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint h_id,
 jint  access_type)
 {
@@ -287,7 +297,7 @@ jint  access_type)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_Hsync
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint file_id)
 {
     intn rval;
@@ -302,7 +312,7 @@ jint file_id)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_HDFclose
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint file_id)
 {
     intn rval;
@@ -319,7 +329,7 @@ jint file_id)
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_HDFopen
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jstring filename,
 jint access,
 jshort n_dds)
@@ -327,11 +337,11 @@ jshort n_dds)
     int32 rval;
     char * str;
 
-        str =(char *) (*env)->GetStringUTFChars(env,filename,0);
+        str =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
 
     rval = HDFopen((char *)str, (intn) access, (int16) n_dds);
 
-    (*env)->ReleaseStringUTFChars(env,filename,str);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,str);
 
     return rval;
 }
@@ -340,7 +350,7 @@ jshort n_dds)
 #ifdef not_yet_implemented
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_HDFflusdd
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint file_id)
 {
 intn rval;
@@ -357,7 +367,7 @@ intn rval;
 
 JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_HDgetNTdesc
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint nt)
 {
 char *rval;
@@ -366,7 +376,7 @@ jstring rstring;
       rval = HDgetNTdesc((int32) nt);
 
       if (rval != NULL) {
-              rstring = (*env)->NewStringUTF(env, rval);
+              rstring = ENVPTR->NewStringUTF(ENVPAR  rval);
       } else {
               rstring = NULL;
       }
@@ -374,3 +384,6 @@ jstring rstring;
       return rstring;
 }
 
+#ifdef __cplusplus
+}
+#endif

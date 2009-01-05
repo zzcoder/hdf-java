@@ -20,15 +20,27 @@
  *     http://hdf.ncsa.uiuc.edu
  *
  */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "hdf.h"
 #include "jni.h"
+
+#ifdef __cplusplus
+#define ENVPTR (env)
+#define ENVPAR 
+#else
+#define ENVPTR (*env)
+#define ENVPAR env,
+#endif
 
 extern jboolean getOldCompInfo( JNIEnv *env, jobject ciobj, comp_info *cinf);
 
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_1DF24getdims
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jstring filename,
 jintArray argv) /* OUT: width, height, il */
 {
@@ -38,26 +50,26 @@ jintArray argv) /* OUT: width, height, il */
     jint *theArgs;
     jboolean bb;
 
-    theArgs = (*env)->GetIntArrayElements(env,argv,&bb);
-    hdf_file =(char *) (*env)->GetStringUTFChars(env,filename,0);
+    theArgs = ENVPTR->GetIntArrayElements(ENVPAR argv,&bb);
+    hdf_file =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
 
     /* get image dimension information */
     rval = DF24getdims(hdf_file, (int32 *)&(theArgs[0]),
         (int32 *)&(theArgs[1]), (intn *)&(theArgs[2]));
 
-    (*env)->ReleaseStringUTFChars(env,filename,hdf_file);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,hdf_file);
     if (rval == FAIL) {
-        (*env)->ReleaseIntArrayElements(env,argv,theArgs,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseIntArrayElements(env,argv,theArgs,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR argv,theArgs,0);
         return JNI_TRUE;
     }
 }
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_1DF24getimage
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jstring filename,
 jbyteArray image, /* OUT: image data width X height X 3 */
 jint width,
@@ -68,17 +80,17 @@ jint height)
     jbyte *dat;
     jboolean bb;
 
-    hdf_file =(char *) (*env)->GetStringUTFChars(env,filename,0);
-    dat = (*env)->GetByteArrayElements(env,image,&bb);
+    hdf_file =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    dat = ENVPTR->GetByteArrayElements(ENVPAR image,&bb);
 
     rval =  DF24getimage((char *)hdf_file, (VOIDP) dat, (int32) width, (int32) height);
 
-    (*env)->ReleaseStringUTFChars(env,filename,hdf_file);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,hdf_file);
     if (rval == FAIL) {
-        (*env)->ReleaseByteArrayElements(env,image,dat,JNI_ABORT);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR image,dat,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        (*env)->ReleaseByteArrayElements(env,image,dat,0);
+        ENVPTR->ReleaseByteArrayElements(ENVPAR image,dat,0);
         return JNI_TRUE;
     }
 
@@ -93,17 +105,17 @@ jobject obj)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_1DF24readref
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jstring filename,
 jshort ref)
 {
     int  retVal;
     char *filePtr;
-    filePtr =(char *) (*env)->GetStringUTFChars(env,filename,0);
+    filePtr =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
 
     retVal = DF24readref(filePtr, (short)ref);
 
-    (*env)->ReleaseStringUTFChars(env,filename,filePtr);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,filePtr);
     if (retVal == FAIL) {
         return JNI_FALSE;
     } else {
@@ -127,18 +139,18 @@ jobject obj)
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_1DF24nimages
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jstring hdfFile)
 {
     char  *hdf_file;
 
-    hdf_file =(char *) (*env)->GetStringUTFChars(env,hdfFile,0);
+    hdf_file =(char *) ENVPTR->GetStringUTFChars(ENVPAR hdfFile,0);
     return(DF24nimages(hdf_file));
 }
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DF24reqil
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint interlace)
 {
     return(DF24reqil((intn)interlace));
@@ -146,7 +158,7 @@ jint interlace)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_1DF24addimage
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jstring filename,
 jbyteArray image, /* IN: image data width X height X 3 */
 jint width,
@@ -157,13 +169,13 @@ jint height)
     jbyte *dat;
     jboolean bb;
 
-    f =(char *) (*env)->GetStringUTFChars(env,filename,0);
-    dat = (*env)->GetByteArrayElements(env,image,&bb);
+    f =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    dat = ENVPTR->GetByteArrayElements(ENVPAR image,&bb);
 
     rval = DF24addimage((char *)f, (VOIDP) dat, (int32) width, (int32) height);
 
-    (*env)->ReleaseStringUTFChars(env,filename,f);
-    (*env)->ReleaseByteArrayElements(env,image,dat,JNI_ABORT);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,f);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR image,dat,JNI_ABORT);
     if (rval == FAIL) {
         return JNI_FALSE;
     } else {
@@ -174,7 +186,7 @@ jint height)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_1DF24putimage
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jstring filename,
 jbyteArray image, /* IN: image data width X height X 3 */
 jint width,
@@ -185,13 +197,13 @@ jint height)
     jbyte *dat;
     jboolean bb;
 
-    f =(char *) (*env)->GetStringUTFChars(env,filename,0);
-    dat = (*env)->GetByteArrayElements(env,image,&bb);
+    f =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
+    dat = ENVPTR->GetByteArrayElements(ENVPAR image,&bb);
 
     rval = DF24putimage((char *)f, (VOIDP) dat, (int32) width, (int32) height);
 
-    (*env)->ReleaseStringUTFChars(env,filename,f);
-    (*env)->ReleaseByteArrayElements(env,image,dat,JNI_ABORT);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR filename,f);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR image,dat,JNI_ABORT);
     if (rval == FAIL) {
         return JNI_FALSE;
     } else {
@@ -202,7 +214,7 @@ jint height)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DF24setcompress
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint type,
 jobject cinfo)
 {
@@ -210,7 +222,7 @@ jobject cinfo)
     comp_info cinf;
     jboolean bval;
 
-    bval = getOldCompInfo(env,cinfo,&cinf);
+    bval = getOldCompInfo(env, cinfo,&cinf);
 
     /* check fo rsuccess... */
 
@@ -226,7 +238,7 @@ jobject cinfo)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DF24setdims
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint width,
 jint height)
 {
@@ -243,7 +255,7 @@ jint height)
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_DF24setil
 ( JNIEnv *env,
-jclass class,
+jclass clss,
 jint il)
 {
     intn rval;
@@ -254,3 +266,7 @@ jint il)
         return JNI_TRUE;
     }
 }
+
+#ifdef __cplusplus
+}
+#endif
