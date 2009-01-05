@@ -25,7 +25,7 @@ LINKER = link.exe
 
 CFLAGS = \
 /I $(HDF5INC) /I $(JAVAHOME)"\include" /I $(JAVAHOME)"\include\win32" \
-/D H5_USE_16_API_DEFAULT /D "_MBCS" /U "__cplusplus" \
+/D H5_USE_16_API /D "_MBCS" /U "__cplusplus" \
 /D "_CRT_SECURE_NO_WARNINGS" /D "_LARGEFILE_SOURCE" \
 /nologo /W3 /EHsc /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /FD /c /TP \
 
