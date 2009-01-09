@@ -492,7 +492,7 @@ HyperlinkListener, ChangeListener, DropTargetListener
         try { 
             Class.forName("ncsa.hdf.srb.H5SRB");
             Class.forName("ncsa.hdf.srb.SRBFileDialog"); 
-        } catch (Throwable ex) {ex.printStackTrace();isSrbSupported = false;}
+        } catch (Throwable ex) {isSrbSupported = false;}
        
         if (isSrbSupported) {
             item = new JMenuItem( "Open from iRODS");

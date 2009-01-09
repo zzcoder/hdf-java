@@ -1128,6 +1128,8 @@ public class H5File extends FileFormat
         int nMembers = memberNames.length;
         int memberRanks[] = new int[nMembers];
         int memberDims[][] = new int[nMembers][1];
+        Dataset ds = null;
+
         for (int i=0; i<nMembers; i++)
         {
             memberRanks[i] = 1;
@@ -1142,9 +1144,10 @@ public class H5File extends FileFormat
             // create new dataset at the root group by default
             pgroup = (Group)get("/");
         }
-
-        return H5CompoundDS.create(name, pgroup, dims, maxdims, chunks, gzip,
+        ds = H5CompoundDS.create(name, pgroup, dims, maxdims, chunks, gzip,
             memberNames, memberDatatypes, memberRanks, memberDims, data);
+
+        return ds;
     }
 
 

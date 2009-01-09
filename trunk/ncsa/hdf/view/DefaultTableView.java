@@ -1472,7 +1472,7 @@ implements TableView, ActionListener
             {
             	if (startEditing[0])
             		return "";
-            	
+
                 int fieldIdx = col;
                 int rowIdx = row;
 

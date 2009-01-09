@@ -598,6 +598,7 @@ public class TestH5Object
         data.add(1, DATA_FLOAT);
         data.add(2, DATA_STR);
 
+
         // create groups
         final Datatype[]  mdtypes = new H5Datatype[3];
         final String[] mnames = {"int", "float", "string"};
@@ -671,7 +672,7 @@ public class TestH5Object
         // create dataset at non root group
         Group g0 = null;
         try {
-            g0 = file.createGroup("/g0", null);
+            g0 = file.createGroup("/gg0", null);
         } catch (final Exception ex) { failed(message, ex, file); return 1;}
         try {
             mdtypes[0] = new H5Datatype(Datatype.CLASS_INTEGER, -1, -1, -1);
