@@ -1221,7 +1221,7 @@ public class H5CompoundDS extends CompoundDS
                     H5.H5Pset_deflate(plist, gzip);
                 }
             }
-            
+
             int fid = file.getFID();
             did = H5.H5Dcreate(fid, fullPath, tid, sid, plist);
         } finally {

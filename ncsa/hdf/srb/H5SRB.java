@@ -41,7 +41,7 @@ public class H5SRB {
                 try {
                    System.load(filename);
                    isIRODSSupported = true;
-                } catch (Throwable err) { err.printStackTrace(); isIRODSSupported= false; }
+                } catch (Throwable err) {isIRODSSupported= false; }
             }
         }
 
@@ -51,7 +51,7 @@ public class H5SRB {
             try {
                 System.loadLibrary("jh5srb");
                 isIRODSSupported = true;
-            } catch (Throwable err) { err.printStackTrace(); isIRODSSupported = false; }
+            } catch (Throwable err) {isIRODSSupported = false; }
         }
      }
 
