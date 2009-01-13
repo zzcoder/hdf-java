@@ -96,10 +96,10 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1name
         /*  exception, returns immediately */
     }
     /* successful return -- save the string; */
-	str = ENVPTR->NewStringUTF(ENVPAR aName);
+    str = ENVPTR->NewStringUTF(ENVPAR aName);
     ENVPTR->SetObjectArrayElement(ENVPAR name,0,str);
 
-	free(aName);
+    free(aName);
     return (jlong)size;
 }
 
