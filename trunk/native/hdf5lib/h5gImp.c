@@ -146,7 +146,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gclose
 {
     herr_t retVal = 0;
 
-	if (group_id > 0)
+    if (group_id > 0)
         retVal =  H5Gclose((hid_t)group_id) ;
 
     if (retVal < 0) {

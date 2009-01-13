@@ -671,8 +671,9 @@ public class H5ScalarDS extends ScalarDS
                                         (isUnsigned && unsignedConverted) );
                 if ( doConversion) {
                     tmpData = convertToUnsignedC(buf, null);
-                } else if (isText && convertByteToString) {
-                    tmpData = stringToByte((String[])buf, H5.H5Tget_size(tid));
+                } // Rosetta Biosoftware - do not convert v-len strings, regardless of conversion request type 
+                else if (isText && convertByteToString && !H5.H5Tis_variable_str(tid)) { 
+                	tmpData = stringToByte((String[])buf, H5.H5Tget_size(tid)); 
                 } else {
                     tmpData = buf;
                 }
@@ -1238,5 +1239,43 @@ public class H5ScalarDS extends ScalarDS
 
         super.setName(newName);
     }
+    
+    /**
+     * H5Dextend verifies that the dataset is at least of size size, extending 
+     * it if necessary. The dimensionality of size is the same as that of the 
+     * dataspace of the dataset being changed. 
+     * 
+     * This function can be applied to the following datasets:
+     *     1) Any dataset with unlimited dimensions
+     *     2) A dataset with fixed dimensions if the current dimension sizes 
+     *        are less than the maximum sizes set with maxdims (see H5Screate_simple) 
+     */
+    public void extend(long[] newDims) throws HDF5Exception { 
+        int did = -1, sid = -1; 
+
+        did = open(); 
+        try { 
+            H5.H5Dextend(did, newDims); 
+            H5.H5Fflush(did, HDF5Constants.H5F_SCOPE_GLOBAL); 
+            sid = H5.H5Dget_space(did); 
+            long[] checkDims = new long[rank]; 
+            H5.H5Sget_simple_extent_dims(sid, checkDims, null); 
+            for (int i = 0; i < rank; i++) { 
+                if (checkDims[i] != newDims[i]) { 
+                    throw new HDF5Exception("error extending dataset "+ getName()); 
+                } 
+            } 
+            dims = checkDims; 
+        } catch (Exception e) { 
+            throw new HDF5Exception(e.getMessage()); 
+        } 
+        finally 
+        {
+        	if (sid > 0)
+             H5.H5Sclose(sid);
+        	
+            close(did); 
+        } 
+    } 
     
 }

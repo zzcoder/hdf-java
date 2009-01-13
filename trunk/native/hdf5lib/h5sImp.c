@@ -809,7 +809,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sclose
 {
     herr_t retVal = 0;
 
-	if (space_id > 0)
+    if (space_id > 0)
         retVal =  H5Sclose(space_id);
 
     if (retVal < 0) {

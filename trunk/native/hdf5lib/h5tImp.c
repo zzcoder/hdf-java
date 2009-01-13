@@ -793,7 +793,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tclose
 {
     herr_t retVal = 0;
 
-	if (type_id > 0)
+    if (type_id > 0)
         retVal =  H5Tclose(type_id);
 
     if (retVal < 0) {
@@ -1173,7 +1173,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tarray_1create
         ENVPTR->ReleaseIntArrayElements(ENVPAR perms,permP,JNI_ABORT);
     }
 
-	free (cdims);
+    free (cdims);
     if (status < 0) {
         h5libraryError(env);
     }

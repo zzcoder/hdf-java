@@ -216,7 +216,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fclose
 {
     herr_t status = 0;
 
-	if (file_id > 0)
+    if (file_id > 0)
         status = H5Fclose((hid_t) file_id );
 
     if (status < 0) {

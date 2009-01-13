@@ -12,6 +12,9 @@
 package ncsa.hdf.hdf5lib;
 
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import ncsa.hdf.hdf5lib.exceptions.*;
 
 
@@ -208,33 +211,77 @@ import ncsa.hdf.hdf5lib.exceptions.*;
 public class H5 {
 
     public final static String H5PATH_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.hdf5lib";
+    
+    //add system property to load library by name from library path, via System.loadLibrary() 
+    public final static String H5_LIBRARY_NAME_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.loadLibraryName"; 
+
+    private static Logger s_logger; 
+    private static String s_libraryName; 
 
     static
     {
         boolean done = false;
-        String filename = System.getProperty(H5PATH_PROPERTY_KEY,null);
+        
+        // use default logger, since spanning sources 
+        s_logger = Logger.getLogger("ncsa.hdf.hdf5lib"); 
+        s_logger.setLevel(Level.INFO); 
+        // first try loading library by name from user supplied library path 
+        s_libraryName = System.getProperty(H5_LIBRARY_NAME_PROPERTY_KEY,null); 
+        String mappedName = null; 
+        if ((s_libraryName != null) && (s_libraryName.length() > 0)) 
+        { 
+            try { 
+                mappedName = System.mapLibraryName(s_libraryName); 
+                System.loadLibrary(s_libraryName); 
+                done = true; 
+            } catch (Throwable err) { 
+                err.printStackTrace(); 
+                done = false; 
+            } finally { 
+                s_logger.log(Level.INFO,"HDF5 library: " + s_libraryName + " resolved to: "+mappedName+"; "+(done ? "" : " NOT") + " successfully loaded from java.library.path");
 
-        if ((filename != null) && (filename.length() > 0))
-        {
-            File h5dll = new File(filename);
-            if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) {
-                try {
-                    System.load(filename);
-                    done = true;
-                } catch (Throwable err) { done = false; }
-            } else {
-                done = false;
-                throw (new UnsatisfiedLinkError("Invalid HDF5 library, "+filename));
-            }
-        }
+            } 
+        } 
+        
+        if (!done) { 
+            // else try loading library via full path 
+            String filename = System.getProperty(H5PATH_PROPERTY_KEY,null); 
+            if ((filename != null) && (filename.length() > 0)) 
+            { 
+                File h5dll = new File(filename); 
+                if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) { 
+                    try { 
+                        System.load(filename); 
+                        done = true; 
+                    } catch (Throwable err) { 
+                        err.printStackTrace(); 
+                        done = false; 
+                    } finally { 
+                        s_logger.log(Level.INFO,"HDF5 library: " + filename + (done ? "" : " NOT") + " successfully loaded.");
 
-        if (!done)
-        {
-            try {
-                System.loadLibrary("jhdf5");
-                done = true;
-            } catch (Throwable err) { err.printStackTrace(); done = false; }
-        }
+                    } 
+                } else { 
+                    done = false; 
+                    throw (new UnsatisfiedLinkError("Invalid HDF5 library, "+filename)); 
+                } 
+            } 
+        } 
+
+        // else load standard library 
+        if (!done) 
+        { 
+            try { 
+                s_libraryName = "jhdf5"; 
+                mappedName = System.mapLibraryName(s_libraryName); 
+                System.loadLibrary("jhdf5"); 
+                done = true; 
+            } catch (Throwable err) { 
+                err.printStackTrace(); done = false; 
+            } finally { 
+                s_logger.log(Level.INFO,"HDF5 library: " + s_libraryName + " resolved to: "+mappedName+"; "+(done ? "" : " NOT") + " successfully loaded from java.library.path");
+
+            } 
+        } 
 
         /* Important!  Exit quietly */
         try { 
