@@ -59,6 +59,35 @@ public class ViewProperties extends Properties
 
     /** name of the tab delimiter */
     public static final String DELIMITER_SEMI_COLON = "Semi-Colon";
+    
+    public static final String MIME_APPLICATION_MSWORD  = "application/msword";
+    public static final String MIME_APPLICATION_OCTETSTREAM  = "application/octet-stream";
+    public static final String MIME_APPLICATION_PDF  = "application/pdf";
+    public static final String MIME_APPLICATION_POSTSCRIPT  = "application/postscript";
+    public static final String MIME_APPLICATION_EXCEL  = "application/vnd.ms-excel";
+    public static final String MIME_APPLICATION_POWERPOINT  = "application/vnd.ms-powerpoint";
+    public static final String MIME_APPLICATION_XCOMPRESSED  = "application/x-compressed";
+    public static final String MIME_APPLICATION_XGZIP  = "application/x-gzip";
+    public static final String MIME_APPLICATION_XHDF  = "application/x-hdf";
+    public static final String MIME_APPLICATION_XJAVASCRIPT  = "application/x-javascript";
+    public static final String MIME_APPLICATION_XNETCDF  = "application/x-netcdf";
+    public static final String MIME_APPLICATION_ZIP  = "application/zip";
+    public static final String MIME_APPLICATION_UNKNOWN  = "application/unknown";
+    public static final String MIME_AUDIO_BASIC  = "audio/basic";
+    public static final String MIME_AUDIO_MID  = "audio/mid";
+    public static final String MIME_AUDIO_MPEG  = "audio/mpeg";
+    public static final String MIME_AUDIO_XAIFF  = "audio/x-aiff";
+    public static final String MIME_AUDIO_XWAV  = "audio/x-wav";
+    public static final String MIME_IMAGE_BMP  = "image/bmp";
+    public static final String MIME_IMAGE_GIF  = "image/gif";
+    public static final String MIME_IMAGE_JPEG  = "image/jpeg";
+    public static final String MIME_IMAGE_TIFF  = "image/tiff";
+    public static final String MIME_TEXT_HTML  = "text/html";
+    public static final String MIME_TEXT_PLAIN  = "text/plain";
+    public static final String MIME_VIDEO_MPEG  = "video/mpeg";
+    public static final String MIME_VIDEO_QUICKTIME  = "video/quicktime";
+    public static final String MIME_VIDEO_MSVIDEO  = "video/x-msvideo";
+
 
     /** user's guide */
     private static String usersGuide = System.getProperty("user.dir")+"/UsersGuide/index.html";
@@ -181,12 +210,6 @@ public class ViewProperties extends Properties
         {
             propertyFile = ud;
         }
-/*
-        else if ((new File(h5v)).exists())
-        {
-            propertyFile = h5v;
-        }
-*/
         else // create new property file at user home directory
         {
             propertyFile = uh;
@@ -225,10 +248,13 @@ public class ViewProperties extends Properties
         }  catch (Exception ex) {;}
         
         String rootPath = System.getProperty("hdfview.root");
+        if (rootPath == null)
+        	rootPath = System.getProperty("user.dir");
+        
         String dirname = rootPath+File.separator+"lib"+File.separator+"ext"+File.separator;
         File extdir = new File(dirname);
         String[] jars = extdir.list();
-
+        
         if ((jars == null) || (jars.length <= 0)) {
             return extClassLoader;
         }
@@ -913,11 +939,17 @@ public class ViewProperties extends Properties
         for (int i=0; i<6; i++) {
             Vector theList = moduleList[i];
             str = (String)get(keys[i]);
+            
+            /*
             if (!theList.contains(str)) {
                 str = moduleNames[i];
             }
-            theList.remove(str);
-            theList.add(0, str);
+            */
+            
+            if (str != null) {
+            	theList.remove(str);
+            	theList.add(0, str);
+            }
         }
     }
 

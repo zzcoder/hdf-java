@@ -116,7 +116,13 @@ public abstract class FileFormat extends File
 
     /** Key for HDF5 file format. */
     public static final String FILE_TYPE_HDF5 = "HDF5";
-
+    
+    /**
+     * A separator that separates file name and object name.
+     * @see ncsa.hdf.object.FileFormat#getHObject(String)
+     */
+    public static final String FILE_OBJ_SEP = "#//";
+    
     /**
      *  FileList keeps a list of supported FileFormats.
      *  This list can be updated and queried at runtime.
@@ -1482,12 +1488,12 @@ public abstract class FileFormat extends File
         }
 
         String filename=null, path=null;
-        int idx = fullPath.indexOf("#//");
+        int idx = fullPath.indexOf(FILE_OBJ_SEP);
 
         if (idx >0 )
         {
             filename = fullPath.substring(0, idx);
-            path = fullPath.substring(idx+3);
+            path = fullPath.substring(idx+FILE_OBJ_SEP.length());
             if ((path == null) || (path.length() == 0)) {
                 path = "/";
             }
