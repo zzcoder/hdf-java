@@ -1923,7 +1923,8 @@ public class DefaultTreeView extends JPanel
                     leafIcon = datatypeIconA;
                 } else {
                     leafIcon = datatypeIcon;
-                }            }
+                }
+            }
 
             return super.getTreeCellRendererComponent(
                 tree,
