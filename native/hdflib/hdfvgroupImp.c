@@ -121,7 +121,7 @@ jobjectArray hdfclassname)
         return;
     }
 
-    className = (char *)malloc(VGNAMELENMAX+1);
+    className = (char *)malloc(H4_MAX_NC_CLASS+1);
     if (className == NULL) {
         h4outOfMemory(env,  "Vgetclass");
         return;
@@ -134,7 +134,7 @@ jobjectArray hdfclassname)
         return;
     }
 
-    className[VGNAMELENMAX] = '\0';
+    className[H4_MAX_NC_CLASS] = '\0';
     /* convert it to java string */
     rstring = ENVPTR->NewStringUTF(ENVPAR className);
 
@@ -173,14 +173,14 @@ jobjectArray hdfname)
     jobject o;
     jboolean bb;
 
-    name = (char *) malloc(VGNAMELENMAX+1);
+    name = (char *) malloc(H4_MAX_NC_NAME+1);
     if (name == NULL) {
         h4outOfMemory(env,  "Vgetname");
         return;
     }
     Vgetname(vgroup_id, name);
 
-    name[VGNAMELENMAX] = '\0';
+    name[H4_MAX_NC_NAME] = '\0';
 
     rstring = ENVPTR->NewStringUTF(ENVPAR name);
 
@@ -463,7 +463,7 @@ jobjectArray vgroup_name) /* OUT: String */
     jobject o;
     jboolean bb;
 
-    name = (char *)malloc(VGNAMELENMAX+1);
+    name = (char *)malloc(H4_MAX_NC_NAME+1);
     if (name == NULL) {
         h4outOfMemory(env,  "Vinquire");
         return JNI_FALSE;
@@ -472,7 +472,7 @@ jobjectArray vgroup_name) /* OUT: String */
 
     rval = Vinquire((int32) vgroup_id, (int32 *)&(theArg[0]), name);
 
-    name[VGNAMELENMAX] = '\0';
+    name[H4_MAX_NC_NAME] = '\0';
 
     if (rval == FAIL) {
         ENVPTR->ReleaseIntArrayElements(ENVPAR n_entries,theArg, JNI_ABORT);
