@@ -22,8 +22,9 @@ import java.awt.Toolkit;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.util.StringTokenizer;
+
+import javax.imageio.ImageIO;
 import javax.swing.tree.DefaultMutableTreeNode;
-import com.sun.image.codec.jpeg.*;
 
 /**
  * The "Tools" class contains various of tools for HDF files such as jpeg to
@@ -50,6 +51,15 @@ public final class Tools
 
     /** Key for PNG image file type. */
     public static final String FILE_TYPE_PNG = "PNG";
+    
+    /** Key for GIF image file type. */
+    public static final String FILE_TYPE_GIF = "GIF";
+    
+    /** Key for BMP image file type. */
+    public static final String FILE_TYPE_BMP = "BMP";
+    
+    /** Key for all image file type. */
+    public static final String FILE_TYPE_IMAGE = "IMG";
 
     /** Print out debug information */
     public static final void debug(Object caller, Object msg)
@@ -77,17 +87,22 @@ public final class Tools
             throw new NullPointerException("The target HDF file is null.");
         }
 
-        if (!fromType.equals(FILE_TYPE_JPEG)) {
+        if (!fromType.equals(FILE_TYPE_IMAGE)) {
             throw new UnsupportedOperationException("Unsupported image type.");
         } else if ( !(toType.equals(FileFormat.FILE_TYPE_HDF4)
              || toType.equals(FileFormat.FILE_TYPE_HDF5 ))) {
             throw new UnsupportedOperationException("Unsupported destination file type.");
         }
 
-        BufferedInputStream in = new BufferedInputStream(new FileInputStream(imgFileName));
-        JPEGImageDecoder decoder = JPEGCodec.createJPEGDecoder(in);
-        BufferedImage image = decoder.decodeAsBufferedImage();
-        in.close();
+        BufferedImage image = null;
+        try {
+            BufferedInputStream in = new BufferedInputStream(new FileInputStream(imgFileName));
+            image = ImageIO.read(in);
+            in.close();
+        } catch (Throwable err) {image = null;}
+
+        if (image == null)
+        	throw new UnsupportedOperationException("Failed to read image: "+imgFileName);
 
         int h = image.getHeight();
         int w = image.getWidth();
@@ -96,6 +111,7 @@ public final class Tools
         try { data = new byte[3*h*w]; }
         catch (OutOfMemoryError err)
         {
+        	err.printStackTrace();
             throw new RuntimeException("Out of memory error.") ;
         }
 
@@ -162,16 +178,8 @@ public final class Tools
         if (image == null) {
             throw new NullPointerException("The source image is null.");
         }
-
-        if (!type.equals(FILE_TYPE_JPEG)) {
-            throw new UnsupportedOperationException("Unsupported image type.");
-        }
-        BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
-
-        JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
-        encoder.encode(image);
-
-        try { out.close(); } catch (Exception ex) {}
+        
+    	ImageIO.write(image, type, file);
     }
 
 
