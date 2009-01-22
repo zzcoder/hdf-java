@@ -40,6 +40,9 @@ public class DefaultFileFilter extends FileFilter
     private static FileFilter FILE_FILTER_JPEG = null;
     private static FileFilter FILE_FILTER_TIFF = null;
     private static FileFilter FILE_FILTER_PNG = null;
+    private static FileFilter FILE_FILTER_GIF = null;
+    private static FileFilter FILE_FILTER_BMP = null;
+    private static FileFilter FILE_FILTER_IMG = null;
     private static FileFilter FILE_FILTER_TEXT = null;
 
     private static String fileExtension = ViewProperties.getFileExtension();
@@ -304,7 +307,7 @@ public class DefaultFileFilter extends FileFilter
         return FILE_FILTER_HDF5;
     }
 
-    /** Return a file filter for JPEG image file. */
+    /** Return a file filter for JPEG image files. */
     public static FileFilter getFileFilterJPEG()
     {
         if (FILE_FILTER_JPEG != null) {
@@ -314,13 +317,17 @@ public class DefaultFileFilter extends FileFilter
         DefaultFileFilter filter = new DefaultFileFilter();
         filter.addExtension("jpg");
         filter.addExtension("jpeg");
+        filter.addExtension("jpe");
+        filter.addExtension("jif");
+        filter.addExtension("jfif");
+        filter.addExtension("jfi");
         filter.setDescription("JPEG images");
         FILE_FILTER_JPEG = filter;
 
         return FILE_FILTER_JPEG;
     }
-
-    /** Return a file filter for TIFF image file. */
+    
+    /** Return a file filter for TIFF image files. */
     public static FileFilter getFileFilterTIFF()
     {
         if (FILE_FILTER_TIFF != null) {
@@ -336,7 +343,7 @@ public class DefaultFileFilter extends FileFilter
         return FILE_FILTER_TIFF;
     }
 
-    /** Return a file filter for PNG image file. */
+    /** Return a file filter for PNG image files. */
     public static FileFilter getFileFilterPNG()
     {
         if (FILE_FILTER_PNG != null) {
@@ -349,6 +356,61 @@ public class DefaultFileFilter extends FileFilter
         FILE_FILTER_PNG = filter;
 
         return FILE_FILTER_PNG;
+    }
+    
+    /** Return a file filter for BMP image files. */
+    public static FileFilter getFileFilterBMP()
+    {
+        if (FILE_FILTER_BMP != null) {
+            return FILE_FILTER_BMP;
+        }
+
+        DefaultFileFilter filter = new DefaultFileFilter();
+        filter.addExtension("bmp");
+        filter.addExtension("dib");
+        filter.setDescription("BMP images");
+        FILE_FILTER_BMP = filter;
+
+        return FILE_FILTER_BMP;
+    }
+
+    /** Return a file filter for GIF image files. */
+    public static FileFilter getFileFilterGIF()
+    {
+        if (FILE_FILTER_GIF != null) {
+            return FILE_FILTER_GIF;
+        }
+
+        DefaultFileFilter filter = new DefaultFileFilter();
+        filter.addExtension("gif");
+        filter.setDescription("GIF images");
+        FILE_FILTER_GIF = filter;
+
+        return FILE_FILTER_GIF;
+    }
+    
+    /** Return a file filter for GIF, JPEG, BMP, or PNG image files. */
+    public static FileFilter getImageFileFilter()
+    {
+        if (FILE_FILTER_IMG != null) {
+            return FILE_FILTER_IMG;
+        }
+
+        DefaultFileFilter filter = new DefaultFileFilter();
+        filter.addExtension("jpg");
+        filter.addExtension("jpeg");
+        filter.addExtension("jpe");
+        filter.addExtension("jif");
+        filter.addExtension("jfif");
+        filter.addExtension("jfi");
+        filter.addExtension("png");
+        filter.addExtension("gif");
+        filter.addExtension("bmp");
+        filter.addExtension("dib");
+        filter.setDescription("GIF, JPEG, BMP, or PNG images");
+        FILE_FILTER_IMG = filter;
+
+        return FILE_FILTER_IMG;
     }
 
     /** Return a file filter for text file. */

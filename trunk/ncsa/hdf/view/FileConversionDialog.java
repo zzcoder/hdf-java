@@ -44,6 +44,8 @@ implements ActionListener
     private JTextField srcFileField, dstFileField;
 
     private boolean isConverted ;
+    
+    private boolean isConvertedFromImage;
 
     private String convertedFile;
 
@@ -75,53 +77,26 @@ implements ActionListener
         fileTypeFrom = typeFrom;
         fileTypeTo = typeTo;
         isConverted = false;
+        isConvertedFromImage = false;
         fileList = openFiles;
         toFileExtension = "";
         currentDir = dir;
         toolkit = Toolkit.getDefaultToolkit();
 
         String fromName = "Source";
-        if (fileTypeFrom.equals(Tools.FILE_TYPE_JPEG) &&
-            fileTypeTo.equals(FileFormat.FILE_TYPE_HDF5))
+        if (fileTypeTo.equals(FileFormat.FILE_TYPE_HDF5))
         {
             toFileExtension = ".h5";
-            setTitle("Convert JPEG to HDF5 ...");
-            fromName = "JPEG";
+            setTitle("Convert Image to HDF5 ...");
+            fromName = "IMAGE";
+            isConvertedFromImage = true;
         }
-        else if (fileTypeFrom.equals(Tools.FILE_TYPE_JPEG) &&
-            fileTypeTo.equals(FileFormat.FILE_TYPE_HDF4))
+        else if (fileTypeTo.equals(FileFormat.FILE_TYPE_HDF4))
         {
             toFileExtension = ".hdf";
-            setTitle("Convert JPEG to HDF4 ...");
-            fromName = "JPEG";
-        }
-        else if (fileTypeFrom.equals(Tools.FILE_TYPE_TIFF) &&
-            fileTypeTo.equals(FileFormat.FILE_TYPE_HDF5))
-        {
-            toFileExtension = ".h5";
-            setTitle("Convert TIFF to HDF5 ...");
-            fromName = "TIFF";
-        }
-        else if (fileTypeFrom.equals(Tools.FILE_TYPE_TIFF) &&
-            fileTypeTo.equals(FileFormat.FILE_TYPE_HDF4))
-        {
-            toFileExtension = ".hdf";
-            setTitle("Convert TIFF to HDF4 ...");
-            fromName = "TIFF";
-        }
-        else if (fileTypeFrom.equals(Tools.FILE_TYPE_PNG) &&
-            fileTypeTo.equals(FileFormat.FILE_TYPE_HDF5))
-        {
-            toFileExtension = ".h5";
-            setTitle("Convert PNG to HDF5 ...");
-            fromName = "PNG";
-        }
-        else if (fileTypeFrom.equals(Tools.FILE_TYPE_PNG) &&
-            fileTypeTo.equals(FileFormat.FILE_TYPE_HDF4))
-        {
-            toFileExtension = ".hdf";
-            setTitle("Convert PNG to HDF4 ...");
-            fromName = "PNG";
+            setTitle("Convert Image to HDF4 ...");
+            fromName = "IMAGE";
+            isConvertedFromImage = true;
         }
 
         // layout the components
@@ -208,13 +183,8 @@ implements ActionListener
         else if (cmd.equals("Browse source file"))
         {
             JFileChooser fchooser = new JFileChooser(currentDir);
-            if (fileTypeFrom.equals(Tools.FILE_TYPE_JPEG)) {
-                fchooser.setFileFilter(DefaultFileFilter.getFileFilterJPEG());
-            } else if (fileTypeFrom.equals(Tools.FILE_TYPE_TIFF)) {
-                fchooser.setFileFilter(DefaultFileFilter.getFileFilterTIFF());
-            } else if (fileTypeFrom.equals(Tools.FILE_TYPE_PNG)) {
-                fchooser.setFileFilter(DefaultFileFilter.getFileFilterPNG());
-            }
+            if (isConvertedFromImage)
+                fchooser.setFileFilter(DefaultFileFilter.getImageFileFilter());
 
             int returnVal = fchooser.showOpenDialog(this);
 

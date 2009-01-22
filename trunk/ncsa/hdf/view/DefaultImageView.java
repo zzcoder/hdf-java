@@ -345,10 +345,35 @@ implements ImageView, ActionListener
         menu.setMnemonic('I');
         bar.add(menu);
 
-        JMenuItem item = new JMenuItem( "Save Image As JPEG");
+        JMenu convertImageMenu = new JMenu("Save Image As");
+        menu.add(convertImageMenu);
+
+        JMenuItem item = new JMenuItem(Tools.FILE_TYPE_JPEG);
         item.addActionListener(this);
         item.setActionCommand("Save image as jpeg");
-        menu.add(item);
+        convertImageMenu.add(item);
+
+        /* ImageIO does not support tiff by default
+        item = new JMenuItem(Tools.FILE_TYPE_TIFF);
+        item.addActionListener(this);
+        item.setActionCommand("Save image as tiff");
+        convertImageMenu.add(item);
+        */
+
+        item = new JMenuItem(Tools.FILE_TYPE_PNG);
+        item.addActionListener(this);
+        item.setActionCommand("Save image as png");
+        convertImageMenu.add(item);
+
+        item = new JMenuItem(Tools.FILE_TYPE_GIF);
+        item.addActionListener(this);
+        item.setActionCommand("Save image as gif");
+        convertImageMenu.add(item);
+
+        item = new JMenuItem(Tools.FILE_TYPE_BMP);
+        item.addActionListener(this);
+        item.setActionCommand("Save image as bmp");
+        convertImageMenu.add(item);
 
         menu.addSeparator();
 
@@ -1168,13 +1193,17 @@ implements ImageView, ActionListener
         final JFileChooser fchooser = new JFileChooser(dataset.getFile());
         if (type.equals(Tools.FILE_TYPE_JPEG)) {
             fchooser.setFileFilter(DefaultFileFilter.getFileFilterJPEG());
-        } else if (type.equals(Tools.FILE_TYPE_TIFF)) {
-            fchooser.setFileFilter(DefaultFileFilter.getFileFilterTIFF());
+        //} else if (type.equals(Tools.FILE_TYPE_TIFF)) {
+        //    fchooser.setFileFilter(DefaultFileFilter.getFileFilterTIFF());
         } else if (type.equals(Tools.FILE_TYPE_PNG)) {
             fchooser.setFileFilter(DefaultFileFilter.getFileFilterPNG());
+        } else if (type.equals(Tools.FILE_TYPE_GIF)) {
+            fchooser.setFileFilter(DefaultFileFilter.getFileFilterGIF());
+        } else if (type.equals(Tools.FILE_TYPE_BMP)) {
+            fchooser.setFileFilter(DefaultFileFilter.getFileFilterBMP());
         }
 
-        fchooser.changeToParentDirectory();
+        //fchooser.changeToParentDirectory();
         fchooser.setDialogTitle("Save Current Image To "+type+" File --- "+dataset.getName());
 
         File choosedFile = new File(dataset.getName()+"."+type.toLowerCase());
@@ -1249,6 +1278,10 @@ implements ImageView, ActionListener
                 filetype = Tools.FILE_TYPE_TIFF;
             } else if (cmd.equals("Save image as png")) {
                 filetype = Tools.FILE_TYPE_PNG;
+            } else if (cmd.equals("Save image as gif")) {
+                filetype = Tools.FILE_TYPE_GIF;
+            } else if (cmd.equals("Save image as bmp")) {
+                filetype = Tools.FILE_TYPE_BMP;
             }
 
             try { saveImageAs(filetype); }

@@ -596,14 +596,14 @@ HyperlinkListener, ChangeListener, DropTargetListener
         menu.setMnemonic('T');
         mbar.add(menu);
 
-        JMenu imageSubmenu = new JMenu("Convert JPEG To");
+        JMenu imageSubmenu = new JMenu("Convert Image To");
         item = new JMenuItem( "HDF4");
-        item.setActionCommand("Convert image file: JPEG to HDF4");
+        item.setActionCommand("Convert image file: Image to HDF4");
         item.addActionListener(this);
         h4GUIs.add(item);
         imageSubmenu.add(item);
         item = new JMenuItem( "HDF5");
-        item.setActionCommand("Convert image file: JPEG to HDF5");
+        item.setActionCommand("Convert image file: Image to HDF5");
         item.addActionListener(this);
         h5GUIs.add(item);
         imageSubmenu.add(item);
@@ -1243,34 +1243,14 @@ HyperlinkListener, ChangeListener, DropTargetListener
         {
             String typeFrom=null, typeTo =null;
 
-            if (cmd.equals("Convert image file: JPEG to HDF5"))
+            if (cmd.equals("Convert image file: Image to HDF5"))
             {
-                typeFrom = Tools.FILE_TYPE_JPEG;
+            	typeFrom = Tools.FILE_TYPE_IMAGE;
                 typeTo = FileFormat.FILE_TYPE_HDF5;
             }
-            else if (cmd.equals("Convert image file: TIFF to HDF5"))
+            else if (cmd.equals("Convert image file: Image to HDF4"))
             {
-                typeFrom = Tools.FILE_TYPE_TIFF;
-                typeTo = FileFormat.FILE_TYPE_HDF5;
-            }
-            else if (cmd.equals("Convert image file: PNG to HDF5"))
-            {
-                typeFrom = Tools.FILE_TYPE_PNG;
-                typeTo = FileFormat.FILE_TYPE_HDF5;
-            }
-            else if (cmd.equals("Convert image file: JPEG to HDF4"))
-            {
-                typeFrom = Tools.FILE_TYPE_JPEG;
-                typeTo = FileFormat.FILE_TYPE_HDF4;
-            }
-            else if (cmd.equals("Convert image file: TIFF to HDF4"))
-            {
-                typeFrom = Tools.FILE_TYPE_TIFF;
-                typeTo = FileFormat.FILE_TYPE_HDF4;
-            }
-            else if (cmd.equals("Convert image file: PNG to HDF4"))
-            {
-                typeFrom = Tools.FILE_TYPE_PNG;
+            	typeFrom = Tools.FILE_TYPE_IMAGE;
                 typeTo = FileFormat.FILE_TYPE_HDF4;
             } else {
                 return;
