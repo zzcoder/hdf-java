@@ -170,13 +170,6 @@ do-jh5obj-packages: $(H5OBJPACKAGES)
 jhdfview-packages: $(HDFVIEWPACKAGES)  
 	$(JAR) cf ./lib/jhdfview.jar $(HDFVIEWCLASSES) $(HDFVIEWICONS)
 
-#
-#  Temporary, not sure how we'll really handle these
-#
-example-extensions:
-	-mkdir -p $(LIBDIR)/ext 
-	cp ./lib/ext/testview.jar $(LIBDIR)/ext 
-
 classes: packages
 
 natives: FORCE
