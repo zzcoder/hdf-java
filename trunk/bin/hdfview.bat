@@ -22,7 +22,7 @@ SET PATH="%HDFJAVA%"\lib\win;"%HDFJAVA%"\lib\ext
 set JNI_CLASSPATH="%HDFJAVA%"\lib\jhdf.jar;"%HDFJAVA%"\lib\jhdf5.jar
 
 @REM set the object package classpath
-set OBJ_CLASSPATH="%HDFJAVA%"\lib\jhdfobj.jar;"%HDFJAVA%"\lib\jhdf4obj.jar;"%HDFJAVA%"\lib\jhdf5obj.jar;"%HDFJAVA%"\lib\netcdf.jar;"%HDFJAVA%"\lib\fits.jar
+set OBJ_CLASSPATH="%HDFJAVA%"\lib\jhdfobj.jar;"%HDFJAVA%"\lib\jhdf4obj.jar;"%HDFJAVA%"\lib\jhdf5obj.jar;"%HDFJAVA%"\lib\netcdf.jar;"%HDFJAVA%"\lib\fits.jar;"%HDFJAVA%"\lib\jgraph.jar
 
 @REM set the CLASSPATH
 set CLASSPATH=%JNI_CLASSPATH%;%OBJ_CLASSPATH%;"%HDFJAVA%"\lib\jhdfview.jar
