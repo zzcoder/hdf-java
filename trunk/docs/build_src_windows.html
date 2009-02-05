@@ -86,50 +86,9 @@ to help you to build the C source code.
 </DL>
 
 You will need the nmake tool to run the makfile. The nmake tool come with Microsoft
-Visual C++. The first step is to configure the makfile. Edit the makefile to set
+Visual C++. The first step is to configure the makfile. Edit the nt_makefile to set
 the dependent libraries and other requirements.
 
-<p>
-<table cellpadding="4" cellspacing="2" border="1" width="80%" align="center">
-<tr>
-<td>
-#============================================================================<br>
-#<br>
-#              Makefile to compile HDF Java Native C Source<br>
-#              Usage: nmake /f jhdf.mak<br>
-#<br>
-#============================================================================<br>
-<br>
-# Visual C++ directory, for example<br>
-#VCPPDIR=C:\Program Files\Microsoft Visual Studio\VC98<br>
-VCPPDIR=<br>
-<br>
-# directory where JDK is installed (need JDK1.5.0 or above), for example<br>
-#JAVADIR=D:\java\jDK1.5.0\<br>
-JAVADIR=<br>
-<br>
-# directory of the HDF Java Products, for example<br>
-#HDFJAVADIR=D:\work\hdf-java\<br>
-HDFJAVADIR=<br>
-<br>
-# the directory where HDF library is installed, for example<br>
-#HDFDIR=E:\Work\MyHDFstuff\hdf-42r0\<br>
-HDFDIR=<br>
-<br>
-# the JPEG library, for example<br>
-#JPEGLIB=E:\Work\MyHDFstuff\lib-external\jpeg\libjpeg.lib<br>
-JPEGLIB=<br>
-<br>
-# the GZIP library, for example<br>
-#GZIPLIB=E:\Work\MyHDFstuff\lib-external\zlib\bin\windows\zlib114\lib\zlib.lib<br>
-GZIPLIB=<br>
-<br>
-# SZIP library, for example<br>
-#SZIPLIB=E:\Work\MyHDFstuff\lib-external\szip\bin\windows\szip-msvc++\lib\szlib.lib<br>
-SZIPLIB=<br>
-</td>
-</tr>
-</table>
 <hr>
 <h3>
 Compile the HDF Java Source Code</h3>
