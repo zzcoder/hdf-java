@@ -6,19 +6,59 @@ include ("../includes/header.html");
 </fieldset>
 
 
-<p>
+<p/>
 <table BORDER=0 CELLSPACING=0 COLS=1 BGCOLOR="#FFFDDD">
+
 <td>
 The <b>HDF Java Products</b> include 
 a visual tool for browsing and editing HDF files, 
 a Java package providing an object-oriented interface to HDF data objects,
 and Java Native Interfaces to the standard HDF libraries.    
 The HDF Java Products work with both HDF4 and HDF5 files.
-<p>
+
+<p/>
 The HDF Java Products were revised and reorganized beginning with version 2.0. 
 HDFView replaced JHV and H5View, the original HDF4 and HDF5 viewers. 
 
-<h4>Latest Version: 2.4 (Built with HDF4.2r2 and HDF5-1.6.6)</h4>
+<h4>Latest Version: 2.5 (Built with HDF4.2r4 and HDF5-1.8.2 using jdk 1.6.x)</h4>
+HDF5 Java Native (JNI5) was built on HDF5 1.8.2 with 1.6 compatible API option.
+For information on new features in HDF5 Release 1.8.x and format compatibility 
+considerations, please visit http://www.hdfgroup.org/HDF5/doc/ADGuide/CompatFormat180.html
+
+<p/>
+<table border="1" BGCOLOR="#FFDDDD">
+<caption><b>hdf-java 2.5 DOs and DON'Ts</b></caption>
+  <tr>
+    <th  width="50%">DOs</th>
+    <th  width="50%">DON'Ts</th>
+  </tr>
+  <tr>
+    <td>
+        support HDF5 1.6 APIs<br/>
+        open files created with HDF5 1.6 APIs<br/>
+        open files created with HDF5 1.8 APIs
+    </td>
+    <td>
+        does not include HDF5 1.8 new APIs (200+ new APIs)<br/>
+        does not suport new features provided by the new APIs, e.g. external links<br/>
+    </td>
+  </tr>
+</table>
+
+<p/>
+<h4>Full support of HDF5 1.8</h4>
+The development of full support for HDF5 1.8 is in progress. The full support
+will be included in the next hdf-java release, which is scheduled for October, 2009. 
+<p/>
+The full support will include:
+<ul>
+<li> Implementing HDF5 Java Native (JNI5) with new HDF5 1.8 APIs.</li>
+<li> Using new APIs in the hdf-java object package. </li>
+<li> Adding new features provided by the new APIs.</li>
+</ul>
+
+
+<p/>
 read <a href="hdfview/UsersGuide/ug01introduction.html#ug01release">
 About This Release</a> for more information.
 
@@ -37,12 +77,6 @@ About This Release</a> for more information.
 <td><a href="hdfview/index.html">HDFView</a></td>
 
 <td>A visual tool for browsing and editing HDF4 and HDF5 files.
-<!--
-HDFView version 2.0 and above is built on modules. 
-Components of HDFView are replacable. 
-For more information about HDFView modules, see
-<a href="modular-hdfview/index.html">Modular HDFView</a>.
--->
 </td>
 </tr>
 
