@@ -2,7 +2,9 @@
 	$page_title = "HDFView User's Guide -- HDF Object Model"; 
 	include ("../../../links.php"); 
 	include ("../../../includes/header.html"); 
-?> 
+?>
+<link href="edit.css" rel="stylesheet" type="text/css" />
+ 
 <p>
 <a href="index.html">[Index]</a>
 <a href="ug01introduction.html">[1]</a>
@@ -11,27 +13,34 @@
 <a href="ug04treeview.html">[4]</a>
 <a href="ug05spreadsheet.html">[5]</a>
 <a href="ug06imageview.html">[6]</a>
-<a href="ug07textview.html">[7]</a>
-</p>
+<a href="ug07textview.html">[7]</a></p>
 
 <h1>
 <fieldset>Chapter 3: HDF Object Model</fieldset></h1>
 
-<p>
-HDF files may contain many types of data objects that a scientist
-might need. HDFView displays the data objects appropriately according their
-types. For example, an two dimension dataset with an associated palette
-will be displayed as an image. When you open an HDF file with HDFView,
-you see the tree structure of an HDF file, showing the objects and their
-groupings. You can select an object from the tree to view its content.</p>
-
+This chapter provides basic information of about the HDF object model. For more
+details of the object model, visit the HDF Object Model website at <a href="/hdf-java-html/hdf-object/"> /hdf-java-html/hdf-object/ </a>
+<ul class="ul">
+  <li class="add"><a href="ug03objects.html#ug03overview">3.1 Overview</a></li>
+  <li class="add"><a href="ug03objects.html#ug03definition">3.2 The HDF Object Package</a></li>
+  <li class="add"><a href="ug03objects.html#ug03hierarchy">3.3 Class Hierarchy</a></li>
+  <li class="add"><a href="ug03objects.html#ug03application">3.4 Using the HDF Object Package</a></li>
+</ul>
+<hr noshade="noshade" size="1" />
+<h2> <a name="ug03overview" id="ug03overview"></a>3.1 Overview</h2>
+<p>HDF files may contain many types of data objects that a scientist
+  might need. HDFView displays the data objects appropriately according to their
+  types. For example, a two-dimension dataset with an associated palette
+  will be displayed as an image. When you open an HDF file with HDFView,
+  you see the tree structure of an HDF file, showing the objects and their
+  groupings. You can select an object from the tree to view its content.</p>
 <p>
 HDF4 (i.e. HDF version 4) is based on the original 1988 version of HDF.
 Versions 1, 2, 3, and 4 of HDF were all backward compatible, and HDF4
-can access files created by all earlier versions, but HDF5 is a completely
+can access files created by all earlier versions. HDF5 is a completely
 new format and library.  Although they are conceptually related, HDF5 files 
 cannot be read by the HDF4 library and vice versa.  HDF5 was
-designed to address some of the limitations of HDF4, and also to address
+designed to address some of the limitations of HDF4 and to address
 and exploit current and anticipated requirements of modern systems and
 applications.</p>
 
@@ -43,30 +52,18 @@ design will be independent of the file format (HDF4 or HDF5). Such a design
 allows the HDFView to support and convert objects of different formats
 (HDF4 and HDF5).</p>
 
-<p>
-This chapter provides basic information of the HDF object model. For more
-details of the object model, visit the HDF Object Model website at
-<a href="/hdf-java-html/hdf-object/">
-/hdf-java-html/hdf-object/ </a></p>
-
-<ul class="ul">
-<li class="li2"><a href="ug03objects.html#ug03definition">3.1 What it is</a></li>
-<li class="li2"><a href="ug03objects.html#ug03hierarchy">3.2 The Class Hierarchy</a></li>
-<li class="li2"><a href="ug03objects.html#ug03application">3.3 How to Use it</a></li>
-</ul>
-
 <hr noshade size=1 />
 
 <h2>
-<a name="ug03definition"></a>3.1 What it is</h2>
+<a name="ug03definition"></a>3.2 The HDF Object Package</h2>
 <p>
-The <b>HDF Object Package</b> is a Java package which implement HDF4 and
+The <b>HDF Object Package</b> is a Java package that implements HDF4 and
 HDF5 data objects in an object-oriented form. The HDF Java Object Package
 provides common standard Java APIs to access both HDF4 and HDF5 files.</p>
 <p>The HDF Object Package is <b>NOT</b> a "wrapper" for the native HDF
-libraries and it requires the HDF4 and HDF5 wrapper.
+libraries, and it requires the HDF4 and HDF5 wrappers.
 The HDF4 and HDF5 wrappers are separate HDF Java products. For
-details of the HDF4 and HDF5 native interfaces, read
+details about the HDF4 and HDF5 native interfaces, read
 <a href="/hdf-java-html/JNI/jhi/index.html">
 NCSA Java HDF Interface (JHI)</a>
 and
@@ -75,20 +72,20 @@ NCSA Java HDF5 Interface (JHI5)</a>.</p>
 
 <p>
 The HDF Object Package implements higher
-level APIs and encapsulates HDF library calls into an object oriented fashion
+level APIs and encapsulates HDF library calls into an object-oriented fashion
 for easy access to HDF files. For example, to retrieve data content from an
 HDF5 dataset by using the HDF5 library APIs directly, you have to make many
-calls such as; get the datatype information (datatype class, size, sign,
+calls, such as, get the datatype information (datatype class, size, sign,
 and etc), get the dataspace information (number of dimension, dimension
-sizes), and allocate the data buffer. The HDF Object package puts all these
-calls into one single call - read().</p>
+sizes), and allocate the data buffer. The HDF Object Package puts all these
+calls into a single call - read().</p>
 
 <p>The HDF Object Package, <i>ncsa.hdf.object</i>, provides classes that
 reflect fundamental concepts to the design of HDF objects. Objects
 of HDF5 (group and dataset) and HDF4 (group, multi-dimension array, raster
 image, vdata and annotation) are presented as Java classes.</p>
 
-<p>The HDF object package has two major goals. First, it simplifies the
+<p>The HDF Object Package has two major goals. First, it simplifies the
 process of reading information from or writing data to a file because the
 details of accessing the HDF library are encapsulated into respective
 classes. Second, HDF4 and HDF5 objects are inherited from the same common object
@@ -98,11 +95,11 @@ libraries directly. The following diagram explains the relationship of the
 object package, HDF JNI, and application.</p>
 
 <p><b>
-HDF Applications &lt;==> HDF Object Package &lt;==> HDF4/5 Java Wraper (JNI4/5) &lt;==> HDF File
+HDF Applications &lt;==> HDF Object Package &lt;==> HDF4/5 Java Wrapper (JNI4/5) &lt;==> HDF File
 </b></p>
 
 <h2>
-<a name="ug03hierarchy"></a>3.2 The Class Hierarchy</h2>
+<a name="ug03hierarchy"></a>3.3 Class Hierarchy</h2>
 <p>
 The HDF Object Package implements an abstract data model, and the objects
 of the HDF4 and HDF5 data models are represented as instances of the abstract
@@ -236,7 +233,7 @@ top classes.</p>
 
 <br />
 <h2>
-<a name="ug03application"></a>3.3 How to Use it</h2>
+<a name="ug03application"></a>3.4 Using the HDF Object Package</h2>
 <p>
 The HDF Object Package is used by Java applications to access HDF4 and
 HDF5 files without directly calling the HDF4 and HDF5 library APIs. Library
@@ -254,10 +251,10 @@ NCSA Java HDF5 Interface (JHI5)</a>.</p>
 <br />
 
 <p>
-The following examples show how to retreve file hierarchy using
-the HDF object package.</p>
+The following examples show how to retrieve file hierarchy using
+the HDF Object Package.</p>
 
-<h3>Example 3.1: retrieve and print HDF5 objects </h3>
+<h3>Example 3.1: Retrieve and print HDF5 objects </h3>
 
 <pre>
 import ncsa.hdf.object.*;     // include the common HDF object package
@@ -311,7 +308,7 @@ public class TestH5File
 }
 </pre>
 
-<h3>Example 3.2: retrieve and print HDF4 objects </h3>
+<h3>Example 3.2: Retrieve and print HDF4 objects </h3>
 
 <pre>
 import ncsa.hdf.object.*;    // include the common HDF object package
@@ -377,8 +374,7 @@ public class TestH4File
 <a href="ug04treeview.html">[4]</a>
 <a href="ug05spreadsheet.html">[5]</a>
 <a href="ug06imageview.html">[6]</a>
-<a href="ug07textview.html">[7]</a>
-</p>
+<a href="ug07textview.html">[7]</a></p>
 
 <h5>Last Modified: &nbsp; December 16, 2008</h5>
 
