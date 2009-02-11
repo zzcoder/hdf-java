@@ -2,70 +2,15 @@
 include ("../links.php"); 
 include ("../includes/header.html"); 
 ?><fieldset>
-<h1>HDF Java Products</h1>
+<h1><center>HDF Java Products</center></h1>
 </fieldset>
 
+The <b>HDF Java Products</b> include a visual tool for browsing and editing HDF 
+files, a Java package providing an object-oriented interface to HDF data objects, 
+and Java Native Interfaces to the standard HDF libraries. The HDF Java Products 
+work with both HDF4 and HDF5 files.
 
-<p/>
-<table BORDER=0 CELLSPACING=0 COLS=1 BGCOLOR="#FFFDDD">
-
-<td>
-The <b>HDF Java Products</b> include 
-a visual tool for browsing and editing HDF files, 
-a Java package providing an object-oriented interface to HDF data objects,
-and Java Native Interfaces to the standard HDF libraries.    
-The HDF Java Products work with both HDF4 and HDF5 files.
-
-<p/>
-The HDF Java Products were revised and reorganized beginning with version 2.0. 
-HDFView replaced JHV and H5View, the original HDF4 and HDF5 viewers. 
-
-<h4>Latest Version: 2.5 (Built with HDF4.2r4 and HDF5-1.8.2 using jdk 1.6.x)</h4>
-HDF5 Java Native (JNI5) was built on HDF5 1.8.2 with 1.6 compatible API option.
-For information on new features in HDF5 Release 1.8.x and format compatibility 
-considerations, please visit http://www.hdfgroup.org/HDF5/doc/ADGuide/CompatFormat180.html
-
-<p/>
-<table border="1" BGCOLOR="#FFDDDD">
-<caption><b>hdf-java 2.5 DOs and DON'Ts</b></caption>
-  <tr>
-    <th  width="50%">DOs</th>
-    <th  width="50%">DON'Ts</th>
-  </tr>
-  <tr>
-    <td>
-        support HDF5 1.6 APIs<br/>
-        open files created with HDF5 1.6 APIs<br/>
-        open files created with HDF5 1.8 APIs
-    </td>
-    <td>
-        does not include HDF5 1.8 new APIs (200+ new APIs)<br/>
-        does not suport new features provided by the new APIs, e.g. external links<br/>
-    </td>
-  </tr>
-</table>
-
-<p/>
-<h4>Full support of HDF5 1.8</h4>
-The development of full support for HDF5 1.8 is in progress. The full support
-will be included in the next hdf-java release, which is scheduled for October, 2009. 
-<p/>
-The full support will include:
-<ul>
-<li> Implementing HDF5 Java Native (JNI5) with new HDF5 1.8 APIs.</li>
-<li> Using new APIs in the hdf-java object package. </li>
-<li> Adding new features provided by the new APIs.</li>
-</ul>
-
-
-<p/>
-read <a href="hdfview/UsersGuide/ug01introduction.html#ug01release">
-About This Release</a> for more information.
-
-</td>
-</table>
-
-<p>
+<p />
 <table WIDTH=100% BORDER COLS=2>
 
 <tr>
@@ -105,84 +50,126 @@ Java HDF5 Interface (JHI5) is used to access the HDF5 library.</td>
 
 </table>
 
-<hr>
+<p />
+<table cellSpacing=0 cols=1 bgColor=#fffddd border=0>
+  <tr>
+    <td>
 
-<p>
+	  <h2><center>Current Release (<font color="FF0000">February, 2009</font>)</center></h2>
+
+	  <p />
+	  <b>Version 2.5</b> of the HDF Java Products was released February 11, 2009. This version 
+         was built with HDF4.2r4 and HDF5 Release 1.8.2 <i><b>with the 1.6 API Compatibility 
+         Macros</b></i>, using jdk 1.6.x.
+
+	  <p />
+	  Version 2.5 takes advantage of many of the improvements introduced in HDF5 Release 1.8.0. 
+	  However, since it relies on the 1.6 APIs, this version of hdf-java does not include the 
+      200+ APIs introduced with HDF5 1.8.0, and cannot use features that are only accessible via those APIs.
+
+	  <p />
+	  HDF5 files created with HDF5 1.8.x APIs can be opened, but objects that use new file 
+      format features will not be accessible with the hdf-java products. All files and objects 
+      written by version 2.5 of the hdf-java products will be readable by applications linked 
+      with 1.6.x or 1.8.x versions of the HDF5 library.
+
+	  <p />
+	  <ul class="ul">
+      	<lh><b>Please refer to the related HDF5 documentation for details:</b></lh>
+    	<li><a href="http://www.hdfgroup.org/HDF5/doc/ADGuide/WhatsNew180.html">What's New in HDF5 1.8.0</a></li>
+    	<li><a href="http://www.hdfgroup.org/HDF5/doc/RM/APICompatMacros.html">API Compatibility Macros in HDF5</a></li>
+		<li><a href="http://www.hdfgroup.org/HDF5/doc/ADGuide/CompatFormat180.html">New Features in HDF5 Release 1.8.0 and Format Compatibility Considerations</a></li>
+	  </ul>
+
+	  <p />
+	  The HDFView User's Guide section <a href="http://www.bigdata.org/hdf-java-html/hdfview/UsersGuide/ug01introduction.html#ug01release"><i>About This Release</i></A>, 
+	  provides more information on Version 2.5 of HDFView, the visual browser.
+
+	  <p />
+
+	  <b>Full support for HDF 1.8 will be provided in the next version of the HDF Java Products</b>, 
+	  scheduled for release in October, 2009. That version will: 
+	  (1) Implement HDF5 Java Native (JNI5) with new HDF5 1.8 APIs. 
+	  (2) Use new APIs in the hdf-java object package. 
+	  (3) Add features supported by the new APIs. 
+
+      </td>
+      </tr>
+      </table>
+
+<hr>
+<p />
 <a name="downloads"></a>
-<h2>Download HDF Java Products</h2>
+<h2><center>Download HDF Java Products</center></h2>
+
+<h3>Packaged</h3>
 
 <img name="ndownload" src="../../images/downloadc.jpg" width="216" height="141" border="0" usemap="#n_download" alt="">
 <map name="n_download">
 <area shape="rect" coords="41,85,172,136" href="../../hdf-java-html/hdfview/index.html" title="hdfview downloads" alt="hdfview downloads" >
 </map>
 
-<p>
-To download a specific HDF Java Product, follow the Product link in the 
-table above and select Download from the product page.
+<p />
+<a href="http://www.bigdata.org/hdf-java-html/hdfview/index.html">HDFView</a>
+ is packaged with an installer for easy download and installation on a variety of platforms.
 
-<p>
-Source code for all HDF Java Products, 
-as well as pre-built binaries for many platforms,
-can be downloaded from 
-<a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/">
-ftp://ftp.hdfgroup.org/HDF5/hdf-java/</a>.
+<h3>Source Distribution</h3>
 
-<p>
-<h3>Source</h3>
+<p />
+The <b>source distribution</b> is available from  
+<a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/src">ftp://ftp.hdfgroup.org/HDF5/hdf-java/src</a>.
 
-<p>
-The source distribution, found under the <b>src</b> directory at the ftp site,  
-includes the Java code to build
-<a href="hdfview/index.html">HDFView</a>,
-the <a href="./hdf-object/index.html">Java HDF Object Package</a>,
-and related HDF4 and HDF5 Object Packages.
 
-<p>
-The source distribution also includes Java classes that 
-declare the native methods for 
-<a href="./JNI/jhi/index.html">Java HDF Interface (JHI)</a>
-and <a href="./JNI/jhi5/index.html">Java HDF5 Interface (JHI5)</a>,
-and C code that implements the native methods.
-JHI requires the HDF4 4.2r1 library (binary) 
-and JHI5 requires the HDF5 1.6.5 library (binary), 
-which are not included in the HDF Java Products source distribution.
-The HDF libraries can be obtained from the 
-<a href="http://www.hdfgroup.org/downloads/index.html"> HDF Downloads</a> page.
+<p />
+The source distribution includes the Java code to build 
+<a href="http://www.bigdata.org/hdf-java-html/hdfview/index.html">HDFView</a>, the 
+<a href="http://www.bigdata.org/hdf-java-html/hdf-object/index.html">Java HDF 
+Object Package</a>, and related HDF4 and HDF5 Object Packages. 
+The source distribution also includes Java classes that declare the native 
+methods for 
 
-<p>
-Building the HDF Java Products from the source distribution is not an
-easy endeavor.
-Refer to the following the instructions for more details:
+<a href="http://www.bigdata.org/hdf-java-html/JNI/jhi/index.html">Java HDF 
+Interface (JHI)</a> and 
+<a href="http://www.bigdata.org/hdf-java-html/JNI/jhi5/index.html">Java HDF5 
+Interface (JHI5)</a>, and C code that implements the native methods. 
+
+
+<p />
+JHI requires the HDF4 4.2r4 library (binary) and JHI5 requires the HDF5 1.8.2 
+library (binary), which are not included in the HDF Java Products source 
+distribution. The HDF libraries can be obtained from the <A 
+href="http://www.hdfgroup.org/downloads/index.html">HDF Downloads</A> page.
+
+<p />
+Building the HDF Java Products from the source distribution is not an easy 
+endeavor. Refer to the following the instructions for more details: 
+
 <ul class="ul">
- <li class="li2"><A HREF="./build_src_unix.html">Building from source on Unix and MacOSX</A></li>
- <li class="li2"><A HREF="./build_src_windows.html">Building from source on Windows</A></li>
-</UL>
+  <li><a 
+  href="http://www.bigdata.org/hdf-java-html/build_src_unix.html">Building from 
+  source on Unix and MacOSX</a> </li> 
+  <li><a 
+  href="http://www.bigdata.org/hdf-java-html/build_src_windows.html">Building 
+  from source on Windows</a> </li>
+</ul>
 
-<p>
 <h3>Pre-Built Binaries</h3>
 
-<p>
-The pre-built binaries, found under the <b>bin</b> directory at the ftp site, 
-include all of the HDF Java Products listed in the table above, 
-as well as the HDF4 and HDF5 libraries required by JHI and JHI5.   
-
-<p>
-The binary files are distributed in several formats including
-.jar files, .tar files, and packaged with an installer program.
-
-<p>
-Binaries are provided for 
-<b>linux, macosx, solaris,</b> and <b>windows</b> 
-in the corresonding <b>platform</b> subdirectories of 
+The <b>pre-built binaries</b> are available from  
 <a href="ftp://ftp.hdfgroup.org/HDF5/hdf-java/bin">ftp://ftp.hdfgroup.org/HDF5/hdf-java/bin</a>.
-README files in the platform directories on the ftp site 
-describe the packaging formats and corresponding files for each
-specific platform.
+
+
+
+<p />
+The pre-built binaries include all of the HDF Java Products listed in the 
+table above, as well as the HDF4 and HDF5 libraries required by JHI and JHI5.
+Binaries are provided for <B>linux, macosx, solaris,</B> and <B>windows</B> 
+in the corresponding <B>platform</B> subdirectories of the ftp site.  
+
 <hr>
-<P>
+<P />
 <?php 
 include ("../includes/footer.html"); 
 ?>
-<!--
-Last update 8/29/07 - RA
--->
+
+
