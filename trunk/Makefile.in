@@ -43,7 +43,6 @@ H5OBJDISTFILES= ./ncsa/hdf/object/h5/*.java
 FITSDISTJARFILE = ./lib/fits.jar
 NC2SDISTJARFILE = ./lib/netcdf.jar
 JUNITSDISTJARFILE = ./lib/junit.jar
-JGRAPHDISTJARFILE = ./lib/jgraph.jar
 
 NC2OBJDISTFILES= ./ncsa/hdf/object/nc2/*.java ./lib/netcdf.jar 
 
@@ -59,11 +58,6 @@ TOPDIST=./VERSION ./COPYING ./Makefile.in \
 	./samples/* \
 	./configure ./native/Makefile.in 
 
-JH45IDISTFILES=./native/h4toh5lib/Makefile.in \
-	./native/h4toh5lib/*.c \
-	./ncsa/hdf/h4toh5lib/*.java  \
-	./ncsa/hdf/h4toh5lib/exceptions/*.java
-
 JHIDISTFILES=./native/hdflib/Makefile.in \
 	./native/hdflib/*.c \
 	./ncsa/hdf/hdflib/*.java
@@ -77,18 +71,14 @@ SRBDISTFILES= \
         ./ncsa/hdf/srb/*.java \
         ./ncsa/hdf/srb/native/*.c 
 
-EXAMPLESFILES=./examples/Makefile.in ./examples/intro/*.java ./examples/intro/Makefile.in ./examples/groups/*.java ./examples/groups/Makefile.in ./examples/datasets/*.java ./examples/datasets/Makefile.in ./examples/datatypes/*.java ./examples/datatypes/Makefile.in
+EXAMPLESFILES=./examples/*.in ./examples/intro/*.java ./examples/intro/*.in ./examples/groups/*.java ./examples/groups/*.in ./examples/datasets/*.java ./examples/datasets/*.in ./examples/datatypes/*.java ./examples/datatypes/*.in ./examples/testfiles/*.txt
 
-TESTFILES=./test/Makefile.in ./test/object/*.java ./test/object/*.in ./test/linktest/Makefile.in ./test/linktest/testh4link.in ./test/linktest/testlink.in ./test/linktest/*.java ./test/h5/*.java ./test/h5/*.in ./test/h5/*.h5 ./test/unittests/*.in ./test/unittests/*.java ./test/view/*.in ./test/view/*.java
+TESTFILES=./test/Makefile.in ./test/object/*.java ./test/object/*.in ./test/linktest/Makefile.in ./test/linktest/testh4link.in ./test/linktest/testlink.in ./test/linktest/*.java ./test/h5/*.java ./test/h5/*.in ./test/h5/*.h5 ./test/unittests/*.in ./test/unittests/*.java 
 
 DOCFILES=./docs/*.html ./docs/*.gif ./docs/*.js ./docs/hdfview/*.html ./docs/hdfview/*.gif ./docs/hdfview/ModularGuide/*.html ./docs/hdfview/ModularGuide/*.gif ./docs/hdfview/UsersGuide/images/*.gif ./docs/hdfview/UsersGuide/images/*.jpg ./docs/hdfview/UsersGuide/*.html
 
-DISTFILES= $(TOPDIST) $(JHI5DISTFILES) $(JHIDISTFILES) $(JH45IDISTFILES) $(HDFDISTFILES) $(HDFVIEWDISTFILES) $(HDFOBJDISTFILES) $(H4OBJDISTFILES) $(H5OBJDISTFILES) $(NC2OBJDISTFILES) $(FITSOBJDISTFILES) $(TESTFILES) $(DOCFILES) $(FITSDISTJARFILE) $(NC2DISTJARFILE) $(SRBDISTFILES) $(JUNITSDISTJARFILE) 
+DISTFILES= $(TOPDIST) $(JHI5DISTFILES) $(JHIDISTFILES) $(HDFDISTFILES) $(HDFVIEWDISTFILES) $(HDFOBJDISTFILES) $(H4OBJDISTFILES) $(H5OBJDISTFILES) $(NC2OBJDISTFILES) $(FITSOBJDISTFILES) $(TESTFILES) $(DOCFILES) $(FITSDISTJARFILE) $(NC2DISTJARFILE) $(SRBDISTFILES) $(JUNITSDISTJARFILE) $(EXAMPLESFILES)
 
-
-JH45PACKAGES = \
-	ncsa.hdf.h4toh5lib.exceptions \
-	ncsa.hdf.h4toh5lib 
 
 JHIPACKAGES = \
 	ncsa.hdf.hdflib
@@ -129,13 +119,7 @@ install-just-hdf4: install-hdflib install-jhdf
 
 install-just-hdf5: install-hdf5lib install-jhdf5
 
-packages: jhdf-packages jhdf5-packages nc2-packages fits-packages jh4toh5-packages jhdfobj-packages h5srb-packages jhdfview-packages
-
-jh4toh5-packages: 
-	@if test -n "$(H45INC)" ; then $(MAKE) do-jh4toh5-packages ; fi
-
-do-jh4toh5-packages: $(JH45PACKAGES)  
-	$(JAR) cf ./lib/jh4toh5.jar $(JH45CLASSES)
+packages: jhdf-packages jhdf5-packages nc2-packages fits-packages jhdfobj-packages h5srb-packages jhdfview-packages
 
 jhdf-packages: 
 	@if test -n "$(H4INC)" ; then $(MAKE) do-jhdf-packages; fi
@@ -225,7 +209,6 @@ clean: clean-natives clean-classes clean-test clean-testlink clean-examples
 
 clean-classes:
 	$(FIND) ./ncsa \( -name '#*' -o -name '*~' -o -name '*.class' \) -exec $(RM) -f {} \; ;\
-	$(RM) -f ./lib/jh4toh5.jar
 	$(RM) -f ./lib/jhdf.jar
 	$(RM) -f ./lib/jhdf5.jar
 	$(RM) -f ./lib/jhdfobj.jar
@@ -250,10 +233,6 @@ clean-hdf5lib:
 	cd native; \
 	$(MAKE) clean-hdf5lib;
 
-clean-h4toh5lib:
-	cd native; \
-	$(MAKE) clean-h4toh5lib;
-
 clean-docs:
 	cd docs; \
 	$(RM) *.html
@@ -272,7 +251,7 @@ checklink: install linktest
 	linkh4test; \
 
 
-install: install-lib install-jhdf install-jhdf5 install-jh4toh5 install-jhdfobj install-h5srb install-jhdfview
+install: install-lib install-jhdf install-jhdf5 install-jhdfobj install-h5srb install-jhdfview
 	@echo "Install complete"
 
 uninstall: uninstall-jhdfview uninstall-jhdfobj uninstall-lib uninstall-jh45 uninstall-jhi uninstall-jhi5 uninstall-h5srb
@@ -306,30 +285,11 @@ do-install-hdf5lib: hdf5lib
 	cp ./lib/@JAVATARG@/libjhdf5.$(JSLEXT) $(LIBDIR)/@JAVATARG@
 	echo "Install Native HDF5 complete"
 
-install-libh4to5: 
-	@if test -n "$(H45INC)" ; then $(MAKE) do-install-libh4toh5 ; fi
-
-do-install-libh4to5: h4toh5lib
-	-mkdir -p $(LIBDIR);
-	-mkdir -p $(LIBDIR)/@JAVATARG@
-	cp ./lib/@JAVATARG@/libjh4toh5.$(JSLEXT) $(LIBDIR)/@JAVATARG@
-	@echo "Install Native HDF4 to 5 complete"
-
-
 uninstall-lib:
 	$(RM) -f $(LIBDIR)/@JAVATARG@/libjhdf.$(JSLEXT)
 	$(RM) -f $(LIBDIR)/@JAVATARG@/libjhdf5.$(JSLEXT)
-	$(RM) -f $(LIBDIR)/@JAVATARG@/libjh4toh5.$(JSLEXT)
 
 install-jars: install-jhdf install-jhdf5 install-jh45 install-jhdfobject install-jhdfview
-
-install-jh4toh5: 
-	@if test -n "$(H45INC)" ; then $(MAKE) do-install-jh4toh5 ; fi
-
-do-install-jh4toh5: jh4toh5-packages
-	-mkdir -p $(LIBDIR);
-	$(JAR) cf $(JH45INSTALLDIR)/lib/jh4toh5.jar $(JH45CLASSES)
-	@echo "Install JH45 complete"
 
 install-jhdf: 
 	@if test -n "$(H4INC)" ; then $(MAKE) do-install-jhdf ; fi
@@ -379,7 +339,6 @@ install-jhdfview: ncsa.hdf.view
 	cp lib/netcdf.jar $(LIBDIR)
 	cp lib/fits.jar $(LIBDIR)
 	cp lib/junit.jar $(LIBDIR)
-	cp lib/jgraph.jar $(LIBDIR)
 	cp bin/hdfview.sh $(BINDIR)
 	chmod a+x $(BINDIR)/hdfview.sh
 	@echo "Install HDFVIEW complete"
@@ -395,9 +354,6 @@ uninstall-jhi5:
 
 uninstall-jhi: 
 	$(RM) -f $(JH45INSTALLDIR)/lib/jhdf.jar
-
-uninstall-jh45: 
-	if test -n "$(H45INC)" ; then $(RM) -f $(JH45INSTALLDIR)/lib/jh4toh5.jar ; fi
 
 uninstall-jhdfobj: 
 	$(RM) -f $(JH45INSTALLDIR)/lib/jhdfobj.jar
@@ -449,12 +405,9 @@ distclean: clean-natives clean-classes clean-test clean-testlink clean-examples
 	$(RM) -rf ./lib/jhdfobj.jar
 	$(RM) -rf ./lib/jhdfview.jar
 	$(RM) -f ./native/Makefile
-	$(RM) -rf ./native/h4toh5lib/Makefile
 	$(RM) -rf ./native/hdflib/Makefile
 	$(RM) -rf ./native/hdf5lib/Makefile
 	$(RM) -rf ./test/Makefile
-	$(RM) -rf ./test/h4toh5/Makefile
-	$(RM) -rf ./test/h4toh5/*.sh
 	$(RM) -rf ./test/object/Makefile
 	$(RM) -rf ./test/object/*.sh
 	$(RM) -rf ./test/linktest/Makefile
@@ -485,13 +438,6 @@ src-dist:
 # --------
 # Packages
 # --------
-
-ncsa.hdf.h4toh5lib: \
-	ncsa/hdf/h4toh5lib/h4toh5.class
-
-ncsa.hdf.h4toh5lib.exceptions: \
-	ncsa/hdf/h4toh5lib/exceptions/H45Exception.class \
-	ncsa/hdf/h4toh5lib/exceptions/H45LibraryException.class
 
 ncsa.hdf.hdf5lib: \
 	ncsa/hdf/hdf5lib/H5.class \
@@ -600,19 +546,6 @@ ncsa.hdf.srb: ncsa/hdf/srb/H5SrbCompoundDS.class \
 test.object: test/object/TestH4File.class \
 	test/object/TestH5File.class
 
-test.h4toh5: test/h4toh5/apitest.class \
-	test/h4toh5/imagetest.class \
-	test/h4toh5/nametest.class \
-	test/h4toh5/sdstest.class \
-	test/h4toh5/vdatatest.class \
-	test/h4toh5/vgrouptest.class \
-	test/h4toh5/linktest1.class \
-	test/h4toh5/linktest2.class \
-	test/h4toh5/linktest3.class \
-	test/h4toh5/linktest4.class \
-	test/h4toh5/linktest5.class 
-
-
 #
 #  The Hdfviewer
 #
@@ -654,9 +587,6 @@ ncsa.hdf.view: ./ncsa/hdf/view/TreeView.class \
 # Single targets
 # --------------
 
-h4toh5:	ncsa/hdf/h4toh5lib/h4toh5.class
-H45Exception:	ncsa/hdf/h4toh5lib/exceptions/H45Exception.class 
-H45LibraryException:	ncsa/hdf/h4toh5lib/exceptions/H45LibraryException.class 
 H5:	ncsa/hdf/hdf5lib/H5.class
 HDF5Constants:	ncsa/hdf/hdf5lib/HDF5Constants.class
 HDF5GroupInfo:	ncsa/hdf/hdf5lib/HDF5GroupInfo.class
@@ -759,9 +689,6 @@ SRBFileDialog: ncsa/hdf/srb/SRBFileDialog.class
 #     This is what is loaded into the 'jar' file.
 #
 
-JH45CLASSES= ./ncsa/hdf/h4toh5lib/*.class \
-        ./ncsa/hdf/h4toh5lib/exceptions/*.class
-
 
 JHI5CLASSES= ./ncsa/hdf/hdf5lib/*.class \
         ./ncsa/hdf/hdf5lib/exceptions/*.class
@@ -790,9 +717,6 @@ HDFVIEWICONS= ./ncsa/hdf/view/icons/*.gif \
 #  Source to pack for distribution
 ##
 JAVASRCS= \
-./ncsa/hdf/h4toh5lib/h4toh5.java \
-./ncsa/hdf/h4toh5lib/exceptions/H45Exception.java  \
-./ncsa/hdf/h4toh5lib/exceptions/H45LibraryException.java \
 ./ncsa/hdf/hdf5lib/H5.java  \
 ./ncsa/hdf/hdf5lib/HDF5Constants.java  \
 ./ncsa/hdf/hdf5lib/HDF5GroupInfo.java  \
@@ -898,17 +822,6 @@ JAVASRCS= \
 ./ncsa/hdf/view/MetaDataView.java \
 ./ncsa/hdf/view/HelpView.java \
 ./ncsa/hdf/view/PaletteView.java \
-./test/h4toh5/apitest.java \
-./test/h4toh5/imagetest.java \
-./test/h4toh5/linktest1.java \
-./test/h4toh5/linktest2.java \
-./test/h4toh5/linktest3.java \
-./test/h4toh5/linktest4.java \
-./test/h4toh5/linktest5.java \
-./test/h4toh5/nametest.java \
-./test/h4toh5/sdstest.java \
-./test/h4toh5/vdatatest.java \
-./test/h4toh5/vgrouptest.java \
 ./test/object/TestH4File.java \
 ./test/object/TestH5File.java \
 ./test/linktest/TestHDF4Link.java \

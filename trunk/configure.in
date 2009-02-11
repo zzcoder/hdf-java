@@ -802,17 +802,17 @@ if test -d "./test"; then
 ##
 ##  Everything
 ##
-OUTPUT_FILES="$OUTPUT_FILES native/hdf5lib/Makefile native/h4toh5lib/Makefile test/Makefile test/h4toh5/Makefile test/h4toh5/apitest.sh test/h4toh5/imagetest.sh test/h4toh5/nametest.sh test/h4toh5/sdstest.sh test/h4toh5/vdatatest.sh test/h4toh5/vgrouptest.sh test/h4toh5/runtests.sh test/object/testh4file.sh test/object/testh5file.sh test/object/Makefile test/object/runtests.sh test/h4toh5/linktest.sh test/h4toh5/sdstestattr.sh test/h4toh5/imagetestattr.sh test/h4toh5/lonesdstest.sh test/h4toh5/lonevdatatest.sh test/h4toh5/loneimagetest.sh examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile"
+OUTPUT_FILES="$OUTPUT_FILES native/hdf5lib/Makefile test/Makefile test/object/testh4file.sh test/object/testh5file.sh test/object/Makefile test/object/runtests.sh examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile"
 else
 ##
 ##  H4, H5, H45, but NO tests
 ##
-OUTPUT_FILES="Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile native/h4toh5lib/Makefile"
+OUTPUT_FILES="Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile"
 fi
 else
 if test -d "./test"; then
 ##  Don't use H4toH5 (but do include some tests)
-OUTPUT_FILES="$OUTPUT_FILES test/linktest/Makefile test/linktest/testlink test/linktest/testh4link test/Makefile test/object/Makefile test/object/testh4file.sh test/object/testh5file.sh test/object/runtests.sh test/h5/TestHDF5.sh test/object/TestH5Object.sh test/object/TestH5Table.sh test/object/TestH5MemoryLeak.sh test/unittests/Makefile test/unittests/unittests.sh test/view/Makefile test/view/viewtest.sh examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile examples/runExample.sh"
+OUTPUT_FILES="$OUTPUT_FILES test/linktest/Makefile test/linktest/testlink test/linktest/testh4link test/Makefile test/object/Makefile test/object/testh4file.sh test/object/testh5file.sh test/object/runtests.sh test/h5/TestHDF5.sh test/object/TestH5Object.sh test/object/TestH5Table.sh test/object/TestH5MemoryLeak.sh test/unittests/Makefile test/unittests/unittests.sh examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile examples/runExample.sh"
 else
 ##  Don't use H4toH5 (no tests)
 OUTPUT_FILES="$OUTPUT_FILES"
@@ -826,7 +826,6 @@ chmod +x test/object/TestH5Object.sh
 chmod +x test/object/TestH5Table.sh
 chmod +x test/object/TestH5MemoryLeak.sh
 chmod +x test/unittests/unittests.sh
-chmod +x test/view/viewtest.sh
 fi
 
 
