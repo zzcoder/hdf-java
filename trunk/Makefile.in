@@ -254,7 +254,7 @@ checklink: install linktest
 install: install-lib install-jhdf install-jhdf5 install-jhdfobj install-h5srb install-jhdfview
 	@echo "Install complete"
 
-uninstall: uninstall-jhdfview uninstall-jhdfobj uninstall-lib uninstall-jh45 uninstall-jhi uninstall-jhi5 uninstall-h5srb
+uninstall: uninstall-jhdfview uninstall-jhdfobj uninstall-lib uninstall-jhi uninstall-jhi5 uninstall-h5srb
 
 install-lib: natives
 	-mkdir -p $(LIBDIR);
@@ -289,7 +289,7 @@ uninstall-lib:
 	$(RM) -f $(LIBDIR)/@JAVATARG@/libjhdf.$(JSLEXT)
 	$(RM) -f $(LIBDIR)/@JAVATARG@/libjhdf5.$(JSLEXT)
 
-install-jars: install-jhdf install-jhdf5 install-jh45 install-jhdfobject install-jhdfview
+install-jars: install-jhdf install-jhdf5 install-jhdfobject install-jhdfview
 
 install-jhdf: 
 	@if test -n "$(H4INC)" ; then $(MAKE) do-install-jhdf ; fi
