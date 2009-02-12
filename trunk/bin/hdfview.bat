@@ -24,8 +24,11 @@ set JNI_CLASSPATH="%HDFJAVA%"\lib\jhdf.jar;"%HDFJAVA%"\lib\jhdf5.jar
 @REM set the object package classpath
 set OBJ_CLASSPATH="%HDFJAVA%"\lib\jhdfobj.jar;"%HDFJAVA%"\lib\jhdf4obj.jar;"%HDFJAVA%"\lib\jhdf5obj.jar;"%HDFJAVA%"\lib\netcdf.jar;"%HDFJAVA%"\lib\fits.jar;"%HDFJAVA%"\lib\jgraph.jar
 
+@REM ext path
+set EXT_CLASSPATH="%HDFJAVA%"\lib\jgraph.jar;"%HDFJAVA%"\lib\ext\*
+
 @REM set the CLASSPATH
-set CLASSPATH=%JNI_CLASSPATH%;%OBJ_CLASSPATH%;"%HDFJAVA%"\lib\jhdfview.jar
+set CLASSPATH=%JNI_CLASSPATH%;%OBJ_CLASSPATH%;%EXT_CLASSPATH%;"%HDFJAVA%"\lib\jhdfview.jar
 
 "%JAVAHOME%\bin\java" -Xmx1024m -Djava.library.path=%PATH% -Dhdfview.root="%HDFJAVA%" -classpath %CLASSPATH% ncsa.hdf.view.HDFView -root "%HDFJAVA%"
 
