@@ -17,7 +17,7 @@ export JAVAPATH
 CPATH=$HDFVIEW_HOME"/lib/jhdf.jar:"$HDFVIEW_HOME"/lib/jhdf5.jar:"$HDFVIEW_HOME"/lib/jhdfobj.jar"
 CPATH=$CPATH":"$HDFVIEW_HOME"/lib/netcdf.jar:"$HDFVIEW_HOME"/lib/fits.jar:"$HDFVIEW_HOME"/lib/h5srb.jar"
 CPATH=$CPATH":"$HDFVIEW_HOME"/lib/jhdf4obj.jar:"$HDFVIEW_HOME"/lib/jhdf5obj.jar:"$HDFVIEW_HOME"/lib/jhdfview.jar"
-CPATH=$CPATH":"$HDFVIEW_HOME"/lib/jgraph.jar"
+CPATH=$CPATH":"$HDFVIEW_HOME"/lib/jgraph.jar:"$HDFVIEW_HOME"/lib/ext/*"
 
 TEST=/usr/bin/test
 if [ ! -x /usr/bin/test ] 
