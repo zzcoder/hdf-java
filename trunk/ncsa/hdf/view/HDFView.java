@@ -274,16 +274,21 @@ HyperlinkListener, ChangeListener, DropTargetListener
         windowMenu = new JMenu( "Window" );
         fileMenu = new JMenu( "File" );
 
-        String className = (String)treeViews.get(0);
-        // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
+        int n = treeViews.size();
         Class theClass = null;
-
-        try { theClass = Class.forName(className); }
-        catch (Exception ex)
-        {
-            try { theClass = ViewProperties.loadExtClass().loadClass(className); }
-            catch (Exception ex2)
-            {theClass = null;}
+        for (int i=0; i<n; i++)	 {
+        	// use the first available treeview
+            String className = (String)treeViews.get(i);
+            // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
+            try { theClass = Class.forName(className); }
+            catch (Exception ex)
+            {
+                try { theClass = ViewProperties.loadExtClass().loadClass(className); }
+                catch (Exception ex2) {theClass = null;}
+            }
+           
+            if (theClass != null)
+            	break;
         }
 
         if (theClass != null) {
@@ -420,7 +425,6 @@ HyperlinkListener, ChangeListener, DropTargetListener
         
         // TEST
         if (treeView.getClass().getName().startsWith("erdc")) {
-        	System.out.println("TEST ERDC: HDFView.createMainWindow()");
             topSplitPane.setDividerLocation(500);
             d.width = (int)(0.9*toolkit.getScreenSize().width);
             d.height = (int)(d.width*0.618);
@@ -1841,12 +1845,13 @@ HyperlinkListener, ChangeListener, DropTargetListener
     public void mouseEventFired(java.awt.event.MouseEvent e)
     {
         HObject obj = treeView.getCurrentObject();
+
         if (obj == null) {
             return;
         }
        
         Object src = e.getSource();
-        if ((src instanceof JTree))
+        if ((src instanceof JComponent))
         {
             String filename = obj.getFile();
             urlBar.setSelectedItem(filename);

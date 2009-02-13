@@ -1167,7 +1167,7 @@ implements TableView, ActionListener
                 JOptionPane.ERROR_MESSAGE);
             dataValue = null;
         }
-        
+
         if (dataValue == null) {
             return null;
         }
