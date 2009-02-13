@@ -1604,7 +1604,22 @@ public class DefaultTreeView extends JPanel
         // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
         Class theClass = null;
         try { theClass = Class.forName(dataViewName); }
-        catch (Exception ex) { theClass = ViewProperties.loadExtClass().loadClass(dataViewName); }
+        catch (Exception ex) { 
+        	try {
+        		theClass = ViewProperties.loadExtClass().loadClass(dataViewName); 
+        	} catch (Exception ex2) { theClass = null;}
+        }
+        
+        //  use default dataview
+        if (theClass == null) {
+            if (isText)
+                dataViewName = "ncsa.hdf.view.DefaultTextView";
+            else if (isImage)
+                dataViewName = "ncsa.hdf.view.DefaultImageView";
+            else
+                dataViewName = "ncsa.hdf.view.DefaultTableView";
+            try { theClass = Class.forName(dataViewName); } catch (Exception ex){}
+        }
 
         Object theView = null;
         Object[] initargs = {viewer};

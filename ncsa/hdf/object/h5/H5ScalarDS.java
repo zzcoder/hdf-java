@@ -611,13 +611,13 @@ public class H5ScalarDS extends ScalarDS
                     }
                 }
             } // if (theData != null)
-            
         } finally {
             try { H5.H5Sclose(spaceIDs[0]); } catch (Exception ex) {}
             try { H5.H5Sclose(spaceIDs[1]); } catch (Exception ex) {}
             try { H5.H5Tclose(tid); } catch (Exception ex2) {}
             close(did);
         }
+
         return theData;
     }
 
