@@ -99,8 +99,8 @@ implements TableView, ActionListener
     private JCheckBoxMenuItem checkScientificNotation, checkFixedDataLength;
     private int fixedDataLength;
 
-    private final DecimalFormat scientificFormat = new DecimalFormat ("0.0###E0#");
-    private final DecimalFormat normalFormat = new DecimalFormat ("#.#");
+    private final DecimalFormat scientificFormat = new DecimalFormat ("###.#####E0#");
+    private final DecimalFormat normalFormat = new DecimalFormat();
     private DecimalFormat numberFormat = normalFormat;
     private final boolean startEditing[] = {false};
 
