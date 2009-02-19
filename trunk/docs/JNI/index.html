@@ -1,13 +1,22 @@
 <?php
 include ("../../links.php"); 
 include ("../../includes/header.html"); 
-?><fieldset><h1>Java Native Interface for HDF</h1></fieldset>
+?>
+
+<fieldset>
+<h1>Java Native Interface for HDF</h1>
+</fieldset>
 	
+<table cellspacing="10" width="100%">
+  <tr align="right">
+  <td>
+    <b><a href="jhi/index.html">JHI (HDF4)</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>
+    <b><a href="jhi5/index.html">JHI5 (HDF5)</a></b>
+  </td>
+  </tr>
+</table>
 
-    <h2><a href="jhi/index.html">JHI (HDF4)</a></h2>
-	<h2><a href="jhi5/index.html">JHI5 (HDF5)</a></h2>
-
-<p>
+<hr>
 This document explains the general principles of using the JNI to link C libraries
 and the specific requirements for linking to HDF4 and HDF5. The JNI specification
 and code is standard for all platforms, but compiling and runtime linking are
