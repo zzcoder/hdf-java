@@ -36,6 +36,7 @@ import java.awt.Toolkit;
 import java.awt.Color;
 import java.awt.Insets;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.awt.GridLayout;
 import java.awt.Point;
 
@@ -99,9 +100,9 @@ implements TableView, ActionListener
     private JCheckBoxMenuItem checkScientificNotation, checkFixedDataLength;
     private int fixedDataLength;
 
-    private final DecimalFormat scientificFormat = new DecimalFormat ("0.0###E0#");
-    private final DecimalFormat normalFormat = new DecimalFormat ("#.#");
-    private DecimalFormat numberFormat = normalFormat;
+    private final DecimalFormat scientificFormat = new DecimalFormat ("###.#####E0#");
+    private final NumberFormat normalFormat = null;//NumberFormat.getInstance();
+    private NumberFormat numberFormat = normalFormat;
     private final boolean startEditing[] = {false};
 
     private JTextField frameField;
@@ -1167,7 +1168,7 @@ implements TableView, ActionListener
                 JOptionPane.ERROR_MESSAGE);
             dataValue = null;
         }
-        
+
         if (dataValue == null) {
             return null;
         }
@@ -1281,7 +1282,7 @@ implements TableView, ActionListener
                         theValue = Array.get(dataValue, row*colCount+column);
                     }
                     
-                    if (!isStr)
+                    if (!isStr && numberFormat!=null)
                     	theValue = numberFormat.format(theValue);
                 }
                 

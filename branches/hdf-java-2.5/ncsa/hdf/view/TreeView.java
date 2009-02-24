@@ -104,7 +104,7 @@ public abstract interface TreeView
 
     /**
      * Displays the meta data of a data object.
-     * @param dataObject teh data object
+     * @param dataObject the data object
      * @return the MetaDataView that displays the MetaData of the data object
      * @throws Exception
      */
