@@ -155,6 +155,8 @@ implements ImageView, ActionListener
 
     /** flag to indicate if the original data type is unsigned integer */
     private boolean isUnsigned;
+    
+    private boolean isUnsignedConverted = false;
 
     private final Toolkit toolkit;
 
@@ -806,6 +808,7 @@ implements ImageView, ActionListener
         data = dataset.getData();
         if (dataset.getDatatype().getDatatypeClass() == Datatype.CLASS_INTEGER) {
             data =  dataset.convertFromUnsignedC();
+            isUnsignedConverted = true;
             doAutoContrast = (ViewProperties.isAutoContrast() && noPalette && isLocalFile);
         }
         else
@@ -2147,49 +2150,38 @@ implements ImageView, ActionListener
             if (isTrueColor)
             {
                 strBuff.append("(");
+                int i0, i1, i2;
+                String r, g, b;
+                
                 if (isPlaneInterlace)
                 {
-                    if (isUnsigned)
-                    {
-                        strBuff.append(convertUnsignedPoint(y*w+x));
-                        strBuff.append(", ");
-                        strBuff.append(convertUnsignedPoint(w*h+y*w+x));
-                        strBuff.append(", ");
-                        strBuff.append(convertUnsignedPoint(2*w*h+y*w+x));
-                    }
-                    else
-                    {
-                        strBuff.append(Array.get(data, y*w+x));
-                        strBuff.append(", ");
-                        strBuff.append(Array.get(data, w*h+y*w+x));
-                        strBuff.append(", ");
-                        strBuff.append(Array.get(data, 2*w*h+y*w+x));
-                    }
+                    i0 = y*w+x;      // index for the first plane
+                    i1 = i0 + w*h;   // index for the second plane
+                    i2 = i0 + 2*w*h; // index for the third plane
+                } 
+                else {
+                    i0 = 3*(y*w+x);  // index for the first pixel
+                    i1 = i0+1;       // index for the second pixel
+                    i2 = i0+2;       // index for the third pixel
                 }
-                else
-                {
-                    if (isUnsigned)
-                    {
-                        strBuff.append(convertUnsignedPoint(3*(y*w+x)));
-                        strBuff.append(", ");
-                        strBuff.append(convertUnsignedPoint(3*(y*w+x)+1));
-                        strBuff.append(", ");
-                        strBuff.append(convertUnsignedPoint(3*(y*w+x)+2));
-                    }
-                    else
-                    {
-                        strBuff.append(Array.get(data, 3*(y*w+x)));
-                        strBuff.append(", ");
-                        strBuff.append(Array.get(data, 3*(y*w+x)+1));
-                        strBuff.append(", ");
-                        strBuff.append(Array.get(data, 3*(y*w+x)+2));
-                    }
+                   
+                if (isUnsigned && !isUnsignedConverted) {
+                    r = String.valueOf(convertUnsignedPoint(i0));
+                    g = String.valueOf(convertUnsignedPoint(i1));
+                    b = String.valueOf(convertUnsignedPoint(i2));
                 }
+                else {
+                    r = String.valueOf(Array.get(data, i0));
+                    g = String.valueOf(Array.get(data, i1));
+                    b = String.valueOf(Array.get(data, i2));
+                }
+     
+                strBuff.append(r + ", " + g +  ", " + b);
                 strBuff.append(")");
-            }
+            } //if (isTrueColor)
             else
             {
-                if (isUnsigned) {
+                if (isUnsigned && !isUnsignedConverted) {
                     strBuff.append(convertUnsignedPoint(y*w+x));
                 } else {
                     strBuff.append(Array.get(data, y*w+x));
@@ -2197,7 +2189,7 @@ implements ImageView, ActionListener
             }
 
             valueField.setText(strBuff.toString());
-        }
+        } // private void showPixelValue
 
         private void selectAll()
         {
@@ -2209,7 +2201,6 @@ implements ImageView, ActionListener
         private long convertUnsignedPoint(int idx)
         {
             long l = 0;
-
             if (NT == 'B')
             {
                 byte b = Array.getByte(data, idx);
@@ -2237,7 +2228,6 @@ implements ImageView, ActionListener
                     l = i;
                 }
             }
-
             return l;
         }
 

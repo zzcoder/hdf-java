@@ -820,8 +820,16 @@ public class H5 {
      **/
     public synchronized static native int H5Dread(int dataset_id, int mem_type_id,
             int mem_space_id, int file_space_id, int xfer_plist_id,
-            byte[] buf)
+            byte[] buf, boolean isCriticalPinning)
     throws HDF5LibraryException, NullPointerException;
+    
+    public synchronized static int H5Dread(int dataset_id, int mem_type_id,
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            byte[] buf)  throws HDF5LibraryException, NullPointerException 
+    {
+         return H5Dread(dataset_id, mem_type_id,mem_space_id, file_space_id, 
+                xfer_plist_id, buf, true);
+    }
 
     public synchronized static native int H5DreadVL(int dataset_id, int mem_type_id,
             int mem_space_id, int file_space_id, int xfer_plist_id, Object[] buf)
@@ -849,10 +857,8 @@ public class H5 {
      **/
     public synchronized static int H5Dread(int dataset_id, int mem_type_id,
             int mem_space_id, int file_space_id,
-            int xfer_plist_id, Object obj )
-    throws HDF5Exception,
-    HDF5LibraryException,
-    NullPointerException
+            int xfer_plist_id, Object obj, boolean isCriticalPinning)
+    throws HDF5Exception, HDF5LibraryException, NullPointerException
     {
         int status = -1;
         boolean is1D = false;
@@ -868,15 +874,15 @@ public class H5 {
 
         if (is1D && (dname == 'B')) {
             status = H5Dread(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                    xfer_plist_id, (byte[])obj);
+                    xfer_plist_id, (byte[])obj, isCriticalPinning);
         }
         else if (is1D && (dname == 'S')) {
             status = H5Dread_short(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                    xfer_plist_id, (short[])obj);
+                    xfer_plist_id, (short[])obj, isCriticalPinning);
         }
         else if (is1D && (dname == 'I')) {
             status = H5Dread_int(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                    xfer_plist_id, (int[])obj);
+                    xfer_plist_id, (int[])obj, isCriticalPinning);
         }
         else if (is1D && (dname == 'J')) {
             status = H5Dread_long(dataset_id, mem_type_id,mem_space_id, file_space_id,
@@ -884,11 +890,11 @@ public class H5 {
         }
         else if (is1D && (dname == 'F')) {
             status = H5Dread_float(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                    xfer_plist_id, (float[])obj);
+                    xfer_plist_id, (float[])obj, isCriticalPinning);
         }
         else if (is1D && (dname == 'D')) {
             status = H5Dread_double(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                    xfer_plist_id, (double[])obj);
+                    xfer_plist_id, (double[])obj, isCriticalPinning);
         }
         else if (H5.H5Tequal(mem_type_id, HDF5Constants.H5T_STD_REF_DSETREG)) {
             status = H5Dread_reg_ref(dataset_id, mem_type_id,mem_space_id, file_space_id,
@@ -910,7 +916,7 @@ public class H5 {
 
             // will raise exception if read fails
             status = H5Dread(dataset_id, mem_type_id, mem_space_id,
-                    file_space_id, xfer_plist_id, buf);
+                    file_space_id, xfer_plist_id, buf, isCriticalPinning);
             if (status >= 0) {
                 // convert the data into a Java Array */
                 obj = theArray.arrayify( buf);
@@ -922,6 +928,15 @@ public class H5 {
         }
 
         return status;
+    }
+
+    public synchronized static int H5Dread(int dataset_id, int mem_type_id,
+            int mem_space_id, int file_space_id,
+            int xfer_plist_id, Object obj)
+    throws HDF5Exception, HDF5LibraryException, NullPointerException
+    {
+        return H5Dread(dataset_id, mem_type_id,mem_space_id, file_space_id,
+                xfer_plist_id, obj, true);
     }
 
     /** 
@@ -973,9 +988,18 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native int H5Dwrite(int dataset_id,
-            int mem_type_id, int mem_space_id,
-            int file_space_id, int xfer_plist_id, byte[] buf)
+            int mem_type_id, int mem_space_id, int file_space_id, 
+            int xfer_plist_id, byte[] buf, boolean isCriticalPinning)
     throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static int H5Dwrite(int dataset_id,
+            int mem_type_id, int mem_space_id, int file_space_id, 
+            int xfer_plist_id, byte[] buf) 
+    throws HDF5LibraryException, NullPointerException 
+    {
+        return H5Dwrite(dataset_id,mem_type_id, mem_space_id, file_space_id,
+                xfer_plist_id, buf, true);
+    }
 
     /**
      *  H5Dwrite writes a (partial) dataset, specified by its
@@ -998,10 +1022,8 @@ public class H5 {
      *  @exception NullPointerException - data object is null.
      **/
     public synchronized static int H5Dwrite(int dataset_id, int mem_type_id, int mem_space_id,
-            int file_space_id, int xfer_plist_id, Object obj )
-    throws HDF5Exception,
-    HDF5LibraryException,
-    NullPointerException
+            int file_space_id, int xfer_plist_id, Object obj, boolean isCriticalPinning)
+    throws HDF5Exception, HDF5LibraryException, NullPointerException
     {
         int status = -1;
         boolean is1D = false;
@@ -1017,27 +1039,27 @@ public class H5 {
 
         if (is1D && (dname == 'B')) {
             status = H5Dwrite(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                    xfer_plist_id, (byte[])obj);
+                    xfer_plist_id, (byte[])obj, isCriticalPinning);
         }
         else if (is1D && (dname == 'S')) {
             status = H5Dwrite_short(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                    xfer_plist_id, (short[])obj);
+                    xfer_plist_id, (short[])obj, isCriticalPinning);
         }
         else if (is1D && (dname == 'I')) {
             status = H5Dwrite_int(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                    xfer_plist_id, (int[])obj);
+                    xfer_plist_id, (int[])obj, isCriticalPinning);
         }
         else if (is1D && (dname == 'J')) {
             status = H5Dwrite_long(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                    xfer_plist_id, (long[])obj);
+                    xfer_plist_id, (long[])obj, isCriticalPinning);
         }
         else if (is1D && (dname == 'F')) {
             status = H5Dwrite_float(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                    xfer_plist_id, (float[])obj);
+                    xfer_plist_id, (float[])obj, isCriticalPinning);
         }
         else if (is1D && (dname == 'D')) {
             status = H5Dwrite_double(dataset_id, mem_type_id,mem_space_id, file_space_id,
-                    xfer_plist_id, (double[])obj);
+                    xfer_plist_id, (double[])obj, isCriticalPinning);
         }
 
         // Rosetta Biosoftware - call into H5DwriteString for variable length Strings 
@@ -1051,7 +1073,8 @@ public class H5 {
             byte[] buf = theArray.byteify();
 
             /* will raise exception on error */
-            status = H5Dwrite(dataset_id, mem_type_id, mem_space_id, file_space_id, xfer_plist_id, buf);
+            status = H5Dwrite(dataset_id, mem_type_id, mem_space_id, 
+                    file_space_id, xfer_plist_id, buf, isCriticalPinning);
 
             // clean up these:  assign 'null' as hint to gc() */
             buf = null;
@@ -1059,6 +1082,14 @@ public class H5 {
         }
 
         return status;
+    }
+
+    public synchronized static int H5Dwrite(int dataset_id, int mem_type_id, int mem_space_id,
+            int file_space_id, int xfer_plist_id, Object obj)
+    throws HDF5Exception, HDF5LibraryException, NullPointerException
+    {
+        return H5Dwrite(dataset_id, mem_type_id, mem_space_id,
+                file_space_id, xfer_plist_id, obj, true);
     }
 
 
@@ -4445,28 +4476,73 @@ public class H5 {
 
     public synchronized static native int H5Dread_short(int dataset_id, int mem_type_id,
             int mem_space_id, int file_space_id, int xfer_plist_id,
-            short[] buf)
+            short[] buf, boolean isCriticalPinning)
     throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static int H5Dread_short(int dataset_id, int mem_type_id,
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            short[] buf) 
+    throws HDF5LibraryException, NullPointerException
+    {
+        return H5Dread_short(dataset_id, mem_type_id,mem_space_id, 
+                file_space_id, xfer_plist_id, buf, true);
+    }
 
     public synchronized static native int H5Dread_int(int dataset_id, int mem_type_id,
             int mem_space_id, int file_space_id, int xfer_plist_id,
-            int[] buf)
+            int[] buf, boolean isCriticalPinning)
     throws HDF5LibraryException, NullPointerException;
+    
+    public synchronized static int H5Dread_int(int dataset_id, int mem_type_id,
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            int[] buf) 
+    throws HDF5LibraryException, NullPointerException
+    {
+        return H5Dread_int(dataset_id, mem_type_id,mem_space_id, 
+                file_space_id, xfer_plist_id, buf, true);
+    }
 
     public synchronized static native int H5Dread_long(int dataset_id, int mem_type_id,
             int mem_space_id, int file_space_id, int xfer_plist_id,
-            long[] buf)
+            long[] buf, boolean isCriticalPinning)
     throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static int H5Dread_long(int dataset_id, int mem_type_id,
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            long[] buf) 
+    throws HDF5LibraryException, NullPointerException
+    {
+        return H5Dread_long(dataset_id, mem_type_id,mem_space_id, 
+                file_space_id, xfer_plist_id, buf, true);
+    }
 
     public synchronized static native int H5Dread_float(int dataset_id, int mem_type_id,
             int mem_space_id, int file_space_id, int xfer_plist_id,
-            float[] buf)
+            float[] buf, boolean isCriticalPinning)
     throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static int H5Dread_float(int dataset_id, int mem_type_id,
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            float[] buf) 
+    throws HDF5LibraryException, NullPointerException
+    {
+        return H5Dread_float(dataset_id, mem_type_id,mem_space_id, 
+                file_space_id, xfer_plist_id, buf, true);
+    }
 
     public synchronized static native int H5Dread_double(int dataset_id, int mem_type_id,
             int mem_space_id, int file_space_id, int xfer_plist_id,
-            double[] buf)
+            double[] buf, boolean isCriticalPinning)
     throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static int H5Dread_double(int dataset_id, int mem_type_id,
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            double[] buf) 
+    throws HDF5LibraryException, NullPointerException
+    {
+        return H5Dread_double(dataset_id, mem_type_id,mem_space_id, 
+                file_space_id, xfer_plist_id, buf, true);
+    }
 
     public synchronized static native int H5Dread_string(int dataset_id, int mem_type_id,
             int mem_space_id, int file_space_id, int xfer_plist_id,
@@ -4480,28 +4556,73 @@ public class H5 {
 
     public synchronized static native int H5Dwrite_short(int dataset_id, int mem_type_id,
             int mem_space_id, int file_space_id, int xfer_plist_id,
-            short[] buf)
+            short[] buf, boolean isCriticalPinning)
     throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static int H5Dwrite_short(int dataset_id, int mem_type_id,
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            short[] buf)
+    throws HDF5LibraryException, NullPointerException
+    {
+        return H5Dwrite_short(dataset_id, mem_type_id,mem_space_id, 
+                file_space_id,  xfer_plist_id, buf, true);
+    }
 
     public synchronized static native int H5Dwrite_int(int dataset_id, int mem_type_id,
             int mem_space_id, int file_space_id, int xfer_plist_id,
-            int[] buf)
+            int[] buf, boolean isCriticalPinning)
     throws HDF5LibraryException, NullPointerException;
+    
+    public synchronized static int H5Dwrite_int(int dataset_id, int mem_type_id,
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            int[] buf)
+    throws HDF5LibraryException, NullPointerException
+    {
+        return H5Dwrite_int(dataset_id, mem_type_id,mem_space_id, 
+                file_space_id,  xfer_plist_id, buf, true);
+    }
 
     public synchronized static native int H5Dwrite_long(int dataset_id, int mem_type_id,
             int mem_space_id, int file_space_id, int xfer_plist_id,
-            long[] buf)
+            long[] buf, boolean isCriticalPinning)
     throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static int H5Dwrite_long(int dataset_id, int mem_type_id,
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            long[] buf)
+    throws HDF5LibraryException, NullPointerException
+    {
+        return H5Dwrite_long(dataset_id, mem_type_id,mem_space_id, 
+                file_space_id,  xfer_plist_id, buf, true);
+    }
 
     public synchronized static native int H5Dwrite_float(int dataset_id, int mem_type_id,
             int mem_space_id, int file_space_id, int xfer_plist_id,
-            float[] buf)
+            float[] buf, boolean isCriticalPinning)
     throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static int H5Dwrite_float(int dataset_id, int mem_type_id,
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            float[] buf)
+    throws HDF5LibraryException, NullPointerException
+    {
+        return H5Dwrite_float(dataset_id, mem_type_id,mem_space_id, 
+                file_space_id,  xfer_plist_id, buf, true);
+    }
 
     public synchronized static native int H5Dwrite_double(int dataset_id, int mem_type_id,
             int mem_space_id, int file_space_id, int xfer_plist_id,
-            double[] buf)
+            double[] buf, boolean isCriticalPinning)
     throws HDF5LibraryException, NullPointerException;
+
+    public synchronized static int H5Dwrite_double(int dataset_id, int mem_type_id,
+            int mem_space_id, int file_space_id, int xfer_plist_id,
+            double[] buf)
+    throws HDF5LibraryException, NullPointerException
+    {
+        return H5Dwrite_double(dataset_id, mem_type_id,mem_space_id, 
+                file_space_id,  xfer_plist_id, buf, true);
+    }
 
     public synchronized static native int H5Pset_fclose_degree(int plist, int degree)
     throws HDF5LibraryException, NullPointerException;
