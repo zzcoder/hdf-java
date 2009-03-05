@@ -463,7 +463,7 @@ public final class Tools
 
             for (i=0; i<nentries; i++) {
                 for (j=1; j<4; j++)
-                    tbl[i][j] = (tbl[i][j]-min_color)*ratio-128;
+                    tbl[i][j] = (tbl[i][j]-min_color)*ratio;
             }
         }        
         
@@ -633,7 +633,6 @@ public final class Tools
 
     /**
      *  Convert an array of raw data into array of a byte data.
-     *  Byte data ranged from -128 to 127.
      *  <p>
      *  @param rawData The input raw data.
      *  @param minmax the range of the raw data.
@@ -654,7 +653,6 @@ public final class Tools
 
     /**
      *  Convert an array of raw data into array of a byte data.
-     *  Byte data ranged from -128 to 127.
      *  <p>
      *  @param rawData The input raw data.
      *  @param minmax the range of the raw data.
@@ -747,14 +745,14 @@ public final class Tools
                     for (int i=0; i<h; i++)
                     {
                         for (int j=0; j<w; j++) {
-                            byteData[i*w+j] = (byte)((s[j*h+i]-min)*ratio-128);
+                            byteData[i*w+j] = (byte)((s[j*h+i]-min)*ratio);
                         }
                     }
                 }
                 else {
                     for (int i=0; i<size; i++)
                     {
-                        byteData[i] = (byte)((s[i]-min)*ratio-128);
+                        byteData[i] = (byte)((s[i]-min)*ratio);
                     }
                 }
 
@@ -781,13 +779,13 @@ public final class Tools
                     for (int i=0; i<h; i++)
                     {
                         for (int j=0; j<w; j++) {
-                            byteData[i*w+j] = (byte)((ia[j*h+i]-min)*ratio-128);
+                            byteData[i*w+j] = (byte)((ia[j*h+i]-min)*ratio);
                         }
                     }
                 }
                 else {
                     for (int i=0; i<size; i++) {
-                        byteData[i] = (byte)((ia[i] - min)*ratio-128);
+                        byteData[i] = (byte)((ia[i] - min)*ratio);
                     }
                 }
 
@@ -814,13 +812,13 @@ public final class Tools
                     for (int i=0; i<h; i++)
                     {
                         for (int j=0; j<w; j++) {
-                            byteData[i*w+j] = (byte)((l[j*h+i]-min)*ratio-128);
+                            byteData[i*w+j] = (byte)((l[j*h+i]-min)*ratio);
                         }
                     }
                 } else {
                     for (int i=0; i<size; i++)
                     {
-                        byteData[i] = (byte)((l[i]-min)*ratio-128);
+                        byteData[i] = (byte)((l[i]-min)*ratio);
                     }
                 }
 
@@ -847,13 +845,13 @@ public final class Tools
                     for (int i=0; i<h; i++)
                     {
                         for (int j=0; j<w; j++) {
-                            byteData[i*w+j] = (byte)((f[j*h+i]-min)*ratio-128);
+                            byteData[i*w+j] = (byte)((f[j*h+i]-min)*ratio);
                         }
                     }
                 } else {
                     for (int i=0; i<size; i++)
                     {
-                        byteData[i] = (byte)((f[i]-min)*ratio-128);
+                        byteData[i] = (byte)((f[i]-min)*ratio);
                     }
                 }
 
@@ -880,13 +878,13 @@ public final class Tools
                     for (int i=0; i<h; i++)
                     {
                         for (int j=0; j<w; j++) {
-                            byteData[i*w+j] = (byte)((d[j*h+i]-min)*ratio-128);
+                            byteData[i*w+j] = (byte)((d[j*h+i]-min)*ratio);
                         }
                     }
                 } else {
                     for (int i=0; i<size; i++)
                     {
-                        byteData[i] = (byte)((d[i]-min)*ratio-128);
+                        byteData[i] = (byte)((d[i]-min)*ratio);
                     }
                 }
 

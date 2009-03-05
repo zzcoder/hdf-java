@@ -671,7 +671,8 @@ public class H5ScalarDS extends ScalarDS
                                         (isUnsigned && unsignedConverted) );
                 if ( doConversion) {
                     tmpData = convertToUnsignedC(buf, null);
-                } // Rosetta Biosoftware - do not convert v-len strings, regardless of conversion request type 
+                } 
+                // Rosetta Biosoftware - do not convert v-len strings, regardless of conversion request type 
                 else if (isText && convertByteToString && !H5.H5Tis_variable_str(tid)) { 
                 	tmpData = stringToByte((String[])buf, H5.H5Tget_size(tid)); 
                 } else {
