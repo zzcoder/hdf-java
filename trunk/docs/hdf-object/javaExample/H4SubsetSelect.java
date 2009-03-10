@@ -103,6 +103,7 @@ public class H4SubsetSelect
 
         // initialize the dataset: load dataset information such as datatype
         // and dataspace into memory.
+        dataset.hasAttribute();
         dataset.init();
 
         // start, stride and sizes will determined the selected subset

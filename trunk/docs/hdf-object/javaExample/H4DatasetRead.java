@@ -65,6 +65,7 @@ public class H4DatasetRead
 
         // retrieve athe dataset "2D 32-bit integer 20x10"
         Dataset dataset = (Dataset)root.getMemberList().get(0);
+        dataset.hasAttribute();
         int[] dataRead = (int[])dataset.read();
 
         // print out the data values
