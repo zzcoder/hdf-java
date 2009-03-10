@@ -136,6 +136,7 @@ public class H4GRImage extends ScalarDS
         palette = null;
         isImage = isImageDisplay = true;
         unsignedConverted = false;
+        grid = ((H4File)getFileFormat()).getGRAccessID();
     }
     
     /*
@@ -145,7 +146,7 @@ public class H4GRImage extends ScalarDS
     public boolean hasAttribute () 
     { 
         if (nAttributes < 0) {
-            this.grid = ((H4File)getFileFormat()).getGRAccessID();
+            grid = ((H4File)getFileFormat()).getGRAccessID();
 
             int id = open();
             String[] objName = {""};

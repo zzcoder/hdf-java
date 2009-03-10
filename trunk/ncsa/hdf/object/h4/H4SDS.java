@@ -129,6 +129,7 @@ public class H4SDS extends ScalarDS
     {
         super (theFile, name, path, oid);
         unsignedConverted = false;
+        sdid = ((H4File)getFileFormat()).getSDAccessID();
     }
 
     /*
@@ -138,7 +139,7 @@ public class H4SDS extends ScalarDS
     public boolean hasAttribute () 
     { 
         if (nAttributes < 0) {
-            this.sdid = ((H4File)getFileFormat()).getSDAccessID();
+            sdid = ((H4File)getFileFormat()).getSDAccessID();
 
             int id = open();
             try { // retireve attributes of the dataset

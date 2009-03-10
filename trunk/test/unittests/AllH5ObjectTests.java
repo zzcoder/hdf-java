@@ -50,5 +50,4 @@ public class AllH5ObjectTests {
         
         junit.textui.TestRunner.run(suite());
     }
-
 }
