@@ -12,14 +12,15 @@
  * help@hdfgroup.org.                                                        *
  ****************************************************************************/
 
-package hdf.h5.structs;
+package hdf.h5.enums;
 
-import hdf.h5.enums.H5Genum;
 
-//Information struct for group (for H5Gget_info/H5Gget_info_by_name/H5Gget_info_by_idx)
-public class H5G_info_t {
-  public H5Genum  storage_type; // Type of storage for links in group
-  public long     nlinks;       // Number of links in group
-  public long     max_corder;   // Current max. creation order value for group
-  public int      mounted;      // Whether group has a file mounted on it
+public enum H5Oenum {
+//Types of objects in file
+// H5O_type_t
+  H5O_TYPE_UNKNOWN,       // Unknown object type
+  H5O_TYPE_GROUP,         // Object is a group
+  H5O_TYPE_DATASET,       // Object is a dataset
+  H5O_TYPE_NAMED_DATATYPE,// Object is a named data type 
+  H5O_TYPE_NTYPES;        // Number of different object types (must be last!)
 }

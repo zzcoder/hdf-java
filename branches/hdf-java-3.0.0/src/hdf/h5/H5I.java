@@ -1,6 +1,20 @@
+/*****************************************************************************
+ * Copyright by The HDF Group.                                               *
+ * Copyright by the Board of Trustees of the University of Illinois.         *
+ * All rights reserved.                                                      *
+ *                                                                           *
+ * This file is part of the HDF Java Products distribution.                  *
+ * The full copyright notice, including terms governing use, modification,   *
+ * and redistribution, is contained in the files COPYING and Copyright.html. *
+ * COPYING can be found at the root of the source code distribution tree.    *
+ * Or, see http://hdfgroup.org/products/hdf-java/doc/Copyright.html.         *
+ * If you do not have access to either file, you may request a copy from     *
+ * help@hdfgroup.org.                                                        *
+ ****************************************************************************/
+
 package hdf.h5;
 
-import hdf.h5.enums.H5I.H5I_type_t;
+import hdf.h5.enums.H5Ienum;
 import hdf.h5.exceptions.HDF5LibraryException;
 
 //////////////////////////////////////////////////////////////
@@ -27,7 +41,7 @@ public class H5I {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native int H5Iregister(H5I_type_t type, byte[] object)
+  public synchronized static native int H5Iregister(H5Ienum type, byte[] object)
       throws HDF5LibraryException;
 
    /**
@@ -41,7 +55,7 @@ public class H5I {
     *
     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
     **/
-   public synchronized static native byte[] H5Iobject_verify(int id, H5I_type_t id_type)
+   public synchronized static native byte[] H5Iobject_verify(int id, H5Ienum id_type)
    throws HDF5LibraryException;
 
    /**
@@ -54,7 +68,7 @@ public class H5I {
     *
     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
     **/
-   public synchronized static native byte[] H5Iremove_verify(int id, H5I_type_t id_type)
+   public synchronized static native byte[] H5Iremove_verify(int id, H5Ienum id_type)
    throws HDF5LibraryException;
 
    /**
@@ -157,7 +171,7 @@ public class H5I {
     *
     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
     **/
-   public synchronized static native void H5Iclear_type(H5I_type_t type, boolean force)
+   public synchronized static native void H5Iclear_type(H5Ienum type, boolean force)
    throws HDF5LibraryException;
 
    /**
@@ -170,7 +184,7 @@ public class H5I {
     *
     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
     **/
-   public synchronized static native void H5Idestroy_type(H5I_type_t type)
+   public synchronized static native void H5Idestroy_type(H5Ienum type)
    throws HDF5LibraryException;
 
    /**
@@ -182,7 +196,7 @@ public class H5I {
     *
     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
     **/
-   public synchronized static native int H5Iinc_type_ref(H5I_type_t type)
+   public synchronized static native int H5Iinc_type_ref(H5Ienum type)
    throws HDF5LibraryException;
 
    /**
@@ -194,7 +208,7 @@ public class H5I {
     *
     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
     **/
-   public synchronized static native int H5Idec_type_ref(H5I_type_t type)
+   public synchronized static native int H5Idec_type_ref(H5Ienum type)
    throws HDF5LibraryException;
 
    /**
@@ -206,7 +220,7 @@ public class H5I {
     *
     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
     **/
-   public synchronized static native int H5Iget_type_ref(H5I_type_t type)
+   public synchronized static native int H5Iget_type_ref(H5Ienum type)
    throws HDF5LibraryException;
 
 //   Pointer H5Isearch(H5I_type_t type, H5I_search_func_t func, Pointer key);
@@ -220,7 +234,7 @@ public class H5I {
     *
     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
     **/
-   public synchronized static native long H5Inmembers(H5I_type_t type)
+   public synchronized static native long H5Inmembers(H5Ienum type)
    throws HDF5LibraryException;
 
    /**
@@ -232,7 +246,7 @@ public class H5I {
     *
     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
     **/
-   public synchronized static native boolean H5Itype_exists(H5I_type_t type)
+   public synchronized static native boolean H5Itype_exists(H5Ienum type)
    throws HDF5LibraryException;
 
    /**

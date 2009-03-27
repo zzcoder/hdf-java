@@ -12,14 +12,14 @@
  * help@hdfgroup.org.                                                        *
  ****************************************************************************/
 
-package hdf.h5.structs;
+package hdf.h5.enums;
 
-import hdf.h5.enums.H5Genum;
-
-//Information struct for group (for H5Gget_info/H5Gget_info_by_name/H5Gget_info_by_idx)
-public class H5G_info_t {
-  public H5Genum  storage_type; // Type of storage for links in group
-  public long     nlinks;       // Number of links in group
-  public long     max_corder;   // Current max. creation order value for group
-  public int      mounted;      // Whether group has a file mounted on it
+public enum H5Genum {
+//Types of link storage for groups.
+// H5G_storage_type_t
+  H5G_STORAGE_TYPE_UNKNOWN,	      // Unknown link storage type
+  H5G_STORAGE_TYPE_SYMBOL_TABLE,  // Links in group are stored with a "symbol table"
+                                  // (this is sometimes called "old-style" groups
+  H5G_STORAGE_TYPE_COMPACT,	      // Links are stored in object header
+  H5G_STORAGE_TYPE_DENSE; 	      // Links are stored in fractal heap & indexed with v2 B-tree
 }

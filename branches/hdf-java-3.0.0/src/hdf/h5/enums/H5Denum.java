@@ -12,14 +12,44 @@
  * help@hdfgroup.org.                                                        *
  ****************************************************************************/
 
-package hdf.h5.structs;
+package hdf.h5.enums;
 
-import hdf.h5.enums.H5Genum;
+public enum H5Denum {
+// H5D_alloc_time_t
+  H5D_ALLOC_TIME_ERROR,
+  H5D_ALLOC_TIME_DEFAULT,
+  H5D_ALLOC_TIME_EARLY,
+  H5D_ALLOC_TIME_LATE,
+  H5D_ALLOC_TIME_INCR,
 
-//Information struct for group (for H5Gget_info/H5Gget_info_by_name/H5Gget_info_by_idx)
-public class H5G_info_t {
-  public H5Genum  storage_type; // Type of storage for links in group
-  public long     nlinks;       // Number of links in group
-  public long     max_corder;   // Current max. creation order value for group
-  public int      mounted;      // Whether group has a file mounted on it
+// H5D_chunk_index_t 
+  H5D_CHUNK_BTREE, // v1 B-tree index
+
+//Values for time of writing fill value property
+// H5D_fill_time_t 
+  H5D_FILL_TIME_ERROR,
+  H5D_FILL_TIME_ALLOC,
+  H5D_FILL_TIME_NEVER,
+  H5D_FILL_TIME_IFSET,
+
+//Values for fill value status
+// H5D_fill_value_t 
+  H5D_FILL_VALUE_ERROR,
+  H5D_FILL_VALUE_UNDEFINED,
+  H5D_FILL_VALUE_DEFAULT,
+  H5D_FILL_VALUE_USER_DEFINED,
+
+// H5D_layout_t 
+  H5D_LAYOUT_ERROR,
+  H5D_COMPACT,            //raw data is very small
+  H5D_CONTIGUOUS,         //the default 
+  H5D_CHUNKED,            //slow and fancy
+  H5D_NLAYOUTS,           //this one must be last LAYOUT!
+
+//Values for the status of space allocation
+// H5D_space_status_t 
+  H5D_SPACE_STATUS_ERROR,
+  H5D_SPACE_STATUS_NOT_ALLOCATED,
+  H5D_SPACE_STATUS_PART_ALLOCATED,
+  H5D_SPACE_STATUS_ALLOCATED;
 }

@@ -24,7 +24,7 @@
 include $(top_srcdir)/config/commence.am
 
 # All subdirectories
-SUBDIRS=h4 h5
-DIST_SUBDIRS = h4 h5
+SUBDIRS=h4 h5 obj view
+DIST_SUBDIRS = h4 h5 obj view
 
 include $(top_srcdir)/config/conclude.am

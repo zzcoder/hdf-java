@@ -23,5 +23,11 @@
 
 include $(top_srcdir)/config/commence.am
 
+.SUFFIXES: .java .class
+
+all: h4
+
+h4: HDFTable.class
+
 .java.class:
         $(JAVAC) -classpath $(CLASSPATH) $<

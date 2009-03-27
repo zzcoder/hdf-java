@@ -12,7 +12,7 @@
 package hdf.h5.exceptions;
 
 import hdf.h5.H5;
-import hdf.h5.HDF5Constants;
+import hdf.h5.constants.H5Zconstant;
 
 /**
  *  <p>
@@ -85,161 +85,161 @@ public class HDF5LibraryException extends HDF5Exception
      */
     public String getMinorError(int err_code)
     {
-        if (err_code == HDF5Constants.H5E_NONE_MINOR ) {
+        if (err_code == HDF5Constants.H5Zconstant ) {
             return "special zero no error";
-        } else if (err_code == HDF5Constants.H5E_UNINITIALIZED) {
+        } else if (err_code == HDF5Constants.H5Zconstant) {
             return"information is unitialized";
-        } else if (err_code == HDF5Constants.H5E_UNSUPPORTED ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "feature is unsupported";
-        } else if (err_code == HDF5Constants.H5E_BADTYPE ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "incorrect type found";
-        } else if (err_code == HDF5Constants.H5E_BADRANGE ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "argument out of range";
-        } else if (err_code == HDF5Constants.H5E_BADVALUE ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "bad value for argument";
-        } else if (err_code == HDF5Constants.H5E_NOSPACE ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "no space available for allocation";
-        } else if (err_code == HDF5Constants.H5E_CANTCOPY ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "unable to copy object";
-        } else if (err_code == HDF5Constants.H5E_CANTFREE ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "unable to free object";
-        } else if (err_code == HDF5Constants.H5E_ALREADYEXISTS) {
+        } else if (err_code == HDF5Constants.H5Zconstant) {
             return "Object already exists";
-        } else if (err_code == HDF5Constants.H5E_CANTLOCK ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Unable to lock object";
-        } else if (err_code == HDF5Constants.H5E_CANTUNLOCK ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Unable to unlock object";
-        } else if (err_code == HDF5Constants.H5E_FILEEXISTS ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "file already exists";
-        } else if (err_code == HDF5Constants.H5E_FILEOPEN ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "file already open";
-        } else if (err_code == HDF5Constants.H5E_CANTCREATE ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't create file";
-        } else if (err_code == HDF5Constants.H5E_CANTOPENFILE ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't open file";
-        } else if (err_code == HDF5Constants.H5E_CANTCLOSEFILE) {
+        } else if (err_code == HDF5Constants.H5Zconstant) {
             return "Can't close file";
-        } else if (err_code == HDF5Constants.H5E_NOTHDF5 ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "not an HDF5 format file";
-        } else if (err_code == HDF5Constants.H5E_BADFILE ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "bad file ID accessed";
-        } else if (err_code == HDF5Constants.H5E_TRUNCATED ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "file has been truncated";
-        } else if (err_code == HDF5Constants.H5E_MOUNT ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "file mount error";
-        } else if (err_code == HDF5Constants.H5E_SEEKERROR ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "seek failed";
-        } else if (err_code == HDF5Constants.H5E_READERROR ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "read failed";
-        } else if (err_code == HDF5Constants.H5E_WRITEERROR ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "write failed";
-        } else if (err_code == HDF5Constants.H5E_CLOSEERROR ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "close failed";
-        } else if (err_code == HDF5Constants.H5E_OVERFLOW ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "address overflowed";
-        } else if (err_code == HDF5Constants.H5E_FCNTL ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "file fcntl failed";
-        } else if (err_code == HDF5Constants.H5E_CANTINIT ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't initialize object";
-        } else if (err_code == HDF5Constants.H5E_ALREADYINIT ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "object already initialized";
-        } else if (err_code == HDF5Constants.H5E_CANTRELEASE ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't release object";
-        } else if (err_code == HDF5Constants.H5E_BADATOM ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't find atom information";
-        } else if (err_code == HDF5Constants.H5E_BADGROUP ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't find group information";
-        } else if (err_code == HDF5Constants.H5E_CANTREGISTER ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't register new atom";
-        } else if (err_code == HDF5Constants.H5E_CANTINC ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't increment reference count";
-        } else if (err_code == HDF5Constants.H5E_CANTDEC ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't decrement reference count";
-        } else if (err_code == HDF5Constants.H5E_NOIDS ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Out of IDs for group";
-        } else if (err_code == HDF5Constants.H5E_CANTFLUSH ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't flush object from cache";
-        } else if (err_code == HDF5Constants.H5E_CANTLOAD ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't load object into cache";
-        } else if (err_code == HDF5Constants.H5E_PROTECT ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "protected object error";
-        } else if (err_code == HDF5Constants.H5E_NOTCACHED ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "object not currently cached";
-        } else if (err_code == HDF5Constants.H5E_NOTFOUND ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "object not found";
-        } else if (err_code == HDF5Constants.H5E_EXISTS ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "object already exists";
-        } else if (err_code == HDF5Constants.H5E_CANTENCODE ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't encode value";
-        } else if (err_code == HDF5Constants.H5E_CANTDECODE ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't decode value";
-        } else if (err_code == HDF5Constants.H5E_CANTSPLIT ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't split node";
-        } else if (err_code == HDF5Constants.H5E_CANTINSERT ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't insert object";
-        } else if (err_code == HDF5Constants.H5E_CANTLIST ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't list node";
-        } else if (err_code == HDF5Constants.H5E_LINKCOUNT ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "bad object header link count";
-        } else if (err_code == HDF5Constants.H5E_VERSION ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "wrong version number";
-        } else if (err_code == HDF5Constants.H5E_ALIGNMENT ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "alignment error";
-        } else if (err_code == HDF5Constants.H5E_BADMESG ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "unrecognized message";
-        } else if (err_code == HDF5Constants.H5E_CANTDELETE ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return " Can't delete message";
-        } else if (err_code == HDF5Constants.H5E_CANTOPENOBJ ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't open object";
-        } else if (err_code == HDF5Constants.H5E_COMPLEN ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "name component is too long";
-        } else if (err_code == HDF5Constants.H5E_CWG ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "problem with current working group";
-        } else if (err_code == HDF5Constants.H5E_LINK ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "link count failure";
-        } else if (err_code == HDF5Constants.H5E_SLINK ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "symbolic link error";
-        } else if (err_code == HDF5Constants.H5E_CANTCONVERT ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't convert datatypes";
-        } else if (err_code == HDF5Constants.H5E_BADSIZE ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Bad size for object";
-        } else if (err_code == HDF5Constants.H5E_CANTCLIP ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't clip hyperslab region";
-        } else if (err_code == HDF5Constants.H5E_CANTCOUNT ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't count elements";
-        } else if (err_code == HDF5Constants.H5E_CANTSELECT ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't select hyperslab";
-        } else if (err_code == HDF5Constants.H5E_CANTNEXT ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't move to next iterator location";
-        } else if (err_code == HDF5Constants.H5E_BADSELECT ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Invalid selection";
-        } else if (err_code == HDF5Constants.H5E_CANTGET ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't get value";
-        } else if (err_code == HDF5Constants.H5E_CANTSET ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Can't set value";
-        } else if (err_code == HDF5Constants.H5E_DUPCLASS ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "Duplicate class name in parent class";
-        } else if (err_code == HDF5Constants.H5E_MPI ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "some MPI function failed";
-        } else if (err_code == HDF5Constants.H5E_MPIERRSTR ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "MPI Error String";
-        } else if (err_code == HDF5Constants.H5E_CANTMAKETREE ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "can't make a TBBT tree";
-        } else if (err_code == HDF5Constants.H5E_CANTRECV ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "can't receive messages from processes";
-        } else if (err_code == HDF5Constants.H5E_CANTSENDMDATA) {
+        } else if (err_code == HDF5Constants.H5Zconstant) {
             return "can't send metadata message";
-        } else if (err_code == HDF5Constants.H5E_CANTCHANGE ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "can't register change on server";
-        } else if (err_code == HDF5Constants.H5E_CANTALLOC ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "can't allocate from file";
-        } else if (err_code == HDF5Constants.H5E_NOFILTER ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "requested filter is not available";
-        } else if (err_code == HDF5Constants.H5E_CALLBACK ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "callback failed";
-        } else if (err_code == HDF5Constants.H5E_CANAPPLY ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "error from filter \"can apply\" callback";
-        } else if (err_code == HDF5Constants.H5E_SETLOCAL ) {
+        } else if (err_code == HDF5Constants.H5Zconstant ) {
             return "error from filter \"set local\" callback";
         } else {
             return "undefined error";

@@ -1,7 +1,21 @@
+/*****************************************************************************
+ * Copyright by The HDF Group.                                               *
+ * Copyright by the Board of Trustees of the University of Illinois.         *
+ * All rights reserved.                                                      *
+ *                                                                           *
+ * This file is part of the HDF Java Products distribution.                  *
+ * The full copyright notice, including terms governing use, modification,   *
+ * and redistribution, is contained in the files COPYING and Copyright.html. *
+ * COPYING can be found at the root of the source code distribution tree.    *
+ * Or, see http://hdfgroup.org/products/hdf-java/doc/Copyright.html.         *
+ * If you do not have access to either file, you may request a copy from     *
+ * help@hdfgroup.org.                                                        *
+ ****************************************************************************/
+
 package hdf.h5;
 
-import hdf.h5.enums.H5O.H5O_type_t;
-import hdf.h5.enums.H5R.H5R_type_t;
+import hdf.h5.enums.H5Oenum;
+import hdf.h5.enums.H5Renum;
 import hdf.h5.exceptions.HDF5LibraryException;
 
 //////////////////////////////////////////////////////////////
@@ -27,7 +41,7 @@ public class H5R {
    *  @exception NullPointerException - name is null.
    **/
   public synchronized static native byte[] H5Rcreate(int loc_id, String name,
-          H5R_type_t ref_type, int space_id)
+          H5Renum ref_type, int space_id)
       throws HDF5LibraryException, NullPointerException;
 
   /**
@@ -41,7 +55,7 @@ public class H5R {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native int H5Rdereference(int dataset, H5R_type_t ref_type, byte[] ref)
+  public synchronized static native int H5Rdereference(int dataset, H5Renum ref_type, byte[] ref)
       throws HDF5LibraryException;
 
   /**
@@ -57,7 +71,7 @@ public class H5R {
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    *  @exception NullPointerException - ref array is null.
    **/
-  public synchronized static native int H5Rget_region(int dataset, H5R_type_t ref_type, byte[] ref)
+  public synchronized static native int H5Rget_region(int dataset, H5Renum ref_type, byte[] ref)
       throws HDF5LibraryException, NullPointerException;
 //  int H5Rget_region(int dataset, H5R_type_t ref_type, Pointer ref);
 
@@ -73,7 +87,7 @@ public class H5R {
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    *  @exception NullPointerException - ref is null.
    **/
-  public synchronized static native H5O_type_t H5Rget_obj_type2(int loc_id, H5R_type_t ref_type, byte[] ref)
+  public synchronized static native H5Oenum H5Rget_obj_type2(int loc_id, H5Renum ref_type, byte[] ref)
       throws HDF5LibraryException, NullPointerException;
 //  int H5Rget_obj_type2(int loc_id, H5R_type_t ref_type, Pointer ref, H5O_type_t obj_type);
 
@@ -89,7 +103,7 @@ public class H5R {
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    *  @exception NullPointerException - ref is null.
    **/
-  public synchronized static native String H5Rget_name(int loc_id, H5R_type_t ref_type, byte[] ref)
+  public synchronized static native String H5Rget_name(int loc_id, H5Renum ref_type, byte[] ref)
       throws HDF5LibraryException, NullPointerException;
 //  long H5Rget_name(int loc_id, H5R_type_t ref_type, Pointer ref,
 //      String name/*out*/, long size);

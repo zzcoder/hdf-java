@@ -1,7 +1,20 @@
+/*****************************************************************************
+ * Copyright by The HDF Group.                                               *
+ * Copyright by the Board of Trustees of the University of Illinois.         *
+ * All rights reserved.                                                      *
+ *                                                                           *
+ * This file is part of the HDF Java Products distribution.                  *
+ * The full copyright notice, including terms governing use, modification,   *
+ * and redistribution, is contained in the files COPYING and Copyright.html. *
+ * COPYING can be found at the root of the source code distribution tree.    *
+ * Or, see http://hdfgroup.org/products/hdf-java/doc/Copyright.html.         *
+ * If you do not have access to either file, you may request a copy from     *
+ * help@hdfgroup.org.                                                        *
+ ****************************************************************************/
+
 package hdf.h5;
 
-import hdf.h5.enums.H5_index_t;
-import hdf.h5.enums.H5_iter_order_t;
+import hdf.h5.enums.H5enum;
 import hdf.h5.exceptions.HDF5Exception;
 import hdf.h5.exceptions.HDF5LibraryException;
 import hdf.h5.structs.H5A_info_t;
@@ -112,7 +125,7 @@ public class H5A {
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
   public synchronized static native int H5Aopen_by_idx(int loc_id,  String obj_name,
-        H5_index_t idx_type, H5_iter_order_t order, long n, int aapl_id,
+        H5enum idx_type, H5enum order, long n, int aapl_id,
         int lapl_id)
       throws HDF5LibraryException, NullPointerException;
 
@@ -309,7 +322,7 @@ public class H5A {
    *  @exception IllegalArgumentException - buf_size <= 0.
    **/
   public synchronized static native long H5Aget_name_by_idx(int loc_id, String obj_name,
-        H5_index_t idx_type, H5_iter_order_t order, long n,
+        H5enum idx_type, H5enum order, long n,
         String[] name /*out*/, long size, int lapl_id)
       throws HDF5LibraryException, ArrayIndexOutOfBoundsException, ArrayStoreException,
         NullPointerException, IllegalArgumentException;
@@ -330,7 +343,7 @@ public class H5A {
    *  @exception NullPointerException - name is null.
    **/
   public synchronized static native String H5Aget_name_by_idx(int loc_id, String obj_name,
-        H5_index_t idx_type, H5_iter_order_t order, long n, int lapl_id)
+        H5enum idx_type, H5enum order, long n, int lapl_id)
       throws HDF5LibraryException, NullPointerException;
 //  public synchronized static native long H5Aget_name_by_idx(int loc_id, String obj_name,
 //      H5_index_t idx_type, H5_iter_order_t order, long n,
@@ -398,7 +411,7 @@ public class H5A {
    *  @exception NullPointerException - name is null.
    **/
   public synchronized static native H5A_info_t H5Aget_info_by_idx(int loc_id, String obj_name,
-        H5_index_t idx_type, H5_iter_order_t order, long n, int lapl_id)
+        H5enum idx_type, H5enum order, long n, int lapl_id)
       throws HDF5LibraryException, NullPointerException;
 //  int H5Aget_info_by_idx(int loc_id, String obj_name,H5_index_t idx_type, 
 //      H5_iter_order_t order, long n, H5A_info_t ainfo /*out*/, int lapl_id);
@@ -493,7 +506,7 @@ public class H5A {
    *  @exception NullPointerException - name is null.
    **/
   public synchronized static native void H5Adelete_by_idx(int loc_id, String obj_name,
-        H5_index_t idx_type, H5_iter_order_t order, long n, int lapl_id)
+        H5enum idx_type, H5enum order, long n, int lapl_id)
       throws HDF5LibraryException, NullPointerException;
 
   /**

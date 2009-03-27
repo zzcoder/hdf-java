@@ -12,14 +12,25 @@
  * help@hdfgroup.org.                                                        *
  ****************************************************************************/
 
-package hdf.h5.structs;
+package hdf.h5.enums;
 
-import hdf.h5.enums.H5Genum;
-
-//Information struct for group (for H5Gget_info/H5Gget_info_by_name/H5Gget_info_by_idx)
-public class H5G_info_t {
-  public H5Genum  storage_type; // Type of storage for links in group
-  public long     nlinks;       // Number of links in group
-  public long     max_corder;   // Current max. creation order value for group
-  public int      mounted;      // Whether group has a file mounted on it
+public enum H5Ienum {
+//Library type values.
+// H5I_type_t
+  H5I_UNINIT,             //uninitialized type/
+  H5I_BADID,	            //invalid Type
+  H5I_FILE,	              //type ID for File objects	
+  H5I_GROUP,		          //type ID for Group objects
+  H5I_DATATYPE,	          //type ID for Datatype objects	
+  H5I_DATASPACE,	        //type ID for Dataspace objects	
+  H5I_DATASET,	          //type ID for Dataset objects	
+  H5I_ATTR,		            //type ID for Attribute objects	
+  H5I_REFERENCE,	        //type ID for Reference objects	
+  H5I_VFL,			          //type ID for virtual file layer
+  H5I_GENPROP_CLS,        //type ID for generic property list classes
+  H5I_GENPROP_LST,        //type ID for generic property lists 
+  H5I_ERROR_CLASS,        //type ID for error classes	
+  H5I_ERROR_MSG,          //type ID for error messages	
+  H5I_ERROR_STACK,        //type ID for error stacks	
+  H5I_NTYPES;		          //number of library types, MUST BE LAST! 
 }
