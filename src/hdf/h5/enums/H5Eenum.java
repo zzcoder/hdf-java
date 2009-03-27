@@ -12,14 +12,16 @@
  * help@hdfgroup.org.                                                        *
  ****************************************************************************/
 
-package hdf.h5.structs;
+package hdf.h5.enums;
 
-import hdf.h5.enums.H5Genum;
+public enum H5Eenum {
+//Error stack traversal direction
+// H5E_direction_t 
+  H5E_WALK_UPWARD,        //begin deep, end at API function
+  H5E_WALK_DOWNWARD,      //begin at API function, end deep
 
-//Information struct for group (for H5Gget_info/H5Gget_info_by_name/H5Gget_info_by_idx)
-public class H5G_info_t {
-  public H5Genum  storage_type; // Type of storage for links in group
-  public long     nlinks;       // Number of links in group
-  public long     max_corder;   // Current max. creation order value for group
-  public int      mounted;      // Whether group has a file mounted on it
+//Different kinds of error information
+// H5E_type_t 
+  H5E_MAJOR,
+  H5E_MINOR;
 }

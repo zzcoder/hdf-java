@@ -12,14 +12,19 @@
  * help@hdfgroup.org.                                                        *
  ****************************************************************************/
 
-package hdf.h5.structs;
+package hdf.h5.enums;
 
-import hdf.h5.enums.H5Genum;
+public enum H5enum {
+// H5_index_t 
+  H5_INDEX_UNKNOWN,     // Unknown index type     
+  H5_INDEX_NAME,        // Index on names   
+  H5_INDEX_CRT_ORDER,   // Index on creation order 
+  H5_INDEX_N,           // Number of indices defined 
 
-//Information struct for group (for H5Gget_info/H5Gget_info_by_name/H5Gget_info_by_idx)
-public class H5G_info_t {
-  public H5Genum  storage_type; // Type of storage for links in group
-  public long     nlinks;       // Number of links in group
-  public long     max_corder;   // Current max. creation order value for group
-  public int      mounted;      // Whether group has a file mounted on it
+// H5_iter_order_t 
+  H5_ITER_UNKNOWN,      // Unknown order
+  H5_ITER_INC,          // Increasing order
+  H5_ITER_DEC,          // Decreasing order
+  H5_ITER_NATIVE,       // No particular order, whatever is fastest
+  H5_ITER_N;            // Number of iteration orders
 }

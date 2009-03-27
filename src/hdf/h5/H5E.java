@@ -1,6 +1,20 @@
+/*****************************************************************************
+ * Copyright by The HDF Group.                                               *
+ * Copyright by the Board of Trustees of the University of Illinois.         *
+ * All rights reserved.                                                      *
+ *                                                                           *
+ * This file is part of the HDF Java Products distribution.                  *
+ * The full copyright notice, including terms governing use, modification,   *
+ * and redistribution, is contained in the files COPYING and Copyright.html. *
+ * COPYING can be found at the root of the source code distribution tree.    *
+ * Or, see http://hdfgroup.org/products/hdf-java/doc/Copyright.html.         *
+ * If you do not have access to either file, you may request a copy from     *
+ * help@hdfgroup.org.                                                        *
+ ****************************************************************************/
+
 package hdf.h5;
 
-import hdf.h5.enums.H5E.H5E_type_t;
+import hdf.h5.enums.H5Eenum;
 import hdf.h5.exceptions.HDF5LibraryException;
 
 import java.io.File;
@@ -68,7 +82,7 @@ public class H5E {
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    *  @exception NullPointerException - msg is null.
    **/
-  public synchronized static native int H5Ecreate_msg(int cls_id, H5E_type_t msg_type, String msg)
+  public synchronized static native int H5Ecreate_msg(int cls_id, H5Eenum msg_type, String msg)
   throws HDF5LibraryException, NullPointerException;
   
   /**
@@ -212,9 +226,9 @@ public class H5E {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native String H5Eget_msg(int msg_id, H5E_type_t[] type)
+  public synchronized static native String H5Eget_msg(int msg_id, H5Eenum[] type)
   throws HDF5LibraryException;
-//long H5Eget_msg(int msg_id, H5E_type_t type, String msg, IntegerType size);  
+//long H5Eget_msg(int msg_id, H5Eenum type, String msg, IntegerType size);  
   
   /**
    *  H5Eget_num retrieves the number of error records in the error 

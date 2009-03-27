@@ -1,7 +1,20 @@
+/*****************************************************************************
+ * Copyright by The HDF Group.                                               *
+ * Copyright by the Board of Trustees of the University of Illinois.         *
+ * All rights reserved.                                                      *
+ *                                                                           *
+ * This file is part of the HDF Java Products distribution.                  *
+ * The full copyright notice, including terms governing use, modification,   *
+ * and redistribution, is contained in the files COPYING and Copyright.html. *
+ * COPYING can be found at the root of the source code distribution tree.    *
+ * Or, see http://hdfgroup.org/products/hdf-java/doc/Copyright.html.         *
+ * If you do not have access to either file, you may request a copy from     *
+ * help@hdfgroup.org.                                                        *
+ ****************************************************************************/
+
 package hdf.h5;
 
-import hdf.h5.enums.H5_index_t;
-import hdf.h5.enums.H5_iter_order_t;
+import hdf.h5.enums.H5enum;
 import hdf.h5.exceptions.HDF5LibraryException;
 
 public class H5O {
@@ -56,7 +69,7 @@ public class H5O {
    *  @exception NullPointerException - group_name is null.
    **/
   public synchronized static native int H5Oopen_by_idx(int loc_id, String group_name,
-          H5_index_t idx_type, H5_iter_order_t order, long n, int lapl_id)
+          H5enum idx_type, H5enum order, long n, int lapl_id)
       throws HDF5LibraryException, NullPointerException;
 
 //  /**
@@ -107,7 +120,7 @@ public class H5O {
 //   *  @exception NullPointerException - name is null.
 //   **/
 //  public synchronized static native void H5Oget_info_by_idx(int loc_id, String group_name,
-//          H5_index_t idx_type, H5_iter_order_t order, long n, H5O_info_t oinfo, int lapl_id)
+//          H5enum idx_type, H5enum order, long n, H5O_info_t oinfo, int lapl_id)
 //      throws HDF5LibraryException, NullPointerException;
 
   /**
@@ -247,7 +260,7 @@ public class H5O {
 //   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
 //   *  @exception NullPointerException - name is null.
 //   **/
-//  public synchronized static native int H5Ovisit(int obj_id, H5_index_t idx_type, H5_iter_order_t order,
+//  public synchronized static native int H5Ovisit(int obj_id, H5enum idx_type, H5enum order,
 //          H5O_iterate_t op, Pointer op_data)
 //      throws HDF5LibraryException, NullPointerException;
 //
@@ -269,7 +282,7 @@ public class H5O {
 //   *  @exception NullPointerException - name is null.
 //   **/
 //  public synchronized static native int H5Ovisit_by_name(int loc_id, String obj_name,
-//          H5_index_t idx_type, H5_iter_order_t order, H5O_iterate_t op,
+//          H5enum idx_type, H5enum order, H5O_iterate_t op,
 //          Pointer op_data, int lapl_id)
 //      throws HDF5LibraryException, NullPointerException;
 
