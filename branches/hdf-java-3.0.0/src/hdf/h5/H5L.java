@@ -14,8 +14,9 @@
 
 package hdf.h5;
 
-import hdf.h5.enums.H5Lenum;
-import hdf.h5.enums.H5enum;
+import hdf.h5.enums.H5L_TYPE;
+import hdf.h5.enums.H5_INDEX;
+import hdf.h5.enums.H5_ITER;
 import hdf.h5.exceptions.HDF5LibraryException;
 
 public class H5L {
@@ -168,7 +169,7 @@ public class H5L {
    *  @exception NullPointerException - group_name is null.
    **/
   public synchronized static native void H5Ldelete_by_idx(int loc_id, String group_name,
-      H5enum idx_type, H5enum order, long n, int lapl_id)
+      H5_INDEX idx_type, H5_ITER order, long n, int lapl_id)
   throws HDF5LibraryException, NullPointerException;
 
   /**
@@ -206,10 +207,10 @@ public class H5L {
    *  @exception NullPointerException - group_name is null.
    **/
   public synchronized static native byte[] H5Lget_val_by_idx(int loc_id, String group_name,
-      H5enum idx_type, H5enum order, long n, long size, int lapl_id)
+      H5_INDEX idx_type, H5_ITER order, long n, long size, int lapl_id)
   throws HDF5LibraryException, NullPointerException;
 //  int H5Lget_val_by_idx(int loc_id, String group_name,
-//      H5enum idx_type, H5enum order, long n,
+//      H5_INDEX idx_type, H5_ITER order, long n,
 //      Pointer buf/*out*/, long size, int lapl_id);
 
   /**
@@ -261,10 +262,10 @@ public class H5L {
    *  @exception NullPointerException - group_name is null.
    **/
   public synchronized static native byte[] H5Lget_info_by_idx(int loc_id, String group_name,
-      H5enum idx_type, H5enum order, long n, int lapl_id)
+      H5_INDEX idx_type, H5_ITER order, long n, int lapl_id)
   throws HDF5LibraryException, NullPointerException;
 //  int H5Lget_info_by_idx(int loc_id, String group_name,
-//      H5enum idx_type, H5enum order, long n,
+//      H5_INDEX idx_type, H5_ITER order, long n,
 //      H5L_info_t linfo /*out*/, int lapl_id);
 
   /**
@@ -284,10 +285,10 @@ public class H5L {
    *  @exception NullPointerException - group_name is null.
    **/
   public synchronized static native String H5Lget_name_by_idx(int loc_id, String group_name,
-      H5enum idx_type, H5enum order, long n, int lapl_id)
+      H5_INDEX idx_type, H5_ITER order, long n, int lapl_id)
   throws HDF5LibraryException, NullPointerException;
 //  long H5Lget_name_by_idx(int loc_id, String group_name,
-//      H5enum idx_type, H5enum order, long n,
+//      H5_INDEX idx_type, H5_ITER order, long n,
 //      String name /*out*/, long size, int lapl_id)
 
 //  /**
@@ -306,7 +307,7 @@ public class H5L {
 //   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
 //   **/
 //  public synchronized static native int H5Literate(int grp_id, 
-//      H5enum idx_type, H5enum order,
+//      H5_INDEX idx_type, H5_ITER order,
 //      LongByReference idx, H5L_iterate_t op, Pointer op_data)
 //  throws HDF5LibraryException;
 
@@ -329,7 +330,7 @@ public class H5L {
 //  *  @exception NullPointerException - group_name is null.
 //  **/
 //  public synchronized static native int H5Literate_by_name(int loc_id, String group_name,
-//      H5enum idx_type, H5enum order, LongByReference idx,
+//      H5_INDEX idx_type, H5_ITER order, LongByReference idx,
 //      H5L_iterate_t op, Pointer op_data, int lapl_id)
 //  throws HDF5LibraryException, NullPointerException;
 
@@ -348,7 +349,7 @@ public class H5L {
 //  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
 //  **/
 //  public synchronized static native int H5Lvisit(int grp_id, 
-//      H5enum idx_type, H5enum order,
+//      H5_INDEX idx_type, H5_ITER order,
 //      H5L_iterate_t op, Pointer op_data)
 //  throws HDF5LibraryException;
 
@@ -369,7 +370,7 @@ public class H5L {
 //  *  @exception NullPointerException - group_name is null.
 //  **/
 //  public synchronized static native int H5Lvisit_by_name(int loc_id, String group_name,
-//      H5enum idx_type, H5enum order, H5L_iterate_t op,
+//      H5_INDEX idx_type, H5_ITER order, H5L_iterate_t op,
 //      Pointer op_data, int lapl_id)
 //  throws HDF5LibraryException, NullPointerException;
 
@@ -392,7 +393,7 @@ public class H5L {
    *  @exception NullPointerException - link_name is null.
    **/
   public synchronized static native void H5Lcreate_ud(int link_loc_id, String link_name,
-      H5Lenum link_type, byte[] udata, long udata_size, int lcpl_id,
+      H5L_TYPE link_type, byte[] udata, long udata_size, int lcpl_id,
       int lapl_id)
   throws HDF5LibraryException, NullPointerException;
 
@@ -418,7 +419,7 @@ public class H5L {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native void H5Lunregister(H5Lenum id)
+  public synchronized static native void H5Lunregister(H5L_TYPE id)
   throws HDF5LibraryException;
 
   /**
@@ -433,7 +434,7 @@ public class H5L {
    *  @exception IllegalArgumentException - identifier is not a valid 
    *                                        user-defined class identifier.
    **/
-  public synchronized static native boolean H5Lis_registered(H5Lenum id)
+  public synchronized static native boolean H5Lis_registered(H5L_TYPE id)
   throws HDF5LibraryException, IllegalArgumentException;
 
   // External link functions

@@ -14,42 +14,35 @@
 
 package hdf.h5.enums;
 
-public enum H5Denum {
-// H5D_alloc_time_t
-  H5D_ALLOC_TIME_ERROR,
-  H5D_ALLOC_TIME_DEFAULT,
-  H5D_ALLOC_TIME_EARLY,
-  H5D_ALLOC_TIME_LATE,
-  H5D_ALLOC_TIME_INCR,
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
-// H5D_chunk_index_t 
-  H5D_CHUNK_BTREE, // v1 B-tree index
+// Type of padding to use in other atomic types
+public enum H5T_PAD {
+  ERROR        (-1),   //error 
+  ZERO         ( 0),   //always set to zero 
+  ONE          ( 1),   //always set to one 
+  BACKGROUND   ( 2),   //set to background value  
+  NPAD         ( 3);   //THIS MUST BE LAST 
+	private static final Map<Integer, H5T_PAD> lookup = new HashMap<Integer, H5T_PAD>();
 
-//Values for time of writing fill value property
-// H5D_fill_time_t 
-  H5D_FILL_TIME_ERROR,
-  H5D_FILL_TIME_ALLOC,
-  H5D_FILL_TIME_NEVER,
-  H5D_FILL_TIME_IFSET,
+	static {
+		for (H5T_PAD s : EnumSet.allOf(H5T_PAD.class))
+			lookup.put(s.getCode(), s);
+	}
 
-//Values for fill value status
-// H5D_fill_value_t 
-  H5D_FILL_VALUE_ERROR,
-  H5D_FILL_VALUE_UNDEFINED,
-  H5D_FILL_VALUE_DEFAULT,
-  H5D_FILL_VALUE_USER_DEFINED,
+	private int code;
 
-// H5D_layout_t 
-  H5D_LAYOUT_ERROR,
-  H5D_COMPACT,            //raw data is very small
-  H5D_CONTIGUOUS,         //the default 
-  H5D_CHUNKED,            //slow and fancy
-  H5D_NLAYOUTS,           //this one must be last LAYOUT!
+	H5T_PAD(int pad_type) {
+		this.code = pad_type;
+	}
 
-//Values for the status of space allocation
-// H5D_space_status_t 
-  H5D_SPACE_STATUS_ERROR,
-  H5D_SPACE_STATUS_NOT_ALLOCATED,
-  H5D_SPACE_STATUS_PART_ALLOCATED,
-  H5D_SPACE_STATUS_ALLOCATED;
+	public int getCode() {
+		return this.code;
+	}
+
+	public static H5T_PAD get(int code) {
+		return lookup.get(code);
+	}
 }

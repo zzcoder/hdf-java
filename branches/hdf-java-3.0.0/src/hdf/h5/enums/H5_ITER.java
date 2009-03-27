@@ -14,18 +14,35 @@
 
 package hdf.h5.enums;
 
-public enum H5Cenum {
-// H5C_cache_decr_mode 
-  H5C_decr__off,
-  H5C_decr__threshold,
-  H5C_decr__age_out,
-  H5C_decr__age_out_with_threshold,
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
-// H5C_cache_flash_incr_mode 
-  H5C_flash_incr__off,
-  H5C_flash_incr__add_space,
+public enum H5_ITER {
+  UNKNOWN (-1),     // Unknown order 
+  INC     ( 0),     // Increasing order
+  DEC     ( 1),     // Decreasing order
+  NATIVE  ( 2),     // No particular order, whatever is fastest
+  N	      ( 3);     // Number of iteration orders
+	private static final Map<Integer, H5_ITER> lookup = new HashMap<Integer, H5_ITER>();
 
-// H5C_cache_incr_mode 
-  H5C_incr__off,
-  H5C_incr__threshold;
+	static {
+		for (H5_ITER s : EnumSet.allOf(H5_ITER.class))
+			lookup.put(s.getCode(), s);
+	}
+
+	private int code;
+
+	H5_ITER(int iter_order_type) {
+		this.code = iter_order_type;
+	}
+
+	public int getCode() {
+		return this.code;
+	}
+
+	public static H5_ITER get(int code) {
+		return lookup.get(code);
+	}
+
 }

@@ -12,14 +12,36 @@
  * help@hdfgroup.org.                                                        *
  ****************************************************************************/
 
-package hdf.h5.structs;
+package hdf.h5.enums;
 
-import hdf.h5.enums.H5G_STORAGE_TYPE;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
-//Information struct for group (for H5Gget_info/H5Gget_info_by_name/H5Gget_info_by_idx)
-public class H5G_info_t {
-  public H5G_STORAGE_TYPE  storage_type; // Type of storage for links in group
-  public long     nlinks;       // Number of links in group
-  public long     max_corder;   // Current max. creation order value for group
-  public int      mounted;      // Whether group has a file mounted on it
+//Values to decide if EDC is enabled for reading data
+public enum H5Z_EDC {
+  ERROR_EDC       (-1),   // error value 
+  DISABLE_EDC     ( 0),
+  ENABLE_EDC      ( 1),
+  NO_EDC          ( 2);   // must be the last 
+	private static final Map<Integer, H5Z_EDC> lookup = new HashMap<Integer, H5Z_EDC>();
+
+	static {
+		for (H5Z_EDC s : EnumSet.allOf(H5Z_EDC.class))
+			lookup.put(s.getCode(), s);
+	}
+
+	private int code;
+
+	H5Z_EDC(int type) {
+		this.code = type;
+	}
+
+	public int getCode() {
+		return this.code;
+	}
+
+	public static H5Z_EDC get(int code) {
+		return lookup.get(code);
+	}
 }

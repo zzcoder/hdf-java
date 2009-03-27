@@ -14,11 +14,17 @@
 
 package hdf.h5;
 
-import hdf.h5.enums.H5Denum;
-import hdf.h5.enums.H5FDenum;
-import hdf.h5.enums.H5Fenum;
-import hdf.h5.enums.H5Tenum;
-import hdf.h5.enums.H5Zenum;
+import hdf.h5.enums.H5D_ALLOC_TIME;
+import hdf.h5.enums.H5D_FILL_TIME;
+import hdf.h5.enums.H5D_FILL_VALUE;
+import hdf.h5.enums.H5D_LAYOUT;
+import hdf.h5.enums.H5FD_MEM;
+import hdf.h5.enums.H5F_CLOSE_DEGREE;
+import hdf.h5.enums.H5F_LIBVER;
+import hdf.h5.enums.H5T_CSET;
+import hdf.h5.enums.H5Z_EDC;
+import hdf.h5.enums.H5Z_FILTER;
+import hdf.h5.enums.H5Z_SO_SCALE;
 import hdf.h5.exceptions.HDF5Exception;
 import hdf.h5.exceptions.HDF5LibraryException;
 
@@ -731,7 +737,7 @@ public class H5P {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native void H5Pset_multi_type(int fapl_id, H5FDenum type)
+  public synchronized static native void H5Pset_multi_type(int fapl_id, H5FD_MEM type)
   throws HDF5LibraryException;
 
   /**
@@ -743,7 +749,7 @@ public class H5P {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native H5FDenum H5Pget_multi_type(int fapl_id)
+  public synchronized static native H5FD_MEM H5Pget_multi_type(int fapl_id)
   throws HDF5LibraryException;
 
   /**
@@ -830,7 +836,7 @@ public class H5P {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native void H5Pset_fclose_degree(int fapl_id, H5Fenum degree)
+  public synchronized static native void H5Pset_fclose_degree(int fapl_id, H5F_CLOSE_DEGREE degree)
   throws HDF5LibraryException;
 
   /**
@@ -843,7 +849,7 @@ public class H5P {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native H5Fenum H5Pget_fclose_degree(int fapl_id)
+  public synchronized static native H5F_CLOSE_DEGREE H5Pget_fclose_degree(int fapl_id)
   throws HDF5LibraryException;
 
   /**
@@ -939,7 +945,7 @@ public class H5P {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native void H5Pset_libver_bounds(int plist_id, H5Fenum low, H5Fenum high)
+  public synchronized static native void H5Pset_libver_bounds(int plist_id, H5F_LIBVER low, H5F_LIBVER high)
   throws HDF5LibraryException, NullPointerException;
 
   /**
@@ -957,7 +963,7 @@ public class H5P {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native H5Fenum[] H5Pget_libver_bounds(int plist_id)
+  public synchronized static native H5F_LIBVER[] H5Pget_libver_bounds(int plist_id)
   throws HDF5LibraryException, NullPointerException;
 
   /* Dataset creation property list (DCPL) routines */
@@ -973,7 +979,7 @@ public class H5P {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native void H5Pset_layout(int plist_id, H5Denum layout)
+  public synchronized static native void H5Pset_layout(int plist_id, H5D_LAYOUT layout)
   throws HDF5LibraryException;
 
   /**
@@ -985,7 +991,7 @@ public class H5P {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native H5Denum H5Pget_layout(int plist_id)
+  public synchronized static native H5D_LAYOUT H5Pget_layout(int plist_id)
   throws HDF5LibraryException;
 
   /**
@@ -1076,7 +1082,7 @@ public class H5P {
 //  int H5Pget_external(int plist_id, int idx, long name_size,
 //            String name/*out*/, LongByReference offset/*out*/,
 //            LongByReference size/*out*/);
-  public synchronized static native int H5Pmodify_filter(int plist_id, H5Zenum filter,
+  public synchronized static native int H5Pmodify_filter(int plist_id, H5Z_FILTER filter,
           int flags, long cd_nelmts, int[/*cd_nelmts*/] cd_values)
   throws HDF5LibraryException, NullPointerException;
 
@@ -1094,7 +1100,7 @@ public class H5P {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native void H5Pset_filter(int plist_id, H5Zenum filter,
+  public synchronized static native void H5Pset_filter(int plist_id, H5Z_FILTER filter,
           int flags, long cd_nelmts, int cd_values[])
   throws HDF5LibraryException;
 
@@ -1133,7 +1139,7 @@ public class H5P {
    **/
   public synchronized static native String H5Pget_filter2(int plist_id, int filter_idx,
          int[] flags/*out*/, int[] cd_nelmts/*out*/,
-         int[] cd_values/*out*/, H5Zenum[] filter_id /*out*/,
+         int[] cd_values/*out*/, H5Z_FILTER[] filter_id /*out*/,
          int[] filter_config /*out*/)
   throws HDF5LibraryException, NullPointerException;
 
@@ -1154,7 +1160,7 @@ public class H5P {
    *  @exception NullPointerException - an array is null.
    *
    **/
-  public synchronized static native String H5Pget_filter_by_id2(int plist_id, H5Zenum filter_id,
+  public synchronized static native String H5Pget_filter_by_id2(int plist_id, H5Z_FILTER filter_id,
          int[] flags/*out*/, long[] cd_nelmts/*out*/,
          int[] cd_values/*out*/, int[] filter_config/*out*/)
   throws HDF5LibraryException, NullPointerException;
@@ -1184,7 +1190,7 @@ public class H5P {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native void H5Premove_filter(int plist_id, H5Zenum filter)
+  public synchronized static native void H5Premove_filter(int plist_id, H5Z_FILTER filter)
   throws HDF5LibraryException;
 
   /**
@@ -1251,7 +1257,7 @@ public class H5P {
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
   public synchronized static native void H5Pset_scaleoffset(int plist_id, 
-      H5Zenum scale_type, int scale_factor)
+      H5Z_SO_SCALE scale_type, int scale_factor)
   throws HDF5LibraryException, NullPointerException;
 
   /**
@@ -1306,7 +1312,7 @@ public class H5P {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native H5Denum H5Pfill_value_defined(int plist_id)
+  public synchronized static native H5D_FILL_VALUE H5Pfill_value_defined(int plist_id)
   throws HDF5LibraryException;
 
   /**
@@ -1319,7 +1325,7 @@ public class H5P {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native void H5Pset_alloc_time(int plist_id, H5Denum alloc_time)
+  public synchronized static native void H5Pset_alloc_time(int plist_id, H5D_ALLOC_TIME alloc_time)
   throws HDF5LibraryException;
 
   /**
@@ -1331,7 +1337,7 @@ public class H5P {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native H5Denum H5Pget_alloc_time(int plist_id)
+  public synchronized static native H5D_ALLOC_TIME H5Pget_alloc_time(int plist_id)
   throws HDF5LibraryException;
 
   /**
@@ -1344,7 +1350,7 @@ public class H5P {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native void H5Pset_fill_time(int plist_id, H5Denum fill_time)
+  public synchronized static native void H5Pset_fill_time(int plist_id, H5D_FILL_TIME fill_time)
   throws HDF5LibraryException;
 
   /**
@@ -1357,7 +1363,7 @@ public class H5P {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native H5Denum H5Pget_fill_time(int plist_id)
+  public synchronized static native H5D_FILL_TIME H5Pget_fill_time(int plist_id)
   throws HDF5LibraryException;
 
   /* Dataset access property list (DAPL) routines */
@@ -1492,7 +1498,7 @@ public class H5P {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native void H5Pset_edc_check(int plist_id, H5Zenum check)
+  public synchronized static native void H5Pset_edc_check(int plist_id, H5Z_EDC check)
   throws HDF5LibraryException, NullPointerException;
 
   /**
@@ -1505,7 +1511,7 @@ public class H5P {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native H5Zenum H5Pget_edc_check(int plist_id)
+  public synchronized static native H5Z_EDC H5Pget_edc_check(int plist_id)
   throws HDF5LibraryException, NullPointerException;
 //  int H5Pset_filter_callback(int plist_id, H5Z_filter_func_t func,
 //                                       Pointer op_data);
@@ -1764,7 +1770,7 @@ public class H5P {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native void H5Pset_char_encoding(int plist_id, H5Tenum encoding)
+  public synchronized static native void H5Pset_char_encoding(int plist_id, H5T_CSET encoding)
   throws HDF5LibraryException;
 
   /**
@@ -1777,7 +1783,7 @@ public class H5P {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native H5Tenum H5Pget_char_encoding(int plist_id)
+  public synchronized static native H5T_CSET H5Pget_char_encoding(int plist_id)
   throws HDF5LibraryException;
 
   /* Link access property list (LAPL) routines */

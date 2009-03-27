@@ -14,7 +14,9 @@
 
 package hdf.h5;
 
-import hdf.h5.enums.H5Senum;
+import hdf.h5.enums.H5S_CLASS;
+import hdf.h5.enums.H5S_SEL;
+import hdf.h5.enums.H5S_SELECT_OPER;
 import hdf.h5.exceptions.HDF5LibraryException;
 
 //////////////////////////////////////////////////////////////
@@ -34,7 +36,7 @@ public class H5S {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native int H5Screate(H5Senum type)
+  public synchronized static native int H5Screate(H5S_CLASS type)
   throws HDF5LibraryException;
 
   /**
@@ -221,19 +223,19 @@ public class H5S {
    *  @exception NullPointerException - an input array is null.
    *  @exception IllegalArgumentException - an input array is invalid.
    **/
-  public synchronized static native void H5Sselect_hyperslab(int space_id, H5Senum op,
+  public synchronized static native void H5Sselect_hyperslab(int space_id, H5S_SELECT_OPER op,
       long start[], long _stride[], long count[], long _block[])
   throws HDF5LibraryException, NullPointerException, IllegalArgumentException;
   /* #define NEW_HYPERSLAB_API */
 //  #ifdef NEW_HYPERSLAB_API
-//  public synchronized static native int H5Scombine_hyperslab(int space_id, H5Senum op,
+//  public synchronized static native int H5Scombine_hyperslab(int space_id, H5S_SELECT_OPER op,
 //             const long start[], const long _stride[],
 //             const long count[], const long _block[])
 //  throws HDF5LibraryException, NullPointerException;
-//  public synchronized static native int H5Sselect_select(int space1_id, H5Senum op,
+//  public synchronized static native int H5Sselect_select(int space1_id, H5S_SELECT_OPER op,
 //                                    int space2_id)
 //  throws HDF5LibraryException, NullPointerException;
-//  public synchronized static native int H5Scombine_select(int space1_id, H5Senum op,
+//  public synchronized static native int H5Scombine_select(int space1_id, H5S_SELECT_OPER op,
 //                                    int space2_id)
 //  throws HDF5LibraryException, NullPointerException;
 //  #endif /* NEW_HYPERSLAB_API */
@@ -253,7 +255,7 @@ public class H5S {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native void H5Sselect_elements(int space_id, H5Senum op,
+  public synchronized static native void H5Sselect_elements(int space_id, H5S_SELECT_OPER op,
       long num_elem, long[] coord)
   throws HDF5LibraryException, NullPointerException;
 
@@ -267,7 +269,7 @@ public class H5S {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native H5Senum H5Sget_simple_extent_type(int space_id)
+  public synchronized static native H5S_CLASS H5Sget_simple_extent_type(int space_id)
   throws HDF5LibraryException;
 
   /**
@@ -466,6 +468,6 @@ public class H5S {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native H5Senum H5Sget_select_type(int spaceid)
+  public synchronized static native H5S_SEL H5Sget_select_type(int spaceid)
   throws HDF5LibraryException, NullPointerException;
 }

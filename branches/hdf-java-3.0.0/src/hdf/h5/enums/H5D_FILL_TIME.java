@@ -14,12 +14,35 @@
 
 package hdf.h5.enums;
 
-public enum H5Genum {
-//Types of link storage for groups.
-// H5G_storage_type_t
-  H5G_STORAGE_TYPE_UNKNOWN,	      // Unknown link storage type
-  H5G_STORAGE_TYPE_SYMBOL_TABLE,  // Links in group are stored with a "symbol table"
-                                  // (this is sometimes called "old-style" groups
-  H5G_STORAGE_TYPE_COMPACT,	      // Links are stored in object header
-  H5G_STORAGE_TYPE_DENSE; 	      // Links are stored in fractal heap & indexed with v2 B-tree
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+
+// Values for time of writing fill value property
+public enum H5D_FILL_TIME {
+  ERROR	(-1),
+  ALLOC ( 0),
+  NEVER	( 1),
+  IFSET	( 2);
+	private static final Map<Integer, H5D_FILL_TIME> lookup = new HashMap<Integer, H5D_FILL_TIME>();
+
+	static {
+		for (H5D_FILL_TIME s : EnumSet.allOf(H5D_FILL_TIME.class))
+			lookup.put(s.getCode(), s);
+	}
+
+	private int code;
+
+	H5D_FILL_TIME(int fill_time_type) {
+		this.code = fill_time_type;
+	}
+
+	public int getCode() {
+		return this.code;
+	}
+
+	public static H5D_FILL_TIME get(int code) {
+		return lookup.get(code);
+	}
+
 }

@@ -14,7 +14,7 @@
 
 package hdf.h5;
 
-import hdf.h5.constants.H5Zconstant;
+import hdf.h5.constants.H5Pconstant;
 import hdf.h5.exceptions.*;
 
 /**
@@ -41,13 +41,13 @@ public class HDFNativeData
 
     static
     {
-        int plist = HDF5Constants.H5Zconstant;
-        int[] version_info = new int[4];
+        int plist = H5Pconstant.H5P_DEFAULT;
         try {
-            H5.H5Pget_version(plist,version_info);
-        } catch (Exception ex) {
+          int[] version_info = H5P.H5Pget_version(plist);
+        } 
+        catch (Exception ex) {
         }
-        }
+    }
     /**
           * Convert an array of bytes into an array of ints
       *

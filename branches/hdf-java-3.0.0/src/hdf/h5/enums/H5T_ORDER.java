@@ -12,14 +12,38 @@
  * help@hdfgroup.org.                                                        *
  ****************************************************************************/
 
-package hdf.h5.structs;
+package hdf.h5.enums;
 
-import hdf.h5.enums.H5G_STORAGE_TYPE;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
-//Information struct for group (for H5Gget_info/H5Gget_info_by_name/H5Gget_info_by_idx)
-public class H5G_info_t {
-  public H5G_STORAGE_TYPE  storage_type; // Type of storage for links in group
-  public long     nlinks;       // Number of links in group
-  public long     max_corder;   // Current max. creation order value for group
-  public int      mounted;      // Whether group has a file mounted on it
+// Byte orders
+public enum H5T_ORDER {
+  ERROR      (-1),  //error 
+  LE         ( 0),  //little endian
+  BE         ( 1),  //bit endian   
+  VAX        ( 2),  //VAX mixed endian
+  NONE       ( 3);  //no particular order (strings, bits,..)
+  //NONE must be last
+	private static final Map<Integer, H5T_ORDER> lookup = new HashMap<Integer, H5T_ORDER>();
+
+	static {
+		for (H5T_ORDER s : EnumSet.allOf(H5T_ORDER.class))
+			lookup.put(s.getCode(), s);
+	}
+
+	private int code;
+
+	H5T_ORDER(int order_type) {
+		this.code = order_type;
+	}
+
+	public int getCode() {
+		return this.code;
+	}
+
+	public static H5T_ORDER get(int code) {
+		return lookup.get(code);
+	}
 }

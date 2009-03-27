@@ -12,14 +12,35 @@
  * help@hdfgroup.org.                                                        *
  ****************************************************************************/
 
-package hdf.h5.structs;
+package hdf.h5.enums;
 
-import hdf.h5.enums.H5G_STORAGE_TYPE;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
-//Information struct for group (for H5Gget_info/H5Gget_info_by_name/H5Gget_info_by_idx)
-public class H5G_info_t {
-  public H5G_STORAGE_TYPE  storage_type; // Type of storage for links in group
-  public long     nlinks;       // Number of links in group
-  public long     max_corder;   // Current max. creation order value for group
-  public int      mounted;      // Whether group has a file mounted on it
+// The order to retrieve atomic native datatype
+public enum H5T_DIR {
+  DEFAULT     (0),    //default direction is inscendent
+  ASCEND      (1),    //in inscendent order
+  DESCEND     (2);    //in descendent order
+	private static final Map<Integer, H5T_DIR> lookup = new HashMap<Integer, H5T_DIR>();
+
+	static {
+		for (H5T_DIR s : EnumSet.allOf(H5T_DIR.class))
+			lookup.put(s.getCode(), s);
+	}
+
+	private int code;
+
+	H5T_DIR(int direction_type) {
+		this.code = direction_type;
+	}
+
+	public int getCode() {
+		return this.code;
+	}
+
+	public static H5T_DIR get(int code) {
+		return lookup.get(code);
+	}
 }
