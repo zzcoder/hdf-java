@@ -14,7 +14,7 @@
 
 package hdf.h5;
 
-import hdf.h5.enums.H5Ienum;
+import hdf.h5.enums.H5I_TYPE;
 import hdf.h5.exceptions.HDF5LibraryException;
 
 //////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ public class H5I {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native int H5Iregister(H5Ienum type, byte[] object)
+  public synchronized static native int H5Iregister(H5I_TYPE type, byte[] object)
       throws HDF5LibraryException;
 
    /**
@@ -55,7 +55,7 @@ public class H5I {
     *
     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
     **/
-   public synchronized static native byte[] H5Iobject_verify(int id, H5Ienum id_type)
+   public synchronized static native byte[] H5Iobject_verify(int id, H5I_TYPE id_type)
    throws HDF5LibraryException;
 
    /**
@@ -68,7 +68,7 @@ public class H5I {
     *
     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
     **/
-   public synchronized static native byte[] H5Iremove_verify(int id, H5Ienum id_type)
+   public synchronized static native byte[] H5Iremove_verify(int id, H5I_TYPE id_type)
    throws HDF5LibraryException;
 
    /**
@@ -159,7 +159,7 @@ public class H5I {
    public synchronized static native int H5Iget_ref(int obj_id)
    throws HDF5LibraryException;
 
-   //   H5I_type_t H5Iregister_type(long hash_size, int reserved, H5I_free_t free_func);
+   //   H5I_TYPE H5Iregister_type(long hash_size, int reserved, H5I_free_t free_func);
 
    /**
     *  H5Iclear_type deletes all IDs of the type identified by the argument type. 
@@ -171,7 +171,7 @@ public class H5I {
     *
     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
     **/
-   public synchronized static native void H5Iclear_type(H5Ienum type, boolean force)
+   public synchronized static native void H5Iclear_type(H5I_TYPE type, boolean force)
    throws HDF5LibraryException;
 
    /**
@@ -184,7 +184,7 @@ public class H5I {
     *
     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
     **/
-   public synchronized static native void H5Idestroy_type(H5Ienum type)
+   public synchronized static native void H5Idestroy_type(H5I_TYPE type)
    throws HDF5LibraryException;
 
    /**
@@ -196,7 +196,7 @@ public class H5I {
     *
     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
     **/
-   public synchronized static native int H5Iinc_type_ref(H5Ienum type)
+   public synchronized static native int H5Iinc_type_ref(H5I_TYPE type)
    throws HDF5LibraryException;
 
    /**
@@ -208,7 +208,7 @@ public class H5I {
     *
     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
     **/
-   public synchronized static native int H5Idec_type_ref(H5Ienum type)
+   public synchronized static native int H5Idec_type_ref(H5I_TYPE type)
    throws HDF5LibraryException;
 
    /**
@@ -220,10 +220,10 @@ public class H5I {
     *
     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
     **/
-   public synchronized static native int H5Iget_type_ref(H5Ienum type)
+   public synchronized static native int H5Iget_type_ref(H5I_TYPE type)
    throws HDF5LibraryException;
 
-//   Pointer H5Isearch(H5I_type_t type, H5I_search_func_t func, Pointer key);
+//   Pointer H5Isearch(H5I_TYPE type, H5I_search_func_t func, Pointer key);
 
    /**
     *  H5Inmembers returns the number of identifiers of the identifier type specified in type. 
@@ -234,7 +234,7 @@ public class H5I {
     *
     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
     **/
-   public synchronized static native long H5Inmembers(H5Ienum type)
+   public synchronized static native long H5Inmembers(H5I_TYPE type)
    throws HDF5LibraryException;
 
    /**
@@ -246,7 +246,7 @@ public class H5I {
     *
     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
     **/
-   public synchronized static native boolean H5Itype_exists(H5Ienum type)
+   public synchronized static native boolean H5Itype_exists(H5I_TYPE type)
    throws HDF5LibraryException;
 
    /**

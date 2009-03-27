@@ -14,21 +14,34 @@
 
 package hdf.h5.enums;
 
-public enum H5Fenum {
-// H5F_close_degree_t 
-  H5F_CLOSE_DEFAULT,      // Use the degree pre-defined by underlining VFL
-  H5F_CLOSE_WEAK,         // file closes only after all opened objects are closed
-  H5F_CLOSE_SEMI,         // if no opened objects, file is close; otherwise, file close fails
-  H5F_CLOSE_STRONG,       // if there are opened objects, close them first, then close file
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
-//Library's file format versions
-// H5F_libver_t 
-  H5F_LIBVER_EARLIEST,    // Use the earliest possible format for storing objects
-  H5F_LIBVER_LATEST,      // Use the latest possible format available for storing objects
+// Types of integer sign schemes
+public enum H5T_SGN {
+  ERROR        (-1),   //error
+  NONE         ( 0),   //this is an unsigned type
+  COMP2        ( 1),   //two's complement
+  NSGN         ( 2);   //this must be last!
+	private static final Map<Integer, H5T_SGN> lookup = new HashMap<Integer, H5T_SGN>();
 
-//The difference between a single file and a set of mounted files
-// H5F_scope_t {
-  H5F_SCOPE_LOCAL,        //specified file handle only  
-  H5F_SCOPE_GLOBAL,       //entire virtual file   
-  H5F_SCOPE_DOWN;         //for internal use only   
+	static {
+		for (H5T_SGN s : EnumSet.allOf(H5T_SGN.class))
+			lookup.put(s.getCode(), s);
+	}
+
+	private int code;
+
+	H5T_SGN(int sign_type) {
+		this.code = sign_type;
+	}
+
+	public int getCode() {
+		return this.code;
+	}
+
+	public static H5T_SGN get(int code) {
+		return lookup.get(code);
+	}
 }

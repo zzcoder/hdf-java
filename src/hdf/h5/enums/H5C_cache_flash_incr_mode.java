@@ -14,12 +14,7 @@
 
 package hdf.h5.enums;
 
-public enum H5Lenum {
-//Link class types.
-// H5L_type_t
-  H5L_TYPE_ERROR,         // Invalid link type id
-  H5L_TYPE_HARD,          // Hard link id 
-  H5L_TYPE_SOFT,          // Soft link id
-  H5L_TYPE_EXTERNAL,      // External link id 
-  H5L_TYPE_MAX;	          // Maximum link type id 
+public enum H5C_cache_flash_incr_mode {
+  off,
+  add_space
 }

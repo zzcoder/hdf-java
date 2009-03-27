@@ -12,14 +12,37 @@
  * help@hdfgroup.org.                                                        *
  ****************************************************************************/
 
-package hdf.h5.structs;
+package hdf.h5.enums;
 
-import hdf.h5.enums.H5G_STORAGE_TYPE;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
-//Information struct for group (for H5Gget_info/H5Gget_info_by_name/H5Gget_info_by_idx)
-public class H5G_info_t {
-  public H5G_STORAGE_TYPE  storage_type; // Type of storage for links in group
-  public long     nlinks;       // Number of links in group
-  public long     max_corder;   // Current max. creation order value for group
-  public int      mounted;      // Whether group has a file mounted on it
+//Types of objects in file
+public enum H5O_TYPE {
+  UNKNOWN        (-1),   // Unknown object type
+  GROUP          ( 0),   // Object is a group
+  DATASET        ( 1),   // Object is a dataset
+  NAMED_DATATYPE ( 2),   // Object is a named data type 
+  NTYPES         ( 3);   // Number of different object types (must be last!)
+	private static final Map<Integer, H5O_TYPE> lookup = new HashMap<Integer, H5O_TYPE>();
+
+	static {
+		for (H5O_TYPE s : EnumSet.allOf(H5O_TYPE.class))
+			lookup.put(s.getCode(), s);
+	}
+
+	private int code;
+
+	H5O_TYPE(int type) {
+		this.code = type;
+	}
+
+	public int getCode() {
+		return this.code;
+	}
+
+	public static H5O_TYPE get(int code) {
+		return lookup.get(code);
+	}
 }

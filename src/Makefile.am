@@ -24,26 +24,7 @@
 include $(top_srcdir)/config/commence.am
 
 # All subdirectories
-SUBDIRS = constants enums exceptions structs
-DIST_SUBDIRS = constants enums exceptions structs
+SUBDIRS=hdf
+DIST_SUBDIRS = hdf
 
-SOURCES = H5.java H5A.java H5D.java H5E.java H5F.java H5G.java \
-          H5I.java H5L.java H5O.java H5P.java H5R.java H5S.java \
-          H5T.java H5Z.java HDFArray.java HDFNativeData.java
-
-CLASSES = H5.class H5A.class H5D.class H5E.class H5F.class H5G.class \
-          H5I.class H5L.class H5O.class H5P.class H5R.class H5S.class \
-          H5T.class H5Z.class HDFArray.class HDFNativeData.class
-
-.SUFFIXES: .java .class
-
-all: h5
-
-doc: $(SOURCES)
-        javadoc -author $(SOURCES)
-        
-h5: $(CLASSES)
-
-.java.class:
-        $(JAVAC) -classpath $(CLASSPATH) $<
-
+include $(top_srcdir)/config/conclude.am

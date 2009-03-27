@@ -14,23 +14,35 @@
 
 package hdf.h5.enums;
 
-public enum H5Ienum {
-//Library type values.
-// H5I_type_t
-  H5I_UNINIT,             //uninitialized type/
-  H5I_BADID,	            //invalid Type
-  H5I_FILE,	              //type ID for File objects	
-  H5I_GROUP,		          //type ID for Group objects
-  H5I_DATATYPE,	          //type ID for Datatype objects	
-  H5I_DATASPACE,	        //type ID for Dataspace objects	
-  H5I_DATASET,	          //type ID for Dataset objects	
-  H5I_ATTR,		            //type ID for Attribute objects	
-  H5I_REFERENCE,	        //type ID for Reference objects	
-  H5I_VFL,			          //type ID for virtual file layer
-  H5I_GENPROP_CLS,        //type ID for generic property list classes
-  H5I_GENPROP_LST,        //type ID for generic property lists 
-  H5I_ERROR_CLASS,        //type ID for error classes	
-  H5I_ERROR_MSG,          //type ID for error messages	
-  H5I_ERROR_STACK,        //type ID for error stacks	
-  H5I_NTYPES;		          //number of library types, MUST BE LAST! 
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+
+// Different types of dataspaces
+public enum H5S_CLASS {
+  NO_CLASS         (-1),  // error
+  SCALAR           ( 0),  // scalar variable
+  SIMPLE           ( 1),  // simple data space
+  NULL             ( 2);  // null data space
+  private static final Map<Integer, H5S_CLASS> lookup = new HashMap<Integer, H5S_CLASS>();
+
+  static {
+    for (H5S_CLASS s : EnumSet.allOf(H5S_CLASS.class))
+      lookup.put(s.getCode(), s);
+  }
+
+  private int code;
+
+  H5S_CLASS(int type) {
+    this.code = type;
+  }
+
+  public int getCode() {
+    return this.code;
+  }
+
+  public static H5S_CLASS get(int code) {
+    return lookup.get(code);
+  }
+
 }

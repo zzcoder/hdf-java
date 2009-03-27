@@ -14,7 +14,7 @@
 
 package hdf.h5;
 
-import hdf.h5.enums.H5Fenum;
+import hdf.h5.enums.H5F_SCOPE;
 import hdf.h5.exceptions.HDF5LibraryException;
 
 //////////////////////////////////////////////////////////////
@@ -113,7 +113,7 @@ public class H5F {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native void H5Fflush(int object_id, H5Fenum scope)
+  public synchronized static native void H5Fflush(int object_id, H5F_SCOPE scope)
   throws HDF5LibraryException;
 
   /**

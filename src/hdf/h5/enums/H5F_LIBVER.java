@@ -14,17 +14,8 @@
 
 package hdf.h5.enums;
 
-public enum H5enum {
-// H5_index_t 
-  H5_INDEX_UNKNOWN,     // Unknown index type     
-  H5_INDEX_NAME,        // Index on names   
-  H5_INDEX_CRT_ORDER,   // Index on creation order 
-  H5_INDEX_N,           // Number of indices defined 
-
-// H5_iter_order_t 
-  H5_ITER_UNKNOWN,      // Unknown order
-  H5_ITER_INC,          // Increasing order
-  H5_ITER_DEC,          // Decreasing order
-  H5_ITER_NATIVE,       // No particular order, whatever is fastest
-  H5_ITER_N;            // Number of iteration orders
+// Library's file format versions
+public enum H5F_LIBVER {
+  EARLIEST,        // Use the earliest possible format for storing objects
+  LATEST           // Use the latest possible format available for storing objects
 }

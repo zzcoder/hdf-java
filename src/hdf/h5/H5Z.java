@@ -14,7 +14,7 @@
 
 package hdf.h5;
 
-import hdf.h5.enums.H5Zenum;
+import hdf.h5.enums.H5Z_FILTER;
 import hdf.h5.exceptions.HDF5LibraryException;
 
 //////////////////////////////////////////////////////////////
@@ -47,7 +47,7 @@ public class H5Z {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native void H5Zunregister(H5Zenum id)
+  public synchronized static native void H5Zunregister(H5Z_FILTER id)
       throws HDF5LibraryException;
 
   /**
@@ -60,7 +60,7 @@ public class H5Z {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native boolean H5Zfilter_avail(H5Zenum id)
+  public synchronized static native boolean H5Zfilter_avail(H5Z_FILTER id)
       throws HDF5LibraryException;
 
   /**
@@ -72,8 +72,8 @@ public class H5Z {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native int H5Zget_filter_info(H5Zenum filter)
+  public synchronized static native int H5Zget_filter_info(H5Z_FILTER filter)
       throws HDF5LibraryException;
-//  int H5Zget_filter_info(H5Zenum filter, IntByReference filter_config_flags);
+//  int H5Zget_filter_info(H5Z_FILTER filter, IntByReference filter_config_flags);
 
 }

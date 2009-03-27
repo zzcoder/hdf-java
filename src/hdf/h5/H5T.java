@@ -14,7 +14,14 @@
 
 package hdf.h5;
 
-import hdf.h5.enums.H5Tenum;
+import hdf.h5.enums.H5T_CLASS;
+import hdf.h5.enums.H5T_CSET;
+import hdf.h5.enums.H5T_DIR;
+import hdf.h5.enums.H5T_NORM;
+import hdf.h5.enums.H5T_ORDER;
+import hdf.h5.enums.H5T_PAD;
+import hdf.h5.enums.H5T_SGN;
+import hdf.h5.enums.H5T_STR;
 import hdf.h5.exceptions.HDF5LibraryException;
 
 //////////////////////////////////////////////////////////////
@@ -52,7 +59,7 @@ public class H5T {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native int H5Tcreate(H5Tenum type, long size)
+  public synchronized static native int H5Tcreate(H5T_CLASS type, long size)
   throws HDF5LibraryException;
 
   /**
@@ -86,7 +93,7 @@ public class H5T {
    *  H5Tequal determines whether two datatype identifiers refer
    *  to the same datatype.
    *
-   *  @param mem_type_id IN: Identifier of datatype to compare.
+   *  @param type_id1 IN: Identifier of datatype to compare.
    *  @param type_id2 IN: Identifier of datatype to compare.
    *
    *  @return true if the datatype identifiers refer to the
@@ -94,7 +101,7 @@ public class H5T {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native boolean H5Tequal(H5Tenum mem_type_id, int type_id2)
+  public synchronized static native boolean H5Tequal(int type_id1, int type_id2)
   throws HDF5LibraryException;
 
   /**
@@ -426,7 +433,7 @@ public class H5T {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native H5Tenum H5Tget_class(int type_id)
+  public synchronized static native H5T_CLASS H5Tget_class(int type_id)
   throws HDF5LibraryException;
 
   /**
@@ -440,7 +447,7 @@ public class H5T {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native boolean H5Tdetect_class(int type_id, H5Tenum cls)
+  public synchronized static native boolean H5Tdetect_class(int type_id, H5T_CLASS cls)
   throws HDF5LibraryException;
 
   /**
@@ -464,7 +471,7 @@ public class H5T {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native H5Tenum H5Tget_order(int type_id)
+  public synchronized static native H5T_ORDER H5Tget_order(int type_id)
   throws HDF5LibraryException;
 
   /**
@@ -505,7 +512,7 @@ public class H5T {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native H5Tenum[] H5Tget_pad(int type_id)
+  public synchronized static native H5T_PAD[] H5Tget_pad(int type_id)
   throws HDF5LibraryException;
 
   /**
@@ -517,7 +524,7 @@ public class H5T {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native H5Tenum H5Tget_sign(int type_id)
+  public synchronized static native H5T_SGN H5Tget_sign(int type_id)
   throws HDF5LibraryException;
   /**
    *  H5Tget_fields retrieves information about the locations of
@@ -562,7 +569,7 @@ public class H5T {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native H5Tenum H5Tget_norm(int type_id)
+  public synchronized static native H5T_NORM H5Tget_norm(int type_id)
   throws HDF5LibraryException;
 
   /**
@@ -575,7 +582,7 @@ public class H5T {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native H5Tenum H5Tget_inpad(int type_id)
+  public synchronized static native H5T_PAD H5Tget_inpad(int type_id)
   throws HDF5LibraryException;
 
   /**
@@ -588,7 +595,7 @@ public class H5T {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native H5Tenum H5Tget_strpad(int type_id)
+  public synchronized static native H5T_STR H5Tget_strpad(int type_id)
   throws HDF5LibraryException;
 
   /**
@@ -657,7 +664,7 @@ public class H5T {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native H5Tenum H5Tget_member_class(int type_id, int membno)
+  public synchronized static native H5T_CLASS H5Tget_member_class(int type_id, int membno)
   throws HDF5LibraryException;
 
   /**
@@ -694,19 +701,19 @@ public class H5T {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native H5Tenum H5Tget_cset(int type_id)
+  public synchronized static native H5T_CSET H5Tget_cset(int type_id)
   throws HDF5LibraryException;
 
   /**
    *  H5Tis_variable_str determines whether the datatype identified in type_id is a variable-length string. 
    *
-   *  @param mem_type_id  IN: Identifier of datatype to query.
+   *  @param type_id  IN: Identifier of datatype to query.
    *
    *  @return true if type_id is a variable-length string. 
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native boolean H5Tis_variable_str(H5Tenum mem_type_id)
+  public synchronized static native boolean H5Tis_variable_str(int type_id)
   throws HDF5LibraryException;
 
   /**
@@ -719,12 +726,12 @@ public class H5T {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native int H5Tget_native_type(int type_id, H5Tenum direction)
+  public synchronized static native H5T_DIR H5Tget_native_type(int type_id, H5T_DIR direction)
   throws HDF5LibraryException;
-  public synchronized static int H5Tget_native_type(int tid)
+  public synchronized static H5T_DIR H5Tget_native_type(int tid)
   throws HDF5LibraryException
   {
-      return H5Tget_native_type(tid, H5Tenum.H5T_DIR_ASCEND);
+      return H5Tget_native_type(tid, H5T_DIR.ASCEND);
   }
 
   /* Setting property values */
@@ -753,7 +760,7 @@ public class H5T {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native void H5Tset_order(int type_id, H5Tenum order)
+  public synchronized static native void H5Tset_order(int type_id, H5T_ORDER order)
   throws HDF5LibraryException;
 
   /**
@@ -793,7 +800,7 @@ public class H5T {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native void H5Tset_pad(int type_id, H5Tenum lsb, H5Tenum msb)
+  public synchronized static native void H5Tset_pad(int type_id, H5T_PAD lsb, H5T_PAD msb)
   throws HDF5LibraryException;
 
   /**
@@ -806,7 +813,7 @@ public class H5T {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native void H5Tset_sign(int type_id, H5Tenum sign)
+  public synchronized static native void H5Tset_sign(int type_id, H5T_SGN sign)
   throws HDF5LibraryException;
 
   /**
@@ -851,7 +858,7 @@ public class H5T {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native void H5Tset_norm(int type_id, H5Tenum norm)
+  public synchronized static native void H5Tset_norm(int type_id, H5T_NORM norm)
   throws HDF5LibraryException;
 
   /**
@@ -868,7 +875,7 @@ public class H5T {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native void H5Tset_inpad(int type_id, H5Tenum pad)
+  public synchronized static native void H5Tset_inpad(int type_id, H5T_PAD pad)
   throws HDF5LibraryException;
 
   /**
@@ -881,7 +888,7 @@ public class H5T {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native void H5Tset_cset(int type_id, H5Tenum cset)
+  public synchronized static native void H5Tset_cset(int type_id, H5T_CSET cset)
   throws HDF5LibraryException;
 
   /**
@@ -894,7 +901,7 @@ public class H5T {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native void H5Tset_strpad(int type_id, H5Tenum strpad)
+  public synchronized static native void H5Tset_strpad(int type_id, H5T_STR strpad)
   throws HDF5LibraryException;
 
   /* Type conversion database */

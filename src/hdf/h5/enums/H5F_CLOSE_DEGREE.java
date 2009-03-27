@@ -12,14 +12,43 @@
  * help@hdfgroup.org.                                                        *
  ****************************************************************************/
 
-package hdf.h5.structs;
+package hdf.h5.enums;
 
-import hdf.h5.enums.H5G_STORAGE_TYPE;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
-//Information struct for group (for H5Gget_info/H5Gget_info_by_name/H5Gget_info_by_idx)
-public class H5G_info_t {
-  public H5G_STORAGE_TYPE  storage_type; // Type of storage for links in group
-  public long     nlinks;       // Number of links in group
-  public long     max_corder;   // Current max. creation order value for group
-  public int      mounted;      // Whether group has a file mounted on it
+// How does file close behave?
+// H5F_CLOSE_DEFAULT - Use the degree pre-defined by underlining VFL
+// H5F_CLOSE_WEAK    - file closes only after all opened objects are closed
+// H5F_CLOSE_SEMI    - if no opened objects, file is close; otherwise, file
+//	       close fails
+// H5F_CLOSE_STRONG  - if there are opened objects, close them first, then
+//	       close file
+//
+public enum H5F_CLOSE_DEGREE {
+  DEFAULT   (0),
+  WEAK      (1),
+  SEMI      (2),
+  STRONG    (3);
+	private static final Map<Integer, H5F_CLOSE_DEGREE> lookup = new HashMap<Integer, H5F_CLOSE_DEGREE>();
+
+	static {
+		for (H5F_CLOSE_DEGREE s : EnumSet.allOf(H5F_CLOSE_DEGREE.class))
+			lookup.put(s.getCode(), s);
+	}
+
+	private int code;
+
+	H5F_CLOSE_DEGREE(int close_degree_type) {
+		this.code = close_degree_type;
+	}
+
+	public int getCode() {
+		return this.code;
+	}
+
+	public static H5F_CLOSE_DEGREE get(int code) {
+		return lookup.get(code);
+	}
 }

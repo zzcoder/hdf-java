@@ -14,8 +14,8 @@
 
 package hdf.h5;
 
-import hdf.h5.enums.H5Oenum;
-import hdf.h5.enums.H5Renum;
+import hdf.h5.enums.H5O_TYPE;
+import hdf.h5.enums.H5R_TYPE;
 import hdf.h5.exceptions.HDF5LibraryException;
 
 //////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ public class H5R {
    *  @exception NullPointerException - name is null.
    **/
   public synchronized static native byte[] H5Rcreate(int loc_id, String name,
-          H5Renum ref_type, int space_id)
+          H5R_TYPE ref_type, int space_id)
       throws HDF5LibraryException, NullPointerException;
 
   /**
@@ -55,7 +55,7 @@ public class H5R {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native int H5Rdereference(int dataset, H5Renum ref_type, byte[] ref)
+  public synchronized static native int H5Rdereference(int dataset, H5R_TYPE ref_type, byte[] ref)
       throws HDF5LibraryException;
 
   /**
@@ -71,9 +71,9 @@ public class H5R {
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    *  @exception NullPointerException - ref array is null.
    **/
-  public synchronized static native int H5Rget_region(int dataset, H5Renum ref_type, byte[] ref)
+  public synchronized static native int H5Rget_region(int dataset, H5R_TYPE ref_type, byte[] ref)
       throws HDF5LibraryException, NullPointerException;
-//  int H5Rget_region(int dataset, H5R_type_t ref_type, Pointer ref);
+//  int H5Rget_region(int dataset, H5R_TYPE ref_type, Pointer ref);
 
   /**
    *  H5Rget_obj_type2 retrieves the type of the referenced object.
@@ -87,9 +87,9 @@ public class H5R {
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    *  @exception NullPointerException - ref is null.
    **/
-  public synchronized static native H5Oenum H5Rget_obj_type2(int loc_id, H5Renum ref_type, byte[] ref)
+  public synchronized static native H5O_TYPE H5Rget_obj_type2(int loc_id, H5R_TYPE ref_type, byte[] ref)
       throws HDF5LibraryException, NullPointerException;
-//  int H5Rget_obj_type2(int loc_id, H5R_type_t ref_type, Pointer ref, H5O_type_t obj_type);
+//  int H5Rget_obj_type2(int loc_id, H5R_TYPE ref_type, Pointer ref, H5O_type_t obj_type);
 
   /**
    *  H5Rget_name retrieves a name for the referenced object.
@@ -103,9 +103,9 @@ public class H5R {
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    *  @exception NullPointerException - ref is null.
    **/
-  public synchronized static native String H5Rget_name(int loc_id, H5Renum ref_type, byte[] ref)
+  public synchronized static native String H5Rget_name(int loc_id, H5R_TYPE ref_type, byte[] ref)
       throws HDF5LibraryException, NullPointerException;
-//  long H5Rget_name(int loc_id, H5R_type_t ref_type, Pointer ref,
+//  long H5Rget_name(int loc_id, H5R_TYPE ref_type, Pointer ref,
 //      String name/*out*/, long size);
 
 }

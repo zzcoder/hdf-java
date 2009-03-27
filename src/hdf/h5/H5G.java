@@ -14,7 +14,8 @@
 
 package hdf.h5;
 
-import hdf.h5.enums.H5enum;
+import hdf.h5.enums.H5_INDEX;
+import hdf.h5.enums.H5_ITER;
 import hdf.h5.exceptions.HDF5LibraryException;
 import hdf.h5.structs.H5G_info_t;
 
@@ -138,7 +139,7 @@ public class H5G {
    *  @exception NullPointerException - name is null.
    **/
   public synchronized static native H5G_info_t H5Gget_info_by_idx(int group_id, String group_name,
-        H5enum idx_type, H5enum order, long n, int lapl_id)
+        H5_INDEX idx_type, H5_ITER order, long n, int lapl_id)
       throws HDF5LibraryException, NullPointerException;
 //  int H5Gget_info_by_idx(int group_id, String group_name,
 //        H5_index_t idx_type, H5_iter_order_t order, long n, H5G_info_t ginfo, int lapl_id);  

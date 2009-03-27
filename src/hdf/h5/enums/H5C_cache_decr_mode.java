@@ -14,14 +14,9 @@
 
 package hdf.h5.enums;
 
-public enum H5Eenum {
-//Error stack traversal direction
-// H5E_direction_t 
-  H5E_WALK_UPWARD,        //begin deep, end at API function
-  H5E_WALK_DOWNWARD,      //begin at API function, end deep
-
-//Different kinds of error information
-// H5E_type_t 
-  H5E_MAJOR,
-  H5E_MINOR;
+public enum H5C_cache_decr_mode {
+  off,
+  threshold,
+  age_out,
+  age_out_with_threshold
 }

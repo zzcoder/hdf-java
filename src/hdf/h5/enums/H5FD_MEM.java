@@ -12,14 +12,43 @@
  * help@hdfgroup.org.                                                        *
  ****************************************************************************/
 
-package hdf.h5.structs;
+package hdf.h5.enums;
 
-import hdf.h5.enums.H5G_STORAGE_TYPE;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
-//Information struct for group (for H5Gget_info/H5Gget_info_by_name/H5Gget_info_by_idx)
-public class H5G_info_t {
-  public H5G_STORAGE_TYPE  storage_type; // Type of storage for links in group
-  public long     nlinks;       // Number of links in group
-  public long     max_corder;   // Current max. creation order value for group
-  public int      mounted;      // Whether group has a file mounted on it
+// Types of allocation requests. The values larger than H5FD_MEM_DEFAULT
+// should not change other than adding new types to the end. These numbers
+// might appear in files.
+public enum H5FD_MEM {
+	    NOLIST	 (-1),			//must be negative
+	    DEFAULT	 ( 0),			//must be zero
+	    SUPER    ( 1),
+	    BTREE    ( 2),
+	    DRAW     ( 3),
+	    GHEAP    ( 4),
+	    LHEAP    ( 5),
+	    OHDR     ( 6),
+	    NTYPES	 ( 7);		  //must be last
+	  	private static final Map<Integer, H5FD_MEM> lookup = new HashMap<Integer, H5FD_MEM>();
+
+	  	static {
+	  		for (H5FD_MEM s : EnumSet.allOf(H5FD_MEM.class))
+	  			lookup.put(s.getCode(), s);
+	  	}
+
+	  	private int code;
+
+	  	H5FD_MEM(int type) {
+	  		this.code = type;
+	  	}
+
+	  	public int getCode() {
+	  		return this.code;
+	  	}
+
+	  	public static H5FD_MEM get(int code) {
+	  		return lookup.get(code);
+	  	}
 }

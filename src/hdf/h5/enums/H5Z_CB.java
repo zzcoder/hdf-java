@@ -14,37 +14,34 @@
 
 package hdf.h5.enums;
 
-public enum H5Zenum {
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+
 //Return values for filter callback function
-// H5Z_cb_return_t 
-  H5Z_CB_ERROR,
-  H5Z_CB_FAIL,            // I/O should fail if filter fails.
-  H5Z_CB_CONT,            // I/O continues if filter fails.
-  H5Z_CB_NO,
+public enum H5Z_CB {
+  ERROR  (-1),
+  FAIL   ( 0),    // I/O should fail if filter fails.
+  CONT   ( 1),    // I/O continues if filter fails.
+  NO     ( 2);
+	private static final Map<Integer, H5Z_CB> lookup = new HashMap<Integer, H5Z_CB>();
 
-//Values to decide if EDC is enabled for reading data
-// H5Z_EDC_t
-  H5Z_ERROR_EDC ,         // error value
-  H5Z_DISABLE_EDC,
-  H5Z_ENABLE_EDC,
-  H5Z_NO_EDC,             // must be the last
+	static {
+		for (H5Z_CB s : EnumSet.allOf(H5Z_CB.class))
+			lookup.put(s.getCode(), s);
+	}
 
-//Filter IDs
-// H5Z_filter_t 
-  H5Z_FILTER_ERROR,       //no filter
-  H5Z_FILTER_NONE,        //reserved indefinitely
-  H5Z_FILTER_DEFLATE,     //deflation like gzip
-  H5Z_FILTER_SHUFFLE,     //shuffle the data
-  H5Z_FILTER_FLETCHER32,  //fletcher32 checksum of EDC
-  H5Z_FILTER_SZIP,        //szip compression
-  H5Z_FILTER_NBIT,        //nbit compression
-  H5Z_FILTER_SCALEOFFSET, //scale+offset compression
-  H5Z_FILTER_RESERVED,    //filter ids below this value are reserved for library use
-  H5Z_FILTER_MAX,         //maximum filter id
+	private int code;
 
-//Special parameters for ScaleOffset filter
-// H5Z_SO_scale_type_t 
-  H5Z_SO_FLOAT_DSCALE,
-  H5Z_SO_FLOAT_ESCALE,
-  H5Z_SO_INT;
+	H5Z_CB(int type) {
+		this.code = type;
+	}
+
+	public int getCode() {
+		return this.code;
+	}
+
+	public static H5Z_CB get(int code) {
+		return lookup.get(code);
+	}
 }

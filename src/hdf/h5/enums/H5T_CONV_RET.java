@@ -12,14 +12,35 @@
  * help@hdfgroup.org.                                                        *
  ****************************************************************************/
 
-package hdf.h5.structs;
+package hdf.h5.enums;
 
-import hdf.h5.enums.H5G_STORAGE_TYPE;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
-//Information struct for group (for H5Gget_info/H5Gget_info_by_name/H5Gget_info_by_idx)
-public class H5G_info_t {
-  public H5G_STORAGE_TYPE  storage_type; // Type of storage for links in group
-  public long     nlinks;       // Number of links in group
-  public long     max_corder;   // Current max. creation order value for group
-  public int      mounted;      // Whether group has a file mounted on it
+// The return value from conversion callback function H5T_conv_except_func_t
+public enum H5T_CONV_RET {
+  ABORT      (-1),   //abort conversion
+  UNHANDLED  ( 0),   //callback function failed to handle the exception
+  HANDLED    ( 1);   //callback function handled the exception successfully 
+	private static final Map<Integer, H5T_CONV_RET> lookup = new HashMap<Integer, H5T_CONV_RET>();
+
+	static {
+		for (H5T_CONV_RET s : EnumSet.allOf(H5T_CONV_RET.class))
+			lookup.put(s.getCode(), s);
+	}
+
+	private int code;
+
+	H5T_CONV_RET(int conv_ret_type) {
+		this.code = conv_ret_type;
+	}
+
+	public int getCode() {
+		return this.code;
+	}
+
+	public static H5T_CONV_RET get(int code) {
+		return lookup.get(code);
+	}
 }

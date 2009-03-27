@@ -14,11 +14,37 @@
 
 package hdf.h5.enums;
 
-public enum H5Renum {
-//Reference types allowed.
-// H5R_type_t
-  H5R_BADTYPE,            //invalid Reference Type
-  H5R_OBJECT,             //Object reference
-  H5R_DATASET_REGION,     //Dataset Region Reference
-  H5R_MAXTYPE;            //highest type (Invalid as true type)
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+
+// Enumerated type for the type of selection
+public enum H5S_SEL {
+  ERROR       (-1),  // Error
+  NONE        ( 0),  // Nothing selected
+  POINTS      ( 1),  // Sequence of points selected
+  HYPERSLABS  ( 2),  // "New-style" hyperslab selection defined 
+  ALL         ( 3),  // Entire extent selected
+  N           ( 4);  // THIS MUST BE LAST
+  private static final Map<Integer, H5S_SEL> lookup = new HashMap<Integer, H5S_SEL>();
+
+  static {
+    for (H5S_SEL s : EnumSet.allOf(H5S_SEL.class))
+      lookup.put(s.getCode(), s);
+  }
+
+  private int code;
+
+  H5S_SEL(int type) {
+    this.code = type;
+  }
+
+  public int getCode() {
+    return this.code;
+  }
+
+  public static H5S_SEL get(int code) {
+    return lookup.get(code);
+  }
+
 }
