@@ -524,7 +524,7 @@ else
 fi
 fi
 HERE=`pwd`
-CLASSPATH="$JAVACLASSES"":""$HERE"
+CLASSPATH=
 
 withval="";
 AC_SUBST(javabin) javabin=""
@@ -724,8 +724,8 @@ VERSSTRING=`/bin/cat ./VERSION | sed -e 's/VERSION=HDF-JAVA-//' `
 AC_SUBST(VERSSTRING)
 
 dnl OUTPUT_FILES="Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile bin/hdfview.sh"
-OUTPUT_FILES="Makefile src/hdf/Makefile src/hdf/h4/Makefile src/hdf/h5/Makefile"
+OUTPUT_FILES="Makefile src/Makefile "
 
-AC_CONFIG_FILES([Makefile])
-AC_OUTPUT($OUTPUT_FILES)
+AC_CONFIG_FILES([Makefile src/Makefile])
+AC_OUTPUT()
 
