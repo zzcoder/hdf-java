@@ -164,7 +164,7 @@ h5_enums_SOURCES = $(h5_PATH)/enums/H5_INDEX.java \
         $(h5_PATH)/enums/H5Z_CB.java \
         $(h5_PATH)/enums/H5Z_EDC.java \
         $(h5_PATH)/enums/H5Z_FILTER.java \
-        $(h5_PATH)/enums/H5S_SO_SCALE.java
+        $(h5_PATH)/enums/H5Z_SO_SCALE.java
 
 h5_enums_CLASSES = $(h5_PATH)/enums/H5_INDEX.class \
 	$(h5_PATH)/enums/H5_ITER.class \
@@ -207,7 +207,7 @@ h5_enums_CLASSES = $(h5_PATH)/enums/H5_INDEX.class \
         $(h5_PATH)/enums/H5Z_CB.class \
         $(h5_PATH)/enums/H5Z_EDC.class \
         $(h5_PATH)/enums/H5Z_FILTER.class \
-        $(h5_PATH)/enums/H5S_SO_SCALE.class
+        $(h5_PATH)/enums/H5Z_SO_SCALE.class
 
 h5_exceptions_SOURCES = $(h5_PATH)/exceptions/HDF5AtomException.java \
 	$(h5_PATH)/exceptions/HDF5AttributeException.java \
