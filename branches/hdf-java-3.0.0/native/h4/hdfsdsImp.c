@@ -17,6 +17,7 @@ extern "C" {
 #endif
 
 #include "hdf.h"
+#include "mfhdf.h"
 #include <jni.h>
 #include "h4jni.h"
 
