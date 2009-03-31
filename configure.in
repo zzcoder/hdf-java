@@ -45,6 +45,9 @@ dnl Developers should './configure --enable-maintainer-mode' to turn on
 dnl rebuild rules.
 AM_MAINTAINER_MODE
 
+
+AC_CANONICAL_SYSTEM
+
 dnl ----------------------------------------------------------------------
 dnl Some platforms have broken tr, basename, and/or xargs programs. Check
 dnl that it actually does what it's supposed to do. Catch this early
@@ -112,76 +115,93 @@ AC_PREFIX_DEFAULT("")
 AC_PATH_PROG(RM,rm,\"\",,)
 AC_PATH_PROG(FIND,find,\"\",,)
 
+dnl ----------------------------------------------------------------------
+dnl Source any special files that we need.  These files normally aren't
+dnl present but can be used by the maintainers to fine tune things like
+dnl turning on debug or profiling flags for the compiler.  The search order
+dnl is:
 dnl
-dnl  Some platform specific settings for different Java implementations
+dnl	CPU-VENDOR-OS
+dnl	VENDOR-OS
+dnl	CPU-OS
+dnl	CPU-VENDOR
+dnl	OS
+dnl	VENDOR
+dnl	CPU
 dnl
-AC_CANONICAL_HOST
-TARGET=$target
-echo "FYI the target here is: "$target
-case $target in
-alpha-dec-osf*.*) TARGETLIB="alpha"
-LD=$CC; LDOPT="-pthread -shared"; SLEXT="so";
-LLEXT="a";
-JSLEXT="so";
-COPT="-pthread -shared"; COPTNOSHARED=;
-;;
-*aix*) TARGETLIB="aix"
-LD=$CC; LDOPT=-G; SLEXT="so";
-LLEXT="a";
-JSLEXT="so";
-COPT=-G; COPTNOSHARED=;
-;;
-*-*-solaris2*) TARGETLIB="solaris"
-LD=$CC; LDOPT=-G; SLEXT="so";
-LLEXT="a";  
-JSLEXT="so";
-COPT=-G; COPTNOSHARED=; 
-;;
-mips*-sgi-irix6*) 
-TARGETLIB="irix"
-LD=ld; 
-LLEXT="a";  
-JSLEXT="so";
-;;
-x86_64-pc-linux*) LD=$CC; LDOPT=-shared; SLEXT="so";
-TARGETLIB="linux"
-SLEXT="so";
-LLEXT="a";  # the extension for the HDF and other libraries to link to
-JSLEXT="so";
-COPT="-shared -Dx86_64 -fPIC" ; 
-;;
-ia64-pc-linux*) LD=$CC; LDOPT=-shared; SLEXT="so";
-TARGETLIB="linux"
-SLEXT="so";
-LLEXT="a";  # the extension for the HDF and other libraries to link to
-JSLEXT="so";
-COPT="-shared -Dia64 -fPIC" ; 
-;;
-*-pc-linux*) LD=$CC; LDOPT=-shared; SLEXT="so";
-TARGETLIB="linux"
-SLEXT="so";
-LLEXT="a";  # the extension for the HDF and other libraries to link to
-JSLEXT="so";
-COPT="-shared -DUNIX386" ; 
-;;
-*-freebsd*) LD=$CC; LDOPT=-shared;
-TARGETLIB="freebsd"
-SLEXT="so";
-LLEXT="a";  # the extension for the HDF and other libraries to link to
-JSLEXT="so";
-COPT="-shared" ;
-;;
-*powerpc-apple*) 
-LD=$CC; LDOPT=-bundle; 
-JSLEXT="jnilib";
-LLEXT="a";
-SLEXT="dylib";
-;;
-*) LD=$CC; LDOPT=-G; SLEXT="so";
-LLEXT="a";
-TARGETLIB="$target"
-;;
+dnl If the `OS' ends with a version number then remove it. For instance,
+dnl `freebsd3.1' would become `freebsd'
+case $host_os in
+  aix4.*)
+    host_os_novers=aix4.x
+    ;;
+  aix5.*)
+    host_os_novers=aix5.x
+    ;;
+  freebsd*)
+    host_os_novers=freebsd
+    ;;
+  irix5.*)
+    host_os_novers=irix5.x
+    ;;
+  irix6.*)
+    host_os_novers=irix6.x
+    ;;
+  osf4.*)
+    host_os_novers=osf4.x
+    ;;
+  osf5.*)
+    host_os_novers=osf5.x
+    ;;
+  solaris2.*)
+    host_os_novers=solaris2.x
+    ;;
+  *)
+    host_os_novers=$host_os
+    ;;
 esac
+
+echo "$host_os"
+host_config="none"
+for f in $host_cpu-$host_vendor-$host_os \
+         $host_cpu-$host_vendor-$host_os_novers \
+         $host_vendor-$host_os \
+         $host_vendor-$host_os_novers \
+         $host_cpu-$host_os \
+         $host_cpu-$host_os_novers \
+         $host_cpu-$host_vendor \
+         $host_os \
+         $host_os_novers \
+         $host_vendor \
+         $host_cpu ; do
+  AC_MSG_CHECKING([for config $f])
+  if test -f "$srcdir/config/$f"; then
+    host_config=$srcdir/config/$f
+    AC_MSG_RESULT([found])
+    break
+  fi
+  AC_MSG_RESULT([no])
+done
+if test "X$host_config" != "Xnone"; then
+  CC_BASENAME="`echo $CC | cut -f1 -d' ' | xargs basename 2>/dev/null`"
+  . $host_config
+fi
+
+dnl Source any special site-specific file
+hname="`hostname`"
+while test -n "$hname"; do
+  file=$srcdir/config/site-specific/host-$hname
+  AC_MSG_CHECKING([for config $file])
+  if test -f "$file"; then
+    . $file
+    AC_MSG_RESULT([found])
+    break
+  fi
+  AC_MSG_RESULT([no])
+  hname_tmp=$hname
+  hname="`echo $hname | cut -d. -f2-99`"
+  test "$hname_tmp" = "$hname" && break
+done
 
 dnl ----------------
 dnl  Check for the external compression libraries required by the 
@@ -586,105 +606,6 @@ case "$withval" in
 esac
 
 ac_cv_lib_JAVAINC=$JAVAINC
-
-
-case $target in
-alpha-dec-osf*.*)
-LD=$CC; LDOPT="-pthread -shared"; SLEXT="so";
-LLEXT="a";
-JSLEXT="so";
-COPT="-pthread -shared"; COPTNOSHARED=;
-JAVAINC2=$JAVAINC/alpha ; JAVATARG=alpha;
-;;
-*aix*)
-LD=$CC; LDOPT=-G; SLEXT="so";
-LLEXT="a";
-JSLEXT="so";
-COPT=-G; COPTNOSHARED=;
-JAVAINC2=$JAVAINC/aix ; JAVATARG=aix;
-;;
-*-*-solaris2*) 
-LD=$CC; LDOPT=-G; SLEXT="so";
-LLEXT="a";  
-JSLEXT="so";
-COPT=-G; COPTNOSHARED=; 
-JAVAINC2=$JAVAINC/solaris ; JAVATARG=solaris;
-;;
-mips*-sgi-irix6*) 
-LD=ld; 
-LLEXT="a";  # the extension for the HDF and other libraries to link to
-JSLEXT="so";  
-OS=`uname -r`;
-SYS=`uname -s`
-if test "$SYS" = "IRIX"; then
-LDOPT2="-check_registry /usr/lib/so_locations"; SLEXT="so";
-if test "$GCC" = "yes" ; then
-LDOPT="-shared";
-COPT="-shared" ; COPTNOSHARED=""; 
-else
-LDOPT="-n32 -shared";
-COPT="-n32 -shared" ; COPTNOSHARED="-n32"; 
-fi
-elif test "$SYS" = "IRIX64"; then
-LDOPT2="-check_registry /usr/lib/so_locations"; SLEXT="so";
-if test "$GCC" = "yes" ; then
-LDOPT="-shared";
-COPT="-shared" ; COPTNOSHARED=""; 
-else
-LDOPT="-n32 -shared";
-COPT="-n32 -shared" ; COPTNOSHARED="-n32"; 
-fi
-else 
-echo "No such system: "$SYS
-fi
-JSLEXT="so";
-JAVAINC2=$JAVAINC/irix; JAVATARG=irix-$OS;
-;;
-x86_64-pc-linux*) LD=$CC; LDOPT=-shared;
-SLEXT="so";
-LLEXT="a";  # the extension for the HDF and other libraries to link to
-JSLEXT="so";
-COPT="-shared -Dx86_64 -fPIC" ;
-JAVAINC2=$JAVAINC/linux;
-JAVATARG=linux;
-;;
-ia64-pc-linux*) LD=$CC; LDOPT=-shared;
-SLEXT="so";
-LLEXT="a";  # the extension for the HDF and other libraries to link to
-JSLEXT="so";
-COPT="-shared -Dia64 -fPIC" ;
-JAVAINC2=$JAVAINC/linux;
-JAVATARG=linux;
-;;
-*-pc-linux*) LD=$CC; LDOPT=-shared; 
-SLEXT="so";
-LLEXT="a";  # the extension for the HDF and other libraries to link to
-JSLEXT="so";
-COPT="-shared -DUNIX386" ; 
-JAVAINC2=$JAVAINC/linux; 
-JAVATARG=linux;
-;;
-*-freebsd*) LD=$CC; LDOPT=-shared;
-SLEXT="so";
-LLEXT="a";  # the extension for the HDF and other libraries to link to
-JSLEXT="so";
-COPT="-shared" ;
-JAVAINC2=$JAVAINC/freebsd; 
-JAVATARG=freebsd;
-;;
-*powerpc-apple*) 
-LD=$CC; LDOPT=-bundle; 
-JSLEXT="jnilib";
-LLEXT="a";
-SLEXT="dylib";
-JAVAINC2=$JAVAINC/macosx; 
-JAVATARG=macosx;
-;;
-*) LD=$CC; LDOPT=-G; SLEXT="so";
-JSLEXT="so";
-LLEXT="a";
-COPT=-shared; COPTNOSHSARED=; JAVAINC2=$JAVAINC/$target; JAVATARG=$TARGET ;;
-esac
 
 AC_SUBST(LD)
 AC_SUBST(LDOPT)
