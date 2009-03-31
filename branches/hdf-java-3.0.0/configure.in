@@ -724,8 +724,8 @@ VERSSTRING=`/bin/cat ./VERSION | sed -e 's/VERSION=HDF-JAVA-//' `
 AC_SUBST(VERSSTRING)
 
 dnl OUTPUT_FILES="Makefile native/Makefile native/hdflib/Makefile native/hdf5lib/Makefile bin/hdfview.sh"
-OUTPUT_FILES="Makefile src/Makefile "
+OUTPUT_FILES="Makefile native/Makefile native/h4/Makefile native/h5/Makefile src/Makefile "
 
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile native/Makefile native/h4/Makefile native/h5/Makefile src/Makefile])
 AC_OUTPUT()
 

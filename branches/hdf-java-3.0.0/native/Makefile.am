@@ -37,8 +37,8 @@
 
 include $(top_srcdir)/config/commence.am
 
-SUBDIRS = native src
-DIST_SUBDIRS = native src
+SUBDIRS = h4 h5
+DIST_SUBDIRS = h4 h5
 
 # Automake wants to make config.status depend on configure.  This
 # makes sense, but config.status can't always be regenerated
