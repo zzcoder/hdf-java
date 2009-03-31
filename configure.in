@@ -489,8 +489,9 @@ case "$withval" in
     jdk_inc="`echo $withval |cut -f1 -d,`"
     if test -n "$jdk_inc"; then
       JAVAINC="$jdk_inc"
+      JAVAINC2="$jdk_inc/$JAVATARG"
       saved_CPPFLAGS="$CPPFLAGS"
-      CPPFLAGS="$CPPFLAGS $COPT -I$jdk_inc -I$jdk_inc/$TARGETLIB"
+      CPPFLAGS="$CPPFLAGS $COPT -I$jdk_inc -I$jdk_inc/$JAVATARG"
     fi
 
     AC_CHECK_HEADERS(jni.h,,
@@ -606,6 +607,7 @@ case "$withval" in
 esac
 
 ac_cv_lib_JAVAINC=$JAVAINC
+ac_cv_lib_JAVAINC2=$JAVAINC2
 
 AC_SUBST(LD)
 AC_SUBST(LDOPT)

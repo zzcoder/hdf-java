@@ -67,7 +67,6 @@ LLEXT="a"
 JSLEXT="so"
 COPT=-G
 COPTNOSHARED=
-JAVAINC2=$JAVAINC/solaris
 JAVATARG=solaris
 
 # The default C++ compiler

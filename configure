@@ -672,14 +672,6 @@ HDF4LIB
 SZLIB
 JPEGLIB
 ZLIB
-host_os
-host_vendor
-host_cpu
-host
-build_os
-build_vendor
-build_cpu
-build
 FIND
 RM
 EGREP
@@ -701,6 +693,18 @@ CPPFLAGS
 LDFLAGS
 CFLAGS
 CC
+target_os
+target_vendor
+target_cpu
+target
+host_os
+host_vendor
+host_cpu
+host
+build_os
+build_vendor
+build_cpu
+build
 MAINT
 MAINTAINER_MODE_FALSE
 MAINTAINER_MODE_TRUE
@@ -1406,6 +1410,7 @@ Program names:
 System types:
   --build=BUILD     configure for building on BUILD [guessed]
   --host=HOST       cross-compile to build programs to run on HOST [BUILD]
+  --target=TARGET   configure for building compilers for TARGET [HOST]
 _ACEOF
 fi
 
@@ -2412,6 +2417,134 @@ fi
   MAINT=$MAINTAINER_MODE_TRUE
 
 
+
+
+# Make sure we can run config.sub.
+$SHELL "$ac_aux_dir/config.sub" sun4 >/dev/null 2>&1 ||
+  { { $as_echo "$as_me:$LINENO: error: cannot run $SHELL $ac_aux_dir/config.sub" >&5
+$as_echo "$as_me: error: cannot run $SHELL $ac_aux_dir/config.sub" >&2;}
+   { (exit 1); exit 1; }; }
+
+{ $as_echo "$as_me:$LINENO: checking build system type" >&5
+$as_echo_n "checking build system type... " >&6; }
+if test "${ac_cv_build+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  ac_build_alias=$build_alias
+test "x$ac_build_alias" = x &&
+  ac_build_alias=`$SHELL "$ac_aux_dir/config.guess"`
+test "x$ac_build_alias" = x &&
+  { { $as_echo "$as_me:$LINENO: error: cannot guess build type; you must specify one" >&5
+$as_echo "$as_me: error: cannot guess build type; you must specify one" >&2;}
+   { (exit 1); exit 1; }; }
+ac_cv_build=`$SHELL "$ac_aux_dir/config.sub" $ac_build_alias` ||
+  { { $as_echo "$as_me:$LINENO: error: $SHELL $ac_aux_dir/config.sub $ac_build_alias failed" >&5
+$as_echo "$as_me: error: $SHELL $ac_aux_dir/config.sub $ac_build_alias failed" >&2;}
+   { (exit 1); exit 1; }; }
+
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_build" >&5
+$as_echo "$ac_cv_build" >&6; }
+case $ac_cv_build in
+*-*-*) ;;
+*) { { $as_echo "$as_me:$LINENO: error: invalid value of canonical build" >&5
+$as_echo "$as_me: error: invalid value of canonical build" >&2;}
+   { (exit 1); exit 1; }; };;
+esac
+build=$ac_cv_build
+ac_save_IFS=$IFS; IFS='-'
+set x $ac_cv_build
+shift
+build_cpu=$1
+build_vendor=$2
+shift; shift
+# Remember, the first character of IFS is used to create $*,
+# except with old shells:
+build_os=$*
+IFS=$ac_save_IFS
+case $build_os in *\ *) build_os=`echo "$build_os" | sed 's/ /-/g'`;; esac
+
+
+{ $as_echo "$as_me:$LINENO: checking host system type" >&5
+$as_echo_n "checking host system type... " >&6; }
+if test "${ac_cv_host+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  if test "x$host_alias" = x; then
+  ac_cv_host=$ac_cv_build
+else
+  ac_cv_host=`$SHELL "$ac_aux_dir/config.sub" $host_alias` ||
+    { { $as_echo "$as_me:$LINENO: error: $SHELL $ac_aux_dir/config.sub $host_alias failed" >&5
+$as_echo "$as_me: error: $SHELL $ac_aux_dir/config.sub $host_alias failed" >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_host" >&5
+$as_echo "$ac_cv_host" >&6; }
+case $ac_cv_host in
+*-*-*) ;;
+*) { { $as_echo "$as_me:$LINENO: error: invalid value of canonical host" >&5
+$as_echo "$as_me: error: invalid value of canonical host" >&2;}
+   { (exit 1); exit 1; }; };;
+esac
+host=$ac_cv_host
+ac_save_IFS=$IFS; IFS='-'
+set x $ac_cv_host
+shift
+host_cpu=$1
+host_vendor=$2
+shift; shift
+# Remember, the first character of IFS is used to create $*,
+# except with old shells:
+host_os=$*
+IFS=$ac_save_IFS
+case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
+
+
+{ $as_echo "$as_me:$LINENO: checking target system type" >&5
+$as_echo_n "checking target system type... " >&6; }
+if test "${ac_cv_target+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  if test "x$target_alias" = x; then
+  ac_cv_target=$ac_cv_host
+else
+  ac_cv_target=`$SHELL "$ac_aux_dir/config.sub" $target_alias` ||
+    { { $as_echo "$as_me:$LINENO: error: $SHELL $ac_aux_dir/config.sub $target_alias failed" >&5
+$as_echo "$as_me: error: $SHELL $ac_aux_dir/config.sub $target_alias failed" >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_target" >&5
+$as_echo "$ac_cv_target" >&6; }
+case $ac_cv_target in
+*-*-*) ;;
+*) { { $as_echo "$as_me:$LINENO: error: invalid value of canonical target" >&5
+$as_echo "$as_me: error: invalid value of canonical target" >&2;}
+   { (exit 1); exit 1; }; };;
+esac
+target=$ac_cv_target
+ac_save_IFS=$IFS; IFS='-'
+set x $ac_cv_target
+shift
+target_cpu=$1
+target_vendor=$2
+shift; shift
+# Remember, the first character of IFS is used to create $*,
+# except with old shells:
+target_os=$*
+IFS=$ac_save_IFS
+case $target_os in *\ *) target_os=`echo "$target_os" | sed 's/ /-/g'`;; esac
+
+
+# The aliases save the names the user supplied, while $host etc.
+# will get canonicalized.
+test -n "$target_alias" &&
+  test "$program_prefix$program_suffix$program_transform_name" = \
+    NONENONEs,x,x, &&
+  program_prefix=${target_alias}-
 
 { $as_echo "$as_me:$LINENO: checking if tr works" >&5
 $as_echo_n "checking if tr works... " >&6; }
@@ -4517,155 +4650,82 @@ fi
 
 
 
-# Make sure we can run config.sub.
-$SHELL "$ac_aux_dir/config.sub" sun4 >/dev/null 2>&1 ||
-  { { $as_echo "$as_me:$LINENO: error: cannot run $SHELL $ac_aux_dir/config.sub" >&5
-$as_echo "$as_me: error: cannot run $SHELL $ac_aux_dir/config.sub" >&2;}
-   { (exit 1); exit 1; }; }
-
-{ $as_echo "$as_me:$LINENO: checking build system type" >&5
-$as_echo_n "checking build system type... " >&6; }
-if test "${ac_cv_build+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  ac_build_alias=$build_alias
-test "x$ac_build_alias" = x &&
-  ac_build_alias=`$SHELL "$ac_aux_dir/config.guess"`
-test "x$ac_build_alias" = x &&
-  { { $as_echo "$as_me:$LINENO: error: cannot guess build type; you must specify one" >&5
-$as_echo "$as_me: error: cannot guess build type; you must specify one" >&2;}
-   { (exit 1); exit 1; }; }
-ac_cv_build=`$SHELL "$ac_aux_dir/config.sub" $ac_build_alias` ||
-  { { $as_echo "$as_me:$LINENO: error: $SHELL $ac_aux_dir/config.sub $ac_build_alias failed" >&5
-$as_echo "$as_me: error: $SHELL $ac_aux_dir/config.sub $ac_build_alias failed" >&2;}
-   { (exit 1); exit 1; }; }
-
-fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_build" >&5
-$as_echo "$ac_cv_build" >&6; }
-case $ac_cv_build in
-*-*-*) ;;
-*) { { $as_echo "$as_me:$LINENO: error: invalid value of canonical build" >&5
-$as_echo "$as_me: error: invalid value of canonical build" >&2;}
-   { (exit 1); exit 1; }; };;
+case $host_os in
+  aix4.*)
+    host_os_novers=aix4.x
+    ;;
+  aix5.*)
+    host_os_novers=aix5.x
+    ;;
+  freebsd*)
+    host_os_novers=freebsd
+    ;;
+  irix5.*)
+    host_os_novers=irix5.x
+    ;;
+  irix6.*)
+    host_os_novers=irix6.x
+    ;;
+  osf4.*)
+    host_os_novers=osf4.x
+    ;;
+  osf5.*)
+    host_os_novers=osf5.x
+    ;;
+  solaris2.*)
+    host_os_novers=solaris2.x
+    ;;
+  *)
+    host_os_novers=$host_os
+    ;;
 esac
-build=$ac_cv_build
-ac_save_IFS=$IFS; IFS='-'
-set x $ac_cv_build
-shift
-build_cpu=$1
-build_vendor=$2
-shift; shift
-# Remember, the first character of IFS is used to create $*,
-# except with old shells:
-build_os=$*
-IFS=$ac_save_IFS
-case $build_os in *\ *) build_os=`echo "$build_os" | sed 's/ /-/g'`;; esac
 
-
-{ $as_echo "$as_me:$LINENO: checking host system type" >&5
-$as_echo_n "checking host system type... " >&6; }
-if test "${ac_cv_host+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  if test "x$host_alias" = x; then
-  ac_cv_host=$ac_cv_build
-else
-  ac_cv_host=`$SHELL "$ac_aux_dir/config.sub" $host_alias` ||
-    { { $as_echo "$as_me:$LINENO: error: $SHELL $ac_aux_dir/config.sub $host_alias failed" >&5
-$as_echo "$as_me: error: $SHELL $ac_aux_dir/config.sub $host_alias failed" >&2;}
-   { (exit 1); exit 1; }; }
+echo "$host_os"
+host_config="none"
+for f in $host_cpu-$host_vendor-$host_os \
+         $host_cpu-$host_vendor-$host_os_novers \
+         $host_vendor-$host_os \
+         $host_vendor-$host_os_novers \
+         $host_cpu-$host_os \
+         $host_cpu-$host_os_novers \
+         $host_cpu-$host_vendor \
+         $host_os \
+         $host_os_novers \
+         $host_vendor \
+         $host_cpu ; do
+  { $as_echo "$as_me:$LINENO: checking for config $f" >&5
+$as_echo_n "checking for config $f... " >&6; }
+  if test -f "$srcdir/config/$f"; then
+    host_config=$srcdir/config/$f
+    { $as_echo "$as_me:$LINENO: result: found" >&5
+$as_echo "found" >&6; }
+    break
+  fi
+  { $as_echo "$as_me:$LINENO: result: no" >&5
+$as_echo "no" >&6; }
+done
+if test "X$host_config" != "Xnone"; then
+  CC_BASENAME="`echo $CC | cut -f1 -d' ' | xargs basename 2>/dev/null`"
+  . $host_config
 fi
 
-fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_host" >&5
-$as_echo "$ac_cv_host" >&6; }
-case $ac_cv_host in
-*-*-*) ;;
-*) { { $as_echo "$as_me:$LINENO: error: invalid value of canonical host" >&5
-$as_echo "$as_me: error: invalid value of canonical host" >&2;}
-   { (exit 1); exit 1; }; };;
-esac
-host=$ac_cv_host
-ac_save_IFS=$IFS; IFS='-'
-set x $ac_cv_host
-shift
-host_cpu=$1
-host_vendor=$2
-shift; shift
-# Remember, the first character of IFS is used to create $*,
-# except with old shells:
-host_os=$*
-IFS=$ac_save_IFS
-case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
-
-
-TARGET=$target
-echo "FYI the target here is: "$target
-case $target in
-alpha-dec-osf*.*) TARGETLIB="alpha"
-LD=$CC; LDOPT="-pthread -shared"; SLEXT="so";
-LLEXT="a";
-JSLEXT="so";
-COPT="-pthread -shared"; COPTNOSHARED=;
-;;
-*aix*) TARGETLIB="aix"
-LD=$CC; LDOPT=-G; SLEXT="so";
-LLEXT="a";
-JSLEXT="so";
-COPT=-G; COPTNOSHARED=;
-;;
-*-*-solaris2*) TARGETLIB="solaris"
-LD=$CC; LDOPT=-G; SLEXT="so";
-LLEXT="a";
-JSLEXT="so";
-COPT=-G; COPTNOSHARED=;
-;;
-mips*-sgi-irix6*)
-TARGETLIB="irix"
-LD=ld;
-LLEXT="a";
-JSLEXT="so";
-;;
-x86_64-pc-linux*) LD=$CC; LDOPT=-shared; SLEXT="so";
-TARGETLIB="linux"
-SLEXT="so";
-LLEXT="a";  # the extension for the HDF and other libraries to link to
-JSLEXT="so";
-COPT="-shared -Dx86_64 -fPIC" ;
-;;
-ia64-pc-linux*) LD=$CC; LDOPT=-shared; SLEXT="so";
-TARGETLIB="linux"
-SLEXT="so";
-LLEXT="a";  # the extension for the HDF and other libraries to link to
-JSLEXT="so";
-COPT="-shared -Dia64 -fPIC" ;
-;;
-*-pc-linux*) LD=$CC; LDOPT=-shared; SLEXT="so";
-TARGETLIB="linux"
-SLEXT="so";
-LLEXT="a";  # the extension for the HDF and other libraries to link to
-JSLEXT="so";
-COPT="-shared -DUNIX386" ;
-;;
-*-freebsd*) LD=$CC; LDOPT=-shared;
-TARGETLIB="freebsd"
-SLEXT="so";
-LLEXT="a";  # the extension for the HDF and other libraries to link to
-JSLEXT="so";
-COPT="-shared" ;
-;;
-*powerpc-apple*)
-LD=$CC; LDOPT=-bundle;
-JSLEXT="jnilib";
-LLEXT="a";
-SLEXT="dylib";
-;;
-*) LD=$CC; LDOPT=-G; SLEXT="so";
-LLEXT="a";
-TARGETLIB="$target"
-;;
-esac
+hname="`hostname`"
+while test -n "$hname"; do
+  file=$srcdir/config/site-specific/host-$hname
+  { $as_echo "$as_me:$LINENO: checking for config $file" >&5
+$as_echo_n "checking for config $file... " >&6; }
+  if test -f "$file"; then
+    . $file
+    { $as_echo "$as_me:$LINENO: result: found" >&5
+$as_echo "found" >&6; }
+    break
+  fi
+  { $as_echo "$as_me:$LINENO: result: no" >&5
+$as_echo "no" >&6; }
+  hname_tmp=$hname
+  hname="`echo $hname | cut -d. -f2-99`"
+  test "$hname_tmp" = "$hname" && break
+done
 
 
 { $as_echo "$as_me:$LINENO: checking gzip compression" >&5
@@ -4999,8 +5059,9 @@ $as_echo "$as_me: error: JDK needed for compilation." >&2;}
     jdk_inc="`echo $withval |cut -f1 -d,`"
     if test -n "$jdk_inc"; then
       JAVAINC="$jdk_inc"
+      JAVAINC2="$jdk_inc/$JAVATARG"
       saved_CPPFLAGS="$CPPFLAGS"
-      CPPFLAGS="$CPPFLAGS $COPT -I$jdk_inc -I$jdk_inc/$TARGETLIB"
+      CPPFLAGS="$CPPFLAGS $COPT -I$jdk_inc -I$jdk_inc/$JAVATARG"
     fi
 
     # On IRIX 5.3, sys/types and inttypes.h are conflicting.
@@ -5522,105 +5583,7 @@ $as_echo "$as_me: error: jhdf5 path needed for compilation." >&2;}
 esac
 
 ac_cv_lib_JAVAINC=$JAVAINC
-
-
-case $target in
-alpha-dec-osf*.*)
-LD=$CC; LDOPT="-pthread -shared"; SLEXT="so";
-LLEXT="a";
-JSLEXT="so";
-COPT="-pthread -shared"; COPTNOSHARED=;
-JAVAINC2=$JAVAINC/alpha ; JAVATARG=alpha;
-;;
-*aix*)
-LD=$CC; LDOPT=-G; SLEXT="so";
-LLEXT="a";
-JSLEXT="so";
-COPT=-G; COPTNOSHARED=;
-JAVAINC2=$JAVAINC/aix ; JAVATARG=aix;
-;;
-*-*-solaris2*)
-LD=$CC; LDOPT=-G; SLEXT="so";
-LLEXT="a";
-JSLEXT="so";
-COPT=-G; COPTNOSHARED=;
-JAVAINC2=$JAVAINC/solaris ; JAVATARG=solaris;
-;;
-mips*-sgi-irix6*)
-LD=ld;
-LLEXT="a";  # the extension for the HDF and other libraries to link to
-JSLEXT="so";
-OS=`uname -r`;
-SYS=`uname -s`
-if test "$SYS" = "IRIX"; then
-LDOPT2="-check_registry /usr/lib/so_locations"; SLEXT="so";
-if test "$GCC" = "yes" ; then
-LDOPT="-shared";
-COPT="-shared" ; COPTNOSHARED="";
-else
-LDOPT="-n32 -shared";
-COPT="-n32 -shared" ; COPTNOSHARED="-n32";
-fi
-elif test "$SYS" = "IRIX64"; then
-LDOPT2="-check_registry /usr/lib/so_locations"; SLEXT="so";
-if test "$GCC" = "yes" ; then
-LDOPT="-shared";
-COPT="-shared" ; COPTNOSHARED="";
-else
-LDOPT="-n32 -shared";
-COPT="-n32 -shared" ; COPTNOSHARED="-n32";
-fi
-else
-echo "No such system: "$SYS
-fi
-JSLEXT="so";
-JAVAINC2=$JAVAINC/irix; JAVATARG=irix-$OS;
-;;
-x86_64-pc-linux*) LD=$CC; LDOPT=-shared;
-SLEXT="so";
-LLEXT="a";  # the extension for the HDF and other libraries to link to
-JSLEXT="so";
-COPT="-shared -Dx86_64 -fPIC" ;
-JAVAINC2=$JAVAINC/linux;
-JAVATARG=linux;
-;;
-ia64-pc-linux*) LD=$CC; LDOPT=-shared;
-SLEXT="so";
-LLEXT="a";  # the extension for the HDF and other libraries to link to
-JSLEXT="so";
-COPT="-shared -Dia64 -fPIC" ;
-JAVAINC2=$JAVAINC/linux;
-JAVATARG=linux;
-;;
-*-pc-linux*) LD=$CC; LDOPT=-shared;
-SLEXT="so";
-LLEXT="a";  # the extension for the HDF and other libraries to link to
-JSLEXT="so";
-COPT="-shared -DUNIX386" ;
-JAVAINC2=$JAVAINC/linux;
-JAVATARG=linux;
-;;
-*-freebsd*) LD=$CC; LDOPT=-shared;
-SLEXT="so";
-LLEXT="a";  # the extension for the HDF and other libraries to link to
-JSLEXT="so";
-COPT="-shared" ;
-JAVAINC2=$JAVAINC/freebsd;
-JAVATARG=freebsd;
-;;
-*powerpc-apple*)
-LD=$CC; LDOPT=-bundle;
-JSLEXT="jnilib";
-LLEXT="a";
-SLEXT="dylib";
-JAVAINC2=$JAVAINC/macosx;
-JAVATARG=macosx;
-;;
-*) LD=$CC; LDOPT=-G; SLEXT="so";
-JSLEXT="so";
-LLEXT="a";
-COPT=-shared; COPTNOSHSARED=; JAVAINC2=$JAVAINC/$target; JAVATARG=$TARGET ;;
-esac
+ac_cv_lib_JAVAINC2=$JAVAINC2
 
 
 

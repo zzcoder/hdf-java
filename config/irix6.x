@@ -169,7 +169,6 @@ else
   echo "No such system: "$SYS
 fi
 JSLEXT="so"
-JAVAINC2=$JAVAINC/irix
 JAVATARG=irix-$OS
 
 

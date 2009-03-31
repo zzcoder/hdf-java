@@ -37,5 +37,4 @@ SLEXT="so"
 LLEXT="a"  # the extension for the HDF and other libraries to link to
 JSLEXT="so"
 COPT="-shared -DUNIX386"
-JAVAINC2=$JAVAINC/linux
 JAVATARG=linux

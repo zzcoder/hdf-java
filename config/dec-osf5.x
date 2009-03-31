@@ -41,7 +41,6 @@ LLEXT="a"
 JSLEXT="so"
 COPT="-pthread -shared"
 COPTNOSHARED=
-JAVAINC2=$JAVAINC/alpha
 JAVATARG=alpha
 
 # DEC MPI-IO implementation has a bug, it cannot generate correct MPI
