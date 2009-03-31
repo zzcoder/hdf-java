@@ -32,7 +32,6 @@ LDOPT=-bundle
 JSLEXT="jnilib"
 LLEXT="a"
 SLEXT="dylib"
-JAVAINC2=$JAVAINC/macosx
 JAVATARG=macosx
 
 # Figure out compiler flags

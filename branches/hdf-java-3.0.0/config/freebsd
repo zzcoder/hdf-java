@@ -54,7 +54,6 @@ SLEXT="so"
 LLEXT="a"  # the extension for the HDF and other libraries to link to
 JSLEXT="so"
 COPT="-shared"
-JAVAINC2=$JAVAINC/freebsd
 JAVATARG=freebsd
 
 
