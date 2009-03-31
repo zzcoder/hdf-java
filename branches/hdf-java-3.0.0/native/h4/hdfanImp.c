@@ -17,8 +17,9 @@ extern "C" {
 #endif
 
 #include "hdf.h"
-#include "h4jni.h"
 #include <jni.h>
+#include "h4jni.h"
+
 
 
 JNIEXPORT jint JNICALL Java_hdf_h4_HDFLibrary_ANstart

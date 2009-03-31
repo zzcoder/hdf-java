@@ -17,8 +17,8 @@ extern "C" {
 #endif
 
 #include "hdf.h"
-#include "h4jni.h"
 #include <jni.h>
+#include "h4jni.h"
 
 
 JNIEXPORT jboolean JNICALL Java_hdf_h4_HDFDeprecated_DFANaddfds
