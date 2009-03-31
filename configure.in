@@ -4,14 +4,12 @@ dnl Copyright by The HDF Group.
 dnl Copyright by the Board of Trustees of the University of Illinois.
 dnl All rights reserved.
 dnl
-dnl This file is part of HDF-JAVA.  The full HDF-JAVA-JAVA copyright notice, including
-dnl terms governing use, modification, and redistribution, is contained in
-dnl the files COPYING and Copyright.html.  COPYING can be found at the root
-dnl of the source code distribution tree; Copyright.html can be found at the
-dnl root level of an installed copy of the electronic HDF-JAVA document set and
-dnl is linked from the top-level documents page.  It can also be found at
-dnl http://hdfgroup.org/HDF-JAVA/doc/Copyright.html.  If you do not have
-dnl access to either file, you may request a copy from help@hdfgroup.org.
+dnl This file is part of HDF Java Products. The full HDF Java copyright       *
+dnl notice, including terms governing use, modification, and redistribution,  *
+dnl is contained in the file, COPYING.  COPYING can be found at the root of   *
+dnl the source code distribution tree. You can also access it online  at      *
+dnl http://www.hdfgroup.org/products/licenses.html.  If you do not have       *
+dnl access to the file, you may request a copy from help@hdfgroup.org.        *
 
 dnl ----------------------------------------------------------------------
 dnl Initialize configure.
