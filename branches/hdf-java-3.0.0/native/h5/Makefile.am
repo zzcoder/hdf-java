@@ -34,7 +34,7 @@ libjh5_OBJECTS =  exceptionImp.o \
 
 
 .c.o:
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(COPT) $(CFLAGS) -c $< -o $@
 
 # make depends on the files specified in the objects macro defination
 all:  libjh5

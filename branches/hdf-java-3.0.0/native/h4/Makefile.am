@@ -73,7 +73,7 @@ libjh4_OBJECTS =  hdfstructsutil.o \
 	hdfnativeImp.o 
 
 .c.o:
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(COPT) $(CFLAGS) -c $< -o $@
 
 
 # make depends on the files specified in the objects macro defination
