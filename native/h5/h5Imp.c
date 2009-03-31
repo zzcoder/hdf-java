@@ -28,8 +28,8 @@ extern "C" {
  */
 
 #include "hdf5.h"
-#include "h5jni.h"
 #include <jni.h>
+#include "h5jni.h"
 
 /*
 #include <signal.h>

@@ -17,8 +17,8 @@ extern "C" {
 #endif
 
 #include "hdf.h"
-#include "h4jni.h"
 #include <jni.h>
+#include "h4jni.h"
 
 
 extern jboolean getOldCompInfo( JNIEnv *env, jobject ciobj, comp_info *cinf);
