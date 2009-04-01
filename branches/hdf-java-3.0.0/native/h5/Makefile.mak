@@ -31,7 +31,7 @@ CFLAGS = \
 
 LINKFLAG=/nologo /dll /incremental:no /machine:i386 
 
-OBJECTS=exceptionImp.obj H5.obj 
+OBJECTS=exceptionImp.obj h5Constants.obj H5.obj 
 
 MSDEV_LIBS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib \
 advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib \
@@ -40,8 +40,11 @@ advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
 all: $(OBJECTS)
 	$(LINKER) /OUT:"jhdf5.dll" $(LINKFLAG) $(OBJECTS) $(HDF5LIB) $(SZLIB) $(ZLIB) $(MSDEV_LIBS)
 
-exceptionImp.obj: exceptionImp.c
+h5Constants.obj: h5Constants.c
 	$(CC) $(CFLAGS) /Fo$@ $?
+	
+exceptionImp.obj: exceptionImp.c
+	$(CC) $(CFLAGS) /Fo$@ $?	
     
 H5.obj: H5.c
 	$(CC) $(CFLAGS) /Fo$@ $?
