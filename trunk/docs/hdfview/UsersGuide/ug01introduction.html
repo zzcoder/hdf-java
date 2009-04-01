@@ -215,10 +215,14 @@ The current implementation of HDFView has the following limitations:
      <li>Deleting object/attribute in HDF4 is not supported.</li>
      <li>HDFView does not support conversion between HDF4 and HDF5.</li>
      <li>HDFView supports only indexed image with RGB color model or 24-bit true color image. It does not support other color models such as CMYK and HSV.</li>
-     <li> HDFView cannot modify compressed HDF4 SDS if rank > 2. When SDS has more than two 
-      dimensions, HDFView reads and displays only a hyperslab (say first plane). If user 
-     tries to modify a value and save the file, new data is not saved because HDF4 
-     cannot do partial I/O on a compressed dataset. It can only overwrite the whole dataset</li>
+     <li>HDFView cannot modify compressed HDF4 SDS if rank is greater than 2
+         because the existing compression algorithms supported by HDF do not 
+         allow partial modification to a compressed datastream.</li>
+     <li>HDFView cannot modify HDF4 vdata. HDF4 only writes vdata by 
+         records while hdf-java reads data by vdata fields since hdf-java
+         does not support data structure of vdata record.</li>
+     <li>Writing nested compound data of HDF5 is limited to some
+         simple cases. HDFView does not write complex compound data.</li>
      </ul>
      
      <h2>
