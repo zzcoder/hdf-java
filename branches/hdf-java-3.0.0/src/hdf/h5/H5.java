@@ -138,7 +138,7 @@ import java.util.logging.Logger;
  *  It would be infeasible to declare a separate routine for
  *  every combination of number type and dimensionality.
  *  For that reason, the
- *  <a href="./ncsa.hdf.hdf5lib.HDFArray.html><b>HDFArray</b></a>
+ *  <a href="./hdf.h5.HDFArray.html><b>HDFArray</b></a>
  *  class is used to
  *  discover the type, shape, and size of the data array
  *  at run time, and to convert to and from a contiguous array
@@ -166,7 +166,7 @@ import java.util.logging.Logger;
  *  <div>
  *  The HDF-5 API defines a set of constants and enumerated values.
  *  Most of these values are available to Java programs via the class
- *  <a href="./ncsa.hdf.hdf5lib.HDF5Constants.html">
+ *  <a href="./hdf.h5.HDF5Constants.html">
  *  <b>HDF5Constants</b></a>.
  *  For example, the parameters for the h5open() call include two
  *  numeric values, <b><i>HDFConstants.H5F_ACC_RDWR</i></b> and
@@ -180,7 +180,7 @@ import java.util.logging.Logger;
  *  determined at run time by the HDF-5 C library.
  *  To support these parameters,
  *  the Java class
- *  <a href="./ncsa.hdf.hdf5lib.HDF5CDataTypes.html">
+ *  <a href="./hdf.h5.HDF5CDataTypes.html">
  *  <b>HDF5CDataTypes</b></a> looks up the values when
  *  initiated.  The values can be accessed as public variables of the
  *  Java class, such as:
@@ -201,13 +201,13 @@ import java.util.logging.Logger;
  *  </div>
  *  <div>
  *  The exceptions of the JHI5 are organized as sub-classes of the class
- *  <a href="./ncsa.hdf.hdf5lib.exceptions.HDF5Exception.html">
+ *  <a href="./hdf.h5.exceptions.HDF5Exception.html">
  *  <b>HDF5Exception</b></a>.  There are two subclasses of
  *  <b>HDF5Exception</b>,
- *  <a href="./ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException.html">
+ *  <a href="./hdf.h5.exceptions.HDF5LibraryException.html">
  *  <b>HDF5LibraryException</b></a>
  *  and
- *  <a href="./ncsa.hdf.hdf5lib.exceptions.HDF5JavaException.html">
+ *  <a href="./hdf.h5.exceptions.HDF5JavaException.html">
  *  <b>HDF5JavaException</b></a>. The sub-classes of the former
  *  represent errors from the HDF-5 C library, while sub-classes of the latter
  *  represent errors in the JHI5 wrapper and support code.
@@ -222,24 +222,24 @@ import java.util.logging.Logger;
  *
  *  @version HDF5 1.2 <br />
  *  <b>See also:
- *  <a href ="./ncsa.hdf.hdf5lib.HDFArray.html">
- *  </b> ncsa.hdf.hdf5lib.HDFArray</a><br />
- *  <a href ="./ncsa.hdf.hdf5lib.HDF5Constants.html">
- *  </b> ncsa.hdf.hdf5lib.HDF5Constants</a><br />
- *  <a href ="./ncsa.hdf.hdf5lib.HDF5CDataTypes.html">
- *  </b> ncsa.hdf.hdf5lib.HDF5CDataTypes</a><br />
- *  <a href ="./ncsa.hdf.hdf5lib.HDF5Exception.html">
- *  ncsa.hdf.hdf5lib.HDF5Exception<br />
+ *  <a href ="./hdf.h5.HDFArray.html">
+ *  </b> hdf.h5.HDFArray</a><br />
+ *  <a href ="./hdf.h5.HDF5Constants.html">
+ *  </b> hdf.h5.HDF5Constants</a><br />
+ *  <a href ="./hdf.h5.HDF5CDataTypes.html">
+ *  </b> hdf.h5.HDF5CDataTypes</a><br />
+ *  <a href ="./hdf.h5.HDF5Exception.html">
+ *  hdf.h5.HDF5Exception<br />
  *  <a href="http://hdf.ncsa.uiuc.edu/HDF5/">
  *  http://hdf.ncsa.uiuc.edu/HDF5"</a>
  *  </div>
  **/
 public class H5 {
 
-    public final static String H5PATH_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.hdf5lib";
+    public final static String H5PATH_PROPERTY_KEY = "hdf.h5";
     
     //add system property to load library by name from library path, via System.loadLibrary() 
-    public final static String H5_LIBRARY_NAME_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.loadLibraryName"; 
+    public final static String H5_LIBRARY_NAME_PROPERTY_KEY = "hdf.h5.loadLibraryName"; 
 
     private static Logger s_logger; 
     private static String s_libraryName; 
@@ -249,7 +249,7 @@ public class H5 {
         boolean done = false;
         
         // use default logger, since spanning sources 
-        s_logger = Logger.getLogger("ncsa.hdf.hdf5lib"); 
+        s_logger = Logger.getLogger("hdf.h5"); 
         s_logger.setLevel(Level.INFO); 
         // first try loading library by name from user supplied library path 
         s_libraryName = System.getProperty(H5_LIBRARY_NAME_PROPERTY_KEY,null); 
@@ -323,9 +323,9 @@ public class H5 {
          *     This will crash immediately if not the
          *     specified version.
          */
-        Integer majnum = Integer.getInteger("ncsa.hdf.hdf5lib.H5.hdf5maj",null);
-        Integer minnum = Integer.getInteger("ncsa.hdf.hdf5lib.H5.hdf5min",null);
-        Integer relnum = Integer.getInteger("ncsa.hdf.hdf5lib.H5.hdf5rel",null);
+        Integer majnum = Integer.getInteger("hdf.h5.H5.hdf5maj",null);
+        Integer minnum = Integer.getInteger("hdf.h5.H5.hdf5min",null);
+        Integer relnum = Integer.getInteger("hdf.h5.H5.hdf5rel",null);
         if ((majnum != null) && (minnum != null) && (relnum != null)) {
             H5.H5check_version(majnum.intValue(),minnum.intValue(),relnum.intValue());
         }
@@ -493,19 +493,5 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native void H5Eclear() throws HDF5LibraryException;
-
-
-    ////////////////////////////////////////////////////////////////////
-    //                                                                //
-    //             New APIs for HDF5Index                             //
-    //                 October 10, 2005                               //
-    ////////////////////////////////////////////////////////////////////
-
-    public synchronized static native int H5INcreate (String grp_name, int grp_loc_id,
-            int property_list, int data_loc_id, String data_loc_name, String field_name, long max_mem_size);
-
-    public synchronized static native int H5INquery (int dset_id, String keys[],
-            Object ubounds, Object lbounds, int nkeys);
-
 }
 
