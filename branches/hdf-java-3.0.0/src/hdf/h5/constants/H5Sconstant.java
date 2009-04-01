@@ -82,5 +82,4 @@ public class H5Sconstant {
   final public static int H5S_SELECT_XOR = H5.J2C( JH5S_SELECT_XOR );
   final public static int H5S_SIMPLE = H5.J2C( JH5S_SIMPLE );
   final public static int H5S_UNLIMITED = H5.J2C( JH5S_UNLIMITED );
-
 }

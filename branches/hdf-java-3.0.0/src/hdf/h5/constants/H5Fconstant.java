@@ -78,5 +78,8 @@ public class H5Fconstant {
   final public static int H5F_SCOPE_GLOBAL = H5.J2C( JH5F_SCOPE_GLOBAL );
   final public static int H5F_SCOPE_LOCAL = H5.J2C( JH5F_SCOPE_LOCAL );
   final public static int H5F_UNLIMITED = H5.J2C( JH5F_UNLIMITED );
-
+  
+  /* Value passed to H5Pset_elink_acc_flags to cause flags to be taken from the
+   * parent file. */
+  public static final int H5F_ACC_DEFAULT = 0xffff;   /*ignore setting on lapl     */
 }

@@ -4,6 +4,7 @@
 package hdf.h5;
 
 import static org.junit.Assert.*;
+import hdf.h5.constants.H5Fconstant;
 
 import org.junit.After;
 import org.junit.Before;
@@ -34,7 +35,63 @@ public class TestH5 {
      */
     @Test
     public void testJ2C() {
-        fail("Not yet implemented");
+        int H5F_ACC_RDONLY  = 0x0000;
+        int H5F_ACC_RDWR    = 0x0001;
+        int H5F_ACC_TRUNC   = 0x0002;
+        int H5F_ACC_EXCL    = 0x0004;
+        int H5F_ACC_DEBUG   = 0x0008;
+        int H5F_ACC_CREAT   = 0x0010;
+        int H5F_ACC_DEFAULT = 0xffff;
+        int H5F_OBJ_FILE    = 0x0001;
+        int H5F_OBJ_DATASET = 0x0002;
+        int H5F_OBJ_GROUP   = 0x0004;
+        int H5F_OBJ_DATATYPE = 0x0008;
+        int H5F_OBJ_ATTR    = 0x0010;
+        int H5F_OBJ_ALL     = H5F_OBJ_FILE|H5F_OBJ_DATASET|H5F_OBJ_GROUP|H5F_OBJ_DATATYPE|H5F_OBJ_ATTR;
+        int H5F_OBJ_LOCAL   = 0x0020;
+        
+        int definedValues[] = {
+                H5F_ACC_RDONLY,
+                H5F_ACC_RDWR,
+                H5F_ACC_TRUNC,
+                H5F_ACC_EXCL,
+                H5F_ACC_DEBUG,
+                H5F_ACC_CREAT,
+                H5F_ACC_DEFAULT,
+                H5F_OBJ_FILE,
+                H5F_OBJ_DATASET,
+                H5F_OBJ_GROUP,
+                H5F_OBJ_DATATYPE,
+                H5F_OBJ_ATTR,
+                H5F_OBJ_ALL,
+                H5F_OBJ_LOCAL
+            };
+        
+        int j2cValues[] = {
+                H5Fconstant.H5F_ACC_RDONLY,
+                H5Fconstant.H5F_ACC_RDWR,
+                H5Fconstant.H5F_ACC_TRUNC,
+                H5Fconstant.H5F_ACC_EXCL,
+                H5Fconstant.H5F_ACC_DEBUG,
+                H5Fconstant.H5F_ACC_CREAT,
+                H5Fconstant.H5F_ACC_DEFAULT,
+                H5Fconstant.H5F_OBJ_FILE,
+                H5Fconstant.H5F_OBJ_DATASET,
+                H5Fconstant.H5F_OBJ_GROUP,
+                H5Fconstant.H5F_OBJ_DATATYPE,
+                H5Fconstant.H5F_OBJ_ATTR,
+                H5Fconstant.H5F_OBJ_ALL,
+                H5Fconstant.H5F_OBJ_LOCAL
+            };
+        
+        for (int i=0; i<definedValues.length; i++) {
+System.out.println(i+"\t "+definedValues[i]) ;           
+            assertEquals(definedValues[i], j2cValues[i]);
+        }
+        
+        assertFalse(H5F_ACC_RDONLY == H5Fconstant.H5F_ACC_RDONLY);
+        assertFalse(H5F_OBJ_FILE == H5Fconstant.H5F_OBJ_GROUP);
+
     }
 
     /**

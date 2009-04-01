@@ -46,4 +46,7 @@ public class H5constant {
   final public static int H5_SZIP_ALLOW_K13_OPTION_MASK = H5.J2C( JH5_SZIP_ALLOW_K13_OPTION_MASK );
   final public static int H5_SZIP_CHIP_OPTION_MASK = H5.J2C( JH5_SZIP_CHIP_OPTION_MASK );
 
+  public static final int  H5_ITER_ERROR   = -1;
+  public static final int  H5_ITER_CONT    = 0;
+  public static final int  H5_ITER_STOP    = 1;
 }
