@@ -22,12 +22,12 @@ extern "C" {
 #endif
 
 #include "hdf5.h"
-#include <stdio.h>
+#include "H5version.h"
 #include "jni.h"
 
 #ifdef __cplusplus
 #define ENVPTR (env)
-#define ENVPAR 
+#define ENVPAR
 #else
 #define ENVPTR (*env)
 #define ENVPAR env,
@@ -67,7 +67,11 @@ int getMinorErrorNumber();
 
 /* get the major and minor error numbers on the top of the erroe stack */
 static
-herr_t walk_error_callback(int n, H5E_error_t *err_desc, void *_err_nums)
+#ifdef H5_USE_16_API
+herr_t walk_error_callback(int n, H5E_error1_t *err_desc, void *_err_nums)
+#else
+herr_t walk_error_callback(unsigned n, const H5E_error2_t *err_desc, void *_err_nums)
+#endif
 {
     H5E_num_t *err_nums = (H5E_num_t *)_err_nums;
 
@@ -89,10 +93,14 @@ char *defineHDF5LibraryException(int maj_num);
  * Signature: ()I
  *
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5error_1off
+JNIEXPORT jint JNICALL Java_hdf_h5_H5_H5error_1off
   (JNIEnv *env, jclass clss )
 {
+#ifdef H5_USE_16_API
     return H5Eset_auto(NULL, NULL);
+#else
+    return H5Eset_auto(H5E_DEFAULT, NULL, NULL);
+#endif
 }
 
 
@@ -103,19 +111,28 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5error_1off
  *
  *  Call the HDF-5 library to print the HDF-5 error stack to 'file_name'.
  */
-JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_printStackTrace0
+JNIEXPORT void JNICALL Java_hdf_h5_exceptions_HDF5LibraryException_printStackTrace0
   (JNIEnv *env, jobject obj, jstring file_name)
 {
     FILE *stream;
     char *file;
 
-    if (file_name == NULL)
+    if (file_name == NULL) {
+#ifdef H5_USE_16_API
         H5Eprint(stderr);
+#else
+        H5Eprint(H5E_DEFAULT, stderr);
+#endif
+    }
     else
     {
         file = (char *)ENVPTR->GetStringUTFChars(ENVPAR file_name,0);
         stream = fopen(file, "a+");
-        H5Eprint(stream);
+#ifdef H5_USE_16_API
+        H5Eprint(stderr);
+#else
+        H5Eprint(H5E_DEFAULT, stderr);
+#endif
         ENVPTR->ReleaseStringUTFChars(ENVPAR file_name, file);
         if (stream) fclose(stream);
     }
@@ -132,12 +149,16 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_pri
  *  library.  Later releases will have a public interface for this
  *  purpose.
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_getMajorErrorNumber
+JNIEXPORT jint JNICALL Java_hdf_h5_exceptions_HDF5LibraryException_getMajorErrorNumber
   (JNIEnv *env, jobject obj)
 {
     H5E_num_t err_nums;
 
+#ifdef H5_USE_16_API
     H5Ewalk(H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
+#else
+    H5Ewalk(H5E_DEFAULT, H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
+#endif
 
     return (int) err_nums.maj_num;
 }
@@ -146,7 +167,11 @@ int getMajorErrorNumber()
 {
     H5E_num_t err_nums;
 
+#ifdef H5_USE_16_API
     H5Ewalk(H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
+#else
+    H5Ewalk(H5E_DEFAULT, H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
+#endif
 
     return (int) err_nums.maj_num;
 }
@@ -162,7 +187,7 @@ int getMajorErrorNumber()
  *  library.  Later releases will have a public interface for this
  *  purpose.
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_getMinorErrorNumber
+JNIEXPORT jint JNICALL Java_hdf_h5_exceptions_HDF5LibraryException_getMinorErrorNumber
   (JNIEnv *env, jobject obj)
 {
     return (jint) getMinorErrorNumber();
@@ -172,7 +197,11 @@ int getMinorErrorNumber()
 {
     H5E_num_t err_nums;
 
+#ifdef H5_USE_16_API
     H5Ewalk(H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
+#else
+    H5Ewalk(H5E_DEFAULT, H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
+#endif
 
     return (int) err_nums.min_num;
 }
@@ -509,49 +538,49 @@ char *defineHDF5LibraryException(int maj_num)
     H5E_major_t err_num = (H5E_major_t) maj_num;
 
     if (H5E_ARGS == err_num)
-        return "ncsa/hdf/hdf5lib/exceptions/HDF5FunctionArgumentException";
+        return "hdf/h5/exceptions/HDF5FunctionArgumentException";
     else if (H5E_RESOURCE == err_num)
-        return "ncsa/hdf/hdf5lib/exceptions/HDF5ResourceUnavailableException";
+        return "hdf/h5/exceptions/HDF5ResourceUnavailableException";
     else if (H5E_INTERNAL == err_num)
-        return "ncsa/hdf/hdf5lib/exceptions/HDF5InternalErrorException";
+        return "hdf/h5/exceptions/HDF5InternalErrorException";
     else if (H5E_FILE == err_num)
-        return "ncsa/hdf/hdf5lib/exceptions/HDF5FileInterfaceException";
+        return "hdf/h5/exceptions/HDF5FileInterfaceException";
     else if (H5E_IO == err_num)
-        return "ncsa/hdf/hdf5lib/exceptions/HDF5LowLevelIOException";
+        return "hdf/h5/exceptions/HDF5LowLevelIOException";
     else if (H5E_FUNC == err_num)
-        return "ncsa/hdf/hdf5lib/exceptions/HDF5FunctionEntryExitException";
+        return "hdf/h5/exceptions/HDF5FunctionEntryExitException";
     else if (H5E_ATOM == err_num)
-        return "ncsa/hdf/hdf5lib/exceptions/HDF5AtomException";
+        return "hdf/h5/exceptions/HDF5AtomException";
     else if (H5E_CACHE == err_num)
-        return "ncsa/hdf/hdf5lib/exceptions/HDF5MetaDataCacheException";
+        return "hdf/h5/exceptions/HDF5MetaDataCacheException";
     else if (H5E_BTREE == err_num)
-        return "ncsa/hdf/hdf5lib/exceptions/HDF5BtreeException";
+        return "hdf/h5/exceptions/HDF5BtreeException";
     else if (H5E_SYM == err_num)
-        return "ncsa/hdf/hdf5lib/exceptions/HDF5SymbolTableException";
+        return "hdf/h5/exceptions/HDF5SymbolTableException";
     else if (H5E_HEAP == err_num)
-        return "ncsa/hdf/hdf5lib/exceptions/HDF5HeapException";
+        return "hdf/h5/exceptions/HDF5HeapException";
     else if (H5E_OHDR == err_num)
-        return "ncsa/hdf/hdf5lib/exceptions/HDF5ObjectHeaderException";
+        return "hdf/h5/exceptions/HDF5ObjectHeaderException";
     else if (H5E_DATATYPE == err_num)
-        return "ncsa/hdf/hdf5lib/exceptions/HDF5DatatypeInterfaceException";
+        return "hdf/h5/exceptions/HDF5DatatypeInterfaceException";
     else if (H5E_DATASPACE == err_num)
-        return "ncsa/hdf/hdf5lib/exceptions/HDF5DataspaceInterfaceException";
+        return "hdf/h5/exceptions/HDF5DataspaceInterfaceException";
     else if (H5E_DATASET == err_num)
-        return "ncsa/hdf/hdf5lib/exceptions/HDF5DatasetInterfaceException";
+        return "hdf/h5/exceptions/HDF5DatasetInterfaceException";
     else if (H5E_STORAGE == err_num)
-        return "ncsa/hdf/hdf5lib/exceptions/HDF5DataStorageException";
+        return "hdf/h5/exceptions/HDF5DataStorageException";
     else if (H5E_PLIST == err_num)
-        return "ncsa/hdf/hdf5lib/exceptions/HDF5PropertyListInterfaceException";
+        return "hdf/h5/exceptions/HDF5PropertyListInterfaceException";
     else if (H5E_ATTR == err_num)
-        return "ncsa/hdf/hdf5lib/exceptions/HDF5AttributeException";
+        return "hdf/h5/exceptions/HDF5AttributeException";
     else if (H5E_PLINE == err_num)
-        return "ncsa/hdf/hdf5lib/exceptions/HDF5DataFiltersException";
+        return "hdf/h5/exceptions/HDF5DataFiltersException";
     else if (H5E_EFL == err_num)
-        return "ncsa/hdf/hdf5lib/exceptions/HDF5ExternalFileListException";
+        return "hdf/h5/exceptions/HDF5ExternalFileListException";
     else if (H5E_REFERENCE == err_num)
-        return "ncsa/hdf/hdf5lib/exceptions/HDF5ReferenceException";
+        return "hdf/h5/exceptions/HDF5ReferenceException";
 
-    return "ncsa/hdf/hdf5lib/exceptions/HDF5LibraryException";
+    return "hdf/h5/exceptions/HDF5LibraryException";
 }
 
 #ifdef __cplusplus

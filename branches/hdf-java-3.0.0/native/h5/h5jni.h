@@ -11,6 +11,8 @@
  * access to the file, you may request a copy from help@hdfgroup.org.        *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "H5version.h"
+
 #ifdef __cplusplus
 #define ENVPTR (env)
 #define ENVPAR
