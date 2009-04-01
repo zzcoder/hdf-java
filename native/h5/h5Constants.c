@@ -25,7 +25,7 @@ extern "C" {
  * Method:    J2c
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_J2C
+JNIEXPORT jint JNICALL Java_hdf_h5_H5_J2C
   (JNIEnv *env, jclass clss, jint java_constant)
 {
     switch (java_constant)
