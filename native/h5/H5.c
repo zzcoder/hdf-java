@@ -33,6 +33,49 @@ extern "C" {
 #include "H5.h"
 
 
+	/*
+	 * Class:     hdf_h5_H5
+	 * Method:    H5open
+	 * Signature: ()V
+	 */
+	JNIEXPORT void JNICALL Java_hdf_h5_H5_H5open
+	  (JNIEnv *env, jclass cls)
+	{
+	    herr_t retVal = -1;
+	    retVal =  H5open();
+	    if (retVal < 0) {
+	        h5libraryError(env);
+	    }
+	}
+
+	/*
+	 * Class:     hdf_h5_H5
+	 * Method:    H5dont_atexit
+	 * Signature: ()V
+	 */
+	JNIEXPORT void JNICALL Java_hdf_h5_H5_H5dont_1atexit
+	  (JNIEnv *env, jclass cls)
+	{
+	    int retVal = H5dont_atexit();
+	    if (retVal < 0) {
+	        h5libraryError(env);
+	    }
+	}
+
+	/*
+	 * Class:     hdf_h5_H5
+	 * Method:    H5check_version
+	 * Signature: (III)V
+	 */
+	JNIEXPORT void JNICALL Java_hdf_h5_H5_H5check_1version
+	  (JNIEnv *env, jclass cls, jint majnum, jint minnum, jint relnum)
+	{
+	    int retVal = H5check_version((unsigned)majnum, (unsigned)minnum, (unsigned)relnum);
+
+	    if (retVal < 0) {
+	        h5libraryError(env);
+	    }
+	}
 
 #ifdef __cplusplus
 }
