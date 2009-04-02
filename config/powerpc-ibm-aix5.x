@@ -39,8 +39,6 @@ fi
 # Default java compiler flags.
 LD=$CC
 LDOPT=-G
-SLEXT="so"
-LLEXT="a"
 JSLEXT="so"
 COPT=-G
 COPTNOSHARED=

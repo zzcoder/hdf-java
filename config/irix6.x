@@ -137,13 +137,11 @@ fi
 
 # Default java compiler flags.
 LD=ld
-LLEXT="a"  # the extension for the HDF and other libraries to link to
 JSLEXT="so" 
 OS=`uname -r`
 SYS=`uname -s`
 if test "$SYS" = "IRIX"; then
   LDOPT2="-check_registry /usr/lib/so_locations"
-  SLEXT="so"
   if test "$GCC" = "yes";  then
     LDOPT="-shared"
     COPT="-shared"
@@ -155,7 +153,6 @@ if test "$SYS" = "IRIX"; then
   fi
 elif test "$SYS" = "IRIX64"; then
   LDOPT2="-check_registry /usr/lib/so_locations" 
-  SLEXT="so"
   if test "$GCC" = "yes";  then
     LDOPT="-shared"
     COPT="-shared"
