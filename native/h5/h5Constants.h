@@ -12,7 +12,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /*
- *  The Java constants defined at ncsa.hdf.hdf5lib.HDF5Constants.java
+ *  The Java constants defined at hdf.hdf5.HDF5Constants.java
  *
  *  The values are arbitrary, but it is very important that this
  *  file has the same values as HDF5Constants.java.
