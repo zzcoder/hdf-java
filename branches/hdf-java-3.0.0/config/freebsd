@@ -50,8 +50,6 @@ fi
 # Default java compiler flags.
 LD=$CC
 LDOPT=-shared
-SLEXT="so"
-LLEXT="a"  # the extension for the HDF and other libraries to link to
 JSLEXT="so"
 COPT="-shared"
 JAVATARG=freebsd

@@ -36,9 +36,6 @@ ARCH=${ARCH:='-arch host -tune host'}
 # Default java compiler flags.
 LD=$CC
 LDOPT="-pthread -shared"
-SLEXT="so"
-LLEXT="a"
-JSLEXT="so"
 COPT="-pthread -shared"
 COPTNOSHARED=
 JAVATARG=alpha

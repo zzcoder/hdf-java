@@ -30,8 +30,6 @@ fi
 LD=$CC
 LDOPT=-bundle
 JSLEXT="jnilib"
-LLEXT="a"
-SLEXT="dylib"
 JAVATARG=macosx
 
 # Figure out compiler flags

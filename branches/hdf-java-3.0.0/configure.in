@@ -45,7 +45,7 @@ dnl Developers should './configure --enable-maintainer-mode' to turn on
 dnl rebuild rules.
 AM_MAINTAINER_MODE
 
-
+AC_PROG_LIBTOOL
 AC_CANONICAL_SYSTEM
 
 dnl ----------------------------------------------------------------------
