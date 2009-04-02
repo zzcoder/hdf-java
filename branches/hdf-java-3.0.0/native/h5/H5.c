@@ -23,7 +23,7 @@ extern "C" {
  *  analogous arguments and return codes.
  *
  *  For details of the HDF libraries, see the HDF Documentation at:
- *   http://hdf.ncsa.uiuc.edu/HDF5/doc/
+ *   http://www.hdfgroup.org/HDF5/doc/
  *
  */
 

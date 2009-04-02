@@ -88,7 +88,7 @@ char *defineHDF5LibraryException(int maj_num);
 
 
 /*
- * Class:     ncsa_hdf_hdf5lib_exceptions_HDF5Library
+ * Class:     hdf_hdf5_exceptions_HDF5Library
  * Method:    H5error_off
  * Signature: ()I
  *
@@ -105,7 +105,7 @@ JNIEXPORT jint JNICALL Java_hdf_h5_H5_H5error_1off
 
 
 /*
- * Class:     ncsa_hdf_hdf5lib_exceptions_HDFLibraryException
+ * Class:     hdf_hdf5_exceptions_HDFLibraryException
  * Method:    printStackTrace0
  * Signature: (Ljava/lang/Object;)V
  *
@@ -139,7 +139,7 @@ JNIEXPORT void JNICALL Java_hdf_h5_exceptions_HDF5LibraryException_printStackTra
 }
 
 /*
- * Class:     ncsa_hdf_hdf5lib_exceptions_HDFLibraryException
+ * Class:     hdf_hdf5_exceptions_HDFLibraryException
  * Method:    getMajorErrorNumber
  * Signature: ()I
  *
@@ -177,7 +177,7 @@ int getMajorErrorNumber()
 }
 
 /*
- * Class:     ncsa_hdf_hdf5lib_exceptions_HDFLibraryException
+ * Class:     hdf_hdf5_exceptions_HDFLibraryException
  * Method:    getMinorErrorNumber
  * Signature: ()I
  *

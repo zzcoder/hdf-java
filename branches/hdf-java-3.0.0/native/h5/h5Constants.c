@@ -20,8 +20,8 @@ extern "C" {
 #include <jni.h>
 
 /*
- * Class:     ncsa_hdf_hdf5lib_H5Header converts Java constants defined
- *            at ncsa.hdf.hdf5lib.HDF5Constants.java to HDF5 runtime global variables.
+ * Class:     hdf_hdf5_H5Header converts Java constants defined
+ *            at hdf_hdf5.HDF5Constants.java to HDF5 runtime global variables.
  * Method:    J2c
  * Signature: (I)I
  */

@@ -23,7 +23,7 @@ extern "C" {
  *  analogous arguments and return codes.
  *
  *  For details of the HDF libraries, see the HDF Documentation at:
- *   http://hdf.ncsa.uiuc.edu/HDF5/doc/
+ *   http://www.hdfgroup.org/HDF5/doc/
  *
  */
 
@@ -36,11 +36,11 @@ extern "C" {
 */
 
 /*
- * Class:     ncsa_hdf_hdf5lib_H5
+ * Class:     hdf_hdf5_H5
  * Method:    H5open
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5open
+JNIEXPORT jint JNICALL Java_hdf_hdf5_H5_H5open
   (JNIEnv *env, jclass clss)
 {
     herr_t retVal = -1;
@@ -52,11 +52,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5open
 }
 
 /*
- * Class:     ncsa_hdf_hdf5lib_H5
+ * Class:     hdf_hdf5_H5
  * Method:    H5close
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5close
+JNIEXPORT jint JNICALL Java_hdf_hdf5_H5_H5close
   (JNIEnv *env, jclass clss)
 {
     herr_t retVal = -1;
@@ -68,11 +68,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5close
 }
 
 /*
- * Class:     ncsa_hdf_hdf5lib_H5
+ * Class:     hdf_hdf5_H5
  * Method:    H5dont_atexit
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5dont_1atexit
+JNIEXPORT jint JNICALL Java_hdf_hdf5_H5_H5dont_1atexit
   (JNIEnv *env, jclass clss)
 {
     int retVal = H5dont_atexit();
@@ -83,11 +83,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5dont_1atexit
 }
 
 /*
- * Class:     ncsa_hdf_hdf5lib_H5
+ * Class:     hdf_hdf5_H5
  * Method:    H5get_libversion
  * Signature: ([I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5get_1libversion
+JNIEXPORT jint JNICALL Java_hdf_hdf5_H5_H5get_1libversion
   (JNIEnv *env, jclass clss, jintArray libversion)
 {
     unsigned *theArray = NULL;
@@ -131,11 +131,11 @@ void catch_abrt()
 }
 #endif
 /*
- * Class:     ncsa_hdf_hdf5lib_H5
+ * Class:     hdf_hdf5_H5
  * Method:    H5check_version
  * Signature: (III)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5check_1version
+JNIEXPORT jint JNICALL Java_hdf_hdf5_H5_H5check_1version
   (JNIEnv *env, jclass clss, jint majnum, jint minnum, jint relnum)
 {
     int status;
@@ -176,18 +176,18 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5check_1version
  *  there is no separate file h5eImp.c
  */
 /*
- * Class:     ncsa_hdf_hdf5lib_H5
+ * Class:     hdf_hdf5_H5
  * Method:    H5check_version
  * Signature: (III)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eclear
+JNIEXPORT jint JNICALL Java_hdf_hdf5_H5_H5Eclear
   (JNIEnv *env, jclass clss )
 {
     herr_t res = -1;
     res = H5Eclear() ;
     if (res < 0) {
         h5raiseException( env,
-        "ncsa/hdf/hdf5lib/exceptions/HDF5LibraryException",
+        "hdf/hdf5/exceptions/HDF5LibraryException",
         "H5Eclear Failed");
 
     }
@@ -195,7 +195,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eclear
 }
 
 /*
- * Class:     ncsa_hdf_hdf5lib_H5
+ * Class:     hdf_hdf5_H5
  * Method:    H5garbage_collect
  * Signature: ()I
  *
@@ -203,7 +203,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eclear
  *     of HDF5, configure with --enable-hdf5_1_2_1
  *
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5garbage_1collect
+JNIEXPORT jint JNICALL Java_hdf_hdf5_H5_H5garbage_1collect
   (JNIEnv *env, jclass clss)
 {
     herr_t retVal = -1;
@@ -217,13 +217,13 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5garbage_1collect
 }
 
 /*
- * Class:     ncsa_hdf_hdf5lib_H5
+ * Class:     hdf_hdf5_H5
  * Method:    H5set_free_list_limits(int reg_global_lim, int reg_list_lim,
  *                int arr_global_lim, int arr_list_lim, int blk_global_lim,
  *                int blk_list_lim )
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5set_1free_1list_1limits
+JNIEXPORT jint JNICALL Java_hdf_hdf5_H5_H5set_1free_1list_1limits
   (JNIEnv *env, jclass clss,jint reg_global_lim, jint reg_list_lim,
   jint arr_global_lim, jint arr_list_lim, jint blk_global_lim, jint blk_list_lim )
 {
