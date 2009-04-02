@@ -32,7 +32,7 @@ public class H5A {
 //        String attr_name/*in*/, H5A_info_t ainfo/*in*/, Pointer op_data/*in,out*/);
 //  }
   /**
-   *  H5Acreate2 creates an attribute which is attached to the
+   *  H5Acreate creates an attribute which is attached to the
    *  object specified with loc_id.
    *
    *  @param loc_id    IN: Object (dataset, group, or named datatype) to be attached to.
@@ -47,9 +47,22 @@ public class H5A {
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    *  @exception NullPointerException - name is null.
    **/
-  public synchronized static native int H5Acreate2(int loc_id, String attr_name, int type_id,
+  public static int H5Acreate(int loc_id, String attr_name, int type_id,
         int space_id, int acpl_id, int aapl_id)
-      throws HDF5LibraryException, NullPointerException;
+      throws HDF5LibraryException, NullPointerException
+  {
+    return H5Acreate2(loc_id, attr_name, type_id, space_id, acpl_id, aapl_id);
+  }
+  /**
+   *  H5Acreate2 creates an attribute which is attached to the
+   *  object specified with loc_id.
+   *
+   *  @see public static int H5Acreate(int loc_id, String attr_name, int type_id,
+   *     int space_id, int acpl_id, int aapl_id)
+   **/
+  public synchronized static native int H5Acreate2(int loc_id, String attr_name, int type_id,
+      int space_id, int acpl_id, int aapl_id)
+    throws HDF5LibraryException, NullPointerException;
 
   /**
    *  H5Acreate_by_name creates an attribute which is attached to the
@@ -449,6 +462,12 @@ public class H5A {
   public synchronized static native void H5Arename_by_name(int loc_id, String obj_name,
         String old_attr_name, String new_attr_name, int lapl_id)
       throws HDF5LibraryException, NullPointerException;
+//  public static int H5Aiterate(int loc_id, H5_INDEX idx_type,
+//        H5_ITER order, LongByReference idx, H5A_operator2_t op, Pointer op_data)
+//  throws HDF5LibraryException, NullPointerException
+//  {
+//    return H5Aiterate2(loc_id, idx_type, order, idx, op, op_data);
+//  }
 //  public synchronized static native int H5Aiterate2(int loc_id, H5_INDEX idx_type,
 //        H5_ITER order, LongByReference idx, H5A_operator2_t op, Pointer op_data)
 //  throws HDF5LibraryException, NullPointerException;
@@ -548,4 +567,50 @@ public class H5A {
    */
   public synchronized static native int H5Acopy(int src_aid, int dst_aid)
     throws HDF5LibraryException;
+  
+  /**
+   *  H5Acreate creates an attribute which is attached to the
+   *  object specified with loc_id.
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Acreate(int, String, int, int, int, int)}
+   *
+   *  @param loc_id    IN: Object (dataset, group, or named datatype) to be attached to.
+   *  @param attr_name IN: Name of attribute to create.
+   *  @param type_id   IN: Identifier of datatype for attribute.
+   *  @param space_id  IN: Identifier of dataspace for attribute.
+   *  @param acpl_id   IN: Identifier of creation property list (currently not used).
+   *
+   *  @return an attribute identifier if successful
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - name is null.
+   **/
+  public static int H5Acreate(int loc_id, String attr_name, int type_id,
+        int space_id, int acpl_id)
+      throws HDF5LibraryException, NullPointerException
+  {
+    return H5Acreate1(loc_id, attr_name, type_id, space_id, acpl_id);
+  }
+  /**
+   *  H5Acreate1 creates an attribute which is attached to the
+   *  object specified with loc_id.
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Acreate2(int, String, int, int, int, int)}
+   *
+   *  @see public static int H5Acreate(int loc_id, String attr_name, int type_id,
+   *     int space_id, int acpl_id)
+   **/
+  private synchronized static native int H5Acreate1(int loc_id, String attr_name, int type_id,
+      int space_id, int acpl_id)
+    throws HDF5LibraryException, NullPointerException;
+//  public static int H5Aiterate(int loc_id, LongByReference idx, 
+//    H5A_operator1_t op, Pointer op_data)
+//  throws HDF5LibraryException, NullPointerException
+//  {
+//    return H5Aiterate1(loc_id, idx, op, op_data);
+//  }
+//  public synchronized static native int H5Aiterate1(int loc_id, 
+//    LongByReference idx, H5A_operator1_t op, Pointer op_data)
+//  throws HDF5LibraryException, NullPointerException;
+
 }

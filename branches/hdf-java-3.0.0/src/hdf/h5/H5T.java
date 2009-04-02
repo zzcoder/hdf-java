@@ -117,7 +117,7 @@ public class H5T {
   throws HDF5LibraryException;
 
   /**
-   *  H5Tcommit2 saves a transient datatype as an immutable named datatype in a file.
+   *  H5Tcommit saves a transient datatype as an immutable named datatype in a file.
    *
    *  @param loc_id   IN: Location identifier.
    *  @param name     IN: Name given to committed datatype.
@@ -131,12 +131,24 @@ public class H5T {
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    *  @exception NullPointerException - name is null.
    **/
+  public static void H5Tcommit(int loc_id, String name, int type_id, int lcpl_id,
+      int tcpl_id, int tapl_id)
+  throws HDF5LibraryException, NullPointerException
+  {
+    H5Tcommit2( loc_id, name, type_id, lcpl_id, tcpl_id, tapl_id);
+  }
+  /**
+   *  H5Tcommit2 saves a transient datatype as an immutable named datatype in a file.
+   *
+   *  @see public static void H5Tcommit(int loc_id, String name, int type_id, int lcpl_id,
+   *    int tcpl_id, int tapl_id)
+   **/
   public synchronized static native void H5Tcommit2(int loc_id, String name, int type_id, int lcpl_id,
       int tcpl_id, int tapl_id)
   throws HDF5LibraryException, NullPointerException;
 
   /**
-   *  H5Topen2 opens a named datatype at the location specified
+   *  H5Topen opens a named datatype at the location specified
    *  by loc_id and return an identifier for the datatype.
    *
    *  @param loc_id   IN: A file, group, or datatype identifier.
@@ -147,6 +159,17 @@ public class H5T {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    *  @exception NullPointerException - name is null.
+   **/
+  public static int H5Topen(int loc_id, String name, int tapl_id)
+  throws HDF5LibraryException, NullPointerException
+  {
+    return H5Topen2(loc_id, name, tapl_id);
+  }
+  /**
+   *  H5Topen2 opens a named datatype at the location specified
+   *  by loc_id and return an identifier for the datatype.
+   *
+   *  @see public synchronized static native int H5Topen(int loc_id, String name, int tapl_id)
    **/
   public synchronized static native int H5Topen2(int loc_id, String name, int tapl_id)
   throws HDF5LibraryException, NullPointerException;
@@ -345,7 +368,7 @@ public class H5T {
 
   /* Operations defined on array datatypes */
   /**
-   *  H5Tarray_create2 creates a new array datatype object. 
+   *  H5Tarray_create creates a new array datatype object. 
    *
    *  @param base_id  IN: Datatype identifier for the array base datatype.
    *  @param ndims    IN: Rank of the array.
@@ -355,7 +378,17 @@ public class H5T {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native int H5Tarray_create2(int base_id, int ndims, long dim[/* ndims */])
+  public static int H5Tarray_create(int base_id, int ndims, long[] dim)
+  throws HDF5LibraryException
+  {
+    return H5Tarray_create2(base_id, ndims, dim);
+  }
+  /**
+   *  H5Tarray_create2 creates a new array datatype object. 
+   *
+   *  @see public static int H5Tarray_create(int base_id, int ndims, long[] dim)
+   **/
+  public synchronized static native int H5Tarray_create2(int base_id, int ndims, long[] dim)
   throws HDF5LibraryException;
 
   /**
@@ -371,7 +404,7 @@ public class H5T {
   throws HDF5LibraryException;
 
   /**
-   *  H5Tget_array_dims2 returns the sizes of the dimensions of the specified array datatype object. 
+   *  H5Tget_array_dims returns the sizes of the dimensions of the specified array datatype object. 
    *
    *  @param type_id  IN: Datatype identifier of array object.
    *  @param dims    OUT: Sizes of array dimensions.
@@ -379,6 +412,16 @@ public class H5T {
    *  @return the non-negative number of dimensions of the array type
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public static int H5Tget_array_dims(int type_id, long[] dims)
+  throws HDF5LibraryException, NullPointerException
+  {
+    return H5Tget_array_dims2(type_id, dims);
+  }
+  /**
+   *  H5Tget_array_dims2 returns the sizes of the dimensions of the specified array datatype object. 
+   *
+   *  @see public static int H5Tget_array_dims(int type_id, long[] dims)
    **/
   public synchronized static native int H5Tget_array_dims2(int type_id, long[] dims)
   throws HDF5LibraryException, NullPointerException;
@@ -947,4 +990,120 @@ public class H5T {
       byte[] background, int plist_id)
   throws HDF5LibraryException, NullPointerException;
 //    int H5Tconvert(int src_id, int dst_id, long nelmts, Pointer buf, Pointer background, int plist_id);
+
+  /**
+   *  H5Tarray_create creates a new array datatype object. 
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Tarray_create(int, int, long[])}
+   *
+   *  @param base_id  IN: Datatype identifier for the array base datatype.
+   *  @param ndims    IN: Rank of the array.
+   *  @param dim      IN: Size of each array dimension.
+   *  @param perm     IN: Dimension permutation. (Currently not implemented.)
+   *
+   *  @return a valid datatype identifier
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public static int H5Tarray_create(int base_id, int ndims, long[] dim, int[] perm)
+  throws HDF5LibraryException
+  {
+    return H5Tarray_create1(base_id, ndims, dim, perm);
+  }
+  /**
+   *  H5Tarray_create1 creates a new array datatype object. 
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Tarray_create2(int, int, long[])}
+   *
+   *  @see public static int H5Tarray_create(int base_id, int ndims, long[] dim, int[] perm)
+   **/
+  private synchronized static native int H5Tarray_create1(int base_id, int ndims, long[] dim, int[] perm)
+  throws HDF5LibraryException;
+
+  /**
+   *  H5Tget_array_dims returns the sizes of the dimensions of the specified array datatype object. 
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Tget_array_dims(int, long[])}
+   *
+   *  @param type_id  IN: Datatype identifier of array object.
+   *  @param dims    OUT: Sizes of array dimensions.
+   *  @param perm    OUT: Dimension permutation. (Currently not implemented.)
+   *
+   *  @return the non-negative number of dimensions of the array type
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public static int H5Tget_array_dims(int type_id, long[] dims, int[] perm)
+  throws HDF5LibraryException, NullPointerException
+  {
+    return H5Tget_array_dims1(type_id, dims, perm);
+  }
+  /**
+   *  H5Tget_array_dims1 returns the sizes of the dimensions of the specified array datatype object. 
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Tget_array_dims2(int, long[])}
+   *
+   *  @see public static int H5Tget_array_dims(int type_id, long[] dims, int[] perm)
+   **/
+  private synchronized static native int H5Tget_array_dims1(int type_id, long[] dims, int[] perm)
+  throws HDF5LibraryException, NullPointerException;
+
+  /**
+   *  H5Topen opens a named datatype at the location specified
+   *  by loc_id and return an identifier for the datatype.
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Topen(int, String, int)}
+   *
+   *  @param loc_id   IN: A file, group, or datatype identifier.
+   *  @param name     IN: A datatype name, defined within the file or group identified by loc_id.
+   *
+   *  @return a named datatype identifier if successful
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - name is null.
+   **/
+  public static int H5Topen(int loc_id, String name)
+  throws HDF5LibraryException, NullPointerException
+  {
+    return H5Topen1(loc_id, name);
+  }
+  /**
+   *  H5Topen1 opens a named datatype at the location specified
+   *  by loc_id and return an identifier for the datatype.
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Topen2(int, String, int)}
+   *
+   *  @see public synchronized static native int H5Topen(int loc_id, String name)
+   **/
+  private synchronized static native int H5Topen1(int loc_id, String name)
+  throws HDF5LibraryException, NullPointerException;
+
+  /**
+   *  H5Tcommit saves a transient datatype as an immutable named datatype in a file.
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Tcommit2(int, String, int, int, int, int)}
+   *
+   *  @param loc_id   IN: Location identifier.
+   *  @param name     IN: Name given to committed datatype.
+   *  @param type_id  IN: Identifier of datatype to be committed.
+   *
+   *  @return none
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - name is null.
+   **/
+  public static void H5Tcommit(int loc_id, String name, int type_id)
+  throws HDF5LibraryException, NullPointerException
+  {
+    H5Tcommit1( loc_id, name, type_id);
+  }
+  /**
+   *  H5Tcommit1 saves a transient datatype as an immutable named datatype in a file.
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Tcommit2(int, String, int, int, int, int)}
+   *
+   *  @see public static void H5Tcommit(int loc_id, String name, int type_id)
+   **/
+  private synchronized static native void H5Tcommit1(int loc_id, String name, int type_id)
+  throws HDF5LibraryException, NullPointerException;
 }

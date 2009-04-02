@@ -24,32 +24,11 @@ include $(top_srcdir)/config/commence.am
 CFLAGS = $(DEFS) -I. -I$(JAVAINC) -I$(JAVAINC2) -I$(HDF4INC)
 
 # Be sure to add -lbsd if compiling in a SYSV environment
-LIBS =  $(HDFLIB)/libmfhdf.$(LLEXT) $(HDFLIB)/libdf.$(LLEXT) $(SZLIB) $(ZLIB) $(JPEGLIB) -lm
+LIBS =  $(HDF4LIB)/libmfhdf.$(LLEXT) $(HDF4LIB)/libdf.$(LLEXT) $(SZLIB) $(ZLIB) $(JPEGLIB) -lm
 
-libjh4_SOURCES =  hdfstructsutil.c \
-	hdfImp.c \
-	hdfvgroupImp.c \
-	hdfvdataImp.c \
-	hdfsdsImp.c \
-	hdfanImp.c \
-	hdfdfanImp.c \
-	hdfdfsdImp.c \
-	hdfr24Imp.c \
-	hdfdfpalImp.c \
-	hdfr8Imp.c \
-	hdfgrImp.c \
-	hdfheImp.c \
-	hdfdfuImp.c \
-	hdfhxImp.c \
-	hdfvfImp.c \
-	hdfvhImp.c \
-	hdfvqImp.c \
-	hdfvsqImp.c \
-	hdfexceptionImp.c \
-	hdfdfcompImp.c \
-	hdfnativeImp.c 
+LIBDIR=$(JHVINST)
 
-libjh4_OBJECTS =  hdfstructsutil.o \
+jhdf4_OBJECTS =  hdfstructsutil.o \
 	hdfImp.o \
 	hdfvgroupImp.o \
 	hdfvdataImp.o \
@@ -77,16 +56,14 @@ libjh4_OBJECTS =  hdfstructsutil.o \
 
 
 # make depends on the files specified in the objects macro defination
-all:  libjh4
+all:  jhdf4
 
-h4lib: libjh4
-
-libjh4: $(libjh4_OBJECTS) 
+jhdf4: $(jhdf4_OBJECTS) 
 	-mkdir -p $(LIBDIR);
-	$(LD) $(LDOPT) -o $(LIBDIR)/libjh4.$(JSLEXT) $(LDOPT2) $(libjh4_OBJECTS) $(LIBS)
+	$(LD) $(LDOPT) -o $(LIBDIR)/jhdf4.$(JSLEXT) $(LDOPT2) $(jhdf4_OBJECTS) $(LIBS)
 
 clean:
-	$(RM) -f *.o so_locations $(LIBDIR)/libjh4.$(JSLEXT)
+	$(RM) -f *.o so_locations $(LIBDIR)/jhdf4.$(JSLEXT)
 
 
 include $(top_srcdir)/config/conclude.am

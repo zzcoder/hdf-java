@@ -13,6 +13,7 @@
 
 package hdf.h5;
 
+import hdf.h5.enums.H5G_OBJECT_TYPE;
 import hdf.h5.enums.H5O_TYPE;
 import hdf.h5.enums.H5R_TYPE;
 import hdf.h5.exceptions.HDF5LibraryException;
@@ -75,7 +76,7 @@ public class H5R {
 //  int H5Rget_region(int dataset, H5R_TYPE ref_type, Pointer ref);
 
   /**
-   *  H5Rget_obj_type2 retrieves the type of the referenced object.
+   *  H5Rget_obj_type retrieves the type of the referenced object.
    *
    *  @param loc_id   IN: The dataset containing the reference object or the group containing that dataset.
    *  @param ref_type IN: Type of reference to query.
@@ -85,6 +86,16 @@ public class H5R {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    *  @exception NullPointerException - ref is null.
+   **/
+  public static H5O_TYPE H5Rget_obj_type(int loc_id, H5R_TYPE ref_type, byte[] ref)
+      throws HDF5LibraryException, NullPointerException
+  {
+    return H5Rget_obj_type2(loc_id, ref_type, ref);
+  }
+  /**
+   *  H5Rget_obj_type2 retrieves the type of the referenced object.
+   *
+   *  @see public static H5O_TYPE H5Rget_obj_type(int loc_id, H5R_TYPE ref_type, byte[] ref)
    **/
   public synchronized static native H5O_TYPE H5Rget_obj_type2(int loc_id, H5R_TYPE ref_type, byte[] ref)
       throws HDF5LibraryException, NullPointerException;
@@ -107,4 +118,14 @@ public class H5R {
 //  long H5Rget_name(int loc_id, H5R_TYPE ref_type, Pointer ref,
 //      String name/*out*/, long size);
 
+  /**
+   *  H5Rget_obj_type1 retrieves the type of the referenced object.
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Acreate2(int, String, int, int, int, int)}
+   *
+   *  @see public static H5G_TYPE H5Rget_obj_type(int loc_id, H5R_TYPE ref_type, byte[] ref)
+   **/
+  private synchronized static native H5G_OBJECT_TYPE H5Rget_obj_type1(int loc_id, H5R_TYPE ref_type, byte[] ref)
+      throws HDF5LibraryException, NullPointerException;
+//  int H5Rget_obj_type1(int loc_id, H5G_TYPE ref_type, Pointer ref, H5O_type_t obj_type);
 }

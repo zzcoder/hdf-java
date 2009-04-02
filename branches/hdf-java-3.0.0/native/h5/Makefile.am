@@ -24,28 +24,26 @@ include $(top_srcdir)/config/commence.am
 
 CFLAGS = -D_FILE_OFFSET_BITS=64 $(DEFS) -I. -I$(HDF5INC) -I$(JAVAINC1) -I$(JAVAINC2)
 
-LIBS =  $(HDF5LIB)/libh5.$(LLEXT) $(ZLIB) $(SZLIB) -lm
+LIBS =  $(HDF5LIB)/libhdf5.$(LLEXT) $(ZLIB) $(SZLIB) -lm
+
+LIBDIR=$(JH5INST)
 
 # Macro def: object filename used
-libjh5_OBJECTS =  exceptionImp.o \
-	h5Constants.o \
-	h5Imp.o \
-	h5util.o
+jdfh5_OBJECTS =  exceptionImp.o \
+	H5.o 
 
 
 .c.o:
 	$(CC) $(COPT) $(CFLAGS) -c $< -o $@
 
 # make depends on the files specified in the objects macro defination
-all:  libjh5
+all:  jhdf5
 
-h5lib: libjh5
-
-libjh5: $(libjh5_OBJECTS)
+jhdf5: $(jhdf5_OBJECTS)
 	-mkdir -p $(LIBDIR);
-	$(LD) $(LDOPT) -o $(LIBDIR)/libjh5.$(JSLEXT) $(LDOPT2) $(libjh5_OBJECTS) $(LIBS)
+	$(LD) $(LDOPT) -o $(LIBDIR)/jhdf5.$(JSLEXT) $(LDOPT2) $(jhdf5_OBJECTS) $(LIBS)
 
 clean:
-	$(RM) -f *.o so_locations $(LIBDIR)/libjh5.$(JSLEXT)
+	$(RM) -f *.o so_locations $(LIBDIR)/jhdf5.$(JSLEXT)
 
 include $(top_srcdir)/config/conclude.am

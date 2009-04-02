@@ -149,8 +149,13 @@ public class H5E {
    **/
   public synchronized static native void H5Eset_current_stack(int stack_id)
   throws HDF5LibraryException;
-//  int H5Epush2(int err_stack, String file, String func, int line,
-//        int cls_id, int maj_id, int min_id, String msg, ...);
+//  public static int H5Epush(int err_stack, String file, String func, int line,
+//    int cls_id, int maj_id, int min_id, String msg, ...)
+//  {
+//    H5Epush2(err_stack, file, func, line, cls_id, maj_id, min_id, msg, ...);
+//  }
+//  public synchronized static native int H5Epush2(int err_stack, String file, String func, int line,
+//    int cls_id, int maj_id, int min_id, String msg, ...);
   
   /**
    *  H5Epop deletes the number of error records specified in count from 
@@ -168,7 +173,7 @@ public class H5E {
   throws HDF5LibraryException;
   
   /**
-   *  H5Eprint2 prints the error stack specified by estack_id on the 
+   *  H5Eprint prints the error stack specified by estack_id on the 
    *  specified stream, stream.
    *
    *  @param stack_id IN: Error stack identifier.If the identifier is H5E_DEFAULT, the current error stack will be printed.
@@ -178,16 +183,40 @@ public class H5E {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native void H5Eprint2(int err_stack, File/*FILE **/stream)
+  public static void H5Eprint(int err_stack, File stream)
+  throws HDF5LibraryException
+  {
+    H5Eprint2(err_stack, stream);
+  }
+  /**
+   *  H5Eprint2 prints the error stack specified by estack_id on the 
+   *  specified stream, stream.
+   *
+   *  @see public static void H5Eprint(int err_stack, File stream)
+   **/
+  public synchronized static native void H5Eprint2(int err_stack, File stream)
   throws HDF5LibraryException;
   
+//  int H5Ewalk(int err_stack, H5E_direction_t direction, H5E_walk2_t func,
+//        Pointer client_data)
+//  {
+//    return H5Ewalk2(err_stack, direction, func, client_data);
+//  }
 //  int H5Ewalk2(int err_stack, H5E_direction_t direction, H5E_walk2_t func,
 //        Pointer client_data);
-//  int H5Eget_auto2(int estack_id, H5E_auto2_t func, PointerByReference);
+//  int H5Eget_auto(int estack_id, H5E_auto2_t func, PointerByReference client_data);
+//  {
+//    return H5Eget_auto2(estack_id,  func, client_data);
+//  }
+//  int H5Eget_auto2(int estack_id, H5E_auto2_t func, PointerByReference client_data);
+//  int H5Eset_auto(int estack_id, H5E_auto2_t func, Pointer client_data);
+//  {
+//    return H5Eset_auto2(estack_id, func, client_data);
+//  }
 //  int H5Eset_auto2(int estack_id, H5E_auto2_t func, Pointer client_data);
   
   /**
-   *  H5Eclear2 clears the error stack specified by estack_id, or, if 
+   *  H5Eclear clears the error stack specified by estack_id, or, if 
    *  estack_id is set to H5E_DEFAULT, the error stack for the current thread. 
    *
    *  @param stack_id IN: Error stack identifier.
@@ -195,6 +224,17 @@ public class H5E {
    *  @return none
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public static void H5Eclear(int err_stack)
+  throws HDF5LibraryException
+  {
+    H5Eclear2(err_stack);
+  }
+  /**
+   *  H5Eclear2 clears the error stack specified by estack_id, or, if 
+   *  estack_id is set to H5E_DEFAULT, the error stack for the current thread. 
+   *
+   *  @see public static void H5Eclear(int err_stack)
    **/
   public synchronized static native void H5Eclear2(int err_stack)
   throws HDF5LibraryException;
@@ -242,5 +282,84 @@ public class H5E {
    **/
   public synchronized static native long H5Eget_num(int stack_id)
   throws HDF5LibraryException, NullPointerException;
+  
+  /**
+   *  H5Eprint prints the error stack specified by estack_id on the 
+   *  specified stream, stream.
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Eprint(int, File)}
+   *
+   *  @param stream   IN: File pointer, or stderr if null.
+   *
+   *  @return none
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public static void H5Eprint(File stream)
+  throws HDF5LibraryException
+  {
+    H5Eprint1(stream);
+  }
+  /**
+   *  H5Eprint1 prints the error stack specified by estack_id on the 
+   *  specified stream, stream.
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Eprint2(int, File)}
+   *
+   *  @see public static void H5Eprint(File stream)
+   **/
+  private synchronized static native void H5Eprint1(File stream)
+  throws HDF5LibraryException;
+  
+  /**
+   *  H5Eclear clears the error stack specified by estack_id, or, if 
+   *  estack_id is set to H5E_DEFAULT, the error stack for the current thread. 
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Eclear(int)}
+   *
+   *  @return none
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public static void H5Eclear()
+  throws HDF5LibraryException
+  {
+    H5Eclear1();
+  }
+  /**
+   *  H5Eclear1 clears the error stack specified by estack_id, or, if 
+   *  estack_id is set to H5E_DEFAULT, the error stack for the current thread. 
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Eclear2(int)}
+   *
+   *  @see public static void H5Eclear()
+   **/
+  private synchronized static native void H5Eclear1()
+  throws HDF5LibraryException;
+//  public static int H5Epush(String file, String func, int line,
+//    int maj_id, int min_id, String msg)
+//  {
+//    H5Epush1(file, func, line, maj_id, min_id, msg);
+//  }
+//  private synchronized static native int H5Epush1(String file, String func, int line,
+//    int maj_id, int min_id, String msg);
+//  
+//  int H5Ewalk(H5E_direction_t direction, H5E_walk1_t func,
+//        Pointer client_data)
+//  {
+//    return H5Ewalk1(direction, func, client_data);
+//  }
+//  int H5Ewalk1(H5E_direction_t direction, H5E_walk1_t func,
+//        Pointer client_data);
+//  int H5Eget_auto(H5E_auto1_t func, PointerByReference client_data);
+//  {
+//    return H5Eget_auto1(func, client_data);
+//  }
+//  int H5Eget_auto1(H5E_auto1_t func, PointerByReference client_data);
+//  int H5Eset_auto(H5E_auto1_t func, Pointer client_data);
+//  {
+//    return H5Eset_auto1(func, client_data);
+//  }
+//  int H5Eset_auto1(H5E_auto1_t func, Pointer client_data);
 
 }

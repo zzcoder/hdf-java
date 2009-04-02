@@ -27,7 +27,7 @@ import hdf.h5.structs.H5G_info_t;
 public class H5G {
 
   /**
-   *  H5Gcreate2 creates a new group with the specified name at
+   *  H5Gcreate creates a new group with the specified name at
    *  the specified location, loc_id.
    *
    *  @param loc_id    IN: The file or group identifier.
@@ -41,6 +41,19 @@ public class H5G {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    *  @exception NullPointerException - name is null.
+   **/
+  public static int H5Gcreate(int loc_id, String name, int lcpl_id,
+        int gcpl_id, int gapl_id)
+      throws HDF5LibraryException, NullPointerException
+  {
+    return H5Gcreate2(loc_id, name, lcpl_id, gcpl_id, gapl_id);
+  }
+  /**
+   *  H5Gcreate2 creates a new group with the specified name at
+   *  the specified location, loc_id.
+   *
+   *  @see public static int H5Gcreate(int loc_id, String name, int lcpl_id,
+   *     int gcpl_id, int gapl_id)
    **/
   public synchronized static native int H5Gcreate2(int loc_id, String name, int lcpl_id,
         int gcpl_id, int gapl_id)
@@ -62,7 +75,7 @@ public class H5G {
       throws HDF5LibraryException;
 
   /**
-   *  H5Gopen2 opens an existing group, name, at the location specified by loc_id. 
+   *  H5Gopen opens an existing group, name, at the location specified by loc_id. 
    *
    *  @param loc_id   IN: File or group identifier specifying the location of the group to be opened.
    *  @param name     IN: Name of group to open.
@@ -73,6 +86,16 @@ public class H5G {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    *  @exception NullPointerException - name is null.
+   **/
+  public static int H5Gopen(int loc_id, String name, int gapl_id)
+      throws HDF5LibraryException, NullPointerException
+  {
+    return H5Gopen2(loc_id, name, gapl_id);
+  }
+  /**
+   *  H5Gopen2 opens an existing group, name, at the location specified by loc_id. 
+   *
+   *  @see public static int H5Gopen(int loc_id, String name, int gapl_id)
    **/
   public synchronized static native int H5Gopen2(int loc_id, String name, int gapl_id)
       throws HDF5LibraryException, NullPointerException;
@@ -156,4 +179,64 @@ public class H5G {
   public synchronized static native int H5Gclose(int group_id)
   throws HDF5LibraryException;
 
+  
+  
+  /**
+   *  H5Gcreate creates a new group with the specified name at
+   *  the specified location, loc_id.
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Gcreate2(int, String, int, int, int)}
+   *
+   *  @param loc_id    IN: The file or group identifier.
+   *  @param name      IN: The absolute or relative name of the new group.
+   *  @param size_hint IN: the number of bytes to reserve for the names that will appear in the group.
+   *
+   *  @return a valid group identifier
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - name is null.
+   **/
+  public static int H5Gcreate(int loc_id, String name, long size_hint)
+      throws HDF5LibraryException, NullPointerException
+  {
+    return H5Gcreate1(loc_id, name, size_hint);
+  }
+  /**
+   *  H5Gcreate1 creates a new group with the specified name at
+   *  the specified location, loc_id.
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Gcreate2(int, String, int, int, int)}
+   *
+   *  @see public static int H5Gcreate(int loc_id, String name, long size_hint)
+   **/
+  private synchronized static native int H5Gcreate1(int loc_id, String name, long size_hint)
+      throws HDF5LibraryException, NullPointerException;
+
+  /**
+   *  H5Gopen opens an existing group, name, at the location specified by loc_id. 
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Gopen(int, String, int)}
+   *
+   *  @param loc_id   IN: File or group identifier specifying the location of the group to be opened.
+   *  @param name     IN: Name of group to open.
+   *
+   *  @return a valid group identifier if successful
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - name is null.
+   **/
+  public static int H5Gopen(int loc_id, String name)
+      throws HDF5LibraryException, NullPointerException
+  {
+    return H5Gopen1(loc_id, name);
+  }
+  /**
+   *  H5Gopen1 opens an existing group, name, at the location specified by loc_id. 
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Gopen2(int, String, int)}
+   *
+   *  @see public static int H5Gopen(int loc_id, String name)
+   **/
+  private synchronized static native int H5Gopen1(int loc_id, String name)
+      throws HDF5LibraryException, NullPointerException;
 }

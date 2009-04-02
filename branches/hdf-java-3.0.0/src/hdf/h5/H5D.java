@@ -34,7 +34,7 @@ public class H5D {
   //  }
 
   /**
-   *  H5Dcreate2 creates a new dataset named name at the 
+   *  H5Dcreate creates a new dataset named name at the 
    *  location specified by loc_id.
    *
    *  @param loc_id   IN: Location identifier 
@@ -49,6 +49,19 @@ public class H5D {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    *  @exception NullPointerException - name is null.
+   **/
+  public static int H5Dcreate(int loc_id, String name, int type_id,
+      int space_id, int lcpl_id, int dcpl_id, int dapl_id)
+  throws HDF5LibraryException, NullPointerException
+  {
+    return H5Dcreate2(loc_id, name, type_id, space_id, lcpl_id, dcpl_id, dapl_id);
+  }
+  /**
+   *  H5Dcreate2 creates a new dataset named name at the 
+   *  location specified by loc_id.
+   *
+   *  @see public static int H5Dcreate(int loc_id, String name, int type_id,
+   *     int space_id, int lcpl_id, int dcpl_id, int dapl_id)
    **/
   public synchronized static native int H5Dcreate2(int loc_id, String name, int type_id,
       int space_id, int lcpl_id, int dcpl_id, int dapl_id)
@@ -73,7 +86,7 @@ public class H5D {
   throws HDF5LibraryException;
 
   /**
-   *  H5Dopen2 opens the existing dataset specified by a location identifier 
+   *  H5Dopen opens the existing dataset specified by a location identifier 
    *  and name, loc_id  and name, respectively. 
    *
    *  @param loc_id   IN: Location identifier 
@@ -84,6 +97,17 @@ public class H5D {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    *  @exception NullPointerException - name is null.
+   **/
+  public static int H5Dopen(int loc_id, String name, int dapl_id)
+  throws HDF5LibraryException, NullPointerException
+  {
+    return H5Dopen2(loc_id, name, dapl_id);
+  }
+  /**
+   *  H5Dopen2 opens the existing dataset specified by a location identifier 
+   *  and name, loc_id  and name, respectively. 
+   *
+   *  @see public static int H5Dopen(int loc_id, String name, int dapl_id)
    **/
   public synchronized static native int H5Dopen2(int loc_id, String name, int dapl_id)
   throws HDF5LibraryException, NullPointerException;
@@ -696,5 +720,71 @@ public class H5D {
   public synchronized static native void H5Dset_extent(int dset_id, long size[])
   throws HDF5LibraryException, NullPointerException;
   public synchronized static native int H5Ddebug(int dset_id)
+  throws HDF5LibraryException, NullPointerException;
+
+  /**
+   *  H5Dcreate creates a new dataset named name at the 
+   *  location specified by loc_id.
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Dcreate(int, String, int, int, int, int, int) }
+   *
+   *  @param loc_id   IN: Location identifier 
+   *  @param name     IN: Dataset name
+   *  @param type_id  IN: Datatype identifier
+   *  @param space_id IN: Dataspace identifier 
+   *  @param dcpl_id  IN: Identifier of dataset creation property list.
+   *
+   *  @return a dataset identifier
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - name is null.
+   **/
+  public static int H5Dcreate(int loc_id, String name, int type_id,
+      int space_id, int dcpl_id)
+  throws HDF5LibraryException, NullPointerException
+  {
+    return H5Dcreate1(loc_id, name, type_id, space_id, dcpl_id);
+  }
+  /**
+   *  H5Dcreate1 creates a new dataset named name at the 
+   *  location specified by loc_id.
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Dcreate2(int, String, int, int, int, int, int) }
+   *
+   *  @see public static int H5Dcreate(int loc_id, String name, int type_id,
+   *     int space_id, int dcpl_id)
+   **/
+  private synchronized static native int H5Dcreate1(int loc_id, String name, int type_id,
+      int space_id, int dcpl_id)
+  throws HDF5LibraryException, NullPointerException;
+
+  /**
+   *  H5Dopen opens the existing dataset specified by a location identifier 
+   *  and name, loc_id  and name, respectively. 
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Dopen(int, String, int) }
+   *
+   *  @param loc_id   IN: Location identifier 
+   *  @param name     IN: Dataset name
+   *
+   *  @return a dataset identifier if successful
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - name is null.
+   **/
+  public static int H5Dopen(int loc_id, String name)
+  throws HDF5LibraryException, NullPointerException
+  {
+    return H5Dopen1(loc_id, name);
+  }
+  /**
+   *  H5Dopen1 opens the existing dataset specified by a location identifier 
+   *  and name, loc_id  and name, respectively. 
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Dopen2(int, String, int) }
+   *
+   *  @see public static int H5Dopen(int loc_id, String name)
+   **/
+  private synchronized static native int H5Dopen1(int loc_id, String name)
   throws HDF5LibraryException, NullPointerException;
 }
