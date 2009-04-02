@@ -97,12 +97,29 @@ public class H5P {
    **/
   public synchronized static native int H5Pcreate(int cls_id)
   throws HDF5LibraryException;
-  
+//  
+//  int H5Pregister(int cls_id, String name, long size,
+//      Pointer def_value, H5P_prp_cb1_t prp_create,
+//      H5P_prp_cb2_t prp_set, H5P_prp_cb2_t prp_get,
+//      H5P_prp_cb2_t prp_del, H5P_prp_cb1_t prp_copy,
+//      H5P_prp_compare_func_t prp_cmp, H5P_prp_cb1_t prp_close)
+//  {
+//    return H5Pregister2(cls_id, name, size, def_value, prp_create,
+//        prp_set, prp_get, prp_del, prp_copy, prp_cmp, prp_close);
+//  }
 //  int H5Pregister2(int cls_id, String name, long size,
 //      Pointer def_value, H5P_prp_cb1_t prp_create,
 //      H5P_prp_cb2_t prp_set, H5P_prp_cb2_t prp_get,
 //      H5P_prp_cb2_t prp_del, H5P_prp_cb1_t prp_copy,
 //      H5P_prp_compare_func_t prp_cmp, H5P_prp_cb1_t prp_close);
+//  int H5Pinsert(int plist_id, String name, long size,
+//      Pointer value, H5P_prp_cb2_t prp_set, H5P_prp_cb2_t prp_get,
+//      H5P_prp_cb2_t prp_delete, H5P_prp_cb1_t prp_copy,
+//      H5P_prp_compare_func_t prp_cmp, H5P_prp_cb1_t prp_close)
+//  {
+//    return H5Pinsert2(plist_id, name, size, value, prp_set, prp_get, 
+//        prp_delete, prp_copy, prp_cmp, prp_close);
+//  }
 //  int H5Pinsert2(int plist_id, String name, long size,
 //      Pointer value, H5P_prp_cb2_t prp_set, H5P_prp_cb2_t prp_get,
 //      H5P_prp_cb2_t prp_delete, H5P_prp_cb1_t prp_copy,
@@ -1117,7 +1134,7 @@ public class H5P {
   throws HDF5LibraryException;
 
   /**
-   *  H5Pget_filter2 returns information about a filter, specified
+   *  H5Pget_filter returns information about a filter, specified
    *  by its filter number, in a filter pipeline, specified by
    *  the property list with which it is associated.
    *
@@ -1136,6 +1153,25 @@ public class H5P {
    *  @exception NullPointerException - an array is null.
    *
    **/
+  public static String H5Pget_filter(int plist_id, int filter_idx,
+         int[] flags/*out*/, int[] cd_nelmts/*out*/,
+         int[] cd_values/*out*/, H5Z_FILTER[] filter_id /*out*/,
+         int[] filter_config /*out*/)
+  throws HDF5LibraryException, NullPointerException
+  {
+    return H5Pget_filter2(plist_id, filter_idx, flags, cd_nelmts,
+        cd_values, filter_id, filter_config);
+  }
+  /**
+   *  H5Pget_filter2 returns information about a filter, specified
+   *  by its filter number, in a filter pipeline, specified by
+   *  the property list with which it is associated.
+   *
+   *  @see public static String H5Pget_filter(int plist_id, int filter_idx,
+   *      int[] flags, int[] cd_nelmts, int[] cd_values, H5Z_FILTER[] filter_id,
+   *      int[] filter_config)
+   *
+   **/
   public synchronized static native String H5Pget_filter2(int plist_id, int filter_idx,
          int[] flags/*out*/, int[] cd_nelmts/*out*/,
          int[] cd_values/*out*/, H5Z_FILTER[] filter_id /*out*/,
@@ -1143,7 +1179,7 @@ public class H5P {
   throws HDF5LibraryException, NullPointerException;
 
   /**
-   *  H5Pget_filter_by_id2 returns information about the filter specified 
+   *  H5Pget_filter_by_id returns information about the filter specified 
    *  in filter_id, a filter identifier. 
    *
    *  @param plist_id       IN: Property list identifier.
@@ -1157,6 +1193,22 @@ public class H5P {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    *  @exception NullPointerException - an array is null.
+   *
+   **/
+  public static String H5Pget_filter_by_id(int plist_id, H5Z_FILTER filter_id,
+         int[] flags/*out*/, long[] cd_nelmts/*out*/,
+         int[] cd_values/*out*/, int[] filter_config/*out*/)
+  throws HDF5LibraryException, NullPointerException
+  {
+    return H5Pget_filter_by_id2(plist_id, filter_id, flags, cd_nelmts,
+        cd_values, filter_config);
+  }
+  /**
+   *  H5Pget_filter_by_id2 returns information about the filter specified 
+   *  in filter_id, a filter identifier. 
+   *
+   *  @see public synchronized static native String H5Pget_filter_by_id2(int plist_id, H5Z_FILTER filter_id,
+   *     int[] flags, long[] cd_nelmts, int[] cd_values, int[] filter_config)
    *
    **/
   public synchronized static native String H5Pget_filter_by_id2(int plist_id, H5Z_FILTER filter_id,
@@ -1932,4 +1984,119 @@ public class H5P {
   public synchronized static native int H5Pget_copy_object(int plist_id)
   throws HDF5LibraryException;
 
+  
+//  int H5Pregister(int cls_id, String name, long size,
+//      Pointer def_value, H5P_prp_cb1_t prp_create,
+//      H5P_prp_cb2_t prp_set, H5P_prp_cb2_t prp_get,
+//      H5P_prp_cb2_t prp_del, H5P_prp_cb1_t prp_copy,
+//      H5P_prp_cb1_t prp_close)
+//  {
+//    return H5Pregister1(cls_id, name, size, def_value, prp_create,
+//        prp_set, prp_get, prp_del, prp_copy, prp_close);
+//  }
+//  int H5Pregister1(int cls_id, String name, long size,
+//      Pointer def_value, H5P_prp_cb1_t prp_create,
+//      H5P_prp_cb1_t prp_set, H5P_prp_cb1_t prp_get,
+//      H5P_prp_cb1_t prp_del, H5P_prp_cb1_t prp_copy,
+//      H5P_prp_cb1_t prp_close);
+//  int H5Pinsert(int plist_id, String name, long size,
+//      Pointer value, H5P_prp_cb1_t prp_set, H5P_prp_cb1_t prp_get,
+//      H5P_prp_cb1_t prp_delete, H5P_prp_cb1_t prp_copy,
+//      H5P_prp_cb1_t prp_close)
+//  {
+//    return H5Pinsert1(plist_id, name, size, value, prp_set, prp_get, 
+//        prp_delete, prp_copy, prp_close);
+//  }
+//  int H5Pinsert1(int plist_id, String name, long size,
+//      Pointer value, H5P_prp_cb1_t prp_set, H5P_prp_cb1_t prp_get,
+//      H5P_prp_cb1_t prp_delete, H5P_prp_cb1_t prp_copy,
+//      H5P_prp_cb1_t prp_close);
+
+  /**
+   *  H5Pget_filter returns information about a filter, specified
+   *  by its filter number, in a filter pipeline, specified by
+   *  the property list with which it is associated.
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Pget_filter2(int, int, int[], int[], int[], H5Z_FILTER[], int[])}
+   *
+   *  @param plist_id       IN: Property list identifier.
+   *  @param filter_idx     IN: Sequence number within the filter pipeline of the 
+   *                            filter for which information is sought.
+   *  @param flags         OUT: Bit vector specifying certain general properties of the filter.
+   *  @param cd_nelmts  IN/OUT: Number of elements in cd_values
+   *  @param cd_values     OUT: Auxiliary data for the filter.
+   *  @param filter_id     OUT: The filter identification number.
+   *  @param filter_config OUT: Bit field, as described in  H5Zget_filter_info.
+   *
+   *  @return the name of the filter.
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - an array is null.
+   *
+   **/
+  public static String H5Pget_filter(int plist_id, int filter_idx,
+         int[] flags/*out*/, int[] cd_nelmts/*out*/,
+         int[] cd_values/*out*/, H5Z_FILTER[] filter_id /*out*/)
+  throws HDF5LibraryException, NullPointerException
+  {
+    return H5Pget_filter1(plist_id, filter_idx, flags, cd_nelmts,
+        cd_values, filter_id);
+  }
+  /**
+   *  H5Pget_filter1 returns information about a filter, specified
+   *  by its filter number, in a filter pipeline, specified by
+   *  the property list with which it is associated.
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Pget_filter2(int, int, int[], int[], int[], H5Z_FILTER[], int[])}
+   *
+   *  @see public static String H5Pget_filter(int plist_id, int filter_idx,
+   *      int[] flags, int[] cd_nelmts, int[] cd_values, H5Z_FILTER[] filter_id)
+   *
+   **/
+  private synchronized static native String H5Pget_filter1(int plist_id, int filter_idx,
+         int[] flags/*out*/, int[] cd_nelmts/*out*/,
+         int[] cd_values/*out*/, H5Z_FILTER[] filter_id /*out*/)
+  throws HDF5LibraryException, NullPointerException;
+
+  /**
+   *  H5Pget_filter_by_id returns information about the filter specified 
+   *  in filter_id, a filter identifier. 
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Pget_filter_by_id2(int, H5Z_FILTER, int[], long[], int[], int[])}
+   *
+   *  @param plist_id       IN: Property list identifier.
+   *  @param filter_id      IN: The filter identification number.
+   *  @param flags         OUT: Bit vector specifying certain general properties of the filter.
+   *  @param cd_nelmts  IN/OUT: Number of elements in cd_values
+   *  @param cd_values     OUT: Auxiliary data for the filter.
+   *  @param filter_config OUT: Bit field, as described in  H5Zget_filter_info.
+   *
+   *  @return the name of the filter.
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - an array is null.
+   *
+   **/
+  public static String H5Pget_filter_by_id(int plist_id, H5Z_FILTER filter_id,
+         int[] flags/*out*/, long[] cd_nelmts/*out*/,
+         int[] cd_values/*out*/)
+  throws HDF5LibraryException, NullPointerException
+  {
+    return H5Pget_filter_by_id1(plist_id, filter_id, flags, cd_nelmts,
+        cd_values);
+  }
+  /**
+   *  H5Pget_filter_by_id1 returns information about the filter specified 
+   *  in filter_id, a filter identifier. 
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Pget_filter_by_id2(int, H5Z_FILTER, int[], long[], int[], int[])}
+   *
+   *  @see public synchronized static native String H5Pget_filter_by_id(int plist_id, H5Z_FILTER filter_id,
+   *     int[] flags, long[] cd_nelmts, int[] cd_values)
+   *
+   **/
+  private synchronized static native String H5Pget_filter_by_id1(int plist_id, H5Z_FILTER filter_id,
+         int[] flags/*out*/, long[] cd_nelmts/*out*/,
+         int[] cd_values/*out*/)
+  throws HDF5LibraryException, NullPointerException;
 }

@@ -113,7 +113,7 @@ LDFLAGS = @LDFLAGS@
 LDOPT = @LDOPT@
 LDOPT2 = @LDOPT2@
 LIBOBJS = @LIBOBJS@
-LIBS = $(HDF5LIB)/libh5.$(LLEXT) $(ZLIB) $(SZLIB) -lm
+LIBS = $(HDF5LIB)/libhdf5.$(LLEXT) $(ZLIB) $(SZLIB) -lm
 LLEXT = @LLEXT@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
@@ -213,12 +213,11 @@ LIBHDF5 = $(top_builddir)/src/libhdf5.la
 # .chklog files are output from those tests.
 # *.clog are from the MPE option.
 CHECK_CLEANFILES = *.chkexe *.chklog *.clog
+LIBDIR = $(JH5INST)
 
 # Macro def: object filename used
-libjh5_OBJECTS = exceptionImp.o \
-	h5Constants.o \
-	h5Imp.o \
-	h5util.o
+jdfh5_OBJECTS = exceptionImp.o \
+	H5.o 
 
 all: all-am
 
@@ -394,16 +393,14 @@ help:
 	$(CC) $(COPT) $(CFLAGS) -c $< -o $@
 
 # make depends on the files specified in the objects macro defination
-all:  libjh5
+all:  jhdf5
 
-h5lib: libjh5
-
-libjh5: $(libjh5_OBJECTS)
+jhdf5: $(jhdf5_OBJECTS)
 	-mkdir -p $(LIBDIR);
-	$(LD) $(LDOPT) -o $(LIBDIR)/libjh5.$(JSLEXT) $(LDOPT2) $(libjh5_OBJECTS) $(LIBS)
+	$(LD) $(LDOPT) -o $(LIBDIR)/jhdf5.$(JSLEXT) $(LDOPT2) $(jhdf5_OBJECTS) $(LIBS)
 
 clean:
-	$(RM) -f *.o so_locations $(LIBDIR)/libjh5.$(JSLEXT)
+	$(RM) -f *.o so_locations $(LIBDIR)/jhdf5.$(JSLEXT)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

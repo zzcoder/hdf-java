@@ -89,8 +89,9 @@ do
 	  fi
   fi
 done
+
 if test "$yyy_ok" != "yes"; then
-echo $yyy_ok
+  echo $yyy_ok
   AC_MSG_ERROR([expr program doesn't work])
 else
   AC_MSG_RESULT([yes])
@@ -161,7 +162,6 @@ case $host_os in
     ;;
 esac
 
-echo "$host_os"
 host_config="none"
 for f in $host_cpu-$host_vendor-$host_os \
          $host_cpu-$host_vendor-$host_os_novers \
@@ -367,6 +367,7 @@ dnl  Check that the libraries that HDF4 needs have been found
 dnl
 dnl  Must stop here if something is missing.
 dnl
+
 if test "$HAVE_HDF4" = "yes"; then
 	AC_MSG_CHECKING([dependencies for HDF4 library])
 	needjpg=`grep 'define H4_HAVE_LIBJPEG 1' $HDF4INC/h4config.h`
@@ -445,6 +446,7 @@ dnl  Check that the libraries that HDF4 needs have been found
 dnl
 dnl  Must stop here if something is missing.
 dnl
+
 if test -n "$HDF5LIB"; then
 	AC_MSG_CHECKING([dependencies for HDF5 library])
 	DFL=`grep 'filters (external)' $HDF5LIB"/libhdf5.settings" | grep deflate`
@@ -490,12 +492,12 @@ case "$withval" in
     if test -n "$jdk_inc"; then
       JAVAINC="$jdk_inc"
       JAVAINC2="$jdk_inc/$JAVATARG"
-      saved_CPPFLAGS="$CPPFLAGS"
-      CPPFLAGS="$CPPFLAGS $COPT -I$jdk_inc -I$jdk_inc/$JAVATARG"
+      saved_CFLAGS="$CFLAGS"
+      CFLAGS="$CFLAGS $COPT -I$jdk_inc -I$jdk_inc/$JAVATARG"
     fi
 
     AC_CHECK_HEADERS(jni.h,,
-                     CPPFLAGS="$saved_CPPFLAGS"
+                     CFLAGS="$saved_CFLAGS"
                      AC_MSG_ERROR(cannot find JDK header files!))
 
     jdk_lib="`echo $withval | cut -f2 -d, -s`"
@@ -608,6 +610,47 @@ esac
 
 ac_cv_lib_JAVAINC=$JAVAINC
 ac_cv_lib_JAVAINC2=$JAVAINC2
+
+if test "$prefix" != "NONE" ; then
+	INSTDIR="$prefix"
+else
+	INSTDIR=""
+fi
+
+INSTDIR_FOUND=1
+if test -z "$INSTDIR" ; then
+AC_CACHE_CHECK("JAVA HDF install directory",ac_cv_lib_INSTDIR,INSTDIR_FOUND=0)
+fi
+if test $INSTDIR_FOUND -eq 1; then
+	if test -z "$INSTDIR" ; then
+		INSTDIR=$ac_cv_lib_INSTDIR;
+	fi
+	if test \( ! -d "$INSTDIR" \); then
+		INSTDIR_FOUND=0
+	fi
+	if test \( ! -w "$INSTDIR" \); then
+		AC_MSG_ERROR( [ $INSTDIR : not writable ])
+		INSTDIR_FOUND=0
+	fi
+fi
+until test $INSTDIR_FOUND -eq 1; do
+	echo "Please type the directory in which to install JAVA HDF"
+	read INSTDIR
+	INSTDIR_FOUND=1
+	if test \( ! -d "$INSTDIR" \); then
+		INSTDIR_FOUND=0
+	fi
+	if test \( ! -w "$INSTDIR" \); then
+		AC_MSG_ERROR( [ $INSTDIR : not writable ])
+		INSTDIR_FOUND=0
+	fi
+done
+
+ac_cv_lib_COPT=$COPT
+
+ac_cv_lib_INSTDIR=$INSTDIR
+JHVINST=$INSTDIR
+JH5INST=$INSTDIR
 
 AC_SUBST(LD)
 AC_SUBST(LDOPT)

@@ -2622,8 +2622,9 @@ $as_echo "option $yyy_option too long, configure will fail" >&6; }
 	  fi
   fi
 done
+
 if test "$yyy_ok" != "yes"; then
-echo $yyy_ok
+  echo $yyy_ok
   { { $as_echo "$as_me:$LINENO: error: expr program doesn't work" >&5
 $as_echo "$as_me: error: expr program doesn't work" >&2;}
    { (exit 1); exit 1; }; }
@@ -4680,7 +4681,6 @@ case $host_os in
     ;;
 esac
 
-echo "$host_os"
 host_config="none"
 for f in $host_cpu-$host_vendor-$host_os \
          $host_cpu-$host_vendor-$host_os_novers \
@@ -4907,6 +4907,7 @@ if test $HAVE_HDF4 = "yes"; then
 $as_echo "HDF4 found: $HDF4LIB" >&6; };
 fi
 
+
 if test "$HAVE_HDF4" = "yes"; then
 	{ $as_echo "$as_me:$LINENO: checking dependencies for HDF4 library" >&5
 $as_echo_n "checking dependencies for HDF4 library... " >&6; }
@@ -4996,6 +4997,7 @@ if test $HAVE_HDF5 = "yes"; then
 $as_echo "HDF5 found: $HDF5LIB" >&6; };
 fi
 
+
 if test -n "$HDF5LIB"; then
 	{ $as_echo "$as_me:$LINENO: checking dependencies for HDF5 library" >&5
 $as_echo_n "checking dependencies for HDF5 library... " >&6; }
@@ -5060,8 +5062,8 @@ $as_echo "$as_me: error: JDK needed for compilation." >&2;}
     if test -n "$jdk_inc"; then
       JAVAINC="$jdk_inc"
       JAVAINC2="$jdk_inc/$JAVATARG"
-      saved_CPPFLAGS="$CPPFLAGS"
-      CPPFLAGS="$CPPFLAGS $COPT -I$jdk_inc -I$jdk_inc/$JAVATARG"
+      saved_CFLAGS="$CFLAGS"
+      CFLAGS="$CFLAGS $COPT -I$jdk_inc -I$jdk_inc/$JAVATARG"
     fi
 
     # On IRIX 5.3, sys/types and inttypes.h are conflicting.
@@ -5285,7 +5287,7 @@ as_val=`eval 'as_val=${'$as_ac_Header'}
 _ACEOF
 
 else
-  CPPFLAGS="$saved_CPPFLAGS"
+  CFLAGS="$saved_CFLAGS"
                      { { $as_echo "$as_me:$LINENO: error: cannot find JDK header files!" >&5
 $as_echo "$as_me: error: cannot find JDK header files!" >&2;}
    { (exit 1); exit 1; }; }
@@ -5584,6 +5586,59 @@ esac
 
 ac_cv_lib_JAVAINC=$JAVAINC
 ac_cv_lib_JAVAINC2=$JAVAINC2
+
+if test "$prefix" != "NONE" ; then
+	INSTDIR="$prefix"
+else
+	INSTDIR=""
+fi
+
+INSTDIR_FOUND=1
+if test -z "$INSTDIR" ; then
+{ $as_echo "$as_me:$LINENO: checking \"JAVA HDF install directory\"" >&5
+$as_echo_n "checking \"JAVA HDF install directory\"... " >&6; }
+if test "${ac_cv_lib_INSTDIR+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  INSTDIR_FOUND=0
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_lib_INSTDIR" >&5
+$as_echo "$ac_cv_lib_INSTDIR" >&6; }
+fi
+if test $INSTDIR_FOUND -eq 1; then
+	if test -z "$INSTDIR" ; then
+		INSTDIR=$ac_cv_lib_INSTDIR;
+	fi
+	if test \( ! -d "$INSTDIR" \); then
+		INSTDIR_FOUND=0
+	fi
+	if test \( ! -w "$INSTDIR" \); then
+		{ { $as_echo "$as_me:$LINENO: error:  $INSTDIR : not writable " >&5
+$as_echo "$as_me: error:  $INSTDIR : not writable " >&2;}
+   { (exit 1); exit 1; }; }
+		INSTDIR_FOUND=0
+	fi
+fi
+until test $INSTDIR_FOUND -eq 1; do
+	echo "Please type the directory in which to install JAVA HDF"
+	read INSTDIR
+	INSTDIR_FOUND=1
+	if test \( ! -d "$INSTDIR" \); then
+		INSTDIR_FOUND=0
+	fi
+	if test \( ! -w "$INSTDIR" \); then
+		{ { $as_echo "$as_me:$LINENO: error:  $INSTDIR : not writable " >&5
+$as_echo "$as_me: error:  $INSTDIR : not writable " >&2;}
+   { (exit 1); exit 1; }; }
+		INSTDIR_FOUND=0
+	fi
+done
+
+ac_cv_lib_COPT=$COPT
+
+ac_cv_lib_INSTDIR=$INSTDIR
+JHVINST=$INSTDIR
+JH5INST=$INSTDIR
 
 
 
