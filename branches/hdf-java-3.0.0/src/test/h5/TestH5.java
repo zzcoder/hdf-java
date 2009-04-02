@@ -1,9 +1,10 @@
 /**
  * 
  */
-package hdf.h5;
+package test.h5;
 
 import static org.junit.Assert.*;
+import hdf.h5.H5;
 import hdf.h5.constants.H5Fconstant;
 
 import org.junit.After;

@@ -72,7 +72,7 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
-CLASSPATH = $(srcdir)
+CLASSPATH = $(srcdir):$(top_srcdir)/lib/juni.jar
 COPT = @COPT@
 COPTNOSHARE = @COPTNOSHARE@
 CPP = @CPP@
@@ -279,42 +279,28 @@ h4_CLASSES = $(h4_PATH)/HDFException.class \
         $(h4_PATH)/HDFTable.class 
 
 h5_PATH = hdf/h5
-h5_constant_SOURCES = $(h5_PATH)/constants/H5_define.java \
-	$(h5_PATH)/constants/H5constant.java  \
+h5_constant_SOURCES = $(h5_PATH)/constants/H5constant.java  \
 	$(h5_PATH)/constants/H5Dconstant.java  \
 	$(h5_PATH)/constants/H5Econstant.java \
-	$(h5_PATH)/constants/H5F_define.java  \
 	$(h5_PATH)/constants/H5Fconstant.java  \
 	$(h5_PATH)/constants/H5Gconstant.java \
-        $(h5_PATH)/constants/H5I_define.java  \
 	$(h5_PATH)/constants/H5Iconstant.java  \
-	$(h5_PATH)/constants/H5L_define.java  \
 	$(h5_PATH)/constants/H5Pconstant.java \
         $(h5_PATH)/constants/H5Rconstant.java  \
-	$(h5_PATH)/constants/H5S_define.java  \
 	$(h5_PATH)/constants/H5Sconstant.java \
-        $(h5_PATH)/constants/H5T_define.java  \
 	$(h5_PATH)/constants/H5Tconstant.java  \
-	$(h5_PATH)/constants/H5Z_define.java  \
 	$(h5_PATH)/constants/H5Zconstant.java
 
-h5_constant_CLASSES = $(h5_PATH)/constants/H5_define.class \
-	$(h5_PATH)/constants/H5constant.class \
+h5_constant_CLASSES = $(h5_PATH)/constants/H5constant.class \
 	$(h5_PATH)/constants/H5Dconstant.class \
 	$(h5_PATH)/constants/H5Econstant.class \
-        $(h5_PATH)/constants/H5F_define.class \
         $(h5_PATH)/constants/H5Fconstant.class \
         $(h5_PATH)/constants/H5Gconstant.class \
-        $(h5_PATH)/constants/H5I_define.class \
         $(h5_PATH)/constants/H5Iconstant.class \
-        $(h5_PATH)/constants/H5L_define.class \
         $(h5_PATH)/constants/H5Pconstant.class \
         $(h5_PATH)/constants/H5Rconstant.class \
-        $(h5_PATH)/constants/H5S_define.class \
         $(h5_PATH)/constants/H5Sconstant.class \
-        $(h5_PATH)/constants/H5T_define.class \
         $(h5_PATH)/constants/H5Tconstant.class \
-        $(h5_PATH)/constants/H5Z_define.class \
         $(h5_PATH)/constants/H5Zconstant.class
 
 h5_enums_SOURCES = $(h5_PATH)/enums/H5_INDEX.java \
@@ -501,6 +487,9 @@ h5_CLASSES = $(h5_constant_CLASSES) \
 	$(h5_PATH)/HDFArray.class  \
 	$(h5_PATH)/HDFNativeData.class
 
+testh5_PATH = test/h5
+testh5_SOURCES = $(testh5_PATH)/TestH5.java
+testh5_CLASSES = $(testh5_PATH)/TestH5.class
 all: all-am
 
 .SUFFIXES:
@@ -681,22 +670,28 @@ help:
 	@$(top_srcdir)/bin/makehelp
 
 SUFFIXES: .java .class
-all: h4 h5
+
+all: jhdf4 jhdf5 testjhdf5
+
+SUFFIXES: .java .class
 
 h4_doc: $(h4_SOURCES)
 	javadoc -author $(h4_SOURCES)
 
-h4: $(h4_CLASSES)
-
-SUFFIXES: .java .class
-
 h5_doc: $(h5_SOURCES)
 	javadoc -author $(h5_SOURCES)
 
-h5: $(h5_CLASSES)
-
 .java.class:
 	$(JAVAC) -classpath $(CLASSPATH) $<
+
+jhdf4 : $(h4_CLASSES)
+	$(JAR) -cf $@.jar $(h4_CLASSES)
+
+jhdf5 : $(h5_CLASSES)
+	$(JAR) -cf $@.jar $(h5_CLASSES)
+
+testjhdf5 : $(testh5_CLASSES)
+	$(JAR) -cf $@.jar $(testh5_CLASSES)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
