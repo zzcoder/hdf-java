@@ -22398,7 +22398,7 @@ VERSION=./VERSION
 VERSSTRING=`/bin/cat ./VERSION | sed -e 's/VERSION=HDF-JAVA-//' `
 
 
-OUTPUT_FILES="Makefile native/Makefile native/h4/Makefile native/h5/Makefile src/Makefile "
+OUTPUT_FILES="Makefile native/Makefile native/h4/Makefile native/h5/Makefile src/Makefile"
 
 ac_config_files="$ac_config_files Makefile native/Makefile native/h4/Makefile native/h5/Makefile src/Makefile"
 

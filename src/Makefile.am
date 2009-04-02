@@ -23,10 +23,13 @@ include $(top_srcdir)/config/commence.am
 
 SUFFIXES: .java .class
 
-CLASSPATH = $(srcdir)
-all: h4 h5
+CLASSPATH = $(srcdir):$(top_srcdir)/lib/juni.jar
+
+
+all: jhdf4 jhdf5 testjhdf5
 
 h4_PATH = hdf/h4
+
 h4_SOURCES = $(h4_PATH)/HDFException.java \
         $(h4_PATH)/HDFArray.java \
         $(h4_PATH)/HDFChunkInfo.java \
@@ -76,49 +79,30 @@ h4_CLASSES = $(h4_PATH)/HDFException.class \
         $(h4_PATH)/HDFTable.class 
 
 
-h4_doc: $(h4_SOURCES)
-	javadoc -author $(h4_SOURCES)
-        
-h4: $(h4_CLASSES)
-
 h5_PATH = hdf/h5
 
-h5_constant_SOURCES = $(h5_PATH)/constants/H5_define.java \
-	$(h5_PATH)/constants/H5constant.java  \
+h5_constant_SOURCES = $(h5_PATH)/constants/H5constant.java  \
 	$(h5_PATH)/constants/H5Dconstant.java  \
 	$(h5_PATH)/constants/H5Econstant.java \
-	$(h5_PATH)/constants/H5F_define.java  \
 	$(h5_PATH)/constants/H5Fconstant.java  \
 	$(h5_PATH)/constants/H5Gconstant.java \
-        $(h5_PATH)/constants/H5I_define.java  \
 	$(h5_PATH)/constants/H5Iconstant.java  \
-	$(h5_PATH)/constants/H5L_define.java  \
 	$(h5_PATH)/constants/H5Pconstant.java \
         $(h5_PATH)/constants/H5Rconstant.java  \
-	$(h5_PATH)/constants/H5S_define.java  \
 	$(h5_PATH)/constants/H5Sconstant.java \
-        $(h5_PATH)/constants/H5T_define.java  \
 	$(h5_PATH)/constants/H5Tconstant.java  \
-	$(h5_PATH)/constants/H5Z_define.java  \
 	$(h5_PATH)/constants/H5Zconstant.java
 
-h5_constant_CLASSES = $(h5_PATH)/constants/H5_define.class \
-	$(h5_PATH)/constants/H5constant.class \
+h5_constant_CLASSES = $(h5_PATH)/constants/H5constant.class \
 	$(h5_PATH)/constants/H5Dconstant.class \
 	$(h5_PATH)/constants/H5Econstant.class \
-        $(h5_PATH)/constants/H5F_define.class \
         $(h5_PATH)/constants/H5Fconstant.class \
         $(h5_PATH)/constants/H5Gconstant.class \
-        $(h5_PATH)/constants/H5I_define.class \
         $(h5_PATH)/constants/H5Iconstant.class \
-        $(h5_PATH)/constants/H5L_define.class \
         $(h5_PATH)/constants/H5Pconstant.class \
         $(h5_PATH)/constants/H5Rconstant.class \
-        $(h5_PATH)/constants/H5S_define.class \
         $(h5_PATH)/constants/H5Sconstant.class \
-        $(h5_PATH)/constants/H5T_define.class \
         $(h5_PATH)/constants/H5Tconstant.class \
-        $(h5_PATH)/constants/H5Z_define.class \
         $(h5_PATH)/constants/H5Zconstant.class
 
 h5_enums_SOURCES = $(h5_PATH)/enums/H5_INDEX.java \
@@ -307,14 +291,29 @@ h5_CLASSES = $(h5_constant_CLASSES) \
 
 SUFFIXES: .java .class
 
+h4_doc: $(h4_SOURCES)
+	javadoc -author $(h4_SOURCES)
+
 h5_doc: $(h5_SOURCES)
 	javadoc -author $(h5_SOURCES)
-        
-h5: $(h5_CLASSES)
 
 .java.class:
 	$(JAVAC) -classpath $(CLASSPATH) $<
 
+jhdf4 : $(h4_CLASSES)
+	$(JAR) -cf $@.jar $(h4_CLASSES)
 
+
+jhdf5 : $(h5_CLASSES)
+	$(JAR) -cf $@.jar $(h5_CLASSES)
+
+testh5_PATH = test/h5
+
+testh5_SOURCES = $(testh5_PATH)/TestH5.java
+
+testh5_CLASSES = $(testh5_PATH)/TestH5.class
+
+testjhdf5 : $(testh5_CLASSES)
+	$(JAR) -cf $@.jar $(testh5_CLASSES)
 
 include $(top_srcdir)/config/conclude.am
