@@ -87,22 +87,6 @@ JNIEXPORT void JNICALL Java_hdf_h5_H5_H5check_1version
 JNIEXPORT void JNICALL Java_hdf_h5_H5_H5Eclear
   (JNIEnv *, jclass);
 
-/*
- * Class:     hdf_h5_H5
- * Method:    H5INcreate
- * Signature: (Ljava/lang/String;IIILjava/lang/String;Ljava/lang/String;J)I
- */
-JNIEXPORT jint JNICALL Java_hdf_h5_H5_H5INcreate
-  (JNIEnv *, jclass, jstring, jint, jint, jint, jstring, jstring, jlong);
-
-/*
- * Class:     hdf_h5_H5
- * Method:    H5INquery
- * Signature: (I[Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;I)I
- */
-JNIEXPORT jint JNICALL Java_hdf_h5_H5_H5INquery
-  (JNIEnv *, jclass, jint, jobjectArray, jobject, jobject, jint);
-
 #ifdef __cplusplus
 }
 #endif

@@ -71,6 +71,22 @@ JNIEXPORT jobject JNICALL Java_hdf_h5_H5G_H5Gget_1info_1by_1idx
 JNIEXPORT jint JNICALL Java_hdf_h5_H5G_H5Gclose
   (JNIEnv *, jclass, jint);
 
+/*
+ * Class:     hdf_h5_H5G
+ * Method:    H5Gcreate1
+ * Signature: (ILjava/lang/String;J)I
+ */
+JNIEXPORT jint JNICALL Java_hdf_h5_H5G_H5Gcreate1
+  (JNIEnv *, jclass, jint, jstring, jlong);
+
+/*
+ * Class:     hdf_h5_H5G
+ * Method:    H5Gopen1
+ * Signature: (ILjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_hdf_h5_H5G_H5Gopen1
+  (JNIEnv *, jclass, jint, jstring);
+
 #ifdef __cplusplus
 }
 #endif

@@ -967,6 +967,22 @@ JNIEXPORT void JNICALL Java_hdf_h5_H5P_H5Pset_1copy_1object
 JNIEXPORT jint JNICALL Java_hdf_h5_H5P_H5Pget_1copy_1object
   (JNIEnv *, jclass, jint);
 
+/*
+ * Class:     hdf_h5_H5P
+ * Method:    H5Pget_filter1
+ * Signature: (II[I[I[I[Lhdf/h5/enums/H5Z_FILTER;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_hdf_h5_H5P_H5Pget_1filter1
+  (JNIEnv *, jclass, jint, jint, jintArray, jintArray, jintArray, jobjectArray);
+
+/*
+ * Class:     hdf_h5_H5P
+ * Method:    H5Pget_filter_by_id1
+ * Signature: (ILhdf/h5/enums/H5Z_FILTER;[I[J[I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_hdf_h5_H5P_H5Pget_1filter_1by_1id1
+  (JNIEnv *, jclass, jint, jobject, jintArray, jlongArray, jintArray);
+
 #ifdef __cplusplus
 }
 #endif

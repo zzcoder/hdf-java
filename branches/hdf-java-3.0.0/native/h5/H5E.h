@@ -127,6 +127,22 @@ JNIEXPORT jstring JNICALL Java_hdf_h5_H5E_H5Eget_1msg
 JNIEXPORT jlong JNICALL Java_hdf_h5_H5E_H5Eget_1num
   (JNIEnv *, jclass, jint);
 
+/*
+ * Class:     hdf_h5_H5E
+ * Method:    H5Eprint1
+ * Signature: (Ljava/io/File;)V
+ */
+JNIEXPORT void JNICALL Java_hdf_h5_H5E_H5Eprint1
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     hdf_h5_H5E
+ * Method:    H5Eclear1
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_hdf_h5_H5E_H5Eclear1
+  (JNIEnv *, jclass);
+
 #ifdef __cplusplus
 }
 #endif

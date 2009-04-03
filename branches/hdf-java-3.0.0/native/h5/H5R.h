@@ -47,6 +47,14 @@ JNIEXPORT jobject JNICALL Java_hdf_h5_H5R_H5Rget_1obj_1type2
 JNIEXPORT jstring JNICALL Java_hdf_h5_H5R_H5Rget_1name
   (JNIEnv *, jclass, jint, jobject, jbyteArray);
 
+/*
+ * Class:     hdf_h5_H5R
+ * Method:    H5Rget_obj_type1
+ * Signature: (ILhdf/h5/enums/H5R_TYPE;[B)Lhdf/h5/enums/H5G_OBJECT_TYPE;
+ */
+JNIEXPORT jobject JNICALL Java_hdf_h5_H5R_H5Rget_1obj_1type1
+  (JNIEnv *, jclass, jint, jobject, jbyteArray);
+
 #ifdef __cplusplus
 }
 #endif
