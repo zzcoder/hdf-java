@@ -347,15 +347,6 @@ public class H5 {
 
     //////////////////////////////////////////////////////////////////
 
-    /**
-     *  J2C converts a Java constant to an HDF5 constant determined at runtime
-     *
-     *  @param java_constant IN: The value of Java constant
-     *  
-     *  @return the value of an HDF5 constant determined at runtime
-     **/
-    public synchronized static native int J2C(int java_constant);
-
     /** Turn off error handling
      *  By default, the C library prints the error stack
      *  of the HDF-5 C library on stdout.  This behavior
