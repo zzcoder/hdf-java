@@ -13,8 +13,6 @@
 
 package hdf.h5.constants;
 
-import hdf.h5.H5;
-
 
 /**
 /**
@@ -29,101 +27,105 @@ import hdf.h5.H5;
 public class H5Zconstant
 {
     ///////////////////////////////////////////////////////////////////////////
-    //           This list must be identical to H5Constants.h                //
-    //                DO NOT EDIT THE LIST !!!                               //
+    //           The values are used in the C JNI header file.               //
+    //      DO NOT CHANGE THE VALUES UNLESS YOU KNOW WHAT YOU DO !!!         //
     ///////////////////////////////////////////////////////////////////////////
+    final private static int JH5Z_CB_CONT = 10 ;
+    final private static int JH5Z_CB_ERROR = 20 ;
+    final private static int JH5Z_CB_FAIL = 30 ;
+    final private static int JH5Z_CB_NO = 40 ;
+    final private static int JH5Z_DISABLE_EDC = 50 ;
+    final private static int JH5Z_ENABLE_EDC = 60 ;
+    final private static int JH5Z_ERROR_EDC = 70 ;
+    final private static int JH5Z_FILTER_DEFLATE = 80 ;
+    final private static int JH5Z_FILTER_ERROR = 90 ;
+    final private static int JH5Z_FILTER_FLETCHER32 = 100 ;
+    final private static int JH5Z_FILTER_MAX = 110 ;
+    final private static int JH5Z_FILTER_NONE = 120 ;
+    final private static int JH5Z_FILTER_RESERVED = 130 ;
+    final private static int JH5Z_FILTER_SHUFFLE = 140 ;
+    final private static int JH5Z_FILTER_SZIP = 150 ;
+    final private static int JH5Z_FLAG_DEFMASK = 160 ;
+    final private static int JH5Z_FLAG_INVMASK = 170 ;
+    final private static int JH5Z_FLAG_MANDATORY = 180 ;
+    final private static int JH5Z_FLAG_OPTIONAL = 190 ;
+    final private static int JH5Z_FLAG_REVERSE = 200 ;
+    final private static int JH5Z_FLAG_SKIP_EDC = 210 ;
+    final private static int JH5Z_MAX_NFILTERS = 220 ;
+    final private static int JH5Z_NO_EDC = 230 ;
+    final private static int JH5Z_FILTER_CONFIG_ENCODE_ENABLED = 240 ;
+    final private static int JH5Z_FILTER_CONFIG_DECODE_ENABLED = 250 ;
+    private static final int JH5Z_SO_INT_MINBITS_DEFAULT = 260 ;
+    private static final int JH5_SZIP_ALLOW_K13_OPTION_MASK  = 270 ;
+    private static final int JH5_SZIP_CHIP_OPTION_MASK       = 280 ;
+    private static final int JH5_SZIP_EC_OPTION_MASK         = 290 ;
+    private static final int JH5_SZIP_NN_OPTION_MASK         = 300 ;
+    private static final int JH5_SZIP_MAX_PIXELS_PER_BLOCK   = 310 ;
+    private static final int JH5Z_SHUFFLE_USER_NPARMS   = 320 ; 
+    private static final int JH5Z_SHUFFLE_TOTAL_NPARMS  = 330 ; 
+    private static final int JH5Z_SZIP_USER_NPARMS   = 340 ; 
+    private static final int JH5Z_SZIP_TOTAL_NPARMS  = 350 ; 
+    private static final int JH5Z_SZIP_PARM_MASK     = 360 ;   
+    private static final int JH5Z_SZIP_PARM_PPB      = 370 ;    
+    private static final int JH5Z_SZIP_PARM_BPP      = 380 ;    
+    private static final int JH5Z_SZIP_PARM_PPS      = 390 ;    
+    private static final int JH5Z_NBIT_USER_NPARMS   = 400 ;   
+    private static final int JH5Z_SCALEOFFSET_USER_NPARMS = 410 ; 
+    private static final int JH5Z_FILTER_ALL   = 420 ;   
 
-    final private static int JH5Z_CB_CONT = 5260;
-    final private static int JH5Z_CB_ERROR = 5270;
-    final private static int JH5Z_CB_FAIL = 5280;
-    final private static int JH5Z_CB_NO = 5290;
-    final private static int JH5Z_DISABLE_EDC = 5300;
-    final private static int JH5Z_ENABLE_EDC = 5310;
-    final private static int JH5Z_ERROR_EDC = 5320;
-    final private static int JH5Z_FILTER_DEFLATE = 5330;
-    final private static int JH5Z_FILTER_ERROR = 5340;
-    final private static int JH5Z_FILTER_FLETCHER32 = 5350;
-    final private static int JH5Z_FILTER_MAX = 5360;
-    final private static int JH5Z_FILTER_NONE = 5370;
-    final private static int JH5Z_FILTER_RESERVED = 5380;
-    final private static int JH5Z_FILTER_SHUFFLE = 5390;
-    final private static int JH5Z_FILTER_SZIP = 5400;
-    final private static int JH5Z_FLAG_DEFMASK = 5410;
-    final private static int JH5Z_FLAG_INVMASK = 5420;
-    final private static int JH5Z_FLAG_MANDATORY = 5430;
-    final private static int JH5Z_FLAG_OPTIONAL = 5440;
-    final private static int JH5Z_FLAG_REVERSE = 5450;
-    final private static int JH5Z_FLAG_SKIP_EDC = 5460;
-    final private static int JH5Z_MAX_NFILTERS = 5470;
-    final private static int JH5Z_NO_EDC = 5480;
-    final private static int JH5Z_FILTER_CONFIG_ENCODE_ENABLED = 5490;
-    final private static int JH5Z_FILTER_CONFIG_DECODE_ENABLED = 5500;
 
     ///////////////////////////////////////////////////////////////////////////
     //                Get the HDF5 constants from the library                //
     ///////////////////////////////////////////////////////////////////////////
 
-    final public static int H5Z_CB_CONT = H5.J2C( JH5Z_CB_CONT );
-    final public static int H5Z_CB_ERROR = H5.J2C( JH5Z_CB_ERROR );
-    final public static int H5Z_CB_FAIL = H5.J2C( JH5Z_CB_FAIL );
-    final public static int H5Z_CB_NO = H5.J2C( JH5Z_CB_NO );
-    final public static int H5Z_DISABLE_EDC = H5.J2C( JH5Z_DISABLE_EDC );
-    final public static int H5Z_ENABLE_EDC = H5.J2C( JH5Z_ENABLE_EDC );
-    final public static int H5Z_ERROR_EDC = H5.J2C( JH5Z_ERROR_EDC );
-    final public static int H5Z_FILTER_DEFLATE = H5.J2C( JH5Z_FILTER_DEFLATE );
-    final public static int H5Z_FILTER_ERROR = H5.J2C( JH5Z_FILTER_ERROR );
-    final public static int H5Z_FILTER_FLETCHER32 = H5.J2C( JH5Z_FILTER_FLETCHER32 );
-    final public static int H5Z_FILTER_MAX = H5.J2C( JH5Z_FILTER_MAX );
-    final public static int H5Z_FILTER_NONE = H5.J2C( JH5Z_FILTER_NONE );
-    final public static int H5Z_FILTER_RESERVED = H5.J2C( JH5Z_FILTER_RESERVED );
-    final public static int H5Z_FILTER_SHUFFLE = H5.J2C( JH5Z_FILTER_SHUFFLE );
-    final public static int H5Z_FILTER_SZIP = H5.J2C( JH5Z_FILTER_SZIP );
-    final public static int H5Z_FLAG_DEFMASK = H5.J2C( JH5Z_FLAG_DEFMASK );
-    final public static int H5Z_FLAG_INVMASK = H5.J2C( JH5Z_FLAG_INVMASK );
-    final public static int H5Z_FLAG_MANDATORY = H5.J2C( JH5Z_FLAG_MANDATORY );
-    final public static int H5Z_FLAG_OPTIONAL = H5.J2C( JH5Z_FLAG_OPTIONAL );
-    final public static int H5Z_FLAG_REVERSE = H5.J2C( JH5Z_FLAG_REVERSE );
-    final public static int H5Z_FLAG_SKIP_EDC = H5.J2C( JH5Z_FLAG_SKIP_EDC );
-    final public static int H5Z_MAX_NFILTERS = H5.J2C( JH5Z_MAX_NFILTERS );
-    final public static int H5Z_NO_EDC = H5.J2C( JH5Z_NO_EDC );
-    final public static int H5Z_FILTER_CONFIG_ENCODE_ENABLED = H5.J2C( JH5Z_FILTER_CONFIG_ENCODE_ENABLED );
-    final public static int H5Z_FILTER_CONFIG_DECODE_ENABLED = H5.J2C( JH5Z_FILTER_CONFIG_DECODE_ENABLED );
+    final public static int H5Z_CB_CONT = J2C( JH5Z_CB_CONT );
+    final public static int H5Z_CB_ERROR = J2C( JH5Z_CB_ERROR );
+    final public static int H5Z_CB_FAIL = J2C( JH5Z_CB_FAIL );
+    final public static int H5Z_CB_NO = J2C( JH5Z_CB_NO );
+    final public static int H5Z_DISABLE_EDC = J2C( JH5Z_DISABLE_EDC );
+    final public static int H5Z_ENABLE_EDC = J2C( JH5Z_ENABLE_EDC );
+    final public static int H5Z_ERROR_EDC = J2C( JH5Z_ERROR_EDC );
+    final public static int H5Z_FILTER_DEFLATE = J2C( JH5Z_FILTER_DEFLATE );
+    final public static int H5Z_FILTER_ERROR = J2C( JH5Z_FILTER_ERROR );
+    final public static int H5Z_FILTER_FLETCHER32 = J2C( JH5Z_FILTER_FLETCHER32 );
+    final public static int H5Z_FILTER_MAX = J2C( JH5Z_FILTER_MAX );
+    final public static int H5Z_FILTER_NONE = J2C( JH5Z_FILTER_NONE );
+    final public static int H5Z_FILTER_RESERVED = J2C( JH5Z_FILTER_RESERVED );
+    final public static int H5Z_FILTER_SHUFFLE = J2C( JH5Z_FILTER_SHUFFLE );
+    final public static int H5Z_FILTER_SZIP = J2C( JH5Z_FILTER_SZIP );
+    final public static int H5Z_FLAG_DEFMASK = J2C( JH5Z_FLAG_DEFMASK );
+    final public static int H5Z_FLAG_INVMASK = J2C( JH5Z_FLAG_INVMASK );
+    final public static int H5Z_FLAG_MANDATORY = J2C( JH5Z_FLAG_MANDATORY );
+    final public static int H5Z_FLAG_OPTIONAL = J2C( JH5Z_FLAG_OPTIONAL );
+    final public static int H5Z_FLAG_REVERSE = J2C( JH5Z_FLAG_REVERSE );
+    final public static int H5Z_FLAG_SKIP_EDC = J2C( JH5Z_FLAG_SKIP_EDC );
+    final public static int H5Z_MAX_NFILTERS = J2C( JH5Z_MAX_NFILTERS );
+    final public static int H5Z_NO_EDC = J2C( JH5Z_NO_EDC );
+    final public static int H5Z_FILTER_CONFIG_ENCODE_ENABLED = J2C( JH5Z_FILTER_CONFIG_ENCODE_ENABLED );
+    final public static int H5Z_FILTER_CONFIG_DECODE_ENABLED = J2C( JH5Z_FILTER_CONFIG_DECODE_ENABLED );
+    public static final int  H5Z_SO_INT_MINBITS_DEFAULT = J2C(JH5Z_SO_INT_MINBITS_DEFAULT);
+    public static final int  H5_SZIP_ALLOW_K13_OPTION_MASK  = J2C(JH5_SZIP_ALLOW_K13_OPTION_MASK );
+    public static final int  H5_SZIP_CHIP_OPTION_MASK       = J2C(JH5_SZIP_CHIP_OPTION_MASK      );
+    public static final int  H5_SZIP_EC_OPTION_MASK         = J2C(JH5_SZIP_EC_OPTION_MASK        );
+    public static final int  H5_SZIP_NN_OPTION_MASK         = J2C(JH5_SZIP_NN_OPTION_MASK        );
+    public static final int  H5_SZIP_MAX_PIXELS_PER_BLOCK   = J2C(JH5_SZIP_MAX_PIXELS_PER_BLOCK  );
+    public static final int  H5Z_SHUFFLE_USER_NPARMS   = J2C(JH5Z_SHUFFLE_USER_NPARMS  );
+    public static final int  H5Z_SHUFFLE_TOTAL_NPARMS  = J2C(JH5Z_SHUFFLE_TOTAL_NPARMS );
+    public static final int  H5Z_SZIP_USER_NPARMS   = J2C(JH5Z_SZIP_USER_NPARMS  );
+    public static final int  H5Z_SZIP_TOTAL_NPARMS  = J2C(JH5Z_SZIP_TOTAL_NPARMS );
+    public static final int  H5Z_SZIP_PARM_MASK     = J2C(JH5Z_SZIP_PARM_MASK    );
+    public static final int  H5Z_SZIP_PARM_PPB      = J2C(JH5Z_SZIP_PARM_PPB     );
+    public static final int  H5Z_SZIP_PARM_BPP      = J2C(JH5Z_SZIP_PARM_BPP     );
+    public static final int  H5Z_SZIP_PARM_PPS      = J2C(JH5Z_SZIP_PARM_PPS     );
+    public static final int  H5Z_NBIT_USER_NPARMS   = J2C(JH5Z_NBIT_USER_NPARMS  );
+    public static final int  H5Z_SCALEOFFSET_USER_NPARMS = J2C(JH5Z_SCALEOFFSET_USER_NPARMS);
+    public static final int  H5Z_FILTER_ALL   = J2C(JH5Z_FILTER_ALL  );
 
-    public static final int H5Z_SO_INT_MINBITS_DEFAULT = 0;
-    
-    // Special parameters for szip compression
-    public static final int H5_SZIP_ALLOW_K13_OPTION_MASK  = 1;
-    public static final int H5_SZIP_CHIP_OPTION_MASK       = 2;
-    public static final int H5_SZIP_EC_OPTION_MASK         = 4;
-    public static final int H5_SZIP_NN_OPTION_MASK         = 32;
-    public static final int H5_SZIP_MAX_PIXELS_PER_BLOCK   = 32;
-
-    // for the shuffle filter
-    public static final int H5Z_SHUFFLE_USER_NPARMS   = 0; // Number of parameters that users can set
-    public static final int H5Z_SHUFFLE_TOTAL_NPARMS  = 1; // Total number of parameters for filter
-
-    // for the szip filter
-    public static final int H5Z_SZIP_USER_NPARMS   = 2;    // Number of parameters that users can set
-    public static final int H5Z_SZIP_TOTAL_NPARMS  = 4;    // Total number of parameters for filter
-    public static final int H5Z_SZIP_PARM_MASK     = 0;    // "User" parameter for option mask
-    public static final int H5Z_SZIP_PARM_PPB      = 1;    // "User" parameter for pixels-per-block
-    public static final int H5Z_SZIP_PARM_BPP      = 2;    // "Local" parameter for bits-per-pixel
-    public static final int H5Z_SZIP_PARM_PPS      = 3;    // "Local" parameter for pixels-per-scanline
-
-    // for the nbit filter
-    public static final int H5Z_NBIT_USER_NPARMS   = 0;    // Number of parameters that users can set
-
-    // for the scale offset filter
-    public static final int H5Z_SCALEOFFSET_USER_NPARMS = 2;  // Number of parameters that users can set
-
-    // General
-    public static final int H5Z_FILTER_ALL   = 0;   // Symbol to remove all filters in H5Premove_filter
-    
     /**
-     * Get the value of a constant variable from the library. Some of the
-     * library constants are defined at run-time. Using get() will make sure
-     * the constants are correct. 
-     */
-    private synchronized static native int get(String constantName);
-
-}
+     *  J2C converts a Java constant to an HDF5 constant determined at runtime
+     *
+     *  @param java_constant IN: The value of Java constant
+     *  
+     *  @return the value of an HDF5 constant determined at runtime
+     **/
+    public synchronized static native int J2C(int java_constant);}
