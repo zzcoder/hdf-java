@@ -236,17 +236,31 @@ import java.util.logging.Logger;
  **/
 public class H5 {
 
+    /**
+     * A key of system property to load library from the library path.
+     */
     public final static String H5PATH_PROPERTY_KEY = "hdf.h5";
     
-    //add system property to load library by name from library path, via System.loadLibrary() 
+    /** 
+     * A key of system property to load library by name from library path, 
+     * via System.loadLibrary() 
+     */ 
     public final static String H5_LIBRARY_NAME_PROPERTY_KEY = "hdf.h5.loadLibraryName"; 
 
     private static Logger s_logger; 
     private static String s_libraryName; 
-
-    static
+    private static boolean isLibraryLoaded = false;
+    
+    static { loadH5Lib(); }
+    
+    /**
+     * load the hdf5 library. loadH5Lib() is only accessible from hdf.h5 package.
+     */
+    static void loadH5Lib() 
     {
-        boolean done = false;
+        // Make sure that the library is loaded only once 
+        if (isLibraryLoaded)
+            return;
         
         // use default logger, since spanning sources 
         s_logger = Logger.getLogger("hdf.h5"); 
@@ -259,17 +273,17 @@ public class H5 {
             try { 
                 mappedName = System.mapLibraryName(s_libraryName); 
                 System.loadLibrary(s_libraryName); 
-                done = true; 
+                isLibraryLoaded = true; 
             } catch (Throwable err) { 
                 err.printStackTrace(); 
-                done = false; 
+                isLibraryLoaded = false; 
             } finally { 
-                s_logger.log(Level.INFO,"HDF5 library: " + s_libraryName + " resolved to: "+mappedName+"; "+(done ? "" : " NOT") + " successfully loaded from java.library.path");
+                s_logger.log(Level.INFO,"HDF5 library: " + s_libraryName + " resolved to: "+mappedName+"; "+(isLibraryLoaded ? "" : " NOT") + " successfully loaded from java.library.path");
 
             } 
         } 
         
-        if (!done) { 
+        if (!isLibraryLoaded) { 
             // else try loading library via full path 
             String filename = System.getProperty(H5PATH_PROPERTY_KEY,null); 
             if ((filename != null) && (filename.length() > 0)) 
@@ -278,33 +292,33 @@ public class H5 {
                 if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) { 
                     try { 
                         System.load(filename); 
-                        done = true; 
+                        isLibraryLoaded = true; 
                     } catch (Throwable err) { 
                         err.printStackTrace(); 
-                        done = false; 
+                        isLibraryLoaded = false; 
                     } finally { 
-                        s_logger.log(Level.INFO,"HDF5 library: " + filename + (done ? "" : " NOT") + " successfully loaded.");
+                        s_logger.log(Level.INFO,"HDF5 library: " + filename + (isLibraryLoaded ? "" : " NOT") + " successfully loaded.");
 
                     } 
                 } else { 
-                    done = false; 
+                    isLibraryLoaded = false; 
                     throw (new UnsatisfiedLinkError("Invalid HDF5 library, "+filename)); 
                 } 
             } 
         } 
 
         // else load standard library 
-        if (!done) 
+        if (!isLibraryLoaded) 
         { 
             try { 
                 s_libraryName = "jhdf5"; 
                 mappedName = System.mapLibraryName(s_libraryName); 
                 System.loadLibrary("jhdf5"); 
-                done = true; 
+                isLibraryLoaded = true; 
             } catch (Throwable err) { 
-                err.printStackTrace(); done = false; 
+                err.printStackTrace(); isLibraryLoaded = false; 
             } finally { 
-                s_logger.log(Level.INFO,"HDF5 library: " + s_libraryName + " resolved to: "+mappedName+"; "+(done ? "" : " NOT") + " successfully loaded from java.library.path");
+                s_logger.log(Level.INFO,"HDF5 library: " + s_libraryName + " resolved to: "+mappedName+"; "+(isLibraryLoaded ? "" : " NOT") + " successfully loaded from java.library.path");
 
             } 
         } 
@@ -329,7 +343,7 @@ public class H5 {
         if ((majnum != null) && (minnum != null) && (relnum != null)) {
             H5.H5check_version(majnum.intValue(),minnum.intValue(),relnum.intValue());
         }
-    }
+    } // static void loadH5Lib()
 
     //////////////////////////////////////////////////////////////////
 
