@@ -27,17 +27,21 @@ extern "C" {
 JNIEXPORT jint JNICALL Java_hdf_h5_constants_H5constant_J2C
   (JNIEnv *env, jclass cls, jint java_constant)
 {
-    int c_constant = (int)c_constant;
-
     switch (java_constant)
     {
-        /*case  : c_constant = ; break; */
- 
+    case hdf_h5_constants_H5constant_JH5_SZIP_MAX_PIXELS_PER_BLOCK : return H5_SZIP_MAX_PIXELS_PER_BLOCK;
+    case hdf_h5_constants_H5constant_JH5_SZIP_NN_OPTION_MASK : return H5_SZIP_NN_OPTION_MASK;
+    case hdf_h5_constants_H5constant_JH5_SZIP_EC_OPTION_MASK : return H5_SZIP_EC_OPTION_MASK;
+    case hdf_h5_constants_H5constant_JH5_SZIP_ALLOW_K13_OPTION_MASK : return H5_SZIP_ALLOW_K13_OPTION_MASK;
+    case hdf_h5_constants_H5constant_JH5_SZIP_CHIP_OPTION_MASK : return H5_SZIP_CHIP_OPTION_MASK;
+    case hdf_h5_constants_H5constant_JH5_ITER_ERROR : return H5_ITER_ERROR  ;
+    case hdf_h5_constants_H5constant_JH5_ITER_CONT  : return H5_ITER_CONT   ;
+    case hdf_h5_constants_H5constant_JH5_ITER_STOP  : return H5_ITER_STOP   ;
     }
 
-    return (jint) c_constant;
+    return -1;
 }
 
 #ifdef __cplusplus
-extern "C" {
+}
 #endif

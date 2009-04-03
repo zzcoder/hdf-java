@@ -84,6 +84,6 @@ public class H5Dconstant {
      *  
      *  @return the value of an HDF5 constant determined at runtime
      **/
-    public synchronized static native int J2C(int java_constant);
+    private synchronized static native int J2C(int java_constant);
 
 }

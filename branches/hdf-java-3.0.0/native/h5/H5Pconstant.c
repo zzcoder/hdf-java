@@ -16,7 +16,7 @@ extern "C" {
 #endif
 
 #include "hdf5.h"
-#include "H5constant.h"
+#include "H5Pconstant.h"
 #include <jni.h>
 
 /*
@@ -24,20 +24,29 @@ extern "C" {
  * Method:    J2C
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_hdf_h5_constants_H5constant_J2C
+JNIEXPORT jint JNICALL Java_hdf_h5_constants_H5Pconstant_J2C
   (JNIEnv *env, jclass cls, jint java_constant)
 {
-    int c_constant = (int)c_constant;
-
     switch (java_constant)
     {
-        /*case  : c_constant = ; break; */
- 
+    case hdf_h5_constants_H5Pconstant_JH5P_DATASET_CREATE : return H5P_DATASET_CREATE ;
+    case hdf_h5_constants_H5Pconstant_JH5P_DATASET_CREATE_DEFAULT : return H5P_DATASET_CREATE_DEFAULT ;
+    case hdf_h5_constants_H5Pconstant_JH5P_DATASET_XFER : return H5P_DATASET_XFER ;
+    case hdf_h5_constants_H5Pconstant_JH5P_DATASET_XFER_DEFAULT : return H5P_DATASET_XFER_DEFAULT ;
+    case hdf_h5_constants_H5Pconstant_JH5P_DEFAULT : return H5P_DEFAULT ;
+    case hdf_h5_constants_H5Pconstant_JH5P_FILE_ACCESS : return H5P_FILE_ACCESS ;
+    case hdf_h5_constants_H5Pconstant_JH5P_FILE_ACCESS_DEFAULT : return H5P_FILE_ACCESS_DEFAULT ;
+    case hdf_h5_constants_H5Pconstant_JH5P_FILE_CREATE : return H5P_FILE_CREATE ;
+    case hdf_h5_constants_H5Pconstant_JH5P_FILE_CREATE_DEFAULT : return H5P_FILE_CREATE_DEFAULT ;
+    /*case hdf_h5_constants_H5Pconstant_JH5P_MOUNT : return H5P_MOUNT ;
+    case hdf_h5_constants_H5Pconstant_JH5P_MOUNT_DEFAULT : return H5P_MOUNT_DEFAULT ;*/
+    case hdf_h5_constants_H5Pconstant_JH5P_NO_CLASS : return H5P_NO_CLASS ;
+    /*case hdf_h5_constants_H5Pconstant_JH5P_NO_CLASS_DEFAULT : return H5P_NO_CLASS_DEFAULT ;*/
     }
 
-    return (jint) c_constant;
+    return -1;
 }
 
 #ifdef __cplusplus
-extern "C" {
+}
 #endif
