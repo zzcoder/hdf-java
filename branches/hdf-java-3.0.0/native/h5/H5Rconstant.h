@@ -8,24 +8,24 @@
 extern "C" {
 #endif
 #undef hdf_h5_constants_H5Rconstant_JH5R_BADTYPE
-#define hdf_h5_constants_H5Rconstant_JH5R_BADTYPE 2950L
+#define hdf_h5_constants_H5Rconstant_JH5R_BADTYPE 10L
 #undef hdf_h5_constants_H5Rconstant_JH5R_DATASET_REGION
-#define hdf_h5_constants_H5Rconstant_JH5R_DATASET_REGION 2960L
+#define hdf_h5_constants_H5Rconstant_JH5R_DATASET_REGION 20L
 #undef hdf_h5_constants_H5Rconstant_JH5R_INTERNAL
-#define hdf_h5_constants_H5Rconstant_JH5R_INTERNAL 2970L
+#define hdf_h5_constants_H5Rconstant_JH5R_INTERNAL 30L
 #undef hdf_h5_constants_H5Rconstant_JH5R_MAXTYPE
-#define hdf_h5_constants_H5Rconstant_JH5R_MAXTYPE 2980L
+#define hdf_h5_constants_H5Rconstant_JH5R_MAXTYPE 40L
 #undef hdf_h5_constants_H5Rconstant_JH5R_OBJ_REF_BUF_SIZE
-#define hdf_h5_constants_H5Rconstant_JH5R_OBJ_REF_BUF_SIZE 2990L
+#define hdf_h5_constants_H5Rconstant_JH5R_OBJ_REF_BUF_SIZE 50L
 #undef hdf_h5_constants_H5Rconstant_JH5R_OBJECT
-#define hdf_h5_constants_H5Rconstant_JH5R_OBJECT 3000L
+#define hdf_h5_constants_H5Rconstant_JH5R_OBJECT 60L
 /*
  * Class:     hdf_h5_constants_H5Rconstant
- * Method:    get
- * Signature: (Ljava/lang/String;)I
+ * Method:    J2C
+ * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_hdf_h5_constants_H5Rconstant_get
-  (JNIEnv *, jclass, jstring);
+JNIEXPORT jint JNICALL Java_hdf_h5_constants_H5Rconstant_J2C
+  (JNIEnv *, jclass, jint);
 
 #ifdef __cplusplus
 }

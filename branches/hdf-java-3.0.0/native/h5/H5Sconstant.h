@@ -8,58 +8,58 @@
 extern "C" {
 #endif
 #undef hdf_h5_constants_H5Sconstant_JH5S_ALL
-#define hdf_h5_constants_H5Sconstant_JH5S_ALL 3010L
+#define hdf_h5_constants_H5Sconstant_JH5S_ALL 10L
 #undef hdf_h5_constants_H5Sconstant_JH5S_COMPLEX
-#define hdf_h5_constants_H5Sconstant_JH5S_COMPLEX 3020L
+#define hdf_h5_constants_H5Sconstant_JH5S_COMPLEX 20L
 #undef hdf_h5_constants_H5Sconstant_JH5S_MAX_RANK
-#define hdf_h5_constants_H5Sconstant_JH5S_MAX_RANK 3030L
+#define hdf_h5_constants_H5Sconstant_JH5S_MAX_RANK 30L
 #undef hdf_h5_constants_H5Sconstant_JH5S_NO_CLASS
-#define hdf_h5_constants_H5Sconstant_JH5S_NO_CLASS 3040L
+#define hdf_h5_constants_H5Sconstant_JH5S_NO_CLASS 40L
 #undef hdf_h5_constants_H5Sconstant_JH5S_SCALAR
-#define hdf_h5_constants_H5Sconstant_JH5S_SCALAR 3050L
+#define hdf_h5_constants_H5Sconstant_JH5S_SCALAR 50L
 #undef hdf_h5_constants_H5Sconstant_JH5S_SEL_ALL
-#define hdf_h5_constants_H5Sconstant_JH5S_SEL_ALL 3060L
+#define hdf_h5_constants_H5Sconstant_JH5S_SEL_ALL 60L
 #undef hdf_h5_constants_H5Sconstant_JH5S_SEL_ERROR
-#define hdf_h5_constants_H5Sconstant_JH5S_SEL_ERROR 3070L
+#define hdf_h5_constants_H5Sconstant_JH5S_SEL_ERROR 70L
 #undef hdf_h5_constants_H5Sconstant_JH5S_SEL_HYPERSLABS
-#define hdf_h5_constants_H5Sconstant_JH5S_SEL_HYPERSLABS 3080L
+#define hdf_h5_constants_H5Sconstant_JH5S_SEL_HYPERSLABS 80L
 #undef hdf_h5_constants_H5Sconstant_JH5S_SEL_N
-#define hdf_h5_constants_H5Sconstant_JH5S_SEL_N 3090L
+#define hdf_h5_constants_H5Sconstant_JH5S_SEL_N 90L
 #undef hdf_h5_constants_H5Sconstant_JH5S_SEL_NONE
-#define hdf_h5_constants_H5Sconstant_JH5S_SEL_NONE 3100L
+#define hdf_h5_constants_H5Sconstant_JH5S_SEL_NONE 100L
 #undef hdf_h5_constants_H5Sconstant_JH5S_SEL_POINTS
-#define hdf_h5_constants_H5Sconstant_JH5S_SEL_POINTS 3110L
+#define hdf_h5_constants_H5Sconstant_JH5S_SEL_POINTS 110L
 #undef hdf_h5_constants_H5Sconstant_JH5S_SELECT_AND
-#define hdf_h5_constants_H5Sconstant_JH5S_SELECT_AND 3120L
+#define hdf_h5_constants_H5Sconstant_JH5S_SELECT_AND 120L
 #undef hdf_h5_constants_H5Sconstant_JH5S_SELECT_APPEND
-#define hdf_h5_constants_H5Sconstant_JH5S_SELECT_APPEND 3130L
+#define hdf_h5_constants_H5Sconstant_JH5S_SELECT_APPEND 130L
 #undef hdf_h5_constants_H5Sconstant_JH5S_SELECT_INVALID
-#define hdf_h5_constants_H5Sconstant_JH5S_SELECT_INVALID 3140L
+#define hdf_h5_constants_H5Sconstant_JH5S_SELECT_INVALID 140L
 #undef hdf_h5_constants_H5Sconstant_JH5S_SELECT_NOOP
-#define hdf_h5_constants_H5Sconstant_JH5S_SELECT_NOOP 3150L
+#define hdf_h5_constants_H5Sconstant_JH5S_SELECT_NOOP 150L
 #undef hdf_h5_constants_H5Sconstant_JH5S_SELECT_NOTA
-#define hdf_h5_constants_H5Sconstant_JH5S_SELECT_NOTA 3160L
+#define hdf_h5_constants_H5Sconstant_JH5S_SELECT_NOTA 160L
 #undef hdf_h5_constants_H5Sconstant_JH5S_SELECT_NOTB
-#define hdf_h5_constants_H5Sconstant_JH5S_SELECT_NOTB 3170L
+#define hdf_h5_constants_H5Sconstant_JH5S_SELECT_NOTB 170L
 #undef hdf_h5_constants_H5Sconstant_JH5S_SELECT_OR
-#define hdf_h5_constants_H5Sconstant_JH5S_SELECT_OR 3180L
+#define hdf_h5_constants_H5Sconstant_JH5S_SELECT_OR 180L
 #undef hdf_h5_constants_H5Sconstant_JH5S_SELECT_PREPEND
-#define hdf_h5_constants_H5Sconstant_JH5S_SELECT_PREPEND 3190L
+#define hdf_h5_constants_H5Sconstant_JH5S_SELECT_PREPEND 190L
 #undef hdf_h5_constants_H5Sconstant_JH5S_SELECT_SET
-#define hdf_h5_constants_H5Sconstant_JH5S_SELECT_SET 3200L
+#define hdf_h5_constants_H5Sconstant_JH5S_SELECT_SET 200L
 #undef hdf_h5_constants_H5Sconstant_JH5S_SELECT_XOR
-#define hdf_h5_constants_H5Sconstant_JH5S_SELECT_XOR 3210L
+#define hdf_h5_constants_H5Sconstant_JH5S_SELECT_XOR 210L
 #undef hdf_h5_constants_H5Sconstant_JH5S_SIMPLE
-#define hdf_h5_constants_H5Sconstant_JH5S_SIMPLE 3220L
+#define hdf_h5_constants_H5Sconstant_JH5S_SIMPLE 220L
 #undef hdf_h5_constants_H5Sconstant_JH5S_UNLIMITED
-#define hdf_h5_constants_H5Sconstant_JH5S_UNLIMITED 3230L
+#define hdf_h5_constants_H5Sconstant_JH5S_UNLIMITED 230L
 /*
  * Class:     hdf_h5_constants_H5Sconstant
- * Method:    get
- * Signature: (Ljava/lang/String;)I
+ * Method:    J2C
+ * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_hdf_h5_constants_H5Sconstant_get
-  (JNIEnv *, jclass, jstring);
+JNIEXPORT jint JNICALL Java_hdf_h5_constants_H5Sconstant_J2C
+  (JNIEnv *, jclass, jint);
 
 #ifdef __cplusplus
 }

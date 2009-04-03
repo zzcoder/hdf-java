@@ -8,42 +8,42 @@
 extern "C" {
 #endif
 #undef hdf_h5_constants_H5Iconstant_JH5I_ATTR
-#define hdf_h5_constants_H5Iconstant_JH5I_ATTR 2670L
+#define hdf_h5_constants_H5Iconstant_JH5I_ATTR 10L
 #undef hdf_h5_constants_H5Iconstant_JH5I_BADID
-#define hdf_h5_constants_H5Iconstant_JH5I_BADID 2680L
+#define hdf_h5_constants_H5Iconstant_JH5I_BADID 20L
 #undef hdf_h5_constants_H5Iconstant_JH5I_DATASET
-#define hdf_h5_constants_H5Iconstant_JH5I_DATASET 2690L
+#define hdf_h5_constants_H5Iconstant_JH5I_DATASET 30L
 #undef hdf_h5_constants_H5Iconstant_JH5I_DATASPACE
-#define hdf_h5_constants_H5Iconstant_JH5I_DATASPACE 2700L
+#define hdf_h5_constants_H5Iconstant_JH5I_DATASPACE 40L
 #undef hdf_h5_constants_H5Iconstant_JH5I_DATATYPE
-#define hdf_h5_constants_H5Iconstant_JH5I_DATATYPE 2710L
+#define hdf_h5_constants_H5Iconstant_JH5I_DATATYPE 50L
 #undef hdf_h5_constants_H5Iconstant_JH5I_FILE
-#define hdf_h5_constants_H5Iconstant_JH5I_FILE 2720L
+#define hdf_h5_constants_H5Iconstant_JH5I_FILE 60L
 #undef hdf_h5_constants_H5Iconstant_JH5I_FILE_CLOSING
-#define hdf_h5_constants_H5Iconstant_JH5I_FILE_CLOSING 2730L
+#define hdf_h5_constants_H5Iconstant_JH5I_FILE_CLOSING 70L
 #undef hdf_h5_constants_H5Iconstant_JH5I_GENPROP_CLS
-#define hdf_h5_constants_H5Iconstant_JH5I_GENPROP_CLS 2740L
+#define hdf_h5_constants_H5Iconstant_JH5I_GENPROP_CLS 80L
 #undef hdf_h5_constants_H5Iconstant_JH5I_GENPROP_LST
-#define hdf_h5_constants_H5Iconstant_JH5I_GENPROP_LST 2750L
+#define hdf_h5_constants_H5Iconstant_JH5I_GENPROP_LST 90L
 #undef hdf_h5_constants_H5Iconstant_JH5I_GROUP
-#define hdf_h5_constants_H5Iconstant_JH5I_GROUP 2760L
+#define hdf_h5_constants_H5Iconstant_JH5I_GROUP 100L
 #undef hdf_h5_constants_H5Iconstant_JH5I_INVALID_HID
-#define hdf_h5_constants_H5Iconstant_JH5I_INVALID_HID 2770L
+#define hdf_h5_constants_H5Iconstant_JH5I_INVALID_HID 110L
 #undef hdf_h5_constants_H5Iconstant_JH5I_NGROUPS
-#define hdf_h5_constants_H5Iconstant_JH5I_NGROUPS 2780L
+#define hdf_h5_constants_H5Iconstant_JH5I_NGROUPS 120L
 #undef hdf_h5_constants_H5Iconstant_JH5I_REFERENCE
-#define hdf_h5_constants_H5Iconstant_JH5I_REFERENCE 2790L
+#define hdf_h5_constants_H5Iconstant_JH5I_REFERENCE 130L
 #undef hdf_h5_constants_H5Iconstant_JH5I_TEMPBUF
-#define hdf_h5_constants_H5Iconstant_JH5I_TEMPBUF 2800L
+#define hdf_h5_constants_H5Iconstant_JH5I_TEMPBUF 140L
 #undef hdf_h5_constants_H5Iconstant_JH5I_VFL
-#define hdf_h5_constants_H5Iconstant_JH5I_VFL 2810L
+#define hdf_h5_constants_H5Iconstant_JH5I_VFL 150L
 /*
  * Class:     hdf_h5_constants_H5Iconstant
- * Method:    get
- * Signature: (Ljava/lang/String;)I
+ * Method:    J2C
+ * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_hdf_h5_constants_H5Iconstant_get
-  (JNIEnv *, jclass, jstring);
+JNIEXPORT jint JNICALL Java_hdf_h5_constants_H5Iconstant_J2C
+  (JNIEnv *, jclass, jint);
 
 #ifdef __cplusplus
 }

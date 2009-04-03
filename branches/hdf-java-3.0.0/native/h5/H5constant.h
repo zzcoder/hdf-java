@@ -8,28 +8,28 @@
 extern "C" {
 #endif
 #undef hdf_h5_constants_H5constant_JH5_SZIP_MAX_PIXELS_PER_BLOCK
-#define hdf_h5_constants_H5constant_JH5_SZIP_MAX_PIXELS_PER_BLOCK 1000L
+#define hdf_h5_constants_H5constant_JH5_SZIP_MAX_PIXELS_PER_BLOCK 10L
 #undef hdf_h5_constants_H5constant_JH5_SZIP_NN_OPTION_MASK
-#define hdf_h5_constants_H5constant_JH5_SZIP_NN_OPTION_MASK 1010L
+#define hdf_h5_constants_H5constant_JH5_SZIP_NN_OPTION_MASK 10L
 #undef hdf_h5_constants_H5constant_JH5_SZIP_EC_OPTION_MASK
-#define hdf_h5_constants_H5constant_JH5_SZIP_EC_OPTION_MASK 1020L
+#define hdf_h5_constants_H5constant_JH5_SZIP_EC_OPTION_MASK 20L
 #undef hdf_h5_constants_H5constant_JH5_SZIP_ALLOW_K13_OPTION_MASK
-#define hdf_h5_constants_H5constant_JH5_SZIP_ALLOW_K13_OPTION_MASK 1021L
+#define hdf_h5_constants_H5constant_JH5_SZIP_ALLOW_K13_OPTION_MASK 30L
 #undef hdf_h5_constants_H5constant_JH5_SZIP_CHIP_OPTION_MASK
-#define hdf_h5_constants_H5constant_JH5_SZIP_CHIP_OPTION_MASK 1022L
-#undef hdf_h5_constants_H5constant_H5_ITER_ERROR
-#define hdf_h5_constants_H5constant_H5_ITER_ERROR -1L
-#undef hdf_h5_constants_H5constant_H5_ITER_CONT
-#define hdf_h5_constants_H5constant_H5_ITER_CONT 0L
-#undef hdf_h5_constants_H5constant_H5_ITER_STOP
-#define hdf_h5_constants_H5constant_H5_ITER_STOP 1L
+#define hdf_h5_constants_H5constant_JH5_SZIP_CHIP_OPTION_MASK 40L
+#undef hdf_h5_constants_H5constant_JH5_ITER_ERROR
+#define hdf_h5_constants_H5constant_JH5_ITER_ERROR 50L
+#undef hdf_h5_constants_H5constant_JH5_ITER_CONT
+#define hdf_h5_constants_H5constant_JH5_ITER_CONT 60L
+#undef hdf_h5_constants_H5constant_JH5_ITER_STOP
+#define hdf_h5_constants_H5constant_JH5_ITER_STOP 70L
 /*
  * Class:     hdf_h5_constants_H5constant
- * Method:    get
- * Signature: (Ljava/lang/String;)I
+ * Method:    J2C
+ * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_hdf_h5_constants_H5constant_get
-  (JNIEnv *, jclass, jstring);
+JNIEXPORT jint JNICALL Java_hdf_h5_constants_H5constant_J2C
+  (JNIEnv *, jclass, jint);
 
 #ifdef __cplusplus
 }
