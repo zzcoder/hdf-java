@@ -9,14 +9,6 @@ extern "C" {
 #endif
 /*
  * Class:     hdf_h5_H5
- * Method:    J2C
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_hdf_h5_H5_J2C
-  (JNIEnv *, jclass, jint);
-
-/*
- * Class:     hdf_h5_H5
  * Method:    H5error_off
  * Signature: ()I
  */

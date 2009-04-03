@@ -7,13 +7,57 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef hdf_h5_constants_H5Fconstant_JH5F_ACC_CREAT
+#define hdf_h5_constants_H5Fconstant_JH5F_ACC_CREAT 10L
+#undef hdf_h5_constants_H5Fconstant_JH5F_ACC_DEBUG
+#define hdf_h5_constants_H5Fconstant_JH5F_ACC_DEBUG 20L
+#undef hdf_h5_constants_H5Fconstant_JH5F_ACC_EXCL
+#define hdf_h5_constants_H5Fconstant_JH5F_ACC_EXCL 30L
+#undef hdf_h5_constants_H5Fconstant_JH5F_ACC_RDONLY
+#define hdf_h5_constants_H5Fconstant_JH5F_ACC_RDONLY 40L
+#undef hdf_h5_constants_H5Fconstant_JH5F_ACC_RDWR
+#define hdf_h5_constants_H5Fconstant_JH5F_ACC_RDWR 50L
+#undef hdf_h5_constants_H5Fconstant_JH5F_ACC_TRUNC
+#define hdf_h5_constants_H5Fconstant_JH5F_ACC_TRUNC 60L
+#undef hdf_h5_constants_H5Fconstant_JH5F_ACC_DEFAULT
+#define hdf_h5_constants_H5Fconstant_JH5F_ACC_DEFAULT 70L
+#undef hdf_h5_constants_H5Fconstant_JH5F_CLOSE_DEFAULT
+#define hdf_h5_constants_H5Fconstant_JH5F_CLOSE_DEFAULT 80L
+#undef hdf_h5_constants_H5Fconstant_JH5F_CLOSE_SEMI
+#define hdf_h5_constants_H5Fconstant_JH5F_CLOSE_SEMI 90L
+#undef hdf_h5_constants_H5Fconstant_JH5F_CLOSE_STRONG
+#define hdf_h5_constants_H5Fconstant_JH5F_CLOSE_STRONG 100L
+#undef hdf_h5_constants_H5Fconstant_JH5F_CLOSE_WEAK
+#define hdf_h5_constants_H5Fconstant_JH5F_CLOSE_WEAK 110L
+#undef hdf_h5_constants_H5Fconstant_JH5F_OBJ_ALL
+#define hdf_h5_constants_H5Fconstant_JH5F_OBJ_ALL 120L
+#undef hdf_h5_constants_H5Fconstant_JH5F_OBJ_ATTR
+#define hdf_h5_constants_H5Fconstant_JH5F_OBJ_ATTR 130L
+#undef hdf_h5_constants_H5Fconstant_JH5F_OBJ_DATASET
+#define hdf_h5_constants_H5Fconstant_JH5F_OBJ_DATASET 140L
+#undef hdf_h5_constants_H5Fconstant_JH5F_OBJ_DATATYPE
+#define hdf_h5_constants_H5Fconstant_JH5F_OBJ_DATATYPE 150L
+#undef hdf_h5_constants_H5Fconstant_JH5F_OBJ_FILE
+#define hdf_h5_constants_H5Fconstant_JH5F_OBJ_FILE 160L
+#undef hdf_h5_constants_H5Fconstant_JH5F_OBJ_GROUP
+#define hdf_h5_constants_H5Fconstant_JH5F_OBJ_GROUP 170L
+#undef hdf_h5_constants_H5Fconstant_JH5F_OBJ_LOCAL
+#define hdf_h5_constants_H5Fconstant_JH5F_OBJ_LOCAL 180L
+#undef hdf_h5_constants_H5Fconstant_JH5F_SCOPE_DOWN
+#define hdf_h5_constants_H5Fconstant_JH5F_SCOPE_DOWN 190L
+#undef hdf_h5_constants_H5Fconstant_JH5F_SCOPE_GLOBAL
+#define hdf_h5_constants_H5Fconstant_JH5F_SCOPE_GLOBAL 200L
+#undef hdf_h5_constants_H5Fconstant_JH5F_SCOPE_LOCAL
+#define hdf_h5_constants_H5Fconstant_JH5F_SCOPE_LOCAL 210L
+#undef hdf_h5_constants_H5Fconstant_JH5F_UNLIMITED
+#define hdf_h5_constants_H5Fconstant_JH5F_UNLIMITED 220L
 /*
  * Class:     hdf_h5_constants_H5Fconstant
- * Method:    get
- * Signature: (Ljava/lang/String;)I
+ * Method:    J2C
+ * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_hdf_h5_constants_H5Fconstant_get
-  (JNIEnv *, jclass, jstring);
+JNIEXPORT jint JNICALL Java_hdf_h5_constants_H5Fconstant_J2C
+  (JNIEnv *, jclass, jint);
 
 #ifdef __cplusplus
 }
