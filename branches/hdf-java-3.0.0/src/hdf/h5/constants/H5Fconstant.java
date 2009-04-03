@@ -32,54 +32,86 @@ import hdf.h5.H5;
 ///////////////////////////////////////////////////////////////////////////
 
 public class H5Fconstant {
-  final private static int JH5F_ACC_CREAT = 2310;
-  final private static int JH5F_ACC_DEBUG = 2320;
-  final private static int JH5F_ACC_EXCL = 2330;
-  final private static int JH5F_ACC_RDONLY = 2340;
-  final private static int JH5F_ACC_RDWR = 2350;
-  final private static int JH5F_ACC_TRUNC = 2360;
-  final private static int JH5F_CLOSE_DEFAULT = 2370;
-  final private static int JH5F_CLOSE_SEMI = 2380;
-  final private static int JH5F_CLOSE_STRONG = 2390;
-  final private static int JH5F_CLOSE_WEAK = 2400;
-  final private static int JH5F_OBJ_ALL = 2410;
-  final private static int JH5F_OBJ_ATTR = 2415;
-  final private static int JH5F_OBJ_DATASET = 2420;
-  final private static int JH5F_OBJ_DATATYPE = 2430;
-  final private static int JH5F_OBJ_FILE = 2440;
-  final private static int JH5F_OBJ_GROUP = 2450;
-  final private static int JH5F_OBJ_LOCAL = 2455; /* 1.6.5 */
-  final private static int JH5F_SCOPE_DOWN = 2460;
-  final private static int JH5F_SCOPE_GLOBAL = 2470;
-  final private static int JH5F_SCOPE_LOCAL = 2480;
-  final private static int JH5F_UNLIMITED = 2490;
+//  final private static int JH5F_ACC_CREAT = 2310;
+//  final private static int JH5F_ACC_DEBUG = 2320;
+//  final private static int JH5F_ACC_EXCL = 2330;
+//  final private static int JH5F_ACC_RDONLY = 2340;
+//  final private static int JH5F_ACC_RDWR = 2350;
+//  final private static int JH5F_ACC_TRUNC = 2360;
+//  final private static int JH5F_CLOSE_DEFAULT = 2370;
+//  final private static int JH5F_CLOSE_SEMI = 2380;
+//  final private static int JH5F_CLOSE_STRONG = 2390;
+//  final private static int JH5F_CLOSE_WEAK = 2400;
+//  final private static int JH5F_OBJ_ALL = 2410;
+//  final private static int JH5F_OBJ_ATTR = 2415;
+//  final private static int JH5F_OBJ_DATASET = 2420;
+//  final private static int JH5F_OBJ_DATATYPE = 2430;
+//  final private static int JH5F_OBJ_FILE = 2440;
+//  final private static int JH5F_OBJ_GROUP = 2450;
+//  final private static int JH5F_OBJ_LOCAL = 2455; /* 1.6.5 */
+//  final private static int JH5F_SCOPE_DOWN = 2460;
+//  final private static int JH5F_SCOPE_GLOBAL = 2470;
+//  final private static int JH5F_SCOPE_LOCAL = 2480;
+//  final private static int JH5F_UNLIMITED = 2490;
+//
+//  ///////////////////////////////////////////////////////////////////////////
+//  //                Get the HDF5 constants from the library                //
+//  ///////////////////////////////////////////////////////////////////////////
+//  final public static int H5F_ACC_CREAT = H5.J2C( JH5F_ACC_CREAT );
+//  final public static int H5F_ACC_DEBUG = H5.J2C( JH5F_ACC_DEBUG );
+//  final public static int H5F_ACC_EXCL = H5.J2C( JH5F_ACC_EXCL );
+//  final public static int H5F_ACC_RDONLY = H5.J2C( JH5F_ACC_RDONLY );
+//  final public static int H5F_ACC_RDWR = H5.J2C( JH5F_ACC_RDWR );
+//  final public static int H5F_ACC_TRUNC = H5.J2C( JH5F_ACC_TRUNC );
+//  final public static int H5F_CLOSE_DEFAULT = H5.J2C( JH5F_CLOSE_DEFAULT );
+//  final public static int H5F_CLOSE_SEMI = H5.J2C( JH5F_CLOSE_SEMI );
+//  final public static int H5F_CLOSE_STRONG = H5.J2C( JH5F_CLOSE_STRONG );
+//  final public static int H5F_CLOSE_WEAK = H5.J2C( JH5F_CLOSE_WEAK );
+//  final public static int H5F_OBJ_ALL = H5.J2C( JH5F_OBJ_ALL );
+//  final public static int H5F_OBJ_ATTR = H5.J2C( JH5F_OBJ_ATTR );
+//  final public static int H5F_OBJ_DATASET = H5.J2C( JH5F_OBJ_DATASET );
+//  final public static int H5F_OBJ_DATATYPE = H5.J2C( JH5F_OBJ_DATATYPE );
+//  final public static int H5F_OBJ_FILE = H5.J2C( JH5F_OBJ_FILE );
+//  final public static int H5F_OBJ_GROUP = H5.J2C( JH5F_OBJ_GROUP );
+//  final public static int H5F_OBJ_LOCAL = H5.J2C( JH5F_OBJ_LOCAL ); /* 1.6.5 */
+//  final public static int H5F_SCOPE_DOWN = H5.J2C( JH5F_SCOPE_DOWN );
+//  final public static int H5F_SCOPE_GLOBAL = H5.J2C( JH5F_SCOPE_GLOBAL );
+//  final public static int H5F_SCOPE_LOCAL = H5.J2C( JH5F_SCOPE_LOCAL );
+//  final public static int H5F_UNLIMITED = H5.J2C( JH5F_UNLIMITED );
+//  
+//  /* Value passed to H5Pset_elink_acc_flags to cause flags to be taken from the
+//   * parent file. */
+//  public static final int H5F_ACC_DEFAULT = 0xffff;   /*ignore setting on lapl     */
+//  
+//  
 
-  ///////////////////////////////////////////////////////////////////////////
-  //                Get the HDF5 constants from the library                //
-  ///////////////////////////////////////////////////////////////////////////
-  final public static int H5F_ACC_CREAT = H5.J2C( JH5F_ACC_CREAT );
-  final public static int H5F_ACC_DEBUG = H5.J2C( JH5F_ACC_DEBUG );
-  final public static int H5F_ACC_EXCL = H5.J2C( JH5F_ACC_EXCL );
-  final public static int H5F_ACC_RDONLY = H5.J2C( JH5F_ACC_RDONLY );
-  final public static int H5F_ACC_RDWR = H5.J2C( JH5F_ACC_RDWR );
-  final public static int H5F_ACC_TRUNC = H5.J2C( JH5F_ACC_TRUNC );
-  final public static int H5F_CLOSE_DEFAULT = H5.J2C( JH5F_CLOSE_DEFAULT );
-  final public static int H5F_CLOSE_SEMI = H5.J2C( JH5F_CLOSE_SEMI );
-  final public static int H5F_CLOSE_STRONG = H5.J2C( JH5F_CLOSE_STRONG );
-  final public static int H5F_CLOSE_WEAK = H5.J2C( JH5F_CLOSE_WEAK );
-  final public static int H5F_OBJ_ALL = H5.J2C( JH5F_OBJ_ALL );
-  final public static int H5F_OBJ_ATTR = H5.J2C( JH5F_OBJ_ATTR );
-  final public static int H5F_OBJ_DATASET = H5.J2C( JH5F_OBJ_DATASET );
-  final public static int H5F_OBJ_DATATYPE = H5.J2C( JH5F_OBJ_DATATYPE );
-  final public static int H5F_OBJ_FILE = H5.J2C( JH5F_OBJ_FILE );
-  final public static int H5F_OBJ_GROUP = H5.J2C( JH5F_OBJ_GROUP );
-  final public static int H5F_OBJ_LOCAL = H5.J2C( JH5F_OBJ_LOCAL ); /* 1.6.5 */
-  final public static int H5F_SCOPE_DOWN = H5.J2C( JH5F_SCOPE_DOWN );
-  final public static int H5F_SCOPE_GLOBAL = H5.J2C( JH5F_SCOPE_GLOBAL );
-  final public static int H5F_SCOPE_LOCAL = H5.J2C( JH5F_SCOPE_LOCAL );
-  final public static int H5F_UNLIMITED = H5.J2C( JH5F_UNLIMITED );
+    /**
+     * Get the value of a constant variable from the library. Some of the
+     * library constants are defined at run-time. Using get() will make sure
+     * the constants are correct. 
+     */
+    private synchronized static native int get(String constantName);
   
-  /* Value passed to H5Pset_elink_acc_flags to cause flags to be taken from the
-   * parent file. */
-  public static final int H5F_ACC_DEFAULT = 0xffff;   /*ignore setting on lapl     */
+    public static final int H5F_ACC_CREAT = get("H5F_ACC_CREAT");
+    public static final int H5F_ACC_DEBUG = get("H5F_ACC_DEBUG");
+    public static final int H5F_ACC_EXCL = get("H5F_ACC_EXCL");
+    public static final int H5F_ACC_RDONLY = get("H5F_ACC_RDONLY");
+    public static final int H5F_ACC_RDWR = get("H5F_ACC_RDWR");
+    public static final int H5F_ACC_TRUNC = get("H5F_ACC_TRUNC");
+    public static final int H5F_ACC_DEFAULT = get("H5F_ACC_DEFAULT");
+    public static final int H5F_CLOSE_DEFAULT = get("H5F_CLOSE_DEFAULT");
+    public static final int H5F_CLOSE_SEMI = get("H5F_CLOSE_SEMI");
+    public static final int H5F_CLOSE_STRONG = get("H5F_CLOSE_STRONG");
+    public static final int H5F_CLOSE_WEAK = get("H5F_CLOSE_WEAK");
+    public static final int H5F_OBJ_ALL = get("H5F_OBJ_ALL");
+    public static final int H5F_OBJ_ATTR = get("H5F_OBJ_ATTR");
+    public static final int H5F_OBJ_DATASET = get("H5F_OBJ_DATASET");
+    public static final int H5F_OBJ_DATATYPE = get("H5F_OBJ_DATATYPE");
+    public static final int H5F_OBJ_FILE = get("H5F_OBJ_FILE");
+    public static final int H5F_OBJ_GROUP = get("H5F_OBJ_GROUP");
+    public static final int H5F_OBJ_LOCAL = get("H5F_OBJ_LOCAL");
+    public static final int H5F_SCOPE_DOWN = get("H5F_SCOPE_DOWN");
+    public static final int H5F_SCOPE_GLOBAL = get("H5F_SCOPE_GLOBAL");
+    public static final int H5F_SCOPE_LOCAL = get("H5F_SCOPE_LOCAL");
+    public static final int H5F_UNLIMITED = get("H5F_UNLIMITED");
 }

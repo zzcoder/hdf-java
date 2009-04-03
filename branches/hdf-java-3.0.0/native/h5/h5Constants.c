@@ -170,6 +170,7 @@ JNIEXPORT jint JNICALL Java_hdf_h5_H5_J2C
         case JH5F_OBJ_FILE  : return  H5F_OBJ_FILE;
         case JH5F_OBJ_ATTR  : return  H5F_OBJ_ATTR;
         case JH5F_OBJ_GROUP  : return  H5F_OBJ_GROUP;
+        case JH5F_OBJ_LOCAL  : return  H5F_OBJ_LOCAL;
         case JH5F_SCOPE_DOWN  : return  H5F_SCOPE_DOWN;
         case JH5F_SCOPE_GLOBAL  : return  H5F_SCOPE_GLOBAL;
         case JH5F_SCOPE_LOCAL  : return  H5F_SCOPE_LOCAL;

@@ -62,5 +62,13 @@ public class H5Pconstant {
   final public static int H5P_MOUNT_DEFAULT = H5.J2C( JH5P_MOUNT_DEFAULT );
   final public static int H5P_NO_CLASS = H5.J2C( JH5P_NO_CLASS );
   final public static int H5P_NO_CLASS_DEFAULT = H5.J2C( JH5P_NO_CLASS_DEFAULT );
+  
+  /**
+   * Get the value of a constant variable from the library. Some of the
+   * library constants are defined at run-time. Using get() will make sure
+   * the constants are correct. 
+   */
+  private synchronized static native int get(String constantName);
+  
 
 }
