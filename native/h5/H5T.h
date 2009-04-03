@@ -511,6 +511,38 @@ JNIEXPORT void JNICALL Java_hdf_h5_H5T_H5Tcompiler_1conv
 JNIEXPORT void JNICALL Java_hdf_h5_H5T_H5Tconvert
   (JNIEnv *, jclass, jint, jint, jlong, jbyteArray, jbyteArray, jint);
 
+/*
+ * Class:     hdf_h5_H5T
+ * Method:    H5Tarray_create1
+ * Signature: (II[J[I)I
+ */
+JNIEXPORT jint JNICALL Java_hdf_h5_H5T_H5Tarray_1create1
+  (JNIEnv *, jclass, jint, jint, jlongArray, jintArray);
+
+/*
+ * Class:     hdf_h5_H5T
+ * Method:    H5Tget_array_dims1
+ * Signature: (I[J[I)I
+ */
+JNIEXPORT jint JNICALL Java_hdf_h5_H5T_H5Tget_1array_1dims1
+  (JNIEnv *, jclass, jint, jlongArray, jintArray);
+
+/*
+ * Class:     hdf_h5_H5T
+ * Method:    H5Topen1
+ * Signature: (ILjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_hdf_h5_H5T_H5Topen1
+  (JNIEnv *, jclass, jint, jstring);
+
+/*
+ * Class:     hdf_h5_H5T
+ * Method:    H5Tcommit1
+ * Signature: (ILjava/lang/String;I)V
+ */
+JNIEXPORT void JNICALL Java_hdf_h5_H5T_H5Tcommit1
+  (JNIEnv *, jclass, jint, jstring, jint);
+
 #ifdef __cplusplus
 }
 #endif

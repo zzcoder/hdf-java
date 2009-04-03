@@ -231,6 +231,14 @@ JNIEXPORT jboolean JNICALL Java_hdf_h5_H5A_H5Aexists_1by_1name
 JNIEXPORT jint JNICALL Java_hdf_h5_H5A_H5Acopy
   (JNIEnv *, jclass, jint, jint);
 
+/*
+ * Class:     hdf_h5_H5A
+ * Method:    H5Acreate1
+ * Signature: (ILjava/lang/String;III)I
+ */
+JNIEXPORT jint JNICALL Java_hdf_h5_H5A_H5Acreate1
+  (JNIEnv *, jclass, jint, jstring, jint, jint, jint);
+
 #ifdef __cplusplus
 }
 #endif

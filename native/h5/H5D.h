@@ -263,6 +263,22 @@ JNIEXPORT void JNICALL Java_hdf_h5_H5D_H5Dset_1extent
 JNIEXPORT jint JNICALL Java_hdf_h5_H5D_H5Ddebug
   (JNIEnv *, jclass, jint);
 
+/*
+ * Class:     hdf_h5_H5D
+ * Method:    H5Dcreate1
+ * Signature: (ILjava/lang/String;III)I
+ */
+JNIEXPORT jint JNICALL Java_hdf_h5_H5D_H5Dcreate1
+  (JNIEnv *, jclass, jint, jstring, jint, jint, jint);
+
+/*
+ * Class:     hdf_h5_H5D
+ * Method:    H5Dopen1
+ * Signature: (ILjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_hdf_h5_H5D_H5Dopen1
+  (JNIEnv *, jclass, jint, jstring);
+
 #ifdef __cplusplus
 }
 #endif
