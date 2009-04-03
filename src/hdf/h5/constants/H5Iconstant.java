@@ -66,5 +66,12 @@ public class H5Iconstant {
   final public static int H5I_REFERENCE = H5.J2C( JH5I_REFERENCE );
   final public static int H5I_TEMPBUF = H5.J2C( JH5I_TEMPBUF );
   final public static int H5I_VFL = H5.J2C( JH5I_VFL );
+  /**
+   * Get the value of a constant variable from the library. Some of the
+   * library constants are defined at run-time. Using get() will make sure
+   * the constants are correct. 
+   */
+  private synchronized static native int get(String constantName);
+  
 
 }

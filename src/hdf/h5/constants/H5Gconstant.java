@@ -70,5 +70,13 @@ public class H5Gconstant {
   final public static int H5G_TYPE = H5.J2C( JH5G_TYPE );
   final public static int H5G_UNKNOWN = H5.J2C( JH5G_UNKNOWN );
   final public static int H5G_USERTYPE = H5.J2C( JH5G_USERTYPE );
+  
+  /**
+   * Get the value of a constant variable from the library. Some of the
+   * library constants are defined at run-time. Using get() will make sure
+   * the constants are correct. 
+   */
+  private synchronized static native int get(String constantName);
+  
 
 }

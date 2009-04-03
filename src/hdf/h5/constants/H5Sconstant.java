@@ -82,4 +82,12 @@ public class H5Sconstant {
   final public static int H5S_SELECT_XOR = H5.J2C( JH5S_SELECT_XOR );
   final public static int H5S_SIMPLE = H5.J2C( JH5S_SIMPLE );
   final public static int H5S_UNLIMITED = H5.J2C( JH5S_UNLIMITED );
+  
+  /**
+   * Get the value of a constant variable from the library. Some of the
+   * library constants are defined at run-time. Using get() will make sure
+   * the constants are correct. 
+   */
+  private synchronized static native int get(String constantName);
+
 }

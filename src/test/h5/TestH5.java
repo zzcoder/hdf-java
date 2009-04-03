@@ -86,11 +86,10 @@ public class TestH5 {
             };
         
         for (int i=0; i<definedValues.length; i++) {
-System.out.println(i+"\t "+definedValues[i]) ;           
             assertEquals(definedValues[i], j2cValues[i]);
         }
         
-        assertFalse(H5F_ACC_RDONLY == H5Fconstant.H5F_ACC_RDONLY);
+        assertFalse(H5F_ACC_RDONLY == H5Fconstant.H5F_ACC_RDWR);
         assertFalse(H5F_OBJ_FILE == H5Fconstant.H5F_OBJ_GROUP);
 
     }

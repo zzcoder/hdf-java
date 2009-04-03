@@ -118,4 +118,12 @@ public class H5Zconstant
 
     // General
     public static final int H5Z_FILTER_ALL   = 0;   // Symbol to remove all filters in H5Premove_filter
+    
+    /**
+     * Get the value of a constant variable from the library. Some of the
+     * library constants are defined at run-time. Using get() will make sure
+     * the constants are correct. 
+     */
+    private synchronized static native int get(String constantName);
+
 }

@@ -78,5 +78,13 @@ public class H5Dconstant {
   final public static int H5D_SPACE_STATUS_ERROR = H5.J2C( JH5D_SPACE_STATUS_ERROR );
   final public static int H5D_SPACE_STATUS_NOT_ALLOCATED = H5.J2C( JH5D_SPACE_STATUS_NOT_ALLOCATED );
   final public static int H5D_SPACE_STATUS_PART_ALLOCATED = H5.J2C( JH5D_SPACE_STATUS_PART_ALLOCATED );
+  
+  /**
+   * Get the value of a constant variable from the library. Some of the
+   * library constants are defined at run-time. Using get() will make sure
+   * the constants are correct. 
+   */
+  private synchronized static native int get(String constantName);
+
 
 }

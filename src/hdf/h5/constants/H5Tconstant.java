@@ -444,5 +444,13 @@ public class H5Tconstant {
   final public static int H5T_UNIX_D64LE = H5.J2C( JH5T_UNIX_D64LE );
   final public static int H5T_VARIABLE = H5.J2C( JH5T_VARIABLE );     // Rosetta Biosoftware 
   final public static int H5T_VLEN = H5.J2C( JH5T_VLEN );
+  
+  /**
+   * Get the value of a constant variable from the library. Some of the
+   * library constants are defined at run-time. Using get() will make sure
+   * the constants are correct. 
+   */
+  private synchronized static native int get(String constantName);
+  
 
 }

@@ -37,6 +37,8 @@ public class H5constant {
   final private static int JH5_SZIP_EC_OPTION_MASK = 1020;
   final private static int JH5_SZIP_ALLOW_K13_OPTION_MASK = 1021;
   final private static int JH5_SZIP_CHIP_OPTION_MASK = 1022;
+  
+  
   ///////////////////////////////////////////////////////////////////////////
   //                Get the HDF5 constants from the library                //
   ///////////////////////////////////////////////////////////////////////////
@@ -49,4 +51,12 @@ public class H5constant {
   public static final int  H5_ITER_ERROR   = -1;
   public static final int  H5_ITER_CONT    = 0;
   public static final int  H5_ITER_STOP    = 1;
+  
+  /**
+   * Get the value of a constant variable from the library. Some of the
+   * library constants are defined at run-time. Using get() will make sure
+   * the constants are correct. 
+   */
+  private synchronized static native int get(String constantName);
+  
 }

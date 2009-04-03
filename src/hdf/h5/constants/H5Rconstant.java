@@ -49,4 +49,11 @@ public class H5Rconstant {
   final public static int H5R_OBJ_REF_BUF_SIZE = H5.J2C( JH5R_OBJ_REF_BUF_SIZE );
   final public static int H5R_OBJECT = H5.J2C( JH5R_OBJECT );
 
+  /**
+   * Get the value of a constant variable from the library. Some of the
+   * library constants are defined at run-time. Using get() will make sure
+   * the constants are correct. 
+   */
+  private synchronized static native int get(String constantName);
+  
 }

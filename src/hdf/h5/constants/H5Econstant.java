@@ -250,5 +250,13 @@ public class H5Econstant {
   final public static int H5E_WALK_DOWNWARD = H5.J2C( JH5E_WALK_DOWNWARD );
   final public static int H5E_WALK_UPWARD = H5.J2C( JH5E_WALK_UPWARD );
   final public static int H5E_WRITEERROR = H5.J2C( JH5E_WRITEERROR );
+  
+  /**
+   * Get the value of a constant variable from the library. Some of the
+   * library constants are defined at run-time. Using get() will make sure
+   * the constants are correct. 
+   */
+  private synchronized static native int get(String constantName);
+  
 
 }
