@@ -33,13 +33,13 @@ public class H5constant {
     ///////////////////////////////////////////////////////////////////////////
 
     final private static int JH5_SZIP_MAX_PIXELS_PER_BLOCK = 10;
-    final private static int JH5_SZIP_NN_OPTION_MASK = 10;
-    final private static int JH5_SZIP_EC_OPTION_MASK = 20;
-    final private static int JH5_SZIP_ALLOW_K13_OPTION_MASK = 30;
-    final private static int JH5_SZIP_CHIP_OPTION_MASK = 40;
-    final private static int JH5_ITER_ERROR   = 50;
-    final private static int JH5_ITER_CONT    = 60;
-    final private static int JH5_ITER_STOP    = 70;
+    final private static int JH5_SZIP_NN_OPTION_MASK = 20;
+    final private static int JH5_SZIP_EC_OPTION_MASK = 30;
+    final private static int JH5_SZIP_ALLOW_K13_OPTION_MASK = 40;
+    final private static int JH5_SZIP_CHIP_OPTION_MASK = 50;
+    final private static int JH5_ITER_ERROR   = 60;
+    final private static int JH5_ITER_CONT    = 70;
+    final private static int JH5_ITER_STOP    = 80;
 
     ///////////////////////////////////////////////////////////////////////////
     //                Get the HDF5 constants from the library                //
@@ -60,5 +60,5 @@ public class H5constant {
      *  
      *  @return the value of an HDF5 constant determined at runtime
      **/
-    public synchronized static native int J2C(int java_constant);
+    private  synchronized static native int J2C(int java_constant);
 }

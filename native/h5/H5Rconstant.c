@@ -16,7 +16,7 @@ extern "C" {
 #endif
 
 #include "hdf5.h"
-#include "H5constant.h"
+#include "H5Rconstant.h"
 #include <jni.h>
 
 /*
@@ -24,20 +24,22 @@ extern "C" {
  * Method:    J2C
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_hdf_h5_constants_H5constant_J2C
+JNIEXPORT jint JNICALL Java_hdf_h5_constants_H5Rconstant_J2C
   (JNIEnv *env, jclass cls, jint java_constant)
 {
-    int c_constant = (int)c_constant;
-
     switch (java_constant)
     {
-        /*case  : c_constant = ; break; */
- 
+    case hdf_h5_constants_H5Rconstant_JH5R_BADTYPE : return H5R_BADTYPE;
+    case hdf_h5_constants_H5Rconstant_JH5R_DATASET_REGION : return H5R_DATASET_REGION;
+    /*case hdf_h5_constants_H5Rconstant_JH5R_INTERNA : return H5R_INTERNA;*/
+    case hdf_h5_constants_H5Rconstant_JH5R_MAXTYPE : return H5R_MAXTYPE;
+    case hdf_h5_constants_H5Rconstant_JH5R_OBJ_REF_BUF_SIZE : return H5R_OBJ_REF_BUF_SIZE;
+    case hdf_h5_constants_H5Rconstant_JH5R_OBJECT : return H5R_OBJECT;
     }
 
-    return (jint) c_constant;
+    return -1;
 }
 
 #ifdef __cplusplus
-extern "C" {
+}
 #endif
