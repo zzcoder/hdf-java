@@ -256,7 +256,7 @@ public class H5 {
     /**
      * load the hdf5 library. loadH5Lib() is only accessible from hdf.h5 package.
      */
-    static void loadH5Lib() 
+    public static void loadH5Lib() 
     {
         // Make sure that the library is loaded only once 
         if (isLibraryLoaded)

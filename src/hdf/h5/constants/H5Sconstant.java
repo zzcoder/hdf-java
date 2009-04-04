@@ -13,6 +13,8 @@
 
 package hdf.h5.constants;
 
+import hdf.h5.H5;
+
 
 /**
 /**
@@ -25,6 +27,8 @@ package hdf.h5.constants;
  *  </p>
  */
 public class H5Sconstant {
+    static { H5.loadH5Lib(); } // make sure the library is available.
+
     ///////////////////////////////////////////////////////////////////////////
     //           The values are used in the C JNI header file.               //
     //      DO NOT CHANGE THE VALUES UNLESS YOU KNOW WHAT YOU DO !!!         //
