@@ -42,7 +42,6 @@ public class TestH5 {
         int H5F_ACC_EXCL    = 0x0004;
         int H5F_ACC_DEBUG   = 0x0008;
         int H5F_ACC_CREAT   = 0x0010;
-        int H5F_ACC_DEFAULT = 0xffff;
         int H5F_OBJ_FILE    = 0x0001;
         int H5F_OBJ_DATASET = 0x0002;
         int H5F_OBJ_GROUP   = 0x0004;

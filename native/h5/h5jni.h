@@ -13,6 +13,9 @@
 
 #include "H5version.h"
 
+#ifndef _Included_h5jni
+#define _Included_h5jni
+
 #ifdef __cplusplus
 #define ENVPTR (env)
 #define ENVPAR
@@ -21,8 +24,21 @@
 #define ENVPAR env,
 #endif
 
+#define GET_ENUM_VALUE(_obj, _val) { \
+    jclass enum_cls = ENVPTR->GetObjectClass(ENVPAR _obj); \
+    jmethodID enum_getCode = ENVPTR->GetMethodID(ENVPAR enum_cls, "getCode", "()I"); \
+    _val = ENVPTR->CallIntMethod(ENVPAR _obj, enum_getCode); \
+}
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern jboolean h5JNIFatalError( JNIEnv *env, char *functName);
 extern jboolean h5nullArgument( JNIEnv *env, char *functName);
 extern jboolean h5libraryError( JNIEnv *env );
 extern jboolean h5raiseException( JNIEnv *env, char *exception, char *message);
+#ifdef __cplusplus
+}
+#endif
 
+#endif
