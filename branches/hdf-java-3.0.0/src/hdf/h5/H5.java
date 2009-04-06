@@ -235,6 +235,16 @@ import java.util.logging.Logger;
  *  </div>
  **/
 public class H5 {
+    /**
+     * The version number of the HDF5 library: <br />
+     *     LIB_VERSION[0]: The major version of the library.<br />
+     *     LIB_VERSION[1]: The minor version of the library.<br />
+     *     LIB_VERSION[2]: The release number of the library.<br />
+     *     
+     * Make sure to update the verions number when a different
+     * library is used.    
+     */
+    public final static int LIB_VERSION[] = {1, 8, 2};
 
     /**
      * A key of system property to load library from the library path.
@@ -473,30 +483,5 @@ public class H5 {
      **/
     public synchronized static native void H5check_version(int majnum, int minnum, int relnum);
 
-
-
-
-
-
-    //////////////////////////////////////////////////////////////
-    //                                                          //
-    //             H5E: Error Stack                             //
-    //                                                          //
-    //////////////////////////////////////////////////////////////
-
-    /**
-     *   H5Eclear clears the error stack for the current thread.
-     *   H5Eclear can fail if there are problems initializing the
-     *   library.
-     *  <div>
-     *   This may be used by exception handlers to assure that
-     *   the error condition in the HDF-5 library has been reset.
-     *  </div>
-     *
-     *   @return none
-     *
-     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-     **/
-    public synchronized static native void H5Eclear() throws HDF5LibraryException;
 }
 
