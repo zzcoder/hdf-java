@@ -119,7 +119,10 @@ public class TestH5 {
      */
     @Test
     public void testH5close() {
-        fail("Not yet implemented");
+        try { H5.H5close(); }
+        catch (Throwable err) {
+            fail("H5.H5close failed: "+err);
+        }
     }
 
     /**
@@ -127,7 +130,10 @@ public class TestH5 {
      */
     @Test
     public void testH5garbage_collect() {
-        fail("Not yet implemented");
+        try { H5.H5garbage_collect(); }
+        catch (Throwable err) {
+            fail("H5.H5garbage_collect failed: "+err);
+        }
     }
 
     /**
@@ -135,7 +141,18 @@ public class TestH5 {
      */
     @Test
     public void testH5set_free_list_limits() {
-        fail("Not yet implemented");
+        int reg_global_lim  = 1;
+        int reg_list_lim    = 1;
+        int arr_global_lim  = 1;
+        int arr_list_lim    = 1;
+        int blk_global_lim  = 1;
+        int blk_list_lim    = 1;
+        
+        try { H5.H5set_free_list_limits(reg_global_lim, reg_list_lim, 
+                arr_global_lim, arr_list_lim, blk_global_lim, blk_list_lim); }
+        catch (Throwable err) {
+            fail("H5.H5set_free_list_limits failed: "+err);
+        }
     }
 
     /**
@@ -143,7 +160,18 @@ public class TestH5 {
      */
     @Test
     public void testH5get_libversion() {
-        fail("Not yet implemented");
+        int libversion[] = {0,0,0};
+        
+        try { H5.H5get_libversion(libversion); }
+        catch (Throwable err) {
+            fail("H5.H5get_libversion: "+err);
+        }
+        
+        for (int i=0; i<3; i++)
+            assertEquals(libversion[i], H5.LIB_VERSION[i]); 
+
+        for (int i=0; i<3; i++)
+            assertFalse(libversion[i] == 0);
     }
 
     /**
@@ -165,13 +193,4 @@ public class TestH5 {
         
         
     }
-
-    /**
-     * Test method for {@link hdf.h5.H5#H5Eclear()}.
-     */
-    @Test
-    public void testH5Eclear() {
-        fail("Not yet implemented");
-    }
-
 }
