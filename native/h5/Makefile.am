@@ -31,12 +31,32 @@ LIBDIR=$(JH5INST)
 lib_LTLIBRARIES = libjhdf5.la
 libjhdf5_la_LIBADD = $(LIBS) -lm
 
-libjhdf5_la_SOURCES = h5Constants.c \
+libjhdf5_la_SOURCES = H5constant.c \
+	H5Dconstant.c \
+	H5Econstant.c \
+	H5Fconstant.c \
+	H5Gconstant.c \
+	H5Iconstant.c \
+	H5Pconstant.c \
+	H5Rconstant.c \
+	H5Sconstant.c \
+	H5Tconstant.c \
+	H5Zconstant.c \
 	exceptionImp.c \
 	H5.c 
 	
 include_HEADERS = h5jni.h \
-	h5Constants.h \
+	H5constant.h \
+	H5Dconstant.h \
+	H5Econstant.h \
+	H5Fconstant.h \
+	H5Gconstant.h \
+	H5Iconstant.h \
+	H5Pconstant.h \
+	H5Rconstant.h \
+	H5Sconstant.h \
+	H5Tconstant.h \
+	H5Zconstant.h \
 	H5.h 
 
 include $(top_srcdir)/config/conclude.am
