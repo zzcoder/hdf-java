@@ -68,20 +68,28 @@ public class H5Fconstant {
     final public static int H5F_ACC_RDWR = J2C( JH5F_ACC_RDWR );
     final public static int H5F_ACC_TRUNC = J2C( JH5F_ACC_TRUNC );
     final public static int H5F_ACC_DEFAULT = J2C( JH5F_ACC_DEFAULT );
+    
+    /* use enum H5F_CLOSE_DEGREE
     final public static int H5F_CLOSE_DEFAULT = J2C( JH5F_CLOSE_DEFAULT );
     final public static int H5F_CLOSE_SEMI = J2C( JH5F_CLOSE_SEMI );
     final public static int H5F_CLOSE_STRONG = J2C( JH5F_CLOSE_STRONG );
     final public static int H5F_CLOSE_WEAK = J2C( JH5F_CLOSE_WEAK );
+    */
+    
     final public static int H5F_OBJ_ALL = J2C( JH5F_OBJ_ALL );
     final public static int H5F_OBJ_ATTR = J2C( JH5F_OBJ_ATTR );
     final public static int H5F_OBJ_DATASET = J2C( JH5F_OBJ_DATASET );
     final public static int H5F_OBJ_DATATYPE = J2C( JH5F_OBJ_DATATYPE );
     final public static int H5F_OBJ_FILE = J2C( JH5F_OBJ_FILE );
     final public static int H5F_OBJ_GROUP = J2C( JH5F_OBJ_GROUP );
-    final public static int H5F_OBJ_LOCAL = J2C( JH5F_OBJ_LOCAL ); /* 1.6.5 */
+    final public static int H5F_OBJ_LOCAL = J2C( JH5F_OBJ_LOCAL ); 
+    
+    /* use enum H5F_SCOPE
     final public static int H5F_SCOPE_DOWN = J2C( JH5F_SCOPE_DOWN );
     final public static int H5F_SCOPE_GLOBAL = J2C( JH5F_SCOPE_GLOBAL );
     final public static int H5F_SCOPE_LOCAL = J2C( JH5F_SCOPE_LOCAL );
+    */
+    
     final public static int H5F_UNLIMITED = J2C( JH5F_UNLIMITED );
 
     /**
