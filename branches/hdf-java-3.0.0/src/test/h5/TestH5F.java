@@ -131,6 +131,18 @@ public class TestH5F {
     public void testH5Fopen() {
         int fid = -1;
         
+        /* test null */
+        try { 
+            fid = H5F.H5Fopen(null, H5Fconstant.H5F_ACC_RDWR, DEFAULT); 
+            
+            // shouldn't goto the line below
+            fail("H5.H5Fopen(null, ...) should fail since the file name is null.");
+        }
+        catch (NullPointerException err) {}
+        catch (Throwable err) {
+            fail("H5.H5Fopen: "+err);
+        }
+        
         try { fid = H5F.H5Fopen(H5_FILE, H5Fconstant.H5F_ACC_RDWR, DEFAULT); }
         catch (Throwable err) {
             fail("H5.H5Fopen: "+err);
@@ -215,7 +227,35 @@ public class TestH5F {
 
     @Test
     public void testH5Fclose() {
-        fail("Not yet implemented");
+        int fid = -1;
+        
+        try { fid = H5F.H5Fopen(H5_FILE, H5Fconstant.H5F_ACC_RDWR, DEFAULT); }
+        catch (Throwable err) {
+            fail("H5.H5Fopen: "+err);
+        }
+        assertTrue (fid > 0);
+        
+        try { H5F.H5Fclose(fid); } 
+        catch (Throwable err) {
+            fail("H5.H5Fclose: "+err);
+        }
+        
+        // it should fail since the file was closed.
+        try { 
+            H5F.H5Fclose(fid); 
+            
+            // shouldn't goto the line below
+            fail("H5.H5Fclose should fail since the file was closed.");
+        } catch (Throwable err) {}
+        
+        // cannot close a file with negative id.
+        try { 
+            H5F.H5Fclose(-1); 
+            
+            // shouldn't goto the line below
+            fail("H5.H5Fclose cannot close a file with negative id.");
+        } catch (Throwable err) {}
+
     }
 
     @Test
@@ -280,7 +320,23 @@ public class TestH5F {
 
     @Test
     public void testH5Fget_name() {
-        fail("Not yet implemented");
-    }
+        int fid = -1;
+        String fname = null;
+        
+        try { fid = H5F.H5Fopen(H5_FILE, H5Fconstant.H5F_ACC_RDWR, DEFAULT); }
+        catch (Throwable err) {
+            fail("H5.H5Fopen: "+err);
+        }
+        assertTrue (fid > 0);
+        
+        try { 
+            fname = H5F.H5Fget_name(fid); 
+        } catch (Throwable err) {
+            fail("H5.H5Fget_name: "+err);
+        }
+        assertNotNull(fname);
+        assertEquals(fname, H5_FILE);
 
+        try { H5F.H5Fclose(fid); } catch (Exception ex) {}
+    }
 }

@@ -27,6 +27,7 @@ extern "C" {
  *
  */
 
+#include <stdlib.h>
 #include <jni.h>
 #include "hdf5.h"
 #include "h5jni.h"
@@ -46,11 +47,13 @@ extern "C" {
 
 	    if (filename == NULL) {
 	        h5nullArgument( env, "H5Fis_hdf5:  name is NULL");
+	        return JNI_FALSE;
 	    }
 
 	    file = (char *)ENVPTR->GetStringUTFChars(ENVPAR filename,&isCopy);
 	    if (file == NULL) {
 	        h5JNIFatalError( env, "H5Fis_hdf5:  file name is not pinned");
+	        return JNI_FALSE;
 	    }
 
 	    ret_val = H5Fis_hdf5(file);
@@ -81,11 +84,13 @@ extern "C" {
 
 	    if (filename == NULL) {
 	        h5nullArgument( env, "H5Fcreate:  filename is NULL");
+	        return -1;
 	    }
 
 	    file = (char *)ENVPTR->GetStringUTFChars(ENVPAR filename,&isCopy);
 	    if (file == NULL) {
 	        h5JNIFatalError( env, "H5Fcreate:  file filename is not pinned");
+	        return -1;
 	    }
 
 	    ret_val = H5Fcreate(file, flags, create_id, access_id);
@@ -130,11 +135,13 @@ extern "C" {
 
 	    if (filename == NULL) {
 	        h5nullArgument( env, "H5Fopen: file name is NULL");
+	        return -1;
 	    }
 
 	    file = (char *)ENVPTR->GetStringUTFChars(ENVPAR filename,&isCopy);
 	    if (file == NULL) {
 	        h5JNIFatalError( env, "H5Fopen: file name not pinned");
+	        return -1;
 	    }
 
 	    ret_val = H5Fopen(file, (unsigned) flags, (hid_t) access_id );
@@ -144,6 +151,7 @@ extern "C" {
 	    if (ret_val < 0) {
 	        h5libraryError(env);
 	    }
+
 	    return (jint)ret_val;
 	}
 
@@ -182,6 +190,47 @@ extern "C" {
 	    if (ret_val < 0) {
 	        h5libraryError(env);
 	    }
+	}
+
+	/*
+	 * Class:     hdf_h5_H5F
+	 * Method:    H5Fget_name
+	 * Signature: (I)Ljava/lang/String;
+	 */
+	JNIEXPORT jstring JNICALL Java_hdf_h5_H5F_H5Fget_1name
+	  (JNIEnv *env, jclass cls, jint file_id)
+	{
+	    char *namePtr;
+	    jstring str;
+	    ssize_t buf_size;
+
+	    /* get the length of the name */
+	    buf_size = H5Fget_name(file_id, NULL, 0);
+
+	    if (buf_size <= 0) {
+	        h5badArgument( env, "H5Fget_name:  buf_size <= 0");
+	        return NULL;
+	    }
+
+	    buf_size++; /* add extra space for the null terminator */
+	    namePtr = (char*)malloc(sizeof(char)*buf_size);
+	    if (namePtr == NULL) {
+	        h5outOfMemory( env, "H5Fget_name:  malloc failed");
+	        return NULL;
+	    }
+
+	    buf_size = H5Fget_name ((hid_t) file_id, (char *)namePtr, (size_t)buf_size);
+
+	    if (buf_size < 0) {
+	        free(namePtr);
+	        h5libraryError(env);
+	        return NULL;
+	    }
+
+	    str = ENVPTR->NewStringUTF(ENVPAR namePtr);
+	    free(namePtr);
+
+	    return str;
 	}
 
 

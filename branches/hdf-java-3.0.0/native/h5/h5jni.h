@@ -33,10 +33,12 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern jboolean h5JNIFatalError( JNIEnv *env, char *functName);
-extern jboolean h5nullArgument( JNIEnv *env, char *functName);
-extern jboolean h5libraryError( JNIEnv *env );
-extern jboolean h5raiseException( JNIEnv *env, char *exception, char *message);
+extern jboolean h5JNIFatalError(JNIEnv *, char *);
+extern jboolean h5nullArgument(JNIEnv *, char *);
+extern jboolean h5badArgument (JNIEnv *, char *);
+extern jboolean h5outOfMemory (JNIEnv *, char *);
+extern jboolean h5libraryError(JNIEnv *env );
+extern jboolean h5raiseException(JNIEnv *, char *, char *);
 #ifdef __cplusplus
 }
 #endif

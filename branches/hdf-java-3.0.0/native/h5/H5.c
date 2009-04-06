@@ -138,10 +138,13 @@ extern "C" {
 
 	    if (libversion == NULL) {
 	        h5nullArgument( env, "H5get_version:  libversion is NULL");
+	        return;
 	    }
+
 	    theArray = (unsigned *)ENVPTR->GetIntArrayElements(ENVPAR libversion,&isCopy);
 	    if (theArray == NULL) {
 	        h5JNIFatalError( env, "H5get_libversion:  input not pinned");
+	        return;
 	    }
 
 	    ret_val =  H5get_libversion(&(theArray[0]), &(theArray[1]), &(theArray[2]));
