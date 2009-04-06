@@ -74,7 +74,10 @@ am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(HDF5LIB)/libhdf5.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
 libjhdf5_la_DEPENDENCIES = $(am__DEPENDENCIES_2)
-am_libjhdf5_la_OBJECTS = h5Constants.lo exceptionImp.lo H5.lo
+am_libjhdf5_la_OBJECTS = H5constant.lo H5Dconstant.lo H5Econstant.lo \
+	H5Fconstant.lo H5Gconstant.lo H5Iconstant.lo H5Pconstant.lo \
+	H5Rconstant.lo H5Sconstant.lo H5Tconstant.lo H5Zconstant.lo \
+	exceptionImp.lo H5.lo
 libjhdf5_la_OBJECTS = $(am_libjhdf5_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/./config/depcomp
@@ -265,12 +268,32 @@ CHECK_CLEANFILES = *.chkexe *.chklog *.clog
 LIBDIR = $(JH5INST)
 lib_LTLIBRARIES = libjhdf5.la
 libjhdf5_la_LIBADD = $(LIBS) -lm
-libjhdf5_la_SOURCES = h5Constants.c \
+libjhdf5_la_SOURCES = H5constant.c \
+	H5Dconstant.c \
+	H5Econstant.c \
+	H5Fconstant.c \
+	H5Gconstant.c \
+	H5Iconstant.c \
+	H5Pconstant.c \
+	H5Rconstant.c \
+	H5Sconstant.c \
+	H5Tconstant.c \
+	H5Zconstant.c \
 	exceptionImp.c \
 	H5.c 
 
 include_HEADERS = h5jni.h \
-	h5Constants.h \
+	H5constant.h \
+	H5Dconstant.h \
+	H5Econstant.h \
+	H5Fconstant.h \
+	H5Gconstant.h \
+	H5Iconstant.h \
+	H5Pconstant.h \
+	H5Rconstant.h \
+	H5Sconstant.h \
+	H5Tconstant.h \
+	H5Zconstant.h \
 	H5.h 
 
 all: all-am
@@ -343,8 +366,18 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/H5.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/H5Dconstant.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/H5Econstant.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/H5Fconstant.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/H5Gconstant.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/H5Iconstant.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/H5Pconstant.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/H5Rconstant.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/H5Sconstant.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/H5Tconstant.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/H5Zconstant.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/H5constant.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/exceptionImp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/h5Constants.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
