@@ -2,6 +2,7 @@ package test.h5;
 
 import static org.junit.Assert.fail;
 import hdf.h5.H5E;
+import hdf.h5.constants.H5Econstant;
 
 import org.junit.After;
 import org.junit.Before;
@@ -31,13 +32,30 @@ public class TestH5E {
     }
   }
 
+  @Test(expected=IllegalArgumentException.class)
+  public void testH5Eprint2_invalid_classid() throws Throwable  {
+      H5E.H5Eprint2(-1, null); 
+      fail("H5E.H5Eprint2: invalid argument");
+  }
+
+  @Test
+  public void testH5Eprint2_default() {
+    System.out.println("H5Econstant.H5E_DEFAULT: "+H5Econstant.H5E_DEFAULT);
+    try { 
+      H5E.H5Eprint2(H5Econstant.H5E_DEFAULT, null); 
+    }
+    catch (Throwable err) {
+      fail("H5E.H5Eprint2: "+err);
+    }
+  }
+
   @Test
   public void testH5Eprint2() {
     try { 
-      H5E.H5Eprint2(hdf_java_classid,null); 
+      H5E.H5Eprint2(hdf_java_classid, null); 
     }
     catch (Throwable err) {
-      fail("H5E.H5Eunregister_class: "+err);
+      fail("H5E.H5Eprint2: "+err);
     }
   }
 
