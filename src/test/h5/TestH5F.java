@@ -12,10 +12,24 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestH5F {
+public class TestH5F 
+{
+    private static final int DEFAULT = H5Pconstant.H5P_DEFAULT;
     private static final String H5_FILE = "test.h5";
     private static final String TXT_FILE = "test.txt";
-    private static final int DEFAULT = H5Pconstant.H5P_DEFAULT;
+    private static final int COUNT_OBJ_FILE = 1;
+    private static final int COUNT_OBJ_DATASET = 0;
+    private static final int COUNT_OBJ_GROUP = 0;
+    private static final int COUNT_OBJ_DATATYPE = 0;
+    private static final int COUNT_OBJ_ATTR = 0;
+    private static final int COUNT_OBJ_ALL = (COUNT_OBJ_FILE+COUNT_OBJ_DATASET+
+            COUNT_OBJ_GROUP+COUNT_OBJ_DATATYPE+COUNT_OBJ_ATTR);
+    private static final int[] OBJ_COUNTS = {COUNT_OBJ_FILE, COUNT_OBJ_DATASET, 
+        COUNT_OBJ_GROUP, COUNT_OBJ_DATATYPE, COUNT_OBJ_ATTR, COUNT_OBJ_ALL};
+    private static final int[] OBJ_TYPES = {H5Fconstant.H5F_OBJ_FILE, 
+        H5Fconstant.H5F_OBJ_DATASET, H5Fconstant.H5F_OBJ_GROUP, 
+        H5Fconstant.H5F_OBJ_DATATYPE, H5Fconstant.H5F_OBJ_ATTR, 
+        H5Fconstant.H5F_OBJ_ALL};
 
     private final void _deleteFile(String filename)
     {
@@ -66,6 +80,16 @@ public class TestH5F {
         }
     }
     
+    private final int _openFile(String filename, int flag) {
+        int fid = -1;
+        
+        try { fid = H5F.H5Fopen(filename, flag, DEFAULT); }
+        catch (Throwable err) {
+            fail("H5.H5Fopen: "+err);
+        }
+        assertTrue (fid > 0);
+        return fid;
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -106,6 +130,18 @@ public class TestH5F {
     @Test
     public void testH5Fcreate() {
         int fid;
+        
+        /* test null */
+        try { 
+            fid = H5F.H5Fcreate(null, H5Fconstant.H5F_ACC_TRUNC, DEFAULT, DEFAULT); 
+            // shouldn't goto the line below
+            fail("H5.H5Fcreate(null, ...) should fail since the file name is null.");
+        }
+        catch (NullPointerException err) {}
+        catch (Throwable err) {
+            fail("H5.H5Fopen: "+err);
+        }
+        
         _testH5Fcreate(H5_FILE, H5Fconstant.H5F_ACC_TRUNC);
         
         _deleteFile(H5_FILE);
@@ -134,7 +170,6 @@ public class TestH5F {
         /* test null */
         try { 
             fid = H5F.H5Fopen(null, H5Fconstant.H5F_ACC_RDWR, DEFAULT); 
-            
             // shouldn't goto the line below
             fail("H5.H5Fopen(null, ...) should fail since the file name is null.");
         }
@@ -143,12 +178,7 @@ public class TestH5F {
             fail("H5.H5Fopen: "+err);
         }
         
-        try { fid = H5F.H5Fopen(H5_FILE, H5Fconstant.H5F_ACC_RDWR, DEFAULT); }
-        catch (Throwable err) {
-            fail("H5.H5Fopen: "+err);
-        }
-        
-        assertTrue (fid > 0);
+        fid = _openFile(H5_FILE, H5Fconstant.H5F_ACC_RDWR);
         try { H5F.H5Fclose(fid); } catch (Exception ex) {}
         
         // set the file to read-only
@@ -180,11 +210,7 @@ public class TestH5F {
     public void testH5Freopen() {
         int fid = -1, fid2=-1;
         
-        try { fid = H5F.H5Fopen(H5_FILE, H5Fconstant.H5F_ACC_RDWR, DEFAULT); }
-        catch (Throwable err) {
-            fail("H5.H5Fopen: "+err);
-        }
-        assertTrue (fid > 0);
+        fid = _openFile(H5_FILE, H5Fconstant.H5F_ACC_RDWR);
         
         try { fid2 = H5F.H5Freopen(fid); }
         catch (Throwable err) {
@@ -204,13 +230,7 @@ public class TestH5F {
 
     @Test
     public void testH5Fflush() {
-        int fid = -1;
-        
-        try { fid = H5F.H5Fopen(H5_FILE, H5Fconstant.H5F_ACC_RDWR, DEFAULT); }
-        catch (Throwable err) {
-            fail("H5.H5Fopen: "+err);
-        }
-        assertTrue (fid > 0);
+        int fid = _openFile(H5_FILE, H5Fconstant.H5F_ACC_RDWR);
         
         try { H5F.H5Fflush(fid, H5F_SCOPE.GLOBAL); }
         catch (Throwable err) {
@@ -227,13 +247,7 @@ public class TestH5F {
 
     @Test
     public void testH5Fclose() {
-        int fid = -1;
-        
-        try { fid = H5F.H5Fopen(H5_FILE, H5Fconstant.H5F_ACC_RDWR, DEFAULT); }
-        catch (Throwable err) {
-            fail("H5.H5Fopen: "+err);
-        }
-        assertTrue (fid > 0);
+        int fid = _openFile(H5_FILE, H5Fconstant.H5F_ACC_RDWR);
         
         try { H5F.H5Fclose(fid); } 
         catch (Throwable err) {
@@ -260,62 +274,211 @@ public class TestH5F {
 
     @Test
     public void testH5Fget_create_plist() {
-        fail("Not yet implemented");
-    }
+        int fid = _openFile(H5_FILE, H5Fconstant.H5F_ACC_RDWR);
+        int plist = -1;
+        
+        try { plist = H5F.H5Fget_create_plist(fid); }
+        catch (Throwable err) {
+            fail("H5.H5Fget_create_plist: "+err);
+        }
+        assertTrue(plist > 0);
+       
+        try { H5F.H5Fclose(fid); } catch (Exception ex) {}
+        
+        // it should fail because the file was closed.
+        try { plist = H5F.H5Fget_create_plist(fid); }
+        catch (Throwable err) {
+            plist = -1;
+        }
+        assertTrue(plist < 0);
+     }
 
     @Test
     public void testH5Fget_access_plist() {
-        fail("Not yet implemented");
+        int fid = _openFile(H5_FILE, H5Fconstant.H5F_ACC_RDWR);
+        int plist = -1;
+        
+        try { plist = H5F.H5Fget_access_plist(fid); }
+        catch (Throwable err) {
+            fail("H5.H5Fget_access_plist: "+err);
+        }
+        assertTrue(plist > 0);
+       
+        try { H5F.H5Fclose(fid); } catch (Exception ex) {}
+        
+        // it should fail because the file was closed.
+        try { plist = H5F.H5Fget_access_plist(fid); }
+        catch (Throwable err) {
+            plist = -1;
+        }
+        assertTrue(plist < 0);
     }
 
     @Test
     public void testH5Fget_intent() {
-        fail("Not yet implemented");
-    }
+        int fid = -1, intent = 0;
+        
+        fid = _openFile(H5_FILE, H5Fconstant.H5F_ACC_RDWR);
+        try { intent = H5F.H5Fget_intent(fid); }
+        catch (Throwable err) {
+            fail("H5.H5Fget_intent: "+err);
+        }
+        assertEquals(intent, H5Fconstant.H5F_ACC_RDWR);
+        try { H5F.H5Fclose(fid); } catch (Exception ex) {}
+        
+        fid = _openFile(H5_FILE, H5Fconstant.H5F_ACC_RDONLY);
+        try { intent = H5F.H5Fget_intent(fid); }
+        catch (Throwable err) {
+            fail("H5.H5Fget_intent: "+err);
+        }
+        assertEquals(intent, H5Fconstant.H5F_ACC_RDONLY);
+        try { H5F.H5Fclose(fid); } catch (Exception ex) {}
+   }
 
     @Test
     public void testH5Fget_obj_count() {
-        fail("Not yet implemented");
+        int fid = -1;
+        long count = -1;
+
+        fid = _openFile(H5_FILE, H5Fconstant.H5F_ACC_RDWR);
+
+        for (int i=0; i<OBJ_TYPES.length; i++) {
+            try { count = H5F.H5Fget_obj_count(fid, OBJ_TYPES[i]); }
+            catch (Throwable err) {
+                fail("H5.H5Fget_obj_count: "+err);
+            }
+            assertEquals(count, OBJ_COUNTS[i]);
+        }
+        
+        try { H5F.H5Fclose(fid); } catch (Exception ex) {}
     }
 
     @Test
+    /**
+     * TODO: need to add objects to the file after H5G[D,T]create() functions 
+     * are implemented.
+     */
     public void testH5Fget_obj_ids() {
-        fail("Not yet implemented");
+        long count = 0;
+        int max_objs = 100;
+        int[] obj_id_list = new int[max_objs];
+        int[] open_obj_counts = new int[OBJ_TYPES.length];
+
+        for (int i=0; i<OBJ_TYPES.length; i++)
+            open_obj_counts[i] = 0;
+        
+        open_obj_counts[0] = 1;
+        for (int i=0; i<OBJ_TYPES.length-1; i++)
+            open_obj_counts[OBJ_TYPES.length-1] += open_obj_counts[i];
+       
+        int fid = _openFile(H5_FILE, H5Fconstant.H5F_ACC_RDWR);
+        for (int i=0; i<OBJ_TYPES.length; i++) {
+            try { count = H5F.H5Fget_obj_ids(fid, OBJ_TYPES[i], max_objs, obj_id_list); }
+            catch (Throwable err) {
+                fail("H5.H5Fget_obj_ids: "+err);
+            }
+            assertEquals(count, open_obj_counts[i]);
+        }
+
+        try { H5F.H5Fclose(fid); } catch (Exception ex) {}
     }
 
     @Test
+    /**
+     * TODO: need to add objects to the file after H5G[D,T]create() functions 
+     * are implemented.
+     */
     public void testH5Fmount() {
+        int fid = _openFile(H5_FILE, H5Fconstant.H5F_ACC_RDWR);
+
+        try { H5F.H5Fclose(fid); } catch (Exception ex) {}
         fail("Not yet implemented");
     }
 
     @Test
+    /**
+     * TODO: need to add objects to the file after H5G[D,T]create() functions 
+     * are implemented.
+     */
     public void testH5Funmount() {
+        int fid = _openFile(H5_FILE, H5Fconstant.H5F_ACC_RDWR);
+
+        try { H5F.H5Fclose(fid); } catch (Exception ex) {}
         fail("Not yet implemented");
     }
 
     @Test
     public void testH5Fget_freespace() {
-        fail("Not yet implemented");
+        long freeSpace = 0;
+        int fid = _openFile(H5_FILE, H5Fconstant.H5F_ACC_RDWR);
+
+        try { freeSpace = H5F.H5Fget_freespace(fid); } 
+        catch (Throwable err) {
+            fail("H5.H5Fget_freespace: "+err);
+        }
+        assertEquals(freeSpace, 0);
+        
+        //TODO add/and delete objects and test freespace
+
+        try { H5F.H5Fclose(fid); } catch (Exception ex) {}
     }
 
     @Test
     public void testH5Fget_filesize() {
-        fail("Not yet implemented");
+        long fileSize = 0;
+        int fid = _openFile(H5_FILE, H5Fconstant.H5F_ACC_RDWR);
+
+        try { fileSize = H5F.H5Fget_filesize(fid); } 
+        catch (Throwable err) {
+            fail("H5.H5Fget_freespace: "+err);
+        }
+        assertTrue(fileSize > 0);
+        
+        //TODO add/and delete objects and test freespace
+
+        try { H5F.H5Fclose(fid); } catch (Exception ex) {}
     }
 
     @Test
     public void testH5Fget_mdc_hit_rate() {
-        fail("Not yet implemented");
+        double rate;
+        int fid = _openFile(H5_FILE, H5Fconstant.H5F_ACC_RDWR);
+        
+        try { rate = H5F.H5Fget_mdc_hit_rate(fid); } 
+        catch (Throwable err) {
+            fail("H5.H5Fget_mdc_hit_rate: "+err);
+        }
+
+        try { H5F.H5Fclose(fid); } catch (Exception ex) {}
     }
 
     @Test
     public void testH5Fget_mdc_size() {
-        fail("Not yet implemented");
+        int nentries = -1;
+        long cache_sizes[] = new long[3];
+        int fid = _openFile(H5_FILE, H5Fconstant.H5F_ACC_RDWR);
+        
+        try { nentries = H5F.H5Fget_mdc_size(fid, cache_sizes); } 
+        catch (Throwable err) {
+            fail("H5.H5Fget_mdc_size: "+err);
+        }
+        assertTrue(nentries == 0);
+        
+        //TODO: test more cases of different cache sizes.
+      
+        try { H5F.H5Fclose(fid); } catch (Exception ex) {}
     }
 
     @Test
     public void testH5Freset_mdc_hit_rate_stats() {
-        fail("Not yet implemented");
+        int fid = _openFile(H5_FILE, H5Fconstant.H5F_ACC_RDWR);
+
+        try { H5F.H5Freset_mdc_hit_rate_stats(fid); } 
+        catch (Throwable err) {
+            fail("H5.H5Freset_mdc_hit_rate_stats: "+err);
+        }
+
+        try { H5F.H5Fclose(fid); } catch (Exception ex) {}
     }
 
     @Test

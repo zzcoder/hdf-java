@@ -138,9 +138,9 @@ JNIEXPORT jdouble JNICALL Java_hdf_h5_H5F_H5Fget_1mdc_1hit_1rate
 /*
  * Class:     hdf_h5_H5F
  * Method:    H5Fget_mdc_size
- * Signature: (I[J)V
+ * Signature: (I[J)I
  */
-JNIEXPORT void JNICALL Java_hdf_h5_H5F_H5Fget_1mdc_1size
+JNIEXPORT jint JNICALL Java_hdf_h5_H5F_H5Fget_1mdc_1size
   (JNIEnv *, jclass, jint, jlongArray);
 
 /*

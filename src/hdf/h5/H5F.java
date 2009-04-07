@@ -156,7 +156,7 @@ public class H5F {
   throws HDF5LibraryException;
 
   /**
-   *  H5Fget_intent retrieves the “intended access mode” flag passed 
+   *  H5Fget_intent retrieves the intended access mode flag passed 
    *  with H5Fopen when the file was opened. 
    *
    *  @param file_id  IN: File identifier for a currently-open HDF5 file
@@ -342,8 +342,8 @@ public class H5F {
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    *  @exception NullPointerException - metadata_cache is null.
    **/
-  public synchronized static native void H5Fget_mdc_size(int file_id, long[] metadata_cache)
-  throws HDF5LibraryException, NullPointerException;
+  public synchronized static native int H5Fget_mdc_size(int file_id, long[] metadata_cache)
+  throws HDF5LibraryException, NullPointerException, IllegalArgumentException;
 
   /**
    *  H5Freset_mdc_hit_rate_stats resets the hit rate statistics 
