@@ -185,7 +185,7 @@ public class H5E {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public static void H5Eprint(int err_stack, File stream)
+  public static void H5Eprint(int err_stack, Object stream)
   throws HDF5LibraryException
   {
     H5Eprint2(err_stack, stream);
@@ -194,9 +194,9 @@ public class H5E {
    *  H5Eprint2 prints the error stack specified by estack_id on the 
    *  specified stream, stream.
    *
-   *  @see public static void H5Eprint(int err_stack, File stream)
+   *  @see public static void H5Eprint(int err_stack, Object stream)
    **/
-  public synchronized static native void H5Eprint2(int err_stack, File stream)
+  public synchronized static native void H5Eprint2(int err_stack, Object stream)
   throws HDF5LibraryException;
   
 //  int H5Ewalk(int err_stack, H5E_direction_t direction, H5E_walk2_t func,
@@ -297,7 +297,7 @@ public class H5E {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public static void H5Eprint(File stream)
+  public static void H5Eprint(Object stream)
   throws HDF5LibraryException
   {
     H5Eprint1(stream);
@@ -306,11 +306,11 @@ public class H5E {
    *  H5Eprint1 prints the error stack specified by estack_id on the 
    *  specified stream, stream.
    *
-   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Eprint2(int, File)}
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Eprint2(int, Object)}
    *
-   *  @see public static void H5Eprint(File stream)
+   *  @see public static void H5Eprint(Object stream)
    **/
-  private synchronized static native void H5Eprint1(File stream)
+  private synchronized static native void H5Eprint1(Object stream)
   throws HDF5LibraryException;
   
   /**
