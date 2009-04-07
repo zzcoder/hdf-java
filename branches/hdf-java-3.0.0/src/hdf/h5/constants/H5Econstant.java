@@ -92,6 +92,7 @@ public class H5Econstant {
     final private static int JH5E_DATASET = 560 ;
     final private static int JH5E_DATASPACE = 570 ;
     final private static int JH5E_DATATYPE = 580 ;
+    final private static int JH5E_DEFAULT = 585 ;
     final private static int JH5E_DUPCLASS = 590 ;
     final private static int JH5E_EFL = 600 ;
     final private static int JH5E_EXISTS = 610 ;
@@ -138,8 +139,6 @@ public class H5Econstant {
     final private static int JH5E_UNSUPPORTED = 1020 ;
     final private static int JH5E_VERSION = 1030 ;
     final private static int JH5E_VFL = 1040 ;
-    final private static int JH5E_WALK_DOWNWARD = 1050 ;
-    final private static int JH5E_WALK_UPWARD = 1060 ;
     final private static int JH5E_WRITEERROR = 1070 ;
 
     ///////////////////////////////////////////////////////////////////////////
@@ -203,6 +202,7 @@ public class H5Econstant {
     final public static int H5E_DATASET = J2C( JH5E_DATASET );
     final public static int H5E_DATASPACE = J2C( JH5E_DATASPACE );
     final public static int H5E_DATATYPE = J2C( JH5E_DATATYPE );
+    final public static int H5E_DEFAULT = J2C( JH5E_DEFAULT );
     final public static int H5E_DUPCLASS = J2C( JH5E_DUPCLASS );
     final public static int H5E_EFL = J2C( JH5E_EFL );
     final public static int H5E_EXISTS = J2C( JH5E_EXISTS );
@@ -249,8 +249,6 @@ public class H5Econstant {
     final public static int H5E_UNSUPPORTED = J2C( JH5E_UNSUPPORTED );
     final public static int H5E_VERSION = J2C( JH5E_VERSION );
     final public static int H5E_VFL = J2C( JH5E_VFL );
-    final public static int H5E_WALK_DOWNWARD = J2C( JH5E_WALK_DOWNWARD );
-    final public static int H5E_WALK_UPWARD = J2C( JH5E_WALK_UPWARD );
     final public static int H5E_WRITEERROR = J2C( JH5E_WRITEERROR );
 
     /**

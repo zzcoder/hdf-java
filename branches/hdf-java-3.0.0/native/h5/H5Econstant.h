@@ -123,6 +123,8 @@ extern "C" {
 #define hdf_h5_constants_H5Econstant_JH5E_DATASPACE 570L
 #undef hdf_h5_constants_H5Econstant_JH5E_DATATYPE
 #define hdf_h5_constants_H5Econstant_JH5E_DATATYPE 580L
+#undef hdf_h5_constants_H5Econstant_JH5E_DEFAULT
+#define hdf_h5_constants_H5Econstant_JH5E_DEFAULT 585L
 #undef hdf_h5_constants_H5Econstant_JH5E_DUPCLASS
 #define hdf_h5_constants_H5Econstant_JH5E_DUPCLASS 590L
 #undef hdf_h5_constants_H5Econstant_JH5E_EFL
