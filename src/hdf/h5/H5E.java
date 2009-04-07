@@ -19,6 +19,8 @@ import hdf.h5.exceptions.HDF5LibraryException;
 import java.io.File;
 
 public class H5E {
+  static { H5.loadH5Lib(); } // make sure the library is available.
+
 //  // Error stack traversal callback function pointers 
 //  public interface H5E_walk2_t extends Callback {
 //    int callback(int n, H5E_error2_t err_desc, Pointer client_data);

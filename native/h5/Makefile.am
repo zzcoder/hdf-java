@@ -43,7 +43,9 @@ libjhdf5_la_SOURCES = H5constant.c \
 	H5Tconstant.c \
 	H5Zconstant.c \
 	exceptionImp.c \
-	H5.c 
+	H5.c \
+	H5E.c \
+	H5F.c 
 	
 include_HEADERS = h5jni.h \
 	H5constant.h \
@@ -57,6 +59,8 @@ include_HEADERS = h5jni.h \
 	H5Sconstant.h \
 	H5Tconstant.h \
 	H5Zconstant.h \
-	H5.h 
+	H5.h \
+	H5E.h \
+	H5F.h 
 
 include $(top_srcdir)/config/conclude.am
