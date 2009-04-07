@@ -105,10 +105,10 @@ extern "C" {
     /*
      * Class:     hdf_h5_H5E
      * Method:    H5Eprint2
-     * Signature: (ILjava/io/File;)V
+     * Signature: (ILjava/lang/Object;)V
      */
     JNIEXPORT void JNICALL Java_hdf_h5_H5E_H5Eprint2
-      (JNIEnv *env, jclass cls, jint cls_id, jobject stream_id)
+      (JNIEnv *env, jclass cls, jint cls_id, jobject stream_obj)
     {
         herr_t ret_val = -1;
 
@@ -116,7 +116,7 @@ extern "C" {
             h5badArgument(env, "H5Eprint2: invalid argument");
             return;
         }
-        ret_val = H5Eprint2((hid_t)cls_id, stream_id);
+        ret_val = H5Eprint2((hid_t)cls_id, (FILE*)stream_obj);
         if (ret_val < 0) {
             h5libraryError(env);
         }
