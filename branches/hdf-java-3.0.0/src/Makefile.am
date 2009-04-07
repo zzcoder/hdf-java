@@ -316,4 +316,7 @@ testh5_CLASSES = $(testh5_PATH)/TestH5.class
 testjhdf5 : $(testh5_CLASSES)
 	$(JAR) -cf $@.jar $(testh5_CLASSES)
 
+clean:
+	$(FIND) ./$(h5_PATH) \( -name '#*' -o -name '*~' -o -name '*.class' \) -exec $(RM) -f {} \; ;
+
 include $(top_srcdir)/config/conclude.am

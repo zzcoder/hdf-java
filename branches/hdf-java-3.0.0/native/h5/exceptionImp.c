@@ -322,7 +322,7 @@ jboolean h5nullArgument( JNIEnv *env, char *functName)
     rval = ENVPTR->Throw(ENVPAR (jthrowable) ex );
 
     if (rval < 0) {
-        printf("FATAL ERROR:  NullPoitner: Throw failed\n");
+        printf("FATAL ERROR:  NullPointer: Throw failed\n");
         return JNI_FALSE;
     }
 
