@@ -87,6 +87,7 @@ JNIEXPORT jint JNICALL Java_hdf_h5_constants_H5Econstant_J2C
     case hdf_h5_constants_H5Econstant_JH5E_DATASET : return H5E_DATASET;
     case hdf_h5_constants_H5Econstant_JH5E_DATASPACE : return H5E_DATASPACE;
     case hdf_h5_constants_H5Econstant_JH5E_DATATYPE : return H5E_DATATYPE;
+    case hdf_h5_constants_H5Econstant_JH5E_DEFAULT : return H5E_DEFAULT;
     case hdf_h5_constants_H5Econstant_JH5E_DUPCLASS : return H5E_DUPCLASS;
     case hdf_h5_constants_H5Econstant_JH5E_EFL : return H5E_EFL;
     case hdf_h5_constants_H5Econstant_JH5E_EXISTS : return H5E_EXISTS;
@@ -133,8 +134,6 @@ JNIEXPORT jint JNICALL Java_hdf_h5_constants_H5Econstant_J2C
     case hdf_h5_constants_H5Econstant_JH5E_UNSUPPORTED : return H5E_UNSUPPORTED;
     case hdf_h5_constants_H5Econstant_JH5E_VERSION : return H5E_VERSION;
     case hdf_h5_constants_H5Econstant_JH5E_VFL : return H5E_VFL;
-    case hdf_h5_constants_H5Econstant_JH5E_WALK_DOWNWARD : return H5E_WALK_DOWNWARD;
-    case hdf_h5_constants_H5Econstant_JH5E_WALK_UPWARD : return H5E_WALK_UPWARD;
     case hdf_h5_constants_H5Econstant_JH5E_WRITEERROR : return H5E_WRITEERROR;
     }
 
