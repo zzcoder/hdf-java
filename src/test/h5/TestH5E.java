@@ -1,90 +1,41 @@
 package test.h5;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import hdf.h5.H5E;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestH5E {
   static int hdf_java_classid = 0;
 
-  @Test
-  public void testH5Eregister_class() {
-    int classid = 0;
-    String cls_name = null;
-    String lib_name = null;
-    String version = null;
+  @Before
+  public void H5Eregister_class() {
+    hdf_java_classid = -1;
+    try { 
+      hdf_java_classid = H5E.H5Eregister_class("HDF-Java-Error", "HDF-Java", "3.0.0"); 
+    }
+    catch (Throwable err) {
+      fail("H5E.H5Eregister_class: "+err);
+    }
+  }
 
-    // test cls_name is null
+  @After
+  public void H5Eunregister_class() {
     try { 
-      classid = H5E.H5Eregister_class(cls_name, lib_name, version); 
-    }
-    catch (NullPointerException err) {
-      classid = -1;
+      H5E.H5Eunregister_class(hdf_java_classid); 
     }
     catch (Throwable err) {
-      fail("H5E.H5Eregister_class: "+err);
+      fail("H5E.H5Eunregister_class: "+err);
     }
-    assertTrue("cls_name is null", classid < 0);
-    cls_name = "HDF-Java-Error";
-    classid = 0;
-
-    // test lib_name is null
-    try { 
-      classid = H5E.H5Eregister_class(cls_name, lib_name, version); 
-    }
-    catch (NullPointerException err) {
-      classid = -1;    
-    }
-    catch (Throwable err) {
-      fail("H5E.H5Eregister_class: "+err);
-    }
-    assertTrue("lib_name is null", classid < 0);
-    lib_name = "HDF-Java";
-    classid = 0;
-
-    // test version is null
-    try { 
-      classid = H5E.H5Eregister_class(cls_name, lib_name, version); 
-    }
-    catch (NullPointerException err) {
-      classid = -1;    
-    }
-    catch (Throwable err) {
-      fail("H5E.H5Eregister_class: "+err);
-    }
-    assertTrue("version is null", classid < 0);
-    version = "3.0.0";
-    classid = -1;
-    try { 
-      classid = H5E.H5Eregister_class(cls_name, lib_name, version); 
-    }
-    catch (Throwable err) {
-      fail("H5E.H5Eregister_class: "+err);
-    }
-    assertFalse("registered error class", classid < 0);
-    hdf_java_classid = classid;
-//    System.out.println("hdf_java_classid"+hdf_java_classid);
   }
 
   @Test
-  public void testH5Eunregister_class() {
-    int classid = -1;
-    // test classid is invalid
+  public void testH5Eprint2() {
     try { 
-      H5E.H5Eunregister_class(classid); }
-    catch (IllegalArgumentException err) {
-      classid = -1;    
+      H5E.H5Eprint2(hdf_java_classid,null); 
     }
-    catch (Throwable err) {
-      classid = 0;    
-    }
-    assertTrue("classid is invalid", classid < 0);
-    
-    classid = hdf_java_classid;    
-    try { H5E.H5Eunregister_class(classid); }
     catch (Throwable err) {
       fail("H5E.H5Eunregister_class: "+err);
     }
@@ -132,11 +83,6 @@ public class TestH5E {
 
   @Test
   public void testH5EprintIntFile() {
-    fail("Not yet implemented");
-  }
-
-  @Test
-  public void testH5Eprint2() {
     fail("Not yet implemented");
   }
 
