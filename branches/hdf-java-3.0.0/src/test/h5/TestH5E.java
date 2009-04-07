@@ -40,7 +40,6 @@ public class TestH5E {
 
   @Test
   public void testH5Eprint2_default() {
-    System.out.println("H5Econstant.H5E_DEFAULT: "+H5Econstant.H5E_DEFAULT);
     try { 
       H5E.H5Eprint2(H5Econstant.H5E_DEFAULT, null); 
     }
