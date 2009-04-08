@@ -72,7 +72,7 @@ void h5str_resize (h5str_t *str, size_t new_len)
     new_str = (char *)malloc(new_len);
     if (new_len > str->max) /* increase memory */
         strcpy(new_str, str->s);
-    else 
+    else
         strncpy(new_str, str->s, new_len-1);
 
     free(str->s);
@@ -193,11 +193,11 @@ int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr)
         char *tmp_str;
         size = 0;
 
-        if(H5Tis_variable_str(tid)) 
+        if(H5Tis_variable_str(tid))
         {
             tmp_str = *(char**)ptr;
             if(tmp_str) size = strlen(tmp_str);
-        } else 
+        } else
         {
             tmp_str = cptr;
             size = H5Tget_size(tid);
@@ -232,7 +232,12 @@ int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr)
         mtid = H5Tget_super(tid);
         size = H5Tget_size(mtid);
         rank = H5Tget_array_ndims(tid);
+
+#ifdef H5_USE_16_API
         H5Tget_array_dims(tid, dims, NULL);
+#else
+        H5Tget_array_dims(tid, dims);
+#endif
 
         total_elmts = 1;
         for (i=0; i<rank; i++)
@@ -341,16 +346,16 @@ int h5str_dump_region(h5str_t *str, hid_t region)
 
             for (i = 0; i < nblocks; i++) {
                 int j;
-    
+
                 h5str_append(str, " ");
-    
+
                 /* Start coordinates and opposite corner */
                 for (j = 0; j < ndims; j++) {
                     tmp_str[0] = '\0';
                     sprintf(tmp_str, "%s%lu", j ? "," : "(", (unsigned long)ptdata[i * 2 * ndims + j]);
                     h5str_append(str, tmp_str);
                 }
-    
+
                 for (j = 0; j < ndims; j++) {
                     tmp_str[0] = '\0';
                     sprintf(tmp_str, "%s%lu", j ? "," : ")-(", (unsigned long)ptdata[i * 2 * ndims + j + ndims]);
@@ -359,8 +364,8 @@ int h5str_dump_region(h5str_t *str, hid_t region)
                 h5str_append(str, ") ");
                 tmp_str[0] = '\0';
             }
-    
-            free(ptdata);        
+
+            free(ptdata);
         } /* if (alloc_size == (hsize_t)((size_t)alloc_size)) */
     } /* if (nblocks > 0) */
 
@@ -372,10 +377,10 @@ int h5str_dump_region(h5str_t *str, hid_t region)
         if (alloc_size == (hsize_t)((size_t)alloc_size)) {
             ptdata = (hsize_t *)malloc((size_t)alloc_size);
             H5Sget_select_elem_pointlist(region, (hsize_t)0, (hsize_t)npoints, ptdata);
-    
+
             for (i = 0; i < npoints; i++) {
                 int j;
-    
+
                 h5str_append(str, " ");
 
                 for (j = 0; j < ndims; j++) {
@@ -383,10 +388,10 @@ int h5str_dump_region(h5str_t *str, hid_t region)
                     sprintf(tmp_str, "%s%lu", j ? "," : "(", (unsigned long)(ptdata[i * ndims + j]));
                     h5str_append(str, tmp_str);
                 }
-    
+
                 h5str_append(str, ") ");
             }
-    
+
             free(ptdata);
         }
     }

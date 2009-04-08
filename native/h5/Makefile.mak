@@ -31,10 +31,10 @@ CFLAGS = \
 
 LINKFLAG=/nologo /dll /incremental:no /machine:i386 
 
-OBJECTS=exceptionImp.obj H5constant.obj H5Dconstant.obj H5Econstant.obj \
-H5Fconstant.obj H5Gconstant.obj H5Iconstant.obj H5Pconstant.obj \
-H5Rconstant.obj H5Sconstant.obj H5Tconstant.obj H5Zconstant.obj \
-H5.obj H5F.obj
+OBJECTS=exceptionImp.obj h5util.obj H5constant.obj H5Dconstant.obj \
+H5Econstant.obj H5Fconstant.obj H5Gconstant.obj H5Iconstant.obj \
+H5Pconstant.obj H5Rconstant.obj H5Sconstant.obj H5Tconstant.obj H5Zconstant.obj \
+H5.obj H5F.obj H5G.obj
 
 MSDEV_LIBS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib \
 advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib \
@@ -43,6 +43,12 @@ advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
 all: $(OBJECTS)
 	$(LINKER) /OUT:"jhdf5.dll" $(LINKFLAG) $(OBJECTS) $(HDF5LIB) $(SZLIB) $(ZLIB) $(MSDEV_LIBS)
 
+exceptionImp.obj: exceptionImp.c
+	$(CC) $(CFLAGS) /Fo$@ $?	
+
+h5util.obj: h5util.c
+	$(CC) $(CFLAGS) /Fo$@ $?	
+        
 H5constant.obj: H5constant.c
 	$(CC) $(CFLAGS) /Fo$@ $?
 
@@ -78,14 +84,15 @@ H5Tconstant.obj: H5Tconstant.c
 H5Zconstant.obj: H5Zconstant.c
 	$(CC) $(CFLAGS) /Fo$@ $?
 
-exceptionImp.obj: exceptionImp.c
-	$(CC) $(CFLAGS) /Fo$@ $?	
-    
 H5.obj: H5.c
 	$(CC) $(CFLAGS) /Fo$@ $?
 
 H5F.obj: H5F.c
 	$(CC) $(CFLAGS) /Fo$@ $?
+
+H5G.obj: H5G.c
+	$(CC) $(CFLAGS) /Fo$@ $?
+
 
 clean:
 	@del *.dll

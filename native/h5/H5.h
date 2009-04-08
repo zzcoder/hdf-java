@@ -10,9 +10,9 @@ extern "C" {
 /*
  * Class:     hdf_h5_H5
  * Method:    H5error_off
- * Signature: ()I
+ * Signature: ()V
  */
-JNIEXPORT jint JNICALL Java_hdf_h5_H5_H5error_1off
+JNIEXPORT void JNICALL Java_hdf_h5_H5_H5error_1off
   (JNIEnv *, jclass);
 
 /*

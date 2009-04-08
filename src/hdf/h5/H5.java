@@ -264,9 +264,16 @@ public class H5 {
     static { loadH5Lib(); }
     
     /**
+     * True if H5 uses 16 APIs; otherwise, false.
+     * This variable must be defined after loadH5Lib() was called.
+     */
+    public static final boolean isAPI16 = H5Use16();
+    
+    
+    /**
      * load the hdf5 library. loadH5Lib() is only accessible from hdf.h5 package.
      */
-    public static void loadH5Lib() 
+    public static void loadH5Lib()
     {
         // Make sure that the library is loaded only once 
         if (isLibraryLoaded)
@@ -341,7 +348,7 @@ public class H5 {
         }
 
         /* Important!  Disable error output to C stdout */
-        H5.H5error_off();
+        try { H5.H5error_off(); } catch (HDF5LibraryException ex) {}
 
         /*  Optional:  confirm the version
          *     This will crash immediately if not the
@@ -362,7 +369,8 @@ public class H5 {
      *  of the HDF-5 C library on stdout.  This behavior
      *  may be disabled by calling H5error_off().
      **/
-    public synchronized static native int H5error_off();
+    public synchronized static native void H5error_off()
+    throws HDF5LibraryException;
 
 
     //////////////////////////////////////////////////////////////
@@ -483,5 +491,12 @@ public class H5 {
      **/
     public synchronized static native void H5check_version(int majnum, int minnum, int relnum);
 
+    /**
+     *  Check if 16 APIs are used.
+     *
+     *  @return true if 16 APIs are used; otherwise, false.
+     **/
+    private synchronized static native boolean H5Use16();
+    
 }
 

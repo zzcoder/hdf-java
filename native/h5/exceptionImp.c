@@ -86,24 +86,6 @@ herr_t walk_error_callback(unsigned n, const H5E_error2_t *err_desc, void *_err_
 
 char *defineHDF5LibraryException(int maj_num);
 
-
-/*
- * Class:     hdf_hdf5_exceptions_HDF5Library
- * Method:    H5error_off
- * Signature: ()I
- *
- */
-JNIEXPORT jint JNICALL Java_hdf_h5_H5_H5error_1off
-  (JNIEnv *env, jclass clss )
-{
-#ifdef H5_USE_16_API
-    return H5Eset_auto(NULL, NULL);
-#else
-    return H5Eset_auto(H5E_DEFAULT, NULL, NULL);
-#endif
-}
-
-
 /*
  * Class:     hdf_hdf5_exceptions_HDFLibraryException
  * Method:    printStackTrace0
