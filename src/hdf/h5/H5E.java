@@ -16,8 +16,6 @@ package hdf.h5;
 import hdf.h5.enums.H5E_TYPE;
 import hdf.h5.exceptions.HDF5LibraryException;
 
-import java.io.File;
-
 public class H5E {
   static { H5.loadH5Lib(); } // make sure the library is available.
 
@@ -289,7 +287,7 @@ public class H5E {
    *  H5Eprint prints the error stack specified by estack_id on the 
    *  specified stream, stream.
    *
-   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Eprint(int, File)}
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Eprint(int, Object)}
    *
    *  @param stream   IN: File pointer, or stderr if null.
    *

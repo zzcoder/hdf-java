@@ -489,8 +489,18 @@ h5_CLASSES = $(h5_constant_CLASSES) \
 	$(h5_PATH)/HDFNativeData.class
 
 testh5_PATH = test/h5
-testh5_SOURCES = $(testh5_PATH)/TestH5.java
-testh5_CLASSES = $(testh5_PATH)/TestH5.class
+testh5_SOURCES = $(testh5_PATH)/TestH5.java \
+	$(testh5_PATH)/TestH5Eregister.java \
+	$(testh5_PATH)/TestH5Edefault.java \
+	$(testh5_PATH)/TestH5E.java \
+	$(testh5_PATH)/TestH5F.java
+
+testh5_CLASSES = $(testh5_PATH)/TestH5.class \
+	$(testh5_PATH)/TestH5Eregister.class \
+	$(testh5_PATH)/TestH5Edefault.class \
+	$(testh5_PATH)/TestH5E.class \
+	$(testh5_PATH)/TestH5F.class
+
 all: all-am
 
 .SUFFIXES:
