@@ -183,7 +183,7 @@ extern "C" {
         herr_t ret_val = -1;
         jint enum_val = H5F_SCOPE_LOCAL;
 
-        GET_ENUM_VALUE(scope, enum_val);
+        enum_val = get_enum_value(env, scope);
 
         ret_val =  H5Fflush((hid_t) object_id, (H5F_scope_t) enum_val);
 
