@@ -13,8 +13,32 @@
 
 package hdf.h5.enums;
 
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+
 //Different kinds of error information
 public enum H5E_TYPE {
-  MAJOR,
-  MINOR;
+  MAJOR (0),
+  MINOR (1);
+  private static final Map<Integer, H5E_TYPE> lookup = new HashMap<Integer, H5E_TYPE>();
+
+  static {
+    for (H5E_TYPE s : EnumSet.allOf(H5E_TYPE.class))
+      lookup.put(s.getCode(), s);
+  }
+
+  private int code;
+
+  H5E_TYPE(int type) {
+    this.code = type;
+  }
+
+  public int getCode() {
+    return this.code;
+  }
+
+  public static H5E_TYPE get(int code) {
+    return lookup.get(code);
+  }
 }
