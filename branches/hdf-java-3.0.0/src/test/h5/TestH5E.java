@@ -1,5 +1,7 @@
 package test.h5;
 
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
@@ -47,6 +49,7 @@ public class TestH5E {
     try { 
       String class_name = H5E.H5Eget_class_name(hdf_java_classid); 
       assertNotNull("H5E.H5Eget_class_name: "+class_name,class_name);
+      assertEquals("H5E.H5Eget_class_name: ","HDF-Java-Error",class_name);
     }
     catch (Throwable err) {
       err.printStackTrace();
@@ -103,6 +106,22 @@ public class TestH5E {
   }
 
   @Test
+  public void testH5Eget_msg() {
+    try {
+      int err_id = H5E.H5Ecreate_msg(hdf_java_classid, H5E_TYPE.MAJOR, "Error in Test"); 
+      assertFalse("H5E.H5Ecreate_msg: "+err_id, err_id<0);
+      String msg = H5E.H5Eget_msg(err_id, H5E_TYPE.MAJOR); 
+      assertNotNull("H5E.H5Eget_msg: "+msg,msg);
+      assertEquals("H5E.H5Eget_msg: ","Error in Test",msg);
+      H5E.H5Eclose_msg(err_id);
+    }
+    catch (Throwable err) {
+      err.printStackTrace();
+      fail("H5E.H5Ecreate_msg: "+err);
+    }
+  }
+
+  @Test
   public void testH5Ecreate_stack() {
     fail("Not yet implemented");
   }
@@ -134,11 +153,6 @@ public class TestH5E {
 
   @Test
   public void testH5Eauto_is_v2() {
-    fail("Not yet implemented");
-  }
-
-  @Test
-  public void testH5Eget_msg() {
     fail("Not yet implemented");
   }
 

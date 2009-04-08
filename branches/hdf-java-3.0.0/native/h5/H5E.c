@@ -117,7 +117,7 @@ extern "C" {
             h5badArgument(env, "H5Eclose_msg: invalid argument");
             return;
         }
-        ret_val = H5Eclose_1msg((hid_t)err_id);
+        ret_val = H5Eclose_msg((hid_t)err_id);
         if (ret_val < 0) {
             h5libraryError(env);
         }
@@ -149,7 +149,7 @@ extern "C" {
             h5JNIFatalError( env, "H5Ecreate_msg: error message not pinned");
             return ret_val;
         }
-        GET_ENUM_VALUE(msg_type, enum_val);
+        enum_val = get_enum_value(ENVPAR msg_type);
         ret_val = H5Ecreate_msg((hid_t)err_id, (H5E_type_t) enum_val, the_err_msg);
         ENVPTR->ReleaseStringUTFChars(ENVPAR err_msg, the_err_msg);
         if (ret_val < 0) {
@@ -266,6 +266,71 @@ extern "C" {
         return str;
     }
 
+
+    /*
+     * Class:     hdf_h5_H5E
+     * Method:    H5Eget_msg
+     * Signature: (ILhdf/h5/enums/H5E_TYPE;)Ljava/lang/String;
+     */
+    JNIEXPORT jstring JNICALL Java_hdf_h5_H5E_H5Eget_1msg
+      (JNIEnv *env, jclass cls, jint msg_id, jobject error_msg_type)
+    {
+        char *namePtr;
+        jstring str;
+        ssize_t buf_size;
+        H5E_type_t *mesg_type= malloc(sizeof(H5E_type_t));
+
+        if (msg_id < 0) {
+            h5badArgument(env, "H5Eget_msg: invalid argument");
+            return NULL;
+        }
+        /* get the length of the name */
+        buf_size = H5Eget_msg(msg_id, NULL, NULL, 0);
+
+        if (buf_size < 0) {
+            h5badArgument( env, "H5Eget_msg:  buf_size < 0");
+            return NULL;
+        }
+        if (buf_size == 0) {
+            h5badArgument( env, "H5Eget_msg:  No message");
+            return NULL;
+        }
+
+        buf_size++; /* add extra space for the null terminator */
+        namePtr = (char*)malloc(sizeof(char)*buf_size);
+        if (namePtr == NULL) {
+            h5outOfMemory( env, "H5Eget_msg:  malloc failed");
+            return NULL;
+        }
+        buf_size = H5Eget_msg((hid_t)msg_id, mesg_type, (char *)namePtr, (size_t)buf_size);
+
+        if (buf_size < 0) {
+            free(namePtr);
+            free(mesg_type);
+            h5libraryError(env);
+            return NULL;
+        }
+
+        str = ENVPTR->NewStringUTF(ENVPAR namePtr);
+        free(namePtr);
+ 
+        jclass enum_cls = ENVPTR->GetObjectClass(ENVPAR error_msg_type);
+        if (enum_cls == NULL) {
+            free(mesg_type);
+            h5libraryError(env);
+            return NULL;
+        }
+        jmethodID mid_get = ENVPTR->GetStaticMethodID(ENVPAR enum_cls, "get", "(I)Lhdf/h5/enums/H5E_TYPE;");
+        if (mid_get == NULL) {
+            free(mesg_type);
+            h5libraryError(env);
+            return NULL;
+        }
+        error_msg_type = ENVPTR->CallObjectMethod(ENVPAR error_msg_type, mid_get, *mesg_type);
+        free(mesg_type);
+
+        return str;
+    }
 
 
 #ifdef __cplusplus

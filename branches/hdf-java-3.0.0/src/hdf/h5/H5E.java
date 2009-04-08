@@ -265,7 +265,7 @@ public class H5E {
    *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native String H5Eget_msg(int msg_id, H5E_TYPE[] type)
+  public synchronized static native String H5Eget_msg(int msg_id, H5E_TYPE type)
   throws HDF5LibraryException;
 //long H5Eget_msg(int msg_id, H5E_TYPE type, String msg, IntegerType size);  
   
