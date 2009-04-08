@@ -71,6 +71,11 @@ public class TestH5Edefault {
     H5E.H5Ecreate_msg(-1, H5E_TYPE.MAJOR, "null");
   }
 
+  @Test(expected=IllegalArgumentException.class)
+  public void testH5Eget_msg_invalid_msgid() throws Throwable {
+    H5E.H5Eget_msg(-1, null);
+  }
+
   @Test
   public void testH5Ecreate_stack() {
     fail("Not yet implemented");
