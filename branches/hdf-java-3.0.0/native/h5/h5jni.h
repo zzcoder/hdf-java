@@ -12,6 +12,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "H5version.h"
+#include <string.h>"
 
 #ifndef _Included_h5jni
 #define _Included_h5jni
@@ -24,12 +25,6 @@
 #define ENVPAR env,
 #endif
 
-#define GET_ENUM_VALUE(_obj, _val) { \
-    jclass enum_cls = ENVPTR->GetObjectClass(ENVPAR _obj); \
-    jmethodID enum_getCode = ENVPTR->GetMethodID(ENVPAR enum_cls, "getCode", "()I"); \
-    _val = ENVPTR->CallIntMethod(ENVPAR _obj, enum_getCode); \
-}
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -39,6 +34,15 @@ extern jboolean h5badArgument (JNIEnv *, char *);
 extern jboolean h5outOfMemory (JNIEnv *, char *);
 extern jboolean h5libraryError(JNIEnv *env );
 extern jboolean h5raiseException(JNIEnv *, char *, char *);
+
+/* implemented at H5.c */
+extern jint get_enum_value(JNIEnv *env, jobject enum_obj);
+extern jobject get_enum_object(JNIEnv *env, const char* enum_class_name,
+		const char* enum_field_name, const char* enum_field_desc);
+
+/* implemented at H5G.c */
+extern jobject create_H5G_info_t(JNIEnv *env, H5G_info_t group_info);
+
 #ifdef __cplusplus
 }
 #endif

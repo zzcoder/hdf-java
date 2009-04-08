@@ -68,7 +68,7 @@ JNIEXPORT jobject JNICALL Java_hdf_h5_H5G_H5Gget_1info_1by_1idx
  * Method:    H5Gclose
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_hdf_h5_H5G_H5Gclose
+JNIEXPORT void JNICALL Java_hdf_h5_H5G_H5Gclose
   (JNIEnv *, jclass, jint);
 
 /*

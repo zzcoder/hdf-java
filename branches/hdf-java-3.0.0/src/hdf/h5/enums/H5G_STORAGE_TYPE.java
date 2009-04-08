@@ -19,29 +19,29 @@ import java.util.Map;
 
 // Types of link storage for groups.
 public enum H5G_STORAGE_TYPE {
-  UNKNOWN     (-1),	// Unknown link storage type
-  SYMBOL_TABLE (0), // Links in group are stored with a "symbol table"
-                    // (this is sometimes called "old-style" groups
-  COMPACT      (1),	// Links are stored in object header
-  DENSE        (2); // Links are stored in fractal heap & indexed with v2 B-tree
-	private static final Map<Integer, H5G_STORAGE_TYPE> lookup = new HashMap<Integer, H5G_STORAGE_TYPE>();
+    UNKNOWN     (-1),	// Unknown link storage type
+    SYMBOL_TABLE (0), // Links in group are stored with a "symbol table"
+    // (this is sometimes called "old-style" groups
+    COMPACT      (1),	// Links are stored in object header
+    DENSE        (2); // Links are stored in fractal heap & indexed with v2 B-tree
+    private static final Map<Integer, H5G_STORAGE_TYPE> lookup = new HashMap<Integer, H5G_STORAGE_TYPE>();
 
-	static {
-		for (H5G_STORAGE_TYPE s : EnumSet.allOf(H5G_STORAGE_TYPE.class))
-			lookup.put(s.getCode(), s);
-	}
+    static {
+        for (H5G_STORAGE_TYPE s : EnumSet.allOf(H5G_STORAGE_TYPE.class))
+            lookup.put(s.getCode(), s);
+    }
 
-	private int code;
+    private int code;
 
-	H5G_STORAGE_TYPE(int type) {
-		this.code = type;
-	}
+    H5G_STORAGE_TYPE(int type) {
+        this.code = type;
+    }
 
-	public int getCode() {
-		return this.code;
-	}
+    public int getCode() {
+        return this.code;
+    }
 
-	public static H5G_STORAGE_TYPE get(int code) {
-		return lookup.get(code);
-	}
+    public static H5G_STORAGE_TYPE get(int code) {
+        return lookup.get(code);
+    }
 }

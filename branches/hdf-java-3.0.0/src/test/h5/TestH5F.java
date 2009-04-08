@@ -2,6 +2,7 @@ package test.h5;
 
 import static org.junit.Assert.*;
 import hdf.h5.H5F;
+import hdf.h5.H5G;
 import hdf.h5.constants.H5Fconstant;
 import hdf.h5.constants.H5Pconstant;
 import hdf.h5.enums.H5F_SCOPE;
@@ -384,27 +385,77 @@ public class TestH5F
     }
 
     @Test
-    /**
-     * TODO: need to add objects to the file after H5G[D,T]create() functions 
-     * are implemented.
-     */
-    public void testH5Fmount() {
-        int fid = _openFile(H5_FILE, H5Fconstant.H5F_ACC_RDWR);
+    public void testH5Fmount_unmount() {
+        String file1 = "src.h5";
+        String file2 = "dst.h5";
+        String group1 = "/G";
+        String group2 = "/MOUNTED";
+        
+        _createH5File(file1);
+        _createH5File(file2);
+        
+        int fid1 = _openFile(file1, H5Fconstant.H5F_ACC_RDWR);
+        assertTrue(fid1 > 0);
+        
+        int fid2 = _openFile(file2, H5Fconstant.H5F_ACC_RDWR);
+        assertTrue(fid2 > 0);
+        
+        // create a group at file1
+        int gid = -1;
+        try { gid = H5G.H5Gcreate(fid1, group1, DEFAULT, DEFAULT, DEFAULT); }
+        catch (Throwable err) {
+            fail("H5G.H5Gcreate: "+err);
+        }
+        assertTrue(gid > 0);
+        try { H5G.H5Gclose(gid); } catch (Exception ex) {}
+        
+        // create a group at file 2
+        gid = -1;
+        try { gid = H5G.H5Gcreate(fid2, group2, DEFAULT, DEFAULT, DEFAULT); }
+        catch (Throwable err) {
+            fail("H5G.H5Gcreate: "+err);
+        }
+        assertTrue(gid > 0);
+        try { H5G.H5Gclose(gid); } catch (Exception ex) {}        
 
-        try { H5F.H5Fclose(fid); } catch (Exception ex) {}
-        fail("Not yet implemented");
-    }
+        // before mount, "/G/MOUNTED" does not exists in file1
+        gid = -1;
+        try { gid = H5G.H5Gopen(fid1, group1+group2, DEFAULT); }
+        catch (Throwable err) { gid = -1; }
+        assertTrue(gid < 0);
+        
+        // Mount file2 under G in the file1
+        try { H5F.H5Fmount(fid1, group1, fid2, DEFAULT); }
+        catch (Throwable err) {
+            fail("H5F.H5Fmount: "+err);
+        }
+        
+        // now file1 should have group "/G/MOUNTED"
+        gid = -1;
+        try { gid = H5G.H5Gopen(fid1, group1+group2, DEFAULT); }
+        catch (Throwable err) {
+            fail("H5G.H5Gopen: "+err);
+        }
+        assertTrue(gid > 0);
+        try { H5G.H5Gclose(gid); } catch (Exception ex) {}  
+        
+        // unmount file2 from file1
+        try { H5F.H5Funmount(fid1, group1); }
+        catch (Throwable err) {
+            fail("H5F.H5Funmount: "+err);
+        }
+       
+        // file2 was unmounted from file1, "/G/MOUNTED" does not exists in file1
+        gid = -1;
+        try { gid = H5G.H5Gopen(fid1, group1+group2, DEFAULT); }
+        catch (Throwable err) { gid = -1; }
+        assertTrue(gid < 0);        
 
-    @Test
-    /**
-     * TODO: need to add objects to the file after H5G[D,T]create() functions 
-     * are implemented.
-     */
-    public void testH5Funmount() {
-        int fid = _openFile(H5_FILE, H5Fconstant.H5F_ACC_RDWR);
-
-        try { H5F.H5Fclose(fid); } catch (Exception ex) {}
-        fail("Not yet implemented");
+        try { H5F.H5Fclose(fid1); } catch (Exception ex) {}
+        try { H5F.H5Fclose(fid2); } catch (Exception ex) {}
+        
+        _deleteFile(file1);
+        _deleteFile(file2);        
     }
 
     @Test

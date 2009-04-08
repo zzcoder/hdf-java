@@ -172,11 +172,9 @@ public class H5G {
    *
    *  @param group_id  Group identifier to release.
    *
-   *  @return a non-negative value if successful
-   *
    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
    **/
-  public synchronized static native int H5Gclose(int group_id)
+  public synchronized static native void H5Gclose(int group_id)
   throws HDF5LibraryException;
 
   
@@ -239,4 +237,46 @@ public class H5G {
    **/
   private synchronized static native int H5Gopen1(int loc_id, String name)
       throws HDF5LibraryException, NullPointerException;
+  
+  /*
+/////////////////////////////////////////////////////////////////////////////////
+//
+//
+//Add these methods so that we don't need to call H5Gget_objtype_by_idx
+//in a loop to get information for all the object in a group, which takes
+//a lot of time to finish if the number of objects is more than 10,000
+//
+/////////////////////////////////////////////////////////////////////////////////
+*/
+  public synchronized static void H5Gget_obj_info_all( int loc_id,
+          String name, String[] oname, int[]type)
+  throws HDF5LibraryException, NullPointerException
+  {
+      if (name == null || name.length()<=0) {
+          throw new NullPointerException("H5Gget_obj_info_all(): name is null");
+      }
+      
+      if (oname == null) {
+          throw new NullPointerException("H5Gget_obj_info_all(): name array is null");
+      }
+
+      if (type == null) {
+          throw new NullPointerException("H5Gget_obj_info_all(): type array is null");
+      }
+
+      if (oname.length <= 0) {
+          throw new HDF5LibraryException("H5Gget_obj_info_all(): array size is zero");
+      }
+
+      if (oname.length != type.length) {
+          throw new HDF5LibraryException("H5Gget_obj_info_all(): name and type array sizes are different");
+      }
+
+      H5Gget_obj_info_all( loc_id, name, oname, type, oname.length);
+  }
+
+  private synchronized static native void H5Gget_obj_info_all( int loc_id,
+          String name, String[] oname, int[]type, int n)
+  throws HDF5LibraryException, NullPointerException;
+  
 }
