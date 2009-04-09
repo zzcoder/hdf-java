@@ -3,7 +3,7 @@
  */
 package test.h5;
 
-import static org.junit.Assert.*;
+import junit.framework.TestCase;
 import hdf.h5.H5;
 import hdf.h5.constants.H5Fconstant;
 
@@ -15,11 +15,12 @@ import org.junit.Test;
  * @author xcao
  *
  */
-public class TestH5 {
+public class TestH5 extends TestCase {
 
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @Before
     public void setUp() throws Exception {
     }
@@ -27,6 +28,7 @@ public class TestH5 {
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @After
     public void tearDown() throws Exception {
     }
@@ -114,17 +116,6 @@ public class TestH5 {
     }
     
     /**
-     * Test method for {@link hdf.h5.H5#H5close()}.
-     */
-    @Test
-    public void testH5close() {
-        try { H5.H5close(); }
-        catch (Throwable err) {
-            fail("H5.H5close failed: "+err);
-        }
-    }
-
-    /**
      * Test method for {@link hdf.h5.H5#H5garbage_collect()}.
      */
     @Test
@@ -189,7 +180,5 @@ public class TestH5 {
         catch (Throwable err) {
             fail("H5.H5check_version failed: "+err);
         }
-        
-        
     }
 }

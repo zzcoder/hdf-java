@@ -1,6 +1,5 @@
 package test.h5;
 
-import static org.junit.Assert.*;
 import hdf.h5.H5;
 import hdf.h5.H5F;
 import hdf.h5.H5G;
@@ -10,11 +9,13 @@ import hdf.h5.enums.H5F_SCOPE;
 
 import java.io.File;
 
+import junit.framework.TestCase;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestH5F 
+public class TestH5F extends TestCase
 {
     private static final boolean is16 = H5.isAPI16;
     private static final int DEFAULT = H5Pconstant.H5P_DEFAULT;
@@ -42,7 +43,7 @@ public class TestH5F
             try {
                 file.delete();
             } catch (SecurityException e) {
-                e.printStackTrace();
+                ;//e.printStackTrace();
             }
         }
     }
@@ -55,7 +56,7 @@ public class TestH5F
             fid = H5F.H5Fcreate(filename, H5Fconstant.H5F_ACC_TRUNC, 
                 DEFAULT, DEFAULT);
         } catch (Exception e) {
-            e.printStackTrace();
+            ;//e.printStackTrace();
         }
         
         if (fid > 0) {
@@ -125,6 +126,7 @@ public class TestH5F
         return fid;
     }
 
+    @Override
     @Before
     public void setUp() throws Exception {
         // create a test file
@@ -136,6 +138,7 @@ public class TestH5F
             txtFile.createNewFile();
     }
     
+    @Override
     @After
     public void tearDown() throws Exception {
         // delete the test files created at setUp()

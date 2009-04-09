@@ -193,7 +193,14 @@ extern "C" {
 	jint get_enum_value(JNIEnv *env, jobject enum_obj)
 	{
 	    jclass enum_cls = ENVPTR->GetObjectClass(ENVPAR enum_obj);
+        if (enum_cls == NULL) {
+            return -1;
+        }
+
 	    jmethodID mid_getCode = ENVPTR->GetMethodID(ENVPAR enum_cls, "getCode", "()I");
+        if (mid_getCode == NULL) {
+            return -1L;
+        }
 
         return ENVPTR->CallIntMethod(ENVPAR enum_obj, mid_getCode);
 	}
@@ -206,10 +213,12 @@ extern "C" {
         if (enum_cls == NULL) {
             return NULL;
         }
+
         jmethodID mid_get = ENVPTR->GetStaticMethodID(ENVPAR enum_cls, "get", enum_field_desc);
         if (mid_get == NULL) {
             return NULL;
         }
+
         return ENVPTR->CallStaticObjectMethod(ENVPAR enum_cls, mid_get, enum_val);
 	}
 
