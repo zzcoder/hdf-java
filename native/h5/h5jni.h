@@ -12,7 +12,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "H5version.h"
-#include <string.h>"
+#include <string.h>
 
 #ifndef _Included_h5jni
 #define _Included_h5jni

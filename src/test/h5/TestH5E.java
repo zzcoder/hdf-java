@@ -108,11 +108,13 @@ public class TestH5E {
   @Test
   public void testH5Eget_msg() {
     try {
+      H5E_TYPE[] error_msg_type = {H5E_TYPE.MINOR};
       int err_id = H5E.H5Ecreate_msg(hdf_java_classid, H5E_TYPE.MAJOR, "Error in Test"); 
       assertFalse("H5E.H5Ecreate_msg: "+err_id, err_id<0);
-      String msg = H5E.H5Eget_msg(err_id, H5E_TYPE.MAJOR); 
+      String msg = H5E.H5Eget_msg(err_id, error_msg_type); 
       assertNotNull("H5E.H5Eget_msg: "+msg,msg);
       assertEquals("H5E.H5Eget_msg: ","Error in Test",msg);
+      assertEquals("H5E.H5Eget_msg: ", H5E_TYPE.MAJOR, error_msg_type[0]);
       H5E.H5Eclose_msg(err_id);
     }
     catch (Throwable err) {

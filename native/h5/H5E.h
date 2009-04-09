@@ -114,10 +114,10 @@ JNIEXPORT jboolean JNICALL Java_hdf_h5_H5E_H5Eauto_1is_1v2
 /*
  * Class:     hdf_h5_H5E
  * Method:    H5Eget_msg
- * Signature: (ILhdf/h5/enums/H5E_TYPE;)Ljava/lang/String;
+ * Signature: (I[Lhdf/h5/enums/H5E_TYPE;)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_hdf_h5_H5E_H5Eget_1msg
-  (JNIEnv *, jclass, jint, jobject);
+  (JNIEnv *, jclass, jint, jobjectArray);
 
 /*
  * Class:     hdf_h5_H5E
