@@ -26,13 +26,13 @@ import java.util.Map;
 public enum H5G_OBJECT_TYPE {
   UNKNOWN     (-1),   // Unknown object type
   GROUP       ( 0),   // Object is a group
-  DATASET     ( 0),   // Object is a dataset 
-  TYPE        ( 0),   // Object is a named data type
-  LINK        ( 0),   // Object is a symbolic link
-  UDLINK      ( 0),   // Object is a user-defined link
-  RESERVED_5  ( 0),   // Reserved for future use
-  RESERVED_6  ( 0),   // Reserved for future use 
-  RESERVED_7  ( 0);   // Reserved for future use
+  DATASET     ( 1),   // Object is a dataset 
+  TYPE        ( 2),   // Object is a named data type
+  LINK        ( 3),   // Object is a symbolic link
+  UDLINK      ( 4),   // Object is a user-defined link
+  RESERVED_5  ( 5),   // Reserved for future use
+  RESERVED_6  ( 6),   // Reserved for future use 
+  RESERVED_7  ( 7);   // Reserved for future use
 	private static final Map<Integer, H5G_OBJECT_TYPE> lookup = new HashMap<Integer, H5G_OBJECT_TYPE>();
 
 	static {

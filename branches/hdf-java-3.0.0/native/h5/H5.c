@@ -200,13 +200,17 @@ extern "C" {
 
 	/* get the enum object for a given enum field name. */
 	jobject get_enum_object(JNIEnv *env, const char* enum_class_name,
-			const char* enum_field_name, const char* enum_field_desc)
+			jint enum_val, const char* enum_field_desc)
 	{
-		jclass enum_cls = ENVPTR->FindClass(ENVPAR enum_class_name);
-	    jfieldID enum_field = ENVPTR->GetStaticFieldID(ENVPAR enum_cls,
-	    		enum_field_name, enum_field_desc);
-
-	    return ENVPTR->GetStaticObjectField(ENVPAR enum_cls, enum_field);
+        jclass enum_cls = ENVPTR->FindClass(ENVPAR enum_class_name);
+        if (enum_cls == NULL) {
+            return NULL;
+        }
+        jmethodID mid_get = ENVPTR->GetStaticMethodID(ENVPAR enum_cls, "get", enum_field_desc);
+        if (mid_get == NULL) {
+            return NULL;
+        }
+        return ENVPTR->CallStaticObjectMethod(ENVPAR enum_cls, mid_get, enum_val);
 	}
 
 
