@@ -4,8 +4,10 @@ package test.h5;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import hdf.h5.H5E;
+import hdf.h5.H5F;
 import hdf.h5.enums.H5E_TYPE;
 
 import org.junit.After;
@@ -26,7 +28,7 @@ public class TestH5E {
     }
     catch (Throwable err) {
       err.printStackTrace();
-      fail("H5E.H5Eregister_class: "+err);
+      fail("H5E.H5Eget_stack_class: "+err);
     }
   }
 
@@ -40,7 +42,7 @@ public class TestH5E {
     }
     catch (Throwable err) {
       err.printStackTrace();
-      fail("H5E.H5Eunregister_class: "+err);
+      fail("H5E.H5Erestore_stack_class: "+err);
     }
   }
 
@@ -69,7 +71,7 @@ public class TestH5E {
     }
   }
 
-  @Ignore
+  @Ignore("Tested with create_msg_major[minor]")
   public void testH5Eclose_msg() {
     fail("Not yet implemented");
   }
@@ -83,12 +85,12 @@ public class TestH5E {
   public void testH5Ecreate_msg_major() {
     try { 
       int err_id = H5E.H5Ecreate_msg(hdf_java_classid, H5E_TYPE.MAJOR, "Error in Test"); 
-      assertFalse("H5E.H5Ecreate_msg: "+err_id, err_id<0);
+      assertFalse("H5E.H5Ecreate_msg_major: "+err_id, err_id<0);
       H5E.H5Eclose_msg(err_id);
     }
     catch (Throwable err) {
       err.printStackTrace();
-      fail("H5E.H5Ecreate_msg: "+err);
+      fail("H5E.H5Ecreate_msg_major: "+err);
     }
   }
 
@@ -96,12 +98,12 @@ public class TestH5E {
   public void testH5Ecreate_msg_minor() {
     try { 
       int err_id = H5E.H5Ecreate_msg(hdf_java_classid, H5E_TYPE.MINOR, "Error in Test Function"); 
-      assertFalse("H5E.H5Ecreate_msg: "+err_id, err_id<0);
+      assertFalse("H5E.H5Ecreate_msg_minor: "+err_id, err_id<0);
       H5E.H5Eclose_msg(err_id);
     }
     catch (Throwable err) {
       err.printStackTrace();
-      fail("H5E.H5Ecreate_msg: "+err);
+      fail("H5E.H5Ecreate_msg_minor: "+err);
     }
   }
 
@@ -110,7 +112,7 @@ public class TestH5E {
     try {
       H5E_TYPE[] error_msg_type = {H5E_TYPE.MINOR};
       int err_id = H5E.H5Ecreate_msg(hdf_java_classid, H5E_TYPE.MAJOR, "Error in Test"); 
-      assertFalse("H5E.H5Ecreate_msg: "+err_id, err_id<0);
+      assertFalse("H5E.H5Eget_msg: H5Ecreate_msg - "+err_id, err_id<0);
       String msg = H5E.H5Eget_msg(err_id, error_msg_type); 
       assertNotNull("H5E.H5Eget_msg: "+msg,msg);
       assertEquals("H5E.H5Eget_msg: ","Error in Test",msg);
@@ -119,56 +121,126 @@ public class TestH5E {
     }
     catch (Throwable err) {
       err.printStackTrace();
-      fail("H5E.H5Ecreate_msg: "+err);
+      fail("H5E.H5Eget_msg: "+err);
     }
   }
 
   @Test
   public void testH5Ecreate_stack() {
-    fail("Not yet implemented");
-  }
-
-  @Test
-  public void testH5Eset_current_stack() {
-    fail("Not yet implemented");
+    try { 
+      int stk_id = H5E.H5Ecreate_stack(); 
+      assertFalse("H5E.H5Ecreate_stack: "+stk_id, stk_id<0);
+      H5E.H5Eclose_stack(stk_id);
+    }
+    catch (Throwable err) {
+      err.printStackTrace();
+      fail("H5E.H5Ecreate_stack: "+err);
+    }
   }
 
   @Test
   public void testH5Epop() {
-    fail("Not yet implemented");
+    try { 
+      H5E.H5Eset_current_stack(current_stackid); 
+      try { 
+        H5F.H5Fopen("test", 0, 1); 
+      }
+      catch (Throwable err) {
+      }
+      long num_msg = H5E.H5Eget_num(current_stackid);
+      assertTrue("H5E.H5Epop", num_msg == 2);
+      H5E.H5Epop(current_stackid, 1); 
+      num_msg = H5E.H5Eget_num(current_stackid);
+      assertTrue("H5E.H5Epop", num_msg == 1);
+    }
+    catch (Throwable err) {
+      err.printStackTrace();
+      fail("H5E.H5Epop: "+err);
+    }
   }
 
   @Test
-  public void testH5EprintIntFile() {
-    fail("Not yet implemented");
+  public void testH5EprintInt() {
+    try { 
+      assertFalse(current_stackid<0);
+      H5E.H5Eprint(current_stackid, null); 
+    }
+    catch (Throwable err) {
+      err.printStackTrace();
+      fail("H5E.H5EprintInt: "+err);
+    }
   }
 
   @Test
   public void testH5EclearInt() {
-    fail("Not yet implemented");
+    try {
+      H5E.H5Eclear(current_stackid);
+    }
+    catch (Throwable err) {
+      err.printStackTrace();
+      fail("H5E.H5EclearInt: "+err);
+    }
   }
 
   @Test
   public void testH5Eclear2() {
-    fail("Not yet implemented");
+    try {
+      H5E.H5Eclear2(current_stackid);
+    }
+    catch (Throwable err) {
+      err.printStackTrace();
+      fail("H5E.H5Eclear2: "+err);
+    }
   }
 
   @Test
   public void testH5Eauto_is_v2() {
-    fail("Not yet implemented");
+    try {
+      boolean is_v2 = H5E.H5Eauto_is_v2(current_stackid);
+      assertTrue("H5E.H5Eauto_is_v2: ", is_v2);
+    }
+    catch (Throwable err) {
+      err.printStackTrace();
+      fail("H5E.H5Eauto_is_v2: "+err);
+    }
   }
 
   @Test
   public void testH5Eget_num() {
-    fail("Not yet implemented");
+    try {
+      long num_msg = H5E.H5Eget_num(current_stackid);
+      assertTrue("H5E.H5Eget_num",num_msg == 0);
+    }
+    catch (Throwable err) {
+      err.printStackTrace();
+      fail("H5E.H5Eget_num: "+err);
+    }
   }
 
   @Test
-  public void testH5EprintFile() {
+  public void testH5Eget_num_with_msg() {
+    try {
+      H5E.H5Eset_current_stack(current_stackid); 
+      try { 
+        H5F.H5Fopen("test", 0, 1); 
+      }
+      catch (Throwable err) {
+      }
+      long num_msg = H5E.H5Eget_num(current_stackid);
+      assertTrue("H5E.H5Eget_num_with_msg", num_msg > 0);
+    }
+    catch (Throwable err) {
+      err.printStackTrace();
+      fail("H5E.H5Eget_num_with_msg: "+err);
+    }
+  }
+
+  @Ignore("API1.6")
+  public void testH5Eprint() {
     fail("Not yet implemented");
   }
 
-  @Test
+  @Ignore("API1.6")
   public void testH5Eclear() {
     fail("Not yet implemented");
   }

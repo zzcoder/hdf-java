@@ -35,16 +35,33 @@ extern "C" {
     /* get the enum object for a given enum field name. */
     jobject get_H5E_TYPE_object(JNIEnv *env, jint enum_val)
     {
-        char enum_field_name[8];
-        jclass enum_cls = ENVPTR->FindClass(ENVPAR "hdf/h5/enums/H5E_TYPE");
-        if (enum_cls == NULL) {
-            return NULL;
+        return get_enum_object(env,
+                "hdf/h5/enums/H5E_TYPE",
+                enum_val,
+                "(I)Lhdf/h5/enums/H5E_TYPE;");
+    }
+
+    /*
+     * Class:     hdf_h5_H5E
+     * Method:    H5Eauto_is_v2
+     * Signature: (I)Z
+     */
+    JNIEXPORT jboolean JNICALL Java_hdf_h5_H5E_H5Eauto_1is_1v2
+      (JNIEnv *env, jclass cls, jint stk_id)
+    {
+        herr_t ret_val = -1;
+        unsigned int is_stack = 0;
+
+        if (stk_id < 0) {
+            h5badArgument(env, "H5Epop: invalid argument");
+            return 0;
         }
-        jmethodID mid_get = ENVPTR->GetStaticMethodID(ENVPAR enum_cls, "getEnum", "(I)Lhdf/h5/enums/H5E_TYPE;");
-        if (mid_get == NULL) {
-            return NULL;
+        ret_val = H5Eauto_is_v2(stk_id, &is_stack);
+        if (ret_val < 0) {
+            h5libraryError(env);
+            return 0;
         }
-        return ENVPTR->CallStaticObjectMethod(ENVPAR enum_cls, mid_get, enum_val);
+        return is_stack;
     }
 
     /*
@@ -348,6 +365,107 @@ extern "C" {
         return str;
     }
 
+    /*
+     * Class:     hdf_h5_H5E
+     * Method:    H5Eget_num
+     * Signature: (I)J
+     */
+    JNIEXPORT jlong JNICALL Java_hdf_h5_H5E_H5Eget_1num
+      (JNIEnv *env, jclass cls, jint stk_id)
+    {
+        ssize_t ret_val = -1;
+
+        if (stk_id < 0) {
+            h5badArgument(env, "H5Eprint2: invalid argument");
+            return -1;
+        }
+        ret_val = H5Eget_num(stk_id);
+        if (ret_val < 0) {
+            h5libraryError(env);
+            return -1;
+        }
+        return ret_val;
+    }
+
+    /*
+     * Class:     hdf_h5_H5E
+     * Method:    H5Eclear2
+     * Signature: (I)V
+     */
+    JNIEXPORT void JNICALL Java_hdf_h5_H5E_H5Eclear2
+      (JNIEnv *env, jclass cls, jint stk_id)
+    {
+        herr_t ret_val = -1;
+
+        if (stk_id < 0) {
+            h5badArgument(env, "H5Eclear2: invalid argument");
+            return;
+        }
+        ret_val = H5Eclear2(stk_id);
+        if (ret_val < 0) {
+            h5libraryError(env);
+            return;
+        }
+    }
+
+    /*
+     * Class:     hdf_h5_H5E
+     * Method:    H5Ecreate_stack
+     * Signature: ()I
+     */
+    JNIEXPORT jint JNICALL Java_hdf_h5_H5E_H5Ecreate_1stack
+      (JNIEnv *env, jclass cls)
+    {
+        jint ret_val = -1;
+        ret_val = H5Ecreate_stack();
+        if (ret_val < 0) {
+            h5libraryError(env);
+            return -1;
+        }
+        return ret_val;
+    }
+
+    /*
+     * Class:     hdf_h5_H5E
+     * Method:    H5Epop
+     * Signature: (IJ)V
+     */
+    JNIEXPORT void JNICALL Java_hdf_h5_H5E_H5Epop
+      (JNIEnv *env, jclass cls, jint stk_id, jlong count)
+    {
+        herr_t ret_val = -1;
+
+        if (stk_id < 0) {
+            h5badArgument(env, "H5Epop: invalid argument");
+            return;
+        }
+        ret_val = H5Epop(stk_id, count);
+        if (ret_val < 0) {
+            h5libraryError(env);
+            return;
+        }
+    }
+
+    /*
+     * Class:     hdf_h5_H5E
+     * Method:    H5Eset_current_stack
+     * Signature: (I)V
+     */
+    JNIEXPORT void JNICALL Java_hdf_h5_H5E_H5Eset_1current_1stack
+      (JNIEnv *env, jclass cls, jint stk_id)
+    {
+        herr_t ret_val = -1;
+
+        if (stk_id < 0) {
+            h5badArgument(env, "H5Epop: invalid argument");
+            return;
+        }
+        ret_val = H5Eset_current_stack(stk_id);
+        if (ret_val < 0) {
+            h5libraryError(env);
+            return;
+        }
+    }
 
 #ifdef __cplusplus
 }

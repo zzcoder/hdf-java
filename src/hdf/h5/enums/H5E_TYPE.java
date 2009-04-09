@@ -41,8 +41,4 @@ public enum H5E_TYPE {
     public static H5E_TYPE get(int code) {
         return lookup.get(code);
     }
-
-    public static H5E_TYPE getEnum(int code) {
-        return values()[code];
-    }
 }

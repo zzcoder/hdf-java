@@ -309,17 +309,25 @@ jhdf5 : $(h5_CLASSES)
 
 testh5_PATH = test/h5
 
-testh5_SOURCES = $(testh5_PATH)/TestH5.java \
+testh5_SOURCES = $(testh5_PATH)/TestAll.java \
+	$(testh5_PATH)/TestH5.java \
 	$(testh5_PATH)/TestH5Eregister.java \
 	$(testh5_PATH)/TestH5Edefault.java \
 	$(testh5_PATH)/TestH5E.java \
-	$(testh5_PATH)/TestH5F.java
+	$(testh5_PATH)/TestH5F.java \
+	$(testh5_PATH)/TestH5G.java \
+	$(testh5_PATH)/TestH5S.java \
+	$(testh5_PATH)/TestH5T.java
 
-testh5_CLASSES = $(testh5_PATH)/TestH5.class \
+testh5_CLASSES = $(testh5_PATH)/TestAll.class \
+	$(testh5_PATH)/TestH5E.class \
 	$(testh5_PATH)/TestH5Eregister.class \
 	$(testh5_PATH)/TestH5Edefault.class \
 	$(testh5_PATH)/TestH5E.class \
-	$(testh5_PATH)/TestH5F.class
+	$(testh5_PATH)/TestH5F.class \
+	$(testh5_PATH)/TestH5G.class \
+	$(testh5_PATH)/TestH5S.class \
+	$(testh5_PATH)/TestH5T.class
 
 testjhdf5 : $(testh5_CLASSES)
 	$(JAR) -cf $@.jar $(testh5_CLASSES)
