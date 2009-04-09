@@ -1093,7 +1093,7 @@ public abstract class Dataset extends HObject
         //String bigstr = new String(bytes);
         String[] strArray = new String[n];
         String str = null;
-        int idx = 0, offset=0;
+        int idx = 0;
         for (int i=0; i<n; i++) {
             str = new String(bytes, i*length, length);
             // bigstr.substring uses less memory space
@@ -1106,7 +1106,15 @@ public abstract class Dataset extends HObject
             if (idx > 0) {
                 str = str.substring(0, idx);
             }
-            strArray[i] = str.trim();
+            
+            // trim only the end 
+            int end = str.length();
+            while (str.charAt(end-1) <= '\u0020')
+                end--;
+            strArray[i] = (end <= 0) ? null : str.substring(0, end);
+            
+            // trim both start and end
+            //strArray[i] = str.trim();
         }
 
         return strArray;
