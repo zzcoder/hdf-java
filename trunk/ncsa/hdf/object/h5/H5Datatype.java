@@ -38,47 +38,50 @@ public class H5Datatype extends Datatype
     /**
      * @see ncsa.hdf.object.HObject#serialVersionUID
      */
-	public static final long serialVersionUID = HObject.serialVersionUID;
+    public static final long serialVersionUID = HObject.serialVersionUID;
 
-   /**
+    /**
      * The list of attributes of this data object.
      */
-     private List attributeList;
-     
+    private List attributeList;
 
-     /** Flag to indicate if this datatype is a named datatype */
-     private boolean isNamed=false;
-     
-     private int nAttributes = -1;
 
-     /**
-      * Constrcuts an named HDF5 data type object for a given file, dataset name and group path.
-      * <p>
-      * The datatype object represents an existing named datatype in file. For example, 
-      * new H5Datatype(file, "dtype1", "/g0") constructs a datatype object that corresponds to
-      * the dataset,"dset1", at group "/g0".
-      * <p>
-      * @param theFile the file that contains the dataset.
-      * @param name the name of the dataset such as "dset1".
-      * @param path the group path to the dataset such as "/g0/".
-      */
+    /** Flag to indicate if this datatype is a named datatype */
+    private boolean isNamed=false;
+
+    private int nAttributes = -1;
+
+    private boolean isVLEN = false;
+
+    /**
+     * Constrcuts an named HDF5 data type object for a given file, dataset name and group path.
+     * <p>
+     * The datatype object represents an existing named datatype in file. For example, 
+     * new H5Datatype(file, "dtype1", "/g0") constructs a datatype object that corresponds to
+     * the dataset,"dset1", at group "/g0".
+     * <p>
+     * @param theFile the file that contains the dataset.
+     * @param name the name of the dataset such as "dset1".
+     * @param path the group path to the dataset such as "/g0/".
+     */
     public H5Datatype(
-        FileFormat theFile,
-        String name,
-        String path)
+            FileFormat theFile,
+            String name,
+            String path)
     {
         super (theFile, name, path, null);
     }
-     
-     /**
+
+    /**
      * @deprecated  Not for public use in the future. <br>
      * Using {@link #H5Datatype(FileFormat, String, String)}
      */
+    @Deprecated
     public H5Datatype(
-        FileFormat theFile,
-        String name,
-        String path,
-        long[] oid)
+            FileFormat theFile,
+            String name,
+            String path,
+            long[] oid)
     {
         super (theFile, name, path, oid);
 
@@ -88,31 +91,8 @@ public class H5Datatype extends Datatype
                 byte[] ref_buf = H5.H5Rcreate(theFile.getFID(), this.getFullName(), HDF5Constants.H5R_OBJECT, -1);
                 this.oid = new long[1];
                 this.oid[0] = HDFNativeData.byteToLong(ref_buf, 0);
-             } catch (Exception ex) {}
+            } catch (Exception ex) {}
         }
-     }
-
-    /*
-     * (non-Javadoc)
-     * @see ncsa.hdf.object.DataFormat#hasAttribute()
-     */
-    public boolean hasAttribute () 
-    { 
-        if (nAttributes < 0) {
-            int tid = -1;
-            try
-            {
-                tid = H5.H5Topen(getFID(), getPath()+getName());
-                fromNative(tid);
-                nAttributes = H5.H5Aget_num_attrs(tid);
-                isNamed = true;
-            } catch (Exception ex) { nAttributes = 0;} 
-            finally {
-                try {H5.H5Tclose(tid);} catch (Exception ex){}
-            }
-        }
-        
-        return (nAttributes>0);
     }
 
     /**
@@ -158,8 +138,32 @@ public class H5Datatype extends Datatype
     public H5Datatype(int nativeID)
     {
         super(nativeID);
+
+        fromNative(nativeID);
     }
-    
+
+    /*
+     * (non-Javadoc)
+     * @see ncsa.hdf.object.DataFormat#hasAttribute()
+     */
+    public boolean hasAttribute () 
+    { 
+        if (nAttributes < 0) {
+            int tid = -1;
+            try
+            {
+                tid = H5.H5Topen(getFID(), getPath()+getName());
+                fromNative(tid);
+                nAttributes = H5.H5Aget_num_attrs(tid);
+                isNamed = true;
+            } catch (Exception ex) { nAttributes = 0;} 
+            finally {
+                try {H5.H5Tclose(tid);} catch (Exception ex){}
+            }
+        }
+
+        return (nAttributes>0);
+    }
 
     /**
      * Converts values in an Enumeration Datatype to names.
@@ -189,14 +193,14 @@ public class H5Datatype extends Datatype
      *
      */
     public static final String[] convertEnumValueToName(
-        int tid, Object inValues, String[] outNames) throws HDF5Exception
-    {
+            int tid, Object inValues, String[] outNames) throws HDF5Exception
+            {
         int inSize = 0;
 
         if ( (inValues == null) || 
-                     ( (inSize = Array.getLength(inValues)) <=0) || 
-             ( (outNames != null) && (inSize != Array.getLength(outNames))) ) {
-           return null;
+                ( (inSize = Array.getLength(inValues)) <=0) || 
+                ( (outNames != null) && (inSize != Array.getLength(outNames))) ) {
+            return null;
         }
 
         int nMembers = H5.H5Tget_nmembers(tid);
@@ -212,7 +216,7 @@ public class H5Datatype extends Datatype
                 outNames[i] = null;
             }
         }
-        
+
         String[] names = new String[nMembers];
         int[] values = new int[nMembers];
         int[] theValue = {0};
@@ -239,12 +243,13 @@ public class H5Datatype extends Datatype
         } 
 
         return outNames;
-    }
-    
+            }
+
     /*
      * (non-Javadoc)
      * @see ncsa.hdf.object.Datatype#fromNative(int)
      */
+    @Override
     public void fromNative(int tid)
     {
         int tclass=-1, tsize=-1;
@@ -253,13 +258,14 @@ public class H5Datatype extends Datatype
         try { 
             tclass = H5.H5Tget_class(tid);
             tsize = H5.H5Tget_size(tid);
+            isVLEN = (tclass == HDF5Constants.H5T_VLEN);
         } catch (Exception ex) { datatypeClass = CLASS_NO_CLASS; };
- 
+
         try { 
             isUchar = H5.H5Tequal(tid, HDF5Constants.H5T_NATIVE_UCHAR);
             isChar = (H5.H5Tequal(tid, HDF5Constants.H5T_NATIVE_CHAR) || isUchar);
         } catch (Exception ex) {};
-        
+
         if (tclass == HDF5Constants.H5T_ARRAY) {
             int tmptid = -1;
             datatypeClass = CLASS_ARRAY;
@@ -292,6 +298,8 @@ public class H5Datatype extends Datatype
         else if (tclass == HDF5Constants.H5T_FLOAT) {
             datatypeClass = CLASS_FLOAT;
         } else if (tclass == HDF5Constants.H5T_STRING) {
+            try { isVLEN = H5.H5Tis_variable_str(tid); } catch (Exception ex) {}
+
             datatypeClass = CLASS_STRING;
         } else if (tclass == HDF5Constants.H5T_REFERENCE) {
             datatypeClass = CLASS_REFERENCE;
@@ -313,7 +321,11 @@ public class H5Datatype extends Datatype
             } catch (Exception ex) {}
         }
 
-        datatypeSize = tsize;
+        if (isVLEN)
+            datatypeSize = -1;
+        else
+            datatypeSize = tsize;
+
         datatypeOrder = NATIVE;
     }
 
@@ -326,26 +338,33 @@ public class H5Datatype extends Datatype
      * @param tid the datatype identifieron disk.
      * @return the memory datatype identifier if successful, and negative otherwise.
      */
+    @Deprecated
     public static int toNative(int tid)
     {
         // data type information
         int native_type=-1;
-        
+
         try {
             native_type = H5.H5Tget_native_type(tid);
         } catch (Exception ex) {}
-    
+
+        try {
+            if (H5.H5Tis_variable_str(tid))
+                H5.H5Tset_size (native_type, HDF5Constants.H5T_VARIABLE);
+        } catch (Exception ex) {}
+
         return native_type;
     }
-    
+
     /*
      * (non-Javadoc)
      * @see ncsa.hdf.object.Datatype#toNative()
      */
+    @Override
     public int toNative()
     {
         int tid=-1, tmptid=-1;
-        
+
         if (isNamed) {
             try {tid = H5.H5Topen(getFID(), getPath()+getName());}
             catch (Exception ex) {;}
@@ -359,71 +378,72 @@ public class H5Datatype extends Datatype
         try {
             switch (datatypeClass)
             {
-                case CLASS_ARRAY:
-                    try {
-                        tmptid = baseType.toNative();
-                        tid = H5.H5Tarray_create(tmptid, dims.length, dims, null);
-                    } finally { close(tmptid); }
-                    break;
-                case CLASS_INTEGER:
-                case CLASS_ENUM:
-                    if (datatypeSize == 1) {
-                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT8);
-                    } else if (datatypeSize == 2) {
-                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT16);
-                    } else if (datatypeSize == 4) {
-                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT32);
-                    } else if (datatypeSize == 8) {
-                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT64);
-                    } else {
-                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT);
-                    }
+            case CLASS_ARRAY:
+                try {
+                    tmptid = baseType.toNative();
+                    tid = H5.H5Tarray_create(tmptid, dims.length, dims, null);
+                } finally { close(tmptid); }
+                break;
+            case CLASS_INTEGER:
+            case CLASS_ENUM:
+                if (datatypeSize == 1) {
+                    tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT8);
+                } else if (datatypeSize == 2) {
+                    tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT16);
+                } else if (datatypeSize == 4) {
+                    tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT32);
+                } else if (datatypeSize == 8) {
+                    tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT64);
+                } else {
+                    tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_INT);
+                }
 
-                    if (datatypeOrder == Datatype.ORDER_BE) {
-                        H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_BE);
-                    } else if (datatypeOrder == Datatype.ORDER_LE) {
-                        H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_LE);
-                    }
+                if (datatypeOrder == Datatype.ORDER_BE) {
+                    H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_BE);
+                } else if (datatypeOrder == Datatype.ORDER_LE) {
+                    H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_LE);
+                }
 
-                    if (datatypeSign == Datatype.SIGN_NONE) {
-                        H5.H5Tset_sign(tid, HDF5Constants.H5T_SGN_NONE);
-                    }
-                    break;
-                case CLASS_FLOAT:
-                    if (datatypeSize == 8) {
-                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_DOUBLE);
-                    } else {
-                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_FLOAT);
-                    }
+                if (datatypeSign == Datatype.SIGN_NONE) {
+                    H5.H5Tset_sign(tid, HDF5Constants.H5T_SGN_NONE);
+                }
+                break;
+            case CLASS_FLOAT:
+                if (datatypeSize == 8) {
+                    tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_DOUBLE);
+                } else {
+                    tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_FLOAT);
+                }
 
-                    if (datatypeOrder == Datatype.ORDER_BE) {
-                        H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_BE);
-                    } else if (datatypeOrder == Datatype.ORDER_LE) {
-                        H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_LE);
-                    }
-                    break;
-                case CLASS_CHAR:
-                    if (datatypeSign == Datatype.SIGN_NONE) {
-                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_UCHAR);
-                    } else {
-                        tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_CHAR);
-                    }
-                    break;
-                case CLASS_STRING:
-                    tid = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
-                    if (datatypeSize < 0)
-                        H5.H5Tset_size (tid, HDF5Constants.H5T_VARIABLE);
-                    else
-                        H5.H5Tset_size(tid, datatypeSize);
-                    H5.H5Tset_strpad(tid, HDF5Constants.H5T_STR_NULLPAD);
-                    break;
-                case CLASS_REFERENCE:
-                	if (datatypeSize > H5.H5Tget_size(HDF5Constants.H5T_STD_REF_OBJ)) {
-                        tid = H5.H5Tcopy(HDF5Constants.H5T_STD_REF_DSETREG);
-                	} else {
-                        tid = H5.H5Tcopy(HDF5Constants.H5T_STD_REF_OBJ);
-                	}
-                    break;
+                if (datatypeOrder == Datatype.ORDER_BE) {
+                    H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_BE);
+                } else if (datatypeOrder == Datatype.ORDER_LE) {
+                    H5.H5Tset_order(tid, HDF5Constants.H5T_ORDER_LE);
+                }
+                break;
+            case CLASS_CHAR:
+                if (datatypeSign == Datatype.SIGN_NONE) {
+                    tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_UCHAR);
+                } else {
+                    tid = H5.H5Tcopy(HDF5Constants.H5T_NATIVE_CHAR);
+                }
+                break;
+            case CLASS_STRING:
+                tid = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
+                if (isVLEN)
+                    H5.H5Tset_size (tid, HDF5Constants.H5T_VARIABLE);
+                else
+                    H5.H5Tset_size(tid, datatypeSize);
+
+                H5.H5Tset_strpad(tid, HDF5Constants.H5T_STR_NULLPAD);
+                break;
+            case CLASS_REFERENCE:
+                if (datatypeSize > H5.H5Tget_size(HDF5Constants.H5T_STD_REF_OBJ)) {
+                    tid = H5.H5Tcopy(HDF5Constants.H5T_STD_REF_DSETREG);
+                } else {
+                    tid = H5.H5Tcopy(HDF5Constants.H5T_STD_REF_OBJ);
+                }
+                break;
             } // switch (tclass)
         } catch (Exception ex) { tid = -1;}
 
@@ -445,11 +465,11 @@ public class H5Datatype extends Datatype
 
                 while (token.hasMoreTokens()) {
                     memstr = token.nextToken();
-                    
+
                     if (memstr != null) {
                         memstr = memstr.trim();
                     }
-                    
+
                     if ((memstr==null) || (memstr.length()<1)) {
                         continue;
                     }
@@ -558,8 +578,8 @@ public class H5Datatype extends Datatype
             }
         }
         else if ( (tclass == HDF5Constants.H5T_STRING) ||
-            (tclass == HDF5Constants.H5T_REFERENCE) ||
-            (tclass == HDF5Constants.H5T_BITFIELD))
+                (tclass == HDF5Constants.H5T_REFERENCE) ||
+                (tclass == HDF5Constants.H5T_BITFIELD))
         {
             data = new byte[size*tsize];
         }
@@ -577,7 +597,7 @@ public class H5Datatype extends Datatype
                 {
                     asize *= marray[j];
                 }
-                
+
                 superTid = H5.H5Tget_super(tid);
                 data =  allocateArray (superTid, size*asize);
             } catch (Exception ex) {}
@@ -611,19 +631,20 @@ public class H5Datatype extends Datatype
             tsize = H5.H5Tget_size(tid);
         } catch (Exception ex) {tsize = -1; }
 
-         return tsize;
+        return tsize;
     }
 
     /*
      * (non-Javadoc)
      * @see ncsa.hdf.object.Datatype#getDatatypeDescription()
      */
+    @Override
     public String getDatatypeDescription()
     {
         int tid = toNative();
         String str = getDatatypeDescription(tid);
         close(tid);
-        
+
         return str;
     }
 
@@ -652,15 +673,15 @@ public class H5Datatype extends Datatype
             if (tsize == 1)
             {
                 try {
-                if (H5.H5Tequal(tid, HDF5Constants.H5T_NATIVE_UCHAR)) {
-                    description = "8-bit unsigned character";
-                } else if (H5.H5Tequal(tid, HDF5Constants.H5T_NATIVE_CHAR)) {
-                    description = "8-bit character";
-                } else if (tsign == HDF5Constants.H5T_SGN_NONE) {
-                    description = "8-bit unsigned integer";
-                } else {
-                    description = "8-bit integer";
-                }
+                    if (H5.H5Tequal(tid, HDF5Constants.H5T_NATIVE_UCHAR)) {
+                        description = "8-bit unsigned character";
+                    } else if (H5.H5Tequal(tid, HDF5Constants.H5T_NATIVE_CHAR)) {
+                        description = "8-bit character";
+                    } else if (tsign == HDF5Constants.H5T_SGN_NONE) {
+                        description = "8-bit unsigned integer";
+                    } else {
+                        description = "8-bit integer";
+                    }
                 } catch (Exception ex) { description = "Unknown"; }
             }
             else if (tsize == 2)
@@ -799,7 +820,7 @@ public class H5Datatype extends Datatype
         } else {
             description = "Unknown";
         }
-        
+
         return description;
     }
 
@@ -808,6 +829,7 @@ public class H5Datatype extends Datatype
      * (non-Javadoc)
      * @see ncsa.hdf.object.Datatype#isUnsigned()
      */
+    @Override
     public boolean isUnsigned()
     {
         return (datatypeSign == SIGN_NONE);
@@ -846,6 +868,7 @@ public class H5Datatype extends Datatype
      * 
      * @see ncsa.hdf.hdf5lib.H5#H5Topen(int, String)
      */
+    @Override
     public int open()
     {
         int tid = -1;
@@ -868,22 +891,24 @@ public class H5Datatype extends Datatype
      * 
      * @param tid the datatype ID to close
      */
+    @Override
     public void close(int tid)    {
         try { H5.H5Tclose(tid); }
         catch (HDF5Exception ex) {;}
     }
-    
+
     /*
      * (non-Javadoc)
      * @see ncsa.hdf.object.Datatype#getMetadata()
      */
+    @Override
     public List getMetadata() throws HDF5Exception
     {
         // load attributes first
         if (attributeList == null)
         {
             int tid = open();
-            
+
             try {
                 attributeList = H5File.getAttribute(tid);
             } catch (Exception ex) {}
@@ -899,6 +924,7 @@ public class H5Datatype extends Datatype
      * (non-Javadoc)
      * @see ncsa.hdf.object.Datatype#writeMetadata(java.lang.Object)
      */
+    @Override
     public void writeMetadata(Object info) throws Exception
     {
         // only attribute metadata is supported.
@@ -929,6 +955,7 @@ public class H5Datatype extends Datatype
      * (non-Javadoc)
      * @see ncsa.hdf.object.Datatype#removeMetadata(java.lang.Object)
      */
+    @Override
     public void removeMetadata(Object info) throws HDF5Exception
     {
         // only attribute metadata is supported.

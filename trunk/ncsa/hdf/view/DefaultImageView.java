@@ -1020,15 +1020,15 @@ implements ImageView, ActionListener
             }
         }
 
-        /*
-        double[] xRange = dataset.getImageDataRange();
-        if (xRange == null || xRange[0] == xRange[1]) {
-        	xRange = new double[2];
-        	Tools.findMinMax(data, xRange, null);
-        }
-        */
+        /* Use original data range */
+//        double[] xRange = originalRange;
+//        if (xRange == null || xRange[0] == xRange[1]) {
+//        	xRange = new double[2];
+//        	Tools.findMinMax(data, xRange, null);
+//        }
 
         double[] xRange = {0, 255};
+        
         Chart cv = new Chart(
             (JFrame)viewer,
             "Histogram - " + dataset.getPath()+dataset.getName() + " - by pixel index",

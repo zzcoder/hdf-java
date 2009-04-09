@@ -1893,7 +1893,7 @@ implements TableView, ActionListener
     {
         final JFileChooser fchooser = new JFileChooser(dataset.getFile());
         fchooser.setFileFilter(DefaultFileFilter.getFileFilterText());
-        fchooser.changeToParentDirectory();
+        //fchooser.changeToParentDirectory();
         fchooser.setDialogTitle("Save Current Data To Text File --- "+dataset.getName());
 
         File choosedFile = new File(dataset.getName()+".txt");;
