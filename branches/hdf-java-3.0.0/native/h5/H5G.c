@@ -61,21 +61,33 @@ typedef struct info_all
  */
 jobject create_H5G_info_t(JNIEnv *env, H5G_info_t group_info)
 {
-	jobject storage_type = get_enum_object(env,
+	jclass cls;
+	jboolean jmounted;
+	jobject storage_type, obj;
+	jfieldID fid_storage_type, fid_nlinks, fid_max_corder, fid_mounted;
+
+	cls = ENVPTR->FindClass(ENVPAR "hdf/h5/structs/H5G_info_t");
+	if (cls == NULL) return NULL;
+
+	obj = ENVPTR->AllocObject(ENVPAR cls);
+	if (obj == NULL) return NULL;
+
+	fid_storage_type = ENVPTR->GetFieldID(ENVPAR cls, "storage_type",
+			"Lhdf/h5/enums/H5G_STORAGE_TYPE;");
+	fid_nlinks = ENVPTR->GetFieldID(ENVPAR cls, "nlinks", "J");
+	fid_max_corder = ENVPTR->GetFieldID(ENVPAR cls, "max_corder", "J");
+	fid_mounted = ENVPTR->GetFieldID(ENVPAR cls, "mounted", "Z");
+
+	if (fid_storage_type==NULL || fid_nlinks==NULL || fid_max_corder==NULL ||
+			fid_mounted == NULL)
+		return NULL;
+
+	jmounted = (group_info.mounted==0) ? JNI_FALSE : JNI_TRUE;
+	storage_type = get_enum_object(env,
 			"hdf/h5/enums/H5G_STORAGE_TYPE",
 			(jint)group_info.storage_type,
 			"(I)Lhdf/h5/enums/H5G_STORAGE_TYPE;");
-
-	jclass cls = ENVPTR->FindClass(ENVPAR "hdf/h5/structs/H5G_info_t");
-	jobject obj = ENVPTR->AllocObject(ENVPAR cls);
-
-	jfieldID fid_storage_type = ENVPTR->GetFieldID(ENVPAR cls, "storage_type",
-			"Lhdf/h5/enums/H5G_STORAGE_TYPE;");
-	jfieldID fid_nlinks = ENVPTR->GetFieldID(ENVPAR cls, "nlinks", "J");
-	jfieldID fid_max_corder = ENVPTR->GetFieldID(ENVPAR cls, "max_corder", "J");
-	jfieldID fid_mounted = ENVPTR->GetFieldID(ENVPAR cls, "mounted", "Z");
-
-	jboolean jmounted = (group_info.mounted==0) ? JNI_FALSE : JNI_TRUE;
+	if (storage_type == NULL) return NULL;
 
 	ENVPTR->SetObjectField(ENVPAR obj, fid_storage_type, storage_type);
 	ENVPTR->SetLongField(ENVPAR obj, fid_nlinks, (jlong)group_info.nlinks);
