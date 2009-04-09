@@ -32,6 +32,21 @@ extern "C" {
 #include "h5jni.h"
 #include "H5E.h"
 
+    /* get the enum object for a given enum field name. */
+    jobject get_H5E_TYPE_object(JNIEnv *env, jint enum_val)
+    {
+        char enum_field_name[8];
+        jclass enum_cls = ENVPTR->FindClass(ENVPAR "hdf/h5/enums/H5E_TYPE");
+        if (enum_cls == NULL) {
+            return NULL;
+        }
+        jmethodID mid_get = ENVPTR->GetStaticMethodID(ENVPAR enum_cls, "getEnum", "(I)Lhdf/h5/enums/H5E_TYPE;");
+        if (mid_get == NULL) {
+            return NULL;
+        }
+        return ENVPTR->CallStaticObjectMethod(ENVPAR enum_cls, mid_get, enum_val);
+    }
+
     /*
      * Class:     hdf_h5_H5E
      * Method:    H5Eregister_class
@@ -270,15 +285,18 @@ extern "C" {
     /*
      * Class:     hdf_h5_H5E
      * Method:    H5Eget_msg
-     * Signature: (ILhdf/h5/enums/H5E_TYPE;)Ljava/lang/String;
+     * Signature: (I[Lhdf/h5/enums/H5E_TYPE;)Ljava/lang/String;
      */
     JNIEXPORT jstring JNICALL Java_hdf_h5_H5E_H5Eget_1msg
-      (JNIEnv *env, jclass cls, jint msg_id, jobject error_msg_type)
+      (JNIEnv *env, jclass cls, jint msg_id, jobjectArray error_msg_type_list)
     {
         char *namePtr;
         jstring str;
+        jboolean isCopy;
         ssize_t buf_size;
         H5E_type_t *mesg_type= malloc(sizeof(H5E_type_t));
+        jint enum_val = -1;
+        jobject error_msg_type;
 
         if (msg_id < 0) {
             h5badArgument(env, "H5Eget_msg: invalid argument");
@@ -302,6 +320,11 @@ extern "C" {
             h5outOfMemory( env, "H5Eget_msg:  malloc failed");
             return NULL;
         }
+        if ( error_msg_type_list == NULL ) {
+            h5nullArgument( env, "H5Eget_msg:  error_msg_type_list is NULL");
+            return NULL;
+        }
+
         buf_size = H5Eget_msg((hid_t)msg_id, mesg_type, (char *)namePtr, (size_t)buf_size);
 
         if (buf_size < 0) {
@@ -310,25 +333,18 @@ extern "C" {
             h5libraryError(env);
             return NULL;
         }
-
+        enum_val = *mesg_type;
+        free(mesg_type);
+        
         str = ENVPTR->NewStringUTF(ENVPAR namePtr);
         free(namePtr);
  
-        jclass enum_cls = ENVPTR->GetObjectClass(ENVPAR error_msg_type);
-        if (enum_cls == NULL) {
-            free(mesg_type);
+        error_msg_type = get_H5E_TYPE_object(env, enum_val);
+        if (error_msg_type == NULL) {
             h5libraryError(env);
             return NULL;
         }
-        jmethodID mid_get = ENVPTR->GetStaticMethodID(ENVPAR enum_cls, "get", "(I)Lhdf/h5/enums/H5E_TYPE;");
-        if (mid_get == NULL) {
-            free(mesg_type);
-            h5libraryError(env);
-            return NULL;
-        }
-        error_msg_type = ENVPTR->CallObjectMethod(ENVPAR error_msg_type, mid_get, *mesg_type);
-        free(mesg_type);
-
+        ENVPTR->SetObjectArrayElement(ENVPAR error_msg_type_list, 0, error_msg_type);
         return str;
     }
 
