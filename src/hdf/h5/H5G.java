@@ -152,7 +152,7 @@ public class H5G {
    *  @param group_name IN: Name of group for which information is to be retrieved.
    *  @param idx_type   IN: Type of index by which objects are ordered  
    *  @param order      IN: Order of iteration within index 
-   *  @param n          IN: Attribute’s position in index 
+   *  @param n          IN: Attribute's position in index 
    *  @param lapl_id    IN: Link access property list.
    *
    *  @return a structure in which group information is returned 
@@ -238,7 +238,7 @@ public class H5G {
   private synchronized static native int H5Gopen1(int loc_id, String name)
       throws HDF5LibraryException, NullPointerException;
   
-  /*
+/*
 /////////////////////////////////////////////////////////////////////////////////
 //
 //
@@ -248,35 +248,45 @@ public class H5G {
 //
 /////////////////////////////////////////////////////////////////////////////////
 */
+  
+/**
+ * retrieves information of all objects under the group (name) located in the 
+ * file or group specified by loc_id.
+ * 
+ * @param loc_id     IN:  File or group identifier
+ * @param name       IN:  Name of group for which information is to be retrieved
+ * @param objNames   OUT: Names of all objects under the group, name.
+ * @param objTypes   OUT: Types of all objects under the group, name.
+ */
   public synchronized static void H5Gget_obj_info_all( int loc_id,
-          String name, String[] oname, int[]type)
+          String name, String[] objNames, int[] objTypes)
   throws HDF5LibraryException, NullPointerException
   {
       if (name == null || name.length()<=0) {
           throw new NullPointerException("H5Gget_obj_info_all(): name is null");
       }
-      
-      if (oname == null) {
+
+      if (objNames == null) {
           throw new NullPointerException("H5Gget_obj_info_all(): name array is null");
       }
 
-      if (type == null) {
+      if (objTypes == null) {
           throw new NullPointerException("H5Gget_obj_info_all(): type array is null");
       }
 
-      if (oname.length <= 0) {
+      if (objNames.length <= 0) {
           throw new HDF5LibraryException("H5Gget_obj_info_all(): array size is zero");
       }
 
-      if (oname.length != type.length) {
+      if (objNames.length != objTypes.length) {
           throw new HDF5LibraryException("H5Gget_obj_info_all(): name and type array sizes are different");
       }
 
-      H5Gget_obj_info_all( loc_id, name, oname, type, oname.length);
+      H5Gget_obj_info_all( loc_id, name, objNames, objTypes, objNames.length);
   }
 
   private synchronized static native void H5Gget_obj_info_all( int loc_id,
           String name, String[] oname, int[]type, int n)
   throws HDF5LibraryException, NullPointerException;
-  
+
 }

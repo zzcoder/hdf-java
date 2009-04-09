@@ -19,30 +19,30 @@ import java.util.Map;
 
 //Different kinds of error information
 public enum H5E_TYPE {
-  MAJOR (0),
-  MINOR (1);
-  private static final Map<Integer, H5E_TYPE> lookup = new HashMap<Integer, H5E_TYPE>();
+    MAJOR (0),
+    MINOR (1);
+    private static final Map<Integer, H5E_TYPE> lookup = new HashMap<Integer, H5E_TYPE>();
 
-  static {
-    for (H5E_TYPE s : EnumSet.allOf(H5E_TYPE.class))
-      lookup.put(s.getCode(), s);
-  }
+    static {
+        for (H5E_TYPE s : EnumSet.allOf(H5E_TYPE.class))
+            lookup.put(s.getCode(), s);
+    }
 
-  private int code;
+    private int code;
 
-  H5E_TYPE(int type) {
-    this.code = type;
-  }
+    H5E_TYPE(int type) {
+        this.code = type;
+    }
 
-  public int getCode() {
-    return this.code;
-  }
+    public int getCode() {
+        return this.code;
+    }
 
-  public static H5E_TYPE get(int code) {
-    return lookup.get(code);
-  }
+    public static H5E_TYPE get(int code) {
+        return lookup.get(code);
+    }
 
-  public static H5E_TYPE getEnum(int code) {
-    return values()[code];
-  }
+    public static H5E_TYPE getEnum(int code) {
+        return values()[code];
+    }
 }
