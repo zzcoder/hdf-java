@@ -44,8 +44,8 @@ HDF5 Image Specification</a>.</p>
 <li class="li2"><a href="ug06imageview.html#ug06zoom">6.2 Zoom/Flip/Contour Image</a></li>
 <li class="li2"><a href="ug06imageview.html#ug06palette">6.3 View and Modify Image Palette/Values</a></li>
 <li class="li2"><a href="ug06imageview.html#ug06histogram">6.4 Show Histogram of Pixel Values</a></li>
-<li class="li2"><a href="ug06imageview.html#ug06import">6.5 Import JPEG Image to HDF4/5</a></li>
-<li class="li2"><a href="ug06imageview.html#ug06save">6.6 Save HDF Image to JPEG File</a></li>
+<li class="li2"><a href="ug06imageview.html#ug06import">6.5 Import JPEG, GIF, PNG, or BMP Image to HDF4/5</a></li>
+<li class="li2"><a href="ug06imageview.html#ug06save">6.6 Save HDF Image to JPEG, GIF, PNG, or BMP File</a></li>
 </ul>
 
 <hr noshade size=1 />
@@ -250,20 +250,19 @@ of the pixel values.</p>
 <br /><b>Histogram of Pixel Values</b></p></center>
 
 <h2>
-<a name="ug06import"></a>6.5 Import JPEG Image to HDF4/5</h2>
+<a name="ug06import"></a>6.5 Import JPEG, GIF, PNG, or BMP Image to HDF4/5</h2>
 <p>
-Using HDFView, you can convert a JPEG image into an HDF4 or HDF5 image.
-Select the "Import JPEG To" command in the file menu or the "JPEG To"
-command in the Tools menu, a popup window prompts you to choose the JPEG
+Using HDFView, you can convert a JPEG, GIF, PNG, or BMP image into an HDF4 or HDF5 image.
+Select the "Convert Image To" command in the Tools menu, a popup window prompts you to choose the
 image file that you want to convert. The image is converted into a 24-bit HDF4 or HDF5 image. The
 current conversion does not support an image with indexed color model or an image
 with less than two color components. The image data is saved as an 8-bit unsigned
 integer regardless of the data type of the original image.</p>
 
 <h2>
-<a name="ug06save"></a>6.6 Save HDF Image to JPEG File</h2>
+<a name="ug06save"></a>6.6 Save HDF Image to JPEG, GIF, PNG, or BMP File</h2>
 Using the "Save Image As" command in the "Image" menu, you can save the
-current image as a JPEG file.
+current HDF image as a JPEG, GIF, PNG, or BMP file.
 
 <!-- BEGIN OF FOOTER INFO -->
 <hr noshade size=1 />
