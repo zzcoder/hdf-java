@@ -75,6 +75,8 @@ public class H4Datatype extends Datatype
     public H4Datatype(int nativeID)
     {
         super(nativeID);
+
+        fromNative(nativeID);
     }
 
     /*

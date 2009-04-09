@@ -252,8 +252,6 @@ public abstract class Datatype extends HObject
     public Datatype(int type)
     {
         this(CLASS_NO_CLASS, NATIVE, NATIVE, NATIVE);
-
-        fromNative(type);
     }
 
     /**

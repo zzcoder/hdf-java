@@ -478,7 +478,7 @@ implements ActionListener, ItemListener, HyperlinkListener
 
                 if (sizeChoice.getSelectedItem().equals("64"))
                 {
-                    // unsigned 64 bit integer is not allowed
+                    // unsigned 64 bit integer is not allowed in Java
                     checkUnsigned.setSelected(false);
                     checkUnsigned.setEnabled(false);
                 }
@@ -530,7 +530,7 @@ implements ActionListener, ItemListener, HyperlinkListener
             {
                 if (sizeChoice.getSelectedItem().equals("64"))
                 {
-                    // unsigned 64 bit integer is not allowed
+                    // unsigned 64 bit integer is not allowed in Java
                     checkUnsigned.setSelected(false);
                     checkUnsigned.setEnabled(false);
                 } else {
