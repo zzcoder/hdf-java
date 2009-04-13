@@ -51,7 +51,7 @@ extern jboolean h5badArgument( JNIEnv *env, char *functName);
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Topen
   (JNIEnv *env, jclass clss, jint loc_id, jstring name)
 {
-    herr_t status;
+    hid_t status;
     char* tname;
     jboolean isCopy;
 
@@ -409,7 +409,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1sign
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tset_1sign
   (JNIEnv *env, jclass clss, jint type_id, jint sign)
 {
-    herr_t retVal = -1;
+    H5T_sign_t retVal = -1;
     retVal =  H5Tset_sign(type_id, (H5T_sign_t)sign);
     if (retVal < 0) {
         h5libraryError(env);

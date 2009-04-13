@@ -150,7 +150,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Screate_1simple
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Scopy
   (JNIEnv *env, jclass clss, jint space_id)
 {
-    herr_t retVal = -1;
+    hid_t retVal = -1;
     retVal =  H5Scopy (space_id);
     if (retVal < 0) {
         h5libraryError(env);

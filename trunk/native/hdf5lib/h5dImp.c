@@ -156,7 +156,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dcreate
   (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint type_id,
   jint space_id, jint create_plist_id)
 {
-    herr_t status;
+    hid_t status;
     char* file;
     jboolean isCopy;
 

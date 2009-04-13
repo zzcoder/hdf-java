@@ -111,7 +111,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gcreate
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gopen
   (JNIEnv *env, jclass clss, jint loc_id, jstring name)
 {
-    herr_t status;
+    hid_t status;
     char* gName;
     jboolean isCopy;
 
