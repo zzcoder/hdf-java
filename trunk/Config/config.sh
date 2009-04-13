@@ -22,14 +22,42 @@ EXTRA_FLAGS=
 #                     solaris32 (linew)                    #
 ############################################################
 #INSTDIR=/mnt/scr1/xcao/hdf_java/bin/solaris32
-#JAVAINC=/usr/jdk/instances/jdk1.5.0/include
-#JAVALIB=/usr/jdk/instances/jdk1.5.0/lib
+#JAVAINC=/usr/jdk/jdk1.6.0_12/include
+#JAVALIB=/usr/jdk/jdk1.6.0_12/jre/lib
 #HDF4=/mnt/scr1/xcao/hdf_java/lib/solaris32/hdf4
 #HDF5=/mnt/scr1/xcao/hdf_java/lib/solaris32/hdf5
 #JPEG=/mnt/scr1/xcao/hdf_java/lib/solaris32/jpeg
 #SZIP=/mnt/scr1/xcao/hdf_java/lib/solaris32/szip
 #ZLIB=/mnt/scr1/xcao/hdf_java/lib/solaris32/zlib
 #export CC="/opt/SUNWspro/bin/cc"
+
+############################################################
+#                     solaris64 (linew)                    #
+############################################################
+#INSTDIR=/mnt/scr1/xcao/hdf_java/bin/solaris64
+#JAVAINC=/usr/jdk/jdk1.6.0_12/include
+#JAVALIB=/usr/jdk/jdk1.6.0_12/jre/lib
+#JAVABIN=/usr/jdk/jdk1.6.0_12/bin/sparcv9
+#HDF4=/mnt/scr1/xcao/hdf_java/lib/solaris64/hdf4
+#HDF5=/mnt/scr1/xcao/hdf_java/lib/solaris64/hdf5
+#JPEG=/mnt/scr1/xcao/hdf_java/lib/solaris64/jpeg
+#SZIP=/mnt/scr1/xcao/hdf_java/lib/solaris64/szip
+#ZLIB=/mnt/scr1/xcao/hdf_java/lib/solaris64/zlib
+#export CC="/opt/SUNWspro/bin/cc -KPIC -xarch=v9"
+#EXTRA_FLAGS=--with-javabin=$JAVABIN 
+
+############################################################
+#                     linux64 (smirom)                     #
+############################################################
+#INSTDIR=/mnt/scr1/xcao/hdf_java/bin/linux64x86
+#JAVAINC=/mnt/scr1/xcao/jdk/linux64/jdk1.6.0_11/include
+#JAVALIB=/mnt/scr1/xcao/jdk/linux64/jdk1.6.0_11/jre/lib
+#HDF4=/mnt/scr1/xcao/hdf_java/lib/linux64amd/hdf4
+#HDF5=/mnt/scr1/xcao/hdf_java/lib/linux64amd/hdf5
+#JPEG=/mnt/scr1/xcao/hdf_java/lib/linux64amd/jpeg
+#SZIP=/mnt/scr1/xcao/hdf_java/lib/linux64amd/szip
+#ZLIB=/mnt/scr1/xcao/hdf_java/lib/linux64amd/zlib
+#export CC="gcc -fPIC"
 
 ############################################################
 #                     macintel (tejeda)                    #
@@ -43,36 +71,6 @@ EXTRA_FLAGS=
 #SZIP=/Users/xcao/work/lib-external/szip-2.1
 #ZLIB=/Users/xcao/work/lib-external/zlib-1.2.1
 #EXTRA_FLAGS="-build=powerpc-apple --with-jdkclasses=/System/Library/Frameworks/JavaVM.framework/Classes --with-javabin=/System/Library/Frameworks/JavaVM.framework/Commands"
-
-############################################################
-#                     solaris64 (linew)                    #
-############################################################
-#INSTDIR=/mnt/scr1/xcao/hdf_java/bin/solaris64
-#JAVAINC=/usr/jdk/instances/jdk1.5.0/include
-#JAVALIB=/usr/jdk/instances/jdk1.5.0/lib
-#JAVABIN=/usr/jdk/instances/jdk1.5.0/bin/sparcv9
-#HDF4=/mnt/scr1/xcao/hdf_java/lib/solaris64/hdf4
-#HDF5=/mnt/scr1/xcao/hdf_java/lib/solaris64/hdf5
-#HDF5 1.8
-#HDF5=/mnt/scr1/xcao/hdf5_1_8/build/sol64
-#JPEG=/mnt/scr1/xcao/hdf_java/lib/solaris64/jpeg
-#SZIP=/mnt/scr1/xcao/hdf_java/lib/solaris64/szip
-#ZLIB=/mnt/scr1/xcao/hdf_java/lib/solaris64/zlib
-#export CC="/opt/SUNWspro/bin/cc -KPIC -xarch=v9"
-#EXTRA_FLAGS=--with-javabin=$JAVABIN 
-
-############################################################
-#                     linux64 (smirom)                     #
-############################################################
-#INSTDIR=/mnt/scr1/xcao/hdf_java/bin/linux64amd
-#JAVAINC=/usr/java/jdk1.5.0_10/include
-#JAVALIB=/usr/java/jdk1.5.0_10/jre/lib
-#HDF4=/mnt/scr1/xcao/hdf_java/lib/linux64amd/hdf4
-#HDF5=/mnt/scr1/xcao/hdf_java/lib/linux64amd/hdf5
-#JPEG=/mnt/scr1/xcao/hdf_java/lib/linux64amd/jpeg
-#SZIP=/mnt/scr1/xcao/hdf_java/lib/linux64amd/szip
-#ZLIB=/mnt/scr1/xcao/hdf_java/lib/linux64amd/zlib
-#export CC="gcc -fPIC"
 
 
 ############################################################
