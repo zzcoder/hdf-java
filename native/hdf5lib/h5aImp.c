@@ -59,7 +59,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Acreate
   (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint type_id,
   jint space_id, jint create_plist)
 {
-    herr_t status;
+    hid_t status;
     char* aName;
     jboolean isCopy;
 
@@ -94,7 +94,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Acreate
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aopen_1name
   (JNIEnv *env, jclass clss, jint loc_id, jstring name)
 {
-    herr_t status;
+    hid_t status;
     char* aName;
     jboolean isCopy;
 
@@ -128,7 +128,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aopen_1name
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aopen_1idx
   (JNIEnv *env, jclass clss, jint loc_id, jint idx)
 {
-    herr_t retVal = -1;
+    hid_t retVal = -1;
     retVal =  H5Aopen_idx((hid_t)loc_id, (unsigned int) idx );
     if (retVal < 0) {
         h5libraryError(env);

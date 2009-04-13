@@ -59,7 +59,7 @@ extern jboolean h5badArgument( JNIEnv *env, char *functName);
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pcreate
   (JNIEnv *env, jclass clss, jint type)
 {
-    herr_t retVal = -1;
+    hid_t retVal = -1;
     retVal =  H5Pcreate((hid_t)type );
     if (retVal < 0) {
         h5libraryError(env);

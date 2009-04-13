@@ -116,7 +116,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rdereference
 {
     jboolean isCopy;
     jbyte *refP;
-    herr_t status;
+    hid_t status;
 
     if (ref == NULL) {
         h5nullArgument( env, "H5Rdereference:  ref is NULL");

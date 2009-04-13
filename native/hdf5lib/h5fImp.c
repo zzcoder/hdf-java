@@ -303,7 +303,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Funmount
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Freopen
   (JNIEnv *env, jclass clss, jint file_id)
 {
-    herr_t retVal = -1;
+    hid_t retVal = -1;
     retVal =  H5Freopen((hid_t)file_id);
     if (retVal < 0) {
         /* throw exception */
@@ -406,7 +406,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1obj_1ids
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1obj_1count
   (JNIEnv *env, jclass clss, jint file_id, jint types )
 {
-    herr_t status;
+    ssize_t status;
 
     status = -1;
 
