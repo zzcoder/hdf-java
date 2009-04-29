@@ -2099,4 +2099,38 @@ public class H5P {
          int[] flags/*out*/, long[] cd_nelmts/*out*/,
          int[] cd_values/*out*/)
   throws HDF5LibraryException, NullPointerException;
+
+  /**
+   *  H5Pset_preserve sets the dataset transfer property list
+   *  status to TRUE or FALSE.
+   *
+   *  @deprecated As of HDF5 1.8
+   *
+   *  @param plist  IN: Identifier for the dataset transfer property list.
+   *  @param status IN: Status of for the dataset transfer property list.
+   *
+   *  @return none
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception IllegalArgumentException - plist is invalid.
+   **/
+  public synchronized static native void H5Pset_preserve(int plist,
+      boolean status)
+      throws HDF5LibraryException, IllegalArgumentException;
+
+
+  /**
+   *  H5Pget_preserve checks the status of the dataset transfer
+   *  property list.
+   *
+   *  @deprecated As of HDF5 1.8
+   *
+   *  @param plist  IN: Identifier for the dataset transfer property list.
+   *
+   *  @return TRUE or FALSE 
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native boolean H5Pget_preserve(int plist)
+      throws HDF5LibraryException;
 }
