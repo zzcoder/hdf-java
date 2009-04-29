@@ -237,6 +237,178 @@ public class H5G {
    **/
   private synchronized static native int H5Gopen1(int loc_id, String name)
       throws HDF5LibraryException, NullPointerException;
+
+  /**
+   *  H5Glink creates a new name for an already existing object.
+   *
+   *  @deprecated As of HDF5 1.8
+   *
+   *  @param loc_id    IN: File, group, dataset, or datatype identifier.
+   *  @param link_type IN: Link type. Possible values are:
+   *  <UL>
+   *  <LI>
+   *  H5G_LINK_HARD
+   *  </LI>
+   *  <LI>
+   *  H5G_LINK_SOFT.
+   *  </LI>
+   *  </UL>
+   *  @param current_name IN: A name of the existing object if link is
+   *                          a hard link. Can be anything for the soft link.
+   *  @param new_name     IN: New name for the object.
+   *
+   *  @return none
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - current_name or name is null.
+   **/
+  public synchronized static native void H5Glink(int loc_id, int link_type,
+      String current_name, String new_name)
+      throws HDF5LibraryException, NullPointerException;
+
+
+  /**
+   *  H5Glink2 creates a new name for an already existing object.
+   *
+   *  @deprecated As of HDF5 1.8
+   *
+   *  @param curr_loc_id  IN: File, group, dataset, or datatype identifier.
+   *  @param current_name IN: A name of the existing object if link is
+   *                          a hard link. Can be anything for the soft link.
+   *  @param link_type    IN: Link type. Possible values are:
+   *  <UL>
+   *  <LI>
+   *  H5G_LINK_HARD
+   *  </LI>
+   *  <LI>
+   *  H5G_LINK_SOFT.
+   *  </LI>
+   *  </UL>
+   *  @param new_loc_id   IN: New file, group, dataset, or datatype identifier.
+   *  @param new_name     IN: New name for the object.
+   *
+   *  @return none
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - current_name or name is null.
+   **/
+  public synchronized static native void H5Glink2(int curr_loc_id,
+      String current_name, int link_type, int new_loc_id, String new_name )
+      throws HDF5LibraryException, NullPointerException;
+
+  /**
+   *  H5Gunlink removes an association between a name and an object.
+   *
+   *  @deprecated As of HDF5 1.8
+   *
+   *  @param loc_id IN: Identifier of the file containing the object.
+   *  @param name   IN: Name of the object to unlink.
+   *
+   *  @return none
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - name is null.
+   **/
+  public synchronized static native void H5Gunlink(int loc_id, String name)
+      throws HDF5LibraryException, NullPointerException;
+
+  /**
+   *  H5Gmove renames an object within an HDF5 file.
+   *  The original name, src, is unlinked from the group graph
+   *  and the new name, dst, is inserted as an atomic operation.
+   *  Both names are interpreted relative to loc_id, which is
+   *  either a file or a group identifier.
+   *
+   *  @deprecated As of HDF5 1.8
+   *
+   *  @param loc_id IN: File or group identifier.
+   *  @param src    IN: Object's original name.
+   *  @param dst    IN: Object's new name.
+   *
+   *  @return none
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - src or dst is null.
+   **/
+  public synchronized static native void H5Gmove(int loc_id, String src,
+      String dst)
+      throws HDF5LibraryException, NullPointerException;
+
+  /**
+   *  H5Gget_linkval returns size characters of the link value
+   *  through the value argument if loc_id (a file or group
+   *  identifier) and name specify a symbolic link.
+   *
+   *  @deprecated As of HDF5 1.8
+   *
+   *  @param loc_id IN: Identifier of the file, group, dataset, or datatype.
+   *  @param name   IN: Name of the object whose link value is to be checked.
+   *  @param size   IN: Maximum number of characters of value to be returned.
+   *
+   *  @return  the link value
+   *
+   *  @exception ArrayIndexOutOfBoundsException   Copy back failed
+   *  @exception ArrayStoreException  Copy back failed
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - name is null.
+   *  @exception IllegalArgumentException - size is invalid
+   **/
+  public synchronized static native String H5Gget_linkval(int loc_id, String name,
+      int size)
+      throws ArrayIndexOutOfBoundsException,
+      ArrayStoreException,
+      HDF5LibraryException,
+      NullPointerException,
+      IllegalArgumentException;
+
+
+  /**
+   *  H5Gset_comment sets the comment for the the object name
+   *  to comment.   Any previously existing comment is overwritten.
+   *
+   *  @deprecated As of HDF5 1.8
+   *
+   *  @param loc_id  IN: Identifier of the file, group, dataset, or datatype.
+   *  @param name    IN: Name of the object whose comment is to be set or reset.
+   *  @param comment IN: The new comment.
+   *
+   *  @return none
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - name or comment is null.
+   **/
+  public synchronized static native void H5Gset_comment(int loc_id, String name,
+      String comment)
+      throws HDF5LibraryException, NullPointerException;
+
+
+  /**
+   *  H5Gget_comment retrieves the comment for the the object name.
+   *  The comment is returned in the buffer comment.
+   *
+   *  @deprecated As of HDF5 1.8
+   *
+   *  @param loc_id   IN: Identifier of the file, group, dataset, or datatype.
+   *  @param name     IN: Name of the object whose comment is to be set or reset.
+   *  @param bufsize  IN: Anticipated size of the buffer required to hold comment.
+   *  @param comment OUT: The comment.
+   *  
+   *  @return the number of characters in the comment, counting the null terminator
+   *
+   *  @exception ArrayIndexOutOfBoundsException - JNI error writing back data
+   *  @exception ArrayStoreException - JNI error writing back data
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - name is null.
+   *  @exception IllegalArgumentException - size < 1, comment is invalid.
+   **/
+  public synchronized static native int H5Gget_comment(int loc_id, String name,
+      int bufsize,
+      String[] comment)
+      throws ArrayIndexOutOfBoundsException,
+      ArrayStoreException,
+      HDF5LibraryException,
+      NullPointerException,
+      IllegalArgumentException;
   
 /*
 /////////////////////////////////////////////////////////////////////////////////

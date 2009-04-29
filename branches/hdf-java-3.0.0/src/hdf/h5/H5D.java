@@ -787,4 +787,43 @@ public class H5D {
    **/
   private synchronized static native int H5Dopen1(int loc_id, String name)
   throws HDF5LibraryException, NullPointerException;
+
+  /**
+   *  H5Dextend verifies that the dataset is at least of size size.
+   *
+   *  @deprecated As of HDF5 1.8 in favor of the function {@link #H5Dset_extent(int dset_id, long size[]).
+   *
+   *  @param dataset_id  IN: Identifier of the dataset.
+   *  @param size        IN: Array containing the new magnitude of each dimension.
+   *
+   *  @return none
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - size array is null.
+   **/
+  public synchronized static native void H5Dextend(int dataset_id, byte[] size)
+      throws HDF5LibraryException, NullPointerException;
+
+  /**
+   *  H5Dextend verifies that the dataset is at least of size size.
+   *
+   *  @deprecated As of HDF5 1.8 in favor of the function {@link #H5Dset_extent(int dset_id, long size[]).
+   *
+   *  @param dataset_id  IN: Identifier of the dataset.
+   *  @param size        IN: Array containing the new magnitude of each dimension.
+   *
+   *  @return none
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - size array is null.
+   **/
+  public synchronized static void H5Dextend(int dataset_id, long[] size)
+      throws HDF5Exception, NullPointerException
+  {
+      HDFArray theArray = new HDFArray(size);
+      byte[] buf = theArray.byteify();
+      H5Dextend(dataset_id, buf);
+      buf = null;
+      theArray = null;
+  }
 }

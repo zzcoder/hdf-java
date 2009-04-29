@@ -613,4 +613,52 @@ public class H5A {
 //    LongByReference idx, H5A_operator1_t op, Pointer op_data)
 //  throws HDF5LibraryException, NullPointerException;
 
+  /**
+   *  H5Aget_num_attrs returns the number of attributes attached 
+   *  to the object specified by its identifier, loc_id.
+   *
+   *  @deprecated As of HDF5 1.8
+   *
+   *  @param loc_id    IN: Object (dataset, group, or named datatype).
+   *
+   *  @return the number of attributes
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native int H5Aget_num_attrs(int loc_id)
+    throws HDF5LibraryException;
+
+  /**
+   *  H5Aopen_idx opens an attribute which is attached to 
+   *  the object specified with loc_id.
+   *
+   *  @deprecated As of HDF5 1.8
+   *
+   *  @param loc_id    IN: Object (dataset, group, or named datatype).
+   *  @param idx       IN: Index of the attribute to open.
+   *
+   *  @return the attribute identifier
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native int H5Aopen_idx(int loc_id, int idx)
+    throws HDF5LibraryException;
+
+  /**
+   *  H5Aopen_name opens an attribute specified by its name, name, 
+   *  which is attached to the object specified with loc_id.
+   *
+   *  @deprecated As of HDF5 1.8
+   *
+   *  @param loc_id    IN: Object (dataset, group, or named datatype).
+   *  @param attr_name IN: Name of attribute.
+   *
+   *  @return the attribute identifier
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - name is null.
+   **/
+  public synchronized static native int H5Aopen_name(int loc_id, String attr_name)
+    throws HDF5LibraryException, NullPointerException;
+
 }

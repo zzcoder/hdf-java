@@ -361,5 +361,33 @@ public class H5E {
 //    return H5Eset_auto1(func, client_data);
 //  }
 //  int H5Eset_auto1(H5E_auto1_t func, Pointer client_data);
+  
+  /**
+   *  H5Eget_major returns a string that describes the error.
+   *
+   *  @deprecated As of HDF5 1.8
+   *
+   *  @param major IN: Major error number.
+   *
+   *  @return string describing the error
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native String H5Eget_major(int major)
+  throws HDF5LibraryException;
+  
+  /**
+   *  H5Eget_minor returns a string that describes the error. 
+   *
+   *  @deprecated As of HDF5 1.8
+   *
+   *  @param minor IN: Error stack identifier.
+   *
+   *  @return string describing the error
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native String H5Eget_minor(int minor)
+  throws HDF5LibraryException;
 
 }
