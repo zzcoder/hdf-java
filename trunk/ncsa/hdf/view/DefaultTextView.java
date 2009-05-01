@@ -77,18 +77,28 @@ implements TextView, ActionListener, KeyListener
      */
     public DefaultTextView(ViewManager theView)
     {
+        this(theView, (HObject)theView.getTreeView().getCurrentObject());
+    }
+    
+    /**
+     * Constructs an TextView.
+     * <p>
+     * @param theView the main HDFView.
+     * @param hobject the data object to be displayed.
+     */
+    public DefaultTextView(ViewManager theView, HObject hobject)
+    {
         viewer = theView;
         text = null;
         table = null;
         dataset = null;
         textEditor = new TextAreaEditor(this);
         
-        HObject obj = viewer.getTreeView().getCurrentObject();
-        if (!(obj instanceof ScalarDS)) {
+        if (!(hobject instanceof ScalarDS)) {
             return;
         }
 
-        dataset = (ScalarDS)obj;
+        dataset = (ScalarDS)hobject;
 
         if (!dataset.isText()) {
             viewer.showStatus("Cannot display non-text dataset in text view.");

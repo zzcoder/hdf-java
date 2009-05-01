@@ -196,7 +196,17 @@ implements ImageView, ActionListener
      * <p>
      * @param theView the main HDFView.
      */
-    public DefaultImageView(ViewManager theView)
+    public DefaultImageView(ViewManager theView) {
+        this(theView, (HObject)theView.getTreeView().getCurrentObject());
+    }
+
+    /**
+     * Constructs an ImageView.
+     * <p>
+     * @param theView the main HDFView.
+     * @param hobject the data object to be displayed.
+     */
+    public DefaultImageView(ViewManager theView, HObject hobject)
     {
         super();
 
@@ -225,7 +235,6 @@ implements ImageView, ActionListener
         autoGainData = null;
         generalContrastSlider = null;
 
-        HObject hobject = (HObject)viewer.getTreeView().getCurrentObject();
         if ((hobject == null) || !(hobject instanceof ScalarDS)) {
             viewer.showStatus("Display data in image failed for - "+hobject);
             return;

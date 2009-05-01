@@ -60,33 +60,33 @@ public class ViewProperties extends Properties
     /** name of the tab delimiter */
     public static final String DELIMITER_SEMI_COLON = "Semi-Colon";
     
-    public static final String MIME_APPLICATION_MSWORD  = "application/msword";
-    public static final String MIME_APPLICATION_OCTETSTREAM  = "application/octet-stream";
-    public static final String MIME_APPLICATION_PDF  = "application/pdf";
-    public static final String MIME_APPLICATION_POSTSCRIPT  = "application/postscript";
-    public static final String MIME_APPLICATION_EXCEL  = "application/vnd.ms-excel";
-    public static final String MIME_APPLICATION_POWERPOINT  = "application/vnd.ms-powerpoint";
-    public static final String MIME_APPLICATION_XCOMPRESSED  = "application/x-compressed";
-    public static final String MIME_APPLICATION_XGZIP  = "application/x-gzip";
-    public static final String MIME_APPLICATION_XHDF  = "application/x-hdf";
-    public static final String MIME_APPLICATION_XJAVASCRIPT  = "application/x-javascript";
-    public static final String MIME_APPLICATION_XNETCDF  = "application/x-netcdf";
-    public static final String MIME_APPLICATION_ZIP  = "application/zip";
-    public static final String MIME_APPLICATION_UNKNOWN  = "application/unknown";
-    public static final String MIME_AUDIO_BASIC  = "audio/basic";
-    public static final String MIME_AUDIO_MID  = "audio/mid";
-    public static final String MIME_AUDIO_MPEG  = "audio/mpeg";
-    public static final String MIME_AUDIO_XAIFF  = "audio/x-aiff";
-    public static final String MIME_AUDIO_XWAV  = "audio/x-wav";
-    public static final String MIME_IMAGE_BMP  = "image/bmp";
-    public static final String MIME_IMAGE_GIF  = "image/gif";
-    public static final String MIME_IMAGE_JPEG  = "image/jpeg";
-    public static final String MIME_IMAGE_TIFF  = "image/tiff";
-    public static final String MIME_TEXT_HTML  = "text/html";
-    public static final String MIME_TEXT_PLAIN  = "text/plain";
-    public static final String MIME_VIDEO_MPEG  = "video/mpeg";
-    public static final String MIME_VIDEO_QUICKTIME  = "video/quicktime";
-    public static final String MIME_VIDEO_MSVIDEO  = "video/x-msvideo";
+//    public static final String MIME_APPLICATION_MSWORD  = "application/msword";
+//    public static final String MIME_APPLICATION_OCTETSTREAM  = "application/octet-stream";
+//    public static final String MIME_APPLICATION_PDF  = "application/pdf";
+//    public static final String MIME_APPLICATION_POSTSCRIPT  = "application/postscript";
+//    public static final String MIME_APPLICATION_EXCEL  = "application/vnd.ms-excel";
+//    public static final String MIME_APPLICATION_POWERPOINT  = "application/vnd.ms-powerpoint";
+//    public static final String MIME_APPLICATION_XCOMPRESSED  = "application/x-compressed";
+//    public static final String MIME_APPLICATION_XGZIP  = "application/x-gzip";
+//    public static final String MIME_APPLICATION_XHDF  = "application/x-hdf";
+//    public static final String MIME_APPLICATION_XJAVASCRIPT  = "application/x-javascript";
+//    public static final String MIME_APPLICATION_XNETCDF  = "application/x-netcdf";
+//    public static final String MIME_APPLICATION_ZIP  = "application/zip";
+//    public static final String MIME_APPLICATION_UNKNOWN  = "application/unknown";
+//    public static final String MIME_AUDIO_BASIC  = "audio/basic";
+//    public static final String MIME_AUDIO_MID  = "audio/mid";
+//    public static final String MIME_AUDIO_MPEG  = "audio/mpeg";
+//    public static final String MIME_AUDIO_XAIFF  = "audio/x-aiff";
+//    public static final String MIME_AUDIO_XWAV  = "audio/x-wav";
+//    public static final String MIME_IMAGE_BMP  = "image/bmp";
+//    public static final String MIME_IMAGE_GIF  = "image/gif";
+//    public static final String MIME_IMAGE_JPEG  = "image/jpeg";
+//    public static final String MIME_IMAGE_TIFF  = "image/tiff";
+//    public static final String MIME_TEXT_HTML  = "text/html";
+//    public static final String MIME_TEXT_PLAIN  = "text/plain";
+//    public static final String MIME_VIDEO_MPEG  = "video/mpeg";
+//    public static final String MIME_VIDEO_QUICKTIME  = "video/quicktime";
+//    public static final String MIME_VIDEO_MSVIDEO  = "video/x-msvideo";
 
 
     /** user's guide */
@@ -163,25 +163,25 @@ public class ViewProperties extends Properties
     private static String propertyFile;
 
     /** a list of treeview module */
-    private static Vector moduleListTreeView = new Vector(5);
+    private static Vector<String> moduleListTreeView = new Vector(5);
 
     /** a list of metaview module */
-    private static Vector moduleListMetaDataView = new Vector(5);
+    private static Vector<String> moduleListMetaDataView = new Vector(5);
 
     /** a list of textview module */
-    private static Vector moduleListTextView = new Vector(5);
+    private static Vector<String> moduleListTextView = new Vector(5);
 
     /** a list of tableview module */
-    private static Vector moduleListTableView = new Vector(5);
+    private static Vector<String> moduleListTableView = new Vector(5);
 
     /** a list of imageview module */
-    private static Vector moduleListImageView = new Vector(5);
+    private static Vector<String> moduleListImageView = new Vector(5);
 
     /** a list of paletteview module */
-    private static Vector moduleListPaletteView = new Vector(5);
+    private static Vector<String> moduleListPaletteView = new Vector(5);
 
     /** a list of helpview module */
-    private static Vector moduleListHelpView = new Vector(5);
+    private static Vector<String> moduleListHelpView = new Vector(5);
     
     /**
      * Creates a property list with given root directory of the HDFView.
@@ -236,15 +236,20 @@ public class ViewProperties extends Properties
         if (extClassLoader != null) {
             return extClassLoader;
         } else {
-            extClassLoader = ClassLoader.getSystemClassLoader(); // default classloader
+            // default classloader
+            extClassLoader = ClassLoader.getSystemClassLoader(); 
         }
         
-        // test only 
+        // for test only. Delete it from production 
         try { 
-        	//System.out.println("TEST ERDC: ViewProperties.loadExtClass()");
-        	String theName = "erdc.TreeViewERDC";
-        	Class cls = extClassLoader.loadClass(theName); 
-        	moduleListTreeView.add(theName);
+            //System.out.println("TEST ERDC: ViewProperties.loadExtClass()");
+            String theName = "erdc.TreeViewERDC";
+            extClassLoader.loadClass(theName); // make sure the class exists
+            moduleListTreeView.add(theName);
+            
+            theName = "erdc.ImageViewERDC";
+            extClassLoader.loadClass(theName); // make sure the class exists
+            moduleListImageView.add(theName);
         }  catch (Exception ex) {;}
         
         String rootPath = System.getProperty("hdfview.root");
@@ -315,28 +320,35 @@ public class ViewProperties extends Properties
                 Class[] interfaces = theClass.getInterfaces();
                 if (interfaces != null) {
                     for (int j=0; j<interfaces.length; j++) {
-                        String intfaceName = interfaces[j].getName();
-                        if ("ncsa.hdf.view.TreeView".equals(intfaceName)) {
+                        String interfaceName = interfaces[j].getName();
+
+                        if ("ncsa.hdf.view.TreeView".equals(interfaceName) &&
+                                !moduleListTreeView.contains(theName)) {
                             moduleListTreeView.add(theName);
                             break;
-                        } else if ("ncsa.hdf.view.MetaDataView".equals(intfaceName)) {
+                        } else if ("ncsa.hdf.view.MetaDataView".equals(interfaceName) &&
+                                !moduleListMetaDataView.contains(theName)) {
                             moduleListMetaDataView.add(theName);
                             break;
-                        } else if ("ncsa.hdf.view.TextView".equals(intfaceName)) {
+                        } else if ("ncsa.hdf.view.TextView".equals(interfaceName) &&
+                                !moduleListTextView.contains(theName)) {
                             moduleListTextView.add(theName);
                             break;
-                        } else if ("ncsa.hdf.view.TableView".equals(intfaceName)) {
+                        } else if ("ncsa.hdf.view.TableView".equals(interfaceName) &&
+                                !moduleListTableView.contains(theName)) {
                             moduleListTableView.add(theName);
                             break;
-                        } else if ("ncsa.hdf.view.ImageView".equals(intfaceName)) {
+                        } else if ("ncsa.hdf.view.ImageView".equals(interfaceName) &&
+                                !moduleListImageView.contains(theName)) {
                             moduleListImageView.add(theName);
                             break;
-                        } else if ("ncsa.hdf.view.PaletteView".equals(intfaceName)) {
+                        } else if ("ncsa.hdf.view.PaletteView".equals(interfaceName) &&
+                                !moduleListPaletteView.contains(theName)) {
                             moduleListPaletteView.add(theName);
                             break;
-                        } else if ("ncsa.hdf.view.HelpView".equals(intfaceName)) {
-                            try  { moduleListHelpView.add(theClass.newInstance()); }
-                            catch (Throwable err) {}
+                        } else if ("ncsa.hdf.view.HelpView".equals(interfaceName) && 
+                            !moduleListHelpView.contains(theName)) {
+                            moduleListHelpView.add(theName);
                             break;
                         }
                     } // for (int j=0; j<interfaces.length; j++) {

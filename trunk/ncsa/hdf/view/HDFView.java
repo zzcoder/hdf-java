@@ -299,6 +299,10 @@ HyperlinkListener, ChangeListener, DropTargetListener
                 treeView = (TreeView)constructor.newInstance(paramObj);
             } catch (Exception ex) { treeView = null; }
         }
+        
+        // could not load user's treeview, use default treeview.
+        if (treeView == null)
+            treeView = new DefaultTreeView(this);
 
         createMainWindow(width, height, x, y);
         
