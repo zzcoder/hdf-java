@@ -63,6 +63,9 @@ public class H5ScalarDS extends ScalarDS
      /** flag to indicate if the datatype in file is the same as dataype in memory*/
      private boolean isNativeDatatype = false;
      
+     /** flag to indicate is the datatype is reg. ref. */
+     private boolean isRegRef = false;
+     
      private int nAttributes = -1;
      
      /**
@@ -236,6 +239,7 @@ public class H5ScalarDS extends ScalarDS
             isVLEN = ((tclass==HDF5Constants.H5T_VLEN) || H5.H5Tis_variable_str(tid));
             isEnum = (tclass==HDF5Constants.H5T_ENUM);
             isUnsigned = H5Datatype.isUnsigned(tid);
+            isRegRef=H5.H5Tequal(tid, HDF5Constants.H5T_STD_REF_DSETREG);
             
             // check if it is an external dataset
            try {
@@ -635,10 +639,12 @@ public class H5ScalarDS extends ScalarDS
             return;
         }
 
-        if (isVLEN && !isText) {    // Rosetta Biosoftware VLEN Strings are supported now...
+        if (isVLEN && !isText) { 
             throw(new HDF5Exception("Writing variable-length data is not supported"));
         } else if (isEnum && isEnumConverted()) {
             throw(new HDF5Exception("Writing converted enum data is not supported"));
+        } else if (isRegRef) {
+            throw(new HDF5Exception("Writing region references data is not supported"));
         }
 
         long[] lsize = {1};
@@ -658,28 +664,26 @@ public class H5ScalarDS extends ScalarDS
             }
              
             isText = (H5.H5Tget_class(tid)==HDF5Constants.H5T_STRING);
-            boolean is_reg_ref = (H5.H5Tequal(tid, HDF5Constants.H5T_STD_REF_DSETREG));
-            
-            if  (!is_reg_ref) {
-                // check if need to convert integer data
-                int tsize = H5.H5Tget_size(tid);
-                String cname = buf.getClass().getName();
-                char dname = cname.charAt(cname.lastIndexOf("[")+1);
-                boolean doConversion = (((tsize==1) && (dname=='S')) || 
-                                        ((tsize==2) && (dname=='I')) || 
-                                        ((tsize==4) && (dname=='J')) ||
-                                        (isUnsigned && unsignedConverted) );
-                if ( doConversion) {
-                    tmpData = convertToUnsignedC(buf, null);
-                } 
-                // Rosetta Biosoftware - do not convert v-len strings, regardless of conversion request type 
-                else if (isText && convertByteToString && !H5.H5Tis_variable_str(tid)) { 
-                	tmpData = stringToByte((String[])buf, H5.H5Tget_size(tid)); 
-                } else {
-                    tmpData = buf;
-                }
-                H5.H5Dwrite(did, tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, tmpData);
+
+            // check if need to convert integer data
+            int tsize = H5.H5Tget_size(tid);
+            String cname = buf.getClass().getName();
+            char dname = cname.charAt(cname.lastIndexOf("[")+1);
+            boolean doConversion = (((tsize==1) && (dname=='S')) || 
+                    ((tsize==2) && (dname=='I')) || 
+                    ((tsize==4) && (dname=='J')) ||
+                    (isUnsigned && unsignedConverted) );
+            if ( doConversion) {
+                tmpData = convertToUnsignedC(buf, null);
+            } 
+            // do not convert v-len strings, regardless of conversion request type 
+            else if (isText && convertByteToString && !H5.H5Tis_variable_str(tid)) { 
+                tmpData = stringToByte((String[])buf, H5.H5Tget_size(tid)); 
+            } else {
+                tmpData = buf;
             }
+            H5.H5Dwrite(did, tid, spaceIDs[0], spaceIDs[1], HDF5Constants.H5P_DEFAULT, tmpData);
+
         } finally {
             tmpData = null;
             try { H5.H5Sclose(spaceIDs[0]); } catch (Exception ex) {}

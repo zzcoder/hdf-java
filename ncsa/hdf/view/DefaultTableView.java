@@ -27,10 +27,12 @@ import java.awt.datatransfer.*;
 import java.util.*;
 import java.io.*;
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.Toolkit;
 import java.awt.Color;
@@ -47,7 +49,7 @@ import java.awt.Point;
  * @version 2.4 9/6/2007
  */
 public class DefaultTableView extends JInternalFrame
-implements TableView, ActionListener
+implements TableView, ActionListener, MouseListener
 {
 	private static final long serialVersionUID = HObject.serialVersionUID;
 
@@ -96,6 +98,8 @@ implements TableView, ActionListener
     private boolean isDisplayTypeChar;
 
     private boolean isDataTransposed;
+    
+    private boolean isRegRef;
 
     private JCheckBoxMenuItem checkScientificNotation, checkFixedDataLength;
     private int fixedDataLength;
@@ -104,6 +108,9 @@ implements TableView, ActionListener
     private final NumberFormat normalFormat = null;//NumberFormat.getInstance();
     private NumberFormat numberFormat = normalFormat;
     private final boolean startEditing[] = {false};
+    private JPopupMenu popupMenu;
+    private enum ViewType { TABLE, IMAGE, TEXT }
+    private ViewType viewType;
 
     private JTextField frameField;
 
@@ -117,7 +124,28 @@ implements TableView, ActionListener
      * @param theView the main HDFView.
      */
     public DefaultTableView(ViewManager theView) {
-        this(theView, Boolean.FALSE, Boolean.FALSE);
+        this(theView, null, Boolean.FALSE, Boolean.FALSE);
+    }
+    /**
+     * Constructs an TableView.
+     * <p>
+     * @param theView the main HDFView.
+     * @param obj the object to be displayed.
+     */
+    public DefaultTableView(ViewManager theView, HObject obj) {
+        this(theView, obj, Boolean.FALSE, Boolean.FALSE);
+    }
+
+    /**
+     * Constructs an TableView.
+     * <p>
+     * @param theView the main HDFView.
+     * @param isDisplayChar true if display unsigned char as characters.
+     * @param transposed true if the data content is transposed.
+     */
+    public DefaultTableView(ViewManager theView, Boolean isDisplayChar, Boolean transposed)
+    {
+        this(theView, null, isDisplayChar, transposed);
     }
 
     /**
@@ -125,7 +153,7 @@ implements TableView, ActionListener
      * <p>
      * @param theView the main HDFView.
      */
-    public DefaultTableView(ViewManager theView, Boolean isDisplayChar, Boolean transposed)
+    private DefaultTableView(ViewManager theView, HObject obj, Boolean isDisplayChar, Boolean transposed)
     {
         super();
 
@@ -135,10 +163,16 @@ implements TableView, ActionListener
         toolkit = Toolkit.getDefaultToolkit();
         isValueChanged = false;
         isReadOnly = false;
+        isRegRef = false;
+        viewType = ViewType.TABLE;;
         isDataTransposed = transposed.booleanValue();
         fixedDataLength = -1;
+        HObject hobject = obj;
+        popupMenu = null;
 
-        HObject hobject = (HObject)viewer.getTreeView().getCurrentObject();
+        if (hobject == null)
+            hobject = (HObject)viewer.getTreeView().getCurrentObject();
+        
         if ((hobject == null) || !(hobject instanceof Dataset)) {
              return;
         }
@@ -170,7 +204,9 @@ implements TableView, ActionListener
                 (dtype.getDatatypeSize()==1 || 
                 (dtype.getDatatypeClass() == Datatype.CLASS_ARRAY &&
                 dtype.getBasetype().getDatatypeClass()==Datatype.CLASS_CHAR)));
-
+        isRegRef = ( (dtype.getDatatypeClass() == Datatype.CLASS_REFERENCE) &&
+                dtype.getDatatypeSize() != 8);
+        
         // create the table and its columnHeader
         if (dataset instanceof CompoundDS)
         {
@@ -182,6 +218,12 @@ implements TableView, ActionListener
         {
             this.setFrameIcon(ViewProperties.getDatasetIcon());
             table = createTable( (ScalarDS)dataset);
+            
+            // add mouse action to support opening data pointed by reg. ref.
+            if (isRegRef) {
+                isReadOnly = true;
+                table.addMouseListener(this);
+            }
         }
 
         if (table == null)
@@ -299,6 +341,10 @@ implements TableView, ActionListener
 		int cellRowHeight = table.getFontMetrics(table.getFont()).getHeight();
         rowHeaders.setRowHeight(cellRowHeight);
         table.setRowHeight(cellRowHeight);
+        
+        // create popup menu for reg. ref.
+        if (isRegRef)
+            popupMenu = createPopupMenu();
     }
 
     private JMenuBar createMenuBar() {
@@ -473,231 +519,256 @@ implements TableView, ActionListener
 
     public void actionPerformed(ActionEvent e)
     {
-    	try { setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        try { 
+            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-        Object source = e.getSource();
-        String cmd = e.getActionCommand();
+            Object source = e.getSource();
+            String cmd = e.getActionCommand();
 
-        if (cmd.equals("Close")) {
-            dispose();  // terminate the application
-        }
-        else if (cmd.equals("Save table as text")) {
-            try { saveAsText(); }
-            catch (Exception ex) {
-                toolkit.beep();
-                JOptionPane.showMessageDialog((JFrame)viewer,
-                        ex,
-                        getTitle(),
-                        JOptionPane.ERROR_MESSAGE);
+            if (cmd.equals("Close")) {
+                dispose();  // terminate the application
             }
-        }
-        else if (cmd.equals("Copy data")) {
-            copyData();
-        }
-        else if (cmd.equals("Paste data")) {
-            pasteData();
-        }
-        else if (cmd.equals("Import data from file")) {
-            String currentDir = dataset.getFileFormat().getParent();
-            JFileChooser fchooser = new JFileChooser(currentDir);
-            fchooser.setFileFilter(DefaultFileFilter.getFileFilterText());
-            int returnVal = fchooser.showOpenDialog(this);
-
-            if(returnVal != JFileChooser.APPROVE_OPTION) {
-                return;
+            else if (cmd.equals("Save table as text")) {
+                try { saveAsText(); }
+                catch (Exception ex) {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog((JFrame)viewer,
+                            ex,
+                            getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
+                }
             }
-
-            File choosedFile = fchooser.getSelectedFile();
-            if (choosedFile == null) {
-                return;
+            else if (cmd.equals("Copy data")) {
+                copyData();
             }
+            else if (cmd.equals("Paste data")) {
+                pasteData();
+            }
+            else if (cmd.equals("Import data from file")) {
+                String currentDir = dataset.getFileFormat().getParent();
+                JFileChooser fchooser = new JFileChooser(currentDir);
+                fchooser.setFileFilter(DefaultFileFilter.getFileFilterText());
+                int returnVal = fchooser.showOpenDialog(this);
 
-            String txtFile = choosedFile.getAbsolutePath();
-            importTextData(txtFile);
-        }
-        else if (cmd.equals("Write selection to dataset"))
-        {
-            JTable jtable = getTable();
-            if ((jtable.getSelectedColumnCount() <=0) ||
-                (jtable.getSelectedRowCount() <=0) )
+                if(returnVal != JFileChooser.APPROVE_OPTION) {
+                    return;
+                }
+
+                File choosedFile = fchooser.getSelectedFile();
+                if (choosedFile == null) {
+                    return;
+                }
+
+                String txtFile = choosedFile.getAbsolutePath();
+                importTextData(txtFile);
+            }
+            else if (cmd.equals("Write selection to dataset"))
             {
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Select table cells to write.",
-                        "HDFView",
-                        JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-
-            TreeView treeView = viewer.getTreeView();
-            TreeNode node = viewer.getTreeView().findTreeNode(dataset);
-            Group pGroup = (Group)((DefaultMutableTreeNode)node.getParent()).getUserObject();
-            TreeNode root = dataset.getFileFormat().getRootNode();
-
-            if (root == null) {
-                return;
-            }
-
-            Vector list = new Vector(dataset.getFileFormat().getNumberOfMembers()+5);
-            DefaultMutableTreeNode theNode = null;
-            Enumeration local_enum = ((DefaultMutableTreeNode)root).depthFirstEnumeration();
-            while(local_enum.hasMoreElements()) {
-                theNode = (DefaultMutableTreeNode)local_enum.nextElement();
-                list.add(theNode.getUserObject());
-            }
-
-            NewDatasetDialog dialog = new NewDatasetDialog(
-                (JFrame)viewer,
-                pGroup,
-                list,
-                this);
-            dialog.setVisible(true);
-
-            HObject obj = (HObject)dialog.getObject();
-            if (obj != null) {
-                Group pgroup = dialog.getParentGroup();
-                try { treeView.addObject(obj, pgroup); }
-                catch (Exception ex) {}
-            }
-            
-            list.setSize(0);
-        }
-        else if (cmd.equals("Save dataset")) {
-            try { updateValueInFile(); }
-            catch (Exception ex) {
-                toolkit.beep();
-                JOptionPane.showMessageDialog((JFrame)viewer,
-                        ex,
-                        getTitle(),
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        }
-        else if (cmd.equals("Select all data")) {
-            try { selectAll(); }
-            catch (Exception ex) {
-                toolkit.beep();
-                JOptionPane.showMessageDialog((JFrame)viewer,
-                        ex,
-                        getTitle(),
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        }
-        else if (cmd.equals("Show chart")) {
-            showLineplot();
-        }
-        else if (cmd.equals("First page")) {
-            firstPage();
-        }
-        else if (cmd.equals("Previous page")) {
-            previousPage();
-        }
-        else if (cmd.equals("Next page")) {
-            nextPage();
-        }
-        else if (cmd.equals("Last page")) {
-            lastPage();
-        }
-        else if (cmd.equals("Show statistics")) {
-            try {
-                Object theData = null;
-
-                if (dataset instanceof CompoundDS)
+                JTable jtable = getTable();
+                if ((jtable.getSelectedColumnCount() <=0) ||
+                        (jtable.getSelectedRowCount() <=0) )
                 {
-                	theData = getSelectedData();
-                    int cols = table.getSelectedColumnCount();
-                    //if (!(dataset instanceof ScalarDS))  return;
-                    if ((dataset instanceof CompoundDS) && (cols>1))
-                    {
-                        JOptionPane.showMessageDialog(this,
-                                "Please select one colunm a time for compound dataset.",
-                                getTitle(),
-                                JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    else if (theData == null)
-                    {
-                        JOptionPane.showMessageDialog(this,
-                                "Select a column to show statistics.",
-                                getTitle(),
-                                JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                } else {
-                    theData = dataValue;
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Select table cells to write.",
+                            "HDFView",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return;
                 }
 
-                double[] minmax = new double[2];
-                double[] stat = new double[2];
-                Tools.findMinMax(theData, minmax, fillValue);
-                if (Tools.computeStatistics(theData, stat, fillValue) > 0) {
-                	String statistics = "Min                      = "+minmax[0] +
-                                      "\nMax                      = "+minmax[1] +
-                	                  "\nMean                     = "+stat[0] +
-                	                  "\nStandard deviation = "+stat[1];
-                    JOptionPane.showMessageDialog(this, statistics, "Statistics", JOptionPane.INFORMATION_MESSAGE);
-                }
-                
-                theData = null;
-                System.gc();
-            } catch (Exception ex) {
-                toolkit.beep();
-                JOptionPane.showMessageDialog((JFrame)viewer,
-                        ex,
-                        getTitle(),
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        }
-        else if (cmd.equals("Math conversion")) {
-            try { mathConversion(); }
-            catch (Exception ex) {
-                toolkit.beep();
-                JOptionPane.showMessageDialog((JFrame)viewer,
-                        ex,
-                        getTitle(),
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        }
-        else if (cmd.startsWith("Go to frame"))
-        {
-            int page = 0;
-            try { page = Integer.parseInt(frameField.getText().trim()); }
-            catch (Exception ex) { page = -1; }
+                TreeView treeView = viewer.getTreeView();
+                TreeNode node = viewer.getTreeView().findTreeNode(dataset);
+                Group pGroup = (Group)((DefaultMutableTreeNode)node.getParent()).getUserObject();
+                TreeNode root = dataset.getFileFormat().getRootNode();
 
-            gotoPage(page);
-        }
-        else if (cmd.equals("Scientific Notation"))
-        {
-        	if (checkScientificNotation.isSelected())
-        		numberFormat = scientificFormat;
-        	else 
-        		numberFormat = normalFormat;
-             this.updateUI();
-        }
-        else if (cmd.equals("Fixed data length"))
-        {
-            if (!checkFixedDataLength.isSelected()) {
-                fixedDataLength = -1;
+                if (root == null) {
+                    return;
+                }
+
+                Vector list = new Vector(dataset.getFileFormat().getNumberOfMembers()+5);
+                DefaultMutableTreeNode theNode = null;
+                Enumeration local_enum = ((DefaultMutableTreeNode)root).depthFirstEnumeration();
+                while(local_enum.hasMoreElements()) {
+                    theNode = (DefaultMutableTreeNode)local_enum.nextElement();
+                    list.add(theNode.getUserObject());
+                }
+
+                NewDatasetDialog dialog = new NewDatasetDialog(
+                        (JFrame)viewer,
+                        pGroup,
+                        list,
+                        this);
+                dialog.setVisible(true);
+
+                HObject obj = (HObject)dialog.getObject();
+                if (obj != null) {
+                    Group pgroup = dialog.getParentGroup();
+                    try { treeView.addObject(obj, pgroup); }
+                    catch (Exception ex) {}
+                }
+
+                list.setSize(0);
+            }
+            else if (cmd.equals("Save dataset")) {
+                try { updateValueInFile(); }
+                catch (Exception ex) {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog((JFrame)viewer,
+                            ex,
+                            getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            else if (cmd.equals("Select all data")) {
+                try { selectAll(); }
+                catch (Exception ex) {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog((JFrame)viewer,
+                            ex,
+                            getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            else if (cmd.equals("Show chart")) {
+                showLineplot();
+            }
+            else if (cmd.equals("First page")) {
+                firstPage();
+            }
+            else if (cmd.equals("Previous page")) {
+                previousPage();
+            }
+            else if (cmd.equals("Next page")) {
+                nextPage();
+            }
+            else if (cmd.equals("Last page")) {
+                lastPage();
+            }
+            else if (cmd.equals("Show statistics")) {
+                try {
+                    Object theData = null;
+
+                    if (dataset instanceof CompoundDS)
+                    {
+                        theData = getSelectedData();
+                        int cols = table.getSelectedColumnCount();
+                        //if (!(dataset instanceof ScalarDS))  return;
+                        if ((dataset instanceof CompoundDS) && (cols>1))
+                        {
+                            JOptionPane.showMessageDialog(this,
+                                    "Please select one colunm a time for compound dataset.",
+                                    getTitle(),
+                                    JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        else if (theData == null)
+                        {
+                            JOptionPane.showMessageDialog(this,
+                                    "Select a column to show statistics.",
+                                    getTitle(),
+                                    JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    } else {
+                        theData = dataValue;
+                    }
+
+                    double[] minmax = new double[2];
+                    double[] stat = new double[2];
+                    Tools.findMinMax(theData, minmax, fillValue);
+                    if (Tools.computeStatistics(theData, stat, fillValue) > 0) {
+                        String statistics = "Min                      = "+minmax[0] +
+                        "\nMax                      = "+minmax[1] +
+                        "\nMean                     = "+stat[0] +
+                        "\nStandard deviation = "+stat[1];
+                        JOptionPane.showMessageDialog(this, statistics, "Statistics", JOptionPane.INFORMATION_MESSAGE);
+                    }
+
+                    theData = null;
+                    System.gc();
+                } catch (Exception ex) {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog((JFrame)viewer,
+                            ex,
+                            getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            else if (cmd.equals("Math conversion")) {
+                try { mathConversion(); }
+                catch (Exception ex) {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog((JFrame)viewer,
+                            ex,
+                            getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            else if (cmd.startsWith("Go to frame"))
+            {
+                int page = 0;
+                try { page = Integer.parseInt(frameField.getText().trim()); }
+                catch (Exception ex) { page = -1; }
+
+                gotoPage(page);
+            }
+            else if (cmd.equals("Scientific Notation"))
+            {
+                if (checkScientificNotation.isSelected())
+                    numberFormat = scientificFormat;
+                else 
+                    numberFormat = normalFormat;
                 this.updateUI();
-                return;
             }
+            else if (cmd.equals("Fixed data length"))
+            {
+                if (!checkFixedDataLength.isSelected()) {
+                    fixedDataLength = -1;
+                    this.updateUI();
+                    return;
+                }
 
-            String str = JOptionPane.showInputDialog(this, "Enter fixed data length when importing text data\n\n"+
-                    "For example, for a text string of \"12345678\"\n\t\tenter 2, the data will be 12, 34, 56, 78\n\t\tenter 4, the data will be 1234, 5678\n", "");
+                String str = JOptionPane.showInputDialog(this, "Enter fixed data length when importing text data\n\n"+
+                        "For example, for a text string of \"12345678\"\n\t\tenter 2, the data will be 12, 34, 56, 78\n\t\tenter 4, the data will be 1234, 5678\n", "");
 
-            if ((str == null) || (str.length()<1)) {
-                checkFixedDataLength.setSelected(false);
-                return;
-            }
+                if ((str == null) || (str.length()<1)) {
+                    checkFixedDataLength.setSelected(false);
+                    return;
+                }
 
-            try { fixedDataLength = Integer.parseInt(str); }
-            catch (Exception ex) { fixedDataLength = -1; }
+                try { fixedDataLength = Integer.parseInt(str); }
+                catch (Exception ex) { fixedDataLength = -1; }
 
-            if (fixedDataLength<1) {
-                checkFixedDataLength.setSelected(false);
-                return;
-            }
+                if (fixedDataLength<1) {
+                    checkFixedDataLength.setSelected(false);
+                    return;
+                }
+            } else if (cmd.startsWith("Show data as")) {
+                // show data pointed by reg. ref.
+                if (cmd.endsWith("table"))
+                    viewType = ViewType.TABLE;
+                else if (cmd.endsWith("image"))
+                    viewType = ViewType.IMAGE;
+                else
+                    viewType = ViewType.TABLE;
+                
+                String[] data = (String[]) getSelectedData();
+                if (data == null || data.length <=0) {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog(
+                        this,
+                        "No data selected.",
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                    
+                }
+       
+                for (int i=0; i<data.length; i++)
+                    showRegRefData(data[i]);
+            }  
         }
-    	}finally { setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)); }
+        finally { setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)); }
     }
 
     // Implementing DataView.
@@ -1019,32 +1090,50 @@ implements TableView, ActionListener
 
         int cols = table.getSelectedColumnCount();
         int rows = table.getSelectedRowCount();
+        int size = cols*rows;
 
         if ((cols <=0) || (rows <= 0))
         {
             return null;
         }
 
+        // the whole table is selected
         if ((table.getColumnCount() == cols) &&
             (table.getRowCount() == rows)) {
             return dataValue;
         }
+        
+        selectedData = null;
+        if (isRegRef) {
+            // reg. ref data are stored in strings
+            selectedData = new String[size];
+        } else {
+            switch (NT) {
+            case 'B':
+                selectedData = new byte[size];
+                break;
+            case 'S':
+                selectedData = new short[size];
+                break;
+            case 'I':
+                selectedData = new int[size];
+                break;
+            case 'J':
+                selectedData = new long[size];
+                break;
+            case 'F':
+                selectedData = new float[size];
+                break;
+            case 'D':
+                selectedData = new double[size];
+                break;
+            default:
+                selectedData = null;
+                break;
+            }
+        }
 
-        int size = cols*rows;
-        int nt = NT;
-        if (nt == 'B') {
-            selectedData = new byte[size];
-        } else if (nt == 'S') {
-            selectedData = new short[size];
-        } else if (nt == 'I') {
-            selectedData = new int[size];
-        } else if (nt == 'J') {
-            selectedData = new long[size];
-        } else if (nt == 'F') {
-            selectedData = new float[size];
-        } else if (nt == 'D') {
-            selectedData = new double[size];
-        } else
+        if (selectedData == null)
         {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
@@ -2506,6 +2595,10 @@ implements TableView, ActionListener
 
             if (e.getID() == MouseEvent.MOUSE_DRAGGED)
             {
+                // do not do anything, just resize the column
+                if (getResizingColumn() != null)
+                    return;
+                
                 int colEnd = columnAtPoint(e.getPoint());
 
                 if (colEnd < 0) {
@@ -2541,12 +2634,12 @@ implements TableView, ActionListener
 
                 if(e.isControlDown())
                 {
-                    // select discontinguous columns
+                    // select discontinuous columns
                     parentTable.addColumnSelectionInterval(currentColumnIndex, currentColumnIndex);
                 }
                 else if (e.isShiftDown())
                 {
-                    // select continguous columns
+                    // select continuous columns
                     if (lastColumnIndex < 0) {
                         parentTable.addColumnSelectionInterval(0, currentColumnIndex);
                     } else if (lastColumnIndex < currentColumnIndex) {
@@ -2799,4 +2892,258 @@ implements TableView, ActionListener
             return this;
         }
     }
+
+    //////////////////////////////////////////////////////////////////////////
+    //                                                                      //
+    //        The code below was added to deal with region references       //
+    //                      Peter Cao, 4/30/2009                            //
+    //                                                                      //
+    //////////////////////////////////////////////////////////////////////////
+    
+    @Override
+    public void mouseClicked(MouseEvent e) 
+    {
+        // only deal with reg. ref 
+        if (!isRegRef)
+            return;
+        
+        int eMod = e.getModifiers();
+
+        // provide two options here: double click to show data in table, or
+        // right mouse to choose to show data in table or in image
+        
+        // right mouse click
+        if (e.isPopupTrigger() || (eMod == InputEvent.BUTTON3_MASK) ||
+            (System.getProperty("os.name").startsWith("Mac") &&
+            (eMod == (InputEvent.BUTTON1_MASK|InputEvent.CTRL_MASK))))
+        {
+            if (popupMenu != null) {
+                popupMenu.show((JComponent)e.getSource(), e.getX(), e.getY());
+            }
+        } else if (e.getClickCount() == 2) {
+            // double click
+            viewType = ViewType.TABLE;
+            String[] data = (String[]) getSelectedData();
+            
+            if (data == null || data.length <=0) {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(
+                    this,
+                    "No data selected.",
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+                
+            }
+   
+            for (int i=0; i<data.length; i++)
+                showRegRefData(data[i]);
+        }
+
+    }
+    
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        // TODO Auto-generated method stub
+        
+    }
+    @Override
+    public void mouseExited(MouseEvent e) {
+        // TODO Auto-generated method stub
+        
+    }
+    @Override
+    public void mousePressed(MouseEvent e) {
+        // TODO Auto-generated method stub
+        
+    }
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        // TODO Auto-generated method stub
+    }
+    
+    /** creates a popup menu for a right mouse click on a data object */
+    private JPopupMenu createPopupMenu()
+    {
+        JPopupMenu menu = new JPopupMenu();
+        JMenuItem item;
+
+        item = new JMenuItem( "Show As Table");
+        item.setMnemonic(KeyEvent.VK_T);
+        item.addActionListener(this);
+        item.setActionCommand("Show data as table");
+        menu.add(item);
+
+        item = new JMenuItem( "Show As Image");
+        item.setMnemonic(KeyEvent.VK_I);
+        item.addActionListener(this);
+        item.setActionCommand("Show data as image");
+        menu.add(item);
+
+//        item = new JMenuItem( "Show As Text");
+//        item.setMnemonic(KeyEvent.VK_I);
+//        item.addActionListener(this);
+//        item.setActionCommand("Show data as text");
+//        menu.add(item);
+
+        return menu;
+    }
+    
+    /**
+     * Display data pointed by region references. Data of each region is shown
+     * in a separate spreadsheet. The reg. ref. information is stored in strings
+     * of the format below:
+     * <p />
+     * <ul> 
+     *   <li> For point selections: "file_id:obj_id { <point1> <point2> ...) }",
+     *        where <point1> is in the form of (location_of_dim0, location_of_dim1, ...). 
+     *        For example, 0:800 { (0,1)  (2,11)  (1,0)  (2,4) } </li>
+     *   <li> For rectangle selections: "file_id:obj_id { <corner coordinates1> <corner coordinates2> ... }",
+     *        where <corner coordinates1> is in the form of (start_corner)-(oposite_corner).
+     *        For example, 0:800 { (0,0)-(0,2)  (0,11)-(0,13)  (2,0)-(2,2)  (2,11)-(2,13) }</li>
+     * </ul>
+     *  
+     * @param data the array of strings that contain the reg. ref information.
+     * 
+     */
+    private void showRegRefData(String reg) 
+    {
+        boolean isPointSelection = false;
+        
+        if (reg == null || reg.length() <=0)
+            return;
+        
+        isPointSelection = (reg.indexOf('-')<=0);
+        
+        // find the object id
+        String oidStr = reg.substring(reg.indexOf(':')+1, reg.indexOf(' '));
+        long oid[] = {-1};
+        
+        // decode object ID
+        try { oid[0] = Long.valueOf(oidStr); }
+        catch (Exception ex) { return; }
+         
+        // decode the region selection
+        String regStr = reg.substring(reg.indexOf('{')+1, reg.indexOf('}'));
+        if (regStr==null || regStr.length()<=0)
+            return; // no selection
+        
+        StringTokenizer st = new StringTokenizer(regStr);
+        int nSelections = st.countTokens();
+        if (nSelections <= 0)
+            return; // no selection
+        
+        HObject obj = FileFormat.findObject(dataset.getFileFormat(), oid);
+        if (obj == null || !(obj instanceof ScalarDS))
+            return;
+        
+        ScalarDS dset = (ScalarDS) obj;
+        ScalarDS dset_copy = null;
+
+        // create an instance of the dataset constructor
+        Constructor constructor = null;
+        Object[] paramObj = null;
+        try {
+            Class[] paramClass = {FileFormat.class, String.class, String.class};
+            constructor = dset.getClass().getConstructor(paramClass);
+            paramObj = new Object[] {dset.getFileFormat(), dset.getName(), dset.getPath()};
+        } catch (Exception ex) { constructor = null; }
+        
+        // load each selection into a separate dataset and display it in 
+        // a separate spreadsheet
+        StringBuffer titleSB = new StringBuffer();
+        Font font = this.getFont();
+        CompoundBorder border = BorderFactory.createCompoundBorder(
+                BorderFactory.createRaisedBevelBorder(),
+                BorderFactory.createTitledBorder(
+                        BorderFactory.createEmptyBorder(5,5,5,5),
+                        "Data pointed by region reference", 
+                        TitledBorder.RIGHT, 
+                        TitledBorder.BOTTOM,
+                        font,
+                        Color.RED));   
+
+        while (st.hasMoreTokens()) {
+            try { dset_copy = (ScalarDS)constructor.newInstance(paramObj); }
+            catch (Exception ex) {continue; }
+            
+            if (dset_copy == null)
+                continue;
+            
+            try { dset_copy.init(); } catch (Exception ex) {continue; }
+            
+            int rank = dset_copy.getRank();
+            long start[] = dset_copy.getStartDims();
+            long count[] = dset_copy.getSelectedDims();
+            
+            // set the selected dimension sizes based on the region selection info.
+            int idx = 0;
+            String sizeStr = null;
+            String token = st.nextToken();
+            
+            titleSB.setLength(0);
+            titleSB.append(token);
+            titleSB.append(" at ");
+            
+            token = token.replace('(', ' ');
+            token = token.replace(')', ' ');
+            if (isPointSelection) {
+                // point selection
+                StringTokenizer tmp = new StringTokenizer(token, ",");
+                while (tmp.hasMoreTokens()) {
+                    count[idx] = 1;
+                    sizeStr = tmp.nextToken().trim();
+                    start[idx] = Long.valueOf(sizeStr);
+                    idx++;
+                }
+            } else {
+                // rectangle selection
+                String startStr = token.substring(0, token.indexOf('-'));
+                String endStr = token.substring(token.indexOf('-')+1);
+                StringTokenizer tmp = new StringTokenizer(startStr, ",");
+                while (tmp.hasMoreTokens()) {
+                    sizeStr = tmp.nextToken().trim();
+                    start[idx] = Long.valueOf(sizeStr);
+                    idx++;
+                }
+                
+                idx = 0;
+                tmp = new StringTokenizer(endStr, ",");
+                while (tmp.hasMoreTokens()) {
+                    sizeStr = tmp.nextToken().trim();
+                    count[idx] = Long.valueOf(sizeStr)-start[idx]+1;
+                    idx++;
+                }
+            }
+            
+            Object data = null;
+            try { data = dset_copy.getData(); }
+            catch (Exception ex) {data = null; }
+            
+            JInternalFrame dataView = null;
+            switch (viewType) {
+            case TEXT:
+                dataView = new DefaultTextView(viewer, dset_copy);
+                break;
+            case IMAGE:
+                dataView = new DefaultImageView(viewer, dset_copy);
+                 break;
+            default:
+                dataView = new DefaultTableView(viewer, dset_copy);
+                break;
+            }
+            
+            if (dataView != null) {
+                viewer.addDataView((DataView)dataView);
+                titleSB.append(dset_copy.getName());
+                titleSB.append("  -  ");
+                titleSB.append(dset_copy.getPath());
+                titleSB.append("  -  ");
+                titleSB.append(dataset.getFile());
+                dataView.setTitle(titleSB.toString());
+                
+                dataView.setBorder(border);
+            }
+        } // while (st.hasMoreTokens())
+    } // private void showRegRefData(String reg) 
 }

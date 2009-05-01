@@ -1057,7 +1057,7 @@ public class H5File extends FileFormat
     /***************************************************************************
      * Methods related to Datatypes and HObjects in HDF5 Files.
      * Strictly speaking, these methods aren't related to H5File
-     * and the actions coudl be carried out through the H5Group, 
+     * and the actions could be carried out through the H5Group, 
      * H5Datatype and H5*DS classes.  But, in some cases they allow a
      * null input and expect the generated object to be of HDF5 type.
      * So, we put them in the H5File class so that we create the proper 
@@ -1879,86 +1879,6 @@ public class H5File extends FileFormat
         }  // for ( i = 0; i < nelems; i++)
 
        return group;
-    }
-
-    /**
-     * Finds an object by its object ID
-     *
-     * @param file the file containing the object
-     * @param oid the oid to search for
-     * @return the object that has the given OID; otherwise returns null
-     */
-    private HObject findObject(FileFormat file, long[] oid)
-    {
-        if ((file == null) || (oid == null)) {
-            return null;
-        }
-
-        HObject theObj = null;
-        DefaultMutableTreeNode theNode = null;
-
-        MutableTreeNode theRoot = (MutableTreeNode)file.getRootNode();
-        if (theRoot == null) {
-            return null;
-        }
-
-        Enumeration local_enum = 
-                    ((DefaultMutableTreeNode)theRoot).breadthFirstEnumeration();
-        while(local_enum.hasMoreElements())
-        {
-            theNode = (DefaultMutableTreeNode)local_enum.nextElement();
-            theObj = (HObject)theNode.getUserObject();
-            if (theObj.equalsOID(oid)) {
-                break;
-            }
-        }
-
-        return theObj;
-    }
-
-    /**
-     * Finds an object by the full path of the object (path+name)
-     *
-     * @param file the file containing the object
-     * @param oid the path the full path of the object to search for
-     * @return the object that has the given path; otherwise returns null
-     */
-    private HObject findObject(FileFormat file, String path)
-    {
-        if ((file == null) || (path == null)) {
-            return null;
-        }
-
-        if (!path.endsWith("/")) {
-            path = path+"/";
-        }
-
-        DefaultMutableTreeNode theRoot = 
-                        (DefaultMutableTreeNode)file.getRootNode();
-
-        if (theRoot == null) {
-            return null;
-        } else if (path.equals("/")) {
-            return (HObject)theRoot.getUserObject();
-        }
-
-        Enumeration local_enum = (theRoot).breadthFirstEnumeration();
-        DefaultMutableTreeNode theNode = null;
-        HObject theObj = null;
-        while(local_enum.hasMoreElements())
-        {
-            theNode = (DefaultMutableTreeNode)local_enum.nextElement();
-            theObj = (HObject)theNode.getUserObject();
-            String fullPath = theObj.getFullName()+"/";
-
-            if (path.equals(fullPath)) {
-                break;
-            } else {
-                theObj = null;
-            }
-        }
-
-        return theObj;
     }
 
 

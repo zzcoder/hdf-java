@@ -18,6 +18,7 @@ import java.util.*;
 import java.io.File;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 /**
@@ -1021,7 +1022,7 @@ public abstract class FileFormat extends File
      * @param tclass class of datatype, e.g. Datatype.CLASS_INTEGER
      * @param tsize  size of the datatype in bytes, e.g. 4 for 32-bit integer.
      * @param torder order of the byte endianing, Datatype.ORDER_LE.
-     * @param tsign  signed or unsinged of an integer, Datatype.SIGN_NONE.
+     * @param tsign  signed or unsigned of an integer, Datatype.SIGN_NONE.
      * @param name name of the datatype to create, e.g. "Native Integer".
      * @return  The new datatype if successful; otherwise returns null.
      * @throws Exception 
@@ -1069,7 +1070,7 @@ public abstract class FileFormat extends File
      * @param tclass class of datatype, e.g. Datatype.CLASS_INTEGER
      * @param tsize  size of the datatype in bytes, e.g. 4 for 32-bit integer.
      * @param torder order of the byte endian, e.g. Datatype.ORDER_LE.
-     * @param tsign  signed or unsinged of an integer, Datatype.SIGN_NONE.
+     * @param tsign  signed or unsigned of an integer, Datatype.SIGN_NONE.
      * @return    The new datatype object if successful; otherwise returns null.
      * @throws Exception 
      *               The exceptions thrown vary depending on the 
@@ -1549,6 +1550,87 @@ public abstract class FileFormat extends File
         }
 
         return obj;
+    }
+    
+    /**
+     * Finds an object by its object ID
+     *
+     * @param file the file containing the object
+     * @param oid the oid to search for
+     * @return the object that has the given OID; otherwise returns null
+     */
+    public final static HObject findObject(FileFormat file, long[] oid)
+    {
+        if ((file == null) || (oid == null)) {
+            return null;
+        }
+
+        HObject theObj = null;
+        DefaultMutableTreeNode theNode = null;
+
+        MutableTreeNode theRoot = (MutableTreeNode)file.getRootNode();
+        if (theRoot == null) {
+            return null;
+        }
+
+        Enumeration local_enum = 
+                    ((DefaultMutableTreeNode)theRoot).breadthFirstEnumeration();
+        while(local_enum.hasMoreElements())
+        {
+            theNode = (DefaultMutableTreeNode)local_enum.nextElement();
+            theObj = (HObject)theNode.getUserObject();
+            if (theObj.equalsOID(oid)) {
+                break;
+            }
+        }
+
+        return theObj;
+    }
+    
+
+    /**
+     * Finds an object by the full path of the object (path+name)
+     *
+     * @param file the file containing the object
+     * @param oid the path the full path of the object to search for
+     * @return the object that has the given path; otherwise returns null
+     */
+    public final static HObject findObject(FileFormat file, String path)
+    {
+        if ((file == null) || (path == null)) {
+            return null;
+        }
+
+        if (!path.endsWith("/")) {
+            path = path+"/";
+        }
+
+        DefaultMutableTreeNode theRoot = 
+                        (DefaultMutableTreeNode)file.getRootNode();
+
+        if (theRoot == null) {
+            return null;
+        } else if (path.equals("/")) {
+            return (HObject)theRoot.getUserObject();
+        }
+
+        Enumeration local_enum = (theRoot).breadthFirstEnumeration();
+        DefaultMutableTreeNode theNode = null;
+        HObject theObj = null;
+        while(local_enum.hasMoreElements())
+        {
+            theNode = (DefaultMutableTreeNode)local_enum.nextElement();
+            theObj = (HObject)theNode.getUserObject();
+            String fullPath = theObj.getFullName()+"/";
+
+            if (path.equals(fullPath)) {
+                break;
+            } else {
+                theObj = null;
+            }
+        }
+
+        return theObj;
     }
     
 }
