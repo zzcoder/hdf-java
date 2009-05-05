@@ -45,12 +45,12 @@ the data can be written as an array of bytes.
 
 <blockquote>
 <pre><b>H5.H5Tinsert( datatype, "real", 0,
- HDFCDataTyupes.JHT_NATIVE_DOUBLE );</b></pre>
+ HDF5Constants.HT_NATIVE_DOUBLE );</b></pre>
 </blockquote>
 
 <blockquote>
 <pre><b>H5.H5Tinsert( datatype, "imaginary", 8,
- HDFCDataTyupes.JHT_NATIVE_DOUBLE );</b></pre>
+ HDF5Constants.HT_NATIVE_DOUBLE );</b></pre>
 </blockquote>
 
 <pre><b> // create the dataset with this dataspace and compound
@@ -106,7 +106,7 @@ Double[] imaginaryValues = new Double[100];</b></pre>
  datatype = H5.H5Tcreate( HDF5Constants.H5T_COMPOUND, 8 );</b></pre>
 
 <blockquote>
-<pre><b>H5.H5Tinsert( datatype, "real", 0, HDFCDataTyupes.JHT_NATIVE_DOUBLE );</b></pre>
+<pre><b>H5.H5Tinsert( datatype, "real", 0, HDF5Constants.HT_NATIVE_DOUBLE );</b></pre>
 </blockquote>
 </blockquote>
 
@@ -127,7 +127,7 @@ int datatype2 = -1;
 datatype2 = H5.H5Tcreate( HDF5Constants.H5T_COMPOUND, 8 );</b></pre>
 
 <pre><b>H5.H5Tinsert( datatype, "imaginary", 0,
- HDFCDataTyupes.JHT_NATIVE_DOUBLE );
+ HDF5Constants.HT_NATIVE_DOUBLE );
 
 H5.H5Dread( dataset, datatype, dataspace,
  HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT,
