@@ -1109,7 +1109,7 @@ public abstract class Dataset extends HObject
             
             // trim only the end 
             int end = str.length();
-            while (str.charAt(end-1) <= '\u0020')
+            while (end > 0 && str.charAt(end-1) <= '\u0020')
                 end--;
             strArray[i] = (end <= 0) ? null : str.substring(0, end);
             

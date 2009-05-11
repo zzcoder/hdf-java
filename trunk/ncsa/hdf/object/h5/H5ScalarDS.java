@@ -389,14 +389,29 @@ public class H5ScalarDS extends ScalarDS
         }
         else if (rank > 2)
         {
-            // 3D dataset is arranged in the order of [frame][height][width] by default
-            selectedIndex[1] = rank-1; // width, the fastest dimension
-            selectedIndex[0] = rank-2; // height
-            selectedIndex[2] = rank-3; // frames
+//            // 3D dataset is arranged in the order of [frame][height][width] by default
+//            selectedIndex[1] = rank-1; // width, the fastest dimension
+//            selectedIndex[0] = rank-2; // height
+//            selectedIndex[2] = rank-3; // frames
+            
+//
+//            (5/4/09) Modified the default dimension order. See bug#1379
+//            We change the default order to the following. In most situation, 
+//            users want to use the nature order of
+//               selectedIndex[0] = 0
+//               selectedIndex[1] = 1
+//               selectedIndex[2] = 2
+//            Most of NPOESS data is the the order above.  
+            
+            selectedIndex[0] = 0; // width, the fastest dimension
+            selectedIndex[1] = 1; // height
+            selectedIndex[2] = 2; // frames            
+            
             selectedDims[selectedIndex[0]] = dims[selectedIndex[0]];
             selectedDims[selectedIndex[1]] = dims[selectedIndex[1]];
         }
 
+        // only can display one-D a time for text data
         if ((rank > 1) && isText)
         {
             selectedIndex[0] = rank-1;

@@ -1564,6 +1564,7 @@ public class DefaultTreeView extends JPanel
         boolean isImage = ((d instanceof ScalarDS) && ((ScalarDS)d).isImage());
         boolean isDisplayTypeChar = false;
         boolean isTransposed = false;
+        BitSet bitmask = null;
         String dataViewName = null;
 
         JInternalFrame theFrame = (JInternalFrame)viewer.getDataView(d);
@@ -1592,13 +1593,17 @@ public class DefaultTreeView extends JPanel
                 return null;
             }
 
-            if (theFrame != null) {
-                ((DataView)theFrame).dispose();
-            }
+            // allow to display the same dataset multiple times
+            // modified by Peter Cao, May 8, 2009
+            //  if (theFrame != null) {
+            //     ((DataView)theFrame).dispose();
+            //  }
+            
             isImage = dialog.isImageDisplay();
             isDisplayTypeChar = dialog.isDisplayTypeChar();
             dataViewName = dialog.getDataViewName();
             isTransposed = dialog.isTransposed();
+            bitmask = dialog.getBitmask();
         }
 
         // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
@@ -1624,7 +1629,14 @@ public class DefaultTreeView extends JPanel
         Object theView = null;
         Object[] initargs = {viewer};
         if (dataViewName.startsWith("ncsa.hdf.view.DefaultTableView")) {
-            Object[] tmpargs = {viewer, new Boolean(isDisplayTypeChar), new Boolean(isTransposed)};
+            
+            HashMap map = new HashMap(3);
+            map.put(ViewProperties.DATA_VIEW_KEY.CHAR, new Boolean(isDisplayTypeChar));
+            map.put(ViewProperties.DATA_VIEW_KEY.TRANSPOSED, new Boolean(isTransposed));
+            if (bitmask != null)
+                map.put(ViewProperties.DATA_VIEW_KEY.BITMASK, bitmask);
+            
+            Object[] tmpargs = {viewer, map};
             initargs = tmpargs;
         }
         else if (dataViewName.startsWith("ncsa.hdf.view.DefaultImageView")) {
