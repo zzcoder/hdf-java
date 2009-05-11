@@ -77,22 +77,31 @@ implements TextView, ActionListener, KeyListener
      */
     public DefaultTextView(ViewManager theView)
     {
-        this(theView, (HObject)theView.getTreeView().getCurrentObject());
+        this(theView, null);
     }
     
     /**
      * Constructs an TextView.
      * <p>
      * @param theView the main HDFView.
-     * @param hobject the data object to be displayed.
+     * @param map the properties on how to show the data. The map is used to 
+     *        allow applications to pass properties on how to display the data, 
+     *        such as, transposing data, showing data as character, applying 
+     *        bitmask, and etc. Predefined keys are listed at ViewProperties.DATA_VIEW_KEY.
      */
-    public DefaultTextView(ViewManager theView, HObject hobject)
+    public DefaultTextView(ViewManager theView, HashMap map)
     {
         viewer = theView;
         text = null;
         table = null;
         dataset = null;
         textEditor = new TextAreaEditor(this);
+        
+        HObject hobject = null;
+        if (map != null) 
+            hobject = (HObject)map.get(ViewProperties.DATA_VIEW_KEY.OBJECT);
+        else 
+            hobject = (HObject)theView.getTreeView().getCurrentObject();
         
         if (!(hobject instanceof ScalarDS)) {
             return;

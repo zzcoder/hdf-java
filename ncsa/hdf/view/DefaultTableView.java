@@ -58,10 +58,10 @@ implements TableView, ActionListener, MouseListener
      */
     private final ViewManager viewer;
 
-    /** numberical data type.
-      B = bypte array,
+    /** Numerical data type.
+      B = byte array,
       S = short array,
-      I = inte array,
+      I = int array,
       J = long array,
       F = float array, and
       D = double array.
@@ -100,13 +100,17 @@ implements TableView, ActionListener, MouseListener
     private boolean isDataTransposed;
     
     private boolean isRegRef;
+    
+    private BitSet bitmask;
 
-    private JCheckBoxMenuItem checkScientificNotation, checkFixedDataLength;
+    private final JCheckBoxMenuItem checkFixedDataLength;
     private int fixedDataLength;
+    private final JCheckBoxMenuItem checkScientificNotation, checkHex, checkBin; 
 
     private final DecimalFormat scientificFormat = new DecimalFormat ("###.#####E0#");
     private final NumberFormat normalFormat = null;//NumberFormat.getInstance();
     private NumberFormat numberFormat = normalFormat;
+    private boolean showAsHex = false, showAsBin = false;
     private final boolean startEditing[] = {false};
     private JPopupMenu popupMenu;
     private enum ViewType { TABLE, IMAGE, TEXT }
@@ -117,6 +121,8 @@ implements TableView, ActionListener, MouseListener
     private long curFrame=0, maxFrame=1;
     
     private Object fillValue = null;
+    
+    private Border border;
 
      /**
      * Constructs an TableView.
@@ -124,36 +130,19 @@ implements TableView, ActionListener, MouseListener
      * @param theView the main HDFView.
      */
     public DefaultTableView(ViewManager theView) {
-        this(theView, null, Boolean.FALSE, Boolean.FALSE);
-    }
-    /**
-     * Constructs an TableView.
-     * <p>
-     * @param theView the main HDFView.
-     * @param obj the object to be displayed.
-     */
-    public DefaultTableView(ViewManager theView, HObject obj) {
-        this(theView, obj, Boolean.FALSE, Boolean.FALSE);
+        this(theView, null);
     }
 
     /**
      * Constructs an TableView.
      * <p>
      * @param theView the main HDFView.
-     * @param isDisplayChar true if display unsigned char as characters.
-     * @param transposed true if the data content is transposed.
+     * @param map the properties on how to show the data. The map is used to 
+     *        allow applications to pass properties on how to display the data, 
+     *        such as, transposing data, showing data as character, applying 
+     *        bitmask, and etc. Predefined keys are listed at ViewProperties.DATA_VIEW_KEY.
      */
-    public DefaultTableView(ViewManager theView, Boolean isDisplayChar, Boolean transposed)
-    {
-        this(theView, null, isDisplayChar, transposed);
-    }
-
-    /**
-     * Constructs an TableView.
-     * <p>
-     * @param theView the main HDFView.
-     */
-    private DefaultTableView(ViewManager theView, HObject obj, Boolean isDisplayChar, Boolean transposed)
+    public DefaultTableView(ViewManager theView, HashMap map)
     {
         super();
 
@@ -164,11 +153,31 @@ implements TableView, ActionListener, MouseListener
         isValueChanged = false;
         isReadOnly = false;
         isRegRef = false;
-        viewType = ViewType.TABLE;;
-        isDataTransposed = transposed.booleanValue();
+        viewType = ViewType.TABLE;
         fixedDataLength = -1;
-        HObject hobject = obj;
+        HObject hobject = null;
         popupMenu = null;
+        bitmask = null;
+        border = null;
+        
+        checkFixedDataLength = new JCheckBoxMenuItem("Fixed Data Length", false);
+        checkScientificNotation = new JCheckBoxMenuItem("Show Scientific Notation", false);
+        checkHex = new JCheckBoxMenuItem("Show Hexadecimal", false);
+        checkBin = new JCheckBoxMenuItem("Show Binary", false);
+
+        if (map != null) {
+            hobject = (HObject)map.get(ViewProperties.DATA_VIEW_KEY.OBJECT);
+            
+            bitmask = (BitSet)map.get(ViewProperties.DATA_VIEW_KEY.BITMASK);
+            
+            Boolean b = (Boolean) map.get(ViewProperties.DATA_VIEW_KEY.CHAR);
+            if (b != null)
+                isDisplayTypeChar = b.booleanValue();
+            
+            b = (Boolean) map.get(ViewProperties.DATA_VIEW_KEY.TRANSPOSED);
+            if (b != null)
+                isDataTransposed = b.booleanValue();
+        }
 
         if (hobject == null)
             hobject = (HObject)viewer.getTreeView().getCurrentObject();
@@ -200,10 +209,11 @@ implements TableView, ActionListener, MouseListener
         }
 
         Datatype dtype = dataset.getDatatype();
-        isDisplayTypeChar = (isDisplayChar.booleanValue() && 
-                (dtype.getDatatypeSize()==1 || 
-                (dtype.getDatatypeClass() == Datatype.CLASS_ARRAY &&
+        isDisplayTypeChar = (isDisplayTypeChar && 
+               (dtype.getDatatypeSize()==1 || 
+               (dtype.getDatatypeClass() == Datatype.CLASS_ARRAY &&
                 dtype.getBasetype().getDatatypeClass()==Datatype.CLASS_CHAR)));
+        
         isRegRef = ( (dtype.getDatatypeClass() == Datatype.CLASS_REFERENCE) &&
                 dtype.getDatatypeSize() != 8);
         
@@ -345,6 +355,9 @@ implements TableView, ActionListener, MouseListener
         // create popup menu for reg. ref.
         if (isRegRef)
             popupMenu = createPopupMenu();
+        
+        if (border!= null)
+            this.setBorder(border);
     }
 
     private JMenuBar createMenuBar() {
@@ -370,7 +383,6 @@ implements TableView, ActionListener, MouseListener
         item.setEnabled(isEditable);
         menu.add(item);
         
-        checkFixedDataLength = new JCheckBoxMenuItem("Fixed Data Length", false);
         item = checkFixedDataLength;
         item.addActionListener(this);
         item.setActionCommand("Fixed data length");
@@ -438,14 +450,28 @@ implements TableView, ActionListener, MouseListener
 
         menu.addSeparator();
 
-        checkScientificNotation = new JCheckBoxMenuItem("Scientific Notation", false);
         item = checkScientificNotation;
         item.addActionListener(this);
-        item.setActionCommand("Scientific Notation");
+        item.setActionCommand("Show scientific notation");
         if (dataset instanceof ScalarDS) {
             menu.add(item);
         }
 
+        boolean isInt = (NT == 'B' || NT == 'S' || NT == 'I' || NT == 'J');
+        item = checkHex;
+        item.addActionListener(this);
+        item.setActionCommand("Show hexadecimal");
+        if ( (dataset instanceof ScalarDS) && isInt ) {
+            menu.add(item);
+        }
+        
+        item = checkBin;
+        item.addActionListener(this);
+        item.setActionCommand("Show binary");
+        if ( (dataset instanceof ScalarDS) && isInt ) {
+            menu.add(item);
+        }        
+        
         menu.addSeparator();
 
         item = new JMenuItem( "Close");
@@ -712,14 +738,41 @@ implements TableView, ActionListener, MouseListener
 
                 gotoPage(page);
             }
-            else if (cmd.equals("Scientific Notation"))
+            else if (cmd.equals("Show scientific notation"))
             {
-                if (checkScientificNotation.isSelected())
+                if (checkScientificNotation.isSelected()) {
                     numberFormat = scientificFormat;
+                    checkHex.setSelected(false);
+                    checkBin.setSelected(false);
+                    showAsHex = false;
+                    showAsBin = false;
+                }
                 else 
                     numberFormat = normalFormat;
                 this.updateUI();
             }
+            else if (cmd.equals("Show hexadecimal"))
+            {
+                showAsHex = checkHex.isSelected();
+                if (showAsHex) {
+                    checkScientificNotation.setSelected(false);
+                    checkBin.setSelected(false);
+                    showAsBin = false;
+                    numberFormat = normalFormat;
+                }
+                this.updateUI();
+            }
+            else if (cmd.equals("Show binary"))
+            {
+                showAsBin = checkBin.isSelected();
+                if (showAsBin) {
+                    checkScientificNotation.setSelected(false);
+                    checkHex.setSelected(false);
+                    showAsHex = false;
+                    numberFormat = normalFormat;
+                }
+                this.updateUI();
+            }            
             else if (cmd.equals("Fixed data length"))
             {
                 if (!checkFixedDataLength.isSelected()) {
@@ -1244,9 +1297,15 @@ implements TableView, ActionListener, MouseListener
         dataValue = null;
         try {
             d.setEnumConverted(ViewProperties.isConvertEnum());
-            d.getData();
-            d.convertFromUnsignedC();
             dataValue = d.getData();
+            
+            if (applyBitmask(dataValue, bitmask) ) {
+                isReadOnly = true;
+            }
+            else {
+                d.convertFromUnsignedC();
+                dataValue = d.getData();
+            }
         }
         catch (Exception ex)
         {
@@ -1324,7 +1383,9 @@ implements TableView, ActionListener, MouseListener
             private final Datatype btype = dtype.getBasetype();
             private final boolean isArray = (dtype.getDatatypeClass()==Datatype.CLASS_ARRAY);
             private final boolean isStr = (NT == 'L');
-            Object theValue;
+            private final boolean isInt = (NT == 'B' || NT == 'S' || NT == 'I' || NT == 'J');
+            private final boolean isFloat = (dtype.getDatatypeClass()==Datatype.CLASS_FLOAT);
+            private Object theValue;
             
             public int getColumnCount() {
             	return columnNames.length;
@@ -1371,8 +1432,19 @@ implements TableView, ActionListener, MouseListener
                         theValue = Array.get(dataValue, row*colCount+column);
                     }
                     
-                    if (!isStr && numberFormat!=null)
-                    	theValue = numberFormat.format(theValue);
+                    if (!isStr) {
+                        if (showAsHex && isInt) {
+                            // show in Hexadecimal
+                            theValue = Long.toHexString(Long.valueOf(theValue.toString()));
+                        }
+                        else if (showAsBin && isInt) {
+                            theValue = Long.toBinaryString(Long.valueOf(theValue.toString()));
+                        }
+                        else if (numberFormat!=null){
+                            // show in scientific format
+                            theValue = numberFormat.format(theValue);
+                        }                         
+                    } //if (!isStr) {
                 }
                 
                 return theValue;
@@ -1711,6 +1783,62 @@ implements TableView, ActionListener, MouseListener
 
         return theTable;
     } /* createTable */
+    
+    private boolean applyBitmask(Object theData, BitSet theMask)
+    {
+        
+        if (theData == null ||
+            Array.getLength(theData) <=0 ||
+            theMask == null)
+            return false;
+        
+        char nt = '0';
+        String cName = theData.getClass().getName();
+        int cIndex = cName.lastIndexOf("[");
+        if (cIndex >= 0 ) {
+            nt = cName.charAt(cIndex+1);
+        }
+        
+        // only deal with 8 bit data
+        if (nt != 'B')
+            return false;
+        
+        byte[] bdata = (byte[])theData;
+        int bmask=0, theValue=0, packedValue=0;
+        
+        for (int i=0; i<8; i++) {
+            if (theMask.get(i))
+                bmask += 1<<i;
+        }
+        
+        for (int i=0; i<bdata.length; i++) {
+            theValue = bdata[i] & bmask;
+            
+            // pack 1's bits
+            packedValue = 0;
+            for (int j=7; j>=0; j--) {
+                if (bitmask.get(j)) {
+                    if ((packedValue & 1) == 1)
+                        packedValue = packedValue << 1;
+                    packedValue += (theValue >> j) & 1;
+                }
+            }
+
+            bdata[i] = (byte)packedValue; 
+        }
+        
+        border = BorderFactory.createCompoundBorder(
+                BorderFactory.createRaisedBevelBorder(),
+                BorderFactory.createTitledBorder(
+                        BorderFactory.createLineBorder(Color.BLUE, 3),
+                        "By bitmask "+theMask, 
+                        TitledBorder.RIGHT, 
+                        TitledBorder.TOP,
+                        this.getFont(),
+                        Color.RED));   
+        
+        return true;
+    }
 
     private void gotoPage(long idx)
     {
@@ -2232,7 +2360,13 @@ implements TableView, ActionListener, MouseListener
         {
             long lvalue = -1;
             long maxValue = Long.MAX_VALUE;
-            lvalue = Long.parseLong(cellValue);
+            
+            if (showAsBin)
+                lvalue = Long.parseLong(cellValue, 2);
+            else if (showAsHex)
+                lvalue = Long.parseLong(cellValue, 16);
+            else
+                lvalue = Long.parseLong(cellValue);
 
             if (lvalue < 0)
             {
@@ -2253,43 +2387,59 @@ implements TableView, ActionListener, MouseListener
             }
         }
 
-        if (NT == 'B')
-        {
-            byte value = 0;
-            value = Byte.parseByte(cellValue);
-            Array.setByte(dataValue, i, value);
+        switch (NT) {
+        case 'B':
+            byte bvalue = 0;
+            if (showAsBin)
+                bvalue = Byte.parseByte(cellValue, 2);
+            else if (showAsHex)
+                bvalue = Byte.parseByte(cellValue, 16);
+            else
+                bvalue = Byte.parseByte(cellValue);
+            Array.setByte(dataValue, i, bvalue);
+            break;
+        case 'S':
+            short svalue = 0;
+            if (showAsBin)
+                svalue = Short.parseShort(cellValue, 2);
+            else if (showAsHex)
+                svalue = Short.parseShort(cellValue, 16);
+            else
+                svalue = Short.parseShort(cellValue);
+            Array.setShort(dataValue, i, svalue);
+            break;
+        case 'I':
+            int ivalue = 0;
+            if (showAsBin)
+                ivalue = Integer.parseInt(cellValue, 2);
+            else if (showAsHex)
+                ivalue = Integer.parseInt(cellValue, 16);
+            else
+                ivalue = Integer.parseInt(cellValue);
+            Array.setInt(dataValue, i, ivalue);
+            break;
+        case 'J':
+            long lvalue = 0;
+            if (showAsBin)
+                lvalue = Long.parseLong(cellValue, 2);
+            else if (showAsHex)
+                lvalue = Long.parseLong(cellValue, 16);
+            else
+                lvalue = Long.parseLong(cellValue);
+            Array.setLong(dataValue, i, lvalue);
+            break;
+        case 'F':
+            float fvalue = 0;
+            fvalue = Float.parseFloat(cellValue);
+            Array.setFloat(dataValue, i, fvalue);
+            break;
+        case 'D':
+            double dvalue = 0;
+            dvalue = Double.parseDouble(cellValue);
+            Array.setDouble(dataValue, i, dvalue);
+            break;
         }
-        else if (NT == 'S')
-        {
-            short value = 0;
-            value = Short.parseShort(cellValue);
-            Array.setShort(dataValue, i, value);
-        }
-        else if (NT == 'I')
-        {
-            int value = 0;
-            value = Integer.parseInt(cellValue);
-            Array.setInt(dataValue, i, value);
-        }
-        else if (NT == 'J')
-        {
-            long value = 0;
-            value = Long.parseLong(cellValue);
-            Array.setLong(dataValue, i, value);
-        }
-        else if (NT == 'F')
-        {
-            float value = 0;
-            value = Float.parseFloat(cellValue);
-            Array.setFloat(dataValue, i, value);
-        }
-        else if (NT == 'D')
-        {
-            double value = 0;
-            value = Double.parseDouble(cellValue);
-            Array.setDouble(dataValue, i, value);
-        }
-
+        
         isValueChanged = true;
     }
 
@@ -2900,7 +3050,6 @@ implements TableView, ActionListener, MouseListener
     //                                                                      //
     //////////////////////////////////////////////////////////////////////////
     
-    @Override
     public void mouseClicked(MouseEvent e) 
     {
         // only deal with reg. ref 
@@ -2942,22 +3091,21 @@ implements TableView, ActionListener, MouseListener
 
     }
     
-    @Override
     public void mouseEntered(MouseEvent e) {
         // TODO Auto-generated method stub
         
     }
-    @Override
+
     public void mouseExited(MouseEvent e) {
         // TODO Auto-generated method stub
         
     }
-    @Override
+
     public void mousePressed(MouseEvent e) {
         // TODO Auto-generated method stub
         
     }
-    @Override
+
     public void mouseReleased(MouseEvent e) {
         // TODO Auto-generated method stub
     }
@@ -3056,10 +3204,10 @@ implements TableView, ActionListener, MouseListener
         CompoundBorder border = BorderFactory.createCompoundBorder(
                 BorderFactory.createRaisedBevelBorder(),
                 BorderFactory.createTitledBorder(
-                        BorderFactory.createEmptyBorder(5,5,5,5),
+                        BorderFactory.createLineBorder(Color.BLUE, 3),
                         "Data pointed by region reference", 
                         TitledBorder.RIGHT, 
-                        TitledBorder.BOTTOM,
+                        TitledBorder.TOP,
                         font,
                         Color.RED));   
 
@@ -3121,15 +3269,17 @@ implements TableView, ActionListener, MouseListener
             catch (Exception ex) {data = null; }
             
             JInternalFrame dataView = null;
+            HashMap map = new HashMap(1);
+            map.put(ViewProperties.DATA_VIEW_KEY.OBJECT, dset_copy);
             switch (viewType) {
             case TEXT:
-                dataView = new DefaultTextView(viewer, dset_copy);
+                dataView = new DefaultTextView(viewer, map);
                 break;
             case IMAGE:
-                dataView = new DefaultImageView(viewer, dset_copy);
+                dataView = new DefaultImageView(viewer, map);
                  break;
             default:
-                dataView = new DefaultTableView(viewer, dset_copy);
+                dataView = new DefaultTableView(viewer, map);
                 break;
             }
             

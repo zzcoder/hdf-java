@@ -197,16 +197,19 @@ implements ImageView, ActionListener
      * @param theView the main HDFView.
      */
     public DefaultImageView(ViewManager theView) {
-        this(theView, (HObject)theView.getTreeView().getCurrentObject());
+        this(theView, null);
     }
 
     /**
      * Constructs an ImageView.
      * <p>
      * @param theView the main HDFView.
-     * @param hobject the data object to be displayed.
+     * @param map the properties on how to show the data. The map is used to 
+     *        allow applications to pass properties on how to display the data, 
+     *        such as, transposing data, showing data as character, applying 
+     *        bitmask, and etc. Predefined keys are listed at ViewProperties.DATA_VIEW_KEY.
      */
-    public DefaultImageView(ViewManager theView, HObject hobject)
+    public DefaultImageView(ViewManager theView, HashMap map)
     {
         super();
 
@@ -235,6 +238,12 @@ implements ImageView, ActionListener
         autoGainData = null;
         generalContrastSlider = null;
 
+        HObject hobject = null;
+        if (map != null) 
+            hobject = (HObject)map.get(ViewProperties.DATA_VIEW_KEY.OBJECT);
+        else 
+            hobject = (HObject)theView.getTreeView().getCurrentObject();
+        
         if ((hobject == null) || !(hobject instanceof ScalarDS)) {
             viewer.showStatus("Display data in image failed for - "+hobject);
             return;

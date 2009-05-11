@@ -20,8 +20,10 @@ import javax.swing.*;
 
 import java.awt.event.*;
 import javax.swing.border.*;
+
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.Dimension;
@@ -72,7 +74,11 @@ implements ActionListener, ItemListener
 
     private int currentIndex[];
 
-    private JRadioButton spreadsheetButton, imageButton, charButton;
+    private JRadioButton spreadsheetButton, imageButton, charButton, bitmaskButton;
+    
+    private BitSet bitmask;
+    private JTextField bitmaskField;
+    private JButton bitmaskHelp;
 
     private JComboBox choiceTextView, choiceTableView, choiceImageView, choicePalette, choices[];
     private JComboBox transposeChoice;
@@ -96,7 +102,7 @@ implements ActionListener, ItemListener
     private final PreviewNavigator navigator;
 
     private int numberOfPalettes;
-
+    
     /** JComboBox.setSelectedItem() or setSelectedIndex() always fires
      * action event. If you call setSelectedItem() or setSelectedIndex()
      * at itemStateChanged() or actionPerformed(), the setSelectedItem()
@@ -120,6 +126,7 @@ implements ActionListener, ItemListener
         isSelectionCancelled = true;
         isTrueColorImage = false;
         isText = false;
+        bitmask = null;
         numberOfPalettes = 1;
         toolkit = Toolkit.getDefaultToolkit();
 
@@ -184,11 +191,27 @@ implements ActionListener, ItemListener
 
         spreadsheetButton = new JRadioButton("Spreadsheet ", true);
         spreadsheetButton.setMnemonic(KeyEvent.VK_S);
-        imageButton = new JRadioButton("Image");
+        imageButton = new JRadioButton("Image ");
         imageButton.setMnemonic(KeyEvent.VK_I);
         charButton = new JRadioButton("Show As Char", false);
         charButton.setMnemonic(KeyEvent.VK_C);
         charButton.setEnabled(false);
+        charButton.addItemListener(this);
+
+        bitmaskButton = new JRadioButton("Apply Bitmask", false);
+        bitmaskButton.setMnemonic(KeyEvent.VK_B);
+        bitmaskButton.setEnabled(false);
+        bitmaskButton.addItemListener(this);
+        
+        bitmaskField = new JTextField("");
+        bitmaskField.setVisible(false);
+        
+        bitmaskHelp = new JButton(ViewProperties.getHelpIcon() );
+        bitmaskHelp.setToolTipText( "Help on how to set bitmask" );
+        bitmaskHelp.setMargin( new Insets(0, 0, 0, 0) );
+        bitmaskHelp.addActionListener( this );
+        bitmaskHelp.setActionCommand( "Help on how to set bitmask" );
+        bitmaskHelp.setVisible(false);
 
         // layout the components
         JPanel contentPane = (JPanel)getContentPane();
@@ -239,7 +262,7 @@ implements ActionListener, ItemListener
             isText = sd.isText();
 
             if (isText) {
-                w1 = 600 + (ViewProperties.getFontSize()-12)*15;
+                w1 = 700 + (ViewProperties.getFontSize()-12)*15;
                 h1 = 280 + (ViewProperties.getFontSize()-12)*10;
                 contentPane.setPreferredSize(new Dimension(w1, h1));
                 // add textview selection
@@ -251,8 +274,8 @@ implements ActionListener, ItemListener
 
                 centerP.add(txtviewP, BorderLayout.SOUTH);
             } else {
-                w1 = 800 + (ViewProperties.getFontSize()-12)*15;
-                h1 = 360 + (ViewProperties.getFontSize()-12)*10;
+                w1 = 730 + (ViewProperties.getFontSize()-12)*15;
+                h1 = 400 + (ViewProperties.getFontSize()-12)*10;
                 contentPane.setPreferredSize(new Dimension(w1, h1));
                 if (rank > 1) {
                     centerP.add(navigatorP, BorderLayout.WEST);
@@ -265,23 +288,38 @@ implements ActionListener, ItemListener
                 rgroup.add(spreadsheetButton);
                 rgroup.add(imageButton);
                 JPanel viewP = new JPanel();
-                viewP.setLayout(new GridLayout(1,2));
+                viewP.setLayout(new GridLayout(2,1, 5, 5));
                 viewP.setBorder(new TitledBorder("Display As"));
 
                 JPanel sheetP = new JPanel();
-                sheetP.setLayout(new GridLayout(1,3, 5, 5));
+                sheetP.setLayout(new GridLayout(1, 3));
                 sheetP.add(spreadsheetButton);
-                sheetP.add(charButton);
-                //sheetP.add(swapOnlyButton);
+                int tclass = sd.getDatatype().getDatatypeClass();
+                if ( tclass==Datatype.CLASS_CHAR || 
+                     (tclass== Datatype.CLASS_INTEGER && sd.getDatatype().getDatatypeSize() ==1 ) ) {
+                    sheetP.add(charButton);
+                    
+                    JPanel tmpP = new JPanel();
+                    tmpP.setLayout(new GridLayout(1, 2));                    
+                    tmpP.add(bitmaskButton);
+                    tmpP.add(bitmaskField);
+                    
+                    JPanel tmpP2 = new JPanel();
+                    tmpP2.setLayout(new BorderLayout());
+                    tmpP2.add(tmpP, BorderLayout.CENTER);
+                    tmpP2.add(bitmaskHelp, BorderLayout.EAST);
+
+                    sheetP.add(tmpP2);
+                }
 
                 // add tableview selection
                 JPanel tviewP = new JPanel();
                 tviewP.setLayout(new BorderLayout());
-                tviewP.add(new JLabel("TableView:  "), BorderLayout.WEST);
+                tviewP.add(new JLabel("TableView:   "), BorderLayout.WEST);
                 tviewP.add(choiceTableView, BorderLayout.CENTER);
 
                 JPanel leftP = new JPanel();
-                leftP.setBorder(new TitledBorder(""));
+                leftP.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
                 leftP.setLayout(new GridLayout(2,1, 5, 5));
                 leftP.add(sheetP);
                 leftP.add(tviewP);
@@ -292,23 +330,26 @@ implements ActionListener, ItemListener
                 imageP.setLayout(new BorderLayout(5,5));
                 imageP.add(imageButton, BorderLayout.WEST);
                 imageP.add(choicePalette, BorderLayout.CENTER);
-                imageP.setBorder(new TitledBorder(""));
 
                 // add imageview selection
                 JPanel iviewP = new JPanel();
                 iviewP.setLayout(new BorderLayout());
-                iviewP.add(new JLabel("ImageView:  "), BorderLayout.WEST);
+                iviewP.add(new JLabel("ImageView: "), BorderLayout.WEST);
                 iviewP.add(choiceImageView, BorderLayout.CENTER);
 
                 JPanel rightP = new JPanel();
-                rightP.setBorder(new TitledBorder(""));
+                rightP.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
                 rightP.setLayout(new GridLayout(2,1, 5, 5));
                 rightP.add(imageP);
                 rightP.add(iviewP);
 
                 viewP.add(rightP);
-
-                contentPane.add(viewP, BorderLayout.NORTH);
+                
+                JPanel northP = new JPanel();
+                northP.setLayout(new BorderLayout(5,5));
+                northP.add(viewP, BorderLayout.CENTER);
+                
+                contentPane.add(northP, BorderLayout.NORTH);
             }
         }
 
@@ -533,43 +574,75 @@ implements ActionListener, ItemListener
             {
                 start[choice4Index[i]] = start4[i];
             }
-        }
+        } // else if (cmd.equals("Select more dimensions"))
+        else if (cmd.equals("Help on how to set bitmask")) {
+            String msg = 
+                "The bitmask is used to extract the value(s) of specific bit(s) from a byte data.\n"+
+                "The bitwise AND is used to perform the bit mask operation. This operation is used\n"+
+                "to isolate part of a string of bits, or to determine whether a particular bit is 1 or 0.\n"+
+                "\nFor example, \n"+
+                "        bit pattern \"00100000\"  determines whether the third bit is 1.\n"+
+                "        bit pattern \"00000011\"  determines whether the last two bits are 1.\n"+
+                "\nA valid bitmask MUST be a string of 8 bits of 1's and 0's.\n\n";
 
+            JOptionPane.showMessageDialog((JFrame)viewer, msg);
+        }
     }
 
     public void itemStateChanged(ItemEvent e)
     {
         Object source = e.getSource();
 
-        if (source.equals(imageButton) ||
-            source.equals(spreadsheetButton))
+        if (source instanceof JRadioButton) 
         {
-            choicePalette.setEnabled( imageButton.isSelected() && !isTrueColorImage);
-
-            if (imageButton.isSelected()) {
-                choiceImageView.setEnabled(true);
-                choiceTableView.setEnabled(false);
-            } else {
-                choiceImageView.setEnabled(false);
-                choiceTableView.setEnabled(true);
-            }
-
-            // reset show char button
-            Datatype dtype = dataset.getDatatype();
-            if (spreadsheetButton.isSelected() &&
-                ( (dtype.getDatatypeSize()==1) ||
-                  (dtype.getDatatypeClass() == Datatype.CLASS_ARRAY &&
-                   dtype.getBasetype().getDatatypeClass()==Datatype.CLASS_CHAR) ) )
+            if (source.equals(imageButton) || source.equals(spreadsheetButton))
             {
-                charButton.setEnabled(true);
-            }
-            else
-            {
-                charButton.setEnabled(false);
-                charButton.setSelected(false);
-            }
+                choicePalette.setEnabled( imageButton.isSelected() && !isTrueColorImage);
 
-            //swapOnlyButton.setEnabled(spreadsheetButton.isSelected());
+                if (imageButton.isSelected()) {
+                    choiceImageView.setEnabled(true);
+                    choiceTableView.setEnabled(false);
+                } else {
+                    choiceImageView.setEnabled(false);
+                    choiceTableView.setEnabled(true);
+                }
+
+                // reset show char button
+                Datatype dtype = dataset.getDatatype();
+                if (spreadsheetButton.isSelected() &&
+                        ( (dtype.getDatatypeSize()==1) ||
+                          (dtype.getDatatypeClass() == Datatype.CLASS_ARRAY &&
+                           dtype.getBasetype().getDatatypeClass()==Datatype.CLASS_CHAR) ) )
+                {
+                    charButton.setEnabled(true);
+                    bitmaskButton.setEnabled(true);
+                }
+                else
+                {
+                    charButton.setEnabled(false);
+                    charButton.setSelected(false);
+                    bitmaskButton.setEnabled(false);
+                    bitmaskButton.setSelected(false);                    
+                }
+                
+                bitmaskField.setVisible(bitmaskButton.isEnabled() && bitmaskButton.isSelected());
+                bitmaskHelp.setVisible(bitmaskField.isVisible());
+            } else if (source.equals(bitmaskButton))
+            {
+                if (bitmaskButton.isSelected())
+                    charButton.setSelected(false);
+
+                 bitmaskField.setVisible(bitmaskButton.isSelected());
+                 bitmaskHelp.setVisible(bitmaskField.isVisible());
+            }
+            else if (source.equals(charButton))
+            {
+                if (charButton.isSelected())
+                    bitmaskButton.setSelected(false);
+
+                bitmaskField.setVisible(bitmaskButton.isSelected());
+                bitmaskHelp.setVisible(bitmaskField.isVisible());
+            }
         }
         else if (source instanceof JComboBox)
         {
@@ -768,11 +841,13 @@ implements ActionListener, ItemListener
                dtype.getBasetype().getDatatypeClass()==Datatype.CLASS_CHAR) ) )
         {
             charButton.setEnabled(true);
+            bitmaskButton.setEnabled(true);
         }
         else
         {
             charButton.setEnabled(false);
             charButton.setSelected(false);
+            bitmaskButton.setEnabled(false);
         }
     }
 
@@ -831,6 +906,7 @@ implements ActionListener, ItemListener
         long[] n1= {0, 0, 0}; // end
         long[] n2= {1, 1, 1}; // stride
         int[] sIndex = {0, 1, 2};
+        boolean retVal = true;
 
         int n = Math.min(3, rank);
         for (int i=0; i<n; i++)
@@ -929,6 +1005,82 @@ implements ActionListener, ItemListener
 
         //clear the old data
         dataset.clearData();
+        
+        retVal = setBitmask();
+
+        return retVal;
+    }
+    
+    private boolean setBitmask() 
+    {
+        if (!bitmaskButton.isVisible() || !bitmaskButton.isSelected()) {
+            bitmask = null;
+            return false;
+        }
+
+        String str = bitmaskField.getText();
+        if (str == null || (str=str.trim())==null) {
+            JOptionPane.showMessageDialog(
+                    (JFrame)viewer,
+                    "Bitmask is empty.",
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+            bitmask = null;
+            return false;
+        }
+
+        int len = str.length();
+        
+        boolean isvalidmask = (len<=8);
+        if (isvalidmask) {
+            bitmask = new BitSet(8);
+            for (int i=0; i<len; i++) {
+                char bit = str.charAt(i);
+                if (bit=='0')
+                    bitmask.set(len-i-1, false);
+                else if (bit == '1')
+                    bitmask.set(len-i-1, true);
+                else {
+                    isvalidmask = false;
+                    break;
+                }
+            }
+        }
+
+        if (!isvalidmask) {
+            JOptionPane.showMessageDialog(
+                    (JFrame)viewer,
+                    "A valid bitmask MUST be a string of 8 or less bits of 1's and 0's.",
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+            bitmask = null;
+            return false;
+        }
+
+        // do not use bitmask if it is empty (all bits are zero)
+        if (bitmask.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    (JFrame)viewer,
+                    "The bitmask is empty. It will not be applied to the data.",
+                    getTitle(),
+                    JOptionPane.WARNING_MESSAGE);
+            bitmask = null;
+        } else {
+            boolean isFull = true;
+            int size = bitmask.size();
+            for (int i=0; i<size; i++)
+                isFull = (bitmask.get(i) && isFull);
+
+            // do not use bitmask if it is full (all bits are one)
+            if (isFull) {
+                JOptionPane.showMessageDialog(
+                        (JFrame)viewer,
+                        "The bitmask is empty. It will not be applied to the data.",
+                        getTitle(),
+                        JOptionPane.WARNING_MESSAGE);
+                bitmask = null;
+            }
+        }
 
         return true;
     }
@@ -1205,6 +1357,32 @@ implements ActionListener, ItemListener
     public boolean isDisplayTypeChar() { return charButton.isSelected(); }
     
     /**
+     * Return the bitmask.
+     */
+    public BitSet getBitmask() 
+    { 
+        if (!bitmaskButton.isEnabled() || !bitmaskButton.isSelected())
+            return null;
+        else if (bitmask == null)
+            return null;
+        
+        // do not use bitmask if it is empty (all bits are zero)
+        if (bitmask.isEmpty())
+            return null;
+        
+        boolean isFull = true;
+        int size = bitmask.size();
+        for (int i=0; i<size; i++)
+            isFull = (bitmask.get(i) && isFull);
+        
+        // do not use bitmask if it is full (all bits are one)
+        if (isFull)
+            return null;
+        
+        return bitmask; 
+    }
+    
+    /**
      * 
      * @return true if transpose the data in 2D table; otherwise, do not transpose the data. 
      */
@@ -1224,4 +1402,5 @@ implements ActionListener, ItemListener
 
         return viewName;
     }
+    
 }

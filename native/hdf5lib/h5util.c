@@ -408,6 +408,183 @@ static hbool_t h5tools_is_zero(const void *_mem, size_t size)
     return 1;
 }
 
+/*-------------------------------------------------------------------------
+ * Function: H5LRget_region_info
+ *
+ * Purpose: Gets information about the data set pointed to by a
+ *          region reference.
+ *
+ * Return: Success: 0, Failure: -1
+ *
+ * Programmer: M. Scot Breitenfeld
+ *
+ * Date: February 17, 2009
+ *
+ * Modified: Peter Cao, 4/28/09 -- Make it compile without using any private APIs.
+ *
+ *-------------------------------------------------------------------------
+ */
+herr_t
+H5LRget_region_info(hid_t obj_id,          /* -IN-      Id. of any object in a file associated with reference */
+               const hdset_reg_ref_t *ref, /* -IN-      Region reference to query                             */ 
+               size_t *len,                /* -IN/OUT-  Size of the buffer path                               */
+               char *path,                 /* -OUT-     Full path that a region reference points to           */
+               int *rank,                  /* -OUT-     The number of dimensions of the dataset pointed by region reference */
+               hid_t *dtype,               /* -OUT-     Dataset datatype pointed by region reference          */
+               H5S_sel_type *sel_type,     /* -OUT-     Type fo the selection (point or hyperslab)            */
+               size_t *numelem,            /* -IN/OUT-  Number of coordinate blocks or selected elements      */
+               hsize_t *buf )              /* -OUT-     Buffer containing description of the region           */
+
+{
+    hid_t dset = -1, sid = -1;
+    hid_t ret_value = SUCCEED; 
+    herr_t status;
+    
+    /* Determine the rank of the space */
+    sid = H5Rget_region(obj_id, H5R_DATASET_REGION, ref);
+    if(sid < 0) {
+        HGOTO_ERROR(H5E_SYM, H5E_CANTOPENOBJ, FAIL, "INTERNAL ERROR - Argument 1");
+    }
+
+    /* Determine the type of the dataspace selection */
+    *sel_type = H5Sget_select_type(sid);
+
+    if(*sel_type!=H5S_SEL_HYPERSLABS)  {
+        HGOTO_ERROR(H5E_SYM, H5E_CANTOPENOBJ, FAIL, "Wrong select type");
+    }
+
+    /* Try to open object */
+    dset = H5Rdereference(obj_id, H5R_DATASET_REGION, ref);
+    
+    if(dset < 0) {
+        HGOTO_ERROR(H5E_SYM, H5E_CANTOPENOBJ, FAIL, "INVALID OBJECT TYPE- Argument 1");
+    }
+
+    /* Determine the size of the name buffer, with null character included */
+    *len = (size_t)(1 + H5Iget_name (dset, NULL, (size_t)0));
+
+    *rank = (int)H5Sget_simple_extent_ndims(sid);
+    if(*rank < 0) {
+        HGOTO_ERROR(H5E_SYM, H5E_CANTOPENOBJ, FAIL, "INTERNAL ERROR - Argument 1");
+    }
+
+    /* get the number of elements */
+    if(*sel_type==H5S_SEL_HYPERSLABS) {
+        *numelem = (size_t)H5Sget_select_hyper_nblocks(sid);
+    } else if(*sel_type==H5S_SEL_POINTS) {
+        *numelem = (size_t)H5Sget_select_npoints(sid);
+    }
+
+    /* if path is NULL, the user only wants the size and rank */
+    if( path != NULL) {
+        /* Get the data set name the region reference points to */
+        status = H5Iget_name (dset, path, *len);
+        if(status < 0) {
+            HGOTO_ERROR(H5E_SYM, H5E_CANTOPENOBJ, FAIL, "INTERNAL ERROR - Argument 1");
+        }
+
+        /* get the data type */
+        *dtype = (hid_t)H5Dget_type(dset);
+        if(status < 0) {
+            HGOTO_ERROR(H5E_SYM, H5E_CANTOPENOBJ, FAIL, "INTERNAL ERROR - Argument 1");
+        }
+
+        /* get the corner coordinates of the hyperslab */
+        if(*sel_type == H5S_SEL_HYPERSLABS) {
+            /* get the list of hyperslab blocks currently selected */
+            status = H5Sget_select_hyper_blocklist(sid, (hsize_t)0, (hsize_t)1, buf);
+        }    
+
+        if(status < 0) {
+            HGOTO_ERROR(H5E_SYM, H5E_CANTOPENOBJ, FAIL, "INTERNAL ERROR - Argument 1");
+        }
+    }
+
+    ret_value = SUCCEED;
+
+ done:
+
+    if (sid > 0)
+        H5Sclose(sid);
+
+    if (dset > 0)
+        H5Dclose(dset);
+
+    return ret_value;
+}
+
+/*-------------------------------------------------------------------------
+ * Function: H5LRread_region
+ *
+ * Purpose: Read raw data pointed by a region reference 
+ *          to an application buffer
+ *
+ * Return: Success: 0, Failure: -1
+ *
+ * Programmer: M. Scot Breitenfeld
+ *
+ * Date: February 17, 2009
+ *
+ * Modified: Peter Cao, 4/28/09 -- Make it compile without using any private APIs.
+ *
+ *-------------------------------------------------------------------------
+ */
+herr_t
+H5LRread_region(hid_t obj_id,       /* -IN-      Id. of any object in a file associated with reference */
+        const hdset_reg_ref_t *ref, /* -IN-      Region reference to query                             */
+        hid_t mem_type,             /* -IN-      Id. of the memory datatype                            */
+        size_t *numelem,            /* -IN/OUT-  Number of elements in the referenced region           */
+        void *buf                   /* -OUT-     Buffer containing data from the referenced region     */
+        ) 
+{
+    hid_t did = -1, fsid = -1, msid =-1;
+    H5S_sel_type sel_type;
+    hsize_t dims1[1];
+    herr_t ret_value = SUCCEED;
+
+    /* Open the HDF5 object referenced */ 
+    did = H5Rdereference(obj_id, H5R_DATASET_REGION, ref);
+    
+    if( did < 0){
+        HGOTO_ERROR(H5E_SYM, H5E_CANTOPENOBJ, FAIL, "Unable to open object referenced.");
+    }
+
+    /* Retrieve the dataspace with the specified region selected */
+    fsid = H5Rget_region (did, H5R_DATASET_REGION, ref);
+
+    /* Determine the type of the dataspace selection */
+    sel_type = H5Sget_select_type(fsid);
+
+    /* Determine the number of elements the dataspace selection */
+    dims1[0] = H5Sget_select_npoints(fsid);
+    *numelem = (size_t)dims1[0];
+    
+    /* read the data. if buf is NULL, only need to n=know number of elements. */
+    if( buf != NULL) {
+        msid = H5Screate_simple (1, dims1, NULL);
+
+        if( H5Dread (did, mem_type, msid, fsid, H5P_DEFAULT, buf) < 0) {
+            HGOTO_ERROR(H5E_SYM, H5E_CANTOPENOBJ, FAIL, "Unable to read data.");
+        }
+    }
+
+    ret_value = SUCCEED;
+
+done:
+
+    if (fsid > 0)
+        H5Sclose(fsid);
+
+    if (msid > 0)
+        H5Sclose(msid);
+
+    if (did>0)
+        H5Dclose(did);
+
+    return ret_value;
+}
+
+
 #ifdef __cplusplus
 }
 #endif
