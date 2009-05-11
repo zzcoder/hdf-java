@@ -1015,7 +1015,7 @@ implements ActionListener, ItemListener
     {
         if (!bitmaskButton.isVisible() || !bitmaskButton.isSelected()) {
             bitmask = null;
-            return false;
+            return true;
         }
 
         String str = bitmaskField.getText();
