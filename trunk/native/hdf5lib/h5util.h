@@ -23,21 +23,6 @@
 #define FAIL        (-1)
 #endif
 
-#define HGOTO_DONE(ret_val) {ret_value = ret_val; goto done;}
-
-#ifdef H5_USE_16_API
-#define HGOTO_ERROR(maj_id, min_id, ret_val, str) { \
-    H5Eclear1(); \
-   H5Epush1(__FILE__, __FUNCTION__, __LINE__, maj_id, min_id, str); \
-   HGOTO_DONE(ret_val) \
-}
-#else
-#define HGOTO_ERROR(maj_id, min_id, ret_val, str) { \
-    H5Eclear2(H5E_DEFAULT); \
-   H5Epush2(NULL, __FILE__, __FUNCTION__, __LINE__, H5E_ERR_CLS_g, maj_id, min_id, str); \
-   HGOTO_DONE(ret_val) \
-}
-#endif
 
 typedef struct h5str_t {
     char    *s;
