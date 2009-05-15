@@ -805,8 +805,8 @@ implements TableView, ActionListener, MouseListener
                 else
                     viewType = ViewType.TABLE;
                 
-                String[] data = (String[]) getSelectedData();
-                if (data == null || data.length <=0) {
+                String[] theData = (String[]) getSelectedData();
+                if (theData == null || theData.length <=0) {
                     toolkit.beep();
                     JOptionPane.showMessageDialog(
                         this,
@@ -817,8 +817,8 @@ implements TableView, ActionListener, MouseListener
                     
                 }
        
-                for (int i=0; i<data.length; i++)
-                    showRegRefData(data[i]);
+                for (int i=0; i<theData.length; i++)
+                    showRegRefData(theData[i]);
             }  
         }
         finally { setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)); }
@@ -1141,18 +1141,20 @@ implements TableView, ActionListener, MouseListener
     {
         Object selectedData = null;
 
-        int cols = table.getSelectedColumnCount();
-        int rows = table.getSelectedRowCount();
-        int size = cols*rows;
-
-        if ((cols <=0) || (rows <= 0))
+        int[] selectedRows = table.getSelectedRows();
+        int[] selectedCols = table.getSelectedColumns();
+        if (selectedRows == null || selectedRows.length <=0 ||
+            selectedCols == null || selectedCols.length <=0)
         {
             return null;
         }
+   
+        int size = selectedCols.length*selectedRows.length;
+
 
         // the whole table is selected
-        if ((table.getColumnCount() == cols) &&
-            (table.getRowCount() == rows)) {
+        if ((table.getColumnCount() == selectedCols.length) &&
+            (table.getRowCount() == selectedRows.length)) {
             return dataValue;
         }
         
@@ -1196,16 +1198,29 @@ implements TableView, ActionListener, MouseListener
             return null;
         }
 
+        
         int r0 = table.getSelectedRow();
         int c0 = table.getSelectedColumn();
         int w = table.getColumnCount();
         int idx_src=0, idx_dst=0;
-        for (int i=0; i<rows; i++)
+        for (int i=0; i<selectedRows.length; i++)
         {
-            idx_src = (r0+i)*w+c0;
-            System.arraycopy(dataValue, idx_src, selectedData, idx_dst, cols);
-            idx_dst += cols;
+            for (int j=0; j<selectedCols.length; j++) {
+                idx_src = selectedRows[i]*w+selectedCols[j];
+                Array.set(selectedData, idx_dst, Array.get(dataValue, idx_src));
+                idx_dst++;
+                
+            }
         }
+        
+        // this only works for continuous cells
+//        for (int i=0; i<rows; i++)
+//        {
+//            idx_src = (r0+i)*w+c0;
+//            System.arraycopy(dataValue, idx_src, selectedData, idx_dst, cols);
+//            idx_dst += cols;
+//        }
+
 
         return selectedData;
     }

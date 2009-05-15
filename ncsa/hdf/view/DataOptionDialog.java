@@ -583,7 +583,8 @@ implements ActionListener, ItemListener
                 "\nFor example, \n"+
                 "        bit pattern \"00100000\"  determines whether the third bit is 1.\n"+
                 "        bit pattern \"00000011\"  determines whether the last two bits are 1.\n"+
-                "\nA valid bitmask MUST be a string of 8 bits of 1's and 0's.\n\n";
+                "\nA valid bitmask MUST be a string of 8 or less bits of 1's and 0's. For example,\n" +
+                "        00000001\n        10000001\n         1 (same as 00000001)\n        11 (same as 00000011)\n\n";
 
             JOptionPane.showMessageDialog((JFrame)viewer, msg);
         }

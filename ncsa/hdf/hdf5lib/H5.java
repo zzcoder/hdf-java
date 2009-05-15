@@ -4278,7 +4278,7 @@ public class H5 {
     }
 
     public synchronized static int H5Gget_obj_info_all( int loc_id,
-            String name, String[] oname, int[]type)
+            String name, String[] oname, int[]type, long[] ref)
     throws HDF5LibraryException, NullPointerException
     {
         if (oname == null) {
@@ -4289,6 +4289,10 @@ public class H5 {
             throw new NullPointerException("H5Gget_obj_info_all(): type array is null");
         }
 
+        if (ref == null) {
+            throw new NullPointerException("H5Gget_obj_info_all(): ref array is null");
+        }
+        
         if (oname.length == 0) {
             throw new HDF5LibraryException("H5Gget_obj_info_all(): array size is zero");
         }
@@ -4296,12 +4300,16 @@ public class H5 {
         if (oname.length != type.length) {
             throw new HDF5LibraryException("H5Gget_obj_info_all(): name and type array sizes are different");
         }
+        
+        if (oname.length != ref.length) {
+            throw new HDF5LibraryException("H5Gget_obj_info_all(): name and ref array sizes are different");
+        }
 
-        return H5Gget_obj_info_all( loc_id, name, oname, type, oname.length);
+        return H5Gget_obj_info_all( loc_id, name, oname, type, ref, oname.length);
     }
 
     public synchronized static native int H5Gget_obj_info_all( int loc_id,
-            String name, String[] oname, int[]type, int n)
+            String name, String[] oname, int[]type, long[]ref, int n)
     throws HDF5LibraryException, NullPointerException;
 
 
