@@ -27,7 +27,7 @@ import ncsa.hdf.object.*;
  * a set of the names together in one place, i.e. a group. The general
  * structure of a group is similar to that of the UNIX file system in
  * that the group may contain references to other groups or data objects
- * just as the UNIX directory may contain subdirectories or files.
+ * just as the UNIX directory may contain sub-directories or files.
  * <p>
  * For more information on HDF5 Groups, 
  * @see <a href="http://hdfgroup.org/HDF5/doc/UG/">HDF5 User's Guide</a>
