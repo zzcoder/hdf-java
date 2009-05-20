@@ -4308,7 +4308,7 @@ public class H5 {
         return H5Gget_obj_info_all( loc_id, name, oname, type, ref, oname.length);
     }
 
-    public synchronized static native int H5Gget_obj_info_all( int loc_id,
+    private synchronized static native int H5Gget_obj_info_all( int loc_id,
             String name, String[] oname, int[]type, long[]ref, int n)
     throws HDF5LibraryException, NullPointerException;
 
