@@ -1981,7 +1981,7 @@ implements TableView, ActionListener, MouseListener
                 if (fixedDataLength < 1)
                 {
                     // separate by delimiter
-                    StringTokenizer lt = new StringTokenizer(line);
+                    StringTokenizer lt = new StringTokenizer(line, "\t");
                     while (lt.hasMoreTokens() && (c < cols))
                     {
                         index = r*cols+c;
@@ -2065,19 +2065,19 @@ implements TableView, ActionListener, MouseListener
         }
 
         int size = Array.getLength(dataValue);
-        String delimiter = ViewProperties.getDataDelimiter();
-        if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_TAB)) {
-            delimiter = "\t";
-        } else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_SPACE)) {
-            delimiter = " ";
-        } else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_COMMA)) {
-            delimiter = ",";
-        } else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_COLON)) {
-            delimiter = ":";
-        } else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_SEMI_COLON)) {
-            delimiter = ";";
-        } else {
-            delimiter = "\t";
+        
+        String delName = ViewProperties.getDataDelimiter();
+        String delimiter = "\t";
+        
+        // delimiter must include a tab to be consistent with copy/paste (
+        if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_SPACE)) {
+            delimiter = " "+delimiter;
+        } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_COMMA)) {
+            delimiter = ","+delimiter;
+        } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_COLON)) {
+            delimiter = ":"+delimiter;
+        } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_SEMI_COLON)) {
+            delimiter = ";"+delimiter;
         }
 
         String token=null;
@@ -2114,6 +2114,8 @@ implements TableView, ActionListener, MouseListener
             } // while (tokenizer1.hasMoreTokens() && index < size)
             try { line = in.readLine(); }
             catch (IOException ex) { line = null; }
+            c = 0;
+            r++;
         }
         try { in.close(); } catch (IOException ex) {}
 
@@ -2177,19 +2179,18 @@ implements TableView, ActionListener, MouseListener
         PrintWriter out = new PrintWriter(
             new BufferedWriter(new FileWriter(choosedFile)));
 
-        String delimiter = ViewProperties.getDataDelimiter();
-        if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_TAB)) {
-            delimiter = "\t";
-        } else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_SPACE)) {
-            delimiter = " ";
-        } else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_COMMA)) {
-            delimiter = ",";
-        } else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_COLON)) {
-            delimiter = ":";
-        } else if (delimiter.equalsIgnoreCase(ViewProperties.DELIMITER_SEMI_COLON)) {
-            delimiter = ";";
-        } else {
-            delimiter = "\t";
+        String delName = ViewProperties.getDataDelimiter();
+        String delimiter = "\t";
+        
+        // delimiter must include a tab to be consistent with copy/paste (
+        if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_SPACE)) {
+            delimiter = " "+delimiter;
+        } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_COMMA)) {
+            delimiter = ","+delimiter;
+        } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_COLON)) {
+            delimiter = ":"+delimiter;
+        } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_SEMI_COLON)) {
+            delimiter = ";"+delimiter;
         }
 
         int cols = table.getColumnCount();
@@ -2211,12 +2212,12 @@ implements TableView, ActionListener, MouseListener
 
         viewer.showStatus("Data save to: "+fname);
 
-        try {
-            RandomAccessFile rf = new RandomAccessFile(choosedFile, "r");
-            long size = rf.length();
-            rf.close();
-            viewer.showStatus("File size (bytes): "+size);
-        } catch (Exception ex) {}
+//        try {
+//            RandomAccessFile rf = new RandomAccessFile(choosedFile, "r");
+//            long size = rf.length();
+//            rf.close();
+//            viewer.showStatus("File size (bytes): "+size);
+//        } catch (Exception ex) {}
     }
 
     /** update dataset value in file.

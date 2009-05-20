@@ -350,6 +350,7 @@ public class H4SDS extends ScalarDS
             if (theData != null) {
                 // assume external data files are located in the same directory as the main file.
                 HDFLibrary.HXsetdir(getFileFormat().getParent());
+                
                 boolean status = HDFLibrary.SDreaddata(id, start, stride, select, theData);
 
                 if (isText) {
