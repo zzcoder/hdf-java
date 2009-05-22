@@ -1535,12 +1535,13 @@ public class H5File extends FileFormat
         
         DefaultMutableTreeNode root = null;
 
+        long[] rootOID = {0};
         H5Group rootGroup = new H5Group(
             this,
             getName(), // set the node name to the file name
             null, // root node does not have a parent path
-            null  // root node does not have a parent node
-            );
+            null,  // root node does not have a parent node
+            rootOID);
 
         root = new DefaultMutableTreeNode(rootGroup)
         {

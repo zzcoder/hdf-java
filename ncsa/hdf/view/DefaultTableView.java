@@ -1396,6 +1396,7 @@ implements TableView, ActionListener, MouseListener
             private final StringBuffer stringBuffer = new StringBuffer();
             private final Datatype dtype = dataset.getDatatype();
             private final Datatype btype = dtype.getBasetype();
+            private final int typeSize = dtype.getDatatypeSize();
             private final boolean isArray = (dtype.getDatatypeClass()==Datatype.CLASS_ARRAY);
             private final boolean isStr = (NT == 'L');
             private final boolean isInt = (NT == 'B' || NT == 'S' || NT == 'I' || NT == 'J');
@@ -1453,7 +1454,8 @@ implements TableView, ActionListener, MouseListener
                             theValue = Long.toHexString(Long.valueOf(theValue.toString()));
                         }
                         else if (showAsBin && isInt) {
-                            theValue = Long.toBinaryString(Long.valueOf(theValue.toString()));
+                            theValue = Tools.toBinaryString(Long.valueOf(theValue.toString()), typeSize);
+                            //theValue = Long.toBinaryString(Long.valueOf(theValue.toString()));
                         }
                         else if (numberFormat!=null){
                             // show in scientific format
@@ -1474,7 +1476,7 @@ implements TableView, ActionListener, MouseListener
 
         	public boolean isCellEditable( int row, int col )
         	{
-        		if (isReadOnly || isDisplayTypeChar || isArray) {
+        		if (isReadOnly || isDisplayTypeChar || isArray || showAsBin || showAsHex) {
         			return false;
         		} else {
         			return true;
@@ -1940,9 +1942,6 @@ implements TableView, ActionListener, MouseListener
     /** paste data from the system clipboard to the spreadsheet. */
     private void pasteData()
     {
-//        if (!(dataset instanceof ScalarDS))
-//            return; // does not support compound dataset in this version
-
         int pasteDataFlag = JOptionPane.showConfirmDialog(this,
             "Do you want to paste selected data ?",
             this.getTitle(),
@@ -1964,7 +1963,6 @@ implements TableView, ActionListener, MouseListener
         }
         int r = r0;
         int c = c0;
-        int index = r*cols+c;
 
         Clipboard cb =  Toolkit.getDefaultToolkit().getSystemClipboard();
         Transferable content = cb.getContents(this);
@@ -1984,9 +1982,10 @@ implements TableView, ActionListener, MouseListener
                     StringTokenizer lt = new StringTokenizer(line, "\t");
                     while (lt.hasMoreTokens() && (c < cols))
                     {
-                        index = r*cols+c;
-                        updateValueInMemory(lt.nextToken(), r, c);
-                        c = c + 1;
+                        try {
+                            updateValueInMemory(lt.nextToken(), r, c);
+                        } catch (Exception ex) { continue; }
+                        c++;
                     }
                     r = r+1;
                     c = c0;
@@ -1997,12 +1996,11 @@ implements TableView, ActionListener, MouseListener
                     String theVal;
                     for (int i = 0; i<n; i=i+fixedDataLength)
                     {
-                        index = r*cols+c;
                         try {
                             theVal = line.substring(i, i+fixedDataLength);
                             updateValueInMemory(theVal, r, c);
                         } catch (Exception ex) { continue; }
-                        c = c + 1;
+                        c ++;
                     }
                 }
             }
@@ -2023,10 +2021,6 @@ implements TableView, ActionListener, MouseListener
      */
     private void importTextData(String fname)
     {
-        if (!(dataset instanceof ScalarDS)) {
-            return; // does not support compound dataset in this version
-        }
-
         int pasteDataFlag = JOptionPane.showConfirmDialog(this,
             "Do you want to paste selected data ?",
             this.getTitle(),
@@ -2046,16 +2040,13 @@ implements TableView, ActionListener, MouseListener
         if (r0 < 0) {
             r0 = 0;
         }
-        int r = r0;
-        int c = c0;
-        int index = r*cols+c;
 
         BufferedReader in = null;
         try { in = new BufferedReader(new FileReader(fname));
         } catch (FileNotFoundException ex) { return; }
 
         String line = null;
-        StringTokenizer tokenizer1=null, tokenizer2=null;
+        StringTokenizer tokenizer1=null;
 
         try { line = in.readLine(); }
         catch (IOException ex)
@@ -2064,8 +2055,6 @@ implements TableView, ActionListener, MouseListener
             return;
         }
 
-        int size = Array.getLength(dataValue);
-        
         String delName = ViewProperties.getDataDelimiter();
         String delimiter = "\t";
         
@@ -2081,42 +2070,28 @@ implements TableView, ActionListener, MouseListener
         }
 
         String token=null;
-        while ((line != null) && (index < size))
+        int r = r0, c = c0;
+        while ((line != null) && (r < rows))
         {
-            tokenizer1 = new StringTokenizer(line);
-            while (tokenizer1.hasMoreTokens() && (index < size))
+            tokenizer1 = new StringTokenizer(line, delimiter);
+            while (tokenizer1.hasMoreTokens() && (c < cols))
             {
-                tokenizer2 = new StringTokenizer(tokenizer1.nextToken(), delimiter);
-                while (tokenizer2.hasMoreTokens() && (index < size))
+                token = tokenizer1.nextToken();
+                try { updateValueInMemory(token, r, c); }
+                catch (Exception ex)
                 {
-                    token = tokenizer2.nextToken();
-                    try { updateValueInMemory(token, r, c); }
-                    catch (Exception ex)
-                    {
-                        toolkit.beep();
-                        JOptionPane.showMessageDialog(
-                        this,
-                        ex,
-                        getTitle(),
-                        JOptionPane.ERROR_MESSAGE);
-                        try { in.close(); } catch (IOException ex2) {}
-                        return;
-                    }
-                    index++;
-                    c++;
-
-                    if (c >= cols)
-                    {
-                        c = 0;
-                        r++;
-                    }
-                } // while (tokenizer2.hasMoreTokens() && index < size)
+                    JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
+                    try { in.close(); } catch (IOException ex2) {}
+                    return;
+                }
+                c++;
             } // while (tokenizer1.hasMoreTokens() && index < size)
             try { line = in.readLine(); }
             catch (IOException ex) { line = null; }
             c = 0;
             r++;
         }
+
         try { in.close(); } catch (IOException ex) {}
 
         table.updateUI();
@@ -2225,7 +2200,7 @@ implements TableView, ActionListener, MouseListener
      */
     public void updateValueInFile()
     {
-        if (isReadOnly) {
+        if (isReadOnly || showAsBin || showAsHex) {
             return;
         }
 
@@ -2357,7 +2332,8 @@ implements TableView, ActionListener, MouseListener
     {
         if (!(dataset instanceof ScalarDS) ||
             (cellValue == null) ||
-            ((cellValue=cellValue.trim()) == null)) {
+            ((cellValue=cellValue.trim()) == null) ||
+            showAsBin || showAsHex) {
             return;
         }
 
@@ -2377,12 +2353,7 @@ implements TableView, ActionListener, MouseListener
             long lvalue = -1;
             long maxValue = Long.MAX_VALUE;
             
-            if (showAsBin)
-                lvalue = Long.parseLong(cellValue, 2);
-            else if (showAsHex)
-                lvalue = Long.parseLong(cellValue, 16);
-            else
-                lvalue = Long.parseLong(cellValue);
+            lvalue = Long.parseLong(cellValue);
 
             if (lvalue < 0)
             {
@@ -2406,42 +2377,22 @@ implements TableView, ActionListener, MouseListener
         switch (NT) {
         case 'B':
             byte bvalue = 0;
-            if (showAsBin)
-                bvalue = Byte.parseByte(cellValue, 2);
-            else if (showAsHex)
-                bvalue = Byte.parseByte(cellValue, 16);
-            else
-                bvalue = Byte.parseByte(cellValue);
+            bvalue = Byte.parseByte(cellValue);
             Array.setByte(dataValue, i, bvalue);
             break;
         case 'S':
             short svalue = 0;
-            if (showAsBin)
-                svalue = Short.parseShort(cellValue, 2);
-            else if (showAsHex)
-                svalue = Short.parseShort(cellValue, 16);
-            else
-                svalue = Short.parseShort(cellValue);
+            svalue = Short.parseShort(cellValue);
             Array.setShort(dataValue, i, svalue);
             break;
         case 'I':
             int ivalue = 0;
-            if (showAsBin)
-                ivalue = Integer.parseInt(cellValue, 2);
-            else if (showAsHex)
-                ivalue = Integer.parseInt(cellValue, 16);
-            else
-                ivalue = Integer.parseInt(cellValue);
+            ivalue = Integer.parseInt(cellValue);
             Array.setInt(dataValue, i, ivalue);
             break;
         case 'J':
             long lvalue = 0;
-            if (showAsBin)
-                lvalue = Long.parseLong(cellValue, 2);
-            else if (showAsHex)
-                lvalue = Long.parseLong(cellValue, 16);
-            else
-                lvalue = Long.parseLong(cellValue);
+            lvalue = Long.parseLong(cellValue);
             Array.setLong(dataValue, i, lvalue);
             break;
         case 'F':
