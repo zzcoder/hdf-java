@@ -1605,5 +1605,55 @@ public final class Tools
     	return retval;
     }
 
+    /**
+     * Returns a string representation of the long  argument as an unsigned integer in base 2.
+     * This is different from Long.toBinaryString(long i). This function add padding (0's) to
+     * the string based on the nbytes. For example, if v=15, nbytes=1, the string will
+     * be "00001111".
+     * 
+     * @param v the lon value
+     * @param nbytes nubmer of bytes in the integer
+     * @return the string representation of the unsigned long value represented by the argument in binary (base 2).
+     */
+    public static final String toBinaryString(long v, int nbytes)
+    {
+        if (nbytes <=0)
+            return null;
+        
+        int nhex = nbytes*2;
+        short[] hex = new short[nhex];
+   
+        for (int i=0; i<nhex; i++)
+            hex[i] = (short)(0x0F & (v >> (i*4) ));
+        
+        StringBuffer sb = new StringBuffer();
+        boolean isEven = true;
+        for (int i=nhex-1; i>=0; i--) {
+            if (isEven) 
+                sb.append(" ");
+            isEven = !isEven; // toggle
+            
+            switch (hex[i]) {
+            case 0:  sb.append("0000"); break;
+            case 1:  sb.append("0001"); break;
+            case 2:  sb.append("0010"); break;
+            case 3:  sb.append("0011"); break;
+            case 4:  sb.append("0100"); break;
+            case 5:  sb.append("0101"); break;
+            case 6:  sb.append("0110"); break;
+            case 7:  sb.append("0111"); break;
+            case 8:  sb.append("1000"); break;
+            case 9:  sb.append("1001"); break;
+            case 10: sb.append("1010"); break;
+            case 11: sb.append("1011"); break;
+            case 12: sb.append("1100"); break;
+            case 13: sb.append("1101"); break;
+            case 14: sb.append("1110"); break;
+            case 15: sb.append("1111"); break;
+            }
+        }
+        
+        return sb.toString();
+    }
 
 }
