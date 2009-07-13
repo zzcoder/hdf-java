@@ -1039,13 +1039,13 @@ implements ImageView, ActionListener
         }
 
         /* Use original data range */
-//        double[] xRange = originalRange;
-//        if (xRange == null || xRange[0] == xRange[1]) {
-//        	xRange = new double[2];
-//        	Tools.findMinMax(data, xRange, null);
-//        }
+        double[] xRange = originalRange;
+        if (xRange == null || xRange[0] == xRange[1]) {
+        	xRange = new double[2];
+        	Tools.findMinMax(data, xRange, null);
+        }
 
-        double[] xRange = {0, 255};
+//        double[] xRange = {0, 255};
         
         Chart cv = new Chart(
             (JFrame)viewer,
@@ -1730,7 +1730,7 @@ implements ImageView, ActionListener
             palette[0],  // r - the array of red color components
             palette[1],  // g - the array of green color components
             palette[2]); // b - the array of blue color components
-
+        
         if (memoryImageSource == null) {
         	memoryImageSource = new MemoryImageSource(w, h, colorModel, imageData, 0, w);
         } else {

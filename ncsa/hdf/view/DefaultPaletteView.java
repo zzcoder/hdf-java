@@ -21,6 +21,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import java.awt.image.*;
+
 import javax.swing.border.*;
 import javax.swing.table.*;
 import javax.swing.event.*;
@@ -330,8 +331,18 @@ ActionListener, ItemListener
 
         int w = dataset.getWidth();
         int h = dataset.getHeight();
-        currentImage = Toolkit.getDefaultToolkit().createImage (new MemoryImageSource
-            (w, h, colorModel, imageView.getImageByteData(), 0, w));
+        MemoryImageSource memoryImageSource = null;
+        
+        try { memoryImageSource = (MemoryImageSource)originalImage.getSource(); }
+        catch (Throwable err) { memoryImageSource = null; }
+        
+        if (memoryImageSource == null) {
+            memoryImageSource = new MemoryImageSource(w, h, colorModel, imageView.getImageByteData(), 0, w);
+        } else {
+            memoryImageSource.newPixels(imageView.getImageByteData(), colorModel, 0, w);
+        }
+        
+        currentImage = Toolkit.getDefaultToolkit().createImage (memoryImageSource);        
     }
 
     public void mouseClicked(MouseEvent e){} // MouseListener

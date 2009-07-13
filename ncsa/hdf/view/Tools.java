@@ -1362,7 +1362,7 @@ public final class Tools
      * @param fillValue the missing value or fill value. Exclude this value when check for min/max
      * @return non-negative if successful; otherwise, returns negative
      */
-    public static int findMinMax(Object data, double[] minmax, Object fillValue)
+    public static int findMinMax(Object data, double[] minmax, Object fillValue) 
     {
     	int retval = 1;
     	

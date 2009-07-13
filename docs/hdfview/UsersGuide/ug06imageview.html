@@ -125,7 +125,41 @@ used. The palette is chosen from the "Select Palette" menu in the
 <li class="li2">nature</li>
 <li class="li2">wave</li>
 </ul>
-The default setting is "gray," a gray scale.
+
+If no palette is selected, a gray scale will be used.
+
+<p />
+<strong>Converting non-byte data to byte data</strong>
+<p />
+Non-byte data will be converted to image byte data in one of the two algorithms:
+simple linear conversion or auto gain conversion. 
+<p />
+
+<dl>
+  <dt>Simple linear conversion</dt>
+  <dd>  y = [(x - min)/(max-min)]*255.<br>
+        Where, <br>
+            x is the original value; <br>
+            y is the byte value.<br>
+  </dd>
+  <dt>Auto gain conversion</dt>
+  <dd>  y = (x + bias) * gain. <br>
+        Where, <br>
+            x is the original value; <br>
+            y is the byte value;<br>
+            gain = MAX_VALUE / (max-min);<br>
+            bias = -min; <br>
+            MAX_VALUE is the max value of original data type, e.g. USHRT_MAX for unsigned short integers.<br>
+  </dd>
+</dl>
+<p />
+Auto gain algorithm will be used only if Auto gain is selected from "Tools" ==> "User Options",
+and the original dataset does not have any attached palette and you did not selected any palette from
+"Open As" windows. Simple linear conversion will be applied to all other cases. The image values will be
+different and the image will look different if different algorithm is used.
+
+<p />
+
 <h3>
 <a name="ug06image_true" id="ug06image_true"></a>6.1.2 True Color Image </h3>
 <p>
