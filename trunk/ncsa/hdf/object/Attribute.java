@@ -240,6 +240,14 @@ public class Attribute implements Metadata
     }
 
     /**
+     * Return the name of the attribute.
+     * @see toString(String delimiter)
+     */
+    public String toString() {
+        return name;
+    }
+
+    /**
      * Returns a string representation of the data value of the attribute.
      * For example, "0, 255". 
      * <p>
