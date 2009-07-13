@@ -306,6 +306,22 @@ HyperlinkListener, ChangeListener, DropTargetListener
 
         createMainWindow(width, height, x, y);
         
+        try
+        {
+            java.awt.Font font = null;
+            String ftype = ViewProperties.getFontType();
+            int fsize = ViewProperties.getFontSize();
+            try { font = new java.awt.Font(ftype, java.awt.Font.PLAIN, fsize); }
+            catch (Exception ex) { font = null; }
+            if (font != null) {
+                updateFontSize(font);
+             }
+        } catch (Exception ex){;}
+
+        // need to call pack() before open any file so that 
+        // all GUI components will be in place.
+        pack();
+        
         /* add support for drag and drop file */
         new DropTarget(this, this) ;
 
@@ -342,17 +358,6 @@ HyperlinkListener, ChangeListener, DropTargetListener
             setEnabled(h5GUIs, false);
         }
         
-        try
-        {
-            java.awt.Font font = null;
-            String ftype = ViewProperties.getFontType();
-            int fsize = ViewProperties.getFontSize();
-            try { font = new java.awt.Font(ftype, java.awt.Font.PLAIN, fsize); }
-            catch (Exception ex) { font = null; }
-            if (font != null) {
-                updateFontSize(font);
-             }
-        } catch (Exception ex){;}
     }
     
     /**
@@ -714,7 +719,6 @@ HyperlinkListener, ChangeListener, DropTargetListener
         JButton button = new JButton(ViewProperties.getFileopenIcon() );
         tbar.add( button );
         button.setToolTipText( "Open" );
-        button.setMargin( new Insets( 0, 0, 0, 0 ) );
         button.addActionListener( this );
         button.setActionCommand( "Open file" );
 
@@ -722,7 +726,6 @@ HyperlinkListener, ChangeListener, DropTargetListener
         button = new JButton(ViewProperties.getFilecloseIcon() );
         tbar.add( button );
         button.setToolTipText( "Close" );
-        button.setMargin( new Insets( 0, 0, 0, 0 ) );
         button.addActionListener( this );
         button.setActionCommand( "Close file" );
 
@@ -732,7 +735,6 @@ HyperlinkListener, ChangeListener, DropTargetListener
         button = new JButton( ViewProperties.getHelpIcon() );
         tbar.add( button );
         button.setToolTipText( "Help" );
-        button.setMargin( new Insets( 0, 0, 0, 0 ) );
         button.addActionListener( this );
         button.setActionCommand( "Users guide" );
 
@@ -740,7 +742,6 @@ HyperlinkListener, ChangeListener, DropTargetListener
         button = new JButton( ViewProperties.getH4Icon() );
         tbar.add( button );
         button.setToolTipText( "HDF4 Library Version" );
-        button.setMargin( new Insets( 0, 0, 0, 0 ) );
         button.addActionListener( this );
         button.setActionCommand( "HDF4 library" );
         if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4) == null) {
@@ -751,7 +752,6 @@ HyperlinkListener, ChangeListener, DropTargetListener
         button = new JButton( ViewProperties.getH5Icon() );
         tbar.add( button );
         button.setToolTipText( "HDF5 Library Version" );
-        button.setMargin( new Insets( 0, 0, 0, 0 ) );
         button.addActionListener( this );
         button.setActionCommand( "HDF5 library" );
         if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) == null) {
@@ -1844,7 +1844,7 @@ HyperlinkListener, ChangeListener, DropTargetListener
     }
 
     public TreeView getTreeView() { return treeView; }
-
+    
     /** Tree mouse event fired */
     public void mouseEventFired(java.awt.event.MouseEvent e)
     {
@@ -2316,7 +2316,6 @@ HyperlinkListener, ChangeListener, DropTargetListener
         }
 
         HDFView frame = new HDFView(rootDir, flist, W, H, X, Y);
-        frame.pack();
         frame.setVisible(true);
     }
 }
