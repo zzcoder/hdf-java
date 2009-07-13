@@ -391,14 +391,12 @@ implements ActionListener
                 if (barWidth <=0 ) {
                     barWidth = 1;
                 }
-
+                dw = (double)w/(double)numberOfPoints;
                 for (int j=0; j<numberOfPoints; j++)
                 {
-                    xp = xgap+(int)(w*(j - xmin)/(xmax-xmin));
-                    yp = h-(int)(h*(data[0][j]-ymin)/(ymax-ymin));
-                    g.drawLine((int)xp, h, (int)xp, (int)yp);
-                    g.drawLine((int)xp+1, h, (int)xp+1, (int)yp);
-                    g.drawLine((int)xp+2, h, (int)xp+2, (int)yp);
+                    xp = xgap + j*dw; 
+                    yp = (int)(h*(data[0][j]-ymin)/(ymax-ymin));
+                    g.fillRect((int)xp, (int)(h-yp), barWidth, (int)yp);
                 }
 
                 g.setColor(c); // set the color back to its default
