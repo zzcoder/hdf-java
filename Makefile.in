@@ -107,7 +107,7 @@ TESTPACKAGES = test.object
 .SUFFIXES: .java .class
 
 .java.class:
-	$(JAVAC) -classpath $(CLASSPATH) $<
+	$(JAVAC) -source 5 -classpath $(CLASSPATH) $<
 
 all: natives packages do-examples
 
