@@ -319,26 +319,13 @@ The parallel API includes:
 <li>
 <i>H5Pget_xfer</i></li>
 </ol>
-<b><i>Ragged and Variable Length Array</i></b>
-<p>The HDF-5 Variable Length and Ragged Array APIs are not supported by
+
+<p />
+<b><i>Variable Length Array</i></b>
+<p>The HDF-5 Variable Length APIs are not fully supported by
 the JHI5. It is not clear how to implement these features in Java
 programs. The following functions are not implemented:
 <ol>
-<li>
-<i>H5RAcreate</i></li>
-
-<li>
-<i>H5RAopen</i></li>
-
-<li>
-<i>H5RAclose</i></li>
-
-<li>
-<i>H5RAwrite</i></li>
-
-<li>
-<i>H5RAread</i></li>
-
 <li>
 <i>H5Dvlen_reclaim</i></li>
 
@@ -348,10 +335,11 @@ programs. The following functions are not implemented:
 <li>
 <i>H5Pget_vlen_mem_manager</i></li>
 
-<li>
-<i>H5Tvlen_create</i></li>
 </ol>
-<i>Fill Value</i><i></i>
+
+<p />
+
+<b><i>Fill Value</i></b>
 <p>The HDF-5 properties to control fill values are not implemented.
 The functions are:
 <ol>
