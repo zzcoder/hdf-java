@@ -787,7 +787,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
         return -1;
     }    
 
-    oName = (char **)malloc(n * sizeof (*oName));
+    oName = (char **)calloc(n, sizeof (*oName));
     refs = (unsigned long *)malloc(n * sizeof (unsigned long));
     
     status = H5Gget_obj_info_all( (hid_t) loc_id, gName,  oName, (int *)tarr, refs);
@@ -820,9 +820,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
         ENVPTR->ReleaseIntArrayElements(ENVPAR oType,tarr,0);
         ENVPTR->ReleaseLongArrayElements(ENVPAR oRef,refP,0);
     }
-
+    
     return (jint)status;
-
 }
 
 herr_t H5Gget_obj_info_all( hid_t loc_id, char *group_name, char **objname, int *type, unsigned long *objno)
@@ -832,34 +831,23 @@ herr_t H5Gget_obj_info_all( hid_t loc_id, char *group_name, char **objname, int 
     info.type = type;
     info.objno = objno;
     info.count = 0;
-
-    if(H5Giterate(loc_id, group_name, NULL, obj_info_all, (void *)&info)<0)
-        return -1;
-
-    return 0;
+    herr_t retVal = 0;
+   
+    retVal = H5Giterate(loc_id, group_name, NULL, obj_info_all, (void *)&info);
+    
+    return retVal;
 }
 
 herr_t obj_info_all(hid_t loc_id, const char *name, void *opdata)
 {
     int type = -1;
+    herr_t retVal = 0;
     info_all_t* info = (info_all_t*)opdata;
     H5G_stat_t statbuf;
 
-    /*
-    if ( (type=H5Gget_objtype_by_idx(loc_id, info->count)) <0)
-    {
-        *(info->type+info->count) = -1;
-        *(info->objname+info->count) = NULL;
-    } else {
-        *(info->type+info->count) = type;
-        *(info->objname+info->count) = (char *) malloc(strlen(name)+1);
-        strcpy(*(info->objname+info->count), name);
-    }
-    */
-     
-    /* H5Gget_objinfo() gives more information also take the same
-       amount of time as  H5Gget_objtype_by_idx() */
-    if ( H5Gget_objinfo(loc_id, name, 0, &statbuf) <0)
+    retVal = H5Gget_objinfo(loc_id, name, 0, &statbuf);
+    
+    if (retVal < 0)
     {
         *(info->type+info->count) = -1;
         *(info->objname+info->count) = NULL;
@@ -870,10 +858,9 @@ herr_t obj_info_all(hid_t loc_id, const char *name, void *opdata)
         strcpy(*(info->objname+info->count), name);
         *(info->objno+info->count) = statbuf.objno[0];
     }
-    
     info->count++;
 
-    return 0;
+    return retVal;
 }
 
 
