@@ -1615,7 +1615,7 @@ public class H5File extends FileFormat
         String[] objNames = new String[nelems];
 
         try { H5.H5Gget_obj_info_all(fid, fullPath, objNames, objTypes, objRefs); }
-        catch (HDF5Exception ex) {;}
+        catch (HDF5Exception ex) {return;}
 
         int i0 = Math.max(0, getStartMembers());
         int i1 = getMaxMembers();

@@ -389,7 +389,7 @@ public class H5ScalarDS extends ScalarDS
         }
         else if (rank > 2)
         {
-//            // 3D dataset is arranged in the order of [frame][height][width] by default
+//            // hdf-java 2.5 version: 3D dataset is arranged in the order of [frame][height][width] by default
 //            selectedIndex[1] = rank-1; // width, the fastest dimension
 //            selectedIndex[0] = rank-2; // height
 //            selectedIndex[2] = rank-3; // frames
@@ -403,9 +403,16 @@ public class H5ScalarDS extends ScalarDS
 //               selectedIndex[2] = 2
 //            Most of NPOESS data is the the order above.  
             
-            selectedIndex[0] = 0; // width, the fastest dimension
-            selectedIndex[1] = 1; // height
-            selectedIndex[2] = 2; // frames            
+            if (isImage) {
+                // 3D dataset is arranged in the order of [frame][height][width]
+                selectedIndex[1] = rank-1; // width, the fastest dimension
+                selectedIndex[0] = rank-2; // height
+                selectedIndex[2] = rank-3; // frames          
+            } else {
+                selectedIndex[0] = 0; // width, the fastest dimension
+                selectedIndex[1] = 1; // height
+                selectedIndex[2] = 2; // frames                  
+            }
             
             selectedDims[selectedIndex[0]] = dims[selectedIndex[0]];
             selectedDims[selectedIndex[1]] = dims[selectedIndex[1]];
@@ -655,7 +662,7 @@ public class H5ScalarDS extends ScalarDS
         }
 
         if (isVLEN && !isText) { 
-            throw(new HDF5Exception("Writing variable-length data is not supported"));
+            throw(new HDF5Exception("Writing non-string variable-length data is not supported"));
         } else if (isEnum && isEnumConverted()) {
             throw(new HDF5Exception("Writing converted enum data is not supported"));
         } else if (isRegRef) {
