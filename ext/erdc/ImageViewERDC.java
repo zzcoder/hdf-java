@@ -12,7 +12,7 @@
  * help@hdfgroup.org.                                                        *
  ****************************************************************************/
 
-package erdc;
+package ext.erdc;
 
 import ncsa.hdf.object.*;
 import ncsa.hdf.view.Chart;

@@ -1,4 +1,4 @@
-package erdc;
+package ext.erdc;
 
 public class BuildingInfo 
 {

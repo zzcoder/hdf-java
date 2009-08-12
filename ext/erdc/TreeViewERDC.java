@@ -11,7 +11,7 @@
  * access to the file, you may request a copy from help@hdfgroup.org.        *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-package erdc;
+package ext.erdc;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -295,7 +295,7 @@ public class TreeViewERDC extends JPanel
         ICON_TYPE[] iconTypes = ICON_TYPE.values();
         for (int i=0; i<iconTypes.length; i++) {
             String name = iconTypes[i].getName();
-            u = classLoader.getResource("erdc/"+name);
+            u = classLoader.getResource("ext/erdc/"+name);
             if (u != null)
                 iconMap.put(name, new ImageIcon(u));
         }
@@ -1863,7 +1863,10 @@ public class TreeViewERDC extends JPanel
         // set up the help window
         helpWindow.setLocation(220, 120);
         ((JPanel)helpWindow.getContentPane()).setPreferredSize(new Dimension(1000, 1000));
-        helpWindow.setIconImage(ICON_TYPE.GENERIC.getIcon().getImage());
+        
+        try {
+            helpWindow.setIconImage(ICON_TYPE.GENERIC.getIcon().getImage());
+        } catch (Exception ex) {}
 
         JToolBar tbar = new JToolBar();
         tbar.setFloatable(false);

@@ -12,7 +12,7 @@
  * help@hdfgroup.org.                                                        *
  ****************************************************************************/
 
-package npoess;
+package ext.npoess;
 
 import ncsa.hdf.object.*;
 import ncsa.hdf.view.*;
