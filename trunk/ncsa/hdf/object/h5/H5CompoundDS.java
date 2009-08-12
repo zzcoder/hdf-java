@@ -308,10 +308,10 @@ public class H5CompoundDS extends CompoundDS
                     member_data = H5Datatype.allocateArray(atom_tid, (int)lsize[0]);
                 } catch (Exception ex) {member_data = null; }
 
-                if (member_data == null)
+                if (member_data == null || H5.H5Tequal(atom_tid, HDF5Constants.H5T_STD_REF_DSETREG))
                 {
                     String[] nullValues = new String[(int)lsize[0]];
-                    String errorStr = "not supported: "+ H5Datatype.getDatatypeDescription(atom_tid);
+                    String errorStr = "unsupported: "+ H5Datatype.getDatatypeDescription(atom_tid);
                     for (int j=0; j<lsize[0]; j++) {
                         nullValues[j] = errorStr;
                     }
