@@ -11,7 +11,7 @@
  * access to the file, you may request a copy from help@hdfgroup.org.        *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-package erdc;
+package ext.erdc;
 
 import java.awt.BasicStroke;
 import java.awt.Dimension;

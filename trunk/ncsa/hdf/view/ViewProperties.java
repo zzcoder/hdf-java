@@ -215,15 +215,15 @@ public class ViewProperties extends Properties
             // default classloader
             extClassLoader = ClassLoader.getSystemClassLoader(); 
         }
-        
+
         // for test only. Delete it from production 
         try { 
             //System.out.println("TEST ERDC: ViewProperties.loadExtClass()");
-            String theName = "erdc.TreeViewERDC";
+            String theName = "ext.erdc.TreeViewERDC";
             extClassLoader.loadClass(theName); // make sure the class exists
             moduleListTreeView.add(theName);
             
-            theName = "erdc.ImageViewERDC";
+            theName = "ext.erdc.ImageViewERDC";
             extClassLoader.loadClass(theName); // make sure the class exists
             moduleListImageView.add(theName);
         }  catch (Exception ex) {;}

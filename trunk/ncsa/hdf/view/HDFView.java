@@ -290,7 +290,7 @@ HyperlinkListener, ChangeListener, DropTargetListener
             if (theClass != null)
             	break;
         }
-
+        
         if (theClass != null) {
             try {
                 Class[] paramClass = {Class.forName("ncsa.hdf.view.ViewManager")};
@@ -433,7 +433,7 @@ HyperlinkListener, ChangeListener, DropTargetListener
         }
         
         // TEST
-        if (treeView.getClass().getName().startsWith("erdc")) {
+        if (treeView.getClass().getName().startsWith("ext.erdc")) {
             topSplitPane.setDividerLocation(500);
             d.width = (int)(0.9*toolkit.getScreenSize().width);
             d.height = (int)(d.width*0.618);
