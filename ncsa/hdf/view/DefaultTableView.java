@@ -99,7 +99,7 @@ implements TableView, ActionListener, MouseListener
 
     private boolean isDataTransposed;
     
-    private boolean isRegRef;
+    private boolean isRegRef, isObjRef;
     
     private BitSet bitmask;
 
@@ -153,6 +153,7 @@ implements TableView, ActionListener, MouseListener
         isValueChanged = false;
         isReadOnly = false;
         isRegRef = false;
+        isObjRef = false;
         viewType = ViewType.TABLE;
         fixedDataLength = -1;
         HObject hobject = null;
@@ -214,9 +215,6 @@ implements TableView, ActionListener, MouseListener
                (dtype.getDatatypeClass() == Datatype.CLASS_ARRAY &&
                 dtype.getBasetype().getDatatypeClass()==Datatype.CLASS_CHAR)));
         
-        isRegRef = ( (dtype.getDatatypeClass() == Datatype.CLASS_REFERENCE) &&
-                dtype.getDatatypeSize() != 8);
-        
         // create the table and its columnHeader
         if (dataset instanceof CompoundDS)
         {
@@ -229,10 +227,16 @@ implements TableView, ActionListener, MouseListener
             this.setFrameIcon(ViewProperties.getDatasetIcon());
             table = createTable( (ScalarDS)dataset);
             
-            // add mouse action to support opening data pointed by reg. ref.
-            if (isRegRef) {
-                isReadOnly = true;
+            if (dtype.getDatatypeClass() == Datatype.CLASS_REFERENCE) 
+            {
                 table.addMouseListener(this);
+                
+                if (dtype.getDatatypeSize() > 8) {
+                    isReadOnly = true;
+                    isRegRef = true;
+                }
+                else
+                    isObjRef = true;
             }
         }
 
@@ -353,7 +357,7 @@ implements TableView, ActionListener, MouseListener
         table.setRowHeight(cellRowHeight);
         
         // create popup menu for reg. ref.
-        if (isRegRef)
+        if (isRegRef || isObjRef)
             popupMenu = createPopupMenu();
         
         if (border!= null)
@@ -805,8 +809,8 @@ implements TableView, ActionListener, MouseListener
                 else
                     viewType = ViewType.TABLE;
                 
-                String[] theData = (String[]) getSelectedData();
-                if (theData == null || theData.length <=0) {
+                Object theData = getSelectedData();
+                if (theData == null) {
                     toolkit.beep();
                     JOptionPane.showMessageDialog(
                         this,
@@ -817,8 +821,13 @@ implements TableView, ActionListener, MouseListener
                     
                 }
        
-                for (int i=0; i<theData.length; i++)
-                    showRegRefData(theData[i]);
+                int len = Array.getLength(theData);
+                for (int i=0; i<len; i++) {
+                    if (isRegRef)
+                        showRegRefData((String)Array.get(theData, i));
+                    else if (isObjRef)
+                        showObjRefData(Array.getLong(theData, i));
+                }
             }  
         }
         finally { setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)); }
@@ -1537,7 +1546,38 @@ implements TableView, ActionListener, MouseListener
                         ", "+
                         table.getColumnName(column)+
                         "  =  ");
-                    cellValueField.setText(getValueAt(row, column).toString());
+                    
+                    Object val = getValueAt(row, column);
+                    String strVal = null;
+                    
+                    if (isRegRef) {
+                        String reg = (String) val;
+                        String oidStr = reg.substring(reg.indexOf(':')+1, reg.indexOf(' '));
+                        long oid[] = {-1};
+                        
+                        // decode object ID
+                        try { 
+                            oid[0] = Long.valueOf(oidStr);
+                            HObject obj = FileFormat.findObject(dataset.getFileFormat(), oid);
+                            strVal = obj.getFullName() + " " + reg.substring(reg.indexOf("{"));
+                        }
+                        catch (Exception ex) { strVal = null; }
+                    } else if (isObjRef) {
+                        Long ref = (Long) val;
+                        long oid[] = {ref.longValue()};
+                        
+                        // decode object ID
+                        try { 
+                            HObject obj = FileFormat.findObject(dataset.getFileFormat(), oid);
+                            strVal = obj.getFullName();
+                        }
+                        catch (Exception ex) { strVal = null; }
+                    }
+                    
+                    if (strVal == null)
+                        strVal = val.toString();
+                    
+                    cellValueField.setText(strVal);
                 }
 
                 return super.isCellSelected(row, column);
@@ -3020,7 +3060,7 @@ implements TableView, ActionListener, MouseListener
     public void mouseClicked(MouseEvent e) 
     {
         // only deal with reg. ref 
-        if (!isRegRef)
+        if (! (isRegRef || isObjRef))
             return;
         
         int eMod = e.getModifiers();
@@ -3039,9 +3079,9 @@ implements TableView, ActionListener, MouseListener
         } else if (e.getClickCount() == 2) {
             // double click
             viewType = ViewType.TABLE;
-            String[] data = (String[]) getSelectedData();
+            Object theData = getSelectedData();
             
-            if (data == null || data.length <=0) {
+            if (theData == null) {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(
                     this,
@@ -3052,8 +3092,13 @@ implements TableView, ActionListener, MouseListener
                 
             }
    
-            for (int i=0; i<data.length; i++)
-                showRegRefData(data[i]);
+            int len = Array.getLength(theData);
+            for (int i=0; i<len; i++) {
+                if (isRegRef)
+                    showRegRefData((String)Array.get(theData, i));
+                else if (isObjRef)
+                    showObjRefData(Array.getLong(theData, i));
+            }
         }
 
     }
@@ -3105,6 +3150,81 @@ implements TableView, ActionListener, MouseListener
     }
     
     /**
+     * Display data pointed by object references. Data of each object is shown
+     * in a separate spreadsheet. 
+     * @param ref the array of strings that contain the reg. ref information.
+     * 
+     */
+    private void showObjRefData(long ref) {
+        long[] oid = {ref};
+        
+        HObject obj = FileFormat.findObject(dataset.getFileFormat(), oid);
+        if (obj == null || !(obj instanceof ScalarDS))
+            return;
+        
+        ScalarDS dset = (ScalarDS) obj;
+        ScalarDS dset_copy = null;
+
+        // create an instance of the dataset constructor
+        Constructor constructor = null;
+        Object[] paramObj = null;
+        Object data = null;
+        
+        try {
+            Class[] paramClass = {FileFormat.class, String.class, String.class};
+            constructor = dset.getClass().getConstructor(paramClass);
+            paramObj = new Object[] {dset.getFileFormat(), dset.getName(), dset.getPath()};
+            dset_copy = (ScalarDS)constructor.newInstance(paramObj);
+            data = dset_copy.getData();
+        } catch (Exception ex) { data = null; }
+        
+        if (data == null)
+            return;        
+        
+        // load each selection into a separate dataset and display it in 
+        // a separate spreadsheet
+        StringBuffer titleSB = new StringBuffer();
+        Font font = this.getFont();
+        CompoundBorder border = BorderFactory.createCompoundBorder(
+                BorderFactory.createRaisedBevelBorder(),
+                BorderFactory.createTitledBorder(
+                        BorderFactory.createLineBorder(Color.BLUE, 3),
+                        "Data pointed by object reference", 
+                        TitledBorder.RIGHT, 
+                        TitledBorder.TOP,
+                        font,
+                        Color.RED));  
+        
+        JInternalFrame dataView = null;
+        HashMap map = new HashMap(1);
+        map.put(ViewProperties.DATA_VIEW_KEY.OBJECT, dset_copy);
+        switch (viewType) {
+        case TEXT:
+            dataView = new DefaultTextView(viewer, map);
+            break;
+        case IMAGE:
+            dataView = new DefaultImageView(viewer, map);
+             break;
+        default:
+            dataView = new DefaultTableView(viewer, map);
+            break;
+        }
+        
+        if (dataView != null) {
+            viewer.addDataView((DataView)dataView);
+            titleSB.append(dset_copy.getName());
+            titleSB.append("  -  ");
+            titleSB.append(dset_copy.getPath());
+            titleSB.append("  -  ");
+            titleSB.append(dataset.getFile());
+            dataView.setTitle(titleSB.toString());
+            
+            dataView.setBorder(border);
+        }
+    }
+
+    
+    /**
      * Display data pointed by region references. Data of each region is shown
      * in a separate spreadsheet. The reg. ref. information is stored in strings
      * of the format below:
@@ -3118,7 +3238,7 @@ implements TableView, ActionListener, MouseListener
      *        For example, 0:800 { (0,0)-(0,2)  (0,11)-(0,13)  (2,0)-(2,2)  (2,11)-(2,13) }</li>
      * </ul>
      *  
-     * @param data the array of strings that contain the reg. ref information.
+     * @param reg the array of strings that contain the reg. ref information.
      * 
      */
     private void showRegRefData(String reg) 
