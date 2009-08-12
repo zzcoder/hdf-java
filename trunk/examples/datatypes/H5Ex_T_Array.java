@@ -19,7 +19,7 @@ public class H5Ex_T_Array {
 	private static String FILENAME = "h5ex_t_array.h5";
 	private static String DATASETNAME = "DS1";
 	private static final int DIM0 = 4;
-	private static final int ADIM0 = 3;
+	private static final int ADIM0 = 3
 	private static final int ADIM1 = 5;
 	private static final int RANK = 1;
 	private static final int NDIMS = 2;
