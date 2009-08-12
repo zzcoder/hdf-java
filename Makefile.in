@@ -67,17 +67,13 @@ JHI5DISTFILES= ./native/hdf5lib/Makefile.in \
         ./ncsa/hdf/hdf5lib/*.java  \
         ./ncsa/hdf/hdf5lib/exceptions/*.java 
 
-SRBDISTFILES= \
-        ./ncsa/hdf/srb/*.java \
-        ./ncsa/hdf/srb/native/*.c 
-
 EXAMPLESFILES=./examples/*.in ./examples/intro/*.java ./examples/intro/*.in ./examples/groups/*.java ./examples/groups/*.in ./examples/datasets/*.java ./examples/datasets/*.in ./examples/datatypes/*.java ./examples/datatypes/*.in ./examples/testfiles/*.txt
 
 TESTFILES=./test/Makefile.in ./test/object/*.java ./test/object/*.in ./test/linktest/Makefile.in ./test/linktest/testh4link.in ./test/linktest/testlink.in ./test/linktest/*.java ./test/h5/*.java ./test/h5/*.in ./test/h5/*.h5 ./test/unittests/*.in ./test/unittests/*.java 
 
 DOCFILES=./docs/*.html ./docs/*.gif ./docs/*.js ./docs/hdfview/*.html ./docs/hdfview/*.gif ./docs/hdfview/ModularGuide/*.html ./docs/hdfview/ModularGuide/*.gif ./docs/hdfview/UsersGuide/images/*.gif ./docs/hdfview/UsersGuide/images/*.jpg ./docs/hdfview/UsersGuide/*.html
 
-DISTFILES= $(TOPDIST) $(JHI5DISTFILES) $(JHIDISTFILES) $(HDFDISTFILES) $(HDFVIEWDISTFILES) $(HDFOBJDISTFILES) $(H4OBJDISTFILES) $(H5OBJDISTFILES) $(NC2OBJDISTFILES) $(FITSOBJDISTFILES) $(TESTFILES) $(DOCFILES) $(FITSDISTJARFILE) $(NC2DISTJARFILE) $(SRBDISTFILES) $(JUNITSDISTJARFILE) $(EXAMPLESFILES)
+DISTFILES= $(TOPDIST) $(JHI5DISTFILES) $(JHIDISTFILES) $(HDFDISTFILES) $(HDFVIEWDISTFILES) $(HDFOBJDISTFILES) $(H4OBJDISTFILES) $(H5OBJDISTFILES) $(NC2OBJDISTFILES) $(FITSOBJDISTFILES) $(TESTFILES) $(DOCFILES) $(FITSDISTJARFILE) $(NC2DISTJARFILE) $(JUNITSDISTJARFILE) $(EXAMPLESFILES)
 
 
 JHIPACKAGES = \
@@ -94,8 +90,6 @@ H4OBJPACKAGES = ncsa.hdf.object.h4
 H5OBJPACKAGES = ncsa.hdf.object.h5
 
 NC2OBJPACKAGES = ncsa.hdf.object.nc2
-
-H5SRBPACKAGES = ncsa.hdf.srb
 
 FITSOBJPACKAGES = ncsa.hdf.object.fits
 
@@ -119,7 +113,7 @@ install-just-hdf4: install-hdflib install-jhdf
 
 install-just-hdf5: install-hdf5lib install-jhdf5
 
-packages: jhdf-packages jhdf5-packages nc2-packages fits-packages jhdfobj-packages h5srb-packages jhdfview-packages
+packages: jhdf-packages jhdf5-packages nc2-packages fits-packages jhdfobj-packages jhdfview-packages
 
 jhdf-packages: 
 	@if test -n "$(H4INC)" ; then $(MAKE) do-jhdf-packages; fi
@@ -137,9 +131,6 @@ nc2-packages: $(NC2OBJPACKAGES)
 fits-packages: $(FITSOBJPACKAGES)
 	-mkdir -p ./lib/ext 
 	$(JAR) cf ./lib/ext/fitsobj.jar $(FITSOBJCLASSES)
-
-h5srb-packages: $(H5SRBPACKAGES)
-	$(JAR) cf ./lib/h5srb.jar $(H5SRBCLASSES)
 
 jhdfobj-packages: $(HDFOBJPACKAGES)  
 	$(JAR) cf ./lib/jhdfobj.jar $(HDFOBJCLASSES)
@@ -215,7 +206,6 @@ clean-classes:
 	$(RM) -f ./lib/jhdf4obj.jar
 	$(RM) -f ./lib/jhdf5obj.jar
 	$(RM) -f ./lib/jhdfview.jar
-	$(RM) -f ./lib/h5srb.jar
 	$(RM) -f ./lib/ext/nc2obj.jar
 	$(RM) -f ./lib/ext/fitsobj.jar
 
@@ -251,10 +241,10 @@ checklink: install linktest
 	linkh4test; \
 
 
-install: install-lib install-jhdf install-jhdf5 install-jhdfobj install-h5srb install-jhdfview
+install: install-lib install-jhdf install-jhdf5 install-jhdfobj install-jhdfview
 	@echo "Install complete"
 
-uninstall: uninstall-jhdfview uninstall-jhdfobj uninstall-lib uninstall-jhi uninstall-jhi5 uninstall-h5srb
+uninstall: uninstall-jhdfview uninstall-jhdfobj uninstall-lib uninstall-jhi uninstall-jhi5 
 
 install-lib: natives
 	-mkdir -p $(LIBDIR);
@@ -342,12 +332,6 @@ install-jhdfview: ncsa.hdf.view
 	cp bin/hdfview.sh $(BINDIR)
 	chmod a+x $(BINDIR)/hdfview.sh
 	@echo "Install HDFVIEW complete"
-
-install-h5srb: ncsa.hdf.srb
-	$(JAR) cf $(JH45INSTALLDIR)/lib/h5srb.jar $(H5SRBCLASSES)
-
-uninstall-h5srb:
-	$(RM) -f $(JH45INSTALLDIR)/lib/h5srb.jar
 
 uninstall-jhi5: 
 	$(RM) -f $(JH45INSTALLDIR)/lib/jhdf5.jar
@@ -531,15 +515,6 @@ ncsa.hdf.object.fits: ncsa/hdf/object/fits/FitsDataset.class \
 	ncsa/hdf/object/fits/FitsFile.class \
 	ncsa/hdf/object/fits/FitsGroup.class
 
-ncsa.hdf.srb: ncsa/hdf/srb/H5SrbCompoundDS.class \
-	ncsa/hdf/srb/H5SrbDatatype.class \
-	ncsa/hdf/srb/H5SrbFile.class \
-	ncsa/hdf/srb/H5SrbGroup.class \
-	ncsa/hdf/srb/H5SrbScalarDS.class \
-	ncsa/hdf/srb/SRBFileDialog.class \
-	ncsa/hdf/srb/H5SRB.class
-
-
 #
 # The test files are not included in the preliminary source release
 #
@@ -677,13 +652,6 @@ NC2Dataset: ncsa/hdf/object/nc2/NC2Dataset.class
 NC2Datatype: ncsa/hdf/object/nc2/NC2Datatype.class
 NC2File: ncsa/hdf/object/nc2/NC2File.class
 NC2Group: ncsa/hdf/object/nc2/NC2Group.class
-H5SrbCompoundDS: ncsa/hdf/srb/H5SrbCompoundDS.class
-H5SrbDatatype: ncsa/hdf/srb/H5SrbDatatype.class
-H5SrbFile: ncsa/hdf/srb/H5SrbFile.class
-H5SrbGroup: ncsa/hdf/srb/H5SrbGroup.class
-H5SRB: ncsa/hdf/srb/H5SRB.class
-H5SrbScalarDS: ncsa/hdf/srb/H5SrbScalarDS.class
-SRBFileDialog: ncsa/hdf/srb/SRBFileDialog.class
 
 #  All classes that are built, including private classes:
 #     This is what is loaded into the 'jar' file.
@@ -705,8 +673,6 @@ H5OBJCLASSES= ./ncsa/hdf/object/h5/*.class
 NC2OBJCLASSES= ./ncsa/hdf/object/nc2/*.class
 
 FITSOBJCLASSES= ./ncsa/hdf/object/fits/*.class
-
-H5SRBCLASSES= ./ncsa/hdf/srb/*.class
 
 HDFVIEWCLASSES=./ncsa/hdf/view/*.class
 
