@@ -233,14 +233,13 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dgetdir_1ext
 
     str = ENVPTR->NewStringUTF(ENVPAR aName);
 
-    if (str == NULL) {
-        free(aName);
-        h5JNIFatalError( env,"H5Dgetcwd:  return string failed");
-        return -1;
-    }
     free(aName);
 
-    ENVPTR->SetObjectArrayElement(ENVPAR dir_name,0,str);
+    if (str == NULL) {
+         h5JNIFatalError( env,"H5Dgetcwd:  return string failed");
+    } else {
+        ENVPTR->SetObjectArrayElement(ENVPAR dir_name,0,str);
+    }
 
     return 0;
 }
