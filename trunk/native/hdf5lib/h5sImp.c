@@ -251,12 +251,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sselect_1elements
 
     ENVPTR->ReleaseByteArrayElements(ENVPAR coord, P, 0);
 
+    if (lp) free (lp);
+
     if (status < 0) {
-        if (lp) free (lp);
         h5libraryError(env);
     }
-
-    if (lp) free (lp);
 
     return (jint)status;
 }
