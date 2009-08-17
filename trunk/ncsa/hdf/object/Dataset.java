@@ -1111,7 +1111,8 @@ public abstract class Dataset extends HObject
             int end = str.length();
             while (end > 0 && str.charAt(end-1) <= '\u0020')
                 end--;
-            strArray[i] = (end <= 0) ? null : str.substring(0, end);
+            
+            strArray[i] = (end <= 0) ? "" : str.substring(0, end);
             
             // trim both start and end
             //strArray[i] = str.trim();
@@ -1145,14 +1146,17 @@ public abstract class Dataset extends HObject
 
         StringBuffer strBuff = new StringBuffer(length);
         for (int i=0; i<size; i++)
-        {
-            if (strings[i].length() > length) {
-                strings[i] = strings[i].substring(0, length);
+        {            
+            // initialize the string with spaces
+            strBuff.replace(0, length, " ");
+
+            if (strings[i] != null) {
+                if (strings[i].length() > length) {
+                    strings[i] = strings[i].substring(0, length);
+                }
+                strBuff.replace(0, length, strings[i]);                    
             }
 
-            // padding the string with space
-            strBuff.replace(0, length, " ");
-            strBuff.replace(0, length, strings[i]);
             strBuff.setLength(length);
             System.arraycopy(strBuff.toString().getBytes(), 0, bytes, length*i, length);
         }
