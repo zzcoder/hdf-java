@@ -1564,7 +1564,7 @@ public class DefaultTreeView extends JPanel
         boolean isImage = ((d instanceof ScalarDS) && ((ScalarDS)d).isImage());
         boolean isDisplayTypeChar = false;
         boolean isTransposed = false;
-        BitSet bitmask = null;
+        //BitSet bitmask = null;
         String dataViewName = null;
 
         JInternalFrame theFrame = (JInternalFrame)viewer.getDataView(d);
@@ -1603,7 +1603,7 @@ public class DefaultTreeView extends JPanel
             isDisplayTypeChar = dialog.isDisplayTypeChar();
             dataViewName = dialog.getDataViewName();
             isTransposed = dialog.isTransposed();
-            bitmask = dialog.getBitmask();
+            //bitmask = dialog.getBitmask();
         }
 
         // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
@@ -1633,35 +1633,35 @@ public class DefaultTreeView extends JPanel
             HashMap map = new HashMap(4);
             map.put(ViewProperties.DATA_VIEW_KEY.CHAR, new Boolean(isDisplayTypeChar));
             map.put(ViewProperties.DATA_VIEW_KEY.TRANSPOSED, new Boolean(isTransposed));
-            if (bitmask != null) {
-                map.put(ViewProperties.DATA_VIEW_KEY.BITMASK, bitmask);
-
-                // create a copy of dataset
-                ScalarDS d_copy = null;
-                Constructor constructor = null;
-                Object[] paramObj = null;
-                try {
-                    Class[] paramClass = {FileFormat.class, String.class, String.class};
-                    constructor = d.getClass().getConstructor(paramClass);
-                    paramObj = new Object[] {d.getFileFormat(), d.getName(), d.getPath()};
-                } catch (Exception ex) { constructor = null; }
-
-                try { d_copy = (ScalarDS)constructor.newInstance(paramObj); }
-                catch (Exception ex) { d_copy = null; }
-                if (d_copy!= null) {
-                    try {
-                        d_copy.init();
-                        int rank = d.getRank();
-                        System.arraycopy(d.getDims(), 0, d_copy.getDims(), 0, rank);
-                        System.arraycopy(d.getStartDims(), 0, d_copy.getStartDims(), 0, rank);
-                        System.arraycopy(d.getSelectedDims(), 0, d_copy.getSelectedDims(), 0, rank);
-                        System.arraycopy(d.getStride(), 0, d_copy.getStride(), 0, rank);
-                        System.arraycopy(d.getSelectedIndex(), 0, d_copy.getSelectedIndex(), 0, 3);
-                    } catch (Throwable ex) {}
-
-                    map.put(ViewProperties.DATA_VIEW_KEY.OBJECT, d_copy);
-                }
-            }
+//            if (bitmask != null) {
+//                map.put(ViewProperties.DATA_VIEW_KEY.BITMASK, bitmask);
+//
+//                // create a copy of dataset
+//                ScalarDS d_copy = null;
+//                Constructor constructor = null;
+//                Object[] paramObj = null;
+//                try {
+//                    Class[] paramClass = {FileFormat.class, String.class, String.class};
+//                    constructor = d.getClass().getConstructor(paramClass);
+//                    paramObj = new Object[] {d.getFileFormat(), d.getName(), d.getPath()};
+//                } catch (Exception ex) { constructor = null; }
+//
+//                try { d_copy = (ScalarDS)constructor.newInstance(paramObj); }
+//                catch (Exception ex) { d_copy = null; }
+//                if (d_copy!= null) {
+//                    try {
+//                        d_copy.init();
+//                        int rank = d.getRank();
+//                        System.arraycopy(d.getDims(), 0, d_copy.getDims(), 0, rank);
+//                        System.arraycopy(d.getStartDims(), 0, d_copy.getStartDims(), 0, rank);
+//                        System.arraycopy(d.getSelectedDims(), 0, d_copy.getSelectedDims(), 0, rank);
+//                        System.arraycopy(d.getStride(), 0, d_copy.getStride(), 0, rank);
+//                        System.arraycopy(d.getSelectedIndex(), 0, d_copy.getSelectedIndex(), 0, 3);
+//                    } catch (Throwable ex) {}
+//
+//                    map.put(ViewProperties.DATA_VIEW_KEY.OBJECT, d_copy);
+//                }
+//            }
             
             Object[] tmpargs = {viewer, map};
             initargs = tmpargs;

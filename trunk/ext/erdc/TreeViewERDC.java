@@ -230,7 +230,7 @@ public class TreeViewERDC extends JPanel
     
     /** hashmap that hold building information */
     private HashMap idMap; 
-	
+    
 	public TreeViewERDC(ViewManager theView) 
 	{
 	    viewer = theView;

@@ -41,7 +41,7 @@ import java.awt.Cursor;
  * @author Peter X. Cao
  * @version 2.4 9/6/2007
  */
-public class DefaultTreeView extends JPanel
+public class TreeViewNPOESS extends JPanel
 	implements TreeView, ActionListener 
 {
 	public static final long serialVersionUID = HObject.serialVersionUID;
@@ -98,7 +98,7 @@ public class DefaultTreeView extends JPanel
 
     private JMenuItem addLinkMenuItem;
 
-    public DefaultTreeView(ViewManager theView) {
+    public TreeViewNPOESS(ViewManager theView) {
         viewer = theView;
 
         root = new DefaultMutableTreeNode() {
@@ -1587,7 +1587,7 @@ public class DefaultTreeView extends JPanel
                 dataViewName = (String)HDFView.getListOfTableView().get(0);
             }
         } else {
-            DataOptionDialog dialog = new DataOptionDialog(viewer, d);
+            DataOptionNPOESS dialog = new DataOptionNPOESS(viewer, d);
 
             dialog.setVisible(true);
             if (dialog.isCancelled()) {

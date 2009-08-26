@@ -216,18 +216,6 @@ public class ViewProperties extends Properties
             extClassLoader = ClassLoader.getSystemClassLoader(); 
         }
 
-        // for test only. Delete it from production 
-        try { 
-            //System.out.println("TEST ERDC: ViewProperties.loadExtClass()");
-            String theName = "ext.erdc.TreeViewERDC";
-            extClassLoader.loadClass(theName); // make sure the class exists
-            moduleListTreeView.add(theName);
-            
-            theName = "ext.erdc.ImageViewERDC";
-            extClassLoader.loadClass(theName); // make sure the class exists
-            moduleListImageView.add(theName);
-        }  catch (Exception ex) {;}
-        
         String rootPath = System.getProperty("hdfview.root");
         if (rootPath == null)
         	rootPath = System.getProperty("user.dir");

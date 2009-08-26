@@ -501,19 +501,19 @@ HyperlinkListener, ChangeListener, DropTargetListener
         item.setActionCommand("Open file read-only");
         fileMenu.add(item);
 
-        boolean isSrbSupported = true;
-        try { 
-            Class.forName("ncsa.hdf.srb.H5SRB");
-            Class.forName("ncsa.hdf.srb.SRBFileDialog"); 
-        } catch (Throwable ex) {isSrbSupported = false;}
-       
-        if (isSrbSupported) {
-            item = new JMenuItem( "Open from iRODS");
-            item.setMnemonic(KeyEvent.VK_S);
-            item.addActionListener(this);
-            item.setActionCommand("Open from irods");
-            fileMenu.add(item);
-        }
+//        boolean isSrbSupported = true;
+//        try { 
+//            Class.forName("ncsa.hdf.srb.H5SRB");
+//            Class.forName("ncsa.hdf.srb.SRBFileDialog"); 
+//        } catch (Throwable ex) {isSrbSupported = false;}
+//       
+//        if (isSrbSupported) {
+//            item = new JMenuItem( "Open from iRODS");
+//            item.setMnemonic(KeyEvent.VK_S);
+//            item.addActionListener(this);
+//            item.setActionCommand("Open from irods");
+//            fileMenu.add(item);
+//        }
 
         fileMenu.addSeparator();
 
@@ -2215,6 +2215,41 @@ HyperlinkListener, ChangeListener, DropTargetListener
         
         currentFile = srbFileDialog.getName();
     }
+    
+    // For test only. Delete it from production.
+    // Add plugin modules.
+    private static final void loadExtModules() throws Exception
+    {
+        ClassLoader extClassLoader = ViewProperties.loadExtClass();
+        Vector moduleListTreeView  = ViewProperties.getTreeViewList();
+        Vector moduleListImageView = ViewProperties.getImageViewList();
+        
+        if (extClassLoader == null ||
+                moduleListTreeView == null ||
+                moduleListImageView == null)
+            return;
+        
+        String[] extTreeViews = {
+                "ext.erdc.TreeViewERDC",
+                "ext.npoess.TreeViewNPOESS"};
+        
+        String[] extImageViews = {
+                "ext.erdc.ImageViewERDC"};
+        
+        for (int i=0; i<extTreeViews.length; i++) {
+            if (!moduleListTreeView.contains(extTreeViews[i])) {
+                extClassLoader.loadClass(extTreeViews[i]); // make sure the class exists
+                moduleListTreeView.add(extTreeViews[i]);              
+            }            
+        }
+
+        for (int i=0; i<extImageViews.length; i++) {
+            if (!moduleListImageView.contains(extImageViews[i])) {
+                extClassLoader.loadClass(extImageViews[i]); // make sure the class exists
+                moduleListImageView.add(extImageViews[i]);                
+            }        
+        }
+    }
 
     /**
      * The starting point of this application.
@@ -2317,5 +2352,6 @@ HyperlinkListener, ChangeListener, DropTargetListener
 
         HDFView frame = new HDFView(rootDir, flist, W, H, X, Y);
         frame.setVisible(true);
+        try { loadExtModules(); } catch (Exception ex) {}
     }
 }
