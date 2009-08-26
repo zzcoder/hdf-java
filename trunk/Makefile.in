@@ -46,6 +46,8 @@ JUNITSDISTJARFILE = ./lib/junit.jar
 
 NC2OBJDISTFILES= ./ncsa/hdf/object/nc2/*.java ./lib/netcdf.jar 
 
+NPOESSDISTFILES= ./ext/npoess/*.java 
+
 FITSOBJDISTFILES= ./ncsa/hdf/object/fits/*.java ./lib/fits.jar 
 
 TOPDIST=./VERSION ./COPYING ./Makefile.in \
@@ -97,6 +99,8 @@ HDFVIEWPACKAGES= ncsa.hdf.view
 
 TESTPACKAGES = test.object
 
+NPOESSPACKAGES = ext.npoess
+
 
 .SUFFIXES: .java .class
 
@@ -113,7 +117,7 @@ install-just-hdf4: install-hdflib install-jhdf
 
 install-just-hdf5: install-hdf5lib install-jhdf5
 
-packages: jhdf-packages jhdf5-packages nc2-packages fits-packages jhdfobj-packages jhdfview-packages
+packages: jhdf-packages jhdf5-packages nc2-packages fits-packages jhdfobj-packages jhdfview-packages npoess-packages
 
 jhdf-packages: 
 	@if test -n "$(H4INC)" ; then $(MAKE) do-jhdf-packages; fi
@@ -145,6 +149,10 @@ do-jh5obj-packages: $(H5OBJPACKAGES)
 
 jhdfview-packages: $(HDFVIEWPACKAGES)  
 	$(JAR) cf ./lib/jhdfview.jar $(HDFVIEWCLASSES) $(HDFVIEWICONS)
+
+npoess-packages: $(NPOESSPACKAGES)
+	-mkdir -p ./lib/ext 
+	$(JAR) cf ./lib/ext/npoess.jar $(NPOESSCLASSES)
 
 classes: packages
 
@@ -208,6 +216,7 @@ clean-classes:
 	$(RM) -f ./lib/jhdfview.jar
 	$(RM) -f ./lib/ext/nc2obj.jar
 	$(RM) -f ./lib/ext/fitsobj.jar
+	$(RM) -f ./lib/ext/npoess.jar
 
 clean-packages: clean-classes
 
@@ -319,6 +328,7 @@ install-jhdfview: ncsa.hdf.view
 	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdfview.jar $(HDFVIEWCLASSES) $(HDFVIEWICONS)
 	-mkdir -p $(LIBDIR)/ext
 	$(JAR) cf $(JH45INSTALLDIR)/lib/ext/nc2obj.jar $(NC2OBJCLASSES)
+	$(JAR) cf $(JH45INSTALLDIR)/lib/ext/npoess.jar $(NPOESSCLASSES)
 	$(JAR) cf $(JH45INSTALLDIR)/lib/ext/fitsobj.jar $(FITSOBJCLASSES)
 	$(RM) -rf $(UGDIR);
 	-mkdir -p $(UGDIR);
@@ -515,6 +525,9 @@ ncsa.hdf.object.fits: ncsa/hdf/object/fits/FitsDataset.class \
 	ncsa/hdf/object/fits/FitsFile.class \
 	ncsa/hdf/object/fits/FitsGroup.class
 
+ext.npoess:	ext/npoess/DataOptionNPOESS.class \
+	ext/npoess/TreeViewNPOESS.class
+
 #
 # The test files are not included in the preliminary source release
 #
@@ -652,6 +665,8 @@ NC2Dataset: ncsa/hdf/object/nc2/NC2Dataset.class
 NC2Datatype: ncsa/hdf/object/nc2/NC2Datatype.class
 NC2File: ncsa/hdf/object/nc2/NC2File.class
 NC2Group: ncsa/hdf/object/nc2/NC2Group.class
+TreeViewNPOESS: ext/npoess/TreeViewNPOESS.class
+DataOptionNPOESS: ext/npoess/DataOptionNPOESS.class
 
 #  All classes that are built, including private classes:
 #     This is what is loaded into the 'jar' file.
@@ -671,6 +686,8 @@ H4OBJCLASSES= ./ncsa/hdf/object/h4/*.class
 H5OBJCLASSES= ./ncsa/hdf/object/h5/*.class
 
 NC2OBJCLASSES= ./ncsa/hdf/object/nc2/*.class
+
+NPOESSCLASSES= ./ext/npoess/*.class
 
 FITSOBJCLASSES= ./ncsa/hdf/object/fits/*.class
 
@@ -793,5 +810,6 @@ JAVASRCS= \
 ./test/linktest/TestHDF4Link.java \
 ./test/linktest/TestHDF5Link.java \
 ./ncsa/hdf/object/nc2/*.java \
-./ncsa/hdf/object/fits/*.java
+./ncsa/hdf/object/fits/*.java \
+./ext/npoess/*.java \
 
