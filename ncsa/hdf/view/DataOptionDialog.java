@@ -74,11 +74,13 @@ implements ActionListener, ItemListener
 
     private int currentIndex[];
 
-    private JRadioButton spreadsheetButton, imageButton, charButton, bitmaskButton;
+    private JRadioButton spreadsheetButton, imageButton, charButton;
     
-    private BitSet bitmask;
-    private JTextField bitmaskField;
-    private JButton bitmaskHelp;
+    //use plugin to deal with bitmask
+//    private JRadioButton bitmaskButton;
+//    private BitSet bitmask;
+//    private JTextField bitmaskField;
+//    private JButton bitmaskHelp;
 
     private JComboBox choiceTextView, choiceTableView, choiceImageView, choicePalette, choices[];
     private JComboBox transposeChoice;
@@ -126,7 +128,7 @@ implements ActionListener, ItemListener
         isSelectionCancelled = true;
         isTrueColorImage = false;
         isText = false;
-        bitmask = null;
+        //bitmask = null;
         numberOfPalettes = 1;
         toolkit = Toolkit.getDefaultToolkit();
 
@@ -198,6 +200,7 @@ implements ActionListener, ItemListener
         charButton.setEnabled(false);
         charButton.addItemListener(this);
 
+        /*
         bitmaskButton = new JRadioButton("Apply Bitmask", false);
         bitmaskButton.setMnemonic(KeyEvent.VK_B);
         bitmaskButton.setEnabled(false);
@@ -212,6 +215,7 @@ implements ActionListener, ItemListener
         bitmaskHelp.addActionListener( this );
         bitmaskHelp.setActionCommand( "Help on how to set bitmask" );
         bitmaskHelp.setVisible(false);
+        */
 
         // layout the components
         JPanel contentPane = (JPanel)getContentPane();
@@ -299,17 +303,17 @@ implements ActionListener, ItemListener
                      (tclass== Datatype.CLASS_INTEGER && sd.getDatatype().getDatatypeSize() ==1 ) ) {
                     sheetP.add(charButton);
                     
-                    JPanel tmpP = new JPanel();
-                    tmpP.setLayout(new GridLayout(1, 2));                    
-                    tmpP.add(bitmaskButton);
-                    tmpP.add(bitmaskField);
-                    
-                    JPanel tmpP2 = new JPanel();
-                    tmpP2.setLayout(new BorderLayout());
-                    tmpP2.add(tmpP, BorderLayout.CENTER);
-                    tmpP2.add(bitmaskHelp, BorderLayout.EAST);
-
-                    sheetP.add(tmpP2);
+//                    JPanel tmpP = new JPanel();
+//                    tmpP.setLayout(new GridLayout(1, 2));                    
+//                    tmpP.add(bitmaskButton);
+//                    tmpP.add(bitmaskField);
+//                    
+//                    JPanel tmpP2 = new JPanel();
+//                    tmpP2.setLayout(new BorderLayout());
+//                    tmpP2.add(tmpP, BorderLayout.CENTER);
+//                    tmpP2.add(bitmaskHelp, BorderLayout.EAST);
+//
+//                    sheetP.add(tmpP2);
                 }
 
                 // add tableview selection
@@ -616,34 +620,35 @@ implements ActionListener, ItemListener
                            dtype.getBasetype().getDatatypeClass()==Datatype.CLASS_CHAR) ) )
                 {
                     charButton.setEnabled(true);
-                    bitmaskButton.setEnabled(true);
+                    //bitmaskButton.setEnabled(true);
                 }
                 else
                 {
                     charButton.setEnabled(false);
                     charButton.setSelected(false);
-                    bitmaskButton.setEnabled(false);
-                    bitmaskButton.setSelected(false);                    
+                    //bitmaskButton.setEnabled(false);
+                    //bitmaskButton.setSelected(false);                    
                 }
                 
-                bitmaskField.setVisible(bitmaskButton.isEnabled() && bitmaskButton.isSelected());
-                bitmaskHelp.setVisible(bitmaskField.isVisible());
-            } else if (source.equals(bitmaskButton))
-            {
-                if (bitmaskButton.isSelected())
-                    charButton.setSelected(false);
-
-                 bitmaskField.setVisible(bitmaskButton.isSelected());
-                 bitmaskHelp.setVisible(bitmaskField.isVisible());
-            }
-            else if (source.equals(charButton))
-            {
-                if (charButton.isSelected())
-                    bitmaskButton.setSelected(false);
-
-                bitmaskField.setVisible(bitmaskButton.isSelected());
-                bitmaskHelp.setVisible(bitmaskField.isVisible());
-            }
+                //bitmaskField.setVisible(bitmaskButton.isEnabled() && bitmaskButton.isSelected());
+                //bitmaskHelp.setVisible(bitmaskField.isVisible());
+            } 
+//            else if (source.equals(bitmaskButton))
+//            {
+//                if (bitmaskButton.isSelected())
+//                    charButton.setSelected(false);
+//
+//                 bitmaskField.setVisible(bitmaskButton.isSelected());
+//                 bitmaskHelp.setVisible(bitmaskField.isVisible());
+//            }
+//            else if (source.equals(charButton))
+//            {
+//                if (charButton.isSelected())
+//                    bitmaskButton.setSelected(false);
+//
+//                bitmaskField.setVisible(bitmaskButton.isSelected());
+//                bitmaskHelp.setVisible(bitmaskField.isVisible());
+//            }
         }
         else if (source instanceof JComboBox)
         {
@@ -842,13 +847,13 @@ implements ActionListener, ItemListener
                dtype.getBasetype().getDatatypeClass()==Datatype.CLASS_CHAR) ) )
         {
             charButton.setEnabled(true);
-            bitmaskButton.setEnabled(true);
+            //bitmaskButton.setEnabled(true);
         }
         else
         {
             charButton.setEnabled(false);
             charButton.setSelected(false);
-            bitmaskButton.setEnabled(false);
+            //bitmaskButton.setEnabled(false);
         }
     }
 
@@ -1007,84 +1012,84 @@ implements ActionListener, ItemListener
         //clear the old data
         dataset.clearData();
         
-        retVal = setBitmask();
+        //retVal = setBitmask();
 
         return retVal;
     }
     
-    private boolean setBitmask() 
-    {
-        if (!bitmaskButton.isVisible() || !bitmaskButton.isSelected()) {
-            bitmask = null;
-            return true;
-        }
-
-        String str = bitmaskField.getText();
-        if (str == null || (str=str.trim())==null) {
-            JOptionPane.showMessageDialog(
-                    (JFrame)viewer,
-                    "Bitmask is empty.",
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
-            bitmask = null;
-            return false;
-        }
-
-        int len = str.length();
-        
-        boolean isvalidmask = (len<=8);
-        if (isvalidmask) {
-            bitmask = new BitSet(8);
-            for (int i=0; i<len; i++) {
-                char bit = str.charAt(i);
-                if (bit=='0')
-                    bitmask.set(len-i-1, false);
-                else if (bit == '1')
-                    bitmask.set(len-i-1, true);
-                else {
-                    isvalidmask = false;
-                    break;
-                }
-            }
-        }
-
-        if (!isvalidmask) {
-            JOptionPane.showMessageDialog(
-                    (JFrame)viewer,
-                    "A valid bitmask MUST be a string of 8 or less bits of 1's and 0's.",
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
-            bitmask = null;
-            return false;
-        }
-
-        // do not use bitmask if it is empty (all bits are zero)
-        if (bitmask.isEmpty()) {
-            JOptionPane.showMessageDialog(
-                    (JFrame)viewer,
-                    "The bitmask is empty. It will not be applied to the data.",
-                    getTitle(),
-                    JOptionPane.WARNING_MESSAGE);
-            bitmask = null;
-        } else {
-            boolean isFull = true;
-            int size = bitmask.size();
-            for (int i=0; i<size; i++)
-                isFull = (bitmask.get(i) && isFull);
-
-            // do not use bitmask if it is full (all bits are one)
-            if (isFull) {
-                JOptionPane.showMessageDialog(
-                        (JFrame)viewer,
-                        "The bitmask is empty. It will not be applied to the data.",
-                        getTitle(),
-                        JOptionPane.WARNING_MESSAGE);
-                bitmask = null;
-            }
-        }
-
-        return true;
-    }
+//    private boolean setBitmask() 
+//    {
+//        if (!bitmaskButton.isVisible() || !bitmaskButton.isSelected()) {
+//            bitmask = null;
+//            return true;
+//        }
+//
+//        String str = bitmaskField.getText();
+//        if (str == null || (str=str.trim())==null) {
+//            JOptionPane.showMessageDialog(
+//                    (JFrame)viewer,
+//                    "Bitmask is empty.",
+//                    getTitle(),
+//                    JOptionPane.ERROR_MESSAGE);
+//            bitmask = null;
+//            return false;
+//        }
+//
+//        int len = str.length();
+//        
+//        boolean isvalidmask = (len<=8);
+//        if (isvalidmask) {
+//            bitmask = new BitSet(8);
+//            for (int i=0; i<len; i++) {
+//                char bit = str.charAt(i);
+//                if (bit=='0')
+//                    bitmask.set(len-i-1, false);
+//                else if (bit == '1')
+//                    bitmask.set(len-i-1, true);
+//                else {
+//                    isvalidmask = false;
+//                    break;
+//                }
+//            }
+//        }
+//
+//        if (!isvalidmask) {
+//            JOptionPane.showMessageDialog(
+//                    (JFrame)viewer,
+//                    "A valid bitmask MUST be a string of 8 or less bits of 1's and 0's.",
+//                    getTitle(),
+//                    JOptionPane.ERROR_MESSAGE);
+//            bitmask = null;
+//            return false;
+//        }
+//
+//        // do not use bitmask if it is empty (all bits are zero)
+//        if (bitmask.isEmpty()) {
+//            JOptionPane.showMessageDialog(
+//                    (JFrame)viewer,
+//                    "The bitmask is empty. It will not be applied to the data.",
+//                    getTitle(),
+//                    JOptionPane.WARNING_MESSAGE);
+//            bitmask = null;
+//        } else {
+//            boolean isFull = true;
+//            int size = bitmask.size();
+//            for (int i=0; i<size; i++)
+//                isFull = (bitmask.get(i) && isFull);
+//
+//            // do not use bitmask if it is full (all bits are one)
+//            if (isFull) {
+//                JOptionPane.showMessageDialog(
+//                        (JFrame)viewer,
+//                        "The bitmask is empty. It will not be applied to the data.",
+//                        getTitle(),
+//                        JOptionPane.WARNING_MESSAGE);
+//                bitmask = null;
+//            }
+//        }
+//
+//        return true;
+//    }
 
     /** SubsetNavigator draws selection rectangle of subset. */
     private class PreviewNavigator extends JComponent
@@ -1357,31 +1362,31 @@ implements ActionListener, ItemListener
      */
     public boolean isDisplayTypeChar() { return charButton.isSelected(); }
     
-    /**
-     * Return the bitmask.
-     */
-    public BitSet getBitmask() 
-    { 
-        if (!bitmaskButton.isEnabled() || !bitmaskButton.isSelected())
-            return null;
-        else if (bitmask == null)
-            return null;
-        
-        // do not use bitmask if it is empty (all bits are zero)
-        if (bitmask.isEmpty())
-            return null;
-        
-        boolean isFull = true;
-        int size = bitmask.size();
-        for (int i=0; i<size; i++)
-            isFull = (bitmask.get(i) && isFull);
-        
-        // do not use bitmask if it is full (all bits are one)
-        if (isFull)
-            return null;
-        
-        return bitmask; 
-    }
+//    /**
+//     * Return the bitmask.
+//     */
+//    public BitSet getBitmask() 
+//    { 
+//        if (!bitmaskButton.isEnabled() || !bitmaskButton.isSelected())
+//            return null;
+//        else if (bitmask == null)
+//            return null;
+//        
+//        // do not use bitmask if it is empty (all bits are zero)
+//        if (bitmask.isEmpty())
+//            return null;
+//        
+//        boolean isFull = true;
+//        int size = bitmask.size();
+//        for (int i=0; i<size; i++)
+//            isFull = (bitmask.get(i) && isFull);
+//        
+//        // do not use bitmask if it is full (all bits are one)
+//        if (isFull)
+//            return null;
+//        
+//        return bitmask; 
+//    }
     
     /**
      * 

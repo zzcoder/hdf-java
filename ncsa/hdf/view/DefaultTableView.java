@@ -2111,26 +2111,36 @@ implements TableView, ActionListener, MouseListener
 
         String token=null;
         int r = r0, c = c0;
-        while ((line != null) && (r < rows))
-        {
-            tokenizer1 = new StringTokenizer(line, delimiter);
-            while (tokenizer1.hasMoreTokens() && (c < cols))
+        while ((line != null) && (r < rows)) {
+            try {
+                tokenizer1 = new StringTokenizer(line, delimiter);
+                while (tokenizer1.hasMoreTokens() && (c < cols)) {
+                    token = tokenizer1.nextToken();
+                    if (dataset instanceof ScalarDS) {
+                        StringTokenizer tokenizer2 = new StringTokenizer(token);
+                        while (tokenizer2.hasMoreTokens() && (c < cols)) {
+                            updateValueInMemory(tokenizer2.nextToken(), r, c);
+                            c++;
+                        }
+                    }
+                    else {
+                        updateValueInMemory(token, r, c);
+                        c++;    
+                    }
+                } // while (tokenizer1.hasMoreTokens() && index < size)
+            }
+            catch (Exception ex)
             {
-                token = tokenizer1.nextToken();
-                try { updateValueInMemory(token, r, c); }
-                catch (Exception ex)
-                {
-                    JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
-                    try { in.close(); } catch (IOException ex2) {}
-                    return;
-                }
-                c++;
-            } // while (tokenizer1.hasMoreTokens() && index < size)
+                JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
+                try { in.close(); } catch (IOException ex2) {}
+                return;
+            }
+
             try { line = in.readLine(); }
             catch (IOException ex) { line = null; }
             c = 0;
             r++;
-        }
+        } // while ((line != null) && (r < rows))
 
         try { in.close(); } catch (IOException ex) {}
 
