@@ -17,7 +17,6 @@ EXTRA_FLAGS=
 #SZIP=/mnt/scr1/xcao/hdf_java/lib/linux32/szip
 #ZLIB=/mnt/scr1/xcao/hdf_java/lib/linux32/zlib
 
-
 ############################################################
 #                     solaris32 (linew)                    #
 ############################################################
@@ -38,6 +37,9 @@ EXTRA_FLAGS=
 #JAVAINC=/usr/jdk/jdk1.6.0_12/include
 #JAVALIB=/usr/jdk/jdk1.6.0_12/jre/lib
 #JAVABIN=/usr/jdk/jdk1.6.0_12/bin/sparcv9
+#JAVAINC=/usr/java/include
+#JAVALIB=/usr/java/jre/lib
+#JAVABIN=/usr/java/bin/sparcv9
 #HDF4=/mnt/scr1/xcao/hdf_java/lib/solaris64/hdf4
 #HDF5=/mnt/scr1/xcao/hdf_java/lib/solaris64/hdf5
 #JPEG=/mnt/scr1/xcao/hdf_java/lib/solaris64/jpeg
@@ -49,7 +51,7 @@ EXTRA_FLAGS=
 ############################################################
 #                     linux64 (smirom)                     #
 ############################################################
-#INSTDIR=/mnt/scr1/xcao/hdf_java/bin/linux64x86
+#INSTDIR=/mnt/scr1/xcao/hdf_java/bin/linux64
 #JAVAINC=/mnt/scr1/xcao/jdk/linux64/jdk1.6.0_11/include
 #JAVALIB=/mnt/scr1/xcao/jdk/linux64/jdk1.6.0_11/jre/lib
 #HDF4=/mnt/scr1/xcao/hdf_java/lib/linux64amd/hdf4
@@ -76,6 +78,7 @@ EXTRA_FLAGS=
 ############################################################
 #               Do not change below this line              #
 ############################################################
+rm -rf $INSTDIR; mkdir $INSTDIR
 ./configure $EXTRA_FLAGS --prefix=$INSTDIR \
 --with-jdk=$JAVAINC,$JAVALIB \
 --with-hdf5=$HDF5/include,$HDF5/lib \
