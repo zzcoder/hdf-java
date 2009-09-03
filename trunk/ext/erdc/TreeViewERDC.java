@@ -100,8 +100,8 @@ public class TreeViewERDC extends JPanel
 	private final static int CELL_H = (int)(CELL_W/1.618);
 	private final static int SPACE_X = 20; // cell distance
 	private final static int SPACE_Y = 150; // level distance
-	private final static String CLASS_ELLIPS = "erdc.JGraphEllipseView";
-	private final static String CLASS_DIAMOND = "erdc.JGraphDiamondView";
+	private final static String CLASS_ELLIPS = "ext.erdc.JGraphEllipseView";
+	private final static String CLASS_DIAMOND = "ext.erdc.JGraphDiamondView";
 	private final static String MIME_XLS = "excel";
 	private final static String MIME_PDF = "pdf";
 	private final static String MIME_HDF = "hdf";
@@ -1854,7 +1854,7 @@ public class TreeViewERDC extends JPanel
     private void createHelpPane()
     {
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        URL helpURL = classLoader.getResource("erdc/help.html");
+        URL helpURL = classLoader.getResource("ext/erdc/help.html");
          
         if (helpURL == null) {
             viewer.showStatus("Cannot open erdc/help.html file.");

@@ -2235,18 +2235,22 @@ HyperlinkListener, ChangeListener, DropTargetListener
         
         String[] extImageViews = {
                 "ext.erdc.ImageViewERDC"};
-        
+   
         for (int i=0; i<extTreeViews.length; i++) {
             if (!moduleListTreeView.contains(extTreeViews[i])) {
-                extClassLoader.loadClass(extTreeViews[i]); // make sure the class exists
-                moduleListTreeView.add(extTreeViews[i]);              
+                try {
+                    extClassLoader.loadClass(extTreeViews[i]); // make sure the class exists
+                    moduleListTreeView.add(extTreeViews[i]);   
+                } catch (Exception ex) { continue; }
             }            
         }
 
         for (int i=0; i<extImageViews.length; i++) {
             if (!moduleListImageView.contains(extImageViews[i])) {
-                extClassLoader.loadClass(extImageViews[i]); // make sure the class exists
-                moduleListImageView.add(extImageViews[i]);                
+                try {
+                    extClassLoader.loadClass(extImageViews[i]); // make sure the class exists
+                    moduleListImageView.add(extImageViews[i]);  
+                } catch (Exception ex) { continue; }
             }        
         }
     }
