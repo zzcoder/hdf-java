@@ -342,8 +342,8 @@ public class H5File extends FileFormat
                     try { H5.H5Tclose(tmptid); } catch (Exception ex) {}
                 }
 
-                Attribute attr = new Attribute( nameA[0], new H5Datatype(tid), 
-                                                dims );
+                Datatype attrType = new H5Datatype(tid);
+                Attribute attr = new Attribute( nameA[0], attrType, dims );
                 attributeList.add(attr);
 
                 boolean is_variable_str = false;

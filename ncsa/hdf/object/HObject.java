@@ -460,7 +460,10 @@ public abstract class HObject implements Serializable, DataFormat
      */
     public String toString()
     {
-        return name;
+        if (name != null)
+            return name;
+        else
+            return super.toString();
     }
 
     

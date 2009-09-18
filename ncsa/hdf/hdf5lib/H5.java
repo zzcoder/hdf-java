@@ -3206,8 +3206,8 @@ public class H5 {
      *  to modify
      *  @param op  IN: Operation to perform on current selection.
      *  @param start  IN: Offset of start of hyperslab
-     *  @param count  IN: Number of blocks included in hyperslab.
      *  @param stride  IN: Hyperslab stride.
+     *  @param count  IN: Number of blocks included in hyperslab.
      *  @param block  IN: Size of block in hyperslab.
      *
      *  @return a non-negative value if successful
