@@ -728,6 +728,81 @@ public class H5ScalarDSTest extends TestCase {
      }
     
     /**
+     * Test method for {@link ncsa.hdf.object.h5.H5ScalarDS#write(java.lang.Object)}.
+     * <p>
+     * What to test:
+     * <ul>
+     *   <li> Read/write a subset of null strings
+     *   <li> Repeat all above
+     *   <li> write the original data back to file
+     * </ul>
+     */
+    public final void testReadWriteNullStr() {
+        String[] data = null;
+        String[] nullStrs = null;
+        H5ScalarDS dset = null;
+        
+        try {
+            dset = (H5ScalarDS)testFile.get(H5TestFile.NAME_DATASET_STR);
+            dset.init();
+        } catch (Exception ex) { dset = null;}
+        assertNotNull(dset);
+        
+        try {
+            data = (String[]) dset.getData();
+        } catch (Exception ex) {data = null; }
+        assertNotNull(data);
+        assertTrue(data.length>0);
+        
+        nullStrs = new String[data.length];
+        
+        for (int i=0; i<data.length; i++)
+            nullStrs[i] = null;
+        
+        // write null strings
+        try { 
+            dset.write(nullStrs);
+        } catch (Exception ex) {
+            fail("Write null strings failed. "+ex);
+        }
+        
+        // read null strings
+        try { 
+            dset.clearData();
+            nullStrs = (String[]) dset.read();
+        } catch (Exception ex) {
+            fail("Read null strings failed. "+ex);
+            nullStrs = null;
+        }
+        assertNotNull(nullStrs);
+        
+        // make sure all the strings are empty
+        for (int i=0; i<data.length; i++) {
+            assertNotNull(nullStrs[i]);
+            assertTrue(nullStrs[i].length()==0);
+        }
+
+        // restore to the original state
+        try { 
+            dset.write(data);
+        } catch (Exception ex) {
+            fail("Write null strings failed. "+ex);
+        }
+     
+        // read data back and check it is to the original state
+        try { 
+            dset.clearData();
+            nullStrs = (String[]) dset.read();
+        } catch (Exception ex) {
+            fail("Read null strings failed. "+ex);
+            nullStrs = null;
+        }
+        assertNotNull(nullStrs);
+        for (int i=0; i<data.length; i++)
+            assertTrue(data[i].equals(nullStrs[i]));
+     }
+    
+    /**
      * Test method for {@link ncsa.hdf.object.h5.H5ScalarDS#copy(ncsa.hdf.object.Group, java.lang.String, long[], java.lang.Object)}.
      * <p>
      * What to test:
