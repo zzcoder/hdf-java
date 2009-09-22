@@ -52,6 +52,8 @@ public class H5Datatype extends Datatype
     private int nAttributes = -1;
 
     private boolean isVLEN = false;
+    
+    private String description = null;
 
     /**
      * Constrcuts an named HDF5 data type object for a given file, dataset name and group path.
@@ -139,6 +141,7 @@ public class H5Datatype extends Datatype
     {
         super(nativeID);
 
+        description = getDatatypeDescription(nativeID);
         fromNative(nativeID);
     }
 
@@ -641,11 +644,13 @@ public class H5Datatype extends Datatype
     @Override
     public String getDatatypeDescription()
     {
-        int tid = toNative();
-        String str = getDatatypeDescription(tid);
-        close(tid);
+        if (description == null) {
+            int tid = toNative();
+            description = getDatatypeDescription(tid);
+            close(tid);           
+        }
 
-        return str;
+        return description;
     }
 
     /**
@@ -817,6 +822,8 @@ public class H5Datatype extends Datatype
             finally {
                 try {H5.H5Tclose(tmptid); } catch (Exception ex) {}
             }
+        } else if (tclass == HDF5Constants.H5T_OPAQUE) {
+            description = "Opaque";
         } else {
             description = "Unknown";
         }

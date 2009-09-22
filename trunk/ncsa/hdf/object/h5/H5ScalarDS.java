@@ -61,7 +61,7 @@ public class H5ScalarDS extends ScalarDS
      private boolean isExternal = false;
      
      /** flag to indicate if the datatype in file is the same as dataype in memory*/
-     private boolean isNativeDatatype = false;
+     private boolean isNativeDatatype = true;
      
      /** flag to indicate is the datatype is reg. ref. */
      private boolean isRegRef = false;
@@ -233,8 +233,10 @@ public class H5ScalarDS extends ScalarDS
         try {
             sid = H5.H5Dget_space(did);
             tid= H5.H5Dget_type(did);
+            
             int tclass = H5.H5Tget_class(tid);
             rank = H5.H5Sget_simple_extent_ndims(sid);
+            
             isText = (tclass==HDF5Constants.H5T_STRING);
             isVLEN = ((tclass==HDF5Constants.H5T_VLEN) || H5.H5Tis_variable_str(tid));
             isEnum = (tclass==HDF5Constants.H5T_ENUM);
@@ -266,7 +268,8 @@ public class H5ScalarDS extends ScalarDS
                         }   catch (Exception ex2) { fillValue = null; }
                     }
                 }
-            } finally {
+            } catch (HDF5Exception ex) {;}
+            finally {
                 try { H5.H5Tclose(tmptid); } catch (HDF5Exception ex) {;}
                 try {H5.H5Pclose(pid);} catch (Exception ex) {;}
             }
@@ -283,7 +286,7 @@ public class H5ScalarDS extends ScalarDS
                 maxDims = new long[rank];
                 H5.H5Sget_simple_extent_dims(sid, dims, maxDims);
             }
-        } catch (HDF5Exception ex) {}
+        } catch (HDF5Exception ex) {;}
         finally
         {
             try { H5.H5Tclose(tid); } catch (HDF5Exception ex2) {}
@@ -1220,6 +1223,7 @@ public class H5ScalarDS extends ScalarDS
 
             try {
                 tid = H5.H5Dget_type(did);
+                
                 if (!isNativeDatatype) {
                     int tmptid = -1;
                     try {

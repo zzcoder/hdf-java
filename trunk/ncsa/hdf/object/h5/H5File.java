@@ -1725,6 +1725,7 @@ public class H5File extends FileFormat
                 try {
                     did = H5.H5Dopen(fid, fullPath+obj_name);
                     tid = H5.H5Dget_type(did);
+
                     tclass = H5.H5Tget_class(tid);
                     if ((tclass == HDF5Constants.H5T_ARRAY) ||
                         (tclass == HDF5Constants.H5T_VLEN))
