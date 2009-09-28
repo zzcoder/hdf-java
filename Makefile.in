@@ -117,7 +117,7 @@ install-just-hdf4: install-hdflib install-jhdf
 
 install-just-hdf5: install-hdf5lib install-jhdf5
 
-packages: jhdf-packages jhdf5-packages nc2-packages fits-packages jhdfobj-packages jhdfview-packages npoess-packages
+packages: jhdf-packages jhdf5-packages nc2-packages fits-packages jhdfobj-packages jhdfview-packages
 
 jhdf-packages: 
 	@if test -n "$(H4INC)" ; then $(MAKE) do-jhdf-packages; fi
@@ -328,7 +328,6 @@ install-jhdfview: ncsa.hdf.view
 	$(JAR) cf $(JH45INSTALLDIR)/lib/jhdfview.jar $(HDFVIEWCLASSES) $(HDFVIEWICONS)
 	-mkdir -p $(LIBDIR)/ext
 	$(JAR) cf $(JH45INSTALLDIR)/lib/ext/nc2obj.jar $(NC2OBJCLASSES)
-	$(JAR) cf $(JH45INSTALLDIR)/lib/ext/npoess.jar $(NPOESSCLASSES)
 	$(JAR) cf $(JH45INSTALLDIR)/lib/ext/fitsobj.jar $(FITSOBJCLASSES)
 	$(RM) -rf $(UGDIR);
 	-mkdir -p $(UGDIR);
