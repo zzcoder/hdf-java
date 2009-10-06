@@ -106,7 +106,7 @@ public class TestH5Table {
             System.out.println("\nReading/writing a "+DIM1+"x"+DIM2+" table [KB/S]: \t"+ readKBS+"\t"+writeKBS);
             
             try {
-                nObjs = H5.H5Fget_obj_count(file.getFID(), HDF5Constants.H5F_OBJ_LOCAL);
+                nObjs = H5.H5Fget_obj_count(file.getFID(), HDF5Constants.H5F_OBJ_ALL);
             } catch (final Exception ex) { 
                  System.out.println("H5.H5Fget_obj_count() failed. "+ ex);
             }

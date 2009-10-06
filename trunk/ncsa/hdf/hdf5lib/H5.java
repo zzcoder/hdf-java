@@ -215,12 +215,20 @@ public class H5 {
     //add system property to load library by name from library path, via System.loadLibrary() 
     public final static String H5_LIBRARY_NAME_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.loadLibraryName"; 
 
-    private static Logger s_logger; 
-    private static String s_libraryName; 
+    private static boolean isLibraryLoaded = false;
 
-    static
+    static { loadH5Lib(); }
+
+
+    public static void loadH5Lib()
     {
-        boolean done = false;
+        // Make sure that the library is loaded only once 
+        if (isLibraryLoaded)
+            return;
+
+        Logger s_logger; 
+        String s_libraryName; 
+        
         
         // use default logger, since spanning sources 
         s_logger = Logger.getLogger("ncsa.hdf.hdf5lib"); 
@@ -233,17 +241,17 @@ public class H5 {
             try { 
                 mappedName = System.mapLibraryName(s_libraryName); 
                 System.loadLibrary(s_libraryName); 
-                done = true; 
+                isLibraryLoaded = true; 
             } catch (Throwable err) { 
                 err.printStackTrace(); 
-                done = false; 
+                isLibraryLoaded = false; 
             } finally { 
-                s_logger.log(Level.INFO,"HDF5 library: " + s_libraryName + " resolved to: "+mappedName+"; "+(done ? "" : " NOT") + " successfully loaded from java.library.path");
+                s_logger.log(Level.INFO,"HDF5 library: " + s_libraryName + " resolved to: "+mappedName+"; "+(isLibraryLoaded ? "" : " NOT") + " successfully loaded from java.library.path");
 
             } 
         } 
         
-        if (!done) { 
+        if (!isLibraryLoaded) { 
             // else try loading library via full path 
             String filename = System.getProperty(H5PATH_PROPERTY_KEY,null); 
             if ((filename != null) && (filename.length() > 0)) 
@@ -252,33 +260,34 @@ public class H5 {
                 if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) { 
                     try { 
                         System.load(filename); 
-                        done = true; 
+                        isLibraryLoaded = true; 
                     } catch (Throwable err) { 
                         err.printStackTrace(); 
-                        done = false; 
+                        isLibraryLoaded = false; 
                     } finally { 
-                        s_logger.log(Level.INFO,"HDF5 library: " + filename + (done ? "" : " NOT") + " successfully loaded.");
+                        s_logger.log(Level.INFO,"HDF5 library: " + filename + (isLibraryLoaded ? "" : " NOT") + " successfully loaded.");
 
                     } 
                 } else { 
-                    done = false; 
+                    isLibraryLoaded = false; 
                     throw (new UnsatisfiedLinkError("Invalid HDF5 library, "+filename)); 
                 } 
             } 
         } 
 
         // else load standard library 
-        if (!done) 
+        if (!isLibraryLoaded) 
         { 
             try { 
                 s_libraryName = "jhdf5"; 
                 mappedName = System.mapLibraryName(s_libraryName); 
                 System.loadLibrary("jhdf5"); 
-                done = true; 
+                isLibraryLoaded = true; 
             } catch (Throwable err) { 
-                err.printStackTrace(); done = false; 
+                err.printStackTrace(); 
+                isLibraryLoaded = false; 
             } finally { 
-                s_logger.log(Level.INFO,"HDF5 library: " + s_libraryName + " resolved to: "+mappedName+"; "+(done ? "" : " NOT") + " successfully loaded from java.library.path");
+                s_logger.log(Level.INFO,"HDF5 library: " + s_libraryName + " resolved to: "+mappedName+"; "+(isLibraryLoaded ? "" : " NOT") + " successfully loaded from java.library.path");
 
             } 
         } 
@@ -304,16 +313,6 @@ public class H5 {
             H5.H5check_version(majnum.intValue(),minnum.intValue(),relnum.intValue());
         }
     }
-
-    //////////////////////////////////////////////////////////////////
-
-    /**
-     *  J2C converts a Java constant to an HDF5 constant determined at runtime
-     *
-     *  @param java_constant The value of Java constant
-     *  @return the value of an HDF5 constant determined at runtime
-     **/
-    public synchronized static native int J2C(int java_constant);
 
     /** Turn off error handling
      * By default, the C library prints the error stack

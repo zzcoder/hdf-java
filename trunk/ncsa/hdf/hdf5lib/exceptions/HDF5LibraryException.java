@@ -193,12 +193,8 @@ public class HDF5LibraryException extends HDF5Exception
             return "Can't open object";
         } else if (err_code == HDF5Constants.H5E_COMPLEN ) {
             return "name component is too long";
-        } else if (err_code == HDF5Constants.H5E_CWG ) {
-            return "problem with current working group";
         } else if (err_code == HDF5Constants.H5E_LINK ) {
             return "link count failure";
-        } else if (err_code == HDF5Constants.H5E_SLINK ) {
-            return "symbolic link error";
         } else if (err_code == HDF5Constants.H5E_CANTCONVERT ) {
             return "Can't convert datatypes";
         } else if (err_code == HDF5Constants.H5E_BADSIZE ) {
@@ -223,14 +219,8 @@ public class HDF5LibraryException extends HDF5Exception
             return "some MPI function failed";
         } else if (err_code == HDF5Constants.H5E_MPIERRSTR ) {
             return "MPI Error String";
-        } else if (err_code == HDF5Constants.H5E_CANTMAKETREE ) {
-            return "can't make a TBBT tree";
         } else if (err_code == HDF5Constants.H5E_CANTRECV ) {
             return "can't receive messages from processes";
-        } else if (err_code == HDF5Constants.H5E_CANTSENDMDATA) {
-            return "can't send metadata message";
-        } else if (err_code == HDF5Constants.H5E_CANTCHANGE ) {
-            return "can't register change on server";
         } else if (err_code == HDF5Constants.H5E_CANTALLOC ) {
             return "can't allocate from file";
         } else if (err_code == HDF5Constants.H5E_NOFILTER ) {

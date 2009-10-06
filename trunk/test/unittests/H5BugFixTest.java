@@ -295,7 +295,7 @@ public class H5BugFixTest extends TestCase {
                 }
      
                 try {
-                    nObjs = H5.H5Fget_obj_count(file.getFID(), HDF5Constants.H5F_OBJ_LOCAL);
+                    nObjs = H5.H5Fget_obj_count(file.getFID(), HDF5Constants.H5F_OBJ_ALL);
                 } catch (final Exception ex) { 
                      fail("H5.H5Fget_obj_count() failed. "+ ex);
                 }

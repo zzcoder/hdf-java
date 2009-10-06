@@ -99,7 +99,7 @@ public class H5CompoundDSTest extends TestCase {
         assertNotNull(testFile);
 
         testFile.open();
-
+        
         testDataset = (H5CompoundDS)testFile.get(DNAME);
         assertNotNull(testDataset);
     }
@@ -114,7 +114,7 @@ public class H5CompoundDSTest extends TestCase {
         final int fid = testFile.getFID();
         if (fid > 0) {
             int nObjs = 0;
-            try { nObjs = H5.H5Fget_obj_count(fid, HDF5Constants.H5F_OBJ_LOCAL); }
+            try { nObjs = H5.H5Fget_obj_count(fid, HDF5Constants.H5F_OBJ_ALL); }
             catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }
             assertEquals(1, nObjs); // file id should be the only one left open
          }
@@ -434,7 +434,7 @@ public class H5CompoundDSTest extends TestCase {
             }
 
             int nObjs = 0;
-            try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_LOCAL); }
+            try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
             catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }
             assertEquals(1, nObjs); // file id should be the only one left open
             

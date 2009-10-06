@@ -202,7 +202,7 @@ public class TestH5MemoryLeak
                     }
          
                     nObjs = 0;
-                    try { nObjs = H5.H5Fget_obj_count(file.getFID(), HDF5Constants.H5F_OBJ_LOCAL); }
+                    try { nObjs = H5.H5Fget_obj_count(file.getFID(), HDF5Constants.H5F_OBJ_ALL); }
                     catch (final Exception ex) { ; }
                     if (nObjs > 1) {
                         System.err.println("Possible memory leak. Some objects are still open.");
