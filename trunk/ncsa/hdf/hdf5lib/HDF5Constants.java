@@ -172,8 +172,7 @@ public class HDF5Constants
     public static final int H5F_OBJ_DATATYPE = H5F_OBJ_DATATYPE();
     public static final int H5F_OBJ_FILE = H5F_OBJ_FILE();
     public static final int H5F_OBJ_GROUP = H5F_OBJ_GROUP();
-    /*public static final int H5F_OBJ_LOCAL = H5F_OBJ_LOCAL(); BUGGY in 1.8 library */ 
-    public static final int H5F_SCOPE_DOWN = H5F_SCOPE_DOWN();
+    public static final int H5F_OBJ_LOCAL = H5F_OBJ_LOCAL();  
     public static final int H5F_SCOPE_GLOBAL = H5F_SCOPE_GLOBAL();
     public static final int H5F_SCOPE_LOCAL = H5F_SCOPE_LOCAL();
     public static final int H5F_UNLIMITED = H5F_UNLIMITED();
