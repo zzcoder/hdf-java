@@ -826,12 +826,13 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
 
 herr_t H5Gget_obj_info_all( hid_t loc_id, char *group_name, char **objname, int *type, unsigned long *objno)
 {
+    herr_t retVal = 0;
+
     info_all_t info;
     info.objname = objname;
     info.type = type;
     info.objno = objno;
     info.count = 0;
-    herr_t retVal = 0;
    
     retVal = H5Giterate(loc_id, group_name, NULL, obj_info_all, (void *)&info);
     
