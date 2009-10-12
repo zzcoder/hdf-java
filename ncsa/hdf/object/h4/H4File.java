@@ -33,6 +33,9 @@ public class H4File extends FileFormat
 {
     public static final long serialVersionUID = HObject.serialVersionUID;
 
+    // make sure that the library is loaded.
+    static { HDFLibrary.loadH4Lib(); }
+
     /**
      * the file access flag.
      */
@@ -119,7 +122,6 @@ public class H4File extends FileFormat
     public H4File(String fileName, int access)
     {
         super(fileName);
-
         isReadOnly = (access == READ);
         objList = new Vector();
 
