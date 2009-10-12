@@ -214,37 +214,42 @@ import java.io.*;
  *  <p>
  *  <hr>
  */
-public class HDFLibrary {
-
-    private final static String JHI_VERSION= "2.5";
-
+public class HDFLibrary 
+{
     public final static String HDFPATH_PROPERTY_KEY = "ncsa.hdf.hdflib.HDFLibrary.hdflib";
 
-    static
+    private final static String JHI_VERSION= "2.5";
+    private static boolean isLibraryLoaded = false;
+
+    static { loadH4Lib(); }
+    
+    public static void loadH4Lib()
     {
-        boolean done = false;
-        String filename = System.getProperty(HDFPATH_PROPERTY_KEY, null);
+        if (isLibraryLoaded) // load only once
+            return;
         
+        String filename = System.getProperty(HDFPATH_PROPERTY_KEY, null);
+      
         if ((filename != null) && (filename.length() > 0))
         {
             File h5dll = new File(filename);
             if (h5dll.exists() && h5dll.canRead() && h5dll.isFile()) {
                 try {
                     System.load(filename);
-                    done = true;
-                    } catch (Throwable err) { done = false; }
+                    isLibraryLoaded = true;
+                    } catch (Throwable err) { isLibraryLoaded = false; }
             } else {
-                done = false;
+                isLibraryLoaded = false;
                 throw (new UnsatisfiedLinkError("Invalid HDF4 library, "+filename));
             }
         }
         
-        if (!done)
+        if (!isLibraryLoaded)
         {
             try {
                 System.loadLibrary("jhdf");
-                done = true;
-            } catch (Throwable err) { err.printStackTrace(); done = false; }
+                isLibraryLoaded = true;
+            } catch (Throwable err) { err.printStackTrace(); isLibraryLoaded = false; }
         }
 
         try { 

@@ -350,11 +350,11 @@ HyperlinkListener, ChangeListener, DropTargetListener
             }
         }
 
-        if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4) == null) {
+        if ( FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4)== null) {
             setEnabled(h4GUIs, false);
         }
 
-        if (FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) == null) {
+        if ( FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5) == null) {
             setEnabled(h5GUIs, false);
         }
         
