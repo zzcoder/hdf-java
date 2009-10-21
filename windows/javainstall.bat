@@ -73,7 +73,7 @@ rem Setup our environment
 	
 	if not exist "%INSTALLDIR%" (
 		mkdir %INSTALLDIR%
-		if !errorlevel! neq 0 (
+		if %errorlevel% neq 0 (
 			exit /b
 		)
 	) else (
@@ -110,6 +110,8 @@ rem Install the HDF Java Libraries.
 	call :safe_copy win32lib\ext\*.jar %INSTALLDIR%\ext
 	call :safe_copy win32lib\*.lib %INSTALLDIR%
 	call :safe_copy win32lib\*.dll %INSTALLDIR%
+	if %nerrors% equ 0
+		echo.Installing Java Libraries successful
 	
     exit /b %nerrors%
 
@@ -180,7 +182,7 @@ rem Handle errors
 :error
 
     rem For now, our error handling consists of setting nerrors and quitting
-    echo.HDF check failed.
+    echo.HDF install failed.
     set /a nerrors=%nerrors%+1
     goto end
     
@@ -193,7 +195,7 @@ rem This is where the magic happens
 
     call :parse_params %*
     if %errorlevel% neq 0 (
-        if !errorlevel! equ 1 (
+        if %errorlevel% equ 1 (
             rem This isn't an error case-- this means /? was specified.  Simply
             rem quit.
             goto end

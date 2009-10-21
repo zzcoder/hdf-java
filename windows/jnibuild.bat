@@ -132,7 +132,7 @@ rem Build the HDF Java Native Wrappers.
     for %%a in (Release) DO (
         echo.Building %hdf_platform% %%a Java Native Wrappers...
         devenv %hdf_sln% %ccflags% /rebuild "%%a|%hdf_platform%"
-        if !errorlevel! neq 0 exit /b
+        if %errorlevel% neq 0 exit /b %errorlevel%
     )
 
     exit /b 0
@@ -155,7 +155,7 @@ rem This is where the magic happens
 
     call :parse_params %*
     if %errorlevel% neq 0 (
-        if !errorlevel! equ 1 (
+        if %errorlevel% equ 1 (
             rem This isn't an error case-- this means /? was specified.  Simply
             rem quit.
             goto end
