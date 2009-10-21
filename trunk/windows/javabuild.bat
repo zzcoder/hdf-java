@@ -82,7 +82,7 @@ rem Setup our environment
 	)
 	if "%TESTLIBDIR%"=="" (
 		set TESTLIBDIR=%TESTDIR%\win32lib
-		if !errorlevel! neq 0 (
+		if %errorlevel% neq 0 (
 			exit /b
 		)
 	)
@@ -117,29 +117,30 @@ rem Build the HDF Java Sources.
     rem Build sources
     echo.Building Java Sources...
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\hdf5lib\*.java
-    if !errorlevel! neq 0 exit /b
+    if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\hdf5lib\exceptions\*.java
-    if !errorlevel! neq 0 exit /b
+    if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\hdflib\*.java
-    if !errorlevel! neq 0 exit /b
+    if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\object\*.java
-    if !errorlevel! neq 0 exit /b
+    if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\object\fits\*.java
-    if !errorlevel! neq 0 exit /b
+    if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\object\h4\*.java
-    if !errorlevel! neq 0 exit /b
+    if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\object\h5\*.java
-    if !errorlevel! neq 0 exit /b
+    if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\object\nc2\*.java
-    if !errorlevel! neq 0 exit /b
+    if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ext\npoess\*.java
-    if !errorlevel! neq 0 exit /b
+    if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\view\*.java
-    if !errorlevel! neq 0 exit /b
+    if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\test\object\*.java
-    if !errorlevel! neq 0 exit /b
+    if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\test\unittests\*.java
-    if !errorlevel! neq 0 exit /b
+    if %errorlevel% neq 0 exit /b
+    echo.Building Java Sources Successful
 
     exit /b 0
 	
@@ -161,25 +162,26 @@ rem Build the HDF JARs.
 	call :safe_copy %TESTDIR%\ncsa\hdf\view\*.html ncsa\hdf\view
 	
     rem Build jars
-	echo.Jaring %%a ...
+	echo.Jaring ...
 	%java_pack% -cf jhdf.jar ncsa\hdf\hdflib
-	if !errorlevel! neq 0 exit /b
+	if %errorlevel% neq 0 exit /b
 	%java_pack% -cf jhdf5.jar ncsa\hdf\hdf5lib
-	if !errorlevel! neq 0 exit /b
+	if %errorlevel% neq 0 exit /b
 	%java_pack% -cf jhdfview.jar ncsa\hdf\view
-	if !errorlevel! neq 0 exit /b
+	if %errorlevel% neq 0 exit /b
 	%java_pack% -cf jhdfobj.jar ncsa\hdf\object\*.class
-	if !errorlevel! neq 0 exit /b
+	if %errorlevel% neq 0 exit /b
 	%java_pack% -cf jhdf4obj.jar ncsa\hdf\object\h4\*.class
-	if !errorlevel! neq 0 exit /b
+	if %errorlevel% neq 0 exit /b
 	%java_pack% -cf jhdf5obj.jar ncsa\hdf\object\h5\*.class
-	if !errorlevel! neq 0 exit /b
+	if %errorlevel% neq 0 exit /b
 	%java_pack% -cf nc2obj.jar ncsa\hdf\object\nc2\*.class
-	if !errorlevel! neq 0 exit /b
+	if %errorlevel% neq 0 exit /b
 	%java_pack% -cf fitsobj.jar ncsa\hdf\object\fits\*.class
-	if !errorlevel! neq 0 exit /b
+	if %errorlevel% neq 0 exit /b
 	%java_pack% -cf npoess.jar ext\npoess\*.class
-	if !errorlevel! neq 0 exit /b
+	if %errorlevel% neq 0 exit /b
+	echo.Jaring Successful
 
 	popd
 	
@@ -252,7 +254,7 @@ rem This is where the magic happens
 
     call :parse_params %*
     if %errorlevel% neq 0 (
-        if !errorlevel! equ 1 (
+        if %errorlevel% equ 1 (
             rem This isn't an error case-- this means /? was specified.  Simply
             rem quit.
             goto end

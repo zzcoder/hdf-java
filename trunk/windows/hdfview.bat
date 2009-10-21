@@ -82,7 +82,7 @@ rem This is where the magic happens
 
     call :parse_params %*
     if %errorlevel% neq 0 (
-        if !errorlevel! equ 1 (
+        if %errorlevel% equ 1 (
             rem This isn't an error case-- this means /? was specified.  Simply
             rem quit.
             goto end
