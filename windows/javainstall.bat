@@ -110,8 +110,6 @@ rem Install the HDF Java Libraries.
 	call :safe_copy win32lib\ext\*.jar %INSTALLDIR%\ext
 	call :safe_copy win32lib\*.lib %INSTALLDIR%
 	call :safe_copy win32lib\*.dll %INSTALLDIR%
-	if %nerrors% equ 0
-		echo.Installing Java Libraries successful
 	
     exit /b %nerrors%
 
@@ -209,25 +207,25 @@ rem This is where the magic happens
     
     call :setup
     if %errorlevel% neq 0 (
-        echo.Error setting up build environment.
+        echo.Error setting up install environment.
         goto error
     )
     
     call :installall
     if %errorlevel% neq 0 (
-        echo.Error setting up build environment.
+        echo.Error installing code.
         goto error
     )
     
     call :installdocs
     if %errorlevel% neq 0 (
-        echo.Error setting up build environment.
+        echo.Error installing docs.
         goto error
     )
     
     call :installview
     if %errorlevel% neq 0 (
-        echo.Error setting up build environment.
+        echo.Error installing hdfview.
         goto error
     )
 
