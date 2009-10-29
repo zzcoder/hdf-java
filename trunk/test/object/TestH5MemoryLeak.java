@@ -178,14 +178,14 @@ public class TestH5MemoryLeak
                         for (int j=0; j<DNAMES.length; j++) {
                             dset = (Dataset)file.get(DNAMES[j]);
                             dset.init();
-                            final Object data = dset.getData();
+                           final Object data = dset.getData();
                             dset.write(data);
                             dset.getMetadata();
                             
                             // copy data into a new datast
                             if (dset instanceof ScalarDS) {
                                 dset = dset.copy(rootGrp, DNAMES[j]+"_copy"+openOption, DIMs, data);
-                            }
+                           }
                         }
                         
                         // groups
@@ -262,7 +262,7 @@ public class TestH5MemoryLeak
     {
         H5File file=null;
         Group g0, g1, g00;
-        final Dataset[] dsets = new Dataset[10];
+        final Dataset[] dsets = new Dataset[11];
         
         final H5Datatype typeInt = new H5Datatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, -1);
         final H5Datatype typeFloat = new H5Datatype(Datatype.CLASS_FLOAT, DATATYPE_SIZE, -1, -1);
@@ -293,6 +293,7 @@ public class TestH5MemoryLeak
         dsets[8] = file.createCompoundDS(NAME_DATASET_COMPOUND, null, DIMs, null, CHUNKs, 9, COMPOUND_MEMBER_NAMES, COMPOUND_MEMBER_DATATYPES, null, DATA_COMP);
         dsets[9] = file.createCompoundDS(NAME_DATASET_COMPOUND_SUB, null, DIMs, null, CHUNKs, 9, COMPOUND_MEMBER_NAMES, COMPOUND_MEMBER_DATATYPES, null, DATA_COMP);
         dsets[10] = file.createScalarDS  (NAME_DATASET_STR_VLEN, null, typeStrVlen, DIMs, null, CHUNKs, 9, DATA_STR);
+
         
         for (int i=0; i<dsets.length; i++) {
             dsets[i].writeMetadata(ATTRIBUTE_STR);
@@ -302,7 +303,7 @@ public class TestH5MemoryLeak
         file.createDatatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, -1, NAME_DATATYPE_INT);
         file.createDatatype(Datatype.CLASS_FLOAT, DATATYPE_SIZE, -1, -1, NAME_DATATYPE_FLOAT);
         file.createDatatype(Datatype.CLASS_STRING, STR_LEN, -1, -1, NAME_DATATYPE_STR);
-
+ 
         try { file.close(); } catch (final Exception ex) {}
         
         return file;

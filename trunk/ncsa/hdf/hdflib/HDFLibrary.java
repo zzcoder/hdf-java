@@ -249,7 +249,7 @@ public class HDFLibrary
             try {
                 System.loadLibrary("jhdf");
                 isLibraryLoaded = true;
-            } catch (Throwable err) { err.printStackTrace(); isLibraryLoaded = false; }
+            } catch (Throwable err) { isLibraryLoaded = false; }
         }
 
         try { 
