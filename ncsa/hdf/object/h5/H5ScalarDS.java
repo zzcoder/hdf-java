@@ -482,6 +482,7 @@ public class H5ScalarDS extends ScalarDS
 
             dataset = new H5ScalarDS(pgroup.getFileFormat(), dstName, path);
             if (buff != null) {
+                dataset.init();
                 dataset.write(buff);
             }
             
