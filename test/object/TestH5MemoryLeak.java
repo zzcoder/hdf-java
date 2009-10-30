@@ -1,7 +1,12 @@
 package test.object;
 
+import java.text.DecimalFormat;
 import java.util.Vector;
 import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryUsage;
+
+import com.sun.management.OperatingSystemMXBean;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
@@ -130,7 +135,10 @@ public class TestH5MemoryLeak
         int nObjs = 0; // number of object left open
         Dataset dset =null;
         File tmpFile = null;
-        
+        OperatingSystemMXBean osm = null;
+        try { H5.H5Eclear();} catch (Exception ex) {}
+        DecimalFormat df = new DecimalFormat("000.00#E0#");
+     
         for (int i=0; i<DIM_SIZE; i++) {
             DATA_INT[i] = i;
             DATA_LONG[i] = i;
@@ -145,75 +153,92 @@ public class TestH5MemoryLeak
         DATA_COMP.add(2, DATA_STR);
         DATA_COMP.add(3, DATA_LONG);
  
+        int count = 0;
+        long KB = 1024;
+        System.out.flush();
+        System.out.println("\n\nNo. of loops\tUsed(KB)\tTotal(KB)\tFree(KB)\tMax(KB)\n"+
+                           "_______________________________________________________________________\n");
         while(true)
         {
+            count ++;
+            if (count % 100 == 0) {  
+                osm = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean() ;
+                System.out.println(
+                  df.format(count) + "   \t" +   
+                  df.format((osm.getCommittedVirtualMemorySize()) / KB) + "      \t" +   
+                  df.format(osm.getTotalPhysicalMemorySize() / KB) + "    \t" +   
+                  df.format(osm.getFreePhysicalMemorySize() / KB) + "     \t" +  
+                  df.format(Runtime.getRuntime().maxMemory() / KB)); 
+            }   
+            
             tmpFile = null;
             try {
                 try {
                     tmpFile = createTestFile();
                 } catch (final Exception ex) {
+                    ex.printStackTrace();
                     System.err.print("createTestFile() failed.");
                     tmpFile = null;
                     break;
                 }
                 
-                // test two open options: open full tree or open individual object only
-                 for (int openOption=0; openOption<2; openOption++)
-                {
-                    nObjs = 0;
-                    final H5File file = new H5File(NAME_FILE_H5, FileFormat.WRITE);
-                    
-                    if (openOption == 0) {
-                        try { 
-                            file.open(); // opent the full tree
-                        } catch (final Exception ex) { 
-                            System.err.println("file.open(). "+ ex);
-                        }
-                    }
-                      
-                    try {
-                        final Group rootGrp = (Group) file.get("/");
-                        
-                        // datasets
-                        for (int j=0; j<DNAMES.length; j++) {
-                            dset = (Dataset)file.get(DNAMES[j]);
-                            dset.init();
-                           final Object data = dset.getData();
-                            dset.write(data);
-                            dset.getMetadata();
-                            
-                            // copy data into a new datast
-                            if (dset instanceof ScalarDS) {
-                                dset = dset.copy(rootGrp, DNAMES[j]+"_copy"+openOption, DIMs, data);
-                           }
-                        }
-                        
-                        // groups
-                        file.get(NAME_GROUP);
-                        file.get(NAME_GROUP_ATTR);
-                        file.get(NAME_GROUP_SUB);
-
-                        // datatypes
-                        file.get(NAME_DATATYPE_INT);
-                        file.get(NAME_DATATYPE_FLOAT);
-                        file.get(NAME_DATATYPE_STR);
-                    } catch (final Exception ex) { 
-                         System.err.println("file.get(). "+ ex);
-                    }
-         
-                    nObjs = 0;
-                    try { nObjs = H5.H5Fget_obj_count(file.getFID(), HDF5Constants.H5F_OBJ_ALL); }
-                    catch (final Exception ex) { ; }
-                    if (nObjs > 1) {
-                        System.err.println("Possible memory leak. Some objects are still open.");
-                    }
-                    
-                    try {            
-                        file.close();
-                    } catch (final Exception ex) { 
-                         System.err.println("file.close() failed. "+ ex);
-                    }
-                } // for (int openOption=0; openOption<2; openOption++)
+//                // test two open options: open full tree or open individual object only
+//                 for (int openOption=0; openOption<2; openOption++)
+//                {
+//                    nObjs = 0;
+//                    final H5File file = new H5File(NAME_FILE_H5, FileFormat.WRITE);
+//                    
+//                    if (openOption == 0) {
+//                        try { 
+//                            file.open(); // open the full tree
+//                        } catch (final Exception ex) { 
+//                            System.err.println("file.open(). "+ ex);
+//                        }
+//                    }
+//                      
+//                    try {
+//                        final Group rootGrp = (Group) file.get("/");
+//                        
+//                        // datasets
+//                        for (int j=0; j<DNAMES.length; j++) {
+//                            dset = (Dataset)file.get(DNAMES[j]);
+//                            dset.init();
+//                           final Object data = dset.getData();
+//                            dset.write(data);
+//                            dset.getMetadata();
+//                            
+//                            // copy data into a new datast
+//                            if (dset instanceof ScalarDS) {
+//                                dset = dset.copy(rootGrp, DNAMES[j]+"_copy"+openOption, DIMs, data);
+//                           }
+//                        }
+//                        
+//                        // groups
+//                        file.get(NAME_GROUP);
+//                        file.get(NAME_GROUP_ATTR);
+//                        file.get(NAME_GROUP_SUB);
+//
+//                        // datatypes
+//                        file.get(NAME_DATATYPE_INT);
+//                        file.get(NAME_DATATYPE_FLOAT);
+//                        file.get(NAME_DATATYPE_STR);
+//                    } catch (final Exception ex) { 
+//                         System.err.println("file.get(). "+ ex);
+//                    }
+//         
+//                    nObjs = 0;
+//                    try { nObjs = H5.H5Fget_obj_count(file.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+//                    catch (final Exception ex) { ; }
+//                    if (nObjs > 1) {
+//                        System.err.println("Possible memory leak. Some objects are still open.");
+//                    }
+//
+//                    try {            
+//                        file.close();
+//                    } catch (final Exception ex) { 
+//                         System.err.println("file.close() failed. "+ ex);
+//                    }
+//                } // for (int openOption=0; openOption<2; openOption++)
             } finally {
                 // delete the testing file
                 if (tmpFile != null) {
@@ -262,8 +287,7 @@ public class TestH5MemoryLeak
     {
         H5File file=null;
         Group g0, g1, g00;
-        final Dataset[] dsets = new Dataset[11];
-        
+         
         final H5Datatype typeInt = new H5Datatype(Datatype.CLASS_INTEGER, DATATYPE_SIZE, -1, -1);
         final H5Datatype typeFloat = new H5Datatype(Datatype.CLASS_FLOAT, DATATYPE_SIZE, -1, -1);
         final H5Datatype typeStr = new H5Datatype(Datatype.CLASS_STRING, STR_LEN, -1, -1);
@@ -282,6 +306,7 @@ public class TestH5MemoryLeak
         g1.writeMetadata(ATTRIBUTE_STR);
         g1.writeMetadata(ATTRIBUTE_INT_ARRAY);
 
+        final Dataset[] dsets = new Dataset[7];
         dsets[0] = file.createScalarDS  (NAME_DATASET_INT, null, typeInt, DIMs, null, CHUNKs, 9, DATA_INT);
         dsets[1] = file.createScalarDS  (NAME_DATASET_FLOAT, null, typeFloat, DIMs, null, CHUNKs, 9, DATA_FLOAT);
         dsets[2] = file.createScalarDS  (NAME_DATASET_CHAR, null, typeChar, DIMs, null, CHUNKs, 9, DATA_BYTE);
@@ -289,10 +314,10 @@ public class TestH5MemoryLeak
         dsets[4] = file.createScalarDS  (NAME_DATASET_ENUM, null, typeEnum, DIMs, null, CHUNKs, 9, DATA_ENUM);
         dsets[5] = file.createScalarDS  (NAME_DATASET_SUB, g0, typeInt, DIMs, null, CHUNKs, 9, DATA_INT);
         dsets[6] = file.createScalarDS  (NAME_DATASET_SUB_SUB, g00, typeFloat, DIMs, null, CHUNKs, 9, DATA_FLOAT);
-        dsets[7] = file.createImage     (NAME_DATASET_IMAGE, null, typeInt, DIMs, null, CHUNKs, 9, 1, -1, DATA_BYTE);
-        dsets[8] = file.createCompoundDS(NAME_DATASET_COMPOUND, null, DIMs, null, CHUNKs, 9, COMPOUND_MEMBER_NAMES, COMPOUND_MEMBER_DATATYPES, null, DATA_COMP);
-        dsets[9] = file.createCompoundDS(NAME_DATASET_COMPOUND_SUB, null, DIMs, null, CHUNKs, 9, COMPOUND_MEMBER_NAMES, COMPOUND_MEMBER_DATATYPES, null, DATA_COMP);
-        dsets[10] = file.createScalarDS  (NAME_DATASET_STR_VLEN, null, typeStrVlen, DIMs, null, CHUNKs, 9, DATA_STR);
+//        dsets[7] = file.createImage     (NAME_DATASET_IMAGE, null, typeInt, DIMs, null, CHUNKs, 9, 1, -1, DATA_BYTE);
+//        dsets[8] = file.createCompoundDS(NAME_DATASET_COMPOUND, null, DIMs, null, CHUNKs, 9, COMPOUND_MEMBER_NAMES, COMPOUND_MEMBER_DATATYPES, null, DATA_COMP);
+//        dsets[9] = file.createCompoundDS(NAME_DATASET_COMPOUND_SUB, null, DIMs, null, CHUNKs, 9, COMPOUND_MEMBER_NAMES, COMPOUND_MEMBER_DATATYPES, null, DATA_COMP);
+//        dsets[10] = file.createScalarDS  (NAME_DATASET_STR_VLEN, null, typeStrVlen, DIMs, null, CHUNKs, 9, DATA_STR);
 
         
         for (int i=0; i<dsets.length; i++) {
@@ -304,6 +329,14 @@ public class TestH5MemoryLeak
         file.createDatatype(Datatype.CLASS_FLOAT, DATATYPE_SIZE, -1, -1, NAME_DATATYPE_FLOAT);
         file.createDatatype(Datatype.CLASS_STRING, STR_LEN, -1, -1, NAME_DATATYPE_STR);
  
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(file.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { ; }
+        if (nObjs > 1) {
+            System.err.println("Possible memory leak. Some objects are still open." +nObjs);
+        }
+
+        
         try { file.close(); } catch (final Exception ex) {}
         
         return file;
