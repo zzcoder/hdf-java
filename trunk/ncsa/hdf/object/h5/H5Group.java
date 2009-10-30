@@ -285,6 +285,8 @@ public class H5Group extends Group
 
          // create a new group and add ot to the parent node
         int gid = H5.H5Gcreate(file.open(), fullPath, -1);
+        try {H5.H5Gclose(gid);} catch (Exception ex) {}
+        
         byte[] ref_buf = H5.H5Rcreate(
             file.open(),
             fullPath,
