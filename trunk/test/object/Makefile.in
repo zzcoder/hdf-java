@@ -36,6 +36,7 @@ runtests: all
 check: all
 #	./runtests.sh
 	./TestH5Object.sh
+	./TestH5MemoryLeak.sh
 
 clean:
 	$(RM) -f *.class
