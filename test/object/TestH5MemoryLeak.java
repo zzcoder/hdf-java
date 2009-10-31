@@ -115,7 +115,7 @@ public class TestH5MemoryLeak
         try { H5.H5Eclear();} catch (Exception ex) {}
         System.out.flush();
 
-        System.out.println("\n\nCheck memory leak (may take 5 to 10 mintues) ...");
+        System.out.println("\nCheck memory leak (may take 5 to 10 mintues) ...");
         try {
             if (is_userfile)
                 retValue = test_user_file(args[0]);
@@ -124,9 +124,9 @@ public class TestH5MemoryLeak
         } catch (Throwable err) { retValue=1; }
         
         if (retValue <= 0)
-            System.out.println("PASSED:\t\tcheck memory leak.");
+            System.out.println("PASSED:\tcheck memory leak.\n");
         else
-            System.out.println("FAILED***:\t\tcheck memory leak.");        
+            System.out.println("FAILED***:\tcheck memory leak.\n");        
     }
  
     private static final long test_user_file(String fname) throws Exception
