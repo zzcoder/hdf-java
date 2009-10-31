@@ -112,8 +112,10 @@ public class TestH5MemoryLeak
             is_userfile = (tmpFile.exists() && tmpFile.isFile());
         }
 
-        System.out.println("\n\nCheck memory leak (may take 5 to 10 mintues) ...");
+        try { H5.H5Eclear();} catch (Exception ex) {}
         System.out.flush();
+
+        System.out.println("\n\nCheck memory leak (may take 5 to 10 mintues) ...");
         try {
             if (is_userfile)
                 retValue = test_user_file(args[0]);
@@ -131,7 +133,6 @@ public class TestH5MemoryLeak
     {
         H5File testFile = null;
         OperatingSystemMXBean osm = null;
-        try { H5.H5Eclear();} catch (Exception ex) {}
         DecimalFormat df = new DecimalFormat("000.00#E0#");
         
         int count = 0;
@@ -188,7 +189,6 @@ public class TestH5MemoryLeak
         Dataset dset =null;
         File tmpFile = null;
         OperatingSystemMXBean osm = null;
-        try { H5.H5Eclear();} catch (Exception ex) {}
         DecimalFormat df = new DecimalFormat("000.00#E0#");
      
         for (int i=0; i<DIM_SIZE; i++) {
@@ -215,13 +215,13 @@ public class TestH5MemoryLeak
                            "_______________________________________________________________________\n");
         }
         
-        while(count<1000000)
+        while(count<10000)
         {
             count ++;
             if (count % 100 == 0) {
                 osm = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean() ;
                 mem1 = osm.getCommittedVirtualMemorySize();
-                if (count>10000) {
+                if (count>1000) {
                     sum += (mem1-mem0);
                     sumStr = df.format((sum / KB));
                  }
