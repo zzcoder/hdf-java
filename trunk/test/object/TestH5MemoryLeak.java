@@ -24,6 +24,8 @@ public class TestH5MemoryLeak
     /** Name of test file */ 
     private final static String NAME_FILE_H5="TestH5MemoryLeak.h5";
     
+    private final static boolean DEBUG = false;
+    
     /** Name of test groups */
     private final static String NAME_GROUP = "/g0";
     private final static String NAME_GROUP_ATTR = "/g0_attr";
@@ -102,6 +104,7 @@ public class TestH5MemoryLeak
     public static void main(final String[] args) 
     {
         boolean is_userfile = false;
+        long retValue = 0;
 
         if (args.length > 0)
         {
@@ -109,28 +112,77 @@ public class TestH5MemoryLeak
             is_userfile = (tmpFile.exists() && tmpFile.isFile());
         }
 
+        System.out.println("\n\nCheck memory leak (may take 5 to 10 mintues) ...");
+        System.out.flush();
         try {
             if (is_userfile)
-                test_user_file(args[0]);
+                retValue = test_user_file(args[0]);
             else
-                test_default_file();
-        } catch (Throwable err) { err.printStackTrace(); }
+                retValue = test_default_file();
+        } catch (Throwable err) { retValue=1; }
+        
+        if (retValue <= 0)
+            System.out.println("PASSED:\t\tcheck memory leak.");
+        else
+            System.out.println("FAILED***:\t\tcheck memory leak.");        
     }
  
-    private static final void test_user_file(String fname) throws Exception
+    private static final long test_user_file(String fname) throws Exception
     {
         H5File testFile = null;
+        OperatingSystemMXBean osm = null;
+        try { H5.H5Eclear();} catch (Exception ex) {}
+        DecimalFormat df = new DecimalFormat("000.00#E0#");
         
-        while(true) {
+        int count = 0;
+        String sumStr="-----";
+        long KB = 1024, mem0=0, mem1=0, sum=0;
+        
+        if (DEBUG) {
+            System.out.flush();
+            System.out.println("\n\nNo. of loops\tIncrease\tUsed(KB)\tTotal(KB)\tFree(KB)\tMax(KB)\n"+
+                           "_______________________________________________________________________\n");
+        }
+        
+        while(count<10000)
+        {
+            count ++;
+            if (count % 100 == 0) {
+                osm = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean() ;
+                mem1 = osm.getCommittedVirtualMemorySize();
+                if (count>1000) {
+                    sum += (mem1-mem0);
+                    sumStr = df.format((sum / KB));
+                 }
+                
+                if (sum > 0)
+                    break;
+                
+
+                if (DEBUG) {
+                    System.out.println(
+                            df.format(count) + "   \t" +
+                            sumStr + "    \t" +
+                            df.format((mem1 / KB)) + "    \t" +
+                            df.format(osm.getTotalPhysicalMemorySize() / KB) + "   \t" +
+                            df.format(osm.getFreePhysicalMemorySize() / KB) + "    \t" +
+                            df.format(Runtime.getRuntime().maxMemory() / KB));
+                }
+
+                mem0 = mem1;
+            }
+
             testFile = new H5File(fname, H5File.READ);
             testFile.open();
             testFile.getRootNode();
             try { Thread.sleep(100); } catch (Exception ex) {;}
             testFile.close();
         }
+        
+        return sum;
     }
 
-    private static final void test_default_file()
+    private static final long test_default_file()
     {
         int nObjs = 0; // number of object left open
         Dataset dset =null;
@@ -154,23 +206,43 @@ public class TestH5MemoryLeak
         DATA_COMP.add(3, DATA_LONG);
  
         int count = 0;
-        long KB = 1024;
-        System.out.flush();
-        System.out.println("\n\nNo. of loops\tUsed(KB)\tTotal(KB)\tFree(KB)\tMax(KB)\n"+
+        String sumStr="-----";
+        long KB = 1024, mem0=0, mem1=0, sum=0;
+        
+        if (DEBUG) {
+            System.out.flush();
+            System.out.println("\n\nNo. of loops\tIncrease\tUsed(KB)\tTotal(KB)\tFree(KB)\tMax(KB)\n"+
                            "_______________________________________________________________________\n");
-        while(true)
+        }
+        
+        while(count<1000000)
         {
             count ++;
-            if (count % 100 == 0) {  
+            if (count % 100 == 0) {
                 osm = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean() ;
-                System.out.println(
-                  df.format(count) + "   \t" +   
-                  df.format((osm.getCommittedVirtualMemorySize()) / KB) + "      \t" +   
-                  df.format(osm.getTotalPhysicalMemorySize() / KB) + "    \t" +   
-                  df.format(osm.getFreePhysicalMemorySize() / KB) + "     \t" +  
-                  df.format(Runtime.getRuntime().maxMemory() / KB)); 
-            }   
-            
+                mem1 = osm.getCommittedVirtualMemorySize();
+                if (count>10000) {
+                    sum += (mem1-mem0);
+                    sumStr = df.format((sum / KB));
+                 }
+                
+                if (sum > 0)
+                    break;
+                
+
+                if (DEBUG) {
+                    System.out.println(
+                            df.format(count) + "   \t" +
+                            sumStr + "    \t" +
+                            df.format((mem1 / KB)) + "    \t" +
+                            df.format(osm.getTotalPhysicalMemorySize() / KB) + "   \t" +
+                            df.format(osm.getFreePhysicalMemorySize() / KB) + "    \t" +
+                            df.format(Runtime.getRuntime().maxMemory() / KB));
+                }
+
+                mem0 = mem1;
+            }
+
             tmpFile = null;
             try {
                 try {
@@ -246,6 +318,8 @@ public class TestH5MemoryLeak
                 }
             }
         } // while (true)
+        
+        return sum;
     }
     
     /**
