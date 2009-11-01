@@ -718,6 +718,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fill_1value
 
     byteP = ENVPTR->GetByteArrayElements(ENVPAR value,&isCopy);
     status = H5Pset_fill_value((hid_t)plist_id, (hid_t)type_id, byteP);
+    ENVPTR->ReleaseByteArrayElements(ENVPAR value,byteP,JNI_ABORT);
 
     return status;
 }

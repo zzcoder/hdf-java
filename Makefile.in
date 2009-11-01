@@ -239,9 +239,9 @@ clean-docs:
 	$(RM) -r *.html
 
 check: install $(TESTPACKAGES)
-	cd test; \
-	$(MAKE) check;
 	cd examples; \
+	$(MAKE) check;
+	cd test; \
 	$(MAKE) check;
 
 checklink: install linktest
