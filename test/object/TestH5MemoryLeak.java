@@ -245,7 +245,6 @@ public class TestH5MemoryLeak
                 try {
                     tmpFile = createTestFile();
                 } catch (final Exception ex) {
-                    ex.printStackTrace();
                     sum = 1;
                     tmpFile = null;
                     break;
