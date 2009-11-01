@@ -219,10 +219,10 @@ public class HDF5LibraryException extends HDF5Exception
             return "some MPI function failed";
         } else if (err_code == HDF5Constants.H5E_MPIERRSTR ) {
             return "MPI Error String";
-        } else if (err_code == HDF5Constants.H5E_CANTRECV ) {
-            return "can't receive messages from processes";
-        } else if (err_code == HDF5Constants.H5E_CANTALLOC ) {
-            return "can't allocate from file";
+//        } else if (err_code == HDF5Constants.H5E_CANTRECV ) {
+//            return "can't receive messages from processes";
+//        } else if (err_code == HDF5Constants.H5E_CANTALLOC ) {
+//            return "can't allocate from file";
         } else if (err_code == HDF5Constants.H5E_NOFILTER ) {
             return "requested filter is not available";
         } else if (err_code == HDF5Constants.H5E_CALLBACK ) {

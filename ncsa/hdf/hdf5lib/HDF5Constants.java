@@ -518,7 +518,7 @@ public class HDF5Constants
     private static native final int H5E_CACHE();
     private static native final int H5E_CALLBACK();
     private static native final int H5E_CANAPPLY();
-    private static native final int H5E_CANTALLOC();
+//    private static native final int H5E_CANTALLOC();
     private static native final int H5E_CANTCLIP();
     private static native final int H5E_CANTCLOSEFILE();
     private static native final int H5E_CANTCONVERT();
@@ -541,7 +541,7 @@ public class HDF5Constants
     private static native final int H5E_CANTNEXT();
     private static native final int H5E_CANTOPENFILE();
     private static native final int H5E_CANTOPENOBJ();
-    private static native final int H5E_CANTRECV();
+//    private static native final int H5E_CANTRECV();
     private static native final int H5E_CANTREGISTER();
     private static native final int H5E_CANTRELEASE();
     private static native final int H5E_CANTSELECT();
