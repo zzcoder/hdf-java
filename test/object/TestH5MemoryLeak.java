@@ -225,10 +225,6 @@ public class TestH5MemoryLeak
                     sumStr = df.format((sum / KB));
                  }
                 
-                if (sum > 0)
-                    break;
-                
-
                 if (DEBUG) {
                     System.out.println(
                             df.format(count) + "   \t" +
@@ -237,6 +233,9 @@ public class TestH5MemoryLeak
                             df.format(osm.getTotalPhysicalMemorySize() / KB) + "   \t" +
                             df.format(osm.getFreePhysicalMemorySize() / KB));
                 }
+
+                if (sum > 0)
+                    break;
 
                 mem0 = mem1;
             }
