@@ -75,7 +75,7 @@ public class HDF5Constants
     public static final int H5E_CACHE = H5E_CACHE();
     public static final int H5E_CALLBACK = H5E_CALLBACK();
     public static final int H5E_CANAPPLY = H5E_CANAPPLY();
-    public static final int H5E_CANTALLOC = H5E_CANTALLOC();
+//    public static final int H5E_CANTALLOC = H5E_CANTALLOC(); 
     public static final int H5E_CANTCLIP = H5E_CANTCLIP();
     public static final int H5E_CANTCLOSEFILE = H5E_CANTCLOSEFILE();
     public static final int H5E_CANTCONVERT = H5E_CANTCONVERT();
@@ -98,7 +98,7 @@ public class HDF5Constants
     public static final int H5E_CANTNEXT = H5E_CANTNEXT();
     public static final int H5E_CANTOPENFILE = H5E_CANTOPENFILE();
     public static final int H5E_CANTOPENOBJ = H5E_CANTOPENOBJ();
-    public static final int H5E_CANTRECV = H5E_CANTRECV();
+//    public static final int H5E_CANTRECV = H5E_CANTRECV();
     public static final int H5E_CANTREGISTER = H5E_CANTREGISTER();
     public static final int H5E_CANTRELEASE = H5E_CANTRELEASE();
     public static final int H5E_CANTSELECT = H5E_CANTSELECT();
