@@ -63,7 +63,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5E_1BTREE(JNIEnv *en
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5E_1CACHE(JNIEnv *env, jclass cls) { return H5E_CACHE; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5E_1CALLBACK(JNIEnv *env, jclass cls) { return H5E_CALLBACK; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5E_1CANAPPLY(JNIEnv *env, jclass cls) { return H5E_CANAPPLY; }
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5E_1CANTALLOC(JNIEnv *env, jclass cls) { return H5E_CANTALLOC; }
+/*JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5E_1CANTALLOC(JNIEnv *env, jclass cls) { return H5E_CANTALLOC; }*/
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5E_1CANTCLIP(JNIEnv *env, jclass cls) { return H5E_CANTCLIP; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5E_1CANTCLOSEFILE(JNIEnv *env, jclass cls) { return H5E_CANTCLOSEFILE; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5E_1CANTCONVERT(JNIEnv *env, jclass cls) { return H5E_CANTCONVERT; }
@@ -86,7 +86,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5E_1CANTLOCK(JNIEnv 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5E_1CANTNEXT(JNIEnv *env, jclass cls) { return H5E_CANTNEXT; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5E_1CANTOPENFILE(JNIEnv *env, jclass cls) { return H5E_CANTOPENFILE; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5E_1CANTOPENOBJ(JNIEnv *env, jclass cls) { return H5E_CANTOPENOBJ; }
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5E_1CANTRECV(JNIEnv *env, jclass cls) { return H5E_CANTRECV; }
+/*JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5E_1CANTRECV(JNIEnv *env, jclass cls) { return H5E_CANTRECV; }*/
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5E_1CANTREGISTER(JNIEnv *env, jclass cls) { return H5E_CANTREGISTER; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5E_1CANTRELEASE(JNIEnv *env, jclass cls) { return H5E_CANTRELEASE; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5E_1CANTSELECT(JNIEnv *env, jclass cls) { return H5E_CANTSELECT; }
