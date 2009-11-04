@@ -70,8 +70,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Screate_1simple
     hid_t status;
     jbyte *dimsP, *maxdimsP;
     jboolean isCopy;
-    hsize_t *sa;
-    hsize_t *msa;
+    hsize_t *sa=NULL;
+    hsize_t *msa=NULL;
     int i;
     hsize_t *lp;
     jlong *jlp;
@@ -111,7 +111,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Screate_1simple
             h5JNIFatalError(env,  "H5Screate-simple:  maxdims not pinned");
             return -1;
         }
-    msa = lp = (hsize_t *)malloc(rank * sizeof(hsize_t));
+        msa = lp = (hsize_t *)malloc(rank * sizeof(hsize_t));
         if (msa == NULL) {
             ENVPTR->ReleaseByteArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
             ENVPTR->ReleaseByteArrayElements(ENVPAR maxdims,maxdimsP,JNI_ABORT);
@@ -130,11 +130,12 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Screate_1simple
     status = H5Screate_simple(rank, (const hsize_t *)sa, (const hsize_t *)msa);
     if (maxdimsP != NULL) {
         ENVPTR->ReleaseByteArrayElements(ENVPAR maxdims,maxdimsP,JNI_ABORT);
-        free (msa);
+        if (msa) free (msa);
     }
 
     ENVPTR->ReleaseByteArrayElements(ENVPAR dims,dimsP,0);
-    free (sa);
+
+    if (sa) free (sa);
 
     if (status < 0) {
         h5libraryError(env);
@@ -1017,16 +1018,18 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sget_1select_1bounds
     if (status < 0) {
         ENVPTR->ReleaseLongArrayElements(ENVPAR start,startP,JNI_ABORT);
         ENVPTR->ReleaseLongArrayElements(ENVPAR end,endP,JNI_ABORT);
-        free(strt); free(en);
+        free(strt); 
+        free(en);
         h5libraryError(env);
     } else  {
         for (i = 0; i < rank; i++) {
             startP[i] = strt[i];
             endP[i] = en[i];
         }
-        free(strt); free(en);
         ENVPTR->ReleaseLongArrayElements(ENVPAR start,startP,0);
         ENVPTR->ReleaseLongArrayElements(ENVPAR end,endP,0);
+        free(strt); 
+        free(en);
     }
 
     return (jint)status;

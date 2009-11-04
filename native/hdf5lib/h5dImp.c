@@ -1340,7 +1340,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DwriteString
         (hid_t)file_space_id, (hid_t)xfer_plist_id, wdata);
 
     // now free memory
-    for (i = 0; i < size; ++i) {
+    for (i = 0; i < size; i++) {
        if(wdata[i]) {
            free(wdata[i]);
        }
