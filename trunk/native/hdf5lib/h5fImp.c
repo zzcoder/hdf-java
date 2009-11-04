@@ -452,6 +452,7 @@ JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1name
     if (size < 0) {
         free(aName);
         h5libraryError(env);
+        return -1; 
     }
 
     str = ENVPTR->NewStringUTF(ENVPAR aName);

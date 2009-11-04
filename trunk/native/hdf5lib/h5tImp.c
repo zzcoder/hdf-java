@@ -1211,7 +1211,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1array_1dims
     jint *permP;
     int dlen;
     int i;
-    hsize_t *cdims;
+    hsize_t *cdims=NULL;
     jboolean isCopy;
 
     if ( dims == NULL ) {
@@ -1256,6 +1256,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1array_1dims
             ENVPTR->ReleaseIntArrayElements(ENVPAR perms,permP,0);
         }
     }
+
+    if (cdims) free(cdims);
 
     return (jint)status;
 }

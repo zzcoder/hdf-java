@@ -820,6 +820,9 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
         ENVPTR->ReleaseIntArrayElements(ENVPAR oType,tarr,0);
         ENVPTR->ReleaseLongArrayElements(ENVPAR oRef,refP,0);
     }
+
+    if (oName)
+        free(oName);
     
     return (jint)status;
 }
