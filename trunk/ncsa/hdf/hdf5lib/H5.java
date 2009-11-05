@@ -1090,7 +1090,7 @@ public class H5 {
     throws HDF5Exception, HDF5LibraryException, NullPointerException
     {
         return H5Dwrite(dataset_id, mem_type_id, mem_space_id,
-                file_space_id, xfer_plist_id, obj, true);
+                file_space_id, xfer_plist_id, obj, IS_CRITICAL_PINNING);
     }
 
 
