@@ -244,7 +244,7 @@ public class TestH5MemoryLeak
             try {
                 try {
                     tmpFile = createTestFile();
-                } catch (final Exception ex) {
+                } catch (Exception ex) {
                     sum = 1;
                     tmpFile = null;
                     break;
@@ -254,24 +254,24 @@ public class TestH5MemoryLeak
                  for (int openOption=0; openOption<2; openOption++)
                 {
                     nObjs = 0;
-                    final H5File file = new H5File(NAME_FILE_H5, FileFormat.WRITE);
+                    H5File file = new H5File(NAME_FILE_H5, FileFormat.WRITE);
                     
                     if (openOption == 0) {
                         try { 
                             file.open(); // open the full tree
-                        } catch (final Exception ex) { 
+                        } catch (Exception ex) { 
                             System.err.println("file.open(). "+ ex);
                         }
                     }
                       
                     try {
-                        final Group rootGrp = (Group) file.get("/");
+                        Group rootGrp = (Group) file.get("/");
                         
                         // datasets
                         for (int j=0; j<DNAMES.length; j++) {
                             dset = (Dataset)file.get(DNAMES[j]);
                             dset.init();
-                            final Object data = dset.getData();
+                            Object data = dset.getData();
                             try { dset.write(data); } catch (Exception ex) {}
 
                             dset.getMetadata();
@@ -293,20 +293,20 @@ public class TestH5MemoryLeak
                         file.get(NAME_DATATYPE_INT);
                         file.get(NAME_DATATYPE_FLOAT);
                         file.get(NAME_DATATYPE_STR);
-                    } catch (final Exception ex) { 
+                    } catch (Exception ex) { 
                          System.err.println("file.get(). "+ ex);
                     }
          
                     nObjs = 0;
                     try { nObjs = H5.H5Fget_obj_count(file.getFID(), HDF5Constants.H5F_OBJ_ALL); }
-                    catch (final Exception ex) { ; }
+                    catch (Exception ex) { ; }
                     if (nObjs > 1) {
                         System.err.println("Possible memory leak. Some objects are still open.");
                     }
 
                     try {            
                         file.close();
-                    } catch (final Exception ex) { 
+                    } catch (Exception ex) { 
                          System.err.println("file.close() failed. "+ ex);
                     }
                 } // for (int openOption=0; openOption<2; openOption++)
