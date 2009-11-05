@@ -3103,8 +3103,8 @@ public class H5 {
             theArr = new HDFArray(maximum_size);
             themax = theArr.byteify();
         }
-        int retVal = H5Screate_simple(rank, thecurr,
-                themax);
+
+        int retVal = H5Sset_extent_simple(space_id, rank, thecurr, themax);
 
         thecurr = null;
         themax = null;
