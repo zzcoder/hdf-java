@@ -39,7 +39,7 @@ public class TestH5MemoryLeak
         "/dataset_float", "/dataset_str",
         "/dataset_enum", "/dataset_image",
         "/dataset_comp", NAME_GROUP + "/dataset_int",
-        NAME_GROUP_SUB+ "/dataset_float", NAME_GROUP + "/dataset_comp"/*, "/dataset_str_vlen"*/};
+        NAME_GROUP_SUB+ "/dataset_float", NAME_GROUP + "/dataset_comp", "/dataset_str_vlen"};
     private final static String NAME_DATASET_CHAR           = DNAMES[0];
     private final static String NAME_DATASET_INT            = DNAMES[1];
     private final static String NAME_DATASET_FLOAT          = DNAMES[2];
@@ -50,7 +50,7 @@ public class TestH5MemoryLeak
     private final static String NAME_DATASET_SUB            = DNAMES[7];
     private final static String NAME_DATASET_SUB_SUB        = DNAMES[8];
     private final static String NAME_DATASET_COMPOUND_SUB   = DNAMES[9];
-//    private final static String NAME_DATASET_STR_VLEN       = DNAMES[10];
+    private final static String NAME_DATASET_STR_VLEN       = DNAMES[10];
     
     /** Name of test dataype */
     private final static String NAME_DATATYPE_INT   = NAME_GROUP + "/datatype_int";
@@ -379,7 +379,7 @@ public class TestH5MemoryLeak
         g1.writeMetadata(ATTRIBUTE_STR);
         g1.writeMetadata(ATTRIBUTE_INT_ARRAY);
 
-        final Dataset[] dsets = new Dataset[10];
+        final Dataset[] dsets = new Dataset[11];
         dsets[0] = file.createScalarDS  (NAME_DATASET_INT, null, typeInt, DIMs, null, CHUNKs, 9, DATA_INT);
         dsets[1] = file.createScalarDS  (NAME_DATASET_FLOAT, null, typeFloat, DIMs, null, CHUNKs, 9, DATA_FLOAT);
         dsets[2] = file.createScalarDS  (NAME_DATASET_CHAR, null, typeChar, DIMs, null, CHUNKs, 9, DATA_BYTE);
@@ -392,7 +392,7 @@ public class TestH5MemoryLeak
                    COMPOUND_MEMBER_NAMES, COMPOUND_MEMBER_DATATYPES, null, DATA_COMP);
         dsets[9] = file.createCompoundDS(NAME_DATASET_COMPOUND_SUB, null, DIMs, null, CHUNKs, 9, 
                    COMPOUND_MEMBER_NAMES, COMPOUND_MEMBER_DATATYPES, null, DATA_COMP);
-//        dsets[10] = file.createScalarDS  (NAME_DATASET_STR_VLEN, null, typeStrVlen, DIMs, null, CHUNKs, 9, DATA_STR);
+        dsets[10] = file.createScalarDS  (NAME_DATASET_STR_VLEN, null, typeStrVlen, DIMs, null, CHUNKs, 9, DATA_STR);
 
         
         for (int i=0; i<dsets.length; i++) {
