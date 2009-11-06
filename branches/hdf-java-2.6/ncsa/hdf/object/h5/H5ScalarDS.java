@@ -37,7 +37,7 @@ public class H5ScalarDS extends ScalarDS
     /**
      * @see ncsa.hdf.object.HObject#serialVersionUID
      */
-	public static final long serialVersionUID = HObject.serialVersionUID;
+  public static final long serialVersionUID = HObject.serialVersionUID;
 
     /**
      * The list of attributes of this data object. Members of the list are
@@ -440,8 +440,8 @@ public class H5ScalarDS extends ScalarDS
      */
     public void clear() {
         super.clear(); 
-    		
-    	if (attributeList != null) {
+        
+      if (attributeList != null) {
             ((Vector)attributeList).setSize(0);
         }
     }
@@ -482,6 +482,7 @@ public class H5ScalarDS extends ScalarDS
 
             dataset = new H5ScalarDS(pgroup.getFileFormat(), dstName, path);
             if (buff != null) {
+                dataset.init();
                 dataset.write(buff);
             }
             
@@ -611,11 +612,11 @@ public class H5ScalarDS extends ScalarDS
             
             if ( (originalBuf ==null) || isText || isREF ||
                 ((originalBuf!=null) && (lsize[0] !=nPoints))) {
-            	try {
-                	theData = H5Datatype.allocateArray(tid, (int)lsize[0]);            	
-            	} catch (OutOfMemoryError err) {
-            		throw new HDF5Exception("Out Of Memory.");
-            	}
+              try {
+                  theData = H5Datatype.allocateArray(tid, (int)lsize[0]);             
+              } catch (OutOfMemoryError err) {
+                throw new HDF5Exception("Out Of Memory.");
+              }
             } else {
                 theData = originalBuf; // reuse the buffer if the size is the same
             }
@@ -1302,9 +1303,9 @@ public class H5ScalarDS extends ScalarDS
         } 
         finally 
         {
-        	if (sid > 0)
+          if (sid > 0)
              H5.H5Sclose(sid);
-        	
+          
             close(did); 
         } 
     } 

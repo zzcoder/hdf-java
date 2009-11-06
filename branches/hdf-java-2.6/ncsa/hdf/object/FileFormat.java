@@ -187,22 +187,27 @@ public abstract class FileFormat extends File
      */
     static {
         // add default HDF4 modules
-        try {
-            Class fileclass = Class.forName("ncsa.hdf.object.h4.H4File");
-            FileFormat fileformat = (FileFormat)fileclass.newInstance();
-            if (fileformat != null) {
-                FileFormat.addFileFormat("HDF", fileformat);
-            }
-        } catch (Throwable err ) {;}
+        if (FileFormat.getFileFormat("HDF") == null) {
+            try {
+                Class fileclass = Class.forName("ncsa.hdf.object.h4.H4File");
+                FileFormat fileformat = (FileFormat)fileclass.newInstance();
+                if (fileformat != null) {
+                    FileFormat.addFileFormat("HDF", fileformat);
+                }
+            } catch (Throwable err ) {;}
+        }
+        
 
         // add default HDF5 modules
-        try {
-            Class fileclass = Class.forName("ncsa.hdf.object.h5.H5File");
-            FileFormat fileformat = (FileFormat)fileclass.newInstance();
-            if (fileformat != null) {
-                FileFormat.addFileFormat("HDF5", fileformat);
-            }
-        } catch (Throwable err ) {;}
+        if (FileFormat.getFileFormat("HDF5") == null) {
+            try {
+                Class fileclass = Class.forName("ncsa.hdf.object.h5.H5File");
+                FileFormat fileformat = (FileFormat)fileclass.newInstance();
+                if (fileformat != null) {
+                    FileFormat.addFileFormat("HDF5", fileformat);
+                }
+            } catch (Throwable err ) {;}
+        }
     }
 
     /***************************************************************************
@@ -239,9 +244,9 @@ public abstract class FileFormat extends File
         fullFileName = filename;
         
         if ( (filename != null) && (filename.length() > 0) ) {
-        	try {
-        		fullFileName = this.getAbsolutePath();
-        	} catch (Exception ex) {}
+          try {
+            fullFileName = this.getAbsolutePath();
+          } catch (Exception ex) {}
         }
         isReadOnly = false;
     }

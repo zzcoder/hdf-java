@@ -168,7 +168,7 @@ import java.io.*;
  *  <p>
  *  <pre>
  *      int SDreaddata(int sdsid, int32 *start, int32 * stride,
- *  		       int32 *count, VOIDP data);
+ *             int32 *count, VOIDP data);
  *  </pre>
  *  <p>
  *  where ``VOIDP'' means that the data may be any valid numeric
@@ -192,7 +192,7 @@ import java.io.*;
  *  <p>
  *  <pre>
  *      int SDreaddata(int sdsid, int[] start, int[] stride,
- *  		       int[] count, Object data);
+ *             int[] count, Object data);
  *  </pre>
  *  and the parameter <i>data</i> can be any multi-dimensional
  *  array of numbers, such as float[][], or int[][][].
@@ -249,7 +249,7 @@ public class HDFLibrary
             try {
                 System.loadLibrary("jhdf");
                 isLibraryLoaded = true;
-            } catch (Throwable err) { err.printStackTrace(); isLibraryLoaded = false; }
+            } catch (Throwable err) { isLibraryLoaded = false; }
         }
 
         try { 

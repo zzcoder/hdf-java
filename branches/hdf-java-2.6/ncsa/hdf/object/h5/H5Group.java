@@ -40,7 +40,7 @@ public class H5Group extends Group
     /**
      * @see ncsa.hdf.object.HObject#serialVersionUID
      */
-	public static final long serialVersionUID = HObject.serialVersionUID;
+  public static final long serialVersionUID = HObject.serialVersionUID;
 
     /**
      * The list of attributes of this data object. Members of the list are
@@ -132,9 +132,9 @@ public class H5Group extends Group
      * @see ncsa.hdf.object.Group#clear()
      */
     public void clear() {
-    	super.clear(); 
-    		
-    	if (attributeList != null) {
+      super.clear(); 
+        
+      if (attributeList != null) {
             ((Vector)attributeList).setSize(0);
         }
     }
@@ -285,6 +285,8 @@ public class H5Group extends Group
 
          // create a new group and add ot to the parent node
         int gid = H5.H5Gcreate(file.open(), fullPath, -1);
+        try {H5.H5Gclose(gid);} catch (Exception ex) {}
+        
         byte[] ref_buf = H5.H5Rcreate(
             file.open(),
             fullPath,

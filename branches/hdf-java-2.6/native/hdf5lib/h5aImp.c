@@ -161,6 +161,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Awrite
     }
     status = H5Awrite((hid_t)attr_id, (hid_t)mem_type_id, byteP);
 
+    ENVPTR->ReleaseByteArrayElements(ENVPAR buf, byteP,JNI_ABORT);
+
     if (status < 0) {
         h5libraryError(env);
     }
@@ -265,6 +267,7 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1name
     if (size < 0) {
         free(aName);
         h5libraryError(env);
+        return -1;
         /*  exception, returns immediately */
     }
     /* successful return -- save the string; */
@@ -541,8 +544,13 @@ herr_t H5AreadVL_str (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf)
         ENVPTR->SetObjectArrayElement(ENVPAR buf, i, jstr);
     }
         
-    H5Dvlen_reclaim(tid, sid, H5P_DEFAULT, strs);
+    /*H5Dvlen_reclaim(tid, sid, H5P_DEFAULT, strs);*/
     H5Sclose(sid);
+
+    for (i=0; i<n; i++) {
+        if (strs[i]) 
+            free(strs[i]);
+    }
 
     if (strs)
         free(strs);

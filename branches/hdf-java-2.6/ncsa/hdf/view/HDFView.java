@@ -63,7 +63,7 @@ import java.awt.Font;
 public class HDFView extends JFrame implements ViewManager, ActionListener, 
 HyperlinkListener, ChangeListener, DropTargetListener
 {
-	public static final long serialVersionUID = HObject.serialVersionUID;
+  public static final long serialVersionUID = HObject.serialVersionUID;
 
     /** tag for TreeView*/
     public static final int MODULE_TREEVIEW = 100;
@@ -276,8 +276,8 @@ HyperlinkListener, ChangeListener, DropTargetListener
 
         int n = treeViews.size();
         Class theClass = null;
-        for (int i=0; i<n; i++)	 {
-        	// use the first available treeview
+        for (int i=0; i<n; i++)  {
+          // use the first available treeview
             String className = (String)treeViews.get(i);
             // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
             try { theClass = Class.forName(className); }
@@ -288,7 +288,7 @@ HyperlinkListener, ChangeListener, DropTargetListener
             }
            
             if (theClass != null)
-            	break;
+              break;
         }
         
         if (theClass != null) {
@@ -1009,7 +1009,7 @@ HyperlinkListener, ChangeListener, DropTargetListener
                     File tmpFile = new File(filename);
                     
                     if (!tmpFile.exists())
-                    	return;
+                      return;
                     
                     if (tmpFile.isDirectory())
                     {
@@ -1253,12 +1253,12 @@ HyperlinkListener, ChangeListener, DropTargetListener
 
             if (cmd.equals("Convert image file: Image to HDF5"))
             {
-            	typeFrom = Tools.FILE_TYPE_IMAGE;
+              typeFrom = Tools.FILE_TYPE_IMAGE;
                 typeTo = FileFormat.FILE_TYPE_HDF5;
             }
             else if (cmd.equals("Convert image file: Image to HDF4"))
             {
-            	typeFrom = Tools.FILE_TYPE_IMAGE;
+              typeFrom = Tools.FILE_TYPE_IMAGE;
                 typeTo = FileFormat.FILE_TYPE_HDF4;
             } else {
                 return;
@@ -1299,11 +1299,11 @@ HyperlinkListener, ChangeListener, DropTargetListener
         }
         else if (cmd.equals("User options"))
         {
-        	if (userOptionDialog == null) {
+          if (userOptionDialog == null) {
                 userOptionDialog = new UserOptionsDialog(this, rootDir);
             }
 
-        	userOptionDialog.setVisible(true);
+          userOptionDialog.setVisible(true);
 
             if (userOptionDialog.isWorkDirChanged())
             {
@@ -1331,14 +1331,14 @@ HyperlinkListener, ChangeListener, DropTargetListener
             }
 
             if (userOptionDialog.isFontChanged()) {
-            	Font font = null;
-            	try { 
-            		font = new Font(ViewProperties.getFontType(), Font.PLAIN, ViewProperties.getFontSize());
-            	} catch (Exception ex) { font = null; }
-            	
-            	if (font != null) {
+              Font font = null;
+              try { 
+                font = new Font(ViewProperties.getFontType(), Font.PLAIN, ViewProperties.getFontSize());
+              } catch (Exception ex) { font = null; }
+              
+              if (font != null) {
                     updateFontSize(font);
-            	}
+              }
             }
         }
         else if (cmd.equals("Register file format")) {
@@ -1636,12 +1636,12 @@ HyperlinkListener, ChangeListener, DropTargetListener
                 final List fileList = (List) tr.getTransferData(DataFlavor.javaFileListFlavor);
                 int n = fileList.size();
                 for (int i=0; i<n; i++) {
-                	File file = (File)fileList.get(i);
-                	if (file.isDirectory())
-                		continue;
+                  File file = (File)fileList.get(i);
+                  if (file.isDirectory())
+                    continue;
 
-                	String filename = file.getAbsolutePath();
-                	
+                  String filename = file.getAbsolutePath();
+                  
                     currentFile = filename;
                     try {
                         treeView.openFile(filename, FileFormat.WRITE);
@@ -2117,8 +2117,8 @@ HyperlinkListener, ChangeListener, DropTargetListener
         
         File tmpFile = new File (tmpDir);
         if (!tmpFile.canWrite())
-        	tmpDir = System.getProperty("user.home");
-        	
+          tmpDir = System.getProperty("user.home");
+          
         localFile =   tmpDir + localFile;
 
         tmpFile = new File( localFile);
@@ -2207,10 +2207,10 @@ HyperlinkListener, ChangeListener, DropTargetListener
                 Object[] paramObj = {(java.awt.Frame)this};
                 srbFileDialog = (JDialog)ctrSrbFileDialog.newInstance(paramObj);
             } catch (Exception ex) {
-            	throw ex;
+              throw ex;
             }
         } else {
-        	srbFileDialog.setVisible(true);
+          srbFileDialog.setVisible(true);
         }
         
         currentFile = srbFileDialog.getName();
@@ -2271,7 +2271,7 @@ HyperlinkListener, ChangeListener, DropTargetListener
             UIManager.setLookAndFeel(
                     UIManager.getCrossPlatformLookAndFeelClassName());
         } catch (Exception e) { }
-
+        
         String rootDir = System.getProperty("user.dir");
         File tmpFile = null;
         int i=0, j=0, W=0, H=0, X=0, Y=0;
@@ -2297,10 +2297,10 @@ HyperlinkListener, ChangeListener, DropTargetListener
             {
                 // -geometry WIDTHxHEIGHT+XOFF+YOFF 
                 try {
-                	String geom = args[++i];
+                  String geom = args[++i];
                     j = i;
                     
-                	int idx = 0;
+                  int idx = 0;
                     int idx0 = geom.lastIndexOf('-');
                     int idx1 = geom.lastIndexOf('+');
                     
@@ -2324,10 +2324,10 @@ HyperlinkListener, ChangeListener, DropTargetListener
                     }
                     
                     idx = geom.indexOf('x');
-                	if (idx > 0) {
-                		W = Integer.parseInt(geom.substring(0, idx));
-                		H = Integer.parseInt(geom.substring(idx+1));
-                	}
+                  if (idx > 0) {
+                    W = Integer.parseInt(geom.substring(0, idx));
+                    H = Integer.parseInt(geom.substring(idx+1));
+                  }
                 } catch (Exception e) {e.printStackTrace();}
             } else if ("-java.vm.version".equalsIgnoreCase(args[i]))
             {

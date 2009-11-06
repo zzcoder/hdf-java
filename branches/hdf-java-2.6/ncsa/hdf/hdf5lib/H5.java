@@ -217,6 +217,8 @@ public class H5 {
 
     private static boolean isLibraryLoaded = false;
 
+    final private static boolean IS_CRITICAL_PINNING = true;
+
     static { loadH5Lib(); }
 
 
@@ -827,7 +829,7 @@ public class H5 {
             byte[] buf)  throws HDF5LibraryException, NullPointerException 
     {
          return H5Dread(dataset_id, mem_type_id,mem_space_id, file_space_id, 
-                xfer_plist_id, buf, true);
+                xfer_plist_id, buf, IS_CRITICAL_PINNING);
     }
 
     public synchronized static native int H5DreadVL(int dataset_id, int mem_type_id,
@@ -997,7 +999,7 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException 
     {
         return H5Dwrite(dataset_id,mem_type_id, mem_space_id, file_space_id,
-                xfer_plist_id, buf, true);
+                xfer_plist_id, buf, IS_CRITICAL_PINNING);
     }
 
     /**
@@ -1088,7 +1090,7 @@ public class H5 {
     throws HDF5Exception, HDF5LibraryException, NullPointerException
     {
         return H5Dwrite(dataset_id, mem_type_id, mem_space_id,
-                file_space_id, xfer_plist_id, obj, true);
+                file_space_id, xfer_plist_id, obj, IS_CRITICAL_PINNING);
     }
 
 
@@ -3101,8 +3103,8 @@ public class H5 {
             theArr = new HDFArray(maximum_size);
             themax = theArr.byteify();
         }
-        int retVal = H5Screate_simple(rank, thecurr,
-                themax);
+
+        int retVal = H5Sset_extent_simple(space_id, rank, thecurr, themax);
 
         thecurr = null;
         themax = null;
@@ -4234,11 +4236,18 @@ public class H5 {
     public synchronized static int H5Gn_members( int loc_id, String name)
     throws HDF5LibraryException, NullPointerException {
         int grp_id = H5Gopen(loc_id, name);
+        int ret=-1;
         long [] nobj = new long[1];
-        nobj[0] = -1;
-        int ret = H5Gget_num_objs(grp_id, nobj);
-        int r = (new Long(nobj[0])).intValue();
-        return (r);
+
+        try {
+            nobj[0] = -1;
+            H5Gget_num_objs(grp_id, nobj);
+            ret = (new Long(nobj[0])).intValue();
+        } finally {
+            H5.H5Gclose(grp_id);
+        }
+
+        return (ret);
     }
 
     /**
@@ -4264,14 +4273,20 @@ public class H5 {
             String name, int idx, String[] oname, int[]type)
     throws HDF5LibraryException, NullPointerException
     {
-        long default_buf_size = 4096;
+        long val=-1, default_buf_size = 4096;
         String n[] = new String[1];
         n[0] = new String("");
         int grp_id = H5Gopen(loc_id, name);
-        long val = H5Gget_objname_by_idx(grp_id, idx, n, default_buf_size);
-        int type_code = H5Gget_objtype_by_idx(grp_id, idx);
-        oname[0] = new String(n[0]);
-        type[0] = type_code;
+
+        try {
+            val = H5Gget_objname_by_idx(grp_id, idx, n, default_buf_size);
+            int type_code = H5Gget_objtype_by_idx(grp_id, idx);
+            oname[0] = new String(n[0]);
+            type[0] = type_code;
+        } finally {
+            H5Gclose(grp_id);
+        }
+
         int ret = (new Long(val)).intValue();
         return ret;
     }
@@ -4492,7 +4507,7 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException
     {
         return H5Dread_short(dataset_id, mem_type_id,mem_space_id, 
-                file_space_id, xfer_plist_id, buf, true);
+                file_space_id, xfer_plist_id, buf, IS_CRITICAL_PINNING);
     }
 
     public synchronized static native int H5Dread_int(int dataset_id, int mem_type_id,
@@ -4506,7 +4521,7 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException
     {
         return H5Dread_int(dataset_id, mem_type_id,mem_space_id, 
-                file_space_id, xfer_plist_id, buf, true);
+                file_space_id, xfer_plist_id, buf, IS_CRITICAL_PINNING);
     }
 
     public synchronized static native int H5Dread_long(int dataset_id, int mem_type_id,
@@ -4520,7 +4535,7 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException
     {
         return H5Dread_long(dataset_id, mem_type_id,mem_space_id, 
-                file_space_id, xfer_plist_id, buf, true);
+                file_space_id, xfer_plist_id, buf, IS_CRITICAL_PINNING);
     }
 
     public synchronized static native int H5Dread_float(int dataset_id, int mem_type_id,
@@ -4534,7 +4549,7 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException
     {
         return H5Dread_float(dataset_id, mem_type_id,mem_space_id, 
-                file_space_id, xfer_plist_id, buf, true);
+                file_space_id, xfer_plist_id, buf, IS_CRITICAL_PINNING);
     }
 
     public synchronized static native int H5Dread_double(int dataset_id, int mem_type_id,
@@ -4548,7 +4563,7 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException
     {
         return H5Dread_double(dataset_id, mem_type_id,mem_space_id, 
-                file_space_id, xfer_plist_id, buf, true);
+                file_space_id, xfer_plist_id, buf, IS_CRITICAL_PINNING);
     }
 
     public synchronized static native int H5Dread_string(int dataset_id, int mem_type_id,
@@ -4572,7 +4587,7 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException
     {
         return H5Dwrite_short(dataset_id, mem_type_id,mem_space_id, 
-                file_space_id,  xfer_plist_id, buf, true);
+                file_space_id,  xfer_plist_id, buf, IS_CRITICAL_PINNING);
     }
 
     public synchronized static native int H5Dwrite_int(int dataset_id, int mem_type_id,
@@ -4586,7 +4601,7 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException
     {
         return H5Dwrite_int(dataset_id, mem_type_id,mem_space_id, 
-                file_space_id,  xfer_plist_id, buf, true);
+                file_space_id,  xfer_plist_id, buf, IS_CRITICAL_PINNING);
     }
 
     public synchronized static native int H5Dwrite_long(int dataset_id, int mem_type_id,
@@ -4600,7 +4615,7 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException
     {
         return H5Dwrite_long(dataset_id, mem_type_id,mem_space_id, 
-                file_space_id,  xfer_plist_id, buf, true);
+                file_space_id,  xfer_plist_id, buf, IS_CRITICAL_PINNING);
     }
 
     public synchronized static native int H5Dwrite_float(int dataset_id, int mem_type_id,
@@ -4614,7 +4629,7 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException
     {
         return H5Dwrite_float(dataset_id, mem_type_id,mem_space_id, 
-                file_space_id,  xfer_plist_id, buf, true);
+                file_space_id,  xfer_plist_id, buf, IS_CRITICAL_PINNING);
     }
 
     public synchronized static native int H5Dwrite_double(int dataset_id, int mem_type_id,
@@ -4628,7 +4643,7 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException
     {
         return H5Dwrite_double(dataset_id, mem_type_id,mem_space_id, 
-                file_space_id,  xfer_plist_id, buf, true);
+                file_space_id,  xfer_plist_id, buf, IS_CRITICAL_PINNING);
     }
 
     public synchronized static native int H5Pset_fclose_degree(int plist, int degree)
