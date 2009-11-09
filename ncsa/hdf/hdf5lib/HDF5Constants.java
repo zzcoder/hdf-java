@@ -1,12 +1,14 @@
 /****************************************************************************
- * NCSA HDF                                                                 *
- * National Comptational Science Alliance                                   *
- * University of Illinois at Urbana-Champaign                               *
- * 605 E. Springfield, Champaign IL 61820                                   *
- *                                                                          *
- * For conditions of distribution and use, see the accompanying             *
- * hdf-java/COPYING file.                                                   *
- *                                                                          *
+ * Copyright by The HDF Group.                                               *
+ * Copyright by the Board of Trustees of the University of Illinois.         *
+ * All rights reserved.                                                      *
+ *                                                                           *
+ * This file is part of HDF Java Products. The full HDF Java copyright       *
+ * notice, including terms governing use, modification, and redistribution,  *
+ * is contained in the file, COPYING.  COPYING can be found at the root of   *
+ * the source code distribution tree. You can also access it online  at      *
+ * http://www.hdfgroup.org/products/licenses.html.  If you do not have       *
+ * access to the file, you may request a copy from help@hdfgroup.org.        *
  ****************************************************************************/
 
 package ncsa.hdf.hdf5lib;
@@ -35,6 +37,15 @@ public class HDF5Constants
     public static final int H5_SZIP_EC_OPTION_MASK = H5_SZIP_EC_OPTION_MASK();
     public static final int H5_SZIP_ALLOW_K13_OPTION_MASK = H5_SZIP_ALLOW_K13_OPTION_MASK();
     public static final int H5_SZIP_CHIP_OPTION_MASK = H5_SZIP_CHIP_OPTION_MASK();
+    public static final int H5_INDEX_UNKNOWN = H5_INDEX_UNKNOWN();
+    public static final int H5_INDEX_NAME = H5_INDEX_NAME();
+    public static final int H5_INDEX_CRT_ORDER = H5_INDEX_CRT_ORDER();
+    public static final int H5_INDEX_N = H5_INDEX_N();
+    public static final int H5_ITER_UNKNOWN = H5_ITER_UNKNOWN();
+    public static final int H5_ITER_INC = H5_ITER_INC();
+    public static final int H5_ITER_DEC = H5_ITER_DEC();
+    public static final int H5_ITER_NATIVE = H5_ITER_NATIVE();
+    public static final int H5_ITER_N = H5_ITER_N();
     public static final int H5D_ALLOC_TIME_DEFAULT = H5D_ALLOC_TIME_DEFAULT();
     public static final int H5D_ALLOC_TIME_EARLY = H5D_ALLOC_TIME_EARLY();
     public static final int H5D_ALLOC_TIME_ERROR = H5D_ALLOC_TIME_ERROR();
@@ -110,6 +121,7 @@ public class HDF5Constants
     public static final int H5E_DATASET = H5E_DATASET();
     public static final int H5E_DATASPACE = H5E_DATASPACE();
     public static final int H5E_DATATYPE = H5E_DATATYPE();
+    public static final int H5E_DEFAULT = H5E_DEFAULT();
     public static final int H5E_DUPCLASS = H5E_DUPCLASS();
     public static final int H5E_EFL = H5E_EFL();
     public static final int H5E_EXISTS = H5E_EXISTS();
@@ -123,6 +135,8 @@ public class HDF5Constants
     public static final int H5E_IO = H5E_IO();
     public static final int H5E_LINK = H5E_LINK();
     public static final int H5E_LINKCOUNT = H5E_LINKCOUNT();
+    public static final int H5E_MAJOR = H5E_MAJOR();
+    public static final int H5E_MINOR = H5E_MINOR();
     public static final int H5E_MOUNT = H5E_MOUNT();
     public static final int H5E_MPI = H5E_MPI();
     public static final int H5E_MPIERRSTR = H5E_MPIERRSTR();
@@ -471,13 +485,22 @@ public class HDF5Constants
     
     ///////////////////////////////////////////////////////////////////////////
     //    List of private native variables to get constant values from C     //
-    //            DO NOT EDIT THE LIST UNLESS YOU WHAT YOU DO!!!             //
+    //       DO NOT EDIT THE LIST UNLESS YOU KNOW WHAT YOU DO!!!             //
     ///////////////////////////////////////////////////////////////////////////
     private static native final int H5_SZIP_MAX_PIXELS_PER_BLOCK();
     private static native final int H5_SZIP_NN_OPTION_MASK();
     private static native final int H5_SZIP_EC_OPTION_MASK();
     private static native final int H5_SZIP_ALLOW_K13_OPTION_MASK();
     private static native final int H5_SZIP_CHIP_OPTION_MASK();
+    private static native final int H5_INDEX_UNKNOWN();
+    private static native final int H5_INDEX_NAME();
+    private static native final int H5_INDEX_CRT_ORDER();
+    private static native final int H5_INDEX_N();
+    private static native final int H5_ITER_UNKNOWN();
+    private static native final int H5_ITER_INC();
+    private static native final int H5_ITER_DEC();
+    private static native final int H5_ITER_NATIVE();
+    private static native final int H5_ITER_N();
     private static native final int H5D_ALLOC_TIME_DEFAULT();
     private static native final int H5D_ALLOC_TIME_EARLY();
     private static native final int H5D_ALLOC_TIME_ERROR();
@@ -553,6 +576,7 @@ public class HDF5Constants
     private static native final int H5E_DATASET();
     private static native final int H5E_DATASPACE();
     private static native final int H5E_DATATYPE();
+    private static native final int H5E_DEFAULT();
     private static native final int H5E_DUPCLASS();
     private static native final int H5E_EFL();
     private static native final int H5E_EXISTS();
@@ -566,6 +590,8 @@ public class HDF5Constants
     private static native final int H5E_IO();
     private static native final int H5E_LINK();
     private static native final int H5E_LINKCOUNT();
+    private static native final int H5E_MAJOR();
+    private static native final int H5E_MINOR();
     private static native final int H5E_MOUNT();
     private static native final int H5E_MPI();
     private static native final int H5E_MPIERRSTR();

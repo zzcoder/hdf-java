@@ -65,7 +65,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Topen
         return -1;
     }
 
+#ifdef H5_USE_16_API
     status = H5Topen(loc_id, tname);
+#else
+    status = H5Topen2(loc_id, tname, (hid_t)H5P_DEFAULT);
+#endif
 
     ENVPTR->ReleaseStringUTFChars(ENVPAR name,tname);
     if (status < 0) {
@@ -96,7 +100,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tcommit
         return -1;
     }
 
-    status = H5Tcommit(loc_id, tname, type );
+#ifdef H5_USE_16_API
+    status = H5Tcommit(loc_id, tname, type);
+#else
+    status = H5Tcommit2(loc_id, tname, type, (hid_t)H5P_DEFAULT, (hid_t)H5P_DEFAULT, (hid_t)H5P_DEFAULT);
+#endif
 
     ENVPTR->ReleaseStringUTFChars(ENVPAR name,tname);
     if (status < 0) {
@@ -1166,7 +1174,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tarray_1create
         cdims[i] = (hsize_t)dimsP[i];
     }
 
+#ifdef H5_USE_16_API
     status = H5Tarray_create((hid_t)base, (int)rank, (const hsize_t *)cdims, (const int *)permP);
+#else
+    status = H5Tarray_create2((hid_t)base, (int)rank, (const hsize_t *)cdims);
+#endif
 
     ENVPTR->ReleaseIntArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
     if (permP != NULL) {
@@ -1239,7 +1251,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1array_1dims
         }
     }
 
+#ifdef H5_USE_16_API
     status = H5Tget_array_dims((hid_t)dt, (hsize_t *)cdims, (int *)permP);
+#else
+    status = H5Tget_array_dims2((hid_t)dt, (hsize_t *)cdims);
+#endif
 
     if (status < 0) {
         ENVPTR->ReleaseIntArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
@@ -1320,6 +1336,168 @@ JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tdetect_1class
         h5libraryError(env);
         return JNI_FALSE;
     }
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Topen2
+ * Signature: (ILjava/lang/String;I)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Topen2
+  (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint access_plist)
+{
+    hid_t status;
+    char* tname;
+    jboolean isCopy;
+
+    if (name == NULL) {
+        h5nullArgument( env, "H5Topen2:  name is NULL");
+        return -1;
+    }
+    tname = (char *)ENVPTR->GetStringUTFChars(ENVPAR name,&isCopy);
+    if (tname == NULL) {
+        h5JNIFatalError(env,  "H5Topen2:  name not pinned");
+        return -1;
+    }
+
+    status = H5Topen2(loc_id, tname, (hid_t)access_plist);
+
+    ENVPTR->ReleaseStringUTFChars(ENVPAR name,tname);
+    if (status < 0) {
+        h5libraryError(env);
+    }
+    return (jint)status;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Tcommit2
+ * Signature: (ILjava/lang/String;IIII)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tcommit2
+  (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint type,
+          jint link_plist_id, jint create_plist_id, jint access_plist_id)
+{
+    herr_t status;
+    char* tname;
+    jboolean isCopy;
+
+    if (name == NULL) {
+        h5nullArgument( env, "H5Tcommit2:  name is NULL");
+        return -1;
+    }
+    tname = (char *)ENVPTR->GetStringUTFChars(ENVPAR name,&isCopy);
+    if (tname == NULL) {
+        h5JNIFatalError(env,  "H5Tcommit2:  name not pinned");
+        return -1;
+    }
+
+    status = H5Tcommit2(loc_id, tname, type, (hid_t)link_plist_id, (hid_t)create_plist_id, (hid_t)access_plist_id);
+
+    ENVPTR->ReleaseStringUTFChars(ENVPAR name,tname);
+    if (status < 0) {
+        h5libraryError(env);
+    }
+    return (jint)status;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Tarray_create2
+ * Signature: (II[B)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tarray_1create2
+  (JNIEnv *env, jclass clss, jint base, jint rank, jintArray dims)
+{
+    hid_t status;
+    jint *dimsP;
+    int dlen;
+    hsize_t *cdims=NULL;
+    jboolean isCopy;
+    int i;
+
+    if (rank <= 0) {
+        h5nullArgument( env, "H5Tarray_create:  rank is < 1");
+        return -1;
+    }
+    if ( dims == NULL ) {
+        h5nullArgument( env, "H5Tarray_create:  dims is NULL");
+        return -1;
+    }
+
+    dimsP = ENVPTR->GetIntArrayElements(ENVPAR dims,&isCopy);
+    if (dimsP == NULL) {
+        h5JNIFatalError( env, "H5Tarray_create:  dimsP not pinned");
+        return -1;
+    }
+
+    dlen = ENVPTR->GetArrayLength(ENVPAR dims);
+    if (dlen != rank) {
+        ENVPTR->ReleaseIntArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
+        return -1;
+    }
+
+    cdims = (hsize_t *)malloc(dlen * sizeof(hsize_t));
+    for (i = 0; i < dlen; i++) {
+        cdims[i] = (hsize_t)dimsP[i];
+    }
+
+    status = H5Tarray_create2((hid_t)base, (int)rank, (const hsize_t *)cdims);
+
+    ENVPTR->ReleaseIntArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
+
+    free (cdims);
+    if (status < 0) {
+        h5libraryError(env);
+    }
+
+    return (jint)status;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Tarray_get_dims2
+ * Signature: (I[I)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1array_1dims2
+  (JNIEnv *env, jclass clss, jint dt, jintArray dims)
+{
+    hid_t status;
+    jint *dimsP;
+    int dlen;
+    int i;
+    hsize_t *cdims=NULL;
+    jboolean isCopy;
+
+    if ( dims == NULL ) {
+        h5nullArgument( env, "H5Tget_array_dims:  value is NULL");
+        return -1;
+    }
+
+    dimsP = ENVPTR->GetIntArrayElements(ENVPAR dims,&isCopy);
+    if (dimsP == NULL) {
+        h5JNIFatalError( env, "H5Tget_array_dims:  dimsP not pinned");
+        return -1;
+    }
+
+    dlen = ENVPTR->GetArrayLength(ENVPAR dims);
+    cdims = (hsize_t *)malloc(dlen * sizeof(hsize_t));
+
+    status = H5Tget_array_dims2((hid_t)dt, (hsize_t *)cdims);
+
+    if (status < 0) {
+        ENVPTR->ReleaseIntArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
+        h5libraryError(env);
+    } else {
+        for (i = 0; i < dlen; i++) {
+            dimsP[i] = (jint) cdims[i];
+        }
+        ENVPTR->ReleaseIntArrayElements(ENVPAR dims,dimsP,0);
+    }
+
+    if (cdims) free(cdims);
+
+    return (jint)status;
 }
 
 

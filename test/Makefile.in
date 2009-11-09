@@ -12,11 +12,15 @@
 all:
 	(cd unittests; $(MAKE);)
 	(cd object; $(MAKE);)
+	(cd junit; $(MAKE);)
 
 check:
 	(cd unittests; $(MAKE) check;)
 	(cd object; $(MAKE) check;)
+	(cd junit; $(MAKE) check;)
 
 clean:
 	(cd object; $(MAKE) clean;)
 	(cd unittests; $(MAKE) clean;)
+	(cd junit; $(MAKE) clean;)
+	

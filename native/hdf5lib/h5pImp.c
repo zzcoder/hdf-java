@@ -800,7 +800,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1nfilters
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Pget_filter
- * Signature: (II[I[IILjava/lang/String;)I
+ * Signature: (II[I[I[IILjava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter
   (JNIEnv *env, jclass clss, jint plist, jint filter_number, jintArray flags,
@@ -863,9 +863,17 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter
         int cd_nelmts_temp = *(cd_nelmtsArray);
         size_t cd_nelmts_t = cd_nelmts_temp;
 
+#ifdef H5_USE_16_API
         status = H5Pget_filter((hid_t)plist, (int)filter_number, 
             (unsigned int *)flagsArray, &cd_nelmts_t, (unsigned int *)cd_valuesArray,
             (size_t)namelen, filter);
+#else
+        unsigned int filter_config;
+        status = H5Pget_filter2((hid_t)plist, (int)filter_number, 
+            (unsigned int *)flagsArray, &cd_nelmts_t, (unsigned int *)cd_valuesArray,
+            (size_t)namelen, filter, &filter_config);
+#endif
+        
         *cd_nelmtsArray = cd_nelmts_t;
     }
 
@@ -1989,10 +1997,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pmodify_1filter
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Pget_filter_by_id( hid_t plist_id, H5Z_filter_t filter,
- *                unsigned int *flags, size_t *cd_nelmts, unsigned int cd_values[],
- *                size_t namelen, char *name[] )
- * Signature: (III[J)I
+ * Method:    H5Pget_filter_by_id
+ * Signature: (II[I[J[IJLjava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id
   (JNIEnv *env, jclass clss, jint plist, jint filter, jintArray flags,
@@ -2080,9 +2086,16 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id
         return -1;
     }
 
+#ifdef H5_USE_16_API
     status = H5Pget_filter_by_id( (hid_t)plist, (H5Z_filter_t)filter,
         (unsigned int *)flagsP, (size_t *)nelmsP, (unsigned int *)cd_valuesP,
         (size_t)namelen, (char *)aName);
+#else
+    unsigned int filter_config;
+    status = H5Pget_filter_by_id2( (hid_t)plist, (H5Z_filter_t)filter,
+        (unsigned int *)flagsP, (size_t *)nelmsP, (unsigned int *)cd_valuesP,
+        (size_t)namelen, (char *)aName, &filter_config);
+#endif
 
     if (status < 0) {
         ENVPTR->ReleaseIntArrayElements(ENVPAR flags,flagsP,JNI_ABORT);
@@ -2781,6 +2794,257 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pclose_1class
     }
 
     return (jint) retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_filter2
+ * Signature: (II[I[I[IILjava/lang/String;[I)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter2
+  (JNIEnv *env, jclass clss, jint plist, jint filter_number, jintArray flags,
+  jintArray cd_nelmts, jintArray cd_values, jint namelen, jobjectArray name, jintArray filter_config)
+{
+    herr_t status;
+    jint *flagsArray, *cd_nelmtsArray, *cd_valuesArray, *filter_configArray;
+    jboolean isCopy;
+    char *filter;
+    jstring str;
+
+    if (namelen <= 0) {
+        h5badArgument( env, "H5Pget_filter:  namelen <= 0");
+        return -1;
+    }
+    if (flags == NULL) {
+        h5badArgument( env, "H5Pget_filter:  flags is NULL");
+        return -1;
+    }
+    if (cd_nelmts == NULL) {
+        h5badArgument( env, "H5Pget_filter:  cd_nelmts is NULL");
+        return -1;
+    }
+    if (cd_values == NULL) {
+        h5badArgument( env, "H5Pget_filter:  cd_values is NULL");
+        return -1;
+    }
+    if (filter_config == NULL) {
+        h5badArgument( env, "H5Pget_filter:  filter_config is NULL");
+        return -1;
+    }
+    filter = (char *)malloc(sizeof(char)*namelen);
+    if (filter == NULL) {
+        h5outOfMemory( env, "H5Pget_filter:  namelent malloc failed");
+        return -1;
+    }
+    flagsArray = (jint *)ENVPTR->GetIntArrayElements(ENVPAR flags,&isCopy);
+    if (flagsArray == NULL) {
+        free(filter);
+        h5JNIFatalError(env,  "H5Pget_filter:  flags array not pinned");
+        return -1;
+    }
+    cd_nelmtsArray = (jint *)ENVPTR->GetIntArrayElements(ENVPAR cd_nelmts,&isCopy);
+    if (cd_nelmtsArray == NULL) {
+        ENVPTR->ReleaseIntArrayElements(ENVPAR flags,flagsArray,JNI_ABORT);
+        free(filter);
+        h5JNIFatalError(env,  "H5Pget_filter:  nelmts array not pinned");
+        return -1;
+    }
+    cd_valuesArray = (jint *)ENVPTR->GetIntArrayElements(ENVPAR cd_values,&isCopy);
+    if (cd_valuesArray == NULL)  {
+        ENVPTR->ReleaseIntArrayElements(ENVPAR cd_nelmts,cd_nelmtsArray,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR flags,flagsArray,JNI_ABORT);
+        free(filter);
+        h5JNIFatalError(env,  "H5Pget_filter:  elmts array not pinned");
+        return -1;
+    }
+    filter_configArray = (jint *)ENVPTR->GetIntArrayElements(ENVPAR filter_config,&isCopy);
+    if (filter_configArray == NULL) {
+        ENVPTR->ReleaseIntArrayElements(ENVPAR cd_nelmts,cd_nelmtsArray,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR flags,flagsArray,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR cd_values,cd_valuesArray,JNI_ABORT);
+        free(filter);
+        h5JNIFatalError(env,  "H5Pget_filter:  filter_config array not pinned");
+        return -1;
+    }
+
+    {
+        /* direct cast (size_t *)cd_nelmtsArray fails on 64-bit environment, see bug #1369
+        status = H5Pget_filter((hid_t)plist, (int)filter_number, (unsigned int *)flagsArray,
+          (size_t *)cd_nelmtsArray, (unsigned int *)cd_valuesArray, (size_t)namelen, filter);
+        */
+        int cd_nelmts_temp = *(cd_nelmtsArray);
+        size_t cd_nelmts_t = cd_nelmts_temp;
+
+        unsigned int filter_config;
+        status = H5Pget_filter2((hid_t)plist, (int)filter_number, 
+            (unsigned int *)flagsArray, &cd_nelmts_t, (unsigned int *)cd_valuesArray,
+            (size_t)namelen, filter, (unsigned int *)filter_configArray);
+        
+        *cd_nelmtsArray = cd_nelmts_t;
+    }
+
+    if (status < 0)
+    {
+        ENVPTR->ReleaseIntArrayElements(ENVPAR filter_config,filter_configArray,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR cd_values,cd_valuesArray,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR cd_nelmts,cd_nelmtsArray,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR flags,flagsArray,JNI_ABORT);
+        free(filter);
+        h5libraryError(env);
+    }
+    else {
+        ENVPTR->ReleaseIntArrayElements(ENVPAR filter_config,filter_configArray,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR cd_values,cd_valuesArray,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR cd_nelmts,cd_nelmtsArray,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR flags,flagsArray,0);
+        /*  NewStringUTF may throw OutOfMemoryError */
+        str = ENVPTR->NewStringUTF(ENVPAR filter);
+        if (str == NULL) {
+            free(filter);
+            h5JNIFatalError(env,  "H5Pget_filter:  return string not pinned");
+            return -1;
+        }
+        /*  SetObjectArrayElement may throw exceptiosn */
+        ENVPTR->SetObjectArrayElement(ENVPAR name,0,(jobject)str);
+    }
+
+    free(filter);
+    return (jint)status;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_filter_by_id2
+ * Signature: (II[I[J[IJLjava/lang/String;[I)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id2
+  (JNIEnv *env, jclass clss, jint plist, jint filter, jintArray flags,
+  jlongArray cd_nelmts, jintArray cd_values, jlong namelen, jobjectArray name, jintArray filter_config)
+{
+    herr_t status;
+    int i=0;
+    jint *cd_valuesP, *flagsP, *filter_configP;
+    jlong *cd_nelmsP;
+    jboolean isCopy;
+    size_t *nelmsP;
+    int rank;
+    long bs;
+    char *aName;
+    jstring str;
+
+    bs = (long)namelen;
+    if (bs <= 0) {
+        h5badArgument( env, "H5Pget_filter_by_id:  namelen <= 0");
+        return -1;
+    }
+
+    if (flags == NULL) {
+        h5nullArgument( env, "H5Pget_filter_by_id:  flags is NULL");
+        return -1;
+    }
+
+    if (cd_nelmts == NULL) {
+        h5nullArgument( env, "H5Pget_filter_by_id:  cd_nelms is NULL");
+        return -1;
+    }
+
+    if (cd_values == NULL) {
+        h5nullArgument( env, "H5Pget_filter_by_id:  cd_values is NULL");
+        return -1;
+    }
+
+    if (name == NULL) {
+        h5nullArgument( env, "H5Pget_filter_by_id:  name is NULL");
+        return -1;
+    }
+    
+    if (filter_config == NULL) {
+        h5badArgument( env, "H5Pget_filter_by_id:  filter_config is NULL");
+        return -1;
+    }
+
+    aName = (char*)malloc(sizeof(char)*bs);
+    if (aName == NULL) {
+        h5outOfMemory( env, "H5Pget_filter_by_id:  malloc failed");
+        return -1;
+    }
+
+    flagsP = ENVPTR->GetIntArrayElements(ENVPAR flags,&isCopy);
+
+    if (flagsP == NULL) {
+        free(aName);
+        h5JNIFatalError(env,  "H5Pget_filter_by_id:  flags not pinned");
+        return -1;
+    }
+
+    cd_nelmsP = ENVPTR->GetLongArrayElements(ENVPAR cd_nelmts,&isCopy);
+
+    if (cd_nelmsP == NULL) {
+        free(aName);
+        h5JNIFatalError(env,  "H5Pget_filter_by_id:  cd_nelms not pinned");
+        return -1;
+    }
+
+    nelmsP = (size_t *)malloc( sizeof(size_t));
+
+    if (nelmsP == NULL) {
+        ENVPTR->ReleaseIntArrayElements(ENVPAR flags,flagsP,JNI_ABORT);
+        ENVPTR->ReleaseLongArrayElements(ENVPAR cd_nelmts,cd_nelmsP,JNI_ABORT);
+        free(aName);
+        h5JNIFatalError(env,  "H5Pget_filter_by_id:  cd_nelmts array not converted to unsigned int.");
+        return -1;
+    }
+
+    cd_valuesP = ENVPTR->GetIntArrayElements(ENVPAR cd_values,&isCopy);
+    rank  = ENVPTR->GetArrayLength(ENVPAR  cd_values);
+
+    if (cd_valuesP == NULL) {
+        ENVPTR->ReleaseIntArrayElements(ENVPAR flags,flagsP,JNI_ABORT);
+        ENVPTR->ReleaseLongArrayElements(ENVPAR cd_nelmts,cd_nelmsP,JNI_ABORT);
+        free(aName);
+        free(nelmsP);
+        h5JNIFatalError(env,  "H5Pget_filter_by_id:  cd_values array not converted to unsigned int.");
+        return -1;
+    }
+
+    filter_configP = ENVPTR->GetIntArrayElements(ENVPAR filter_config,&isCopy);
+
+    if (filter_configP == NULL) {
+        ENVPTR->ReleaseIntArrayElements(ENVPAR flags,flagsP,JNI_ABORT);
+        ENVPTR->ReleaseLongArrayElements(ENVPAR cd_nelmts,cd_nelmsP,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR cd_values,cd_valuesP,JNI_ABORT);
+        free(aName);
+        free(nelmsP);
+        h5JNIFatalError(env,  "H5Pget_filter_by_id:  flags not pinned");
+        return -1;
+    }
+
+    status = H5Pget_filter_by_id2( (hid_t)plist, (H5Z_filter_t)filter,
+        (unsigned int *)flagsP, (size_t *)nelmsP, (unsigned int *)cd_valuesP,
+        (size_t)namelen, (char *)aName, (unsigned int *)filter_configP);
+
+    if (status < 0) {
+        ENVPTR->ReleaseIntArrayElements(ENVPAR flags,flagsP,JNI_ABORT);
+        ENVPTR->ReleaseLongArrayElements(ENVPAR cd_nelmts,cd_nelmsP,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR cd_values,cd_valuesP,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR filter_config,filter_configP,JNI_ABORT);
+        h5libraryError(env);
+    } 
+    else {
+
+        cd_nelmsP[0] = nelmsP[0];
+
+        str = ENVPTR->NewStringUTF(ENVPAR aName);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR flags,flagsP,0);
+        ENVPTR->ReleaseLongArrayElements(ENVPAR cd_nelmts,cd_nelmsP,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR cd_values,cd_valuesP,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR filter_config,filter_configP,0);
+    }
+
+    free(aName);
+    free(nelmsP);
+
+    return (jint)status;
 }
 
 #ifdef __cplusplus

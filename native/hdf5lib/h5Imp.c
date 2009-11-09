@@ -1,12 +1,14 @@
 /****************************************************************************
- * NCSA HDF                                                                 *
- * National Comptational Science Alliance                                   *
- * University of Illinois at Urbana-Champaign                               *
- * 605 E. Springfield, Champaign IL 61820                                   *
- *                                                                          *
- * For conditions of distribution and use, see the accompanying             *
- * hdf-java/COPYING file.                                                   *
- *                                                                          *
+ * Copyright by The HDF Group.                                               *
+ * Copyright by the Board of Trustees of the University of Illinois.         *
+ * All rights reserved.                                                      *
+ *                                                                           *
+ * This file is part of HDF Java Products. The full HDF Java copyright       *
+ * notice, including terms governing use, modification, and redistribution,  *
+ * is contained in the file, COPYING.  COPYING can be found at the root of   *
+ * the source code distribution tree. You can also access it online  at      *
+ * http://www.hdfgroup.org/products/licenses.html.  If you do not have       *
+ * access to the file, you may request a copy from help@hdfgroup.org.        *
  ****************************************************************************/
 #ifdef __cplusplus
 extern "C" {
@@ -26,7 +28,6 @@ extern "C" {
 
 #include "hdf5.h"
 #include <jni.h>
-#include <jni.h>
 /*
 #include <signal.h>
 */
@@ -43,6 +44,7 @@ extern jboolean h5JNIFatalError( JNIEnv *env, char *functName);
 extern jboolean h5nullArgument( JNIEnv *env, char *functName);
 extern jboolean h5libraryError( JNIEnv *env );
 extern jboolean h5raiseException( JNIEnv *env, char *exception, char *message);
+
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5open
@@ -185,14 +187,18 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5check_1version
  */
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5check_version
- * Signature: (III)I
+ * Method:    H5Eclear
+ * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eclear
   (JNIEnv *env, jclass clss )
 {
     herr_t res = -1;
+#ifdef H5_USE_16_API
     res = H5Eclear() ;
+#else
+    res = H5Eclear2(H5E_DEFAULT) ;
+#endif
     if (res < 0) {
         h5raiseException( env,
         "ncsa/hdf/hdf5lib/exceptions/HDF5LibraryException",
@@ -226,13 +232,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5garbage_1collect
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5set_free_list_limits(int reg_global_lim, int reg_list_lim,
- *                int arr_global_lim, int arr_list_lim, int blk_global_lim,
- *                int blk_list_lim )
- * Signature: ()I
+ * Method:    H5set_free_list_limits
+ * Signature: (IIIIII)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5set_1free_1list_1limits
-  (JNIEnv *env, jclass clss,jint reg_global_lim, jint reg_list_lim,
+  (JNIEnv *env, jclass clss, jint reg_global_lim, jint reg_list_lim,
   jint arr_global_lim, jint arr_list_lim, jint blk_global_lim, jint blk_list_lim )
 {
     int retVal = H5set_free_list_limits((int)reg_global_lim, (int)reg_list_lim,
@@ -241,6 +245,22 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5set_1free_1list_1limits
         h5libraryError(env);
     }
     return retVal;
+}
+
+/*
+ * Class:     hdf_hdf5_exceptions_HDF5Library
+ * Method:    H5Use16
+ * Signature: ()Z
+ *
+ */
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Use16
+  (JNIEnv *env, jclass cls )
+{
+#ifdef H5_USE_16_API
+    return JNI_TRUE;
+#else
+    return JNI_FALSE;
+#endif
 }
 
 
