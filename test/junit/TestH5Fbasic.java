@@ -100,6 +100,24 @@ public class TestH5Fbasic {
   }
 
   @Test(expected=HDF5LibraryException.class)
+  public void testH5Freopen_closed() throws HDF5LibraryException, Throwable {
+    int fid = -1;
+    int fid2 = -1;
+
+    try { 
+      fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDWR, HDF5Constants.H5P_DEFAULT); 
+    }
+    catch (Throwable err) {
+      fail("H5.H5Fopen: "+err);
+    }
+
+    try { H5.H5Fclose(fid); } catch (Exception ex) {}
+
+    // should fail because the file was closed.
+    fid2 = H5.H5Freopen(fid); 
+  }
+
+  @Test
   public void testH5Freopen() throws HDF5LibraryException, Throwable {
     int fid = -1;
     int fid2 = -1;
@@ -120,37 +138,6 @@ public class TestH5Fbasic {
     assertTrue (fid2 > 0);
 
     try { H5.H5Fclose(fid2); } catch (Exception ex) {}
-
-    try { H5.H5Fclose(fid); } catch (Exception ex) {}
-
-    // should fail because the file was closed.
-    fid2 = H5.H5Freopen(fid); 
-  }
-
-  @Test
-  public void testH5Fflush() {
-    int fid = -1;
-
-    try { 
-      fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDWR, HDF5Constants.H5P_DEFAULT); 
-    }
-    catch (Throwable err) {
-      fail("H5.H5Fopen: "+err);
-    }
-
-    try { 
-      H5.H5Fflush(fid, HDF5Constants.H5F_SCOPE_GLOBAL); 
-    }
-    catch (Throwable err) {
-      fail("H5.H5Fflush: "+err);
-    }
-
-    try { 
-      H5.H5Fflush(fid, HDF5Constants.H5F_SCOPE_LOCAL); 
-    }
-    catch (Throwable err) {
-      fail("H5.H5Fflush: "+err);
-    }
 
     try { H5.H5Fclose(fid); } catch (Exception ex) {}
   }
@@ -241,10 +228,10 @@ public class TestH5Fbasic {
     }
     assertTrue(fileSize > 0);
 
-    //TODO add/and delete objects and test freespace
-
     try { H5.H5Fclose(fid); } catch (Exception ex) {}
   }
+
+  //TODO add/and delete objects and test freespace
 
   @Test
   public void testH5Fget_mdc_hit_rate() {
@@ -289,10 +276,10 @@ public class TestH5Fbasic {
     }
     assertTrue("H5.H5Fget_mdc_size #:"+nentries, nentries == 4);
 
-    //TODO: test more cases of different cache sizes.
-
     try { H5.H5Fclose(fid); } catch (Exception ex) {}
   }
+
+  //TODO: test more cases of different cache sizes.
 
   @Test
   public void testH5Freset_mdc_hit_rate_stats() {
