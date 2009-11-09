@@ -14,8 +14,8 @@ all:
 	(cd unittests; $(MAKE);)
 
 check:
-	(cd object; $(MAKE) check;)
 	(cd unittests; $(MAKE) check;)
+	(cd object; $(MAKE) check;)
 
 clean:
 	(cd object; $(MAKE) clean;)
