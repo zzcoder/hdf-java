@@ -70,4 +70,67 @@ public class TestH5Fparams {
     // cannot close a file with negative id.
     H5.H5Fclose(-1); 
   }
+
+  @Test
+  public void testH5Fcreate() throws HDF5LibraryException, NullPointerException {
+     int fid = H5.H5Fcreate("test.h5", HDF5Constants.H5F_ACC_TRUNC, 
+                        HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+      if(fid > 0) {
+        H5.H5Fclose(fid);
+      }
+      File file = new File("test.h5");
+
+      if (file.exists()) {
+        try {
+          file.delete();
+        } 
+        catch (SecurityException e) {
+          ;//e.printStackTrace();
+        }
+      }
+  }
+
+  @Test
+  public void testH5Fflush_global() {
+    int fid = -1;
+
+    try { 
+      fid = H5.H5Fcreate("test.h5", HDF5Constants.H5F_ACC_TRUNC, 
+          HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+    }
+    catch (Throwable err) {
+      fail("H5.H5Fopen: "+err);
+    }
+
+    try { 
+      H5.H5Fflush(fid, HDF5Constants.H5F_SCOPE_GLOBAL); 
+    }
+    catch (Throwable err) {
+      fail("H5.H5Fflush: "+err);
+    }
+
+    try { H5.H5Fclose(fid); } catch (Exception ex) {}
+  }
+
+  @Test
+  public void testH5Fflush_local() {
+    int fid = -1;
+
+    try { 
+      fid = H5.H5Fcreate("test.h5", HDF5Constants.H5F_ACC_TRUNC, 
+          HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+    }
+    catch (Throwable err) {
+      fail("H5.H5Fopen: "+err);
+    }
+
+    try { 
+      H5.H5Fflush(fid, HDF5Constants.H5F_SCOPE_LOCAL); 
+    }
+    catch (Throwable err) {
+      fail("H5.H5Fflush: "+err);
+    }
+
+    try { H5.H5Fclose(fid); } catch (Exception ex) {}
+  }
 }
