@@ -187,8 +187,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1region
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5G_obj_t H5Rget_obj_type(hid_t id, H5R_type_t ref_type, void *_ref)
- * Signature: (I[B)I
+ * Method:    H5G_obj_t H5Rget_obj_type
+ * Signature: (II[B)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type
   (JNIEnv *env, jclass clss, jint loc_id, jint ref_type, jbyteArray ref)
@@ -210,13 +210,68 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type
         return -1;
     }
 
+#ifdef H5_USE_16_API
     status = H5Rget_obj_type((hid_t)loc_id, (H5R_type_t)ref_type, refP);
+#else
+    status = -1;
+#endif
 
     ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,0);
 
     if (status < 0) {
         h5libraryError(env);
     }
+    return (jint)status;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    int H5Rget_obj_type2
+ * Signature: (II[B[I)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type2
+  (JNIEnv *env, jclass clss, jint loc_id, jint ref_type, jbyteArray ref, jintArray ref_obj)
+{
+
+    jint status;
+    jboolean isCopy;
+    jbyte *refP;
+    jint *ref_objP;
+
+
+    if (ref == NULL) {
+        h5nullArgument( env, "H5Rget_object_type:  ref is NULL");
+        return -1;
+    }
+    if (ref_obj == NULL) {
+        h5nullArgument( env, "H5Rget_object_type:  ref_obj is NULL");
+        return -1;
+    }
+
+    refP = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR ref,&isCopy);
+    if (refP == NULL) {
+        h5JNIFatalError(env,  "H5Rget_object_type:  ref not pinned");
+        return -1;
+    }
+    ref_objP = (jbyte *)ENVPTR->GetIntArrayElements(ENVPAR ref_obj,&isCopy);
+    if (ref_objP == NULL) {
+        ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,0);
+        h5JNIFatalError(env,  "H5Rget_object_type:  ref_obj not pinned");
+        return -1;
+    }
+
+    status = H5Rget_obj_type2((hid_t)loc_id, (H5R_type_t)ref_type, refP, (H5O_type_t*)ref_objP);
+
+    if (status < 0) {
+        ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,JNI_ABORT);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR ref_obj,ref_objP,JNI_ABORT);
+        h5libraryError(env);
+    } 
+    else {
+        ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,0);
+        ENVPTR->ReleaseIntArrayElements(ENVPAR ref_obj,ref_objP,0);
+    }
+    
     return (jint)status;
 }
 

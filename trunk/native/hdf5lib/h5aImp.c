@@ -75,8 +75,13 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Acreate
         return -1;
     }
 
+#ifdef H5_USE_16_API
     status = H5Acreate((hid_t)loc_id, aName, (hid_t)type_id,
         (hid_t)space_id, (hid_t)create_plist );
+#else
+    status = H5Acreate2((hid_t)loc_id, aName, (hid_t)type_id,
+        (hid_t)space_id, (hid_t)create_plist, (hid_t)H5P_DEFAULT );
+#endif
 
     ENVPTR->ReleaseStringUTFChars(ENVPAR name,aName);
 
@@ -624,6 +629,42 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Acopy
     }
 
     return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Acreate2
+ * Signature: (ILjava/lang/String;IIII)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Acreate2
+  (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint type_id,
+  jint space_id, jint create_plist, jint access_plist)
+{
+    hid_t status;
+    char* aName;
+    jboolean isCopy;
+
+    if (name == NULL) {
+        h5nullArgument( env, "H5Acreate2:  name is NULL");
+        return -1;
+    }
+
+    aName = (char *)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
+
+    if (aName == NULL) {
+        h5JNIFatalError( env, "H5Acreate2: aName is not pinned");
+        return -1;
+    }
+
+    status = H5Acreate2((hid_t)loc_id, aName, (hid_t)type_id,
+        (hid_t)space_id, (hid_t)create_plist, (hid_t)access_plist );
+
+    ENVPTR->ReleaseStringUTFChars(ENVPAR name,aName);
+
+    if (status < 0) {
+        h5libraryError(env);
+    }
+    return (jint)status;
 }
 
 #ifdef __cplusplus

@@ -199,7 +199,7 @@ clean-examples:
 	@if test -d "examples"; then cd examples; $(MAKE) clean; fi
 
 clean-test:
-	@if test -d "test/Makefile"; then  cd test; $(MAKE) clean; fi
+	@if test -d "test"; then  cd test; $(MAKE) clean; fi
 
 clean-testlink:
 	@if test -d "test/testlink/Makefile"; then  cd test/linktest; $(MAKE) clean; fi

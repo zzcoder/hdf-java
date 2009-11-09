@@ -1,21 +1,27 @@
 /****************************************************************************
- * NCSA HDF                                                                 *
- * National Comptational Science Alliance                                   *
- * University of Illinois at Urbana-Champaign                               *
- * 605 E. Springfield, Champaign IL 61820                                   *
- *                                                                          *
- * For conditions of distribution and use, see the accompanying             *
- * hdf-java/COPYING file.                                                   *
- *                                                                          *
+ * Copyright by The HDF Group.                                               *
+ * Copyright by the Board of Trustees of the University of Illinois.         *
+ * All rights reserved.                                                      *
+ *                                                                           *
+ * This file is part of HDF Java Products. The full HDF Java copyright       *
+ * notice, including terms governing use, modification, and redistribution,  *
+ * is contained in the file, COPYING.  COPYING can be found at the root of   *
+ * the source code distribution tree. You can also access it online  at      *
+ * http://www.hdfgroup.org/products/licenses.html.  If you do not have       *
+ * access to the file, you may request a copy from help@hdfgroup.org.        *
  ****************************************************************************/
 
 package ncsa.hdf.hdf5lib;
 
-import java.io.*;
+import ncsa.hdf.hdf5lib.structs.H5G_info_t;
+
+import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import ncsa.hdf.hdf5lib.exceptions.*;
+import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
+import ncsa.hdf.hdf5lib.exceptions.HDF5JavaException;
+import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
 
 /**
@@ -209,17 +215,33 @@ import ncsa.hdf.hdf5lib.exceptions.*;
  *  http://hdf.ncsa.uiuc.edu/HDF5"</a>
  **/
 public class H5 {
+  /**
+   * The version number of the HDF5 library: <br />
+   *     LIB_VERSION[0]: The major version of the library.<br />
+   *     LIB_VERSION[1]: The minor version of the library.<br />
+   *     LIB_VERSION[2]: The release number of the library.<br />
+   *     
+   * Make sure to update the verions number when a different
+   * library is used.    
+   */
+  public final static int LIB_VERSION[] = {1, 8, 4};
 
     public final static String H5PATH_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.hdf5lib";
     
     //add system property to load library by name from library path, via System.loadLibrary() 
     public final static String H5_LIBRARY_NAME_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.loadLibraryName"; 
 
+    private static Logger s_logger; 
+    private static String s_libraryName; 
     private static boolean isLibraryLoaded = false;
 
-    final private static boolean IS_CRITICAL_PINNING = true;
-
     static { loadH5Lib(); }
+    
+    /**
+     * True if H5 uses 16 APIs; otherwise, false.
+     * This variable must be defined after loadH5Lib() was called.
+     */
+    public static final boolean isAPI16 = H5Use16();
 
 
     public static void loadH5Lib()
@@ -227,10 +249,6 @@ public class H5 {
         // Make sure that the library is loaded only once 
         if (isLibraryLoaded)
             return;
-
-        Logger s_logger; 
-        String s_libraryName; 
-        
         
         // use default logger, since spanning sources 
         s_logger = Logger.getLogger("ncsa.hdf.hdf5lib"); 
@@ -829,7 +847,7 @@ public class H5 {
             byte[] buf)  throws HDF5LibraryException, NullPointerException 
     {
          return H5Dread(dataset_id, mem_type_id,mem_space_id, file_space_id, 
-                xfer_plist_id, buf, IS_CRITICAL_PINNING);
+                xfer_plist_id, buf, true);
     }
 
     public synchronized static native int H5DreadVL(int dataset_id, int mem_type_id,
@@ -999,7 +1017,7 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException 
     {
         return H5Dwrite(dataset_id,mem_type_id, mem_space_id, file_space_id,
-                xfer_plist_id, buf, IS_CRITICAL_PINNING);
+                xfer_plist_id, buf, true);
     }
 
     /**
@@ -1090,7 +1108,7 @@ public class H5 {
     throws HDF5Exception, HDF5LibraryException, NullPointerException
     {
         return H5Dwrite(dataset_id, mem_type_id, mem_space_id,
-                file_space_id, xfer_plist_id, obj, IS_CRITICAL_PINNING);
+                file_space_id, xfer_plist_id, obj, true);
     }
 
 
@@ -3103,8 +3121,8 @@ public class H5 {
             theArr = new HDFArray(maximum_size);
             themax = theArr.byteify();
         }
-
-        int retVal = H5Sset_extent_simple(space_id, rank, thecurr, themax);
+        int retVal = H5Screate_simple(rank, thecurr,
+                themax);
 
         thecurr = null;
         themax = null;
@@ -4236,18 +4254,11 @@ public class H5 {
     public synchronized static int H5Gn_members( int loc_id, String name)
     throws HDF5LibraryException, NullPointerException {
         int grp_id = H5Gopen(loc_id, name);
-        int ret=-1;
         long [] nobj = new long[1];
-
-        try {
-            nobj[0] = -1;
-            H5Gget_num_objs(grp_id, nobj);
-            ret = (new Long(nobj[0])).intValue();
-        } finally {
-            H5.H5Gclose(grp_id);
-        }
-
-        return (ret);
+        nobj[0] = -1;
+        int ret = H5Gget_num_objs(grp_id, nobj);
+        int r = (new Long(nobj[0])).intValue();
+        return (r);
     }
 
     /**
@@ -4273,20 +4284,14 @@ public class H5 {
             String name, int idx, String[] oname, int[]type)
     throws HDF5LibraryException, NullPointerException
     {
-        long val=-1, default_buf_size = 4096;
+        long default_buf_size = 4096;
         String n[] = new String[1];
         n[0] = new String("");
         int grp_id = H5Gopen(loc_id, name);
-
-        try {
-            val = H5Gget_objname_by_idx(grp_id, idx, n, default_buf_size);
-            int type_code = H5Gget_objtype_by_idx(grp_id, idx);
-            oname[0] = new String(n[0]);
-            type[0] = type_code;
-        } finally {
-            H5Gclose(grp_id);
-        }
-
+        long val = H5Gget_objname_by_idx(grp_id, idx, n, default_buf_size);
+        int type_code = H5Gget_objtype_by_idx(grp_id, idx);
+        oname[0] = new String(n[0]);
+        type[0] = type_code;
         int ret = (new Long(val)).intValue();
         return ret;
     }
@@ -4507,7 +4512,7 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException
     {
         return H5Dread_short(dataset_id, mem_type_id,mem_space_id, 
-                file_space_id, xfer_plist_id, buf, IS_CRITICAL_PINNING);
+                file_space_id, xfer_plist_id, buf, true);
     }
 
     public synchronized static native int H5Dread_int(int dataset_id, int mem_type_id,
@@ -4521,7 +4526,7 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException
     {
         return H5Dread_int(dataset_id, mem_type_id,mem_space_id, 
-                file_space_id, xfer_plist_id, buf, IS_CRITICAL_PINNING);
+                file_space_id, xfer_plist_id, buf, true);
     }
 
     public synchronized static native int H5Dread_long(int dataset_id, int mem_type_id,
@@ -4535,7 +4540,7 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException
     {
         return H5Dread_long(dataset_id, mem_type_id,mem_space_id, 
-                file_space_id, xfer_plist_id, buf, IS_CRITICAL_PINNING);
+                file_space_id, xfer_plist_id, buf, true);
     }
 
     public synchronized static native int H5Dread_float(int dataset_id, int mem_type_id,
@@ -4549,7 +4554,7 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException
     {
         return H5Dread_float(dataset_id, mem_type_id,mem_space_id, 
-                file_space_id, xfer_plist_id, buf, IS_CRITICAL_PINNING);
+                file_space_id, xfer_plist_id, buf, true);
     }
 
     public synchronized static native int H5Dread_double(int dataset_id, int mem_type_id,
@@ -4563,7 +4568,7 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException
     {
         return H5Dread_double(dataset_id, mem_type_id,mem_space_id, 
-                file_space_id, xfer_plist_id, buf, IS_CRITICAL_PINNING);
+                file_space_id, xfer_plist_id, buf, true);
     }
 
     public synchronized static native int H5Dread_string(int dataset_id, int mem_type_id,
@@ -4587,7 +4592,7 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException
     {
         return H5Dwrite_short(dataset_id, mem_type_id,mem_space_id, 
-                file_space_id,  xfer_plist_id, buf, IS_CRITICAL_PINNING);
+                file_space_id,  xfer_plist_id, buf, true);
     }
 
     public synchronized static native int H5Dwrite_int(int dataset_id, int mem_type_id,
@@ -4601,7 +4606,7 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException
     {
         return H5Dwrite_int(dataset_id, mem_type_id,mem_space_id, 
-                file_space_id,  xfer_plist_id, buf, IS_CRITICAL_PINNING);
+                file_space_id,  xfer_plist_id, buf, true);
     }
 
     public synchronized static native int H5Dwrite_long(int dataset_id, int mem_type_id,
@@ -4615,7 +4620,7 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException
     {
         return H5Dwrite_long(dataset_id, mem_type_id,mem_space_id, 
-                file_space_id,  xfer_plist_id, buf, IS_CRITICAL_PINNING);
+                file_space_id,  xfer_plist_id, buf, true);
     }
 
     public synchronized static native int H5Dwrite_float(int dataset_id, int mem_type_id,
@@ -4629,7 +4634,7 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException
     {
         return H5Dwrite_float(dataset_id, mem_type_id,mem_space_id, 
-                file_space_id,  xfer_plist_id, buf, IS_CRITICAL_PINNING);
+                file_space_id,  xfer_plist_id, buf, true);
     }
 
     public synchronized static native int H5Dwrite_double(int dataset_id, int mem_type_id,
@@ -4643,7 +4648,7 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException
     {
         return H5Dwrite_double(dataset_id, mem_type_id,mem_space_id, 
-                file_space_id,  xfer_plist_id, buf, IS_CRITICAL_PINNING);
+                file_space_id,  xfer_plist_id, buf, true);
     }
 
     public synchronized static native int H5Pset_fclose_degree(int plist, int degree)
@@ -4885,6 +4890,806 @@ public class H5 {
      */
     public synchronized static native int H5Pclose_class( int plid)
     throws HDF5LibraryException;
+
+
+    ////////////////////////////////////////////////////////////////////
+    //                                                                //
+    //             New APIs for HDF5 1.8                              //
+    //                 October 26, 2009                               //
+    ////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////////////
+    //                  H5E: Error Interface Functions                //
+    ////////////////////////////////////////////////////////////////////
+
+    /**
+     *  Check if 16 APIs are used.
+     *
+     *  @return true if 16 APIs are used; otherwise, false.
+     **/
+    private synchronized static native boolean H5Use16();
+
+//  // Error stack traversal callback function pointers 
+//  public interface H5E_walk2_t extends Callback {
+//    int callback(int n, H5E_error2_t err_desc, Pointer client_data);
+//  }
+//  public interface H5E_auto2_t extends Callback {
+//    int callback(int estack, Pointer client_data);
+//  }
+  
+  /**
+   *  H5Eregister_class registers a client library or application program to 
+   *  the HDF5 error API so that the client library or application program 
+   *  can report errors together with HDF5 library.
+   *
+   *  @param cls_name IN: Name of the error class.
+   *  @param lib_name IN: Name of the client library or application to which the error class belongs.
+   *  @param version  IN: Version of the client library or application to which the error class belongs.
+   *
+   *  @return a class identifier
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - name is null.
+   **/
+  public synchronized static native int H5Eregister_class(String cls_name, String lib_name, String version)
+  throws HDF5LibraryException, NullPointerException;
+  
+  /**
+   *  H5Eunregister_class removes the error class specified by class_id.
+   *
+   *  @param class_id IN: Error class identifier.
+   *
+   *  @return none
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native void H5Eunregister_class(int class_id)
+  throws HDF5LibraryException;
+  
+  /**
+   *  H5Eclose_msg closes an error message identifier, which can be either a major or minor message. 
+   *
+   *  @param err_id  IN: Error message identifier.
+   *
+   *  @return none
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native void H5Eclose_msg(int err_id)
+  throws HDF5LibraryException;
+  
+  /**
+   *  H5Ecreate_msg adds an error message to an error class defined by client 
+   *  library or application program.
+   *
+   *  @param cls_id   IN: Error class identifier.
+   *  @param msg_type IN: The type of the error message. 
+   *  @param msg      IN: The error message.
+   *
+   *  @return a message identifier
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - msg is null.
+   **/
+  public synchronized static native int H5Ecreate_msg(int cls_id, int msg_type, String msg)
+  throws HDF5LibraryException, NullPointerException;
+  
+  /**
+   *  H5Ecreate_stack creates a new empty error stack and returns the 
+   *  new stack’s identifier. 
+   *
+   *  @param none
+   *
+   *  @return an error stack identifier
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native int H5Ecreate_stack()
+  throws HDF5LibraryException;
+  
+  /**
+   *  H5Eget_current_stack copies the current error stack and returns an 
+   *  error stack identifier for the new copy. 
+   *
+   *  @param none
+   *
+   *  @return an error stack identifier
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native int H5Eget_current_stack()
+  throws HDF5LibraryException;
+  
+  /**
+   *  H5Eclose_stack closes the object handle for an error stack and 
+   *  releases its resources.
+   *
+   *  @param stack_id IN: Error stack identifier.
+   *
+   *  @return none
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native void H5Eclose_stack(int stack_id)
+  throws HDF5LibraryException;
+  
+  /**
+   *  H5Eget_class_name retrieves the name of the error class 
+   *  specified by the class identifier.
+   *
+   *  @param class_id IN: Error class identifier.
+   *
+   *  @return the name of the error class
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native String H5Eget_class_name(int class_id)
+  throws HDF5LibraryException, NullPointerException;
+//long H5Eget_class_name(int class_id, String name, IntegerType size);  
+  
+  /**
+   *  H5Eset_current_stack replaces the content of the current error stack 
+   *  with a copy of the content of the error stack specified by estack_id. 
+   *
+   *  @param stack_id IN: Error stack identifier.
+   *
+   *  @return none
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native void H5Eset_current_stack(int stack_id)
+  throws HDF5LibraryException;
+//  public static int H5Epush(int err_stack, String file, String func, int line,
+//    int cls_id, int maj_id, int min_id, String msg, ...)
+//  {
+//    H5Epush2(err_stack, file, func, line, cls_id, maj_id, min_id, msg, ...);
+//  }
+//  public synchronized static native int H5Epush2(int err_stack, String file, String func, int line,
+//    int cls_id, int maj_id, int min_id, String msg, ...);
+  
+  /**
+   *  H5Epop deletes the number of error records specified in count from 
+   *  the top of the error stack specified by estack_id 
+   *  (including major, minor messages and description).
+   *
+   *  @param stack_id IN: Error stack identifier.
+   *  @param count    IN: Version of the client library or application to which the error class belongs.
+   *
+   *  @return none
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native void H5Epop(int stack_id, long count)
+  throws HDF5LibraryException;
+  
+  /**
+   *  H5Eprint2 prints the error stack specified by estack_id on the 
+   *  specified stream, stream.
+   *
+   *  @param stack_id IN: Error stack identifier.If the identifier is H5E_DEFAULT, the current error stack will be printed.
+   *  @param stream   IN: File pointer, or stderr if null.
+   *
+   *  @return none
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native void H5Eprint2(int err_stack, Object stream)
+  throws HDF5LibraryException;
+  
+//  int H5Ewalk(int err_stack, H5E_direction_t direction, H5E_walk2_t func,
+//        Pointer client_data)
+//  {
+//    return H5Ewalk2(err_stack, direction, func, client_data);
+//  }
+//  int H5Ewalk2(int err_stack, H5E_direction_t direction, H5E_walk2_t func,
+//        Pointer client_data);
+//  int H5Eget_auto(int estack_id, H5E_auto2_t func, PointerByReference client_data);
+//  {
+//    return H5Eget_auto2(estack_id,  func, client_data);
+//  }
+//  int H5Eget_auto2(int estack_id, H5E_auto2_t func, PointerByReference client_data);
+//  int H5Eset_auto(int estack_id, H5E_auto2_t func, Pointer client_data);
+//  {
+//    return H5Eset_auto2(estack_id, func, client_data);
+//  }
+//  int H5Eset_auto2(int estack_id, H5E_auto2_t func, Pointer client_data);
+  
+  /**
+   *  H5Eclear clears the error stack specified by estack_id, or, if 
+   *  estack_id is set to H5E_DEFAULT, the error stack for the current thread. 
+   *
+   *  @param stack_id IN: Error stack identifier.
+   *
+   *  @return none
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public static void H5Eclear(int err_stack)
+  throws HDF5LibraryException
+  {
+    H5Eclear2(err_stack);
+  }
+  /**
+   *  H5Eclear2 clears the error stack specified by estack_id, or, if 
+   *  estack_id is set to H5E_DEFAULT, the error stack for the current thread. 
+   *
+   *  @see public static void H5Eclear(int err_stack)
+   **/
+  public synchronized static native void H5Eclear2(int err_stack)
+  throws HDF5LibraryException;
+  
+  /**
+   *  H5Eauto_is_v2 determines whether the error auto reporting function 
+   *  for an error stack conforms to the H5E_auto2_t typedef 
+   *  or the H5E_auto1_t typedef. 
+   *
+   *  @param stack_id IN: Error stack identifier.
+   *
+   *  @return boolean true if the error stack conforms to H5E_auto2_t  
+   *          and false if it conforms to H5E_auto1_t. 
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native boolean H5Eauto_is_v2(int err_stack)
+  throws HDF5LibraryException;
+  
+  /**
+   *  H5Eget_msg retrieves the error message including its length and type.
+   *
+   *  @param msg_id  IN: Name of the error class.
+   *  @param type   OUT: The type of the error message.
+   *                     Valid values are H5E_MAJOR and H5E_MINOR.
+   *
+   *  @return the error message
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native String H5Eget_msg(int msg_id, int[] type_list)
+  throws HDF5LibraryException;
+//long H5Eget_msg(int msg_id, H5E_TYPE type, String msg, IntegerType size);  
+  
+  /**
+   *  H5Eget_num retrieves the number of error records in the error 
+   *  stack specified by estack_id  
+   *  (including major, minor messages and description). 
+   *
+   *  @param stack_id IN: Error stack identifier.
+   *
+   *  @return the number of error messages
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native long H5Eget_num(int stack_id)
+  throws HDF5LibraryException, NullPointerException;
+  
+  /**
+   *  H5Eprint1 prints the error stack specified by estack_id on the 
+   *  specified stream, stream.
+   *
+   *  @param stream   IN: File pointer, or stderr if null.
+   *
+   *  @return none
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *
+   *  @deprecated As of HDF5 1.8, replaced by {@link #H5Eprint2(int, Object)}
+   **/
+  public synchronized static native void H5Eprint1(Object stream)
+  throws HDF5LibraryException;
+
+  //  public static int H5Epush(String file, String func, int line,
+//    int maj_id, int min_id, String msg)
+//  {
+//    H5Epush1(file, func, line, maj_id, min_id, msg);
+//  }
+//  private synchronized static native int H5Epush1(String file, String func, int line,
+//    int maj_id, int min_id, String msg);
+//  
+//  int H5Ewalk(H5E_direction_t direction, H5E_walk1_t func,
+//        Pointer client_data)
+//  {
+//    return H5Ewalk1(direction, func, client_data);
+//  }
+//  int H5Ewalk1(H5E_direction_t direction, H5E_walk1_t func,
+//        Pointer client_data);
+//  int H5Eget_auto(H5E_auto1_t func, PointerByReference client_data);
+//  {
+//    return H5Eget_auto1(func, client_data);
+//  }
+//  int H5Eget_auto1(H5E_auto1_t func, PointerByReference client_data);
+//  int H5Eset_auto(H5E_auto1_t func, Pointer client_data);
+//  {
+//    return H5Eset_auto1(func, client_data);
+//  }
+//  int H5Eset_auto1(H5E_auto1_t func, Pointer client_data);
+//  
+//  /**
+//   *  H5Eget_major returns a string that describes the error.
+//   *
+//   *  @deprecated As of HDF5 1.8
+//   *
+//   *  @param major IN: Major error number.
+//   *
+//   *  @return string describing the error
+//   *
+//   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+//   **/
+//  public synchronized static native String H5Eget_major(int major)
+//  throws HDF5LibraryException;
+//  
+//  /**
+//   *  H5Eget_minor returns a string that describes the error. 
+//   *
+//   *  @deprecated As of HDF5 1.8
+//   *
+//   *  @param minor IN: Error stack identifier.
+//   *
+//   *  @return string describing the error
+//   *
+//   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+//   **/
+//  public synchronized static native String H5Eget_minor(int minor)
+//  throws HDF5LibraryException;
+
+  ////////////////////////////////////////////////////////////////////
+  //                   H5F: File Interface Functions                //
+  ////////////////////////////////////////////////////////////////////
+
+  /**
+   *  H5Fget_intent retrieves the intended access mode flag passed 
+   *  with H5Fopen when the file was opened. 
+   *
+   *  @param file_id  IN: File identifier for a currently-open HDF5 file
+   *
+   *  @return the intended access mode flag, as originally passed with H5Fopen.
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native int H5Fget_intent(int file_id)
+  throws HDF5LibraryException;
+//    int H5Fget_intent(int file_id, IntByReference intent);
+
+  /**
+   *  H5Fget_obj_count returns the number of open object identifiers for the file. 
+   *
+   *  @param file_id  IN: File identifier for a currently-open HDF5 file
+   *  @param types    IN: Type of object for which identifiers are to be returned.
+   *  <ul>
+   *  <li>H5F_OBJ_FILE      Files only</li>
+   *  <li>H5F_OBJ_DATASET   Datasets only</li>
+   *  <li>H5F_OBJ_GROUP     Groups only</li>
+   *  <li>H5F_OBJ_DATATYPE  Named datatypes only</li>
+   *  <li>H5F_OBJ_ATTR      Attributes only</li>
+   *  <li>H5F_OBJ_ALL       All of the above</li>
+   *  <li>H5F_OBJ_LOCAL     Restrict search to objects opened through current file identifier.</li>
+   *  </ul>
+   *
+   *  @return the number of open objects.
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native long H5Fget_obj_count_long(int file_id, int types)
+  throws HDF5LibraryException;
+
+  /**
+   *  H5Fget_obj_ids returns the list of identifiers for all open HDF5 objects fitting the specified criteria. 
+   *
+   *  @param file_id      IN: File identifier for a currently-open HDF5 file
+   *  @param types        IN: Type of object for which identifiers are to be returned.
+   *  @param max_objs     IN: Maximum number of object identifiers to place into obj_id_list.
+   *  @param obj_id_list OUT: Pointer to the returned list of open object identifiers.
+   *
+   *  @return the number of objects placed into obj_id_list.
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native long H5Fget_obj_ids_long(int file_id, int types, long max_objs, int[] obj_id_list)
+  throws HDF5LibraryException, NullPointerException;
+
+//  /**
+//   *  H5Fget_vfd_handle returns a pointer to the file handle from the low-level file driver 
+//   *  currently being used by the HDF5 library for file I/O. 
+//   *
+//   *  @param file_id      IN: Identifier of the file to be queried.
+//   *  @param fapl         IN: File access property list identifier.
+//   *
+//   *  @return a pointer to the file handle being used by the low-level virtual file driver.
+//   *
+//   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+//   **/
+//  public synchronized static native Pointer file_handle H5Fget_vfd_handle(int file_id, int fapl)
+//  throws HDF5LibraryException;
+
+  /**
+   *  H5Fget_freespace returns the amount of space that is unused by any objects in the file. 
+   *
+   *  @param file_id  IN: File identifier for a currently-open HDF5 file
+   *
+   *  @return the amount of free space in the file
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native long H5Fget_freespace(int file_id)
+  throws HDF5LibraryException, NullPointerException;
+
+
+//  /**
+//   *  H5Fget_mdc_config loads the current metadata cache configuration into 
+//   *  the instance of H5AC_cache_config_t pointed to by the config_ptr parameter. 
+//   *
+//   *  @param file_id        IN: Identifier of the target file
+//   *  @param config_ptr IN/OUT: Pointer to the instance of H5AC_cache_config_t in which the current metadata cache configuration is to be reported.
+//   *
+//   *  @return none
+//   *
+//   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+//   *  @exception NullPointerException - config_ptr is null.
+//   **/
+//  public synchronized static native void H5Fget_mdc_config(int file_id,
+//          H5AC_cache_config_t config_ptr)
+//  throws HDF5LibraryException, NullPointerException;
+//
+//  /**
+//   *  H5Fset_mdc_config attempts to configure the file's metadata cache according to the configuration supplied.
+//   *
+//   *  @param file_id    IN: Identifier of the target file
+//   *  @param config_ptr IN: Pointer to the instance of H5AC_cache_config_t containing the desired configuration.
+//   *
+//   *  @return none
+//   *
+//   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+//   *  @exception NullPointerException - config_ptr is null.
+//   **/
+//  public synchronized static native int H5Fset_mdc_config(int file_id,
+//          H5AC_cache_config_t config_ptr)
+//  throws HDF5LibraryException, NullPointerException;
+
+  /**
+   *  H5Fget_mdc_hit_rate queries the metadata cache of the target file to 
+   *  obtain its hit rate (cache hits / (cache hits + cache misses)) 
+   *  since the last time hit rate statistics were reset.
+   *
+   *  @param file_id  IN: Identifier of the target file.
+   *
+   *  @return the double in which the hit rate is returned.
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native double H5Fget_mdc_hit_rate(int file_id)
+  throws HDF5LibraryException;
+
+  /**
+   *  H5Fget_mdc_size queries the metadata cache of the target file for the desired size information. 
+   *
+   *  @param file_id              IN: Identifier of the target file.
+   *  @param metadata_cache      OUT: Current metadata cache information
+   *  <ul>
+   *      <li>metadata_cache[0] = max_size_ptr       // current cache maximum size</li>
+   *      <li>metadata_cache[1] = min_clean_size_ptr // current cache minimum clean size</li>
+   *      <li>metadata_cache[2] = cur_size_ptr       // current cache size</li>
+   *  </ul>
+   *
+   *  @return current number of entries in the cache
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - metadata_cache is null.
+   **/
+  public synchronized static native int H5Fget_mdc_size(int file_id, long[] metadata_cache)
+  throws HDF5LibraryException, NullPointerException, IllegalArgumentException;
+
+  /**
+   *  H5Freset_mdc_hit_rate_stats resets the hit rate statistics 
+   *  counters in the metadata cache associated with the specified file. 
+   *
+   *  @param file_id  IN: Identifier of the target file.
+   *
+   *  @return none
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native void H5Freset_mdc_hit_rate_stats(int file_id)
+  throws HDF5LibraryException;
+
+
+  /**
+   *  H5Fget_name retrieves the name of the file to which the object obj_id belongs. 
+   *
+   *  @param obj_id  IN: Identifier of the object for which the associated filename is sought.
+   *
+   *  @return the filename.
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native String H5Fget_name (int obj_id)
+  throws HDF5LibraryException;
+//  long H5Fget_name(int obj_id, Buffer name/*out*/, long size);
+
+//  /**
+//   *  H5Fget_info returns global information for the file associated with the 
+//   *  object identifier obj_id. 
+//   *
+//   *  @param obj_id  IN: Object identifier for any object in the file. 
+//   *
+//   *  @return the structure containing global file information.
+//   *
+//   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+//   **/
+//  public synchronized static native H5F_info_t H5Fget_info(int obj_id)
+//  throws HDF5LibraryException, NullPointerException;
+//  int H5Fget_info(int obj_id, H5F_info_t file_info);
+
+  ////////////////////////////////////////////////////////////////////
+  //                   H5G: Group Interface Functions               //
+  ////////////////////////////////////////////////////////////////////
+
+  /**
+   *  H5Gcreate creates a new group with the specified name at
+   *  the specified location, loc_id.
+   *
+   *  @param loc_id    IN: The file or group identifier.
+   *  @param name      IN: The absolute or relative name of the new group.
+   *  @param lcpl_id   IN: Identifier of link creation property list.
+   *  @param gcpl_id   IN: Identifier of group creation property list.
+   *  @param gapl_id   IN: Identifier of group access property list.
+   *                       (No group access properties have been implemented at this time; use H5P_DEFAULT.)
+   *
+   *  @return a valid group identifier
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - name is null.
+   **/
+  public synchronized static native int H5Gcreate2(int loc_id, String name, int lcpl_id,
+        int gcpl_id, int gapl_id)
+      throws HDF5LibraryException, NullPointerException;
+
+  /**
+   *  H5Gcreate_anon creates a new empty group in the file specified by loc_id.
+   *
+   *  @param loc_id    IN: File or group identifier specifying the file in which the new group is to be created.
+   *  @param gcpl_id   IN: Identifier of group creation property list.
+   *  @param gapl_id   IN: Identifier of group access property list.
+   *                       (No group access properties have been implemented at this time; use H5P_DEFAULT.)
+   *
+   *  @return a valid group identifier
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native int H5Gcreate_anon(int loc_id, int gcpl_id, int gapl_id)
+      throws HDF5LibraryException;
+
+  /**
+   *  H5Gopen opens an existing group, name, at the location specified by loc_id. 
+   *
+   *  @param loc_id   IN: File or group identifier specifying the location of the group to be opened.
+   *  @param name     IN: Name of group to open.
+   *  @param gapl_id  IN: Identifier of group access property list.
+   *                       (No group access properties have been implemented at this time; use H5P_DEFAULT.)
+   *
+   *  @return a valid group identifier if successful
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - name is null.
+   **/
+  public synchronized static native int H5Gopen2(int loc_id, String name, int gapl_id)
+      throws HDF5LibraryException, NullPointerException;
+
+  /**
+   *  H5Gget_create_plist returns an identifier for the group creation 
+   *  property list associated with the group specified by group_id. 
+   *
+   *  @param group_id IN: Identifier of the group.
+   *
+   *  @return an identifier for the group’s creation property list
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native int H5Gget_create_plist(int group_id)
+      throws HDF5LibraryException;
+
+  /**
+   *  H5Gget_info retrieves information about the group specified by 
+   *  group_id. The information is returned in the group_info struct.  
+   *
+   *  @param group_id IN: Identifier of the group.
+   *
+   *  @return a structure in which group information is returned 
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+  public synchronized static native H5G_info_t H5Gget_info(int group_id)
+      throws HDF5LibraryException;
+//  int H5Gget_info(int loc_id, H5G_info_t ginfo);
+
+  /**
+   *  H5Gget_info_by_name retrieves information about the group group_name 
+   *  located in the file or group specified by loc_id.
+   *
+   *  @param group_id IN: File or group identifier.
+   *  @param name     IN: Name of group for which information is to be retrieved.
+   *  @param lapl_id  IN: Link access property list.
+   *
+   *  @return a structure in which group information is returned 
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - name is null.
+   **/
+  public synchronized static native H5G_info_t H5Gget_info_by_name(int group_id, String name, int lapl_id)
+      throws HDF5LibraryException, NullPointerException;
+//  int H5Gget_info_by_name(int group_id, String name, H5G_info_t ginfo, int lapl_id);  
+
+  /**
+   *  H5Gget_info_by_idx retrieves information about a group, according to the
+   *  group’s position within an index.  
+   *
+   *  @param group_id   IN: File or group identifier.
+   *  @param group_name IN: Name of group for which information is to be retrieved.
+   *  @param idx_type   IN: Type of index by which objects are ordered  
+   *  @param order      IN: Order of iteration within index 
+   *  @param n          IN: Attribute's position in index 
+   *  @param lapl_id    IN: Link access property list.
+   *
+   *  @return a structure in which group information is returned 
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - name is null.
+   **/
+  public synchronized static native H5G_info_t H5Gget_info_by_idx(int group_id, String group_name,
+        int idx_type, int order, long n, int lapl_id)
+      throws HDF5LibraryException, NullPointerException;
+//  int H5Gget_info_by_idx(int group_id, String group_name,
+//        H5_index_t idx_type, H5_iter_order_t order, long n, H5G_info_t ginfo, int lapl_id);  
+  
+/*
+/////////////////////////////////////////////////////////////////////////////////
+//
+//
+//Add these methods so that we don't need to call H5Gget_objtype_by_idx
+//in a loop to get information for all the object in a group, which takes
+//a lot of time to finish if the number of objects is more than 10,000
+//
+/////////////////////////////////////////////////////////////////////////////////
+*/
+  
+/**
+ * retrieves information of all objects under the group (name) located in the 
+ * file or group specified by loc_id.
+ * 
+ * @param loc_id     IN:  File or group identifier
+ * @param name       IN:  Name of group for which information is to be retrieved
+ * @param objNames   OUT: Names of all objects under the group, name.
+ * @param objTypes   OUT: Types of all objects under the group, name.
+ */
+  public synchronized static void H5Gget_obj_info_all( int loc_id,
+          String name, String[] objNames, int[] objTypes)
+  throws HDF5LibraryException, NullPointerException
+  {
+      if (name == null || name.length()<=0) {
+          throw new NullPointerException("H5Gget_obj_info_all(): name is null");
+      }
+
+      if (objNames == null) {
+          throw new NullPointerException("H5Gget_obj_info_all(): name array is null");
+      }
+
+      if (objTypes == null) {
+          throw new NullPointerException("H5Gget_obj_info_all(): type array is null");
+      }
+
+      if (objNames.length <= 0) {
+          throw new HDF5LibraryException("H5Gget_obj_info_all(): array size is zero");
+      }
+
+      if (objNames.length != objTypes.length) {
+          throw new HDF5LibraryException("H5Gget_obj_info_all(): name and type array sizes are different");
+      }
+
+      H5Gget_obj_info_all( loc_id, name, objNames, objTypes, objNames.length);
+  }
+
+  private synchronized static native void H5Gget_obj_info_all( int loc_id,
+          String name, String[] oname, int[]type, int n)
+  throws HDF5LibraryException, NullPointerException;
+
+  ////////////////////////////////////////////////////////////////////
+  //                                                                //
+  ////////////////////////////////////////////////////////////////////
+
+  ////////////////////////////////////////////////////////////////////
+  //                    H5A                                         //
+  ////////////////////////////////////////////////////////////////////
+
+//    /**
+//     *  H5Acreate2 creates an attribute which is attached to the
+//     *  object specified with loc_id.
+//     *
+//   *  @param loc_id    IN: Object (dataset, group, or named datatype) to be attached to.
+//   *  @param attr_name IN: Name of attribute to create.
+//   *  @param type_id   IN: Identifier of datatype for attribute.
+//   *  @param space_id  IN: Identifier of dataspace for attribute.
+//   *  @param acpl_id   IN: Identifier of creation property list (currently not used).
+//   *  @param aapl_id   IN: Identifier of access property list (currently not used).
+//   *
+//   *  @return an attribute identifier if successful
+//   *
+//   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+//   *  @exception NullPointerException - name is null.
+//     **/
+//    public synchronized static native int H5Acreate2(int loc_id, String attr_name, int type_id,
+//        int space_id, int acpl_id, int aapl_id)
+//      throws HDF5LibraryException, NullPointerException;
+//
+//    /**
+//     *  H5Acreate_by_name creates an attribute which is attached to the
+//     *  object specified with loc_id and obj_name.
+//     *
+//     *  @param loc_id    IN: Object (dataset, group, or named datatype) to be attached to.
+//     *  @param obj_name  IN: Name, relative to loc_id, of object that attribute is to be attached to.
+//     *  @param attr_name IN: Name of attribute to create.
+//     *  @param type_id   IN: Identifier of datatype for attribute.
+//     *  @param space_id  IN: Identifier of dataspace for attribute.
+//     *  @param acpl_id   IN: Identifier of creation property list (currently not used).
+//     *  @param aapl_id   IN: Identifier of access property list (currently not used).
+//     *  @param lapl_id   IN: Identifier of link access property list.
+//     *
+//     *  @return an attribute identifier if successful
+//     *
+//     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+//     *  @exception NullPointerException - name is null.
+//     **/
+//    public synchronized static native int H5Acreate_by_name(int loc_id, String obj_name, String attr_name,
+//          int type_id, int space_id, int acpl_id, int aapl_id, int lapl_id)
+//        throws HDF5LibraryException, NullPointerException;
+//
+//    /**
+//     *  H5Adelete_by_name removes the attribute attr_name from an object 
+//     *  specified by location and name, loc_id and obj_name, respectively. 
+//     *
+//     *  @param loc_id    IN: Location of object to which attribute is attached .
+//     *  @param obj_name  IN: Name, relative to loc_id, of object that attribute is attached to.
+//     *  @param attr_name IN: Name of attribute to delete.
+//     *  @param lapl_id   IN: Identifier of link access property list.
+//     *
+//     *  @return none
+//     *
+//     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+//     *  @exception NullPointerException - name is null.
+//     **/
+//    public synchronized static native void H5Adelete_by_name(int loc_id, String obj_name,
+//          String attr_name, int lapl_id)
+//        throws HDF5LibraryException, NullPointerException;
+//
+//    /**
+//     *  H5Aexists determines whether the attribute attr_name exists on the 
+//     *  object specified by obj_id. 
+//     *
+//     *  @param obj_id    IN: Object identifier.
+//     *  @param attr_name IN: Name of the attribute.
+//     *
+//     *  @return boolean true if an attribute with a given name exists.
+//     *
+//     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+//     *  @exception NullPointerException - attr_name is null.
+//     **/
+//    public synchronized static native boolean H5Aexists(int obj_id, String attr_name)
+//        throws HDF5LibraryException, NullPointerException;
+//
+//    /**
+//     *  H5Aexists_by_name determines whether the attribute attr_name exists on an object. That object is 
+//     *  specified by its location and name, loc_id and obj_name, respectively. 
+//     *
+//     *  @param loc_id    IN: Location of object to which attribute is attached .
+//     *  @param obj_name  IN: Name, relative to loc_id, of object that attribute is attached to.
+//     *  @param attr_name IN: Name of attribute.
+//     *  @param lapl_id   IN: Identifier of link access property list.
+//     *
+//     *  @return boolean true if an attribute with a given name exists.
+//     *
+//     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+//     *  @exception NullPointerException - name is null.
+//     **/
+//    public synchronized static native boolean H5Aexists_by_name(int obj_id, String obj_name,
+//          String attr_name, int lapl_id)
+//        throws HDF5LibraryException, NullPointerException;
 
 }
 

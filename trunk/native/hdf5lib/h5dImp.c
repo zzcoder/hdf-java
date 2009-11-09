@@ -170,8 +170,12 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dcreate
         return -1;
     }
     
+#ifdef H5_USE_16_API
     status = H5Dcreate(loc_id, file, type_id, space_id, create_plist_id);
-
+#else
+    status = H5Dcreate2(loc_id, file, type_id, space_id, (hid_t)H5P_DEFAULT, create_plist_id, (hid_t)H5P_DEFAULT);
+#endif
+    
     ENVPTR->ReleaseStringUTFChars(ENVPAR name,file);
     if (status < 0) {
         h5libraryError(env);
@@ -267,7 +271,12 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dopen
         h5JNIFatalError( env, "H5Dopen:  file name not pinned");
         return -1;
     }
+    
+#ifdef H5_USE_16_API
     status = H5Dopen((hid_t)loc_id, file );
+#else
+    status = H5Dopen2((hid_t)loc_id, file, (hid_t)H5P_DEFAULT );
+#endif
 
     ENVPTR->ReleaseStringUTFChars(ENVPAR name,file);
     if (status < 0) {
@@ -1351,6 +1360,70 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DwriteString
         h5libraryError(env);
     }
 
+    return (jint)status;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Dcreate2
+ * Signature: (ILjava/lang/String;IIIII)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dcreate2
+  (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint type_id,
+  jint space_id, jint link_plist_id, jint create_plist_id, jint access_plist_id)
+{
+    hid_t status;
+    char* file;
+    jboolean isCopy;
+
+    if (name == NULL) {
+        h5nullArgument( env, "H5Dcreate:  name is NULL");
+        return -1;
+    }
+    file = (char *)ENVPTR->GetStringUTFChars(ENVPAR name,&isCopy);
+    if (file == NULL) {
+        h5JNIFatalError( env, "H5Dcreate:  file name not pinned");
+        return -1;
+    }
+    
+    status = H5Dcreate2(loc_id, file, type_id, space_id, (hid_t)link_plist_id, (hid_t)create_plist_id, (hid_t)access_plist_id);
+
+    ENVPTR->ReleaseStringUTFChars(ENVPAR name,file);
+    if (status < 0) {
+        h5libraryError(env);
+    }
+    return (jint)status;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Dopen2
+ * Signature: (ILjava/lang/String;I)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dopen2
+  (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint access_plist)
+{
+    hid_t status;
+    char* file;
+    jboolean isCopy;
+
+    if (name == NULL) {
+        h5nullArgument( env, "H5Dopen:  name is NULL");
+        return -1;
+    }
+
+    file = (char *)ENVPTR->GetStringUTFChars(ENVPAR name,&isCopy);
+    if (file == NULL) {
+        h5JNIFatalError( env, "H5Dopen:  file name not pinned");
+        return -1;
+    }
+    
+    status = H5Dopen2((hid_t)loc_id, file, (hid_t)access_plist );
+
+    ENVPTR->ReleaseStringUTFChars(ENVPAR name,file);
+    if (status < 0) {
+        h5libraryError(env);
+    }
     return (jint)status;
 }
 
