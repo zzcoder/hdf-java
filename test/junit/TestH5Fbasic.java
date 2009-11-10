@@ -186,24 +186,14 @@ public class TestH5Fbasic {
   @Test
   public void testH5Fget_freespace() {
     long freeSpace = 0;
-    int fid = -1;
-    
-    try { 
-        fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDWR, HDF5Constants.H5P_DEFAULT); 
-    }
-    catch (Throwable err) {
-        fail("H5.H5Fopen: "+err);
-    }
 
     try { 
-      freeSpace = H5.H5Fget_freespace(fid); 
+      freeSpace = H5.H5Fget_freespace(H5fid); 
     } 
     catch (Throwable err) {
       fail("H5.H5Fget_freespace: "+err);
     }
     assertEquals(freeSpace, 0);
-
-    try { H5.H5Fclose(fid); } catch (Exception ex) {}
   }
 
   //TODO add/and delete objects and test freespace
@@ -211,24 +201,14 @@ public class TestH5Fbasic {
   @Test
   public void testH5Fget_filesize() {
     long fileSize = 0;
-    int fid = -1;
-    
-    try { 
-        fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDWR, HDF5Constants.H5P_DEFAULT); 
-    }
-    catch (Throwable err) {
-        fail("H5.H5Fopen: "+err);
-    }
 
     try { 
-      fileSize = H5.H5Fget_filesize(fid); 
+      fileSize = H5.H5Fget_filesize(H5fid); 
     } 
     catch (Throwable err) {
       fail("H5.H5Fget_freespace: "+err);
     }
     assertTrue(fileSize > 0);
-
-    try { H5.H5Fclose(fid); } catch (Exception ex) {}
   }
 
   //TODO add/and delete objects and test freespace
@@ -236,94 +216,53 @@ public class TestH5Fbasic {
   @Test
   public void testH5Fget_mdc_hit_rate() {
     double rate;
-    int fid = -1;
-    
-    try { 
-        fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDWR, HDF5Constants.H5P_DEFAULT); 
-    }
-    catch (Throwable err) {
-        fail("H5.H5Fopen: "+err);
-    }
 
     try { 
-      rate = H5.H5Fget_mdc_hit_rate(fid); 
+      rate = H5.H5Fget_mdc_hit_rate(H5fid); 
     } 
     catch (Throwable err) {
       fail("H5.H5Fget_mdc_hit_rate: "+err);
     }
-
-    try { H5.H5Fclose(fid); } catch (Exception ex) {}
   }
 
   @Test
   public void testH5Fget_mdc_size() {
     int nentries = -1;
     long cache_sizes[] = new long[3];
-    int fid = -1;
-    
-    try { 
-        fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDWR, HDF5Constants.H5P_DEFAULT); 
-    }
-    catch (Throwable err) {
-        fail("H5.H5Fopen: "+err);
-    }
 
     try { 
-      nentries = H5.H5Fget_mdc_size(fid, cache_sizes);
+      nentries = H5.H5Fget_mdc_size(H5fid, cache_sizes);
     } 
     catch (Throwable err) {
       fail("H5.H5Fget_mdc_size: "+err);
     }
     assertTrue("H5.H5Fget_mdc_size #:"+nentries, nentries == 4);
-
-    try { H5.H5Fclose(fid); } catch (Exception ex) {}
   }
 
   //TODO: test more cases of different cache sizes.
 
   @Test
   public void testH5Freset_mdc_hit_rate_stats() {
-    int fid = -1;
-    
-    try { 
-        fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDWR, HDF5Constants.H5P_DEFAULT); 
-    }
-    catch (Throwable err) {
-        fail("H5.H5Fopen: "+err);
-    }
 
     try { 
-      H5.H5Freset_mdc_hit_rate_stats(fid); 
+      H5.H5Freset_mdc_hit_rate_stats(H5fid); 
     } 
     catch (Throwable err) {
       fail("H5.H5Freset_mdc_hit_rate_stats: "+err);
     }
-
-    try { H5.H5Fclose(fid); } catch (Exception ex) {}
   }
 
   @Test
   public void testH5Fget_name() {
     String fname = null;
-    int fid = -1;
-    
-    try { 
-        fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDWR, HDF5Constants.H5P_DEFAULT); 
-    }
-    catch (Throwable err) {
-        fail("H5.H5Fopen: "+err);
-    }
-    assertTrue (fid > 0);
 
     try { 
-      fname = H5.H5Fget_name(fid); 
+      fname = H5.H5Fget_name(H5fid); 
     } 
     catch (Throwable err) {
       fail("H5.H5Fget_name: "+err);
     }
     assertNotNull(fname);
     assertEquals(fname, H5_FILE);
-
-    try { H5.H5Fclose(fid); } catch (Exception ex) {}
   }
 }

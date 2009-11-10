@@ -61,60 +61,49 @@ public class TestH5F {
     _deleteFile(H5_FILE);
   }
 
-  private final int _createGroup(int fid, String name) {
-    int gid = -1;
-    try {
-      if (H5.isAPI16)
-        gid = H5.H5Gcreate(fid, name, 0);
-      else
-        gid = H5.H5Gcreate2(fid, name, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-    }
-    catch (Throwable err) {
-      fail("H5.H5Gcreate: "+err);
-    }
-    assertTrue(gid > 0);
-
-    return gid;
-  }
-
-  private final int _openGroup(int fid, String name) {
-    int gid = -1;
-    try {
-      if (H5.isAPI16)
-        gid = H5.H5Gopen(fid, name);
-      else
-        gid = H5.H5Gopen2(fid, name, HDF5Constants.H5P_DEFAULT);
-    } 
-    catch (Throwable err) {
-      gid = -1;
-    }
-
-    return gid;
-
-  }
+//  private final int _createGroup(int fid, String name) {
+//    int gid = -1;
+//    try {
+//      if (H5.isAPI16)
+//        gid = H5.H5Gcreate(fid, name, 0);
+//      else
+//        gid = H5.H5Gcreate2(fid, name, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+//    }
+//    catch (Throwable err) {
+//      fail("H5.H5Gcreate: "+err);
+//    }
+//    assertTrue(gid > 0);
+//
+//    return gid;
+//  }
+//
+//  private final int _openGroup(int fid, String name) {
+//    int gid = -1;
+//    try {
+//      if (H5.isAPI16)
+//        gid = H5.H5Gopen(fid, name);
+//      else
+//        gid = H5.H5Gopen2(fid, name, HDF5Constants.H5P_DEFAULT);
+//    } 
+//    catch (Throwable err) {
+//      gid = -1;
+//    }
+//
+//    return gid;
+//
+//  }
 
   @Test
   public void testH5Fget_create_plist() {
-    int fid = -1;
-
-    try { 
-      fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDWR, HDF5Constants.H5P_DEFAULT); 
-    }
-    catch (Throwable err) {
-      fail("H5.H5Fopen: "+err);
-    }
-
     int plist = -1;
 
     try { 
-      plist = H5.H5Fget_create_plist(fid); 
+      plist = H5.H5Fget_create_plist(H5fid); 
     }
     catch (Throwable err) {
       fail("H5.H5Fget_create_plist: "+err);
     }
     assertTrue(plist > 0);
-
-    try { H5.H5Fclose(fid); } catch (Exception ex) {}
   }
 
   @Test(expected=HDF5LibraryException.class)
@@ -135,25 +124,15 @@ public class TestH5F {
 
   @Test
   public void testH5Fget_access_plist() {
-    int fid = -1;
-
-    try { 
-      fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDWR, HDF5Constants.H5P_DEFAULT); 
-    }
-    catch (Throwable err) {
-      fail("H5.H5Fopen: "+err);
-    }
     int plist = -1;
 
     try { 
-      plist = H5.H5Fget_access_plist(fid); 
+      plist = H5.H5Fget_access_plist(H5fid); 
     }
     catch (Throwable err) {
       fail("H5.H5Fget_access_plist: "+err);
     }
     assertTrue(plist > 0);
-
-    try { H5.H5Fclose(fid); } catch (Exception ex) {}
   }
 
   @Test(expected=HDF5LibraryException.class)
