@@ -1470,7 +1470,6 @@ public class H5 {
     public synchronized static native int H5Gclose(int group_id)
     throws HDF5LibraryException;
 
-
     /**
      *  H5Glink creates a new name for an already existing object.
      *
@@ -1492,11 +1491,19 @@ public class H5 {
      *
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - current_name or name is null.
+     *
+     *  @deprecated As of HDF5 1.8
      **/
     public synchronized static native int H5Glink(int loc_id, int link_type,
             String current_name, String new_name)
     throws HDF5LibraryException, NullPointerException;
 
+
+    /**
+     *  H5Glink creates a new name for an already existing object.
+     *
+     *  @deprecated As of HDF5 1.8
+     **/
     public synchronized static native int H5Glink2(int curr_loc_id,
             String current_name, int link_type, int new_loc_id, String new_name )
     throws HDF5LibraryException, NullPointerException;
@@ -1511,6 +1518,8 @@ public class H5 {
      *
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - name is null.
+     *
+     *  @deprecated As of HDF5 1.8
      **/
     public synchronized static native int H5Gunlink(int loc_id, String name)
     throws HDF5LibraryException, NullPointerException;
@@ -1530,6 +1539,8 @@ public class H5 {
      *
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - src or dst is null.
+     *
+     *  @deprecated As of HDF5 1.8
      **/
     public synchronized static native int H5Gmove(int loc_id, String src,
             String dst)
@@ -1556,6 +1567,8 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - name is null.
      *  @exception IllegalArgumentException - size is invalid
+     *
+     *  @deprecated As of HDF5 1.8
      **/
     public synchronized static native int H5Gget_linkval(int loc_id, String name,
             int size, String[] value)
@@ -1580,6 +1593,8 @@ public class H5 {
      *
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - name or comment is null.
+     *
+     *  @deprecated As of HDF5 1.8
      **/
     public synchronized static native int H5Gset_comment(int loc_id, String name,
             String comment)
@@ -1608,6 +1623,8 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      *  @exception IllegalArgumentException - size < 1,
      *  comment is invalid.
+     *
+     *  @deprecated As of HDF5 1.8
      **/
     public synchronized static native int H5Gget_comment(int loc_id, String name,
             int bufsize,
@@ -4195,6 +4212,8 @@ public class H5 {
      * @return positive value if successful; otherwise returns a negative value.
      * @throws HDF5LibraryException
      * @throws NullPointerException
+     *
+     *  @deprecated As of HDF5 1.8
      */
     public synchronized static native int H5Gget_num_objs(int loc_id, long[] num_obj)
     throws HDF5LibraryException, NullPointerException;
@@ -4390,6 +4409,8 @@ public class H5 {
      *
      *  @see ncsa.hdf.hdf5lib.HDF5GroupInfo
      *  See public synchronized static native int H5Gget_objinfo();
+     *
+     *  @deprecated As of HDF5 1.8
      **/
     public synchronized static int H5Gget_objinfo(int loc_id, String name,
             boolean follow_link,

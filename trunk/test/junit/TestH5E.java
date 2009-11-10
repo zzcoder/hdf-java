@@ -126,6 +126,56 @@ public class TestH5E {
   }
 
   @Test
+  public void testH5Eget_msg_major() {
+
+    try { 
+      H5.H5Fopen("test", 0, 1); 
+    }
+    catch (HDF5LibraryException hdferr) {
+      try {
+        int[] error_msg_type = {HDF5Constants.H5E_MAJOR};
+        String msg = H5.H5Eget_msg(hdferr.getMajorErrorNumber(), error_msg_type); 
+        assertNotNull("H5.H5Eget_msg: "+msg,msg);
+        assertEquals("H5.H5Eget_msg: ","Invalid arguments to routine",msg);
+        assertEquals("H5.H5Eget_msg: ", HDF5Constants.H5E_MAJOR, error_msg_type[0]);
+      }
+      catch (Throwable err) {
+        err.printStackTrace();
+        fail("H5.H5Eget_msg: "+err);
+      }
+    }
+    catch (Throwable err) {
+      err.printStackTrace();
+      fail("H5.H5Eget_msg: "+err);
+    }
+  }
+
+  @Test
+  public void testH5Eget_msg_minor() {
+
+    try { 
+      H5.H5Fopen("test", 0, 1); 
+    }
+    catch (HDF5LibraryException hdferr) {
+      try {
+        int[] error_msg_type = {HDF5Constants.H5E_MINOR};
+        String msg = H5.H5Eget_msg(hdferr.getMinorErrorNumber(), error_msg_type); 
+        assertNotNull("H5.H5Eget_msg: "+msg,msg);
+        assertEquals("H5.H5Eget_msg: ","Inappropriate type",msg);
+        assertEquals("H5.H5Eget_msg: ", HDF5Constants.H5E_MINOR, error_msg_type[0]);
+      }
+      catch (Throwable err) {
+        err.printStackTrace();
+        fail("H5.H5Eget_msg: "+err);
+      }
+    }
+    catch (Throwable err) {
+      err.printStackTrace();
+      fail("H5.H5Eget_msg: "+err);
+    }
+  }
+
+  @Test
   public void testH5Ecreate_stack() {
     try { 
       int stk_id = H5.H5Ecreate_stack(); 

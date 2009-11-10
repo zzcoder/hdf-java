@@ -170,6 +170,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_get
 int getMajorErrorNumber()
 {
     H5E_num_t err_nums;
+    err_nums.maj_num = 0;
+    err_nums.min_num = 0;
 
 #ifdef H5_USE_16_API
     H5Ewalk(H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
@@ -201,6 +203,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_get
 int getMinorErrorNumber()
 {
     H5E_num_t err_nums;
+    err_nums.maj_num = 0;
+    err_nums.min_num = 0;
 
 #ifdef H5_USE_16_API
     H5Ewalk(H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
@@ -438,8 +442,11 @@ jboolean h5libraryError( JNIEnv *env )
     H5E_type_t error_msg_type;
     hid_t stk_id = -1;
 
+    stk_id = H5Eget_current_stack();
+    H5Eset_current_stack(stk_id);
     maj_num = (int)getMajorErrorNumber();
     exception = (char *)defineHDF5LibraryException(maj_num);
+    H5Eset_current_stack(stk_id);
 
     jc = ENVPTR->FindClass(ENVPAR exception);
     if (jc == NULL) {
@@ -450,16 +457,19 @@ jboolean h5libraryError( JNIEnv *env )
         return JNI_FALSE;
     }
 
-    stk_id = H5Eget_current_stack();
+    H5Eset_current_stack(stk_id);
     min_num = (int)getMinorErrorNumber();
     /* get the length of the name */
     msg_size = H5Eget_msg(min_num, NULL, NULL, 0);
-    msg_size++; /* add extra space for the null terminator */
-    msg = (char*)malloc(sizeof(char)*msg_size);
-    msg_size = H5Eget_msg((hid_t)min_num, &error_msg_type, (char *)msg, (size_t)msg_size);
-//    msg = (char *)H5Eget_minor((H5E_minor_t)min_num);
-    str = ENVPTR->NewStringUTF(ENVPAR msg);
-    free(msg);
+    if(msg_size>0) {
+        msg_size++; /* add extra space for the null terminator */
+        msg = (char*)malloc(sizeof(char)*msg_size);
+        msg_size = H5Eget_msg((hid_t)min_num, &error_msg_type, (char *)msg, (size_t)msg_size);
+        str = ENVPTR->NewStringUTF(ENVPAR msg);
+        free(msg);
+    }
+    else
+        str = NULL;
     H5Eset_current_stack(stk_id);
 
     args[0] = (char *)str;
