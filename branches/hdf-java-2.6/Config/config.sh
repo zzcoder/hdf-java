@@ -49,11 +49,11 @@ EXTRA_FLAGS=
 #EXTRA_FLAGS=--with-javabin=$JAVABIN 
 
 ############################################################
-#                     linux64 (smirom)                     #
+#                     linux64 (amani)                     #
 ############################################################
 #INSTDIR=/mnt/scr1/xcao/hdf_java/bin/linux64
-#JAVAINC=/mnt/scr1/xcao/jdk/linux64/jdk1.6.0_11/include
-#JAVALIB=/mnt/scr1/xcao/jdk/linux64/jdk1.6.0_11/jre/lib
+#JAVAINC=/usr/java/jdk1.6.0_16/include
+#JAVALIB=/usr/java/jdk1.6.0_16/jre/lib
 #HDF4=/mnt/scr1/xcao/hdf_java/lib/linux64amd/hdf4
 #HDF5=/mnt/scr1/xcao/hdf_java/lib/linux64amd/hdf5
 #JPEG=/mnt/scr1/xcao/hdf_java/lib/linux64amd/jpeg
