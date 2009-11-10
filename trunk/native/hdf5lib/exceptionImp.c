@@ -436,6 +436,7 @@ jboolean h5libraryError( JNIEnv *env )
     int rval, min_num, maj_num;
     ssize_t msg_size;
     H5E_type_t error_msg_type;
+    hid_t stk_id = -1;
 
     maj_num = (int)getMajorErrorNumber();
     exception = (char *)defineHDF5LibraryException(maj_num);
@@ -449,7 +450,7 @@ jboolean h5libraryError( JNIEnv *env )
         return JNI_FALSE;
     }
 
-    hid_t stk_id = H5Eget_current_stack();
+    stk_id = H5Eget_current_stack();
     min_num = (int)getMinorErrorNumber();
     /* get the length of the name */
     msg_size = H5Eget_msg(min_num, NULL, NULL, 0);
