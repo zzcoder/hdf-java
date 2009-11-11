@@ -2,8 +2,6 @@ package test.junit;
 
 import java.io.File;
 
-//import static org.junit.Assert.assertEquals;
-//import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -289,6 +287,26 @@ public class TestH5Gbasic {
     try { H5.H5Gclose(gid); } catch (Exception ex) {}
   }
 
+  @Test
+  public void testH5Gget_info_by_name_fileid() {
+    H5G_info_t info = null;
+    int gid = _createGroup(H5fid, "/testH5Gcreate");
+    assertTrue(gid > 0);
+    try { H5.H5Gclose(gid); } catch (Exception ex) {}
+
+    try { 
+      info = H5.H5Gget_info_by_name(H5fid, "/testH5Gcreate", HDF5Constants.H5P_DEFAULT); 
+    } 
+    catch (Throwable err) {
+      try { H5.H5Gclose(gid); } catch (Exception ex) {}
+      err.printStackTrace();
+      fail("H5.H5Gget_info_by_name: "+err);
+    }
+    assertNotNull(info);
+
+    try { H5.H5Gclose(gid); } catch (Exception ex) {}
+  }
+
   @Test(expected=NullPointerException.class)
   public void testH5Gget_info_by_idx_null() throws Throwable, HDF5LibraryException, NullPointerException {
     H5.H5Gget_info_by_idx(-1, null, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5_ITER_INC, 1, HDF5Constants.H5P_DEFAULT); 
@@ -311,46 +329,32 @@ public class TestH5Gbasic {
     assertTrue(gid > 0);
 
     try { 
-      info = H5.H5Gget_info_by_idx(gid, "/testH5Gcreate", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 1, HDF5Constants.H5P_DEFAULT); 
+      info = H5.H5Gget_info_by_idx(gid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT); 
     } 
     catch (Throwable err) {
-      try { H5.H5Gclose(gid); } catch (Exception ex) {}
+      err.printStackTrace();
+      fail("H5.H5Gget_info_by_idx: "+err);
+    }
+    assertNotNull(info);
+    
+    try { H5.H5Gclose(gid); } catch (Exception ex) {}
+  }
+
+  @Test
+  public void testH5Gget_info_by_idx_fileid() {
+    H5G_info_t info = null;
+    int gid = _createGroup(H5fid, "/testH5Gcreate");
+    assertTrue(gid > 0);
+    try { H5.H5Gclose(gid); } catch (Exception ex) {}
+
+    try { 
+      info = H5.H5Gget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT); 
+    } 
+    catch (Throwable err) {
       err.printStackTrace();
       fail("H5.H5Gget_info_by_idx: "+err);
     }
     assertNotNull(info);
   }
-  //
-  //  @Test
-  //  public void testH5Gget_obj_info_all() {
-  //    H5G_info_t info = null;
-  //
-  //    int fid = _openFile(H5_FILE, HDF5Constants.H5F_ACC_RDWR);
-  //    int gid = _openGroup(fid, GROUPS[0]);
-  //
-  //    try { info = H5.H5Gget_info(gid); } 
-  //    catch (Throwable err) {
-  //      fail("H5.H5Gget_info: "+err);
-  //    }
-  //    try { H5.H5Gclose(gid); } catch (Exception ex) {}
-  //    assertNotNull(info);
-  //    assertTrue(info.nlinks>0);
-  //    String objNames[] = new String[(int)info.nlinks];
-  //    int objTypes[] = new int[(int)info.nlinks];
-  //
-  //    try { H5.H5Gget_obj_info_all(fid, GROUPS[0], objNames, objTypes); } 
-  //    catch (Throwable err) {
-  //      fail("H5.H5Gget_obj_info_all: "+err);
-  //    }
-  //
-  //    for (int i=0; i<objNames.length; i++) {
-  //      assertNotNull(objNames[i]);
-  //      assertTrue(objNames[i].length()>0);
-  //    }
-  //
-  //    //TODO add more cases after H5P is implemented.
-  //
-  //    try { H5.H5Fclose(fid); } catch (Exception ex) {}
-  //  }
 
 }
