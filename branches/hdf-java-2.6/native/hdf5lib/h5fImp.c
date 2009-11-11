@@ -49,7 +49,7 @@ extern jboolean h5badArgument( JNIEnv *env, char *functName);
  * Method:    H5Fopen
  * Signature: (Ljava/lang/String;II)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fopen
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Fopen
   (JNIEnv *env, jclass clss, jstring name, jint flags, jint access_id)
 {
     hid_t status;
@@ -85,7 +85,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fopen
  * Method:    H5Fcreate
  * Signature: (Ljava/lang/String;III)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fcreate
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Fcreate
   (JNIEnv *env, jclass clss, jstring name, jint flags, jint create_id, jint access_id)
 {
     hid_t status;
@@ -177,7 +177,7 @@ JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fis_1hdf5
  * Method:    H5Fget_create_plist
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1create_1plist
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Fget_1create_1plist
   (JNIEnv *env, jclass clss, jint file_id)
 {
     hid_t retVal = -1;
@@ -194,7 +194,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1create_1plist
  * Method:    H5Fget_access_plist
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1access_1plist
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Fget_1access_1plist
   (JNIEnv *env, jclass clss, jint file_id)
 {
     hid_t retVal = -1;
@@ -211,7 +211,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fget_1access_1plist
  * Method:    H5Fclose
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Fclose
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Fclose
   (JNIEnv *env, jclass clss, jint file_id)
 {
     herr_t status = 0;
@@ -300,7 +300,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Funmount
  * Method:    H5Freopen
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Freopen
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Freopen
   (JNIEnv *env, jclass clss, jint file_id)
 {
     hid_t retVal = -1;

@@ -14,7 +14,7 @@
 # For 64bit machine, use MACHINE=x64
 MACHINE=i386
 
-JAVAHOME=D:\Java\jdk1.6.0_01
+JAVAHOME=D:\Java\jdk1.6.0_16
 HDF5INC=G:\HDF\lib\hdf5182\include
 HDF5LIB=G:\HDF\lib\hdf5182\lib\hdf5.lib
 SZLIB=G:\HDF\lib_external\szip20-win-xpnet-enc\lib\szlib.lib

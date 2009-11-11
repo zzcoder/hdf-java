@@ -110,7 +110,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rcreate
  * Method:    H5Rdereference
  * Signature: (II[B)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rdereference
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rdereference
   (JNIEnv *env, jclass clss, jint dataset, jint ref_type,
   jbyteArray ref )
 {
@@ -149,7 +149,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rdereference
  * Method:    H5Rget_region
  * Signature: (II[B)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1region
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rget_1region
   (JNIEnv *env, jclass clss, jint dataset, jint ref_type,
   jbyteArray ref )
 {

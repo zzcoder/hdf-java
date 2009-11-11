@@ -56,7 +56,7 @@ extern jboolean h5badArgument( JNIEnv *env, char *functName);
  * Method:    H5Pcreate
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pcreate
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Pcreate
   (JNIEnv *env, jclass clss, jint type)
 {
     hid_t retVal = -1;
@@ -72,7 +72,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pcreate
  * Method:    H5Pclose
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pclose
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Pclose
   (JNIEnv *env, jclass clss, jint plist)
 {
     herr_t retVal = 0;
@@ -108,7 +108,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1class
  * Method:    H5Pcopy
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pcopy
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Pcopy
   (JNIEnv *env, jclass clss, jint plist)
 {
     hid_t retVal = -1;

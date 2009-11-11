@@ -55,7 +55,7 @@ herr_t H5AreadVL_comp (JNIEnv *env, hid_t aid, hid_t tid, jobjectArray buf);
  * Method:    H5Acreate
  * Signature: (ILjava/lang/String;III)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Acreate
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Acreate
   (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint type_id,
   jint space_id, jint create_plist)
 {
@@ -91,7 +91,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Acreate
  * Method:    H5Aopen_name
  * Signature: (ILjava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aopen_1name
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aopen_1name
   (JNIEnv *env, jclass clss, jint loc_id, jstring name)
 {
     hid_t status;
@@ -125,7 +125,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aopen_1name
  * Method:    H5Aopen_idx
  * Signature: (II)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aopen_1idx
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aopen_1idx
   (JNIEnv *env, jclass clss, jint loc_id, jint idx)
 {
     hid_t retVal = -1;
@@ -212,7 +212,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aread
  * Method:    H5Aget_space
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1space
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aget_1space
   (JNIEnv *env, jclass clss, jint attr_id)
 {
     hid_t retVal = -1;
@@ -229,7 +229,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1space
  * Method:    H5Aget_type
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1type
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aget_1type
   (JNIEnv *env, jclass clss, jint attr_id)
 {
     hid_t retVal = -1;
@@ -343,7 +343,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Adelete
  * Method:    H5Aclose
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aclose
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aclose
   (JNIEnv *env, jclass clss, jint attr_id)
 {
     herr_t retVal = 0;

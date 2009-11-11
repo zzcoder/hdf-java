@@ -76,7 +76,7 @@ typedef struct info_all
  * Method:    H5Gcreate
  * Signature: (ILjava/lang/String;I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gcreate
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gcreate
   (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint size_hint)
 {
     hid_t status;
@@ -109,7 +109,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gcreate
  * Method:    H5Gopen
  * Signature: (ILjava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gopen
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gopen
   (JNIEnv *env, jclass clss, jint loc_id, jstring name)
 {
     hid_t status;
@@ -142,7 +142,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gopen
  * Method:    H5Gclose
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gclose
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gclose
   (JNIEnv *env, jclass clss, jint group_id)
 {
     herr_t retVal = 0;
