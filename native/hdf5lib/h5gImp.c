@@ -56,9 +56,11 @@ extern "C" {
 #ifdef __cplusplus
 herr_t obj_info_all(hid_t loc_id, const char *name, void *opdata);
 herr_t H5Gget_obj_info_all(hid_t, char *, char **, int *, unsigned long *);
+herr_t H5Gget_obj_info_all2( hid_t loc_id, char *group_name, char **objname, int *type );
 #else
 static herr_t obj_info_all(hid_t loc_id, const char *name, void *opdata);
 static herr_t H5Gget_obj_info_all(hid_t, char *, char **, int *, unsigned long *);
+static herr_t H5Gget_obj_info_all2( hid_t loc_id, char *group_name, char **objname, int *type );
 #endif
 
 typedef struct info_all
@@ -68,6 +70,13 @@ typedef struct info_all
     unsigned long *objno;
     int count;
 } info_all_t;
+
+typedef struct info_all2
+{
+    char **objname;
+    int *type;
+    int count;
+} info_all2_t;
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
@@ -872,6 +881,85 @@ herr_t obj_info_all(hid_t loc_id, const char *name, void *opdata)
     info->count++;
 
     return retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Gget_obj_info_all2
+ * Signature: (ILjava/lang/String;[Ljava/lang/Object;[I[LI)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all2
+  (JNIEnv *env, jclass clss, jint loc_id, jstring group_name,
+    jobjectArray objName, jintArray oType, jlongArray oRef, jint n)
+{
+    herr_t ret_val;
+    char *gName=NULL;
+    char **oName=NULL;
+    jboolean isCopy;
+    jstring str;
+    jint *tarr;
+    int i;
+
+    gName = (char *)ENVPTR->GetStringUTFChars(ENVPAR group_name,&isCopy);
+    tarr = ENVPTR->GetIntArrayElements(ENVPAR oType,&isCopy);
+    oName = (char **)malloc(n * sizeof (*oName));
+
+    ret_val = H5Gget_obj_info_all2( (hid_t) loc_id, gName,  oName, (int *)tarr );
+
+    ENVPTR->ReleaseStringUTFChars(ENVPAR group_name,gName);
+
+    if (ret_val < 0) {
+        ENVPTR->ReleaseIntArrayElements(ENVPAR oType,tarr,JNI_ABORT);
+        h5str_array_free(oName, n);
+        h5libraryError(env);
+        return;
+    }
+
+    ENVPTR->ReleaseIntArrayElements(ENVPAR oType,tarr,0);
+
+    if (oName) {
+        for (i=0; i<n; i++) {
+            if (*(oName+i)) {
+                str = ENVPTR->NewStringUTF(ENVPAR *(oName+i));
+                ENVPTR->SetObjectArrayElement(ENVPAR objName,i,(jobject)str);
+            }
+        } /* for (i=0; i<n; i++)*/
+    }
+
+    h5str_array_free(oName, n);
+}
+
+herr_t H5Gget_obj_info_all2( hid_t loc_id, char *group_name, char **objname, int *type )
+{
+    info_all2_t info;
+    info.objname = objname;
+    info.type = type;
+    info.count = 0;
+
+//    if(H5Literate(loc_id, group_name, NULL, obj_info_all2, (void *)&info)<0)
+        return -1;
+
+    return 0;
+}
+
+herr_t obj_info_all2(hid_t loc_id, const char *name, void *opdata)
+{
+    int type = -1;
+    info_all2_t* info = (info_all2_t*)opdata;
+
+    if ( (type=H5Gget_objtype_by_idx(loc_id, info->count)) <0)
+    {
+        *(info->type+info->count) = -1;
+        *(info->objname+info->count) = NULL;
+    } else {
+        *(info->type+info->count) = type;
+        /* this will be freed by h5str_array_free(oName, n)*/
+        *(info->objname+info->count) = (char *) malloc(strlen(name)+1);
+        strcpy(*(info->objname+info->count), name);
+    }
+    info->count++;
+
+    return 0;
 }
 
 /*
