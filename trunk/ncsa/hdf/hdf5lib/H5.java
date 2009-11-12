@@ -5830,8 +5830,13 @@ throws HDF5LibraryException;
    * @param name       IN:  Name of group for which information is to be retrieved
    * @param objNames   OUT: Names of all objects under the group, name.
    * @param objTypes   OUT: Types of all objects under the group, name.
+   *
+   * @return the number of items found 
+   *
+   * @exception HDF5LibraryException - Error from the HDF-5 Library.
+   * @exception NullPointerException - name is null.
    */
-  public synchronized static void H5Gget_obj_info_all2( int loc_id,
+  public synchronized static int H5Gget_obj_info_all2( int loc_id,
       String name, String[] objNames, int[] objTypes)
   throws HDF5LibraryException, NullPointerException
   {
@@ -5855,10 +5860,10 @@ throws HDF5LibraryException;
       throw new HDF5LibraryException("H5Gget_obj_info_all(): name and type array sizes are different");
     }
 
-    H5Gget_obj_info_all2( loc_id, name, objNames, objTypes, objNames.length);
+    return H5Gget_obj_info_all2( loc_id, name, objNames, objTypes, objNames.length);
   }
 
-  private synchronized static native void H5Gget_obj_info_all2( int loc_id,
+  private synchronized static native int H5Gget_obj_info_all2( int loc_id,
       String name, String[] oname, int[]type, int n)
   throws HDF5LibraryException, NullPointerException;
 

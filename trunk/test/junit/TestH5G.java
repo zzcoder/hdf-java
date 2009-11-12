@@ -174,7 +174,7 @@ public class TestH5G {
     }
   }
 
-  @Ignore("Not yet Implemented")
+  @Test
   public void testH5Gget_obj_info_all() {
     H5G_info_t info = null;
 
@@ -189,22 +189,24 @@ public class TestH5G {
     }
     try { H5.H5Gclose(gid); } catch (Exception ex) {}
     assertNotNull(info);
-    assertTrue(info.nlinks>0);
+    assertTrue("number of links is "+info.nlinks,info.nlinks>0);
     String objNames[] = new String[(int)info.nlinks];
     int objTypes[] = new int[(int)info.nlinks];
 
-//    try { 
-//      H5.H5Gget_obj_info_all2(H5fid, GROUPS[0], objNames, objTypes);
-//    } 
-//    catch (Throwable err) {
-//      err.printStackTrace();
-//      fail("H5.H5Gget_obj_info_all: "+err);
-//    }
-//
-//    for (int i=0; i<objNames.length; i++) {
-//      assertNotNull(objNames[i]);
-//      assertTrue(objNames[i].length()>0);
-//    }
+    int names_found = 0;
+    try { 
+      names_found = H5.H5Gget_obj_info_all2(H5fid, GROUPS[0], objNames, objTypes);
+    } 
+    catch (Throwable err) {
+      err.printStackTrace();
+      fail("H5.H5Gget_obj_info_all: "+err);
+    }
+
+    assertTrue("number found different than expected ",names_found == objNames.length);
+    for (int i=0; i<objNames.length; i++) {
+      assertNotNull("name #"+i+" does not exist",objNames[i]);
+      assertTrue(objNames[i].length()>0);
+    }
   }
 
 }
