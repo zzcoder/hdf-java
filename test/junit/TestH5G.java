@@ -1,18 +1,19 @@
 package test.junit;
 
-import java.io.File;
-
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
+
 import ncsa.hdf.hdf5lib.H5;
+import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 import ncsa.hdf.hdf5lib.structs.H5G_info_t;
-import ncsa.hdf.hdf5lib.HDF5Constants;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestH5G {
@@ -173,35 +174,37 @@ public class TestH5G {
     }
   }
 
-//    @Test
-//    public void testH5Gget_obj_info_all() {
-//        H5G_info_t info = null;
-//        
-//        int gid = _openGroup(H5fid, GROUPS[0]);
-//
-//        try { info = H5.H5Gget_info(gid); } 
-//        catch (Throwable err) {
-//          err.printStackTrace();
-//            fail("H5.H5Gget_info: "+err);
-//        }
-//        try { H5.H5Gclose(gid); } catch (Exception ex) {}
-//        assertNotNull(info);
-//        assertTrue(info.nlinks>0);
-//        String objNames[] = new String[(int)info.nlinks];
-//        int objTypes[] = new int[(int)info.nlinks];
-//        
-//        try { 
-//          H5.H5Gget_obj_info_all(H5fid, GROUPS[0], objNames, objTypes); 
-//          } 
-//        catch (Throwable err) {
-//          err.printStackTrace();
-//            fail("H5.H5Gget_obj_info_all: "+err);
-//        }
-//        
-//        for (int i=0; i<objNames.length; i++) {
-//            assertNotNull(objNames[i]);
-//            assertTrue(objNames[i].length()>0);
-//        }
+  @Ignore("Not yet Implemented")
+  public void testH5Gget_obj_info_all() {
+    H5G_info_t info = null;
+
+    int gid = _openGroup(H5fid, GROUPS[0]);
+
+    try { 
+      info = H5.H5Gget_info(gid); 
+    } 
+    catch (Throwable err) {
+      err.printStackTrace();
+      fail("H5.H5Gget_info: "+err);
+    }
+    try { H5.H5Gclose(gid); } catch (Exception ex) {}
+    assertNotNull(info);
+    assertTrue(info.nlinks>0);
+    String objNames[] = new String[(int)info.nlinks];
+    int objTypes[] = new int[(int)info.nlinks];
+
+//    try { 
+//      H5.H5Gget_obj_info_all2(H5fid, GROUPS[0], objNames, objTypes);
+//    } 
+//    catch (Throwable err) {
+//      err.printStackTrace();
+//      fail("H5.H5Gget_obj_info_all: "+err);
 //    }
+//
+//    for (int i=0; i<objNames.length; i++) {
+//      assertNotNull(objNames[i]);
+//      assertTrue(objNames[i].length()>0);
+//    }
+  }
 
 }

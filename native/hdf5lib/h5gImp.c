@@ -54,13 +54,15 @@ extern "C" {
 #endif
 
 #ifdef __cplusplus
-herr_t obj_info_all(hid_t loc_id, const char *name, void *opdata);
-herr_t H5Gget_obj_info_all(hid_t, char *, char **, int *, unsigned long *);
-herr_t H5Gget_obj_info_all2( hid_t loc_id, char *group_name, char **objname, int *type );
+    herr_t obj_info_all(hid_t loc_id, const char *name, void *opdata);
+    herr_t obj_info_all2(hid_t g_id, const char *name, const H5L_info_t *info, void *op_data);
+    herr_t H5Gget_obj_info_all(hid_t, char *, char **, int *, unsigned long *);
+    herr_t H5Gget_obj_info_all2(hid_t, char *, char **, int *);
 #else
-static herr_t obj_info_all(hid_t loc_id, const char *name, void *opdata);
-static herr_t H5Gget_obj_info_all(hid_t, char *, char **, int *, unsigned long *);
-static herr_t H5Gget_obj_info_all2( hid_t loc_id, char *group_name, char **objname, int *type );
+    static herr_t obj_info_all(hid_t loc_id, const char *name, void *opdata);
+    static herr_t obj_info_all2(hid_t g_id, const char *name, const H5L_info_t *info, void *op_data);
+    static herr_t H5Gget_obj_info_all(hid_t, char *, char **, int *, unsigned long *);
+    static herr_t H5Gget_obj_info_all2(hid_t, char *, char **, int *);
 #endif
 
 typedef struct info_all
@@ -83,7 +85,7 @@ typedef struct info_all2
  * Method:    H5Gcreate
  * Signature: (ILjava/lang/String;J)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gcreate
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gcreate
   (JNIEnv *env, jclass clss, jint loc_id, jstring name, jlong size_hint)
 {
     hid_t status;
@@ -120,7 +122,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gcreate
  * Method:    H5Gopen
  * Signature: (ILjava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gopen
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gopen
   (JNIEnv *env, jclass clss, jint loc_id, jstring name)
 {
     hid_t status;
@@ -157,7 +159,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gopen
  * Method:    H5Gclose
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gclose
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gclose
   (JNIEnv *env, jclass clss, jint group_id)
 {
     herr_t retVal =  H5Gclose((hid_t)group_id) ;
@@ -886,11 +888,11 @@ herr_t obj_info_all(hid_t loc_id, const char *name, void *opdata)
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Gget_obj_info_all2
- * Signature: (ILjava/lang/String;[Ljava/lang/Object;[I[LI)I
+ * Signature: (ILjava/lang/String;[Ljava/lang/Object;[I[L)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all2
   (JNIEnv *env, jclass clss, jint loc_id, jstring group_name,
-    jobjectArray objName, jintArray oType, jlongArray oRef, jint n)
+    jobjectArray objName, jintArray oType, jlongArray oRef, int n)
 {
     herr_t ret_val;
     char *gName=NULL;
@@ -931,33 +933,34 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all2
 
 herr_t H5Gget_obj_info_all2( hid_t loc_id, char *group_name, char **objname, int *type )
 {
+    hsize_t obj_index = 0;
     info_all2_t info;
     info.objname = objname;
     info.type = type;
     info.count = 0;
 
-//    if(H5Literate(loc_id, group_name, NULL, obj_info_all2, (void *)&info)<0)
+    if(H5Literate(loc_id, H5_INDEX_NAME, H5_ITER_NATIVE, &obj_index, obj_info_all2, (void *)&info) < 0)
         return -1;
 
     return 0;
 }
 
-herr_t obj_info_all2(hid_t loc_id, const char *name, void *opdata)
+herr_t obj_info_all2(hid_t loc_id, const char *name, const H5L_info_t *info, void *op_data)  
 {
     int type = -1;
-    info_all2_t* info = (info_all2_t*)opdata;
+    info_all2_t* datainfo = (info_all2_t*)op_data;
 
-    if ( (type=H5Gget_objtype_by_idx(loc_id, info->count)) <0)
+    if ( (type=H5Gget_objtype_by_idx(loc_id, datainfo->count)) <0)
     {
-        *(info->type+info->count) = -1;
-        *(info->objname+info->count) = NULL;
+        *(datainfo->type+datainfo->count) = -1;
+        *(datainfo->objname+datainfo->count) = NULL;
     } else {
-        *(info->type+info->count) = type;
+        *(datainfo->type+datainfo->count) = type;
         /* this will be freed by h5str_array_free(oName, n)*/
-        *(info->objname+info->count) = (char *) malloc(strlen(name)+1);
-        strcpy(*(info->objname+info->count), name);
+        *(datainfo->objname+datainfo->count) = (char *) malloc(strlen(name)+1);
+        strcpy(*(datainfo->objname+datainfo->count), name);
     }
-    info->count++;
+    datainfo->count++;
 
     return 0;
 }

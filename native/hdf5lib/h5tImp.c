@@ -48,7 +48,7 @@ extern jboolean h5badArgument( JNIEnv *env, char *functName);
  * Method:    H5Topen
  * Signature: (ILjava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Topen
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Topen
   (JNIEnv *env, jclass clss, jint loc_id, jstring name)
 {
     hid_t status;
@@ -140,7 +140,7 @@ JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tcommitted
  * Method:    H5Tcreate
  * Signature: (II)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tcreate
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Tcreate
   (JNIEnv *env, jclass clss, jint dclass, jint size)
 {
     hid_t retVal = -1;
@@ -156,7 +156,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tcreate
  * Method:    H5Tcopy
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tcopy
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Tcopy
   (JNIEnv *env, jclass clss, jint type_id)
 {
     hid_t retVal = -1;
@@ -717,7 +717,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1member_1index
  * Method:    H5Tget_member_type
  * Signature: (II)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1member_1type
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Tget_1member_1type
   (JNIEnv *env, jclass clss, jint type_id, jint field_idx)
 {
     hid_t retVal = -1;
@@ -796,7 +796,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tpack
  * Method:    H5Tclose
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tclose
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Tclose
   (JNIEnv *env, jclass clss, jint type_id)
 {
     herr_t retVal = 0;
@@ -816,7 +816,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tclose
  * Method:    H5Tenum_create
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tenum_1create
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Tenum_1create
   (JNIEnv *env, jclass clss, jint base_id)
 {
     hid_t status;
@@ -995,7 +995,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tenum_1valueof
  * Method:    H5Tvlen_create
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tvlen_1create
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Tvlen_1create
   (JNIEnv *env, jclass clss, jint base_id)
 {
     hid_t status;
@@ -1074,7 +1074,7 @@ JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1tag
  * Method:    H5Tget_super
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1super
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Tget_1super
   (JNIEnv *env, jclass clss, jint type)
 {
     hid_t status;
@@ -1126,7 +1126,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1member_1value
  * Method:    H5Tarray_create
  * Signature: (II[B[B)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tarray_1create
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Tarray_1create
   (JNIEnv *env, jclass clss, jint base, jint rank, jintArray dims, jintArray perms)
 {
     hid_t status;
@@ -1303,7 +1303,7 @@ JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tis_1variable_1str
  * Method:    H5Tget_native_type(hid_t type_id, H5T_direction_t direction )
  * Signature: (I)J
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1native_1type
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Tget_1native_1type
   (JNIEnv *env, jclass clss, jint dtype_id, jint direction)
 {
     hid_t native_tid;

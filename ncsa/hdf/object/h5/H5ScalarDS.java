@@ -1133,7 +1133,7 @@ public class H5ScalarDS extends ScalarDS
             if (gzip > 0) {
                 H5.H5Pset_deflate(plist, gzip);
             }
-            int fid = file.open();
+            int fid = file.getFID();
             did = H5.H5Dcreate(fid, fullPath, tid, sid, plist);
 
             byte[] ref_buf = H5.H5Rcreate( fid, fullPath, HDF5Constants.H5R_OBJECT, -1);
