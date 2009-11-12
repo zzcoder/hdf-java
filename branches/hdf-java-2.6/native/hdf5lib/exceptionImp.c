@@ -420,8 +420,10 @@ jboolean h5libraryError( JNIEnv *env )
     rval = ENVPTR->Throw(ENVPAR (jthrowable) ex );
     if (rval < 0) {
         printf("FATAL ERROR:  h5libraryError: Throw failed\n");
+        free(msg);
         return JNI_FALSE;
     }
+    free(msg);
 
     return JNI_TRUE;
 }

@@ -400,6 +400,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sget_1simple_1extent_1dims
         maxdimsP = ENVPTR->GetLongArrayElements(ENVPAR maxdims,&isCopy);
         if (maxdimsP == NULL) {
             ENVPTR->ReleaseLongArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
+            free(sa);
             h5JNIFatalError(env,  "H5Pget_simple_extent:  maxdims not pinned");
             return -1;
         }
