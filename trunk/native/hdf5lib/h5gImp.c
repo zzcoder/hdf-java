@@ -935,13 +935,14 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all2
 
 int H5Gget_obj_info_all2( hid_t loc_id, char *group_name, char **objname, int *type )
 {
-    hsize_t obj_index = 0;
+//    hsize_t obj_index = 0;
     info_all2_t info;
     info.objname = objname;
     info.type = type;
     info.count = 0;
 
-    if(H5Literate(loc_id, H5_INDEX_NAME, H5_ITER_NATIVE, &obj_index, obj_info_all2, (void *)&info) < 0)
+//    if(H5Literate(loc_id, H5_INDEX_NAME, H5_ITER_NATIVE, &obj_index, obj_info_all2, (void *)&info) < 0)
+      if(H5Lvisit(loc_id, H5_INDEX_NAME, H5_ITER_NATIVE, obj_info_all2, (void *)&info) < 0)
         return -1;
 
     return info.count;
