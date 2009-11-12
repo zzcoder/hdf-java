@@ -26,6 +26,7 @@ public class TestH5MemoryLeak
     
     private final static boolean DEBUG = true;
     private final static int NLOOPS = 10000;
+    private final static int NPRINT = 100;
     private final static int NSTART = 2000;
     
     /** Name of test groups */
@@ -149,7 +150,7 @@ public class TestH5MemoryLeak
         while(count<NLOOPS)
         {
             count ++;
-            if (count % 100 == 0) {
+            if (count % NPRINT == 0) {
                 osm = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean() ;
                 mem1 = osm.getCommittedVirtualMemorySize();
                 if (count>NSTART) {
@@ -210,14 +211,14 @@ public class TestH5MemoryLeak
         
         if (DEBUG) {
             System.out.flush();
-            System.out.println("\n\nNo. of loops\tIncrease\tUsed(KB)\tTotal(KB)\tFree(KB)\n"+
-                           "_______________________________________________________________________\n");
+            System.out.println("\n\nNo. of loops\tIncrease\tUsed(KB)\tTotal(KB)\tNo. of open IDs\n"+
+                           "_______________________________________________________________________________\n");
         }
         
         while(count<NLOOPS)
         {
             count ++;
-            if (count % 100 == 0) {
+            if (count % NPRINT == 0) {
                 osm = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean() ;
                 mem1 = osm.getCommittedVirtualMemorySize();
                 if (count>NSTART) {
@@ -231,7 +232,7 @@ public class TestH5MemoryLeak
                             sumStr + "    \t" +
                             df.format((mem1 / KB)) + "    \t" +
                             df.format(osm.getTotalPhysicalMemorySize() / KB) + "   \t" +
-                            df.format(osm.getFreePhysicalMemorySize() / KB));
+                            H5.OPEN_IDS.size());
                 }
 
                 if (sum > 0)
@@ -393,8 +394,6 @@ public class TestH5MemoryLeak
         dsets[9] = file.createCompoundDS(NAME_DATASET_COMPOUND_SUB, null, DIMs, null, CHUNKs, 9, 
                    COMPOUND_MEMBER_NAMES, COMPOUND_MEMBER_DATATYPES, null, DATA_COMP);
         dsets[10] = file.createScalarDS  (NAME_DATASET_STR_VLEN, null, typeStrVlen, DIMs, null, CHUNKs, 9, DATA_STR);
-
-        
         for (int i=0; i<dsets.length; i++) {
             dsets[i].writeMetadata(ATTRIBUTE_STR);
             dsets[i].writeMetadata(ATTRIBUTE_INT_ARRAY);

@@ -152,7 +152,7 @@ herr_t H5DreadVL_num (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t fi
  * Method:    H5Dcreate
  * Signature: (ILjava/lang/String;III)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dcreate
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dcreate
   (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint type_id,
   jint space_id, jint create_plist_id)
 {
@@ -254,7 +254,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dgetdir_1ext
  * Method:    H5Dopen
  * Signature: (ILjava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dopen
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dopen
   (JNIEnv *env, jclass clss, jint loc_id, jstring name)
 {
     hid_t status;
@@ -290,7 +290,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dopen
  * Method:    H5Dget_space
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dget_1space
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dget_1space
   (JNIEnv *env, jclass clss, jint dataset_id)
 {
     hid_t retVal = -1;
@@ -306,7 +306,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dget_1space
  * Method:    H5Dget_type
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dget_1type
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dget_1type
   (JNIEnv *env, jclass clss, jint dataset_id)
 {
     hid_t retVal = -1;
@@ -322,7 +322,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dget_1type
  * Method:    H5Dget_create_plist
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dget_1create_1plist
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dget_1create_1plist
   (JNIEnv *env, jclass clss, jint dataset_id)
 {
     hid_t retVal = -1;
@@ -467,7 +467,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dextend
  * Method:    H5Dclose
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dclose
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dclose
   (JNIEnv *env, jclass clss, jint dataset_id)
 {
     hid_t retVal = 0;

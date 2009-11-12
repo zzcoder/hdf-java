@@ -48,7 +48,7 @@ extern jboolean h5badArgument( JNIEnv *env, char *functName);
  * Method:    H5Screate
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Screate
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Screate
   (JNIEnv *env, jclass clss, jint type)
 {
     hid_t retVal = -1;
@@ -64,7 +64,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Screate
  * Method:    H5Screate_simple
  * Signature: (I[B[B)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Screate_1simple
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Screate_1simple
   (JNIEnv *env, jclass clss, jint rank, jbyteArray dims, jbyteArray maxdims)
 {
     hid_t status;
@@ -148,7 +148,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Screate_1simple
  * Method:    H5Scopy
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Scopy
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Scopy
   (JNIEnv *env, jclass clss, jint space_id)
 {
     hid_t retVal = -1;
@@ -252,7 +252,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sselect_1elements
 
     ENVPTR->ReleaseByteArrayElements(ENVPAR coord, P, 0);
 
-    if (lp) free (lp);
+    if (llp) free (llp);
 
     if (status < 0) {
         h5libraryError(env);
@@ -400,6 +400,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sget_1simple_1extent_1dims
         maxdimsP = ENVPTR->GetLongArrayElements(ENVPAR maxdims,&isCopy);
         if (maxdimsP == NULL) {
             ENVPTR->ReleaseLongArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
+            free(sa);
             h5JNIFatalError(env,  "H5Pget_simple_extent:  maxdims not pinned");
             return -1;
         }
@@ -804,7 +805,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sselect_1hyperslab
  * Method:    H5Sclose
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sclose
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Sclose
   (JNIEnv *env, jclass clss, jint space_id)
 {
     herr_t retVal = 0;
