@@ -69,7 +69,7 @@ JHI5DISTFILES= ./native/hdf5lib/Makefile.in \
         ./ncsa/hdf/hdf5lib/*.java  \
         ./ncsa/hdf/hdf5lib/exceptions/*.java 
 
-EXAMPLESFILES=./examples/*.in ./examples/intro/*.java ./examples/intro/*.in ./examples/groups/*.java ./examples/groups/*.in ./examples/datasets/*.java ./examples/datasets/*.in ./examples/datatypes/*.java ./examples/datatypes/*.in ./examples/testfiles/*.txt
+EXAMPLESFILES=./examples/*.in ./examples/intro/*.java ./examples/intro/*.in ./examples/groups/*.java ./examples/groups/*.in ./examples/groups/*.h5 ./examples/datasets/*.java ./examples/datasets/*.in ./examples/datatypes/*.java ./examples/datatypes/*.in ./examples/testfiles/*.txt
 
 TESTFILES=./test/Makefile.in ./test/object/*.java ./test/object/*.in ./test/linktest/Makefile.in ./test/linktest/testh4link.in ./test/linktest/testlink.in ./test/linktest/*.java ./test/h5/*.java ./test/h5/*.in ./test/h5/*.h5 ./test/unittests/*.in ./test/unittests/*.java 
 
