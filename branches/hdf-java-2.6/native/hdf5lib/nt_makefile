@@ -10,10 +10,6 @@
 #   set path=%path";"C:\Program Files\Microsoft Visual Studio 8\VC\bin"
 #
 
-# For 32bit machine, use MACHINE=i386
-# For 64bit machine, use MACHINE=x64
-MACHINE=i386
-
 JAVAHOME=D:\Java\jdk1.6.0_16
 HDF5INC=G:\HDF\lib\hdf5182\include
 HDF5LIB=G:\HDF\lib\hdf5182\lib\hdf5.lib
@@ -33,7 +29,7 @@ CFLAGS = \
 /D "_CRT_SECURE_NO_WARNINGS" /D "_LARGEFILE_SOURCE" \
 /nologo /W3 /EHsc /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /FD /c /TP \
 
-LINKFLAG=/nologo /dll /incremental:no /machine:$(MACHINE) 
+LINKFLAG=/nologo /dll /incremental:no /machine:i386
 
 OBJECTS=exceptionImp.obj h5aImp.obj h5Constants.obj h5dImp.obj h5fImp.obj \
         h5gImp.obj h5iImp.obj h5Imp.obj h5pImp.obj h5rImp.obj h5sImp.obj \
