@@ -397,6 +397,9 @@ jboolean h5libraryError( JNIEnv *env )
     jstring str;
     char *msg;
     int rval, min_num, maj_num;
+    unsigned majnum, minnum, relnum;
+
+    H5get_libversion(&majnum, &minnum, &relnum);
 
     maj_num = (int)getMajorErrorNumber();
     exception = (char *)defineHDF5LibraryException(maj_num);
@@ -420,10 +423,13 @@ jboolean h5libraryError( JNIEnv *env )
     rval = ENVPTR->Throw(ENVPAR (jthrowable) ex );
     if (rval < 0) {
         printf("FATAL ERROR:  h5libraryError: Throw failed\n");
-        free(msg);
+        if (majnum>=1 &&  minnum > 6) /* do not free for HDF5 1.6. It is static memory in 1.6 */
+            free(msg);
         return JNI_FALSE;
     }
-    free(msg);
+
+    if (majnum>=1 &&  minnum > 6) /* do not free for HDF5 1.6. It is static memory in 1.6 */
+        free(msg);
 
     return JNI_TRUE;
 }
