@@ -5836,28 +5836,73 @@ throws HDF5LibraryException;
    * @exception HDF5LibraryException - Error from the HDF-5 Library.
    * @exception NullPointerException - name is null.
    */
+  public synchronized static int H5Gget_obj_info_group2( int loc_id,
+      String name, String[] objNames, int[] objTypes)
+  throws HDF5LibraryException, NullPointerException
+  {
+    if (name == null || name.length()<=0) {
+      throw new NullPointerException("H5Gget_obj_info_group2(): name is null");
+    }
+
+    if (objNames == null) {
+      throw new NullPointerException("H5Gget_obj_info_group2(): name array is null");
+    }
+
+    if (objTypes == null) {
+      throw new NullPointerException("H5Gget_obj_info_group2(): type array is null");
+    }
+
+    if (objNames.length <= 0) {
+      throw new HDF5LibraryException("H5Gget_obj_info_group2(): array size is zero");
+    }
+
+    if (objNames.length != objTypes.length) {
+      throw new HDF5LibraryException("H5Gget_obj_info_group2(): name and type array sizes are different");
+    }
+
+    return H5Gget_obj_info_group2( loc_id, name, objNames, objTypes, objNames.length);
+  }
+
+  private synchronized static native int H5Gget_obj_info_group2( int loc_id,
+      String name, String[] oname, int[]type, int n)
+  throws HDF5LibraryException, NullPointerException;
+
+  /**
+   * retrieves information of all objects (recurvisely) under the group (name) located in the 
+   * file or group specified by loc_id.
+   * 
+   * @param loc_id     IN:  File or group identifier
+   * @param name       IN:  Name of group for which information is to be retrieved
+   * @param objNames   OUT: Names of all objects under the group, name.
+   * @param objTypes   OUT: Types of all objects under the group, name.
+   *
+   * @return the number of items found 
+   *
+   * @exception HDF5LibraryException - Error from the HDF-5 Library.
+   * @exception NullPointerException - name is null.
+   */
   public synchronized static int H5Gget_obj_info_all2( int loc_id,
       String name, String[] objNames, int[] objTypes)
   throws HDF5LibraryException, NullPointerException
   {
     if (name == null || name.length()<=0) {
-      throw new NullPointerException("H5Gget_obj_info_all(): name is null");
+      throw new NullPointerException("H5Gget_obj_info_all2(): name is null");
     }
 
     if (objNames == null) {
-      throw new NullPointerException("H5Gget_obj_info_all(): name array is null");
+      throw new NullPointerException("H5Gget_obj_info_all2(): name array is null");
     }
 
     if (objTypes == null) {
-      throw new NullPointerException("H5Gget_obj_info_all(): type array is null");
+      throw new NullPointerException("H5Gget_obj_info_all2(): type array is null");
     }
 
     if (objNames.length <= 0) {
-      throw new HDF5LibraryException("H5Gget_obj_info_all(): array size is zero");
+      throw new HDF5LibraryException("H5Gget_obj_info_all2(): array size is zero");
     }
 
     if (objNames.length != objTypes.length) {
-      throw new HDF5LibraryException("H5Gget_obj_info_all(): name and type array sizes are different");
+      throw new HDF5LibraryException("H5Gget_obj_info_all2(): name and type array sizes are different");
     }
 
     return H5Gget_obj_info_all2( loc_id, name, objNames, objTypes, objNames.length);

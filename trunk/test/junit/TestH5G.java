@@ -189,9 +189,67 @@ public class TestH5G {
     }
     try { H5.H5Gclose(gid); } catch (Exception ex) {}
     assertNotNull(info);
-    assertTrue("number of links is "+info.nlinks,info.nlinks>0);
+    assertTrue("number of links is empty",info.nlinks>0);
     String objNames[] = new String[(int)info.nlinks];
     int objTypes[] = new int[(int)info.nlinks];
+    long objRefs[] = new long[(int)info.nlinks];
+
+    int names_found = 0;
+    try { 
+      names_found = H5.H5Gget_obj_info_all(H5fid, GROUPS[0], objNames, objTypes, objRefs);
+    } 
+    catch (Throwable err) {
+      err.printStackTrace();
+      fail("H5.H5Gget_obj_info_all: "+err);
+    }
+
+    assertTrue("number found["+names_found+"] different than expected["+objNames.length+"]",names_found == objNames.length);
+    for (int i=0; i<objNames.length; i++) {
+      assertNotNull("name #"+i+" does not exist",objNames[i]);
+      assertTrue(objNames[i].length()>0);
+    }
+  }
+
+  @Test
+  public void testH5Gget_obj_info_group2() {
+    H5G_info_t info = null;
+
+    int gid = _openGroup(H5fid, GROUPS[0]);
+
+    try { 
+      info = H5.H5Gget_info(gid); 
+    } 
+    catch (Throwable err) {
+      err.printStackTrace();
+      fail("H5.H5Gget_info: "+err);
+    }
+    try { H5.H5Gclose(gid); } catch (Exception ex) {}
+    assertNotNull(info);
+    assertTrue("number of links is empty",info.nlinks>0);
+    String objNames[] = new String[(int)info.nlinks];
+    int objTypes[] = new int[(int)info.nlinks];
+
+    int names_found = 0;
+    try { 
+      names_found = H5.H5Gget_obj_info_group2(H5fid, GROUPS[0], objNames, objTypes);
+    } 
+    catch (Throwable err) {
+      err.printStackTrace();
+      fail("H5.H5Gget_obj_info_group2: "+err);
+    }
+
+    assertTrue("number found["+names_found+"] different than expected["+objNames.length+"]",names_found == objNames.length);
+    for (int i=0; i<objNames.length; i++) {
+      assertNotNull("name #"+i+" does not exist",objNames[i]);
+      assertTrue(objNames[i].length()>0);
+    }
+  }
+
+  @Test
+  public void testH5Gget_obj_info_all2() {
+    int groups_size = GROUPS.length;
+    String objNames[] = new String[groups_size];
+    int objTypes[] = new int[groups_size];
 
     int names_found = 0;
     try { 
@@ -199,10 +257,10 @@ public class TestH5G {
     } 
     catch (Throwable err) {
       err.printStackTrace();
-      fail("H5.H5Gget_obj_info_all: "+err);
+      fail("H5.H5Gget_obj_info_all2: "+err);
     }
 
-    assertTrue("number found different than expected ",names_found == objNames.length);
+    assertTrue("number found["+names_found+"] different than expected["+objNames.length+"]",names_found == objNames.length);
     for (int i=0; i<objNames.length; i++) {
       assertNotNull("name #"+i+" does not exist",objNames[i]);
       assertTrue(objNames[i].length()>0);
