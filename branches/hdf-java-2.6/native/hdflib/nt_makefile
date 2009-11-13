@@ -10,7 +10,7 @@
 #   set path=%path";"C:\Program Files\Microsoft Visual Studio 8\VC\bin"
 #
 
-JAVAHOME=D:\Java\jdk1.6.0_01
+JAVAHOME=D:\Java\jdk1.6.0_16
 HDF4INC=G:\HDF\lib\hdf42r4\include
 HDF4DLIB=G:\HDF\lib\hdf42r4\lib\hd424.lib
 HDF4MLIB=G:\HDF\lib\hdf42r4\lib\hm424.lib
