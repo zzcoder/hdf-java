@@ -4565,9 +4565,22 @@ throws HDF5LibraryException;
     return ret;
   }
 
-
+  /**
+   * retrieves information of all objects under the group (name) located in the 
+   * file or group specified by loc_id.
+   * 
+   * @param loc_id     IN:  File or group identifier
+   * @param name       IN:  Name of group for which information is to be retrieved
+   * @param objNames   OUT: Names of all objects under the group, name.
+   * @param objTypes   OUT: Types of all objects under the group, name.
+   *
+   * @return the number of items found 
+   *
+   * @exception HDF5LibraryException - Error from the HDF-5 Library.
+   * @exception NullPointerException - name is null.
+   */
   public synchronized static int H5Gget_obj_info_all( int loc_id,
-      String name, String[] oname, int[]type, long[] ref)
+      String name, String[] oname, int[] type, long[] ref)
   throws HDF5LibraryException, NullPointerException
   {
     if (oname == null) {
@@ -4578,10 +4591,6 @@ throws HDF5LibraryException;
       throw new NullPointerException("H5Gget_obj_info_all(): type array is null");
     }
 
-    if (ref == null) {
-      throw new NullPointerException("H5Gget_obj_info_all(): ref array is null");
-    }
-
     if (oname.length == 0) {
       throw new HDF5LibraryException("H5Gget_obj_info_all(): array size is zero");
     }
@@ -4590,15 +4599,11 @@ throws HDF5LibraryException;
       throw new HDF5LibraryException("H5Gget_obj_info_all(): name and type array sizes are different");
     }
 
-    if (oname.length != ref.length) {
-      throw new HDF5LibraryException("H5Gget_obj_info_all(): name and ref array sizes are different");
-    }
-
     return H5Gget_obj_info_all( loc_id, name, oname, type, ref, oname.length);
   }
 
   private synchronized static native int H5Gget_obj_info_all( int loc_id,
-      String name, String[] oname, int[]type, long[]ref, int n)
+      String name, String[] oname, int[] type, long[] ref, int n)
   throws HDF5LibraryException, NullPointerException;
 
 
@@ -5823,93 +5828,49 @@ throws HDF5LibraryException;
    */
 
   /**
-   * retrieves information of all objects under the group (name) located in the 
-   * file or group specified by loc_id.
-   * 
-   * @param loc_id     IN:  File or group identifier
-   * @param name       IN:  Name of group for which information is to be retrieved
-   * @param objNames   OUT: Names of all objects under the group, name.
-   * @param objTypes   OUT: Types of all objects under the group, name.
-   *
-   * @return the number of items found 
-   *
-   * @exception HDF5LibraryException - Error from the HDF-5 Library.
-   * @exception NullPointerException - name is null.
-   */
-  public synchronized static int H5Gget_obj_info_group2( int loc_id,
-      String name, String[] objNames, int[] objTypes)
-  throws HDF5LibraryException, NullPointerException
-  {
-    if (name == null || name.length()<=0) {
-      throw new NullPointerException("H5Gget_obj_info_group2(): name is null");
-    }
-
-    if (objNames == null) {
-      throw new NullPointerException("H5Gget_obj_info_group2(): name array is null");
-    }
-
-    if (objTypes == null) {
-      throw new NullPointerException("H5Gget_obj_info_group2(): type array is null");
-    }
-
-    if (objNames.length <= 0) {
-      throw new HDF5LibraryException("H5Gget_obj_info_group2(): array size is zero");
-    }
-
-    if (objNames.length != objTypes.length) {
-      throw new HDF5LibraryException("H5Gget_obj_info_group2(): name and type array sizes are different");
-    }
-
-    return H5Gget_obj_info_group2( loc_id, name, objNames, objTypes, objNames.length);
-  }
-
-  private synchronized static native int H5Gget_obj_info_group2( int loc_id,
-      String name, String[] oname, int[]type, int n)
-  throws HDF5LibraryException, NullPointerException;
-
-  /**
    * retrieves information of all objects (recurvisely) under the group (name) located in the 
-   * file or group specified by loc_id.
+   * file or group specified by loc_id upto maximum specified by objMax.
    * 
    * @param loc_id     IN:  File or group identifier
    * @param name       IN:  Name of group for which information is to be retrieved
    * @param objNames   OUT: Names of all objects under the group, name.
    * @param objTypes   OUT: Types of all objects under the group, name.
+   * @param objMax     IN:  Maximum number of all objects under the group, name.
    *
    * @return the number of items found 
    *
    * @exception HDF5LibraryException - Error from the HDF-5 Library.
    * @exception NullPointerException - name is null.
    */
-  public synchronized static int H5Gget_obj_info_all2( int loc_id,
-      String name, String[] objNames, int[] objTypes)
+  public synchronized static int H5Gget_obj_info_max( int loc_id,
+      String[] objNames, int[] objTypes, long[] ref, int objMax)
   throws HDF5LibraryException, NullPointerException
   {
-    if (name == null || name.length()<=0) {
-      throw new NullPointerException("H5Gget_obj_info_all2(): name is null");
-    }
-
     if (objNames == null) {
-      throw new NullPointerException("H5Gget_obj_info_all2(): name array is null");
+      throw new NullPointerException("H5Gget_obj_info_max(): name array is null");
     }
 
     if (objTypes == null) {
-      throw new NullPointerException("H5Gget_obj_info_all2(): type array is null");
+      throw new NullPointerException("H5Gget_obj_info_max(): type array is null");
     }
 
     if (objNames.length <= 0) {
-      throw new HDF5LibraryException("H5Gget_obj_info_all2(): array size is zero");
+      throw new HDF5LibraryException("H5Gget_obj_info_max(): array size is zero");
+    }
+
+    if (objMax <= 0) {
+      throw new HDF5LibraryException("H5Gget_obj_info_max(): maximum array size is zero");
     }
 
     if (objNames.length != objTypes.length) {
-      throw new HDF5LibraryException("H5Gget_obj_info_all2(): name and type array sizes are different");
+      throw new HDF5LibraryException("H5Gget_obj_info_max(): name and type array sizes are different");
     }
 
-    return H5Gget_obj_info_all2( loc_id, name, objNames, objTypes, objNames.length);
+    return H5Gget_obj_info_max( loc_id, objNames, objTypes, ref, objMax, objNames.length);
   }
 
-  private synchronized static native int H5Gget_obj_info_all2( int loc_id,
-      String name, String[] oname, int[]type, int n)
+  private synchronized static native int H5Gget_obj_info_max( int loc_id,
+      String[] oname, int[] type, long[] ref, int amax, int n)
   throws HDF5LibraryException, NullPointerException;
 
   ////////////////////////////////////////////////////////////////////
