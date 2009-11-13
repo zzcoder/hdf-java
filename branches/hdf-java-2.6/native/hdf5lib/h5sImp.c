@@ -37,7 +37,6 @@ extern "C" {
 #define ENVPAR env,
 #endif
 
-extern jboolean h5outOfMemory( JNIEnv *env, char *functName);
 extern jboolean h5JNIFatalError( JNIEnv *env, char *functName);
 extern jboolean h5nullArgument( JNIEnv *env, char *functName);
 extern jboolean h5libraryError( JNIEnv *env );
@@ -676,7 +675,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sselect_1hyperslab
     i = (int)ENVPTR->GetArrayLength(ENVPAR start);
     if (i != ENVPTR->GetArrayLength(ENVPAR count)) {
         h5badArgument( env, "H5Sselect_hyperslab:  count and start have different rank!");
-
+        return -1;
     }
     rank = i / sizeof(jlong);
 

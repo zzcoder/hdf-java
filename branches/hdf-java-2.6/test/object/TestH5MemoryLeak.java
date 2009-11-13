@@ -232,7 +232,7 @@ public class TestH5MemoryLeak
                             sumStr + "    \t" +
                             df.format((mem1 / KB)) + "    \t" +
                             df.format(osm.getTotalPhysicalMemorySize() / KB) + "   \t" +
-                            H5.OPEN_IDS.size());
+                            H5.getOpenIDCount());
                 }
 
                 if (sum > 0)

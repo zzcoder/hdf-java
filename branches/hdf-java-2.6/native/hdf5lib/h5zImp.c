@@ -28,9 +28,6 @@ extern "C" {
 #include <jni.h>
 #include <stdlib.h>
 
-extern jboolean h5JNIFatalError( JNIEnv *env, char *functName);
-extern jboolean h5nullArgument( JNIEnv *env, char *functName);
-extern jboolean h5badArgument( JNIEnv *env, char *functName);
 extern jboolean h5libraryError( JNIEnv *env );
 
 /*

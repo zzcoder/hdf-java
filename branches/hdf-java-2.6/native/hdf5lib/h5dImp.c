@@ -355,6 +355,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread
     if (status < 0) {
         UNPIN_BYTE_ARRAY(JNI_ABORT);
         h5libraryError(env);
+        return -1;
     }
 
     UNPIN_BYTE_ARRAY(0);
@@ -720,6 +721,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1short
     if (status < 0) {
         UNPIN_SHORT_ARRAY(JNI_ABORT);
         h5libraryError(env);
+        return -1;
     }
 
     UNPIN_SHORT_ARRAY(0);
@@ -752,6 +754,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1int
     if (status < 0) {
         UNPIN_INT_ARRAY(JNI_ABORT);
         h5libraryError(env);
+        return -1;
     }
 
     UNPIN_INT_ARRAY(0);
@@ -785,6 +788,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1long
     if (status < 0) {
         UNPIN_LONG_ARRAY(JNI_ABORT);
         h5libraryError(env);
+        return -1;
     }
 
     UNPIN_LONG_ARRAY(0);
@@ -817,6 +821,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1float
     if (status < 0) {
         UNPIN_FLOAT_ARRAY(JNI_ABORT);
         h5libraryError(env);
+        return -1;
     }
 
     UNPIN_FLOAT_ARRAY(0);
@@ -848,6 +853,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1double
     if (status < 0) {
         UNPIN_DOUBLE_ARRAY(JNI_ABORT);
         h5libraryError(env);
+        return -1;
     }
 
     UNPIN_DOUBLE_ARRAY(0);
@@ -879,6 +885,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1string
 
     if ( (str_len = H5Tget_size((hid_t)mem_type_id)) <=0 ) {
         h5libraryError(env);
+        return -1;
     }
 
     if ( (cstr = (char *)malloc(str_len+1)) == NULL) {

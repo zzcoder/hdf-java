@@ -38,8 +38,6 @@ extern "C" {
 #endif
 
 extern jboolean h5outOfMemory( JNIEnv *env, char *functName);
-extern jboolean h5JNIFatalError( JNIEnv *env, char *functName);
-extern jboolean h5nullArgument( JNIEnv *env, char *functName);
 extern jboolean h5libraryError( JNIEnv *env );
 extern jboolean h5badArgument( JNIEnv *env, char *functName);
 
@@ -89,10 +87,13 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1name
         h5outOfMemory( env, "H5Iget_name:  malloc failed");
         return -1;
     }
+
     size = H5Iget_name((hid_t)obj_id, aName, (size_t)buf_size);
+
     if (size < 0) {
         free(aName);
         h5libraryError(env);
+        return -1;
         /*  exception, returns immediately */
     }
     /* successful return -- save the string; */

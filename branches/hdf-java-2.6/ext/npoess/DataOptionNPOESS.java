@@ -526,8 +526,8 @@ implements ActionListener, ItemListener
             for (int i=0; i<rank; i++)
             {
                 if ((i!=currentIndex[0]) &&
-                    (i!=currentIndex[1]) &&
-                    (i!=currentIndex[2]))
+                        (i!=currentIndex[1]) &&
+                        (i!=currentIndex[2]))
                 {
                     choice4.add(choices[0].getItemAt(i));
                     choice4Index[idx++] = i;
@@ -535,12 +535,12 @@ implements ActionListener, ItemListener
             }
 
             String msg = "Select slice location for dimension(s):\n\""
-                       +choice4.get(0)+" [1 .. "+dims[choice4Index[0]]+"]\"";
+                +choice4.get(0)+" [0 .. "+(dims[choice4Index[0]]-1)+"]\"";
             String initValue = String.valueOf(start[choice4Index[0]]);
             int n = choice4.size();
             for (int i=1; i<n; i++)
             {
-                msg +=" x \"" + choice4.get(i)+ " [1 .. "+dims[choice4Index[i]]+"]\"";
+                msg +=" x \"" + choice4.get(i)+ " [0 .. "+(dims[choice4Index[i]]-1)+"]\"";
                 initValue += " x "+String.valueOf(start[choice4Index[i]]);
             }
 
@@ -568,20 +568,20 @@ implements ActionListener, ItemListener
                 } catch (Exception ex)
                 {
                     JOptionPane.showMessageDialog(
-                        this,
-                        ex.getMessage(),
-                        "Select Slice Location",
-                        JOptionPane.ERROR_MESSAGE);
+                            this,
+                            ex.getMessage(),
+                            "Select Slice Location",
+                            JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
                 if ((start4[i] < 0) || (start4[i] >=dims[choice4Index[i]]))
                 {
                     JOptionPane.showMessageDialog(
-                        this,
-                        "Slice location is out of range.\n"+start4[i]+" > "+dims[choice4Index[i]],
-                        "Select Slice Location",
-                        JOptionPane.ERROR_MESSAGE);
+                            this,
+                            "Slice location is out of range.\n"+start4[i]+" >= "+dims[choice4Index[i]],
+                            "Select Slice Location",
+                            JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 

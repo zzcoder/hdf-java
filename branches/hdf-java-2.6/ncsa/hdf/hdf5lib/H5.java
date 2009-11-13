@@ -218,9 +218,9 @@ public class H5 {
 
     private static boolean isLibraryLoaded = false;
 
-    final private static boolean IS_CRITICAL_PINNING = true;
+    private final static boolean IS_CRITICAL_PINNING = true;
     
-    final public static Vector<Integer> OPEN_IDS = new Vector<Integer>();
+    private final static Vector<Integer> OPEN_IDS = new Vector<Integer>();
 
     static { loadH5Lib(); }
 
@@ -333,6 +333,28 @@ public class H5 {
     //                                                          //
     //////////////////////////////////////////////////////////////
 
+
+
+    /**
+     * Get number of open IDs.
+     */
+    public final static int getOpenIDCount() {
+        return OPEN_IDS.size();
+    }
+    
+    /**
+     * Get the open ID at the specified index.
+     * 
+     * @param index -- an index of the open ID.
+     * @return Returns the open ID at the specified index.
+     */
+    public final static int getOpenID(int index) {
+        int id = -1;
+        if (index >= 0 && index < OPEN_IDS.size())
+            id = (int) OPEN_IDS.elementAt(index);
+        
+        return id;
+    }
 
     /**
      *  H5open initialize the library.

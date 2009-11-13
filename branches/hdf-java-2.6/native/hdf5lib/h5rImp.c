@@ -36,7 +36,6 @@ extern "C" {
 #define ENVPAR env,
 #endif
 
-extern jboolean h5outOfMemory( JNIEnv *env, char *functName);
 extern jboolean h5JNIFatalError( JNIEnv *env, char *functName);
 extern jboolean h5nullArgument( JNIEnv *env, char *functName);
 extern jboolean h5libraryError( JNIEnv *env );
@@ -124,9 +123,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rdereference
     }
     if ((ref_type == H5R_OBJECT) && ENVPTR->GetArrayLength(ENVPAR ref) < 8) {
         h5badArgument( env, "H5Rdereference:  obj ref input array < 8");
+        return -1;
     } else if ((ref_type == H5R_DATASET_REGION)
         && ENVPTR->GetArrayLength(ENVPAR ref) < 12) {
         h5badArgument( env, "H5Rdereference:  region ref input array < 12");
+        return -1;
     }
     refP = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR ref,&isCopy);
     if (refP == NULL) {
@@ -168,6 +169,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rget_1region
     }
     if ( ENVPTR->GetArrayLength(ENVPAR ref) < 12) {
         h5badArgument( env, "H5Rget_region:  region ref input array < 12");
+        return -1;
     }
     refP = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR ref,&isCopy);
     if (refP == NULL) {

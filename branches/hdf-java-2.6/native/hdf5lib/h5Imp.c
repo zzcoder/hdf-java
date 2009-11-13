@@ -104,8 +104,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5get_1libversion
 
     if (libversion == NULL) {
         h5nullArgument( env, "H5get_version:  libversion is NULL");
+        return -1;
     }
+
     theArray = (unsigned *)ENVPTR->GetIntArrayElements(ENVPAR libversion,&isCopy);
+
     if (theArray == NULL) {
         h5JNIFatalError( env, "H5get_libversion:  input not pinned");
         return -1;

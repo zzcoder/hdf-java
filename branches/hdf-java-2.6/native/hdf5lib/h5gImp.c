@@ -349,6 +349,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1objinfo
         follow = FALSE;  /*  HDF5 'FALSE' */
     } else {
         h5badArgument( env, "H5Gget_objinfo:  follow_link is invalid");
+        return -1;
     }
     if (fileno == NULL) {
         h5nullArgument( env, "H5Gget_objinfo:  fileno is NULL");
@@ -356,6 +357,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1objinfo
     }
     if (ENVPTR->GetArrayLength(ENVPAR fileno) < 2) {
         h5badArgument( env, "H5Gget_objinfo:  fileno input array < 2");
+        return -1;
     }
     if (objno == NULL) {
         h5nullArgument( env, "H5Gget_objinfo:  objno is NULL");
@@ -363,6 +365,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1objinfo
     }
     if (ENVPTR->GetArrayLength(ENVPAR objno) < 2) {
         h5badArgument( env, "H5Gget_objinfo:  objno input array < 2");
+        return -1;
     }
     if (link_info == NULL) {
         h5nullArgument( env, "H5Gget_objinfo:  link_info is NULL");
@@ -370,6 +373,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1objinfo
     }
     if (ENVPTR->GetArrayLength(ENVPAR link_info) < 3) {
         h5badArgument( env, "H5Gget_objinfo:  link_info input array < 3");
+        return -1;
     }
     if (mtime == NULL) {
         h5nullArgument( env, "H5Gget_objinfo:  mtime is NULL");
@@ -646,12 +650,13 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1num_1objs
         ENVPTR->ReleaseLongArrayElements(ENVPAR num_obj,num_objP,JNI_ABORT);
         free(num_obja);
         h5libraryError(env);
-    } else {
-        for (i = 0; i < rank; i++) {
-            num_objP[i] = num_obja[i];
-        }
-        ENVPTR->ReleaseLongArrayElements(ENVPAR num_obj,num_objP,0);
+        return -1;
     }
+
+    for (i = 0; i < rank; i++) {
+        num_objP[i] = num_obja[i];
+    }
+    ENVPTR->ReleaseLongArrayElements(ENVPAR num_obj,num_objP,0);
 
     free(num_obja);
     return (jint)status;
@@ -684,8 +689,10 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1objname_1by_1idx
     if (size < 0) {
         free(aName);
         h5libraryError(env);
+        return -1;
         /*  exception, returns immediately */
     }
+
     /* successful return -- save the string; */
     str = ENVPTR->NewStringUTF(ENVPAR aName);
     if (str == NULL) {
@@ -693,6 +700,7 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1objname_1by_1idx
         h5JNIFatalError( env,"H5Gget_objname_by_idx:  return string failed");
         return -1;
     }
+
     free(aName);
     /*  Note: throws ArrayIndexOutOfBoundsException,
         ArrayStoreException */
@@ -799,27 +807,28 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
         h5str_array_free(oName, n);
         free(refs);
         h5libraryError(env);
-    } else {
-        if (refs) {
-            for (i=0; i<n; i++) {
-                refP[i] = (jlong) refs[i];
-            }
-        }
-        
-        if (oName) {
-            for (i=0; i<n; i++) {
-                if (*(oName+i)) {
-                    str = ENVPTR->NewStringUTF(ENVPAR *(oName+i));
-                    ENVPTR->SetObjectArrayElement(ENVPAR objName,i,(jobject)str);
-                }
-            } /* for (i=0; i<n; i++)*/
-        }
+        return -1;
+    } 
 
-        free(refs);
-        h5str_array_free(oName, n);
-        ENVPTR->ReleaseIntArrayElements(ENVPAR oType,tarr,0);
-        ENVPTR->ReleaseLongArrayElements(ENVPAR oRef,refP,0);
+    if (refs) {
+        for (i=0; i<n; i++) {
+            refP[i] = (jlong) refs[i];
+        }
     }
+        
+    if (oName) {
+        for (i=0; i<n; i++) {
+            if (*(oName+i)) {
+                str = ENVPTR->NewStringUTF(ENVPAR *(oName+i));
+                ENVPTR->SetObjectArrayElement(ENVPAR objName,i,(jobject)str);
+            }
+        } /* for (i=0; i<n; i++)*/
+    }
+
+    free(refs);
+    h5str_array_free(oName, n);
+    ENVPTR->ReleaseIntArrayElements(ENVPAR oType,tarr,0);
+    ENVPTR->ReleaseLongArrayElements(ENVPAR oRef,refP,0);
     
     return (jint)status;
 }
