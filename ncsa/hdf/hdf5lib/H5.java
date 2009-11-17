@@ -4957,6 +4957,8 @@ public class H5 {
      *         negative value
      * @throws HDF5LibraryException
      * @throws NullPointerException
+     * 
+     * @deprecated As of HDF5 1.8
      */
     public synchronized static native long H5Gget_objname_by_idx(int group_id,
             long idx, String[] name, long size)
@@ -4973,6 +4975,8 @@ public class H5 {
      *         negative value
      * @throws HDF5LibraryException
      * @throws NullPointerException
+     * 
+     * @deprecated As of HDF5 1.8
      */
     public synchronized static native int H5Gget_objtype_by_idx(int group_id,
             long idx) throws HDF5LibraryException, NullPointerException;
@@ -5010,14 +5014,15 @@ public class H5 {
      * @exception NullPointerException
      *                - name is null.
      */
-    public synchronized static int H5Gn_members(int loc_id, String name)
+    public synchronized static long H5Gn_members(int loc_id, String name)
             throws HDF5LibraryException, NullPointerException {
         int grp_id = H5Gopen(loc_id, name);
-        long[] nobj = new long[1];
-        nobj[0] = -1;
-        int ret = H5Gget_num_objs(grp_id, nobj);
-        int r = (new Long(nobj[0])).intValue();
-        return (r);
+//        long[] nobj = new long[1];
+//        nobj[0] = -1;
+//        int ret = H5Gget_num_objs(grp_id, nobj);
+//        int r = (new Long(nobj[0])).intValue();
+        H5G_info_t info = H5.H5Gget_info(grp_id);
+        return (info.nlinks);
     }
 
     /**
@@ -5113,11 +5118,6 @@ public class H5 {
     private synchronized static native int H5Gget_obj_info_all(int loc_id,
             String name, String[] oname, int[] otype, int[] ltype, long[] ref, int n)
             throws HDF5LibraryException, NullPointerException;
-
-    // This function is denegrated. It is recommended that the new
-    // library calls should be used,
-    // H5Gget_objname_by_idx
-    // H5Gget_objtype_by_idx
 
     /**
      * H5Gget_objinfo returns information about the specified object.
