@@ -331,8 +331,6 @@ public class TestH5G {
 
     @Test
     public void testH5Gget_obj_info_max() {
-        H5G_info_t info = null;
-
         int gid = _openGroup(H5fid, GROUPS[0]);
         int groups_max_size = GROUPS.length + 1;
         String objNames[] = new String[groups_max_size];
@@ -371,8 +369,6 @@ public class TestH5G {
 
     @Test
     public void testH5Gget_obj_info_max_limit() {
-        H5G_info_t info = null;
-
         int gid = _openGroup(H5fid, GROUPS[0]);
         int groups_max_size = GROUPS.length - 3;
         String objNames[] = new String[groups_max_size];
