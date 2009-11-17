@@ -33,7 +33,7 @@ extern "C" {
 #include <string.h>
 #include "hdf5.h"
 #include "h5jni.h"
-#include "H5gImp.h"
+#include "h5gImp.h"
 #include "h5util.h"
 
 /* missing definitions from hdf5.h */

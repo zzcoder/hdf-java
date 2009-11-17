@@ -31,7 +31,7 @@ extern "C" {
 #include <stdlib.h>
 #include "hdf5.h"
 #include "h5jni.h"
-#include "H5lImp.h"
+#include "h5lImp.h"
 
 #ifdef __cplusplus
 #define ENVPTR (env)
