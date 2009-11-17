@@ -22,6 +22,7 @@ import java.lang.reflect.Array;
 import ncsa.hdf.object.*;
 import ncsa.hdf.hdf5lib.*;
 import ncsa.hdf.hdf5lib.exceptions.*;
+import ncsa.hdf.hdf5lib.structs.H5G_info_t;
 
 /**
  * H5File is an implementation of the FileFormat class for HDF5 files.
@@ -1594,9 +1595,8 @@ public class H5File extends FileFormat
         nelems = 0;
         try {
             gid = pgroup.open();
-            long[] nmembers = {0};
-            H5.H5Gget_num_objs(gid, nmembers);
-            nelems = (int)nmembers[0];
+            H5G_info_t info = H5.H5Gget_info(gid);
+            nelems = (int)info.nlinks;
         } catch (HDF5Exception ex) {
             nelems = -1;
         }

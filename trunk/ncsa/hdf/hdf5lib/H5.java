@@ -3337,15 +3337,13 @@ public class H5 {
     // ////////////////////////////////////////////////////////////
 
     /**
-     * H5Screate creates a new dataspace of a particular type.
-     * 
-     * @param type
-     *            The type of dataspace to be created.
-     * 
-     * @return a dataspace identifier if successful
-     * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     *  H5Screate creates a new dataspace of a particular type.
+     *
+     *  @param type IN: The type of dataspace to be created.
+     *
+     *  @return a dataspace identifier
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public static int H5Screate(int type) throws HDF5LibraryException {
         int id = _H5Screate(type);
@@ -3358,21 +3356,17 @@ public class H5 {
             throws HDF5LibraryException;
 
     /**
-     * H5Screate_simple creates a new simple data space and opens it for access.
-     * 
-     * @param rank
-     *            Number of dimensions of dataspace.
-     * @param dims
-     *            An array of the size of each dimension.
-     * @param maxdims
-     *            An array of the maximum size of each dimension.
-     * 
-     * @return a dataspace identifier if successful
-     * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
-     * @exception NullPointerException
-     *                - dims or maxdims is null.
+     *  H5Screate_simple creates a new simple data space and opens
+     *  it for access.
+     *
+     *  @param rank    IN: Number of dimensions of dataspace.
+     *  @param dims    IN: An array of the size of each dimension.
+     *  @param maxdims IN: An array of the maximum size of each dimension.
+     *
+     *  @return a dataspace identifier
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - dims or maxdims is null.
      **/
     public static int H5Screate_simple(int rank, byte[] dims, byte[] maxdims)
             throws HDF5LibraryException, NullPointerException {

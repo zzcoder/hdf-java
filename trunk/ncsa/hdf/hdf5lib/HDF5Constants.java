@@ -492,6 +492,18 @@ public class HDF5Constants {
     public static final int H5Z_NO_EDC = H5Z_NO_EDC();
     public static final int H5Z_FILTER_CONFIG_ENCODE_ENABLED = H5Z_FILTER_CONFIG_ENCODE_ENABLED();
     public static final int H5Z_FILTER_CONFIG_DECODE_ENABLED = H5Z_FILTER_CONFIG_DECODE_ENABLED();
+    public static final int H5Z_SO_INT_MINBITS_DEFAULT = H5Z_SO_INT_MINBITS_DEFAULT();
+    public static final int H5Z_SHUFFLE_USER_NPARMS = H5Z_SHUFFLE_USER_NPARMS();
+    public static final int H5Z_SHUFFLE_TOTAL_NPARMS = H5Z_SHUFFLE_TOTAL_NPARMS();
+    public static final int H5Z_SZIP_USER_NPARMS = H5Z_SZIP_USER_NPARMS();
+    public static final int H5Z_SZIP_TOTAL_NPARMS = H5Z_SZIP_TOTAL_NPARMS();
+    public static final int H5Z_SZIP_PARM_MASK = H5Z_SZIP_PARM_MASK();
+    public static final int H5Z_SZIP_PARM_PPB = H5Z_SZIP_PARM_PPB();
+    public static final int H5Z_SZIP_PARM_BPP = H5Z_SZIP_PARM_BPP();
+    public static final int H5Z_SZIP_PARM_PPS = H5Z_SZIP_PARM_PPS();
+    public static final int H5Z_NBIT_USER_NPARMS = H5Z_NBIT_USER_NPARMS();
+    public static final int H5Z_SCALEOFFSET_USER_NPARMS = H5Z_SCALEOFFSET_USER_NPARMS();
+    public static final int H5Z_FILTER_ALL = H5Z_FILTER_ALL();
 
     // /////////////////////////////////////////////////////////////////////////
     // List of private native variables to get constant values from C //
@@ -1416,5 +1428,29 @@ public class HDF5Constants {
     private static native final int H5Z_FILTER_CONFIG_ENCODE_ENABLED();
 
     private static native final int H5Z_FILTER_CONFIG_DECODE_ENABLED();
+
+    private static native final int H5Z_SO_INT_MINBITS_DEFAULT();
+
+    private static native final int H5Z_SHUFFLE_USER_NPARMS();
+
+    private static native final int H5Z_SHUFFLE_TOTAL_NPARMS();
+
+    private static native final int H5Z_SZIP_USER_NPARMS();
+
+    private static native final int H5Z_SZIP_TOTAL_NPARMS();
+
+    private static native final int H5Z_SZIP_PARM_MASK();
+
+    private static native final int H5Z_SZIP_PARM_PPB();
+
+    private static native final int H5Z_SZIP_PARM_BPP();
+
+    private static native final int H5Z_SZIP_PARM_PPS();
+
+    private static native final int H5Z_NBIT_USER_NPARMS();
+
+    private static native final int H5Z_SCALEOFFSET_USER_NPARMS();
+
+    private static native final int H5Z_FILTER_ALL();
 
 }
