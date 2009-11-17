@@ -63,7 +63,7 @@ public class H5Ex_G_Iterate {
 		System.out.println("Objects in root group:");
 		try {
 			if (file_id >= 0) {
-				int count = H5.H5Gn_members(file_id, DATASETNAME);
+				int count = (int)H5.H5Gn_members(file_id, DATASETNAME);
 				String[] oname = new String[count];
                 int[] otype = new int[count];
                 int[] ltype = new int[count];
