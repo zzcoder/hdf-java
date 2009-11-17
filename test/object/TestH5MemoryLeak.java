@@ -232,7 +232,7 @@ public class TestH5MemoryLeak
                             sumStr + "    \t" +
                             df.format((mem1 / KB)) + "    \t" +
                             df.format(osm.getTotalPhysicalMemorySize() / KB) + "   \t" +
-                            H5.OPEN_IDS.size());
+                            H5.getOpenIDCount());
                 }
 
                 if (sum > 0)
@@ -368,7 +368,6 @@ public class TestH5MemoryLeak
         final H5Datatype typeStrVlen = new H5Datatype(Datatype.CLASS_STRING, -1, -1, -1);
         final H5Datatype typeChar = new H5Datatype(Datatype.CLASS_CHAR, 1, -1, -1);
         final H5Datatype typeEnum = new H5Datatype(Datatype.CLASS_ENUM, DATATYPE_SIZE, -1, -1);
-       
 
         file = new H5File(NAME_FILE_H5, FileFormat.CREATE);
         file.open();
