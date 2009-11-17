@@ -499,7 +499,8 @@ HyperlinkListener, ChangeListener, DropTargetListener
         item.setMnemonic(KeyEvent.VK_R);
         item.addActionListener(this);
         item.setActionCommand("Open file read-only");
-        fileMenu.add(item);
+        if (!ViewProperties.isReadOnly())
+            fileMenu.add(item);
 
 //        boolean isSrbSupported = true;
 //        try { 
@@ -995,6 +996,9 @@ HyperlinkListener, ChangeListener, DropTargetListener
         {
             int fileAccessID = FileFormat.WRITE;
             String filename = null;
+            
+            if (ViewProperties.isReadOnly())
+                fileAccessID = FileFormat.READ;
 
             if (cmd.equals("Open file: from file bar"))
             {
@@ -2087,7 +2091,7 @@ HyperlinkListener, ChangeListener, DropTargetListener
         } else {
             currentDir = choosedFile.getParent();
         }
-
+        
         return choosedFile.getAbsolutePath();
     }
 

@@ -21,6 +21,7 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
+import java.util.BitSet;
 import java.util.StringTokenizer;
 
 import javax.imageio.ImageIO;
@@ -640,15 +641,24 @@ public final class Tools
      */
     public static byte[] getBytes(Object rawData, double[] minmax, byte[] byteData)
     {
-        return Tools.getBytes(rawData, minmax, -1, -1, false, null, byteData);
+        return Tools.getBytes(rawData, minmax, -1, -1, false, null, false, byteData);
     }
     public static byte[] getBytes(Object rawData, double[] minmax, int w, int h, boolean isTransposed, byte[] byteData)
     {
-        return Tools.getBytes(rawData, minmax, w, h, isTransposed, null, byteData);
+        return Tools.getBytes(rawData, minmax, w, h, isTransposed, null, false, 
+                byteData);
     }
     public static byte[] getBytes(Object rawData, double[] minmax, Object fillValue, byte[] byteData)
     {
-        return Tools.getBytes(rawData, minmax, -1, -1, false, fillValue, byteData);
+        return Tools.getBytes(rawData, minmax, -1, -1, false, fillValue, false, 
+                byteData);
+    }
+
+    public static byte[] getBytes(Object rawData, double[] minmax, int w, int h,
+            boolean isTransposed, Object fillValue, byte[] byteData)
+    {
+        return getBytes(rawData, minmax, w, h, isTransposed,fillValue, false, 
+                byteData);
     }
 
     /**
@@ -660,7 +670,8 @@ public final class Tools
      *  @return the byte array of pixel data.
      */
     public static byte[] getBytes(Object rawData, double[] minmax, int w, int h,
-           boolean isTransposed, Object fillValue, byte[] byteData)
+           boolean isTransposed, Object fillValue, boolean convertByteData, 
+           byte[] byteData)
     {
         // no input data
         if (rawData == null) {
@@ -683,18 +694,9 @@ public final class Tools
             minmax[0] = minmax[1] = 0;
         }
 
-        // no need for conversion
-        if ((dname == 'B') && !isTransposed)
-        {
-            if (byteData == null)
-                byteData = (byte[]) rawData;
-            else
-                System.arraycopy(rawData, 0, byteData, 0, size);
-            
-            minmax[0] = 0;
-            minmax[1] = 255;
-            
-            return byteData;
+        if (dname == 'B') {
+           return convertByteData ((byte[])rawData, minmax, w, h,
+           isTransposed, fillValue, convertByteData, byteData);
         }
 
         if ((byteData == null) || (size != byteData.length)) {
@@ -710,20 +712,6 @@ public final class Tools
         
         switch (dname)
         {
-            case 'B':
-                byte[] b = (byte[])rawData;
-
-                if (isTransposed)
-                {
-                    for (int i=0; i<h; i++)
-                    {
-                        for (int j=0; j<w; j++) {
-                            byteData[i*w+j] = b[j*h+i];
-                        }
-                    }
-                }
-                break;
-
             case 'S':
                 short[] s = (short[])rawData;
 
@@ -897,6 +885,58 @@ public final class Tools
 
         return byteData;
     }
+    
+    private static byte[] convertByteData(byte[] rawData, double[] minmax, int w, int h,
+            boolean isTransposed, Object fillValue, boolean convertByteData, 
+            byte[] byteData)
+    {
+        double min=Double.MAX_VALUE, max=-Double.MAX_VALUE, ratio=1.0d;
+
+        if (rawData == null)
+            return null;
+        
+        if (byteData == null)
+            byteData = rawData;
+        else
+            System.arraycopy(rawData, 0, byteData, 0, rawData.length);
+        
+        if (convertByteData) {
+            if (minmax[0] == minmax[1]) {
+                Tools.findMinMax(rawData,  minmax, fillValue);
+            }
+           
+            min = minmax[0]; 
+            max = minmax[1];
+            ratio = (min == max) ? 1.00d : (double)(255.00/(max-min)); 
+            if ( isTransposed) {
+                for (int i=0; i<h; i++)
+                {
+                    for (int j=0; j<w; j++) {
+                        byteData[i*w+j] = (byte)((rawData[j*h+i]-min)*ratio);
+                    }
+                }              
+            } else {
+                for (int i=0; i<rawData.length; i++)
+                {
+                    byteData[i] = (byte)((rawData[i]-min)*ratio);
+                }                
+            }
+        } else {
+            minmax[0] = 0;
+            minmax[1] = 255;          
+            if ( isTransposed) {
+                for (int i=0; i<h; i++)
+                {
+                    for (int j=0; j<w; j++) {
+                        byteData[i*w+j] = rawData[j*h+i];
+                    }
+                }              
+            }
+        }
+        
+        return byteData;
+    }
+    
     /** Create and initialize a new instance of the given class.
      * @param initargs - array of objects to be passed as arguments
      * @return a new instance of the given class.
@@ -1655,5 +1695,79 @@ public final class Tools
         
         return sb.toString();
     }
+    
+    /**
+     * Apply bitmask to a data array.
+     * 
+     * @param theData the data array which the bitmask is applied to.
+     * @param theMask the bitmask to be applied to the data array.
+     * @return true if bitmask is applied successfuly; otherwise, false.
+     */
+    public static final boolean applyBitmask(Object theData, BitSet theMask)
+    {
+        if (theData == null ||
+            Array.getLength(theData) <=0 ||
+            theMask == null)
+            return false;
+        
+        char nt = '0';
+        String cName = theData.getClass().getName();
+        int cIndex = cName.lastIndexOf("[");
+        if (cIndex >= 0 ) {
+            nt = cName.charAt(cIndex+1);
+        }
+        
+        // only deal with 8 or 16 bit data
+        if (!(nt == 'B' || nt == 'S'))
+            return false;
+        
+        int bmask=0, theValue=0, packedValue=0;
+        
+        int n = theMask.length();
+
+        for (int i=0; i<n; i++) {
+            if (theMask.get(i))
+                bmask += 1<<i;
+        }
+        
+        if (nt == 'B') {
+            byte[] bdata = (byte[])theData;
+            for (int i=0; i<bdata.length; i++) {
+                theValue = bdata[i] & bmask;
+                
+                // pack 1's bits
+                packedValue = 0;
+                for (int j=n-1; j>=0; j--) {
+                    if (theMask.get(j)) {
+                        if ((packedValue & 1) == 1)
+                            packedValue = packedValue << 1;
+                        packedValue += (theValue >> j) & 1;
+                    }
+                }
+
+                bdata[i] = (byte)packedValue; 
+            }            
+        } else {
+            short[] sdata = (short[])theData;
+            for (int i=0; i<sdata.length; i++) {
+                theValue = sdata[i] & bmask;
+                
+                // pack 1's bits
+                packedValue = 0;
+                for (int j=n-1; j>=0; j--) {
+                    if (theMask.get(j)) {
+                        if ((packedValue & 1) == 1)
+                            packedValue = packedValue << 1;
+                        packedValue += (theValue >> j) & 1;
+                    }
+                }
+
+                sdata[i] = (short)packedValue; 
+            }
+        }
+
+        
+        return true;
+    } /* public static final boolean applyBitmask() */
 
 }

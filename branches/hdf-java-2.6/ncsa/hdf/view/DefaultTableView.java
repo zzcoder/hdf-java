@@ -28,6 +28,7 @@ import java.util.*;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
+import java.math.BigInteger;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -101,8 +102,6 @@ implements TableView, ActionListener, MouseListener
     
     private boolean isRegRef, isObjRef;
     
-    private BitSet bitmask;
-
     private final JCheckBoxMenuItem checkFixedDataLength;
     private int fixedDataLength;
     private final JCheckBoxMenuItem checkScientificNotation, checkHex, checkBin; 
@@ -122,8 +121,8 @@ implements TableView, ActionListener, MouseListener
     
     private Object fillValue = null;
     
-    private Border border;
-
+    private BitSet bitmask;
+ 
      /**
      * Constructs an TableView.
      * <p>
@@ -159,7 +158,6 @@ implements TableView, ActionListener, MouseListener
         HObject hobject = null;
         popupMenu = null;
         bitmask = null;
-        border = null;
         
         checkFixedDataLength = new JCheckBoxMenuItem("Fixed Data Length", false);
         checkScientificNotation = new JCheckBoxMenuItem("Show Scientific Notation", false);
@@ -359,9 +357,6 @@ implements TableView, ActionListener, MouseListener
         // create popup menu for reg. ref.
         if (isRegRef || isObjRef)
             popupMenu = createPopupMenu();
-        
-        if (border!= null)
-            this.setBorder(border);
     }
 
     private JMenuBar createMenuBar() {
@@ -1323,13 +1318,22 @@ implements TableView, ActionListener, MouseListener
             d.setEnumConverted(ViewProperties.isConvertEnum());
             dataValue = d.getData();
             
-            if (applyBitmask(dataValue, bitmask) ) {
+            if (Tools.applyBitmask(dataValue, bitmask) ) {
                 isReadOnly = true;
+                Border border = BorderFactory.createCompoundBorder(
+                        BorderFactory.createRaisedBevelBorder(),
+                        BorderFactory.createTitledBorder(
+                                BorderFactory.createLineBorder(Color.BLUE, 3),
+                                "By bitmask "+bitmask, 
+                                TitledBorder.RIGHT, 
+                                TitledBorder.TOP,
+                                this.getFont(),
+                                Color.RED)); 
+                this.setBorder(border);
             }
-            else {
-                d.convertFromUnsignedC();
-                dataValue = d.getData();
-            }
+
+            d.convertFromUnsignedC();
+            dataValue = d.getData();
         }
         catch (Exception ex)
         {
@@ -1409,7 +1413,7 @@ implements TableView, ActionListener, MouseListener
             private final boolean isArray = (dtype.getDatatypeClass()==Datatype.CLASS_ARRAY);
             private final boolean isStr = (NT == 'L');
             private final boolean isInt = (NT == 'B' || NT == 'S' || NT == 'I' || NT == 'J');
-            private final boolean isFloat = (dtype.getDatatypeClass()==Datatype.CLASS_FLOAT);
+            private final boolean isUINT64 = (dtype.isUnsigned() && (NT == 'J'));
             private Object theValue;
             
             public int getColumnCount() {
@@ -1457,20 +1461,30 @@ implements TableView, ActionListener, MouseListener
                         theValue = Array.get(dataValue, row*colCount+column);
                     }
                     
-                    if (!isStr) {
-                        if (showAsHex && isInt) {
-                            // show in Hexadecimal
-                            theValue = Long.toHexString(Long.valueOf(theValue.toString()));
+                    if (isStr) 
+                        return theValue;
+                    
+                    if (isUINT64) {
+                        Long l = (Long)theValue;
+                        if ( l< 0) {
+                            l = (l << 1)>>1;
+                            BigInteger big1 = new BigInteger("9223372036854775808"); // 2^65
+                            BigInteger big2 = new BigInteger(l.toString()); 
+                            BigInteger big = big1.add(big2);
+                            theValue = big.toString();
                         }
-                        else if (showAsBin && isInt) {
-                            theValue = Tools.toBinaryString(Long.valueOf(theValue.toString()), typeSize);
-                            //theValue = Long.toBinaryString(Long.valueOf(theValue.toString()));
-                        }
-                        else if (numberFormat!=null){
-                            // show in scientific format
-                            theValue = numberFormat.format(theValue);
-                        }                         
-                    } //if (!isStr) {
+                    } else if (showAsHex && isInt) {
+                        // show in Hexadecimal
+                        theValue = Long.toHexString(Long.valueOf(theValue.toString()));
+                    }
+                    else if (showAsBin && isInt) {
+                        theValue = Tools.toBinaryString(Long.valueOf(theValue.toString()), typeSize);
+                        //theValue = Long.toBinaryString(Long.valueOf(theValue.toString()));
+                    }
+                    else if (numberFormat!=null){
+                        // show in scientific format
+                        theValue = numberFormat.format(theValue);
+                    } 
                 }
                 
                 return theValue;
@@ -1841,62 +1855,6 @@ implements TableView, ActionListener, MouseListener
         return theTable;
     } /* createTable */
     
-    private boolean applyBitmask(Object theData, BitSet theMask)
-    {
-        
-        if (theData == null ||
-            Array.getLength(theData) <=0 ||
-            theMask == null)
-            return false;
-        
-        char nt = '0';
-        String cName = theData.getClass().getName();
-        int cIndex = cName.lastIndexOf("[");
-        if (cIndex >= 0 ) {
-            nt = cName.charAt(cIndex+1);
-        }
-        
-        // only deal with 8 bit data
-        if (nt != 'B')
-            return false;
-        
-        byte[] bdata = (byte[])theData;
-        int bmask=0, theValue=0, packedValue=0;
-        
-        for (int i=0; i<8; i++) {
-            if (theMask.get(i))
-                bmask += 1<<i;
-        }
-        
-        for (int i=0; i<bdata.length; i++) {
-            theValue = bdata[i] & bmask;
-            
-            // pack 1's bits
-            packedValue = 0;
-            for (int j=7; j>=0; j--) {
-                if (bitmask.get(j)) {
-                    if ((packedValue & 1) == 1)
-                        packedValue = packedValue << 1;
-                    packedValue += (theValue >> j) & 1;
-                }
-            }
-
-            bdata[i] = (byte)packedValue; 
-        }
-        
-        border = BorderFactory.createCompoundBorder(
-                BorderFactory.createRaisedBevelBorder(),
-                BorderFactory.createTitledBorder(
-                        BorderFactory.createLineBorder(Color.BLUE, 3),
-                        "By bitmask "+theMask, 
-                        TitledBorder.RIGHT, 
-                        TitledBorder.TOP,
-                        this.getFont(),
-                        Color.RED));   
-        
-        return true;
-    }
-
     private void gotoPage(long idx)
     {
         if (dataset.getRank() < 3) {

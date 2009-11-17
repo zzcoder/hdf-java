@@ -55,6 +55,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener
     private String rootDir, workDir;
     private JCheckBox checkCurrentUserDir, checkAutoContrast, checkConvertEnum;
     private JButton currentDirButton;
+    private JRadioButton checkReadOnly;
 
     private int fontSize;
 
@@ -241,17 +242,35 @@ public class UserOptionsDialog extends JDialog implements ActionListener
         centerP.add(p0);
 
         p0 = new JPanel();
-        p0.setLayout(new BorderLayout());
-        p0.add(new JLabel("Extension: "), BorderLayout.WEST);
-        p0.add(fileExtField=new JTextField(ViewProperties.getFileExtension()), BorderLayout.CENTER);
+        p0.setLayout(new GridLayout(1,2,8,8));
+        
+        JPanel p00 = new JPanel();
+        p00.setLayout(new BorderLayout());
+        p00.add(new JLabel("Extension: "), BorderLayout.WEST);
+        p00.add(fileExtField=new JTextField(ViewProperties.getFileExtension()), BorderLayout.CENTER);
         tborder = new TitledBorder("File Extension");
         tborder.setTitleColor(Color.darkGray);
-        p0.setBorder(tborder);
+        p00.setBorder(tborder);
+
+        JPanel p01 = new JPanel();
+        p01.setLayout(new GridLayout(1,2,8,8));
+        p01.add(checkReadOnly = new JRadioButton("Read Only", ViewProperties.isReadOnly()));
+        JRadioButton rw = new JRadioButton("Read/Write", !ViewProperties.isReadOnly());
+        p01.add(rw);
+        ButtonGroup bgrp = new ButtonGroup() ;
+        bgrp.add(checkReadOnly);
+        bgrp.add(rw);
+        tborder = new TitledBorder("Default File Acess Mode");
+        tborder.setTitleColor(Color.darkGray);
+        p01.setBorder(tborder);
+        
+        p0.add(p01);
+        p0.add(p00);      
         centerP.add(p0);
 
         p0 = new JPanel();
         p0.setLayout(new GridLayout(1,2,8,8));
-        JPanel p00 = new JPanel();
+        p00 = new JPanel();
         p00.setLayout(new BorderLayout());
         p00.add(new JLabel("Font Size: "), BorderLayout.WEST);
         p00.add(fontSizeChoice, BorderLayout.CENTER);
@@ -791,6 +810,11 @@ public class UserOptionsDialog extends JDialog implements ActionListener
             ext = ext.trim();
             ViewProperties.setFileExtension(ext);
         }
+        
+        if (checkReadOnly.isSelected())
+            ViewProperties.setReadOnly(true);
+        else
+            ViewProperties.setReadOnly(false);
 
         // set font size
         int fsize = 12;

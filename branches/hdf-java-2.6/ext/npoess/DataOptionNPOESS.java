@@ -80,7 +80,7 @@ implements ActionListener, ItemListener
     private JCheckBox charCheckbox, bitmaskCheckbox;
     
     private BitSet bitmask;
-    private JRadioButton[] bitmaskButtons = new JRadioButton[8];
+    private JRadioButton[] bitmaskButtons;
     private JButton bitmaskHelp;
 
     private JComboBox choiceTextView, choiceTableView, choiceImageView, choicePalette, choices[];
@@ -206,14 +206,6 @@ implements ActionListener, ItemListener
         bitmaskCheckbox.setEnabled(false);
         bitmaskCheckbox.addItemListener(this);
         
-        for (int i=0; i<bitmaskButtons.length; i++) {
-            bitmaskButtons[i] = new JRadioButton(String.valueOf(i));
-            bitmaskButtons[i].setEnabled(false);
-        }
-        
-//        bitmaskField = new JTextField("");
-//        bitmaskField.setVisible(false);
-        
         bitmaskHelp = new JButton(ViewProperties.getHelpIcon() );
         bitmaskHelp.setToolTipText( "Help on how to set bitmask" );
         bitmaskHelp.setMargin( new Insets(0, 0, 0, 0) );
@@ -299,34 +291,14 @@ implements ActionListener, ItemListener
                 selectViewP.setLayout(new GridLayout(2, 1, 5, 5));
                 selectViewP.setBorder(new TitledBorder("Display As"));
 
-                JPanel sheetP = new JPanel();
-                sheetP.setLayout(new BorderLayout(25,5));
-                
                 JPanel sheetP1 = new JPanel();
                 sheetP1.setLayout(new GridLayout(1, 2, 25, 5));
-                
-                JPanel sheetP2 = new JPanel();
-                
-                sheetP.add(sheetP1, BorderLayout.WEST);
-                sheetP.add(sheetP2, BorderLayout.CENTER);
-                
                 sheetP1.add(spreadsheetButton);
                 
                 int tclass = sd.getDatatype().getDatatypeClass();
                 if ( tclass==Datatype.CLASS_CHAR || 
                      (tclass== Datatype.CLASS_INTEGER && sd.getDatatype().getDatatypeSize() ==1 ) ) {
-                    
                     sheetP1.add(charCheckbox);
-                    
-                    JPanel tmpP = new JPanel();
-                    tmpP.setLayout(new GridLayout(1, bitmaskButtons.length));                    
-                    for (int i=bitmaskButtons.length-1; i>=0; i--)
-                        tmpP.add(bitmaskButtons[i]);
-
-                    sheetP2.setLayout(new BorderLayout());
-                    sheetP2.add(bitmaskCheckbox,BorderLayout.WEST);
-                    sheetP2.add(tmpP, BorderLayout.CENTER);
-                    sheetP2.add(bitmaskHelp, BorderLayout.EAST);
                 }
 
                 // add tableview selection
@@ -338,7 +310,7 @@ implements ActionListener, ItemListener
                 JPanel selectTableP = new JPanel();
                 selectTableP.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
                 selectTableP.setLayout(new GridLayout(2,1, 5, 5));
-                selectTableP.add(sheetP);
+                selectTableP.add(sheetP1);
                 selectTableP.add(tviewP);
 
                 selectViewP.add(selectTableP);
@@ -363,9 +335,39 @@ implements ActionListener, ItemListener
                 selectViewP.add(selectImageP);
                 
                 JPanel northP = new JPanel();
-                northP.setLayout(new BorderLayout(5,5));
-                northP.add(selectViewP, BorderLayout.CENTER);
-                
+                northP.setLayout(new GridLayout(1,2, 5, 5));
+                northP.add(selectViewP);
+                if ( tclass==Datatype.CLASS_CHAR || 
+                    (tclass== Datatype.CLASS_INTEGER && 
+                     sd.getDatatype().getDatatypeSize() <=2 ) ) 
+                {
+                    bitmaskButtons = new JRadioButton[8*sd.getDatatype().getDatatypeSize()];
+                    for (int i=0; i<bitmaskButtons.length; i++) {
+                        bitmaskButtons[i] = new JRadioButton(String.valueOf(i));
+                        bitmaskButtons[i].setEnabled(false);
+                    }
+                    
+                    JPanel sheetP2 = new JPanel();
+                    northP.add(sheetP2);
+                    sheetP2.setBorder(new TitledBorder("Set Bitmask"));
+
+                    JPanel tmpP = new JPanel();
+                    tmpP.setLayout(new GridLayout(2, bitmaskButtons.length/2));                    
+                    for (int i=bitmaskButtons.length/2-1; i>=0; i--)
+                        tmpP.add(bitmaskButtons[i]);
+                    
+                    for (int i=bitmaskButtons.length-1; i>=bitmaskButtons.length/2; i--)
+                        tmpP.add(bitmaskButtons[i]);
+                    
+                    sheetP2.setLayout(new BorderLayout(10, 10));
+                    sheetP2.add(tmpP, BorderLayout.CENTER);
+                    
+                    tmpP = new JPanel(); 
+                    tmpP.setLayout(new BorderLayout());
+                    tmpP.add(bitmaskCheckbox, BorderLayout.WEST);
+                    tmpP.add(bitmaskHelp, BorderLayout.EAST);
+                    sheetP2.add(tmpP, BorderLayout.NORTH);
+                }
                 contentPane.add(northP, BorderLayout.NORTH);
             }
         }
@@ -493,7 +495,7 @@ implements ActionListener, ItemListener
             if (isSelectionCancelled) {
                 return;
             }
-            
+
             if (dataset instanceof ScalarDS) {
                 ((ScalarDS)dataset).setIsImageDisplay(imageButton.isSelected());
             }
@@ -624,13 +626,13 @@ implements ActionListener, ItemListener
 
             // reset show char button
             Datatype dtype = dataset.getDatatype();
-            if (spreadsheetButton.isSelected() &&
-                    ( (dtype.getDatatypeSize()==1) ||
-                            (dtype.getDatatypeClass() == Datatype.CLASS_ARRAY &&
-                                    dtype.getBasetype().getDatatypeClass()==Datatype.CLASS_CHAR) ) )
+            int tclass = dtype.getDatatypeClass();
+            if (tclass==Datatype.CLASS_CHAR || 
+                 tclass== Datatype.CLASS_INTEGER)
             {
-                charCheckbox.setEnabled(true);
-                bitmaskCheckbox.setEnabled(true);
+                int tsize = dtype.getDatatypeSize();
+                charCheckbox.setEnabled(spreadsheetButton.isSelected() &&(tsize==1));
+                bitmaskCheckbox.setEnabled((tsize<=2));
             }
             else
             {
@@ -853,13 +855,13 @@ implements ActionListener, ItemListener
 
         // reset show char button
         Datatype dtype = dataset.getDatatype();
-        if (spreadsheetButton.isSelected() &&
-            ( (dtype.getDatatypeSize()==1) ||
-              (dtype.getDatatypeClass() == Datatype.CLASS_ARRAY &&
-               dtype.getBasetype().getDatatypeClass()==Datatype.CLASS_CHAR) ) )
+        int tclass = dtype.getDatatypeClass();
+        if (tclass==Datatype.CLASS_CHAR || 
+            tclass== Datatype.CLASS_INTEGER)
         {
-            charCheckbox.setEnabled(true);
-            bitmaskCheckbox.setEnabled(true);
+            int tsize = dtype.getDatatypeSize();
+            charCheckbox.setEnabled((tsize==1) && spreadsheetButton.isSelected());
+            bitmaskCheckbox.setEnabled((tsize<=2));
         }
         else
         {
@@ -1031,7 +1033,9 @@ implements ActionListener, ItemListener
     
     private boolean setBitmask() 
     {
-        if (!bitmaskCheckbox.isVisible() || !bitmaskCheckbox.isSelected()) {
+        if (!bitmaskCheckbox.isVisible() || 
+            !bitmaskCheckbox.isSelected() ||
+            bitmaskButtons == null) {
             bitmask = null;
             return true;
         }

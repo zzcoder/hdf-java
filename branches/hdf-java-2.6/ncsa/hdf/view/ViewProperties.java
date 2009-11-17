@@ -63,7 +63,7 @@ public class ViewProperties extends Properties
     /**
      * Property keys how how the data is displayed.
      */
-    public static enum DATA_VIEW_KEY {CHAR, TRANSPOSED, READONLY, OBJECT, BITMASK, BORDER,  INFO};
+    public static enum DATA_VIEW_KEY {CHAR, CONVERTBYTE, TRANSPOSED, READONLY, OBJECT, BITMASK, BORDER, INFO};
 
     /** user's guide */
     private static String usersGuide = System.getProperty("user.dir")+"/UsersGuide/index.html";
@@ -98,9 +98,15 @@ public class ViewProperties extends Properties
     private static Vector srbAccountList=new Vector(5);
     
     /** flag to indicate if auto contrast is used in image process. 
-     * Use autocontrast by default.
+     * Do not use autocontrast by default (2.6 change).
      */
-    private static boolean isAutoContrast = true;
+    private static boolean isAutoContrast = false;
+    
+    /**
+     * flag to indicate if default open file is read only.
+     * By default, use read/write.
+     */
+    private static boolean isReadOnly = false;
     
     /** a list of palette files */
     private static Vector paletteList = new Vector(5);
@@ -787,6 +793,11 @@ public class ViewProperties extends Properties
             isAutoContrast = ("auto".equalsIgnoreCase(str));
         }
         
+        str = (String)get("file.mode");
+        if (str != null) {
+            isReadOnly = ("r".equalsIgnoreCase(str));
+        }        
+        
         str = (String)get("enum.conversion");
         if (str != null) {
             convertEnum = ("true".equalsIgnoreCase(str));
@@ -975,6 +986,12 @@ public class ViewProperties extends Properties
             put("image.contrast", "general");
         }
 
+        if (isReadOnly) {
+            put("file.mode", "r");
+        } else {
+            put("file.mode", "rw");
+        }
+        
         put("enum.conversion", String.valueOf(convertEnum));
         
         // save the list of most recent files
@@ -1226,13 +1243,28 @@ public class ViewProperties extends Properties
      * @return true if auto contrast is used in image process; otherwise, returns false.
      */
     public static boolean isAutoContrast() { return isAutoContrast; }
-
+    
     /**
      * Set the flag to indicate if auto contrast is used in image process.
      * 
      * @param b the flag to indicate if auto contrast is used in image process.
      */
     public static void setAutoContrast(boolean b) { isAutoContrast = b; }
+    
+    /**
+     * Returns true if default file access is read only.
+     * 
+     * @return true if default file access is read only; otherwise, returns false.
+     */
+    public static boolean isReadOnly() { return isReadOnly; }    
+
+    /**
+     * Set the flag to indicate if default file access is read only.
+     * 
+     * @param b the flag to indicate if default file access is read only.
+     */
+    public static void setReadOnly(boolean b) { isReadOnly = b; }
+    
 
     /**
      * @return the convertEnum

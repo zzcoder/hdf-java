@@ -187,9 +187,12 @@ implements ImageView, ActionListener
     private double[] gainBias;
     private double[] minMaxGain;
     private double[] minMaxBias;
-    
+
     /** int array to hold unsigned short or signed int data from applying the autogain */
     private Object autoGainData;
+
+    private BitSet bitmask;
+    private boolean convertByteData = false;
 
     /**
      * Constructs an ImageView.
@@ -237,11 +240,18 @@ implements ImageView, ActionListener
         minMaxBias = null;
         autoGainData = null;
         generalContrastSlider = null;
+        bitmask = null;
 
         HObject hobject = null;
-        if (map != null) 
+        if (map != null) {
             hobject = (HObject)map.get(ViewProperties.DATA_VIEW_KEY.OBJECT);
-        else 
+            bitmask = (BitSet)map.get(ViewProperties.DATA_VIEW_KEY.BITMASK);
+            Boolean b = (Boolean) map.get(ViewProperties.DATA_VIEW_KEY.CONVERTBYTE);
+            if (b != null)
+                convertByteData = b.booleanValue();            
+        }
+
+        if (hobject == null)
             hobject = (HObject)theView.getTreeView().getCurrentObject();
         
         if ((hobject == null) || !(hobject instanceof ScalarDS)) {
@@ -255,7 +265,8 @@ implements ImageView, ActionListener
         {
             dataRange = new double[2];
             dataRange[0] = dataRange[1] = 0;
-            if (dataset.getDatatype().getDatatypeSize() == 1 ) {
+            if (dataset.getDatatype().getDatatypeSize() == 1 &&
+                    !convertByteData) {
                 dataRange[1] = 255; // byte image data rang = [0, 255]           
             }
         }
@@ -824,6 +835,22 @@ implements ImageView, ActionListener
         }
 
         data = dataset.getData();
+        if (bitmask != null ) {
+            if (Tools.applyBitmask(data, bitmask) ) {
+                Border border = BorderFactory.createCompoundBorder(
+                        BorderFactory.createRaisedBevelBorder(),
+                        BorderFactory.createTitledBorder(
+                                BorderFactory.createLineBorder(Color.BLUE, 3),
+                                "By bitmask "+bitmask, 
+                                TitledBorder.RIGHT, 
+                                TitledBorder.TOP,
+                                this.getFont(),
+                                Color.RED));  
+                doAutoContrast = false;
+                this.setBorder(border);
+            }
+        } 
+        
         if (dataset.getDatatype().getDatatypeClass() == Datatype.CLASS_INTEGER) {
             data =  dataset.convertFromUnsignedC();
             isUnsignedConverted = true;
@@ -840,12 +867,9 @@ implements ImageView, ActionListener
         int h = dataset.getHeight();
  
         if (isAutoContrastFailed) {
-            // converts raw data to image data
-            if (dataset.isDefaultImageOrder()) {
-               imageByteData = Tools.getBytes(data, dataRange, dataset.getFillValue(), imageByteData);
-            } else {
-                imageByteData = Tools.getBytes(data, dataRange, w, h, true, dataset.getFillValue(), imageByteData);
-            }
+            imageByteData = Tools.getBytes(data, dataRange, w, h, 
+                    !dataset.isDefaultImageOrder(), dataset.getFillValue(), 
+                    convertByteData, imageByteData);
         }
 
         image = createIndexedImage(imageByteData, imagePalette, w, h);
