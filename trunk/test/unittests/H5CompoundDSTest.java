@@ -101,7 +101,7 @@ public class H5CompoundDSTest extends TestCase {
         testFile.open();
         
         testDataset = (H5CompoundDS)testFile.get(DNAME);
-        assertNotNull(testDataset);
+        assertNotNull("setUp testFile.get",testDataset);
     }
 
     /* (non-Javadoc)

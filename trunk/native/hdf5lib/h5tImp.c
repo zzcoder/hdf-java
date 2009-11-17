@@ -443,6 +443,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1fields
     }
     if (ENVPTR->GetArrayLength(ENVPAR fields) < 5) {
         h5badArgument( env, "H5Tget_fields:  fields input array < order 5");
+        return -1;
     }
     P = ENVPTR->GetIntArrayElements(ENVPAR fields,&isCopy);
     if (P == NULL) {
@@ -923,6 +924,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tenum_1nameof
     if (status < 0) {
         free(nameP);
         h5libraryError(env);
+        return -1;
     }
     else {
         str = ENVPTR->NewStringUTF(ENVPAR nameP);

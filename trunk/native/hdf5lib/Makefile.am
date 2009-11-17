@@ -29,7 +29,7 @@ libjhdf5_a_LDFLAGS= -version-info $(LT_VERS_INTERFACE):$(LT_VERS_REVISION):$(LT_
 
 # library sources
 libjhdf5_a_SOURCES= exceptionImp.c h5Constants.c h5Imp.c h5aImp.c h5dImp.c h5eImp.c \
-                    h5fImp.c h5gImp.c h5iImp.c h5pImp.c h5rImp.c h5sImp.c \
+                    h5fImp.c h5gImp.c h5iImp.c h5lImp.c h5pImp.c h5rImp.c h5sImp.c \
                     h5tImp.c nativeData.c h5util.c h5zImp.c
 
 # Public headers

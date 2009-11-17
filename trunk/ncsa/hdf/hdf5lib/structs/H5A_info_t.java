@@ -14,8 +14,8 @@
 package ncsa.hdf.hdf5lib.structs;
 
 public class H5A_info_t {
-  public int          corder_valid;   // Indicate if creation order is valid
-  public int          corder;         // Creation order
-  public int          cset;           // Character set of attribute name
-  public long         data_size;      // Size of raw data
+    public int corder_valid; // Indicate if creation order is valid
+    public int corder; // Creation order
+    public int cset; // Character set of attribute name
+    public long data_size; // Size of raw data
 }
