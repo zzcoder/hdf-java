@@ -30,7 +30,7 @@ extern "C" {
 #include <jni.h>
 #include "hdf5.h"
 #include "h5jni.h"
-#include "H5eImp.h"
+#include "h5eImp.h"
 
     /*
      * Class:     hdf_h5_H5E
