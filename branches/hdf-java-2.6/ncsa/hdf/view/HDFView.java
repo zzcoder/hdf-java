@@ -61,28 +61,9 @@ import java.awt.Font;
  */
 
 public class HDFView extends JFrame implements ViewManager, ActionListener, 
-HyperlinkListener, ChangeListener, DropTargetListener
+ChangeListener, DropTargetListener
 {
   public static final long serialVersionUID = HObject.serialVersionUID;
-
-    /** tag for TreeView*/
-    public static final int MODULE_TREEVIEW = 100;
-
-    /** tag for imageView*/
-    public static final int MODULE_IMAGEVIEW = 101;
-
-    /** tag for tableView*/
-    public static final int MODULE_TABLEVIEW = 102;
-
-    /** tag for textView*/
-    public static final int MODULE_TEXTVIEW = 103;
-
-    /** tag for MetadataView*/
-    public static final int MODULE_METADATAVIEW = 104;
-
-    /** tag for paletteView*/
-    public static final int MODULE_PALETTEVIEW = 105;
-
     /** a list of tree view implementation. */
     private static List treeViews;
 
@@ -107,10 +88,10 @@ HyperlinkListener, ChangeListener, DropTargetListener
     private static final String aboutHDFView =
         "HDF Viewer, "+ "Version "+ViewProperties.VERSION+"\n"+
         "For "+System.getProperty("os.name")+"\n\n"+
-        "Copyright "+'\u00a9'+" 2006-2008 The HDF Group.\n"+
+        "Copyright "+'\u00a9'+" 2006-2009 The HDF Group.\n"+
         "All rights reserved.";
 
-    private static final String JAVA_COMPILER = System.getProperty("java.vm.version");
+    private static final String JAVA_COMPILER = "jdk 1.6.0";
 
     /** the directory where the HDFView is installed */
     private String rootDir;
@@ -154,12 +135,6 @@ HyperlinkListener, ChangeListener, DropTargetListener
     /** GUI component: file menu on the menubar */
     private final JMenu fileMenu;
 
-    /** GUI component: window to show the Users' Guide */
-    private final JFrame usersGuideWindow;
-
-    /** GUI component: editorPane to show the Users' Guide */
-    private final JEditorPane usersGuideEditorPane;
-
     /** the string buffer holding the status message */
     private final StringBuffer message;
 
@@ -176,21 +151,6 @@ HyperlinkListener, ChangeListener, DropTargetListener
 
     /** The list of GUI components related to HDF4 */
     private final List h4GUIs;
-
-    /** The URL of the User's Guide. */
-    private URL usersGuideURL;
-
-    /** The previous URL of the User's Guide. */
-    private URL previousUsersGuideURL;
-
-    /** the text field to display the current ug link */
-    private JTextField ugField;
-
-    /** The previously visited URLs for back action. */
-    private Stack visitedUsersGuideURLs;
-
-    /** The back button for users guide. */
-    private JButton usersGuideBackButton;
 
     /** to add and display url */
     private JComboBox urlBar;
@@ -265,10 +225,6 @@ HyperlinkListener, ChangeListener, DropTargetListener
         // create tab pane to display attributes and status information
         infoTabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
         infoTabbedPane.addChangeListener(this);
-
-        // setup the Users guide window
-        usersGuideWindow = new JFrame("HDFView User's Guide");
-        usersGuideEditorPane = new JEditorPane();
 
         contentPane = new JDesktopPane();
         windowMenu = new JMenu( "Window" );
@@ -474,8 +430,6 @@ HyperlinkListener, ChangeListener, DropTargetListener
         mainPane.add(toolPane, BorderLayout.NORTH);
         mainPane.add(splitPane, BorderLayout.CENTER);
         mainPane.setPreferredSize(d);
-
-        createUsersGuidePane();
     }
 
     private JMenuBar createMenuBar()
@@ -760,107 +714,6 @@ HyperlinkListener, ChangeListener, DropTargetListener
         }
 
         return tbar;
-    }
-
-    /**
-     * Create GUI components to show the users guide.
-     */
-    private void createUsersGuidePane()
-    {
-        String ugPath = ViewProperties.getUsersGuide();
-
-        try {
-            usersGuideURL = new URL(ugPath);
-            usersGuideEditorPane.setPage(usersGuideURL);
-        } catch (Exception e) {
-            usersGuideURL = null;
-            showStatus(e.toString());
-        }
-
-        if (usersGuideURL == null)
-        {
-            String fileSeparator = System.getProperty("file.separator");
-            try {
-                ugPath = "file:"  + rootDir
-                + fileSeparator  + "UsersGuide" + fileSeparator + "index.html";
-                ViewProperties.setUsersGuide(ugPath);
-                usersGuideURL = new URL(ugPath);
-                /* ...  use the URL to initialize the editor pane  ... */
-            } catch (Exception e) {
-                usersGuideURL = null;
-                showStatus(e.toString());
-            }
-        }
-
-        if (usersGuideURL == null) {
-            return;
-        } else {
-            showStatus(usersGuideURL.toString());
-        }
-
-        previousUsersGuideURL = usersGuideURL;
-        visitedUsersGuideURLs = new Stack();
-
-        // set up the usersGuide window
-        usersGuideWindow.setLocation(20, 20);
-        usersGuideWindow.setSize(800, 850);
-        ((JPanel)usersGuideWindow.getContentPane()).setPreferredSize(new Dimension(500, 600));
-
-        try {
-            Image helpImage = ((ImageIcon)ViewProperties.getHelpIcon()).getImage();
-            usersGuideWindow.setIconImage(helpImage);
-        }
-        catch (Exception ex ) {}
-
-        JToolBar tbar = new JToolBar();
-
-        // home button
-        JButton button = new JButton( ViewProperties.getFirstIcon() );
-        tbar.add( button );
-        button.setToolTipText( "Home" );
-        button.setMargin( new Insets( 0, 0, 0, 0 ) );
-        button.addActionListener( this );
-        button.setActionCommand( "Users guide home" );
-
-        // back button
-        button = new JButton( ViewProperties.getPreviousIcon() );
-        tbar.add( button );
-        button.setToolTipText( "Back" );
-        button.setMargin( new Insets( 0, 0, 0, 0 ) );
-        button.addActionListener( this );
-        button.setActionCommand( "Users guide back" );
-        button.setEnabled(false);
-        usersGuideBackButton = button;
-
-        button = new JButton( "Close" );
-        tbar.addSeparator();
-        tbar.addSeparator();
-        tbar.add( button );
-        button.setMargin( new Insets( 0, 0, 0, 0 ) );
-        button.addActionListener( this );
-        button.setActionCommand( "Close users guide" );
-
-        usersGuideEditorPane.setEditable(false);
-        try {
-            usersGuideEditorPane.setPage(usersGuideURL);
-        } catch (IOException e) {
-            showStatus(e.toString());
-        }
-        usersGuideEditorPane.addHyperlinkListener(this);
-
-        JScrollPane editorScrollPane = new JScrollPane(usersGuideEditorPane);
-        JPanel contentPane = (JPanel)usersGuideWindow.getContentPane();
-        contentPane.setLayout(new BorderLayout());
-        JPanel northP = new JPanel();
-        northP.setLayout(new GridLayout(2,1));
-        northP.add(tbar);
-        northP.add(ugField = new JTextField());
-        ugField.setEditable(false);
-        if (usersGuideURL != null) {
-            ugField.setText(usersGuideURL.toString());
-        }
-        contentPane.add (northP, BorderLayout.NORTH);
-        contentPane.add (editorScrollPane, BorderLayout.CENTER);
     }
 
     /** Bring the window to the front.
@@ -1313,27 +1166,7 @@ HyperlinkListener, ChangeListener, DropTargetListener
             {
                 currentDir = ViewProperties.getWorkDir();
             }
-
-            if (userOptionDialog.isUserGuideChanged())
-            {
-                //update the UG path
-                String ugPath = ViewProperties.getUsersGuide();
-                try {
-                    usersGuideURL = new URL(ugPath);
-                } catch (Exception e2) {
-                    showStatus(e2.toString());
-                    return;
-                }
-
-                visitedUsersGuideURLs.clear();
-                try {
-                    usersGuideEditorPane.setPage(usersGuideURL);
-                    ugField.setText(ugPath);
-                } catch (IOException e2) {
-                    showStatus(e2.toString());
-                }
-            }
-
+            
             if (userOptionDialog.isFontChanged()) {
               Font font = null;
               try { 
@@ -1452,41 +1285,29 @@ HyperlinkListener, ChangeListener, DropTargetListener
         }
         else if (cmd.equals("Users guide"))
         {
-            if (usersGuideURL != null) {
-                usersGuideWindow.setVisible(true);
-            }
-        }
-        else if (cmd.equals("Close users guide"))
-        {
-            if (usersGuideURL != null) {
-                usersGuideWindow.setVisible(false);
-            }
-        }
-        else if (cmd.equals("Users guide home"))
-        {
-            HyperlinkEvent linkEvent = new HyperlinkEvent(
-                usersGuideEditorPane,
-                HyperlinkEvent.EventType.ACTIVATED,
-                usersGuideURL);
+            String ugPath = ViewProperties.getUsersGuide();
 
-            hyperlinkUpdate(linkEvent);
-        }
-        else if (cmd.equals("Users guide back"))
-        {
-            HyperlinkEvent linkEvent = new HyperlinkEvent(
-                usersGuideEditorPane,
-                HyperlinkEvent.EventType.ACTIVATED,
-                (URL)visitedUsersGuideURLs.pop());
-
-            hyperlinkUpdate(linkEvent);
-
-            // hyperlinkUpdate will push the popped link back into the stack
-            visitedUsersGuideURLs.pop();
-
-            if (visitedUsersGuideURLs.empty())
+            // URL is invalid, use default path.
+            if (ugPath == null || !ugPath.startsWith("http://"))
             {
-                usersGuideBackButton.setEnabled(false);
+                String sep = File.separator;
+                File tmpFile = new File(ugPath);
+                if (!(tmpFile.exists())){
+                    ugPath = rootDir+sep+"UsersGuide"+sep+"index.html";
+                    ViewProperties.setUsersGuide(ugPath);
+                }
             }
+
+            try {
+                Tools.launchBrowser(ugPath);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        ex.getMessage(),
+                        "HDFView",
+                        JOptionPane.ERROR_MESSAGE,
+                        ViewProperties.getLargeHdfIcon());
+            }                
         }
         else if (cmd.equals("HDF4 library"))
         {
@@ -1575,37 +1396,6 @@ HyperlinkListener, ChangeListener, DropTargetListener
                     break;
                 }
             } // for (int i=0; i<n; i++)
-        }
-    }
-
-    public void hyperlinkUpdate(HyperlinkEvent e) {
-        if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-            JEditorPane pane = (JEditorPane) e.getSource();
-
-            try {
-                URL currentURL = e.getURL();
-                String htmlDoc = currentURL.getFile();
-                htmlDoc = htmlDoc.toLowerCase();
-
-                // only support html files
-                if ((htmlDoc.length()<=1) ||
-                    !(htmlDoc.endsWith("html") ||
-                    htmlDoc.endsWith("htm"))) {
-                    return;
-                }
-
-                pane.setPage(currentURL);
-                if(visitedUsersGuideURLs.isEmpty()) {
-                    usersGuideBackButton.setEnabled(true);
-                }
-                visitedUsersGuideURLs.push(previousUsersGuideURL);
-                previousUsersGuideURL = currentURL;
-                ugField.setText(currentURL.toString());
-            } catch (Throwable t) {
-                try {pane.setPage(previousUsersGuideURL);}
-                catch (Throwable t2) {}
-                showStatus(t.toString());
-            }
         }
     }
 

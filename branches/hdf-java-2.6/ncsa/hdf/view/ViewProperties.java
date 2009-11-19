@@ -37,13 +37,13 @@ public class ViewProperties extends Properties
 	public static final long serialVersionUID = HObject.serialVersionUID;
 
     /** the version of the HDFViewer */
-    public static final String VERSION = "2.5";
+    public static final String VERSION = "2.6b1";
+
+    /** the local property file name */
+    private static final String USER_PROPERTY_FILE = ".hdfview"+VERSION.substring(0, 3);
 
     /** the maximum number of most recent files */
     public static final int MAX_RECENT_FILES = 15;
-
-    /** the local property file name */
-    private static final String USER_PROPERTY_FILE = ".hdfview"+VERSION;
 
     /** name of the tab delimiter */
     public static final String DELIMITER_TAB = "Tab";
@@ -772,20 +772,8 @@ public class ViewProperties extends Properties
         }
 
         String str = (String)get("users.guide");
-        if (str != null)
-        {
-            String tmpUG = str.toLowerCase();
-            if (tmpUG.startsWith("file:") || tmpUG.startsWith("http:")) {
-                usersGuide = str;
-            } else
-            {
-                File tmpFile = new File(str);
-                if (tmpFile.exists()) {
-                    usersGuide = "file:"+str;
-                } else {
-                    usersGuide = "http://"+str;
-                }
-            }
+        if (str != null) {
+            usersGuide = str;
         }
         
         str = (String)get("image.contrast");
@@ -1167,19 +1155,7 @@ public class ViewProperties extends Properties
         if ((str == null) || (str.length()<=0)) {
             return;
         }
-
-        String tmpUG = str.toLowerCase();
-        if (tmpUG.startsWith("file:") || tmpUG.startsWith("http:")) {
-            usersGuide = str;
-        } else
-        {
-            File tmpFile = new File(str);
-            if (tmpFile.exists()) {
-                usersGuide = "file:"+str;
-            } else {
-                usersGuide = "http://"+str;
-            }
-        }
+        usersGuide = str;
     }
 
     /** set the path of the H5to H5 converter */
