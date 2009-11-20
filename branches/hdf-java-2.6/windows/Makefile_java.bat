@@ -6,14 +6,13 @@
 @REM
 @REM =======================================================================
 
-@REM set up your java home directory(requires jdk1.4.1 or above), for example
-@REM SET JAVAHOME=d:\java\jdk1.4.1
+@REM set up your java home directory(requires jdk1.5 or above), for example
+@REM SET JAVAHOME=D:\Java\jdk1.6.0_16
 SET JAVAHOME=
 
 @REM set up "HDF JAVA Product" home directory, for example
-@REM SET HDFJAVA=D:\work\hdf-java
+@REM SET HDFJAVA=G:\Projects\Java\hdf-java-2.6
 SET HDFJAVA=
-
 
 @REM Do not make changes under this line unless you know what you are doing.
 @REM =======================================================================
@@ -54,9 +53,6 @@ mkdir %HDFJAVA%\classes\
 SET CLASSPATH=%HDFJAVA%;%HDFJAVA%\classes;%HDFJAVA%\lib\netcdf.jar;%HDFJAVA%\lib\fits.jar
 
 @ECHO compiling "ncsa\hdf\hdflib", please wait ....
-javac -d %HDFJAVA%\classes %HDFJAVA%\glguerin\io\*.java
-javac -d %HDFJAVA%\classes %HDFJAVA%\glguerin\mac\io\*.java
-javac -d %HDFJAVA%\classes %HDFJAVA%\glguerin\util\*.java
 javac -d %HDFJAVA%\classes %HDFJAVA%\ncsa\hdf\hdflib\*.java
 
 @ECHO compiling "ncsa\hdf\hdf5lib", please wait ....
@@ -94,7 +90,7 @@ del %HDFJAVA%\lib\ext\fitsobj.jar/Q
 del %HDFJAVA%\lib\jhdfview.jar/Q
 
 cd %HDFJAVA%\classes
-jar -cf jhdf.jar ncsa\hdf\hdflib glguerin
+jar -cf jhdf.jar ncsa\hdf\hdflib 
 jar -cf jhdf5.jar ncsa\hdf\hdf5lib
 jar -cf jhdfobj.jar ncsa\hdf\object\*.class
 jar -cf jhdf4obj.jar ncsa\hdf\object\h4\*.class
