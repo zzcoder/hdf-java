@@ -29,6 +29,8 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.*;
 import java.io.*;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.*;
 
 import javax.swing.event.*;

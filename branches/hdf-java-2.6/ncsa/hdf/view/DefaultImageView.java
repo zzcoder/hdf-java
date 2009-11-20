@@ -23,6 +23,7 @@ import javax.swing.event.*;
 import java.awt.image.*;
 import java.io.*;
 import java.lang.reflect.Array;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
@@ -437,13 +438,14 @@ implements ImageView, ActionListener
         item.setActionCommand("Set data range");
         menu.add(item);
         // no need for byte data
-        try {
-            String cname = data.getClass().getName();
-            char dname = cname.charAt(cname.lastIndexOf("[")+1);
-            if (dname == 'B') {
-                item.setEnabled(false);
-            }
-        } catch (Exception ex) {}
+        // commented out for 2.6. May also need to apply range filter to byte data.
+//        try {
+//            String cname = data.getClass().getName();
+//            char dname = cname.charAt(cname.lastIndexOf("[")+1);
+//            if (dname == 'B') {
+//                item.setEnabled(false);
+//            }
+//        } catch (Exception ex) {}
 
        menu.addSeparator();
 
@@ -1882,9 +1884,15 @@ implements ImageView, ActionListener
     private void changeDataRange(double[] newRange)
     {
        try {
-            imageByteData = Tools.getBytes(data, newRange, dataset.getFillValue(), imageByteData);
-            int w = dataset.getWidth();
-            int h = dataset.getHeight();
+           int w = dataset.getWidth();
+           int h = dataset.getHeight();
+           
+            //imageByteData = Tools.getBytes(data, newRange, dataset.getFillValue(), imageByteData);
+            
+            imageByteData = Tools.getBytes(data, newRange, w, h, 
+                    !dataset.isDefaultImageOrder(), dataset.getFillValue(), 
+                    true, imageByteData);
+
             image = createIndexedImage(imageByteData, imagePalette, w, h);
             imageComponent.setImage(image);
             zoomTo(zoomFactor);
@@ -3193,7 +3201,7 @@ implements ImageView, ActionListener
 
             int tickSpace = (iMax-iMin)/10;
 
-            java.text.NumberFormat numberFormat = java.text.NumberFormat.getNumberInstance();
+            DecimalFormat numberFormat = new DecimalFormat("##0.#####E0");
             NumberFormatter formatter = new NumberFormatter(numberFormat);
             formatter.setMinimum(new Double(minmax[0]));
             formatter.setMaximum(new Double(minmax[1]));
@@ -3261,6 +3269,11 @@ implements ImageView, ActionListener
             confirmP.add(button);
             contentPane.add(confirmP, BorderLayout.SOUTH);
             contentPane.add(new JLabel(" "), BorderLayout.NORTH);
+            
+            if ((iMax-iMin) < 2) {
+                minSlider.setEnabled(false);
+                maxSlider.setEnabled(false);
+            }
 
             Point l = getParent().getLocation();
             Dimension d = getParent().getPreferredSize();
@@ -3299,6 +3312,7 @@ implements ImageView, ActionListener
         /** Listen to the slider. */
         public void stateChanged(ChangeEvent e)
         {
+            
             Object source = e.getSource();
 
             if (!(source instanceof JSlider)) {
@@ -3306,6 +3320,9 @@ implements ImageView, ActionListener
             }
 
             JSlider slider = (JSlider)source;
+            if (!slider.isEnabled())
+                return;
+            
             int value = slider.getValue();
             if (slider.equals(minSlider))
             {
@@ -3337,6 +3354,7 @@ implements ImageView, ActionListener
         public void propertyChange(PropertyChangeEvent e)
         {
             Object source = e.getSource();
+
             if ("value".equals(e.getPropertyName()))
             {
                 Number num = (Number)e.getNewValue();
@@ -3345,7 +3363,7 @@ implements ImageView, ActionListener
                 }
                 double value = num.doubleValue();
 
-                if (source.equals(minField) && (minSlider!= null))
+                if (source.equals(minField) && (minSlider!= null) && minSlider.isEnabled())
                 {
                     int maxValue = maxSlider.getValue();
                     if (value > maxValue)
@@ -3357,7 +3375,7 @@ implements ImageView, ActionListener
                     
                     minSlider.setValue((int)value);
                 }
-                else if (source.equals(maxField) && (maxSlider!= null))
+                else if (source.equals(maxField) && (maxSlider!= null)&& minSlider.isEnabled())
                 {
                     int minValue = minSlider.getValue();
                     if (value < minValue)

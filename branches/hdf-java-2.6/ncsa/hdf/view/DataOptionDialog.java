@@ -1194,6 +1194,7 @@ implements ActionListener, ItemListener
             {
                 Object data = sd.read();
                 byte[] bData = Tools.getBytes(data, sd.getImageDataRange(), sd.getFillValue(), null);
+
                 int h = sd.getHeight();
                 int w = sd.getWidth();
 

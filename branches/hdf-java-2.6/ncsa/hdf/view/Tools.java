@@ -695,7 +695,7 @@ public final class Tools
             minmax = new double[2];
             minmax[0] = minmax[1] = 0;
         }
-
+        
         if (dname == 'B') {
            return convertByteData ((byte[])rawData, minmax, w, h,
            isTransposed, fillValue, convertByteData, byteData);
@@ -708,6 +708,7 @@ public final class Tools
         if (minmax[0] == minmax[1]) {
             Tools.findMinMax(rawData,  minmax, fillValue);
         }
+        
         min = minmax[0]; 
         max = minmax[1];
         ratio = (min == max) ? 1.00d : (double)(255.00/(max-min));

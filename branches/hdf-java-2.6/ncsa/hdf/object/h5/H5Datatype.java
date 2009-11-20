@@ -664,7 +664,7 @@ public class H5Datatype extends Datatype
         String description = "Unknown";
 
         // data type information
-        int tclass=-1, tsize=-1, tsign=-1;
+        int tclass=-1, tsize=-1, tsign=-1, torder=-1;
 
         try
         {

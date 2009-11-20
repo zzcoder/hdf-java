@@ -17,12 +17,14 @@ package ncsa.hdf.view;
 import ncsa.hdf.object.*;
 
 import javax.swing.*;
+import javax.swing.text.Position;
 import javax.swing.tree.*;
 import java.util.*;
 import java.io.*;
 import java.lang.reflect.*;
 import java.awt.Component;
 import java.awt.BorderLayout;
+import java.awt.Event;
 import java.awt.Toolkit;
 import java.awt.event.*;
 import java.awt.Cursor;
@@ -73,6 +75,9 @@ public class DefaultTreeView extends JPanel
 
     /** The current selected node. */
     private DefaultMutableTreeNode selectedNode;
+    
+    /** The current selected TreePath. */
+    private TreePath selectedTreePath;    
 
     /** the current selected object */
     private HObject selectedObject;
@@ -96,6 +101,8 @@ public class DefaultTreeView extends JPanel
     private JMenuItem addDatatypeMenuItem;
 
     private JMenuItem addLinkMenuItem;
+    
+    private String currentSearchPhrase = null;
 
     public DefaultTreeView(ViewManager theView) {
         viewer = theView;
@@ -111,6 +118,8 @@ public class DefaultTreeView extends JPanel
         editGUIs = new Vector();
         objectsToCopy = null;
         isDefaultDisplay = true;
+        selectedTreePath = null;
+        selectedNode = null;
 
         addTableMenuItem = new JMenuItem( "Table", ViewProperties.getTableIcon());
         addTableMenuItem.addActionListener(this);
@@ -278,8 +287,22 @@ public class DefaultTreeView extends JPanel
 
         menu.addSeparator();
 
-        item = new JMenuItem( "Close File");
+        item = new JMenuItem( "Find");
         item.setMnemonic(KeyEvent.VK_F);
+        item.addActionListener(this);
+        item.setActionCommand("Find");
+        menu.add(item);
+        
+//        item = new JMenuItem( "Find Next");
+//        item.setMnemonic(KeyEvent.VK_N);
+//        item.addActionListener(this);
+//        item.setActionCommand("Find next");
+//        menu.add(item);        
+        
+        menu.addSeparator();
+
+        item = new JMenuItem( "Close File");
+        item.setMnemonic(KeyEvent.VK_E);
         item.addActionListener(this);
         item.setActionCommand("Close file");
         menu.add(item);
@@ -876,6 +899,113 @@ public class DefaultTreeView extends JPanel
 
         return list;
     }
+    
+    /**
+     * Find first object that is matched by name.
+     * @param objName -- the object name.
+     * @return the object if found, otherwise, returns null.
+     */
+    private final static HObject find(String objName, TreePath treePath, JTree tree)
+    {
+        HObject retObj = null;
+        boolean isFound=false, isPrefix=false, isSuffix=false, isContain=false;
+        
+        if (objName == null || objName.length()<=0 || treePath==null) {
+            return null;
+        }
+        
+        if (objName.equals("*"))
+            return null;
+        
+        if (objName.startsWith("*")) {
+            isSuffix = true;
+            objName = objName.substring(1, objName.length());
+        }
+        
+        if (objName.endsWith("*")) {
+            isPrefix = true;
+            objName = objName.substring(0, objName.length()-1);
+        }
+
+        if (isPrefix && isSuffix) {
+            isContain = true;
+            isPrefix = isSuffix = false;
+        }
+        
+        if (objName == null || objName.length()<=0)
+            return null;
+        
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode)treePath.getLastPathComponent();
+        if (node == null)
+            return null;
+        
+        HObject obj = null;
+        String theName = null;
+        DefaultMutableTreeNode theNode = null;
+        Enumeration local_enum = node.breadthFirstEnumeration();
+        while(local_enum.hasMoreElements())
+        {
+            theNode = (DefaultMutableTreeNode)local_enum.nextElement();
+            obj = (HObject) theNode.getUserObject();
+            if (obj != null && (theName = obj.getName())!=null) {
+                if (isPrefix)
+                    isFound = theName.startsWith(objName);
+                else if (isSuffix)
+                    isFound = theName.endsWith(objName);
+                else if (isContain)
+                    isFound = theName.contains(objName);
+                else
+                    isFound = theName.equals(objName);
+
+                if (isFound) {   
+                    retObj = obj;
+                    break;
+                }
+            }
+        }
+
+        if (retObj != null) {
+            TreePath dstPath = getTreePath(treePath, theNode, 0);
+
+            //tree.fireTreeExpanded(dstPath) ;
+            tree.setSelectionPath(dstPath);
+            tree.scrollPathToVisible(dstPath);
+        }
+
+        return retObj;
+    }
+
+    /**
+     * Get the TreePath from the parent to the target node.
+     * @param parent -- the parent TreePath
+     * @param node -- the target node
+     * @param depth
+     * @return the tree path if target node found, otherwise; returns null;
+     */
+    private static TreePath getTreePath(TreePath parent, TreeNode node, int depth) 
+    {
+        if (node == null || parent == null || depth <0)
+            return null;
+        
+        TreeNode theNode = (TreeNode) parent.getLastPathComponent();
+        if (node == theNode)
+            return parent;
+
+        if (theNode.getChildCount() >= 0) {
+            for (Enumeration e = theNode.children(); e.hasMoreElements();) {
+                TreeNode n = (TreeNode) e.nextElement();
+                TreePath path = parent.pathByAddingChild(n);
+                TreePath result = getTreePath(path, node, depth + 1);
+
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+        
+        return null;
+    }
+
 
     private void addGroup()
     {
@@ -1273,6 +1403,24 @@ public class DefaultTreeView extends JPanel
                     JOptionPane.ERROR_MESSAGE);
             }
         }
+        else if (cmd.startsWith("Find")) {
+            if (cmd.equals("Find")) {
+                String findStr = currentSearchPhrase;
+                if (findStr == null)
+                    findStr = "";
+           
+                findStr = (String) JOptionPane.showInputDialog(this, 
+                        "Find (e.g. O3Quality, O3*, or *Quality):", 
+                        "Find Object by Name", 
+                        JOptionPane.PLAIN_MESSAGE,
+                        null, null, findStr);
+                
+                if (findStr != null && findStr.length()>0)
+                    currentSearchPhrase = findStr;
+            }
+
+            find(currentSearchPhrase, selectedTreePath, tree);
+        }        
     }
 
     /**
@@ -2010,6 +2158,7 @@ public class DefaultTreeView extends JPanel
             DefaultMutableTreeNode theNode = (DefaultMutableTreeNode)selPath.getLastPathComponent();
             if (!theNode.equals(selectedNode))
             {
+                selectedTreePath = selPath;
                 selectedNode = theNode;
                 selectedObject = ((HObject)(selectedNode.getUserObject()));
                 FileFormat theFile = selectedObject.getFileFormat();
