@@ -17,8 +17,16 @@ package ncsa.hdf.object.nc2;
 import java.io.*;
 import java.util.*;
 import javax.swing.tree.*;
-import ncsa.hdf.object.*;
-import ucar.nc2.*;
+
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
+
+import ncsa.hdf.object.Dataset;
+import ncsa.hdf.object.Datatype;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.HObject;
+
 
 /**
  * This class provides file level APIs. File access APIs include retrieving the
@@ -112,7 +120,7 @@ public class NC2File extends FileFormat
                ((header[0]==67) &&
                 (header[1]==68) &&
                 (header[2]==70) &&
-                (header[3]==1)) ) {
+                (header[3]<4)) ) {
                 is_netcdf = true;
             } else {
                 is_netcdf = false;
@@ -169,7 +177,7 @@ public class NC2File extends FileFormat
             return root;
         }
 
-        Iterator it = ncFile.getVariableIterator();
+        Iterator it = ncFile.getVariables().iterator();
         Variable ncDataset = null;
         DefaultMutableTreeNode node = null;
         NC2Dataset d = null;
@@ -337,8 +345,8 @@ public class NC2File extends FileFormat
         long[] attrDims = {netcdfAttr.getLength()};
         Datatype attrType = new NC2Datatype(netcdfAttr.getDataType());
         ncsaAttr = new ncsa.hdf.object.Attribute(attrName, attrType, attrDims);
-        ncsaAttr.setValue(netcdfAttr.getValue());
-
+        ncsaAttr.setValue(netcdfAttr.getValues());
+        
         return ncsaAttr;
     }
 

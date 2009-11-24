@@ -1334,6 +1334,9 @@ implements TableView, ActionListener, MouseListener
 
             d.convertFromUnsignedC();
             dataValue = d.getData();
+            
+            if (Array.getLength(dataValue)<=rows)
+                cols = 1;
         }
         catch (Exception ex)
         {

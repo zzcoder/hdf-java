@@ -15,8 +15,12 @@
 package ncsa.hdf.object.nc2;
 
 import java.util.*;
-import ncsa.hdf.object.*;
-import ucar.nc2.*;
+
+import ucar.nc2.NetcdfFile;
+
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.HObject;
 
 /**
  * An H5Group represents HDF5 group, inheriting from Group.

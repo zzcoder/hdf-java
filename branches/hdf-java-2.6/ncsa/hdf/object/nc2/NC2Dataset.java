@@ -14,9 +14,19 @@
 
 package ncsa.hdf.object.nc2;
 
+import java.lang.reflect.Array;
 import java.util.*;
-import ncsa.hdf.object.*;
-import ucar.nc2.*;
+
+import ucar.ma2.DataType;
+import ucar.nc2.Variable;
+
+import ncsa.hdf.object.Dataset;
+import ncsa.hdf.object.Datatype;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.HObject;
+import ncsa.hdf.object.ScalarDS;
+
 
 /**
  * NC2Dataset describes an multi-dimension array of HDF5 scalar or atomic data
@@ -106,12 +116,22 @@ public class NC2Dataset extends ScalarDS
 
         if (oneD.getClass().getName().startsWith("[C")) {
             char[] charA = (char[])oneD;
-            String[] strA = {new String(charA)};
-            theData = strA;
+            int nCols = (int)selectedDims[selectedIndex[1]];
+            int nRows = (int)selectedDims[selectedIndex[0]];
+            
+            String[] strA = new String[nRows];
+            String allStr = new String(charA);
+
+            int indx0 = 0;
+            for (int i=0; i<nRows; i++) {
+                indx0 = i*nCols;
+                strA[i] = allStr.substring(indx0, indx0+nCols);
+            }
+             theData = strA;
         } else {
             theData = oneD;
         }
-
+        
         return theData;
     }
 
@@ -178,6 +198,7 @@ public class NC2Dataset extends ScalarDS
         }
 
         isText = nativeDataset.getDataType().equals(DataType.STRING);
+        boolean isChar = nativeDataset.getDataType().equals(DataType.CHAR);
 
         rank = nativeDataset.getRank();
 

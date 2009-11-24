@@ -1013,6 +1013,7 @@ ChangeListener, DropTargetListener
             try { treeView.closeFile(theFile); }
             catch (Exception ex) {;}
             theFile = null;
+            attributeArea.setText("");
             System.gc();
         }
         else if (cmd.equals("Close all file"))
@@ -1025,6 +1026,8 @@ ChangeListener, DropTargetListener
                 catch (Exception ex) {}
             }
             currentFile = null;
+            
+            attributeArea.setText("");
         }
         else if (cmd.equals("Save current file as"))
         {

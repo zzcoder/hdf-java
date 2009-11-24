@@ -14,8 +14,11 @@
 
 package ncsa.hdf.object.nc2;
 
-import ncsa.hdf.object.*;
-import ucar.nc2.*;
+import ucar.ma2.DataType;
+import ncsa.hdf.object.Datatype;
+import ncsa.hdf.object.HObject;
+
+
 
 /**
  * Datatype encapsulates information of a datatype.
