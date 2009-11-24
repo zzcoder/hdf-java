@@ -736,14 +736,24 @@ public final class Tools
                     for (int i=0; i<h; i++)
                     {
                         for (int j=0; j<w; j++) {
-                            byteData[i*w+j] = (byte)((s[j*h+i]-min)*ratio);
+                            if (s[j*h+i] <= min)
+                                byteData[i*w+j] = 0;
+                            else if (s[j*h+i] >= max)
+                                byteData[i*w+j] = (byte)255;
+                            else
+                                byteData[i*w+j] = (byte)((s[j*h+i]-min)*ratio);
                         }
                     }
                 }
                 else {
                     for (int i=0; i<size; i++)
                     {
-                        byteData[i] = (byte)((s[i]-min)*ratio);
+                        if (s[i] <= min)
+                            byteData[i] = 0;
+                        else if (s[i] >= max)
+                            byteData[i] = (byte)255;
+                        else
+                            byteData[i] = (byte)((s[i]-min)*ratio);
                     }
                 }
 
@@ -770,13 +780,23 @@ public final class Tools
                     for (int i=0; i<h; i++)
                     {
                         for (int j=0; j<w; j++) {
-                            byteData[i*w+j] = (byte)((ia[j*h+i]-min)*ratio);
+                            if (ia[j*h+i] <= min)
+                                byteData[i*w+j] = 0;
+                            else if (ia[j*h+i] >= max)
+                                byteData[i*w+j] = (byte)255;
+                            else
+                                byteData[i*w+j] = (byte)((ia[j*h+i]-min)*ratio);
                         }
                     }
                 }
                 else {
                     for (int i=0; i<size; i++) {
-                        byteData[i] = (byte)((ia[i] - min)*ratio);
+                        if (ia[i] <= min)
+                            byteData[i] = 0;
+                        else if (ia[i] >= max)
+                            byteData[i] = (byte)255;
+                        else
+                            byteData[i] = (byte)((ia[i] - min)*ratio);
                     }
                 }
 
@@ -803,13 +823,23 @@ public final class Tools
                     for (int i=0; i<h; i++)
                     {
                         for (int j=0; j<w; j++) {
-                            byteData[i*w+j] = (byte)((l[j*h+i]-min)*ratio);
+                            if (l[j*h+i] <= min)
+                                byteData[i*w+j] = 0;
+                            else if (l[j*h+i] >= max)
+                                byteData[i*w+j] = (byte)255;
+                            else
+                                byteData[i*w+j] = (byte)((l[j*h+i]-min)*ratio);
                         }
                     }
                 } else {
                     for (int i=0; i<size; i++)
                     {
-                        byteData[i] = (byte)((l[i]-min)*ratio);
+                        if (l[i] <= min)
+                            byteData[i] = 0;
+                        else if (l[i] >= max)
+                            byteData[i] = (byte)255;
+                        else
+                            byteData[i] = (byte)((l[i]-min)*ratio);
                     }
                 }
 
@@ -836,13 +866,23 @@ public final class Tools
                     for (int i=0; i<h; i++)
                     {
                         for (int j=0; j<w; j++) {
+                            if (f[j*h+i] <= min)
+                                byteData[i*w+j] = 0;
+                            else if (f[j*h+i] >= max)
+                                byteData[i*w+j] = (byte)255;
+                            else
                             byteData[i*w+j] = (byte)((f[j*h+i]-min)*ratio);
                         }
                     }
                 } else {
                     for (int i=0; i<size; i++)
                     {
-                        byteData[i] = (byte)((f[i]-min)*ratio);
+                        if (f[i] <= min)
+                            byteData[i] = 0;
+                        else if (f[i] >= max)
+                            byteData[i] = (byte)255;
+                        else
+                            byteData[i] = (byte)((f[i]-min)*ratio);
                     }
                 }
 
@@ -869,13 +909,23 @@ public final class Tools
                     for (int i=0; i<h; i++)
                     {
                         for (int j=0; j<w; j++) {
-                            byteData[i*w+j] = (byte)((d[j*h+i]-min)*ratio);
+                            if (d[j*h+i] <= min)
+                                byteData[i*w+j] = 0;
+                            else if (d[j*h+i] >= max)
+                                byteData[i*w+j] = (byte)255;
+                            else
+                                byteData[i*w+j] = (byte)((d[j*h+i]-min)*ratio);
                         }
                     }
                 } else {
                     for (int i=0; i<size; i++)
                     {
-                        byteData[i] = (byte)((d[i]-min)*ratio);
+                        if (d[i] <= min)
+                            byteData[i] = 0;
+                        else if (d[i] >= max)
+                            byteData[i] = (byte)255;
+                        else
+                            byteData[i] = (byte)((d[i]-min)*ratio);
                     }
                 }
 
@@ -907,24 +957,12 @@ public final class Tools
             if (minmax[0] == minmax[1]) {
                 Tools.findMinMax(rawData,  minmax, fillValue);
             }
+        }
+        
+        if (minmax[0] == 0 && minmax[1]==255)
+            convertByteData = false; // no need to convert data
            
-            min = minmax[0]; 
-            max = minmax[1];
-            ratio = (min == max) ? 1.00d : (double)(255.00/(max-min)); 
-            if ( isTransposed) {
-                for (int i=0; i<h; i++)
-                {
-                    for (int j=0; j<w; j++) {
-                        byteData[i*w+j] = (byte)((rawData[j*h+i]-min)*ratio);
-                    }
-                }              
-            } else {
-                for (int i=0; i<rawData.length; i++)
-                {
-                    byteData[i] = (byte)((rawData[i]-min)*ratio);
-                }                
-            }
-        } else {
+        if (!convertByteData) {
             minmax[0] = 0;
             minmax[1] = 255;          
             if ( isTransposed) {
@@ -934,6 +972,33 @@ public final class Tools
                         byteData[i*w+j] = rawData[j*h+i];
                     }
                 }              
+            }
+        } else {
+            min = minmax[0]; 
+            max = minmax[1];
+            ratio = (min == max) ? 1.00d : (double)(255.00/(max-min)); 
+            if ( isTransposed) {
+                for (int i=0; i<h; i++)
+                {
+                    for (int j=0; j<w; j++) {
+                        if (rawData[j*h+i]>=max)
+                            byteData[i*w+j] = (byte)255;
+                        else if (rawData[j*h+i] <= min)
+                            byteData[i*w+j] = (byte)0;
+                        else
+                            byteData[i*w+j] = (byte)((rawData[j*h+i]-min)*ratio);
+                    }
+                }              
+            } else {
+                for (int i=0; i<rawData.length; i++)
+                {
+                    if (rawData[i] >= max)
+                        rawData[i] = (byte)255;
+                    else if (rawData[i] <= min)
+                        rawData[i] = (byte) 0;
+                    else
+                        byteData[i] = (byte)((rawData[i]-min)*ratio);
+                }                
             }
         }
         

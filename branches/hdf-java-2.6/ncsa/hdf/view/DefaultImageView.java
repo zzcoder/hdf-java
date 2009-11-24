@@ -270,6 +270,9 @@ implements ImageView, ActionListener
                     !convertByteData) {
                 dataRange[1] = 255; // byte image data rang = [0, 255]           
             }
+        } else {
+            if (dataRange[0] < dataRange[1])
+                convertByteData = true;
         }
 
         JPanel contentPane = (JPanel)getContentPane();
