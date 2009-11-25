@@ -74,6 +74,20 @@ EXTRA_FLAGS=
 #ZLIB=/Users/xcao/work/lib-external/zlib-1.2.1
 #EXTRA_FLAGS="-build=powerpc-apple --with-jdkclasses=/System/Library/Frameworks/JavaVM.framework/Classes --with-javabin=/System/Library/Frameworks/JavaVM.framework/Commands"
 
+############################################################
+#                     linux64ia (colbalt)                  #
+############################################################
+#INSTDIR=/u/ncsa/xcao/work/build
+#JAVAINC=/usr/local/java/jdk1.6.0_11/include
+#JAVALIB=/usr/local/java/jdk1.6.0_11/jre/lib
+#HDF4=/u/ncsa/xcao/work/lib/hdf4
+#HDF5=/u/ncsa/xcao/work/lib/hdf5
+#JPEG=/u/ncsa/xcao/work/lib/jpeg
+#SZIP=/u/ncsa/xcao/work/lib/szip
+#ZLIB=/u/ncsa/xcao/work/lib/zlib
+#export CC="gcc -fPIC"
+
+
 
 ############################################################
 #               Do not change below this line              #
