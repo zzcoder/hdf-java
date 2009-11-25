@@ -45,7 +45,7 @@ EXTRA_FLAGS=
 #JPEG=/mnt/scr1/xcao/hdf_java/lib/solaris64/jpeg
 #SZIP=/mnt/scr1/xcao/hdf_java/lib/solaris64/szip
 #ZLIB=/mnt/scr1/xcao/hdf_java/lib/solaris64/zlib
-#export CC="/opt/SUNWspro/bin/cc -KPIC -xarch=v9"
+#export CC="/opt/SUNWspro/bin/cc -KPIC -m64"
 #EXTRA_FLAGS=--with-javabin=$JAVABIN 
 
 ############################################################
