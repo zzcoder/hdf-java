@@ -105,6 +105,8 @@ rem Build the HDF Java Tests.
     if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ -cp %classpath%;%TESTDIR%\lib\junit.jar %TESTDIR%\test\unittests\*.java
     if %errorlevel% neq 0 exit /b
+    %java_compile% -source 5 -d %TESTDIR%\classes\ -cp %classpath%;%TESTDIR%\lib\junit4-4.5.jar %TESTDIR%\test\junit\*.java
+    if %errorlevel% neq 0 exit /b
     echo.Building Java Sources Succesful
 
     exit /b 0
@@ -119,12 +121,16 @@ rem Check the HDF Java Library.
 
     rem Check Library
     echo.Checking Java Object Library...
-    %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% test.object.TestH5Object
+    %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %TESTDIR%\classes;%classpath% test.object.TestH5Object
     if %errorlevel% neq 0 exit /b
     echo.Checking Java Object Library Unit Tests...
-    %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %classpath%;%TESTDIR%\lib\junit.jar test.unittests.AllH5ObjectTests
+    %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %TESTDIR%\classes;%classpath%;%TESTDIR%\lib\junit.jar test.unittests.AllH5ObjectTests
     if %errorlevel% neq 0 exit /b
     echo.Checking Java Object Library Successful
+    echo.Checking Java JUnit4 Tests...
+    %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %TESTDIR%\classes;%classpath%;%TESTDIR%\lib\junit4-4.5.jar org.junit.runner.JUnitCore test.junit.TestAll
+    if %errorlevel% neq 0 exit /b
+    echo.Checking Java JUnit4 Successful
 
     exit /b 0
 	
@@ -218,7 +224,7 @@ rem Check the HDF Java Examples.
     call :runexample datatypes.H5Ex_T_String
     call :runexample datatypes.H5Ex_T_StringAttribute
 	
-	if !nerrors! neq 0 exit /b !nerrors!
+	if %nerrors% neq 0 exit /b %nerrors%
     echo.Checking Java Examples Successful
 	
     exit /b 0
@@ -228,7 +234,7 @@ rem Check the HDF Java Examples.
 	pushd examples
 
 	echo.
-    %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %TESTDIR%\examples;%classpath% %1 > %1.out
+    %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %TESTDIR%\classes;%classpath% %1 > %1.out
 	fc %1.out testfiles\%1.txt
     if %errorlevel% neq 0 (
         set /a nerrors=%nerrors%+1
