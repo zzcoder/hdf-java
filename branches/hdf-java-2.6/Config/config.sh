@@ -77,6 +77,7 @@ EXTRA_FLAGS=
 ############################################################
 #                     linux64ia (colbalt)                  #
 ############################################################
+# must use "-J-Xmx128m" option for javac, jar, etc
 #INSTDIR=/u/ncsa/xcao/work/build
 #JAVAINC=/usr/local/java/jdk1.6.0_11/include
 #JAVALIB=/usr/local/java/jdk1.6.0_11/jre/lib
