@@ -8,11 +8,11 @@
 
 @REM set up your java home directory(requires jdk1.5 or above), for example
 @REM SET JAVAHOME=D:\Java\jdk1.6.0_16
-SET JAVAHOME=
+SET JAVAHOME=D:\Java\jdk1.6.0_16
 
 @REM set up "HDF JAVA Product" home directory, for example
 @REM SET HDFJAVA=G:\Projects\Java\hdf-java-2.6
-SET HDFJAVA=
+SET HDFJAVA=G:\Projects\Java\hdf-java-2.6
 
 @REM Do not make changes under this line unless you know what you are doing.
 @REM =======================================================================

@@ -2155,6 +2155,6 @@ ChangeListener, DropTargetListener
 
         HDFView frame = new HDFView(rootDir, flist, W, H, X, Y);
         frame.setVisible(true);
-        try { loadExtModules(); } catch (Exception ex) {}
+        //try { loadExtModules(); } catch (Exception ex) {}
     }
 }
