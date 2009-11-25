@@ -119,10 +119,10 @@ rem Check the HDF Java Library.
 
     rem Check Library
     echo.Checking Java Object Library...
-    %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% test.object.TestH5Object
+    %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %TESTDIR%\classes;%classpath% test.object.TestH5Object
     if %errorlevel% neq 0 exit /b
     echo.Checking Java Object Library Unit Tests...
-    %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %classpath%;%TESTDIR%\lib\junit.jar test.unittests.AllH5ObjectTests
+    %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %TESTDIR%\classes;%classpath%;%TESTDIR%\lib\junit.jar test.unittests.AllH5ObjectTests
     if %errorlevel% neq 0 exit /b
     echo.Checking Java Object Library Successful
 
