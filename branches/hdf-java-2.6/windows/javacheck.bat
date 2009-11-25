@@ -228,7 +228,7 @@ rem Check the HDF Java Examples.
 	pushd examples
 
 	echo.
-    %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %TESTDIR%\examples;%classpath% %1 > %1.out
+    %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %TESTDIR%\classes;%classpath% %1 > %1.out
 	fc %1.out testfiles\%1.txt
     if %errorlevel% neq 0 (
         set /a nerrors=%nerrors%+1
