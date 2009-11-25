@@ -101,9 +101,9 @@ rem Build the HDF Java Tests.
 
     rem Build sources
     echo.Building Java Sources...
-    %java_compile% -source 5 -cp %classpath%;%TESTDIR%\lib\junit.jar %TESTDIR%\test\object\*.java
+    %java_compile% -source 5 -d %TESTDIR%\classes\ -cp %classpath%;%TESTDIR%\lib\junit.jar %TESTDIR%\test\object\*.java
     if %errorlevel% neq 0 exit /b
-    %java_compile% -source 5 -cp %classpath%;%TESTDIR%\lib\junit.jar %TESTDIR%\test\unittests\*.java
+    %java_compile% -source 5 -d %TESTDIR%\classes\ -cp %classpath%;%TESTDIR%\lib\junit.jar %TESTDIR%\test\unittests\*.java
     if %errorlevel% neq 0 exit /b
     echo.Building Java Sources Succesful
 
@@ -138,13 +138,13 @@ rem Build the HDF Java Examples.
 
     rem Build Examples
     echo.Building Java Examples...
-    %java_compile% -source 5 -cp %classpath% %TESTDIR%\examples\intro\*.java
+    %java_compile% -source 5 -d %TESTDIR%\classes\ -cp %classpath% %TESTDIR%\examples\intro\*.java
     if %errorlevel% neq 0 exit /b
-    %java_compile% -source 5 -cp %classpath% %TESTDIR%\examples\groups\*.java
+    %java_compile% -source 5 -d %TESTDIR%\classes\ -cp %classpath% %TESTDIR%\examples\groups\*.java
     if %errorlevel% neq 0 exit /b
-    %java_compile% -source 5 -cp %classpath% %TESTDIR%\examples\datasets\*.java
+    %java_compile% -source 5 -d %TESTDIR%\classes\ -cp %classpath% %TESTDIR%\examples\datasets\*.java
     if %errorlevel% neq 0 exit /b
-    %java_compile% -source 5 -cp %classpath% %TESTDIR%\examples\datatypes\*.java
+    %java_compile% -source 5 -d %TESTDIR%\classes\ -cp %classpath% %TESTDIR%\examples\datatypes\*.java
     if %errorlevel% neq 0 exit /b
     echo.Building Java Examples Successful
 
