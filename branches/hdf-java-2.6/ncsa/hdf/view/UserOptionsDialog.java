@@ -260,7 +260,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener
         ButtonGroup bgrp = new ButtonGroup() ;
         bgrp.add(checkReadOnly);
         bgrp.add(rw);
-        tborder = new TitledBorder("Default File Acess Mode");
+        tborder = new TitledBorder("Default File Access Mode");
         tborder.setTitleColor(Color.darkGray);
         p01.setBorder(tborder);
         

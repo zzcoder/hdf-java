@@ -21,6 +21,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 
+import ncsa.hdf.view.ViewProperties;
+
 /**
  * FileFormat defines general interfaces for working with files whose
  * data is organized according to a supported format.
@@ -113,7 +115,7 @@ public abstract class FileFormat extends File
      **************************************************************************/
 
     /** Key for HDF4 file format. */
-    public static final String FILE_TYPE_HDF4 = "HDF";
+    public static final String FILE_TYPE_HDF4 = "HDF4";
 
     /** Key for HDF5 file format. */
     public static final String FILE_TYPE_HDF5 = "HDF5";
@@ -187,24 +189,24 @@ public abstract class FileFormat extends File
      */
     static {
         // add default HDF4 modules
-        if (FileFormat.getFileFormat("HDF") == null) {
+        if (FileFormat.getFileFormat(FILE_TYPE_HDF4) == null) {
             try {
                 Class fileclass = Class.forName("ncsa.hdf.object.h4.H4File");
                 FileFormat fileformat = (FileFormat)fileclass.newInstance();
                 if (fileformat != null) {
-                    FileFormat.addFileFormat("HDF", fileformat);
+                    FileFormat.addFileFormat(FILE_TYPE_HDF4, fileformat);
                 }
             } catch (Throwable err ) {;}
         }
         
 
         // add default HDF5 modules
-        if (FileFormat.getFileFormat("HDF5") == null) {
+        if (FileFormat.getFileFormat(FILE_TYPE_HDF5) == null) {
             try {
                 Class fileclass = Class.forName("ncsa.hdf.object.h5.H5File");
                 FileFormat fileformat = (FileFormat)fileclass.newInstance();
                 if (fileformat != null) {
-                    FileFormat.addFileFormat("HDF5", fileformat);
+                    FileFormat.addFileFormat(FILE_TYPE_HDF5, fileformat);
                 }
             } catch (Throwable err ) {;}
         }

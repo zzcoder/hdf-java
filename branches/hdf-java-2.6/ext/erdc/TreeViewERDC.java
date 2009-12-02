@@ -249,7 +249,7 @@ public class TreeViewERDC extends JPanel
         helpWindow = new JFrame("ERDC Concept Map");
         helpEditorPane = new JEditorPane();
         
-        loadIcons();
+        loadIcons(); 
         
         infoArea = new JTextArea();
         //infoArea.setPreferredSize(new Dimension(220, 60));

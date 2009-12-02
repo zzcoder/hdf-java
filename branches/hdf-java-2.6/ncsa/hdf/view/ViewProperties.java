@@ -732,12 +732,49 @@ public class ViewProperties extends Properties
     /** Load user properties from property file */
     public void load() throws Exception
     {
+        String propVal = null;
+        
         if (propertyFile == null) {
             return;
         }
+ 
+        // add default module.
+        String[] moduleKeys = {"module.treeview", "module.metadataview", "module.textview",
+                "module.tableview", "module.imageview", "module.paletteview"};
+        Vector[] moduleList = {moduleListTreeView, moduleListMetaDataView, moduleListTextView,
+                moduleListTableView,moduleListImageView, moduleListPaletteView};
+        String[] moduleNames = {
+                "ncsa.hdf.view.DefaultTreeView", "ncsa.hdf.view.DefaultMetaDataView",
+                "ncsa.hdf.view.DefaultTextView", "ncsa.hdf.view.DefaultTableView",
+                "ncsa.hdf.view.DefaultImageView", "ncsa.hdf.view.DefaultPaletteView"};
 
-        loadExtClass();
-
+        // add default implementation of modules
+        for (int i=0; i<6; i++) {
+            if (!moduleList[i].contains(moduleNames[i])) {
+                moduleList[i].addElement(moduleNames[i]);
+            }
+        }
+        if (extClassLoader == null)            
+            loadExtClass();
+        
+        // set default selection of data views
+        for (int i=0; i<6; i++) {
+            Vector theList = moduleList[i];
+            propVal = (String)get(moduleKeys[i]);
+          
+            if (propVal != null) {
+                // set default to the module specified in property file
+                theList.remove(propVal);
+                theList.add(0, propVal);
+            } else {
+                // use default module
+                theList.remove(moduleNames[i]);
+                theList.add(0, moduleNames[i]);
+            }
+        }
+        
+        // add netcdf and fits file formats
+        
         try {
             FileInputStream fis = new FileInputStream(propertyFile);
             load(fis);
@@ -771,63 +808,63 @@ public class ViewProperties extends Properties
             }
         }
 
-        String str = (String)get("users.guide");
-        if (str != null) {
-            usersGuide = str;
+        propVal = (String)get("users.guide");
+        if (propVal != null) {
+            usersGuide = propVal;
         }
         
-        str = (String)get("image.contrast");
-        if (str != null) {
-            isAutoContrast = ("auto".equalsIgnoreCase(str));
+        propVal = (String)get("image.contrast");
+        if (propVal != null) {
+            isAutoContrast = ("auto".equalsIgnoreCase(propVal));
         }
         
-        str = (String)get("file.mode");
-        if (str != null) {
-            isReadOnly = ("r".equalsIgnoreCase(str));
+        propVal = (String)get("file.mode");
+        if (propVal != null) {
+            isReadOnly = ("r".equalsIgnoreCase(propVal));
         }        
         
-        str = (String)get("enum.conversion");
-        if (str != null) {
-            convertEnum = ("true".equalsIgnoreCase(str));
+        propVal = (String)get("enum.conversion");
+        if (propVal != null) {
+            convertEnum = ("true".equalsIgnoreCase(propVal));
         }
 
-        str = (String)get("data.delimiter");
-        if ((str != null) && (str.length()>0)) {
-            delimiter = str;
+        propVal = (String)get("data.delimiter");
+        if ((propVal != null) && (propVal.length()>0)) {
+            delimiter = propVal;
         }
 
-        str = (String)get("h4toh5.converter");
-        if ((str != null) && (str.length()>0)) {
-            h4toh5 = str;
+        propVal = (String)get("h4toh5.converter");
+        if ((propVal != null) && (propVal.length()>0)) {
+            h4toh5 = propVal;
         }
 
-        str = (String)get("work.dir");
-        if ((str != null) && (str.length()>0)) {
-            workDir = str;
+        propVal = (String)get("work.dir");
+        if ((propVal != null) && (propVal.length()>0)) {
+            workDir = propVal;
         }
 
-        str = (String)get("file.extension");
-        if ((str != null) && (str.length()>0))
+        propVal = (String)get("file.extension");
+        if ((propVal != null) && (propVal.length()>0))
         {
-            fileExt = str;
+            fileExt = propVal;
             FileFormat.addFileExtension(fileExt);
         }
 
-        str = (String)get("font.size");
-        if ((str != null) && (str.length()>0))
+        propVal = (String)get("font.size");
+        if ((propVal != null) && (propVal.length()>0))
         {
-            try { fontSize = Integer.parseInt(str); }
+            try { fontSize = Integer.parseInt(propVal); }
             catch (Exception ex) {}
         }
 
-        str = (String)get("font.type");
-        if ((str != null) && (str.length()>0)) {
-            fontType = str.trim();
+        propVal = (String)get("font.type");
+        if ((propVal != null) && (propVal.length()>0)) {
+            fontType = propVal.trim();
         }
 
-        str = (String)get("max.members");
-        if ((str != null) && (str.length()>0)) {
-            try { max_members = Integer.parseInt(str); }
+        propVal = (String)get("max.members");
+        if ((propVal != null) && (propVal.length()>0)) {
+            try { max_members = Integer.parseInt(propVal); }
             catch (Exception ex) {}
         }
 
@@ -865,7 +902,7 @@ public class ViewProperties extends Properties
         }
         
         // load srb account
-        str=null;
+        propVal=null;
         String srbaccount[] = new String[7];
         for (int i=0; i<MAX_RECENT_FILES; i++)
         {
@@ -892,39 +929,6 @@ public class ViewProperties extends Properties
             }
             srbAccountList.add(srbaccount);
             srbaccount = new String[7];
-        }
-
-        String[] keys = {"module.treeview", "module.metadataview", "module.textview",
-            "module.tableview", "module.imageview", "module.paletteview"};
-        Vector[] moduleList = {moduleListTreeView, moduleListMetaDataView, moduleListTextView,
-            moduleListTableView,moduleListImageView, moduleListPaletteView};
-        String[] moduleNames = {
-            "ncsa.hdf.view.DefaultTreeView", "ncsa.hdf.view.DefaultMetaDataView",
-            "ncsa.hdf.view.DefaultTextView", "ncsa.hdf.view.DefaultTableView",
-            "ncsa.hdf.view.DefaultImageView", "ncsa.hdf.view.DefaultPaletteView"};
-
-        // add default implementation of modules
-        for (int i=0; i<6; i++) {
-            if (!moduleList[i].contains(moduleNames[i])) {
-                moduleList[i].addElement(moduleNames[i]);
-            }
-        }
-
-        // set default selection of data views
-        for (int i=0; i<6; i++) {
-            Vector theList = moduleList[i];
-            str = (String)get(keys[i]);
-            
-            /*
-            if (!theList.contains(str)) {
-                str = moduleNames[i];
-            }
-            */
-            
-            if (str != null) {
-            	theList.remove(str);
-            	theList.add(0, str);
-            }
         }
     }
 

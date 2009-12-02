@@ -194,7 +194,7 @@ ChangeListener, DropTargetListener
         // load the view properties
         props = new ViewProperties(rootDir);
        try { props.load();} catch (Exception ex){;}
-      
+    
         //recentFiles = ViewProperties.getMRF();
         currentDir = ViewProperties.getWorkDir();
         if (currentDir == null) {
@@ -1188,9 +1188,12 @@ ChangeListener, DropTargetListener
                 "where, KEY: the unique identifier for the file format"+
                 "\n           FILE_FORMAT: the full class name of the file format"+
                 "\n           FILE_EXTENSION: the file extension for the file format"+
-                "\n\nFor example, the following line registers HDF4 file format:"+
-                "\nHDF:ncsa.hdf.object.h4.H4File:hdf\n\n";
-            String str = JOptionPane.showInputDialog(this, msg);
+                "\n\nFor example, "+
+                "\n\t to add NetCDF, \"NetCDF:ncsa.hdf.object.nc2.NC2File:nc\"" +
+                "\n\t to add FITS, \"FITS:ncsa.hdf.object.fits.FitsFile:fits\"\n\n";
+             String str = (String)JOptionPane.showInputDialog(this, msg, "Register a file format", 
+                   JOptionPane.PLAIN_MESSAGE, ViewProperties.getLargeHdfIcon(), 
+                   null, null);
             if ((str == null) || (str.length()<1)) {
                 return;
             }
@@ -1278,8 +1281,8 @@ ChangeListener, DropTargetListener
             }
 
             String theKey = (String)JOptionPane.showInputDialog(this,
-                "Unregister file format", "Unregister file format",
-                JOptionPane.WARNING_MESSAGE, ViewProperties.getHdfIcon(), keylist.toArray(),
+                "Unregister a file format", "Unregister a file format",
+                JOptionPane.WARNING_MESSAGE, ViewProperties.getLargeHdfIcon(), keylist.toArray(),
                 null);
 
             if (theKey == null) {
@@ -1297,8 +1300,13 @@ ChangeListener, DropTargetListener
             {
                 String sep = File.separator;
                 File tmpFile = new File(ugPath);
-                if (!(tmpFile.exists())){
+                if (!(tmpFile.exists())) {
                     ugPath = rootDir+sep+"UsersGuide"+sep+"index.html";
+                    tmpFile = new File(ugPath);
+                    if (!(tmpFile.exists())) {
+                        // use the online copy
+                        ugPath = "http://www.hdfgroup.org/hdf-java-html/hdfview/UsersGuide/index.html";
+                    }
                     ViewProperties.setUsersGuide(ugPath);
                 }
             }
@@ -1355,15 +1363,13 @@ ChangeListener, DropTargetListener
         }
         else if (cmd.equals("File format list"))
         {
-            FileFormat[] fileformats = FileFormat.getFileFormats();
-            if ((fileformats == null) || (fileformats.length <=0)) {
-                return;
-            }
+            Enumeration formatKeys = FileFormat.getFileFormatKeys();
 
             String str = "\nSupported File Formats: \n";
-            for (int i=0; i<fileformats.length; i++) {
-                str += "        "+fileformats[i].getClass().getName() + "\n";
+            while (formatKeys.hasMoreElements()) {
+                str += "    " + formatKeys.nextElement() +"\n";
             }
+            str += "\n";
 
             JOptionPane.showMessageDialog(
                 this,
