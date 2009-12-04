@@ -44,7 +44,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="H5_USE_16_API"
+				PreprocessorDefinitions=""
 				MinimalRebuild="true"
 				ExceptionHandling="0"
 				BasicRuntimeChecks="3"
@@ -120,7 +120,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="H5_USE_16_API"
+				PreprocessorDefinitions=""
 				MinimalRebuild="true"
 				ExceptionHandling="0"
 				BasicRuntimeChecks="3"
@@ -198,7 +198,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				PreprocessorDefinitions="H5_USE_16_API"
+				PreprocessorDefinitions=""
 				ExceptionHandling="0"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -277,7 +277,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				PreprocessorDefinitions="H5_USE_16_API"
+				PreprocessorDefinitions=""
 				ExceptionHandling="0"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -355,6 +355,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\native\hdf5lib\h5eImp.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\native\hdf5lib\h5fImp.c"
 				>
 			</File>
@@ -368,6 +372,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\native\hdf5lib\h5Imp.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\native\hdf5lib\h5lImp.c"
 				>
 			</File>
 			<File
@@ -406,6 +414,30 @@
 			>
 			<File
 				RelativePath="..\..\..\native\hdf5lib\h5util.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\native\hdf5lib\h5eImp.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\native\hdf5lib\h5fImp.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\native\hdf5lib\h5gImp.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\native\hdf5lib\h5jni.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\native\hdf5lib\h5lImp.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\native\hdf5lib\h5sImp.h"
 				>
 			</File>
 		</Filter>
