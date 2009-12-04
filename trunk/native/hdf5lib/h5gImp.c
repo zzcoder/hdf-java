@@ -1036,7 +1036,6 @@ herr_t obj_info_max(hid_t loc_id, const char *name, const H5L_info_t *info, void
     int type = -1;
     herr_t retVal = 0;
     info_all_t* datainfo = (info_all_t*)op_data;
-    H5L_info_t infobuf;
     H5O_info_t object_info;
 
     retVal = H5Oget_info(loc_id, &object_info);

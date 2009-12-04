@@ -2028,6 +2028,9 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id
     long bs;
     char *aName;
     jstring str;
+#ifndef  H5_USE_16_API
+    unsigned int filter_config;
+#endif
 
     bs = (long)namelen;
     if (bs <= 0) {
@@ -2105,7 +2108,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id
         (unsigned int *)flagsP, (size_t *)nelmsP, (unsigned int *)cd_valuesP,
         (size_t)namelen, (char *)aName);
 #else
-    unsigned int filter_config;
     status = H5Pget_filter_by_id2( (hid_t)plist, (H5Z_filter_t)filter,
         (unsigned int *)flagsP, (size_t *)nelmsP, (unsigned int *)cd_valuesP,
         (size_t)namelen, (char *)aName, &filter_config);
@@ -2890,7 +2892,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter2
         int cd_nelmts_temp = *(cd_nelmtsArray);
         size_t cd_nelmts_t = cd_nelmts_temp;
 
-        unsigned int filter_config;
         status = H5Pget_filter2((hid_t)plist, (int)filter_number, 
             (unsigned int *)flagsArray, &cd_nelmts_t, (unsigned int *)cd_valuesArray,
             (size_t)namelen, filter, (unsigned int *)filter_configArray);

@@ -1734,7 +1734,7 @@ public class H5 {
      * @exception NullPointerException
      *                - name is null.
      **/
-    public static int H5Gcreate(int loc_id, String name, int size_hint)
+    public static int H5Gcreate(int loc_id, String name, long size_hint)
             throws HDF5LibraryException, NullPointerException {
         int id = _H5Gcreate(loc_id, name, size_hint);
         if (id > 0)
@@ -1743,7 +1743,7 @@ public class H5 {
     }
 
     private synchronized static native int _H5Gcreate(int loc_id, String name,
-            int size_hint) throws HDF5LibraryException, NullPointerException;
+            long size_hint) throws HDF5LibraryException, NullPointerException;
 
     /**
      * H5Gopen opens an existing group with the specified name at the specified
