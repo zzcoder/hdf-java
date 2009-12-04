@@ -196,8 +196,9 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rget_1region
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type
   (JNIEnv *env, jclass clss, jint loc_id, jint ref_type, jbyteArray ref)
 {
-
+#ifdef H5_USE_16_API
     H5G_obj_t status;
+#endif
     int retVal =-1;
     jboolean isCopy;
     jbyte *refP;
@@ -262,7 +263,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type2
         h5JNIFatalError(env,  "H5Rget_object_type:  ref not pinned");
         return -1;
     }
-    ref_objP = (jbyte *)ENVPTR->GetIntArrayElements(ENVPAR ref_obj,&isCopy);
+    ref_objP = (jint *)ENVPTR->GetIntArrayElements(ENVPAR ref_obj,&isCopy);
     if (ref_objP == NULL) {
         ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,0);
         h5JNIFatalError(env,  "H5Rget_object_type:  ref_obj not pinned");
