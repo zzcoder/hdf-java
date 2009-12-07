@@ -3,39 +3,72 @@
  */
 package test.junit;
 
-
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
+
+import ncsa.hdf.hdf5lib.H5;
+import ncsa.hdf.hdf5lib.HDF5Constants;
+import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
+
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
-public class TestH5S {
+public class TestH5Sbasic {
+    private static final String H5_FILE = "test.h5";
+    int H5fid = -1;
 
-    /**
-     * @throws java.lang.Exception
-     */
+    private final void _deleteFile(String filename) {
+        File file = new File(filename);
+
+        if (file.exists()) {
+            try {
+                file.delete();
+            }
+            catch (SecurityException e) {
+                ;// e.printStackTrace();
+            }
+        }
+    }
+
     @Before
-    public void setUp() throws Exception {
+    public void createH5file()
+            throws HDF5LibraryException, NullPointerException {
+        H5fid = H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_TRUNC,
+                HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
-    public void tearDown() throws Exception {
+    public void deleteH5file() throws HDF5LibraryException {
+        if (H5fid > 0) {
+            H5.H5Fclose(H5fid);
+        }
+        _deleteFile(H5_FILE);
     }
 
-    /**
-     * Test method for {@link hdf.h5.H5S#H5Screate(hdf.h5.enums.H5S_CLASS)}.
-     */
-    @Ignore("Not yet implemented")
-    public final void testH5Screate() {
-        fail("Not yet implemented"); // TODO
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Sclose_invalid() throws Throwable, HDF5LibraryException {
+        H5.H5Sclose(-1);
     }
+
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Screate_invalid()
+            throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Screate(-1);
+    }
+
+
+//    /**
+//     * Test method for {@link hdf.h5.H5S#H5Screate(hdf.h5.enums.H5S_CLASS)}.
+//     */
+//    @Ignore("Not yet implemented")
+//    public final void testH5Screate() {
+//        fail("Not yet implemented"); // TODO
+//    }
 //
 //    /**
 //     * Test method for {@link hdf.h5.H5S#H5Screate_simple(int, long[], long[])}.
