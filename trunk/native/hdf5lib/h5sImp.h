@@ -20,10 +20,10 @@ extern "C" {
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Screate_simple
-     * Signature: (I[B[B)I
+     * Signature: (I[J[J)I
      */
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Screate_1simple
-      (JNIEnv *, jclass, jint, jbyteArray, jbyteArray);
+      (JNIEnv *, jclass, jint, jlongArray, jlongArray);
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
@@ -108,10 +108,10 @@ extern "C" {
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Sset_extent_simple
-     * Signature: (II[B[B)I
+     * Signature: (II[J[J)I
      */
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sset_1extent_1simple
-      (JNIEnv *, jclass, jint, jint, jbyteArray, jbyteArray);
+      (JNIEnv *, jclass, jint, jint, jlongArray, jlongArray);
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
@@ -148,10 +148,10 @@ extern "C" {
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Sselect_hyperslab
-     * Signature: (II[B[B[B[B)I
+     * Signature: (II[J[J[J[J)I
      */
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sselect_1hyperslab
-      (JNIEnv *, jclass, jint, jint, jbyteArray, jbyteArray, jbyteArray, jbyteArray);
+      (JNIEnv *, jclass, jint, jint, jlongArray, jlongArray, jlongArray, jlongArray);
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
@@ -200,6 +200,30 @@ extern "C" {
      */
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sget_1select_1bounds
       (JNIEnv *, jclass, jint, jlongArray, jlongArray);
+
+    /*
+     * Class:     hdf_h5_H5S
+     * Method:    H5Sencode
+     * Signature: (I[B[J)I
+     */
+    JNIEXPORT jint JNICALL Java_hdf_h5_H5S_H5Sencode__I_3B_3J
+      (JNIEnv *env, jclass cls, jint obj_id, jbyteArray buf, jlongArray nalloc);
+
+    /*
+     * Class:     hdf_h5_H5S
+     * Method:    H5Sencode
+     * Signature: (I)[B
+     */
+    JNIEXPORT jbyteArray JNICALL Java_hdf_h5_H5S_H5Sencode__I
+      (JNIEnv *env, jclass cls, jint obj_id);
+
+    /*
+     * Class:     hdf_h5_H5S
+     * Method:    H5Sdecode
+     * Signature: ([B)I
+     */
+    JNIEXPORT jint JNICALL Java_hdf_h5_H5S_H5Sdecode
+      (JNIEnv *env, jclass cls, jbyteArray buf);
 
 #ifdef __cplusplus
 }
