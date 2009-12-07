@@ -10,34 +10,34 @@ extern "C" {
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Gclose
+ * Method:    _H5Gclose
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gclose
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gclose
   (JNIEnv *, jclass, jint);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Gcreate2
+ * Method:    _H5Gcreate2
  * Signature: (ILjava/lang/String;III)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gcreate2
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gcreate2
   (JNIEnv *, jclass, jint, jstring, jint, jint, jint);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Gcreate_anon
+ * Method:    _H5Gcreate_anon
  * Signature: (III)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gcreate_1anon
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gcreate_1anon
   (JNIEnv *, jclass, jint, jint, jint);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Gopen2
+ * Method:    _H5Gopen2
  * Signature: (ILjava/lang/String;I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gopen2
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gopen2
   (JNIEnv *, jclass, jint, jstring, jint);
 
 /*
@@ -134,18 +134,18 @@ JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1info_1by_1idx
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Gcreate1
+ * Method:    _H5Gcreate
  * Signature: (ILjava/lang/String;J)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gcreate1
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gcreate
   (JNIEnv *, jclass, jint, jstring, jlong);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Gopen1
+ * Method:    _H5Gopen
  * Signature: (ILjava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gopen1
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gopen
   (JNIEnv *, jclass, jint, jstring);
 
 /*

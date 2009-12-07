@@ -16,6 +16,7 @@ package ncsa.hdf.hdf5lib;
 import ncsa.hdf.hdf5lib.structs.H5G_info_t;
 
 import java.io.File;
+import java.nio.ByteBuffer;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -3365,45 +3366,31 @@ public class H5 {
      *
      *  @return a dataspace identifier
      *
-     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception HDF5Exception - Error from the HDF-5 Library.
      *  @exception NullPointerException - dims or maxdims is null.
      **/
-    public static int H5Screate_simple(int rank, byte[] dims, byte[] maxdims)
-            throws HDF5LibraryException, NullPointerException {
+    public static int H5Screate_simple(int rank, long[] dims, long[] maxdims)
+    throws HDF5Exception, NullPointerException {
         int id = _H5Screate_simple(rank, dims, maxdims);
         if (id > 0)
             OPEN_IDS.addElement(id);
         return id;
     }
 
-    private synchronized static native int _H5Screate_simple(int rank,
-            byte[] dims, byte[] maxdims)
-            throws HDF5LibraryException, NullPointerException;
+    public synchronized static native int _H5Screate_simple(int rank, long[] dims,
+            long[] maxdims) throws HDF5Exception, NullPointerException;
 
-    public synchronized static int H5Screate_simple(int rank, long[] dims,
-            long[] maxdims) throws HDF5Exception, NullPointerException {
-        if (dims == null) {
-            return -1;
-        }
+    public static int H5Screate_simple(int rank, byte[] dims, byte[] maxdims)
+            throws HDF5Exception, NullPointerException {
+        ByteBuffer dimsbb = ByteBuffer.wrap(dims);
+        long[] ladims = (dimsbb.asLongBuffer()).array();
+        ByteBuffer maxdimsbb = ByteBuffer.wrap(maxdims);
+        long[] lamaxdims = (maxdimsbb.asLongBuffer()).array();
 
-        HDFArray theArray = new HDFArray(dims);
-        byte[] thedims = theArray.byteify();
-
-        byte[] themaxdims = null;
-        HDFArray theArr = null;
-
-        if (maxdims != null) {
-            theArr = new HDFArray(maxdims);
-            themaxdims = theArr.byteify();
-        }
-
-        int retVal = H5Screate_simple(rank, thedims, themaxdims);
-
-        thedims = null;
-        themaxdims = null;
-        theArr = null;
-        theArray = null;
-        return retVal;
+        int id = _H5Screate_simple(rank, ladims, lamaxdims);
+        if (id > 0)
+            OPEN_IDS.addElement(id);
+        return id;
     }
 
     /**
@@ -3552,13 +3539,11 @@ public class H5 {
      * H5Sget_select_npoints determines the number of elements in the current
      * selection of a dataspace.
      * 
-     * @param space_id
-     *            Dataspace identifier.
+     * @param space_id IN: Identifier of the dataspace object to query
      * 
      * @return the number of elements in the selection if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native long H5Sget_select_npoints(int space_id)
             throws HDF5LibraryException;
@@ -3567,12 +3552,11 @@ public class H5 {
      * H5Sget_simple_extent_ndims determines the dimensionality (or rank) of a
      * dataspace.
      * 
-     * @param space_id
-     *            Identifier of the dataspace
+     * @param space_id IN: Identifier of the dataspace
+     * 
      * @return the number of dimensions in the dataspace if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Sget_simple_extent_ndims(
             int space_id) throws HDF5LibraryException;
@@ -3581,20 +3565,15 @@ public class H5 {
      * H5Sget_simple_extent_dims returns the size and maximum sizes of each
      * dimension of a dataspace through the dims and maxdims parameters.
      * 
-     * @param space_id
-     *            IN: Identifier of the dataspace object to query
-     * @param dims
-     *            OUT: Pointer to array to store the size of each dimension.
-     * @param maxdims
-     *            OUT: Pointer to array to store the maximum size of each
-     *            dimension.
+     * @param space_id IN: Identifier of the dataspace object to query
+     * @param dims    OUT: Pointer to array to store the size of each dimension.
+     * @param maxdims OUT: Pointer to array to store the maximum size of each
+     *                     dimension.
      * 
      * @return the number of dimensions in the dataspace if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
-     * @exception NullPointerException
-     *                - dims or maxdims is null.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
+     * @exception NullPointerException - dims or maxdims is null.
      **/
     public synchronized static native int H5Sget_simple_extent_dims(
             int space_id, long[] dims, long[] maxdims)
@@ -3633,32 +3612,18 @@ public class H5 {
      *                - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Sset_extent_simple(int space_id,
-            int rank, byte[] current_size, byte[] maximum_size)
+            int rank, long[] current_size, long[] maximum_size)
             throws HDF5LibraryException, NullPointerException;
 
-    public synchronized static int H5Sset_extent_simple(int space_id, int rank,
-            long[] current_size, long[] maximum_size)
-            throws HDF5Exception, NullPointerException {
-        if (current_size == null) {
-            return -1;
-        }
+    public synchronized static  int H5Sset_extent_simple(int space_id,
+            int rank, byte[] current_size, byte[] maximum_size)
+            throws HDF5LibraryException, NullPointerException {
+        ByteBuffer csbb = ByteBuffer.wrap(current_size);
+        long[] lacs = (csbb.asLongBuffer()).array();
+        ByteBuffer maxsbb = ByteBuffer.wrap(maximum_size);
+        long[] lamaxs = (maxsbb.asLongBuffer()).array();
 
-        HDFArray theArray = new HDFArray(current_size);
-        byte[] thecurr = theArray.byteify();
-
-        byte[] themax = null;
-        HDFArray theArr = null;
-        if (maximum_size != null) {
-            theArr = new HDFArray(maximum_size);
-            themax = theArr.byteify();
-        }
-        int retVal = H5Screate_simple(rank, thecurr, themax);
-
-        thecurr = null;
-        themax = null;
-        theArr = null;
-        theArray = null;
-        return retVal;
+        return H5Sset_extent_simple(space_id, rank, current_size, maximum_size);
     }
 
     /**
@@ -3772,52 +3737,26 @@ public class H5 {
      * @exception NullPointerException
      *                - an input array is invalid.
      **/
-    public synchronized static native int H5Sselect_hyperslab(int space_id,
+    public synchronized static int H5Sselect_hyperslab(int space_id,
             int op, byte[] start, byte[] stride, byte[] count, byte[] block)
             throws HDF5LibraryException, NullPointerException,
-            IllegalArgumentException;
+            IllegalArgumentException {
+        ByteBuffer startbb = ByteBuffer.wrap(start);
+        long[] lastart = (startbb.asLongBuffer()).array();
+        ByteBuffer stridebb = ByteBuffer.wrap(stride);
+        long[] lastride = (stridebb.asLongBuffer()).array();
+        ByteBuffer countbb = ByteBuffer.wrap(count);
+        long[] lacount = (countbb.asLongBuffer()).array();
+        ByteBuffer blockbb = ByteBuffer.wrap(block);
+        long[] lablock = (blockbb.asLongBuffer()).array();
 
-    public synchronized static int H5Sselect_hyperslab(int space_id, int op,
+        return H5Sselect_hyperslab(space_id, op, start, stride, count, block);
+    }
+
+    public synchronized static native int H5Sselect_hyperslab(int space_id, int op,
             long[] start, long[] stride, long[] count, long[] block)
             throws HDF5Exception, NullPointerException,
-            IllegalArgumentException {
-        byte[] thestart = null;
-        if (start != null) {
-            HDFArray theA1 = new HDFArray(start);
-            thestart = theA1.byteify();
-            theA1 = null;
-        }
-
-        byte[] thecount = null;
-        if (count != null) {
-            HDFArray theA2 = new HDFArray(count);
-            thecount = theA2.byteify();
-            theA2 = null;
-        }
-
-        byte[] thestride = null;
-        if (stride != null) {
-            HDFArray theA3 = new HDFArray(stride);
-            thestride = theA3.byteify();
-            theA3 = null;
-        }
-
-        byte[] theblock = null;
-        if (block != null) {
-            HDFArray theA4 = new HDFArray(block);
-            theblock = theA4.byteify();
-            theA4 = null;
-        }
-
-        int retVal = H5Sselect_hyperslab(space_id, op, thestart, thestride,
-                thecount, theblock);
-
-        thestart = null;
-        thestride = null;
-        thecount = null;
-        theblock = null;
-        return retVal;
-    }
+            IllegalArgumentException;
 
     /**
      * H5Sclose releases a dataspace.
@@ -6360,7 +6299,15 @@ public class H5 {
      * @exception NullPointerException
      *                - name is null.
      **/
-    public synchronized static native int H5Gcreate2(int loc_id, String name,
+    public static int H5Gcreate2(int loc_id, String name,
+            int lcpl_id, int gcpl_id, int gapl_id)
+            throws HDF5LibraryException, NullPointerException {
+                int id = _H5Gcreate2(loc_id, name, lcpl_id, gcpl_id, gapl_id);
+                if (id > 0)
+                    OPEN_IDS.addElement(id);
+                return id;
+            }
+    public synchronized static native int _H5Gcreate2(int loc_id, String name,
             int lcpl_id, int gcpl_id, int gapl_id)
             throws HDF5LibraryException, NullPointerException;
 
@@ -6382,7 +6329,14 @@ public class H5 {
      * @exception HDF5LibraryException
      *                - Error from the HDF-5 Library.
      **/
-    public synchronized static native int H5Gcreate_anon(int loc_id,
+    public static int H5Gcreate_anon(int loc_id,
+            int gcpl_id, int gapl_id) throws HDF5LibraryException {
+                int id = _H5Gcreate_anon(loc_id, gcpl_id, gapl_id);
+                if (id > 0)
+                    OPEN_IDS.addElement(id);
+                return id;
+            }
+    public synchronized static native int _H5Gcreate_anon(int loc_id,
             int gcpl_id, int gapl_id) throws HDF5LibraryException;
 
     /**
@@ -6406,7 +6360,14 @@ public class H5 {
      * @exception NullPointerException
      *                - name is null.
      **/
-    public synchronized static native int H5Gopen2(int loc_id, String name,
+    public static int H5Gopen2(int loc_id, String name,
+            int gapl_id) throws HDF5LibraryException, NullPointerException {
+                int id = _H5Gopen2(loc_id, name, gapl_id);
+                if (id > 0)
+                    OPEN_IDS.addElement(id);
+                return id;
+            }
+    public synchronized static native int _H5Gopen2(int loc_id, String name,
             int gapl_id) throws HDF5LibraryException, NullPointerException;
 
     /**
@@ -6590,6 +6551,85 @@ public class H5 {
      **/
     public synchronized static native String H5Lget_val(int loc_id, String name, int lapl_id)
     throws HDF5LibraryException, NullPointerException;
+
+
+    // //////////////////////////////////////////////////////////////////
+    // H5S: Dataspace Interface Functions //
+    // //////////////////////////////////////////////////////////////////
+
+    /**
+     *  H5Sencode converts a data space description into binary form in a buffer.
+     *
+     *  @param obj_id   IN: Identifier of the object to be encoded.
+     *  @param buf     OUT: Buffer for the object to be encoded into. 
+     *                      If the provided buffer is NULL, only the 
+     *                      size of buffer needed is returned.
+     *  @param nalloc   IN: The size of the allocated buffer.
+     *
+     *  @return the size needed for the allocated buffer.
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     **/
+    public synchronized static native int H5Sencode(int obj_id, byte[] buf, long[] nalloc)
+    throws HDF5LibraryException, NullPointerException;
+    /**
+     *  H5Sencode converts a data space description into binary form in a buffer.
+     *
+     *  @param obj_id   IN: Identifier of the object to be encoded.
+     *
+     *  @return the buffer for the object to be encoded into.
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     **/
+    public synchronized static native byte[] H5Sencode(int obj_id)
+    throws HDF5LibraryException, NullPointerException;
+
+    /**
+     *  H5Sdecode reconstructs the HDF5 data space object and returns a 
+     *  new object handle for it.
+     *
+     *  @param buf   IN: Buffer for the data space object to be decoded.
+     *
+     *  @return a new object handle
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - buf is null.
+     **/
+    public synchronized static native int H5Sdecode(byte[] buf)
+    throws HDF5LibraryException, NullPointerException;
+
+//    /**
+//     *  H5Sselect_hyperslab selects a hyperslab region to add to
+//     *  the current selected region for the dataspace specified
+//     *  by space_id.  The start, stride, count, and block arrays
+//     *  must be the same size as the rank of the dataspace.
+//     *
+//     *  @param space_id IN: Identifier of dataspace selection to modify
+//     *  @param op       IN: Operation to perform on current selection.
+//     *  @param start    IN: Offset of start of hyperslab
+//     *  @param count    IN: Number of blocks included in hyperslab.
+//     *  @param stride   IN: Hyperslab stride.
+//     *  @param block    IN: Size of block in hyperslab.
+//     *
+//     *  @return none
+//     *
+//     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+//     *  @exception NullPointerException - an input array is null.
+//     *  @exception IllegalArgumentException - an input array is invalid.
+//     **/
+//    public synchronized static native void H5Sselect_hyperslab(int space_id, H5S_SELECT_OPER op,
+//          long start[], long _stride[], long count[], long _block[])
+//        throws HDF5LibraryException, NullPointerException, IllegalArgumentException;
+//    public synchronized static native int H5Scombine_hyperslab(int space_id, H5S_SELECT_OPER op,
+//          const long start[], const long _stride[],
+//          const long count[], const long _block[])
+//        throws HDF5LibraryException, NullPointerException;
+//    public synchronized static native int H5Sselect_select(int space1_id, H5S_SELECT_OPER op,
+//          int space2_id)
+//        throws HDF5LibraryException, NullPointerException;
+//    public synchronized static native int H5Scombine_select(int space1_id, H5S_SELECT_OPER op,
+//          int space2_id)
+//        throws HDF5LibraryException, NullPointerException;
 
     // //////////////////////////////////////////////////////////////////
     // //
