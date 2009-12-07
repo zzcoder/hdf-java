@@ -77,7 +77,7 @@ typedef struct info_all
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Gcreate
+ * Method:    _H5Gcreate
  * Signature: (ILjava/lang/String;J)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gcreate
@@ -114,7 +114,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gcreate
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Gopen
+ * Method:    _H5Gopen
  * Signature: (ILjava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gopen
@@ -151,7 +151,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gopen
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Gclose
+ * Method:    _H5Gclose
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gclose
@@ -1110,10 +1110,10 @@ jobject create_H5G_info_t(JNIEnv *env, H5G_info_t group_info)
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Gcreate2
+ * Method:    _H5Gcreate2
  * Signature: (ILjava/lang/String;III)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gcreate2
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gcreate2
   (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint link_plist_id, jint create_plist_id, jint access_plist_id)
 {
     hid_t status;
@@ -1143,10 +1143,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gcreate2
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Gcreate_anon
+ * Method:    _H5Gcreate_anon
  * Signature: (III)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gcreate_1anon
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gcreate_1anon
   (JNIEnv *env, jclass cls, jint loc_id, jint gcpl_id, jint gapl_id)
 {
     hid_t ret_val;
@@ -1161,10 +1161,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gcreate_1anon
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Gopen2
+ * Method:    _H5Gopen2
  * Signature: (ILjava/lang/String;I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gopen2
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gopen2
   (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint access_plist_id)
 {
     hid_t status;
