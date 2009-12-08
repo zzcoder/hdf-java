@@ -481,15 +481,15 @@ public class H5ScalarDS extends ScalarDS
             }
 
             dataset = new H5ScalarDS(pgroup.getFileFormat(), dstName, path);
-            
+
             dstdid = dataset.open();
-            try { H5File.copyAttributes(srcdid, dstdid); }
+            try {H5File.copyAttributes(srcdid, dstdid);}
             catch (Exception ex) {}
-            
+
             if (buff != null) {
                 dataset.init();
                 dataset.write(buff);
-            }
+            }       
         }
         finally {
             try { H5.H5Pclose(plist); } catch(Exception ex) {}
@@ -1202,7 +1202,6 @@ public class H5ScalarDS extends ScalarDS
             H5.H5Aread( aid, atype, ref_buf);
         } catch (HDF5Exception ex)
         {
-            ex.printStackTrace();
             ref_buf = null;
         } finally {
             try { H5.H5Tclose(atype); } catch (HDF5Exception ex2) {}
