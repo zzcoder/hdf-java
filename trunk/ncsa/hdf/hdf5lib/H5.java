@@ -6558,6 +6558,23 @@ public class H5 {
     // //////////////////////////////////////////////////////////////////
 
     /**
+     * H5Sextent_equal determines whether the dataspace extents of two dataspaces, 
+     * space1_id and space2_id, are equal. 
+     * 
+     * @param first_space_id
+     *            IN: The identifier for the first dataspace.
+     * @param second_space_id
+     *            IN: The identifier for the seconddataspace.
+     * 
+     * @return true if successful, else false
+     * 
+     * @exception HDF5LibraryException
+     *                - Error from the HDF-5 Library.
+     **/
+    public synchronized static native boolean H5Sextent_equal(int first_space_id,
+            int second_space_id) throws HDF5LibraryException;
+
+    /**
      *  H5Sencode converts a data space description into binary form in a buffer.
      *
      *  @param obj_id   IN: Identifier of the object to be encoded.

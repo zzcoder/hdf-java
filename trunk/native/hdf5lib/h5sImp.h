@@ -139,6 +139,14 @@ extern "C" {
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Sextent_equal
+     * Signature: (II)Z
+     */
+    JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sextent_1equal
+      (JNIEnv *, jclass, jint, jint);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Sset_extent_none
      * Signature: (I)I
      */

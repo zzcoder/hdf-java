@@ -4,9 +4,14 @@
 package test.junit;
 
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import ncsa.hdf.hdf5lib.H5;
+import ncsa.hdf.hdf5lib.HDF5Constants;
+import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
+import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -14,260 +19,158 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestH5S {
+    int H5sid = -1;
+    int H5rank = 2;
+    long H5dims[] = {5, 5};
+    long H5maxdims[] = {10, 10};
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
-    public void setUp() throws Exception {
+    public void createH5file()
+            throws NullPointerException, HDF5Exception {
+        H5sid = H5.H5Screate_simple(H5rank, H5dims, H5maxdims);
+        assertTrue("H5.H5Screate_simple_extent",H5sid > 0);
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
-    public void tearDown() throws Exception {
+    public void deleteH5file() throws HDF5LibraryException {
+        if (H5sid > 0) {
+            H5.H5Sclose(H5sid);
+        }
     }
 
-    /**
-     * Test method for {@link hdf.h5.H5S#H5Screate(hdf.h5.enums.H5S_CLASS)}.
-     */
-    @Ignore("Not yet implemented")
-    public final void testH5Screate() {
-        fail("Not yet implemented"); // TODO
+    @Test
+    public void testH5Sget_simple_extent_ndims()
+            throws Throwable, HDF5LibraryException, NullPointerException {
+        int read_rank = -1;
+        try {
+            read_rank = H5.H5Sget_simple_extent_ndims(H5sid);
+            assertTrue("H5.H5Screate_simple_extent_ndims",H5rank == read_rank);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Sget_simple_extent_ndims: " + err);
+        }
     }
-//
-//    /**
-//     * Test method for {@link hdf.h5.H5S#H5Screate_simple(int, long[], long[])}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Screate_simple() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for
-//     * {@link hdf.h5.H5S#H5Sset_extent_simple(int, int, long[], long[])}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Sset_extent_simple() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link hdf.h5.H5S#H5Scopy(int)}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Scopy() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link hdf.h5.H5S#H5Sclose(int)}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Sclose() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link hdf.h5.H5S#H5Sencode(int, byte[], long[])}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5SencodeIntByteArrayLongArray() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link hdf.h5.H5S#H5Sencode(int)}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5SencodeInt() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link hdf.h5.H5S#H5Sdecode(byte[])}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Sdecode() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link hdf.h5.H5S#H5Sget_simple_extent_npoints(int)}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Sget_simple_extent_npoints() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link hdf.h5.H5S#H5Sget_simple_extent_ndims(int)}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Sget_simple_extent_ndims() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for
-//     * {@link hdf.h5.H5S#H5Sget_simple_extent_dims(int, long[], long[])}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Sget_simple_extent_dims() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link hdf.h5.H5S#H5Sis_simple(int)}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Sis_simple() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link hdf.h5.H5S#H5Sget_select_npoints(int)}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Sget_select_npoints() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for
-//     * {@link hdf.h5.H5S#H5Sselect_hyperslab(int, hdf.h5.enums.H5S_SELECT_OPER, long[], long[], long[], long[])}
-//     * .
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Sselect_hyperslab() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for
-//     * {@link hdf.h5.H5S#H5Sselect_elements(int, hdf.h5.enums.H5S_SELECT_OPER, long, long[])}
-//     * .
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Sselect_elements() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link hdf.h5.H5S#H5Sget_simple_extent_type(int)}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Sget_simple_extent_type() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link hdf.h5.H5S#H5Sset_extent_none(int)}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Sset_extent_none() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link hdf.h5.H5S#H5Sextent_copy(int, int)}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Sextent_copy() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link hdf.h5.H5S#H5Sextent_equal(int, int)}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Sextent_equal() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link hdf.h5.H5S#H5Sselect_all(int)}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Sselect_all() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link hdf.h5.H5S#H5Sselect_none(int)}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Sselect_none() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link hdf.h5.H5S#H5Soffset_simple(int, long[])}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Soffset_simple() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link hdf.h5.H5S#H5Sselect_valid(int)}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Sselect_valid() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link hdf.h5.H5S#H5Sget_select_hyper_nblocks(int)}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Sget_select_hyper_nblocks() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link hdf.h5.H5S#H5Sget_select_elem_npoints(int)}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Sget_select_elem_npoints() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for
-//     * {@link hdf.h5.H5S#H5Sget_select_hyper_blocklist(int, long, long)}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Sget_select_hyper_blocklist() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for
-//     * {@link hdf.h5.H5S#H5Sget_select_elem_pointlist(int, long, long)}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Sget_select_elem_pointlist() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for
-//     * {@link hdf.h5.H5S#H5Sget_select_bounds(int, long[], long[])}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Sget_select_bounds() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link hdf.h5.H5S#H5Sget_select_type(int)}.
-//     */
-//    @Ignore("Not yet implemented")
-//    public final void testH5Sget_select_type() {
-//        fail("Not yet implemented"); // TODO
-//    }
+
+    @Test
+    public void testH5Sget_simple_extent_dims_null()
+            throws Throwable, HDF5LibraryException, NullPointerException {
+        int read_rank = -1;
+        
+        try {
+            read_rank = H5.H5Sget_simple_extent_dims(H5sid, null, null);
+            assertTrue("H5.H5Screate_simple_extent_dims",H5rank == read_rank);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Sget_simple_extent_dims: " + err);
+        }
+    }
+
+    @Test
+    public void testH5Sget_simple_extent_dims()
+            throws Throwable, HDF5LibraryException, NullPointerException {
+        int read_rank = -1;
+        long dims[] = {5, 5};
+        long maxdims[] = {10, 10};
+        
+        try {
+            read_rank = H5.H5Sget_simple_extent_dims(H5sid, dims, maxdims);
+            assertTrue("H5.H5Screate_simple_extent_dims",H5rank == read_rank);
+            assertTrue("H5.H5Screate_simple_extent_dims:dims",H5dims[0] == dims[0]);
+            assertTrue("H5.H5Screate_simple_extent_dims:maxdims",H5maxdims[0] == maxdims[0]);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Sget_simple_extent_dims: " + err);
+        }
+    }
+
+    @Test
+    public void testH5Sis_simple()
+            throws Throwable, HDF5LibraryException, NullPointerException {
+        boolean result = false;
+        
+        try {
+            result = H5.H5Sis_simple(H5sid);
+            assertTrue("H5.H5Sis_simple",result);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Sis_simple: " + err);
+        }
+    }
+
+    @Test
+    public void testH5Scopy()
+            throws Throwable, HDF5LibraryException, NullPointerException {
+        int sid = -1;
+        int read_rank = -1;
+
+        try {
+            sid = H5.H5Scopy(H5sid);
+            assertTrue("H5.H5Sis_simple",sid > 0);
+            read_rank = H5.H5Sget_simple_extent_ndims(sid);
+            assertTrue("H5.H5Screate_simple_extent_ndims",H5rank == read_rank);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Scopy: " + err);
+        }
+
+        try {H5.H5Sclose(sid);} catch (Exception ex) {}
+    }
+
+    @Test
+    public void testH5Sextent_copy()
+            throws Throwable, HDF5LibraryException, NullPointerException {
+        int sid = -1;
+        int class_type = -1;
+        
+        try {
+            sid = H5.H5Screate(HDF5Constants.H5S_NULL);
+            assertTrue("H5.H5Screate_null",sid > 0);
+            H5.H5Sextent_copy(sid, H5sid);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Sextent_copy: " + err);
+        }
+        class_type = H5.H5Sget_simple_extent_type(sid);
+        assertTrue("H5.H5Screate_null: type",class_type == HDF5Constants.H5S_SIMPLE);
+
+        try {H5.H5Sclose(sid);} catch (Exception ex) {}
+    }
+
+    @Test
+    public void testH5Sextent_equal()
+            throws Throwable, HDF5LibraryException, NullPointerException {
+        int sid = -1;
+        int class_type = -1;
+        boolean result = false;
+        
+        try {
+            sid = H5.H5Screate(HDF5Constants.H5S_NULL);
+            assertTrue("H5.H5Screate_null",sid > 0);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Screate: null " + err);
+        }
+        result = H5.H5Sextent_equal(sid, H5sid);
+        assertFalse("H5.testH5Sextent_equal",result);
+        
+        try {
+            H5.H5Sextent_copy(sid, H5sid);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Sextent_copy " + err);
+        }
+        result = H5.H5Sextent_equal(sid, H5sid);
+        assertTrue("H5.testH5Sextent_equal",result);
+
+        try {H5.H5Sclose(sid);} catch (Exception ex) {}
+    }
 
 }
