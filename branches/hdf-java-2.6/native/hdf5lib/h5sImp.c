@@ -75,6 +75,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Screate_1simple
     hsize_t *lp;
     jlong *jlp;
 
+    if (rank <= 0) {
+        h5badArgument( env, "H5Screate_simple:  rank <=0");
+        return -1;
+    }
+
     if (dims == NULL) {
         h5nullArgument( env, "H5Screate_simple:  dims is NULL");
         return -1;
