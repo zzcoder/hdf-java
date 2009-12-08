@@ -481,13 +481,15 @@ public class H5ScalarDS extends ScalarDS
             }
 
             dataset = new H5ScalarDS(pgroup.getFileFormat(), dstName, path);
+            
+            dstdid = dataset.open();
+            try { H5File.copyAttributes(srcdid, dstdid); }
+            catch (Exception ex) {}
+            
             if (buff != null) {
                 dataset.init();
                 dataset.write(buff);
             }
-            
-            dstdid = dataset.open();
-            H5File.copyAttributes(srcdid, dstdid);
         }
         finally {
             try { H5.H5Pclose(plist); } catch(Exception ex) {}
@@ -969,7 +971,7 @@ public class H5ScalarDS extends ScalarDS
         byte[][] thePalette = null;
         byte[] refs = getPaletteRefs();
         int did=-1, pal_id=-1, tid=-1;
-        
+       
         if (refs == null) {
             return null;
         }
@@ -1165,7 +1167,7 @@ public class H5ScalarDS extends ScalarDS
     public byte[] getPaletteRefs()
     {
         if (rank <=0) {
-            init();
+            init(); // init will be called to get refs
         }
         
         return paletteRefs;
@@ -1200,6 +1202,7 @@ public class H5ScalarDS extends ScalarDS
             H5.H5Aread( aid, atype, ref_buf);
         } catch (HDF5Exception ex)
         {
+            ex.printStackTrace();
             ref_buf = null;
         } finally {
             try { H5.H5Tclose(atype); } catch (HDF5Exception ex2) {}

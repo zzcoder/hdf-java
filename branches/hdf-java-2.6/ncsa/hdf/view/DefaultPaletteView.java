@@ -239,6 +239,7 @@ ActionListener, ItemListener
             if (paletteValueTable == null) {
                 paletteValueTable = new PaletteValueTable(this);
             }
+            paletteValueTable.refresh();
             paletteValueTable.setVisible(true);
         }
         else if (cmd.equals("Hide palette values"))
@@ -348,7 +349,7 @@ ActionListener, ItemListener
     public void mouseClicked(MouseEvent e){} // MouseListener
     public void mouseReleased(MouseEvent e) {
         if ((paletteValueTable != null) && paletteValueTable.isVisible()) {
-            paletteValueTable.paletteUpdated();
+            paletteValueTable.refresh();
         }
     } // MouseListener
     public void mouseEntered(MouseEvent e) {} // MouseListener
@@ -538,8 +539,10 @@ ActionListener, ItemListener
             JButton button = new JButton("  Ok  ");
             button.addActionListener(owner);
             button.setActionCommand("Hide palette values");
-
-            contentPane.add(button, BorderLayout.SOUTH);
+            
+            JPanel tmpP = new JPanel();
+            tmpP.add(button);
+            contentPane.add(tmpP, BorderLayout.SOUTH);
 
             Point l = owner.getLocation();
             l.x += 100;
@@ -576,8 +579,9 @@ ActionListener, ItemListener
             isPaletteChanged = true;
         }
 
-        public void paletteUpdated()
+        public void refresh()
         {
+            valueTable.editingStopped(new ChangeEvent (valueTable));
             valueTable.updateUI();
         }
     }
