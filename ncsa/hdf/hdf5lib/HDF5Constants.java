@@ -245,6 +245,7 @@ public class HDF5Constants {
     public static final int H5S_ALL = H5S_ALL();
     public static final int H5S_MAX_RANK = H5S_MAX_RANK();
     public static final int H5S_NO_CLASS = H5S_NO_CLASS();
+    public static final int H5S_NULL = H5S_NULL();
     public static final int H5S_SCALAR = H5S_SCALAR();
     public static final int H5S_SEL_ALL = H5S_SEL_ALL();
     public static final int H5S_SEL_ERROR = H5S_SEL_ERROR();
@@ -934,6 +935,8 @@ public class HDF5Constants {
     private static native final int H5S_MAX_RANK();
 
     private static native final int H5S_NO_CLASS();
+
+    private static native final int H5S_NULL();
 
     private static native final int H5S_SCALAR();
 

@@ -70,12 +70,29 @@ extern "C" {
         hsize_t *sa = NULL;
         hsize_t *msa = NULL;
         int i;
+        int drank, mrank;
         hsize_t *lp;
         jlong *jlp;
 
+        if (rank < 0) {
+            h5badArgument(env, "H5Screate_simple:  rank is invalid");
+            return -1;
+        }
         if (dims == NULL) {
             h5nullArgument(env, "H5Screate_simple:  dims is NULL");
             return -1;
+        }
+        drank = (int) ENVPTR->GetArrayLength(ENVPAR dims);
+        if (drank != rank) {
+            h5badArgument(env, "H5Screate_simple:  dims rank is invalid");
+            return -1;
+        }
+        if(maxdims != NULL) {
+            mrank = (int) ENVPTR->GetArrayLength(ENVPAR maxdims);
+            if (mrank != rank) {
+                h5badArgument(env, "H5Screate_simple:  maxdims rank is invalid");
+                return -1;
+            }
         }
         dimsP = ENVPTR->GetLongArrayElements(ENVPAR dims, &isCopy);
         if (dimsP == NULL) {
@@ -118,7 +135,7 @@ extern "C" {
                 return -1;
             }
             jlp = (jlong *)maxdimsP;
-            for (i = 0; i < rank; i++) {
+            for (i = 0; i < mrank; i++) {
                 *lp = (hsize_t)*jlp;
                 lp++;
                 jlp++;
@@ -378,23 +395,26 @@ extern "C" {
         hsize_t *sa;
         hsize_t *msa;
         int i;
-        int rank;
+        int rank = -1;
+        int mrank;
 
         if (dims == NULL) {
-            h5nullArgument(env, "H5Sget_simple_extent:  dims is NULL");
-            return -1;
-        }
-        dimsP = ENVPTR->GetLongArrayElements(ENVPAR dims, &isCopy);
-        if (dimsP == NULL) {
-            h5JNIFatalError(env, "H5Pget_simple_extent:  dims not pinned");
-            return -1;
-        }
-        rank = (int) ENVPTR->GetArrayLength(ENVPAR dims);
-        sa = (hsize_t *)malloc( rank * sizeof(hsize_t));
-        if (sa == NULL) {
-            ENVPTR->ReleaseLongArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
-            h5JNIFatalError(env,"H5Sget_simple_extent:  dims not converted to hsize_t");
-            return -1;
+            dimsP = NULL;
+            sa = (hsize_t *)dimsP;
+        } 
+        else {
+            dimsP = ENVPTR->GetLongArrayElements(ENVPAR dims, &isCopy);
+            if (dimsP == NULL) {
+                h5JNIFatalError(env, "H5Pget_simple_extent_dims:  dims not pinned");
+                return -1;
+            }
+            rank = (int) ENVPTR->GetArrayLength(ENVPAR dims);
+            sa = (hsize_t *)malloc( rank * sizeof(hsize_t));
+            if (sa == NULL) {
+                ENVPTR->ReleaseLongArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
+                h5JNIFatalError(env,"H5Sget_simple_extent_dims:  dims not converted to hsize_t");
+                return -1;
+            }
         }
         if (maxdims == NULL) {
             maxdimsP = NULL;
@@ -403,17 +423,33 @@ extern "C" {
         else {
             maxdimsP = ENVPTR->GetLongArrayElements(ENVPAR maxdims,&isCopy);
             if (maxdimsP == NULL) {
-                ENVPTR->ReleaseLongArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
-                free(sa);
-                h5JNIFatalError(env,  "H5Pget_simple_extent:  maxdims not pinned");
+                if (dimsP != NULL)  {
+                    ENVPTR->ReleaseLongArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
+                    free(sa);
+                }
+                h5JNIFatalError(env,  "H5Pget_simple_extent_dims:  maxdims not pinned");
+                return -1;
+            }
+            mrank = (int) ENVPTR->GetArrayLength(ENVPAR maxdims);
+            if(rank < 0)
+                rank = mrank;
+            else if(mrank != rank) {
+                if (dimsP != NULL)  {
+                    ENVPTR->ReleaseLongArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
+                    free(sa);
+                }
+                ENVPTR->ReleaseLongArrayElements(ENVPAR maxdims,maxdimsP,JNI_ABORT);
+                h5JNIFatalError(env,  "H5Sget_simple_extent_dims:  maxdims rank not same as dims");
                 return -1;
             }
             msa = (hsize_t *)malloc( rank * sizeof(hsize_t));
             if (msa == NULL)  {
-                ENVPTR->ReleaseLongArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
+                if (dimsP != NULL)  {
+                    ENVPTR->ReleaseLongArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
+                    free(sa);
+                }
                 ENVPTR->ReleaseLongArrayElements(ENVPAR maxdims,maxdimsP,JNI_ABORT);
-                free(sa);
-                h5JNIFatalError(env,  "H5Sget_simple_extent:  maxdims not converted to hsize_t");
+                h5JNIFatalError(env,  "H5Sget_simple_extent_dims:  maxdims not converted to hsize_t");
                 return -1;
             }
         }
@@ -421,8 +457,10 @@ extern "C" {
         status = H5Sget_simple_extent_dims(space_id, (hsize_t *)sa, (hsize_t *)msa);
 
         if (status < 0) {
-            ENVPTR->ReleaseLongArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
-            free(sa);
+            if (dimsP != NULL)  {
+                ENVPTR->ReleaseLongArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
+                free(sa);
+            }
             if (maxdimsP != NULL)  {
                 ENVPTR->ReleaseLongArrayElements(ENVPAR maxdims,maxdimsP,JNI_ABORT);
                 free(msa);
@@ -430,11 +468,13 @@ extern "C" {
             h5libraryError(env);
         } 
         else {
-            for (i = 0; i < rank; i++) {
-                dimsP[i] = sa[i];
+            if (dimsP != NULL)  {
+                for (i = 0; i < rank; i++) {
+                    dimsP[i] = sa[i];
+                }
+                free(sa);
+                ENVPTR->ReleaseLongArrayElements(ENVPAR dims,dimsP,0);
             }
-            free(sa);
-            ENVPTR->ReleaseLongArrayElements(ENVPAR dims,dimsP,0);
             if (maxdimsP != NULL) {
                 for (i = 0; i < rank; i++) {
                     maxdimsP[i] = msa[i];
@@ -476,12 +516,25 @@ extern "C" {
         hsize_t *sa;
         hsize_t *msa;
         int i;
+        int drank, mrank;
         hsize_t *lp;
         jlong *jlp;
 
         if (dims == NULL) {
             h5nullArgument(env, "H5Sset_simple_extent:  dims is NULL");
             return -1;
+        }
+        drank = (int) ENVPTR->GetArrayLength(ENVPAR dims);
+        if (drank != rank) {
+            h5badArgument(env, "H5Screate_simple:  dims rank is invalid");
+            return -1;
+        }
+        if(maxdims != NULL) {
+            mrank = (int) ENVPTR->GetArrayLength(ENVPAR maxdims);
+            if (mrank != rank) {
+                h5badArgument(env, "H5Screate_simple:  maxdims rank is invalid");
+                return -1;
+            }
         }
         dimsP = ENVPTR->GetLongArrayElements(ENVPAR dims, &isCopy);
         if (dimsP == NULL) {
@@ -629,6 +682,27 @@ extern "C" {
             h5libraryError(env);
         }
         return (jint) retVal;
+    }
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Sextent_equal
+     * Signature: (II)Z
+     */
+    JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sextent_1equal
+      (JNIEnv *env, jclass clss, jint space_id, jint src_id) {
+        htri_t bval;
+        bval = H5Sextent_equal(space_id, src_id);
+        if (bval > 0) {
+            return JNI_TRUE;
+        }
+        else if (bval == 0) {
+            return JNI_FALSE;
+        }
+        else {
+            h5libraryError(env);
+            return JNI_FALSE;
+        }
     }
 
     /*
