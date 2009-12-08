@@ -1029,7 +1029,7 @@ implements TableView, ActionListener, MouseListener
 
             for (int i=0; i<nLines; i++)
             {
-                lineLabels[i] = "Row"+String.valueOf(rows[i]+1);
+                lineLabels[i] = String.valueOf(rows[i]);
                 for (int j=0; j<cols.length; j++)
                 {
                     try {
@@ -2073,29 +2073,45 @@ implements TableView, ActionListener, MouseListener
         String token=null;
         int r = r0, c = c0;
         while ((line != null) && (r < rows)) {
-            try {
-                tokenizer1 = new StringTokenizer(line, delimiter);
-                while (tokenizer1.hasMoreTokens() && (c < cols)) {
-                    token = tokenizer1.nextToken();
-                    if (dataset instanceof ScalarDS) {
-                        StringTokenizer tokenizer2 = new StringTokenizer(token);
-                        while (tokenizer2.hasMoreTokens() && (c < cols)) {
-                            updateValueInMemory(tokenizer2.nextToken(), r, c);
-                            c++;
-                        }
-                    }
-                    else {
-                        updateValueInMemory(token, r, c);
-                        c++;    
-                    }
-                } // while (tokenizer1.hasMoreTokens() && index < size)
-            }
-            catch (Exception ex)
+            if (fixedDataLength > 0)
             {
-                JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
-                try { in.close(); } catch (IOException ex2) {}
-                return;
+                // the data has fixed length
+                int n = line.length();
+                String theVal;
+                for (int i = 0; i<n; i=i+fixedDataLength)
+                {
+                    try {
+                        theVal = line.substring(i, i+fixedDataLength);
+                        updateValueInMemory(theVal, r, c);
+                    } catch (Exception ex) { continue; }
+                    c ++;
+                }
+            } else {
+                try {
+                    tokenizer1 = new StringTokenizer(line, delimiter);
+                    while (tokenizer1.hasMoreTokens() && (c < cols)) {
+                        token = tokenizer1.nextToken();
+                        if (dataset instanceof ScalarDS) {
+                            StringTokenizer tokenizer2 = new StringTokenizer(token);
+                            while (tokenizer2.hasMoreTokens() && (c < cols)) {
+                                updateValueInMemory(tokenizer2.nextToken(), r, c);
+                                c++;
+                            }
+                        }
+                        else {
+                            updateValueInMemory(token, r, c);
+                            c++;    
+                        }
+                    } // while (tokenizer1.hasMoreTokens() && index < size)
+                }
+                catch (Exception ex)
+                {
+                    JOptionPane.showMessageDialog(this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
+                    try { in.close(); } catch (IOException ex2) {}
+                    return;
+                }
             }
+
 
             try { line = in.readLine(); }
             catch (IOException ex) { line = null; }

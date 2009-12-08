@@ -1493,7 +1493,7 @@ public final class Tools
                 byte[] b = (byte[])data;
                 if (hasFillValue)
                     fill = ((byte[])fillValue)[0];
-                 for (int i=1; i<n; i++) {
+                 for (int i=0; i<n; i++) {
                     if (hasFillValue && b[i] == fill) continue;
                 	if (minmax[0]>b[i]) {
                         minmax[0] = b[i];
@@ -1508,7 +1508,7 @@ public final class Tools
                 if (hasFillValue)
                     fill = ((short[])fillValue)[0];
                 
-                for (int i=1; i<n; i++) {
+                for (int i=0; i<n; i++) {
                     if (hasFillValue && s[i] == fill) continue;
                     if (minmax[0]>s[i]) {
                         minmax[0] = s[i];
@@ -1523,7 +1523,7 @@ public final class Tools
                 if (hasFillValue)
                     fill = ((int[])fillValue)[0];
                 
-                for (int i=1; i<n; i++) {
+                for (int i=0; i<n; i++) {
                     if (hasFillValue && ia[i] == fill) continue;
                     if (minmax[0]>ia[i]) {
                         minmax[0] = ia[i];
@@ -1537,7 +1537,7 @@ public final class Tools
             	long[] l = (long[])data;
                 if (hasFillValue)
                     fill = ((long[])fillValue)[0];
-                for (int i=1; i<n; i++) {
+                for (int i=0; i<n; i++) {
                     if (hasFillValue && l[i] == fill) continue;
                     if (minmax[0]>l[i]) {
                         minmax[0] = l[i];
@@ -1551,7 +1551,7 @@ public final class Tools
                 float[] f = (float[])data;
                 if (hasFillValue)
                     fill = ((float[])fillValue)[0];
-                for (int i=1; i<n; i++) {
+                for (int i=0; i<n; i++) {
                     if (hasFillValue && f[i] == fill) continue;
                     if (minmax[0]>f[i]) {
                         minmax[0] = f[i];
@@ -1566,7 +1566,7 @@ public final class Tools
                 double[] d = (double[])data;
                 if (hasFillValue)
                     fill = ((double[])fillValue)[0];
-                for (int i=1; i<n; i++) {
+                for (int i=0; i<n; i++) {
                     if (hasFillValue && d[i] == fill) continue;
                     if (minmax[0]>d[i]) {
                         minmax[0] = d[i];
