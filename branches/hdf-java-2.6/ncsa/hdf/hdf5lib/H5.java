@@ -23,12 +23,12 @@ import ncsa.hdf.hdf5lib.exceptions.*;
  *  This class is the Java interface for the HDF5 library.
  *  <p>
  *  This code is the called by Java programs to access the
- *  entry points of the HDF5 1.2 library.
+ *  entry points of the HDF5 library.
  *  Each routine wraps a single HDF5 entry point, generally with the
  *  arguments and return codes analogous to the C interface.
  *  <p>
  *  For details of the HDF5 library, see the HDF5 Documentation at:
- *  <a href="http://hdf.ncsa.uiuc.edu/HDF5/">http://hdf.ncsa.uiuc.edu/HDF5/</a>
+ *  <a href="http://hdfgroup.org/HDF5/">http://hdfgroup.org/HDF5/</a>
  *  <hr>
  *  <p>
  *  <b>Mapping of arguments for Java</b>
@@ -124,7 +124,7 @@ import ncsa.hdf.hdf5lib.exceptions.*;
  *  It would be infeasible to declare a separate routine for
  *  every combination of number type and dimensionality.
  *  For that reason, the
- *  <a href="./ncsa.hdf.hdf5lib.HDFArray.html><b>HDFArray</b></a>
+ *  <a href="./ncsa.hdf.hdf5lib.HDFArray.html"><b>HDFArray</b></a>
  *  class is used to
  *  discover the type, shape, and size of the data array
  *  at run time, and to convert to and from a contiguous array
@@ -206,8 +206,8 @@ import ncsa.hdf.hdf5lib.exceptions.*;
  *  </b> ncsa.hdf.hdf5lib.HDF5CDataTypes</a><BR>
  *  <a href ="./ncsa.hdf.hdf5lib.HDF5Exception.html">
  *  ncsa.hdf.hdf5lib.HDF5Exception<BR>
- *  <a href="http://hdf.ncsa.uiuc.edu/HDF5/">
- *  http://hdf.ncsa.uiuc.edu/HDF5"</a>
+ *  <a href="http://hdfgroup.org/HDF5/">
+ *  http://hdfgroup.org/HDF5"</a>
  **/
 public class H5 {
 
