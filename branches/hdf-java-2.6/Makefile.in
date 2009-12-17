@@ -418,7 +418,7 @@ distclean: clean-natives clean-classes clean-test clean-testlink clean-examples
 #	./build/JDK/builddist solaris
 #	./build/JRE/buildjre solaris
 
-src-dist:
+src-dist: docs
 	-mkdir -p hdf-java
 	tar cvf $(VERSION)-x.tar $(DISTFILES) ; mv $(VERSION)-x.tar hdf-java/
 	cd hdf-java ; tar xf $(VERSION)-x.tar ; $(RM) -f $(VERSION)-x.tar ; mkdir -p test/object/samples ; find . -name .svn -exec rm -rf {} \;
