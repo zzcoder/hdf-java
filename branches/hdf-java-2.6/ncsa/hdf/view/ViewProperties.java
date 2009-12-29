@@ -112,7 +112,7 @@ public class ViewProperties extends Properties
     private static Vector paletteList = new Vector(5);
     
     /** flag to indicate if enum data is converted to strings */
-    private static boolean convertEnum = false;
+    private static boolean convertEnum = true;
 
     /**
      * Current Java application such as HDFView cannot handle files

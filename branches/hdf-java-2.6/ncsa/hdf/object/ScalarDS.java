@@ -103,11 +103,6 @@ public abstract class ScalarDS extends Dataset
     protected boolean isDefaultImageOrder;
     
     /**
-     * Flag to indicate if the enum data is converted to strings.
-     */
-    private boolean enumConverted = false;
-    
-    /**
      * Constructs an instance of a ScalarDS with specific name and path.
      * An HDF data object must have a name. The path is the group path starting
      * from the root.
@@ -398,27 +393,4 @@ public abstract class ScalarDS extends Dataset
         return fillValue;
     }
 
-    /**
-     * Get flag that indicate if enum data is converted to strings.
-     * 
-     * @return the enumConverted
-     */
-    public boolean isEnumConverted() {
-        return enumConverted;
-    }
-
-    /**
-     * Set flag that indicate if enum data is converted to strings.
-     * 
-     * @param b the enumConverted to set
-     */
-    public void setEnumConverted(boolean b) {
-        if (enumConverted != b) {
-            originalBuf = convertedBuf = null;
-            this.clearData();
-        }
-        
-        enumConverted = b;
-    }
-     
 }

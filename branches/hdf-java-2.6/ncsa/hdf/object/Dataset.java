@@ -160,6 +160,11 @@ public abstract class Dataset extends HObject
      * buffer is the array of 32-bit singed integer.
      */
     protected Object convertedBuf = null;
+    
+    /**
+     * Flag to indicate if the enum data is converted to strings.
+     */
+    protected boolean enumConverted = false;
 
 
     /**
@@ -1194,4 +1199,27 @@ public abstract class Dataset extends HObject
      * @return The size of the datatype
      */
     public int getSize(int tid) { return -1; }
+    
+    /**
+     * Get flag that indicate if enum data is converted to strings.
+     * 
+     * @return the enumConverted
+     */
+    public boolean isEnumConverted() {
+        return enumConverted;
+    }
+
+    /**
+     * Set flag that indicate if enum data is converted to strings.
+     * 
+     * @param b the enumConverted to set
+     */
+    public void setEnumConverted(boolean b) {
+        if (enumConverted != b) {
+            originalBuf = convertedBuf = null;
+            this.clearData();
+        }
+        
+        enumConverted = b;
+    }
 }

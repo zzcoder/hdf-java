@@ -213,6 +213,8 @@ implements TableView, ActionListener, MouseListener
                (dtype.getDatatypeClass() == Datatype.CLASS_ARRAY &&
                 dtype.getBasetype().getDatatypeClass()==Datatype.CLASS_CHAR)));
         
+        dataset.setEnumConverted(ViewProperties.isConvertEnum());
+        
         // create the table and its columnHeader
         if (dataset instanceof CompoundDS)
         {
@@ -1315,7 +1317,6 @@ implements TableView, ActionListener, MouseListener
 
         dataValue = null;
         try {
-            d.setEnumConverted(ViewProperties.isConvertEnum());
             dataValue = d.getData();
             
             if (Tools.applyBitmask(dataValue, bitmask) ) {

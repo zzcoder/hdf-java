@@ -1798,7 +1798,6 @@ public class H5File extends FileFormat
             dstName = srcDataset.getName();
         }
         dname = path + dstName;
-
         try {
             srcdid = srcDataset.open();
             tid = H5.H5Dget_type(srcdid);

@@ -363,7 +363,7 @@ public class H5CompoundDS extends CompoundDS
                     else if (compInfo[2] !=0) {
                         member_data = Dataset.convertFromUnsignedC(member_data, null);
                     }
-                    else if (member_class == HDF5Constants.H5T_ENUM)
+                    else if (member_class == HDF5Constants.H5T_ENUM && enumConverted)
                     {
                         try {
                             String[] strs = H5Datatype.convertEnumValueToName(atom_tid, member_data, null);

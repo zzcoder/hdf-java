@@ -133,7 +133,7 @@ public class FileFormatTest extends TestCase {
 	 */
 	public final void testGetFileFormatKeys() {
 		Enumeration e = FileFormat.getFileFormatKeys();
-		String keys[] = {"HDF5", "HDF4"};
+		String keys[] = {"HDF5", "HDF"};
 		int pos = 0;
 		while (e.hasMoreElements()) {
 			assertEquals(keys[pos++], e.nextElement());

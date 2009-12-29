@@ -821,7 +821,6 @@ public class H5 {
         int id = _H5Dopen(loc_id, name);
         if (id>0) OPEN_IDS.addElement(id);
         return id;
-            
     }
     private synchronized static native int _H5Dopen(int loc_id, String name)
     throws HDF5LibraryException, NullPointerException;
