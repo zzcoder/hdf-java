@@ -297,7 +297,18 @@ public class DefaultTreeView extends JPanel
 //        item.setMnemonic(KeyEvent.VK_N);
 //        item.addActionListener(this);
 //        item.setActionCommand("Find next");
-//        menu.add(item);        
+//        menu.add(item);
+        
+        menu.addSeparator();
+        
+        item = new JMenuItem( "Expand All");
+        item.addActionListener(this);
+        item.setActionCommand("Expand all");
+        menu.add(item);
+        item = new JMenuItem( "Collapse All");
+        item.addActionListener(this);
+        item.setActionCommand("Collapse all");
+        menu.add(item);
         
         menu.addSeparator();
 
@@ -1420,6 +1431,20 @@ public class DefaultTreeView extends JPanel
             }
 
             find(currentSearchPhrase, selectedTreePath, tree);
+        }    
+        else if (cmd.startsWith("Expand all")) {
+            int row = 0;
+            while (row < tree.getRowCount()) {
+                tree.expandRow(row);
+                row++;
+            }
+        }
+        else if (cmd.startsWith("Collapse all")) {
+            int row = tree.getRowCount() - 1;
+            while (row >= 0) {
+                tree.collapseRow(row);
+                row--;
+            }
         }        
     }
 

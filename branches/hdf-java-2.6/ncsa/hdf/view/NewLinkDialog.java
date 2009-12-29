@@ -62,7 +62,7 @@ implements ActionListener
      */
     public NewLinkDialog(JFrame owner, Group pGroup, List objs)
     {
-        super (owner, "New Dataset...", true);
+        super (owner, "New Link...", true);
 
         newObject = null;
 

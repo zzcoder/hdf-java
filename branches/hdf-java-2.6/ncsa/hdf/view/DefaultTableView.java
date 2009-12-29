@@ -414,7 +414,7 @@ implements TableView, ActionListener, MouseListener
         item.setEnabled(isEditable && (dataset instanceof ScalarDS));
         menu.add(item);
 
-        item = new JMenuItem( "Update File");
+        item = new JMenuItem( "Save to File");
         item.addActionListener(this);
         item.setActionCommand("Save dataset");
         item.setEnabled(isEditable);
@@ -846,7 +846,9 @@ implements TableView, ActionListener, MouseListener
 
             if (op == JOptionPane.YES_OPTION) {
                 updateValueInFile();
-            }
+            } else 
+                dataset.clearData(); // reload data
+            
         }
 
         if (dataset instanceof ScalarDS)
