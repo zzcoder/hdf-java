@@ -435,11 +435,11 @@ jboolean h5libraryError( JNIEnv *env )
     char *args[2];
     char *exception;
     jobject ex;
-    jstring str;
     char *msg;
     int rval, min_num, maj_num;
     ssize_t msg_size;
     H5E_type_t error_msg_type;
+    jstring str = NULL;
     hid_t stk_id = -1;
 
     stk_id = H5Eget_current_stack();
@@ -464,9 +464,11 @@ jboolean h5libraryError( JNIEnv *env )
     if(msg_size>0) {
         msg_size++; /* add extra space for the null terminator */
         msg = (char*)malloc(sizeof(char)*msg_size);
-        msg_size = H5Eget_msg((hid_t)min_num, &error_msg_type, (char *)msg, (size_t)msg_size);
-        str = ENVPTR->NewStringUTF(ENVPAR msg);
-        free(msg);
+        if(msg) {
+            msg_size = H5Eget_msg((hid_t)min_num, &error_msg_type, (char *)msg, (size_t)msg_size);
+            str = ENVPTR->NewStringUTF(ENVPAR msg);
+            free(msg);
+        }
     }
     else
         str = NULL;
