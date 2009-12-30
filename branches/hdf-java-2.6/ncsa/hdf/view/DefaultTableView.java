@@ -2044,6 +2044,10 @@ implements TableView, ActionListener, MouseListener
         if (r0 < 0) {
             r0 = 0;
         }
+        
+        // start at the first column for compound datasets
+        if (dataset instanceof CompoundDS) 
+            c0 = 0;
 
         BufferedReader in = null;
         try { in = new BufferedReader(new FileReader(fname));
