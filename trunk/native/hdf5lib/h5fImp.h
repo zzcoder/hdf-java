@@ -2,8 +2,8 @@
 #include <jni.h>
 /* Header for class ncsa_hdf_hdf5lib_H5_H5F */
 
-#ifndef _Included_ncsa_hdf_hdf5lib_H5
-#define _Included_ncsa_hdf_hdf5lib_H5
+#ifndef _Included_ncsa_hdf_hdf5lib_H5_H5F
+#define _Included_ncsa_hdf_hdf5lib_H5_H5F
 #ifdef __cplusplus
 extern "C" {
 #endif

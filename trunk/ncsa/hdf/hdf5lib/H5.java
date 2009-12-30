@@ -3907,20 +3907,18 @@ public class H5 {
     // ////////////////////////////////////////////////////////////
 
     /**
-     * H5Topen opens a named datatype at the location specified by loc_id and
-     * return an identifier for the datatype.
-     * 
-     * @param loc_id
-     *            A file, group, or datatype identifier.
-     * @param name
-     *            A datatype name.
-     * 
-     * @return a named datatype identifier if successful
-     * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
-     * @exception NullPointerException
-     *                - name is null.
+     *  H5Topen opens a named datatype at the location specified
+     *  by loc_id and return an identifier for the datatype.
+     *
+     *  @deprecated As of HDF5 1.8, replaced by {@link #H5Topen(int, String, int)}
+     *
+     *  @param loc_id   IN: A file, group, or datatype identifier.
+     *  @param name     IN: A datatype name, defined within the file or group identified by loc_id.
+     *
+     *  @return a named datatype identifier if successful
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - name is null.
      **/
     public static int H5Topen(int loc_id, String name)
             throws HDF5LibraryException, NullPointerException {
@@ -3937,34 +3935,33 @@ public class H5 {
      * H5Tcommit commits a transient datatype (not immutable) to a file, turned
      * it into a named datatype.
      * 
-     * @param loc_id
-     *            A file or group identifier.
-     * @param name
-     *            A datatype name.
-     * @param type
-     *            A datatype identifier.
+     * @deprecated As of HDF5 1.8, replaced by {@link #H5Tcommit(int, String, int, int, int, int)}
+     *
+     * @param loc_id   IN: Location identifier.
+     * @param name     IN: Name given to committed datatype.
+     * @param type_id  IN: Identifier of datatype to be committed.
      * 
      * @return a non-negative value if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
-     * @exception NullPointerException
-     *                - name is null.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
+     * @exception NullPointerException - name is null.
      **/
-    public synchronized static native int H5Tcommit(int loc_id, String name,
+    public static int H5Tcommit(int loc_id, String name,
+            int type) throws HDF5LibraryException, NullPointerException {
+        return H5Tcommit1(loc_id, name, type);
+    }
+    public synchronized static native int H5Tcommit1(int loc_id, String name,
             int type) throws HDF5LibraryException, NullPointerException;
 
     /**
      * H5Tcommitted queries a type to determine whether the type specified by
      * the type identifier is a named type or a transient type.
      * 
-     * @param type
-     *            Datatype identifier.
+     * @param type_id   IN: Identifier of datatype.
      * 
-     * @return true if successfully committed
+     * @return true the datatype has been committed
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native boolean H5Tcommitted(int type)
             throws HDF5LibraryException;
@@ -3973,40 +3970,29 @@ public class H5 {
      * H5Tcreate creates a new dataype of the specified class with the specified
      * number of bytes.
      * 
-     * @param dclass
-     *            Class of datatype to create.
-     * @param size
-     *            The number of bytes in the datatype to create.
+     * @param type IN: Class of datatype to create.
+     * @param size IN: The number of bytes in the datatype to create.
      * 
      * @return datatype identifier if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public static int H5Tcreate(int dclass, int size)
             throws HDF5LibraryException {
-        int id = _H5Tcreate(dclass, size);
-        if (id > 0)
-            OPEN_IDS.addElement(id);
-        return id;
+        return H5Tcreate(dclass, (long)size);
     }
 
-    private synchronized static native int _H5Tcreate(int dclass, int size)
-            throws HDF5LibraryException;
-
     /**
-     * H5Tcopy copies an existing datatype. The returned type is always
-     * transient and unlocked.
-     * 
-     * @param type_id
-     *            Identifier of datatype to copy. Can be a datatype identifier,
-     *            a predefined datatype (defined in H5Tpublic.h), or a dataset
-     *            Identifier.
-     * 
-     * @return a datatype identifier if successful
-     * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     *  H5Tcopy copies an existing datatype. The returned type is
+     *  always transient and unlocked.
+     *
+     *  @param type_id IN: Identifier of datatype to copy. Can be a datatype 
+     *                      identifier, a  predefined datatype (defined in 
+     *                      H5Tpublic.h), or a dataset Identifier.
+     *
+     *  @return a datatype identifier if successful
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public static int H5Tcopy(int type_id) throws HDF5LibraryException {
         int id = _H5Tcopy(type_id);
@@ -4019,19 +4005,16 @@ public class H5 {
             throws HDF5LibraryException;
 
     /**
-     * H5Tequal determines whether two datatype identifiers refer to the same
-     * datatype.
-     * 
-     * @param type_id1
-     *            Identifier of datatype to compare.
-     * @param type_id2
-     *            Identifier of datatype to compare.
-     * 
-     * @return true if the datatype identifiers refer to the same datatype, else
-     *         FALSE.
-     * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     *  H5Tequal determines whether two datatype identifiers refer
+     *  to the same datatype.
+     *
+     *  @param type_id1 IN: Identifier of datatype to compare.
+     *  @param type_id2 IN: Identifier of datatype to compare.
+     *
+     *  @return true if the datatype identifiers refer to the
+     *  same datatype, else false.
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native boolean H5Tequal(int type_id1,
             int type_id2) throws HDF5LibraryException;
@@ -4040,14 +4023,11 @@ public class H5 {
      * H5Tlock locks the datatype specified by the type_id identifier, making it
      * read-only and non-destrucible.
      * 
-     * @param type_id
-     *            Identifier of datatype to lock.
+     * @param type_id IN: Identifier of datatype to lock.
      * 
      * @return a non-negative value if successful
      * 
-     * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tlock(int type_id)
             throws HDF5LibraryException;
@@ -4055,14 +4035,11 @@ public class H5 {
     /**
      * H5Tget_class returns the datatype class identifier.
      * 
-     * @param type_id
-     *            Identifier of datatype to query.
+     *  @param type_id  IN: Identifier of datatype to query.
+     *
+     *  @return datatype class identifier if successful; otherwise H5T_NO_CLASS(-1).
      * 
-     * @return datatype class identifier if successful; otherwise H5T_NO_CLASS
-     *         (-1).
-     * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_class(int type_id)
             throws HDF5LibraryException;
@@ -4095,19 +4072,21 @@ public class H5 {
      * @exception HDF5LibraryException
      *                - Error from the HDF-5 Library.
      **/
-    public synchronized static native int H5Tset_size(int type_id, int size)
-            throws HDF5LibraryException;
+    public static int H5Tset_size(int type_id, int size)
+            throws HDF5LibraryException
+    {
+        H5Tset_size(type_id, (long)size);
+        return 0;
+    }
 
     /**
      * H5Tget_order returns the byte order of an atomic datatype.
      * 
-     * @param type_id
-     *            Identifier of datatype to query.
+     * @param type_id  IN: Identifier of datatype to query.
      * 
      * @return a byte order constant if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_order(int type_id)
             throws HDF5LibraryException;
@@ -4115,15 +4094,12 @@ public class H5 {
     /**
      * H5Tset_order sets the byte ordering of an atomic datatype.
      * 
-     * @param type_id
-     *            Identifier of datatype to set.
-     * @param order
-     *            Byte ordering constant.
+     * @param type_id  IN: Identifier of datatype to set.
+     * @param order    IN: Byte ordering constant.
      * 
      * @return a non-negative value if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tset_order(int type_id, int order)
             throws HDF5LibraryException;
@@ -4155,18 +4131,21 @@ public class H5 {
      * @exception HDF5LibraryException
      *                - Error from the HDF-5 Library.
      **/
-    public synchronized static native int H5Tset_precision(int type_id,
-            int precision) throws HDF5LibraryException;
+    public static int H5Tset_precision(int type_id,
+            int precision) throws HDF5LibraryException
+    {
+        H5Tset_precision(type_id, (long)precision);
+        return 0;
+    }
 
     /**
      * H5Tget_offset retrieves the bit offset of the first significant bit.
      * 
-     * @param type_id
-     *            Identifier of datatype to query.
+     * @param type_id  IN: Identifier of datatype to query.
+     *
      * @return a positive offset value if successful; otherwise 0.
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_offset(int type_id)
             throws HDF5LibraryException;
@@ -4184,18 +4163,20 @@ public class H5 {
      * @exception HDF5LibraryException
      *                - Error from the HDF-5 Library.
      **/
-    public synchronized static native int H5Tset_offset(int type_id, int offset)
-            throws HDF5LibraryException;
+    public static int H5Tset_offset(int type_id, int offset)
+            throws HDF5LibraryException
+    {
+        H5Tset_offset(type_id, (long)offset);
+        return 0;
+    }
 
     /**
      * H5Tget_pad retrieves the padding type of the least and most-significant
      * bit padding.
      * 
-     * @param type_id
-     *            IN: Identifier of datatype to query.
-     * @param pad
-     *            OUT: locations to return least-significant and
-     *            most-significant bit padding type.
+     * @param type_id IN: Identifier of datatype to query.
+     * @param pad    OUT: locations to return least-significant and
+     *                    most-significant bit padding type.
      * 
      *            <pre>
      *      pad[0] = lsb // least-significant bit padding type
@@ -4204,10 +4185,8 @@ public class H5 {
      * 
      * @return a non-negative value if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
-     * @exception NullPointerException
-     *                - pad is null.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
+     * @exception NullPointerException - pad is null.
      **/
     public synchronized static native int H5Tget_pad(int type_id, int[] pad)
             throws HDF5LibraryException, NullPointerException;
@@ -4215,12 +4194,9 @@ public class H5 {
     /**
      * H5Tset_pad sets the least and most-significant bits padding types.
      * 
-     * @param type_id
-     *            Identifier of datatype to set.
-     * @param lsb
-     *            Padding type for least-significant bits.
-     * @param msb
-     *            Padding type for most-significant bits.
+     * @param type_id  IN: Identifier of datatype to set.
+     * @param lsb      IN: Padding type for least-significant bits.
+     * @param msb      IN: Padding type for most-significant bits.
      * 
      * @return a non-negative value if successful
      * 
@@ -4233,13 +4209,11 @@ public class H5 {
     /**
      * H5Tget_sign retrieves the sign type for an integer type.
      * 
-     * @param type_id
-     *            Identifier of datatype to query.
+     * @param type_id  IN: Identifier of datatype to query.
      * 
      * @return a valid sign type if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_sign(int type_id)
             throws HDF5LibraryException;
@@ -4247,15 +4221,12 @@ public class H5 {
     /**
      * H5Tset_sign sets the sign proprety for an integer type.
      * 
-     * @param type_id
-     *            Identifier of datatype to set.
-     * @param sign
-     *            Sign type.
+     * @param type_id  IN: Identifier of datatype to set.
+     * @param sign     IN: Sign type.
      * 
      * @return a non-negative value if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tset_sign(int type_id, int sign)
             throws HDF5LibraryException;
@@ -4264,33 +4235,30 @@ public class H5 {
      * H5Tget_fields retrieves information about the locations of the various
      * bit fields of a floating point datatype.
      * 
-     * @param type_id
-     *            IN: Identifier of datatype to query.
-     * @param fields
-     *            OUT: location of size and bit-position.
+     * @param type_id IN: Identifier of datatype to query.
+     * @param fields OUT: location of size and bit-position.
      * 
-     *            <pre>
+     * <pre>
      *      fields[0] = spos  OUT: location to return size of in bits.
-     *      fields[1] = epos  OUT: location to return exponent
-     *                  bit-position.
-     *      fields[2] = esize  OUT: location to return size of
-     *                  exponent in bits.
-     *      fields[3] = mpos  OUT: location to return mantissa
-     *                  bit-position.
-     *      fields[4] = msize  OUT: location to return size of
-     *                  mantissa in bits.
+     *      fields[1] = epos  OUT: location to return exponent bit-position.
+     *      fields[2] = esize OUT: location to return size of exponent in bits.
+     *      fields[3] = mpos  OUT: location to return mantissa bit-position.
+     *      fields[4] = msize OUT: location to return size of mantissa in bits.
      * </pre>
      * 
      * @return a non-negative value if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
-     * @exception NullPointerException
-     *                - fileds is null.
-     * @exception IllegalArgumentException
-     *                - fileds array is invalid.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
+     * @exception NullPointerException - fields is null.
+     * @exception IllegalArgumentException - fields array is invalid.
      **/
-    public synchronized static native int H5Tget_fields(int type_id,
+    public static int H5Tget_fields(int type_id,
+            int[] fields)
+            throws HDF5LibraryException, NullPointerException,
+            IllegalArgumentException {
+                return H5Tget_fields_int(type_id, fields);
+            }
+    private synchronized static native int H5Tget_fields_int(int type_id,
             int[] fields)
             throws HDF5LibraryException, NullPointerException,
             IllegalArgumentException;
@@ -4317,9 +4285,14 @@ public class H5 {
      * @exception HDF5LibraryException
      *                - Error from the HDF-5 Library.
      **/
-    public synchronized static native int H5Tset_fields(int type_id, int spos,
+    public static int H5Tset_fields(int type_id, int spos,
             int epos, int esize, int mpos, int msize)
-            throws HDF5LibraryException;
+            throws HDF5LibraryException
+     {
+        H5Tset_fields(type_id, (long)spos, (long)epos, (long)esize, 
+                (long)mpos, (long)msize);
+        return 0;
+     }
 
     /**
      * H5Tget_ebias retrieves the exponent bias of a floating-point type.
@@ -4348,20 +4321,22 @@ public class H5 {
      * @exception HDF5LibraryException
      *                - Error from the HDF-5 Library.
      **/
-    public synchronized static native int H5Tset_ebias(int type_id, int ebias)
-            throws HDF5LibraryException;
+    public static int H5Tset_ebias(int type_id, int ebias)
+            throws HDF5LibraryException
+    {
+        H5Tset_ebias(type_id, (long)ebias);
+        return 0;
+    }
 
     /**
      * H5Tget_norm retrieves the mantissa normalization of a floating-point
      * datatype.
      * 
-     * @param type_id
-     *            Identifier of datatype to query.
+     * @param type_id  IN: Identifier of datatype to query.
      * 
      * @return a valid normalization type if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_norm(int type_id)
             throws HDF5LibraryException;
@@ -4369,15 +4344,12 @@ public class H5 {
     /**
      * H5Tset_norm sets the mantissa normalization of a floating-point datatype.
      * 
-     * @param type_id
-     *            Identifier of datatype to set.
-     * @param norm
-     *            Mantissa normalization type.
+     * @param type_id  IN: Identifier of datatype to set.
+     * @param norm     IN: Mantissa normalization type.
      * 
      * @return a non-negative value if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tset_norm(int type_id, int norm)
             throws HDF5LibraryException;
@@ -4386,13 +4358,11 @@ public class H5 {
      * H5Tget_inpad retrieves the internal padding type for unused bits in
      * floating-point datatypes.
      * 
-     * @param type_id
-     *            Identifier of datatype to query.
+     * @param type_id  IN: Identifier of datatype to query.
      * 
      * @return a valid padding type if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_inpad(int type_id)
             throws HDF5LibraryException;
@@ -4403,15 +4373,12 @@ public class H5 {
      * then H5Tset_inpad will be filled according to the value of the padding
      * value property inpad.
      * 
-     * @param type_id
-     *            Identifier of datatype to modify.
-     * @param inpad
-     *            Padding type.
+     * @param type_id  IN: Identifier of datatype to modify.
+     * @param inpad    IN: Padding type.
      * 
      * @return a non-negative value if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tset_inpad(int type_id, int inpad)
             throws HDF5LibraryException;
@@ -4419,13 +4386,11 @@ public class H5 {
     /**
      * H5Tget_cset retrieves the character set type of a string datatype.
      * 
-     * @param type_id
-     *            Identifier of datatype to query.
+     * @param type_id  IN: Identifier of datatype to query.
      * 
      * @return a valid character set type if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_cset(int type_id)
             throws HDF5LibraryException;
@@ -4433,15 +4398,12 @@ public class H5 {
     /**
      * H5Tset_cset the character set to be used.
      * 
-     * @param type_id
-     *            Identifier of datatype to modify.
-     * @param cset
-     *            Character set type.
+     * @param type_id  IN: Identifier of datatype to modify.
+     * @param cset     IN: Character set type.
      * 
      * @return a non-negative value if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tset_cset(int type_id, int cset)
             throws HDF5LibraryException;
@@ -4449,13 +4411,11 @@ public class H5 {
     /**
      * H5Tget_strpad retrieves the string padding method for a string datatype.
      * 
-     * @param type_id
-     *            Identifier of datatype to query.
+     * @param type_id  IN: Identifier of datatype to query.
      * 
      * @return a valid string padding type if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_strpad(int type_id)
             throws HDF5LibraryException;
@@ -4463,15 +4423,12 @@ public class H5 {
     /**
      * H5Tset_strpad defines the storage mechanism for the string.
      * 
-     * @param type_id
-     *            Identifier of datatype to modify.
-     * @param strpad
-     *            String padding type.
+     * @param type_id IN: Identifier of datatype to modify.
+     * @param strpad  IN: String padding type.
      * 
      * @return a non-negative value if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tset_strpad(int type_id, int strpad)
             throws HDF5LibraryException;
@@ -4479,76 +4436,66 @@ public class H5 {
     /**
      * H5Tget_nmembers retrieves the number of fields a compound datatype has.
      * 
-     * @param type_id
-     *            Identifier of datatype to query.
+     * @param type_id  IN: Identifier of datatype to query.
      * 
      * @return number of members datatype has if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_nmembers(int type_id)
             throws HDF5LibraryException;
 
     /**
-     * H5Tget_member_name retrieves the name of a field of a compound datatype.
+     * H5Tget_member_name retrieves the name of a field of a compound datatype or 
+     * an element of an enumeration datatype. 
      * 
-     * @param type_id
-     *            Identifier of datatype to query.
-     * @param field_idx
-     *            Field index (0-based) of the field name to retrieve.
+     * @param type_id    IN: Identifier of datatype to query.
+     * @param field_idx  IN: Field index (0-based) of the field name to retrieve.
      * 
-     * @return a valid pointer if successful; otherwise null.
+     * @return a valid pointer to the name if successful; otherwise null.
      * 
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
-    public synchronized static native String H5Tget_member_name(int type_id,
-            int field_idx);
+    public synchronized static native String H5Tget_member_name(int type_id, int field_idx)
+    throws HDF5LibraryException;
 
     /**
      * H5Tget_member_index retrieves the index of a field of a compound
      * datatype.
      * 
-     * @param type_id
-     *            Identifier of datatype to query.
-     * @param field_name
-     *            Field name of the field index to retrieve.
+     * @param type_id    IN: Identifier of datatype to query.
+     * @param field_name IN: Field name of the field index to retrieve.
      * 
      * @return if field is defined, the index; else negative.
      * 
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_member_index(int type_id,
-            String field_name);
+            String field_name) throws HDF5LibraryException;
 
     /**
      * H5Tget_member_class returns the datatype of the specified member.
      * 
-     * @param type_id
-     *            Identifier of datatype to query.
-     * @param field_idx
-     *            Field index (0-based) of the field type to retrieve.
+     * @param type_id   IN: Datatype identifier of compound object.
+     * @param membno    IN: Compound object member number.
      * 
-     * @return the identifier of a copy of the datatype of the field if
-     *         successful;
+     * @return the identifier of a copy of the datatype of the field if successful;
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tget_member_class(int type_id,
-            int field_idx) throws HDF5LibraryException;
+            int membno) throws HDF5LibraryException;
 
     /**
      * H5Tget_member_type returns the datatype of the specified member.
      * 
-     * @param type_id
-     *            Identifier of datatype to query.
-     * @param field_idx
-     *            Field index (0-based) of the field type to retrieve.
+     * @param type_id   IN: Identifier of datatype to query.
+     * @param field_idx IN: Field index (0-based) of the field type to retrieve.
      * 
      * @return the identifier of a copy of the datatype of the field if
      *         successful;
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public static int H5Tget_member_type(int type_id, int field_idx)
             throws HDF5LibraryException {
@@ -4567,37 +4514,28 @@ public class H5 {
      * NOT the offset of any Java object which might be mapped to this data
      * item.
      * 
-     * @param type_id
-     *            Identifier of datatype to query.
-     * @param membno
-     *            Field index (0-based) of the field type to retrieve.
+     * @param type_id  IN: Identifier of datatype to query.
+     * @param membno   IN: Field index (0-based) of the field type to retrieve.
      * 
      * @return the offset of the member.
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native long H5Tget_member_offset(int type_id,
             int membno) throws HDF5LibraryException;
 
     /**
-     * H5Tinsert adds another member to the compound datatype type_id.
+     *  H5Tinsert adds another member to the compound datatype type_id.
+     *
+     *  @param type_id  IN: Identifier of compound datatype to modify.
+     *  @param name     IN: Name of the field to insert.
+     *  @param offset   IN: Offset in memory structure of the field to insert.
+     *  @param field_id IN: Datatype identifier of the field to insert.
      * 
-     * @param type_id
-     *            Identifier of compound datatype to modify.
-     * @param name
-     *            Name of the field to insert.
-     * @param offset
-     *            Offset in memory structure of the field to insert.
-     * @param field_id
-     *            Datatype identifier of the field to insert.
+     *  @return a non-negative value if successful
      * 
-     * @return a non-negative value if successful
-     * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
-     * @exception NullPointerException
-     *                - name is null.
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - name is null.
      **/
     public synchronized static native int H5Tinsert(int type_id, String name,
             long offset, int field_id)
@@ -4610,13 +4548,11 @@ public class H5 {
      * <b>WARNING:</b> This call only affects the C-data, even if it succeeds,
      * there may be no visible effect on Java objects.
      * 
-     * @param type_id
-     *            Identifier of datatype to modify.
+     * @param type_id IN: Identifier of datatype to modify.
      * 
      * @return a non-negative value if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tpack(int type_id)
             throws HDF5LibraryException;
@@ -4624,13 +4560,11 @@ public class H5 {
     /**
      * H5Tclose releases a datatype.
      * 
-     * @param type_id
-     *            Identifier of datatype to release.
+     * @param type_id IN: Identifier of datatype to release.
      * 
      * @return a non-negative value if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public static int H5Tclose(int type_id) throws HDF5LibraryException {
         OPEN_IDS.removeElement(type_id);
@@ -4644,13 +4578,11 @@ public class H5 {
      * H5Tenum_create creates a new enumeration datatype based on the specified
      * base datatype, parent_id, which must be an integer type.
      * 
-     * @param base_id
-     *            Identifier of the parent datatype to release.
-     * 
-     * @return a non-negative value if successful
-     * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     *  @param base_id IN: Identifier of the parent datatype to release.
+     *
+     *  @return the datatype identifier for the new enumeration datatype
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public static int H5Tenum_create(int base_id) throws HDF5LibraryException {
         int id = _H5Tenum_create(base_id);
@@ -4666,50 +4598,50 @@ public class H5 {
      * H5Tenum_insert inserts a new enumeration datatype member into an
      * enumeration datatype.
      * 
-     * @param type
-     *            Identifier of datatype.
-     * @param name
-     *            The name of the member
-     * @param value
-     *            The value of the member, data of the correct type
+     * @param type  IN: Identifier of datatype.
+     * @param name  IN: The name of the member
+     * @param value IN: The value of the member, data of the correct type
      * 
      * @return a non-negative value if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
-     * @exception NullPointerException
-     *                - name is null.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
+     * @exception NullPointerException - name is null.
      **/
-    public synchronized static native int H5Tenum_insert(int type, String name,
-            int[] value) throws HDF5LibraryException, NullPointerException;
 
-    public synchronized static int H5Tenum_insert(int type, String name,
+    public static int H5Tenum_insert(int type, String name,
+            int[] value) throws HDF5LibraryException, NullPointerException {
+        return H5Tenum_insert_int(type, name, value);
+    }
+
+    public static int H5Tenum_insert(int type, String name,
             int value) throws HDF5LibraryException, NullPointerException {
         int[] val = { value };
-        return H5Tenum_insert(type, name, val);
+        return H5Tenum_insert_int(type, name, val);
     }
+    
+    private synchronized static native int H5Tenum_insert_int(int type, String name,
+            int[] value) throws HDF5LibraryException, NullPointerException;
 
     /**
      * H5Tenum_nameof finds the symbol name that corresponds to the specified
      * value of the enumeration datatype type.
      * 
-     * @param type
-     *            IN: Identifier of datatype.
-     * @param value
-     *            IN: The value of the member, data of the correct
-     * @param name
-     *            OUT: The name of the member
-     * @param size
-     *            IN: The max length of the name
+     * @param type  IN: Identifier of datatype.
+     * @param value IN: The value of the member, data of the correct
+     * @param name OUT: The name of the member
+     * @param size  IN: The max length of the name
      * 
      * @return a non-negative value if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
-     * @exception NullPointerException
-     *                - name is null.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
+     * @exception NullPointerException - name is null.
      **/
-    public synchronized static native int H5Tenum_nameof(int type, int[] value,
+    public static int H5Tenum_nameof(int type, int[] value,
+            String[] name, int size)
+            throws HDF5LibraryException, NullPointerException {
+                return H5Tenum_nameof_int(type, value, name, size);
+            }
+    private synchronized static native int H5Tenum_nameof_int(int type, int[] value,
             String[] name, int size)
             throws HDF5LibraryException, NullPointerException;
 
@@ -4717,34 +4649,32 @@ public class H5 {
      * H5Tenum_valueof finds the value that corresponds to the specified name of
      * the enumeration datatype type.
      * 
-     * @param type
-     *            IN: Identifier of datatype.
-     * @param name
-     *            IN: The name of the member
-     * @param value
-     *            OUT: The value of the member
+     * @param type   IN: Identifier of datatype.
+     * @param name   IN: The name of the member
+     * @param value OUT: The value of the member
      * 
      * @return a non-negative value if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
-     * @exception NullPointerException
-     *                - name is null.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
+     * @exception NullPointerException - name is null.
      **/
-    public synchronized static native int H5Tenum_valueof(int type,
+    public static int H5Tenum_valueof(int type,
+            String name, int[] value)
+            throws HDF5LibraryException, NullPointerException {
+                return H5Tenum_valueof_int(type, name, value);
+            }
+    private synchronized static native int H5Tenum_valueof_int(int type,
             String name, int[] value)
             throws HDF5LibraryException, NullPointerException;
 
     /**
      * H5Tvlen_create creates a new variable-length (VL) dataype.
      * 
-     * @param base_id
-     *            IN: Identifier of parent datatype.
+     * @param base_id  IN: Identifier of parent datatype.
      * 
      * @return a non-negative value if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public static int H5Tvlen_create(int base_id) throws HDF5LibraryException {
         int id = _H5Tvlen_create(base_id);
@@ -4760,15 +4690,12 @@ public class H5 {
      * H5Tset_tag tags an opaque datatype type_id with a unique ASCII identifier
      * tag.
      * 
-     * @param type
-     *            IN: Identifier of parent datatype.
-     * @param tag
-     *            IN: Name of the tag (will be stored as ASCII)
+     * @param type IN: Datatype identifier for the opaque datatype to be tagged.
+     * @param tag  IN: Descriptive ASCII string with which the opaque datatype is to be tagged.
      * 
      * @return a non-negative value if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native int H5Tset_tag(int type, String tag)
             throws HDF5LibraryException;
@@ -4776,13 +4703,11 @@ public class H5 {
     /**
      * H5Tget_tag returns the tag associated with datatype type_id.
      * 
-     * @param type
-     *            IN: Identifier of datatype.
+     * @param type IN: Identifier of datatype.
      * 
      * @return the tag
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public synchronized static native String H5Tget_tag(int type)
             throws HDF5LibraryException;
@@ -4790,13 +4715,11 @@ public class H5 {
     /**
      * H5Tget_super returns the type from which TYPE is derived.
      * 
-     * @param type
-     *            IN: Identifier of datatype.
+     * @param type IN: Identifier of datatype.
      * 
      * @return the parent type
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public static int H5Tget_super(int type) throws HDF5LibraryException {
         int id = _H5Tget_super(type);
@@ -4812,26 +4735,42 @@ public class H5 {
      * H5Tget_member_value returns the value of the enumeration datatype member
      * memb_no.
      * 
-     * @param type_id
-     *            IN: Identifier of datatype.
-     * @param membno
-     *            IN: The name of the member
-     * @param value
-     *            OUT: The value of the member
+     * @param type_id IN: Identifier of datatype.
+     * @param membno  IN: The name of the member
+     * @param value  OUT: The value of the member
      * 
      * @return a non-negative value if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
-     * @exception NullPointerException
-     *                - name is null.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
+     * @exception NullPointerException - value is null.
      **/
-    public synchronized static native int H5Tget_member_value(int type_id,
+    public static int H5Tget_member_value(int type_id,
+            int membno, int[] value)
+            throws HDF5LibraryException, NullPointerException {
+                return H5Tget_member_value_int(type_id, membno, value);
+            }
+    private synchronized static native int H5Tget_member_value_int(int type_id,
             int membno, int[] value)
             throws HDF5LibraryException, NullPointerException;
 
     /**
      ** Array data types, new in HDF5.1.4.
+     **/
+
+    /**
+     *  H5Tarray_create creates a new array datatype object. 
+     *
+     *  @deprecated As of HDF5 1.8, replaced by {@link #H5Tarray_create(int, int, long[])}
+     *
+     *  @param base     IN: Datatype identifier for the array base datatype.
+     *  @param rank     IN: Rank of the array.
+     *  @param dims     IN: Size of each array dimension.
+     *  @param perms    IN: Dimension permutation. (Currently not implemented.)
+     *
+     *  @return a valid datatype identifier
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - dims is null.
      **/
     public static int H5Tarray_create(int base, int rank, int[] dims,
             int[] perms) throws HDF5LibraryException, NullPointerException {
@@ -4845,9 +4784,33 @@ public class H5 {
             int[] dims, int[] perms)
             throws HDF5LibraryException, NullPointerException;
 
-    public synchronized static native int H5Tget_array_ndims(int dt)
-            throws HDF5LibraryException, NullPointerException;
 
+    /**
+     *  H5Tget_array_ndims returns the rank, the number of dimensions, of an array datatype object. 
+     *
+     *  @param type_id  IN: Datatype identifier of array object.
+     *
+     *  @return the rank of the array
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     **/
+    public synchronized static native int H5Tget_array_ndims(int type_id)
+    throws HDF5LibraryException;
+
+    /**
+     *  H5Tget_array_dims returns the sizes of the dimensions of the specified array datatype object. 
+     *
+     *  @deprecated As of HDF5 1.8
+     *
+     *  @param type_id  IN: Datatype identifier of array object.
+     *  @param dims    OUT: Sizes of array dimensions.
+     *  @param perm[]  OUT: Dimension permutations. (This parameter is not used.)
+     *
+     *  @return the non-negative number of dimensions of the array type
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - dims is null.
+     **/
     public synchronized static native int H5Tget_array_dims(int dt, int[] dims,
             int[] perms) throws HDF5LibraryException, NullPointerException;
 
@@ -4914,16 +4877,25 @@ public class H5 {
     public synchronized static native int H5Gget_objtype_by_idx(int group_id,
             long idx) throws HDF5LibraryException, NullPointerException;
 
+    /**
+     *  H5Tget_native_type returns the equivalent native datatype for the datatype specified in type_id. 
+     *
+     *  @param type_id   IN: Identifier of datatype to query.
+     *  @param direction IN: Direction of search.
+     *
+     *  @return the native datatype identifier for the specified dataset datatype. 
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     **/
     public static int H5Tget_native_type(int tid, int direction)
-            throws HDF5LibraryException, NullPointerException {
+            throws HDF5LibraryException {
         int id = _H5Tget_native_type(tid, direction);
         if (id > 0)
             OPEN_IDS.addElement(id);
         return id;
     }
-
     private synchronized static native int _H5Tget_native_type(int tid,
-            int direction) throws HDF5LibraryException, NullPointerException;
+            int direction) throws HDF5LibraryException;
 
     // Backward compatibility:
     // These functions have been replaced by new HDF5 library calls.
@@ -5139,8 +5111,19 @@ public class H5 {
         return status;
     }
 
+
+    /**
+     *  H5Tget_native_type returns the equivalent native datatype for the datatype specified in type_id. 
+     *
+     *  @param type_id   IN: Identifier of datatype to query.
+     *                       Direction of search is assumed to be in ascending order.
+     *
+     *  @return the native datatype identifier for the specified dataset datatype. 
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     **/
     public synchronized static int H5Tget_native_type(int tid)
-            throws HDF5LibraryException, NullPointerException {
+            throws HDF5LibraryException {
         return H5Tget_native_type(tid, HDF5Constants.H5T_DIR_ASCEND);
     }
 
@@ -5185,17 +5168,73 @@ public class H5 {
     public synchronized static native int H5set_free_list_limits(
             int reg_global_lim, int reg_list_lim, int arr_global_lim,
             int arr_list_lim, int blk_global_lim, int blk_list_lim)
-            throws HDF5LibraryException, NullPointerException;
+            throws HDF5LibraryException;
 
+
+    /**
+     * H5Fget_obj_ids returns the list of identifiers for all open HDF5 objects
+     * fitting the specified criteria.
+     * 
+     * @param file_id
+     *            IN: File identifier for a currently-open HDF5 file
+     * @param types
+     *            IN: Type of object for which identifiers are to be returned.
+     * @param max_objs
+     *            IN: Maximum number of object identifiers to place into
+     *            obj_id_list.
+     * @param obj_id_list
+     *            OUT: Pointer to the returned list of open object identifiers.
+     * 
+     * @return the number of objects placed into obj_id_list.
+     * 
+     * @exception HDF5LibraryException
+     *                - Error from the HDF-5 Library.
+     * @exception NullPointerException
+     *                - obj_id_list is null.
+     **/
     public synchronized static native int H5Fget_obj_ids(int file_id,
             int types, int max, int[] obj_id_list)
             throws HDF5LibraryException, NullPointerException;
 
-    public synchronized static native int H5Fget_obj_count(int file_id,
-            int types) throws HDF5LibraryException, NullPointerException;
 
-    public synchronized static native boolean H5Tis_variable_str(int dtype_id)
-            throws HDF5LibraryException, NullPointerException;
+    /**
+     * H5Fget_obj_count returns the number of open object identifiers for the
+     * file.
+     * 
+     * @param file_id
+     *            IN: File identifier for a currently-open HDF5 file
+     * @param types
+     *            IN: Type of object for which identifiers are to be returned.
+     *            <ul>
+     *            <li>H5F_OBJ_FILE Files only</li>
+     *            <li>H5F_OBJ_DATASET Datasets only</li>
+     *            <li>H5F_OBJ_GROUP Groups only</li>
+     *            <li>H5F_OBJ_DATATYPE Named datatypes only</li>
+     *            <li>H5F_OBJ_ATTR Attributes only</li>
+     *            <li>H5F_OBJ_ALL All of the above</li>
+     *            <li>H5F_OBJ_LOCAL Restrict search to objects opened through
+     *            current file identifier.</li>
+     *            </ul>
+     * 
+     * @return the number of open objects.
+     * 
+     * @exception HDF5LibraryException
+     *                - Error from the HDF-5 Library.
+     **/
+    public synchronized static native int H5Fget_obj_count(int file_id,
+            int types) throws HDF5LibraryException;
+
+    /**
+     *  H5Tis_variable_str determines whether the datatype identified in type_id is a variable-length string. 
+     *
+     *  @param type_id  IN: Identifier of datatype to query.
+     *
+     *  @return true if type_id is a variable-length string. 
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     **/
+    public synchronized static native boolean H5Tis_variable_str(int type_id)
+    throws HDF5LibraryException;
 
     public synchronized static native int H5Zfilter_avail(int filter)
             throws HDF5LibraryException, NullPointerException;
@@ -5222,8 +5261,19 @@ public class H5 {
             long[] vector_size)
             throws HDF5LibraryException, NullPointerException;
 
-    public synchronized static native boolean H5Tdetect_class(int dtype_id,
-            int dtype_class) throws HDF5LibraryException, NullPointerException;
+    /**
+     *  H5Tdetect_class determines whether the datatype specified in dtype_id contains 
+     *  any datatypes of the datatype class specified in dtype_class. 
+     *
+     *  @param type_id  IN: Identifier of datatype to query.
+     *  @param cls      IN: Identifier of datatype cls.
+     *
+     *  @return true if the datatype specified in dtype_id contains any datatypes of the datatype class
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     **/
+    public synchronized static native boolean H5Tdetect_class(int type_id, int cls)
+    throws HDF5LibraryException;
 
     // //////////////////////////////////////////////////////////////////
     // //
@@ -6107,6 +6157,8 @@ public class H5 {
      * 
      * @exception HDF5LibraryException
      *                - Error from the HDF-5 Library.
+     * @exception NullPointerException
+     *                - obj_id_list is null.
      **/
     public synchronized static native long H5Fget_obj_ids_long(int file_id,
             int types, long max_objs, int[] obj_id_list)
@@ -6142,7 +6194,7 @@ public class H5 {
      *                - Error from the HDF-5 Library.
      **/
     public synchronized static native long H5Fget_freespace(int file_id)
-            throws HDF5LibraryException, NullPointerException;
+            throws HDF5LibraryException;
 
     // /**
     // * H5Fget_mdc_config loads the current metadata cache configuration into
@@ -6647,6 +6699,488 @@ public class H5 {
 //    public synchronized static native int H5Scombine_select(int space1_id, H5S_SELECT_OPER op,
 //          int space2_id)
 //        throws HDF5LibraryException, NullPointerException;
+
+    //////////////////////////////////////////////////////////////
+    //H5T: Datatype Interface Functions                         //
+    //////////////////////////////////////////////////////////////
+//  public interface H5T_conv_t extends Callback {
+//  int callback(int src_id, int dst_id, H5T_cdata_t cdata, long nelmts,
+//      long buf_stride, long bkg_stride, Pointer buf, Pointer bkg,
+//      int dset_xfer_plist);
+//}
+//
+//// Exception handler. If an exception like overflow happenes during
+//// conversion,
+//// this function is called if it's registered through H5Pset_type_conv_cb.
+//public interface H5T_conv_except_func_t extends Callback {
+//  int callback(H5T_conv_except_t except_type, int src_id, int dst_id,
+//      Pointer src_buf, Pointer dst_buf, Pointer user_data);
+//}
+
+/* Operations defined on all datatypes */
+
+/**
+ *  H5Tcreate creates a new dataype of the specified class with
+ *  the specified number of bytes.
+ *
+ *  @param type IN: Class of datatype to create.
+ *  @param size IN: The number of bytes in the datatype to create.
+ *
+ *  @return datatype identifier
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ **/
+    public static int H5Tcreate(int type, long size)
+    throws HDF5LibraryException {
+        int id = _H5Tcreate(type, size);
+        if (id > 0)
+            OPEN_IDS.addElement(id);
+        return id;
+    }
+private synchronized static native int _H5Tcreate(int type, long size)
+throws HDF5LibraryException;
+
+/**
+ *  H5Tcommit saves a transient datatype as an immutable named datatype in a file.
+ *
+ *  @param loc_id   IN: Location identifier.
+ *  @param name     IN: Name given to committed datatype.
+ *  @param type_id  IN: Identifier of datatype to be committed.
+ *  @param lcpl_id  IN: Link creation property list.
+ *  @param tcpl_id  IN: Datatype creation property list.
+ *  @param tapl_id  IN: Datatype access property list.
+ *
+ *  @return none
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception NullPointerException - name is null.
+ **/
+public synchronized static native void H5Tcommit(int loc_id, String name, int type_id, int lcpl_id,
+    int tcpl_id, int tapl_id)
+throws HDF5LibraryException, NullPointerException;
+
+/**
+ *  H5Topen opens a named datatype at the location specified
+ *  by loc_id and return an identifier for the datatype.
+ *
+ *  @param loc_id   IN: A file, group, or datatype identifier.
+ *  @param name     IN: A datatype name, defined within the file or group identified by loc_id.
+ *  @param tapl_id  IN: Datatype access property list.
+ *
+ *  @return a named datatype identifier if successful
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception NullPointerException - name is null.
+ **/
+public static int H5Topen(int loc_id, String name, int tapl_id)
+throws HDF5LibraryException, NullPointerException
+{
+    int id = _H5Topen2(loc_id, name, tapl_id);
+    if (id > 0)
+        OPEN_IDS.addElement(id);
+    return id;
+}
+
+private synchronized static native int _H5Topen2(int loc_id, String name, int tapl_id)
+throws HDF5LibraryException, NullPointerException;
+
+/**
+ *  H5Tcommit_anon commits a transient datatype (not immutable) to a file, 
+ *  turning it into a named datatype with the specified creation and property lists.
+ *
+ *  @param loc_id   IN: Location identifier.
+ *  @param type_id  IN: Identifier of datatype to be committed.
+ *  @param tcpl_id  IN: Datatype creation property list.
+ *  @param tapl_id  IN: Datatype access property list.
+ *
+ *  @return none
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ **/
+public synchronized static native void H5Tcommit_anon(int loc_id, int type_id, int tcpl_id, int tapl_id)
+throws HDF5LibraryException;
+
+/**
+ *  H5Tget_create_plist returns a property list identifier for the datatype 
+ *  creation property list associated with the datatype specified by type_id. 
+ *
+ *  @param type_id   IN: Identifier of datatype.
+ *
+ *  @return a datatype property list identifier.
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ **/
+public synchronized static native int H5Tget_create_plist(int type_id)
+throws HDF5LibraryException;
+
+/**
+ *  H5Tencode converts a data type description into binary form in a buffer.
+ *
+ *  @param obj_id   IN: Identifier of the object to be encoded.
+ *  @param buf     OUT: Buffer for the object to be encoded into. 
+ *                      If the provided buffer is NULL, only the 
+ *                      size of buffer needed is returned.
+ *  @param nalloc   IN: The size of the allocated buffer.
+ *
+ *  @return the size needed for the allocated buffer.
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception NullPointerException - buf is null.
+ **/
+public synchronized static native int H5Tencode(int obj_id, byte[] buf, long nalloc)
+throws HDF5LibraryException, NullPointerException;
+///**
+// *  H5Tencode converts a data type description into binary form in a buffer.
+// *
+// *  @param obj_id   IN: Identifier of the object to be encoded.
+// *
+// *  @return the buffer for the object to be encoded into.
+// *
+// *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+// **/
+//public synchronized static native byte[] H5Tencode(int obj_id)
+//throws HDF5LibraryException;
+
+/**
+ *  H5Tdecode reconstructs the HDF5 data type object and 
+ *  returns a new object handle for it.
+ *
+ *  @param buf   IN: Buffer for the data type object to be decoded.
+ *
+ *  @return a new object handle
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception NullPointerException - buf is null.
+ **/
+public synchronized static native int H5Tdecode(byte[] buf)
+throws HDF5LibraryException, NullPointerException;
+
+/* Operations defined on compound datatypes */
+
+/* Operations defined on enumeration datatypes */
+
+/**
+ *  H5Tenum_insert inserts a new enumeration datatype member
+ *  into an enumeration datatype.
+ *
+ *  @param type  IN: Identifier of datatype.
+ *  @param name  IN: The name of the member
+ *  @param value IN: The value of the member, data of the correct type
+ *
+ *  @return none
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception NullPointerException - name is null.
+ **/
+public synchronized static native void H5Tenum_insert(int type, String name, byte[] value)
+throws HDF5LibraryException, NullPointerException;
+
+/**
+ *  H5Tenum_nameof finds the symbol name that corresponds
+ *  to the specified value of the enumeration datatype type.
+ *
+ *  @param type   IN: Identifier of datatype.
+ *  @param value  IN: The value of the member, data of the correct
+ *  @param size   IN: The probable length of the name
+ *
+ *  @return the symbol name.
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception NullPointerException - value is null.
+ **/
+public synchronized static native String H5Tenum_nameof(int type, byte[] value, long size)
+throws HDF5LibraryException, NullPointerException;
+//int H5Tenum_nameof(int type, Pointer value, Buffer name/* out */, long size);
+
+/**
+ *  H5Tenum_valueof finds the value that corresponds to
+ *  the specified name of the enumeration datatype type.
+ *
+ *  @param type   IN: Identifier of datatype.
+ *  @param name   IN: The name of the member
+ *  @param value OUT: The value of the member
+ *
+ *  @return the value of the enumeration datatype.
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ **/
+public synchronized static native void H5Tenum_valueof(int type, String name, byte[] value)
+throws HDF5LibraryException, NullPointerException;
+
+/* Operations defined on variable-length datatypes */
+
+/* Operations defined on array datatypes */
+/**
+ *  H5Tarray_create creates a new array datatype object. 
+ *
+ *  @param base_id  IN: Datatype identifier for the array base datatype.
+ *  @param ndims    IN: Rank of the array.
+ *  @param dim      IN: Size of each array dimension.
+ *
+ *  @return a valid datatype identifier
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception NullPointerException - dim is null.
+ **/
+public static int H5Tarray_create(int base_id, int ndims, long[] dim)
+throws HDF5LibraryException, NullPointerException
+{
+  int id = _H5Tarray_create2(base_id, ndims, dim);
+  if (id > 0)
+      OPEN_IDS.addElement(id);
+  return id;
+}
+private synchronized static native int _H5Tarray_create2(int base_id, int ndims, long[] dim)
+throws HDF5LibraryException, NullPointerException;
+
+/**
+ *  H5Tget_array_dims returns the sizes of the dimensions of the specified array datatype object. 
+ *
+ *  @param type_id  IN: Datatype identifier of array object.
+ *  @param dims    OUT: Sizes of array dimensions.
+ *
+ *  @return the non-negative number of dimensions of the array type
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception NullPointerException - dims is null.
+ **/
+public static int H5Tget_array_dims(int type_id, long[] dims)
+throws HDF5LibraryException, NullPointerException
+{
+  return H5Tget_array_dims2(type_id, dims);
+}
+/**
+ *  H5Tget_array_dims2 returns the sizes of the dimensions of the specified array datatype object. 
+ *
+ *  @see public static int H5Tget_array_dims(int type_id, long[] dims)
+ **/
+public synchronized static native int H5Tget_array_dims2(int type_id, long[] dims)
+throws HDF5LibraryException, NullPointerException;
+
+/* Operations defined on opaque datatypes */
+
+/* Querying property values */
+
+/**
+ *  H5Tget_size returns the size of a datatype in bytes.
+ *
+ *  @param type_id  IN: Identifier of datatype to query.
+ *
+ *  @return the size of the datatype in bytes
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ **/
+public synchronized static native long H5Tget_size_long(int type_id)
+throws HDF5LibraryException;
+
+/**
+ *  H5Tget_precision returns the precision of an atomic datatype.
+ *
+ *  @param type_id  IN: Identifier of datatype to query.
+ *
+ *  @return the number of significant bits if successful
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ **/
+public synchronized static native long H5Tget_precision_long(int type_id)
+throws HDF5LibraryException;
+
+/**
+ *  H5Tget_fields retrieves information about the locations of
+ *  the various bit fields of a floating point datatype.
+ *
+ *  @param type_id  IN: Identifier of datatype to query.
+ *  @param fields  OUT: location of size and bit-position.
+ *  <ul>
+ *      <li>fields[0] = spos  OUT: location to return size of in bits.</li>
+ *      <li>fields[1] = epos  OUT: location to return exponent bit-position.</li>
+ *      <li>fields[2] = esize OUT: location to return size of exponent in bits.</li>
+ *      <li>fields[3] = mpos  OUT: location to return mantissa bit-position.</li>
+ *      <li>fields[4] = msize OUT: location to return size of mantissa in bits.</li>
+ *  </ul>
+ *
+ *  @return none.
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception NullPointerException - fields is null.
+ *  @exception IllegalArgumentException - fields array is invalid.
+ **/
+public synchronized static native void H5Tget_fields(int type_id, long[] fields)
+throws HDF5LibraryException, NullPointerException, IllegalArgumentException;
+
+/**
+ *  H5Tget_ebias retrieves the exponent bias of a
+ *  floating-point type.
+ *
+ *  @param type_id  IN: Identifier of datatype to query.
+ *
+ *  @return the bias 
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ **/
+public synchronized static native long H5Tget_ebias_long(int type_id)
+throws HDF5LibraryException;
+
+/**
+ *  H5Tget_member_value returns the value of the enumeration datatype member memb_no. 
+ *
+ *  @param type_id  IN: Datatype identifier for the enumeration datatype.
+ *  @param membno   IN: Number of the enumeration datatype member.
+ *  @param value   OUT: The value of the member
+ *
+ *  @return none.
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception NullPointerException - value is null.
+ **/
+public synchronized static native void H5Tget_member_value(int type_id, int membno, byte[] value)
+throws HDF5LibraryException, NullPointerException;
+
+/* Setting property values */
+/**
+ *  H5Tset_size sets the total size in bytes, size, for an
+ *  atomic datatype (this operation is not permitted on
+ *  compound datatypes).
+ *
+ *  @param type_id  IN: Identifier of datatype to change size.
+ *  @param size     IN: Size in bytes to modify datatype.
+ *
+ *  @return none
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ **/
+public synchronized static native void H5Tset_size(int type_id, long size)
+throws HDF5LibraryException;
+
+/**
+ *  H5Tset_precision sets the precision of an atomic datatype.
+ *
+ *  @param type_id    IN: Identifier of datatype to set.
+ *  @param precision  IN: Number of bits of precision for datatype.
+ *
+ *  @return none
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ **/
+public synchronized static native void H5Tset_precision(int type_id, long precision)
+throws HDF5LibraryException;
+
+/**
+ *  H5Tset_offset sets the bit offset of the first significant bit.
+ *
+ *  @param type_id  IN: Identifier of datatype to set.
+ *  @param offset   IN: Offset of first significant bit.
+ *
+ *  @return none
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ **/
+public synchronized static native void H5Tset_offset(int type_id, long offset)
+throws HDF5LibraryException;
+
+/**
+ *  H5Tset_fields sets the locations and sizes of the various
+ *  floating point bit fields.
+ *
+ *  @param type_id  IN: Identifier of datatype to set.
+ *  @param spos     IN: Size position.
+ *  @param epos     IN: Exponent bit position.
+ *  @param esize    IN: Size of exponent in bits.
+ *  @param mpos     IN: Mantissa bit position.
+ *  @param msize    IN: Size of mantissa in bits.
+ *
+ *  @return none
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ **/
+public synchronized static native void H5Tset_fields(int type_id, long spos, long epos, long esize, long mpos, long msize)
+throws HDF5LibraryException;
+
+/**
+ *  H5Tset_ebias sets the exponent bias of a floating-point type.
+ *
+ *  @param type_id  IN: Identifier of datatype to set.
+ *  @param ebias    IN: Exponent bias value.
+ *
+ *  @return none
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ **/
+public synchronized static native void H5Tset_ebias(int type_id, long ebias)
+throws HDF5LibraryException;
+
+/* Type conversion database */
+//public synchronized static native int H5Tregister(H5T_pers_t pers, String name, int src_id, int dst_id,
+//    H5T_conv_t func)
+//throws HDF5LibraryException, NullPointerException;
+//
+//public synchronized static native int H5Tunregister(H5T_pers_t pers, String name, int src_id, int dst_id,
+//    H5T_conv_t func)
+//throws HDF5LibraryException, NullPointerException;
+
+//H5T_conv_t H5Tfind(int src_id, int dst_id, H5T_cdata_t *pcdata);
+
+/**
+ *  H5Tcompiler_conv finds out whether the library’s conversion function from 
+ *  type src_id to type dst_id is a compiler (hard) conversion.
+ *
+ *  @param src_id     IN: Identifier of source datatype.
+ *  @param dst_id     IN: Identifier of destination datatype.
+ *
+ *  @return none
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ **/
+public synchronized static native void H5Tcompiler_conv(int src_id, int dst_id)
+throws HDF5LibraryException;
+
+/**
+ **  H5Tconvert converts nelmts elements from the type specified by the src_id identifier to type dst_id.
+ *
+ *  @param src_id     IN: Identifier of source datatype.
+ *  @param dst_id     IN: Identifier of destination datatype.
+ *  @param nelmts     IN: Size of array buf.
+ *  @param buf        IN: Array containing pre- and post-conversion values.
+ *  @param background IN: Optional background buffer.
+ *  @param plist_id   IN: Dataset transfer property list identifier.
+ *
+ *  @return none
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception NullPointerException - buf is null.
+ **/
+public synchronized static native void H5Tconvert(int src_id, int dst_id, long nelmts, byte[] buf,
+    byte[] background, int plist_id)
+throws HDF5LibraryException, NullPointerException;
+//  int H5Tconvert(int src_id, int dst_id, long nelmts, Pointer buf, Pointer background, int plist_id);
+
+/**
+ *  H5Tget_array_dims returns the sizes of the dimensions of the specified array datatype object. 
+ *
+ *  @deprecated As of HDF5 1.8, replaced by {@link #H5Tget_array_dims(int, long[])}
+ *
+ *  @param type_id  IN: Datatype identifier of array object.
+ *  @param dims    OUT: Sizes of array dimensions.
+ *  @param perm    OUT: Dimension permutation. (Currently not implemented.)
+ *
+ *  @return the non-negative number of dimensions of the array type
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ **/
+public static int H5Tget_array_dims(int type_id, long[] dims, int[] perm)
+throws HDF5LibraryException, NullPointerException
+{
+  return H5Tget_array_dims1(type_id, dims, perm);
+}
+/**
+ *  H5Tget_array_dims1 returns the sizes of the dimensions of the specified array datatype object. 
+ *
+ *  @deprecated As of HDF5 1.8, replaced by {@link #H5Tget_array_dims2(int, long[])}
+ *
+ *  @see public static int H5Tget_array_dims(int type_id, long[] dims, int[] perm)
+ **/
+private synchronized static native int H5Tget_array_dims1(int type_id, long[] dims, int[] perm)
+throws HDF5LibraryException, NullPointerException;
 
     // //////////////////////////////////////////////////////////////////
     // //
