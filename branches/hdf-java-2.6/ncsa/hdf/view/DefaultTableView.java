@@ -2463,12 +2463,13 @@ implements TableView, ActionListener, MouseListener
         int column = col;
         int offset = 0;
         int morder = 1;
-
+        
         if (nSubColumns > 1) // multi-dimension compound dataset
         {
             int colIdx = col/nFields;
             column = col - colIdx*nFields;
-            offset = row*orders[column] + colIdx*nRows*orders[column];
+            ////BUG 573: offset = row*orders[column] + colIdx*nRows*orders[column];
+            offset = row*orders[column]*nSubColumns+colIdx*orders[column];
         }
         else {
             offset = row*orders[column];
