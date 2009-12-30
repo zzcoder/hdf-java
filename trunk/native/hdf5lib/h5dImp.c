@@ -937,6 +937,18 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1string
     return (jint)status;
 }
 
+htri_t H5Tdetect_variable_str(hid_t tid) {
+    htri_t ret_val = 0;
+
+    if (H5Tget_class(tid) == H5T_COMPOUND) {
+        hid_t mtid = H5Tget_member_type(tid, 0);
+        ret_val = H5Tdetect_variable_str(mtid);
+        H5Tclose (mtid);
+    } else
+        ret_val = H5Tis_variable_str(tid);
+
+    return ret_val;
+}
 
 /**
  *  Read VLEN data into array of arrays.
@@ -955,6 +967,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DreadVL
         return -1;
     }
 
+    /* fixed bug 951
     if (H5Tget_class((hid_t)mem_type_id) == H5T_COMPOUND) {
         hid_t nested_tid = H5Tget_member_type((hid_t)mem_type_id, 0);
         isStr = H5Tis_variable_str(nested_tid);
@@ -962,7 +975,9 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DreadVL
     }
     else
         isStr = H5Tis_variable_str((hid_t)mem_type_id);
+    */
 
+    isStr = H5Tdetect_variable_str((hid_t)mem_type_id);
 
     if (isStr > 0)
     {
