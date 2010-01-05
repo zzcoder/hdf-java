@@ -360,7 +360,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tset_1precision
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1offset
   (JNIEnv *env, jclass clss, jint type_id)
 {
-    size_t retVal = 0;
+    int retVal = 0;
     retVal =  H5Tget_offset(type_id);
     if (retVal < 0) {
         h5libraryError(env);
@@ -848,7 +848,7 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1member_1offset
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1member_1class
   (JNIEnv *env, jclass clss, jint type_id, jint memno)
 {
-    size_t retVal = 0;
+    int retVal = 0;
     retVal =  H5Tget_member_class((hid_t)type_id, memno);
     if (retVal < 0) {
         h5libraryError(env);

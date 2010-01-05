@@ -21,6 +21,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
 import ncsa.hdf.hdf5lib.exceptions.HDF5JavaException;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
@@ -4043,6 +4044,44 @@ public class H5 {
      **/
     public synchronized static native int H5Tget_class(int type_id)
             throws HDF5LibraryException;
+
+    /**
+     * H5Tget_class_name returns the datatype class identifier.
+     * 
+     *  @param class_id  IN: Identifier of class from H5Tget_class.
+     *
+     *  @return class name if successful; otherwise H5T_NO_CLASS.
+     * 
+     **/
+    public static String H5Tget_class_name(int class_id) {
+        String retValue = null;
+        if(HDF5Constants.H5T_INTEGER==class_id)  /*integer types             */
+            retValue = "H5T_INTEGER";
+        else if(HDF5Constants.H5T_FLOAT==class_id)    /*floating-point types      */
+            retValue = "H5T_FLOAT";
+        else if(HDF5Constants.H5T_TIME==class_id)     /*date and time types       */
+            retValue = "H5T_TIME";
+        else if(HDF5Constants.H5T_STRING==class_id)   /*character string types    */
+            retValue = "H5T_STRING";
+        else if(HDF5Constants.H5T_BITFIELD==class_id) /*bit field types           */
+            retValue = "H5T_BITFIELD";
+        else if(HDF5Constants.H5T_OPAQUE==class_id)   /*opaque types              */
+            retValue = "H5T_OPAQUE";
+        else if(HDF5Constants.H5T_COMPOUND==class_id) /*compound types           */
+            retValue = "H5T_COMPOUND";
+        else if(HDF5Constants.H5T_REFERENCE==class_id)/*reference types          */
+            retValue = "H5T_REFERENCE";
+        else if(HDF5Constants.H5T_ENUM==class_id)     /*enumeration types        */
+            retValue = "H5T_ENUM";
+        else if(HDF5Constants.H5T_VLEN==class_id)     /*Variable-Length types    */
+            retValue = "H5T_VLEN";
+        else if(HDF5Constants.H5T_ARRAY==class_id)    /*Array types              */
+            retValue = "H5T_ARRAY";
+        else
+            retValue = "H5T_NO_CLASS";
+
+        return retValue;
+    }
 
     /**
      * H5Tget_size returns the size of a datatype in bytes.
