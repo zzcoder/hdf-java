@@ -1438,7 +1438,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Tarray_1create
     int i;
 
     if (rank <= 0) {
-        h5nullArgument( env, "H5Tarray_create:  rank is < 1");
+        h5badArgument( env, "H5Tarray_create:  rank is < 1");
         return -1;
     }
     if ( dims == NULL ) {
@@ -1703,7 +1703,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Tarray_1create2
     int i;
 
     if (rank <= 0) {
-        h5nullArgument( env, "H5Tarray_create:  rank is < 1");
+        h5badArgument( env, "H5Tarray_create:  rank is < 1");
         return -1;
     }
     if ( dims == NULL ) {
