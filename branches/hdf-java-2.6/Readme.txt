@@ -4,13 +4,14 @@ The hdf-java product has been built and tested on:
 32-bit Java 2 SDK
     * Linux
     * Solaris
-    * Mac PowerPC
     * Mac Intel
     * Windows (Vista/XP/2000)
 
 64-bit Java 2 SDK
-    * Linux 64-bit AMD
+    * Linux 64-bit 
+    * Linux 64-bit iitanium 
     * Solaris 64-bit
+    * Mac Intel
 
 
 This code will likely work on most platforms that support HDF and Java,
