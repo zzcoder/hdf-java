@@ -132,8 +132,8 @@ rem Build the HDF Java Sources.
     if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\object\nc2\*.java
     if %errorlevel% neq 0 exit /b
-    %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ext\npoess\*.java
-    if %errorlevel% neq 0 exit /b
+rem    %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ext\npoess\*.java
+rem    if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\view\*.java
     if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\test\object\*.java
@@ -179,8 +179,8 @@ rem Build the HDF JARs.
 	if %errorlevel% neq 0 exit /b
 	%java_pack% -cf fitsobj.jar ncsa\hdf\object\fits\*.class
 	if %errorlevel% neq 0 exit /b
-	%java_pack% -cf npoess.jar ext\npoess\*.class
-	if %errorlevel% neq 0 exit /b
+rem	%java_pack% -cf npoess.jar ext\npoess\*.class
+rem	if %errorlevel% neq 0 exit /b
 	echo.Jaring Successful
 
 	popd
@@ -202,7 +202,7 @@ rem Install the HDF JARs.
 
 	call :safe_copy %TESTDIR%\classes\nc2obj.jar %TESTLIBDIR%\ext
 	call :safe_copy %TESTDIR%\classes\fitsobj.jar %TESTLIBDIR%\ext
-	call :safe_copy %TESTDIR%\classes\npoess.jar %TESTLIBDIR%\ext
+rem	call :safe_copy %TESTDIR%\classes\npoess.jar %TESTLIBDIR%\ext
 	call :safe_copy %TESTDIR%\classes\jhdf.jar %TESTLIBDIR%
 	call :safe_copy %TESTDIR%\classes\jhdf5.jar %TESTLIBDIR%
 	call :safe_copy %TESTDIR%\classes\jhdfobj.jar %TESTLIBDIR%

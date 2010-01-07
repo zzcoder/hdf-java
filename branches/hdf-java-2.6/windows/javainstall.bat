@@ -162,9 +162,6 @@ rem	call :safe_copy docs\javadocs\images\*.gif %INSTALLDIR%\javadocs\images
 	if not exist "%INSTALLDIR%\hdf-object" (
 		mkdir %INSTALLDIR%\hdf-object
 	)
-	call :safe_copy docs\hdf-object\*.html %INSTALLDIR%\hdf-object
-	call :safe_copy docs\hdf-object\*.jpg %INSTALLDIR%\hdf-object
-	call :safe_copy docs\hdf-object\*.h5 %INSTALLDIR%\hdf-object
 	
     exit /b %nerrors%
 	

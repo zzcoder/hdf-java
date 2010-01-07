@@ -74,61 +74,61 @@ You need the following libraries in order to compile the HDF Java products.
 <hr>
 <h3>
 Compile the HDF Java Native C</h3>
-To compile the HDF Java Native C code, you need to have <b>Microsoft Visual C++</b>
-installed on your machine. Two Windows Makefiles hdf-java/windows are provided
-to help you to build the C source code.
+To compile the HDF Java Native C code, you need to have <b>Microsoft Visual Studio 2008</b>
+installed on your machine. Under the windows\proj\all folder is the solution file.
 <DL>
-  <DT><a href="jhdf.mak.txt">jhdf.mak</a>
-    <DD>Makefile to compile HDF4 Java Native C, native/hdflib/*.c files<br>
+  <DT><a href="..\windows\proj\jhdf\jhdf.vcproj">jhdf.vcproj</a>
+    <DD>Project to compile HDF4 Java Native C, native/hdflib/*.c files<br>
     <b>Winsock functions, Ws2_32.lib, must be included, i.e. LINK32_FLAGS=... ws2_32.lib ...</b></DD></DT>
-  <DT><a href="jhdf5.mak.txt">jhdf5.mak</a>
-    <DD>Makefile to compile HDF5 Java Native C, native/hdf5lib/*.c files</DD></DT>
+  <DT><a href="..\windows\proj\jhdf5\jhdf5.vcproj">jhdf5.vcproj</a>
+    <DD>Project to compile HDF5 Java Native C, native/hdf5lib/*.c files</DD></DT>
 </DL>
 
-You will need the nmake tool to run the makfile. The nmake tool come with Microsoft
-Visual C++. The first step is to configure the makfile. Edit the nt_makefile to set
-the dependent libraries and other requirements.
+To use the batch files the <b>JAVAHOME</b> environment variable must be set. Using the 
+VS2008 command line, change into the hdf-java\windows folder and run copy_hdf.bat.
 
 <hr>
+<h3>
+Compile the HDF native Source Code</h3>
+To compile the HDF native Source Code, you run the jnibuild.bat batch file within the 
+hdf-java root folder. You must pass the compiler version (currently only VS9) as a parameter.
+<DL>
+  <DT><a href="..\windows\jnibuild.bat">jnibuild.bat</a>
+    <DD>Batch to compile HDF native source</DD></DT>
+</DL>
 <h3>
 Compile the HDF Java Source Code</h3>
 To compile the HDF Java Source Code, you need to have jdk1.5.0 or above
-installed on your machine. A batch file under hdf-java/windows is provided to
-help you to build the Java source code.
+installed on your machine. You run the javabuild.bat batch file within the 
+hdf-java root folder. You must pass the hdf-java source folder (C:\hdf-java) as a parameter.
 <DL>
-  <DT><a href="Makefile_java.bat.txt">Makefile_java.bat</a>
+  <DT><a href="..\windows\javabuild.bat">javabuild.bat</a>
     <DD>Batch to compile HDF Java source</DD></DT>
 </DL>
+<h3>
+Test the HDF Java Build</h3>
+To test the HDF Java Build, you need to have jdk1.5.0 or above
+installed on your machine. You run the javacheck.bat batch file within the 
+hdf-java root folder. You must pass the hdf-java source folder (C:\hdf-java) as a parameter.
+<DL>
+  <DT><a href="..\windows\javacheck.bat">javacheck.bat</a>
+    <DD>Batch to test HDF Java</DD></DT>
+</DL>
+<h3>
+Install the HDF Java Build</h3>
+To install the HDF Java Build, you need to have jdk1.5.0 or above
+installed on your machine. You run the javainstall.bat batch file within the 
+hdf-java root folder. You must pass the destination folder (C:\programs\hdf-java) as a parameter.
+<DL>
+  <DT><a href="..\windows\javainstall.bat">javainstall.bat</a>
+    <DD>Batch to install HDF Java</DD></DT>
+</DL>
 
-You will need to configure the batch file before you run it. Edit the batch file
-to set the dependent libraries and other requirements.
-
-<p>
-<table cellpadding="4" cellspacing="2" border="1"  align="center">
-<tr>
-<td>
-        @ECHO OFF<br>
-        <br>
-        @REM =======================================================================<br>
-        @REM<br>
-        @REM          Batch file to compile the HDF Java source code<br>
-        @REM<br>
-        @REM =======================================================================<br>
-        <br>
-        @REM set up your java home directory(requires jdk1.5.0 or above), for example<br>
-        @REM SET JAVAHOME=d:\java\jdk1.5.0<br>
-        SET JAVAHOME=<br>
-        <br>
-        @REM set up "HDF JAVA Product" home directory, for example<br>
-        @REM SET HDFJAVA=D:\work\hdf-java<br>
-        SET HDFJAVA=<br></td>
-</tr>
-</table>
 <hr>
 <h3>
 Running the HDF Java code</h3>
-After successfully run the makefile and batch file, the binaries of the HDF Java
-products are packed and put at $(JAVAHOME)\lib.
+After successfully run the batch files, the binaries of the HDF Java
+products are packed and put at destination folder.
 
 <p>
 <table BORDER COLS=2 >
@@ -193,46 +193,7 @@ products are packed and put at $(JAVAHOME)\lib.
 </tr>
 </table>
 
-<p>
-Set the following batch file to run the HDFView
-<p>
-<code>
-        @ECHO OFF<br>
-        <br>
-        @REM =======================================================================<br>
-        @REM<br>
-        @REM          Batch file to run the HDFView<br>
-        @REM<br>
-        @REM =======================================================================<br>
-        <br>
-        @REM set up your java home directory(requires jdk1.5.0 or above), for example<br>
-        @REM SET JAVAHOME=d:\java\jdk1.5.0<br>
-        SET JAVAHOME=<br>
-        <br>
-        @REM set up "HDF JAVA Product" home directory, for example<br>
-        @REM SET HDFJAVA=D:\work\hdf-java<br>
-        SET HDFJAVA=<br>
-        <br>
-        <br>
-        @REM Do not make changes under this line unless you know what you are doing.<br>
-        @REM =======================================================================<br>
-        <br>
-        SET PATH=%HDFJAVA%\lib\win;%PATH%<br>
-        <br>
-        @REM set the JNI classpath<br>
-        set JNI_CLASSPATH=%HDFJAVA%/lib/jhdf.jar;%HDFJAVA%/lib/jhdf5.jar<br>
-        <br>
-        @REM set the object package classpath<br>
-        set OBJ_CLASSPATH=%HDFJAVA%/lib/jhdfobj.jar;%HDFJAVA%/lib/jhdf4obj.jar;<br>
-	(continued)%HDFJAVA%/lib/jhdf5obj.jar;%HDFJAVA%\lib\netcdf.jar;%HDFJAVA%\lib\fits.jar<br>
-        <br>
-        @REM set the CLASSPATH<br>
-        set CLASSPATH=%JNI_CLASSPATH%;%OBJ_CLASSPATH%;%HDFJAVA%/lib/jhdfview.jar<br>
-        <br>
-        %JAVAHOME%\bin\java -mx999m -classpath %CLASSPATH% ncsa.hdf.view.HDFView -root %HDFJAVA%<br>
-        pause<br>
-        :END<br>
-</code>
+
 <?php 
 include ("../includes/footer.html"); 
 ?>
