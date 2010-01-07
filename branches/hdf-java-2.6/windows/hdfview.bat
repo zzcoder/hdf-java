@@ -57,7 +57,7 @@ rem Setup our environment
 	)
 	set java_run=%JAVAHOME%\bin\java.exe
 	
-	set INSTALLDIR=%CD%
+	set INSTALLDIR=%CD%\lib
 	
 	set CLASSPATH=%INSTALLDIR%\*;%INSTALLDIR%\ext\*
 

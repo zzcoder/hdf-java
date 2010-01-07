@@ -81,8 +81,11 @@ rem Setup our environment
 		call :safe_delete  %INSTALLDIR%
 	)
 	
-	if not exist !%INSTALLDIR%!"\ext" (
-		mkdir %INSTALLDIR%\ext
+	if not exist !%INSTALLDIR%!"\lib" (
+		mkdir %INSTALLDIR%\lib
+	)
+	if not exist !%INSTALLDIR%!"\lib\ext" (
+		mkdir %INSTALLDIR%\lib\ext
 	)
 	
 	if not exist "win32lib" (
@@ -106,10 +109,10 @@ rem Install the HDF Java Libraries.
 
     rem Install Libraries
     echo.Installing Java Libraries...
-	call :safe_copy win32lib\*.jar %INSTALLDIR%
-	call :safe_copy win32lib\ext\*.jar %INSTALLDIR%\ext
-	call :safe_copy win32lib\*.lib %INSTALLDIR%
-	call :safe_copy win32lib\*.dll %INSTALLDIR%
+	call :safe_copy win32lib\*.jar %INSTALLDIR%\lib
+	call :safe_copy win32lib\ext\*.jar %INSTALLDIR%\lib\ext
+	call :safe_copy win32lib\*.lib %INSTALLDIR%\lib
+	call :safe_copy win32lib\*.dll %INSTALLDIR%\lib
 	
     exit /b %nerrors%
 
@@ -146,19 +149,16 @@ rem	mkdir %INSTALLDIR%\javadocs
 rem	mkdir %INSTALLDIR%\javadocs\images
 rem	call :safe_copy docs\javadocs\images\*.gif %INSTALLDIR%\javadocs\images
 
-	if not exist "%INSTALLDIR%\hdfview" (
-		mkdir %INSTALLDIR%\hdfview
+	if not exist "%INSTALLDIR%\UsersGuide" (
+		mkdir %INSTALLDIR%\UsersGuide
 	)
-	if not exist "%INSTALLDIR%\hdfview\UsersGuide" (
-		mkdir %INSTALLDIR%\hdfview\UsersGuide
+	if not exist "%INSTALLDIR%\UsersGuide\images" (
+		mkdir %INSTALLDIR%\UsersGuide\images
 	)
-	if not exist "%INSTALLDIR%\hdfview\UsersGuide\images" (
-		mkdir %INSTALLDIR%\hdfview\UsersGuide\images
-	)
-	call :safe_copy docs\hdfview\index.html %INSTALLDIR%\hdfview\UsersGuide
-	call :safe_copy docs\hdfview\UsersGuide\*.html %INSTALLDIR%\hdfview\UsersGuide
-	call :safe_copy docs\hdfview\UsersGuide\images\*.gif %INSTALLDIR%\hdfview\UsersGuide\images
-	
+	call :safe_copy docs\hdfview\index.html %INSTALLDIR%\UsersGuide
+	call :safe_copy docs\hdfview\UsersGuide\*.html %INSTALLDIR%\UsersGuide
+	call :safe_copy docs\hdfview\UsersGuide\images\*.gif %INSTALLDIR%\UsersGuide\images
+ 
     exit /b %nerrors%
 	
 rem Install the hdfview script.
