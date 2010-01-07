@@ -73,7 +73,7 @@ TESTFILES=./test/Makefile.in ./test/object/*.java ./test/object/*.in ./test/link
 
 DOCFILES=./docs/*.html ./docs/*.gif ./docs/*.js ./docs/hdfview/*.html ./docs/hdfview/*.gif ./docs/hdfview/ModularGuide/*.html ./docs/hdfview/ModularGuide/*.gif ./docs/hdfview/UsersGuide/images/*.gif ./docs/hdfview/UsersGuide/images/*.jpg ./docs/hdfview/UsersGuide/*.html
 
-WINDOWSFILES=	./windows/copy_hdf.bat ./windows/javabuild.bat  \
+WINDOWSFILES=./windows/hdfview.bat ./windows/copy_hdf.bat ./windows/javabuild.bat  \
 	./windows/javacheck.bat ./windows/javainstall.bat ./windows/jnibuild.bat \
 	./windows/proj/all/hdfjava.sln ./windows/proj/jhdf/jhdf.vcproj ./windows/proj/jhdf5/jhdf5.vcproj
  
