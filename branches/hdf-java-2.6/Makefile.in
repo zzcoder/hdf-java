@@ -52,8 +52,6 @@ FITSOBJDISTFILES= ./ncsa/hdf/object/fits/*.java ./lib/fits.jar
 
 TOPDIST=./VERSION ./COPYING ./Makefile.in \
 	./Readme_binary_jre.txt ./Readme_binary.txt ./Readme.txt \
-	./windows/jhdf.mak ./windows/Makefile_java.bat  \
-	./windows/jhdf5.mak \
 	./bin/hdfview.sh.in ./bin/hdfview.bat  \
 	./runconfig-example.sh \
 	./configure.in ./Config/config* ./Config/install-sh \
@@ -75,7 +73,12 @@ TESTFILES=./test/Makefile.in ./test/object/*.java ./test/object/*.in ./test/link
 
 DOCFILES=./docs/*.html ./docs/*.gif ./docs/*.js ./docs/hdfview/*.html ./docs/hdfview/*.gif ./docs/hdfview/ModularGuide/*.html ./docs/hdfview/ModularGuide/*.gif ./docs/hdfview/UsersGuide/images/*.gif ./docs/hdfview/UsersGuide/images/*.jpg ./docs/hdfview/UsersGuide/*.html
 
-DISTFILES= $(TOPDIST) $(JHI5DISTFILES) $(JHIDISTFILES) $(HDFDISTFILES) $(HDFVIEWDISTFILES) $(HDFOBJDISTFILES) $(H4OBJDISTFILES) $(H5OBJDISTFILES) $(NC2OBJDISTFILES) $(FITSOBJDISTFILES) $(TESTFILES) $(DOCFILES) $(FITSDISTJARFILE) $(NC2DISTJARFILE) $(JUNITSDISTJARFILE) $(EXAMPLESFILES)
+WINDOWSFILES=	./windows/copy_hdf.bat ./windows/javabuild.bat  \
+	./windows/javacheck.bat ./windows/javainstall.bat ./windows/jnibuild.bat \
+	./windows/proj/all/hdfjava.sln ./windows/proj/jhdf/jhdf.vcproj ./windows/proj/jhdf5/jhdf5.vcproj
+ 
+
+DISTFILES= $(TOPDIST) $(JHI5DISTFILES) $(JHIDISTFILES) $(HDFDISTFILES) $(HDFVIEWDISTFILES) $(HDFOBJDISTFILES) $(H4OBJDISTFILES) $(H5OBJDISTFILES) $(NC2OBJDISTFILES) $(FITSOBJDISTFILES) $(TESTFILES) $(DOCFILES) $(FITSDISTJARFILE) $(NC2DISTJARFILE) $(JUNITSDISTJARFILE) $(EXAMPLESFILES) $(WINDOWSFILES)
 
 
 JHIPACKAGES = \
