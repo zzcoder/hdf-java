@@ -34,7 +34,6 @@ public class AllH5ObjectTests {
         suite.addTestSuite(FileFormatTest.class);
         suite.addTestSuite(GroupTest.class);
         suite.addTestSuite(HObjectTest.class);
-        suite.addTestSuite(H5CompoundDSTest.class);
         
         //$JUnit-END$
         return suite;

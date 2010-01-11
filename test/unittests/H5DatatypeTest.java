@@ -108,15 +108,6 @@ public class H5DatatypeTest extends TestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
         
-        // make sure all objects are closed
-        final int fid = testFile.getFID();
-        if (fid > 0) {
-            int nObjs = 0;
-            try { nObjs = H5.H5Fget_obj_count(fid, HDF5Constants.H5F_OBJ_ALL); }
-            catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }
-            assertEquals(1, nObjs); // file id should be the only one left open
-         }
-        
         if (testFile != null) {
             try { testFile.close(); } catch (final Exception ex) {}
             testFile = null;
@@ -159,6 +150,10 @@ public class H5DatatypeTest extends TestCase {
              
             try { H5.H5Tclose(tid); } catch (final Exception ex) {}
          }
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
      }
 
     /**
@@ -204,6 +199,10 @@ public class H5DatatypeTest extends TestCase {
                 ; // Expected - intentional
             }
          }
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
     }
 
     /**
@@ -267,6 +266,10 @@ public class H5DatatypeTest extends TestCase {
         assertEquals(HDF5Constants.H5T_STRING, tclass);
         
         try { H5.H5Tclose(tid); } catch (final Exception ex) {}
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
     }
 
     /**
@@ -302,6 +305,10 @@ public class H5DatatypeTest extends TestCase {
         assertTrue(type.getDatatypeSize()==4);
         
         try { H5.H5Tclose(tid); } catch (final Exception ex) {}
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
     }
 
     /**
@@ -359,6 +366,10 @@ public class H5DatatypeTest extends TestCase {
                 }
             }
         } //for (int i=0; i<n; i++) {
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
     }
 
     /**
@@ -486,6 +497,10 @@ public class H5DatatypeTest extends TestCase {
                 fail("writeMetadata() failed. "+ ex);
             }
         } //for (int i=0; i<n; i++) {
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
     }
 
     /**
@@ -544,5 +559,9 @@ public class H5DatatypeTest extends TestCase {
         } catch (final Exception ex) { 
             fail("writeMetadata() failed. "+ ex);
         }
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
     }
 }

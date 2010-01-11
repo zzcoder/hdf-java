@@ -112,15 +112,6 @@ public class H5ScalarDSTest extends TestCase {
      */
     protected void tearDown() throws Exception {
         super.tearDown();
-
-        // make sure all objects are closed
-        final int fid = testFile.getFID();
-        if (fid > 0) {
-            int nObjs = 0;
-            try { nObjs = H5.H5Fget_obj_count(fid, HDF5Constants.H5F_OBJ_ALL); }
-            catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }
-            assertEquals(1, nObjs); // file id should be the only one left open
-         }
         
         if (testFile != null) {
             try { testFile.close(); } catch (final Exception ex) {}
@@ -206,6 +197,10 @@ public class H5ScalarDSTest extends TestCase {
             fail("setName() failed. "+ ex);
         }
         assertNotNull(testDataset);
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
     }
     
     /**
@@ -245,6 +240,10 @@ public class H5ScalarDSTest extends TestCase {
                 H5.H5Dclose(did);
             } catch (final Exception ex) {}
          }
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
      }
     
     /**
@@ -304,6 +303,10 @@ public class H5ScalarDSTest extends TestCase {
             }
             assertTrue(sid < 0);
         }
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
     }
 
     /**
@@ -345,6 +348,10 @@ public class H5ScalarDSTest extends TestCase {
             fail("clear() failed. "+ ex);
         }
         assertTrue(attrs.size() <= 0);
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
     }
 
     /**
@@ -543,6 +550,10 @@ public class H5ScalarDSTest extends TestCase {
                 assertEquals(H5TestFile.DATA_INT[idx], data[0]);
              } // for (int i=0; i<nrows; i++) {
         } //for (int loop=0; loop<NLOOPS; loop++) {
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
     }
     
     /**
@@ -568,7 +579,11 @@ public class H5ScalarDSTest extends TestCase {
         final int expected = H5TestFile.DIM_SIZE * 4;
         
         assertEquals(expected, n);
-    }
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
+   }
 
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5ScalarDS#write(java.lang.Object)}.
@@ -640,6 +655,10 @@ public class H5ScalarDSTest extends TestCase {
                 fail("write() failed. "+ ex);
             }
         } //for (int loop=0; loop<NLOOPS; loop++) {
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
      }
 
     /**
@@ -725,6 +744,10 @@ public class H5ScalarDSTest extends TestCase {
                 fail("write() failed. "+ ex);
             }
         } //for (int loop=0; loop<NLOOPS; loop++) {
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
      }
     
     /**
@@ -800,6 +823,10 @@ public class H5ScalarDSTest extends TestCase {
         assertNotNull(nullStrs);
         for (int i=0; i<data.length; i++)
             assertTrue(data[i].equals(nullStrs[i]));
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
      }
     
     /**
@@ -887,6 +914,10 @@ public class H5ScalarDSTest extends TestCase {
                 }
             }
         } //for (int loop=0; loop<NLOOPS; loop++) {
+        nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
     }
 
     /**
@@ -910,6 +941,10 @@ public class H5ScalarDSTest extends TestCase {
         assertNotNull(dtype);
         assertEquals(Datatype.CLASS_INTEGER, dtype.getDatatypeClass());
         assertEquals(H5TestFile.DATATYPE_SIZE, dtype.getDatatypeSize());
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
     }
 
     /**
@@ -939,6 +974,10 @@ public class H5ScalarDSTest extends TestCase {
             assertEquals(H5TestFile.DATA_PALETTE[i*3+1], pal[1][i]);
             assertEquals(H5TestFile.DATA_PALETTE[i*3+2], pal[2][i]);
         }
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
      }
 
     /**
@@ -968,6 +1007,10 @@ public class H5ScalarDSTest extends TestCase {
             assertEquals(H5TestFile.DATA_PALETTE[i*3+1], pal[1][i]);
             assertEquals(H5TestFile.DATA_PALETTE[i*3+2], pal[2][i]);
         }
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
     }
 
     /**
@@ -991,6 +1034,10 @@ public class H5ScalarDSTest extends TestCase {
         
         final byte[] refs = img.getPaletteRefs();
         assertNotNull(refs);
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
     }
 
     /**
@@ -1051,6 +1098,10 @@ public class H5ScalarDSTest extends TestCase {
             data = null; // Expected - intentional
         }
         assertNull(data);
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
    }
 
     /**
@@ -1124,7 +1175,11 @@ public class H5ScalarDSTest extends TestCase {
             data = null; // Expected - intentional
         }
         assertNull(data);
-   }
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
+  }
 
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5ScalarDS#getMetadata()}.
@@ -1164,6 +1219,10 @@ public class H5ScalarDSTest extends TestCase {
                 }
             }
         } //for (int i=0; i<n; i++) {
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
     }
     
     /**
@@ -1292,6 +1351,10 @@ public class H5ScalarDSTest extends TestCase {
                 fail("writeMetadata() failed. "+ ex);
             }
         } //for (int i=0; i<n; i++) {
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
     }
 
     /**
@@ -1351,6 +1414,10 @@ public class H5ScalarDSTest extends TestCase {
         } catch (final Exception ex) { 
             fail("writeMetadata() failed. "+ ex);
         }
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
      }
 
     /**
@@ -1394,6 +1461,10 @@ public class H5ScalarDSTest extends TestCase {
          }  catch (final Exception ex) { 
              fail("testFile.delete failed. "+ ex);
          }
+         int nObjs = 0;
+         try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+         catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+         assertEquals(1, nObjs); // file id should be the only one left open
     }
     
 }
