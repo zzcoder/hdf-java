@@ -141,5 +141,97 @@ public class TestH5T {
         if (filetype_id >= 0)
             H5.H5Tclose(filetype_id);
     }
+    
+    @Test
+    public void testH5Tenum_functions() throws Throwable, HDF5LibraryException {
+        int       tid=-1;
+        String    enum_type="Enum_type";
+        byte[]    enum_val = new byte[1];
+        String    enum_name;
+
+        /* Create a enumerate datatype */
+        try {
+            tid=H5.H5Tcreate(HDF5Constants.H5T_ENUM, (long)1);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("testH5Tenum_functions:H5Tcreate " + err);
+        }
+        assertTrue("testH5Tenum_functions:H5Tcreate",tid > 0);
+        try {
+            enum_val[0]=10;
+            H5.H5Tenum_insert(tid, "RED", enum_val);
+            enum_val[0]=11;
+            H5.H5Tenum_insert(tid, "GREEN", enum_val);
+            enum_val[0]=12;
+            H5.H5Tenum_insert(tid, "BLUE", enum_val);
+            enum_val[0]=13;
+            H5.H5Tenum_insert(tid, "ORANGE", enum_val);
+            enum_val[0]=14;
+            H5.H5Tenum_insert(tid, "YELLOW", enum_val);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("testH5Tenum_functions:H5Tenum_insert " + err);
+        }
+
+        /* Query member number and member index by member name, for enumeration type. */
+        assertTrue("Can't get member number",H5.H5Tget_nmembers(tid) == 5);
+        assertTrue("Can't get correct index number",H5.H5Tget_member_index(tid, "ORANGE") == 3);
+
+        /* Commit enumeration datatype and close it */
+        try {
+            H5.H5Tcommit(H5fid, enum_type, tid, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("testH5Tenum_functions:H5Tcommit " + err);
+        }
+        try {
+            if(tid > 0) 
+                H5.H5Tclose(tid);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("testH5Tenum_functions:H5Tclose " + err);
+        }
+
+        /* Open the dataytpe for query */
+        try {
+            tid = H5.H5Topen(H5fid, enum_type, HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("testH5Tenum_functions:H5Topen2 " + err);
+        }
+        assertTrue("testH5Tenum_functions:H5Tcreate",tid > 0);
+
+        /* Query member number and member index by member name, for enumeration type */
+        assertTrue("Can't get member number",H5.H5Tget_nmembers(tid) == 5);
+        assertTrue("Can't get correct index number",H5.H5Tget_member_index(tid, "ORANGE") == 3);
+
+        /* Query member value by member name, for enumeration type */
+        H5.H5Tenum_valueof (tid, "ORANGE", enum_val);
+        assertTrue("Incorrect value for enum member",enum_val[0]==13);
+
+        /* Query member value by member index, for enumeration type */
+        H5.H5Tget_member_value (tid, 2, enum_val);
+        assertTrue("Incorrect value for enum member",enum_val[0]==12);
+
+        /* Query member name by member value, for enumeration type */
+        enum_val[0] = 14;
+        enum_name = H5.H5Tenum_nameof(tid, enum_val, 16);
+        assertTrue("Incorrect name for enum member",enum_name.compareTo("YELLOW")==0);
+
+        /* Close datatype and file */
+        try {
+            if(tid > 0) 
+                H5.H5Tclose(tid);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("testH5Tenum_functions:H5Tclose " + err);
+        }
+    }
 
 }
