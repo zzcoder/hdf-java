@@ -73,7 +73,7 @@ public class H5CompoundDS extends CompoundDS
     /**
      * @see ncsa.hdf.object.HObject#serialVersionUID
      */
-	public static final long serialVersionUID = HObject.serialVersionUID;
+    public static final long serialVersionUID = HObject.serialVersionUID;
 
     /**
      * The list of attributes attached data object.
@@ -190,9 +190,9 @@ public class H5CompoundDS extends CompoundDS
      * @see ncsa.hdf.object.Dataset#clear()
      */
     public void clear() {
-    	super.clear(); 
-    		
-    	if (attributeList != null) {
+        super.clear(); 
+            
+        if (attributeList != null) {
             ((Vector)attributeList).setSize(0);
         }
      }
@@ -346,11 +346,11 @@ public class H5CompoundDS extends CompoundDS
                     try { H5.H5Tclose(comp_tid); } catch (Exception ex2) {}
                 }
                 
-				if (member_class == HDF5Constants.H5T_ARRAY) {
-					int tmptid = H5.H5Tget_super(atom_tid);
-					member_class = H5.H5Tget_class(tmptid);
-					try { H5.H5Tclose(tmptid); } catch (Exception ex) {}
-				}
+                if (member_class == HDF5Constants.H5T_ARRAY) {
+                    int tmptid = H5.H5Tget_super(atom_tid);
+                    member_class = H5.H5Tget_class(tmptid);
+                    try { H5.H5Tclose(tmptid); } catch (Exception ex) {}
+                }
                 
                 if (!isVL)
                 {

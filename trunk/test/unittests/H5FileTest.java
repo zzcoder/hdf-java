@@ -110,16 +110,6 @@ public class H5FileTest extends TestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
 
-        // make sure all objects are closed
-        final int fid = testFile.getFID();
-        if (fid > 0) {
-            int nObjs = 0;
-
-            try { nObjs = H5.H5Fget_obj_count(fid, 31); }
-            catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }
-            assertEquals(1, nObjs); // file id should be the only one left open
-         }
-
         if (testFile != null) {
             try { testFile.close(); } catch (final Exception ex) {}
             testFile = null;
@@ -176,6 +166,10 @@ public class H5FileTest extends TestCase {
         } //for (int i=0; i<NLOOPS; i++)
 
         try { testFile.open(); } catch (final Exception ex) {}
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
      }
 
     /**
@@ -224,6 +218,10 @@ public class H5FileTest extends TestCase {
         final javax.swing.tree.TreeNode root = testFile.getRootNode();
         assertNotNull(root);
         assertTrue(root.getChildCount()>0);
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
     }
 
 
@@ -232,6 +230,10 @@ public class H5FileTest extends TestCase {
      */
     public final void testIsReadOnly() {
         assertFalse(testFile.isReadOnly());
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
     }
 
     /**
@@ -354,6 +356,10 @@ public class H5FileTest extends TestCase {
     public final void testIsThisTypeString() {
         assertTrue(H5FILE.isThisType(H5TestFile.NAME_FILE_H5));
         assertFalse(H5FILE.isThisType("No such file"));
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
     }
 
     /**
@@ -367,6 +373,10 @@ public class H5FileTest extends TestCase {
      */
     public final void testIsThisTypeFileFormat() {
         assertTrue(H5FILE.isThisType(testFile));
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
     }
 
     /**
@@ -820,6 +830,10 @@ public class H5FileTest extends TestCase {
         assertTrue(nObjs <=1); // file id should be the only this left open
 
         try { testFile.open(); } catch (final Exception ex) {}
+        nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
     }
 
     /**
@@ -951,6 +965,10 @@ public class H5FileTest extends TestCase {
         assertNotNull(img);
         assertTrue(img.hasAttribute());
         assertTrue(img.isImage());
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
     }
 
 }

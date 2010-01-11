@@ -1423,7 +1423,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1member_1value
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Tarray_create
+ * Method:    _H5Tarray_create
  * Signature: (II[I[I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Tarray_1create
@@ -1454,6 +1454,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Tarray_1create
 
     dlen = ENVPTR->GetArrayLength(ENVPAR dims);
     if (dlen != rank) {
+        h5JNIFatalError( env, "H5Tarray_create:  dims len != rank");
         ENVPTR->ReleaseIntArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
         return -1;
     }
@@ -1552,7 +1553,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1array_1dims
         h5libraryError(env);
         return -1;
     }
-
+    
+    for (i = 0; i < dlen; i++) {
+        dimsP[i] = (jint) cdims[i];
+    }
     ENVPTR->ReleaseIntArrayElements(ENVPAR dims,dimsP,0);
 
     if (cdims) free(cdims);

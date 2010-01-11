@@ -111,5 +111,35 @@ public class TestH5T {
         if (filetype_id >= 0)
             H5.H5Tclose(filetype_id);
     }
+    
+    @Test
+    public void testH5Tget_array_dims() throws Throwable, HDF5LibraryException {
+       int filetype_id = -1;
+       int ndims = 0;
+       long[] adims = { 3, 5 };
+       long[] rdims = new long[2];
+
+       try {
+           filetype_id = H5.H5Tarray_create(HDF5Constants.H5T_STD_I64LE, 2, adims);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("testH5Tarray_create.H5Tarray_create " + err);
+        }
+        assertTrue("testH5Tget_array_dims:H5Tarray_create",filetype_id > 0);
+       try {
+           ndims = H5.H5Tget_array_dims(filetype_id, rdims);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("testH5Tget_array_dims.H5Tget_array_dims " + err);
+        }
+        assertTrue("testH5Tget_array_dims",ndims == 2);
+        assertTrue("testH5Tget_array_dims",adims[0] == rdims[0]);
+        assertTrue("testH5Tget_array_dims",adims[1] == rdims[1]);
+        
+        if (filetype_id >= 0)
+            H5.H5Tclose(filetype_id);
+    }
 
 }

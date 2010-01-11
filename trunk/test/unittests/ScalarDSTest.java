@@ -16,83 +16,76 @@ import ncsa.hdf.object.ScalarDS;
  *
  */
 public class ScalarDSTest extends TestCase {
-	private static final H5File H5FILE = new H5File();
+    private static final H5File H5FILE = new H5File();
 
-	private H5File testFile = null;
-	private H5Group testGroup = null;
-	private ScalarDS intDset = null;
-	private ScalarDS floatDset = null;
-	private ScalarDS charDset = null;
-	private ScalarDS strDset = null;
-	private ScalarDS enumDset = null;
-	private ScalarDS imageDset = null;
-	private ScalarDS imagePalete = null;
-	private ScalarDS ORDset = null;
-	/**
-	 * @param arg0
-	 */
-	public ScalarDSTest(String arg0) {
-		super(arg0);
-	}
+    private H5File testFile = null;
+    private H5Group testGroup = null;
+    private ScalarDS intDset = null;
+    private ScalarDS floatDset = null;
+    private ScalarDS charDset = null;
+    private ScalarDS strDset = null;
+    private ScalarDS enumDset = null;
+    private ScalarDS imageDset = null;
+    private ScalarDS imagePalete = null;
+    private ScalarDS ORDset = null;
+    /**
+     * @param arg0
+     */
+    public ScalarDSTest(String arg0) {
+        super(arg0);
+    }
 
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#setUp()
-	 */
-	protected void setUp() throws Exception {		
-		super.setUp();
-		testFile = (H5File)H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.READ);
-		assertNotNull(testFile);
-		testGroup = (H5Group) testFile.get(H5TestFile.NAME_GROUP_ATTR);
-		assertNotNull(testGroup);
+    /* (non-Javadoc)
+     * @see junit.framework.TestCase#setUp()
+     */
+    protected void setUp() throws Exception {       
+        super.setUp();
+        testFile = (H5File)H5FILE.open(H5TestFile.NAME_FILE_H5, FileFormat.READ);
+        assertNotNull(testFile);
+        testGroup = (H5Group) testFile.get(H5TestFile.NAME_GROUP_ATTR);
+        assertNotNull(testGroup);
 
-		intDset = (ScalarDS) testFile.get(H5TestFile.NAME_DATASET_INT);
-		assertNotNull(intDset);
-		intDset.init();
-		floatDset = (ScalarDS) testFile.get(H5TestFile.NAME_DATASET_FLOAT);
-		assertNotNull(floatDset);
-		floatDset.init();
-		charDset = (ScalarDS) testFile.get(H5TestFile.NAME_DATASET_CHAR);
-		assertNotNull(charDset);
-		charDset.init();
-		strDset = (ScalarDS) testFile.get(H5TestFile.NAME_DATASET_STR);
-		assertNotNull(strDset);
-		strDset.init();
-		enumDset = (ScalarDS) testFile.get(H5TestFile.NAME_DATASET_ENUM);
-		assertNotNull(enumDset);
-		enumDset.init();
-		imageDset = (ScalarDS) testFile.get(H5TestFile.NAME_DATASET_IMAGE);
-		assertNotNull(imageDset);
-		imageDset.init();
-		ORDset = (ScalarDS) testFile.get(H5TestFile.NAME_DATASET_OBJ_REF);
-		assertNotNull(ORDset);
-		ORDset.init();
-		imagePalete = (ScalarDS) testFile.get(H5TestFile.NAME_DATASET_IMAGE_PALETTE);
-		assertNotNull(imagePalete);
-		imagePalete.init();
-	}
+        intDset = (ScalarDS) testFile.get(H5TestFile.NAME_DATASET_INT);
+        assertNotNull(intDset);
+        intDset.init();
+        floatDset = (ScalarDS) testFile.get(H5TestFile.NAME_DATASET_FLOAT);
+        assertNotNull(floatDset);
+        floatDset.init();
+        charDset = (ScalarDS) testFile.get(H5TestFile.NAME_DATASET_CHAR);
+        assertNotNull(charDset);
+        charDset.init();
+        strDset = (ScalarDS) testFile.get(H5TestFile.NAME_DATASET_STR);
+        assertNotNull(strDset);
+        strDset.init();
+        enumDset = (ScalarDS) testFile.get(H5TestFile.NAME_DATASET_ENUM);
+        assertNotNull(enumDset);
+        enumDset.init();
+        imageDset = (ScalarDS) testFile.get(H5TestFile.NAME_DATASET_IMAGE);
+        assertNotNull(imageDset);
+        imageDset.init();
+        ORDset = (ScalarDS) testFile.get(H5TestFile.NAME_DATASET_OBJ_REF);
+        assertNotNull(ORDset);
+        ORDset.init();
+        imagePalete = (ScalarDS) testFile.get(H5TestFile.NAME_DATASET_IMAGE_PALETTE);
+        assertNotNull(imagePalete);
+        imagePalete.init();
+    }
 
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#tearDown()
-	 */
-	protected void tearDown() throws Exception {
-		super.tearDown();
-		final int fid = testFile.getFID();
-		if (fid > 0) {
-			int nObjs = 0;
-			try { nObjs = H5.H5Fget_obj_count(fid, HDF5Constants.H5F_OBJ_ALL); }
-			catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }
-			assertEquals(1, nObjs); // file id should be the only one left open
-		}
+    /* (non-Javadoc)
+     * @see junit.framework.TestCase#tearDown()
+     */
+    protected void tearDown() throws Exception {
+        super.tearDown();
 
-		if (testFile != null) {
-			try { testFile.close(); } catch (final Exception ex) {}
-			testFile = null;
-		}
-	}
+        if (testFile != null) {
+            try { testFile.close(); } catch (final Exception ex) {}
+            testFile = null;
+        }
+    }
 
-	/**
-	 * 
-	 * What to test:
+    /**
+     * 
+     * What to test:
      * <ul> 
      *   <li> Test for general functionality
      *   <ul>
@@ -106,51 +99,59 @@ public class ScalarDSTest extends TestCase {
      *   </ul>
      * </ul>
      */ 
-	public final void testImageFunctionality() {
+    public final void testImageFunctionality() {
         assertTrue(imageDset.hasAttribute());
-		assertTrue(imageDset.isImage());
-		assertTrue(imageDset.isImageDisplay());
-	
-		assertEquals(imageDset.getInterlace(), -1);
-		
-		assertFalse(imageDset.isTrueColor());
-		
-		assertFalse(intDset.isImage());
-		assertFalse(floatDset.isImage());
-		assertFalse(charDset.isImage());
-		assertFalse(enumDset.isImage());
-		assertFalse(imagePalete.isImage());
-		assertFalse(ORDset.isImage());
-	
-		assertFalse(intDset.isImageDisplay());
-		assertFalse(floatDset.isImageDisplay());
-		assertFalse(charDset.isImageDisplay());
-		assertFalse(enumDset.isImageDisplay());
-		assertFalse(imagePalete.isImageDisplay());
-		assertFalse(ORDset.isImageDisplay());
-	
-		intDset.setIsImageDisplay(true);
-		assertTrue(intDset.isImageDisplay());
-		intDset.setIsImageDisplay(false);
-		assertFalse(intDset.isImageDisplay());
-	}
-	
-	 /** What to test:
-	  * <ul> 
-	  *   <li> Test for general functionality
-	  *   <ul>
-	  *     <li> For all datasets in the file check if it is text. Only string dataset should return true.
-	  *   </ul>
-	  * </ul>
-	  */ 
-	public final void testIsText() {
-		assertTrue(strDset.isText());
-		assertFalse(imageDset.isText());
-		assertFalse(intDset.isText());
-		assertFalse(floatDset.isText());
-		assertFalse(charDset.isText());
-		assertFalse(enumDset.isText());
-		assertFalse(ORDset.isText());
-		assertFalse(imagePalete.isText());
-	}
+        assertTrue(imageDset.isImage());
+        assertTrue(imageDset.isImageDisplay());
+    
+        assertEquals(imageDset.getInterlace(), -1);
+        
+        assertFalse(imageDset.isTrueColor());
+        
+        assertFalse(intDset.isImage());
+        assertFalse(floatDset.isImage());
+        assertFalse(charDset.isImage());
+        assertFalse(enumDset.isImage());
+        assertFalse(imagePalete.isImage());
+        assertFalse(ORDset.isImage());
+    
+        assertFalse(intDset.isImageDisplay());
+        assertFalse(floatDset.isImageDisplay());
+        assertFalse(charDset.isImageDisplay());
+        assertFalse(enumDset.isImageDisplay());
+        assertFalse(imagePalete.isImageDisplay());
+        assertFalse(ORDset.isImageDisplay());
+    
+        intDset.setIsImageDisplay(true);
+        assertTrue(intDset.isImageDisplay());
+        intDset.setIsImageDisplay(false);
+        assertFalse(intDset.isImageDisplay());
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
+    }
+    
+     /** What to test:
+      * <ul> 
+      *   <li> Test for general functionality
+      *   <ul>
+      *     <li> For all datasets in the file check if it is text. Only string dataset should return true.
+      *   </ul>
+      * </ul>
+      */ 
+    public final void testIsText() {
+        assertTrue(strDset.isText());
+        assertFalse(imageDset.isText());
+        assertFalse(intDset.isText());
+        assertFalse(floatDset.isText());
+        assertFalse(charDset.isText());
+        assertFalse(enumDset.isText());
+        assertFalse(ORDset.isText());
+        assertFalse(imagePalete.isText());
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
+    }
 }

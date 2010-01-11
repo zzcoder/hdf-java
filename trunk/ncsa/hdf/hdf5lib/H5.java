@@ -13,6 +13,7 @@
 
 package ncsa.hdf.hdf5lib;
 
+import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.structs.H5G_info_t;
 
 import java.io.File;

@@ -46,13 +46,6 @@ public class DataFormatTest extends TestCase {
 	 */
 	protected void tearDown() throws Exception {
 		super.tearDown();
-        final int fid = testFile.getFID();
-        if (fid > 0) {
-            int nObjs = 0;
-            try { nObjs = H5.H5Fget_obj_count(fid, HDF5Constants.H5F_OBJ_ALL); }
-            catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }
-            assertEquals(1, nObjs); // file id should be the only one left open
-         }
         
         if (testFile != null) {
             try { testFile.close(); } catch (final Exception ex) {}
@@ -70,6 +63,10 @@ public class DataFormatTest extends TestCase {
 		if (!testGroup.getFile().equals(H5TestFile.NAME_FILE_H5)) {
             fail("getFile() fails.");
         }
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
 	}
 
 	/**
@@ -104,6 +101,10 @@ public class DataFormatTest extends TestCase {
                 fail("getValue() failed");
             }
 		}
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
 	}
 
 	/**
@@ -163,6 +164,10 @@ public class DataFormatTest extends TestCase {
 		if (!value[0].equals("IMAGE")) {
             fail("writeMetadata() failed.");
         }
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
 	}
 
 	/**
@@ -187,6 +192,10 @@ public class DataFormatTest extends TestCase {
 			fail("removeMetadata() failed " + e.getMessage());
 		}
 		assertEquals(2, mdataList.size());
+        int nObjs = 0;
+        try { nObjs = H5.H5Fget_obj_count(testFile.getFID(), HDF5Constants.H5F_OBJ_ALL); }
+        catch (final Exception ex) { fail("H5.H5Fget_obj_count() failed. "+ ex);   }        
+        assertEquals(1, nObjs); // file id should be the only one left open
 	}
 
 }
