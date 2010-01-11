@@ -1349,17 +1349,15 @@ public class H5 {
     /**
      * H5Dextend verifies that the dataset is at least of size size.
      * 
-     * @param dataset_id
-     *            Identifier of the dataset.
-     * @param size
-     *            Array containing the new magnitude of each dimension.
+     * @param dataset_id IN: Identifier of the dataset.
+     * @param size       IN: Array containing the new magnitude of each dimension.
      * 
      * @return a non-negative value if successful
      * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
-     * @exception NullPointerException
-     *                - size array is null.
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
+     * @exception NullPointerException - size array is null.
+     * 
+     * @deprecated As of HDF5 1.8
      **/
     public synchronized static native int H5Dextend(int dataset_id, byte[] size)
             throws HDF5LibraryException, NullPointerException;
