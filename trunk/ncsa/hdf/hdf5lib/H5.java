@@ -880,6 +880,8 @@ public class H5 {
     /**
      * H5Dcreate creates a data set with a name, name, in the file or in the
      * group specified by the identifier loc_id.
+     *
+     * @deprecated As of HDF5 1.8, replaced by {@link #H5Dcreate(int, String, int, int, int, int, int) }
      * 
      * @param loc_id
      *            Identifier of the file or group to create the dataset within.
@@ -913,20 +915,18 @@ public class H5 {
             throws HDF5LibraryException, NullPointerException;
 
     /**
-     * H5Dopen opens an existing dataset for access in the file or group
-     * specified in loc_id.
-     * 
-     * @param loc_id
-     *            Identifier of the dataset to open or the file or group
-     * @param name
-     *            The name of the dataset to access.
-     * 
-     * @return a dataset identifier if successful
-     * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
-     * @exception NullPointerException
-     *                - name is null.
+     *  H5Dopen opens the existing dataset specified by a location identifier 
+     *  and name, loc_id  and name, respectively. 
+     *
+     *  @deprecated As of HDF5 1.8, replaced by {@link #H5Dopen(int, String, int) }
+     *
+     *  @param loc_id   IN: Location identifier 
+     *  @param name     IN: Dataset name
+     *
+     *  @return a dataset identifier if successful
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - name is null.
      **/
     public static int H5Dopen(int loc_id, String name)
             throws HDF5LibraryException, NullPointerException {
@@ -934,7 +934,6 @@ public class H5 {
         if (id > 0)
             OPEN_IDS.addElement(id);
         return id;
-
     }
 
     private synchronized static native int _H5Dopen(int loc_id, String name)
@@ -1362,6 +1361,20 @@ public class H5 {
     public synchronized static native int H5Dextend(int dataset_id, byte[] size)
             throws HDF5LibraryException, NullPointerException;
 
+
+    /**
+     * H5Dextend verifies that the dataset is at least of size size.
+     * 
+     * @param dataset_id IN: Identifier of the dataset.
+     * @param size       IN: Array containing the new magnitude of each dimension.
+     * 
+     * @return a non-negative value if successful
+     * 
+     * @exception HDF5LibraryException - Error from the HDF-5 Library.
+     * @exception NullPointerException - size array is null.
+     * 
+     * @deprecated As of HDF5 1.8
+     **/
     public synchronized static int H5Dextend(int dataset_id, long[] size)
             throws HDF5Exception, NullPointerException {
         int rval = -1;
@@ -5196,7 +5209,21 @@ public class H5 {
             int options_mask, int pixels_per_block)
             throws HDF5LibraryException, NullPointerException;
 
-    public synchronized static native int H5Dget_space_status(int dset_id,
+    /**
+     *  H5Dget_space_status determines whether space has been 
+     *  allocated for the dataset dset_id. 
+     *
+     *  @param dset_id IN: Identifier of the dataset to query.
+     *
+     *  @return the space allocation status
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     **/
+    public static int H5Dget_space_status(int dset_id,
+            int[] status) throws HDF5LibraryException, NullPointerException {
+        return _H5Dget_space_status(dset_id, status);
+    }
+    private synchronized static native int _H5Dget_space_status(int dset_id,
             int[] status) throws HDF5LibraryException, NullPointerException;
 
     public synchronized static native long H5Iget_name(int obj_id,
@@ -7218,6 +7245,198 @@ throws HDF5LibraryException, NullPointerException
  *  @see public static int H5Tget_array_dims(int type_id, long[] dims, int[] perm)
  **/
 private synchronized static native int H5Tget_array_dims1(int type_id, long[] dims, int[] perm)
+throws HDF5LibraryException, NullPointerException;
+
+//////////////////////////////////////////////////////////////
+//                                                          //
+//             H5D: Datasets Interface Functions            //
+//                                                          //
+//////////////////////////////////////////////////////////////
+//  // Define the operator function pointer for H5Diterate()
+//  public interface H5D_operator_t extends Callback {
+//    int callback(Pointer elem, int type_id, int ndim,
+//           LongByReference point, Pointer operator_data);
+//  }
+
+/**
+ *  H5Dcreate creates a new dataset named name at the 
+ *  location specified by loc_id.
+ *
+ *  @param loc_id   IN: Location identifier 
+ *  @param name     IN: Dataset name
+ *  @param type_id  IN: Datatype identifier
+ *  @param space_id IN: Dataspace identifier 
+ *  @param lcpl_id  IN: Identifier of link creation property list.
+ *  @param dcpl_id  IN: Identifier of dataset creation property list.
+ *  @param dapl_id  IN: Identifier of dataset access property list.
+ *
+ *  @return a dataset identifier
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception NullPointerException - name is null.
+ **/
+public static int H5Dcreate(int loc_id, String name, int type_id,
+    int space_id, int lcpl_id, int dcpl_id, int dapl_id)
+throws HDF5LibraryException, NullPointerException {
+    int id = _H5Dcreate2(loc_id, name, type_id, space_id, lcpl_id, dcpl_id, dapl_id);
+    if (id > 0)
+      OPEN_IDS.addElement(id);
+    return id;
+}
+/**
+ *  H5Dcreate2 creates a new dataset named name at the 
+ *  location specified by loc_id.
+ *
+ *  @see public static int H5Dcreate(int loc_id, String name, int type_id,
+ *     int space_id, int lcpl_id, int dcpl_id, int dapl_id)
+ **/
+private synchronized static native int _H5Dcreate2(int loc_id, String name, int type_id,
+    int space_id, int lcpl_id, int dcpl_id, int dapl_id)
+throws HDF5LibraryException, NullPointerException;
+
+/**
+ *  H5Dcreate_anon creates a dataset in the file specified by loc_id. 
+ *
+ *  @param loc_id   IN: Location identifier 
+ *  @param type_id  IN: Datatype identifier
+ *  @param space_id IN: Dataspace identifier 
+ *  @param lcpl_id  IN: Identifier of link creation property list.
+ *  @param dcpl_id  IN: Identifier of dataset creation property list.
+ *  @param dapl_id  IN: Identifier of dataset access property list.
+ *
+ *  @return a dataset identifier
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ **/
+public static int H5Dcreate_anon(int loc_id, int type_id, int space_id,
+    int dcpl_id, int dapl_id)
+throws HDF5LibraryException {
+    int id = _H5Dcreate_anon(loc_id, type_id, space_id, dcpl_id, dapl_id);
+    if (id > 0)
+      OPEN_IDS.addElement(id);
+    return id;
+}
+
+private synchronized static native int _H5Dcreate_anon(int loc_id, int type_id, int space_id,
+        int dcpl_id, int dapl_id)
+    throws HDF5LibraryException;
+
+/**
+ *  H5Dopen opens the existing dataset specified by a location identifier 
+ *  and name, loc_id  and name, respectively. 
+ *
+ *  @param loc_id   IN: Location identifier 
+ *  @param name     IN: Dataset name
+ *  @param dapl_id  IN: Identifier of dataset access property list.
+ *
+ *  @return a dataset identifier if successful
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception NullPointerException - name is null.
+ **/
+public static int H5Dopen(int loc_id, String name, int dapl_id)
+throws HDF5LibraryException, NullPointerException
+{
+    int id = _H5Dopen2(loc_id, name, dapl_id);
+    if (id > 0)
+        OPEN_IDS.addElement(id);
+    return id;
+}
+/**
+ *  H5Dopen2 opens the existing dataset specified by a location identifier 
+ *  and name, loc_id  and name, respectively. 
+ *
+ *  @see public static int H5Dopen(int loc_id, String name, int dapl_id)
+ **/
+private synchronized static native int _H5Dopen2(int loc_id, String name, int dapl_id)
+throws HDF5LibraryException, NullPointerException;
+
+/**
+ *  H5Dget_space_status determines whether space has been 
+ *  allocated for the dataset dset_id. 
+ *
+ *  @param dset_id IN: Identifier of the dataset to query.
+ *
+ *  @return the space allocation status
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ **/
+public synchronized static native int H5Dget_space_status(int dset_id)
+throws HDF5LibraryException;
+
+/**
+ *  H5Dget_access_plist returns an identifier for a copy of the
+ *  dataset access property list for a dataset.
+ *
+ *  @param dset_id IN: Identifier of the dataset to query.
+ *
+ *  @return a dataset access property list identifier
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ **/
+public synchronized static native int H5Dget_access_plist(int dset_id)
+throws HDF5LibraryException;
+
+/** H5Dget_offset returns the address in the file of the dataset dset_id.
+ *
+ *  @param dset_id  IN: Identifier of the dataset in question
+ *
+ *  @return the offset in bytes.
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ **/
+public synchronized static native long H5Dget_offset(int dset_id)
+throws HDF5LibraryException;
+
+/**
+ *  H5Dvlen_get_buf_size determines the number of bytes required to store the VL data from 
+ *  the dataset, using the space_id for the selection in the dataset on disk and the 
+ *  type_id for the memory representation of the VL data in memory. 
+ *
+ *  @param dset_id  IN: Identifier of the dataset read from.
+ *  @param type_id  IN: Identifier of the datatype.
+ *  @param space_id IN: Identifier of the dataspace.
+ *
+ *  @return the size in bytes of the memory buffer required to store the VL data.
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception NullPointerException - buf is null.
+ **/
+public synchronized static native long H5Dvlen_get_buf_size(int dset_id, int type_id, int space_id)
+throws HDF5LibraryException;
+//int H5Dvlen_get_buf_size(int dset_id, int type_id, int space_id, LongByReference size);
+
+/**
+ *  H5Dfill explicitly fills the dataspace selection in memory, space_id, 
+ *  with the fill value specified in fill. 
+ *
+ *  @param fill      IN: Pointer to the fill value to be used.
+ *  @param fill_type IN: Fill value datatype identifier.
+ *  @param buf   IN/OUT: Pointer to the memory buffer containing the selection to be filled.
+ *  @param buf_type  IN: Datatype of dataspace elements to be filled.
+ *  @param space     IN: Dataspace describing memory buffer and containing the selection to be filled.
+ *
+ *  @return none
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception NullPointerException - buf is null.
+ **/
+public synchronized static native void H5Dfill(byte[] fill, int fill_type, byte[] buf, int buf_type, int space)
+throws HDF5LibraryException, NullPointerException;
+
+/**
+ *  H5Dset_extent sets the current dimensions of the chunked dataset dset_id 
+ *  to the sizes specified in size. 
+ *
+ *  @param dset_id  IN: Chunked dataset identifier.
+ *  @param size     IN: Array containing the new magnitude of each dimension of the dataset. 
+ *
+ *  @return none
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception NullPointerException - size is null.
+ **/
+public synchronized static native void H5Dset_extent(int dset_id, long size[])
 throws HDF5LibraryException, NullPointerException;
 
     // //////////////////////////////////////////////////////////////////
