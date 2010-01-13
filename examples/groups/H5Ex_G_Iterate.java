@@ -20,11 +20,11 @@ public class H5Ex_G_Iterate {
 	private static String DATASETNAME = "/";
 
 	enum H5O_type {
-		H5O_UNKNOWN(-1), // Unknown object type
-		H5O_GROUP(0), // Object is a group
-		H5O_DATASET(1), // Object is a dataset
-		H5O_NAMED_DATATYPE(2), // Object is a named data type
-		H5O_NTYPES(3); // Number of different object types
+	    H5O_TYPE_UNKNOWN(-1), // Unknown object type
+	    H5O_TYPE_GROUP(0), // Object is a group
+	    H5O_TYPE_DATASET(1), // Object is a dataset
+	    H5O_TYPE_NAMED_DATATYPE(2), // Object is a named data type
+	    H5O_TYPE_NTYPES(3); // Number of different object types
 		private static final Map<Integer, H5O_type> lookup = new HashMap<Integer, H5O_type>();
 
 		static {
@@ -73,13 +73,13 @@ public class H5Ex_G_Iterate {
 				// Get type of the object and display its name and type.
 				for (int indx = 0; indx < otype.length; indx++) {
 					switch (H5O_type.get(otype[indx])) {
-					case H5O_GROUP:
+					case H5O_TYPE_GROUP:
 						System.out.println("  Group: " + oname[indx]);
 						break;
-					case H5O_DATASET:
+					case H5O_TYPE_DATASET:
 						System.out.println("  Dataset: " + oname[indx]);
 						break;
-					case H5O_NAMED_DATATYPE:
+					case H5O_TYPE_NAMED_DATATYPE:
 						System.out.println("  Datatype: " + oname[indx]);
 						break;
 					default:

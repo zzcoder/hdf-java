@@ -134,10 +134,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dvlen_1reclaim
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Dget_space_status
+ * Method:    _H5Dget_space_status
  * Signature: (I[I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dget_1space_1status
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dget_1space_1status
   (JNIEnv*, jclass, jint, jintArray);
 
 /*
@@ -229,11 +229,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dwrite_1double
   (JNIEnv*, jclass, jint, jint, jint, jint, jint, jdoubleArray, jboolean);
 
 /*
- * Class:     ncsa_hdf_hdf5lib_H5_H5D
+ * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5DwriteString
- * Signature: (IIIII[Ljava/lang/String;)V
+ * Signature: (IIIII[Ljava/lang/String;)I
  */
-JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5D_H5DwriteString
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DwriteString
   (JNIEnv *, jclass, jint, jint, jint, jint, jint, jobjectArray);
 
 /*
@@ -253,75 +253,75 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1reg_1ref (JNIEnv*, jcla
     jint, jint, jint, jint, jint, jobjectArray);
 
 /*
- * Class:     ncsa_hdf_hdf5lib_H5_H5D
- * Method:    H5Dcreate2
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    _H5Dcreate2
  * Signature: (ILjava/lang/String;IIIII)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5D_H5Dcreate2
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dcreate2
   (JNIEnv *, jclass, jint, jstring, jint, jint, jint, jint, jint);
 
 /*
- * Class:     ncsa_hdf_hdf5lib_H5_H5D
- * Method:    H5Dopen2
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    _H5Dopen2
  * Signature: (ILjava/lang/String;I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5D_H5Dopen2
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dopen2
   (JNIEnv *, jclass, jint, jstring, jint);
 
 /*
- * Class:     ncsa_hdf_hdf5lib_H5_H5D
- * Method:    H5Dcreate_anon
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    _H5Dcreate_anon
  * Signature: (IIIII)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5D_H5Dcreate_1anon
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dcreate_1anon
   (JNIEnv *, jclass, jint, jint, jint, jint, jint);
 
 /*
- * Class:     ncsa_hdf_hdf5lib_H5_H5D
+ * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dget_space_status
  * Signature: (I)I;
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5D_H5Dget_1space_1status
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dget_1space_1status
   (JNIEnv *, jclass, jint);
 
 /*
- * Class:     ncsa_hdf_hdf5lib_H5_H5D
+ * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dget_access_plist
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5D_H5Dget_1access_1plist
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dget_1access_1plist
   (JNIEnv *, jclass, jint);
 
 /*
- * Class:     ncsa_hdf_hdf5lib_H5_H5D
+ * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dget_offset
  * Signature: (I)J
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5D_H5Dget_1offset
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dget_1offset
   (JNIEnv *, jclass, jint);
 
 /*
- * Class:     ncsa_hdf_hdf5lib_H5_H5D
+ * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dvlen_get_buf_size_long
  * Signature: (III)J
  */
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5D_H5Dvlen_1get_1buf_1size_1long
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dvlen_1get_1buf_1size_1long
   (JNIEnv *, jclass, jint, jint, jint);
 
 /*
- * Class:     ncsa_hdf_hdf5lib_H5_H5D
+ * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dfill
  * Signature: ([BI[BII)V
  */
-JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5D_H5Dfill
+JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dfill
   (JNIEnv *, jclass, jbyteArray, jint, jbyteArray, jint, jint);
 
 /*
- * Class:     ncsa_hdf_hdf5lib_H5_H5D
+ * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dset_extent
  * Signature: (I[J)V
  */
-JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5D_H5Dset_1extent
+JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dset_1extent
   (JNIEnv *, jclass, jint, jlongArray);
 
 #ifdef __cplusplus
