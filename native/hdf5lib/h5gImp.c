@@ -1007,7 +1007,7 @@ herr_t obj_info_all(hid_t loc_id, const char *name, const H5L_info_t *info, void
     info_all_t* datainfo = (info_all_t*)op_data;
     H5O_info_t object_info;
 
-    retVal = H5Oget_info(loc_id, &object_info);
+    retVal = H5Oget_info_by_name(loc_id, name, &object_info, H5P_DEFAULT);
     if ( retVal < 0) {
         *(datainfo->otype+datainfo->count) = -1;
         *(datainfo->ltype+datainfo->count) = -1;
