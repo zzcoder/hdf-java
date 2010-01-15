@@ -57,31 +57,21 @@ Java HDF5 Interface (JHI5) is used to access the HDF5 library.</td>
   <tr>
     <td>
 
-	  <h2><center>Current Release (<font color="FF0000">February, 2009</font>)</center></h2>
+	  <h2><center>Current Release</center></h2>
 
       <p />
-       <?php include("patch_notes.html"); ?> 
+       <?php include("release.html"); ?> 
 	  <p />
 
-      <h3>hdf-java 2.5 release</h3>
-	  <b>Version 2.5</b> of the HDF Java Products was released February 11, 2009. This version 
-         was built with HDF4.2r4 and HDF5 Release 1.8.2 <i><b>with the 1.6 API Compatibility 
-         Macros</b></i>, using jdk 1.6.x.
-
-      <p />
-      To obtain hdf-java 2.5, go to <br />
-	  <a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/"> 
-      http://www.hdfgroup.org/ftp/HDF5/hdf-java</a>
-
 	  <p />
-	  Version 2.5 takes advantage of many of the improvements introduced in HDF5 Release 1.8.0. 
+	  The current version of hdf-java takes advantage of many of the improvements introduced in HDF5 Release 1.8.0. 
 	  However, since it relies on the 1.6 APIs, this version of hdf-java does not include the 
       200+ APIs introduced with HDF5 1.8.0, and cannot use features that are only accessible via those APIs.
 
 	  <p />
 	  HDF5 files created with HDF5 1.8.x APIs can be opened, but objects that use new file 
       format features will not be accessible with the hdf-java products. All files and objects 
-      written by version 2.5 of the hdf-java products will be readable by applications linked 
+      written by teh current version of hdf-java of the hdf-java products will be readable by applications linked 
       with 1.6.x or 1.8.x versions of the HDF5 library.
 
 	  <p />
@@ -91,10 +81,6 @@ Java HDF5 Interface (JHI5) is used to access the HDF5 library.</td>
     	<li><a href="http://www.hdfgroup.org/HDF5/doc/RM/APICompatMacros.html">API Compatibility Macros in HDF5</a></li>
 		<li><a href="http://www.hdfgroup.org/HDF5/doc/ADGuide/CompatFormat180.html">New Features in HDF5 Release 1.8.0 and Format Compatibility Considerations</a></li>
 	  </ul>
-
-	  <p />
-	  The HDFView User's Guide section <a href="http://www.bigdata.org/hdf-java-html/hdfview/UsersGuide/ug01introduction.html#ug01release"><i>About This Release</i></A>, 
-	  provides more information on Version 2.5 of HDFView, the visual browser.
 
 	  <p />
 
@@ -126,11 +112,11 @@ Java HDF5 Interface (JHI5) is used to access the HDF5 library.</td>
   </td>
   <td>
 <a href="http://www.bigdata.org/hdf-java-html/hdfview/index.html">HDFView</a>
- is packaged with an installer for easy download and installation on a variety of platforms. The current release is <b>version 2.5</b>.
+ is packaged with an installer for easy download and installation on a variety of platforms.
 
 <p />
-An older release (<b>version 2.4</b>) is also available at <a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java-2.4/hdfview/">
-http://www.hdfgroup.org/ftp/HDF5/hdf-java-2.4/hdfview/</a>
+An older release is also available at <a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java-2.5/hdfview/">
+http://www.hdfgroup.org/ftp/HDF5/hdf-java-2.5/hdfview/</a>
   </td>
  </tr>
 </table>
@@ -157,7 +143,7 @@ Interface (JHI5)</a>, and C code that implements the native methods.
 
 
 <p />
-JHI requires the HDF4 4.2r4 library (binary) and JHI5 requires the HDF5 1.8.2 
+JHI requires the HDF4 library (binary) and JHI5 requires the HDF5 
 library (binary), which are not included in the HDF Java Products source 
 distribution. The HDF libraries can be obtained from the <A 
 href="http://www.hdfgroup.org/downloads/index.html">HDF Downloads</A> page.
