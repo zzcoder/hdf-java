@@ -21,76 +21,57 @@ Using HDFView, you can
 <li>add, delete and modify attributes
 <li>replace I/O and GUI components such as table view, image view and metadata view
 </ul>
-<p />
-For new features and major changes of the latest version, please read <br />
-<a href="UsersGuide/ug01introduction.html#ug01release">About This Release</a>.
-<p />
-For information on how to use the HDFView, please read <br />
- <a href="UsersGuide/index.html">the User's Guide</a>
-<p />
-To know how to implement HDFView modules, please read<br>
- <a href="ModularGuide/index.html">the Module Guide</a>
+
+<dl>
+  <dt><a href="UsersGuide/ug01introduction.html#ug01release">About This Release</a></dt>
+  <dd>- new features and major changes of the latest version</dd>
+  <dt><a href="UsersGuide/index.html">the User's Guide</a></dt>
+  <dd>- information on how to use the HDFView</dd>
+  <dt><a href="ModularGuide/index.html">the Module Guide</a> </dt>
+  <dd>- instruction on how to implement HDFView modules</dd>
+</dl>
 </td>
-  <td align="right">
-  <img src="hdfview.gif"> </td>
-  </tr>
+
+<td align="right">
+  <img src="hdfview.gif"> 
+</td>
+
+</tr>
 </table>
 <hr>
-<h3>Download (Version 2.5) </h3>
+
+<?php include("../release.html"); ?> 
+  
+<hr>
+<a name="download_hdfview"><h3>Download</h3>
 
 <p />
-<table cellSpacing=5 cols=1 bgColor=#fffddd border=1>
-  <tr>
-    <td>
-      <p />
-      <?php include("../patch_notes.html"); ?> 
-      <p />
-      <h3>hdf-java 2.5 release</h3>
-	  <b>Version 2.5</b> of the HDF Java Products was released February 11, 2009. This version 
-         was built with HDF4.2r4 and HDF5 Release 1.8.2 <i><b>with the 1.6 API Compatibility 
-         Macros</b></i>, using jdk 1.6.x.
-
-      <p />
-      To obtain hdf-java 2.5, go to <br />
-	  <a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/"> 
-      http://www.hdfgroup.org/ftp/HDF5/hdf-java</a>
-    </td>
-  </tr>
-</table>
-
-<p />
-HDFView can be downloaded quickly from here. The Windows, Solaris, Linux
-and AIX versions listed below (that have an asterisk) include JDK 1.6.  If you want a version for these
-platforms that does not include JDK, see the footnote immediately following.
+HDFView can be downloaded quickly from here. JRE1.6 is bundled in the 
+distribution. No additional software is needed to run HDFView. The HDFView 
+installer allows you to use other JRE installed in your system instead 
+of using the packed JRE.
 
 <ul class="ul">
-  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_windows_vm.exe">Windows Vista/98/NT/2000/XP</A> [34 MB] <strong>*</strong>
-  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_solaris_vm.bin">Solaris</A> [61 MB] <strong>*</strong>
-  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_linux_vm.bin">Linux</A> [60 MB] <strong>*</strong>
-  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_macosx_intel_novm.zip">Mac Intel</A> [7.3 MB]
-  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_macosx_novm.zip">Mac Power PC</A> [8.2 MB]
-  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_linux64x86_novm.bin">Linux x86_64</A> [11 MB] <strong>*</strong>
-  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_linux64ia_novm.bin">Linux ia64</A> [11 MB] <strong>*</strong>
-  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_solaris64_novm.bin">Solaris 64-bit SPARC</A> [11 MB] <font size=-1> JDK1.5+ Required</font>
+  <lh><b>32-bit distribution -- runs on 32-bit systems or 64-bit systems with 32-bit JRE</b></lh>
+  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_win32.exe">Windows</a> [44 MB]
+  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_linux32.bin">Linux</a> [49 MB] 
+  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_solaris32.bin">Solaris SPARC</a> [85 MB]
+  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_macosx_intel32.zip">Mac Intel</a> [8 MB]<strong>*</strong>
 </ul>
 
-<B>*</B> The versions listed above for Windows, Solaris, Linux, and AIX will
-install
-a standalone version of HDFView where JRE1.6 is bundled in the distribution.
-No additional software is needed to run HDFView. If JDK 1.6 or above is
-already installed on your machine, you may want the non-JRE distribution.
-The file size of the HDFView distribution without the Java VM is much smaller. 
-<p />
-To obtain the non-JRE distributions, see: &nbsp; 
-<a href="UsersGuide/ug01introduction.html#ug01installation">
-<strong>HDFView User's Guide, Section 1.5, Installation</strong></A>
-<p />
-The <b>source distribution</b> is available from  
-<a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/src">http://www.hdfgroup.org/ftp/HDF5/hdf-java/src</a>.
+<ul class="ul">
+  <lh><b>64-bit distribution -- runs on 64-bit systems with 64-bit JRE</b></lh>
+  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_linux64.bin">Linux x86</a> [63 MB] 
+  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_solaris64.bin">Solaris SPARC</a> 86 MB]
+   <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_linux64ia.bin">Linux Itanium</a> [64 MB]
+  <li><a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/hdfview/hdfview_install_macosx_intel64.zip">Mac Intel</a> [8 MB]<strong>*</strong>
+</ul>
+
+<B>*</B> JRE is not needed for HDFView distribution for MacOS . 
 
 <p />
-An older release (<b>version 2.4</b>) is also available at <a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java-2.4/hdfview/">
-http://www.hdfgroup.org/ftp/HDF5/hdf-java-2.4/hdfview/</a>
+An older release (<b>version 2.5</b>) is also available at <a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java-2.5/hdfview/">
+http://www.hdfgroup.org/ftp/HDF5/hdf-java-2.5/hdfview/</a>
 
 <p />
 
@@ -102,13 +83,13 @@ http://www.hdfgroup.org/ftp/HDF5/hdf-java-2.4/hdfview/</a>
 <p />
   <ul class="ul">
   <li>To install, type: &nbsp; <CODE>
-    sh ./hdfview_install_{linux, solaris, irix}_{vm, novm}.bin</CODE>
+    sh ./hdfview_install_xxx.bin</CODE>
   <li>To run,  type: &nbsp; <CODE>./hdfview</CODE>
   </ul>
 <p />
 <li><B>Mac OS X:</B><p />
 <ul class="ul">
-  <li>To install, open <CODE>hdfview_install_macosx_novm.zip</CODE>
+  <li>To install, open <CODE>hdfview_install_macosx_xxx.zip</CODE>
   <li>To run, {where_you_install_hdfview}/hdfview.sh <br>
               or click on the HDFView Icon on the desktop
 
@@ -117,8 +98,8 @@ http://www.hdfgroup.org/ftp/HDF5/hdf-java-2.4/hdfview/</a>
 <li><B>Windows:</B><p />
 <p />
   <ul class="ul">
-  <li>To install, type: <CODE> hdfview_install_windows_vm.exe </CODE>
-  <li>To run, select HDFView from the menu, <CODE>Start -> programs -> THG HDFView 2.x -> HDFView 2.x</CODE>
+  <li>To install, type: <CODE> hdfview_install_windows_xxx.exe </CODE>
+  <li>To run, select HDFView from the menu, <CODE>Start -> programs -> HDFView 2.x -> HDFView 2.x</CODE>
   </ul>
 </ul>
 
