@@ -75,7 +75,7 @@ public class H5Ex_T_Opaque {
 		try {
 			if ((file_id >= 0) && (datatype_id >= 0) && (dataspace_id >= 0))
 				dataset_id = H5.H5Dcreate(file_id, DATASETNAME, datatype_id,
-						dataspace_id, HDF5Constants.H5P_DEFAULT);
+						dataspace_id, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -150,7 +150,7 @@ public class H5Ex_T_Opaque {
 		// Open an existing dataset.
 		try {
 			if (file_id >= 0)
-				dataset_id = H5.H5Dopen(file_id, DATASETNAME);
+				dataset_id = H5.H5Dopen(file_id, DATASETNAME, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

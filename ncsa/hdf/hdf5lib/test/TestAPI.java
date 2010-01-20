@@ -168,7 +168,7 @@ public class TestAPI implements TestModule
 
 		// Open an existing dataset.
 		try {
-			dataset_id = H5.H5Dopen(file_id, datasetName);
+			dataset_id = H5.H5Dopen(file_id, datasetName, HDF5Constants.H5P_DEFAULT);
 		} catch (HDF5Exception ex) {
 			dbgInfo += "\n\nH5Dopen() Failed, exception: "+ex;
 			return false;
@@ -603,7 +603,7 @@ public class TestAPI implements TestModule
 		try {
 			dataset_id = H5.H5Dcreate(file_id, "intArray",
 			H5.J2C(HDF5CDataTypes.JH5T_NATIVE_INT),
-			dataspace_id, HDF5Constants.H5P_DEFAULT);
+			dataspace_id, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 		} catch (HDF5Exception ex) {
 			dbgInfo += "\n\nH5Dcreate() Failed, exception: "+ex;
 			return false;
@@ -797,7 +797,7 @@ public class TestAPI implements TestModule
 		try {
 		dataset_id = H5.H5Dcreate(file_id, "intArray",
 			H5.J2C(HDF5CDataTypes.JH5T_NATIVE_INT),
-			dataspace_id, HDF5Constants.H5P_DEFAULT);
+			dataspace_id, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 		} catch (HDF5Exception ex) {
 			dbgInfo += "\n\nH5Dcreate() Failed, exception: "+ex;
 			return false;

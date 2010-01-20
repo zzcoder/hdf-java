@@ -40,7 +40,7 @@ public class H5_CreateDataset {
 			if ((file_id >= 0) && (dataspace_id >= 0))
 				dataset_id = H5.H5Dcreate(file_id, "/" + DATASETNAME,
 						HDF5Constants.H5T_STD_I32BE, dataspace_id,
-						HDF5Constants.H5P_DEFAULT);
+						HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

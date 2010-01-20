@@ -120,7 +120,7 @@ public class H5Ex_D_Chunk {
 		try {
 			if ((file_id >= 0) && (filespace_id >= 0) && (dcpl_id >= 0))
 				dataset_id = H5.H5Dcreate(file_id, DATASETNAME,
-						HDF5Constants.H5T_STD_I32LE, filespace_id, dcpl_id);
+						HDF5Constants.H5T_STD_I32LE, filespace_id, HDF5Constants.H5P_DEFAULT, dcpl_id, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -214,7 +214,7 @@ public class H5Ex_D_Chunk {
 		// Open an existing dataset.
 		try {
 			if (file_id >= 0)
-				dataset_id = H5.H5Dopen(file_id, DATASETNAME);
+				dataset_id = H5.H5Dopen(file_id, DATASETNAME, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
