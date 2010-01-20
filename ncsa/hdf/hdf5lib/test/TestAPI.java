@@ -440,9 +440,9 @@ public class TestAPI implements TestModule
 		dimsf[0] = 6;
 		dimsf[1] = 7;
 		try {
-			status = H5.H5Dextend(dataset, dimsf);
+			status = H5.H5Dset_extent(dataset, dimsf);
 		} catch (Exception ex) {
-			dbgInfo += "H5Dextend: failed: "+ex;
+			dbgInfo += "H5Dset_extent: failed: "+ex;
 			return false;
 		}
 

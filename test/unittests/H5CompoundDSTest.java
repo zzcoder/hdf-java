@@ -1710,7 +1710,7 @@ public class H5CompoundDSTest extends TestCase {
         final float[] expectedFloats = {.1f,.2f,.3f,.4f,.5f,.6f,.7f,.8f,.9f,.10f,.11f,.12f};
         final long[] dims = {2};
         final int[] memberRanks = {2, 2};
-        final int[][] memberDims = {{3, 2}, {3, 2}};
+        final long[][] memberDims = {{3, 2}, {3, 2}};
         
         try {
             rootGrp = (H5Group)testFile.get("/");
@@ -1841,7 +1841,7 @@ public class H5CompoundDSTest extends TestCase {
                     new String[] {"int", "float", "str"}, 
                     new H5Datatype[] {typeInt, typeFloat, typeStr}, 
                     new int[] {1,1,1}, 
-                    new int[][] {{1},{1},{1}},
+                    new long[][] {{1},{1},{1}},
                     compData);
         } catch (final Exception ex) { 
             fail("H5CompoundDS.create() failed. "+ ex);

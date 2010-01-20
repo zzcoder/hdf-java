@@ -217,7 +217,7 @@ public class H5Ex_D_UnlimitedAdd {
 		// Extend the dataset.
 		try {
 			if (dataset_id >= 0)
-				H5.H5Dextend(dataset_id, extdims);
+				H5.H5Dset_extent(dataset_id, extdims);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
