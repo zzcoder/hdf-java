@@ -38,6 +38,7 @@ all:    TestH5.class \
         TestH5Tbasic.class \
         TestH5T.class \
         TestH5Dparams.class \
+        TestH5D.class \
         TestAll.class 
 
 

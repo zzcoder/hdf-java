@@ -41,8 +41,14 @@ public class TestH5Giterate {
     @Before
     public void openH5file()
             throws HDF5LibraryException, NullPointerException {
-        H5fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDONLY,
+        try {
+            H5fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDONLY,
                 HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Fopen: openH5file: " + err);
+        }
     }
 
     @After

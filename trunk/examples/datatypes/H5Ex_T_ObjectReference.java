@@ -84,7 +84,7 @@ public class H5Ex_T_ObjectReference {
 			if ((file_id >= 0) && (dataspace_id >= 0)) {
 				dataset_id = H5.H5Dcreate(file_id, DATASETNAME2,
 						HDF5Constants.H5T_STD_I32LE, dataspace_id,
-						HDF5Constants.H5P_DEFAULT);
+						HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 				if (dataset_id >= 0)
 					H5.H5Dclose(dataset_id);
 				dataset_id = -1;
@@ -141,7 +141,7 @@ public class H5Ex_T_ObjectReference {
 			if ((file_id >= 0) && (filespace_id >= 0))
 				dataset_id = H5.H5Dcreate(file_id, DATASETNAME,
 						HDF5Constants.H5T_STD_REF_OBJ, filespace_id,
-						HDF5Constants.H5P_DEFAULT);
+						HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -207,7 +207,7 @@ public class H5Ex_T_ObjectReference {
 		// Open an existing dataset.
 		try {
 			if (file_id >= 0)
-				dataset_id = H5.H5Dopen(file_id, DATASETNAME);
+				dataset_id = H5.H5Dopen(file_id, DATASETNAME, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

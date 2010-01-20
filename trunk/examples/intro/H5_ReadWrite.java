@@ -34,7 +34,7 @@ public class H5_ReadWrite {
 		// Open an existing dataset.
 		try {
 			if (file_id >= 0)
-				dataset_id = H5.H5Dopen(file_id, "/" + DATASETNAME);
+				dataset_id = H5.H5Dopen(file_id, "/" + DATASETNAME, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

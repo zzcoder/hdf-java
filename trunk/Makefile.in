@@ -239,9 +239,9 @@ clean-docs:
 	$(RM) -r *.html
 
 check: install $(TESTPACKAGES)
-	cd examples; \
-	$(MAKE) check;
 	cd test; \
+	$(MAKE) check;
+	cd examples; \
 	$(MAKE) check;
 
 checklink: install linktest
@@ -465,6 +465,10 @@ ncsa.hdf.hdf5lib.exceptions: \
 	ncsa/hdf/hdf5lib/exceptions/HDF5ResourceUnavailableException.class \
 	ncsa/hdf/hdf5lib/exceptions/HDF5SymbolTableException.class 
 
+ncsa.hdf.hdf5lib.structs: \
+	ncsa/hdf/hdf5lib/structs/H5A_info_t.class \
+	ncsa/hdf/hdf5lib/structs/H5G_info_t.class
+
 ncsa.hdf.hdflib: \
 	ncsa/hdf/hdflib/HDFArray.class \
 	ncsa/hdf/hdflib/HDFChunkInfo.class \
@@ -603,6 +607,8 @@ HDF5PropertyListInterfaceException:	ncsa/hdf/hdf5lib/exceptions/HDF5PropertyList
 HDF5ReferenceException:	ncsa/hdf/hdf5lib/exceptions/HDF5ReferenceException.class
 HDF5ResourceUnavailableException:	ncsa/hdf/hdf5lib/exceptions/HDF5ResourceUnavailableException.class
 HDF5SymbolTableException:	ncsa/hdf/hdf5lib/exceptions/HDF5SymbolTableException.class
+H5A_info_t:	ncsa/hdf/hdf5lib/structs/H5A_info_t.class
+H5G_info_t:	ncsa/hdf/hdf5lib/structs/H5G_info_t.class
 HDFArray:	ncsa/hdf/hdflib/HDFArray.class
 HDFChunkInfo:	ncsa/hdf/hdflib/HDFChunkInfo.class
 HDFCompInfo:	ncsa/hdf/hdflib/HDFCompInfo.class
@@ -673,6 +679,7 @@ DataOptionNPOESS: ext/npoess/DataOptionNPOESS.class
 
 
 JHI5CLASSES= ./ncsa/hdf/hdf5lib/*.class \
+        ./ncsa/hdf/hdf5lib/structs/*.class \
         ./ncsa/hdf/hdf5lib/exceptions/*.class
 
 
@@ -728,6 +735,8 @@ JAVASRCS= \
 ./ncsa/hdf/hdf5lib/exceptions/HDF5ReferenceException.java  \
 ./ncsa/hdf/hdf5lib/exceptions/HDF5ResourceUnavailableException.java  \
 ./ncsa/hdf/hdf5lib/exceptions/HDF5SymbolTableException.java  \
+./ncsa/hdf/hdf5lib/structs/H5A_info_t.java \
+./ncsa/hdf/hdf5lib/structs/H5G_info_t.java \
 ./ncsa/hdf/hdflib/HDFArray.java  \
 ./ncsa/hdf/hdflib/HDFChunkInfo.java  \
 ./ncsa/hdf/hdflib/HDFCompInfo.java  \

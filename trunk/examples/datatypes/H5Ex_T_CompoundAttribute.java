@@ -229,7 +229,7 @@ public class H5Ex_T_CompoundAttribute {
 			if (dataspace_id >= 0) {
 				dataset_id = H5.H5Dcreate(file_id, DATASETNAME,
 						HDF5Constants.H5T_STD_I32LE, dataspace_id,
-						HDF5Constants.H5P_DEFAULT);
+						HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 				H5.H5Sclose(dataspace_id);
 				dataspace_id = -1;
 			}
@@ -367,7 +367,7 @@ public class H5Ex_T_CompoundAttribute {
 		// Open an existing dataset.
 		try {
 			if (file_id >= 0)
-				dataset_id = H5.H5Dopen(file_id, DATASETNAME);
+				dataset_id = H5.H5Dopen(file_id, DATASETNAME, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

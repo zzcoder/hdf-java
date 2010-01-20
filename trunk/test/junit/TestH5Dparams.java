@@ -16,6 +16,21 @@ public class TestH5Dparams {
         H5.H5Dclose(-1);
     }
 
+    @Test(expected = NullPointerException.class)
+    public void testH5Dcreate_null() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Dcreate(-1, null, 0, 0, 0, 0, 0);
+    }
+
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Dcreate_invalid() throws Throwable, HDF5LibraryException {
+        H5.H5Dcreate(-1, "Bogus", -1, -1, -1, -1, -1);
+    }
+
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Dcreate_anon_invalid() throws Throwable, HDF5LibraryException {
+        H5.H5Dcreate_anon(-1, -1, -1, -1, -1);
+    }
+
     @Test(expected = HDF5LibraryException.class)
     public void testH5Dget_access_plist_invalid() throws Throwable, HDF5LibraryException {
         H5.H5Dget_access_plist(-1);

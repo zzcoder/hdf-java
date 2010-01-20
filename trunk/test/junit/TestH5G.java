@@ -52,7 +52,7 @@ public class TestH5G {
         catch (Throwable err) {
             gid = -1;
             err.printStackTrace();
-            fail("H5.H5Gcreate: " + err);
+            fail("H5.H5Gopen: " + err);
         }
 
         return gid;
