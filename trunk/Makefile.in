@@ -466,8 +466,11 @@ ncsa.hdf.hdf5lib.exceptions: \
 	ncsa/hdf/hdf5lib/exceptions/HDF5SymbolTableException.class 
 
 ncsa.hdf.hdf5lib.structs: \
+	ncsa/hdf/hdf5lib/structs/H5_ih_info_t.class \
 	ncsa/hdf/hdf5lib/structs/H5A_info_t.class \
-	ncsa/hdf/hdf5lib/structs/H5G_info_t.class
+	ncsa/hdf/hdf5lib/structs/H5G_info_t.class \
+	ncsa/hdf/hdf5lib/structs/H5O_info_t.class \
+	ncsa/hdf/hdf5lib/structs/H5O_hdr_info_t.class
 
 ncsa.hdf.hdflib: \
 	ncsa/hdf/hdflib/HDFArray.class \
@@ -607,8 +610,11 @@ HDF5PropertyListInterfaceException:	ncsa/hdf/hdf5lib/exceptions/HDF5PropertyList
 HDF5ReferenceException:	ncsa/hdf/hdf5lib/exceptions/HDF5ReferenceException.class
 HDF5ResourceUnavailableException:	ncsa/hdf/hdf5lib/exceptions/HDF5ResourceUnavailableException.class
 HDF5SymbolTableException:	ncsa/hdf/hdf5lib/exceptions/HDF5SymbolTableException.class
+H5_ih_info_t:	ncsa/hdf/hdf5lib/structs/H5_ih_info_t.class
 H5A_info_t:	ncsa/hdf/hdf5lib/structs/H5A_info_t.class
 H5G_info_t:	ncsa/hdf/hdf5lib/structs/H5G_info_t.class
+H5O_info_t:	ncsa/hdf/hdf5lib/structs/H5O_info_t.class
+H5O_hdr_info_t:	ncsa/hdf/hdf5lib/structs/H5O_hdr_info_t.class
 HDFArray:	ncsa/hdf/hdflib/HDFArray.class
 HDFChunkInfo:	ncsa/hdf/hdflib/HDFChunkInfo.class
 HDFCompInfo:	ncsa/hdf/hdflib/HDFCompInfo.class

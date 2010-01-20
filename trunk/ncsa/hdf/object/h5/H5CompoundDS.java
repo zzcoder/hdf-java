@@ -163,7 +163,7 @@ public class H5CompoundDS extends CompoundDS
         if (nAttributes < 0) {
             int did = -1;
             try { 
-                did = H5.H5Dopen(getFID(), getPath()+getName());
+                did = H5.H5Dopen(getFID(), getPath()+getName(), HDF5Constants.H5P_DEFAULT);
                 nAttributes = H5.H5Aget_num_attrs(did); 
             } catch (Exception ex) { nAttributes = 0;}
             close(did);
@@ -699,7 +699,7 @@ public class H5CompoundDS extends CompoundDS
 
         try
         {
-            did = H5.H5Dopen(getFID(), getPath()+getName());
+            did = H5.H5Dopen(getFID(), getPath()+getName(), HDF5Constants.H5P_DEFAULT);
         } catch (HDF5Exception ex)
         {
             did = -1;
@@ -808,8 +808,8 @@ public class H5CompoundDS extends CompoundDS
                 if (tclass == HDF5Constants.H5T_ARRAY)
                 {
                     int n = H5.H5Tget_array_ndims(memberTIDs[i]);
-                    int mdim[] = new int[n];
-                    H5.H5Tget_array_dims(memberTIDs[i], mdim, null);
+                    long mdim[] = new long[n];
+                    H5.H5Tget_array_dims(memberTIDs[i], mdim);
                     memberDims[i] = mdim;
                     tmptid = H5.H5Tget_super(memberTIDs[i]);
                     memberOrders[i] = (H5.H5Tget_size(memberTIDs[i])/H5.H5Tget_size(tmptid));
@@ -1015,7 +1015,7 @@ public class H5CompoundDS extends CompoundDS
 
         int nMembers = memberNames.length;
         int memberRanks[] = new int[nMembers];
-        int memberDims[][] = new int[nMembers][1];
+        long memberDims[][] = new long[nMembers][1];
         for (int i=0; i<nMembers; i++)
         {
             memberRanks[i] = 1;
@@ -1037,7 +1037,7 @@ public class H5CompoundDS extends CompoundDS
         String[] memberNames,
         Datatype[] memberDatatypes,
         int[] memberRanks,
-        int[][] memberDims,
+        long[][] memberDims,
         Object data) throws Exception
     {
         return H5CompoundDS.create(name, pgroup, dims, null, null, -1,
@@ -1116,7 +1116,7 @@ public class H5CompoundDS extends CompoundDS
         String[] memberNames,
         Datatype[] memberDatatypes,
         int[] memberRanks,
-        int[][] memberDims,
+        long[][] memberDims,
         Object data) throws Exception
     {
         H5CompoundDS dataset = null;
@@ -1169,7 +1169,7 @@ public class H5CompoundDS extends CompoundDS
                 int tmptid = -1;
                 try {
                     tmptid = memberDatatypes[i].toNative();
-                    mTypes[i] = H5.H5Tarray_create(tmptid, memberRanks[i], memberDims[i], null);
+                    mTypes[i] = H5.H5Tarray_create(tmptid, memberRanks[i], memberDims[i]);
                 } finally {
                     try {H5.H5Tclose(tmptid); } catch (Exception ex) {}
                 }
@@ -1228,7 +1228,7 @@ public class H5CompoundDS extends CompoundDS
             }
 
             int fid = file.getFID();
-            did = H5.H5Dcreate(fid, fullPath, tid, sid, plist);
+            did = H5.H5Dcreate(fid, fullPath, tid, sid, HDF5Constants.H5P_DEFAULT, plist, HDF5Constants.H5P_DEFAULT);
         } finally {
             try {H5.H5Pclose(plist);} catch (HDF5Exception ex) {};
             try {H5.H5Sclose(sid);} catch (HDF5Exception ex) {};
@@ -1315,12 +1315,12 @@ public class H5CompoundDS extends CompoundDS
             if (member_class == HDF5Constants.H5T_ARRAY)
             {
                 int mn = H5.H5Tget_array_ndims(member_tid);
-                int[] marray = new int[mn];
-                H5.H5Tget_array_dims(member_tid, marray, null);
+                long[] marray = new long[mn];
+                H5.H5Tget_array_dims(member_tid, marray);
                 baseType = H5.H5Tget_super(member_tid);
                 tmp_tid2 = baseType;
                 tmp_tid4 = H5.H5Tget_native_type(baseType);
-                arrayType = H5.H5Tarray_create (tmp_tid4, mn, marray, null);
+                arrayType = H5.H5Tarray_create (tmp_tid4, mn, marray);
                 tmp_tid3 = arrayType;
             }
 

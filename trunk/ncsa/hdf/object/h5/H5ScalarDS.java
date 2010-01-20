@@ -475,7 +475,7 @@ public class H5ScalarDS extends ScalarDS
             plist = H5.H5Dget_create_plist(srcdid);
             
             try {
-                dstdid = H5.H5Dcreate(pgroup.getFID(), dname, tid, sid, plist);
+                dstdid = H5.H5Dcreate(pgroup.getFID(), dname, tid, sid, HDF5Constants.H5P_DEFAULT, plist, HDF5Constants.H5P_DEFAULT);
             } finally {
                 try { H5.H5Dclose(dstdid); } catch(Exception ex2) {}
             }
@@ -927,7 +927,7 @@ public class H5ScalarDS extends ScalarDS
 
         try
         {
-            did = H5.H5Dopen(getFID(), getPath()+getName());
+            did = H5.H5Dopen(getFID(), getPath()+getName(), HDF5Constants.H5P_DEFAULT);
         } catch (HDF5Exception ex)
         {
             did = -1;
@@ -1134,7 +1134,7 @@ public class H5ScalarDS extends ScalarDS
                 H5.H5Pset_deflate(plist, gzip);
             }
             int fid = file.getFID();
-            did = H5.H5Dcreate(fid, fullPath, tid, sid, plist);
+            did = H5.H5Dcreate(fid, fullPath, tid, sid, HDF5Constants.H5P_DEFAULT, plist, HDF5Constants.H5P_DEFAULT);
 
             byte[] ref_buf = H5.H5Rcreate( fid, fullPath, HDF5Constants.H5R_OBJECT, -1);
             long l = HDFNativeData.byteToLong(ref_buf, 0);
@@ -1273,7 +1273,7 @@ public class H5ScalarDS extends ScalarDS
     }
     
     /**
-     * H5Dextend verifies that the dataset is at least of size size, extending 
+     * H5Dset_extent verifies that the dataset is at least of size size, extending 
      * it if necessary. The dimensionality of size is the same as that of the 
      * dataspace of the dataset being changed. 
      * 
@@ -1287,7 +1287,7 @@ public class H5ScalarDS extends ScalarDS
 
         did = open(); 
         try { 
-            H5.H5Dextend(did, newDims); 
+            H5.H5Dset_extent(did, newDims); 
             H5.H5Fflush(did, HDF5Constants.H5F_SCOPE_GLOBAL); 
             sid = H5.H5Dget_space(did); 
             long[] checkDims = new long[rank]; 

@@ -972,7 +972,7 @@ public class H5File extends FileFormat
             if (objType == HDF5Constants.H5G_DATASET) {
                 int did = -1;
                 try {
-                    did = H5.H5Dopen(fid, path);
+                    did = H5.H5Dopen(fid, path, HDF5Constants.H5P_DEFAULT);
                     obj = getDataset(did, name, pPath); 
                 }
                 finally { 
@@ -1128,7 +1128,7 @@ public class H5File extends FileFormat
     {
         int nMembers = memberNames.length;
         int memberRanks[] = new int[nMembers];
-        int memberDims[][] = new int[nMembers][1];
+        long memberDims[][] = new long[nMembers][1];
         Dataset ds = null;
 
         for (int i=0; i<nMembers; i++)

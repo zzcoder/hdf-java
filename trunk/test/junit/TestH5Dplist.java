@@ -95,68 +95,30 @@ public class TestH5D {
     }
 
     @Test
-    public void testH5Dcreate() throws Throwable, HDF5LibraryException {
-        int dataset_id = -1;
-        try {
-            dataset_id = H5.H5Dcreate(H5fid, "dset",
-                HDF5Constants.H5T_STD_I32BE, H5dsid,
-                HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-        }
-        catch (Exception err) {
-            err.printStackTrace();
-            fail("testH5Dcreate: " + err);
-        }
-        assertTrue(dataset_id > 0);
-
-        // End access to the dataset and release resources used by it.
-        try {
-            if (dataset_id >= 0)
-                H5.H5Dclose(dataset_id);
-        }
-        catch (Exception err) {
-            err.printStackTrace();
-        }
-    }
-
-    @Test
-    public void testH5Dcreate_anon() throws Throwable, HDF5LibraryException {
-        int dataset_id = -1;
-        try {
-            dataset_id = H5.H5Dcreate_anon(H5fid, HDF5Constants.H5T_STD_I32BE, 
-                    H5dsid, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-        }
-        catch (Exception err) {
-            err.printStackTrace();
-            fail("testH5Dcreate_anon: " + err);
-        }
-        assertTrue(dataset_id > 0);
-
-        // End access to the dataset and release resources used by it.
-        try {
-            if (dataset_id >= 0)
-                H5.H5Dclose(dataset_id);
-        }
-        catch (Exception err) {
-            err.printStackTrace();
-        }
-    }
-
-    @Test
-    public void testH5Dopen() throws Throwable, HDF5LibraryException {
-        int dataset_id = _createDataset(H5fid, H5dsid, "dset", HDF5Constants.H5P_DEFAULT);
-        H5.H5Dclose(dataset_id);
+    public void testH5Dget_access_plist() throws Throwable, HDF5LibraryException {
+        int dapl_id = -1;
+        long nlinks = -1;
+        int test_dapl_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_ACCESS);
+        H5.H5Pset_nlinks(test_dapl_id, 134);
+        nlinks = H5.H5Pget_nlinks(test_dapl_id);
+        assertTrue("testH5Dget_access_plist: nlinks: ", nlinks == 134);
+        
+        int dataset_id = _createDataset(H5fid, H5dsid, "dset", test_dapl_id);
         
         try {
-            dataset_id = H5.H5Dopen(H5fid, "dset", HDF5Constants.H5P_DEFAULT);
+            dapl_id = H5.H5Dget_access_plist(dataset_id);
         }
         catch (Exception err) {
             err.printStackTrace();
-            fail("testH5Dopen: " + err);
+            fail("testH5Dget_access_plist: H5.H5Dget_access_plist: " + err);
         }
-        assertTrue("testH5Dopen: ", dataset_id > 0);
+        assertTrue("testH5Dget_access_plist: dapl_id: ", dapl_id > 0);
+        assertTrue("testH5Dget_access_plist: ", H5.H5Pequal(dapl_id, test_dapl_id) > 0);
 
         // End access to the dataset and release resources used by it.
         try {
+            if (dapl_id >= 0)
+                H5.H5Pclose(dapl_id);
             if (dataset_id >= 0)
                 H5.H5Dclose(dataset_id);
         }
@@ -164,5 +126,34 @@ public class TestH5D {
             err.printStackTrace();
         }
     }
+    
+//  @Test
+//  public void testH5Dset_extent() throws Throwable, HDF5LibraryException {
+//      int dapl_id = -1;
+//      int test_dapl_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_ACCESS);
+//      H5.H5Pset_nlinks(dapl1, 134);
+//      int dataset_id = _createDataset(H5fid, H5dsid, "dset", test_dapl_id);
+//      
+//      try {
+//          dapl_id = H5.H5Dset_extent(dataset_id);
+//      }
+//      catch (Exception err) {
+//          err.printStackTrace();
+//          fail("testH5Dset_extent: H5.H5Dget_access_plist: " + err);
+//      }
+//      assertTrue("testH5Dset_extent: dapl_id: ", dapl_id > 0);
+////      assertTrue("testH5Dset_extent: ", H5.H5Pequal(dapl_id, HDF5Constants.H5P_DEFAULT) > 0);
+//
+//      // End access to the dataset and release resources used by it.
+//      try {
+//          if (dapl_id >= 0)
+//              H5.H5Pclose(dapl_id);
+//          if (dataset_id >= 0)
+//              H5.H5Dclose(dataset_id);
+//      }
+//      catch (Exception err) {
+//          err.printStackTrace();
+//      }
+//  }
 
 }

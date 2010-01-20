@@ -229,6 +229,8 @@ public class HDF5Constants {
     public static final int H5O_TYPE_NTYPES = H5O_TYPE_NTYPES();
     public static final int H5P_DATASET_CREATE = H5P_DATASET_CREATE();
     public static final int H5P_DATASET_CREATE_DEFAULT = H5P_DATASET_CREATE_DEFAULT();
+    public static final int H5P_DATASET_ACCESS = H5P_DATASET_ACCESS();
+    public static final int H5P_DATASET_ACCESS_DEFAULT = H5P_DATASET_ACCESS_DEFAULT();
     public static final int H5P_DATASET_XFER = H5P_DATASET_XFER();
     public static final int H5P_DATASET_XFER_DEFAULT = H5P_DATASET_XFER_DEFAULT();
     public static final int H5P_DEFAULT = H5P_DEFAULT();
@@ -903,6 +905,10 @@ public class HDF5Constants {
     private static native final int H5P_DATASET_CREATE();
 
     private static native final int H5P_DATASET_CREATE_DEFAULT();
+
+    private static native final int H5P_DATASET_ACCESS();
+
+    private static native final int H5P_DATASET_ACCESS_DEFAULT();
 
     private static native final int H5P_DATASET_XFER();
 
