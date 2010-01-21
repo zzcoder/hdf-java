@@ -14,7 +14,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestH5D {
+public class TestH5Dplist {
     private static final String H5_FILE = "test.h5";
     private static final int DIM_X = 4;
     private static final int DIM_Y = 6;
