@@ -20,70 +20,80 @@ import javax.swing.tree.TreeNode;
 import ncsa.hdf.object.*;
 
 /**
- *
- * <p>TreeView defines APIs for open a file and display the file structure in tree structure.</p>
- *
- * <p>TreeView uses folders and leaf nodes to represent groups and data objects in the
- * file. You can expand or collapse folders to navigate data objects in the file.</p>
- *
- * <p>From the TreeView, you can open data content or metadata of selected object.
- * You can selet object(s) to delete or add new object to the file.</p>
- *
+ * 
+ * <p>
+ * TreeView defines APIs for open a file and display the file structure in tree
+ * structure.
+ * </p>
+ * 
+ * <p>
+ * TreeView uses folders and leaf nodes to represent groups and data objects in
+ * the file. You can expand or collapse folders to navigate data objects in the
+ * file.
+ * </p>
+ * 
+ * <p>
+ * From the TreeView, you can open data content or metadata of selected object.
+ * You can selet object(s) to delete or add new object to the file.
+ * </p>
+ * 
  * @author Peter X. Cao
  * @version 2.4 9/6/2007
  */
-public abstract interface TreeView
-{
+public abstract interface TreeView {
     /**
-     * Opens a file and retrieves the file structure of the file.
-     * It also can be used to create a new file by setting the accessID to
-     * FileFormat.CREATE.
-     *
+     * Opens a file and retrieves the file structure of the file. It also can be
+     * used to create a new file by setting the accessID to FileFormat.CREATE.
+     * 
      * <p>
-     * Subclasses must implement this function to take appropriate steps to
-     * open a file.</p>
-     *
-     * @param filename the name of the file to open.
-     * @param accessID identifier for the file access. Valid value of accessID is:
-     * <ul>
-     * <li>FileFormat.READ --- allow read-only access to file.</li>
-     * <li>FileFormat.WRITE --- allow read and write access to file.</li>
-     * <li>FileFormat.CREATE --- create a new file.</li>
-     * </ul>
-     *
-     * @return the FileFormat of this file if successful; otherwise returns null.
+     * Subclasses must implement this function to take appropriate steps to open
+     * a file.
+     * </p>
+     * 
+     * @param filename
+     *            the name of the file to open.
+     * @param accessID
+     *            identifier for the file access. Valid value of accessID is:
+     *            <ul>
+     *            <li>FileFormat.READ --- allow read-only access to file.</li>
+     *            <li>FileFormat.WRITE --- allow read and write access to file.</li>
+     *            <li>FileFormat.CREATE --- create a new file.</li>
+     *            </ul>
+     * 
+     * @return the FileFormat of this file if successful; otherwise returns
+     *         null.
      */
     public abstract FileFormat openFile(String filename, int accessID)
-        throws Exception;
+            throws Exception;
 
     /**
      * close a file
-     * @param file the file to close
+     * 
+     * @param file
+     *            the file to close
      */
-    public abstract void closeFile(FileFormat file)
-        throws Exception;
+    public abstract void closeFile(FileFormat file) throws Exception;
 
     /**
      * save a file
-     * @param file the file to save
+     * 
+     * @param file
+     *            the file to save
      */
-    public abstract void saveFile(FileFormat file)
-        throws Exception;
+    public abstract void saveFile(FileFormat file) throws Exception;
 
     /**
-     * Gets the selected the file.
-     * When multiple files are open, we need to know which file is currently
-     * selected.
-     *
+     * Gets the selected the file. When multiple files are open, we need to know
+     * which file is currently selected.
+     * 
      * @return the FileFormat of the selected file.
      */
     public abstract FileFormat getSelectedFile();
 
     /**
-     * Gets a list of selected objects in the tree.
-     * Obtaining a list of current selected objects is necessary for copy/paste/delete
-     * objects.
-     *
+     * Gets a list of selected objects in the tree. Obtaining a list of current
+     * selected objects is necessary for copy/paste/delete objects.
+     * 
      * @return a list of selected object in the tree.
      */
     public abstract List getSelectedObjects();
@@ -95,33 +105,41 @@ public abstract interface TreeView
 
     /**
      * Dispaly the content of a data object.
-     * @param dataObject the data object
+     * 
+     * @param dataObject
+     *            the data object
      * @return the dataview that displays the data content
      * @throws Exception
      */
     public abstract DataView showDataContent(HObject dataObject)
-        throws Exception;
+            throws Exception;
 
     /**
      * Displays the meta data of a data object.
-     * @param dataObject the data object
+     * 
+     * @param dataObject
+     *            the data object
      * @return the MetaDataView that displays the MetaData of the data object
      * @throws Exception
      */
     public abstract MetaDataView showMetaData(HObject dataObject)
-        throws Exception;
+            throws Exception;
 
     /**
      * Adds a new data object to the file.
-     * @param newObject the new object to add.
-     * @param parentGroup the parent group the object is to add to.
+     * 
+     * @param newObject
+     *            the new object to add.
+     * @param parentGroup
+     *            the parent group the object is to add to.
      * @throws Exception
      */
     public abstract void addObject(HObject newObject, Group parentGroup)
-        throws Exception;
+            throws Exception;
 
     /**
      * Returns the JTree which holds the file structure.
+     * 
      * @return the JTree which holds the file structure.
      */
     public abstract JTree getTree();

@@ -10,13 +10,13 @@ import junit.framework.TestSuite;
  * Test suite for all unit tests of HDF5 objects.
  * 
  * @author xcao
- *
+ * 
  */
 public class AllH5ObjectTests {
     public static Test suite() {
         final TestSuite suite = new TestSuite("Test for test.unittests");
-        //$JUnit-BEGIN$
-        
+        // $JUnit-BEGIN$
+
         // ncsa.hdf.object.h5 package
         suite.addTestSuite(H5CompoundDSTest.class);
         suite.addTestSuite(H5BugFixTest.class);
@@ -34,19 +34,21 @@ public class AllH5ObjectTests {
         suite.addTestSuite(FileFormatTest.class);
         suite.addTestSuite(GroupTest.class);
         suite.addTestSuite(HObjectTest.class);
-        
-        //$JUnit-END$
+
+        // $JUnit-END$
         return suite;
     }
 
     public static void main(final String[] args) {
-        
-        try { H5TestFile.createTestFile(null); } 
+
+        try {
+            H5TestFile.createTestFile(null);
+        }
         catch (final Exception ex) {
-            System.out.println("*** Unable to create HDF5 test file. "+ex);
+            System.out.println("*** Unable to create HDF5 test file. " + ex);
             System.exit(-1);
         }
-        
+
         junit.textui.TestRunner.run(suite());
     }
 }

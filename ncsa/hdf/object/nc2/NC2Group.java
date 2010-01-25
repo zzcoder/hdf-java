@@ -15,23 +15,27 @@
 package ncsa.hdf.object.nc2;
 
 import java.util.*;
-import ncsa.hdf.object.*;
-import ucar.nc2.*;
+
+import ucar.nc2.NetcdfFile;
+
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.HObject;
 
 /**
- * An H5Group represents HDF5 group, inheriting from Group.
- * Every HDF5 object has at least one name. An HDF5 group is used to store
- * a set of the names together in one place, i.e. a group. The general
- * structure of a group is similar to that of the UNIX file system in
- * that the group may contain references to other groups or data objects
- * just as the UNIX directory may contain subdirectories or files.
+ * An H5Group represents HDF5 group, inheriting from Group. Every HDF5 object
+ * has at least one name. An HDF5 group is used to store a set of the names
+ * together in one place, i.e. a group. The general structure of a group is
+ * similar to that of the UNIX file system in that the group may contain
+ * references to other groups or data objects just as the UNIX directory may
+ * contain subdirectories or files.
  * <p>
+ * 
  * @version 1.1 9/4/2007
  * @author Peter X. Cao
  */
-public class NC2Group extends Group
-{
-	public static final long serialVersionUID = HObject.serialVersionUID;
+public class NC2Group extends Group {
+    public static final long serialVersionUID = HObject.serialVersionUID;
 
     /**
      * The list of attributes of this data object. Members of the list are
@@ -40,35 +44,40 @@ public class NC2Group extends Group
     private List attributeList;
 
     /** The default object ID for HDF5 objects */
-    private final static long[] DEFAULT_OID = {0};
+    private final static long[] DEFAULT_OID = { 0 };
 
     /**
      * Constructs an HDF5 group with specific name, path, and parent.
      * <p>
-     * @param fileFormat the file which containing the group.
-     * @param name the name of this group.
-     * @param path the full path of this group.
-     * @param parent the parent of this group.
-     * @param oid the unique identifier of this data object.
+     * 
+     * @param fileFormat
+     *            the file which containing the group.
+     * @param name
+     *            the name of this group.
+     * @param path
+     *            the full path of this group.
+     * @param parent
+     *            the parent of this group.
+     * @param oid
+     *            the unique identifier of this data object.
      */
-    public NC2Group(
-        FileFormat fileFormat,
-        String name,
-        String path,
-        Group parent,
-        long[] theID) {
-        super (fileFormat, name, path, parent, ((theID == null) ? DEFAULT_OID : theID));
+    public NC2Group(FileFormat fileFormat, String name, String path,
+            Group parent, long[] theID) {
+        super(fileFormat, name, path, parent, ((theID == null) ? DEFAULT_OID
+                : theID));
     }
 
     /*
      * (non-Javadoc)
+     * 
      * @see ncsa.hdf.object.DataFormat#hasAttribute()
      */
-    public boolean hasAttribute () { return false; }
+    public boolean hasAttribute() {
+        return false;
+    }
 
     // Implementing DataFormat
-    public List getMetadata() throws Exception
-    {
+    public List getMetadata() throws Exception {
         if (!isRoot()) {
             return null;
         }
@@ -77,7 +86,7 @@ public class NC2Group extends Group
             return attributeList;
         }
 
-        NC2File theFile = (NC2File)getFileFormat();
+        NC2File theFile = (NC2File) getFileFormat();
         NetcdfFile ncFile = theFile.getNetcdfFile();
 
         List netcdfAttributeList = ncFile.getGlobalAttributes();
@@ -89,8 +98,8 @@ public class NC2Group extends Group
         attributeList = new Vector(n);
 
         ucar.nc2.Attribute netcdfAttr = null;
-        for (int i=0; i<n; i++) {
-            netcdfAttr = (ucar.nc2.Attribute)netcdfAttributeList.get(i);
+        for (int i = 0; i < n; i++) {
+            netcdfAttr = (ucar.nc2.Attribute) netcdfAttributeList.get(i);
             attributeList.add(NC2File.convertAttribute(netcdfAttr));
         }
 
@@ -100,48 +109,60 @@ public class NC2Group extends Group
     /**
      * Creates a new attribute and attached to this dataset if attribute does
      * not exist. Otherwise, just update the value of the attribute.
-     *
+     * 
      * <p>
-     * @param info the atribute to attach
+     * 
+     * @param info
+     *            the atribute to attach
      */
     public void writeMetadata(Object info) throws Exception {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException(
+                "Unsupported operation for NetCDF.");
     }
 
     /**
      * Deletes an attribute from this dataset.
      * <p>
-     * @param info the attribute to delete.
+     * 
+     * @param info
+     *            the attribute to delete.
      */
     public void removeMetadata(Object info) throws Exception {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException(
+                "Unsupported operation for NetCDF.");
     }
 
     // Implementing DataFormat
     public int open() {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException(
+                "Unsupported operation for NetCDF.");
     }
 
     /** close group access */
     public void close(int gid) {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException(
+                "Unsupported operation for NetCDF.");
     }
 
     /**
      * Creates a new group.
-     * @param file the file which the group is added to.
-     * @param name the name of the group to create.
-     * @param pgroup the parent group of the new group.
+     * 
+     * @param file
+     *            the file which the group is added to.
+     * @param name
+     *            the name of the group to create.
+     * @param pgroup
+     *            the parent group of the new group.
      * @return the new group if successful. Otherwise returns null.
      */
-    public static NC2Group create(String name, Group pgroup)
-        throws Exception {
+    public static NC2Group create(String name, Group pgroup) throws Exception {
         // not supported
-        throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
+        throw new UnsupportedOperationException(
+                "Unsupported operation for NetCDF.");
     }
 
 }
