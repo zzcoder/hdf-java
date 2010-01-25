@@ -6704,7 +6704,7 @@ public class H5 {
      *
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
-    public synchronized static native int H5Sencode(int obj_id, byte[] buf, long[] nalloc)
+    public synchronized static native int H5Sencode_buf(int obj_id, byte[] buf, long[] nalloc)
     throws HDF5LibraryException, NullPointerException;
     /**
      *  H5Sencode converts a data space description into binary form in a buffer.

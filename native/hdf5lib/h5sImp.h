@@ -211,10 +211,10 @@ extern "C" {
 
     /*
      * Class:     hdf_h5_H5S
-     * Method:    H5Sencode
+     * Method:    H5Sencode_buf
      * Signature: (I[B[J)I
      */
-    JNIEXPORT jint JNICALL Java_hdf_h5_H5S_H5Sencode__I_3B_3J
+    JNIEXPORT jint JNICALL Java_hdf_h5_H5S_H5Sencode_1buf
       (JNIEnv *env, jclass cls, jint obj_id, jbyteArray buf, jlongArray nalloc);
 
     /*
@@ -222,7 +222,7 @@ extern "C" {
      * Method:    H5Sencode
      * Signature: (I)[B
      */
-    JNIEXPORT jbyteArray JNICALL Java_hdf_h5_H5S_H5Sencode__I
+    JNIEXPORT jbyteArray JNICALL Java_hdf_h5_H5S_H5Sencode
       (JNIEnv *env, jclass cls, jint obj_id);
 
     /*
