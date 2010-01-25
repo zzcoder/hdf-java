@@ -15,9 +15,9 @@
 package ncsa.hdf.view;
 
 /**
- *
+ * 
  * The palette view interface for displaying image palette
- *
+ * 
  * @author Peter X. Cao
  * @version 2.4 9/6/2007
  */

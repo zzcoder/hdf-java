@@ -28,22 +28,22 @@ import java.util.*;
 import ncsa.hdf.object.*;
 
 /**
- * NewImageDialog shows a message dialog requesting user input for creating
- * a new HDF4/5 Image.
+ * NewImageDialog shows a message dialog requesting user input for creating a
+ * new HDF4/5 Image.
  * 
  * @author Peter X. Cao
  * @version 2.4 9/6/2007
  */
-public class NewImageDialog extends JDialog
-implements ActionListener, ItemListener
-{
-	public static final long serialVersionUID = HObject.serialVersionUID;
+public class NewImageDialog extends JDialog implements ActionListener,
+        ItemListener {
+    public static final long serialVersionUID = HObject.serialVersionUID;
 
     private JTextField nameField, widthField, heightField;
 
     private JComboBox parentChoice;
 
-    private JRadioButton checkIndex, checkTrueColor, checkInterlacePixel, checkInterlacePlane;
+    private JRadioButton checkIndex, checkTrueColor, checkInterlacePixel,
+            checkInterlacePlane;
 
     /** a list of current groups */
     private List groupList;
@@ -56,18 +56,23 @@ implements ActionListener, ItemListener
 
     private final Toolkit toolkit;
 
-    /** Constructs NewImageDialog with specified list of possible parent groups.
-     *  @param owner the owner of the input
-     *  @param pGroup the parent group which the new group is added to.
-     *  @param objs the list of all objects.
+    /**
+     * Constructs NewImageDialog with specified list of possible parent groups.
+     * 
+     * @param owner
+     *            the owner of the input
+     * @param pGroup
+     *            the parent group which the new group is added to.
+     * @param objs
+     *            the list of all objects.
      */
-    public NewImageDialog(Frame owner, Group pGroup, List objs)
-    {
-        super (owner, "New HDF Image...", true);
+    public NewImageDialog(Frame owner, Group pGroup, List objs) {
+        super(owner, "New HDF Image...", true);
 
         newObject = null;
 
-        isH5 = pGroup.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
+        isH5 = pGroup.getFileFormat().isThisType(
+                FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
         fileFormat = pGroup.getFileFormat();
         toolkit = Toolkit.getDefaultToolkit();
 
@@ -75,32 +80,34 @@ implements ActionListener, ItemListener
         groupList = new Vector();
         Object obj = null;
         Iterator iterator = objs.iterator();
-        while (iterator.hasNext())
-        {
+        while (iterator.hasNext()) {
             obj = iterator.next();
-            if (obj instanceof Group)
-            {
+            if (obj instanceof Group) {
                 groupList.add(obj);
-                Group g = (Group)obj;
+                Group g = (Group) obj;
                 if (g.isRoot()) {
                     parentChoice.addItem(HObject.separator);
-                } else {
-                    parentChoice.addItem(g.getPath()+g.getName()+HObject.separator);
+                }
+                else {
+                    parentChoice.addItem(g.getPath() + g.getName()
+                            + HObject.separator);
                 }
             }
         }
 
         if (pGroup.isRoot()) {
             parentChoice.setSelectedItem(HObject.separator);
-        } else {
-            parentChoice.setSelectedItem(pGroup.getPath()+pGroup.getName()+HObject.separator);
+        }
+        else {
+            parentChoice.setSelectedItem(pGroup.getPath() + pGroup.getName()
+                    + HObject.separator);
         }
 
-        JPanel contentPane = (JPanel)getContentPane();
-        contentPane.setLayout(new BorderLayout(5,5));
-        contentPane.setBorder(BorderFactory.createEmptyBorder(10,5,5,5));
-        int w = 400 + (ViewProperties.getFontSize()-12)*15;
-        int h = 250 + (ViewProperties.getFontSize()-12)*10;
+        JPanel contentPane = (JPanel) getContentPane();
+        contentPane.setLayout(new BorderLayout(5, 5));
+        contentPane.setBorder(BorderFactory.createEmptyBorder(10, 5, 5, 5));
+        int w = 400 + (ViewProperties.getFontSize() - 12) * 15;
+        int h = 250 + (ViewProperties.getFontSize() - 12) * 10;
         contentPane.setPreferredSize(new Dimension(w, h));
 
         JButton okButton = new JButton("   Ok   ");
@@ -121,7 +128,7 @@ implements ActionListener, ItemListener
 
         // set name, parent, width and height panel
         JPanel centerP = new JPanel();
-        centerP.setLayout(new BorderLayout(5,5));
+        centerP.setLayout(new BorderLayout(5, 5));
         JPanel tmpP = new JPanel();
         tmpP.setLayout(new GridLayout(6, 1, 5, 5));
         tmpP.add(new JLabel("Image name: "));
@@ -134,20 +141,20 @@ implements ActionListener, ItemListener
 
         tmpP = new JPanel();
         tmpP.setLayout(new GridLayout(6, 1, 5, 5));
-        tmpP.add(nameField=new JTextField());
+        tmpP.add(nameField = new JTextField());
         tmpP.add(parentChoice);
-        tmpP.add(heightField=new JTextField());
-        tmpP.add(widthField=new JTextField());
+        tmpP.add(heightField = new JTextField());
+        tmpP.add(widthField = new JTextField());
 
         JPanel tmpP0 = new JPanel();
-        tmpP0.setLayout(new GridLayout(1,2));
+        tmpP0.setLayout(new GridLayout(1, 2));
         tmpP0.add(checkIndex = new JRadioButton("Indexed colormap", true));
         tmpP0.add(checkTrueColor = new JRadioButton("24-bit truecolor"));
         tmpP0.setBorder(new TitledBorder(""));
         tmpP.add(tmpP0);
 
         tmpP0 = new JPanel();
-        tmpP0.setLayout(new GridLayout(1,2));
+        tmpP0.setLayout(new GridLayout(1, 2));
         tmpP0.add(checkInterlacePixel = new JRadioButton("Pixel interlace"));
         tmpP0.add(checkInterlacePlane = new JRadioButton("Plane interlace"));
         tmpP0.setBorder(new TitledBorder(""));
@@ -179,93 +186,77 @@ implements ActionListener, ItemListener
         pack();
     }
 
-    public void actionPerformed(ActionEvent e)
-    {
+    public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         String cmd = e.getActionCommand();
 
-        if (cmd.equals("Ok"))
-        {
+        if (cmd.equals("Ok")) {
             newObject = createHDFimage();
             if (newObject != null) {
                 dispose();
             }
         }
-        if (cmd.equals("Cancel"))
-        {
+        if (cmd.equals("Cancel")) {
             newObject = null;
             dispose();
-            ((Vector)groupList).setSize(0);
+            ((Vector) groupList).setSize(0);
         }
     }
 
-    public void itemStateChanged(ItemEvent e)
-    {
+    public void itemStateChanged(ItemEvent e) {
         Object source = e.getSource();
 
-        if (source.equals(checkIndex))
-        {
+        if (source.equals(checkIndex)) {
             checkInterlacePixel.setSelected(true);
             checkInterlacePixel.setEnabled(false);
             checkInterlacePlane.setEnabled(false);
         }
-        else if (source.equals(checkTrueColor))
-        {
+        else if (source.equals(checkTrueColor)) {
             checkInterlacePixel.setEnabled(true);
             checkInterlacePlane.setEnabled(true);
         }
     }
 
-    private Dataset createHDFimage()
-    {
+    private Dataset createHDFimage() {
         Dataset dataset = null;
 
         String name = nameField.getText();
         if (name != null) {
             name = name.trim();
         }
-        if ((name == null) || (name.length()<=0))
-        {
+        if ((name == null) || (name.length() <= 0)) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                "Dataset name is not specified.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+                    "Dataset name is not specified.", getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
-        if (name.indexOf(HObject.separator) >= 0)
-        {
+        if (name.indexOf(HObject.separator) >= 0) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                "Dataset name cannot contain path.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+                    "Dataset name cannot contain path.", getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
-        Group pgroup = (Group)groupList.get(parentChoice.getSelectedIndex());
-        if (pgroup == null)
-        {
+        Group pgroup = (Group) groupList.get(parentChoice.getSelectedIndex());
+        if (pgroup == null) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                "Select a parent group.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Select a parent group.",
+                    getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
-        int w=0, h=0;
+        int w = 0, h = 0;
         try {
             w = Integer.parseInt(widthField.getText());
             h = Integer.parseInt(heightField.getText());
-        } catch (Exception ex)
-        {
+        }
+        catch (Exception ex) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                ex.getMessage(),
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
@@ -277,43 +268,35 @@ implements ActionListener, ItemListener
         int interlace = ScalarDS.INTERLACE_PIXEL;
         int ncomp = 2;
 
-        if (checkIndex.isSelected())
-        {
+        if (checkIndex.isSelected()) {
             // indexed colormap
-            if (isH5)
-            {
-                long[] tmpdims = {h, w};
+            if (isH5) {
+                long[] tmpdims = { h, w };
                 dims = tmpdims;
             }
-            else
-            {
-                long[] tmpdims = {w, h};
+            else {
+                long[] tmpdims = { w, h };
                 dims = tmpdims;
             }
         }
-        else
-        {
+        else {
             // true color image
-            if (isH5)
-            {
+            if (isH5) {
                 // HDF5 true color image
-                if (checkInterlacePixel.isSelected())
-                {
-                    long[] tmpdims = {h, w, 3};
+                if (checkInterlacePixel.isSelected()) {
+                    long[] tmpdims = { h, w, 3 };
                     dims = tmpdims;
                 }
-                else
-                {
+                else {
                     interlace = ScalarDS.INTERLACE_PLANE;
-                    long[] tmpdims = {3, h, w};
+                    long[] tmpdims = { 3, h, w };
                     dims = tmpdims;
                 }
             }
-            else
-            {
+            else {
                 // HDF4 true color image
                 ncomp = 3;
-                long[] tmpdims = {w, h};
+                long[] tmpdims = { w, h };
                 dims = tmpdims;
                 if (checkInterlacePlane.isSelected()) {
                     interlace = ScalarDS.INTERLACE_PLANE;
@@ -321,20 +304,18 @@ implements ActionListener, ItemListener
             }
         }
 
-        try
-        {
+        try {
 
-            Datatype datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign);
-            dataset = fileFormat.createImage(name, pgroup, datatype,
-                dims, dims, null, -1, ncomp, interlace, null);
+            Datatype datatype = fileFormat.createDatatype(tclass, tsize,
+                    torder, tsign);
+            dataset = fileFormat.createImage(name, pgroup, datatype, dims,
+                    dims, null, -1, ncomp, interlace, null);
             dataset.init();
-        } catch (Exception ex)
-        {
+        }
+        catch (Exception ex) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                ex.getMessage(),
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
@@ -342,11 +323,13 @@ implements ActionListener, ItemListener
     }
 
     /** Returns the new dataset created. */
-    public DataFormat getObject() { return newObject; }
+    public DataFormat getObject() {
+        return newObject;
+    }
 
     /** Returns the parent group of the new dataset. */
     public Group getParentGroup() {
-        return (Group)groupList.get(parentChoice.getSelectedIndex());
+        return (Group) groupList.get(parentChoice.getSelectedIndex());
     }
 
 }

@@ -26,16 +26,14 @@ import java.util.*;
 import ncsa.hdf.object.*;
 
 /**
- * NewDatasetDialog shows a message dialog requesting user input for creating
- * a new HDF4/5 dataset.
+ * NewDatasetDialog shows a message dialog requesting user input for creating a
+ * new HDF4/5 dataset.
  * 
  * @author Peter X. Cao
  * @version 2.4 9/6/2007
  */
-public class NewLinkDialog extends JDialog
-implements ActionListener
-{
-	public static final long serialVersionUID = HObject.serialVersionUID;
+public class NewLinkDialog extends JDialog implements ActionListener {
+    public static final long serialVersionUID = HObject.serialVersionUID;
 
     private JTextField nameField;
 
@@ -55,14 +53,18 @@ implements ActionListener
 
     private final Toolkit toolkit;
 
-    /** Constructs NewLinkDialog with specified list of possible parent groups.
-     *  @param owner the owner of the input
-     *  @param pGroup the parent group which the new group is added to.
-     *  @param objs the list of all objects.
+    /**
+     * Constructs NewLinkDialog with specified list of possible parent groups.
+     * 
+     * @param owner
+     *            the owner of the input
+     * @param pGroup
+     *            the parent group which the new group is added to.
+     * @param objs
+     *            the list of all objects.
      */
-    public NewLinkDialog(JFrame owner, Group pGroup, List objs)
-    {
-        super (owner, "New Dataset...", true);
+    public NewLinkDialog(JFrame owner, Group pGroup, List objs) {
+        super(owner, "New Link...", true);
 
         newObject = null;
 
@@ -77,26 +79,25 @@ implements ActionListener
         HObject obj = null;
         Iterator iterator = objs.iterator();
         String full_name = null;
-        int idx_root=-1, idx=-1;
-        while (iterator.hasNext())
-        {
-            obj = (HObject)iterator.next();
+        int idx_root = -1, idx = -1;
+        while (iterator.hasNext()) {
+            obj = (HObject) iterator.next();
             idx++;
 
-            if (obj instanceof Group)
-            {
-                Group g = (Group)obj;
+            if (obj instanceof Group) {
+                Group g = (Group) obj;
                 groupList.add(obj);
-                if (g.isRoot())
-                {
+                if (g.isRoot()) {
                     full_name = HObject.separator;
                     idx_root = idx;
-                } else {
-                    full_name = g.getPath()+g.getName()+HObject.separator;
+                }
+                else {
+                    full_name = g.getPath() + g.getName() + HObject.separator;
                 }
                 parentChoice.addItem(full_name);
-            } else {
-                full_name = obj.getPath()+obj.getName();
+            }
+            else {
+                full_name = obj.getPath() + obj.getName();
             }
 
             linkToChoice.addItem(full_name);
@@ -107,15 +108,17 @@ implements ActionListener
 
         if (pGroup.isRoot()) {
             parentChoice.setSelectedItem(HObject.separator);
-        } else {
-            parentChoice.setSelectedItem(pGroup.getPath()+pGroup.getName()+HObject.separator);
+        }
+        else {
+            parentChoice.setSelectedItem(pGroup.getPath() + pGroup.getName()
+                    + HObject.separator);
         }
 
-        JPanel contentPane = (JPanel)getContentPane();
-        contentPane.setLayout(new BorderLayout(5,5));
-        contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
-        int w = 400 + (ViewProperties.getFontSize()-12)*15;
-        int h = 150 + (ViewProperties.getFontSize()-12)*10;
+        JPanel contentPane = (JPanel) getContentPane();
+        contentPane.setLayout(new BorderLayout(5, 5));
+        contentPane.setBorder(BorderFactory.createEmptyBorder(15, 5, 5, 5));
+        int w = 400 + (ViewProperties.getFontSize() - 12) * 15;
+        int h = 150 + (ViewProperties.getFontSize() - 12) * 10;
         contentPane.setPreferredSize(new Dimension(w, h));
 
         JButton okButton = new JButton("   Ok   ");
@@ -136,16 +139,16 @@ implements ActionListener
 
         // set NAME and PARENT GROUP panel
         JPanel namePanel = new JPanel();
-        namePanel.setLayout(new BorderLayout(5,5));
+        namePanel.setLayout(new BorderLayout(5, 5));
         JPanel tmpP = new JPanel();
-        tmpP.setLayout(new GridLayout(3,1));
+        tmpP.setLayout(new GridLayout(3, 1));
         tmpP.add(new JLabel("Link name: "));
         tmpP.add(new JLabel("Parent group: "));
         tmpP.add(new JLabel("Link to: "));
         namePanel.add(tmpP, BorderLayout.WEST);
         tmpP = new JPanel();
-        tmpP.setLayout(new GridLayout(3,1));
-        tmpP.add(nameField=new JTextField());
+        tmpP.setLayout(new GridLayout(3, 1));
+        tmpP.add(nameField = new JTextField());
         tmpP.add(parentChoice);
         tmpP.add(linkToChoice);
         namePanel.add(tmpP, BorderLayout.CENTER);
@@ -160,99 +163,80 @@ implements ActionListener
         pack();
     }
 
-
-    public void actionPerformed(ActionEvent e)
-    {
+    public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         String cmd = e.getActionCommand();
 
-        if (cmd.equals("Ok"))
-        {
+        if (cmd.equals("Ok")) {
             newObject = createLink();
 
             if (newObject != null) {
                 dispose();
             }
         }
-        if (cmd.equals("Cancel"))
-        {
+        if (cmd.equals("Cancel")) {
             newObject = null;
             dispose();
-            ((Vector)groupList).setSize(0);
+            ((Vector) groupList).setSize(0);
         }
     }
 
-    private HObject createLink()
-    {
+    private HObject createLink() {
         String name = null;
         Group pgroup = null;
 
         name = nameField.getText().trim();
-        if ((name == null) || (name.length()<1))
-        {
+        if ((name == null) || (name.length() < 1)) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                "Dataset name is not specified.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+                    "Dataset name is not specified.", getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
-        if (name.indexOf(HObject.separator) >= 0)
-        {
+        if (name.indexOf(HObject.separator) >= 0) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                "Dataset name cannot contain path.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+                    "Dataset name cannot contain path.", getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
-        pgroup = (Group)groupList.get(parentChoice.getSelectedIndex());
+        pgroup = (Group) groupList.get(parentChoice.getSelectedIndex());
 
-        if (pgroup == null)
-        {
+        if (pgroup == null) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                "Parent group is null.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Parent group is null.",
+                    getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
-        HObject currentObj = (HObject)objList.get(linkToChoice.getSelectedIndex());
+        HObject currentObj = (HObject) objList.get(linkToChoice
+                .getSelectedIndex());
 
-        if (currentObj == null)
-        {
+        if (currentObj == null) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                "Target object is null.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Target object is null.",
+                    getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
-        if ((currentObj instanceof Group) && ((Group)currentObj).isRoot())
-        {
+        if ((currentObj instanceof Group) && ((Group) currentObj).isRoot()) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                "Cannot make a link to the root group.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+                    "Cannot make a link to the root group.", getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
         HObject obj = null;
-        try
-        {
+        try {
             obj = fileFormat.createLink(pgroup, name, currentObj);
-        } catch (Exception ex)
-        {
+        }
+        catch (Exception ex) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                ex,
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, ex, getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
@@ -260,11 +244,13 @@ implements ActionListener
     }
 
     /** Returns the new dataset created. */
-    public DataFormat getObject() { return newObject; }
+    public DataFormat getObject() {
+        return newObject;
+    }
 
     /** Returns the parent group of the new dataset. */
     public Group getParentGroup() {
-        return (Group)groupList.get(parentChoice.getSelectedIndex());
+        return (Group) groupList.get(parentChoice.getSelectedIndex());
     }
 
 }

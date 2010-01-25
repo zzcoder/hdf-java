@@ -25,18 +25,15 @@ import java.awt.Toolkit;
 import java.util.*;
 import ncsa.hdf.object.*;
 
-
 /**
- * NewGroupDialog shows a message dialog requesting user input for creating
- * a new HDF4/5 group.
+ * NewGroupDialog shows a message dialog requesting user input for creating a
+ * new HDF4/5 group.
  * 
  * @author Peter X. Cao
  * @version 2.4 9/6/2007
  */
-public class NewGroupDialog extends JDialog
-implements ActionListener
-{
-	public static final long serialVersionUID = HObject.serialVersionUID;
+public class NewGroupDialog extends JDialog implements ActionListener {
+    public static final long serialVersionUID = HObject.serialVersionUID;
 
     private JTextField nameField;
 
@@ -51,15 +48,18 @@ implements ActionListener
 
     private final Toolkit toolkit;
 
-
-    /** Constructs NewGroupDialog with specified list of possible parent groups.
-     *  @param owner the owner of the input
-     *  @param pGroup the parent group which the new group is added to.
-     *  @param objs the list of all objects.
+    /**
+     * Constructs NewGroupDialog with specified list of possible parent groups.
+     * 
+     * @param owner
+     *            the owner of the input
+     * @param pGroup
+     *            the parent group which the new group is added to.
+     * @param objs
+     *            the list of all objects.
      */
-    public NewGroupDialog(Frame owner, Group pGroup, List objs)
-    {
-        super (owner, "New Group...", true);
+    public NewGroupDialog(Frame owner, Group pGroup, List objs) {
+        super(owner, "New Group...", true);
 
         newObject = null;
 
@@ -70,32 +70,34 @@ implements ActionListener
         groupList = new Vector();
         Object obj = null;
         Iterator iterator = objs.iterator();
-        while (iterator.hasNext())
-        {
+        while (iterator.hasNext()) {
             obj = iterator.next();
-            if (obj instanceof Group)
-            {
+            if (obj instanceof Group) {
                 groupList.add(obj);
-                Group g = (Group)obj;
+                Group g = (Group) obj;
                 if (g.isRoot()) {
                     parentChoice.addItem(HObject.separator);
-                } else {
-                    parentChoice.addItem(g.getPath()+g.getName()+HObject.separator);
+                }
+                else {
+                    parentChoice.addItem(g.getPath() + g.getName()
+                            + HObject.separator);
                 }
             }
         }
 
         if (pGroup.isRoot()) {
             parentChoice.setSelectedItem(HObject.separator);
-        } else {
-            parentChoice.setSelectedItem(pGroup.getPath()+pGroup.getName()+HObject.separator);
+        }
+        else {
+            parentChoice.setSelectedItem(pGroup.getPath() + pGroup.getName()
+                    + HObject.separator);
         }
 
-        JPanel contentPane = (JPanel)getContentPane();
-        contentPane.setLayout(new BorderLayout(5,5));
-        contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
-        int w = 400 + (ViewProperties.getFontSize()-12)*15;
-        int h = 120 + (ViewProperties.getFontSize()-12)*10;
+        JPanel contentPane = (JPanel) getContentPane();
+        contentPane.setLayout(new BorderLayout(5, 5));
+        contentPane.setBorder(BorderFactory.createEmptyBorder(15, 5, 5, 5));
+        int w = 400 + (ViewProperties.getFontSize() - 12) * 15;
+        int h = 120 + (ViewProperties.getFontSize() - 12) * 10;
         contentPane.setPreferredSize(new Dimension(w, h));
 
         JButton okButton = new JButton("   Ok   ");
@@ -116,15 +118,15 @@ implements ActionListener
 
         // set NAME and PARENT GROUP panel
         JPanel namePanel = new JPanel();
-        namePanel.setLayout(new BorderLayout(5,5));
+        namePanel.setLayout(new BorderLayout(5, 5));
         JPanel tmpP = new JPanel();
-        tmpP.setLayout(new GridLayout(2,1));
+        tmpP.setLayout(new GridLayout(2, 1));
         tmpP.add(new JLabel("Group name: "));
         tmpP.add(new JLabel("Parent group: "));
         namePanel.add(tmpP, BorderLayout.WEST);
         tmpP = new JPanel();
-        tmpP.setLayout(new GridLayout(2,1));
-        tmpP.add(nameField=new JTextField());
+        tmpP.setLayout(new GridLayout(2, 1));
+        tmpP.add(nameField = new JTextField());
         tmpP.add(parentChoice);
         namePanel.add(tmpP, BorderLayout.CENTER);
         contentPane.add(namePanel, BorderLayout.CENTER);
@@ -138,74 +140,59 @@ implements ActionListener
         pack();
     }
 
-    public void actionPerformed(ActionEvent e)
-    {
+    public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         String cmd = e.getActionCommand();
 
-        if (cmd.equals("Ok"))
-        {
+        if (cmd.equals("Ok")) {
             newObject = create();
             if (newObject != null) {
                 dispose();
             }
         }
-        if (cmd.equals("Cancel"))
-        {
+        if (cmd.equals("Cancel")) {
             newObject = null;
             dispose();
         }
     }
 
-    private HObject create()
-    {
+    private HObject create() {
         String name = null;
         Group pgroup = null;
 
         name = nameField.getText();
-        if (name == null)
-        {
+        if (name == null) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                "Group name is not specified.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Group name is not specified.",
+                    getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
-        if (name.indexOf(HObject.separator) >= 0)
-        {
+        if (name.indexOf(HObject.separator) >= 0) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                "Group name cannot contain path.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+                    "Group name cannot contain path.", getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
-        pgroup = (Group)groupList.get(parentChoice.getSelectedIndex());
+        pgroup = (Group) groupList.get(parentChoice.getSelectedIndex());
 
-        if (pgroup == null)
-        {
+        if (pgroup == null) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                "Parent group is null.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Parent group is null.",
+                    getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
         Group obj = null;
-        try
-        {
+        try {
             obj = fileFormat.createGroup(name, pgroup);
-        } catch (Exception ex)
-        {
+        }
+        catch (Exception ex) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                ex.getMessage(),
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
@@ -213,11 +200,13 @@ implements ActionListener
     }
 
     /** Returns the new group created. */
-    public DataFormat getObject() { return newObject; }
+    public DataFormat getObject() {
+        return newObject;
+    }
 
     /** Returns the parent group of the new group. */
     public Group getParentGroup() {
-        return (Group)groupList.get(parentChoice.getSelectedIndex());
+        return (Group) groupList.get(parentChoice.getSelectedIndex());
     }
 
 }

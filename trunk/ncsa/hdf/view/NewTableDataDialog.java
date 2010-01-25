@@ -35,23 +35,21 @@ import ncsa.hdf.object.*;
  * @author Peter X. Cao
  * @version 2.4 9/6/2007
  */
-public class NewTableDataDialog extends JDialog
-implements ActionListener, ItemListener
-{
-	public static final long serialVersionUID = HObject.serialVersionUID;
+public class NewTableDataDialog extends JDialog implements ActionListener,
+        ItemListener {
+    public static final long serialVersionUID = HObject.serialVersionUID;
 
-    private static final String[] DATATYPE_NAMES = {
-        "byte (8-bit)",                // 0
-        "short (16-bit)",              // 1
-        "int (32-bit)",                // 2
-        "unsigned byte (8-bit)",       // 3
-        "unsigned short (16-bit)",     // 4
-        "unsigned int (32-bit)",       // 5
-        "long (64-bit)",               // 6
-        "float",                       // 7
-        "double",                      // 8
-        "string",                      // 9
-        "enum"                         // 10
+    private static final String[] DATATYPE_NAMES = { "byte (8-bit)", // 0
+            "short (16-bit)", // 1
+            "int (32-bit)", // 2
+            "unsigned byte (8-bit)", // 3
+            "unsigned short (16-bit)", // 4
+            "unsigned int (32-bit)", // 5
+            "long (64-bit)", // 6
+            "float", // 7
+            "double", // 8
+            "string", // 9
+            "enum" // 10
     };
 
     private FileFormat fileformat;
@@ -79,19 +77,25 @@ implements ActionListener, ItemListener
 
     private DefaultCellEditor cellEditor;
 
-    private JTextField nameField, currentSizeField, maxSizeField, chunkSizeField;
+    private JTextField nameField, currentSizeField, maxSizeField,
+            chunkSizeField;
     private JComboBox compressionLevel, rankChoice, memberTypeChoice;
     private JCheckBox checkCompression;
     private JRadioButton checkContinguous, checkChunked;
 
-    /** Constructs NewTableDataDialog with specified list of possible parent groups.
-     *  @param owner the owner of the input
-     *  @param pGroup the parent group which the new group is added to.
-     *  @param objs the list of all objects.
+    /**
+     * Constructs NewTableDataDialog with specified list of possible parent
+     * groups.
+     * 
+     * @param owner
+     *            the owner of the input
+     * @param pGroup
+     *            the parent group which the new group is added to.
+     * @param objs
+     *            the list of all objects.
      */
-    public NewTableDataDialog(JFrame owner, Group pGroup, List objs)
-    {
-        super (owner, "New Compound Dataset...", true);
+    public NewTableDataDialog(JFrame owner, Group pGroup, List objs) {
+        super(owner, "New Compound Dataset...", true);
 
         newObject = null;
         dataView = null;
@@ -101,19 +105,19 @@ implements ActionListener, ItemListener
         memberTypeChoice = new JComboBox(DATATYPE_NAMES);
         cellEditor = new DefaultCellEditor(memberTypeChoice);
         rowEditorModel = new RowEditorModel(numberOfMembers, cellEditor);
-        String[] colNames = {"Name", "Datatype", "Array size / String length / Enum names"};
-        tableModel =  new DefaultTableModel( colNames, numberOfMembers);
-        table = new JTable(tableModel)
-        {
-        	public static final long serialVersionUID = HObject.serialVersionUID;
+        String[] colNames = { "Name", "Datatype",
+                "Array size / String length / Enum names" };
+        tableModel = new DefaultTableModel(colNames, numberOfMembers);
+        table = new JTable(tableModel) {
+            public static final long serialVersionUID = HObject.serialVersionUID;
 
             RowEditorModel rm = rowEditorModel;
-            public TableCellEditor getCellEditor(int row, int col)
-            {
+
+            public TableCellEditor getCellEditor(int row, int col) {
                 TableCellEditor cellEditor = rm.getEditor(row);
 
-                if ((cellEditor==null) || !(col==1)) {
-                    cellEditor =  super.getCellEditor(row,col);
+                if ((cellEditor == null) || !(col == 1)) {
+                    cellEditor = super.getCellEditor(row, col);
                 }
 
                 return cellEditor;
@@ -121,18 +125,20 @@ implements ActionListener, ItemListener
         };
         table.setRowSelectionAllowed(false);
         table.setColumnSelectionAllowed(false);
-        
+
         // set cell height for large fonts
-		int cellRowHeight = Math.max(16, table.getFontMetrics(table.getFont()).getHeight());
+        int cellRowHeight = Math.max(16, table.getFontMetrics(table.getFont())
+                .getHeight());
         table.setRowHeight(cellRowHeight);
 
         toolkit = Toolkit.getDefaultToolkit();
-        isH5 = pGroup.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
+        isH5 = pGroup.getFileFormat().isThisType(
+                FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
 
         parentChoice = new JComboBox();
         String[] memberSizes = new String[100];
-        for (int i=0; i<100; i++) {
-            memberSizes[i] = String.valueOf(i+1);
+        for (int i = 0; i < 100; i++) {
+            memberSizes[i] = String.valueOf(i + 1);
         }
 
         nFieldBox = new JComboBox(memberSizes);
@@ -147,21 +153,20 @@ implements ActionListener, ItemListener
 
         compoundDSList = new Vector(objs.size());
 
-        while (iterator.hasNext())
-        {
+        while (iterator.hasNext()) {
             obj = iterator.next();
-            if (obj instanceof Group)
-            {
-                Group g = (Group)obj;
+            if (obj instanceof Group) {
+                Group g = (Group) obj;
                 groupList.add(obj);
                 if (g.isRoot()) {
                     parentChoice.addItem(HObject.separator);
-                } else {
-                    parentChoice.addItem(g.getPath()+g.getName()+HObject.separator);
+                }
+                else {
+                    parentChoice.addItem(g.getPath() + g.getName()
+                            + HObject.separator);
                 }
             }
-            else if (obj instanceof CompoundDS)
-            {
+            else if (obj instanceof CompoundDS) {
                 compoundDSList.add(obj);
             }
         }
@@ -172,15 +177,17 @@ implements ActionListener, ItemListener
 
         if (pGroup.isRoot()) {
             parentChoice.setSelectedItem(HObject.separator);
-        } else {
-            parentChoice.setSelectedItem(pGroup.getPath()+pGroup.getName()+HObject.separator);
+        }
+        else {
+            parentChoice.setSelectedItem(pGroup.getPath() + pGroup.getName()
+                    + HObject.separator);
         }
 
-        JPanel contentPane = (JPanel)getContentPane();
-        contentPane.setLayout(new BorderLayout(5,5));
-        contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
-        int w = 700 + (ViewProperties.getFontSize()-12)*15;
-        int h = 500 + (ViewProperties.getFontSize()-12)*10;
+        JPanel contentPane = (JPanel) getContentPane();
+        contentPane.setLayout(new BorderLayout(5, 5));
+        contentPane.setBorder(BorderFactory.createEmptyBorder(15, 5, 5, 5));
+        int w = 700 + (ViewProperties.getFontSize() - 12) * 15;
+        int h = 500 + (ViewProperties.getFontSize() - 12) * 10;
         contentPane.setPreferredSize(new Dimension(w, h));
 
         JButton okButton = new JButton("   Ok   ");
@@ -195,30 +202,29 @@ implements ActionListener, ItemListener
 
         // set NAME and PARENT GROUP panel
         JPanel namePanel = new JPanel();
-        namePanel.setLayout(new BorderLayout(5,5));
+        namePanel.setLayout(new BorderLayout(5, 5));
         JPanel tmpP = new JPanel();
-        tmpP.setLayout(new GridLayout(3,1));
+        tmpP.setLayout(new GridLayout(3, 1));
         tmpP.add(new JLabel("   Dataset name: "));
         tmpP.add(new JLabel("   Parent group: "));
         tmpP.add(new JLabel("Import template: "));
         namePanel.add(tmpP, BorderLayout.WEST);
         tmpP = new JPanel();
-        tmpP.setLayout(new GridLayout(3,1));
-        tmpP.add(nameField=new JTextField());
+        tmpP.setLayout(new GridLayout(3, 1));
+        tmpP.add(nameField = new JTextField());
         tmpP.add(parentChoice);
         tmpP.add(templateChoice);
         namePanel.add(tmpP, BorderLayout.CENTER);
 
         // set DATATSPACE
         JPanel spacePanel = new JPanel();
-        spacePanel.setLayout(new GridLayout(2,3,15,3));
+        spacePanel.setLayout(new GridLayout(2, 3, 15, 3));
         TitledBorder border = new TitledBorder("Dataspace");
         border.setTitleColor(Color.blue);
         spacePanel.setBorder(border);
 
-
         rankChoice = new JComboBox();
-        for (int i=1; i<33; i++) {
+        for (int i = 1; i < 33; i++) {
             rankChoice.addItem(String.valueOf(i));
         }
         rankChoice.setSelectedIndex(0);
@@ -250,7 +256,7 @@ implements ActionListener, ItemListener
         checkCompression = new JCheckBox("gzip");
 
         compressionLevel = new JComboBox();
-        for (int i=0; i<10; i++) {
+        for (int i = 0; i < 10; i++) {
             compressionLevel.addItem(String.valueOf(i));
         }
         compressionLevel.setSelectedIndex(6);
@@ -293,7 +299,7 @@ implements ActionListener, ItemListener
 
         // add name, space and layout panels
         tmpP = new JPanel();
-        tmpP.setLayout(new BorderLayout(5,5));
+        tmpP.setLayout(new BorderLayout(5, 5));
         tmpP.add(namePanel, BorderLayout.NORTH);
         tmpP.add(spacePanel, BorderLayout.CENTER);
         tmpP.add(layoutPanel, BorderLayout.SOUTH);
@@ -302,9 +308,9 @@ implements ActionListener, ItemListener
 
         // add field table
         tmpP = new JPanel();
-        tmpP.setLayout(new BorderLayout(5,5));
+        tmpP.setLayout(new BorderLayout(5, 5));
         tmpP0 = new JPanel();
-        tmpP0.setLayout(new BorderLayout(5,5));
+        tmpP0.setLayout(new BorderLayout(5, 5));
         tmpP0.add(new JLabel(" Number of Members:"), BorderLayout.WEST);
         tmpP0.add(nFieldBox, BorderLayout.CENTER);
         tmpP.add(tmpP0, BorderLayout.NORTH);
@@ -336,64 +342,59 @@ implements ActionListener, ItemListener
         pack();
     }
 
-    public void actionPerformed(ActionEvent e)
-    {
+    public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         String cmd = e.getActionCommand();
 
-        if (cmd.equals("Ok"))
-        {
-            try { newObject = createCompoundDS(); }
-            catch (Exception ex)
-            {
-                JOptionPane.showMessageDialog(this,
-                    ex,
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+        if (cmd.equals("Ok")) {
+            try {
+                newObject = createCompoundDS();
+            }
+            catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, ex, getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
             }
 
             if (newObject != null) {
                 dispose();
             }
         }
-        else if (cmd.equals("Cancel"))
-        {
+        else if (cmd.equals("Cancel")) {
             newObject = null;
             dispose();
             (groupList).setSize(0);
         }
-        else if (cmd.equals("Change number of members"))
-        {
+        else if (cmd.equals("Change number of members")) {
             int n = 0;
 
-            try { n = Integer.valueOf((String)nFieldBox.getSelectedItem()).intValue(); }
-            catch (Exception ex) {}
+            try {
+                n = Integer.valueOf((String) nFieldBox.getSelectedItem())
+                        .intValue();
+            }
+            catch (Exception ex) {
+            }
 
             if (n == numberOfMembers) {
                 return;
             }
 
             tableModel.setRowCount(n);
-            for (int i=numberOfMembers; i<n; i++)
-            {
+            for (int i = numberOfMembers; i < n; i++) {
                 rowEditorModel.addEditorForRow(i, cellEditor);
             }
             numberOfMembers = n;
         }
     }
 
-    public void itemStateChanged(ItemEvent e)
-    {
+    public void itemStateChanged(ItemEvent e) {
         Object source = e.getSource();
 
-        if (source.equals(rankChoice))
-        {
-            int rank = rankChoice.getSelectedIndex()+1;
+        if (source.equals(rankChoice)) {
+            int rank = rankChoice.getSelectedIndex() + 1;
             String currentSizeStr = "1";
             String maxSizeStr = "0";
 
-            for (int i=1; i<rank; i++)
-            {
+            for (int i = 1; i < rank; i++) {
                 currentSizeStr += " x 1";
                 maxSizeStr += " x 0";
             }
@@ -405,15 +406,15 @@ implements ActionListener, ItemListener
             int idx = currentStr.lastIndexOf("x");
             String chunkStr = "1";
 
-            if (rank <=1) {
+            if (rank <= 1) {
                 chunkStr = currentStr;
-            } else
-            {
-                for (int i=1; i<rank-1; i++) {
+            }
+            else {
+                for (int i = 1; i < rank - 1; i++) {
                     chunkStr += " x 1";
                 }
-                if (idx >0) {
-                    chunkStr += " x "+currentStr.substring(idx+1);
+                if (idx > 0) {
+                    chunkStr += " x " + currentStr.substring(idx + 1);
                 }
             }
 
@@ -421,50 +422,47 @@ implements ActionListener, ItemListener
         }
         else if (source.equals(checkContinguous)) {
             chunkSizeField.setEnabled(false);
-        } else if (source.equals(checkChunked))
-        {
+        }
+        else if (source.equals(checkChunked)) {
             chunkSizeField.setEnabled(true);
             String currentStr = currentSizeField.getText();
             int idx = currentStr.lastIndexOf("x");
             String chunkStr = "1";
 
-            int rank = rankChoice.getSelectedIndex()+1;
-            if (rank <=1) {
+            int rank = rankChoice.getSelectedIndex() + 1;
+            if (rank <= 1) {
                 chunkStr = currentStr;
-            } else
-            {
-                for (int i=1; i<rank-1; i++) {
+            }
+            else {
+                for (int i = 1; i < rank - 1; i++) {
                     chunkStr += " x 1";
                 }
-                if (idx >0) {
-                    chunkStr += " x "+currentStr.substring(idx+1);
+                if (idx > 0) {
+                    chunkStr += " x " + currentStr.substring(idx + 1);
                 }
             }
 
             chunkSizeField.setText(chunkStr);
         }
-        else if (source.equals(checkCompression))
-        {
+        else if (source.equals(checkCompression)) {
             boolean isCompressed = checkCompression.isSelected();
 
-            if (isCompressed)
-            {
-                if (!checkChunked.isSelected())
-                {
+            if (isCompressed) {
+                if (!checkChunked.isSelected()) {
                     String currentStr = currentSizeField.getText();
                     int idx = currentStr.lastIndexOf("x");
                     String chunkStr = "1";
 
-                    int rank = rankChoice.getSelectedIndex()+1;
-                    if (rank <=1) {
+                    int rank = rankChoice.getSelectedIndex() + 1;
+                    if (rank <= 1) {
                         chunkStr = currentStr;
-                    } else
-                    {
-                        for (int i=1; i<rank-1; i++) {
+                    }
+                    else {
+                        for (int i = 1; i < rank - 1; i++) {
                             chunkStr += " x 1";
                         }
-                        if (idx >0) {
-                            chunkStr += " x "+currentStr.substring(idx+1);
+                        if (idx > 0) {
+                            chunkStr += " x " + currentStr.substring(idx + 1);
                         }
                     }
 
@@ -475,15 +473,13 @@ implements ActionListener, ItemListener
                 checkChunked.setSelected(true);
                 chunkSizeField.setEnabled(true);
             }
-            else
-            {
+            else {
                 compressionLevel.setEnabled(false);
                 checkContinguous.setEnabled(true);
             }
         }
-        else if (source.equals(memberTypeChoice))
-        {
-            String item = (String)memberTypeChoice.getSelectedItem();
+        else if (source.equals(memberTypeChoice)) {
+            String item = (String) memberTypeChoice.getSelectedItem();
             if ((item == null) || !item.equals("enum")) {
                 return;
             }
@@ -491,40 +487,42 @@ implements ActionListener, ItemListener
             int row = table.getSelectedRow();
             table.setValueAt("mb1=0,mb=1,...", row, 2);
         }
-        else if (source.equals(templateChoice))
-        {
+        else if (source.equals(templateChoice)) {
             Object obj = templateChoice.getSelectedItem();
-            if ( !(obj instanceof CompoundDS)) {
+            if (!(obj instanceof CompoundDS)) {
                 return;
             }
 
-            CompoundDS dset = (CompoundDS)obj;
+            CompoundDS dset = (CompoundDS) obj;
             int rank = dset.getRank();
             if (rank < 1) {
                 dset.init();
             }
 
             rank = dset.getRank();
-            rankChoice.setSelectedIndex(rank-1);
+            rankChoice.setSelectedIndex(rank - 1);
             long[] dims = dset.getDims();
             String[] mNames = dset.getMemberNames();
             int[] mOrders = dset.getMemberOrders();
             Datatype[] mTypes = dset.getMemberTypes();
 
             String sizeStr = String.valueOf(dims[0]);
-            for (int i=1; i<rank; i++) {
-                sizeStr += "x"+dims[i];
+            for (int i = 1; i < rank; i++) {
+                sizeStr += "x" + dims[i];
             }
             currentSizeField.setText(sizeStr);
 
-            try { dset.getMetadata(); } // get chunking and compression info
-            catch (Exception ex) {}
+            try {
+                dset.getMetadata();
+            } // get chunking and compression info
+            catch (Exception ex) {
+            }
             long[] chunks = dset.getChunkSize();
             if (chunks != null) {
                 checkChunked.setSelected(true);
                 sizeStr = String.valueOf(chunks[0]);
-                for (int i=1; i<rank; i++) {
-                    sizeStr += "x"+chunks[i];
+                for (int i = 1; i < rank; i++) {
+                    sizeStr += "x" + chunks[i];
                 }
                 chunkSizeField.setText(sizeStr);
             }
@@ -533,20 +531,24 @@ implements ActionListener, ItemListener
             if (compression != null) {
                 int idx = compression.indexOf("GZIP: level = ");
                 int clevel = -1;
-                try { clevel = Integer.parseInt(compression.substring(idx+14, idx+15)); }
-                catch (NumberFormatException ex) { clevel = -1; }
+                try {
+                    clevel = Integer.parseInt(compression.substring(idx + 14,
+                            idx + 15));
+                }
+                catch (NumberFormatException ex) {
+                    clevel = -1;
+                }
 
-                if (clevel>0) {
+                if (clevel > 0) {
                     checkCompression.setSelected(true);
                     compressionLevel.setSelectedIndex(clevel);
                 }
             }
 
             numberOfMembers = dset.getMemberCount();
-            nFieldBox.setSelectedIndex(numberOfMembers-1);
+            nFieldBox.setSelectedIndex(numberOfMembers - 1);
             tableModel.setRowCount(numberOfMembers);
-            for (int i=0; i<numberOfMembers; i++)
-            {
+            for (int i = 0; i < numberOfMembers; i++) {
                 rowEditorModel.addEditorForRow(i, cellEditor);
 
                 tableModel.setValueAt(mNames[i], i, 0);
@@ -554,46 +556,46 @@ implements ActionListener, ItemListener
                 int typeIdx = -1;
                 int tclass = mTypes[i].getDatatypeClass();
                 int tsize = mTypes[i].getDatatypeSize();
-                if (tclass == Datatype.CLASS_INTEGER)
-                {
+                if (tclass == Datatype.CLASS_INTEGER) {
                     int tsigned = mTypes[i].getDatatypeSign();
-                    if (tsigned == Datatype.SIGN_NONE)
-                    {
+                    if (tsigned == Datatype.SIGN_NONE) {
                         if (tsize == 1) {
                             typeIdx = 3;
-                        } else if (tsize == 2) {
+                        }
+                        else if (tsize == 2) {
                             typeIdx = 4;
-                        } else if (tsize == 4) {
+                        }
+                        else if (tsize == 4) {
                             typeIdx = 5;
                         }
                     }
-                    else
-                    {
+                    else {
                         if (tsize == 1) {
                             typeIdx = 0;
-                        } else if (tsize == 2) {
+                        }
+                        else if (tsize == 2) {
                             typeIdx = 1;
-                        } else if (tsize == 4) {
+                        }
+                        else if (tsize == 4) {
                             typeIdx = 2;
-                        } else {
+                        }
+                        else {
                             typeIdx = 6;
                         }
                     }
                 }
-                else if (tclass == Datatype.CLASS_FLOAT)
-                {
+                else if (tclass == Datatype.CLASS_FLOAT) {
                     if (tsize == 4) {
                         typeIdx = 7;
-                    } else {
+                    }
+                    else {
                         typeIdx = 8;
                     }
                 }
-                else if (tclass == Datatype.CLASS_STRING)
-                {
+                else if (tclass == Datatype.CLASS_STRING) {
                     typeIdx = 9;
                 }
-                else if (tclass == Datatype.CLASS_ENUM)
-                {
+                else if (tclass == Datatype.CLASS_ENUM) {
                     typeIdx = 10;
                 }
 
@@ -606,9 +608,11 @@ implements ActionListener, ItemListener
 
                 if (tclass == Datatype.CLASS_STRING) {
                     tableModel.setValueAt(String.valueOf(tsize), i, 2);
-                } else if (tclass == Datatype.CLASS_ENUM) {
+                }
+                else if (tclass == Datatype.CLASS_ENUM) {
                     tableModel.setValueAt(mTypes[i].getEnumMembers(), i, 2);
-                } else {
+                }
+                else {
                     tableModel.setValueAt(String.valueOf(mOrders[i]), i, 2);
                 }
 
@@ -616,8 +620,7 @@ implements ActionListener, ItemListener
         } // else if (source.equals(templateChoice))
     }
 
-    private HObject createCompoundDS() throws Exception
-    {
+    private HObject createCompoundDS() throws Exception {
         HObject obj = null;
         long dims[], maxdims[], chunks[];
         int rank;
@@ -625,27 +628,26 @@ implements ActionListener, ItemListener
         // stop editing the last selected cell
         int row = table.getSelectedRow();
         int col = table.getSelectedColumn();
-        if ((row>=0) && (col>-0))
-        {
+        if ((row >= 0) && (col > -0)) {
             TableCellEditor ed = table.getCellEditor(row, col);
             if (ed != null) {
                 ed.stopCellEditing();
             }
         }
 
-        maxdims= chunks = null;
+        maxdims = chunks = null;
         String dname = nameField.getText();
-        if ((dname == null) || (dname.length()<=0)) {
+        if ((dname == null) || (dname.length() <= 0)) {
             throw new IllegalArgumentException("Dataset name is empty");
         }
 
-        Group pgroup = (Group)groupList.get(parentChoice.getSelectedIndex());
+        Group pgroup = (Group) groupList.get(parentChoice.getSelectedIndex());
         if (pgroup == null) {
             throw new IllegalArgumentException("Invalid parent group");
         }
 
         int n = table.getRowCount();
-        if (n<=0) {
+        if (n <= 0) {
             return null;
         }
 
@@ -653,122 +655,120 @@ implements ActionListener, ItemListener
         Datatype[] mDatatypes = new Datatype[n];
         int[] mOrders = new int[n];
 
-        for (int i=0; i<n; i++)
-        {
-            String name = (String)table.getValueAt(i, 0);
-            if ((name == null) || (name.length() <=0)) {
+        for (int i = 0; i < n; i++) {
+            String name = (String) table.getValueAt(i, 0);
+            if ((name == null) || (name.length() <= 0)) {
                 throw new IllegalArgumentException("Member name is empty");
             }
             mNames[i] = name;
 
             int order = 1;
-            String orderStr = (String)table.getValueAt(i, 2);
+            String orderStr = (String) table.getValueAt(i, 2);
             if (orderStr != null) {
-                try { order = Integer.parseInt(orderStr); }
-                catch (Exception ex) {}
+                try {
+                    order = Integer.parseInt(orderStr);
+                }
+                catch (Exception ex) {
+                }
             }
             mOrders[i] = order;
 
-            String typeName = (String)table.getValueAt(i, 1);
+            String typeName = (String) table.getValueAt(i, 1);
             Datatype type = null;
-            if (DATATYPE_NAMES[0].equals(typeName))
-            {
-                type = fileformat.createDatatype(Datatype.CLASS_INTEGER, 1, Datatype.NATIVE, Datatype.NATIVE);
+            if (DATATYPE_NAMES[0].equals(typeName)) {
+                type = fileformat.createDatatype(Datatype.CLASS_INTEGER, 1,
+                        Datatype.NATIVE, Datatype.NATIVE);
             }
-            else if (DATATYPE_NAMES[1].equals(typeName))
-            {
-                type = fileformat.createDatatype(Datatype.CLASS_INTEGER, 2, Datatype.NATIVE, Datatype.NATIVE);
+            else if (DATATYPE_NAMES[1].equals(typeName)) {
+                type = fileformat.createDatatype(Datatype.CLASS_INTEGER, 2,
+                        Datatype.NATIVE, Datatype.NATIVE);
             }
-            else if (DATATYPE_NAMES[2].equals(typeName))
-            {
-                type = fileformat.createDatatype(Datatype.CLASS_INTEGER, 4, Datatype.NATIVE, Datatype.NATIVE);
+            else if (DATATYPE_NAMES[2].equals(typeName)) {
+                type = fileformat.createDatatype(Datatype.CLASS_INTEGER, 4,
+                        Datatype.NATIVE, Datatype.NATIVE);
             }
-            else if (DATATYPE_NAMES[3].equals(typeName))
-            {
-                type = fileformat.createDatatype(Datatype.CLASS_INTEGER, 1, Datatype.NATIVE, Datatype.SIGN_NONE);
+            else if (DATATYPE_NAMES[3].equals(typeName)) {
+                type = fileformat.createDatatype(Datatype.CLASS_INTEGER, 1,
+                        Datatype.NATIVE, Datatype.SIGN_NONE);
             }
-            else if (DATATYPE_NAMES[4].equals(typeName))
-            {
-                type = fileformat.createDatatype(Datatype.CLASS_INTEGER, 2, Datatype.NATIVE, Datatype.SIGN_NONE);
+            else if (DATATYPE_NAMES[4].equals(typeName)) {
+                type = fileformat.createDatatype(Datatype.CLASS_INTEGER, 2,
+                        Datatype.NATIVE, Datatype.SIGN_NONE);
             }
-            else if (DATATYPE_NAMES[5].equals(typeName))
-            {
-                type = fileformat.createDatatype(Datatype.CLASS_INTEGER, 4, Datatype.NATIVE, Datatype.SIGN_NONE);
+            else if (DATATYPE_NAMES[5].equals(typeName)) {
+                type = fileformat.createDatatype(Datatype.CLASS_INTEGER, 4,
+                        Datatype.NATIVE, Datatype.SIGN_NONE);
             }
-            else if (DATATYPE_NAMES[6].equals(typeName))
-            {
-                type = fileformat.createDatatype(Datatype.CLASS_INTEGER, 8, Datatype.NATIVE, Datatype.NATIVE);
+            else if (DATATYPE_NAMES[6].equals(typeName)) {
+                type = fileformat.createDatatype(Datatype.CLASS_INTEGER, 8,
+                        Datatype.NATIVE, Datatype.NATIVE);
             }
-            else if (DATATYPE_NAMES[7].equals(typeName))
-            {
-                type = fileformat.createDatatype(Datatype.CLASS_FLOAT, 4, Datatype.NATIVE, Datatype.NATIVE);
+            else if (DATATYPE_NAMES[7].equals(typeName)) {
+                type = fileformat.createDatatype(Datatype.CLASS_FLOAT, 4,
+                        Datatype.NATIVE, Datatype.NATIVE);
             }
-            else if (DATATYPE_NAMES[8].equals(typeName))
-            {
-                type = fileformat.createDatatype(Datatype.CLASS_FLOAT, 8, Datatype.NATIVE, Datatype.NATIVE);
+            else if (DATATYPE_NAMES[8].equals(typeName)) {
+                type = fileformat.createDatatype(Datatype.CLASS_FLOAT, 8,
+                        Datatype.NATIVE, Datatype.NATIVE);
             }
-            else if (DATATYPE_NAMES[9].equals(typeName))
-            {
-                type = fileformat.createDatatype(Datatype.CLASS_STRING, order, Datatype.NATIVE, Datatype.NATIVE);
+            else if (DATATYPE_NAMES[9].equals(typeName)) {
+                type = fileformat.createDatatype(Datatype.CLASS_STRING, order,
+                        Datatype.NATIVE, Datatype.NATIVE);
             }
             else if (DATATYPE_NAMES[10].equals(typeName)) // enum
             {
-                type = fileformat.createDatatype(Datatype.CLASS_ENUM, 4, Datatype.NATIVE, Datatype.NATIVE);
-                if ((orderStr==null) || (orderStr.length()<1) || orderStr.endsWith("..."))
-                {
+                type = fileformat.createDatatype(Datatype.CLASS_ENUM, 4,
+                        Datatype.NATIVE, Datatype.NATIVE);
+                if ((orderStr == null) || (orderStr.length() < 1)
+                        || orderStr.endsWith("...")) {
                     toolkit.beep();
                     JOptionPane.showMessageDialog(this,
-                            "Invalid member values: "+orderStr,
-                            getTitle(),
+                            "Invalid member values: " + orderStr, getTitle(),
                             JOptionPane.ERROR_MESSAGE);
                     return null;
-                } else {
+                }
+                else {
                     type.setEnumMembers(orderStr);
                 }
             }
-            else
-            {
+            else {
                 throw new IllegalArgumentException("Invalid data type.");
             }
             mDatatypes[i] = type;
         } // for (int i=0; i<n; i++)
 
-        rank = rankChoice.getSelectedIndex()+1;
-        StringTokenizer st = new StringTokenizer(currentSizeField.getText(), "x");
-        if (st.countTokens() < rank)
-        {
+        rank = rankChoice.getSelectedIndex() + 1;
+        StringTokenizer st = new StringTokenizer(currentSizeField.getText(),
+                "x");
+        if (st.countTokens() < rank) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                "Number of values in the current dimension size is less than "+rank,
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+                    "Number of values in the current dimension size is less than "
+                            + rank, getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
         long l = 0;
         dims = new long[rank];
         String token = null;
-        for (int i=0; i<rank; i++)
-        {
+        for (int i = 0; i < rank; i++) {
             token = st.nextToken().trim();
-            try { l = Long.parseLong(token); }
-            catch (NumberFormatException ex)
-            {
+            try {
+                l = Long.parseLong(token);
+            }
+            catch (NumberFormatException ex) {
                 toolkit.beep();
-                JOptionPane.showMessageDialog(this,
-                    "Invalid dimension size: "+currentSizeField.getText(),
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Invalid dimension size: "
+                        + currentSizeField.getText(), getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
                 return null;
             }
 
-            if (l <=0)
-            {
+            if (l <= 0) {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(this,
-                    "Dimension size must be greater than zero.",
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+                        "Dimension size must be greater than zero.",
+                        getTitle(), JOptionPane.ERROR_MESSAGE);
                 return null;
             }
 
@@ -776,42 +776,38 @@ implements ActionListener, ItemListener
         }
 
         st = new StringTokenizer(maxSizeField.getText(), "x");
-        if (st.countTokens() < rank)
-        {
+        if (st.countTokens() < rank) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                "Number of values in the max dimension size is less than "+rank,
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+                    "Number of values in the max dimension size is less than "
+                            + rank, getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
         l = 0;
         maxdims = new long[rank];
-        for (int i=0; i<rank; i++)
-        {
+        for (int i = 0; i < rank; i++) {
             token = st.nextToken().trim();
-            try { l = Long.parseLong(token); }
-            catch (NumberFormatException ex)
-            {
+            try {
+                l = Long.parseLong(token);
+            }
+            catch (NumberFormatException ex) {
                 toolkit.beep();
-                JOptionPane.showMessageDialog(this,
-                    "Invalid max dimension size: "+maxSizeField.getText(),
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+                JOptionPane
+                        .showMessageDialog(this, "Invalid max dimension size: "
+                                + maxSizeField.getText(), getTitle(),
+                                JOptionPane.ERROR_MESSAGE);
                 return null;
             }
 
-            if (l < -1)
-            {
+            if (l < -1) {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(this,
-                    "Dimension size cannot be less than -1.",
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+                        "Dimension size cannot be less than -1.", getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
                 return null;
             }
-            else if ( l == 0) {
+            else if (l == 0) {
                 l = dims[i];
             }
 
@@ -819,81 +815,73 @@ implements ActionListener, ItemListener
         }
 
         chunks = null;
-        if (checkChunked.isSelected())
-        {
+        if (checkChunked.isSelected()) {
             st = new StringTokenizer(chunkSizeField.getText(), "x");
-            if (st.countTokens() < rank)
-            {
+            if (st.countTokens() < rank) {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(this,
-                    "Number of values in the chunk size is less than "+rank,
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+                        "Number of values in the chunk size is less than "
+                                + rank, getTitle(), JOptionPane.ERROR_MESSAGE);
                 return null;
             }
 
             l = 0;
             chunks = new long[rank];
             token = null;
-            for (int i=0; i<rank; i++)
-            {
+            for (int i = 0; i < rank; i++) {
                 token = st.nextToken().trim();
-                try { l = Long.parseLong(token); }
-                catch (NumberFormatException ex)
-                {
+                try {
+                    l = Long.parseLong(token);
+                }
+                catch (NumberFormatException ex) {
                     toolkit.beep();
                     JOptionPane.showMessageDialog(this,
-                        "Invalid chunk dimension size: "+chunkSizeField.getText(),
-                        getTitle(),
-                        JOptionPane.ERROR_MESSAGE);
+                            "Invalid chunk dimension size: "
+                                    + chunkSizeField.getText(), getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
                     return null;
                 }
 
-                if (l < 1)
-                {
+                if (l < 1) {
                     toolkit.beep();
                     JOptionPane.showMessageDialog(this,
-                        "Chunk size cannot be less than 1.",
-                        getTitle(),
-                        JOptionPane.ERROR_MESSAGE);
+                            "Chunk size cannot be less than 1.", getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
                     return null;
                 }
 
                 chunks[i] = l;
             } // for (int i=0; i<rank; i++)
 
-            long tchunksize=1, tdimsize=1;
-            for (int i=0; i<rank; i++)
-            {
+            long tchunksize = 1, tdimsize = 1;
+            for (int i = 0; i < rank; i++) {
                 tchunksize *= chunks[i];
                 tdimsize *= dims[i];
             }
 
-            if (tchunksize >= tdimsize)
-            {
+            if (tchunksize >= tdimsize) {
                 toolkit.beep();
-                int status = JOptionPane.showConfirmDialog(
-                    this,
-                    "Chunk size is equal/greater than the current size. "+
-                    "\nAre you sure you want to set chunk size to "+
-                    chunkSizeField.getText()+"?",
-                    getTitle(),
-                    JOptionPane.YES_NO_OPTION);
+                int status = JOptionPane
+                        .showConfirmDialog(
+                                this,
+                                "Chunk size is equal/greater than the current size. "
+                                        + "\nAre you sure you want to set chunk size to "
+                                        + chunkSizeField.getText() + "?",
+                                getTitle(), JOptionPane.YES_NO_OPTION);
                 if (status == JOptionPane.NO_OPTION) {
                     return null;
                 }
             }
 
-            if (tchunksize == 1)
-            {
+            if (tchunksize == 1) {
                 toolkit.beep();
-                int status = JOptionPane.showConfirmDialog(
-                    this,
-                     "Chunk size is one, which may cause large memory overhead for large dataset."+
-                    "\nAre you sure you want to set chunk size to "+
-                    chunkSizeField.getText()+"?",
-                    getTitle(),
-                    JOptionPane.YES_NO_OPTION);
+                int status = JOptionPane
+                        .showConfirmDialog(
+                                this,
+                                "Chunk size is one, which may cause large memory overhead for large dataset."
+                                        + "\nAre you sure you want to set chunk size to "
+                                        + chunkSizeField.getText() + "?",
+                                getTitle(), JOptionPane.YES_NO_OPTION);
                 if (status == JOptionPane.NO_OPTION) {
                     return null;
                 }
@@ -907,55 +895,52 @@ implements ActionListener, ItemListener
         }
 
         if (checkChunked.isSelected()) {
-            obj = fileformat.createCompoundDS(dname, pgroup, dims, maxdims, chunks,
-                gzip, mNames, mDatatypes, mOrders, null);
-        } else {
-            obj = fileformat.createCompoundDS(dname, pgroup, dims, maxdims, null,
-                -1, mNames, mDatatypes, mOrders, null);
+            obj = fileformat.createCompoundDS(dname, pgroup, dims, maxdims,
+                    chunks, gzip, mNames, mDatatypes, mOrders, null);
+        }
+        else {
+            obj = fileformat.createCompoundDS(dname, pgroup, dims, maxdims,
+                    null, -1, mNames, mDatatypes, mOrders, null);
         }
 
         return obj;
     }
 
     /** Returns the new dataset created. */
-    public DataFormat getObject() { return newObject; }
+    public DataFormat getObject() {
+        return newObject;
+    }
 
     /** Returns the parent group of the new dataset. */
     public Group getParentGroup() {
-        return (Group)groupList.get(parentChoice.getSelectedIndex());
+        return (Group) groupList.get(parentChoice.getSelectedIndex());
     }
 
-    private class RowEditorModel
-    {
+    private class RowEditorModel {
         private Hashtable data;
 
-        public RowEditorModel()
-        {
+        public RowEditorModel() {
             data = new Hashtable();
         }
 
         // all rows has the same cell editor
-        public RowEditorModel(int rows, TableCellEditor ed)
-        {
+        public RowEditorModel(int rows, TableCellEditor ed) {
             data = new Hashtable();
-            for (int i=0; i<rows; i++) {
+            for (int i = 0; i < rows; i++) {
                 data.put(new Integer(i), ed);
             }
         }
 
-        public void addEditorForRow(int row, TableCellEditor e )
-        {
+        public void addEditorForRow(int row, TableCellEditor e) {
             data.put(new Integer(row), e);
         }
 
-        public void removeEditorForRow(int row)
-        {
+        public void removeEditorForRow(int row) {
             data.remove(new Integer(row));
         }
 
-        public TableCellEditor getEditor(int row)
-        {
-            return (TableCellEditor)data.get(new Integer(row));
+        public TableCellEditor getEditor(int row) {
+            return (TableCellEditor) data.get(new Integer(row));
         }
     }
 }

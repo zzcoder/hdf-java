@@ -18,22 +18,22 @@ import java.util.List;
 
 /**
  * An interface that provides general I/O operations for read/write object data.
- * For example, reading data content or data attribute from file into memory
- * or writing data content or data attribute from memory into file.
+ * For example, reading data content or data attribute from file into memory or
+ * writing data content or data attribute from memory into file.
  * <p>
+ * 
  * @see ncsa.hdf.object.HObject
- *
+ * 
  * @version 1.1 9/4/2007
  * @author Peter X. Cao
  */
-public interface DataFormat
-{
+public interface DataFormat {
     /**
      * Returns the full path of the file that contains this data object.
      * <p>
      * The file name is necessary because data objects are uniquely identified
-     * by object reference and file name when mutilple files are opened at
-     * the same time.
+     * by object reference and file name when mutilple files are opened at the
+     * same time.
      */
     public abstract String getFile();
 
@@ -41,35 +41,37 @@ public interface DataFormat
      * Retrieves the metadata such as attributes from file.
      * <p>
      * Metadata such as attributes are stored in a List.
-     *
+     * 
      * @return the list of metadata objects.
      */
     public abstract List getMetadata() throws Exception;
 
     /**
-     * Writes a specific metadata (such as attribute) into file. 
+     * Writes a specific metadata (such as attribute) into file.
      * 
      * <p>
-     * If metadata exists, the method updates its value. If the metadata 
-     * does not exists in file, it creates the metadata in file and attaches 
-     * it to the object.
-     *
-     * @param info the metadata to write.
+     * If metadata exists, the method updates its value. If the metadata does
+     * not exists in file, it creates the metadata in file and attaches it to
+     * the object.
+     * 
+     * @param info
+     *            the metadata to write.
      */
     public abstract void writeMetadata(Object info) throws Exception;
 
     /**
      * Deletes an existing metadata from this data object.
-     *
-     * @param info the metadata to delete.
+     * 
+     * @param info
+     *            the metadata to delete.
      */
     public abstract void removeMetadata(Object info) throws Exception;
-    
+
     /**
      * Check if the object has any attributes attached.
-     *
+     * 
      * @return true if it has any attribute(s), false otherwise.
      */
-    public abstract boolean hasAttribute ();
+    public abstract boolean hasAttribute();
 
 }

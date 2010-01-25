@@ -32,20 +32,21 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 /**
- * NewDatasetDialog shows a message dialog requesting user input for creating
- * a new HDF4/5 dataset.
+ * NewDatasetDialog shows a message dialog requesting user input for creating a
+ * new HDF4/5 dataset.
  * 
  * @author Peter X. Cao
  * @version 2.4 9/6/2007
  */
-public class NewDatasetDialog extends JDialog
-implements ActionListener, ItemListener, HyperlinkListener
-{
-	public static final long serialVersionUID = HObject.serialVersionUID;
+public class NewDatasetDialog extends JDialog implements ActionListener,
+        ItemListener, HyperlinkListener {
+    public static final long serialVersionUID = HObject.serialVersionUID;
 
-    private JTextField nameField, currentSizeField, maxSizeField, chunkSizeField, stringLengthField;
+    private JTextField nameField, currentSizeField, maxSizeField,
+            chunkSizeField, stringLengthField;
 
-    private JComboBox parentChoice, classChoice, sizeChoice, endianChoice, rankChoice, compressionLevel;
+    private JComboBox parentChoice, classChoice, sizeChoice, endianChoice,
+            rankChoice, compressionLevel;
 
     private JCheckBox checkUnsigned, checkCompression;
 
@@ -66,14 +67,19 @@ implements ActionListener, ItemListener, HyperlinkListener
 
     private final DataView dataView;
 
-    /** Constructs NewDatasetDialog with specified list of possible parent groups.
-     *  @param owner the owner of the input
-     *  @param pGroup the parent group which the new group is added to.
-     *  @param objs the list of all objects.
+    /**
+     * Constructs NewDatasetDialog with specified list of possible parent
+     * groups.
+     * 
+     * @param owner
+     *            the owner of the input
+     * @param pGroup
+     *            the parent group which the new group is added to.
+     * @param objs
+     *            the list of all objects.
      */
-    public NewDatasetDialog(JFrame owner, Group pGroup, List objs)
-    {
-        super (owner, "New Dataset...", true);
+    public NewDatasetDialog(JFrame owner, Group pGroup, List objs) {
+        super(owner, "New Dataset...", true);
 
         helpDialog = null;
         newObject = null;
@@ -81,38 +87,41 @@ implements ActionListener, ItemListener, HyperlinkListener
 
         fileFormat = pGroup.getFileFormat();
         toolkit = Toolkit.getDefaultToolkit();
-        isH5 = pGroup.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
+        isH5 = pGroup.getFileFormat().isThisType(
+                FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
 
         parentChoice = new JComboBox();
         groupList = new Vector();
         Object obj = null;
         Iterator iterator = objs.iterator();
-        while (iterator.hasNext())
-        {
+        while (iterator.hasNext()) {
             obj = iterator.next();
-            if (obj instanceof Group)
-            {
-                Group g = (Group)obj;
+            if (obj instanceof Group) {
+                Group g = (Group) obj;
                 groupList.add(obj);
                 if (g.isRoot()) {
                     parentChoice.addItem(HObject.separator);
-                } else {
-                    parentChoice.addItem(g.getPath()+g.getName()+HObject.separator);
+                }
+                else {
+                    parentChoice.addItem(g.getPath() + g.getName()
+                            + HObject.separator);
                 }
             }
         }
 
         if (pGroup.isRoot()) {
             parentChoice.setSelectedItem(HObject.separator);
-        } else {
-            parentChoice.setSelectedItem(pGroup.getPath()+pGroup.getName()+HObject.separator);
+        }
+        else {
+            parentChoice.setSelectedItem(pGroup.getPath() + pGroup.getName()
+                    + HObject.separator);
         }
 
-        JPanel contentPane = (JPanel)getContentPane();
-        contentPane.setLayout(new BorderLayout(5,5));
-        contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
-        int w = 600 + (ViewProperties.getFontSize()-12)*15;
-        int h = 350 + (ViewProperties.getFontSize()-12)*10;
+        JPanel contentPane = (JPanel) getContentPane();
+        contentPane.setLayout(new BorderLayout(5, 5));
+        contentPane.setBorder(BorderFactory.createEmptyBorder(15, 5, 5, 5));
+        int w = 600 + (ViewProperties.getFontSize() - 12) * 15;
+        int h = 350 + (ViewProperties.getFontSize() - 12) * 10;
         contentPane.setPreferredSize(new Dimension(w, h));
 
         JButton okButton = new JButton("   Ok   ");
@@ -139,22 +148,22 @@ implements ActionListener, ItemListener, HyperlinkListener
 
         // set NAME and PARENT GROUP panel
         JPanel namePanel = new JPanel();
-        namePanel.setLayout(new BorderLayout(5,5));
+        namePanel.setLayout(new BorderLayout(5, 5));
         JPanel tmpP = new JPanel();
-        tmpP.setLayout(new GridLayout(2,1));
+        tmpP.setLayout(new GridLayout(2, 1));
         tmpP.add(new JLabel("Dataset name: "));
         tmpP.add(new JLabel("Parent group: "));
         namePanel.add(tmpP, BorderLayout.WEST);
         tmpP = new JPanel();
-        tmpP.setLayout(new GridLayout(2,1));
-        tmpP.add(nameField=new JTextField());
+        tmpP.setLayout(new GridLayout(2, 1));
+        tmpP.add(nameField = new JTextField());
         tmpP.add(parentChoice);
         namePanel.add(tmpP, BorderLayout.CENTER);
         contentPane.add(namePanel, BorderLayout.NORTH);
 
         // set DATATYPE
         JPanel typePanel = new JPanel();
-        typePanel.setLayout(new GridLayout(2,4,15,3));
+        typePanel.setLayout(new GridLayout(2, 4, 15, 3));
         TitledBorder border = new TitledBorder("Datatype");
         border.setTitleColor(Color.blue);
         typePanel.setBorder(border);
@@ -171,8 +180,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         classChoice.addItem("FLOAT");
         classChoice.addItem("CHAR");
 
-        if (isH5)
-        {
+        if (isH5) {
             classChoice.addItem("STRING");
             classChoice.addItem("REFERENCE");
             classChoice.addItem("ENUM");
@@ -181,8 +189,7 @@ implements ActionListener, ItemListener, HyperlinkListener
             endianChoice.addItem("LITTLE ENDIAN");
             endianChoice.addItem("BIG ENDIAN");
         }
-        else
-        {
+        else {
             sizeChoice.addItem("DEFAULT");
             endianChoice.addItem("DEFAULT");
         }
@@ -203,14 +210,13 @@ implements ActionListener, ItemListener, HyperlinkListener
 
         // set DATATSPACE
         JPanel spacePanel = new JPanel();
-        spacePanel.setLayout(new GridLayout(2,3,15,3));
+        spacePanel.setLayout(new GridLayout(2, 3, 15, 3));
         border = new TitledBorder("Dataspace");
         border.setTitleColor(Color.blue);
         spacePanel.setBorder(border);
 
-
         rankChoice = new JComboBox();
-        for (int i=1; i<33; i++) {
+        for (int i = 1; i < 33; i++) {
             rankChoice.addItem(String.valueOf(i));
         }
         rankChoice.setSelectedIndex(1);
@@ -226,7 +232,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         jb.setActionCommand("Set max size");
         jb.addActionListener(this);
         spacePanel.add(jb);
-        //spacePanel.add(maxSizeField);
+        // spacePanel.add(maxSizeField);
 
         // set storage layout and data compression
         JPanel layoutPanel = new JPanel();
@@ -246,7 +252,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         checkCompression = new JCheckBox("gzip");
 
         compressionLevel = new JComboBox();
-        for (int i=0; i<10; i++) {
+        for (int i = 0; i < 10; i++) {
             compressionLevel.addItem(String.valueOf(i));
         }
         compressionLevel.setSelectedIndex(6);
@@ -288,7 +294,7 @@ implements ActionListener, ItemListener, HyperlinkListener
         layoutPanel.add(tmpP, BorderLayout.CENTER);
 
         JPanel infoPanel = new JPanel();
-        infoPanel.setLayout(new GridLayout(3,1,5,10));
+        infoPanel.setLayout(new GridLayout(3, 1, 5, 10));
         infoPanel.add(typePanel);
         infoPanel.add(spacePanel);
         infoPanel.add(layoutPanel);
@@ -310,14 +316,20 @@ implements ActionListener, ItemListener, HyperlinkListener
         pack();
     }
 
-    /** Constructs NewDatasetDialog with specified list of possible parent groups.
-     *  @param owner the owner of the input
-     *  @param pGroup the parent group which the new group is added to.
-     *  @param objs the list of all objects.
+    /**
+     * Constructs NewDatasetDialog with specified list of possible parent
+     * groups.
+     * 
+     * @param owner
+     *            the owner of the input
+     * @param pGroup
+     *            the parent group which the new group is added to.
+     * @param objs
+     *            the list of all objects.
      */
-    public NewDatasetDialog(JFrame owner, Group pGroup, List objs, DataView observer)
-    {
-        super (owner, "New Dataset...", true);
+    public NewDatasetDialog(JFrame owner, Group pGroup, List objs,
+            DataView observer) {
+        super(owner, "New Dataset...", true);
 
         helpDialog = null;
         newObject = null;
@@ -325,7 +337,8 @@ implements ActionListener, ItemListener, HyperlinkListener
 
         fileFormat = pGroup.getFileFormat();
         toolkit = Toolkit.getDefaultToolkit();
-        isH5 = pGroup.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
+        isH5 = pGroup.getFileFormat().isThisType(
+                FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
 
         parentChoice = new JComboBox();
         groupList = new Vector();
@@ -333,29 +346,32 @@ implements ActionListener, ItemListener, HyperlinkListener
         Iterator iterator = objs.iterator();
         while (iterator.hasNext()) {
             obj = iterator.next();
-            if (obj instanceof Group)
-            {
-                Group g = (Group)obj;
+            if (obj instanceof Group) {
+                Group g = (Group) obj;
                 groupList.add(obj);
                 if (g.isRoot()) {
                     parentChoice.addItem(HObject.separator);
-                } else {
-                    parentChoice.addItem(g.getPath()+g.getName()+HObject.separator);
+                }
+                else {
+                    parentChoice.addItem(g.getPath() + g.getName()
+                            + HObject.separator);
                 }
             }
         }
 
         if (pGroup.isRoot()) {
             parentChoice.setSelectedItem(HObject.separator);
-        } else {
-            parentChoice.setSelectedItem(pGroup.getPath()+pGroup.getName()+HObject.separator);
+        }
+        else {
+            parentChoice.setSelectedItem(pGroup.getPath() + pGroup.getName()
+                    + HObject.separator);
         }
 
-        JPanel contentPane = (JPanel)getContentPane();
-        contentPane.setLayout(new BorderLayout(5,5));
-        contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
-        int w = 400 + (ViewProperties.getFontSize()-12)*15;
-        int h = 120 + (ViewProperties.getFontSize()-12)*10;
+        JPanel contentPane = (JPanel) getContentPane();
+        contentPane.setLayout(new BorderLayout(5, 5));
+        contentPane.setBorder(BorderFactory.createEmptyBorder(15, 5, 5, 5));
+        int w = 400 + (ViewProperties.getFontSize() - 12) * 15;
+        int h = 120 + (ViewProperties.getFontSize() - 12) * 10;
         contentPane.setPreferredSize(new Dimension(w, h));
 
         JButton okButton = new JButton("   Ok   ");
@@ -376,15 +392,16 @@ implements ActionListener, ItemListener, HyperlinkListener
 
         // set NAME and PARENT GROUP panel
         JPanel namePanel = new JPanel();
-        namePanel.setLayout(new BorderLayout(5,5));
+        namePanel.setLayout(new BorderLayout(5, 5));
         JPanel tmpP = new JPanel();
-        tmpP.setLayout(new GridLayout(2,1));
+        tmpP.setLayout(new GridLayout(2, 1));
         tmpP.add(new JLabel("Dataset name: "));
         tmpP.add(new JLabel("Parent group: "));
         namePanel.add(tmpP, BorderLayout.WEST);
         tmpP = new JPanel();
-        tmpP.setLayout(new GridLayout(2,1));
-        tmpP.add(nameField=new JTextField(((HObject)observer.getDataObject()).getName()+"~copy",40));
+        tmpP.setLayout(new GridLayout(2, 1));
+        tmpP.add(nameField = new JTextField(
+                ((HObject) observer.getDataObject()).getName() + "~copy", 40));
         tmpP.add(parentChoice);
         namePanel.add(tmpP, BorderLayout.CENTER);
         contentPane.add(namePanel, BorderLayout.CENTER);
@@ -397,18 +414,18 @@ implements ActionListener, ItemListener, HyperlinkListener
         pack();
     }
 
-    public void actionPerformed(ActionEvent e)
-    {
+    public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         String cmd = e.getActionCommand();
 
-        if (cmd.equals("Ok"))
-        {
+        if (cmd.equals("Ok")) {
             if (dataView instanceof TableView) {
                 newObject = createFromTable();
-            } else if (dataView instanceof ImageView) {
+            }
+            else if (dataView instanceof ImageView) {
                 newObject = createFromImage();
-            } else if (dataView == null) {
+            }
+            else if (dataView == null) {
                 newObject = createFromScratch();
             }
 
@@ -416,45 +433,42 @@ implements ActionListener, ItemListener, HyperlinkListener
                 dispose();
             }
         }
-        if (cmd.equals("Cancel"))
-        {
+        if (cmd.equals("Cancel")) {
             newObject = null;
             dispose();
-            ((Vector)groupList).setSize(0);
+            ((Vector) groupList).setSize(0);
         }
-        else if (cmd.equals("Show help"))
-        {
+        else if (cmd.equals("Show help")) {
             if (helpDialog == null) {
                 createHelpDialog();
             }
             helpDialog.setVisible(true);
         }
-        else if (cmd.equals("Hide help"))
-        {
+        else if (cmd.equals("Hide help")) {
             if (helpDialog != null) {
                 helpDialog.setVisible(false);
             }
         }
         else if (cmd.equals("Set max size")) {
-        	String msg = JOptionPane.showInputDialog(this, 
-                "Enter max dimension sizes. \n" +
-                "Use \"unlimited\" for unlimited dimension size.\n\n" +
-                "For example,\n" +
-                "    200 x 100\n"+
-                "    100 x unlimited\n\n", currentSizeField.getText());
-        	if (msg == null || msg.length()<1)
-        		maxSizeField.setText(currentSizeField.getText());
-        	else
-        		maxSizeField.setText(msg);
+            String msg = JOptionPane
+                    .showInputDialog(
+                            this,
+                            "Enter max dimension sizes. \n"
+                                    + "Use \"unlimited\" for unlimited dimension size.\n\n"
+                                    + "For example,\n" + "    200 x 100\n"
+                                    + "    100 x unlimited\n\n",
+                            currentSizeField.getText());
+            if (msg == null || msg.length() < 1)
+                maxSizeField.setText(currentSizeField.getText());
+            else
+                maxSizeField.setText(msg);
         }
     }
 
-    public void itemStateChanged(ItemEvent e)
-    {
+    public void itemStateChanged(ItemEvent e) {
         Object source = e.getSource();
 
-        if (source.equals(classChoice))
-        {
+        if (source.equals(classChoice)) {
             int idx = classChoice.getSelectedIndex();
             sizeChoice.setSelectedIndex(0);
             endianChoice.setSelectedIndex(0);
@@ -466,8 +480,7 @@ implements ActionListener, ItemListener, HyperlinkListener
                 endianChoice.setEnabled(isH5);
                 checkUnsigned.setEnabled(true);
 
-                if (sizeChoice.getItemCount() == 3)
-                {
+                if (sizeChoice.getItemCount() == 3) {
                     sizeChoice.removeItem("32");
                     sizeChoice.removeItem("64");
                     sizeChoice.addItem("8");
@@ -476,8 +489,7 @@ implements ActionListener, ItemListener, HyperlinkListener
                     sizeChoice.addItem("64");
                 }
 
-                if (sizeChoice.getSelectedItem().equals("64"))
-                {
+                if (sizeChoice.getSelectedItem().equals("64")) {
                     // unsigned 64 bit integer is not allowed in Java
                     checkUnsigned.setSelected(false);
                     checkUnsigned.setEnabled(false);
@@ -489,8 +501,7 @@ implements ActionListener, ItemListener, HyperlinkListener
                 endianChoice.setEnabled(isH5);
                 checkUnsigned.setEnabled(false);
 
-                if (sizeChoice.getItemCount() == 5)
-                {
+                if (sizeChoice.getItemCount() == 5) {
                     sizeChoice.removeItem("16");
                     sizeChoice.removeItem("8");
                 }
@@ -524,28 +535,24 @@ implements ActionListener, ItemListener, HyperlinkListener
                 stringLengthField.setText("R=0,G=1,B=2,...");
             }
         }
-        else if (source.equals(sizeChoice))
-        {
-            if (classChoice.getSelectedIndex() == 0)
-            {
-                if (sizeChoice.getSelectedItem().equals("64"))
-                {
+        else if (source.equals(sizeChoice)) {
+            if (classChoice.getSelectedIndex() == 0) {
+                if (sizeChoice.getSelectedItem().equals("64")) {
                     // unsigned 64 bit integer is not allowed in Java
                     checkUnsigned.setSelected(false);
                     checkUnsigned.setEnabled(false);
-                } else {
+                }
+                else {
                     checkUnsigned.setEnabled(true);
                 }
             }
         }
-        else if (source.equals(rankChoice))
-        {
-            int rank = rankChoice.getSelectedIndex()+1;
+        else if (source.equals(rankChoice)) {
+            int rank = rankChoice.getSelectedIndex() + 1;
             String currentSizeStr = "1";
             String maxSizeStr = "0";
 
-            for (int i=1; i<rank; i++)
-            {
+            for (int i = 1; i < rank; i++) {
                 currentSizeStr += " x 1";
                 maxSizeStr += " x 0";
             }
@@ -557,15 +564,15 @@ implements ActionListener, ItemListener, HyperlinkListener
             int idx = currentStr.lastIndexOf("x");
             String chunkStr = "1";
 
-            if (rank <=1) {
+            if (rank <= 1) {
                 chunkStr = currentStr;
-            } else
-            {
-                for (int i=1; i<rank-1; i++) {
+            }
+            else {
+                for (int i = 1; i < rank - 1; i++) {
                     chunkStr += " x 1";
                 }
-                if (idx >0) {
-                    chunkStr += " x "+currentStr.substring(idx+1);
+                if (idx > 0) {
+                    chunkStr += " x " + currentStr.substring(idx + 1);
                 }
             }
 
@@ -573,41 +580,40 @@ implements ActionListener, ItemListener, HyperlinkListener
         }
         else if (source.equals(checkContinguous)) {
             chunkSizeField.setEnabled(false);
-        } else if (source.equals(checkChunked))
-        {
+        }
+        else if (source.equals(checkChunked)) {
             chunkSizeField.setEnabled(true);
             String chunkStr = "";
-            StringTokenizer st = new StringTokenizer (currentSizeField.getText(), "x");
-            int rank = rankChoice.getSelectedIndex()+1;
+            StringTokenizer st = new StringTokenizer(
+                    currentSizeField.getText(), "x");
+            int rank = rankChoice.getSelectedIndex() + 1;
             while (st.hasMoreTokens()) {
-            	long l = Math.max(1, Long.valueOf(st.nextToken().trim())/(2*rank));
-            	chunkStr += String.valueOf(l) + "x";
+                long l = Math.max(1, Long.valueOf(st.nextToken().trim())
+                        / (2 * rank));
+                chunkStr += String.valueOf(l) + "x";
             }
             chunkStr = chunkStr.substring(0, chunkStr.lastIndexOf('x'));
             chunkSizeField.setText(chunkStr);
         }
-        else if (source.equals(checkCompression))
-        {
+        else if (source.equals(checkCompression)) {
             boolean isCompressed = checkCompression.isSelected();
 
-            if (isCompressed)
-            {
-                if (!checkChunked.isSelected())
-                {
+            if (isCompressed) {
+                if (!checkChunked.isSelected()) {
                     String currentStr = currentSizeField.getText();
                     int idx = currentStr.lastIndexOf("x");
                     String chunkStr = "1";
 
-                    int rank = rankChoice.getSelectedIndex()+1;
-                    if (rank <=1) {
+                    int rank = rankChoice.getSelectedIndex() + 1;
+                    if (rank <= 1) {
                         chunkStr = currentStr;
-                    } else
-                    {
-                        for (int i=1; i<rank-1; i++) {
+                    }
+                    else {
+                        for (int i = 1; i < rank - 1; i++) {
                             chunkStr += " x 1";
                         }
-                        if (idx >0) {
-                            chunkStr += " x "+currentStr.substring(idx+1);
+                        if (idx > 0) {
+                            chunkStr += " x " + currentStr.substring(idx + 1);
                         }
                     }
 
@@ -618,8 +624,7 @@ implements ActionListener, ItemListener, HyperlinkListener
                 checkChunked.setSelected(true);
                 chunkSizeField.setEnabled(true);
             }
-            else
-            {
+            else {
                 compressionLevel.setEnabled(false);
                 checkContinguous.setEnabled(true);
             }
@@ -627,15 +632,14 @@ implements ActionListener, ItemListener, HyperlinkListener
     }
 
     /** Creates a dialog to show the help information. */
-    private void createHelpDialog()
-    {
+    private void createHelpDialog() {
         helpDialog = new JDialog(this, "Create New Dataset");
 
-        JPanel contentPane = (JPanel)helpDialog.getContentPane();
-        contentPane.setLayout(new BorderLayout(5,5));
-        contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
-        int w = 500 + (ViewProperties.getFontSize()-12)*15;
-        int h = 400 + (ViewProperties.getFontSize()-12)*10;
+        JPanel contentPane = (JPanel) helpDialog.getContentPane();
+        contentPane.setLayout(new BorderLayout(5, 5));
+        contentPane.setBorder(BorderFactory.createEmptyBorder(15, 5, 5, 5));
+        int w = 500 + (ViewProperties.getFontSize() - 12) * 15;
+        int h = 400 + (ViewProperties.getFontSize() - 12) * 10;
         contentPane.setPreferredSize(new Dimension(w, h));
 
         JButton b = new JButton("  Ok  ");
@@ -643,36 +647,46 @@ implements ActionListener, ItemListener, HyperlinkListener
         b.setActionCommand("Hide help");
         JPanel tmpP = new JPanel();
         tmpP.add(b);
-        contentPane.add (tmpP, BorderLayout.SOUTH);
+        contentPane.add(tmpP, BorderLayout.SOUTH);
 
         JEditorPane infoPane = new JEditorPane();
         infoPane.setEditable(false);
         JScrollPane editorScrollPane = new JScrollPane(infoPane);
-        contentPane.add (editorScrollPane, BorderLayout.CENTER);
+        contentPane.add(editorScrollPane, BorderLayout.CENTER);
 
         try {
-            URL url= null, url2=null, url3=null;
+            URL url = null, url2 = null, url3 = null;
             String rootPath = ViewProperties.getViewRoot();
 
             try {
-                url = new URL("file:"+rootPath+"/lib/jhdfview.jar");
-            } catch (java.net.MalformedURLException mfu) {;}
+                url = new URL("file:" + rootPath + "/lib/jhdfview.jar");
+            }
+            catch (java.net.MalformedURLException mfu) {
+                ;
+            }
 
             try {
-                url2 = new URL("file:"+rootPath+"/");
-            } catch (java.net.MalformedURLException mfu) {;}
+                url2 = new URL("file:" + rootPath + "/");
+            }
+            catch (java.net.MalformedURLException mfu) {
+                ;
+            }
 
             try {
-                url3 = new URL("file:"+rootPath+"/src/");
-            } catch (java.net.MalformedURLException mfu) {;}
+                url3 = new URL("file:" + rootPath + "/src/");
+            }
+            catch (java.net.MalformedURLException mfu) {
+                ;
+            }
 
-            URL uu[] = {url, url2, url3};
+            URL uu[] = { url, url2, url3 };
             URLClassLoader cl = new URLClassLoader(uu);
             URL u = cl.findResource("ncsa/hdf/view/NewDatasetHelp.html");
 
             infoPane.setPage(u);
             infoPane.addHyperlinkListener(this);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             infoPane.setContentType("text/html");
             StringBuffer buff = new StringBuffer();
             buff.append("<html>");
@@ -681,7 +695,7 @@ implements ActionListener, ItemListener, HyperlinkListener
             buff.append("</body>");
             buff.append("</html>");
             infoPane.setText(buff.toString());
-       }
+        }
 
         Point l = helpDialog.getOwner().getLocation();
         l.x += 50;
@@ -691,69 +705,60 @@ implements ActionListener, ItemListener, HyperlinkListener
         helpDialog.pack();
     }
 
-    public void hyperlinkUpdate(HyperlinkEvent e)
-    {
-        if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
-        {
+    public void hyperlinkUpdate(HyperlinkEvent e) {
+        if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
             JEditorPane pane = (JEditorPane) e.getSource();
 
-            if (e instanceof HTMLFrameHyperlinkEvent)
-            {
-                HTMLFrameHyperlinkEvent  evt = (HTMLFrameHyperlinkEvent)e;
-                HTMLDocument doc = (HTMLDocument)pane.getDocument();
+            if (e instanceof HTMLFrameHyperlinkEvent) {
+                HTMLFrameHyperlinkEvent evt = (HTMLFrameHyperlinkEvent) e;
+                HTMLDocument doc = (HTMLDocument) pane.getDocument();
                 doc.processHTMLFrameHyperlinkEvent(evt);
-            } else
-            {
-                try { pane.setPage(e.getURL()); }
-                catch (Throwable t)  {}
+            }
+            else {
+                try {
+                    pane.setPage(e.getURL());
+                }
+                catch (Throwable t) {
+                }
             }
         }
     }
 
-    private HObject createFromScratch()
-    {
+    private HObject createFromScratch() {
         String name = null;
         Group pgroup = null;
-        int rank=-1, gzip=-1, tclass=-1, tsize=-1, torder=-1, tsign=-1;
+        int rank = -1, gzip = -1, tclass = -1, tsize = -1, torder = -1, tsign = -1;
         long dims[], maxdims[], chunks[];
 
         name = nameField.getText().trim();
-        if ((name == null) || (name.length()<1))
-        {
+        if ((name == null) || (name.length() < 1)) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                "Dataset name is not specified.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+                    "Dataset name is not specified.", getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
-        if (name.indexOf(HObject.separator) >= 0)
-        {
+        if (name.indexOf(HObject.separator) >= 0) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                "Dataset name cannot contain path.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+                    "Dataset name cannot contain path.", getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
-        pgroup = (Group)groupList.get(parentChoice.getSelectedIndex());
+        pgroup = (Group) groupList.get(parentChoice.getSelectedIndex());
 
-        if (pgroup == null)
-        {
+        if (pgroup == null) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                "Parent group is null.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Parent group is null.",
+                    getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
         // set datatype class
         int idx = classChoice.getSelectedIndex();
-        if (idx == 0)
-        {
+        if (idx == 0) {
             tclass = Datatype.CLASS_INTEGER;
             if (checkUnsigned.isSelected()) {
                 tsign = Datatype.SIGN_NONE;
@@ -761,85 +766,72 @@ implements ActionListener, ItemListener, HyperlinkListener
         }
         else if (idx == 1) {
             tclass = Datatype.CLASS_FLOAT;
-        } else if (idx == 2)
-        {
+        }
+        else if (idx == 2) {
             tclass = Datatype.CLASS_CHAR;
             if (checkUnsigned.isSelected()) {
                 tsign = Datatype.SIGN_NONE;
             }
         }
-        else if (idx == 3)
-        {
+        else if (idx == 3) {
             tclass = Datatype.CLASS_STRING;
         }
-        else if (idx == 4)
-        {
+        else if (idx == 4) {
             tclass = Datatype.CLASS_REFERENCE;
         }
-        else if (idx == 5)
-        {
+        else if (idx == 5) {
             tclass = Datatype.CLASS_ENUM;
         }
 
         // set datatype size/order
         idx = sizeChoice.getSelectedIndex();
-        if (tclass == Datatype.CLASS_STRING)
-        {
+        if (tclass == Datatype.CLASS_STRING) {
             int stringLength = 0;
-            try { stringLength = Integer.parseInt(stringLengthField.getText()); }
-            catch (NumberFormatException ex)
-            {
+            try {
+                stringLength = Integer.parseInt(stringLengthField.getText());
+            }
+            catch (NumberFormatException ex) {
                 stringLength = -1;
             }
 
-            if (stringLength<=0)
-            {
+            if (stringLength <= 0) {
                 toolkit.beep();
-                JOptionPane.showMessageDialog(this,
-                    "Invalid string length: "+stringLengthField.getText(),
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Invalid string length: "
+                        + stringLengthField.getText(), getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
                 return null;
             }
             tsize = stringLength;
         }
-        else if (tclass == Datatype.CLASS_ENUM)
-        {
+        else if (tclass == Datatype.CLASS_ENUM) {
             String enumStr = stringLengthField.getText();
-            if ((enumStr==null) || (enumStr.length()<1) || enumStr.endsWith("..."))
-            {
+            if ((enumStr == null) || (enumStr.length() < 1)
+                    || enumStr.endsWith("...")) {
                 toolkit.beep();
-                JOptionPane.showMessageDialog(this,
-                    "Invalid member values: "+stringLengthField.getText(),
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Invalid member values: "
+                        + stringLengthField.getText(), getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
                 return null;
             }
         }
-        else if (tclass == Datatype.CLASS_REFERENCE)
-        {
+        else if (tclass == Datatype.CLASS_REFERENCE) {
             tsize = 1;
         }
-        else if (idx == 0)
-        {
+        else if (idx == 0) {
             tsize = Datatype.NATIVE;
         }
-        else if (tclass == Datatype.CLASS_FLOAT)
-        {
-            tsize = idx*4;
+        else if (tclass == Datatype.CLASS_FLOAT) {
+            tsize = idx * 4;
         }
-        else
-        {
-            tsize = 1 << (idx-1);
+        else {
+            tsize = 1 << (idx - 1);
         }
 
-        if ((tsize==8) && !isH5 && (tclass == Datatype.CLASS_INTEGER))
-        {
+        if ((tsize == 8) && !isH5 && (tclass == Datatype.CLASS_INTEGER)) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-            "HDF4 does not support 64-bit integer.",
-            getTitle(),
-            JOptionPane.ERROR_MESSAGE);
+                    "HDF4 does not support 64-bit integer.", getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
@@ -847,48 +839,46 @@ implements ActionListener, ItemListener, HyperlinkListener
         idx = endianChoice.getSelectedIndex();
         if (idx == 0) {
             torder = Datatype.NATIVE;
-        } else if (idx == 1) {
+        }
+        else if (idx == 1) {
             torder = Datatype.ORDER_LE;
-        } else {
+        }
+        else {
             torder = Datatype.ORDER_BE;
         }
 
-        rank = rankChoice.getSelectedIndex()+1;
-        StringTokenizer st = new StringTokenizer(currentSizeField.getText(), "x");
-        if (st.countTokens() < rank)
-        {
+        rank = rankChoice.getSelectedIndex() + 1;
+        StringTokenizer st = new StringTokenizer(currentSizeField.getText(),
+                "x");
+        if (st.countTokens() < rank) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                "Number of values in the current dimension size is less than "+rank,
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+                    "Number of values in the current dimension size is less than "
+                            + rank, getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
         long l = 0;
         dims = new long[rank];
         String token = null;
-        for (int i=0; i<rank; i++)
-        {
+        for (int i = 0; i < rank; i++) {
             token = st.nextToken().trim();
-            try { l = Long.parseLong(token); }
-            catch (NumberFormatException ex)
-            {
+            try {
+                l = Long.parseLong(token);
+            }
+            catch (NumberFormatException ex) {
                 toolkit.beep();
-                JOptionPane.showMessageDialog(this,
-                    "Invalid dimension size: "+currentSizeField.getText(),
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Invalid dimension size: "
+                        + currentSizeField.getText(), getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
                 return null;
             }
 
-            if (l <=0)
-            {
+            if (l <= 0) {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(this,
-                    "Dimension size must be greater than zero.",
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+                        "Dimension size must be greater than zero.",
+                        getTitle(), JOptionPane.ERROR_MESSAGE);
                 return null;
             }
 
@@ -896,48 +886,44 @@ implements ActionListener, ItemListener, HyperlinkListener
         }
 
         st = new StringTokenizer(maxSizeField.getText(), "x");
-        if (st.countTokens() < rank)
-        {
+        if (st.countTokens() < rank) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                "Number of values in the max dimension size is less than "+rank,
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+                    "Number of values in the max dimension size is less than "
+                            + rank, getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
         l = 0;
         maxdims = new long[rank];
-        for (int i=0; i<rank; i++)
-        {
+        for (int i = 0; i < rank; i++) {
             token = st.nextToken().trim();
 
-			token = token.toLowerCase();
-			if (token.startsWith("unl"))
-				l = -1;
-			else {
-	            try { l = Long.parseLong(token); }
-	            catch (NumberFormatException ex)
-	            {
-	                toolkit.beep();
-	                JOptionPane.showMessageDialog(this,
-	                    "Invalid max dimension size: "+maxSizeField.getText(),
-	                    getTitle(),
-	                    JOptionPane.ERROR_MESSAGE);
-	                return null;
-	            }
-			}
+            token = token.toLowerCase();
+            if (token.startsWith("unl"))
+                l = -1;
+            else {
+                try {
+                    l = Long.parseLong(token);
+                }
+                catch (NumberFormatException ex) {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog(this,
+                            "Invalid max dimension size: "
+                                    + maxSizeField.getText(), getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
+                    return null;
+                }
+            }
 
-            if (l < -1)
-            {
+            if (l < -1) {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(this,
-                    "Dimension size cannot be less than -1.",
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+                        "Dimension size cannot be less than -1.", getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
                 return null;
             }
-            else if ( l == 0) {
+            else if (l == 0) {
                 l = dims[i];
             }
 
@@ -945,80 +931,72 @@ implements ActionListener, ItemListener, HyperlinkListener
         }
 
         chunks = null;
-        if (checkChunked.isSelected())
-        {
+        if (checkChunked.isSelected()) {
             st = new StringTokenizer(chunkSizeField.getText(), "x");
-            if (st.countTokens() < rank)
-            {
+            if (st.countTokens() < rank) {
                 toolkit.beep();
                 JOptionPane.showMessageDialog(this,
-                    "Number of values in the chunk size is less than "+rank,
-                    getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+                        "Number of values in the chunk size is less than "
+                                + rank, getTitle(), JOptionPane.ERROR_MESSAGE);
                 return null;
             }
 
             l = 0;
             chunks = new long[rank];
-            for (int i=0; i<rank; i++)
-            {
+            for (int i = 0; i < rank; i++) {
                 token = st.nextToken().trim();
-                try { l = Long.parseLong(token); }
-                catch (NumberFormatException ex)
-                {
+                try {
+                    l = Long.parseLong(token);
+                }
+                catch (NumberFormatException ex) {
                     toolkit.beep();
                     JOptionPane.showMessageDialog(this,
-                        "Invalid chunk dimension size: "+chunkSizeField.getText(),
-                        getTitle(),
-                        JOptionPane.ERROR_MESSAGE);
+                            "Invalid chunk dimension size: "
+                                    + chunkSizeField.getText(), getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
                     return null;
                 }
 
-                if (l < 1)
-                {
+                if (l < 1) {
                     toolkit.beep();
                     JOptionPane.showMessageDialog(this,
-                        "Chunk size cannot be less than 1.",
-                        getTitle(),
-                        JOptionPane.ERROR_MESSAGE);
+                            "Chunk size cannot be less than 1.", getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
                     return null;
                 }
 
                 chunks[i] = l;
             } // for (int i=0; i<rank; i++)
 
-            long tchunksize=1, tdimsize=1;
-            for (int i=0; i<rank; i++)
-            {
+            long tchunksize = 1, tdimsize = 1;
+            for (int i = 0; i < rank; i++) {
                 tchunksize *= chunks[i];
                 tdimsize *= dims[i];
             }
 
-            if (tchunksize >= tdimsize)
-            {
+            if (tchunksize >= tdimsize) {
                 toolkit.beep();
-                int status = JOptionPane.showConfirmDialog(
-                    this,
-                    "Chunk size is equal/greater than the current size. "+
-                    "\nAre you sure you want to set chunk size to "+
-                    chunkSizeField.getText()+"?",
-                    getTitle(),
-                    JOptionPane.YES_NO_OPTION);
+                int status = JOptionPane
+                        .showConfirmDialog(
+                                this,
+                                "Chunk size is equal/greater than the current size. "
+                                        + "\nAre you sure you want to set chunk size to "
+                                        + chunkSizeField.getText() + "?",
+                                getTitle(), JOptionPane.YES_NO_OPTION);
                 if (status == JOptionPane.NO_OPTION) {
                     return null;
                 }
             }
 
-            if (tchunksize == 1)
-            {
+            if (tchunksize == 1) {
                 toolkit.beep();
-                int status = JOptionPane.showConfirmDialog(
-                    this,
-                     "Chunk size is one, which may cause large memory overhead for large dataset."+
-                    "\nAre you sure you want to set chunk size to "+
-                    chunkSizeField.getText()+"?",
-                    getTitle(),
-                    JOptionPane.YES_NO_OPTION);
+                int status = JOptionPane
+                        .showConfirmDialog(
+                                this,
+                                "Chunk size is one, which may cause large memory overhead for large dataset."
+                                        + "\nAre you sure you want to set chunk size to "
+                                        + chunkSizeField.getText() + "?",
+                                getTitle(), JOptionPane.YES_NO_OPTION);
                 if (status == JOptionPane.NO_OPTION) {
                     return null;
                 }
@@ -1028,72 +1006,63 @@ implements ActionListener, ItemListener, HyperlinkListener
 
         if (checkCompression.isSelected()) {
             gzip = compressionLevel.getSelectedIndex();
-        } else {
+        }
+        else {
             gzip = 0;
         }
 
         HObject obj = null;
-        try
-        {
-            Datatype datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign);
+        try {
+            Datatype datatype = fileFormat.createDatatype(tclass, tsize,
+                    torder, tsign);
             if (tclass == Datatype.CLASS_ENUM) {
                 datatype.setEnumMembers(stringLengthField.getText());
             }
-            obj = fileFormat.createScalarDS(name, pgroup, datatype,
-                dims, maxdims, chunks, gzip, null);
-        } catch (Exception ex)
-        {
+            obj = fileFormat.createScalarDS(name, pgroup, datatype, dims,
+                    maxdims, chunks, gzip, null);
+        }
+        catch (Exception ex) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                ex,
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, ex, getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
         return obj;
     }
 
-    private HObject createFromTable()
-    {
+    private HObject createFromTable() {
         HObject obj = null;
 
         String name = null;
         Group pgroup = null;
 
         name = nameField.getText();
-        if (name == null)
-        {
+        if (name == null) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                "Dataset name is not specified.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+                    "Dataset name is not specified.", getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
-        if (name.indexOf(HObject.separator) >= 0)
-        {
+        if (name.indexOf(HObject.separator) >= 0) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                "Dataset name cannot contain path.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+                    "Dataset name cannot contain path.", getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
-        pgroup = (Group)groupList.get(parentChoice.getSelectedIndex());
-        if (pgroup == null)
-        {
+        pgroup = (Group) groupList.get(parentChoice.getSelectedIndex());
+        if (pgroup == null) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                "Parent group is null.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Parent group is null.",
+                    getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
-        TableView tableView = (TableView)dataView;
+        TableView tableView = (TableView) dataView;
         Object theData = tableView.getSelectedData();
         if (theData == null) {
             return null;
@@ -1101,119 +1070,99 @@ implements ActionListener, ItemListener, HyperlinkListener
 
         int w = tableView.getTable().getSelectedColumnCount();
         int h = tableView.getTable().getSelectedRowCount();
-        Dataset dataset = (Dataset)tableView.getDataObject();
-        if (dataset instanceof ScalarDS)
-        {
-            ScalarDS sd = (ScalarDS)dataset;
+        Dataset dataset = (Dataset) tableView.getDataObject();
+        if (dataset instanceof ScalarDS) {
+            ScalarDS sd = (ScalarDS) dataset;
             if (sd.isUnsigned()) {
                 theData = Dataset.convertToUnsignedC(theData);
             }
         }
 
-        try
-        {
-            long[] dims = {h, w};
+        try {
+            long[] dims = { h, w };
             obj = dataset.copy(pgroup, name, dims, theData);
         }
-        catch (Exception ex)
-        {
+        catch (Exception ex) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-            ex.getMessage(),
-            getTitle(),
-            JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
         return obj;
     }
 
-    private HObject createFromImage()
-    {
+    private HObject createFromImage() {
         HObject obj = null;
 
         String name = null;
         Group pgroup = null;
 
         name = nameField.getText();
-        if (name == null)
-        {
+        if (name == null) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                "Dataset name is not specified.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+                    "Dataset name is not specified.", getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
-        if (name.indexOf(HObject.separator) >= 0)
-        {
+        if (name.indexOf(HObject.separator) >= 0) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                "Dataset name cannot contain path.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+                    "Dataset name cannot contain path.", getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
-        pgroup = (Group)groupList.get(parentChoice.getSelectedIndex());
-        if (pgroup == null)
-        {
+        pgroup = (Group) groupList.get(parentChoice.getSelectedIndex());
+        if (pgroup == null) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-                "Parent group is null.",
-                getTitle(),
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Parent group is null.",
+                    getTitle(), JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
-        ImageView imageView = (ImageView)dataView;
-        ScalarDS dataset = (ScalarDS)imageView.getDataObject();
+        ImageView imageView = (ImageView) dataView;
+        ScalarDS dataset = (ScalarDS) imageView.getDataObject();
         Object theData = imageView.getSelectedData();
-        
+
         if (theData == null) {
             return null;
         }
-        
+
         // in version 2.4, unsigned image data is converted to signed data
         // to write data, the data needs to converted back to unsigned.
         if (dataset.isUnsigned()) {
             theData = Dataset.convertToUnsignedC(theData);
         }
-        
+
         int w = imageView.getSelectedArea().width;
         int h = imageView.getSelectedArea().height;
- 
-        try
-        {
+
+        try {
             long[] dims = null;
-            if (isH5)
-            {
-                if (imageView.isTrueColor())
-                {
+            if (isH5) {
+                if (imageView.isTrueColor()) {
                     dims = new long[3];
-                    if (imageView.isPlaneInterlace())
-                    {
+                    if (imageView.isPlaneInterlace()) {
                         dims[0] = 3;
                         dims[1] = h;
                         dims[2] = w;
                     }
-                    else
-                    {
+                    else {
                         dims[0] = h;
                         dims[1] = w;
                         dims[2] = 3;
                     }
                 }
-                else
-                {
+                else {
                     dims = new long[2];
                     dims[0] = h;
                     dims[1] = w;
                 }
             }
-            else
-            {
+            else {
                 dims = new long[2];
                 dims[0] = w;
                 dims[1] = h;
@@ -1221,13 +1170,10 @@ implements ActionListener, ItemListener, HyperlinkListener
 
             obj = dataset.copy(pgroup, name, dims, theData);
         }
-        catch (Exception ex)
-        {
+        catch (Exception ex) {
             toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-            ex.getMessage(),
-            getTitle(),
-            JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
@@ -1235,11 +1181,13 @@ implements ActionListener, ItemListener, HyperlinkListener
     }
 
     /** Returns the new dataset created. */
-    public DataFormat getObject() { return newObject; }
+    public DataFormat getObject() {
+        return newObject;
+    }
 
     /** Returns the parent group of the new dataset. */
     public Group getParentGroup() {
-        return (Group)groupList.get(parentChoice.getSelectedIndex());
+        return (Group) groupList.get(parentChoice.getSelectedIndex());
     }
 
 }
