@@ -4,13 +4,14 @@ The hdf-java product has been built and tested on:
 32-bit Java 2 SDK
     * Linux
     * Solaris
-    * Mac PowerPC
     * Mac Intel
     * Windows (Vista/XP/2000)
 
 64-bit Java 2 SDK
-    * Linux 64-bit AMD
+    * Linux 64-bit 
+    * Linux 64-bit iitanium 
     * Solaris 64-bit
+    * Mac Intel
 
 
 This code will likely work on most platforms that support HDF and Java,
@@ -28,15 +29,23 @@ Prerequisites:
     1. HDF4 binary distribution (source is not needed)
     2. HDF5 binary distribution (source is not needed)
     3. Java Development Kit 1.5.x or above
+    4. Exterenal libraries: szip, zlib, jpeg (for HDF4 only)
 
 Build:
 
 1. Configure
 
+Use the example configure file at Config/config.sh
+
 The configure step must specify the paths to the required software and
 where to install.  
 
-  ./configure --with-hdf5=INC,LIB --with-hdf4=INC,LIB --with-jdk=INC,LIB --prefix=INSTDIR
+  ./configure --prefix=INSTDIR \
+    --with-hdf5=INC,LIB \
+    --with-hdf4=INC,LIB --with-jdk=INC,LIB \
+    --with-libjpeg=$JPEG/include,$JPEG/lib \
+    --with-libsz=$SZIP/include,$SZIP/lib \
+    --with-libz=$ZLIB/include,$ZLIB/lib \
 
 Where
     --with-hdf5=INC,LIB = path to where the HDF5 include and library are installed,
@@ -97,8 +106,8 @@ Build:
 For More Information:
 ====================
 
-  http://hdf.ncsa.uiuc.edu/hdf-java-html
+  http://www.hdfgroup.org/hdf-java-html
 
-  hdfhelp@ncsa.uiuc.edu
+  help@hdfgroup.org
 
 
