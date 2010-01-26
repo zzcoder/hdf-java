@@ -117,7 +117,9 @@ of the HDF4 and HDF5 data models are represented as instances of the abstract
 objects. The abstract class <b>HObject</b> has two fundamental abstract
 classes are <b>Group</b> and <b>Dataset</b>, and all HDF5 and HDF4 objects
 are a sub-type of one of these abstract classes.
-<p>Figure 1 shows the class hierarchy of the HDF Object Package. 
+<p>Figure 1 shows the class hierarchy of the HDF Object Package. <!--<i>{Peter
+-- the dependency to the HDF Library Package is not identical to my diagram
+below. We need to decide on a common way to show it in UML.}--></i>
 <p>The classes are explained in the Java class document
  <a href="../javadocs/index.html">the Javadocs</a>.
 
@@ -147,9 +149,13 @@ selected platforms.
 <p><i>Prerequisites</i>
 <p>The HDF Object Package requires <a href="../JNI/jhi/index.html">the
 Java HDF Interface (JHI)</a> and
-<a href="../JNI/jhi5/index.html">the Java HDF5 Interface (JHI5)</a>. 
-
-<hr>
+<a href="../JNI/jhi5/index.html">the Java
+HDF5 Interface (JHI5)</a>. These are included in the distribution.
+<p>The HDF Object Package was developed using Java 2 SDK (JDK 1.2.x and
+JDK 1.3.x). The HDF Object Package no platform specific code, and should
+work on any system with Java JDK 1.2.x or JDK 1.3.x. At the time of the
+release, the code has been tested on Solaris, Linux, Windows 98/NT, and
+SGI IRIX 6.5.<hr>
 <h3>
 <a NAME="#DOWNLOAD"></a>Download</h3>
 The source and pre-built binaries for the HDF Object Package can be downloaded
@@ -232,7 +238,9 @@ native libraries are available for selected platforms.
 <p>The source distribution includes all the Java source to build the jar
 files, plus the C source for the native methods of the <a href="../JNI/jhi/index.html">JHI</a>
 and <a href="../JNI/jhi5/index.html">JHI5</a>.
-
+<p>The JHI requires the HDF4.1r5 library (binary) and the JHI5 requires
+the HDF5.1.4.4 library (binary). These are not included in the Java source.
+They can be obtained from:
 <?php 
 include ("../../includes/footer.html"); 
 ?>

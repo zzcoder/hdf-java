@@ -167,4 +167,16 @@ public class TestH5Sbasic {
         try {H5.H5Sclose(sid);} catch (Exception ex) {}
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testH5Sencode_invalid()
+            throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Sencode(-1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Sdecode_null()
+            throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Sdecode(null);
+    }
+
 }
