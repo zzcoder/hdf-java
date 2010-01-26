@@ -1105,42 +1105,86 @@ extern "C" {
     }
 
     /*
-     * Class:     hdf_h5_H5S
-     * Method:    H5Sencode_buf
-     * Signature: (I[B[J)I
-     */
-    JNIEXPORT jint JNICALL Java_hdf_h5_H5S_H5Sencode_1buf
-      (JNIEnv *env, jclass cls, jint obj_id, jbyteArray buf, jlongArray nalloc)
-    {
-        herr_t status = -1;
-
-        return (jint)status;
-    }
-
-    /*
-     * Class:     hdf_h5_H5S
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Sencode
      * Signature: (I)[B
      */
-    JNIEXPORT jbyteArray JNICALL Java_hdf_h5_H5S_H5Sencode
+    JNIEXPORT jbyteArray JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sencode
       (JNIEnv *env, jclass cls, jint obj_id)
     {
         herr_t status = -1;
+        unsigned char *bufPtr;
+        size_t buf_size = 0;
 
-        return NULL;
+        if (obj_id < 0) {
+            h5badArgument(env, "H5Sencode: invalid argument");
+            return NULL;
+        }
+        
+        status = H5Sencode(obj_id, NULL, &buf_size);
+
+        if (status < 0) {
+            h5libraryError(env);
+            return NULL;
+        }
+
+        if (buf_size < 0) {
+            h5badArgument( env, "H5Sencode:  buf_size < 0");
+            return NULL;
+        }
+
+        bufPtr = (unsigned char*)calloc((size_t)1, buf_size);
+        if (bufPtr == NULL) {
+            h5outOfMemory( env, "H5Sencode:  calloc failed");
+            return NULL;
+        }
+
+        status = H5Sencode((hid_t)obj_id, bufPtr, &buf_size);
+
+        if (status < 0) {
+            free(bufPtr);
+            h5libraryError(env);
+            return NULL;
+        }
+
+        jbyteArray returnedArray = ENVPTR->NewByteArray(ENVPAR buf_size);
+        ENVPTR->SetByteArrayRegion(ENVPAR returnedArray, 0, buf_size, bufPtr);
+
+        free(bufPtr);
+
+        return returnedArray;
     }
 
     /*
-     * Class:     hdf_h5_H5S
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Sdecode
      * Signature: ([B)I
      */
-    JNIEXPORT jint JNICALL Java_hdf_h5_H5S_H5Sdecode
+    JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sdecode
       (JNIEnv *env, jclass cls, jbyteArray buf)
     {
-        herr_t status = -1;
+        hid_t sid = -1;
+        jbyte *bufP;
+        jboolean isCopy;
 
-        return (jint)status;
+        if (buf == NULL) {
+            h5nullArgument(env, "H5Sdecode:  buf is NULL");
+            return -1;
+        }
+        bufP = ENVPTR->GetByteArrayElements(ENVPAR buf, &isCopy);
+        if (bufP == NULL) {
+            h5JNIFatalError( env, "H5Sdecode:  buf not pinned");
+            return -1;
+        }
+        sid = H5Sdecode(bufP);
+
+        if (sid < 0) {
+            ENVPTR->ReleaseByteArrayElements(ENVPAR buf, bufP, JNI_ABORT);
+            h5libraryError(env);
+        }
+        ENVPTR->ReleaseByteArrayElements(ENVPAR buf, bufP, 0);
+
+        return (jint)sid;
     }
 
 #ifdef __cplusplus

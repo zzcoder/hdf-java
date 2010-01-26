@@ -210,27 +210,19 @@ extern "C" {
       (JNIEnv *, jclass, jint, jlongArray, jlongArray);
 
     /*
-     * Class:     hdf_h5_H5S
-     * Method:    H5Sencode_buf
-     * Signature: (I[B[J)I
-     */
-    JNIEXPORT jint JNICALL Java_hdf_h5_H5S_H5Sencode_1buf
-      (JNIEnv *env, jclass cls, jint obj_id, jbyteArray buf, jlongArray nalloc);
-
-    /*
-     * Class:     hdf_h5_H5S
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Sencode
      * Signature: (I)[B
      */
-    JNIEXPORT jbyteArray JNICALL Java_hdf_h5_H5S_H5Sencode
+    JNIEXPORT jbyteArray JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sencode
       (JNIEnv *env, jclass cls, jint obj_id);
 
     /*
-     * Class:     hdf_h5_H5S
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Sdecode
      * Signature: ([B)I
      */
-    JNIEXPORT jint JNICALL Java_hdf_h5_H5S_H5Sdecode
+    JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sdecode
       (JNIEnv *env, jclass cls, jbyteArray buf);
 
 #ifdef __cplusplus

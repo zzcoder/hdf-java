@@ -6695,21 +6695,6 @@ public class H5 {
      *  H5Sencode converts a data space description into binary form in a buffer.
      *
      *  @param obj_id   IN: Identifier of the object to be encoded.
-     *  @param buf     OUT: Buffer for the object to be encoded into. 
-     *                      If the provided buffer is NULL, only the 
-     *                      size of buffer needed is returned.
-     *  @param nalloc   IN: The size of the allocated buffer.
-     *
-     *  @return the size needed for the allocated buffer.
-     *
-     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-     **/
-    public synchronized static native int H5Sencode_buf(int obj_id, byte[] buf, long[] nalloc)
-    throws HDF5LibraryException, NullPointerException;
-    /**
-     *  H5Sencode converts a data space description into binary form in a buffer.
-     *
-     *  @param obj_id   IN: Identifier of the object to be encoded.
      *
      *  @return the buffer for the object to be encoded into.
      *

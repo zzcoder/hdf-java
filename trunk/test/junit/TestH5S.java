@@ -173,4 +173,97 @@ public class TestH5S {
         try {H5.H5Sclose(sid);} catch (Exception ex) {}
     }
 
+    @Test
+    public void testH5Sencode_decode_null_dataspace()
+            throws Throwable, HDF5LibraryException, NullPointerException {
+        int sid = -1;
+        int decoded_sid = -1;
+        byte[] null_sbuf = null;
+        boolean result = false;
+        
+        try {
+            sid = H5.H5Screate(HDF5Constants.H5S_NULL);
+            assertTrue("H5.H5Screate_null",sid > 0);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Screate: null " + err);
+        }
+        
+        try {
+            null_sbuf = H5.H5Sencode(sid);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Sencode " + err);
+        }
+        assertFalse("H5.testH5Sencode",null_sbuf==null);
+        
+        try {
+            decoded_sid = H5.H5Sdecode(null_sbuf);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Sdecode " + err);
+        }
+        assertTrue("H5.testH5Sdecode",decoded_sid>0);
+
+        result = H5.H5Sextent_equal(sid, decoded_sid);
+        assertTrue("H5.testH5Sextent_equal",result);
+
+        try {H5.H5Sclose(decoded_sid);} catch (Exception ex) {}
+        try {H5.H5Sclose(sid);} catch (Exception ex) {}
+    }
+
+    @Test
+    public void testH5Sencode_decode_scalar_dataspace()
+            throws Throwable, HDF5LibraryException, NullPointerException {
+        int sid = -1;
+        int decoded_sid = -1;
+        byte[] scalar_sbuf = null;
+        boolean result = false;
+        int iresult = -1;
+        long lresult = -1;
+        
+        try {
+            sid = H5.H5Screate(HDF5Constants.H5S_SCALAR);
+            assertTrue("H5.H5Screate_null",sid > 0);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Screate: null " + err);
+        }
+        
+        try {
+            scalar_sbuf = H5.H5Sencode(sid);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Sencode " + err);
+        }
+        assertFalse("H5.testH5Sencode",scalar_sbuf==null);
+        
+        try {
+            decoded_sid = H5.H5Sdecode(scalar_sbuf);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Sdecode " + err);
+        }
+        assertTrue("H5.testH5Sdecode",decoded_sid>0);
+
+        result = H5.H5Sextent_equal(sid, decoded_sid);
+        assertTrue("H5.testH5Sextent_equal",result);
+        
+        /* Verify decoded dataspace */
+        lresult = H5.H5Sget_simple_extent_npoints(decoded_sid);
+        assertTrue("H5.testH5Sget_simple_extent_npoints",lresult==1);
+
+        iresult = H5.H5Sget_simple_extent_ndims(decoded_sid);
+        assertTrue("H5.testH5Sget_simple_extent_ndims",iresult==0);
+
+        try {H5.H5Sclose(decoded_sid);} catch (Exception ex) {}
+        try {H5.H5Sclose(sid);} catch (Exception ex) {}
+    }
+
 }
