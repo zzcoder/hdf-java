@@ -99,8 +99,8 @@ public class TestH5Dplist {
         int dapl_id = -1;
         long nlinks = -1;
         int test_dapl_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_ACCESS);
-        H5.H5Pset_nlinks(test_dapl_id, 134);
-        nlinks = H5.H5Pget_nlinks(test_dapl_id);
+//        H5.H5Pset_nlinks(test_dapl_id, 134);
+//        nlinks = H5.H5Pget_nlinks(test_dapl_id);
         assertTrue("testH5Dget_access_plist: nlinks: ", nlinks == 134);
         
         int dataset_id = _createDataset(H5fid, H5dsid, "dset", test_dapl_id);

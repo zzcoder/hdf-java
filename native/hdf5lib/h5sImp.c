@@ -49,10 +49,12 @@ extern "C" {
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Screate(JNIEnv *env,
             jclass clss, jint type) {
         hid_t retVal = -1;
+        
         retVal = H5Screate((H5S_class_t) type);
-        if (retVal < 0) {
+        
+        if (retVal < 0)
             h5libraryError(env);
-        }
+
         return (jint) retVal;
     }
 
@@ -155,9 +157,9 @@ extern "C" {
         if (sa) 
             free (sa);
 
-        if (status < 0) {
+        if (status < 0)
             h5libraryError(env);
-        }
+
         return (jint)status;
     }
 
@@ -172,9 +174,9 @@ extern "C" {
         
         retVal = H5Scopy(space_id);
         
-        if (retVal < 0) {
+        if (retVal < 0)
             h5libraryError(env);
-        }
+
         return (jint) retVal;
     }
 
@@ -226,9 +228,10 @@ extern "C" {
         ENVPTR->ReleaseLongArrayElements(ENVPAR env, coord, P, 0);
         free(sa);
 
-        if (status < 0) {
+        if (status < 0)
             h5libraryError(env);
-        }
+
+
         return (jint)status;
     }
 #endif
@@ -278,9 +281,8 @@ extern "C" {
 
         if (llp) free (llp);
 
-        if (status < 0) {
+        if (status < 0)
             h5libraryError(env);
-        }
 
         return (jint)status;
     }
@@ -293,10 +295,12 @@ extern "C" {
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sselect_1all(JNIEnv *env,
             jclass clss, jint space_id) {
         herr_t retVal = -1;
+        
         retVal = H5Sselect_all(space_id);
-        if (retVal < 0) {
+        
+        if (retVal < 0)
             h5libraryError(env);
-        }
+
         return (jint) retVal;
     }
 
@@ -308,10 +312,12 @@ extern "C" {
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sselect_1none(JNIEnv *env,
             jclass clss, jint space_id) {
         herr_t retVal = -1;
+        
         retVal = H5Sselect_none(space_id);
-        if (retVal < 0) {
+        
+        if (retVal < 0)
             h5libraryError(env);
-        }
+
         return (jint) retVal;
     }
 
@@ -344,10 +350,12 @@ extern "C" {
     JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sget_1simple_1extent_1npoints(
             JNIEnv *env, jclass clss, jint space_id) {
         hssize_t retVal = -1;
+        
         retVal = H5Sget_simple_extent_npoints(space_id);
-        if (retVal < 0) {
+        
+        if (retVal < 0)
             h5libraryError(env);
-        }
+
         return (jlong) retVal;
     }
 
@@ -359,10 +367,13 @@ extern "C" {
     JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sget_1select_1npoints(
             JNIEnv *env, jclass clss, jint space_id) {
         hssize_t retVal = -1;
+        
         retVal = H5Sget_select_npoints(space_id);
-        if (retVal < 0) {
+        
+        if (retVal < 0) 
             h5libraryError(env);
-        }
+
+
         return (jlong) retVal;
     }
 
@@ -374,10 +385,13 @@ extern "C" {
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Sget_1simple_1extent_1ndims(
             JNIEnv *env, jclass clss, jint space_id) {
         int retVal = -1;
+        
         retVal = H5Sget_simple_extent_ndims(space_id);
-        if (retVal < 0) {
+        
+        if (retVal < 0)
             h5libraryError(env);
-        }
+
+
         return (jint) retVal;
     }
 
@@ -466,22 +480,22 @@ extern "C" {
                 free(msa);
             }
             h5libraryError(env);
+            return -1;
         } 
-        else {
-            if (dimsP != NULL)  {
-                for (i = 0; i < rank; i++) {
-                    dimsP[i] = sa[i];
-                }
-                free(sa);
-                ENVPTR->ReleaseLongArrayElements(ENVPAR dims,dimsP,0);
+
+        if (dimsP != NULL)  {
+            for (i = 0; i < rank; i++) {
+                dimsP[i] = sa[i];
             }
-            if (maxdimsP != NULL) {
-                for (i = 0; i < rank; i++) {
-                    maxdimsP[i] = msa[i];
-                }
-                free(msa);
-                ENVPTR->ReleaseLongArrayElements(ENVPAR maxdims,maxdimsP,0);
+            free(sa);
+            ENVPTR->ReleaseLongArrayElements(ENVPAR dims,dimsP,0);
+        }
+        if (maxdimsP != NULL) {
+            for (i = 0; i < rank; i++) {
+                maxdimsP[i] = msa[i];
             }
+            free(msa);
+            ENVPTR->ReleaseLongArrayElements(ENVPAR maxdims,maxdimsP,0);
         }
 
         return (jint)status;
@@ -496,9 +510,10 @@ extern "C" {
             JNIEnv *env, jclass clss, jint space_id) {
         H5S_class_t retVal = H5S_NO_CLASS;
         retVal = H5Sget_simple_extent_type(space_id);
-        if (retVal == H5S_NO_CLASS) {
+        
+        if (retVal == H5S_NO_CLASS) 
             h5libraryError(env);
-        }
+
         return (jint) retVal;
     }
 
@@ -556,7 +571,8 @@ extern "C" {
         if (maxdims == NULL) {
             maxdimsP = NULL;
             msa = (hsize_t *)maxdimsP;
-        } else {
+        } 
+        else {
             maxdimsP = ENVPTR->GetLongArrayElements(ENVPAR maxdims,&isCopy);
             if (maxdimsP == NULL) {
                 ENVPTR->ReleaseLongArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
@@ -588,9 +604,9 @@ extern "C" {
             free (msa);
         }
 
-        if (status < 0) {
+        if (status < 0)
             h5libraryError(env);
-        }
+
         return (jint)status;
     }
 
@@ -663,9 +679,9 @@ extern "C" {
             free(sa);
         }
 
-        if (status < 0) {
+        if (status < 0) 
             h5libraryError(env);
-        }
+ 
         return (jint)status;
     }
 
@@ -678,9 +694,9 @@ extern "C" {
             jclass clss, jint space_id, jint src_id) {
         herr_t retVal = -1;
         retVal = H5Sextent_copy(space_id, src_id);
-        if (retVal < 0) {
+        if (retVal < 0)
             h5libraryError(env);
-        }
+
         return (jint) retVal;
     }
 
@@ -714,10 +730,9 @@ extern "C" {
             JNIEnv *env, jclass clss, jint space_id) {
         herr_t retVal = -1;
         retVal = H5Sset_extent_none(space_id);
-        if (retVal < 0) {
-            /* throw exception */
+        if (retVal < 0)
             h5libraryError(env);
-        }
+ 
         return (jint) retVal;
     }
 
@@ -749,6 +764,7 @@ extern "C" {
             h5nullArgument(env, "H5Sselect_hyperslab:  count is NULL");
             return -1;
         }
+        
         rank = (int) ENVPTR->GetArrayLength(ENVPAR start);
         if (rank != ENVPTR->GetArrayLength(ENVPAR count)) {
             h5badArgument(env,
@@ -767,12 +783,14 @@ extern "C" {
             h5JNIFatalError(env,"H5Sselect_hyperslab:  start not converted to hsize_t");
             return -1;
         }
+        
         jlp = (jlong *)startP;
         for (i = 0; i < rank; i++) {
             *lp = (hsize_t)*jlp;
             lp++;
             jlp++;
         }
+        
         countP = ENVPTR->GetLongArrayElements(ENVPAR count,&isCopy);
         if (countP == NULL) {
             ENVPTR->ReleaseLongArrayElements(ENVPAR start, startP,JNI_ABORT);
@@ -788,6 +806,7 @@ extern "C" {
             h5JNIFatalError(env,  "H5Sselect_hyperslab:  count not converted to hsize_t");
             return -1;
         }
+        
         jlp = (jlong *)countP;
         for (i = 0; i < rank; i++) {
             *lp = (hsize_t)*jlp;
@@ -797,7 +816,8 @@ extern "C" {
         if (stride == NULL) {
             strideP = NULL;
             strd = (hsize_t *)strideP;
-        } else {
+        } 
+        else {
             strideP = ENVPTR->GetLongArrayElements(ENVPAR stride,&isCopy);
             if (strideP == NULL) {
                 ENVPTR->ReleaseLongArrayElements(ENVPAR count, countP,JNI_ABORT);
@@ -825,7 +845,8 @@ extern "C" {
         if (block == NULL) {
             blockP = NULL;
             blk = (hsize_t *)blockP;
-        } else {
+        } 
+        else {
             blockP = ENVPTR->GetLongArrayElements(ENVPAR block,&isCopy);
             if (blockP == NULL)  {
                 ENVPTR->ReleaseLongArrayElements(ENVPAR stride, strideP,JNI_ABORT);
@@ -870,9 +891,9 @@ extern "C" {
             free(blk);
         }
 
-        if (status < 0) {
+        if (status < 0)
             h5libraryError(env);
-        }
+
         return (jint)status;
     }
 
@@ -968,13 +989,14 @@ extern "C" {
             ENVPTR->ReleaseLongArrayElements(ENVPAR buf,bufP,JNI_ABORT);
             free (ba);
             h5libraryError(env);
-        } else  {
-            for (i = 0; i < (numblocks*2); i++) {
-                bufP[i] = ba[i];
-            }
-            free (ba);
-            ENVPTR->ReleaseLongArrayElements(ENVPAR buf,bufP,0);
+            return -1;
+        } 
+
+        for (i = 0; i < (numblocks*2); i++) {
+            bufP[i] = ba[i];
         }
+        free (ba);
+        ENVPTR->ReleaseLongArrayElements(ENVPAR buf,bufP,0);
 
         return (jint)status;
     }
@@ -1016,13 +1038,14 @@ extern "C" {
             free (ba);
             ENVPTR->ReleaseLongArrayElements(ENVPAR buf,bufP,JNI_ABORT);
             h5libraryError(env);
-        } else  {
-            for (i = 0; i < numpoints; i++) {
-                bufP[i] = ba[i];
-            }
-            free (ba) ;
-            ENVPTR->ReleaseLongArrayElements(ENVPAR buf,bufP,0);
+            return -1;
+        } 
+
+        for (i = 0; i < numpoints; i++) {
+            bufP[i] = ba[i];
         }
+        free (ba) ;
+        ENVPTR->ReleaseLongArrayElements(ENVPAR buf,bufP,0);
 
         return (jint)status;
     }
@@ -1090,17 +1113,18 @@ extern "C" {
             free(strt); 
             free(en);
             h5libraryError(env);
-        } else  {
-            for (i = 0; i < rank; i++) {
-                startP[i] = strt[i];
-                endP[i] = en[i];
-            }
-            ENVPTR->ReleaseLongArrayElements(ENVPAR start,startP,0);
-            ENVPTR->ReleaseLongArrayElements(ENVPAR end,endP,0);
-            free(strt); 
-            free(en);
-        }
+            return -1;
+        } 
 
+        for (i = 0; i < rank; i++) {
+            startP[i] = strt[i];
+            endP[i] = en[i];
+        }
+        ENVPTR->ReleaseLongArrayElements(ENVPAR start,startP,0);
+        ENVPTR->ReleaseLongArrayElements(ENVPAR end,endP,0);
+        free(strt); 
+        free(en);
+ 
         return (jint)status;
     }
 
@@ -1181,6 +1205,7 @@ extern "C" {
         if (sid < 0) {
             ENVPTR->ReleaseByteArrayElements(ENVPAR buf, bufP, JNI_ABORT);
             h5libraryError(env);
+            return -1;
         }
         ENVPTR->ReleaseByteArrayElements(ENVPAR buf, bufP, 0);
 
