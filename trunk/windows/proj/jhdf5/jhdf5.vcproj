@@ -417,6 +417,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\native\hdf5lib\h5dImp.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\native\hdf5lib\h5eImp.h"
 				>
 			</File>
@@ -438,6 +442,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\native\hdf5lib\h5sImp.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\native\hdf5lib\h5tImp.h"
 				>
 			</File>
 		</Filter>
