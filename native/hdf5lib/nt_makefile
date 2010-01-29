@@ -11,8 +11,8 @@
 #
 
 JAVAHOME=D:\Java\jdk1.6.0_16
-HDF5INC=G:\HDF\lib\hdf5182\include
-HDF5LIB=G:\HDF\lib\hdf5182\lib\hdf5.lib
+HDF5INC=G:\HDF\lib\hdf5184\include
+HDF5LIB=G:\HDF\lib\hdf5184\lib\hdf5.lib
 SZLIB=G:\HDF\lib_external\szip20-win-xpnet-enc\lib\szlib.lib
 ZLIB=G:\HDF\lib_external\zlib-121-windows\lib\zlib.lib
 
