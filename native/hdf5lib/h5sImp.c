@@ -1139,6 +1139,7 @@ extern "C" {
         herr_t status = -1;
         unsigned char *bufPtr;
         size_t buf_size = 0;
+        jbyteArray returnedArray = NULL;
 
         if (obj_id < 0) {
             h5badArgument(env, "H5Sencode: invalid argument");
@@ -1171,7 +1172,7 @@ extern "C" {
             return NULL;
         }
 
-        jbyteArray returnedArray = ENVPTR->NewByteArray(ENVPAR buf_size);
+        returnedArray = ENVPTR->NewByteArray(ENVPAR buf_size);
         ENVPTR->SetByteArrayRegion(ENVPAR returnedArray, 0, buf_size, bufPtr);
 
         free(bufPtr);
