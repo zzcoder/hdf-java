@@ -39,7 +39,7 @@ JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tcommitted
  * Signature: (IJ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tcreate
-  (JNIEnv *, jclass, jobject, jlong);
+  (JNIEnv *, jclass, jint, jlong);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
@@ -432,7 +432,8 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tenum_1insert
  * Signature: (I[I[Ljava/lang/String;I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tenum_1nameof_1int
-  (JNIEnv *env, jclass clss, jint type, jintArray value, jobjectArray name, jint size);
+  (JNIEnv *env, jclass clss, jint type, jintArray value, jobjectArray name, 
+          jint size);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5

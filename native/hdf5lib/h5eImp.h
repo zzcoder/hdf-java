@@ -7,6 +7,15 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Eauto_is_v2
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eauto_1is_1v2
+  (JNIEnv *, jclass, jint);
+
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Eregister_class
@@ -34,7 +43,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eclose_1msg
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Ecreate_msg
- * Signature: (ILhdf/h5/enums/H5E_TYPE;Ljava/lang/String;)I
+ * Signature: (IILjava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Ecreate_1msg
   (JNIEnv *, jclass, jint, jint, jstring);
@@ -65,6 +74,22 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eclose_1stack
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Eprint1
+ * Signature: (Ljava/lang/Object;)V
+ */
+JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eprint1
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Eprint2
+ * Signature: (ILjava/lang/Object;)V
+ */
+JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eprint2
+  (JNIEnv *, jclass, jint, jobject);
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Eget_class_name
  * Signature: (I)Ljava/lang/String;
  */
@@ -89,22 +114,6 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Epop
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Eprint1
- * Signature: (Ljava/lang/Object;)V
- */
-JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eprint1
-  (JNIEnv *, jclass, jobject);
-
-/*
- * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Eprint2
- * Signature: (ILjava/lang/Object;)V
- */
-JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eprint2
-  (JNIEnv *, jclass, jint, jobject);
-
-/*
- * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Eclear2
  * Signature: (I)V
  */
@@ -113,19 +122,11 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eclear2
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Eauto_is_v2
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eauto_1is_1v2
-  (JNIEnv *, jclass, jint);
-
-/*
- * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Eget_msg
- * Signature: (I[Lhdf/h5/enums/H5E_TYPE;)Ljava/lang/String;
+ * Signature: (I[I)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eget_1msg
-  (JNIEnv *, jclass, jint, jobjectArray);
+  (JNIEnv *, jclass, jint, jintArray);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
@@ -134,14 +135,6 @@ JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eget_1msg
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eget_1num
   (JNIEnv *, jclass, jint);
-
-/*
- * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Eprint1
- * Signature: (Ljava/lang/Object;)V
- */
-JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eprint1
-  (JNIEnv *, jclass, jobject);
 
 #ifdef __cplusplus
 }

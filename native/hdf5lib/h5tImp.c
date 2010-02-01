@@ -1141,7 +1141,8 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tenum_1insert
  * Signature: (I[I[Ljava/lang/String;I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tenum_1nameof_1int
-  (JNIEnv *env, jclass clss, jint type, jintArray value, jobjectArray name, jint size)
+  (JNIEnv *env, jclass clss, jint type, jintArray value, jobjectArray name, 
+          jint size)
 {
     hid_t status;
     jint *intP;

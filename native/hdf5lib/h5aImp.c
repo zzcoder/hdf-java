@@ -248,7 +248,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aget_1type
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Aget_name
- * Signature: (IJLjava/lang/String;)J
+ * Signature: (IJ[Ljava/lang/String;)J
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1name
   (JNIEnv *env, jclass clss, jint attr_id, jlong buf_size, jobjectArray name)
@@ -366,7 +366,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aclose
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Aread
- * Signature: (II[B)I
+ * Signature: (II[Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5AreadVL
   (JNIEnv *env, jclass clss, jint attr_id, jint mem_type_id, jobjectArray buf)

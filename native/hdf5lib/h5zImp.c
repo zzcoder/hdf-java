@@ -35,8 +35,8 @@ extern jboolean h5libraryError( JNIEnv *env );
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Zunregister(H5Z_filter_t filter)
- * Signature: ([BILjava/lang/String;II)I
+ * Method:    H5Zunregister
+ * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Zunregister
   (JNIEnv *env, jclass clss,
@@ -55,8 +55,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Zunregister
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Zfilter_avail(H5Z_filter_t filter)
- * Signature: ([BILjava/lang/String;II)I
+ * Method:    H5Zfilter_avail
+ * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Zfilter_1avail
   (JNIEnv *env, jclass clss,
@@ -82,8 +82,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Zfilter_1avail
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Signature: herr_t H5Zget_filter_info (H5Z_filter_t filter)
- * Purpose:
+ * Method:    H5Zget_filter_info
+ * Signature: (I)I
  */
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Zget_1filter_1info

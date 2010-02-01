@@ -462,7 +462,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1objinfo
  * Signature: (ILjava/lang/String;I[Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1linkval
-  (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint size, jobjectArray value)
+  (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint size, 
+          jobjectArray value)
 {
     char* gName;
     jboolean isCopy;
@@ -682,7 +683,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1num_1objs
  * Signature: (IJ[Ljava/lang/String;J)J
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1objname_1by_1idx
-  (JNIEnv *env, jclass clss, jint group_id, jlong idx, jobjectArray name, jlong buf_size)
+  (JNIEnv *env, jclass clss, jint group_id, jlong idx, 
+          jobjectArray name, jlong buf_size)
 {
     char *aName;
     jstring str;
@@ -756,11 +758,12 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1objtype_1by_1idx
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Gget_obj_info_all
- * Signature: (ILjava/lang/String;[Ljava/lang/Object;[I[JI)I
+ * Signature: (ILjava/lang/String;[Ljava/lang/String;[I[I[JI)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
   (JNIEnv *env, jclass clss, jint loc_id, jstring group_name,
-    jobjectArray objName, jintArray oType, jintArray lType, jlongArray oRef, int n)
+    jobjectArray objName, jintArray oType, jintArray lType, 
+    jlongArray oRef, int n)
 {
     herr_t ret_val = -1;
     char *gName=NULL;
@@ -877,10 +880,12 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Gget_obj_info_max
- * Signature: (I[Ljava/lang/Object;[I[JII)I
+ * Signature: (I[Ljava/lang/String;[I[I[JII)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1max
-  (JNIEnv *env, jclass clss, jint loc_id, jobjectArray objName, jintArray oType, jintArray lType, jlongArray oRef, int maxnum, int n)
+  (JNIEnv *env, jclass clss, jint loc_id, jobjectArray objName, 
+          jintArray oType, jintArray lType, jlongArray oRef, 
+          int maxnum, int n)
 {
     herr_t ret_val = -1;
     char **oName=NULL;
@@ -1114,7 +1119,8 @@ jobject create_H5G_info_t(JNIEnv *env, H5G_info_t group_info)
  * Signature: (ILjava/lang/String;III)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gcreate2
-  (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint link_plist_id, jint create_plist_id, jint access_plist_id)
+  (JNIEnv *env, jclass clss, jint loc_id, jstring name, 
+          jint link_plist_id, jint create_plist_id, jint access_plist_id)
 {
     hid_t status;
     char* gName;
