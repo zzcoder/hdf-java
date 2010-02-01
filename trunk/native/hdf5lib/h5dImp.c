@@ -217,7 +217,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dchdir_1ext
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dgetdir_1ext
- * Signature: (Ljava/lang/String;I)I
+ * Signature: ([Ljava/lang/String;I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dgetdir_1ext
   (JNIEnv *env, jclass clss, jobjectArray dir_name, jint buf_size)
@@ -1255,7 +1255,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DwriteString
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5DreadVL
- * Signature: (IIIII[Ljava/lang/Object;)I
+ * Signature: (IIIII[Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DreadVL
   (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id,
@@ -1400,7 +1400,7 @@ herr_t H5DreadVL_str (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dread_reg_ref
- * Signature: (IIIII[L)I
+ * Signature: (IIIII[Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1reg_1ref (JNIEnv *env, jclass clss,
     jint dataset_id, jint mem_type_id, jint mem_space_id,

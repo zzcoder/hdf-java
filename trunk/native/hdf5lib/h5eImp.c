@@ -33,7 +33,7 @@ extern "C" {
 #include "h5eImp.h"
 
     /*
-     * Class:     hdf_h5_H5E
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Eauto_is_v2
      * Signature: (I)Z
      */
@@ -183,6 +183,23 @@ extern "C" {
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Ecreate_stack
+     * Signature: ()I
+     */
+    JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Ecreate_1stack
+      (JNIEnv *env, jclass cls)
+    {
+        jint ret_val = -1;
+        ret_val = H5Ecreate_stack();
+        if (ret_val < 0) {
+            h5libraryError(env);
+            return -1;
+        }
+        return ret_val;
+    }
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Eget_current_stack
      * Signature: ()I
      */
@@ -307,6 +324,68 @@ extern "C" {
         return str;
     }
 
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Eset_current_stack
+     * Signature: (I)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eset_1current_1stack
+      (JNIEnv *env, jclass cls, jint stk_id)
+    {
+        herr_t ret_val = -1;
+
+        if (stk_id < 0) {
+            h5badArgument(env, "H5Eset_current_stack: invalid argument");
+            return;
+        }
+        ret_val = H5Eset_current_stack(stk_id);
+        if (ret_val < 0) {
+            h5libraryError(env);
+            return;
+        }
+    }
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Epop
+     * Signature: (IJ)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Epop
+      (JNIEnv *env, jclass cls, jint stk_id, jlong count)
+    {
+        herr_t ret_val = -1;
+
+        if (stk_id < 0) {
+            h5badArgument(env, "H5Epop: invalid argument");
+            return;
+        }
+        ret_val = H5Epop(stk_id, count);
+        if (ret_val < 0) {
+            h5libraryError(env);
+            return;
+        }
+    }
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Eclear2
+     * Signature: (I)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eclear2
+      (JNIEnv *env, jclass cls, jint stk_id)
+    {
+        herr_t ret_val = -1;
+
+        if (stk_id < 0) {
+            h5badArgument(env, "H5Eclear2: invalid argument");
+            return;
+        }
+        ret_val = H5Eclear2(stk_id);
+        if (ret_val < 0) {
+            h5libraryError(env);
+            return;
+        }
+    }
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
@@ -392,86 +471,6 @@ extern "C" {
             return -1;
         }
         return ret_val;
-    }
-
-    /*
-     * Class:     ncsa_hdf_hdf5lib_H5
-     * Method:    H5Eclear2
-     * Signature: (I)V
-     */
-    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eclear2
-      (JNIEnv *env, jclass cls, jint stk_id)
-    {
-        herr_t ret_val = -1;
-
-        if (stk_id < 0) {
-            h5badArgument(env, "H5Eclear2: invalid argument");
-            return;
-        }
-        ret_val = H5Eclear2(stk_id);
-        if (ret_val < 0) {
-            h5libraryError(env);
-            return;
-        }
-    }
-
-    /*
-     * Class:     ncsa_hdf_hdf5lib_H5
-     * Method:    H5Ecreate_stack
-     * Signature: ()I
-     */
-    JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Ecreate_1stack
-      (JNIEnv *env, jclass cls)
-    {
-        jint ret_val = -1;
-        ret_val = H5Ecreate_stack();
-        if (ret_val < 0) {
-            h5libraryError(env);
-            return -1;
-        }
-        return ret_val;
-    }
-
-    /*
-     * Class:     ncsa_hdf_hdf5lib_H5
-     * Method:    H5Epop
-     * Signature: (IJ)V
-     */
-    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Epop
-      (JNIEnv *env, jclass cls, jint stk_id, jlong count)
-    {
-        herr_t ret_val = -1;
-
-        if (stk_id < 0) {
-            h5badArgument(env, "H5Epop: invalid argument");
-            return;
-        }
-        ret_val = H5Epop(stk_id, count);
-        if (ret_val < 0) {
-            h5libraryError(env);
-            return;
-        }
-    }
-
-    /*
-     * Class:     ncsa_hdf_hdf5lib_H5
-     * Method:    H5Eset_current_stack
-     * Signature: (I)V
-     */
-    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eset_1current_1stack
-      (JNIEnv *env, jclass cls, jint stk_id)
-    {
-        herr_t ret_val = -1;
-
-        if (stk_id < 0) {
-            h5badArgument(env, "H5Eset_current_stack: invalid argument");
-            return;
-        }
-        ret_val = H5Eset_current_stack(stk_id);
-        if (ret_val < 0) {
-            h5libraryError(env);
-            return;
-        }
     }
 
 #ifdef __cplusplus

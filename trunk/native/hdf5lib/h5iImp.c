@@ -44,9 +44,9 @@ extern jboolean h5libraryError( JNIEnv *env );
 extern jboolean h5badArgument( JNIEnv *env, char *functName);
 
 /*
- * Class:     ncsa_hdf_hdf5lib_H5Header
- * Method:    H5Gget_linkval
- * Signature: (ILjava/lang/String;I[Ljava/lang/String;)I
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Iget_type
+ * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1type
   (JNIEnv *env, jclass clss, jint obj_id)
@@ -68,8 +68,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1type
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Iget_name(hid_t obj_id, char *name, size_t size )
- * Signature: (IJLjava/lang/String;)J
+ * Method:    H5Iget_name
+ * Signature: (ILjava/lang/String;J)J
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1name
   (JNIEnv *env, jclass clss, jint obj_id, jobjectArray name, jlong buf_size)
@@ -108,8 +108,8 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1name
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Signature: int H5Iget_ref(hid_t obj_id)
- * Purpose:   Retrieves the reference count for an object
+ * Method:    H5Iget_ref
+ * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1ref
   (JNIEnv *env, jclass clss, jint obj_id)
@@ -124,8 +124,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1ref
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Signature: int H5Iinc_ref(hid_t obj_id)
- * Purpose:   Increments the reference count for an object
+ * Method:    H5Iinc_ref
+ * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iinc_1ref
   (JNIEnv *env, jclass clss, jint obj_id)
@@ -140,8 +140,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iinc_1ref
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Signature: int H5Idec_ref(hid_t obj_id)
- * Purpose:   Decrements the reference count for an object
+ * Method:    H5Idec_1ref
+ * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Idec_1ref
   (JNIEnv *env, jclass clss, jint obj_id)
@@ -164,8 +164,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Idec_1ref
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Signature:  hid_t H5Iget_file_id (hid_t obj_id)
- * Purpose:
+ * Method:    H5Iget_file_id
+ * Signature: (I)I
  */
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1file_1id

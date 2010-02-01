@@ -29,7 +29,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dchdir_1ext
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Dgetdir_1ext
- * Signature: (Ljava/lang/String;I)I
+ * Signature: ([Ljava/lang/String;I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dgetdir_1ext
   (JNIEnv*, jclass, jobjectArray, jint);
@@ -186,7 +186,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1double
  * Signature: (IIIII[Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dread_1string
-  (JNIEnv*, jclass, jint, jint, jint, jint, jint, jstring);
+  (JNIEnv*, jclass, jint, jint, jint, jint, jint, jobjectArray);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
