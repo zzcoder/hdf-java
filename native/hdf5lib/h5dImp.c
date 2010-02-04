@@ -1632,12 +1632,21 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dfill
 JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dset_1extent
   (JNIEnv *env, jclass clss, jint loc_id, jlongArray buf)
 {
-    herr_t status;
-    jlong   *buffP;
+    herr_t   status;
+    int      i = 0;
+    jlong    *buffP;
+    jsize    rank;
+    hsize_t  *dims;
     jboolean isCopy;
 
     if ( buf == NULL ) {
         h5nullArgument( env, "H5Dset_extent:  buf is NULL");
+        return;
+    }
+
+    rank = ENVPTR->GetArrayLength(ENVPAR buf);
+    if (rank <=0) {
+        h5JNIFatalError( env, "H5Dset_extent:  rank <=0");
         return;
     }
 
@@ -1647,9 +1656,15 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dset_1extent
         return;
     }
     
-    status = H5Dset_extent(loc_id, buffP);
+    dims = (hsize_t *) malloc(rank * sizeof(hsize_t));
+    for (i = 0; i< rank; i++)
+        dims[i] = (hsize_t)buffP[i];
+    
+    status = H5Dset_extent(loc_id, dims);
 
-    ENVPTR->ReleaseDoubleArrayElements(ENVPAR buf,buffP,0);
+    free (dims);
+
+    ENVPTR->ReleaseLongArrayElements(ENVPAR buf,buffP,0);
     
     if (status < 0) {
         h5libraryError(env);

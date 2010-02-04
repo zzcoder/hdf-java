@@ -1027,7 +1027,7 @@ herr_t obj_info_all(hid_t loc_id, const char *name, const H5L_info_t *info, void
         *(datainfo->objname+datainfo->count) = (char *) malloc(strlen(name)+1);
         strcpy(*(datainfo->objname+datainfo->count), name);
         if(info->type==H5L_TYPE_HARD)
-            *(datainfo->objno+datainfo->count) = info->u.address;
+            *(datainfo->objno+datainfo->count) = (unsigned long)info->u.address;
         else
             *(datainfo->objno+datainfo->count) = info->u.val_size;
     }
@@ -1058,12 +1058,12 @@ herr_t obj_info_max(hid_t loc_id, const char *name, const H5L_info_t *info, void
         *(datainfo->objname+datainfo->count) = (char *) malloc(strlen(name)+1);
         strcpy(*(datainfo->objname+datainfo->count), name);
         if(info->type==H5L_TYPE_HARD)
-            *(datainfo->objno+datainfo->count) = info->u.address;
+            *(datainfo->objno+datainfo->count) = (unsigned long)info->u.address;
         else
             *(datainfo->objno+datainfo->count) = info->u.val_size;
     }
     datainfo->count++;
-    if(datainfo->count < datainfo->idxnum)
+    if(datainfo->count < (int)datainfo->idxnum)
         return 0;
     else
         return 1;

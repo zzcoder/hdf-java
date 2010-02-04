@@ -1173,7 +1173,7 @@ extern "C" {
         }
 
         returnedArray = ENVPTR->NewByteArray(ENVPAR buf_size);
-        ENVPTR->SetByteArrayRegion(ENVPAR returnedArray, 0, buf_size, bufPtr);
+        ENVPTR->SetByteArrayRegion(ENVPAR returnedArray, 0, buf_size, (jbyte *)bufPtr);
 
         free(bufPtr);
 
