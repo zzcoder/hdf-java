@@ -6658,10 +6658,10 @@ public class H5 {
      *  H5Lget_val returns the link value of a symbolic link.
      *
      *  @param loc_id  IN: Identifier of the file or group containing the object.
-     *  @param name    IN: Name of the link to delete.
+     *  @param name    IN: Name of the symbolic link.
      *  @param lapl_id IN: Link access property list identifier
      *
-     *  @return the link value (byte[]) of maximum size
+     *  @return the link value
      *
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - name is null.

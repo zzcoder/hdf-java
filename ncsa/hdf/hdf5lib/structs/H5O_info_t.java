@@ -26,7 +26,7 @@ public class H5O_info_t {
     public long   num_attrs;  /* # of attributes attached to object */
     public H5O_hdr_info_t      hdr;            /* Object header information */
     /* Extra metadata storage for obj & attributes */
-    public struct meta_size {
+    public class meta_size {
         public H5_ih_info_t   obj;             /* v1/v2 B-tree & local/fractal heap for groups, B-tree for chunked datasets */
         public H5_ih_info_t   attr;            /* v2 B-tree & heap for attributes */
     };
