@@ -25,7 +25,7 @@ public class H5O_hdr_info_t {
         public long mesg;       /* Space within header for actual message information */
         public long free;       /* Free space within object header */
     };
-    public struct mesg {
+    public class mesg {
         public long present;   /* Flags to indicate presence of message type in header */
         public long shared;    /* Flags to indicate message type is shared in header */
     } ;
