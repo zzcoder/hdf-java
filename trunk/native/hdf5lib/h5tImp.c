@@ -146,7 +146,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Tcreate
   (JNIEnv *env, jclass clss, jint dclass, jlong size)
 {
     hid_t retVal = -1;
-    retVal =  H5Tcreate((H5T_class_t )dclass, size );
+    retVal =  H5Tcreate((H5T_class_t )dclass, (size_t)size );
     if (retVal < 0) {
         h5libraryError(env);
     }
@@ -265,7 +265,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tset_1size
   (JNIEnv *env, jclass clss, jint type_id, jlong size)
 {
     herr_t retVal = -1;
-    retVal =  H5Tset_size(type_id, size );
+    retVal =  H5Tset_size(type_id, (size_t)size );
     if (retVal < 0) {
         h5libraryError(env);
     }
@@ -345,7 +345,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tset_1precision
   (JNIEnv *env, jclass clss, jint type_id, jlong precision)
 {
     herr_t retVal = -1;
-    retVal =  H5Tset_precision(type_id, precision);
+    retVal =  H5Tset_precision(type_id, (size_t)precision);
     if (retVal < 0) {
         h5libraryError(env);
     }
@@ -377,7 +377,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tset_1offset
   (JNIEnv *env, jclass clss, jint type_id, jlong offset)
 {
     herr_t retVal = -1;
-    retVal =  H5Tset_offset(type_id, offset);
+    retVal =  H5Tset_offset(type_id, (size_t)offset);
     if (retVal < 0) {
         h5libraryError(env);
     }
@@ -551,7 +551,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tset_1fields
   jlong esize, jlong mpos, jlong msize)
 {
     herr_t retVal = -1;
-    retVal =  H5Tset_fields(type_id, spos, epos, esize, mpos, msize);
+    retVal =  H5Tset_fields(type_id, (size_t)spos, (size_t)epos, (size_t)esize, (size_t)mpos, (size_t)msize);
     if (retVal < 0) {
         h5libraryError(env);
     }
@@ -598,7 +598,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tset_1ebias
   (JNIEnv *env, jclass clss, jint type_id, jlong ebias)
 {
     herr_t retVal = -1;
-    retVal =  H5Tset_ebias(type_id, ebias);
+    retVal =  H5Tset_ebias(type_id, (size_t)ebias);
     if (retVal < 0) {
         h5libraryError(env);
     }
