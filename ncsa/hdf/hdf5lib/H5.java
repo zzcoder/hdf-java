@@ -13,19 +13,17 @@
 
 package ncsa.hdf.hdf5lib;
 
-import ncsa.hdf.hdf5lib.HDF5Constants;
-import ncsa.hdf.hdf5lib.structs.H5G_info_t;
-
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
 import ncsa.hdf.hdf5lib.exceptions.HDF5JavaException;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
+import ncsa.hdf.hdf5lib.structs.H5G_info_t;
+import ncsa.hdf.hdf5lib.structs.H5L_info_t;
 
 /**
  * This class is the Java interface for the HDF5 library.
@@ -6653,6 +6651,37 @@ public class H5 {
     // //////////////////////////////////////////////////////////////////
     // H5L: Link Interface Functions //
     // //////////////////////////////////////////////////////////////////
+
+    /**
+     *  H5Lexists checks if a link with a particular name exists in a group. 
+     *
+     *  @param loc_id  IN: Identifier of the file or group to query. 
+     *  @param name    IN: The name of the link to check. 
+     *  @param lapl_id IN: Link access property list identifier
+     *
+     *  @return a boolean, true if the name exists, otherwise false.
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - name is null.
+     **/
+    public synchronized static native boolean H5Lexists(int loc_id, String name, int lapl_id)
+    throws HDF5LibraryException, NullPointerException;
+
+    /**
+     *  H5Lget_info returns information about the specified link.
+     *
+     *  @param loc_id  IN: Identifier of the file or group. 
+     *  @param name    IN: Name of the link for which information is being sought.
+     *  @param lapl_id IN: Link access property list identifier
+     *
+     *  @return a buffer(H5L_info_t) for the link information.
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - name is null.
+     **/
+    public synchronized static native H5L_info_t H5Lget_info(int loc_id, String name,
+        int lapl_id)
+    throws HDF5LibraryException, NullPointerException;
 
     /**
      *  H5Lget_val returns the link value of a symbolic link.

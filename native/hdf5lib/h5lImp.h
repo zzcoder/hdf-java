@@ -7,13 +7,30 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*
- * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Lget_val
- * Signature: (ILjava/lang/String;I)Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lget_1val
-  (JNIEnv *, jclass, jint, jstring, jint);
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Lexists
+     * Signature: (ILjava/lang/String;I)Z
+     */
+    JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lexists
+      (JNIEnv *, jclass, jint, jstring, jint);
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Lget_info
+     * Signature: (ILjava/lang/String;I)Lncsa/hdf/hdf5lib/structs/H5L_info_t;
+     */
+    JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lget_1info
+      (JNIEnv *, jclass, jint, jstring, jint);
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Lget_val
+     * Signature: (ILjava/lang/String;I)Ljava/lang/String;
+     */
+    JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lget_1val
+      (JNIEnv *, jclass, jint, jstring, jint);
 
 #ifdef __cplusplus
 }
