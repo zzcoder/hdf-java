@@ -40,6 +40,7 @@ all:    TestH5.class \
         TestH5Dparams.class \
         TestH5D.class \
         TestH5Lparams.class \
+        TestH5Lbasic.class \
         TestAll.class 
 
 

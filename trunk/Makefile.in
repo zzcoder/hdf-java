@@ -472,6 +472,7 @@ ncsa.hdf.hdf5lib.structs: \
 	ncsa/hdf/hdf5lib/structs/H5_ih_info_t.class \
 	ncsa/hdf/hdf5lib/structs/H5A_info_t.class \
 	ncsa/hdf/hdf5lib/structs/H5G_info_t.class \
+	ncsa/hdf/hdf5lib/structs/H5L_info_t.class \
 	ncsa/hdf/hdf5lib/structs/H5O_info_t.class \
 	ncsa/hdf/hdf5lib/structs/H5O_hdr_info_t.class
 
