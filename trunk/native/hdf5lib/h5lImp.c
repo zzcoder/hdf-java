@@ -150,13 +150,13 @@ extern "C" {
         jobject ret_info_t = NULL;
 
         if (name == NULL) {
-            h5nullArgument( env, "H5Lget_info:  name is NULL");
+            h5nullArgument( env, "H5Lget_info_by_idx:  name is NULL");
             return NULL;
         }
         
         lName = (char *)ENVPTR->GetStringUTFChars(ENVPAR name,&isCopy);
         if (lName == NULL) {
-            h5JNIFatalError( env, "H5Lget_info:  name not pinned");
+            h5JNIFatalError( env, "H5Lget_info_by_idx:  name not pinned");
             return NULL;
         }
 
@@ -183,6 +183,71 @@ extern "C" {
             args[4].j = infobuf.u.val_size;
         ret_info_t = (*env)->NewObjectA(env, cls, constructor, args);
         return ret_info_t;
+    }
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Lget_name_by_idx
+     * Signature: (ILjava/lang/String;IIJI)Ljava/lang/String;
+     */
+    JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lget_1name_1by_1idx
+    (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint index_field, jint order, jlong link_n, jint access_id)
+    {
+        char* lName;
+        jboolean isCopy;
+        jlong status_size;
+        size_t buf_size;
+        char *lValue;
+        jstring str = NULL;
+
+        if (name == NULL) {
+            h5nullArgument( env, "H5Lget_name_by_idx:  name is NULL");
+            return NULL;
+        }
+        
+        lName = (char *)ENVPTR->GetStringUTFChars(ENVPAR name,&isCopy);
+        if (lName == NULL) {
+            h5JNIFatalError( env, "H5Lget_name_by_idx:  name not pinned");
+            return NULL;
+        }
+
+        /* get the length of the link name */
+        status_size = H5Lget_name_by_idx(loc_id, lName, (H5_index_t)index_field, (H5_iter_order_t)order, (hsize_t)link_n, NULL, 0, H5P_DEFAULT);
+        if(status_size < 0) {
+            ENVPTR->ReleaseStringUTFChars(ENVPAR name,lName);
+            h5libraryError(env);
+            return NULL;
+        }
+        buf_size = status_size + 1;/* add extra space for the null terminator */
+        
+        lValue = (char *) malloc(sizeof(char)*buf_size);
+        if (lValue == NULL) {
+            ENVPTR->ReleaseStringUTFChars(ENVPAR name,lName);
+            h5outOfMemory( env, "H5Lget_name_by_idx:  malloc failed ");
+            return NULL;
+        }
+
+        status_size = H5Lget_name_by_idx(loc_id, lName, (H5_index_t)index_field, (H5_iter_order_t)order, (hsize_t)link_n, lValue, buf_size, access_id);
+
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name,lName);
+
+        if (status_size < 0) {
+            free(lValue);
+            h5libraryError(env);
+            return NULL;
+        }
+        /* may throw OutOfMemoryError */
+        str = ENVPTR->NewStringUTF(ENVPAR lValue);
+        if (str == NULL) {
+            /* exception -- fatal JNI error */
+            free(lValue);
+            h5JNIFatalError( env, "H5Lget_name_by_idx:  return string not created");
+            return NULL;
+        }
+
+        free(lValue);
+
+        return str;
     }
    
     /*
@@ -215,6 +280,7 @@ extern "C" {
         /* get the length of the link val */
         status = H5Lget_info(loc_id, lName, &infobuf, H5P_DEFAULT);
         if(status < 0) {
+            ENVPTR->ReleaseStringUTFChars(ENVPAR name,lName);
             h5libraryError(env);
             return NULL;
         }
