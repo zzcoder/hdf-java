@@ -3,7 +3,6 @@
  */
 package test.object;
 
-import test.object.h5.H5TestFile;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.object.FileFormat;

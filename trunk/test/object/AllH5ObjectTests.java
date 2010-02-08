@@ -3,13 +3,13 @@
  */
 package test.object;
 
-import test.object.h5.H5BugFixTest;
-import test.object.h5.H5CompoundDSTest;
-import test.object.h5.H5DatatypeTest;
-import test.object.h5.H5FileTest;
-import test.object.h5.H5GroupTest;
-import test.object.h5.H5ScalarDSTest;
-import test.object.h5.H5TestFile;
+import test.object.H5BugFixTest;
+import test.object.H5CompoundDSTest;
+import test.object.H5DatatypeTest;
+import test.object.H5FileTest;
+import test.object.H5GroupTest;
+import test.object.H5ScalarDSTest;
+import test.object.H5TestFile;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
