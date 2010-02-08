@@ -207,6 +207,21 @@ public class TestH5Lcreate {
     }
 
     @Test
+    public void testH5Lget_val() throws Throwable, HDF5LibraryException {
+        String link_value = null;
+        _createSoftLink(H5fid, "/G1/DS2", H5fid, "L1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        try {
+            link_value = H5.H5Lget_val(H5fid, "L1", HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Lget_val: " + err);
+        }
+        assertFalse("H5Lget_val ",link_value==null);
+        assertTrue("Link Value ",link_value.compareTo("/G1/DS2")==0);
+    }
+
+    @Test
     public void testH5Lcreate_soft_dangle() throws Throwable, HDF5LibraryException, NullPointerException {
         H5.H5Lcreate_soft("DS3", H5fid, "L2", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
         H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
@@ -237,6 +252,21 @@ public class TestH5Lcreate {
         assertFalse("H5Lget_info ",link_info==null);
         assertTrue("H5Lget_info link type",link_info.type==HDF5Constants.H5L_TYPE_SOFT);
         assertTrue("Link Address ",link_info.address_val_size>0);
+    }
+
+    @Test
+    public void testH5Lget_val_dangle() throws Throwable, HDF5LibraryException {
+        String link_value = null;
+        _createSoftLink(H5fid, "DS3", H5fid, "L2", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        try {
+            link_value = H5.H5Lget_val(H5fid, "L2", HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Lget_val: " + err);
+        }
+        assertFalse("H5Lget_val ",link_value==null);
+        assertTrue("Link Value ",link_value.compareTo("DS3")==0);
     }
 
 }
