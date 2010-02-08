@@ -20,6 +20,7 @@ import org.junit.Test;
 
 public class TestH5Lcreate {
     private static final boolean is16 = H5.isAPI16;
+    private static final String H5_EXTFILE = "test/hdf5lib/h5ex_g_iterate.h5";
     private static final String H5_FILE = "test.h5";
     private static final int DIM_X = 4;
     private static final int DIM_Y = 6;
@@ -103,6 +104,20 @@ public class TestH5Lcreate {
             fail("H5.H5Lcreate_soft: " + err);
         }
         assertTrue("TestH5L._createSoftLink ", link_exists);
+    }
+
+    private final void _createExternalLink(int fid, String ext_filename, String curname, int did, String dstname, int dcpl, int dapl) {
+        boolean link_exists = false;
+        try {
+            H5.H5Lcreate_external(ext_filename, curname, did, dstname, dcpl, dapl);
+            H5.H5Fflush(fid, HDF5Constants.H5F_SCOPE_LOCAL);
+            link_exists = H5.H5Lexists(did, dstname, dapl);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Lcreate_external: " + err);
+        }
+        assertTrue("TestH5L._createExternalLink ", link_exists);
     }
 
     @Before
@@ -207,7 +222,7 @@ public class TestH5Lcreate {
     }
 
     @Test
-    public void testH5Lget_val() throws Throwable, HDF5LibraryException {
+    public void testH5Lget_val_soft() throws Throwable, HDF5LibraryException {
         String link_value = null;
         _createSoftLink(H5fid, "/G1/DS2", H5fid, "L1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
         try {
@@ -267,6 +282,60 @@ public class TestH5Lcreate {
         }
         assertFalse("H5Lget_val ",link_value==null);
         assertTrue("Link Value ",link_value.compareTo("DS3")==0);
+    }
+
+    @Test
+    public void testH5Lcreate_external() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Lcreate_external(H5_EXTFILE, "DT1", H5fid, "L1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
+        boolean link_exists = H5.H5Lexists(H5fid, "L1", HDF5Constants.H5P_DEFAULT);
+        assertTrue("testH5Lcreate_external:H5Lexists ",link_exists);
+    }
+
+    @Test
+    public void testH5Lget_info_externallink() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5L_info_t link_info = null;
+        _createExternalLink(H5fid, H5_EXTFILE, "DT1", H5fid, "L1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        try {
+            link_info = H5.H5Lget_info(H5fid, "L1", HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Lget_info: " + err);
+        }
+        assertFalse("H5Lget_info ",link_info==null);
+        assertTrue("H5Lget_info link type",link_info.type==HDF5Constants.H5L_TYPE_EXTERNAL);
+        assertTrue("Link Address ",link_info.address_val_size>0);
+    }
+
+    @Test
+    public void testH5Lget_val_external() throws Throwable, HDF5LibraryException {
+        String link_value = null;
+        _createExternalLink(H5fid, H5_EXTFILE, "DT1", H5fid, "L1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        try {
+            link_value = H5.H5Lget_val(H5fid, "L1", HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Lget_val: " + err);
+        }
+        assertFalse("H5Lget_val ",link_value==null);
+        assertTrue("Link Value ",link_value.compareTo("DT1")==0);
+    }
+
+    @Test
+    public void testH5Lget_val_external_filename() throws Throwable, HDF5LibraryException {
+        String link_file = null;
+        _createExternalLink(H5fid, H5_EXTFILE, "DT1", H5fid, "L1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        try {
+            link_file = H5.H5Lget_val_external(H5fid, "L1", HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Lget_val_external: " + err);
+        }
+        assertFalse("H5Lget_val_external ",link_file==null);
+        assertTrue("Link Filename ",link_file.compareTo(H5_EXTFILE)==0);
     }
 
 }

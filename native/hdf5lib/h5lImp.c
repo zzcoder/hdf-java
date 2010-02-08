@@ -43,6 +43,73 @@ extern "C" {
     
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Lcreate_external
+     * Signature: (Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;II)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lcreate_1external
+    (JNIEnv *env, jclass clss, jstring file_name, jstring cur_name, jint dst_loc_id, jstring dst_name, jint create_id, jint access_id)
+  {
+      herr_t status = -1;
+      char* lFileName;
+      char* lCurName;
+      char* lDstName;
+      jboolean isCopy;
+      
+      if (file_name == NULL) {
+          h5nullArgument( env, "H5Lcreate_external:  file_name is NULL");
+          return;
+      }
+      
+      lFileName = (char *)ENVPTR->GetStringUTFChars(ENVPAR file_name,&isCopy);
+      if (lFileName == NULL) {
+          h5JNIFatalError( env, "H5Lcreate_external:  file_name not pinned");
+          return;
+      }
+     
+      if (cur_name == NULL) {
+          ENVPTR->ReleaseStringUTFChars(ENVPAR file_name,lFileName);
+          h5nullArgument( env, "H5Lcreate_external:  cur_name is NULL");
+          return;
+      }
+      
+      lCurName = (char *)ENVPTR->GetStringUTFChars(ENVPAR cur_name,&isCopy);
+      if (lCurName == NULL) {
+          ENVPTR->ReleaseStringUTFChars(ENVPAR file_name,lFileName);
+          h5JNIFatalError( env, "H5Lcreate_external:  cur_name not pinned");
+          return;
+      }
+      
+      if (dst_name == NULL) {
+          ENVPTR->ReleaseStringUTFChars(ENVPAR file_name,lFileName);
+          ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name,lCurName);
+          h5nullArgument( env, "H5Lcreate_external:  dst_name is NULL");
+          return;
+      }
+      
+      lDstName = (char *)ENVPTR->GetStringUTFChars(ENVPAR dst_name,&isCopy);
+      if (lDstName == NULL) {
+          ENVPTR->ReleaseStringUTFChars(ENVPAR file_name,lFileName);
+          ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name,lCurName);
+          h5JNIFatalError( env, "H5Lcreate_external:  dst_name not pinned");
+          return;
+      }
+
+      status = H5Lcreate_external(lFileName, lCurName, dst_loc_id, lDstName, create_id, access_id);
+
+      ENVPTR->ReleaseStringUTFChars(ENVPAR file_name,lFileName);
+      ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name,lCurName);
+      ENVPTR->ReleaseStringUTFChars(ENVPAR dst_name,lDstName);
+      
+      if (status < 0) {
+         h5libraryError(env);
+         return;
+      }
+      
+      return;
+  }
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Lcreate_hard
      * Signature: (ILjava/lang/String;ILjava/lang/String;II)V
      */
@@ -66,6 +133,7 @@ extern "C" {
         }
         
         if (dst_name == NULL) {
+            ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name,lCurName);
             h5nullArgument( env, "H5Lcreate_hard:  dst_name is NULL");
             return;
         }
@@ -115,6 +183,7 @@ extern "C" {
         }
         
         if (dst_name == NULL) {
+            ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name,lCurName);
             h5nullArgument( env, "H5Lcreate_soft:  dst_name is NULL");
             return;
         }
@@ -396,7 +465,9 @@ extern "C" {
         jstring str;
         herr_t status;
         H5L_info_t infobuf;
-
+        const char *file_name;
+        const char *obj_name;
+        
         if (name == NULL) {
             h5nullArgument( env, "H5Lget_val:  name is NULL");
             return NULL;
@@ -417,9 +488,9 @@ extern "C" {
         }
         buf_size = infobuf.u.val_size + 1;/* add extra space for the null terminator */
         
-        if(infobuf.type != H5L_TYPE_SOFT) {
+        if(infobuf.type == H5L_TYPE_HARD) {
             ENVPTR->ReleaseStringUTFChars(ENVPAR name,lName);
-            h5JNIFatalError( env, "H5Lget_val:  link not symbolic");
+            h5JNIFatalError( env, "H5Lget_val:  link is hard type");
             return NULL;
         }
         
@@ -439,11 +510,108 @@ extern "C" {
            return NULL;
         }
         /* may throw OutOfMemoryError */
-        str = ENVPTR->NewStringUTF(ENVPAR lValue);
+        if(infobuf.type == H5L_TYPE_EXTERNAL) {
+            status =  H5Lunpack_elink_val(lValue, (size_t)infobuf.u.val_size, NULL, &file_name, &obj_name);
+            if (status < 0) {
+               free(lValue);
+               h5libraryError(env);
+               return NULL;
+            }
+            
+            str = ENVPTR->NewStringUTF(ENVPAR obj_name);
+        }
+        else
+            str = ENVPTR->NewStringUTF(ENVPAR lValue);
+        
         if (str == NULL) {
             /* exception -- fatal JNI error */
             free(lValue);
             h5JNIFatalError( env, "H5Lget_val:  return string not created");
+            return NULL;
+        }
+
+        free(lValue);
+
+        return str;
+    }
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Lget_val_external
+     * Signature: (ILjava/lang/String;I)Ljava/lang/String;
+     */
+    JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lget_1val_1external
+      (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint access_id)
+    {
+        char* lName;
+        jboolean isCopy;
+        char *lValue;
+        size_t buf_size;
+        jstring str;
+        herr_t status;
+        H5L_info_t infobuf;
+        const char *file_name;
+        const char *obj_name;
+        
+        if (name == NULL) {
+            h5nullArgument( env, "H5Lget_val_external:  name is NULL");
+            return NULL;
+        }
+        
+        lName = (char *)ENVPTR->GetStringUTFChars(ENVPAR name,&isCopy);
+        if (lName == NULL) {
+            h5JNIFatalError( env, "H5Lget_val_external:  name not pinned");
+            return NULL;
+        }
+
+        /* get the length of the link val */
+        status = H5Lget_info(loc_id, lName, &infobuf, H5P_DEFAULT);
+        if(status < 0) {
+            ENVPTR->ReleaseStringUTFChars(ENVPAR name,lName);
+            h5libraryError(env);
+            return NULL;
+        }
+        buf_size = infobuf.u.val_size + 1;/* add extra space for the null terminator */
+        
+        if(infobuf.type == H5L_TYPE_HARD) {
+            ENVPTR->ReleaseStringUTFChars(ENVPAR name,lName);
+            h5JNIFatalError( env, "H5Lget_val_external:  link is hard type");
+            return NULL;
+        }
+        
+        lValue = (char *) malloc(sizeof(char)*buf_size);
+        if (lValue == NULL) {
+            ENVPTR->ReleaseStringUTFChars(ENVPAR name,lName);
+            h5outOfMemory( env, "H5Lget_val_external:  malloc failed ");
+            return NULL;
+        }
+
+        status = H5Lget_val((hid_t)loc_id, lName, lValue, (size_t)buf_size, access_id);
+
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name,lName);
+        if (status < 0) {
+           free(lValue);
+           h5libraryError(env);
+           return NULL;
+        }
+        /* may throw OutOfMemoryError */
+        if(infobuf.type == H5L_TYPE_EXTERNAL) {
+            status =  H5Lunpack_elink_val(lValue, (size_t)infobuf.u.val_size, NULL, &file_name, &obj_name);
+            if (status < 0) {
+               free(lValue);
+               h5libraryError(env);
+               return NULL;
+            }
+            
+            str = ENVPTR->NewStringUTF(ENVPAR file_name);
+        }
+        else
+            str = ENVPTR->NewStringUTF(ENVPAR lValue);
+        
+        if (str == NULL) {
+            /* exception -- fatal JNI error */
+            free(lValue);
+            h5JNIFatalError( env, "H5Lget_val_external:  return string not created");
             return NULL;
         }
 

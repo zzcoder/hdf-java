@@ -6653,6 +6653,26 @@ public class H5 {
     // //////////////////////////////////////////////////////////////////
 
     /**
+     *  H5Lcreate_external creates a new soft link to an external object, which is 
+     *  an object in a different HDF5 file from the location of the link. 
+     *
+     *  @param file_name   IN: Name of the target file containing the target object.
+     *  @param obj_name    IN: Path within the target file to the target object.
+     *  @param link_loc_id IN: The file or group identifier for the new link. 
+     *  @param link_name   IN: The name of the new link.
+     *  @param lcpl_id     IN: Link creation property list identifier
+     *  @param lapl_id     IN: Link access property list identifier
+     *
+     *  @return none
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - name is null.
+     **/
+    public synchronized static native void H5Lcreate_external(String file_name, String obj_name,
+        int link_loc_id, String link_name, int lcpl_id, int lapl_id)
+    throws HDF5LibraryException, NullPointerException;
+
+    /**
      *  H5Lcreate_hard creates a new hard link to a pre-existing object in an HDF5 file.
      *
      *  @param cur_loc   IN: The file or group identifier for the target object.
@@ -6788,6 +6808,21 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native String H5Lget_val(int loc_id, String name, int lapl_id)
+    throws HDF5LibraryException, NullPointerException;
+
+    /**
+     *  H5Lget_val_external returns the filename of an external link.
+     *
+     *  @param loc_id  IN: Identifier of the file or group containing the object.
+     *  @param name    IN: Name of the external link.
+     *  @param lapl_id IN: Link access property list identifier
+     *
+     *  @return the external link filename
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - name is null.
+     **/
+    public synchronized static native String H5Lget_val_external(int loc_id, String name, int lapl_id)
     throws HDF5LibraryException, NullPointerException;
 
 

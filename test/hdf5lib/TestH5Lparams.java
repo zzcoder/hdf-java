@@ -97,4 +97,24 @@ public class TestH5Lparams {
         H5.H5Lcreate_soft("Bogus", 0, null, 0, 0);
     }
 
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Lcreate_external_invalid() throws Throwable, HDF5LibraryException {
+        H5.H5Lcreate_external("PathToFile", "Bogus", -1, "Bogus", -1, -1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Lcreate_external_null_file() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Lcreate_external(null, "Bogus", 0, "Bogus", 0, 0);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Lcreate_external_null_current() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Lcreate_external("PathToFile", null, 0, "Bogus", 0, 0);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Lcreate_external_null_dest() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Lcreate_external("PathToFile", "Bogus", 0, null, 0, 0);
+    }
+
 }
