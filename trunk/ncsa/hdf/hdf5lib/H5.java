@@ -6684,6 +6684,26 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException;
 
     /**
+     *  H5Lget_info_by_idx opens a named datatype at the location specified
+     *  by loc_id and return an identifier for the datatype.
+     *
+     *  @param loc_id     IN: File or group identifier specifying location of subject group
+     *  @param group_name IN: Name of subject group
+     *  @param idx_type   IN: Type of index
+     *  @param order      IN: Order within field or index
+     *  @param n          IN: Link for which to retrieve information 
+     *  @param lapl_id    IN: Link access property list identifier 
+     *
+     *  @return a buffer(H5L_info_t) for the link information.
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - group_name is null.
+     **/
+    public synchronized static native H5L_info_t H5Lget_info_by_idx(int loc_id, String group_name,
+        int idx_type, int order, long n, int lapl_id)
+    throws HDF5LibraryException, NullPointerException;
+
+    /**
      *  H5Lget_val returns the link value of a symbolic link.
      *
      *  @param loc_id  IN: Identifier of the file or group containing the object.
