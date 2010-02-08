@@ -10,6 +10,14 @@ extern "C" {
     
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Lcreate_hard
+     * Signature: (ILjava/lang/String;ILjava/lang/String;II)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lcreate_1hard
+      (JNIEnv *, jclass, jint, jstring, jint, jstring, jint, jint);
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Lexists
      * Signature: (ILjava/lang/String;I)Z
      */

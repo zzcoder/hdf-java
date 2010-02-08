@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
+import ncsa.hdf.hdf5lib.exceptions.HDF5MetaDataCacheException;
 import ncsa.hdf.hdf5lib.exceptions.HDF5SymbolTableException;
 import ncsa.hdf.hdf5lib.structs.H5L_info_t;
 
@@ -51,7 +52,7 @@ public class TestH5Lbasic {
     }
 
     @After
-    public void deleteH5file() throws HDF5LibraryException {
+    public void closeH5file() throws HDF5LibraryException {
         if (H5fid > 0) {
             H5.H5Fclose(H5fid);
         }
@@ -155,6 +156,11 @@ public class TestH5Lbasic {
         assertFalse("H5Lget_info_by_idx ",link_info==null);
         assertTrue("H5Lget_info_by_idx link type",link_info.type==HDF5Constants.H5L_TYPE_HARD);
         assertTrue("Link Address ",link_info.address_val_size==H5la_l1);
+    }
+
+    @Test(expected = HDF5SymbolTableException.class)
+    public void testH5Lget_name_by_idx_not_exist() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Lget_name_by_idx(H5fid, "None", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
     }
 
     @Test
