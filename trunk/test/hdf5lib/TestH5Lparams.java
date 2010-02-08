@@ -39,22 +39,37 @@ public class TestH5Lparams {
 
     @Test(expected = HDF5LibraryException.class)
     public void testH5Lget_info_by_idx_invalid() throws Throwable, HDF5LibraryException {
-        H5.H5Lget_info_by_idx(-1, "Bogus", -1, -1, -1, -1);
+        H5.H5Lget_info_by_idx(-1, "Bogus", -1, -1, -1L, -1);
     }
 
     @Test(expected = NullPointerException.class)
     public void testH5Lget_info_by_idx_null() throws Throwable, HDF5LibraryException, NullPointerException {
-        H5.H5Lget_info_by_idx(-1, null, 0, 0, 0, 0);
+        H5.H5Lget_info_by_idx(-1, null, 0, 0, 0L, 0);
     }
 
     @Test(expected = HDF5LibraryException.class)
     public void testH5Lget_name_by_idx_invalid() throws Throwable, HDF5LibraryException {
-        H5.H5Lget_name_by_idx(-1, "Bogus", -1, -1, -1, -1);
+        H5.H5Lget_name_by_idx(-1, "Bogus", -1, -1, -1L, -1);
     }
 
     @Test(expected = NullPointerException.class)
     public void testH5Lget_name_by_idx_null() throws Throwable, HDF5LibraryException, NullPointerException {
-        H5.H5Lget_name_by_idx(-1, null, 0, 0, 0, 0);
+        H5.H5Lget_name_by_idx(-1, null, 0, 0, 0L, 0);
+    }
+
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Lcreate_hard_invalid() throws Throwable, HDF5LibraryException {
+        H5.H5Lcreate_hard(-1, "Bogus", -1, "Bogus", -1, -1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Lcreate_hard_null_current() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Lcreate_hard(-1, null, 0, "Bogus", 0, 0);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Lcreate_hard_null_dest() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Lcreate_hard(-1, "Bogus", 0, null, 0, 0);
     }
 
 }

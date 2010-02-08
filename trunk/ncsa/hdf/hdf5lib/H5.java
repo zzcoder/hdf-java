@@ -6653,6 +6653,25 @@ public class H5 {
     // //////////////////////////////////////////////////////////////////
 
     /**
+     *  H5Lcreate_hard creates a new hard link to a pre-existing object in an HDF5 file.
+     *
+     *  @param cur_loc   IN: The file or group identifier for the target object.
+     *  @param cur_name  IN: Name of the target object, which must already exist.
+     *  @param dst_loc   IN: The file or group identifier for the new link.
+     *  @param dst_name  IN: The name of the new link.
+     *  @param lcpl_id   IN: Link creation property list identifier
+     *  @param lapl_id   IN: Link access property list identifier
+     *
+     *  @return none
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - cur_name or dst_name is null.
+     **/
+    public synchronized static native void H5Lcreate_hard(int cur_loc, String cur_name,
+        int dst_loc, String dst_name, int lcpl_id, int lapl_id)
+    throws HDF5LibraryException, NullPointerException;
+
+    /**
      *  H5Lexists checks if a link with a particular name exists in a group. 
      *
      *  @param loc_id  IN: Identifier of the file or group to query. 
