@@ -10,7 +10,7 @@
 
  ************************************************************/
 
-package datatypes;
+package examples.datatypes;
 
 import java.text.DecimalFormat;
 

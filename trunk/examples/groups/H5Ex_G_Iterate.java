@@ -6,7 +6,7 @@
   This file is intended for use with HDF5 Library verion 1.6
 
  ************************************************************/
-package groups;
+package examples.groups;
 
 import java.util.EnumSet;
 import java.util.HashMap;

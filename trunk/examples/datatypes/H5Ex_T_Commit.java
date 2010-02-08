@@ -11,7 +11,7 @@
 
  ************************************************************/
 
-package datatypes;
+package examples.datatypes;
 
 import java.io.IOException;
 import java.io.ObjectInput;

@@ -11,7 +11,7 @@
 
  ************************************************************/
 
-package datatypes;
+package examples.datatypes;
 
 import java.util.EnumSet;
 import java.util.HashMap;
