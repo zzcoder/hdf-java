@@ -21,23 +21,6 @@ public class TestH5Lbasic {
     private static long H5la_l1 = -1;
     int H5fid = -1;
 
-    private final int _openGroup(int fid, String name) {
-        int gid = -1;
-        try {
-            if (is16)
-                gid = H5.H5Gopen(fid, name);
-            else
-                gid = H5.H5Gopen2(fid, name, HDF5Constants.H5P_DEFAULT);
-        }
-        catch (Throwable err) {
-            gid = -1;
-            err.printStackTrace();
-            fail("H5.H5Gcreate: " + err);
-        }
-
-        return gid;
-    }
-
     @Before
     public void openH5file()
             throws HDF5LibraryException, NullPointerException {

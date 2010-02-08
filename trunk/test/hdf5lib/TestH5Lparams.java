@@ -82,4 +82,19 @@ public class TestH5Lparams {
         H5.H5Ldelete(-1, null, 0);
     }
 
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Lcreate_soft_invalid() throws Throwable, HDF5LibraryException {
+        H5.H5Lcreate_soft( "Bogus", -1, "Bogus", -1, -1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Lcreate_soft_null_current() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Lcreate_soft(null, 0, "Bogus", 0, 0);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Lcreate_soft_null_dest() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Lcreate_soft("Bogus", 0, null, 0, 0);
+    }
+
 }
