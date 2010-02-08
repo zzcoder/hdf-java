@@ -201,7 +201,7 @@ clean-examples:
 clean-test:
 	@if test -d "test/Makefile"; then  cd test; $(MAKE) clean; fi
 
-clean: clean-natives clean-classes clean-test clean-testlink clean-examples
+clean: clean-natives clean-classes clean-test clean-examples
 
 clean-classes:
 	$(FIND) ./ncsa \( -name '#*' -o -name '*~' -o -name '*.class' \) -exec $(RM) -f {} \; ;\
@@ -379,7 +379,7 @@ uninstall-ug:
 	$(RM) -rf $(DOCDIR)/hdfview/UsersGuide/*
 	$(RM) -rf $(DOCDIR)/hdf-object/*
 
-distclean: clean-natives clean-classes clean-test clean-testlink clean-examples
+distclean: clean-natives clean-classes clean-test clean-examples
 	$(RM) -f config.cache config.status config.log 
 	$(RM) -rf ./lib/@JAVATARG@
 	$(RM) -rf ./lib/jhdf.jar
