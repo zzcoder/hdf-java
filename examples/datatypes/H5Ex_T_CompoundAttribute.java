@@ -10,7 +10,7 @@
 
  ************************************************************/
 
-package datatypes;
+package examples.datatypes;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
