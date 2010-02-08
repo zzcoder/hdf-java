@@ -92,6 +92,39 @@ extern "C" {
     
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Ldelete
+     * Signature: (ILjava/lang/String;I)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Ldelete
+      (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint access_id)
+    {
+        char* lName;
+        jboolean isCopy;
+        herr_t status = -1;
+
+        if (name == NULL) {
+            h5nullArgument( env, "H5Ldelete:  name is NULL");
+            return;
+        }
+        
+        lName = (char *)ENVPTR->GetStringUTFChars(ENVPAR name,&isCopy);
+        if (lName == NULL) {
+            h5JNIFatalError( env, "H5Ldelete:  name not pinned");
+            return;
+        }
+        
+        status = H5Ldelete(loc_id, lName, access_id);
+        
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name,lName);
+        
+        if (status < 0) {
+            h5libraryError(env);
+            return;
+        }
+    }
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Lexists
      * Signature: (ILjava/lang/String;I)Z
      */

@@ -18,6 +18,14 @@ extern "C" {
     
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Ldelete
+     * Signature: (ILjava/lang/String;I)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Ldelete
+      (JNIEnv *, jclass, jint, jstring, jint);
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Lexists
      * Signature: (ILjava/lang/String;I)Z
      */
