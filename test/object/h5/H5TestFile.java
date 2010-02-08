@@ -1,7 +1,7 @@
 /**
  * 
  */
-package test.unittests;
+package test.object.h5;
 
 import java.util.Vector;
 import ncsa.hdf.object.*;

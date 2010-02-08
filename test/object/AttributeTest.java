@@ -1,7 +1,7 @@
 /**
  * 
  */
-package test.unittests;
+package test.object;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
@@ -15,6 +15,8 @@ import junit.framework.TestCase;
 
 import java.util.Arrays;
 import java.util.List;
+
+import test.object.h5.H5TestFile;
 
 /**
  * @author Rishi R. Sinha

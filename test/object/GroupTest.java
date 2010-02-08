@@ -1,7 +1,7 @@
 /**
  * 
  */
-package test.unittests;
+package test.object;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
@@ -13,6 +13,8 @@ import ncsa.hdf.object.Group;
 import ncsa.hdf.object.HObject;
 import java.util.Iterator;
 import java.util.List;
+
+import test.object.h5.H5TestFile;
 
 /**
  * @author Rishi R Sinha
