@@ -12,17 +12,17 @@
 # ****************************************************************************/
 
 all:
-	(cd unittests; $(MAKE);)
 	(cd object; $(MAKE);)
 	(cd hdf5lib; $(MAKE);)
+	(cd object/misc; $(MAKE);)
 
 check:
-	(cd unittests; $(MAKE) check;)
 	(cd object; $(MAKE) check;)
 	(cd hdf5lib; $(MAKE) check;)
+	(cd object/misc; $(MAKE);)
 
 clean:
 	(cd object; $(MAKE) clean;)
-	(cd unittests; $(MAKE) clean;)
 	(cd hdf5lib; $(MAKE) clean;)
+	(cd object/misc; $(MAKE);)
 	

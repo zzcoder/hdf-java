@@ -1,7 +1,7 @@
 /**
  * 
  */
-package test.object.h5;
+package test.object;
 
 import java.util.Vector;
 

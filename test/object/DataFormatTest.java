@@ -14,7 +14,7 @@ import ncsa.hdf.object.h5.H5File;
 import junit.framework.TestCase;
 import java.util.List;
 
-import test.object.h5.H5TestFile;
+import test.object.H5TestFile;
 
 /**
  * @author rsinha

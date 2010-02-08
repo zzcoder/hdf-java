@@ -14,7 +14,7 @@ import ncsa.hdf.object.HObject;
 import java.util.Iterator;
 import java.util.List;
 
-import test.object.h5.H5TestFile;
+import test.object.H5TestFile;
 
 /**
  * @author Rishi R Sinha
