@@ -19,7 +19,7 @@ public class H5O_hdr_info_t {
     public int nmesgs;        /* Number of object header messages */
     public int nchunks;       /* Number of object header chunks */
     public int flags;             /* Object header status flags */
-    public struct space{
+    public class space{
         public long total;      /* Total space for storing object header in file */
         public long meta;       /* Space within header for object header metadata information */
         public long mesg;       /* Space within header for actual message information */
