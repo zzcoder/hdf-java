@@ -6704,6 +6704,26 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException;
 
     /**
+     *  H5Lget_name_by_idx retrieves name of the nth link in a group, according to 
+     *  the order within a specified field or index. 
+     *
+     *  @param loc_id     IN: File or group identifier specifying location of subject group
+     *  @param group_name IN: Name of subject group
+     *  @param idx_type   IN: Type of index
+     *  @param order      IN: Order within field or index
+     *  @param n          IN: Link for which to retrieve information 
+     *  @param lapl_id    IN: Link access property list identifier 
+     *
+     *  @return a String for the link name.
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - group_name is null.
+     **/
+    public synchronized static native String H5Lget_name_by_idx(int loc_id, String group_name,
+        int idx_type, int order, long n, int lapl_id)
+    throws HDF5LibraryException, NullPointerException;
+
+    /**
      *  H5Lget_val returns the link value of a symbolic link.
      *
      *  @param loc_id  IN: Identifier of the file or group containing the object.

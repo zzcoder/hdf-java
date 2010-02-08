@@ -47,4 +47,14 @@ public class TestH5Lparams {
         H5.H5Lget_info_by_idx(-1, null, 0, 0, 0, 0);
     }
 
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Lget_name_by_idx_invalid() throws Throwable, HDF5LibraryException {
+        H5.H5Lget_name_by_idx(-1, "Bogus", -1, -1, -1, -1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Lget_name_by_idx_null() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Lget_name_by_idx(-1, null, 0, 0, 0, 0);
+    }
+
 }

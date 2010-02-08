@@ -135,10 +135,10 @@ public class TestH5Lbasic {
         }
         catch (Throwable err) {
             err.printStackTrace();
-            fail("H5.H5Lget_info: " + err);
+            fail("H5.H5Lget_info_by_idx: " + err);
         }
-        assertFalse("H5Lget_info ",link_info==null);
-        assertTrue("H5Lget_info link type",link_info.type==HDF5Constants.H5L_TYPE_HARD);
+        assertFalse("H5Lget_info_by_idx ",link_info==null);
+        assertTrue("H5Lget_info_by_idx link type",link_info.type==HDF5Constants.H5L_TYPE_HARD);
         assertTrue("Link Address ",link_info.address_val_size==H5la_ds1);
     }
 
@@ -150,11 +150,39 @@ public class TestH5Lbasic {
         }
         catch (Throwable err) {
             err.printStackTrace();
-            fail("H5.H5Lget_info: " + err);
+            fail("H5.H5Lget_info_by_idx: " + err);
         }
-        assertFalse("H5Lget_info ",link_info==null);
-        assertTrue("H5Lget_info link type",link_info.type==HDF5Constants.H5L_TYPE_HARD);
+        assertFalse("H5Lget_info_by_idx ",link_info==null);
+        assertTrue("H5Lget_info_by_idx link type",link_info.type==HDF5Constants.H5L_TYPE_HARD);
         assertTrue("Link Address ",link_info.address_val_size==H5la_l1);
+    }
+
+    @Test
+    public void testH5Lget_name_by_idx_n0() throws Throwable, HDF5LibraryException, NullPointerException {
+        String link_name = null;
+        try {
+            link_name = H5.H5Lget_name_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Lget_name_by_idx: " + err);
+        }
+        assertFalse("H5Lget_name_by_idx ",link_name==null);
+        assertTrue("Link Name ",link_name.compareTo("DS1")==0);
+    }
+
+    @Test
+    public void testH5Lget_name_by_idx_n3() throws Throwable, HDF5LibraryException, NullPointerException {
+        String link_name = null;
+        try {
+            link_name = H5.H5Lget_name_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 3, HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Lget_name_by_idx: " + err);
+        }
+        assertFalse("H5Lget_name_by_idx ",link_name==null);
+        assertTrue("Link Name ",link_name.compareTo("L1")==0);
     }
 
 }
