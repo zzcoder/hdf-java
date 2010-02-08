@@ -131,6 +131,60 @@ extern "C" {
         ret_info_t = (*env)->NewObjectA(env, cls, constructor, args);
         return ret_info_t;
     }
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Lget_info_by_idx
+     * Signature: (ILjava/lang/String;IIJI)Lncsa/hdf/hdf5lib/structs/H5L_info_t;
+     */
+    JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lget_1info_1by_1idx
+    (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint index_field, jint order, jlong link_n, jint access_id)
+    {
+        char* lName;
+        jboolean isCopy;
+        herr_t status;
+        H5L_info_t infobuf;
+        jclass cls;
+        jmethodID constructor;
+        jvalue args[5];
+        jobject ret_info_t = NULL;
+
+        if (name == NULL) {
+            h5nullArgument( env, "H5Lget_info:  name is NULL");
+            return NULL;
+        }
+        
+        lName = (char *)ENVPTR->GetStringUTFChars(ENVPAR name,&isCopy);
+        if (lName == NULL) {
+            h5JNIFatalError( env, "H5Lget_info:  name not pinned");
+            return NULL;
+        }
+
+        status = H5Lget_info_by_idx(loc_id, lName, (H5_index_t)index_field, (H5_iter_order_t)order, (hsize_t)link_n, &infobuf, access_id);
+
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name,lName);
+
+        if (status < 0) {
+           h5libraryError(env);
+           return NULL;
+        }
+
+        // get a reference to your class if you don't have it already
+        cls = (*env)->FindClass(env, "ncsa/hdf/hdf5lib/structs/H5L_info_t");
+        // get a reference to the constructor; the name is <init>
+        constructor = (*env)->GetMethodID(env, cls, "<init>", "(IZJIJ)V");
+        args[0].i = infobuf.type;
+        args[1].z = infobuf.corder_valid;
+        args[2].j = infobuf.corder;
+        args[3].i = infobuf.cset;
+        if(infobuf.type==0)
+            args[4].j = infobuf.u.address;
+        else
+            args[4].j = infobuf.u.val_size;
+        ret_info_t = (*env)->NewObjectA(env, cls, constructor, args);
+        return ret_info_t;
+    }
+   
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Lget_val

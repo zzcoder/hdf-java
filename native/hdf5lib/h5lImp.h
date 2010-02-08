@@ -26,6 +26,14 @@ extern "C" {
     
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Lget_info_by_idx
+     * Signature: (ILjava/lang/String;IIJI)Lncsa/hdf/hdf5lib/structs/H5L_info_t;
+     */
+    JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lget_1info_1by_1idx
+      (JNIEnv *, jclass, jint, jstring, jint, jint, jlong, jint);
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Lget_val
      * Signature: (ILjava/lang/String;I)Ljava/lang/String;
      */

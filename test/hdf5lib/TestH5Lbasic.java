@@ -16,6 +16,8 @@ import org.junit.Test;
 public class TestH5Lbasic {
     private static final boolean is16 = H5.isAPI16;
     private static final String H5_FILE = "test/hdf5lib/h5ex_g_iterate.h5";
+    private static long H5la_ds1 = -1;
+    private static long H5la_l1 = -1;
     int H5fid = -1;
 
     private final int _openGroup(int fid, String name) {
@@ -101,7 +103,8 @@ public class TestH5Lbasic {
         }
         assertFalse("H5Lget_info ",link_info==null);
         assertTrue("H5Lget_info link type",link_info.type==HDF5Constants.H5L_TYPE_HARD);
-   }
+        H5la_ds1 = link_info.address_val_size;
+    }
 
     @Test
     public void testH5Lget_info_hardlink() throws Throwable, HDF5LibraryException, NullPointerException {
@@ -116,6 +119,42 @@ public class TestH5Lbasic {
         assertFalse("H5Lget_info ",link_info==null);
         assertTrue("H5Lget_info link type",link_info.type==HDF5Constants.H5L_TYPE_HARD);
         assertTrue("Link Address ",link_info.address_val_size>0);
-   }
+        H5la_l1 = link_info.address_val_size;
+    }
+
+    @Test(expected = HDF5SymbolTableException.class)
+    public void testH5Lget_info_by_idx_not_exist() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Lget_info_by_idx(H5fid, "None", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
+    }
+
+    @Test
+    public void testH5Lget_info_by_idx_n0() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5L_info_t link_info = null;
+        try {
+            link_info = H5.H5Lget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Lget_info: " + err);
+        }
+        assertFalse("H5Lget_info ",link_info==null);
+        assertTrue("H5Lget_info link type",link_info.type==HDF5Constants.H5L_TYPE_HARD);
+        assertTrue("Link Address ",link_info.address_val_size==H5la_ds1);
+    }
+
+    @Test
+    public void testH5Lget_info_by_idx_n3() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5L_info_t link_info = null;
+        try {
+            link_info = H5.H5Lget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 3, HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Lget_info: " + err);
+        }
+        assertFalse("H5Lget_info ",link_info==null);
+        assertTrue("H5Lget_info link type",link_info.type==HDF5Constants.H5L_TYPE_HARD);
+        assertTrue("Link Address ",link_info.address_val_size==H5la_l1);
+    }
 
 }
