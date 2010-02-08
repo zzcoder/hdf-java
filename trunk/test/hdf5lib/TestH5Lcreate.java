@@ -144,4 +144,13 @@ public class TestH5Lcreate {
         H5.H5Lcreate_hard(H5fid, "L1", H5fid, "/G1/DS2", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
     }
 
+    @Test
+    public void testH5Ldelete_hard_link() throws Throwable, HDF5LibraryException, NullPointerException {
+        _createHardLink(H5fid, H5fid, "/G1/DS2", H5fid, "L1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        H5.H5Ldelete(H5fid, "L1", HDF5Constants.H5P_DEFAULT);
+        H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
+        boolean link_exists = H5.H5Lexists(H5fid, "L1", HDF5Constants.H5P_DEFAULT);
+        assertFalse("testH5Lcreate_hard:H5Lexists ",link_exists);
+    }
+
 }

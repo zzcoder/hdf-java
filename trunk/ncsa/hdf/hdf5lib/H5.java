@@ -6672,6 +6672,21 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException;
 
     /**
+     *  H5Ldelete removes the link specified from a group. 
+     *
+     *  @param loc_id  IN: Identifier of the file or group containing the object.
+     *  @param name    IN: Name of the link to delete.
+     *  @param lapl_id IN: Link access property list identifier
+     *
+     *  @return none
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - name is null.
+     **/
+    public synchronized static native void H5Ldelete(int loc_id, String name, int lapl_id)
+    throws HDF5LibraryException, NullPointerException;
+
+    /**
      *  H5Lexists checks if a link with a particular name exists in a group. 
      *
      *  @param loc_id  IN: Identifier of the file or group to query. 
