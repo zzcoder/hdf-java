@@ -15,7 +15,7 @@
 JAVAC           = @JAVAC@
 RM           = @RM@
 
-CLASSPATH=@CLASSPATH@:/home/abyrne/HDF_Projects/HDFJava-J-1.8API/lib/junit4.jar
+CLASSPATH=@CLASSPATH@:"$HDFVIEW_HOME"/lib/junit4.jar
 
 .SUFFIXES: .java .class
 
