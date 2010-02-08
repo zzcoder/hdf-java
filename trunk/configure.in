@@ -798,7 +798,7 @@ if test -d "./test"; then
 ##
 ##  Everything
 ##
-OUTPUT_FILES="$OUTPUT_FILES native/hdf5lib/Makefile test/Makefile test/object/testh4file.sh test/object/testh5file.sh test/object/Makefile test/object/runtests.sh examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile"
+OUTPUT_FILES="$OUTPUT_FILES native/hdf5lib/Makefile test/Makefile test/object/misc/testh4file.sh test/object/misc/testh5file.sh test/object/misc/Makefile test/object/misc/runtests.sh examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile"
 else
 ##
 ##  H4, H5, H45, but NO tests
@@ -808,7 +808,7 @@ fi
 else
 if test -d "./test"; then
 ##  Don't use H4toH5 (but do include some tests)
-OUTPUT_FILES="$OUTPUT_FILES test/Makefile test/object/Makefile test/object/testh4file.sh test/object/testh5file.sh test/object/runtests.sh test/object/TestH5Object.sh test/object/TestH5Table.sh test/object/TestH5MemoryLeak.sh test/unittests/Makefile test/unittests/unittests.sh examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile examples/runExample.sh"
+OUTPUT_FILES="$OUTPUT_FILES test/Makefile test/object/misc/Makefile test/object/misc/testh4file.sh test/object/misc/testh5file.sh test/object/misc/runtests.sh test/object/misc/TestH5Object.sh test/object/misc/TestH5Table.sh test/object/misc/TestH5MemoryLeak.sh test/object/Makefile test/object/unittests.sh examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile examples/runExample.sh"
 else
 ##  Don't use H4toH5 (no tests)
 OUTPUT_FILES="$OUTPUT_FILES"
@@ -818,10 +818,10 @@ fi
 AC_OUTPUT($OUTPUT_FILES)
 
 if test -d "./test"; then
-chmod +x test/object/TestH5Object.sh
-chmod +x test/object/TestH5Table.sh
-chmod +x test/object/TestH5MemoryLeak.sh
-chmod +x test/unittests/unittests.sh
+chmod +x test/object/misc/TestH5Object.sh
+chmod +x test/object/misc/TestH5Table.sh
+chmod +x test/object/misc/TestH5MemoryLeak.sh
+chmod +x test/object/unittests.sh
 fi
 
 
