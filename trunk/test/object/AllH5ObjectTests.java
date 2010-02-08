@@ -1,8 +1,15 @@
 /**
  * 
  */
-package test.unittests;
+package test.object;
 
+import test.object.h5.H5BugFixTest;
+import test.object.h5.H5CompoundDSTest;
+import test.object.h5.H5DatatypeTest;
+import test.object.h5.H5FileTest;
+import test.object.h5.H5GroupTest;
+import test.object.h5.H5ScalarDSTest;
+import test.object.h5.H5TestFile;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 

@@ -1,9 +1,11 @@
 /**
  * 
  */
-package test.unittests;
+package test.object;
 
 import java.util.Enumeration;
+
+import test.object.h5.H5TestFile;
 
 import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;

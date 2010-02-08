@@ -1,7 +1,7 @@
 /**
  * 
  */
-package test.unittests;
+package test.object;
 
 import junit.framework.TestCase;
 import ncsa.hdf.object.Datatype;
