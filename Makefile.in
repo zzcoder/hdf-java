@@ -69,7 +69,7 @@ JHI5DISTFILES= ./native/hdf5lib/Makefile.in \
 
 EXAMPLESFILES=./examples/*.in ./examples/intro/*.java ./examples/intro/*.in ./examples/groups/*.java ./examples/groups/*.in ./examples/groups/*.h5 ./examples/datasets/*.java ./examples/datasets/*.in ./examples/datatypes/*.java ./examples/datatypes/*.in ./examples/testfiles/*.txt
 
-TESTFILES=./test/Makefile.in ./test/object/*.java ./test/object/*.in ./test/linktest/Makefile.in ./test/linktest/testh4link.in ./test/linktest/testlink.in ./test/linktest/*.java ./test/h5/*.java ./test/h5/*.in ./test/h5/*.h5 ./test/unittests/*.in ./test/unittests/*.java 
+TESTFILES=./test/Makefile.in ./test/object/*.java ./test/object/*.in ./test/unittests/*.in ./test/unittests/*.java 
 
 DOCFILES=./docs/*.html ./docs/*.gif ./docs/*.js ./docs/hdfview/*.html ./docs/hdfview/*.gif ./docs/hdfview/ModularGuide/*.html ./docs/hdfview/ModularGuide/*.gif ./docs/hdfview/UsersGuide/images/*.gif ./docs/hdfview/UsersGuide/images/*.jpg ./docs/hdfview/UsersGuide/*.html
 
@@ -189,9 +189,6 @@ javadocs:
 	$(JAVADOC) -sourcepath $(CLASSPATH) -d ./docs/javadocs $(JAVADOC_FLAGS) ncsa.hdf.hdflib $(JHI5PACKAGES) $(HDFOBJPACKAGES) $(H4OBJPACKAGES) $(H5OBJPACKAGES) ; \
 	fi
 
-linktest:
-	@if test -d "test/linktest"; then cd test/linktest; $(MAKE); fi
-
 tests:
 	@if test -d "test"; then cd test; $(MAKE); fi
 
@@ -203,9 +200,6 @@ clean-examples:
 
 clean-test:
 	@if test -d "test/Makefile"; then  cd test; $(MAKE) clean; fi
-
-clean-testlink:
-	@if test -d "test/testlink/Makefile"; then  cd test/linktest; $(MAKE) clean; fi
 
 clean: clean-natives clean-classes clean-test clean-testlink clean-examples
 
@@ -246,12 +240,6 @@ check: install $(TESTPACKAGES)
 	$(MAKE) check;
 	cd examples; \
 	$(MAKE) check;
-
-checklink: install linktest
-	cd test/linktest; \
-	linktest; \
-	linkh4test; \
-
 
 install: install-lib install-jhdf install-jhdf5 install-jhdfobj install-jhdfview
 	@echo "Install complete"
@@ -406,9 +394,6 @@ distclean: clean-natives clean-classes clean-test clean-testlink clean-examples
 	$(RM) -rf ./test/Makefile
 	$(RM) -rf ./test/object/Makefile
 	$(RM) -rf ./test/object/*.sh
-	$(RM) -rf ./test/linktest/Makefile
-	$(RM) -rf ./test/linktest/testh4link
-	$(RM) -rf ./test/linktest/testlink
 	$(RM) -rf ./examples/Makefile
 	$(RM) -rf ./examples/intro/Makefile
 	$(RM) -rf ./examples/groups/Makefile
@@ -825,8 +810,6 @@ JAVASRCS= \
 ./ncsa/hdf/view/PaletteView.java \
 ./test/object/TestH4File.java \
 ./test/object/TestH5File.java \
-./test/linktest/TestHDF4Link.java \
-./test/linktest/TestHDF5Link.java \
 ./ncsa/hdf/object/nc2/*.java \
 ./ncsa/hdf/object/fits/*.java \
 ./ext/npoess/*.java \
