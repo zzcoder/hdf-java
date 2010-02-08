@@ -92,6 +92,55 @@ extern "C" {
     
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Lcreate_soft
+     * Signature: (Ljava/lang/String;ILjava/lang/String;II)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lcreate_1soft
+      (JNIEnv *env, jclass clss, jstring cur_name, jint dst_loc_id, jstring dst_name, jint create_id, jint access_id)
+    {
+        herr_t status = -1;
+        char* lCurName;
+        char* lDstName;
+        jboolean isCopy;
+        
+        if (cur_name == NULL) {
+            h5nullArgument( env, "H5Lcreate_soft:  cur_name is NULL");
+            return;
+        }
+        
+        lCurName = (char *)ENVPTR->GetStringUTFChars(ENVPAR cur_name,&isCopy);
+        if (lCurName == NULL) {
+            h5JNIFatalError( env, "H5Lcreate_soft:  cur_name not pinned");
+            return;
+        }
+        
+        if (dst_name == NULL) {
+            h5nullArgument( env, "H5Lcreate_soft:  dst_name is NULL");
+            return;
+        }
+        
+        lDstName = (char *)ENVPTR->GetStringUTFChars(ENVPAR dst_name,&isCopy);
+        if (lDstName == NULL) {
+            ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name,lCurName);
+            h5JNIFatalError( env, "H5Lcreate_soft:  dst_name not pinned");
+            return;
+        }
+
+        status = H5Lcreate_soft(lCurName, dst_loc_id, lDstName, create_id, access_id);
+
+        ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name,lCurName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR dst_name,lDstName);
+        
+        if (status < 0) {
+           h5libraryError(env);
+           return;
+        }
+        
+        return;
+    }
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Ldelete
      * Signature: (ILjava/lang/String;I)V
      */

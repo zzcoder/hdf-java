@@ -6672,6 +6672,24 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException;
 
     /**
+     *  H5Lcreate_soft creates a new soft link to an object in an HDF5 file.
+     *
+     *  @param link_target IN: Path to the target object, which is not required to exist.
+     *  @param link_loc_id IN: The file or group identifier for the new link.
+     *  @param link_name   IN: The name of the new link.
+     *  @param lcpl_id     IN: Link creation property list identifier
+     *  @param lapl_id     IN: Link access property list identifier
+     *
+     *  @return none
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - link_name is null.
+     **/
+    public synchronized static native void H5Lcreate_soft(String link_target, int link_loc_id,
+        String link_name, int lcpl_id, int lapl_id)
+    throws HDF5LibraryException, NullPointerException;
+
+    /**
      *  H5Ldelete removes the link specified from a group. 
      *
      *  @param loc_id  IN: Identifier of the file or group containing the object.

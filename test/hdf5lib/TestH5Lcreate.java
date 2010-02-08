@@ -91,6 +91,20 @@ public class TestH5Lcreate {
         assertTrue("TestH5L._createHardLink ", link_exists);
     }
 
+    private final void _createSoftLink(int fid, String curname, int did, String dstname, int dcpl, int dapl) {
+        boolean link_exists = false;
+        try {
+            H5.H5Lcreate_soft(curname, did, dstname, dcpl, dapl);
+            H5.H5Fflush(fid, HDF5Constants.H5F_SCOPE_LOCAL);
+            link_exists = H5.H5Lexists(did, dstname, dapl);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Lcreate_soft: " + err);
+        }
+        assertTrue("TestH5L._createSoftLink ", link_exists);
+    }
+
     @Before
     public void createH5file()
             throws NullPointerException, HDF5Exception {
@@ -151,6 +165,78 @@ public class TestH5Lcreate {
         H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
         boolean link_exists = H5.H5Lexists(H5fid, "L1", HDF5Constants.H5P_DEFAULT);
         assertFalse("testH5Lcreate_hard:H5Lexists ",link_exists);
+    }
+
+    @Test
+    public void testH5Lcreate_soft() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Lcreate_soft("DS1", H5fid, "L1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
+        boolean link_exists = H5.H5Lexists(H5fid, "L1", HDF5Constants.H5P_DEFAULT);
+        assertTrue("testH5Lcreate_soft:H5Lexists ",link_exists);
+    }
+
+    @Test(expected = HDF5SymbolTableException.class)
+    public void testH5Lcreate_soft_dst_link_exists() throws Throwable, HDF5LibraryException, NullPointerException {
+        _createSoftLink(H5fid, "/G1/DS2", H5fid, "L1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        H5.H5Lcreate_soft("L1", H5fid, "/G1/DS2", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+    }
+
+    @Test
+    public void testH5Ldelete_soft_link() throws Throwable, HDF5LibraryException, NullPointerException {
+        _createSoftLink(H5fid, "/G1/DS2", H5fid, "L1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        H5.H5Ldelete(H5fid, "L1", HDF5Constants.H5P_DEFAULT);
+        H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
+        boolean link_exists = H5.H5Lexists(H5fid, "L1", HDF5Constants.H5P_DEFAULT);
+        assertFalse("testH5Lcreate_soft:H5Lexists ",link_exists);
+    }
+
+    @Test
+    public void testH5Lget_info_softlink() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5L_info_t link_info = null;
+        _createSoftLink(H5fid, "/G1/DS2", H5fid, "L1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        try {
+            link_info = H5.H5Lget_info(H5fid, "L1", HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Lget_info: " + err);
+        }
+        assertFalse("H5Lget_info ",link_info==null);
+        assertTrue("H5Lget_info link type",link_info.type==HDF5Constants.H5L_TYPE_SOFT);
+        assertTrue("Link Address ",link_info.address_val_size>0);
+    }
+
+    @Test
+    public void testH5Lcreate_soft_dangle() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Lcreate_soft("DS3", H5fid, "L2", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
+        boolean link_exists = H5.H5Lexists(H5fid, "L2", HDF5Constants.H5P_DEFAULT);
+        assertTrue("testH5Lcreate_soft:H5Lexists ",link_exists);
+    }
+
+    @Test
+    public void testH5Ldelete_soft_link_dangle() throws Throwable, HDF5LibraryException, NullPointerException {
+        _createSoftLink(H5fid, "DS3", H5fid, "L2", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        H5.H5Ldelete(H5fid, "L2", HDF5Constants.H5P_DEFAULT);
+        H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
+        boolean link_exists = H5.H5Lexists(H5fid, "L2", HDF5Constants.H5P_DEFAULT);
+        assertFalse("testH5Lcreate_soft:H5Lexists ",link_exists);
+    }
+
+    @Test
+    public void testH5Lget_info_softlink_dangle() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5L_info_t link_info = null;
+        _createSoftLink(H5fid, "DS3", H5fid, "L2", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        try {
+            link_info = H5.H5Lget_info(H5fid, "L2", HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Lget_info: " + err);
+        }
+        assertFalse("H5Lget_info ",link_info==null);
+        assertTrue("H5Lget_info link type",link_info.type==HDF5Constants.H5L_TYPE_SOFT);
+        assertTrue("Link Address ",link_info.address_val_size>0);
     }
 
 }

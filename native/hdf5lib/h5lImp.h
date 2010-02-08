@@ -18,6 +18,14 @@ extern "C" {
     
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Lcreate_soft
+     * Signature: (Ljava/lang/String;ILjava/lang/String;II)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lcreate_1soft
+      (JNIEnv *, jclass, jstring, jint, jstring, jint, jint);
+  
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Ldelete
      * Signature: (ILjava/lang/String;I)V
      */
