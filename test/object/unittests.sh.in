@@ -69,7 +69,7 @@ case  $os_name in
         ;;
 esac
 
-(cd ../..; $JAVAPATH/java -Xmx1024M -Djava.library.path=$HDFVIEW_HOME"/lib/"$OS_NAME test.unittests.AllH5ObjectTests)
+(cd ../..; $JAVAPATH/java -Xmx1024M -Djava.library.path=$HDFVIEW_HOME"/lib/"$OS_NAME test.object.AllH5ObjectTests)
 
 
 

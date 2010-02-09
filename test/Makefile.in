@@ -19,10 +19,10 @@ all:
 check:
 	(cd object; $(MAKE) check;)
 	(cd hdf5lib; $(MAKE) check;)
-	(cd object/misc; $(MAKE);)
+	(cd object/misc; $(MAKE); check)
 
 clean:
 	(cd object; $(MAKE) clean;)
 	(cd hdf5lib; $(MAKE) clean;)
-	(cd object/misc; $(MAKE);)
+	(cd object/misc; $(MAKE); clean)
 	
