@@ -28,6 +28,7 @@ extern "C" {
  */
 
 #include <jni.h>
+#include <stdlib.h>
 #include "hdf5.h"
 #include "h5jni.h"
 #include "h5eImp.h"
