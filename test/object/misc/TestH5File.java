@@ -10,7 +10,7 @@
  *                                                                          *
  ****************************************************************************/
 
-package test.object.h5.misc;
+package test.object.misc;
 
 import javax.swing.tree.*;
 import java.util.*;
