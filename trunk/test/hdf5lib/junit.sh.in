@@ -15,7 +15,7 @@ export JAVAPATH
 ###############################################################################
 
 
-CPATH=".:"$HDFVIEW_HOME"/lib/jhdf5.jar:"$HDFVIEW_HOME"/lib/jhdfobj.jar:"$HDFVIEW_HOME"/lib/jhdf5obj.jar:"$HDFVIEW_HOME"/lib/junit4.jar"
+CPATH=".:"$HDFVIEW_HOME"/lib/jhdf5.jar:"$HDFVIEW_HOME"/lib/jhdfobj.jar:"$HDFVIEW_HOME"/lib/jhdf5obj.jar:"$HDFVIEW_HOME"/lib/junit.jar"
 
 TEST=/usr/bin/test
 if [ ! -x /usr/bin/test ]

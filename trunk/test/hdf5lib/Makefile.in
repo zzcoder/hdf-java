@@ -15,7 +15,7 @@
 JAVAC           = @JAVAC@
 RM           = @RM@
 
-CLASSPATH=@CLASSPATH@:"$HDFVIEW_HOME"/lib/junit4.jar
+CLASSPATH=@CLASSPATH@:@JH45INST@/../lib/junit.jar
 
 .SUFFIXES: .java .class
 
@@ -46,7 +46,7 @@ all:    TestH5.class \
 
 
 check: all
-	chmod u+x junit.sh; # ./junit.sh
+	chmod u+x junit.sh; ./junit.sh
 
 clean:
 	$(RM) *.class

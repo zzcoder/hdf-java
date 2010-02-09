@@ -69,9 +69,13 @@ JHI5DISTFILES= ./native/hdf5lib/Makefile.in \
 
 EXAMPLESFILES=./examples/*.in ./examples/intro/*.java ./examples/intro/*.in ./examples/groups/*.java ./examples/groups/*.in ./examples/groups/*.h5 ./examples/datasets/*.java ./examples/datasets/*.in ./examples/datatypes/*.java ./examples/datatypes/*.in ./examples/testfiles/*.txt
 
-TESTFILES=./test/Makefile.in ./test/object/misc/*.java ./test/object/misc/*.in ./test/object/*.in ./test/object/*.java 
+TESTFILES=./test/Makefile.in ./test/object/misc/*.java ./test/object/misc/*.in \
+          ./test/object/*.in ./test/object/*.java ./test/hdf5lib/*.in ./test/hd5lib/*.java
 
-DOCFILES=./docs/*.html ./docs/*.gif ./docs/*.js ./docs/hdfview/*.html ./docs/hdfview/*.gif ./docs/hdfview/ModularGuide/*.html ./docs/hdfview/ModularGuide/*.gif ./docs/hdfview/UsersGuide/images/*.gif ./docs/hdfview/UsersGuide/images/*.jpg ./docs/hdfview/UsersGuide/*.html
+DOCFILES=./docs/*.html ./docs/*.gif ./docs/*.js ./docs/hdfview/*.html \
+         ./docs/hdfview/*.gif ./docs/hdfview/ModularGuide/*.html \
+         ./docs/hdfview/ModularGuide/*.gif ./docs/hdfview/UsersGuide/images/*.gif \
+         ./docs/hdfview/UsersGuide/images/*.jpg ./docs/hdfview/UsersGuide/*.html
 
 WINDOWSFILES=./windows/hdfview.bat ./windows/copy_hdf.bat ./windows/javabuild.bat  \
 	./windows/javacheck.bat ./windows/javainstall.bat ./windows/jnibuild.bat \
@@ -392,6 +396,8 @@ distclean: clean-natives clean-classes clean-test clean-examples
 	$(RM) -rf ./native/hdflib/Makefile
 	$(RM) -rf ./native/hdf5lib/Makefile
 	$(RM) -rf ./test/Makefile
+	$(RM) -rf ./test/hdf5lib/Makefile
+	$(RM) -rf ./test/hdf5lib/*.sh
 	$(RM) -rf ./test/object/misc/Makefile
 	$(RM) -rf ./test/object/misc/*.sh
 	$(RM) -rf ./examples/Makefile
@@ -526,8 +532,8 @@ ext.npoess:	ext/npoess/DataOptionNPOESS.class \
 #
 # The test files are not included in the preliminary source release
 #
-test.object: test/object/TestH4File.class \
-	test/object/TestH5File.class
+test.object: test/object/misc/TestH4File.class \
+	test/object/misc/TestH5File.class
 
 #
 #  The Hdfviewer
@@ -808,8 +814,8 @@ JAVASRCS= \
 ./ncsa/hdf/view/MetaDataView.java \
 ./ncsa/hdf/view/HelpView.java \
 ./ncsa/hdf/view/PaletteView.java \
-./test/object/TestH4File.java \
-./test/object/TestH5File.java \
+./test/object/misc/TestH4File.java \
+./test/object/misc/TestH5File.java \
 ./ncsa/hdf/object/nc2/*.java \
 ./ncsa/hdf/object/fits/*.java \
 ./ext/npoess/*.java \
