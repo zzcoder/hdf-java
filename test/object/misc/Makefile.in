@@ -36,6 +36,8 @@ runtests: all
 check: all
 #	./runtests.sh
 	./TestH5Object.sh
+
+check-memory-leak:
 	./TestH5MemoryLeak.sh
 
 clean:

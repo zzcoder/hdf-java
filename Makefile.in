@@ -244,6 +244,7 @@ check: install $(TESTPACKAGES)
 	$(MAKE) check;
 	cd examples; \
 	$(MAKE) check;
+	cd test/object/misc; $(MAKE) check-memory-leak;
 
 install: install-lib install-jhdf install-jhdf5 install-jhdfobj install-jhdfview
 	@echo "Install complete"
