@@ -71,7 +71,7 @@ case  $os_name in
 esac
 
 $JAVAPATH/javac TestH5Table".java"
-(cd ../..; $JAVAPATH/java -Xmx1024M -Djava.library.path=$HDFVIEW_HOME"/lib/"$OS_NAME test.object.TestH5Table $*)
+(cd ../../..; $JAVAPATH/java -Xmx1024M -Djava.library.path=$HDFVIEW_HOME"/lib/"$OS_NAME test.object.misc.TestH5Table $*)
 
 
 
