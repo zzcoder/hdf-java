@@ -317,9 +317,9 @@ extern "C" {
         }
 
         // get a reference to your class if you don't have it already
-        cls = (*env)->FindClass(env, "ncsa/hdf/hdf5lib/structs/H5L_info_t");
+        cls = ENVPTR->FindClass(ENVPAR "ncsa/hdf/hdf5lib/structs/H5L_info_t");
         // get a reference to the constructor; the name is <init>
-        constructor = (*env)->GetMethodID(env, cls, "<init>", "(IZJIJ)V");
+        constructor = ENVPTR->GetMethodID(ENVPAR cls, "<init>", "(IZJIJ)V");
         args[0].i = infobuf.type;
         args[1].z = infobuf.corder_valid;
         args[2].j = infobuf.corder;
@@ -328,7 +328,7 @@ extern "C" {
             args[4].j = infobuf.u.address;
         else
             args[4].j = infobuf.u.val_size;
-        ret_info_t = (*env)->NewObjectA(env, cls, constructor, args);
+        ret_info_t = ENVPTR->NewObjectA(ENVPAR cls, constructor, args);
         return ret_info_t;
     }
     
@@ -370,9 +370,9 @@ extern "C" {
         }
 
         // get a reference to your class if you don't have it already
-        cls = (*env)->FindClass(env, "ncsa/hdf/hdf5lib/structs/H5L_info_t");
+        cls = ENVPTR->FindClass(ENVPAR "ncsa/hdf/hdf5lib/structs/H5L_info_t");
         // get a reference to the constructor; the name is <init>
-        constructor = (*env)->GetMethodID(env, cls, "<init>", "(IZJIJ)V");
+        constructor = ENVPTR->GetMethodID(ENVPAR cls, "<init>", "(IZJIJ)V");
         args[0].i = infobuf.type;
         args[1].z = infobuf.corder_valid;
         args[2].j = infobuf.corder;
@@ -381,7 +381,7 @@ extern "C" {
             args[4].j = infobuf.u.address;
         else
             args[4].j = infobuf.u.val_size;
-        ret_info_t = (*env)->NewObjectA(env, cls, constructor, args);
+        ret_info_t = ENVPTR->NewObjectA(ENVPAR cls, constructor, args);
         return ret_info_t;
     }
     
