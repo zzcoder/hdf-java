@@ -38,8 +38,8 @@ public class TestH5Lcreate {
             try {
                 file.delete();
             }
-            catch (SecurityException e) {
-                ;// e.printStackTrace();
+            catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -146,8 +146,12 @@ public class TestH5Lcreate {
     public void deleteH5file() throws HDF5LibraryException {
         if (H5gid > 0) 
             H5.H5Gclose(H5gid);
+        if (H5did2 > 0) 
+            H5.H5Dclose(H5did2);
         if (H5dsid > 0) 
             H5.H5Sclose(H5dsid);
+        if (H5did1 > 0) 
+            H5.H5Dclose(H5did1);
         if (H5fid > 0) 
             H5.H5Fclose(H5fid);
 
