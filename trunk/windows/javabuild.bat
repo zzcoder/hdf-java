@@ -138,7 +138,7 @@ rem Build the HDF Java Sources.
     if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\test\object\*.java
     if %errorlevel% neq 0 exit /b
-    %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\test\unittests\*.java
+    %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\test\object\misc\*.java
     if %errorlevel% neq 0 exit /b
     echo.Building Java Sources Successful
 
