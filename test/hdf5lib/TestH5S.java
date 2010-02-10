@@ -7,7 +7,6 @@ package test.hdf5lib;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
@@ -15,7 +14,6 @@ import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestH5S {
@@ -27,6 +25,8 @@ public class TestH5S {
     @Before
     public void createH5file()
             throws NullPointerException, HDF5Exception {
+        assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
+
         H5sid = H5.H5Screate_simple(H5rank, H5dims, H5maxdims);
         assertTrue("H5.H5Screate_simple_extent",H5sid > 0);
     }

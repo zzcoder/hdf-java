@@ -49,6 +49,8 @@ public class TestH5F {
     @Before
     public void createH5file()
             throws HDF5LibraryException, NullPointerException {
+        assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
+
         H5fid = H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_TRUNC,
                 HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
         H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
@@ -106,6 +108,7 @@ public class TestH5F {
             fail("H5.H5Fget_create_plist: " + err);
         }
         assertTrue(plist > 0);
+        try {H5.H5Pclose(plist);} catch (HDF5LibraryException e) {e.printStackTrace();}
     }
 
     @Test(expected = HDF5LibraryException.class)
@@ -141,6 +144,7 @@ public class TestH5F {
             fail("H5.H5Fget_access_plist: " + err);
         }
         assertTrue(plist > 0);
+        try {H5.H5Pclose(plist);} catch (HDF5LibraryException e) {e.printStackTrace();}
     }
 
     @Test(expected = HDF5LibraryException.class)

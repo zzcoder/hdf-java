@@ -1,15 +1,18 @@
 package test.hdf5lib;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import ncsa.hdf.hdf5lib.H5;
-import ncsa.hdf.hdf5lib.HDF5Constants;
-import ncsa.hdf.hdf5lib.exceptions.HDF5FunctionArgumentException;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestH5Dparams {
+
+    @Before
+    public void checkOpenIDs() {
+        assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
+    }
 
     @Test(expected = HDF5LibraryException.class)
     public void testH5Dclose_invalid() throws Throwable, HDF5LibraryException {

@@ -8,13 +8,14 @@ import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestH5Edefault {
 
     @Before
     public void H5Eset_default_stack() {
+        assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
+
         try {
             H5.H5Eset_current_stack(HDF5Constants.H5E_DEFAULT);
         }

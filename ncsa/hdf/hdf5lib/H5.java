@@ -3360,7 +3360,7 @@ public class H5 {
     public static int H5Screate(int type) throws HDF5LibraryException {
         int id = _H5Screate(type);
         if (id > 0)
-            OPEN_IDS.addElement(type);
+            OPEN_IDS.addElement(id);
         return id;
     }
 
@@ -3634,7 +3634,7 @@ public class H5 {
         ByteBuffer maxsbb = ByteBuffer.wrap(maximum_size);
         long[] lamaxs = (maxsbb.asLongBuffer()).array();
 
-        return H5Sset_extent_simple(space_id, rank, current_size, maximum_size);
+        return H5Sset_extent_simple(space_id, rank, lacs, lamaxs);
     }
 
     /**
@@ -3761,12 +3761,12 @@ public class H5 {
         ByteBuffer blockbb = ByteBuffer.wrap(block);
         long[] lablock = (blockbb.asLongBuffer()).array();
 
-        return H5Sselect_hyperslab(space_id, op, start, stride, count, block);
+        return H5Sselect_hyperslab(space_id, op, lastart, lastride, lacount, lablock);
     }
 
     public synchronized static native int H5Sselect_hyperslab(int space_id, int op,
             long[] start, long[] stride, long[] count, long[] block)
-            throws HDF5Exception, NullPointerException,
+            throws HDF5LibraryException, NullPointerException,
             IllegalArgumentException;
 
     /**

@@ -1,6 +1,7 @@
 package test.hdf5lib;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -10,9 +11,16 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestH5Fparams {
+
+    @Before
+    public void checkOpenIDs() {
+        assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
+    }
+
     @Test(expected = NullPointerException.class)
     public void testH5Fcreate_null() throws Throwable, NullPointerException {
         H5.H5Fcreate(null, HDF5Constants.H5F_ACC_TRUNC,
