@@ -13,7 +13,6 @@ import ncsa.hdf.hdf5lib.structs.H5G_info_t;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestH5G {
@@ -74,6 +73,8 @@ public class TestH5G {
     @Before
     public void createH5file()
             throws HDF5LibraryException, NullPointerException {
+        assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
+
         H5fid = H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_TRUNC,
                 HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 

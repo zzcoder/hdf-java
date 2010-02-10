@@ -1,15 +1,15 @@
 package test.hdf5lib;
 
-import java.io.File;
-
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
+
 import ncsa.hdf.hdf5lib.H5;
+import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 import ncsa.hdf.hdf5lib.structs.H5G_info_t;
-import ncsa.hdf.hdf5lib.HDF5Constants;
 
 import org.junit.After;
 import org.junit.Before;
@@ -53,6 +53,8 @@ public class TestH5Gbasic {
     @Before
     public void createH5file()
             throws HDF5LibraryException, NullPointerException {
+        assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
+
         H5fid = H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_TRUNC,
                 HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
         H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);

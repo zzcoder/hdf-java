@@ -10,9 +10,15 @@ import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.exceptions.HDF5FunctionArgumentException;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestH5Sbasic {
+
+    @Before
+    public void checkOpenIDs() {
+        assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
+    }
 
     @Test(expected = HDF5LibraryException.class)
     public void testH5Sclose_invalid() throws Throwable, HDF5LibraryException {
@@ -47,7 +53,7 @@ public class TestH5Sbasic {
         class_type = H5.H5Sget_simple_extent_type(sid);
         assertTrue("H5.H5Screate_scalar: type",class_type == HDF5Constants.H5S_SCALAR);
 
-        try {H5.H5Sclose(sid);} catch (Exception ex) {}
+        try {H5.H5Sclose(sid);} catch (Exception ex) {ex.printStackTrace();}
     }
 
     @Test

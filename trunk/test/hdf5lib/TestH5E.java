@@ -20,6 +20,8 @@ public class TestH5E {
 
     @Before
     public void H5Eget_stack_class() {
+        assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
+
         hdf_java_classid = -1;
         try {
             hdf_java_classid = H5.H5Eregister_class("HDF-Java-Error",

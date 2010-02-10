@@ -1,12 +1,18 @@
 package test.hdf5lib;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import ncsa.hdf.hdf5lib.H5;
-import ncsa.hdf.hdf5lib.HDF5Constants;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestH5Eregister {
+
+    @Before
+    public void checkOpenIDs() {
+        assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
+    }
 
     @Test(expected = NullPointerException.class)
     public void testH5Eregister_class_cls_name_null()

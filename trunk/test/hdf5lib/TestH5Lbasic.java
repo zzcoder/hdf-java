@@ -6,7 +6,6 @@ import static org.junit.Assert.fail;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
-import ncsa.hdf.hdf5lib.exceptions.HDF5MetaDataCacheException;
 import ncsa.hdf.hdf5lib.exceptions.HDF5SymbolTableException;
 import ncsa.hdf.hdf5lib.structs.H5L_info_t;
 
@@ -24,6 +23,8 @@ public class TestH5Lbasic {
     @Before
     public void openH5file()
             throws HDF5LibraryException, NullPointerException {
+        assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
+
         try {
             H5fid = H5.H5Fopen(H5_FILE, HDF5Constants.H5F_ACC_RDONLY,
                 HDF5Constants.H5P_DEFAULT);

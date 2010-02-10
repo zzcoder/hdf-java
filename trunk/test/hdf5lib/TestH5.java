@@ -9,8 +9,6 @@ import static org.junit.Assert.fail;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
