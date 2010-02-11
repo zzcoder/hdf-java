@@ -13,7 +13,7 @@
 
 /*
  *  This code is the C-interface called by Java programs to access the
- *  Group Object API Functions of the HDF5 library.
+ *  Link Object API Functions of the HDF5 library.
  *
  *  Each routine wraps a single HDF entry point, generally with the
  *  analogous arguments and return codes.
