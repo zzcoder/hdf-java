@@ -10,11 +10,11 @@
 #   set path=%path";"C:\Program Files\Microsoft Visual Studio 8\VC\bin"
 #
 
-JAVAHOME=D:\Java\jdk1.6.0_16
-HDF5INC=G:\HDF\lib\hdf5184\include
-HDF5LIB=G:\HDF\lib\hdf5184\lib\hdf5.lib
-SZLIB=G:\HDF\lib_external\szip20-win-xpnet-enc\lib\szlib.lib
-ZLIB=G:\HDF\lib_external\zlib-121-windows\lib\zlib.lib
+JAVAHOME="C:\Program Files\Java\jdk1.6.0_18"
+HDF5INC=C:\hdf\hdf5\include
+HDF5LIB=C:\hdf\hdf5\lib\hdf5.lib
+SZLIB=C:\hdf\szip\lib\szlib.lib
+ZLIB=C:\hdf\zlib\lib\zlib.lib
 
 #####################################################################
 #      Do not change below this line unless you know what you do    #
@@ -24,7 +24,7 @@ CC=cl.exe
 LINKER = link.exe
 
 CFLAGS = \
-/I $(HDF5INC) /I $(JAVAHOME)"\include" /I $(JAVAHOME)"\include\win32" \
+/I $(HDF5INC) /I $(JAVAHOME)\include /I $(JAVAHOME)\include\win32 \
 /D "_MBCS" /U "__cplusplus" \
 /D "_CRT_SECURE_NO_WARNINGS" /D "_LARGEFILE_SOURCE" \
 /nologo /W3 /EHsc /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /FD /c /TP \
