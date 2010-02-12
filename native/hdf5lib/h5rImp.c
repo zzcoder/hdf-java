@@ -285,6 +285,64 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type2
     return (jint)status;
 }
 
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Rget_name
+ * Signature: (II[B[Ljava/lang/String;J)J
+ */
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1name
+  (JNIEnv *env, jclass clss, jint loc_id, jint ref_type, jbyteArray ref, jobjectArray name, jlong size)
+{
+	jlong ret_val = -1;
+    jbyte *refP;
+	jboolean isCopy;
+	char *aName=NULL;
+    jstring str;
+    size_t bs;
+
+    bs = (long)size;
+    if (bs <= 0) {
+        h5badArgument( env, "H5Rget_name:  size <= 0");
+        return -1;
+    }
+
+	if (ref == NULL) {
+        h5nullArgument( env, "H5Rget_name:  ref is NULL");
+        return -1;
+	}
+
+    refP = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR ref,&isCopy);
+    if (refP == NULL) {
+        h5JNIFatalError(env,  "H5Rcreate:  ref not pinned");
+        return -1;
+    }
+	
+	aName = (char*)malloc(sizeof(char)*bs);
+    if (aName == NULL) {
+        ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,JNI_ABORT);
+        h5outOfMemory( env, "H5Aget_name:  malloc failed");
+        return -1;
+    }
+
+    ret_val = (jlong) H5Rget_name( (hid_t)loc_id, (H5R_type_t) ref_type, refP, aName, bs) ;
+
+	if (ret_val < 0) {
+        ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,JNI_ABORT);
+		free(aName);
+        h5libraryError(env);
+        return -1;
+	}
+
+    str = ENVPTR->NewStringUTF(ENVPAR aName);
+	ENVPTR->SetObjectArrayElement(ENVPAR name,0,str);
+
+    ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,0);
+	if (aName) free (aName);
+
+	return ret_val;
+}
+
+
 #ifdef __cplusplus
 }
 #endif

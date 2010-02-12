@@ -7696,4 +7696,27 @@ throws HDF5LibraryException, NullPointerException;
     // String attr_name, int lapl_id)
     // throws HDF5LibraryException, NullPointerException;
 
+
+
+//////////////////////////////////////////////////////////////
+////
+//H5R: HDF5 1.8 Reference API Functions            //
+////
+//////////////////////////////////////////////////////////////
+
+/**
+ * H5Rget_name retrieves a name for the object identified by ref.
+ * @param hid_t loc_id 	IN: Identifier for the dataset containing the reference or for the group that dataset is in.
+ * @param H5R_type_t ref_type     	IN: Type of reference.
+ * @param void *ref 	IN: An object or dataset region reference.
+ * @param char *name 	OUT: A name associated with the referenced object or dataset region.
+ * @param size_t size 	IN: The size of the name buffer.
+ * 
+ * @return Returns the length of the name if successful, returning 0 (zero) if no name is associated with the identifier. Otherwise returns a negative value. 
+ */
+public synchronized static native long H5Rget_name( int loc_id, int ref_type, byte[] ref, String[] name, long size)
+        throws HDF5LibraryException, NullPointerException, IllegalArgumentException;
+ 
+
+
 }
