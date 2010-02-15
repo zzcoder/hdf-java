@@ -14,7 +14,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TestH5Lbasic {
-    private static final boolean is16 = H5.isAPI16;
     private static final String H5_FILE = "test/hdf5lib/h5ex_g_iterate.h5";
     private static long H5la_ds1 = -1;
     private static long H5la_l1 = -1;

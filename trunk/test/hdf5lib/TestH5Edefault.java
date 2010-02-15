@@ -38,15 +38,8 @@ public class TestH5Edefault {
         catch (Throwable err) {
         }
         try {
-            System.out.println("H5.isAPI16 is " + H5.isAPI16);
-            if (H5.isAPI16) {
-                H5.H5Eprint1(null);
-                H5.H5Eclear();
-            }
-            else {
-                H5.H5Eprint2(HDF5Constants.H5E_DEFAULT, null);
-                H5.H5Eclear2(HDF5Constants.H5E_DEFAULT);
-            }
+            H5.H5Eprint2(HDF5Constants.H5E_DEFAULT, null);
+            H5.H5Eclear2(HDF5Constants.H5E_DEFAULT);
         }
         catch (Throwable err) {
             err.printStackTrace();
@@ -209,12 +202,7 @@ public class TestH5Edefault {
     @Test
     public void testH5Eclear() {
         try {
-            if (H5.isAPI16) {
-                H5.H5Eclear();
-            }
-            else {
-                H5.H5Eclear2(HDF5Constants.H5E_DEFAULT);
-            }
+            H5.H5Eclear2(HDF5Constants.H5E_DEFAULT);
         }
         catch (Throwable err) {
             err.printStackTrace();
@@ -252,10 +240,7 @@ public class TestH5Edefault {
     public void testH5Eauto_is_v2() {
         try {
             boolean is_v2 = H5.H5Eauto_is_v2(HDF5Constants.H5E_DEFAULT);
-            if (H5.isAPI16)
-                assertFalse("H5.H5Eauto_is_v2: ", is_v2);
-            else
-                assertTrue("H5.H5Eauto_is_v2: ", is_v2);
+            assertTrue("H5.H5Eauto_is_v2: ", is_v2);
         }
         catch (Throwable err) {
             err.printStackTrace();

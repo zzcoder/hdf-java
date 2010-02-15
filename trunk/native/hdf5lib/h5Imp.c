@@ -196,11 +196,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eclear
   (JNIEnv *env, jclass clss )
 {
     herr_t res = -1;
-#ifdef H5_USE_16_API
-    res = H5Eclear() ;
-#else
     res = H5Eclear2(H5E_DEFAULT) ;
-#endif
     if (res < 0) {
         h5raiseException( env,
         "ncsa/hdf/hdf5lib/exceptions/HDF5LibraryException",
@@ -247,22 +243,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5set_1free_1list_1limits
         h5libraryError(env);
     }
     return retVal;
-}
-
-/*
- * Class:     hdf_hdf5_exceptions_HDF5Library
- * Method:    H5Use16
- * Signature: ()Z
- *
- */
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Use16
-  (JNIEnv *env, jclass cls )
-{
-#ifdef H5_USE_16_API
-    return JNI_TRUE;
-#else
-    return JNI_FALSE;
-#endif
 }
 
 

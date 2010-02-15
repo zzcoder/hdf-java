@@ -871,17 +871,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter
         */
         int cd_nelmts_temp = *(cd_nelmtsArray);
         size_t cd_nelmts_t = cd_nelmts_temp;
-
-#ifdef H5_USE_16_API
-        status = H5Pget_filter((hid_t)plist, (int)filter_number, 
-            (unsigned int *)flagsArray, &cd_nelmts_t, (unsigned int *)cd_valuesArray,
-            (size_t)namelen, filter);
-#else
         unsigned int filter_config;
         status = H5Pget_filter2((hid_t)plist, (int)filter_number, 
             (unsigned int *)flagsArray, &cd_nelmts_t, (unsigned int *)cd_valuesArray,
             (size_t)namelen, filter, &filter_config);
-#endif
         
         *cd_nelmtsArray = cd_nelmts_t;
     }
@@ -2028,9 +2021,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id
     long bs;
     char *aName;
     jstring str;
-#ifndef  H5_USE_16_API
     unsigned int filter_config;
-#endif
 
     bs = (long)namelen;
     if (bs <= 0) {
@@ -2103,15 +2094,9 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id
         return -1;
     }
 
-#ifdef H5_USE_16_API
-    status = H5Pget_filter_by_id( (hid_t)plist, (H5Z_filter_t)filter,
-        (unsigned int *)flagsP, (size_t *)nelmsP, (unsigned int *)cd_valuesP,
-        (size_t)namelen, (char *)aName);
-#else
     status = H5Pget_filter_by_id2( (hid_t)plist, (H5Z_filter_t)filter,
         (unsigned int *)flagsP, (size_t *)nelmsP, (unsigned int *)cd_valuesP,
         (size_t)namelen, (char *)aName, &filter_config);
-#endif
 
     if (status < 0) {
         ENVPTR->ReleaseIntArrayElements(ENVPAR flags,flagsP,JNI_ABORT);

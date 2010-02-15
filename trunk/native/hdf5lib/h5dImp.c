@@ -168,11 +168,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dcreate
         return -1;
     }
     
-#ifdef H5_USE_16_API
-    status = H5Dcreate(loc_id, file, type_id, space_id, create_plist_id);
-#else
     status = H5Dcreate2(loc_id, file, type_id, space_id, (hid_t)H5P_DEFAULT, (hid_t)create_plist_id, (hid_t)H5P_DEFAULT);
-#endif
     
     ENVPTR->ReleaseStringUTFChars(ENVPAR name, file);
     if (status < 0) {
@@ -273,11 +269,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dopen
         return -1;
     }
     
-#ifdef H5_USE_16_API
-    status = H5Dopen((hid_t)loc_id, file);
-#else
     status = H5Dopen2((hid_t)loc_id, (const char*)file, (hid_t)H5P_DEFAULT);
-#endif
 
     ENVPTR->ReleaseStringUTFChars(ENVPAR name, file);
     if (status < 0) {

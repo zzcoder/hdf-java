@@ -99,11 +99,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gcreate
         return -1;
     }
 
-#ifdef H5_USE_16_API
-    status = H5Gcreate((hid_t)loc_id, gName, (size_t)size_hint );
-#else
     status = H5Gcreate2((hid_t)loc_id, gName, (hid_t)H5P_DEFAULT, (hid_t)H5P_DEFAULT, (hid_t)H5P_DEFAULT );
-#endif
 
     ENVPTR->ReleaseStringUTFChars(ENVPAR name,gName);
     if (status < 0) {
@@ -136,11 +132,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gopen
         return -1;
     }
 
-#ifdef H5_USE_16_API
-    status = H5Gopen((hid_t)loc_id, gName );
-#else
     status = H5Gopen2((hid_t)loc_id, gName, (hid_t)H5P_DEFAULT );
-#endif
 
     ENVPTR->ReleaseStringUTFChars(ENVPAR name,gName);
     if (status < 0) {
@@ -783,11 +775,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
             h5JNIFatalError( env, "H5Gget_obj_info_all:  name not pinned");
             return -1;
         }
-#ifdef H5_USE_16_API
-        gid = H5Gopen(loc_id, gName);
-#else
         gid = H5Gopen2(loc_id, gName, H5P_DEFAULT);
-#endif
 
         ENVPTR->ReleaseStringUTFChars(ENVPAR group_name,gName);
 

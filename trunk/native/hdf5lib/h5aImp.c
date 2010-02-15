@@ -75,13 +75,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Acreate
         return -1;
     }
 
-#ifdef H5_USE_16_API
-    status = H5Acreate((hid_t)loc_id, aName, (hid_t)type_id,
-        (hid_t)space_id, (hid_t)create_plist );
-#else
     status = H5Acreate2((hid_t)loc_id, aName, (hid_t)type_id,
         (hid_t)space_id, (hid_t)create_plist, (hid_t)H5P_DEFAULT );
-#endif
 
     ENVPTR->ReleaseStringUTFChars(ENVPAR name,aName);
 

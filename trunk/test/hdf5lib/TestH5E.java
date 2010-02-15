@@ -303,10 +303,7 @@ public class TestH5E {
     public void testH5Eauto_is_v2() {
         try {
             boolean is_v2 = H5.H5Eauto_is_v2(current_stackid);
-            if (H5.isAPI16)
-                assertFalse("H5.H5Eauto_is_v2: ", is_v2);
-            else
-                assertTrue("H5.H5Eauto_is_v2: ", is_v2);
+            assertTrue("H5.H5Eauto_is_v2: ", is_v2);
         }
         catch (Throwable err) {
             err.printStackTrace();
