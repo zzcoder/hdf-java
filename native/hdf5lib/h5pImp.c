@@ -3064,6 +3064,36 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id2
     return (jint)status;
 }
 
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1nlinks
+  (JNIEnv *env, jclass clss, jint lapl_id)
+{
+
+	 herr_t retVal = -1;
+	 size_t nlinks;
+	 retVal = H5Pget_nlinks((hid_t)lapl_id, &nlinks); 
+
+	 if (retVal < 0) {
+        h5libraryError(env);
+    }
+
+    return (jlong) nlinks;
+}
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1nlinks
+  (JNIEnv * env, jclass clss, jint lapl_id, jlong nlinks)
+{
+	herr_t retVal = -1;
+
+	retVal = H5Pset_nlinks((hid_t)lapl_id,(size_t)nlinks);
+
+	if(retVal <0){
+		h5libraryError(env);
+    }
+	
+	return (jint)retVal;
+
+}
+
+
 #ifdef __cplusplus
 }
 #endif

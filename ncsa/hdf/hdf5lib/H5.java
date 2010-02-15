@@ -7719,4 +7719,35 @@ public synchronized static native long H5Rget_name( int loc_id, int ref_type, by
  
 
 
+//////////////////////////////////////////////////////////////
+////
+//H5P: HDF5 1.8 Property List API Functions            //
+////
+//////////////////////////////////////////////////////////////
+
+/**
+* H5Pget_nlinks retrieves the maximum number of soft or user-defined link traversals allowed, nlinks, before the library assumes it has found a cycle and aborts the traversal. This value is retrieved from the link access property list lapl_id.
+* @param hid_t fapl_id 	IN: File access property list identifier
+* @param size_t *nlinks     	OUT: Maximum number of links to traverse
+* 
+* @return Returns a non-negative value if successful; otherwise returns a negative value. 
+*/
+
+
+public synchronized static native long H5Pget_nlinks(int lapl_id)
+throws HDF5LibraryException;
+
+
+
+/**
+* H5Pset_nlinks sets the maximum number of soft or user-defined link traversals allowed, nlinks, before the library assumes it has found a cycle and aborts the traversal. This value is set in the link access property list lapl_id. 
+* @param hid_t fapl_id 	IN: File access property list identifier
+* @param size_t *nlinks     IN: Maximum number of links to traverse
+* 
+* @return Returns a non-negative value if successful; otherwise returns a negative value. 
+*/
+
+public synchronized static native int H5Pset_nlinks(int lapl_id, long nlinks)
+throws HDF5LibraryException;
+
 }
