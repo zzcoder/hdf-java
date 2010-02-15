@@ -67,9 +67,6 @@ public class TestH5F {
     // private final int _createGroup(int fid, String name) {
     // int gid = -1;
     // try {
-    // if (H5.isAPI16)
-    // gid = H5.H5Gcreate(fid, name, 0);
-    // else
     // gid = H5.H5Gcreate2(fid, name, HDF5Constants.H5P_DEFAULT,
     // HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
     // }
@@ -84,9 +81,6 @@ public class TestH5F {
     // private final int _openGroup(int fid, String name) {
     // int gid = -1;
     // try {
-    // if (H5.isAPI16)
-    // gid = H5.H5Gopen(fid, name);
-    // else
     // gid = H5.H5Gopen2(fid, name, HDF5Constants.H5P_DEFAULT);
     // }
     // catch (Throwable err) {

@@ -68,11 +68,7 @@ int getMinorErrorNumber();
 
 /* get the major and minor error numbers on the top of the erroe stack */
 static
-#ifdef H5_USE_16_API
-herr_t walk_error_callback(int n, H5E_error1_t *err_desc, void *_err_nums)
-#else
 herr_t walk_error_callback(unsigned n, const H5E_error2_t *err_desc, void *_err_nums)
-#endif
 {
     H5E_num_t *err_nums = (H5E_num_t *)_err_nums;
 
@@ -97,12 +93,7 @@ char *defineHDF5LibraryException(int maj_num);
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5error_1off
   (JNIEnv *env, jclass clss )
 {
-#ifdef H5_USE_16_API
-    H5Eset_auto(NULL, NULL);
-#else
-//    hid_t stk_id = H5Eget_current_stack();
     H5Eset_auto2(H5E_DEFAULT, NULL, NULL);
-#endif
     return 0;
 }
 
@@ -121,22 +112,12 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_pri
     char *file;
 
     if (file_name == NULL) {
-#ifdef H5_USE_16_API
-        H5Eprint(stderr);
-#else
-//        hid_t stk_id = H5Eget_current_stack();
         H5Eprint2(H5E_DEFAULT, stderr);
-#endif
     }
     else {
         file = (char *)ENVPTR->GetStringUTFChars(ENVPAR file_name,0);
         stream = fopen(file, "a+");
-#ifdef H5_USE_16_API
-        H5Eprint(stream);
-#else
-//        hid_t stk_id = H5Eget_current_stack();
         H5Eprint2(H5E_DEFAULT, stream);
-#endif
         ENVPTR->ReleaseStringUTFChars(ENVPAR file_name, file);
         if (stream) fclose(stream);
     }
@@ -158,12 +139,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_get
 {
     H5E_num_t err_nums;
 
-#ifdef H5_USE_16_API
-    H5Ewalk(H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
-#else
-//    hid_t stk_id = H5Eget_current_stack();
     H5Ewalk2(H5E_DEFAULT, H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
-#endif
 
     return (int) err_nums.maj_num;
 }
@@ -174,12 +150,7 @@ int getMajorErrorNumber()
     err_nums.maj_num = 0;
     err_nums.min_num = 0;
 
-#ifdef H5_USE_16_API
-    H5Ewalk(H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
-#else
-//    hid_t stk_id = H5Eget_current_stack();
     H5Ewalk2(H5E_DEFAULT, H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
-#endif
 
     return (int) err_nums.maj_num;
 }
@@ -207,12 +178,7 @@ int getMinorErrorNumber()
     err_nums.maj_num = 0;
     err_nums.min_num = 0;
 
-#ifdef H5_USE_16_API
-    H5Ewalk(H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
-#else
-//    hid_t stk_id = H5Eget_current_stack();
     H5Ewalk2(H5E_DEFAULT, H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
-#endif
 
     return (int) err_nums.min_num;
 }

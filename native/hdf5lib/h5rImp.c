@@ -196,9 +196,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rget_1region
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type
   (JNIEnv *env, jclass clss, jint loc_id, jint ref_type, jbyteArray ref)
 {
-#ifdef H5_USE_16_API
-    H5G_obj_t status;
-#endif
     int retVal =-1;
     jboolean isCopy;
     jbyte *refP;
@@ -216,15 +213,9 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type
         return -1;
     }
 
-#ifdef H5_USE_16_API
-    status = H5Rget_obj_type((hid_t)loc_id, (H5R_type_t)ref_type, refP);
-    retVal = status;
-#else
     retVal = H5Rget_obj_type2((hid_t)loc_id, (H5R_type_t)ref_type, refP, &object_info);
     if(retVal >= 0)
         retVal = object_info;
-          
-#endif
 
     ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,0);
 

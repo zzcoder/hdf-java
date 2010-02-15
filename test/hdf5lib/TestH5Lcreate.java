@@ -18,7 +18,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TestH5Lcreate {
-    private static final boolean is16 = H5.isAPI16;
     private static final String H5_EXTFILE = "test/hdf5lib/h5ex_g_iterate.h5";
     private static final String H5_FILE = "test.h5";
     private static final int DIM_X = 4;
@@ -62,10 +61,7 @@ public class TestH5Lcreate {
     private final int _createGroup(int fid, String name) {
         int gid = -1;
         try {
-            if (is16)
-                gid = H5.H5Gcreate(fid, name, 0);
-            else
-                gid = H5.H5Gcreate2(fid, name, HDF5Constants.H5P_DEFAULT,
+            gid = H5.H5Gcreate2(fid, name, HDF5Constants.H5P_DEFAULT,
                         HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
         }
         catch (Throwable err) {

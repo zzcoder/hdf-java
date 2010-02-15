@@ -13,17 +13,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TestH5Giterate {
-    private static final boolean is16 = H5.isAPI16;
     private static final String H5_FILE = "test/hdf5lib/h5ex_g_iterate.h5";
     int H5fid = -1;
 
     private final int _openGroup(int fid, String name) {
         int gid = -1;
         try {
-            if (is16)
-                gid = H5.H5Gopen(fid, name);
-            else
-                gid = H5.H5Gopen2(fid, name, HDF5Constants.H5P_DEFAULT);
+            gid = H5.H5Gopen2(fid, name, HDF5Constants.H5P_DEFAULT);
         }
         catch (Throwable err) {
             gid = -1;

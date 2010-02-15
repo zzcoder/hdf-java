@@ -225,11 +225,7 @@ int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr) {
         size = H5Tget_size(mtid);
         rank = H5Tget_array_ndims(tid);
 
-#ifdef H5_USE_16_API
-        H5Tget_array_dims(tid, dims, NULL);
-#else
         H5Tget_array_dims2(tid, dims);
-#endif
 
         total_elmts = 1;
         for (i = 0; i < rank; i++)

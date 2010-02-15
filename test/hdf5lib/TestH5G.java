@@ -16,7 +16,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TestH5G {
-    private static final boolean is16 = H5.isAPI16;
     private static final String H5_FILE = "test.h5";
     private static final String[] GROUPS = { "/G1", "/G1/G11", "/G1/G12",
             "/G1/G11/G111", "/G1/G11/G112", "/G1/G11/G113", "/G1/G11/G114" };
@@ -25,10 +24,7 @@ public class TestH5G {
     private final int _createGroup(int fid, String name) {
         int gid = -1;
         try {
-            if (is16)
-                gid = H5.H5Gcreate(fid, name, 0);
-            else
-                gid = H5.H5Gcreate2(fid, name, HDF5Constants.H5P_DEFAULT,
+            gid = H5.H5Gcreate2(fid, name, HDF5Constants.H5P_DEFAULT,
                         HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
         }
         catch (Throwable err) {
@@ -42,11 +38,7 @@ public class TestH5G {
     private final int _openGroup(int fid, String name) {
         int gid = -1;
         try {
-            if (is16)
-                gid = H5.H5Gopen(fid, name);
-            else
-                gid = H5.H5Gopen2(fid, name, HDF5Constants.H5P_DEFAULT);
-            ;
+            gid = H5.H5Gopen2(fid, name, HDF5Constants.H5P_DEFAULT);
         }
         catch (Throwable err) {
             gid = -1;

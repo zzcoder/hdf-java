@@ -257,12 +257,6 @@ public class H5 {
         loadH5Lib();
     }
 
-    /**
-     * True if H5 uses 16 APIs; otherwise, false. This variable must be defined
-     * after loadH5Lib() was called.
-     */
-    public static final boolean isAPI16 = H5Use16();
-
     public static void loadH5Lib() {
         // Make sure that the library is loaded only once
         if (isLibraryLoaded)
@@ -5772,13 +5766,6 @@ public class H5 {
     // //////////////////////////////////////////////////////////////////
     // H5E: Error Interface Functions //
     // //////////////////////////////////////////////////////////////////
-
-    /**
-     * Check if 16 APIs are used.
-     * 
-     * @return true if 16 APIs are used; otherwise, false.
-     **/
-    private synchronized static native boolean H5Use16();
 
     // // Error stack traversal callback function pointers
     // public interface H5E_walk2_t extends Callback {

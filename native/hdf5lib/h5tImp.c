@@ -65,12 +65,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Topen
         h5JNIFatalError(env,  "H5Topen:  name not pinned");
         return -1;
     }
-
-#ifdef H5_USE_16_API
-    status = H5Topen(loc_id, tname);
-#else
     status = H5Topen2(loc_id, tname, (hid_t)H5P_DEFAULT);
-#endif
 
     ENVPTR->ReleaseStringUTFChars(ENVPAR name,tname);
     if (status < 0) {
@@ -101,11 +96,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tcommit1
         return -1;
     }
 
-#ifdef H5_USE_16_API
-    status = H5Tcommit(loc_id, tname, type);
-#else
     status = H5Tcommit2(loc_id, tname, type, (hid_t)H5P_DEFAULT, (hid_t)H5P_DEFAULT, (hid_t)H5P_DEFAULT);
-#endif
 
     ENVPTR->ReleaseStringUTFChars(ENVPAR name,tname);
     if (status < 0) {
@@ -1477,11 +1468,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Tarray_1create
         cdims[i] = (hsize_t)dimsP[i];
     }
 
-#ifdef H5_USE_16_API
-    status = H5Tarray_create((hid_t)base, (int)rank, (const hsize_t *)cdims, (const int *)permP);
-#else
     status = H5Tarray_create2((hid_t)base, (int)rank, (const hsize_t *)cdims);
-#endif
 
     ENVPTR->ReleaseIntArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
     if (permP != NULL) {
@@ -1543,11 +1530,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Tget_1array_1dims
     dlen = ENVPTR->GetArrayLength(ENVPAR dims);
     cdims = (hsize_t *)malloc(dlen * sizeof(hsize_t));
 
-#ifdef H5_USE_16_API
-    status = H5Tget_array_dims((hid_t)dt, (hsize_t *)cdims, (int *)permP);
-#else
     status = H5Tget_array_dims2((hid_t)dt, (hsize_t *)cdims);
-#endif
 
     if (status < 0) {
         ENVPTR->ReleaseIntArrayElements(ENVPAR dims,dimsP,JNI_ABORT);
