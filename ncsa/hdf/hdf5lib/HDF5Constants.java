@@ -180,6 +180,8 @@ public class HDF5Constants {
     public static final int H5F_CLOSE_SEMI = H5F_CLOSE_SEMI();
     public static final int H5F_CLOSE_STRONG = H5F_CLOSE_STRONG();
     public static final int H5F_CLOSE_WEAK = H5F_CLOSE_WEAK();
+    public static final int H5F_LIBVER_EARLIEST = H5F_LIBVER_EARLIEST();
+    public static final int H5F_LIBVER_LATEST = H5F_LIBVER_LATEST();
     public static final int H5F_OBJ_ALL = H5F_OBJ_ALL();
     public static final int H5F_OBJ_ATTR = H5F_OBJ_ATTR();
     public static final int H5F_OBJ_DATASET = H5F_OBJ_DATASET();
@@ -805,7 +807,11 @@ public class HDF5Constants {
     private static native final int H5F_CLOSE_STRONG();
 
     private static native final int H5F_CLOSE_WEAK();
-
+    
+    private static native final int H5F_LIBVER_EARLIEST();
+    
+    private static native final int H5F_LIBVER_LATEST();
+    
     private static native final int H5F_OBJ_ALL();
 
     private static native final int H5F_OBJ_ATTR();

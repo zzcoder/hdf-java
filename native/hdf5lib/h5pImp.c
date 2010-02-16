@@ -3049,9 +3049,14 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id2
     return (jint)status;
 }
 
-JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1nlinks
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_nlinks
+ * Signature: (I)J
+ */
+ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1nlinks
   (JNIEnv *env, jclass clss, jint lapl_id)
-{
+ {
 
 	 herr_t retVal = -1;
 	 size_t nlinks;
@@ -3062,11 +3067,22 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1nlinks
     }
 
     return (jlong) nlinks;
-}
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1nlinks
+ }
+
+ /*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_nlinks
+ * Signature: (IJ)I
+ */
+ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1nlinks
   (JNIEnv * env, jclass clss, jint lapl_id, jlong nlinks)
-{
+ {
 	herr_t retVal = -1;
+
+	if (nlinks <= 0) {
+	    h5badArgument( env, "H5Pset_1nlinks:  nlinks_l <= 0");
+        return -1;
+    }
 
 	retVal = H5Pset_nlinks((hid_t)lapl_id,(size_t)nlinks);
 
@@ -3076,7 +3092,44 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1nlinks
 	
 	return (jint)retVal;
 
-}
+ }
+
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_libver_bounds
+ * Signature: (I[J)I
+ */
+ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1libver_1bounds
+  (JNIEnv * env, jclass clss, jint fapl_id, jlongArray libver)
+ {
+	herr_t retVal = -1;
+	H5F_libver_t *theArray = NULL;
+    jboolean isCopy;
+
+	if (libver == NULL) {
+        h5nullArgument( env, "H5Pget_libver_bounds:  libversion bounds is NULL");
+        return -1;
+    }
+
+	theArray = (H5F_libver_t *)ENVPTR->GetLongArrayElements(ENVPAR libver,&isCopy);
+    if (theArray == NULL) {
+        h5JNIFatalError( env, "H5Pget_libver_bounds:  input not pinned");
+        return -1;
+    }
+  
+	retVal = H5Pget_libver_bounds((hid_t)fapl_id, &(theArray[1]), &(theArray[2]));
+
+	if(retVal <0){
+		ENVPTR->ReleaseLongArrayElements(ENVPAR libver,(jlong *)theArray,JNI_ABORT);
+		h5libraryError(env);
+    }else {
+        ENVPTR->ReleaseLongArrayElements(ENVPAR libver,(jlong *)theArray,0);
+    }
+	
+	return (jint)retVal;
+
+ }
 
 
 #ifdef __cplusplus
