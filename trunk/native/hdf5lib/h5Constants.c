@@ -169,6 +169,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5F_1CLOSE_1DEFAULT(J
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5F_1CLOSE_1SEMI(JNIEnv *env, jclass cls) { return H5F_CLOSE_SEMI; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5F_1CLOSE_1STRONG(JNIEnv *env, jclass cls) { return H5F_CLOSE_STRONG; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5F_1CLOSE_1WEAK(JNIEnv *env, jclass cls) { return H5F_CLOSE_WEAK; }
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5F_1LIBVER_1EARLIEST(JNIEnv *env, jclass cls){return H5F_LIBVER_EARLIEST;}
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5F_1LIBVER_1LATEST(JNIEnv *env, jclass cls){return H5F_LIBVER_LATEST;}
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5F_1OBJ_1ALL(JNIEnv *env, jclass cls) { return H5F_OBJ_ALL; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5F_1OBJ_1ATTR(JNIEnv *env, jclass cls) { return H5F_OBJ_ATTR; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5F_1OBJ_1DATASET(JNIEnv *env, jclass cls) { return H5F_OBJ_DATASET; }

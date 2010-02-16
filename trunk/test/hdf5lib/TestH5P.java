@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TestH5P {
+	
     private static final String H5_FILE = "test.h5";
     private static final int DIM_X = 4;
     private static final int DIM_Y = 6;
@@ -88,7 +89,7 @@ public class TestH5P {
     }
 
     @Test
-    public void H5Pget_nlinks() throws Throwable, HDF5LibraryException {
+    public void testH5Pget_nlinks() throws Throwable, HDF5LibraryException {
     	
     		  int lapl_id = -1;
     		  long nlinks = -1;
@@ -127,9 +128,7 @@ public class TestH5P {
     }
     
     @Test
-    public void H5Pset_nlinks() throws Throwable, HDF5LibraryException {
-    	
-    	//fail("Test failed");
+    public void testH5Pset_nlinks() throws Throwable, HDF5LibraryException {
     	
     	int lapl_id = -1;
 		long nlinks = 20;
@@ -172,6 +171,48 @@ public class TestH5P {
     	
     }
     
- 
- 
+    @Test
+    public void testH5Pget_libver_bounds() throws Throwable, HDF5LibraryException {
+    	
+       	int fapl_id = -1;
+		int ret_val = -1;
+		
+		long []libver = new long[2];
+		
+        try {
+        	fapl_id = H5.H5Pcreate(HDF5Constants.H5P_FILE_ACCESS);
+          } catch (Throwable err) 
+          {
+      	   err.printStackTrace();
+          }
+          
+          try {
+        	  ret_val = H5.H5Pget_libver_bounds(fapl_id, libver);
+          }catch (Throwable err) {
+              err.printStackTrace();
+              fail("H5Pget_libver_bounds: " + err);
+          } finally
+          {
+       	   H5.H5Pclose(fapl_id);
+          }
+		
+          //Check the ret_val value, if its is negative then test fails.
+          assertTrue("testH5Pget_libver_bounds: H5Pset_nlinks", ret_val>=0);
+          
+          //Check the Earliest Version if the library
+          assertEquals(HDF5Constants.H5F_LIBVER_EARLIEST, libver[0] );
+          
+          //Check the Latest Version if the library
+          assertEquals(HDF5Constants.H5F_LIBVER_LATEST, libver[1] );
+          
+          //Negative Test - Error should be thrown when H5Pget_libver_bounds is called for the file who access has been closed.
+          try{
+        	 H5.H5Pget_libver_bounds(fapl_id, libver);
+       	   fail("Negative Test Failed:- Error not Thrown when Access to File is Closed.");
+          }
+          catch(AssertionError err){
+       	   fail("H5.H5Pget_libver_bounds: " + err);
+          }catch(Throwable err){}
+		
+    }
 }

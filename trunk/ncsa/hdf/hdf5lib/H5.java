@@ -7693,14 +7693,20 @@ throws HDF5LibraryException, NullPointerException;
 
 /**
  * H5Rget_name retrieves a name for the object identified by ref.
- * @param hid_t loc_id 	IN: Identifier for the dataset containing the reference or for the group that dataset is in.
- * @param H5R_type_t ref_type     	IN: Type of reference.
- * @param void *ref 	IN: An object or dataset region reference.
- * @param char *name 	OUT: A name associated with the referenced object or dataset region.
- * @param size_t size 	IN: The size of the name buffer.
+ * @param loc_id 	IN: Identifier for the dataset containing the reference or for the group that dataset is in.
+ * @param ref_type     	IN: Type of reference.
+ * @param ref 	IN: An object or dataset region reference.
+ * @param name 	OUT: A name associated with the referenced object or dataset region.
+ * @param size 	IN: The size of the name buffer.
  * 
  * @return Returns the length of the name if successful, returning 0 (zero) if no name is associated with the identifier. Otherwise returns a negative value. 
- */
+ * 
+ * 
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ * @exception NullPointerException - size is null.
+ * @exception IllegalArgumentException - Argument is illegal.
+ *  
+ **/
 public synchronized static native long H5Rget_name( int loc_id, int ref_type, byte[] ref, String[] name, long size)
         throws HDF5LibraryException, NullPointerException, IllegalArgumentException;
  
@@ -7713,12 +7719,14 @@ public synchronized static native long H5Rget_name( int loc_id, int ref_type, by
 //////////////////////////////////////////////////////////////
 
 /**
-* H5Pget_nlinks retrieves the maximum number of soft or user-defined link traversals allowed, nlinks, before the library assumes it has found a cycle and aborts the traversal. This value is retrieved from the link access property list lapl_id.
-* @param hid_t fapl_id 	IN: File access property list identifier
-* @param size_t *nlinks     	OUT: Maximum number of links to traverse
-* 
-* @return Returns a non-negative value if successful; otherwise returns a negative value. 
-*/
+ * H5Pget_nlinks retrieves the maximum number of soft or user-defined link traversals allowed, nlinks, before the library assumes it has found a cycle and aborts the traversal. This value is retrieved from the link access property list lapl_id.
+ * @param lapl_id 	IN: File access property list identifier
+ * 
+ * @return Returns a Maximum number of links to traverse. 
+ * 
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  
+ **/
 
 
 public synchronized static native long H5Pget_nlinks(int lapl_id)
@@ -7727,14 +7735,41 @@ throws HDF5LibraryException;
 
 
 /**
-* H5Pset_nlinks sets the maximum number of soft or user-defined link traversals allowed, nlinks, before the library assumes it has found a cycle and aborts the traversal. This value is set in the link access property list lapl_id. 
-* @param hid_t fapl_id 	IN: File access property list identifier
-* @param size_t *nlinks     IN: Maximum number of links to traverse
-* 
-* @return Returns a non-negative value if successful; otherwise returns a negative value. 
-*/
+ * H5Pset_nlinks sets the maximum number of soft or user-defined link traversals allowed, nlinks, before the library assumes it has found a cycle and aborts the traversal. This value is set in the link access property list lapl_id. 
+ * @param fapl_id 	IN: File access property list identifier
+ * @param nlinks     IN: Maximum number of links to traverse
+ * 
+ * @return Returns a non-negative value if successful; otherwise returns a negative value. 
+ * 
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ * @exception IllegalArgumentException - Argument is Illegal
+ *  
+ **/
 
 public synchronized static native int H5Pset_nlinks(int lapl_id, long nlinks)
-throws HDF5LibraryException;
+throws HDF5LibraryException, IllegalArgumentException;
+
+
+/**
+ * H5Pget_libver_bounds H5Pget_libver_bounds retrieves the lower and upper bounds on the HDF5 Library versions that indirectly determine the object formats versions used when creating objects in the file.
+ * @param fapl_id 	IN: File access property list identifier
+ * @param libver 
+ *              The earliest/latest version of the library that will be used for writing objects.
+ *
+ *      <pre>
+ *      libver[0] =  The earliest version of the library that will be used for writing objects
+ *      libver[1] =  The latest version of the library that will be used for writing objects.
+ *      </pre>
+ *      
+ * @return Returns a non-negative value if successful; otherwise returns a negative value.
+ * 
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception NullPointerException - size is null.
+ *  
+ **/
+ 
+public synchronized static native int H5Pget_libver_bounds(int fapl_id, long []libver) 
+throws HDF5LibraryException, NullPointerException;
+
 
 }
