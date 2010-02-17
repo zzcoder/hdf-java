@@ -856,6 +856,9 @@ public class H5 {
      *                - Error from the HDF-5 Library.
      **/
     public static int H5Aclose(int attr_id) throws HDF5LibraryException {
+    	if (attr_id < 0)
+    		return -1;
+    	
         OPEN_IDS.removeElement(attr_id);
         return _H5Aclose(attr_id);
     }
@@ -1391,6 +1394,9 @@ public class H5 {
      *                - Error from the HDF-5 Library.
      **/
     public static int H5Dclose(int dataset_id) throws HDF5LibraryException {
+    	if (dataset_id < 0)
+    		return -1;
+    	
         OPEN_IDS.removeElement(dataset_id);
         return _H5Dclose(dataset_id);
     }
@@ -1642,6 +1648,9 @@ public class H5 {
      *                - Error from the HDF-5 Library.
      **/
     public static int H5Fclose(int file_id) throws HDF5LibraryException {
+    	if (file_id <0)
+    		return -1;
+    	
         OPEN_IDS.removeElement(file_id);
         return _H5Fclose(file_id);
     }
@@ -1791,6 +1800,9 @@ public class H5 {
      *                - Error from the HDF-5 Library.
      **/
     public static int H5Gclose(int group_id) throws HDF5LibraryException {
+    	if (group_id < 0)
+    		return -1;
+    	
         OPEN_IDS.removeElement(group_id);
         return _H5Gclose(group_id);
     }
@@ -2038,6 +2050,9 @@ public class H5 {
      *                - Error from the HDF-5 Library.
      **/
     public static int H5Pclose(int plist) throws HDF5LibraryException {
+    	if (plist < 0)
+    		return -1;
+    	
         OPEN_IDS.removeElement(plist);
         return _H5Pclose(plist);
     }
@@ -3775,6 +3790,9 @@ public class H5 {
      *                - Error from the HDF-5 Library.
      **/
     public static int H5Sclose(int space_id) throws HDF5LibraryException {
+    	if (space_id < 0)
+    		return -1;
+    	
         OPEN_IDS.removeElement(space_id);
         return _H5Sclose(space_id);
     }
@@ -4610,6 +4628,9 @@ public class H5 {
      * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
     public static int H5Tclose(int type_id) throws HDF5LibraryException {
+    	if (type_id < 0)
+    		return -1;
+    	
         OPEN_IDS.removeElement(type_id);
         return _H5Tclose(type_id);
     }
