@@ -7751,7 +7751,7 @@ throws HDF5LibraryException, IllegalArgumentException;
 
 
 /**
- * H5Pget_libver_bounds H5Pget_libver_bounds retrieves the lower and upper bounds on the HDF5 Library versions that indirectly determine the object formats versions used when creating objects in the file.
+ * H5Pget_libver_bounds retrieves the lower and upper bounds on the HDF5 Library versions that indirectly determine the object formats versions used when creating objects in the file.
  * @param fapl_id 	IN: File access property list identifier
  * @param libver 
  *              The earliest/latest version of the library that will be used for writing objects.
@@ -7771,5 +7771,22 @@ throws HDF5LibraryException, IllegalArgumentException;
 public synchronized static native int H5Pget_libver_bounds(int fapl_id, long []libver) 
 throws HDF5LibraryException, NullPointerException;
 
+
+/**
+ * H5Pset_libver_bounds Sets bounds on library versions, and indirectly format versions, to be used when creating objects
+ * @param fapl_id   IN: File access property list identifier
+ * @param low      	IN: The earliest version of the library that will be used for writing objects
+ * @param high      IN: The latest version of the library that will be used for writing objects.
+ * 
+ *      
+ * @return Returns a non-negative value if successful; otherwise returns a negative value.
+ * 
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception IllegalArgumentException - Argument is Illegal
+ *  
+ **/
+
+public synchronized static native int H5Pset_libver_bounds(int fapl_id, long low, long high)
+throws HDF5LibraryException, IllegalArgumentException;
 
 }

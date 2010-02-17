@@ -3131,6 +3131,34 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id2
 
  }
 
+ /*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_libver_bounds
+ * Signature: (IJJ)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1libver_1bounds
+  (JNIEnv * env, jclass clss, jint fapl_id, jlong low, jlong high)
+{
+	herr_t retVal = -1;
+
+	if ((H5F_libver_t)high != H5F_LIBVER_LATEST){
+	h5badArgument( env, "H5Pset_libver_bounds:  invalid high library version bound");
+        return -1;
+	}
+	
+	if(((H5F_libver_t)low !=H5F_LIBVER_EARLIEST)&&((H5F_libver_t)low != H5F_LIBVER_LATEST)){
+	h5badArgument( env, "H5Pset_libver_bounds:  invalid low library version bound");
+        return -1;
+	}
+
+	retVal = H5Pset_libver_bounds((hid_t)fapl_id, (H5F_libver_t)low, (H5F_libver_t)high);
+	
+	if(retVal <0){
+		h5libraryError(env);
+	}
+	
+	return (jint)retVal;
+}
 
 #ifdef __cplusplus
 }
