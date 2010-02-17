@@ -197,7 +197,7 @@ public class TestH5P {
           }
 		
           //Check the ret_val value, if its is negative then test fails.
-          assertTrue("testH5Pget_libver_bounds: H5Pset_nlinks", ret_val>=0);
+          assertTrue("testH5Pget_libver_bounds: H5Pget_libver_bounds", ret_val>=0);
           
           //Check the Earliest Version if the library
           assertEquals(HDF5Constants.H5F_LIBVER_EARLIEST, libver[0] );
@@ -214,5 +214,75 @@ public class TestH5P {
        	   fail("H5.H5Pget_libver_bounds: " + err);
           }catch(Throwable err){}
 		
+    }
+    
+    @Test
+    public void testH5Pset_libver_bounds() throws Throwable, HDF5LibraryException {
+    	
+    	int fapl_id = -1;
+		int ret_val = -1;
+		int retVal = -1;
+		long low = HDF5Constants.H5F_LIBVER_EARLIEST;
+		long high = HDF5Constants.H5F_LIBVER_LATEST;
+		long []libver = new long[2];
+		
+		
+		try {
+        	fapl_id = H5.H5Pcreate(HDF5Constants.H5P_FILE_ACCESS);
+          } catch (Throwable err) 
+          {
+      	   err.printStackTrace();
+          }
+          
+          try {
+        	  ret_val = H5.H5Pset_libver_bounds(fapl_id, low, high);
+        	  retVal = H5.H5Pget_libver_bounds(fapl_id, libver);
+              
+        	  //Negative Test - Error should be thrown when low is not equal to H5F_LIBVER_EARLIEST or H5F_LIBVER_LATEST.
+              try{
+            	  H5.H5Pset_libver_bounds(fapl_id, 5, high);
+           	   fail("Negative Test Failed:- Error not Thrown when low is not equal to H5F_LIBVER_EARLIEST or H5F_LIBVER_LATEST.");
+              }
+              catch(AssertionError err){
+           	   fail("H5.H5Pset_libver_bounds: " + err);
+              }catch(Throwable err){}
+              
+        	  //Negative Test - Error should be thrown when high is not equal to H5F_LIBVER_LATEST.
+              try{
+            	  H5.H5Pset_libver_bounds(fapl_id, low, 5);
+           	   fail("Negative Test Failed:- Error not Thrown when high is not equal to H5F_LIBVER_LATEST.");
+              }
+              catch(AssertionError err){
+           	   fail("H5.H5Pset_libver_bounds: " + err);
+              }catch(Throwable err){}
+              
+          }catch (Throwable err) {
+              err.printStackTrace();
+              fail("H5Pset_libver_bounds: " + err);
+          } finally
+          {
+       	   H5.H5Pclose(fapl_id);
+          }
+          
+          //Check the ret_val value, if its is negative then test fails.
+          assertTrue("testH5Pset_libver_bounds: H5Pset_libver_bounds", ret_val>=0);
+          
+          assertTrue("testH5Pget_libver_bounds: H5Pget_libver_bounds", retVal>=0);
+          
+          //Check the Earliest Version if the library
+          assertEquals(HDF5Constants.H5F_LIBVER_EARLIEST, libver[0]);
+          
+          //Check the Latest Version if the library
+          assertEquals(HDF5Constants.H5F_LIBVER_LATEST, libver[1] );
+		
+          //Negative Test - Error should be thrown when H5Pset_libver_bounds is called for the file who access has been closed.
+          try{
+        	  H5.H5Pset_libver_bounds(fapl_id, low, high);
+       	   fail("Negative Test Failed:- Error not Thrown when Access to File is Closed.");
+          }
+          catch(AssertionError err){
+       	   fail("H5.H5Pset_libver_bounds: " + err);
+          }catch(Throwable err){}  
+          
     }
 }
