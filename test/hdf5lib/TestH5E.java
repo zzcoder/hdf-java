@@ -114,16 +114,30 @@ public class TestH5E {
 
     @Test
     public void testH5Eget_msg() {
+        int[] error_msg_type = { HDF5Constants.H5E_MINOR };
+        int err_id = -1;
+        String msg = null;
         try {
-            int[] error_msg_type = { HDF5Constants.H5E_MINOR };
-            int err_id = H5.H5Ecreate_msg(hdf_java_classid,
+            err_id = H5.H5Ecreate_msg(hdf_java_classid,
                     HDF5Constants.H5E_MAJOR, "Error in Test");
-            assertFalse("H5.H5Eget_msg: H5Ecreate_msg - " + err_id, err_id < 0);
-            String msg = H5.H5Eget_msg(err_id, error_msg_type);
-            assertNotNull("H5.H5Eget_msg: " + msg, msg);
-            assertEquals("H5.H5Eget_msg: ", "Error in Test", msg);
-            assertEquals("H5.H5Eget_msg: ", HDF5Constants.H5E_MAJOR,
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Eget_msg: " + err);
+        }
+        assertFalse("H5.H5Eget_msg: H5Ecreate_msg - " + err_id, err_id < 0);
+        try {
+            msg = H5.H5Eget_msg(err_id, error_msg_type);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Eget_msg: " + err);
+        }
+        assertNotNull("H5.H5Eget_msg: " + msg, msg);
+        assertEquals("H5.H5Eget_msg: ", "Error in Test", msg);
+        assertEquals("H5.H5Eget_msg: ", HDF5Constants.H5E_MAJOR,
                     error_msg_type[0]);
+        try {
             H5.H5Eclose_msg(err_id);
         }
         catch (Throwable err) {
@@ -132,27 +146,28 @@ public class TestH5E {
         }
     }
 
-    @Test
+    @Ignore
     public void testH5Eget_msg_major() {
 
         try {
             H5.H5Fopen("test", 0, 1);
         }
         catch (HDF5LibraryException hdferr) {
+            int[] error_msg_type = { HDF5Constants.H5E_MAJOR };
+            String msg = null;
             try {
-                int[] error_msg_type = { HDF5Constants.H5E_MAJOR };
-                String msg = H5.H5Eget_msg(hdferr.getMajorErrorNumber(),
+                msg = H5.H5Eget_msg(hdferr.getMajorErrorNumber(),
                         error_msg_type);
-                assertNotNull("H5.H5Eget_msg: " + msg, msg);
-                assertEquals("H5.H5Eget_msg: ", "Invalid arguments to routine",
-                        msg);
-                assertEquals("H5.H5Eget_msg: ", HDF5Constants.H5E_MAJOR,
-                        error_msg_type[0]);
             }
             catch (Throwable err) {
                 err.printStackTrace();
                 fail("H5.H5Eget_msg: " + err);
             }
+            assertNotNull("H5.H5Eget_msg: " + msg, msg);
+            assertEquals("H5.H5Eget_msg: ", "Invalid arguments to routine",
+                        msg);
+            assertEquals("H5.H5Eget_msg: ", HDF5Constants.H5E_MAJOR,
+                        error_msg_type[0]);
         }
         catch (Throwable err) {
             err.printStackTrace();
@@ -160,26 +175,26 @@ public class TestH5E {
         }
     }
 
-    @Test
+    @Ignore
     public void testH5Eget_msg_minor() {
-
         try {
             H5.H5Fopen("test", 0, 1);
         }
         catch (HDF5LibraryException hdferr) {
+            int[] error_msg_type = { HDF5Constants.H5E_MINOR };
+            String msg = null;
             try {
-                int[] error_msg_type = { HDF5Constants.H5E_MINOR };
-                String msg = H5.H5Eget_msg(hdferr.getMinorErrorNumber(),
+                msg = H5.H5Eget_msg(hdferr.getMinorErrorNumber(),
                         error_msg_type);
-                assertNotNull("H5.H5Eget_msg: " + msg, msg);
-                assertEquals("H5.H5Eget_msg: ", "Inappropriate type", msg);
-                assertEquals("H5.H5Eget_msg: ", HDF5Constants.H5E_MINOR,
-                        error_msg_type[0]);
             }
             catch (Throwable err) {
                 err.printStackTrace();
                 fail("H5.H5Eget_msg: " + err);
             }
+            assertNotNull("H5.H5Eget_msg: " + msg, msg);
+            assertEquals("H5.H5Eget_msg: ", "Inappropriate type", msg);
+            assertEquals("H5.H5Eget_msg: ", HDF5Constants.H5E_MINOR,
+                        error_msg_type[0]);
         }
         catch (Throwable err) {
             err.printStackTrace();
@@ -189,9 +204,16 @@ public class TestH5E {
 
     @Test
     public void testH5Ecreate_stack() {
+        int stk_id = -1;
         try {
-            int stk_id = H5.H5Ecreate_stack();
-            assertFalse("H5.H5Ecreate_stack: " + stk_id, stk_id < 0);
+            stk_id = H5.H5Ecreate_stack();
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Ecreate_stack: " + err);
+        }
+        assertFalse("H5.H5Ecreate_stack: " + stk_id, stk_id < 0);
+        try {
             H5.H5Eclose_stack(stk_id);
         }
         catch (Throwable err) {
@@ -200,7 +222,7 @@ public class TestH5E {
         }
     }
 
-    @Test
+    @Ignore
     public void testH5Epop() {
         try {
             H5.H5Eset_current_stack(current_stackid);
@@ -267,8 +289,8 @@ public class TestH5E {
 
     @Test
     public void testH5EprintInt() {
+        assertFalse(current_stackid < 0);
         try {
-            assertFalse(current_stackid < 0);
             H5.H5Eprint2(current_stackid, null);
         }
         catch (Throwable err) {
@@ -301,29 +323,31 @@ public class TestH5E {
 
     @Test
     public void testH5Eauto_is_v2() {
+        boolean is_v2 = false;
         try {
-            boolean is_v2 = H5.H5Eauto_is_v2(current_stackid);
-            assertTrue("H5.H5Eauto_is_v2: ", is_v2);
+            is_v2 = H5.H5Eauto_is_v2(current_stackid);
         }
         catch (Throwable err) {
             err.printStackTrace();
             fail("H5.H5Eauto_is_v2: " + err);
         }
+        assertTrue("H5.H5Eauto_is_v2: ", is_v2);
     }
 
     @Test
     public void testH5Eget_num() {
+        long num_msg = -1;
         try {
-            long num_msg = H5.H5Eget_num(current_stackid);
-            assertTrue("H5.H5Eget_num", num_msg == 0);
+            num_msg = H5.H5Eget_num(current_stackid);
         }
         catch (Throwable err) {
             err.printStackTrace();
             fail("H5.H5Eget_num: " + err);
         }
+        assertTrue("H5.H5Eget_num", num_msg == 0);
     }
 
-    @Test
+    @Ignore
     public void testH5Eget_num_with_msg() {
         try {
             H5.H5Eset_current_stack(current_stackid);

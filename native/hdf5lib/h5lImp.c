@@ -43,6 +43,56 @@ extern "C" {
     
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Lcopy
+     * Signature: (ILjava/lang/String;ILjava/lang/String;II)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lcopy
+      (JNIEnv *env, jclass clss, jint cur_loc_id, jstring cur_name, jint dst_loc_id, jstring dst_name, jint create_id, jint access_id)
+    {
+        char    *lCurName;
+        char    *lDstName;
+        jboolean isCopy;
+        herr_t   status = -1;
+        
+        if (cur_name == NULL) {
+            h5nullArgument( env, "H5Lcreate_hard:  cur_name is NULL");
+            return;
+        }
+        
+        lCurName = (char*)ENVPTR->GetStringUTFChars(ENVPAR cur_name, &isCopy);
+        if (lCurName == NULL) {
+            h5JNIFatalError( env, "H5Lcreate_hard:  cur_name not pinned");
+            return;
+        }
+        
+        if (dst_name == NULL) {
+            ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
+            h5nullArgument( env, "H5Lcreate_hard:  dst_name is NULL");
+            return;
+        }
+        
+        lDstName = (char*)ENVPTR->GetStringUTFChars(ENVPAR dst_name, &isCopy);
+        if (lDstName == NULL) {
+            ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
+            h5JNIFatalError( env, "H5Lcreate_hard:  dst_name not pinned");
+            return;
+        }
+
+        status = H5Lcopy((hid_t)cur_loc_id, (const char*)lCurName, (hid_t)dst_loc_id, (const char*)lDstName, (hid_t)create_id, (hid_t)access_id);
+
+        ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR dst_name, lDstName);
+        
+        if (status < 0) {
+           h5libraryError(env);
+           return;
+        }
+        
+        return;
+    }
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Lcreate_external
      * Signature: (Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;II)V
      */
@@ -537,6 +587,90 @@ extern "C" {
     
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Lget_val_by_idx
+     * Signature: (ILjava/lang/String;IIJI)Ljava/lang/String;
+     */
+    JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lget_1val_1by_1idx
+    (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint index_field, jint order, jlong link_n, jint access_id)
+    {
+        herr_t      status;
+        size_t      buf_size;
+        H5L_info_t  infobuf;
+        char       *lName;
+        void       *lValue;
+        const char *file_name;
+        const char *obj_name;
+        jboolean    isCopy;
+        jstring     str;
+
+        if (name == NULL) {
+            h5nullArgument( env, "H5Lget_val_by_idx:  name is NULL");
+            return NULL;
+        }
+        
+        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
+        if (lName == NULL) {
+            h5JNIFatalError( env, "H5Lget_val_by_idx:  name not pinned");
+            return NULL;
+        }
+
+        /* get the length of the link valuee */
+        status = H5Lget_info_by_idx((hid_t)loc_id, (const char*)lName, (H5_index_t)index_field, (H5_iter_order_t)order, (hsize_t)link_n, (H5L_info_t*)&infobuf, (hid_t)access_id);
+        if(status < 0) {
+            ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
+            h5libraryError(env);
+            return NULL;
+        }
+        buf_size = infobuf.u.val_size;
+        if(buf_size < 0) {
+            ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
+            h5libraryError(env);
+            return NULL;
+        }
+        lValue = (void*)malloc(buf_size);
+        if (lValue == NULL) {
+            ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
+            h5outOfMemory( env, "H5Lget_val_by_idx:  malloc failed ");
+            return NULL;
+        }
+
+        status = H5Lget_val_by_idx((hid_t)loc_id, (const char*)lName, (H5_index_t)index_field, (H5_iter_order_t)order, (hsize_t)link_n, (void*)lValue, (size_t)buf_size, (hid_t)access_id);
+
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
+
+        if (status < 0) {
+            free(lValue);
+            h5libraryError(env);
+            return NULL;
+        }
+        /* may throw OutOfMemoryError */
+        if(infobuf.type == H5L_TYPE_EXTERNAL) {
+            status = H5Lunpack_elink_val((char*)lValue, (size_t)infobuf.u.val_size, (unsigned*)NULL, (const char**)&file_name, (const char**)&obj_name);
+            if (status < 0) {
+               free(lValue);
+               h5libraryError(env);
+               return NULL;
+            }
+            
+            str = ENVPTR->NewStringUTF(ENVPAR obj_name);
+        }
+        else
+            str = ENVPTR->NewStringUTF(ENVPAR lValue);
+        
+        if (str == NULL) {
+            /* exception -- fatal JNI error */
+            free(lValue);
+            h5JNIFatalError( env, "H5Lget_val_by_idx:  return string not created");
+            return NULL;
+        }
+
+        free(lValue);
+
+        return str;
+    }
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Lget_val_external
      * Signature: (ILjava/lang/String;I)Ljava/lang/String;
      */
@@ -618,6 +752,56 @@ extern "C" {
         free(lValue);
 
         return str;
+    }
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Lmove
+     * Signature: (ILjava/lang/String;ILjava/lang/String;II)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lmove
+      (JNIEnv *env, jclass clss, jint cur_loc_id, jstring cur_name, jint dst_loc_id, jstring dst_name, jint create_id, jint access_id)
+    {
+        char    *lCurName;
+        char    *lDstName;
+        jboolean isCopy;
+        herr_t   status = -1;
+        
+        if (cur_name == NULL) {
+            h5nullArgument( env, "H5Lcreate_hard:  cur_name is NULL");
+            return;
+        }
+        
+        lCurName = (char*)ENVPTR->GetStringUTFChars(ENVPAR cur_name, &isCopy);
+        if (lCurName == NULL) {
+            h5JNIFatalError( env, "H5Lcreate_hard:  cur_name not pinned");
+            return;
+        }
+        
+        if (dst_name == NULL) {
+            ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
+            h5nullArgument( env, "H5Lcreate_hard:  dst_name is NULL");
+            return;
+        }
+        
+        lDstName = (char*)ENVPTR->GetStringUTFChars(ENVPAR dst_name, &isCopy);
+        if (lDstName == NULL) {
+            ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
+            h5JNIFatalError( env, "H5Lcreate_hard:  dst_name not pinned");
+            return;
+        }
+
+        status = H5Lmove((hid_t)cur_loc_id, (const char*)lCurName, (hid_t)dst_loc_id, (const char*)lDstName, (hid_t)create_id, (hid_t)access_id);
+
+        ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR dst_name, lDstName);
+        
+        if (status < 0) {
+           h5libraryError(env);
+           return;
+        }
+        
+        return;
     }
 
 
