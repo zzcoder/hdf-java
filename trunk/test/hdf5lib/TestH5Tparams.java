@@ -14,9 +14,9 @@ public class TestH5Tparams {
         assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
     }
 
-    @Test(expected = HDF5LibraryException.class)
+    @Test
     public void testH5Tclose_invalid() throws Throwable, HDF5LibraryException {
-        H5.H5Tclose(-1);
+        assertTrue(H5.H5Tclose(-1)<0);
     }
 
     @Test(expected = HDF5LibraryException.class)
