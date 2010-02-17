@@ -857,7 +857,7 @@ public class H5 {
      **/
     public static int H5Aclose(int attr_id) throws HDF5LibraryException {
     	if (attr_id < 0)
-    		return -1;
+    		throw new HDF5LibraryException("Negative ID");;
     	
         OPEN_IDS.removeElement(attr_id);
         return _H5Aclose(attr_id);
@@ -1395,7 +1395,7 @@ public class H5 {
      **/
     public static int H5Dclose(int dataset_id) throws HDF5LibraryException {
     	if (dataset_id < 0)
-    		return -1;
+    		throw new HDF5LibraryException("Negative ID");
     	
         OPEN_IDS.removeElement(dataset_id);
         return _H5Dclose(dataset_id);
@@ -1649,7 +1649,7 @@ public class H5 {
      **/
     public static int H5Fclose(int file_id) throws HDF5LibraryException {
     	if (file_id <0)
-    		return -1;
+    		throw new HDF5LibraryException("Negative ID");;
     	
         OPEN_IDS.removeElement(file_id);
         return _H5Fclose(file_id);
@@ -1801,7 +1801,7 @@ public class H5 {
      **/
     public static int H5Gclose(int group_id) throws HDF5LibraryException {
     	if (group_id < 0)
-    		return -1;
+    		throw new HDF5LibraryException("Negative ID");;
     	
         OPEN_IDS.removeElement(group_id);
         return _H5Gclose(group_id);
@@ -2051,7 +2051,7 @@ public class H5 {
      **/
     public static int H5Pclose(int plist) throws HDF5LibraryException {
     	if (plist < 0)
-    		return -1;
+    		throw new HDF5LibraryException("Negative ID");;
     	
         OPEN_IDS.removeElement(plist);
         return _H5Pclose(plist);
@@ -3791,7 +3791,7 @@ public class H5 {
      **/
     public static int H5Sclose(int space_id) throws HDF5LibraryException {
     	if (space_id < 0)
-    		return -1;
+    		throw new HDF5LibraryException("Negative ID");;
     	
         OPEN_IDS.removeElement(space_id);
         return _H5Sclose(space_id);
@@ -4629,7 +4629,7 @@ public class H5 {
      **/
     public static int H5Tclose(int type_id) throws HDF5LibraryException {
     	if (type_id < 0)
-    		return -1;
+    		throw new HDF5LibraryException("Negative ID");;
     	
         OPEN_IDS.removeElement(type_id);
         return _H5Tclose(type_id);
@@ -6661,6 +6661,25 @@ public class H5 {
     // //////////////////////////////////////////////////////////////////
 
     /**
+     *  H5Lcopy copies a link from one location to another. 
+     *
+     *  @param src_loc   IN: Location identifier of the source link 
+     *  @param src_name  IN: Name of the link to be copied 
+     *  @param dst_loc   IN: Location identifier specifying the destination of the copy 
+     *  @param dst_name  IN: Name to be assigned to the new copy
+     *  @param lcpl_id   IN: Link creation property list identifier
+     *  @param lapl_id   IN: Link access property list identifier
+     *
+     *  @return none
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - name is null.
+     **/
+    public synchronized static native void H5Lcopy(int src_loc, String src_name, int dst_loc,
+        String dst_name, int lcpl_id, int lapl_id)
+    throws HDF5LibraryException, NullPointerException;
+
+    /**
      *  H5Lcreate_external creates a new soft link to an external object, which is 
      *  an object in a different HDF5 file from the location of the link. 
      *
@@ -6819,6 +6838,25 @@ public class H5 {
     throws HDF5LibraryException, NullPointerException;
 
     /**
+     *  H5Lget_val_by_idx retrieves value of the nth link in a group, according to the order within an index. 
+     *
+     *  @param loc_id     IN: File or group identifier specifying location of subject group
+     *  @param group_name IN: Name of subject group
+     *  @param idx_type   IN: Type of index
+     *  @param order      IN: Order within field or index
+     *  @param n          IN: Link for which to retrieve information 
+     *  @param lapl_id    IN: Link access property list identifier 
+     *
+     *  @return the link value (String) 
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - group_name is null.
+     **/
+    public synchronized static native String H5Lget_val_by_idx(int loc_id, String group_name,
+        int idx_type, int order, long n, int lapl_id)
+    throws HDF5LibraryException, NullPointerException;
+
+    /**
      *  H5Lget_val_external returns the filename of an external link.
      *
      *  @param loc_id  IN: Identifier of the file or group containing the object.
@@ -6831,6 +6869,25 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native String H5Lget_val_external(int loc_id, String name, int lapl_id)
+    throws HDF5LibraryException, NullPointerException;
+
+    /**
+     *  H5Lmove renames a link within an HDF5 file.
+     *
+     *  @param src_loc   IN: Original file or group identifier.
+     *  @param src_name  IN: Original link name.
+     *  @param dst_loc   IN: Destination file or group identifier.
+     *  @param dst_name  IN: New link name.
+     *  @param lcpl_id   IN: Link creation property list identifier to be associated with the new link.
+     *  @param lapl_id   IN: Link access property list identifier to be associated with the new link.
+     *
+     *  @return none
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - name is null.
+     **/
+    public synchronized static native void H5Lmove(int src_loc, String src_name, int dst_loc,
+        String dst_name, int lcpl_id, int lapl_id)
     throws HDF5LibraryException, NullPointerException;
 
 

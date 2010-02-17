@@ -77,10 +77,10 @@ public class TestH5Fparams {
         }
     }
 
-    @Test
+    @Test(expected = HDF5LibraryException.class)
     public void testH5Fclose_negative() throws HDF5LibraryException, Throwable {
         // cannot close a file with negative id.
-        assertTrue(H5.H5Fclose(-1)<0);
+        H5.H5Fclose(-1);
     }
 
     @Test

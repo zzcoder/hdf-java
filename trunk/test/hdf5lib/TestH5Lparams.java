@@ -124,4 +124,44 @@ public class TestH5Lparams {
         H5.H5Lcreate_external("PathToFile", "Bogus", 0, null, 0, 0);
     }
 
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Lcopy_invalid() throws Throwable, HDF5LibraryException {
+        H5.H5Lcopy(-1, "Bogus", -1, "Bogus", -1, -1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Lcopy_null_current() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Lcopy(-1, null, 0, "Bogus", 0, 0);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Lcopy_null_dest() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Lcopy(-1, "Bogus", 0, null, 0, 0);
+    }
+
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Lmove_invalid() throws Throwable, HDF5LibraryException {
+        H5.H5Lmove(-1, "Bogus", -1, "Bogus", -1, -1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Lmove_null_current() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Lmove(-1, null, 0, "Bogus", 0, 0);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Lmove_null_dest() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Lmove(-1, "Bogus", 0, null, 0, 0);
+    }
+
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Lget_val_by_idx_invalid() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Lget_val_by_idx(-1, "Bogus", -1, -1, -1L, -1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Lget_val_by_idx_null() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Lget_val_by_idx(-1, null, 0, 0, 0L, 0);
+    }
+
 }

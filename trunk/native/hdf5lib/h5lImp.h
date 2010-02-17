@@ -10,6 +10,14 @@ extern "C" {
     
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Lcopy
+     * Signature: (ILjava/lang/String;ILjava/lang/String;II)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lcopy
+      (JNIEnv *, jclass, jint, jstring, jint, jstring, jint, jint);
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Lcreate_external
      * Signature: (Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;II)V
      */
@@ -79,6 +87,22 @@ extern "C" {
      */
     JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lget_1val
       (JNIEnv *, jclass, jint, jstring, jint);
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Lget_val_by_idx
+     * Signature: (ILjava/lang/String;IIJI)Ljava/lang/String;
+     */
+    JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lget_1val_1by_1idx
+      (JNIEnv *, jclass, jint, jstring, jint, jint, jlong, jint);
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Lmove
+     * Signature: (ILjava/lang/String;ILjava/lang/String;II)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lmove
+      (JNIEnv *, jclass, jint, jstring, jint, jstring, jint, jint);
 
 #ifdef __cplusplus
 }
