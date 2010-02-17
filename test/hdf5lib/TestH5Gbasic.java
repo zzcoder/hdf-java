@@ -64,9 +64,9 @@ public class TestH5Gbasic {
         _deleteFile(H5_FILE);
     }
 
-    @Test(expected = HDF5LibraryException.class)
+    @Test
     public void testH5Gclose_invalid() throws Throwable, HDF5LibraryException {
-        H5.H5Gclose(-1);
+        assertTrue(H5.H5Gclose(-1)<0);
     }
 
     @Test(expected = NullPointerException.class)
