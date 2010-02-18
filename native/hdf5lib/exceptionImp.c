@@ -65,6 +65,7 @@ typedef struct H5E_num_t {
 
 int getMajorErrorNumber();
 int getMinorErrorNumber();
+int getErrorNumbers(H5E_num_t*);
 
 /* get the major and minor error numbers on the top of the erroe stack */
 static
@@ -80,9 +81,9 @@ herr_t walk_error_callback(unsigned n, const H5E_error2_t *err_desc, void *_err_
     return 0;
 }
 
+static hid_t activeStackID = H5E_DEFAULT;
 
 char *defineHDF5LibraryException(int maj_num);
-
 
 /*
  * Class:     ncsa_hdf_hdf5lib_exceptions_HDF5Library
@@ -117,7 +118,7 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_pri
     else {
         file = (char *)ENVPTR->GetStringUTFChars(ENVPAR file_name,0);
         stream = fopen(file, "a+");
-        H5Eprint2(H5E_DEFAULT, stream);
+        H5Eprint2(activeStackID, stream);
         ENVPTR->ReleaseStringUTFChars(ENVPAR file_name, file);
         if (stream) fclose(stream);
     }
@@ -139,7 +140,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_get
 {
     H5E_num_t err_nums;
 
-    H5Ewalk2(H5E_DEFAULT, H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
+    H5Ewalk2(activeStackID, H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
 
     return (int) err_nums.maj_num;
 }
@@ -150,7 +151,7 @@ int getMajorErrorNumber()
     err_nums.maj_num = 0;
     err_nums.min_num = 0;
 
-    H5Ewalk2(H5E_DEFAULT, H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
+    H5Ewalk2(activeStackID, H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
 
     return (int) err_nums.maj_num;
 }
@@ -178,9 +179,30 @@ int getMinorErrorNumber()
     err_nums.maj_num = 0;
     err_nums.min_num = 0;
 
-    H5Ewalk2(H5E_DEFAULT, H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
+    H5Ewalk2(activeStackID, H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
 
     return (int) err_nums.min_num;
+}
+
+int getErrorNumbers(H5E_num_t *err_nums)
+{
+    err_nums->maj_num = 0;
+    err_nums->min_num = 0;
+
+    return H5Ewalk2(activeStackID, H5E_WALK_DOWNWARD, walk_error_callback, err_nums);
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    getDefaultStack
+ * Signature: ()I
+ *
+ *  Get the current HDF-5 error stack id.
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_getDefaultStack
+  (JNIEnv *env, jobject obj)
+{
+    return (jint) activeStackID;
 }
 
 /*
@@ -403,18 +425,26 @@ jboolean h5libraryError( JNIEnv *env )
     char *exception;
     jobject ex;
     char *msg;
-    int rval, min_num, maj_num;
+    int rval;
+    int num_errs = 0;
+    int min_num;
+    int maj_num;
     ssize_t msg_size;
     H5E_type_t error_msg_type;
     jstring str = NULL;
     hid_t stk_id = -1;
-
-    stk_id = H5Eget_current_stack();
-    H5Eset_current_stack(stk_id);
-    maj_num = (int)getMajorErrorNumber();
+    H5E_num_t exceptionNumbers;
+    
+    /* Save current stack contents for future use */
+    stk_id = H5Eget_current_stack(); /* This will clear current stack  */ 
+    H5Eclose_stack(activeStackID);
+    activeStackID = stk_id; /* Set new default */
+    
+    getErrorNumbers(&exceptionNumbers);
+    maj_num = exceptionNumbers.maj_num;
+    min_num = exceptionNumbers.min_num;
+//printf("\nError: Major=%d Minor=%d\n", maj_num, min_num);
     exception = (char *)defineHDF5LibraryException(maj_num);
-    H5Eset_current_stack(stk_id);
-
     jc = ENVPTR->FindClass(ENVPAR exception);
     if (jc == NULL) {
         return JNI_FALSE;
@@ -424,8 +454,10 @@ jboolean h5libraryError( JNIEnv *env )
         return JNI_FALSE;
     }
 
-    H5Eset_current_stack(stk_id);
-    min_num = (int)getMinorErrorNumber();
+    /* get the number of errors on the stack */
+    num_errs = H5Eget_num(stk_id);
+printf("\nErrors [%d]: Major=%d Minor=%d\n", num_errs, maj_num, min_num);
+
     /* get the length of the name */
     msg_size = H5Eget_msg(min_num, NULL, NULL, 0);
     if(msg_size>0) {
@@ -434,13 +466,12 @@ jboolean h5libraryError( JNIEnv *env )
         if(msg) {
             msg_size = H5Eget_msg((hid_t)min_num, &error_msg_type, (char *)msg, (size_t)msg_size);
             str = ENVPTR->NewStringUTF(ENVPAR msg);
+//("\nError message <%s> is size %d\n", msg, msg_size);
             free(msg);
         }
     }
     else
         str = NULL;
- 
-    H5Eclose_stack(stk_id);
 
     args[0] = (char *)str;
     args[1] = 0;

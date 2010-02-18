@@ -371,6 +371,11 @@ public class H5 {
      */
     public synchronized static native int H5error_off();
 
+    /**
+     * Get the current stack id being used by the exception class.
+     */
+    public synchronized static native int getDefaultStack();
+
     // ////////////////////////////////////////////////////////////
     // //
     // H5: General Library Functions //
@@ -479,9 +484,6 @@ public class H5 {
 
     /**
      * H5garbage_collect collects on all free-lists of all types.
-     * <p>
-     * Note: this is new with HDF5.1.2.2. If using an earlier version, use
-     * 'configure --enable-hdf5_1_2_1' so this routine will fail safely.
      * 
      * @return a non-negative value if successful
      * 
@@ -509,8 +511,10 @@ public class H5 {
      * @exception HDF5LibraryException
      *                - Error from the HDF-5 Library.
      **/
-    public synchronized static native int H5Eclear()
-            throws HDF5LibraryException;
+    public static int H5Eclear() throws HDF5LibraryException {
+        H5Eclear2(HDF5Constants.H5E_DEFAULT);
+        return 0;
+    }
 
     // ////////////////////////////////////////////////////////////
     // //

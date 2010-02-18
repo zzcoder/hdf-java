@@ -184,47 +184,19 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5check_1version
 
 
 /*
- *  This is the only routine from H5E currently implemente, so
- *  there is no separate file h5eImp.c
- */
-/*
- * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Eclear
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eclear
-  (JNIEnv *env, jclass clss )
-{
-    herr_t res = -1;
-    res = H5Eclear2(H5E_DEFAULT) ;
-    if (res < 0) {
-        h5raiseException( env,
-        "ncsa/hdf/hdf5lib/exceptions/HDF5LibraryException",
-        "H5Eclear Failed");
-
-    }
-    return (jint) res;
-}
-
-/*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5garbage_collect
  * Signature: ()I
- *
- *  ** New in HDF5.1.2.2:  if linking with earlier version
- *     of HDF5, configure with --enable-hdf5_1_2_1
  *
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5garbage_1collect
   (JNIEnv *env, jclass clss)
 {
     herr_t retVal = -1;
-#ifndef USE_H5_1_2_1
     retVal =  H5garbage_collect();
     if (retVal < 0) {
         h5libraryError(env);
     }
-#endif
     return (jint)retVal;
 }
 
