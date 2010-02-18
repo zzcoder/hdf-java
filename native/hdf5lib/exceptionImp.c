@@ -443,7 +443,6 @@ jboolean h5libraryError( JNIEnv *env )
     getErrorNumbers(&exceptionNumbers);
     maj_num = exceptionNumbers.maj_num;
     min_num = exceptionNumbers.min_num;
-//printf("\nError: Major=%d Minor=%d\n", maj_num, min_num);
     exception = (char *)defineHDF5LibraryException(maj_num);
     jc = ENVPTR->FindClass(ENVPAR exception);
     if (jc == NULL) {
@@ -456,7 +455,6 @@ jboolean h5libraryError( JNIEnv *env )
 
     /* get the number of errors on the stack */
     num_errs = H5Eget_num(stk_id);
-printf("\nErrors [%d]: Major=%d Minor=%d\n", num_errs, maj_num, min_num);
 
     /* get the length of the name */
     msg_size = H5Eget_msg(min_num, NULL, NULL, 0);
@@ -466,7 +464,6 @@ printf("\nErrors [%d]: Major=%d Minor=%d\n", num_errs, maj_num, min_num);
         if(msg) {
             msg_size = H5Eget_msg((hid_t)min_num, &error_msg_type, (char *)msg, (size_t)msg_size);
             str = ENVPTR->NewStringUTF(ENVPAR msg);
-//("\nError message <%s> is size %d\n", msg, msg_size);
             free(msg);
         }
     }
