@@ -7871,4 +7871,34 @@ throws HDF5LibraryException, NullPointerException;
 public synchronized static native int H5Pset_libver_bounds(int fapl_id, long low, long high)
 throws HDF5LibraryException, IllegalArgumentException;
 
+
+/**
+ * H5Pget_link_creation_order queries the group creation property list, gcpl_id, and returns a flag indicating whether link creation order is tracked and/or indexed in a group.  
+ * @param gcpl_id  	IN: Group creation property list identifier
+ * 
+ * @return crt_order_flags -Creation order flag(s)
+ * 
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  
+ **/
+
+public synchronized static native int H5Pget_link_creation_order(int gcpl_id)
+throws HDF5LibraryException;
+
+
+/**
+ * H5Pset_link_creation_order Sets flags in a group creation property list, gcpl_id, for tracking and/or indexing links on creation order. 
+ * @param gcpl_id  	IN: Group creation property list identifier
+ * @param crt_order_flags      	IN: Creation order flag(s)
+ * 
+ * 
+ * @return Returns a non-negative value if successful; otherwise returns a negative value. 
+ * 
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  
+ **/
+
+public synchronized static native int H5Pset_link_creation_order(int gcpl_id, int crt_order_flags)
+throws HDF5LibraryException;
+
 }
