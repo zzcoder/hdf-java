@@ -295,25 +295,26 @@ public class TestH5P {
     	
     	try {
     		gcpl_id = H5.H5Pcreate(HDF5Constants.H5P_FILE_CREATE);
-          } catch (Throwable err) 
+          } 
+    	catch (Throwable err) 
           {
       	   err.printStackTrace();
           }
-          try {
+        try {
         	  crt_order_flags = H5.H5Pget_link_creation_order(gcpl_id);
         	  
-          }catch (Throwable err) {
-        err.printStackTrace();
-        fail("H5Pget_link_creation_order: " + err);
-          } finally
+        }catch (Throwable err) {
+           err.printStackTrace();
+           fail("H5Pget_link_creation_order: " + err);
+        }finally
           {
         	  H5.H5Pclose(gcpl_id);
           }
           
-          //Check the ret_val value, if its is negative then test fails.
+        //Check the ret_val value, if its is negative then test fails.
            assertTrue("testH5Pget_link_creation_order: H5Pget_link_creation_order", crt_order_flags >=0);
            
-           //Negative Test - Error should be thrown when H5Pget_link_creation_order is called for the file who access has been closed.
+        //Negative Test - Error should be thrown when H5Pget_link_creation_order is called for the file who access has been closed.
            try{
         	   H5.H5Pget_link_creation_order(gcpl_id);
         	   fail("Negative Test Failed:- Error not Thrown when Access to File is Closed.");
@@ -331,8 +332,7 @@ public class TestH5P {
     {
     	int ret_val = -1;
     	int gcpl_id = -1;
-    	//int crt_order_flags = HDF5Constants.H5P_CRT_ORDER_TRACKED + HDF5Constants.H5P_CRT_ORDER_INDEXED;
-    	int crt_order_flags = HDF5Constants.H5P_CRT_ORDER_TRACKED;
+    	int crt_order_flags = HDF5Constants.H5P_CRT_ORDER_TRACKED + HDF5Constants.H5P_CRT_ORDER_INDEXED;
     	int crtorderflags = 0;
     	
     	
@@ -367,7 +367,7 @@ public class TestH5P {
         	  /* Setting invalid combination of a group order creation order indexing on should fail */
            		  crt_order_flags = HDF5Constants.H5P_CRT_ORDER_INDEXED;
            		  H5.H5Pset_link_creation_order(gcpl_id, crt_order_flags);
-           		  fail("H5Pset_link_create_order() should have failed for a creation order index with no tracking.");
+           		  fail("H5Pset_link_creation_order() should have failed for a creation order index with no tracking.");
            	  	  }
         	  catch(AssertionError err){fail("H5.H5Pset_link_creation_order: " + err);}
         	  catch(HDF5FunctionArgumentException err){}
@@ -387,6 +387,110 @@ public class TestH5P {
           }
           catch(AssertionError err){
        	   fail("H5.H5Pset_link_creation_order: " + err);
+          }catch(Throwable err){}   
+    }
+    
+    @Test
+    public void testH5Pget_attr_creation_order() throws Throwable, HDF5LibraryException
+    {
+    	int ocpl_id = -1;
+    	int crt_order_flags = 0;
+    	
+    	try {
+    		ocpl_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_CREATE);
+          } 
+    	catch (Throwable err) 
+          {
+      	   err.printStackTrace();
+          }
+        try {
+        	  crt_order_flags = H5.H5Pget_attr_creation_order(ocpl_id);
+        	  
+        }catch (Throwable err) {
+           err.printStackTrace();
+           fail("H5Pget_attr_creation_order: " + err);
+        }finally
+          {
+        	  H5.H5Pclose(ocpl_id);
+          }
+          
+        //Check the ret_val value, if its is negative then test fails.
+           assertTrue("testH5Pget_attr_creation_order: H5Pget_attr_creation_order", crt_order_flags >=0);
+           
+        //Negative Test - Error should be thrown when H5Pget_attr_creation_order is called for the file who access has been closed.
+           try{
+        	   H5.H5Pget_attr_creation_order(ocpl_id);
+        	   fail("Negative Test Failed:- Error not Thrown when Access to File is Closed.");
+           }
+           catch(AssertionError err){
+        	   fail("H5.H5Pget_attr_creation_order: " + err);
+           }catch(Throwable err){}  
+        
+    }
+    
+@Test
+    
+    public void testH5Pset_attr_creation_order() throws Throwable, HDF5LibraryException
+    {
+    	int ret_val = -1;
+    	int ocpl_id = -1;
+    	int crt_order_flags = HDF5Constants.H5P_CRT_ORDER_TRACKED + HDF5Constants.H5P_CRT_ORDER_INDEXED;
+    	int crtorderflags = 0;
+    	
+    	
+    	try {
+    		ocpl_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_CREATE);
+    	  } 
+    	catch (Throwable err) 
+          {
+      	   err.printStackTrace();
+          }
+         try {
+        	         	 
+        	 
+        	  ret_val = H5.H5Pset_attr_creation_order(ocpl_id, crt_order_flags);
+        	  crtorderflags = H5.H5Pget_attr_creation_order(ocpl_id);
+        	  
+        	  //Check the ret_val value, if its is negative then test fails.
+              assertTrue("testH5Pset_attr_creation_order: H5Pset_attr_creation_order", ret_val>=0);
+              
+        	  // Check if the value set by H5Pset_attr_creation_order is equal to value returned from H5Pget_attr_creation_order.
+        	  assertEquals(crt_order_flags, crtorderflags);
+        	  
+        	  
+        	  crt_order_flags = HDF5Constants.H5P_CRT_ORDER_TRACKED;
+        	  ret_val = H5.H5Pset_attr_creation_order(ocpl_id, crt_order_flags);
+        	  
+        	  crtorderflags = H5.H5Pget_attr_creation_order(ocpl_id);
+        	  
+              //Check the if crt_order_flags is equal to the value set H5P_CRT_ORDER_TRACKED
+              assertEquals(crt_order_flags, crtorderflags);
+        	  
+        	  
+           	  try{
+        	  /* Setting invalid combination of a group order creation order indexing on should fail */
+           		  crt_order_flags = HDF5Constants.H5P_CRT_ORDER_INDEXED;
+           		  H5.H5Pset_attr_creation_order(ocpl_id, crt_order_flags);
+           		  fail("H5Pset_attr_creation_order() should have failed for a creation order index with no tracking.");
+           	  	  }
+        	  catch(AssertionError err){fail("H5.H5Pset_attr_creation_order: " + err);}
+        	  catch(HDF5FunctionArgumentException err){}
+       
+         }catch (Throwable err) {
+        	  err.printStackTrace();
+        	  fail("H5Pset_attr_creation_order: " + err);
+          }finally
+          {
+        	  H5.H5Pclose(ocpl_id);
+          }
+                   
+          //Negative Test - Error should be thrown when H5Pset_attr_creation_order is called for the file who access has been closed.
+          try{
+           H5.H5Pset_attr_creation_order(ocpl_id, crt_order_flags);;
+       	   fail("Negative Test Failed:- Error not Thrown when Access to File is Closed.");
+          }
+          catch(AssertionError err){
+       	   fail("H5.H5Pset_attr_creation_order: " + err);
           }catch(Throwable err){}   
     }
     
