@@ -2013,7 +2013,8 @@ public class H5 {
      **/
     public synchronized static native int H5Iget_type(int obj_id)
             throws HDF5LibraryException;
-
+    
+   
     // ////////////////////////////////////////////////////////////
     // //
     // H5P: Property List Interface Functions //
@@ -7901,4 +7902,33 @@ throws HDF5LibraryException;
 public synchronized static native int H5Pset_link_creation_order(int gcpl_id, int crt_order_flags)
 throws HDF5LibraryException;
 
+
+/**
+ * H5Pget_attr_creation_order retrieves the settings for tracking and indexing attribute creation order on an object  
+ * @param ocpl_id  	  	IN: Object (group or dataset) creation property list identifier
+ * 
+ * @return crt_order_flags OUT: Flags specifying whether to track and index attribute creation order 
+ * 
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  
+ **/
+
+public synchronized static native int H5Pget_attr_creation_order(int ocpl_id)
+throws HDF5LibraryException;
+
+
+/**
+ * H5Pset_attr_creation_order sets flags specifying whether to track and index attribute creation order on an object.  
+ * @param ocpl_id  	            IN: Object creation property list identifier
+ * @param crt_order_flags      	IN: Flags specifying whether to track and index attribute creation order
+ * 
+ * 
+ * @return Returns a non-negative value if successful; otherwise returns a negative value. 
+ * 
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  
+ **/
+
+public synchronized static native int H5Pset_attr_creation_order(int ocpl_id, int crt_order_flags)
+throws HDF5LibraryException;
 }

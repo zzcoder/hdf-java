@@ -3169,7 +3169,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1link_1creation_1order
   (JNIEnv * env, jclass clss, jint gcpl_id)
 {
 	herr_t retVal = -1;
-	jboolean isCopy;
 	unsigned crt_order_flags;
 	
 	retVal = H5Pget_link_creation_order((hid_t)gcpl_id, &crt_order_flags);
@@ -3199,6 +3198,49 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1link_1creation_1order
 
 	return (jint)retVal;
 }
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_attr_creation_order
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1attr_1creation_1order
+  (JNIEnv * env, jclass clss, jint ocpl_id)
+{
+	herr_t retVal = -1;
+	unsigned crt_order_flags;
+	
+	retVal = H5Pget_attr_creation_order((hid_t)ocpl_id, &crt_order_flags);
+
+	if(retVal <0){
+		h5libraryError(env);
+	}
+
+	return (jint)crt_order_flags;
+
+}
+
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_attr_creation_order
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1attr_1creation_1order
+  (JNIEnv * env, jclass clss, jint ocpl_id, jint crt_order_flags)
+{
+	herr_t retVal = -1;
+
+	retVal = H5Pset_attr_creation_order((hid_t)ocpl_id, crt_order_flags);
+
+	if(retVal <0){
+		h5libraryError(env);
+	}
+    
+	return (jint)retVal;
+}
+
+
 
 #ifdef __cplusplus
 }
