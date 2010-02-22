@@ -468,7 +468,7 @@ extern "C" {
             h5libraryError(env);
             return NULL;
         }
-        buf_size = status_size + 1;/* add extra space for the null terminator */
+        buf_size = (size_t)status_size + 1;/* add extra space for the null terminator */
         
         lValue = (char*)malloc(sizeof(char) * buf_size);
         if (lValue == NULL) {
@@ -655,7 +655,7 @@ extern "C" {
             str = ENVPTR->NewStringUTF(ENVPAR obj_name);
         }
         else
-            str = ENVPTR->NewStringUTF(ENVPAR lValue);
+          str = ENVPTR->NewStringUTF(ENVPAR (char*)lValue);
         
         if (str == NULL) {
             /* exception -- fatal JNI error */
