@@ -7931,4 +7931,28 @@ throws HDF5LibraryException;
 
 public synchronized static native int H5Pset_attr_creation_order(int ocpl_id, int crt_order_flags)
 throws HDF5LibraryException;
+
+
+//////////////////////////////////////////////////////////////
+////
+//H5I: HDF5 1.8 Identifier Interface API Functions            //
+////
+//////////////////////////////////////////////////////////////
+
+
+/**
+ * H5Iget_type_ref retrieves the reference count on an ID type. The reference count is used by the library to indicate when an ID type can be destroyed. 
+ * 
+ * @param type      	
+ *           IN: The identifier of the type whose reference count is to be retrieved
+ * 
+ * @return the current reference count on success, negative on failure.
+ * 
+ * @exception HDF5LibraryException
+ *                - Error from the HDF-5 Library.
+ **/
+
+public synchronized static native int H5Iget_type_ref(int type)
+throws HDF5LibraryException;
+
 }
