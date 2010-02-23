@@ -209,6 +209,27 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1type_1ref
 
 }
 
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Inmembers
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Inmembers
+  (JNIEnv *env, jclass clss, jint type)
+{
+   herr_t retVal;
+   hsize_t num_members;
+
+   retVal = H5Inmembers((H5I_type_t)type, &num_members);
+
+   if (retVal <0){
+		h5libraryError(env);
+	}
+
+   return (jint)num_members;
+
+}
+
 
 #ifdef __cplusplus
 }
