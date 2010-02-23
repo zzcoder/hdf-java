@@ -182,6 +182,33 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1file_1id
     return (jint) file_id;
 }
 
+/**********************************************************************
+ *                                                                    *
+ *          New functions release 1.8.0                               *
+ *                                                                    *
+ **********************************************************************/
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Iget_type_ref
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Iget_1type_1ref
+  (JNIEnv *env, jclass clss, jint type)
+{
+	int retVal;
+
+	retVal = H5Iget_type_ref((H5I_type_t)type);
+
+	
+	if (retVal <0){
+		h5libraryError(env);
+	}
+
+	return (jint)retVal;
+
+}
+
 
 #ifdef __cplusplus
 }
