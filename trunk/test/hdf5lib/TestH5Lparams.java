@@ -164,4 +164,14 @@ public class TestH5Lparams {
         H5.H5Lget_val_by_idx(-1, null, 0, 0, 0L, 0);
     }
 
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Ldelete_by_idx_invalid() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Ldelete_by_idx(-1, "Bogus", -1, -1, -1L, -1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Ldelete_by_idx_null() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Ldelete_by_idx(-1, null, 0, 0, 0L, 0);
+    }
+
 }

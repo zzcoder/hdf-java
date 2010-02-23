@@ -9,6 +9,7 @@ import java.io.File;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
+import ncsa.hdf.hdf5lib.exceptions.HDF5FunctionArgumentException;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 import ncsa.hdf.hdf5lib.exceptions.HDF5SymbolTableException;
 import ncsa.hdf.hdf5lib.structs.H5L_info_t;
@@ -61,6 +62,10 @@ public class TestH5Lcreate {
     private final int _createGroup(int fid, String name) {
         int gid = -1;
         try {
+//            int lcpl = H5.H5Pcreate_list(HDF5Constants.H5P_LINK_CREATE);
+//            int lcpl = H5.H5Pcreate_list(HDF5Constants.H5P_DEFAULT);
+//            H5.H5Pset_link_creation_order(lcpl, HDF5Constants.H5P_CRT_ORDER_TRACKED);
+//            H5.H5Pset_link_creation_order(lcpl, HDF5Constants.H5P_CRT_ORDER_INDEXED);
             gid = H5.H5Gcreate2(fid, name, HDF5Constants.H5P_DEFAULT,
                         HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
         }
@@ -154,7 +159,7 @@ public class TestH5Lcreate {
         _deleteFile(H5_FILE);
     }
 
-    @Test(expected = HDF5SymbolTableException.class)
+    @Test(expected = HDF5LibraryException.class)
     public void testH5Lcreate_hard_cur_not_exists() throws Throwable, HDF5LibraryException, NullPointerException {
         H5.H5Lcreate_hard(H5fid, "None", H5fid, "DS1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
     }
@@ -167,7 +172,7 @@ public class TestH5Lcreate {
         assertTrue("testH5Lcreate_hard:H5Lexists ",link_exists);
     }
 
-    @Test(expected = HDF5SymbolTableException.class)
+    @Test(expected = HDF5LibraryException.class)
     public void testH5Lcreate_hard_dst_link_exists() throws Throwable, HDF5LibraryException, NullPointerException {
         _createHardLink(H5fid, H5fid, "/G1/DS2", H5fid, "L1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
         H5.H5Lcreate_hard(H5fid, "L1", H5fid, "/G1/DS2", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
@@ -190,7 +195,7 @@ public class TestH5Lcreate {
         assertTrue("testH5Lcreate_soft:H5Lexists ",link_exists);
     }
 
-    @Test(expected = HDF5SymbolTableException.class)
+    @Test(expected = HDF5LibraryException.class)
     public void testH5Lcreate_soft_dst_link_exists() throws Throwable, HDF5LibraryException, NullPointerException {
         _createSoftLink(H5fid, "/G1/DS2", H5fid, "L1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
         H5.H5Lcreate_soft("L1", H5fid, "/G1/DS2", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
@@ -338,7 +343,7 @@ public class TestH5Lcreate {
         assertTrue("Link Filename ",link_file.compareTo(H5_EXTFILE)==0);
     }
 
-    @Test(expected = HDF5SymbolTableException.class)
+    @Test(expected = HDF5LibraryException.class)
     public void testH5Lcopy_cur_not_exists() throws Throwable, HDF5LibraryException, NullPointerException {
         H5.H5Lcopy(H5fid, "None", H5fid, "DS1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
     }
@@ -351,13 +356,13 @@ public class TestH5Lcreate {
         assertTrue("testH5Lcopy:H5Lexists ",link_exists);
     }
 
-    @Test(expected = HDF5SymbolTableException.class)
+    @Test(expected = HDF5LibraryException.class)
     public void testH5Lcopy_dst_link_exists() throws Throwable, HDF5LibraryException, NullPointerException {
         _createHardLink(H5fid, H5fid, "/G1/DS2", H5fid, "CPY1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
         H5.H5Lcopy(H5fid, "CPY1", H5fid, "/G1/DS2", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
     }
 
-    @Test(expected = HDF5SymbolTableException.class)
+    @Test(expected = HDF5LibraryException.class)
     public void testH5Lmove_cur_not_exists() throws Throwable, HDF5LibraryException, NullPointerException {
         H5.H5Lmove(H5fid, "None", H5fid, "DS1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
     }
@@ -372,19 +377,24 @@ public class TestH5Lcreate {
         assertFalse("testH5Lcopy:H5Lexists ",link_exists);
     }
 
-    @Test(expected = HDF5SymbolTableException.class)
+    @Test(expected = HDF5LibraryException.class)
     public void testH5Lmove_dst_link_exists() throws Throwable, HDF5LibraryException, NullPointerException {
         _createHardLink(H5fid, H5fid, "/G1/DS2", H5fid, "CPY1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
         H5.H5Lmove(H5fid, "CPY1", H5fid, "/G1/DS2", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
     }
 
-    @Test(expected = HDF5SymbolTableException.class)
-    public void testH5Lget_val_by_idx_not_exist() throws Throwable, HDF5LibraryException, NullPointerException {
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Lget_val_by_idx_not_exist_name() throws Throwable, HDF5LibraryException, NullPointerException {
         H5.H5Lget_val_by_idx(H5fid, "None", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
     }
 
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Lget_val_by_idx_not_exist_create() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Lget_val_by_idx(H5fid, "None", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
+    }
+
     @Test
-    public void testH5Lget_val_by_idx_n2() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Lget_val_by_idx_n2_name() throws Throwable, HDF5LibraryException, NullPointerException {
         H5L_info_t link_info = null;
         String link_value = null;
         _createSoftLink(H5fid, "/G1/DS2", H5fid, "LS", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
@@ -395,8 +405,8 @@ public class TestH5Lcreate {
             err.printStackTrace();
             fail("H5.H5Lget_info_by_idx: " + err);
         }
-        assertFalse("testH5Lget_val_by_idx_n0 ",link_info==null);
-        assertTrue("testH5Lget_val_by_idx_n0 link type",link_info.type==HDF5Constants.H5L_TYPE_SOFT);
+        assertFalse("testH5Lget_val_by_idx_n2 ",link_info==null);
+        assertTrue("testH5Lget_val_by_idx_n2 link type",link_info.type==HDF5Constants.H5L_TYPE_SOFT);
         try {
             link_value = H5.H5Lget_val_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 2, HDF5Constants.H5P_DEFAULT);
         }
@@ -404,12 +414,37 @@ public class TestH5Lcreate {
             err.printStackTrace();
             fail("H5.H5Lget_val_by_idx: " + err);
         }
-        assertFalse("testH5Lget_val_by_idx_n0 ",link_value==null);
-        assertTrue("testH5Lget_val_by_idx_n0 Link Value ", link_value.compareTo("/G1/DS2")==0);
+        assertFalse("testH5Lget_val_by_idx_n2 ",link_value==null);
+        assertTrue("testH5Lget_val_by_idx_n2 Link Value ", link_value.compareTo("/G1/DS2")==0);
     }
 
+//    @Test
+//    public void testH5Lget_val_by_idx_n2_create() throws Throwable, HDF5LibraryException, NullPointerException {
+//        H5L_info_t link_info = null;
+//        String link_value = null;
+//        _createSoftLink(H5fid, "/G1/DS2", H5fid, "LS", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+//        try {
+//            link_info = H5.H5Lget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 2, HDF5Constants.H5P_DEFAULT);
+//        }
+//        catch (Throwable err) {
+//            err.printStackTrace();
+//            fail("H5.H5Lget_info_by_idx: " + err);
+//        }
+//        assertFalse("testH5Lget_val_by_idx_n2 ",link_info==null);
+//        assertTrue("testH5Lget_val_by_idx_n2 link type",link_info.type==HDF5Constants.H5L_TYPE_SOFT);
+//        try {
+//            link_value = H5.H5Lget_val_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 2, HDF5Constants.H5P_DEFAULT);
+//        }
+//        catch (Throwable err) {
+//            err.printStackTrace();
+//            fail("H5.H5Lget_val_by_idx: " + err);
+//        }
+//        assertFalse("testH5Lget_val_by_idx_n2 ",link_value==null);
+//        assertTrue("testH5Lget_val_by_idx_n2 Link Value ", link_value.compareTo("/G1/DS2")==0);
+//    }
+
     @Test
-    public void testH5Lget_val_by_idx_external() throws Throwable, HDF5LibraryException, NullPointerException {
+    public void testH5Lget_val_by_idx_external_name() throws Throwable, HDF5LibraryException, NullPointerException {
         H5L_info_t link_info = null;
         String link_value = null;
         _createExternalLink(H5fid, H5_EXTFILE, "DT1", H5fid, "LE", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
@@ -432,5 +467,106 @@ public class TestH5Lcreate {
         assertFalse("testH5Lget_val_by_idx_ext ",link_value==null);
         assertTrue("testH5Lget_val_by_idx_ext Link Value ",link_value.compareTo("DT1")==0);
     }
+
+//    @Test
+//    public void testH5Lget_val_by_idx_external_create() throws Throwable, HDF5LibraryException, NullPointerException {
+//        H5L_info_t link_info = null;
+//        String link_value = null;
+//        _createExternalLink(H5fid, H5_EXTFILE, "DT1", H5fid, "LE", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+//        try {
+//            link_info = H5.H5Lget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 2, HDF5Constants.H5P_DEFAULT);
+//        }
+//        catch (Throwable err) {
+//            err.printStackTrace();
+//            fail("H5.H5Lget_info_by_idx: " + err);
+//        }
+//        assertFalse("testH5Lget_val_by_idx_ext ",link_info==null);
+//        assertTrue("testH5Lget_val_by_idx_ext link type "+link_info.type,link_info.type==HDF5Constants.H5L_TYPE_EXTERNAL);
+//        try {
+//            link_value = H5.H5Lget_val_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 2, HDF5Constants.H5P_DEFAULT);
+//        }
+//        catch (Throwable err) {
+//            err.printStackTrace();
+//            fail("H5.H5Lget_val_by_idx: " + err);
+//        }
+//        assertFalse("testH5Lget_val_by_idx_ext ",link_value==null);
+//        assertTrue("testH5Lget_val_by_idx_ext Link Value ",link_value.compareTo("DT1")==0);
+//    }
+
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Ldelete_by_idx_not_exist_name() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Ldelete_by_idx(H5fid, "None", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
+    }
+
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Ldelete_by_idx_not_exist_create() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Ldelete_by_idx(H5fid, "None", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
+    }
+
+    @Test
+    public void testH5Ldelete_by_idx_n2_name() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5L_info_t link_info = null;
+        _createSoftLink(H5fid, "/G1/DS2", H5fid, "LS", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        try {
+            link_info = H5.H5Lget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 2, HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Lget_info_by_idx: " + err);
+        }
+        assertFalse("testH5Ldelete_by_idx_n2 ",link_info==null);
+        assertTrue("testH5Ldelete_by_idx_n2 link type",link_info.type==HDF5Constants.H5L_TYPE_SOFT);
+        try {
+            H5.H5Ldelete_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 2, HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Ldelete_by_idx: " + err);
+        }
+        try {
+            link_info = H5.H5Lget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 2, HDF5Constants.H5P_DEFAULT);
+        }
+        catch (HDF5LibraryException err) {
+            link_info = null;
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Ldelete_by_idx: " + err);
+        }
+        assertTrue("testH5Ldelete_by_idx_n2 ",link_info==null);
+    }
+
+//    @Test
+//    public void testH5Ldelete_by_idx_n2_create() throws Throwable, HDF5LibraryException, NullPointerException {
+//        H5L_info_t link_info = null;
+//        _createSoftLink(H5fid, "/G1/DS2", H5fid, "LS", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+//        try {
+//            link_info = H5.H5Lget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 2, HDF5Constants.H5P_DEFAULT);
+//        }
+//        catch (Throwable err) {
+//            err.printStackTrace();
+//            fail("H5.H5Lget_info_by_idx: " + err);
+//        }
+//        assertFalse("testH5Ldelete_by_idx_n2 ",link_info==null);
+//        assertTrue("testH5Ldelete_by_idx_n2 link type",link_info.type==HDF5Constants.H5L_TYPE_SOFT);
+//        try {
+//            H5.H5Ldelete_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 2, HDF5Constants.H5P_DEFAULT);
+//        }
+//        catch (Throwable err) {
+//            err.printStackTrace();
+//            fail("H5.H5Ldelete_by_idx: " + err);
+//        }
+//        try {
+//            link_info = H5.H5Lget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 2, HDF5Constants.H5P_DEFAULT);
+//        }
+//        catch (HDF5SymbolTableException err) {
+//            link_info = null;
+//        }
+//        catch (Throwable err) {
+//            err.printStackTrace();
+//            fail("H5.H5Ldelete_by_idx: " + err);
+//        }
+//        assertTrue("testH5Ldelete_by_idx_n2 ",link_info==null);
+//    }
 
 }

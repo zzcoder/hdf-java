@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
+import ncsa.hdf.hdf5lib.exceptions.HDF5FunctionArgumentException;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 import ncsa.hdf.hdf5lib.exceptions.HDF5SymbolTableException;
 import ncsa.hdf.hdf5lib.structs.H5L_info_t;
@@ -70,7 +71,7 @@ public class TestH5Lbasic {
         assertTrue("H5Lexists ",link_exists);
     }
 
-    @Test(expected = HDF5SymbolTableException.class)
+    @Test(expected = HDF5LibraryException.class)
     public void testH5Lget_info_not_exist() throws Throwable, HDF5LibraryException, NullPointerException {
         H5.H5Lget_info(H5fid, "None", HDF5Constants.H5P_DEFAULT);
     }
@@ -106,9 +107,24 @@ public class TestH5Lbasic {
         H5la_l1 = link_info.address_val_size;
     }
 
-    @Test(expected = HDF5SymbolTableException.class)
-    public void testH5Lget_info_by_idx_not_exist() throws Throwable, HDF5LibraryException, NullPointerException {
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Lget_info_by_idx_name_not_exist_name() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Lget_info_by_idx(H5fid, "None", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
+    }
+
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Lget_info_by_idx_name_not_exist_create() throws Throwable, HDF5LibraryException, NullPointerException {
         H5.H5Lget_info_by_idx(H5fid, "None", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
+    }
+
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Lget_info_by_idx_not_exist_name() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Lget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 5, HDF5Constants.H5P_DEFAULT);
+    }
+
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Lget_info_by_idx_not_exist_create() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Lget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 5, HDF5Constants.H5P_DEFAULT);
     }
 
     @Test
@@ -141,7 +157,7 @@ public class TestH5Lbasic {
         assertTrue("Link Address ",link_info.address_val_size==H5la_l1);
     }
 
-    @Test(expected = HDF5SymbolTableException.class)
+    @Test(expected = HDF5LibraryException.class)
     public void testH5Lget_name_by_idx_not_exist() throws Throwable, HDF5LibraryException, NullPointerException {
         H5.H5Lget_name_by_idx(H5fid, "None", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
     }

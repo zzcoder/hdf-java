@@ -95,7 +95,7 @@ public class TestH5Sbasic {
         H5.H5Screate_simple(5, dims, null);
     }
 
-    @Test(expected = HDF5FunctionArgumentException.class)
+    @Test(expected = HDF5LibraryException.class)
     public void testH5Screate_simple_dims_exceed()
             throws Throwable, HDF5LibraryException, NullPointerException {
         long dims[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,
@@ -103,7 +103,7 @@ public class TestH5Sbasic {
         H5.H5Screate_simple(35, dims, null);
     }
 
-    @Test(expected = HDF5FunctionArgumentException.class)
+    @Test(expected = HDF5LibraryException.class)
     public void testH5Screate_simple_dims_zero()
             throws Throwable, HDF5LibraryException, NullPointerException {
         long dims[] = {0, 0};
