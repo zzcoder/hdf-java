@@ -58,7 +58,7 @@ public class TestH5T {
         _deleteFile(H5_FILE);
     }
     
-    @Test(expected = HDF5FunctionArgumentException.class)
+    @Test(expected = HDF5LibraryException.class)
     public void testH5Tequal_type_error() throws Throwable, HDF5LibraryException {
         H5.H5Tequal(HDF5Constants.H5T_INTEGER, H5strdid);
     }

@@ -371,11 +371,6 @@ public class H5 {
      */
     public synchronized static native int H5error_off();
 
-    /**
-     * Get the current stack id being used by the exception class.
-     */
-    public synchronized static native int getDefaultStack();
-
     // ////////////////////////////////////////////////////////////
     // //
     // H5: General Library Functions //
@@ -6754,6 +6749,26 @@ public class H5 {
      *  @exception NullPointerException - name is null.
      **/
     public synchronized static native void H5Ldelete(int loc_id, String name, int lapl_id)
+    throws HDF5LibraryException, NullPointerException;
+
+    /**
+     *  H5Ldelete_by_idx removes the nth link in a group according to the specified order 
+     *  and in the specified index.
+     *
+     *  @param loc_id     IN: File or group identifier specifying location of subject group
+     *  @param group_name IN: Name of subject group
+     *  @param idx_type   IN: Index or field which determines the order 
+     *  @param order      IN: Order within field or index
+     *  @param n          IN: Link for which to retrieve information 
+     *  @param lapl_id    IN: Link access property list identifier 
+     *
+     *  @return none
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - group_name is null.
+     **/
+    public synchronized static native void H5Ldelete_by_idx(int loc_id, String group_name,
+        int idx_type, int order, long n, int lapl_id)
     throws HDF5LibraryException, NullPointerException;
 
     /**
