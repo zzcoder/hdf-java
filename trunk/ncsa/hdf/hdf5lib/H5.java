@@ -7985,4 +7985,30 @@ throws HDF5LibraryException;
 public synchronized static native int H5Inmembers(int type)
 throws HDF5LibraryException;
 
+
+//////////////////////////////////////////////////////////////
+////
+//H5A: HDF5 1.8 Attribute Interface API Functions           //
+////
+//////////////////////////////////////////////////////////////
+
+/**
+ * H5Acreate2 creates an attribute, attr_name, which is attached to the object specified by the identifier loc_id.  
+ * 
+ * @param loc_id        	IN: Location or object identifier; may be dataset or group 
+ * @param attr_name      	IN: Attribute name 
+ * @param type_id   	    IN: Attribute datatype identifier 
+ * @param space_id   	    IN: Attribute dataspace identifier
+ * @param acpl_id   	    IN: Attribute creation property list identifier 
+ * @param aapl_id   	    IN: Attribute access property list identifier 
+ * 
+ * @return  An attribute identifier if successful; otherwise returns a negative value. 
+ * 
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ * @exception NullPointerException - Name is null.
+ **/
+
+public synchronized static native int H5Acreate2( int loc_id, String attr_name, int type_id, int space_id, int acpl_id, int aapl_id ) 
+throws HDF5LibraryException, NullPointerException;
+
 }
