@@ -13,7 +13,7 @@ import org.junit.runners.Suite;
         TestH5Dparams.class, TestH5D.class,
         TestH5Lparams.class, TestH5Lbasic.class, TestH5Lcreate.class,
         TestH5R.class, 
-        TestH5P.class
+        TestH5P.class, TestH5A.class
 })
 public class TestAll {
 }

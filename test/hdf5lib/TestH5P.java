@@ -363,14 +363,14 @@ public class TestH5P {
               //Check the if crt_order_flags is equal to the value set H5P_CRT_ORDER_TRACKED
               assertEquals(crt_order_flags, crtorderflags);
         	  
-           	  try{
+           	  try {
         	  /* Setting invalid combination of a group order creation order indexing on should fail */
            		  crt_order_flags = HDF5Constants.H5P_CRT_ORDER_INDEXED;
            		  H5.H5Pset_link_creation_order(gcpl_id, crt_order_flags);
            		  fail("H5Pset_link_creation_order() should have failed for a creation order index with no tracking.");
-           	  	  }
+           	  }
         	  catch(AssertionError err){fail("H5.H5Pset_link_creation_order: " + err);}
-        	  catch(HDF5FunctionArgumentException err){}
+        	  catch(HDF5LibraryException err){}
        
          }catch (Throwable err) {
         	  err.printStackTrace();
@@ -474,7 +474,7 @@ public class TestH5P {
            		  fail("H5Pset_attr_creation_order() should have failed for a creation order index with no tracking.");
            	  	  }
         	  catch(AssertionError err){fail("H5.H5Pset_attr_creation_order: " + err);}
-        	  catch(HDF5FunctionArgumentException err){}
+        	  catch(HDF5LibraryException err){}
        
          }catch (Throwable err) {
         	  err.printStackTrace();
