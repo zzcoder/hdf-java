@@ -662,6 +662,86 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Acreate2
     return (jint)status;
 }
 
+
+/**********************************************************************
+ *                                                                    *
+ *          New functions release 1.8.0                               *
+ *                                                                    *
+ **********************************************************************/
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    _H5Acreate2
+ * Signature: (ILjava/lang/String;IIII)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Acreate2
+(JNIEnv *env, jclass clss, jint loc_id, jstring name, jint type_id,
+  jint space_id, jint create_plist, jint access_plist)
+{
+    hid_t status;
+    char* aName;
+    jboolean isCopy;
+
+    if (name == NULL) {
+        h5nullArgument( env, "H5Acreate2:  name is NULL");
+        return -1;
+    }
+
+    aName = (char *)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
+
+    if (aName == NULL) {
+        h5JNIFatalError( env, "H5Acreate2: aName is not pinned");
+        return -1;
+    }
+
+	status = H5Acreate2((hid_t)loc_id, aName, (hid_t)type_id,
+        (hid_t)space_id, (hid_t)create_plist, (hid_t)access_plist );
+
+    ENVPTR->ReleaseStringUTFChars(ENVPAR name,aName);
+
+    if (status < 0) {
+        h5libraryError(env);
+    }
+    return (jint)status;
+}
+
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    _H5Aopen
+ * Signature: (ILjava/lang/String;I)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aopen
+  (JNIEnv *env, jclass clss, jint obj_id, jstring name, jint access_plist)
+
+{
+   hid_t retVal;
+   char* aName;
+   jboolean isCopy;
+
+   if (name == NULL) {
+        h5nullArgument( env, "H5Aopen:  name is NULL");
+        return -1;
+    }
+
+    aName = (char *)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
+
+    if (aName == NULL) {
+        h5JNIFatalError( env, "H5Aopen: aName is not pinned");
+        return -1;
+    }
+
+	retVal = H5Aopen((hid_t)obj_id, aName, (hid_t)access_plist); 
+
+	ENVPTR->ReleaseStringUTFChars(ENVPAR name,aName);
+
+    if (retVal< 0) {
+        h5libraryError(env);
+    }
+    return (jint)retVal;
+
+}
+
 #ifdef __cplusplus
 }
 #endif
