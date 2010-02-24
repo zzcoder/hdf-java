@@ -8008,7 +8008,41 @@ throws HDF5LibraryException;
  * @exception NullPointerException - Name is null.
  **/
 
-public synchronized static native int H5Acreate2( int loc_id, String attr_name, int type_id, int space_id, int acpl_id, int aapl_id ) 
+public static int H5Acreate2( int loc_id, String attr_name, int type_id, int space_id, int acpl_id, int aapl_id )
+throws HDF5LibraryException, NullPointerException {
+	int id = _H5Acreate2(loc_id, attr_name, type_id, space_id, acpl_id, aapl_id );
+	if (id > 0)
+		OPEN_IDS.addElement(id);
+	return id;
+}
+
+private synchronized static native int _H5Acreate2( int loc_id, String attr_name, int type_id, int space_id, int acpl_id, int aapl_id ) 
+throws HDF5LibraryException, NullPointerException;
+
+/**
+ * H5Aopen opens an existing attribute, attr_name, that is attached to an object specified an object identifier, object_id.
+ * 
+ * @param obj_id        	IN: Identifer for object to which attribute is attached 
+ * @param attr_name      	IN: Name of attribute to open  
+ * @param aapl_id   	    IN: Attribute access property list identifier 
+ * 
+ * @return  An attribute identifier if successful; otherwise returns a negative value. 
+ * 
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ * @exception NullPointerException - Name is null.
+ **/
+public static int H5Aopen(int obj_id, String attr_name, int aapl_id)
+throws HDF5LibraryException, NullPointerException {
+	int id = _H5Aopen(obj_id, attr_name, aapl_id);
+	if (id > 0)
+		OPEN_IDS.addElement(id);
+	return id;
+}
+
+private synchronized static native int _H5Aopen(int obj_id, String attr_name, int aapl_id) 
 throws HDF5LibraryException, NullPointerException;
 
 }
+
+
+

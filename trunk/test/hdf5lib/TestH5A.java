@@ -119,10 +119,61 @@ public class TestH5A {
         	H5.H5Sclose(space_id);
         	H5.H5Aclose(atrr_id);
         	}
-    	
+        
         assertTrue("testH5Acreate2: H5Acreate2", atrr_id>=0);
-            
+        
+     
     }
+    
+    @Test
+    public void testH5Aopen() throws Throwable, HDF5LibraryException {
+    	
+    	 int atrr_id = -1;
+    	 int attribute_id = -1;
+         int obj_id=  H5did;
+         String attr_name= "dset";
+         int type_id = -1;
+         int space_id = -1;
+         int acpl_id = HDF5Constants.H5P_DEFAULT;
+         int aapl_id = HDF5Constants.H5P_DEFAULT;
+     	
+         try{
+         	type_id = H5.H5Tcreate(HDF5Constants.H5T_ENUM, (long)1);
+         	space_id = H5.H5Screate(HDF5Constants.H5S_NULL);
+         	}
+         catch(Throwable err){
+         	err.printStackTrace();
+             fail("H5.H5Tcreate: " + err);
+             fail("H5.H5Screate: " + err);
+         	}
+         
+         try {
+        	 //Creating an attribute, attr_name attached to an object identifier.
+         	atrr_id = H5.H5Acreate2(obj_id, attr_name, type_id, space_id, acpl_id, aapl_id );
+         	} 
+         catch (Throwable err) {
+             err.printStackTrace();
+             fail("H5.H5Acreate2: " + err);
+         	}
+         try {
+        	  //Opening the existing attribute, attr_name(Created by H5ACreate2) attached to an object identifier.
+        	 attribute_id = H5.H5Aopen(obj_id, attr_name, aapl_id);
+         	} 
+         catch (Throwable err) {
+             err.printStackTrace();
+             fail("H5.H5Aopen: " + err);
+         	}
+         finally{
+         	H5.H5Tclose(type_id);
+         	H5.H5Sclose(space_id);
+         	H5.H5Aclose(atrr_id);
+         	H5.H5Aclose(attribute_id);
+         	}
+         
+         assertTrue("testH5Aopen: H5Aopen", attribute_id>=0);
+       
+    }
+    
 
  
 }
