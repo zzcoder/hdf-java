@@ -8042,6 +8042,35 @@ throws HDF5LibraryException, NullPointerException {
 private synchronized static native int _H5Aopen(int obj_id, String attr_name, int aapl_id) 
 throws HDF5LibraryException, NullPointerException;
 
+
+/**
+ * H5Aopen_by_idx opens an existing attribute that is attached to an object specified by location and name, loc_id and obj_name, respectively
+ * 
+ * @param loc_id        	IN: Location of object to which attribute is attached  
+ * @param obj_name      	IN: Name of object to which attribute is attached, relative to location  
+ * @param idx_type   	    IN: Type of index
+ * @param order      	    IN: Index traversal order  
+ * @param n             	IN: Attribute’s position in index 
+ * @param aapl_id   	    IN: Attribute access property list 
+ * @param lapl_id   	    IN: Link access property list 
+ * 
+ * @return  An attribute identifier if successful; otherwise returns a negative value. 
+ * 
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ * @exception NullPointerException - Name is null.
+ **/
+
+public static int H5Aopen_by_idx(int loc_id, String obj_name, int idx_type, int order ,int n, int aapl_id, int lapl_id) 
+throws HDF5LibraryException, NullPointerException {
+	int id = _H5Aopen_by_idx(loc_id, obj_name, idx_type, order , n, aapl_id, lapl_id);
+	if (id > 0)
+		OPEN_IDS.addElement(id);
+	return id;
+}
+
+private synchronized static native int _H5Aopen_by_idx(int loc_id, String obj_name, int idx_type, int order ,int n, int aapl_id, int lapl_id)
+throws HDF5LibraryException, NullPointerException;
+
 }
 
 

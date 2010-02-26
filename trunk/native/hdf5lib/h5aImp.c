@@ -742,6 +742,42 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aopen
 
 }
 
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    _H5Aopen_by_idx
+ * Signature: (ILjava/lang/String;IIIII)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aopen_1by_1idx
+  (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint idx_type, jint order, jint n, jint aapl_id, jint lapl_id)
+{
+	hid_t retVal;
+	char* aName;
+	jboolean isCopy;
+
+	if (name == NULL) {
+        h5nullArgument( env, "H5Aopen_by_idx:  name is NULL");
+        return -1;
+	}
+
+    aName = (char *)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
+
+    if (aName == NULL) {
+        h5JNIFatalError( env, "H5Aopen_by_idx: aName is not pinned");
+        return -1;
+    }
+
+	retVal = H5Aopen_by_idx((hid_t)loc_id, aName, (H5_index_t)idx_type, (H5_iter_order_t)order, (hsize_t)n, (hid_t)aapl_id, (hid_t)lapl_id); 
+
+	ENVPTR->ReleaseStringUTFChars(ENVPAR name,aName);
+
+    if (retVal< 0) {
+        h5libraryError(env);
+    }
+    return (jint)retVal;
+
+}
+
+
 #ifdef __cplusplus
 }
 #endif
