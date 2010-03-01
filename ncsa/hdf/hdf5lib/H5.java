@@ -7665,65 +7665,12 @@ throws HDF5LibraryException, NullPointerException;
 public synchronized static native void H5Dset_extent(int dset_id, long size[])
 throws HDF5LibraryException, NullPointerException;
 
-    // //////////////////////////////////////////////////////////////////
-    // //
-    // //////////////////////////////////////////////////////////////////
-
+   
     // //////////////////////////////////////////////////////////////////
     // H5A //
     // //////////////////////////////////////////////////////////////////
 
-    // /**
-    // * H5Acreate2 creates an attribute which is attached to the
-    // * object specified with loc_id.
-    // *
-    // * @param loc_id IN: Object (dataset, group, or named datatype) to be
-    // attached to.
-    // * @param attr_name IN: Name of attribute to create.
-    // * @param type_id IN: Identifier of datatype for attribute.
-    // * @param space_id IN: Identifier of dataspace for attribute.
-    // * @param acpl_id IN: Identifier of creation property list (currently not
-    // used).
-    // * @param aapl_id IN: Identifier of access property list (currently not
-    // used).
-    // *
-    // * @return an attribute identifier if successful
-    // *
-    // * @exception HDF5LibraryException - Error from the HDF-5 Library.
-    // * @exception NullPointerException - name is null.
-    // **/
-    // public synchronized static native int H5Acreate2(int loc_id, String
-    // attr_name, int type_id,
-    // int space_id, int acpl_id, int aapl_id)
-    // throws HDF5LibraryException, NullPointerException;
-    //
-    // /**
-    // * H5Acreate_by_name creates an attribute which is attached to the
-    // * object specified with loc_id and obj_name.
-    // *
-    // * @param loc_id IN: Object (dataset, group, or named datatype) to be
-    // attached to.
-    // * @param obj_name IN: Name, relative to loc_id, of object that attribute
-    // is to be attached to.
-    // * @param attr_name IN: Name of attribute to create.
-    // * @param type_id IN: Identifier of datatype for attribute.
-    // * @param space_id IN: Identifier of dataspace for attribute.
-    // * @param acpl_id IN: Identifier of creation property list (currently not
-    // used).
-    // * @param aapl_id IN: Identifier of access property list (currently not
-    // used).
-    // * @param lapl_id IN: Identifier of link access property list.
-    // *
-    // * @return an attribute identifier if successful
-    // *
-    // * @exception HDF5LibraryException - Error from the HDF-5 Library.
-    // * @exception NullPointerException - name is null.
-    // **/
-    // public synchronized static native int H5Acreate_by_name(int loc_id,
-    // String obj_name, String attr_name,
-    // int type_id, int space_id, int acpl_id, int aapl_id, int lapl_id)
-    // throws HDF5LibraryException, NullPointerException;
-    //
+    
     // /**
     // * H5Adelete_by_name removes the attribute attr_name from an object
     // * specified by location and name, loc_id and obj_name, respectively.
@@ -7758,27 +7705,6 @@ throws HDF5LibraryException, NullPointerException;
     // **/
     // public synchronized static native boolean H5Aexists(int obj_id, String
     // attr_name)
-    // throws HDF5LibraryException, NullPointerException;
-    //
-    // /**
-    // * H5Aexists_by_name determines whether the attribute attr_name exists on
-    // an object. That object is
-    // * specified by its location and name, loc_id and obj_name, respectively.
-    // *
-    // * @param loc_id IN: Location of object to which attribute is attached .
-    // * @param obj_name IN: Name, relative to loc_id, of object that attribute
-    // is attached to.
-    // * @param attr_name IN: Name of attribute.
-    // * @param lapl_id IN: Identifier of link access property list.
-    // *
-    // * @return boolean true if an attribute with a given name exists.
-    // *
-    // * @exception HDF5LibraryException - Error from the HDF-5 Library.
-    // * @exception NullPointerException - name is null.
-    // **/
-    // public synchronized static native boolean H5Aexists_by_name(int obj_id,
-    // String obj_name,
-    // String attr_name, int lapl_id)
     // throws HDF5LibraryException, NullPointerException;
 
 
@@ -8050,7 +7976,7 @@ throws HDF5LibraryException, NullPointerException;
  * @param obj_name      	IN: Name of object to which attribute is attached, relative to location  
  * @param idx_type   	    IN: Type of index
  * @param order      	    IN: Index traversal order  
- * @param n             	IN: Attribute’s position in index 
+ * @param n             	IN: Attribute's position in index 
  * @param aapl_id   	    IN: Attribute access property list 
  * @param lapl_id   	    IN: Link access property list 
  * 
@@ -8070,6 +7996,71 @@ throws HDF5LibraryException, NullPointerException {
 
 private synchronized static native int _H5Aopen_by_idx(int loc_id, String obj_name, int idx_type, int order ,int n, int aapl_id, int lapl_id)
 throws HDF5LibraryException, NullPointerException;
+
+/**
+* H5Acreate_by_name creates an attribute, attr_name, which is attached to the object specified by loc_id and obj_name.
+*
+* @param loc_id				IN: Location or object identifier; may be dataset or group
+* @param obj_name			IN: Name, relative to loc_id, of object that attribute is to be attached to
+* @param attr_name			IN: Attribute name 
+* @param type_id			IN: Attribute datatype identifier
+* @param space_id 			IN: Attribute dataspace identifier 
+* @param acpl_id 			IN: Attribute creation property list identifier (currently not used).
+* @param aapl_id 			IN: Attribute access property list identifier (currently not used).
+* @param lapl_id			IN: Link access property list 
+*
+* @return  An attribute identifier if successful; otherwise returns a negative value.
+*
+* @exception HDF5LibraryException - Error from the HDF-5 Library.
+* @exception NullPointerException - name is null.
+**/
+
+public static int H5Acreate_by_name(int loc_id, String obj_name, String attr_name, int type_id, int space_id, int acpl_id, int aapl_id, int lapl_id) 
+throws HDF5LibraryException, NullPointerException {
+	int id = _H5Acreate_by_name(loc_id, obj_name, attr_name, type_id, space_id, acpl_id, aapl_id, lapl_id);
+	if (id > 0)
+		OPEN_IDS.addElement(id);
+	return id;
+}
+
+private synchronized static native int _H5Acreate_by_name(int loc_id, String obj_name, String attr_name, int type_id, int space_id, 
+		int acpl_id, int aapl_id, int lapl_id)
+throws HDF5LibraryException, NullPointerException;
+
+/**
+* H5Aexists_by_name determines whether the attribute attr_name exists on an object. That object is specified by its location and name, loc_id and obj_name, respectively.
+*
+* @param loc_id				IN: Location of object to which attribute is attached .
+* @param obj_name			IN: Name, relative to loc_id, of object that attribute is attached to.
+* @param attr_name			IN: Name of attribute.
+* @param lapl_id			IN: Link access property list identifier.
+*
+* @return boolean true if an attribute with a given name exists, otherwise returns false.
+*
+* @exception HDF5LibraryException - Error from the HDF-5 Library.
+* @exception NullPointerException - name is null.
+**/
+public synchronized static native boolean H5Aexists_by_name(int obj_id, String obj_name, String attr_name, int lapl_id)
+throws HDF5LibraryException, NullPointerException;
+
+/**
+ * H5Arename_by_name changes the name of attribute that is attached to the object specified by loc_id and obj_name. The attribute named old_attr_name is renamed new_attr_name.
+ * 
+ * @param loc_id			IN: Location or object identifier; may be dataset or group   
+ * @param obj_name			IN: Name of object, relative to location, whose attribute is to be renamed  
+ * @param old_attr_name     IN: Prior attribute name 
+ * @param new_attr_name   	IN: New attribute name 
+ * @param lapl_id   	    IN: Link access property list 
+ * 
+ * @return  A non-negative value if successful; otherwise returns a negative value. 
+ * 
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ * @exception NullPointerException - Name is null.
+ **/
+
+public synchronized static native int H5Arename_by_name(int loc_id, String obj_name, String old_attr_name, String new_attr_name, int lapl_id)
+throws HDF5LibraryException, NullPointerException;
+
 
 }
 

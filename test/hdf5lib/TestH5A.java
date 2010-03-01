@@ -1,5 +1,6 @@
 package test.hdf5lib;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -103,11 +104,11 @@ public class TestH5A {
 		}
 
 		try {
-			atrr_id = H5.H5Acreate2(loc_id, attr_name, type_id, space_id,
-					acpl_id, aapl_id);
+			atrr_id = H5.H5Acreate2(loc_id, attr_name, type_id, space_id, acpl_id, aapl_id);
 
 			// Check the value of attribute id returned from H5Acreate2.If it is negative then test fails.
 			assertTrue("testH5Acreate2: H5Acreate2", atrr_id >= 0);
+
 		} catch (Throwable err) {
 			err.printStackTrace();
 			fail("H5.H5Acreate2: " + err);
@@ -163,7 +164,7 @@ public class TestH5A {
 			fail("H5.H5Acreate2: " + err);
 		}
 
-	    try {
+		try {
 			// Opening the existing attribute, attr_name(Created by H5ACreate2) attached to an object identifier.
 			attribute_id = H5.H5Aopen(obj_id, attr_name, aapl_id);
 
@@ -248,7 +249,7 @@ public class TestH5A {
 		}
 		
 		
-		// Negative test- Error should be thrown when H5Aopen_by_idx is called with an invalid attribute name(which hasn't been created).
+		// Negative test- Error should be thrown when H5Aopen_by_idx is called with an invalid object name(which hasn't been created).
 		try {
 			n = 0;
 			obj_name = "file";
@@ -260,16 +261,16 @@ public class TestH5A {
 		}
 		
 		
-        finally
+		finally
         {
-           H5.H5Tclose(type_id);
-		   H5.H5Sclose(space_id);
-		   H5.H5Pclose(lapl_id);
-		   H5.H5Aclose(attr_id);
-		   H5.H5Aclose(attribute_id);
+			H5.H5Tclose(type_id);
+			H5.H5Sclose(space_id);
+			H5.H5Pclose(lapl_id);
+			H5.H5Aclose(attr_id);
+			H5.H5Aclose(attribute_id);
         }
         
-     // Negative test- Error should be thrown when H5Aopen_by_idx is called when IDs are closed
+		// Negative test- Error should be thrown when H5Aopen_by_idx is called when IDs are closed
 		try {
 			H5.H5Aopen_by_idx(loc_id, obj_name, idx_type, order , n, aapl_id, lapl_id);
 			fail("Negative Test Failed:- Error not Thrown when IDs are closed.");
@@ -278,6 +279,118 @@ public class TestH5A {
 		} catch (HDF5LibraryException err) {
 		}
 	
+	}
+	
+	@Test
+	public void testH5Acreate_by_name() throws Throwable, HDF5LibraryException {
+		
+		int loc_id = H5fid;
+		String obj_name = ".";
+		String attr_name = "DATASET";
+		int type_id = -1;
+		int space_id = -1;
+		int lapl_id = -1;
+		int acpl_id = HDF5Constants.H5P_DEFAULT;
+		int aapl_id = HDF5Constants.H5P_DEFAULT;
+		int attribute_id = -1;
+		boolean bool_val = false;
+				
+		try {
+			type_id  = H5.H5Tcreate(HDF5Constants.H5T_ENUM, (long) 1);
+			space_id = H5.H5Screate(HDF5Constants.H5S_NULL);
+			lapl_id  = H5.H5Pcreate(HDF5Constants.H5P_DATASET_ACCESS);
+		} catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5.H5Tcreate: " + err);
+			fail("H5.H5Screate: " + err);
+			fail("H5.H5Pcreate: " + err);
+		}
+		
+		try {
+			// 
+			attribute_id = H5.H5Acreate_by_name(loc_id, obj_name, attr_name, type_id, space_id, acpl_id, aapl_id, lapl_id);
+
+			// Check the value of attribute id returned from H5Acreate_by_name, it should be non negative.
+			assertTrue("testH5Acreate_by_name: H5Acreate_by_name", attribute_id >= 0);
+			
+			//Check if the name of attribute attached to the object specified by loc_id and obj_name exists.It should be true.
+			bool_val= H5.H5Aexists_by_name(loc_id, obj_name, attr_name, lapl_id);
+			assertTrue("testH5Acreate_by_name: H5Aexists_by_name", bool_val== true);
+			
+		} catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5.H5Acreate_by_name " + err);
+		}
+
+		finally
+        {
+			H5.H5Tclose(type_id);
+			H5.H5Sclose(space_id);
+			H5.H5Pclose(lapl_id);
+			H5.H5Aclose(attribute_id);
+		}	
+		
+	}
+
+	
+	@Test
+	public void testH5Arename_by_name() throws Throwable, HDF5LibraryException {
+		
+		int loc_id = H5fid;
+		String obj_name = ".";
+		String old_attr_name = "old";
+		String new_attr_name = "new";
+		int type_id = -1;
+		int space_id = -1;
+		int lapl_id = -1;
+		int attr_id = -1;
+		int acpl_id = HDF5Constants.H5P_DEFAULT;
+		int aapl_id = HDF5Constants.H5P_DEFAULT;
+		int ret_val = -1;
+		boolean bool_val = false;
+		
+		try {
+			type_id  = H5.H5Tcreate(HDF5Constants.H5T_ENUM, (long) 1);
+			space_id = H5.H5Screate(HDF5Constants.H5S_NULL);
+			lapl_id  = H5.H5Pcreate(HDF5Constants.H5P_DATASET_ACCESS);
+			attr_id  = H5.H5Acreate_by_name(loc_id, obj_name, old_attr_name, type_id, space_id, acpl_id, aapl_id, lapl_id);
+		} catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5.H5Tcreate: " + err);
+			fail("H5.H5Screate: " + err);
+			fail("H5.H5Pcreate: " + err);
+			fail("H5.H5Acreate2: " + err);
+		}
+		
+		try {
+			// 
+			ret_val = H5.H5Arename_by_name(loc_id, obj_name, old_attr_name, new_attr_name, lapl_id);
+
+			// Check the return value.It should be non negative.
+			assertTrue("testH5Arename_by_name: H5Arename_by_name", ret_val >= 0);
+			
+			//Check if the new name of attribute attached to the object specified by loc_id and obj_name exists.It should be true.
+			bool_val= H5.H5Aexists_by_name( loc_id, obj_name, new_attr_name, lapl_id);
+			assertTrue("testH5Arename_by_name: H5Aexists_by_name", bool_val== true);
+			
+			//Check if the old name of attribute attached to the object specified by loc_id and obj_name exists. It should equal false.
+			bool_val= H5.H5Aexists_by_name( loc_id, obj_name, old_attr_name, lapl_id);
+			assertEquals(bool_val, false);
+			
+
+		} catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5.H5Arename_by_name " + err);
+		}
+		
+		finally
+        {
+			H5.H5Tclose(type_id);
+			H5.H5Sclose(space_id);
+			H5.H5Pclose(lapl_id);
+			H5.H5Aclose(attr_id);
+		}
+
 	}
 
 }
