@@ -242,6 +242,7 @@ public class HDF5Constants {
     public static final int H5P_FILE_ACCESS_DEFAULT = H5P_FILE_ACCESS_DEFAULT();
     public static final int H5P_FILE_CREATE = H5P_FILE_CREATE();
     public static final int H5P_FILE_CREATE_DEFAULT = H5P_FILE_CREATE_DEFAULT();
+    public static final int H5P_GROUP_CREATE = H5P_GROUP_CREATE();
     public static final int H5P_LINK_CREATE = H5P_LINK_CREATE();
     public static final int H5P_LINK_ACCESS = H5P_LINK_ACCESS();
     public static final int H5P_NO_CLASS = H5P_NO_CLASS();
@@ -937,6 +938,8 @@ public class HDF5Constants {
     private static native final int H5P_FILE_CREATE();
 
     private static native final int H5P_FILE_CREATE_DEFAULT();
+
+    private static native final int H5P_GROUP_CREATE();
 
     private static native final int H5P_LINK_CREATE();
 
