@@ -29,7 +29,7 @@ extern "C" {
 
 #ifdef __cplusplus
 #define ENVPTR (env)
-#define ENVPAR 
+#define ENVPAR
 #else
 #define ENVPTR (*env)
 #define ENVPAR env,
@@ -81,16 +81,16 @@ jint height)
     jboolean bb;
 
     hdf_file =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
-    dat = ENVPTR->GetByteArrayElements(ENVPAR image,&bb);
+    dat = (jbyte *)ENVPTR->GetPrimitiveArrayCritical(ENVPAR image,&bb);
 
     rval =  DF24getimage((char *)hdf_file, (VOIDP) dat, (int32) width, (int32) height);
 
     ENVPTR->ReleaseStringUTFChars(ENVPAR filename,hdf_file);
     if (rval == FAIL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR image,dat,JNI_ABORT);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR image,dat,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR image,dat,0);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR image,dat,0);
         return JNI_TRUE;
     }
 

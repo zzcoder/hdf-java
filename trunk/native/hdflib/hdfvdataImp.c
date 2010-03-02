@@ -30,7 +30,7 @@ extern "C" {
 
 #ifdef __cplusplus
 #define ENVPTR (env)
-#define ENVPAR 
+#define ENVPAR
 #else
 #define ENVPTR (*env)
 #define ENVPAR env,
@@ -504,7 +504,7 @@ jint interlace)
     jbyte  * data;
     jboolean bb;
 
-    data = ENVPTR->GetByteArrayElements(ENVPAR databuf,&bb);
+    data = (jbyte *)ENVPTR->GetPrimitiveArrayCritical(ENVPAR databuf,&bb);
 
     /* retrieve the general info. */
     retVal = VSread((int32)vdata_id, (unsigned char *)data, nrecords, interlace);
@@ -512,7 +512,7 @@ jint interlace)
     if (retVal == FAIL) {
         ENVPTR->ReleaseByteArrayElements(ENVPAR databuf,data,JNI_ABORT);
     } else {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR databuf,data,0);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR databuf,data,0);
     }
     return retVal;
 }

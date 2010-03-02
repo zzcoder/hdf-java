@@ -30,7 +30,7 @@ extern "C" {
 
 #ifdef __cplusplus
 #define ENVPTR (env)
-#define ENVPAR 
+#define ENVPAR
 #else
 #define ENVPTR (*env)
 #define ENVPAR env,
@@ -94,7 +94,7 @@ jbyteArray pallete) /* OUT: byte[] */
     jboolean bb;
 
     hdf_file =(char *) ENVPTR->GetStringUTFChars(ENVPAR filename,0);
-    dat = ENVPTR->GetByteArrayElements(ENVPAR image,&bb);
+    dat = (jbyte *)ENVPTR->GetPrimitiveArrayCritical(ENVPAR image,&bb);
     if (pallete == NULL) {
         rval =  DFR8getimage((char *)hdf_file, (uint8 *) dat, (int32) width, (int32) height,
             (uint8 *)NULL);
@@ -106,13 +106,13 @@ jbyteArray pallete) /* OUT: byte[] */
 
     ENVPTR->ReleaseStringUTFChars(ENVPAR filename,hdf_file);
     if (rval == FAIL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR image,dat,JNI_ABORT);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR image,dat,JNI_ABORT);
         if (pallete != NULL) {
             ENVPTR->ReleaseByteArrayElements(ENVPAR pallete,p,JNI_ABORT);
         }
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR image,dat,0);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR image,dat,0);
         if (pallete != NULL) {
             ENVPTR->ReleaseByteArrayElements(ENVPAR pallete,p,0);
         }

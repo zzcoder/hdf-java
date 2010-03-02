@@ -30,7 +30,7 @@ extern "C" {
 
 #ifdef __cplusplus
 #define ENVPTR (env)
-#define ENVPAR 
+#define ENVPAR
 #else
 #define ENVPTR (*env)
 #define ENVPAR env,
@@ -41,8 +41,6 @@ extern jboolean makeChunkInfo( JNIEnv *env, jobject chunkobj, int32 flgs, HDF_CH
 extern jboolean getNewCompInfo( JNIEnv *env, jobject ciobj, comp_info *cinf);
 extern jboolean setNewCompInfo( JNIEnv *env, jobject ciobj, comp_coder_t coder, comp_info *cinf);
 extern jboolean getChunkInfo( JNIEnv *env, jobject chunkobj, HDF_CHUNK_DEF *cinf);
-
-
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDstart
 ( JNIEnv *env,
@@ -219,7 +217,7 @@ jbyteArray data)
     cnt = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR count,&bb);
 
     /* assume that 'data' is big enough */
-    d = ENVPTR->GetByteArrayElements(ENVPAR data,&bb);
+    d = (jbyte *)ENVPTR->GetPrimitiveArrayCritical(ENVPAR data,&bb);
 
     retVal = SDreaddata((int32)sdsid, strt, strd, cnt, d);
 
@@ -229,7 +227,7 @@ jbyteArray data)
             ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,JNI_ABORT);
         }
         ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,JNI_ABORT);
-        ENVPTR->ReleaseByteArrayElements(ENVPAR data,d,JNI_ABORT);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR data,d,JNI_ABORT);
         return JNI_FALSE;
     } else {
         ENVPTR->ReleaseIntArrayElements(ENVPAR start,(jint *)strt,0);
@@ -237,7 +235,7 @@ jbyteArray data)
             ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,0);
         }
         ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,0);
-        ENVPTR->ReleaseByteArrayElements(ENVPAR data,d,0);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR data,d,0);
         return JNI_TRUE;
     }
 }
@@ -1131,7 +1129,7 @@ jbyteArray data)
     e = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR edge,&bb);
 
     /* assume that 'data' is big enough */
-    d = ENVPTR->GetByteArrayElements(ENVPAR data,&bb);
+    d = (jbyte *)ENVPTR->GetPrimitiveArrayCritical(ENVPAR data,&bb);
 
     retVal = SDwritedata((int32)sdsid, strt, strd, e, d);
 
@@ -1141,7 +1139,7 @@ jbyteArray data)
             ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,JNI_ABORT);
         }
         ENVPTR->ReleaseIntArrayElements(ENVPAR edge,(jint *)e,JNI_ABORT);
-        ENVPTR->ReleaseByteArrayElements(ENVPAR data,d,JNI_ABORT);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR data,d,JNI_ABORT);
         return JNI_FALSE;
     } else {
         ENVPTR->ReleaseIntArrayElements(ENVPAR start,(jint *)strt,0);
@@ -1149,7 +1147,7 @@ jbyteArray data)
             ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,0);
         }
         ENVPTR->ReleaseIntArrayElements(ENVPAR edge,(jint *)e,0);
-        ENVPTR->ReleaseByteArrayElements(ENVPAR data,d,0);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR data,d,0);
         return JNI_TRUE;
     }
 }
@@ -1385,7 +1383,7 @@ jbyteArray dat)  /* OUT: byte[] */
 int32 retVal;
 jbyte * s;
 jint *arr;
-    jboolean bb;
+jboolean bb;
 
     arr = ENVPTR->GetIntArrayElements(ENVPAR origin,&bb);
     s = ENVPTR->GetByteArrayElements(ENVPAR dat,&bb);
@@ -1502,7 +1500,7 @@ jshortArray data)
     cnt = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR count,&bb);
 
     /* assume that 'data' is big enough */
-    d = ENVPTR->GetShortArrayElements(ENVPAR data,&bb);
+    d = (jshort *)ENVPTR->GetPrimitiveArrayCritical(ENVPAR data,&bb);
 
     retVal = SDreaddata((int32)sdsid, strt, strd, cnt, d);
 
@@ -1512,7 +1510,7 @@ jshortArray data)
             ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,JNI_ABORT);
         }
         ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,JNI_ABORT);
-        ENVPTR->ReleaseShortArrayElements(ENVPAR data,d,JNI_ABORT);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR data,d,JNI_ABORT);
         return JNI_FALSE;
     } else {
         ENVPTR->ReleaseIntArrayElements(ENVPAR start,(jint *)strt,0);
@@ -1520,7 +1518,7 @@ jshortArray data)
             ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,0);
         }
         ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,0);
-        ENVPTR->ReleaseShortArrayElements(ENVPAR data,d,0);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR data,d,0);
         return JNI_TRUE;
     }
 }
@@ -1550,7 +1548,7 @@ jintArray data)
     cnt = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR count,&bb);
 
     /* assume that 'data' is big enough */
-    d = ENVPTR->GetIntArrayElements(ENVPAR data,&bb);
+    d = (jint *)ENVPTR->GetPrimitiveArrayCritical(ENVPAR data,&bb);
 
     retVal = SDreaddata((int32)sdsid, strt, strd, cnt, d);
 
@@ -1560,7 +1558,7 @@ jintArray data)
             ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,JNI_ABORT);
         }
         ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,JNI_ABORT);
-        ENVPTR->ReleaseIntArrayElements(ENVPAR data,d,JNI_ABORT);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR data,d,JNI_ABORT);
         return JNI_FALSE;
     } else {
         ENVPTR->ReleaseIntArrayElements(ENVPAR start,(jint *)strt,0);
@@ -1568,7 +1566,7 @@ jintArray data)
             ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,0);
         }
         ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,0);
-        ENVPTR->ReleaseIntArrayElements(ENVPAR data,d,0);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR data,d,0);
         return JNI_TRUE;
     }
 }
@@ -1598,7 +1596,7 @@ jlongArray data)
     cnt = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR count,&bb);
 
     /* assume that 'data' is big enough */
-    d = ENVPTR->GetLongArrayElements(ENVPAR data,&bb);
+    d = (jlong *)ENVPTR->GetPrimitiveArrayCritical(ENVPAR data,&bb);
 
     retVal = SDreaddata((int32)sdsid, strt, strd, cnt, d);
 
@@ -1608,7 +1606,7 @@ jlongArray data)
             ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,JNI_ABORT);
         }
         ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,JNI_ABORT);
-        ENVPTR->ReleaseLongArrayElements(ENVPAR data,d,JNI_ABORT);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR data,d,JNI_ABORT);
         return JNI_FALSE;
     } else {
         ENVPTR->ReleaseIntArrayElements(ENVPAR start,(jint *)strt,0);
@@ -1616,7 +1614,7 @@ jlongArray data)
             ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,0);
         }
         ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,0);
-        ENVPTR->ReleaseLongArrayElements(ENVPAR data,d,0);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR data,d,0);
         return JNI_TRUE;
     }
 }
@@ -1646,7 +1644,7 @@ jfloatArray data)
     cnt = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR count,&bb);
 
     /* assume that 'data' is big enough */
-    d = ENVPTR->GetFloatArrayElements(ENVPAR data,&bb);
+    d = (jfloat *)ENVPTR->GetPrimitiveArrayCritical(ENVPAR data,&bb);
 
     retVal = SDreaddata((int32)sdsid, strt, strd, cnt, d);
 
@@ -1656,17 +1654,17 @@ jfloatArray data)
             ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,JNI_ABORT);
         }
         ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,JNI_ABORT);
-        ENVPTR->ReleaseFloatArrayElements(ENVPAR data,d,JNI_ABORT);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR data,d,JNI_ABORT);
         return JNI_FALSE;
-    } else {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR start,(jint *)strt,0);
-        if (stride != NULL) {
-            ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,0);
-        }
-        ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,0);
-        ENVPTR->ReleaseFloatArrayElements(ENVPAR data,d,0);
-        return JNI_TRUE;
     }
+
+    ENVPTR->ReleaseIntArrayElements(ENVPAR start,(jint *)strt,0);
+    if (stride != NULL) {
+        ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,0);
+    }
+    ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,0);
+    ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR data,d,0);
+    return JNI_TRUE;
 }
 
 JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_SDreaddata_1double
@@ -1694,7 +1692,7 @@ jdoubleArray data)
     cnt = (int32 *)ENVPTR->GetIntArrayElements(ENVPAR count,&bb);
 
     /* assume that 'data' is big enough */
-    d = ENVPTR->GetDoubleArrayElements(ENVPAR data,&bb);
+    d = (jdouble *)ENVPTR->GetPrimitiveArrayCritical(ENVPAR data,&bb);
 
     retVal = SDreaddata((int32)sdsid, strt, strd, cnt, d);
 
@@ -1704,7 +1702,7 @@ jdoubleArray data)
             ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,JNI_ABORT);
         }
         ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,JNI_ABORT);
-        ENVPTR->ReleaseDoubleArrayElements(ENVPAR data,d,JNI_ABORT);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR data,d,JNI_ABORT);
         return JNI_FALSE;
     } else {
         ENVPTR->ReleaseIntArrayElements(ENVPAR start,(jint *)strt,0);
@@ -1712,7 +1710,7 @@ jdoubleArray data)
             ENVPTR->ReleaseIntArrayElements(ENVPAR stride,(jint *)strd,0);
         }
         ENVPTR->ReleaseIntArrayElements(ENVPAR count,(jint *)cnt,0);
-        ENVPTR->ReleaseDoubleArrayElements(ENVPAR data,d,0);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR data,d,0);
         return JNI_TRUE;
     }
 }
