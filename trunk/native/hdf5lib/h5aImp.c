@@ -748,7 +748,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aopen
  * Signature: (ILjava/lang/String;IIIII)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Aopen_1by_1idx
-  (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint idx_type, jint order, jint n, jint aapl_id, jint lapl_id)
+  (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint idx_type, jint order, jlong n, jint aapl_id, jint lapl_id)
 {
 	hid_t retVal;
 	char* aName;
@@ -920,6 +920,71 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Arename_1by_1name
         h5libraryError(env);
     }
     return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Aget_name_by_idx
+ * Signature: (ILjava/lang/String;IIJI)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1name_1by_1idx
+  (JNIEnv *env, jclass clss, jint loc_id, jstring obj_name, jint idx_type, jint order, jlong n, jint lapl_id)
+{
+	size_t   buf_size;
+    char    *aName;
+    char    *aValue;
+    jboolean isCopy;
+    jlong    status_size;
+    jstring  str = NULL;
+
+    if (obj_name == NULL) {
+        h5nullArgument( env, "H5Aget_name_by_idx:  object name is NULL");
+        return NULL;
+    }
+	aName = (char*)ENVPTR->GetStringUTFChars(ENVPAR obj_name, &isCopy);
+    if (aName == NULL) {
+        h5JNIFatalError( env, "H5Aget_name_by_idx:  name not pinned");
+        return NULL;
+    }
+
+	/* get the length of the attribute name */
+	status_size = H5Aget_name_by_idx((hid_t)loc_id, aName, (H5_index_t)idx_type, (H5_iter_order_t) order, (hsize_t) n, (char*)NULL, (size_t)0, (hid_t)lapl_id);
+
+	if(status_size < 0) {
+        ENVPTR->ReleaseStringUTFChars(ENVPAR obj_name, aName);
+        h5libraryError(env);
+        return NULL;
+    }
+    buf_size = (size_t)status_size + 1;/* add extra space for the null terminator */
+    
+    aValue = (char*)malloc(sizeof(char) * buf_size);
+    if (aValue == NULL) {
+        ENVPTR->ReleaseStringUTFChars(ENVPAR obj_name, aName);
+        h5outOfMemory( env, "H5Aget_name_by_idx:  malloc failed ");
+        return NULL;
+    }
+
+	status_size = H5Aget_name_by_idx((hid_t)loc_id, aName, (H5_index_t)idx_type, (H5_iter_order_t) order, (hsize_t) n, (char*)aValue, (size_t)buf_size, (hid_t)lapl_id);
+	
+    ENVPTR->ReleaseStringUTFChars(ENVPAR obj_name, aName);
+
+    if (status_size < 0) {
+        free(aValue);
+        h5libraryError(env);
+        return NULL;
+    }
+    /* may throw OutOfMemoryError */
+    str = ENVPTR->NewStringUTF(ENVPAR aValue);
+    if (str == NULL) {
+        /* exception -- fatal JNI error */
+        free(aValue);
+        h5JNIFatalError( env, "H5Aget_name_by_idx:  return string not created");
+        return NULL;
+    }
+
+    free(aValue);
+
+    return str;
 }
 
 #ifdef __cplusplus
