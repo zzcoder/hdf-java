@@ -31,7 +31,7 @@ extern "C" {
 
 #ifdef __cplusplus
 #define ENVPTR (env)
-#define ENVPAR 
+#define ENVPAR
 #else
 #define ENVPTR (*env)
 #define ENVPAR env,
@@ -249,7 +249,8 @@ jbyteArray data)  /* OUT: byte[] */
     jint *edg;
     jboolean bb;
 
-    arr = ENVPTR->GetByteArrayElements(ENVPAR data,&bb);
+    arr = (jbyte *)ENVPTR->GetPrimitiveArrayCritical(ENVPAR data,&bb);
+
     strt = ENVPTR->GetIntArrayElements(ENVPAR start,&bb);
     if (stride == NULL) {
         strd = NULL;
@@ -273,10 +274,10 @@ jbyteArray data)  /* OUT: byte[] */
     ENVPTR->ReleaseIntArrayElements(ENVPAR edge,edg,JNI_ABORT);
 
     if (rval == FAIL) {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR data,arr,JNI_ABORT);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR data,arr,JNI_ABORT);
         return JNI_FALSE;
     } else {
-        ENVPTR->ReleaseByteArrayElements(ENVPAR data,arr,0);
+        ENVPTR->ReleasePrimitiveArrayCritical(ENVPAR data,arr,0);
         return JNI_TRUE;
     }
 }

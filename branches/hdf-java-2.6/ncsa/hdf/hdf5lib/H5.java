@@ -214,7 +214,10 @@ public class H5 {
     public final static String H5PATH_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.hdf5lib";
     
     //add system property to load library by name from library path, via System.loadLibrary() 
-    public final static String H5_LIBRARY_NAME_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.loadLibraryName"; 
+    public final static String H5_LIBRARY_NAME_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.loadLibraryName";
+    
+    /** logging level: 0 -- information, 1 -- warning message, 2 -- failure */
+    public static int LOGGING_LEVEL = 2;
 
     private static boolean isLibraryLoaded = false;
 
@@ -237,7 +240,13 @@ public class H5 {
         
         // use default logger, since spanning sources 
         s_logger = Logger.getLogger("ncsa.hdf.hdf5lib"); 
-        s_logger.setLevel(Level.INFO); 
+        if (LOGGING_LEVEL == 2)
+            s_logger.setLevel(Level.SEVERE);
+        else if (LOGGING_LEVEL == 1)
+            s_logger.setLevel(Level.WARNING);
+        else
+            s_logger.setLevel(Level.INFO);
+        
         // first try loading library by name from user supplied library path 
         s_libraryName = System.getProperty(H5_LIBRARY_NAME_PROPERTY_KEY,null); 
         String mappedName = null; 
@@ -3006,17 +3015,7 @@ public class H5 {
     throws HDF5LibraryException;
 
     /**
-     *  H5Screate_simple creates a new simple data space and opens
-     *  it for access.
-     *
-     *  @param rank Number of dimensions of dataspace.
-     *  @param dims An array of the size of each dimension.
-     *  @param maxdims An array of the maximum size of each dimension.
-     *
-     *  @return a dataspace identifier if successful
-     *
-     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-     *  @exception NullPointerException - dims or maxdims is null.
+     *  @deprecated use H5Screate_simple(int rank, long[] dims, long[] maxdims)
      **/
     public static int H5Screate_simple(int rank, byte[] dims,
             byte[] maxdims)
@@ -3031,6 +3030,19 @@ public class H5 {
     throws HDF5LibraryException,
     NullPointerException;
     
+    /**
+     *  H5Screate_simple creates a new simple data space and opens
+     *  it for access.
+     *
+     *  @param rank Number of dimensions of dataspace.
+     *  @param dims An array of the size of each dimension.
+     *  @param maxdims An array of the maximum size of each dimension.
+     *
+     *  @return a dataspace identifier if successful
+     *
+     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+     *  @exception NullPointerException - dims or maxdims is null.
+     **/    
     public synchronized static int H5Screate_simple(int rank, long[] dims,
             long[] maxdims)
     throws HDF5Exception,

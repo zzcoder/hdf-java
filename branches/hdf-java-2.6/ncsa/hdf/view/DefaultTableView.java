@@ -187,7 +187,15 @@ implements TableView, ActionListener, MouseListener
 
         dataset = (Dataset)hobject;
         isReadOnly = dataset.getFileFormat().isReadOnly();
-
+        
+		long[] dims = dataset.getDims();
+		long tsize = 1;
+		
+		for (int i=0; i<dims.length; i++)
+			tsize *= dims[i];
+		
+        if (dataset.getHeight() <=0 || dataset.getWidth()<=0 || tsize<=0)
+        	return;
 
         // cannot edit hdf4 vdata
         if (dataset.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4)) &&
@@ -310,7 +318,7 @@ implements TableView, ActionListener, MouseListener
         int[] selectedIndex = dataset.getSelectedIndex();
         long[] count = dataset.getSelectedDims();
         long[] stride = dataset.getStride();
-        long[] dims = dataset.getDims();
+        //long[] dims = dataset.getDims();
         long[] start = dataset.getStartDims();
         int n = Math.min(3, rank);
         if (rank>2) {

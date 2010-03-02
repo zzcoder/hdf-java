@@ -1887,7 +1887,7 @@ public class DefaultTreeView extends JPanel
                 metaDataViewList.toArray(),
                 className);
         }
-
+ 
         // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
         Class theClass = null;
         try { theClass = Class.forName(className); }

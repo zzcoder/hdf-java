@@ -520,7 +520,7 @@ ChangeListener, DropTargetListener
         fileMenu.addSeparator();
 
         item = new JMenuItem( "Exit");
-        item.setMnemonic(KeyEvent.VK_E);
+        item.setMnemonic(KeyEvent.VK_X);
         item.addActionListener(this);
         item.setActionCommand("Exit");
         item.setAccelerator(

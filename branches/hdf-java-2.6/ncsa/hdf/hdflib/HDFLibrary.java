@@ -1762,7 +1762,7 @@ public class HDFLibrary
 
         HDFArray theArray = new HDFArray(theData);
         data = theArray.byteify();
-            return SDwritedata( sdsid, start, stride, count, data);
+        return SDwritedata( sdsid, start, stride, count, data);
     }
 
     public static native boolean SDsetnbitdataset(int id, int start_bit, int bit_len,

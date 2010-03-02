@@ -639,6 +639,9 @@ implements ActionListener, MetaDataView
                 String names[] = compound.getMemberNames();
                 Datatype types[] = compound.getMemberTypes();
                 int orders[] = compound.getMemberOrders();
+                System.out.println("################# "+names);System.out.flush();
+                System.out.println("################# "+types);System.out.flush();
+                System.out.println("################# "+orders);System.out.flush();
 
                 for (int i=0; i<n; i++)
                 {
