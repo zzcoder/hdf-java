@@ -7986,7 +7986,7 @@ throws HDF5LibraryException, NullPointerException;
  * @exception NullPointerException - Name is null.
  **/
 
-public static int H5Aopen_by_idx(int loc_id, String obj_name, int idx_type, int order ,int n, int aapl_id, int lapl_id) 
+public static int H5Aopen_by_idx(int loc_id, String obj_name, int idx_type, int order ,long n, int aapl_id, int lapl_id) 
 throws HDF5LibraryException, NullPointerException {
 	int id = _H5Aopen_by_idx(loc_id, obj_name, idx_type, order , n, aapl_id, lapl_id);
 	if (id > 0)
@@ -7994,7 +7994,7 @@ throws HDF5LibraryException, NullPointerException {
 	return id;
 }
 
-private synchronized static native int _H5Aopen_by_idx(int loc_id, String obj_name, int idx_type, int order ,int n, int aapl_id, int lapl_id)
+private synchronized static native int _H5Aopen_by_idx(int loc_id, String obj_name, int idx_type, int order ,long n, int aapl_id, int lapl_id)
 throws HDF5LibraryException, NullPointerException;
 
 /**
@@ -8059,6 +8059,25 @@ throws HDF5LibraryException, NullPointerException;
  **/
 
 public synchronized static native int H5Arename_by_name(int loc_id, String obj_name, String old_attr_name, String new_attr_name, int lapl_id)
+throws HDF5LibraryException, NullPointerException;
+
+/**
+ * H5Aget_name_by_idx retrieves the name of an attribute that is attached to an object, which is specified by its location and name, loc_id and obj_name, respectively.
+ * 
+ * @param loc_id			IN: Location of object to which attribute is attached 
+ * @param obj_name			IN: Name of object to which attribute is attached, relative to location  
+ * @param idx_type			IN: Type of index 
+ * @param order				IN: Index traversal order  
+ * @param n					IN: Attribute’s position in index
+ * @param lapl_id   	    IN: Link access property list 
+ * 
+ * @return  String for Attribute name. 
+ * 
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ * @exception NullPointerException - obj_name is null.
+ **/
+
+public synchronized static native String H5Aget_name_by_idx(int loc_id, String obj_name, int idx_type, int order, long n, int lapl_id)
 throws HDF5LibraryException, NullPointerException;
 
 
