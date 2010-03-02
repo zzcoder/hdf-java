@@ -498,13 +498,14 @@ public class H4Vdata extends CompoundDS
             numberOfMembers = 0;
             numberOfRecords = 0;
         }
-
-        if ((numberOfMembers <=0) || (numberOfRecords <= 0))
-        {
-            // no table field is defined or no records
-            close(id);
-            return;
-        }
+        
+//        Still need to get information if there is no record, see bug 1738
+//        if ((numberOfMembers <=0) || (numberOfRecords <= 0))
+//        {
+//            // no table field is defined or no records
+//            close(id);
+//            return;
+//        }
 
         // a Vdata table is an one dimension array of records.
         // each record has the same fields

@@ -245,10 +245,13 @@ public class H5 {
     // System.loadLibrary()
     public final static String H5_LIBRARY_NAME_PROPERTY_KEY = "ncsa.hdf.hdf5lib.H5.loadLibraryName";
 
+    /** logging level: 0 -- information, 1 -- warning message, 2 -- failure */
+    public static int LOGGING_LEVEL = 2;
+    
     private static Logger s_logger;
     private static String s_libraryName;
     private static boolean isLibraryLoaded = false;
-
+    
     private final static boolean IS_CRITICAL_PINNING = true;
     
     private final static Vector<Integer> OPEN_IDS = new Vector<Integer>();
@@ -263,8 +266,14 @@ public class H5 {
             return;
 
         // use default logger, since spanning sources
-        s_logger = Logger.getLogger("ncsa.hdf.hdf5lib");
-        s_logger.setLevel(Level.INFO);
+        s_logger = Logger.getLogger("ncsa.hdf.hdf5lib"); 
+        if (LOGGING_LEVEL == 2)
+            s_logger.setLevel(Level.SEVERE);
+        else if (LOGGING_LEVEL == 1)
+            s_logger.setLevel(Level.WARNING);
+        else
+            s_logger.setLevel(Level.INFO);
+        
         // first try loading library by name from user supplied library path
         s_libraryName = System.getProperty(H5_LIBRARY_NAME_PROPERTY_KEY, null);
         String mappedName = null;
@@ -3400,6 +3409,9 @@ public class H5 {
     public synchronized static native int _H5Screate_simple(int rank, long[] dims,
             long[] maxdims) throws HDF5Exception, NullPointerException;
 
+    /**
+     *  @deprecated use H5Screate_simple(int rank, long[] dims, long[] maxdims)
+     **/
     public static int H5Screate_simple(int rank, byte[] dims, byte[] maxdims)
             throws HDF5Exception, NullPointerException {
         ByteBuffer dimsbb = ByteBuffer.wrap(dims);

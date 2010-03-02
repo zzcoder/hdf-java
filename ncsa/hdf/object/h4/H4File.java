@@ -717,6 +717,7 @@ public class H4File extends FileFormat
         {
             n = 0;
         }
+
         for (int i=0; i<n; i++)
         {
             ref = refs[i];
@@ -1076,8 +1077,8 @@ public class H4File extends FileFormat
         }
 
         if (showAll || ((id != HDFConstants.FAIL) &&
-            // do not display Vdata named "Attr0.0"
-            !vClass[0].equalsIgnoreCase(HDFConstants.HDF_ATTRIBUTE) &&
+            // do not display Vdata named "Attr0.0" // commented out for bug 1737
+            //!vClass[0].equalsIgnoreCase(HDFConstants.HDF_ATTRIBUTE) &&
             // do not display internal Vdata, "_HDF_CHK_TBL_"
             !vClass[0].startsWith(HDFConstants.HDF_CHK_TBL) &&
             // do not display internal vdata for CDF, "CDF0.0"
