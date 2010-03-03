@@ -25,6 +25,12 @@ then
 TEST=`which test`
 fi
 
+if [ ! -d $JAVAPATH ]; then
+    JAVALOC=`which java`
+    LASTSLASH=`perl -e "print rindex(\"${JAVALOC}\", '/')"`
+    JAVAPATH=`perl -e "print substr(\"${JAVALOC}\", 0, $LASTSLASH)"`
+fi
+
 if $TEST -z "$CLASSPATH"; then
 	CLASSPATH=""
 fi
