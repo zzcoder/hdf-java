@@ -11,6 +11,8 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
+import ncsa.hdf.hdf5lib.structs.H5L_info_t;
+import ncsa.hdf.hdf5lib.structs.H5A_info_t;
 
 import org.junit.After;
 import org.junit.Before;
@@ -432,6 +434,113 @@ public class TestH5A {
 				H5.H5Aclose(attr1_id);
 			if (attr2_id > 0)
 				H5.H5Aclose(attr2_id);
+		}
+
+	}
+	@Test
+	public void testH5Aget_storage_size() throws Throwable{
+		
+		int type_id = -1, space_id = -1, attr_id = -1;
+		long attr_size = -1;
+
+		try {
+			type_id = H5.H5Tcreate(HDF5Constants.H5T_ENUM, (long) 1);
+			space_id = H5.H5Screate(HDF5Constants.H5S_NULL);
+			attr_id = H5.H5Acreate2(H5did, "dset", type_id, space_id,
+					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+
+			attr_size = H5.H5Aget_storage_size(attr_id);
+			assertTrue("The size of attribute is :", attr_size == 0);
+		} catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5.H5Aget_storage_size: " + err);
+		} finally {
+			if (type_id > 0)
+				H5.H5Tclose(type_id);
+			if (space_id > 0)
+				H5.H5Sclose(space_id);
+			if (attr_id > 0)
+				H5.H5Aclose(attr_id);
+		}
+	}
+	
+	@Test
+	public void testH5Aget_info() throws Throwable, HDF5LibraryException{
+		
+		H5A_info_t attr_info = null;
+		int type_id = -1, space_id = -1;
+		int attribute_id = -1, atrr_id = -1;
+
+		try {
+			type_id = H5.H5Tcreate(HDF5Constants.H5T_ENUM, (long) 1);
+			space_id = H5.H5Screate(HDF5Constants.H5S_NULL);
+			atrr_id = H5.H5Acreate2(H5did, "dset", type_id, space_id,
+					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+			attribute_id = H5.H5Aopen(H5did, "dset", HDF5Constants.H5P_DEFAULT);
+			// Calling H5Aget_info with attribute_id returned from H5Aopen.
+			attr_info = H5.H5Aget_info(attribute_id);
+			assertFalse("H5Aget_info ", attr_info == null);
+			assertTrue("Corder_Valid should be false",
+					attr_info.corder_valid == false);
+			assertTrue("Character set used for attribute name",
+					attr_info.cset == HDF5Constants.H5T_CSET_ASCII);
+			assertTrue("Corder ", attr_info.corder >= 0);
+			assertEquals(attr_info.data_size, H5.H5Aget_storage_size(atrr_id));
+		} catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5.H5Aget_info: " + err);
+		} finally {
+			if (type_id > 0)
+				H5.H5Tclose(type_id);
+			if (space_id > 0)
+				H5.H5Sclose(space_id);
+			if (atrr_id > 0)
+				H5.H5Aclose(atrr_id);
+			if (attribute_id > 0)
+				H5.H5Aclose(attribute_id);
+		}
+	}
+	
+	@Test
+	public void testH5Aget_info1() throws Throwable, HDF5LibraryException{
+		
+		H5A_info_t attr_info = null;
+		int type_id = -1, space_id = -1, lapl_id = -1;
+		int attribute_id = -1, atrr_id = -1;
+		int order = HDF5Constants.H5_ITER_INC;
+
+		try {
+			type_id = H5.H5Tcreate(HDF5Constants.H5T_ENUM, (long) 1);
+			space_id = H5.H5Screate(HDF5Constants.H5S_NULL);
+			lapl_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_ACCESS);
+			atrr_id = H5.H5Acreate2(H5did, ".", type_id, space_id,
+					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+			attribute_id = H5.H5Aopen_by_idx(H5did, ".", HDF5Constants.H5_INDEX_CRT_ORDER, order, 0,
+					HDF5Constants.H5P_DEFAULT, lapl_id);
+			//Calling H5Aget_info with attribute_id returned from H5Aopen_by_idx.
+			attr_info = H5.H5Aget_info(attribute_id);
+
+			assertFalse("H5Aget_info ", attr_info == null);
+			assertTrue("Corder_Valid should be true",
+					attr_info.corder_valid == true);
+			assertTrue("Character set used for attribute name",
+					attr_info.cset == HDF5Constants.H5T_CSET_ASCII);
+			assertTrue("Corder ", attr_info.corder == order);
+			assertEquals(attr_info.data_size, H5.H5Aget_storage_size(atrr_id));
+		} catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5.H5Aget_info1: " + err);
+		} finally {
+			if (type_id > 0)
+				H5.H5Tclose(type_id);
+			if (space_id > 0)
+				H5.H5Sclose(space_id);
+			if (lapl_id > 0)
+				H5.H5Pclose(lapl_id);
+			if (atrr_id > 0)
+				H5.H5Aclose(atrr_id);
+			if (attribute_id > 0)
+				H5.H5Aclose(attribute_id);
 		}
 
 	}
