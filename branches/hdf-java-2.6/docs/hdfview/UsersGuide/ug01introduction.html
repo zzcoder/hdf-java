@@ -61,7 +61,7 @@
      
 <p>
      <h4>HDF libraries</h4>
-     This release was built and tested with HDF4.2r5 and HDF5-1.8.4 with HDF5 1.6 compatibility 
+     This release was built and tested with HDF 4.2.5 and HDF5-1.8.4 Patch 1 with HDF5 1.6 compatibility 
 	 flag. For information on new features in HDF5 Release 1.8.0 and format compatibility considerations, 
 	 please visit <a href="http://www.hdfgroup.org/HDF5/doc/ADGuide/CompatFormat180.html">
      http://www.hdfgroup.org/HDF5/doc/ADGuide/CompatFormat180.html</a>. </p>
@@ -89,15 +89,15 @@
      <p />
      <h4>Major Improvements</h4>
 	 <ul class="ul">
-      <li>Built on HDF5 1.8.4 library and HDF4 2r5 library.
-      <li>Fix memory leak in the HDF-Java native.
-      <li>Add H5.getOpenIDCount() and H5. getOpenID() to track any open IDs.
-       These functions can be very useful for checking memory leak for applications.
-      <li>Add features to show data pointed to by object references or region references.
-      <li>Find/search dataset from HDFView.
-      <li>Add user option to open a file directly with read-only mode.
+      <li>Built on HDF5 1.8.4 Patch 1 library and HDF 4.2.5 library.</li>
+      <li>Fix memory leak in the HDF-Java native.</li>
+      <li>Add H5.getOpenIDCount() and H5. getOpenID() to track any open IDs.</li>
+       These functions can be very useful for checking memory leak for applications.</li>
+      <li>Add features to show data pointed to by object references or region references.</li>
+      <li>Find/search dataset from HDFView.</li>
+      <li>Add user option to open a file directly with read-only mode.</li>
       <li>Show unsigned 64-bit integer.
-      <li>support netcdf3 files for the NETCDF module (ncsa.hdf.object.nc2.NC2File).
+      <li>Support netcdf3 files for the NETCDF module (ncsa.hdf.object.nc2.NC2File).</li>
 	</ul>
 
      <h4>Major Bug Fixes</h4>
@@ -120,6 +120,10 @@
         <li> <!-- [BUG ID: 1654] --> H5Sselect_hyperslab parameter order in header comment is wrong  </li>
         <li> <!-- [BUG ID: 1684] --> High dim label is wrong </li>
         <li> <!-- [BUG ID: 1700] --> 16-bit and 32-bit images do not scale properly if set range</li>
+        <li> <!-- [BUG ID: 1757] --> Use better memory allocation in HDF4 JNI to avoid crash on OutOfMemory error on large dataset.</li>
+        <li> <!-- [BUG ID: 1737] --> Show some HDF-EOS attributes stored in HDF4 vdata.</li>
+        <li> <!-- [BUG ID: 1738] --> Fix a problem of displaying information for HDF4 vdata without name.</li> 
+        <li> <!-- [BUG ID: 1746] --> Add HDF-Java logging levels to HDF5 JNI and set default level to "SEVERE".</li>
 	</ul>   
     
      <h2>
