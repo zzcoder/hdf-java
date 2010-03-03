@@ -1,13 +1,25 @@
 <html>
 <body>
 <h3>hdf-java 2.6.1 release (March 5, 2010)</h3>
+This release was built with <b>HDF 4.2.5</b> and <b>HDF5 1.8.4 Patch 1</b> with 
+the <i>1.6 API Compatibility Macros</i>, using jdk 1.6.x. 
+</P>
+<b>HDF5 1.8.4 Patch 1</b>
+fixes a corruption problem that existed from HDF5 1.8.0 through HDF5 1.8.4. For 
+more information, see 
+<a href="http://www.hdfgroup.org/HDF5/release/known_problems/index.html">
+the Known Problems page</a>. 
+</p>
+No major change in hdf-java since hdf-java 2.6. Some minor changes include:
+<ul>
+<li> Use better memory allocation in HDF4 JNI to avoid crash on OutOfMemory error on large dataset.</li>
+<li> Show some HDF-EOS attributes stored in HDF4 vdata.</li>
+<li> Fix a problem of displaying information for HDF4 vdata without name.</li> 
+<li> Add HDF-Java logging levels to HDF5 JNI and set default level to "SEVERE".</li>
+</ul>    
 
-<h3>hdf-java 2.6 release (January 15, 2010)</h3>
-<b>Version 2.6</b> of the HDF Java Products was built with <b>HDF4.2r5</b> 
-    and <b>HDF5 1.8.4</b> with the <i>1.6 API Compatibility Macros</i>, using jdk 1.6.x. 
-	
 <p />
-To obtain hdf-java 2.6 (HDFView installers, Pre-built binaries, and Source code), 
+To obtain hdf-java products (HDFView installers, Pre-built binaries, and Source code), 
 go to <a href="http://www.hdfgroup.org/ftp/HDF5/hdf-java/"> http://www.hdfgroup.org/ftp/HDF5/hdf-java/</a>.
 <br />
 For more information on the current release, please read <a href="http://www.hdfgroup.org/hdf-java-html/hdfview/UsersGuide/ug01introduction.html#ug01release"><i>About This Release</i></a>.
