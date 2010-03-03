@@ -988,6 +988,61 @@ JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1name_1by_1idx
 	return str;
 }
 
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Aget_storage_size
+ * Signature: (I)J
+ */
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1storage_1size
+  (JNIEnv *env, jclass clss, jint attr_id)
+{
+	hsize_t retVal = (hsize_t)-1;
+
+    retVal = H5Aget_storage_size((hid_t)attr_id);
+/* probably returns '0' if fails--don't do an exception
+    if (retVal < 0) {
+        h5libraryError(env);
+    }
+*/
+    return (jlong)retVal;
+}
+
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Aget_info
+ * Signature: (I)Lncsa/hdf/hdf5lib/structs/H5A_info_t;
+ */
+JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1info
+  (JNIEnv *env, jclass clss, jint attr_id)
+{
+    herr_t     status;
+    H5A_info_t ainfo;
+    jclass     cls;
+    jmethodID  constructor;
+    jvalue     args[4];
+    jobject    ret_info_t = NULL;
+
+    status = H5Aget_info((hid_t)attr_id, (H5A_info_t*)&ainfo);
+
+    if (status < 0) {
+       h5libraryError(env);
+       return NULL;
+    }
+
+    // get a reference to your class if you don't have it already
+    cls = ENVPTR->FindClass(ENVPAR "ncsa/hdf/hdf5lib/structs/H5A_info_t");
+    // get a reference to the constructor; the name is <init>
+    constructor = ENVPTR->GetMethodID(ENVPAR cls, "<init>", "(ZJIJ)V");
+    args[0].z = ainfo.corder_valid;
+    args[1].j = ainfo.corder;
+    args[2].i = ainfo.cset;
+    args[3].j = ainfo.data_size;
+    ret_info_t = ENVPTR->NewObjectA(ENVPAR cls, constructor, args);
+    return ret_info_t;
+    
+}
+
 #ifdef __cplusplus
 }
 #endif

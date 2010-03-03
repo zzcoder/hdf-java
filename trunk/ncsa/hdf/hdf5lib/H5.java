@@ -24,6 +24,7 @@ import ncsa.hdf.hdf5lib.exceptions.HDF5JavaException;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 import ncsa.hdf.hdf5lib.structs.H5G_info_t;
 import ncsa.hdf.hdf5lib.structs.H5L_info_t;
+import ncsa.hdf.hdf5lib.structs.H5A_info_t;
 
 /**
  * This class is the Java interface for the HDF5 library.
@@ -8040,7 +8041,8 @@ private synchronized static native int _H5Acreate_by_name(int loc_id, String obj
 throws HDF5LibraryException, NullPointerException;
 
 /**
-* H5Aexists_by_name determines whether the attribute attr_name exists on an object. That object is specified by its location and name, loc_id and obj_name, respectively.
+* H5Aexists_by_name determines whether the attribute attr_name exists on an object. That object is specified by its location and name, 
+* loc_id and obj_name, respectively.
 *
 * @param loc_id				IN: Location of object to which attribute is attached .
 * @param obj_name			IN: Name, relative to loc_id, of object that attribute is attached to.
@@ -8056,41 +8058,70 @@ public synchronized static native boolean H5Aexists_by_name(int obj_id, String o
 throws HDF5LibraryException, NullPointerException;
 
 /**
- * H5Arename_by_name changes the name of attribute that is attached to the object specified by loc_id and obj_name. The attribute named old_attr_name is renamed new_attr_name.
- * 
- * @param loc_id			IN: Location or object identifier; may be dataset or group   
- * @param obj_name			IN: Name of object, relative to location, whose attribute is to be renamed  
- * @param old_attr_name     IN: Prior attribute name 
- * @param new_attr_name   	IN: New attribute name 
- * @param lapl_id   	    IN: Link access property list 
- * 
- * @return  A non-negative value if successful; otherwise returns a negative value. 
- * 
- * @exception HDF5LibraryException - Error from the HDF-5 Library.
- * @exception NullPointerException - Name is null.
- **/
+* H5Arename_by_name changes the name of attribute that is attached to the object specified by loc_id and obj_name. 
+* The attribute named old_attr_name is renamed new_attr_name.
+* 
+* @param loc_id			IN: Location or object identifier; may be dataset or group   
+* @param obj_name			IN: Name of object, relative to location, whose attribute is to be renamed  
+* @param old_attr_name     IN: Prior attribute name 
+* @param new_attr_name   	IN: New attribute name 
+* @param lapl_id   	    IN: Link access property list 
+* 
+* @return  A non-negative value if successful; otherwise returns a negative value. 
+* 
+* @exception HDF5LibraryException - Error from the HDF-5 Library.
+* @exception NullPointerException - Name is null.
+**/
 
 public synchronized static native int H5Arename_by_name(int loc_id, String obj_name, String old_attr_name, String new_attr_name, int lapl_id)
 throws HDF5LibraryException, NullPointerException;
 
 /**
- * H5Aget_name_by_idx retrieves the name of an attribute that is attached to an object, which is specified by its location and name, loc_id and obj_name, respectively.
- * 
- * @param loc_id			IN: Location of object to which attribute is attached 
- * @param obj_name			IN: Name of object to which attribute is attached, relative to location  
- * @param idx_type			IN: Type of index 
- * @param order				IN: Index traversal order  
- * @param n					IN: Attribute’s position in index
- * @param lapl_id   	    IN: Link access property list 
- * 
- * @return  String for Attribute name. 
- * 
- * @exception HDF5LibraryException - Error from the HDF-5 Library.
- * @exception NullPointerException - obj_name is null.
- **/
+* H5Aget_name_by_idx retrieves the name of an attribute that is attached to an object, which is specified by its location and name, 
+* loc_id and obj_name, respectively.
+* 
+* @param attr_id			IN: Attribute identifier 
+* @param obj_name			IN: Name of object to which attribute is attached, relative to location  
+* @param idx_type			IN: Type of index 
+* @param order				IN: Index traversal order  
+* @param n					IN: Attribute's position in index
+* @param lapl_id			IN: Link access property list 
+* 
+* @return  String for Attribute name. 
+* 
+* @exception HDF5LibraryException - Error from the HDF-5 Library.
+* @exception NullPointerException - obj_name is null.
+**/
 
 public synchronized static native String H5Aget_name_by_idx(int loc_id, String obj_name, int idx_type, int order, long n, int lapl_id)
 throws HDF5LibraryException, NullPointerException;
+
+
+/**
+* H5Aget_storage_size returns the amount of storage that is required for the specified attribute, attr_id.
+* 
+* @param attr_id			IN: Identifier of the attribute to query.
+* 
+* @return the amount of storage size allocated for the attribute; otherwise returns 0 (zero)
+* 
+* @exception HDF5LibraryException - Error from the HDF-5 Library.
+**/
+public synchronized static native long H5Aget_storage_size(int attr_id)
+throws HDF5LibraryException;
+
+
+/**
+ * H5Aget_info retrieves attribute information, by attribute identifier. 
+ * 
+ * @param attr_id			IN: Attribute identifier 
+ * 
+ * @return  A buffer(H5A_info_t) for Attribute information 
+ * 
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ **/
+
+public synchronized static native H5A_info_t H5Aget_info(int attr_id)
+throws HDF5LibraryException;
 
 
 }
