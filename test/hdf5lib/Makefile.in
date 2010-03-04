@@ -15,7 +15,7 @@
 JAVAC           = @JAVAC@
 RM           = @RM@
 
-CLASSPATH=@CLASSPATH@:@JH45INST@/../lib/junit.jar
+CLASSPATH=@CLASSPATH@:../../lib/junit.jar
 
 .SUFFIXES: .java .class
 
