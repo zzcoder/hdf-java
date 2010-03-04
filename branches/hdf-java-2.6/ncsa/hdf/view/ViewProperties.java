@@ -930,6 +930,16 @@ public class ViewProperties extends Properties
             srbAccountList.add(srbaccount);
             srbaccount = new String[7];
         }
+        
+        // set default modules from user property files
+        for (int i=0; i<6; i++) {
+        	String moduleName = (String)get(moduleKeys[i]);
+        	if ((moduleName !=null) && (moduleName.length()>0)) {
+        		if (moduleList[i].contains(moduleName))
+        			moduleList[i].remove(moduleName);
+        		moduleList[i].add(0, moduleName);
+        	}
+        }      
     }
 
     /** Save user properties into property file */
