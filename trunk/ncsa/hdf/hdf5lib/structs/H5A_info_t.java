@@ -13,7 +13,7 @@
 
 package ncsa.hdf.hdf5lib.structs;
 
-//Information struct for Attribute (For H5Aget_info)
+//Information struct for Attribute (For H5Aget_info/H5Aget_info_by_idx)
 public class H5A_info_t {
 	public boolean corder_valid; // Indicate if creation order is valid
 	public long corder; // Creation order of attribute
