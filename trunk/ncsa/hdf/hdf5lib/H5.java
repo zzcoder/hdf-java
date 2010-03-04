@@ -8141,6 +8141,23 @@ throws HDF5LibraryException;
 public synchronized static native H5A_info_t H5Aget_info_by_idx(int loc_id, String obj_name, int idx_type, int order, long n, int lapl_id)
 throws HDF5LibraryException, NullPointerException;
 
+/**
+* H5Aget_info_by_name Retrieves attribute information, by attribute name. 
+* 
+* @param loc_id			IN: Location of object to which attribute is attached 
+* @param obj_name		IN: Name of object to which attribute is attached, relative to location
+* @param attr_name		IN: Attribute name
+* @param lapl_id		IN: Link access property list
+*  
+* @return  A buffer(H5A_info_t) for Attribute information 
+* 
+* @exception HDF5LibraryException - Error from the HDF-5 Library.
+* @exception NullPointerException - obj_name is null.
+**/
+
+public synchronized static native H5A_info_t H5Aget_info_by_name(int loc_id, String obj_name, String attr_name, int lapl_id)
+throws HDF5LibraryException, NullPointerException;
+
 }
 
 

@@ -444,11 +444,13 @@ public class TestH5A {
 	@Test
 	public void testH5Aget_info_by_idx() throws Throwable, HDF5LibraryException, NullPointerException{
 
-		int attr_id = -1;
+		int attr_id = -1, attr2_id = -1;;
 		H5A_info_t attr_info = null;
 
 		try {
 			attr_id = H5.H5Acreate2(H5did, "dset1", type_id, space_id,
+					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+			attr2_id = H5.H5Acreate2(H5did, "dataset2", type_id, space_id,
 					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 			
 			//Verify info for 1st attribute, in increasing creation order
@@ -457,44 +459,77 @@ public class TestH5A {
 			assertTrue("Corder ", attr_info.corder == 0);//should equal 0 as this is the order of 1st attribute created.
 			assertEquals(attr_info.data_size, H5.H5Aget_storage_size(attr_id));
 
-			try {
-				int attr2_id = -1;
-				attr2_id = H5.H5Acreate2(H5did, "dataset2", type_id, space_id,HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+			//Verify info for 2nd attribute, in increasing creation order
+			attr_info = H5.H5Aget_info_by_idx(H5did, ".", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 1, lapl_id);
+			assertNotNull(attr_info);
+			assertTrue("Corder", attr_info.corder == 1);
+			assertEquals(attr_info.data_size, H5.H5Aget_storage_size(attr2_id));
 
-				//Verify info for 2nd attribute, in increasing creation order
-				attr_info = H5.H5Aget_info_by_idx(H5did, ".", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 1, lapl_id);
-				assertNotNull(attr_info);
-				assertTrue("Corder", attr_info.corder == 1);
-				assertEquals(attr_info.data_size, H5.H5Aget_storage_size(attr2_id));
+			//verify info for 2nd attribute, in decreasing creation order
+			attr_info = H5.H5Aget_info_by_idx(H5did, ".", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_DEC, 0, lapl_id);
+			assertNotNull(attr_info);
+			assertTrue("Corder", attr_info.corder == 1); //should equal 1 as this is the order of 2nd attribute created.
 
-				//verify info for 2nd attribute, in decreasing creation order
-				attr_info = H5.H5Aget_info_by_idx(H5did, ".", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_DEC, 0, lapl_id);
-				assertNotNull(attr_info);
-				assertTrue("Corder", attr_info.corder == 1); //should equal 1 as this is the order of 2nd attribute created.
+			//verify info for 1st attribute, in decreasing creation order
+			attr_info = H5.H5Aget_info_by_idx(H5did, ".", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_DEC, 1, lapl_id);
+			assertNotNull(attr_info);
+			assertTrue("Corder", attr_info.corder == 0); //should equal 0 as this is the order of 1st attribute created.
 
-				//verify info for 1st attribute, in decreasing creation order
-				attr_info = H5.H5Aget_info_by_idx(H5did, ".", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_DEC, 1, lapl_id);
-				assertNotNull(attr_info);
-				assertTrue("Corder", attr_info.corder == 0); //should equal 0 as this is the order of 1st attribute created.
-				
-				//verify info for 1st attribute, in increasing name order
-				attr_info = H5.H5Aget_info_by_idx(H5did, ".", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 1, lapl_id);
-				assertNotNull(attr_info);
-				assertTrue("Corder", attr_info.corder == 0); //should equal 0 as this is the order of 1st attribute created.
-				
-				//verify info for 2nd attribute, in decreasing name order
-				attr_info = H5.H5Aget_info_by_idx(H5did, ".", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_DEC, 1, lapl_id);
-				assertNotNull(attr_info);
-				assertTrue("Corder", attr_info.corder == 1); //should equal 1 as this is the order of 2nd attribute created.
-				
-				H5.H5Aclose(attr2_id);
-			} catch (Throwable err) {
-				err.printStackTrace();
-				fail("H5.H5Aget_info_by_idx:" + err);
-			}
+			//verify info for 1st attribute, in increasing name order
+			attr_info = H5.H5Aget_info_by_idx(H5did, ".", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 1, lapl_id);
+			assertNotNull(attr_info);
+			assertTrue("Corder", attr_info.corder == 0); //should equal 0 as this is the order of 1st attribute created.
+
+			//verify info for 2nd attribute, in decreasing name order
+			attr_info = H5.H5Aget_info_by_idx(H5did, ".", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_DEC, 1, lapl_id);
+			assertNotNull(attr_info);
+			assertTrue("Corder", attr_info.corder == 1); //should equal 1 as this is the order of 2nd attribute created.
+
 		} catch (Throwable err) {
 			err.printStackTrace();
 			fail("H5.H5Aget_info_by_idx:" + err);
+		} finally {
+			if (attr_id > 0)
+				H5.H5Aclose(attr_id);
+			if (attr2_id > 0)
+				H5.H5Aclose(attr2_id);
+		}
+	}
+
+	@Test
+	public void testH5Aget_info_by_name() throws Throwable, HDF5LibraryException, NullPointerException{
+
+		int attr_id = -1;
+		H5A_info_t attr_info = null;
+		String obj_name = ".";
+		String attr_name = "DATASET";
+
+		try {
+			attr_id = H5.H5Acreate_by_name(H5fid, obj_name, attr_name, type_id,
+					space_id, HDF5Constants.H5P_DEFAULT,
+					HDF5Constants.H5P_DEFAULT, lapl_id);
+			assertTrue("testH5Aget_info_by_name: H5Acreate_by_name",
+					attr_id >= 0);
+
+			attr_info = H5.H5Aget_info_by_name(H5fid, obj_name, attr_name,
+					lapl_id);
+			assertNotNull(attr_info);
+
+			// Negative test- Error should be thrown when H5Aget_info_by_name is
+			// called for invalid attr_name(which hasn't been created).
+			try {
+				attr_name = "Datasets";
+				attr_info = H5.H5Aget_info_by_name(H5fid, obj_name, attr_name,
+						lapl_id);
+				fail("Negative Test Failed:- Error not Thrown for invalid attr_name.");
+			} catch (AssertionError err) {
+				fail("H5.H5Aget_info_by_name: " + err);
+			} catch (HDF5LibraryException err) {
+			}
+
+		} catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5.H5Aget_info_by_name:" + err);
 		} finally {
 			if (attr_id > 0)
 				H5.H5Aclose(attr_id);

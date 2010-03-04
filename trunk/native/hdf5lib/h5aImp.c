@@ -794,14 +794,13 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Acreate_1by_1name
 		h5nullArgument( env, "H5Acreate_by_name:  object name is NULL");
 		return -1;
 	}
+	if (attr_name == NULL) {
+		h5nullArgument( env, "H5Acreate_by_name:  attribute name is NULL");
+		return -1;
+	}
 	aName = (char *)ENVPTR->GetStringUTFChars(ENVPAR obj_name, &isCopy);
 	if (aName == NULL) {
 		h5JNIFatalError( env, "H5Acreate_by_name: aName is not pinned");
-		return -1;
-	}
-
-	if (attr_name == NULL) {
-		h5nullArgument( env, "H5Acreate_by_name:  attribute name is NULL");
 		return -1;
 	}
 	attrName = (char *)ENVPTR->GetStringUTFChars(ENVPAR attr_name, &isCopy);
@@ -839,16 +838,15 @@ JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aexists_1by_1name
         h5nullArgument( env, "H5Aexists_by_name:  object name is NULL");
         return -1;
 	}
+	if (attr_name == NULL) {
+        h5nullArgument( env, "H5Aexists_by_name:  attribute name is NULL");
+        return -1;
+	}
     aName = (char *)ENVPTR->GetStringUTFChars(ENVPAR obj_name, &isCopy);
     if (aName == NULL) {
         h5JNIFatalError( env, "H5Aexists_by_name: aName is not pinned");
         return -1;
     }
-
-	if (attr_name == NULL) {
-        h5nullArgument( env, "H5Aexists_by_name:  attribute name is NULL");
-        return -1;
-	}
     attrName = (char *)ENVPTR->GetStringUTFChars(ENVPAR attr_name, &isCopy);
     if (attrName == NULL) {
 		ENVPTR->ReleaseStringUTFChars(ENVPAR obj_name,aName);
@@ -884,18 +882,18 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Arename_1by_1name
 		h5nullArgument( env, "H5Arename_by_name:  object name is NULL");
 		return -1;
 	}
-	aName = (char *)ENVPTR->GetStringUTFChars(ENVPAR obj_name, &isCopy);
-	if (aName == NULL) {
-		h5JNIFatalError( env, "H5Arename_by_name: object name is not pinned");
-		return -1;
-	}
-
 	if (old_attr_name == NULL) {
 		h5nullArgument( env, "H5Arename_by_name:  old_attr_name is NULL");
 		return -1;
 	}
 	if (new_attr_name == NULL) {
 		h5nullArgument( env, "H5Arename_by_name:  new_attr_name is NULL");
+		return -1;
+	}
+
+	aName = (char *)ENVPTR->GetStringUTFChars(ENVPAR obj_name, &isCopy);
+	if (aName == NULL) {
+		h5JNIFatalError( env, "H5Arename_by_name: object name is not pinned");
 		return -1;
 	}
 	oName = (char *)ENVPTR->GetStringUTFChars(ENVPAR old_attr_name,&isCopy);
@@ -1079,6 +1077,66 @@ JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1info_1by_1idx
 		(H5_iter_order_t)order, (hsize_t)n, (H5A_info_t*)&ainfo, (hid_t)lapl_id); 
 
     ENVPTR->ReleaseStringUTFChars(ENVPAR obj_name, aName);
+
+    if (status < 0) {
+       h5libraryError(env);
+       return NULL;
+    }
+
+    // get a reference to your class if you don't have it already
+    cls = ENVPTR->FindClass(ENVPAR "ncsa/hdf/hdf5lib/structs/H5A_info_t");
+    // get a reference to the constructor; the name is <init>
+	constructor = ENVPTR->GetMethodID(ENVPAR cls, "<init>", "(ZJIJ)V");
+    args[0].z = ainfo.corder_valid;
+    args[1].j = ainfo.corder;
+    args[2].i = ainfo.cset;
+    args[3].j = ainfo.data_size;
+    ret_info_t = ENVPTR->NewObjectA(ENVPAR cls, constructor, args);
+    return ret_info_t;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Aget_info_by_name
+ * Signature: (ILjava/lang/String;Ljava/lang/String;I)Lncsa/hdf/hdf5lib/structs/H5A_info_t;
+ */
+JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1info_1by_1name
+  (JNIEnv *env, jclass clss, jint loc_id, jstring obj_name, jstring attr_name, jint lapl_id)
+{
+	char      *aName;
+	char	  *attrName;
+    herr_t     status;
+    H5A_info_t ainfo;
+    jboolean   isCopy;
+    jclass     cls;
+    jmethodID  constructor;
+    jvalue     args[4];
+    jobject    ret_info_t = NULL;
+
+    if (obj_name == NULL) {
+        h5nullArgument( env, "H5Aget_info_by_name: obj_name is NULL");
+        return NULL;
+    }
+	if (attr_name == NULL) {
+        h5nullArgument( env, "H5Aget_info_by_name: attr_name is NULL");
+        return NULL;
+    } 
+    aName = (char*)ENVPTR->GetStringUTFChars(ENVPAR obj_name, &isCopy);
+    if (aName == NULL) {
+        h5JNIFatalError( env, "H5Aget_info_by_name: object name not pinned");
+        return NULL;
+    }
+    attrName = (char*)ENVPTR->GetStringUTFChars(ENVPAR attr_name, &isCopy);
+    if (attrName == NULL) {
+		ENVPTR->ReleaseStringUTFChars(ENVPAR obj_name, aName);
+        h5JNIFatalError( env, "H5Aget_info_by_name: Attribute name not pinned");
+        return NULL;
+    }
+	status = H5Aget_info_by_name((hid_t)loc_id, (const char*)aName, (const char*)attrName, 
+		(H5A_info_t*)&ainfo,(hid_t)lapl_id); 
+	
+    ENVPTR->ReleaseStringUTFChars(ENVPAR obj_name, aName);
+	ENVPTR->ReleaseStringUTFChars(ENVPAR attr_name, attrName);
 
     if (status < 0) {
        h5libraryError(env);
