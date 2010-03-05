@@ -612,6 +612,64 @@ public class TestH5A {
 				H5.H5Aclose(attribute_id);
 		}
 	}
+	
+	@Test
+	public void testH5Adelete_by_idx() throws Throwable, HDF5LibraryException, NullPointerException{
+		
+		boolean exists = false;
+		int attr1_id = -1, attr2_id = -1;
+		int attr3_id = -1, attr4_id = -1;
+		
+		try {
+			attr1_id = H5.H5Acreate_by_name(H5fid, ".", "attribute1",
+					type_id, space_id, HDF5Constants.H5P_DEFAULT,
+					HDF5Constants.H5P_DEFAULT, lapl_id);
+			attr2_id = H5.H5Acreate_by_name(H5fid, ".", "attribute2",
+					type_id, space_id, HDF5Constants.H5P_DEFAULT,
+					HDF5Constants.H5P_DEFAULT, lapl_id);
+			attr3_id = H5.H5Acreate_by_name(H5fid, ".", "attribute3",
+					type_id, space_id, HDF5Constants.H5P_DEFAULT,
+					HDF5Constants.H5P_DEFAULT, lapl_id);
+			attr4_id = H5.H5Acreate_by_name(H5fid, ".", "attribute4",
+					type_id, space_id, HDF5Constants.H5P_DEFAULT,
+					HDF5Constants.H5P_DEFAULT, lapl_id);
+					
+			H5.H5Adelete_by_idx(H5fid, ".", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 0, lapl_id);
+			exists = H5.H5Aexists(H5fid, "attribute1");
+			assertFalse("H5Adelete_by_idx: H5Aexists", exists);
+			
+			H5.H5Adelete_by_idx(H5fid, ".", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 1, lapl_id);
+			exists = H5.H5Aexists(H5fid, "attribute3");
+			assertFalse("H5Adelete_by_idx: H5Aexists", exists);
+			
+			H5.H5Adelete_by_idx(H5fid, ".", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_DEC, 0, lapl_id);
+			exists = H5.H5Aexists(H5fid, "attribute4");
+			assertFalse("H5Adelete_by_idx: H5Aexists", exists);
+
+		} catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5.H5Adelete_by_idx: " + err);
+		} finally {
+			if (attr1_id > 0)
+				H5.H5Aclose(attr1_id);
+			if (attr2_id > 0)
+				H5.H5Aclose(attr2_id);
+			if (attr3_id > 0)
+				H5.H5Aclose(attr3_id);
+			if (attr4_id > 0)
+				H5.H5Aclose(attr4_id);
+		}
+	}
+	
+	@Test(expected = NullPointerException.class)
+    public void testH5Adelete_by_idx_null() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Adelete_by_idx(H5fid, null, HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 0, lapl_id);
+    }
+	
+	@Test(expected = HDF5LibraryException.class)
+    public void testH5Adelete_by_idx_invalidobject() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Adelete_by_idx(H5fid, "invalid", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 0, lapl_id);
+    }
 
 }
 
