@@ -1206,32 +1206,32 @@ JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aexists
   (JNIEnv *env, jclass clss, jint obj_id, jstring attr_name)
 {
 	char    *aName;
-    jboolean isCopy;
-    htri_t   bval = 0;
+	jboolean isCopy;
+	htri_t   bval = 0;
 
-    if (attr_name == NULL) {
-        h5nullArgument( env, "H5Aexists: attr_name is NULL");
-        return JNI_FALSE;
-    }
-    aName = (char*)ENVPTR->GetStringUTFChars(ENVPAR attr_name, &isCopy);
-    if (aName == NULL) {
-        h5JNIFatalError( env, "H5Aexists: attr_name not pinned");
-        return JNI_FALSE;
-    }
-    
+	if (attr_name == NULL) {
+		h5nullArgument( env, "H5Aexists: attr_name is NULL");
+		return JNI_FALSE;
+	}
+	aName = (char*)ENVPTR->GetStringUTFChars(ENVPAR attr_name, &isCopy);
+	if (aName == NULL) {
+		h5JNIFatalError( env, "H5Aexists: attr_name not pinned");
+		return JNI_FALSE;
+	}
+
 	bval = H5Aexists((hid_t)obj_id, (const char*)aName);
-    ENVPTR->ReleaseStringUTFChars(ENVPAR attr_name, aName);
-    
-    if (bval > 0) {
-        return JNI_TRUE;
-    }
-    else if (bval == 0) {
-        return JNI_FALSE;
-    }
-    else {
-        h5libraryError(env);
-        return JNI_FALSE;
-    }
+	ENVPTR->ReleaseStringUTFChars(ENVPAR attr_name, aName);
+
+	if (bval > 0) {
+		return JNI_TRUE;
+	}
+	else if (bval == 0) {
+		return JNI_FALSE;
+	}
+	else {
+		h5libraryError(env);
+		return JNI_FALSE;
+	}
 
 }
 
@@ -1244,28 +1244,28 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Adelete_1by_1idx
   (JNIEnv *env, jclass clss, jint loc_id, jstring obj_name, jint idx_type, jint order, jlong n, jint lapl_id)
 {
 	char      *aName;
-    herr_t     status;
-    jboolean   isCopy;
+	herr_t     status;
+	jboolean   isCopy;
 
-    if (obj_name == NULL) {
-        h5nullArgument( env, "H5Adelete_by_idx: obj_name is NULL");
-        return;
-    }
-    
-    aName = (char*)ENVPTR->GetStringUTFChars(ENVPAR obj_name, &isCopy);
-    if (aName == NULL) {
-        h5JNIFatalError( env, "H5Adelete_by_idx: obj_name not pinned");
-        return;
-    }
+	if (obj_name == NULL) {
+		h5nullArgument( env, "H5Adelete_by_idx: obj_name is NULL");
+		return;
+	}
+
+	aName = (char*)ENVPTR->GetStringUTFChars(ENVPAR obj_name, &isCopy);
+	if (aName == NULL) {
+		h5JNIFatalError( env, "H5Adelete_by_idx: obj_name not pinned");
+		return;
+	}
 
 	status = H5Adelete_by_idx((hid_t)loc_id, (const char*)aName, (H5_index_t)idx_type,
 		(H5_iter_order_t)order, (hsize_t)n, (hid_t)lapl_id);
-    ENVPTR->ReleaseStringUTFChars(ENVPAR obj_name, aName);
+	ENVPTR->ReleaseStringUTFChars(ENVPAR obj_name, aName);
 
-    if (status < 0) {
-       h5libraryError(env);
-       return;
-    }
+	if (status < 0) {
+		h5libraryError(env);
+		return;
+	}
 }
 
 
