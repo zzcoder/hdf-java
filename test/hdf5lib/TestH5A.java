@@ -662,14 +662,18 @@ public class TestH5A {
 	}
 	
 	@Test(expected = NullPointerException.class)
-    public void testH5Adelete_by_idx_null() throws Throwable, HDF5LibraryException, NullPointerException {
-        H5.H5Adelete_by_idx(H5fid, null, HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 0, lapl_id);
-    }
-	
+	public void testH5Adelete_by_idx_null() throws Throwable,
+			HDF5LibraryException, NullPointerException {
+		H5.H5Adelete_by_idx(H5fid, null, HDF5Constants.H5_INDEX_CRT_ORDER,
+				HDF5Constants.H5_ITER_INC, 0, lapl_id);
+	}
+
 	@Test(expected = HDF5LibraryException.class)
-    public void testH5Adelete_by_idx_invalidobject() throws Throwable, HDF5LibraryException, NullPointerException {
-        H5.H5Adelete_by_idx(H5fid, "invalid", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 0, lapl_id);
-    }
+	public void testH5Adelete_by_idx_invalidobject() throws Throwable,
+			HDF5LibraryException, NullPointerException {
+		H5.H5Adelete_by_idx(H5fid, "invalid", HDF5Constants.H5_INDEX_CRT_ORDER,
+				HDF5Constants.H5_ITER_INC, 0, lapl_id);
+	}
 
 }
 
