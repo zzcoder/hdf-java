@@ -540,28 +540,28 @@ public class TestH5A {
 	
 	@Test
 	public void testH5Adelete_by_name() throws Throwable, HDF5LibraryException, NullPointerException{
-		int loc_id = H5fid;
-		String obj_name = ".";
-		String attr_name = "DATASET";
+	
 		int attr_id = -1, ret_val = -1;
-		boolean bool_val = true;
+		boolean bool_val = false, exists = false;
 
 		try {
-			attr_id = H5.H5Acreate_by_name(loc_id, obj_name, attr_name,
+			attr_id = H5.H5Acreate_by_name(H5fid, ".", "DATASET",
 					type_id, space_id, HDF5Constants.H5P_DEFAULT,
 					HDF5Constants.H5P_DEFAULT, lapl_id);
-			ret_val = H5.H5Adelete_by_name(loc_id, obj_name, attr_name, lapl_id);
+			ret_val = H5.H5Adelete_by_name(H5fid, ".", "DATASET", lapl_id);
 			assertTrue("H5Adelete_by_name", ret_val >= 0);
 
-			// Check if the attr_name still exists.
-			bool_val = H5.H5Aexists_by_name(loc_id, obj_name, attr_name,
+			// Check if the Attribute still exists.
+			bool_val = H5.H5Aexists_by_name(H5fid, ".", "DATASET",
 					lapl_id);
 			assertFalse("testH5Adelete_by_name: H5Aexists_by_name", bool_val);
+			exists = H5.H5Aexists(H5fid, "DATASET");
+			assertFalse("testH5Adelete_by_name: H5Aexists ",exists);
 
 			// Negative test. Error thrown when we try to delete an attribute
 			// that has already been deleted.
 			try{
-				ret_val = H5.H5Adelete_by_name(H5fid, obj_name, attr_name, lapl_id);
+				ret_val = H5.H5Adelete_by_name(H5fid, ".", "DATASET", lapl_id);
 				fail("Negative Test Failed: Error Not thrown.");
 			} catch (AssertionError err) {
 				fail("H5.H5Adelete_by_name: " + err);
@@ -573,6 +573,43 @@ public class TestH5A {
 		} finally {
 			if (attr_id > 0)
 				H5.H5Aclose(attr_id);
+		}
+	}
+	
+	@Test
+	public void testH5Aexists() throws Throwable, HDF5LibraryException, NullPointerException{
+		
+		boolean exists = false;
+		int atrr_id = -1, attribute_id = -1;
+
+		try {
+			exists = H5.H5Aexists(H5fid, "None");
+		} catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5.H5Aexists: " + err);
+		}
+		assertFalse("H5Aexists ", exists);
+
+		try {
+			atrr_id = H5.H5Acreate2(H5fid, "dset", type_id, space_id,
+					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+			exists = H5.H5Aexists(H5fid, "dset");
+			assertTrue("H5Aexists ", exists);
+
+			attribute_id = H5.H5Acreate_by_name(H5fid, ".", "attribute",
+					type_id, space_id, HDF5Constants.H5P_DEFAULT,
+					HDF5Constants.H5P_DEFAULT, lapl_id);
+			exists = H5.H5Aexists(H5fid, "attribute");
+			assertTrue("H5Aexists ", exists);
+
+		} catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5.H5Aexists: " + err);
+		} finally {
+			if (atrr_id > 0)
+				H5.H5Aclose(atrr_id);
+			if (attribute_id > 0)
+				H5.H5Aclose(attribute_id);
 		}
 	}
 
