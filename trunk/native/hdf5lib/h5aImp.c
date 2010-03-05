@@ -1197,6 +1197,45 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Adelete_1by_1name
     return (jint)retVal;
 }
 
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Aexists
+ * Signature: (ILjava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aexists
+  (JNIEnv *env, jclass clss, jint obj_id, jstring attr_name)
+{
+	char    *aName;
+    jboolean isCopy;
+    htri_t   bval = 0;
+
+    if (attr_name == NULL) {
+        h5nullArgument( env, "H5Aexists: attr_name is NULL");
+        return JNI_FALSE;
+    }
+    aName = (char*)ENVPTR->GetStringUTFChars(ENVPAR attr_name, &isCopy);
+    if (aName == NULL) {
+        h5JNIFatalError( env, "H5Aexists: attr_name not pinned");
+        return JNI_FALSE;
+    }
+    
+	bval = H5Aexists((hid_t)obj_id, (const char*)aName);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR attr_name, aName);
+    
+    if (bval > 0) {
+        return JNI_TRUE;
+    }
+    else if (bval == 0) {
+        return JNI_FALSE;
+    }
+    else {
+        h5libraryError(env);
+        return JNI_FALSE;
+    }
+
+}
+
+
 #ifdef __cplusplus
 }
 #endif

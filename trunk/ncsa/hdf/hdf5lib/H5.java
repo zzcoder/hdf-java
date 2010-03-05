@@ -7678,50 +7678,6 @@ throws HDF5LibraryException, NullPointerException;
 public synchronized static native void H5Dset_extent(int dset_id, long size[])
 throws HDF5LibraryException, NullPointerException;
 
-   
-    // //////////////////////////////////////////////////////////////////
-    // H5A //
-    // //////////////////////////////////////////////////////////////////
-
-    
-    // /**
-    // * H5Adelete_by_name removes the attribute attr_name from an object
-    // * specified by location and name, loc_id and obj_name, respectively.
-    // *
-    // * @param loc_id IN: Location of object to which attribute is attached .
-    // * @param obj_name IN: Name, relative to loc_id, of object that attribute
-    // is attached to.
-    // * @param attr_name IN: Name of attribute to delete.
-    // * @param lapl_id IN: Identifier of link access property list.
-    // *
-    // * @return none
-    // *
-    // * @exception HDF5LibraryException - Error from the HDF-5 Library.
-    // * @exception NullPointerException - name is null.
-    // **/
-    // public synchronized static native void H5Adelete_by_name(int loc_id,
-    // String obj_name,
-    // String attr_name, int lapl_id)
-    // throws HDF5LibraryException, NullPointerException;
-    //
-    // /**
-    // * H5Aexists determines whether the attribute attr_name exists on the
-    // * object specified by obj_id.
-    // *
-    // * @param obj_id IN: Object identifier.
-    // * @param attr_name IN: Name of the attribute.
-    // *
-    // * @return boolean true if an attribute with a given name exists.
-    // *
-    // * @exception HDF5LibraryException - Error from the HDF-5 Library.
-    // * @exception NullPointerException - attr_name is null.
-    // **/
-    // public synchronized static native boolean H5Aexists(int obj_id, String
-    // attr_name)
-    // throws HDF5LibraryException, NullPointerException;
-
-
-
 //////////////////////////////////////////////////////////////
 ////
 //H5R: HDF5 1.8 Reference API Functions            //
@@ -8172,6 +8128,20 @@ throws HDF5LibraryException, NullPointerException;
 * @exception NullPointerException - name is null.
 **/
 public synchronized static native int H5Adelete_by_name(int loc_id, String obj_name, String attr_name, int lapl_id)
+throws HDF5LibraryException, NullPointerException;
+
+/**
+* H5Aexists determines whether the attribute attr_name exists on the object specified by obj_id.
+*
+* @param obj_id				IN: Object identifier.
+* @param attr_name			IN: Name of the attribute.
+*
+* @return boolean true if an attribute with a given name exists.
+*
+* @exception HDF5LibraryException - Error from the HDF-5 Library.
+* @exception NullPointerException - attr_name is null.
+**/
+public synchronized static native boolean H5Aexists(int obj_id, String attr_name)
 throws HDF5LibraryException, NullPointerException;
 
 }
