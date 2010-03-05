@@ -98,6 +98,8 @@ public class TestH5A {
 			H5.H5Sclose(space_id);
 		if (lapl_id > 0)
 			H5.H5Pclose(lapl_id);
+		
+		//assertTrue("H5 open ids is 0", H5.getOpenIDCount() == 0);
 	}
 	
 	@Test
@@ -530,6 +532,44 @@ public class TestH5A {
 		} catch (Throwable err) {
 			err.printStackTrace();
 			fail("H5.H5Aget_info_by_name:" + err);
+		} finally {
+			if (attr_id > 0)
+				H5.H5Aclose(attr_id);
+		}
+	}
+	
+	@Test
+	public void testH5Adelete_by_name() throws Throwable, HDF5LibraryException, NullPointerException{
+		int loc_id = H5fid;
+		String obj_name = ".";
+		String attr_name = "DATASET";
+		int attr_id = -1, ret_val = -1;
+		boolean bool_val = true;
+
+		try {
+			attr_id = H5.H5Acreate_by_name(loc_id, obj_name, attr_name,
+					type_id, space_id, HDF5Constants.H5P_DEFAULT,
+					HDF5Constants.H5P_DEFAULT, lapl_id);
+			ret_val = H5.H5Adelete_by_name(loc_id, obj_name, attr_name, lapl_id);
+			assertTrue("H5Adelete_by_name", ret_val >= 0);
+
+			// Check if the attr_name still exists.
+			bool_val = H5.H5Aexists_by_name(loc_id, obj_name, attr_name,
+					lapl_id);
+			assertFalse("testH5Adelete_by_name: H5Aexists_by_name", bool_val);
+
+			// Negative test. Error thrown when we try to delete an attribute
+			// that has already been deleted.
+			try{
+				ret_val = H5.H5Adelete_by_name(H5fid, obj_name, attr_name, lapl_id);
+				fail("Negative Test Failed: Error Not thrown.");
+			} catch (AssertionError err) {
+				fail("H5.H5Adelete_by_name: " + err);
+			} catch (HDF5LibraryException err) {
+			}
+		} catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5.H5Adelete_by_name " + err);
 		} finally {
 			if (attr_id > 0)
 				H5.H5Aclose(attr_id);

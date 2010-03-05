@@ -1155,6 +1155,48 @@ JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aget_1info_1by_1name
     return ret_info_t;
 }
 
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Adelete_by_name
+ * Signature: (ILjava/lang/String;Ljava/lang/String;I)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Adelete_1by_1name
+  (JNIEnv *env, jclass clss, jint loc_id, jstring obj_name, jstring attr_name, jint lapl_id)
+{
+   herr_t retVal;
+   char *aName, *attrName;
+   jboolean isCopy;
+
+	if (obj_name == NULL) {
+        h5nullArgument( env, "H5Adelete_by_name:  object name is NULL");
+        return -1;
+	}
+	if (attr_name == NULL) {
+        h5nullArgument( env, "H5Adelete_by_name:  attribute name is NULL");
+        return -1;
+	}
+    aName = (char *)ENVPTR->GetStringUTFChars(ENVPAR obj_name, &isCopy);
+    if (aName == NULL) {
+        h5JNIFatalError( env, "H5Adelete_by_name: aName is not pinned");
+        return -1;
+    }
+    attrName = (char *)ENVPTR->GetStringUTFChars(ENVPAR attr_name, &isCopy);
+    if (attrName == NULL) {
+		ENVPTR->ReleaseStringUTFChars(ENVPAR obj_name,aName);
+        h5JNIFatalError( env, "H5Adelete_by_name: attrName is not pinned");
+        return -1;
+    }
+    retVal = H5Adelete_by_name((hid_t)loc_id, (const char*)aName, (const char*)attrName, (hid_t)lapl_id); 
+	
+	ENVPTR->ReleaseStringUTFChars(ENVPAR obj_name,aName);
+	ENVPTR->ReleaseStringUTFChars(ENVPAR attr_name,attrName);
+
+	if (retVal< 0) {
+        h5libraryError(env);
+    }
+    return (jint)retVal;
+}
+
 #ifdef __cplusplus
 }
 #endif

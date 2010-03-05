@@ -8158,6 +8158,22 @@ throws HDF5LibraryException, NullPointerException;
 public synchronized static native H5A_info_t H5Aget_info_by_name(int loc_id, String obj_name, String attr_name, int lapl_id)
 throws HDF5LibraryException, NullPointerException;
 
+/**
+* H5Adelete_by_name removes the attribute attr_name from an object specified by location and name, loc_id and obj_name, respectively. 
+*
+* @param loc_id				IN: Location or object identifier; may be dataset or group
+* @param obj_name			IN: Name of object, relative to location, from which attribute is to be removed
+* @param attr_name			IN: Name of attribute to delete
+* @param lapl_id			IN: Link access property list identifier.
+*
+* @return a non-negative value if successful; otherwise returns a negative value.
+*
+* @exception HDF5LibraryException - Error from the HDF-5 Library.
+* @exception NullPointerException - name is null.
+**/
+public synchronized static native int H5Adelete_by_name(int loc_id, String obj_name, String attr_name, int lapl_id)
+throws HDF5LibraryException, NullPointerException;
+
 }
 
 
