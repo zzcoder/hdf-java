@@ -8144,6 +8144,24 @@ throws HDF5LibraryException, NullPointerException;
 public synchronized static native boolean H5Aexists(int obj_id, String attr_name)
 throws HDF5LibraryException, NullPointerException;
 
+/**
+*  H5Adelete_by_idx removes an attribute, specified by its location in an index, from an object.
+*
+*  @param loc_id     		IN: Location or object identifier; may be dataset or group 
+*  @param obj_name			IN: Name of object, relative to location, from which attribute is to be removed 
+*  @param idx_type			IN: Type of index  
+*  @param order				IN: Order in which to iterate over index
+*  @param n					IN: Offset within index  
+*  @param lapl_id			IN: Link access property list identifier 
+*
+*  @return none
+*
+*  @exception HDF5LibraryException - Error from the HDF-5 Library.
+*  @exception NullPointerException - obj_name is null.
+**/
+public synchronized static native void H5Adelete_by_idx(int loc_id, String obj_name, int idx_type, int order, long n, int lapl_id)
+throws HDF5LibraryException, NullPointerException;
+
 }
 
 

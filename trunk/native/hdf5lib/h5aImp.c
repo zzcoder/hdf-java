@@ -1235,6 +1235,40 @@ JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Aexists
 
 }
 
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Adelete_by_idx
+ * Signature: (ILjava/lang/String;IIJI)V
+ */
+JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Adelete_1by_1idx
+  (JNIEnv *env, jclass clss, jint loc_id, jstring obj_name, jint idx_type, jint order, jlong n, jint lapl_id)
+{
+	char      *aName;
+    herr_t     status;
+    jboolean   isCopy;
+
+    if (obj_name == NULL) {
+        h5nullArgument( env, "H5Adelete_by_idx: obj_name is NULL");
+        return;
+    }
+    
+    aName = (char*)ENVPTR->GetStringUTFChars(ENVPAR obj_name, &isCopy);
+    if (aName == NULL) {
+        h5JNIFatalError( env, "H5Adelete_by_idx: obj_name not pinned");
+        return;
+    }
+
+	status = H5Adelete_by_idx((hid_t)loc_id, (const char*)aName, (H5_index_t)idx_type,
+		(H5_iter_order_t)order, (hsize_t)n, (hid_t)lapl_id);
+    ENVPTR->ReleaseStringUTFChars(ENVPAR obj_name, aName);
+
+    if (status < 0) {
+       h5libraryError(env);
+       return;
+    }
+}
+
+
 
 #ifdef __cplusplus
 }
