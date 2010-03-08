@@ -500,5 +500,31 @@ public class TestH5P {
 		} catch (Throwable err) {
 		}
 	}
+	
+	@Test
+	public void testH5Pset_copy_object() throws Throwable, HDF5LibraryException {
+	
+		int ocp_plist_id = -1;
+		int cpy_option = -1;
+
+		try {
+			ocp_plist_id = H5.H5Pcreate(HDF5Constants.H5P_OBJECT_COPY);
+
+			H5.H5Pset_copy_object(ocp_plist_id, HDF5Constants.H5O_COPY_SHALLOW_HIERARCHY_FLAG);
+			cpy_option = H5.H5Pget_copy_object(ocp_plist_id);
+			assertEquals(HDF5Constants.H5O_COPY_SHALLOW_HIERARCHY_FLAG,
+					cpy_option);
+		} catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5Pset_copy_object: " + err);
+		} finally {
+			H5.H5Pclose(ocp_plist_id);
+		}
+	}
+	
+	@Test(expected = HDF5LibraryException.class)
+	public void testH5Pset_copy_objectinvalid() throws Throwable, HDF5LibraryException {
+		H5.H5Pset_copy_object(HDF5Constants.H5P_DEFAULT, HDF5Constants.H5O_COPY_SHALLOW_HIERARCHY_FLAG);
+	}
 
 }
