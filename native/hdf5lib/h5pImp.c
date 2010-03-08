@@ -3049,6 +3049,12 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id2
     return (jint)status;
 }
 
+/**********************************************************************
+ *                                                                    *
+ *          New functions release 1.8.0                               *
+ *                                                                    *
+ **********************************************************************/
+
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Pget_nlinks
@@ -3075,7 +3081,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id2
  * Signature: (IJ)I
  */
  JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1nlinks
-  (JNIEnv * env, jclass clss, jint lapl_id, jlong nlinks)
+  (JNIEnv *env, jclass clss, jint lapl_id, jlong nlinks)
  {
 	herr_t retVal = -1;
 
@@ -3091,9 +3097,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id2
     }
 	
 	return (jint)retVal;
-
  }
-
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
@@ -3101,7 +3105,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id2
  * Signature: (I[J)I
  */
  JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1libver_1bounds
-  (JNIEnv * env, jclass clss, jint fapl_id, jlongArray libver)
+  (JNIEnv *env, jclass clss, jint fapl_id, jlongArray libver)
  {
 	herr_t retVal = -1;
 	H5F_libver_t *theArray = NULL;
@@ -3128,7 +3132,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id2
     }
 	
 	return (jint)retVal;
-
  }
 
  /*
@@ -3137,7 +3140,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id2
  * Signature: (IJJ)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1libver_1bounds
-  (JNIEnv * env, jclass clss, jint fapl_id, jlong low, jlong high)
+  (JNIEnv *env, jclass clss, jint fapl_id, jlong low, jlong high)
 {
 	herr_t retVal = -1;
 
@@ -3166,7 +3169,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1libver_1bounds
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1link_1creation_1order
-  (JNIEnv * env, jclass clss, jint gcpl_id)
+  (JNIEnv *env, jclass clss, jint gcpl_id)
 {
 	herr_t retVal = -1;
 	unsigned crt_order_flags;
@@ -3178,15 +3181,15 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1link_1creation_1order
 	}
 
 	return (jint)crt_order_flags;
-
 }
+
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Pset_link_creation_order
  * Signature: (II)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1link_1creation_1order
-  (JNIEnv * env, jclass clss, jint gcpl_id, jint crt_order_flags)
+  (JNIEnv *env, jclass clss, jint gcpl_id, jint crt_order_flags)
 {
 	herr_t retVal = -1;
 
@@ -3205,7 +3208,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1link_1creation_1order
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1attr_1creation_1order
-  (JNIEnv * env, jclass clss, jint ocpl_id)
+  (JNIEnv *env, jclass clss, jint ocpl_id)
 {
 	herr_t retVal = -1;
 	unsigned crt_order_flags;
@@ -3217,9 +3220,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1attr_1creation_1order
 	}
 
 	return (jint)crt_order_flags;
-
 }
-
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
@@ -3227,7 +3228,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1attr_1creation_1order
  * Signature: (II)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1attr_1creation_1order
-  (JNIEnv * env, jclass clss, jint ocpl_id, jint crt_order_flags)
+  (JNIEnv *env, jclass clss, jint ocpl_id, jint crt_order_flags)
 {
 	herr_t retVal = -1;
 
@@ -3240,6 +3241,40 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1attr_1creation_1order
 	return (jint)retVal;
 }
 
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_copy_object
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1copy_1object
+  (JNIEnv *env, jclass clss, jint ocp_plist_id, jint copy_options)
+{
+	herr_t retVal = -1;
+
+	retVal = H5Pset_copy_object((hid_t)ocp_plist_id, (unsigned)copy_options);
+	if(retVal <0){
+		h5libraryError(env);
+	}
+    return;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_copy_object
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1copy_1object
+  (JNIEnv *env, jclass clss, jint ocp_plist_id)
+{
+	herr_t retVal = -1;
+	unsigned copy_options;
+
+	retVal = H5Pget_copy_object((hid_t)ocp_plist_id, &copy_options);
+	if(retVal <0){
+		h5libraryError(env);
+	}
+	return (jint)copy_options;
+}
 
 
 #ifdef __cplusplus

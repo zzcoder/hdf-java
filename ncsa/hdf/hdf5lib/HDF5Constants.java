@@ -223,7 +223,13 @@ public class HDF5Constants {
     public static final int H5L_TYPE_HARD = H5L_TYPE_HARD();
     public static final int H5L_TYPE_SOFT = H5L_TYPE_SOFT();
     public static final int H5L_TYPE_EXTERNAL = H5L_TYPE_EXTERNAL();
-    public static final int H5L_TYPE_MAX = H5L_TYPE_MAX();
+    public static final int H5L_TYPE_MAX = H5L_TYPE_MAX(); 
+    public static final int H5O_COPY_SHALLOW_HIERARCHY_FLAG = H5O_COPY_SHALLOW_HIERARCHY_FLAG();
+    public static final int H5O_COPY_EXPAND_SOFT_LINK_FLAG =  H5O_COPY_EXPAND_SOFT_LINK_FLAG();
+    public static final int H5O_COPY_EXPAND_EXT_LINK_FLAG = H5O_COPY_EXPAND_EXT_LINK_FLAG();
+    public static final int H5O_COPY_EXPAND_REFERENCE_FLAG = H5O_COPY_EXPAND_REFERENCE_FLAG();
+    public static final int H5O_COPY_WITHOUT_ATTR_FLAG = H5O_COPY_WITHOUT_ATTR_FLAG();
+    public static final int H5O_COPY_PRESERVE_NULL_FLAG = H5O_COPY_PRESERVE_NULL_FLAG();
     public static final int H5O_TYPE_UNKNOWN = H5O_TYPE_UNKNOWN();
     public static final int H5O_TYPE_GROUP = H5O_TYPE_GROUP();
     public static final int H5O_TYPE_DATASET = H5O_TYPE_DATASET();
@@ -246,6 +252,7 @@ public class HDF5Constants {
     public static final int H5P_LINK_CREATE = H5P_LINK_CREATE();
     public static final int H5P_LINK_ACCESS = H5P_LINK_ACCESS();
     public static final int H5P_NO_CLASS = H5P_NO_CLASS();
+    public static final int H5P_OBJECT_COPY = H5P_OBJECT_COPY();
     public static final int H5R_BADTYPE = H5R_BADTYPE();
     public static final int H5R_DATASET_REGION = H5R_DATASET_REGION();
     public static final int H5R_MAXTYPE = H5R_MAXTYPE();
@@ -902,7 +909,19 @@ public class HDF5Constants {
     private static native final int H5L_TYPE_EXTERNAL();
     
     private static native final int H5L_TYPE_MAX();
-
+    
+    private static native final int H5O_COPY_SHALLOW_HIERARCHY_FLAG();
+    
+    private static native final int H5O_COPY_EXPAND_SOFT_LINK_FLAG();
+    
+    private static native final int H5O_COPY_EXPAND_EXT_LINK_FLAG();
+    
+    private static native final int H5O_COPY_EXPAND_REFERENCE_FLAG();
+    
+    private static native final int H5O_COPY_WITHOUT_ATTR_FLAG();
+    
+    private static native final int H5O_COPY_PRESERVE_NULL_FLAG();
+    
     private static native final int H5O_TYPE_UNKNOWN();
     
     private static native final int H5O_TYPE_GROUP();
@@ -946,6 +965,8 @@ public class HDF5Constants {
     private static native final int H5P_LINK_ACCESS();
 
     private static native final int H5P_NO_CLASS();
+    
+    private static native final int H5P_OBJECT_COPY();
 
     private static native final int H5R_BADTYPE();
 

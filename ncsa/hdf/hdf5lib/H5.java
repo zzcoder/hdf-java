@@ -7832,7 +7832,6 @@ throws HDF5LibraryException;
  * @param ocpl_id  	            IN: Object creation property list identifier
  * @param crt_order_flags      	IN: Flags specifying whether to track and index attribute creation order
  * 
- * 
  * @return Returns a non-negative value if successful; otherwise returns a negative value. 
  * 
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
@@ -7840,6 +7839,33 @@ throws HDF5LibraryException;
  **/
 
 public synchronized static native int H5Pset_attr_creation_order(int ocpl_id, int crt_order_flags)
+throws HDF5LibraryException;
+
+/**
+ * H5Pset_copy_object Sets properties to be used when an object is copied.  
+ * @param ocp_plist_id			IN: Object copy property list identifier
+ * @param copy_options      	IN: Copy option(s) to be set
+ *  
+ * @return none 
+ * 
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  
+ **/
+
+public synchronized static native void H5Pset_copy_object(int ocp_plist_id, int copy_options)
+throws HDF5LibraryException;
+
+/**
+ * H5Pget_copy_object retrieves the properties to be used when an object is copied.  
+ * @param ocp_plist_id			IN: Object copy property list identifier
+ *  
+ * @return Copy option(s) set in the object copy property list  
+ * 
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  
+ **/
+
+public synchronized static native int H5Pget_copy_object(int ocp_plist_id)
 throws HDF5LibraryException;
 
 
