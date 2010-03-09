@@ -3275,6 +3275,41 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1copy_1object
 	}
 	return (jint)copy_options;
 }
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_create_intermediate_group
+ * Signature: (IZ)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1create_1intermediate_1group
+  (JNIEnv *env, jclass clss, jint lcpl_id, jboolean crt_intermed_group)
+{
+	herr_t retVal = -1;
+
+	retVal = H5Pset_create_intermediate_group((hid_t)lcpl_id, (unsigned)crt_intermed_group); 
+	if(retVal <0){
+		h5libraryError(env);
+	}
+    return (jint)retVal;
+}
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_create_intermediate_group
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1create_1intermediate_1group
+  (JNIEnv *env, jclass clss, jint lcpl_id)
+{
+	herr_t retVal = -1;
+	unsigned crt_intermed_group;
+
+	retVal = H5Pget_create_intermediate_group((hid_t)lcpl_id, &crt_intermed_group); 
+	
+	if(retVal <0){
+		h5libraryError(env);
+	}
+	return (jboolean)crt_intermed_group;
+}
+
 
 
 #ifdef __cplusplus

@@ -25,6 +25,9 @@ public class TestH5P {
     int H5dsid = -1;
     int H5did = -1;
     long[] H5dims = { DIM_X, DIM_Y };
+    int lapl_id = -1, fapl_id = -1;
+    int gcpl_id = -1, ocpl_id = -1;
+    int ocp_plist_id = -1, lcpl_id = -1;
 
     private final void _deleteFile(String filename) {
         File file = new File(filename);
@@ -63,6 +66,12 @@ public class TestH5P {
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
             H5dsid = H5.H5Screate_simple(2, H5dims, null);
             H5did = _createDataset(H5fid, H5dsid, "dset", HDF5Constants.H5P_DEFAULT);
+            lapl_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_ACCESS);
+            fapl_id = H5.H5Pcreate(HDF5Constants.H5P_FILE_ACCESS);
+            gcpl_id = H5.H5Pcreate(HDF5Constants.H5P_FILE_CREATE);
+            ocpl_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_CREATE);
+            ocp_plist_id = H5.H5Pcreate(HDF5Constants.H5P_OBJECT_COPY);
+            lcpl_id = H5.H5Pcreate(HDF5Constants.H5P_LINK_CREATE);
         }
         catch (Throwable err) {
             err.printStackTrace();
@@ -71,6 +80,12 @@ public class TestH5P {
         assertTrue("TestH5D.createH5file: H5.H5Fcreate: ",H5fid > 0);
         assertTrue("TestH5D.createH5file: H5.H5Screate_simple: ",H5dsid > 0);
         assertTrue("TestH5D.createH5file: _createDataset: ",H5did > 0);
+        assertTrue(lapl_id > 0);
+        assertTrue(fapl_id > 0);
+        assertTrue(gcpl_id > 0);
+        assertTrue(ocpl_id > 0);
+        assertTrue(ocp_plist_id > 0);
+        assertTrue(lcpl_id > 0);
 
         H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
     }
@@ -85,147 +100,76 @@ public class TestH5P {
             H5.H5Fclose(H5fid);
  
         _deleteFile(H5_FILE);
+        
+        if (lapl_id >0)
+        	H5.H5Pclose(lapl_id);
+        if (fapl_id >0)
+        	H5.H5Pclose(fapl_id);
+        if (gcpl_id >0)
+        	H5.H5Pclose(gcpl_id);
+        if (ocpl_id >0)
+        	H5.H5Pclose(ocpl_id);
+        if (ocp_plist_id >0)
+        	H5.H5Pclose(ocp_plist_id);
+        if (lcpl_id >0)
+        	H5.H5Pclose(lcpl_id);
     }
 
     @Test
     public void testH5Pget_nlinks() throws Throwable, HDF5LibraryException {
-    	
-    		  int lapl_id = -1;
-    		  long nlinks = -1;
-              
-              try {
-            	  lapl_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_ACCESS);
-              } catch (Throwable err) 
-              {
-              }
-              
-              try {
-               nlinks = (long)H5.H5Pget_nlinks(lapl_id);
-            	   
-              }catch (Throwable err) {
-                   err.printStackTrace();
-                   fail("H5.H5Pget_nlinks: " + err);
-              } finally
-              {
-            	   H5.H5Pclose(lapl_id);
-              }
-               
-              //Check if the value of nLinks is greater than zero.
-              assertTrue("testH5Pget_nlinks: H5Pget_nlinks", nlinks>0);
-               
-              //Check the default value of nlink.
-              assertEquals(nlinks, 16L);
-               
-              //Negative Test - Error should be thrown when H5Pget_nlinks is called for the file who access has been closed.
-              try{
-            	   H5.H5Pget_nlinks(lapl_id);
-            	   fail("Negative Test Failed:- Error not Thrown when Access to File is Closed.");
-              }
-              catch(AssertionError err){
-            	   fail("H5.H5Pget_nlinks: " + err);
-              }catch(Throwable err){
-              }
-    }
-    
+		long nlinks = -1;
+		try {
+			nlinks = (long) H5.H5Pget_nlinks(lapl_id);
+		} catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5.H5Pget_nlinks: " + err);
+		}
+		assertTrue("testH5Pget_nlinks", nlinks > 0);
+		// Check the default value of nlinks.
+		assertEquals(nlinks, 16L);
+	}
+
     @Test
     public void testH5Pset_nlinks() throws Throwable, HDF5LibraryException {
-    	
-		int lapl_id = -1;
 		long nlinks = 20;
 		int ret_val = -1;
-
-		try {
-			lapl_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_ACCESS);
-		} catch (Throwable err) {
-		}
-
 		try {
 			ret_val = H5.H5Pset_nlinks(lapl_id, nlinks);
 			nlinks = (long) H5.H5Pget_nlinks(lapl_id);
 		} catch (Throwable err) {
 			err.printStackTrace();
 			fail("H5.H5Pset_nlinks: " + err);
-		} finally {
-			H5.H5Pclose(lapl_id);
 		}
-		// Check the ret_val value, if its is negative then test fails.
-		assertTrue("testH5Pset_nlinks: H5Pset_nlinks", ret_val >= 0);
-
+		assertTrue("testH5Pset_nlinks", ret_val >= 0);
 		// Check the value of nlinks retrieved from H5Pget_nlinks function.
-		assertEquals(nlinks, 20L);
-
-		// Negative Test - Error should be thrown when H5Pset_nlinks is called
-		// for the file who access has been closed.
-		try {
-			H5.H5Pset_nlinks(lapl_id, nlinks);
-			fail("Negative Test Failed:- Error not Thrown when Access to File is Closed.");
-		} catch (AssertionError err) {
-			fail("H5.H5Pset_nlinks: " + err);
-		} catch (Throwable err) {
-		}
-        
+		assertEquals(nlinks, 20L);     
     }
     
     @Test
     public void testH5Pget_libver_bounds() throws Throwable, HDF5LibraryException {
-    	
-		int fapl_id = -1;
 		int ret_val = -1;
-
 		long[] libver = new long[2];
-
-		try {
-			fapl_id = H5.H5Pcreate(HDF5Constants.H5P_FILE_ACCESS);
-		} catch (Throwable err) {
-			err.printStackTrace();
-		}
-
 		try {
 			ret_val = H5.H5Pget_libver_bounds(fapl_id, libver);
 		} catch (Throwable err) {
 			err.printStackTrace();
 			fail("H5Pget_libver_bounds: " + err);
-		} finally {
-			H5.H5Pclose(fapl_id);
 		}
-
-		// Check the ret_val value, if its is negative then test fails.
-		assertTrue("testH5Pget_libver_bounds: H5Pget_libver_bounds",
-				ret_val >= 0);
-
+		assertTrue("testH5Pget_libver_bounds", ret_val >= 0);
 		// Check the Earliest Version if the library
 		assertEquals(HDF5Constants.H5F_LIBVER_EARLIEST, libver[0]);
-
 		// Check the Latest Version if the library
 		assertEquals(HDF5Constants.H5F_LIBVER_LATEST, libver[1]);
-
-		// Negative Test - Error should be thrown when H5Pget_libver_bounds is
-		// called for the file who access has been closed.
-		try {
-			H5.H5Pget_libver_bounds(fapl_id, libver);
-			fail("Negative Test Failed:- Error not Thrown when Access to File is Closed.");
-		} catch (AssertionError err) {
-			fail("H5.H5Pget_libver_bounds: " + err);
-		} catch (Throwable err) {
-		}
-
-    }
+	}
     
     @Test
     public void testH5Pset_libver_bounds() throws Throwable, HDF5LibraryException {
     	
-		int fapl_id = -1;
 		int ret_val = -1;
 		int retVal = -1;
 		long low = HDF5Constants.H5F_LIBVER_EARLIEST;
 		long high = HDF5Constants.H5F_LIBVER_LATEST;
 		long[] libver = new long[2];
-
-		try {
-			fapl_id = H5.H5Pcreate(HDF5Constants.H5P_FILE_ACCESS);
-		} catch (Throwable err) {
-			err.printStackTrace();
-		}
 
 		try {
 			ret_val = H5.H5Pset_libver_bounds(fapl_id, low, high);
@@ -254,88 +198,36 @@ public class TestH5P {
 		} catch (Throwable err) {
 			err.printStackTrace();
 			fail("H5Pset_libver_bounds: " + err);
-		} finally {
-			H5.H5Pclose(fapl_id);
 		}
-
-		// Check the ret_val value, if its is negative then test fails.
 		assertTrue("testH5Pset_libver_bounds: H5Pset_libver_bounds",
 				ret_val >= 0);
-
 		assertTrue("testH5Pget_libver_bounds: H5Pget_libver_bounds",
 				retVal >= 0);
-
 		// Check the Earliest Version if the library
 		assertEquals(HDF5Constants.H5F_LIBVER_EARLIEST, libver[0]);
-
 		// Check the Latest Version if the library
 		assertEquals(HDF5Constants.H5F_LIBVER_LATEST, libver[1]);
-
-		// Negative Test - Error should be thrown when H5Pset_libver_bounds is
-		// called for the file who access has been closed.
-		try {
-			H5.H5Pset_libver_bounds(fapl_id, low, high);
-			fail("Negative Test Failed:- Error not Thrown when Access to File is Closed.");
-		} catch (AssertionError err) {
-			fail("H5.H5Pset_libver_bounds: " + err);
-		} catch (Throwable err) {
-		}
-
-    }
+	}
     
     @Test
-    public void testH5Pget_link_creation_order() throws Throwable, HDF5LibraryException
-    {
-		int gcpl_id = -1;
+    public void testH5Pget_link_creation_order() throws Throwable, HDF5LibraryException {
 		int crt_order_flags = 0;
-
-		try {
-			gcpl_id = H5.H5Pcreate(HDF5Constants.H5P_FILE_CREATE);
-		} catch (Throwable err) {
-			err.printStackTrace();
-		}
 		try {
 			crt_order_flags = H5.H5Pget_link_creation_order(gcpl_id);
-
 		} catch (Throwable err) {
 			err.printStackTrace();
 			fail("H5Pget_link_creation_order: " + err);
-		} finally {
-			H5.H5Pclose(gcpl_id);
 		}
-
-		// Check the ret_val value, if its is negative then test fails.
-		assertTrue(
-				"testH5Pget_link_creation_order: H5Pget_link_creation_order",
-				crt_order_flags >= 0);
-
-		// Negative Test - Error should be thrown when
-		// H5Pget_link_creation_order is called for the file who access has been
-		// closed.
-		try {
-			H5.H5Pget_link_creation_order(gcpl_id);
-			fail("Negative Test Failed:- Error not Thrown when Access to File is Closed.");
-		} catch (AssertionError err) {
-			fail("H5.H5Pget_link_creation_order: " + err);
-		} catch (Throwable err) {
-		}
-
+		assertTrue("testH5Pget_link_creation_order", crt_order_flags >= 0);
 	}
 
 	@Test
-	public void testH5Pset_link_creation_order() throws Throwable,
-			HDF5LibraryException {
+	public void testH5Pset_link_creation_order() throws Throwable, HDF5LibraryException {
 		int ret_val = -1;
-		int gcpl_id = -1;
 		int crt_order_flags = HDF5Constants.H5P_CRT_ORDER_TRACKED
 				+ HDF5Constants.H5P_CRT_ORDER_INDEXED;
 		int crtorderflags = 0;
 
-		try {
-			gcpl_id = H5.H5Pcreate(HDF5Constants.H5P_FILE_CREATE);
-		} catch (Throwable err) {
-			err.printStackTrace();
-		}
 		try {
 
 			ret_val = H5.H5Pset_link_creation_order(gcpl_id, crt_order_flags);
@@ -375,97 +267,44 @@ public class TestH5P {
 		} catch (Throwable err) {
 			err.printStackTrace();
 			fail("H5Pset_link_creation_order: " + err);
-		} finally {
-			H5.H5Pclose(gcpl_id);
-		}
-
-		// Negative Test - Error should be thrown when
-		// H5Pset_link_creation_order is called for the file who access has been
-		// closed.
-		try {
-			H5.H5Pset_link_creation_order(gcpl_id, crt_order_flags);
-			;
-			fail("Negative Test Failed:- Error not Thrown when Access to File is Closed.");
-		} catch (AssertionError err) {
-			fail("H5.H5Pset_link_creation_order: " + err);
-		} catch (Throwable err) {
-		}
+		} 
 	}
     
     @Test
-    public void testH5Pget_attr_creation_order() throws Throwable, HDF5LibraryException
-    {
-		int ocpl_id = -1;
+    public void testH5Pget_attr_creation_order() throws Throwable, HDF5LibraryException {
 		int crt_order_flags = 0;
 
 		try {
-			ocpl_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_CREATE);
-		} catch (Throwable err) {
-			err.printStackTrace();
-		}
-		try {
 			crt_order_flags = H5.H5Pget_attr_creation_order(ocpl_id);
-
 		} catch (Throwable err) {
 			err.printStackTrace();
 			fail("H5Pget_attr_creation_order: " + err);
-		} finally {
-			H5.H5Pclose(ocpl_id);
-		}
-
-		// Check the ret_val value, if its is negative then test fails.
-		assertTrue(
-				"testH5Pget_attr_creation_order: H5Pget_attr_creation_order",
-				crt_order_flags >= 0);
-
-		// Negative Test - Error should be thrown when
-		// H5Pget_attr_creation_order is called for the file who access has been
-		// closed.
-		try {
-			H5.H5Pget_attr_creation_order(ocpl_id);
-			fail("Negative Test Failed:- Error not Thrown when Access to File is Closed.");
-		} catch (AssertionError err) {
-			fail("H5.H5Pget_attr_creation_order: " + err);
-		} catch (Throwable err) {
-		}
-
+		} 
+		assertTrue("testH5Pget_attr_creation_order", crt_order_flags >= 0);
     }
     
 	@Test
 	public void testH5Pset_attr_creation_order() throws Throwable,
 			HDF5LibraryException {
 		int ret_val = -1;
-		int ocpl_id = -1;
 		int crt_order_flags = HDF5Constants.H5P_CRT_ORDER_TRACKED
 				+ HDF5Constants.H5P_CRT_ORDER_INDEXED;
 		int crtorderflags = 0;
 
 		try {
-			ocpl_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_CREATE);
-		} catch (Throwable err) {
-			err.printStackTrace();
-		}
-		try {
 
 			ret_val = H5.H5Pset_attr_creation_order(ocpl_id, crt_order_flags);
 			crtorderflags = H5.H5Pget_attr_creation_order(ocpl_id);
-
-			// Check the ret_val value, if its is negative then test fails.
 			assertTrue(
 					"testH5Pset_attr_creation_order: H5Pset_attr_creation_order",
 					ret_val >= 0);
-
 			// Check if the value set by H5Pset_attr_creation_order is equal to
 			// value returned from H5Pget_attr_creation_order.
 			assertEquals(crt_order_flags, crtorderflags);
 
 			crt_order_flags = HDF5Constants.H5P_CRT_ORDER_TRACKED;
 			ret_val = H5.H5Pset_attr_creation_order(ocpl_id, crt_order_flags);
-
 			crtorderflags = H5.H5Pget_attr_creation_order(ocpl_id);
-
-			// Check the if crt_order_flags is equal to the value set
-			// H5P_CRT_ORDER_TRACKED
 			assertEquals(crt_order_flags, crtorderflags);
 
 			try {
@@ -484,32 +323,15 @@ public class TestH5P {
 		} catch (Throwable err) {
 			err.printStackTrace();
 			fail("H5Pset_attr_creation_order: " + err);
-		} finally {
-			H5.H5Pclose(ocpl_id);
-		}
-
-		// Negative Test - Error should be thrown when
-		// H5Pset_attr_creation_order is called for the file who access has been
-		// closed.
-		try {
-			H5.H5Pset_attr_creation_order(ocpl_id, crt_order_flags);
-			;
-			fail("Negative Test Failed:- Error not Thrown when Access to File is Closed.");
-		} catch (AssertionError err) {
-			fail("H5.H5Pset_attr_creation_order: " + err);
-		} catch (Throwable err) {
-		}
+		} 
 	}
 	
 	@Test
 	public void testH5Pset_copy_object() throws Throwable, HDF5LibraryException {
 	
-		int ocp_plist_id = -1;
 		int cpy_option = -1;
 
 		try {
-			ocp_plist_id = H5.H5Pcreate(HDF5Constants.H5P_OBJECT_COPY);
-
 			H5.H5Pset_copy_object(ocp_plist_id, HDF5Constants.H5O_COPY_SHALLOW_HIERARCHY_FLAG);
 			cpy_option = H5.H5Pget_copy_object(ocp_plist_id);
 			assertEquals(HDF5Constants.H5O_COPY_SHALLOW_HIERARCHY_FLAG,
@@ -517,9 +339,7 @@ public class TestH5P {
 		} catch (Throwable err) {
 			err.printStackTrace();
 			fail("H5Pset_copy_object: " + err);
-		} finally {
-			H5.H5Pclose(ocp_plist_id);
-		}
+		} 
 	}
 	
 	@Test(expected = HDF5LibraryException.class)
@@ -527,4 +347,49 @@ public class TestH5P {
 		H5.H5Pset_copy_object(HDF5Constants.H5P_DEFAULT, HDF5Constants.H5O_COPY_SHALLOW_HIERARCHY_FLAG);
 	}
 
+	@Test
+	public void testH5Pset_create_intermediate_group() throws Throwable, HDF5LibraryException {
+	
+		int ret_val = -1;
+		try {
+			ret_val = H5.H5Pset_create_intermediate_group(lcpl_id, true);
+			assertTrue(ret_val>=0);
+		} catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5Pset_create_intermediate_group: " + err);
+		} 
+	}
+	
+	@Test(expected = HDF5LibraryException.class)
+	public void testH5Pset_create_intermediate_group_invalid() throws Throwable, HDF5LibraryException {
+		H5.H5Pset_create_intermediate_group(ocp_plist_id, true);
+	}
+	
+	@Test
+	public void testH5Pget_create_intermediate_group_notcreated() throws Throwable, HDF5LibraryException {
+	
+		try {
+			boolean flag = H5.H5Pget_create_intermediate_group(lcpl_id);
+			assertEquals(false, flag);
+		} catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5Pget_create_intermediate_group_notcreated: " + err);
+		}
+	}
+	
+	@Test
+	public void testH5Pget_create_intermediate_group_created() throws Throwable, HDF5LibraryException {
+
+		try {
+			H5.H5Pset_create_intermediate_group(lcpl_id, true);
+			boolean flag = H5.H5Pget_create_intermediate_group(lcpl_id);
+			assertEquals(true, flag);
+		} catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5Pget_create_intermediate_group_created: " + err);
+		}
+	}
+	
+	
+	
 }
