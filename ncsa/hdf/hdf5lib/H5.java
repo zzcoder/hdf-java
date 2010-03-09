@@ -7868,6 +7868,33 @@ throws HDF5LibraryException;
 public synchronized static native int H5Pget_copy_object(int ocp_plist_id)
 throws HDF5LibraryException;
 
+/**
+ * H5Pset_create_intermediate_group specifies in property list whether to create missing intermediate groups 
+ * @param lcpl_id				IN: Link creation property list identifier
+ * @param crt_intermed_group	IN: Flag specifying whether to create intermediate groups upon the creation of an object 
+ *  
+ * @return a non-negative valule if successful; otherwise returns a negative value.
+ * 
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  
+ **/
+
+public synchronized static native int H5Pset_create_intermediate_group(int lcpl_id, boolean crt_intermed_group)
+throws HDF5LibraryException;
+
+/**
+ * H5Pget_create_intermediate_group determines whether property is set to enable creating missing intermediate groups.  
+ * @param lcpl_id				IN:  Link creation property list identifier
+ *  
+ * @return Boolean true or false   
+ * 
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  
+ **/
+
+public synchronized static native boolean H5Pget_create_intermediate_group(int lcpl_id)
+throws HDF5LibraryException;
+
 
 //////////////////////////////////////////////////////////////
 ////
