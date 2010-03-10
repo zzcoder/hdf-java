@@ -120,6 +120,10 @@ rem Check the HDF Java Library.
     echo.
 
     rem Check Library
+    echo.Checking Java JUnit4 Tests...
+    %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %TESTDIR%\classes;%classpath%;%TESTDIR%\lib\junit.jar org.junit.runner.JUnitCore test.hdf5lib.TestAll
+    if %errorlevel% neq 0 exit /b
+    echo.Checking Java JUnit4 Successful
     echo.Checking Java Object Library...
     %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %TESTDIR%\classes;%classpath% test.object.misc.TestH5Object
     if %errorlevel% neq 0 exit /b
@@ -127,10 +131,6 @@ rem Check the HDF Java Library.
     %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %TESTDIR%\classes;%classpath%;%TESTDIR%\lib\junit.jar test.object.AllH5ObjectTests
     if %errorlevel% neq 0 exit /b
     echo.Checking Java Object Library Successful
-    echo.Checking Java JUnit4 Tests...
-    %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %TESTDIR%\classes;%classpath%;%TESTDIR%\lib\junit.jar org.junit.runner.JUnitCore test.hdf5lib.TestAll
-    if %errorlevel% neq 0 exit /b
-    echo.Checking Java JUnit4 Successful
 
     exit /b 0
 	

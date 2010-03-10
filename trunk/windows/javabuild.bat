@@ -118,7 +118,11 @@ rem Build the HDF Java Sources.
     echo.Building Java Sources...
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\hdf5lib\*.java
     if %errorlevel% neq 0 exit /b
+rem     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\hdf5lib\callbacks\*.java
+rem     if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\hdf5lib\exceptions\*.java
+    if %errorlevel% neq 0 exit /b
+    %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\hdf5lib\structs\*.java
     if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\hdflib\*.java
     if %errorlevel% neq 0 exit /b
@@ -135,10 +139,6 @@ rem Build the HDF Java Sources.
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ext\npoess\*.java
     if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\view\*.java
-    if %errorlevel% neq 0 exit /b
-    %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\test\object\*.java
-    if %errorlevel% neq 0 exit /b
-    %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\test\object\misc\*.java
     if %errorlevel% neq 0 exit /b
     echo.Building Java Sources Successful
 
