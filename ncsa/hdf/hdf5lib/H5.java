@@ -7761,7 +7761,7 @@ throws HDF5LibraryException, IllegalArgumentException;
  *  
  **/
  
-public synchronized static native int H5Pget_libver_bounds(int fapl_id, long []libver) 
+public synchronized static native int H5Pget_libver_bounds(int fapl_id, int []libver) 
 throws HDF5LibraryException, NullPointerException;
 
 
@@ -7779,7 +7779,7 @@ throws HDF5LibraryException, NullPointerException;
  *  
  **/
 
-public synchronized static native int H5Pset_libver_bounds(int fapl_id, long low, long high)
+public synchronized static native int H5Pset_libver_bounds(int fapl_id, int low, int high)
 throws HDF5LibraryException, IllegalArgumentException;
 
 
@@ -7894,6 +7894,36 @@ throws HDF5LibraryException;
 
 public synchronized static native boolean H5Pget_create_intermediate_group(int lcpl_id)
 throws HDF5LibraryException;
+
+/**
+ * H5Pset_data_transform sets a data transform expression 
+ * @param plist_id				IN: Identifier of the property list or class
+ * @param expression			IN: Pointer to the null-terminated data transform expression 
+ *  
+ * @return a non-negative valule if successful; otherwise returns a negative value.
+ * 
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception NullPointerException - expression is null.
+ *  
+ **/
+
+public synchronized static native int H5Pset_data_transform(int plist_id, String expression)
+throws HDF5LibraryException, NullPointerException;
+
+///**
+// * H5Pget_data_transform retrieves the data transform expression previously set in the dataset transfer property list plist_id by H5Pset_data_transform. 
+// * @param plist_id				IN: Identifier of the property list or class
+// * @param size					IN: Number of bytes of the transform expression to copy to
+// *  
+// * @return The transform expression as a String   
+// * 
+// *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+// *  @exception NullPointerException - expression is null.
+// *  
+// **/
+
+//public synchronized static native String H5Pget_data_transform(int plist_id, long size)
+//throws HDF5LibraryException, NullPointerException;
 
 
 //////////////////////////////////////////////////////////////
