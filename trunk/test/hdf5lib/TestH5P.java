@@ -411,35 +411,38 @@ public class TestH5P {
 	public void testH5Pset_data_transform_InvalidExpression2() throws Throwable, HDF5LibraryException, NullPointerException {
 		H5.H5Pset_data_transform(plist_id, "hello");
 	}
-/*	
+	
 	@Test
-	public void testH5Pget_data_transform() throws Throwable, HDF5LibraryException, NullPointerException {
+	public void testH5Pget_data_transform() throws Throwable, HDF5LibraryException, IllegalArgumentException {
 		
 		String expression = "(5/9.0)*(x-32)";
-		String ret_expression = null;
+		String [] express = {""};
+		long express_size = 0;
 		long size = 20;
 
 		try {
 			H5.H5Pset_data_transform(plist_id, expression);	
-			ret_expression = H5.H5Pget_data_transform(plist_id, size);
+			express_size = H5.H5Pget_data_transform(plist_id, express, size);
 		} 
 		catch (Throwable err) {
 			err.printStackTrace();
-			fail("H5Pset_data_transform: " + err);
+			fail("H5Pget_data_transform: " + err);
 		}
-		assertNotNull(ret_expression);
-		assertEquals("H5Pset_data_transform: buffer size is too small",expression, ret_expression);
-		
+		assertTrue(express_size>=0);
+		assertTrue("The data transform expression: ", expression.equals(express[0]));
 	}
 	
 	@Test(expected = HDF5LibraryException.class)
-	public void testH5Pget_data_transform_ExpressionNotCreated() throws Throwable, HDF5LibraryException, NullPointerException {
-		H5.H5Pget_data_transform(plist_id, 20);
+	public void testH5Pget_data_transform_ExpressionNotSet() throws Throwable, HDF5LibraryException, IllegalArgumentException {
+		String [] express = {""};
+		H5.H5Pget_data_transform(plist_id, express, 20);
 	}
-*/
 	
-	
-	
-	
+	@Test(expected = IllegalArgumentException.class)
+	public void testH5Pget_data_transform_IllegalSize() throws Throwable, HDF5LibraryException, IllegalArgumentException {
+		String [] express = {""};
+		H5.H5Pset_data_transform(plist_id, "(5/9.0)*(x-32)");
+		H5.H5Pget_data_transform(plist_id, express, 0);
+	}
 	
 }

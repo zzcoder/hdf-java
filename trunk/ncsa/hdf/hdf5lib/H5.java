@@ -7910,20 +7910,21 @@ throws HDF5LibraryException;
 public synchronized static native int H5Pset_data_transform(int plist_id, String expression)
 throws HDF5LibraryException, NullPointerException;
 
-///**
-// * H5Pget_data_transform retrieves the data transform expression previously set in the dataset transfer property list plist_id by H5Pset_data_transform. 
-// * @param plist_id				IN: Identifier of the property list or class
-// * @param size					IN: Number of bytes of the transform expression to copy to
-// *  
-// * @return The transform expression as a String   
-// * 
-// *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-// *  @exception NullPointerException - expression is null.
-// *  
-// **/
-
-//public synchronized static native String H5Pget_data_transform(int plist_id, long size)
-//throws HDF5LibraryException, NullPointerException;
+/**
+ * H5Pget_data_transform retrieves the data transform expression previously set in the dataset transfer property list plist_id by H5Pset_data_transform.
+ * @param plist_id				IN: Identifier of the property list or class
+ * @param size					IN: Number of bytes of the transform expression to copy to
+ * @param expression			OUT: A data transform expression
+ * 
+ * @return The size of the transform expression if successful; 0(zero) if no transform expression exists. Otherwise returns a negative value. 
+ * 
+ * 
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ * @exception IllegalArgumentException - Size is <= 0.
+ *  
+ **/
+public synchronized static native long H5Pget_data_transform( int plist_id, String[] expression, long size)
+throws HDF5LibraryException, IllegalArgumentException;
 
 
 //////////////////////////////////////////////////////////////

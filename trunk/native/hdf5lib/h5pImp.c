@@ -3336,6 +3336,56 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1data_1transform
 	return (jint)retVal;
 }
 
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_data_transform
+ * Signature: (I[Ljava/lang/String;J)J
+ */
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1data_1transform
+  (JNIEnv *env, jclass clss, jint plist_id, jobjectArray expression, jlong size)
+{
+	ssize_t buf_size;
+	char *express;
+	jlong    express_size;
+	jstring  str = NULL;
+
+	if (size <= 0) {
+        h5badArgument( env, "H5Pget_data_transform:  size <= 0");
+        return -1;
+    }
+	express_size = (jlong)H5Pget_data_transform((hid_t)plist_id, (char*)NULL, (size_t)size);
+	if(express_size <0){
+		h5libraryError(env);
+		return -1;
+	}
+	buf_size = (ssize_t)express_size + 1;/* add extra space for the null terminator */
+	express = (char*)malloc(sizeof(char)*buf_size);
+    if (express == NULL) {
+		h5outOfMemory( env, "H5Pget_data_transform:  malloc failed ");
+		return -1;
+	}
+
+	express_size = (jlong)H5Pget_data_transform((hid_t)plist_id, (char*)express, (size_t)size);
+	if (express_size < 0) {
+		free(express);
+		h5libraryError(env);
+		return -1;
+	}
+
+    str = ENVPTR->NewStringUTF(ENVPAR express);
+	if (str == NULL) {
+		/* exception -- fatal JNI error */
+		free(express);
+		h5JNIFatalError( env, "H5Pget_data_transform:  return string not created");
+		return NULL;
+	}
+	ENVPTR->SetObjectArrayElement(ENVPAR expression,0,str);
+	free(express);
+
+	return express_size;
+}
+
+
 
 
 
