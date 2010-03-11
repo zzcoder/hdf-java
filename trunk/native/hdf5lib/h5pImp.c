@@ -3102,45 +3102,43 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1filter_1by_1id2
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Pget_libver_bounds
- * Signature: (I[J)I
+ * Signature: (I[I)I
  */
- JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1libver_1bounds
-  (JNIEnv *env, jclass clss, jint fapl_id, jlongArray libver)
- {
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1libver_1bounds
+  (JNIEnv *env, jclass clss, jint fapl_id, jintArray libver)
+{
+	
 	herr_t retVal = -1;
 	H5F_libver_t *theArray = NULL;
     jboolean isCopy;
-
+	
 	if (libver == NULL) {
         h5nullArgument( env, "H5Pget_libver_bounds:  libversion bounds is NULL");
         return -1;
     }
-
-	theArray = (H5F_libver_t *)ENVPTR->GetLongArrayElements(ENVPAR libver,&isCopy);
+	theArray = (H5F_libver_t *)ENVPTR->GetIntArrayElements(ENVPAR libver,&isCopy);
     if (theArray == NULL) {
         h5JNIFatalError( env, "H5Pget_libver_bounds:  input not pinned");
         return -1;
-    }
-  
-	retVal = H5Pget_libver_bounds((hid_t)fapl_id, &(theArray[1]), &(theArray[2]));
-
+    }	
+	retVal = H5Pget_libver_bounds((hid_t)fapl_id, &(theArray[0]), &(theArray[1]));
 	if(retVal <0){
-		ENVPTR->ReleaseLongArrayElements(ENVPAR libver,(jlong *)theArray,JNI_ABORT);
+		ENVPTR->ReleaseIntArrayElements(ENVPAR libver,(jint *)theArray,JNI_ABORT);
 		h5libraryError(env);
-    }else {
-        ENVPTR->ReleaseLongArrayElements(ENVPAR libver,(jlong *)theArray,0);
-    }
-	
+    }	
+	else {
+	 ENVPTR->ReleaseIntArrayElements(ENVPAR libver,(jint *)theArray,0);
+	}
 	return (jint)retVal;
- }
+}
 
  /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Pset_libver_bounds
- * Signature: (IJJ)I
+ * Signature: (III)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1libver_1bounds
-  (JNIEnv *env, jclass clss, jint fapl_id, jlong low, jlong high)
+  (JNIEnv *env, jclass clss, jint fapl_id, jint low, jint high)
 {
 	herr_t retVal = -1;
 
@@ -3309,6 +3307,35 @@ JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1create_1intermediate
 	}
 	return (jboolean)crt_intermed_group;
 }
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_data_transform
+ * Signature: (ILjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1data_1transform
+  (JNIEnv *env, jclass clss, jint plist_id, jstring expression)
+{
+	herr_t retVal = -1;
+	char *express;
+	jboolean   isCopy;
+
+	if (expression == NULL) {
+		h5nullArgument( env, "H5Pset_data_transform:  expression is NULL");
+		return -1;
+	}
+	express = (char *)ENVPTR->GetStringUTFChars(ENVPAR expression, &isCopy);
+	if (express == NULL) {
+		h5JNIFatalError( env, "H5Pset_data_transform: expression is not pinned");
+		return -1;
+	}
+	retVal = H5Pset_data_transform((hid_t)plist_id, (const char*)express);
+	ENVPTR->ReleaseStringUTFChars(ENVPAR expression,express);
+	if (retVal< 0) {
+		h5libraryError(env);
+	}
+	return (jint)retVal;
+}
+
 
 
 

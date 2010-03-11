@@ -3,6 +3,7 @@ package test.hdf5lib;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 
@@ -28,6 +29,7 @@ public class TestH5P {
     int lapl_id = -1, fapl_id = -1;
     int gcpl_id = -1, ocpl_id = -1;
     int ocp_plist_id = -1, lcpl_id = -1;
+    int plist_id = -1;
 
     private final void _deleteFile(String filename) {
         File file = new File(filename);
@@ -72,6 +74,7 @@ public class TestH5P {
             ocpl_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_CREATE);
             ocp_plist_id = H5.H5Pcreate(HDF5Constants.H5P_OBJECT_COPY);
             lcpl_id = H5.H5Pcreate(HDF5Constants.H5P_LINK_CREATE);
+            plist_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_XFER);
         }
         catch (Throwable err) {
             err.printStackTrace();
@@ -86,6 +89,7 @@ public class TestH5P {
         assertTrue(ocpl_id > 0);
         assertTrue(ocp_plist_id > 0);
         assertTrue(lcpl_id > 0);
+        assertTrue(plist_id > 0);
 
         H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
     }
@@ -113,6 +117,8 @@ public class TestH5P {
         	H5.H5Pclose(ocp_plist_id);
         if (lcpl_id >0)
         	H5.H5Pclose(lcpl_id);
+        if (plist_id >0)
+        	H5.H5Pclose(plist_id);
     }
 
     @Test
@@ -120,7 +126,8 @@ public class TestH5P {
 		long nlinks = -1;
 		try {
 			nlinks = (long) H5.H5Pget_nlinks(lapl_id);
-		} catch (Throwable err) {
+		}
+		catch (Throwable err) {
 			err.printStackTrace();
 			fail("H5.H5Pget_nlinks: " + err);
 		}
@@ -131,82 +138,72 @@ public class TestH5P {
 
     @Test
     public void testH5Pset_nlinks() throws Throwable, HDF5LibraryException {
-		long nlinks = 20;
-		int ret_val = -1;
-		try {
-			ret_val = H5.H5Pset_nlinks(lapl_id, nlinks);
-			nlinks = (long) H5.H5Pget_nlinks(lapl_id);
-		} catch (Throwable err) {
-			err.printStackTrace();
-			fail("H5.H5Pset_nlinks: " + err);
-		}
-		assertTrue("testH5Pset_nlinks", ret_val >= 0);
-		// Check the value of nlinks retrieved from H5Pget_nlinks function.
-		assertEquals(nlinks, 20L);     
+    	long nlinks = 20;
+    	int ret_val = -1;
+    	try {
+    		ret_val = H5.H5Pset_nlinks(lapl_id, nlinks);
+    		nlinks = (long) H5.H5Pget_nlinks(lapl_id);
+    	}
+    	catch (Throwable err) {
+    		err.printStackTrace();
+    		fail("H5.H5Pset_nlinks: " + err);
+    	}
+    	assertTrue("testH5Pset_nlinks", ret_val >= 0);
+    	// Check the value of nlinks retrieved from H5Pget_nlinks function.
+    	assertEquals(nlinks, 20L); 
     }
     
     @Test
+   
     public void testH5Pget_libver_bounds() throws Throwable, HDF5LibraryException {
-		int ret_val = -1;
-		long[] libver = new long[2];
-		try {
-			ret_val = H5.H5Pget_libver_bounds(fapl_id, libver);
-		} catch (Throwable err) {
-			err.printStackTrace();
-			fail("H5Pget_libver_bounds: " + err);
-		}
-		assertTrue("testH5Pget_libver_bounds", ret_val >= 0);
-		// Check the Earliest Version if the library
-		assertEquals(HDF5Constants.H5F_LIBVER_EARLIEST, libver[0]);
-		// Check the Latest Version if the library
-		assertEquals(HDF5Constants.H5F_LIBVER_LATEST, libver[1]);
-	}
-    
+    	int ret_val = -1;
+    	int[] libver = new int[2];
+    	
+    	try {
+    		ret_val = H5.H5Pget_libver_bounds(fapl_id, libver);
+    	}
+    	catch (Throwable err) {
+    		err.printStackTrace();
+    		fail("H5Pget_libver_bounds: " + err);
+    	}
+    	assertTrue("testH5Pget_libver_bounds", ret_val >= 0);
+    	// Check the Earliest Version if the library
+    	assertEquals(HDF5Constants.H5F_LIBVER_EARLIEST, libver[0]);
+    	// Check the Latest Version if the library
+    	assertEquals(HDF5Constants.H5F_LIBVER_LATEST, libver[1]);
+    }
+       
     @Test
     public void testH5Pset_libver_bounds() throws Throwable, HDF5LibraryException {
     	
-		int ret_val = -1;
-		int retVal = -1;
-		long low = HDF5Constants.H5F_LIBVER_EARLIEST;
-		long high = HDF5Constants.H5F_LIBVER_LATEST;
-		long[] libver = new long[2];
+    	int ret_val = -1;
+    	int low = HDF5Constants.H5F_LIBVER_EARLIEST;
+    	int high = HDF5Constants.H5F_LIBVER_LATEST;
+    	int[] libver = new int[2];
 
-		try {
-			ret_val = H5.H5Pset_libver_bounds(fapl_id, low, high);
-			retVal = H5.H5Pget_libver_bounds(fapl_id, libver);
-
-			// Negative Test - Error should be thrown when low is not equal to
-			// H5F_LIBVER_EARLIEST or H5F_LIBVER_LATEST.
-			try {
-				H5.H5Pset_libver_bounds(fapl_id, 5, high);
-				fail("Negative Test Failed:- Error not Thrown when low is not equal to H5F_LIBVER_EARLIEST or H5F_LIBVER_LATEST.");
-			} catch (AssertionError err) {
-				fail("H5.H5Pset_libver_bounds: " + err);
-			} catch (Throwable err) {
-			}
-
-			// Negative Test - Error should be thrown when high is not equal to
-			// H5F_LIBVER_LATEST.
-			try {
-				H5.H5Pset_libver_bounds(fapl_id, low, 5);
-				fail("Negative Test Failed:- Error not Thrown when high is not equal to H5F_LIBVER_LATEST.");
-			} catch (AssertionError err) {
-				fail("H5.H5Pset_libver_bounds: " + err);
-			} catch (Throwable err) {
-			}
-
-		} catch (Throwable err) {
-			err.printStackTrace();
-			fail("H5Pset_libver_bounds: " + err);
-		}
-		assertTrue("testH5Pset_libver_bounds: H5Pset_libver_bounds",
-				ret_val >= 0);
-		assertTrue("testH5Pget_libver_bounds: H5Pget_libver_bounds",
-				retVal >= 0);
-		// Check the Earliest Version if the library
-		assertEquals(HDF5Constants.H5F_LIBVER_EARLIEST, libver[0]);
-		// Check the Latest Version if the library
-		assertEquals(HDF5Constants.H5F_LIBVER_LATEST, libver[1]);
+    	try {
+    		ret_val = H5.H5Pset_libver_bounds(fapl_id, low, high);
+    		H5.H5Pget_libver_bounds(fapl_id, libver);
+    	}
+    	catch (Throwable err) {
+    		err.printStackTrace();
+    		fail("H5Pset_libver_bounds: " + err);
+    	}
+    	assertTrue("testH5Pset_libver_bounds", ret_val >= 0);
+    	// Check the Earliest Version if the library
+    	assertEquals(HDF5Constants.H5F_LIBVER_EARLIEST, libver[0]);
+    	// Check the Latest Version if the library
+    	assertEquals(HDF5Constants.H5F_LIBVER_LATEST, libver[1]);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+	public void testH5Pset_libver_bounds_invalidlow() throws Throwable, HDF5LibraryException {
+    	H5.H5Pset_libver_bounds(fapl_id, 5, HDF5Constants.H5F_LIBVER_LATEST);
+	}
+    
+    @Test(expected = IllegalArgumentException.class)
+	public void testH5Pset_libver_bounds_invalidhigh() throws Throwable, HDF5LibraryException {
+    	H5.H5Pset_libver_bounds(fapl_id, HDF5Constants.H5F_LIBVER_LATEST, 5);
 	}
     
     @Test
@@ -214,116 +211,106 @@ public class TestH5P {
 		int crt_order_flags = 0;
 		try {
 			crt_order_flags = H5.H5Pget_link_creation_order(gcpl_id);
-		} catch (Throwable err) {
+		}
+		catch (Throwable err) {
 			err.printStackTrace();
 			fail("H5Pget_link_creation_order: " + err);
 		}
 		assertTrue("testH5Pget_link_creation_order", crt_order_flags >= 0);
 	}
 
-	@Test
-	public void testH5Pset_link_creation_order() throws Throwable, HDF5LibraryException {
-		int ret_val = -1;
-		int crt_order_flags = HDF5Constants.H5P_CRT_ORDER_TRACKED
-				+ HDF5Constants.H5P_CRT_ORDER_INDEXED;
-		int crtorderflags = 0;
+    @Test
+    public void testH5Pset_link_creation_order_trackedPLUSindexed() throws Throwable, HDF5LibraryException {
+    	int ret_val = -1;
+    	int crt_order_flags = HDF5Constants.H5P_CRT_ORDER_TRACKED + HDF5Constants.H5P_CRT_ORDER_INDEXED;
+    	int crtorderflags = 0;
 
-		try {
+    	try {
+    		ret_val = H5.H5Pset_link_creation_order(gcpl_id, crt_order_flags);
+    		crtorderflags = H5.H5Pget_link_creation_order(gcpl_id);
+    	}
+    	catch (Throwable err) {
+    		err.printStackTrace();
+    		fail("H5Pset_link_creation_order: " + err);
+    	} 
+    	assertTrue("testH5Pset_link_creation_order_trackedPLUSindexed",ret_val >= 0);
+    	assertEquals(crt_order_flags, crtorderflags);
+    }
+    
+    @Test
+    public void testH5Pset_link_creation_order_tracked() throws Throwable, HDF5LibraryException {
+    	int ret_val = -1;
+    	int crtorderflags = 0;
 
-			ret_val = H5.H5Pset_link_creation_order(gcpl_id, crt_order_flags);
-			crtorderflags = H5.H5Pget_link_creation_order(gcpl_id);
-
-			// Check the ret_val value, if its is negative then test fails.
-			assertTrue(
-					"testH5Pset_link_creation_order: H5Pset_link_creation_order",
-					ret_val >= 0);
-
-			// Check if the value set by H5Pset_link_creation_order is equal to
-			// value returned from H5Pget_link_creation_order.
-			assertEquals(crt_order_flags, crtorderflags);
-
-			crt_order_flags = HDF5Constants.H5P_CRT_ORDER_TRACKED;
-			ret_val = H5.H5Pset_link_creation_order(gcpl_id, crt_order_flags);
-
-			crtorderflags = H5.H5Pget_link_creation_order(gcpl_id);
-
-			// Check the if crt_order_flags is equal to the value set
-			// H5P_CRT_ORDER_TRACKED
-			assertEquals(crt_order_flags, crtorderflags);
-
-			try {
-				/*
-				 * Setting invalid combination of a group order creation order
-				 * indexing on should fail
-				 */
-				crt_order_flags = HDF5Constants.H5P_CRT_ORDER_INDEXED;
-				H5.H5Pset_link_creation_order(gcpl_id, crt_order_flags);
-				fail("H5Pset_link_creation_order() should have failed for a creation order index with no tracking.");
-			} catch (AssertionError err) {
-				fail("H5.H5Pset_link_creation_order: " + err);
-			} catch (HDF5LibraryException err) {
-			}
-
-		} catch (Throwable err) {
-			err.printStackTrace();
-			fail("H5Pset_link_creation_order: " + err);
-		} 
+    	try {
+    		ret_val = H5.H5Pset_link_creation_order(gcpl_id, HDF5Constants.H5P_CRT_ORDER_TRACKED);
+    		crtorderflags = H5.H5Pget_link_creation_order(gcpl_id);
+    	}
+    	catch (Throwable err) {
+    		err.printStackTrace();
+    		fail("H5Pset_link_creation_order: " + err);
+    	} 
+    	assertTrue("testH5Pset_link_creation_order_tracked",ret_val >= 0);
+    	assertEquals(HDF5Constants.H5P_CRT_ORDER_TRACKED, crtorderflags);
+    }
+    
+    @Test(expected = HDF5LibraryException.class)
+	public void testH5Pset_link_creation_order_invalidvalue() throws Throwable, HDF5LibraryException {
+    	H5.H5Pset_link_creation_order(gcpl_id, HDF5Constants.H5P_CRT_ORDER_INDEXED);
 	}
     
     @Test
     public void testH5Pget_attr_creation_order() throws Throwable, HDF5LibraryException {
-		int crt_order_flags = 0;
+    	int crt_order_flags = 0;
 
-		try {
-			crt_order_flags = H5.H5Pget_attr_creation_order(ocpl_id);
-		} catch (Throwable err) {
-			err.printStackTrace();
-			fail("H5Pget_attr_creation_order: " + err);
-		} 
-		assertTrue("testH5Pget_attr_creation_order", crt_order_flags >= 0);
+    	try {
+    		crt_order_flags = H5.H5Pget_attr_creation_order(ocpl_id);
+    	}
+    	catch (Throwable err) {
+    		err.printStackTrace();
+    		fail("H5Pget_attr_creation_order: " + err);
+    	} 
+    	assertTrue("testH5Pget_attr_creation_order", crt_order_flags >= 0);
     }
     
-	@Test
-	public void testH5Pset_attr_creation_order() throws Throwable,
-			HDF5LibraryException {
-		int ret_val = -1;
-		int crt_order_flags = HDF5Constants.H5P_CRT_ORDER_TRACKED
-				+ HDF5Constants.H5P_CRT_ORDER_INDEXED;
-		int crtorderflags = 0;
+    @Test
+    public void testH5Pset_attr_creation_order_trackedPLUSindexed() throws Throwable, HDF5LibraryException {
+    	int ret_val = -1;
+    	int crt_order_flags = HDF5Constants.H5P_CRT_ORDER_TRACKED + HDF5Constants.H5P_CRT_ORDER_INDEXED;
+    	int crtorderflags = 0;
 
-		try {
+    	try {
+    		ret_val = H5.H5Pset_attr_creation_order(ocpl_id, crt_order_flags);
+    		crtorderflags = H5.H5Pget_attr_creation_order(ocpl_id);
+    	}
+    	catch (Throwable err) {
+    		err.printStackTrace();
+    		fail("H5Pset_attr_creation_order: " + err);
+    	} 
+    	assertTrue("testH5Pset_attr_creation_order_trackedPLUSindexed", ret_val >= 0);
+    	assertEquals(crt_order_flags, crtorderflags);
+    }
+    
+    @Test
+    public void testH5Pset_attr_creation_order_tracked() throws Throwable, HDF5LibraryException {
+    	int ret_val = -1;
+    	int crtorderflags = 0;
 
-			ret_val = H5.H5Pset_attr_creation_order(ocpl_id, crt_order_flags);
-			crtorderflags = H5.H5Pget_attr_creation_order(ocpl_id);
-			assertTrue(
-					"testH5Pset_attr_creation_order: H5Pset_attr_creation_order",
-					ret_val >= 0);
-			// Check if the value set by H5Pset_attr_creation_order is equal to
-			// value returned from H5Pget_attr_creation_order.
-			assertEquals(crt_order_flags, crtorderflags);
-
-			crt_order_flags = HDF5Constants.H5P_CRT_ORDER_TRACKED;
-			ret_val = H5.H5Pset_attr_creation_order(ocpl_id, crt_order_flags);
-			crtorderflags = H5.H5Pget_attr_creation_order(ocpl_id);
-			assertEquals(crt_order_flags, crtorderflags);
-
-			try {
-				/*
-				 * Setting invalid combination of a group order creation order
-				 * indexing on should fail
-				 */
-				crt_order_flags = HDF5Constants.H5P_CRT_ORDER_INDEXED;
-				H5.H5Pset_attr_creation_order(ocpl_id, crt_order_flags);
-				fail("H5Pset_attr_creation_order() should have failed for a creation order index with no tracking.");
-			} catch (AssertionError err) {
-				fail("H5.H5Pset_attr_creation_order: " + err);
-			} catch (HDF5LibraryException err) {
-			}
-
-		} catch (Throwable err) {
-			err.printStackTrace();
-			fail("H5Pset_attr_creation_order: " + err);
-		} 
+    	try {
+    		ret_val = H5.H5Pset_attr_creation_order(ocpl_id, HDF5Constants.H5P_CRT_ORDER_TRACKED);
+    		crtorderflags = H5.H5Pget_attr_creation_order(ocpl_id);
+    	} 
+    	catch (Throwable err) {
+    		err.printStackTrace();
+    		fail("H5Pset_attr_creation_order: " + err);
+    	} 
+    	assertTrue("testH5Pset_attr_creation_order_tracked", ret_val >= 0);
+    	assertEquals(HDF5Constants.H5P_CRT_ORDER_TRACKED, crtorderflags);
+    }
+    
+    @Test(expected = HDF5LibraryException.class)
+	public void testH5Pset_attr_creation_order_invalidvalue() throws Throwable, HDF5LibraryException {
+    	H5.H5Pset_attr_creation_order(ocpl_id, HDF5Constants.H5P_CRT_ORDER_INDEXED);
 	}
 	
 	@Test
@@ -333,17 +320,17 @@ public class TestH5P {
 
 		try {
 			H5.H5Pset_copy_object(ocp_plist_id, HDF5Constants.H5O_COPY_SHALLOW_HIERARCHY_FLAG);
-			cpy_option = H5.H5Pget_copy_object(ocp_plist_id);
-			assertEquals(HDF5Constants.H5O_COPY_SHALLOW_HIERARCHY_FLAG,
-					cpy_option);
-		} catch (Throwable err) {
+			cpy_option = H5.H5Pget_copy_object(ocp_plist_id);	
+		} 
+		catch (Throwable err) {
 			err.printStackTrace();
 			fail("H5Pset_copy_object: " + err);
 		} 
+		assertEquals(HDF5Constants.H5O_COPY_SHALLOW_HIERARCHY_FLAG, cpy_option);
 	}
 	
 	@Test(expected = HDF5LibraryException.class)
-	public void testH5Pset_copy_objectinvalid() throws Throwable, HDF5LibraryException {
+	public void testH5Pset_copy_object_invalidobject() throws Throwable, HDF5LibraryException {
 		H5.H5Pset_copy_object(HDF5Constants.H5P_DEFAULT, HDF5Constants.H5O_COPY_SHALLOW_HIERARCHY_FLAG);
 	}
 
@@ -353,42 +340,105 @@ public class TestH5P {
 		int ret_val = -1;
 		try {
 			ret_val = H5.H5Pset_create_intermediate_group(lcpl_id, true);
-			assertTrue(ret_val>=0);
-		} catch (Throwable err) {
+		}
+		catch (Throwable err) {
 			err.printStackTrace();
 			fail("H5Pset_create_intermediate_group: " + err);
 		} 
+		assertTrue(ret_val>=0);
 	}
 	
 	@Test(expected = HDF5LibraryException.class)
-	public void testH5Pset_create_intermediate_group_invalid() throws Throwable, HDF5LibraryException {
+	public void testH5Pset_create_intermediate_group_invalidobject() throws Throwable, HDF5LibraryException {
 		H5.H5Pset_create_intermediate_group(ocp_plist_id, true);
 	}
 	
 	@Test
-	public void testH5Pget_create_intermediate_group_notcreated() throws Throwable, HDF5LibraryException {
-	
+	public void testH5Pget_create_intermediate_group() throws Throwable, HDF5LibraryException {
+		boolean flag = false;
 		try {
-			boolean flag = H5.H5Pget_create_intermediate_group(lcpl_id);
-			assertEquals(false, flag);
-		} catch (Throwable err) {
+			H5.H5Pset_create_intermediate_group(lcpl_id, true);
+			flag = H5.H5Pget_create_intermediate_group(lcpl_id);	
+		} 
+		catch (Throwable err) {
 			err.printStackTrace();
-			fail("H5Pget_create_intermediate_group_notcreated: " + err);
+			fail("H5Pget_create_intermediate_group: " + err);
 		}
+		assertEquals(true, flag);
 	}
 	
 	@Test
-	public void testH5Pget_create_intermediate_group_created() throws Throwable, HDF5LibraryException {
+	public void testH5Pget_create_intermediate_group_notcreated() throws Throwable, HDF5LibraryException {
+		boolean flag = true;
+		try {
+			flag = H5.H5Pget_create_intermediate_group(lcpl_id);	
+		} 
+		catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5Pget_create_intermediate_group_notcreated: " + err);
+		}
+		assertEquals(false, flag);
+	}
+	
+	@Test
+	public void testH5Pset_data_transform() throws Throwable, HDF5LibraryException, NullPointerException {
+		
+		String expression = "(5/9.0)*(x-32)";
+		int ret_val = -1;
 
 		try {
-			H5.H5Pset_create_intermediate_group(lcpl_id, true);
-			boolean flag = H5.H5Pget_create_intermediate_group(lcpl_id);
-			assertEquals(true, flag);
-		} catch (Throwable err) {
+			ret_val= H5.H5Pset_data_transform(plist_id, expression);	
+		} 
+		catch (Throwable err) {
 			err.printStackTrace();
-			fail("H5Pget_create_intermediate_group_created: " + err);
+			fail("H5Pset_data_transform: " + err);
 		}
+		assertTrue(ret_val>=0);
+		
 	}
+	
+	@Test(expected = NullPointerException.class)
+	public void testH5Pset_data_transform_NullExpression() throws Throwable, HDF5LibraryException, NullPointerException {
+		H5.H5Pset_data_transform(plist_id, null);
+	}
+	
+	@Test(expected = HDF5LibraryException.class)
+	public void testH5Pset_data_transform_InvalidExpression1() throws Throwable, HDF5LibraryException, NullPointerException {
+		H5.H5Pset_data_transform(plist_id, "");
+	}
+	
+	@Test(expected = HDF5LibraryException.class)
+	public void testH5Pset_data_transform_InvalidExpression2() throws Throwable, HDF5LibraryException, NullPointerException {
+		H5.H5Pset_data_transform(plist_id, "hello");
+	}
+/*	
+	@Test
+	public void testH5Pget_data_transform() throws Throwable, HDF5LibraryException, NullPointerException {
+		
+		String expression = "(5/9.0)*(x-32)";
+		String ret_expression = null;
+		long size = 20;
+
+		try {
+			H5.H5Pset_data_transform(plist_id, expression);	
+			ret_expression = H5.H5Pget_data_transform(plist_id, size);
+		} 
+		catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5Pset_data_transform: " + err);
+		}
+		assertNotNull(ret_expression);
+		assertEquals("H5Pset_data_transform: buffer size is too small",expression, ret_expression);
+		
+	}
+	
+	@Test(expected = HDF5LibraryException.class)
+	public void testH5Pget_data_transform_ExpressionNotCreated() throws Throwable, HDF5LibraryException, NullPointerException {
+		H5.H5Pget_data_transform(plist_id, 20);
+	}
+*/
+	
+	
 	
 	
 	

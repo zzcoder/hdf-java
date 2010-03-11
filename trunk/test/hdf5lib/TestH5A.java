@@ -99,34 +99,15 @@ public class TestH5A {
 		if (lapl_id > 0)
 			H5.H5Pclose(lapl_id);
 		
-		//assertTrue("H5 open ids is 0", H5.getOpenIDCount() == 0);
 	}
 	
 	@Test
 	public void testH5Acreate2() throws Throwable, HDF5LibraryException {
 
-		int loc_id = H5did;
-		String attr_name = "dset";
-		int atrr_id = -1 ;
-		int acpl_id = HDF5Constants.H5P_DEFAULT;
-		int aapl_id = HDF5Constants.H5P_DEFAULT;
-
+		int atrr_id = -1;
 		try {
-			atrr_id = H5.H5Acreate2(loc_id, attr_name, type_id, space_id,
-					acpl_id, aapl_id);
-			assertTrue("testH5Acreate2: H5Acreate2", atrr_id >= 0);
-			// Negative Test - Error should be thrown when H5Acreate2 is called
-			// for
-			// an invalid loc_id
-			try {
-				loc_id = H5dsid;
-				H5.H5Acreate2(loc_id, attr_name, type_id, space_id, acpl_id,
-						aapl_id);
-				fail("Negative Test Failed:- Error not Thrown when location is invalid for attribute.");
-			} catch (AssertionError err) {
-				fail("H5.H5Acreate2: " + err);
-			} catch (HDF5LibraryException err) {
-			}
+			atrr_id = H5.H5Acreate2(H5did, "dset", type_id, space_id, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+			assertTrue("testH5Acreate2", atrr_id >= 0);
 		} catch (Throwable err) {
 			err.printStackTrace();
 			fail("H5.H5Acreate2: " + err);
@@ -135,35 +116,32 @@ public class TestH5A {
 				H5.H5Aclose(atrr_id);
 		}
 	}
+	
+	@Test(expected = HDF5LibraryException.class)
+	public void testH5Acreate2_invalidobject() throws Throwable, HDF5LibraryException {
+		H5.H5Acreate2(H5dsid, "dset", type_id, space_id, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void testH5Acreate2_nullname() throws Throwable, HDF5LibraryException {
+		H5.H5Acreate2(H5did, null, type_id, space_id, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+	}
 
 	@Test
 	public void testH5Aopen() throws Throwable, HDF5LibraryException, NullPointerException {
 
-		int obj_id = H5did;
 		String attr_name = "dset";
 		int attribute_id = -1, atrr_id = -1;
 
 		try {
-			atrr_id = H5.H5Acreate2(obj_id, attr_name, type_id, space_id,
+			atrr_id = H5.H5Acreate2(H5did, attr_name, type_id, space_id,
 					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 
 			// Opening the existing attribute, attr_name(Created by H5ACreate2)
 			// attached to an object identifier.
-			attribute_id = H5.H5Aopen(obj_id, attr_name,
+			attribute_id = H5.H5Aopen(H5did, attr_name,
 					HDF5Constants.H5P_DEFAULT);
 			assertTrue("testH5Aopen: H5Aopen", attribute_id >= 0);
-
-			// Negative test- Error should be thrown when H5Aopen is called with
-			// an
-			// invalid attribute name(which hasn't been created).
-			try {
-				attr_name = "file";
-				H5.H5Aopen(obj_id, attr_name, HDF5Constants.H5P_DEFAULT);
-				fail("Negative Test Failed:- Error not Thrown when attribute name is invalid.");
-			} catch (AssertionError err) {
-				fail("H5.H5Aopen: " + err);
-			} catch (HDF5LibraryException err) {
-			}
 		} catch (Throwable err) {
 			err.printStackTrace();
 			fail("H5.H5Aopen: " + err);
@@ -174,6 +152,11 @@ public class TestH5A {
 				H5.H5Aclose(attribute_id);
 		}
 
+	}
+	
+	@Test(expected = HDF5LibraryException.class)
+	public void testH5Aopen_invalidname() throws Throwable, HDF5LibraryException {
+		H5.H5Aopen(H5did, "attr_name", HDF5Constants.H5P_DEFAULT);
 	}
 
 	@Test
@@ -240,14 +223,13 @@ public class TestH5A {
 	@Test
 	public void testH5Acreate_by_name() throws Throwable, HDF5LibraryException, NullPointerException {
 
-		int loc_id = H5fid;
 		String obj_name = ".";
 		String attr_name = "DATASET";
 		int attribute_id = -1;
 		boolean bool_val = false;
 
 		try {
-			attribute_id = H5.H5Acreate_by_name(loc_id, obj_name, attr_name,
+			attribute_id = H5.H5Acreate_by_name(H5fid, obj_name, attr_name,
 					type_id, space_id, HDF5Constants.H5P_DEFAULT,
 					HDF5Constants.H5P_DEFAULT, lapl_id);
 			assertTrue("testH5Acreate_by_name: H5Acreate_by_name",
@@ -255,7 +237,7 @@ public class TestH5A {
 
 			// Check if the name of attribute attached to the object specified
 			// by loc_id and obj_name exists.It should be true.
-			bool_val = H5.H5Aexists_by_name(loc_id, obj_name, attr_name,
+			bool_val = H5.H5Aexists_by_name(H5fid, obj_name, attr_name,
 					lapl_id);
 			assertTrue("testH5Acreate_by_name: H5Aexists_by_name",
 					bool_val == true);
@@ -510,25 +492,9 @@ public class TestH5A {
 			attr_id = H5.H5Acreate_by_name(H5fid, obj_name, attr_name, type_id,
 					space_id, HDF5Constants.H5P_DEFAULT,
 					HDF5Constants.H5P_DEFAULT, lapl_id);
-			assertTrue("testH5Aget_info_by_name: H5Acreate_by_name",
-					attr_id >= 0);
-
 			attr_info = H5.H5Aget_info_by_name(H5fid, obj_name, attr_name,
 					lapl_id);
 			assertNotNull(attr_info);
-
-			// Negative test- Error should be thrown when H5Aget_info_by_name is
-			// called for invalid attr_name(which hasn't been created).
-			try {
-				attr_name = "Datasets";
-				attr_info = H5.H5Aget_info_by_name(H5fid, obj_name, attr_name,
-						lapl_id);
-				fail("Negative Test Failed:- Error not Thrown for invalid attr_name.");
-			} catch (AssertionError err) {
-				fail("H5.H5Aget_info_by_name: " + err);
-			} catch (HDF5LibraryException err) {
-			}
-
 		} catch (Throwable err) {
 			err.printStackTrace();
 			fail("H5.H5Aget_info_by_name:" + err);
