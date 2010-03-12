@@ -176,6 +176,7 @@ public class HDF5Constants {
     public static final int H5F_ACC_RDONLY = H5F_ACC_RDONLY();
     public static final int H5F_ACC_RDWR = H5F_ACC_RDWR();
     public static final int H5F_ACC_TRUNC = H5F_ACC_TRUNC();
+    public static final int H5F_ACC_DEFAULT = H5F_ACC_DEFAULT();
     public static final int H5F_CLOSE_DEFAULT = H5F_CLOSE_DEFAULT();
     public static final int H5F_CLOSE_SEMI = H5F_CLOSE_SEMI();
     public static final int H5F_CLOSE_STRONG = H5F_CLOSE_STRONG();
@@ -249,6 +250,7 @@ public class HDF5Constants {
     public static final int H5P_FILE_CREATE = H5P_FILE_CREATE();
     public static final int H5P_FILE_CREATE_DEFAULT = H5P_FILE_CREATE_DEFAULT();
     public static final int H5P_GROUP_CREATE = H5P_GROUP_CREATE();
+    public static final int H5P_GROUP_ACCESS = H5P_GROUP_ACCESS();
     public static final int H5P_LINK_CREATE = H5P_LINK_CREATE();
     public static final int H5P_LINK_ACCESS = H5P_LINK_ACCESS();
     public static final int H5P_NO_CLASS = H5P_NO_CLASS();
@@ -811,6 +813,8 @@ public class HDF5Constants {
     private static native final int H5F_ACC_RDWR();
 
     private static native final int H5F_ACC_TRUNC();
+    
+    private static native final int H5F_ACC_DEFAULT();
 
     private static native final int H5F_CLOSE_DEFAULT();
 
@@ -959,6 +963,8 @@ public class HDF5Constants {
     private static native final int H5P_FILE_CREATE_DEFAULT();
 
     private static native final int H5P_GROUP_CREATE();
+    
+    private static native final int H5P_GROUP_ACCESS();
 
     private static native final int H5P_LINK_CREATE();
 

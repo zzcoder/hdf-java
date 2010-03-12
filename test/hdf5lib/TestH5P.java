@@ -30,6 +30,7 @@ public class TestH5P {
     int gcpl_id = -1, ocpl_id = -1;
     int ocp_plist_id = -1, lcpl_id = -1;
     int plist_id = -1;
+    int gapl_id = -1;
 
     private final void _deleteFile(String filename) {
         File file = new File(filename);
@@ -75,6 +76,7 @@ public class TestH5P {
             ocp_plist_id = H5.H5Pcreate(HDF5Constants.H5P_OBJECT_COPY);
             lcpl_id = H5.H5Pcreate(HDF5Constants.H5P_LINK_CREATE);
             plist_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_XFER);
+            gapl_id = H5.H5Pcreate(HDF5Constants.H5P_GROUP_ACCESS);
         }
         catch (Throwable err) {
             err.printStackTrace();
@@ -119,6 +121,8 @@ public class TestH5P {
         	H5.H5Pclose(lcpl_id);
         if (plist_id >0)
         	H5.H5Pclose(plist_id);
+        if (gapl_id >0)
+        	H5.H5Pclose(gapl_id);
     }
 
     @Test
@@ -443,6 +447,48 @@ public class TestH5P {
 		String [] express = {""};
 		H5.H5Pset_data_transform(plist_id, "(5/9.0)*(x-32)");
 		H5.H5Pget_data_transform(plist_id, express, 0);
+	}
+	
+	@Test
+    public void testH5Pget_elink_acc_flags() throws Throwable, HDF5LibraryException {
+		
+		int get_flags = -1;
+		try {
+			get_flags = H5.H5Pget_elink_acc_flags(gapl_id);
+		}
+		catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5Pget_elink_acc_flags: " + err);
+		}
+		assertTrue("H5Pget_elink_acc_flags", get_flags >= 0);
+		assertEquals(HDF5Constants.H5F_ACC_DEFAULT, get_flags);
+	}
+	
+	@Test
+    public void testH5Pset_elink_acc_flags() throws Throwable, HDF5LibraryException, IllegalArgumentException {
+		
+		int get_flags = -1;
+		int ret_val = -1;
+		try {
+			ret_val = H5.H5Pset_elink_acc_flags(lapl_id, HDF5Constants.H5F_ACC_RDWR);
+			get_flags = H5.H5Pget_elink_acc_flags(lapl_id);
+		}
+		catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5Pset_elink_acc_flags: " + err);
+		}
+		assertTrue("H5Pset_elink_acc_flags", ret_val >= 0);
+		assertEquals(HDF5Constants.H5F_ACC_RDWR, get_flags);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testH5Pset_elink_acc_flags_InvalidFlag1() throws Throwable, HDF5LibraryException, IllegalArgumentException {
+		H5.H5Pset_elink_acc_flags(lapl_id, HDF5Constants.H5F_ACC_TRUNC);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testH5Pset_elink_acc_flags_InvalidFlag2() throws Throwable, HDF5LibraryException, IllegalArgumentException {
+		H5.H5Pset_elink_acc_flags(lapl_id, -1);
 	}
 	
 }

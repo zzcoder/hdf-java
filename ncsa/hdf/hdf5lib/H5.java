@@ -7926,6 +7926,33 @@ throws HDF5LibraryException, NullPointerException;
 public synchronized static native long H5Pget_data_transform( int plist_id, String[] expression, long size)
 throws HDF5LibraryException, IllegalArgumentException;
 
+/**
+ * H5Pget_elink_acc_flags retrieves the external link traversal file access flag from the specified link access property list.
+ * @param lapl_id  	      	IN: Link access property list identifier 
+ * 
+ * @return File access flag for link traversal.  
+ * 
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  
+ **/
+public synchronized static native int H5Pget_elink_acc_flags(int lapl_id)
+throws HDF5LibraryException;
+
+/**
+ * H5Pset_elink_acc_flags Sets the external link traversal file access flag in a link access property list. 
+ * @param lapl_id  	      		IN: Link access property list identifier
+ * @param flags  	   			IN: The access flag for external link traversal.  
+ *  
+ * @return a non-negative value if successful; otherwise returns a negative value.
+ * 
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception IllegalArgumentException - Invalid Flag values.
+ *  
+ **/
+
+public synchronized static native int H5Pset_elink_acc_flags(int lapl_id, int flags)
+throws HDF5LibraryException, IllegalArgumentException;
+
 
 //////////////////////////////////////////////////////////////
 ////
