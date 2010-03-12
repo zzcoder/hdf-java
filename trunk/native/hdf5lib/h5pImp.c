@@ -3385,9 +3385,45 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1data_1transform
 	return express_size;
 }
 
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_elink_acc_flags
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1elink_1acc_1flags
+  (JNIEnv *env, jclass clss, jint lapl_id)
+{
+	herr_t status;
+	unsigned flags;
 
+	status = H5Pget_elink_acc_flags((hid_t)lapl_id, &flags);
+	if(status <0){
+		h5libraryError(env);
+	}
+	return (jint)flags;
+}
 
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_elink_acc_flags
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1elink_1acc_1flags
+  (JNIEnv *env, jclass clss, jint lapl_id, jint flags)
+{
+	herr_t retVal;
 
+	if (((unsigned)flags != H5F_ACC_RDWR)&&((unsigned)flags != H5F_ACC_RDONLY)&&((unsigned)flags != H5F_ACC_DEFAULT)){
+	h5badArgument( env, "H5Pset_elink_acc_flags: invalid flags value");
+		return -1;
+	}
+
+	retVal = H5Pset_elink_acc_flags((hid_t)lapl_id, (unsigned)flags);
+	if(retVal <0){
+		h5libraryError(env);
+	}
+	return (jint)retVal;
+}
 
 #ifdef __cplusplus
 }
