@@ -3485,6 +3485,107 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1link_1phase_1change
 	}
 	return (jint)retVal;
 }
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_attr_phase_change
+ * Signature: (I[I)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1attr_1phase_1change
+  (JNIEnv *env, jclass clss, jint ocpl_id, jintArray attributes)
+{
+	herr_t retVal = -1;
+	unsigned *theArray = NULL;
+	jboolean isCopy;
+
+	if (attributes == NULL) {
+		h5nullArgument( env, "H5Pget_attr_phase_change:  attributes is NULL");
+		return -1;
+	}
+	theArray = (unsigned *)ENVPTR->GetIntArrayElements(ENVPAR attributes,&isCopy);
+	if (theArray == NULL) {
+		h5JNIFatalError( env, "H5Pget_attr_phase_change:  input not pinned");
+		return -1;
+	}	
+	retVal = H5Pget_attr_phase_change((hid_t)ocpl_id, &(theArray[0]), &(theArray[1]));
+	if(retVal <0){
+		ENVPTR->ReleaseIntArrayElements(ENVPAR attributes,(jint *)theArray,JNI_ABORT);
+		h5libraryError(env);
+	}	
+	else {
+	 ENVPTR->ReleaseIntArrayElements(ENVPAR attributes,(jint *)theArray,0);
+	}
+	return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_shared_mesg_phase_change
+ * Signature: (I[I)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1shared_1mesg_1phase_1change
+  (JNIEnv *env, jclass clss, jint fcpl_id, jintArray size)
+{
+	herr_t retVal = -1;
+	unsigned *theArray = NULL;
+	jboolean isCopy;
+
+	if (size == NULL) {
+		h5nullArgument( env, "H5Pget_shared_mesg_phase_change:  size is NULL");
+		return -1;
+	}
+	theArray = (unsigned *)ENVPTR->GetIntArrayElements(ENVPAR size,&isCopy);
+	if (theArray == NULL) {
+		h5JNIFatalError( env, "H5Pget_shared_mesg_phase_change:  input not pinned");
+		return -1;
+	}	
+	retVal = H5Pget_shared_mesg_phase_change((hid_t)fcpl_id, &(theArray[0]), &(theArray[1]));
+	if(retVal <0){
+		ENVPTR->ReleaseIntArrayElements(ENVPAR size,(jint *)theArray,JNI_ABORT);
+		h5libraryError(env);
+	}	
+	else {
+	 ENVPTR->ReleaseIntArrayElements(ENVPAR size,(jint *)theArray,0);
+	}
+	return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_shared_mesg_phase_change
+ * Signature: (III)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1shared_1mesg_1phase_1change
+  (JNIEnv *env, jclass clss, jint fcpl_id, jint max_list, jint min_btree)
+{
+	herr_t retVal;
+
+	 /* Check that values are sensible.  The min_btree value must be no greater
+	 * than the max list plus one.
+	 *
+	 * Range check to make certain they will fit into encoded form.
+	 */
+
+	if(max_list + 1 < min_btree){
+		h5badArgument( env, "H5Pset_shared_mesg_phase_change: minimum B-tree value is greater than maximum list value");
+		return -1;
+	}
+	if(max_list > H5O_SHMESG_MAX_LIST_SIZE){
+		h5badArgument( env, "H5Pset_shared_mesg_phase_change: max list value is larger than H5O_SHMESG_MAX_LIST_SIZE");
+		return -1;
+	}
+	if(min_btree > H5O_SHMESG_MAX_LIST_SIZE){
+		h5badArgument( env, "H5Pset_shared_mesg_phase_change: min btree value is larger than H5O_SHMESG_MAX_LIST_SIZE");
+		return -1;
+	}
+	retVal = H5Pset_shared_mesg_phase_change((hid_t)fcpl_id, (unsigned)max_list, (unsigned)min_btree);
+	if(retVal <0){
+		h5libraryError(env);
+	}
+	return (jint)retVal;
+
+}
+
 #ifdef __cplusplus
 }
 #endif

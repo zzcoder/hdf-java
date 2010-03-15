@@ -8031,6 +8031,63 @@ throws HDF5LibraryException, IllegalArgumentException;
 public synchronized static native int H5Pget_link_phase_change(int gcpl_id, int []links) 
 throws HDF5LibraryException, NullPointerException;
 
+/**
+ * H5Pget_attr_phase_change retrieves attribute storage phase change thresholds. 
+ * @param ocpl_id  	IN: : Object (dataset or group) creation property list identifier 
+ * @param attributes 
+ *               The maximun and minimum no. of attributes
+ *               to be stored.
+ *
+ *      <pre>
+ *      attributes[0] =  The maximum number of attributes to be stored in compact storage
+ *      attributes[1] =  The minimum number of attributes to be stored in dense storage 
+ *      </pre>
+ *      
+ * @return Returns a non-negative value if successful; otherwise returns a negative value.
+ * 
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception NullPointerException - size is null.
+ *  
+ **/
+ 
+public synchronized static native int H5Pget_attr_phase_change(int ocpl_id, int []attributes) 
+throws HDF5LibraryException, NullPointerException;
+
+/**
+ * H5Pget_shared_mesg_phase_change retrieves shared object header message phase change information. 
+ * @param fcpl_id			IN: : File creation property list identifier 
+ * @param size
+ *               The threshold values for storage of shared object header 
+ *               message indexes in a file.
+ *
+ *      <pre>
+ *      size[0] =  Threshold above which storage of a shared object header message index shifts from list to B-tree 
+ *      size[1] =  Threshold below which storage of a shared object header message index reverts to list format  
+ *      </pre>
+ *      
+ * @return Returns a non-negative value if successful; otherwise returns a negative value.
+ * 
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ * @exception NullPointerException - size is null.
+ *  
+ **/
+ public synchronized static native int H5Pget_shared_mesg_phase_change(int fcpl_id, int []size) 
+throws HDF5LibraryException, NullPointerException;
+
+/**
+ * H5Pset_shared_mesg_phase_change sets shared object header message storage phase change thresholds. 
+ * @param fcpl_id				IN: File creation property list identifier
+ * @param max_list				IN: Threshold above which storage of a shared object header message index shifts from list to B-tree
+ * @param min_btree				IN: Threshold below which storage of a shared object header message index reverts to list format
+ *  
+ * @return a non-negative value if successful; otherwise returns a negative value.
+ * 
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ * @exception IllegalArgumentException - Invalid values of max_list and min_btree.
+ *  
+ **/
+public synchronized static native int H5Pset_shared_mesg_phase_change(int fcpl_id, int max_list, int min_btree)
+throws HDF5LibraryException, IllegalArgumentException;
 
 //////////////////////////////////////////////////////////////
 ////
