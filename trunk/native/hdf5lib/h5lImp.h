@@ -111,6 +111,22 @@ extern "C" {
      */
     JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lmove
       (JNIEnv *, jclass, jint, jstring, jint, jstring, jint, jint);
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Lvisit
+     * Signature: (IIILjava/lang/Object;Ljava/lang/Object;)I
+     */
+    JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lvisit
+      (JNIEnv *, jclass, jint, jint, jint, jobject, jobject);
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Lvisit_by_name
+     * Signature: (ILjava/lang/String;IILjava/lang/Object;Ljava/lang/Object;I)I
+     */
+    JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lvisit_1by_1name
+      (JNIEnv *, jclass, jint, jstring, jint, jint, jobject, jobject, jint);
 
 #ifdef __cplusplus
 }

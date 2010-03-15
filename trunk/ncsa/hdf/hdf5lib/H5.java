@@ -19,6 +19,8 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import ncsa.hdf.hdf5lib.callbacks.H5L_iterate_cb;
+import ncsa.hdf.hdf5lib.callbacks.H5L_iterate_t;
 import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
 import ncsa.hdf.hdf5lib.exceptions.HDF5JavaException;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
@@ -6923,7 +6925,45 @@ public class H5 {
         String dst_name, int lcpl_id, int lapl_id)
     throws HDF5LibraryException, NullPointerException;
 
+  /**
+   *  H5Lvisit recursively visits all links starting from a specified group.
+   *
+   *  @param grp_id     IN: Identifier specifying subject group
+   *  @param idx_type   IN: Type of index  
+   *  @param order      IN: Order of iteration within index 
+   *  @param op         IN: Callback function passing data regarding the link to the calling application  
+   *  @param op_data    IN: User-defined pointer to data required by the application for its processing of the link 
+   *
+   *  @return returns the return value of the first operator that returns a positive value, or zero if all members were 
+   *      processed with no operator returning non-zero.
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   **/
+   public synchronized static native int H5Lvisit(int grp_id, int idx_type, int order,
+       H5L_iterate_cb op, H5L_iterate_t op_data)
+   throws HDF5LibraryException;
 
+  /**
+   *  H5Lvisit_by_name recursively visits all links starting from a specified group. 
+   *
+   *  @param loc_id     IN: Identifier specifying subject group
+   *  @param group_name IN: Name of subject group
+   *  @param idx_type   IN: Type of index  
+   *  @param order      IN: Order of iteration within index 
+   *  @param op         IN: Callback function passing data regarding the link to the calling application  
+   *  @param op_data    IN: User-defined pointer to data required by the application for its processing of the link 
+   *
+   *  @return returns the return value of the first operator that returns a positive value, or zero if all members were 
+   *      processed with no operator returning non-zero.
+   *
+   *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+   *  @exception NullPointerException - group_name is null.
+   **/
+   public synchronized static native int H5Lvisit_by_name(int loc_id, String group_name,
+       int idx_type, int order, H5L_iterate_cb op,
+       H5L_iterate_t op_data, int lapl_id)
+   throws HDF5LibraryException, NullPointerException;
+    
     // //////////////////////////////////////////////////////////////////
     // H5S: Dataspace Interface Functions //
     // //////////////////////////////////////////////////////////////////
