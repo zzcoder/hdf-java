@@ -7953,6 +7953,44 @@ throws HDF5LibraryException;
 public synchronized static native int H5Pset_elink_acc_flags(int lapl_id, int flags)
 throws HDF5LibraryException, IllegalArgumentException;
 
+/**
+ * H5Pset_link_phase_change Sets the parameters for conversion between compact and dense groups. 
+ * @param gcpl_id				IN: Group creation property list identifier
+ * @param max_compact			IN: Maximum number of links for compact storage(Default: 8) 
+ * @param min_dense				IN: Minimum number of links for dense storage(Default: 6)
+ *  
+ * @return a non-negative value if successful; otherwise returns a negative value.
+ * 
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception IllegalArgumentException - Invalid values of max_compact and min_dense.
+ *  
+ **/
+
+public synchronized static native int H5Pset_link_phase_change(int gcpl_id, int max_compact, int min_dense)
+throws HDF5LibraryException, IllegalArgumentException;
+
+/**
+ * H5Pget_link_phase_change Queries the settings for conversion between compact and dense groups.
+ * @param gcpl_id  	IN: Group creation property list identifier
+ * @param links 
+ *               The max. no. of compact links & the min. no. of dense
+ *               links, which are used for storing groups
+ *
+ *      <pre>
+ *      links[0] =  The maximum number of links for compact storage
+ *      links[1] =  The minimum number of links for dense storage
+ *      </pre>
+ *      
+ * @return Returns a non-negative value if successful; otherwise returns a negative value.
+ * 
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception NullPointerException - size is null.
+ *  
+ **/
+ 
+public synchronized static native int H5Pget_link_phase_change(int gcpl_id, int []links) 
+throws HDF5LibraryException, NullPointerException;
+
 
 //////////////////////////////////////////////////////////////
 ////
