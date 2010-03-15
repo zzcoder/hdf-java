@@ -65,7 +65,9 @@ JHIDISTFILES=./native/hdflib/Makefile.in \
 JHI5DISTFILES= ./native/hdf5lib/Makefile.in \
         ./native/hdf5lib/*.c ./native/hdf5lib/*.h \
         ./ncsa/hdf/hdf5lib/*.java  \
-        ./ncsa/hdf/hdf5lib/exceptions/*.java 
+        ./ncsa/hdf/hdf5lib/callbacks/*.java \
+        ./ncsa/hdf/hdf5lib/exceptions/*.java \
+        ./ncsa/hdf/hdf5lib/structs/*.java 
 
 EXAMPLESFILES=./examples/*.in ./examples/intro/*.java ./examples/intro/*.in ./examples/groups/*.java ./examples/groups/*.in ./examples/groups/*.h5 ./examples/datasets/*.java ./examples/datasets/*.in ./examples/datatypes/*.java ./examples/datatypes/*.in ./examples/testfiles/*.txt
 
@@ -89,7 +91,9 @@ JHIPACKAGES = \
 	ncsa.hdf.hdflib
 
 JHI5PACKAGES = \
+	ncsa.hdf.hdf5lib.callbacks \
 	ncsa.hdf.hdf5lib.exceptions \
+	ncsa.hdf.hdf5lib.structs \
 	ncsa.hdf.hdf5lib 
 
 HDFOBJPACKAGES = ncsa.hdf.object
@@ -175,10 +179,6 @@ hdf5lib: FORCE
 	cd native; \
 	$(MAKE) hdf5lib
 
-h4to5lib: FORCE
-	cd native; \
-	$(MAKE) h4to5lib
-
 FORCE:
 
 ## revise arrangement of docs, java docs.
@@ -203,7 +203,7 @@ clean-examples:
 	@if test -d "examples"; then cd examples; $(MAKE) clean; fi
 
 clean-test:
-	@if test -d "test/Makefile"; then  cd test; $(MAKE) clean; fi
+	@if test -d "test"; then  cd test; $(MAKE) clean; fi
 
 clean: clean-natives clean-classes clean-test clean-examples
 
@@ -462,7 +462,7 @@ ncsa.hdf.hdf5lib.exceptions: \
 
 ncsa.hdf.hdf5lib.callbacks: \
 	ncsa/hdf/hdf5lib/callbacks/Callbacks.class \
-	ncsa/hdf/hdf5lib/callbacks/H5L_iterate_cb.class
+	ncsa/hdf/hdf5lib/callbacks/H5L_iterate_cb.class \
 	ncsa/hdf/hdf5lib/callbacks/H5L_iterate_t.class
 
 ncsa.hdf.hdf5lib.structs: \

@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TestH5Giterate {
-    private static final String H5_FILE = "test/hdf5lib/h5ex_g_iterate.h5";
+    private static final String H5_FILE = "test/hdf5lib/h5ex_g_iterate.hdf";
     int H5fid = -1;
 
     private final int _openGroup(int fid, String name) {

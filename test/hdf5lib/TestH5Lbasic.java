@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class TestH5Lbasic {
-    private static final String H5_FILE = "test/hdf5lib/h5ex_g_iterate.h5";
+    private static final String H5_FILE = "test/hdf5lib/h5ex_g_iterate.hdf";
     private static long H5la_ds1 = -1;
     private static long H5la_l1 = -1;
     int H5fid = -1;
