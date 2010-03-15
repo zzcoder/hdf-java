@@ -514,7 +514,7 @@ public class TestH5P {
 	}
 	
 	@Test
-    public void testH5Pget_link_phase_change() throws Throwable, HDF5LibraryException, NullPointerException {
+	public void testH5Pget_link_phase_change() throws Throwable, HDF5LibraryException, NullPointerException {
 		int ret_val = -1;
 		int[] links = new int[2];
 
@@ -528,10 +528,10 @@ public class TestH5P {
 		assertTrue("testH5Pget_link_phase_change", ret_val >= 0);
 		assertEquals("Default value of maximum compact storage", 8, links[0]);
 		assertEquals("Default value of minimum dense storage", 6, links[1]);
-    }
+	}
 	
 	@Test
-    public void testH5Pget_link_phase_change_EqualsSet() throws Throwable, HDF5LibraryException {
+	public void testH5Pget_link_phase_change_EqualsSet() throws Throwable, HDF5LibraryException {
 		int[] links = new int[2];
 		try {
 			H5.H5Pset_link_phase_change(gcpl_id , 10, 7);
@@ -543,10 +543,88 @@ public class TestH5P {
 		}
 		assertEquals("Value of maximum compact storage set", 10, links[0]);
 		assertEquals("Value of minimum dense storage set", 7, links[1]);
-    }
+	}
 	
 	@Test(expected = NullPointerException.class)
 	public void testH5Pget_link_phase_change_Null() throws Throwable, HDF5LibraryException, NullPointerException {
 		H5.H5Pget_link_phase_change(gcpl_id, null); 
+	}
+	
+	@Test
+	public void testH5Pget_attr_phase_change() throws Throwable, HDF5LibraryException, NullPointerException {
+		int ret_val = -1;
+		int[] attributes = new int[2];
+
+		try {
+			ret_val = H5.H5Pget_attr_phase_change(ocpl_id, attributes); 
+		}
+		catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5Pget_attr_phase_change: " + err);
+		}
+		assertTrue("testH5Pget_attr_phase_change", ret_val >= 0);
+		assertEquals("Default value of the max. no. of attributes stored in compact storage", 8, attributes[0]);
+		assertEquals("Default value of the min. no. of attributes stored in dense storage", 6, attributes[1]);
+	}
+
+	@Test
+	public void testH5Pget_shared_mesg_phase_change() throws Throwable, HDF5LibraryException, NullPointerException {
+		int ret_val = -1;
+		int[] size = new int[2];
+
+		try {
+			ret_val = H5.H5Pget_shared_mesg_phase_change(gcpl_id, size); 
+		}
+		catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5Pget_shared_mesg_phase_change: " + err);
+		}
+		assertTrue("testH5Pget_shared_mesg_phase_change", ret_val >= 0);
+	}
+
+	@Test
+	public void testH5Pget_shared_mesg_phase_change_EqualsSET() throws Throwable, HDF5LibraryException {
+		int[] size = new int[2];
+
+		try {
+			H5.H5Pset_shared_mesg_phase_change(gcpl_id,50, 40);
+			H5.H5Pget_shared_mesg_phase_change(gcpl_id, size); 
+		}
+		catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5Pget_shared_mesg_phase_change_EqualsSET: " + err);
+		}
+		assertEquals("Value of maximum list set", 50, size[0]);
+		assertEquals("Value of minimum btree set", 40, size[1]);
+	}
+
+	@Test
+	public void testH5Pset_shared_mesg_phase_change() throws Throwable, HDF5LibraryException, IllegalArgumentException {
+
+		int ret_val = -1;
+		try {
+			ret_val = H5.H5Pset_shared_mesg_phase_change(gcpl_id,2, 1);
+		}
+		catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5Pset_shared_mesg_phase_change: " + err);
+		}
+		assertTrue("H5Pset_shared_mesg_phase_change", ret_val >= 0);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testH5PH5Pset_shared_mesg_phase_change_HighMaxlistValue() throws Throwable, HDF5LibraryException, IllegalArgumentException {
+		H5.H5Pset_shared_mesg_phase_change(gcpl_id, 5001, 4000);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testH5PH5Pset_shared_mesg_phase_change_HighMinbtreeValue() throws Throwable, HDF5LibraryException, IllegalArgumentException {
+		H5.H5Pset_shared_mesg_phase_change(gcpl_id, 5000, 5001);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testH5PH5Pset_shared_mesg_phase_change_MinbtreeGreaterThanMaxlist()
+	throws Throwable, HDF5LibraryException, IllegalArgumentException {
+		H5.H5Pset_link_phase_change(gcpl_id , 3, 7);
 	}
 }
