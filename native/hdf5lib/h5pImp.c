@@ -3425,6 +3425,66 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1elink_1acc_1flags
 	return (jint)retVal;
 }
 
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_link_phase_change
+ * Signature: (III)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1link_1phase_1change
+  (JNIEnv *env, jclass clss, jint gcpl_id, jint max_compact, jint min_dense)
+{
+	herr_t retVal;
+
+	if(max_compact < min_dense){
+		h5badArgument( env, "H5Pset_link_phase_change: max compact value must be >= min dense value");
+		return -1;
+	}
+	if(max_compact > 65535){
+		h5badArgument( env, "H5Pset_link_phase_change: max compact value must be < 65536");
+		return -1;
+	}
+	if(min_dense > 65535){
+		h5badArgument( env, "H5Pset_link_phase_change: min dense value must be < 65536");
+		return -1;
+	}
+	retVal = H5Pset_link_phase_change((hid_t)gcpl_id, (unsigned)max_compact, (unsigned)min_dense);
+	if(retVal <0){
+		h5libraryError(env);
+	}
+	return (jint)retVal;
+
+}
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_link_phase_change
+ * Signature: (I[I)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1link_1phase_1change
+  (JNIEnv *env, jclass clss, jint gcpl_id, jintArray links)
+{
+	herr_t retVal = -1;
+	unsigned *theArray = NULL;
+	jboolean isCopy;
+
+	if (links == NULL) {
+		h5nullArgument( env, "H5Pget_link_phase_change:  links is NULL");
+		return -1;
+	}
+	theArray = (unsigned *)ENVPTR->GetIntArrayElements(ENVPAR links,&isCopy);
+	if (theArray == NULL) {
+		h5JNIFatalError( env, "H5Pget_link_phase_change:  input not pinned");
+		return -1;
+	}	
+	retVal = H5Pget_link_phase_change((hid_t)gcpl_id, &(theArray[0]), &(theArray[1]));
+	if(retVal <0){
+		ENVPTR->ReleaseIntArrayElements(ENVPAR links,(jint *)theArray,JNI_ABORT);
+		h5libraryError(env);
+	}	
+	else {
+	 ENVPTR->ReleaseIntArrayElements(ENVPAR links,(jint *)theArray,0);
+	}
+	return (jint)retVal;
+}
 #ifdef __cplusplus
 }
 #endif

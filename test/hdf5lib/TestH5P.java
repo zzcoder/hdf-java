@@ -158,7 +158,6 @@ public class TestH5P {
     }
     
     @Test
-   
     public void testH5Pget_libver_bounds() throws Throwable, HDF5LibraryException {
     	int ret_val = -1;
     	int[] libver = new int[2];
@@ -397,8 +396,7 @@ public class TestH5P {
 			err.printStackTrace();
 			fail("H5Pset_data_transform: " + err);
 		}
-		assertTrue(ret_val>=0);
-		
+		assertTrue(ret_val>=0);	
 	}
 	
 	@Test(expected = NullPointerException.class)
@@ -491,4 +489,64 @@ public class TestH5P {
 		H5.H5Pset_elink_acc_flags(lapl_id, -1);
 	}
 	
+	@Test
+    public void testH5Pset_link_phase_change() throws Throwable, HDF5LibraryException, IllegalArgumentException {
+		
+		int ret_val = -1;
+		try {
+			ret_val = H5.H5Pset_link_phase_change(gcpl_id , 2, 2);
+		}
+		catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5Pset_link_phase_change: " + err);
+		}
+		assertTrue("H5Pset_link_phase_change", ret_val >= 0);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testH5Pset_link_phase_change_Highmax_Compact() throws Throwable, HDF5LibraryException, IllegalArgumentException {
+		H5.H5Pset_link_phase_change(gcpl_id , 70000000, 3);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testH5Pset_link_phase_change_max_compactLESSTHANmin_dense() throws Throwable, HDF5LibraryException, IllegalArgumentException {
+		H5.H5Pset_link_phase_change(gcpl_id , 5, 6);
+	}
+	
+	@Test
+    public void testH5Pget_link_phase_change() throws Throwable, HDF5LibraryException, NullPointerException {
+		int ret_val = -1;
+		int[] links = new int[2];
+
+		try {
+			ret_val = H5.H5Pget_link_phase_change(gcpl_id, links); 
+		}
+		catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5Pget_link_phase_change: " + err);
+		}
+		assertTrue("testH5Pget_link_phase_change", ret_val >= 0);
+		assertEquals("Default value of maximum compact storage", 8, links[0]);
+		assertEquals("Default value of minimum dense storage", 6, links[1]);
+    }
+	
+	@Test
+    public void testH5Pget_link_phase_change_EqualsSet() throws Throwable, HDF5LibraryException {
+		int[] links = new int[2];
+		try {
+			H5.H5Pset_link_phase_change(gcpl_id , 10, 7);
+			H5.H5Pget_link_phase_change(gcpl_id, links); 
+		}
+		catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5Pget_link_phase_change_EqualsSet: " + err);
+		}
+		assertEquals("Value of maximum compact storage set", 10, links[0]);
+		assertEquals("Value of minimum dense storage set", 7, links[1]);
+    }
+	
+	@Test(expected = NullPointerException.class)
+	public void testH5Pget_link_phase_change_Null() throws Throwable, HDF5LibraryException, NullPointerException {
+		H5.H5Pget_link_phase_change(gcpl_id, null); 
+	}
 }
