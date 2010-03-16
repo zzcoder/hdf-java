@@ -3,20 +3,19 @@ package test.hdf5lib;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
-import ncsa.hdf.hdf5lib.exceptions.HDF5FunctionArgumentException;
-import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
-import ncsa.hdf.hdf5lib.exceptions.HDF5SymbolTableException;
-import ncsa.hdf.hdf5lib.structs.H5L_info_t;
 import ncsa.hdf.hdf5lib.callbacks.H5L_iterate_cb;
 import ncsa.hdf.hdf5lib.callbacks.H5L_iterate_t;
+import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
+import ncsa.hdf.hdf5lib.structs.H5L_info_t;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Iterator;
 
 public class TestH5Lbasic {
     private static final String H5_FILE = "test/hdf5lib/h5ex_g_iterate.hdf";
@@ -196,7 +195,6 @@ public class TestH5Lbasic {
 
     @Test
     public void testH5Lvisit() throws Throwable, HDF5LibraryException, NullPointerException {
-        int status = -1;
         class idata {
             public String link_name = null;
             public int link_type = -1;
@@ -206,7 +204,7 @@ public class TestH5Lbasic {
             }
         }
         class H5L_iter_data implements H5L_iterate_t {
-            public ArrayList iterdata = new ArrayList();
+            public ArrayList<idata> iterdata = new ArrayList<idata>();
         }
         H5L_iterate_t iter_data = new H5L_iter_data();
         class H5L_iter_callback implements H5L_iterate_cb {
@@ -218,7 +216,7 @@ public class TestH5Lbasic {
         }
         H5L_iterate_cb iter_cb = new H5L_iter_callback();
         try {
-            status = H5.H5Lvisit(H5fid, HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, iter_cb, iter_data);
+            H5.H5Lvisit(H5fid, HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, iter_cb, iter_data);
         }
         catch (Throwable err) {
             err.printStackTrace();
@@ -235,7 +233,6 @@ public class TestH5Lbasic {
 
     @Test
     public void testH5Lvisit_by_name() throws Throwable, HDF5LibraryException, NullPointerException {
-        int status = -1;
         class idata {
             public String link_name = null;
             public int link_type = -1;
@@ -245,7 +242,7 @@ public class TestH5Lbasic {
             }
         }
         class H5L_iter_data implements H5L_iterate_t {
-            public ArrayList iterdata = new ArrayList();
+            public ArrayList<idata> iterdata = new ArrayList<idata>();
         }
         H5L_iterate_t iter_data = new H5L_iter_data();
         class H5L_iter_callback implements H5L_iterate_cb {
@@ -257,7 +254,7 @@ public class TestH5Lbasic {
         }
         H5L_iterate_cb iter_cb = new H5L_iter_callback();
         try {
-            status = H5.H5Lvisit_by_name(H5fid, "G1", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, iter_cb, iter_data, HDF5Constants.H5P_DEFAULT);
+            H5.H5Lvisit_by_name(H5fid, "G1", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, iter_cb, iter_data, HDF5Constants.H5P_DEFAULT);
         }
         catch (Throwable err) {
             err.printStackTrace();
@@ -265,7 +262,78 @@ public class TestH5Lbasic {
         }
         assertFalse("H5Lvisit_by_name ",((H5L_iter_data)iter_data).iterdata.isEmpty());
         assertTrue("H5Lvisit_by_name "+((H5L_iter_data)iter_data).iterdata.size(),((H5L_iter_data)iter_data).iterdata.size()==1);
-        assertTrue("H5Lvisit "+((idata)((H5L_iter_data)iter_data).iterdata.get(0)).link_name,((idata)((H5L_iter_data)iter_data).iterdata.get(0)).link_name.compareToIgnoreCase("DS2")==0);
+        assertTrue("H5Lvisit_by_name "+((idata)((H5L_iter_data)iter_data).iterdata.get(0)).link_name,((idata)((H5L_iter_data)iter_data).iterdata.get(0)).link_name.compareToIgnoreCase("DS2")==0);
+    }
+
+    @Test
+    public void testH5Literate() throws Throwable, HDF5LibraryException, NullPointerException {
+        class idata {
+            public String link_name = null;
+            public int link_type = -1;
+            idata(String name, int type) {
+                this.link_name = name;
+                this.link_type = type;
+            }
+        }
+        class H5L_iter_data implements H5L_iterate_t {
+            public ArrayList<idata> iterdata = new ArrayList<idata>();
+        }
+        H5L_iterate_t iter_data = new H5L_iter_data();
+        class H5L_iter_callback implements H5L_iterate_cb {
+            public int callback(int group, String name, H5L_info_t info, H5L_iterate_t op_data) {
+                idata id = new idata(name, info.type);
+                ((H5L_iter_data)op_data).iterdata.add(id);
+                return 0;
+            }
+        }
+        H5L_iterate_cb iter_cb = new H5L_iter_callback();
+        try {
+            H5.H5Literate(H5fid, HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 0L, iter_cb, iter_data);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Literate: " + err);
+        }
+        assertFalse("H5Literate ",((H5L_iter_data)iter_data).iterdata.isEmpty());
+        assertTrue("H5Literate "+((H5L_iter_data)iter_data).iterdata.size(),((H5L_iter_data)iter_data).iterdata.size()==4);
+        assertTrue("H5Literate "+((idata)((H5L_iter_data)iter_data).iterdata.get(0)).link_name,((idata)((H5L_iter_data)iter_data).iterdata.get(0)).link_name.compareToIgnoreCase("DS1")==0);
+        assertTrue("H5Literate "+((idata)((H5L_iter_data)iter_data).iterdata.get(1)).link_name,((idata)((H5L_iter_data)iter_data).iterdata.get(1)).link_name.compareToIgnoreCase("DT1")==0);
+        assertTrue("H5Literate "+((idata)((H5L_iter_data)iter_data).iterdata.get(2)).link_name,((idata)((H5L_iter_data)iter_data).iterdata.get(2)).link_name.compareToIgnoreCase("G1")==0);
+        assertTrue("H5Literate "+((idata)((H5L_iter_data)iter_data).iterdata.get(3)).link_name,((idata)((H5L_iter_data)iter_data).iterdata.get(3)).link_name.compareToIgnoreCase("L1")==0);
+    }
+
+    @Test
+    public void testH5Literate_by_name() throws Throwable, HDF5LibraryException, NullPointerException {
+        class idata {
+            public String link_name = null;
+            public int link_type = -1;
+            idata(String name, int type) {
+                this.link_name = name;
+                this.link_type = type;
+            }
+        }
+        class H5L_iter_data implements H5L_iterate_t {
+            public ArrayList<idata> iterdata = new ArrayList<idata>();
+        }
+        H5L_iterate_t iter_data = new H5L_iter_data();
+        class H5L_iter_callback implements H5L_iterate_cb {
+            public int callback(int group, String name, H5L_info_t info, H5L_iterate_t op_data) {
+                idata id = new idata(name, info.type);
+                ((H5L_iter_data)op_data).iterdata.add(id);
+                return 0;
+            }
+        }
+        H5L_iterate_cb iter_cb = new H5L_iter_callback();
+        try {
+            H5.H5Literate_by_name(H5fid, "G1", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 0L, iter_cb, iter_data, HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Literate_by_name: " + err);
+        }
+        assertFalse("H5Literate_by_name ",((H5L_iter_data)iter_data).iterdata.isEmpty());
+        assertTrue("H5Literate_by_name "+((H5L_iter_data)iter_data).iterdata.size(),((H5L_iter_data)iter_data).iterdata.size()==1);
+        assertTrue("H5Literate_by_name "+((idata)((H5L_iter_data)iter_data).iterdata.get(0)).link_name,((idata)((H5L_iter_data)iter_data).iterdata.get(0)).link_name.compareToIgnoreCase("DS2")==0);
     }
 
 }

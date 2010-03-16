@@ -91,18 +91,18 @@ extern "C" {
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Lget_val
-     * Signature: (ILjava/lang/String;I)Ljava/lang/String;
+     * Signature: (ILjava/lang/String;[Ljava/lang/String;I)I
      */
-    JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lget_1val
-      (JNIEnv *, jclass, jint, jstring, jint);
+    JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lget_1val
+      (JNIEnv *, jclass, jint, jstring, jobjectArray, jint);
     
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Lget_val_by_idx
-     * Signature: (ILjava/lang/String;IIJI)Ljava/lang/String;
+     * Signature: (ILjava/lang/String;IIJ[Ljava/lang/String;I)I
      */
-    JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lget_1val_1by_1idx
-      (JNIEnv *, jclass, jint, jstring, jint, jint, jlong, jint);
+    JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lget_1val_1by_1idx
+      (JNIEnv *, jclass, jint, jstring, jint, jint, jlong, jobjectArray, jint);
     
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
@@ -127,6 +127,22 @@ extern "C" {
      */
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Lvisit_1by_1name
       (JNIEnv *, jclass, jint, jstring, jint, jint, jobject, jobject, jint);
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Literate
+     * Signature: (IIIJLjava/lang/Object;Ljava/lang/Object;)I
+     */
+    JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Literate
+      (JNIEnv *, jclass, jint, jint, jint, jlong, jobject, jobject);
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Literate_by_name
+     * Signature: (ILjava/lang/String;IILjava/lang/Object;Ljava/lang/Object;I)I
+     */
+    JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Literate_1by_1name
+      (JNIEnv *, jclass, jint, jstring, jint, jint, jlong, jobject, jobject, jint);
 
 #ifdef __cplusplus
 }

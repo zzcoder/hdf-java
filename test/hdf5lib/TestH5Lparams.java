@@ -16,12 +16,12 @@ public class TestH5Lparams {
 
     @Test(expected = HDF5LibraryException.class)
     public void testH5Lget_val_invalid() throws Throwable, HDF5LibraryException {
-        H5.H5Lget_val(-1, "Bogus", -1);
+        H5.H5Lget_val(-1, "Bogus", null, -1);
     }
 
     @Test(expected = NullPointerException.class)
     public void testH5Lget_val_null() throws Throwable, HDF5LibraryException, NullPointerException {
-        H5.H5Lget_val(-1, null, 0);
+        H5.H5Lget_val(-1, null, null, 0);
     }
 
     @Test(expected = HDF5LibraryException.class)
@@ -156,12 +156,12 @@ public class TestH5Lparams {
 
     @Test(expected = HDF5LibraryException.class)
     public void testH5Lget_val_by_idx_invalid() throws Throwable, HDF5LibraryException, NullPointerException {
-        H5.H5Lget_val_by_idx(-1, "Bogus", -1, -1, -1L, -1);
+        H5.H5Lget_val_by_idx(-1, "Bogus", -1, -1, -1L, null, -1);
     }
 
     @Test(expected = NullPointerException.class)
     public void testH5Lget_val_by_idx_null() throws Throwable, HDF5LibraryException, NullPointerException {
-        H5.H5Lget_val_by_idx(-1, null, 0, 0, 0L, 0);
+        H5.H5Lget_val_by_idx(-1, null, 0, 0, 0L, null, 0);
     }
 
     @Test(expected = HDF5LibraryException.class)
@@ -187,6 +187,21 @@ public class TestH5Lparams {
     @Test(expected = NullPointerException.class)
     public void testH5Lvisit_by_name_null() throws Throwable, HDF5LibraryException, NullPointerException {
         H5.H5Lvisit_by_name(-1, "Bogus", -1, -1, null, null, -1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Literate_null() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Literate(-1, -1, -1, -1, null, null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Literate_by_name_nullname() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Literate_by_name(-1, null, -1, -1, -1, null, null, -1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Literate_by_name_null() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Literate_by_name(-1, "Bogus", -1, -1, -1, null, null, -1);
     }
 
 }
