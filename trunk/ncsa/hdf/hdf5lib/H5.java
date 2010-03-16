@@ -8119,6 +8119,33 @@ throws HDF5LibraryException, NullPointerException;
 public synchronized static native int H5Pset_shared_mesg_phase_change(int fcpl_id, int max_list, int min_btree)
 throws HDF5LibraryException, IllegalArgumentException;
 
+/**
+ * H5Pget_shared_mesg_nindexes retrieves number of shared object header message indexes in file creation property list. 
+ * @param fcpl_id			IN: : File creation property list identifier 
+ *
+ * @return nindexes, the number of shared object header message indexes available in files created with this property list 
+ * 
+ * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  
+ **/
+public synchronized static native int H5Pget_shared_mesg_nindexes(int fcpl_id) 
+throws HDF5LibraryException;
+ 
+ /**
+  * H5Pset_shared_mesg_nindexes sets the number of shared object header message indexes in the specified file creation property list. 
+  * @param plist_id				IN: File creation property list 
+  * @param nindexes		      	IN: Number of shared object header message indexes to be available in files created with this property list
+  *  
+  * @return a non-negative value if successful; otherwise returns a negative value.
+  * 
+  * @exception HDF5LibraryException - Error from the HDF-5 Library.
+  * @exception IllegalArgumentException - Invalid values of nindexes
+  *  
+  **/
+ public synchronized static native int H5Pset_shared_mesg_nindexes(int plist_id, int nindexes)
+ throws HDF5LibraryException, IllegalArgumentException;
+
+
 //////////////////////////////////////////////////////////////
 ////
 //H5I: HDF5 1.8 Identifier Interface API Functions            //
