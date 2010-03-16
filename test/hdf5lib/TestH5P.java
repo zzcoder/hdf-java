@@ -627,4 +627,40 @@ public class TestH5P {
 	throws Throwable, HDF5LibraryException, IllegalArgumentException {
 		H5.H5Pset_link_phase_change(gcpl_id , 3, 7);
 	}
+	
+	@Test
+    public void testH5Pget_shared_mesg_nindexes() throws Throwable, HDF5LibraryException {
+		
+		int nindexes = -1;
+		try {
+			nindexes = H5.H5Pget_shared_mesg_nindexes(gcpl_id);
+		}
+		catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5Pget_shared_mesg_nindexes: " + err);
+		}
+		assertTrue("H5Pget_shared_mesg_nindexes", nindexes >= 0);
+	}
+	
+	@Test
+    public void testH5Pset_shared_mesg_nindexes() throws Throwable, HDF5LibraryException, IllegalArgumentException {
+		
+		int nindexes = -1;
+		int ret_val = -1;
+		try {
+			ret_val = H5.H5Pset_shared_mesg_nindexes(gcpl_id, 7);
+			nindexes = H5.H5Pget_shared_mesg_nindexes(gcpl_id);
+		}
+		catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5Pset_shared_mesg_nindexes: " + err);
+		}
+		assertTrue("H5Pset_shared_mesg_nindexes", ret_val >= 0);
+		assertEquals("Value of nindexes is equal to value set",7 ,nindexes);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testH5Pset_shared_mesg_nindexes_InvalidHIGHnindexes() throws Throwable, HDF5LibraryException, IllegalArgumentException {
+		H5.H5Pset_shared_mesg_nindexes(gcpl_id, 9);
+	}
 }

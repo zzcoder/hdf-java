@@ -3583,7 +3583,45 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1shared_1mesg_1phase_1cha
 		h5libraryError(env);
 	}
 	return (jint)retVal;
+}
 
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_shared_mesg_nindexes
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1shared_1mesg_1nindexes
+  (JNIEnv *env, jclass clss, jint fcpl_id)
+{
+	herr_t status;
+	unsigned nindexes;
+
+	status = H5Pget_shared_mesg_nindexes((hid_t)fcpl_id, &nindexes); 
+	if(status <0){
+		h5libraryError(env);
+	}
+	return (jint)nindexes;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_shared_mesg_nindexes
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1shared_1mesg_1nindexes
+  (JNIEnv *env, jclass clss, jint plist_id, jint nindexes)
+{
+	herr_t retVal;
+
+	if (nindexes > H5O_SHMESG_MAX_NINDEXES){
+		h5badArgument( env, "H5Pset_shared_mesg_nindexes: number of indexes is greater than H5O_SHMESG_MAX_NINDEXES");
+		return -1;
+	}      
+	retVal = H5Pset_shared_mesg_nindexes((hid_t) plist_id,(unsigned)nindexes); 
+	if(retVal <0){
+		h5libraryError(env);
+	}
+	return (jint)retVal;
 }
 
 #ifdef __cplusplus
