@@ -6860,16 +6860,17 @@ public class H5 {
     /**
      *  H5Lget_val returns the link value of a symbolic link.
      *
-     *  @param loc_id  IN: Identifier of the file or group containing the object.
-     *  @param name    IN: Name of the symbolic link.
-     *  @param lapl_id IN: Link access property list identifier
+     *  @param loc_id      IN: Identifier of the file or group containing the object.
+     *  @param name        IN: Name of the symbolic link.
+     *  @param link_value OUT: Path of the symbolic link, or the file_name and path of an external file.
+     *  @param lapl_id     IN: Link access property list identifier
      *
-     *  @return the link value
+     *  @return the link type
      *
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - name is null.
      **/
-    public synchronized static native String H5Lget_val(int loc_id, String name, int lapl_id)
+    public synchronized static native int H5Lget_val(int loc_id, String name, String[] link_value, int lapl_id)
     throws HDF5LibraryException, NullPointerException;
 
     /**
@@ -6880,30 +6881,16 @@ public class H5 {
      *  @param idx_type   IN: Type of index
      *  @param order      IN: Order within field or index
      *  @param n          IN: Link for which to retrieve information 
+     *  @param link_value OUT: Path of the symbolic link, or the file_name and path of an external file.
      *  @param lapl_id    IN: Link access property list identifier 
      *
-     *  @return the link value (String) 
+     *  @return the link type
      *
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - group_name is null.
      **/
-    public synchronized static native String H5Lget_val_by_idx(int loc_id, String group_name,
-        int idx_type, int order, long n, int lapl_id)
-    throws HDF5LibraryException, NullPointerException;
-
-    /**
-     *  H5Lget_val_external returns the filename of an external link.
-     *
-     *  @param loc_id  IN: Identifier of the file or group containing the object.
-     *  @param name    IN: Name of the external link.
-     *  @param lapl_id IN: Link access property list identifier
-     *
-     *  @return the external link filename
-     *
-     *  @exception HDF5LibraryException - Error from the HDF-5 Library.
-     *  @exception NullPointerException - name is null.
-     **/
-    public synchronized static native String H5Lget_val_external(int loc_id, String name, int lapl_id)
+    public synchronized static native int H5Lget_val_by_idx(int loc_id, String group_name,
+        int idx_type, int order, long n, String[] link_value, int lapl_id)
     throws HDF5LibraryException, NullPointerException;
 
     /**
@@ -6962,6 +6949,49 @@ public class H5 {
    public synchronized static native int H5Lvisit_by_name(int loc_id, String group_name,
        int idx_type, int order, H5L_iterate_cb op,
        H5L_iterate_t op_data, int lapl_id)
+   throws HDF5LibraryException, NullPointerException;
+
+   /**
+    *  H5Literate iterates through links in a group. 
+    *
+    *  @param grp_id     IN: Identifier specifying subject group
+    *  @param idx_type   IN: Type of index  
+    *  @param order      IN: Order of iteration within index 
+    *  @param idx        IN: Iteration position at which to start  
+    *  @param op         IN: Callback function passing data regarding the link to the calling application  
+    *  @param op_data    IN: User-defined pointer to data required by the application for its processing of the link 
+    *
+    *  @return returns the return value of the first operator that returns a positive value, or zero if all members were 
+    *      processed with no operator returning non-zero.
+    *
+    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+    **/
+   public synchronized static native int H5Literate(int grp_id, 
+           int idx_type, int order,
+           long idx, H5L_iterate_cb op, H5L_iterate_t op_data)
+   throws HDF5LibraryException;
+
+   /**
+    *  H5Literate_by_name iterates through links in a group. 
+    *
+    *  @param grp_id     IN: Identifier specifying subject group
+    *  @param group_name IN: Name of subject group
+    *  @param idx_type   IN: Type of index  
+    *  @param order      IN: Order of iteration within index 
+    *  @param idx        IN: Iteration position at which to start  
+    *  @param op         IN: Callback function passing data regarding the link to the calling application  
+    *  @param op_data    IN: User-defined pointer to data required by the application for its processing of the link 
+    *  @param lapl_id    IN: Link access property list identifier 
+    *
+    *  @return returns the return value of the first operator that returns a positive value, or zero if all members were 
+    *    processed with no operator returning non-zero.
+    *
+    *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+    *  @exception NullPointerException - group_name is null.
+    **/
+   public synchronized static native int H5Literate_by_name(int loc_id, String group_name,
+           int idx_type, int order, long idx,
+           H5L_iterate_cb op, H5L_iterate_t op_data, int lapl_id)
    throws HDF5LibraryException, NullPointerException;
     
     // //////////////////////////////////////////////////////////////////
