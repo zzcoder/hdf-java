@@ -68,19 +68,19 @@ extern "C" {
         herr_t   status = -1;
         
         if (cur_name == NULL) {
-            h5nullArgument( env, "H5Lcreate_hard:  cur_name is NULL");
+            h5nullArgument(env, "H5Lcreate_hard:  cur_name is NULL");
             return;
         }
         
         lCurName = (char*)ENVPTR->GetStringUTFChars(ENVPAR cur_name, &isCopy);
         if (lCurName == NULL) {
-            h5JNIFatalError( env, "H5Lcreate_hard:  cur_name not pinned");
+            h5JNIFatalError(env, "H5Lcreate_hard:  cur_name not pinned");
             return;
         }
         
         if (dst_name == NULL) {
             ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
-            h5nullArgument( env, "H5Lcreate_hard:  dst_name is NULL");
+            h5nullArgument(env, "H5Lcreate_hard:  dst_name is NULL");
             return;
         }
         
@@ -119,33 +119,33 @@ extern "C" {
       herr_t   status = -1;
       
       if (file_name == NULL) {
-          h5nullArgument( env, "H5Lcreate_external:  file_name is NULL");
+          h5nullArgument(env, "H5Lcreate_external:  file_name is NULL");
           return;
       }
       
       lFileName = (char*)ENVPTR->GetStringUTFChars(ENVPAR file_name, &isCopy);
       if (lFileName == NULL) {
-          h5JNIFatalError( env, "H5Lcreate_external:  file_name not pinned");
+          h5JNIFatalError(env, "H5Lcreate_external:  file_name not pinned");
           return;
       }
      
       if (cur_name == NULL) {
           ENVPTR->ReleaseStringUTFChars(ENVPAR file_name, lFileName);
-          h5nullArgument( env, "H5Lcreate_external:  cur_name is NULL");
+          h5nullArgument(env, "H5Lcreate_external:  cur_name is NULL");
           return;
       }
       
       lCurName = (char*)ENVPTR->GetStringUTFChars(ENVPAR cur_name,&isCopy);
       if (lCurName == NULL) {
           ENVPTR->ReleaseStringUTFChars(ENVPAR file_name, lFileName);
-          h5JNIFatalError( env, "H5Lcreate_external:  cur_name not pinned");
+          h5JNIFatalError(env, "H5Lcreate_external:  cur_name not pinned");
           return;
       }
       
       if (dst_name == NULL) {
           ENVPTR->ReleaseStringUTFChars(ENVPAR file_name, lFileName);
           ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
-          h5nullArgument( env, "H5Lcreate_external:  dst_name is NULL");
+          h5nullArgument(env, "H5Lcreate_external:  dst_name is NULL");
           return;
       }
       
@@ -153,7 +153,7 @@ extern "C" {
       if (lDstName == NULL) {
           ENVPTR->ReleaseStringUTFChars(ENVPAR file_name, lFileName);
           ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
-          h5JNIFatalError( env, "H5Lcreate_external:  dst_name not pinned");
+          h5JNIFatalError(env, "H5Lcreate_external:  dst_name not pinned");
           return;
       }
 
@@ -185,19 +185,19 @@ extern "C" {
         herr_t   status = -1;
         
         if (cur_name == NULL) {
-            h5nullArgument( env, "H5Lcreate_hard:  cur_name is NULL");
+            h5nullArgument(env, "H5Lcreate_hard:  cur_name is NULL");
             return;
         }
         
         lCurName = (char*)ENVPTR->GetStringUTFChars(ENVPAR cur_name, &isCopy);
         if (lCurName == NULL) {
-            h5JNIFatalError( env, "H5Lcreate_hard:  cur_name not pinned");
+            h5JNIFatalError(env, "H5Lcreate_hard:  cur_name not pinned");
             return;
         }
         
         if (dst_name == NULL) {
             ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
-            h5nullArgument( env, "H5Lcreate_hard:  dst_name is NULL");
+            h5nullArgument(env, "H5Lcreate_hard:  dst_name is NULL");
             return;
         }
         
@@ -235,19 +235,19 @@ extern "C" {
         herr_t   status = -1;
         
         if (cur_name == NULL) {
-            h5nullArgument( env, "H5Lcreate_soft:  cur_name is NULL");
+            h5nullArgument(env, "H5Lcreate_soft:  cur_name is NULL");
             return;
         }
         
         lCurName = (char*)ENVPTR->GetStringUTFChars(ENVPAR cur_name, &isCopy);
         if (lCurName == NULL) {
-            h5JNIFatalError( env, "H5Lcreate_soft:  cur_name not pinned");
+            h5JNIFatalError(env, "H5Lcreate_soft:  cur_name not pinned");
             return;
         }
         
         if (dst_name == NULL) {
             ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
-            h5nullArgument( env, "H5Lcreate_soft:  dst_name is NULL");
+            h5nullArgument(env, "H5Lcreate_soft:  dst_name is NULL");
             return;
         }
         
@@ -284,13 +284,13 @@ extern "C" {
         herr_t   status = -1;
 
         if (name == NULL) {
-            h5nullArgument( env, "H5Ldelete:  name is NULL");
+            h5nullArgument(env, "H5Ldelete:  name is NULL");
             return;
         }
         
         lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
-            h5JNIFatalError( env, "H5Ldelete:  name not pinned");
+            h5JNIFatalError(env, "H5Ldelete:  name not pinned");
             return;
         }
         
@@ -317,13 +317,13 @@ extern "C" {
         jboolean   isCopy;
 
         if (name == NULL) {
-            h5nullArgument( env, "H5Ldelete_by_idx:  name is NULL");
+            h5nullArgument(env, "H5Ldelete_by_idx:  name is NULL");
             return;
         }
         
         lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
-            h5JNIFatalError( env, "H5Ldelete_by_idx:  name not pinned");
+            h5JNIFatalError(env, "H5Ldelete_by_idx:  name not pinned");
             return;
         }
 
@@ -350,13 +350,13 @@ extern "C" {
         htri_t   bval = 0;
 
         if (name == NULL) {
-            h5nullArgument( env, "H5Lexists:  name is NULL");
+            h5nullArgument(env, "H5Lexists:  name is NULL");
             return JNI_FALSE;
         }
         
         lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
-            h5JNIFatalError( env, "H5Lexists:  name not pinned");
+            h5JNIFatalError(env, "H5Lexists:  name not pinned");
             return JNI_FALSE;
         }
         
@@ -393,13 +393,13 @@ extern "C" {
         jobject    ret_info_t = NULL;
 
         if (name == NULL) {
-            h5nullArgument( env, "H5Lget_info:  name is NULL");
+            h5nullArgument(env, "H5Lget_info:  name is NULL");
             return NULL;
         }
         
         lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
-            h5JNIFatalError( env, "H5Lget_info:  name not pinned");
+            h5JNIFatalError(env, "H5Lget_info:  name not pinned");
             return NULL;
         }
 
@@ -454,13 +454,13 @@ extern "C" {
         jobject    ret_info_t = NULL;
 
         if (name == NULL) {
-            h5nullArgument( env, "H5Lget_info_by_idx:  name is NULL");
+            h5nullArgument(env, "H5Lget_info_by_idx:  name is NULL");
             return NULL;
         }
         
         lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
-            h5JNIFatalError( env, "H5Lget_info_by_idx:  name not pinned");
+            h5JNIFatalError(env, "H5Lget_info_by_idx:  name not pinned");
             return NULL;
         }
 
@@ -513,13 +513,13 @@ extern "C" {
         jstring  str = NULL;
 
         if (name == NULL) {
-            h5nullArgument( env, "H5Lget_name_by_idx:  name is NULL");
+            h5nullArgument(env, "H5Lget_name_by_idx:  name is NULL");
             return NULL;
         }
         
         lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
-            h5JNIFatalError( env, "H5Lget_name_by_idx:  name not pinned");
+            h5JNIFatalError(env, "H5Lget_name_by_idx:  name not pinned");
             return NULL;
         }
 
@@ -581,13 +581,13 @@ extern "C" {
         jstring     str;
         
         if (name == NULL) {
-            h5nullArgument( env, "H5Lget_val:  name is NULL");
+            h5nullArgument(env, "H5Lget_val:  name is NULL");
             return NULL;
         }
         
         lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name,&isCopy);
         if (lName == NULL) {
-            h5JNIFatalError( env, "H5Lget_val:  name not pinned");
+            h5JNIFatalError(env, "H5Lget_val:  name not pinned");
             return NULL;
         }
 
@@ -666,13 +666,13 @@ extern "C" {
         jstring     str;
 
         if (name == NULL) {
-            h5nullArgument( env, "H5Lget_val_by_idx:  name is NULL");
+            h5nullArgument(env, "H5Lget_val_by_idx:  name is NULL");
             return NULL;
         }
         
         lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
-            h5JNIFatalError( env, "H5Lget_val_by_idx:  name not pinned");
+            h5JNIFatalError(env, "H5Lget_val_by_idx:  name not pinned");
             return NULL;
         }
 
@@ -750,13 +750,13 @@ extern "C" {
         jstring     str;
         
         if (name == NULL) {
-            h5nullArgument( env, "H5Lget_val_external:  name is NULL");
+            h5nullArgument(env, "H5Lget_val_external:  name is NULL");
             return NULL;
         }
         
         lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
-            h5JNIFatalError( env, "H5Lget_val_external:  name not pinned");
+            h5JNIFatalError(env, "H5Lget_val_external:  name not pinned");
             return NULL;
         }
 
@@ -830,19 +830,19 @@ extern "C" {
         herr_t   status = -1;
         
         if (cur_name == NULL) {
-            h5nullArgument( env, "H5Lcreate_hard:  cur_name is NULL");
+            h5nullArgument(env, "H5Lcreate_hard:  cur_name is NULL");
             return;
         }
         
         lCurName = (char*)ENVPTR->GetStringUTFChars(ENVPAR cur_name, &isCopy);
         if (lCurName == NULL) {
-            h5JNIFatalError( env, "H5Lcreate_hard:  cur_name not pinned");
+            h5JNIFatalError(env, "H5Lcreate_hard:  cur_name not pinned");
             return;
         }
         
         if (dst_name == NULL) {
             ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
-            h5nullArgument( env, "H5Lcreate_hard:  dst_name is NULL");
+            h5nullArgument(env, "H5Lcreate_hard:  dst_name is NULL");
             return;
         }
         
@@ -876,7 +876,7 @@ extern "C" {
         jvalue     args[5];
         jobject    cb_info_t = NULL;
 
-        if(JVMPTR->AttachCurrentThread(JVMPAR2 (void**)&CBENVPAR NULL) != 0) {
+        if(JVMPTR->AttachCurrentThread(JVMPAR2 (void**)&cben, NULL) != 0) {
             printf("JNI H5L_iterate_cb error: AttachCurrentThread failed\n");
             JVMPTR->DetachCurrentThread(JVMPAR);
             return -1;
@@ -941,11 +941,11 @@ extern "C" {
         visit_callback = callback_op;
 
         if (op_data == NULL) {
-            h5nullArgument(ENVPAR "H5Lvisit:  op_data is NULL");
+            h5nullArgument(env, "H5Lvisit:  op_data is NULL");
             return -1;
         }
         if (callback_op == NULL) {
-            h5nullArgument(ENVPAR "H5Lvisit:  callback_op is NULL");
+            h5nullArgument(env, "H5Lvisit:  callback_op is NULL");
             return -1;
         }
         
@@ -976,22 +976,22 @@ extern "C" {
         visit_callback = callback_op;
         
         if (name == NULL) {
-            h5nullArgument( env, "H5Lvisit_by_name:  name is NULL");
+            h5nullArgument(env, "H5Lvisit_by_name:  name is NULL");
             return NULL;
         }
         
         lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
-            h5JNIFatalError( env, "H5Lvisit_by_name:  name not pinned");
+            h5JNIFatalError(env, "H5Lvisit_by_name:  name not pinned");
             return NULL;
         }
 
         if (op_data == NULL) {
-            h5nullArgument(ENVPAR "H5Lvisit_by_name:  op_data is NULL");
+            h5nullArgument(env, "H5Lvisit_by_name:  op_data is NULL");
             return -1;
         }
         if (callback_op == NULL) {
-            h5nullArgument(ENVPAR "H5Lvisit_by_name:  callback_op is NULL");
+            h5nullArgument(env, "H5Lvisit_by_name:  callback_op is NULL");
             return -1;
         }
         
