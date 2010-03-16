@@ -39,12 +39,16 @@ extern "C" {
 #define CBENVPTR (cbenv)
 #define CBENVPAR 
 #define JVMPTR (jvm)
+#define JVMPAR 
+#define JVMPAR2 
 #else
 #define ENVPTR (*env)
 #define ENVPAR env,
 #define CBENVPTR (*cbenv)
 #define CBENVPAR cbenv,
 #define JVMPTR (*jvm)
+#define JVMPAR jvm
+#define JVMPAR2 jvm,
 #endif
     
     JavaVM *jvm;
@@ -872,21 +876,21 @@ extern "C" {
         jvalue     args[5];
         jobject    cb_info_t = NULL;
 
-        if(JVMPTR->AttachCurrentThread(jvm, (void**)&CBENVPAR NULL) != 0) {
+        if(JVMPTR->AttachCurrentThread(JVMPAR2 (void**)&CBENVPAR NULL) != 0) {
             printf("JNI H5L_iterate_cb error: AttachCurrentThread failed\n");
-            JVMPTR->DetachCurrentThread(jvm);
+            JVMPTR->DetachCurrentThread(JVMPAR);
             return -1;
         }
         cls = CBENVPTR->GetObjectClass(CBENVPAR visit_callback);
         if (cls == 0) {
            printf("JNI H5L_iterate_cb error: GetObjectClass failed\n");
-           JVMPTR->DetachCurrentThread(jvm);
+           JVMPTR->DetachCurrentThread(JVMPAR);
            return -1;
         }
         mid = CBENVPTR->GetMethodID(CBENVPAR cls, "callback", "(ILjava/lang/String;Lncsa/hdf/hdf5lib/structs/H5L_info_t;Lncsa/hdf/hdf5lib/callbacks/H5L_iterate_t;)I");
         if (mid == 0) {
             printf("JNI H5L_iterate_cb error: GetMethodID failed\n");
-            JVMPTR->DetachCurrentThread(jvm);
+            JVMPTR->DetachCurrentThread(JVMPAR);
             return -1;
         }
         str = CBENVPTR->NewStringUTF(CBENVPAR name);
@@ -895,14 +899,14 @@ extern "C" {
         cls = CBENVPTR->FindClass(CBENVPAR "ncsa/hdf/hdf5lib/structs/H5L_info_t");
         if (cls == 0) {
            printf("JNI H5L_iterate_cb error: GetObjectClass info failed\n");
-           JVMPTR->DetachCurrentThread(jvm);
+           JVMPTR->DetachCurrentThread(JVMPAR);
            return -1;
         }
         // get a reference to the constructor; the name is <init>
         constructor = CBENVPTR->GetMethodID(CBENVPAR cls, "<init>", "(IZJIJ)V");
         if (constructor == 0) {
             printf("JNI H5L_iterate_cb error: GetMethodID constructor failed\n");
-            JVMPTR->DetachCurrentThread(jvm);
+            JVMPTR->DetachCurrentThread(JVMPAR);
             return -1;
         }
         args[0].i = info->type;
@@ -917,7 +921,7 @@ extern "C" {
 
         status = CBENVPTR->CallIntMethod(CBENVPAR visit_callback, mid, g_id, str, cb_info_t, op_data);
 
-        JVMPTR->DetachCurrentThread(jvm);
+        JVMPTR->DetachCurrentThread(JVMPAR);
         return status;
     }
     
