@@ -3698,6 +3698,39 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1shared_1mesg_1index
 	}
 	return (jint)retVal;
 }
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_local_heap_size_hint
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1local_1heap_1size_1hint
+  (JNIEnv *env, jclass clss, jint gcpl_id, jint size_hint)
+{
+	herr_t retVal = -1;
+
+	retVal = H5Pset_local_heap_size_hint((hid_t)gcpl_id, (size_t)size_hint); 
+	if(retVal <0){
+		h5libraryError(env);
+	}
+	return (jint)retVal;
+}
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_local_heap_size_hint
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1local_1heap_1size_1hint
+  (JNIEnv *env, jclass clss, jint gcpl_id)
+{ 
+	herr_t status;
+	size_t size_hint;
+
+	status = H5Pget_local_heap_size_hint((hid_t)gcpl_id, &size_hint); 
+	if(status <0){
+		h5libraryError(env);
+	}
+	return (jint)size_hint;
+}
 
 #ifdef __cplusplus
 }
