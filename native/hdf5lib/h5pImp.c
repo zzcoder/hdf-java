@@ -3624,6 +3624,81 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1shared_1mesg_1nindexes
 	return (jint)retVal;
 }
 
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_shared_mesg_index
+ * Signature: (IIII)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1shared_1mesg_1index
+  (JNIEnv *env, jclass clss, jint fcpl_id, jint index_num, jint mesg_type_flags, jint min_mesg_size)
+{	
+	herr_t      retVal;
+	unsigned    nindexes;/* Number of SOHM indexes */
+
+	/* Check arguments */
+	if(mesg_type_flags > H5O_SHMESG_ALL_FLAG){
+		h5badArgument( env, "H5Pset_shared_mesg_index: unrecognized flags in mesg_type_flags");
+		return -1;
+	}
+	/* Read the current number of indexes */
+	if(H5Pget_shared_mesg_nindexes((hid_t)fcpl_id, &nindexes)<0){
+		h5libraryError(env);
+	}
+	/* Range check */
+	if((unsigned)index_num >= nindexes){
+		h5badArgument( env, "H5Pset_shared_mesg_index: index_num is too large; no such index");
+		return -1;
+	}
+	retVal = H5Pset_shared_mesg_index((hid_t)fcpl_id, (unsigned)index_num, (unsigned) mesg_type_flags, (unsigned) min_mesg_size);
+	if(retVal <0){
+		h5libraryError(env);
+	}
+	return (jint)retVal;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_shared_mesg_index
+ * Signature: (II[I)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1shared_1mesg_1index
+  (JNIEnv *env, jclass clss, jint fcpl_id, jint index_num, jintArray mesg_info)
+{
+	herr_t retVal = -1;
+	unsigned    nindexes;/* Number of SOHM indexes */
+	unsigned *theArray = NULL;
+	jboolean isCopy;
+
+	/* Read the current number of indexes */
+	if(H5Pget_shared_mesg_nindexes((hid_t)fcpl_id, &nindexes)<0){
+		h5libraryError(env);
+	}
+	/* Range check */
+	if((unsigned)index_num >= nindexes){
+		h5badArgument( env, "H5Pget_shared_mesg_index: index_num is too large; no such index");
+		return -1;
+	}
+	if (mesg_info == NULL) {
+		h5nullArgument( env, "H5Pget_shared_mesg_index:  mesg_info is NULL");
+		return -1;
+	}
+	theArray = (unsigned *)ENVPTR->GetIntArrayElements(ENVPAR mesg_info,&isCopy);
+	if (theArray == NULL) {
+		h5JNIFatalError( env, "H5Pget_shared_mesg_index:  input not pinned");
+		return -1;
+	}	
+
+	retVal = H5Pget_shared_mesg_index((hid_t)fcpl_id, (unsigned)index_num, &(theArray[0]), &(theArray[1])); 
+	if(retVal <0){
+		ENVPTR->ReleaseIntArrayElements(ENVPAR mesg_info,(jint *)theArray,JNI_ABORT);
+		h5libraryError(env);
+	}	
+	else {
+	 ENVPTR->ReleaseIntArrayElements(ENVPAR mesg_info,(jint *)theArray,0);
+	}
+	return (jint)retVal;
+}
+
 #ifdef __cplusplus
 }
 #endif
