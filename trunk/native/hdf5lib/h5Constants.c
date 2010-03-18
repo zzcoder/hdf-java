@@ -224,6 +224,13 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5O_1COPY_1EXPAND_1EX
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5O_1COPY_1EXPAND_1REFERENCE_1FLAG(JNIEnv *env, jclass cls){return H5O_COPY_EXPAND_REFERENCE_FLAG; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5O_1COPY_1WITHOUT_1ATTR_1FLAG(JNIEnv *env, jclass cls){return H5O_COPY_WITHOUT_ATTR_FLAG; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5O_1COPY_1PRESERVE_1NULL_1FLAG(JNIEnv *env, jclass cls){return H5O_COPY_PRESERVE_NULL_FLAG; }
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5O_1SHMESG_1NONE_1FLAG(JNIEnv *env, jclass cls){return H5O_SHMESG_NONE_FLAG; }
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5O_1SHMESG_1SDSPACE_1FLAG(JNIEnv *env, jclass cls){return H5O_SHMESG_SDSPACE_FLAG; }
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5O_1SHMESG_1DTYPE_1FLAG(JNIEnv *env, jclass cls){return H5O_SHMESG_DTYPE_FLAG; }
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5O_1SHMESG_1FILL_1FLAG(JNIEnv *env, jclass cls){return H5O_SHMESG_FILL_FLAG; }
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5O_1SHMESG_1PLINE_1FLAG(JNIEnv *env, jclass cls){return H5O_SHMESG_PLINE_FLAG; }
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5O_1SHMESG_1ATTR_1FLAG(JNIEnv *env, jclass cls){return H5O_SHMESG_ATTR_FLAG; }
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5O_1SHMESG_1ALL_1FLAG(JNIEnv *env, jclass cls){return H5O_SHMESG_ALL_FLAG; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5O_1TYPE_1UNKNOWN(JNIEnv *env, jclass cls) { return H5O_TYPE_UNKNOWN; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5O_1TYPE_1GROUP(JNIEnv *env, jclass cls) { return H5O_TYPE_GROUP; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5O_1TYPE_1DATASET(JNIEnv *env, jclass cls) { return H5O_TYPE_DATASET; }

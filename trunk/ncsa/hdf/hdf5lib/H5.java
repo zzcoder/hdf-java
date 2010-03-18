@@ -8139,12 +8139,49 @@ throws HDF5LibraryException;
   * @return a non-negative value if successful; otherwise returns a negative value.
   * 
   * @exception HDF5LibraryException - Error from the HDF-5 Library.
-  * @exception IllegalArgumentException - Invalid values of nindexes
+  * @exception IllegalArgumentException - Invalid value of nindexes
   *  
   **/
  public synchronized static native int H5Pset_shared_mesg_nindexes(int plist_id, int nindexes)
  throws HDF5LibraryException, IllegalArgumentException;
+ 
+ /**
+  * H5Pset_shared_mesg_index Configures the specified shared object header message index 
+  * @param fcpl_id				IN: File creation property list identifier.
+  * @param index_num			IN: Index being configured.
+  * @param mesg_type_flags		IN: Types of messages that should be stored in this index.
+  * @param min_mesg_size      	IN: Minimum message size.
+  *  
+  * @return a non-negative value if successful; otherwise returns a negative value.
+  * 
+  * @exception HDF5LibraryException - Error from the HDF-5 Library.
+  * @exception IllegalArgumentException - Invalid value of nindexes
+  *  
+  **/
+ public synchronized static native int H5Pset_shared_mesg_index(int fcpl_id, int index_num, int mesg_type_flags, int min_mesg_size)
+ throws HDF5LibraryException, IllegalArgumentException;
 
+ /**
+  * H5Pget_shared_mesg_index Retrieves the configuration settings for a shared message index.  
+  * @param fcpl_id			IN: File creation property list identifier 
+  * @param index_num		IN: Index being configured.
+  * @param mesg_info
+  *               The message type and minimum message size            
+  *
+  *      <pre>
+  *      mesg_info[0] =  Types of messages that may be stored in this index.
+  *      mesg_info[1] =  Minimum message size.  
+  *      </pre>
+  *      
+  * @return Returns a non-negative value if successful; otherwise returns a negative value.
+  * 
+  * @exception HDF5LibraryException - Error from the HDF-5 Library.
+  * @exception NullPointerException - mesg_info is null.
+  * @exception IllegalArgumentException - Invalid value of nindexes
+  *  
+  **/
+ public synchronized static native int H5Pget_shared_mesg_index(int fcpl_id, int index_num,  int []mesg_info) 
+ throws HDF5LibraryException, NullPointerException, IllegalArgumentException;
 
 //////////////////////////////////////////////////////////////
 ////

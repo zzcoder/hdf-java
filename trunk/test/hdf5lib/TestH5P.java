@@ -627,10 +627,10 @@ public class TestH5P {
 	throws Throwable, HDF5LibraryException, IllegalArgumentException {
 		H5.H5Pset_link_phase_change(gcpl_id , 3, 7);
 	}
-	
+
 	@Test
-    public void testH5Pget_shared_mesg_nindexes() throws Throwable, HDF5LibraryException {
-		
+	public void testH5Pget_shared_mesg_nindexes() throws Throwable, HDF5LibraryException {
+
 		int nindexes = -1;
 		try {
 			nindexes = H5.H5Pget_shared_mesg_nindexes(gcpl_id);
@@ -641,10 +641,10 @@ public class TestH5P {
 		}
 		assertTrue("H5Pget_shared_mesg_nindexes", nindexes >= 0);
 	}
-	
+
 	@Test
-    public void testH5Pset_shared_mesg_nindexes() throws Throwable, HDF5LibraryException, IllegalArgumentException {
-		
+	public void testH5Pset_shared_mesg_nindexes() throws Throwable, HDF5LibraryException, IllegalArgumentException {
+
 		int nindexes = -1;
 		int ret_val = -1;
 		try {
@@ -658,9 +658,60 @@ public class TestH5P {
 		assertTrue("H5Pset_shared_mesg_nindexes", ret_val >= 0);
 		assertEquals("Value of nindexes is equal to value set",7 ,nindexes);
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
-	public void testH5Pset_shared_mesg_nindexes_InvalidHIGHnindexes() throws Throwable, HDF5LibraryException, IllegalArgumentException {
+	public void testH5Pset_shared_mesg_nindexes_InvalidHIGHnindexes()throws Throwable, HDF5LibraryException, IllegalArgumentException {
 		H5.H5Pset_shared_mesg_nindexes(gcpl_id, 9);
+	}
+
+	@Test
+	public void testH5Pset_shared_mesg_index() throws Throwable, HDF5LibraryException, IllegalArgumentException {
+
+		int ret_val = -1;
+		try {
+			H5.H5Pset_shared_mesg_nindexes(gcpl_id, 2);
+			ret_val = H5.H5Pset_shared_mesg_index(gcpl_id, 0,HDF5Constants.H5O_SHMESG_ATTR_FLAG, 10);
+		}
+		catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5Pset_shared_mesg_index: " + err);
+		}
+		assertTrue("H5Pset_shared_mesg_index", ret_val >= 0);	
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testH5Pset_shared_mesg_index_Invalid_indexnum() throws Throwable, HDF5LibraryException, IllegalArgumentException {
+		H5.H5Pset_shared_mesg_index(gcpl_id, 2,HDF5Constants.H5O_SHMESG_ATTR_FLAG, 10);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testH5Pset_shared_mesg_index_InvalidFlag() throws Throwable, HDF5LibraryException, IllegalArgumentException {
+		H5.H5Pset_shared_mesg_nindexes(gcpl_id, 7);
+		H5.H5Pset_shared_mesg_index(gcpl_id, 2,HDF5Constants.H5O_SHMESG_ALL_FLAG + 1, 10);
+	}
+
+	@Test
+	public void testH5Pget_shared_mesg_index() throws Throwable, HDF5LibraryException {
+
+		int ret_val = -1;
+		int[] mesg_info = new int[2];
+		try {
+			H5.H5Pset_shared_mesg_nindexes(gcpl_id, 2);
+			H5.H5Pset_shared_mesg_index(gcpl_id, 0,HDF5Constants.H5O_SHMESG_ATTR_FLAG, 10);
+			ret_val = H5.H5Pget_shared_mesg_index(gcpl_id, 0, mesg_info);
+		}
+		catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5Pget_shared_mesg_index: " + err);
+		}
+		assertTrue("H5Pget_shared_mesg_index", ret_val >= 0);	
+		assertEquals("Type of message", HDF5Constants.H5O_SHMESG_ATTR_FLAG, mesg_info[0]);
+		assertEquals("minimum message size", 10, mesg_info[1]);	
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testH5Pget_shared_mesg_index_Invalid_indexnum() throws Throwable, HDF5LibraryException, IllegalArgumentException {
+		int[] mesg_info = new int[2];
+		H5.H5Pget_shared_mesg_index(gcpl_id, 0, mesg_info);
 	}
 }
