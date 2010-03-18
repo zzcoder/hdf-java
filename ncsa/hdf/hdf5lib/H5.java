@@ -7869,7 +7869,7 @@ throws HDF5LibraryException;
 
 /**
  * H5Pset_link_creation_order Sets flags in a group creation property list, gcpl_id, for tracking and/or indexing links on creation order. 
- * @param gcpl_id  	IN: Group creation property list identifier
+ * @param gcpl_id  				IN: Group creation property list identifier
  * @param crt_order_flags      	IN: Creation order flag(s)
  * 
  * 
@@ -8182,6 +8182,32 @@ throws HDF5LibraryException;
   **/
  public synchronized static native int H5Pget_shared_mesg_index(int fcpl_id, int index_num,  int []mesg_info) 
  throws HDF5LibraryException, NullPointerException, IllegalArgumentException;
+ 
+ /**
+  * H5Pset_local_heap_size_hint Specifies the anticipated maximum size of a local heap. 
+  * @param gcpl_id				IN: Group creation property list identifier
+  * @param size_hint			IN: Anticipated maximum size in bytes of local heap
+  *  
+  * @return a non-negative value if successful; otherwise returns a negative value.
+  * 
+  * @exception HDF5LibraryException - Error from the HDF-5 Library.
+  *  
+  **/
+ public synchronized static native int H5Pset_local_heap_size_hint(int gcpl_id, int size_hint)
+ throws HDF5LibraryException;
+ 
+ /**
+  * H5Pget_local_heap_size_hint Retrieves the anticipated size of the local heap for original-style groups.  
+  * @param gcpl_id				IN: Group creation property list identifier
+  *  
+  * @return size_hint, the anticipated size of local heap
+  * 
+  * @exception HDF5LibraryException - Error from the HDF-5 Library.
+  *  
+  **/
+ public synchronized static native int H5Pget_local_heap_size_hint(int gcpl_id)
+ throws HDF5LibraryException;
+
 
 //////////////////////////////////////////////////////////////
 ////
