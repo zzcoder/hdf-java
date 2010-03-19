@@ -8207,7 +8207,103 @@ throws HDF5LibraryException;
   **/
  public synchronized static native int H5Pget_local_heap_size_hint(int gcpl_id)
  throws HDF5LibraryException;
+ 
+ /**
+  * H5Pset_nbit Sets up the use of the N-Bit filter.  
+  * @param plist_id				IN: Dataset creation property list identifier.
+  *  
+  * @return a non-negative value if successful; otherwise returns a negative value.
+  * 
+  * @exception HDF5LibraryException - Error from the HDF-5 Library.
+  *  
+  **/
+ public synchronized static native int H5Pset_nbit(int plist_id)
+ throws HDF5LibraryException;
+ 
+ /**
+  * H5Pset_scaleoffset sets the Scale-Offset filter for a dataset.   
+  * @param plist_id				IN: Dataset creation property list identifier.
+  * @param scale_type			IN: Flag indicating compression method.
+  * @param scale_factor			IN: Parameter related to scale.
+  *  
+  * @return a non-negative value if successful; otherwise returns a negative value.
+  * 
+  * @exception HDF5LibraryException - Error from the HDF-5 Library.
+  * @exception IllegalArgumentException - Invalid arguments
+  *  
+  **/
+ public synchronized static native int H5Pset_scaleoffset(int plist_id, int scale_type, int scale_factor)
+ throws HDF5LibraryException, IllegalArgumentException;
+ 
+ /**
+  * H5Pset_est_link_info Sets estimated number of links and length of link names in a group.  
+  * @param gcpl_id				IN: Group creation property list identifier
+  * @param est_num_entries 		IN: Estimated number of links to be inserted into group
+  * @param est_name_len			IN: Estimated average length of link names
+  *  
+  * @return a non-negative value if successful; otherwise returns a negative value.
+  * 
+  * @exception HDF5LibraryException - Error from the HDF-5 Library.
+  * @exception IllegalArgumentException - Invalid values to est_num_entries and est_name_len.
+  *  
+  **/
+ public synchronized static native int H5Pset_est_link_info(int gcpl_id, int est_num_entries, int est_name_len)
+ throws HDF5LibraryException, IllegalArgumentException;
+ 
+ /**
+  * H5Pget_est_link_info Queries data required to estimate required local heap or object header size. 
+  * @param gcpl_id				IN: Group creation property list identifier 
+  * @param link_info
+  *               Estimated number of links to be inserted into group
+  *               And the estimated average length of link names         
+  *
+  *      <pre>
+  *      link_info[0] =  Estimated number of links to be inserted into group
+  *      link_info[1] =  Estimated average length of link names   
+  *      </pre>
+  *      
+  * @return Returns a non-negative value if successful; otherwise returns a negative value.
+  * 
+  * @exception HDF5LibraryException - Error from the HDF-5 Library.
+  * @exception NullPointerException - link_info is null.
+  *  
+  **/
+ public synchronized static native int H5Pget_est_link_info(int gcpl_id, int []link_info) 
+ throws HDF5LibraryException, NullPointerException;
+ 
+ /**
+  * H5Pset_elink_fapl Sets a file access property list for use in accessing a file pointed to by an external link.  
+  * @param lapl_id  	      	IN: Link access property list identifier
+  * @param fapl_id  	   		IN: File access property list identifier
+  *  
+  * @return a non-negative value if successful; otherwise returns a negative value.
+  * 
+  * @exception HDF5LibraryException - Error from the HDF-5 Library.
+  *  
+  **/
+ public synchronized static native int H5Pset_elink_fapl(int lapl_id, int fapl_id)
+ throws HDF5LibraryException;
+ 
+ /**
+  * H5Pget_elink_fapl Retrieves the file access property list identifier associated with the link access property list.   
+  * @param lapl_id  	      	IN: Link access property list identifier
+  *  
+  * @return a non-negative value if successful; otherwise returns a negative value.
+  * 
+  * @exception HDF5LibraryException - Error from the HDF-5 Library.
+  *  
+  **/
+ public static int H5Pget_elink_fapl(int lapl_id)
+ throws HDF5LibraryException {
+	 	int id = _H5Pget_elink_fapl(lapl_id);
+	 	if (id > 0)
+		 OPEN_IDS.addElement(id);
+	 	return id;
+ 	}
 
+ private synchronized static native int _H5Pget_elink_fapl(int lapl_id)
+ throws HDF5LibraryException;
+ 
 
 //////////////////////////////////////////////////////////////
 ////

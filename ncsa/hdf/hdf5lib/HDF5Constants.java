@@ -519,6 +519,9 @@ public class HDF5Constants {
     public static final int H5Z_FILTER_CONFIG_ENCODE_ENABLED = H5Z_FILTER_CONFIG_ENCODE_ENABLED();
     public static final int H5Z_FILTER_CONFIG_DECODE_ENABLED = H5Z_FILTER_CONFIG_DECODE_ENABLED();
     public static final int H5Z_SO_INT_MINBITS_DEFAULT = H5Z_SO_INT_MINBITS_DEFAULT();
+    public static final int H5Z_SO_FLOAT_DSCALE = H5Z_SO_FLOAT_DSCALE();
+    public static final int H5Z_SO_FLOAT_ESCALE = H5Z_SO_FLOAT_ESCALE();
+    public static final int H5Z_SO_INT = H5Z_SO_INT();
     public static final int H5Z_SHUFFLE_USER_NPARMS = H5Z_SHUFFLE_USER_NPARMS();
     public static final int H5Z_SHUFFLE_TOTAL_NPARMS = H5Z_SHUFFLE_TOTAL_NPARMS();
     public static final int H5Z_SZIP_USER_NPARMS = H5Z_SZIP_USER_NPARMS();
@@ -1508,6 +1511,12 @@ public class HDF5Constants {
     private static native final int H5Z_FILTER_CONFIG_DECODE_ENABLED();
 
     private static native final int H5Z_SO_INT_MINBITS_DEFAULT();
+    
+    private static native final int H5Z_SO_FLOAT_DSCALE();
+    
+    private static native final int H5Z_SO_FLOAT_ESCALE();
+    
+    private static native final int H5Z_SO_INT();
 
     private static native final int H5Z_SHUFFLE_USER_NPARMS();
 
