@@ -8770,23 +8770,21 @@ throws HDF5LibraryException, NullPointerException;
 public synchronized static native H5O_info_t H5Oget_info(int loc_id)
 throws HDF5LibraryException, NullPointerException;
 
-///**
-//*  H5Oget_info_by_name retrieves the metadata for an object, identifying the object by location and relative name. 
-//*
-//*  @param loc_id  IN: File or group identifier specifying location of group in which object is located
-//*  @param name    IN: Relative name of group
-//*  @param oinfo  OUT: Buffer in which to return object information
-//*  @param lapl_id IN: Access property list identifier for the link pointing to the object (Not currently used; pass as H5P_DEFAULT.)
-//*
-//*  @return none
-//*
-//*  @exception HDF5LibraryException - Error from the HDF-5 Library.
-//*  @exception NullPointerException - name is null.
-//**/
-//public synchronized static native void H5Oget_info_by_name(int loc_id, String name, 
-//      H5O_info_t oinfo, int lapl_id)
-//  throws HDF5LibraryException, NullPointerException;
-//
+/**
+*  H5Oget_info_by_name retrieves the metadata for an object, identifying the object by location and relative name. 
+*
+*  @param loc_id  IN: File or group identifier specifying location of group in which object is located
+*  @param name    IN: Relative name of group
+*  @param lapl_id IN: Access property list identifier for the link pointing to the object (Not currently used; pass as H5P_DEFAULT.)
+*
+*  @return  object information
+*
+*  @exception HDF5LibraryException - Error from the HDF-5 Library.
+*  @exception NullPointerException - name is null.
+**/
+public synchronized static native H5O_info_t H5Oget_info_by_name(int loc_id, String name, int lapl_id)
+  throws HDF5LibraryException, NullPointerException;
+
 ///**
 //*  H5Oget_info_by_idx retrieves the metadata for an object, identifying the object by an index position. 
 //*
