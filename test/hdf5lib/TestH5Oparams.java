@@ -2,6 +2,7 @@ package test.hdf5lib;
 
 import static org.junit.Assert.assertTrue;
 import ncsa.hdf.hdf5lib.H5;
+import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
 import org.junit.Before;
@@ -47,6 +48,18 @@ public class TestH5Oparams {
     @Test(expected = HDF5LibraryException.class)
     public void testH5Oget_info_invalid() throws Throwable, HDF5LibraryException {
         H5.H5Oget_info(-1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Oget_info_by_name_null()
+            throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Oget_info_by_name(-1, null, HDF5Constants.H5P_DEFAULT);
+    }
+
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Oget_info_by_name_invalid()
+            throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Oget_info_by_name(-1, "/testH5Gcreate", HDF5Constants.H5P_DEFAULT);
     }
 
 //    @Test(expected = HDF5LibraryException.class)

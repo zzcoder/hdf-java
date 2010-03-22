@@ -162,7 +162,6 @@ extern "C" {
     JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oget_1info
     (JNIEnv *env, jclass clss, jint loc_id)
     {
-        char       *lName;
         herr_t      status;
         H5O_info_t  infobuf;
         jboolean    isCopy;
@@ -175,6 +174,118 @@ extern "C" {
         jobject     ret_info_t = NULL;
 
         status = H5Oget_info((hid_t)loc_id, (H5O_info_t*)&infobuf);
+
+        if (status < 0) {
+           h5libraryError(env);
+           return NULL;
+        }
+
+        // get a reference to the H5_hdr_info_t class
+        cls = ENVPTR->FindClass(ENVPAR "ncsa/hdf/hdf5lib/structs/H5O_hdr_info_t");
+        if (cls == 0) {
+           h5JNIFatalError( env, "JNI error: GetObjectClass H5O_hdr_info_t failed\n");
+           return NULL;
+        }
+        // get a reference to the constructor; the name is <init>
+        constructor = ENVPTR->GetMethodID(ENVPAR cls, "<init>", "(IIIIJJJJJJ)V");
+        if (constructor == 0) {
+            h5JNIFatalError( env, "JNI error: GetMethodID H5O_hdr_info_t failed\n");
+           return NULL;
+        }
+        args[0].i = infobuf.hdr.version;
+        args[1].i = infobuf.hdr.nmesgs;
+        args[2].i = infobuf.hdr.nchunks;
+        args[3].i = infobuf.hdr.flags;
+        args[4].j = infobuf.hdr.space.total;
+        args[5].j = infobuf.hdr.space.meta;
+        args[6].j = infobuf.hdr.space.mesg;
+        args[7].j = infobuf.hdr.space.free;
+        args[8].j = infobuf.hdr.mesg.present;
+        args[9].j = infobuf.hdr.mesg.shared;
+        hdrinfobuf = ENVPTR->NewObjectA(ENVPAR cls, constructor, args);
+
+        // get a reference to the H5_ih_info_t class
+        cls = ENVPTR->FindClass(ENVPAR "ncsa/hdf/hdf5lib/structs/H5_ih_info_t");
+        if (cls == 0) {
+           h5JNIFatalError( env, "JNI error: GetObjectClass H5_ih_info_t failed\n");
+           return NULL;
+        }
+        // get a reference to the constructor; the name is <init>
+        constructor = ENVPTR->GetMethodID(ENVPAR cls, "<init>", "(JJ)V");
+        if (constructor == 0) {
+            h5JNIFatalError( env, "JNI error: GetMethodID H5_ih_info_t failed\n");
+           return NULL;
+        }
+        args[0].j = infobuf.meta_size.obj.index_size;
+        args[1].j = infobuf.meta_size.obj.heap_size;
+        ihinfobuf1 = ENVPTR->NewObjectA(ENVPAR cls, constructor, args);
+        args[0].j = infobuf.meta_size.attr.index_size;
+        args[1].j = infobuf.meta_size.attr.heap_size;
+        ihinfobuf2 = ENVPTR->NewObjectA(ENVPAR cls, constructor, args);
+
+        // get a reference to the H5O_info_t class
+        cls = ENVPTR->FindClass(ENVPAR "ncsa/hdf/hdf5lib/structs/H5O_info_t");
+        if (cls == 0) {
+           h5JNIFatalError( env, "JNI error: GetObjectClass H5O_info_t failed\n");
+           return NULL;
+        }
+        // get a reference to the constructor; the name is <init>
+        constructor = ENVPTR->GetMethodID(ENVPAR cls, "<init>", "(JJIIJJJJJLncsa/hdf/hdf5lib/structs/H5O_hdr_info_t;Lncsa/hdf/hdf5lib/structs/H5_ih_info_t;Lncsa/hdf/hdf5lib/structs/H5_ih_info_t;)V");
+        if (constructor == 0) {
+            h5JNIFatalError( env, "JNI error: GetMethodID H5O_info_t failed\n");
+           return NULL;
+        }
+        args[0].j = infobuf.fileno;
+        args[1].j = infobuf.addr;
+        args[2].i = infobuf.type;
+        args[3].i = infobuf.rc;
+        args[4].j = infobuf.num_attrs;
+        args[5].j = infobuf.atime;
+        args[6].j = infobuf.mtime;
+        args[7].j = infobuf.ctime;
+        args[8].j = infobuf.btime;
+        args[9].l = hdrinfobuf;
+        args[10].l = ihinfobuf1;
+        args[11].l = ihinfobuf2;
+        ret_info_t = ENVPTR->NewObjectA(ENVPAR cls, constructor, args);
+
+        return ret_info_t;
+    }
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Oget_info_by_name
+     * Signature: (ILjava/lang/String;IIJI)Lncsa/hdf/hdf5lib/structs/H5O_info_t;
+     */
+    JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oget_1info_1by_1name
+    (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint access_id)
+    {
+        char       *lName;
+        herr_t      status;
+        H5O_info_t  infobuf;
+        jboolean    isCopy;
+        jclass      cls;
+        jmethodID   constructor;
+        jvalue      args[12];
+        jobject     hdrinfobuf;
+        jobject     ihinfobuf1;
+        jobject     ihinfobuf2;
+        jobject     ret_info_t = NULL;
+
+        if (name == NULL) {
+            h5nullArgument(env, "H5Oget_info_by_name:  name is NULL");
+            return NULL;
+        }
+
+        lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
+        if (lName == NULL) {
+            h5JNIFatalError(env, "H5Oget_info_by_name:  name not pinned");
+            return NULL;
+        }
+
+        status = H5Oget_info_by_name((hid_t)loc_id, (const char*)lName, (H5O_info_t*)&infobuf, (hid_t)access_id);
+
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name, lName);
 
         if (status < 0) {
            h5libraryError(env);

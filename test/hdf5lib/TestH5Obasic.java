@@ -122,6 +122,78 @@ public class TestH5Obasic {
         H5la_l1 = obj_info.addr;
         try {H5.H5Oclose(oid);} catch (Exception ex) {}
     }
+
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Oget_info_by_name_not_exist_name() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Oget_info_by_name(H5fid, "None", HDF5Constants.H5P_DEFAULT);
+    }
+
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Oget_info_by_name_not_exists()
+            throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Oget_info_by_name(H5fid, "Bogus", HDF5Constants.H5P_DEFAULT);
+    }
+
+    @Test
+    public void testH5Oget_info_by_name_dataset() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5O_info_t obj_info = null;
+        
+        try {
+            obj_info = H5.H5Oget_info_by_name(H5fid, "DS1", HDF5Constants.H5P_DEFAULT);
+        } 
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Oget_info: " + err);
+        }
+        assertFalse("H5Oget_info ",obj_info==null);
+        assertTrue("H5Oget_info object type",obj_info.type==HDF5Constants.H5O_TYPE_DATASET);
+        H5la_ds1 = obj_info.addr;
+    }
+
+    @Test
+    public void testH5Oget_info_by_name_hardlink() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5O_info_t obj_info = null;
+        try {
+            obj_info = H5.H5Oget_info_by_name(H5fid, "L1", HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Oget_info: " + err);
+        }
+        assertFalse("H5Oget_info ",obj_info==null);
+        assertTrue("H5Oget_info object type",obj_info.type==HDF5Constants.H5O_TYPE_DATASET);
+        H5la_l1 = obj_info.addr;
+    }
+
+    @Test
+    public void testH5Oget_info_by_name_group() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5O_info_t obj_info = null;
+        try {
+            obj_info = H5.H5Oget_info_by_name(H5fid, "G1", HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Oget_info: " + err);
+        }
+        assertFalse("H5Oget_info ",obj_info==null);
+        assertTrue("H5Oget_info object type",obj_info.type==HDF5Constants.H5O_TYPE_GROUP);
+        H5la_l1 = obj_info.addr;
+    }
+
+    @Test
+    public void testH5Oget_info_by_name_datatype() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5O_info_t obj_info = null;
+        try {
+            obj_info = H5.H5Oget_info_by_name(H5fid, "DT1", HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Oget_info: " + err);
+        }
+        assertFalse("H5Oget_info ",obj_info==null);
+        assertTrue("H5Oget_info object type",obj_info.type==HDF5Constants.H5O_TYPE_NAMED_DATATYPE);
+        H5la_l1 = obj_info.addr;
+    }
 //
 //    @Test(expected = HDF5LibraryException.class)
 //    public void testH5Oget_info_by_idx_name_not_exist_name() throws Throwable, HDF5LibraryException, NullPointerException {
