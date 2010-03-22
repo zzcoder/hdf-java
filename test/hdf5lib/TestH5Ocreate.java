@@ -252,27 +252,36 @@ public class TestH5Ocreate {
         assertTrue("Link Address ",obj_info.addr>0);
     }
 
-//    @Test(expected = HDF5LibraryException.class)
-//    public void testH5Olink_cur_not_exists() throws Throwable, HDF5LibraryException, NullPointerException {
-//        H5.H5Olink(H5fid, "None", H5fid, "DS1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-//    }
-//
-//    @Test
-//    public void testH5Olink() throws Throwable, HDF5LibraryException, NullPointerException {
-//        H5.H5Olink(H5fid, "DS1", H5fid, "CPY1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-//        H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
-//        boolean link_exists = H5.H5Oexists(H5fid, "CPY1", HDF5Constants.H5P_DEFAULT);
-//        assertTrue("testH5Olink:H5Oexists ",link_exists);
-//        link_exists = H5.H5Oexists(H5fid, "DS1", HDF5Constants.H5P_DEFAULT);
-//        assertFalse("testH5Olink:H5Oexists ",link_exists);
-//    }
-//
-//    @Test(expected = HDF5LibraryException.class)
-//    public void testH5Olink_dst_link_exists() throws Throwable, HDF5LibraryException, NullPointerException {
-//        _createHardLink(H5fid, H5fid, "/G1/DS2", H5fid, "CPY1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-//        H5.H5Olink(H5fid, "CPY1", H5fid, "/G1/DS2", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-//    }
-//
+    @Test
+    public void testH5Olink() throws Throwable, HDF5LibraryException, NullPointerException {
+        int oid = -1;
+        H5O_info_t obj_info = null;
+        H5O_info_t dst_obj_info = null;
+        try {
+            oid = H5.H5Oopen(H5fid, "DS1", HDF5Constants.H5P_DEFAULT);
+            obj_info = H5.H5Oget_info(oid);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Oget_info: " + err);
+        }
+        H5.H5Olink(oid, H5fid, "CPY1", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
+        try {H5.H5Oclose(oid);} catch (Exception ex) {}
+        assertFalse("H5Oget_info ",obj_info==null);
+        assertTrue("H5Oget_info object type",obj_info.type==HDF5Constants.H5O_TYPE_DATASET);
+        
+        try {
+            dst_obj_info = H5.H5Oget_info_by_name(H5fid, "CPY1", HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Oget_info_by_name: " + err);
+        }
+        assertFalse("H5Oget_info ",dst_obj_info==null);
+        assertTrue("H5Oget_info object type",dst_obj_info.type==HDF5Constants.H5O_TYPE_DATASET);
+    }
+
 //    @Test
 //    public void testH5Ovisit_create() throws Throwable, HDF5LibraryException, NullPointerException {
 //        int order = H5.H5Pget_link_creation_order(H5fcpl);

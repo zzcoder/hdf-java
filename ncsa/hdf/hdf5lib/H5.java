@@ -8804,24 +8804,24 @@ public synchronized static native H5O_info_t H5Oget_info_by_idx(int loc_id, Stri
       int idx_type, int order, long n, int lapl_id)
   throws HDF5LibraryException, NullPointerException;
 
-///**
-//*  H5Olink creates a new hard link to an object in an HDF5 file. 
-//*
-//*  @param obj_id      IN: Object to be linked.
-//*  @param new_loc_id  IN: File or group identifier specifying location at which object is to be linked. 
-//*  @param name        IN: Relative name of link to be created.
-//*  @param lcpl_id     IN: Link creation property list identifier. 
-//*  @param lapl_id     IN: Access property list identifier.
-//*
-//*  @return none
-//*
-//*  @exception HDF5LibraryException - Error from the HDF-5 Library.
-//*  @exception NullPointerException - name is null.
-//**/
-//public synchronized static native void H5Olink(int obj_id, int new_loc_id, String new_name,
-//      int lcpl_id, int lapl_id)
-//  throws HDF5LibraryException, NullPointerException;
-//
+/**
+*  H5Olink creates a new hard link to an object in an HDF5 file. 
+*
+*  @param obj_id      IN: Object to be linked.
+*  @param new_loc_id  IN: File or group identifier specifying location at which object is to be linked. 
+*  @param name        IN: Relative name of link to be created.
+*  @param lcpl_id     IN: Link creation property list identifier. 
+*  @param lapl_id     IN: Access property list identifier.
+*
+*  @return none
+*
+*  @exception HDF5LibraryException - Error from the HDF-5 Library.
+*  @exception NullPointerException - name is null.
+**/
+public synchronized static native void H5Olink(int obj_id, int new_loc_id, String new_name,
+      int lcpl_id, int lapl_id)
+  throws HDF5LibraryException, NullPointerException;
+
 ///**
 //*  H5Oincr_refcount increments the hard link reference count for an object.
 //*
