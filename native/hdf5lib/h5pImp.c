@@ -3859,6 +3859,101 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Pget_1elink_1fapl
 	}
 	return (jint)retVal;
 }
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_elink_prefix
+ * Signature: (ILjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1elink_1prefix
+  (JNIEnv *env, jclass clss, jint lapl_id, jstring prefix)
+{ 
+	herr_t retVal = -1;
+	const char    *aName;
+	jboolean isCopy;
+
+	if (prefix == NULL) {
+		h5nullArgument( env, "H5Pset_elink_prefix: prefix is NULL");
+		return NULL;
+	}
+	aName = (const char*)ENVPTR->GetStringUTFChars(ENVPAR prefix, &isCopy);
+	if (aName == NULL) {
+		h5JNIFatalError( env, "H5Pset_elink_prefix: prefix not pinned");
+		return NULL;
+	}
+	retVal = H5Pset_elink_prefix((hid_t)lapl_id, aName);
+	if(retVal < 0) {
+		ENVPTR->ReleaseStringUTFChars(ENVPAR prefix, aName);
+		h5libraryError(env);
+		return -1;
+	}
+	ENVPTR->ReleaseStringUTFChars(ENVPAR prefix, aName);
+	return (jint)retVal;
+}
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_elink_prefix
+ * Signature: (I[Ljava/lang/String;)J
+ */
+JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1elink_1prefix
+  (JNIEnv *env, jclass clss, jint lapl_id, jobjectArray prefix)
+{
+	size_t size = -1;
+	char *pre;
+	jlong   prefix_size;
+	jstring  str = NULL;
+
+	if (prefix == NULL) {
+		h5nullArgument( env, "H5Pget_elink_prefix: prefix is NULL");
+		return NULL;
+	}
+	prefix_size = (jlong)H5Pget_elink_prefix((hid_t)lapl_id, (char*)NULL, size);
+	if(prefix_size <0){
+		h5libraryError(env);
+		return -1;
+	}
+	size = (size_t)prefix_size + 1;/* add extra space for the null terminator */
+	pre = (char*)malloc(sizeof(char)*size);
+	 if (pre == NULL) {
+		h5outOfMemory( env, "H5Pget_elink_prefix:  malloc failed ");
+		return -1;
+	}
+	prefix_size = (jlong)H5Pget_elink_prefix((hid_t)lapl_id, (char*)pre, size);
+	if (prefix_size < 0) {
+		free(pre);
+		h5libraryError(env);
+		return -1;
+	}
+
+    str = ENVPTR->NewStringUTF(ENVPAR pre);
+	if (str == NULL) {
+		/* exception -- fatal JNI error */
+		free(pre);
+		h5JNIFatalError( env, "H5Pget_elink_prefix:  return string not created");
+		return NULL;
+	}
+	ENVPTR->SetObjectArrayElement(ENVPAR prefix,0,str);
+	free(pre);
+
+	return prefix_size;
+
+}
+
+///*
+// * Class:     ncsa_hdf_hdf5lib_H5
+//* Method:    H5Pset_fapl_direct
+//* Signature: (IIII)I
+// */
+//JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1direct
+//  (JNIEnv *env, jclass clss, jint fapl_id, jint alignment, jint block_size, jint cbuf_size)
+//{
+//	herr_t retVal = -1;
+//
+//	retVal = H5Pset_fapl_direct((hid_t)fapl_id, (size_t)alignment, (size_t)block_size, (size_t)cbuf_size);
+//	if(retVal <0){
+//		h5libraryError(env);
+//	}
+//	return (jint)retVal;
+//}
 
 #ifdef __cplusplus
 }

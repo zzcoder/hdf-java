@@ -879,4 +879,45 @@ public class TestH5P {
 		}
 	}
 	
+	@Test
+	public void testH5Pset_elink_prefix() throws Throwable, HDF5LibraryException, NullPointerException {
+		int ret_val = -1;
+		String prefix = "tmp";
+		try {
+			ret_val = H5.H5Pset_elink_prefix(plapl_id, prefix);
+		}
+		catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5Pset_est_link_info: " + err);
+		}
+		assertTrue("H5Pset_elink_prefix", ret_val >= 0);
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void testH5Pset_elink_prefix_null() throws Throwable, HDF5LibraryException {
+		H5.H5Pset_elink_prefix(plapl_id, null);
+	}
+	
+	@Test
+	public void testH5Pget_elink_prefix() throws Throwable, HDF5LibraryException, NullPointerException{
+		
+		String prefix = "tmp";
+		String [] pre = {""};
+		long prefix_size = 0;
+
+		try {
+			H5.H5Pset_elink_prefix(plapl_id, prefix);
+			prefix_size = H5.H5Pget_elink_prefix(plapl_id, pre);
+		} 
+		catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5Pget_elink_prefix: " + err);
+		}
+		assertTrue(prefix_size>=0);
+		assertTrue("The prefix: ", prefix.equals(pre[0]));
+	}
+	@Test(expected = NullPointerException.class)
+	public void testH5Pget_elink_prefix_null() throws Throwable, HDF5LibraryException {
+		H5.H5Pget_elink_prefix(plapl_id, null);
+	}
 }
