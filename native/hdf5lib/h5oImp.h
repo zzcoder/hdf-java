@@ -65,21 +65,21 @@ extern "C" {
     JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Olink
       (JNIEnv *, jclass, jint, jint, jstring, jint, jint);
     
-//    /*
-//     * Class:     ncsa_hdf_hdf5lib_H5
-//     * Method:    H5Ovisit
-//     * Signature: (IIILjava/lang/Object;Ljava/lang/Object;)I
-//     */
-//    JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Ovisit
-//      (JNIEnv *, jclass, jint, jint, jint, jobject, jobject);
-//    
-//    /*
-//     * Class:     ncsa_hdf_hdf5lib_H5
-//     * Method:    H5Ovisit_by_name
-//     * Signature: (ILjava/lang/String;IILjava/lang/Object;Ljava/lang/Object;I)I
-//     */
-//    JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Ovisit_1by_1name
-//      (JNIEnv *, jclass, jint, jstring, jint, jint, jobject, jobject, jint);
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Ovisit
+     * Signature: (IIILjava/lang/Object;Ljava/lang/Object;)I
+     */
+    JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Ovisit
+      (JNIEnv *, jclass, jint, jint, jint, jobject, jobject);
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Ovisit_by_name
+     * Signature: (ILjava/lang/String;IILjava/lang/Object;Ljava/lang/Object;I)I
+     */
+    JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Ovisit_1by_1name
+      (JNIEnv *, jclass, jint, jstring, jint, jint, jobject, jobject, jint);
 
 #ifdef __cplusplus
 }
