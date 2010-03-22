@@ -966,7 +966,7 @@ extern "C" {
               jlong idx, jobject callback_op, jobject op_data)
     {
         jboolean      isCopy;
-        long          start_idx = idx;
+        hsize_t       start_idx = (hsize_t)idx;
         herr_t        status = -1;
         
         ENVPTR->GetJavaVM(ENVPAR &jvm);
@@ -1002,7 +1002,7 @@ extern "C" {
     {
         jboolean      isCopy;
         char         *lName;
-        long          start_idx = idx;
+        hsize_t       start_idx = (hsize_t)idx;
         herr_t        status = -1;
         
         ENVPTR->GetJavaVM(ENVPAR &jvm);
