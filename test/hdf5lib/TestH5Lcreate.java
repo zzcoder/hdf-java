@@ -65,8 +65,6 @@ public class TestH5Lcreate {
     private final int _createGroup(int fid, String name) {
         int gid = -1;
         try {
-//            H5gcpl = H5.H5Pcreate(HDF5Constants.H5P_GROUP_CREATE);
-//            H5.H5Pset_link_creation_order(H5gcpl, HDF5Constants.H5P_CRT_ORDER_TRACKED+HDF5Constants.H5P_CRT_ORDER_INDEXED);
             H5gcpl = HDF5Constants.H5P_DEFAULT;
             gid = H5.H5Gcreate2(fid, name, HDF5Constants.H5P_DEFAULT,
                     H5gcpl, HDF5Constants.H5P_DEFAULT);

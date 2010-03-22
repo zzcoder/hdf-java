@@ -38,7 +38,7 @@ CFLAGS = -D_FILE_OFFSET_BITS=64 $(DEFS) -I. -I$(HDF5INC) -I$(JAVAINC1) -I$(JAVAI
 LIBS =  $(HDF5LIB)/libhdf5.$(LLEXT) $(ZLIB) $(SZLIB) -lm
 
 # Macro def: object filename used
-OBJECTS =  exceptionImp.o h5Constants.o h5Imp.o h5aImp.o h5dImp.o h5eImp.o h5fImp.o h5gImp.o h5iImp.o h5lImp.o h5pImp.o h5rImp.o h5sImp.o h5tImp.o nativeData.o h5util.o h5zImp.o
+OBJECTS =  exceptionImp.o h5Constants.o h5Imp.o h5aImp.o h5dImp.o h5eImp.o h5fImp.o h5gImp.o h5iImp.o h5lImp.o h5oImp.o h5pImp.o h5rImp.o h5sImp.o h5tImp.o nativeData.o h5util.o h5zImp.o
 
 # make depends on the files specified in the objects macro defination
 all:  libjhdf5

@@ -68,26 +68,26 @@ extern "C" {
         herr_t   status = -1;
         
         if (cur_name == NULL) {
-            h5nullArgument(env, "H5Lcreate_hard:  cur_name is NULL");
+            h5nullArgument(env, "H5Lcopy:  cur_name is NULL");
             return;
         }
         
         lCurName = (char*)ENVPTR->GetStringUTFChars(ENVPAR cur_name, &isCopy);
         if (lCurName == NULL) {
-            h5JNIFatalError(env, "H5Lcreate_hard:  cur_name not pinned");
+            h5JNIFatalError(env, "H5Lcopy:  cur_name not pinned");
             return;
         }
         
         if (dst_name == NULL) {
             ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
-            h5nullArgument(env, "H5Lcreate_hard:  dst_name is NULL");
+            h5nullArgument(env, "H5Lcopy:  dst_name is NULL");
             return;
         }
         
         lDstName = (char*)ENVPTR->GetStringUTFChars(ENVPAR dst_name, &isCopy);
         if (lDstName == NULL) {
             ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
-            h5JNIFatalError(env, "H5Lcreate_hard:  dst_name not pinned");
+            h5JNIFatalError(env, "H5Lcopy:  dst_name not pinned");
             return;
         }
 

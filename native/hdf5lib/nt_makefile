@@ -32,7 +32,7 @@ CFLAGS = \
 LINKFLAG=/nologo /dll /incremental:no /machine:i386
 
 OBJECTS=exceptionImp.obj h5Constants.obj h5Imp.obj h5aImp.obj h5dImp.obj h5eImp.obj \
-        h5fImp.obj h5gImp.obj h5iImp.obj h5lImp.obj h5pImp.obj h5rImp.obj h5sImp.obj \
+        h5fImp.obj h5gImp.obj h5iImp.obj h5lImp.obj h5oImp.obj h5pImp.obj h5rImp.obj h5sImp.obj \
         h5tImp.obj nativeData.obj h5util.obj h5zImp.obj
 
 
@@ -65,6 +65,9 @@ h5iImp.obj: h5iImp.c
 	$(CC) $(CFLAGS) /Fo$@ $?
 
 h5Imp.obj: h5Imp.c
+	$(CC) $(CFLAGS) /Fo$@ $?
+
+h5oImp.obj: h5oImp.c
 	$(CC) $(CFLAGS) /Fo$@ $?
 
 h5pImp.obj: h5pImp.c
