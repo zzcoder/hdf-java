@@ -48,14 +48,14 @@ extern "C" {
      */
     JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oget_1info_1by_1name
     (JNIEnv *, jclass, jint, jstring, jint);
-//    
-//    /*
-//     * Class:     ncsa_hdf_hdf5lib_H5
-//     * Method:    H5Oget_info_by_idx
-//     * Signature: (ILjava/lang/String;IIJI)Lncsa/hdf/hdf5lib/structs/H5O_info_t;
-//     */
-//    JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oget_1info_1by_1idx
-//      (JNIEnv *, jclass, jint, jstring, jint, jint, jlong, jint);
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Oget_info_by_idx
+     * Signature: (ILjava/lang/String;IIJI)Lncsa/hdf/hdf5lib/structs/H5O_info_t;
+     */
+    JNIEXPORT jobject JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oget_1info_1by_1idx
+      (JNIEnv *, jclass, jint, jstring, jint, jint, jlong, jint);
 //    
 //    /*
 //     * Class:     ncsa_hdf_hdf5lib_H5

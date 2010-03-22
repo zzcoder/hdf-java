@@ -8785,25 +8785,24 @@ throws HDF5LibraryException, NullPointerException;
 public synchronized static native H5O_info_t H5Oget_info_by_name(int loc_id, String name, int lapl_id)
   throws HDF5LibraryException, NullPointerException;
 
-///**
-//*  H5Oget_info_by_idx retrieves the metadata for an object, identifying the object by an index position. 
-//*
-//*  @param loc_id     IN: File or group identifier 
-//*  @param group_name IN: Name of group, relative to loc_id, in which object is located
-//*  @param idx_type   IN: Type of index by which objects are ordered  
-//*  @param order      IN: Order of iteration within index 
-//*  @param n          IN: Object to open 
-//*  @param oinfo     OUT: Buffer in which to return object information
-//*  @param lapl_id    IN: Access property list identifier for the link pointing to the object (Not currently used; pass as H5P_DEFAULT.)
-//*
-//*  @return none
-//*
-//*  @exception HDF5LibraryException - Error from the HDF-5 Library.
-//*  @exception NullPointerException - name is null.
-//**/
-//public synchronized static native void H5Oget_info_by_idx(int loc_id, String group_name,
-//      H5_index_t idx_type, H5_iter_order_t order, long n, H5O_info_t oinfo, int lapl_id)
-//  throws HDF5LibraryException, NullPointerException;
+/**
+*  H5Oget_info_by_idx retrieves the metadata for an object, identifying the object by an index position. 
+*
+*  @param loc_id     IN: File or group identifier 
+*  @param group_name IN: Name of group, relative to loc_id, in which object is located
+*  @param idx_type   IN: Type of index by which objects are ordered  
+*  @param order      IN: Order of iteration within index 
+*  @param n          IN: Object to open 
+*  @param lapl_id    IN: Access property list identifier for the link pointing to the object (Not currently used; pass as H5P_DEFAULT.)
+*
+*  @return object information
+*
+*  @exception HDF5LibraryException - Error from the HDF-5 Library.
+*  @exception NullPointerException - name is null.
+**/
+public synchronized static native H5O_info_t H5Oget_info_by_idx(int loc_id, String group_name,
+      int idx_type, int order, long n, int lapl_id)
+  throws HDF5LibraryException, NullPointerException;
 
 ///**
 //*  H5Olink creates a new hard link to an object in an HDF5 file. 

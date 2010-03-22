@@ -16,6 +16,8 @@ public class TestH5Obasic {
     private static final String H5_FILE = "test/hdf5lib/h5ex_g_iterate.hdf";
     private static long H5la_ds1 = -1;
     private static long H5la_l1 = -1;
+    private static long H5la_dt1 = -1;
+    private static long H5la_g1 = -1;
     int H5fid = -1;
 
     @Before
@@ -101,7 +103,7 @@ public class TestH5Obasic {
         }
         assertFalse("H5Oget_info ",obj_info==null);
         assertTrue("H5Oget_info object type",obj_info.type==HDF5Constants.H5O_TYPE_GROUP);
-        H5la_l1 = obj_info.addr;
+        H5la_g1 = obj_info.addr;
         try {H5.H5Oclose(oid);} catch (Exception ex) {}
     }
 
@@ -119,7 +121,7 @@ public class TestH5Obasic {
         }
         assertFalse("H5Oget_info ",obj_info==null);
         assertTrue("H5Oget_info object type",obj_info.type==HDF5Constants.H5O_TYPE_NAMED_DATATYPE);
-        H5la_l1 = obj_info.addr;
+        H5la_dt1 = obj_info.addr;
         try {H5.H5Oclose(oid);} catch (Exception ex) {}
     }
 
@@ -177,7 +179,7 @@ public class TestH5Obasic {
         }
         assertFalse("H5Oget_info ",obj_info==null);
         assertTrue("H5Oget_info object type",obj_info.type==HDF5Constants.H5O_TYPE_GROUP);
-        H5la_l1 = obj_info.addr;
+        H5la_g1 = obj_info.addr;
     }
 
     @Test
@@ -192,59 +194,59 @@ public class TestH5Obasic {
         }
         assertFalse("H5Oget_info ",obj_info==null);
         assertTrue("H5Oget_info object type",obj_info.type==HDF5Constants.H5O_TYPE_NAMED_DATATYPE);
-        H5la_l1 = obj_info.addr;
+        H5la_dt1 = obj_info.addr;
     }
-//
-//    @Test(expected = HDF5LibraryException.class)
-//    public void testH5Oget_info_by_idx_name_not_exist_name() throws Throwable, HDF5LibraryException, NullPointerException {
-//        H5.H5Oget_info_by_idx(H5fid, "None", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
-//    }
-//
-//    @Test(expected = HDF5LibraryException.class)
-//    public void testH5Oget_info_by_idx_name_not_exist_create() throws Throwable, HDF5LibraryException, NullPointerException {
-//        H5.H5Oget_info_by_idx(H5fid, "None", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
-//    }
-//
-//    @Test(expected = HDF5LibraryException.class)
-//    public void testH5Oget_info_by_idx_not_exist_name() throws Throwable, HDF5LibraryException, NullPointerException {
-//        H5.H5Oget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 5, HDF5Constants.H5P_DEFAULT);
-//    }
-//
-//    @Test(expected = HDF5LibraryException.class)
-//    public void testH5Oget_info_by_idx_not_exist_create() throws Throwable, HDF5LibraryException, NullPointerException {
-//        H5.H5Oget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 5, HDF5Constants.H5P_DEFAULT);
-//    }
-//
-//    @Test
-//    public void testH5Oget_info_by_idx_n0() throws Throwable, HDF5LibraryException, NullPointerException {
-//        H5O_info_t link_info = null;
-//        try {
-//            link_info = H5.H5Oget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
-//        }
-//        catch (Throwable err) {
-//            err.printStackTrace();
-//            fail("H5.H5Oget_info_by_idx: " + err);
-//        }
-//        assertFalse("H5Oget_info_by_idx ",link_info==null);
-//        assertTrue("H5Oget_info_by_idx link type",link_info.type==HDF5Constants.H5O_TYPE_HARD);
-//        assertTrue("Link Address ",link_info.address_val_size==H5la_ds1);
-//    }
-//
-//    @Test
-//    public void testH5Oget_info_by_idx_n3() throws Throwable, HDF5LibraryException, NullPointerException {
-//        H5O_info_t link_info = null;
-//        try {
-//            link_info = H5.H5Oget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 3, HDF5Constants.H5P_DEFAULT);
-//        }
-//        catch (Throwable err) {
-//            err.printStackTrace();
-//            fail("H5.H5Oget_info_by_idx: " + err);
-//        }
-//        assertFalse("H5Oget_info_by_idx ",link_info==null);
-//        assertTrue("H5Oget_info_by_idx link type",link_info.type==HDF5Constants.H5O_TYPE_HARD);
-//        assertTrue("Link Address ",link_info.address_val_size==H5la_l1);
-//    }
-//
+
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Oget_info_by_idx_name_not_exist_name() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Oget_info_by_idx(H5fid, "None", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
+    }
+
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Oget_info_by_idx_name_not_exist_create() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Oget_info_by_idx(H5fid, "None", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
+    }
+
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Oget_info_by_idx_not_exist_name() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Oget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 5, HDF5Constants.H5P_DEFAULT);
+    }
+
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Oget_info_by_idx_not_exist_create() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Oget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, 5, HDF5Constants.H5P_DEFAULT);
+    }
+
+    @Test
+    public void testH5Oget_info_by_idx_n0() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5O_info_t obj_info = null;
+        try {
+            obj_info = H5.H5Oget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 0, HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Oget_info_by_idx: " + err);
+        }
+        assertFalse("H5Oget_info_by_idx ",obj_info==null);
+        assertTrue("H5Oget_info_by_idx link type",obj_info.type==HDF5Constants.H5O_TYPE_DATASET);
+        assertTrue("Link Address ",obj_info.addr==H5la_ds1);
+    }
+
+    @Test
+    public void testH5Oget_info_by_idx_n3() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5O_info_t obj_info = null;
+        try {
+            obj_info = H5.H5Oget_info_by_idx(H5fid, "/", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, 3, HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Oget_info_by_idx: " + err);
+        }
+        assertFalse("H5Oget_info_by_idx ",obj_info==null);
+        assertTrue("H5Oget_info_by_idx link type",obj_info.type==HDF5Constants.H5O_TYPE_DATASET);
+        assertTrue("Link Address ",obj_info.addr==H5la_l1);
+    }
+
 //    @Test
 //    public void testH5Ovisit() throws Throwable, HDF5LibraryException, NullPointerException {
 //        class idata {
