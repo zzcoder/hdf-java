@@ -463,7 +463,9 @@ ncsa.hdf.hdf5lib.exceptions: \
 ncsa.hdf.hdf5lib.callbacks: \
 	ncsa/hdf/hdf5lib/callbacks/Callbacks.class \
 	ncsa/hdf/hdf5lib/callbacks/H5L_iterate_cb.class \
-	ncsa/hdf/hdf5lib/callbacks/H5L_iterate_t.class
+	ncsa/hdf/hdf5lib/callbacks/H5L_iterate_t.class \
+	ncsa/hdf/hdf5lib/callbacks/H5O_iterate_cb.class \
+	ncsa/hdf/hdf5lib/callbacks/H5O_iterate_t.class
 
 ncsa.hdf.hdf5lib.structs: \
 	ncsa/hdf/hdf5lib/structs/H5_ih_info_t.class \
@@ -614,6 +616,8 @@ HDF5SymbolTableException:	ncsa/hdf/hdf5lib/exceptions/HDF5SymbolTableException.c
 Callbacks:	ncsa/hdf/hdf5lib/callbacks/Callbacks.class
 H5L_iterate_t:	ncsa/hdf/hdf5lib/callbacks/H5L_iterate_t.class
 H5L_iterate_cb:	ncsa/hdf/hdf5lib/callbacks/H5L_iterate_cb.class
+H5O_iterate_t:	ncsa/hdf/hdf5lib/callbacks/H5O_iterate_t.class
+H5O_iterate_cb:	ncsa/hdf/hdf5lib/callbacks/H5O_iterate_cb.class
 H5_ih_info_t:	ncsa/hdf/hdf5lib/structs/H5_ih_info_t.class
 H5A_info_t:	ncsa/hdf/hdf5lib/structs/H5A_info_t.class
 H5G_info_t:	ncsa/hdf/hdf5lib/structs/H5G_info_t.class
@@ -750,6 +754,8 @@ JAVASRCS= \
 ./ncsa/hdf/hdf5lib/callbacks/Callbacks.java \
 ./ncsa/hdf/hdf5lib/callbacks/H5L_iterate_cb.java \
 ./ncsa/hdf/hdf5lib/callbacks/H5L_iterate_t.java \
+./ncsa/hdf/hdf5lib/callbacks/H5O_iterate_cb.java \
+./ncsa/hdf/hdf5lib/callbacks/H5O_iterate_t.java \
 ./ncsa/hdf/hdf5lib/structs/H5_ih_info_t.java \
 ./ncsa/hdf/hdf5lib/structs/H5A_info_t.java \
 ./ncsa/hdf/hdf5lib/structs/H5G_info_t.java \
