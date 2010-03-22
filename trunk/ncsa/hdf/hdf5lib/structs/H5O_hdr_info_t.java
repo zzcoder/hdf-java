@@ -18,15 +18,27 @@ public class H5O_hdr_info_t {
     public int version;       /* Version number of header format in file */
     public int nmesgs;        /* Number of object header messages */
     public int nchunks;       /* Number of object header chunks */
-    public int flags;             /* Object header status flags */
-    public class space{
-        public long total;      /* Total space for storing object header in file */
-        public long meta;       /* Space within header for object header metadata information */
-        public long mesg;       /* Space within header for actual message information */
-        public long free;       /* Free space within object header */
-    };
-    public class mesg {
-        public long present;   /* Flags to indicate presence of message type in header */
-        public long shared;    /* Flags to indicate message type is shared in header */
-    } ;
+    public int flags;         /* Object header status flags */
+    public long space_total;  /* Total space for storing object header in file */
+    public long space_meta;   /* Space within header for object header metadata information */
+    public long space_mesg;   /* Space within header for actual message information */
+    public long space_free;   /* Free space within object header */
+    public long mesg_present; /* Flags to indicate presence of message type in header */
+    public long mesg_shared;  /* Flags to indicate message type is shared in header */
+    
+    H5O_hdr_info_t (int version, int nmesgs, int nchunks, int flags, 
+        long space_total, long space_meta, long space_mesg, long space_free, 
+        long mesg_present, long mesg_shared) 
+    {
+        this.version = version;
+        this.nmesgs = nmesgs;
+        this.nchunks = nchunks;
+        this.flags = flags;
+        this.space_total = space_total;
+        this.space_meta = space_meta;
+        this.space_mesg = space_mesg;
+        this.space_free = space_free;
+        this.mesg_present = mesg_present;
+        this.mesg_shared = mesg_shared;
+    }
 }

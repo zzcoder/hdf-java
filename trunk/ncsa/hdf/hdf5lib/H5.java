@@ -27,6 +27,7 @@ import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 import ncsa.hdf.hdf5lib.structs.H5G_info_t;
 import ncsa.hdf.hdf5lib.structs.H5L_info_t;
 import ncsa.hdf.hdf5lib.structs.H5A_info_t;
+import ncsa.hdf.hdf5lib.structs.H5O_info_t;
 
 /**
  * This class is the Java interface for the HDF5 library.
@@ -8756,20 +8757,19 @@ throws HDF5LibraryException, NullPointerException;
 //      H5_INDEX idx_type, H5_ITER order, long n, int lapl_id)
 //  throws HDF5LibraryException, NullPointerException;
 
-///**
-//*  H5Oget_info retrieves the metadata for an object specified by an identifier. 
-//*
-//*  @param loc_id  IN: Identifier for target object 
-//*  @param oinfo  OUT: Buffer in which to return object information
-//*
-//*  @return none
-//*
-//*  @exception HDF5LibraryException - Error from the HDF-5 Library.
-//*  @exception NullPointerException - name is null.
-//**/
-//public synchronized static native void H5Oget_info(int loc_id, H5O_info_t oinfo)
-//  throws HDF5LibraryException, NullPointerException;
-//
+/**
+ *  H5Oget_info retrieves the metadata for an object specified by an identifier. 
+ *
+ *  @param loc_id  IN: Identifier for target object 
+ *
+ *  @return object information
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception NullPointerException - name is null.
+ **/
+public synchronized static native H5O_info_t H5Oget_info(int loc_id)
+throws HDF5LibraryException, NullPointerException;
+
 ///**
 //*  H5Oget_info_by_name retrieves the metadata for an object, identifying the object by location and relative name. 
 //*

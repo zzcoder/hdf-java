@@ -2,7 +2,6 @@ package test.hdf5lib;
 
 import static org.junit.Assert.assertTrue;
 import ncsa.hdf.hdf5lib.H5;
-import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
 import org.junit.Before;
@@ -44,17 +43,12 @@ public class TestH5Oparams {
     public void testH5Ocopy_null_dest() throws Throwable, HDF5LibraryException, NullPointerException {
         H5.H5Ocopy(-1, "Bogus", 0, null, 0, 0);
     }
-//
-//    @Test(expected = HDF5LibraryException.class)
-//    public void testH5Oget_info_invalid() throws Throwable, HDF5LibraryException {
-//        H5.H5Oget_info(-1, "Bogus", -1);
-//    }
-//
-//    @Test(expected = NullPointerException.class)
-//    public void testH5Oget_info_null() throws Throwable, HDF5LibraryException, NullPointerException {
-//        H5.H5Oget_info(-1, null, 0);
-//    }
-//
+
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Oget_info_invalid() throws Throwable, HDF5LibraryException {
+        H5.H5Oget_info(-1);
+    }
+
 //    @Test(expected = HDF5LibraryException.class)
 //    public void testH5Oget_info_by_idx_invalid() throws Throwable, HDF5LibraryException {
 //        H5.H5Oget_info_by_idx(-1, "Bogus", -1, -1, -1L, -1);

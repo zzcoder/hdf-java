@@ -17,4 +17,10 @@ package ncsa.hdf.hdf5lib.structs;
 public class H5_ih_info_t {
     public long     index_size;     /* btree and/or list */
     public long     heap_size;
+    
+    H5_ih_info_t (long index_size, long heap_size) 
+    {
+        this.index_size = index_size;
+        this.heap_size = heap_size;
+    }
 }
