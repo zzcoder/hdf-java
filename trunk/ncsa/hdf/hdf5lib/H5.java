@@ -8304,6 +8304,49 @@ throws HDF5LibraryException;
  private synchronized static native int _H5Pget_elink_fapl(int lapl_id)
  throws HDF5LibraryException;
  
+ /**
+  * H5Pset_elink_prefix Sets prefix to be applied to external link paths.   
+  * @param lapl_id  	      	IN: Link access property list identifier
+  * @param prefix  	   			IN: Prefix to be applied to external link paths
+  *  
+  * @return a non-negative value if successful; otherwise returns a negative value.
+  * 
+  * @exception HDF5LibraryException - Error from the HDF-5 Library.
+  * @exception NullPointerException - prefix is null.
+  *  
+  **/
+ public synchronized static native int H5Pset_elink_prefix(int lapl_id, String prefix)
+ throws HDF5LibraryException, NullPointerException;
+ 
+ /**
+  * H5Pget_elink_prefix Retrieves prefix applied to external link paths.
+  * @param lapl_id				IN: Link access property list identifier
+  * @param prefix				OUT: Prefix applied to external link paths
+  * 
+  * @return If successful, returns a non-negative value specifying the size in bytes of the prefix without the NULL terminator; 
+  * 		otherwise returns a negative value.  
+  * 
+  * @exception HDF5LibraryException - Error from the HDF-5 Library.
+  * @exception NullPointerException - prefix is null.
+  *  
+  **/
+ public synchronized static native long H5Pget_elink_prefix( int lapl_id, String[] prefix)
+ throws HDF5LibraryException, NullPointerException;
+ 
+ ///**
+ // * H5Pset_fapl_direct Sets up use of the direct I/O driver.   
+ // * @param fapl_id			IN: File access property list identifier 
+ // * @param alignment		IN: Required memory alignment boundary 
+ // * @param block_size		IN: File system block size 
+ // * @param cbuf_size		IN: Copy buffer size 
+ // *  
+ // * @return a non-negative value if successful; otherwise returns a negative value.
+ // * 
+ // * @exception HDF5LibraryException - Error from the HDF-5 Library.
+ // *  
+ // **/
+ //public synchronized static native int H5Pset_fapl_direct(int fapl_id, int alignment, int block_size, int cbuf_size)
+// throws HDF5LibraryException;
 
 //////////////////////////////////////////////////////////////
 ////
