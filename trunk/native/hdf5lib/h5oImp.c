@@ -475,57 +475,42 @@ extern "C" {
 
         return ret_info_t;
     }
-//    
-//    /*
-//     * Class:     ncsa_hdf_hdf5lib_H5
-//     * Method:    H5Olink
-//     * Signature: (ILjava/lang/String;ILjava/lang/String;II)V
-//     */
-//    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Olink
-//      (JNIEnv *env, jclass clss, jint cur_loc_id, jstring cur_name, jint dst_loc_id, jstring dst_name, jint create_id, jint access_id)
-//    {
-//        char    *lCurName;
-//        char    *lDstName;
-//        jboolean isCopy;
-//        herr_t   status = -1;
-//        
-//        if (cur_name == NULL) {
-//            h5nullArgument(env, "H5Ocreate_hard:  cur_name is NULL");
-//            return;
-//        }
-//        
-//        lCurName = (char*)ENVPTR->GetStringUTFChars(ENVPAR cur_name, &isCopy);
-//        if (lCurName == NULL) {
-//            h5JNIFatalError(env, "H5Ocreate_hard:  cur_name not pinned");
-//            return;
-//        }
-//        
-//        if (dst_name == NULL) {
-//            ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
-//            h5nullArgument(env, "H5Ocreate_hard:  dst_name is NULL");
-//            return;
-//        }
-//        
-//        lDstName = (char*)ENVPTR->GetStringUTFChars(ENVPAR dst_name, &isCopy);
-//        if (lDstName == NULL) {
-//            ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
-//            h5JNIFatalError( env, "H5Ocreate_hard:  dst_name not pinned");
-//            return;
-//        }
-//
-//        status = H5Olink((hid_t)cur_loc_id, (const char*)lCurName, (hid_t)dst_loc_id, (const char*)lDstName, (hid_t)create_id, (hid_t)access_id);
-//
-//        ENVPTR->ReleaseStringUTFChars(ENVPAR cur_name, lCurName);
-//        ENVPTR->ReleaseStringUTFChars(ENVPAR dst_name, lDstName);
-//        
-//        if (status < 0) {
-//           h5libraryError(env);
-//           return;
-//        }
-//        
-//        return;
-//    }
-//
+    
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Olink
+     * Signature: (IILjava/lang/String;II)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Olink
+      (JNIEnv *env, jclass clss, jint cur_loc_id, jint dst_loc_id, jstring dst_name, jint create_id, jint access_id)
+    {
+        char    *lDstName;
+        jboolean isCopy;
+        herr_t   status = -1;
+        
+        if (dst_name == NULL) {
+            h5nullArgument(env, "H5Ocreate_hard:  dst_name is NULL");
+            return;
+        }
+        
+        lDstName = (char*)ENVPTR->GetStringUTFChars(ENVPAR dst_name, &isCopy);
+        if (lDstName == NULL) {
+            h5JNIFatalError( env, "H5Ocreate_hard:  dst_name not pinned");
+            return;
+        }
+
+        status = H5Olink((hid_t)cur_loc_id, (hid_t)dst_loc_id, (const char*)lDstName, (hid_t)create_id, (hid_t)access_id);
+
+        ENVPTR->ReleaseStringUTFChars(ENVPAR dst_name, lDstName);
+        
+        if (status < 0) {
+           h5libraryError(env);
+           return;
+        }
+        
+        return;
+    }
+
 //    herr_t H5O_iterate_cb(hid_t g_id, const char *name, const H5O_info_t *info, void *op_data) {
 //        JNIEnv    *cbenv;
 //        jint       status;

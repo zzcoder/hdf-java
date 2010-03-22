@@ -72,21 +72,16 @@ public class TestH5Oparams {
         H5.H5Oget_info_by_idx(-1, null, 0, 0, 0L, 0);
     }
 
-//    @Test(expected = HDF5LibraryException.class)
-//    public void testH5Olink_invalid() throws Throwable, HDF5LibraryException {
-//        H5.H5Olink(-1, "Bogus", -1, "Bogus", -1, -1);
-//    }
-//
-//    @Test(expected = NullPointerException.class)
-//    public void testH5Olink_null_current() throws Throwable, HDF5LibraryException, NullPointerException {
-//        H5.H5Olink(-1, null, 0, "Bogus", 0, 0);
-//    }
-//
-//    @Test(expected = NullPointerException.class)
-//    public void testH5Olink_null_dest() throws Throwable, HDF5LibraryException, NullPointerException {
-//        H5.H5Olink(-1, "Bogus", 0, null, 0, 0);
-//    }
-//
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Olink_invalid() throws Throwable, HDF5LibraryException {
+        H5.H5Olink(-1, -1, "Bogus", -1, -1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Olink_null_dest() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Olink(-1, 0, null, 0, 0);
+    }
+
 //    @Test(expected = NullPointerException.class)
 //    public void testH5Ovisit_null() throws Throwable, HDF5LibraryException, NullPointerException {
 //        H5.H5Ovisit(-1, -1, -1, null, null);
