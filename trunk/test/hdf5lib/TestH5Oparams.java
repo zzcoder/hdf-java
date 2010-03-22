@@ -82,19 +82,19 @@ public class TestH5Oparams {
         H5.H5Olink(-1, 0, null, 0, 0);
     }
 
-//    @Test(expected = NullPointerException.class)
-//    public void testH5Ovisit_null() throws Throwable, HDF5LibraryException, NullPointerException {
-//        H5.H5Ovisit(-1, -1, -1, null, null);
-//    }
-//
-//    @Test(expected = NullPointerException.class)
-//    public void testH5Ovisit_by_name_nullname() throws Throwable, HDF5LibraryException, NullPointerException {
-//        H5.H5Ovisit_by_name(-1, null, -1, -1, null, null, -1);
-//    }
-//
-//    @Test(expected = NullPointerException.class)
-//    public void testH5Ovisit_by_name_null() throws Throwable, HDF5LibraryException, NullPointerException {
-//        H5.H5Ovisit_by_name(-1, "Bogus", -1, -1, null, null, -1);
-//    }
+    @Test(expected = NullPointerException.class)
+    public void testH5Ovisit_null() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Ovisit(-1, -1, -1, null, null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Ovisit_by_name_nullname() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Ovisit_by_name(-1, null, -1, -1, null, null, -1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Ovisit_by_name_null() throws Throwable, HDF5LibraryException, NullPointerException {
+        H5.H5Ovisit_by_name(-1, "Bogus", -1, -1, null, null, -1);
+    }
 
 }
