@@ -8847,65 +8847,63 @@ public synchronized static native void H5Olink(int obj_id, int new_loc_id, Strin
 //**/
 //public synchronized static native void H5Odecr_refcount(int object_id)
 //  throws HDF5LibraryException;
-//
-///**
-//*  H5Oset_comment sets the comment for the specified object.
-//*
-//*  @param obj_id  IN: Identifier of the target object
-//*  @param comment IN: The new comment.
-//*
-//*  @return none
-//*
-//*  @exception HDF5LibraryException - Error from the HDF-5 Library.
-//*  @exception NullPointerException - comment is null.
-//**/
-//public synchronized static native void H5Oset_comment(int obj_id, String comment)
-//  throws HDF5LibraryException, NullPointerException;
-//
-///**
-//*  H5Oset_comment_by_name sets the comment for the specified object.
-//*
-//*  @param loc_id  IN: Identifier of a file, group, dataset, or named datatype.
-//*  @param name    IN: Relative name of the object whose comment is to be set or reset.
-//*  @param comment IN: The new comment.
-//*  @param lapl_id IN: Link access property list identifier. 
-//*
-//*  @return none
-//*
-//*  @exception HDF5LibraryException - Error from the HDF-5 Library.
-//*  @exception NullPointerException - name is null.
-//**/
-//public synchronized static native void H5Oset_comment_by_name(int loc_id, String name,
-//      String comment, int lapl_id)
-//  throws HDF5LibraryException, NullPointerException;
-//
-///**
-//*  H5Oget_comment retrieves the comment for the specified object.
-//*
-//*  @param obj_id  IN: File or group identifier 
-//*
-//*  @return the comment
-//*
-//*  @exception HDF5LibraryException - Error from the HDF-5 Library.
-//**/
-//public synchronized static native String H5Oget_comment(int obj_id)
-//  throws HDF5LibraryException;
-//long H5Oget_comment(int obj_id, String comment, long bufsize);
 
-///**
-//*  H5Oget_comment_by_name retrieves the comment for an object.
-//*
-//*  @param loc_id  IN: Identifier of a file, group, dataset, or named datatype.
-//*  @param name    IN: Relative name of the object whose comment is to be set or reset.
-//*  @param lapl_id IN: Link access property list identifier. 
-//*
-//*  @return the comment
-//*
-//*  @exception HDF5LibraryException - Error from the HDF-5 Library.
-//*  @exception NullPointerException - name is null.
-//**/
-//public synchronized static native String H5Oget_comment_by_name(int loc_id, String name, int lapl_id)
-//  throws HDF5LibraryException, NullPointerException;
+/**
+*  H5Oset_comment sets the comment for the specified object.
+*
+*  @param obj_id  IN: Identifier of the target object
+*  @param comment IN: The new comment.
+*
+*  @return none
+*
+*  @exception HDF5LibraryException - Error from the HDF-5 Library.
+**/
+public synchronized static native void H5Oset_comment(int obj_id, String comment)
+  throws HDF5LibraryException;
+
+/**
+*  H5Oset_comment_by_name sets the comment for the specified object.
+*
+*  @param loc_id  IN: Identifier of a file, group, dataset, or named datatype.
+*  @param name    IN: Relative name of the object whose comment is to be set or reset.
+*  @param comment IN: The new comment.
+*  @param lapl_id IN: Link access property list identifier. 
+*
+*  @return none
+*
+*  @exception HDF5LibraryException - Error from the HDF-5 Library.
+*  @exception NullPointerException - name is null.
+**/
+public synchronized static native void H5Oset_comment_by_name(int loc_id, String name,
+      String comment, int lapl_id)
+  throws HDF5LibraryException, NullPointerException;
+
+/**
+*  H5Oget_comment retrieves the comment for the specified object.
+*
+*  @param obj_id  IN: File or group identifier 
+*
+*  @return the comment
+*
+*  @exception HDF5LibraryException - Error from the HDF-5 Library.
+**/
+public synchronized static native String H5Oget_comment(int obj_id)
+  throws HDF5LibraryException;
+
+/**
+*  H5Oget_comment_by_name retrieves the comment for an object.
+*
+*  @param loc_id  IN: Identifier of a file, group, dataset, or named datatype.
+*  @param name    IN: Relative name of the object whose comment is to be set or reset.
+*  @param lapl_id IN: Link access property list identifier. 
+*
+*  @return the comment
+*
+*  @exception HDF5LibraryException - Error from the HDF-5 Library.
+*  @exception NullPointerException - name is null.
+**/
+public synchronized static native String H5Oget_comment_by_name(int loc_id, String name, int lapl_id)
+  throws HDF5LibraryException, NullPointerException;
 //long H5Oget_comment_by_name(int loc_id, String name, String comment, long bufsize, int lapl_id);
 
 /**

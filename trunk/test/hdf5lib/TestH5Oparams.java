@@ -97,4 +97,34 @@ public class TestH5Oparams {
         H5.H5Ovisit_by_name(-1, "Bogus", -1, -1, null, null, -1);
     }
 
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Oset_comment_invalid() throws Throwable, HDF5LibraryException {
+        H5.H5Oset_comment(-1, "Bogus");
+    }
+
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Oget_comment_invalid() throws Throwable, HDF5LibraryException {
+        H5.H5Oget_comment(-1);
+    }
+
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Oset_comment_by_name_invalid() throws Throwable, HDF5LibraryException {
+        H5.H5Oset_comment_by_name(-1, "Bogus", null, -1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Oset_comment_by_name_null() throws Throwable, HDF5LibraryException {
+        H5.H5Oset_comment_by_name(-1, null, null, -1);
+    }
+
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Oget_comment_by_name_invalid() throws Throwable, HDF5LibraryException {
+        H5.H5Oget_comment_by_name(-1, "Bogus", -1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testH5Oget_comment_by_name_null() throws Throwable, HDF5LibraryException {
+        H5.H5Oget_comment_by_name(-1, null, -1);
+    }
+
 }

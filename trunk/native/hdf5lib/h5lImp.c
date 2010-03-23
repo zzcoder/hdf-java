@@ -51,9 +51,6 @@ extern "C" {
 #define JVMPAR2 jvm,
 #endif
     
-    JavaVM *jvm;
-    jobject visit_callback;   
-    
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Lcopy

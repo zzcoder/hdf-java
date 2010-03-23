@@ -7,6 +7,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+    
+    extern JavaVM *jvm;
+    extern jobject visit_callback;   
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
@@ -80,6 +83,38 @@ extern "C" {
      */
     JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Ovisit_1by_1name
       (JNIEnv *, jclass, jint, jstring, jint, jint, jobject, jobject, jint);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Oset_comment
+     * Signature: (ILjava/lang/String;)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oset_1comment
+      (JNIEnv *env, jclass clss, jint loc_id, jstring comment);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Oset_comment_by_name
+     * Signature: (ILjava/lang/String;Ljava/lang/String;I)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oset_1comment_1by_1name
+      (JNIEnv *env, jclass clss, jint loc_id, jstring name, jstring comment, jint access_id);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Oget_comment
+     * Signature: (I)Ljava/lang/String;
+     */
+    JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oget_1comment
+      (JNIEnv *env, jclass clss, jint loc_id);
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Oget_comment_by_name
+     * Signature: (ILjava/lang/String;I)Ljava/lang/String;
+     */
+    JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oget_1comment_1by_1name
+      (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint access_id);
 
 #ifdef __cplusplus
 }
