@@ -21,6 +21,10 @@ extern "C" {
 #include <stdlib.h>
 #include "hdf5.h"
 #include "h5util.h"
+#include "jni.h"
+    
+    JavaVM *jvm;
+    jobject visit_callback;   
 
 int h5str_dump_region(h5str_t *str, hid_t region);
 static hbool_t h5tools_is_zero(const void *_mem, size_t size);

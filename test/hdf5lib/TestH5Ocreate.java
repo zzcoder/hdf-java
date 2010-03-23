@@ -326,9 +326,132 @@ public class TestH5Ocreate {
         assertTrue("H5Ovisit "+((idata)((H5O_iter_data)iter_data).iterdata.get(1)).link_name,((idata)((H5O_iter_data)iter_data).iterdata.get(1)).link_name.compareToIgnoreCase("DS1")==0);
         assertTrue("H5Ovisit "+((idata)((H5O_iter_data)iter_data).iterdata.get(2)).link_name,((idata)((H5O_iter_data)iter_data).iterdata.get(2)).link_name.compareToIgnoreCase("G1")==0);
         assertTrue("H5Ovisit "+((idata)((H5O_iter_data)iter_data).iterdata.get(3)).link_name,((idata)((H5O_iter_data)iter_data).iterdata.get(3)).link_name.compareToIgnoreCase("G1/DS2")==0);
-//        assertTrue("H5Ovisit "+((idata)((H5O_iter_data)iter_data).iterdata.get(3)).link_name,((idata)((H5O_iter_data)iter_data).iterdata.get(3)).link_name.compareToIgnoreCase("CPY1")==0);
-//        assertTrue("H5Ovisit "+((idata)((H5O_iter_data)iter_data).iterdata.get(4)).link_name,((idata)((H5O_iter_data)iter_data).iterdata.get(4)).link_name.compareToIgnoreCase("LE")==0);
-//        assertTrue("H5Ovisit "+((idata)((H5O_iter_data)iter_data).iterdata.get(5)).link_name,((idata)((H5O_iter_data)iter_data).iterdata.get(5)).link_name.compareToIgnoreCase("LS")==0);
+    }
+
+    @Test
+    public void testH5Ocomment() throws Throwable, HDF5LibraryException, NullPointerException {
+        int oid = -1;
+        String obj_comment = null;
+        try {
+            oid = H5.H5Oopen(H5fid, "DS1", HDF5Constants.H5P_DEFAULT);
+            H5.H5Oset_comment(oid, "Test Comment");
+            H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Oset_comment: " + err);
+        }
+        try {
+            obj_comment = H5.H5Oget_comment(oid);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Oget_comment: " + err);
+        }
+        try {H5.H5Oclose(oid);} catch (Exception ex) {}
+        assertFalse("H5Oget_comment: ",obj_comment==null);
+        assertTrue("H5Oget_comment: ",obj_comment.compareTo("Test Comment")==0);
+    }
+
+    @Test
+    public void testH5Ocomment_clear() throws Throwable, HDF5LibraryException, NullPointerException {
+        int oid = -1;
+        String obj_comment = null;
+        try {
+            oid = H5.H5Oopen(H5fid, "DS1", HDF5Constants.H5P_DEFAULT);
+            H5.H5Oset_comment(oid, "Test Comment");
+            H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Oset_comment: " + err);
+        }
+        try {
+            obj_comment = H5.H5Oget_comment(oid);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Oget_comment: " + err);
+        }
+        assertFalse("H5Oget_comment: ",obj_comment==null);
+        assertTrue("H5Oget_comment: ",obj_comment.compareTo("Test Comment")==0);
+        try {
+            H5.H5Oset_comment(oid, null);
+            H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Oset_comment: " + err);
+        }
+        try {
+            obj_comment = H5.H5Oget_comment(oid);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Oget_comment: " + err);
+        }
+        try {H5.H5Oclose(oid);} catch (Exception ex) {}
+        assertTrue("H5Oget_comment: ",obj_comment==null);
+    }
+
+    @Test
+    public void testH5Ocomment_by_name() throws Throwable, HDF5LibraryException, NullPointerException {
+        String obj_comment = null;
+        try {
+            H5.H5Oset_comment_by_name(H5fid, "DS1", "Test Comment", HDF5Constants.H5P_DEFAULT);
+            H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Oset_comment_by_name: " + err);
+        }
+        try {
+            obj_comment = H5.H5Oget_comment_by_name(H5fid, "DS1", HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Oget_comment_by_name: " + err);
+        }
+        assertFalse("H5Oget_comment_by_name: ",obj_comment==null);
+        assertTrue("H5Oget_comment_by_name: ",obj_comment.compareTo("Test Comment")==0);
+    }
+
+    @Test
+    public void testH5Ocomment_by_name_clear() throws Throwable, HDF5LibraryException, NullPointerException {
+        String obj_comment = null;
+        try {
+            H5.H5Oset_comment_by_name(H5fid, "DS1", "Test Comment", HDF5Constants.H5P_DEFAULT);
+            H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Oset_comment_by_name: " + err);
+        }
+        try {
+            obj_comment = H5.H5Oget_comment_by_name(H5fid, "DS1", HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Oget_comment_by_name: " + err);
+        }
+        assertFalse("H5Oget_comment_by_name: ",obj_comment==null);
+        assertTrue("H5Oget_comment_by_name: ",obj_comment.compareTo("Test Comment")==0);
+        try {
+            H5.H5Oset_comment_by_name(H5fid, "DS1", null, HDF5Constants.H5P_DEFAULT);
+            H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Oset_comment_by_name: " + err);
+        }
+        try {
+            obj_comment = H5.H5Oget_comment_by_name(H5fid, "DS1", HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Oget_comment_by_name: " + err);
+        }
+        assertTrue("H5Oget_comment_by_name: ",obj_comment==null);
     }
 
 }

@@ -8,6 +8,9 @@
 extern "C" {
 #endif
     
+    extern JavaVM *jvm;
+    extern jobject visit_callback;   
+    
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
      * Method:    H5Lcopy

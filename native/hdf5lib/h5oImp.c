@@ -50,9 +50,6 @@ extern "C" {
 #define JVMPAR jvm
 #define JVMPAR2 jvm,
 #endif
-    
-    JavaVM *jvm;
-    jobject visit_callback;   
 
     /*
      * Class:     ncsa_hdf_hdf5lib_H5
@@ -670,13 +667,13 @@ extern "C" {
         
         if (name == NULL) {
             h5nullArgument(env, "H5Ovisit_by_name:  name is NULL");
-            return NULL;
+            return -1;
         }
         
         lName = (char*)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
         if (lName == NULL) {
             h5JNIFatalError(env, "H5Ovisit_by_name:  name not pinned");
-            return NULL;
+            return -1;
         }
 
         if (op_data == NULL) {
@@ -698,6 +695,200 @@ extern "C" {
         }
         
         return status;
+    }
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Oset_comment
+     * Signature: (ILjava/lang/String;)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oset_1comment
+      (JNIEnv *env, jclass clss, jint loc_id, jstring comment)
+    {
+        herr_t  status;
+        char    *oComment;
+        jboolean isCopy;
+
+        if (comment == NULL) {
+            oComment = NULL;
+        }
+        else {
+            oComment = (char *)ENVPTR->GetStringUTFChars(ENVPAR comment, &isCopy);
+            if (oComment == NULL) {
+                h5JNIFatalError( env, "H5Oset_comment:  comment not pinned");
+                return;
+            }
+        }
+
+        status = H5Oset_comment((hid_t)loc_id, (const char*)oComment);
+
+        ENVPTR->ReleaseStringUTFChars(ENVPAR comment, oComment);
+
+        if (status < 0) {
+            h5libraryError(env);
+        }
+    }
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Oset_comment_by_name
+     * Signature: (ILjava/lang/String;Ljava/lang/String;I)V
+     */
+    JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oset_1comment_1by_1name
+      (JNIEnv *env, jclass clss, jint loc_id, jstring name, jstring comment, jint access_id)
+    {
+        herr_t   status;
+        char    *oName;
+        char    *oComment;
+        jboolean isCopy;
+
+        if (name == NULL) {
+            h5nullArgument( env, "H5Oset_comment_by_name:  name is NULL");
+            return;
+        }
+        oName = (char *)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
+        if (oName == NULL) {
+            h5JNIFatalError( env, "H5Oset_comment_by_name:  name not pinned");
+            return;
+        }
+        if (comment == NULL) {
+            oComment = NULL;
+        }
+        else {
+            oComment = (char *)ENVPTR->GetStringUTFChars(ENVPAR comment,&isCopy);
+            if (oComment == NULL) {
+                ENVPTR->ReleaseStringUTFChars(ENVPAR name, oName);
+                h5JNIFatalError( env, "H5Oset_comment_by_name:  comment not pinned");
+                return;
+            }
+        }
+
+        status = H5Oset_comment_by_name((hid_t)loc_id, (const char*)oName, (const char*)oComment, (hid_t)access_id);
+
+        ENVPTR->ReleaseStringUTFChars(ENVPAR comment, oComment);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name, oName);
+
+        if (status < 0) {
+            h5libraryError(env);
+        }
+        return;
+    }
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Oget_comment
+     * Signature: (I)Ljava/lang/String;
+     */
+    JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oget_1comment
+      (JNIEnv *env, jclass clss, jint loc_id)
+    {
+        char   *oComment;
+        size_t  buf_size;
+        ssize_t status;
+        jstring str;
+
+        /* get the length of the comment */
+        buf_size = H5Oget_comment((hid_t)loc_id, NULL, 0);
+        if (buf_size < 0) {
+            h5badArgument( env, "H5Oget_comment:  buf_size < 0");
+            return NULL;
+        }
+        if (buf_size == 0) {
+            return NULL;
+        }
+
+        buf_size++; /* add extra space for the null terminator */
+        oComment = (char *)malloc(sizeof(char)*buf_size);
+        if (oComment == NULL) {
+            /* exception -- out of memory */
+            h5outOfMemory( env, "H5Oget_comment:  malloc failed");
+            return NULL;
+        }
+
+        status = H5Oget_comment((hid_t)loc_id, (char*)oComment, (size_t)buf_size);
+
+        if (status >= 0) {
+            /*  may throw OutOfMemoryError */
+            str = ENVPTR->NewStringUTF(ENVPAR oComment);
+            free(oComment);
+            if (str == NULL) {
+                h5JNIFatalError( env, "H5Oget_comment:  return string not allocated");
+                return NULL;
+            }
+        } 
+        else {
+            free(oComment);
+            h5libraryError(env);
+            return NULL;
+        }
+
+        return (jstring)str;
+    }
+
+    /*
+     * Class:     ncsa_hdf_hdf5lib_H5
+     * Method:    H5Oget_comment_by_name
+     * Signature: (ILjava/lang/String;I)Ljava/lang/String;
+     */
+    JNIEXPORT jstring JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Oget_1comment_1by_1name
+      (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint access_id)
+    {
+        char    *oComment;
+        char    *oName;
+        size_t   buf_size;
+        ssize_t  status;
+        jstring  str;
+        jboolean isCopy;
+
+        if (name == NULL) {
+            h5nullArgument( env, "H5Oget_comment_by_name:  name is NULL");
+            return NULL;
+        }
+        oName = (char *)ENVPTR->GetStringUTFChars(ENVPAR name, &isCopy);
+        if (oName == NULL) {
+            h5JNIFatalError( env, "H5Oget_comment_by_name:  name not pinned");
+            return NULL;
+        }
+
+        /* get the length of the comment */
+        buf_size = H5Oget_comment_by_name((hid_t)loc_id, (const char*)oName, NULL, 0, (hid_t)access_id);
+        if (buf_size < 0) {
+            ENVPTR->ReleaseStringUTFChars(ENVPAR name, oName);
+            h5badArgument( env, "H5Oget_comment_by_name:  buf_size < 0");
+            return NULL;
+        }
+        if (buf_size == 0) {
+            ENVPTR->ReleaseStringUTFChars(ENVPAR name, oName);
+            return NULL;
+        }
+
+        buf_size++; /* add extra space for the null terminator */
+        oComment = (char *)malloc(sizeof(char)*buf_size);
+        if (oComment == NULL) {
+            ENVPTR->ReleaseStringUTFChars(ENVPAR name, oName);
+            h5outOfMemory( env, "H5Oget_comment_by_name:  malloc failed");
+            return NULL;
+        }
+
+        status = H5Oget_comment_by_name((hid_t)loc_id, (const char*)oName, (char*)oComment, (size_t)buf_size, (hid_t)access_id);
+        ENVPTR->ReleaseStringUTFChars(ENVPAR name, oName);
+
+        if (status >= 0) {
+            /*  may throw OutOfMemoryError */
+            str = ENVPTR->NewStringUTF(ENVPAR oComment);
+            free(oComment);
+            if (str == NULL) {
+                h5JNIFatalError( env, "H5Oget_comment_by_name:  return string not allocated");
+                return NULL;
+            }
+        } 
+        else {
+            free(oComment);
+            h5libraryError(env);
+            return NULL;
+        }
+
+        return (jstring)str;
     }
 
 
