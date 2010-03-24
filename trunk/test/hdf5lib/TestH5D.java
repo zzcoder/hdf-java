@@ -52,24 +52,23 @@ public class TestH5D {
     }
 
 //    private final int _openDataset(int fid, String name) {
-//        int did = -1;
-//        try {
-//            did = H5.H5Dopen(fid, name, HDF5Constants.H5P_DEFAULT);
-//        }
-//        catch (Throwable err) {
-//            did = -1;
-//            err.printStackTrace();
-//            fail("H5.H5Dopen: " + err);
-//        }
-//        assertTrue("TestH5D._openDataset: ",did > 0);
-//
-//        return did;
+//       int did = -1;
+//       try {
+//           did = H5.H5Dopen(fid, name, HDF5Constants.H5P_DEFAULT);
+//      }
+//       catch (Throwable err) {
+//           did = -1;
+//           err.printStackTrace();
+//           fail("H5.H5Dopen: " + err);
+//       }
+//       assertTrue("TestH5D._openDataset: ",did > 0);
+//       return did;
 //    }
 
     @Before
     public void createH5file()
             throws NullPointerException, HDF5Exception {
-        assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
+       assertTrue("H5 open ids is 0",H5.getOpenIDCount()==0);
 
         try {
             H5fid = H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_TRUNC,

@@ -3924,7 +3924,7 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1elink_1prefix
 		return -1;
 	}
 
-    str = ENVPTR->NewStringUTF(ENVPAR pre);
+	str = ENVPTR->NewStringUTF(ENVPAR pre);
 	if (str == NULL) {
 		/* exception -- fatal JNI error */
 		free(pre);
@@ -3935,25 +3935,26 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1elink_1prefix
 	free(pre);
 
 	return prefix_size;
-
 }
 
-///*
-// * Class:     ncsa_hdf_hdf5lib_H5
-//* Method:    H5Pset_fapl_direct
-//* Signature: (IIII)I
-// */
-//JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1direct
-//  (JNIEnv *env, jclass clss, jint fapl_id, jint alignment, jint block_size, jint cbuf_size)
-//{
-//	herr_t retVal = -1;
-//
-//	retVal = H5Pset_fapl_direct((hid_t)fapl_id, (size_t)alignment, (size_t)block_size, (size_t)cbuf_size);
-//	if(retVal <0){
-//		h5libraryError(env);
-//	}
-//	return (jint)retVal;
-//}
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pset_fapl_direct
+ * Signature: (IIII)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1direct
+ (JNIEnv *env, jclass clss, jint fapl_id, jint alignment, jint block_size, jint cbuf_size)
+{
+	herr_t retVal = -1;
+
+	#ifdef H5_HAVE_DIRECT 
+		retVal = H5Pset_fapl_direct((hid_t)fapl_id, (size_t)alignment, (size_t)block_size, (size_t)cbuf_size);
+		if(retVal <0){
+		h5libraryError(env);
+		}
+	#endif 
+	return (jint)retVal;
+}
 
 #ifdef __cplusplus
 }

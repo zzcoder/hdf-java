@@ -8336,20 +8336,20 @@ throws HDF5LibraryException;
  public synchronized static native long H5Pget_elink_prefix( int lapl_id, String[] prefix)
  throws HDF5LibraryException, NullPointerException;
  
- ///**
- // * H5Pset_fapl_direct Sets up use of the direct I/O driver.   
- // * @param fapl_id			IN: File access property list identifier 
- // * @param alignment		IN: Required memory alignment boundary 
- // * @param block_size		IN: File system block size 
- // * @param cbuf_size		IN: Copy buffer size 
- // *  
- // * @return a non-negative value if successful; otherwise returns a negative value.
- // * 
- // * @exception HDF5LibraryException - Error from the HDF-5 Library.
- // *  
- // **/
- //public synchronized static native int H5Pset_fapl_direct(int fapl_id, int alignment, int block_size, int cbuf_size)
-// throws HDF5LibraryException;
+ /**
+  * H5Pset_fapl_direct Sets up use of the direct I/O driver.   
+  * @param fapl_id		IN: File access property list identifier 
+  * @param alignment		IN: Required memory alignment boundary 
+  * @param block_size		IN: File system block size 
+  * @param cbuf_size		IN: Copy buffer size 
+  *  
+  * @return a non-negative value if successful; otherwise returns a negative value.
+  * 
+  * @exception HDF5LibraryException - Error from the HDF-5 Library.
+  *  
+  **/
+ public synchronized static native int H5Pset_fapl_direct(int fapl_id, int alignment, int block_size, int cbuf_size)
+ throws HDF5LibraryException;
 
 //////////////////////////////////////////////////////////////
 ////
