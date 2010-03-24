@@ -747,7 +747,7 @@ extern "C" {
             ENVPTR->SetObjectArrayElement(ENVPAR link_value, 1, str);
         }
         else {
-            str = ENVPTR->NewStringUTF(ENVPAR lValue);
+            str = ENVPTR->NewStringUTF(ENVPAR (char *)lValue);
             if (str == NULL) {
                 /* exception -- fatal JNI error */
                 free(lValue);
