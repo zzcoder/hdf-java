@@ -920,4 +920,16 @@ public class TestH5P {
 	public void testH5Pget_elink_prefix_null() throws Throwable, HDF5LibraryException {
 		H5.H5Pget_elink_prefix(plapl_id, null);
 	}
+	
+	@Test
+	public void testH5Pset_fapl_direct() throws Throwable, HDF5LibraryException {
+		int ret_val = -1;
+		try {
+			ret_val = H5.H5Pset_fapl_direct(fapl_id, 1024, 4096, 8*4096);
+		}
+		catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5Pset_fapl_direct: " + err);
+		}
+	}
 }
