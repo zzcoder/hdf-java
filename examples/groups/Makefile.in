@@ -21,11 +21,13 @@ CLASSPATH=@CLASSPATH@
 .java.class:
 	$(JAVAC) -classpath $(CLASSPATH) $<
 
-all: H5Ex_G_Create H5Ex_G_Iterate
+all: H5Ex_G_Create H5Ex_G_Iterate H5Ex_G_Compact
 
 H5Ex_G_Create: H5Ex_G_Create.class
 
 H5Ex_G_Iterate: H5Ex_G_Iterate.class
+
+H5Ex_G_Compact: H5Ex_G_Compact.class
 
 check: all
 
