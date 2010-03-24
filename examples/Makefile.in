@@ -72,7 +72,10 @@ run-groups:
 		echo "**FAILED**    groups.H5Ex_G_Iterate"; fi;
 	@if ./runExample.sh examples.groups.H5Ex_G_Compact; then \
 		echo "  PASSED      groups.H5Ex_G_Compact"; else  \
-		echo "**FAILED**    groups.H5Ex_G_Compact"; fi;		
+		echo "**FAILED**    groups.H5Ex_G_Compact"; fi;	
+	@if ./runExample.sh examples.groups.H5Ex_G_Corder; then \
+		echo "  PASSED      groups.H5Ex_G_Corder"; else  \
+		echo "**FAILED**    groups.H5Ex_G_Corder"; fi;			
 
 run-datasets:
 	@if ./runExample.sh examples.datasets.H5Ex_D_Alloc; then \
