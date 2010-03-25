@@ -196,6 +196,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5G_1RESERVED_15(JNIE
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5G_1RESERVED_16(JNIEnv *env, jclass cls) { return H5G_RESERVED_6; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5G_1RESERVED_17(JNIEnv *env, jclass cls) { return H5G_RESERVED_7; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5G_1SAME_1LOC(JNIEnv *env, jclass cls) { return H5G_SAME_LOC; }
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5G_1STORAGE_1TYPE_1UNKNOWN(JNIEnv *env, jclass cls){ return H5G_STORAGE_TYPE_UNKNOWN; }
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5G_1STORAGE_1TYPE_1SYMBOL_1TABLE(JNIEnv *env, jclass cls){ return H5G_STORAGE_TYPE_SYMBOL_TABLE; }
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5G_1STORAGE_1TYPE_1COMPACT(JNIEnv *env, jclass cls){ return H5G_STORAGE_TYPE_COMPACT; }
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5G_1STORAGE_1TYPE_1DENSE(JNIEnv *env, jclass cls){ return H5G_STORAGE_TYPE_DENSE; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5G_1TYPE(JNIEnv *env, jclass cls) { return H5G_TYPE; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5G_1UNKNOWN(JNIEnv *env, jclass cls) { return H5G_UNKNOWN; }
 

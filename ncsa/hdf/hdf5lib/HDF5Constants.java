@@ -206,6 +206,10 @@ public class HDF5Constants {
     public static final int H5G_RESERVED_6 = H5G_RESERVED_6();
     public static final int H5G_RESERVED_7 = H5G_RESERVED_7();
     public static final int H5G_SAME_LOC = H5G_SAME_LOC();
+    public static final int H5G_STORAGE_TYPE_UNKNOWN = H5G_STORAGE_TYPE_UNKNOWN();
+    public static final int H5G_STORAGE_TYPE_SYMBOL_TABLE = H5G_STORAGE_TYPE_SYMBOL_TABLE();
+    public static final int H5G_STORAGE_TYPE_COMPACT = H5G_STORAGE_TYPE_COMPACT();
+    public static final int H5G_STORAGE_TYPE_DENSE = H5G_STORAGE_TYPE_DENSE();
     public static final int H5G_TYPE = H5G_TYPE();
     public static final int H5G_UNKNOWN = H5G_UNKNOWN();
     public static final int H5I_ATTR = H5I_ATTR();
@@ -885,6 +889,14 @@ public class HDF5Constants {
     private static native final int H5G_RESERVED_7();
 
     private static native final int H5G_SAME_LOC();
+    
+    private static native final int H5G_STORAGE_TYPE_UNKNOWN();
+    
+    private static native final int H5G_STORAGE_TYPE_SYMBOL_TABLE();
+    
+    private static native final int H5G_STORAGE_TYPE_COMPACT();
+    
+    private static native final int H5G_STORAGE_TYPE_DENSE();
 
     private static native final int H5G_TYPE();
 
