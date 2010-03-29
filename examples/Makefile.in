@@ -79,6 +79,10 @@ run-groups:
 	@if ./runExample.sh examples.groups.H5Ex_G_Intermediate; then \
 		echo "  PASSED      groups.H5Ex_G_Intermediate"; else  \
 		echo "**FAILED**    groups.H5Ex_G_Intermediate"; fi;	
+	@if ./runExample.sh examples.groups.H5Ex_G_Phase; then \
+		echo "  PASSED      groups.H5Ex_G_Phase"; else  \
+		echo "**FAILED**    groups.H5Ex_G_Phase"; fi;	
+
 			
 
 run-datasets:
