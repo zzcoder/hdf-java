@@ -22,7 +22,7 @@ CLASSPATH=@CLASSPATH@
 	$(JAVAC) -classpath $(CLASSPATH) $<
 
 all: H5Ex_D_Alloc H5Ex_D_Checksum H5Ex_D_Chunk H5Ex_D_Compact H5Ex_D_External H5Ex_D_FillValue H5Ex_D_Gzip \
-  H5Ex_D_Hyperslab H5Ex_D_ReadWrite H5Ex_D_Shuffle H5Ex_D_Szip H5Ex_D_UnlimitedAdd H5Ex_D_UnlimitedGzip H5Ex_D_UnlimitedMod
+  H5Ex_D_Hyperslab H5Ex_D_ReadWrite H5Ex_D_Shuffle H5Ex_D_Szip H5Ex_D_UnlimitedAdd H5Ex_D_UnlimitedGzip H5Ex_D_UnlimitedMod H5Ex_D_Nbit
 
 H5Ex_D_Alloc: H5Ex_D_Alloc.class
 
@@ -51,6 +51,8 @@ H5Ex_D_UnlimitedAdd: H5Ex_D_UnlimitedAdd.class
 H5Ex_D_UnlimitedGzip: H5Ex_D_UnlimitedGzip.class
 
 H5Ex_D_UnlimitedMod: H5Ex_D_UnlimitedMod.class
+
+H5Ex_D_Nbit : H5Ex_D_Nbit.class
 
 check: all
 
