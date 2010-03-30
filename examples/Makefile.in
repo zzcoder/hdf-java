@@ -131,6 +131,10 @@ run-datasets:
 	@if ./runExample.sh examples.datasets.H5Ex_D_UnlimitedMod; then \
 		echo "  PASSED      datasets.H5Ex_D_UnlimitedMod"; else  \
 		echo "**FAILED**    datasets.H5Ex_D_UnlimitedMod"; fi;
+	@if ./runExample.sh examples.datasets.H5Ex_D_Nbit; then \
+		echo "  PASSED      datasets.H5Ex_D_Nbit"; else  \
+		echo "**FAILED**    datasets.H5Ex_D_Nbit"; fi;
+
 
 run-datatypes:
 	@if ./runExample.sh examples.datatypes.H5Ex_T_Array; then \
