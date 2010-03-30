@@ -24,13 +24,13 @@ public class H5Ex_G_Compact {
 	    
 	    // Obtain the group info and print the group storage type.     
 	    ginfo = H5.H5Gget_info(group_id);
-	    //System.out.print("Group storage type for " + FILE1 + " is: ");
+	    System.out.print("Group storage type for " + FILE1 + " is: ");
 	    if (ginfo.storage_type == HDF5Constants.H5G_STORAGE_TYPE_COMPACT)
-	    	//System.out.println("H5G_STORAGE_TYPE_COMPACT"); /* New compact format */
+	    	System.out.println("H5G_STORAGE_TYPE_COMPACT"); /* New compact format */
 	    if (ginfo.storage_type == HDF5Constants.H5G_STORAGE_TYPE_DENSE)
-	    	//System.out.println("H5G_STORAGE_TYPE_DENSE"); /* New dense (indexed) format */
+	    	System.out.println("H5G_STORAGE_TYPE_DENSE"); /* New dense (indexed) format */
 	    if (ginfo.storage_type == HDF5Constants.H5G_STORAGE_TYPE_SYMBOL_TABLE)
-	    	//System.out.println("H5G_STORAGE_TYPE_SYMBOL_TABLE");/* Original format */
+	    	System.out.println("H5G_STORAGE_TYPE_SYMBOL_TABLE");/* Original format */
 	   
 	    // Close file. 
 	    if(group_id>=0)
@@ -43,7 +43,7 @@ public class H5Ex_G_Compact {
 
 	    //Obtain and print the file size.
 	    size = H5.H5Fget_filesize (file_id);
-	    //System.out.println ("File size for " + FILE1 + " is: "  +  size + " bytes" );
+	    System.out.println ("File size for " + FILE1 + " is: "  +  size + " bytes" );
 
 	    //Close FILE1.
 	    H5.H5Fclose (file_id);
@@ -61,13 +61,13 @@ public class H5Ex_G_Compact {
 
 	    //Obtain the group info and print the group storage type.
 	    ginfo = H5.H5Gget_info(group_id);
-	    //System.out.print("\nGroup storage type for " + FILE2 + " is: ");
+	    System.out.print("\nGroup storage type for " + FILE2 + " is: ");
 	    if (ginfo.storage_type == HDF5Constants.H5G_STORAGE_TYPE_COMPACT)
-	    	//System.out.println("H5G_STORAGE_TYPE_COMPACT"); /* New compact format */
+	    	System.out.println("H5G_STORAGE_TYPE_COMPACT"); /* New compact format */
 	    if (ginfo.storage_type == HDF5Constants.H5G_STORAGE_TYPE_DENSE)
-	    	//System.out.println("H5G_STORAGE_TYPE_DENSE"); /* New dense (indexed) format */
+	    	System.out.println("H5G_STORAGE_TYPE_DENSE"); /* New dense (indexed) format */
 	    if (ginfo.storage_type == HDF5Constants.H5G_STORAGE_TYPE_SYMBOL_TABLE)
-	    	//System.out.println("H5G_STORAGE_TYPE_SYMBOL_TABLE");/* Original format */
+	    	System.out.println("H5G_STORAGE_TYPE_SYMBOL_TABLE");/* Original format */
 
 	    //Close file. 
 	    H5.H5Gclose (group_id);
@@ -78,7 +78,7 @@ public class H5Ex_G_Compact {
 
 	    //Obtain and print the file size.
 	    size = H5.H5Fget_filesize (file_id);
-	    //System.out.println ("File size for " + FILE2 + " is: "  +  size + " bytes");
+	    System.out.println ("File size for " + FILE2 + " is: "  +  size + " bytes");
 	   
 	    //Close FILE2 and release resources.
 	    H5.H5Fclose (file_id);

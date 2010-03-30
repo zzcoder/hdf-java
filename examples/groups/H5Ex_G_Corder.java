@@ -48,19 +48,19 @@ public class H5Ex_G_Corder {
 				ginfo= H5.H5Gget_info(group_id);
 
 				//Traverse links in the primary group using alphabetical indices (H5_INDEX_NAME).
-				//System.out.println("Traversing group using alphabetical indices:");
+				System.out.println("Traversing group using alphabetical indices:");
 				for (i=0; i<ginfo.nlinks; i++) {
 					//Retrieve the name of the ith link in a group
 					name = H5.H5Lget_name_by_idx(group_id, ".", HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC, i, HDF5Constants.H5P_DEFAULT);
-					//System.out.println("Index " + i + ": " + name);
+					System.out.println("Index " + i + ": " + name);
 				}
 
 				//Traverse links in the primary group by creation order (H5_INDEX_CRT_ORDER).
-				//System.out.println("Traversing group using creation order indices:");
+				System.out.println("Traversing group using creation order indices:");
 				for (i=0; i<ginfo.nlinks; i++) {
 					//Retrieve the name of the ith link in a group
 					name = H5.H5Lget_name_by_idx(group_id, ".", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC, i, HDF5Constants.H5P_DEFAULT);
-					//System.out.println("Index " + i + ": " + name);
+					System.out.println("Index " + i + ": " + name);
 				}
 
 			}catch (Exception e) {

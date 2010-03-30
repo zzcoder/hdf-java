@@ -90,7 +90,7 @@ class H5O_iter_callback implements H5O_iterate_cb {
 		System.out.print("/"); /* Print root group in object path */
 
 		//Check if the current object is the root group, and if not print the full path name and type.
-		
+
 		if (name.charAt(0) == '.')         /* Root group, do not print '.' */
 			System.out.print("  (Group)\n");
 		else if(info.type == HDF5Constants.H5O_TYPE_GROUP ) 
