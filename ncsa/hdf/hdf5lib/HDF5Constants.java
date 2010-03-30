@@ -508,6 +508,7 @@ public class HDF5Constants {
     public static final int H5Z_FILTER_ERROR = H5Z_FILTER_ERROR();
     public static final int H5Z_FILTER_FLETCHER32 = H5Z_FILTER_FLETCHER32();
     public static final int H5Z_FILTER_MAX = H5Z_FILTER_MAX();
+    public static final int H5Z_FILTER_NBIT = H5Z_FILTER_NBIT();
     public static final int H5Z_FILTER_NONE = H5Z_FILTER_NONE();
     public static final int H5Z_FILTER_RESERVED = H5Z_FILTER_RESERVED();
     public static final int H5Z_FILTER_SHUFFLE = H5Z_FILTER_SHUFFLE();
@@ -1493,6 +1494,8 @@ public class HDF5Constants {
     private static native final int H5Z_FILTER_FLETCHER32();
 
     private static native final int H5Z_FILTER_MAX();
+    
+    private static native final int H5Z_FILTER_NBIT();
 
     private static native final int H5Z_FILTER_NONE();
 

@@ -508,6 +508,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5Z_1FILTER_1DEFLATE(
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5Z_1FILTER_1ERROR(JNIEnv *env, jclass cls) { return H5Z_FILTER_ERROR; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5Z_1FILTER_1FLETCHER32(JNIEnv *env, jclass cls) { return H5Z_FILTER_FLETCHER32; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5Z_1FILTER_1MAX(JNIEnv *env, jclass cls) { return H5Z_FILTER_MAX; }
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5Z_1FILTER_1NBIT(JNIEnv *env, jclass cls) {return H5Z_FILTER_NBIT; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5Z_1FILTER_1NONE(JNIEnv *env, jclass cls) { return H5Z_FILTER_NONE; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5Z_1FILTER_1RESERVED(JNIEnv *env, jclass cls) { return H5Z_FILTER_RESERVED; }
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_HDF5Constants_H5Z_1FILTER_1SHUFFLE(JNIEnv *env, jclass cls) { return H5Z_FILTER_SHUFFLE; }
