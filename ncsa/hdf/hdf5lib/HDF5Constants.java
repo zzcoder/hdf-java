@@ -511,6 +511,7 @@ public class HDF5Constants {
     public static final int H5Z_FILTER_NBIT = H5Z_FILTER_NBIT();
     public static final int H5Z_FILTER_NONE = H5Z_FILTER_NONE();
     public static final int H5Z_FILTER_RESERVED = H5Z_FILTER_RESERVED();
+    public static final int H5Z_FILTER_SCALEOFFSET = H5Z_FILTER_SCALEOFFSET();
     public static final int H5Z_FILTER_SHUFFLE = H5Z_FILTER_SHUFFLE();
     public static final int H5Z_FILTER_SZIP = H5Z_FILTER_SZIP();
     public static final int H5Z_FLAG_DEFMASK = H5Z_FLAG_DEFMASK();
@@ -1500,6 +1501,8 @@ public class HDF5Constants {
     private static native final int H5Z_FILTER_NONE();
 
     private static native final int H5Z_FILTER_RESERVED();
+    
+    private static native final int H5Z_FILTER_SCALEOFFSET();
 
     private static native final int H5Z_FILTER_SHUFFLE();
 
