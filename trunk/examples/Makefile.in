@@ -134,6 +134,10 @@ run-datasets:
 	@if ./runExample.sh examples.datasets.H5Ex_D_Nbit; then \
 		echo "  PASSED      datasets.H5Ex_D_Nbit"; else  \
 		echo "**FAILED**    datasets.H5Ex_D_Nbit"; fi;
+	@if ./runExample.sh examples.datasets.H5Ex_D_Transform; then \
+		echo "  PASSED      datasets.H5Ex_D_Transform"; else  \
+		echo "**FAILED**    datasets.H5Ex_D_Transform"; fi;
+
 
 
 run-datatypes:
