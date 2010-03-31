@@ -140,7 +140,9 @@ run-datasets:
 	@if ./runExample.sh examples.datasets.H5Ex_D_Sofloat; then \
 		echo "  PASSED      datasets.H5Ex_D_Sofloat"; else  \
 		echo "**FAILED**    datasets.H5Ex_D_Sofloat"; fi;
-
+	@if ./runExample.sh examples.datasets.H5Ex_D_Soint; then \
+		echo "  PASSED      datasets.H5Ex_D_Soint"; else  \
+		echo "**FAILED**    datasets.H5Ex_D_Soint"; fi;
 
 
 run-datatypes:
