@@ -23,7 +23,7 @@ import ncsa.hdf.hdf5lib.structs.H5O_info_t;
 
 public class H5Ex_G_Visit {
 
-	private static String FILE = "h5ex_g_visit.h5";
+	private static String FILE = "groups/h5ex_g_visit.h5";
 
 		private static void VisitGroup() throws Exception {
 
