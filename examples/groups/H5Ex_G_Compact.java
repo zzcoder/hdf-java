@@ -1,5 +1,8 @@
 package examples.groups;
 
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.structs.H5G_info_t;
@@ -10,85 +13,222 @@ public class H5Ex_G_Compact {
 	private static final String FILE2 = "h5ex_g_compact2.h5";
 	private static final String GROUP = "G1";
 
-	public static void CreateGroup() throws Exception
-	{
-	    int     	file_id = -1;
-	    int 		group_id = -1;
-	    int			fapl_id = -1; 
-	    H5G_info_t  ginfo;
-	    long		size;
+	enum H5G_storage {
+		H5G_STORAGE_TYPE_UNKNOWN(-1),
+		H5G_STORAGE_TYPE_SYMBOL_TABLE(0),
+		H5G_STORAGE_TYPE_COMPACT(1),
+		H5G_STORAGE_TYPE_DENSE(2);
 
-	    //Create file 1.  This file will use original format groups.
-	    file_id = H5.H5Fcreate (FILE1, HDF5Constants.H5F_ACC_TRUNC, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-	    group_id = H5.H5Gcreate2(file_id, GROUP, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-	    
-	    // Obtain the group info and print the group storage type.     
-	    ginfo = H5.H5Gget_info(group_id);
-	    System.out.print("Group storage type for " + FILE1 + " is: ");
-	    if (ginfo.storage_type == HDF5Constants.H5G_STORAGE_TYPE_COMPACT)
-	    	System.out.println("H5G_STORAGE_TYPE_COMPACT"); /* New compact format */
-	    if (ginfo.storage_type == HDF5Constants.H5G_STORAGE_TYPE_DENSE)
-	    	System.out.println("H5G_STORAGE_TYPE_DENSE"); /* New dense (indexed) format */
-	    if (ginfo.storage_type == HDF5Constants.H5G_STORAGE_TYPE_SYMBOL_TABLE)
-	    	System.out.println("H5G_STORAGE_TYPE_SYMBOL_TABLE");/* Original format */
-	   
-	    // Close file. 
-	    if(group_id>=0)
-	    	H5.H5Gclose (group_id);
-	    if (file_id>=0)
-	    	H5.H5Fclose (file_id);
-	    
-	    // Re-open file.  Need to get the correct file size.
-	    file_id = H5.H5Fopen(FILE1, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
+		private static final Map<Integer, H5G_storage> lookup = new HashMap<Integer, H5G_storage>();
 
-	    //Obtain and print the file size.
-	    size = H5.H5Fget_filesize (file_id);
-	    System.out.println ("File size for " + FILE1 + " is: "  +  size + " bytes" );
+		static {
+			for (H5G_storage s : EnumSet.allOf(H5G_storage.class))
+				lookup.put(s.getCode(), s);
+		}
 
-	    //Close FILE1.
-	    H5.H5Fclose (file_id);
+		private int code;
 
-	    /*
-	     * Set file access property list to allow the latest file format.
-	     * This will allow the library to create new compact format groups.
-	     */
-	    fapl_id = H5.H5Pcreate (HDF5Constants.H5P_FILE_ACCESS);
-	    H5.H5Pset_libver_bounds (fapl_id, HDF5Constants.H5F_LIBVER_LATEST, HDF5Constants.H5F_LIBVER_LATEST);
+		H5G_storage(int layout_type) {
+			this.code = layout_type;
+		}
 
-	    //Create file 2 using the new file access property list.
-	    file_id = H5.H5Fcreate(FILE2, HDF5Constants.H5F_ACC_TRUNC, HDF5Constants.H5P_DEFAULT, fapl_id);
-	    group_id = H5.H5Gcreate2(file_id, GROUP, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+		public int getCode() {
+			return this.code;
+		}
 
-	    //Obtain the group info and print the group storage type.
-	    ginfo = H5.H5Gget_info(group_id);
-	    System.out.print("\nGroup storage type for " + FILE2 + " is: ");
-	    if (ginfo.storage_type == HDF5Constants.H5G_STORAGE_TYPE_COMPACT)
-	    	System.out.println("H5G_STORAGE_TYPE_COMPACT"); /* New compact format */
-	    if (ginfo.storage_type == HDF5Constants.H5G_STORAGE_TYPE_DENSE)
-	    	System.out.println("H5G_STORAGE_TYPE_DENSE"); /* New dense (indexed) format */
-	    if (ginfo.storage_type == HDF5Constants.H5G_STORAGE_TYPE_SYMBOL_TABLE)
-	    	System.out.println("H5G_STORAGE_TYPE_SYMBOL_TABLE");/* Original format */
+		public static H5G_storage get(int code) {
+			return lookup.get(code);
+		}
+	}
 
-	    //Close file. 
-	    H5.H5Gclose (group_id);
-	    H5.H5Fclose (file_id);
-	    
-	    //Re-open file.  Needed to get the correct file size.
-	    file_id = H5.H5Fopen (FILE2, HDF5Constants.H5F_ACC_RDONLY, fapl_id);
+	public static void CreateGroup() {
+		int     	file_id = -1;
+		int 		group_id = -1;
+		int			fapl_id = -1; 
+		H5G_info_t  ginfo;
+		long		size;
 
-	    //Obtain and print the file size.
-	    size = H5.H5Fget_filesize (file_id);
-	    System.out.println ("File size for " + FILE2 + " is: "  +  size + " bytes");
-	   
-	    //Close FILE2 and release resources.
-	    H5.H5Fclose (file_id);
+		//Create file 1.  This file will use original format groups.
+		try{
+			file_id = H5.H5Fcreate (FILE1, HDF5Constants.H5F_ACC_TRUNC, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		//Create a group in the file1.
+		try{
+			if(file_id>=0)
+				group_id = H5.H5Gcreate2(file_id, GROUP, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		// Obtain the group info and print the group storage type.   
+		try{
+			if(group_id>=0){
+				ginfo = H5.H5Gget_info(group_id);
+				System.out.print("Group storage type for " + FILE1 + " is: ");
+				switch (H5G_storage.get(ginfo.storage_type)) {
+				case H5G_STORAGE_TYPE_COMPACT:
+					System.out.println("H5G_STORAGE_TYPE_COMPACT"); // New compact format
+					break;
+				case H5G_STORAGE_TYPE_DENSE:
+					System.out.println("H5G_STORAGE_TYPE_DENSE"); //New dense (indexed) format
+					break;
+				case H5G_STORAGE_TYPE_SYMBOL_TABLE:
+					System.out.println("H5G_STORAGE_TYPE_SYMBOL_TABLE"); //Original format 
+				}
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		// Close the group. 
+		try {
+			if (group_id >= 0)
+				H5.H5Gclose(group_id);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		//close the file 1.
+		try {
+			if (file_id >= 0)
+				H5.H5Fclose (file_id);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+
+		// Re-open file 1.  Need to get the correct file size.
+		try{
+			file_id = H5.H5Fopen(FILE1, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		//Obtain and print the file size.
+		try{
+			if(file_id>=0){
+				size = H5.H5Fget_filesize (file_id);
+				System.out.println ("File size for " + FILE1 + " is: "  +  size + " bytes" );
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		//Close FILE1.
+		try {
+			if (file_id >= 0)
+				H5.H5Fclose (file_id);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+
+		//Set file access property list to allow the latest file format.
+		// This will allow the library to create new compact format groups.
+		try{
+			fapl_id = H5.H5Pcreate (HDF5Constants.H5P_FILE_ACCESS);
+			if(fapl_id>=0)
+				H5.H5Pset_libver_bounds (fapl_id, HDF5Constants.H5F_LIBVER_LATEST, HDF5Constants.H5F_LIBVER_LATEST);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		//Create file 2 using the new file access property list.
+		try{
+			file_id = H5.H5Fcreate(FILE2, HDF5Constants.H5F_ACC_TRUNC, HDF5Constants.H5P_DEFAULT, fapl_id);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		//Create group in file2.
+		try{
+			if(file_id>=0)
+				group_id = H5.H5Gcreate2(file_id, GROUP, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		//Obtain the group info and print the group storage type.
+		try{
+			if(group_id>=0){
+				ginfo = H5.H5Gget_info(group_id);
+				System.out.print("\nGroup storage type for " + FILE2 + " is: ");
+				switch (H5G_storage.get(ginfo.storage_type)) {
+				case H5G_STORAGE_TYPE_COMPACT:
+					System.out.println("H5G_STORAGE_TYPE_COMPACT"); //New compact format
+					break;
+				case H5G_STORAGE_TYPE_DENSE:
+					System.out.println("H5G_STORAGE_TYPE_DENSE"); // New dense (indexed) format
+					break;
+				case H5G_STORAGE_TYPE_SYMBOL_TABLE:
+					System.out.println("H5G_STORAGE_TYPE_SYMBOL_TABLE"); // Original format
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		// Close the group. 
+		try {
+			if (group_id >= 0)
+				H5.H5Gclose(group_id);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		//close the file 2.
+		try {
+			if (file_id >= 0)
+				H5.H5Fclose (file_id);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		//Re-open file 2.  Needed to get the correct file size.
+		try{
+			file_id = H5.H5Fopen (FILE2, HDF5Constants.H5F_ACC_RDONLY, fapl_id);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		//Obtain and print the file size.
+		try{
+			if(file_id>=0){
+				size = H5.H5Fget_filesize (file_id);
+				System.out.println ("File size for " + FILE2 + " is: "  +  size + " bytes");
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		//Close FILE2.
+		try {
+			if (file_id >= 0)
+				H5.H5Fclose (file_id);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void main(String[] args) {
-		try { 
-			H5Ex_G_Compact.CreateGroup();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		H5Ex_G_Compact.CreateGroup();
 	}
 }
