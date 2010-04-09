@@ -106,7 +106,7 @@ public class TestH5A {
 
 		int atrr_id = -1;
 		try {
-			atrr_id = H5.H5Acreate2(H5did, "dset", type_id, space_id, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+			atrr_id = H5.H5Acreate(H5did, "dset", type_id, space_id, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 			assertTrue("testH5Acreate2", atrr_id >= 0);
 		} catch (Throwable err) {
 			err.printStackTrace();
@@ -119,12 +119,12 @@ public class TestH5A {
 	
 	@Test(expected = HDF5LibraryException.class)
 	public void testH5Acreate2_invalidobject() throws Throwable, HDF5LibraryException {
-		H5.H5Acreate2(H5dsid, "dset", type_id, space_id, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+		H5.H5Acreate(H5dsid, "dset", type_id, space_id, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 	}
 	
 	@Test(expected = NullPointerException.class)
 	public void testH5Acreate2_nullname() throws Throwable, HDF5LibraryException {
-		H5.H5Acreate2(H5did, null, type_id, space_id, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+		H5.H5Acreate(H5did, null, type_id, space_id, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 	}
 
 	@Test
@@ -134,7 +134,7 @@ public class TestH5A {
 		int attribute_id = -1, atrr_id = -1;
 
 		try {
-			atrr_id = H5.H5Acreate2(H5did, attr_name, type_id, space_id,
+			atrr_id = H5.H5Acreate(H5did, attr_name, type_id, space_id,
 					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 
 			// Opening the existing attribute, attr_name(Created by H5ACreate2)
@@ -172,7 +172,7 @@ public class TestH5A {
 		int aapl_id = HDF5Constants.H5P_DEFAULT;
 
 		try {
-			attr_id = H5.H5Acreate2(loc_id, obj_name, type_id, space_id,
+			attr_id = H5.H5Acreate(loc_id, obj_name, type_id, space_id,
 					acpl_id, aapl_id);
 
 			// Opening the existing attribute, obj_name(Created by H5ACreate2)
@@ -344,7 +344,7 @@ public class TestH5A {
 		long attr_size = -1;
 
 		try {
-			attr_id = H5.H5Acreate2(H5did, "dset", type_id, space_id,
+			attr_id = H5.H5Acreate(H5did, "dset", type_id, space_id,
 					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 
 			attr_size = H5.H5Aget_storage_size(attr_id);
@@ -365,7 +365,7 @@ public class TestH5A {
 		int attribute_id = -1, atrr_id = -1;
 
 		try {
-			atrr_id = H5.H5Acreate2(H5did, "dset", type_id, space_id,
+			atrr_id = H5.H5Acreate(H5did, "dset", type_id, space_id,
 					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 			attribute_id = H5.H5Aopen(H5did, "dset", HDF5Constants.H5P_DEFAULT);
 			// Calling H5Aget_info with attribute_id returned from H5Aopen.
@@ -396,7 +396,7 @@ public class TestH5A {
 		int order = HDF5Constants.H5_ITER_INC;
 
 		try {
-			atrr_id = H5.H5Acreate2(H5did, ".", type_id, space_id,
+			atrr_id = H5.H5Acreate(H5did, ".", type_id, space_id,
 					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 			attribute_id = H5.H5Aopen_by_idx(H5did, ".",
 					HDF5Constants.H5_INDEX_CRT_ORDER, order, 0,
@@ -432,9 +432,9 @@ public class TestH5A {
 		H5A_info_t attr_info = null;
 
 		try {
-			attr_id = H5.H5Acreate2(H5did, "dset1", type_id, space_id,
+			attr_id = H5.H5Acreate(H5did, "dset1", type_id, space_id,
 					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-			attr2_id = H5.H5Acreate2(H5did, "dataset2", type_id, space_id,
+			attr2_id = H5.H5Acreate(H5did, "dataset2", type_id, space_id,
 					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 			
 			//Verify info for 1st attribute, in increasing creation order
@@ -557,7 +557,7 @@ public class TestH5A {
 		assertFalse("H5Aexists ", exists);
 
 		try {
-			atrr_id = H5.H5Acreate2(H5fid, "dset", type_id, space_id,
+			atrr_id = H5.H5Acreate(H5fid, "dset", type_id, space_id,
 					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 			exists = H5.H5Aexists(H5fid, "dset");
 			assertTrue("H5Aexists ", exists);
