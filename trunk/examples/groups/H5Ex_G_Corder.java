@@ -27,7 +27,7 @@ public class H5Ex_G_Corder {
 
 			// Create primary group using the property list.
 			if (status >= 0)
-				group_id = H5.H5Gcreate2(file_id, "index_group", HDF5Constants.H5P_DEFAULT, gcpl_id, HDF5Constants.H5P_DEFAULT);
+				group_id = H5.H5Gcreate(file_id, "index_group", HDF5Constants.H5P_DEFAULT, gcpl_id, HDF5Constants.H5P_DEFAULT);
 
 			try{
 				/*
@@ -35,13 +35,13 @@ public class H5Ex_G_Corder {
 				 * by creation order.  Note that these groups do not have to have
 				 * the creation order tracking property set.
 				 */
-				subgroup_id = H5.H5Gcreate2(group_id, "H", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+				subgroup_id = H5.H5Gcreate(group_id, "H", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 				status = H5.H5Gclose(subgroup_id);
-				subgroup_id = H5.H5Gcreate2(group_id, "D", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+				subgroup_id = H5.H5Gcreate(group_id, "D", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 				status = H5.H5Gclose(subgroup_id);
-				subgroup_id = H5.H5Gcreate2(group_id, "F", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+				subgroup_id = H5.H5Gcreate(group_id, "F", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 				status = H5.H5Gclose(subgroup_id);
-				subgroup_id = H5.H5Gcreate2(group_id, "5", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+				subgroup_id = H5.H5Gcreate(group_id, "5", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 				status = H5.H5Gclose(subgroup_id);
 
 				// Get group info.
