@@ -47,7 +47,7 @@ extern "C" {
 
 #ifdef __cplusplus
 #define ENVPTR (env)
-#define ENVPAR 
+#define ENVPAR
 #else
 #define ENVPTR (*env)
 #define ENVPAR env,
@@ -169,7 +169,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dcreate
         h5JNIFatalError( env, "H5Dcreate:  file name not pinned");
         return -1;
     }
-    
+
     status = H5Dcreate(loc_id, file, type_id, space_id, create_plist_id);
 
     ENVPTR->ReleaseStringUTFChars(ENVPAR name,file);
@@ -506,8 +506,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dcopy
     hid_t dst_did = (hid_t)dst_id;
     hid_t tid=-1;
     hid_t sid=-1;
-    hsize_t total_size = 0;
+    hsize_t total_size = 0, total_allocated_size;
 
+    total_allocated_size = H5Dget_storage_size(src_did);
+    if (total_allocated_size <=0)
+    	return 0; // nothing to write;
 
     sid = H5Dget_space(src_did);
     if (sid < 0) {
@@ -559,7 +562,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dcopy
 
     return (jint)retVal;
 }
-
 
 /*
  * Copies the content of one dataset to another dataset
@@ -984,7 +986,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DreadVL
         return -1;
 }
 
-herr_t H5DreadVL_num (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, 
+herr_t H5DreadVL_num (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid,
     hid_t file_sid, hid_t xfer_plist_id, jobjectArray buf)
 {
     herr_t status;
@@ -1046,7 +1048,7 @@ herr_t H5DreadVL_num (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid,
     return status;
 }
 
-herr_t H5DreadVL_str (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t 
+herr_t H5DreadVL_str (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t
     file_sid, hid_t xfer_plist_id, jobjectArray buf)
 {
     herr_t status=-1;
