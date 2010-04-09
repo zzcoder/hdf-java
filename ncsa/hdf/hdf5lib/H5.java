@@ -6440,7 +6440,7 @@ public class H5 {
      * @exception NullPointerException
      *                - name is null.
      **/
-    public static int H5Gcreate2(int loc_id, String name,
+    public static int H5Gcreate(int loc_id, String name,
             int lcpl_id, int gcpl_id, int gapl_id)
             throws HDF5LibraryException, NullPointerException {
                 int id = _H5Gcreate2(loc_id, name, lcpl_id, gcpl_id, gapl_id);
@@ -6501,7 +6501,7 @@ public class H5 {
      * @exception NullPointerException
      *                - name is null.
      **/
-    public static int H5Gopen2(int loc_id, String name,
+    public static int H5Gopen(int loc_id, String name,
             int gapl_id) throws HDF5LibraryException, NullPointerException {
                 int id = _H5Gopen2(loc_id, name, gapl_id);
                 if (id > 0)
@@ -8396,7 +8396,7 @@ throws HDF5LibraryException;
 //////////////////////////////////////////////////////////////
 
 /**
- * H5Acreate2 creates an attribute, attr_name, which is attached to the object specified by the identifier loc_id.  
+ * H5Acreate creates an attribute, attr_name, which is attached to the object specified by the identifier loc_id.  
  * 
  * @param loc_id        	IN: Location or object identifier; may be dataset or group 
  * @param attr_name      	IN: Attribute name 

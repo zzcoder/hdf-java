@@ -24,7 +24,7 @@ public class TestH5G {
     private final int _createGroup(int fid, String name) {
         int gid = -1;
         try {
-            gid = H5.H5Gcreate2(fid, name, HDF5Constants.H5P_DEFAULT,
+            gid = H5.H5Gcreate(fid, name, HDF5Constants.H5P_DEFAULT,
                         HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
         }
         catch (Throwable err) {
@@ -38,7 +38,7 @@ public class TestH5G {
     private final int _openGroup(int fid, String name) {
         int gid = -1;
         try {
-            gid = H5.H5Gopen2(fid, name, HDF5Constants.H5P_DEFAULT);
+            gid = H5.H5Gopen(fid, name, HDF5Constants.H5P_DEFAULT);
         }
         catch (Throwable err) {
             gid = -1;
