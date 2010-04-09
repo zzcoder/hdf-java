@@ -66,7 +66,7 @@ public class TestH5Ocreate {
         int gid = -1;
         try {
             H5gcpl = HDF5Constants.H5P_DEFAULT;
-            gid = H5.H5Gcreate2(fid, name, HDF5Constants.H5P_DEFAULT,
+            gid = H5.H5Gcreate(fid, name, HDF5Constants.H5P_DEFAULT,
                     H5gcpl, HDF5Constants.H5P_DEFAULT);
         }
         catch (Throwable err) {

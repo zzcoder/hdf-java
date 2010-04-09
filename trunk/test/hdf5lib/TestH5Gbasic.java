@@ -22,7 +22,7 @@ public class TestH5Gbasic {
     private final int _createGroup(int fid, String name) {
         int gid = -1;
         try {
-            gid = H5.H5Gcreate2(fid, name, HDF5Constants.H5P_DEFAULT,
+            gid = H5.H5Gcreate(fid, name, HDF5Constants.H5P_DEFAULT,
                         HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
         }
         catch (Throwable err) {
@@ -75,7 +75,7 @@ public class TestH5Gbasic {
         int gid = -1;
 
         // it should fail because the group name is null
-        gid = H5.H5Gcreate2(H5fid, null, HDF5Constants.H5P_DEFAULT,
+        gid = H5.H5Gcreate(H5fid, null, HDF5Constants.H5P_DEFAULT,
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 
         try {H5.H5Gclose(gid);} catch (Exception ex) {}
@@ -84,7 +84,7 @@ public class TestH5Gbasic {
     @Test(expected = HDF5LibraryException.class)
     public void testH5Gcreate_invalid()
             throws Throwable, HDF5LibraryException, NullPointerException {
-        H5.H5Gcreate2(-1, "Invalid ID", HDF5Constants.H5P_DEFAULT,
+        H5.H5Gcreate(-1, "Invalid ID", HDF5Constants.H5P_DEFAULT,
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
     }
 
@@ -92,7 +92,7 @@ public class TestH5Gbasic {
     public void testH5Gcreate() {
         int gid = -1;
         try {
-            gid = H5.H5Gcreate2(H5fid, "/testH5Gcreate",
+            gid = H5.H5Gcreate(H5fid, "/testH5Gcreate",
                         HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT,
                         HDF5Constants.H5P_DEFAULT);
         }
@@ -127,7 +127,7 @@ public class TestH5Gbasic {
         try {H5.H5Gclose(gid);} catch (Exception ex) {}
 
         // it should failed now because the group already exists in file
-        gid = H5.H5Gcreate2(H5fid, "/testH5Gcreate",
+        gid = H5.H5Gcreate(H5fid, "/testH5Gcreate",
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT,
                     HDF5Constants.H5P_DEFAULT);
     }
@@ -153,7 +153,7 @@ public class TestH5Gbasic {
             throws Throwable, HDF5LibraryException, NullPointerException {
         int gid = -1;
 
-        gid = H5.H5Gopen2(H5fid, null, HDF5Constants.H5P_DEFAULT);
+        gid = H5.H5Gopen(H5fid, null, HDF5Constants.H5P_DEFAULT);
 
         try {H5.H5Gclose(gid);} catch (Exception ex) {}
     }
@@ -161,7 +161,7 @@ public class TestH5Gbasic {
     @Test(expected = HDF5LibraryException.class)
     public void testH5Gopen_invalid()
             throws Throwable, HDF5LibraryException, NullPointerException {
-        H5.H5Gopen2(-1, "Invalid ID", HDF5Constants.H5P_DEFAULT);
+        H5.H5Gopen(-1, "Invalid ID", HDF5Constants.H5P_DEFAULT);
     }
 
     @Test(expected = HDF5LibraryException.class)
@@ -169,7 +169,7 @@ public class TestH5Gbasic {
             throws Throwable, HDF5LibraryException, NullPointerException {
         int gid = -1;
 
-         gid = H5.H5Gopen2(H5fid, "Never_created", HDF5Constants.H5P_DEFAULT);
+         gid = H5.H5Gopen(H5fid, "Never_created", HDF5Constants.H5P_DEFAULT);
 
         try {H5.H5Gclose(gid);} catch (Exception ex) {}
     }
@@ -182,7 +182,7 @@ public class TestH5Gbasic {
         try {H5.H5Gclose(gid);} catch (Exception ex) {}
 
         try {
-            gid = H5.H5Gopen2(H5fid, "/testH5Gcreate",
+            gid = H5.H5Gopen(H5fid, "/testH5Gcreate",
                         HDF5Constants.H5P_DEFAULT);
         }
         catch (Throwable err) {
