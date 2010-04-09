@@ -536,6 +536,8 @@ public class H5 {
      * H5Acreate creates an attribute which is attached to the object specified
      * with loc_id.
      * 
+     * @deprecated As of HDF5 1.8, replaced by {@link #H5Acreate( int, String, int, int, int, int) }
+     * 
      * @param loc_id
      *            IN: Object (dataset, group, or named datatype) to be attached
      *            to.
@@ -572,6 +574,8 @@ public class H5 {
      * H5Aopen_name opens an attribute specified by its name, name, which is
      * attached to the object specified with loc_id.
      * 
+     * @deprecated As of HDF5 1.8
+     * 
      * @param loc_id
      *            IN: Identifier of a group, dataset, or named datatype
      *            atttribute
@@ -600,6 +604,8 @@ public class H5 {
      * H5Aopen_idx opens an attribute which is attached to the object specified
      * with loc_id. The location object may be either a group, dataset, or named
      * datatype, all of which may have any sort of attribute.
+     * 
+     * @deprecated As of HDF5 1.8
      * 
      * @param loc_id
      *            IN: Identifier of the group, dataset, or named datatype
@@ -826,6 +832,8 @@ public class H5 {
     /**
      * H5Aget_num_attrs returns the number of attributes attached to the object
      * specified by its identifier, loc_id.
+     * 
+     * @deprecated As of HDF5 1.8
      * 
      * @param loc_id
      *            IN: Identifier of a group, dataset, or named datatype.
@@ -1748,6 +1756,8 @@ public class H5 {
      * H5Gcreate creates a new group with the specified name at the specified
      * location, loc_id.
      * 
+     * @deprecated As of HDF5 1.8, replaced by {@link #H5Gcreate(int, String, int, int, int) }
+     * 
      * @param loc_id
      *            The file or group identifier.
      * @param name
@@ -1777,6 +1787,8 @@ public class H5 {
     /**
      * H5Gopen opens an existing group with the specified name at the specified
      * location, loc_id.
+     * 
+     * @deprecated As of HDF5 1.8, replaced by {@link #H5Gopen(int, String, int) }
      * 
      * @param loc_id
      *            File or group identifier within which group is to be open.
@@ -1824,34 +1836,36 @@ public class H5 {
     private synchronized static native int _H5Gclose(int group_id)
             throws HDF5LibraryException;
 
-    /**
-     * H5Glink creates a new name for an already existing object.
-     * 
-     * @param loc_id
-     *            File, group, dataset, or datatype identifier.
-     * @param link_type
-     *            Link type. Possible values are:
-     *            <UL>
-     *            <LI>
-     *            H5G_LINK_HARD</LI>
-     *            <LI>
-     *            H5G_LINK_SOFT.</LI>
-     *            </UL>
-     * @param current_name
-     *            A name of the existing object if link is a hard link. Can be
-     *            anything for the soft link.
-     * @param new_name
-     *            New name for the object.
-     * 
-     * @return a non-negative value if successful
-     * 
-     * @exception HDF5LibraryException
-     *                - Error from the HDF-5 Library.
-     * @exception NullPointerException
-     *                - current_name or name is null.
-     * 
-     * @deprecated As of HDF5 1.8
-     **/
+	/**
+	 * H5Glink creates a new name for an already existing object.
+	 * 
+	 * @param loc_id
+	 *            File, group, dataset, or datatype identifier.
+	 * @param link_type
+	 *            Link type. Possible values are:
+	 *            <UL>
+	 *            <LI>
+	 *            H5G_LINK_HARD</LI>
+	 *            <LI>
+	 *            H5G_LINK_SOFT.</LI>
+	 *            </UL>
+	 * @param current_name
+	 *            A name of the existing object if link is a hard link. Can be
+	 *            anything for the soft link.
+	 * @param new_name
+	 *            New name for the object.
+	 * 
+	 * @return a non-negative value if successful
+	 * 
+	 * @exception HDF5LibraryException
+	 *                - Error from the HDF-5 Library.
+	 * @exception NullPointerException
+	 *                - current_name or name is null. 
+	 * 
+	 * @deprecated As of HDF5 1.8, replaced by
+	 *             {@link #H5Lcreate_hard(int, String, int, String, int, int)
+	 *             and #H5Lcreate_soft(String, int, String, int, int) }
+	 **/
     public synchronized static native int H5Glink(int loc_id, int link_type,
             String current_name, String new_name)
             throws HDF5LibraryException, NullPointerException;
@@ -1880,7 +1894,7 @@ public class H5 {
      * @exception NullPointerException
      *                - name is null.
      * 
-     * @deprecated As of HDF5 1.8
+     * @deprecated As of HDF5 1.8, replaced by {@link #H5Ldelete(int, String, int)}
      **/
     public synchronized static native int H5Gunlink(int loc_id, String name)
             throws HDF5LibraryException, NullPointerException;
@@ -1905,7 +1919,7 @@ public class H5 {
      * @exception NullPointerException
      *                - src or dst is null.
      * 
-     * @deprecated As of HDF5 1.8
+     * @deprecated As of HDF5 1.8, replaced by {@link #H5Lmove(int, String, int,String, int, int)}
      **/
     public synchronized static native int H5Gmove(int loc_id, String src,
             String dst) throws HDF5LibraryException, NullPointerException;
@@ -1938,7 +1952,7 @@ public class H5 {
      * @exception IllegalArgumentException
      *                - size is invalid
      * 
-     * @deprecated As of HDF5 1.8
+     * @deprecated As of HDF5 1.8, replaced by {@link #H5Lget_val(int, String, String[] , int)}
      **/
     public synchronized static native int H5Gget_linkval(int loc_id,
             String name, int size, String[] value)
@@ -1964,7 +1978,7 @@ public class H5 {
      * @exception NullPointerException
      *                - name or comment is null.
      * 
-     * @deprecated As of HDF5 1.8
+     * @deprecated As of HDF5 1.8, replaced by {@link #H5Oset_comment(int, String)}
      **/
     public synchronized static native int H5Gset_comment(int loc_id,
             String name, String comment)
@@ -1996,7 +2010,7 @@ public class H5 {
      * @exception IllegalArgumentException
      *                - size < 1, comment is invalid.
      * 
-     * @deprecated As of HDF5 1.8
+     * @deprecated As of HDF5 1.8, replaced by {@link #H5Oget_comment(int)}
      **/
     public synchronized static native int H5Gget_comment(int loc_id,
             String name, int bufsize, String[] comment)
@@ -4914,7 +4928,7 @@ public class H5 {
      * @throws HDF5LibraryException
      * @throws NullPointerException
      * 
-     * @deprecated As of HDF5 1.8
+     * @deprecated As of HDF5 1.8, replaced by {@link #H5Gget_info(int)}
      */
     public synchronized static native int H5Gget_num_objs(int loc_id,
             long[] num_obj) throws HDF5LibraryException, NullPointerException;
@@ -4936,7 +4950,7 @@ public class H5 {
      * @throws HDF5LibraryException
      * @throws NullPointerException
      * 
-     * @deprecated As of HDF5 1.8
+     * @deprecated As of HDF5 1.8, replaced by {@link #H5Lget_name_by_idx(int, String, int, int, long, int)}
      */
     public synchronized static native long H5Gget_objname_by_idx(int group_id,
             long idx, String[] name, long size)
@@ -4954,7 +4968,7 @@ public class H5 {
      * @throws HDF5LibraryException
      * @throws NullPointerException
      * 
-     * @deprecated As of HDF5 1.8
+     * @deprecated As of HDF5 1.8, replaced by {@link #H5Oget_info(int)}
      */
     public synchronized static native int H5Gget_objtype_by_idx(int group_id,
             long idx) throws HDF5LibraryException, NullPointerException;
@@ -5140,7 +5154,7 @@ public class H5 {
      * @exception IllegalArgumentException
      *                - bad argument.
      * 
-     * @deprecated As of HDF5 1.8
+     * @deprecated As of HDF5 1.8, replaced by {@link #H5Lget_info(int, String, int) and #H5Oget_info(int)}
      **/
     public synchronized static native int H5Gget_objinfo(int loc_id,
             String name, boolean follow_link, long[] fileno, long[] objno,
