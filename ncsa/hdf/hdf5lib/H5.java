@@ -6603,7 +6603,7 @@ public class H5 {
     /*
      * //////////////////////////////////////////////////////////////////////////
      * /////// // // //Add these methods so that we don't need to call
-     * H5Gget_objtype_by_idx //in a loop to get information for all the object
+     *  //in a loop to get information for all the object
      * in a group, which takes //a lot of time to finish if the number of
      * objects is more than 10,000 //
      * ///////////////////////////////////////////
@@ -8411,13 +8411,21 @@ throws HDF5LibraryException;
  * @exception NullPointerException - Name is null.
  **/
 
-public static int H5Acreate2( int loc_id, String attr_name, int type_id, int space_id, int acpl_id, int aapl_id )
+public static int H5Acreate( int loc_id, String attr_name, int type_id, int space_id, int acpl_id, int aapl_id )
 throws HDF5LibraryException, NullPointerException {
 	int id = _H5Acreate2(loc_id, attr_name, type_id, space_id, acpl_id, aapl_id );
 	if (id > 0)
 		OPEN_IDS.addElement(id);
 	return id;
 }
+
+/**
+ * H5Acreate2 an attribute, attr_name, which is attached to the object
+ * specified by the identifier loc_id.
+ * 
+ * @see public static int H5Acreate( int loc_id, String attr_name, int
+ *      type_id, int space_id, int acpl_id, int aapl_id )
+ **/
 
 private synchronized static native int _H5Acreate2( int loc_id, String attr_name, int type_id, int space_id, int acpl_id, int aapl_id ) 
 throws HDF5LibraryException, NullPointerException;
