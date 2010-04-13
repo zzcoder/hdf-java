@@ -3370,7 +3370,7 @@ public class H5 {
      * @param ref
      *            IN: the reference
      * 
-     * @return a valid identifier if successful
+     * @return a valid object type if successful
      * 
      * @exception HDF5LibraryException
      *                - Error from the HDF-5 Library.
@@ -3394,7 +3394,7 @@ public class H5 {
      *  H5Screate creates a new dataspace of a particular type.
      *
      *  @param type IN: The type of dataspace to be created.
-     *
+     
      *  @return a dataspace identifier
      *
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
@@ -7804,7 +7804,8 @@ public synchronized static native long H5Rget_name( int loc_id, int ref_type, by
  * @param ref			IN: the reference
  * @param obj_type		OUT:Type of referenced object
  * 
- * @return Returns a non-negative value if successful; otherwise returns a negative value.
+ * @return Returns the object type, which is the same as obj_type[0]. The return value is
+ *         the same as the HDF5 1.6 version. 
  * 
  * @exception HDF5LibraryException
  *                - Error from the HDF-5 Library.

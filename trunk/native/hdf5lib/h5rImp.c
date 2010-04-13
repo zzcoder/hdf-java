@@ -273,7 +273,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type2
         ENVPTR->ReleaseIntArrayElements(ENVPAR ref_obj,ref_objP,0);
     }
     
-    return (jint)status;
+    return (jint)ref_objP[0];
 }
 
 /*
