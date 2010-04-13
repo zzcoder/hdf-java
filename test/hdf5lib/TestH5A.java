@@ -704,6 +704,41 @@ public class TestH5A {
 		H5.H5Adelete_by_idx(H5fid, "invalid", HDF5Constants.H5_INDEX_CRT_ORDER,
 				HDF5Constants.H5_ITER_INC, 0, lapl_id);
 	}
+	
+	@Test
+	public void testH5Aopen_by_name() throws Throwable, HDF5LibraryException, NullPointerException {
+
+		String obj_name = ".";
+		String attr_name = "DATASET";
+		int attribute_id = -1;
+		int aid = -1;
+
+		try {
+			attribute_id = H5.H5Acreate_by_name(H5fid, obj_name, attr_name,
+					type_id, space_id, HDF5Constants.H5P_DEFAULT,
+					HDF5Constants.H5P_DEFAULT, lapl_id);
+
+			//open Attribute by name
+			if(attribute_id>=0){
+				try{
+					aid = H5.H5Aopen_by_name(H5fid, obj_name, attr_name, HDF5Constants.H5P_DEFAULT, lapl_id);
+					assertTrue("testH5Aopen_by_name: ", aid>=0);
+				}
+				catch(Throwable err) {
+					err.printStackTrace();
+					fail("H5.H5Aopen_by_name " + err);
+				}
+			}
+		} catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5.H5Aopen_by_name " + err);
+		} finally {
+			if (aid > 0)
+				H5.H5Aclose(aid);
+			if (attribute_id > 0)
+				H5.H5Aclose(attribute_id);
+		}
+	}
 
 }
 
