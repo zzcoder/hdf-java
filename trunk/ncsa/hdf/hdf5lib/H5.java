@@ -574,8 +574,8 @@ public class H5 {
      * H5Aopen_name opens an attribute specified by its name, name, which is
      * attached to the object specified with loc_id.
      * 
-     * @deprecated As of HDF5 1.8
-     * 
+     * @deprecated As of HDF5 1.8, replaced by {@link #H5Aopen_by_name(int, String, String, int, int)}
+     *  
      * @param loc_id
      *            IN: Identifier of a group, dataset, or named datatype
      *            atttribute
@@ -605,7 +605,7 @@ public class H5 {
      * with loc_id. The location object may be either a group, dataset, or named
      * datatype, all of which may have any sort of attribute.
      * 
-     * @deprecated As of HDF5 1.8
+     * @deprecated As of HDF5 1.8,  replaced by {@link #H5Aopen_by_idx(int, String, int, int, long, int, int)  }
      * 
      * @param loc_id
      *            IN: Identifier of the group, dataset, or named datatype
@@ -833,7 +833,7 @@ public class H5 {
      * H5Aget_num_attrs returns the number of attributes attached to the object
      * specified by its identifier, loc_id.
      * 
-     * @deprecated As of HDF5 1.8
+     * @deprecated As of HDF5 1.8,   replaced by {@link #H5Oget_info( int )}
      * 
      * @param loc_id
      *            IN: Identifier of a group, dataset, or named datatype.
@@ -1373,7 +1373,7 @@ public class H5 {
      * @exception HDF5LibraryException - Error from the HDF-5 Library.
      * @exception NullPointerException - size array is null.
      * 
-     * @deprecated As of HDF5 1.8
+     * @deprecated As of HDF5 1.8, replaced by {@link #H5Dset_extent(int, long[]) }
      **/
     public synchronized static native int H5Dextend(int dataset_id, byte[] size)
             throws HDF5LibraryException, NullPointerException;
@@ -2719,6 +2719,8 @@ public class H5 {
      * number, in a filter pipeline, specified by the property list with which
      * it is associated.
      * 
+     * @deprecated As of HDF5 1.8, replaced by {@link #H5Pget_filter(int, int, int[], int[], int[], int, String[], int[]) }
+     * 
      * @param plist
      *            IN: Property list identifier.
      * @param filter_number
@@ -3358,6 +3360,8 @@ public class H5 {
     /**
      * Given a reference to an object ref, H5Rget_obj_type returns the type of
      * the object pointed to.
+     * 
+     * @deprecated As of HDF5 1.8, replaced by {@link #H5Rget_obj_type(int, int, byte[], int[]) }
      * 
      * @param loc_id
      *            IN: loc_id of the reference object.
@@ -7791,6 +7795,40 @@ public synchronized static native long H5Rget_name( int loc_id, int ref_type, by
         throws HDF5LibraryException, NullPointerException, IllegalArgumentException;
  
 
+/**
+ * H5Rget_obj_type Given a reference to an object ref, H5Rget_obj_type returns the type of
+ * the object pointed to.
+ * 
+ * @param loc_id		IN: loc_id of the reference object.
+ * @param ref_type		IN: Type of reference to query. 
+ * @param ref			IN: the reference
+ * @param obj_type		OUT:Type of referenced object
+ * 
+ * @return Returns a non-negative value if successful; otherwise returns a negative value.
+ * 
+ * @exception HDF5LibraryException
+ *                - Error from the HDF-5 Library.
+ * @exception NullPointerException
+ *                - array is null.
+ * @exception IllegalArgumentException
+ *                - array is invalid.
+ **/
+public static int H5Rget_obj_type(int loc_id,
+        int ref_type, byte ref[], int [] obj_type)
+        throws HDF5LibraryException, NullPointerException,
+        IllegalArgumentException{
+return H5Rget_obj_type2(loc_id, ref_type, ref, obj_type);
+}
+
+/**
+ * H5Rget_obj_type2 Retrieves the type of object that an object reference points to. 
+ * 
+ * @see public static int H5Rget_obj_type(int loc_id, int ref_type, byte ref[], int [] obj_type)
+ **/
+
+private synchronized static native int H5Rget_obj_type2(int loc_id,
+        int ref_type, byte ref[], int [] obj_type)
+throws HDF5LibraryException, NullPointerException, IllegalArgumentException;
 
 //////////////////////////////////////////////////////////////
 ////
@@ -8365,6 +8403,57 @@ throws HDF5LibraryException;
  public synchronized static native int H5Pset_fapl_direct(int fapl_id, int alignment, int block_size, int cbuf_size)
  throws HDF5LibraryException;
 
+ /**
+  * H5Pget_filter returns information about a filter, specified by its filter
+  * number, in a filter pipeline, specified by the property list with which
+  * it is associated.
+  * 
+  * @param plist			IN: Property list identifier.
+  * @param filter_number	IN: Sequence number within the filter pipeline of the filter
+  *								 for which information is sought.
+  * @param flags			OUT: Bit vector specifying certain general properties of the
+  *            					 filter.
+  * @param cd_nelmts		IN/OUT: Number of elements in cd_values
+  * @param cd_values		OUT: Auxiliary data for the filter.
+  * @param namelen			IN: Anticipated number of characters in name.
+  * @param name				OUT: Name of the filter.
+  * @param filter_config	OUT:A bit field encoding the returned filter information 
+  * 
+  * @return the filter identification number if successful. Otherwise returns
+  *         H5Z_FILTER_ERROR (-1).
+  * 
+  * @exception ArrayIndexOutOfBoundsException
+  *                Fatal error on Copyback
+  * @exception ArrayStoreException
+  *                Fatal error on Copyback
+  * @exception NullPointerException
+  *                - name or an array is null.
+  * 
+  **/
+ public static int H5Pget_filter(int plist,
+         int filter_number, int[] flags, int[] cd_nelmts, int[] cd_values,
+         int namelen, String[] name, int[] filter_config)
+         throws ArrayIndexOutOfBoundsException, ArrayStoreException,
+         HDF5LibraryException, NullPointerException{
+	 return H5Pget_filter2(plist, filter_number, flags, cd_nelmts, cd_values,
+	         namelen, name, filter_config);
+ }
+
+ /**
+  * H5Pget_filter2 returns information about a filter, specified by its filter
+  * number, in a filter pipeline, specified by the property list with which
+  * it is associated.
+  * 
+  * @see public static int H5Pget_filter(int plist,
+         int filter_number, int[] flags, int[] cd_nelmts, int[] cd_values,
+         int namelen, String[] name, int[] filter_config)
+  **/
+
+ private synchronized static native int H5Pget_filter2(int plist,
+         int filter_number, int[] flags, int[] cd_nelmts, int[] cd_values,
+         int namelen, String[] name, int[] filter_config)
+throws ArrayIndexOutOfBoundsException, ArrayStoreException, HDF5LibraryException, NullPointerException;
+
 //////////////////////////////////////////////////////////////
 ////
 //H5I: HDF5 1.8 Identifier Interface API Functions            //
@@ -8692,6 +8781,30 @@ throws HDF5LibraryException, NullPointerException;
 public synchronized static native void H5Adelete_by_idx(int loc_id, String obj_name, int idx_type, int order, long n, int lapl_id)
 throws HDF5LibraryException, NullPointerException;
 
+/**
+*  H5Aopen_by_name Opens an attribute for an object by object name and attribute name
+*
+*  @param loc_id     		IN: Location from which to find object to which attribute is attached  
+*  @param obj_name			IN: Name of object to which attribute is attached, relative to loc_id 
+*  @param attr_name			IN: Name of attribute to open  
+*  @param aapl_id			IN: Attribute access property list 
+*  @param lapl_id			IN: Link access property list identifier 
+*
+*  @return Returns an attribute identifier if successful; otherwise returns a negative value. 
+*
+*  @exception HDF5LibraryException - Error from the HDF-5 Library.
+*  @exception NullPointerException - obj_name is null.
+**/
+public static int H5Aopen_by_name(int loc_id, String obj_name, String attr_name, int aapl_id, int lapl_id) 
+throws HDF5LibraryException, NullPointerException {
+	int id = _H5Aopen_by_name(loc_id, obj_name, attr_name, aapl_id, lapl_id);
+	if (id > 0)
+		OPEN_IDS.addElement(id);
+	return id;
+}
+
+private synchronized static native int _H5Aopen_by_name(int loc_id, String obj_name, String attr_name,int aapl_id, int lapl_id)
+throws HDF5LibraryException, NullPointerException;
 
 //////////////////////////////////////////////////////////////
 ////
