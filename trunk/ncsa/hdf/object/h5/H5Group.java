@@ -19,6 +19,10 @@ import java.util.*;
 import ncsa.hdf.hdf5lib.*;
 import ncsa.hdf.hdf5lib.exceptions.*;
 import ncsa.hdf.object.*;
+import ncsa.hdf.hdf5lib.structs.H5G_info_t;
+import ncsa.hdf.hdf5lib.structs.H5O_hdr_info_t;
+import ncsa.hdf.hdf5lib.structs.H5O_info_t;
+import ncsa.hdf.hdf5lib.structs.H5_ih_info_t;
 
 /**
  * An H5Group object represents an existing HDF5 group in file.
@@ -49,6 +53,8 @@ public class H5Group extends Group {
     protected List attributeList;
 
     private int nAttributes = -1;
+    
+    private H5O_info_t obj_info = new H5O_info_t(-1L, -1L, 0, 0, -1L, 0L, 0L, 0L, 0L, null,null,null);
 
     /**
      * Constructs an HDF5 group with specific name, path, and parent.
@@ -97,20 +103,21 @@ public class H5Group extends Group {
      * @see ncsa.hdf.object.DataFormat#hasAttribute()
      */
     public boolean hasAttribute() {
-        if (nAttributes < 0) {
-            int gid = open();
-            if (gid > 0) {
-                try {
-                    nAttributes = H5.H5Aget_num_attrs(gid);
-                }
-                catch (Exception ex) {
-                    nAttributes = 0;
-                }
-                close(gid);
-            }
-        }
+   	 if (obj_info.num_attrs< 0) {
+           int gid = open();
+           if (gid > 0) {
+               try {
+               	obj_info = H5.H5Oget_info(gid);
+               	
+               }
+               catch (Exception ex) {
+               	obj_info.num_attrs = 0;
+               }
+               close(gid);
+           }
+       }
 
-        return (nAttributes > 0);
+   	 return(obj_info.num_attrs >0);
     }
 
     /*
@@ -123,9 +130,9 @@ public class H5Group extends Group {
             int gid = open();
             if (gid > 0) {
                 try {
-                    long[] nmembers = { 0 };
-                    H5.H5Gget_num_objs(gid, nmembers);
-                    nMembersInFile = (int) nmembers[0];
+                	H5G_info_t group_info = null;
+                	group_info = H5.H5Gget_info(gid);
+                	nMembersInFile = (int)group_info.nlinks;
                 }
                 catch (Exception ex) {
                     nMembersInFile = 0;
@@ -232,10 +239,10 @@ public class H5Group extends Group {
 
         try {
             if (isRoot()) {
-                gid = H5.H5Gopen(getFID(), separator);
+            	gid = H5.H5Gopen(getFID(), separator, HDF5Constants.H5P_DEFAULT);
             }
             else {
-                gid = H5.H5Gopen(getFID(), getPath() + getName());
+                gid = H5.H5Gopen(getFID(), getPath() + getName(), HDF5Constants.H5P_DEFAULT);
             }
 
         }
@@ -303,7 +310,7 @@ public class H5Group extends Group {
         fullPath = path + name;
 
         // create a new group and add ot to the parent node
-        int gid = H5.H5Gcreate(file.open(), fullPath, -1);
+        int gid = H5.H5Gcreate(file.open(), fullPath, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
         try {
             H5.H5Gclose(gid);
         }
@@ -346,8 +353,8 @@ public class H5Group extends Group {
         }
 
         // Call the library to move things in the file
-        H5.H5Gmove(this.getFID(), currentFullPath, newFullPath);
-
+        H5.H5Lmove(this.getFID(), currentFullPath, this.getFID(), newFullPath, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+      
         super.setName(newName);
     }
 
