@@ -29,7 +29,7 @@ public class H5O_info_t {
     public H5_ih_info_t     meta_size_obj;  /* v1/v2 B-tree & local/fractal heap for groups, B-tree for chunked datasets */
     public H5_ih_info_t     meta_size_attr; /* v2 B-tree & heap for attributes */
     
-    H5O_info_t (long fileno, long addr, int type,
+    public H5O_info_t (long fileno, long addr, int type,
         int rc, long num_attrs, long atime, long mtime, long ctime, long btime,
         H5O_hdr_info_t hdr, H5_ih_info_t meta_size_obj, H5_ih_info_t meta_size_attr) 
     {
