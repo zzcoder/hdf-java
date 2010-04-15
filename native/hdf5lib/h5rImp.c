@@ -238,6 +238,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type2
     jboolean isCopy;
     jbyte *refP;
     jint *ref_objP;
+	int retVal;
 
 
     if (ref == NULL) {
@@ -262,6 +263,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type2
     }
 
     status = H5Rget_obj_type2((hid_t)loc_id, (H5R_type_t)ref_type, refP, (H5O_type_t*)ref_objP);
+    retVal = ref_objP[0];
 
     if (status < 0) {
         ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,JNI_ABORT);
@@ -272,8 +274,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1obj_1type2
         ENVPTR->ReleaseByteArrayElements(ENVPAR ref,refP,0);
         ENVPTR->ReleaseIntArrayElements(ENVPAR ref_obj,ref_objP,0);
     }
-    
-    return (jint)ref_objP[0];
+    return (jint)retVal;
 }
 
 /*
