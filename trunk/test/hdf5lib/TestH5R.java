@@ -2,6 +2,7 @@ package test.hdf5lib;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 
@@ -107,6 +108,32 @@ public class TestH5R {
         
         assertTrue("The name of the object: ", objName.equals(name[0]));
         
+    }
+    
+    @Test
+    public void testH5Rget_obj_type2() throws Throwable, HDF5LibraryException {
+    	int  ref_type=HDF5Constants.H5R_OBJECT;
+    	byte[] ref=null;
+
+    	String objName = "/dset";
+    	int obj_type = -1;;
+    	int[] otype = { 1 };
+
+    	try{
+    		ref = H5.H5Rcreate(H5fid, objName, ref_type, -1);
+    	}
+    	catch(Throwable err) {
+    		err.printStackTrace();
+    	}
+
+    	try {
+    		obj_type = H5.H5Rget_obj_type(H5fid, HDF5Constants.H5R_OBJECT, ref, otype);
+    	} 
+    	catch (Throwable err) {
+    		err.printStackTrace();
+    		fail("H5.H5Rget_obj_type2: " + err);
+    	}
+    	assertEquals(obj_type, HDF5Constants.H5O_TYPE_DATASET);        
     }
 
  
