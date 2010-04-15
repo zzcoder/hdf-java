@@ -168,17 +168,16 @@ public class TestH5A {
 		int order = HDF5Constants.H5_ITER_INC;
 		long n = 0;
 		int attr_id = -1, attribute_id = -1;
-		int acpl_id = HDF5Constants.H5P_DEFAULT;
 		int aapl_id = HDF5Constants.H5P_DEFAULT;
 
 		try {
-			attr_id = H5.H5Acreate(loc_id, obj_name, type_id, space_id,
-					acpl_id, aapl_id);
+			attr_id = H5.H5Acreate(H5did, "file", type_id, space_id,
+					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 
 			// Opening the existing attribute, obj_name(Created by H5ACreate2)
 			// by index, attached to an object identifier.
-			attribute_id = H5.H5Aopen_by_idx(loc_id, obj_name, idx_type, order,
-					n, aapl_id, lapl_id);
+			attribute_id = H5.H5Aopen_by_idx(H5did, ".", HDF5Constants.H5_INDEX_CRT_ORDER, HDF5Constants.H5_ITER_INC,
+					0, HDF5Constants.H5P_DEFAULT, lapl_id);
 
 			assertTrue("testH5Aopen_by_idx: H5Aopen_by_idx", attribute_id >= 0);
 
