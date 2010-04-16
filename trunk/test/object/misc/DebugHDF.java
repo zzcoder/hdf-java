@@ -4,15 +4,12 @@ import java.util.*;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.nio.ByteBuffer;
-
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDFNativeData;
 import ncsa.hdf.hdf5lib.HDF5Constants;
+import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
 import ncsa.hdf.object.*;
 import ncsa.hdf.object.h5.*;
-//import ncsa.hdf.hdflib.*;
-import ncsa.hdf.object.h4.*;
 
 public class DebugHDF {
 
@@ -106,9 +103,113 @@ public class DebugHDF {
 //       try { readDatatype(); } catch(Exception ex) {ex.printStackTrace();}
 //       try { readTextFile("G:\\temp\\vlarsizes.txt"); } catch(Exception ex) {ex.printStackTrace();}
        //try {processa8apis(); } catch (Exception ex) {} 
-        try {convertByte2Long(); } catch (Exception ex) {ex.printStackTrace();} 
+       // try {convertByte2Long(); } catch (Exception ex) {ex.printStackTrace();} 
+       // try {testH5IO("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
+        try {testH5Core("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
+     }
 
+    private static void testH5Core(final String filename) throws Exception {
+    	
+    	int fapl_id = H5.H5Pcreate(HDF5Constants.H5P_FILE_ACCESS);
+    	H5.H5Pset_fapl_core(fapl_id, 1024, true);
+    	
+    	
     }
+    
+    private static void testH5IO(final String filename) throws Exception {
+    	int SIZE = 10*1024*1024;
+    	int fid = -1, did = -1, sid = -1, rank = 1;
+    	long[] dims = { SIZE };
+    	float[] buf = new float[SIZE];
+
+//    	for (int i = 0; i < buf.length; i++)
+//    		buf[i] = i;
+//
+//    	try {
+//    		fid = H5.H5Fcreate(filename, HDF5Constants.H5F_ACC_TRUNC,
+//    				HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+//    		sid = H5.H5Screate_simple(rank, dims, null);
+//    		did = H5.H5Dcreate(fid, "test", HDF5Constants.H5T_NATIVE_FLOAT,
+//    				sid, HDF5Constants.H5P_DEFAULT);
+//    	} finally {
+//    		try {
+//    			H5.H5Sclose(sid);
+//    		} catch (HDF5Exception ex) {
+//    		}
+//    		try {
+//    			H5.H5Dclose(did);
+//    		} catch (HDF5Exception ex) {
+//    		}
+//
+//    		try {
+//    			H5.H5Fclose(fid);
+//    		} catch (HDF5Exception ex) {
+//    		}
+//    	}
+//
+//    	try {
+//
+//    		fid = H5.H5Fopen(filename, HDF5Constants.H5F_ACC_RDWR,
+//    				HDF5Constants.H5P_DEFAULT);
+//    		did = H5.H5Dopen(fid, "test");
+//
+//    		long t0 = System.currentTimeMillis();
+//    		H5.H5Dwrite_float(did, HDF5Constants.H5T_NATIVE_FLOAT,
+//    				HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
+//    				HDF5Constants.H5P_DEFAULT, buf);
+//    		long t1 = System.currentTimeMillis();
+//    		System.out.println("Time on writing (40MB): " + (t1 - t0));
+//
+//    	} finally {
+//    		try {
+//    			H5.H5Sclose(sid);
+//    		} catch (HDF5Exception ex) {
+//    		}
+//    		try {
+//    			H5.H5Dclose(did);
+//    		} catch (HDF5Exception ex) {
+//    		}
+//
+//    		try {
+//    			H5.H5Fclose(fid);
+//    		} catch (HDF5Exception ex) {
+//    		}
+//    	}
+
+    	try {
+
+    		fid = H5.H5Fopen(filename, HDF5Constants.H5F_ACC_RDWR,
+    				HDF5Constants.H5P_DEFAULT);
+    		did = H5.H5Dopen(fid, "test");
+
+    		long t0 = System.currentTimeMillis();
+    		H5.H5Dread_float(did, HDF5Constants.H5T_NATIVE_FLOAT,
+    				HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
+    				HDF5Constants.H5P_DEFAULT, buf);
+    		System.out.println(buf[SIZE-1]);
+    		long t1 = System.currentTimeMillis();
+    		System.out.println("Time on reading (40MB): " + (t1 - t0));
+
+    	} finally {
+    		try {
+    			H5.H5Sclose(sid);
+    		} catch (HDF5Exception ex) {
+    		}
+    		try {
+    			H5.H5Dclose(did);
+    		} catch (HDF5Exception ex) {
+    		}
+
+    		try {
+    			H5.H5Fclose(fid);
+    		} catch (HDF5Exception ex) {
+    		}
+    	}
+
+    }    
+
+    
+    
     public static void convertByte2Long() throws Exception {
         long[] la = {1000000000000000001L, 1000000000000000002L, 1000000000000000003L};
         byte[] ba = HDFNativeData.longToByte(0, la.length, la);
@@ -406,7 +507,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
   }
   
 
-    public static final void testVariableArity(String desc, Object... args) {
+    private static final void testVariableArity(String desc, Object... args) {
         System.out.print(desc+":\t");
         
         if (args == null) {
@@ -424,7 +525,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         System.out.println();
     }
     
-    public static final void testStrings(String fname)  throws Exception 
+    private static final void testStrings(String fname)  throws Exception 
     {
         final int strLen = 128;
         final long[] dims = {1000};
@@ -465,7 +566,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         testFile.close();
     }
 
-    public static final void createINF(String fname)  throws Exception {
+    private static final void createINF(String fname)  throws Exception {
         final long[] dims2D = {5, 2};
         final float[] data = new float[(int)dims2D[0]*(int)dims2D[1]];
         final double[] data2 = new double[(int)dims2D[0]*(int)dims2D[1]];
@@ -525,7 +626,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
 
     }
     
-    public static final void createNaN(String fname)  throws Exception {
+    private static final void createNaN(String fname)  throws Exception {
         final long[] dims2D = {5000, 3000};
         final float[] data = new float[(int)dims2D[0]*(int)dims2D[1]];
 
@@ -586,7 +687,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
 
     }
     
-    public static final void TestBug1523(String fname) throws Exception {
+    private static final void TestBug1523(String fname) throws Exception {
         H5File file = new H5File(fname);
         file.open();
         file.close();
@@ -632,7 +733,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
     }
 
 
-    public static final void TestBitmask()
+    private static final void TestBitmask()
     {
         int bmask=0, value = 0;
         BitSet theMask = new BitSet(8);
@@ -675,7 +776,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
     }
     
     
-    public static final void TestBit64()
+    private static final void TestBit64()
     {
         System.out.println("0xffffffffffffffff = "+ 0xffffffffffffffffL);
     }
@@ -685,7 +786,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
      * @param fname the file that contains a dataset of variable-lenght strings.
      * @throws Exception
      */
-    public static final void TestVlen(String fname, int accessID) throws Exception
+    private static final void TestVlen(String fname, int accessID) throws Exception
     {
         Object data = null;
         H5File h5file = new H5File(fname, accessID);;
@@ -718,7 +819,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
      * float, and double.
      * @throws Exception
      */
-    public static final void TestPinning(String fname) throws Exception
+    private static final void TestPinning(String fname) throws Exception
     {
         Object data;
         String dnames[] = {"bytes", "shorts", "ints", "longs", "floats", "doubles"};
@@ -787,7 +888,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
     	}
     }    
     
-	public static void TestVlenRead(String fname) throws Exception {
+	private static void testVlenRead(String fname) throws Exception {
 		
 		boolean  useBufferedReads = false;	// true = break up reads into smaller chunks, false = get data at once
 		
@@ -895,7 +996,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
     	return o;
     }
     
-    public static void TestBEAttr(String fname) throws Exception
+    private static void testBEAttr(String fname) throws Exception
     {
         long[] dims2D = {20, 10};
 
@@ -969,7 +1070,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         testFile.close();
     }
 
-    public static void TestMemoryLeak(String fname) throws Exception
+    private static void testMemoryLeak(String fname) throws Exception
     {
     	/* a list of objects: char, compound, enum, float32, float64, image,
     	 * int16, int32, int64, int8, str, uchar, uint16, uint32, uint8
@@ -987,7 +1088,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
 
     }
     
-    public static void testTofwerkReaderBug1213 (final String filename) throws IOException 
+    private static void testTofwerkReaderBug1213 (final String filename) throws IOException 
     {
         Object data = null;
         
@@ -1068,7 +1169,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         System.out.println("Exiting successfully.");
     }    
 
-    public static void TestMemoryLeakOpenClose(String fname) throws Exception
+    private static void testMemoryLeakOpenClose(String fname) throws Exception
     {
         H5File testFile = null;
         
@@ -1081,7 +1182,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         }
     }
     
-    public static void TestH5Compound2000Fields(final String filename) throws Exception 
+    private static void testH5Compound2000Fields(final String filename) throws Exception 
     {
         int ncols = 12;
         FileFormat fileFormat = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
@@ -1119,7 +1220,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
 
     }
     
-    public static void TestH5DreadNIO(final String filename) throws Exception 
+    private static void testH5DreadNIO(final String filename) throws Exception 
     {
         final String dname = "8kx8k";
         final int NLOOPS = 20;
@@ -1159,7 +1260,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
     }
     
     // see bug#1042
-    public static void TestH5Array(final String filename) throws Exception 
+    private static void testH5Array(final String filename) throws Exception 
     {
         int array_dims[] = {20};
         int fid = H5.H5Fcreate(filename, HDF5Constants.H5F_ACC_TRUNC, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
@@ -1196,7 +1297,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         H5.H5Fclose(fid);
    }
     
-    public static void TestH5Vlen(final String filename) throws Exception 
+    private static void testH5Vlen(final String filename) throws Exception 
     {
         String buf[] = {"This is a test"};
         
@@ -1221,7 +1322,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         H5.H5Fclose(fid);
     }
     
-    public static void TestH5WriteFloats(final String filename) throws Exception 
+    private static void testH5WriteFloats(final String filename) throws Exception 
     {
         FileFormat fileFormat = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         H5File file = (H5File) fileFormat.create(filename);
@@ -1263,7 +1364,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         file.close();
     }
     
-    public static void TestH5ReadPerf(final String filename) throws Exception 
+    private static void testH5ReadPerf(final String filename) throws Exception 
     {
         final String dname = "8kx8k";
         final int NLOOPS = 20;
@@ -1343,7 +1444,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
             }
    }
     
-    public static void TestH5ReadChunk(final String filename) throws Exception 
+    private static void testH5ReadChunk(final String filename) throws Exception 
     {
         final String dnames[] = { "chunk1000x1000", "chunk100x1000", "chunk1x1000", "chunk50x50", "nochunk"};
 
@@ -1360,7 +1461,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         }
       }
     
-    public static void TestH5Bug863(final String filename) throws Exception 
+    private static void testH5Bug863(final String filename) throws Exception 
     {
         //H5File file = new H5File(filename, H5File.READ);
         final int nloops = 1000000;
@@ -1381,7 +1482,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         }
     }
     
-    public static void TestH5Bug847(final String filename)  throws Exception 
+    private static void testH5Bug847(final String filename)  throws Exception 
     {
         List list=null;
         final int TEST_INT_VALUE = 999999999;
@@ -1484,7 +1585,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         }
     }
 
-    public static void testCreateLongPath(final String fname) throws Exception {
+    private static void testCreateLongPath(final String fname) throws Exception {
         final int n = 5;
         H5File file=null;
         final Group g;
@@ -1523,7 +1624,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         try { file.close(); } catch (final Exception ex) {}
      }
     
-    public static void testCompressedStrings(final String fname) throws Exception {
+    private static void testCompressedStrings(final String fname) throws Exception {
         H5File file=null;
         
         file = new H5File(fname, H5File.CREATE);
@@ -1621,7 +1722,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
        System.out.println( difference + " \tbytes/String" );
     }
     
-    public static void TestH5OpenClose(final String filename)  throws Exception 
+    private static void testH5OpenClose(final String filename)  throws Exception 
     {
         int loop = 1000000;
         
@@ -1635,7 +1736,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         }
     }
     
-    public static void TestGetOneRow (final String filename, final String objName) throws Exception
+    private static void testGetOneRow (final String filename, final String objName) throws Exception
     {
         List data=null;
         
@@ -1686,7 +1787,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         file.close();
     }    
 
-    public static void testFillValue(final String fname) throws Exception
+    private static void testFillValue(final String fname) throws Exception
     {
     	final int[] fill_int = {9999};
     	final float[] fill_float = {9999.99f};
@@ -1739,7 +1840,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
     	H5.H5Fclose(fid);	
     }
     
-    public static void testGetObjID() throws Exception
+    private static void testGetObjID() throws Exception
     {
         final HashMap typeMap = new HashMap();
         typeMap.put(new Integer(HDF5Constants.H5T_INTEGER), "integer");
@@ -1772,7 +1873,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         }
     }
 
-    public static void TestHDF5Copy (final String filename, final String objName) throws Exception
+    private static void testHDF5Copy (final String filename, final String objName) throws Exception
     {
         String newFilename = filename+"_copy.h5";
 
@@ -1800,7 +1901,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         newFile.close();
     }
 
-    public static void TestHDF5Get (final String filename) throws Exception
+    private static void testHDF5Get (final String filename) throws Exception
     {
         final H5File file = new H5File(filename, H5File.READ);
         final Group group = (Group)file.get("/Group0");
@@ -1808,7 +1909,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         file.close();
     }
 
-    public static void TestHDF5Misc (final String filename) throws Exception
+    private static void testHDF5Misc (final String filename) throws Exception
     {
         final ncsa.hdf.object.h5.H5File file = new ncsa.hdf.object.h5.H5File(filename, ncsa.hdf.object.h5.H5File.READ);
         testGetMemberList(file);
@@ -1824,7 +1925,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
      * but not all the methods available for these classes seem
      * to work propertly.
      */
-    public static void testGetMemberList (final ncsa.hdf.object.h5.H5File file) throws Exception
+    private static void testGetMemberList (final ncsa.hdf.object.h5.H5File file) throws Exception
     {
         final Group group = (Group)file.get("/");
         System.out.println("\nContents of file <doesn't work!>:");
@@ -1886,7 +1987,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
      * returns a null object, rather than an empty string.    So, you have
      * to check if your HObject is the root.    See next method!
      */
-    public static void testGetPath (final ncsa.hdf.object.h5.H5File file) throws Exception
+    private static void testGetPath (final ncsa.hdf.object.h5.H5File file) throws Exception
     {
         final HObject hObject = file.get("/");
         System.out.println("Next line should print '':");
@@ -1898,7 +1999,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
      * This is a bug.    The 'Group.isRoot()' operation operation seems
      * to return 'true' no matter what...
      */
-    public static void testIsRoot (final ncsa.hdf.object.h5.H5File file) throws Exception
+    private static void testIsRoot (final ncsa.hdf.object.h5.H5File file) throws Exception
     {
         Group group = null;
 
@@ -1972,7 +2073,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         file.close();
     }
 
-    public static void testEnum(final String fileName) throws Exception
+    private static void testEnum(final String fileName) throws Exception
     {
         final int booleanEnum = H5.H5Tenum_create(HDF5Constants.H5T_STD_I8LE);
         int status = H5.H5Tenum_insert(booleanEnum, "true", new int[] {1});
@@ -1982,7 +2083,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         System.out.println(H5.H5Tget_member_name(booleanEnum, 1));
     }
 
-//    public static void testSDgetchunkinfo(final String fileName) throws Exception
+//    private static void testSDgetchunkinfo(final String fileName) throws Exception
 //    {
 //        final FileFormat fileFormat = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4);
 //        if (fileFormat == null)
@@ -2026,7 +2127,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
 //        testFile.close();
 //    }
 
-    public static void testSizeof () throws Exception
+    private static void testSizeof () throws Exception
     {
         // Warm up all classes/methods we will use
         runGC ();
@@ -2125,7 +2226,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         return s_runtime.totalMemory () - s_runtime.freeMemory ();
     }
 
-    public static void TestHDFvector( final String fileName ) throws Exception
+    private static void testHDFvector( final String fileName ) throws Exception
     {
 
         // retrieve an instance of H5File
@@ -2226,7 +2327,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         return v;
     }
 
-    private static void TestHDFgenotype(final String fileName) throws Exception {
+    private static void testHDFgenotype(final String fileName) throws Exception {
         // retrieve an instance of H5File
 
         final FileFormat fileFormat = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
@@ -2477,7 +2578,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
 
     }
 
-    private static void TestHDFcomment(final String fileName) throws Exception {
+    private static void testHDFcomment(final String fileName) throws Exception {
         // retrieve an instance of H5File
 
         final FileFormat fileFormat = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
@@ -2521,7 +2622,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         H5.H5Fflush(testFile.getFID(), HDF5Constants.H5F_SCOPE_GLOBAL);
     }
 
-    private static void TestHDFdelete(final String fileName) throws Exception {
+    private static void testHDFdelete(final String fileName) throws Exception {
         // retrieve an instance of H5File
 
         final FileFormat fileFormat = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
@@ -2605,7 +2706,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         }
     }
 
-    private static void TestHDFcompound() {
+    private static void testHDFcompound() {
         String FNAME = "H:\\java\\java8\\xcao\\test\\bigdata.h5";
         String DNAME = "PI";
     	
