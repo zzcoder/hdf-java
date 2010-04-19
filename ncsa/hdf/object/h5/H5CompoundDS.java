@@ -18,6 +18,7 @@ import java.util.*;
 
 import ncsa.hdf.hdf5lib.*;
 import ncsa.hdf.hdf5lib.exceptions.*;
+import ncsa.hdf.hdf5lib.structs.H5O_info_t;
 import ncsa.hdf.hdflib.HDFLibrary;
 import ncsa.hdf.object.*;
 
@@ -84,6 +85,8 @@ public class H5CompoundDS extends CompoundDS {
     private List attributeList;
 
     private int nAttributes = -1;
+    
+    private H5O_info_t obj_info = new H5O_info_t(-1L, -1L, 0, 0, -1L, 0L, 0L, 0L, 0L, null,null,null);
 
     /**
      * A list of names of all fields including nested fields.
@@ -166,20 +169,20 @@ public class H5CompoundDS extends CompoundDS {
      * @see ncsa.hdf.object.DataFormat#hasAttribute()
      */
     public boolean hasAttribute() {
-        if (nAttributes < 0) {
-            int did = -1;
-            try {
-                did = H5.H5Dopen(getFID(), getPath() + getName(),
-                        HDF5Constants.H5P_DEFAULT);
-                nAttributes = H5.H5Aget_num_attrs(did);
-            }
-            catch (Exception ex) {
-                nAttributes = 0;
-            }
-            close(did);
-        }
+    	if (obj_info.num_attrs< 0) {
+    		int did = -1;
+    		try {
+    			did = H5.H5Dopen(getFID(), getPath() + getName(),
+    					HDF5Constants.H5P_DEFAULT);
+    			obj_info = H5.H5Oget_info(did);
+    		}
+    		catch (Exception ex) {
+    			obj_info.num_attrs = 0;
+    		}
+    		close(did);
+    	}
 
-        return (nAttributes > 0);
+    	return(obj_info.num_attrs >0);
     }
 
     /*
@@ -669,6 +672,7 @@ public class H5CompoundDS extends CompoundDS {
             String[] cd_name = { "", "" };
             int nfilt = H5.H5Pget_nfilters(pid);
             int filter = -1;
+            int[] filter_config = { 1 };
             compression = "";
 
             for (int i = 0; i < nfilt; i++) {
@@ -677,8 +681,7 @@ public class H5CompoundDS extends CompoundDS {
                 }
 
                 try {
-                    filter = H5.H5Pget_filter(pid, i, flags, cd_nelmts,
-                            cd_values, 120, cd_name);
+                	filter = H5.H5Pget_filter(pid, i, flags, cd_nelmts, cd_values, 120, cd_name, filter_config);
                 }
                 catch (Throwable err) {
                     compression += "ERROR";
@@ -1006,7 +1009,7 @@ public class H5CompoundDS extends CompoundDS {
         }
 
         // Call the library to move things in the file
-        H5.H5Gmove(this.getFID(), currentFullPath, newFullPath);
+        H5.H5Lmove(this.getFID(), currentFullPath, this.getFID(), newFullPath, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 
         super.setName(newName);
     }
