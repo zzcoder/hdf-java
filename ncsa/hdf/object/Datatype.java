@@ -195,10 +195,11 @@ public abstract class Datatype extends HObject {
     /*
      * The dimension of the ARRAY element. For ARRAY datatype only
      */
-    protected int[] dims;
+    protected long[] dims; 
+    
 
     /**
-     * Contructs a named datatype with a given file, name and path.
+     * Constructs a named datatype with a given file, name and path.
      * <p>
      * 
      * @param theFile
