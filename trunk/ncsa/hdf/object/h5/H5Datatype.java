@@ -50,7 +50,7 @@ public class H5Datatype extends Datatype {
 
     private int nAttributes = -1;
     
-    private H5O_info_t obj_info = new H5O_info_t(-1L, -1L, 0, 0, -1L, 0L, 0L, 0L, 0L, null,null,null);
+    private H5O_info_t obj_info;
 
     private boolean isVLEN = false;
 
@@ -83,7 +83,8 @@ public class H5Datatype extends Datatype {
     @Deprecated
     public H5Datatype(FileFormat theFile, String name, String path, long[] oid) {
         super(theFile, name, path, oid);
-
+        obj_info = new H5O_info_t(-1L, -1L, 0, 0, -1L, 0L, 0L, 0L, 0L, null,null,null);
+        
         if ((oid == null) && (theFile != null)) {
             // retrieve the object ID
             try {

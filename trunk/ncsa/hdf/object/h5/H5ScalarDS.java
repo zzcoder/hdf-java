@@ -72,7 +72,7 @@ public class H5ScalarDS extends ScalarDS {
 
     private int nAttributes = -1;
     
-    private H5O_info_t obj_info = new H5O_info_t(-1L, -1L, 0, 0, -1L, 0L, 0L, 0L, 0L, null,null,null);
+    private H5O_info_t obj_info;
 
     /**
      * Constructs an instance of a H5ScalarDS object with specific name and
@@ -101,6 +101,7 @@ public class H5ScalarDS extends ScalarDS {
         super(theFile, theName, thePath, oid);
         unsignedConverted = false;
         paletteRefs = null;
+        obj_info = new H5O_info_t(-1L, -1L, 0, 0, -1L, 0L, 0L, 0L, 0L, null,null,null);
 
         if ((oid == null) && (theFile != null)) {
             // retrieve the object ID
@@ -1073,7 +1074,7 @@ public class H5ScalarDS extends ScalarDS {
         // add the new attribute into attribute list
         if (!attrExisted) {
             attributeList.add(attr);
-            obj_info.num_attrs = attributeList.size();
+            nAttributes = attributeList.size();
         }
     }
 
@@ -1094,7 +1095,7 @@ public class H5ScalarDS extends ScalarDS {
             H5.H5Adelete(did, attr.getName());
             List attrList = getMetadata();
             attrList.remove(attr);
-            obj_info.num_attrs = attributeList.size();
+            nAttributes = attributeList.size();
         }
         finally {
             close(did);

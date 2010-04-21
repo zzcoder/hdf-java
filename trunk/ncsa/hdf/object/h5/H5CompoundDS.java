@@ -86,7 +86,7 @@ public class H5CompoundDS extends CompoundDS {
 
     private int nAttributes = -1;
     
-    private H5O_info_t obj_info = new H5O_info_t(-1L, -1L, 0, 0, -1L, 0L, 0L, 0L, 0L, null,null,null);
+    private H5O_info_t obj_info;
 
     /**
      * A list of names of all fields including nested fields.
@@ -149,7 +149,8 @@ public class H5CompoundDS extends CompoundDS {
      */
     public H5CompoundDS(FileFormat theFile, String name, String path, long[] oid) {
         super(theFile, name, path, oid);
-
+        obj_info = new H5O_info_t(-1L, -1L, 0, 0, -1L, 0L, 0L, 0L, 0L, null,null,null);
+        
         if ((oid == null) && (theFile != null)) {
             // retrieve the object ID
             try {

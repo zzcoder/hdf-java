@@ -54,7 +54,7 @@ public class H5Group extends Group {
 
     private int nAttributes = -1;
     
-    private H5O_info_t obj_info = new H5O_info_t(-1L, -1L, 0, 0, -1L, 0L, 0L, 0L, 0L, null,null,null);
+    private H5O_info_t obj_info ; 
 
     /**
      * Constructs an HDF5 group with specific name, path, and parent.
@@ -70,7 +70,7 @@ public class H5Group extends Group {
      *            the parent of this group.
      */
     public H5Group(FileFormat theFile, String name, String path, Group parent) {
-        this(theFile, name, path, parent, null);
+        this(theFile, name, path, parent, null);   
     }
 
     /**
@@ -81,6 +81,7 @@ public class H5Group extends Group {
             long[] oid) {
         super(theFile, name, path, parent, oid);
         nMembersInFile = -1;
+        obj_info = new H5O_info_t(-1L, -1L, 0, 0, -1L, 0L, 0L, 0L, 0L, null,null,null);
 
         if ((oid == null) && (theFile != null)) {
             // retrieve the object ID
