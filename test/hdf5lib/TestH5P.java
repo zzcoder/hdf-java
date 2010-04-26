@@ -337,13 +337,23 @@ public class TestH5P {
 
 		try {
 			H5.H5Pset_copy_object(ocp_plist_id, HDF5Constants.H5O_COPY_SHALLOW_HIERARCHY_FLAG);
-			cpy_option = H5.H5Pget_copy_object(ocp_plist_id);	
+			cpy_option = H5.H5Pget_copy_object(ocp_plist_id);
 		} 
 		catch (Throwable err) {
 			err.printStackTrace();
 			fail("H5Pset_copy_object: " + err);
 		} 
 		assertEquals(HDF5Constants.H5O_COPY_SHALLOW_HIERARCHY_FLAG, cpy_option);
+		
+		try {
+			H5.H5Pset_copy_object(ocp_plist_id, HDF5Constants.H5O_COPY_EXPAND_REFERENCE_FLAG);
+			cpy_option = H5.H5Pget_copy_object(ocp_plist_id);
+		} 
+		catch (Throwable err) {
+			err.printStackTrace();
+			fail("H5Pset_copy_object: " + err);
+		} 
+		assertEquals(HDF5Constants.H5O_COPY_EXPAND_REFERENCE_FLAG, cpy_option);		
 	}
 	
 	@Test(expected = HDF5LibraryException.class)
