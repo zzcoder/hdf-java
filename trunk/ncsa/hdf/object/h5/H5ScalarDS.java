@@ -812,10 +812,6 @@ public class H5ScalarDS extends ScalarDS {
             throw (new HDF5Exception(
                     "Writing non-string variable-length data is not supported"));
         }
-        else if (isEnum && isEnumConverted()) {
-            throw (new HDF5Exception(
-                    "Writing converted enum data is not supported"));
-        }
         else if (isRegRef) {
             throw (new HDF5Exception(
                     "Writing region references data is not supported"));
@@ -851,6 +847,8 @@ public class H5ScalarDS extends ScalarDS {
             boolean doConversion = (((tsize == 1) && (dname == 'S'))
                     || ((tsize == 2) && (dname == 'I'))
                     || ((tsize == 4) && (dname == 'J')) || (isUnsigned && unsignedConverted));
+            
+            tmpData = buf;
             if (doConversion) {
                 tmpData = convertToUnsignedC(buf, null);
             }
@@ -860,9 +858,10 @@ public class H5ScalarDS extends ScalarDS {
                     && !H5.H5Tis_variable_str(tid)) {
                 tmpData = stringToByte((String[]) buf, H5.H5Tget_size(tid));
             }
-            else {
-                tmpData = buf;
+            else if (isEnum && (Array.get(buf, 0) instanceof String)) {
+                tmpData = H5Datatype.convertEnumNameToValue(tid, (String[])buf, null);
             }
+            
             H5.H5Dwrite(did, tid, spaceIDs[0], spaceIDs[1],
                     HDF5Constants.H5P_DEFAULT, tmpData);
 

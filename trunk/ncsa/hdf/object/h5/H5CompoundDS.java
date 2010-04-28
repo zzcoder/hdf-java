@@ -495,6 +495,7 @@ public class H5CompoundDS extends CompoundDS {
             // it into its type such, int, long, float, etc.
             int idx = 0;
             int n = flatNameList.size();
+            boolean isEnum = false;
             tid = H5.H5Dget_type(did);
 
             extractCompoundInfo(tid, null, null, atomicList);
@@ -514,6 +515,7 @@ public class H5CompoundDS extends CompoundDS {
                 try {
                     member_class = H5.H5Tget_class(atom_tid);
                     member_size = H5.H5Tget_size(atom_tid);
+                    isEnum = (member_class == HDF5Constants.H5T_ENUM);
                 }
                 catch (Exception ex) {
                 }
@@ -526,8 +528,7 @@ public class H5CompoundDS extends CompoundDS {
                 catch (Exception ex) {
                 }
 
-                if ((member_data == null) || isVL
-                        || (member_class == HDF5Constants.H5T_ENUM)) {
+                if ((member_data == null) || isVL) {
                     continue;
                 }
 
@@ -545,6 +546,9 @@ public class H5CompoundDS extends CompoundDS {
                             && (Array.get(member_data, 0) instanceof String)) {
                         tmpData = stringToByte((String[]) member_data,
                                 member_size);
+                    }
+                    else if (isEnum && (Array.get(member_data, 0) instanceof String)) {
+                        tmpData = H5Datatype.convertEnumNameToValue(atom_tid, (String[])member_data, null);
                     }
 
                     if (tmpData != null) {
