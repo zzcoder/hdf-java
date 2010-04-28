@@ -1530,7 +1530,7 @@ public class H5File extends FileFormat {
     public int open(int plist) throws Exception {
         return open(true, plist);
     }
-
+    
     /***************************************************************************
      * Private methods.
      **************************************************************************/

@@ -267,6 +267,77 @@ public class H5Datatype extends Datatype {
         return outNames;
     }
 
+    /**
+     * Converts namess in an Enumeration Datatype to values.
+     * <p>
+     * This method searches the identified enumeration datatype for the names
+     * appearing in <code>inValues</code> and returns the values corresponding to
+     * those names.
+     * 
+     * @param tid
+     *            The identifier of the enumeration datatype.
+     * @param in
+     *            The array of enumerations names to be converted.
+     * @param out
+     *            The array of values to be populated.
+     *
+     * @return The int array of values if successful; otherwise return null.
+     * @throws HDF5Exception
+     *             If there is an error at the HDF5 library level.
+     * 
+     */
+    public static final int[] convertEnumNameToValue(int tid,
+            String[] in, int[] out) throws HDF5Exception {
+        int size = 0;
+
+        if ((in == null)
+                || ((size = Array.getLength(in)) <= 0)
+                || ((out != null) && (size != Array.getLength(out)))) {
+            return null;
+        }
+
+        int nMembers = H5.H5Tget_nmembers(tid);
+        if (nMembers <= 0) {
+            return null;
+        }
+
+        if (out == null) {
+            out = new int[size];
+        }
+        else {
+            // set values in existing array to -1 in case no match found
+            for (int i = 0; i < size; i++) {
+                out[i] = -1;
+            }
+        }
+
+        String[] names = new String[nMembers];
+        int[] values = new int[nMembers];
+        int[] theValue = { 0 };
+
+        // Loop through the enumeration datatype and extract the names and
+        // values.
+        for (int i = 0; i < nMembers; i++) {
+            names[i] = H5.H5Tget_member_name(tid, i);
+            H5.H5Tget_member_value(tid, i, theValue);
+            values[i] = theValue[0];
+        }
+
+        for (int i = 0; i < size; i++) {
+            if (in[i] == null || in[i].length()<=0)
+                continue;
+
+            for (int j = 0; j < nMembers; j++) {
+                if (in[i].equalsIgnoreCase(names[j])) {
+                    out[i] = values[j];
+                    break;
+                }
+            }
+        }
+        
+        return out;
+    }
+    
     /*
      * (non-Javadoc)
      * 

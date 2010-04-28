@@ -2447,6 +2447,9 @@ implements TableView, ActionListener, MouseListener
             dvalue = Double.parseDouble(cellValue);
             Array.setDouble(dataValue, i, dvalue);
             break;
+         default:
+        	 Array.set(dataValue, i, cellValue); 
+             break;
         }
         
         isValueChanged = true;
