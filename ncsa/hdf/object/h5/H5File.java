@@ -885,6 +885,60 @@ public class H5File extends FileFormat {
     public int open() throws Exception {
         return open(true);
     }
+    
+    /**
+     * Sets the bounds of library versions
+     * 					to the default earliest possible format.
+     * @throws HDF5Exception
+     */
+    public void setLibBounds() throws Exception {
+      setLibBounds(HDF5Constants.H5F_LIBVER_EARLIEST, HDF5Constants.H5F_LIBVER_LATEST );
+    }
+    
+    /**
+     * Sets the bounds of library versions.
+     * @param low
+     * 				The earliest version of the library.
+     * @param high
+     * 				The latest version of the library.
+     * @throws HDF5Exception
+     */
+    public void setLibBounds(int low, int high) throws Exception {
+    	int fapl = HDF5Constants.H5P_DEFAULT;
+
+    	if (fid > 0) {
+    		fapl=H5.H5Pcreate(HDF5Constants.H5P_FILE_ACCESS);
+    	} 
+    	else
+    	{
+    		try{
+    			fid = this.open();
+    		}
+    		catch(Exception e){
+    			e.printStackTrace();
+    		}
+    		fapl = H5.H5Fget_access_plist(fid);
+    		try{
+    			this.close();
+    		}
+    		catch(Exception e){
+    		}
+    	}
+
+    	try{
+    		H5.H5Pset_libver_bounds( fapl, low, high );
+    	}
+    	catch(Exception e){
+    		e.printStackTrace();
+    	}
+    	finally{
+    		try{
+    			H5.H5Pclose(fapl);
+    		}
+    		catch(Exception e){
+    		}
+    	}
+    }   
 
     /**
      * Closes file associated with this H5File instance.
@@ -1365,31 +1419,31 @@ public class H5File extends FileFormat {
      * @see ncsa.hdf.object.FileFormat#copy(ncsa.hdf.object.HObject,
      * ncsa.hdf.object.Group, java.lang.String)
      */
-    public TreeNode copy(HObject srcObj, Group dstGroup, String dstName)
-            throws Exception {
-        TreeNode newNode = null;
+	public TreeNode copy(HObject srcObj, Group dstGroup, String dstName)
+			throws Exception {
+		TreeNode newNode = null;
 
-        if ((srcObj == null) || (dstGroup == null)) {
-            return null;
-        }
+		if ((srcObj == null) || (dstGroup == null)) {
+			return null;
+		}
 
-        if (dstName == null) {
-            dstName = srcObj.getName();
-        }
+		if (dstName == null) {
+			dstName = srcObj.getName();
+		}
 
-        if (srcObj instanceof Dataset) {
-            newNode = copyDataset((Dataset) srcObj, (H5Group) dstGroup, dstName);
-        }
-        else if (srcObj instanceof H5Group) {
-            newNode = copyGroup((H5Group) srcObj, (H5Group) dstGroup, dstName);
-        }
-        else if (srcObj instanceof H5Datatype) {
-            newNode = copyDatatype((H5Datatype) srcObj, (H5Group) dstGroup,
-                    dstName);
-        }
+		if (srcObj instanceof Dataset) {
+			newNode = copyDataset((Dataset) srcObj, (H5Group) dstGroup, dstName);
+		} 
+		else if (srcObj instanceof H5Group) {
+			newNode = copyGroup((H5Group) srcObj, (H5Group) dstGroup, dstName);
+		}
+		else if (srcObj instanceof H5Datatype) {
+			newNode = copyDatatype((H5Datatype) srcObj, (H5Group) dstGroup,
+					dstName);
+		}
 
-        return newNode;
-    }
+		return newNode;
+	}
 
     /*
      * (non-Javadoc)
@@ -1568,13 +1622,13 @@ public class H5File extends FileFormat {
      * 
      * @param loadFullHierarchy
      *            if true, load the full hierarchy into memory; otherwise just
-     *            opens the file idenfitier.
+     *            opens the file identifier.
      * @return the file identifier if successful; otherwise returns negative
      *         value.
      */
     private int open(boolean loadFullHierarchy, int plist) throws Exception {
         if (fid > 0) {
-            return fid; // file is openned already
+            return fid; // file is opened already
         }
 
         // The cwd may be changed at Dataset.read() by H5Dchdir_ext()
@@ -1879,122 +1933,71 @@ public class H5File extends FileFormat {
     } // private depth_first()
 
     private TreeNode copyDataset(Dataset srcDataset, H5Group pgroup,
-            String dstName) throws Exception {
-        Dataset dataset = null;
-        TreeNode newNode;
-        int srcdid = -1, dstdid = -1, tid = -1, sid = -1, plist = -1;
-        String dname = null, path = null;
+    		String dstName) throws Exception {
+    	Dataset dataset = null;
+    	TreeNode newNode;
+    	int srcdid = -1, dstdid = -1;
+    	int ocp_plist_id = -1;
+    	String dname = null, path = null;
 
-        if (pgroup.isRoot()) {
-            path = HObject.separator;
-        }
-        else {
-            path = pgroup.getPath() + pgroup.getName() + HObject.separator;
-        }
+    	if (pgroup.isRoot()) {
+    		path = HObject.separator;
+    	}
+    	else {
+    		path = pgroup.getPath() + pgroup.getName() + HObject.separator;
+    	}
 
-        if ((dstName == null) || dstName.equals(HObject.separator)
-                || (dstName.length() < 1)) {
-            dstName = srcDataset.getName();
-        }
-        dname = path + dstName;
+    	if ((dstName == null) || dstName.equals(HObject.separator)
+    			|| (dstName.length() < 1)) {
+    		dstName = srcDataset.getName();
+    	}
+    	dname = path + dstName;
+   
+    	try {
+    		srcdid = srcDataset.open();
+    		dstdid = pgroup.open();
 
-        try {
-            srcdid = srcDataset.open();
-            tid = H5.H5Dget_type(srcdid);
-            sid = H5.H5Dget_space(srcdid);
-            plist = H5.H5Dget_create_plist(srcdid);
-            dstdid = H5.H5Dcreate(pgroup.getFID(), dname, tid, sid, HDF5Constants.H5P_DEFAULT, plist, HDF5Constants.H5P_DEFAULT);
+    		try{
+    			ocp_plist_id = H5.H5Pcreate(HDF5Constants.H5P_OBJECT_COPY);
+    			H5.H5Pset_copy_object(ocp_plist_id, HDF5Constants.H5O_COPY_EXPAND_REFERENCE_FLAG);
+    			H5.H5Ocopy(srcdid, ".", dstdid, dstName, ocp_plist_id, HDF5Constants.H5P_DEFAULT);    			
+    		}
+    		catch (Exception ex) {
+    		}
+    		finally {
+    			try {
+    				H5.H5Pclose(ocp_plist_id);
+    			}
+    			catch (Exception ex) {
+    			}
+    		}
 
-            // copy data values
-            H5.H5Dcopy(srcdid, dstdid);
+    		if (srcDataset instanceof H5ScalarDS) {
+    			dataset = new H5ScalarDS(pgroup.getFileFormat(), dstName, path);
+    		}
+    		else {
+    			dataset = new H5CompoundDS(pgroup.getFileFormat(), dstName,
+    					path);
+    		}
 
-            // copy attributes from one object to the new object
-            copyAttributes(srcdid, dstdid);
+    		pgroup.addToMemberList(dataset);
+    		newNode = new DefaultMutableTreeNode(dataset);
 
-            if (srcDataset instanceof H5ScalarDS) {
-                dataset = new H5ScalarDS(pgroup.getFileFormat(), dstName, path);
-            }
-            else {
-                dataset = new H5CompoundDS(pgroup.getFileFormat(), dstName,
-                        path);
-            }
-
-            pgroup.addToMemberList(dataset);
-            newNode = new DefaultMutableTreeNode(dataset);
-
-            // if the dataset is a image and has palette, copy the pallete
-            int srcaid = -1, dstaid = -1, atid = -1;
-            try {
-            	srcaid = H5.H5Aopen_by_name(srcdid,"." , "PALETTE", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-            	dstaid = H5.H5Aopen_by_name(dstdid, ".", "PALETTE", HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-                atid = H5.H5Aget_type(srcaid);
-                if (H5.H5Tget_class(atid) == HDF5Constants.H5T_REFERENCE) {
-                    long[] oid = new long[1];
-                    H5.H5Aread(srcaid, atid, oid);
-
-                    // search and copy palette
-                    HObject pal = findObject(srcDataset.getFileFormat(), oid);
-                    if ((pal != null) && (pal instanceof Dataset)) {
-                        try {
-                            copy(pal, pgroup, null);
-                        }
-                        catch (Exception ex2) {
-                        }
-                        byte[] ref_buf = H5.H5Rcreate(pgroup.getFID(), path
-                                + pal.getName(), HDF5Constants.H5R_OBJECT, -1);
-                        H5.H5Awrite(dstaid, atid, ref_buf);
-                    }
-                }
-            }
-            catch (Exception ex) {
-                ;
-            }
-            finally {
-                try {
-                    H5.H5Tclose(atid);
-                }
-                catch (Exception ex) {
-                }
-                try {
-                    H5.H5Aclose(srcaid);
-                }
-                catch (Exception ex) {
-                }
-                try {
-                    H5.H5Aclose(dstaid);
-                }
-                catch (Exception ex) {
-                }
-            }
-        }
-        finally {
-            try {
-                H5.H5Pclose(plist);
-            }
-            catch (Exception ex) {
-            }
-            try {
-                H5.H5Sclose(sid);
-            }
-            catch (Exception ex) {
-            }
-            try {
-                H5.H5Tclose(tid);
-            }
-            catch (Exception ex) {
-            }
-            try {
-                H5.H5Dclose(srcdid);
-            }
-            catch (Exception ex) {
-            }
-            try {
-                H5.H5Dclose(dstdid);
-            }
-            catch (Exception ex) {
-            }
-        }
-        return newNode;
+    	}
+    		finally { 	
+    			try {
+    				srcDataset.close(srcdid);
+    			}
+    			catch (Exception ex) {
+    			}
+    			try {
+    				pgroup.close(dstdid);
+    			}
+    			catch (Exception ex) {
+    			}
+    		}
+    	
+    	return newNode;
     }
 
     /**
@@ -2058,49 +2061,52 @@ public class H5File extends FileFormat {
      * @throws Exception
      */
     private TreeNode copyDatatype(Datatype srcType, H5Group pgroup,
-            String dstName) throws Exception {
-        Datatype datatype = null;
-        int tid_src, tid_dst;
-        String tname = null, path = null;
-        DefaultMutableTreeNode newNode = null;
+    		String dstName) throws Exception {
+    	Datatype datatype = null;
+    	int tid_src = -1, gid_dst = -1;
+    	String path = null;
+    	DefaultMutableTreeNode newNode = null;
 
-        if (pgroup.isRoot()) {
-            path = HObject.separator;
-        }
-        else {
-            path = pgroup.getPath() + pgroup.getName() + HObject.separator;
-        }
+    	if (pgroup.isRoot()) {
+    		path = HObject.separator;
+    	}
+    	else {
+    		path = pgroup.getPath() + pgroup.getName() + HObject.separator;
+    	}
 
-        if ((dstName == null) || dstName.equals(HObject.separator)
-                || (dstName.length() < 1)) {
-            dstName = srcType.getName();
-        }
+    	if ((dstName == null) || dstName.equals(HObject.separator)
+    			|| (dstName.length() < 1)) {
+    		dstName = srcType.getName();
+    	}
 
-        tname = path + dstName;
-        tid_src = srcType.open();
-        tid_dst = H5.H5Tcopy(tid_src);
+    	try {
+    		tid_src = srcType.open();
+        	gid_dst = pgroup.open();
 
-        try {
-        	H5.H5Tcommit(pgroup.getFID(), tname, tid_dst, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-            datatype = new H5Datatype(pgroup.getFileFormat(), dstName, path);
+    		try {
+    			H5.H5Ocopy(tid_src, ".", gid_dst, dstName, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+    		}
+    		catch (Exception ex) {
+    		}
+    		datatype = new H5Datatype(pgroup.getFileFormat(), dstName, path);
 
-            pgroup.addToMemberList(datatype);
-            newNode = new DefaultMutableTreeNode(datatype);
-        }
-        finally {
-            try {
-                H5.H5Tclose(tid_src);
-            }
-            catch (Exception ex) {
-            }
-            try {
-                H5.H5Tclose(tid_dst);
-            }
-            catch (Exception ex) {
-            }
-        }
+    		pgroup.addToMemberList(datatype);
+    		newNode = new DefaultMutableTreeNode(datatype);
+    	}
+    	finally {
+    		try {
+    			srcType.close(tid_src);
+    		}
+    		catch (Exception ex) {
+    		}   
+    		try {
+    			pgroup.close(gid_dst);
+    		}
+    		catch (Exception ex) {
+    		}
+    	}
 
-        return newNode;
+    	return newNode;
     }
 
     /**
@@ -2134,52 +2140,41 @@ public class H5File extends FileFormat {
         }
 
         gname = path + dstName;
-
+        
         try {
-            srcgid = srcGroup.open();
-            dstgid = H5.H5Gcreate(pgroup.getFID(), gname, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-            group = new H5Group(pgroup.getFileFormat(), dstName, path, pgroup);
+        	srcgid = srcGroup.open();
+        	dstgid = pgroup.open();
+        	try {
+        		H5.H5Ocopy(srcgid, ".", dstgid, dstName, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        	}
+        	catch (Exception ex) {
+        		ex.printStackTrace();
+        	}
+        	
+        	group = new H5Group(pgroup.getFileFormat(), dstName, path, pgroup);
+        	newNode = new DefaultMutableTreeNode(group) {
+        		public static final long serialVersionUID = HObject.serialVersionUID;
 
-            copyAttributes(srcgid, dstgid);
-
-            newNode = new DefaultMutableTreeNode(group) {
-                public static final long serialVersionUID = HObject.serialVersionUID;
-
-                public boolean isLeaf() {
-                    return false;
-                }
-            };
-            pgroup.addToMemberList(group);
-
-            // copy members of the source group to the new group
-            List members = srcGroup.getMemberList();
-            if ((members != null) && (members.size() > 0)) {
-                Iterator iterator = members.iterator();
-                while (iterator.hasNext()) {
-                    HObject mObj = (HObject) iterator.next();
-                    try {
-                        newNode.add((MutableTreeNode) copy(mObj, group, null));
-                    }
-                    catch (Exception ex) {
-                    }
-                }
-            }
-
+        		public boolean isLeaf() {
+        			return false;
+        		}
+        	};
+        	pgroup.addToMemberList(group);    	
         }
-        finally {
-            try {
-                srcGroup.close(srcgid);
-            }
-            catch (Exception ex) {
-            }
-            try {
-                H5.H5Gclose(dstgid);
-            }
-            catch (Exception ex) {
-            }
-
-        }
-
+        
+    	finally {
+    		try {
+    			srcGroup.close(srcgid);
+    		}
+    		catch (Exception ex) {
+    		}   
+    		try {
+    			pgroup.close(dstgid);
+    		}
+    		catch (Exception ex) {
+    		}
+    	}
+    	
         return newNode;
     }
 

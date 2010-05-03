@@ -4,6 +4,8 @@
 package test.object;
 
 import java.util.Vector;
+
+import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.object.*;
 import ncsa.hdf.object.h5.*;
 
@@ -48,6 +50,14 @@ public class H5TestFile {
             NAME_DATASET_FLOAT_SUB_SUB, NAME_DATASET_COMPOUND_SUB,
             NAME_DATATYPE_INT, NAME_DATATYPE_UINT, NAME_DATATYPE_FLOAT,
             NAME_DATATYPE_STR, NAME_DATASET_OBJ_REF };
+    
+    public final static int OBJ_TYPES[] = { HDF5Constants.H5O_TYPE_GROUP, HDF5Constants.H5O_TYPE_GROUP,
+    	HDF5Constants.H5O_TYPE_GROUP, HDF5Constants.H5O_TYPE_DATASET, HDF5Constants.H5O_TYPE_DATASET,
+    	HDF5Constants.H5O_TYPE_DATASET, HDF5Constants.H5O_TYPE_DATASET, HDF5Constants.H5O_TYPE_DATASET,
+    	HDF5Constants.H5O_TYPE_DATASET, HDF5Constants.H5O_TYPE_DATASET, HDF5Constants.H5O_TYPE_DATASET,
+    	HDF5Constants.H5O_TYPE_DATASET, HDF5Constants.H5O_TYPE_DATASET,
+    	HDF5Constants.H5O_TYPE_NAMED_DATATYPE, HDF5Constants.H5O_TYPE_NAMED_DATATYPE, HDF5Constants.H5O_TYPE_NAMED_DATATYPE,
+    	HDF5Constants.H5O_TYPE_NAMED_DATATYPE, HDF5Constants.H5O_TYPE_DATASET };
 
     // data space information
     public final static int DATATYPE_SIZE = 4;
@@ -174,7 +184,7 @@ public class H5TestFile {
         dsets[6] = file.createScalarDS(NAME_DATASET_FLOAT_SUB_SUB, g00,
                 typeFloat, DIMs, null, CHUNKs, 9, DATA_FLOAT);
         dsets[7] = file.createImage(NAME_DATASET_IMAGE, null, typeByte, DIMs,
-                null, CHUNKs, 9, 1, -1, DATA_BYTE);
+                null, CHUNKs, 9, 1, -1, DATA_BYTE);     
         dsets[8] = file.createCompoundDS(NAME_DATASET_COMPOUND, null, DIMs,
                 null, CHUNKs, 9, COMPOUND_MEMBER_NAMES,
                 COMPOUND_MEMBER_DATATYPES, null, DATA_COMP);
@@ -190,6 +200,7 @@ public class H5TestFile {
             dsets[i].writeMetadata(ATTRIBUTE_INT_ARRAY);
         }
 
+        
         // create a wave palette and attach it to the image
         final Dataset pal = file.createScalarDS(NAME_DATASET_IMAGE_PALETTE,
                 null, typeByte, new long[] { 256, 3 }, null, null, -1,
@@ -236,8 +247,9 @@ public class H5TestFile {
         // write object refs to the ref dataset
         file.open();
         final long[] refs = new long[DIM_SIZE];
-        for (int i = 0; i < OBJ_NAMES.length; i++) {
-            oid = file.get(OBJ_NAMES[i]).getOID();
+       // for (int i = 0; i < OBJ_NAMES.length; i++) { --//This gives CORE DUMP when OBJ_NAMES = NAME_DATASET_OBJ_REF, as it enters an infinite loop.
+        for (int i = 0; i < OBJ_NAMES.length-1; i++) {
+             oid = file.get(OBJ_NAMES[i]).getOID();
             refs[i] = oid[0];
         }
         dsets[10].write(refs);
