@@ -154,7 +154,7 @@ public class H5FileTest extends TestCase {
                     FileFormat.WRITE);
 
             try {
-                fid = file.open(); // opent the full tree
+                fid = file.open(); // open the full tree
             }
             catch (final Exception ex) {
                 fail("file.open() failed. " + ex);
@@ -1012,121 +1012,130 @@ public class H5FileTest extends TestCase {
      * </ul>
      */
     public final void testUpdateReferenceDataset() {
-        Group root = null;
-        HObject srcObj = null, dstObj = null;
-        final String nameNewFile = "testH5File.h5";
-        String dstName = null;
-        H5File file = null;
+    	Group root = null;
+    	HObject srcObj = null, dstObj = null;
+    	final String nameNewFile = "testH5File.h5";
+    	String dstName = null;
+    	H5File file = null;
 
-        try {
-            root = (Group) testFile.get("/");
-        }
-        catch (final Exception ex) {
-            fail("file.get() failed. " + ex);
-        }
-        assertNotNull(root);
+    	try {
+    		root = (Group) testFile.get("/");
+    	}
+    	catch (final Exception ex) {
+    		fail("file.get() failed. " + ex);
+    	}
+    	assertNotNull(root);
 
-        final List members = root.getMemberList();
-        final int n = members.size();
-        assertTrue(n > 0);
+    	final List members = root.getMemberList();
+    	final int n = members.size();
+    	assertTrue(n > 0);
 
-        try {
-            file = (H5File) H5FILE.create(nameNewFile);
-            file.open();
-        }
-        catch (final Exception ex) {
-            fail("file.create() failed. " + ex);
-        }
-        assertNotNull(file);
+    	try {
+    		file = (H5File) H5FILE.create(nameNewFile);
+    		file.open();
+    	}
+    	catch (final Exception ex) {
+    		fail("file.create() failed. " + ex);
+    	}
+    	assertNotNull(file);
 
-        try {
-            root = (Group) file.get("/");
-        }
-        catch (final Exception ex) {
-            fail("file.get() failed. " + ex);
-        }
-        assertNotNull(root);
+    	try {
+    		root = (Group) file.get("/");
+    	}
+    	catch (final Exception ex) {
+    		fail("file.get() failed. " + ex);
+    	}
+    	assertNotNull(root);
 
-        // copy all the objects to the new file
-        for (int i = 0; i < n; i++) {
-            dstName = null;
-            dstObj = null;
-            srcObj = (HObject) members.get(i);
+    	// copy all the objects to the new file
+    	for (int i = 0; i < n; i++) {
+    		dstName = null;
+    		dstObj = null;
+    		srcObj = (HObject) members.get(i);
 
-            try {
-                dstObj = (HObject) ((DefaultMutableTreeNode) testFile.copy(
-                        srcObj, root)).getUserObject();
-            }
-            catch (final Exception ex) {
-                // image palette probably is copied already
-                if (H5TestFile.NAME_DATASET_IMAGE_PALETTE.equals(srcObj
-                        .getFullName())) {
-                    continue;
-                }
+    		try {
+    			dstObj = (HObject) ((DefaultMutableTreeNode) testFile.copy(
+    					srcObj, root)).getUserObject();
+    		}
+    		catch (final Exception ex) {
+    			// image palette probably is copied already
+    			if (H5TestFile.NAME_DATASET_IMAGE_PALETTE.equals(srcObj
+    					.getFullName())) {
+    				continue;
+    			}
 
-                fail("file.copy() failed on " + srcObj.getFullName() + ". "
-                        + ex);
-            }
-            assertNotNull(dstObj);
-            dstName = dstObj.getFullName();
+    			fail("file.copy() failed on " + srcObj.getFullName() + ". "
+    					+ ex);
+    		}
+    		assertNotNull(dstObj);
+    		dstName = dstObj.getFullName();
 
-            // re-open the file to make sure the object is writen to file
-            try {
-                file.close();
-                file.open();
-            }
-            catch (final Exception ex) {
-                fail("file.close() failed. " + ex);
-            }
+    		// re-open the file to make sure the object is writen to file
+    		try {
+    			file.close();
+    			file.open();
+    		}
+    		catch (final Exception ex) {
+    			fail("file.close() failed. " + ex);
+    		}
 
-            try {
-                dstObj = file.get(dstName);
-            }
-            catch (final Exception ex) {
-                fail("file.get() failed on " + dstObj.getFullName() + ". " + ex);
-            }
-            assertNotNull(dstObj);
-        }
+    		try {
+    			dstObj = file.get(dstName);
+    		}
+    		catch (final Exception ex) {
+    			fail("file.get() failed on " + dstObj.getFullName() + ". " + ex);
+    		}
+    		assertNotNull(dstObj);
+    	}
 
-        try {
-            H5File.updateReferenceDataset(testFile, file);
-        }
-        catch (final Exception ex) {
-            fail("H5File.updateReferenceDataset() failed. " + ex);
-        }
+    	try {
+    		H5File.updateReferenceDataset(testFile, file);
+    	}
+    	catch (final Exception ex) {
+    		fail("H5File.updateReferenceDataset() failed. " + ex);
+    	}
 
-        long[] refs = null;
-        try {
-            refs = (long[]) ((Dataset) file
-                    .get(H5TestFile.NAME_DATASET_OBJ_REF)).getData();
-        }
-        catch (final Exception ex) {
-            fail("file.get() failed. " + ex);
-        }
-        assertNotNull(refs);
+    	int[] otype = { 1 };
+    	int obj_type = -1;
+    	int did = -1;
+    	byte[] read_data = new byte[3920]; 
+    	HObject obj = null;
 
-        // check the references are updated correctly
-        long[] oid = null;
-        HObject obj = null;
-        for (int i = 0; i < 5; i++) {
-            try {
-                obj = file.get(H5TestFile.OBJ_NAMES[i]);
-                oid = obj.getOID();
-            }
-            catch (final Exception ex) {
-                fail("file.get() failed. " + ex);
-            }
-            assertEquals(oid[0], refs[i]);
-        }
+    	//Check if the copied dataset containing references, point to correct object type.
+    	try {          	
+    		obj = file.get(H5TestFile.OBJ_NAMES[17]);
+    		did = H5.H5Dopen(file.getFID(),obj.getName(), HDF5Constants.H5P_DEFAULT);
+    		H5.H5Dread(did, HDF5Constants.H5T_STD_REF_OBJ, HDF5Constants.H5S_ALL,HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, read_data);
 
-        try {
-            file.close();
-        }
-        catch (final Exception ex) {
-            fail("file.close() failed. " + ex);
-        }
+    		byte rbuf0[]= new byte[8];
+    		int srcPos =0;
 
-        file.delete();
+    		for (int i = 0; i < 17; i++) {
+    			System.arraycopy(read_data, srcPos, rbuf0, 0, 8);
+    			srcPos = srcPos + 8;
+    			obj_type = H5.H5Rget_obj_type(file.getFID(), HDF5Constants.H5R_OBJECT, rbuf0, otype);
+    			assertTrue(obj_type== H5TestFile.OBJ_TYPES[i]);
+    		}
+    	}
+    	catch (final Exception ex) {
+    		ex.printStackTrace();
+    		fail("file.get() failed. " + ex);
+    	}
+    	
+    	try{
+    		H5.H5Dclose(did);
+    	}
+    	catch (final Exception ex) {
+    	}
+    	
+    	try {
+    		file.close();
+    	}
+    	catch (final Exception ex) {
+    		fail("file.close() failed. " + ex);
+    	}
+
+    	file.delete();
     }
 
     /**
@@ -1155,6 +1164,32 @@ public class H5FileTest extends TestCase {
             fail("H5.H5Fget_obj_count() failed. " + ex);
         }
         assertEquals(1, nObjs); // file id should be the only one left open
+    }
+
+    /**
+     * Test method for
+     * {@link ncsa.hdf.object.h5.H5File#setLibBounds(int , int )}
+     * 
+     */
+    public final void testSetLibBounds() {
+    	int low = HDF5Constants.H5F_LIBVER_LATEST;
+    	int high = HDF5Constants.H5F_LIBVER_LATEST;
+
+    	final H5File file =  new H5File(H5TestFile.NAME_FILE_H5, FileFormat.WRITE);
+
+    	try{
+    		file.setLibBounds(low,high);   	
+    	}
+    	catch (final Exception ex) {
+    		fail("testFile.setLibBounds() failed. " + ex);
+    	}
+
+    	try{
+    		testFile.setLibBounds();   	
+    	}
+    	catch (final Exception ex) {
+    		fail("testFile.setLibBounds() failed. " + ex);
+    	}
     }
 
 }
