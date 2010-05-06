@@ -327,8 +327,7 @@ public class H5CompoundDS extends CompoundDS {
                 try {
                     member_class = H5.H5Tget_class(atom_tid);
                     member_size = H5.H5Tget_size(atom_tid);
-                    member_data = H5Datatype.allocateArray(atom_tid,
-                            (int) lsize[0]);
+                    member_data = H5Datatype.allocateArray(atom_tid,(int) lsize[0]);
                 }
                 catch (Exception ex) {
                     member_data = null;
@@ -357,6 +356,7 @@ public class H5CompoundDS extends CompoundDS {
                         // See BUG#951 isVL = H5.H5Tdetect_class(atom_tid,
                         // HDF5Constants.H5T_VLEN);
                         isVL = H5.H5Tis_variable_str(atom_tid);
+                        isVL = isVL || H5.H5Tdetect_class(atom_tid, HDF5Constants.H5T_VLEN);
                     }
                     catch (Exception ex) {
                     }
