@@ -1728,7 +1728,7 @@ implements TableView, ActionListener, MouseListener
                     int colIdx = col/nFields;
                     fieldIdx = col - colIdx*nFields;
                     //BUG 573: rowIdx = row*orders[fieldIdx] + colIdx*nRows*orders[fieldIdx];
-                    rowIdx = row*orders[fieldIdx]*nSubColumns+colIdx*orders[fieldIdx];;
+                    rowIdx = row*orders[fieldIdx]*nSubColumns+colIdx*orders[fieldIdx];
                 }
                 else {
                     rowIdx = row*orders[fieldIdx];
@@ -1768,9 +1768,11 @@ implements TableView, ActionListener, MouseListener
                 } else
                 {
                     // member is an ARRAY datatype
-                    for (int i=0; i<orders[fieldIdx]; i++) {
-                        stringBuffer.append(Array.get(colValue, rowIdx+i));
+                    stringBuffer.append(Array.get(colValue, rowIdx));
+                	
+                    for (int i=1; i<orders[fieldIdx]; i++) {
                         stringBuffer.append(", ");
+                        stringBuffer.append(Array.get(colValue, rowIdx+i));
                     }
                 }
 
@@ -2072,17 +2074,22 @@ implements TableView, ActionListener, MouseListener
         }
 
         String delName = ViewProperties.getDataDelimiter();
-        String delimiter = "\t";
-        
-        // delimiter must include a tab to be consistent with copy/paste (
-        if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_SPACE)) {
-            delimiter = " "+delimiter;
-        } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_COMMA)) {
-            delimiter = ","+delimiter;
-        } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_COLON)) {
-            delimiter = ":"+delimiter;
-        } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_SEMI_COLON)) {
-            delimiter = ";"+delimiter;
+        String delimiter = "";
+
+        // delimiter must include a tab to be consistent with copy/paste for compound fields 
+        if (dataset instanceof CompoundDS)
+        	delimiter = "\t";
+        else {
+            
+            if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_SPACE)) {
+                delimiter = " ";
+            } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_COMMA)) {
+                delimiter = ",";
+            } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_COLON)) {
+                delimiter = ":";
+            } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_SEMI_COLON)) {
+                delimiter = ";";
+            }
         }
 
         String token=null;
@@ -2197,9 +2204,12 @@ implements TableView, ActionListener, MouseListener
             new BufferedWriter(new FileWriter(choosedFile)));
 
         String delName = ViewProperties.getDataDelimiter();
-        String delimiter = "\t";
+        String delimiter = "";
+
+        // delimiter must include a tab to be consistent with copy/paste for compound fields
+        if (dataset instanceof CompoundDS)
+            delimiter = "\t";
         
-        // delimiter must include a tab to be consistent with copy/paste (
         if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_SPACE)) {
             delimiter = " "+delimiter;
         } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_COMMA)) {
@@ -2522,11 +2532,11 @@ implements TableView, ActionListener, MouseListener
         StringTokenizer st = new StringTokenizer(cellValue, ",");
         if (st.countTokens() < morder)
         {
-            toolkit.beep();
-            JOptionPane.showMessageDialog(this,
-            "Number of data point < "+morder+".",
-            getTitle(),
-            JOptionPane.ERROR_MESSAGE);
+//            toolkit.beep();
+//            JOptionPane.showMessageDialog(this,
+//            "Number of data points < "+morder+".",
+//            getTitle(),
+//            JOptionPane.ERROR_MESSAGE);
             return;
         }
 
