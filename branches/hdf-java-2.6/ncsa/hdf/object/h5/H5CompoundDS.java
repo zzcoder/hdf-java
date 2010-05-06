@@ -327,6 +327,7 @@ public class H5CompoundDS extends CompoundDS
                     try { 
                         // See BUG#951 isVL = H5.H5Tdetect_class(atom_tid, HDF5Constants.H5T_VLEN); 
                         isVL = H5.H5Tis_variable_str(atom_tid);
+                        isVL = isVL || H5.H5Tdetect_class(atom_tid, HDF5Constants.H5T_VLEN);
                     } catch (Exception ex) {}
   
                     if (isVL) {
