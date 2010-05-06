@@ -2072,19 +2072,23 @@ implements TableView, ActionListener, MouseListener
         }
 
         String delName = ViewProperties.getDataDelimiter();
-        String delimiter = "\t";
-        
-        // delimiter must include a tab to be consistent with copy/paste (
-        if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_SPACE)) {
-            delimiter = " "+delimiter;
-        } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_COMMA)) {
-            delimiter = ","+delimiter;
-        } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_COLON)) {
-            delimiter = ":"+delimiter;
-        } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_SEMI_COLON)) {
-            delimiter = ";"+delimiter;
-        }
+        String delimiter = "";
 
+        // delimiter must include a tab to be consistent with copy/paste for compound fields 
+        if (dataset instanceof CompoundDS)
+        	delimiter = "\t";
+        else {
+            
+            if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_SPACE)) {
+                delimiter = " ";
+            } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_COMMA)) {
+                delimiter = ",";
+            } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_COLON)) {
+                delimiter = ":";
+            } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_SEMI_COLON)) {
+                delimiter = ";";
+            }
+        }
         String token=null;
         int r = r0, c = c0;
         while ((line != null) && (r < rows)) {
@@ -2197,9 +2201,12 @@ implements TableView, ActionListener, MouseListener
             new BufferedWriter(new FileWriter(choosedFile)));
 
         String delName = ViewProperties.getDataDelimiter();
-        String delimiter = "\t";
+        String delimiter = "";
+
+        // delimiter must include a tab to be consistent with copy/paste for compound fields
+        if (dataset instanceof CompoundDS)
+            delimiter = "\t";
         
-        // delimiter must include a tab to be consistent with copy/paste (
         if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_SPACE)) {
             delimiter = " "+delimiter;
         } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_COMMA)) {
@@ -2209,7 +2216,7 @@ implements TableView, ActionListener, MouseListener
         } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_SEMI_COLON)) {
             delimiter = ";"+delimiter;
         }
-
+        
         int cols = table.getColumnCount();
         int rows = table.getRowCount();
 
