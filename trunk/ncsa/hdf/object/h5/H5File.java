@@ -1315,20 +1315,33 @@ public class H5File extends FileFormat {
     }
 
     /***
-     * Creates a new group with specified name in exisiting group.
+     * Creates a new group with specified name in existing group.
      * 
      * @see ncsa.hdf.object.FileFormat#createGroup(java.lang.String,
      *      ncsa.hdf.object.Group)
      */
     public Group createGroup(String name, Group pgroup) throws Exception {
+        return this.createGroup(name, pgroup, HDF5Constants.H5P_DEFAULT);
+
+    }
+    
+	/***
+	 * Creates a new group with specified name in existing group and with the
+	 * group creation properties list, gplist.
+	 * 
+	 * @see ncsa.hdf.object.h5.H5Group#create(java.lang.String,
+	 *      ncsa.hdf.object.Group, int)
+	 * 
+	 */
+    public Group createGroup(String name, Group pgroup, int ... gplist) throws Exception {
         // create new group at the root
         if (pgroup == null) {
             pgroup = (Group) this.get("/");
         }
 
-        return H5Group.create(name, pgroup);
+        return H5Group.create(name, pgroup, gplist);
     }
-
+    
     /*
      * (non-Javadoc)
      * 
@@ -1336,48 +1349,83 @@ public class H5File extends FileFormat {
      * java.lang.String, ncsa.hdf.object.HObject)
      */
     public HObject createLink(Group parentGroup, String name, HObject currentObj)
-            throws Exception {
-        HObject obj = null;
-        String current_full_name = null, new_full_name = null, parent_path = null;
+    		throws Exception {
+    	return this.createLink(parentGroup, name, currentObj, HDF5Constants.H5L_TYPE_HARD);
+    }
+    
+	/**
+	 * Creates a link to an object in the open file.
+	 * <p>
+	 * If parentGroup is null, the new link is created in the root group.
+	 * 
+	 * @param parentGroup
+	 *            The group where the link is created.
+	 * @param name
+	 *            The name of the link.
+	 * @param currentObj
+	 *            The existing object the new link will reference.
+	 * @param type
+	 *            The type of link to be created. It can be a hard link, a soft
+	 *            link or an external link.
+	 * @return The object pointed to by the new link if successful; otherwise
+	 *         returns null.
+	 * @throws Exception
+	 *             The exceptions thrown vary depending on the implementing
+	 *             class.
+	 */
+    public HObject createLink(Group parentGroup, String name, HObject currentObj, int type)
+    throws Exception {
+    	HObject obj = null;
+    	String current_full_name = null, new_full_name = null, parent_path = null;
 
-        if (currentObj == null) {
-            throw new HDF5Exception(
-                    "The object pointed by the link cannot be null.");
-        }
+    	if (currentObj == null) {
+    		throw new HDF5Exception(
+    				"The object pointed by the link cannot be null.");
+    	}
 
-        if ((currentObj instanceof Group) && ((Group) currentObj).isRoot()) {
-            throw new HDF5Exception("Cannot make a link to the root group.");
-        }
+    	if ((parentGroup == null) || parentGroup.isRoot()) {
+    		parent_path = HObject.separator;
+    	}
+    	else {
+    		parent_path = parentGroup.getPath() + HObject.separator
+    		+ parentGroup.getName() + HObject.separator;
+    	}
 
-        if ((parentGroup == null) || parentGroup.isRoot()) {
-            parent_path = HObject.separator;
-        }
-        else {
-            parent_path = parentGroup.getPath() + HObject.separator
-                    + parentGroup.getName() + HObject.separator;
-        }
+    	new_full_name = parent_path + name;
 
-        new_full_name = parent_path + name;
-        current_full_name = currentObj.getPath() + HObject.separator
-                + currentObj.getName();
-        
-        H5.H5Lcreate_hard(fid, current_full_name,
-        		fid, new_full_name, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+    	if(type ==HDF5Constants.H5L_TYPE_HARD){   	 
+    		if ((currentObj instanceof Group) && ((Group) currentObj).isRoot()) {
+    			throw new HDF5Exception("Cannot make a link to the root group.");
+    		}
+    		current_full_name = currentObj.getPath() + HObject.separator
+    		+ currentObj.getName();
 
-        if (currentObj instanceof Group) {
-            obj = new H5Group(this, name, parent_path, parentGroup);
-        }
-        else if (currentObj instanceof H5Datatype) {
-            obj = new H5Datatype(this, name, parent_path);
-        }
-        else if (currentObj instanceof H5CompoundDS) {
-            obj = new H5CompoundDS(this, name, parent_path);
-        }
-        else if (currentObj instanceof H5ScalarDS) {
-            obj = new H5ScalarDS(this, name, parent_path);
-        }
+    		H5.H5Lcreate_hard(fid, current_full_name,
+    				fid, new_full_name, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+    	}
 
-        return obj;
+    	else if(type ==HDF5Constants.H5L_TYPE_SOFT){  	   	 	  
+    		H5.H5Lcreate_soft( currentObj.getFullName(), fid, new_full_name, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+    	}
+
+    	else if(type ==HDF5Constants.H5L_TYPE_EXTERNAL){  
+    		H5.H5Lcreate_external(currentObj.getFile(), currentObj.getFullName(), fid, new_full_name, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);  	  
+    	}
+
+    	if (currentObj instanceof Group) {
+    		obj = new H5Group(this, name, parent_path, parentGroup);
+    	}
+    	else if (currentObj instanceof H5Datatype) {
+    		obj = new H5Datatype(this, name, parent_path);
+    	}
+    	else if (currentObj instanceof H5CompoundDS) {
+    		obj = new H5CompoundDS(this, name, parent_path);
+    	}
+    	else if (currentObj instanceof H5ScalarDS) {
+    		obj = new H5ScalarDS(this, name, parent_path);
+    	}
+
+    	return obj;
     }
 
     /**

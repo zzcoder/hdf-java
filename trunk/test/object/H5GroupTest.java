@@ -9,6 +9,7 @@ import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.HDFNativeData;
 import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
+import ncsa.hdf.hdf5lib.structs.H5G_info_t;
 import ncsa.hdf.object.Attribute;
 import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
@@ -798,6 +799,141 @@ public class H5GroupTest extends TestCase {
             fail("H5.H5Fget_obj_count() failed. " + ex);
         }
         assertEquals(1, nObjs); // file id should be the only one left open
+    }
+
+	/**
+	 * Test method for
+	 * {@link ncsa.hdf.object.h5.H5Group#create(java.lang.String, ncsa.hdf.object.Group, int)}
+	 * .
+	 * <p>
+	 * What to test:
+	 * <ul>
+	 * <li>Sets group creation property list identifier
+	 * <li>Sets link storage and creation order
+	 * <li>Check that group is not created when the order of group property list is incorrect.
+	 * <li>Create a new group
+	 * <li>Create subgroups
+	 * <li>Close and reopen the file
+	 * <li>Check the new group and subgroup
+	 * <li>Check name of ith link in group by creation order and storage type
+	 * <li>Restore to the original file (remove the new group)
+	 * </ul>
+	 */
+    public final void testCreateWithGroupplist() {
+    	Group grp = null;
+    	final String nameNew = "/Group1";
+    	int gcpl = -1;
+    	int gid = -1;
+    	H5G_info_t ginfo;
+    	Group grp2 = null, grp3 = null;
+
+    	try {
+    		gcpl = H5.H5Pcreate(HDF5Constants.H5P_GROUP_CREATE);
+    		if (gcpl >= 0) {
+    			H5.H5Pset_link_creation_order(gcpl,
+    					HDF5Constants.H5P_CRT_ORDER_TRACKED
+    					+ HDF5Constants.H5P_CRT_ORDER_INDEXED); // Set link creation order.
+    			H5.H5Pset_link_phase_change(gcpl, 3, 2); // Set link storage.
+    		}
+    	} catch (final Exception ex) {
+    		fail("H5.H5Pcreate() failed. " + ex);
+    	}
+
+    	try {
+    		final Group rootGrp = (Group) testFile.get("/");
+    		grp = H5Group.create(nameNew, rootGrp, gcpl);
+    	} catch (final Exception ex) {
+    		; //Expected -intentional as the order of gplist is invalid.
+    	}
+    	assertNull(grp);
+    	
+    	try {
+    		final Group rootGrp = (Group) testFile.get("/");
+    		grp = H5Group.create(nameNew, rootGrp, HDF5Constants.H5P_DEFAULT, gcpl);
+    	} catch (final Exception ex) {
+    		ex.printStackTrace();
+    		fail("H5Group.create failed. " + ex);
+    	}
+    	assertNotNull(grp);
+
+    	try {
+    		grp2 = H5Group.create("G5", grp); // create subgroups
+    		grp3 = H5Group.create("G3", grp);
+    	} catch (final Exception ex) {
+    		fail("H5Group.create failed. " + ex);
+    	}
+    	assertNotNull(grp2);
+    	assertNotNull(grp3);
+
+    	try {
+    		H5.H5Pclose(gcpl);
+    	} catch (final Exception ex) {
+    	}
+
+    	try {
+    		testFile.close(); // Close and reopen file.
+    		testFile.open();
+    	} catch (final Exception ex) {
+    		fail("testFile.close() failed. " + ex);
+    	}
+    	grp = null;
+    	try {
+    		grp = (Group) testFile.get(nameNew);
+    	} catch (final Exception ex) {
+    		fail("testFile.get() failed. " + ex);
+    	}
+    	assertNotNull(grp);
+
+    	try {
+    		gid = grp.open();
+    	} catch (final Exception ex) {
+    		fail("grp.open() failed. " + ex);
+    	}
+    	assertTrue(gid > 0);
+
+    	try {
+    		ginfo = H5.H5Gget_info(gid); // Get group info.
+    		String name = H5.H5Lget_name_by_idx(gid, ".",
+    				HDF5Constants.H5_INDEX_CRT_ORDER,
+    				HDF5Constants.H5_ITER_INC, 1, HDF5Constants.H5P_DEFAULT); // Get name of ith link.			
+    		assertEquals("G3", name);
+    		assertEquals(HDF5Constants.H5G_STORAGE_TYPE_COMPACT,
+    				ginfo.storage_type);
+    	} catch (final Exception ex) {
+    		fail("H5.H5Lget_name_by_idx() failed. " + ex);
+    	}
+
+    	grp.close(gid);
+
+    	try {
+    		testFile.delete(grp); // delete the new group
+    	} catch (final Exception ex) {
+    		fail("testFile.delete() failed. " + ex);
+    	}
+
+    	try {
+    		testFile.close(); // Close and reopen file.
+    		testFile.open();
+    	} catch (final Exception ex) {
+    		fail("testFile.get() failed. " + ex);
+    	}
+
+    	grp = null;
+    	try {
+    		grp = (Group) testFile.get(nameNew);
+    	} catch (final Exception ex) {
+    		; // Expected - intentional
+    	}
+    	assertNull(grp);
+
+    	int nObjs = 0;
+    	try {
+    		nObjs = H5.H5Fget_obj_count(testFile.getFID(),
+    				HDF5Constants.H5F_OBJ_ALL);
+    	} catch (final Exception ex) {
+    		fail("H5.H5Fget_obj_count() failed. " + ex);
+    	}
+    	assertEquals(1, nObjs); // file id should be the only one left open
     }
 
 }

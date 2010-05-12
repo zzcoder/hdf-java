@@ -268,19 +268,49 @@ public class H5Group extends Group {
         }
     }
 
-    /**
-     * Creates a new group with a name in a group.
-     * 
-     * @param name
-     *            The name of a new group.
-     * @param pgroup
-     *            The parent group object.
-     * @return The new group if successful; otherwise returns null.
-     */
-    public static H5Group create(String name, Group pgroup) throws Exception {
+	/**
+	 * Creates a new group with a name in a group and with the group creation
+	 * properties specified in gplist.
+	 * <p>
+	 * The gplist contains a sequence of group creation property list
+	 * identifiers, lcpl, gcpl, gapl. It allows the user to create a group with
+	 * group creation properties.
+	 * 
+	 * @see ncsa.hdf.hdf5lib.H5#H5Gcreate(int, String, int, int, int) for the
+	 *      order of property list identifiers.
+	 * 
+	 * @param name
+	 *            The name of a new group.
+	 * @param pgroup
+	 *            The parent group object.
+	 * @param gplist
+	 *            The group creation properties, in which the order of the properties conforms the
+	 *            HDF5 library API, H5Gcreate(), i.e. lcpl, gcpl and gapl, where
+	 *<ul>
+	 *    <li>lcpl : Property list for link creation
+	 *    <li>gcpl : Property list for group creation
+	 *    <li>gapl : Property list for group access
+	 *</ul> 
+	 *           
+	 * @return The new group if successful; otherwise returns null.
+	 */
+    
+    public static H5Group create(String name, Group pgroup, int ... gplist) throws Exception {
         H5Group group = null;
         String fullPath = null;
-
+        int lcpl = HDF5Constants.H5P_DEFAULT;
+        int gcpl = HDF5Constants.H5P_DEFAULT;
+        int gapl = HDF5Constants.H5P_DEFAULT;
+        
+        if(gplist.length > 0) {
+            lcpl = gplist[0];
+            if(gplist.length > 1) {
+                 gcpl = gplist[1];
+                 if (gplist.length > 2)
+                     gapl = gplist[2];
+            }
+        } 
+        
         if (name == null) {
             return null;
         }
@@ -310,8 +340,8 @@ public class H5Group extends Group {
 
         fullPath = path + name;
 
-        // create a new group and add ot to the parent node
-        int gid = H5.H5Gcreate(file.open(), fullPath, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        // create a new group and add it to the parent node
+        int gid = H5.H5Gcreate(file.open(), fullPath, lcpl, gcpl, gapl);
         try {
             H5.H5Gclose(gid);
         }

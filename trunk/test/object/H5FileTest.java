@@ -5,8 +5,14 @@ package test.object;
 
 import java.util.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+
+import org.junit.Test;
+
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
+import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
+import ncsa.hdf.hdf5lib.structs.H5G_info_t;
+import ncsa.hdf.hdf5lib.structs.H5L_info_t;
 import ncsa.hdf.object.HObject;
 import ncsa.hdf.object.Group;
 import ncsa.hdf.object.Dataset;
@@ -14,8 +20,13 @@ import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.h5.H5Datatype;
 import ncsa.hdf.object.h5.H5File;
+import ncsa.hdf.object.h5.H5Group;
 import ncsa.hdf.object.h5.H5ScalarDS;
 import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * TestCase for H5File.
@@ -343,6 +354,117 @@ public class H5FileTest extends TestCase {
         catch (final Exception ex) {
         }
         file.delete();
+    }
+
+    /**
+     * Test method for
+     * {@link ncsa.hdf.object.h5.H5File#createGroup(java.lang.String, ncsa.hdf.object.Group, int)}
+     * .
+     * <p>
+     * What to test:
+     * <ul>
+     * <li>create a file
+     * <li>Sets link creation property list identifier
+     * <li>Sets group creation property list identifier
+     * <li>Check that group is not created when the order of group property list is incorrect.
+     * <li>create a group
+     * <li>create subgroups
+     * <li>Check the new group and subgroup
+     * <li>Check name of ith link in group by creation order. 
+     * <li>close/delete the file
+     * </ul>
+     */
+    public final void testCreateGroupWithGroupplist() {
+    	final String nameNew = "testH5File2.h5";
+    	H5File file = null;
+    	int fid = -1;
+    	int gcpl = -1;
+    	int gid = -1;
+    	int lcpl = -1;
+    	Group grp = null;
+    	Group grp2 = null, grp3 = null;
+    	H5G_info_t ginfo;
+
+    	try {
+    		file = (H5File) H5FILE.create(nameNew);
+    	} catch (final Exception ex) {
+    		fail("file.create() failed. " + ex);
+    	}
+    	try {
+    		fid = file.open();
+    	} catch (final Exception ex) {
+    		fail("file.open() failed. " + ex);
+    	}
+    	assertTrue(fid > 0);
+
+    	try {
+    		lcpl = H5.H5Pcreate(HDF5Constants.H5P_LINK_CREATE); //create lcpl
+    		if (lcpl >= 0) 
+    			H5.H5Pset_create_intermediate_group(lcpl, true);	
+    	} catch (final Exception ex) {
+    		fail("H5.H5Pcreate() failed. " + ex);
+    	}
+
+    	try {
+    		gcpl = H5.H5Pcreate(HDF5Constants.H5P_GROUP_CREATE); //create gcpl
+    		if (gcpl >= 0) {
+    			H5.H5Pset_link_creation_order(gcpl,
+    					HDF5Constants.H5P_CRT_ORDER_TRACKED
+    					+ HDF5Constants.H5P_CRT_ORDER_INDEXED);//Set link creation order
+    		}
+    	} catch (final Exception ex) {
+    		fail("H5.H5Pcreate() failed. " + ex);
+    	}
+    	try {
+    		grp = file.createGroup("Group1/Group2/Group3", null, gcpl,lcpl);
+    	} catch (final Exception ex) {
+    		; //Expected -intentional as the order of gplist is invalid.
+    	}
+    	assertNull(grp);
+
+    	try {
+    		grp = file.createGroup("Group1/Group2/Group3", null, lcpl,gcpl);
+    	} catch (final Exception ex) {
+    		fail("file.createGroup() failed. " + ex);
+    	}
+    	assertNotNull(grp);
+
+    	try {
+    		gid = grp.open();
+    	} catch (final Exception ex) {
+    		fail("grp.open() failed. " + ex);
+    	}
+    	assertTrue(gid > 0);
+
+    	try {
+    		grp2 = file.createGroup("G4", grp); // create subgroups in /Group3
+    		grp3 = file.createGroup("G3", grp);
+    	} catch (final Exception ex) {
+    		fail("file.createGroup() failed. " + ex);
+    	}
+    	assertNotNull(grp2);
+    	assertNotNull(grp3);
+
+    	try {	
+    		String name = H5.H5Lget_name_by_idx(gid, ".",
+    				HDF5Constants.H5_INDEX_CRT_ORDER,
+    				HDF5Constants.H5_ITER_INC, 1, HDF5Constants.H5P_DEFAULT); // Get name of 2nd link
+    		assertEquals("G3", name);
+    	} catch (final Exception ex) {
+    		fail("H5.H5Lget_name_by_idx() failed. " + ex);
+    	}
+
+    	grp.close(gid);
+    	try {
+    		H5.H5Pclose(lcpl);
+    		H5.H5Pclose(gcpl);
+    	} catch (final Exception ex) {
+    	}
+    	try {
+    		file.close();
+    	} catch (final Exception ex) {
+    	}
+    	file.delete();
     }
 
     /**
@@ -1191,5 +1313,303 @@ public class H5FileTest extends TestCase {
     		fail("testFile.setLibBounds() failed. " + ex);
     	}
     }
+    
+    /**
+     * Test method for
+     * {@link ncsa.hdf.object.h5.H5File#createLink(ncsa.hdf.object.Group, java.lang.String, ncsa.hdf.object.HObject, int)}
+     * .
+     * <p>
+     * What to test:
+     * <ul>
+     * <li>create a file
+     * <li>create groups
+     * <li>create subgroups and dataset
+     * <li>Create soft link and hard link
+     * <li>Checks the soft link and hard link 
+     * <li>Create a soft dangling link
+     * <li>Check the soft dangling link 
+     * <li>Retrieve Link information.
+     * <li>Check the link type. 
+     * <li>close/delete the file
+     * </ul>
+     */
+    public final void testCreateLink() {
+    	final String nameNew = "testH5FileLinks.h5";
+    	H5File file = null;
+    	int fid = -1;
+    	Group grp1 = null, grp2 = null;
+    	Group subgrp1 = null;
+    	Dataset d1 = null;
 
+    	try {
+    		file = (H5File) H5FILE.create(nameNew);
+    	}
+    	catch (final Exception ex) {
+    		fail("file.create() failed. " + ex);
+    	}
+
+    	try {
+    		fid = file.open();
+    	}
+    	catch (final Exception ex) {
+    		fail("file.open() failed. " + ex);
+    	}
+    	assertTrue(fid > 0);
+
+    	try {
+    		grp1 = file.createGroup("Group1", null);
+    		grp2 = file.createGroup("Group2", null);
+    	}
+    	catch (final Exception ex) {
+    		fail("file.createGroup() failed. " + ex);
+    	}
+    	assertNotNull(grp1);
+    	assertNotNull(grp2);
+
+    	try {
+    		subgrp1 = file.createGroup("G2", grp1); // create subgroup in Group1
+    	} catch (final Exception ex) {
+    		fail("file.createGroup() failed. " + ex);
+    	}
+    	assertNotNull(subgrp1);
+
+    	long[] H5dims = { 4, 6};
+    	try{
+    		d1 = file.createScalarDS("DS1", grp1, typeInt, H5dims, null, null,0, null); //create dataset in Group1  
+    	}
+    	catch (final Exception ex) {
+    		fail("file.createScalarDS() failed. " + ex);
+    	}
+    	assertNotNull(d1);
+
+    	//Create Soft and hard Links
+    	HObject obj = null;
+    	try{
+    		obj = file.createLink(grp1, "NAME_SOFT_LINK", d1, HDF5Constants.H5L_TYPE_SOFT);
+    	}catch (final Exception ex) {
+    		ex.printStackTrace();
+    		fail("file.createLink() failed. " + ex);
+    	}
+    	assertNotNull(obj);
+
+    	try{
+    		obj = file.createLink(grp2, "NAME_HARD_LINK", grp1, HDF5Constants.H5L_TYPE_HARD);
+    	}catch (final Exception ex) {
+    		ex.printStackTrace();
+    		fail("file.createLink() failed. " + ex);
+    	}
+    	assertNotNull(obj);
+    	
+    	//Create a Dangling Link to object.     	
+    	Group grplink = new H5Group(null, "DGroup", "/Group1", null);
+    	assertNotNull(grplink);
+    	try{
+    		obj = file.createLink(grp1, "NAME_SOFT_LINK_DANGLE", grplink, HDF5Constants.H5L_TYPE_SOFT);
+    	}catch (final Exception ex) {
+    		ex.printStackTrace();
+    		fail("file.createLink() failed. " + ex);
+    	}
+    	assertNotNull(obj);
+
+    	//Create the object to which a dangling link is created
+    	try {
+    		grplink = file.createGroup("DGroup", grp1); 
+    	} catch (final Exception ex) {
+    		fail("file.createGroup() failed. " + ex);
+    	}
+    	assertNotNull(grplink);
+
+    	int gid = -1;
+    	try{
+    		gid = grp1.open();
+    	}
+    	catch(Exception ex){
+    		fail("grp1.open()failed. " + ex);
+    	}
+
+    	H5L_info_t link_info = null;
+    	try {
+    		link_info = H5.H5Lget_info(gid, "NAME_SOFT_LINK_DANGLE", HDF5Constants.H5P_DEFAULT);
+    	}
+    	catch (Exception ex) {
+    		fail("H5.H5Lget_info: " + ex);
+    	}
+    	assertFalse("H5Lget_info ",link_info==null);
+    	assertTrue("H5Lget_info link type",link_info.type==HDF5Constants.H5L_TYPE_SOFT);
+    	assertTrue("Link Address ",link_info.address_val_size>0);
+
+    	try {
+    		grp1.close(gid);
+    	}
+    	catch (final Exception ex) {
+    	}
+
+    	try {
+    		file.close();
+    	}
+    	catch (final Exception ex) {
+    	}
+    	file.delete();
+    }
+  
+    /**
+     * Test method for
+     * {@link ncsa.hdf.object.h5.H5File#createLink(ncsa.hdf.object.Group, java.lang.String, ncsa.hdf.object.HObject, int)}
+     * .
+     * <p>
+     * What to test:
+     * <ul>
+     * <li>create a file, file1
+     * <li>create group
+     * <li>create subgroup and dataset
+     * <li>create a second file, file2
+     * <li>create group in file2
+     * <li>Create External Links from file2 to dataset in File1
+     * <li>Checks the external link
+     * <li>Create a dangling external link from file2 to object in file1
+     * <li>Checks the dangling external link 
+     * <li>Retrieve Link information.
+     * <li>Check the link type. 
+     * <li>close/delete the files
+     * </ul>
+     */
+    public final void testCreateLinkExternal() {
+    	final String nameNew = "TESTFILE1.h5";
+    	H5File file1 = null;
+    	H5File file2 = null;
+    	int fid = -1;
+    	Group grp1 = null;
+    	Group fgrp1 = null;
+    	Group subgrp1 = null;
+    	Dataset d1 = null;
+
+    	//Create File1.
+    	try {
+    		file1 = (H5File) H5FILE.create(nameNew);
+    	}
+    	catch (final Exception ex) {
+    		fail("file1.create() failed. " + ex);
+    	}   
+    	try {
+    		fid = file1.open();
+    	}
+    	catch (final Exception ex) {
+    		fail("file1.open() failed. " + ex);
+    	}
+    	assertTrue(fid > 0);
+
+    	try {
+    		grp1 = file1.createGroup("Group1", null);
+    	}
+    	catch (final Exception ex) {
+    		fail("file.createGroup() failed. " + ex);
+    	}
+    	assertNotNull(grp1);      
+    	try {
+    		subgrp1 = file1.createGroup("G2", grp1); // create subgroups in Group1
+    	} catch (final Exception ex) {
+    		fail("file.createGroup() failed. " + ex);
+    	}
+    	assertNotNull(subgrp1);  	
+    	long[] H5dims = { 4, 6};
+    	try{
+    		d1 = file1.createScalarDS("DS1", grp1, typeInt, H5dims, null, null,0, null); //create dataset in Group1  
+    	}
+    	catch (final Exception ex) {
+    		fail("file.createScalarDS() failed. " + ex);
+    	}
+    	assertNotNull(d1);
+
+    	//Create File2
+    	try {
+    		file2 = (H5File) H5FILE.create("TESTExternal.h5");
+    	}
+    	catch (final Exception ex) {
+    		fail("file2.create() failed. " + ex);
+    	} 
+    	try {
+    		fid = file2.open();
+    	}
+    	catch (final Exception ex) {
+    		fail("file2.open() failed. " + ex);
+    	}
+    	assertTrue(fid > 0);
+    	try {
+    		fgrp1 = file2.createGroup("Group1", null);
+    	}
+    	catch (final Exception ex) {
+    		fail("file.createGroup() failed. " + ex);
+    	}
+    	assertNotNull(fgrp1);
+
+    	//Create External Links from file2 to dataset in File1.
+    	HObject obj = null;
+    	try{
+    		obj = file2.createLink(fgrp1, "NAME_EXTERNAL_LINK", d1, HDF5Constants.H5L_TYPE_EXTERNAL);
+    	}catch (final Exception ex) {
+    		ex.printStackTrace();
+    		fail("file.createLink() failed. " + ex);
+    	}
+    	assertNotNull(obj);
+
+    	//Create a Dangling Link to object.
+    	Group grplink = new H5Group(file1, "DGroup", null, null);
+    	assertNotNull(grplink);	
+    	try{
+    		obj = file2.createLink(fgrp1, "GROUP_HARD_LINK_DANGLE", grplink, HDF5Constants.H5L_TYPE_EXTERNAL);
+    	}catch (final Exception ex) {
+    		ex.printStackTrace();
+    		fail("file.createLink() failed. " + ex);
+    	}
+    	assertNotNull(obj);
+
+    	//Create the object to which a dangling link is created
+    	try {
+    		grplink = file1.createGroup("DGroup", null); 
+    	} catch (final Exception ex) {
+    		fail("file.createGroup() failed. " + ex);
+    	}
+    	assertNotNull(grplink);
+
+    	//Retrieve Link information
+    	int gid = -1;
+    	try{
+    		gid = fgrp1.open(); 
+    	}
+    	catch(Exception ex){
+    		fail("fgrp1.open()failed. " + ex);
+    	}
+
+    	H5L_info_t link_info = null;
+    	try {
+    		link_info = H5.H5Lget_info(gid, "GROUP_HARD_LINK_DANGLE", HDF5Constants.H5P_DEFAULT);
+    	}
+    	catch (Exception ex) {
+    		fail("H5.H5Lget_info: " + ex);
+    	}
+    	assertFalse("H5Lget_info ",link_info==null);
+    	assertTrue("H5Lget_info link type",link_info.type==HDF5Constants.H5L_TYPE_EXTERNAL);
+    	assertTrue("Link Address ",link_info.address_val_size>0);
+
+    	try {
+    		fgrp1.close(gid);
+    	}
+    	catch (final Exception ex) {
+    	}
+
+    	//Close file.
+    	try {
+    		file1.close();
+    	}
+    	catch (final Exception ex) {
+    	}
+
+    	try {
+    		file2.close();
+    	}
+    	catch (final Exception ex) {
+    	}
+    	file1.delete();
+    	file2.delete();
+    }
 }
