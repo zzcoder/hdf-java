@@ -18,6 +18,7 @@ import ncsa.hdf.object.Group;
 import ncsa.hdf.object.Dataset;
 import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Attribute;
 import ncsa.hdf.object.h5.H5Datatype;
 import ncsa.hdf.object.h5.H5File;
 import ncsa.hdf.object.h5.H5Group;
@@ -1612,4 +1613,102 @@ public class H5FileTest extends TestCase {
     	file1.delete();
     	file2.delete();
     }
+    
+	/**
+	 * Test method for
+	 * {@link ncsa.hdf.object.h5.H5File#getAttribute(int, int, int)}.
+	 * <p>
+	 * What to test:
+	 * <ul>
+	 * <li>create a file
+	 * <li>create group
+	 * <li>create 3 attributes in a group
+	 * <li>open group
+	 * <li>retrieves attributes in alphabetical or creation order
+	 * <li>check the attribute name equals the attribute name retrieved from
+	 * list
+	 * <li>close group
+	 * <li>close/delete the files
+	 * </ul>
+	 */
+	public final void testCreateAttribute() {
+		final String nameNew = "TESTFILEAttr1.h5";
+		H5File file = null;
+		int fid = -1;
+		Group g1 = null;
+		Dataset d1 = null;
+
+		try {
+			file = (H5File) H5FILE.create(nameNew); // Create File1.
+		} catch (final Exception ex) {
+			fail("file1.create() failed. " + ex);
+		}
+		try {
+			fid = file.open();
+		} catch (final Exception ex) {
+			fail("file1.open() failed. " + ex);
+		}
+		assertTrue(fid > 0);
+
+		try {
+			g1 = file.createGroup("Group1", null);
+		} catch (final Exception ex) {
+			fail("file.createGroup() failed. " + ex);
+		}
+		assertNotNull(g1);
+
+		Attribute attr1 = new Attribute("intAttr", new H5Datatype(
+				Datatype.CLASS_INTEGER, 4, -1, -1), new long[] { 10 },
+				new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+		Attribute attr2 = new Attribute("strAttr", new H5Datatype(
+				Datatype.CLASS_STRING, 20, -1, -1), new long[] { 1 },
+				new String[] { "String attribute." });
+
+		Attribute attr3 = new Attribute("floatAttr", new H5Datatype(
+				Datatype.CLASS_FLOAT, 4, -1, -1), new long[] { 2 },
+				new float[] { 2, 4 });
+
+		try {
+			g1.writeMetadata(attr1);
+			g1.writeMetadata(attr2);
+			g1.writeMetadata(attr3);
+		} catch (final Exception ex) {
+			fail("g1.writeMetadata() failed. " + ex);
+		}
+
+		int gid = -1;
+		try {
+			gid = g1.open();
+		} catch (Exception ex) {
+			fail("g1.open()failed. " + ex);
+		}
+		List attributeList = null;
+		try {
+			attributeList = file
+					.getAttribute(gid, HDF5Constants.H5_INDEX_CRT_ORDER,
+							HDF5Constants.H5_ITER_INC);//Retrieve attributes in increasing creation order.
+			assertEquals(attr2.getName(), attributeList.get(1).toString());
+		} catch (final Exception ex) {
+			fail("file.getAttribute() failed. " + ex);
+		}
+
+		try {
+			attributeList = file.getAttribute(gid); //Retrieve attributes in increasing alphabetical order.
+			assertEquals(attr2.getName(), attributeList.get(2).toString());
+		} catch (final Exception ex) {
+			fail("file.getAttribute() failed. " + ex);
+		}
+
+		try {
+			g1.close(gid);
+		} catch (final Exception ex) {
+		}
+
+		try {
+			file.close(); // Close file.
+		} catch (final Exception ex) {
+		}
+
+		file.delete();
+	}
 }

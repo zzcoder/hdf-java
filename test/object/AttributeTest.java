@@ -52,9 +52,9 @@ public class AttributeTest extends TestCase {
         assertNotNull(testGroup);
         List testAttrs = testGroup.getMetadata();
         assertNotNull(testAttrs);
-        strAttr = (Attribute) testAttrs.get(0);
+        strAttr = (Attribute) testAttrs.get(1);
         assertNotNull(strAttr);
-        arrayIntAttr = (Attribute) testAttrs.get(1);
+        arrayIntAttr = (Attribute) testAttrs.get(0);
         assertNotNull(arrayIntAttr);
     }
 

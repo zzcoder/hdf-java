@@ -294,27 +294,67 @@ public class H5File extends FileFormat {
 
         } // for (int i=0; i<num_attr; i++)
     }
-
-    /**
-     * Returns a list of attributes for the specified object.
-     * <p>
-     * This method returns a list containing the attributes associated with the
-     * identified object. If there are no associated attributes, an empty list
-     * will be returned.
-     * <p>
-     * Attribute names exceeding 256 characters will be truncated in the
-     * returned list.
-     * 
-     * @param objID
-     *            The identifier for the object whose attributes are to be
-     *            returned.
-     * @return The list of the object's attributes.
-     * @throws HDF5Exception
-     *             If an underlying HDF library routine is unable to perform a
-     *             step necessary to retrieve the attributes. A variety of
-     *             failures throw this exception.
-     */
+    
+	/**
+	 * Returns a list of attributes for the specified object.
+	 * <p>
+	 * This method returns a list containing the attributes associated with the
+	 * identified object. If there are no associated attributes, an empty list
+	 * will be returned.
+	 * <p>
+	 * Attribute names exceeding 256 characters will be truncated in the
+	 * returned list.
+	 * 
+	 * @param objID
+	 *            The identifier for the object whose attributes are to be
+	 *            returned.
+	 * @return The list of the object's attributes.
+	 * @throws HDF5Exception
+	 *             If an underlying HDF library routine is unable to perform a
+	 *             step necessary to retrieve the attributes. A variety of
+	 *             failures throw this exception.
+	 * @see #getAttribute(int,int,int)
+	 */
     public static final List getAttribute(int objID) throws HDF5Exception {
+    	return H5File.getAttribute(objID, HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC);
+    }
+    
+	/**
+	 * Returns a list of attributes for the specified object, in creation or
+	 * alphabetical order.
+	 * <p>
+	 * This method returns a list containing the attributes associated with the
+	 * identified object. If there are no associated attributes, an empty list
+	 * will be returned. The list of attributes returned can be in increasing or
+	 * decreasing, creation or alphabetical order.
+	 * <p>
+	 * Attribute names exceeding 256 characters will be truncated in the
+	 * returned list.
+	 * 
+	 * @param objID
+	 *            The identifier for the object whose attributes are to be
+	 *            returned.
+	 * @param idx_type
+	 *            The type of index. Valid values are:
+	 *            <ul>
+	 *            <li>H5_INDEX_NAME: An alpha-numeric index by attribute name
+	 *            <li>H5_INDEX_CRT_ORDER: An index by creation order
+	 *            </ul>
+	 * @param order
+	 *            The index traversal order. Valid values are:
+	 *            <ul>
+	 *            <li>H5_ITER_INC: A top-down iteration incrementing the index
+	 *            position at each step. <li>H5_ITER_DEC: A bottom-up iteration
+	 *            decrementing the index position at each step.
+	 *            </ul>
+	 * @return The list of the object's attributes.
+	 * @throws HDF5Exception
+	 *             If an underlying HDF library routine is unable to perform a
+	 *             step necessary to retrieve the attributes. A variety of
+	 *             failures throw this exception.
+	 */
+    
+    public static final List getAttribute(int objID,int idx_type, int order) throws HDF5Exception {
     	List<Attribute> attributeList = null;
     	int aid = -1, sid = -1, tid = -1;
     	H5O_info_t obj_info = null;
@@ -333,8 +373,8 @@ public class H5File extends FileFormat {
     	
     	for (int i = 0; i < n; i++) {
     		try {      
-    			aid = H5.H5Aopen_by_idx(objID,".", HDF5Constants.H5_INDEX_NAME, 
-    					HDF5Constants.H5_ITER_DEC, i, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+    			aid = H5.H5Aopen_by_idx(objID,".", idx_type, 
+    					order, i, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
     			sid = H5.H5Aget_space(aid);
 
     			long dims[] = null;
