@@ -143,7 +143,8 @@ public abstract class CompoundDS extends Dataset {
      * @deprecated Not for public use in the future.<br>
      *             Using {@link #CompoundDS(FileFormat, String, String)}
      */
-    public CompoundDS(FileFormat theFile, String name, String path, long[] oid) {
+    @Deprecated
+	public CompoundDS(FileFormat theFile, String name, String path, long[] oid) {
         super(theFile, name, path, oid);
 
         numberOfMembers = 0;
@@ -373,7 +374,9 @@ public abstract class CompoundDS extends Dataset {
     /**
      * @deprecated Not implemented for compound dataset.
      */
-    public Dataset copy(Group pgroup, String name, long[] dims, Object data)
+    @Deprecated
+	@Override
+	public Dataset copy(Group pgroup, String name, long[] dims, Object data)
             throws Exception {
         throw new UnsupportedOperationException(
                 "Writing a subset of a compound dataset to a new dataset is not implemented.");

@@ -163,7 +163,8 @@ public class H4GRImage extends ScalarDS
     }
 
     // To do: Implementing Dataset
-    public Dataset copy(Group pgroup, String dname, long[] dims, Object buff) throws Exception
+    @Override
+	public Dataset copy(Group pgroup, String dname, long[] dims, Object buff) throws Exception
     {
         Dataset dataset = null;
         int srcdid=-1, dstdid=-1;
@@ -260,13 +261,16 @@ public class H4GRImage extends ScalarDS
     }
 
     // ***** need to implement from ScalarDS *****
-    public byte[][] readPalette(int idx) { return null;}
+    @Override
+	public byte[][] readPalette(int idx) { return null;}
 
     // ***** need to implement from ScalarDS *****
-    public byte[] getPaletteRefs() { return null;}
+    @Override
+	public byte[] getPaletteRefs() { return null;}
 
     // implementing ScalarDS
-    public Datatype getDatatype()
+    @Override
+	public Datatype getDatatype()
     {
         if (datatype == null)
         {
@@ -277,7 +281,8 @@ public class H4GRImage extends ScalarDS
     }
 
     // Implementing Dataset
-    public byte[] readBytes() throws HDFException
+    @Override
+	public byte[] readBytes() throws HDFException
     {
         byte[] theData = null;
 
@@ -318,7 +323,8 @@ public class H4GRImage extends ScalarDS
     }
 
     // ***** need to implement from DataFormat *****
-    public Object read() throws HDFException
+    @Override
+	public Object read() throws HDFException
     {
         Object theData = null;
 
@@ -371,7 +377,8 @@ public class H4GRImage extends ScalarDS
     }
 
     // Implementing DataFormat
-    public void write(Object buf) throws HDFException
+    @Override
+	public void write(Object buf) throws HDFException
     {
         if (buf == null) {
             return;
@@ -506,7 +513,8 @@ public class H4GRImage extends ScalarDS
     public void removeMetadata(Object info) throws HDFException {;}
 
     // Implementing HObject.
-    public int open()
+    @Override
+	public int open()
     {
 
         int id = -1;
@@ -522,14 +530,16 @@ public class H4GRImage extends ScalarDS
     }
 
     // Implementing HObject.
-    public void close(int grid)
+    @Override
+	public void close(int grid)
     {
         try { HDFLibrary.GRendaccess(grid); }
         catch (HDFException ex) {;}
     }
 
     // Implementing Dataset.
-    public void init()
+    @Override
+	public void init()
     {
         if (rank>0) {
             return; // already called. Initialize only once
@@ -613,7 +623,8 @@ public class H4GRImage extends ScalarDS
     }
 
     // ***** need to implement from ScalarDS *****
-    public byte[][] getPalette()
+    @Override
+	public byte[][] getPalette()
     {
         if (palette != null) {
             return palette;

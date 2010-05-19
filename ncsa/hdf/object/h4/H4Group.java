@@ -176,7 +176,8 @@ public class H4Group extends Group
     public void removeMetadata(Object info) throws HDFException {;}
 
    // Implementing HObject
-    public int open()
+    @Override
+	public int open()
     {
         int vgid = -1;
 
@@ -203,7 +204,8 @@ public class H4Group extends Group
     }
 
     /** close group access. */
-    public void close(int vgid)
+    @Override
+	public void close(int vgid)
     {
         try { HDFLibrary.Vdetach(vgid); }
         catch (Exception ex) { ; }

@@ -40,7 +40,8 @@ public class DatasetTest extends TestCase {
      * 
      * @see junit.framework.TestCase#setUp()
      */
-    protected void setUp() throws Exception {
+    @Override
+	protected void setUp() throws Exception {
         super.setUp();
         testFile = (H5File) H5FILE.open(H5TestFile.NAME_FILE_H5,
                 FileFormat.READ);
@@ -58,7 +59,8 @@ public class DatasetTest extends TestCase {
      * 
      * @see junit.framework.TestCase#tearDown()
      */
-    protected void tearDown() throws Exception {
+    @Override
+	protected void tearDown() throws Exception {
         super.tearDown();
 
         if (testFile != null) {

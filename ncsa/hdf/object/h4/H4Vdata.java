@@ -145,7 +145,8 @@ public class H4Vdata extends CompoundDS
     }
     
     // implementing Dataset
-    public Datatype getDatatype()
+    @Override
+	public Datatype getDatatype()
     {
         if (datatype == null)
         {
@@ -156,7 +157,8 @@ public class H4Vdata extends CompoundDS
     }
 
     // Implementing Dataset
-    public byte[] readBytes() throws HDFException
+    @Override
+	public byte[] readBytes() throws HDFException
     {
         byte[] theData = null;
 
@@ -200,7 +202,8 @@ public class H4Vdata extends CompoundDS
     }
 
     // Implementing DataFormat
-    public Object read() throws HDFException
+    @Override
+	public Object read() throws HDFException
     {
         List list = null;
 
@@ -288,7 +291,8 @@ public class H4Vdata extends CompoundDS
     }
 
     // Implementing DataFormat
-    public void write(Object buf) throws HDFException
+    @Override
+	public void write(Object buf) throws HDFException
     {
         //For writing to a vdata, VSsetfields can only be called once, to set
         //up the fields in a vdata. Once the vdata fields are set, they may
@@ -444,7 +448,8 @@ public class H4Vdata extends CompoundDS
     public void removeMetadata(Object info) throws HDFException { ; }
 
     // Implementing DataFormat
-    public int open()
+    @Override
+	public int open()
     {
         int vsid = -1;
 
@@ -471,7 +476,8 @@ public class H4Vdata extends CompoundDS
     }
 
     // Implementing DataFormat
-    public void close(int vsid)
+    @Override
+	public void close(int vsid)
     {
         try { HDFLibrary.VSdetach(vsid); }
         catch (Exception ex) { ; }
@@ -480,7 +486,8 @@ public class H4Vdata extends CompoundDS
     /**
      * Initializes the H4Vdata such as dimension sizes of this dataset.
      */
-    public void init()
+    @Override
+	public void init()
     {
         if (rank>0) {
             return; // already called. Initialize only once

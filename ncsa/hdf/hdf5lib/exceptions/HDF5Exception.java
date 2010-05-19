@@ -58,7 +58,8 @@ public class HDF5Exception extends Exception {
      * @return the detail message or <code>null</code> if this object does not
      *         have a detail message.
      */
-    public String getMessage() {
+    @Override
+	public String getMessage() {
         return detailMessage;
     }
 }

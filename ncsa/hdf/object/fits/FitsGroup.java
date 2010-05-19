@@ -101,13 +101,15 @@ public class FitsGroup extends Group
     }
 
     // Implementing DataFormat
-    public int open() {
+    @Override
+	public int open() {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
     }
 
     /** close group access */
-    public void close(int gid) {
+    @Override
+	public void close(int gid) {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
     }

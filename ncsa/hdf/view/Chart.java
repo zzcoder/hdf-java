@@ -258,7 +258,8 @@ public class Chart extends JDialog implements ActionListener {
         /**
          * Paints the plot components.
          */
-        public void paint(Graphics g) {
+        @Override
+		public void paint(Graphics g) {
             if (numberOfLines <= 0) {
                 return; // no data
             }

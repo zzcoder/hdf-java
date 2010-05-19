@@ -36,7 +36,7 @@ public class H5Ex_T_FloatAttribute {
 		// Initialize data.
 		for (int indx = 0; indx < DIM0; indx++)
 			for (int jndx = 0; jndx < DIM1; jndx++) {
-				dset_data[indx][jndx] = (double) indx / (jndx + 0.5) + jndx;
+				dset_data[indx][jndx] = indx / (jndx + 0.5) + jndx;
 			}
 
 		// Create a new file using default properties.

@@ -1,26 +1,17 @@
 package test.hdf5lib;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.util.ArrayList;
-
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
-import ncsa.hdf.hdf5lib.callbacks.H5O_iterate_cb;
-import ncsa.hdf.hdf5lib.callbacks.H5O_iterate_t;
 import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
-import ncsa.hdf.hdf5lib.structs.H5O_info_t;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import test.object.H5TestFile;
 
 public class TestH5Ocopy {
     private static final String FILENAME = "testRefsattribute.h5";

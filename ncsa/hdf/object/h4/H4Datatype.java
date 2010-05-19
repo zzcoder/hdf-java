@@ -89,7 +89,8 @@ public class H4Datatype extends Datatype
      * (non-Javadoc)
      * @see ncsa.hdf.object.Datatype#fromNative(int)
      */
-    public void fromNative(int tid)
+    @Override
+	public void fromNative(int tid)
     {
         datatypeOrder = NATIVE;
         datatypeSign = NATIVE;
@@ -210,7 +211,8 @@ public class H4Datatype extends Datatype
      * (non-Javadoc)
      * @see ncsa.hdf.object.Datatype#getDatatypeDescription()
      */
-    public String getDatatypeDescription()
+    @Override
+	public String getDatatypeDescription()
     {
         return getDatatypeDescription(toNative());
     }
@@ -272,7 +274,8 @@ public class H4Datatype extends Datatype
      * (non-Javadoc)
      * @see ncsa.hdf.object.Datatype#isUnsigned()
      */
-    public boolean isUnsigned()
+    @Override
+	public boolean isUnsigned()
     {
         return isUnsigned(toNative());
     }
@@ -308,7 +311,8 @@ public class H4Datatype extends Datatype
      * (non-Javadoc)
      * @see ncsa.hdf.object.Datatype#toNative()
      */
-    public int toNative()
+    @Override
+	public int toNative()
     {
         int tid = -1;
         int tclass = getDatatypeClass();
@@ -381,7 +385,8 @@ public class H4Datatype extends Datatype
      * (non-Javadoc)
      * @see ncsa.hdf.object.Datatype#close(int)
      */
-    public void close(int id) {;}    
+    @Override
+	public void close(int id) {;}    
     
 
 }

@@ -29,21 +29,17 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.*;
 import java.io.*;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.*;
 
 import javax.swing.event.*;
 import java.net.URL;
 import java.lang.reflect.*;
 import java.awt.Event;
-import java.awt.Insets;
 import java.awt.Dimension;
 import java.awt.Component;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
-import java.awt.Image;
 import java.awt.Font;
 
 /**

@@ -73,7 +73,8 @@ public abstract class Group extends HObject {
      * @deprecated Not for public use in the future.<br>
      *             Using {@link #Group(FileFormat, String, String, Group)}
      */
-    public Group(FileFormat theFile, String name, String path, Group parent,
+    @Deprecated
+	public Group(FileFormat theFile, String name, String path, Group parent,
             long[] oid) {
         super(theFile, name, path, oid);
 
@@ -197,7 +198,8 @@ public abstract class Group extends HObject {
      * @param newName
      *            The new name of the group.
      */
-    public void setName(String newName) throws Exception {
+    @Override
+	public void setName(String newName) throws Exception {
         super.setName(newName);
 
         if (memberList != null) {

@@ -46,7 +46,8 @@ public class HDFLibraryException extends HDFException
         HDFerror = err;
     }
 
-    public String getMessage() {
+    @Override
+	public String getMessage() {
         if (msg != null) {
             return msg;
         }

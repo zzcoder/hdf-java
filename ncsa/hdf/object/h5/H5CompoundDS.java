@@ -19,7 +19,6 @@ import java.util.*;
 import ncsa.hdf.hdf5lib.*;
 import ncsa.hdf.hdf5lib.exceptions.*;
 import ncsa.hdf.hdf5lib.structs.H5O_info_t;
-import ncsa.hdf.hdflib.HDFLibrary;
 import ncsa.hdf.object.*;
 
 import java.lang.reflect.Array;
@@ -147,7 +146,8 @@ public class H5CompoundDS extends CompoundDS {
      * @deprecated Not for public use in the future.<br>
      *             Using {@link #H5CompoundDS(FileFormat, String, String)}
      */
-    public H5CompoundDS(FileFormat theFile, String name, String path, long[] oid) {
+    @Deprecated
+	public H5CompoundDS(FileFormat theFile, String name, String path, long[] oid) {
         super(theFile, name, path, oid);
         obj_info = new H5O_info_t(-1L, -1L, 0, 0, -1L, 0L, 0L, 0L, 0L, null,null,null);
         
@@ -191,7 +191,8 @@ public class H5CompoundDS extends CompoundDS {
      * 
      * @see ncsa.hdf.object.Dataset#getDatatype()
      */
-    public Datatype getDatatype() {
+    @Override
+	public Datatype getDatatype() {
         if (datatype == null) {
             datatype = new H5Datatype(Datatype.CLASS_COMPOUND, -1, -1, -1);
         }
@@ -204,7 +205,8 @@ public class H5CompoundDS extends CompoundDS {
      * 
      * @see ncsa.hdf.object.Dataset#clear()
      */
-    public void clear() {
+    @Override
+	public void clear() {
         super.clear();
 
         if (attributeList != null) {
@@ -217,7 +219,8 @@ public class H5CompoundDS extends CompoundDS {
      * 
      * @see ncsa.hdf.object.Dataset#readBytes()
      */
-    public byte[] readBytes() throws HDF5Exception {
+    @Override
+	public byte[] readBytes() throws HDF5Exception {
         byte[] theData = null;
 
         if (rank <= 0) {
@@ -278,7 +281,8 @@ public class H5CompoundDS extends CompoundDS {
      * 
      * @see ncsa.hdf.object.Dataset#read()
      */
-    public Object read() throws HDF5Exception {
+    @Override
+	public Object read() throws HDF5Exception {
         List list = null;
 
         Object member_data = null;
@@ -472,7 +476,8 @@ public class H5CompoundDS extends CompoundDS {
      * @param buf
      *            The vector that contains the data values of compound fields.
      */
-    public void write(Object buf) throws HDF5Exception {
+    @Override
+	public void write(Object buf) throws HDF5Exception {
         if ((buf == null) || (numberOfMembers <= 0) || !(buf instanceof List)) {
             return;
         }
@@ -814,7 +819,8 @@ public class H5CompoundDS extends CompoundDS {
      * 
      * @see ncsa.hdf.object.HObject#open()
      */
-    public int open() {
+    @Override
+	public int open() {
         int did = -1;
 
         try {
@@ -833,7 +839,8 @@ public class H5CompoundDS extends CompoundDS {
      * 
      * @see ncsa.hdf.object.HObject#close(int)
      */
-    public void close(int did) {
+    @Override
+	public void close(int did) {
         try {
             H5.H5Fflush(did, HDF5Constants.H5F_SCOPE_LOCAL);
         }
@@ -852,7 +859,8 @@ public class H5CompoundDS extends CompoundDS {
      * 
      * @see ncsa.hdf.object.Dataset#init()
      */
-    public void init() {
+    @Override
+	public void init() {
         if (rank > 0) {
             resetSelection();
             return; // already called. Initialize only once
@@ -997,7 +1005,8 @@ public class H5CompoundDS extends CompoundDS {
      * 
      * @see ncsa.hdf.object.HObject#setName(java.lang.String)
      */
-    public void setName(String newName) throws Exception {
+    @Override
+	public void setName(String newName) throws Exception {
         String currentFullPath = this.getPath() + this.getName();
         String newFullPath = this.getPath() + newName;
 
@@ -1169,7 +1178,8 @@ public class H5CompoundDS extends CompoundDS {
      *             Using
      *             {@link #create(String, Group, long[], long[], long[], int, String[], Datatype[], int[], int[][], Object)}
      */
-    public static Dataset create(String name, Group pgroup, long[] dims,
+    @Deprecated
+	public static Dataset create(String name, Group pgroup, long[] dims,
             String[] memberNames, Datatype[] memberDatatypes,
             int[] memberSizes, Object data) throws Exception {
         if ((pgroup == null) || (name == null) || (dims == null)
@@ -1195,7 +1205,8 @@ public class H5CompoundDS extends CompoundDS {
      *             Using
      *             {@link #create(String, Group, long[], long[], long[], int, String[], Datatype[], int[], int[][], Object)}
      */
-    public static Dataset create(String name, Group pgroup, long[] dims,
+    @Deprecated
+	public static Dataset create(String name, Group pgroup, long[] dims,
             String[] memberNames, Datatype[] memberDatatypes,
             int[] memberRanks, long[][] memberDims, Object data)
             throws Exception {
@@ -1466,7 +1477,8 @@ public class H5CompoundDS extends CompoundDS {
      * 
      * @see ncsa.hdf.object.Dataset#isString(int)
      */
-    public boolean isString(int tid) {
+    @Override
+	public boolean isString(int tid) {
         boolean b = false;
         try {
             b = (HDF5Constants.H5T_STRING == H5.H5Tget_class(tid));
@@ -1483,7 +1495,8 @@ public class H5CompoundDS extends CompoundDS {
      * 
      * @see ncsa.hdf.object.Dataset#getSize(int)
      */
-    public int getSize(int tid) {
+    @Override
+	public int getSize(int tid) {
         int tsize = -1;
 
         try {

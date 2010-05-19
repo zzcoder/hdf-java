@@ -55,6 +55,7 @@ public class JGraphEllipseView extends VertexView {
 	 * straight line between the source and the specified point p.
 	 * The specified point is expected not to intersect the bounds.
 	 */
+	@Override
 	public Point2D getPerimeterPoint(EdgeView edge, Point2D source, Point2D p) {
 		Rectangle2D r = getBounds();
 
@@ -116,6 +117,7 @@ public class JGraphEllipseView extends VertexView {
 
 	/**
 	 */
+	@Override
 	public CellViewRenderer getRenderer() {
 		return renderer;
 	}
@@ -127,6 +129,7 @@ public class JGraphEllipseView extends VertexView {
 		/**
 		 * Return a slightly larger preferred size than for a rectangle.
 		 */
+		@Override
 		public Dimension getPreferredSize() {
 			Dimension d = super.getPreferredSize();
 			d.width += d.width / 8;
@@ -136,6 +139,7 @@ public class JGraphEllipseView extends VertexView {
 
 		/**
 		 */
+		@Override
 		public void paint(Graphics g) {
 		
 			int b = borderWidth;

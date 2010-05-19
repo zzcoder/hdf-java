@@ -99,7 +99,8 @@ public class NewFileDialog extends JFileChooser // JDialog
         this.showSaveDialog(owner);
     }
 
-    protected void fireActionPerformed(String command) {
+    @Override
+	protected void fireActionPerformed(String command) {
         super.fireActionPerformed(command);
 
         if (command.equals("ApproveSelection")) {

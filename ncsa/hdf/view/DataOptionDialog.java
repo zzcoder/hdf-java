@@ -23,7 +23,6 @@ import javax.swing.border.*;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.Dimension;
@@ -1209,7 +1208,8 @@ public class DataOptionDialog extends JDialog implements ActionListener,
             return preImage;
         }
 
-        public void paint(Graphics g) {
+        @Override
+		public void paint(Graphics g) {
             g.setColor(Color.blue);
 
             if (previewImage != null) {

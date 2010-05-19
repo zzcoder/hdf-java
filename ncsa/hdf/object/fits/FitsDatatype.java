@@ -123,7 +123,8 @@ public class FitsDatatype extends Datatype
      * <p>
      * @param nativeID the fits native datatype.
      */
-    public void fromNative(int dtype)
+    @Override
+	public void fromNative(int dtype)
     {
         switch (dtype) {
             case BasicHDU.BITPIX_BYTE:
@@ -154,7 +155,8 @@ public class FitsDatatype extends Datatype
     }
 
     // implementing Datatype
-    public String getDatatypeDescription() {
+    @Override
+	public String getDatatypeDescription() {
         String description = "Unknown data type.";
 
         switch (nativeType) {
@@ -193,12 +195,14 @@ public class FitsDatatype extends Datatype
     }
 
     // implementing Datatype
-    public boolean isUnsigned() {
+    @Override
+	public boolean isUnsigned() {
         return false;
     }
 
     // implementing Datatype
-    public int toNative() {
+    @Override
+	public int toNative() {
         if (datatypeClass == CLASS_INTEGER) {
             if (datatypeSize == 1) {
                 nativeType = BasicHDU.BITPIX_BYTE;
@@ -224,5 +228,6 @@ public class FitsDatatype extends Datatype
      * (non-Javadoc)
      * @see ncsa.hdf.object.Datatype#close(int)
      */
-    public void close(int id) {;}    
+    @Override
+	public void close(int id) {;}    
 }

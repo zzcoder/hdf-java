@@ -408,7 +408,7 @@ public class H5 {
     public final static int getOpenID(int index) {
         int id = -1;
         if (index >= 0 && index < OPEN_IDS.size())
-            id = (int) OPEN_IDS.elementAt(index);
+            id = OPEN_IDS.elementAt(index);
         
         return id;
     }
@@ -557,7 +557,8 @@ public class H5 {
      * @exception NullPointerException
      *                - name is null.
      **/
-    public static int H5Acreate(int loc_id, String name, int type_id,
+    @Deprecated
+	public static int H5Acreate(int loc_id, String name, int type_id,
             int space_id, int create_plist)
             throws HDF5LibraryException, NullPointerException {
         int id = _H5Acreate(loc_id, name, type_id, space_id, create_plist);
@@ -589,7 +590,8 @@ public class H5 {
      * @exception NullPointerException
      *                - name is null.
      **/
-    public static int H5Aopen_name(int loc_id, String name)
+    @Deprecated
+	public static int H5Aopen_name(int loc_id, String name)
             throws HDF5LibraryException, NullPointerException {
         int id = _H5Aopen_name(loc_id, name);
         if (id > 0)
@@ -618,7 +620,8 @@ public class H5 {
      * @exception HDF5LibraryException
      *                - Error from the HDF-5 Library.
      **/
-    public static int H5Aopen_idx(int loc_id, int idx)
+    @Deprecated
+	public static int H5Aopen_idx(int loc_id, int idx)
             throws HDF5LibraryException {
         int id = _H5Aopen_idx(loc_id, idx);
         if (id > 0)
@@ -843,7 +846,8 @@ public class H5 {
      * @exception HDF5LibraryException
      *                - Error from the HDF-5 Library.
      **/
-    public synchronized static native int H5Aget_num_attrs(int loc_id)
+    @Deprecated
+	public synchronized static native int H5Aget_num_attrs(int loc_id)
             throws HDF5LibraryException;
 
     /**
@@ -918,7 +922,8 @@ public class H5 {
      * @exception NullPointerException
      *                - name is null.
      **/
-    public static int H5Dcreate(int loc_id, String name, int type_id,
+    @Deprecated
+	public static int H5Dcreate(int loc_id, String name, int type_id,
             int space_id, int create_plist_id)
             throws HDF5LibraryException, NullPointerException {
         int id = _H5Dcreate(loc_id, name, type_id, space_id, create_plist_id);
@@ -945,7 +950,8 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - name is null.
      **/
-    public static int H5Dopen(int loc_id, String name)
+    @Deprecated
+	public static int H5Dopen(int loc_id, String name)
             throws HDF5LibraryException, NullPointerException {
         int id = _H5Dopen(loc_id, name);
         if (id > 0)
@@ -1375,7 +1381,8 @@ public class H5 {
      * 
      * @deprecated As of HDF5 1.8, replaced by {@link #H5Dset_extent(int, long[]) }
      **/
-    public synchronized static native int H5Dextend(int dataset_id, byte[] size)
+    @Deprecated
+	public synchronized static native int H5Dextend(int dataset_id, byte[] size)
             throws HDF5LibraryException, NullPointerException;
 
 
@@ -1392,7 +1399,8 @@ public class H5 {
      * 
      * @deprecated As of HDF5 1.8
      **/
-    public synchronized static int H5Dextend(int dataset_id, long[] size)
+    @Deprecated
+	public synchronized static int H5Dextend(int dataset_id, long[] size)
             throws HDF5Exception, NullPointerException {
         int rval = -1;
         HDFArray theArray = new HDFArray(size);
@@ -1773,7 +1781,8 @@ public class H5 {
      * @exception NullPointerException
      *                - name is null.
      **/
-    public static int H5Gcreate(int loc_id, String name, long size_hint)
+    @Deprecated
+	public static int H5Gcreate(int loc_id, String name, long size_hint)
             throws HDF5LibraryException, NullPointerException {
         int id = _H5Gcreate(loc_id, name, size_hint);
         if (id > 0)
@@ -1802,7 +1811,8 @@ public class H5 {
      * @exception NullPointerException
      *                - name is null.
      **/
-    public static int H5Gopen(int loc_id, String name)
+    @Deprecated
+	public static int H5Gopen(int loc_id, String name)
             throws HDF5LibraryException, NullPointerException {
         int id = _H5Gopen(loc_id, name);
         if (id > 0)
@@ -1866,7 +1876,8 @@ public class H5 {
 	 *             {@link #H5Lcreate_hard(int, String, int, String, int, int)
 	 *             and #H5Lcreate_soft(String, int, String, int, int) }
 	 **/
-    public synchronized static native int H5Glink(int loc_id, int link_type,
+    @Deprecated
+	public synchronized static native int H5Glink(int loc_id, int link_type,
             String current_name, String new_name)
             throws HDF5LibraryException, NullPointerException;
 
@@ -1875,7 +1886,8 @@ public class H5 {
      * 
      * @deprecated As of HDF5 1.8
      **/
-    public synchronized static native int H5Glink2(int curr_loc_id,
+    @Deprecated
+	public synchronized static native int H5Glink2(int curr_loc_id,
             String current_name, int link_type, int new_loc_id, String new_name)
             throws HDF5LibraryException, NullPointerException;
 
@@ -1896,7 +1908,8 @@ public class H5 {
      * 
      * @deprecated As of HDF5 1.8, replaced by {@link #H5Ldelete(int, String, int)}
      **/
-    public synchronized static native int H5Gunlink(int loc_id, String name)
+    @Deprecated
+	public synchronized static native int H5Gunlink(int loc_id, String name)
             throws HDF5LibraryException, NullPointerException;
 
     /**
@@ -1921,7 +1934,8 @@ public class H5 {
      * 
      * @deprecated As of HDF5 1.8, replaced by {@link #H5Lmove(int, String, int,String, int, int)}
      **/
-    public synchronized static native int H5Gmove(int loc_id, String src,
+    @Deprecated
+	public synchronized static native int H5Gmove(int loc_id, String src,
             String dst) throws HDF5LibraryException, NullPointerException;
 
     /**
@@ -1954,7 +1968,8 @@ public class H5 {
      * 
      * @deprecated As of HDF5 1.8, replaced by {@link #H5Lget_val(int, String, String[] , int)}
      **/
-    public synchronized static native int H5Gget_linkval(int loc_id,
+    @Deprecated
+	public synchronized static native int H5Gget_linkval(int loc_id,
             String name, int size, String[] value)
             throws ArrayIndexOutOfBoundsException, ArrayStoreException,
             HDF5LibraryException, NullPointerException,
@@ -1980,7 +1995,8 @@ public class H5 {
      * 
      * @deprecated As of HDF5 1.8, replaced by {@link #H5Oset_comment(int, String)}
      **/
-    public synchronized static native int H5Gset_comment(int loc_id,
+    @Deprecated
+	public synchronized static native int H5Gset_comment(int loc_id,
             String name, String comment)
             throws HDF5LibraryException, NullPointerException;
 
@@ -2012,7 +2028,8 @@ public class H5 {
      * 
      * @deprecated As of HDF5 1.8, replaced by {@link #H5Oget_comment(int)}
      **/
-    public synchronized static native int H5Gget_comment(int loc_id,
+    @Deprecated
+	public synchronized static native int H5Gget_comment(int loc_id,
             String name, int bufsize, String[] comment)
             throws ArrayIndexOutOfBoundsException, ArrayStoreException,
             HDF5LibraryException, NullPointerException,
@@ -2749,7 +2766,8 @@ public class H5 {
      *                - name or an array is null.
      * 
      **/
-    public synchronized static native int H5Pget_filter(int plist,
+    @Deprecated
+	public synchronized static native int H5Pget_filter(int plist,
             int filter_number, int[] flags, int[] cd_nelmts, int[] cd_values,
             int namelen, String[] name)
             throws ArrayIndexOutOfBoundsException, ArrayStoreException,
@@ -3379,7 +3397,8 @@ public class H5 {
      * @exception IllegalArgumentException
      *                - array is invalid.
      **/
-    public synchronized static native int H5Rget_obj_type(int loc_id,
+    @Deprecated
+	public synchronized static native int H5Rget_obj_type(int loc_id,
             int ref_type, byte ref[])
             throws HDF5LibraryException, NullPointerException,
             IllegalArgumentException;
@@ -3436,7 +3455,8 @@ public class H5 {
     /**
      *  @deprecated use H5Screate_simple(int rank, long[] dims, long[] maxdims)
      **/
-    public static int H5Screate_simple(int rank, byte[] dims, byte[] maxdims)
+    @Deprecated
+	public static int H5Screate_simple(int rank, byte[] dims, byte[] maxdims)
             throws HDF5Exception, NullPointerException {
         ByteBuffer dimsbb = ByteBuffer.wrap(dims);
         long[] ladims = (dimsbb.asLongBuffer()).array();
@@ -3979,7 +3999,8 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - name is null.
      **/
-    public static int H5Topen(int loc_id, String name)
+    @Deprecated
+	public static int H5Topen(int loc_id, String name)
             throws HDF5LibraryException, NullPointerException {
         int id = _H5Topen(loc_id, name);
         if (id > 0)
@@ -4005,7 +4026,8 @@ public class H5 {
      * @exception HDF5LibraryException - Error from the HDF-5 Library.
      * @exception NullPointerException - name is null.
      **/
-    public static int H5Tcommit(int loc_id, String name,
+    @Deprecated
+	public static int H5Tcommit(int loc_id, String name,
             int type) throws HDF5LibraryException, NullPointerException {
         return H5Tcommit1(loc_id, name, type);
     }
@@ -4872,7 +4894,8 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - dims is null.
      **/
-    public static int H5Tarray_create(int base, int rank, int[] dims,
+    @Deprecated
+	public static int H5Tarray_create(int base, int rank, int[] dims,
             int[] perms) throws HDF5LibraryException, NullPointerException {
         int id = _H5Tarray_create(base, rank, dims, perms);
         if (id > 0)
@@ -4911,7 +4934,8 @@ public class H5 {
      *  @exception HDF5LibraryException - Error from the HDF-5 Library.
      *  @exception NullPointerException - dims is null.
      **/
-    public synchronized static native int H5Tget_array_dims(int dt, int[] dims,
+    @Deprecated
+	public synchronized static native int H5Tget_array_dims(int dt, int[] dims,
             int[] perms) throws HDF5LibraryException, NullPointerException;
 
     // ////////////////////////////////////////////////////////////
@@ -4934,7 +4958,8 @@ public class H5 {
      * 
      * @deprecated As of HDF5 1.8, replaced by {@link #H5Gget_info(int)}
      */
-    public synchronized static native int H5Gget_num_objs(int loc_id,
+    @Deprecated
+	public synchronized static native int H5Gget_num_objs(int loc_id,
             long[] num_obj) throws HDF5LibraryException, NullPointerException;
 
     /**
@@ -4956,7 +4981,8 @@ public class H5 {
      * 
      * @deprecated As of HDF5 1.8, replaced by {@link #H5Lget_name_by_idx(int, String, int, int, long, int)}
      */
-    public synchronized static native long H5Gget_objname_by_idx(int group_id,
+    @Deprecated
+	public synchronized static native long H5Gget_objname_by_idx(int group_id,
             long idx, String[] name, long size)
             throws HDF5LibraryException, NullPointerException;
 
@@ -4974,7 +5000,8 @@ public class H5 {
      * 
      * @deprecated As of HDF5 1.8, replaced by {@link #H5Oget_info(int)}
      */
-    public synchronized static native int H5Gget_objtype_by_idx(int group_id,
+    @Deprecated
+	public synchronized static native int H5Gget_objtype_by_idx(int group_id,
             long idx) throws HDF5LibraryException, NullPointerException;
 
     /**
@@ -5160,7 +5187,8 @@ public class H5 {
      * 
      * @deprecated As of HDF5 1.8, replaced by {@link #H5Lget_info(int, String, int) and #H5Oget_info(int)}
      **/
-    public synchronized static native int H5Gget_objinfo(int loc_id,
+    @Deprecated
+	public synchronized static native int H5Gget_objinfo(int loc_id,
             String name, boolean follow_link, long[] fileno, long[] objno,
             int[] link_info, long[] mtime)
             throws HDF5LibraryException, NullPointerException,
@@ -5192,7 +5220,8 @@ public class H5 {
      * 
      * @deprecated As of HDF5 1.8
      **/
-    public synchronized static int H5Gget_objinfo(int loc_id, String name,
+    @Deprecated
+	public synchronized static int H5Gget_objinfo(int loc_id, String name,
             boolean follow_link, HDF5GroupInfo info)
             throws HDF5LibraryException, NullPointerException {
         int status = -1;
@@ -6140,7 +6169,8 @@ public class H5 {
      * 
      * @deprecated As of HDF5 1.8, replaced by {@link #H5Eprint2(int, Object)}
      **/
-    public synchronized static native void H5Eprint1(Object stream)
+    @Deprecated
+	public synchronized static native void H5Eprint1(Object stream)
             throws HDF5LibraryException;
 
     // public static int H5Epush(String file, String func, int line,
@@ -7562,6 +7592,7 @@ throws HDF5LibraryException, NullPointerException;
  *
  *  @exception HDF5LibraryException - Error from the HDF-5 Library.
  **/
+@Deprecated
 public static int H5Tget_array_dims(int type_id, long[] dims, int[] perm)
 throws HDF5LibraryException, NullPointerException
 {
@@ -7574,6 +7605,7 @@ throws HDF5LibraryException, NullPointerException
  *
  *  @see public static int H5Tget_array_dims(int type_id, long[] dims, int[] perm)
  **/
+@Deprecated
 private synchronized static native int H5Tget_array_dims1(int type_id, long[] dims, int[] perm)
 throws HDF5LibraryException, NullPointerException;
 

@@ -67,7 +67,8 @@ public class FitsFile extends FileFormat
      * @param fileformat the fileformat to be checked.
      * @return true if the given file is an Fits file; otherwise returns false.
      */
-    public boolean isThisType(FileFormat fileformat) {
+    @Override
+	public boolean isThisType(FileFormat fileformat) {
         return (fileformat instanceof FitsFile);
     }
 
@@ -77,7 +78,8 @@ public class FitsFile extends FileFormat
      * @param filename the file to be checked.
      * @return true if the given file is an Fits file; otherwise returns false.
      */
-    public boolean isThisType(String filename)
+    @Override
+	public boolean isThisType(String filename)
     {
         boolean is_fits = false;
         RandomAccessFile raf = null;
@@ -126,14 +128,16 @@ public class FitsFile extends FileFormat
      *
      * @see ncsa.hdf.object.FileFormat@createInstance(java.lang.String, int)
      */
-    public FileFormat createInstance(String filename, int access) 
+    @Override
+	public FileFormat createInstance(String filename, int access) 
 							  throws Exception {
         return new FitsFile(filename);
     }
 
 
     // Implementing FileFormat
-    public int open() throws Exception {
+    @Override
+	public int open() throws Exception {
         if (!isFileOpen) {
             isFileOpen = true;
             rootNode = loadTree();
@@ -155,7 +159,8 @@ public class FitsFile extends FileFormat
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootGroup) {
         	public static final long serialVersionUID = HObject.serialVersionUID;
 
-            public boolean isLeaf() { return false; }
+            @Override
+			public boolean isLeaf() { return false; }
         };
 
         if (fitsFile == null) {
@@ -207,7 +212,8 @@ public class FitsFile extends FileFormat
     }
 
     // Implementing FileFormat
-    public void close() throws IOException {
+    @Override
+	public void close() throws IOException {
         if (fitsFile == null) {
             return;
         }
@@ -219,7 +225,8 @@ public class FitsFile extends FileFormat
     }
 
     // Implementing FileFormat
-    public TreeNode getRootNode() {
+    @Override
+	public TreeNode getRootNode() {
         return rootNode;
     }
 
@@ -228,13 +235,15 @@ public class FitsFile extends FileFormat
     }
 
     // implementign FileFormat
-    public Group createGroup(String name, Group pgroup) throws Exception {
+    @Override
+	public Group createGroup(String name, Group pgroup) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation for Fits.");
     }
 
     // implementign FileFormat
-    public Datatype createDatatype(
+    @Override
+	public Datatype createDatatype(
         int tclass,
         int tsize,
         int torder,
@@ -244,7 +253,8 @@ public class FitsFile extends FileFormat
     }
 
     // implementign FileFormat
-    public Datatype createDatatype(
+    @Override
+	public Datatype createDatatype(
         int tclass,
         int tsize,
         int torder,
@@ -255,13 +265,15 @@ public class FitsFile extends FileFormat
     }
 
     // implementign FileFormat
-    public HObject createLink(Group parentGroup, String name, HObject currentObj) throws Exception
+    @Override
+	public HObject createLink(Group parentGroup, String name, HObject currentObj) throws Exception
     {
         throw new UnsupportedOperationException("createLink() is not supported");
     }
 
     // implementign FileFormat
-    public Dataset createScalarDS(
+    @Override
+	public Dataset createScalarDS(
         String name,
         Group pgroup,
         Datatype type,
@@ -275,7 +287,8 @@ public class FitsFile extends FileFormat
     }
 
     // implementign FileFormat
-    public Dataset createImage(
+    @Override
+	public Dataset createImage(
         String name,
         Group pgroup,
         Datatype type,
@@ -291,13 +304,15 @@ public class FitsFile extends FileFormat
     }
 
     // implementign FileFormat
-    public void delete(HObject obj) throws Exception {
+    @Override
+	public void delete(HObject obj) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     // implementign FileFormat
-    public TreeNode copy(HObject srcObj, Group dstGroup, String dstName) throws Exception {
+    @Override
+	public TreeNode copy(HObject srcObj, Group dstGroup, String dstName) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation.");
     }
@@ -346,7 +361,8 @@ public class FitsFile extends FileFormat
      * @param attrExisted The indicator if the given attribute exists.
      * @return true if successful and false otherwise.
      */
-    public void writeAttribute(HObject obj, ncsa.hdf.object.Attribute attr,
+    @Override
+	public void writeAttribute(HObject obj, ncsa.hdf.object.Attribute attr,
         boolean attrExisted) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation.");
@@ -355,7 +371,8 @@ public class FitsFile extends FileFormat
     /**
      *  Returns the version of the library.
      */
-    public String getLibversion()
+    @Override
+	public String getLibversion()
     {
         String ver = "Fits Java (version 2.4)";
 
@@ -363,7 +380,8 @@ public class FitsFile extends FileFormat
     }
 
     // implementign FileFormat
-    public HObject get(String path) throws Exception
+    @Override
+	public HObject get(String path) throws Exception
     {
         throw new UnsupportedOperationException("get() is not supported");
     }

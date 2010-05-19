@@ -53,7 +53,7 @@ public class H5Ex_G_Traverse {
 		try{
 			System.out.println("/ {");
 			//H5L_iterate_cb iter_cb = new H5L_iter_callbackT();
-			H5.H5Literate(file_id, HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_NATIVE, 0L, iter_cb, (H5L_iterate_t)od);
+			H5.H5Literate(file_id, HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_NATIVE, 0L, iter_cb, od);
 			System.out.println("}");
 		}
 		catch (Exception e) {
@@ -117,7 +117,7 @@ class H5L_iter_callbackT implements H5L_iterate_cb {
 					nextod.addr = infobuf.addr;
 					H5L_iterate_cb iter_cb2 = new H5L_iter_callbackT();
 					return_val = H5.H5Literate_by_name (group, name, HDF5Constants.H5_INDEX_NAME,
-							HDF5Constants.H5_ITER_NATIVE, 0L, iter_cb2,(H5L_iterate_t)nextod,
+							HDF5Constants.H5_ITER_NATIVE, 0L, iter_cb2,nextod,
 							HDF5Constants.H5P_DEFAULT);
 				}
 				for(int i=0;i<spaces;i++)

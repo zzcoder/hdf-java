@@ -186,7 +186,8 @@ public abstract class Dataset extends HObject {
      * @deprecated Not for public use in the future. <br>
      *             Using {@link #Dataset(FileFormat, String, String)}
      */
-    public Dataset(FileFormat theFile, String name, String path, long[] oid) {
+    @Deprecated
+	public Dataset(FileFormat theFile, String name, String path, long[] oid) {
         super(theFile, name, path, oid);
 
         rank = 0;
@@ -698,7 +699,8 @@ public abstract class Dataset extends HObject {
      *             of the dataset object. Dataset operation such as write/read
      *             will fail if the buffer type or size is changed.
      */
-    public final void setData(Object d) {
+    @Deprecated
+	public final void setData(Object d) {
         data = d;
     }
 
@@ -862,7 +864,8 @@ public abstract class Dataset extends HObject {
      * @deprecated Not for public use in the future. <br>
      *             Using {@link #convertFromUnsignedC(Object, Object)}
      */
-    public static Object convertFromUnsignedC(Object data_in) {
+    @Deprecated
+	public static Object convertFromUnsignedC(Object data_in) {
         return Dataset.convertFromUnsignedC(data_in, null);
     }
 
@@ -1000,7 +1003,8 @@ public abstract class Dataset extends HObject {
      * @deprecated Not for public use in the future. <br>
      *             Using {@link #convertToUnsignedC(Object, Object)}
      */
-    public static Object convertToUnsignedC(Object data_in) {
+    @Deprecated
+	public static Object convertToUnsignedC(Object data_in) {
         return Dataset.convertToUnsignedC(data_in, null);
     }
 

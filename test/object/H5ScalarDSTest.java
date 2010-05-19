@@ -95,7 +95,8 @@ public class H5ScalarDSTest extends TestCase {
      * 
      * @see junit.framework.TestCase#setUp()
      */
-    protected void setUp() throws Exception {
+    @Override
+	protected void setUp() throws Exception {
         super.setUp();
 
         typeInt = new H5Datatype(Datatype.CLASS_INTEGER,
@@ -120,7 +121,8 @@ public class H5ScalarDSTest extends TestCase {
      * 
      * @see junit.framework.TestCase#tearDown()
      */
-    protected void tearDown() throws Exception {
+    @Override
+	protected void tearDown() throws Exception {
         super.tearDown();
 
         if (testFile != null) {

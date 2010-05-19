@@ -335,7 +335,8 @@ public class HDF5LibraryException extends HDF5Exception {
      * Prints this <code>HDF5LibraryException</code>, the HDF-5 Library error
      * stack, and and the Java stack trace to the standard error stream.
      */
-    public void printStackTrace() {
+    @Override
+	public void printStackTrace() {
         System.err.println(this);
         printStackTrace0(null); // the HDF-5 Library error stack
         super.printStackTrace(); // the Java stack trace

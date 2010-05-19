@@ -1198,7 +1198,8 @@ public class DataOptionNPOESS extends JDialog implements ActionListener,
             return preImage;
         }
 
-        public void paint(Graphics g) {
+        @Override
+		public void paint(Graphics g) {
             g.setColor(Color.blue);
 
             if (previewImage != null) {

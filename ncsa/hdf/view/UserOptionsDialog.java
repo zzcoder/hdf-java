@@ -19,7 +19,6 @@ import javax.swing.*;
 import java.io.*;
 import java.util.*;
 import java.awt.event.*;
-import javax.swing.event.*;
 import javax.swing.border.*;
 
 import ncsa.hdf.object.HObject;

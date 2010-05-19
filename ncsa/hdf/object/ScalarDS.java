@@ -127,7 +127,8 @@ public abstract class ScalarDS extends Dataset {
      * @deprecated Not for public use in the future.<br>
      *             Using {@link #ScalarDS(FileFormat, String, String)}
      */
-    public ScalarDS(FileFormat theFile, String theName, String thePath,
+    @Deprecated
+	public ScalarDS(FileFormat theFile, String theName, String thePath,
             long[] oid) {
         super(theFile, theName, thePath, oid);
 
@@ -148,7 +149,8 @@ public abstract class ScalarDS extends Dataset {
      * 
      * @see ncsa.hdf.object.Dataset#clearData()
      */
-    public void clearData() {
+    @Override
+	public void clearData() {
         super.clearData();
         unsignedConverted = false;
     }

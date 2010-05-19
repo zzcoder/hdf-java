@@ -217,7 +217,8 @@ public abstract class Datatype extends HObject {
      * @deprecated Not for public use in the future.<br>
      *             Using {@link #Datatype(FileFormat, String, String)}
      */
-    public Datatype(FileFormat theFile, String name, String path, long[] oid) {
+    @Deprecated
+	public Datatype(FileFormat theFile, String name, String path, long[] oid) {
         super(theFile, name, path, oid);
     }
 
@@ -507,7 +508,8 @@ public abstract class Datatype extends HObject {
      * @return the datatype identifier if successful; otherwise returns negative
      *         value.
      */
-    public int open() {
+    @Override
+	public int open() {
         return -1;
     }
 
@@ -519,7 +521,8 @@ public abstract class Datatype extends HObject {
      * @param id
      *            the datatype identifier to close.
      */
-    public abstract void close(int id);
+    @Override
+	public abstract void close(int id);
 
     /*
      * (non-Javadoc)

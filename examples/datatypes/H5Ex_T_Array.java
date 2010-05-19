@@ -209,7 +209,7 @@ public class H5Ex_T_Array {
 
 		// Allocate array of pointers to two-dimensional arrays (the
 		// elements of the dataset.
-		dset_data = new int[(int) dims[0]][(int) (adims[0])][(int) (adims[1])];
+		dset_data = new int[(int) dims[0]][(adims[0])][(adims[1])];
 
 		// Create array datatypes for memory.
 		try {

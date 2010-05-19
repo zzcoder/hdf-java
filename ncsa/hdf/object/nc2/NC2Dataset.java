@@ -14,7 +14,6 @@
 
 package ncsa.hdf.object.nc2;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 import ucar.ma2.DataType;
@@ -78,7 +77,8 @@ public class NC2Dataset extends ScalarDS {
     }
 
     // Implementing Dataset
-    public Dataset copy(Group pgroup, String dstName, long[] dims, Object buff)
+    @Override
+	public Dataset copy(Group pgroup, String dstName, long[] dims, Object buff)
             throws Exception {
         // not supported
         throw new UnsupportedOperationException(
@@ -86,14 +86,16 @@ public class NC2Dataset extends ScalarDS {
     }
 
     // implementing Dataset
-    public byte[] readBytes() throws Exception {
+    @Override
+	public byte[] readBytes() throws Exception {
         // not supported
         throw new UnsupportedOperationException(
                 "Unsupported operation for NetCDF.");
     }
 
     // Implementing DataFormat
-    public Object read() throws Exception {
+    @Override
+	public Object read() throws Exception {
         Object theData = null;
 
         if (nativeDataset == null) {
@@ -145,7 +147,8 @@ public class NC2Dataset extends ScalarDS {
     }
 
     // Implementing DataFormat
-    public void write(Object buf) throws Exception {
+    @Override
+	public void write(Object buf) throws Exception {
         // not supported
         throw new UnsupportedOperationException(
                 "Unsupported operation for NetCDF.");
@@ -192,18 +195,21 @@ public class NC2Dataset extends ScalarDS {
     }
 
     // Implementing HObject
-    public int open() {
+    @Override
+	public int open() {
         return -1;
     }
 
     // Implementing HObject
-    public void close(int did) {
+    @Override
+	public void close(int did) {
     }
 
     /**
      * Retrieve and initialize dimensions and member information.
      */
-    public void init() {
+    @Override
+	public void init() {
         if (nativeDataset == null) {
             return;
         }
@@ -261,7 +267,8 @@ public class NC2Dataset extends ScalarDS {
     }
 
     // Implementing ScalarDS
-    public byte[][] getPalette() {
+    @Override
+	public byte[][] getPalette() {
         if (palette == null) {
             palette = readPalette(0);
         }
@@ -276,7 +283,8 @@ public class NC2Dataset extends ScalarDS {
      *            the palette index to read
      * @return the palette data into two-dimension byte array, byte[3][256]
      */
-    public byte[][] readPalette(int idx) {
+    @Override
+	public byte[][] readPalette(int idx) {
         return null;
     }
 
@@ -313,12 +321,14 @@ public class NC2Dataset extends ScalarDS {
      * returns the byte array of palette refs. returns null if there is no
      * palette attribute attached to this dataset.
      */
-    public byte[] getPaletteRefs() {
+    @Override
+	public byte[] getPaletteRefs() {
         return null;
     }
 
     // implementing ScalarDS
-    public Datatype getDatatype() {
+    @Override
+	public Datatype getDatatype() {
         if (datatype == null) {
             datatype = new NC2Datatype(nativeDataset.getDataType());
         }
@@ -333,7 +343,8 @@ public class NC2Dataset extends ScalarDS {
      * @param newName
      *            the new name of the object.
      */
-    public void setName(String newName) throws Exception {
+    @Override
+	public void setName(String newName) throws Exception {
         // not supported
         throw new UnsupportedOperationException(
                 "Unsupported operation for NetCDF.");
