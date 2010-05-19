@@ -1,0 +1,28 @@
+#/****************************************************************************
+# * Copyright by The HDF Group.                                               *
+# * Copyright by the Board of Trustees of the University of Illinois.         *
+# * All rights reserved.                                                      *
+# *                                                                           *
+# * This file is part of HDF Java Products. The full HDF Java copyright       *
+# * notice, including terms governing use, modification, and redistribution,  *
+# * is contained in the file, COPYING.  COPYING can be found at the root of   *
+# * the source code distribution tree. You can also access it online  at      *
+# * http://www.hdfgroup.org/products/licenses.html.  If you do not have       *
+# * access to the file, you may request a copy from help@hdfgroup.org.        *
+# ****************************************************************************/
+
+all:
+	(cd hdf5lib; $(MAKE);)
+	(cd object; $(MAKE);)
+	(cd object/misc; $(MAKE);)
+
+check:
+	(cd hdf5lib; $(MAKE) check;)
+	(cd object; $(MAKE) check;)
+	(cd object/misc; $(MAKE) check)
+
+clean:
+	(cd hdf5lib; $(MAKE) clean;)
+	(cd object; $(MAKE) clean;)
+	(cd object/misc; $(MAKE) clean)
+	
