@@ -4,8 +4,6 @@ import java.text.DecimalFormat;
 import java.util.Vector;
 import java.io.File;
 import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryUsage;
-
 import com.sun.management.OperatingSystemMXBean;
 
 import ncsa.hdf.hdf5lib.H5;
@@ -173,7 +171,7 @@ public class TestH5MemoryLeak
                 mem0 = mem1;
             }
 
-            testFile = new H5File(fname, H5File.READ);
+            testFile = new H5File(fname, FileFormat.READ);
             testFile.open();
             testFile.getRootNode();
             try { Thread.sleep(100); } catch (Exception ex) {;}

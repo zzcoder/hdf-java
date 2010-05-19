@@ -41,7 +41,8 @@ public class BuildingInfo
         info = sb.toString();
     }
     
-    public String toString() 
+    @Override
+	public String toString() 
     {
         return info;
     }

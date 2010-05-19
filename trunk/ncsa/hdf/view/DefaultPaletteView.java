@@ -34,7 +34,6 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.Graphics;
-import java.io.IOException;
 import java.util.Vector;
 
 /**
@@ -237,7 +236,8 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
         }
     }
 
-    public void dispose() {
+    @Override
+	public void dispose() {
         imageView.setImage(originalImage);
         super.dispose();
     }
@@ -431,11 +431,13 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
             valueTable = new JTable(valueTableModel) {
                 public static final long serialVersionUID = HObject.serialVersionUID;
 
-                public boolean isCellEditable(int row, int col) {
+                @Override
+				public boolean isCellEditable(int row, int col) {
                     return (col > 0 && col < 4);
                 }
 
-                public Object getValueAt(int row, int col) {
+                @Override
+				public Object getValueAt(int row, int col) {
                     if (startEditing[0])
                         return "";
 
@@ -449,7 +451,8 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
                     }
                 }
 
-                public boolean editCellAt(int row, int column,
+                @Override
+				public boolean editCellAt(int row, int column,
                         java.util.EventObject e) {
 
                     if (!isCellEditable(row, column)) {
@@ -465,7 +468,8 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
                     return super.editCellAt(row, column, e);
                 }
 
-                public void editingStopped(ChangeEvent e) {
+                @Override
+				public void editingStopped(ChangeEvent e) {
                     int row = getEditingRow();
                     int col = getEditingColumn();
 
@@ -495,7 +499,8 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
 
                         Color color = Color.white;
 
-                        public java.awt.Component getTableCellRendererComponent(
+                        @Override
+						public java.awt.Component getTableCellRendererComponent(
                                 JTable table, Object value, boolean isSelected,
                                 boolean hasFocus, int row, int col) {
                             java.awt.Component comp = super
@@ -513,7 +518,8 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
                     new DefaultTableCellRenderer() {
                         public static final long serialVersionUID = HObject.serialVersionUID;
 
-                        public java.awt.Component getTableCellRendererComponent(
+                        @Override
+						public java.awt.Component getTableCellRendererComponent(
                                 JTable table, Object value, boolean isSelected,
                                 boolean hasFocus, int row, int col) {
                             java.awt.Component comp = super
@@ -599,7 +605,8 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
         /**
          * Paints the plot components.
          */
-        public void paint(Graphics g) {
+        @Override
+		public void paint(Graphics g) {
             Dimension d = getSize();
             int gap = 20;
             int legendSpace = 60;

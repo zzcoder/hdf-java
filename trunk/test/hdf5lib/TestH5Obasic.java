@@ -283,11 +283,11 @@ public class TestH5Obasic {
         }
         assertFalse("H5Ovisit ",((H5O_iter_data)iter_data).iterdata.isEmpty());
         assertTrue("H5Ovisit "+((H5O_iter_data)iter_data).iterdata.size(),((H5O_iter_data)iter_data).iterdata.size()==5);
-        assertTrue("H5Ovisit "+((idata)((H5O_iter_data)iter_data).iterdata.get(0)).link_name,((idata)((H5O_iter_data)iter_data).iterdata.get(0)).link_name.compareToIgnoreCase(".")==0);
-        assertTrue("H5Ovisit "+((idata)((H5O_iter_data)iter_data).iterdata.get(1)).link_name,((idata)((H5O_iter_data)iter_data).iterdata.get(1)).link_name.compareToIgnoreCase("DS1")==0);
-        assertTrue("H5Ovisit "+((idata)((H5O_iter_data)iter_data).iterdata.get(2)).link_name,((idata)((H5O_iter_data)iter_data).iterdata.get(2)).link_name.compareToIgnoreCase("DT1")==0);
-        assertTrue("H5Ovisit "+((idata)((H5O_iter_data)iter_data).iterdata.get(3)).link_name,((idata)((H5O_iter_data)iter_data).iterdata.get(3)).link_name.compareToIgnoreCase("G1")==0);
-        assertTrue("H5Ovisit "+((idata)((H5O_iter_data)iter_data).iterdata.get(4)).link_name,((idata)((H5O_iter_data)iter_data).iterdata.get(4)).link_name.compareToIgnoreCase("G1/DS2")==0);
+        assertTrue("H5Ovisit "+(((H5O_iter_data)iter_data).iterdata.get(0)).link_name,(((H5O_iter_data)iter_data).iterdata.get(0)).link_name.compareToIgnoreCase(".")==0);
+        assertTrue("H5Ovisit "+(((H5O_iter_data)iter_data).iterdata.get(1)).link_name,(((H5O_iter_data)iter_data).iterdata.get(1)).link_name.compareToIgnoreCase("DS1")==0);
+        assertTrue("H5Ovisit "+(((H5O_iter_data)iter_data).iterdata.get(2)).link_name,(((H5O_iter_data)iter_data).iterdata.get(2)).link_name.compareToIgnoreCase("DT1")==0);
+        assertTrue("H5Ovisit "+(((H5O_iter_data)iter_data).iterdata.get(3)).link_name,(((H5O_iter_data)iter_data).iterdata.get(3)).link_name.compareToIgnoreCase("G1")==0);
+        assertTrue("H5Ovisit "+(((H5O_iter_data)iter_data).iterdata.get(4)).link_name,(((H5O_iter_data)iter_data).iterdata.get(4)).link_name.compareToIgnoreCase("G1/DS2")==0);
 //        assertTrue("H5Ovisit "+((idata)((H5O_iter_data)iter_data).iterdata.get(5)).link_name,((idata)((H5O_iter_data)iter_data).iterdata.get(5)).link_name.compareToIgnoreCase("L1")==0);
     }
 
@@ -322,8 +322,8 @@ public class TestH5Obasic {
         }
         assertFalse("H5Ovisit_by_name ",((H5O_iter_data)iter_data).iterdata.isEmpty());
         assertTrue("H5Ovisit_by_name "+((H5O_iter_data)iter_data).iterdata.size(),((H5O_iter_data)iter_data).iterdata.size()==2);
-        assertTrue("H5Ovisit_by_name "+((idata)((H5O_iter_data)iter_data).iterdata.get(0)).link_name,((idata)((H5O_iter_data)iter_data).iterdata.get(0)).link_name.compareToIgnoreCase(".")==0);
-        assertTrue("H5Ovisit_by_name "+((idata)((H5O_iter_data)iter_data).iterdata.get(1)).link_name,((idata)((H5O_iter_data)iter_data).iterdata.get(1)).link_name.compareToIgnoreCase("DS2")==0);
+        assertTrue("H5Ovisit_by_name "+(((H5O_iter_data)iter_data).iterdata.get(0)).link_name,(((H5O_iter_data)iter_data).iterdata.get(0)).link_name.compareToIgnoreCase(".")==0);
+        assertTrue("H5Ovisit_by_name "+(((H5O_iter_data)iter_data).iterdata.get(1)).link_name,(((H5O_iter_data)iter_data).iterdata.get(1)).link_name.compareToIgnoreCase("DS2")==0);
     }
 
 }

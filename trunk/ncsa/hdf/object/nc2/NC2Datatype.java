@@ -134,7 +134,8 @@ public class NC2Datatype extends Datatype {
      * @param nativeID
      *            the netcdf native datatype.
      */
-    public void fromNative(int tid) {
+    @Override
+	public void fromNative(int tid) {
         if (nativeType == null) {
             return;
         }
@@ -172,7 +173,8 @@ public class NC2Datatype extends Datatype {
     }
 
     // implementing Datatype
-    public String getDatatypeDescription() {
+    @Override
+	public String getDatatypeDescription() {
         if (nativeType == null) {
             return "Unknown data type.";
         }
@@ -181,12 +183,14 @@ public class NC2Datatype extends Datatype {
     }
 
     // implementing Datatype
-    public boolean isUnsigned() {
+    @Override
+	public boolean isUnsigned() {
         return false;
     }
 
     // implementing Datatype
-    public int toNative() {
+    @Override
+	public int toNative() {
         if (datatypeClass == CLASS_INTEGER) {
             if (datatypeSize == 1) {
                 nativeType = DataType.BYTE;
@@ -221,7 +225,8 @@ public class NC2Datatype extends Datatype {
      * 
      * @see ncsa.hdf.object.Datatype#close(int)
      */
-    public void close(int id) {
+    @Override
+	public void close(int id) {
         ;
     }
 

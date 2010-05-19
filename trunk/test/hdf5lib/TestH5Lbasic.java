@@ -224,11 +224,11 @@ public class TestH5Lbasic {
         }
         assertFalse("H5Lvisit ",((H5L_iter_data)iter_data).iterdata.isEmpty());
         assertTrue("H5Lvisit "+((H5L_iter_data)iter_data).iterdata.size(),((H5L_iter_data)iter_data).iterdata.size()==5);
-        assertTrue("H5Lvisit "+((idata)((H5L_iter_data)iter_data).iterdata.get(0)).link_name,((idata)((H5L_iter_data)iter_data).iterdata.get(0)).link_name.compareToIgnoreCase("DS1")==0);
-        assertTrue("H5Lvisit "+((idata)((H5L_iter_data)iter_data).iterdata.get(1)).link_name,((idata)((H5L_iter_data)iter_data).iterdata.get(1)).link_name.compareToIgnoreCase("DT1")==0);
-        assertTrue("H5Lvisit "+((idata)((H5L_iter_data)iter_data).iterdata.get(2)).link_name,((idata)((H5L_iter_data)iter_data).iterdata.get(2)).link_name.compareToIgnoreCase("G1")==0);
-        assertTrue("H5Lvisit "+((idata)((H5L_iter_data)iter_data).iterdata.get(3)).link_name,((idata)((H5L_iter_data)iter_data).iterdata.get(3)).link_name.compareToIgnoreCase("G1/DS2")==0);
-        assertTrue("H5Lvisit "+((idata)((H5L_iter_data)iter_data).iterdata.get(4)).link_name,((idata)((H5L_iter_data)iter_data).iterdata.get(4)).link_name.compareToIgnoreCase("L1")==0);
+        assertTrue("H5Lvisit "+(((H5L_iter_data)iter_data).iterdata.get(0)).link_name,(((H5L_iter_data)iter_data).iterdata.get(0)).link_name.compareToIgnoreCase("DS1")==0);
+        assertTrue("H5Lvisit "+(((H5L_iter_data)iter_data).iterdata.get(1)).link_name,(((H5L_iter_data)iter_data).iterdata.get(1)).link_name.compareToIgnoreCase("DT1")==0);
+        assertTrue("H5Lvisit "+(((H5L_iter_data)iter_data).iterdata.get(2)).link_name,(((H5L_iter_data)iter_data).iterdata.get(2)).link_name.compareToIgnoreCase("G1")==0);
+        assertTrue("H5Lvisit "+(((H5L_iter_data)iter_data).iterdata.get(3)).link_name,(((H5L_iter_data)iter_data).iterdata.get(3)).link_name.compareToIgnoreCase("G1/DS2")==0);
+        assertTrue("H5Lvisit "+(((H5L_iter_data)iter_data).iterdata.get(4)).link_name,(((H5L_iter_data)iter_data).iterdata.get(4)).link_name.compareToIgnoreCase("L1")==0);
     }
 
     @Test
@@ -262,7 +262,7 @@ public class TestH5Lbasic {
         }
         assertFalse("H5Lvisit_by_name ",((H5L_iter_data)iter_data).iterdata.isEmpty());
         assertTrue("H5Lvisit_by_name "+((H5L_iter_data)iter_data).iterdata.size(),((H5L_iter_data)iter_data).iterdata.size()==1);
-        assertTrue("H5Lvisit_by_name "+((idata)((H5L_iter_data)iter_data).iterdata.get(0)).link_name,((idata)((H5L_iter_data)iter_data).iterdata.get(0)).link_name.compareToIgnoreCase("DS2")==0);
+        assertTrue("H5Lvisit_by_name "+(((H5L_iter_data)iter_data).iterdata.get(0)).link_name,(((H5L_iter_data)iter_data).iterdata.get(0)).link_name.compareToIgnoreCase("DS2")==0);
     }
 
     @Test
@@ -296,9 +296,9 @@ public class TestH5Lbasic {
         }
         assertFalse("H5Literate ",((H5L_iter_data)iter_data).iterdata.isEmpty());
         assertTrue("H5Literate "+((H5L_iter_data)iter_data).iterdata.size(),((H5L_iter_data)iter_data).iterdata.size()==4);
-        assertTrue("H5Literate "+((idata)((H5L_iter_data)iter_data).iterdata.get(0)).link_name,((idata)((H5L_iter_data)iter_data).iterdata.get(0)).link_name.compareToIgnoreCase("DS1")==0);
-        assertTrue("H5Literate "+((idata)((H5L_iter_data)iter_data).iterdata.get(1)).link_name,((idata)((H5L_iter_data)iter_data).iterdata.get(1)).link_name.compareToIgnoreCase("DT1")==0);
-        assertTrue("H5Literate "+((idata)((H5L_iter_data)iter_data).iterdata.get(2)).link_name,((idata)((H5L_iter_data)iter_data).iterdata.get(2)).link_name.compareToIgnoreCase("G1")==0);
+        assertTrue("H5Literate "+(((H5L_iter_data)iter_data).iterdata.get(0)).link_name,(((H5L_iter_data)iter_data).iterdata.get(0)).link_name.compareToIgnoreCase("DS1")==0);
+        assertTrue("H5Literate "+(((H5L_iter_data)iter_data).iterdata.get(1)).link_name,(((H5L_iter_data)iter_data).iterdata.get(1)).link_name.compareToIgnoreCase("DT1")==0);
+        assertTrue("H5Literate "+((idata)((H5L_iter_data)iter_data).iterdata.get(2)).link_name,(((H5L_iter_data)iter_data).iterdata.get(2)).link_name.compareToIgnoreCase("G1")==0);
         assertTrue("H5Literate "+((idata)((H5L_iter_data)iter_data).iterdata.get(3)).link_name,((idata)((H5L_iter_data)iter_data).iterdata.get(3)).link_name.compareToIgnoreCase("L1")==0);
     }
 

@@ -120,7 +120,8 @@ public class HDF5GroupInfo {
      * The fileno and objno fields contain four values which uniquely identify
      * an object among those HDF5 files.
      */
-    public boolean equals(Object obj) {
+    @Override
+	public boolean equals(Object obj) {
         if (!(obj instanceof HDF5GroupInfo)) {
             return false;
         }
@@ -148,7 +149,8 @@ public class HDF5GroupInfo {
      * 
      * @return a string representation of this object
      */
-    public String toString() {
+    @Override
+	public String toString() {
         String fileStr = "fileno=null";
         String objStr = "objno=null";
 

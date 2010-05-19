@@ -35,7 +35,6 @@ import java.io.*;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Image;

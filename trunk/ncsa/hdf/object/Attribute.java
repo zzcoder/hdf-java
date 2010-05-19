@@ -246,7 +246,8 @@ public class Attribute implements Metadata {
      * 
      * @see toString(String delimiter)
      */
-    public String toString() {
+    @Override
+	public String toString() {
         return name;
     }
 

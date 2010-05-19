@@ -17,14 +17,12 @@ package ncsa.hdf.view;
 import ncsa.hdf.object.*;
 
 import javax.swing.*;
-import javax.swing.text.Position;
 import javax.swing.tree.*;
 import java.util.*;
 import java.io.*;
 import java.lang.reflect.*;
 import java.awt.Component;
 import java.awt.BorderLayout;
-import java.awt.Event;
 import java.awt.Toolkit;
 import java.awt.event.*;
 import java.awt.Cursor;

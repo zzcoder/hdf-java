@@ -130,7 +130,8 @@ public class DefaultFileFilter extends FileFilter {
      * 
      * @see #getExtension
      */
-    public boolean accept(File f) {
+    @Override
+	public boolean accept(File f) {
         if (f != null) {
             if (f.isDirectory()) {
                 return true;
@@ -192,7 +193,8 @@ public class DefaultFileFilter extends FileFilter {
      * Returns the human readable description of this filter. For example:
      * "JPEG and GIF Image Files (*.jpg, *.gif)"
      */
-    public String getDescription() {
+    @Override
+	public String getDescription() {
         if (fullDescription == null) {
             if ((description == null) || isExtensionListInDescription()) {
                 fullDescription = description == null ? "(" : description

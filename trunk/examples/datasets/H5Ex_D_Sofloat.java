@@ -67,8 +67,8 @@ public class H5Ex_D_Sofloat {
 		for (i=0; i<DIM_X; i++)
 			for (j=0; j<DIM_Y; j++)
 			{
-				x = (double) i;
-				y = (double) j;
+				x = i;
+				y = j;
 				dset_data[i][j] = (x + 1) / (y + 0.3) + y;
 			}
 

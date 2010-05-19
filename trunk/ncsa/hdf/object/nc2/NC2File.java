@@ -90,7 +90,8 @@ public class NC2File extends FileFormat {
      * @return true if the given file is an NetCDF file; otherwise returns
      *         false.
      */
-    public boolean isThisType(FileFormat fileformat) {
+    @Override
+	public boolean isThisType(FileFormat fileformat) {
         return (fileformat instanceof NC2File);
     }
 
@@ -103,7 +104,8 @@ public class NC2File extends FileFormat {
      * @return true if the given file is an NetCDF file; otherwise returns
      *         false.
      */
-    public boolean isThisType(String filename) {
+    @Override
+	public boolean isThisType(String filename) {
         boolean is_netcdf = false;
         RandomAccessFile raf = null;
 
@@ -158,13 +160,15 @@ public class NC2File extends FileFormat {
      * 
      * @see ncsa.hdf.object.FileFormat#createInstance(java.lang.String, int)
      */
-    public FileFormat createInstance(String filename, int access)
+    @Override
+	public FileFormat createInstance(String filename, int access)
             throws Exception {
         return new NC2File(filename);
     }
 
     // Implementing FileFormat
-    public int open() throws Exception {
+    @Override
+	public int open() throws Exception {
         if (!isFileOpen) {
             isFileOpen = true;
             rootNode = loadTree();
@@ -185,7 +189,8 @@ public class NC2File extends FileFormat {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootGroup) {
             public static final long serialVersionUID = HObject.serialVersionUID;
 
-            public boolean isLeaf() {
+            @Override
+			public boolean isLeaf() {
                 return false;
             }
         };
@@ -211,14 +216,16 @@ public class NC2File extends FileFormat {
     }
 
     // Implementing FileFormat
-    public void close() throws IOException {
+    @Override
+	public void close() throws IOException {
         if (ncFile != null) {
             ncFile.close();
         }
     }
 
     // Implementing FileFormat
-    public TreeNode getRootNode() {
+    @Override
+	public TreeNode getRootNode() {
         return rootNode;
     }
 
@@ -227,31 +234,36 @@ public class NC2File extends FileFormat {
     }
 
     // implementing FileFormat
-    public Group createGroup(String name, Group pgroup) throws Exception {
+    @Override
+	public Group createGroup(String name, Group pgroup) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     // implementing FileFormat
-    public Datatype createDatatype(int tclass, int tsize, int torder, int tsign)
+    @Override
+	public Datatype createDatatype(int tclass, int tsize, int torder, int tsign)
             throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation.");
     }
 
-    public Datatype createDatatype(int tclass, int tsize, int torder,
+    @Override
+	public Datatype createDatatype(int tclass, int tsize, int torder,
             int tsign, String name) throws Exception {
         throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     // implementing FileFormat
-    public HObject createLink(Group parentGroup, String name, HObject currentObj)
+    @Override
+	public HObject createLink(Group parentGroup, String name, HObject currentObj)
             throws Exception {
         throw new UnsupportedOperationException("createLink() is not supported");
     }
 
     // implementing FileFormat
-    public Dataset createScalarDS(String name, Group pgroup, Datatype type,
+    @Override
+	public Dataset createScalarDS(String name, Group pgroup, Datatype type,
             long[] dims, long[] maxdims, long[] chunks, int gzip, Object data)
             throws Exception {
         // not supported
@@ -259,7 +271,8 @@ public class NC2File extends FileFormat {
     }
 
     // implementing FileFormat
-    public Dataset createImage(String name, Group pgroup, Datatype type,
+    @Override
+	public Dataset createImage(String name, Group pgroup, Datatype type,
             long[] dims, long[] maxdims, long[] chunks, int gzip, int ncomp,
             int intelace, Object data) throws Exception {
         // not supported
@@ -267,13 +280,15 @@ public class NC2File extends FileFormat {
     }
 
     // implementing FileFormat
-    public void delete(HObject obj) throws Exception {
+    @Override
+	public void delete(HObject obj) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     // implementing FileFormat
-    public TreeNode copy(HObject srcObj, Group dstGroup, String dstName)
+    @Override
+	public TreeNode copy(HObject srcObj, Group dstGroup, String dstName)
             throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation.");
@@ -331,7 +346,8 @@ public class NC2File extends FileFormat {
      *            The indicator if the given attribute exists.
      * @return true if successful and false otherwise.
      */
-    public void writeAttribute(HObject obj, ncsa.hdf.object.Attribute attr,
+    @Override
+	public void writeAttribute(HObject obj, ncsa.hdf.object.Attribute attr,
             boolean attrExisted) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation.");
@@ -358,14 +374,16 @@ public class NC2File extends FileFormat {
     /**
      * Returns the version of the library.
      */
-    public String getLibversion() {
+    @Override
+	public String getLibversion() {
         String ver = "NetCDF Java (version 2.4)";
 
         return ver;
     }
 
     // implementing FileFormat
-    public HObject get(String path) throws Exception {
+    @Override
+	public HObject get(String path) throws Exception {
         throw new UnsupportedOperationException("get() is not supported");
     }
 }

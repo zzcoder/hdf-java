@@ -113,7 +113,8 @@ public class NewTableDataDialog extends JDialog implements ActionListener,
 
             RowEditorModel rm = rowEditorModel;
 
-            public TableCellEditor getCellEditor(int row, int col) {
+            @Override
+			public TableCellEditor getCellEditor(int row, int col) {
                 TableCellEditor cellEditor = rm.getEditor(row);
 
                 if ((cellEditor == null) || !(col == 1)) {

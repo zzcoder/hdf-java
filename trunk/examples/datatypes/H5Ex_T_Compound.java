@@ -19,8 +19,6 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
-import java.util.Arrays;
-
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
@@ -67,8 +65,8 @@ public class H5Ex_T_Compound {
 		public void readExternal(ObjectInput in) throws IOException,
 				ClassNotFoundException {
 			serial_no = in.readInt();
-			byte[] tempbuf = new byte[Sensor_Datatype.MAXSTRINGSIZE];
-			for (int indx = 0; indx < Sensor_Datatype.MAXSTRINGSIZE; indx++) {
+			byte[] tempbuf = new byte[CompoundDatatype.MAXSTRINGSIZE];
+			for (int indx = 0; indx < CompoundDatatype.MAXSTRINGSIZE; indx++) {
 				tempbuf[indx] = in.readByte();
 			}
 			location = new String(tempbuf);
@@ -78,7 +76,7 @@ public class H5Ex_T_Compound {
 
 		public void writeExternal(ObjectOutput out) throws IOException {
 			out.writeInt(serial_no);
-			for (int indx = 0; indx < Sensor_Datatype.MAXSTRINGSIZE; indx++) {
+			for (int indx = 0; indx < CompoundDatatype.MAXSTRINGSIZE; indx++) {
 				if (indx < location.length())
 					out.writeByte(location.charAt(indx));
 				else
@@ -177,7 +175,7 @@ public class H5Ex_T_Compound {
 		try {
 			strtype_id = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
 			if (strtype_id >= 0)
-				H5.H5Tset_size(strtype_id, Sensor_Datatype.MAXSTRINGSIZE);
+				H5.H5Tset_size(strtype_id, CompoundDatatype.MAXSTRINGSIZE);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -253,9 +251,9 @@ public class H5Ex_T_Compound {
 			oout.close();
 			baos.close();
 			dset_data = baos.toByteArray();
-			byte[] write_data = new byte[dset_data.length-Sensor_Datatype.MAGICNUMBER];
-			for(int indx=0; indx<dset_data.length-Sensor_Datatype.MAGICNUMBER;indx++)
-				write_data[indx] = dset_data[indx+Sensor_Datatype.MAGICNUMBER];
+			byte[] write_data = new byte[dset_data.length-CompoundDatatype.MAGICNUMBER];
+			for(int indx=0; indx<dset_data.length-CompoundDatatype.MAGICNUMBER;indx++)
+				write_data[indx] = dset_data[indx+CompoundDatatype.MAGICNUMBER];
 
 			if ((dataset_id >= 0) && (memtype_id >= 0))
 				H5.H5Dwrite(dataset_id, memtype_id, HDF5Constants.H5S_ALL,
@@ -369,7 +367,7 @@ public class H5Ex_T_Compound {
 		try {
 			strtype_id = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
 			if (strtype_id >= 0)
-				H5.H5Tset_size(strtype_id, Sensor_Datatype.MAXSTRINGSIZE);
+				H5.H5Tset_size(strtype_id, CompoundDatatype.MAXSTRINGSIZE);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -404,11 +402,11 @@ public class H5Ex_T_Compound {
 				H5.H5Dread(dataset_id, memtype_id, HDF5Constants.H5S_ALL,
 						HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, read_data);
 
-			dset_data = new byte[read_data.length + Sensor_Datatype.MAGICNUMBER];
-			for (int indx = 0; indx < Sensor_Datatype.MAGICNUMBER; indx++)
-				dset_data[indx] = (byte) Sensor_Datatype.MAGICNUMBERVALUE[indx];
+			dset_data = new byte[read_data.length + CompoundDatatype.MAGICNUMBER];
+			for (int indx = 0; indx < CompoundDatatype.MAGICNUMBER; indx++)
+				dset_data[indx] = (byte) CompoundDatatype.MAGICNUMBERVALUE[indx];
 			for (int indx = 0; indx < read_data.length; indx++)
-				dset_data[indx + Sensor_Datatype.MAGICNUMBER] = read_data[indx];
+				dset_data[indx + CompoundDatatype.MAGICNUMBER] = read_data[indx];
 			ObjectInputStream objectIn = new ObjectInputStream(
 					new ByteArrayInputStream(dset_data));
 

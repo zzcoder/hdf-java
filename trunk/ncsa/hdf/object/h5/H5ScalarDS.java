@@ -96,7 +96,8 @@ public class H5ScalarDS extends ScalarDS {
      * @deprecated Not for public use in the future.<br>
      *             Using {@link #H5ScalarDS(FileFormat, String, String)}
      */
-    public H5ScalarDS(FileFormat theFile, String theName, String thePath,
+    @Deprecated
+	public H5ScalarDS(FileFormat theFile, String theName, String thePath,
             long[] oid) {
         super(theFile, theName, thePath, oid);
         unsignedConverted = false;
@@ -265,7 +266,8 @@ public class H5ScalarDS extends ScalarDS {
      * 
      * @see ncsa.hdf.object.Dataset#init()
      */
-    public void init() {
+    @Override
+	public void init() {
         if (rank > 0) {
             resetSelection();
             return; // already called. Initialize only once
@@ -518,7 +520,8 @@ public class H5ScalarDS extends ScalarDS {
      * 
      * @see ncsa.hdf.object.Dataset#clear()
      */
-    public void clear() {
+    @Override
+	public void clear() {
         super.clear();
 
         if (attributeList != null) {
@@ -532,7 +535,8 @@ public class H5ScalarDS extends ScalarDS {
      * @see ncsa.hdf.object.Dataset#copy(ncsa.hdf.object.Group,
      * java.lang.String, long[], java.lang.Object)
      */
-    public Dataset copy(Group pgroup, String dstName, long[] dims, Object buff)
+    @Override
+	public Dataset copy(Group pgroup, String dstName, long[] dims, Object buff)
             throws Exception {
         // must give a location to copy
         if (pgroup == null) {
@@ -619,7 +623,8 @@ public class H5ScalarDS extends ScalarDS {
      * 
      * @see ncsa.hdf.object.Dataset#readBytes()
      */
-    public byte[] readBytes() throws HDF5Exception {
+    @Override
+	public byte[] readBytes() throws HDF5Exception {
         byte[] theData = null;
 
         if (rank <= 0) {
@@ -680,7 +685,8 @@ public class H5ScalarDS extends ScalarDS {
      * 
      * @see ncsa.hdf.object.Dataset#read()
      */
-    public Object read() throws HDF5Exception {
+    @Override
+	public Object read() throws HDF5Exception {
         Object theData = null;
         int did = -1, tid = -1;
         int spaceIDs[] = { -1, -1 }; // spaceIDs[0]=mspace, spaceIDs[1]=fspace
@@ -799,7 +805,8 @@ public class H5ScalarDS extends ScalarDS {
      * 
      * @see ncsa.hdf.object.Dataset#write(java.lang.Object)
      */
-    public void write(Object buf) throws HDF5Exception {
+    @Override
+	public void write(Object buf) throws HDF5Exception {
         int did = -1, tid = -1;
         int spaceIDs[] = { -1, -1 }; // spaceIDs[0]=mspace, spaceIDs[1]=fspace
         Object tmpData = null;
@@ -1106,7 +1113,8 @@ public class H5ScalarDS extends ScalarDS {
      * 
      * @see ncsa.hdf.object.HObject#open()
      */
-    public int open() {
+    @Override
+	public int open() {
         int did = -1;
 
         try {
@@ -1125,7 +1133,8 @@ public class H5ScalarDS extends ScalarDS {
      * 
      * @see ncsa.hdf.object.HObject#close(int)
      */
-    public void close(int did) {
+    @Override
+	public void close(int did) {
         try {
             H5.H5Fflush(did, HDF5Constants.H5F_SCOPE_LOCAL);
         }
@@ -1144,7 +1153,8 @@ public class H5ScalarDS extends ScalarDS {
      * 
      * @see ncsa.hdf.object.ScalarDS#getPalette()
      */
-    public byte[][] getPalette() {
+    @Override
+	public byte[][] getPalette() {
         if (palette == null) {
             palette = readPalette(0);
         }
@@ -1157,7 +1167,8 @@ public class H5ScalarDS extends ScalarDS {
      * 
      * @see ncsa.hdf.object.ScalarDS#readPalette(int)
      */
-    public byte[][] readPalette(int idx) {
+    @Override
+	public byte[][] readPalette(int idx) {
         byte[][] thePalette = null;
         byte[] refs = getPaletteRefs();
         int did = -1, pal_id = -1, tid = -1;
@@ -1391,7 +1402,8 @@ public class H5ScalarDS extends ScalarDS {
      * 
      * @see ncsa.hdf.object.ScalarDS#getPaletteRefs()
      */
-    public byte[] getPaletteRefs() {
+    @Override
+	public byte[] getPaletteRefs() {
         if (rank <= 0) {
             init(); // init will be called to get refs
         }
@@ -1454,7 +1466,8 @@ public class H5ScalarDS extends ScalarDS {
      * 
      * @see ncsa.hdf.object.Dataset#getDatatype()
      */
-    public Datatype getDatatype() {
+    @Override
+	public Datatype getDatatype() {
         if (datatype == null) {
             int did = -1, tid = -1;
 
@@ -1505,7 +1518,8 @@ public class H5ScalarDS extends ScalarDS {
      * 
      * @see ncsa.hdf.object.HObject#setName(java.lang.String)
      */
-    public void setName(String newName) throws Exception {
+    @Override
+	public void setName(String newName) throws Exception {
         String currentFullPath = this.getPath() + this.getName();
         String newFullPath = this.getPath() + newName;
 

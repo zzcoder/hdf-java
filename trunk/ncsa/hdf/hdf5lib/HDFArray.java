@@ -761,7 +761,7 @@ public class HDFArray {
 
     private Integer[] ByteToInteger(int start, int len, byte[] bin) {
         int in[] = HDFNativeData.byteToInt(start, len, bin);
-        int nelems = java.lang.reflect.Array.getLength((Object) in);
+        int nelems = java.lang.reflect.Array.getLength(in);
         Integer[] out = new Integer[nelems];
 
         for (int i = 0; i < nelems; i++) {
@@ -771,7 +771,7 @@ public class HDFArray {
     }
 
     private byte[] ShortToByte(Short in[]) {
-        int nelems = java.lang.reflect.Array.getLength((Object) in);
+        int nelems = java.lang.reflect.Array.getLength(in);
         short[] out = new short[nelems];
 
         for (int i = 0; i < nelems; i++) {
@@ -781,7 +781,7 @@ public class HDFArray {
     }
 
     private Short[] ByteToShort(byte[] bin) {
-        short in[] = (short[]) HDFNativeData.byteToShort(bin);
+        short in[] = HDFNativeData.byteToShort(bin);
         int nelems = java.lang.reflect.Array.getLength((Object) in);
         Short[] out = new Short[nelems];
 

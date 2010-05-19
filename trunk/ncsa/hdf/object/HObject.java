@@ -157,7 +157,8 @@ public abstract class HObject implements Serializable, DataFormat {
      * @deprecated Not for public use in the future.<br>
      *             Using {@link #HObject(FileFormat, String, String)}
      */
-    public HObject(FileFormat theFile, String theName, String thePath,
+    @Deprecated
+	public HObject(FileFormat theFile, String theName, String thePath,
             long[] oid) {
         this.fileFormat = theFile;
         this.oid = oid;
@@ -469,7 +470,8 @@ public abstract class HObject implements Serializable, DataFormat {
      * 
      * @return The name of the object.
      */
-    public String toString() {
+    @Override
+	public String toString() {
         if (name != null)
             return name;
         else

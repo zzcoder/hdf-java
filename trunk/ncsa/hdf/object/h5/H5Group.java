@@ -20,9 +20,7 @@ import ncsa.hdf.hdf5lib.*;
 import ncsa.hdf.hdf5lib.exceptions.*;
 import ncsa.hdf.object.*;
 import ncsa.hdf.hdf5lib.structs.H5G_info_t;
-import ncsa.hdf.hdf5lib.structs.H5O_hdr_info_t;
 import ncsa.hdf.hdf5lib.structs.H5O_info_t;
-import ncsa.hdf.hdf5lib.structs.H5_ih_info_t;
 
 /**
  * An H5Group object represents an existing HDF5 group in file.
@@ -77,7 +75,8 @@ public class H5Group extends Group {
      * @deprecated Not for public use in the future.<br>
      *             Using {@link #H5Group(FileFormat, String, String, Group)}
      */
-    public H5Group(FileFormat theFile, String name, String path, Group parent,
+    @Deprecated
+	public H5Group(FileFormat theFile, String name, String path, Group parent,
             long[] oid) {
         super(theFile, name, path, parent, oid);
         nMembersInFile = -1;
@@ -126,7 +125,8 @@ public class H5Group extends Group {
      * 
      * @see ncsa.hdf.object.Group#getNumberOfMembersInFile()
      */
-    public int getNumberOfMembersInFile() {
+    @Override
+	public int getNumberOfMembersInFile() {
         if (nMembersInFile < 0) {
             int gid = open();
             if (gid > 0) {
@@ -149,7 +149,8 @@ public class H5Group extends Group {
      * 
      * @see ncsa.hdf.object.Group#clear()
      */
-    public void clear() {
+    @Override
+	public void clear() {
         super.clear();
 
         if (attributeList != null) {
@@ -235,7 +236,8 @@ public class H5Group extends Group {
      * 
      * @see ncsa.hdf.object.HObject#open()
      */
-    public int open() {
+    @Override
+	public int open() {
         int gid = -1;
 
         try {
@@ -259,7 +261,8 @@ public class H5Group extends Group {
      * 
      * @see ncsa.hdf.object.HObject#close(int)
      */
-    public void close(int gid) {
+    @Override
+	public void close(int gid) {
         try {
             H5.H5Gclose(gid);
         }
@@ -367,7 +370,8 @@ public class H5Group extends Group {
      * 
      * @see ncsa.hdf.object.HObject#setName(java.lang.String)
      */
-    public void setName(String newName) throws Exception {
+    @Override
+	public void setName(String newName) throws Exception {
         String currentFullPath = this.getPath() + this.getName();
         String newFullPath = this.getPath() + newName;
 
@@ -394,7 +398,8 @@ public class H5Group extends Group {
      * 
      * @see ncsa.hdf.object.HObject#setPath(java.lang.String)
      */
-    public void setPath(String newPath) throws Exception {
+    @Override
+	public void setPath(String newPath) throws Exception {
         super.setPath(newPath);
 
         List members = this.getMemberList();

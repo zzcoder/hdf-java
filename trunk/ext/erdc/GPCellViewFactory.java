@@ -36,6 +36,7 @@ public class GPCellViewFactory extends DefaultCellViewFactory {
 		map.put(VIEW_CLASS_KEY, viewClass);
 	}
 
+	@Override
 	protected VertexView createVertexView(Object v) {
 		try {
 			DefaultGraphCell cell = (DefaultGraphCell) v;
