@@ -73,7 +73,7 @@ public class H5Datatype extends Datatype {
      *            the group path to the dataset such as "/g0/".
      */
     public H5Datatype(FileFormat theFile, String name, String path) {
-        super(theFile, name, path, null);
+        this(theFile, name, path, null);
     }
 
     /**
@@ -162,7 +162,7 @@ public class H5Datatype extends Datatype {
      * 
      * @see ncsa.hdf.object.DataFormat#hasAttribute()
      */
-    public boolean hasAttribute() {
+    public boolean hasAttribute() {      
     	 if (obj_info.num_attrs< 0) {
             int tid = -1;
             try {

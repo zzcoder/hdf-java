@@ -2079,8 +2079,10 @@ implements TableView, ActionListener, MouseListener
         	delimiter = "\t";
         else {
             
-            if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_SPACE)) {
-                delimiter = " ";
+        	if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_TAB)) {
+                delimiter = "\t";
+            } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_SPACE)) {
+                delimiter = " "+delimiter;
             } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_COMMA)) {
                 delimiter = ",";
             } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_COLON)) {
@@ -2207,7 +2209,9 @@ implements TableView, ActionListener, MouseListener
         if (dataset instanceof CompoundDS)
             delimiter = "\t";
         
-        if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_SPACE)) {
+        if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_TAB)) {
+            delimiter = "\t";
+        } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_SPACE)) {
             delimiter = " "+delimiter;
         } else if (delName.equalsIgnoreCase(ViewProperties.DELIMITER_COMMA)) {
             delimiter = ","+delimiter;
