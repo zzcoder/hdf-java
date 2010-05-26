@@ -1704,4 +1704,66 @@ public class H5FileTest extends TestCase {
 
 		file.delete();
 	}
+	
+	
+	/**
+	 * Test method for
+	 * {@link ncsa.hdf.object.h5.H5File#createDatatype(int, int, int, int, java.lang.String)}.
+	 * {@link ncsa.hdf.object.h5.H5Datatype#hasAttribute()}.
+	 * <p>
+	 * What to test:
+	 * <ul>
+	 * <li>create a file
+	 * <li>open file
+	 * <li>create Datatype
+	 * <li>create attribute in Datatype.
+	 * <li>check for attribute in datatype.
+	 * <li>close/delete the file
+	 * </ul>
+	 */
+	public final void testDatatypehasAttribute() {
+		final String nameNew = "testH5FileDatatype.h5";
+		H5File file = null;
+		int fid = -1;
+		Datatype d1 = null;
+
+		try {
+			file = (H5File) H5FILE.create(nameNew); // Create File
+		} catch (final Exception ex) {
+			fail("file.create() failed. " + ex);
+		}
+
+		try {
+			fid = file.open();
+		} catch (final Exception ex) {
+			fail("file.open() failed. " + ex);
+		}
+		assertTrue(fid > 0);
+
+		try {
+			d1 = file.createDatatype(Datatype.CLASS_INTEGER, 4,
+					Datatype.ORDER_LE, Datatype.SIGN_NONE, "NATIVE_INT"); //create Datatype.
+		} catch (final Exception ex) {
+			fail("file.createDatatype() failed. " + ex);
+		}
+		assertNotNull(d1);
+
+		Attribute attr1 = new Attribute("strAttr", new H5Datatype(
+				Datatype.CLASS_STRING, 20, -1, -1), new long[] { 1 },
+				new String[] { "String attribute." });
+
+		try {
+			d1.writeMetadata(attr1);
+		} catch (final Exception ex) {
+			fail("d1.writeMetadata() failed. " + ex);
+		}
+
+		assertEquals(true, d1.hasAttribute());
+
+		try {
+			file.close();
+		} catch (final Exception ex) {
+		}
+		file.delete();
+	}
 }
