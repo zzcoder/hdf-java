@@ -1,0 +1,47 @@
+[Language]
+LanguageSupport0=0009
+[OperatingSystem]
+OSSupport=0000000000011011
+[Data]
+CurrentMedia=HDFPlugin
+CurrentComponentDef=Default.cdf
+ProductName=HDFPlugin
+set_mifserial=
+DevEnvironment=Microsoft Visual C++
+AppExe=D:\work\HDFPlugin\Release\HDFPlugin.exe
+set_dlldebug=No
+EmailAddresss=
+Instructions=Instructions.txt
+set_testmode=No
+set_mif=No
+SummaryText=
+Department=
+HomeURL=
+Author=
+Type=Internet Application
+InstallRoot=D:\work\HDFPlugin\installation\HDFPlugin
+Version=1.0
+InstallationGUID=b74dcf1a-71e8-4a7d-988b-bdcaddcecb53
+set_level=Level 3
+CurrentFileGroupDef=Default.fdf
+Notes=Notes.txt
+set_maxerr=50
+set_args=
+set_miffile=Status.mif
+set_dllcmdline=
+Copyright=
+set_warnaserr=No
+CurrentPlatform=
+Category=
+set_preproc=
+CurrentLanguage=English
+CompanyName=NCSA
+Description=Description.txt
+set_maxwarn=50
+set_crc=Yes
+[MediaInfo]
+mediadata0=Default/Media\Default
+mediadata1=HDFPlugin/Media\HDFPlugin
+[General]
+Type=INSTALLMAIN
+Version=1.00.000

@@ -1,0 +1,65 @@
+<HTML>
+<script language="JavaScript" type="text/javascript" src="header.js"></script>
+
+<p>
+<h2>
+Product Description</h2>
+
+<table width="100%">
+  <tr>
+  <td valign="top">
+
+<font color="#FF0000"><b>HDF Web-browser plugin </b></font> is a windowed 
+browser plugin that is launched from a web browser to display HDF4 and HDF5 
+files. A <i><b>browser plugin</b></i> is a software program that extends the power 
+of Web browser by adding more features and supporting more types of content 
+than what the standard browser provides.
+
+<p>
+HDF Web-browser plugin is <i><b>not HDFView</i></b>. HDF Plug-in and HDFView are different 
+software. HDFView is Java based standalone applcation that is used to view 
+and edit HDF4 and HDF4 files and runs on multiple platforms. It has more browsing
+features and edting features. HDF Web-browser plugin is "light" browser that
+has less browsing features that HDFView. It has no editing feature. For more
+information on HDFView, visit <a href="http://hdf.ncsa.uiuc.edu/hdf-java-html/">
+http://hdf.ncsa.uiuc.edu/hdf-java-html/</a>
+
+<p>
+HDF Web-browser plugin is <i><b> not an Applet</i></b>. Although both plug-in and applet are 
+launched in web browser, there is a major difference between the two. Like 
+other software, a plug-in is downloaded and installed only once. It is installed 
+onto local disk and launched from local machine. Applets are downloaded at each 
+invocation. The advantage of network traffic of a plug-in over an applet is obvious.
+
+</td>
+  <td align="right">
+  <img src="hdfplugin.gif"> </td>
+  </tr>
+</table>
+
+<h2>
+About Current Release</h2>
+It is a challenge to implement browser plugins. Plugins are platform and browser 
+dependent. Each of these platform/browser combinations has its own requirements.
+Furthermore, since Microsoft has removed support for Netscape plug-ins from IE 5.5 SP 2 
+and beyond, plug-ins developed in Netscape Plugin APIs will not work on IE anymore. 
+Netscape/Mozilla does not support ActiveX controls either. It is impossible to 
+implement a single plugin to support all the platform/browser combinations.
+
+<p>
+The current HDFPlugin is <b>Windows only</b> application. It is implemented as an
+<font color="#ff0000"><b>active document servers </b></font>. An active document server
+such as Microsoft Office Binder or Internet Explorer hosts documents of other application 
+types called Active documents. An active document is a COM (Component Object Model) 
+component that shows some data (charts, sheets, text documents, bitmaps) which is 
+given by Active Document Server.
+
+<p>
+The HDFPlugin is an active document server. When you put an HDF file into Internet 
+Explorer, the Internet Explorer (Container) calls the HDFplugin (Server or plugin)
+to show HDF4 and HDF5 files. The HDFplugin can also run as a standalone application.
+You can open HDF files directly from HDFPlugin. For more details, read the 
+<a href="UsersGuide/index.html"> User's Guide</a>
+
+<script language="JavaScript" type="text/javascript" src="footer.js"></script>
+</HTML>
