@@ -1,0 +1,126 @@
+# InstallAnywhere Localization File
+#
+# External strings for locale: English (en)
+# See the 'ProjectLocalizationInfo.txt' file in this same directory for information 
+#     regarding mappings between the properties shown below and your InstallAnywhere
+#     project.
+#
+# External/Locale property names can take one of three forms:
+#     <ActionName>.<ReferenceID>.<ActionProperty>          (e.g., Installer.858175031081.productName)
+#     <ActionName>.<ReferenceID>.<ActionProperty>.<Index>  (e.g., Installer.858175031081.installLabels.01)
+#         - where the <ActionProperty> is a Vector and the <Index> represents the place within the
+#           Vector where the value of the property should be inserted
+#     _ia.<SomeProperty>                                   (e.g., _ia.MyCustomCodePanelProperty)
+#         - where <SomeProperty> is used as an identifier for a localized value by custom code
+#
+# External/Locale property values should be plain text strings.  Special or i18n characters
+#     that cannot be represented by ASCII characters should be written using escaped unicode.
+#     - see the utility 'native2ascii' distributed with your JDK
+#
+# Product Name: HDFPlugin
+# Project File: D:\work\HDFPlugin\installation\hdfplugin.iap_xml
+# Generated:    Sat Dec 11 11:25:57 CST 2004
+
+
+# Billboard.c6b9fa718284.imageName=billboardImage.gif
+Billboard.c6b9fa718284.imageName=billboardImage.gif
+
+# Billboard.c6b9fa718284.imagePath=com/zerog/ia/installer/images/
+Billboard.c6b9fa718284.imagePath=com/zerog/ia/installer/images/
+
+# InstallBundle.c6b9fa718287.bundleName=Help
+InstallBundle.c6b9fa718287.bundleName=Help
+
+# InstallBundle.c6b9fa718287.description=This installs the help feature.
+InstallBundle.c6b9fa718287.description=This installs the help feature.
+
+# InstallBundle.c6b9fa728286.bundleName=Application
+InstallBundle.c6b9fa728286.bundleName=Application
+
+# InstallBundle.c6b9fa728286.description=This installs the application feature.
+InstallBundle.c6b9fa728286.description=This installs the application feature.
+
+# InstallCompleteAction.c6b9fa90828a.message=Congratulations! $PRODUCT_NAME$ has been successfully installed to:\u000A\u000A     $USER_INSTALL_DIR$\u000A\u000APress \u0022\u0022Done\u0022\u0022 to quit the installer.
+InstallCompleteAction.c6b9fa90828a.message=Congratulations! $PRODUCT_NAME$ has been successfully installed to:\u000A\u000A     $USER_INSTALL_DIR$\u000A\u000APress \u0022\u0022Done\u0022\u0022 to quit the installer.
+
+# InstallCompleteAction.c6b9fa90828a.stepTitle=Install Complete
+InstallCompleteAction.c6b9fa90828a.stepTitle=Install Complete
+
+# InstallDirAction.c6b9fa828289.additionalText=
+InstallDirAction.c6b9fa828289.additionalText=
+
+# InstallDirAction.c6b9fa828289.prompt=Where Would You Like to Install?
+InstallDirAction.c6b9fa828289.prompt=Where Would You Like to Install?
+
+# InstallDirAction.c6b9fa828289.stepTitle=Choose Install Folder
+InstallDirAction.c6b9fa828289.stepTitle=Choose Install Folder
+
+# Installer.c6b9fa138270.installLabels.00=Introduction
+Installer.c6b9fa138270.installLabels.00=Introduction
+
+# Installer.c6b9fa138270.installLabels.01=Choose Install Folder
+Installer.c6b9fa138270.installLabels.01=Choose Install Folder
+
+# Installer.c6b9fa138270.installLabels.02=Installing...
+Installer.c6b9fa138270.installLabels.02=Installing...
+
+# Installer.c6b9fa138270.installLabels.03=Install Complete
+Installer.c6b9fa138270.installLabels.03=Install Complete
+
+# Installer.c6b9fa138270.productName=HDFPlugin
+Installer.c6b9fa138270.productName=HDFPlugin
+
+# Installer.c6b9fa138270.rulesFailedMessage=The installer cannot run on your configuration. It will now quit.
+Installer.c6b9fa138270.rulesFailedMessage=The installer cannot run on your configuration. It will now quit.
+
+# InstallFailedAction.c6b9fa90828b.message=The installation of $PRODUCT_NAME$ is complete, but some errors occurred during the install.\u000A\u000APlease see the installation log for details.  Press \u0022\u0022Done\u0022\u0022 to quit the installer.
+InstallFailedAction.c6b9fa90828b.message=The installation of $PRODUCT_NAME$ is complete, but some errors occurred during the install.\u000A\u000APlease see the installation log for details.  Press \u0022\u0022Done\u0022\u0022 to quit the installer.
+
+# InstallFailedAction.c6b9fa90828b.stepTitle=Install Complete
+InstallFailedAction.c6b9fa90828b.stepTitle=Install Complete
+
+# InstallSet.c6b9fa718286.description=The most common application features will be installed.  This option is recommended for most users.
+InstallSet.c6b9fa718286.description=The most common application features will be installed.  This option is recommended for most users.
+
+# InstallSet.c6b9fa718286.imageName=typicalIcon.png
+InstallSet.c6b9fa718286.imageName=typicalIcon.png
+
+# InstallSet.c6b9fa718286.imagePath=com/zerog/ia/installer/images/
+InstallSet.c6b9fa718286.imagePath=com/zerog/ia/installer/images/
+
+# InstallSet.c6b9fa718286.installSetName=Typical
+InstallSet.c6b9fa718286.installSetName=Typical
+
+# InstallSet.c6b9fa728285.description=Only required application features will be installed.  This option is recommended only for users with limited disk space.
+InstallSet.c6b9fa728285.description=Only required application features will be installed.  This option is recommended only for users with limited disk space.
+
+# InstallSet.c6b9fa728285.imageName=minimalIcon.png
+InstallSet.c6b9fa728285.imageName=minimalIcon.png
+
+# InstallSet.c6b9fa728285.imagePath=com/zerog/ia/installer/images/
+InstallSet.c6b9fa728285.imagePath=com/zerog/ia/installer/images/
+
+# InstallSet.c6b9fa728285.installSetName=Minimal
+InstallSet.c6b9fa728285.installSetName=Minimal
+
+# InstallSet.c6d09cc1829b.description=Choose this option to customize the features to be installed.
+InstallSet.c6d09cc1829b.description=Choose this option to customize the features to be installed.
+
+# InstallSet.c6d09cc1829b.imageName=customIcon.png
+InstallSet.c6d09cc1829b.imageName=customIcon.png
+
+# InstallSet.c6d09cc1829b.imagePath=com/zerog/ia/installer/images/
+InstallSet.c6d09cc1829b.imagePath=com/zerog/ia/installer/images/
+
+# InstallSet.c6d09cc1829b.installSetName=Custom
+InstallSet.c6d09cc1829b.installSetName=Custom
+
+# InstallUninstaller.c6b9fabf828c.destinationName=Uninstall $PRODUCT_NAME$
+InstallUninstaller.c6b9fabf828c.destinationName=Uninstall $PRODUCT_NAME$
+
+# IntroAction.c6b9fa818289.message=InstallAnywhere will guide you through the installation of $PRODUCT_NAME$.\u000A\u000AIt is strongly recommended that you quit all programs before continuing with this installation.\u000A\u000AClick the \u0027Next\u0027 button to proceed to the next screen. If you want to change something on a previous screen, click the \u0027Previous\u0027 button.\u000A\u000AYou may cancel this installation at any time by clicking the \u0027Cancel\u0027 button.
+IntroAction.c6b9fa818289.message=InstallAnywhere will guide you through the installation of $PRODUCT_NAME$.\u000A\u000AIt is strongly recommended that you quit all programs before continuing with this installation.\u000A\u000AClick the \u0027Next\u0027 button to proceed to the next screen. If you want to change something on a previous screen, click the \u0027Previous\u0027 button.\u000A\u000AYou may cancel this installation at any time by clicking the \u0027Cancel\u0027 button.
+
+# IntroAction.c6b9fa818289.stepTitle=Introduction
+IntroAction.c6b9fa818289.stepTitle=Introduction
+

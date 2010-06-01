@@ -1,0 +1,18 @@
+[Data]
+TITLE_MAIN=HDFPlugin
+COMPANY_NAME=NCSA
+COMPANY_NAME16=Company
+PRODUCT_VERSION=1.0
+ERROR_MOVEDATA=An error occurred during the move data process : %d
+UNINST_KEY=HDFPlugin
+TITLE_CAPTIONBAR=HDFPlugin Setup
+PRODUCT_NAME16=Product
+ERROR_VGARESOLUTION=This program requires VGA or better resolution.
+UNINST_DISPLAY_NAME=HDFPlugin
+PRODUCT_KEY=HDFPlugin.exe
+PRODUCT_NAME=HDFPlugin
+ERROR_UNINSTSETUP=unInstaller setup failed to initialize.  You may not be able to uninstall this product.
+[General]
+Language=0009
+Type=STRINGTABLESPECIFIC
+Version=1.00.000

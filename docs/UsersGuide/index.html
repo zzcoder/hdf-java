@@ -1,0 +1,195 @@
+<HTML>
+<script language="JavaScript" type="text/javascript" src="../header.js"></script>
+
+<p>
+<h2>
+Table of Contents</h2>
+
+<UL>
+<LI><a href="#description">Product Description</a></LI>
+<LI><a href="#reasons">Reasons for HDF Plugin</a></LI>
+<LI><a href="#how">How Plugins Work</a></LI>
+<LI><a href="#challenge">Implementation Challenge</a></LI>
+<LI><a href="#use">Current Release And How To It</a></LI>
+</UL>
+
+<p>
+<a NAME="description"></a>
+<h2>
+Product Description</h2>
+
+<font color="#FF0000"><b>HDF Web-browser plugin </b></font> is a windowed 
+browser plugin that is launched from a web browser to display HDF4 and HDF5 
+files. A <i><b>browser plugin</b></i> is a software program that extends the power 
+of Web browser by adding more features and supporting more types of content 
+than what the standard browser provides.
+
+<p>
+HDF Web-browser plugin is <i><b>not HDFView</i></b>. HDF Plug-in and HDFView are different 
+software. HDFView is Java based standalone applcation that is used to view 
+and edit HDF4 and HDF4 files and runs on multiple platforms. It has more browsing
+features and edting features. HDF Web-browser plugin is "light" browser that
+has less browsing features that HDFView. It has no editing feature. For more
+information on HDFView, visit <a href="http://hdf.ncsa.uiuc.edu/hdf-java-html/">
+http://hdf.ncsa.uiuc.edu/hdf-java-html/</a>
+
+<p>
+HDF Web-browser plugin is <i><b> not an Applet</i></b>. Although both plug-in and applet are 
+launched in web browser, there is a major difference between the two. Like 
+other software, a plug-in is downloaded and installed only once. It is installed 
+onto local disk and launched from local machine. Applets are downloaded at each 
+invocation. The advantage of network traffic of a plug-in over an applet is obvious.
+
+
+<p>
+<a NAME="reasons"></a>
+<h2>
+Reasons for HDF Plugin </h2>
+Although there are tools for viewing HDF files, it is too much work for some users 
+to install the tool and keep update new releases, and most of the tools do not support 
+remote file access. The main goal of the HDF Web-browser plugin is to provide users 
+an easy to view HDF files locally or remotely with a web-browser. 
+
+<p>
+The HDF web plug-in extends the HDF user communities to a more wide range. With a simple 
+click on a HDF file, users will be able to see the content of the file in their web-browser 
+as viewing other web support files such as JPEG. Users don't bother to know anything about 
+HDF APIs.
+   
+<ul>
+<li><font color="#FF0000"><b>Click-and-view</b></font>: by clicking on or drag-drop 
+a HDF file, Web-browser will recognize the file type and display the file (much like 
+the acrobat reader plug-in for pdf files)
+
+<li><font color="#FF0000"><b>Easy install and update</b></font>: downloading and 
+installing the plug-in is just a simple click. No uninstall and reinstall is necessary 
+for new release. Users will be asked for automatic update when a new version is released
+
+<li><font color="#FF0000"><b>Lightweight</b></font>: The plug-in is a lightweight module. 
+With relative small size, it takes little time and effort to download and install.
+
+<li><font color="#FF0000"><b>Browse remote files</b></font>: with predefined the MIME type
+and file extensions, the plug-in will take the advantage of the web browser to browse 
+HDF files over the internet
+</ul>
+
+<p>
+<a NAME="how"></a>
+<h2>
+How Plugins Work </h2>
+Plugins work on browsers through a pre-defined set of plug-in APIs. Plug-in APIs such as 
+Netscape Plug-in APIs and Microsoft ActiveX controls are defined for communication between 
+applications and browsers. There are two sets of APIs:
+<UL>
+<li> Plug-in Side Plug-in API: implemented by the plug-in and called by the browser
+<li> Browser Side Plug-in API: implemented by the browser and called by the plug-in
+</UL>
+
+<p><center>
+<img src="pluginArch.gif"></center>
+
+<p>
+Plug-ins are dynamic code modules. When the browser starts, it lists the available plug-ins, 
+reads resources from each plug-in file to determine the MIME types for that plug-in, and 
+registers each plug-in library. The following stages outline the life cycle of a plug-in:
+<ol>
+<li> When the browser encounters data of a MIME type registered for a plug-in, it loads 
+the plug-in code into memory, if it hasn't been loaded already
+<li> The browser calls the plug-in API to create a new instance of the plug-in. Multiple 
+instances of the same plug-in can exist (a) if there are multiple embedded objects on a 
+single page, or (b) if several browser windows are open and each displays the same data type
+<li> A plug-in instance is deleted when a user leaves the instance's page or closes its window
+<li> When the last instance of a plug-in is deleted, the plug-in code is unloaded from memory
+</ol>
+
+<p>
+<a NAME="challenge"></a>
+<h2>
+Implementation Challenge</h2>
+The following is a brief discussion of the implementation challenge. You can read the full report 
+at <a href="http://hdf.ncsa.uiuc.edu/plugins/UsersGuide/TechReport/index.html">Report on HDF Browser Plug-in Project</a>
+(<a href="http://hdf.ncsa.uiuc.edu/plugins/UsersGuide/TechReport/hdf_plugin_report.pdf">pdf</a>)
+
+<p>
+Plugins are platform and browser dependent. Each of these platform/browser combinations 
+has its own requirements. There are also different choices of programming languages and plugin 
+APIs. It is impossible to implement a single plugin to support all the platform/browser combinations
+
+<p>
+<b>Platforms</b>
+<ul>
+<li> Windows
+<li> Mac
+<li> Linux
+<li> Solaris
+</ul>
+
+<p>
+<b>Browsers</b>
+<ul>
+<li> Internet Explorer
+<li> Netscape or Mozilla
+</ul>
+
+<p>
+<b>Languages</b>
+<ul>
+<li> C++
+<li> C
+<li> Java
+</ul>
+
+<p>
+<b>Plugin APIs</b>
+<ul>
+<li> Netscape Plug-in APIs
+<li> Microsoft ActiveX controls
+</ul>
+
+<p>
+Furthermore, since Microsoft has removed support for Netscape plug-ins from IE 5.5 SP 2 
+and beyond, plug-ins developed in Netscape Plugin APIs will not work on IE anymore. 
+Netscape/Mozilla does not support ActiveX controls either.
+<p><center>
+<img src="ns_vs_ms.gif"></center>
+
+<p>
+<a NAME="use"></a>
+<h2>
+Current Release And How To It</h2>
+The current HDFPlugin is <font color="#FF0000"><b>Windows only</b></font> application. It is implemented as an
+<font color="#ff0000"><b>active document servers </b></font>. When you put an HDF 
+file into Internet Explorer, the Internet Explorer (Container) calls the HDFplugin 
+(Server or plugin) to show HDF4 and HDF5 files.
+
+<p>
+The HDFPlugin is <font color="#FF0000"><b>read-only</b></font>. It does not have any editing
+feature. It has limited browsing features. For more browsing and editing features, please
+use the <a href="http://hdf.ncsa.uiuc.edu/hdf-java-html/">HDFView</a>, a visual tool for 
+browsing and editing NCSA HDF4 and HDF5 files.
+
+<p>
+Installing HDFPlugin is very simple. Click on "Start Installer for Windows" button
+on the <a href="http://hdf.ncsa.uiuc.edu/plugins/Install/index.html">Installation</a>
+page. The installer will install the plugin and set the Windows registry for you.
+
+<p>
+After you install the plugin, you can open HDF files in a web browser by draging and droping
+a local hdf file into the browser or giving a URL. Up on opening a file, the file structure 
+is displayed in a tree.
+<p><center>
+<img src="treeview.gif"></center>
+
+<p>
+To show the contend of dataset or image in the file, double left-mouse click on the dataset
+or image. The content will display in image or spread-sheet like table.
+<p><center>
+<img src="dataview.gif"></center>
+
+<p>
+Single righ-mouse click to show the information and attributes of datasets ans groups.
+<p><center>
+<img src="attrview.gif"></center>
+
+<script language="JavaScript" type="text/javascript" src="../footer.js"></script>
+</HTML>

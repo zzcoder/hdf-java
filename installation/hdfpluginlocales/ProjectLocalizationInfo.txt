@@ -1,0 +1,112 @@
+# InstallAnywhere Localization Information and Mapping File
+#
+# This file provides information for the mappings of localization properties
+#     to the action for which the localization is provided.  This file is meant
+#     to be used in conjunction with the custom_xx files found in the same
+#     directory.
+#
+# Notes on the conventions used in this file:
+#     '+--'  denotes a data object that belongs to another given object (it
+#            defines some portion of the properties of its owner object).  This
+#            data object possesses one or more properties that are localizable
+#     '|--'  denotes a parent-child relationship between two objects (typically,
+#            this relationship is represented visually as a hierarchy or nesting
+#            in the Install task of InstallAnywhere's Advanced Designer)
+#     'NoEP' denotes an object that exists in the tree, but does not possess any
+#            externalizable/localizable properties
+#
+#     The relationships described above can be used to help identify the correct
+#     property to configure an object when working with the custom_xx files.
+#
+# Product Name: HDFPlugin
+# Project File: D:\work\HDFPlugin\installation\hdfplugin.iap_xml
+# Generated:    Sat Dec 11 11:25:57 CST 2004
+
+
+---- PRE-INSTALL ACTIONS ----
+-- IntroAction.c6b9fa818289
+-- InstallDirAction.c6b9fa828289
+
+
+---- POST-INSTALL ACTIONS ----
+-- InstallCompleteAction.c6b9fa90828a
+-- ExecFile.c6d97efc8384 (NoEP)
+-- InstallFailedAction.c6b9fa90828b
+
+
+---- EXTERNAL ID TREE ----
+-- Installer.c6b9fa138270
+   |-- InstallSet.c6b9fa718286
+   |-- InstallSet.c6b9fa728285
+   |-- InstallBundle.c6b9fa728286
+   |-- InstallBundle.c6b9fa718287
+   |-- GhostDirectory.c6b9fa628284 (NoEP)
+   |   |-- InstallDirectory.c6b9fa90828c (NoEP)
+   |   |   |-- InstallUninstaller.c6b9fabf828c
+   |-- Billboard.c6b9fa718284
+
+
+---- LEGEND ----
+ASCIIFileManipulator                    ==>      Modify Text File - Single File
+ASCIIFileManipulatorZip                 ==>      Modify Text File - In Archive
+Billboard                               ==>      Billboard
+CheckDiskSpace                          ==>      Check Free Disk Space
+ChooseFile                              ==>      Panel: Choose File
+ChooseFolder                            ==>      Panel: Choose Folder
+ChooseInstallSetAction                  ==>      Panel: Choose Install Sets
+ChooseInstallSetActionConsole           ==>      Console: Choose Install Sets
+ChooseJavaVMAction                      ==>      Panel: Choose Java VM
+ChooseJavaVMActionConsole               ==>      Console: Choose Java VM
+CompareRegExpression                    ==>      Match Regular Expression
+CompareVariable                         ==>      Compare InstallAnywhere Variables
+CreateDialog                            ==>      Panel: Get User Input - Simple
+CreateShortcut                          ==>      Create Alias, Link, Shortcut
+CustomizeBundles                        ==>      Panel: Choose Product Components
+DisplayMessage                          ==>      Panel: Display Message
+DisplayMessageConsole                   ==>      Console: Display Message
+DisplayScrollingMessage                 ==>      Panel: Scrolling Message
+EditEnvironment                         ==>      Set System Environment Variable
+Exec                                    ==>      Execute Command
+FindFileOrFolder                        ==>      Panel: Find File/Folder
+GetPassword                             ==>      Panel: Get Password
+GetPasswordConsole                      ==>      Console: Get Password
+GetUserInput                            ==>      Panel: Get User Input - Advanced
+GetUserInputConsole                     ==>      Console: Get User Input
+ImportantNoteAction                     ==>      Panel: Important Note
+ImportantNoteActionConsole              ==>      Console: Important Note
+InstallBundle                           ==>      Product Feature
+InstallCompleteAction                   ==>      Panel: Install Complete
+InstallCompleteActionConsole            ==>      Console: Install Complete
+InstallDirAction                        ==>      Panel: Choose Install Folder
+InstallDirActionConsole                 ==>      Console: Choose Install Folder
+InstallFailedAction                     ==>      Panel: Install Failed
+InstallFailedActionConsole              ==>      Console: Install Failed
+InstallPanelAction                      ==>      Panel: Custom Code
+InstallProgressAction                   ==>      Install Progress
+InstallSet                              ==>      Install Set
+InstallSummary                          ==>      Panel: Pre-Install Summary
+InstallSummaryConsole                   ==>      Console: Pre-Install Summary
+InstallUninstaller                      ==>      Create Uninstaller
+IntroAction                             ==>      Panel: Introduction
+IntroActionConsole                      ==>      Console: Introduction
+LaunchDefaultBrowser                    ==>      Launch Default Browser
+LicenseAgrAction                        ==>      Panel: License Agreement
+LicenseAgrActionConsole                 ==>      Console: License Agreement
+MakeExecutable                          ==>      Create LaunchAnywhere for Java Application
+MakeRegEntry                            ==>      Set Windows Registry - Single Entry
+NTServiceController                     ==>      Start, Stop, Pause Windows Service
+PrintToConsole                          ==>      Output Text to Console
+PromptUserConsole                       ==>      Console: Show Message Console 'Dialog'
+ReadyToInstallActionConsole             ==>      Console: Ready To Install
+SetSerialNumber                         ==>      Panel: Get Serial Number
+SetSerialNumberConsole                  ==>      Console: Get Serial Number
+ShortcutLocAction                       ==>      Panel: Choose Alias, Link, Shortcut Folder
+ShortcutLocActionConsole                ==>      Console: Choose Link Folder
+ShowDialogAction                        ==>      Show Message Dialog
+SpeedASCIIFileManipulator               ==>      Modify Text File - Multiple Files
+UninstallAllOrFeaturesAction            ==>      Panel: Uninstall All or Specific Features
+UninstallCompleteAction                 ==>      UninstallCompleteAction
+UninstallCompleteActionConsole          ==>      UninstallCompleteActionConsole
+UninstallIntroAction                    ==>      UninstallIntroAction
+UninstallIntroActionConsole             ==>      Console: Uninstall Introduction
+UninstallProgressAction                 ==>      Uninstall Progress

@@ -1,0 +1,82 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: HDFPlugin - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x409 /fo"Release/HDFPlugin.res" /d "NDEBUG" "D:\work\HDFPlugin\HDFPlugin.rc"" 
+Creating temporary file "C:\DOCUME~1\xcao\LOCALS~1\Temp\RSP306.tmp" with contents
+[
+.\hdf4\lib\hd420.lib .\hdf4\lib\hm420.lib .\hdf5\lib\hdf5.lib .\szip\lib\szlib.lib .\zlib\lib\zlib.lib .\jpeg\lib\libjpeg.lib ws2_32.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/HDFPlugin.pdb" /machine:I386 /nodefaultlib:"LIBC" /out:"Release/HDFPlugin.exe" 
+.\Release\UGCBType.obj
+.\Release\UGCell.obj
+.\Release\UGCelTyp.obj
+.\Release\UGCnrBtn.obj
+.\Release\UGCTarrw.obj
+.\Release\UGCtrl.obj
+.\Release\UGDLType.obj
+.\Release\UGDrgDrp.obj
+.\Release\UGDrwHnt.obj
+.\Release\UGDtaSrc.obj
+.\Release\UGEdit.obj
+.\Release\UGEXCEL.OBJ
+.\Release\UGFORMAT.OBJ
+.\Release\UGGDINFO.OBJ
+.\Release\UGGrid.obj
+.\Release\UGHint.obj
+.\Release\UGHSCROL.OBJ
+.\Release\ugLstBox.obj
+.\Release\UGMemMan.obj
+.\Release\UGMultiS.obj
+.\Release\UGPRINT.OBJ
+.\Release\UGPTRLST.OBJ
+.\Release\UGSIDEHD.OBJ
+.\Release\UGTAB.OBJ
+.\Release\UGTopHdg.obj
+.\Release\UGVSCROL.OBJ
+.\Release\BaseView.obj
+.\Release\GridCtrl.obj
+.\Release\HDFPluginDoc.obj
+.\Release\HDFPluginTreeView.obj
+.\Release\ImageView.obj
+.\Release\TableView.obj
+.\Release\TextView.obj
+.\Release\HdfObjH4AtomicDS.obj
+.\Release\HdfObjH4CompoundDS.obj
+.\Release\HdfObjH4File.obj
+.\Release\HdfObjH4Group.obj
+.\Release\HdfObjH4ImageDS.obj
+.\Release\HdfObjH5AtomicDS.obj
+.\Release\HdfObjH5CompoundDS.obj
+.\Release\HdfObjH5File.obj
+.\Release\HdfObjH5Group.obj
+.\Release\HdfObjH5ImageDS.obj
+.\Release\HdfObj.obj
+.\Release\HdfObjAtomicDS.obj
+.\Release\HdfObjAttribute.obj
+.\Release\HdfObjCompoundDS.obj
+.\Release\HdfObjDataset.obj
+.\Release\HdfObjFileFormat.obj
+.\Release\HdfObjGroup.obj
+.\Release\HdfObjImageDS.obj
+.\Release\HDFPlugin.obj
+.\Release\HDFPluginIpFrame.obj
+.\Release\HDFPluginMainFrm.obj
+.\Release\SrvrItem.obj
+.\Release\StdAfx.obj
+.\Release\HDFPlugin.res
+]
+Creating command line "link.exe @C:\DOCUME~1\xcao\LOCALS~1\Temp\RSP306.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Linking...
+
+
+
+<h3>Results</h3>
+HDFPlugin.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>
