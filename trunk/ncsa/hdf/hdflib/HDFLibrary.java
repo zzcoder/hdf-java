@@ -395,8 +395,6 @@ public class HDFLibrary
 
     public static native int ANcreatef(int an_id, int type) throws HDFException;
 
-    public static native boolean ANdestroy() throws HDFException;
-
     /**
      *  @param an_id <b>IN</b>: the AN interface id, returned by ANstart
      *  @param index <b>IN</b>: the index of the annotation
