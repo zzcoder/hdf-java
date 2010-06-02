@@ -255,18 +255,6 @@ jint type)
     return (ANcreatef((int32) an_id, (ann_type) type));
 }
 
-JNIEXPORT jboolean JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANdestroy
-( JNIEnv *env,
-jobject obj)
-{
-    intn rval = ANdestroy( );
-    if (rval == FAIL) {
-        return JNI_FALSE;
-    } else {
-        return JNI_TRUE;
-    }
-}
-
 
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdflib_HDFLibrary_ANget_1tagref
 ( JNIEnv *env,
