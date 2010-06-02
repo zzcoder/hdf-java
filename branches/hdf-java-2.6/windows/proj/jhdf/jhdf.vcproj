@@ -65,7 +65,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="hd425.lib hm425.lib xdr.lib szlib.lib zlib.lib libjpeg.lib wsock32.lib"
+				AdditionalDependencies="hd425.lib hm425.lib xdr.lib libszip.lib zlib.lib libjpeg.lib wsock32.lib"
 				LinkIncremental="2"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="MSVCRTD;LIBCMT"
@@ -141,7 +141,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="hd425.lib hm425.lib xdr.lib szlib.lib zlib.lib libjpeg.lib wsock32.lib"
+				AdditionalDependencies="hd425.lib hm425.lib xdr.lib libszip.lib zlib.lib libjpeg.lib wsock32.lib"
 				LinkIncremental="2"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="MSVCRTD;LIBCMT"
@@ -221,7 +221,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="hd425.lib hm425.lib xdr.lib szlib.lib zlib.lib libjpeg.lib wsock32.lib"
+				AdditionalDependencies="hd425.lib hm425.lib xdr.lib libszip.lib zlib.lib libjpeg.lib wsock32.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories=""
 				IgnoreAllDefaultLibraries="false"
@@ -304,7 +304,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="hd425.lib hm425.lib xdr.lib szlib.lib zlib.lib libjpeg.lib wsock32.lib"
+				AdditionalDependencies="hd425.lib hm425.lib xdr.lib libszip.lib zlib.lib libjpeg.lib wsock32.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories=""
 				IgnoreAllDefaultLibraries="false"

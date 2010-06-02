@@ -65,7 +65,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="hdf5.lib szlib.lib zlib.lib"
+				AdditionalDependencies="hdf5.lib libszip.lib zlib.lib"
 				LinkIncremental="2"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="MSVCRT;LIBCMT"
@@ -141,7 +141,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="hdf5.lib szlib.lib zlib.lib"
+				AdditionalDependencies="hdf5.lib libszip.lib zlib.lib"
 				LinkIncremental="2"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="MSVCRT;LIBCMT"
@@ -218,7 +218,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="hdf5.lib szlib.lib zlib.lib"
+				AdditionalDependencies="hdf5.lib libszip.lib zlib.lib"
 				LinkIncremental="1"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="MSVCRT;LIBC"
@@ -297,7 +297,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="hdf5.lib szlib.lib zlib.lib"
+				AdditionalDependencies="hdf5.lib libszip.lib zlib.lib"
 				LinkIncremental="1"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="MSVCRT;LIBC"
