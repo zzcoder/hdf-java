@@ -260,6 +260,13 @@ public class NC2File extends FileFormat {
             throws Exception {
         throw new UnsupportedOperationException("createLink() is not supported");
     }
+    
+    // implementing FileFormat
+    @Override
+	public HObject createLink(Group parentGroup, String name, HObject currentObj, int type) throws Exception
+    {
+        throw new UnsupportedOperationException("createLink() is not supported");
+    }
 
     // implementing FileFormat
     @Override
