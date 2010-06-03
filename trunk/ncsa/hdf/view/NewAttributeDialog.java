@@ -253,14 +253,35 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
                 lengthField.setEnabled(false);
                 arrayLengthLabel.setText("Array Size: ");
                 objChoice.setEnabled(true);
-                valueField.setText((String) objChoice.getSelectedItem());
+                valueField.setText("");
             }
             else {
                 arrayLengthLabel.setText("Array Size: ");
             }
         }
         else if (source.equals(objChoice)) {
-            valueField.setText((String) objChoice.getSelectedItem());
+        	String objName = (String) objChoice.getSelectedItem();
+         	
+        	if (e.getStateChange()!=ItemEvent.SELECTED)
+        		return;
+        	
+        	long ref = -1;
+        	try {
+        		HObject obj = fileFormat.get(objName);
+        		ref = obj.getOID()[0];
+        	} catch (Exception ex) {}
+        	
+        	if (ref > 0) {
+        		if (valueField.getText().length()>1) {
+                    valueField.setText(valueField.getText()+","+ref);
+                    StringTokenizer st = new StringTokenizer(valueField.getText(), ",");
+                    lengthField.setText(String.valueOf(st.countTokens()));
+        		}
+        		else {
+        			valueField.setText(String.valueOf(ref));
+        			lengthField.setText("1");
+        		}
+        	}
         }
     }
 
@@ -507,14 +528,19 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
             torder = Datatype.NATIVE;
         }
         else if (dt.startsWith("object reference")) {
-            /*
-             * long[] ref = new long[arraySize]; for (int j=0; j<count; j++) {
-             * theToken = st.nextToken().trim(); try { ref[j] =
-             * Long.parseLong(theToken); } catch (NumberFormatException ex) {
-             * JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(),
-             * JOptionPane.ERROR_MESSAGE); return false; } }
-             */
-            value = strValue;
+        	arraySize = st.countTokens();
+        	long[] ref = new long[arraySize]; 
+        	for (int j=0; j<arraySize; j++) {
+        		theToken = st.nextToken().trim(); 
+        		try { ref[j] = Long.parseLong(theToken); } 
+        		catch (NumberFormatException ex) {
+        			JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(),
+        						JOptionPane.ERROR_MESSAGE); 
+        			return false; 
+        		} 
+        	}
+
+        	value = ref;
             tclass = Datatype.CLASS_REFERENCE;
             tsize = 8;
             torder = Datatype.NATIVE;
