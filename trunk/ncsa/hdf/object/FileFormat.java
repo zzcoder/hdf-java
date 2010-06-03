@@ -1323,6 +1323,30 @@ public abstract class FileFormat extends File {
     // 'do the right thing' if fid is -1, currentObj is non-null, if
     // object is null, or the root group then what? document & verify!
 
+	/**
+	 * Creates a link to an object in the open file.
+	 * <p>
+	 * If parentGroup is null, the new link is created in the root group.
+	 * 
+	 * @param parentGroup
+	 *            The group where the link is created.
+	 * @param name
+	 *            The name of the link.
+	 * @param currentObj
+	 *            The existing object the new link will reference.
+	 * @param type
+	 *            The type of link to be created. It can be a hard link, a soft
+	 *            link or an external link.
+	 * @return The object pointed to by the new link if successful; otherwise
+	 *         returns null.
+	 * @throws Exception
+	 *             The exceptions thrown vary depending on the implementing
+	 *             class.
+	 */
+    public abstract HObject createLink(Group parentGroup, String name, HObject currentObj, int type)
+    throws Exception;
+    
+    
     /**
      * Copies the source object to a new destination.
      * <p>
