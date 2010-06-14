@@ -241,12 +241,16 @@ clean-docs:
 	cd docs/javadocs; \
 	$(RM) -r *.html
 
+check-all: check check-mem-leak
+	
+check-mem-leak:  install $(TESTPACKAGES)
+	cd test/object/misc; $(MAKE) check-memory-leak;
+
 check: install $(TESTPACKAGES)
 	cd test; \
 	$(MAKE) check;
 	cd examples; \
 	$(MAKE) check;
-	cd test/object/misc; $(MAKE) check-memory-leak;
 
 install: install-lib install-jhdf install-jhdf5 install-jhdfobj install-jhdfview
 	@echo "Install complete"
