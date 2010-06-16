@@ -831,6 +831,16 @@ public class H5 {
             throws ArrayIndexOutOfBoundsException, ArrayStoreException,
             HDF5LibraryException, NullPointerException,
             IllegalArgumentException;
+    
+    public static long H5Aget_name(int attr_id, String[] name)
+            throws ArrayIndexOutOfBoundsException, ArrayStoreException,
+            HDF5LibraryException, NullPointerException,
+            IllegalArgumentException {
+    	
+    	long len = H5Aget_name(attr_id, 0, null);
+    	
+    	return H5Aget_name(attr_id, len, name);
+    }
 
     /**
      * H5Aget_num_attrs returns the number of attributes attached to the object
