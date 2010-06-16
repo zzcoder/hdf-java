@@ -83,11 +83,6 @@ public class H5File extends FileFormat {
      */
     private DefaultMutableTreeNode rootNode;
 
-    /**
-     * How many characters maximum in an attribute name?
-     */
-    private static final int attrNameLen = 256;
-
     /***************************************************************************
      * Constructor
      **************************************************************************/
@@ -256,7 +251,7 @@ public class H5File extends FileFormat {
             try {
             	aid_src = H5.H5Aopen_by_idx(src_id, ".", HDF5Constants.H5_INDEX_CRT_ORDER,
             			HDF5Constants.H5_ITER_INC, i, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-                H5.H5Aget_name(aid_src, H5File.attrNameLen, aName);
+                H5.H5Aget_name(aid_src, aName);
                 atid = H5.H5Aget_type(aid_src);
                 asid = H5.H5Aget_space(aid_src);
 
@@ -390,7 +385,7 @@ public class H5File extends FileFormat {
     			}
 
     			String[] nameA = { "" };
-    			H5.H5Aget_name(aid, H5File.attrNameLen, nameA);
+    			H5.H5Aget_name(aid, nameA);
 
     			int tmptid = -1;
     			try {
