@@ -1,5 +1,8 @@
 package test.hdf5lib;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -17,5 +20,6 @@ import org.junit.runners.Suite;
         TestH5A.class, 
         TestH5Oparams.class, TestH5Obasic.class, TestH5Ocreate.class
 })
+
 public class TestAll {
 }

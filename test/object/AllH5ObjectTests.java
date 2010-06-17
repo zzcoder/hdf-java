@@ -12,6 +12,7 @@ import test.object.H5GroupTest;
 import test.object.H5ScalarDSTest;
 import test.object.H5TestFile;
 import junit.framework.Test;
+import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
 /**
@@ -22,7 +23,15 @@ import junit.framework.TestSuite;
  */
 public class AllH5ObjectTests {
 	public static Test suite() {
-		final TestSuite suite = new TestSuite("Test for test.unittests");
+		try {
+			H5TestFile.createTestFile(null);
+		}
+		catch (final Exception ex) {
+			System.out.println("*** Unable to create HDF5 test file. " + ex);
+			System.exit(-1);
+		}
+		
+		final TestSuite suite = new TestSuite("Test for hdf-java objects");
 		// $JUnit-BEGIN$
 
 		// ncsa.hdf.object.h5 package
@@ -49,16 +58,10 @@ public class AllH5ObjectTests {
 
 	public static void main(final String[] args) {
 
-		try {
-			H5TestFile.createTestFile(null);
-		}
-		catch (final Exception ex) {
-			System.out.println("*** Unable to create HDF5 test file. " + ex);
-			System.exit(-1);
-		}
-
-		junit.textui.TestRunner.run(suite());
-
+		TestResult results = junit.textui.TestRunner.run(suite());
+		if (!results.wasSuccessful())
+			System.out.println("FAILED***:\tobject unit tests.\n");
+		
 		try {
 			int openID = H5.getOpenIDCount();
 			if(openID>0)
