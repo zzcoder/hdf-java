@@ -21,8 +21,8 @@ EXTRA_FLAGS=
 #                     solaris32 (linew)                    #
 ############################################################
 #INSTDIR=/mnt/scr1/xcao/hdf_java/bin/solaris32
-#JAVAINC=/usr/jdk/jdk1.6.0_12/include
-#JAVALIB=/usr/jdk/jdk1.6.0_12/jre/lib
+#JAVAINC=/usr/java/jdk1.6.0_12/include
+#JAVALIB=/usr/java/jdk1.6.0_12/jre/lib
 #HDF4=/mnt/hdf/packages/hdf4/v425/SunOS_5.10/hdf-4.2.5-solaris
 #HDF5=/mnt/hdf/packages/hdf5/v185/SunOS_5.10/hdf5-1.8.5-solaris-static
 #JPEG=/mnt/scr1/xcao/hdf_java/lib/solaris32/jpeg
@@ -34,9 +34,9 @@ EXTRA_FLAGS=
 #                     solaris64 (linew)                    #
 ############################################################
 #INSTDIR=/mnt/scr1/xcao/hdf_java/bin/solaris64
-#JAVAINC=/usr/jdk/jdk1.6.0_12/include
-#JAVALIB=/usr/jdk/jdk1.6.0_12/jre/lib
-#JAVABIN=/usr/jdk/jdk1.6.0_12/bin/sparcv9
+#JAVAINC=/usr/java/jdk1.6.0_12/include
+#JAVALIB=/usr/java/jdk1.6.0_12/jre/lib
+#JAVABIN=/usr/java/jdk1.6.0_12/bin/sparcv9
 #HDF4=/mnt/scr1/xcao/hdf_java/lib/solaris64/hdf4
 #HDF5=/mnt/scr1/xcao/hdf_java/lib/solaris64/hdf5
 #JPEG=/mnt/scr1/xcao/hdf_java/lib/solaris64/jpeg
