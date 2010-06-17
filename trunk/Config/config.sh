@@ -33,17 +33,17 @@ EXTRA_FLAGS=
 ############################################################
 #                     solaris64 (linew)                    #
 ############################################################
-INSTDIR=/mnt/scr1/xcao/hdf_java/bin/solaris64
-JAVAINC=/usr/java/jdk1.6.0_12/include
-JAVALIB=/usr/java/jdk1.6.0_12/jre/lib
-JAVABIN=/usr/java/jdk1.6.0_12/bin/sparcv9
-HDF4=/mnt/scr1/xcao/hdf_java/lib/solaris64/hdf4
-HDF5=/mnt/scr1/xcao/hdf_java/lib/solaris64/hdf5
-JPEG=/mnt/scr1/xcao/hdf_java/lib/solaris64/jpeg
-SZIP=/mnt/scr1/xcao/hdf_java/lib/solaris64/szip
-ZLIB=/mnt/scr1/xcao/hdf_java/lib/solaris64/zlib
-export CC="/opt/SUNWspro/bin/cc -KPIC -m64"
-EXTRA_FLAGS=--with-javabin=$JAVABIN 
+#INSTDIR=/mnt/scr1/xcao/hdf_java/bin/solaris64
+#JAVAINC=/usr/java/jdk1.6.0_12/include
+#JAVALIB=/usr/java/jdk1.6.0_12/jre/lib
+#JAVABIN=/usr/java/jdk1.6.0_12/bin/sparcv9
+#HDF4=/mnt/scr1/xcao/hdf_java/lib/solaris64/hdf4
+#HDF5=/mnt/scr1/xcao/hdf_java/lib/solaris64/hdf5
+#JPEG=/mnt/scr1/xcao/hdf_java/lib/solaris64/jpeg
+#SZIP=/mnt/scr1/xcao/hdf_java/lib/solaris64/szip
+#ZLIB=/mnt/scr1/xcao/hdf_java/lib/solaris64/zlib
+#export CC="/opt/SUNWspro/bin/cc -KPIC -m64"
+#EXTRA_FLAGS=--with-javabin=$JAVABIN 
 
 ############################################################
 #                     linux64 (amani)                     #
