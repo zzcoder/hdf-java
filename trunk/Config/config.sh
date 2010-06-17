@@ -8,11 +8,11 @@ EXTRA_FLAGS=
 ############################################################
 #                     linux32 (jam)                        #
 ############################################################
-#INSTDIR=/mnt/scr1/xcao/hdf_java/bin/linux32
+#INSTDIR=/mnt/scr1/xcao/hdf_java/src/hdf-java/build
 #JAVAINC=/usr/java/jdk-106/jdk/include
 #JAVALIB=/usr/java/jdk-106/jdk/jre/lib
-#HDF4=/mnt/scr1/xcao/hdf_java/lib/linux32/hdf4
-#HDF5=/mnt/scr1/xcao/hdf_java/lib/linux32/hdf5
+#HDF4=/mnt/hdf/packages/hdf4/v425/Linux_2.6/hdf-4.2.5-linux
+#HDF5=/mnt/hdf/packages/hdf5/v185/Linux_2.6/hdf5-1.8.5-linux-static
 #JPEG=/mnt/scr1/xcao/hdf_java/lib/linux32/jpeg
 #SZIP=/mnt/scr1/xcao/hdf_java/lib/linux32/szip
 #ZLIB=/mnt/scr1/xcao/hdf_java/lib/linux32/zlib
@@ -23,8 +23,8 @@ EXTRA_FLAGS=
 #INSTDIR=/mnt/scr1/xcao/hdf_java/bin/solaris32
 #JAVAINC=/usr/jdk/jdk1.6.0_12/include
 #JAVALIB=/usr/jdk/jdk1.6.0_12/jre/lib
-#HDF4=/mnt/scr1/xcao/hdf_java/lib/solaris32/hdf4
-#HDF5=/mnt/scr1/xcao/hdf_java/lib/solaris32/hdf5
+#HDF4=/mnt/hdf/packages/hdf4/v425/SunOS_5.10/hdf-4.2.5-solaris
+#HDF5=/mnt/hdf/packages/hdf5/v185/SunOS_5.10/hdf5-1.8.5-solaris-static
 #JPEG=/mnt/scr1/xcao/hdf_java/lib/solaris32/jpeg
 #SZIP=/mnt/scr1/xcao/hdf_java/lib/solaris32/szip
 #ZLIB=/mnt/scr1/xcao/hdf_java/lib/solaris32/zlib
@@ -37,9 +37,6 @@ EXTRA_FLAGS=
 #JAVAINC=/usr/jdk/jdk1.6.0_12/include
 #JAVALIB=/usr/jdk/jdk1.6.0_12/jre/lib
 #JAVABIN=/usr/jdk/jdk1.6.0_12/bin/sparcv9
-#JAVAINC=/usr/java/include
-#JAVALIB=/usr/java/jre/lib
-#JAVABIN=/usr/java/bin/sparcv9
 #HDF4=/mnt/scr1/xcao/hdf_java/lib/solaris64/hdf4
 #HDF5=/mnt/scr1/xcao/hdf_java/lib/solaris64/hdf5
 #JPEG=/mnt/scr1/xcao/hdf_java/lib/solaris64/jpeg
@@ -49,16 +46,16 @@ EXTRA_FLAGS=
 #EXTRA_FLAGS=--with-javabin=$JAVABIN 
 
 ############################################################
-#                     linux64 (smirom)                     #
+#                     linux64 (amani)                     #
 ############################################################
 #INSTDIR=/mnt/scr1/xcao/hdf_java/bin/linux64
 #JAVAINC=/mnt/scr1/xcao/jdk/linux64/jdk1.6.0_11/include
 #JAVALIB=/mnt/scr1/xcao/jdk/linux64/jdk1.6.0_11/jre/lib
-#HDF4=/mnt/scr1/xcao/hdf_java/lib/linux64amd/hdf4
-#HDF5=/mnt/scr1/xcao/hdf_java/lib/linux64amd/hdf5
-#JPEG=/mnt/scr1/xcao/hdf_java/lib/linux64amd/jpeg
-#SZIP=/mnt/scr1/xcao/hdf_java/lib/linux64amd/szip
-#ZLIB=/mnt/scr1/xcao/hdf_java/lib/linux64amd/zlib
+#HDF4=/mnt/scr1/xcao/hdf_java/lib/linux64/hdf4
+#HDF5=/mnt/scr1/xcao/hdf_java/lib/linux64/hdf5
+#JPEG=/mnt/scr1/xcao/hdf_java/lib/linux64/jpeg
+#SZIP=/mnt/scr1/xcao/hdf_java/lib/linux64/szip
+#ZLIB=/mnt/scr1/xcao/hdf_java/lib/linux64/zlib
 #export CC="gcc -fPIC"
 
 ############################################################
