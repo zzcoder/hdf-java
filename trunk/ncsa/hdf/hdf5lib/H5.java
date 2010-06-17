@@ -839,7 +839,7 @@ public class H5 {
     	
     	long len = H5Aget_name(attr_id, 0, null);
     	
-    	return H5Aget_name(attr_id, len, name);
+    	return H5Aget_name(attr_id, len+1, name);
     }
 
     /**

@@ -3,6 +3,7 @@
  */
 package test.object;
 
+import java.io.File;
 import java.util.Vector;
 
 import ncsa.hdf.hdf5lib.HDF5Constants;
@@ -129,7 +130,7 @@ public class H5TestFile {
         if ((fileName == null) || (fileName.length() < 1)) {
             fileName = NAME_FILE_H5;
         }
-
+        
         final H5Datatype typeInt = new H5Datatype(Datatype.CLASS_INTEGER,
                 DATATYPE_SIZE, -1, -1);
         final H5Datatype typeByte = new H5Datatype(Datatype.CLASS_INTEGER, 1,
