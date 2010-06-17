@@ -8,7 +8,7 @@ EXTRA_FLAGS=
 ############################################################
 #                     linux32 (jam)                        #
 ############################################################
-#INSTDIR=/mnt/scr1/xcao/hdf_java/src/hdf-java/build
+#INSTDIR=/mnt/scr1/xcao/hdf_java/bin/linux32
 #JAVAINC=/usr/java/jdk-106/jdk/include
 #JAVALIB=/usr/java/jdk-106/jdk/jre/lib
 #HDF4=/mnt/hdf/packages/hdf4/v425/Linux_2.6/hdf-4.2.5-linux
@@ -33,17 +33,17 @@ EXTRA_FLAGS=
 ############################################################
 #                     solaris64 (linew)                    #
 ############################################################
-#INSTDIR=/mnt/scr1/xcao/hdf_java/bin/solaris64
-#JAVAINC=/usr/java/jdk1.6.0_12/include
-#JAVALIB=/usr/java/jdk1.6.0_12/jre/lib
-#JAVABIN=/usr/java/jdk1.6.0_12/bin/sparcv9
-#HDF4=/mnt/scr1/xcao/hdf_java/lib/solaris64/hdf4
-#HDF5=/mnt/scr1/xcao/hdf_java/lib/solaris64/hdf5
-#JPEG=/mnt/scr1/xcao/hdf_java/lib/solaris64/jpeg
-#SZIP=/mnt/scr1/xcao/hdf_java/lib/solaris64/szip
-#ZLIB=/mnt/scr1/xcao/hdf_java/lib/solaris64/zlib
-#export CC="/opt/SUNWspro/bin/cc -KPIC -m64"
-#EXTRA_FLAGS=--with-javabin=$JAVABIN 
+INSTDIR=/mnt/scr1/xcao/hdf_java/bin/solaris64
+JAVAINC=/usr/java/jdk1.6.0_12/include
+JAVALIB=/usr/java/jdk1.6.0_12/jre/lib
+JAVABIN=/usr/java/jdk1.6.0_12/bin/sparcv9
+HDF4=/mnt/scr1/xcao/hdf_java/lib/solaris64/hdf4
+HDF5=/mnt/scr1/xcao/hdf_java/lib/solaris64/hdf5
+JPEG=/mnt/scr1/xcao/hdf_java/lib/solaris64/jpeg
+SZIP=/mnt/scr1/xcao/hdf_java/lib/solaris64/szip
+ZLIB=/mnt/scr1/xcao/hdf_java/lib/solaris64/zlib
+export CC="/opt/SUNWspro/bin/cc -KPIC -m64"
+EXTRA_FLAGS=--with-javabin=$JAVABIN 
 
 ############################################################
 #                     linux64 (amani)                     #
