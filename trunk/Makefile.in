@@ -74,7 +74,9 @@ JHI5DISTFILES= ./native/hdf5lib/Makefile.in \
 EXAMPLESFILES=./examples/*.in ./examples/intro/*.java ./examples/intro/*.in ./examples/groups/*.java ./examples/groups/*.in ./examples/groups/*.h5 ./examples/datasets/*.java ./examples/datasets/*.in ./examples/datatypes/*.java ./examples/datatypes/*.in ./examples/testfiles/*.txt
 
 TESTFILES=./test/Makefile.in ./test/object/misc/*.java ./test/object/misc/*.in \
-          ./test/object/*.in ./test/object/*.java ./test/hdf5lib/*.in ./test/hdf5lib/*.java
+	./test/object/*.in ./test/object/*.java ./test/hdf5lib/*.in ./test/hdf5lib/*.java \
+	./test/hdf5lib/h5ex_g_iterate.hdf
+
 
 DOCFILES=./docs/*.html ./docs/*.gif ./docs/*.js ./docs/hdfview/*.html \
          ./docs/hdfview/*.gif ./docs/hdfview/ModularGuide/*.html \
