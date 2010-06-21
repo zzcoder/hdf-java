@@ -271,13 +271,6 @@ public class FitsFile extends FileFormat
         throw new UnsupportedOperationException("createLink() is not supported");
     }
     
-    // implementing FileFormat
-    @Override
-	public HObject createLink(Group parentGroup, String name, HObject currentObj, int type) throws Exception
-    {
-        throw new UnsupportedOperationException("createLink() is not supported");
-    }
-
     // implementign FileFormat
     @Override
 	public Dataset createScalarDS(

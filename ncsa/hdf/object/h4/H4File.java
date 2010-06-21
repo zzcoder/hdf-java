@@ -441,13 +441,6 @@ public class H4File extends FileFormat
         throw new UnsupportedOperationException("createLink() is not supported");
     }
     
-    // implementing FileFormat
-    @Override
-	public HObject createLink(Group parentGroup, String name, HObject currentObj, int type) throws Exception
-    {
-        throw new UnsupportedOperationException("createLink() is not supported");
-    }
-
     /**
      * Creates a new attribute and attached to the object if attribute does
      * not exist. Otherwise, just update the value of the attribute.
