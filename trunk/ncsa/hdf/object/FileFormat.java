@@ -1343,9 +1343,10 @@ public abstract class FileFormat extends File {
 	 *             The exceptions thrown vary depending on the implementing
 	 *             class.
 	 */
-    public abstract HObject createLink(Group parentGroup, String name, HObject currentObj, int type)
-    throws Exception;
-    
+    public HObject createLink(Group parentGroup, String name, HObject currentObj, int type)
+    throws Exception {
+    	return createLink(parentGroup,name, currentObj);
+    }
     
     /**
      * Copies the source object to a new destination.
