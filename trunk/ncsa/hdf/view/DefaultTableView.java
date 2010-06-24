@@ -1469,11 +1469,23 @@ implements TableView, ActionListener, MouseListener
                     }
                     theValue = stringBuffer;
                } else {
-                    if (isDataTransposed) {
-                        theValue = Array.get(dataValue, column*rowCount+row);
-                    } else {
-                        theValue = Array.get(dataValue, row*colCount+column);
-                    }
+            	    int selectedIndex[] = dataset.getSelectedIndex();
+            	    int index = column*rowCount+row;
+            	    
+            	    if (dataset.getRank()>1) {
+            	    	boolean isNaturalOrder = (selectedIndex[0] < selectedIndex[1]);
+            	    	if ( (isDataTransposed && isNaturalOrder) || (!isDataTransposed && !isNaturalOrder))
+            	    		index = column*rowCount+row;
+            	    	else
+            	    		index = row*colCount+column;
+            	    }
+            	    theValue = Array.get(dataValue, index);
+            	    
+//                    if (isDataTransposed) {
+//                        theValue = Array.get(dataValue, column*rowCount+row);
+//                     } else {
+//                         theValue = Array.get(dataValue, row*colCount+column);
+//                    }
                     
                     if (isStr) 
                         return theValue;
