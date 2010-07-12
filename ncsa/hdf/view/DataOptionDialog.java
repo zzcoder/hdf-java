@@ -19,10 +19,12 @@ import ncsa.hdf.object.*;
 import javax.swing.*;
 
 import java.awt.event.*;
+
 import javax.swing.border.*;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.Dimension;
@@ -34,7 +36,7 @@ import java.util.*;
 
 /**
  * DataOptionDialog is an dialog window used to select display options. Display
- * opotions include selection of subset, display type (image, text, or
+ * options include selection of subset, display type (image, text, or
  * spreadsheet).
  * 
  * @author Peter X. Cao
@@ -72,13 +74,16 @@ public class DataOptionDialog extends JDialog implements ActionListener,
 
     private int currentIndex[];
 
-    private JRadioButton spreadsheetButton, imageButton, charButton;
+    private JRadioButton spreadsheetButton, imageButton;
 
     // use plugin to deal with bitmask
-    // private JRadioButton bitmaskButton;
-    // private BitSet bitmask;
-    // private JTextField bitmaskField;
-    // private JButton bitmaskHelp;
+    private JRadioButton[] bitmaskButtons;
+    
+    private JCheckBox charCheckbox, bitmaskCheckbox;
+    
+    private BitSet bitmask;
+    
+    private JButton bitmaskHelp;
 
     private JComboBox choiceTextView, choiceTableView, choiceImageView,
             choicePalette, choices[];
@@ -127,7 +132,7 @@ public class DataOptionDialog extends JDialog implements ActionListener,
         isSelectionCancelled = true;
         isTrueColorImage = false;
         isText = false;
-        // bitmask = null;
+        bitmask = null;
         numberOfPalettes = 1;
         toolkit = Toolkit.getDefaultToolkit();
 
@@ -196,24 +201,23 @@ public class DataOptionDialog extends JDialog implements ActionListener,
         spreadsheetButton.setMnemonic(KeyEvent.VK_S);
         imageButton = new JRadioButton("Image ");
         imageButton.setMnemonic(KeyEvent.VK_I);
-        charButton = new JRadioButton("Show As Char", false);
-        charButton.setMnemonic(KeyEvent.VK_C);
-        charButton.setEnabled(false);
-        charButton.addItemListener(this);
 
-        /*
-         * bitmaskButton = new JRadioButton("Apply Bitmask", false);
-         * bitmaskButton.setMnemonic(KeyEvent.VK_B);
-         * bitmaskButton.setEnabled(false); bitmaskButton.addItemListener(this);
-         * 
-         * bitmaskField = new JTextField(""); bitmaskField.setVisible(false);
-         * 
-         * bitmaskHelp = new JButton(ViewProperties.getHelpIcon() );
-         * bitmaskHelp.setToolTipText( "Help on how to set bitmask" );
-         * bitmaskHelp.setMargin( new Insets(0, 0, 0, 0) );
-         * bitmaskHelp.addActionListener( this ); bitmaskHelp.setActionCommand(
-         * "Help on how to set bitmask" ); bitmaskHelp.setVisible(false);
-         */
+        charCheckbox = new JCheckBox("Show As Char", false);
+        charCheckbox.setMnemonic(KeyEvent.VK_C);
+        charCheckbox.setEnabled(false);
+        charCheckbox.addItemListener(this);
+        
+        bitmaskCheckbox = new JCheckBox("Apply Bitmask", false);
+        bitmaskCheckbox.setMnemonic(KeyEvent.VK_B);
+        bitmaskCheckbox.setEnabled(false);
+        bitmaskCheckbox.addItemListener(this);
+
+        bitmaskHelp = new JButton(ViewProperties.getHelpIcon());
+        bitmaskHelp.setToolTipText("Help on how to set bitmask");
+        bitmaskHelp.setMargin(new Insets(0, 0, 0, 0));
+        bitmaskHelp.addActionListener(this);
+        bitmaskHelp.setActionCommand("Help on how to set bitmask");
+         
 
         // layout the components
         JPanel contentPane = (JPanel) getContentPane();
@@ -277,8 +281,8 @@ public class DataOptionDialog extends JDialog implements ActionListener,
                 centerP.add(txtviewP, BorderLayout.SOUTH);
             }
             else {
-                w1 = 730 + (ViewProperties.getFontSize() - 12) * 15;
-                h1 = 400 + (ViewProperties.getFontSize() - 12) * 10;
+            	 w1 = 680 + (ViewProperties.getFontSize() - 12) * 15;
+            	 h1 = 400 + (ViewProperties.getFontSize() - 12) * 10;
                 contentPane.setPreferredSize(new Dimension(w1, h1));
                 if (rank > 1) {
                     centerP.add(navigatorP, BorderLayout.WEST);
@@ -295,25 +299,13 @@ public class DataOptionDialog extends JDialog implements ActionListener,
                 viewP.setBorder(new TitledBorder("Display As"));
 
                 JPanel sheetP = new JPanel();
-                sheetP.setLayout(new GridLayout(1, 3));
+                sheetP.setLayout(new GridLayout(1, 2, 25, 5));
                 sheetP.add(spreadsheetButton);
                 int tclass = sd.getDatatype().getDatatypeClass();
                 if (tclass == Datatype.CLASS_CHAR
                         || (tclass == Datatype.CLASS_INTEGER && sd
                                 .getDatatype().getDatatypeSize() == 1)) {
-                    sheetP.add(charButton);
-
-                    // JPanel tmpP = new JPanel();
-                    // tmpP.setLayout(new GridLayout(1, 2));
-                    // tmpP.add(bitmaskButton);
-                    // tmpP.add(bitmaskField);
-                    //                    
-                    // JPanel tmpP2 = new JPanel();
-                    // tmpP2.setLayout(new BorderLayout());
-                    // tmpP2.add(tmpP, BorderLayout.CENTER);
-                    // tmpP2.add(bitmaskHelp, BorderLayout.EAST);
-                    //
-                    // sheetP.add(tmpP2);
+                    sheetP.add(charCheckbox);
                 }
 
                 // add tableview selection
@@ -352,8 +344,44 @@ public class DataOptionDialog extends JDialog implements ActionListener,
                 viewP.add(rightP);
 
                 JPanel northP = new JPanel();
-                northP.setLayout(new BorderLayout(5, 5));
-                northP.add(viewP, BorderLayout.CENTER);
+                northP.setLayout(new GridLayout(1, 2, 5, 5));
+                northP.add(viewP);
+               
+                
+                if (tclass == Datatype.CLASS_CHAR
+                        || (tclass == Datatype.CLASS_INTEGER && sd
+                                .getDatatype().getDatatypeSize() <= 2)) {
+                    bitmaskButtons = new JRadioButton[8 * sd.getDatatype()
+                            .getDatatypeSize()];
+                    for (int i = 0; i < bitmaskButtons.length; i++) {
+                        bitmaskButtons[i] = new JRadioButton(String.valueOf(i));
+                        bitmaskButtons[i].setEnabled(false);
+                    }
+
+                    JPanel sheetP2 = new JPanel();
+                    northP.add(sheetP2);
+                    sheetP2.setBorder(new TitledBorder("Set Bitmask"));
+
+                    JPanel tmpP = new JPanel();
+                    tmpP
+                            .setLayout(new GridLayout(2,
+                                    bitmaskButtons.length / 2));
+                    
+                    for (int i = 0; i<=bitmaskButtons.length / 2 - 1; i++)
+                        tmpP.add(bitmaskButtons[i]);
+                    
+                    for (int i = bitmaskButtons.length / 2; i <= bitmaskButtons.length - 1; i++)
+                        tmpP.add(bitmaskButtons[i]);
+
+                    sheetP2.setLayout(new BorderLayout(10, 10));
+                    sheetP2.add(tmpP, BorderLayout.CENTER);
+
+                    tmpP = new JPanel();
+                    tmpP.setLayout(new BorderLayout());
+                    tmpP.add(bitmaskCheckbox, BorderLayout.WEST);
+                    tmpP.add(bitmaskHelp, BorderLayout.EAST);
+                    sheetP2.add(tmpP, BorderLayout.NORTH);
+                }
 
                 contentPane.add(northP, BorderLayout.NORTH);
             }
@@ -582,7 +610,7 @@ public class DataOptionDialog extends JDialog implements ActionListener,
     public void itemStateChanged(ItemEvent e) {
         Object source = e.getSource();
 
-        if (source instanceof JRadioButton) {
+   //     if (source instanceof JRadioButton) {
             if (source.equals(imageButton) || source.equals(spreadsheetButton)) {
                 choicePalette.setEnabled(imageButton.isSelected()
                         && !isTrueColorImage);
@@ -598,41 +626,38 @@ public class DataOptionDialog extends JDialog implements ActionListener,
 
                 // reset show char button
                 Datatype dtype = dataset.getDatatype();
-                if (spreadsheetButton.isSelected()
-                        && ((dtype.getDatatypeSize() == 1) || (dtype
-                                .getDatatypeClass() == Datatype.CLASS_ARRAY && dtype
-                                .getBasetype().getDatatypeClass() == Datatype.CLASS_CHAR))) {
-                    charButton.setEnabled(true);
-                    // bitmaskButton.setEnabled(true);
-                }
+                int tclass = dtype.getDatatypeClass();
+                if (tclass == Datatype.CLASS_CHAR
+                        || tclass == Datatype.CLASS_INTEGER) {
+                    int tsize = dtype.getDatatypeSize();
+                    charCheckbox.setEnabled(spreadsheetButton.isSelected()
+                            && (tsize == 1));
+                    bitmaskCheckbox.setEnabled((tsize <= 2));
+                }                
                 else {
-                    charButton.setEnabled(false);
-                    charButton.setSelected(false);
-                    // bitmaskButton.setEnabled(false);
-                    // bitmaskButton.setSelected(false);
+                	charCheckbox.setEnabled(false);
+                	charCheckbox.setSelected(false);
+                    bitmaskCheckbox.setEnabled(false);
+                    bitmaskCheckbox.setSelected(false);
                 }
-
-                // bitmaskField.setVisible(bitmaskButton.isEnabled() &&
-                // bitmaskButton.isSelected());
-                // bitmaskHelp.setVisible(bitmaskField.isVisible());
+                setEnableBitmask(bitmaskCheckbox.isEnabled()
+                        && bitmaskCheckbox.isSelected());
+                
             }
-            // else if (source.equals(bitmaskButton))
-            // {
-            // if (bitmaskButton.isSelected())
-            // charButton.setSelected(false);
-            //
-            // bitmaskField.setVisible(bitmaskButton.isSelected());
-            // bitmaskHelp.setVisible(bitmaskField.isVisible());
-            // }
-            // else if (source.equals(charButton))
-            // {
-            // if (charButton.isSelected())
-            // bitmaskButton.setSelected(false);
-            //
-            // bitmaskField.setVisible(bitmaskButton.isSelected());
-            // bitmaskHelp.setVisible(bitmaskField.isVisible());
-            // }
-        }
+           if (source.equals(bitmaskCheckbox)) {
+                if (bitmaskCheckbox.isSelected())
+                	charCheckbox.setSelected(false);
+
+                setEnableBitmask(bitmaskCheckbox.isSelected());
+            }
+           if (source.equals(charCheckbox)) {
+                if (charCheckbox.isSelected())
+                    bitmaskCheckbox.setSelected(false);
+
+                setEnableBitmask(bitmaskCheckbox.isSelected());
+            }
+   //     }
+        
         else if (source instanceof JComboBox) {
             if (!performJComboBoxEvent) {
                 return;
@@ -672,7 +697,7 @@ public class DataOptionDialog extends JDialog implements ActionListener,
             maxLabels[theSelectedChoice]
                     .setText(String.valueOf(dims[theIndex]));
 
-            // if the seelcted choice selects the dimensin that is selected by
+            // if the selected choice selects the dimension that is selected by
             // other dimension choice, exchange the dimensions
             for (int i = 0; i < n; i++) {
                 if (i == theSelectedChoice) {
@@ -736,6 +761,12 @@ public class DataOptionDialog extends JDialog implements ActionListener,
         return imageButton.isSelected();
     }
 
+    /** for deal with bit masks only */
+    private void setEnableBitmask(boolean b) {
+        for (int i = 0; i < bitmaskButtons.length; i++)
+            bitmaskButtons[i].setEnabled(b);
+    }
+    
     /**
      * Set the initial state of all the variables
      */
@@ -824,16 +855,17 @@ public class DataOptionDialog extends JDialog implements ActionListener,
 
         // reset show char button
         Datatype dtype = dataset.getDatatype();
-        if (spreadsheetButton.isSelected()
-                && ((dtype.getDatatypeSize() == 1) || (dtype.getDatatypeClass() == Datatype.CLASS_ARRAY && dtype
-                        .getBasetype().getDatatypeClass() == Datatype.CLASS_CHAR))) {
-            charButton.setEnabled(true);
-            // bitmaskButton.setEnabled(true);
+        int tclass = dtype.getDatatypeClass();
+        if (tclass == Datatype.CLASS_CHAR || tclass == Datatype.CLASS_INTEGER) {
+            int tsize = dtype.getDatatypeSize();
+            charCheckbox.setEnabled((tsize == 1)
+                    && spreadsheetButton.isSelected());
+            bitmaskCheckbox.setEnabled((tsize <= 2));
         }
         else {
-            charButton.setEnabled(false);
-            charButton.setSelected(false);
-            // bitmaskButton.setEnabled(false);
+            charCheckbox.setEnabled(false);
+            charCheckbox.setSelected(false);
+            bitmaskCheckbox.setEnabled(false);
         }
     }
 
@@ -883,7 +915,7 @@ public class DataOptionDialog extends JDialog implements ActionListener,
             pal = Tools.createWavePalette();
         }
         else if ((palChoice > 0) && (palChoice < numberOfPalettes)) {
-            // multuple palettes attached
+            // multiple palettes attached
             pal = ((ScalarDS) dataset).readPalette(palChoice - 1);
         }
 
@@ -985,85 +1017,55 @@ public class DataOptionDialog extends JDialog implements ActionListener,
         // clear the old data
         dataset.clearData();
 
-        // retVal = setBitmask();
+        retVal = setBitmask();
 
         return retVal;
     }
 
-    // private boolean setBitmask()
-    // {
-    // if (!bitmaskButton.isVisible() || !bitmaskButton.isSelected()) {
-    // bitmask = null;
-    // return true;
-    // }
-    //
-    // String str = bitmaskField.getText();
-    // if (str == null || (str=str.trim())==null) {
-    // JOptionPane.showMessageDialog(
-    // (JFrame)viewer,
-    // "Bitmask is empty.",
-    // getTitle(),
-    // JOptionPane.ERROR_MESSAGE);
-    // bitmask = null;
-    // return false;
-    // }
-    //
-    // int len = str.length();
-    //        
-    // boolean isvalidmask = (len<=8);
-    // if (isvalidmask) {
-    // bitmask = new BitSet(8);
-    // for (int i=0; i<len; i++) {
-    // char bit = str.charAt(i);
-    // if (bit=='0')
-    // bitmask.set(len-i-1, false);
-    // else if (bit == '1')
-    // bitmask.set(len-i-1, true);
-    // else {
-    // isvalidmask = false;
-    // break;
-    // }
-    // }
-    // }
-    //
-    // if (!isvalidmask) {
-    // JOptionPane.showMessageDialog(
-    // (JFrame)viewer,
-    // "A valid bitmask MUST be a string of 8 or less bits of 1's and 0's.",
-    // getTitle(),
-    // JOptionPane.ERROR_MESSAGE);
-    // bitmask = null;
-    // return false;
-    // }
-    //
-    // // do not use bitmask if it is empty (all bits are zero)
-    // if (bitmask.isEmpty()) {
-    // JOptionPane.showMessageDialog(
-    // (JFrame)viewer,
-    // "The bitmask is empty. It will not be applied to the data.",
-    // getTitle(),
-    // JOptionPane.WARNING_MESSAGE);
-    // bitmask = null;
-    // } else {
-    // boolean isFull = true;
-    // int size = bitmask.size();
-    // for (int i=0; i<size; i++)
-    // isFull = (bitmask.get(i) && isFull);
-    //
-    // // do not use bitmask if it is full (all bits are one)
-    // if (isFull) {
-    // JOptionPane.showMessageDialog(
-    // (JFrame)viewer,
-    // "The bitmask is empty. It will not be applied to the data.",
-    // getTitle(),
-    // JOptionPane.WARNING_MESSAGE);
-    // bitmask = null;
-    // }
-    // }
-    //
-    // return true;
-    // }
+    private boolean setBitmask() {
+        if (!bitmaskCheckbox.isVisible() || !bitmaskCheckbox.isSelected()
+                || bitmaskButtons == null) {
+            bitmask = null;
+            return true;
+        }
 
+        int len = bitmaskButtons.length;
+        if (bitmask == null)
+            bitmask = new BitSet(len);
+
+        for (int i = 0; i < len; i++) {
+            bitmask.set(i, bitmaskButtons[i].isSelected());
+        }
+
+        // do not use bitmask if it is empty (all bits are zero)
+        if (bitmask.isEmpty()) {
+            JOptionPane
+                    .showMessageDialog(
+                            (JFrame) viewer,
+                            "The bitmask is empty. It will not be applied to the data.",
+                            getTitle(), JOptionPane.WARNING_MESSAGE);
+            bitmask = null;
+        }
+        else {
+            boolean isFull = true;
+            int size = bitmask.size();
+            for (int i = 0; i < size; i++)
+                isFull = (bitmask.get(i) && isFull);
+
+            // do not use bitmask if it is full (all bits are one)
+            if (isFull) {
+                JOptionPane
+                        .showMessageDialog(
+                                (JFrame) viewer,
+                                "The bitmask is empty. It will not be applied to the data.",
+                                getTitle(), JOptionPane.WARNING_MESSAGE);
+                bitmask = null;
+            }
+        }
+
+        return true;
+    }
+    
     /** SubsetNavigator draws selection rectangle of subset. */
     private class PreviewNavigator extends JComponent implements MouseListener,
             MouseMotionListener {
@@ -1341,35 +1343,33 @@ public class DataOptionDialog extends JDialog implements ActionListener,
      *         numbers.
      */
     public boolean isDisplayTypeChar() {
-        return charButton.isSelected();
+        return charCheckbox.isSelected();
     }
 
-    // /**
-    // * Return the bitmask.
-    // */
-    // public BitSet getBitmask()
-    // {
-    // if (!bitmaskButton.isEnabled() || !bitmaskButton.isSelected())
-    // return null;
-    // else if (bitmask == null)
-    // return null;
-    //        
-    // // do not use bitmask if it is empty (all bits are zero)
-    // if (bitmask.isEmpty())
-    // return null;
-    //        
-    // boolean isFull = true;
-    // int size = bitmask.size();
-    // for (int i=0; i<size; i++)
-    // isFull = (bitmask.get(i) && isFull);
-    //        
-    // // do not use bitmask if it is full (all bits are one)
-    // if (isFull)
-    // return null;
-    //        
-    // return bitmask;
-    // }
+    /**
+     * Return the bitmask.
+     */
+    public BitSet getBitmask() {
+        if (!bitmaskCheckbox.isEnabled() || !bitmaskCheckbox.isSelected())
+            return null;
+        else if (bitmask == null)
+            return null;
 
+        // do not use bitmask if it is empty (all bits are zero)
+        if (bitmask.isEmpty())
+            return null;
+
+        boolean isFull = true;
+        int size = bitmask.size();
+        for (int i = 0; i < size; i++)
+            isFull = (bitmask.get(i) && isFull);
+
+        // do not use bitmask if it is full (all bits are one)
+        if (isFull)
+            return null;
+
+        return bitmask;
+    }
     /**
      * 
      * @return true if transpose the data in 2D table; otherwise, do not
