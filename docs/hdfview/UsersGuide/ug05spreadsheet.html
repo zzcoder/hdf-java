@@ -1,7 +1,7 @@
-<?php 
-$page_title = "HDFView User's Guide -- Table Viewer"; 
-include ("../../../links.php"); 
-include ("../../../includes/header.html"); 
+<?php
+$page_title = "HDFView User's Guide -- Table Viewer";
+include ("../../../links.php");
+include ("../../../includes/header.html");
 ?>
 <link href="edit.css" rel="stylesheet" type="text/css" />
 
@@ -181,14 +181,14 @@ is displayed in the status bar of the HDFView.</p>
 5.2.3 Swap Dimension and Data Transpose</h3>
 <p>
 By default, HDFView chooses the first coordinate, dim[0], as the
-ROW index and the second coordinate, dim[1], as the COLUMN index. 
-For example, a 2-D dataset of 8 X 9 (dim0=8, dim1=9) is displayed 
+ROW index and the second coordinate, dim[1], as the COLUMN index.
+For example, a 2-D dataset of 8 X 9 (dim0=8, dim1=9) is displayed
 as eight rows and nine columns by default.</p>
 <p>
-You can also swap the dimension order. However, swapping the dimension 
-order does not change the data order. To change the data order, 
+You can also swap the dimension order. However, swapping the dimension
+order does not change the data order. To change the data order,
 use the "Transpose" option. Swapping and transposing only apply
-to the data in the display and not to the data in the file.</p> 
+to the data in the display and not to the data in the file.</p>
 
 <p>
 Let us use the previous example to demonstrate this procedure.</p>
@@ -229,7 +229,7 @@ order of data stays the same (counting from the location [0, 0], [0, 1], ... [2,
 <p>
 In some cases, we also want to transpose the data (changing the data order) when
 we swap the row and column dimensions. To transpose the data, select the "Transpose"
-option from the drop-down menu. For example, transpose the data to display the dataset as 
+option from the drop-down menu. For example, transpose the data to display the dataset as
 nine rows and eight columns. The order of the data is also changed</p>
 
 <center><p>
@@ -434,6 +434,40 @@ and
 <p>
 are the same.</p>
 
+<h2>
+<a name="ug05import"></a>
+5.7 Dataset storing references</h2>
+<p>A dataset can store reference values of other datasets in the same file.</p>
+<h3><a name="ug05subset_compound"></a>
+5.7.1 Dataset Storing Object References</h3>
+<p>
+A dataset can store object references of other datasets. You can open a dataset containing object references. You can then right click on any value
+in the dataset and it will give two options, to either open as a table or an image.</p>
+<center><p>
+<img src="images/dataset_object_references.PNG" />
+<br />
+<b>Dataset storing regional references</b></p>
+</center>
+<p>
+If opened as a table, then the dataset of reference value "7428" is opened as shown below</p>
+
+<center><p>
+<img src="images/data_pointed_by_ref.PNG" />
+<br />
+<b>Dataset</b></p>
+</center>
+
+<h3><a name="ug05subset_compound"></a>
+5.7.2 Dataset Storing Dataset Region References</h3>
+<p>
+A dataset can store dataset region reference values. You can right click on any value to either show the dataset as a table or a image.</p>
+<center><p>
+<img src="images/dataset_region_ref.PNG" />
+<br />
+<b>Dataset</b></p>
+</center>
+
+
 <!-- BEGIN OF FOOTER INFO -->
 <hr noshade size=1 />
 
@@ -450,8 +484,8 @@ are the same.</p>
 <p>
 <h5>Last Modified: &nbsp; December 16, 2008</h5></p>
 <!-- END OF FOOTER INFO -->
-<!-- 
-<?php 
-include ("../../../includes/footer.html"); 
+<!--
+<?php
+include ("../../../includes/footer.html");
 ?>
  -->

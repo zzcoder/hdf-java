@@ -1,7 +1,7 @@
-<?php 
-$page_title = "HDFView User's Guide -- Tree Viewer"; 
-include ("../../../links.php"); 
-include ("../../../includes/header.html"); 
+<?php
+$page_title = "HDFView User's Guide -- Tree Viewer";
+include ("../../../links.php");
+include ("../../../includes/header.html");
 ?>
 <link href="edit.css" rel="stylesheet" type="text/css" />
 <p>
@@ -141,8 +141,15 @@ determines the number of elements to move from the start location in each dimens
 Stride values of 0 are not allowed. If the stride parameter is NULL, a contiguous
 hyperslab is selected (as if each value in the stride array was set to all 1's).
 <center>
-<p><img src="images/dataset_open_as.gif" />
+<p><img src="images/set bitmask.PNG" />
 <br /><b>The Display Option</b></p></center>
+
+<p>
+The "Set Bitmask" option allows to set bitmask at a particular bit value. For example,
+if you apply bitmask at 0 bit, the the image displayed is shown below</p>
+<center>
+<p><img src="images/bitmask image.PNG" />
+<br /><b>The Image after applying bitmask</b></p></center>
 
 <h2>
 <a name="ug04metadata"></a>4.4 Display Metadata and Attributes</h2>
@@ -327,8 +334,8 @@ To delete an attribute, select the attribute and click the "Delete" button.
 <h5>Last Modified: &nbsp; December 16, 2008</h5>
 
 <!-- END OF FOOTER INFO -->
-<!-- 
-<?php 
-include ("../../../includes/footer.html"); 
+<!--
+<?php
+include ("../../../includes/footer.html");
 ?>
  -->
