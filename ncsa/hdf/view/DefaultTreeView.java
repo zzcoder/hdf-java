@@ -1859,19 +1859,16 @@ public class DefaultTreeView extends JPanel
         if (dataViewName.startsWith("ncsa.hdf.view.DefaultTableView")) {
         	map.put(ViewProperties.DATA_VIEW_KEY.CHAR, new Boolean(isDisplayTypeChar));
         	map.put(ViewProperties.DATA_VIEW_KEY.TRANSPOSED, new Boolean(isTransposed));   
-        	//            Object[] tmpargs = {viewer, map};
-        	//            initargs = tmpargs;
+        	Object[] tmpargs = { viewer, map };
+            initargs = tmpargs;
         }
         else if (dataViewName.startsWith("ncsa.hdf.view.DefaultImageView")) {
-        	//            Object[] tmpargs = {viewer};
-        	//            initargs = tmpargs;
         	map.put(ViewProperties.DATA_VIEW_KEY.CONVERTBYTE, new Boolean(
         			(bitmask != null)));
+        	Object[] tmpargs = { viewer, map };
+            initargs = tmpargs;
         }
         
-        Object[] tmpargs = { viewer, map };
-        initargs = tmpargs;
-
         ((JFrame)viewer).setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try {
             theView = Tools.newInstance(theClass, initargs);
