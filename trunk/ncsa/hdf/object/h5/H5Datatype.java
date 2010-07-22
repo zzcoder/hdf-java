@@ -1124,12 +1124,30 @@ public class H5Datatype extends Datatype {
      */
     @Override
     public List getMetadata() throws HDF5Exception {
+        return this.getMetadata(HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC);
+        }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ncsa.hdf.object.DataFormat#getMetadata(int...)
+     */
+    public List getMetadata(int ...attrPropList) throws HDF5Exception {
         // load attributes first
         if (attributeList == null) {
             int tid = open();
+            int indxType = HDF5Constants.H5_INDEX_NAME;
+    		int order = HDF5Constants.H5_ITER_INC;
+    		
+    		 if(attrPropList.length > 0) {
+    			 indxType = attrPropList[0];
+    	            if(attrPropList.length > 1) {
+    	            	order = attrPropList[1];
+    	            }
+    	        } 
 
             try {
-                attributeList = H5File.getAttribute(tid);
+                attributeList = H5File.getAttribute(tid ,indxType, order);
             }
             catch (Exception ex) {
             }
@@ -1138,6 +1156,11 @@ public class H5Datatype extends Datatype {
             }
         } // if (attributeList == null)
 
+    	try {
+    		this.linkTargetObjName= H5File.getLinkTargetName(this);
+    	}
+    	catch(Exception ex){}
+    	
         return attributeList;
     }
 

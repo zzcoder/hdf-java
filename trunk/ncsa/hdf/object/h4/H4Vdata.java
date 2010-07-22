@@ -15,6 +15,7 @@
 package ncsa.hdf.object.h4;
 
 import java.util.*;
+
 import ncsa.hdf.hdflib.*;
 import ncsa.hdf.object.*;
 
@@ -572,4 +573,10 @@ public class H4Vdata extends CompoundDS
     {
         return memberOrders;
     }
+
+    //Implementing DataFormat
+	@Override
+	public List getMetadata(int... attrPropList) throws Exception {
+		throw new UnsupportedOperationException("getMetadata(int... attrPropList) is not supported");
+	}
 }

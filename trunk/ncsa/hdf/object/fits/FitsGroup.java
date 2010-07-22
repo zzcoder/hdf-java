@@ -15,6 +15,7 @@
 package ncsa.hdf.object.fits;
 
 import java.util.*;
+
 import ncsa.hdf.object.*;
 
 /**
@@ -126,5 +127,11 @@ public class FitsGroup extends Group
         // not supported
         throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
     }
+
+    //Implementing DataFormat
+	@Override
+	public List getMetadata(int... attrPropList) throws Exception {
+		throw new UnsupportedOperationException("getMetadata(int... attrPropList) is not supported");
+	}
 
 }

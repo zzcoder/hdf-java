@@ -945,21 +945,44 @@ public class H5ScalarDS extends ScalarDS {
      * @see ncsa.hdf.object.DataFormat#getMetadata()
      */
     public List getMetadata() throws HDF5Exception {
+        return this.getMetadata(HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC);
+        }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ncsa.hdf.object.DataFormat#getMetadata(int...)
+     */
+    public List getMetadata(int ...attrPropList) throws HDF5Exception {
         if (rank <= 0) {
             init();
         }
 
+        try {
+    		this.linkTargetObjName= H5File.getLinkTargetName(this);
+    	}
+    	catch(Exception ex){}
+    	
         if (attributeList != null) {
             return attributeList;
         }
 
         // load attributes first
         int did = -1, pid = -1;
+        int indxType = HDF5Constants.H5_INDEX_NAME;
+		int order = HDF5Constants.H5_ITER_INC;
+		
+		 if(attrPropList.length > 0) {
+			 indxType = attrPropList[0];
+	            if(attrPropList.length > 1) {
+	            	order = attrPropList[1];
+	            }
+	        } 
         try {
             did = open();
-            attributeList = H5File.getAttribute(did);
+            attributeList = H5File.getAttribute(did, indxType, order);
 
-            // get the compresson and chunk information
+            // get the compression and chunk information
             pid = H5.H5Dget_create_plist(did);
             if (H5.H5Pget_layout(pid) == HDF5Constants.H5D_CHUNKED) {
                 chunkSize = new long[rank];

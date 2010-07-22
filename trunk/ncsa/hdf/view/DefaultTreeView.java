@@ -100,6 +100,8 @@ public class DefaultTreeView extends JPanel
 
     private JMenuItem addLinkMenuItem;
     
+    private JMenuItem setLibVerBoundsItem;
+    
     private String currentSearchPhrase = null;
 
     public DefaultTreeView(ViewManager theView) {
@@ -130,6 +132,10 @@ public class DefaultTreeView extends JPanel
         addLinkMenuItem = new JMenuItem( "Link", ViewProperties.getLinkIcon());
         addLinkMenuItem.addActionListener(this);
         addLinkMenuItem.setActionCommand("Add link");
+        
+        setLibVerBoundsItem = new JMenuItem( "Set Lib version bounds");
+        setLibVerBoundsItem.addActionListener(this);
+        setLibVerBoundsItem.setActionCommand("Set Lib version bounds");
 
         // initialize the tree and root
         treeModel = new DefaultTreeModel(root);
@@ -315,6 +321,9 @@ public class DefaultTreeView extends JPanel
         item.addActionListener(this);
         item.setActionCommand("Close file");
         menu.add(item);
+        
+        menu.addSeparator();
+        menu.add(setLibVerBoundsItem);
 
         return menu;
     }
@@ -360,11 +369,18 @@ public class DefaultTreeView extends JPanel
             addTableMenuItem.setVisible(true);
             addDatatypeMenuItem.setVisible(true);
             addLinkMenuItem.setVisible(true);
+            if ((selectedObject instanceof Group)){
+            	boolean state = (((Group)selectedObject).isRoot());
+            	setLibVerBoundsItem.setVisible(isWritable && state); //added only if it is HDF5format, iswritable & isroot
+            }
+            else
+            	setLibVerBoundsItem.setVisible(false);
         } else
         {
             addTableMenuItem.setVisible(false);
             addDatatypeMenuItem.setVisible(false);
             addLinkMenuItem.setVisible(false);
+            setLibVerBoundsItem.setVisible(false);
         }
 
         popupMenu.show((JComponent)e.getSource(), x, y);
@@ -1286,6 +1302,54 @@ public class DefaultTreeView extends JPanel
         }
     }
 
+    private void setLibVersionBounds(){
+		Object[] lowValues = { "Earliest", "Latest" };
+		Object[] highValues= { "Latest" };
+		JComboBox lowComboBox  = new JComboBox(lowValues);
+		JComboBox highComboBox  = new JComboBox(highValues);
+ 
+		Object[] msg = {"Earliest Version:",lowComboBox,"Latest Version:", highComboBox};
+		Object[] options = {"Ok", "Cancel"};
+		JOptionPane op = new JOptionPane(
+			msg,
+			JOptionPane.PLAIN_MESSAGE,
+			JOptionPane.OK_CANCEL_OPTION,
+			null,
+			options);
+ 
+		JDialog dialog = op.createDialog(this, "Set the library version bounds: ");
+		dialog.setVisible(true);
+ 
+		String result = null;
+		try {
+			result = (String)op.getValue();		
+			}
+		catch(Exception err){
+			//err.printStackTrace();
+		}
+ 
+		if((result!=null) && (result.equals("Ok"))){
+			int low = -1;
+			int high = 1;
+			if((lowComboBox.getSelectedItem()).equals("Earliest"))
+				low = 0;
+			else 
+				low = 1;
+			try {
+				selectedObject.getFileFormat().setLibBounds(low,high);
+			} catch (Throwable err) {
+				toolkit.beep();
+				JOptionPane.showMessageDialog(this,
+						err,
+						"Error when setting lib version bounds",
+						JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+		}
+		else
+			return;    	   	
+    }
+    
     // Implementing java.io.ActionListener
     public void actionPerformed(ActionEvent e)
     {
@@ -1443,7 +1507,11 @@ public class DefaultTreeView extends JPanel
                 tree.collapseRow(row);
                 row--;
             }
-        }        
+        }   
+        
+        else if (cmd.startsWith("Set Lib version bounds")) {       	
+        	setLibVersionBounds();
+        }
     }
 
     /**
@@ -1538,17 +1606,17 @@ public class DefaultTreeView extends JPanel
             fileFormat.setMaxMembers(ViewProperties.getMaxMembers());
             fileFormat.setStartMembers(ViewProperties.getStartMembers());
             
-//            if(fileFormat.isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5))){
-//            	String idxType = ViewProperties.getIndexType();
-//            	int indxType = 0;
-//            	if(idxType.equals("alphabetical"))
-//            		indxType = 0;
-//            	else if(idxType.equals("creation"))
-//            		indxType = 1;
-//
-//            	fileFormat.open(indxType);
-//            }
-//            else
+            if(fileFormat.isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5))){
+            	String idxType = ViewProperties.getIndexType();
+            	int indxType = 0;
+            	if(idxType.equals("alphabetical"))
+            		indxType = 0;
+            	else if(idxType.equals("creation"))
+            		indxType = 1;
+
+            	fileFormat.open(indxType);
+            }
+            else
             	fileFormat.open();
         } finally {
             ((JFrame)viewer).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -2010,7 +2078,7 @@ public class DefaultTreeView extends JPanel
                 datasetIcon, imageIcon, tableIcon, textIcon,
                 openFolder, closeFolder,
                 datasetIconA, imageIconA, tableIconA, textIconA,
-                openFolderA, closeFolderA, datatypeIcon, datatypeIconA;// questionIcon;
+                openFolderA, closeFolderA, datatypeIcon, datatypeIconA, questionIcon;
 
         private HTreeCellRenderer()
         {
@@ -2034,7 +2102,7 @@ public class DefaultTreeView extends JPanel
             datatypeIcon = ViewProperties.getDatatypeIcon();
             datatypeIconA = ViewProperties.getDatatypeIconA();
             
-            //questionIcon = ViewProperties.getQuestionIcon();
+            questionIcon = ViewProperties.getQuestionIcon();
 
             if (openFolder != null) {
                 openIcon = openFolder;
@@ -2070,9 +2138,9 @@ public class DefaultTreeView extends JPanel
                 datatypeIcon = leafIcon;
             }
 
-//            if (questionIcon == null) {
-//            	questionIcon = leafIcon;
-//            }
+            if (questionIcon == null) {
+            	questionIcon = leafIcon;
+            }
             
             if (openFolderA == null) {
                 openFolderA = openFolder;
@@ -2184,9 +2252,9 @@ public class DefaultTreeView extends JPanel
                 }
             }
             
-//            else {
-//                    leafIcon = questionIcon;
-//            }
+            else {
+                    leafIcon = questionIcon;
+            }
 
             return super.getTreeCellRendererComponent(
                 tree,

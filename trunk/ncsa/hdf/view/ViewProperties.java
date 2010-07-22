@@ -82,6 +82,9 @@ public class ViewProperties extends Properties {
 
     /** data delimiter */
     private static String delimiter = DELIMITER_TAB;
+    
+    /** Display index */
+    private static String indexType = "alphabetical";
 
     /** a list of most recent files */
     private static Vector mrf;
@@ -140,7 +143,7 @@ public class ViewProperties extends Properties {
             paletteIcon, chartIcon, brightIcon, autocontrastIcon, copyIcon,
             cutIcon, pasteIcon, previousIcon, nextIcon, firstIcon, lastIcon,
             animationIcon, datatypeIcon, datatypeIconA, linkIcon, iconAPPS,
-            iconURL, iconVIDEO, iconXLS, iconPDF, iconAUDIO;
+            iconURL, iconVIDEO, iconXLS, iconPDF, iconAUDIO, questionIcon;
 
     private static String propertyFile;
 
@@ -540,6 +543,10 @@ public class ViewProperties extends Properties {
     public static ImageIcon getAudioIcon() {
         return iconAUDIO;
     }
+    
+    public static Icon getQuestionIcon() {
+        return questionIcon;
+    }
 
     public static void loadIcons(String rootPath) {
         URL u = null;
@@ -818,6 +825,13 @@ public class ViewProperties extends Properties {
                 animationIcon = new ImageIcon(u);
             }
         }
+        
+        if (questionIcon == null) {
+            u = classLoader.getResource("ncsa/hdf/view/icons/question.gif");
+            if (u != null) {
+                questionIcon = new ImageIcon(u);
+            }
+        }
 
         try {
             u = classLoader.getResource("ncsa/hdf/view/icons/audio.gif");
@@ -986,6 +1000,11 @@ public class ViewProperties extends Properties {
         if ((propVal != null) && (propVal.length() > 0)) {
             delimiter = propVal;
         }
+        
+        propVal = (String) get("data.indexType");
+        if ((propVal != null) && (propVal.length() > 0)) {
+            indexType = propVal;
+        }
 
         propVal = (String) get("h4toh5.converter");
         if ((propVal != null) && (propVal.length() > 0)) {
@@ -1116,6 +1135,10 @@ public class ViewProperties extends Properties {
             put("data.delimiter", delimiter);
         }
 
+        if (indexType == null) {
+            put("data.indexType", indexType);
+        }
+        
         if (usersGuide != null) {
             put("users.guide", usersGuide);
         }
@@ -1276,6 +1299,11 @@ public class ViewProperties extends Properties {
         return delimiter;
     }
 
+    /** returns the Index type for Display */
+    public static String getIndexType() {
+        return indexType;
+    }
+    
     /** returns the font size */
     public static int getFontSize() {
         return fontSize;
@@ -1387,6 +1415,11 @@ public class ViewProperties extends Properties {
     /** set the delimiter of data values */
     public static void setDataDelimiter(String delim) {
         delimiter = delim;
+    }
+    
+    /** set the Index Type */
+    public static void setIndexType(String idxType) {
+        indexType  = idxType;
     }
 
     /**

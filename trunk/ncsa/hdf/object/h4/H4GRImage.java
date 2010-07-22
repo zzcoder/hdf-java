@@ -15,6 +15,7 @@
 package ncsa.hdf.object.h4;
 
 import java.util.*;
+
 import ncsa.hdf.hdflib.*;
 import ncsa.hdf.object.*;
 
@@ -885,5 +886,11 @@ public class H4GRImage extends ScalarDS
             } // for (int i=0; i<numberOfAttributes; i++)
         } catch (Exception ex) {}
     }
+
+    //Implementing DataFormat
+	@Override
+	public List getMetadata(int... attrPropList) throws Exception {
+		throw new UnsupportedOperationException("getMetadata(int... attrPropList) is not supported");
+	}
 
 }

@@ -14,6 +14,8 @@
 
 package ncsa.hdf.object.fits;
 
+import java.util.List;
+
 import ncsa.hdf.object.*;
 import nom.tam.fits.*;
 
@@ -229,5 +231,11 @@ public class FitsDatatype extends Datatype
      * @see ncsa.hdf.object.Datatype#close(int)
      */
     @Override
-	public void close(int id) {;}    
+	public void close(int id) {;}
+
+  //Implementing DataFormat
+	@Override
+	public List getMetadata(int... attrPropList) throws Exception {
+		throw new UnsupportedOperationException("getMetadata(int... attrPropList) is not supported");
+	}    
 }

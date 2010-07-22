@@ -24,6 +24,7 @@ import ncsa.hdf.object.*;
 import ncsa.hdf.hdf5lib.*;
 import ncsa.hdf.hdf5lib.exceptions.*;
 import ncsa.hdf.hdf5lib.structs.H5G_info_t;
+import ncsa.hdf.hdf5lib.structs.H5L_info_t;
 import ncsa.hdf.hdf5lib.structs.H5O_info_t;
 
 /**
@@ -77,11 +78,27 @@ public class H5File extends FileFormat {
      * HDF5Constants.H5F_ACC_RDWR and HDF5Constants.H5F_ACC_CREAT.
      */
     private int flag;
+    
+   /**
+    * The index type. Valid values are HDF5Constants.H5_INDEX_NAME,
+    * HDF5Constants.H5_INDEX_CRT_ORDER.
+    */
+    private int indexType;
 
     /**
-     * The root node of the file hierearchy.
+     * The root node of the file hierarchy.
      */
     private DefaultMutableTreeNode rootNode;
+
+    /**
+     * How many characters maximum in an attribute name?
+     */
+    private static final int attrNameLen = 256;
+    
+    /**
+     * The library version bounds
+     */
+    private int[] libver ;
 
     /***************************************************************************
      * Constructor
@@ -141,7 +158,9 @@ public class H5File extends FileFormat {
     public H5File(String fileName, int access) {
         // Call FileFormat ctor to set absolute path name
         super(fileName);
-
+        
+        libver = new int[2];
+        
         // set metadata for the instance
         rootNode = null;
         this.fid = -1;
@@ -251,7 +270,7 @@ public class H5File extends FileFormat {
             try {
             	aid_src = H5.H5Aopen_by_idx(src_id, ".", HDF5Constants.H5_INDEX_CRT_ORDER,
             			HDF5Constants.H5_ITER_INC, i, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-                H5.H5Aget_name(aid_src, aName);
+                H5.H5Aget_name(aid_src, H5File.attrNameLen, aName);
                 atid = H5.H5Aget_type(aid_src);
                 asid = H5.H5Aget_space(aid_src);
 
@@ -385,7 +404,7 @@ public class H5File extends FileFormat {
     			}
 
     			String[] nameA = { "" };
-    			H5.H5Aget_name(aid, nameA);
+    			H5.H5Aget_name(aid, H5File.attrNameLen, nameA);
 
     			int tmptid = -1;
     			try {
@@ -924,6 +943,17 @@ public class H5File extends FileFormat {
 	public int open() throws Exception {
         return open(true);
     }
+ 
+    /**
+     * Opens file and returns a file identifier.
+     * 
+     * @see ncsa.hdf.object.FileFormat#open(int...)
+     */
+    @Override
+	public int open(int ...propList) throws Exception {
+    	indexType = propList[0];
+        return open(true);
+    }
     
     /**
      * Sets the bounds of library versions
@@ -945,27 +975,14 @@ public class H5File extends FileFormat {
     public void setLibBounds(int low, int high) throws Exception {
     	int fapl = HDF5Constants.H5P_DEFAULT;
 
-    	if (fid > 0) {
-    		fapl=H5.H5Pcreate(HDF5Constants.H5P_FILE_ACCESS);
-    	} 
+    	if (fid < 0) 
+    		return;
     	else
-    	{
-    		try{
-    			fid = this.open();
-    		}
-    		catch(Exception e){
-    			e.printStackTrace();
-    		}
     		fapl = H5.H5Fget_access_plist(fid);
-    		try{
-    			this.close();
-    		}
-    		catch(Exception e){
-    		}
-    	}
 
     	try{
     		H5.H5Pset_libver_bounds( fapl, low, high );
+    		H5.H5Pget_libver_bounds( fapl,libver );  		
     	}
     	catch(Exception e){
     		e.printStackTrace();
@@ -978,6 +995,16 @@ public class H5File extends FileFormat {
     		}
     	}
     }   
+    
+    /**
+     * Gets the bounds of library versions.
+     * @return libver
+     * 				The earliest and latest version of the library.
+     * @throws HDF5Exception
+     */
+    public int[] getLibBounds() throws Exception{
+    	return libver;
+    }
 
     /**
      * Closes file associated with this H5File instance.
@@ -1390,6 +1417,38 @@ public class H5File extends FileFormat {
         return H5Group.create(name, pgroup, gplist);
     }
     
+	/***
+	 * Creates the group creation property list identifier, gcpl. This
+	 * identifier is used when creating Groups.
+	 * 
+	 * @see ncsa.hdf.object.FileFormat#createGcpl(int, int, int)
+	 * 
+	 */
+    public int createGcpl(int creationorder, int maxcompact, int mindense)throws Exception{
+    	int gcpl = -1;
+    	try {
+    		gcpl = H5.H5Pcreate(HDF5Constants.H5P_GROUP_CREATE);
+    		if (gcpl >= 0) {
+    			// Set link creation order.
+    			if (creationorder ==Group.CRT_ORDER_TRACKED){
+    				H5.H5Pset_link_creation_order(gcpl,
+    						HDF5Constants.H5P_CRT_ORDER_TRACKED); 
+    			}
+    			else if (creationorder == Group.CRT_ORDER_INDEXED){
+    				H5.H5Pset_link_creation_order(gcpl,
+    						HDF5Constants.H5P_CRT_ORDER_TRACKED
+    						+ HDF5Constants.H5P_CRT_ORDER_INDEXED); 
+    			}
+    			// Set link storage.
+    			H5.H5Pset_link_phase_change(gcpl, maxcompact, mindense); 
+    		}
+    	} catch (Exception ex) {
+    		ex.printStackTrace();
+    	}
+    	
+    	return gcpl;
+    }
+    
     /*
      * (non-Javadoc)
      * 
@@ -1397,9 +1456,12 @@ public class H5File extends FileFormat {
      * java.lang.String, ncsa.hdf.object.HObject)
      */
     @Override
-	public HObject createLink(Group parentGroup, String name, HObject currentObj)
+	public HObject createLink(Group parentGroup, String name, Object currentObj)
     		throws Exception {
-    	return this.createLink(parentGroup, name, currentObj, HDF5Constants.H5L_TYPE_HARD);
+    	if(currentObj instanceof HObject)
+    		return this.createLink(parentGroup, name, (HObject)currentObj, Group.LINK_TYPE_HARD);
+    	else 
+    		return this.createLink(parentGroup, name, (String)currentObj, Group.LINK_TYPE_HARD);
     }
     
 	/**
@@ -1422,16 +1484,16 @@ public class H5File extends FileFormat {
 	 *             The exceptions thrown vary depending on the implementing
 	 *             class.
 	 */
-    public HObject createLink(Group parentGroup, String name, HObject currentObj, int type)
+    public HObject createLink(Group parentGroup, String name, HObject currentObj, int lType)
     throws Exception {
     	HObject obj = null;
+    	int type = 0;
     	String current_full_name = null, new_full_name = null, parent_path = null;
 
     	if (currentObj == null) {
     		throw new HDF5Exception(
     				"The object pointed by the link cannot be null.");
     	}
-
     	if ((parentGroup == null) || parentGroup.isRoot()) {
     		parent_path = HObject.separator;
     	}
@@ -1442,7 +1504,21 @@ public class H5File extends FileFormat {
 
     	new_full_name = parent_path + name;
 
-    	if(type ==HDF5Constants.H5L_TYPE_HARD){   	 
+    	if (lType == Group.LINK_TYPE_HARD)
+    		type = HDF5Constants.H5L_TYPE_HARD;
+    	    	
+    	else if (lType == Group.LINK_TYPE_SOFT)
+    		type = HDF5Constants.H5L_TYPE_SOFT;
+    	
+    	else if (lType == Group.LINK_TYPE_EXTERNAL)
+    		type = HDF5Constants.H5L_TYPE_EXTERNAL;
+    	
+    	if (H5.H5Lexists(fid, new_full_name, HDF5Constants.H5P_DEFAULT))
+		{
+				H5.H5Ldelete(fid, new_full_name, HDF5Constants.H5P_DEFAULT);
+		}
+    	
+    	if(type ==HDF5Constants.H5L_TYPE_HARD){   	 	
     		if ((currentObj instanceof Group) && ((Group) currentObj).isRoot()) {
     			throw new HDF5Exception("Cannot make a link to the root group.");
     		}
@@ -1453,12 +1529,12 @@ public class H5File extends FileFormat {
     				fid, new_full_name, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
     	}
 
-    	else if(type ==HDF5Constants.H5L_TYPE_SOFT){  	   	 	  
+    	else if(type==HDF5Constants.H5L_TYPE_SOFT){     		
     		H5.H5Lcreate_soft( currentObj.getFullName(), fid, new_full_name, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
     	}
 
     	else if(type ==HDF5Constants.H5L_TYPE_EXTERNAL){  
-    		H5.H5Lcreate_external(currentObj.getFile(), currentObj.getFullName(), fid, new_full_name, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);  	  
+    		H5.H5Lcreate_external(currentObj.getFile(), currentObj.getFullName(), fid, new_full_name, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
     	}
 
     	if (currentObj instanceof Group) {
@@ -1473,9 +1549,87 @@ public class H5File extends FileFormat {
     	else if (currentObj instanceof H5ScalarDS) {
     		obj = new H5ScalarDS(this, name, parent_path);
     	}
-
     	return obj;
     }
+
+	/**
+	 * Creates a soft or external links to objects in a file that do not exist
+	 * at the time the link is created.
+	 * 
+	 * @param parentGroup
+	 *            The group where the link is created.
+	 * @param name
+	 *            The name of the link.
+	 * @param currentObj
+	 *            The name of the object the new link will reference. The object
+	 *            doesn't have to exist.
+	 * @param type
+	 *            The type of link to be created.
+	 * @return The H5Link object pointed to by the new link if successful;
+	 *         otherwise returns null.
+	 * @throws Exception
+	 *             The exceptions thrown vary depending on the implementing
+	 *             class.
+	 */
+	public HObject createLink(Group parentGroup, String name,
+			String currentObj, int lType) throws Exception {
+		HObject obj = null;
+		int type = 0;
+		String new_full_name = null, parent_path = null;
+
+		if (currentObj == null) {
+			throw new HDF5Exception(
+			"The object pointed by the link cannot be null.");
+		}
+		if ((parentGroup == null) || parentGroup.isRoot()) {
+			parent_path = HObject.separator;
+		} else {
+			parent_path = parentGroup.getPath() + HObject.separator
+			+ parentGroup.getName() + HObject.separator;
+		}
+
+		new_full_name = parent_path + name;
+
+		if (lType == Group.LINK_TYPE_HARD)
+			type = HDF5Constants.H5L_TYPE_HARD;
+
+		else if (lType == Group.LINK_TYPE_SOFT)
+			type = HDF5Constants.H5L_TYPE_SOFT;
+
+		else if (lType == Group.LINK_TYPE_EXTERNAL)
+			type = HDF5Constants.H5L_TYPE_EXTERNAL;
+
+		if (H5.H5Lexists(fid, new_full_name, HDF5Constants.H5P_DEFAULT)) {
+			H5.H5Ldelete(fid, new_full_name, HDF5Constants.H5P_DEFAULT);
+		}
+
+		if (type == HDF5Constants.H5L_TYPE_SOFT) {
+			H5.H5Lcreate_soft(currentObj, fid, new_full_name,
+					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+		}
+
+		else if (type == HDF5Constants.H5L_TYPE_EXTERNAL) {
+			String fileName = null;
+			String objectName = null;
+
+			// separate the object name and the file name
+			fileName = currentObj.substring(0, currentObj
+					.lastIndexOf(FileFormat.FILE_OBJ_SEP));
+			objectName = currentObj.substring(currentObj
+					.indexOf(FileFormat.FILE_OBJ_SEP));
+			objectName = objectName.substring(3);
+
+			H5.H5Lcreate_external(fileName, objectName, fid, new_full_name,
+					HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+		}
+
+		if (name.startsWith(HObject.separator)) {
+			name = name.substring(1);
+		}
+		obj = new H5Link(this, name, parent_path);
+
+		return obj;
+	}
 
     /**
      * reload the sub-tree structure from file.
@@ -1824,213 +1978,226 @@ public class H5File extends FileFormat {
      *            the parent node.
      */
     private void depth_first(MutableTreeNode parentNode) {
-        // System.out.println("H5File.depth_first() pnode = "+parentNode);
-        int nelems;
-        MutableTreeNode node = null;
-        String fullPath = null;
-        String ppath = null;
-        String objName = null;
-        DefaultMutableTreeNode pnode = (DefaultMutableTreeNode) parentNode;
-        int gid = -1;
+    	// System.out.println("H5File.depth_first() pnode = "+parentNode);
+    	int nelems;
+    	MutableTreeNode node = null;
+    	String fullPath = null;
+    	String ppath = null;
+    	String objName = null;
+    	DefaultMutableTreeNode pnode = (DefaultMutableTreeNode) parentNode;
+    	int gid = -1;
 
-        H5Group pgroup = (H5Group) (pnode.getUserObject());
-        ppath = pgroup.getPath();
+    	H5Group pgroup = (H5Group) (pnode.getUserObject());
+    	ppath = pgroup.getPath();
 
-        if (ppath == null) {
-            fullPath = HObject.separator;
-            objName = "/";
-        }
-        else {
-            objName = pgroup.getName();
-            fullPath = ppath + pgroup.getName() + HObject.separator;
-        }
+    	if (ppath == null) {
+    		fullPath = HObject.separator;
+    		objName = "/";
+    	}
+    	else {
+    		objName = pgroup.getName();
+    		fullPath = ppath + pgroup.getName() + HObject.separator;
+    	}
 
-        nelems = 0;
-        try {
-            gid = pgroup.open();
-            H5G_info_t info = H5.H5Gget_info(gid);
-            nelems = (int) info.nlinks;
-        }
-        catch (HDF5Exception ex) {
-            nelems = -1;
-        }
+    	nelems = 0;
+    	try {
+    		gid = pgroup.open();
+    		H5G_info_t info = H5.H5Gget_info(gid);
+    		nelems = (int) info.nlinks;
+    	}
+    	catch (HDF5Exception ex) {
+    		nelems = -1;
+    	}
 
-        if (nelems <= 0) {
-            pgroup.close(gid);
-            return;
-        }
+    	if (nelems <= 0) {
+    		pgroup.close(gid);
+    		return;
+    	}
 
-        // since each call of H5.H5Gget_objname_by_idx() takes about one second.
-        // 1,000,000 calls take 12 days. Instead of calling it in a loop,
-        // we use only one call to get all the information, which takes about
-        // two seconds
-        int[] objTypes = new int[nelems];
-        int[] lnkTypes = new int[nelems];
-        long[] objRefs = new long[nelems];
-        String[] objNames = new String[nelems];
+    	// since each call of H5.H5Gget_objname_by_idx() takes about one second.
+    	// 1,000,000 calls take 12 days. Instead of calling it in a loop,
+    	// we use only one call to get all the information, which takes about
+    	// two seconds
+    	int[] objTypes = new int[nelems];
+    	int[] lnkTypes = new int[nelems];
+    	long[] objRefs = new long[nelems];
+    	String[] objNames = new String[nelems];
+    	int indx_type = HDF5Constants.H5_INDEX_NAME;
 
-        try {
-            H5.H5Gget_obj_info_all(fid, fullPath, objNames, objTypes, lnkTypes,
-                    objRefs);
-        }
-        catch (HDF5Exception ex) {
-            return;
-        }
+    	if(indexType==0){
+    		indx_type = HDF5Constants.H5_INDEX_NAME;
+    	}
+    	else if(indexType==1){
+    		indx_type = HDF5Constants.H5_INDEX_CRT_ORDER;
+    	}
+    	try {
+    		H5.H5Gget_obj_info_all(fid, fullPath, objNames, objTypes, lnkTypes,
+    				objRefs, indx_type);
+    	}
+    	catch (HDF5Exception ex) {
+    		return;
+    	}
 
-        int i0 = Math.max(0, getStartMembers());
-        int i1 = getMaxMembers();
-        if (i1 >= nelems) {
-            i1 = nelems;
-            i0 = 0; // load all members
-        }
-        i1 += i0;
-        i1 = Math.min(i1, nelems);
+    	int i0 = Math.max(0, getStartMembers());
+    	int i1 = getMaxMembers();
+    	if (i1 >= nelems) {
+    		i1 = nelems;
+    		i0 = 0; // load all members
+    	}
+    	i1 += i0;
+    	i1 = Math.min(i1, nelems);
 
-        long[] oid = null;
-        String obj_name;
-        int obj_type;
-        int lnk_type;  
+    	long[] oid = null;
+    	String obj_name;
+    	int obj_type;
+    	int lnk_type;  
 
-        // Iterate through the file to see members of the group
-        for (int i = i0; i < i1; i++) {
-            oid = null;
-            obj_name = objNames[i];
-            obj_type = objTypes[i];
-            lnk_type = lnkTypes[i];
-            long l = objRefs[i];
-           int[] otype = { 1 };
+    	// Iterate through the file to see members of the group
+    	for (int i = i0; i < i1; i++) {
+    		oid = null;
+    		obj_name = objNames[i];
+    		obj_type = objTypes[i];
+    		lnk_type = lnkTypes[i];
+    		long l = objRefs[i];
+    		int[] otype = { 1 };
 
-            if (obj_name == null) {
-                continue;
-            }
+    		if (obj_name == null) {
+    			continue;
+    		}
 
-            try {
-                if (lnk_type == HDF5Constants.H5L_TYPE_HARD) {
-                    // find the object linked to
-                    byte[] ref_buf = null;
-                    // String realName = H5.H5Lget_val( fid, fullPath+obj_name,
-                    // HDF5Constants.H5P_DEFAULT);
-                    String realName = fullPath + obj_name;
-                    if ((realName != null)
-                            && !realName.startsWith(HObject.separator)) {
-                        realName = fullPath + realName;
-                    }
-                    ref_buf = H5.H5Rcreate(fid, realName,
-                            HDF5Constants.H5R_OBJECT, -1);
-                    if ((realName != null) && (realName.length() > 0)
-                            && (ref_buf != null)) {
-                    	obj_type = H5.H5Rget_obj_type(fid, HDF5Constants.H5R_OBJECT, ref_buf, otype);
-                    }
-                }
-                oid = new long[1];
-                oid[0] = l; // save the object ID
-            }
-            catch (HDF5Exception ex) {
-                ex.printStackTrace();
-            }
+    		try {
+    			//  if (lnk_type == HDF5Constants.H5L_TYPE_HARD) {
+    			// find the object linked to
+    			byte[] ref_buf = null;
+    			// String realName = H5.H5Lget_val( fid, fullPath+obj_name,
+    			// HDF5Constants.H5P_DEFAULT);
+    			String realName = fullPath + obj_name;
+    			if ((realName != null)
+    					&& !realName.startsWith(HObject.separator)) {
+    				realName = fullPath + realName;
+    			}
+    			ref_buf = H5.H5Rcreate(fid, realName,
+    					HDF5Constants.H5R_OBJECT, -1);
+    			if ((realName != null) && (realName.length() > 0)
+    					&& (ref_buf != null)) {
+    				obj_type = H5.H5Rget_obj_type(fid, HDF5Constants.H5R_OBJECT, ref_buf, otype);
+    			}
+    			//  }
+    		oid = new long[1];
+    		oid[0] = l; // save the object ID
+    		}
+    		catch (HDF5Exception ex) {
+    			// ex.printStackTrace(); 
+    		}
 
-            // we need to use the OID for this release. we will rewrite this so
-            // that we do not use the deprecated constructor
+    		// we need to use the OID for this release. we will rewrite this so
+    		// that we do not use the deprecated constructor
 
-            if (oid == null) {
-                continue; // do the next one, if the object is not identified.
-            }
+    		if ((oid == null)&&(obj_type == HDF5Constants.H5O_TYPE_UNKNOWN)) {
+    			H5Link link = new H5Link(this, obj_name, fullPath, oid);
 
-            // create a new group
-            if (obj_type == HDF5Constants.H5O_TYPE_GROUP) {
-                H5Group g = new H5Group(this, obj_name, fullPath, pgroup, oid); // deprecated!
-                node = new DefaultMutableTreeNode(g) {
-                    public static final long serialVersionUID = HObject.serialVersionUID;
+    			node = new DefaultMutableTreeNode(link);
+    			pnode.add(node);
+    			pgroup.addToMemberList(link);
+    			continue; // do the next one, if the object is not identified.
+    		}
 
-                    @Override
-					public boolean isLeaf() {
-                        return false;
-                    }
-                };
-                pnode.add(node);
-                pgroup.addToMemberList(g);
+    		// create a new group
+    		if (obj_type == HDF5Constants.H5O_TYPE_GROUP) {
+    			H5Group g = new H5Group(this, obj_name, fullPath, pgroup, oid); // deprecated!
+    			node = new DefaultMutableTreeNode(g) {
+    				public static final long serialVersionUID = HObject.serialVersionUID;
 
-                // detect and stop loops
-                // a loop is detected if there exists object with the same
-                // object ID by tracing path back up to the root.
-                boolean hasLoop = false;
-                HObject tmpObj = null;
-                DefaultMutableTreeNode tmpNode = pnode;
-                while (tmpNode != null) {
-                    tmpObj = (HObject) tmpNode.getUserObject();
-                    if (tmpObj.equalsOID(oid)) {
-                        hasLoop = true;
-                        break;
-                    }
-                    else {
-                        tmpNode = (DefaultMutableTreeNode) tmpNode.getParent();
-                    }
-                }
+    				@Override
+    				public boolean isLeaf() {
+    					return false;
+    				}
+    			};
+    			pnode.add(node);
+    			pgroup.addToMemberList(g);
 
-                // recursively go through the next group
-                // stops if it has loop.
-                if (!hasLoop) {
-                    depth_first(node);
-                }
-            }
-            else if (obj_type == HDF5Constants.H5O_TYPE_DATASET) {
-                int did = -1, tid = -1, tclass = -1;
-                try {
-                	did = H5.H5Dopen(fid, fullPath + obj_name, HDF5Constants.H5P_DEFAULT);
-                    tid = H5.H5Dget_type(did);
+    			// detect and stop loops
+    			// a loop is detected if there exists object with the same
+    			// object ID by tracing path back up to the root.
+    			boolean hasLoop = false;
+    			HObject tmpObj = null;
+    			DefaultMutableTreeNode tmpNode = pnode;
+    			while (tmpNode != null) {
+    				tmpObj = (HObject) tmpNode.getUserObject();
+    				if (tmpObj.equalsOID(oid)) {
+    					hasLoop = true;
+    					break;
+    				}
+    				else {
+    					tmpNode = (DefaultMutableTreeNode) tmpNode.getParent();
+    				}
+    			}
 
-                    tclass = H5.H5Tget_class(tid);
-                    if ((tclass == HDF5Constants.H5T_ARRAY)
-                            || (tclass == HDF5Constants.H5T_VLEN)) {
-                        // for ARRAY, the type is determined by the base type
-                        int btid = H5.H5Tget_super(tid);
-                        tclass = H5.H5Tget_class(btid);
-                        try {
-                            H5.H5Tclose(btid);
-                        }
-                        catch (HDF5Exception ex) {
-                        }
-                    }
-                }
-                catch (HDF5Exception ex) {
-                }
-                finally {
-                    try {
-                        H5.H5Tclose(tid);
-                    }
-                    catch (HDF5Exception ex) {
-                    }
-                    try {
-                        H5.H5Dclose(did);
-                    }
-                    catch (HDF5Exception ex) {
-                    }
-                }
-                Dataset d = null;
+    			// recursively go through the next group
+    			// stops if it has loop.
+    			if (!hasLoop) {
+    				depth_first(node);
+    			}
+    		}
+    		else if (obj_type == HDF5Constants.H5O_TYPE_DATASET) {
+    			int did = -1, tid = -1, tclass = -1;
+    			try {
+    				did = H5.H5Dopen(fid, fullPath + obj_name, HDF5Constants.H5P_DEFAULT);
+    				tid = H5.H5Dget_type(did);
 
-                if (tclass == HDF5Constants.H5T_COMPOUND) {
-                    // create a new compound dataset
-                    d = new H5CompoundDS(this, obj_name, fullPath, oid); // deprecated!
-                }
-                else {
-                    // create a new scalar dataset
-                    d = new H5ScalarDS(this, obj_name, fullPath, oid); // deprecated!
-                }
+    				tclass = H5.H5Tget_class(tid);
+    				if ((tclass == HDF5Constants.H5T_ARRAY)
+    						|| (tclass == HDF5Constants.H5T_VLEN)) {
+    					// for ARRAY, the type is determined by the base type
+    					int btid = H5.H5Tget_super(tid);
+    					tclass = H5.H5Tget_class(btid);
+    					try {
+    						H5.H5Tclose(btid);
+    					}
+    					catch (HDF5Exception ex) {
+    					}
+    				}
+    			}
+    			catch (HDF5Exception ex) {
+    			}
+    			finally {
+    				try {
+    					H5.H5Tclose(tid);
+    				}
+    				catch (HDF5Exception ex) {
+    				}
+    				try {
+    					H5.H5Dclose(did);
+    				}
+    				catch (HDF5Exception ex) {
+    				}
+    			}
+    			Dataset d = null;
 
-                node = new DefaultMutableTreeNode(d);
-                pnode.add(node);
-                pgroup.addToMemberList(d);
-            }
-            else if (obj_type == HDF5Constants.H5O_TYPE_NAMED_DATATYPE) {
-                Datatype t = new H5Datatype(this, obj_name, fullPath, oid); // deprecated!
+    			if (tclass == HDF5Constants.H5T_COMPOUND) {
+    				// create a new compound dataset
+    				d = new H5CompoundDS(this, obj_name, fullPath, oid); // deprecated!
+    			}
+    			else {
+    				// create a new scalar dataset
+    				d = new H5ScalarDS(this, obj_name, fullPath, oid); // deprecated!
+    			}
 
-                node = new DefaultMutableTreeNode(t);
-                pnode.add(node);
-                pgroup.addToMemberList(t);
-            }
-        } // for ( i = 0; i < nelems; i++)
+    			node = new DefaultMutableTreeNode(d);
+    			pnode.add(node);
+    			pgroup.addToMemberList(d);
+    		}
+    		else if (obj_type == HDF5Constants.H5O_TYPE_NAMED_DATATYPE) {
+    			Datatype t = new H5Datatype(this, obj_name, fullPath, oid); // deprecated!
 
-        pgroup.close(gid);
+    			node = new DefaultMutableTreeNode(t);
+    			pnode.add(node);
+    			pgroup.addToMemberList(t);
+    		}
+
+    	} // for ( i = 0; i < nelems; i++)
+
+    	pgroup.close(gid);
 
     } // private depth_first()
 
@@ -2385,5 +2552,60 @@ public class H5File extends FileFormat {
     	catch(HDF5Exception ex){
     	}
     	return group;
+    }
+ 
+    /**
+     * Retrieves the name of the target object that is being linked to.
+     * 
+     * @param obj
+     *            The current link object.
+     * @return The name of the target object.
+     * @throws HDF5Exception
+     */
+    public static String getLinkTargetName(HObject obj) throws Exception{
+    	String[] link_value = {null,null};
+    	String targetObjName = null;
+    	
+    	if(obj==null){
+    		return null;
+    	}
+
+    	H5L_info_t link_info = null;
+    	try {
+    		link_info = H5.H5Lget_info(obj.getFID(), obj.getFullName(), HDF5Constants.H5P_DEFAULT);
+    	}
+    	catch (Throwable err) {
+    	}
+    	if(link_info!=null){
+    		if((link_info.type==HDF5Constants.H5L_TYPE_SOFT)||(link_info.type==HDF5Constants.H5L_TYPE_EXTERNAL)){
+    			try{
+    				H5.H5Lget_val(obj.getFID(), obj.getFullName(), link_value, HDF5Constants.H5P_DEFAULT);
+    			}catch(Exception ex){
+    				ex.printStackTrace();
+    			}
+    			if(link_info.type==HDF5Constants.H5L_TYPE_SOFT)
+    				targetObjName = link_value[0];
+    			else if(link_info.type==HDF5Constants.H5L_TYPE_EXTERNAL){
+
+    				targetObjName = link_value[1] + FileFormat.FILE_OBJ_SEP + link_value[0] ;
+    			}
+    		}
+    	}
+    	return targetObjName ;
+    }
+ 
+    /**
+     * Renames an attribute.
+     * 
+     * @param obj
+     *            The object whose attribute is to be renamed.
+     * @param oldAttrName
+     *            The current name of the attribute.
+     * @param newAttrName
+     *            The new name of the attribute.
+     * @throws HDF5Exception
+     */
+    public void renameAttribute(HObject obj, String oldAttrName, String newAttrName) throws Exception {
+    	H5.H5Arename_by_name(obj.getFID(), obj.getName(), oldAttrName, newAttrName, HDF5Constants.H5P_DEFAULT); 	
     }
 }

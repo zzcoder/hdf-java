@@ -21,6 +21,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 
+
 /**
  * FileFormat defines general interfaces for working with files whose data is
  * organized according to a supported format.
@@ -118,7 +119,7 @@ public abstract class FileFormat extends File {
      * 
      * @see ncsa.hdf.object.FileFormat#getHObject(String)
      */
-    public static final String FILE_OBJ_SEP = "#//";
+    public static final String FILE_OBJ_SEP = "://";
 
     /**
      * FileList keeps a list of supported FileFormats. This list can be updated
@@ -907,6 +908,20 @@ public abstract class FileFormat extends File {
     // what if already open? What if can't use requested access mode?
     // Can we doc exceptions better or in implementation methods?
 
+	/**
+	 * Opens file and returns a file identifier.
+	 * 
+	 * @param propList
+	 *            The property list is the list of parameters, like index type
+	 *            and the index order. The index type can be alphabetical or
+	 *            creation. The index order can be increasing order or
+	 *            decreasing order.
+	 * @return File identifier if successful; otherwise -1.
+	 * @throws Exception
+	 * 
+	 */
+    public abstract int open(int ...propList) throws Exception;
+    
     /**
      * Closes file associated with this instance.
      * <p>
@@ -1295,6 +1310,51 @@ public abstract class FileFormat extends File {
      */
     public abstract Group createGroup(String name, Group parentGroup)
             throws Exception;
+    
+	/**
+	 * Creates a new group with specified name in existing group.
+	 * <p>
+	 * If the parent group is null, the new group will be created in the root
+	 * group.
+	 * 
+	 * @param name
+	 *            The name of a new group.
+	 * @param pgroup
+	 *            The parent group object.
+	 * @param gplist
+	 *            The group creation properties, in which the order of the
+	 *            properties conforms the HDF5 library API, H5Gcreate(), i.e.
+	 *            lcpl, gcpl and gapl, where
+	 *           <ul>
+	 *            <li>lcpl : Property list for link creation <li>gcpl : Property
+	 *            list for group creation <li>gapl : Property list for group
+	 *            access
+	 *           </ul>
+	 * 
+	 * @return The new group if successful; otherwise returns null.
+	 * @throws Exception
+	 */
+    public abstract Group createGroup(String name, Group pgroup, int ... gplist) throws Exception;
+    
+	/***
+	 * Creates the group creation property list identifier, gcpl. This
+	 * identifier is used when creating Groups.
+	 * 
+	 * @param creationorder
+	 *            The order in which the objects in a group should be created.
+	 *            It can be Tracked or Indexed.
+	 * @param maxcompact
+	 *            The maximum number of links to store in the group in a compact
+	 *            format.
+	 * @param mindense
+	 *            The minimum number of links to store in the indexed
+	 *            format.Groups which are in indexed format and in which the
+	 *            number of links falls below this threshold are automatically
+	 *            converted to compact format.
+	 * @return The gcpl identifier.
+	 * @throws Exception
+	 */
+    public abstract int createGcpl(int creationorder, int maxcompact, int mindense) throws Exception;
 
     // REVIEW DOCS for createGroup(). Check and document exceptions.
 
@@ -1316,7 +1376,7 @@ public abstract class FileFormat extends File {
      *             class.
      */
     public abstract HObject createLink(Group linkGroup, String name,
-            HObject currentObj) throws Exception;
+            Object currentObj) throws Exception;
 
     // REVIEW DOCS for createLink().
     // Verify Implementing classes document these and also
@@ -1324,7 +1384,8 @@ public abstract class FileFormat extends File {
     // object is null, or the root group then what? document & verify!
 
 	/**
-	 * Creates a link to an object in the open file.
+	 * Creates a soft, hard or external link to an existing object in the open
+	 * file.
 	 * <p>
 	 * If parentGroup is null, the new link is created in the root group.
 	 * 
@@ -1344,6 +1405,30 @@ public abstract class FileFormat extends File {
 	 *             class.
 	 */
     public HObject createLink(Group parentGroup, String name, HObject currentObj, int type)
+    throws Exception {
+    	return createLink(parentGroup,name, currentObj);
+    }
+  
+	/**
+	 * Creates a soft or external links to objects in a file that do not exist
+	 * at the time the link is created.
+	 * 
+	 * @param parentGroup
+	 *            The group where the link is created.
+	 * @param name
+	 *            The name of the link.
+	 * @param currentObj
+	 *            The name of the object the new link will reference. The object
+	 *            doesn't have to exist.
+	 * @param type
+	 *            The type of link to be created.
+	 * @return The H5Link object pointed to by the new link if successful;
+	 *         otherwise returns null.
+	 * @throws Exception
+	 *             The exceptions thrown vary depending on the implementing
+	 *             class.
+	 */
+    public HObject createLink(Group parentGroup, String name, String currentObj, int type)
     throws Exception {
     	return createLink(parentGroup,name, currentObj);
     }
@@ -1672,4 +1757,42 @@ public abstract class FileFormat extends File {
         return theObj;
     }
 
+    /**
+     * Renames an attribute.
+     * 
+     * @param obj
+     *            The object whose attribute is to be renamed.
+     * @param oldAttrName
+     *            The current name of the attribute.
+     * @param newAttrName
+     *            The new name of the attribute.
+     * @throws HDF5Exception
+     */
+    public abstract void renameAttribute(HObject obj, String oldAttrName, String newAttrName) throws Exception;
+
+    /**
+     * Sets the bounds of library versions
+     * 					to the default earliest possible format.
+     * @throws HDF5Exception
+     */
+    public abstract void setLibBounds() throws Exception ;
+    
+    /**
+     * Sets the bounds of library versions.
+     * @param low
+     * 				The earliest version of the library.
+     * @param high
+     * 				The latest version of the library.
+     * @throws HDF5Exception
+     */
+    public abstract void setLibBounds(int low, int high) throws Exception ;
+    
+	/**
+	 * Gets the bounds of library versions
+	 * 
+	 * @return The earliest and latest library versions in an int array.
+	 * @throws HDF5Exception
+	 */
+    public abstract int[] getLibBounds() throws Exception;
+     
 }

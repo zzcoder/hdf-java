@@ -25,7 +25,7 @@ extern "C" {
 #endif
 
 #include "hdf.h"
-#include <jni.h>
+#include "jni.h"
 
 #ifdef __cplusplus
 #define ENVPTR (env)

@@ -45,6 +45,17 @@ public abstract class Group extends HObject {
      * Total number of (Groups and Datasets) of this group in file.
      */
     protected int nMembersInFile;
+    
+    public static final int LINK_TYPE_HARD = 0;
+    
+    public static final int LINK_TYPE_SOFT = 1;
+    
+    public static final int LINK_TYPE_EXTERNAL = 64;
+    
+    public static final int CRT_ORDER_TRACKED = 1;
+    
+    public static final int CRT_ORDER_INDEXED = 2;
+    
 
     /**
      * Constructs an instance of the group with specific name, path and parent
@@ -244,5 +255,4 @@ public abstract class Group extends HObject {
     public int getNumberOfMembersInFile() {
         return nMembersInFile;
     }
-
 }

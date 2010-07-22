@@ -56,12 +56,12 @@ extern "C" {
 #ifdef __cplusplus
     herr_t obj_info_all(hid_t g_id, const char *name, const H5L_info_t *linfo, void *op_data);
     herr_t obj_info_max(hid_t g_id, const char *name, const H5L_info_t *linfo, void *op_data);
-    int H5Gget_obj_info_all(hid_t, char **, int *, int *, unsigned long *);
+	int H5Gget_obj_info_all(hid_t, char **, int *, int *, unsigned long *, int);
     int H5Gget_obj_info_max(hid_t, char **, int *, int *, unsigned long *, int);
 #else
     static herr_t obj_info_all(hid_t g_id, const char *name, const H5L_info_t *linfo, void *op_data);
     static herr_t obj_info_max(hid_t g_id, const char *name, const H5L_info_t *linfo, void *op_data);
-    static int H5Gget_obj_info_all(hid_t, char **, int *, int *, unsigned long *);
+	static int H5Gget_obj_info_all(hid_t, char **, int *, int *, unsigned long *, int);
     static int H5Gget_obj_info_max(hid_t, char **, int *, int *, unsigned long *, int);
 #endif
 
@@ -750,12 +750,12 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1objtype_1by_1idx
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Gget_obj_info_all
- * Signature: (ILjava/lang/String;[Ljava/lang/String;[I[I[JI)I
+ * Signature: (ILjava/lang/String;[Ljava/lang/String;[I[I[JII)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
-  (JNIEnv *env, jclass clss, jint loc_id, jstring group_name,
-    jobjectArray objName, jintArray oType, jintArray lType, 
-    jlongArray oRef, int n)
+  (JNIEnv *env, jclass clss, jint loc_id, jstring group_name, 
+  jobjectArray objName, jintArray oType, jintArray lType,
+  jlongArray oRef, int n, jint indx_type)
 {
     herr_t ret_val = -1;
     char *gName=NULL;
@@ -768,6 +768,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
     unsigned long *refs;
     int i;
     int gid = loc_id;
+	int indexType = indx_type;
 
     if (group_name != NULL) {
         gName = (char *)ENVPTR->GetStringUTFChars(ENVPAR group_name,&isCopy);
@@ -824,7 +825,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
     oName = (char **)calloc(n, sizeof (*oName));
     refs = (unsigned long *)calloc(n, sizeof (unsigned long));
 
-    ret_val = H5Gget_obj_info_all( (hid_t) gid, oName, (int *)otarr, (int *)ltarr, refs );
+    ret_val = H5Gget_obj_info_all( (hid_t) gid, oName, (int *)otarr, (int *)ltarr, refs , indexType);
 
     if (group_name != NULL) {
         H5Gclose(gid);
@@ -961,7 +962,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1max
     return ret_val;
 }
 
-int H5Gget_obj_info_all( hid_t loc_id, char **objname, int *otype, int *ltype, unsigned long *objno )
+int H5Gget_obj_info_all( hid_t loc_id, char **objname, int *otype, int *ltype, unsigned long *objno, int indexType )
 {
     info_all_t info;
     info.objname = objname;
@@ -971,8 +972,10 @@ int H5Gget_obj_info_all( hid_t loc_id, char **objname, int *otype, int *ltype, u
     info.objno = objno;
     info.count = 0;
 
-    if(H5Literate(loc_id, H5_INDEX_NAME, H5_ITER_NATIVE, NULL, obj_info_all, (void *)&info) < 0)
-        return -1;
+	if(H5Literate(loc_id, (H5_index_t)indexType, H5_ITER_INC, NULL, obj_info_all, (void *)&info) < 0){
+		if(H5Literate(loc_id, H5_INDEX_NAME, H5_ITER_INC, NULL, obj_info_all, (void *)&info) < 0)
+        return -1;      
+	}
 
     return info.count;
 }
@@ -1001,12 +1004,14 @@ herr_t obj_info_all(hid_t loc_id, const char *name, const H5L_info_t *info, void
     H5O_info_t object_info;
 
     retVal = H5Oget_info_by_name(loc_id, name, &object_info, H5P_DEFAULT);
+
     if ( retVal < 0) {
         *(datainfo->otype+datainfo->count) = -1;
         *(datainfo->ltype+datainfo->count) = -1;
-        *(datainfo->objname+datainfo->count) = NULL;
+        *(datainfo->objname+datainfo->count) = (char *) malloc(strlen(name)+1);
+        strcpy(*(datainfo->objname+datainfo->count), name);
         *(datainfo->objno+datainfo->count) = -1;
-        return 1;
+        //return 1;
     } 
     else {
         *(datainfo->otype+datainfo->count) = object_info.type;
@@ -1014,7 +1019,7 @@ herr_t obj_info_all(hid_t loc_id, const char *name, const H5L_info_t *info, void
         /* this will be freed by h5str_array_free(oName, n)*/
         *(datainfo->objname+datainfo->count) = (char *) malloc(strlen(name)+1);
         strcpy(*(datainfo->objname+datainfo->count), name);
-        if(info->type==H5L_TYPE_HARD)
+		if(info->type==H5L_TYPE_HARD)
             *(datainfo->objno+datainfo->count) = (unsigned long)info->u.address;
         else
             *(datainfo->objno+datainfo->count) = info->u.val_size;
@@ -1045,7 +1050,7 @@ herr_t obj_info_max(hid_t loc_id, const char *name, const H5L_info_t *info, void
         /* this will be freed by h5str_array_free(oName, n)*/
         *(datainfo->objname+datainfo->count) = (char *) malloc(strlen(name)+1);
         strcpy(*(datainfo->objname+datainfo->count), name);
-        if(info->type==H5L_TYPE_HARD)
+		if(info->type==H5L_TYPE_HARD)
             *(datainfo->objno+datainfo->count) = (unsigned long)info->u.address;
         else
             *(datainfo->objno+datainfo->count) = info->u.val_size;
