@@ -167,4 +167,10 @@ public class NC2Group extends Group {
                 "Unsupported operation for NetCDF.");
     }
 
+    //Implementing DataFormat
+	@Override
+	public List getMetadata(int... attrPropList) throws Exception {
+		throw new UnsupportedOperationException("getMetadata(int... attrPropList) is not supported");
+	}
+
 }

@@ -14,6 +14,8 @@
 
 package ncsa.hdf.object.h4;
 
+import java.util.List;
+
 import ncsa.hdf.hdflib.*;
 import ncsa.hdf.object.*;
 
@@ -386,7 +388,13 @@ public class H4Datatype extends Datatype
      * @see ncsa.hdf.object.Datatype#close(int)
      */
     @Override
-	public void close(int id) {;}    
+	public void close(int id) {;}
+
+    //Implementing DataFormat
+	@Override
+	public List getMetadata(int... attrPropList) throws Exception {
+		throw new UnsupportedOperationException("getMetadata(int... attrPropList) is not supported");
+	}    
     
 
 }

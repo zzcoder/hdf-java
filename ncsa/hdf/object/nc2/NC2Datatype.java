@@ -14,6 +14,8 @@
 
 package ncsa.hdf.object.nc2;
 
+import java.util.List;
+
 import ucar.ma2.DataType;
 import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.HObject;
@@ -229,5 +231,11 @@ public class NC2Datatype extends Datatype {
 	public void close(int id) {
         ;
     }
+
+    //Implementing DataFormat
+	@Override
+	public List getMetadata(int... attrPropList) throws Exception {
+		throw new UnsupportedOperationException("getMetadata(int... attrPropList) is not supported");
+	}
 
 }

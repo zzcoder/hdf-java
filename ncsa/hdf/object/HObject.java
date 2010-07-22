@@ -123,6 +123,11 @@ public abstract class HObject implements Serializable, DataFormat {
      * HDF5 objects are uniquely identified by an object reference.
      */
     protected long[] oid;
+    
+    /**
+     * The name of the Target Object that is being linked to. 
+     */
+    public String linkTargetObjName;
 
     /**
      * Number of attributes attached to the object.
@@ -280,6 +285,17 @@ public abstract class HObject implements Serializable, DataFormat {
     public final String getName() {
         return name;
     }
+   
+    
+   
+    /**
+     * Returns the name of the target object that is linked to.
+     * 
+     * @return The name of the object that is linked to.
+     */
+    public final String getLinkTargetObjName() {  
+        return linkTargetObjName;
+      }
 
     /**
      * Returns the full name (group path + object name) of the object. For

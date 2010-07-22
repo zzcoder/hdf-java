@@ -164,17 +164,40 @@ public class H5Group extends Group {
      * @see ncsa.hdf.object.DataFormat#getMetadata()
      */
     public List getMetadata() throws HDF5Exception {
-        if (attributeList == null) {
-            int gid = open();
-            try {
-                attributeList = H5File.getAttribute(gid);
-            }
-            finally {
-                close(gid);
-            }
-        }
+    return this.getMetadata(HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC);
+    }
+    
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ncsa.hdf.object.DataFormat#getMetadata(int...)
+     */
+    public List getMetadata(int ...attrPropList) throws HDF5Exception {
+    	if (attributeList == null) {
+    		int gid = open();
+    		int indxType = HDF5Constants.H5_INDEX_NAME;
+    		int order = HDF5Constants.H5_ITER_INC;
+    		
+    		 if(attrPropList.length > 0) {
+    			 indxType = attrPropList[0];
+    	            if(attrPropList.length > 1) {
+    	            	order = attrPropList[1];
+    	            }
+    	        } 
+    		try {
+    			attributeList = H5File.getAttribute(gid, indxType, order);
+    		}
+    		finally {
+    			close(gid);
+    		} 
+    	}
 
-        return attributeList;
+    	try{
+    		this.linkTargetObjName= H5File.getLinkTargetName(this);
+    	}catch(Exception ex){    	
+    	}
+
+    	return attributeList;
     }
 
     /*
@@ -296,8 +319,7 @@ public class H5Group extends Group {
 	 *</ul> 
 	 *           
 	 * @return The new group if successful; otherwise returns null.
-	 */
-    
+	 */    
     public static H5Group create(String name, Group pgroup, int ... gplist) throws Exception {
         H5Group group = null;
         String fullPath = null;
@@ -362,6 +384,13 @@ public class H5Group extends Group {
             pgroup.addToMemberList(group);
         }
 
+        if(gcpl>0){
+        	try {
+        		H5.H5Pclose(gcpl);
+        	} catch (final Exception ex) {
+        	}
+        }
+        
         return group;
     }
 

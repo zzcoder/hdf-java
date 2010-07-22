@@ -56,6 +56,8 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
     private JButton currentDirButton;
     private JRadioButton checkReadOnly;
 
+    private JComboBox displayIndexChoice; 
+    
     private int fontSize;
 
     private boolean isFontChanged;
@@ -204,6 +206,10 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
 
         delimiterChoice = new JComboBox(delimiterChoices);
         delimiterChoice.setSelectedItem(ViewProperties.getDataDelimiter());
+        
+        String[] displayIndexChoices = {"alphabetical", "creation" };
+        displayIndexChoice = new JComboBox(displayIndexChoices);
+        displayIndexChoice.setSelectedItem(ViewProperties.getIndexType());
 
         JPanel centerP = new JPanel();
         centerP.setLayout(new GridLayout(9, 1, 10, 10));
@@ -350,6 +356,15 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         p0.setBorder(tborder);
         centerP.add(p0);
 
+        p0 = new JPanel();
+        p0.setLayout(new BorderLayout());
+        p0.add(new JLabel("Display Index order:  "), BorderLayout.WEST);
+        p0.add(displayIndexChoice, BorderLayout.CENTER);
+        tborder = new TitledBorder("Display order of members");
+        tborder.setTitleColor(Color.darkGray);
+        p0.setBorder(tborder);
+        centerP.add(p0);
+        
         return centerP;
     }
 
@@ -782,6 +797,10 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         ViewProperties.setDataDelimiter((String) delimiterChoice
                 .getSelectedItem());
 
+        
+        // set index type
+        ViewProperties.setIndexType((String) displayIndexChoice
+                .getSelectedItem());
         try {
             int maxsize = Integer.parseInt(maxMemberField.getText());
             ViewProperties.setMaxMembers(maxsize);

@@ -169,12 +169,12 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Glink
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Gget_obj_info_all
- * Signature: (ILjava/lang/String;[Ljava/lang/String;[I[I[JI)I
+ * Signature: (ILjava/lang/String;[Ljava/lang/String;[I[I[JII)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
-  (JNIEnv *env, jclass clss, jint loc_id, jstring group_name,
-    jobjectArray objName, jintArray oType, jintArray lType, 
-    jlongArray oRef, int n);
+  (JNIEnv *env, jclass clss, jint loc_id, jstring group_name, 
+  jobjectArray objName, jintArray oType, jintArray lType, 
+  jlongArray oRef, int n, jint indx_type);
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5

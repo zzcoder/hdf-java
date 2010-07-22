@@ -2,6 +2,7 @@ package test.hdf5lib;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -17,9 +18,12 @@ import org.junit.Test;
 
 public class TestH5G {
     private static final String H5_FILE = "test.h5";
+    private static final String H5_FILE2 = "test2.h5";
     private static final String[] GROUPS = { "/G1", "/G1/G11", "/G1/G12",
             "/G1/G11/G111", "/G1/G11/G112", "/G1/G11/G113", "/G1/G11/G114" };
+    private static final String[] GROUPS2 = { "/G1", "/G1/G14", "/G1/G12", "/G1/G13", "/G1/G11"};
     int H5fid = -1;
+    int H5fid2 = -1;
 
     private final int _createGroup(int fid, String name) {
         int gid = -1;
@@ -33,6 +37,35 @@ public class TestH5G {
         }
 
         return gid;
+    }
+    
+    private final int _createGroup2(int fid, String name) {
+    	int gid = -1;
+    	int gcpl = -1;
+    	try{
+    		gcpl = H5.H5Pcreate(HDF5Constants.H5P_GROUP_CREATE); //create gcpl
+    		if (gcpl >= 0) {
+    			H5.H5Pset_link_creation_order(gcpl,
+    					HDF5Constants.H5P_CRT_ORDER_TRACKED
+    					+ HDF5Constants.H5P_CRT_ORDER_INDEXED);//Set link creation order
+    		}
+    	} catch (final Exception ex) {
+    		fail("H5.H5Pcreate() failed. " + ex);
+    	}
+    	try {
+    		gid = H5.H5Gcreate(fid, name, HDF5Constants.H5P_DEFAULT,
+    				gcpl, HDF5Constants.H5P_DEFAULT);
+    	}
+    	catch (Throwable err) {
+    		err.printStackTrace();
+    		fail("H5.H5Gcreate: " + err);
+    	}
+    	try {
+    		H5.H5Pclose(gcpl);
+    	} catch (final Exception ex) {
+    	}
+    	
+    	return gid;
     }
 
     private final int _openGroup(int fid, String name) {
@@ -69,6 +102,9 @@ public class TestH5G {
 
         H5fid = H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_TRUNC,
                 HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        
+        H5fid2 = H5.H5Fcreate(H5_FILE2, HDF5Constants.H5F_ACC_TRUNC,
+                HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
 
         int gid = -1;
 
@@ -81,8 +117,19 @@ public class TestH5G {
             catch (Exception ex) {
             }
         }
+        
+        for (int i = 0; i < GROUPS2.length; i++) {
+            gid = _createGroup2(H5fid2, GROUPS2[i]);
+            assertTrue(gid > 0);
+            try {
+                H5.H5Gclose(gid);
+            }
+            catch (Exception ex) {
+            }
+        }
 
         H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
+        H5.H5Fflush(H5fid2, HDF5Constants.H5F_SCOPE_LOCAL);
     }
 
     @After
@@ -90,7 +137,11 @@ public class TestH5G {
         if (H5fid > 0) {
             H5.H5Fclose(H5fid);
         }
-        _deleteFile(H5_FILE);
+        if (H5fid2 > 0) {
+            H5.H5Fclose(H5fid2);
+        }
+       _deleteFile(H5_FILE);
+       _deleteFile(H5_FILE2);
     }
 
     @Test
@@ -395,6 +446,59 @@ public class TestH5G {
             assertNotNull("name #" + i + " does not exist", objNames[i]);
             assertTrue(objNames[i].length() > 0);
         }
+    }
+    
+    @Test
+    public void testH5Gget_obj_info_all_byIndexType() {
+        H5G_info_t info = null;
+
+        int gid = _openGroup(H5fid2, GROUPS2[0]);
+
+        try {
+            info = H5.H5Gget_info(gid);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Gget_info: " + err);
+        }
+        try {
+            H5.H5Gclose(gid);
+        }
+        catch (Exception ex) {
+        }
+        assertNotNull(info);
+        assertTrue("number of links is empty", info.nlinks > 0);
+        String objNames[] = new String[(int) info.nlinks];
+        int objTypes[] = new int[(int) info.nlinks];
+        int lnkTypes[] = new int[(int) info.nlinks];
+        long objRefs[] = new long[(int) info.nlinks];
+
+        
+        try {
+            H5.H5Gget_obj_info_all(H5fid2, GROUPS2[0], objNames,
+                    objTypes, lnkTypes, objRefs, HDF5Constants.H5_INDEX_CRT_ORDER);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Gget_obj_info_all: " + err);
+        }
+       
+        assertEquals("G12",objNames[1]);
+        assertEquals("G13", objNames[2] );
+        assertEquals("G11", objNames[3] );
+        
+        try {
+           H5.H5Gget_obj_info_all(H5fid2, GROUPS2[0], objNames,
+                    objTypes, lnkTypes, objRefs);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Gget_obj_info_all: " + err);
+        }
+        
+        assertEquals("G12",objNames[1]);
+        assertEquals("G13", objNames[2] );
+        assertEquals("G14", objNames[3] );
     }
 
 }

@@ -433,13 +433,6 @@ public class H4File extends FileFormat
 
         return newNode;
     }
-
-    // implementign FileFormat
-    @Override
-	public HObject createLink(Group parentGroup, String name, HObject currentObj) throws Exception
-    {
-        throw new UnsupportedOperationException("createLink() is not supported");
-    }
     
     /**
      * Creates a new attribute and attached to the object if attribute does
@@ -447,7 +440,7 @@ public class H4File extends FileFormat
      *
      * <p>
      * @param obj the object which the attribute is to be attached to.
-     * @param attr the atribute to attach.
+     * @param attr the attribute to attach.
      * @param isSDglobalAttr The indicator if the given attribute exists.
      */
     @Override
@@ -1751,4 +1744,56 @@ public class H4File extends FileFormat
 
         return obj;
     }
+
+    // implementing FileFormat
+	@Override
+	public int createGcpl(int creationorder, int maxcompact, int mindense)
+			throws Exception {
+		 throw new UnsupportedOperationException("createGcpl is not supported");
+	}
+
+	// implementing FileFormat
+	@Override
+	public Group createGroup(String name, Group pgroup, int... gplist)
+			throws Exception {
+		 throw new UnsupportedOperationException("createGroup is not supported");
+	}
+
+	// implementing FileFormat
+	@Override
+	public HObject createLink(Group linkGroup, String name, Object currentObj)
+			throws Exception {
+		throw new UnsupportedOperationException("createLink is not supported");
+	}
+
+	// implementing FileFormat
+	@Override
+	public int[] getLibBounds() throws Exception {
+		throw new UnsupportedOperationException("getLibBounds is not supported");
+	}
+
+	// implementing FileFormat
+	@Override
+	public int open(int... propList) throws Exception {
+		throw new UnsupportedOperationException("open(int... propList) is not supported");
+	}
+
+	// implementing FileFormat
+	@Override
+	public void renameAttribute(HObject obj, String oldAttrName,
+			String newAttrName) throws Exception {
+		throw new UnsupportedOperationException("renameAttribute is not supported");		
+	}
+
+	// implementing FileFormat
+	@Override
+	public void setLibBounds() throws Exception {
+		throw new UnsupportedOperationException("setLibBounds is not supported");		
+	}
+
+	// implementing FileFormat
+	@Override
+	public void setLibBounds(int low, int high) throws Exception {
+		throw new UnsupportedOperationException("setLibBounds is not supported");		
+	}
 }

@@ -15,6 +15,7 @@
 package ncsa.hdf.object.fits;
 
 import java.util.*;
+
 import ncsa.hdf.object.*;
 
 import java.lang.reflect.Array;
@@ -386,4 +387,10 @@ public class FitsDataset extends ScalarDS
 
         return offset;
     }
+
+    //Implementing DataFormat
+	@Override
+	public List getMetadata(int... attrPropList) throws Exception {
+		throw new UnsupportedOperationException("getMetadata(int... attrPropList) is not supported");	
+	}
 }
