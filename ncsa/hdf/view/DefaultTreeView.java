@@ -87,6 +87,8 @@ public class DefaultTreeView extends JPanel
      * The popup menu used to display user choice of actions on data object.
      */
     private final JPopupMenu popupMenu;
+    
+    private JSeparator separator;
 
     /** a list of editing GUI components */
     private List editGUIs;
@@ -148,9 +150,12 @@ public class DefaultTreeView extends JPanel
         //tree.setShowsRootHandles(true);
         int rowheight = 23 + (int)((tree.getFont().getSize()-12)*0.5);
         tree.setRowHeight(rowheight);
+       
+        // create the separator
+        separator= new JPopupMenu.Separator();
         
         // create the popupmenu
-        popupMenu = createPopupMenu();
+        popupMenu = createPopupMenu();       
 
         // reset the scroll increament
         // layout GUI component
@@ -322,7 +327,7 @@ public class DefaultTreeView extends JPanel
         item.setActionCommand("Close file");
         menu.add(item);
         
-        menu.addSeparator();
+        menu.add(separator);
         menu.add(setLibVerBoundsItem);
 
         return menu;
@@ -371,15 +376,19 @@ public class DefaultTreeView extends JPanel
             addLinkMenuItem.setVisible(true);
             if ((selectedObject instanceof Group)){
             	boolean state = (((Group)selectedObject).isRoot());
+            	separator.setVisible(isWritable && state);
             	setLibVerBoundsItem.setVisible(isWritable && state); //added only if it is HDF5format, iswritable & isroot
             }
-            else
+            else{
+            	separator.setVisible(false);
             	setLibVerBoundsItem.setVisible(false);
+            }
         } else
         {
             addTableMenuItem.setVisible(false);
             addDatatypeMenuItem.setVisible(false);
             addLinkMenuItem.setVisible(false);
+            separator.setVisible(false);
             setLibVerBoundsItem.setVisible(false);
         }
 
