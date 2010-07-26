@@ -610,40 +610,41 @@ public class DataOptionDialog extends JDialog implements ActionListener,
     public void itemStateChanged(ItemEvent e) {
         Object source = e.getSource();
 
-   //     if (source instanceof JRadioButton) {
-            if (source.equals(imageButton) || source.equals(spreadsheetButton)) {
-                choicePalette.setEnabled(imageButton.isSelected()
-                        && !isTrueColorImage);
+  //     if (source instanceof JRadioButton) {
+        if (source.equals(imageButton) || source.equals(spreadsheetButton)) {
+        	choicePalette.setEnabled(imageButton.isSelected()
+        			&& !isTrueColorImage);
 
-                if (imageButton.isSelected()) {
-                    choiceImageView.setEnabled(true);
-                    choiceTableView.setEnabled(false);
-                }
-                else {
-                    choiceImageView.setEnabled(false);
-                    choiceTableView.setEnabled(true);
-                }
+        	if (imageButton.isSelected()) {
+        		choiceImageView.setEnabled(true);
+        		choiceTableView.setEnabled(false);
+        	}
+        	else {
+        		choiceImageView.setEnabled(false);
+        		choiceTableView.setEnabled(true);
+        	}
 
-                // reset show char button
-                Datatype dtype = dataset.getDatatype();
-                int tclass = dtype.getDatatypeClass();
-                if (tclass == Datatype.CLASS_CHAR
-                        || tclass == Datatype.CLASS_INTEGER) {
-                    int tsize = dtype.getDatatypeSize();
-                    charCheckbox.setEnabled(spreadsheetButton.isSelected()
-                            && (tsize == 1));
-                    bitmaskCheckbox.setEnabled((tsize <= 2));
-                }                
-                else {
-                	charCheckbox.setEnabled(false);
-                	charCheckbox.setSelected(false);
-                    bitmaskCheckbox.setEnabled(false);
-                    bitmaskCheckbox.setSelected(false);
-                }
-                setEnableBitmask(bitmaskCheckbox.isEnabled()
-                        && bitmaskCheckbox.isSelected());
-                
-            }
+        	// reset show char button
+        	Datatype dtype = dataset.getDatatype();
+        	int tclass = dtype.getDatatypeClass();
+        	if (tclass == Datatype.CLASS_CHAR
+        			|| tclass == Datatype.CLASS_INTEGER) {
+        		int tsize = dtype.getDatatypeSize();
+        		charCheckbox.setEnabled(spreadsheetButton.isSelected()
+        				&& (tsize == 1));
+        		bitmaskCheckbox.setEnabled((tsize <= 2));
+        	}                
+        	else {
+        		charCheckbox.setEnabled(false);
+        		charCheckbox.setSelected(false);
+        		bitmaskCheckbox.setEnabled(false);
+        		bitmaskCheckbox.setSelected(false);
+        	}
+        	if(bitmaskCheckbox.isEnabled())
+        		setEnableBitmask(bitmaskCheckbox.isEnabled()
+        				&& bitmaskCheckbox.isSelected());
+
+        }
            if (source.equals(bitmaskCheckbox)) {
                 if (bitmaskCheckbox.isSelected())
                 	charCheckbox.setSelected(false);
