@@ -172,6 +172,11 @@ public abstract class ScalarDS extends Dataset {
             convertedBuf = convertFromUnsignedC(originalBuf, convertedBuf);
             data = convertedBuf;
             unsignedConverted = true;
+            
+            if (fillValue != null) {
+            	fillValue = convertFromUnsignedC(fillValue, null);
+            }
+            	
         }
 
         return data;
