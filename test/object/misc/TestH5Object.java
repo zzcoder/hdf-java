@@ -799,7 +799,7 @@ public class TestH5Object
             }
             try { obj.getFileFormat().close(); } catch (final Exception ex2) {}
 
-            obj = FileFormat.getHObject(fname+"#//"+NAME_GROUP_SUB);
+            obj = FileFormat.getHObject(fname+"://"+NAME_GROUP_SUB);
             if (obj == null) {
                 failed(message, new HDF5Exception("Failed to get a group"), file);
                 return 1;
@@ -818,7 +818,7 @@ public class TestH5Object
             }
             try { obj.getFileFormat().close(); } catch (final Exception ex2) {}
             
-            obj = FileFormat.getHObject(fname+"#//"+NAME_DATASET_FLOAT);
+            obj = FileFormat.getHObject(fname+"://"+NAME_DATASET_FLOAT);
             if (obj == null) {
                 failed(message, new HDF5Exception("Failed to get a dataset"), file);
                 return 1;
