@@ -46,8 +46,6 @@ JUNITSDISTJARFILE = ./lib/junit.jar
 
 NC2OBJDISTFILES= ./ncsa/hdf/object/nc2/*.java ./lib/netcdf.jar 
 
-NPOESSDISTFILES= ./ext/npoess/*.java 
-
 FITSOBJDISTFILES= ./ncsa/hdf/object/fits/*.java ./lib/fits.jar 
 
 TOPDIST=./VERSION ./COPYING ./Makefile.in \
@@ -114,8 +112,6 @@ HDFVIEWPACKAGES= ncsa.hdf.view
 
 TESTPACKAGES = test.object
 
-NPOESSPACKAGES = ext.npoess
-
 
 .SUFFIXES: .java .class
 
@@ -164,10 +160,6 @@ do-jh5obj-packages: $(H5OBJPACKAGES)
 
 jhdfview-packages: $(HDFVIEWPACKAGES)  
 	$(JAR) cf ./lib/jhdfview.jar $(HDFVIEWCLASSES) $(HDFVIEWICONS)
-
-npoess-packages: $(NPOESSPACKAGES)
-	-mkdir -p ./lib/ext 
-	$(JAR) cf ./lib/ext/npoess.jar $(NPOESSCLASSES)
 
 classes: packages
 
@@ -221,7 +213,6 @@ clean-classes:
 	$(RM) -f ./lib/jhdfview.jar
 	$(RM) -f ./lib/ext/nc2obj.jar
 	$(RM) -f ./lib/ext/fitsobj.jar
-	$(RM) -f ./lib/ext/npoess.jar
 
 clean-packages: clean-classes
 
@@ -542,9 +533,6 @@ ncsa.hdf.object.fits: ncsa/hdf/object/fits/FitsDataset.class \
 	ncsa/hdf/object/fits/FitsFile.class \
 	ncsa/hdf/object/fits/FitsGroup.class
 
-ext.npoess:	ext/npoess/DataOptionNPOESS.class \
-	ext/npoess/TreeViewNPOESS.class
-
 #
 # The test files are not included in the preliminary source release
 #
@@ -693,8 +681,6 @@ NC2Dataset: ncsa/hdf/object/nc2/NC2Dataset.class
 NC2Datatype: ncsa/hdf/object/nc2/NC2Datatype.class
 NC2File: ncsa/hdf/object/nc2/NC2File.class
 NC2Group: ncsa/hdf/object/nc2/NC2Group.class
-TreeViewNPOESS: ext/npoess/TreeViewNPOESS.class
-DataOptionNPOESS: ext/npoess/DataOptionNPOESS.class
 
 #  All classes that are built, including private classes:
 #     This is what is loaded into the 'jar' file.
@@ -716,8 +702,6 @@ H4OBJCLASSES= ./ncsa/hdf/object/h4/*.class
 H5OBJCLASSES= ./ncsa/hdf/object/h5/*.class
 
 NC2OBJCLASSES= ./ncsa/hdf/object/nc2/*.class
-
-NPOESSCLASSES= ./ext/npoess/*.class
 
 FITSOBJCLASSES= ./ncsa/hdf/object/fits/*.class
 
@@ -850,5 +834,4 @@ JAVASRCS= \
 ./test/object/misc/TestH5File.java \
 ./ncsa/hdf/object/nc2/*.java \
 ./ncsa/hdf/object/fits/*.java \
-./ext/npoess/*.java \
 
