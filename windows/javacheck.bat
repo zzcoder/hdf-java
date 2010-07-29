@@ -60,19 +60,19 @@ rem Parse through the parameters sent to file, and set appropriate variables
 rem Setup our environment
 :setup
 	echo.Setting environment
-	if !%JAVAHOME%!"\bin\javac.exe"=="\bin\javac.exe" (
+	if "!%JAVAHOME%!\bin\javac.exe"=="\bin\javac.exe" (
 		echo.%JAVAHOME%\bin\javac.exe not found,
 		echo.please check your java home directory.
 		goto error
 	)
-	set java_compile=%JAVAHOME%\bin\javac.exe
+	set java_compile="%JAVAHOME%\bin\javac.exe"
 
-	if !%JAVAHOME%!"\bin\java.exe"=="\bin\java.exe" (
+	if "!%JAVAHOME%!\bin\java.exe"=="\bin\java.exe" (
 		echo.%JAVAHOME%\bin\java.exe not found,
 		echo.please check your java home directory.
 		goto error
 	)
-	set java_run=%JAVAHOME%\bin\java.exe
+	set java_run="%JAVAHOME%\bin\java.exe"
 	
 	if not exist "%TESTDIR%\win32lib" (
 		mkdir %TESTDIR%\win32lib

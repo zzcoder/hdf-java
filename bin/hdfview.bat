@@ -50,12 +50,12 @@ rem Parse through the parameters sent to file, and set appropriate variables
 rem Setup our environment
 :setup
 	echo.Setting environment
-	if !%JAVAHOME%!"\bin\java.exe"=="\bin\java.exe" (
+	if "!%JAVAHOME%!\bin\java.exe"=="\bin\java.exe" (
 		echo.%JAVAHOME%\bin\java.exe not found,
 		echo.please check your java home directory.
 		goto error
 	)
-	set java_run=%JAVAHOME%\bin\java.exe
+	set java_run="%JAVAHOME%\bin\java.exe"
 	
 	set INSTALLDIR=%CD%
 	
@@ -101,7 +101,7 @@ rem This is where the magic happens
     )
 
     if "%nerrors%"=="0" (
-		%JAVAHOME%\bin\java -Xmx1024m -Djava.library.path=%PATH% -Dhdfview.root=%INSTALLDIR% -classpath %CLASSPATH% ncsa.hdf.view.HDFView -root %INSTALLDIR%
+		%java_run% -Xmx1024m -Djava.library.path=%PATH% -Dhdfview.root=%INSTALLDIR% -classpath %CLASSPATH% ncsa.hdf.view.HDFView -root %INSTALLDIR%
     )
     rem Fall through to end
 
