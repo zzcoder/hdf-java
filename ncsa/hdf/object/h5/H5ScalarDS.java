@@ -694,7 +694,7 @@ public class H5ScalarDS extends ScalarDS {
         if (rank <= 0) {
             init();
         }
-
+        
         if (isExternal) {
             String pdir = this.getFileFormat().getAbsoluteFile().getParent();
             if (pdir == null) {

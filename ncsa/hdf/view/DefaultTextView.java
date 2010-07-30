@@ -120,11 +120,7 @@ public class DefaultTextView extends JInternalFrame implements TextView,
 
         try {
             text = (String[]) dataset.getData();
-        }
-        catch (Exception ex) {
-            viewer.showStatus(ex.toString());
-            text = null;
-        }
+        } catch (Exception ex) { text = null; }
 
         if (text == null) {
             viewer.showStatus("Loading text dataset failed - "
