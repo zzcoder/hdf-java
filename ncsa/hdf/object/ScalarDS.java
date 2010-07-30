@@ -103,6 +103,11 @@ public abstract class ScalarDS extends Dataset {
      * order of dimensions
      */
     protected boolean isDefaultImageOrder;
+    
+    /**
+     * Flag to indicate if the FillValue is converted from unsigned C.
+     */
+    public boolean isFillValueConverted;
 
     /**
      * Constructs an instance of a ScalarDS with specific name and path. An HDF
@@ -142,6 +147,7 @@ public abstract class ScalarDS extends Dataset {
         imageDataRange = null;
         isImageDisplay = false;
         isDefaultImageOrder = true;
+        isFillValueConverted = false;
     }
 
     /*
@@ -174,7 +180,10 @@ public abstract class ScalarDS extends Dataset {
             unsignedConverted = true;
             
             if (fillValue != null) {
+            	if(!isFillValueConverted){
             	fillValue = convertFromUnsignedC(fillValue, null);
+            	isFillValueConverted = true;
+            	}
             }
             	
         }
