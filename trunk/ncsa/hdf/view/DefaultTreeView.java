@@ -1811,6 +1811,7 @@ public class DefaultTreeView extends JPanel
     public DataView showDataContent(HObject dataObject)
         throws Exception
     {
+    	
         if ((dataObject == null) ||!(dataObject instanceof Dataset)) {
             return null; // can only display dataset
         }
