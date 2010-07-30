@@ -363,16 +363,23 @@ public class DataOptionDialog extends JDialog implements ActionListener,
                     sheetP2.setBorder(new TitledBorder("Set Bitmask"));
 
                     JPanel tmpP = new JPanel();
-                    tmpP
-                            .setLayout(new GridLayout(2,
-                                    bitmaskButtons.length / 2));
-                    
-                    for (int i = 0; i<=bitmaskButtons.length / 2 - 1; i++)
-                        tmpP.add(bitmaskButtons[i]);
-                    
-                    for (int i = bitmaskButtons.length / 2; i <= bitmaskButtons.length - 1; i++)
-                        tmpP.add(bitmaskButtons[i]);
+                    if(bitmaskButtons.length <=8){
+                    	tmpP.setLayout(new GridLayout(1,
+                    			bitmaskButtons.length ));
+                    	for (int i = 0; i<=bitmaskButtons.length  - 1; i++)
+                    		tmpP.add(bitmaskButtons[i]);
+                    }
+                    else{
+                    	tmpP
+                    	.setLayout(new GridLayout(2,
+                    			bitmaskButtons.length / 2));
 
+                    	for (int i = 0; i<=bitmaskButtons.length / 2 - 1; i++)
+                    		tmpP.add(bitmaskButtons[i]);
+
+                    	for (int i = bitmaskButtons.length / 2; i <= bitmaskButtons.length - 1; i++)
+                    		tmpP.add(bitmaskButtons[i]);
+                    }
                     sheetP2.setLayout(new BorderLayout(10, 10));
                     sheetP2.add(tmpP, BorderLayout.CENTER);
 
@@ -1167,8 +1174,12 @@ public class DataOptionDialog extends JDialog implements ActionListener,
 
             try {
                 Object data = sd.read();
-                byte[] bData = Tools.getBytes(data, sd.getImageDataRange(), sd
-                        .getFillValue(), null);
+                Object fillValue = sd.getFillValue();
+                if (fillValue != null){
+                	if(sd.isFillValueConverted)
+                    	fillValue = sd.convertToUnsignedC(fillValue, null);
+                }
+                byte[] bData = Tools.getBytes(data, sd.getImageDataRange(), fillValue, null);
 
                 int h = sd.getHeight();
                 int w = sd.getWidth();
