@@ -374,6 +374,11 @@ public class H4SDS extends ScalarDS
         	catch (Exception ex) {}
         }
 
+        if ((rank > 1) && (selectedIndex[0] > selectedIndex[1]))
+            isDefaultImageOrder = false;
+        else
+            isDefaultImageOrder = true;
+        
         return theData;
     }
 

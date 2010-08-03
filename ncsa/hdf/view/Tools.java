@@ -970,7 +970,12 @@ public final class Tools {
             return null;
 
         if (byteData == null)
-            byteData = rawData;
+        {
+        	if(isTransposed)
+        		byteData = new byte[rawData.length];
+        	else
+        		byteData = rawData;
+        }
         else
             System.arraycopy(rawData, 0, byteData, 0, rawData.length);
 
