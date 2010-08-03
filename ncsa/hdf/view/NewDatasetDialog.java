@@ -125,6 +125,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         contentPane.setPreferredSize(new Dimension(w, h));
 
         JButton okButton = new JButton("   Ok   ");
+        okButton.setName("OK");
         okButton.setActionCommand("Ok");
         okButton.setMnemonic(KeyEvent.VK_O);
         okButton.addActionListener(this);
@@ -157,6 +158,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         tmpP = new JPanel();
         tmpP.setLayout(new GridLayout(2, 1));
         tmpP.add(nameField = new JTextField());
+        nameField.setName("datasetname");
         tmpP.add(parentChoice);
         namePanel.add(tmpP, BorderLayout.CENTER);
         contentPane.add(namePanel, BorderLayout.NORTH);

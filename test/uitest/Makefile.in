@@ -11,19 +11,26 @@
 # * access to the file, you may request a copy from help@hdfgroup.org.        *
 # ****************************************************************************/
 
-all:
-	(cd hdf5lib; $(MAKE);)
-	(cd object; $(MAKE);)
-	(cd object/misc; $(MAKE);)
-	(cd uitest; $(MAKE);)
 
-check:
-	(cd hdf5lib; $(MAKE) check;)
-	(cd object; $(MAKE) check;)
-	(cd object/misc; $(MAKE) check)
+JAVAC           = @JAVAC@
+RM           = @RM@
+
+CLASSPATH=@CLASSPATH@:../../lib/junit.jar:../../lib/fest-swing-1.2.jar:../../lib/jcip-annotations-1.0.jar
+
+.SUFFIXES: .java .class
+
+.java.class:
+	$(JAVAC) -classpath $(CLASSPATH) $<
+
+all: \
+	TestHDFView.class \
+	AllTests.class 
+
+
+check: all
+	chmod u+x junit.sh; ./junit.sh
 
 clean:
-	(cd hdf5lib; $(MAKE) clean;)
-	(cd object; $(MAKE) clean;)
-	(cd object/misc; $(MAKE) clean)
-	
+	$(RM) *.class
+	$(RM) -f *.h5
+

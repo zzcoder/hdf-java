@@ -671,6 +671,7 @@ ChangeListener, DropTargetListener
         // open file button
         JButton button = new JButton(ViewProperties.getFileopenIcon() );
         tbar.add( button );
+        button.setName("Open");
         button.setToolTipText( "Open" );
         button.addActionListener( this );
         button.setActionCommand( "Open file" );
@@ -678,6 +679,7 @@ ChangeListener, DropTargetListener
         // close file button
         button = new JButton(ViewProperties.getFilecloseIcon() );
         tbar.add( button );
+        button.setName("Close");
         button.setToolTipText( "Close" );
         button.addActionListener( this );
         button.setActionCommand( "Close file" );
@@ -687,6 +689,7 @@ ChangeListener, DropTargetListener
         // help button
         button = new JButton( ViewProperties.getHelpIcon() );
         tbar.add( button );
+        button.setName("Help");
         button.setToolTipText( "Help" );
         button.addActionListener( this );
         button.setActionCommand( "Users guide" );
@@ -694,6 +697,7 @@ ChangeListener, DropTargetListener
         // HDF4 Library Version button
         button = new JButton( ViewProperties.getH4Icon() );
         tbar.add( button );
+        button.setName("HDF4 library");
         button.setToolTipText( "HDF4 Library Version" );
         button.addActionListener( this );
         button.setActionCommand( "HDF4 library" );
@@ -704,6 +708,7 @@ ChangeListener, DropTargetListener
         // HDF5 Library Version button
         button = new JButton( ViewProperties.getH5Icon() );
         tbar.add( button );
+        button.setName("HDF5 library");
         button.setToolTipText( "HDF5 Library Version" );
         button.addActionListener( this );
         button.setActionCommand( "HDF5 library" );
@@ -2170,9 +2175,18 @@ ChangeListener, DropTargetListener
                 }
             }
         }
+        final Vector the_flist = flist;
+        final String the_rootDir = rootDir;
+        final int the_X=X, the_Y=Y, the_W=W, the_H=H;
+        //Schedule a job for the event-dispatching thread:
+        //creating and showing this application's GUI.
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                HDFView frame = new HDFView(the_rootDir, the_flist, the_W, the_H, the_X, the_Y);
+                frame.setVisible(true);
+            }
+        });
 
-        HDFView frame = new HDFView(rootDir, flist, W, H, X, Y);
-        frame.setVisible(true);
         //try { loadExtModules(); } catch (Exception ex) {}
     }
 }
