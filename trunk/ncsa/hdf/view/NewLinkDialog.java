@@ -257,7 +257,7 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
         		+ "in a different HDF5 file from the location of the link. External links are \n"
         		+ "allowed to dangle like soft links. \n\n"
         		+ "Soft links and external links are also known as symbolic links as they use \n" 
-        		+ "a name to point to an object; hard links employ an object’s address in the file.  \n\n\n";
+        		+ "a name to point to an object; hard links employ an object's address in the file.  \n\n\n";
         	JOptionPane.showMessageDialog(this, msg);
         }
    

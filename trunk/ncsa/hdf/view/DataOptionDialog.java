@@ -1207,6 +1207,17 @@ public class DataOptionDialog extends JDialog implements ActionListener,
                             }
                         }
                     }
+                    if (!isH5 && !sd.isDefaultImageOrder()&& (selectedIndex[1] > selectedIndex[0])) {
+                        // transpose data for hdf4 images where selectedIndex[1] > selectedIndex[0]
+                        int n = bData.length;
+                        byte[] bData2 = new byte[n];
+                        System.arraycopy(bData, 0, bData2, 0, n);
+                        for (int i = 0; i < h; i++) {
+                            for (int j = 0; j < w; j++) {
+                                bData[i * w + j] = bData2[j * h + i];
+                            }
+                        }
+                    }
                     preImage = Tools.createIndexedImage(bData, imagePalette, w,
                             h);
                 }
