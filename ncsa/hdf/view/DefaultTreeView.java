@@ -1899,17 +1899,18 @@ public class DefaultTreeView extends JPanel
             Object[] paramObj = null;
             try {
                 Class[] paramClass = { FileFormat.class, String.class,
-                        String.class };
+                        String.class, long[].class};
                 constructor = d.getClass().getConstructor(paramClass);
+                
                 paramObj = new Object[] { d.getFileFormat(), d.getName(),
-                        d.getPath() };
+                        d.getPath() , d.getOID()};
             }
             catch (Exception ex) {
                 constructor = null;
             }
 
             try {
-                d_copy = (ScalarDS) constructor.newInstance(paramObj);
+               d_copy = (ScalarDS) constructor.newInstance(paramObj);
             }
             catch (Exception ex) {
                 d_copy = null;
@@ -1929,6 +1930,7 @@ public class DefaultTreeView extends JPanel
                             .getSelectedIndex(), 0, 3);
                 }
                 catch (Throwable ex) {
+                	ex.printStackTrace();
                 }
 
                 map.put(ViewProperties.DATA_VIEW_KEY.OBJECT, d_copy);
