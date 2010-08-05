@@ -168,10 +168,9 @@ public class Chart extends JDialog implements ActionListener {
             findDataRange();
         }
 
-        if ((ymax > 0.000001) && (ymax < 1000000)) {
-            format = new java.text.DecimalFormat("0.######");
+        if ((ymax < 0.0001) || (ymax > 100000)) {
+            format = new java.text.DecimalFormat("###.####E0#");
         }
-
         chartP = new ChartPanel();
         chartP.setBackground(Color.white);
 
@@ -179,7 +178,7 @@ public class Chart extends JDialog implements ActionListener {
     }
 
     /**
-     * Creates and layouts GUI componentes.
+     * Creates and layouts GUI components.
      */
     protected void createUI() {
         Window owner = getOwner();
