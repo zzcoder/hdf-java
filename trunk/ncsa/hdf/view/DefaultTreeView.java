@@ -105,10 +105,14 @@ public class DefaultTreeView extends JPanel
     private JMenuItem setLibVerBoundsItem;
     
     private String currentSearchPhrase = null;
+    
+    private boolean moveFlag;
+    
+    private TreePath[] currentSelectionsForMove ;
 
     public DefaultTreeView(ViewManager theView) {
         viewer = theView;
-
+        
         root = new DefaultMutableTreeNode() {
         	public static final long serialVersionUID = HObject.serialVersionUID;
 
@@ -122,6 +126,8 @@ public class DefaultTreeView extends JPanel
         isDefaultDisplay = true;
         selectedTreePath = null;
         selectedNode = null;
+        moveFlag = false;
+        currentSelectionsForMove= null;
 
         addTableMenuItem = new JMenuItem( "Table", ViewProperties.getTableIcon());
         addTableMenuItem.addActionListener(this);
@@ -266,6 +272,13 @@ public class DefaultTreeView extends JPanel
         item.setActionCommand("Cut object");
         menu.add(item);
         editGUIs.add(item);
+        
+        item = new JMenuItem( "Cut");
+        item.setMnemonic(KeyEvent.VK_T);
+        item.addActionListener(this);
+        item.setActionCommand("Move object");
+        menu.add(item);
+        editGUIs.add(item);
 
         menu.addSeparator();
 
@@ -354,8 +367,9 @@ public class DefaultTreeView extends JPanel
             popupMenu.getComponent(5).setEnabled(state); // "Copy" menuitem
             popupMenu.getComponent(6).setEnabled(isWritable); // "Paste" menuitem
             popupMenu.getComponent(7).setEnabled(state && isWritable); // "Delete" menuitem
-            popupMenu.getComponent(9).setEnabled(state); // "save to" menuitem
-            popupMenu.getComponent(10).setEnabled(state && isWritable); // "rename" menuitem
+            popupMenu.getComponent(10).setEnabled(state); // "save to" menuitem
+            popupMenu.getComponent(11).setEnabled(state && isWritable); // "rename" menuitem
+            popupMenu.getComponent(8).setEnabled((selectedObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5)))&& state && isWritable); // "cut" menuitem
         }
         else {
             popupMenu.getComponent(0).setEnabled(true);
@@ -363,8 +377,9 @@ public class DefaultTreeView extends JPanel
             popupMenu.getComponent(5).setEnabled(true); // "Copy" menuitem
             popupMenu.getComponent(6).setEnabled(isWritable); // "Paste" menuitem
             popupMenu.getComponent(7).setEnabled(isWritable); // "Delete" menuitem
-            popupMenu.getComponent(9).setEnabled(true); // "save to" menuitem
-            popupMenu.getComponent(10).setEnabled(isWritable); // "rename" menuitem
+            popupMenu.getComponent(10).setEnabled(true); // "save to" menuitem
+            popupMenu.getComponent(11).setEnabled(isWritable); // "rename" menuitem
+            popupMenu.getComponent(8).setEnabled((selectedObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5))) && isWritable); // "cut" menuitem
         }
 
         // adding table is only supported by HDF5
@@ -615,11 +630,44 @@ public class DefaultTreeView extends JPanel
     private void copyObject()
     {
         objectsToCopy = getSelectedObjects();
+        moveFlag = false;
+    }
+    
+    /** move selected objects */
+    private void moveObject()
+    { 	      
+    	 objectsToCopy = getSelectedObjects();
+         moveFlag = true;
+         currentSelectionsForMove = tree.getSelectionPaths();      
     }
 
     /** paste selected objects */
     private void pasteObject()
     {
+        
+    	if(moveFlag==true){
+    		HObject theObj = null;
+            for (int i=0; i< currentSelectionsForMove.length; i++) {
+                DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) (currentSelectionsForMove[i].getLastPathComponent());
+                theObj = (HObject)currentNode.getUserObject();
+
+                if (isObjectOpen(theObj)) {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog(
+                        this,
+                        "Cannot move the selected object: "+theObj+
+                        "\nThe dataset or dataset in the group is in use."+
+                        "\n\nPlease close the dataset(s) and try again.\n",
+                         "HDFView",
+                        JOptionPane.ERROR_MESSAGE);
+                    moveFlag = false;
+                    currentSelectionsForMove = null;
+                    objectsToCopy = null;
+                    return;
+                }
+            }
+    	}
+    	
         TreeNode pnode = selectedNode;
 
         if ((objectsToCopy == null) ||
@@ -674,6 +722,21 @@ public class DefaultTreeView extends JPanel
             return;
         }
 
+        if(moveFlag==true){
+        	 if(srcFile!=dstFile){
+                 toolkit.beep();
+                 JOptionPane.showMessageDialog(
+                     this,
+                     "Cannot move the selected object to different file",
+                      "HDFView",
+                     JOptionPane.ERROR_MESSAGE);
+                 moveFlag = false;
+                 currentSelectionsForMove = null;
+                 objectsToCopy = null;
+                 return;
+             }
+        }
+        
         if (pnode.isLeaf()) {
             pnode = pnode.getParent();
         }
@@ -693,12 +756,24 @@ public class DefaultTreeView extends JPanel
 
         msg += "Do you want to copy the selected object(s) to \nGroup: "+
             fullPath + "\nFile: "+ dstFile.getFilePath();
-
-        int op = JOptionPane.showConfirmDialog(this,
-            msg,
-            "Copy object",
-            JOptionPane.YES_NO_OPTION,
-            msgType);
+   
+        int op = -1;
+        if(moveFlag ==true){
+        	String moveMsg = "Do you want to paste the selected object(s) to \nGroup: "+
+            fullPath + "\nFile: "+ dstFile.getFilePath();
+        	op = JOptionPane.showConfirmDialog(this,
+        			moveMsg,
+                    "Copy object",
+                    JOptionPane.YES_NO_OPTION,
+                    msgType);
+        }
+        else {
+        	op = JOptionPane.showConfirmDialog(this,
+        			msg,
+        			"Copy object",
+        			JOptionPane.YES_NO_OPTION,
+        			msgType);
+        }
 
         if (op == JOptionPane.NO_OPTION) {
             return;
@@ -707,6 +782,12 @@ public class DefaultTreeView extends JPanel
         pasteObject(objectsToCopy, pnode, dstFile);
 
         //objectsToCopy = null;
+        if(moveFlag==true){
+        	removeSelectedObjects();
+        	moveFlag = false;
+        	currentSelectionsForMove = null;
+            objectsToCopy = null;
+        }
     }
 
     /** paste selected objects */
@@ -793,19 +874,23 @@ public class DefaultTreeView extends JPanel
         }
 
         TreePath[] currentSelections = tree.getSelectionPaths();
+        
+        if(moveFlag==true){
+        	currentSelections = currentSelectionsForMove;
+        }
         if ((currentSelections == null) || (currentSelections.length <=0)) {
             return;
         }
+        if(moveFlag !=true){
+        	int op = JOptionPane.showConfirmDialog(this,
+        			"Do you want to remove all the selected object(s) ?",
+        			"Remove object",
+        			JOptionPane.YES_NO_OPTION);
 
-        int op = JOptionPane.showConfirmDialog(this,
-            "Do you want to remove all the selected object(s) ?",
-            "Remove object",
-            JOptionPane.YES_NO_OPTION);
-
-        if (op == JOptionPane.NO_OPTION) {
-            return;
+        	if (op == JOptionPane.NO_OPTION) {
+        		return;
+        	}
         }
-
         String frameName = "";
         HObject theObj = null;
         for (int i=0; i< currentSelections.length; i++) {
@@ -826,16 +911,18 @@ public class DefaultTreeView extends JPanel
                 }
             }
 
-            if (isObjectOpen(theObj)) {
-                toolkit.beep();
-                JOptionPane.showMessageDialog(
-                    this,
-                    "Cannot delete the selected object: "+theObj+
-                    "\nThe dataset or dataset in the group is in use."+
-                    "\n\nPlease close the dataset(s) and try again.\n",
-                     "HDFView",
-                    JOptionPane.ERROR_MESSAGE);
-                continue;
+            if(moveFlag !=true){
+            	if (isObjectOpen(theObj)) {
+            		toolkit.beep();
+            		JOptionPane.showMessageDialog(
+            				this,
+            				"Cannot delete the selected object: "+theObj+
+            				"\nThe dataset or dataset in the group is in use."+
+            				"\n\nPlease close the dataset(s) and try again.\n",
+            				"HDFView",
+            				JOptionPane.ERROR_MESSAGE);
+            		continue;
+            	}
             }
 
             try {
@@ -1412,6 +1499,9 @@ public class DefaultTreeView extends JPanel
         }
         else if (cmd.equals("Cut object")) {
             removeSelectedObjects();
+        }
+        else if (cmd.equals("Move object")) {
+            moveObject();
         }
         else if (cmd.equals("Save object to file")) {
             if (selectedObject == null) {
