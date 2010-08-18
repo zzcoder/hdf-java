@@ -1184,7 +1184,47 @@ public class H5ScalarDS extends ScalarDS {
 
         return palette;
     }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see ncsa.hdf.object.ScalarDS#getPaletteName(int)
+     */
+    public String getPaletteName(int idx){
 
+    	byte[] refs = getPaletteRefs();
+    	int did = -1, pal_id = -1;
+    	String [] paletteName = {""};
+    	long size = 100L;
+
+    	if (refs == null) {
+    		return null;
+    	}
+
+    	byte[] ref_buf = new byte[8];
+
+    	try {
+    		System.arraycopy(refs, idx * 8, ref_buf, 0, 8);
+    	}
+    	catch (Throwable err) {
+    		return null;
+    	}
+
+    	try {
+    		did = open();
+    		pal_id = H5.H5Rdereference(getFID(), HDF5Constants.H5R_OBJECT,
+    				ref_buf);
+    		H5.H5Iget_name(pal_id, paletteName, size);
+    	}
+    	catch(Exception ex){
+    		ex.printStackTrace();
+    	}
+    	finally {
+    		close(pal_id);
+    		close(did);
+    	}
+
+    	return paletteName[0];
+    }
     /*
      * (non-Javadoc)
      * 

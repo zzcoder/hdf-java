@@ -69,6 +69,7 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
     private int[][] paletteData;
     private JComboBox choicePalette;
     private PaletteValueTable paletteValueTable;
+    private int  numberOfPalettes;
 
     public DefaultPaletteView(ImageView theImageView) {
         this(null, theImageView);
@@ -79,12 +80,27 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         imageView = theImageView;
         dataset = (ScalarDS) imageView.getDataObject();
-
+        
+        numberOfPalettes = 1;
         choicePalette = new JComboBox();
         choicePalette.addItemListener(this);
 
         choicePalette.addItem("Select palette");
-        choicePalette.addItem(PALETTE_DEFAULT);
+        String paletteName = ((ScalarDS) dataset).getPaletteName(0);
+        choicePalette.addItem(paletteName);
+        boolean isH5 = dataset.getFileFormat().isThisType(
+                FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
+ 
+        if (isH5 && (dataset instanceof ScalarDS)) {
+            byte[] palRefs = ((ScalarDS) dataset).getPaletteRefs();
+            if ((palRefs != null) && (palRefs.length > 8)) {
+              numberOfPalettes = palRefs.length / 8;
+            }
+        }
+        for (int i = 2; i <= numberOfPalettes; i++) {
+        	paletteName = ((ScalarDS) dataset).getPaletteName(i-1);
+        	choicePalette.addItem(paletteName);
+        }
         choicePalette.addItem(PALETTE_GRAY);
         choicePalette.addItem(PALETTE_GRAY_WAVE);
         choicePalette.addItem(PALETTE_RAINBOW);
@@ -279,7 +295,10 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
             imagePalette = Tools.createWavePalette();
         }
         else {
-            byte[][] pal = Tools.readPalette((String) item);
+        	 byte[][] pal = null;
+        	if((idx > 0) && (idx <= numberOfPalettes)) 
+            // multiple palettes attached
+            pal = ((ScalarDS) dataset).readPalette(idx - 1);
             if (pal != null)
                 imagePalette = pal;
         }

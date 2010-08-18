@@ -186,9 +186,11 @@ public class DataOptionDialog extends JDialog implements ActionListener,
         choiceTableView = new JComboBox((Vector) HDFView.getListOfTableView());
 
         choicePalette.addItem("Select palette");
-        choicePalette.addItem("Default");
+        String paletteName = ((ScalarDS) dataset).getPaletteName(0);
+        choicePalette.addItem(paletteName);
         for (int i = 2; i <= numberOfPalettes; i++) {
-            choicePalette.addItem("Default " + i);
+        	paletteName = ((ScalarDS) dataset).getPaletteName(i-1);
+        	choicePalette.addItem(paletteName);
         }
         choicePalette.addItem("Gray");
         choicePalette.addItem("ReverseGray");
