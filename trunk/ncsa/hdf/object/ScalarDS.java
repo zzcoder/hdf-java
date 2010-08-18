@@ -265,6 +265,23 @@ public abstract class ScalarDS extends Dataset {
     public abstract byte[][] readPalette(int idx);
 
     /**
+     * Get the name of a specific image palette from file.
+     * <p>
+     * A scalar dataset may have multiple palettes attached to it.
+     * getPaletteName(int idx) returns the name of a specific palette identified by its index.
+     * 
+     * @param idx
+     *            the index of the palette to retrieve the name.
+     * @return The name of the palette
+     */
+    public String getPaletteName(int idx){
+    	String paletteName = "Default ";
+    	if (idx !=0)
+    		paletteName = "Default " + idx;
+    	return paletteName;
+    }
+
+    /**
      * Returns the byte array of palette refs.
      * <p>
      * A palette reference is an object reference that points to the palette
