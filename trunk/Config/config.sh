@@ -71,6 +71,20 @@ EXTRA_FLAGS=
 #ZLIB=/Users/xcao/work/lib-external/zlib-1.2.1
 #EXTRA_FLAGS="-build=powerpc-apple --with-jdkclasses=/System/Library/Frameworks/JavaVM.framework/Classes --with-javabin=/System/Library/Frameworks/JavaVM.framework/Commands"
 
+############################################################
+#                     macintel 64 (fred)                    #
+############################################################
+#INSTDIR=/Users/xcao/work/build/macintel64
+#JAVAINC=/System/Library/Frameworks/JavaVM.framework/Headers
+#JAVALIB=/System/Library/Frameworks/JavaVM.framework/Libraries
+#HDF4=/Users/xcao/work/HDFplusExt-FPIC/HDF4
+#HDF5=/Users/xcao/work/HDFplusExt-FPIC/HDF5
+#JPEG=/Users/xcao/work/HDFplusExt-FPIC/JPEG
+#SZIP=/Users/xcao/work/HDFplusExt-FPIC/SZIP
+#ZLIB=/Users/xcao/work/HDFplusExt-FPIC/ZLIB
+#EXTRA_FLAGS="-build=powerpc-apple --with-jdkclasses=/System/Library/Frameworks/JavaVM.framework/Classes --with-javabin=/System/Library/Frameworks/JavaVM.framework/Commands"
+#export CC="gcc -mmacosx-version-min=10.5 -isysroot /Developer/SDKs/MacOSX10.5.sdk -fPIC"
+
 
 ############################################################
 #               Do not change below this line              #
