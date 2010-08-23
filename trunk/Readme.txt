@@ -1,37 +1,47 @@
 
-The hdf-java product has been built and tested on:
-
-32-bit Java 2 SDK
-    * Linux
-    * Solaris
-    * Mac Intel
-    * Windows (Vista/XP/2000)
-
-64-bit Java 2 SDK
-    * Linux 64-bit 
-    * Linux 64-bit iitanium 
-    * Solaris 64-bit
-    * Mac Intel
-
-
-This code will likely work on most platforms that support HDF and Java,
-although the configure and Makefile may need to be adjusted.
-
-This code does not compile on HP_UX 11, due to limitations in the HP
-Java Native Interface.
+                               HDF-Java Products
+===============================================================================
 
 
 
-Unix Build Instructions
-=======================
+Features and changes
+=======================================
+
+For major changes, please read "About This Release" at 
+http://www.hdfgroup.org/hdf-java-html/
+
+
+Files included in the release
+=======================================
+
+1) The "hdfview/" directory contains the installation programs for easy
+   download and installation for HDFView. The installation programs are
+   named by platforms. For example, "hdfview_install_linux32.bin" if for 
+   32-bit linux machines. After you install HDFView, you have the pre-built 
+   binaries for all the HDF-Java products: JNI wrapper, object package, 
+   and HDFView.
+
+2) The "bin/" directory includes the pre-built binaries for all of the
+    HDF-Java product. You can either download the tarball, which has all 
+    the necessary binaries, or individual part of pre-built binaries. 
+    We strongly recommend you to download the tarball instead of individual
+    files.
+
+3) The "src/" directory has all of the source code for the HDF-Java product.
+    You will only need it if you are building HDF-Java from the source.
+
+
+Build HDF-Java from the source
+=======================================
 
 Prerequisites:
     1. HDF4 binary distribution (source is not needed)
     2. HDF5 binary distribution (source is not needed)
     3. Java Development Kit 1.5.x or above
-    4. Exterenal libraries: szip, zlib, jpeg (for HDF4 only)
+    4. External libraries: szip, zlib, jpeg (for HDF4 only)
 
-Build:
+Build on unix:
+===================
 
 1. Configure
 
@@ -71,20 +81,10 @@ To install, use 'make install'
 To generate javadocs, 'make javadocs'
 
 
+Build on W1ndows:
+===================
 
-Windows Build Instructions
-=======================
-
-Prerequisites:
-
-    1. HDF4 binary distribution (source is not needed)
-    2. HDF5 binary distribution (source is not needed)
-    3. Java Development Kit 1.5.x or above
-    4. Microsfot Visual C++
-
-Build:
-
-1. Build Java source code
+1) Build Java source code
     a) configure/modify the batch file, windows/Makefile_java.bat
         i) set the %JAVAHOME% in the batch file. 
            %JAVAHOME% is the home directory of the Java Development Kit, 
@@ -94,19 +94,23 @@ Build:
            such as SET HDFJAVA=D:\work\hdf-java
     b) run batch file, windows/Makefile_java.bat
 
-2. Build the HDF4 native C code with Microsfot Visual C++
+2) Build the HDF4 native C code with Microsfot Visual C++
     a) modify make file, windows/jhdf.mak
     b) nmake /f jhdf.mak
 
-3. Build the HDF5 native C code with Microsfot Visual C++
+3) Build the HDF5 native C code with Microsfot Visual C++
     a) modify make file, windows/jhdf5.mak
     b) nmake /f jhdf5.mak
 
 
-For More Information:
-====================
+For more Information, read
+=======================================
 
   http://www.hdfgroup.org/hdf-java-html
+
+
+For questions, send email to
+=======================================
 
   help@hdfgroup.org
 
