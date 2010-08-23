@@ -29,6 +29,13 @@ import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.LongBuffer;
+import java.nio.ShortBuffer;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -122,6 +129,20 @@ implements TableView, ActionListener, MouseListener
     private Object fillValue = null;
     
     private BitSet bitmask;
+    
+    private int binaryOrder;
+    
+    private final int floatBufferSize = 524288;
+    
+    private final int intBufferSize = 524288;
+    
+    private final int shortBufferSize = 1048576;
+    
+    private final int longBufferSize = 262144;
+    
+    private final int doubleBufferSize = 262144;
+    
+    private final int byteBufferSize = 2097152;
  
      /**
      * Constructs an TableView.
@@ -379,10 +400,27 @@ implements TableView, ActionListener, MouseListener
         menu.setMnemonic('T');
         bar.add(menu);
 
-        JMenuItem item = new JMenuItem( "Export Data to File");
+        JMenuItem item = new JMenuItem( "Export Data to Text File");
         item.addActionListener(this);
         item.setActionCommand("Save table as text");
         menu.add(item);
+        
+        JMenu exportAsBinaryMenu = new JMenu("Export Data to Binary File");
+        if ( (dataset instanceof ScalarDS)  ) {  
+        	menu.add(exportAsBinaryMenu);
+        }
+        item = new JMenuItem("Native Order");
+        item.addActionListener(this);
+        item.setActionCommand("Save table as binary Native Order");
+        exportAsBinaryMenu.add(item);
+        item = new JMenuItem("Little Endian");
+        item.addActionListener(this);
+        item.setActionCommand("Save table as binary Little Endian");
+        exportAsBinaryMenu.add(item);
+        item = new JMenuItem("Big Endian");
+        item.addActionListener(this);
+        item.setActionCommand("Save table as binary Big Endian");
+        exportAsBinaryMenu.add(item);
         
         menu.addSeparator();
 
@@ -422,7 +460,7 @@ implements TableView, ActionListener, MouseListener
         item.setEnabled(isEditable && (dataset instanceof ScalarDS));
         menu.add(item);
 
-        item = new JMenuItem( "Save to File");
+        item = new JMenuItem( "Save Changes to File");
         item.addActionListener(this);
         item.setActionCommand("Save dataset");
         item.setEnabled(isEditable);
@@ -572,6 +610,24 @@ implements TableView, ActionListener, MouseListener
                             getTitle(),
                             JOptionPane.ERROR_MESSAGE);
                 }
+            }
+            else if (cmd.startsWith("Save table as binary")) {
+            	if(cmd.equals("Save table as binary Native Order"))
+            		binaryOrder = 1;
+            	if(cmd.equals("Save table as binary Little Endian"))
+            		binaryOrder = 2;
+            	if(cmd.equals("Save table as binary Big Endian"))
+            		binaryOrder = 3;
+            	try { 
+            		saveAsBinary();
+            	}
+            	catch (Exception ex) {
+            		toolkit.beep();
+            		JOptionPane.showMessageDialog((JFrame)viewer,
+            				ex,
+            				getTitle(),
+            				JOptionPane.ERROR_MESSAGE);
+            	}
             }
             else if (cmd.equals("Copy data")) {
                 copyData();
@@ -2258,6 +2314,278 @@ implements TableView, ActionListener, MouseListener
 //            rf.close();
 //            viewer.showStatus("File size (bytes): "+size);
 //        } catch (Exception ex) {}
+    }
+    
+    /** Save data as binary. */
+    private void saveAsBinary() throws Exception
+    {
+        final JFileChooser fchooser = new JFileChooser(dataset.getFile());
+        fchooser.setFileFilter(DefaultFileFilter.getFileFilterBinary());
+        //fchooser.changeToParentDirectory();
+        fchooser.setDialogTitle("Save Current Data To Binary File --- "+dataset.getName());
+
+        File choosedFile = new File(dataset.getName()+".bin");;
+        fchooser.setSelectedFile(choosedFile);
+        int returnVal = fchooser.showSaveDialog(this);
+
+        if(returnVal != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        choosedFile = fchooser.getSelectedFile();
+        if (choosedFile == null) {
+            return;
+        }
+        String fname = choosedFile.getAbsolutePath();
+
+        // check if the file is in use
+        List fileList = viewer.getTreeView().getCurrentFiles();
+        if (fileList != null)
+        {
+            FileFormat theFile = null;
+            Iterator iterator = fileList.iterator();
+            while(iterator.hasNext())
+            {
+                theFile = (FileFormat)iterator.next();
+                if (theFile.getFilePath().equals(fname))
+                {
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog(this,
+                        "Unable to save data to file \""+fname+"\". \nThe file is being used.",
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+        }
+
+        // check if the file exists
+        if (choosedFile.exists())
+        {
+            int newFileFlag = JOptionPane.showConfirmDialog(this,
+                "File exists. Do you want to replace it ?",
+                this.getTitle(),
+                JOptionPane.YES_NO_OPTION);
+            if (newFileFlag == JOptionPane.NO_OPTION) {
+                return;
+            }
+        }
+
+       FileOutputStream outputFile = new FileOutputStream(choosedFile);
+       DataOutputStream out = new DataOutputStream(outputFile);
+        
+        if (dataset instanceof ScalarDS)
+        {
+        	Object data = dataset.getData();
+        	String cname = data.getClass().getName();
+            char dname = cname.charAt(cname.lastIndexOf("[")+1);
+        	ByteBuffer bb = null;  
+
+        	int size = Array.getLength(data);
+        	        	
+        	if (dname == 'B') { 	
+           		byte[] bdata = new byte[size];
+           		bdata = (byte[])data;
+           		
+           		bb = ByteBuffer.allocate(byteBufferSize);
+        		if(binaryOrder==1)
+        			bb.order(ByteOrder.nativeOrder());
+        		else if (binaryOrder==2)
+        			bb.order(ByteOrder.LITTLE_ENDIAN);
+        		else if(binaryOrder==3)
+        			bb.order(ByteOrder.BIG_ENDIAN);
+        		
+        		int remainingSize = size - byteBufferSize;
+        		int allocValue = 0;
+        		int iterationNumber = 0;            	 
+        		do	{
+        			if(remainingSize<=0){
+        				allocValue=remainingSize+byteBufferSize;
+        			} else {
+        				allocValue=byteBufferSize;
+        			}
+        			bb.clear();           		
+        			bb.put(bdata, (iterationNumber * byteBufferSize), allocValue);
+        			out.write(bb.array(), 0, allocValue);
+        			remainingSize = remainingSize - byteBufferSize;
+        			iterationNumber++;
+        		} while (remainingSize > -byteBufferSize);
+        		
+           	 	out.flush();
+           	 	out.close();
+                
+            }
+        	
+        	else if (dname == 'S') {
+        		short[] sdata = new short[size];
+        		sdata = (short[])data;
+        		bb = ByteBuffer.allocate(shortBufferSize * 2);
+        		if(binaryOrder==1)
+        			bb.order(ByteOrder.nativeOrder());
+        		else if (binaryOrder==2)
+        			bb.order(ByteOrder.LITTLE_ENDIAN);
+        		else if(binaryOrder==3)
+        			bb.order(ByteOrder.BIG_ENDIAN);
+
+        		ShortBuffer sb = bb.asShortBuffer();
+        		int remainingSize = size - shortBufferSize;
+        		int allocValue = 0;
+        		int iterationNumber = 0;            	 
+        		do	{
+        			if(remainingSize<=0){
+        				allocValue=remainingSize+shortBufferSize;
+        			} else {
+        				allocValue=shortBufferSize;
+        			}
+        			bb.clear();           		
+        			sb.clear();
+        			sb.put(sdata, (iterationNumber * shortBufferSize), allocValue);
+        			out.write(bb.array(), 0, allocValue * 2);
+        			remainingSize = remainingSize - shortBufferSize;
+        			iterationNumber++;
+        		} while (remainingSize > -shortBufferSize);
+
+        		out.flush();
+        		out.close();
+        	}
+        	
+            else if (dname == 'I') {
+            	 int[] idata = new int[size];
+            	 idata = (int[]) data;
+            	 bb = ByteBuffer.allocate(intBufferSize * 4);
+            	 if(binaryOrder==1)
+            		 bb.order(ByteOrder.nativeOrder());
+            	 else if (binaryOrder==2)
+            		 bb.order(ByteOrder.LITTLE_ENDIAN);
+            	 else if(binaryOrder==3)
+            		 bb.order(ByteOrder.BIG_ENDIAN);
+            	 
+              	 IntBuffer ib = bb.asIntBuffer(); 
+              	 int remainingSize = size - intBufferSize;
+            	 int allocValue = 0;
+            	 int iterationNumber = 0;            	 
+            	 do {
+            		 if(remainingSize<=0){
+            			 allocValue=remainingSize+intBufferSize;
+            		 } else {
+            			 allocValue=intBufferSize;
+            		 }
+            		 bb.clear();           		
+            		 ib.clear();
+            		 ib.put(idata, (iterationNumber * intBufferSize), allocValue);
+            		 out.write(bb.array(), 0, allocValue * 4);
+            		 remainingSize = remainingSize - intBufferSize;
+            		 iterationNumber++;
+            	 } while (remainingSize > -intBufferSize);
+              
+            	 out.flush();
+            	 out.close();
+            }
+        	
+            else if (dname == 'J') {
+            	long[] ldata = new long[size];
+            	ldata =(long[])data;
+
+            	bb = ByteBuffer.allocate(longBufferSize * 8);
+            	if(binaryOrder==1)
+            		bb.order(ByteOrder.nativeOrder());
+            	else if (binaryOrder==2)
+            		bb.order(ByteOrder.LITTLE_ENDIAN);
+            	else if(binaryOrder==3)
+            		bb.order(ByteOrder.BIG_ENDIAN);
+
+            	LongBuffer lb = bb.asLongBuffer();
+            	int remainingSize = size - longBufferSize;
+            	int allocValue = 0;
+            	int iterationNumber = 0;            	 
+            	do {
+            		if(remainingSize<=0){
+            			allocValue=remainingSize+longBufferSize;
+            		} else {
+            			allocValue=longBufferSize;
+            		}
+            		bb.clear();           		
+            		lb.clear();
+            		lb.put(ldata, (iterationNumber * longBufferSize), allocValue);
+            		out.write(bb.array(), 0, allocValue * 8);
+            		remainingSize = remainingSize - longBufferSize;
+            		iterationNumber++;
+            	} while (remainingSize > -longBufferSize);
+
+            	out.flush();
+            	out.close();            	
+            }
+        	
+             else if (dname == 'F') { 	
+            	 float[] fdata = new float[size];
+            	 fdata = (float[]) data;
+            	 
+            	 bb = ByteBuffer.allocate(floatBufferSize * 4);
+            	 if(binaryOrder==1)
+            		 bb.order(ByteOrder.nativeOrder());
+            	 else if (binaryOrder==2)
+            		 bb.order(ByteOrder.LITTLE_ENDIAN);
+            	 else if(binaryOrder==3)
+            		 bb.order(ByteOrder.BIG_ENDIAN);
+            	 
+            	 FloatBuffer fb = bb.asFloatBuffer();           	 
+            	 int remainingSize = size - floatBufferSize;
+            	 int allocValue = 0;
+            	 int iterationNumber = 0;            	 
+            	 do {
+            		 if(remainingSize<=0) {
+            			 allocValue=remainingSize+floatBufferSize;
+            		 } else {
+            			 allocValue=floatBufferSize;
+            		 }
+            		 bb.clear();
+            		 fb.clear();
+            		 fb.put(fdata, (iterationNumber * floatBufferSize), allocValue);
+            		 out.write(bb.array(), 0, allocValue * 4);
+            		 remainingSize = remainingSize - floatBufferSize;
+            		 iterationNumber++;
+            	 } while (remainingSize > -floatBufferSize);
+            	 
+            	 out.flush();
+            	 out.close();
+             }
+        	
+             else if (dname == 'D') {
+            	 double[] ddata = new double[size];
+            	 ddata = (double[])data;
+
+            	 bb = ByteBuffer.allocate(doubleBufferSize * 8);
+            	 if(binaryOrder==1)
+            		 bb.order(ByteOrder.nativeOrder());
+            	 else if (binaryOrder==2)
+            		 bb.order(ByteOrder.LITTLE_ENDIAN);
+            	 else if(binaryOrder==3)
+            		 bb.order(ByteOrder.BIG_ENDIAN);
+
+            	 DoubleBuffer db = bb.asDoubleBuffer();
+            	 int remainingSize = size - doubleBufferSize;
+            	 int allocValue = 0;
+            	 int iterationNumber = 0;            	 
+            	 do {
+            		 if(remainingSize<=0){
+            			 allocValue=remainingSize + doubleBufferSize;
+            		 } else {
+            			 allocValue=doubleBufferSize;
+            		 }
+            		 bb.clear();           		
+            		 db.clear();
+            		 db.put(ddata, (iterationNumber * doubleBufferSize), allocValue);
+            		 out.write(bb.array(), 0, allocValue * 8);
+            		 remainingSize = remainingSize - doubleBufferSize;
+            		 iterationNumber++;
+            	 } while (remainingSize > -doubleBufferSize);
+
+            	 out.flush();
+            	 out.close();      	            	
+             }          
+        }
+        
+        viewer.showStatus("Data save to: "+fname);    
     }
 
     /** update dataset value in file.

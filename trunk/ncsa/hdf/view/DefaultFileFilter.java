@@ -43,6 +43,7 @@ public class DefaultFileFilter extends FileFilter {
     private static FileFilter FILE_FILTER_BMP = null;
     private static FileFilter FILE_FILTER_IMG = null;
     private static FileFilter FILE_FILTER_TEXT = null;
+    private static FileFilter FILE_FILTER_BINARY = null;
 
     private static String fileExtension = ViewProperties.getFileExtension();
 
@@ -420,6 +421,20 @@ public class DefaultFileFilter extends FileFilter {
         FILE_FILTER_TEXT = filter;
 
         return FILE_FILTER_TEXT;
+    }
+    
+    /** Return a file filter for binary file. */
+    public static FileFilter getFileFilterBinary() {
+        if (FILE_FILTER_BINARY != null) {
+            return FILE_FILTER_BINARY;
+        }
+
+        DefaultFileFilter filter = new DefaultFileFilter();
+        filter.addExtension("bin");
+        filter.setDescription("Binary");
+        FILE_FILTER_BINARY = filter;
+
+        return FILE_FILTER_BINARY;
     }
 
     /**
