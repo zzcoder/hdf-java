@@ -2000,24 +2000,36 @@ implements TableView, ActionListener, MouseListener
             return;
         }
 
-        int r1 = r0 + table.getSelectedRowCount();     // finish row
-        int c1 = c0 + table.getSelectedColumnCount();  // finshing column
-
-        for (int i=r0; i<r1; i++)
-        {
-            sb.append(table.getValueAt(i, c0).toString());
-            for (int j=c0+1; j<c1; j++)
+        int nr = table.getSelectedRowCount();
+        int nc = table.getSelectedColumnCount();
+        int r1 = r0 + nr;     // finish row
+        int c1 = c0 + nc;  // finishing column
+        
+        try {
+            for (int i=r0; i<r1; i++)
             {
-                sb.append("\t");
-                sb.append(table.getValueAt(i, j).toString());
+                sb.append(table.getValueAt(i, c0).toString());
+                for (int j=c0+1; j<c1; j++)
+                {
+                    sb.append("\t");
+                    sb.append(table.getValueAt(i, j).toString());
+                }
+                sb.append("\n");
             }
-            sb.append("\n");
+        } catch (java.lang.OutOfMemoryError err) {
+            toolkit.beep();
+            JOptionPane.showMessageDialog((JFrame)viewer,
+                    "Copying data to system clipboard failed. \nUsing \"export/import data\" for copying/pasting large data.",
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+            return;
         }
 
         Clipboard cb =  Toolkit.getDefaultToolkit().getSystemClipboard();
         StringSelection contents = new StringSelection(sb.toString());
         cb.setContents(contents, null);
-    }
+       
+     }
 
     /** paste data from the system clipboard to the spreadsheet. */
     private void pasteData()
@@ -2045,10 +2057,10 @@ implements TableView, ActionListener, MouseListener
         int c = c0;
 
         Clipboard cb =  Toolkit.getDefaultToolkit().getSystemClipboard();
-        Transferable content = cb.getContents(this);
+        //Transferable content = cb.getContents(this);
         String line = "";
         try {
-            String s =(String)content.getTransferData(DataFlavor.stringFlavor);
+            String s =(String)cb.getData(DataFlavor.stringFlavor);
 
             StringTokenizer st = new StringTokenizer(s, "\n");
             // read line by line
