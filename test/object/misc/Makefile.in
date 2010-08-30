@@ -1,4 +1,3 @@
-# Generated automatically from Makefile.in by configure.
 #/****************************************************************************
 # * NCSA HDF                                                                 *
 # * National Comptational Science Alliance                                   *
@@ -14,7 +13,7 @@
 JAVAC=@JAVAC@
 RM=@RM@
 
-CLASSPATH=@CLASSPATH@   
+CLASSPATH=@CLASSPATH@
 
 .SUFFIXES: .java .class
 
@@ -34,7 +33,6 @@ runtests: all
 	chmod u+x runtests.sh
 
 check: all
-#	./runtests.sh
 	./TestH5Object.sh
 
 check-memory-leak:
@@ -44,3 +42,5 @@ clean:
 	$(RM) -f *.class
 	$(RM) -f *.hdf
 	$(RM) -f *.h5
+
+
