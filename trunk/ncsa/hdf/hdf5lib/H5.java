@@ -5979,7 +5979,7 @@ public class H5 {
 
     /**
      * H5Ecreate_stack creates a new empty error stack and returns the new
-     * stack’s identifier.
+     * stack's identifier.
      * 
      * @param none
      * 
@@ -6606,7 +6606,7 @@ public class H5 {
      * @param group_id
      *            IN: Identifier of the group.
      * 
-     * @return an identifier for the group’s creation property list
+     * @return an identifier for the group's creation property list
      * 
      * @exception HDF5LibraryException
      *                - Error from the HDF-5 Library.
@@ -6658,7 +6658,7 @@ public class H5 {
 
     /**
      * H5Gget_info_by_idx retrieves information about a group, according to the
-     * group’s position within an index.
+     * group's position within an index.
      * 
      * @param group_id
      *            IN: File or group identifier.
@@ -7586,7 +7586,7 @@ throws HDF5LibraryException;
 //H5T_conv_t H5Tfind(int src_id, int dst_id, H5T_cdata_t *pcdata);
 
 /**
- *  H5Tcompiler_conv finds out whether the library’s conversion function from 
+ *  H5Tcompiler_conv finds out whether the library's conversion function from 
  *  type src_id to type dst_id is a compiler (hard) conversion.
  *
  *  @param src_id     IN: Identifier of source datatype.
@@ -8939,7 +8939,7 @@ throws HDF5LibraryException, NullPointerException;
 //*  H5Oopen_by_addr opens a group, dataset, or named datatype using its address within an HDF5 file.
 //*
 //*  @param loc_id  IN: File or group identifier 
-//*  @param addr    IN: Object’s address in the file 
+//*  @param addr    IN: Object's address in the file 
 //*
 //*  @return an object identifier for the opened object
 //*
