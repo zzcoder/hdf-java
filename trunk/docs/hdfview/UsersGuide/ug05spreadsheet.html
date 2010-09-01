@@ -45,6 +45,13 @@ to flip the two-dimension table along that dimension.</p>
 <li class="li2"><a href="ug05spreadsheet.html#ug05change">5.4 Change Data Value</a></li>
 <li class="li2"><a href="ug05spreadsheet.html#ug05save">5.5 Save Data Values to a Text File</a></li>
 <li class="li2"><a href="ug05spreadsheet.html#ug05import">5.6 Import Data from a Text File</a></li>
+<li class="li2"><a href="ug05spreadsheet.html#ug05datasetreferences">5.7 Dataset storing references</a></li>
+ <ul class="ul">
+ 	<li class="li2"> <a href="ug05spreadsheet.html#ug05objectref">5.7.1 Dataset Storing Object References</a></li>
+ 	<li class="li2"> <a href="ug05spreadsheet.html#ug05regionalref">5.7.2 Dataset Storing Dataset Region References</a></li>
+  </ul></li>
+<li class="li2"><a href="ug05spreadsheet.html#ug05savebinary">5.8 Sava Data Values to a Binary File</a></li>
+<li class="li2"><a href="ug05spreadsheet.html#ug05importbinary">5.9 Import Data from a Binary File</a></li>
 </ul>
 
 <hr noshade size=1 />
@@ -395,13 +402,12 @@ mathematic function.</p>
 <a name="ug05save"></a>
 5.5 Save Data Values to a Text File</h2>
 <p>
-Writing table data into an ASCII file is nearly transparent. Select "Save As Text" from
-the &quot;Object&quot; menu, and the Save Current Data to Text
+Writing table data into an ASCII file is nearly transparent. Select "Export data to Text File" from
+the &quot;Table&quot; menu, and the Save Current Data to Text
 File dialog box pops up for you to enter the name of the file.
 The data values of the current table will be written to the file. The data values
 are separated by the data delimiter specified by the user options. <b><i>The text
-file does not contain any datatype and dataspace information. HDFView cannot read
-back the text file</i></b>.</p>
+file does not contain any datatype and dataspace information.</i></b>.</p>
 
 <center><p>
 <img src="images/save_as_text.gif" />
@@ -435,10 +441,10 @@ and
 are the same.</p>
 
 <h2>
-<a name="ug05import"></a>
+<a name="ug05datasetreferences"></a>
 5.7 Dataset storing references</h2>
 <p>A dataset can store reference values of other datasets in the same file.</p>
-<h3><a name="ug05subset_compound"></a>
+<h3><a name="ug05objectref"></a>
 5.7.1 Dataset Storing Object References</h3>
 <p>
 A dataset can store object references of other datasets. You can open a dataset containing object references. You can then right click on any value
@@ -457,7 +463,7 @@ If opened as a table, then the dataset of reference value "7428" is opened as sh
 <b>Dataset pointed by object reference</b></p>
 </center>
 
-<h3><a name="ug05subset_compound"></a>
+<h3><a name="ug05regionalref"></a>
 5.7.2 Dataset Storing Dataset Region References</h3>
 <p>
 A dataset can store dataset region reference values. You can right click on any value to either show the dataset as a table or a image.</p>
@@ -467,6 +473,30 @@ A dataset can store dataset region reference values. You can right click on any 
 <b>Dataset pointed by region reference</b></p>
 </center>
 
+<h2>
+<a name="ug05savebinary"></a>
+5.8 Save Data Values to a Binary File</h2>
+<p>
+The table data can be written to a binary file. Select "Export Data to Binary File" from
+the &quot;Table&quot; menu. Select the order in which you want the bytes to be. The "Save Current Data to Binary
+File" dialog box pops up for you to enter the name of the file.
+The data values of the current table will be written to the file. <b><i>The binary
+file does not contain any datatype and dataspace information. Currently, only the entire contents of the table are wrriten to a binary file.</i></b>.</p>
+
+<center><p>
+<img src="images/save_as_binary.png" />
+<br />
+<b>Save Current Data to Binary File</b></p>
+</center>
+
+<h2>
+<a name="ug05importbinary"></a>
+5.9 Import Data from a Binary File</h2>
+<p>
+You can fill the table directly from a binary file. Choose the "Import Data From Binary File"
+command from the &quot;Table&quot; menu and select the byte order. It is assumed that the user should know the data type in the binary file and the byte order.
+Select the binary file to import. The cells of
+the table are filled with the corresponding values.
 
 <!-- BEGIN OF FOOTER INFO -->
 <hr noshade size=1 />
