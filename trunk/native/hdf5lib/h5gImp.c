@@ -755,7 +755,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1objtype_1by_1idx
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
   (JNIEnv *env, jclass clss, jint loc_id, jstring group_name, 
   jobjectArray objName, jintArray oType, jintArray lType,
-  jlongArray oRef, int n, jint indx_type)
+  jlongArray oRef, jint n, jint indx_type)
 {
     herr_t ret_val = -1;
     char *gName=NULL;
