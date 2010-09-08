@@ -99,6 +99,8 @@ public class H5File extends FileFormat {
      * The library version bounds
      */
     private int[] libver ;
+    
+    private boolean attrFlag;
 
     /***************************************************************************
      * Constructor
@@ -160,6 +162,7 @@ public class H5File extends FileFormat {
         super(fileName);
         
         libver = new int[2];
+        attrFlag = false;
         
         // set metadata for the instance
         rootNode = null;
@@ -2606,6 +2609,10 @@ public class H5File extends FileFormat {
      * @throws HDF5Exception
      */
     public void renameAttribute(HObject obj, String oldAttrName, String newAttrName) throws Exception {
-    	H5.H5Arename_by_name(obj.getFID(), obj.getName(), oldAttrName, newAttrName, HDF5Constants.H5P_DEFAULT); 	
+    	if(!attrFlag){
+    		attrFlag = true;
+    		H5.H5Arename_by_name(obj.getFID(), obj.getName(), oldAttrName, newAttrName, HDF5Constants.H5P_DEFAULT); 
+    	}
+    	
     }
 }
