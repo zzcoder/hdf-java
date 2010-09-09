@@ -224,14 +224,30 @@ can not be updated.</b> For HDF4, a new file is the exact copy, same file
 content and file size.</p>
 
 <h3>
-<a name="ug04add"></a>4.5.2 Add and Delete Object</h3>
+<a name="ug04libversion"></a>4.5.2 Setting the Library version bounds</h3>
+<p>The library version bounds of an HDF5 file can be set by right click the file from treeview, and select "Set Lib version Bounds" from the Object menu and set the
+earliest version and latest version. In order to see the library versions of the HDF5 File that had been set, select "Properties" from the Object menu and it will display
+the library versions that had been set earlier.
+</p>
+<center>
+<p><img src="images/set_libversionbounds.png" />
+<br /><b>Setting the Library version bounds of an HDF5 File</b></p></center>
+
+<h3>
+<a name="ug04add"></a>4.5.3 Add and Delete Object</h3>
 <p>
 To create a new group, select the "New Group" command from the Object menu. Then,
 give the name of the new group and the parent group to which the new group is to be added.</p>
 
 <center>
-<p><img src="images/new_group.gif" />
+<p><img src="images/new_group.png" />
 <br /><b>Create New Group</b></p></center>
+<p>By clicking on the "more" button, user can set the options, creation order and link storage when creating groups. Help buttons are provide for
+more information about the options.
+</p>
+<center>
+<p><img src="images/new_group_options.png" />
+<br /><b>Create New Group Options</b></p></center>
 
 <p>
 To create a new dataset, select the "New Dataset" command from the Object menu. Then,
@@ -254,6 +270,24 @@ You can create two kinds of images: an indexed image with 256 colors and a 24-bi
 <p><img src="images/new_image.gif" />
 <br /><b>Create New Image</b></p></center>
 
+<p>
+The "New Link" command from the object menu allows you to create links to objects. Three types of links can be created,
+Hard Link, Soft Link or External Link. Hard links and soft links are links to objects in the same HDF5 file. External links are links to objects in
+different HDF5 file. Soft Links and External Links are symbolic links and are allowed to dangle, meaning that the target object need not exist at the time
+the link is created. Help button is provided for more information about links.</p>
+
+<center>
+<p><img src="images/new_link.png" />
+<br /><b>Create New Link</b></p></center>
+
+<p>
+The type for a soft link or external link object that links to a non-existing target object is unknown, so it will have a different icon as '<img src="images/question.png" />'
+The user can change the target object being linked to, by slecting the link object from the tree view, right click
+and select "Properties" from the object menu. In the properties, select the "Change" button to change the target object.</p>
+
+<center>
+<p><img src="images/change_target.png" />
+<br /><b>Change target Object for a Dangling Link</b></p></center>
 
 <p>
 To delete objects from the tree, you first select the objects, then choose the "Delete"
@@ -271,7 +305,7 @@ file into a new file and rename the new file to the current file.</p>
 
 
 <h3>
-<a name="ug04copy"></a>4.5.3 Copy and Paste Object</h3>
+<a name="ug04copy"></a>4.5.4 Copy and Paste Object</h3>
 <p>
 HDFView allows you to copy an object and paste it in the same file or a different file
 of the same type. To copy and paste an HDF5 object from the tree, select
@@ -296,7 +330,21 @@ Copying a group will also copy all the descendents of the group. Copying a root
 group is not allowed.</p>
 
 <h3>
-<a name="ug04attribute"></a>4.5.4 Add, Delete and Modify Attribute</h3>
+<a name="ug04move"></a>4.5.5 Move Object</h3>
+<p>HDFView allows you to move an object within the same HDF5 file from one location to another. Moving objects from one file
+to another file is not supported by HDFView. To move an HDF5 object from the tree, select the object and then
+select the "Cut" command from the Object menu. You then select a group by a single click on the group to where the object is moved.
+Select the "Paste" command, the object is then moved into the selected group.</p>
+<p>
+You can also select multiple objects in the tree and apply the move action into
+the selected objects. Selection can be contiguous and discontiguous.</p>
+<p>
+Moving a group will also move all the descendents of the group. Moving a root
+group is not allowed. Moving objects is not supported by HDF4 Files.</p>
+
+
+<h3>
+<a name="ug04attribute"></a>4.5.6 Add, Delete and Modify Attribute</h3>
 <p>
 To add an attribute, click the "Add" button on the Attribute panel.
 You can create an attribute of a string, scalar, and 1D array of simple datatypes.
@@ -314,6 +362,10 @@ typed will be truncated to the size of the attribute if it is longer than the
 declared size of the attribute. A valid data value must follow the rules specified
 by the section <a href="ug05spreadsheet.html#ug05change">5.4 Change Data Value</a>.</p>
 
+<p>
+To change the name of an attribute, type the new name into the cell. Close the file and reopen it. Open the
+attribute, the name will be the new name set. Note: once the attribute name is changed, it cannot be changed again until unless
+the file is closed and reopened.</p>
 <p>
 To delete an attribute, select the attribute and click the "Delete" button.
 <b>Deleting an attribute of an HDF4 object is not supported</b>.</p>
