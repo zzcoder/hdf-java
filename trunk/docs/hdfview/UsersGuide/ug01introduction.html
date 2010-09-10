@@ -90,21 +90,52 @@
      </ul>
 
      <p />
-     <h4>Major Improvements</h4>
+
+     <h4>Support HDF5 1.8</h4>
+     <ul class="ul">
+	       <li>HDF5 JNI:- Changes and updates to Java HDF5 Interface(JHI5) for supporting the new APIs added to HDF5 1.8 library.The HDF5 JNI includes two parts:</li>
+	 		     <ul class="ul">
+	 		     <li>The Java code or the Java wrapper class (H5.java) is a list of Java native methods that are one-to-one mapping to the HDF5 APIs. </li>
+	 		     <li>The native code is the C implementation for the Java wrapper method</li>
+	 		     </ul>
+	 		     Changes in the HDF5 JNI include:
+	 		     <ul class ="ul">
+	 		     <li>Changes in some of the HDF5 Java wrapper methods for the compatibility between HDF5 1.6 and 1.8</li>
+	 		     <li>New APIs added to JHI5 to support HDF5 1.8 library</li>
+	 		     <li>Changes of the package names</li>
+	 		     <li>Changes of the class structure of the HDF5 JNI</li>
+	 		     </ul>
+	 	   <li>HDFJava Object Layer:- Changes in the Java HDF Object package to support HDF5 1.8 functions. The following new features are added to the object Layer:</li>
+	 	          <ul class="ul">
+				  <li>Set the bounds of library versions</li>
+				  <li>Create external links</li>
+				  <li>Retrieve link information</li>
+				  <li>Set link creation order </li>
+				  <li>Set link storage type</li>
+	 		     </ul>
+	 	   <li>HDFView:- Changes and updates for supporting HDF5 1.8 in HDFView include:</li>
+	 	   		   <ul class="ul">
+	 	   		   <li>Add functions to the Abstract Layer</li>
+				   <li>Set the bounds of library versions</li>
+				   <li>Create external links</li>
+				   <li>Show link information</li>
+				   <li>Show and modify dangling links</li>
+				   <li>Use link creation order in Groups </li>
+				   <li>Set link storage type</li>
+				   <li>Rename Attributes</li>
+	 		     </ul>
+
+	  </ul>
+
+     <h4>Other Major Improvements</h4>
 	 <ul class="ul">
       <li>Built on HDF5 1.8.6 library and HDF 4.2.5 library.</li>
-      <li>Support HDF5 1.8 </li>
-          <ol>
-		  <li>JNI:- changes and updates to Java HDF5 Interface(JHI5) for supporting the new APIs added to HDF5 1.8 library.</li>
-		  <li>HDFJava Object Layer:- changes in the Java HDF Object package to support HDF5 1.8 functions</li>
-		  <li>HDFView:- Changes and updates for supporting HDF5 1.8 in HDFView.</li>
-		  </ol>
+      <li>Test copying objects using H5Ocopy() function with large datasets</li>
       <li>Added functionality to show the names of the palettes in HDFView</li>
       <li>Add feature in HDFView to move objects within the same HDF5 file.</li>
 	  <li>Add feature in HDFView to export and import data to/from a binary file.</li>
 	  <li>Add feature in HDFView lineplot to use scientific notation for axes w/large values</li>
       <li>Add 'nc' to the file extensions under Tools->User Options in HDFView</li>
-
 	</ul>
 
      <h4>Major Bug Fixes</h4>
@@ -117,6 +148,7 @@
         <li> <!-- [BUG ID:  357] --> HDFView: displays 3D data incorrectly when rotate dimensions</li>
         <li> <!-- [BUG ID: 1825] --> HDFView: error: a value shows up as zero when it is not  </li>
         <li> <!-- [BUG ID: 1862] --> HDFView: export table includes extra TAB separator between values  </li>
+        <li> <!-- [BUG ID: 2029] --> HDFView failed to copy subset of chunked dataset/image </li>
         <li> <!-- [BUG ID: 1872] --> H5R package unit tests missing</li>
         <li> <!-- [BUG ID: 1964] --> Add "Readme" to hdf-java ftp top dir</li>
         <li> <!-- [BUG ID: 2001] --> HDFView: failed to copy large dataset </li>
