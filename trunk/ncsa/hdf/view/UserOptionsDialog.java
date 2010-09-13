@@ -56,7 +56,8 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
     private JButton currentDirButton;
     private JRadioButton checkReadOnly;
 
-    private JComboBox displayIndexChoice; 
+    //For the feature:To display groups/attributes in creation order
+    //private JComboBox displayIndexChoice; 
     
     private int fontSize;
 
@@ -174,198 +175,200 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
     }
 
     private JPanel createGeneralOptionPanel() {
-        String[] fontSizeChoices = { "12", "14", "16", "18", "20", "22", "24",
-                "26", "28", "30", "32", "34", "36", "48" };
-        fontSizeChoice = new JComboBox(fontSizeChoices);
-        fontSizeChoice.setSelectedItem(String.valueOf(ViewProperties
-                .getFontSize()));
+    	String[] fontSizeChoices = { "12", "14", "16", "18", "20", "22", "24",
+    			"26", "28", "30", "32", "34", "36", "48" };
+    	fontSizeChoice = new JComboBox(fontSizeChoices);
+    	fontSizeChoice.setSelectedItem(String.valueOf(ViewProperties
+    			.getFontSize()));
 
-        String[] fontNames = GraphicsEnvironment.getLocalGraphicsEnvironment()
-                .getAvailableFontFamilyNames();
-        String fname = ViewProperties.getFontType();
-        fontTypeChoice = new JComboBox(fontNames);
+    	String[] fontNames = GraphicsEnvironment.getLocalGraphicsEnvironment()
+    	.getAvailableFontFamilyNames();
+    	String fname = ViewProperties.getFontType();
+    	fontTypeChoice = new JComboBox(fontNames);
 
-        boolean isFontValid = false;
-        if (fontNames != null) {
-            for (int i = 0; i < fontNames.length; i++) {
-                if (fontNames[i].equalsIgnoreCase(fname)) {
-                    isFontValid = true;
-                }
-            }
-        }
-        if (!isFontValid) {
-            fname = (viewer).getFont().getFamily();
-            ViewProperties.setFontType(fname);
-        }
-        fontTypeChoice.setSelectedItem(fname);
+    	boolean isFontValid = false;
+    	if (fontNames != null) {
+    		for (int i = 0; i < fontNames.length; i++) {
+    			if (fontNames[i].equalsIgnoreCase(fname)) {
+    				isFontValid = true;
+    			}
+    		}
+    	}
+    	if (!isFontValid) {
+    		fname = (viewer).getFont().getFamily();
+    		ViewProperties.setFontType(fname);
+    	}
+    	fontTypeChoice.setSelectedItem(fname);
 
-        String[] delimiterChoices = { ViewProperties.DELIMITER_TAB,
-                ViewProperties.DELIMITER_COMMA, ViewProperties.DELIMITER_SPACE,
-                ViewProperties.DELIMITER_COLON,
-                ViewProperties.DELIMITER_SEMI_COLON };
+    	String[] delimiterChoices = { ViewProperties.DELIMITER_TAB,
+    			ViewProperties.DELIMITER_COMMA, ViewProperties.DELIMITER_SPACE,
+    			ViewProperties.DELIMITER_COLON,
+    			ViewProperties.DELIMITER_SEMI_COLON };
 
-        delimiterChoice = new JComboBox(delimiterChoices);
-        delimiterChoice.setSelectedItem(ViewProperties.getDataDelimiter());
-        
-        String[] displayIndexChoices = {"alphabetical", "creation" };
-        displayIndexChoice = new JComboBox(displayIndexChoices);
-        displayIndexChoice.setSelectedItem(ViewProperties.getIndexType());
+    	delimiterChoice = new JComboBox(delimiterChoices);
+    	delimiterChoice.setSelectedItem(ViewProperties.getDataDelimiter());
 
-        JPanel centerP = new JPanel();
-        centerP.setLayout(new GridLayout(9, 1, 10, 10));
-        centerP.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
+    	//-----For the feature:To display groups/attributes in creation order
+    	//        String[] displayIndexChoices = {"alphabetical", "creation" };
+    	//        displayIndexChoice = new JComboBox(displayIndexChoices);
+    	//        displayIndexChoice.setSelectedItem(ViewProperties.getIndexType());
 
-        JPanel p0 = new JPanel();
-        p0.setLayout(new BorderLayout());
-        p0.add(checkCurrentUserDir = new JCheckBox(
-                "\"Current Working Directory\" or", false), BorderLayout.WEST);
-        checkCurrentUserDir.addActionListener(this);
-        checkCurrentUserDir.setActionCommand("Set current dir to user.dir");
-        p0.add(workField = new JTextField(workDir), BorderLayout.CENTER);
-        JButton b = new JButton("Browse...");
-        currentDirButton = b;
-        b.setActionCommand("Browse current dir");
-        b.addActionListener(this);
-        p0.add(b, BorderLayout.EAST);
-        TitledBorder tborder = new TitledBorder("Default Working Directory");
-        tborder.setTitleColor(Color.darkGray);
-        p0.setBorder(tborder);
-        centerP.add(p0);
+    	JPanel centerP = new JPanel();
+    	centerP.setLayout(new GridLayout(9, 1, 10, 10));
+    	centerP.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
 
-        p0 = new JPanel();
-        p0.setLayout(new BorderLayout());
-        p0.add(new JLabel("User's Guide:  "), BorderLayout.WEST);
-        p0.add(UGField = new JTextField(ViewProperties.getUsersGuide()),
-                BorderLayout.CENTER);
-        b = new JButton("Browse...");
-        b.setActionCommand("Browse UG");
-        b.addActionListener(this);
-        p0.add(b, BorderLayout.EAST);
-        tborder = new TitledBorder("Help Document");
-        tborder.setTitleColor(Color.darkGray);
-        p0.setBorder(tborder);
-        centerP.add(p0);
+    	JPanel p0 = new JPanel();
+    	p0.setLayout(new BorderLayout());
+    	p0.add(checkCurrentUserDir = new JCheckBox(
+    			"\"Current Working Directory\" or", false), BorderLayout.WEST);
+    	checkCurrentUserDir.addActionListener(this);
+    	checkCurrentUserDir.setActionCommand("Set current dir to user.dir");
+    	p0.add(workField = new JTextField(workDir), BorderLayout.CENTER);
+    	JButton b = new JButton("Browse...");
+    	currentDirButton = b;
+    	b.setActionCommand("Browse current dir");
+    	b.addActionListener(this);
+    	p0.add(b, BorderLayout.EAST);
+    	TitledBorder tborder = new TitledBorder("Default Working Directory");
+    	tborder.setTitleColor(Color.darkGray);
+    	p0.setBorder(tborder);
+    	centerP.add(p0);
 
-        p0 = new JPanel();
-        p0.setLayout(new GridLayout(1, 2, 8, 8));
+    	p0 = new JPanel();
+    	p0.setLayout(new BorderLayout());
+    	p0.add(new JLabel("User's Guide:  "), BorderLayout.WEST);
+    	p0.add(UGField = new JTextField(ViewProperties.getUsersGuide()),
+    			BorderLayout.CENTER);
+    	b = new JButton("Browse...");
+    	b.setActionCommand("Browse UG");
+    	b.addActionListener(this);
+    	p0.add(b, BorderLayout.EAST);
+    	tborder = new TitledBorder("Help Document");
+    	tborder.setTitleColor(Color.darkGray);
+    	p0.setBorder(tborder);
+    	centerP.add(p0);
 
-        JPanel p00 = new JPanel();
-        p00.setLayout(new BorderLayout());
-        p00.add(new JLabel("Extension: "), BorderLayout.WEST);
-        p00
-                .add(fileExtField = new JTextField(ViewProperties
-                        .getFileExtension()), BorderLayout.CENTER);
-        tborder = new TitledBorder("File Extension");
-        tborder.setTitleColor(Color.darkGray);
-        p00.setBorder(tborder);
+    	p0 = new JPanel();
+    	p0.setLayout(new GridLayout(1, 2, 8, 8));
 
-        JPanel p01 = new JPanel();
-        p01.setLayout(new GridLayout(1, 2, 8, 8));
-        p01.add(checkReadOnly = new JRadioButton("Read Only", ViewProperties
-                .isReadOnly()));
-        JRadioButton rw = new JRadioButton("Read/Write", !ViewProperties
-                .isReadOnly());
-        p01.add(rw);
-        ButtonGroup bgrp = new ButtonGroup();
-        bgrp.add(checkReadOnly);
-        bgrp.add(rw);
-        tborder = new TitledBorder("Default File Access Mode");
-        tborder.setTitleColor(Color.darkGray);
-        p01.setBorder(tborder);
+    	JPanel p00 = new JPanel();
+    	p00.setLayout(new BorderLayout());
+    	p00.add(new JLabel("Extension: "), BorderLayout.WEST);
+    	p00
+    	.add(fileExtField = new JTextField(ViewProperties
+    			.getFileExtension()), BorderLayout.CENTER);
+    	tborder = new TitledBorder("File Extension");
+    	tborder.setTitleColor(Color.darkGray);
+    	p00.setBorder(tborder);
 
-        p0.add(p01);
-        p0.add(p00);
-        centerP.add(p0);
+    	JPanel p01 = new JPanel();
+    	p01.setLayout(new GridLayout(1, 2, 8, 8));
+    	p01.add(checkReadOnly = new JRadioButton("Read Only", ViewProperties
+    			.isReadOnly()));
+    	JRadioButton rw = new JRadioButton("Read/Write", !ViewProperties
+    			.isReadOnly());
+    	p01.add(rw);
+    	ButtonGroup bgrp = new ButtonGroup();
+    	bgrp.add(checkReadOnly);
+    	bgrp.add(rw);
+    	tborder = new TitledBorder("Default File Access Mode");
+    	tborder.setTitleColor(Color.darkGray);
+    	p01.setBorder(tborder);
 
-        p0 = new JPanel();
-        p0.setLayout(new GridLayout(1, 2, 8, 8));
-        p00 = new JPanel();
-        p00.setLayout(new BorderLayout());
-        p00.add(new JLabel("Font Size: "), BorderLayout.WEST);
-        p00.add(fontSizeChoice, BorderLayout.CENTER);
-        p0.add(p00);
-        p00 = new JPanel();
-        p00.setLayout(new BorderLayout());
-        p00.add(new JLabel("Font Type: "), BorderLayout.WEST);
-        p00.add(fontTypeChoice, BorderLayout.CENTER);
-        p0.add(p00);
-        tborder = new TitledBorder("Text Font");
-        tborder.setTitleColor(Color.darkGray);
-        p0.setBorder(tborder);
-        centerP.add(p0);
+    	p0.add(p01);
+    	p0.add(p00);
+    	centerP.add(p0);
 
-        p0 = new JPanel();
-        p0.setLayout(new BorderLayout());
-        p0.add(new JLabel("Data Delimiter:  "), BorderLayout.WEST);
-        p0.add(delimiterChoice, BorderLayout.CENTER);
-        tborder = new TitledBorder("Text Data Input/Output");
-        tborder.setTitleColor(Color.darkGray);
-        p0.setBorder(tborder);
-        centerP.add(p0);
+    	p0 = new JPanel();
+    	p0.setLayout(new GridLayout(1, 2, 8, 8));
+    	p00 = new JPanel();
+    	p00.setLayout(new BorderLayout());
+    	p00.add(new JLabel("Font Size: "), BorderLayout.WEST);
+    	p00.add(fontSizeChoice, BorderLayout.CENTER);
+    	p0.add(p00);
+    	p00 = new JPanel();
+    	p00.setLayout(new BorderLayout());
+    	p00.add(new JLabel("Font Type: "), BorderLayout.WEST);
+    	p00.add(fontTypeChoice, BorderLayout.CENTER);
+    	p0.add(p00);
+    	tborder = new TitledBorder("Text Font");
+    	tborder.setTitleColor(Color.darkGray);
+    	p0.setBorder(tborder);
+    	centerP.add(p0);
 
-        p0 = new JPanel();
-        p0.setLayout(new BorderLayout(20, 0));
-        checkAutoContrast = new JCheckBox("Auto Contrast");
-        checkAutoContrast.setSelected(ViewProperties.isAutoContrast());
-        p0.add(checkAutoContrast, BorderLayout.CENTER);
-        JButton button = new JButton(ViewProperties.getHelpIcon());
-        button.setToolTipText("Help on Auto Contrast");
-        button.setMargin(new Insets(0, 0, 0, 0));
-        button.addActionListener(this);
-        button.setActionCommand("Help on Auto Contrast");
-        p0.add(button, BorderLayout.WEST);
-        tborder = new TitledBorder("Image Brightness/Contrast");
-        tborder.setTitleColor(Color.darkGray);
-        p0.setBorder(tborder);
-        centerP.add(p0);
+    	p0 = new JPanel();
+    	p0.setLayout(new BorderLayout());
+    	p0.add(new JLabel("Data Delimiter:  "), BorderLayout.WEST);
+    	p0.add(delimiterChoice, BorderLayout.CENTER);
+    	tborder = new TitledBorder("Text Data Input/Output");
+    	tborder.setTitleColor(Color.darkGray);
+    	p0.setBorder(tborder);
+    	centerP.add(p0);
 
-        p0 = new JPanel();
-        p0.setLayout(new BorderLayout(20, 0));
-        checkConvertEnum = new JCheckBox("Convert Enum");
-        checkConvertEnum.setSelected(ViewProperties.isConvertEnum());
-        p0.add(checkConvertEnum, BorderLayout.CENTER);
-        button = new JButton(ViewProperties.getHelpIcon());
-        button.setToolTipText("Help on Convert Enum");
-        button.setMargin(new Insets(0, 0, 0, 0));
-        button.addActionListener(this);
-        button.setActionCommand("Help on Convert Enum");
-        p0.add(button, BorderLayout.WEST);
-        tborder = new TitledBorder("Convert Enum Data");
-        tborder.setTitleColor(Color.darkGray);
-        p0.setBorder(tborder);
-        centerP.add(p0);
+    	p0 = new JPanel();
+    	p0.setLayout(new BorderLayout(20, 0));
+    	checkAutoContrast = new JCheckBox("Auto Contrast");
+    	checkAutoContrast.setSelected(ViewProperties.isAutoContrast());
+    	p0.add(checkAutoContrast, BorderLayout.CENTER);
+    	JButton button = new JButton(ViewProperties.getHelpIcon());
+    	button.setToolTipText("Help on Auto Contrast");
+    	button.setMargin(new Insets(0, 0, 0, 0));
+    	button.addActionListener(this);
+    	button.setActionCommand("Help on Auto Contrast");
+    	p0.add(button, BorderLayout.WEST);
+    	tborder = new TitledBorder("Image Brightness/Contrast");
+    	tborder.setTitleColor(Color.darkGray);
+    	p0.setBorder(tborder);
+    	centerP.add(p0);
 
-        p0 = new JPanel();
-        p0.setLayout(new GridLayout(1, 2, 8, 8));
-        p00 = new JPanel();
-        p00.setLayout(new BorderLayout());
-        p00.add(new JLabel("Max Members: "), BorderLayout.WEST);
+    	p0 = new JPanel();
+    	p0.setLayout(new BorderLayout(20, 0));
+    	checkConvertEnum = new JCheckBox("Convert Enum");
+    	checkConvertEnum.setSelected(ViewProperties.isConvertEnum());
+    	p0.add(checkConvertEnum, BorderLayout.CENTER);
+    	button = new JButton(ViewProperties.getHelpIcon());
+    	button.setToolTipText("Help on Convert Enum");
+    	button.setMargin(new Insets(0, 0, 0, 0));
+    	button.addActionListener(this);
+    	button.setActionCommand("Help on Convert Enum");
+    	p0.add(button, BorderLayout.WEST);
+    	tborder = new TitledBorder("Convert Enum Data");
+    	tborder.setTitleColor(Color.darkGray);
+    	p0.setBorder(tborder);
+    	centerP.add(p0);
 
-        p00.add(maxMemberField = new JTextField(String.valueOf(ViewProperties
-                .getMaxMembers())), BorderLayout.CENTER);
-        p0.add(p00);
-        p00 = new JPanel();
-        p00.setLayout(new BorderLayout());
-        p00.add(new JLabel("Start Member: "), BorderLayout.WEST);
-        p00.add(startMemberField = new JTextField(String.valueOf(ViewProperties
-                .getStartMembers())), BorderLayout.CENTER);
-        p0.add(p00);
-        tborder = new TitledBorder(
-                "Max Number of Members to Load in Each Group");
-        tborder.setTitleColor(Color.darkGray);
-        p0.setBorder(tborder);
-        centerP.add(p0);
+    	p0 = new JPanel();
+    	p0.setLayout(new GridLayout(1, 2, 8, 8));
+    	p00 = new JPanel();
+    	p00.setLayout(new BorderLayout());
+    	p00.add(new JLabel("Max Members: "), BorderLayout.WEST);
 
-        p0 = new JPanel();
-        p0.setLayout(new BorderLayout());
-        p0.add(new JLabel("Display Index order:  "), BorderLayout.WEST);
-        p0.add(displayIndexChoice, BorderLayout.CENTER);
-        tborder = new TitledBorder("Display order of members");
-        tborder.setTitleColor(Color.darkGray);
-        p0.setBorder(tborder);
-        centerP.add(p0);
-        
-        return centerP;
+    	p00.add(maxMemberField = new JTextField(String.valueOf(ViewProperties
+    			.getMaxMembers())), BorderLayout.CENTER);
+    	p0.add(p00);
+    	p00 = new JPanel();
+    	p00.setLayout(new BorderLayout());
+    	p00.add(new JLabel("Start Member: "), BorderLayout.WEST);
+    	p00.add(startMemberField = new JTextField(String.valueOf(ViewProperties
+    			.getStartMembers())), BorderLayout.CENTER);
+    	p0.add(p00);
+    	tborder = new TitledBorder(
+    	"Max Number of Members to Load in Each Group");
+    	tborder.setTitleColor(Color.darkGray);
+    	p0.setBorder(tborder);
+    	centerP.add(p0);
+
+    	//-----For the feature:To display groups/attributes in creation order
+    	//    	p0 = new JPanel();
+    	//    	p0.setLayout(new BorderLayout());
+    	//    	p0.add(new JLabel("Display Index order:  "), BorderLayout.WEST);
+    	//    	p0.add(displayIndexChoice, BorderLayout.CENTER);
+    	//    	tborder = new TitledBorder("Display order of members");
+    	//    	tborder.setTitleColor(Color.darkGray);
+    	//    	p0.setBorder(tborder);
+    	//    	centerP.add(p0);
+
+    	return centerP;
     }
 
     private JPanel createModuleOptionPanel() {
@@ -797,10 +800,10 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         ViewProperties.setDataDelimiter((String) delimiterChoice
                 .getSelectedItem());
 
-        
-        // set index type
-        ViewProperties.setIndexType((String) displayIndexChoice
-                .getSelectedItem());
+        //------For the feature:To display groups/attributes in creation order
+        //        // set index type
+        //        ViewProperties.setIndexType((String) displayIndexChoice
+        //        		.getSelectedItem());
         try {
             int maxsize = Integer.parseInt(maxMemberField.getText());
             ViewProperties.setMaxMembers(maxsize);

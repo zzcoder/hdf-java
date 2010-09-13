@@ -83,8 +83,9 @@ public class ViewProperties extends Properties {
     /** data delimiter */
     private static String delimiter = DELIMITER_TAB;
     
-    /** Display index */
-    private static String indexType = "alphabetical";
+    //------For the feature:To display groups/attributes in creation order
+    //    /** Display index */
+    //    private static String indexType = "alphabetical";
 
     /** a list of most recent files */
     private static Vector mrf;
@@ -1001,10 +1002,11 @@ public class ViewProperties extends Properties {
             delimiter = propVal;
         }
         
-        propVal = (String) get("data.indexType");
-        if ((propVal != null) && (propVal.length() > 0)) {
-            indexType = propVal;
-        }
+        //------For the feature:To display groups/attributes in creation order
+        //        propVal = (String) get("data.indexType");
+        //        if ((propVal != null) && (propVal.length() > 0)) {
+        //            indexType = propVal;
+        //        }
 
         propVal = (String) get("h4toh5.converter");
         if ((propVal != null) && (propVal.length() > 0)) {
@@ -1134,10 +1136,11 @@ public class ViewProperties extends Properties {
         else {
             put("data.delimiter", delimiter);
         }
-
-        if (indexType == null) {
-            put("data.indexType", indexType);
-        }
+        
+        //--For the feature:To display groups/attributes in creation order
+        //        if (indexType == null) {
+        //            put("data.indexType", indexType);
+        //        }
         
         if (usersGuide != null) {
             put("users.guide", usersGuide);
@@ -1299,10 +1302,11 @@ public class ViewProperties extends Properties {
         return delimiter;
     }
 
-    /** returns the Index type for Display */
-    public static String getIndexType() {
-        return indexType;
-    }
+    //--For the feature:To display groups/attributes in creation order
+    //    /** returns the Index type for Display */
+    //    public static String getIndexType() {
+    //        return indexType;
+    //    }
     
     /** returns the font size */
     public static int getFontSize() {
@@ -1417,10 +1421,11 @@ public class ViewProperties extends Properties {
         delimiter = delim;
     }
     
-    /** set the Index Type */
-    public static void setIndexType(String idxType) {
-        indexType  = idxType;
-    }
+    //---For the feature:To display groups/attributes in creation order
+    //    /** set the Index Type */
+    //    public static void setIndexType(String idxType) {
+    //        indexType  = idxType;
+    //    }
 
     /**
      * Current Java application such as HDFView cannot handle files with large

@@ -1702,21 +1702,23 @@ public class DefaultTreeView extends JPanel
 
         ((JFrame)viewer).setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try {
-            fileFormat.setMaxMembers(ViewProperties.getMaxMembers());
-            fileFormat.setStartMembers(ViewProperties.getStartMembers());
-            
-            if(fileFormat.isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5))){
-            	String idxType = ViewProperties.getIndexType();
-            	int indxType = 0;
-            	if(idxType.equals("alphabetical"))
-            		indxType = 0;
-            	else if(idxType.equals("creation"))
-            		indxType = 1;
+        	fileFormat.setMaxMembers(ViewProperties.getMaxMembers());
+        	fileFormat.setStartMembers(ViewProperties.getStartMembers());
 
-            	fileFormat.open(indxType);
-            }
-            else
-            	fileFormat.open();
+        	//--------For the feature:To display groups in creation order
+        	//            if(fileFormat.isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5))){
+        	//            	String idxType = ViewProperties.getIndexType();
+        	//            	int indxType = 0;
+        	//            	if(idxType.equals("alphabetical"))
+        	//            		indxType = 0;
+        	//            	else if(idxType.equals("creation"))
+        	//            		indxType = 1;
+        	//
+        	//            	fileFormat.open(indxType);
+        	//            }
+        	//            else
+
+        	fileFormat.open();
         } finally {
             ((JFrame)viewer).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
