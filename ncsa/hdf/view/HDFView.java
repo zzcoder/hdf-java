@@ -1730,23 +1730,24 @@ ChangeListener, DropTargetListener
         } // else if (obj instanceof Dataset)
 
         List attrList = null;
-        String idxType = ViewProperties.getIndexType();
-        int indxType = 0;
-        if(idxType.equals("alphabetical"))
-        	indxType = 0;
-        else if(idxType.equals("creation"))
-        	indxType = 1;
-        try { 
-        	if(obj.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5))){
-        		attrList = obj.getMetadata(indxType);
-        	} 
-        	else
-        		attrList = obj.getMetadata();
-        }
-        catch (Exception ex){
-        	ex.printStackTrace();
-        }
-        //try { attrList = obj.getMetadata(); } catch (Exception ex) {ex.printStackTrace();}
+        //-----------For the feature:To display attributes in creation order
+        //        String idxType = ViewProperties.getIndexType();
+        //        int indxType = 0;
+        //        if(idxType.equals("alphabetical"))
+        //        	indxType = 0;
+        //        else if(idxType.equals("creation"))
+        //        	indxType = 1;
+        //        try { 
+        //        	if(obj.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5))){
+        //        		attrList = obj.getMetadata(indxType);
+        //        	} 
+        //        	else
+        //        		attrList = obj.getMetadata();
+        //        }
+        //        catch (Exception ex){
+        //        	ex.printStackTrace();
+        //        }
+        try { attrList = obj.getMetadata(); } catch (Exception ex) {ex.printStackTrace();}
 
         if (attrList == null) {
             metadata.append("\n    Number of attributes = 0");
