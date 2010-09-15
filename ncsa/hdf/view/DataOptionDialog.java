@@ -186,11 +186,16 @@ public class DataOptionDialog extends JDialog implements ActionListener,
         choiceTableView = new JComboBox((Vector) HDFView.getListOfTableView());
 
         choicePalette.addItem("Select palette");
-        String paletteName = ((ScalarDS) dataset).getPaletteName(0);
-        choicePalette.addItem(paletteName);
-        for (int i = 2; i <= numberOfPalettes; i++) {
-        	paletteName = ((ScalarDS) dataset).getPaletteName(i-1);
+        if(dataset instanceof ScalarDS ){
+        	String paletteName = ((ScalarDS) dataset).getPaletteName(0);
+        	if(paletteName==null){
+        		paletteName = "Default";
+        	}
         	choicePalette.addItem(paletteName);
+        	for (int i = 2; i <= numberOfPalettes; i++) {
+        		paletteName = ((ScalarDS) dataset).getPaletteName(i-1);
+        		choicePalette.addItem(paletteName);
+        	}
         }
         choicePalette.addItem("Gray");
         choicePalette.addItem("ReverseGray");
@@ -924,7 +929,7 @@ public class DataOptionDialog extends JDialog implements ActionListener,
         else if (palChoice == numberOfPalettes + 6) {
             pal = Tools.createWavePalette();
         }
-        else if ((palChoice > 0) && (palChoice < numberOfPalettes)) {
+        else if ((palChoice > 0) && (palChoice <= numberOfPalettes)) {
             // multiple palettes attached
             pal = ((ScalarDS) dataset).readPalette(palChoice - 1);
         }
