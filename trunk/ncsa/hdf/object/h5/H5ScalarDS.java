@@ -562,18 +562,22 @@ public class H5ScalarDS extends ScalarDS {
             plist = H5.H5Dget_create_plist(srcdid);
             
             long[] chunks = new long[dims.length];
-            H5.H5Pget_chunk(plist, dims.length, chunks);
-
             boolean setChunkFlag = false;
-            for(int i=0;i<dims.length;i++){
-            	if(dims[i]<chunks[i]){
-            		setChunkFlag = true;
-            		if(dims[i]==1)
-            			chunks[i] =1;
-            		else
-            			chunks[i] = dims[i] /2;
-            	}
+            try{
+            	H5.H5Pget_chunk(plist, dims.length, chunks);
+            	 for(int i=0;i<dims.length;i++){
+                 	if(dims[i]<chunks[i]){
+                 		setChunkFlag = true;
+                 		if(dims[i]==1)
+                 			chunks[i] =1;
+                 		else
+                 			chunks[i] = dims[i] /2;
+                 	}
+                 }
             }
+            catch(Exception ex){
+            }
+
             if(setChunkFlag)
             	H5.H5Pset_chunk(plist, dims.length, chunks);
 
@@ -581,6 +585,7 @@ public class H5ScalarDS extends ScalarDS {
                 dstdid = H5.H5Dcreate(pgroup.getFID(), dname, tid, sid,
                         HDF5Constants.H5P_DEFAULT, plist,
                         HDF5Constants.H5P_DEFAULT);
+            }catch(Exception e){          	
             }
             finally {
                 try {
