@@ -1991,6 +1991,11 @@ public final class Tools {
             Class fileMgr = Class.forName("com.apple.eio.FileManager");
             Method openURL = fileMgr.getDeclaredMethod("openURL",
                     new Class[] { String.class });
+            
+            if (new File(url).exists()) {
+            	// local file
+            	url = "file://"+url;
+            }
             openURL.invoke(null, new Object[] { url });
         }
         // Block for UNIX Platform
