@@ -449,7 +449,6 @@ jboolean h5libraryError( JNIEnv *env )
     else
         str = NULL;
     H5Eset_current_stack(stk_id);    
-    H5Eclose_stack(stk_id);
 
     args[0] = (char *)str;
     args[1] = 0;

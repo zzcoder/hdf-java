@@ -48,13 +48,12 @@ public class TestH5Edefault {
         }
     }
 
-    @Ignore
+    @Test
     public void testH5Eget_current_stack() {
         long num_msg = -1;
         long num_msg_default = -1;
         int stack_id = -1;
         int stack_id_default = HDF5Constants.H5E_DEFAULT;
-System.out.println("Stack>> Default:"+stack_id_default+" Copy:"+stack_id);
         try {
             H5.H5Fopen("test", 0, 1); 
         }
@@ -63,7 +62,6 @@ System.out.println("Stack>> Default:"+stack_id_default+" Copy:"+stack_id);
             stack_id_default = HDF5Constants.H5E_DEFAULT;
             //err.printStackTrace(); //This will clear the error stack
         }
-System.out.println("Stack>> Default:"+stack_id_default+" Copy:"+stack_id);
         // Verify we have the correct number of messages
         try {
             num_msg_default = H5.H5Eget_num(stack_id_default);
@@ -72,8 +70,6 @@ System.out.println("Stack>> Default:"+stack_id_default+" Copy:"+stack_id);
             err.printStackTrace();
             fail("H5.H5Eget_current_stack: " + err);
         }
-System.out.println("Stack>> Default:"+stack_id_default+" Copy:"+stack_id);
-System.out.println("Stack Count>> Default:"+num_msg_default+" Copy:"+num_msg);
         assertTrue("H5.H5Eget_current_stack: get_num #:" + num_msg_default,
                 num_msg_default == 2);
 
@@ -85,8 +81,6 @@ System.out.println("Stack Count>> Default:"+num_msg_default+" Copy:"+num_msg);
             err.printStackTrace();
             fail("H5.H5Eget_current_stack: " + err);
         }
-System.out.println("Stack>> Default:"+stack_id_default+" Copy:"+stack_id);
-System.out.println("Stack Count>> Default:"+num_msg_default+" Copy:"+num_msg);
         assertFalse("H5.H5Eget_current_stack: get_current_stack - "
                 + stack_id, stack_id < 0);
         assertFalse("H5.H5Eget_current_stack: get_current_stack - "
@@ -100,10 +94,8 @@ System.out.println("Stack Count>> Default:"+num_msg_default+" Copy:"+num_msg);
             err.printStackTrace();
             fail("H5.H5Eget_current_stack: " + err);
         }
-System.out.println("Stack>> Default:"+stack_id_default+" Copy:"+stack_id);
-System.out.println("Stack Count>> Default:"+num_msg_default+" Copy:"+num_msg);
-//        assertTrue("H5.H5Eget_current_stack: get_num #:" + num_msg_default,
-//                num_msg_default == 0);
+        assertTrue("H5.H5Eget_current_stack: get_num #:" + num_msg_default,
+                num_msg_default == 0);
 
         //Verify the copy has the correct number of messages
         try {
@@ -113,8 +105,6 @@ System.out.println("Stack Count>> Default:"+num_msg_default+" Copy:"+num_msg);
             err.printStackTrace();
             fail("H5.H5Eget_current_stack: " + err);
         }
-System.out.println("Stack>> Default:"+stack_id_default+" Copy:"+stack_id);
-System.out.println("Stack Count>> Default:"+num_msg_default+" Copy:"+num_msg);
         assertTrue("H5.H5Eget_current_stack: get_num #:" + num_msg,
                 num_msg == 2);
        
@@ -127,7 +117,7 @@ System.out.println("Stack Count>> Default:"+num_msg_default+" Copy:"+num_msg);
         }
     }
 
-    @Ignore
+    @Test
     public void testH5Eget_current_stack_pop() {
         long num_msg = -1;
         long num_msg_default = -1;
@@ -184,6 +174,25 @@ System.out.println("Stack Count>> Default:"+num_msg_default+" Copy:"+num_msg);
         }
         assertTrue("H5.H5Eget_current_stack: get_num #:" + num_msg,
                 num_msg == 2);
+
+        //Generate errors on default stack
+        try {
+            H5.H5Fopen("test", 0, 1);
+        }
+        catch (Throwable err) {
+            //err.printStackTrace(); //This will clear the error stack
+        }
+
+        // Verify we have the correct number of messages
+        try {
+            num_msg_default = H5.H5Eget_num(HDF5Constants.H5E_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Eget_current_stack: " + err);
+        }
+        assertTrue("H5.H5Eget_current_stack: get_num #:" + num_msg_default,
+                num_msg_default == 2);
 
         //Remove one message from the current stack
         try {
@@ -257,7 +266,7 @@ System.out.println("Stack Count>> Default:"+num_msg_default+" Copy:"+num_msg);
         H5.H5Eset_current_stack(-1);
     }
 
-    @Ignore
+    @Test
     public void testH5Eset_current_stack() {
         long num_msg = -1;
         int stack_id = -1;
@@ -302,6 +311,25 @@ System.out.println("Stack Count>> Default:"+num_msg_default+" Copy:"+num_msg);
         }
         assertTrue("H5.H5Eset_current_stack: get_num #:" + num_msg,
                     num_msg == 2);
+
+        //Generate errors on default stack
+        try {
+            H5.H5Fopen("test", 0, 1);
+        }
+        catch (Throwable err) {
+            //err.printStackTrace(); //This will clear the error stack
+        }
+
+        // Verify we have the correct number of messages
+        try {
+            num_msg = H5.H5Eget_num(HDF5Constants.H5E_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Eget_current_stack: " + err);
+        }
+        assertTrue("H5.H5Eset_current_stack: get_num #:" + num_msg,
+                num_msg == 2);
         
         //Remove one message from the current stack
         try {
@@ -328,7 +356,7 @@ System.out.println("Stack Count>> Default:"+num_msg_default+" Copy:"+num_msg);
 
         try {
             H5.H5Eset_current_stack(stack_id);
-            num_msg = H5.H5Eget_num(stack_id);
+            num_msg = H5.H5Eget_num(HDF5Constants.H5E_DEFAULT);
         }
         catch (Throwable err) {
             err.printStackTrace();
@@ -343,7 +371,7 @@ System.out.println("Stack Count>> Default:"+num_msg_default+" Copy:"+num_msg);
         H5.H5Epop(-1, 0);
     }
 
-    @Ignore
+    @Test
     public void testH5Epop() throws Throwable {
         long num_msg = -1;
         try {
@@ -418,7 +446,7 @@ System.out.println("Stack Count>> Default:"+num_msg_default+" Copy:"+num_msg);
         }
     }
 
-    @Ignore
+    @Test
     public void testH5Eclear2_with_msg() {
         long num_msg = -1;
         try {
@@ -482,7 +510,7 @@ System.out.println("Stack Count>> Default:"+num_msg_default+" Copy:"+num_msg);
         assertTrue("H5.H5Eget_num #:" + num_msg, num_msg == 0);
     }
 
-    @Ignore
+    @Test
     public void testH5Eget_num_with_msg() {
         long num_msg = -1;
         try {
