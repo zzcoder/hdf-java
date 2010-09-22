@@ -146,7 +146,7 @@ public class TestH5E {
         }
     }
 
-    @Ignore
+    @Test
     public void testH5Eget_msg_major() {
 
         try {
@@ -175,7 +175,7 @@ public class TestH5E {
         }
     }
 
-    @Ignore
+    @Test
     public void testH5Eget_msg_minor() {
         try {
             H5.H5Fopen("test", 0, 1);
@@ -222,7 +222,7 @@ public class TestH5E {
         }
     }
 
-    @Ignore
+    @Test
     public void testH5Epop() {
         try {
             H5.H5Eset_current_stack(current_stackid);
@@ -347,7 +347,7 @@ public class TestH5E {
         assertTrue("H5.H5Eget_num", num_msg == 0);
     }
 
-    @Ignore
+    @Test
     public void testH5Eget_num_with_msg() {
         try {
             H5.H5Eset_current_stack(current_stackid);
