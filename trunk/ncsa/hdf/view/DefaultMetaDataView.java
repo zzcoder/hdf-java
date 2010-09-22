@@ -65,7 +65,8 @@ implements ActionListener, MetaDataView
     private JTextArea userBlockArea;
     private JButton jamButton;
     
-    public JComboBox linkField2;
+    private JTextField linkField;
+
     private HObject newObject;
     private FileFormat fileFormat;
     private String LinkTObjName;
@@ -195,180 +196,43 @@ implements ActionListener, MetaDataView
             showUserBlockAs(type);
         }
         
-        else if (cmd.equals("Change")){
-        	linkField2.setEditable(true);
-        	FileFormat externalFile = null;
-
-        	if (!LinkTObjName.contains(FileFormat.FILE_OBJ_SEP)) {	
-        		//getting the list of objects from the current file:-
-        		retrieveObjects(fileFormat);
-        	}
-        	else {
-        		JFileChooser fchooser = new JFileChooser(currentDir);
-        		fchooser.setFileFilter(DefaultFileFilter.getFileFilter());
-
-        		int returnVal = fchooser.showOpenDialog(this);
-        		if(returnVal != JFileChooser.APPROVE_OPTION) {
-        			return ;
-        		}
-
-        		File choosedFile = fchooser.getSelectedFile();
-        		if (choosedFile == null) {
-        			return ;
-        		}
-        		if (choosedFile.isDirectory()) {
-        			currentDir = choosedFile.getPath();
-        		} else {
-        			currentDir = choosedFile.getParent();
-        		}     
-
-        		TargetfileName = choosedFile.getAbsolutePath();
-        		FileFormat h5format = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-        		try {
-        			externalFile = h5format.createInstance(TargetfileName, FileFormat.FILE_CREATE_OPEN);
-        			externalFile.open(); //open the file
-        		} catch (Exception ex) {
-        			return;
-        		} 
-
-        		//getting the list of objects from the external file:-
-        		retrieveObjects(externalFile);
-
-        		try {     		
-        			externalFile.close();	
-        		} catch (Exception ex) {
-        		} 
-        	}
-
-        	Object[] msg = {"Target Objects:",linkField2};
-        	Object[] options = {"Ok", "Cancel"};
-        	JOptionPane op = new JOptionPane(
-        			msg,
-        			JOptionPane.PLAIN_MESSAGE,
-        			JOptionPane.OK_CANCEL_OPTION,
-        			null,
-        			options);
-
-        	JDialog dialog = op.createDialog(this, "Change the target Object to: ");
-        	dialog.setVisible(true);
-
-        	String result = null;
-        	try {
-        		result = (String)op.getValue();	
-        	} catch(Exception err){
-        	}
-        	if((result!=null) && (result.equals("Ok"))){
-        		newObject = createLink(); //Call method to create link
-        	}
-        	else
+        else if (cmd.equals("Change link target")){
+        	Group pgroup = null;
+        	try{
+        		pgroup= (Group)hObject.getFileFormat().get(hObject.getPath());
+        	}catch (Exception ex) {
+        	} 
+        	if (pgroup == null) {
+        		JOptionPane.showMessageDialog(this, "Parent group is null.",
+        				getTitle(), JOptionPane.ERROR_MESSAGE); 
+        	}    
+        	String target_name = linkField.getText();
+        	if (target_name != null)
+        		target_name = target_name.trim();
+        		
+        	if (target_name == null ||
+        			target_name.length() < 1 || 
+        			target_name.equals("/") ||
+        			target_name.endsWith(FileFormat.FILE_OBJ_SEP+"/")||
+        			target_name.equals(hObject.getLinkTargetObjName()))
         		return;
-        	if (newObject != null) {
-        		dispose();
-        	}
-        }
-    }
-    
-    private HObject createLink() {
-    	HObject obj = null;
-    	Group pgroup = null;
-    	HObject targetObj = null;
-    	String tObj = null;
-
-    	try{
-    		pgroup= (Group)hObject.getFileFormat().get(hObject.getPath());
-    	}catch (Exception ex) {
-    	} 
-    	if (pgroup == null) {
-    		JOptionPane.showMessageDialog(this, "Parent group is null.",
-    				getTitle(), JOptionPane.ERROR_MESSAGE); 
-    		return null;
-    	}    
-    	String target_name = linkField2.getSelectedItem().toString();
-    	if (target_name.length() < 1)  {
-    		JOptionPane.showMessageDialog(this,
-    				"Target object name not specified.", getTitle(),
-    				JOptionPane.ERROR_MESSAGE);
-    		return null;
-    	}
-
-    	if (!LinkTObjName.contains(FileFormat.FILE_OBJ_SEP)) {//For creating soft links
-    		try{
-    			targetObj = fileFormat.get(linkField2.getSelectedItem().toString());
-    		}catch (Exception ex) {
-    		} 
-
-    		if(targetObj==null){
-    			tObj = linkField2.getSelectedItem().toString();
-
-    			if (!tObj.startsWith(HObject.separator))
-    			{
-    				tObj = HObject.separator + tObj;
-    			}
-    		}
-
-    		if ((targetObj instanceof Group) && ((Group) targetObj).isRoot()) {
-    			JOptionPane.showMessageDialog(this,
-    					"Cannot make a link to the root group.", getTitle(),
-    					JOptionPane.ERROR_MESSAGE);
-    			return null;
-    		}
-    		try {
-    			if(targetObj !=null)
-    				obj = fileFormat.createLink(pgroup, hObject.getName(), targetObj, Group.LINK_TYPE_SOFT);
-    			else if(tObj!=null)
-    				obj = fileFormat.createLink(pgroup,  hObject.getName(), tObj, Group.LINK_TYPE_SOFT);
-    		} catch (Exception ex) {
+        	
+        	int linkType = Group.LINK_TYPE_SOFT;
+        	if (LinkTObjName.contains(FileFormat.FILE_OBJ_SEP))
+        		linkType = Group.LINK_TYPE_EXTERNAL;
+        	
+        	try {
+        		fileFormat.createLink(pgroup,  hObject.getName(), target_name, linkType);
+        	} catch (Exception ex) {
     			ex.printStackTrace();
     			JOptionPane.showMessageDialog(this, ex, getTitle(),
     					JOptionPane.ERROR_MESSAGE);
-    			return null;
     		}
-    	}//End of creating soft Links
-
-    	else { //Create external link
-    		String exfileName = TargetfileName;
-    		FileFormat h5format = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-    		FileFormat externalFile = null;
-    		try {
-    			externalFile = h5format.createInstance(exfileName, FileFormat.FILE_CREATE_OPEN);
-    			externalFile.open(); //open the file
-    		} catch (Exception ex) {
-    			return null;
-    		} 
-
-    		try{
-    			targetObj = externalFile.get(linkField2.getSelectedItem().toString());
-    		} catch (Exception ex) {
-    		} 
-
-    		try {     		
-    			externalFile.close();//close the file
-    		} catch (Exception ex) {
-    		} 
-
-    		if(targetObj==null){
-    			tObj = linkField2.getSelectedItem().toString();
-    		}
-
-    		String tFileObj = null;    
-    		tFileObj = exfileName + FileFormat.FILE_OBJ_SEP + tObj;
-
-    		try {
-    			if(targetObj !=null)
-    				obj = fileFormat.createLink(pgroup, hObject.getName(), targetObj, Group.LINK_TYPE_EXTERNAL);
-    			else if(tObj!=null)
-    				obj = fileFormat.createLink(pgroup, hObject.getName(), tFileObj, Group.LINK_TYPE_EXTERNAL);
-    		} catch (Exception ex) {
-    			ex.printStackTrace();
-    			JOptionPane.showMessageDialog(this, ex, getTitle(),
-    					JOptionPane.ERROR_MESSAGE);
-    			return null;
-    		}
-    	}//End of creating External link
-
-    	return obj;
+        	dispose();
+        } // else if (cmd.equals("Change link target")){
+  
     }
-    
+   
     private final List breadthFirstUserObjects(TreeNode node)
     {
         if (node == null) {
@@ -386,43 +250,6 @@ implements ActionListener, MetaDataView
         return list;
     }  
     
-    private void retrieveObjects(FileFormat file) {	
-		List objsFile =  breadthFirstUserObjects(file.getRootNode());
-		List groupListFile = new Vector(objsFile.size());
-		HObject obj = null;
-		Iterator iterator = objsFile.iterator();
-		List objListFile = objsFile;
-		String full_name = null;
-		int idx_root = -1, idx = -1;
-		linkField2.removeAllItems();
-		while (iterator.hasNext()) {
-			obj = (HObject) iterator.next();
-			idx++;
-
-			if (obj instanceof Group) {
-				Group g = (Group) obj;
-				groupListFile.add(obj);
-				if (g.isRoot()) {
-					full_name = HObject.separator;
-					idx_root = idx;
-				}
-				else {
-					full_name = g.getPath() + g.getName() + HObject.separator;
-				}
-			}
-			else {
-				full_name = obj.getPath() + obj.getName();
-			}
-			
-			if ((obj.getName()!=hObject.getName())){
-				linkField2.addItem(full_name);
-
-			}
-		}
-		linkField2.removeItemAt(idx_root);
-		objListFile.remove(idx_root);
-	}
-
     /** returns the data object displayed in this data viewer */
     public HObject getDataObject() {
         return hObject;
@@ -580,30 +407,18 @@ implements ActionListener, MetaDataView
         JLabel nameField = new JLabel(hObject.getName());
         rp.add(nameField);
         
-        JLabel linkField1;
         JPanel targetObjPanel = new JPanel();
         JButton ChangeTargetObjButton = new JButton("Change"); 
+        ChangeTargetObjButton.setActionCommand("Change link target");
         ChangeTargetObjButton.addActionListener(this);
 
         if(isH5){
         	if(hObject.getLinkTargetObjName()!=null){
-        		long[] oid = null; 
-        		oid = hObject.getOID();
-        		if(oid!=null)
-        		{      		
-        			linkField1 = new JLabel(hObject.getLinkTargetObjName());
-        			rp.add(linkField1);
-        		}
-        		else{    
-        			targetObjPanel.setLayout(new BorderLayout());
-        			linkField2 = new JComboBox();
-        			linkField2.setEditable(false);
-        			linkField2.addActionListener(this);
-        			linkField1 = new JLabel(hObject.getLinkTargetObjName());
-        			targetObjPanel.add(linkField1, BorderLayout.WEST);
-        			targetObjPanel.add(ChangeTargetObjButton, BorderLayout.EAST);
-        			rp.add(targetObjPanel);
-        		}       	 
+        		linkField = new JTextField(hObject.getLinkTargetObjName());
+        		targetObjPanel.setLayout(new BorderLayout());
+    			targetObjPanel.add(linkField, BorderLayout.CENTER);
+    			targetObjPanel.add(ChangeTargetObjButton, BorderLayout.EAST);
+    			rp.add(targetObjPanel);
         	}
         }
 
