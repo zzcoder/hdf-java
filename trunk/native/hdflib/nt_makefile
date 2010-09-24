@@ -17,7 +17,7 @@ HDF4MLIB=G:\HDF\lib\hdf42r4\lib\hm424.lib
 SZLIB=G:\HDF\lib_external\szip20-win-xpnet-enc\lib\szlib.lib
 ZLIB=G:\HDF\lib_external\zlib-121-windows\lib\zlib.lib
 JPEGLIB=G:\HDF\lib_external\jpeg6_2005\lib\libjpeg.lib
-XDRLIB=G:\HDF\lib\hdf42r4\lib\xdr.lib
+XDRLIB=G:\HDF\lib\hdf4.2.5\lib\xdr.lib
 
 #####################################################################
 #      Do not change below this line unless you know what you do    #
