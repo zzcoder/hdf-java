@@ -72,7 +72,6 @@ public class H5Link extends HObject {
 		return 0;
 	}
 
-	@Override
 	public List getMetadata() throws Exception {
 
     	try{
@@ -83,20 +82,16 @@ public class H5Link extends HObject {
     	return null;
 	}
 
-	@Override
 	public boolean hasAttribute() {
 		return false;
 	}
 
-	@Override
 	public void removeMetadata(Object info) throws Exception {		
 	}
 
-	@Override
 	public void writeMetadata(Object info) throws Exception {
 	}
 
-	@Override
 	public List getMetadata(int... attrPropList) throws Exception {
 		return null;
 	}
