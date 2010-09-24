@@ -11,9 +11,9 @@
 #
 
 JAVAHOME=D:\Java\jdk1.6.0_01
-HDF4INC=G:\HDF\lib\hdf42r4\include
-HDF4DLIB=G:\HDF\lib\hdf42r4\lib\hd424.lib
-HDF4MLIB=G:\HDF\lib\hdf42r4\lib\hm424.lib
+HDF4INC=G:\HDF\lib\hdf4.2.5\include
+HDF4DLIB=G:\HDF\lib\hdf4.2.5\lib\hd425.lib
+HDF4MLIB=G:\HDF\lib\hdf4.2.5\lib\hm425.lib
 SZLIB=G:\HDF\lib_external\szip20-win-xpnet-enc\lib\szlib.lib
 ZLIB=G:\HDF\lib_external\zlib-121-windows\lib\zlib.lib
 JPEGLIB=G:\HDF\lib_external\jpeg6_2005\lib\libjpeg.lib
