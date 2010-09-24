@@ -234,7 +234,6 @@ public class FitsDatatype extends Datatype
 	public void close(int id) {;}
 
   //Implementing DataFormat
-	@Override
 	public List getMetadata(int... attrPropList) throws Exception {
 		throw new UnsupportedOperationException("getMetadata(int... attrPropList) is not supported");
 	}    
