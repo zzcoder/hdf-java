@@ -127,7 +127,7 @@ public abstract class HObject implements Serializable, DataFormat {
     /**
      * The name of the Target Object that is being linked to. 
      */
-    public String linkTargetObjName;
+    protected String linkTargetObjName;
 
     /**
      * Number of attributes attached to the object.
@@ -295,6 +295,13 @@ public abstract class HObject implements Serializable, DataFormat {
      */
     public final String getLinkTargetObjName() {  
         return linkTargetObjName;
+      }
+    
+    /**
+     * Sets the name of the target object that is linked to.
+     */
+    public final void setLinkTargetObjName(String targetObjName) {  
+        linkTargetObjName = targetObjName;
       }
 
     /**

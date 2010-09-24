@@ -2176,9 +2176,11 @@ ChangeListener, DropTargetListener
                 }
             }
         }
+        
         final Vector the_flist = flist;
         final String the_rootDir = rootDir;
         final int the_X=X, the_Y=Y, the_W=W, the_H=H;
+        
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {

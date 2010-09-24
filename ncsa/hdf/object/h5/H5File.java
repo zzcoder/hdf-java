@@ -2432,6 +2432,7 @@ public class H5File extends FileFormat {
         			return false;
         		}
         	};
+        	depth_first(newNode);
         	pgroup.addToMemberList(group);    	
         }
         
