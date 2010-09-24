@@ -123,6 +123,8 @@ public class H5ScalarDS extends ScalarDS {
      * @see ncsa.hdf.object.DataFormat#hasAttribute()
      */
     public boolean hasAttribute() {
+    	obj_info.num_attrs = nAttributes;
+    	
        	if (obj_info.num_attrs< 0) {
 
             // test if it is an image

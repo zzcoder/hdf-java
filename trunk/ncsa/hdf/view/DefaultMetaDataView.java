@@ -65,13 +65,10 @@ implements ActionListener, MetaDataView
     private JTextArea userBlockArea;
     private JButton jamButton;
     
-    private JTextField linkField;
+    private JTextField linkField = null;
 
-    private HObject newObject;
     private FileFormat fileFormat;
     private String LinkTObjName;
-    private String currentDir;
-    private String TargetfileName;
 
     private int[] libver;
     
@@ -85,8 +82,6 @@ implements ActionListener, MetaDataView
         viewer = theView;
         hObject = viewer.getTreeView().getCurrentObject();
         fileFormat = hObject.getFileFormat();
-        currentDir = ViewProperties.getWorkDir();
-        TargetfileName = null;
         numAttributes = 0;
         userBlock = null;
         userBlockArea = null;
@@ -153,6 +148,9 @@ implements ActionListener, MetaDataView
         String cmd = e.getActionCommand();
 
         if (cmd.equals("Close")) {
+        	if (isH5 && linkField != null)
+        		checkLinkTargetChanged();
+        	
             dispose();
         }
         else if (cmd.equals("Add attribute")) {
@@ -195,42 +193,42 @@ implements ActionListener, MetaDataView
 
             showUserBlockAs(type);
         }
-        
-        else if (cmd.equals("Change link target")){
-        	Group pgroup = null;
-        	try{
-        		pgroup= (Group)hObject.getFileFormat().get(hObject.getPath());
-        	}catch (Exception ex) {
-        	} 
-        	if (pgroup == null) {
-        		JOptionPane.showMessageDialog(this, "Parent group is null.",
-        				getTitle(), JOptionPane.ERROR_MESSAGE); 
-        	}    
-        	String target_name = linkField.getText();
-        	if (target_name != null)
-        		target_name = target_name.trim();
-        		
-        	if (target_name == null ||
-        			target_name.length() < 1 || 
-        			target_name.equals("/") ||
-        			target_name.endsWith(FileFormat.FILE_OBJ_SEP+"/")||
-        			target_name.equals(hObject.getLinkTargetObjName()))
-        		return;
-        	
-        	int linkType = Group.LINK_TYPE_SOFT;
-        	if (LinkTObjName.contains(FileFormat.FILE_OBJ_SEP))
-        		linkType = Group.LINK_TYPE_EXTERNAL;
-        	
-        	try {
-        		fileFormat.createLink(pgroup,  hObject.getName(), target_name, linkType);
-        	} catch (Exception ex) {
-    			ex.printStackTrace();
-    			JOptionPane.showMessageDialog(this, ex, getTitle(),
-    					JOptionPane.ERROR_MESSAGE);
-    		}
-        	dispose();
-        } // else if (cmd.equals("Change link target")){
-  
+    }
+    
+    private final void checkLinkTargetChanged() {
+    	Group pgroup = null;
+    	try{
+    		pgroup= (Group)hObject.getFileFormat().get(hObject.getPath());
+    	}catch (Exception ex) {
+    	} 
+    	if (pgroup == null) {
+    		JOptionPane.showMessageDialog(this, "Parent group is null.",
+    				getTitle(), JOptionPane.ERROR_MESSAGE);
+    		return;
+    	}
+    	
+    	String target_name = linkField.getText();
+    	if (target_name != null)
+    		target_name = target_name.trim();
+    		
+    	if (target_name == null ||
+    			target_name.length() < 1 || 
+    			target_name.equals("/") ||
+    			target_name.endsWith(FileFormat.FILE_OBJ_SEP+"/")||
+    			target_name.equals(hObject.getLinkTargetObjName()))
+    		return;
+    	
+    	int linkType = Group.LINK_TYPE_SOFT;
+    	if (LinkTObjName.contains(FileFormat.FILE_OBJ_SEP))
+    		linkType = Group.LINK_TYPE_EXTERNAL;
+    	
+    	try {
+    		fileFormat.createLink(pgroup,  hObject.getName(), target_name, linkType);
+    		hObject.setLinkTargetObjName(target_name);
+    	} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this, ex, getTitle(),
+					JOptionPane.ERROR_MESSAGE);
+		}
     }
    
     private final List breadthFirstUserObjects(TreeNode node)
@@ -417,7 +415,7 @@ implements ActionListener, MetaDataView
         		linkField = new JTextField(hObject.getLinkTargetObjName());
         		targetObjPanel.setLayout(new BorderLayout());
     			targetObjPanel.add(linkField, BorderLayout.CENTER);
-    			targetObjPanel.add(ChangeTargetObjButton, BorderLayout.EAST);
+    			//targetObjPanel.add(ChangeTargetObjButton, BorderLayout.EAST);
     			rp.add(targetObjPanel);
         	}
         }

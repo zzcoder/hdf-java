@@ -103,6 +103,8 @@ public class H5Group extends Group {
      * @see ncsa.hdf.object.DataFormat#hasAttribute()
      */
     public boolean hasAttribute() {
+    	obj_info.num_attrs = nAttributes;
+
    	 if (obj_info.num_attrs< 0) {
            int gid = open();
            if (gid > 0) {

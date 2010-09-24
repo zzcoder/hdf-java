@@ -162,7 +162,9 @@ public class H5Datatype extends Datatype {
      * 
      * @see ncsa.hdf.object.DataFormat#hasAttribute()
      */
-    public boolean hasAttribute() {      
+    public boolean hasAttribute() { 
+    	obj_info.num_attrs = nAttributes;
+
     	 if (obj_info.num_attrs< 0) {
             int tid = -1;
             try {
