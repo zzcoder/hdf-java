@@ -389,7 +389,6 @@ public class FitsDataset extends ScalarDS
     }
 
     //Implementing DataFormat
-	@Override
 	public List getMetadata(int... attrPropList) throws Exception {
 		throw new UnsupportedOperationException("getMetadata(int... attrPropList) is not supported");	
 	}
