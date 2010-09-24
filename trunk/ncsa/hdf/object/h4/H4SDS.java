@@ -927,7 +927,6 @@ public class H4SDS extends ScalarDS
     }
 
     //Implementing DataFormat
-	@Override
 	public List getMetadata(int... attrPropList) throws Exception {
 		throw new UnsupportedOperationException("getMetadata(int... attrPropList) is not supported");
 	}
