@@ -57,15 +57,15 @@
      <a NAME="ug01release"></a>1.2 About This Release</h2>
 <p>
      This release includes bug fixes, new features,a test suite, and improved documentation.</p>
-	 To obtain the current version of HDFView, visit
-	 <a href="http://www.hdfgroup.org/hdf-java-html/hdfview/index.html#download_hdfview">
-	 download and install HDFView</a>
+     To obtain the current version of HDFView, visit
+     <a href="http://www.hdfgroup.org/hdf-java-html/hdfview/index.html#download_hdfview">
+     download and install HDFView</a>
 
 <p>
      <h4>HDF libraries</h4>
      This release was built and tested with HDF 4.2.5 and HDF5-1.8.6.
      <!-- For information on new features in HDF5 Release 1.8.6 and format compatibility considerations,
-	 please visit <a href="http://www.hdfgroup.org/HDF5/doc/ADGuide/CompatFormat180.html">
+     please visit <a href="http://www.hdfgroup.org/HDF5/doc/ADGuide/CompatFormat180.html">
      http://www.hdfgroup.org/HDF5/doc/ADGuide/CompatFormat180.html</a>. -->
      </p>
 
@@ -83,90 +83,81 @@
 
      <h5>64-bit distribution -- runs on 64-bit systems with 64-bit JRE</h5>
      <ul class="ul">
-       <li> Linux x86_64 </li>
-       <li> Linux ia64 </li>
+       <li> Linux </li>
        <li> Mac Intel </li>
-       <li> Solaris 64-bit </li>
-     </ul>
+       <li> Solaris </li>
+       <li> Windows </li>
+<!--       <li> Linux IA (Itanium Architecture) </li> -->
+    </ul>
 
      <p />
 
-     <h4>Support HDF5 1.8</h4>
+     <h4>Supporting for HDF5 1.8</h4>
      <ul class="ul">
-	       <li>HDF5 JNI:- Changes and updates to Java HDF5 Interface(JHI5) for supporting the new APIs added to HDF5 1.8 library.The HDF5 JNI includes two parts:</li>
-	 		     <ul class="ul">
-	 		     <li>The Java code or the Java wrapper class (H5.java) is a list of Java native methods that are one-to-one mapping to the HDF5 APIs. </li>
-	 		     <li>The native code is the C implementation for the Java wrapper method</li>
-	 		     </ul>
-	 		     Changes in the HDF5 JNI include:
-	 		     <ul class ="ul">
-	 		     <li>Changes in some of the HDF5 Java wrapper methods for the compatibility between HDF5 1.6 and 1.8</li>
-	 		     <li>New APIs added to JHI5 to support HDF5 1.8 library</li>
-	 		     <li>Changes of the package names</li>
-	 		     <li>Changes of the class structure of the HDF5 JNI</li>
-	 		     </ul>
-	 	   <li>HDFJava Object Layer:- Changes in the Java HDF Object package to support HDF5 1.8 functions. The following new features are added to the object Layer:</li>
-	 	          <ul class="ul">
-				  <li>Set the bounds of library versions</li>
-				  <li>Set link creation order </li>
-				  <li>Set link storage type</li>
-				  <li>Show groups in creation order</li>
-				  <li>Create soft and external links</li>
-				  <li>Retrieve link information</li>
-				  <li>Rename Attributes</li>
-				  <li>Show attributes in creation order </li>
-	 		     </ul>
-	 	   <li>HDFView:- Changes and updates for supporting HDF5 1.8 in HDFView include:</li>
-	 	   		   <ul class="ul">
-	 	   		   <li>Add functions to the Abstract Layer</li>
-				   <li>Set the bounds of library versions of an open file</li>
-				   <li>Show the bounds of library versions of an open file</li>
-				   <li>Set link creation order in Groups </li>
-				   <li>Set link storage type when creating a group</li>
-				   <li>Create soft and external links</li>
-				   <li>Show link information</li>
-				   <li>Show and modify dangling links</li>
-				   <li>Rename Attributes</li>
-	 		     </ul>
+           <li>HDF5 JNI:- Changes to Java HDF5 Interface(JHI5) for supporting the HDF5 1.8 APIs include:</li>
+                  <ul class="ul">
+                  <li>101 new methods were added to JHI5 to support the new APIs added to HDF5 1.8. </li>
+                  <li>Changes were made to 17 methods in JHI5 for supporting the compatibility between HDF5 1.6 and 1.8</li>
+                  <li>Unit tests were added for all the new methods added to JHI5.
+                  </ul>
+            <li>HDFJava Object Layer:- Changes in the Java HDF Object package to support HDF5 1.8 include:</li>
+                   <ul class="ul">
+                  <li>Set the bounds of library versions</li>
+                  <li>Set link creation order </li>
+                  <li>Set link storage type</li>
+                  <li>Show groups in creation order</li>
+                  <li>Create soft and external links</li>
+                  <li>Retrieve link information</li>
+                  <li>Rename Attributes</li>
+                  <li>Show attributes in creation order </li>
+                  </ul>
+            <li>HDFView:- Changes for supporting HDF5 1.8 in HDFView include:</li>
+                  <ul class="ul">
+                   <li>Set the bounds of library versions of an open file</li>
+                   <li>Show the bounds of library versions of an open file</li>
+                   <li>Set link creation order in Groups </li>
+                   <li>Set link storage type when creating a group</li>
+                   <li>Create soft and external links</li>
+                   <li>Show link information</li>
+                  </ul>
 
-	  </ul>
+      </ul>
 
      <h4>Other Major Improvements</h4>
-	 <ul class="ul">
-      <li>Built on HDF5 1.8.6 library and HDF 4.2.5 library.</li>
-      <li>Test copying objects using H5Ocopy() function with large datasets</li>
-      <li>Added functionality to show the names of the palettes in HDFView</li>
-      <li>Add feature in HDFView to move objects within the same HDF5 file.</li>
-	  <li>Add feature in HDFView to export and import data to/from a binary file.</li>
-	  <li>Add feature in HDFView lineplot to use scientific notation for axes w/large values</li>
-      <li>Add 'nc' to the file extensions under Tools->User Options in HDFView</li>
-	</ul>
+     <ul class="ul">
+      <li>Use H5Ocopy() for copying datasets or groups (very useful for copying large datasets)</li>
+      <li>Show the values of specific bit(s) pacekd in a byte or two-byte integers</li>
+      <li>Show and modify dangling links</li>
+      <li>Rename Attributes</li>
+      <li>Show the names of the palettes in HDFView</li>
+      <li>Move objects within the same HDF5 file.</li>
+      <li>Export and import data to/from a binary file.</li>
+    </ul>
 
      <h4>Major Bug Fixes</h4>
-	 <ul class="ul">
+     <ul class="ul">
         <li> <!-- [BUG ID: 1735] --> HDFView: cannot copy+paste a 1024^3-64bit-float-dataset.  </li>
         <li> <!-- [BUG ID: 1856] --> HDFView: Problem to copy large dataset in HDFView </li>
         <li> <!-- [BUG ID: 1879] --> HDFView: Open as image an unsigned short dataset w/fillvalue causes exception </li>
         <li> <!-- [BUG ID: 1911] --> HDFView: image gets displayed incorrectly if you swap dimensions </li>
-        <li> <!-- [BUG ID: 2004] --> HDFView: cannot import data from a binary file </li>
         <li> <!-- [BUG ID:  357] --> HDFView: displays 3D data incorrectly when rotate dimensions</li>
         <li> <!-- [BUG ID: 1825] --> HDFView: error: a value shows up as zero when it is not  </li>
         <li> <!-- [BUG ID: 1862] --> HDFView: export table includes extra TAB separator between values  </li>
-        <li> <!-- [BUG ID: 2029] --> HDFView failed to copy subset of chunked dataset/image </li>
         <li> <!-- [BUG ID: 1872] --> H5R package unit tests missing</li>
         <li> <!-- [BUG ID: 1964] --> Add "Readme" to hdf-java ftp top dir</li>
         <li> <!-- [BUG ID: 2001] --> HDFView: failed to copy large dataset </li>
         <li> <!-- [BUG ID:  833] --> Can't copy/paste large array from Table menu to Excel  </li>
         <li> <!-- [BUG ID: 2015] --> Make all java classes portable for 32-bit and 64-bit</li>
-	</ul>
+    </ul>
+
 <!--Features for HDF-View 1.6.1
      <h2>
      <a NAME="ug01features"></a>1.3 Features</h2>
 <p>
      This version fixed bugs from previous versions and added a few new and
      enhanced features. It is a continuous work from the previous versions of HDFView. Some of
-	 the major features from previous versions include replaceable I/O and GUI modules,
-	 memory leak fixes, enhanced documentation, and test suite.</p>
+     the major features from previous versions include replaceable I/O and GUI modules,
+     memory leak fixes, enhanced documentation, and test suite.</p>
 
      <p>
      This version is user-configurable to support HDF4 or HDF5 or both. Users
@@ -182,76 +173,76 @@
 
 <ul style="list-style:disc;" class="ul">
 
-	 <li>Plugable GUI modules
-	 <ul class="ul">
-	     <li>Tree Viewer</li>
-		 <li>Table Viewer</li>
-		 <li>Image Viewer</li>
-		 <li>Text Viewer</li>
-		 <li>Metadata Viewer</li>
-		 <li>Palette Viewer</li>
-	 </ul>
-	 </li>
+     <li>Plugable GUI modules
+     <ul class="ul">
+         <li>Tree Viewer</li>
+         <li>Table Viewer</li>
+         <li>Image Viewer</li>
+         <li>Text Viewer</li>
+         <li>Metadata Viewer</li>
+         <li>Palette Viewer</li>
+     </ul>
+     </li>
 
-	 <li>Supported file formats
-	 <ul class="ul">
- 	 	 <li>HDF4</li>
-		 <li>HDF5</li>
-		 <li>netCDF (read only)</li>
-		 <li>FITS (read only)</li>
-	 </ul>
-	 </li>
+     <li>Supported file formats
+     <ul class="ul">
+           <li>HDF4</li>
+         <li>HDF5</li>
+         <li>netCDF (read only)</li>
+         <li>FITS (read only)</li>
+     </ul>
+     </li>
 
-	 <li>Tree view of file structure
-	 <ul class="ul">
+     <li>Tree view of file structure
+     <ul class="ul">
          <li>Supports drag-and-drop files to HDFView</li>
          <li>Displays file hierarchy in a tree and allows users to navigate among the file's data objects</li>
          <li>Adds options to show dataset as an image, a table or text</li>
          <li>Allows users to select a subset of dataset to display</li>
          <li>Shows attributes and other general information of data objects</li>
-       	  <li>Supports large fonts in GUI components</li>
-       	  <li>Adds -geometry switch to set the window size and location</li>
-	 </ul>
-	 </li>
+             <li>Supports large fonts in GUI components</li>
+             <li>Adds -geometry switch to set the window size and location</li>
+     </ul>
+     </li>
 
-	 <li>Table view of file content
-	 <ul class="ul">
-	      <li>Be able to show large dataset (e.g. 1,000,000 x 100); very fast in table viewer</li>
-     	  <li>Displays simple compound dataset (simple or nested) in table</li>
-     	  <li>Allows users to select fields/members of VData/compound dataset to display</li>
-     	  <li>Shows multi-dimension compound dataset</li>
-     	  <li>Displays line plot for selected table data</li>
-     	  <li>Views variable-length datasets</li>
-     	  <li>Views ENUM dataset</Li>
-	 </ul>
-	 </li>
+     <li>Table view of file content
+     <ul class="ul">
+          <li>Be able to show large dataset (e.g. 1,000,000 x 100); very fast in table viewer</li>
+           <li>Displays simple compound dataset (simple or nested) in table</li>
+           <li>Allows users to select fields/members of VData/compound dataset to display</li>
+           <li>Shows multi-dimension compound dataset</li>
+           <li>Displays line plot for selected table data</li>
+           <li>Views variable-length datasets</li>
+           <li>Views ENUM dataset</Li>
+     </ul>
+     </li>
 
-	 <li>Image view of file content
-	 <ul class="ul">
+     <li>Image view of file content
+     <ul class="ul">
           <li>Filters out fill value from images</li>
           <li>Imports and applies palette from an external file</li>
-     	  <li>Supports simple image manipulation: zooming image in/out, flipping image horizontally or vertically</li>
-     	  <li>Changes image brightness</li>
-     	  <li>Displays animation of 3-D images</li>
-     	  <li>Displays histogram for selected image area</li>
-	 	  <li>Modifies palette for index RGB images</li>
-     	  <li>Supports multiple color tables for HDF5 images</li>
-     	  <li>Provides slider bar for modifying image threshold range</li>
-       	  <li>Filters "fill value" in Image Viewer </li>
-       	  <li>Shows actual palette that results from palette manipulation </li>
-       	  <li>Supports large number of 8kx8k 3-D images by reuse the memory data buffer</li>
-       	  <li>Incorporates Mouse Grab/Move to browse an image </li>
-	 </ul>
-	 </li>
+           <li>Supports simple image manipulation: zooming image in/out, flipping image horizontally or vertically</li>
+           <li>Changes image brightness</li>
+           <li>Displays animation of 3-D images</li>
+           <li>Displays histogram for selected image area</li>
+           <li>Modifies palette for index RGB images</li>
+           <li>Supports multiple color tables for HDF5 images</li>
+           <li>Provides slider bar for modifying image threshold range</li>
+             <li>Filters "fill value" in Image Viewer </li>
+             <li>Shows actual palette that results from palette manipulation </li>
+             <li>Supports large number of 8kx8k 3-D images by reuse the memory data buffer</li>
+             <li>Incorporates Mouse Grab/Move to browse an image </li>
+     </ul>
+     </li>
 
-	 <li>Text view of file content
-	 <ul class="ul">
-     	  <li>Displays HDF5 user block in text, octal, hex, etc.</li>
-     	  <li>Provides option to show char dataset as text</li>
-     	  <li>Shows text attributes and text dataset in selected fonts (type and size)</li>
-     	  <li>Shows file information, such as file size and total number of datasets</li>
-	 </ul>
-	 </li>
+     <li>Text view of file content
+     <ul class="ul">
+           <li>Displays HDF5 user block in text, octal, hex, etc.</li>
+           <li>Provides option to show char dataset as text</li>
+           <li>Shows text attributes and text dataset in selected fonts (type and size)</li>
+           <li>Shows file information, such as file size and total number of datasets</li>
+     </ul>
+     </li>
      </ul>
 
      <h3>
@@ -261,15 +252,15 @@
          <li>Convert JPEG, GIF, PNG, and BMP images to HDF5 or HDF4</li>
          <li>Save HDF4 or HDF5 images to JPEG, GIF, PNG, and BMP images</li>
          <li>Writes variable length string data</li>
- 	     <li>Adds/deletes/renames datasets and groups</li>
-     	 <li>Edits content of datasets</li>
-		 <li>Copies/pastes object in the same file or dross files of the same file format</li>
-     	 <li>Exports dataset values to an ASCII text file</li>
-     	 <li>Saves an HDF4/HDF5 image to a JPEG file</li>
-     	 <li>Adds/deletes/modifies attributes</li>
-		 <li>Converts a JPEG image file into an HDF4/HDF5 file</li>
-     	 <li>Imports data values from a text file</li>
-		 <li> Adds and modifies user blocks</li>
+          <li>Adds/deletes/renames datasets and groups</li>
+          <li>Edits content of datasets</li>
+         <li>Copies/pastes object in the same file or dross files of the same file format</li>
+          <li>Exports dataset values to an ASCII text file</li>
+          <li>Saves an HDF4/HDF5 image to a JPEG file</li>
+          <li>Adds/deletes/modifies attributes</li>
+         <li>Converts a JPEG image file into an HDF4/HDF5 file</li>
+          <li>Imports data values from a text file</li>
+         <li> Adds and modifies user blocks</li>
      </ul>
   -->
 
@@ -286,11 +277,10 @@ The current implementation of HDFView has the following limitations:
      <li>HDFView cannot modify compressed HDF4 SDS if rank is greater than 2
          because the existing compression algorithms supported by HDF do not
          allow partial modification to a compressed datastream.</li>
-     <li>HDFView cannot modify HDF4 vdata. HDF4 only writes vdata by
-         records while hdf-java reads data by vdata fields since hdf-java
-         does not support data structure of vdata record.</li>
-     <li>Writing nested compound data of HDF5 is limited to some
-         simple cases. HDFView does not write complex compound data.</li>
+     <li>HDFView cannot modify HDF4 vdata. HDF4 only writes vdata by records while hdf-java reads data by vdata fields since hdf-java does not support data structure of vdata record.</li>
+     <li>Writing nested compound data of HDF5 is limited to some simple cases. HDFView does not write complex compound data.</li>
+     <li>Directly using multiple dimensional arrays in HDF-Java causes performance problem.</li>
+     <li>HDF (4&5) APIs with function pointers are not supported in HDF-Java.
      </ul>
 
 
