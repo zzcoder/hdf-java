@@ -1,0 +1,107 @@
+HDF-Java 2.7 Beta is available for download at ftp.hdfgroup.org/HDF5/hdf-java/
+
+Files included in the release:
+/src            -- include all source files
+/bin/$platform  -- prebuilt binaries for specific platform (limited platforms)
+/hdfview        -- HDFView installation program (limited platforms)
+
+Major changes include supporting HDF5 1.8 features in HDF-Java products, bug 
+fixes, and other enhancements.
+
+
+HDF libraries
+===============================================================================
+This release was built and tested with HDF 4.2.5 and HDF5-1.8.6.
+
+
+Platforms
+===============================================================================
+This release was built and tested for the following platforms:
+
+32-bit distribution -- runs on 32-bit systems or 64-bit systems with 32-bit JRE
+    * Linux
+    * Mac Intel
+    * Solaris
+    * Windows
+
+64-bit distribution -- runs on 64-bit systems with 64-bit JRE only
+    * Linux
+    * Mac Intel
+    * Solaris
+    * Windows
+
+
+Supporting for HDF5 1.8
+===============================================================================
+    * HDF5 JNI:- Changes to Java HDF5 Interface(JHI5) include:
+          -- 101 methods were added to JHI5 to support HDF5 1.8.
+          -- Changes were made to 17 methods in JHI5 for supporting the 
+             compatibility between HDF5 1.6 and 1.8
+          -- Unit tests were added for all the new methods added to JHI5. 
+
+    * HDFJava Object Layer:- Changes in the Java HDF Object package include:
+          -- Set the bounds of library versions
+          -- Set link creation order
+          -- Set link storage type
+          -- Show groups in creation order
+          -- Create soft and external links
+          -- Retrieve link information
+          -- Show attributes in creation order
+
+    * HDFView:- Changes for supporting HDF5 1.8 in HDFView include:
+          -- Set the bounds of library versions of an open file
+          -- Show the bounds of library versions of an open file
+          -- Set link creation order in Groups
+          -- Set link storage type when creating a group
+          -- Create soft and external links
+          -- Show link information
+
+
+Other Major Improvements
+===============================================================================
+    * Use H5Ocopy() for copying datasets or groups (important for large datasets)
+    * Show the values of specific bit(s) packed in a byte or two-byte integer
+    * Show and modify dangling links
+    * Rename Attributes
+    * Show the names of the palettes in HDFView
+    * Move objects within the same HDF5 file
+    * Export and import data to/from a binary file
+
+
+Major Bug Fixes
+===============================================================================
+    * HDFView: cannot copy+paste a 1024^3-64bit-float-dataset.
+    * HDFView: Problem to copy large dataset in HDFView
+    * HDFView: Image for an unsigned short dataset w/fillvalue causes exception
+    * HDFView: image displayed incorrectly if you swap dimensions
+    * HDFView: displays 3D data incorrectly when rotate dimensions
+    * HDFView: export table includes extra TAB separator between values
+    * Missing unit tests for H5R package 
+    * HDFView: failed to copy large dataset
+    * Can't copy/paste large array from Table menu to Excel
+    * Make all java classes portable for 32-bit and 64-bit
+
+
+Limitations / Known Problems
+===============================================================================
+    * HDFView does not support undo operations; all changes will go to the 
+      physical file, and the editing results cannot be recovered.
+    * HDFView does not support conversion between HDF4 and HDF5.
+    * HDFView supports only indexed image with RGB color model or 24-bit true 
+      color image. It does not support other color models such as CMYK and HSV.
+    * Directly using multiple dimensional arrays causes performance problem.
+    * HDF (4&5) APIs with function pointers are not supported in HDF-Java. 
+
+    * Specific to HDF4:
+          -- Deleting object/attribute in HDF4 is not supported.
+          -- HDFView cannot modify compressed HDF4 SDS if rank is greater than 
+             two because the existing compression algorithms supported by HDF do 
+             not allow partial modification to a compressed datastream.
+          -- HDFView cannot modify HDF4 vdata. HDF4 only writes vdata by records 
+             while hdf-java reads data by vdata fields since hdf-java does not 
+             support data structure of vdata record.
+
+    * Specific to HDF5:
+          -- Writing nested compound data of HDF5 is limited to some simple cases. 
+             HDFView does not write complex compound data.
+
