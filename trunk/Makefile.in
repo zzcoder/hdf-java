@@ -79,7 +79,8 @@ TESTFILES=./test/Makefile.in ./test/object/misc/*.java ./test/object/misc/*.in \
 DOCFILES=./docs/*.html ./docs/*.gif ./docs/*.js ./docs/hdfview/*.html \
          ./docs/hdfview/*.gif ./docs/hdfview/ModularGuide/*.html \
          ./docs/hdfview/ModularGuide/*.gif ./docs/hdfview/UsersGuide/images/*.gif \
-         ./docs/hdfview/UsersGuide/images/*.jpg ./docs/hdfview/UsersGuide/*.html
+         ./docs/hdfview/UsersGuide/images/*.jpg ./docs/hdfview/UsersGuide/*.html \
+         ./docs/hdfview/UsersGuide/*.txt
 
 WINDOWSFILES=./windows/hdfview.bat ./windows/copy_hdf.bat ./windows/javabuild.bat  \
 	./windows/javacheck.bat ./windows/javainstall.bat ./windows/jnibuild.bat \
@@ -372,6 +373,7 @@ install-ug:
 	-mkdir -p $(DOCDIR)/hdfview/UsersGuide;
 	cp docs/hdfview/index.html $(DOCDIR)/hdfview/UsersGuide;
 	cp docs/hdfview/UsersGuide/*.html $(DOCDIR)/hdfview/UsersGuide;
+	cp docs/hdfview/UsersGuide/*.txt $(DOCDIR)/hdfview/UsersGuide;
 	-mkdir -p $(DOCDIR)/hdfview/UsersGuide/images;
 	cp docs/hdfview/UsersGuide/images/*.gif $(DOCDIR)/hdfview/UsersGuide/images;
 	-mkdir -p $(DOCDIR)/hdf-object;
