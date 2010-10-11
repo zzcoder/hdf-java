@@ -68,7 +68,7 @@ public class H5Ex_G_Iterate {
                 int[] otype = new int[count];
                 int[] ltype = new int[count];
 				long[] orefs = new long[count];
-				H5.H5Gget_obj_info_all(file_id, DATASETNAME, oname, otype, ltype, orefs);
+				H5.H5Gget_obj_info_all(file_id, DATASETNAME, oname, otype, ltype, orefs, HDF5Constants.H5_INDEX_NAME);
 
 				// Get type of the object and display its name and type.
 				for (int indx = 0; indx < otype.length; indx++) {

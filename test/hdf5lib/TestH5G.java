@@ -262,7 +262,7 @@ public class TestH5G {
         int names_found = 0;
         try {
             names_found = H5.H5Gget_obj_info_all(H5fid, GROUPS[0], objNames,
-                    objTypes, lnkTypes, objRefs);
+                    objTypes, lnkTypes, objRefs, HDF5Constants.H5_INDEX_NAME);
         }
         catch (Throwable err) {
             err.printStackTrace();
@@ -300,7 +300,7 @@ public class TestH5G {
         int names_found = 0;
         try {
             names_found = H5.H5Gget_obj_info_all(gid, null, objNames, objTypes, lnkTypes,
-                    objRefs);
+                    objRefs, HDF5Constants.H5_INDEX_NAME);
         }
         catch (Throwable err) {
             try {
@@ -348,7 +348,7 @@ public class TestH5G {
         int names_found = 0;
         try {
             names_found = H5.H5Gget_obj_info_all(gid, null, objNames, objTypes, lnkTypes,
-                    objRefs);
+                    objRefs, HDF5Constants.H5_INDEX_NAME);
         }
         catch (Throwable err) {
             try {
@@ -489,7 +489,7 @@ public class TestH5G {
         
         try {
            H5.H5Gget_obj_info_all(H5fid2, GROUPS2[0], objNames,
-                    objTypes, lnkTypes, objRefs);
+                    objTypes, lnkTypes, objRefs, HDF5Constants.H5_INDEX_NAME);
         }
         catch (Throwable err) {
             err.printStackTrace();

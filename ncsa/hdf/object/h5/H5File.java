@@ -2022,20 +2022,20 @@ public class H5File extends FileFormat {
     	// we use only one call to get all the information, which takes about
     	// two seconds
     	int[] objTypes = new int[nelems];
-    	int[] lnkTypes = new int[nelems];
-    	long[] objRefs = new long[nelems];
+     	long[] objRefs = new long[nelems];
     	String[] objNames = new String[nelems];
-    	int indx_type = HDF5Constants.H5_INDEX_NAME;
-
-    	if(indexType==0){
-    		indx_type = HDF5Constants.H5_INDEX_NAME;
-    	}
-    	else if(indexType==1){
-    		indx_type = HDF5Constants.H5_INDEX_CRT_ORDER;
-    	}
+  
+//    	int indx_type = HDF5Constants.H5_INDEX_NAME;
+//
+//    	if(indexType==0){
+//    		indx_type = HDF5Constants.H5_INDEX_NAME;
+//    	}
+//    	else if(indexType==1){
+//    		indx_type = HDF5Constants.H5_INDEX_CRT_ORDER;
+//    	}
+//    	
     	try {
-    		H5.H5Gget_obj_info_all(fid, fullPath, objNames, objTypes, lnkTypes,
-    				objRefs, indx_type);
+    		H5.H5Gget_obj_info_all(fid, fullPath, objNames, objTypes, objRefs);
     	}
     	catch (HDF5Exception ex) {
     		return;
@@ -2053,15 +2053,14 @@ public class H5File extends FileFormat {
     	long[] oid = null;
     	String obj_name;
     	int obj_type;
-    	int lnk_type;  
+    	//int lnk_type;  
 
     	// Iterate through the file to see members of the group
     	for (int i = i0; i < i1; i++) {
     		oid = null;
     		obj_name = objNames[i];
     		obj_type = objTypes[i];
-    		lnk_type = lnkTypes[i];
-    		long l = objRefs[i];
+     		long l = objRefs[i];
     		int[] otype = { 1 };
 
     		if (obj_name == null) {
