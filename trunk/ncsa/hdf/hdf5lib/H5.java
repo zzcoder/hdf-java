@@ -5037,7 +5037,6 @@ public class H5 {
     // Backward compatibility:
     // These functions have been replaced by new HDF5 library calls.
     // The interface is preserved as a convenience to existing code.
-
     /**
      * H5Gn_members report the number of objects in a Group. The 'objects'
      * include everything that will be visited by H5Giterate. Each link is
@@ -5056,15 +5055,44 @@ public class H5 {
      * @exception NullPointerException
      *                - name is null.
      */
-    public synchronized static long H5Gn_members(int loc_id, String name)
-            throws HDF5LibraryException, NullPointerException {
+    public synchronized static long H5Gn_members_long(int loc_id, String name)
+            throws HDF5LibraryException, NullPointerException 
+    {
         int grp_id = H5Gopen(loc_id, name);
-//        long[] nobj = new long[1];
-//        nobj[0] = -1;
-//        int ret = H5Gget_num_objs(grp_id, nobj);
-//        int r = (new Long(nobj[0])).intValue();
-        H5G_info_t info = H5.H5Gget_info(grp_id);
-        return (info.nlinks);
+        long n = -1;
+
+        try { 
+        	H5G_info_t info = H5.H5Gget_info(grp_id);
+        	n =  info.nlinks;
+        } finally {
+            H5Gclose(grp_id); 
+        } 
+        
+        return n;
+    }
+    
+    /**
+     * H5Gn_members report the number of objects in a Group. The 'objects'
+     * include everything that will be visited by H5Giterate. Each link is
+     * returned, so objects with multiple links will be counted once for each
+     * link.
+     * 
+     * @param loc_id
+     *            file or group ID.
+     * @param name
+     *            name of the group to iterate, relative to the loc_id
+     * 
+     * @return the number of members in the group or -1 if error.
+     * 
+     * @exception HDF5LibraryException
+     *                - Error from the HDF-5 Library.
+     * @exception NullPointerException
+     *                - name is null.
+     */
+    public synchronized static int H5Gn_members(int loc_id, String name)
+            throws HDF5LibraryException, NullPointerException 
+    {
+    	return (int) H5Gn_members_long(loc_id, name);
     }
 
     /**
@@ -5127,7 +5155,7 @@ public class H5 {
      *                - name is null.
      */
     public synchronized static int H5Gget_obj_info_all(int loc_id, String name,
-            String[] oname, int[] otype, int[] ltype, long[] ref)
+            String[] oname, int[] otype, long[] ref)
             throws HDF5LibraryException, NullPointerException {
         if (oname == null) {
             throw new NullPointerException(
@@ -5137,11 +5165,6 @@ public class H5 {
         if (otype == null) {
             throw new NullPointerException(
                     "H5Gget_obj_info_all(): object type array is null");
-        }
-
-        if (ltype == null) {
-            throw new NullPointerException(
-                    "H5Gget_obj_info_max(): link type array is null");
         }
 
         if (oname.length == 0) {
@@ -5154,7 +5177,7 @@ public class H5 {
                     "H5Gget_obj_info_all(): name and type array sizes are different");
         }
 
-        return H5Gget_obj_info_all(loc_id, name, oname, otype, ltype, ref, oname.length, HDF5Constants.H5_INDEX_NAME);
+        return H5Gget_obj_info_all(loc_id, name, oname, otype, new int[oname.length], ref, oname.length, HDF5Constants.H5_INDEX_NAME);
     }
 
     public synchronized static int H5Gget_obj_info_all(int loc_id, String name,
