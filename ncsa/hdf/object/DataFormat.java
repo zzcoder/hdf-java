@@ -46,21 +46,6 @@ public interface DataFormat {
      */
     public abstract List getMetadata() throws Exception;
     
-	/**
-	 * Retrieves the metadata such as attributes from file.
-	 * <p>
-	 * Metadata such as attributes are stored in a List.
-	 * 
-	 * @param attrPropList
-	 *            This is a list of parameters. The parameter are index type and
-	 *            index order. Index type is the index in which we want the
-	 *            attributes to be retrieved, like alphabetically or by
-	 *            creation. Index Order can be increasing, decreasing or native.
-	 * 
-	 * @return the list of metadata objects.
-	 */
-    public abstract List getMetadata(int ...attrPropList) throws Exception;
-
     /**
      * Writes a specific metadata (such as attribute) into file.
      * 

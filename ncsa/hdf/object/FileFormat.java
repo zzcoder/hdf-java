@@ -903,24 +903,6 @@ public abstract class FileFormat extends File {
      */
     public abstract int open() throws Exception;
 
-    // REVIEW DOCS for open()
-    // What if this is a new file? Is the root group created by default?
-    // what if already open? What if can't use requested access mode?
-    // Can we doc exceptions better or in implementation methods?
-
-	/**
-	 * Opens file and returns a file identifier.
-	 * 
-	 * @param propList
-	 *            The property list is the list of parameters, like index type
-	 *            and the index order. The index type can be alphabetical or
-	 *            creation. The index order can be increasing order or
-	 *            decreasing order.
-	 * @return File identifier if successful; otherwise -1.
-	 * @throws Exception
-	 * 
-	 */
-    public abstract int open(int ...propList) throws Exception;
     
     /**
      * Closes file associated with this instance.
@@ -1311,72 +1293,6 @@ public abstract class FileFormat extends File {
     public abstract Group createGroup(String name, Group parentGroup)
             throws Exception;
     
-	/**
-	 * Creates a new group with specified name in existing group.
-	 * <p>
-	 * If the parent group is null, the new group will be created in the root
-	 * group.
-	 * 
-	 * @param name
-	 *            The name of a new group.
-	 * @param pgroup
-	 *            The parent group object.
-	 * @param gplist
-	 *            The group creation properties, in which the order of the
-	 *            properties conforms the HDF5 library API, H5Gcreate(), i.e.
-	 *            lcpl, gcpl and gapl, where
-	 *           <ul>
-	 *            <li>lcpl : Property list for link creation <li>gcpl : Property
-	 *            list for group creation <li>gapl : Property list for group
-	 *            access
-	 *           </ul>
-	 * 
-	 * @return The new group if successful; otherwise returns null.
-	 * @throws Exception
-	 */
-    public abstract Group createGroup(String name, Group pgroup, int ... gplist) throws Exception;
-    
-	/***
-	 * Creates the group creation property list identifier, gcpl. This
-	 * identifier is used when creating Groups.
-	 * 
-	 * @param creationorder
-	 *            The order in which the objects in a group should be created.
-	 *            It can be Tracked or Indexed.
-	 * @param maxcompact
-	 *            The maximum number of links to store in the group in a compact
-	 *            format.
-	 * @param mindense
-	 *            The minimum number of links to store in the indexed
-	 *            format.Groups which are in indexed format and in which the
-	 *            number of links falls below this threshold are automatically
-	 *            converted to compact format.
-	 * @return The gcpl identifier.
-	 * @throws Exception
-	 */
-    public abstract int createGcpl(int creationorder, int maxcompact, int mindense) throws Exception;
-
-    // REVIEW DOCS for createGroup(). Check and document exceptions.
-
-    /**
-     * Creates a link to an existing object in the open file.
-     * <p>
-     * If linkGroup is null, the new link is created in the root group.
-     * 
-     * @param linkGroup
-     *            The group where the link is created.
-     * @param name
-     *            The name of the link.
-     * @param currentObj
-     *            The existing object the new link will reference.
-     * @return The object pointed to by the new link if successful; otherwise
-     *         returns null.
-     * @throws Exception
-     *             The exceptions thrown vary depending on the implementing
-     *             class.
-     */
-    public abstract HObject createLink(Group linkGroup, String name,
-            Object currentObj) throws Exception;
 
     // REVIEW DOCS for createLink().
     // Verify Implementing classes document these and also
@@ -1757,6 +1673,107 @@ public abstract class FileFormat extends File {
         return theObj;
     }
 
+    //////////////////////////////////////////////////////////////////////////////////////
+    //                    Added to support HDF5 1.8 features                            //
+    //////////////////////////////////////////////////////////////////////////////////////
+
+
+    // REVIEW DOCS for open()
+    // What if this is a new file? Is the root group created by default?
+    // what if already open? What if can't use requested access mode?
+    // Can we doc exceptions better or in implementation methods?
+	/**
+	 * Opens file and returns a file identifier.
+	 * 
+	 * @param propList
+	 *            The property list is the list of parameters, like index type
+	 *            and the index order. The index type can be alphabetical or
+	 *            creation. The index order can be increasing order or
+	 *            decreasing order.
+	 * @return File identifier if successful; otherwise -1.
+	 * @throws Exception
+	 * 
+	 */
+    public int open(int ...propList) throws Exception
+    {
+        throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
+    }
+    
+    /**
+	 * Creates a new group with specified name in existing group.
+	 * <p>
+	 * If the parent group is null, the new group will be created in the root
+	 * group.
+	 * 
+	 * @param name
+	 *            The name of a new group.
+	 * @param pgroup
+	 *            The parent group object.
+	 * @param gplist
+	 *            The group creation properties, in which the order of the
+	 *            properties conforms the HDF5 library API, H5Gcreate(), i.e.
+	 *            lcpl, gcpl and gapl, where
+	 *           <ul>
+	 *            <li>lcpl : Property list for link creation <li>gcpl : Property
+	 *            list for group creation <li>gapl : Property list for group
+	 *            access
+	 *           </ul>
+	 * 
+	 * @return The new group if successful; otherwise returns null.
+	 * @throws Exception
+	 */
+    public Group createGroup(String name, Group pgroup, int ... gplist) throws Exception 
+    {
+        throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
+    }
+    
+	/***
+	 * Creates the group creation property list identifier, gcpl. This
+	 * identifier is used when creating Groups.
+	 * 
+	 * @param creationorder
+	 *            The order in which the objects in a group should be created.
+	 *            It can be Tracked or Indexed.
+	 * @param maxcompact
+	 *            The maximum number of links to store in the group in a compact
+	 *            format.
+	 * @param mindense
+	 *            The minimum number of links to store in the indexed
+	 *            format.Groups which are in indexed format and in which the
+	 *            number of links falls below this threshold are automatically
+	 *            converted to compact format.
+	 * @return The gcpl identifier.
+	 * @throws Exception
+	 */
+    public int createGcpl(int creationorder, int maxcompact, int mindense) throws Exception
+    {
+        throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
+    }
+
+    // REVIEW DOCS for createGroup(). Check and document exceptions.
+
+    /**
+     * Creates a link to an existing object in the open file.
+     * <p>
+     * If linkGroup is null, the new link is created in the root group.
+     * 
+     * @param linkGroup
+     *            The group where the link is created.
+     * @param name
+     *            The name of the link.
+     * @param currentObj
+     *            The existing object the new link will reference.
+     * @return The object pointed to by the new link if successful; otherwise
+     *         returns null.
+     * @throws Exception
+     *             The exceptions thrown vary depending on the implementing
+     *             class.
+     */
+    public  HObject createLink(Group linkGroup, String name, Object currentObj) throws Exception
+    {
+        throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
+    }
+
     /**
      * Renames an attribute.
      * 
@@ -1768,15 +1785,11 @@ public abstract class FileFormat extends File {
      *            The new name of the attribute.
      * @throws HDF5Exception
      */
-    public abstract void renameAttribute(HObject obj, String oldAttrName, String newAttrName) throws Exception;
+    public void renameAttribute(HObject obj, String oldAttrName, String newAttrName) throws Exception
+    {
+        throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
+    }
 
-    /**
-     * Sets the bounds of library versions
-     * 					to the default earliest possible format.
-     * @throws HDF5Exception
-     */
-    public abstract void setLibBounds() throws Exception ;
-    
     /**
      * Sets the bounds of library versions.
      * @param low
@@ -1785,7 +1798,10 @@ public abstract class FileFormat extends File {
      * 				The latest version of the library.
      * @throws HDF5Exception
      */
-    public abstract void setLibBounds(int low, int high) throws Exception ;
+    public void setLibBounds(int low, int high) throws Exception 
+    {
+        throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
+    }
     
 	/**
 	 * Gets the bounds of library versions
@@ -1793,6 +1809,10 @@ public abstract class FileFormat extends File {
 	 * @return The earliest and latest library versions in an int array.
 	 * @throws HDF5Exception
 	 */
-    public abstract int[] getLibBounds() throws Exception;
+    public int[] getLibBounds() throws Exception
+    {
+        throw new UnsupportedOperationException("Unsupported operation. Subclasses must implement it.");
+    }
+
      
 }
