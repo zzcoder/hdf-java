@@ -1156,12 +1156,7 @@ public class H5CompoundDS extends CompoundDS {
             }
 
             if (names != null) {
-                try {
-                    mname = name + H5.H5Tget_member_name(tid, i);
-                }
-                catch (HDF5Exception ex) {
-                    mname = name;
-                }
+                mname = name + H5.H5Tget_member_name(tid, i);
             }
 
             if (mclass == HDF5Constants.H5T_COMPOUND) {
