@@ -299,7 +299,7 @@ public class H5ScalarDS extends ScalarDS {
             try {
                 pid = H5.H5Dget_create_plist(did);
                 int nfiles = H5.H5Pget_external_count(pid);
-                isExternal = (nfiles > 1);
+                isExternal = (nfiles > 0);
             }
             catch (Exception ex) {
             }
@@ -717,9 +717,10 @@ public class H5ScalarDS extends ScalarDS {
         if (rank <= 0) {
             init();
         }
-        
+      
         if (isExternal) {
             String pdir = this.getFileFormat().getAbsoluteFile().getParent();
+
             if (pdir == null) {
                 pdir = ".";
             }
@@ -1164,8 +1165,7 @@ public class H5ScalarDS extends ScalarDS {
         int did = -1;
 
         try {
-            did = H5.H5Dopen(getFID(), getPath() + getName(),
-                    HDF5Constants.H5P_DEFAULT);
+            did = H5.H5Dopen(getFID(), getPath() + getName(), HDF5Constants.H5P_DEFAULT);
         }
         catch (HDF5Exception ex) {
             did = -1;

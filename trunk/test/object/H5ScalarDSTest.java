@@ -586,6 +586,39 @@ public class H5ScalarDSTest extends TestCase {
             }
         } // for (int i=0; i<NLOOPS; i++)
     }
+    
+    /**
+     * Test method for {@link ncsa.hdf.object.h5.H5ScalarDS#read()}.
+     * <p>
+     * What to test:
+     * <ul>
+     * <li>Read an external dataset
+     * </ul>
+     */
+    public final void testReadExt() {
+    	
+    	Dataset dset = null;
+    	H5File file = null;
+    	
+    	try {
+    		file = new H5File("test/object/h5ex_d_extern.h5");
+        	dset = (Dataset)file.get("/DS1");
+    	} catch (Exception ex) {;}
+        	
+    	assertNotNull(dset); 
+    	
+    	try {
+        	dset.read();
+        } catch (Exception ex) {
+        		fail("Failed to read data form an external dataset.");
+        }
+        
+        try {
+            if (file!=null)
+            	file.close();    	
+        } catch (Exception ex) {;}
+
+    }
 
     /**
      * Test method for {@link ncsa.hdf.object.h5.H5ScalarDS#read()}.
