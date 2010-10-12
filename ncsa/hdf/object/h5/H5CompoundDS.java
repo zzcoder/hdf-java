@@ -905,7 +905,7 @@ public class H5CompoundDS extends CompoundDS {
         try {
             pid = H5.H5Dget_create_plist(did);
             int nfiles = H5.H5Pget_external_count(pid);
-            isExternal = (nfiles > 1);
+            isExternal = (nfiles > 0);
         }
         catch (Exception ex) {
         }
