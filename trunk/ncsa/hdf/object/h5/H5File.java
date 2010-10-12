@@ -959,15 +959,6 @@ public class H5File extends FileFormat {
     }
     
     /**
-     * Sets the bounds of library versions
-     * 					to the default earliest possible format.
-     * @throws HDF5Exception
-     */
-    public void setLibBounds() throws Exception {
-      setLibBounds(HDF5Constants.H5F_LIBVER_EARLIEST, HDF5Constants.H5F_LIBVER_LATEST );
-    }
-    
-    /**
      * Sets the bounds of library versions.
      * @param low
      * 				The earliest version of the library.
@@ -980,22 +971,22 @@ public class H5File extends FileFormat {
 
     	if (fid < 0) 
     		return;
-    	else
-    		fapl = H5.H5Fget_access_plist(fid);
+    	
+    	fapl = H5.H5Fget_access_plist(fid);
 
     	try{
+    		if (low < 0) 
+    			low = HDF5Constants.H5F_LIBVER_EARLIEST;
+    		
+    		if (high < 0) 
+    			high = HDF5Constants.H5F_LIBVER_LATEST;
+    		
     		H5.H5Pset_libver_bounds( fapl, low, high );
     		H5.H5Pget_libver_bounds( fapl,libver );  		
     	}
-    	catch(Exception e){
-    		e.printStackTrace();
-    	}
-    	finally{
-    		try{
-    			H5.H5Pclose(fapl);
-    		}
-    		catch(Exception e){
-    		}
+    	finally 
+    	{
+    		try { H5.H5Pclose(fapl); } catch(Exception e){ }
     	}
     }   
     

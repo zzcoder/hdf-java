@@ -1409,7 +1409,7 @@ public class H5FileTest extends TestCase {
     	catch(Exception ex){		
     	}
     	try{
-    		testFile.setLibBounds();   	
+    		testFile.setLibBounds(-1, -1);   	
     	}
     	catch (final Exception ex) {
     		fail("testFile.setLibBounds() failed. " + ex);
