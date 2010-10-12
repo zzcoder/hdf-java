@@ -4585,8 +4585,7 @@ public class H5 {
      * 
      * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
-    public synchronized static native String H5Tget_member_name(int type_id, int field_idx)
-    throws HDF5LibraryException;
+    public synchronized static native String H5Tget_member_name(int type_id, int field_idx);
 
     /**
      * H5Tget_member_index retrieves the index of a field of a compound
@@ -4599,8 +4598,7 @@ public class H5 {
      * 
      * @exception HDF5LibraryException - Error from the HDF-5 Library.
      **/
-    public synchronized static native int H5Tget_member_index(int type_id,
-            String field_name) throws HDF5LibraryException;
+    public synchronized static native int H5Tget_member_index(int type_id, String field_name);
 
     /**
      * H5Tget_member_class returns the datatype of the specified member.
