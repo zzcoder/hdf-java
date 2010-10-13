@@ -51,7 +51,7 @@ Supporting for HDF5 1.8
     * HDFView:- Changes for supporting HDF5 1.8 in HDFView include:
           -- Set the bounds of library versions of an open file
           -- Show the bounds of library versions of an open file
-          -- Set link creation order in Groups
+          -- Set link creation order in groups
           -- Set link storage type when creating a group
           -- Create soft and external links
           -- Show link information
@@ -62,7 +62,7 @@ Other Major Improvements
     * Use H5Ocopy() for copying datasets or groups (important for large datasets)
     * Show the values of specific bit(s) packed in a byte or two-byte integer
     * Show and modify dangling links
-    * Rename Attributes
+    * Rename attributes
     * Show the names of the palettes in HDFView
     * Move objects within the same HDF5 file
     * Export and import data to/from a binary file
@@ -71,15 +71,16 @@ Other Major Improvements
 Major Bug Fixes
 ===============================================================================
     * HDFView: cannot copy+paste a 1024^3-64bit-float-dataset.
-    * HDFView: Problem to copy large dataset in HDFView
-    * HDFView: Image for an unsigned short dataset w/fillvalue causes exception
+    * HDFView: problem copying large datasets in HDFView
+    * HDFView: image for an unsigned short dataset with a fill value causes an 
+      exception
     * HDFView: image displayed incorrectly if you swap dimensions
     * HDFView: displays 3D data incorrectly when rotate dimensions
     * HDFView: export table includes extra TAB separator between values
     * Missing unit tests for H5R package 
     * HDFView: failed to copy large dataset
     * Can't copy/paste large array from Table menu to Excel
-    * Make all java classes portable for 32-bit and 64-bit
+    * Make all Java classes portable for 32-bit and 64-bit
 
 
 Limitations / Known Problems
@@ -87,9 +88,9 @@ Limitations / Known Problems
     * HDFView does not support undo operations; all changes will go to the 
       physical file, and the editing results cannot be recovered.
     * HDFView does not support conversion between HDF4 and HDF5.
-    * HDFView supports only indexed image with RGB color model or 24-bit true 
+    * HDFView supports only indexed images with RGB color model or 24-bit true 
       color image. It does not support other color models such as CMYK and HSV.
-    * Directly using multiple dimensional arrays causes performance problem.
+    * Directly using multiple dimensional arrays causes a performance problem.
     * HDF (4&5) APIs with function pointers are not supported in HDF-Java. 
 
     * Specific to HDF4:
@@ -99,7 +100,7 @@ Limitations / Known Problems
              not allow partial modification to a compressed datastream.
           -- HDFView cannot modify HDF4 vdata. HDF4 only writes vdata by records 
              while hdf-java reads data by vdata fields since hdf-java does not 
-             support data structure of vdata record.
+             support the data structure of a vdata record.
 
     * Specific to HDF5:
           -- Writing nested compound data of HDF5 is limited to some simple cases. 
