@@ -131,6 +131,52 @@ public class TestH5Sbasic {
 
         try {H5.H5Sclose(sid);} catch (Exception ex) {}
     }
+    
+    @Test
+    public void testH5Screate_simple_unlimted()
+            throws Throwable, HDF5LibraryException, NullPointerException {
+        int sid = -1;
+        int class_type = -1;
+        int rank = 2;
+        long dims[] = {5, 5};
+        long maxdims[] = {HDF5Constants.H5S_UNLIMITED, HDF5Constants.H5S_UNLIMITED};
+        
+        try {
+            sid = H5.H5Screate_simple(rank, dims, maxdims);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Screate_simple: " + err);
+        }
+        assertTrue("H5.H5Screate_simple",sid > 0);
+        class_type = H5.H5Sget_simple_extent_type(sid);
+        assertTrue("H5.H5Screate_simple: type",class_type == HDF5Constants.H5S_SIMPLE);
+
+        try {H5.H5Sclose(sid);} catch (Exception ex) {}
+    }
+    
+    @Test
+    public void testH5Screate_simple_unlimted_1d()
+            throws Throwable, HDF5LibraryException, NullPointerException {
+        int sid = -1;
+        int class_type = -1;
+        int rank = 1;
+        long dims[] = {5};
+        long maxdims[] = {HDF5Constants.H5S_UNLIMITED};
+        
+        try {
+            sid = H5.H5Screate_simple(rank, dims, maxdims);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Screate_simple: " + err);
+        }
+        assertTrue("H5.H5Screate_simple",sid > 0);
+        class_type = H5.H5Sget_simple_extent_type(sid);
+        assertTrue("H5.H5Screate_simple: type",class_type == HDF5Constants.H5S_SIMPLE);
+
+        try {H5.H5Sclose(sid);} catch (Exception ex) {}
+    }   
 
     @Test
     public void testH5Screate_simple_max_default()

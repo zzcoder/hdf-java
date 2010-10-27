@@ -1407,7 +1407,7 @@ public class H5 {
      * @exception HDF5LibraryException - Error from the HDF-5 Library.
      * @exception NullPointerException - size array is null.
      * 
-     * @deprecated As of HDF5 1.8
+      * @deprecated As of HDF5 1.8, replaced by {@link #H5Dset_extent(int, long[]) }
      **/
     @Deprecated
 	public synchronized static int H5Dextend(int dataset_id, long[] size)
