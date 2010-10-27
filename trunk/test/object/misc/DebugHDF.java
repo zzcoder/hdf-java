@@ -89,10 +89,10 @@ public class DebugHDF {
 //        TestBinaryWrite(2147483647, 2);
 //        TestBinaryWrite(2147483647, 4);
 //        TestBinaryWrite(9123456789123456789L, 8);
-    
+//    
 //        try { TestBug1523("G:\\Projects\\HUGS\\data\\testfile02.h5.corrupt"); } catch(Exception ex) {ex.printStackTrace();}
-        //try { TestBug1523("G:\\Projects\\HUGS\\data\\testfile02.h5"); } catch(Exception ex) {ex.printStackTrace();}
-        //try { createINF("G:\\temp\\inf.h5"); } catch(Exception ex) {ex.printStackTrace();}
+//       try { TestBug1523("G:\\Projects\\HUGS\\data\\testfile02.h5"); } catch(Exception ex) {ex.printStackTrace();}
+//        try { createINF("G:\\temp\\inf.h5"); } catch(Exception ex) {ex.printStackTrace();}
 //        try { createNaN("G:\\temp\\nan_all.h5"); } catch(Exception ex) {ex.printStackTrace();}
 //        try { testStrings("G:\\temp\\strs.h5"); } catch(Exception ex) {ex.printStackTrace();}
 //        testVariableArity("null argument", null);
@@ -102,11 +102,73 @@ public class DebugHDF {
 //        testVariableArity("3 argument", 1,"string",2.59);
 //       try { readDatatype(); } catch(Exception ex) {ex.printStackTrace();}
 //       try { readTextFile("G:\\temp\\vlarsizes.txt"); } catch(Exception ex) {ex.printStackTrace();}
-       //try {processa8apis(); } catch (Exception ex) {} 
-       // try {convertByte2Long(); } catch (Exception ex) {ex.printStackTrace();} 
-       // try {testH5IO("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
-        try {testH5Core("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
-     }
+//       try {processa8apis(); } catch (Exception ex) {} 
+//       try {convertByte2Long(); } catch (Exception ex) {ex.printStackTrace();} 
+//       try {testH5IO("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
+//        try {testH5Core("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
+        try {test1Dstrings("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
+    }
+    
+	public static void test1Dstrings(String fname) throws Exception {
+		//row count of my dataset
+		int rowCount = 5;
+		
+		//max string length
+		int maxStringLength = 5;
+		
+		//buffer of test data to write
+		String[] data = {"12345","12345","12345","12345","12345"};
+		byte[][] buffer = new byte[5][5];
+		for(int i=0; i<data.length; i++){
+			buffer[i] = data[i].getBytes();
+		}
+		
+		//create my file
+		File file = new File("fname");
+		int fileId = H5.H5Fcreate(file.getAbsolutePath(),
+				HDF5Constants.H5F_ACC_TRUNC, HDF5Constants.H5P_DEFAULT,
+				HDF5Constants.H5P_DEFAULT);
+		
+		int RANK = 1;
+		long[] dataset_dims = { rowCount };
+		long[] max_dims = { HDF5Constants.H5S_UNLIMITED };
+		long[] chunk_dims = { rowCount };
+		
+		int strtypeId = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
+		H5.H5Tset_size(strtypeId, maxStringLength);
+		
+		int memtypeId = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
+		H5.H5Tset_size(memtypeId, maxStringLength);
+		
+		int dataspaceId = H5.H5Screate_simple(RANK, dataset_dims, max_dims);
+		int memspaceId = H5.H5Screate_simple(RANK, chunk_dims, chunk_dims);
+
+		int dcplId = H5.H5Pcreate(HDF5Constants.H5P_DATASET_CREATE);
+		H5.H5Pset_deflate(dcplId, 9);
+		H5.H5Pset_chunk(dcplId, 1, chunk_dims);
+
+		int datasetId = H5.H5Dcreate(fileId, "/ds0",
+				strtypeId, dataspaceId, dcplId);
+		
+		long[] hyperslab_dims = { rowCount};
+		memspaceId = H5.H5Screate_simple(1, hyperslab_dims, hyperslab_dims);
+		
+		H5.H5Sselect_hyperslab(dataspaceId, HDF5Constants.H5S_SELECT_SET,
+				new long[] { 0 }, new long[] { 1 },
+				new long[] { rowCount }, new long[] { 1});
+		
+		H5.H5Dwrite(datasetId, memtypeId, memspaceId,
+				dataspaceId, HDF5Constants.H5P_DEFAULT, buffer);
+		
+		H5.H5Sclose(memspaceId);
+		H5.H5Sclose(dataspaceId);
+		H5.H5Tclose(strtypeId);
+		H5.H5Tclose(memtypeId);
+		H5.H5Dclose(datasetId);
+		H5.H5Fclose(fileId);
+	}
+
+
 
     private static void testH5Core(final String filename) throws Exception {
     	
