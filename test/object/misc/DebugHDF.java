@@ -106,7 +106,140 @@ public class DebugHDF {
 //       try {convertByte2Long(); } catch (Exception ex) {ex.printStackTrace();} 
 //       try {testH5IO("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testH5Core("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
-        try {test1Dstrings("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
+//        try {test1Dstrings("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
+        try {testUpdateAttr("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
+//        try {testCreateVlenStr("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
+    }
+    
+    private static final void testCreateVlenStr(String fname) throws Exception
+    {
+    	String dname = "DS1";
+    	int file_id=-1, type_id=-1, dataspace_id =-1, dataset_id = -1;
+    	String[] str_data = { "Parting", "is such", "sweet", "sorrow." };
+    	int rank = 1;
+    	long[] dims = { str_data.length };
+
+    	// Create a new file using default properties.
+    	try {
+    		file_id = H5.H5Fcreate(fname, HDF5Constants.H5F_ACC_TRUNC,
+    				HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+
+    	try {
+    		type_id = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
+    	   	H5.H5Tset_size(type_id, HDF5Constants.H5T_VARIABLE);
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+    	// Create dataspace. Setting maximum size to NULL sets the maximum
+    	// size to be the current size.
+    	try {
+    		dataspace_id = H5.H5Screate_simple(rank, dims, null);
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+
+    	// Create the dataset and write the string data to it.
+    	try {
+    		if ((file_id >= 0) && (type_id >= 0) && (dataspace_id >= 0))
+    			dataset_id = H5.H5Dcreate(file_id, dname, type_id,
+    					dataspace_id, HDF5Constants.H5P_DEFAULT);
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+
+    	// Write the data to the dataset.
+    	try {
+    		if ((dataset_id >= 0) && (type_id >= 0))
+    			H5.H5DwriteString(dataset_id, type_id, HDF5Constants.H5S_ALL,
+    					HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, str_data);
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+
+    	// End access to the dataset and release resources used by it.
+    	try {
+    		if (dataset_id >= 0)
+    			H5.H5Dclose(dataset_id);
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+
+    	// Terminate access to the data space.
+    	try {
+    		if (dataspace_id >= 0)
+    			H5.H5Sclose(dataspace_id);
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+
+    	// Terminate access to the file type.
+    	try {
+    		if (type_id >= 0)
+    			H5.H5Tclose(type_id);
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+
+    	// Close the file.
+    	try {
+    		if (file_id >= 0)
+    			H5.H5Fclose(file_id);
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    }
+
+    private static void testUpdateAttr(String fname) throws Exception
+    {
+    	int data[] = {1,2,3,4,5,6};
+        long[] dims = {data.length};
+        String dname = "/dset";
+
+        // create a new file and a new dataset
+        H5File file = new H5File(fname, FileFormat.CREATE);
+        Datatype dtype = file.createDatatype(Datatype.CLASS_INTEGER, 4, Datatype.NATIVE, Datatype.NATIVE);
+        Dataset dataset = file.createScalarDS (dname, null, dtype, dims, null, null, 0, data);
+        
+        // create and write an attribute to the dataset
+        long[] attrDims = {2};
+        int[] attrValue = {0, 10000};
+        Attribute attr = new Attribute("range", dtype, attrDims);
+        attr.setValue(attrValue); // set the attribute value
+        dataset.writeMetadata(attr);
+
+        // close the file
+        file.close();
+
+        // open the file with read and write access
+        file = new H5File(fname, FileFormat.WRITE);
+
+        // retrieve the dataset and attribute
+        dataset = (Dataset)file.get(dname);
+        attr = (Attribute)dataset.getMetadata().get(0);
+        
+        // change the attribute value
+        if (attr!=null) {
+            attrValue[0] = 100;
+            attr.setValue(attrValue);
+
+            dataset.writeMetadata(attr);        	
+        }
+
+        // close file resource
+        file.close();
     }
     
 	public static void test1Dstrings(String fname) throws Exception {
