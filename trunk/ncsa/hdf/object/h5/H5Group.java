@@ -220,10 +220,10 @@ public class H5Group extends Group {
         if (attributeList == null) {
             this.getMetadata();
         }
-        else {
-            attrExisted = attributeList.contains(attr);
-        }
 
+        if (attributeList != null)
+        	attrExisted = attributeList.contains(attr);
+ 
         getFileFormat().writeAttribute(this, attr, attrExisted);
         // add the new attribute into attribute list
         if (!attrExisted) {

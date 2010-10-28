@@ -1118,9 +1118,9 @@ public class H5ScalarDS extends ScalarDS {
         if (attributeList == null) {
             this.getMetadata();
         }
-        else {
-            attrExisted = attributeList.contains(attr);
-        }
+
+        if (attributeList != null)
+        	attrExisted = attributeList.contains(attr);
 
         getFileFormat().writeAttribute(this, attr, attrExisted);
 
