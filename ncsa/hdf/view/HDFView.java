@@ -39,6 +39,7 @@ import java.awt.Dimension;
 import java.awt.Component;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.Font;
 
@@ -413,10 +414,12 @@ ChangeListener, DropTargetListener
 
         JPanel urlPane = new JPanel();
         urlPane.setLayout(new BorderLayout());
-        JButton b = new JButton("File/URL");
+        JButton b = new JButton("Clear Text");
+        b.setToolTipText("Clear current selection");
+        b.setMargin(new Insets(1,2,1,2));
         urlPane.add(b, BorderLayout.WEST);
         b.addActionListener(this);
-        b.setActionCommand("Popup URL list");
+        b.setActionCommand("Clear current selection");
         urlPane.add(urlBar, BorderLayout.CENTER);
         JPanel toolPane = new JPanel();
         toolPane.setLayout(new GridLayout(2,1,0,0));
@@ -1388,10 +1391,11 @@ ChangeListener, DropTargetListener
                 JOptionPane.PLAIN_MESSAGE,
                 ViewProperties.getLargeHdfIcon());
         }
-        else if (cmd.equals("Popup URL list"))
+        else if (cmd.equals("Clear current selection"))
         {
-            urlBar.setPopupVisible(true);
-        } else
+            //urlBar.setPopupVisible(true);
+        	urlBar.setSelectedIndex(-1);
+       } else
         {
             if ((helpViews == null) || (helpViews.size() <= 0)) {
                 return;
