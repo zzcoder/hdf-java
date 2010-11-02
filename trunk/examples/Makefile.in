@@ -197,3 +197,6 @@ run-datatypes:
 	@if ./runExample.sh examples.datatypes.H5Ex_T_StringAttribute; then \
 		echo "  PASSED      datatypes.H5Ex_T_StringAttribute"; else  \
 		echo "**FAILED**    datatypes.H5Ex_T_StringAttribute"; fi;
+	@if ./runExample.sh examples.datatypes.H5Ex_T_VLString; then \
+		echo "  PASSED      datatypes.H5Ex_T_VLString"; else  \
+		echo "**FAILED**    datatypes.H5Ex_T_VLString"; fi;
