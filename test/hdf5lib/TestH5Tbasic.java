@@ -43,4 +43,34 @@ public class TestH5Tbasic {
         if (H5strdid >= 0)
             H5.H5Tclose(H5strdid);
     }
+    
+    @Test
+    public void testH5Tconvert() throws Throwable, HDF5LibraryException {
+        String[] strs = {"a1234","b1234"};
+        int srcLen=5, dstLen=10, srcId=-1, dstId=-1, dimSize=strs.length;
+        byte[]   buf = new byte[dimSize*dstLen];
+        
+        for (int i=0; i<dimSize; i++)
+        	System.arraycopy(strs[i].getBytes(), 0, buf, i*srcLen, 5);
+   
+        for (int i=0; i<dimSize; i++)
+        	System.out.println(new String(buf, i*srcLen, srcLen));
+        
+        srcId = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
+        H5.H5Tset_size(srcId, srcLen);
+        H5.H5Tset_strpad(srcId, HDF5Constants.H5T_STR_NULLPAD);
+
+        dstId = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
+        H5.H5Tset_size(dstId, dstLen);
+        H5.H5Tset_strpad(dstId, HDF5Constants.H5T_STR_NULLPAD);
+
+        H5.H5Tconvert(srcId, dstId, dimSize, buf, null, HDF5Constants.H5P_DEFAULT);
+        
+        H5.H5Tclose(srcId);
+        H5.H5Tclose(dstId);
+        
+        for (int i=0; i<strs.length; i++) {
+        	assertTrue((new String(buf, i*dstLen, dstLen)).startsWith(strs[i]));
+        }
+    }
 }
