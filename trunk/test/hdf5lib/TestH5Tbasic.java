@@ -53,9 +53,6 @@ public class TestH5Tbasic {
         for (int i=0; i<dimSize; i++)
         	System.arraycopy(strs[i].getBytes(), 0, buf, i*srcLen, 5);
    
-        for (int i=0; i<dimSize; i++)
-        	System.out.println(new String(buf, i*srcLen, srcLen));
-        
         srcId = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
         H5.H5Tset_size(srcId, srcLen);
  
