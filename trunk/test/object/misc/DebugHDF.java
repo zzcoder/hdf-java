@@ -107,8 +107,41 @@ public class DebugHDF {
 //       try {testH5IO("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testH5Core("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {test1Dstrings("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
-        try {testUpdateAttr("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
+//        try {testUpdateAttr("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testCreateVlenStr("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
+        try {testH5TconvertStr(); } catch (Exception ex) {ex.printStackTrace();} 
+    }
+    
+    private static final void testH5TconvertStr() throws Exception
+    {
+        String[] strs = {"a1234","b1234"};
+        int srcLen=5, dstLen=10, srcId=-1, dstId=-1, dimSize=strs.length;
+        byte[]   buf = new byte[dimSize*dstLen];
+        
+        for (int i=0; i<dimSize; i++)
+        	System.arraycopy(strs[i].getBytes(), 0, buf, i*srcLen, 5);
+   
+        for (int i=0; i<dimSize; i++)
+        	System.out.println(new String(buf, i*srcLen, srcLen));
+        
+        srcId = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
+        H5.H5Tset_size(srcId, srcLen);
+        H5.H5Tset_strpad(srcId, HDF5Constants.H5T_STR_NULLPAD);
+
+        dstId = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
+        H5.H5Tset_size(dstId, dstLen);
+        H5.H5Tset_strpad(dstId, HDF5Constants.H5T_STR_NULLPAD);
+
+        H5.H5Tconvert(srcId, dstId, dimSize, buf, null, HDF5Constants.H5P_DEFAULT);
+        
+        H5.H5Tclose(srcId);
+        H5.H5Tclose(dstId);
+        
+        for (int i=0; i<dimSize; i++) {
+        	String str = new String(buf, i*dstLen, dstLen);
+        	System.out.println(str);
+        	System.out.println(str.startsWith(strs[i]));
+        }
     }
     
     private static final void testCreateVlenStr(String fname) throws Exception
