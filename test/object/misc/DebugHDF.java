@@ -126,11 +126,9 @@ public class DebugHDF {
         
         srcId = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
         H5.H5Tset_size(srcId, srcLen);
-        H5.H5Tset_strpad(srcId, HDF5Constants.H5T_STR_NULLPAD);
-
+ 
         dstId = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
         H5.H5Tset_size(dstId, dstLen);
-        H5.H5Tset_strpad(dstId, HDF5Constants.H5T_STR_NULLPAD);
 
         H5.H5Tconvert(srcId, dstId, dimSize, buf, null, HDF5Constants.H5P_DEFAULT);
         
