@@ -519,24 +519,23 @@ public class H5CompoundDS extends CompoundDS {
                     continue;
                 }
 
+                boolean isVL = false;
+                try {
+                    isVL = (H5.H5Tdetect_class(atom_tid, HDF5Constants.H5T_VLEN));
+                }
+                catch (Exception ex) {
+                }
+
+                if (isVL) {
+                    continue;
+                }
+                
                 try {
                     member_class = H5.H5Tget_class(atom_tid);
                     member_size = H5.H5Tget_size(atom_tid);
                     isEnum = (member_class == HDF5Constants.H5T_ENUM);
                 }
                 catch (Exception ex) {
-                }
-
-                boolean isVL = false;
-                try {
-                    isVL = (H5
-                            .H5Tdetect_class(atom_tid, HDF5Constants.H5T_VLEN));
-                }
-                catch (Exception ex) {
-                }
-
-                if ((member_data == null) || isVL) {
-                    continue;
                 }
 
                 Object tmpData = member_data;

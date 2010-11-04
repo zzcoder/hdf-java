@@ -1426,9 +1426,14 @@ public abstract class FileFormat extends File {
     /**
      * Attaches a given attribute to an object.
      * <p>
-     * If the attribute does not exists, creates an attibute in file, and
-     * attches it the object. If the attribute already exists in the object,
-     * just update the value of the attribute attached to the object.
+     * If an HDF(4&5) attribute exists in file, the method updates its value. 
+     * If the attribute does not exists in file, it creates the attribute in 
+     * file and attaches it to the object.
+     * It will fail to write a new attribute to the object where an attribute 
+     * with the same name already exists.  
+     * To update the value of an existing attribute in file, one needs to get 
+     * the instance of the attribute by getMetadata(), change its values, 
+     * and use writeAttribute() to write the value. 
      * 
      * @param obj
      *            The object to which the attribute is attached to.
