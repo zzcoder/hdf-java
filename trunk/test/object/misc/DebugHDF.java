@@ -109,8 +109,61 @@ public class DebugHDF {
 //        try {test1Dstrings("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testUpdateAttr("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testCreateVlenStr("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
-        try {testH5TconvertStr(); } catch (Exception ex) {ex.printStackTrace();} 
+//        try {testH5TconvertStr(); } catch (Exception ex) {ex.printStackTrace();} 
+        try {testH5DeleteDS("g:\\temp\\strs.h5"); } catch (Exception ex) {ex.printStackTrace();} 
     }
+    
+    private static final void testH5DeleteDS(String fname) throws Exception
+    {
+        String dname = "strs";
+        int nloops=1000, rank=1, strLen=1, fid=-1, tid=-1, sid=-1, did=-1;
+        String[] strData = { "1", "2", "3", "4" };
+        long[] dims = { strData.length };
+        byte[] byteData = new byte[strData.length*strLen];
+        
+        for (int i=0; i<strData.length; i++)
+        	System.arraycopy(strData[i].getBytes(), 0, byteData, i*strLen, strLen);
+
+        fid = H5.H5Fcreate(fname, HDF5Constants.H5F_ACC_TRUNC, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        tid = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
+        H5.H5Tset_size(tid, 1);
+        sid = H5.H5Screate_simple(rank, dims, null);
+        did = H5.H5Dcreate(fid, dname, tid, sid, HDF5Constants.H5P_DEFAULT);
+        H5.H5Dwrite(did, tid, HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, byteData);
+
+        H5.H5Dclose(did);
+        H5.H5Fclose(fid);
+         
+        for (int loop=0; loop<nloops; loop++) {
+    		fid = H5.H5Fopen(fname, HDF5Constants.H5F_ACC_RDWR, HDF5Constants.H5P_DEFAULT);
+    		H5.H5Ldelete( fid, dname, HDF5Constants.H5P_DEFAULT);
+
+    		strLen = loop+1;
+            H5.H5Tset_size(tid, strLen);
+            
+            for (int i=0; i<strData.length; i++) {
+            	strData[i] = "";
+            	for (int j=0; j<=loop; j++) {
+            		strData[i] += (i+1);
+            	}
+            }
+            
+            byteData = new byte[strData.length*strLen];
+     
+            for (int i=0; i<strData.length; i++) {
+             	System.arraycopy(strData[i].getBytes(), 0, byteData, i*strLen, strLen);
+            }
+
+            did = H5.H5Dcreate(fid, dname, tid, sid, HDF5Constants.H5P_DEFAULT);
+            H5.H5Dwrite(did, tid, HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, byteData);
+
+            H5.H5Dclose(did);
+            H5.H5Fclose(fid);
+        }
+        
+        H5.H5Sclose(sid);
+        H5.H5Tclose(tid);
+    }    
     
     private static final void testH5TconvertStr() throws Exception
     {
@@ -146,9 +199,9 @@ public class DebugHDF {
     {
     	String dname = "DS1";
     	int file_id=-1, type_id=-1, dataspace_id =-1, dataset_id = -1;
-    	String[] str_data = { "Parting", "is such", "sweet", "sorrow." };
+    	String[] strData = { "Parting", "is such", "sweet", "sorrow." };
     	int rank = 1;
-    	long[] dims = { str_data.length };
+    	long[] dims = { strData.length };
 
     	// Create a new file using default properties.
     	try {
@@ -190,7 +243,7 @@ public class DebugHDF {
     	try {
     		if ((dataset_id >= 0) && (type_id >= 0))
     			H5.H5DwriteString(dataset_id, type_id, HDF5Constants.H5S_ALL,
-    					HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, str_data);
+    					HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, strData);
     	}
     	catch (Exception e) {
     		e.printStackTrace();
