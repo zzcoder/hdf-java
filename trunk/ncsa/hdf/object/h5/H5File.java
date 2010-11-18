@@ -1731,6 +1731,12 @@ public class H5File extends FileFormat {
 
             if (attrExisted) {
             	aid = H5.H5Aopen_by_name(objID, obj_name, name, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+            	int tmptid = H5.H5Aget_type(aid);
+            	boolean isVlen = (H5.H5Tget_class(tmptid)==HDF5Constants.H5T_VLEN || H5.H5Tis_variable_str(tmptid));
+            	try {H5.H5Tclose(tmptid); } catch (Exception ex2) {}
+            	if (isVlen) {
+                    throw (new HDF5Exception( "Writing variable-length attributes is not supported"));
+            	}
             }
             else {
             	aid = H5.H5Acreate(objID, name, tid, sid, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
