@@ -1719,6 +1719,7 @@ public class H5File extends FileFormat {
     	String obj_name = obj.getFullName();
     	String name = attr.getName();
         int tid = -1, sid = -1, aid = -1;
+        boolean isVlen = false;
 
         int objID = obj.open();
         if (objID < 0) {
@@ -1726,23 +1727,32 @@ public class H5File extends FileFormat {
         }
 
         try {
-            tid = attr.getType().toNative();
-            sid = H5.H5Screate_simple(attr.getRank(), attr.getDataDims(), null);
-
+ 
             if (attrExisted) {
             	aid = H5.H5Aopen_by_name(objID, obj_name, name, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+            	tid = H5.H5Aget_type(aid);
             }
             else {
             	aid = H5.H5Acreate(objID, name, tid, sid, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-            }
+                tid = attr.getType().toNative();
+          }
 
+            int atypeClass = H5.H5Tget_class(tid);
+            isVlen = (atypeClass!=HDF5Constants.H5T_VLEN || H5.H5Tis_variable_str(tid));
+            if (isVlen) {
+            	H5.H5Tclose(tid);
+                throw (new HDF5Exception("Writing variable-length attributes is not supported"));
+            }
+            
             // update value of the attribute
+            sid = H5.H5Screate_simple(attr.getRank(), attr.getDataDims(), null);
             Object attrValue = attr.getValue();
-            if (attrValue != null) {
-                if (attr.getType().getDatatypeClass() == Datatype.CLASS_REFERENCE
-                        && attrValue instanceof String) { // reference is a
-                                                          // path+name to the
-                                                          // object
+             
+            // do not support vlen
+            if (attrValue != null && !isVlen) {
+            	
+            	// reference is a path
+                if (atypeClass == HDF5Constants.H5T_REFERENCE && attrValue instanceof String) {
                     attrValue = H5.H5Rcreate(getFID(), (String) attrValue,
                             HDF5Constants.H5R_OBJECT, -1);
                 }
@@ -1767,7 +1777,6 @@ public class H5File extends FileFormat {
                     bval[(strValue.length() - 1)] = 0;
                     attrValue = bval;
                 }
-
                 try {
                     /*
                      * must use native type to write attribute data to file (see
@@ -1775,11 +1784,7 @@ public class H5File extends FileFormat {
                      */
                     int tmptid = tid;
                     tid = H5.H5Tget_native_type(tmptid);
-                    try {
-                        H5.H5Tclose(tmptid);
-                    }
-                    catch (HDF5Exception ex) {
-                    }
+                    try { H5.H5Tclose(tmptid); } catch (HDF5Exception ex) {}
                     H5.H5Awrite(aid, tid, attrValue);
                 }
                 catch (Exception ex) {
