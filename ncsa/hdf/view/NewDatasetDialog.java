@@ -224,7 +224,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         rankChoice.setSelectedIndex(1);
 
         currentSizeField = new JTextField("1 x 1");
-        maxSizeField = new JTextField("0 x 0");
+        maxSizeField = new JTextField("");
         spacePanel.add(new JLabel("No. of dimensions"));
         spacePanel.add(new JLabel("Current size"));
         spacePanel.add(new JLabel(""));
@@ -452,6 +452,10 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
             }
         }
         else if (cmd.equals("Set max size")) {
+        	String strMax = maxSizeField.getText();
+        	if (strMax == null || strMax.length() < 1)
+        		strMax = currentSizeField.getText();
+        	
             String msg = JOptionPane
                     .showInputDialog(
                             this,
@@ -459,11 +463,14 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
                                     + "Use \"unlimited\" for unlimited dimension size.\n\n"
                                     + "For example,\n" + "    200 x 100\n"
                                     + "    100 x unlimited\n\n",
-                            currentSizeField.getText());
+                            strMax);
+            
             if (msg == null || msg.length() < 1)
                 maxSizeField.setText(currentSizeField.getText());
             else
-                maxSizeField.setText(msg);
+            	maxSizeField.setText(msg);
+            
+            checkMaxSize();
         }
     }
 
@@ -631,6 +638,85 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
                 checkContinguous.setEnabled(true);
             }
         }
+    }
+    
+    /** check is the max size is valid */
+    private void checkMaxSize() {
+    	boolean isChunkNeeded = false;
+    	String dimStr = currentSizeField.getText();
+    	String maxStr = maxSizeField.getText();
+    	StringTokenizer stMax = new StringTokenizer(maxStr, "x");
+    	StringTokenizer stDim = new StringTokenizer(dimStr, "x");
+
+    	if (stMax.countTokens() != stDim.countTokens()) {
+    		toolkit.beep();
+    		JOptionPane.showMessageDialog(this,
+    				"Wrong number of values in the max dimension size "+maxStr,
+    				getTitle(), JOptionPane.ERROR_MESSAGE);
+    		maxSizeField.setText(null);
+    		return;
+    	}
+
+    	int rank = stDim.countTokens();
+    	long max=0, dim=0;
+    	long[] maxdims = new long[rank];
+    	long[] dims = new long[rank];
+    	for (int i = 0; i < rank; i++) {
+    		String token = stMax.nextToken().trim();
+
+    		token = token.toLowerCase();
+    		if (token.startsWith("unl")) {
+    			max = -1;
+    			isChunkNeeded = true;
+    		} else {
+    			try {
+    				max = Long.parseLong(token);
+    			}
+    			catch (NumberFormatException ex) {
+    				toolkit.beep();
+    				JOptionPane.showMessageDialog(this,
+    						"Invalid max dimension size: "
+    						+ maxStr, getTitle(),
+    						JOptionPane.ERROR_MESSAGE);
+    				maxSizeField.setText(null);;
+    				return;
+    			}
+    		}
+    		
+    		token = stDim.nextToken().trim();
+    		try {
+    			dim = Long.parseLong(token);
+    		}
+    		catch (NumberFormatException ex) {
+    			toolkit.beep();
+    			JOptionPane.showMessageDialog(this,
+    					"Invalid dimension size: "
+    					+ dimStr, getTitle(),
+    					JOptionPane.ERROR_MESSAGE);
+     			return;
+    		}
+
+    		if (max != -1 && max<dim) {
+				toolkit.beep();
+				JOptionPane.showMessageDialog(this,
+						"Invalid max dimension size: "
+						+ maxStr, getTitle(),
+						JOptionPane.ERROR_MESSAGE);
+				maxSizeField.setText(null);
+				return;
+    		} else if (max>dim) {
+    			isChunkNeeded = true;
+    		}
+    	} // for (int i = 0; i < rank; i++)
+    	
+    	if (isChunkNeeded && !checkChunked.isSelected()) {
+			toolkit.beep();
+			JOptionPane.showMessageDialog(this,
+					"Chunking is required for the max dimensions of "
+					+ maxStr, getTitle(),
+					JOptionPane.ERROR_MESSAGE);
+			checkChunked.setSelected(true);
+    	}
     }
 
     /** Creates a dialog to show the help information. */
