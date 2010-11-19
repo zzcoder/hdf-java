@@ -1410,10 +1410,13 @@ public class H5ScalarDS extends ScalarDS {
 
         // HDF 5 requires you to use chunking in order to define extendible
         // datasets. Chunking makes it possible to extend datasets efficiently,
-        // without having to reorganize storage excessively
+        // without having to reorganize storage excessively. Using default size
+        // of 64x...which has good performance
         if ((chunks == null) && isExtentable) {
-            chunks = dims;
-        }
+        	chunks = new long[dims.length];
+        	for (int i=0; i<dims.length; i++)
+        		chunks[i] = Math.min(dims[i], 64);
+         }
 
         // prepare the dataspace and datatype
         int rank = dims.length;
