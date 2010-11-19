@@ -110,9 +110,49 @@ public class DebugHDF {
 //        try {testUpdateAttr("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testCreateVlenStr("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testH5TconvertStr(); } catch (Exception ex) {ex.printStackTrace();} 
-        try {testH5DeleteDS("g:\\temp\\strs.h5"); } catch (Exception ex) {ex.printStackTrace();} 
+        //try {testH5DeleteDS("g:\\temp\\strs.h5"); } catch (Exception ex) {ex.printStackTrace();} 
+        try {testExtendData("g:\\temp\\extended.h5", "dset", 1000, 1500); } catch (Exception ex) {ex.printStackTrace();} 
     }
     
+    public static void testExtendData(String fname, String dname, int size, int newSize)throws Exception
+    {
+    	long dims[] = {size};
+    	long[] maxdims = {HDF5Constants.H5S_UNLIMITED};
+    	long newDims[] = {newSize};
+    	int extended = newSize - size;
+    	
+    	if (extended<=0)
+    		return; // nothing to extended
+    	
+    	float data[] = new float[size];
+    	for (int i=0; i<size; i++)
+    		data[i] = i;
+    	
+       	float extendedData[] = new float[extended];
+    	for (int i=0; i<extended; i++)
+    		extendedData[i] = size+i;
+    	
+        H5File file = new H5File(fname, H5File.CREATE);
+        file.open();
+        file.createScalarDS(dname, null, new H5Datatype(Datatype.CLASS_FLOAT, -1, -1, -1), dims, maxdims, null, 0, data);
+    	file.close();
+    	
+    	// reopen the file
+    	file.open();
+    	H5ScalarDS ds = (H5ScalarDS)file.get(dname);
+    	
+    	ds.init();
+    	ds.extend(newDims);
+    	
+        long [] start  = ds.getStartDims();
+        long [] count  = ds.getSelectedDims();
+        start[0] = size;
+        count[0] = extended;
+        ds.write(extendedData);
+        
+    	file.close();
+	}
+
     private static final void testH5DeleteDS(String fname) throws Exception
     {
         String dname = "strs";
