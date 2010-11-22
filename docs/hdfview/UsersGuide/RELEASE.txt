@@ -116,5 +116,7 @@ Other notes
 ========================================================================================= 
 Made the following changes to the running script, bin/hdfview.sh, to make it consistent to 
 the Windows batch file, bin/hdfview.bat:
-    change "HDFVIEW_HOME" to "HDFJAVA" and "JAVAPATH" to "JAVAHOME"
+    * change "HDFVIEW_HOME" to "HDFJAVA" and "JAVAPATH" to "JAVAHOME"
+    * FAQs related to HDF-Java products: http://www.hdfgroup.org/hdf5-quest.html#JAVA
+
 
