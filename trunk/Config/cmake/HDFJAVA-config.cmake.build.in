@@ -1,0 +1,29 @@
+#-----------------------------------------------------------------------------
+# HJAVA Config file for compiling against HJAVA build directory
+#-----------------------------------------------------------------------------
+GET_FILENAME_COMPONENT (SELF_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+#-----------------------------------------------------------------------------
+# User Options
+#-----------------------------------------------------------------------------
+SET (HJAVA_ENABLE_PARALLEL @HJAVA_ENABLE_PARALLEL@)
+
+#-----------------------------------------------------------------------------
+# Directories
+#-----------------------------------------------------------------------------
+SET (HJAVA_INCLUDE_DIRS "@HJAVA_INCLUDES_BUILD_TIME@")
+
+#-----------------------------------------------------------------------------
+# Version Strings
+#-----------------------------------------------------------------------------
+SET (HJAVA_VERSION_STRING @HJAVA_VERSION_STRING@)
+SET (HJAVA_VERSION_MAJOR  @HJAVA_VERSION_MAJOR@)
+SET (HJAVA_VERSION_MINOR  @HJAVA_VERSION_MINOR@)
+
+#-----------------------------------------------------------------------------
+# Don't include targets if this file is being picked up by another
+# project which has already build HJAVA as a subproject
+#-----------------------------------------------------------------------------
+IF (NOT TARGET "HJAVA")
+  INCLUDE (${SELF_DIR}/HJAVA-targets.cmake)
+ENDIF (NOT TARGET "HJAVA")
