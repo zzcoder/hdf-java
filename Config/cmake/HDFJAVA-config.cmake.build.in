@@ -1,29 +1,29 @@
 #-----------------------------------------------------------------------------
-# HJAVA Config file for compiling against HJAVA build directory
+# HDFJAVA Config file for compiling against HDFJAVA build directory
 #-----------------------------------------------------------------------------
 GET_FILENAME_COMPONENT (SELF_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 
 #-----------------------------------------------------------------------------
 # User Options
 #-----------------------------------------------------------------------------
-SET (HJAVA_ENABLE_PARALLEL @HJAVA_ENABLE_PARALLEL@)
+SET (HDFJAVA_ENABLE_PARALLEL @HDFJAVA_ENABLE_PARALLEL@)
 
 #-----------------------------------------------------------------------------
 # Directories
 #-----------------------------------------------------------------------------
-SET (HJAVA_INCLUDE_DIRS "@HJAVA_INCLUDES_BUILD_TIME@")
+SET (HDFJAVA_INCLUDE_DIRS "@HDFJAVA_INCLUDES_BUILD_TIME@")
 
 #-----------------------------------------------------------------------------
 # Version Strings
 #-----------------------------------------------------------------------------
-SET (HJAVA_VERSION_STRING @HJAVA_VERSION_STRING@)
-SET (HJAVA_VERSION_MAJOR  @HJAVA_VERSION_MAJOR@)
-SET (HJAVA_VERSION_MINOR  @HJAVA_VERSION_MINOR@)
+SET (HDFJAVA_VERSION_STRING @HDFJAVA_VERSION_STRING@)
+SET (HDFJAVA_VERSION_MAJOR  @HDFJAVA_VERSION_MAJOR@)
+SET (HDFJAVA_VERSION_MINOR  @HDFJAVA_VERSION_MINOR@)
 
 #-----------------------------------------------------------------------------
 # Don't include targets if this file is being picked up by another
-# project which has already build HJAVA as a subproject
+# project which has already build HDFJAVA as a subproject
 #-----------------------------------------------------------------------------
-IF (NOT TARGET "HJAVA")
-  INCLUDE (${SELF_DIR}/HJAVA-targets.cmake)
-ENDIF (NOT TARGET "HJAVA")
+IF (NOT TARGET "HDFJAVA")
+  INCLUDE (${SELF_DIR}/HDFJAVA-targets.cmake)
+ENDIF (NOT TARGET "HDFJAVA")
