@@ -83,7 +83,7 @@ public class TestHDFView {
     @Test 
     public void verifyTextInLabelWhenClickingHDF5Button() {
         mainFrameFixture.button("HDF5 library").click();
-        mainFrameFixture.dialog("dialog1").optionPane().requirePlainMessage().requireMessage("HDF5 1.8.5");
+        mainFrameFixture.dialog("dialog1").optionPane().requirePlainMessage().requireMessage("HDF5 1.8.6");
         mainFrameFixture.dialog("dialog1").optionPane().button("OptionPane.button").click();
     }
     
