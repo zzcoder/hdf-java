@@ -5717,18 +5717,6 @@ public class H5 {
     // ////////////////////////////////////////////////////////////////////////
 
     /**
-     * Creates a new property list class of a given class
-     * 
-     * @param cls
-     *            IN: Class of property list to create
-     * @return a valid property list identifier if successful; a negative value
-     *         if failed
-     * @throws HDF5LibraryException
-     */
-    public synchronized static native int H5Pcreate_list(int cls)
-            throws HDF5LibraryException;
-
-    /**
      * Sets a property list value (support integer only)
      * 
      * @param plid
