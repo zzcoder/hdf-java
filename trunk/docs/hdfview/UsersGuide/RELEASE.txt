@@ -94,7 +94,8 @@ Limitations / Known Problems
     * HDF (4&5) APIs with function pointers are not supported in HDF-Java. 
 
     * Specific to HDF4:
-          -- Deleting object/attribute in HDF4 is not supported.
+          -- Deleting an object or attribute from an HDF4 file is not supported. Deleting 
+             objects in HDF4 may leave dangling objects or corrupt the file.
           -- HDFView cannot modify compressed HDF4 SDS if rank is greater than two because 
              the existing compression algorithms supported by HDF do not allow partial 
              modification to a compressed data stream.
