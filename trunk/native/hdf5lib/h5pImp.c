@@ -3937,6 +3937,51 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pset_1fapl_1direct
 	return (jint)retVal;
 }
 
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Pget_fapl_direct
+ * Signature: (I[I)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pget_1fapl_1direct
+ (JNIEnv *env, jclass clss, jint fapl_id, jintArray info)
+{
+    herr_t retVal = -1;
+    size_t  alignment=0, block_size=0, cbuf_size=0;
+    jint *theArray;
+    jboolean isCopy;
+
+#ifdef H5_HAVE_DIRECT
+    if (info == NULL) {
+        h5nullArgument( env, "H5Pget_fapl_direct:  info input array is NULL");
+        return -1;
+    }
+    if (ENVPTR->GetArrayLength(ENVPAR info) < 3) {
+        h5badArgument( env, "H5Pget_fapl_direct:  info input array < 4");
+        return -1;
+    }
+
+    theArray = (jint *)ENVPTR->GetIntArrayElements(ENVPAR info,&isCopy);
+
+    if (theArray == NULL) {
+        h5JNIFatalError( env, "H5Pget_fapl_direct:  info not pinned");
+        return -1;
+    }
+
+    retVal = H5Pget_fapl_direct((hid_t)fapl_id, &alignment, &block_size, &cbuf_size);
+    if(retVal <0){
+        ENVPTR->ReleaseIntArrayElements(ENVPAR info,theArray,JNI_ABORT);
+        h5libraryError(env);
+    } else {
+        theArray[0] = alignment;
+        theArray[1] = block_size;
+        theArray[2] = cbuf_size;
+        ENVPTR->ReleaseIntArrayElements(ENVPAR info,theArray,0);
+    }
+#endif
+
+    return (jint)retVal;
+}
+
 #ifdef __cplusplus
 }
 #endif
