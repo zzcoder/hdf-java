@@ -2419,25 +2419,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5P1remove_1filter
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5Pcreate_list
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Pcreate_1list
-  (JNIEnv *env, jclass clss, jint cls)
-{
-    hid_t retVal = -1;
-
-    retVal =  H5Pcopy((hid_t)cls);
-
-    if (retVal < 0) {
-        h5libraryError(env);
-    }
-
-    return (jint)retVal;
-}
-
-/*
- * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5Pset
  * Signature: (ILjava/lang/String;I)I
  */
