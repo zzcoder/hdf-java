@@ -8486,6 +8486,20 @@ throws HDF5LibraryException;
  throws HDF5LibraryException;
 
  /**
+  * H5Pget_fapl_direct   Retrieve direct I/O settings.
+  * @param fapl_id		IN: File access property list identifier 
+  * @param info[0] = alignment		OUT: Required memory alignment boundary 
+  * @param info[1] = block_size		OUT: File system block size 
+  * @param info[2] = cbuf_size		OUT: Copy buffer size 
+  *  
+  * @return a non-negative value if successful; otherwise returns a negative value.
+  * 
+  * @exception HDF5LibraryException - Error from the HDF-5 Library.
+  *  
+  **/
+ public synchronized static native int H5Pget_fapl_direct(int fapl_id, int[]info) throws HDF5LibraryException;
+
+ /**
   * H5Pget_filter returns information about a filter, specified by its filter
   * number, in a filter pipeline, specified by the property list with which
   * it is associated.
