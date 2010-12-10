@@ -8,9 +8,13 @@ include ("../../../includes/header.html");
 <h2><u>What it is</u></h2>
 The <b>Java HD5 Interface (JHI5)</b> is a Java package (
 <a href="../../javadocs/ncsa/hdf/hdf5lib/package-summary.html">ncsa.hdf.hdf5lib</a>)
-that ``wraps around'' the NCSA HDF5 library.
-<br>&nbsp;
-<br>&nbsp;
+that ``wraps around'' the NCSA HDF5 library. 
+<p />There are over 460 functions in the HDF5
+library (version 1.8). Ninety three of the functions are not supported in JHI5. Most
+of the unsupported functions have C function pointers, which is not currently 
+implemented in JHI5. For a complete list of unsupported functions, please see
+<a href="jhi5_unsupported_functions.html">unsupported functions</a>.
+
 <center><table BORDER=1 COLS=1 WIDTH="71%" BGCOLOR="#dbeaf5" >
 <tr>
 <td>
