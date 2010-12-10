@@ -104,8 +104,8 @@ Limitations / Known Problems
              compound data.
           -- Writing variable length data is not supported except for dataset where each data point is a single 
              variable length string.
-          -- Adding an additional function for the JNI functions that return an "int" in HDF5 1.6 but require a 
-             "long" return value in HDF5 1.8. For example,
+          -- No single JNI function that can handle HDF5 library functions with different return types in version
+             1.6 and version 1.8. An additional function is added in the JNI. For example,
              public synchronized static native int H5Tget_size(int type_id)
              public synchronized static native long H5Tget_size_long(int type_id)
 
