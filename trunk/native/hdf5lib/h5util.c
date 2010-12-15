@@ -222,7 +222,6 @@ int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr) {
     else if (tclass == H5T_ARRAY) {
         int rank = 0;
         hsize_t dims[H5S_MAX_RANK], total_elmts;
-
         h5str_append(str, "[ ");
 
         mtid = H5Tget_super(tid);
