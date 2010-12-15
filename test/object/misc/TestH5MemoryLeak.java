@@ -174,7 +174,7 @@ public class TestH5MemoryLeak
             testFile = new H5File(fname, FileFormat.READ);
             testFile.open();
             testFile.getRootNode();
-            try { Thread.sleep(100); } catch (Exception ex) {;}
+            try { Thread.sleep(10); } catch (Exception ex) {;}
             testFile.close();
         }
         
@@ -205,14 +205,15 @@ public class TestH5MemoryLeak
  
         int count = 0;
         String sumStr="-----";
-        long KB = 1024, mem0=0, mem1=0, sum=0;
+        long KB = 1024, mem0=0, mem1=0, sum=0, diff=0;
         
         if (DEBUG) {
             System.out.flush();
             System.out.println("\n\nNo. of loops\tIncrease\tUsed(KB)\tTotal(KB)\tNo. of open IDs\n"+
                            "_______________________________________________________________________________\n");
         }
-        
+       
+        int nhigh = 0; 
         while(count<NLOOPS)
         {
             count ++;
@@ -220,7 +221,12 @@ public class TestH5MemoryLeak
                 osm = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean() ;
                 mem1 = osm.getCommittedVirtualMemorySize()/KB;
                 if (count>NSTART) {
-                    sum += (mem1-mem0);
+                    diff = mem1-mem0;
+                    sum += diff;
+                    if (diff>0)
+                        nhigh++;
+                    else
+                        nhigh=0;
                     sumStr = df.format(sum);
                  }
                 
@@ -233,7 +239,7 @@ public class TestH5MemoryLeak
                             H5.getOpenIDCount());
                 }
 
-                if (sum > 0)
+                if ((sum/KB) > 0 || nhigh > 3)
                     break;
 
                 mem0 = mem1;
