@@ -1274,7 +1274,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DreadVL
         isStr = H5Tis_variable_str((hid_t)mem_type_id);
     */
 
+    /* fixed bug 2105, the following line does not detect array of vlen strings
     isStr = H5Tdetect_variable_str((hid_t)mem_type_id);
+    */
+
+    isStr = H5Tdetect_class((hid_t)mem_type_id, H5T_STRING);
 
     if (isStr > 0) {
         return (jint) H5DreadVL_str (env, (hid_t)dataset_id, (hid_t)mem_type_id,

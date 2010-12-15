@@ -313,7 +313,7 @@ public class H5CompoundDS extends CompoundDS {
         Vector atomicList = new Vector();
         try // to match finally for closing resources
         {
-            long[] lsize = { 1 };
+             long[] lsize = { 1 };
             lsize[0] = selectHyperslab(did, spaceIDs);
 
             // read each of member data into a byte array, then extract
@@ -323,6 +323,8 @@ public class H5CompoundDS extends CompoundDS {
             extractCompoundInfo(tid, null, null, atomicList);
 
             for (int i = 0; i < n; i++) {
+                boolean isVL = false;
+
                 if (!isMemberSelected[i]) {
                     continue; // the field is not selected
                 }
@@ -338,7 +340,7 @@ public class H5CompoundDS extends CompoundDS {
                 catch (Exception ex) {
                     member_data = null;
                 }
-
+                
                 if (member_data == null
                         || H5.H5Tequal(atom_tid,
                                 HDF5Constants.H5T_STD_REF_DSETREG)) {
@@ -352,16 +354,25 @@ public class H5CompoundDS extends CompoundDS {
                     continue;
                 }
 
-                boolean isVL = false;
+                if (member_class == HDF5Constants.H5T_ARRAY) {
+                    int tmptid = H5.H5Tget_super(atom_tid);
+                    isVL = H5.H5Tis_variable_str(tmptid);
+
+                    member_class = H5.H5Tget_class(tmptid);
+                    try {
+                        H5.H5Tclose(tmptid);
+                    }
+                    catch (Exception ex) {
+                    }
+                }
+
                 int comp_tid = -1;
                 int compInfo[] = { member_class, member_size, 0 };
                 try {
-                    comp_tid = createCompoundFieldType(atom_tid, member_name,
-                            compInfo);
+                    comp_tid = createCompoundFieldType(atom_tid, member_name, compInfo);
                     try {
-                        // See BUG#951 isVL = H5.H5Tdetect_class(atom_tid,
-                        // HDF5Constants.H5T_VLEN);
-                        isVL = H5.H5Tis_variable_str(atom_tid);
+                        // See BUG#951 isVL = H5.H5Tdetect_class(atom_tid, HDF5Constants.H5T_VLEN);
+                        isVL = isVL || H5.H5Tis_variable_str(atom_tid);
                         isVL = isVL || H5.H5Tdetect_class(atom_tid, HDF5Constants.H5T_VLEN);
                     }
                     catch (Exception ex) {
@@ -393,20 +404,13 @@ public class H5CompoundDS extends CompoundDS {
                     }
                 }
 
-                if (member_class == HDF5Constants.H5T_ARRAY) {
-                    int tmptid = H5.H5Tget_super(atom_tid);
-                    member_class = H5.H5Tget_class(tmptid);
-                    try {
-                        H5.H5Tclose(tmptid);
-                    }
-                    catch (Exception ex) {
-                    }
-                }
-
                 if (!isVL) {
                     if ((member_class == HDF5Constants.H5T_STRING)
                             && convertByteToString) {
-                        member_data = byteToString((byte[]) member_data,
+                        String cname = member_data.getClass().getName();
+                        char dname = cname.charAt(cname.lastIndexOf("[") + 1);
+                        if (dname == 'B')
+                        	member_data = byteToString((byte[]) member_data,
                                 member_size / memberOrders[i]);
                     }
                     else if (member_class == HDF5Constants.H5T_REFERENCE) {
@@ -414,8 +418,7 @@ public class H5CompoundDS extends CompoundDS {
                                 .byteToLong((byte[]) member_data);
                     }
                     else if (compInfo[2] != 0) {
-                        member_data = Dataset.convertFromUnsignedC(member_data,
-                                null);
+                        member_data = Dataset.convertFromUnsignedC(member_data, null);
                     }
                     else if (member_class == HDF5Constants.H5T_ENUM
                             && enumConverted) {
