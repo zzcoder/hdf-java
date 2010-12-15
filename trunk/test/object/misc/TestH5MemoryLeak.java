@@ -141,28 +141,28 @@ public class TestH5MemoryLeak
         
         if (DEBUG) {
             System.out.flush();
-            System.out.println("\n\nNo. of loops\tIncrease\tUsed(KB)\tTotal(KB)\tFree(KB)\n"+
-                           "_______________________________________________________________________\n");
+            System.out.println("\n\nNo. of loops\tIncrease\tUsed(KB)\tTotal(KB)\tNo. of open IDs\n"+
+                           "_______________________________________________________________________________\n");
         }
-       
+        
         while(count<NLOOPS)
         {
             count ++;
             if (count % NPRINT == 0) {
                 osm = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean() ;
-                mem1 = osm.getCommittedVirtualMemorySize();
+                mem1 = osm.getCommittedVirtualMemorySize()/KB;
                 if (count>NSTART) {
                     sum += (mem1-mem0);
-                    sumStr = df.format((sum / KB));
+                    sumStr = df.format(sum);
                  }
                 
                 if (DEBUG) {
                     System.out.println(
                             df.format(count) + "   \t" +
                             sumStr + "    \t" +
-                            df.format((mem1 / KB)) + "    \t" +
+                            df.format((mem1)) + "    \t" +
                             df.format(osm.getTotalPhysicalMemorySize() / KB) + "   \t" +
-                            df.format(osm.getFreePhysicalMemorySize() / KB));
+                            H5.getOpenIDCount());
                 }
 
                 if (sum > 0)
@@ -218,17 +218,17 @@ public class TestH5MemoryLeak
             count ++;
             if (count % NPRINT == 0) {
                 osm = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean() ;
-                mem1 = osm.getCommittedVirtualMemorySize();
+                mem1 = osm.getCommittedVirtualMemorySize()/KB;
                 if (count>NSTART) {
                     sum += (mem1-mem0);
-                    sumStr = df.format((sum / KB));
+                    sumStr = df.format(sum);
                  }
                 
                 if (DEBUG) {
                     System.out.println(
                             df.format(count) + "   \t" +
                             sumStr + "    \t" +
-                            df.format((mem1 / KB)) + "    \t" +
+                            df.format((mem1)) + "    \t" +
                             df.format(osm.getTotalPhysicalMemorySize() / KB) + "   \t" +
                             H5.getOpenIDCount());
                 }
