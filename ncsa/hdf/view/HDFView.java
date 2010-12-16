@@ -87,10 +87,10 @@ ChangeListener, DropTargetListener
     private static final String aboutHDFView =
         "HDF Viewer, "+ "Version "+ViewProperties.VERSION+"\n"+
         "For "+System.getProperty("os.name")+"\n\n"+
-        "Copyright "+'\u00a9'+" 2006-2010 The HDF Group.\n"+
+        "Copyright "+'\u00a9'+" 2006-2011 The HDF Group.\n"+
         "All rights reserved.";
 
-    private static final String JAVA_COMPILER = "jdk 1.6.0";
+    private static final String JAVA_COMPILER = "jdk 1.6";
 
     /** the directory where the HDFView is installed */
     private String rootDir;
