@@ -59,7 +59,7 @@ extern "C" {
 #endif
 
 herr_t H5DreadVL_str (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t file_sid, hid_t xfer_plist_id, jobjectArray buf);
-herr_t H5DreadVL_num (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t file_sid, hid_t xfer_plist_id, jobjectArray buf);
+herr_t H5DreadVL_notstr (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t file_sid, hid_t xfer_plist_id, jobjectArray buf);
 
 #define PIN_BYTE_ARRAY() { \
     if (isCriticalPinning) \
@@ -1257,7 +1257,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DreadVL
   (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id,
   jint file_space_id, jint xfer_plist_id, jobjectArray buf)
 {
-    htri_t isStr = 0;
+    htri_t isStr=0, isNestedCompound=0;
 
     if (buf == NULL) {
         h5nullArgument(env, "H5DreadVL:  buf is NULL");
@@ -1280,21 +1280,30 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DreadVL
 
     isStr = H5Tdetect_class((hid_t)mem_type_id, H5T_STRING);
 
+    /* fixed compound of vlen of compound */
+    if (H5Tget_class((hid_t)mem_type_id) == H5T_COMPOUND) {
+        hid_t nested_tid = H5Tget_member_type((hid_t)mem_type_id, 0);
+        isNestedCompound = H5Tdetect_class((hid_t)nested_tid, H5T_COMPOUND);
+        H5Tclose(nested_tid);
+    }
+
+    if (isStr == 0 || isNestedCompound>0) {
+        return (jint) H5DreadVL_notstr (env, (hid_t)dataset_id, (hid_t)mem_type_id,
+                                     (hid_t)mem_space_id, (hid_t)file_space_id,
+                                     (hid_t)xfer_plist_id, buf);
+    }
+
     if (isStr > 0) {
         return (jint) H5DreadVL_str (env, (hid_t)dataset_id, (hid_t)mem_type_id,
                                      (hid_t)mem_space_id, (hid_t)file_space_id,
                                      (hid_t)xfer_plist_id, buf);
     }
-    else if (isStr == 0) {
-        return (jint) H5DreadVL_num (env, (hid_t)dataset_id, (hid_t)mem_type_id,
-                                     (hid_t)mem_space_id, (hid_t)file_space_id,
-                                     (hid_t)xfer_plist_id, buf);
-    }
-    else
-        return -1;
+
+
+    return -1;
 }
 
-herr_t H5DreadVL_num (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid,
+herr_t H5DreadVL_notstr (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid,
     hid_t file_sid, hid_t xfer_plist_id, jobjectArray buf)
 {
     jint    i;
