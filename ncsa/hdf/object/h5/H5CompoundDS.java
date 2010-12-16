@@ -345,7 +345,7 @@ public class H5CompoundDS extends CompoundDS {
                         || H5.H5Tequal(atom_tid,
                                 HDF5Constants.H5T_STD_REF_DSETREG)) {
                     String[] nullValues = new String[(int) lsize[0]];
-                    String errorStr = "unsupported: "
+                    String errorStr = "not supported in HDFView for "
                             + H5Datatype.getDatatypeDescription(atom_tid);
                     for (int j = 0; j < lsize[0]; j++) {
                         nullValues[j] = errorStr;
@@ -405,17 +405,18 @@ public class H5CompoundDS extends CompoundDS {
                 }
 
                 if (!isVL) {
+                    String cname = member_data.getClass().getName();
+                    char dname = cname.charAt(cname.lastIndexOf("[") + 1);
+
                     if ((member_class == HDF5Constants.H5T_STRING)
                             && convertByteToString) {
-                        String cname = member_data.getClass().getName();
-                        char dname = cname.charAt(cname.lastIndexOf("[") + 1);
                         if (dname == 'B')
                         	member_data = byteToString((byte[]) member_data,
                                 member_size / memberOrders[i]);
                     }
                     else if (member_class == HDF5Constants.H5T_REFERENCE) {
-                        member_data = HDFNativeData
-                                .byteToLong((byte[]) member_data);
+                    	if (dname == 'B')
+                    		member_data = HDFNativeData.byteToLong((byte[]) member_data);
                     }
                     else if (compInfo[2] != 0) {
                         member_data = Dataset.convertFromUnsignedC(member_data, null);
