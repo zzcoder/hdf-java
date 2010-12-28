@@ -186,6 +186,12 @@ int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr) {
         memcpy(&tmp_double, ptr, sizeof(double));
         sprintf(this_str, "%f", tmp_double);
     }
+    else if (tclass == H5T_ENUM) {
+        char enum_name[1024];
+        if (H5Tenum_nameof(tid, ptr, enum_name, sizeof enum_name) >= 0) {
+            h5str_append(str, enum_name);
+        }
+    }
     else if (tclass == H5T_STRING) {
         char *tmp_str;
         size = 0;
