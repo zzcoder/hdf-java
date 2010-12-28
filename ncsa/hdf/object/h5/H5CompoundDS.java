@@ -345,8 +345,7 @@ public class H5CompoundDS extends CompoundDS {
                         || H5.H5Tequal(atom_tid,
                                 HDF5Constants.H5T_STD_REF_DSETREG)) {
                     String[] nullValues = new String[(int) lsize[0]];
-                    String errorStr = "not supported in HDFView for "
-                            + H5Datatype.getDatatypeDescription(atom_tid);
+                    String errorStr = "*unsupported*";
                     for (int j = 0; j < lsize[0]; j++) {
                         nullValues[j] = errorStr;
                     }
