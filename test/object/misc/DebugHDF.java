@@ -110,9 +110,72 @@ public class DebugHDF {
 //        try {testUpdateAttr("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testCreateVlenStr("G:\\temp\\test.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testH5TconvertStr(); } catch (Exception ex) {ex.printStackTrace();} 
-        //try {testH5DeleteDS("g:\\temp\\strs.h5"); } catch (Exception ex) {ex.printStackTrace();} 
-        try {testExtendData("g:\\temp\\extended.h5", "dset", 1000, 1500); } catch (Exception ex) {ex.printStackTrace();} 
+//        try {testH5DeleteDS("g:\\temp\\strs.h5"); } catch (Exception ex) {ex.printStackTrace();} 
+//        try {testExtendData("g:\\temp\\extended.h5", "dset", 1000, 1500); } catch (Exception ex) {ex.printStackTrace();} 
+        try {createNestedcompound("g:\\temp\\nested_cmp.h5", "dset"); } catch (Exception ex) {ex.printStackTrace();} 
     }
+    
+    private static void createNestedcompound(String fname, String dname) throws Exception 
+    {
+        int DIM1 = 50;
+        long[] dims = {DIM1};
+        int cmpSize = 20;
+        int fid=-1, did=-1, tid = -1, tid_nested=-1, sid=-1;
+        int indexData[] = new int[DIM1];
+        double lonData[] = new double[DIM1];
+        double latData[] = new double[DIM1];
+       
+        
+        for (int i=0; i<DIM1; i++) {
+        	indexData[i] = i;
+        	lonData[i] = 5200.1+i;
+        	latData[i] = 10.2+i;
+        }
+        
+        fid = H5.H5Fcreate(fname, HDF5Constants.H5F_ACC_TRUNC, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        sid = H5.H5Screate_simple(1, dims, null);
+        
+        tid_nested = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND, 16);
+        H5.H5Tinsert(tid_nested, "Lon", 0, HDF5Constants.H5T_NATIVE_DOUBLE);
+        H5.H5Tinsert(tid_nested, "Lat", 8, HDF5Constants.H5T_NATIVE_DOUBLE);
+
+        tid = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND, cmpSize);
+        H5.H5Tinsert(tid, "index", 0, HDF5Constants.H5T_NATIVE_INT32);
+        H5.H5Tinsert(tid, "location", 4, tid_nested);
+    
+    	did = H5.H5Dcreate(fid, dname, tid, sid, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+
+    	// write the first field "index"
+    	int tid_tmp = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND, 4);
+    	H5.H5Tinsert(tid_tmp, "index", 0, HDF5Constants.H5T_NATIVE_INT32);
+        H5.H5Dwrite(did, tid_tmp, HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, indexData);
+        H5.H5Tclose(tid_tmp);
+ 
+        // write the first field of the nested compound, "location"->"Lon"
+    	tid_tmp = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND, 8);
+    	H5.H5Tinsert(tid_tmp, "Lon", 0, HDF5Constants.H5T_NATIVE_DOUBLE);
+    	int tid_tmp_nested = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND, 8);
+    	H5.H5Tinsert(tid_tmp_nested, "location", 0, tid_tmp);
+        H5.H5Dwrite(did, tid_tmp_nested, HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, lonData);
+        H5.H5Tclose(tid_tmp_nested);
+        H5.H5Tclose(tid_tmp);
+
+        // write the second field of the nested compound, "location"->"Lat"
+    	tid_tmp = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND, 8);
+    	H5.H5Tinsert(tid_tmp, "Lat", 0, HDF5Constants.H5T_NATIVE_DOUBLE);
+    	tid_tmp_nested = H5.H5Tcreate(HDF5Constants.H5T_COMPOUND, 8);
+    	H5.H5Tinsert(tid_tmp_nested, "location", 0, tid_tmp);
+        H5.H5Dwrite(did, tid_tmp_nested, HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, HDF5Constants.H5P_DEFAULT, latData);
+        H5.H5Tclose(tid_tmp_nested);
+        H5.H5Tclose(tid_tmp);
+
+        H5.H5Tclose(tid);
+        H5.H5Tclose(tid_nested);
+        H5.H5Sclose(sid);
+        H5.H5Dclose(did);
+        H5.H5Fclose(fid);
+    }
+
     
     public static void testExtendData(String fname, String dname, int size, int newSize)throws Exception
     {
