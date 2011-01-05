@@ -100,12 +100,13 @@ Limitations / Known Problems
              fields since hdf-java does not support the data structure of a vdata record.
 
     * Specific to HDF5:
-          -- Writing nested compound data of HDF5 is limited to some simple cases. HDFView does not write complex 
-             compound data.
+          -- Writing compound data is limited to simple cases, e.g. the base compound fields have primitive types 
+             such as integers, floats, characters, etc. HDFView does not write complex compound data, e.g. the type 
+             of a compound field is a datadet region reference.
           -- Writing variable length data is not supported except for dataset where each data point is a single 
              variable length string.
-          -- No single JNI function that can handle HDF5 library functions with different return types in version
-             1.6 and version 1.8. An additional function is added in the JNI. For example,
+          -- No single JNI function that can handle HDF5 library functions that have different return types for 
+             version1.6 and version 1.8. An additional function is added in the JNI. For example,
              public synchronized static native int H5Tget_size(int type_id)
              public synchronized static native long H5Tget_size_long(int type_id)
 
