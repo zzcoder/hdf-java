@@ -4,7 +4,7 @@
 # binary directory.
 #
 #=============================================================================
-# Copyright 2010      Andreas schneider <asn@redhat.com>
+# Copyright 2010      Andreas schneider &lt;asn@redhat.com&gt;
 #
 # Distributed under the OSI-approved BSD License (the "License");
 # see accompanying file Copyright.txt for details.
@@ -18,14 +18,26 @@
 
 if (CMAKE_JAVA_CLASS_OUTPUT_PATH)
     if (EXISTS "${CMAKE_JAVA_CLASS_OUTPUT_PATH}")
-        # glob for class files
-        file(GLOB_RECURSE _JAVA_GLOBBED_FILES "${CMAKE_JAVA_CLASS_OUTPUT_PATH}/*.class")
 
-        # create relative path
+        set(_JAVA_GLOBBED_FILES)
+        if (CMAKE_JAR_CLASSES_PREFIX)
+            foreach(JAR_CLASS_PREFIX ${CMAKE_JAR_CLASSES_PREFIX})
+                message(STATUS "JAR_CLASS_PREFIX: ${JAR_CLASS_PREFIX}")
+
+                file(GLOB_RECURSE _JAVA_GLOBBED_TMP_FILES "${CMAKE_JAVA_CLASS_OUTPUT_PATH}/${JAR_CLASS_PREFIX}/*.class")
+                if (_JAVA_GLOBBED_TMP_FILES)
+                    list(APPEND _JAVA_GLOBBED_FILES ${_JAVA_GLOBBED_TMP_FILES})
+                endif (_JAVA_GLOBBED_TMP_FILES)
+            endforeach(JAR_CLASS_PREFIX ${CMAKE_JAR_CLASSES_PREFIX})
+        else()
+            file(GLOB_RECURSE _JAVA_GLOBBED_FILES "${CMAKE_JAVA_CLASS_OUTPUT_PATH}/*.class")
+        endif (CMAKE_JAR_CLASSES_PREFIX)
+
         set(_JAVA_CLASS_FILES)
+        # file(GLOB_RECURSE foo RELATIVE) is broken so we need this.
         foreach(_JAVA_GLOBBED_FILE ${_JAVA_GLOBBED_FILES})
             file(RELATIVE_PATH _JAVA_CLASS_FILE ${CMAKE_JAVA_CLASS_OUTPUT_PATH} ${_JAVA_GLOBBED_FILE})
-            set(_JAVA_CLASS_FILES "${_JAVA_CLASS_FILES}${_JAVA_CLASS_FILE}\n")
+            set(_JAVA_CLASS_FILES ${_JAVA_CLASS_FILES}${_JAVA_CLASS_FILE}\n)
         endforeach(_JAVA_GLOBBED_FILE ${_JAVA_GLOBBED_FILES})
 
         # write to file

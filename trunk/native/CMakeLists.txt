@@ -10,35 +10,12 @@ IF (BUILD_SHARED_LIBS)
   SET (LIB_TYPE SHARED)
   SET (HDFJAVA_BUILT_AS_DYNAMIC_LIB 1)
 #  ADD_DEFINITIONS (-DHDFJAVA_BUILT_AS_DYNAMIC_LIB)
-  IF (MSVC)
-    SET (CMAKE_MFC_FLAG 0)
-    FOREACH (flag_var
-        CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
-        CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO
-        CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
-        CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
-      IF (${flag_var} MATCHES "/MT")
-        STRING (REGEX REPLACE "/MT" "/MD" ${flag_var} "${${flag_var}}")
-      ENDIF (${flag_var} MATCHES "/MT")
-    ENDFOREACH (flag_var)
-  ENDIF (MSVC)
 ELSE (BUILD_SHARED_LIBS)
+  SET (HDFJAVA_BUILT_AS_STATIC_LIB 1)
   IF (NOT WIN32)
     # should this be a user setting : Everyone uses it anyway ?
     ADD_DEFINITIONS (-DPIC)
   ENDIF (NOT WIN32)
-  IF (MSVC)
-    SET (CMAKE_MFC_FLAG 0)
-    FOREACH (flag_var
-        CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
-        CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO
-        CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
-        CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
-      IF (${flag_var} MATCHES "/MD")
-        STRING (REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
-      ENDIF (${flag_var} MATCHES "/MD")
-    ENDFOREACH (flag_var)
-  ENDIF (MSVC)
 ENDIF (BUILD_SHARED_LIBS)
 
 #-----------------------------------------------------------------------------
@@ -55,6 +32,10 @@ IF (WIN32)
     ADD_DEFINITIONS (-D_CRT_SECURE_NO_WARNINGS)
   ENDIF (NOT CYGWIN)
 ENDIF (WIN32)
+
+IF (MSVC)
+  SET (CMAKE_MFC_FLAG 0)
+ENDIF (MSVC)
 
 #-----------------------------------------------------------------------------
 # Add some definitions for Debug Builds

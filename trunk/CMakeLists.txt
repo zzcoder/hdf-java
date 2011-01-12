@@ -38,10 +38,16 @@ PROJECT ( HDFJAVA C Java )
 #-----------------------------------------------------------------------------
 # Set the core names of all the libraries
 #-----------------------------------------------------------------------------
-SET (HDFJAVA_JNI_HDF_LIB_CORENAME          "jhdf")
-SET (HDFJAVA_JNI_HDF5_LIB_CORENAME         "jhdf5")
-SET (HDFJAVA_NCSA_HDF_LIB_CORENAME         "jarhdf")
-SET (HDFJAVA_NCSA_HDF5_LIB_CORENAME        "jarhdf5")
+SET (HDFJAVA_JNI_HDF_LIB_CORENAME          "libhdf")
+SET (HDFJAVA_JNI_HDF5_LIB_CORENAME         "libhdf5")
+SET (HDFJAVA_NCSA_HDF_LIB_CORENAME         "jhdf")
+SET (HDFJAVA_NCSA_HDF5_LIB_CORENAME        "jhdf5")
+SET (HDFJAVA_NCSA_OBJECT_LIB_CORENAME      "jhdfobj")
+SET (HDFJAVA_NCSA_FITS_LIB_CORENAME        "jfitsobj")
+SET (HDFJAVA_NCSA_H4_LIB_CORENAME          "jh4obj")
+SET (HDFJAVA_NCSA_H5_LIB_CORENAME          "jh5obj")
+SET (HDFJAVA_NCSA_NC2_LIB_CORENAME         "jnc2obj")
+SET (HDFJAVA_TEST_HDF5_LIB_CORENAME        "jtest5")
 
 #-------------------------------------------------7----------------------------
 # Set the true names of all the libraries if customized by external project
@@ -50,6 +56,12 @@ SET (HDFJAVA_JNI_HDF_LIB_NAME      "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_JNI_
 SET (HDFJAVA_JNI_HDF5_LIB_NAME     "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_JNI_HDF5_LIB_CORENAME}")
 SET (HDFJAVA_NCSA_HDF_LIB_NAME     "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_NCSA_HDF_LIB_CORENAME}")
 SET (HDFJAVA_NCSA_HDF5_LIB_NAME    "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_NCSA_HDF5_LIB_CORENAME}")
+SET (HDFJAVA_NCSA_OBJECT_LIB_NAME  "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_NCSA_OBJECT_LIB_CORENAME}")
+SET (HDFJAVA_NCSA_FITS_LIB_NAME    "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_NCSA_FITS_LIB_CORENAME}")
+SET (HDFJAVA_NCSA_H4_LIB_NAME      "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_NCSA_H4_LIB_CORENAME}")
+SET (HDFJAVA_NCSA_H5_LIB_NAME      "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_NCSA_H5_LIB_CORENAME}")
+SET (HDFJAVA_NCSA_NC2_LIB_NAME     "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_NCSA_NC2_LIB_CORENAME}")
+SET (HDFJAVA_TEST_HDF5_LIB_NAME    "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_TEST_HDF5_LIB_CORENAME}")
 
 #-----------------------------------------------------------------------------
 # Set the target names of all the libraries
@@ -58,6 +70,12 @@ SET (HDFJAVA_JNI_HDF_LIB_TARGET       ${HDFJAVA_JNI_HDF_LIB_CORENAME})
 SET (HDFJAVA_JNI_HDF5_LIB_TARGET      ${HDFJAVA_JNI_HDF5_LIB_CORENAME})
 SET (HDFJAVA_NCSA_HDF_LIB_TARGET      ${HDFJAVA_NCSA_HDF_LIB_CORENAME})
 SET (HDFJAVA_NCSA_HDF5_LIB_TARGET     ${HDFJAVA_NCSA_HDF5_LIB_CORENAME})
+SET (HDFJAVA_NCSA_OBJECT_LIB_TARGET   ${HDFJAVA_NCSA_OBJECT_LIB_CORENAME})
+SET (HDFJAVA_NCSA_FITS_LIB_TARGET     ${HDFJAVA_NCSA_FITS_LIB_CORENAME})
+SET (HDFJAVA_NCSA_H4_LIB_TARGET       ${HDFJAVA_NCSA_H4_LIB_CORENAME})
+SET (HDFJAVA_NCSA_H5_LIB_TARGET       ${HDFJAVA_NCSA_H5_LIB_CORENAME})
+SET (HDFJAVA_NCSA_NC2_LIB_TARGET      ${HDFJAVA_NCSA_NC2_LIB_CORENAME})
+SET (HDFJAVA_TEST_HDF5_LIB_TARGET     ${HDFJAVA_TEST_HDF5_LIB_CORENAME})
 
 #-------------------------------------------------7----------------------------
 # Define some CMake variables for use later in the project
@@ -65,11 +83,10 @@ SET (HDFJAVA_NCSA_HDF5_LIB_TARGET     ${HDFJAVA_NCSA_HDF5_LIB_CORENAME})
 SET (HDFJAVA_RESOURCES_DIR       ${HDFJAVA_SOURCE_DIR}/Config/cmake)
 SET (HDFJAVA_JNI_SRC_DIR         ${HDFJAVA_SOURCE_DIR}/native)
 SET (HDFJAVA_JAVA_SRC_DIR        ${HDFJAVA_SOURCE_DIR}/ncsa/hdf)
+SET (HDFJAVA_JAVA_OBJECT_SRC_DIR ${HDFJAVA_SOURCE_DIR}/ncsa/hdf/object)
 SET (HDFJAVA_TEST_SRC_DIR        ${HDFJAVA_SOURCE_DIR}/test)
 SET (HDFJAVA_EXAMPLES_SOURCE_DIR ${HDFJAVA_SOURCE_DIR}/examples)
-
-# set default prefix location
-SET (CMAKE_INSTALL_PREFIX "./hdf" CACHE PATH "Install path prefix, prepended onto install directories")
+SET (HDFJAVA_LIB_DIR             ${HDFJAVA_SOURCE_DIR}/lib)
 
 IF (NOT HJAVA_INSTALL_BIN_DIR)
   SET (HJAVA_INSTALL_BIN_DIR bin)
@@ -110,14 +127,15 @@ SET (HDFJAVA_PACKAGE_VERSION_MAJOR "${HJAVA_VERS_MAJOR}")
 SET (HDFJAVA_PACKAGE_VERSION_MINOR "${HJAVA_VERS_MINOR}")
 SET (HDFJAVA_PACKAGE_STRING "${HDFJAVA_PACKAGE_NAME} ${HDFJAVA_PACKAGE_VERSION}")
 SET (HDFJAVA_PACKAGE_TARNAME "hdf-java")
-SET (HDFJAVA_PACKAGE_URL "htt://www.hdfgroup.org/hdfjava")
+SET (HDFJAVA_PACKAGE_URL "http://www.hdfgroup.org/hdfjava")
 SET (HDFJAVA_PACKAGE_BUGREPORT "help@hdfgroup.org")
 
 #-----------------------------------------------------------------------------
 # Include some macros for reusable code
 #-----------------------------------------------------------------------------
-INCLUDE(${HDFJAVA_RESOURCES_DIR}/HDFMacros.cmake)
-INCLUDE(${HDFJAVA_RESOURCES_DIR}/HDFJavaMacros.cmake)
+INCLUDE (${HDFJAVA_RESOURCES_DIR}/UseJava.cmake)
+INCLUDE (${HDFJAVA_RESOURCES_DIR}/HDFMacros.cmake)
+INCLUDE (${HDFJAVA_RESOURCES_DIR}/HDFJavaMacros.cmake)
 
 #-----------------------------------------------------------------------------
 # Setup output Directories
@@ -131,6 +149,9 @@ IF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
   )
   SET (CMAKE_ARCHIVE_OUTPUT_DIRECTORY
       ${PROJECT_BINARY_DIR}/bin CACHE PATH "Single Directory for all static libraries."
+  )
+  SET (CMAKE_JAVA_LIBRARY_OUTPUT_PATH
+      ${PROJECT_BINARY_DIR}/bin CACHE PATH "Single Directory for all jars."
   )
 ELSE (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
   # if we are externally configured, but the project uses old cmake scripts
@@ -154,6 +175,7 @@ ENDIF (NOT HDFJAVA_EXPORTED_TARGETS)
 # which include HDFJAVA as a sub-project within their build tree
 #-----------------------------------------------------------------------------
 SET_GLOBAL_VARIABLE (HDFJAVA_LIBRARIES_TO_EXPORT "")
+SET_GLOBAL_VARIABLE (HDFJAVA_JARS_TO_EXPORT "")
 
 #-----------------------------------------------------------------------------
 # Run all the CMake configuration tests for our build environment
@@ -178,7 +200,8 @@ SET (HDFJAVA_INCLUDE_DIRECTORIES
     ${HDFJAVA_JNI_SRC_DIR}/hdf5lib
     ${HDFJAVA_BINARY_DIR}
 )
-INCLUDE_DIRECTORIES (${HDFJAVA_INCLUDE_DIRECTORIES} )
+INCLUDE_DIRECTORIES (${HDFJAVA_INCLUDE_DIRECTORIES})
+SET (CMAKE_JAVA_INCLUDE_PATH ${HDFJAVA_LIB_DIR}/fits.jar ${HDFJAVA_LIB_DIR}/netcdf.jar)
 
 SET (MAKE_SYSTEM)
 IF (CMAKE_BUILD_TOOL MATCHES "make")
@@ -419,7 +442,7 @@ IF (HDFJAVA_ENABLE_SZIP_SUPPORT)
       SET (SZIP_LIBRARIES ${SZIP_LIBRARY})
       SET (SZIP_INCLUDE_DIRS ${SZIP_INCLUDE_DIR_GEN} ${SZIP_INCLUDE_DIR})
       SET (HJAVA_HAVE_FILTER_SZIP 1)
-      SET (HJAVA_HAVE_SZLIB_H 1)
+      SET (HJAVA_HAVE_SHDFJAVA_LIBRARIES_TO_EXPORTZLIB_H 1)
       SET (HJAVA_HAVE_LIBSZ 1)
       MESSAGE (STATUS "Filter SZIP is built")
     ELSE (HDFJAVA_ALLOW_EXTERNAL_SUPPORT MATCHES "SVN")
@@ -841,24 +864,6 @@ IF (HDFJAVA_BUILD_EXAMPLES AND BUILD_TESTING)
   ADD_EXECUTABLE(${XLATE_UTILITY} ${HDFJAVA_RESOURCES_DIR}/xlatefile.c)
 ENDIF (HDFJAVA_BUILD_EXAMPLES AND BUILD_TESTING)
 
-#-----------------------------------------------------------------------------
-# Dashboard and Testing Settings
-#-----------------------------------------------------------------------------
-OPTION (BUILD_TESTING "Build HDFJAVA Unit Testing" OFF)
-IF (BUILD_TESTING)
-  SET (DART_TESTING_TIMEOUT 1200
-      CACHE INTEGER
-      "Timeout in seconds for each test (default 1200=20minutes)"
-  )
-  ENABLE_TESTING ()
-  INCLUDE (CTest)
-#  IF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
-#    ADD_SUBDIRECTORY(${HDFJAVA_SOURCE_DIR}/test ${PROJECT_BINARY_DIR}/test)
-#  ENDIF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
-  INCLUDE (${HDFJAVA_SOURCE_DIR}/CTestConfig.cmake)
-  CONFIGURE_FILE (${HDFJAVA_RESOURCES_DIR}/CTestCustom.cmake ${HDFJAVA_BINARY_DIR}/CTestCustom.ctest @ONLY)
-ENDIF (BUILD_TESTING)
-
 FIND_PACKAGE(JNI)
 
 #-----------------------------------------------------------------------------
@@ -884,6 +889,24 @@ IF (HDFJAVA_ALLOW_EXTERNAL_SUPPORT MATCHES "SVN")
     ADD_DEPENDENCIES (${HDFJAVA_JNI_HDF5_LIB_TARGET} HDF5)
   ENDIF (HDF5_FOUND AND HDF5_USE_EXTERNAL)
 ENDIF (HDFJAVA_ALLOW_EXTERNAL_SUPPORT MATCHES "SVN")
+
+#-----------------------------------------------------------------------------
+# Dashboard and Testing Settings
+#-----------------------------------------------------------------------------
+OPTION (BUILD_TESTING "Build HDFJAVA Unit Testing" OFF)
+IF (BUILD_TESTING)
+  SET (DART_TESTING_TIMEOUT 1200
+      CACHE INTEGER
+      "Timeout in seconds for each test (default 1200=20minutes)"
+  )
+  ENABLE_TESTING ()
+  INCLUDE (CTest)
+  IF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
+    ADD_SUBDIRECTORY(${HDFJAVA_SOURCE_DIR}/test ${PROJECT_BINARY_DIR}/test)
+  ENDIF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
+  INCLUDE (${HDFJAVA_SOURCE_DIR}/CTestConfig.cmake)
+  CONFIGURE_FILE (${HDFJAVA_RESOURCES_DIR}/CTestCustom.cmake ${HDFJAVA_BINARY_DIR}/CTestCustom.ctest @ONLY)
+ENDIF (BUILD_TESTING)
 
 #-----------------------------------------------------------------------------
 # Option to build HDFJAVA Examples
