@@ -1,9 +1,9 @@
 package test.hdf5lib;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 
@@ -246,7 +246,7 @@ public class TestH5R {
     	}
     }
     
-    @Test(expected = HDF5LibraryException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testH5Rget_name_Invalidreftype() throws Throwable, HDF5LibraryException, NullPointerException {
     	byte[] ref = null;
     	String[] name= {""};
@@ -310,7 +310,7 @@ public class TestH5R {
     	H5.H5Rdereference(H5did2, HDF5Constants.H5R_OBJECT, ref);
     }
     
-    @Test(expected = HDF5LibraryException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testH5Rdereference_Invalidreference() throws Throwable, HDF5LibraryException, NullPointerException {
     	byte[] ref1 = null;
     	byte[] ref2 = null;
