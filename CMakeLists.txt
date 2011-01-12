@@ -38,18 +38,18 @@ PROJECT ( HDFJAVA C Java )
 #-----------------------------------------------------------------------------
 # Set the core names of all the libraries
 #-----------------------------------------------------------------------------
-SET (HDFJAVA_JNI_HDF_LIB_CORENAME          "libhdf")
-SET (HDFJAVA_JNI_HDF5_LIB_CORENAME         "libhdf5")
-SET (HDFJAVA_NCSA_HDF_LIB_CORENAME         "jhdf")
-SET (HDFJAVA_NCSA_HDF5_LIB_CORENAME        "jhdf5")
-SET (HDFJAVA_NCSA_OBJECT_LIB_CORENAME      "jhdfobj")
-SET (HDFJAVA_NCSA_FITS_LIB_CORENAME        "jfitsobj")
-SET (HDFJAVA_NCSA_H4_LIB_CORENAME          "jh4obj")
-SET (HDFJAVA_NCSA_H5_LIB_CORENAME          "jh5obj")
-SET (HDFJAVA_NCSA_NC2_LIB_CORENAME         "jnc2obj")
-SET (HDFJAVA_TEST_HDF5_LIB_CORENAME        "jtest5")
+SET (HDFJAVA_JNI_HDF_LIB_CORENAME          "jhdf")
+SET (HDFJAVA_JNI_HDF5_LIB_CORENAME         "jhdf5")
+SET (HDFJAVA_NCSA_HDF_LIB_CORENAME         "jarhdf")
+SET (HDFJAVA_NCSA_HDF5_LIB_CORENAME        "jarhdf5")
+SET (HDFJAVA_NCSA_OBJECT_LIB_CORENAME      "jarhdfobj")
+SET (HDFJAVA_NCSA_FITS_LIB_CORENAME        "jarfitsobj")
+SET (HDFJAVA_NCSA_H4_LIB_CORENAME          "jarh4obj")
+SET (HDFJAVA_NCSA_H5_LIB_CORENAME          "jarh5obj")
+SET (HDFJAVA_NCSA_NC2_LIB_CORENAME         "jarnc2obj")
+SET (HDFJAVA_TEST_HDF5_LIB_CORENAME        "jartest5")
 
-#-------------------------------------------------7----------------------------
+#-----------------------------------------------------------------------------
 # Set the true names of all the libraries if customized by external project
 #-----------------------------------------------------------------------------
 SET (HDFJAVA_JNI_HDF_LIB_NAME      "${HDFJAVA_EXTERNAL_LIB_PREFIX}${HDFJAVA_JNI_HDF_LIB_CORENAME}")
@@ -133,6 +133,7 @@ SET (HDFJAVA_PACKAGE_BUGREPORT "help@hdfgroup.org")
 #-----------------------------------------------------------------------------
 # Include some macros for reusable code
 #-----------------------------------------------------------------------------
+SET (CMAKE_MODULE_PATH ${HDFJAVA_RESOURCES_DIR})
 INCLUDE (${HDFJAVA_RESOURCES_DIR}/UseJava.cmake)
 INCLUDE (${HDFJAVA_RESOURCES_DIR}/HDFMacros.cmake)
 INCLUDE (${HDFJAVA_RESOURCES_DIR}/HDFJavaMacros.cmake)
@@ -390,7 +391,7 @@ ENDIF (HDFJAVA_ENABLE_Z_LIB_SUPPORT)
 #-----------------------------------------------------------------------------
 # Option for SzLib support
 #-----------------------------------------------------------------------------
-SET (CMAKE_MODULE_PATH ${HDFJAVA_RESOURCES_DIR} ${CMAKE_MODULE_PATH})
+#SET (CMAKE_MODULE_PATH ${HDFJAVA_RESOURCES_DIR} ${CMAKE_MODULE_PATH})
 OPTION (HDFJAVA_ENABLE_SZIP_SUPPORT "Use SZip Filter" OFF)
 IF (HDFJAVA_ENABLE_SZIP_SUPPORT)
   OPTION (HDFJAVA_ENABLE_SZIP_ENCODING "Use SZip Encoding" OFF)
