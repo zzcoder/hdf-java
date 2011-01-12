@@ -66,13 +66,13 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rcreate
         return -1;
     }
     if (ref_type == H5R_OBJECT) {
-        if (ENVPTR->GetArrayLength(ENVPAR ref) < 8) {
-            h5badArgument( env, "H5Rcreate:  ref input array < 8");
+        if (ENVPTR->GetArrayLength(ENVPAR ref) != H5R_OBJ_REF_BUF_SIZE) {
+            h5badArgument( env, "H5Rcreate:  ref input array != H5R_OBJ_REF_BUF_SIZE");
             return -1;
         }
     } else if (ref_type == H5R_DATASET_REGION) {
-        if (ENVPTR->GetArrayLength(ENVPAR ref) < 12) {
-            h5badArgument( env, "H5Rcreate:  region ref input array < 12");
+        if (ENVPTR->GetArrayLength(ENVPAR ref) != H5R_DSET_REG_REF_BUF_SIZE) {
+            h5badArgument( env, "H5Rcreate:  region ref input array != H5R_DSET_REG_REF_BUF_SIZE");
             return -1;
         }
     } else {
@@ -122,12 +122,12 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rdereference
         h5nullArgument( env, "H5Rdereference:  ref is NULL");
         return -1;
     }
-    if ((ref_type == H5R_OBJECT) && ENVPTR->GetArrayLength(ENVPAR ref) < 8) {
-        h5badArgument( env, "H5Rdereference:  obj ref input array < 8");
+    if ((ref_type == H5R_OBJECT) && ENVPTR->GetArrayLength(ENVPAR ref) != H5R_OBJ_REF_BUF_SIZE) {
+        h5badArgument( env, "H5Rdereference:  obj ref input array != H5R_OBJ_REF_BUF_SIZE");
         return -1;
     } else if ((ref_type == H5R_DATASET_REGION)
-        && ENVPTR->GetArrayLength(ENVPAR ref) < 12) {
-        h5badArgument( env, "H5Rdereference:  region ref input array < 12");
+        && ENVPTR->GetArrayLength(ENVPAR ref) != H5R_DSET_REG_REF_BUF_SIZE) {
+        h5badArgument( env, "H5Rdereference:  region ref input array != H5R_DSET_REG_REF_BUF_SIZE");
         return -1;
     }
     refP = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR ref,&isCopy);
@@ -168,8 +168,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Rget_1region
         h5nullArgument( env, "H5Rget_region:  ref is NULL");
         return -1;
     }
-    if ( ENVPTR->GetArrayLength(ENVPAR ref) < 12) {
-        h5badArgument( env, "H5Rget_region:  region ref input array < 12");
+    if ( ENVPTR->GetArrayLength(ENVPAR ref) != H5R_DSET_REG_REF_BUF_SIZE) {
+        h5badArgument( env, "H5Rget_region:  region ref input array != H5R_DSET_REG_REF_BUF_SIZE");
         return -1;
     }
     refP = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR ref,&isCopy);
@@ -302,6 +302,16 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Rget_1name
         h5nullArgument( env, "H5Rget_name:  ref is NULL");
         return -1;
 	}
+	
+    if ((ref_type == H5R_OBJECT) && ENVPTR->GetArrayLength(ENVPAR ref) != H5R_OBJ_REF_BUF_SIZE) {
+        h5badArgument( env, "H5Rdereference:  obj ref input array != H5R_OBJ_REF_BUF_SIZE");
+        return -1;
+    } 
+    else if ((ref_type == H5R_DATASET_REGION)
+        && ENVPTR->GetArrayLength(ENVPAR ref) != H5R_DSET_REG_REF_BUF_SIZE) {
+        h5badArgument( env, "H5Rdereference:  region ref input array != H5R_DSET_REG_REF_BUF_SIZE");
+        return -1;
+    }
 
     refP = (jbyte *)ENVPTR->GetByteArrayElements(ENVPAR ref,&isCopy);
     if (refP == NULL) {
