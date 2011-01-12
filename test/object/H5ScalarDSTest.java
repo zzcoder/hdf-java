@@ -3,8 +3,10 @@
  */
 package test.object;
 
-import java.util.Vector;
 import java.lang.reflect.Array;
+import java.util.Vector;
+
+import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.HDFNativeData;
@@ -15,10 +17,9 @@ import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.Group;
 import ncsa.hdf.object.ScalarDS;
-import ncsa.hdf.object.h5.H5ScalarDS;
 import ncsa.hdf.object.h5.H5Datatype;
 import ncsa.hdf.object.h5.H5File;
-import junit.framework.TestCase;
+import ncsa.hdf.object.h5.H5ScalarDS;
 
 /**
  * TestCase for H5ScalarDS.

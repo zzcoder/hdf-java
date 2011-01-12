@@ -14,18 +14,30 @@
 
 package ncsa.hdf.view;
 
-import java.awt.event.*;
-import javax.swing.*;
-import java.awt.Frame;
-import java.awt.Point;
-import java.awt.Dimension;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.List;
 import java.util.Iterator;
-import ncsa.hdf.object.*;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.HObject;
 
 /**
  * FileConversionDialog shows a message dialog requesting user input for

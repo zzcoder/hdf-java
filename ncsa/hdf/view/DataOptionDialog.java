@@ -14,25 +14,55 @@
 
 package ncsa.hdf.view;
 
-import ncsa.hdf.object.*;
-
-import javax.swing.*;
-
-import java.awt.event.*;
-
-import javax.swing.border.*;
-
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.Dimension;
 import java.awt.Rectangle;
-import java.awt.Graphics;
-import java.awt.Color;
-import java.awt.Image;
-import java.util.*;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.util.BitSet;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
+
+import ncsa.hdf.object.CompoundDS;
+import ncsa.hdf.object.Dataset;
+import ncsa.hdf.object.Datatype;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.HObject;
+import ncsa.hdf.object.ScalarDS;
 
 /**
  * DataOptionDialog is an dialog window used to select display options. Display
@@ -181,9 +211,9 @@ public class DataOptionDialog extends JDialog implements ActionListener,
         currentIndex = new int[Math.min(3, rank)];
 
         choicePalette = new JComboBox();
-        choiceTextView = new JComboBox((Vector) HDFView.getListOfTextView());
-        choiceImageView = new JComboBox((Vector) HDFView.getListOfImageView());
-        choiceTableView = new JComboBox((Vector) HDFView.getListOfTableView());
+        choiceTextView = new JComboBox((Vector<?>) HDFView.getListOfTextView());
+        choiceImageView = new JComboBox((Vector<?>) HDFView.getListOfImageView());
+        choiceTableView = new JComboBox((Vector<?>) HDFView.getListOfTableView());
 
         choicePalette.addItem("Select palette");
         if(dataset instanceof ScalarDS ){
@@ -546,7 +576,7 @@ public class DataOptionDialog extends JDialog implements ActionListener,
             }
 
             int idx = 0;
-            Vector choice4 = new Vector(rank);
+            Vector<Object> choice4 = new Vector<Object>(rank);
             int[] choice4Index = new int[rank - 3];
             for (int i = 0; i < rank; i++) {
                 if ((i != currentIndex[0]) && (i != currentIndex[1])
@@ -1184,7 +1214,7 @@ public class DataOptionDialog extends JDialog implements ActionListener,
                 Object fillValue = sd.getFillValue();
                 if (fillValue != null){
                 	if(sd.isFillValueConverted)
-                    	fillValue = sd.convertToUnsignedC(fillValue, null);
+                    	fillValue = ScalarDS.convertToUnsignedC(fillValue, null);
                 }
                 byte[] bData = Tools.getBytes(data, sd.getImageDataRange(), fillValue, null);
 

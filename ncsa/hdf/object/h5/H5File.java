@@ -14,18 +14,31 @@
 
 package ncsa.hdf.object.h5;
 
-import java.util.*;
 import java.io.File;
-
-import javax.swing.tree.*;
-
 import java.lang.reflect.Array;
-import ncsa.hdf.object.*;
-import ncsa.hdf.hdf5lib.*;
-import ncsa.hdf.hdf5lib.exceptions.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Vector;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
+
+import ncsa.hdf.hdf5lib.H5;
+import ncsa.hdf.hdf5lib.HDF5Constants;
+import ncsa.hdf.hdf5lib.HDFNativeData;
+import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
 import ncsa.hdf.hdf5lib.structs.H5G_info_t;
 import ncsa.hdf.hdf5lib.structs.H5L_info_t;
 import ncsa.hdf.hdf5lib.structs.H5O_info_t;
+import ncsa.hdf.object.Attribute;
+import ncsa.hdf.object.Dataset;
+import ncsa.hdf.object.Datatype;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.HObject;
+import ncsa.hdf.object.ScalarDS;
 
 /**
  * H5File is an implementation of the FileFormat class for HDF5 files.
@@ -330,7 +343,7 @@ public class H5File extends FileFormat {
 	 *             failures throw this exception.
 	 * @see #getAttribute(int,int,int)
 	 */
-    public static final List getAttribute(int objID) throws HDF5Exception {
+    public static final List<Attribute> getAttribute(int objID) throws HDF5Exception {
     	return H5File.getAttribute(objID, HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_INC);
     }
     
@@ -369,7 +382,7 @@ public class H5File extends FileFormat {
 	 *             failures throw this exception.
 	 */
     
-    public static final List getAttribute(int objID,int idx_type, int order) throws HDF5Exception {
+    public static final List<Attribute> getAttribute(int objID,int idx_type, int order) throws HDF5Exception {
     	List<Attribute> attributeList = null;
     	int aid = -1, sid = -1, tid = -1;
     	H5O_info_t obj_info = null;
@@ -707,8 +720,8 @@ public class H5File extends FileFormat {
         DefaultMutableTreeNode newRoot = (DefaultMutableTreeNode) dstFile
                 .getRootNode();
 
-        Enumeration srcEnum = srcRoot.breadthFirstEnumeration();
-        Enumeration newEnum = newRoot.breadthFirstEnumeration();
+        Enumeration<?> srcEnum = srcRoot.breadthFirstEnumeration();
+        Enumeration<?> newEnum = newRoot.breadthFirstEnumeration();
 
         // build one-to-one table of between objects in
         // the source file and new file
@@ -1020,7 +1033,7 @@ public class H5File extends FileFormat {
         if (rootNode != null) {
             DefaultMutableTreeNode theNode = null;
             HObject theObj = null;
-            Enumeration local_enum = (rootNode).breadthFirstEnumeration();
+            Enumeration<?> local_enum = (rootNode).breadthFirstEnumeration();
             while (local_enum.hasMoreElements()) {
                 theNode = (DefaultMutableTreeNode) local_enum.nextElement();
                 theObj = (HObject) theNode.getUserObject();
@@ -1644,7 +1657,7 @@ public class H5File extends FileFormat {
         if (g.equals(rootNode.getUserObject()))
             theNode = rootNode;
         else {
-            Enumeration local_enum = rootNode.breadthFirstEnumeration();
+            Enumeration<?> local_enum = rootNode.breadthFirstEnumeration();
             while (local_enum.hasMoreElements()) {
                 theNode = (DefaultMutableTreeNode) local_enum.nextElement();
                 theObj = (HObject) theNode.getUserObject();
@@ -1983,7 +1996,7 @@ public class H5File extends FileFormat {
     	MutableTreeNode node = null;
     	String fullPath = null;
     	String ppath = null;
-    	String objName = null;
+//    	String objName = null;
     	DefaultMutableTreeNode pnode = (DefaultMutableTreeNode) parentNode;
     	int gid = -1;
 
@@ -1992,10 +2005,10 @@ public class H5File extends FileFormat {
 
     	if (ppath == null) {
     		fullPath = HObject.separator;
-    		objName = "/";
+//    		objName = "/";
     	}
     	else {
-    		objName = pgroup.getName();
+//    		objName = pgroup.getName();
     		fullPath = ppath + pgroup.getName() + HObject.separator;
     	}
 

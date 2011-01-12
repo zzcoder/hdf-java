@@ -15,9 +15,13 @@
 package ncsa.hdf.view;
 
 import java.util.List;
+
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
-import ncsa.hdf.object.*;
+
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.HObject;
 
 /**
  * 
@@ -96,7 +100,7 @@ public abstract interface TreeView {
      * 
      * @return a list of selected object in the tree.
      */
-    public abstract List getSelectedObjects();
+    public abstract List<?> getSelectedObjects();
 
     /**
      * @return the current selected object in the tree.
@@ -147,7 +151,7 @@ public abstract interface TreeView {
     /**
      * Returns the list of current open files..
      */
-    public abstract List getCurrentFiles();
+    public abstract List<FileFormat> getCurrentFiles();
 
     /**
      * Returns the tree node that contains the given data object.

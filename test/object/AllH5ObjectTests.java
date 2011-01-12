@@ -3,17 +3,10 @@
  */
 package test.object;
 
-import ncsa.hdf.hdf5lib.H5;
-import test.object.H5BugFixTest;
-import test.object.H5CompoundDSTest;
-import test.object.H5DatatypeTest;
-import test.object.H5FileTest;
-import test.object.H5GroupTest;
-import test.object.H5ScalarDSTest;
-import test.object.H5TestFile;
 import junit.framework.Test;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
+import ncsa.hdf.hdf5lib.H5;
 
 /**
  * Test suite for all unit tests of HDF5 objects.

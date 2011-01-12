@@ -1,4 +1,4 @@
-package test.object.misc;
+package test.object;
 
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
@@ -95,7 +95,7 @@ public class TestH5Object
     }
 
     private static final void passed(final String message) {
-        out.println("PASSED:\t"+message);
+        out.println("PASSED:\t\t"+message);
     }
 
     private static final void failed(final String message, final Exception err, final H5File file) {
@@ -237,7 +237,7 @@ public class TestH5Object
         H5File file=null;
         String message = "";
 
-        message = "Create a new file -- new H5File()";
+        message = "Create a new file -- new H5File("+fname+", H5File.CREATE)";
         try {
             file = new H5File(fname, H5File.CREATE);
             file.open();
@@ -245,7 +245,7 @@ public class TestH5Object
         } catch (final Exception ex) { failed(message, ex, file); return 1;}
         passed(message);
 
-        message = "Create a new file -- H5File.create()";
+        message = "Create a new file -- H5File.create("+fname+")";
         try {
             file = (H5File)H5FILE.create(fname);
             file.open();
@@ -253,7 +253,7 @@ public class TestH5Object
         } catch (final Exception ex) { failed(message, ex, file); return 1;}
         passed(message);
 
-        message = "Create a new file -- H5File.open()";
+        message = "Create a new file -- H5File.open("+fname+", H5File.CREATE)";
         try {
             file = (H5File)H5FILE.open(fname, H5File.CREATE);
             file.open();
@@ -283,14 +283,14 @@ public class TestH5Object
             file.close();
         } catch (final Exception ex) { failed(message, ex, file); return 1;}
         
-        message = "Open file with READ-ONLY access -- H5File.open()";
+        message = "Open file with READ-ONLY access -- H5File.open("+fname+", H5File.READ)";
         try {
             file = (H5File)H5FILE.open(fname, H5File.READ);
             file.close();
         } catch (final Exception ex) { failed(message, ex, file); return 1;}
         passed(message);
         
-        message = "Open file with WRITE access -- H5File.open()";
+        message = "Open file with WRITE access -- H5File.open("+fname+", H5File.WRITE)";
         try {
             file = (H5File)H5FILE.open(fname, H5File.WRITE);
             file.close();
@@ -365,21 +365,21 @@ public class TestH5Object
 
         // create groups
         Group g0 = null;
-        message = "Create a group at root -- H5Group.create()";
+        message = "Create a group at root -- H5File.createGroup and H5Group.create(\"/g0\", root_group)";
         try {
             g0 = file.createGroup("/g0", null);
         } catch (final Exception ex) { failed(message, ex, file); return 1;}
         passed(message);
 
         Group g00 = null;
-        message = "Create a group with absolute path -- H5Group.create()";
+        message = "Create a group with absolute path -- H5File.createGroup and H5Group.create(\"g0/g00\", root_group)";
         try {
             g00 = file.createGroup("g0/g00", null);
         } catch (final Exception ex) { failed(message, ex, file); return 1;}
         passed(message);
 
         Group g01 = null;
-        message = "Create a group at non-root group -- H5Group.create()";
+        message = "Create a group at non-root group -- H5File.createGroup and H5Group.create(\"/g0/g01/\", group_g0)";
         try {
             g01 = file.createGroup("/g0/g01/", g0);
         } catch (final Exception ex) { failed(message, ex, file); return 1;}
@@ -470,7 +470,7 @@ public class TestH5Object
         Object data_read = null;
         for (int i=0; i<N; i++)
         {
-            message = "Create/read/write a H5ScalarDS -- H5ScalarDS.create ()";
+            message = "Create/read/write a H5ScalarDS -- H5File.createScalarDS and H5ScalarDS.create (..., "+names[i]+", ...) "+names[i];
             try {
                 dtype = new H5Datatype(dtype_cls[i], dtype_sizes[i], -1, -1);
                 dset = file.createScalarDS(names[i], pgroup, dtype, DIMs, null, CHUNKs, 9, all_data[i]);
@@ -514,7 +514,7 @@ public class TestH5Object
         String message = "";
 
         Group pgroup = null;
-        message = "Create a hard link -- H5File.createLink()";
+        message = "Create a hard link -- H5File.createLink(Group parentGroup, String name, HObject currentObj)";
 
         try {
             file = (H5File)H5FILE.open(fname, H5File.CREATE);
@@ -558,7 +558,7 @@ public class TestH5Object
         String message = "";
 
         Group pgroup = null;
-        message = "Ceate an image -- H5File.createImage()";
+        message = "Ceate an image -- H5File.createImage(...) and H5File.createImageAttributes()";
 
         try {
             file = (H5File)H5FILE.open(fname, H5File.CREATE);
@@ -602,7 +602,7 @@ public class TestH5Object
         String message = "";
 
         Group pgroup = null;
-        message = "Create/read/write a compound dataset -- H5CompoundDS.create()";
+        message = "Create/read/write a compound dataset -- H5File.createCompoundDS(...) and H5CompoundDS.create(...), H5CompoundDS.read(), H5CompoundDS.write() {INTEGER, FLOAT, STRING}";
 
         try {
             file = (H5File)H5FILE.open(fname, H5File.CREATE);
@@ -715,7 +715,7 @@ public class TestH5Object
         String message = "";
 
         Group pgroup = null;
-        message = "Copy dataset, group and attributes -- H5File.copy()";
+        message = "Copy dataset, group and attributes -- H5File.copy(...) and H5File.get(...)";
 
         try {
             file = (H5File)H5FILE.open(fname, H5File.CREATE);
@@ -803,7 +803,7 @@ public class TestH5Object
         final H5File file=null;
         String message = "";
 
-        message = "Get a group for a given path -- H5File.getHObject()";
+        message = "Get a group for a given path -- H5File.getHObject(String filename, String path), H5File.getHObject(fname#//Dataset)";
         if (!create_test_file(fname, message)) {
             return 1;
         }
@@ -816,7 +816,7 @@ public class TestH5Object
             }
             try { obj.getFileFormat().close(); } catch (final Exception ex2) {}
 
-            obj = FileFormat.getHObject(fname+"://"+NAME_GROUP_SUB);
+            obj = FileFormat.getHObject(fname+"#//"+NAME_GROUP_SUB);
             if (obj == null) {
                 failed(message, new HDF5Exception("Failed to get a group"), file);
                 return 1;
@@ -826,7 +826,7 @@ public class TestH5Object
         } catch (final Exception ex) { failed(message, ex, file); return 1;}
         passed(message);
         
-        message = "Get a ScalarDS for a given path -- H5File.getHObject()";
+        message = "Get a ScalarDS for a given path -- H5File.getHObject(String filename, String path), H5File.getHObject(fname#//Dataset)";
         try {
             HObject obj = FileFormat.getHObject(fname, NAME_DATASET_INT);
             if (obj == null) {
@@ -835,7 +835,7 @@ public class TestH5Object
             }
             try { obj.getFileFormat().close(); } catch (final Exception ex2) {}
             
-            obj = FileFormat.getHObject(fname+"://"+NAME_DATASET_FLOAT);
+            obj = FileFormat.getHObject(fname+"#//"+NAME_DATASET_FLOAT);
             if (obj == null) {
                 failed(message, new HDF5Exception("Failed to get a dataset"), file);
                 return 1;
@@ -844,7 +844,7 @@ public class TestH5Object
         } catch (final Exception ex) { failed(message, ex, file); return 1;}
         passed(message);
     
-        message = "Get a CompoundDS for a given path -- H5File.getHObject()";
+        message = "Get a CompoundDS for a given path -- H5File.getHObject(String filename, String path), H5File.getHObject(fname#//Dataset)";
         try {
             final HObject obj = FileFormat.getHObject(fname, NAME_DATASET_COMPOUND);
             if (obj == null) {
@@ -915,7 +915,7 @@ public class TestH5Object
 
         int fid = 0;
         Group pgroup = null;
-        message = "Get object name and path -- Group.getName(), Group.getPath()";
+        message = "Get object name and path -- Group.getName(), Group.getPath(), Group.getFullName(), Dataset.getName(), Dataset.getPath(), Dataset.getFullName()";
 
         try {
             file = (H5File)H5FILE.open(fname, H5File.CREATE);
@@ -1076,7 +1076,7 @@ public class TestH5Object
         String message = "";
 
         Group pgroup = null;
-        message = "Convert byte array to strings -- Dataset.byteToString()";
+        message = "Convert byte array to strings -- Dataset.byteToString() and Dataset.stringToByte(), H5ScalarDS.readBytes()";
 
         try {
             file = (H5File)H5FILE.open(fname, H5File.CREATE);
@@ -1148,7 +1148,7 @@ public class TestH5Object
             pgroup = (Group)file.get("/");
         } catch (final Exception ex) {failed(message, ex, file); return 1;}
 
-        message = "Decode/encode datatypes -- H5Datatype.toNative()";
+        message = "Decode/encode datatypes -- H5Datatype.toNative() and H5Datatype.fromNative(): INTEGER, FLOAT, CHAR, STRING";
         
         try {
             dtype = file.createDatatype(Datatype.CLASS_INTEGER,-1, -1, -1);
@@ -1238,6 +1238,12 @@ public class TestH5Object
                 return 1;
             }
 
+            message += " {"+mnames[0];
+            for (int i=1; i<mnames.length; i++) {
+                message += ", " +mnames[i];
+            }
+            message += "}";
+            
             try { obj.getFileFormat().close(); } catch (final Exception ex2) {}
         } catch (final Exception ex) { failed(message, ex, file); return 1; }
 

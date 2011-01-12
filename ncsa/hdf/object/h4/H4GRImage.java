@@ -14,10 +14,22 @@
 
 package ncsa.hdf.object.h4;
 
-import java.util.*;
+import java.util.List;
+import java.util.Vector;
 
-import ncsa.hdf.hdflib.*;
-import ncsa.hdf.object.*;
+import ncsa.hdf.hdflib.HDFChunkInfo;
+import ncsa.hdf.hdflib.HDFCompInfo;
+import ncsa.hdf.hdflib.HDFConstants;
+import ncsa.hdf.hdflib.HDFDeflateCompInfo;
+import ncsa.hdf.hdflib.HDFException;
+import ncsa.hdf.hdflib.HDFLibrary;
+import ncsa.hdf.object.Attribute;
+import ncsa.hdf.object.Dataset;
+import ncsa.hdf.object.Datatype;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.HObject;
+import ncsa.hdf.object.ScalarDS;
 
 /**
  * H4GRImage describes HDF4 general raster(GR) image and operations performed on

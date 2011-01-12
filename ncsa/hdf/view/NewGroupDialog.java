@@ -14,24 +14,41 @@
 
 package ncsa.hdf.view;
 
-import java.awt.event.*;
-
-import javax.swing.*;
-import javax.swing.border.TitledBorder;
-import javax.swing.text.PlainDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Point;
-import java.awt.Dimension;
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.awt.Toolkit;
-import java.util.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
-import ncsa.hdf.object.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
+
+import ncsa.hdf.object.DataFormat;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.HObject;
 
 /**
  * NewGroupDialog shows a message dialog requesting user input for creating a
@@ -58,7 +75,7 @@ public class NewGroupDialog extends JDialog implements ActionListener, ItemListe
     private JComboBox orderFlags;
 
     /** a list of current groups */
-    private List groupList;
+    private List<Group> groupList;
 
     private HObject newObject;
 
@@ -96,7 +113,7 @@ public class NewGroupDialog extends JDialog implements ActionListener, ItemListe
      * @param objs
      *            the list of all objects.
      */
-    public NewGroupDialog(Frame owner, Group pGroup, List objs) {
+    public NewGroupDialog(Frame owner, Group pGroup, List<?> objs) {
         super(owner, "New Group...", true);
 
         newObject = null;
@@ -107,13 +124,13 @@ public class NewGroupDialog extends JDialog implements ActionListener, ItemListe
         toolkit = Toolkit.getDefaultToolkit();
 
         parentChoice = new JComboBox();
-        groupList = new Vector();
+        groupList = new Vector<Group>();
         Object obj = null;
-        Iterator iterator = objs.iterator();
+        Iterator<?> iterator = objs.iterator();
         while (iterator.hasNext()) {
             obj = iterator.next();
             if (obj instanceof Group) {
-                groupList.add(obj);
+                groupList.add((Group)obj);
                 Group g = (Group) obj;
                 if (g.isRoot()) {
                     parentChoice.addItem(HObject.separator);
@@ -252,7 +269,6 @@ public class NewGroupDialog extends JDialog implements ActionListener, ItemListe
     }
 
     public void actionPerformed(ActionEvent e) {
-        Object source = e.getSource();
         String cmd = e.getActionCommand();
         
         if (cmd.equals("More")) { 
@@ -355,7 +371,7 @@ public class NewGroupDialog extends JDialog implements ActionListener, ItemListe
             return null;
         }
 
-        pgroup = (Group) groupList.get(parentChoice.getSelectedIndex());
+        pgroup = groupList.get(parentChoice.getSelectedIndex());
 
         if (pgroup == null) {
             toolkit.beep();
@@ -425,10 +441,9 @@ public class NewGroupDialog extends JDialog implements ActionListener, ItemListe
 
     /** Returns the parent group of the new group. */
     public Group getParentGroup() {
-        return (Group) groupList.get(parentChoice.getSelectedIndex());
+        return groupList.get(parentChoice.getSelectedIndex());
     }
 
-	@Override
 	public void itemStateChanged(ItemEvent e) {
 		Object source = e.getSource();	
 
@@ -459,7 +474,8 @@ public class NewGroupDialog extends JDialog implements ActionListener, ItemListe
 
 	 //Setting the length of the text fields.
 	 class JTextFieldLimit extends PlainDocument {
-		  private int limit;
+        private static final long serialVersionUID = 1L;
+        private int limit;
 		  JTextFieldLimit(int limit) {
 		    super();
 		    this.limit = limit;
@@ -480,16 +496,13 @@ public class NewGroupDialog extends JDialog implements ActionListener, ItemListe
 			  }
 	 }
 
-	@Override
-	public void keyPressed(KeyEvent arg0) {
+    public void keyPressed(java.awt.event.KeyEvent arg0) {
 	}
 
-	@Override
-	public void keyReleased(KeyEvent arg0) {
+	public void keyReleased(java.awt.event.KeyEvent arg0) {
 	}
 
-	@Override
-	public void keyTyped(KeyEvent arg0) {
+	public void keyTyped(java.awt.event.KeyEvent arg0) {
 		char c = arg0.getKeyChar();
 		if (!Character.isDigit(c))
 			arg0.consume(); // prevent event propagation

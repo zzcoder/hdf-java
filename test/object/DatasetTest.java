@@ -5,14 +5,12 @@ package test.object;
 
 import java.util.Arrays;
 
-import test.object.H5TestFile;
-
+import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
-import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.Dataset;
+import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.h5.H5File;
-import junit.framework.TestCase;
 
 /**
  * @author rsinha

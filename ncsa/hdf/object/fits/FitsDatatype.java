@@ -16,8 +16,9 @@ package ncsa.hdf.object.fits;
 
 import java.util.List;
 
-import ncsa.hdf.object.*;
-import nom.tam.fits.*;
+import ncsa.hdf.object.Datatype;
+import ncsa.hdf.object.HObject;
+import nom.tam.fits.BasicHDU;
 
 /**
  * Datatype encapsulates information of a datatype.

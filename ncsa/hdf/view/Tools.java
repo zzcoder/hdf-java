@@ -14,12 +14,19 @@
 
 package ncsa.hdf.view;
 
-import java.awt.image.*;
-import java.io.*;
-
-import ncsa.hdf.object.*;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.DirectColorModel;
+import java.awt.image.IndexColorModel;
+import java.awt.image.MemoryImageSource;
+import java.awt.image.PixelGrabber;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -28,6 +35,11 @@ import java.util.StringTokenizer;
 
 import javax.imageio.ImageIO;
 import javax.swing.tree.DefaultMutableTreeNode;
+
+import ncsa.hdf.object.Datatype;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.ScalarDS;
 
 /**
  * The "Tools" class contains various of tools for HDF files such as jpeg to HDF
@@ -144,11 +156,9 @@ public final class Tools {
             }
         }
 
-        int fid = -1;
         long[] dims = null;
         Datatype type = null;
         Group pgroup = null;
-        Dataset dataset = null;
         String imgName = imgFile.getName();
         FileFormat newfile = null, thefile = null;
         if (toType.equals(FileFormat.FILE_TYPE_HDF5)) {
@@ -167,12 +177,12 @@ public final class Tools {
 
         if (thefile != null) {
             newfile = thefile.createInstance(hFileName, FileFormat.CREATE);
-            fid = newfile.open();
+            newfile.open();
             pgroup = (Group) ((DefaultMutableTreeNode) newfile.getRootNode())
                     .getUserObject();
             type = newfile.createDatatype(Datatype.CLASS_CHAR, 1,
                     Datatype.NATIVE, Datatype.SIGN_NONE);
-            dataset = newfile.createImage(imgName, pgroup, type, dims, null,
+            newfile.createImage(imgName, pgroup, type, dims, null,
                     null, -1, 3, ScalarDS.INTERLACE_PIXEL, data);
             newfile.close();
         }
@@ -1037,7 +1047,7 @@ public final class Tools {
      *            - array of objects to be passed as arguments
      * @return a new instance of the given class.
      */
-    public static Object newInstance(Class cls, Object[] initargs)
+    public static Object newInstance(Class<?> cls, Object[] initargs)
             throws Exception {
         Object instance = null;
 
@@ -1049,14 +1059,14 @@ public final class Tools {
             instance = cls.newInstance();
         }
         else {
-            Constructor[] constructors = cls.getConstructors();
+            Constructor<?>[] constructors = cls.getConstructors();
             if ((constructors == null) || (constructors.length == 0)) {
                 return null;
             }
 
             boolean isConstructorMatched = false;
-            Constructor constructor = null;
-            Class[] params = null;
+            Constructor<?> constructor = null;
+            Class<?>[] params = null;
             int m = constructors.length;
             int n = initargs.length;
             for (int i = 0; i < m; i++) {
@@ -1984,11 +1994,11 @@ public final class Tools {
 
             if (new File(url).exists())
                 cmd = "cmd /c start \"\" \"" + url + "\"";
-            Process p = runtime.exec(cmd);
+            runtime.exec(cmd);
         }
         // Block for Mac OS
         else if (os.startsWith("Mac OS")) {
-            Class fileMgr = Class.forName("com.apple.eio.FileManager");
+            Class<?> fileMgr = Class.forName("com.apple.eio.FileManager");
             Method openURL = fileMgr.getDeclaredMethod("openURL",
                     new Class[] { String.class });
             

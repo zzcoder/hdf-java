@@ -16,8 +16,9 @@ package ncsa.hdf.object.h4;
 
 import java.util.List;
 
-import ncsa.hdf.hdflib.*;
-import ncsa.hdf.object.*;
+import ncsa.hdf.hdflib.HDFConstants;
+import ncsa.hdf.object.Datatype;
+import ncsa.hdf.object.HObject;
 
 /**
  * This class defines HDF4 data type characteristics and APIs for a data type.

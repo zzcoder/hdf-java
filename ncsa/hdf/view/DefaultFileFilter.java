@@ -14,16 +14,17 @@
 
 package ncsa.hdf.view;
 
-import java.io.File;
-import java.io.RandomAccessFile;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.RandomAccessFile;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
-import java.util.Enumeration;
-import javax.swing.filechooser.*;
+
+import javax.swing.filechooser.FileFilter;
 
 /**
  * A convenience implementation of FileFilter that filters out all files except
@@ -47,7 +48,7 @@ public class DefaultFileFilter extends FileFilter {
 
     private static String fileExtension = ViewProperties.getFileExtension();
 
-    private Hashtable filters = null;
+    private Hashtable<String, DefaultFileFilter> filters = null;
     private String description = null;
     private String fullDescription = null;
     private boolean useExtensionsInDescription = true;
@@ -59,7 +60,7 @@ public class DefaultFileFilter extends FileFilter {
      * @see #addExtension
      */
     public DefaultFileFilter() {
-        this.filters = new Hashtable();
+        this.filters = new Hashtable<String, DefaultFileFilter>();
     }
 
     /**
@@ -178,7 +179,7 @@ public class DefaultFileFilter extends FileFilter {
      */
     public void addExtension(String extension) {
         if (filters == null) {
-            filters = new Hashtable(5);
+            filters = new Hashtable<String, DefaultFileFilter>(5);
         }
 
         String ext = null;
@@ -201,7 +202,7 @@ public class DefaultFileFilter extends FileFilter {
                 fullDescription = description == null ? "(" : description
                         + " (";
                 // build the description from the extension list
-                Enumeration extensions = filters.keys();
+                Enumeration<String> extensions = filters.keys();
                 if (extensions != null) {
 
                     if (!extensions.hasMoreElements()) {
@@ -209,10 +210,10 @@ public class DefaultFileFilter extends FileFilter {
                         return null;
                     }
 
-                    fullDescription += "." + (String) extensions.nextElement();
+                    fullDescription += "." + extensions.nextElement();
                     while (extensions.hasMoreElements()) {
                         fullDescription += ", "
-                                + (String) extensions.nextElement();
+                                + extensions.nextElement();
                     }
                 }
                 fullDescription += ")";
@@ -729,7 +730,7 @@ public class DefaultFileFilter extends FileFilter {
             return false;
         }
 
-        // find the end of uerser block for the input file;
+        // find the end of user block for the input file;
         RandomAccessFile raf = null;
         try {
             raf = new RandomAccessFile(fin, "r");
@@ -739,13 +740,6 @@ public class DefaultFileFilter extends FileFilter {
         }
 
         if (raf == null) {
-            try {
-                raf.close();
-            }
-            catch (Throwable err) {
-                ;
-            }
-            raf = null;
             return false;
         }
 

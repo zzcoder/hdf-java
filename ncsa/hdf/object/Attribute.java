@@ -14,7 +14,7 @@
 
 package ncsa.hdf.object;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Array;
 
 /**
  * An attribute is a (name, value) pair of metadata attached to a primary data

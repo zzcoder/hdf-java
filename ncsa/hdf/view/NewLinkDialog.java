@@ -14,25 +14,46 @@
 
 package ncsa.hdf.view;
 
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Dimension;
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.Toolkit;
-import java.io.File;
-import java.util.*;
-
-import ncsa.hdf.object.*;
+import ncsa.hdf.object.DataFormat;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.HObject;
 
 /**
  * NewLinkDialog shows a message dialog requesting user input for creating a
@@ -520,17 +541,14 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
         return (Group) groupList.get(parentChoice.getSelectedIndex());
     }
 
-	@Override
 	public void changedUpdate(DocumentEvent arg0) {		
 	}
 
-	@Override
 	public void insertUpdate(DocumentEvent e) {
 		targetObject.setEnabled(true);
 		getTargetFileObjs();
 	}
 
-	@Override
 	public void removeUpdate(DocumentEvent arg0) {
 		targetObject.setEnabled(true);
 		getTargetFileObjs();
@@ -612,7 +630,6 @@ public class NewLinkDialog extends JDialog implements ActionListener,DocumentLis
 	        return isOpen;
 	    }
 
-	@Override
 	public void itemStateChanged(ItemEvent e) {
 		Object source = e.getSource();
 

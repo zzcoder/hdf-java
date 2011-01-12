@@ -11,7 +11,7 @@
 
 package ncsa.hdf.hdflib;
 
-import java.io.*;
+import java.io.File;
 
 /**
  *  This is the Java interface for the HDF 4.1 library.

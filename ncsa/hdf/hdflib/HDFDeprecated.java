@@ -11,7 +11,7 @@
 
 package ncsa.hdf.hdflib;
 
-import java.io.*;
+import java.io.OutputStream;
 
 public class HDFDeprecated extends HDFLibrary {
 

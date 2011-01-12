@@ -14,27 +14,50 @@
 
 package ncsa.hdf.view;
 
-import ncsa.hdf.object.*;
-
-import java.awt.event.*;
-
-import javax.swing.*;
-
-import java.awt.image.*;
-
-import javax.swing.border.*;
-import javax.swing.table.*;
-import javax.swing.event.*;
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Point;
-import java.awt.Dimension;
-import java.awt.Window;
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.awt.Toolkit;
-import java.awt.Graphics;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.image.IndexColorModel;
+import java.awt.image.MemoryImageSource;
 import java.util.Vector;
+
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.CellEditor;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.WindowConstants;
+import javax.swing.border.LineBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.HObject;
+import ncsa.hdf.object.ScalarDS;
 
 /**
  * To view and change palette.

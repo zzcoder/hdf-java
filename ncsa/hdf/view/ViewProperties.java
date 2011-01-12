@@ -14,15 +14,22 @@
 
 package ncsa.hdf.view;
 
-import java.io.*;
-import java.util.*;
-import javax.swing.*;
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.net.MalformedURLException;
-import java.util.jar.JarFile;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.Vector;
 import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.HObject;
 
@@ -88,7 +95,7 @@ public class ViewProperties extends Properties {
     //    private static String indexType = "alphabetical";
 
     /** a list of most recent files */
-    private static Vector mrf;
+    private static Vector<String> mrf;
 
     /** the root directory of the HDFView */
     private static String rootDir;
@@ -102,7 +109,7 @@ public class ViewProperties extends Properties {
     private static ClassLoader extClassLoader = null;
 
     /** a list of srb accounts */
-    private static Vector srbAccountList = new Vector(5);
+    private static Vector<String[]> srbAccountList = new Vector<String[]>(5);
 
     /**
      * flag to indicate if auto contrast is used in image process. Do not use
@@ -117,7 +124,7 @@ public class ViewProperties extends Properties {
     private static boolean isReadOnly = false;
 
     /** a list of palette files */
-    private static Vector paletteList = new Vector(5);
+    private static Vector<String> paletteList = new Vector<String>(5);
 
     /** flag to indicate if enum data is converted to strings */
     private static boolean convertEnum = true;
@@ -149,25 +156,25 @@ public class ViewProperties extends Properties {
     private static String propertyFile;
 
     /** a list of treeview module */
-    private static Vector<String> moduleListTreeView = new Vector(5);
+    private static Vector<String> moduleListTreeView = new Vector<String>(5);
 
     /** a list of metaview module */
-    private static Vector<String> moduleListMetaDataView = new Vector(5);
+    private static Vector<String> moduleListMetaDataView = new Vector<String>(5);
 
     /** a list of textview module */
-    private static Vector<String> moduleListTextView = new Vector(5);
+    private static Vector<String> moduleListTextView = new Vector<String>(5);
 
     /** a list of tableview module */
-    private static Vector<String> moduleListTableView = new Vector(5);
+    private static Vector<String> moduleListTableView = new Vector<String>(5);
 
     /** a list of imageview module */
-    private static Vector<String> moduleListImageView = new Vector(5);
+    private static Vector<String> moduleListImageView = new Vector<String>(5);
 
     /** a list of paletteview module */
-    private static Vector<String> moduleListPaletteView = new Vector(5);
+    private static Vector<String> moduleListPaletteView = new Vector<String>(5);
 
     /** a list of helpview module */
-    private static Vector<String> moduleListHelpView = new Vector(5);
+    private static Vector<String> moduleListHelpView = new Vector<String>(5);
 
     /**
      * Creates a property list with given root directory of the HDFView.
@@ -176,7 +183,7 @@ public class ViewProperties extends Properties {
         super();
         rootDir = viewRoot;
 
-        mrf = new Vector(MAX_RECENT_FILES + 5);
+        mrf = new Vector<String>(MAX_RECENT_FILES + 5);
 
         // find the property file
         String uh = "", ud = "", h5v = "", fn;
@@ -240,8 +247,8 @@ public class ViewProperties extends Properties {
             return extClassLoader;
         }
 
-        Vector jarList = new Vector(50);
-        Vector classList = new Vector(50);
+        Vector<String> jarList = new Vector<String>(50);
+        Vector<String> classList = new Vector<String>(50);
         for (int i = 0; i < jars.length; i++) {
             if (jars[i].endsWith(".jar")) {
                 jarList.add(jars[i]);
@@ -293,11 +300,11 @@ public class ViewProperties extends Properties {
         // load user modules into their list
         n = classList.size();
         for (int i = 0; i < n; i++) {
-            String theName = (String) classList.get(i);
+            String theName = classList.get(i);
             try {
                 // enables use of JHDF5 in JNLP (Web Start) applications, the
                 // system class loader with reflection first.
-                Class theClass = null;
+                Class<?> theClass = null;
                 try {
                     theClass = Class.forName(theName);
                 }
@@ -305,7 +312,7 @@ public class ViewProperties extends Properties {
                     theClass = extClassLoader.loadClass(theName);
                 }
 
-                Class[] interfaces = theClass.getInterfaces();
+                Class<?>[] interfaces = theClass.getInterfaces();
                 if (interfaces != null) {
                     for (int j = 0; j < interfaces.length; j++) {
                         String interfaceName = interfaces[j].getName();
@@ -916,7 +923,7 @@ public class ViewProperties extends Properties {
 
         // set default selection of data views
         for (int i = 0; i < 6; i++) {
-            Vector theList = moduleList[i];
+            Vector<String> theList = moduleList[i];
             propVal = (String) get(moduleKeys[i]);
 
             if (propVal != null) {
@@ -1187,7 +1194,7 @@ public class ViewProperties extends Properties {
         int size = mrf.size();
         int minSize = Math.min(size, MAX_RECENT_FILES);
         for (int i = 0; i < minSize; i++) {
-            theFile = (String) mrf.elementAt(i);
+            theFile = mrf.elementAt(i);
             if ((theFile != null) && (theFile.length() > 0)) {
                 put("recent.file" + i, theFile);
             }
@@ -1197,7 +1204,7 @@ public class ViewProperties extends Properties {
         size = paletteList.size();
         minSize = Math.min(size, MAX_RECENT_FILES);
         for (int i = 0; i < minSize; i++) {
-            theFile = (String) paletteList.elementAt(i);
+            theFile = paletteList.elementAt(i);
             if ((theFile != null) && (theFile.length() > 0)) {
                 put("palette.file" + i, theFile);
             }
@@ -1208,7 +1215,7 @@ public class ViewProperties extends Properties {
         size = srbAccountList.size();
         minSize = Math.min(size, MAX_RECENT_FILES);
         for (int i = 0; i < minSize; i++) {
-            srbaccount = (String[]) srbAccountList.get(i);
+            srbaccount = srbAccountList.get(i);
             if ((srbaccount[0] != null) && (srbaccount[1] != null)
                     && (srbaccount[2] != null) && (srbaccount[3] != null)
                     && (srbaccount[4] != null) && (srbaccount[5] != null)
@@ -1224,32 +1231,32 @@ public class ViewProperties extends Properties {
         }
 
         // save default modules
-        String moduleName = (String) moduleListTreeView.elementAt(0);
+        String moduleName = moduleListTreeView.elementAt(0);
         if ((moduleName != null) && (moduleName.length() > 0)) {
             put("module.treeview", moduleName);
         }
 
-        moduleName = (String) moduleListMetaDataView.elementAt(0);
+        moduleName = moduleListMetaDataView.elementAt(0);
         if ((moduleName != null) && (moduleName.length() > 0)) {
             put("module.metadataview", moduleName);
         }
 
-        moduleName = (String) moduleListTextView.elementAt(0);
+        moduleName = moduleListTextView.elementAt(0);
         if ((moduleName != null) && (moduleName.length() > 0)) {
             put("module.textview", moduleName);
         }
 
-        moduleName = (String) moduleListTableView.elementAt(0);
+        moduleName = moduleListTableView.elementAt(0);
         if ((moduleName != null) && (moduleName.length() > 0)) {
             put("module.tableview", moduleName);
         }
 
-        moduleName = (String) moduleListImageView.elementAt(0);
+        moduleName = moduleListImageView.elementAt(0);
         if ((moduleName != null) && (moduleName.length() > 0)) {
             put("module.imageview", moduleName);
         }
 
-        moduleName = (String) moduleListPaletteView.elementAt(0);
+        moduleName = moduleListPaletteView.elementAt(0);
         if ((moduleName != null) && (moduleName.length() > 0)) {
             put("module.paletteview", moduleName);
         }
@@ -1345,51 +1352,51 @@ public class ViewProperties extends Properties {
     };
 
     /** returns the list of most recent files */
-    public static Vector getMRF() {
+    public static Vector<String> getMRF() {
         return mrf;
     }
 
     /** returns the list of palette files */
-    public static Vector getPaletteList() {
+    public static Vector<String> getPaletteList() {
         return paletteList;
     }
 
-    public static Vector getSrbAccount() {
+    public static Vector<String[]> getSrbAccount() {
         return srbAccountList;
     }
 
     /** returns a list of treeview modules */
-    public static Vector getTreeViewList() {
+    public static Vector<String> getTreeViewList() {
         return moduleListTreeView;
     }
 
     /** returns a list of metadataview modules */
-    public static Vector getMetaDataViewList() {
+    public static Vector<String> getMetaDataViewList() {
         return moduleListMetaDataView;
     }
 
     /** returns a list of textview modules */
-    public static Vector getTextViewList() {
+    public static Vector<String> getTextViewList() {
         return moduleListTextView;
     }
 
     /** returns a list of tableview modules */
-    public static Vector getTableViewList() {
+    public static Vector<String> getTableViewList() {
         return moduleListTableView;
     }
 
     /** returns a list of imageview modules */
-    public static Vector getImageViewList() {
+    public static Vector<String> getImageViewList() {
         return moduleListImageView;
     }
 
     /** returns a list of paletteview modules */
-    public static Vector getPaletteViewList() {
+    public static Vector<String> getPaletteViewList() {
         return moduleListPaletteView;
     }
 
     /** returns a list of helpview modules */
-    public static Vector getHelpViewList() {
+    public static Vector<String> getHelpViewList() {
         return moduleListHelpView;
     }
 

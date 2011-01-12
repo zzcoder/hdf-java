@@ -14,12 +14,17 @@
 
 package ncsa.hdf.view;
 
-import javax.swing.*;
 import java.awt.Toolkit;
 import java.io.File;
-import java.util.List;
 import java.util.Iterator;
-import ncsa.hdf.object.*;
+import java.util.List;
+
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.HObject;
 
 /**
  * NewFileDialog shows a message dialog requesting user input for creating a new

@@ -14,19 +14,25 @@
 
 package ncsa.hdf.view;
 
-import java.awt.event.*;
-import javax.swing.*;
-
-import ncsa.hdf.object.HObject;
-
-import java.lang.reflect.Array;
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.Window;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.Dimension;
-import java.awt.BorderLayout;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.lang.reflect.Array;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.WindowConstants;
+
+import ncsa.hdf.object.HObject;
 
 /**
  * ChartView displays histogram/line chart of selected row/column of table data

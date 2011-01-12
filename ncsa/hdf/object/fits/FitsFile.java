@@ -14,10 +14,27 @@
 
 package ncsa.hdf.object.fits;
 
-import java.io.*;
-import javax.swing.tree.*;
-import ncsa.hdf.object.*;
-import nom.tam.fits.*;
+import java.io.DataInput;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
+
+import ncsa.hdf.object.Dataset;
+import ncsa.hdf.object.Datatype;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.HObject;
+import nom.tam.fits.AsciiTableHDU;
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.BinaryTableHDU;
+import nom.tam.fits.Fits;
+import nom.tam.fits.ImageHDU;
+import nom.tam.fits.RandomGroupsHDU;
+import nom.tam.fits.TableHDU;
 
 /**
  * This class provides file level APIs. File access APIs include retrieving the

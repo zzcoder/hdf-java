@@ -3,24 +3,25 @@
  */
 package test.object;
 
-import java.util.*;
+import java.util.List;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.structs.H5G_info_t;
 import ncsa.hdf.hdf5lib.structs.H5L_info_t;
-import ncsa.hdf.object.HObject;
-import ncsa.hdf.object.Group;
+import ncsa.hdf.object.Attribute;
 import ncsa.hdf.object.Dataset;
 import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
-import ncsa.hdf.object.Attribute;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.HObject;
 import ncsa.hdf.object.h5.H5Datatype;
 import ncsa.hdf.object.h5.H5File;
 import ncsa.hdf.object.h5.H5Group;
 import ncsa.hdf.object.h5.H5ScalarDS;
-import junit.framework.TestCase;
 
 /**
  * TestCase for H5File.

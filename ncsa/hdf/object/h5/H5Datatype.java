@@ -14,13 +14,19 @@
 
 package ncsa.hdf.object.h5;
 
-import ncsa.hdf.hdf5lib.*;
-import ncsa.hdf.hdf5lib.exceptions.*;
-import ncsa.hdf.hdf5lib.structs.H5O_info_t;
-import ncsa.hdf.object.*;
-
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import ncsa.hdf.hdf5lib.H5;
+import ncsa.hdf.hdf5lib.HDF5Constants;
+import ncsa.hdf.hdf5lib.HDFNativeData;
+import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
+import ncsa.hdf.hdf5lib.structs.H5O_info_t;
+import ncsa.hdf.object.Attribute;
+import ncsa.hdf.object.Datatype;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.HObject;
 
 /**
  * This class defines HDF5 data type characteristics and APIs for a data type.

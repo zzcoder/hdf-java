@@ -14,22 +14,37 @@
 
 package ncsa.hdf.view;
 
-import javax.swing.*;
-
-import java.io.*;
-import java.util.*;
-import java.awt.event.*;
-import javax.swing.border.*;
-
-import ncsa.hdf.object.HObject;
-
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.awt.GraphicsEnvironment;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.Vector;
+
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.SoftBevelBorder;
+import javax.swing.border.TitledBorder;
+
+import ncsa.hdf.object.HObject;
 
 /**
  * UserOptionsDialog displays components for choosing user options.
