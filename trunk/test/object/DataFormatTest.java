@@ -3,6 +3,9 @@
  */
 package test.object;
 
+import java.util.List;
+
+import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.object.Attribute;
@@ -11,10 +14,6 @@ import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.h5.H5Datatype;
 import ncsa.hdf.object.h5.H5File;
-import junit.framework.TestCase;
-import java.util.List;
-
-import test.object.H5TestFile;
 
 /**
  * @author rsinha

@@ -14,9 +14,11 @@
 
 package ncsa.hdf.object.fits;
 
-import java.util.*;
+import java.util.List;
 
-import ncsa.hdf.object.*;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.HObject;
 
 /**
  * An H5Group represents HDF5 group, inheriting from Group.

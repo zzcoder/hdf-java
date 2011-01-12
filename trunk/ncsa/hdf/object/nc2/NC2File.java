@@ -14,18 +14,21 @@
 
 package ncsa.hdf.object.nc2;
 
-import java.io.*;
-import java.util.*;
-import javax.swing.tree.*;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.Iterator;
 
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
 
 import ncsa.hdf.object.Dataset;
 import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.Group;
 import ncsa.hdf.object.HObject;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 
 /**
  * This class provides file level APIs. File access APIs include retrieving the

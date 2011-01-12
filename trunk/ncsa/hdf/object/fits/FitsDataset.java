@@ -14,12 +14,21 @@
 
 package ncsa.hdf.object.fits;
 
-import java.util.*;
-
-import ncsa.hdf.object.*;
-
 import java.lang.reflect.Array;
-import nom.tam.fits.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import ncsa.hdf.object.Attribute;
+import ncsa.hdf.object.Dataset;
+import ncsa.hdf.object.Datatype;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.HObject;
+import ncsa.hdf.object.ScalarDS;
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
 
 /**
  * FitsDataset describes an multi-dimension array of HDF5 scalar or atomic data

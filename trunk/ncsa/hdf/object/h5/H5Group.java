@@ -14,13 +14,19 @@
 
 package ncsa.hdf.object.h5;
 
-import java.util.*;
+import java.util.List;
+import java.util.Vector;
 
-import ncsa.hdf.hdf5lib.*;
-import ncsa.hdf.hdf5lib.exceptions.*;
-import ncsa.hdf.object.*;
+import ncsa.hdf.hdf5lib.H5;
+import ncsa.hdf.hdf5lib.HDF5Constants;
+import ncsa.hdf.hdf5lib.HDFNativeData;
+import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
 import ncsa.hdf.hdf5lib.structs.H5G_info_t;
 import ncsa.hdf.hdf5lib.structs.H5O_info_t;
+import ncsa.hdf.object.Attribute;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.HObject;
 
 /**
  * An H5Group object represents an existing HDF5 group in file.

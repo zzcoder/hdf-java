@@ -12,12 +12,19 @@
 
 package test.object.misc;
 
-import javax.swing.tree.*;
-import java.util.*;
-import java.lang.reflect.*;
-import ncsa.hdf.object.*;
-import ncsa.hdf.object.h5.*;
-import ncsa.hdf.hdf5lib.*;
+import java.lang.reflect.Array;
+import java.util.Enumeration;
+import java.util.List;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
+
+import ncsa.hdf.hdf5lib.HDF5Constants;
+import ncsa.hdf.object.Attribute;
+import ncsa.hdf.object.h5.H5CompoundDS;
+import ncsa.hdf.object.h5.H5File;
+import ncsa.hdf.object.h5.H5Group;
+import ncsa.hdf.object.h5.H5ScalarDS;
 
 /**
  * Test object at the ncsa.hdf.object package.

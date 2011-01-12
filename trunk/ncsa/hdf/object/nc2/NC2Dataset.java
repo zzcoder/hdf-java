@@ -14,10 +14,8 @@
 
 package ncsa.hdf.object.nc2;
 
-import java.util.*;
-
-import ucar.ma2.DataType;
-import ucar.nc2.Variable;
+import java.util.List;
+import java.util.Vector;
 
 import ncsa.hdf.object.Dataset;
 import ncsa.hdf.object.Datatype;
@@ -25,6 +23,8 @@ import ncsa.hdf.object.FileFormat;
 import ncsa.hdf.object.Group;
 import ncsa.hdf.object.HObject;
 import ncsa.hdf.object.ScalarDS;
+import ucar.ma2.DataType;
+import ucar.nc2.Variable;
 
 /**
  * NC2Dataset describes an multi-dimension array of HDF5 scalar or atomic data

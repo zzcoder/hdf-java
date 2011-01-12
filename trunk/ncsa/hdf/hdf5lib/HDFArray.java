@@ -13,7 +13,8 @@
 
 package ncsa.hdf.hdf5lib;
 
-import ncsa.hdf.hdf5lib.exceptions.*;
+import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
+import ncsa.hdf.hdf5lib.exceptions.HDF5JavaException;
 
 /**
  * This is a class for handling multidimensional arrays for HDF.

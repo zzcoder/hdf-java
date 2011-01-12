@@ -11,18 +11,7 @@
 
 package ncsa.hdf.hdflib;
 
-import java.lang.reflect.*;
-/*
- *  This is a class for handling Vdata table records for
- *  HDF.
- *
- *  The purpose is to allow the storage and retrieval of
- *  tables containing arbitrary types of strings and numbers
- *
- *  The methods support the conversion of an array to and
- *  from Java to a one-dimensional array of bytes suitable
- *  for I/O by the C library.
- */
+import java.lang.reflect.Field;
 
 public class HDFTable {
 

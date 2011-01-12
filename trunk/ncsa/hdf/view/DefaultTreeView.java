@@ -14,18 +14,58 @@
 
 package ncsa.hdf.view;
 
-import ncsa.hdf.object.*;
-
-import javax.swing.*;
-import javax.swing.tree.*;
-import java.util.*;
-import java.io.*;
-import java.lang.reflect.*;
-import java.awt.Component;
 import java.awt.BorderLayout;
-import java.awt.Toolkit;
-import java.awt.event.*;
+import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.BitSet;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import javax.swing.Icon;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+
+import ncsa.hdf.object.CompoundDS;
+import ncsa.hdf.object.Dataset;
+import ncsa.hdf.object.Datatype;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.HObject;
+import ncsa.hdf.object.ScalarDS;
+import ncsa.hdf.view.ViewProperties.DATA_VIEW_KEY;
 
 /**
  *
@@ -64,7 +104,7 @@ public class DefaultTreeView extends JPanel
     private final DefaultTreeModel treeModel;
 
     /** A list open files. */
-    private final List fileList;
+    private final List<FileFormat> fileList;
 
     private final Toolkit toolkit;
 
@@ -91,10 +131,10 @@ public class DefaultTreeView extends JPanel
     private JSeparator separator;
 
     /** a list of editing GUI components */
-    private List editGUIs;
+    private List<JMenuItem> editGUIs;
 
     /** the list of current selected objects */
-    private List objectsToCopy;
+    private List<Object> objectsToCopy;
 
     private JMenuItem addTableMenuItem;
 
@@ -119,9 +159,9 @@ public class DefaultTreeView extends JPanel
             public boolean isLeaf() { return false; }
         };
 
-        fileList = new Vector();
+        fileList = new Vector<FileFormat>();
         toolkit = Toolkit.getDefaultToolkit();
-        editGUIs = new Vector();
+        editGUIs = new Vector<JMenuItem>();
         objectsToCopy = null;
         isDefaultDisplay = true;
         selectedTreePath = null;
@@ -194,10 +234,10 @@ public class DefaultTreeView extends JPanel
 
         // find the file by matching its file name and close the file
         FileFormat theFile = null;
-        Iterator iterator = fileList.iterator();
+        Iterator<FileFormat> iterator = fileList.iterator();
         while(iterator.hasNext())
         {
-            theFile = (FileFormat)iterator.next();
+            theFile = iterator.next();
             if (theFile.getFilePath().equals(filename))
             {
                 isOpen = true;
@@ -411,13 +451,13 @@ public class DefaultTreeView extends JPanel
     }
 
     /** disable/enable GUI components */
-    private static void setEnabled(List list, boolean b)
+    private static void setEnabled(List<JMenuItem> list, boolean b)
     {
         Component item = null;
-        Iterator it = list.iterator();
+        Iterator<JMenuItem> it = list.iterator();
         while (it.hasNext())
         {
-            item = (Component)it.next();
+            item = it.next();
             item.setEnabled(b);
         }
     }
@@ -503,7 +543,7 @@ public class DefaultTreeView extends JPanel
         try { bo.close(); } catch (Exception ex ) {}
 
         try {
-            FileFormat newFile = openFile(filename, FileFormat.WRITE);
+            openFile(filename, FileFormat.WRITE);
         } catch (Exception ex) {
             toolkit.beep();
             JOptionPane.showMessageDialog(
@@ -555,7 +595,7 @@ public class DefaultTreeView extends JPanel
         String filename = dialog.getFile();
 
         int n = root.getChildCount();
-        Vector objList = new Vector(n);
+        Vector<Object> objList = new Vector<Object>(n);
         DefaultMutableTreeNode node = null;
         for (int i=0; i<n; i++)
         {
@@ -588,8 +628,8 @@ public class DefaultTreeView extends JPanel
         Group srcGroup = (Group) ((DefaultMutableTreeNode)root).getUserObject();
         Group dstGroup = (Group) ((DefaultMutableTreeNode)newFile.getRootNode()).getUserObject();
         Object[] parameter = new Object[2];
-        Class classHOjbect = null;
-        Class[] parameterClass = new Class[2];
+        Class<?> classHOjbect = null;
+        Class<?>[] parameterClass = new Class[2];
         Method method = null;
 
         // copy attributes of the root group
@@ -791,7 +831,7 @@ public class DefaultTreeView extends JPanel
     }
 
     /** paste selected objects */
-    private void pasteObject(List objList, TreeNode pnode, FileFormat dstFile)
+    private void pasteObject(List<Object> objList, TreeNode pnode, FileFormat dstFile)
     {
         if ((objList == null) ||
             (objList.size() <=0) ||
@@ -799,12 +839,12 @@ public class DefaultTreeView extends JPanel
             return;
         }
 
-        FileFormat srcFile = ((HObject)objList.get(0)).getFileFormat();
+        ((HObject)objList.get(0)).getFileFormat();
         Group pgroup = (Group)((DefaultMutableTreeNode)pnode).getUserObject();
 
         HObject theObj=null;
         TreeNode newNode = null;
-        Iterator iterator = objList.iterator();
+        Iterator<Object> iterator = objList.iterator();
         while (iterator.hasNext())
         {
             newNode = null;
@@ -891,7 +931,6 @@ public class DefaultTreeView extends JPanel
         		return;
         	}
         }
-        String frameName = "";
         HObject theObj = null;
         for (int i=0; i< currentSelections.length; i++) {
             DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) (currentSelections[i].getLastPathComponent());
@@ -973,7 +1012,7 @@ public class DefaultTreeView extends JPanel
 
         if (obj instanceof Group) {
             Group g = (Group) obj;
-            List members = g.getMemberList();
+            List<?> members = g.getMemberList();
             if ((members == null) || (members.size() == 0)) {
                 isOpen = false;
             } else {
@@ -1003,15 +1042,15 @@ public class DefaultTreeView extends JPanel
      * at this node in breadth-first order..
      * @param node the node to start with.
      */
-    private final List breadthFirstUserObjects(TreeNode node)
+    private final List<Object> breadthFirstUserObjects(TreeNode node)
     {
         if (node == null) {
             return null;
         }
 
-        Vector list = new Vector();
+        Vector<Object> list = new Vector<Object>();
         DefaultMutableTreeNode theNode = null;
-        Enumeration local_enum = ((DefaultMutableTreeNode)node).breadthFirstEnumeration();
+        Enumeration<?> local_enum = ((DefaultMutableTreeNode)node).breadthFirstEnumeration();
         while(local_enum.hasMoreElements())
         {
             theNode = (DefaultMutableTreeNode)local_enum.nextElement();
@@ -1063,7 +1102,7 @@ public class DefaultTreeView extends JPanel
         HObject obj = null;
         String theName = null;
         DefaultMutableTreeNode theNode = null;
-        Enumeration local_enum = node.breadthFirstEnumeration();
+        Enumeration<?> local_enum = node.breadthFirstEnumeration();
         while(local_enum.hasMoreElements())
         {
             theNode = (DefaultMutableTreeNode)local_enum.nextElement();
@@ -1113,7 +1152,7 @@ public class DefaultTreeView extends JPanel
             return parent;
 
         if (theNode.getChildCount() >= 0) {
-            for (Enumeration e = theNode.children(); e.hasMoreElements();) {
+            for (Enumeration<?> e = theNode.children(); e.hasMoreElements();) {
                 TreeNode n = (TreeNode) e.nextElement();
                 TreePath path = parent.pathByAddingChild(n);
                 TreePath result = getTreePath(path, node, depth + 1);
@@ -1549,7 +1588,7 @@ public class DefaultTreeView extends JPanel
                     "HDFView",
                     JOptionPane.ERROR_MESSAGE);
             }
-            List objList = new Vector(2);
+            List<Object> objList = new Vector<Object>(2);
             objList.add(selectedObject);
             pasteObject(objList, dstFile.getRootNode(), dstFile);
         }
@@ -1564,7 +1603,7 @@ public class DefaultTreeView extends JPanel
             }
 
             try {
-                MetaDataView theView = showMetaData(selectedObject);
+                showMetaData(selectedObject);
             }
             catch (Exception ex) {
                 toolkit.beep();
@@ -1637,7 +1676,6 @@ public class DefaultTreeView extends JPanel
     {
         FileFormat fileFormat = null;
         MutableTreeNode fileRoot = null;
-        String msg = "";
 
         if (isFileOpen(filename))
         {
@@ -1655,7 +1693,7 @@ public class DefaultTreeView extends JPanel
             accessID = FileFormat.READ;
         }
 
-        Enumeration keys = FileFormat.getFileFormatKeys();
+        Enumeration<?> keys = FileFormat.getFileFormatKeys();
 
         String theKey = null;
         while (keys.hasMoreElements())
@@ -1751,7 +1789,7 @@ public class DefaultTreeView extends JPanel
         // find the file node in the tree and removed it from the tree first
         FileFormat theFile = null;
         DefaultMutableTreeNode theNode = null;
-        Enumeration enumeration = root.children();
+        Enumeration<?> enumeration = root.children();
         while(enumeration.hasMoreElements())
         {
             theNode = (DefaultMutableTreeNode)enumeration.nextElement();
@@ -1801,7 +1839,7 @@ public class DefaultTreeView extends JPanel
         }
 
         // write the change of the data into file before save the file
-        List views = ((HDFView)viewer).getDataViews();
+        List<?> views = ((HDFView)viewer).getDataViews();
         Object theView = null;
         TableView tableView = null;
         TextView textView = null;
@@ -1859,13 +1897,13 @@ public class DefaultTreeView extends JPanel
      *
      * @return a list of selected object in the tree.
      */
-    public List getSelectedObjects() {
+    public List<Object> getSelectedObjects() {
         TreePath[] paths = tree.getSelectionPaths();
         if ((paths == null) || (paths.length <=0)) {
             return null;
         }
 
-        List objs = new Vector(paths.length);
+        List<Object> objs = new Vector<Object>(paths.length);
         HObject theObject=null, parentObject;
         DefaultMutableTreeNode currentNode=null, parentNode=null;
         for (int i=0; i<paths.length; i++)
@@ -1960,7 +1998,7 @@ public class DefaultTreeView extends JPanel
         }
 
         // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
-        Class theClass = null;
+        Class<?> theClass = null;
         try { theClass = Class.forName(dataViewName); }
         catch (Exception ex) { 
         	try {
@@ -1981,16 +2019,16 @@ public class DefaultTreeView extends JPanel
 
         Object theView = null;
         Object[] initargs = {viewer};
-        HashMap map = new HashMap(4);
+        HashMap<DATA_VIEW_KEY, Serializable> map = new HashMap<DATA_VIEW_KEY, Serializable>(4);
         if (bitmask != null) {
             map.put(ViewProperties.DATA_VIEW_KEY.BITMASK, bitmask);
 
             // create a copy of dataset
             ScalarDS d_copy = null;
-            Constructor constructor = null;
+            Constructor<? extends Dataset> constructor = null;
             Object[] paramObj = null;
             try {
-                Class[] paramClass = { FileFormat.class, String.class,
+                Class<?>[] paramClass = { FileFormat.class, String.class,
                         String.class, long[].class};
                 constructor = d.getClass().getConstructor(paramClass);
                 
@@ -2065,13 +2103,12 @@ public class DefaultTreeView extends JPanel
             return null;
         }
 
-        List metaDataViewList = HDFView.getListOfMetaDataView();
+        List<?> metaDataViewList = HDFView.getListOfMetaDataView();
         if ((metaDataViewList == null) || (metaDataViewList.size() <=0)) {
             return null;
         }
 
         int n = metaDataViewList.size();
-        Class viewClass = null;
         String className = (String)metaDataViewList.get(0);
 
         if (!isDefaultDisplay && (n>1)) {
@@ -2086,7 +2123,7 @@ public class DefaultTreeView extends JPanel
         }
  
         // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
-        Class theClass = null;
+        Class<?> theClass = null;
         try { theClass = Class.forName(className); }
         catch (Exception ex) { theClass = ViewProperties.loadExtClass().loadClass(className); }
 
@@ -2135,7 +2172,7 @@ public class DefaultTreeView extends JPanel
     /**
      * Returns the list of current open files..
      */
-    public List getCurrentFiles() {
+    public List<FileFormat> getCurrentFiles() {
         return fileList;
     }
 
@@ -2155,7 +2192,7 @@ public class DefaultTreeView extends JPanel
 
         DefaultMutableTreeNode theNode = null;
         HObject theObj = null;
-        Enumeration local_enum = ((DefaultMutableTreeNode)theFileRoot).breadthFirstEnumeration();
+        Enumeration<?> local_enum = ((DefaultMutableTreeNode)theFileRoot).breadthFirstEnumeration();
         while(local_enum.hasMoreElements())
         {
             theNode = (DefaultMutableTreeNode)local_enum.nextElement();

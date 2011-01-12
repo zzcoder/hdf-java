@@ -13,7 +13,8 @@
 
 package ncsa.hdf.hdf5lib;
 
-import ncsa.hdf.hdf5lib.exceptions.*;
+import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
+import ncsa.hdf.hdf5lib.exceptions.HDF5JavaException;
 
 /**
  * This class encapsulates native methods to deal with arrays of numbers,

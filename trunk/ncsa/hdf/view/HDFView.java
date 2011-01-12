@@ -14,10 +14,14 @@
 
 package ncsa.hdf.view;
 
-import ncsa.hdf.object.*;
-
-import javax.swing.*;
-
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Event;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -27,21 +31,56 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
-import java.awt.event.*;
-import java.io.*;
-import java.util.*;
-
-import javax.swing.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.net.URL;
-import java.lang.reflect.*;
-import java.awt.Event;
-import java.awt.Dimension;
-import java.awt.Component;
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.Toolkit;
-import java.awt.Font;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDesktopPane;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import ncsa.hdf.object.Attribute;
+import ncsa.hdf.object.CompoundDS;
+import ncsa.hdf.object.Dataset;
+import ncsa.hdf.object.Datatype;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.HObject;
+import ncsa.hdf.object.ScalarDS;
 
 /**
  * HDFView is the main class of this HDF visual tool.
@@ -64,10 +103,10 @@ ChangeListener, DropTargetListener
 {
   public static final long serialVersionUID = HObject.serialVersionUID;
     /** a list of tree view implementation. */
-    private static List treeViews;
+    private static List<String> treeViews;
 
     /** a list of image view implementation. */
-    private static List imageViews;
+    private static List<String> imageViews;
 
     /** a list of tree table implementation. */
     private static List tableViews;
@@ -146,10 +185,10 @@ ChangeListener, DropTargetListener
     private final List editGUIs;
 
     /** The list of GUI components related to HDF5 */
-    private final List h5GUIs;
+    private final List<JMenuItem> h5GUIs;
 
     /** The list of GUI components related to HDF4 */
-    private final List h4GUIs;
+    private final List<JMenuItem> h4GUIs;
 
     /** to add and display url */
     private JComboBox urlBar;
@@ -167,9 +206,10 @@ ChangeListener, DropTargetListener
      * @param root the directory where the HDFView is installed.
      * @param flist a list of files to open.
      */
-    public HDFView(String root, List flist, int width, int height, int x, int y)
+    public HDFView(String root, List<File> flist, int width, int height, int x, int y)
     {
         super("HDFView");
+        this.setName("hdfview");
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         
@@ -185,8 +225,8 @@ ChangeListener, DropTargetListener
         ViewProperties.loadExtClass();
 
         editGUIs = new Vector();
-        h4GUIs = new Vector();
-        h5GUIs = new Vector();
+        h4GUIs = new Vector<JMenuItem>();
+        h5GUIs = new Vector<JMenuItem>();
 
         // load the view properties
         props = new ViewProperties(rootDir);
@@ -211,6 +251,7 @@ ChangeListener, DropTargetListener
         statusArea.setEditable(false);
         statusArea.setBackground(new java.awt.Color(240, 240, 240));
         statusArea.setLineWrap(true);
+        statusArea.setName("status");
         message = new StringBuffer();
         metadata = new StringBuffer();
         showStatus("HDFView root - "+rootDir);
@@ -220,20 +261,25 @@ ChangeListener, DropTargetListener
         attributeArea.setEditable(false);
         attributeArea.setBackground(new java.awt.Color(240, 240, 240));
         attributeArea.setLineWrap(true);
+        attributeArea.setName("attributes");
 
         // create tab pane to display attributes and status information
         infoTabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
         infoTabbedPane.addChangeListener(this);
+        infoTabbedPane.setName("tabpane");
 
         contentPane = new JDesktopPane();
+        contentPane.setName("contentpane");
         windowMenu = new JMenu( "Window" );
+        windowMenu.setName("windowmenu");
         fileMenu = new JMenu( "File" );
+        fileMenu.setName("filemenu");
 
         int n = treeViews.size();
         Class theClass = null;
         for (int i=0; i<n; i++)  {
           // use the first available treeview
-            String className = (String)treeViews.get(i);
+            String className = treeViews.get(i);
             // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
             try { theClass = Class.forName(className); }
             catch (Exception ex)
@@ -284,7 +330,7 @@ ChangeListener, DropTargetListener
 
         File theFile = null;
         for (int i=0; i<nfiles; i++) {
-            theFile = (File)flist.get(i);
+            theFile = flist.get(i);
             if (theFile.isFile()) {
                 currentDir = theFile.getParentFile().getAbsolutePath();
                 currentFile = theFile.getAbsolutePath();
@@ -352,12 +398,15 @@ ChangeListener, DropTargetListener
     {
         // create splitpane to separate treeview and the contentpane
         JScrollPane treeScroller = new JScrollPane((Component)treeView);
+        treeScroller.setName("treescroller");
         JScrollPane contentScroller = new JScrollPane(contentPane);
+        contentScroller.setName("contentscroller");
         JSplitPane topSplitPane = new JSplitPane(
             JSplitPane.HORIZONTAL_SPLIT,
             treeScroller,
             contentScroller);
         topSplitPane.setDividerLocation(200);
+        topSplitPane.setName("topsplitpane");
 
         infoTabbedPane.addTab("Log Info", new JScrollPane(statusArea));
         infoTabbedPane.addTab("Metadata ", new JScrollPane(attributeArea));
@@ -369,6 +418,7 @@ ChangeListener, DropTargetListener
             JSplitPane.VERTICAL_SPLIT,
             topSplitPane,
             infoTabbedPane);
+        splitPane.setName("splitpane");
 
         // set the window size
         //float inset = 0.17f; // for UG only.
@@ -414,6 +464,7 @@ ChangeListener, DropTargetListener
 
         JPanel urlPane = new JPanel();
         urlPane.setLayout(new BorderLayout());
+        urlPane.setName("urlpane");
         
         JButton b = new JButton("Clear Text");
         b.setActionCommand("Clear current selection");
@@ -434,17 +485,20 @@ ChangeListener, DropTargetListener
         toolPane.setLayout(new GridLayout(2,1,0,0));
         toolPane.add(toolBar);
         toolPane.add(urlPane);
+        toolPane.setName("toolpane");
 
         JPanel mainPane = (JPanel)getContentPane();
         mainPane.setLayout(new BorderLayout());
         mainPane.add(toolPane, BorderLayout.NORTH);
         mainPane.add(splitPane, BorderLayout.CENTER);
         mainPane.setPreferredSize(d);
+        mainPane.setName("mainpane");
     }
 
     private JMenuBar createMenuBar()
     {
         JMenuBar mbar = new JMenuBar();
+        mbar.setName("mbar");
         JMenu menu = null;
         JMenuItem item;
 
@@ -679,6 +733,7 @@ ChangeListener, DropTargetListener
     {
         JToolBar tbar = new JToolBar();
         tbar.setFloatable(false);
+        tbar.setName("tbar");
 
         // open file button
         JButton button = new JButton(ViewProperties.getFileopenIcon() );
@@ -841,13 +896,13 @@ ChangeListener, DropTargetListener
     }
 
     /** disable/enable GUI components */
-    private static void setEnabled(List list, boolean b)
+    private static void setEnabled(List<JMenuItem> list, boolean b)
     {
         Component item = null;
-        Iterator it = list.iterator();
+        Iterator<JMenuItem> it = list.iterator();
         while (it.hasNext())
         {
-            item = (Component)it.next();
+            item = it.next();
             item.setEnabled(b);
         }
     }
@@ -959,6 +1014,7 @@ ChangeListener, DropTargetListener
     		}
 
     		NewFileDialog dialog = new NewFileDialog(this, currentDir, ftype, treeView.getCurrentFiles());
+    		dialog.setName("newfiledialog");
     		//dialog.show();
 
     		if (!dialog.isFileCreated()) {
@@ -1032,10 +1088,10 @@ ChangeListener, DropTargetListener
     	else if (cmd.equals("Close all file"))
     	{
     		closeAllWindow();
-    		List files = treeView.getCurrentFiles();
+    		List<FileFormat> files = treeView.getCurrentFiles();
 
     		while(!files.isEmpty()) {
-    			try { treeView.closeFile((FileFormat)files.get(0)); }
+    			try { treeView.closeFile(files.get(0)); }
     			catch (Exception ex) {}
     		}
     		currentFile = null;
@@ -1058,7 +1114,7 @@ ChangeListener, DropTargetListener
     		/* save what have been changed in memory into file */
     		try {
     			FileFormat file = treeView.getSelectedFile();
-    			List views = getDataViews();
+    			List<JInternalFrame> views = getDataViews();
     			Object theView = null;
     			TableView tableView = null;
     			TextView textView = null;
@@ -1229,7 +1285,7 @@ ChangeListener, DropTargetListener
     		// check is the file format has been registered or the key is taken.
     		String theKey = null;
     		String theClassName = null;
-    		Enumeration local_enum = FileFormat.getFileFormatKeys();
+    		Enumeration<?> local_enum = FileFormat.getFileFormatKeys();
     		while (local_enum.hasMoreElements()) {
     			theKey = (String)local_enum.nextElement();
     			if (theKey.endsWith(key)) {
@@ -1376,7 +1432,7 @@ ChangeListener, DropTargetListener
     	}
     	else if (cmd.equals("File format list"))
     	{
-    		Enumeration formatKeys = FileFormat.getFileFormatKeys();
+    		Enumeration<?> formatKeys = FileFormat.getFileFormatKeys();
 
     		String str = "\nSupported File Formats: \n";
     		while (formatKeys.hasMoreElements()) {
@@ -1524,7 +1580,7 @@ ChangeListener, DropTargetListener
 
         // close all open files
         try {
-        List filelist = treeView.getCurrentFiles();
+        List<FileFormat> filelist = treeView.getCurrentFiles();
         if ((filelist != null) && (filelist.size()>0)) {
             Object[] files = filelist.toArray();
             int n = files.length;
@@ -1829,7 +1885,7 @@ ChangeListener, DropTargetListener
 
     /** Returns a list of all open DataViews
      */
-    public List getDataViews()
+    public List<JInternalFrame> getDataViews()
     {
         // check if the data content is already displayed
         JInternalFrame[] frames = contentPane.getAllFrames();
@@ -1839,7 +1895,7 @@ ChangeListener, DropTargetListener
             return null;
         }
 
-        Vector views = new Vector(frames.length);
+        Vector<JInternalFrame> views = new Vector<JInternalFrame>(frames.length);
         HObject obj = null;
         for (int i=0; i<frames.length; i++)
         {
@@ -1856,14 +1912,14 @@ ChangeListener, DropTargetListener
     /**
      * @return a list of treeview implementations.
      */
-    public static final List getListOfTreeView() {
+    public static final List<String> getListOfTreeView() {
         return treeViews;
     }
 
     /**
      * @return a list of imageview implementations.
      */
-    public static final List getListOfImageView() {
+    public static final List<String> getListOfImageView() {
         return imageViews;
     }
 
@@ -2061,8 +2117,8 @@ ChangeListener, DropTargetListener
     private static final void loadExtModules() throws Exception
     {
         ClassLoader extClassLoader = ViewProperties.loadExtClass();
-        Vector moduleListTreeView  = ViewProperties.getTreeViewList();
-        Vector moduleListImageView = ViewProperties.getImageViewList();
+        Vector<String> moduleListTreeView  = ViewProperties.getTreeViewList();
+        Vector<String> moduleListImageView = ViewProperties.getImageViewList();
         
         if (extClassLoader == null ||
                 moduleListTreeView == null ||
@@ -2183,7 +2239,7 @@ ChangeListener, DropTargetListener
             }
         }
 
-        Vector flist = new Vector();
+        Vector<File> flist = new Vector<File>();
         tmpFile = null;
         if (j>=0) {
             for (i = j; i<args.length; i++) {
@@ -2194,7 +2250,7 @@ ChangeListener, DropTargetListener
             }
         }
         
-        final Vector the_flist = flist;
+        final Vector<File> the_flist = flist;
         final String the_rootDir = rootDir;
         final int the_X=X, the_Y=Y, the_W=W, the_H=H;
         

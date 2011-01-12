@@ -14,8 +14,8 @@
 
 package ncsa.hdf.view;
 
-import java.awt.Rectangle;
 import java.awt.Image;
+import java.awt.Rectangle;
 
 /**
  * The image view interface for displaying image object

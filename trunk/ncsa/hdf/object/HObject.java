@@ -14,7 +14,7 @@
 
 package ncsa.hdf.object;
 
-import java.io.*;
+import java.io.Serializable;
 
 /**
  * The HObject class is the root class of all the HDF data objects. Every data

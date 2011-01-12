@@ -3,18 +3,21 @@
  */
 package test.object;
 
-import java.util.Vector;
 import java.lang.reflect.Array;
+import java.util.Vector;
 
+import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.HDFNativeData;
 import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
+import ncsa.hdf.object.Attribute;
 import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.FileFormat;
-import ncsa.hdf.object.Attribute;
-import ncsa.hdf.object.h5.*;
-import junit.framework.TestCase;
+import ncsa.hdf.object.h5.H5CompoundDS;
+import ncsa.hdf.object.h5.H5Datatype;
+import ncsa.hdf.object.h5.H5File;
+import ncsa.hdf.object.h5.H5Group;
 
 /**
  * TestCase for H5CompoundDS.

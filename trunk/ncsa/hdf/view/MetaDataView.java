@@ -14,7 +14,8 @@
 
 package ncsa.hdf.view;
 
-import ncsa.hdf.object.*;
+import ncsa.hdf.object.Attribute;
+import ncsa.hdf.object.HObject;
 
 /**
  * 

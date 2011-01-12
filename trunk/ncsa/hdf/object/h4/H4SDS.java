@@ -14,10 +14,26 @@
 
 package ncsa.hdf.object.h4;
 
-import java.util.*;
+import java.util.List;
+import java.util.Vector;
 
-import ncsa.hdf.hdflib.*;
-import ncsa.hdf.object.*;
+import ncsa.hdf.hdflib.HDFChunkInfo;
+import ncsa.hdf.hdflib.HDFCompInfo;
+import ncsa.hdf.hdflib.HDFConstants;
+import ncsa.hdf.hdflib.HDFDeflateCompInfo;
+import ncsa.hdf.hdflib.HDFException;
+import ncsa.hdf.hdflib.HDFJPEGCompInfo;
+import ncsa.hdf.hdflib.HDFLibrary;
+import ncsa.hdf.hdflib.HDFNBITCompInfo;
+import ncsa.hdf.hdflib.HDFSKPHUFFCompInfo;
+import ncsa.hdf.hdflib.HDFSZIPCompInfo;
+import ncsa.hdf.object.Attribute;
+import ncsa.hdf.object.Dataset;
+import ncsa.hdf.object.Datatype;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.HObject;
+import ncsa.hdf.object.ScalarDS;
 
 /**
  * H4SDS describes HDF4 Scientific Data Sets (SDS) and operations performed on

@@ -14,13 +14,26 @@
 
 package ncsa.hdf.object.h4;
 
-import java.util.*;
 import java.io.File;
-
 import java.lang.reflect.Array;
-import javax.swing.tree.*;
-import ncsa.hdf.hdflib.*;
-import ncsa.hdf.object.*;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
+
+import ncsa.hdf.hdflib.HDFConstants;
+import ncsa.hdf.hdflib.HDFException;
+import ncsa.hdf.hdflib.HDFLibrary;
+import ncsa.hdf.object.Attribute;
+import ncsa.hdf.object.Dataset;
+import ncsa.hdf.object.Datatype;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.HObject;
 
 /**
  * This class provides file level APIs. File access APIs include retrieving the

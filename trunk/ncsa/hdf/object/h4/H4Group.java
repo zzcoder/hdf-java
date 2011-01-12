@@ -14,10 +14,17 @@
 
 package ncsa.hdf.object.h4;
 
-import java.util.*;
+import java.util.List;
+import java.util.Vector;
 
-import ncsa.hdf.hdflib.*;
-import ncsa.hdf.object.*;
+import ncsa.hdf.hdflib.HDFConstants;
+import ncsa.hdf.hdflib.HDFException;
+import ncsa.hdf.hdflib.HDFLibrary;
+import ncsa.hdf.object.Attribute;
+import ncsa.hdf.object.Dataset;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.HObject;
 
 /**
  * An H4Group is a vgroup in HDF4, inheriting from Group.

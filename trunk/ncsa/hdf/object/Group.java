@@ -14,7 +14,9 @@
 
 package ncsa.hdf.object;
 
-import java.util.*;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Vector;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -31,9 +33,14 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public abstract class Group extends HObject {
     /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * The list of members (Groups and Datasets) of this group in memory.
      */
-    private List memberList;
+    private List<HObject> memberList;
 
     /**
      * The parent group where this group is located. The parent of the root
@@ -99,7 +106,7 @@ public abstract class Group extends HObject {
      */
     public void clear() {
         if (memberList != null) {
-            ((Vector) memberList).setSize(0);
+            ((Vector<HObject>) memberList).setSize(0);
         }
     }
 
@@ -114,7 +121,7 @@ public abstract class Group extends HObject {
         if (memberList == null) {
             int size = Math.min(getNumberOfMembersInFile(), this
                     .getFileFormat().getMaxMembers());
-            memberList = new Vector(size + 5);
+            memberList = new Vector<HObject>(size + 5);
         }
 
         if ((object != null) && !memberList.contains(object)) {
@@ -142,7 +149,7 @@ public abstract class Group extends HObject {
      * 
      * @return the list of members of this group.
      */
-    public List getMemberList() {
+    public List<HObject> getMemberList() {
         FileFormat theFile = this.getFileFormat();
         String thePath = this.getPath();
         String theName = this.getName();
@@ -150,7 +157,7 @@ public abstract class Group extends HObject {
         if ((memberList == null) && (theFile != null)) {
             int size = Math.min(getNumberOfMembersInFile(), this
                     .getFileFormat().getMaxMembers());
-            memberList = new Vector(size + 5); // avoid infinite loop search for
+            memberList = new Vector<HObject>(size + 5); // avoid infinite loop search for
                                                // groups without member
 
             // find the memberList from the file by check the group path and
@@ -171,7 +178,7 @@ public abstract class Group extends HObject {
                 return memberList;
             }
 
-            Enumeration emu = root.depthFirstEnumeration();
+            Enumeration<?> emu = root.depthFirstEnumeration();
 
             Group g = null;
             Object uObj = null;
@@ -217,7 +224,7 @@ public abstract class Group extends HObject {
             int n = memberList.size();
             HObject theObj = null;
             for (int i = 0; i < n; i++) {
-                theObj = (HObject) memberList.get(i);
+                theObj = memberList.get(i);
                 theObj.setPath(this.getPath() + newName + HObject.separator);
             }
         }

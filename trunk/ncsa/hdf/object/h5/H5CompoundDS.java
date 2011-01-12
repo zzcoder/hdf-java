@@ -14,14 +14,22 @@
 
 package ncsa.hdf.object.h5;
 
-import java.util.*;
-
-import ncsa.hdf.hdf5lib.*;
-import ncsa.hdf.hdf5lib.exceptions.*;
-import ncsa.hdf.hdf5lib.structs.H5O_info_t;
-import ncsa.hdf.object.*;
-
 import java.lang.reflect.Array;
+import java.util.List;
+import java.util.Vector;
+
+import ncsa.hdf.hdf5lib.H5;
+import ncsa.hdf.hdf5lib.HDF5Constants;
+import ncsa.hdf.hdf5lib.HDFNativeData;
+import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
+import ncsa.hdf.hdf5lib.structs.H5O_info_t;
+import ncsa.hdf.object.Attribute;
+import ncsa.hdf.object.CompoundDS;
+import ncsa.hdf.object.Dataset;
+import ncsa.hdf.object.Datatype;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.Group;
+import ncsa.hdf.object.HObject;
 
 /**
  * The H5CompoundDS class defines an HDF5 dataset of compound datatypes.

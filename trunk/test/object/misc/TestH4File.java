@@ -12,12 +12,20 @@
 
 package test.object.misc;
 
-import javax.swing.tree.*;
-import java.util.*;
-import java.lang.reflect.*;
-import ncsa.hdf.object.*;
-import ncsa.hdf.object.h4.*;
-import ncsa.hdf.hdflib.*;
+import java.lang.reflect.Array;
+import java.util.Enumeration;
+import java.util.List;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
+
+import ncsa.hdf.hdflib.HDFConstants;
+import ncsa.hdf.object.Attribute;
+import ncsa.hdf.object.h4.H4File;
+import ncsa.hdf.object.h4.H4GRImage;
+import ncsa.hdf.object.h4.H4Group;
+import ncsa.hdf.object.h4.H4SDS;
+import ncsa.hdf.object.h4.H4Vdata;
 
 /**
  * Test object at the ncsa.hdf.object package.

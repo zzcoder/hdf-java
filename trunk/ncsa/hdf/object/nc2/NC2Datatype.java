@@ -16,9 +16,9 @@ package ncsa.hdf.object.nc2;
 
 import java.util.List;
 
-import ucar.ma2.DataType;
 import ncsa.hdf.object.Datatype;
 import ncsa.hdf.object.HObject;
+import ucar.ma2.DataType;
 
 /**
  * Datatype encapsulates information of a datatype. Information includes the

@@ -5,8 +5,6 @@ package test.object;
 
 import java.util.Enumeration;
 
-import test.object.H5TestFile;
-
 import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;

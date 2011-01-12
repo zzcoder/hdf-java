@@ -5,11 +5,13 @@ package test.object;
 
 import java.util.Vector;
 
+import junit.framework.TestCase;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
-import ncsa.hdf.object.*;
-import ncsa.hdf.object.h5.*;
-import junit.framework.TestCase;
+import ncsa.hdf.object.Dataset;
+import ncsa.hdf.object.FileFormat;
+import ncsa.hdf.object.h5.H5CompoundDS;
+import ncsa.hdf.object.h5.H5File;
 
 /**
  * TestCase for bug fixes.

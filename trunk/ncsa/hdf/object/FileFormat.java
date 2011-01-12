@@ -14,12 +14,18 @@
 
 package ncsa.hdf.object;
 
-import java.util.*;
 import java.io.File;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
+
+import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
 
 
 /**
