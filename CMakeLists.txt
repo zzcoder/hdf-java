@@ -243,7 +243,7 @@ IF (HDFJAVA_ALLOW_EXTERNAL_SUPPORT MATCHES "SVN")
     SET (HDF4_SVN_URL "http://svn.hdfgroup.uiuc.edu/hdf4/trunk")
   ENDIF (NOT HDF4_SVN_URL)
   IF (NOT HDF5_SVN_URL)
-    SET (HDF5_SVN_URL "http://svn.hdfgroup.uiuc.edu/hdf5/branches/hdf5_1_8")
+    SET (HDF5_SVN_URL "http://svn.hdfgroup.uiuc.edu/hdf5/branches/hdf5_1_8_6")
   ENDIF (NOT HDF5_SVN_URL)
 ENDIF (HDFJAVA_ALLOW_EXTERNAL_SUPPORT MATCHES "SVN")
 
