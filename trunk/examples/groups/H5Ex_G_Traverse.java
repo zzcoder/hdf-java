@@ -12,13 +12,13 @@ This file is intended for use with HDF5 Library version 1.8
  ************************************************************/
 package examples.groups;
 
-import examples.groups.H5Ex_G_Iterate.H5O_type;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.callbacks.H5L_iterate_cb;
 import ncsa.hdf.hdf5lib.callbacks.H5L_iterate_t;
 import ncsa.hdf.hdf5lib.structs.H5L_info_t;
 import ncsa.hdf.hdf5lib.structs.H5O_info_t;
+import examples.groups.H5Ex_G_Iterate.H5O_type;
 
 class opdata implements H5L_iterate_t {
 	int recurs;
