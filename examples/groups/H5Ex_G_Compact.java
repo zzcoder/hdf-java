@@ -3,6 +3,7 @@ package examples.groups;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.structs.H5G_info_t;

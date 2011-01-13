@@ -11,6 +11,7 @@ This file is intended for use with HDF5 Library version 1.8
 package examples.groups;
 
 import java.util.ArrayList;
+
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.callbacks.H5L_iterate_cb;
@@ -29,7 +30,7 @@ public class H5Ex_G_Visit {
 
 		int file_id = -1;
 
-		try{
+		try {
 			//Open file
 			file_id = H5.H5Fopen(FILE, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
 
@@ -49,7 +50,7 @@ public class H5Ex_G_Visit {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		finally{
+		finally {
 			//Close and release resources.
 			if(file_id>=0) 
 				H5.H5Fclose (file_id);

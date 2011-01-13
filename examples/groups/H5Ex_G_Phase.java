@@ -6,10 +6,10 @@
  ************************************************************/
 package examples.groups;
 
-import examples.groups.H5Ex_G_Compact.H5G_storage;
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.structs.H5G_info_t;
+import examples.groups.H5Ex_G_Compact.H5G_storage;
 
 
 public class H5Ex_G_Phase {

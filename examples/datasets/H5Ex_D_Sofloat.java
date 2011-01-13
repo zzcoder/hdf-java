@@ -11,7 +11,10 @@
 	 ************************************************************/
 package examples.datasets;
 
-import examples.datasets.H5Ex_D_Checksum.H5Z_filter;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
@@ -24,6 +27,33 @@ public class H5Ex_D_Sofloat {
 	private static final int DIM_Y = 64;
 	private static final int CHUNK_X = 4;
 	private static final int CHUNK_Y = 8;
+
+    // Values for the status of space allocation
+    enum H5Z_filter {
+        H5Z_FILTER_ERROR(-1), H5Z_FILTER_NONE(0), H5Z_FILTER_DEFLATE(1), H5Z_FILTER_SHUFFLE(
+                2), H5Z_FILTER_FLETCHER32(3), H5Z_FILTER_SZIP(4), H5Z_FILTER_NBIT(5), H5Z_FILTER_SCALEOFFSET(
+                6), H5Z_FILTER_RESERVED(256), H5Z_FILTER_MAX(65535);
+        private static final Map<Integer, H5Z_filter> lookup = new HashMap<Integer, H5Z_filter>();
+
+        static {
+            for (H5Z_filter s : EnumSet.allOf(H5Z_filter.class))
+                lookup.put(s.getCode(), s);
+        }
+
+        private int code;
+
+        H5Z_filter(int layout_type) {
+            this.code = layout_type;
+        }
+
+        public int getCode() {
+            return this.code;
+        }
+
+        public static H5Z_filter get(int code) {
+            return lookup.get(code);
+        }
+    }
 
 	private static boolean checkScaleoffsetFilter() {
 		try {
