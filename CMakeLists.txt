@@ -913,7 +913,7 @@ ENDIF (BUILD_TESTING)
 # Option to build HDFJAVA Examples
 #-----------------------------------------------------------------------------
 IF (HDFJAVA_BUILD_EXAMPLES)
-#  ADD_SUBDIRECTORY(${HDFJAVA_SOURCE_DIR}/examples    examples)
+  ADD_SUBDIRECTORY(${HDFJAVA_SOURCE_DIR}/examples    examples)
 ENDIF (HDFJAVA_BUILD_EXAMPLES)
 
 #-----------------------------------------------------------------------------
