@@ -34,11 +34,11 @@ MACRO (ADD_H5_TEST resultfile resultcode)
           -D "TEST_PROGRAM=examples.intro.${resultfile}"
           -D "TEST_ARGS:STRING=${ARGN}"
           -D "TEST_CLASSPATH:STRING=${${resultfile}_CLASSPATH}"
-          -D "TEST_LIBRARY_DIRECTORY=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
-          -D "TEST_FOLDER=${HDFJAVA_EXAMPLES_INTRO_BINARY_DIR}"
-          -D "TEST_OUTPUT=${resultfile}.out"
+          -D "TEST_LIBRARY_DIRECTORY=${CMAKE_BINARY_DIR}"
+          -D "TEST_FOLDER=${CMAKE_BINARY_DIR}"
+          -D "TEST_OUTPUT=${HDFJAVA_EXAMPLES_INTRO_BINARY_DIR}/${resultfile}.out"
           -D "TEST_EXPECT=${resultcode}"
-          -D "TEST_REFERENCE=${resultfile}.txt"
+          -D "TEST_REFERENCE=${HDFJAVA_EXAMPLES_INTRO_BINARY_DIR}/${resultfile}.txt"
           -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
   )
 ENDMACRO (ADD_H5_TEST file)
