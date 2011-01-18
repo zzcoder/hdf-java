@@ -65,12 +65,20 @@ public class H5Ex_G_Visit {
 		}
 }
 
-
 /************************************************************
 Operator function for H5Lvisit.  This function simply
 retrieves the info for the object the current link points
 to, and calls the operator function for H5Ovisit.
 ************************************************************/
+
+class idata {
+    public String link_name = null;
+    public int link_type = -1;
+    idata(String name, int type) {
+        this.link_name = name;
+        this.link_type = type;
+    }
+
 class H5L_iter_data implements H5L_iterate_t {
     public ArrayList<idata> iterdata = new ArrayList<idata>();
 }
