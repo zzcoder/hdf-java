@@ -46,56 +46,61 @@ SET (HDFJAVA_NCSA_HDF_VIEW_SRCS
 )
 
 SET (HDFJAVA_NCSA_HDF_VIEW_ICONS
-    animation.gif
-    apps.gif
-    audio.gif
-    autocontrast.gif
-    blank.gif
-    brightness.gif
-    chart.gif
-    copy.gif
-    cut.gif
-    dataset.gif
-    datasetA.gif
-    datatype.gif
-    datatypeA.gif
-    fileclose.gif
-    filenew.gif
-    fileopen.gif
-    filesave.gif
-    first.gif
-    folderclose.gif
-    foldercloseA.gif
-    folderopen.gif
-    folderopenA.gif
-    hdf_large.gif
-    hdf.gif
-    hdf32.gif
-    hdf32.icns
-    hdf32.png
-    hdf4.gif
-    hdf5.gif
-    help.gif
-    image.gif
-    imageA.gif
-    last.gif
-    link.gif
-    next.gif
-    palette.gif
-    paste.gif
-    pdf.gif
-    previous.gif
-    question.gif
-    table.gif
-    tableA.gif
-    text.gif
-    textA.gif
-    txt.gif
-    url.gif
-    video.gif
-    xls.gif
-    zoomin.gif
-    zoomout.gif
+    icons/animation.gif
+    icons/apps.gif
+    icons/audio.gif
+    icons/autocontrast.gif
+    icons/blank.gif
+    icons/brightness.gif
+    icons/chart.gif
+    icons/copy.gif
+    icons/cut.gif
+    icons/dataset.gif
+    icons/datasetA.gif
+    icons/datatype.gif
+    icons/datatypeA.gif
+    icons/fileclose.gif
+    icons/filenew.gif
+    icons/fileopen.gif
+    icons/filesave.gif
+    icons/first.gif
+    icons/folderclose.gif
+    icons/foldercloseA.gif
+    icons/folderopen.gif
+    icons/folderopenA.gif
+    icons/hdf_large.gif
+    icons/hdf.gif
+    icons/hdf32.gif
+    icons/hdf32.icns
+    icons/hdf32.png
+    icons/hdf4.gif
+    icons/hdf5.gif
+    icons/help.gif
+    icons/image.gif
+    icons/imageA.gif
+    icons/last.gif
+    icons/link.gif
+    icons/next.gif
+    icons/palette.gif
+    icons/paste.gif
+    icons/pdf.gif
+    icons/previous.gif
+    icons/question.gif
+    icons/table.gif
+    icons/tableA.gif
+    icons/text.gif
+    icons/textA.gif
+    icons/txt.gif
+    icons/url.gif
+    icons/video.gif
+    icons/xls.gif
+    icons/zoomin.gif
+    icons/zoomout.gif
+)
+
+SET (HDFJAVA_NCSA_HDF_VIEW_HTML
+    NewAttrHelp.html
+    NewDatsetHelp.html
 )
 
 SET (CMAKE_JAVA_INCLUDE_PATH 
@@ -105,7 +110,20 @@ SET (CMAKE_JAVA_INCLUDE_PATH
 
 INCLUDE_DIRECTORIES (${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${HDFJAVA_NCSA_VIEW_LIB_CORENAME}.dir/ncsa/hdf/object)
 
-ADD_JAR (${HDFJAVA_NCSA_VIEW_LIB_TARGET} ${HDFJAVA_NCSA_HDF_VIEW_SRCS})
+ADD_JAR (${HDFJAVA_NCSA_VIEW_LIB_TARGET} ${HDFJAVA_NCSA_HDF_VIEW_SRCS} ${HDFJAVA_NCSA_HDF_VIEW_ICONS})
 INSTALL_JAR (${HDFJAVA_NCSA_VIEW_LIB_TARGET} ${LIB_INSTALL_DIR}/${HDFJAVA_NCSA_VIEW_LIB_TARGET})
 SET_GLOBAL_VARIABLE (HDFJAVA_JARS_TO_EXPORT "${HDFJAVA_JARS_TO_EXPORT};${${HDFJAVA_NCSA_VIEW_LIB_TARGET}_JAR_FILE}")
 ADD_DEPENDENCIES (${HDFJAVA_NCSA_VIEW_LIB_TARGET} ${HDFJAVA_NCSA_HDF_LIB_TARGET})
+
+#-----------------------------------------------------------------------------
+# Add Target(s) to CMake Install for import into other projects
+#-----------------------------------------------------------------------------
+IF (HDFJAVA_EXPORTED_TARGETS)
+  INSTALL (
+      TARGETS 
+          ${HDFJAVA_NCSA_VIEW_LIB_TARGET}
+      EXPORT
+          ${HDFJAVA_EXPORTED_TARGETS}
+      ARCHIVE DESTINATION ${HJAVA_INSTALL_BIN_DIR} COMPONENT applications
+  )
+ENDIF (HDFJAVA_EXPORTED_TARGETS)
