@@ -28,13 +28,13 @@ ENDFOREACH (example ${HDF_JAVA_EXAMPLES})
 
 MACRO (ADD_H5_TEST resultfile resultcode)
   ADD_TEST (
-      NAME datasets-${resultfile}
+      NAME intro-${resultfile}
       COMMAND "${CMAKE_COMMAND}"
           -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
           -D "TEST_PROGRAM=examples.intro.${resultfile}"
           -D "TEST_ARGS:STRING=${ARGN}"
           -D "TEST_CLASSPATH:STRING=${${resultfile}_CLASSPATH}"
-          -D "TEST_LIBRARY_DIRECTORY=${CMAKE_BINARY_DIR}"
+          -D "TEST_LIBRARY_DIRECTORY=${CMAKE_JAVA_LIBRARY_OUTPUT_PATH}"
           -D "TEST_FOLDER=${CMAKE_BINARY_DIR}"
           -D "TEST_OUTPUT=${HDFJAVA_EXAMPLES_INTRO_BINARY_DIR}/${resultfile}.out"
           -D "TEST_EXPECT=${resultcode}"
@@ -47,7 +47,7 @@ IF (BUILD_TESTING)
 
   FOREACH (example ${HDF_JAVA_EXAMPLES})
     ADD_TEST (
-        NAME ${example}-clearall-objects
+        NAME intro-${example}-clearall-objects
         COMMAND    ${CMAKE_COMMAND}
             -E remove
             ${example}.h5
@@ -55,7 +55,7 @@ IF (BUILD_TESTING)
             ${example}.out.err
     )
     ADD_TEST (
-        NAME ${example}-copy-objects
+        NAME intro-${example}-copy-objects
         COMMAND    ${CMAKE_COMMAND}
             -E copy_if_different 
             ${HDFJAVA_EXAMPLES_SOURCE_DIR}/testfiles/examples.intro.${example}.txt

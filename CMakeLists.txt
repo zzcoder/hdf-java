@@ -157,9 +157,15 @@ IF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
   SET (CMAKE_ARCHIVE_OUTPUT_DIRECTORY
       ${PROJECT_BINARY_DIR}/bin CACHE PATH "Single Directory for all static libraries."
   )
-  SET (CMAKE_JAVA_LIBRARY_OUTPUT_PATH
-      ${PROJECT_BINARY_DIR}/bin CACHE PATH "Single Directory for all jars."
-  )
+  IF (WIN32)
+    SET (CMAKE_JAVA_LIBRARY_OUTPUT_PATH
+        ${PROJECT_BINARY_DIR} CACHE PATH "Single Directory for all jars."
+    )
+  ELSE (WIN32)
+    SET (CMAKE_JAVA_LIBRARY_OUTPUT_PATH
+        ${PROJECT_BINARY_DIR}/bin CACHE PATH "Single Directory for all jars."
+    )
+  ENDIF (WIN32)
 ELSE (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
   # if we are externally configured, but the project uses old cmake scripts
   # this may not be set and utilities like Hdetect will fail
@@ -246,7 +252,7 @@ IF (HDFJAVA_ALLOW_EXTERNAL_SUPPORT MATCHES "SVN")
     SET (HDF4_SVN_URL "http://svn.hdfgroup.uiuc.edu/hdf4/trunk")
   ENDIF (NOT HDF4_SVN_URL)
   IF (NOT HDF5_SVN_URL)
-    SET (HDF5_SVN_URL "http://svn.hdfgroup.uiuc.edu/hdf5/branches/hdf5_1_8_6")
+    SET (HDF5_SVN_URL "http://svn.hdfgroup.uiuc.edu/hdf5/branches/hdf5_1_8")
   ENDIF (NOT HDF5_SVN_URL)
 ENDIF (HDFJAVA_ALLOW_EXTERNAL_SUPPORT MATCHES "SVN")
 
@@ -490,7 +496,7 @@ ENDIF (NOT BUILD_SHARED_LIBS)
                 -DBLDTYPE:STRING=Release
                 -DHDF_LEGACY_NAMING:BOOL=OFF
                 -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
-                -DHDF4_BUILD_TOOLS:BOOL=ON
+                -DHDF4_BUILD_TOOLS:BOOL=OFF
                 -DHDF4_BUILD_FORTRAN:BOOL=OFF
                 -DHDF4_ALLOW_EXTERNAL_SUPPORT:STRING="SVN"
                 -DBUILD_JPEG_WITH_PIC:BOOL=${BUILD_JPEG_WITH_PIC}
@@ -595,7 +601,7 @@ ENDIF (NOT BUILD_SHARED_LIBS)
                 -DBLDTYPE:STRING=Release
                 -DH5_LEGACY_NAMING:BOOL=OFF
                 -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
-                -DHDF5_BUILD_TOOLS:BOOL=ON
+                -DHDF5_BUILD_TOOLS:BOOL=OFF
                 -DHDF5_ALLOW_EXTERNAL_SUPPORT:STRING="SVN"
                 -DHDF5_ENABLE_Z_LIB_SUPPORT:BOOL=${HDFJAVA_ENABLE_Z_LIB_SUPPORT}
                 -DHDF5_ENABLE_SZIP_SUPPORT:BOOL=${HDFJAVA_ENABLE_SZIP_SUPPORT}
