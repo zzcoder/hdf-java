@@ -262,7 +262,7 @@ public class H5Ex_T_StringAttribute {
 				for (int jndx = 0; jndx < sdim; jndx++) {
 					tempbuf[jndx] = dset_data[indx][jndx];
 				}
-				str_data[indx] = new StringBuffer(new String(tempbuf));
+				str_data[indx] = new StringBuffer(new String(tempbuf).trim());
 			}
 		}
 		catch (Exception e) {
