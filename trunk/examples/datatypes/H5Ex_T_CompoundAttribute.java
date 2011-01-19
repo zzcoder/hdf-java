@@ -71,7 +71,7 @@ public class H5Ex_T_CompoundAttribute {
 			for (int indx = 0; indx < CompoundDatatype.MAXSTRINGSIZE; indx++) {
 				tempbuf[indx] = in.readByte();
 			}
-			location = new String(tempbuf);
+			location = new String(tempbuf).trim();
 			temperature = in.readDouble();
 			pressure = in.readDouble();
 		}
