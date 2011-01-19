@@ -37,3 +37,16 @@ ADD_SUBDIRECTORY(${HDFJAVA_NCSA_HDF_OBJECT_SOURCE_DIR}/fits      fits)
 ADD_SUBDIRECTORY(${HDFJAVA_NCSA_HDF_OBJECT_SOURCE_DIR}/h4        h4)
 ADD_SUBDIRECTORY(${HDFJAVA_NCSA_HDF_OBJECT_SOURCE_DIR}/h5        h5)
 ADD_SUBDIRECTORY(${HDFJAVA_NCSA_HDF_OBJECT_SOURCE_DIR}/nc2       nc2)
+
+#-----------------------------------------------------------------------------
+# Add Target(s) to CMake Install for import into other projects
+#-----------------------------------------------------------------------------
+IF (HDFJAVA_EXPORTED_TARGETS)
+  INSTALL (
+      TARGETS 
+          ${HDFJAVA_NCSA_OBJECT_LIB_TARGET}
+      EXPORT
+          ${HDFJAVA_EXPORTED_TARGETS}
+      ARCHIVE DESTINATION ${HJAVA_INSTALL_BIN_DIR} COMPONENT applications
+  )
+ENDIF (HDFJAVA_EXPORTED_TARGETS)
