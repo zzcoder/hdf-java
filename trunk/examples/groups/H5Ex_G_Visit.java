@@ -24,7 +24,7 @@ import ncsa.hdf.hdf5lib.structs.H5O_info_t;
 
 public class H5Ex_G_Visit {
 
-	private static String FILE = "groups/h5ex_g_visit.h5";
+	private static String FILE = "examples/groups/h5ex_g_visit.h5";
 
 		private static void VisitGroup() throws Exception {
 
@@ -106,5 +106,35 @@ class H5L_iter_callback implements H5L_iterate_cb {
     	return ret;
     }
 }
+
+class H5O_iter_data implements H5O_iterate_t {
+    public ArrayList<idata> iterdata = new ArrayList<idata>();
+}
+
+
+class H5O_iter_callback implements H5O_iterate_cb {
+    public int callback(int group, String name, H5O_info_t info, H5O_iterate_t op_data) {
+        idata id = new idata(name, info.type);
+        ((H5O_iter_data)op_data).iterdata.add(id);
+
+        System.out.print("/"); /* Print root group in object path */
+
+        //Check if the current object is the root group, and if not print the full path name and type.
+
+        if (name.charAt(0) == '.')         /* Root group, do not print '.' */
+            System.out.print("  (Group)\n");
+        else if(info.type == HDF5Constants.H5O_TYPE_GROUP ) 
+            System.out.println(name + "  (Group)" );
+        else if(info.type == HDF5Constants.H5O_TYPE_DATASET)
+            System.out.println(name + "  (Dataset)");
+        else if (info.type == HDF5Constants.H5O_TYPE_NAMED_DATATYPE )
+            System.out.println(name + "  (Datatype)");
+        else
+            System.out.println(name + "  (Unknown)");
+
+        return 0;
+    }
+}
+
 
 

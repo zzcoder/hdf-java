@@ -26,15 +26,31 @@ FOREACH (example ${HDF_JAVA_EXAMPLES})
   ADD_DEPENDENCIES (${example} ${HDFJAVA_NCSA_HDF5_LIB_TARGET})
 ENDFOREACH (example ${HDF_JAVA_EXAMPLES})
 
+SET (HDF_JAVA_TEST_FILES
+    h5ex_g_iterate.h5
+    h5ex_g_visit.h5
+)
+
+FOREACH (h5_file ${HDF_JAVA_TEST_FILES})
+  SET (dest "${PROJECT_BINARY_DIR}/${h5_file}")
+  #MESSAGE (STATUS " Copying ${h5_file}")
+  ADD_CUSTOM_COMMAND (
+      TARGET     H5Ex_G_Visit
+      POST_BUILD
+      COMMAND    ${CMAKE_COMMAND}
+      ARGS       -E copy_if_different ${PROJECT_SOURCE_DIR}/${h5_file} ${dest}
+  )
+ENDFOREACH (h5_file ${HDF_JAVA_TEST_FILES})
+
 MACRO (ADD_H5_TEST resultfile resultcode)
   ADD_TEST (
-      NAME datasets-${resultfile}
+      NAME groups-${resultfile}
       COMMAND "${CMAKE_COMMAND}"
           -D "TEST_TESTER=${CMAKE_Java_RUNTIME}"
           -D "TEST_PROGRAM=examples.groups.${resultfile}"
           -D "TEST_ARGS:STRING=${ARGN}"
-          -D "TEST_CLASSPATH:STRING=\"${${resultfile}_CLASSPATH}\""
-          -D "TEST_LIBRARY_DIRECTORY=${CMAKE_BINARY_DIR}"
+          -D "TEST_CLASSPATH:STRING=${${resultfile}_CLASSPATH}"
+          -D "TEST_LIBRARY_DIRECTORY=${CMAKE_JAVA_LIBRARY_OUTPUT_PATH}"
           -D "TEST_FOLDER=${CMAKE_BINARY_DIR}"
           -D "TEST_OUTPUT=${HDFJAVA_EXAMPLES_GROUPS_BINARY_DIR}/${resultfile}.out"
           -D "TEST_EXPECT=${resultcode}"
@@ -47,7 +63,7 @@ IF (BUILD_TESTING)
 
   FOREACH (example ${HDF_JAVA_EXAMPLES})
     ADD_TEST (
-        NAME ${example}-clearall-objects
+        NAME groups-${example}-clearall-objects
         COMMAND    ${CMAKE_COMMAND}
             -E remove
             ${example}.h5
@@ -55,7 +71,7 @@ IF (BUILD_TESTING)
             ${example}.out.err
     )
     ADD_TEST (
-        NAME ${example}-copy-objects
+        NAME groups-${example}-copy-objects
         COMMAND    ${CMAKE_COMMAND}
             -E copy_if_different 
             ${HDFJAVA_EXAMPLES_SOURCE_DIR}/testfiles/examples.groups.${example}.txt

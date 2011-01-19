@@ -6,10 +6,13 @@
  ************************************************************/
 package examples.groups;
 
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.structs.H5G_info_t;
-import examples.groups.H5Ex_G_Compact.H5G_storage;
 
 
 public class H5Ex_G_Phase {
@@ -17,6 +20,34 @@ public class H5Ex_G_Phase {
 	private static int MAX_GROUPS = 7;
 	private static int MAX_COMPACT = 5;
 	private static int MIN_DENSE = 3;
+
+    enum H5G_storage {
+        H5G_STORAGE_TYPE_UNKNOWN(-1),
+        H5G_STORAGE_TYPE_SYMBOL_TABLE(0),
+        H5G_STORAGE_TYPE_COMPACT(1),
+        H5G_STORAGE_TYPE_DENSE(2);
+
+        private static final Map<Integer, H5G_storage> lookup = new HashMap<Integer, H5G_storage>();
+
+        static {
+            for (H5G_storage s : EnumSet.allOf(H5G_storage.class))
+                lookup.put(s.getCode(), s);
+        }
+
+        private int code;
+
+        H5G_storage(int layout_type) {
+            this.code = layout_type;
+        }
+
+        public int getCode() {
+            return this.code;
+        }
+
+        public static H5G_storage get(int code) {
+            return lookup.get(code);
+        }
+    }
 
 	private static void CreateGroup() {
 		int			file_id = -1;
