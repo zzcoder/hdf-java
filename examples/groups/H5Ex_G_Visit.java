@@ -78,6 +78,7 @@ class idata {
         this.link_name = name;
         this.link_type = type;
     }
+}
 
 class H5L_iter_data implements H5L_iterate_t {
     public ArrayList<idata> iterdata = new ArrayList<idata>();
