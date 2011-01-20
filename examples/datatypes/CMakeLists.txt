@@ -33,7 +33,7 @@ SET (HDF_JAVA_EXAMPLES
 
 FOREACH (example ${HDF_JAVA_EXAMPLES})
   ADD_JAR (${example} ${example}.java)
-  INSTALL_JAR (${example} ${LIB_INSTALL_DIR}/${example}  )
+#  INSTALL_JAR (${example} ${HJAVA_INSTALL_DATA_DIR}/examples examples)
   ADD_DEPENDENCIES (${example} ${HDFJAVA_NCSA_HDF5_LIB_TARGET})
 ENDFOREACH (example ${HDF_JAVA_EXAMPLES})
 
@@ -46,7 +46,7 @@ MACRO (ADD_H5_TEST resultfile resultcode)
           -D "TEST_ARGS:STRING=${ARGN}"
           -D "TEST_CLASSPATH:STRING=${${resultfile}_CLASSPATH}"
           -D "TEST_LIBRARY_DIRECTORY=${CMAKE_JAVA_LIBRARY_OUTPUT_PATH}"
-          -D "TEST_FOLDER=${CMAKE_BINARY_DIR}"
+          -D "TEST_FOLDER=${HDFJAVA_EXAMPLES_BINARY_DIR}"
           -D "TEST_OUTPUT=${HDFJAVA_EXAMPLES_DATATYPES_BINARY_DIR}/${resultfile}.out"
           -D "TEST_EXPECT=${resultcode}"
           -D "TEST_REFERENCE=${HDFJAVA_EXAMPLES_DATATYPES_BINARY_DIR}/${resultfile}.txt"

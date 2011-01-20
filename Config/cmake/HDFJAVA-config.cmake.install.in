@@ -7,11 +7,16 @@ GET_FILENAME_COMPONENT (SELF_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 # User Options
 #-----------------------------------------------------------------------------
 SET (HDFJAVA_ENABLE_PARALLEL @HDFJAVA_ENABLE_PARALLEL@)
+SET (BUILD_SHARED_LIBS    @BUILD_SHARED_LIBS@)
+SET (HDFJAVA_ENABLE_JPEG_LIB_SUPPORT @HDFJAVA5_ENABLE_JPEG_LIB_SUPPORT@)
+SET (HDFJAVA_ENABLE_Z_LIB_SUPPORT @HDFJAVA_ENABLE_Z_LIB_SUPPORT@)
+SET (HDFJAVA_ENABLE_SZIP_SUPPORT  @HDFJAVA_ENABLE_SZIP_SUPPORT@)
+SET (HDFJAVA_ENABLE_SZIP_ENCODING @HDFJAVA_ENABLE_SZIP_ENCODING@)
 
 #-----------------------------------------------------------------------------
 # Directories
 #-----------------------------------------------------------------------------
-SET (HDFJAVA_INCLUDE_DIRS "@HDFJAVA_INCLUDES_BUILD_TIME@")
+SET (HDFJAVA_INCLUDE_DIRS "@CMAKE_INSTALL_PREFIX@")
 
 #-----------------------------------------------------------------------------
 # Version Strings
