@@ -136,7 +136,7 @@ public class DefaultTreeView extends JPanel
     /** the list of current selected objects */
     private List<Object> objectsToCopy;
 
-    private JMenuItem addTableMenuItem;
+    private JMenuItem addTableMenuItem, addDatasetMenuItem;
 
     private JMenuItem addDatatypeMenuItem;
 
@@ -169,7 +169,11 @@ public class DefaultTreeView extends JPanel
         moveFlag = false;
         currentSelectionsForMove= null;
 
-        addTableMenuItem = new JMenuItem( "Table", ViewProperties.getTableIcon());
+        addDatasetMenuItem = new JMenuItem( "Dataset", ViewProperties.getDatasetIcon());
+        addDatasetMenuItem.addActionListener(this);
+        addDatasetMenuItem.setActionCommand("Add dataset");
+
+        addTableMenuItem = new JMenuItem( "Compound DS", ViewProperties.getTableIcon());
         addTableMenuItem.addActionListener(this);
         addTableMenuItem.setActionCommand("Add table");
 
@@ -277,10 +281,7 @@ public class DefaultTreeView extends JPanel
         item.setActionCommand("Add group");
         newOjbectMenu.add(item);
 
-        item = new JMenuItem( "Dataset", ViewProperties.getDatasetIcon());
-        item.addActionListener(this);
-        item.setActionCommand("Add dataset");
-        newOjbectMenu.add(item);
+        newOjbectMenu.add(addDatasetMenuItem);
 
         item = new JMenuItem( "Image", ViewProperties.getImageIcon());
         item.addActionListener(this);
@@ -426,6 +427,7 @@ public class DefaultTreeView extends JPanel
         if ((selectedFile != null) &&
             selectedFile.isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5)))
         {
+            addDatasetMenuItem.setText("Dataset");
             addTableMenuItem.setVisible(true);
             addDatatypeMenuItem.setVisible(true);
             addLinkMenuItem.setVisible(true);
@@ -440,6 +442,7 @@ public class DefaultTreeView extends JPanel
             }
         } else
         {
+            addDatasetMenuItem.setText("SDS");
             addTableMenuItem.setVisible(false);
             addDatatypeMenuItem.setVisible(false);
             addLinkMenuItem.setVisible(false);
