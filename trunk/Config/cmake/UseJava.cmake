@@ -302,31 +302,35 @@ function(add_jar _TARGET_NAME)
 
 endfunction(add_jar)
 
-function(INSTALL_JAR _TARGET_NAME _DESTINATION)
+function(INSTALL_JAR _TARGET_NAME _DESTINATION _COMPONENT)
     if (${_TARGET_NAME}_INSTALL_FILES)
         install(
             FILES
                 ${${_TARGET_NAME}_INSTALL_FILES}
             DESTINATION
                 ${_DESTINATION}
+            COMPONENT
+                ${_COMPONENT}
         )
     else (${_TARGET_NAME}_INSTALL_FILES)
         message(SEND_ERROR "The target ${_TARGET_NAME} is not known in this scope.")
     endif (${_TARGET_NAME}_INSTALL_FILES)
-endfunction(INSTALL_JAR _TARGET_NAME _DESTINATION)
+endfunction(INSTALL_JAR _TARGET_NAME _DESTINATION _COMPONENT)
 
-function(INSTALL_JNI_SYMLINK _TARGET_NAME _DESTINATION)
+function(INSTALL_JNI_SYMLINK _TARGET_NAME _DESTINATION _COMPONENT)
     if (${_TARGET_NAME}_JNI_SYMLINK)
         install(
             FILES
                 ${${_TARGET_NAME}_JNI_SYMLINK}
             DESTINATION
                 ${_DESTINATION}
+            COMPONENT
+                ${_COMPONENT}
         )
     else (${_TARGET_NAME}_JNI_SYMLINK)
         message(SEND_ERROR "The target ${_TARGET_NAME} is not known in this scope.")
     endif (${_TARGET_NAME}_JNI_SYMLINK)
-endfunction(INSTALL_JNI_SYMLINK _TARGET_NAME _DESTINATION)
+endfunction(INSTALL_JNI_SYMLINK _TARGET_NAME _DESTINATION _COMPONENT)
 
 function (find_jar VARIABLE)
     set(_jar_names)

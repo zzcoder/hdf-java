@@ -103,6 +103,9 @@ ENDIF (NOT HJAVA_INSTALL_LIB_DIR)
 IF (NOT HJAVA_INSTALL_INCLUDE_DIR)
   SET (HJAVA_INSTALL_INCLUDE_DIR include)
 ENDIF (NOT HJAVA_INSTALL_INCLUDE_DIR)
+IF (NOT HJAVA_INSTALL_DATA_DIR)
+  SET (HJAVA_INSTALL_DATA_DIR share)
+ENDIF (NOT HJAVA_INSTALL_DATA_DIR)
 
 #-----------------------------------------------------------------------------
 # parse the full version number from hjava.h and include in HJAVA_VERS_INFO
@@ -1033,6 +1036,15 @@ IF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
 ENDIF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
 
 #-----------------------------------------------------------------------------
+# Add Required Jar(s)
+#-----------------------------------------------------------------------------
+INSTALL (
+    FILES ${HDFJAVA_LIB_DIR}/fits.jar ${HDFJAVA_LIB_DIR}/netcdf.jar
+    DESTINATION ${HJAVA_INSTALL_LIB_DIR}
+    COMPONENT libraries
+)
+
+#-----------------------------------------------------------------------------
 # Add Target(s) to CMake Install for import into other projects
 #-----------------------------------------------------------------------------
 IF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
@@ -1102,15 +1114,32 @@ ENDIF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
 # Set the cpack variables
 #-----------------------------------------------------------------------------
 SET (CPACK_PACKAGE_VENDOR "The HDF Group")
+SET (CPACK_PACKAGE_DESCRIPTION_SUMMARY "HDF-JAVA Installation")
+SET (CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/Readme.txt")
 SET (CPACK_PACKAGE_NAME "${HDFJAVA_PACKAGE_NAME}")
+SET (CPACK_PACKAGE_INSTALL_DIRECTORY "${HDFJAVA_PACKAGE_NAME}")
 SET (CPACK_PACKAGE_VERSION "${HDFJAVA_PACKAGE_VERSION}")
 SET (CPACK_PACKAGE_VERSION_MAJOR "${HDFJAVA_PACKAGE_VERSION_MAJOR}")
 SET (CPACK_PACKAGE_VERSION_MINOR "${HDFJAVA_PACKAGE_VERSION_MINOR}")
 SET (CPACK_PACKAGE_VERSION_PATCH "")
 SET (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
+SET (CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/Readme.txt")
+SET (CPACK_PACKAGE_RELOCATABLE TRUE)
 
 IF (WIN32)
+  SET (CPACK_NSIS_CONTACT "help@hdfgroup.org")
+  SET (CPACK_NSIS_MODIFY_PATH ON)
   SET (CPACK_NSIS_PACKAGE_NAME "HDFJAVA ${HDFJAVA_PACKAGE_VERSION}")
+ELSE (WIN32)
+  SET (CPACK_RPM_COMPONENT_INSTALL ON)
+  SET (CPACK_RPM_PRE_INSTALL_SCRIPT_FILE "/sbin/ldconfig")
+  SET (CPACK_RPM_PRE_UNINSTALL_SCRIPT_FILE "/sbin/ldconfig")
+  SET (CPACK_RPM_POST_INSTALL_SCRIPT_FILE "/sbin/ldconfig")
+  SET (CPACK_RPM_POST_UNINSTALL_SCRIPT_FILE "/sbin/ldconfig")
+  SET (CPACK_RPM_PACKAGE_GROUP "Development/Tools")
+  SET (CPACK_RPM_PACKAGE_LICENSE "BSD-style")
+  SET (CPACK_RPM_PACKAGE_URL "http://www.hdfgroup.org/")
+  SET (CPACK_STRIP_FILES "${HDFJAVA_LIBRARIES_TO_EXPORT};${HDFJAVA_JARS_TO_EXPORT};${EXTERNAL_LIBRARY_LIST}")
 ENDIF (WIN32)
 
 INCLUDE (CPack)
