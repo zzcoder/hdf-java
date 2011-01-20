@@ -50,7 +50,7 @@ MACRO (ADD_H5_TEST resultfile resultcode)
           -D "TEST_PROGRAM=examples.groups.${resultfile}"
           -D "TEST_ARGS:STRING=${ARGN}"
           -D "TEST_CLASSPATH:STRING=${${resultfile}_CLASSPATH}"
-          -D "TEST_LIBRARY_DIRECTORY=${CMAKE_JAVA_LIBRARY_OUTPUT_PATH}"
+          -D "TEST_LIBRARY_DIRECTORY=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
           -D "TEST_FOLDER=${HDFJAVA_EXAMPLES_BINARY_DIR}"
           -D "TEST_OUTPUT=${HDFJAVA_EXAMPLES_GROUPS_BINARY_DIR}/${resultfile}.out"
           -D "TEST_EXPECT=${resultcode}"
@@ -66,10 +66,17 @@ IF (BUILD_TESTING)
         NAME groups-${example}-clearall-objects
         COMMAND    ${CMAKE_COMMAND}
             -E remove
-            ${example}.h5
             ${example}.out
             ${example}.out.err
     )
+    IF (NOT ${example} STREQUAL "H5Ex_G_Iterate" AND NOT ${example} STREQUAL "H5Ex_G_Visit")
+      ADD_TEST (${example}
+          NAME groups-${example}-clearall-h5s
+          COMMAND    ${CMAKE_COMMAND}
+              -E remove
+              ${example}.h5
+      )
+    ENDIF (NOT ${example} STREQUAL "H5Ex_G_Iterate" AND NOT ${example} STREQUAL "H5Ex_G_Visit")
     ADD_TEST (
         NAME groups-${example}-copy-objects
         COMMAND    ${CMAKE_COMMAND}
