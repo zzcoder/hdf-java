@@ -7,7 +7,7 @@ example implements the structure described in the User's
 Guide, chapter 4, figure 26.
 
 This file is intended for use with HDF5 Library version 1.8
-************************************************************/
+ ************************************************************/
 package examples.groups;
 
 import java.util.ArrayList;
@@ -25,8 +25,16 @@ import ncsa.hdf.hdf5lib.structs.H5O_info_t;
 public class H5Ex_G_Visit {
 
 	private static String FILE = "examples/groups/h5ex_g_visit.h5";
+	
+	public static void main(String[] args) {
+		try{
+			(new H5Ex_G_Visit()).VisitGroup();
+		}catch(Exception ex) {
+			ex.printStackTrace();
+		}
+	}	
 
-		private static void VisitGroup() throws Exception {
+	private void VisitGroup() throws Exception {
 
 		int file_id = -1;
 
@@ -45,7 +53,7 @@ public class H5Ex_G_Visit {
 			H5L_iterate_cb iter_cb2 = new H5L_iter_callback();
 			System.out.println ("\nLinks in the file:");
 			H5.H5Lvisit(file_id, HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_ITER_NATIVE, iter_cb2, iter_data2);
-			
+
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -56,85 +64,79 @@ public class H5Ex_G_Visit {
 				H5.H5Fclose (file_id);
 		}
 	}
-		public static void main(String[] args) {
-			try{
-				H5Ex_G_Visit.VisitGroup();
-			}catch(Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-}
 
-/************************************************************
+
+
+	/************************************************************
 Operator function for H5Lvisit.  This function simply
 retrieves the info for the object the current link points
 to, and calls the operator function for H5Ovisit.
-************************************************************/
+	 ************************************************************/
 
-class idata {
-    public String link_name = null;
-    public int link_type = -1;
-    idata(String name, int type) {
-        this.link_name = name;
-        this.link_type = type;
-    }
-}
-
-class H5L_iter_data implements H5L_iterate_t {
-    public ArrayList<idata> iterdata = new ArrayList<idata>();
-}
-
-class H5L_iter_callback implements H5L_iterate_cb {
-    public int callback(int group, String name, H5L_info_t info, H5L_iterate_t op_data) {
-    	
-    	idata id = new idata(name, info.type);
-        ((H5L_iter_data)op_data).iterdata.add(id);
-    	
-    	H5O_info_t infobuf;
-    	int ret = 0;
-    	try{
-    	//Get type of the object and display its name and type. The name of the object is passed to this function by the Library.
-    	infobuf = H5.H5Oget_info_by_name (group, name, HDF5Constants.H5P_DEFAULT);
-    	H5O_iterate_cb iter_cbO = new H5O_iter_callback();
-    	H5O_iterate_t iter_dataO = new H5O_iter_data();
-    	ret=iter_cbO.callback(group, name, infobuf, iter_dataO);
-    	}
-    	catch (Exception e) {
-			e.printStackTrace();
+	private class idata {
+		public String link_name = null;
+		public int link_type = -1;
+		idata(String name, int type) {
+			this.link_name = name;
+			this.link_type = type;
 		}
-    	
-    	return ret;
-    }
+	}
+
+	private class H5L_iter_data implements H5L_iterate_t {
+		public ArrayList<idata> iterdata = new ArrayList<idata>();
+	}
+
+	private class H5L_iter_callback implements H5L_iterate_cb {
+		public int callback(int group, String name, H5L_info_t info, H5L_iterate_t op_data) {
+
+			idata id = new idata(name, info.type);
+			((H5L_iter_data)op_data).iterdata.add(id);
+
+			H5O_info_t infobuf;
+			int ret = 0;
+			try{
+				//Get type of the object and display its name and type. The name of the object is passed to this function by the Library.
+				infobuf = H5.H5Oget_info_by_name (group, name, HDF5Constants.H5P_DEFAULT);
+				H5O_iterate_cb iter_cbO = new H5O_iter_callback();
+				H5O_iterate_t iter_dataO = new H5O_iter_data();
+				ret=iter_cbO.callback(group, name, infobuf, iter_dataO);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			return ret;
+		}
+	}
+
+	private class H5O_iter_data implements H5O_iterate_t {
+		public ArrayList<idata> iterdata = new ArrayList<idata>();
+	}
+
+
+	private class H5O_iter_callback implements H5O_iterate_cb {
+		public int callback(int group, String name, H5O_info_t info, H5O_iterate_t op_data) {
+			idata id = new idata(name, info.type);
+			((H5O_iter_data)op_data).iterdata.add(id);
+
+			System.out.print("/"); /* Print root group in object path */
+
+			//Check if the current object is the root group, and if not print the full path name and type.
+
+			if (name.charAt(0) == '.')         /* Root group, do not print '.' */
+				System.out.print("  (Group)\n");
+			else if(info.type == HDF5Constants.H5O_TYPE_GROUP ) 
+				System.out.println(name + "  (Group)" );
+			else if(info.type == HDF5Constants.H5O_TYPE_DATASET)
+				System.out.println(name + "  (Dataset)");
+			else if (info.type == HDF5Constants.H5O_TYPE_NAMED_DATATYPE )
+				System.out.println(name + "  (Datatype)");
+			else
+				System.out.println(name + "  (Unknown)");
+
+			return 0;
+		}
+	}
+
+
 }
-
-class H5O_iter_data implements H5O_iterate_t {
-    public ArrayList<idata> iterdata = new ArrayList<idata>();
-}
-
-
-class H5O_iter_callback implements H5O_iterate_cb {
-    public int callback(int group, String name, H5O_info_t info, H5O_iterate_t op_data) {
-        idata id = new idata(name, info.type);
-        ((H5O_iter_data)op_data).iterdata.add(id);
-
-        System.out.print("/"); /* Print root group in object path */
-
-        //Check if the current object is the root group, and if not print the full path name and type.
-
-        if (name.charAt(0) == '.')         /* Root group, do not print '.' */
-            System.out.print("  (Group)\n");
-        else if(info.type == HDF5Constants.H5O_TYPE_GROUP ) 
-            System.out.println(name + "  (Group)" );
-        else if(info.type == HDF5Constants.H5O_TYPE_DATASET)
-            System.out.println(name + "  (Dataset)");
-        else if (info.type == HDF5Constants.H5O_TYPE_NAMED_DATATYPE )
-            System.out.println(name + "  (Datatype)");
-        else
-            System.out.println(name + "  (Unknown)");
-
-        return 0;
-    }
-}
-
-
-

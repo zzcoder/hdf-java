@@ -3,7 +3,7 @@ This example shows how to create intermediate groups with
 a single call to H5Gcreate.
 
 This file is intended for use with HDF5 Library version 1.8
-************************************************************/
+ ************************************************************/
 package examples.groups;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class H5Ex_G_Intermediate {
 
 	private static String FILE = "h5ex_g_intermediate.h5";
 
-	private static void CreateGroup() throws Exception {
+	private void CreateGroup() throws Exception {
 
 		int     file_id = -1;
 		int		group_id = -1;
@@ -63,48 +63,50 @@ public class H5Ex_G_Intermediate {
 
 	public static void main(String[] args) {
 		try{
-			H5Ex_G_Intermediate.CreateGroup();
+			(new H5Ex_G_Intermediate()).CreateGroup();
 		}catch(Exception ex) {
 			ex.printStackTrace();
 		}
 	}
-}
 
-class idata {
-	public String link_name = null;
-	public int link_type = -1;
-	idata(String name, int type) {
-		this.link_name = name;
-		this.link_type = type;
+
+	private class idata {
+		public String link_name = null;
+		public int link_type = -1;
+		idata(String name, int type) {
+			this.link_name = name;
+			this.link_type = type;
+		}
 	}
-}
-class H5O_iter_data implements H5O_iterate_t {
-    public ArrayList<idata> iterdata = new ArrayList<idata>();
-}
-
-
-class H5O_iter_callback implements H5O_iterate_cb {
-	public int callback(int group, String name, H5O_info_t info, H5O_iterate_t op_data) {
-		idata id = new idata(name, info.type);
-		((H5O_iter_data)op_data).iterdata.add(id);
-
-		System.out.print("/"); /* Print root group in object path */
-
-		//Check if the current object is the root group, and if not print the full path name and type.
-
-		if (name.charAt(0) == '.')         /* Root group, do not print '.' */
-			System.out.print("  (Group)\n");
-		else if(info.type == HDF5Constants.H5O_TYPE_GROUP ) 
-			System.out.println(name + "  (Group)" );
-		else if(info.type == HDF5Constants.H5O_TYPE_DATASET)
-			System.out.println(name + "  (Dataset)");
-		else if (info.type == HDF5Constants.H5O_TYPE_NAMED_DATATYPE )
-			System.out.println(name + "  (Datatype)");
-		else
-			System.out.println(name + "  (Unknown)");
-
-		return 0;
+	private class H5O_iter_data implements H5O_iterate_t {
+		public ArrayList<idata> iterdata = new ArrayList<idata>();
 	}
+
+
+	private class H5O_iter_callback implements H5O_iterate_cb {
+		public int callback(int group, String name, H5O_info_t info, H5O_iterate_t op_data) {
+			idata id = new idata(name, info.type);
+			((H5O_iter_data)op_data).iterdata.add(id);
+
+			System.out.print("/"); /* Print root group in object path */
+
+			//Check if the current object is the root group, and if not print the full path name and type.
+
+			if (name.charAt(0) == '.')         /* Root group, do not print '.' */
+				System.out.print("  (Group)\n");
+			else if(info.type == HDF5Constants.H5O_TYPE_GROUP ) 
+				System.out.println(name + "  (Group)" );
+			else if(info.type == HDF5Constants.H5O_TYPE_DATASET)
+				System.out.println(name + "  (Dataset)");
+			else if (info.type == HDF5Constants.H5O_TYPE_NAMED_DATATYPE )
+				System.out.println(name + "  (Datatype)");
+			else
+				System.out.println(name + "  (Unknown)");
+
+			return 0;
+		}
+	}
+
 }
 
 
