@@ -1,0 +1,3 @@
+SET (HDFJAVA_DIR "@CMAKE_INSTALL_PREFIX@"/lib)
+
+java -Xmx1024m -Djava.library.path=${HDFJAVA_DIR} -classpath ${HDFJAVA_DIR} ncsa.hdf.view.HDFView -root ${HDFJAVA_DIR} 

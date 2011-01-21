@@ -1041,7 +1041,8 @@ INSTALL (
 INSTALL (
     DIRECTORY ${HDFJAVA_SOURCE_DIR}/docs
     DESTINATION ${HJAVA_INSTALL_DATA_DIR}
-    COMPONENT docss
+    USE_SOURCE_PERMISSIONS 
+    COMPONENT docs
 )
 
 #-----------------------------------------------------------------------------
@@ -1143,6 +1144,7 @@ ELSE (WIN32)
 ENDIF (WIN32)
 
 INCLUDE (CPack)
+INCLUDE(InstallRequiredSystemLibraries)
 
 #-----------------------------------------------------------------------------
 # Now list the cpack commands
