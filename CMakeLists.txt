@@ -1138,7 +1138,7 @@ INCLUDE (CPack)
 #-----------------------------------------------------------------------------
 # Now list the cpack commands
 #-----------------------------------------------------------------------------
-CPACK_ADD_COMPONENT (applications 
+CPACK_ADD_COMPONENT (apps 
     DISPLAY_NAME "HDFJAVA Applications" 
     DEPENDS libraries
     GROUP Applications
