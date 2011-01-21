@@ -70,7 +70,7 @@ IF (BUILD_TESTING)
             ${example}.out.err
     )
     IF (NOT ${example} STREQUAL "H5Ex_G_Iterate" AND NOT ${example} STREQUAL "H5Ex_G_Visit")
-      ADD_TEST (${example}
+      ADD_TEST (
           NAME groups-${example}-clearall-h5s
           COMMAND    ${CMAKE_COMMAND}
               -E remove
