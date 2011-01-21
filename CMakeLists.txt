@@ -1036,6 +1036,15 @@ INSTALL (
 )
 
 #-----------------------------------------------------------------------------
+# Add Required Document(s)
+#-----------------------------------------------------------------------------
+INSTALL (
+    DIRECTORY ${HDFJAVA_SOURCE_DIR}/docs
+    DESTINATION ${HJAVA_INSTALL_DATA_DIR}
+    COMPONENT docss
+)
+
+#-----------------------------------------------------------------------------
 # Add Target(s) to CMake Install for import into other projects
 #-----------------------------------------------------------------------------
 IF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
@@ -1151,4 +1160,9 @@ CPACK_ADD_COMPONENT (headers
     DISPLAY_NAME "HDFJAVA Headers" 
     DEPENDS libraries
     GROUP Development
+)
+CPACK_ADD_COMPONENT (docs 
+    DISPLAY_NAME "HDFJAVA Documents" 
+    DEPENDS libraries
+    GROUP Documents
 )
