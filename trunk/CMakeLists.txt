@@ -34,6 +34,9 @@ PROJECT ( HDFJAVA C Java )
 #   to ensure that the correct versions configured are used.
 #
 #-----------------------------------------------------------------------------
+IF (SITE_NAME_VAR)
+  SET (SITE ${SITE_NAME_VAR})
+ENDIF (SITE_NAME_VAR)
 
 #-----------------------------------------------------------------------------
 # Set the core names of all the libraries
