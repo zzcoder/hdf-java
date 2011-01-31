@@ -34,9 +34,11 @@ PROJECT ( HDFJAVA C Java )
 #   to ensure that the correct versions configured are used.
 #
 #-----------------------------------------------------------------------------
-IF (SITE_NAME_VAR)
-  SET (SITE ${SITE_NAME_VAR})
-ENDIF (SITE_NAME_VAR)
+IF (BUILD_SHARED_LIBS)
+  SET (BUILD_NAME_EXT "SHARED")
+ELSE (BUILD_SHARED_LIBS)
+  SET (BUILD_NAME_EXT "STATIC")
+ENDIF (BUILD_SHARED_LIBS)
 
 #-----------------------------------------------------------------------------
 # Set the core names of all the libraries
@@ -209,6 +211,8 @@ SET (HDFJAVA_INCLUDE_DIRECTORIES
     ${HDFJAVA_JNI_SRC_DIR}/hdflib 
     ${HDFJAVA_JNI_SRC_DIR}/hdf5lib
     ${HDFJAVA_BINARY_DIR}
+    ${JAVA_INCLUDE_PATH}
+    ${JAVA_INCLUDE_PATH2}
 )
 INCLUDE_DIRECTORIES (${HDFJAVA_INCLUDE_DIRECTORIES})
 SET (CMAKE_JAVA_INCLUDE_PATH ${HDFJAVA_LIB_DIR}/fits.jar ${HDFJAVA_LIB_DIR}/netcdf.jar)
