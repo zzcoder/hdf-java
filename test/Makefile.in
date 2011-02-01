@@ -21,9 +21,11 @@ check:
 	(cd hdf5lib; $(MAKE) check;)
 	(cd object; $(MAKE) check;)
 	(cd object/misc; $(MAKE) check)
+	(cd uitest; $(MAKE) check;)
 
 clean:
 	(cd hdf5lib; $(MAKE) clean;)
 	(cd object; $(MAKE) clean;)
 	(cd object/misc; $(MAKE) clean)
+	(cd uitest; $(MAKE) clean;)
 	
