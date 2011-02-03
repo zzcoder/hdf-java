@@ -1,1 +1,0 @@
-java -Xmx1024m -Djava.library.path="@CMAKE_INSTALL_PREFIX@/bin" -Dhdfview.root="@CMAKE_INSTALL_PREFIX@/lib" -classpath "@CMAKE_INSTALL_PREFIX@/lib" ncsa.hdf.view.HDFView -root ${HDFJAVA_DIR}"@CMAKE_INSTALL_PREFIX@/share"

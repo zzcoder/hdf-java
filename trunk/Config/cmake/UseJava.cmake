@@ -113,16 +113,20 @@
 #  License text for the above reference.)
 
 function (__java_copy_file src dest comment)
-    add_custom_command(
-        OUTPUT  ${dest}
-        COMMAND cmake -E copy_if_different
-        ARGS    ${src}
-                ${dest}
-        DEPENDS ${src}
-        COMMENT ${comment})
+#message(STATUS "copyfile from ${src} to ${dest}")
+#file(WRITE ${dest} "")
+#    add_custom_command(
+#        OUTPUT  ${dest}
+#        COMMAND ${CMAKE_COMMAND}
+#        ARGS    -E copy_if_different ${src} ${dest}
+#        DEPENDS ${src}
+#        COMMENT ${comment})
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${src} ${dest}
+    )
 endfunction (__java_copy_file src dest comment)
 
-function(add_jar _TARGET_NAME)
+function(add_jar _TARGET_NAME _RESOURCE_BASE)
     set(_JAVA_SOURCE_FILES ${ARGN})
 
     if (CMAKE_LIBRARY_OUTPUT_PATH)
@@ -149,7 +153,6 @@ function(add_jar _TARGET_NAME)
     endforeach(JAVA_INCLUDE_DIR)
 
     set(CMAKE_JAVA_CLASS_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${_TARGET_NAME}.dir")
-
     set(_JAVA_TARGET_OUTPUT_NAME "${_TARGET_NAME}.jar")
     if (CMAKE_JAVA_TARGET_OUTPUT_NAME AND CMAKE_JAVA_TARGET_VERSION)
         set(_JAVA_TARGET_OUTPUT_NAME "${CMAKE_JAVA_TARGET_OUTPUT_NAME}-${CMAKE_JAVA_TARGET_VERSION}.jar")
@@ -197,9 +200,10 @@ function(add_jar _TARGET_NAME)
             list(APPEND _JAVA_DEPENDS ${JAVA_JAR_TARGET_${_JAVA_SOURCE_FILE}})
 
         else (_JAVA_EXT MATCHES ".java")
-            __java_copy_file(${CMAKE_CURRENT_SOURCE_DIR}/${_JAVA_SOURCE_FILE}
+            __java_copy_file(${_RESOURCE_BASE}/${_JAVA_SOURCE_FILE}
                              ${CMAKE_JAVA_CLASS_OUTPUT_PATH}/${_JAVA_SOURCE_FILE}
                              "Copying ${_JAVA_SOURCE_FILE} to the build directory")
+            list(APPEND _DEPENDS_RESOURCE_FILES "${_RESOURCE_BASE}/${_JAVA_SOURCE_FILE}")
             list(APPEND _JAVA_RESOURCE_FILES ${_JAVA_SOURCE_FILE})
         endif (_JAVA_EXT MATCHES ".java")
     endforeach(_JAVA_SOURCE_FILE)
@@ -222,7 +226,7 @@ function(add_jar _TARGET_NAME)
     endif (EXISTS ${CMAKE_MODULE_PATH}/UseJavaSymlinks.cmake)
 
     # Add the target and make sure we have the latest resource files.
-    add_custom_target(${_TARGET_NAME} ALL DEPENDS ${_JAVA_RESOURCE_FILES} ${_JAVA_DEPENDS})
+    add_custom_target(${_TARGET_NAME} ALL DEPENDS ${_DEPENDS_RESOURCE_FILES} ${_JAVA_DEPENDS})
 
     if (_JAVA_COMPILE_FILES)
         # Compile the java files and create a list of class files
