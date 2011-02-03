@@ -27,5 +27,5 @@ clean:
 	(cd hdf5lib; $(MAKE) clean;)
 	(cd object; $(MAKE) clean;)
 	(cd object/misc; $(MAKE) clean)
-	(cd uitest; $(MAKE) clean;)
+#	(cd uitest; $(MAKE) clean;)
 	
