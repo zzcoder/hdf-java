@@ -21,7 +21,7 @@ SET (HDF_JAVA_EXAMPLES
 )
 
 FOREACH (example ${HDF_JAVA_EXAMPLES})
-  ADD_JAR (${example} ${example}.java)
+  ADD_JAR (${example} "." ${example}.java)
 #  INSTALL_JAR (${example} ${HJAVA_INSTALL_DATA_DIR}/examples examples)
   ADD_DEPENDENCIES (${example} ${HDFJAVA_NCSA_HDF5_LIB_TARGET})
 ENDFOREACH (example ${HDF_JAVA_EXAMPLES})
