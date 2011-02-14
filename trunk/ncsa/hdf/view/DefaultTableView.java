@@ -1857,90 +1857,100 @@ implements TableView, ActionListener, MouseListener
         final String[] allColumnNames = subColumnNames;
         AbstractTableModel tm =  new AbstractTableModel()
         {
-            private static final long serialVersionUID = HObject.serialVersionUID;
+        	private static final long serialVersionUID = HObject.serialVersionUID;
 
-            List list = (List)dataValue;
-            CompoundDS compound = (CompoundDS)dataset;
-            int orders[] = compound.getSelectedMemberOrders();
-            Datatype types[] = compound.getSelectedMemberTypes();
-            StringBuffer stringBuffer = new StringBuffer();
-            int nFields = list.size();
-            int nRows = getRowCount();
-            int nSubColumns = (nFields>0) ? getColumnCount()/nFields : 0;
-            
-            public int getColumnCount() {
-            	return allColumnNames.length;
-            }
+        	List list = (List)dataValue;
+        	CompoundDS compound = (CompoundDS)dataset;
+        	int orders[] = compound.getSelectedMemberOrders();
+        	Datatype types[] = compound.getSelectedMemberTypes();
+        	StringBuffer stringBuffer = new StringBuffer();
+        	int nFields = list.size();
+        	int nRows = getRowCount();
+        	int nSubColumns = (nFields>0) ? getColumnCount()/nFields : 0;
 
-            public int getRowCount() {
-            	return rows;
-            }
+        	public int getColumnCount() {
+        		return allColumnNames.length;
+        	}
 
-            public String getColumnName(int col) {
-            	return allColumnNames[col];
-            }
-            
-            public Object getValueAt(int row, int col)
-            {
-            	if (startEditing[0])
-            		return "";
+        	public int getRowCount() {
+        		return rows;
+        	}
 
-                int fieldIdx = col;
-                int rowIdx = row;
+        	public String getColumnName(int col) {
+        		return allColumnNames[col];
+        	}
 
-                if (nSubColumns > 1) // multi-dimension compound dataset
-                {
-                    int colIdx = col/nFields;
-                    fieldIdx = col - colIdx*nFields;
-                    //BUG 573: rowIdx = row*orders[fieldIdx] + colIdx*nRows*orders[fieldIdx];
-                    rowIdx = row*orders[fieldIdx]*nSubColumns+colIdx*orders[fieldIdx];;
-                }
-                else {
-                    rowIdx = row*orders[fieldIdx];
-                }
+        	public Object getValueAt(int row, int col)
+        	{
+        		if (startEditing[0])
+        			return "";
 
-                Object colValue = list.get(fieldIdx);
-                if (colValue == null) {
-                    return "Null";
-                }
+        		int fieldIdx = col;
+        		int rowIdx = row;
 
-                stringBuffer.setLength(0); // clear the old string
-                int[] mdim = compound.getMemeberDims(fieldIdx);
-                if (mdim == null)
-                {
-                    // member is not an ARRAY datatype
-                    int strlen = types[fieldIdx].getDatatypeSize();
-                    boolean isString = (types[fieldIdx].getDatatypeClass() == Datatype.CLASS_STRING);
-                    
+        		if (nSubColumns > 1) // multi-dimension compound dataset
+        		{
+        			int colIdx = col/nFields;
+        			fieldIdx = col - colIdx*nFields;
+        			//BUG 573: rowIdx = row*orders[fieldIdx] + colIdx*nRows*orders[fieldIdx];
+        			rowIdx = row*orders[fieldIdx]*nSubColumns+colIdx*orders[fieldIdx];;
+        		}
+        		else {
+        			rowIdx = row*orders[fieldIdx];
+        		}
 
-                    if ((orders[fieldIdx] <= 1) && isString && (strlen>0) && !compound.getConvertByteToString())
-                    {
-                        // original data is a char array
-                        String str = new String(((byte[])colValue), rowIdx*strlen, strlen);
-                        int idx = str.indexOf('\0');
-                        if (idx > 0) {
-                            str = str.substring(0, idx);
-                        }
-                        stringBuffer.append(str.trim());
-                    } else {
-                        stringBuffer.append(Array.get(colValue, rowIdx));
-                    }
+        		Object colValue = list.get(fieldIdx);
+        		if (colValue == null) {
+        			return "Null";
+        		}
 
-                    for (int i=1; i<orders[fieldIdx]; i++) {
-                        stringBuffer.append(", ");
-                        stringBuffer.append(Array.get(colValue, rowIdx+i));
-                    }
-                } else
-                {
-                    // member is an ARRAY datatype
-                    for (int i=0; i<orders[fieldIdx]; i++) {
-                        stringBuffer.append(Array.get(colValue, rowIdx+i));
-                        stringBuffer.append(", ");
-                    }
-                }
+        		stringBuffer.setLength(0); // clear the old string
+        		boolean isString = (types[fieldIdx].getDatatypeClass() == Datatype.CLASS_STRING);
+        		if (isString && !compound.getConvertByteToString())
+        		{
+        			// strings
+        			int strlen = types[fieldIdx].getDatatypeSize();
+        			String str = new String(((byte[])colValue), rowIdx*strlen, strlen);
+        			int idx = str.indexOf('\0');
+        			if (idx > 0) {
+        				str = str.substring(0, idx);
+        			}
+        			stringBuffer.append(str.trim());
+        		} 
+        		else {
+        			// numerical values
+        			Datatype dtype = types[fieldIdx];
+        			boolean isUINT64 = false;
+        			
+        			if (dtype.isUnsigned()) {
+        				
+        		        String cName = colValue.getClass().getName();
+            	        int cIndex = cName.lastIndexOf("[");
+            	        if (cIndex >= 0 ) {
+            	        	isUINT64 = (cName.charAt(cIndex+1) == 'J');
+            	        }
+        			}
+        			
+           			for (int i=0; i<orders[fieldIdx]; i++) {
+                        Object theValue = Array.get(colValue, rowIdx+i);
+                       if (isUINT64) {
+                            Long l = (Long)theValue;
+                            if ( l < 0) {
+                                l = (l << 1)>>1;
+                                BigInteger big1 = new BigInteger("9223372036854775808"); // 2^65
+                                BigInteger big2 = new BigInteger(l.toString()); 
+                                BigInteger big = big1.add(big2);
+                                theValue = big.toString();
+                            }
+                        } 
+                       if (i>0)
+                    	   stringBuffer.append(", ");
+                       stringBuffer.append(theValue);
+           			}
+        		} // end of else {
 
-                return stringBuffer;
-            }
+        		return stringBuffer;
+        	}
         };
 
         theTable = new JTable(tm)
