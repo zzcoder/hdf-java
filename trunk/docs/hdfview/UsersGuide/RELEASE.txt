@@ -34,7 +34,7 @@ Supporting for HDF5 1.8
 ==================================================================================================================
     * HDF5 JNI:- Changes to Java HDF5 Interface(JHI5) include:
           -- 101 methods were added to JHI5 to support HDF5 1.8.
-          -- Changes were made to 17 methods in JHI5 for supporting the compatibility between HDF5 1.6 and 1.8
+          -- Changes were made to 17 methods in JHI5 for supporting the compatibility between HDF5 1.6 and 1.8.
           -- Unit tests were added for all the new methods added to JHI5. 
 
     * HDF-Java Object Layer:- Changes in the Java HDF Object package include:
@@ -88,7 +88,7 @@ Limitations / Known Problems
     * HDFView supports only indexed images with RGB color model or 24-bit true color image. It does not support 
       other color models such as CMYK and HSV.
     * Directly using multiple dimensional arrays causes a performance problem because there is no direct mapping 
-      for multiple dimensional array between Java and C.
+      for multiple dimensional arrays between Java and C.
     * HDF (4&5) APIs with function pointers are not supported in HDF-Java. 
 
     * Specific to HDF4:
@@ -96,24 +96,24 @@ Limitations / Known Problems
              dangling objects or corrupt the file.
           -- HDFView cannot modify compressed HDF4 SDS if rank is greater than two because the existing compression 
              algorithms supported by HDF do not allow partial modification to a compressed data stream.
-          -- HDFView cannot modify HDF4 vdata. HDF4 only writes vdata by records while hdf-java reads data by vdata 
-             fields since hdf-java does not support the data structure of a vdata record.
+          -- HDFView cannot modify HDF4 vdata. HDF4 only writes vdata by records while HDF-Java reads data by vdata 
+             fields since HDF-Java does not support the data structure of a vdata record.
 
     * Specific to HDF5:
-          -- Writing compound data is limited to simple cases, e.g. the base compound fields have primitive types 
-             such as integers, floats, characters, etc. HDFView does not write complex compound data, e.g. the type 
-             of a compound field is a datadet region reference.
-          -- Writing variable length data is not supported except for dataset where each data point is a single 
+          -- Writing compound data is limited to simple cases. For example, the base compound fields have primitive 
+             types such as integers, floats, characters, etc. HDFView does not write complex compound data. For
+             example, the type of a compound field is a dataset region reference.
+          -- Writing variable length data is not supported except for datasets where each data point is a single 
              variable length string.
-          -- No single JNI function that can handle HDF5 library functions that have different return types for 
-             version1.6 and version 1.8. An additional function is added in the JNI. For example,
+          -- There is no single JNI function that can handle HDF5 library functions that have different return 
+             types for version1.6 and version 1.8. An additional function is added in the JNI. For example,
              public synchronized static native int H5Tget_size(int type_id)
              public synchronized static native long H5Tget_size_long(int type_id)
 
 Other notes
 ==================================================================================================================  
-Made the following changes to bin/hdfview.sh, to make it consistent to the Windows batch file, bin/hdfview.bat:
-    * change "HDFVIEW_HOME" to "HDFJAVA" and "JAVAPATH" to "JAVAHOME"
+Made the following changes to bin/hdfview.sh, to make it consistent with the Windows batch file, bin/hdfview.bat:
+    * changed "HDFVIEW_HOME" to "HDFJAVA" and "JAVAPATH" to "JAVAHOME"
     * FAQs related to HDF-Java products: http://www.hdfgroup.org/hdf5-quest.html#JAVA
 
 
