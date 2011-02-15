@@ -37,7 +37,7 @@ Supporting for HDF5 1.8
           -- Changes were made to 17 methods in JHI5 for supporting the compatibility between HDF5 1.6 and 1.8
           -- Unit tests were added for all the new methods added to JHI5. 
 
-    * HDFJava Object Layer:- Changes in the Java HDF Object package include:
+    * HDF-Java Object Layer:- Changes in the Java HDF Object package include:
           -- Set the bounds of library versions
           -- Set link creation order
           -- Set link storage type
