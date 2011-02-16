@@ -49,7 +49,7 @@ NC2OBJDISTFILES= ./ncsa/hdf/object/nc2/*.java ./lib/netcdf.jar
 FITSOBJDISTFILES= ./ncsa/hdf/object/fits/*.java ./lib/fits.jar 
 
 TOPDIST=./VERSION ./COPYING ./Makefile.in \
-	./Readme_binary_jre.txt ./Readme_binary.txt ./Readme.txt \
+	./Readme.txt \
 	./bin/hdfview.sh.in ./bin/hdfview.bat  \
 	./runconfig-example.sh \
 	./configure.in ./Config/config* ./Config/install-sh \
