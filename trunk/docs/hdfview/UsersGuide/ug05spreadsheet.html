@@ -175,13 +175,14 @@ is displayed in the status bar of the HDFView.</p>
 <p>To flip a data sheet of a 3-D dataset, use the "First",
 "Previous", "Next" or "Last" command on the tool bar.</p>
 
-<p>The following figure shows how a 5-D integer dataset of size 10 x 20 x 30 x 40 x 50 is displayed. The data is displayed in a spreadsheet of 40 X 50
-(dim3 by dim4), of page 2 (dim2), cutting locations 2 at dim0 and 3 at dim1.</p>
+<p>The following figure shows how a 4-D integer dataset of size 5 x 4 x 3 x 2 is displayed. 
+The data is displayed in a spreadsheet of 5 X 4
+(dim0 by dim1), of page 2 (dim2), cutting locations 2 at dim3.</p>
 
 <center><p>
 <img src="images/dataset_3d.gif" />
 <br />
-<b>Spreadsheet with 3-D dataset <span class="comment">[Comment: Is this 3-D or 5-D?]</b></p>
+<b>Spreadsheet with 4-D dataset <span class="comment"></b></p>
 </center>
 
 <h3><a name="ug05subset_transpose"></a>
@@ -269,18 +270,17 @@ HDFView displays a nested HDF5 compound dataset as a flat list of members. The n
 names are separated by "." (a period). For example, if a compound dataset "A" has the following
 nested structure:</p>
 <pre>
-    A --> m01
-    A --> m02
-    A --> nest1 --> m11
-    A --> nest1 --> m12
-    A --> nest1 --> nest2 --> m21
-    A --> nest1 --> nest2 --> m22
+    A --> a_name
+    A --> b_name
+    A --> c_name
+    A --> nested_name --> a_name
+    A --> nested_name --> c_name
     i.e.
-    A = { m01, m02, nest1{m11, m12, nest2{ m21, m22}}}
+    A = {a_name, b_name, c_name, nested_name{a_name, c_name}}
 </pre>
 <p>
 The flat list of members of the compound dataset "A" will be
-{m01, m02, nest1.m11, nest1.m12, nest1.nest2.m21, nest1.nest2.m22}.</p>
+{a_name, b_name, c_name, nested_name->a_name, nested_name->c_name}}.</p>
 
 <center><p>
 <img src="images/dataset_subset_nested.gif" />
