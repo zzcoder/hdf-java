@@ -979,16 +979,6 @@ public final class Tools {
         if (rawData == null)
             return null;
 
-        if (byteData == null)
-        {
-        	if(isTransposed)
-        		byteData = new byte[rawData.length];
-        	else
-        		byteData = rawData;
-        }
-        else
-            System.arraycopy(rawData, 0, byteData, 0, rawData.length);
-
         if (convertByteData) {
             if (minmax[0] == minmax[1]) {
                 Tools.findMinMax(rawData, minmax, fillValue);
@@ -997,8 +987,17 @@ public final class Tools {
 
         if (minmax[0] == 0 && minmax[1] == 255)
             convertByteData = false; // no need to convert data
+        
+        // no conversion and no transpose
+        if (!convertByteData && !isTransposed)
+        	return rawData;
+        
+        // don't want to change the original raw data
+        if (byteData == null || rawData==byteData) 
+         	byteData = new byte[rawData.length];
 
         if (!convertByteData) {
+        	// do not convert data, just transpose the data
             minmax[0] = 0;
             minmax[1] = 255;
             if (isTransposed) {
@@ -1008,33 +1007,34 @@ public final class Tools {
                     }
                 }
             }
+            return byteData;
+        }
+
+        // special data range used, must convert the data
+        min = minmax[0];
+        max = minmax[1];
+        ratio = (min == max) ? 1.00d : (double) (255.00 / (max - min));
+        if (isTransposed) {
+        	for (int i = 0; i < h; i++) {
+        		for (int j = 0; j < w; j++) {
+        			if (rawData[j * h + i] >= max)
+        				byteData[i * w + j] = (byte) 255;
+        			else if (rawData[j * h + i] <= min)
+        				byteData[i * w + j] = (byte) 0;
+        			else
+        				byteData[i * w + j] = (byte) ((rawData[j * h + i] - min) * ratio);
+        		}
+        	}
         }
         else {
-            min = minmax[0];
-            max = minmax[1];
-            ratio = (min == max) ? 1.00d : (double) (255.00 / (max - min));
-            if (isTransposed) {
-                for (int i = 0; i < h; i++) {
-                    for (int j = 0; j < w; j++) {
-                        if (rawData[j * h + i] >= max)
-                            byteData[i * w + j] = (byte) 255;
-                        else if (rawData[j * h + i] <= min)
-                            byteData[i * w + j] = (byte) 0;
-                        else
-                            byteData[i * w + j] = (byte) ((rawData[j * h + i] - min) * ratio);
-                    }
-                }
-            }
-            else {
-                for (int i = 0; i < rawData.length; i++) {
-                    if (rawData[i] >= max)
-                        rawData[i] = (byte) 255;
-                    else if (rawData[i] <= min)
-                        rawData[i] = (byte) 0;
-                    else
-                        byteData[i] = (byte) ((rawData[i] - min) * ratio);
-                }
-            }
+        	for (int i = 0; i < rawData.length; i++) {
+        		if (rawData[i] >= max)
+        			byteData[i] = (byte) 255;
+        		else if (rawData[i] <= min)
+        			byteData[i] = (byte) 0;
+        		else
+        			byteData[i] = (byte) ((rawData[i] - min) * ratio);
+        	}
         }
 
         return byteData;
