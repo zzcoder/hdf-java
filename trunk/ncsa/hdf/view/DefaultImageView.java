@@ -1991,6 +1991,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             JOptionPane.showMessageDialog(this, err.getMessage(), getTitle(),
                     JOptionPane.ERROR_MESSAGE);
         }
+
         dataRange[0] = newRange[0];
         dataRange[1] = newRange[1];
     }
@@ -2329,8 +2330,10 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
 
         private long convertUnsignedPoint(int idx) {
             long l = 0;
+
             if (NT == 'B') {
                 byte b = Array.getByte(data, idx);
+
                 if (b < 0) {
                     l = b + 256;
                 }
@@ -2356,6 +2359,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                     l = i;
                 }
             }
+
             return l;
         }
 
