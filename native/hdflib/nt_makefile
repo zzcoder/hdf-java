@@ -6,7 +6,7 @@
 #
 # Notes: 
 #   To comiple the source code, run 'nmake -f nt_makefile'
-#   You may have add your VS studio bin path to your system path, e.g.
+#   You have to add your VS studio bin path to your system path, e.g.
 #   set path=%path";"C:\Program Files\Microsoft Visual Studio 8\VC\bin"
 #
 
