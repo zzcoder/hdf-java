@@ -32,6 +32,7 @@ CFLAGS = \
 /D "_CRT_SECURE_NO_WARNINGS" /D "_LARGEFILE_SOURCE" \
 /nologo /W3 /EHsc /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /FD /c /TP \
 
+# For 64-bit machines, use /machine:x64
 LINKFLAG=/nologo /dll /incremental:no /machine:i386 
 
 OBJECTS=hdfanImp.obj hdfdfanImp.obj hdfdfcompImp.obj hdfdfpalImp.obj \
