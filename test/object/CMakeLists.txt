@@ -37,7 +37,7 @@ ADD_DEPENDENCIES (${HDFJAVA_TEST_OBJECT_LIB_TARGET} ${HDFJAVA_NCSA_H5_LIB_TARGET
 
 SET (HDF_JAVA_TEST_FILES
       h5ex_d_extern.data
-      h5ex_d_extern.h5
+      h5ex_d_extern.hdf5
 )
 
 FOREACH (h5_file ${HDF_JAVA_TEST_FILES})
