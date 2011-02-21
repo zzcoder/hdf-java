@@ -602,7 +602,7 @@ public class H5ScalarDSTest extends TestCase {
     	H5File file = null;
     	
     	try {
-    		file = new H5File("test/object/h5ex_d_extern.h5");
+    		file = new H5File("test/object/h5ex_d_extern.hdf5");
         	dset = (Dataset)file.get("/DS1");
     	} catch (Exception ex) {;}
         	
