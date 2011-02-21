@@ -107,8 +107,10 @@ rem Build the HDF Java Tests.
     if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ -cp %classpath%;%TESTDIR%\lib\junit.jar %TESTDIR%\test\hdf5lib\*.java
     if %errorlevel% neq 0 exit /b
-    %java_compile% -source 5 -d %TESTDIR%\classes\ -cp %classpath%;%TESTDIR%\lib\junit.jar;%TESTDIR%\lib\fest-swing-1.2.jar;%TESTDIR%\lib\jcip-annotations-1.0.jar %TESTDIR%\test\uitest\*.java
-    if %errorlevel% neq 0 exit /b
+    if exist %TESTDIR%\test\uitest (
+        %java_compile% -source 5 -d %TESTDIR%\classes\ -cp %classpath%;%TESTDIR%\lib\junit.jar;%TESTDIR%\lib\fest-swing-1.2.jar;%TESTDIR%\lib\jcip-annotations-1.0.jar %TESTDIR%\test\uitest\*.java
+        if %errorlevel% neq 0 exit /b
+    )
     echo.Building Java Sources Succesful
 
     exit /b 0
@@ -133,10 +135,12 @@ rem Check the HDF Java Library.
     %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %TESTDIR%\classes;%classpath%;%TESTDIR%\lib\junit.jar test.object.AllH5ObjectTests
     if %errorlevel% neq 0 exit /b
     echo.Checking Java Object Library Successful
-    echo.Checking GUI JUnit4 Tests...
-    %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %TESTDIR%\classes;%classpath%;%TESTDIR%\lib\junit.jar;%TESTDIR%\lib\fest-swing-1.2.jar;%TESTDIR%\lib\fest-reflect-1.2.jar;%TESTDIR%\lib\fest-util-1.1.2.jar;%TESTDIR%\lib\fest-assert-1.2.jar org.junit.runner.JUnitCore test.uitest.AllTests
-    if %errorlevel% neq 0 exit /b
-    echo.Checking GUI JUnit4 Successful
+    if exist %TESTDIR%\test\uitest (
+        echo.Checking GUI JUnit4 Tests...
+        %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %TESTDIR%\classes;%classpath%;%TESTDIR%\lib\junit.jar;%TESTDIR%\lib\fest-swing-1.2.jar;%TESTDIR%\lib\fest-reflect-1.2.jar;%TESTDIR%\lib\fest-util-1.1.2.jar;%TESTDIR%\lib\fest-assert-1.2.jar org.junit.runner.JUnitCore test.uitest.AllTests
+        if %errorlevel% neq 0 exit /b
+        echo.Checking GUI JUnit4 Successful
+    )
 
     exit /b 0
 	

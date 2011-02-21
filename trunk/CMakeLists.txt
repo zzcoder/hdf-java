@@ -289,7 +289,6 @@ IF (HDFJAVA_ENABLE_JPEG_LIB_SUPPORT)
               # [SVN_REVISION rev] 
               INSTALL_COMMAND ""
               CMAKE_ARGS
-                  -DBLDTYPE:STRING=Release
                   -DBUILD_SHARED_LIBS:BOOL=OFF
                   -DCMAKE_BUILD_TYPE:STRING="Release"
                   -DCMAKE_ANSI_CFLAGS:STRING="${JPEG_CMAKE_C_FLAGS}"
@@ -301,7 +300,6 @@ IF (HDFJAVA_ENABLE_JPEG_LIB_SUPPORT)
               URL_MD5 ""
               INSTALL_COMMAND ""
               CMAKE_ARGS
-                  -DBLDTYPE:STRING=Release
                   -DBUILD_SHARED_LIBS:BOOL=OFF
                   -DCMAKE_BUILD_TYPE:STRING="Release"
                   -DCMAKE_ANSI_CFLAGS:STRING="${JPEG_CMAKE_C_FLAGS}"
@@ -363,7 +361,6 @@ IF (HDFJAVA_ENABLE_Z_LIB_SUPPORT)
               # [SVN_REVISION rev] 
               INSTALL_COMMAND ""
               CMAKE_ARGS
-                  -DBLDTYPE:STRING=Release
                   -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
           ) 
         ENDIF (HDFJAVA_ALLOW_EXTERNAL_SUPPORT MATCHES "SVN")
@@ -373,7 +370,6 @@ IF (HDFJAVA_ENABLE_Z_LIB_SUPPORT)
               URL_MD5 ""
               INSTALL_COMMAND ""
               CMAKE_ARGS
-                  -DBLDTYPE:STRING=Release
                   -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
           ) 
         ENDIF (HDFJAVA_ALLOW_EXTERNAL_SUPPORT MATCHES "TGZ")
@@ -454,7 +450,6 @@ IF (HDFJAVA_ENABLE_SZIP_SUPPORT)
             # [SVN_REVISION rev] 
             INSTALL_COMMAND ""
             CMAKE_ARGS
-                -DBLDTYPE:STRING=Release
                 -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
                 -DSZIP_ENABLE_ENCODING:BOOL=${HDFJAVA_ENABLE_SZIP_ENCODING}
         ) 
@@ -465,7 +460,6 @@ IF (HDFJAVA_ENABLE_SZIP_SUPPORT)
             URL_MD5 ""
             INSTALL_COMMAND ""
             CMAKE_ARGS
-                -DBLDTYPE:STRING=Release
                 -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
                 -DSZIP_ENABLE_ENCODING:BOOL=${HDFJAVA_ENABLE_SZIP_ENCODING}
         ) 
