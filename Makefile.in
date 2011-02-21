@@ -73,7 +73,7 @@ EXAMPLESFILES=./examples/*.in ./examples/intro/*.java ./examples/intro/*.in ./ex
 
 TESTFILES=./test/Makefile.in ./test/object/misc/*.java ./test/object/misc/*.in \
 	./test/object/*.in ./test/object/*.java ./test/hdf5lib/*.in ./test/hdf5lib/*.java \
-	./test/hdf5lib/h5ex_g_iterate.hdf ./test/object/h5ex_d_extern.data ./test/object/h5ex_d_extern.h5
+	./test/hdf5lib/h5ex_g_iterate.hdf ./test/object/h5ex_d_extern.data ./test/object/h5ex_d_extern.hdf5
 
 
 DOCFILES=./docs/*.html ./docs/*.gif ./docs/*.js ./docs/hdfview/*.html \
