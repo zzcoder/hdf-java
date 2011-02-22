@@ -14,11 +14,8 @@
 
 package ncsa.hdf.object.h4;
 
-import java.util.List;
-
-import ncsa.hdf.hdflib.HDFConstants;
-import ncsa.hdf.object.Datatype;
-import ncsa.hdf.object.HObject;
+import ncsa.hdf.hdflib.*;
+import ncsa.hdf.object.*;
 
 /**
  * This class defines HDF4 data type characteristics and APIs for a data type.
@@ -92,8 +89,7 @@ public class H4Datatype extends Datatype
      * (non-Javadoc)
      * @see ncsa.hdf.object.Datatype#fromNative(int)
      */
-    @Override
-	public void fromNative(int tid)
+    public void fromNative(int tid)
     {
         datatypeOrder = NATIVE;
         datatypeSign = NATIVE;
@@ -214,8 +210,7 @@ public class H4Datatype extends Datatype
      * (non-Javadoc)
      * @see ncsa.hdf.object.Datatype#getDatatypeDescription()
      */
-    @Override
-	public String getDatatypeDescription()
+    public String getDatatypeDescription()
     {
         return getDatatypeDescription(toNative());
     }
@@ -277,8 +272,7 @@ public class H4Datatype extends Datatype
      * (non-Javadoc)
      * @see ncsa.hdf.object.Datatype#isUnsigned()
      */
-    @Override
-	public boolean isUnsigned()
+    public boolean isUnsigned()
     {
         return isUnsigned(toNative());
     }
@@ -314,8 +308,7 @@ public class H4Datatype extends Datatype
      * (non-Javadoc)
      * @see ncsa.hdf.object.Datatype#toNative()
      */
-    @Override
-	public int toNative()
+    public int toNative()
     {
         int tid = -1;
         int tclass = getDatatypeClass();
@@ -388,13 +381,7 @@ public class H4Datatype extends Datatype
      * (non-Javadoc)
      * @see ncsa.hdf.object.Datatype#close(int)
      */
-    @Override
-	public void close(int id) {;}
-
-    //Implementing DataFormat
-	public List getMetadata(int... attrPropList) throws Exception {
-		throw new UnsupportedOperationException("getMetadata(int... attrPropList) is not supported");
-	}    
+    public void close(int id) {;}    
     
 
 }

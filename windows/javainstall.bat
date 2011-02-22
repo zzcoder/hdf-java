@@ -60,12 +60,12 @@ rem Parse through the parameters sent to file, and set appropriate variables
 rem Setup our environment
 :setup
 	echo.Setting environment
-	if "!%JAVAHOME%!\bin\java.exe"=="\bin\java.exe" (
+	if !%JAVAHOME%!"\bin\java.exe"=="\bin\java.exe" (
 		echo.%JAVAHOME%\bin\java.exe not found,
 		echo.please check your java home directory.
 		goto error
 	)
-	set java_run="%JAVAHOME%\bin\java.exe"
+	set java_run=%JAVAHOME%\bin\java.exe
 
 	if "%INSTALLDIR%"=="" (
 		set INSTALLDIR=hdfjava
@@ -79,6 +79,13 @@ rem Setup our environment
 	) else (
 		echo.Remove old  files
 		call :safe_delete  %INSTALLDIR%
+	)
+	
+	if not exist !%INSTALLDIR%!"\lib" (
+		mkdir %INSTALLDIR%\lib
+	)
+	if not exist !%INSTALLDIR%!"\lib\ext" (
+		mkdir %INSTALLDIR%\lib\ext
 	)
 	
 	if not exist "win32lib" (
@@ -102,13 +109,6 @@ rem Install the HDF Java Libraries.
 
     rem Install Libraries
     echo.Installing Java Libraries...
-
-	if not exist "%INSTALLDIR%\lib" (
-		mkdir %INSTALLDIR%\lib
-	)
-	if not exist "%INSTALLDIR%\lib\ext" (
-		mkdir %INSTALLDIR%\lib\ext
-	)
 	call :safe_copy win32lib\*.jar %INSTALLDIR%\lib
 	call :safe_copy win32lib\ext\*.jar %INSTALLDIR%\lib\ext
 	call :safe_copy win32lib\*.lib %INSTALLDIR%\lib
@@ -159,23 +159,13 @@ rem	call :safe_copy docs\javadocs\images\*.gif %INSTALLDIR%\javadocs\images
 	call :safe_copy docs\hdfview\UsersGuide\*.html %INSTALLDIR%\UsersGuide
 	call :safe_copy docs\hdfview\UsersGuide\images\*.gif %INSTALLDIR%\UsersGuide\images
  
-rem	if not exist "%INSTALLDIR%\hdf-object" (
-rem		mkdir %INSTALLDIR%\hdf-object
-rem	)
-rem	call :safe_copy docs\hdf-object\*.html %INSTALLDIR%\hdf-object
-rem	call :safe_copy docs\hdf-object\*.jpg %INSTALLDIR%\hdf-object
-rem	call :safe_copy docs\hdf-object\*.h5 %INSTALLDIR%\hdf-object
-	
     exit /b %nerrors%
 	
 rem Install the hdfview script.
 :installview
     set nerrors=0
 
-	if not exist "%INSTALLDIR%\bin" (
-		mkdir %INSTALLDIR%\bin
-	)
-	call :safe_copy windows\hdfview.bat %INSTALLDIR%\bin
+	call :safe_copy windows\hdfview.bat %INSTALLDIR%
 	
     exit /b %nerrors%
 

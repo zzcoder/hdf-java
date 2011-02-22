@@ -60,19 +60,19 @@ rem Parse through the parameters sent to file, and set appropriate variables
 rem Setup our environment
 :setup
 	echo.Setting environment
-	if "!%JAVAHOME%!\bin\javac.exe"=="\bin\javac.exe" (
+	if !%JAVAHOME%!"\bin\javac.exe"=="\bin\javac.exe" (
 		echo.%JAVAHOME%\bin\javac.exe not found,
 		echo.please check your java home directory.
 		goto error
 	)
-	set java_compile="%JAVAHOME%\bin\javac.exe"
+	set java_compile=%JAVAHOME%\bin\javac.exe
 	
-	if "!%JAVAHOME%!\bin\jar.exe"=="\bin\jar.exe" (
+	if !%JAVAHOME%!"\bin\jar.exe"=="\bin\jar.exe" (
 		echo.%JAVAHOME%\bin\jar.exe not found,
 		echo.please check your java home directory.
 		goto error
 	)
-	set java_pack="%JAVAHOME%\bin\jar.exe"
+	set java_pack=%JAVAHOME%\bin\jar.exe
 	
 	if not exist "%TESTDIR%\classes" (
 		mkdir %TESTDIR%\classes
@@ -118,11 +118,7 @@ rem Build the HDF Java Sources.
     echo.Building Java Sources...
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\hdf5lib\*.java
     if %errorlevel% neq 0 exit /b
-rem     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\hdf5lib\callbacks\*.java
-rem     if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\hdf5lib\exceptions\*.java
-    if %errorlevel% neq 0 exit /b
-    %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\hdf5lib\structs\*.java
     if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\hdflib\*.java
     if %errorlevel% neq 0 exit /b
@@ -136,7 +132,13 @@ rem     if %errorlevel% neq 0 exit /b
     if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\object\nc2\*.java
     if %errorlevel% neq 0 exit /b
+rem    %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ext\npoess\*.java
+rem    if %errorlevel% neq 0 exit /b
     %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\ncsa\hdf\view\*.java
+    if %errorlevel% neq 0 exit /b
+    %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\test\object\*.java
+    if %errorlevel% neq 0 exit /b
+    %java_compile% -source 5 -d %TESTDIR%\classes\ %TESTDIR%\test\unittests\*.java
     if %errorlevel% neq 0 exit /b
     echo.Building Java Sources Successful
 
@@ -177,6 +179,8 @@ rem Build the HDF JARs.
 	if %errorlevel% neq 0 exit /b
 	%java_pack% -cf fitsobj.jar ncsa\hdf\object\fits\*.class
 	if %errorlevel% neq 0 exit /b
+rem	%java_pack% -cf npoess.jar ext\npoess\*.class
+rem	if %errorlevel% neq 0 exit /b
 	echo.Jaring Successful
 
 	popd
@@ -198,6 +202,7 @@ rem Install the HDF JARs.
 
 	call :safe_copy %TESTDIR%\classes\nc2obj.jar %TESTLIBDIR%\ext
 	call :safe_copy %TESTDIR%\classes\fitsobj.jar %TESTLIBDIR%\ext
+rem	call :safe_copy %TESTDIR%\classes\npoess.jar %TESTLIBDIR%\ext
 	call :safe_copy %TESTDIR%\classes\jhdf.jar %TESTLIBDIR%
 	call :safe_copy %TESTDIR%\classes\jhdf5.jar %TESTLIBDIR%
 	call :safe_copy %TESTDIR%\classes\jhdfobj.jar %TESTLIBDIR%

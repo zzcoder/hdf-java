@@ -1,7 +1,7 @@
 //
 //   Creating groups using absolute and relative names.
 
-package examples.intro;
+package intro;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;

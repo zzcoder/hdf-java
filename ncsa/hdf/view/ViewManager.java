@@ -14,30 +14,28 @@
 
 package ncsa.hdf.view;
 
-import ncsa.hdf.object.HObject;
+import ncsa.hdf.object.*;
 
 /**
- * 
+ *
  * Defines a list of APIs for the main HDFView winodows
- * 
+ *
  * @author Peter X. Cao
  * @version 2.4 9/6/2007
  */
-public abstract interface ViewManager {
+public abstract interface ViewManager
+{
     /** data content is displayed, and add the dataview to the main windows */
     public abstract void addDataView(DataView dataView);
 
     /** data content is closed, and remove the dataview from the main window */
     public abstract void removeDataView(DataView dataView);
 
-    /**
-     * Returns DataView contains the specified data object. It is useful to
-     * avoid redundant display of data object that is opened already.
-     * 
-     * @param dataObject
-     *            the whose presence in the main view is to be tested.
-     * @return DataView contains the specified data object, null if the data
-     *         object is not displayed.
+    /** Returns DataView contains the specified data object.
+     * It is useful to avoid redundant display of data object that is opened already.
+     * @param dataObject the whose presence in the main view is to be tested.
+     * @return DataView contains the specified data object, null if the data object
+     * is not displayed.
      */
     public abstract DataView getDataView(HObject dataObject);
 

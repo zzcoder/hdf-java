@@ -14,54 +14,32 @@
 
 package ncsa.hdf.view;
 
-import java.awt.BorderLayout;
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Enumeration;
-import java.util.StringTokenizer;
-
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JEditorPane;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
-import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLFrameHyperlinkEvent;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.text.html.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import ncsa.hdf.object.Attribute;
-import ncsa.hdf.object.Datatype;
-import ncsa.hdf.object.FileFormat;
-import ncsa.hdf.object.Group;
-import ncsa.hdf.object.HObject;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.Point;
+import java.awt.Dimension;
+import java.awt.Dialog;
+import java.util.*;
+import java.awt.event.*;
+import ncsa.hdf.object.*;
 
-/**
- * NewAttributeDialog displays components for adding new attribute.
+import java.net.URL;
+import java.net.URLClassLoader;
+
+/** NewAttributeDialog displays components for adding new attribute. 
  * 
  * @author Peter X. Cao
  * @version 2.4 9/6/2007
- */
-public class NewAttributeDialog extends JDialog implements ActionListener,
-        ItemListener, HyperlinkListener {
-    public static final long serialVersionUID = HObject.serialVersionUID;
+*/
+public class NewAttributeDialog extends JDialog
+implements ActionListener, ItemListener, HyperlinkListener
+{
+	public static final long serialVersionUID = HObject.serialVersionUID;
 
     /** the default length of a string attribute */
     public static final int DEFAULT_STRING_ATTRIBUTE_LENGTH = 256;
@@ -79,7 +57,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
 
     /** TextField for entering the attribute value. */
     private JTextField valueField;
-
+    
     /** The Choice of the boject list */
     private JComboBox objChoice;
 
@@ -99,25 +77,21 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
 
     private JDialog helpDialog;
 
-    private JRadioButton h4SdAttrRadioButton;
-    private JRadioButton h4GrAttrRadioButton;
+    private JRadioButton  h4SdAttrRadioButton;
+    private JRadioButton  h4GrAttrRadioButton;
 
-    /**
-     * Constructs NewAttributeDialog with specified object (dataset, group, or
-     * image) which the new attribute to be attached to.
-     * 
-     * @param owner
-     *            the owner of the input
-     * @param obj
-     *            the object which the attribute to be attached to.
+    /** Constructs NewAttributeDialog with specified object (dataset, group, or
+     *  image) which the new attribute to be attached to.
+     *  @param owner the owner of the input
+     *  @param obj the object which the attribute to be attached to.
      */
-    public NewAttributeDialog(Dialog owner, HObject obj, Enumeration objList) {
-        super(owner, "New Attribute...", true);
+    public NewAttributeDialog(Dialog owner, HObject obj, Enumeration objList)
+    {
+        super (owner, "New Attribute...", true);
 
         hObject = obj;
         newAttribute = null;
-        isH5 = obj.getFileFormat().isThisType(
-                FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
+        isH5 = obj.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
         helpDialog = null;
         fileFormat = obj.getFileFormat();
 
@@ -136,11 +110,11 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
             typeChoice.addItem("object reference");
         }
 
-        JPanel contentPane = (JPanel) getContentPane();
-        contentPane.setLayout(new BorderLayout(5, 5));
-        contentPane.setBorder(BorderFactory.createEmptyBorder(20, 10, 0, 10));
-        int w = 400 + (ViewProperties.getFontSize() - 12) * 15;
-        int h = 180 + (ViewProperties.getFontSize() - 12) * 10;
+        JPanel contentPane = (JPanel)getContentPane();
+        contentPane.setLayout(new BorderLayout(5,5));
+        contentPane.setBorder(BorderFactory.createEmptyBorder(20,10,0,10));
+        int w = 400 + (ViewProperties.getFontSize()-12)*15;
+        int h = 180 + (ViewProperties.getFontSize()-12)*10;
         contentPane.setPreferredSize(new Dimension(w, h));
 
         JButton okButton = new JButton("   Ok   ");
@@ -156,12 +130,12 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
         helpButton.setMnemonic(KeyEvent.VK_H);
 
         JPanel p = new JPanel();
-        p.setLayout(new BorderLayout(5, 5));
+        p.setLayout(new BorderLayout(5,5));
         JPanel p2 = new JPanel();
-        p2.setLayout(new GridLayout(5, 1, 3, 3));
+        p2.setLayout(new GridLayout(5,1,3,3));
         p2.add(new JLabel("Name: "));
         p2.add(new JLabel("Type: "));
-        p2.add(arrayLengthLabel = new JLabel("Max String Length: "));
+        p2.add(arrayLengthLabel= new JLabel("Max String Length: "));
         p2.add(new JLabel("Value: "));
         p2.add(new JLabel("Object List: "));
         p.add("West", p2);
@@ -169,7 +143,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
         JPanel typePane = new JPanel();
         typePane.setLayout(new BorderLayout());
         JPanel h4GattrPane = new JPanel();
-        h4GattrPane.setLayout(new GridLayout(1, 2, 3, 3));
+        h4GattrPane.setLayout(new GridLayout(1,2,3,3));
         ButtonGroup bg = new ButtonGroup();
         JRadioButton grAttr = new JRadioButton("GR");
         JRadioButton sdAttr = new JRadioButton("SD");
@@ -184,17 +158,16 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
         h4SdAttrRadioButton = sdAttr;
 
         p2 = new JPanel();
-        p2.setLayout(new GridLayout(5, 1, 3, 3));
-        p2.add(nameField = new JTextField("", 30));
-        if (!isH5 && (obj instanceof Group) && ((Group) obj).isRoot()) {
+        p2.setLayout(new GridLayout(5,1,3,3));
+        p2.add(nameField=new JTextField("",30));
+        if (!isH5 && (obj instanceof Group) && ((Group)obj).isRoot()) {
             p2.add(typePane);
-        }
-        else {
+        } else {
             p2.add(typeChoice);
         }
-        p2.add(lengthField = new JTextField("1"));
-        p2.add(valueField = new JTextField("0"));
-        p2.add(objChoice = new JComboBox());
+        p2.add(lengthField=new JTextField("1"));
+        p2.add(valueField=new JTextField("0"));
+        p2.add(objChoice=new JComboBox());
         p.add("Center", p2);
 
         contentPane.add("Center", p);
@@ -211,15 +184,15 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
         helpButton.addActionListener(this);
         objChoice.addItemListener(this);
         objChoice.setEnabled(false);
-
+        
         String str;
         HObject hobj;
         DefaultMutableTreeNode theNode;
         while (objList.hasMoreElements()) {
-            theNode = (DefaultMutableTreeNode) objList.nextElement();
-            hobj = (HObject) theNode.getUserObject();
+            theNode = (DefaultMutableTreeNode)objList.nextElement();
+            hobj = (HObject)theNode.getUserObject();
             if (hobj instanceof Group) {
-                if (((Group) hobj).isRoot())
+                if ( ((Group)hobj).isRoot()) 
                     continue;
             }
             str = hobj.getFullName();
@@ -233,86 +206,71 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
         pack();
     }
 
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e)
+    {
         Object source = e.getSource();
         String cmd = e.getActionCommand();
 
-        if (cmd.equals("Ok")) {
+        if (cmd.equals("Ok"))
+        {
             if (createAttribute()) {
                 dispose();
             }
         }
-        else if (cmd.equals("Cancel")) {
-            newAttribute = null;
+        else if (cmd.equals("Cancel"))
+        {
+            newAttribute= null;
             dispose();
         }
-        else if (cmd.equals("Show help")) {
+        else if (cmd.equals("Show help"))
+        {
             if (helpDialog == null) {
                 createHelpDialog();
             }
             helpDialog.setVisible(true);
         }
-        else if (cmd.equals("Hide help")) {
+        else if (cmd.equals("Hide help"))
+        {
             if (helpDialog != null) {
                 helpDialog.setVisible(false);
             }
         }
     }
 
-    public void itemStateChanged(ItemEvent e) {
+    public void itemStateChanged(ItemEvent e)
+    {
         Object source = e.getSource();
 
-        if (source.equals(typeChoice)) {
+        if (source.equals(typeChoice))
+        {
             int idx = typeChoice.getSelectedIndex();
             objChoice.setEnabled(false);
             lengthField.setEnabled(true);
 
             if (idx == 0) {
                 arrayLengthLabel.setText("Max String Length: ");
-            }
-            else if (typeChoice.getSelectedItem().equals("object reference")) {
+            } else if (typeChoice.getSelectedItem().equals("object reference")){
                 lengthField.setText("1");
                 lengthField.setEnabled(false);
                 arrayLengthLabel.setText("Array Size: ");
                 objChoice.setEnabled(true);
-                valueField.setText("");
-            }
-            else {
+                valueField.setText((String)objChoice.getSelectedItem());
+            } else {
                 arrayLengthLabel.setText("Array Size: ");
             }
-        }
-        else if (source.equals(objChoice)) {
-        	String objName = (String) objChoice.getSelectedItem();
-         	
-        	if (e.getStateChange()!=ItemEvent.SELECTED)
-        		return;
-        	
-        	long ref = -1;
-        	try {
-        		HObject obj = fileFormat.get(objName);
-        		ref = obj.getOID()[0];
-        	} catch (Exception ex) {}
-        	
-        	if (ref > 0) {
-        		if (valueField.getText().length()>1) {
-                    valueField.setText(valueField.getText()+","+ref);
-                    StringTokenizer st = new StringTokenizer(valueField.getText(), ",");
-                    lengthField.setText(String.valueOf(st.countTokens()));
-        		}
-        		else {
-        			valueField.setText(String.valueOf(ref));
-        			lengthField.setText("1");
-        		}
-        	}
+        } else if (source.equals(objChoice))
+        {
+            valueField.setText((String)objChoice.getSelectedItem());
         }
     }
 
-    private boolean createAttribute() {
+    private boolean createAttribute()
+    {
         int string_length = 0;
-        int tclass = -1, tsize = -1, torder = -1, tsign = -1;
+        int tclass=-1, tsize=-1, torder=-1, tsign=-1;
 
         Object value = null;
-        String dt = (String) typeChoice.getSelectedItem();
+        String dt = (String)typeChoice.getSelectedItem();
         String strValue = valueField.getText();
 
         String attrName = nameField.getText();
@@ -320,30 +278,34 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
             attrName = attrName.trim();
         }
 
-        if ((attrName == null) || (attrName.length() < 1)) {
-            JOptionPane.showMessageDialog(this, "No attribute name.",
-                    getTitle(), JOptionPane.ERROR_MESSAGE);
+        if ((attrName == null) || (attrName.length()<1))
+        {
+            JOptionPane.showMessageDialog(this,
+                "No attribute name.",
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
         String lengthStr = lengthField.getText();
 
         int arraySize = 0;
-        if ((lengthStr == null) || (lengthStr.length() <= 0)) {
+        if ((lengthStr == null) || (lengthStr.length() <=0))
+        {
             arraySize = 1;
         }
-        else {
-            try {
-                arraySize = Integer.parseInt(lengthStr);
-            }
-            catch (Exception e) {
-                arraySize = -1;
-            }
+        else
+        {
+            try { arraySize = Integer.parseInt(lengthStr); }
+            catch (Exception e) { arraySize  = -1; }
         }
 
-        if (arraySize <= 0) {
-            JOptionPane.showMessageDialog(this, "Invalid attribute length.",
-                    getTitle(), JOptionPane.ERROR_MESSAGE);
+        if (arraySize <=0 )
+        {
+            JOptionPane.showMessageDialog(this,
+                "Invalid attribute length.",
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
@@ -351,16 +313,19 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
         int count = Math.min(arraySize, st.countTokens());
         String theToken;
 
-        if (dt.startsWith("byte")) {
+        if (dt.startsWith("byte"))
+        {
             byte[] b = new byte[arraySize];
-            for (int j = 0; j < count; j++) {
+            for (int j=0; j<count; j++)
+            {
                 theToken = st.nextToken().trim();
-                try {
-                    b[j] = Byte.parseByte(theToken);
-                }
-                catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(),
-                            getTitle(), JOptionPane.ERROR_MESSAGE);
+                try { b[j] = Byte.parseByte(theToken); }
+                catch (NumberFormatException ex)
+                {
+                    JOptionPane.showMessageDialog(this,
+                        ex.getMessage(),
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
             }
@@ -369,17 +334,20 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
             tsize = 1;
             torder = Datatype.NATIVE;
         }
-        else if (dt.startsWith("short")) {
+        else if (dt.startsWith("short"))
+        {
             short[] s = new short[arraySize];
 
-            for (int j = 0; j < count; j++) {
+            for (int j=0; j<count; j++)
+            {
                 theToken = st.nextToken().trim();
-                try {
-                    s[j] = Short.parseShort(theToken);
-                }
-                catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(),
-                            getTitle(), JOptionPane.ERROR_MESSAGE);
+                try { s[j] = Short.parseShort(theToken); }
+                catch (NumberFormatException ex)
+                {
+                    JOptionPane.showMessageDialog(this,
+                        ex.getMessage(),
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
             }
@@ -388,17 +356,20 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
             tsize = 2;
             torder = Datatype.NATIVE;
         }
-        else if (dt.startsWith("int")) {
+        else if (dt.startsWith("int"))
+        {
             int[] i = new int[arraySize];
 
-            for (int j = 0; j < count; j++) {
+            for (int j=0; j<count; j++)
+            {
                 theToken = st.nextToken().trim();
-                try {
-                    i[j] = Integer.parseInt(theToken);
-                }
-                catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(),
-                            getTitle(), JOptionPane.ERROR_MESSAGE);
+                try { i[j] = Integer.parseInt(theToken); }
+                catch (NumberFormatException ex)
+                {
+                    JOptionPane.showMessageDialog(this,
+                        ex.getMessage(),
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
             }
@@ -407,23 +378,25 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
             tsize = 4;
             torder = Datatype.NATIVE;
         }
-        else if (dt.startsWith("unsigned byte")) {
+        else if (dt.startsWith("unsigned byte"))
+        {
             byte[] b = new byte[arraySize];
             short sv = 0;
-            for (int j = 0; j < count; j++) {
+            for (int j=0; j<count; j++)
+            {
                 theToken = st.nextToken().trim();
-                try {
-                    sv = Short.parseShort(theToken);
-                }
-                catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(),
-                            getTitle(), JOptionPane.ERROR_MESSAGE);
+                try { sv = Short.parseShort(theToken); }
+                catch (NumberFormatException ex)
+                {
+                    JOptionPane.showMessageDialog(this,
+                        ex.getMessage(),
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
-                if (sv < 0) {
+                if (sv <0 ) {
                     sv = 0;
-                }
-                else if (sv > 255) {
+                } else if ( sv > 255) {
                     sv = 255;
                 }
                 b[j] = (byte) sv;
@@ -435,26 +408,28 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
             torder = Datatype.NATIVE;
             tsign = Datatype.SIGN_NONE;
         }
-        else if (dt.startsWith("unsigned short")) {
+        else if (dt.startsWith("unsigned short"))
+        {
             short[] s = new short[arraySize];
             int iv = 0;
-            for (int j = 0; j < count; j++) {
+            for (int j=0; j<count; j++)
+            {
                 theToken = st.nextToken().trim();
-                try {
-                    iv = Integer.parseInt(theToken);
-                }
-                catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(),
-                            getTitle(), JOptionPane.ERROR_MESSAGE);
+                try { iv = Integer.parseInt(theToken); }
+                catch (NumberFormatException ex)
+                {
+                    JOptionPane.showMessageDialog(this,
+                        ex.getMessage(),
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
-                if (iv < 0) {
+                if (iv <0 ) {
                     iv = 0;
-                }
-                else if (iv > 65535) {
+                } else if ( iv > 65535) {
                     iv = 65535;
                 }
-                s[j] = (short) iv;
+                s[j] = (short)iv;
             }
             value = s;
             tclass = Datatype.CLASS_INTEGER;
@@ -462,26 +437,29 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
             torder = Datatype.NATIVE;
             tsign = Datatype.SIGN_NONE;
         }
-        else if (dt.startsWith("unsigned int")) {
+        else if (dt.startsWith("unsigned int"))
+        {
             int[] i = new int[arraySize];
             long lv = 0;
-            for (int j = 0; j < count; j++) {
+            for (int j=0; j<count; j++)
+            {
                 theToken = st.nextToken().trim();
-                try {
-                    lv = Long.parseLong(theToken);
-                }
-                catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(),
-                            getTitle(), JOptionPane.ERROR_MESSAGE);
+                try { lv = Long.parseLong(theToken); }
+                catch (NumberFormatException ex)
+                {
+                    JOptionPane.showMessageDialog(this,
+                        ex.getMessage(),
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
-                if (lv < 0) {
+                if (lv <0 ) {
                     lv = 0;
                 }
-                if (lv > 4294967295L) {
+                if ( lv > 4294967295L) {
                     lv = 4294967295L;
                 }
-                i[j] = (int) lv;
+                i[j] = (int)lv;
             }
             value = i;
             tclass = Datatype.CLASS_INTEGER;
@@ -489,16 +467,19 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
             torder = Datatype.NATIVE;
             tsign = Datatype.SIGN_NONE;
         }
-        else if (dt.startsWith("long")) {
+        else if (dt.startsWith("long"))
+        {
             long[] l = new long[arraySize];
-            for (int j = 0; j < count; j++) {
+            for (int j=0; j<count; j++)
+            {
                 theToken = st.nextToken().trim();
-                try {
-                    l[j] = Long.parseLong(theToken);
-                }
-                catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(),
-                            getTitle(), JOptionPane.ERROR_MESSAGE);
+                try { l[j] = Long.parseLong(theToken); }
+                catch (NumberFormatException ex)
+                {
+                    JOptionPane.showMessageDialog(this,
+                        ex.getMessage(),
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
             }
@@ -507,16 +488,19 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
             tsize = 8;
             torder = Datatype.NATIVE;
         }
-        else if (dt.startsWith("float")) {
+        else if (dt.startsWith("float"))
+        {
             float[] f = new float[arraySize];
-            for (int j = 0; j < count; j++) {
+            for (int j=0; j<count; j++)
+            {
                 theToken = st.nextToken().trim();
-                try {
-                    f[j] = Float.parseFloat(theToken);
-                }
-                catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(),
-                            getTitle(), JOptionPane.ERROR_MESSAGE);
+                try { f[j] = Float.parseFloat(theToken); }
+                catch (NumberFormatException ex)
+                {
+                    JOptionPane.showMessageDialog(this,
+                        ex.getMessage(),
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
                 if (Float.isInfinite(f[j]) || Float.isNaN(f[j])) {
@@ -528,16 +512,19 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
             tsize = 4;
             torder = Datatype.NATIVE;
         }
-        else if (dt.startsWith("double")) {
+        else if (dt.startsWith("double"))
+        {
             double[] d = new double[arraySize];
-            for (int j = 0; j < count; j++) {
+            for (int j=0; j<count; j++)
+            {
                 theToken = st.nextToken().trim();
-                try {
-                    d[j] = Double.parseDouble(theToken);
-                }
-                catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage(),
-                            getTitle(), JOptionPane.ERROR_MESSAGE);
+                try { d[j] = Double.parseDouble(theToken); }
+                catch (NumberFormatException ex)
+                {
+                    JOptionPane.showMessageDialog(this,
+                        ex.getMessage(),
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
                 if (Double.isInfinite(d[j]) || Double.isNaN(d[j])) {
@@ -549,34 +536,37 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
             tsize = 8;
             torder = Datatype.NATIVE;
         }
-        else if (dt.startsWith("object reference")) {
-        	arraySize = st.countTokens();
-        	long[] ref = new long[arraySize]; 
-        	for (int j=0; j<arraySize; j++) {
-        		theToken = st.nextToken().trim(); 
-        		try { ref[j] = Long.parseLong(theToken); } 
-        		catch (NumberFormatException ex) {
-        			JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(),
-        						JOptionPane.ERROR_MESSAGE); 
-        			return false; 
-        		} 
-        	}
-
-        	value = ref;
+        else if (dt.startsWith("object reference"))
+        {
+            /*
+            long[] ref = new long[arraySize];
+            for (int j=0; j<count; j++)
+            {
+                theToken = st.nextToken().trim();
+                try { ref[j] = Long.parseLong(theToken); }
+                catch (NumberFormatException ex)
+                {
+                    JOptionPane.showMessageDialog(this,
+                        ex.getMessage(),
+                        getTitle(),
+                        JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+            }
+            */
+            value = strValue;
             tclass = Datatype.CLASS_REFERENCE;
             tsize = 8;
             torder = Datatype.NATIVE;
         }
-        else if (dt.equals("string")) {
+        else if (dt.equals("string"))
+        {
             try {
                 string_length = Integer.parseInt(lengthField.getText());
-            }
-            catch (Exception e) {
-                string_length = 0;
-            }
+            } catch (Exception e) { string_length = 0; }
 
-            // string_length = Math.max(string_length, strValue.length());
-            if (string_length <= 0) {
+            //string_length = Math.max(string_length, strValue.length());
+            if (string_length <=0) {
                 string_length = DEFAULT_STRING_ATTRIBUTE_LENGTH;
             }
 
@@ -587,36 +577,38 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
             tclass = Datatype.CLASS_STRING;
             tsize = string_length;
 
-            String[] strArray = { strValue };
+            String[] strArray = {strValue};
             value = strArray;
 
             if (isH5) {
                 arraySize = 1; // support string type
-            }
-            else {
+            } else {
                 arraySize = string_length; // array of characters
             }
         }
 
         Datatype datatype = null;
 
-        try {
-            datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign);
-        }
-        catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+        try { datatype = fileFormat.createDatatype(tclass, tsize, torder, tsign); }
+        catch (Exception ex)
+        {
+            JOptionPane.showMessageDialog(this,
+                ex.getMessage(),
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
-        long[] dims = { arraySize };
+        long[] dims = {arraySize};
         Attribute attr = new Attribute(attrName, datatype, dims);
         attr.setValue(value);
 
         try {
-            if (!isH5 && (hObject instanceof Group)
-                    && ((Group) hObject).isRoot()
-                    && h4GrAttrRadioButton.isSelected()) {
+            if (!isH5 &&
+                (hObject instanceof Group) &&
+                ((Group)hObject).isRoot() &&
+                h4GrAttrRadioButton.isSelected())
+            {
                 // don't find a good way to write HDF4 global
                 // attribute. Use the isExisted to separate the
                 // global attribute is GR or SD
@@ -624,14 +616,16 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
                 if (hObject.getMetadata() == null) {
                     hObject.getMetadata().add(attr);
                 }
-            }
-            else {
+            } else {
                 hObject.writeMetadata(attr);
             }
         }
-        catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), getTitle(),
-                    JOptionPane.ERROR_MESSAGE);
+        catch (Exception ex )
+        {
+            JOptionPane.showMessageDialog(this,
+                ex.getMessage(),
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
@@ -641,14 +635,15 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
     }
 
     /** Creates a dialog to show the help information. */
-    private void createHelpDialog() {
+    private void createHelpDialog()
+    {
         helpDialog = new JDialog(this, "Creation New Attribute");
 
-        JPanel contentPane = (JPanel) helpDialog.getContentPane();
-        contentPane.setLayout(new BorderLayout(5, 5));
-        contentPane.setBorder(BorderFactory.createEmptyBorder(15, 5, 5, 5));
-        int w = 500 + (ViewProperties.getFontSize() - 12) * 15;
-        int h = 400 + (ViewProperties.getFontSize() - 12) * 10;
+        JPanel contentPane = (JPanel)helpDialog.getContentPane();
+        contentPane.setLayout(new BorderLayout(5,5));
+        contentPane.setBorder(BorderFactory.createEmptyBorder(15,5,5,5));
+        int w = 500 + (ViewProperties.getFontSize()-12)*15;
+        int h = 400 + (ViewProperties.getFontSize()-12)*10;
         contentPane.setPreferredSize(new Dimension(w, h));
 
         JButton b = new JButton("  Ok  ");
@@ -656,46 +651,36 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
         b.setActionCommand("Hide help");
         JPanel tmpP = new JPanel();
         tmpP.add(b);
-        contentPane.add(tmpP, BorderLayout.SOUTH);
+        contentPane.add (tmpP, BorderLayout.SOUTH);
 
         JEditorPane infoPane = new JEditorPane();
         infoPane.setEditable(false);
         JScrollPane editorScrollPane = new JScrollPane(infoPane);
-        contentPane.add(editorScrollPane, BorderLayout.CENTER);
+        contentPane.add (editorScrollPane, BorderLayout.CENTER);
 
         try {
-            URL url = null, url2 = null, url3 = null;
+            URL url= null, url2=null, url3=null;
             String rootPath = ViewProperties.getViewRoot();
 
             try {
-                url = new URL("file:" + rootPath + "/lib/jhdfview.jar");
-            }
-            catch (java.net.MalformedURLException mfu) {
-                ;
-            }
+                url = new URL("file:"+rootPath+"/lib/jhdfview.jar");
+            } catch (java.net.MalformedURLException mfu) {;}
 
             try {
-                url2 = new URL("file:" + rootPath + "/");
-            }
-            catch (java.net.MalformedURLException mfu) {
-                ;
-            }
+                url2 = new URL("file:"+rootPath+"/");
+            } catch (java.net.MalformedURLException mfu) {;}
 
             try {
-                url3 = new URL("file:" + rootPath + "/src/");
-            }
-            catch (java.net.MalformedURLException mfu) {
-                ;
-            }
+                url3 = new URL("file:"+rootPath+"/src/");
+            } catch (java.net.MalformedURLException mfu) {;}
 
-            URL uu[] = { url, url2, url3 };
+            URL uu[] = {url, url2, url3};
             URLClassLoader cl = new URLClassLoader(uu);
             URL u = cl.findResource("ncsa/hdf/view/NewAttrHelp.html");
 
             infoPane.setPage(u);
             infoPane.addHyperlinkListener(this);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             infoPane.setContentType("text/html");
             StringBuffer buff = new StringBuffer();
             buff.append("<html>");
@@ -704,7 +689,7 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
             buff.append("</body>");
             buff.append("</html>");
             infoPane.setText(buff.toString());
-        }
+       }
 
         Point l = helpDialog.getOwner().getLocation();
         l.x += 50;
@@ -714,28 +699,26 @@ public class NewAttributeDialog extends JDialog implements ActionListener,
         helpDialog.pack();
     }
 
-    public void hyperlinkUpdate(HyperlinkEvent e) {
-        if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+    public void hyperlinkUpdate(HyperlinkEvent e)
+    {
+        if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
+        {
             JEditorPane pane = (JEditorPane) e.getSource();
 
-            if (e instanceof HTMLFrameHyperlinkEvent) {
-                HTMLFrameHyperlinkEvent evt = (HTMLFrameHyperlinkEvent) e;
-                HTMLDocument doc = (HTMLDocument) pane.getDocument();
+            if (e instanceof HTMLFrameHyperlinkEvent)
+            {
+                HTMLFrameHyperlinkEvent  evt = (HTMLFrameHyperlinkEvent)e;
+                HTMLDocument doc = (HTMLDocument)pane.getDocument();
                 doc.processHTMLFrameHyperlinkEvent(evt);
-            }
-            else {
-                try {
-                    pane.setPage(e.getURL());
-                }
-                catch (Throwable t) {
-                }
+            } else
+            {
+                try { pane.setPage(e.getURL()); }
+                catch (Throwable t)  {}
             }
         }
     }
 
     /** return the new attribute created. */
-    public Attribute getAttribute() {
-        return newAttribute;
-    }
+    public Attribute getAttribute() { return newAttribute; }
 
 }

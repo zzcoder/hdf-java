@@ -10,7 +10,7 @@
 
  ************************************************************/
 
-package examples.datatypes;
+package datatypes;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
@@ -81,7 +81,7 @@ public class H5Ex_T_Array {
 		try {
 			if ((file_id >= 0) && (dataspace_id >= 0) && (filetype_id >= 0))
 				dataset_id = H5.H5Dcreate(file_id, DATASETNAME, filetype_id,
-						dataspace_id, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+						dataspace_id, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -166,7 +166,7 @@ public class H5Ex_T_Array {
 		// Open an existing dataset.
 		try {
 			if (file_id >= 0)
-				dataset_id = H5.H5Dopen(file_id, DATASETNAME, HDF5Constants.H5P_DEFAULT);
+				dataset_id = H5.H5Dopen(file_id, DATASETNAME);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -209,7 +209,7 @@ public class H5Ex_T_Array {
 
 		// Allocate array of pointers to two-dimensional arrays (the
 		// elements of the dataset.
-		dset_data = new int[(int) dims[0]][(adims[0])][(adims[1])];
+		dset_data = new int[(int) dims[0]][(int) (adims[0])][(int) (adims[1])];
 
 		// Create array datatypes for memory.
 		try {

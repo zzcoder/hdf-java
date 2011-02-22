@@ -11,7 +11,7 @@
 
  ************************************************************/
 
-package examples.datatypes;
+package datatypes;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -86,7 +86,7 @@ public class H5Ex_T_ObjectReferenceAttribute {
 			if (dataspace_id >= 0) {
 				dataset_id = H5.H5Dcreate(file_id, DATASETNAME2,
 						HDF5Constants.H5T_STD_I32LE, dataspace_id,
-						HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+						HDF5Constants.H5P_DEFAULT);
 				if (dataset_id >= 0)
 					H5.H5Dclose(dataset_id);
 				dataset_id = -1;
@@ -136,7 +136,7 @@ public class H5Ex_T_ObjectReferenceAttribute {
 			if (dataspace_id >= 0) {
 				dataset_id = H5.H5Dcreate(file_id, DATASETNAME,
 						HDF5Constants.H5T_STD_I32LE, dataspace_id,
-						HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+						HDF5Constants.H5P_DEFAULT);
 				H5.H5Sclose(dataspace_id);
 				dataspace_id = -1;
 			}
@@ -233,7 +233,7 @@ public class H5Ex_T_ObjectReferenceAttribute {
 		// Open an existing dataset.
 		try {
 			if (file_id >= 0)
-				dataset_id = H5.H5Dopen(file_id, DATASETNAME, HDF5Constants.H5P_DEFAULT);
+				dataset_id = H5.H5Dopen(file_id, DATASETNAME);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

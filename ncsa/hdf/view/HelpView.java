@@ -15,9 +15,9 @@
 package ncsa.hdf.view;
 
 /**
- * 
+ *
  * The helpview interface for displaying user help information
- * 
+ *
  * @author Peter X. Cao
  * @version 2.4 9/6/2007
  */
@@ -25,10 +25,7 @@ public abstract interface HelpView {
     /** display help informaion */
     public abstract void show();
 
-    /**
-     * Returns the HelpView's label, which is used to displayed in the HDFVIew
-     * help menu.
-     */
+    /** Returns the HelpView's label, which is used to displayed in the HDFVIew help menu. */
     public abstract String getLabel();
 
     /** Returns the action command for this HelpView. */

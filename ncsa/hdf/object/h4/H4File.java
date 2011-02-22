@@ -14,26 +14,13 @@
 
 package ncsa.hdf.object.h4;
 
+import java.util.*;
 import java.io.File;
+
 import java.lang.reflect.Array;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
-
-import ncsa.hdf.hdflib.HDFConstants;
-import ncsa.hdf.hdflib.HDFException;
-import ncsa.hdf.hdflib.HDFLibrary;
-import ncsa.hdf.object.Attribute;
-import ncsa.hdf.object.Dataset;
-import ncsa.hdf.object.Datatype;
-import ncsa.hdf.object.FileFormat;
-import ncsa.hdf.object.Group;
-import ncsa.hdf.object.HObject;
+import javax.swing.tree.*;
+import ncsa.hdf.hdflib.*;
+import ncsa.hdf.object.*;
 
 /**
  * This class provides file level APIs. File access APIs include retrieving the
@@ -165,8 +152,7 @@ public class H4File extends FileFormat
      * @param fileformat the fileformat to be checked.
      * @return true if the given file is an HDF4 file; otherwise returns false.
      */
-    @Override
-	public boolean isThisType(FileFormat fileformat)
+    public boolean isThisType(FileFormat fileformat)
     {
         return (fileformat instanceof H4File);
     }
@@ -178,8 +164,7 @@ public class H4File extends FileFormat
      * @param filename the file to be checked.
      * @return true if the given file is an HDF4 file; otherwise returns false.
      */
-    @Override
-	public boolean isThisType(String filename)
+    public boolean isThisType(String filename)
     {
         boolean isH4 = false;
 
@@ -207,8 +192,7 @@ public class H4File extends FileFormat
      * @see ncsa.hdf.object.FileFormat#createFile(java.lang.String, int)
      * @see #H4File(String, int)
      */
-    @Override
-	public FileFormat createFile(String filename, int createFlag)
+    public FileFormat createFile(String filename, int createFlag)
                                                         throws Exception
     {
         // Flag if we need to create or truncate the file.
@@ -238,16 +222,14 @@ public class H4File extends FileFormat
      * @see ncsa.hdf.object.FileFormat#createInstance(java.lang.String, int)
      * @see #H4File(String, int)
      */
-    @Override
-	public FileFormat createInstance(String filename, int access) 
+    public FileFormat createInstance(String filename, int access) 
 							throws Exception
     {
         return new H4File(filename, access);
     }
 
     // Implementing FileFormat
-    @Override
-	public int open() throws Exception
+    public int open() throws Exception
     {
         if ( fid >=0 ) {
             return fid; // file is openned already
@@ -296,8 +278,7 @@ public class H4File extends FileFormat
     }
 
     // Implementing FileFormat
-    @Override
-	public void close() throws HDFException
+    public void close() throws HDFException
     {
         // clean unused objects
         if (rootNode != null)
@@ -328,21 +309,18 @@ public class H4File extends FileFormat
     }
 
     // Implementing FileFormat
-    @Override
-	public TreeNode getRootNode()
+    public TreeNode getRootNode()
     {
         return rootNode;
     }
 
 
-    @Override
-	public Group createGroup(String name, Group pgroup) throws Exception
+    public Group createGroup(String name, Group pgroup) throws Exception
     {
         return H4Group.create(name, pgroup);
     }
 
-    @Override
-	public Datatype createDatatype(
+    public Datatype createDatatype(
         int tclass,
         int tsize,
         int torder,
@@ -351,8 +329,7 @@ public class H4File extends FileFormat
         return new H4Datatype(tclass, tsize, torder, tsign);
     }
 
-    @Override
-	public Datatype createDatatype(
+    public Datatype createDatatype(
         int tclass,
         int tsize,
         int torder,
@@ -362,8 +339,7 @@ public class H4File extends FileFormat
         throw new UnsupportedOperationException("HDF4 does not support named datatype.");
     }
 
-    @Override
-	public Dataset createScalarDS(
+    public Dataset createScalarDS(
         String name,
         Group pgroup,
         Datatype type,
@@ -377,8 +353,7 @@ public class H4File extends FileFormat
     }
 
 
-    @Override
-	public Dataset createImage(
+    public Dataset createImage(
         String name,
         Group pgroup,
         Datatype type,
@@ -399,8 +374,7 @@ public class H4File extends FileFormat
      * Delete an object from the file.
      * @param obj the data object to delete.
      */
-    @Override
-	public void delete(HObject obj) throws Exception
+    public void delete(HObject obj) throws Exception
     {
         throw (new UnsupportedOperationException(
             "Cannot delete HDF4 object."));
@@ -412,8 +386,7 @@ public class H4File extends FileFormat
      * @param dstGroup the destination group.
      * @return the new node containing the new object.
      */
-    @Override
-	public TreeNode copy(HObject srcObj, Group dstGroup, String dstName) throws Exception
+    public TreeNode copy(HObject srcObj, Group dstGroup, String dstName) throws Exception
     {
         TreeNode newNode = null;
 
@@ -446,18 +419,23 @@ public class H4File extends FileFormat
 
         return newNode;
     }
-    
+
+    // implementign FileFormat
+    public HObject createLink(Group parentGroup, String name, HObject currentObj) throws Exception
+    {
+        throw new UnsupportedOperationException("createLink() is not supported");
+    }
+
     /**
      * Creates a new attribute and attached to the object if attribute does
      * not exist. Otherwise, just update the value of the attribute.
      *
      * <p>
      * @param obj the object which the attribute is to be attached to.
-     * @param attr the attribute to attach.
+     * @param attr the atribute to attach.
      * @param isSDglobalAttr The indicator if the given attribute exists.
      */
-    @Override
-	public void writeAttribute(HObject obj, Attribute attr,
+    public void writeAttribute(HObject obj, Attribute attr,
         boolean isSDglobalAttr) throws HDFException
     {
         String attrName = attr.getName();
@@ -578,8 +556,7 @@ public class H4File extends FileFormat
         {
         	public static final long serialVersionUID = HObject.serialVersionUID;
 
-            @Override
-			public boolean isLeaf() { return false; }
+            public boolean isLeaf() { return false; }
         };
         pgroup.addToMemberList(group);
 
@@ -634,8 +611,7 @@ public class H4File extends FileFormat
         {
         	public static final long serialVersionUID = HObject.serialVersionUID;
 
-            @Override
-			public boolean isLeaf() { return false; }
+            public boolean isLeaf() { return false; }
         };
 
         // get top level VGroup
@@ -671,8 +647,7 @@ public class H4File extends FileFormat
                 {
                 	public static final long serialVersionUID = HObject.serialVersionUID;
 
-                    @Override
-					public boolean isLeaf() { return false; }
+                    public boolean isLeaf() { return false; }
                 };
                 root.add( node );
                 rootGroup.addToMemberList(g);
@@ -902,8 +877,7 @@ public class H4File extends FileFormat
                         {
                         	public static final long serialVersionUID = HObject.serialVersionUID;
 
-                            @Override
-							public boolean isLeaf() { return false; }
+                            public boolean isLeaf() { return false; }
                         };
 
                         pnode.add( node );
@@ -1471,8 +1445,7 @@ public class H4File extends FileFormat
     /**
      *  Returns the version of the HDF4 library.
      */
-    @Override
-	public String getLibversion()
+    public String getLibversion()
     {
         int[] vers = new int[3];
         String ver = "HDF ";
@@ -1530,8 +1503,7 @@ public class H4File extends FileFormat
      * Get an individual HObject with a given path. It deoes not load the whole
      * file structure.
      */
-    @Override
-	public HObject get(String path) throws Exception
+    public HObject get(String path) throws Exception
     {
         if (objList == null) {
             objList = new Vector();

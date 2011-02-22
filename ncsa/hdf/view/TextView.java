@@ -14,10 +14,11 @@
 
 package ncsa.hdf.view;
 
+
 /**
- * 
+ *
  * The text view interface for displaying text data
- * 
+ *
  * @author Peter X. Cao
  * @version 2.4 9/6/2007
  */

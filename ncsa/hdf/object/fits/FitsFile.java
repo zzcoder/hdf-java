@@ -14,27 +14,10 @@
 
 package ncsa.hdf.object.fits;
 
-import java.io.DataInput;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.RandomAccessFile;
-
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
-
-import ncsa.hdf.object.Dataset;
-import ncsa.hdf.object.Datatype;
-import ncsa.hdf.object.FileFormat;
-import ncsa.hdf.object.Group;
-import ncsa.hdf.object.HObject;
-import nom.tam.fits.AsciiTableHDU;
-import nom.tam.fits.BasicHDU;
-import nom.tam.fits.BinaryTableHDU;
-import nom.tam.fits.Fits;
-import nom.tam.fits.ImageHDU;
-import nom.tam.fits.RandomGroupsHDU;
-import nom.tam.fits.TableHDU;
+import java.io.*;
+import javax.swing.tree.*;
+import ncsa.hdf.object.*;
+import nom.tam.fits.*;
 
 /**
  * This class provides file level APIs. File access APIs include retrieving the
@@ -84,8 +67,7 @@ public class FitsFile extends FileFormat
      * @param fileformat the fileformat to be checked.
      * @return true if the given file is an Fits file; otherwise returns false.
      */
-    @Override
-	public boolean isThisType(FileFormat fileformat) {
+    public boolean isThisType(FileFormat fileformat) {
         return (fileformat instanceof FitsFile);
     }
 
@@ -95,8 +77,7 @@ public class FitsFile extends FileFormat
      * @param filename the file to be checked.
      * @return true if the given file is an Fits file; otherwise returns false.
      */
-    @Override
-	public boolean isThisType(String filename)
+    public boolean isThisType(String filename)
     {
         boolean is_fits = false;
         RandomAccessFile raf = null;
@@ -145,16 +126,14 @@ public class FitsFile extends FileFormat
      *
      * @see ncsa.hdf.object.FileFormat@createInstance(java.lang.String, int)
      */
-    @Override
-	public FileFormat createInstance(String filename, int access) 
+    public FileFormat createInstance(String filename, int access) 
 							  throws Exception {
         return new FitsFile(filename);
     }
 
 
     // Implementing FileFormat
-    @Override
-	public int open() throws Exception {
+    public int open() throws Exception {
         if (!isFileOpen) {
             isFileOpen = true;
             rootNode = loadTree();
@@ -176,8 +155,7 @@ public class FitsFile extends FileFormat
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootGroup) {
         	public static final long serialVersionUID = HObject.serialVersionUID;
 
-            @Override
-			public boolean isLeaf() { return false; }
+            public boolean isLeaf() { return false; }
         };
 
         if (fitsFile == null) {
@@ -229,8 +207,7 @@ public class FitsFile extends FileFormat
     }
 
     // Implementing FileFormat
-    @Override
-	public void close() throws IOException {
+    public void close() throws IOException {
         if (fitsFile == null) {
             return;
         }
@@ -242,8 +219,7 @@ public class FitsFile extends FileFormat
     }
 
     // Implementing FileFormat
-    @Override
-	public TreeNode getRootNode() {
+    public TreeNode getRootNode() {
         return rootNode;
     }
 
@@ -252,15 +228,13 @@ public class FitsFile extends FileFormat
     }
 
     // implementign FileFormat
-    @Override
-	public Group createGroup(String name, Group pgroup) throws Exception {
+    public Group createGroup(String name, Group pgroup) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation for Fits.");
     }
 
     // implementign FileFormat
-    @Override
-	public Datatype createDatatype(
+    public Datatype createDatatype(
         int tclass,
         int tsize,
         int torder,
@@ -270,8 +244,7 @@ public class FitsFile extends FileFormat
     }
 
     // implementign FileFormat
-    @Override
-	public Datatype createDatatype(
+    public Datatype createDatatype(
         int tclass,
         int tsize,
         int torder,
@@ -282,8 +255,13 @@ public class FitsFile extends FileFormat
     }
 
     // implementign FileFormat
-    @Override
-	public Dataset createScalarDS(
+    public HObject createLink(Group parentGroup, String name, HObject currentObj) throws Exception
+    {
+        throw new UnsupportedOperationException("createLink() is not supported");
+    }
+
+    // implementign FileFormat
+    public Dataset createScalarDS(
         String name,
         Group pgroup,
         Datatype type,
@@ -297,8 +275,7 @@ public class FitsFile extends FileFormat
     }
 
     // implementign FileFormat
-    @Override
-	public Dataset createImage(
+    public Dataset createImage(
         String name,
         Group pgroup,
         Datatype type,
@@ -314,15 +291,13 @@ public class FitsFile extends FileFormat
     }
 
     // implementign FileFormat
-    @Override
-	public void delete(HObject obj) throws Exception {
+    public void delete(HObject obj) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     // implementign FileFormat
-    @Override
-	public TreeNode copy(HObject srcObj, Group dstGroup, String dstName) throws Exception {
+    public TreeNode copy(HObject srcObj, Group dstGroup, String dstName) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation.");
     }
@@ -371,8 +346,7 @@ public class FitsFile extends FileFormat
      * @param attrExisted The indicator if the given attribute exists.
      * @return true if successful and false otherwise.
      */
-    @Override
-	public void writeAttribute(HObject obj, ncsa.hdf.object.Attribute attr,
+    public void writeAttribute(HObject obj, ncsa.hdf.object.Attribute attr,
         boolean attrExisted) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation.");
@@ -381,17 +355,15 @@ public class FitsFile extends FileFormat
     /**
      *  Returns the version of the library.
      */
-    @Override
-	public String getLibversion()
+    public String getLibversion()
     {
         String ver = "Fits Java (version 2.4)";
 
         return ver;
     }
 
-    // implementing FileFormat
-    @Override
-	public HObject get(String path) throws Exception
+    // implementign FileFormat
+    public HObject get(String path) throws Exception
     {
         throw new UnsupportedOperationException("get() is not supported");
     }

@@ -1,7 +1,7 @@
 <?php
-$page_title = "HDFView User's Guide";
-include ("../../../links.php");
-include ("../../../includes/header.html");
+$page_title = "HDFView User's Guide"; 
+include ("../../../links.php"); 
+include ("../../../includes/header.html"); 
 ?>
 <link href="edit.css" rel="stylesheet" type="text/css" />
 
@@ -18,11 +18,11 @@ include ("../../../includes/header.html");
 
 <fieldset><h1>HDFView User's Guide</h1></fieldset>
 <p>
-<i>Version 2.7<br>February 2011</i></p>
+<i>Version 2.6<br>January 2010</i></p>
 
 <p><i><b>
 This document is a user's guide on how to use HDFView. For information on
-implementing an HDFView module, please read
+implementing an HDFView module, please read  
 <a href="http://www.hdfgroup.org/hdf-java-html/hdfview/ModularGuide/index.html">
 A User's Guide on How to Implement HDFView Modules</a>
 </b></i></p>
@@ -53,7 +53,13 @@ A brief discussion of the HDF object model
 <ul class="ul">
 <li class="li2"><a href="ug01introduction.html#ug01overview">1.1 Overview</a></li>
 <li class="li2"><a href="ug01introduction.html#ug01release" >1.2 About This Release</a></li>
-<li class="li2"><a href="ug01introduction.html#ug1furtherinfo">1.3 Further Information</a></li>
+<li class="li2"><a href="ug01introduction.html#ug01features">1.3 Current Features</a>
+  <ul class="ul">
+<li class="li2"><a href="ug01introduction.html#ug01browsing">1.3.1 Browsing Features</a></li>
+<li class="li2"><a href="ug01introduction.html#ug01editing">1.3.2 Editing Features</a></li>
+</ul></li>
+<li class="li2"><a href="ug01introduction.html#ug01limitations">1.4 Limitations/Known Problems</a></li>
+<li class="li2"><a href="ug01introduction.html#ug1furtherinfo">1.5 Further Information</a></li>
 </ul>
 
 <br />
@@ -92,11 +98,9 @@ A brief discussion of the HDF object model
   <li class="li2"><a href="ug04treeview.html#ug04edit">4.5 Edit File and  File Structure</a>
       <ul class="ul">
         <li class="li2"><a href="ug04treeview.html#ug04file">4.5.1 Create and Save File</a></li>
-        <li class="li2"><a href="ug04treeview.html#ug04libversion">4.5.2 Setting the Library version bounds</a></li>
-        <li class="li2"><a href="ug04treeview.html#ug04add">4.5.3 Add and Delete Object</a></li>
-        <li class="li2"><a href="ug04treeview.html#ug04copy">4.5.4 Copy and Paste Object</a></li>
-        <li class="li2"><a href="ug04treeview.html#ug04move">4.5.5 Move Object</a></li>
-        <li class="li2"><a href="ug04treeview.html#ug04attribute">4.5.6 Add, Delete and Modify Attribute</a></li>
+        <li class="li2"><a href="ug04treeview.html#ug04add">4.5.2 Add and Delete Object</a></li>
+        <li class="li2"><a href="ug04treeview.html#ug04copy">4.5.3 Copy and Paste Object</a></li>
+        <li class="li2"><a href="ug04treeview.html#ug04attribute">4.5.4 Add, Delete and Modify Attribute</a></li>
       </ul>
   </li>
   <li class="li2"></li>
@@ -118,13 +122,6 @@ A brief discussion of the HDF object model
 <li class="li2"><a href="ug05spreadsheet.html#ug05change">5.4 Change Data Value</a></li>
 <li class="li2"><a href="ug05spreadsheet.html#ug05save">5.5 Save Data Values to a Text File</a></li>
 <li class="li2"><a href="ug05spreadsheet.html#ug05import">5.6 Import Data from a Text File</a></li>
-<li class="li2"><a href="ug05spreadsheet.html#ug05datasetreferences">5.7 Dataset storing references</a></li>
- <ul class="ul">
- 	<li class="li2"> <a href="ug05spreadsheet.html#ug05objectref">5.7.1 Dataset Storing Object References</a></li>
- 	<li class="li2"> <a href="ug05spreadsheet.html#ug05regionalref">5.7.2 Dataset Storing Dataset Region References</a></li>
-  </ul></li>
-<li class="li2"><a href="ug05spreadsheet.html#ug05savebinary">5.8 Sava Data Values to a Binary File</a></li>
-<li class="li2"><a href="ug05spreadsheet.html#ug05importbinary">5.9 Import Data from a Binary File</a></li>
 </ul></li>
 
 <br />
@@ -165,6 +162,7 @@ A brief discussion of the HDF object model
 <a href="ug07textview.html">[7]</a>
 </p>
 
+<h5>Last Modified: &nbsp; December 16, 2008</h5>
 <!-- END OF FOOTER INFO -->
 
 </body>

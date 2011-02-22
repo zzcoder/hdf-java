@@ -14,53 +14,23 @@
 
 package ncsa.hdf.view;
 
+import ncsa.hdf.object.*;
+
+import javax.swing.*;
+import java.awt.event.*;
+import javax.swing.border.*;
+import javax.swing.event.*;
+import javax.swing.table.*;
+import javax.swing.tree.*;
+
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
+import java.awt.Insets;
+import java.awt.Dimension;
+import java.util.*;
 import java.io.File;
 import java.lang.reflect.Array;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.StringTokenizer;
-//import java.util.Vector;
-
-import javax.swing.BorderFactory;
-import javax.swing.CellEditor;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.tree.DefaultMutableTreeNode;
-//import javax.swing.tree.TreeNode;
-
-import ncsa.hdf.object.Attribute;
-import ncsa.hdf.object.CompoundDS;
-import ncsa.hdf.object.Dataset;
-import ncsa.hdf.object.Datatype;
-import ncsa.hdf.object.FileFormat;
-import ncsa.hdf.object.Group;
-import ncsa.hdf.object.HObject;
-import ncsa.hdf.object.ScalarDS;
 
 /**
  * DefaultMetadataView is an dialog window used to show data properties.
@@ -93,14 +63,7 @@ implements ActionListener, MetaDataView
     private byte[] userBlock;
     private JTextArea userBlockArea;
     private JButton jamButton;
-    
-    private JTextField linkField = null;
 
-    private FileFormat fileFormat;
-    private String LinkTObjName;
-
-    private int[] libver;
-    
     /**
      * Constructs a DefaultMetadataView with the given HDFView.
      */
@@ -110,13 +73,11 @@ implements ActionListener, MetaDataView
 
         viewer = theView;
         hObject = viewer.getTreeView().getCurrentObject();
-        fileFormat = hObject.getFileFormat();
         numAttributes = 0;
         userBlock = null;
         userBlockArea = null;
-        libver = new int[2];
-        
-         if (hObject == null) {
+
+        if (hObject == null) {
             dispose();
         } else if ( hObject.getPath()== null) {
             setTitle("Properties - "+hObject.getName());
@@ -141,11 +102,6 @@ implements ActionListener, MetaDataView
         }
         tabbedPane.setSelectedIndex(0);
 
-        if(isH5){
-        	if(hObject.getLinkTargetObjName()!=null){
-        		LinkTObjName = hObject.getLinkTargetObjName();
-        	}
-        	}
         JPanel bPanel = new JPanel();
         JButton b = new JButton("  Close  ");
         b.setMnemonic(KeyEvent.VK_C);
@@ -177,9 +133,6 @@ implements ActionListener, MetaDataView
         String cmd = e.getActionCommand();
 
         if (cmd.equals("Close")) {
-        	if (isH5 && linkField != null)
-        		checkLinkTargetChanged();
-        	
             dispose();
         }
         else if (cmd.equals("Add attribute")) {
@@ -223,60 +176,7 @@ implements ActionListener, MetaDataView
             showUserBlockAs(type);
         }
     }
-    
-    private final void checkLinkTargetChanged() {
-    	Group pgroup = null;
-    	try{
-    		pgroup= (Group)hObject.getFileFormat().get(hObject.getPath());
-    	}catch (Exception ex) {
-    	} 
-    	if (pgroup == null) {
-    		JOptionPane.showMessageDialog(this, "Parent group is null.",
-    				getTitle(), JOptionPane.ERROR_MESSAGE);
-    		return;
-    	}
-    	
-    	String target_name = linkField.getText();
-    	if (target_name != null)
-    		target_name = target_name.trim();
-    		
-    	if (target_name == null ||
-    			target_name.length() < 1 || 
-    			target_name.equals("/") ||
-    			target_name.endsWith(FileFormat.FILE_OBJ_SEP+"/")||
-    			target_name.equals(hObject.getLinkTargetObjName()))
-    		return;
-    	
-    	int linkType = Group.LINK_TYPE_SOFT;
-    	if (LinkTObjName.contains(FileFormat.FILE_OBJ_SEP))
-    		linkType = Group.LINK_TYPE_EXTERNAL;
-    	
-    	try {
-    		fileFormat.createLink(pgroup,  hObject.getName(), target_name, linkType);
-    		hObject.setLinkTargetObjName(target_name);
-    	} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, ex, getTitle(),
-					JOptionPane.ERROR_MESSAGE);
-		}
-    }
-   
-//    private final List<Object> breadthFirstUserObjects(TreeNode node)
-//    {
-//        if (node == null) {
-//            return null;
-//        }
-//        Vector<Object> list = new Vector<Object>();
-//        DefaultMutableTreeNode theNode = null;
-//        Enumeration<?> local_enum = ((DefaultMutableTreeNode)node).breadthFirstEnumeration();
-//        while(local_enum.hasMoreElements())
-//        {
-//            theNode = (DefaultMutableTreeNode)local_enum.nextElement();
-//            list.add(theNode.getUserObject());
-//        }
-//
-//        return list;
-//    }  
-    
+
     /** returns the data object displayed in this data viewer */
     public HObject getDataObject() {
         return hObject;
@@ -304,9 +204,11 @@ implements ActionListener, MetaDataView
         }
 
         String rowData[] = new String[4]; // name, value, type, size
+        boolean isUnsigned = false;
 
         rowData[0] = attr.getName();
         rowData[2] = attr.getType().getDatatypeDescription();
+        isUnsigned = attr.getType().isUnsigned();
 
         rowData[1] = attr.toString(", ");
 
@@ -327,7 +229,7 @@ implements ActionListener, MetaDataView
         return attr;
     }
 
-    /** delete an attribute from a data object.*/
+    /** delete an attribribute from a data object.*/
     public Attribute deleteAttribute(HObject obj)
     {
         if (obj == null) {
@@ -354,7 +256,7 @@ implements ActionListener, MetaDataView
             return null;
         }
 
-        List<?> attrList = null;
+        List attrList = null;
         try { attrList = obj.getMetadata(); }
         catch (Exception ex) { attrList = null; }
 
@@ -382,146 +284,108 @@ implements ActionListener, MetaDataView
     private JPanel createGeneralPropertyPanel()
     {
         JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout(10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-        boolean isRoot = ((hObject instanceof Group) && ((Group) hObject)
-                .isRoot());
+        panel.setLayout (new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10,0,0,0));
+        boolean isRoot = ((hObject instanceof Group) && ((Group)hObject).isRoot());
         FileFormat theFile = hObject.getFileFormat();
 
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BorderLayout());
 
         JPanel lp = new JPanel();
-        lp.setLayout(new GridLayout(5, 1));
+        lp.setLayout(new GridLayout(4,1));
 
-        if (isRoot) {
+        if (isRoot)
+        {
             lp.add(new JLabel("File Name: "));
             lp.add(new JLabel("File Path: "));
             lp.add(new JLabel("File Type: "));
-            if (isH5) {
-                try {
-                    libver = hObject.getFileFormat().getLibBounds();
-                }
-                catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-                if (((libver[0] == 0) || (libver[0] == 1)) && (libver[1] == 1))
-                    lp.add(new JLabel("Library version: "));
-            }
         }
-        else {
+        else
+        {
             lp.add(new JLabel("Name: "));
-            if (isH5) {
-                if (hObject.getLinkTargetObjName() != null)
-                    lp.add(new JLabel("Link To Target: "));
-            }
             lp.add(new JLabel("Path: "));
             lp.add(new JLabel("Type: "));
-
+            
             /* bug #926 to remove the OID, put it back on Nov. 20, 2008, --PC */
             if (isH4) {
                 lp.add(new JLabel("Tag, Ref:        "));
-            }
-            else {
+            } else {
                 lp.add(new JLabel("Object Ref:       "));
             }
         }
 
         JPanel rp = new JPanel();
-        rp.setLayout(new GridLayout(5, 1));
+        rp.setLayout(new GridLayout(4,1));
 
         JLabel nameField = new JLabel(hObject.getName());
         rp.add(nameField);
 
-        JPanel targetObjPanel = new JPanel();
-        JButton ChangeTargetObjButton = new JButton("Change");
-        ChangeTargetObjButton.setActionCommand("Change link target");
-        ChangeTargetObjButton.addActionListener(this);
-
-        if (isH5) {
-            if (hObject.getLinkTargetObjName() != null) {
-                linkField = new JTextField(hObject.getLinkTargetObjName());
-                targetObjPanel.setLayout(new BorderLayout());
-                targetObjPanel.add(linkField, BorderLayout.CENTER);
-                // targetObjPanel.add(ChangeTargetObjButton, BorderLayout.EAST);
-                rp.add(targetObjPanel);
-            }
-        }
-
         JLabel pathField = new JLabel();
         if (isRoot) {
             pathField.setText((new File(hObject.getFile())).getParent());
-        }
-        else {
+        } else {
             pathField.setText(hObject.getPath());
         }
         rp.add(pathField);
 
         String typeStr = "Unknown";
         String fileInfo = "";
-        if (isRoot) {
+        if (isRoot)
+        {
             long size = 0;
-            try {
-                size = (new File(hObject.getFile())).length();
-            }
-            catch (Exception ex) {
-                size = -1;
-            }
+            try { size = (new File(hObject.getFile())).length(); }
+            catch (Exception ex) { size = -1; }
             size /= 1024;
 
-            int groupCount = 0, datasetCount = 0;
-            DefaultMutableTreeNode root = (DefaultMutableTreeNode) theFile
-                    .getRootNode();
+            int groupCount=0, datasetCount=0;
+            DefaultMutableTreeNode root = (DefaultMutableTreeNode)theFile.getRootNode();
             DefaultMutableTreeNode theNode = null;
-            Enumeration<?> local_enum = root.depthFirstEnumeration();
-            while (local_enum.hasMoreElements()) {
-                theNode = (DefaultMutableTreeNode) local_enum.nextElement();
+            Enumeration local_enum = root.depthFirstEnumeration();
+            while(local_enum.hasMoreElements())
+            {
+                theNode = (DefaultMutableTreeNode)local_enum.nextElement();
                 if (theNode.getUserObject() instanceof Group) {
                     groupCount++;
-                }
-                else {
+                } else {
                     datasetCount++;
                 }
             }
-            fileInfo = "size=" + size + "K,  groups=" + groupCount
-                    + ",  datasets=" + datasetCount;
+            fileInfo = "size="+size+"K,  groups="+groupCount+ ",  datasets="+datasetCount;
         }
 
-        if (isRoot) {
+        if (isRoot)
+        {
             if (isH5) {
-                typeStr = "HDF5,  " + fileInfo;
-            }
-            else if (isH4) {
-                typeStr = "HDF4,  " + fileInfo;
-            }
-            else {
+                typeStr = "HDF5,  "+fileInfo;
+            } else if (isH4) {
+                typeStr = "HDF4,  "+fileInfo;
+            } else {
                 typeStr = fileInfo;
             }
         }
-        else if (isH5) {
+        else if (isH5)
+        {
             if (hObject instanceof Group) {
                 typeStr = "HDF5 Group";
-            }
-            else if (hObject instanceof ScalarDS) {
+            } else if (hObject instanceof ScalarDS) {
                 typeStr = "HDF5 Scalar Dataset";
-            }
-            else if (hObject instanceof CompoundDS) {
+            } else if (hObject instanceof CompoundDS) {
                 typeStr = "HDF5 Compound Dataset";
-            }
-            else if (hObject instanceof Datatype) {
+            } else if (hObject instanceof Datatype) {
                 typeStr = "HDF5 Named Datatype";
             }
         }
-        else if (isH4) {
+        else if (isH4)
+        {
             if (hObject instanceof Group) {
                 typeStr = "HDF4 Group";
-            }
-            else if (hObject instanceof ScalarDS) {
-                ScalarDS ds = (ScalarDS) hObject;
+            } else if (hObject instanceof ScalarDS)
+            {
+                ScalarDS ds = (ScalarDS)hObject;
                 if (ds.isImage()) {
                     typeStr = "HDF4 Raster Image";
-                }
-                else {
+                } else {
                     typeStr = "HDF4 SDS";
                 }
             }
@@ -529,11 +393,13 @@ implements ActionListener, MetaDataView
                 typeStr = "HDF4 Vdata";
             }
         }
-        else {
+        else
+        {
             if (hObject instanceof Group) {
                 typeStr = "Group";
-            }
-            else if (hObject instanceof ScalarDS) {
+            } else if (hObject instanceof ScalarDS)
+            {
+                ScalarDS ds = (ScalarDS)hObject;
                 typeStr = "Scalar Dataset";
             }
             else if (hObject instanceof CompoundDS) {
@@ -544,31 +410,22 @@ implements ActionListener, MetaDataView
         JLabel typeField = new JLabel(typeStr);
         rp.add(typeField);
 
-        if (isRoot && isH5) {
-            String libversion = null;
-            if ((libver[0] == 0) && (libver[1] == 1))
-                libversion = "Earliest and Latest";
-            else if ((libver[0] == 1) && (libver[1] == 1))
-                libversion = "Latest and Latest";
-            JLabel libverbound = new JLabel(libversion);
-            rp.add(libverbound);
-        }
-
         /* bug #926 to remove the OID, put it back on Nov. 20, 2008, --PC */
         String oidStr = null;
         long[] OID = hObject.getOID();
-        if (OID != null) {
+        if (OID != null)
+        {
             oidStr = String.valueOf(OID[0]);
-            for (int i = 1; i < OID.length; i++) {
-                oidStr += ", " + OID[i];
+            for (int i=1; i<OID.length; i++) {
+                oidStr += ", "+ OID[i];
             }
         }
-
+        
         if (!isRoot) {
             JLabel oidField = new JLabel(oidStr);
             rp.add(oidField);
         }
-
+ 
         JPanel tmpP = new JPanel();
         tmpP.setLayout(new BorderLayout());
         tmpP.add("West", lp);
@@ -580,13 +437,11 @@ implements ActionListener, MetaDataView
 
         JPanel infoPanel = null;
         if (hObject instanceof Group) {
-            infoPanel = createGroupInfoPanel((Group) hObject);
-        }
-        else if (hObject instanceof Dataset) {
-            infoPanel = createDatasetInfoPanel((Dataset) hObject);
-        }
-        else if (hObject instanceof Datatype) {
-            infoPanel = createNamedDatatypeInfoPanel((Datatype) hObject);
+            infoPanel = createGroupInfoPanel((Group)hObject);
+        } else if (hObject instanceof Dataset) {
+            infoPanel= createDatasetInfoPanel((Dataset)hObject);
+        } else if (hObject instanceof Datatype) {
+            infoPanel= createNamedDatatypeInfoPanel((Datatype)hObject);
         }
 
         panel.add(topPanel, BorderLayout.NORTH);
@@ -604,7 +459,7 @@ implements ActionListener, MetaDataView
     {
         JPanel panel = new JPanel();
 
-        List<?> mlist = g.getMemberList();
+        List mlist = g.getMemberList();
         if (mlist == null) {
             return panel;
         }
@@ -917,10 +772,10 @@ implements ActionListener, MetaDataView
 
         panel.add(topPanel, BorderLayout.NORTH);
 
-        List<?> attrList = null;
+        List attrList = null;
 
         try {
-        		attrList = hObject.getMetadata();
+            attrList = hObject.getMetadata();
         } catch (Exception ex) {
              attrList = null;
         }
@@ -940,7 +795,7 @@ implements ActionListener, MetaDataView
 
             public boolean isCellEditable(int row, int column)
             {
-                return ((column == 1)||(isH5 && (column == 0))); // only attribute value and name can be changed
+                return (column == 1); // only value can be changed
             }
 
             public void editingStopped(ChangeEvent e)
@@ -1022,9 +877,9 @@ implements ActionListener, MetaDataView
             attr = (Attribute)attrList.get(i);
             name = attr.getName();
 
-//            boolean isUnsigned = false;
+            boolean isUnsigned = false;
             type = attr.getType().getDatatypeDescription();
-//            isUnsigned = attr.getType().isUnsigned();
+            isUnsigned = attr.getType().isUnsigned();
 
             long dims[] = attr.getDataDims();
             size = String.valueOf(dims[0]);
@@ -1138,199 +993,178 @@ implements ActionListener, MetaDataView
      */
     private void updateAttributeValue(String newValue, int row, int col)
     {
-//        if (col != 1) {
-//            return; // can only change attribute value
-//        }
-    	
-    	 String attrName = (String)attrTable.getValueAt(row, 0);
-    	 List<?> attrList = null;
-         try { attrList = hObject.getMetadata(); }
-         catch (Exception ex)
-         {
-             JOptionPane.showMessageDialog(getOwner(),
-                 ex.getMessage(),
-                 getTitle(),
-                 JOptionPane.ERROR_MESSAGE);
-             return;
-         }
+        if (col != 1) {
+            return; // can only change attribute value
+        }
 
-         Attribute attr = (Attribute)attrList.get(row);
-    	
-    	if (col == 1) //To change attribute value
-    	{        
-    		Object data = attr.getValue();
-    		if (data == null) {
-    			return;
-    		}
+        String attrName = (String)attrTable.getValueAt(row, 0);
 
-    		int array_length = Array.getLength(data);
-    		StringTokenizer st = new StringTokenizer(newValue, ",");
-    		if (st.countTokens() < array_length)
-    		{
-    			JOptionPane.showMessageDialog(getOwner(),
-    					"More data value needed: "+newValue,
-    					getTitle(),
-    					JOptionPane.ERROR_MESSAGE);
-    			return;
-    		}
+        List attrList = null;
+        try { attrList = hObject.getMetadata(); }
+        catch (Exception ex)
+        {
+            JOptionPane.showMessageDialog(getOwner(),
+                ex.getMessage(),
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-    		char NT = ' ';
-    		String cName = data.getClass().getName();
-    		int cIndex = cName.lastIndexOf("[");
-    		if (cIndex >= 0 ) {
-    			NT = cName.charAt(cIndex+1);
-    		}
-    		boolean isUnsigned = attr.isUnsigned();
+        Attribute attr = (Attribute)attrList.get(row);
+        Object data = attr.getValue();
+        if (data == null) {
+            return;
+        }
 
-    		double d = 0;
-    		String theToken = null;
-    		long max=0, min=0;
-    		for (int i=0; i<array_length; i++)
-    		{
-    			max = min = 0;
+        int array_length = Array.getLength(data);
+        StringTokenizer st = new StringTokenizer(newValue, ",");
+        if (st.countTokens() < array_length)
+        {
+            JOptionPane.showMessageDialog(getOwner(),
+                "More data value needed: "+newValue,
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-    			theToken = st.nextToken().trim();
-    			try {
-    				if (!(Array.get(data, i) instanceof String)) {
-    					d = Double.parseDouble(theToken);
-    				}
-    			}
-    			catch (NumberFormatException ex)
-    			{
-    				JOptionPane.showMessageDialog(
-    						getOwner(),
-    						ex.getMessage(),
-    						getTitle(),
-    						JOptionPane.ERROR_MESSAGE);
-    				return;
-    			}
+        char NT = ' ';
+        String cName = data.getClass().getName();
+        int cIndex = cName.lastIndexOf("[");
+        if (cIndex >= 0 ) {
+            NT = cName.charAt(cIndex+1);
+        }
+        boolean isUnsigned = attr.isUnsigned();
 
-    			if (isUnsigned && (d < 0))
-    			{
-    				JOptionPane.showMessageDialog(
-    						getOwner(),
-    						"Negative value for unsigned integer: "+newValue,
-    						getTitle(),
-    						JOptionPane.ERROR_MESSAGE);
-    				return;
-    			}
+        double d = 0;
+        String theToken = null;
+        long max=0, min=0;
+        for (int i=0; i<array_length; i++)
+        {
+            max = min = 0;
 
-    			switch (NT)
-    			{
-    			case 'B':
-    			{
-    				if (isUnsigned)
-    				{
-    					min = 0;
-    					max = 255;
-    				}
-    				else
-    				{
-    					min = Byte.MIN_VALUE;
-    					max = Byte.MAX_VALUE;
-    				}
+            theToken = st.nextToken().trim();
+            try {
+                if (!(Array.get(data, i) instanceof String)) {
+                    d = Double.parseDouble(theToken);
+                }
+            }
+            catch (NumberFormatException ex)
+            {
+                JOptionPane.showMessageDialog(
+                    getOwner(),
+                    ex.getMessage(),
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-    				if ((d > max) || (d < min)) {
-    					JOptionPane.showMessageDialog(
-    							getOwner(),
-    							"Data is out of range["+min+", "+max+"]: "+newValue,
-    							getTitle(),
-    							JOptionPane.ERROR_MESSAGE);
-    				} else {
-    					Array.setByte  (data, i, (byte)d);
-    				}
-    				break;
-    			}
-    			case 'S':
-    			{
-    				if (isUnsigned)
-    				{
-    					min = 0;
-    					max = 65535;
-    				}
-    				else
-    				{
-    					min = Short.MIN_VALUE;
-    					max = Short.MAX_VALUE;
-    				}
+            if (isUnsigned && (d < 0))
+            {
+                JOptionPane.showMessageDialog(
+                    getOwner(),
+                    "Negative value for unsigned integer: "+newValue,
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-    				if ((d > max) || (d < min)) {
-    					JOptionPane.showMessageDialog(
-    							getOwner(),
-    							"Data is out of range["+min+", "+max+"]: "+newValue,
-    							getTitle(),
-    							JOptionPane.ERROR_MESSAGE);
-    				} else {
-    					Array.setShort (data, i, (short)d);
-    				}
-    				break;
-    			}
-    			case 'I':
-    			{
-    				if (isUnsigned)
-    				{
-    					min = 0;
-    					max = 4294967295L;
-    				}
-    				else
-    				{
-    					min = Integer.MIN_VALUE;
-    					max = Integer.MAX_VALUE;
-    				}
+            switch (NT)
+            {
+                case 'B':
+                {
+                    if (isUnsigned)
+                    {
+                        min = 0;
+                        max = 255;
+                    }
+                    else
+                    {
+                        min = Byte.MIN_VALUE;
+                        max = Byte.MAX_VALUE;
+                    }
 
-    				if ((d > max) || (d < min)) {
-    					JOptionPane.showMessageDialog(
-    							getOwner(),
-    							"Data is out of range["+min+", "+max+"]: "+newValue,
-    							getTitle(),
-    							JOptionPane.ERROR_MESSAGE);
-    				} else {
-    					Array.setInt   (data, i, (int)d);
-    				}
-    				break;
-    			}
-    			case 'J':
-    				Array.setLong  (data, i, (long)d); break;
-    			case 'F':
-    				Array.setFloat (data, i, (float)d); break;
-    			case 'D':
-    			default:  Array.set      (data, i, newValue); break;
-    			}
-    		}
+                    if ((d > max) || (d < min)) {
+                        JOptionPane.showMessageDialog(
+                            getOwner(),
+                            "Data is out of range["+min+", "+max+"]: "+newValue,
+                            getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        Array.setByte  (data, i, (byte)d);
+                    }
+                    break;
+                }
+                case 'S':
+                {
+                    if (isUnsigned)
+                    {
+                        min = 0;
+                        max = 65535;
+                    }
+                    else
+                    {
+                        min = Short.MIN_VALUE;
+                        max = Short.MAX_VALUE;
+                    }
 
-    		try {
-    			hObject.getFileFormat().writeAttribute(hObject, attr, true);
-    		} catch (Exception ex)
-    		{
-    			JOptionPane.showMessageDialog(
-    					getOwner(),
-    					ex.getMessage(),
-    					getTitle(),
-    					JOptionPane.ERROR_MESSAGE);
-    			return;
-    		}
+                    if ((d > max) || (d < min)) {
+                        JOptionPane.showMessageDialog(
+                            getOwner(),
+                            "Data is out of range["+min+", "+max+"]: "+newValue,
+                            getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        Array.setShort (data, i, (short)d);
+                    }
+                    break;
+                }
+                case 'I':
+                {
+                    if (isUnsigned)
+                    {
+                        min = 0;
+                        max = 4294967295L;
+                    }
+                    else
+                    {
+                        min = Integer.MIN_VALUE;
+                        max = Integer.MAX_VALUE;
+                    }
 
-    		// update the attribute table
-    		attrTable.setValueAt(attr.toString(", "), row, 1);
-    	}
-    	
-    	if ((col == 0)&& isH5) //To change attribute name
-    	{
-    		try {
-    			hObject.getFileFormat().renameAttribute(hObject, attrName, newValue);
-    		} catch (Exception ex)
-    		{
-    			JOptionPane.showMessageDialog(
-    					getOwner(),
-    					ex.getMessage(),
-    					getTitle(),
-    					JOptionPane.ERROR_MESSAGE);
-    			return;
-    		}
+                    if ((d > max) || (d < min)) {
+                        JOptionPane.showMessageDialog(
+                            getOwner(),
+                            "Data is out of range["+min+", "+max+"]: "+newValue,
+                            getTitle(),
+                            JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        Array.setInt   (data, i, (int)d);
+                    }
+                    break;
+                }
+                case 'J':
+                    Array.setLong  (data, i, (long)d); break;
+                case 'F':
+                    Array.setFloat (data, i, (float)d); break;
+                case 'D':
+                default:  Array.set      (data, i, newValue); break;
+            }
+        }
 
-    		// update the attribute table
-    		attrTable.setValueAt(newValue, row, 0);
-    	}
+        try {
+            hObject.getFileFormat().writeAttribute(hObject, attr, true);
+        } catch (Exception ex)
+        {
+            JOptionPane.showMessageDialog(
+                getOwner(),
+                ex.getMessage(),
+                getTitle(),
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // update the attribute table
+        attrTable.setValueAt(attr.toString(", "), row, 1);
     }
 
 

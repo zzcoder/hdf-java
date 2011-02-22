@@ -11,7 +11,7 @@
 
  ************************************************************/
 
-package examples.datatypes;
+package datatypes;
 
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -137,7 +137,7 @@ public class H5Ex_T_Commit {
 		try {
 			strtype_id = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
 			if (strtype_id >= 0)
-				H5.H5Tset_size(strtype_id, CompoundDatatype.MAXSTRINGSIZE);
+				H5.H5Tset_size(strtype_id, Sensor_Datatype.MAXSTRINGSIZE);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

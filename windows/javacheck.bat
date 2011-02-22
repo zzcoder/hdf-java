@@ -60,19 +60,19 @@ rem Parse through the parameters sent to file, and set appropriate variables
 rem Setup our environment
 :setup
 	echo.Setting environment
-	if "!%JAVAHOME%!\bin\javac.exe"=="\bin\javac.exe" (
+	if !%JAVAHOME%!"\bin\javac.exe"=="\bin\javac.exe" (
 		echo.%JAVAHOME%\bin\javac.exe not found,
 		echo.please check your java home directory.
 		goto error
 	)
-	set java_compile="%JAVAHOME%\bin\javac.exe"
+	set java_compile=%JAVAHOME%\bin\javac.exe
 
-	if "!%JAVAHOME%!\bin\java.exe"=="\bin\java.exe" (
+	if !%JAVAHOME%!"\bin\java.exe"=="\bin\java.exe" (
 		echo.%JAVAHOME%\bin\java.exe not found,
 		echo.please check your java home directory.
 		goto error
 	)
-	set java_run="%JAVAHOME%\bin\java.exe"
+	set java_run=%JAVAHOME%\bin\java.exe
 	
 	if not exist "%TESTDIR%\win32lib" (
 		mkdir %TESTDIR%\win32lib
@@ -103,14 +103,8 @@ rem Build the HDF Java Tests.
     echo.Building Java Sources...
     %java_compile% -source 5 -d %TESTDIR%\classes\ -cp %classpath%;%TESTDIR%\lib\junit.jar %TESTDIR%\test\object\*.java
     if %errorlevel% neq 0 exit /b
-    %java_compile% -source 5 -d %TESTDIR%\classes\ -cp %classpath%;%TESTDIR%\lib\junit.jar %TESTDIR%\test\object\misc\*.java
+    %java_compile% -source 5 -d %TESTDIR%\classes\ -cp %classpath%;%TESTDIR%\lib\junit.jar %TESTDIR%\test\unittests\*.java
     if %errorlevel% neq 0 exit /b
-    %java_compile% -source 5 -d %TESTDIR%\classes\ -cp %classpath%;%TESTDIR%\lib\junit.jar %TESTDIR%\test\hdf5lib\*.java
-    if %errorlevel% neq 0 exit /b
-    if exist %TESTDIR%\test\uitest (
-        %java_compile% -source 5 -d %TESTDIR%\classes\ -cp %classpath%;%TESTDIR%\lib\junit.jar;%TESTDIR%\lib\fest-swing-1.2.jar;%TESTDIR%\lib\jcip-annotations-1.0.jar %TESTDIR%\test\uitest\*.java
-        if %errorlevel% neq 0 exit /b
-    )
     echo.Building Java Sources Succesful
 
     exit /b 0
@@ -124,23 +118,13 @@ rem Check the HDF Java Library.
     echo.
 
     rem Check Library
-    echo.Checking Java JUnit4 Tests...
-    %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %TESTDIR%\classes;%classpath%;%TESTDIR%\lib\junit.jar org.junit.runner.JUnitCore test.hdf5lib.TestAll
-    if %errorlevel% neq 0 exit /b
-    echo.Checking Java JUnit4 Successful
     echo.Checking Java Object Library...
-    %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %TESTDIR%\classes;%classpath% test.object.misc.TestH5Object
+    %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %TESTDIR%\classes;%classpath% test.object.TestH5Object
     if %errorlevel% neq 0 exit /b
     echo.Checking Java Object Library Unit Tests...
-    %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %TESTDIR%\classes;%classpath%;%TESTDIR%\lib\junit.jar test.object.AllH5ObjectTests
+    %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %TESTDIR%\classes;%classpath%;%TESTDIR%\lib\junit.jar test.unittests.AllH5ObjectTests
     if %errorlevel% neq 0 exit /b
     echo.Checking Java Object Library Successful
-    if exist %TESTDIR%\test\uitest (
-        echo.Checking GUI JUnit4 Tests...
-        %java_run% -Xmx1024M -Djava.library.path=%TESTLIBDIR% -cp %TESTDIR%\classes;%classpath%;%TESTDIR%\lib\junit.jar;%TESTDIR%\lib\fest-swing-1.2.jar;%TESTDIR%\lib\fest-reflect-1.2.jar;%TESTDIR%\lib\fest-util-1.1.2.jar;%TESTDIR%\lib\fest-assert-1.2.jar org.junit.runner.JUnitCore test.uitest.AllTests
-        if %errorlevel% neq 0 exit /b
-        echo.Checking GUI JUnit4 Successful
-    )
 
     exit /b 0
 	
@@ -176,65 +160,65 @@ rem Check the HDF Java Examples.
 
     rem Check Examples
     echo.Checking Java intro Examples...
-    call :runexample examples.intro.H5_CreateDataset
-    call :runexample examples.intro.H5_CreateAttribute
-    call :runexample examples.intro.H5_CreateFile
-    call :runexample examples.intro.H5_CreateGroup
-    call :runexample examples.intro.H5_CreateGroupAbsoluteRelative
-    call :runexample examples.intro.H5_CreateGroupDataset
-    call :runexample examples.intro.H5_ReadWrite
+    call :runexample intro.H5_CreateDataset
+    call :runexample intro.H5_CreateAttribute
+    call :runexample intro.H5_CreateFile
+    call :runexample intro.H5_CreateGroup
+    call :runexample intro.H5_CreateGroupAbsoluteRelative
+    call :runexample intro.H5_CreateGroupDataset
+    call :runexample intro.H5_ReadWrite
 	
     echo.
     echo.*****************************************************************************
     echo.Checking Java groups Examples...
-    call :runexample examples.groups.H5Ex_G_Create
+    call :runexample groups.H5Ex_G_Create
 	call :safe_copy examples\groups\h5ex_g_iterate.h5 examples
     if "%nerrors%"=="0" (
-		call :runexample examples.groups.H5Ex_G_Iterate
+		call :runexample groups.H5Ex_G_Iterate
 	) else (
-        echo.**FAILED**    examples.groups.H5Ex_G_Iterate not tested
+        echo.**FAILED**    groups.H5Ex_G_Iterate not tested
     )
 
     echo.
     echo.*****************************************************************************
     echo.Checking Java datsets Examples...
-    call :runexample examples.datasets.H5Ex_D_Alloc
-    call :runexample examples.datasets.H5Ex_D_Checksum
-    call :runexample examples.datasets.H5Ex_D_Chunk
-    call :runexample examples.datasets.H5Ex_D_Compact
-    call :runexample examples.datasets.H5Ex_D_External
-    call :runexample examples.datasets.H5Ex_D_FillValue
-    call :runexample examples.datasets.H5Ex_D_Gzip
-    call :runexample examples.datasets.H5Ex_D_Hyperslab
-    call :runexample examples.datasets.H5Ex_D_ReadWrite
-    call :runexample examples.datasets.H5Ex_D_Shuffle
-    call :runexample examples.datasets.H5Ex_D_Szip
-    call :runexample examples.datasets.H5Ex_D_UnlimitedAdd
-    call :runexample examples.datasets.H5Ex_D_UnlimitedGzip
-    call :runexample examples.datasets.H5Ex_D_UnlimitedMod
+    call :runexample datasets.H5Ex_D_Alloc
+    call :runexample datasets.H5Ex_D_Checksum
+    call :runexample datasets.H5Ex_D_Chunk
+    call :runexample datasets.H5Ex_D_Compact
+    call :runexample datasets.H5Ex_D_External
+    call :runexample datasets.H5Ex_D_FillValue
+    call :runexample datasets.H5Ex_D_Gzip
+    call :runexample datasets.H5Ex_D_Hyperslab
+    call :runexample datasets.H5Ex_D_ReadWrite
+    call :runexample datasets.H5Ex_D_Shuffle
+    call :runexample datasets.H5Ex_D_Szip
+    call :runexample datasets.H5Ex_D_UnlimitedAdd
+    call :runexample datasets.H5Ex_D_UnlimitedGzip
+    call :runexample datasets.H5Ex_D_UnlimitedMod
 
     echo.
     echo.*****************************************************************************
     echo.Checking Java datatypes Examples...
-    call :runexample examples.datatypes.H5Ex_T_Array
-    call :runexample examples.datatypes.H5Ex_T_ArrayAttribute
-    call :runexample examples.datatypes.H5Ex_T_Bit
-    call :runexample examples.datatypes.H5Ex_T_BitAttribute
-    call :runexample examples.datatypes.H5Ex_T_Commit
-    call :runexample examples.datatypes.H5Ex_T_Compound
-    call :runexample examples.datatypes.H5Ex_T_CompoundAttribute
-    call :runexample examples.datatypes.H5Ex_T_Float
-    call :runexample examples.datatypes.H5Ex_T_FloatAttribute
-    call :runexample examples.datatypes.H5Ex_T_Integer
-    call :runexample examples.datatypes.H5Ex_T_IntegerAttribute
-    call :runexample examples.datatypes.H5Ex_T_ObjectReference
-    call :runexample examples.datatypes.H5Ex_T_ObjectReferenceAttribute
-    call :runexample examples.datatypes.H5Ex_T_Opaque
-    call :runexample examples.datatypes.H5Ex_T_OpaqueAttribute
-    call :runexample examples.datatypes.H5Ex_T_String
-    call :runexample examples.datatypes.H5Ex_T_StringAttribute
+    call :runexample datatypes.H5Ex_T_Array
+    call :runexample datatypes.H5Ex_T_ArrayAttribute
+    call :runexample datatypes.H5Ex_T_Bit
+    call :runexample datatypes.H5Ex_T_BitAttribute
+    call :runexample datatypes.H5Ex_T_Commit
+    call :runexample datatypes.H5Ex_T_Compound
+    call :runexample datatypes.H5Ex_T_CompoundAttribute
+    call :runexample datatypes.H5Ex_T_Float
+    call :runexample datatypes.H5Ex_T_FloatAttribute
+    call :runexample datatypes.H5Ex_T_Integer
+    call :runexample datatypes.H5Ex_T_IntegerAttribute
+    call :runexample datatypes.H5Ex_T_ObjectReference
+    call :runexample datatypes.H5Ex_T_ObjectReferenceAttribute
+    call :runexample datatypes.H5Ex_T_Opaque
+    call :runexample datatypes.H5Ex_T_OpaqueAttribute
+    call :runexample datatypes.H5Ex_T_String
+    call :runexample datatypes.H5Ex_T_StringAttribute
 	
-	if %nerrors% neq 0 exit /b %nerrors%
+	if !nerrors! neq 0 exit /b !nerrors!
     echo.Checking Java Examples Successful
 	
     exit /b 0

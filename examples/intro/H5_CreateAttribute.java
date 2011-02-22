@@ -1,7 +1,7 @@
 //
 //   Creating a dataset attribute.
 
-package examples.intro;
+package intro;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
@@ -31,7 +31,7 @@ public class H5_CreateAttribute {
 		// Open an existing dataset.
 		try {
 			if (file_id >= 0)
-				dataset_id = H5.H5Dopen(file_id, "/" + DATASETNAME, HDF5Constants.H5P_DEFAULT);
+				dataset_id = H5.H5Dopen(file_id, "/" + DATASETNAME);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

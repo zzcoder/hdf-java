@@ -1,3 +1,4 @@
+# Generated automatically from Makefile.in by configure.
 #/****************************************************************************
 # * NCSA HDF                                                                 *
 # * National Comptational Science Alliance                                   *
@@ -5,44 +6,39 @@
 # * 605 E. Springfield, Champaign IL 61820                                   *
 # *                                                                          *
 # * For conditions of distribution and use, see the accompanying             *
-# * java-hdf5/COPYING file.                                                  *
+# * hdf-java/COPYING file.                                                   *
 # *                                                                          *
 # ****************************************************************************/
 
 
-JAVAC           = @JAVAC@
-RM           = @RM@
+JAVAC=@JAVAC@
+RM=@RM@
 
-CLASSPATH=@CLASSPATH@:../../lib/junit.jar
+CLASSPATH=@CLASSPATH@   
 
 .SUFFIXES: .java .class
 
 .java.class:
 	$(JAVAC) -classpath $(CLASSPATH) $<
 
-all:    AllH5ObjectTests.class \
-        AttributeTest.class \
-        CompoundDSTest.class \
-        DatasetTest.class \
-        DatatypeTest.class \
-        FileFormatTest.class \
-        GroupTest.class \
-        H5BugFixTest.class \
-        H5CompoundDSTest.class \
-        H5DatatypeTest.class \
-        H5FileTest.class \
-        H5GroupTest.class \
-        H5ScalarDSTest.class \
-        H5TestFile.class \
-        HObjectTest.class \
-        ScalarDSTest.class
+all: testh4file testh5file
+	chmod u+x runtests.sh
 
+testh4file: TestH4File.class
+	chmod u+x testh4file.sh
+
+testh5file: TestH5File.class
+	chmod u+x testh5file.sh
+
+runtests: all
+	chmod u+x runtests.sh
 
 check: all
-	chmod u+x unittests.sh; ./unittests.sh
+#	./runtests.sh
+	./TestH5Object.sh
+	./TestH5MemoryLeak.sh
 
 clean:
-	$(RM) *.class
+	$(RM) -f *.class
 	$(RM) -f *.hdf
 	$(RM) -f *.h5
-

@@ -14,14 +14,10 @@
 
 package ncsa.hdf.view;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Event;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.Toolkit;
+import ncsa.hdf.object.*;
+
+import javax.swing.*;
+
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -31,56 +27,24 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
+import java.awt.event.*;
+import java.io.*;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.*;
+
+import javax.swing.event.*;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDesktopPane;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-import ncsa.hdf.object.Attribute;
-import ncsa.hdf.object.CompoundDS;
-import ncsa.hdf.object.Dataset;
-import ncsa.hdf.object.Datatype;
-import ncsa.hdf.object.FileFormat;
-import ncsa.hdf.object.Group;
-import ncsa.hdf.object.HObject;
-import ncsa.hdf.object.ScalarDS;
+import java.lang.reflect.*;
+import java.awt.Event;
+import java.awt.Insets;
+import java.awt.Dimension;
+import java.awt.Component;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.awt.Image;
+import java.awt.Font;
 
 /**
  * HDFView is the main class of this HDF visual tool.
@@ -103,10 +67,10 @@ ChangeListener, DropTargetListener
 {
   public static final long serialVersionUID = HObject.serialVersionUID;
     /** a list of tree view implementation. */
-    private static List<String> treeViews;
+    private static List treeViews;
 
     /** a list of image view implementation. */
-    private static List<String> imageViews;
+    private static List imageViews;
 
     /** a list of tree table implementation. */
     private static List tableViews;
@@ -126,10 +90,10 @@ ChangeListener, DropTargetListener
     private static final String aboutHDFView =
         "HDF Viewer, "+ "Version "+ViewProperties.VERSION+"\n"+
         "For "+System.getProperty("os.name")+"\n\n"+
-        "Copyright "+'\u00a9'+" 2006-2011 The HDF Group.\n"+
+        "Copyright "+'\u00a9'+" 2006-2010 The HDF Group.\n"+
         "All rights reserved.";
 
-    private static final String JAVA_COMPILER = "jdk 1.6";
+    private static final String JAVA_COMPILER = "jdk 1.6.0";
 
     /** the directory where the HDFView is installed */
     private String rootDir;
@@ -185,10 +149,10 @@ ChangeListener, DropTargetListener
     private final List editGUIs;
 
     /** The list of GUI components related to HDF5 */
-    private final List<JMenuItem> h5GUIs;
+    private final List h5GUIs;
 
     /** The list of GUI components related to HDF4 */
-    private final List<JMenuItem> h4GUIs;
+    private final List h4GUIs;
 
     /** to add and display url */
     private JComboBox urlBar;
@@ -206,10 +170,9 @@ ChangeListener, DropTargetListener
      * @param root the directory where the HDFView is installed.
      * @param flist a list of files to open.
      */
-    public HDFView(String root, List<File> flist, int width, int height, int x, int y)
+    public HDFView(String root, List flist, int width, int height, int x, int y)
     {
         super("HDFView");
-        this.setName("hdfview");
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         
@@ -225,8 +188,8 @@ ChangeListener, DropTargetListener
         ViewProperties.loadExtClass();
 
         editGUIs = new Vector();
-        h4GUIs = new Vector<JMenuItem>();
-        h5GUIs = new Vector<JMenuItem>();
+        h4GUIs = new Vector();
+        h5GUIs = new Vector();
 
         // load the view properties
         props = new ViewProperties(rootDir);
@@ -251,7 +214,6 @@ ChangeListener, DropTargetListener
         statusArea.setEditable(false);
         statusArea.setBackground(new java.awt.Color(240, 240, 240));
         statusArea.setLineWrap(true);
-        statusArea.setName("status");
         message = new StringBuffer();
         metadata = new StringBuffer();
         showStatus("HDFView root - "+rootDir);
@@ -261,25 +223,20 @@ ChangeListener, DropTargetListener
         attributeArea.setEditable(false);
         attributeArea.setBackground(new java.awt.Color(240, 240, 240));
         attributeArea.setLineWrap(true);
-        attributeArea.setName("attributes");
 
         // create tab pane to display attributes and status information
         infoTabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
         infoTabbedPane.addChangeListener(this);
-        infoTabbedPane.setName("tabpane");
 
         contentPane = new JDesktopPane();
-        contentPane.setName("contentpane");
         windowMenu = new JMenu( "Window" );
-        windowMenu.setName("windowmenu");
         fileMenu = new JMenu( "File" );
-        fileMenu.setName("filemenu");
 
         int n = treeViews.size();
         Class theClass = null;
         for (int i=0; i<n; i++)  {
           // use the first available treeview
-            String className = treeViews.get(i);
+            String className = (String)treeViews.get(i);
             // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
             try { theClass = Class.forName(className); }
             catch (Exception ex)
@@ -330,7 +287,7 @@ ChangeListener, DropTargetListener
 
         File theFile = null;
         for (int i=0; i<nfiles; i++) {
-            theFile = flist.get(i);
+            theFile = (File)flist.get(i);
             if (theFile.isFile()) {
                 currentDir = theFile.getParentFile().getAbsolutePath();
                 currentFile = theFile.getAbsolutePath();
@@ -398,15 +355,12 @@ ChangeListener, DropTargetListener
     {
         // create splitpane to separate treeview and the contentpane
         JScrollPane treeScroller = new JScrollPane((Component)treeView);
-        treeScroller.setName("treescroller");
         JScrollPane contentScroller = new JScrollPane(contentPane);
-        contentScroller.setName("contentscroller");
         JSplitPane topSplitPane = new JSplitPane(
             JSplitPane.HORIZONTAL_SPLIT,
             treeScroller,
             contentScroller);
         topSplitPane.setDividerLocation(200);
-        topSplitPane.setName("topsplitpane");
 
         infoTabbedPane.addTab("Log Info", new JScrollPane(statusArea));
         infoTabbedPane.addTab("Metadata ", new JScrollPane(attributeArea));
@@ -418,7 +372,6 @@ ChangeListener, DropTargetListener
             JSplitPane.VERTICAL_SPLIT,
             topSplitPane,
             infoTabbedPane);
-        splitPane.setName("splitpane");
 
         // set the window size
         //float inset = 0.17f; // for UG only.
@@ -464,41 +417,26 @@ ChangeListener, DropTargetListener
 
         JPanel urlPane = new JPanel();
         urlPane.setLayout(new BorderLayout());
-        urlPane.setName("urlpane");
-        
-        JButton b = new JButton("Clear Text");
-        b.setActionCommand("Clear current selection");
-        b.setToolTipText("Clear current selection");
-        b.setMargin(new Insets(1,3,1,3));
-        b.addActionListener(this);
-        urlPane.add(b, BorderLayout.EAST);
-
-        b = new JButton("Recent Files");
+        JButton b = new JButton("File/URL");
+        urlPane.add(b, BorderLayout.WEST);
         b.addActionListener(this);
         b.setActionCommand("Popup URL list");
-        b.setToolTipText("List of recent files");
-        b.setMargin(new Insets(1,3,1,3));
-        urlPane.add(b, BorderLayout.WEST);
-       
         urlPane.add(urlBar, BorderLayout.CENTER);
         JPanel toolPane = new JPanel();
         toolPane.setLayout(new GridLayout(2,1,0,0));
         toolPane.add(toolBar);
         toolPane.add(urlPane);
-        toolPane.setName("toolpane");
 
         JPanel mainPane = (JPanel)getContentPane();
         mainPane.setLayout(new BorderLayout());
         mainPane.add(toolPane, BorderLayout.NORTH);
         mainPane.add(splitPane, BorderLayout.CENTER);
         mainPane.setPreferredSize(d);
-        mainPane.setName("mainpane");
     }
 
     private JMenuBar createMenuBar()
     {
         JMenuBar mbar = new JMenuBar();
-        mbar.setName("mbar");
         JMenu menu = null;
         JMenuItem item;
 
@@ -733,12 +671,10 @@ ChangeListener, DropTargetListener
     {
         JToolBar tbar = new JToolBar();
         tbar.setFloatable(false);
-        tbar.setName("tbar");
 
         // open file button
         JButton button = new JButton(ViewProperties.getFileopenIcon() );
         tbar.add( button );
-        button.setName("Open");
         button.setToolTipText( "Open" );
         button.addActionListener( this );
         button.setActionCommand( "Open file" );
@@ -746,7 +682,6 @@ ChangeListener, DropTargetListener
         // close file button
         button = new JButton(ViewProperties.getFilecloseIcon() );
         tbar.add( button );
-        button.setName("Close");
         button.setToolTipText( "Close" );
         button.addActionListener( this );
         button.setActionCommand( "Close file" );
@@ -756,7 +691,6 @@ ChangeListener, DropTargetListener
         // help button
         button = new JButton( ViewProperties.getHelpIcon() );
         tbar.add( button );
-        button.setName("Help");
         button.setToolTipText( "Help" );
         button.addActionListener( this );
         button.setActionCommand( "Users guide" );
@@ -764,7 +698,6 @@ ChangeListener, DropTargetListener
         // HDF4 Library Version button
         button = new JButton( ViewProperties.getH4Icon() );
         tbar.add( button );
-        button.setName("HDF4 library");
         button.setToolTipText( "HDF4 Library Version" );
         button.addActionListener( this );
         button.setActionCommand( "HDF4 library" );
@@ -775,7 +708,6 @@ ChangeListener, DropTargetListener
         // HDF5 Library Version button
         button = new JButton( ViewProperties.getH5Icon() );
         tbar.add( button );
-        button.setName("HDF5 library");
         button.setToolTipText( "HDF5 Library Version" );
         button.addActionListener( this );
         button.setActionCommand( "HDF5 library" );
@@ -896,13 +828,13 @@ ChangeListener, DropTargetListener
     }
 
     /** disable/enable GUI components */
-    private static void setEnabled(List<JMenuItem> list, boolean b)
+    private static void setEnabled(List list, boolean b)
     {
         Component item = null;
-        Iterator<JMenuItem> it = list.iterator();
+        Iterator it = list.iterator();
         while (it.hasNext())
         {
-            item = it.next();
+            item = (Component)it.next();
             item.setEnabled(b);
         }
     }
@@ -910,578 +842,572 @@ ChangeListener, DropTargetListener
     // To do: Implementing java.io.ActionListener
     public void actionPerformed(ActionEvent e)
     {
-    	String cmd = e.getActionCommand();
+        String cmd = e.getActionCommand();
 
-    	if (cmd.equals("Exit")) {
-    		dispose();  // terminate the application
-    	}
-    	else if (cmd.startsWith("Open file"))
-    	{
-    		int fileAccessID = FileFormat.WRITE;
-    		String filename = null;
+        if (cmd.equals("Exit")) {
+            dispose();  // terminate the application
+        }
+        else if (cmd.startsWith("Open file"))
+        {
+            int fileAccessID = FileFormat.WRITE;
+            String filename = null;
+            
+            if (ViewProperties.isReadOnly())
+                fileAccessID = FileFormat.READ;
 
-    		if (ViewProperties.isReadOnly())
-    			fileAccessID = FileFormat.READ;
+            if (cmd.equals("Open file: from file bar"))
+            {
+                filename = (String) urlBar.getSelectedItem();
+                if (filename == null || filename.length()<1) {
+                    return;
+                }
 
-    		if (cmd.equals("Open file: from file bar"))
-    		{
-    			filename = (String) urlBar.getSelectedItem();
-    			if (filename == null || filename.length()<1) {
-    				return;
-    			}
+                // local file
+                if (!(filename.startsWith("http://") || filename.startsWith("ftp://")))
+                {
+                    File tmpFile = new File(filename);
+                    
+                    if (!tmpFile.exists())
+                      return;
+                    
+                    if (tmpFile.isDirectory())
+                    {
+                        currentDir = filename;
+                        filename = openLocalFile();
+                    }
+                }
+            }
+            else if (cmd.equals("Open file read-only"))
+            {
+                fileAccessID = FileFormat.READ;
+                filename = openLocalFile();
+            }
+            else if (cmd.startsWith("Open file://"))
+            {
+                filename = cmd.substring(12);
+            } else {
+                filename = openLocalFile();
+            }
 
-    			// local file
-    			if (!(filename.startsWith("http://") || filename.startsWith("ftp://")))
-    			{
-    				File tmpFile = new File(filename);
+            if (filename == null) {
+                return;
+            }
 
-    				if (!tmpFile.exists())
-    					return;
+            if (filename.startsWith("http://") || filename.startsWith("ftp://") )
+            {
+                filename = openRemoteFile(filename);
+            }
 
-    				if (tmpFile.isDirectory())
-    				{
-    					currentDir = filename;
-    					filename = openLocalFile();
-    				}
-    			}
-    		}
-    		else if (cmd.equals("Open file read-only"))
-    		{
-    			fileAccessID = FileFormat.READ;
-    			filename = openLocalFile();
-    		}
-    		else if (cmd.startsWith("Open file://"))
-    		{
-    			filename = cmd.substring(12);
-    		} else {
-    			filename = openLocalFile();
-    		}
+            if ((filename == null) ||
+                (filename.length() < 1) ||
+                filename.equals(currentFile)) {
+                return;
+            }
 
-    		if (filename == null) {
-    			return;
-    		}
+            currentFile = filename;
+            try {
+                urlBar.removeItem(filename);
+                urlBar.insertItemAt(filename, 0);
+                urlBar.setSelectedIndex(0);
+            } catch (Exception ex ) {}
 
-    		if (filename.startsWith("http://") || filename.startsWith("ftp://") )
-    		{
-    			filename = openRemoteFile(filename);
-    		}
+            try {
+                treeView.openFile(filename, fileAccessID);
+            } catch (Throwable ex)
+            {
+                try {
+                    treeView.openFile(filename, FileFormat.READ);
+                } catch (Throwable ex2)
+                {
+                    String msg = "Failed to open file "+filename+"\n"+ex2;
+                    toolkit.beep();
+                    JOptionPane.showMessageDialog( this, msg, getTitle(), JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
+        else if (cmd.equals ("Open from irods"))
+        {
+            try { openFromSRB(); }
+            catch (Exception ex)
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(
+                    this,
+                    ex,
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        else if (cmd.startsWith("New HDF"))
+        {
+            String ftype = FileFormat.FILE_TYPE_HDF5;
+            if (cmd.equals("New HDF4 file")) {
+                ftype = FileFormat.FILE_TYPE_HDF4;
+            }
 
-    		if ((filename == null) ||
-    				(filename.length() < 1) ||
-    				filename.equals(currentFile)) {
-    			return;
-    		}
+            NewFileDialog dialog = new NewFileDialog(this, currentDir, ftype, treeView.getCurrentFiles());
+            //dialog.show();
 
-    		currentFile = filename;
-    		try {
-    			urlBar.removeItem(filename);
-    			urlBar.insertItemAt(filename, 0);
-    			urlBar.setSelectedIndex(0);
-    		} catch (Exception ex ) {}
+            if (!dialog.isFileCreated()) {
+                return;
+            }
+            String filename = dialog.getFile();
+            if (filename == null) {
+                return;
+            }
 
-    		try {
-    			treeView.openFile(filename, fileAccessID);
-    		} catch (Throwable ex)
-    		{
-    			try {
-    				treeView.openFile(filename, FileFormat.READ);
-    			} catch (Throwable ex2)
-    			{
-    				String msg = "Failed to open file "+filename+"\n"+ex2;
-    				toolkit.beep();
-    				JOptionPane.showMessageDialog( this, msg, getTitle(), JOptionPane.ERROR_MESSAGE);
-    			}
-    		}
-    	}
-    	else if (cmd.equals ("Open from irods"))
-    	{
-    		try { openFromSRB(); }
-    		catch (Exception ex)
-    		{
-    			toolkit.beep();
-    			JOptionPane.showMessageDialog(
-    					this,
-    					ex,
-    					getTitle(),
-    					JOptionPane.ERROR_MESSAGE);
-    		}
-    	}
-    	else if (cmd.startsWith("New HDF"))
-    	{
-    		String ftype = FileFormat.FILE_TYPE_HDF5;
-    		if (cmd.equals("New HDF4 file")) {
-    			ftype = FileFormat.FILE_TYPE_HDF4;
-    		}
+            try {
+                treeView.openFile(filename, FileFormat.WRITE);
+                currentFile = filename;
+                try {
+                    urlBar.removeItem(filename);
+                    urlBar.insertItemAt(filename, 0);
+                    urlBar.setSelectedIndex(0);
+                } catch (Exception ex2 ) {}
+            } catch (Exception ex)
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(
+                    this,
+                    ex.getMessage()+"\n"+filename,
+                    getTitle(),
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        else if (cmd.equals("Close file"))
+        {
+            FileFormat theFile = treeView.getSelectedFile();
+            if (theFile == null)
+            {
+                toolkit.beep();
+                JOptionPane.showMessageDialog( this, "Select a file to close", getTitle(), JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-    		NewFileDialog dialog = new NewFileDialog(this, currentDir, ftype, treeView.getCurrentFiles());
-    		dialog.setName("newfiledialog");
-    		//dialog.show();
+            // close all the data windows of this file
+            JInternalFrame[] frames = contentPane.getAllFrames();
+            if (frames != null)
+            {
+                for (int i=0; i<frames.length; i++)
+                {
+                    HObject obj = (HObject)(((DataView)frames[i]).getDataObject());
+                    if (obj == null) {
+                        continue;
+                    }
 
-    		if (!dialog.isFileCreated()) {
-    			return;
-    		}
-    		String filename = dialog.getFile();
-    		if (filename == null) {
-    			return;
-    		}
+                    if ( obj.getFileFormat().equals(theFile))
+                    {
+                        frames[i].dispose();
+                        frames[i] = null;
+                    }
+                }
+            }
 
-    		try {
-    			treeView.openFile(filename, FileFormat.WRITE);
-    			currentFile = filename;
-    			try {
-    				urlBar.removeItem(filename);
-    				urlBar.insertItemAt(filename, 0);
-    				urlBar.setSelectedIndex(0);
-    			} catch (Exception ex2 ) {}
-    		} catch (Exception ex)
-    		{
-    			toolkit.beep();
-    			JOptionPane.showMessageDialog(
-    					this,
-    					ex.getMessage()+"\n"+filename,
-    					getTitle(),
-    					JOptionPane.ERROR_MESSAGE);
-    		}
-    	}
-    	else if (cmd.equals("Close file"))
-    	{
-    		FileFormat theFile = treeView.getSelectedFile();
-    		if (theFile == null)
-    		{
-    			toolkit.beep();
-    			JOptionPane.showMessageDialog( this, "Select a file to close", getTitle(), JOptionPane.ERROR_MESSAGE);
-    			return;
-    		}
+            String fname = (String) urlBar.getSelectedItem();
+            if (theFile.getFilePath().equals(fname))
+            {
+                currentFile = null;
+                urlBar.setSelectedIndex(-1);
+            }
 
-    		// close all the data windows of this file
-    		JInternalFrame[] frames = contentPane.getAllFrames();
-    		if (frames != null)
-    		{
-    			for (int i=0; i<frames.length; i++)
-    			{
-    				HObject obj = (HObject)(((DataView)frames[i]).getDataObject());
-    				if (obj == null) {
-    					continue;
-    				}
+            try { treeView.closeFile(theFile); }
+            catch (Exception ex) {;}
+            theFile = null;
+            attributeArea.setText("");
+            System.gc();
+        }
+        else if (cmd.equals("Close all file"))
+        {
+            closeAllWindow();
+            List files = treeView.getCurrentFiles();
 
-    				if ( obj.getFileFormat().equals(theFile))
-    				{
-    					frames[i].dispose();
-    					frames[i] = null;
-    				}
-    			}
-    		}
+            while(!files.isEmpty()) {
+                try { treeView.closeFile((FileFormat)files.get(0)); }
+                catch (Exception ex) {}
+            }
+            currentFile = null;
+            
+            attributeArea.setText("");
+        }
+        else if (cmd.equals("Save current file as"))
+        {
+            try {
+                treeView.saveFile(treeView.getSelectedFile());
+            }
+            catch (Exception ex) {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(
+                    this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        else if (cmd.equals("Save current file"))
+        {
+            /* save what have been changed in memory into file */
+            try {
+                FileFormat file = treeView.getSelectedFile();
+                List views = getDataViews();
+                Object theView = null;
+                TableView tableView = null;
+                TextView textView = null;
+                FileFormat theFile = null;
+                if (views != null)
+                {
+                    int n = views.size();
+                    for (int i=0; i<n; i++)
+                    {
+                        theView = views.get(i);
+                        if (theView instanceof TableView)
+                        {
+                            tableView = (TableView)theView;
+                            theFile = tableView.getDataObject().getFileFormat();
+                            if (file.equals(theFile))
+                            {
+                                tableView.updateValueInFile();
+                            }
+                        }
+                        else if (theView instanceof TextView)
+                        {
+                            textView = (TextView)theView;
+                            theFile = textView.getDataObject().getFileFormat();
+                            if (file.equals(theFile))
+                            {
+                                textView.updateValueInFile();
+                            }
+                        }
+                    } // for (int i=0; i<n; i++)
+                } // if (views != null)
+            }
+            catch (Exception ex) {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(
+                    this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        else if (cmd.equals("Cascade all windows"))
+        {
+            cascadeWindow();
+        }
+        else if (cmd.equals("Tile all windows"))
+        {
+            tileWindow();
+        }
+        else if (cmd.equals("Close a window"))
+        {
+            JInternalFrame frame = contentPane.getSelectedFrame();
 
-    		String fname = (String) urlBar.getSelectedItem();
-    		if (theFile.getFilePath().equals(fname))
-    		{
-    			currentFile = null;
-    			urlBar.setSelectedIndex(-1);
-    		}
+            if (frame != null)
+            {
+                frame.dispose();
+            }
+        }
+        else if (cmd.equals("Close all windows"))
+        {
+            closeAllWindow();
+        }
+        else if (cmd.startsWith("SHOW WINDOW"))
+        {
+            // a window is selected to be shown at the front
+            showWindow(cmd);
+        }
+        else if (cmd.startsWith("Convert image file:"))
+        {
+            String typeFrom=null, typeTo =null;
 
-    		try { treeView.closeFile(theFile); }
-    		catch (Exception ex) {;}
-    		theFile = null;
-    		attributeArea.setText("");
-    		System.gc();
-    	}
-    	else if (cmd.equals("Close all file"))
-    	{
-    		closeAllWindow();
-    		List<FileFormat> files = treeView.getCurrentFiles();
+            if (cmd.equals("Convert image file: Image to HDF5"))
+            {
+              typeFrom = Tools.FILE_TYPE_IMAGE;
+                typeTo = FileFormat.FILE_TYPE_HDF5;
+            }
+            else if (cmd.equals("Convert image file: Image to HDF4"))
+            {
+              typeFrom = Tools.FILE_TYPE_IMAGE;
+                typeTo = FileFormat.FILE_TYPE_HDF4;
+            } else {
+                return;
+            }
 
-    		while(!files.isEmpty()) {
-    			try { treeView.closeFile(files.get(0)); }
-    			catch (Exception ex) {}
-    		}
-    		currentFile = null;
+            FileConversionDialog dialog = new FileConversionDialog(
+                this,
+                typeFrom,
+                typeTo,
+                currentDir,
+                treeView.getCurrentFiles());
+            dialog.setVisible(true);
 
-    		attributeArea.setText("");
-    	}
-    	else if (cmd.equals("Save current file as"))
-    	{
-    		try {
-    			treeView.saveFile(treeView.getSelectedFile());
-    		}
-    		catch (Exception ex) {
-    			toolkit.beep();
-    			JOptionPane.showMessageDialog(
-    					this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
-    		}
-    	}
-    	else if (cmd.equals("Save current file"))
-    	{
-    		/* save what have been changed in memory into file */
-    		try {
-    			FileFormat file = treeView.getSelectedFile();
-    			List<JInternalFrame> views = getDataViews();
-    			Object theView = null;
-    			TableView tableView = null;
-    			TextView textView = null;
-    			FileFormat theFile = null;
-    			if (views != null)
-    			{
-    				int n = views.size();
-    				for (int i=0; i<n; i++)
-    				{
-    					theView = views.get(i);
-    					if (theView instanceof TableView)
-    					{
-    						tableView = (TableView)theView;
-    						theFile = tableView.getDataObject().getFileFormat();
-    						if (file.equals(theFile))
-    						{
-    							tableView.updateValueInFile();
-    						}
-    					}
-    					else if (theView instanceof TextView)
-    					{
-    						textView = (TextView)theView;
-    						theFile = textView.getDataObject().getFileFormat();
-    						if (file.equals(theFile))
-    						{
-    							textView.updateValueInFile();
-    						}
-    					}
-    				} // for (int i=0; i<n; i++)
-    			} // if (views != null)
-    		}
-    		catch (Exception ex) {
-    			toolkit.beep();
-    			JOptionPane.showMessageDialog(
-    					this, ex, getTitle(), JOptionPane.ERROR_MESSAGE);
-    		}
-    	}
-    	else if (cmd.equals("Cascade all windows"))
-    	{
-    		cascadeWindow();
-    	}
-    	else if (cmd.equals("Tile all windows"))
-    	{
-    		tileWindow();
-    	}
-    	else if (cmd.equals("Close a window"))
-    	{
-    		JInternalFrame frame = contentPane.getSelectedFrame();
+            if (dialog.isFileConverted())
+            {
+                String filename = dialog.getConvertedFile();
+                File theFile = new File(filename);
 
-    		if (frame != null)
-    		{
-    			frame.dispose();
-    		}
-    	}
-    	else if (cmd.equals("Close all windows"))
-    	{
-    		closeAllWindow();
-    	}
-    	else if (cmd.startsWith("SHOW WINDOW"))
-    	{
-    		// a window is selected to be shown at the front
-    		showWindow(cmd);
-    	}
-    	else if (cmd.startsWith("Convert image file:"))
-    	{
-    		String typeFrom=null, typeTo =null;
+                if (!theFile.exists() || !theFile.exists()) {
+                    return;
+                }
 
-    		if (cmd.equals("Convert image file: Image to HDF5"))
-    		{
-    			typeFrom = Tools.FILE_TYPE_IMAGE;
-    			typeTo = FileFormat.FILE_TYPE_HDF5;
-    		}
-    		else if (cmd.equals("Convert image file: Image to HDF4"))
-    		{
-    			typeFrom = Tools.FILE_TYPE_IMAGE;
-    			typeTo = FileFormat.FILE_TYPE_HDF4;
-    		} else {
-    			return;
-    		}
+                currentDir = theFile.getParentFile().getAbsolutePath();
+                currentFile = theFile.getAbsolutePath();
 
-    		FileConversionDialog dialog = new FileConversionDialog(
-    				this,
-    				typeFrom,
-    				typeTo,
-    				currentDir,
-    				treeView.getCurrentFiles());
-    		dialog.setVisible(true);
+                try {
+                    treeView.openFile(filename, FileFormat.WRITE);
+                    try {
+                        urlBar.removeItem(filename);
+                        urlBar.insertItemAt(filename, 0);
+                        urlBar.setSelectedIndex(0);
+                    } catch (Exception ex2 ) {}
+                } catch (Exception ex)
+                {
+                    showStatus(ex.toString());
+                }
+            }
+        }
+        else if (cmd.equals("User options"))
+        {
+          if (userOptionDialog == null) {
+                userOptionDialog = new UserOptionsDialog(this, rootDir);
+            }
 
-    		if (dialog.isFileConverted())
-    		{
-    			String filename = dialog.getConvertedFile();
-    			File theFile = new File(filename);
+          userOptionDialog.setVisible(true);
 
-    			if (!theFile.exists() || !theFile.exists()) {
-    				return;
-    			}
+            if (userOptionDialog.isWorkDirChanged())
+            {
+                currentDir = ViewProperties.getWorkDir();
+            }
+            
+            if (userOptionDialog.isFontChanged()) {
+              Font font = null;
+              try { 
+                font = new Font(ViewProperties.getFontType(), Font.PLAIN, ViewProperties.getFontSize());
+              } catch (Exception ex) { font = null; }
+              
+              if (font != null) {
+                    updateFontSize(font);
+              }
+            }
+        }
+        else if (cmd.equals("Register file format")) {
+            String msg = "Register a new file format by \nKEY:FILE_FORMAT:FILE_EXTENSION\n"+
+                "where, KEY: the unique identifier for the file format"+
+                "\n           FILE_FORMAT: the full class name of the file format"+
+                "\n           FILE_EXTENSION: the file extension for the file format"+
+                "\n\nFor example, "+
+                "\n\t to add NetCDF, \"NetCDF:ncsa.hdf.object.nc2.NC2File:nc\"" +
+                "\n\t to add FITS, \"FITS:ncsa.hdf.object.fits.FitsFile:fits\"\n\n";
+             String str = (String)JOptionPane.showInputDialog(this, msg, "Register a file format", 
+                   JOptionPane.PLAIN_MESSAGE, ViewProperties.getLargeHdfIcon(), 
+                   null, null);
+            if ((str == null) || (str.length()<1)) {
+                return;
+            }
 
-    			currentDir = theFile.getParentFile().getAbsolutePath();
-    			currentFile = theFile.getAbsolutePath();
+            int idx1 = str.indexOf(':');
+            int idx2 = str.lastIndexOf(':');
 
-    			try {
-    				treeView.openFile(filename, FileFormat.WRITE);
-    				try {
-    					urlBar.removeItem(filename);
-    					urlBar.insertItemAt(filename, 0);
-    					urlBar.setSelectedIndex(0);
-    				} catch (Exception ex2 ) {}
-    			} catch (Exception ex)
-    			{
-    				showStatus(ex.toString());
-    			}
-    		}
-    	}
-    	else if (cmd.equals("User options"))
-    	{
-    		if (userOptionDialog == null) {
-    			userOptionDialog = new UserOptionsDialog(this, rootDir);
-    		}
+            if ((idx1<0) || (idx2<=idx1)) {
+                JOptionPane.showMessageDialog(
+                        this, "Failed to register "+str +"\n\nMust in the form of KEY:FILE_FORMAT:FILE_EXTENSION",
+                        "Register File Format",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-    		userOptionDialog.setVisible(true);
+            String key = str.substring(0, idx1);
+            String className = str.substring(idx1+1, idx2);
+            String extension = str.substring(idx2+1);
 
-    		if (userOptionDialog.isWorkDirChanged())
-    		{
-    			currentDir = ViewProperties.getWorkDir();
-    		}
+            // check is the file format has been registered or the key is taken.
+            String theKey = null;
+            String theClassName = null;
+            Enumeration local_enum = FileFormat.getFileFormatKeys();
+            while (local_enum.hasMoreElements()) {
+                theKey = (String)local_enum.nextElement();
+                if (theKey.endsWith(key)) {
+                    JOptionPane.showMessageDialog(
+                        this,
+                        "Invalid key: "+key+" is taken.",
+                        "Register File Format",
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
-    		if (userOptionDialog.isFontChanged()) {
-    			Font font = null;
-    			try { 
-    				font = new Font(ViewProperties.getFontType(), Font.PLAIN, ViewProperties.getFontSize());
-    			} catch (Exception ex) { font = null; }
+                theClassName = FileFormat.getFileFormat(theKey).getClass().getName();
+                if (theClassName.endsWith(className)) {
+                    JOptionPane.showMessageDialog(
+                        this,
+                        "The file format has already been registered: "+className,
+                        "Register File Format",
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
 
-    			if (font != null) {
-    				updateFontSize(font);
-    			}
-    		}
-    	}
-    	else if (cmd.equals("Register file format")) {
-    		String msg = "Register a new file format by \nKEY:FILE_FORMAT:FILE_EXTENSION\n"+
-    		"where, KEY: the unique identifier for the file format"+
-    		"\n           FILE_FORMAT: the full class name of the file format"+
-    		"\n           FILE_EXTENSION: the file extension for the file format"+
-    		"\n\nFor example, "+
-    		"\n\t to add NetCDF, \"NetCDF:ncsa.hdf.object.nc2.NC2File:nc\"" +
-    		"\n\t to add FITS, \"FITS:ncsa.hdf.object.fits.FitsFile:fits\"\n\n";
-    		String str = (String)JOptionPane.showInputDialog(this, msg, "Register a file format", 
-    				JOptionPane.PLAIN_MESSAGE, ViewProperties.getLargeHdfIcon(), 
-    				null, null);
-    		if ((str == null) || (str.length()<1)) {
-    			return;
-    		}
+            // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
+            Class theClass = null;
+            try { theClass = Class.forName(className); }
+            catch (Exception ex)
+            {
+                try { theClass = ViewProperties.loadExtClass().loadClass(className); }
+                catch (Exception ex2) {theClass = null;}
+            }
+            if (theClass == null) {
+                return;
+            }
 
-    		int idx1 = str.indexOf(':');
-    		int idx2 = str.lastIndexOf(':');
+            try {
+                Object theObject = theClass.newInstance();
+                if (theObject instanceof FileFormat) {
+                    FileFormat.addFileFormat(key, (FileFormat)theObject);
+                }
+            } catch (Throwable ex) {
+                JOptionPane.showMessageDialog(
+                        this, "Failed to register "+str +"\n\n"+ex,
+                        "Register File Format",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-    		if ((idx1<0) || (idx2<=idx1)) {
-    			JOptionPane.showMessageDialog(
-    					this, "Failed to register "+str +"\n\nMust in the form of KEY:FILE_FORMAT:FILE_EXTENSION",
-    					"Register File Format",
-    					JOptionPane.ERROR_MESSAGE);
-    			return;
-    		}
+            if ((extension != null) && (extension.length()>0))
+            {
+               extension = extension.trim();
+               String ext = ViewProperties.getFileExtension();
+               ext += ", "+extension;
+               ViewProperties.setFileExtension(ext);
+            }
+        }
+        else if (cmd.equals("Unregister file format")) {
+            Enumeration keys = FileFormat.getFileFormatKeys();
+            ArrayList keylist = new ArrayList();
 
-    		String key = str.substring(0, idx1);
-    		String className = str.substring(idx1+1, idx2);
-    		String extension = str.substring(idx2+1);
+            while(keys.hasMoreElements()) {
+                keylist.add(keys.nextElement());
+            }
 
-    		// check is the file format has been registered or the key is taken.
-    		String theKey = null;
-    		String theClassName = null;
-    		Enumeration<?> local_enum = FileFormat.getFileFormatKeys();
-    		while (local_enum.hasMoreElements()) {
-    			theKey = (String)local_enum.nextElement();
-    			if (theKey.endsWith(key)) {
-    				JOptionPane.showMessageDialog(
-    						this,
-    						"Invalid key: "+key+" is taken.",
-    						"Register File Format",
-    						JOptionPane.ERROR_MESSAGE);
-    				return;
-    			}
+            String theKey = (String)JOptionPane.showInputDialog(this,
+                "Unregister a file format", "Unregister a file format",
+                JOptionPane.WARNING_MESSAGE, ViewProperties.getLargeHdfIcon(), keylist.toArray(),
+                null);
 
-    			theClassName = FileFormat.getFileFormat(theKey).getClass().getName();
-    			if (theClassName.endsWith(className)) {
-    				JOptionPane.showMessageDialog(
-    						this,
-    						"The file format has already been registered: "+className,
-    						"Register File Format",
-    						JOptionPane.ERROR_MESSAGE);
-    				return;
-    			}
-    		}
+            if (theKey == null) {
+                return;
+            }
 
-    		// enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
-    		Class theClass = null;
-    		try { theClass = Class.forName(className); }
-    		catch (Exception ex)
-    		{
-    			try { theClass = ViewProperties.loadExtClass().loadClass(className); }
-    			catch (Exception ex2) {theClass = null;}
-    		}
-    		if (theClass == null) {
-    			return;
-    		}
+            FileFormat.removeFileFormat(theKey);
+        }
+        else if (cmd.equals("Users guide"))
+        {
+            String ugPath = ViewProperties.getUsersGuide();
 
-    		try {
-    			Object theObject = theClass.newInstance();
-    			if (theObject instanceof FileFormat) {
-    				FileFormat.addFileFormat(key, (FileFormat)theObject);
-    			}
-    		} catch (Throwable ex) {
-    			JOptionPane.showMessageDialog(
-    					this, "Failed to register "+str +"\n\n"+ex,
-    					"Register File Format",
-    					JOptionPane.ERROR_MESSAGE);
-    			return;
-    		}
+            // URL is invalid, use default path.
+            if (ugPath == null || !ugPath.startsWith("http://"))
+            {
+                String sep = File.separator;
+                File tmpFile = new File(ugPath);
+                if (!(tmpFile.exists())) {
+                    ugPath = rootDir+sep+"UsersGuide"+sep+"index.html";
+                    tmpFile = new File(ugPath);
+                    if (!(tmpFile.exists())) {
+                        // use the online copy
+                        ugPath = "http://www.hdfgroup.org/hdf-java-html/hdfview/UsersGuide/index.html";
+                    }
+                    ViewProperties.setUsersGuide(ugPath);
+                }
+            }
 
-    		if ((extension != null) && (extension.length()>0))
-    		{
-    			extension = extension.trim();
-    			String ext = ViewProperties.getFileExtension();
-    			ext += ", "+extension;
-    			ViewProperties.setFileExtension(ext);
-    		}
-    	}
-    	else if (cmd.equals("Unregister file format")) {
-    		Enumeration keys = FileFormat.getFileFormatKeys();
-    		ArrayList keylist = new ArrayList();
+            try {
+                Tools.launchBrowser(ugPath);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        ex.getMessage(),
+                        "HDFView",
+                        JOptionPane.ERROR_MESSAGE,
+                        ViewProperties.getLargeHdfIcon());
+            }                
+        }
+        else if (cmd.equals("HDF4 library"))
+        {
+            FileFormat thefile = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4);
+            if (thefile == null) {
+                return;
+            }
 
-    		while(keys.hasMoreElements()) {
-    			keylist.add(keys.nextElement());
-    		}
+            JOptionPane.showMessageDialog(
+                this,
+                thefile.getLibversion(),
+                "HDFView",
+                JOptionPane.PLAIN_MESSAGE,
+                ViewProperties.getLargeHdfIcon());
+        }
+        else if (cmd.equals("HDF5 library"))
+        {
+            FileFormat thefile = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+            if (thefile == null) {
+                return;
+            }
 
-    		String theKey = (String)JOptionPane.showInputDialog(this,
-    				"Unregister a file format", "Unregister a file format",
-    				JOptionPane.WARNING_MESSAGE, ViewProperties.getLargeHdfIcon(), keylist.toArray(),
-    				null);
+            JOptionPane.showMessageDialog(
+                this,
+                thefile.getLibversion(),
+                "HDFView",
+                JOptionPane.PLAIN_MESSAGE,
+                ViewProperties.getLargeHdfIcon());
+        }
+        else if (cmd.equals("Java version"))
+        {
+            String info = "Compiled at "+JAVA_COMPILER+
+                "\nRunning at "+System.getProperty("java.vm.version");
+            JOptionPane.showMessageDialog(
+                this,
+                info,
+                "HDFView",
+                JOptionPane.PLAIN_MESSAGE,
+                ViewProperties.getLargeHdfIcon());
+        }
+        else if (cmd.equals("File format list"))
+        {
+            Enumeration formatKeys = FileFormat.getFileFormatKeys();
 
-    		if (theKey == null) {
-    			return;
-    		}
+            String str = "\nSupported File Formats: \n";
+            while (formatKeys.hasMoreElements()) {
+                str += "    " + formatKeys.nextElement() +"\n";
+            }
+            str += "\n";
 
-    		FileFormat.removeFileFormat(theKey);
-    	}
-    	else if (cmd.equals("Users guide"))
-    	{
-    		String ugPath = ViewProperties.getUsersGuide();
+            JOptionPane.showMessageDialog(
+                this,
+                str,
+                "HDFView",
+                JOptionPane.PLAIN_MESSAGE,
+                ViewProperties.getLargeHdfIcon());
+        }
+        else if (cmd.equals("About"))
+        {
+            JOptionPane.showMessageDialog(
+                this,
+                aboutHDFView,
+                "HDFView",
+                JOptionPane.PLAIN_MESSAGE,
+                ViewProperties.getLargeHdfIcon());
+        }
+        else if (cmd.equals("Popup URL list"))
+        {
+            urlBar.setPopupVisible(true);
+        } else
+        {
+            if ((helpViews == null) || (helpViews.size() <= 0)) {
+                return;
+            }
 
-    		// URL is invalid, use default path.
-    		if (ugPath == null || !ugPath.startsWith("http://"))
-    		{
-    			String sep = File.separator;
-    			File tmpFile = new File(ugPath);
-    			if (!(tmpFile.exists())) {
-    				ugPath = rootDir+sep+"UsersGuide"+sep+"index.html";
-    				tmpFile = new File(ugPath);
-    				if (!(tmpFile.exists())) {
-    					// use the online copy
-    					ugPath = "http://www.hdfgroup.org/hdf-java-html/hdfview/UsersGuide/index.html";
-    				}
-    				ViewProperties.setUsersGuide(ugPath);
-    			}
-    		}
-
-    		try {
-    			Tools.launchBrowser(ugPath);
-    		} catch (Exception ex) {
-    			JOptionPane.showMessageDialog(
-    					this,
-    					ex.getMessage(),
-    					"HDFView",
-    					JOptionPane.ERROR_MESSAGE,
-    					ViewProperties.getLargeHdfIcon());
-    		}                
-    	}
-    	else if (cmd.equals("HDF4 library"))
-    	{
-    		FileFormat thefile = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF4);
-    		if (thefile == null) {
-    			return;
-    		}
-
-    		JOptionPane.showMessageDialog(
-    				this,
-    				thefile.getLibversion(),
-    				"HDFView",
-    				JOptionPane.PLAIN_MESSAGE,
-    				ViewProperties.getLargeHdfIcon());
-    	}
-    	else if (cmd.equals("HDF5 library"))
-    	{
-    		FileFormat thefile = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
-    		if (thefile == null) {
-    			return;
-    		}
-
-    		JOptionPane.showMessageDialog(
-    				this,
-    				thefile.getLibversion(),
-    				"HDFView",
-    				JOptionPane.PLAIN_MESSAGE,
-    				ViewProperties.getLargeHdfIcon());
-    	}
-    	else if (cmd.equals("Java version"))
-    	{
-    		String info = "Compiled at "+JAVA_COMPILER+
-    		"\nRunning at "+System.getProperty("java.vm.version");
-    		JOptionPane.showMessageDialog(
-    				this,
-    				info,
-    				"HDFView",
-    				JOptionPane.PLAIN_MESSAGE,
-    				ViewProperties.getLargeHdfIcon());
-    	}
-    	else if (cmd.equals("File format list"))
-    	{
-    		Enumeration<?> formatKeys = FileFormat.getFileFormatKeys();
-
-    		String str = "\nSupported File Formats: \n";
-    		while (formatKeys.hasMoreElements()) {
-    			str += "    " + formatKeys.nextElement() +"\n";
-    		}
-    		str += "\n";
-
-    		JOptionPane.showMessageDialog(
-    				this,
-    				str,
-    				"HDFView",
-    				JOptionPane.PLAIN_MESSAGE,
-    				ViewProperties.getLargeHdfIcon());
-    	}
-    	else if (cmd.equals("About"))
-    	{
-    		JOptionPane.showMessageDialog(
-    				this,
-    				aboutHDFView,
-    				"HDFView",
-    				JOptionPane.PLAIN_MESSAGE,
-    				ViewProperties.getLargeHdfIcon());
-    	}
-    	else if (cmd.equals("Popup URL list"))
-    	{
-    		urlBar.setPopupVisible(true);
-    	}
-    	else if (cmd.equals("Clear current selection"))
-    	{
-    		//urlBar.setPopupVisible(true);
-    		urlBar.setSelectedIndex(-1);
-    	} else
-    	{
-    		if ((helpViews == null) || (helpViews.size() <= 0)) {
-    			return;
-    		}
-
-    		// try if one of the user help information;
-    		int n = helpViews.size();
-    		for (int i=0; i<n; i++)
-    		{
-    			HelpView theView = (HelpView)helpViews.get(i);
-    			if (cmd.equals(theView.getActionCommand()))
-    			{
-    				theView.show();
-    				break;
-    			}
-    		} // for (int i=0; i<n; i++)
-    	}
+            // try if one of the user help information;
+            int n = helpViews.size();
+            for (int i=0; i<n; i++)
+            {
+                HelpView theView = (HelpView)helpViews.get(i);
+                if (cmd.equals(theView.getActionCommand()))
+                {
+                    theView.show();
+                    break;
+                }
+            } // for (int i=0; i<n; i++)
+        }
     }
 
     public void stateChanged(ChangeEvent e)
@@ -1580,7 +1506,7 @@ ChangeListener, DropTargetListener
 
         // close all open files
         try {
-        List<FileFormat> filelist = treeView.getCurrentFiles();
+        List filelist = treeView.getCurrentFiles();
         if ((filelist != null) && (filelist.size()>0)) {
             Object[] files = filelist.toArray();
             int n = files.length;
@@ -1803,23 +1729,6 @@ ChangeListener, DropTargetListener
         } // else if (obj instanceof Dataset)
 
         List attrList = null;
-        //-----------For the feature:To display attributes in creation order
-        //        String idxType = ViewProperties.getIndexType();
-        //        int indxType = 0;
-        //        if(idxType.equals("alphabetical"))
-        //        	indxType = 0;
-        //        else if(idxType.equals("creation"))
-        //        	indxType = 1;
-        //        try { 
-        //        	if(obj.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5))){
-        //        		attrList = obj.getMetadata(indxType);
-        //        	} 
-        //        	else
-        //        		attrList = obj.getMetadata();
-        //        }
-        //        catch (Exception ex){
-        //        	ex.printStackTrace();
-        //        }
         try { attrList = obj.getMetadata(); } catch (Exception ex) {ex.printStackTrace();}
 
         if (attrList == null) {
@@ -1885,7 +1794,7 @@ ChangeListener, DropTargetListener
 
     /** Returns a list of all open DataViews
      */
-    public List<JInternalFrame> getDataViews()
+    public List getDataViews()
     {
         // check if the data content is already displayed
         JInternalFrame[] frames = contentPane.getAllFrames();
@@ -1895,7 +1804,7 @@ ChangeListener, DropTargetListener
             return null;
         }
 
-        Vector<JInternalFrame> views = new Vector<JInternalFrame>(frames.length);
+        Vector views = new Vector(frames.length);
         HObject obj = null;
         for (int i=0; i<frames.length; i++)
         {
@@ -1912,14 +1821,14 @@ ChangeListener, DropTargetListener
     /**
      * @return a list of treeview implementations.
      */
-    public static final List<String> getListOfTreeView() {
+    public static final List getListOfTreeView() {
         return treeViews;
     }
 
     /**
      * @return a list of imageview implementations.
      */
-    public static final List<String> getListOfImageView() {
+    public static final List getListOfImageView() {
         return imageViews;
     }
 
@@ -2117,8 +2026,8 @@ ChangeListener, DropTargetListener
     private static final void loadExtModules() throws Exception
     {
         ClassLoader extClassLoader = ViewProperties.loadExtClass();
-        Vector<String> moduleListTreeView  = ViewProperties.getTreeViewList();
-        Vector<String> moduleListImageView = ViewProperties.getImageViewList();
+        Vector moduleListTreeView  = ViewProperties.getTreeViewList();
+        Vector moduleListImageView = ViewProperties.getImageViewList();
         
         if (extClassLoader == null ||
                 moduleListTreeView == null ||
@@ -2239,7 +2148,7 @@ ChangeListener, DropTargetListener
             }
         }
 
-        Vector<File> flist = new Vector<File>();
+        Vector flist = new Vector();
         tmpFile = null;
         if (j>=0) {
             for (i = j; i<args.length; i++) {
@@ -2249,20 +2158,9 @@ ChangeListener, DropTargetListener
                 }
             }
         }
-        
-        final Vector<File> the_flist = flist;
-        final String the_rootDir = rootDir;
-        final int the_X=X, the_Y=Y, the_W=W, the_H=H;
-        
-        //Schedule a job for the event-dispatching thread:
-        //creating and showing this application's GUI.
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                HDFView frame = new HDFView(the_rootDir, the_flist, the_W, the_H, the_X, the_Y);
-                frame.setVisible(true);
-            }
-        });
 
+        HDFView frame = new HDFView(rootDir, flist, W, H, X, Y);
+        frame.setVisible(true);
         //try { loadExtModules(); } catch (Exception ex) {}
     }
 }

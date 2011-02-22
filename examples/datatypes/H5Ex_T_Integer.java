@@ -10,7 +10,7 @@
 
  ************************************************************/
 
-package examples.datatypes;
+package datatypes;
 
 import java.text.DecimalFormat;
 
@@ -63,7 +63,7 @@ public class H5Ex_T_Integer {
 			if ((file_id >= 0) && (dataspace_id >= 0))
 				dataset_id = H5.H5Dcreate(file_id, DATASETNAME,
 						HDF5Constants.H5T_STD_I64BE, dataspace_id,
-						HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+						HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -128,7 +128,7 @@ public class H5Ex_T_Integer {
 		// Open an existing dataset.
 		try {
 			if (file_id >= 0)
-				dataset_id = H5.H5Dopen(file_id, DATASETNAME, HDF5Constants.H5P_DEFAULT);
+				dataset_id = H5.H5Dopen(file_id, DATASETNAME);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

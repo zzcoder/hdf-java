@@ -20,11 +20,11 @@ package ncsa.hdf.object;
  * component. Particular implementations of Metadata often provide additional
  * context-specific objects as well.
  * <p>
- * 
  * @version 1.1 9/4/2007
  * @author Peter X. Cao
  */
-public interface Metadata extends java.io.Serializable {
+public interface Metadata extends java.io.Serializable
+{
     /**
      * Returns the value of this Metadata.
      */

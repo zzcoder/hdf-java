@@ -17,13 +17,14 @@ package ncsa.hdf.view;
 import javax.swing.JTable;
 
 /**
- * 
+ *
  * The table view interface for displaying data in table form
- * 
+ *
  * @author Peter X. Cao
  * @version 2.4 9/6/2007
  */
-public abstract interface TableView extends DataView {
+public abstract interface TableView extends DataView
+{
     /** returns the table */
     public abstract JTable getTable();
 
@@ -32,5 +33,6 @@ public abstract interface TableView extends DataView {
 
     /** Write the change of a dataset into file. */
     public abstract void updateValueInFile();
+
 
 }

@@ -35,8 +35,7 @@ public class HDFNotImplementedException  extends HDFJavaException
         msg = "HDFJavaException: HDF function not implmented (yet): "+s;
     }
 
-    @Override
-	public String getMessage() {
+    public String getMessage() {
         return msg;
     }
 }

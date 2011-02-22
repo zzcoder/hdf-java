@@ -32,9 +32,8 @@
 extern "C" {
 #endif
 
-#include <jni.h>
 #include "hdf5.h"
-#include "h5jni.h"
+#include <jni.h>
 
 #ifdef __cplusplus
 #define ENVPTR (env)
@@ -43,6 +42,12 @@ extern "C" {
 #define ENVPTR (*env)
 #define ENVPAR env,
 #endif
+
+extern jboolean h5outOfMemory( JNIEnv *env, char *functName);
+extern jboolean h5JNIFatalError( JNIEnv *env, char *functName);
+extern jboolean h5nullArgument( JNIEnv *env, char *functName);
+extern jboolean h5libraryError( JNIEnv *env );
+extern jboolean h5badArgument( JNIEnv *env, char *functName);
 
 
 /* returns int [] */

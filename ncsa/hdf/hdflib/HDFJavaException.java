@@ -31,8 +31,7 @@ public class HDFJavaException extends HDFException
         msg = "HDFLibraryException: "+s;
     }
 
-    @Override
-	public String getMessage() {
+    public String getMessage() {
         return msg;
     }
 }

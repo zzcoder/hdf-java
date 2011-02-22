@@ -6,15 +6,15 @@
 #
 # Notes: 
 #   To comiple the source code, run 'nmake -f nt_makefile'
-#   You have to add your VS studio bin path to your system path, e.g.
+#   You may have add your VS studio bin path to your system path, e.g.
 #   set path=%path";"C:\Program Files\Microsoft Visual Studio 8\VC\bin"
 #
 
-JAVAHOME="C:\Program Files\Java\jdk1.6.0_18"
-HDF5INC=C:\hdf\hdf5\include
-HDF5LIB=C:\hdf\hdf5\lib\hdf5.lib
-SZLIB=C:\hdf\szip\lib\szlib.lib
-ZLIB=C:\hdf\zlib\lib\zlib.lib
+JAVAHOME=D:\Java\jdk1.6.0_16
+HDF5INC=G:\HDF\lib\hdf5184\include
+HDF5LIB=G:\HDF\lib\hdf5184\lib\hdf5.lib
+SZLIB=G:\HDF\lib_external\szip20-win-xpnet-enc\lib\szlib.lib
+ZLIB=G:\HDF\lib_external\zlib-121-windows\lib\zlib.lib
 
 #####################################################################
 #      Do not change below this line unless you know what you do    #
@@ -24,18 +24,16 @@ CC=cl.exe
 LINKER = link.exe
 
 CFLAGS = \
-/I $(HDF5INC) /I $(JAVAHOME)\include /I $(JAVAHOME)\include\win32 \
-/D "_MBCS" /U "__cplusplus" \
+/I $(HDF5INC) /I $(JAVAHOME)"\include" /I $(JAVAHOME)"\include\win32" \
+/D H5_USE_16_API /D "_MBCS" /U "__cplusplus" \
 /D "_CRT_SECURE_NO_WARNINGS" /D "_LARGEFILE_SOURCE" \
 /nologo /W3 /EHsc /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /FD /c /TP \
 
-# For 64-bit machines, use /machine:x64
 LINKFLAG=/nologo /dll /incremental:no /machine:i386
 
-OBJECTS=exceptionImp.obj h5Constants.obj h5Imp.obj h5aImp.obj h5dImp.obj h5eImp.obj \
-        h5fImp.obj h5gImp.obj h5iImp.obj h5lImp.obj h5oImp.obj h5pImp.obj h5rImp.obj h5sImp.obj \
-        h5tImp.obj nativeData.obj h5util.obj h5zImp.obj
-
+OBJECTS=exceptionImp.obj h5aImp.obj h5Constants.obj h5dImp.obj h5fImp.obj \
+        h5gImp.obj h5iImp.obj h5Imp.obj h5pImp.obj h5rImp.obj h5sImp.obj \
+        h5tImp.obj h5util.obj h5zImp.obj nativeData.obj 
 
 MSDEV_LIBS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib \
 advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib \
@@ -68,9 +66,6 @@ h5iImp.obj: h5iImp.c
 h5Imp.obj: h5Imp.c
 	$(CC) $(CFLAGS) /Fo$@ $?
 
-h5oImp.obj: h5oImp.c
-	$(CC) $(CFLAGS) /Fo$@ $?
-
 h5pImp.obj: h5pImp.c
 	$(CC) $(CFLAGS) /Fo$@ $?
 
@@ -91,13 +86,6 @@ h5zImp.obj: h5zImp.c
 
 nativeData.obj: nativeData.c
 	$(CC) $(CFLAGS) /Fo$@ $?
-
-h5eImp.obj: h5eImp.c
-	$(CC) $(CFLAGS) /Fo$@ $?
-
-h5lImp.obj: h5lImp.c
-	$(CC) $(CFLAGS) /Fo$@ $?
-
 
 clean:
 	@del *.dll

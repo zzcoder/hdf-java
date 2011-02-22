@@ -1,14 +1,12 @@
 /****************************************************************************
- * Copyright by The HDF Group.                                               *
- * Copyright by the Board of Trustees of the University of Illinois.         *
- * All rights reserved.                                                      *
- *                                                                           *
- * This file is part of HDF Java Products. The full HDF Java copyright       *
- * notice, including terms governing use, modification, and redistribution,  *
- * is contained in the file, COPYING.  COPYING can be found at the root of   *
- * the source code distribution tree. You can also access it online  at      *
- * http://www.hdfgroup.org/products/licenses.html.  If you do not have       *
- * access to the file, you may request a copy from help@hdfgroup.org.        *
+ * NCSA HDF                                                                 *
+ * National Comptational Science Alliance                                   *
+ * University of Illinois at Urbana-Champaign                               *
+ * 605 E. Springfield, Champaign IL 61820                                   *
+ *                                                                          *
+ * For conditions of distribution and use, see the accompanying             *
+ * hdf-java/COPYING file.                                                   *
+ *                                                                          *
  ****************************************************************************/
 
 /*
@@ -65,11 +63,10 @@ typedef struct H5E_num_t {
 
 int getMajorErrorNumber();
 int getMinorErrorNumber();
-int getErrorNumbers(H5E_num_t*);
 
-/* get the major and minor error numbers on the top of the error stack */
+/* get the major and minor error numbers on the top of the erroe stack */
 static
-herr_t walk_error_callback(unsigned n, const H5E_error2_t *err_desc, void *_err_nums)
+herr_t walk_error_callback(int n, H5E_error_t *err_desc, void *_err_nums)
 {
     H5E_num_t *err_nums = (H5E_num_t *)_err_nums;
 
@@ -81,7 +78,9 @@ herr_t walk_error_callback(unsigned n, const H5E_error2_t *err_desc, void *_err_
     return 0;
 }
 
+
 char *defineHDF5LibraryException(int maj_num);
+
 
 /*
  * Class:     ncsa_hdf_hdf5lib_exceptions_HDF5Library
@@ -92,8 +91,7 @@ char *defineHDF5LibraryException(int maj_num);
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5error_1off
   (JNIEnv *env, jclass clss )
 {
-    H5Eset_auto2(H5E_DEFAULT, NULL, NULL);
-    return 0;
+    return H5Eset_auto(NULL, NULL);
 }
 
 
@@ -110,13 +108,13 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_pri
     FILE *stream;
     char *file;
 
-    if (file_name == NULL) {
-        H5Eprint2(H5E_DEFAULT, stderr);
-    }
-    else {
+    if (file_name == NULL)
+        H5Eprint(stderr);
+    else
+    {
         file = (char *)ENVPTR->GetStringUTFChars(ENVPAR file_name,0);
         stream = fopen(file, "a+");
-        H5Eprint2(H5E_DEFAULT, stream);
+        H5Eprint(stream);
         ENVPTR->ReleaseStringUTFChars(ENVPAR file_name, file);
         if (stream) fclose(stream);
     }
@@ -137,8 +135,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_get
   (JNIEnv *env, jobject obj)
 {
     H5E_num_t err_nums;
-    
-    H5Ewalk2(H5E_DEFAULT, H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
+
+    H5Ewalk(H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
 
     return (int) err_nums.maj_num;
 }
@@ -146,10 +144,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_get
 int getMajorErrorNumber()
 {
     H5E_num_t err_nums;
-    err_nums.maj_num = 0;
-    err_nums.min_num = 0;
 
-    H5Ewalk2(H5E_DEFAULT, H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
+    H5Ewalk(H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
 
     return (int) err_nums.maj_num;
 }
@@ -174,20 +170,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_exceptions_HDF5LibraryException_get
 int getMinorErrorNumber()
 {
     H5E_num_t err_nums;
-    err_nums.maj_num = 0;
-    err_nums.min_num = 0;
 
-    H5Ewalk2(H5E_DEFAULT, H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
+    H5Ewalk(H5E_WALK_DOWNWARD, walk_error_callback, &err_nums);
 
     return (int) err_nums.min_num;
-}
-
-int getErrorNumbers(H5E_num_t *err_nums)
-{
-    err_nums->maj_num = 0;
-    err_nums->min_num = 0;
-
-    return H5Ewalk2(H5E_DEFAULT, H5E_WALK_DOWNWARD, walk_error_callback, err_nums);
 }
 
 /*
@@ -405,28 +391,20 @@ jboolean h5unimplemented( JNIEnv *env, char *functName)
 jboolean h5libraryError( JNIEnv *env )
 {
     jmethodID jm;
-    jclass    jc;
-    char     *args[2];
-    char     *exception;
-    jobject   ex;
-    char     *msg_str;
-    int       rval;
-    int       num_errs = 0;
-    int       min_num;
-    int       maj_num;
-    ssize_t   msg_size = 0;
-    H5E_type_t error_msg_type;
-    jstring   str = NULL;
-    hid_t     stk_id = -1;
-    H5E_num_t exceptionNumbers;
-    
-    /* Save current stack contents for future use */
-    stk_id = H5Eget_current_stack(); /* This will clear current stack  */ 
-    
-    getErrorNumbers(&exceptionNumbers);
-    maj_num = exceptionNumbers.maj_num;
-    min_num = exceptionNumbers.min_num;
+    jclass jc;
+    char *args[2];
+    char *exception;
+    jobject ex;
+    jstring str;
+    char *msg;
+    int rval, min_num, maj_num;
+    unsigned majnum, minnum, relnum;
+
+    H5get_libversion(&majnum, &minnum, &relnum);
+
+    maj_num = (int)getMajorErrorNumber();
     exception = (char *)defineHDF5LibraryException(maj_num);
+
     jc = ENVPTR->FindClass(ENVPAR exception);
     if (jc == NULL) {
         return JNI_FALSE;
@@ -435,20 +413,10 @@ jboolean h5libraryError( JNIEnv *env )
     if (jm == NULL) {
         return JNI_FALSE;
     }
-    /* get the length of the name */
-    msg_size = H5Eget_msg(min_num, NULL, NULL, 0);
-    if(msg_size>0) {
-        msg_size++; /* add extra space for the null terminator */
-        msg_str = (char*)malloc(sizeof(char)*msg_size);
-        if(msg_str) {
-            msg_size = H5Eget_msg((hid_t)min_num, &error_msg_type, (char *)msg_str, (size_t)msg_size);
-            str = ENVPTR->NewStringUTF(ENVPAR msg_str);
-            free(msg_str);
-        }
-    }
-    else
-        str = NULL;
-    H5Eset_current_stack(stk_id);    
+
+    min_num = (int)getMinorErrorNumber();
+    msg = (char *)H5Eget_minor((H5E_minor_t)min_num);
+    str = ENVPTR->NewStringUTF(ENVPAR msg);
 
     args[0] = (char *)str;
     args[1] = 0;
@@ -456,8 +424,13 @@ jboolean h5libraryError( JNIEnv *env )
     rval = ENVPTR->Throw(ENVPAR (jthrowable) ex );
     if (rval < 0) {
         printf("FATAL ERROR:  h5libraryError: Throw failed\n");
+        if (msg && majnum>=1 &&  minnum > 6) /* do not free for HDF5 1.6. It is static memory in 1.6 */
+            free(msg);
         return JNI_FALSE;
     }
+
+    if (msg && majnum>=1 &&  minnum > 6) /* do not free for HDF5 1.6. It is static memory in 1.6 */
+        free(msg);
 
     return JNI_TRUE;
 }

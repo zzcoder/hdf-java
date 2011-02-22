@@ -10,7 +10,7 @@
 
  ************************************************************/
 
-package examples.datatypes;
+package datatypes;
 
 import java.text.DecimalFormat;
 
@@ -36,7 +36,7 @@ public class H5Ex_T_FloatAttribute {
 		// Initialize data.
 		for (int indx = 0; indx < DIM0; indx++)
 			for (int jndx = 0; jndx < DIM1; jndx++) {
-				dset_data[indx][jndx] = indx / (jndx + 0.5) + jndx;
+				dset_data[indx][jndx] = (double) indx / (jndx + 0.5) + jndx;
 			}
 
 		// Create a new file using default properties.
@@ -54,7 +54,7 @@ public class H5Ex_T_FloatAttribute {
 			if (dataspace_id >= 0) {
 				dataset_id = H5.H5Dcreate(file_id, DATASETNAME,
 						HDF5Constants.H5T_STD_I32LE, dataspace_id,
-						HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+						HDF5Constants.H5P_DEFAULT);
 				H5.H5Sclose(dataspace_id);
 				dataspace_id = -1;
 			}
@@ -149,7 +149,7 @@ public class H5Ex_T_FloatAttribute {
 		// Open an existing dataset.
 		try {
 			if (file_id >= 0)
-				dataset_id = H5.H5Dopen(file_id, DATASETNAME, HDF5Constants.H5P_DEFAULT);
+				dataset_id = H5.H5Dopen(file_id, DATASETNAME);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

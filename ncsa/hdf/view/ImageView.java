@@ -14,28 +14,27 @@
 
 package ncsa.hdf.view;
 
-import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.Image;
 
 /**
  * The image view interface for displaying image object
- * 
+ *
  * @author Peter X. Cao
  * @version 2.4 9/6/2007
  */
-public abstract interface ImageView extends DataView {
-    /**
-     * returns the selected area of the image
-     * 
+public abstract interface ImageView extends DataView
+{
+    /** returns the selected area of the image
      * @return the rectangle of the selected image area.
      */
     public abstract Rectangle getSelectedArea();
 
     /** @return true if the image is a truecolor image. */
-    public abstract boolean isTrueColor();
+    public abstract boolean isTrueColor() ;
 
     /** @return true if the image interlace is plance interlace. */
-    public abstract boolean isPlaneInterlace();
+    public abstract boolean isPlaneInterlace() ;
 
     /** returns array of selected data */
     public abstract Object getSelectedData();
@@ -46,10 +45,10 @@ public abstract interface ImageView extends DataView {
     /** sets the image */
     public abstract void setImage(Image img);
 
-    /** returns the palette of the image */
+    /** returns the palette of the image*/
     public abstract byte[][] getPalette();
 
-    /** sets the image palette */
+    /** sets the image palette*/
     public abstract void setPalette(byte[][] palette);
 
     /** returns the byte array of the image data */

@@ -54,8 +54,7 @@ public class HDFException extends Exception
         HDFerror = err;
     }
 
-    @Override
-	public String getMessage() {
+    public String getMessage() {
         return msg;
     }
 }

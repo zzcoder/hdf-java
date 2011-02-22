@@ -271,8 +271,35 @@ The reason is that the file loaded by the JVM (libjhdf.so) must have all the
 symbols resolved, it cannot require dynamic linking to other libraries. (In
 other words, you have to build a dynamic library that does not depend on
 any other dynamic libraries.<br>
-
+This process is platform and compiler specific, and also very fragile. Unix
+configure and make utilities will automatically detect and use shared libraries,
+so care must be taken to override the default behavior. For this reason,
+the HDF JNI configure requires paths to be specified for all the dependent
+libraries.
+<p> Note, too, that the static libraries may not be installed on every system,
+  it may be necessary to re-install some of the libraries required for the HDF
+  JNI, such as libz.<br>
+  The HDF Java products should build and run on other platforms, but the precise process may be different. 
+<p> There are two important platforms where the HDF Java products are not available.
+  On HPUX,&nbsp; JVM for HPUX will load files built with one specific C++ compiler.
+  HPUX does not support the C interface to JNI, and the C++ compiler will not
+  link to code that was built with a C compiler. &nbsp;Unfortunately, it is
+  not possible to build HDF4 or HDF5 with the required C++ compiler. &nbsp;For
+  this reason, the JNI code can be built, but the HDF libraries cannot be linked
+  or loaded the the JVM. <br>
+  
+  <br>
+  On Macosx, HDF5 is supported but not HDF4. On the macosx, JNI will only link
+  to '.dylib' libraries. Unfortunately, dynamic libraries are not supported
+  for HDF4, so the JNI interface to HDF4 is not available. The HDF5 library
+  does build a 'dylib', and the Java native interface for HDF5 can be built.
+  The Java linker does not resolve all the symbols, e.g. to the libz.dylib.
+  Also, the linker include full paths to the dependent library, i.e., the path
+  on the system where the library is built. Care must be taken to make sure
+  that all the dependent libraries are installed when the HDF native library
+  is installed on a system.<br><hr>
 <h3>Deployment, runtime</h3>
+
 
 <p>
 The Java HDF has two parts, the Java classes and the C libraries. The Java

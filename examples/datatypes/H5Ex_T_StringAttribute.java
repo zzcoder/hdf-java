@@ -10,7 +10,7 @@
 
  ************************************************************/
 
-package examples.datatypes;
+package datatypes;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
@@ -71,7 +71,7 @@ public class H5Ex_T_StringAttribute {
 			if (dataspace_id >= 0) {
 				dataset_id = H5.H5Dcreate(file_id, DATASETNAME,
 						HDF5Constants.H5T_STD_I32LE, dataspace_id,
-						HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+						HDF5Constants.H5P_DEFAULT);
 				H5.H5Sclose(dataspace_id);
 				dataspace_id = -1;
 			}
@@ -195,7 +195,7 @@ public class H5Ex_T_StringAttribute {
 		// Open an existing dataset.
 		try {
 			if (file_id >= 0)
-				dataset_id = H5.H5Dopen(file_id, DATASETNAME, HDF5Constants.H5P_DEFAULT);
+				dataset_id = H5.H5Dopen(file_id, DATASETNAME);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -262,7 +262,7 @@ public class H5Ex_T_StringAttribute {
 				for (int jndx = 0; jndx < sdim; jndx++) {
 					tempbuf[jndx] = dset_data[indx][jndx];
 				}
-				str_data[indx] = new StringBuffer(new String(tempbuf).trim());
+				str_data[indx] = new StringBuffer(new String(tempbuf));
 			}
 		}
 		catch (Exception e) {

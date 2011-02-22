@@ -1393,7 +1393,10 @@ do
   if test "$yyy_opt" != "0"; then
 	  zzz_opt=`echo x$yyy_option | awk '{print index($0,"=")}'`
 	  if test "$yyy_opt" != "$zzz_opt"; then
-					  yyy_optarg=`expr "x$yyy_option" : 'x[^=]*=\(.*\)'`
+	#	AC_MSG_WARN([$yyy_option: option is empty?])
+	#	yyy_ok="maybe"
+	#  else
+		  yyy_optarg=`expr "x$yyy_option" : 'x[^=]*=\(.*\)'`
 		  if test -z "$yyy_optarg"; then
 			echo "$as_me:$LINENO: result: option $yyy_option too long, configure will fail" >&5
 echo "${ECHO_T}option $yyy_option too long, configure will fail" >&6
@@ -1403,7 +1406,7 @@ echo "${ECHO_T}option $yyy_option too long, configure will fail" >&6
   fi
 done
 if test "$yyy_ok" != "yes"; then
-  echo $yyy_ok
+echo $yyy_ok
   { { echo "$as_me:$LINENO: error: expr program doesn't work" >&5
 echo "$as_me: error: expr program doesn't work" >&2;}
    { (exit 1); exit 1; }; }
@@ -3216,25 +3219,29 @@ JSLEXT="so";
 x86_64-pc-linux*) LD=$CC; LDOPT=-shared; SLEXT="so";
 TARGETLIB="linux"
 SLEXT="so";
-LLEXT="a";  JSLEXT="so";
+LLEXT="a";  # the extension for the HDF and other libraries to link to
+JSLEXT="so";
 COPT="-shared -Dx86_64 -fPIC" ;
 ;;
 ia64-pc-linux*) LD=$CC; LDOPT=-shared; SLEXT="so";
 TARGETLIB="linux"
 SLEXT="so";
-LLEXT="a";  JSLEXT="so";
+LLEXT="a";  # the extension for the HDF and other libraries to link to
+JSLEXT="so";
 COPT="-shared -Dia64 -fPIC" ;
 ;;
 *-pc-linux*) LD=$CC; LDOPT=-shared; SLEXT="so";
 TARGETLIB="linux"
 SLEXT="so";
-LLEXT="a";  JSLEXT="so";
+LLEXT="a";  # the extension for the HDF and other libraries to link to
+JSLEXT="so";
 COPT="-shared -DUNIX386" ;
 ;;
 *-freebsd*) LD=$CC; LDOPT=-shared;
 TARGETLIB="freebsd"
 SLEXT="so";
-LLEXT="a";  JSLEXT="so";
+LLEXT="a";  # the extension for the HDF and other libraries to link to
+JSLEXT="so";
 COPT="-shared" ;
 ;;
 *powerpc-apple*)
@@ -3316,7 +3323,8 @@ case "$withval" in
     if test -n "$withval" ; then
         jpeg_lib="`echo $withval |cut -f2 -d, -s`"
 	JPEGLIB=$jpeg_lib"/libjpeg."$LLEXT
-    		HAVE_JPEG="yes"
+    	#AC_MSG_RESULT([jpeg found: $JPEGLIB]);
+	HAVE_JPEG="yes"
     else
 	HAVE_JPEG="no"
     fi
@@ -3358,7 +3366,8 @@ case "$withval" in
 	if test -n "$withval" ; then
 	    sz_lib="`echo $withval |cut -f2 -d, -s`"
 		SZLIB=$sz_lib"/libsz."$LLEXT
-				HAVE_SZIP="yes"
+		#AC_MSG_RESULT([szlib found: $SZLIB]);
+		HAVE_SZIP="yes"
 	else
 	      SZLIB=""
 		HAVE_SZIP="no"
@@ -3390,7 +3399,8 @@ fi;
 
 case "$withval" in
   yes)
-          HDF4LIB=""
+    #AC_MSG_ERROR(HDF4 library needed for compilation.)
+      HDF4LIB=""
 	HAVE_HDF4="no"
     ;;
   no)
@@ -4344,11 +4354,16 @@ echo "$as_me: error: jhdf4 path needed for compilation." >&2;}
    { (exit 1); exit 1; }; }
     ;;
   no)
-        ;;
+    #AC_MSG_ERROR(jhdf4 needed for compilation.)
+	# use default path
+    ;;
   *)
     jhdf_jar="`echo $withval |cut -f1 -d,`"
     if test -n "$jhdf_jar"; then
 	CLASSPATH="$CLASSPATH"":""$jhdf_jar""/jhdf.jar"
+    #else
+        #AC_MSG_ERROR(jhdf.jar needed for compilation.)
+	# use default path...
     fi
     ;;
 esac
@@ -4583,7 +4598,7 @@ if test -d "./test"; then
 ##
 ##  Everything
 ##
-OUTPUT_FILES="$OUTPUT_FILES native/hdf5lib/Makefile test/Makefile test/object/misc/testh4file.sh test/object/misc/testh5file.sh test/object/misc/Makefile test/object/misc/runtests.sh test/hdf5lib/junit.sh test/hdf5lib/Makefile examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile"
+OUTPUT_FILES="$OUTPUT_FILES native/hdf5lib/Makefile test/Makefile test/object/testh4file.sh test/object/testh5file.sh test/object/Makefile test/object/runtests.sh examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile"
 else
 ##
 ##  H4, H5, H45, but NO tests
@@ -4593,7 +4608,7 @@ fi
 else
 if test -d "./test"; then
 ##  Don't use H4toH5 (but do include some tests)
-OUTPUT_FILES="$OUTPUT_FILES test/Makefile test/object/misc/Makefile test/object/misc/testh4file.sh test/object/misc/testh5file.sh test/object/misc/runtests.sh test/object/misc/TestH5Object.sh test/object/misc/TestH5Table.sh test/object/misc/TestH5MemoryLeak.sh test/object/Makefile test/object/unittests.sh test/hdf5lib/junit.sh test/hdf5lib/Makefile examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile examples/runExample.sh"
+OUTPUT_FILES="$OUTPUT_FILES test/linktest/Makefile test/linktest/testlink test/linktest/testh4link test/Makefile test/object/Makefile test/object/testh4file.sh test/object/testh5file.sh test/object/runtests.sh test/h5/TestHDF5.sh test/object/TestH5Object.sh test/object/TestH5Table.sh test/object/TestH5MemoryLeak.sh test/unittests/Makefile test/unittests/unittests.sh examples/Makefile examples/intro/Makefile examples/datasets/Makefile examples/datatypes/Makefile examples/groups/Makefile examples/runExample.sh"
 else
 ##  Don't use H4toH5 (no tests)
 OUTPUT_FILES="$OUTPUT_FILES"
@@ -5573,11 +5588,10 @@ fi
 
 
 if test -d "./test"; then
-chmod +x test/object/misc/TestH5Object.sh
-chmod +x test/object/misc/TestH5Table.sh
-chmod +x test/object/misc/TestH5MemoryLeak.sh
-chmod +x test/object/unittests.sh
-chmod +x test/hdf5lib/junit.sh
+chmod +x test/object/TestH5Object.sh
+chmod +x test/object/TestH5Table.sh
+chmod +x test/object/TestH5MemoryLeak.sh
+chmod +x test/unittests/unittests.sh
 fi
 
 

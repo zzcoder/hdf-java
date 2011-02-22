@@ -14,21 +14,11 @@
 
 package ncsa.hdf.object.fits;
 
-import java.lang.reflect.Array;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
+import ncsa.hdf.object.*;
 
-import ncsa.hdf.object.Attribute;
-import ncsa.hdf.object.Dataset;
-import ncsa.hdf.object.Datatype;
-import ncsa.hdf.object.FileFormat;
-import ncsa.hdf.object.Group;
-import ncsa.hdf.object.HObject;
-import ncsa.hdf.object.ScalarDS;
-import nom.tam.fits.BasicHDU;
-import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCard;
+import java.lang.reflect.Array;
+import nom.tam.fits.*;
 
 /**
  * FitsDataset describes an multi-dimension array of HDF5 scalar or atomic data
@@ -81,8 +71,7 @@ public class FitsDataset extends ScalarDS
      * (non-Javadoc)
      * @see ncsa.hdf.object.Dataset#copy(ncsa.hdf.object.Group, java.lang.String, long[], java.lang.Object)
      */
-    @Override
-	public Dataset copy(Group pgroup, String dstName, long[] dims, Object buff)
+    public Dataset copy(Group pgroup, String dstName, long[] dims, Object buff)
     throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
@@ -92,8 +81,7 @@ public class FitsDataset extends ScalarDS
      * (non-Javadoc)
      * @see ncsa.hdf.object.Dataset#readBytes()
      */
-    @Override
-	public byte[] readBytes() throws Exception {
+    public byte[] readBytes() throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
     }
@@ -102,8 +90,7 @@ public class FitsDataset extends ScalarDS
      * (non-Javadoc)
      * @see ncsa.hdf.object.Dataset#read()
      */
-    @Override
-	public Object read() throws Exception {
+    public Object read() throws Exception {
         Object theData = null;
         Object fitsData = null;
 
@@ -131,8 +118,7 @@ public class FitsDataset extends ScalarDS
      * (non-Javadoc)
      * @see ncsa.hdf.object.Dataset#write(java.lang.Object)
      */
-    @Override
-	public void write(Object buf) throws Exception {
+    public void write(Object buf) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
     }
@@ -203,22 +189,19 @@ public class FitsDataset extends ScalarDS
      * (non-Javadoc)
      * @see ncsa.hdf.object.HObject#open()
      */
-    @Override
-	public int open() { return -1;}
+    public int open() { return -1;}
 
     /*
      * (non-Javadoc)
      * @see ncsa.hdf.object.HObject#close(int)
      */
-    @Override
-	public void close(int did) {}
+    public void close(int did) {}
 
     /*
      * (non-Javadoc)
      * @see ncsa.hdf.object.Dataset#init()
      */
-    @Override
-	public void init() {
+    public void init() {
         if (nativeDataset == null) {
             return;
         }
@@ -284,8 +267,7 @@ public class FitsDataset extends ScalarDS
      * (non-Javadoc)
      * @see ncsa.hdf.object.ScalarDS#getPalette()
      */
-    @Override
-	public byte[][] getPalette()
+    public byte[][] getPalette()
     {
         if (palette == null) {
             palette = readPalette(0);
@@ -298,8 +280,7 @@ public class FitsDataset extends ScalarDS
      * (non-Javadoc)
      * @see ncsa.hdf.object.ScalarDS#readPalette(int)
      */
-    @Override
-	public byte[][] readPalette(int idx) {
+    public byte[][] readPalette(int idx) {
         return null;
     }
 
@@ -332,8 +313,7 @@ public class FitsDataset extends ScalarDS
      * (non-Javadoc)
      * @see ncsa.hdf.object.ScalarDS#getPaletteRefs()
      */
-    @Override
-	public byte[] getPaletteRefs() {
+    public byte[] getPaletteRefs() {
         return null;
     }
 
@@ -341,8 +321,7 @@ public class FitsDataset extends ScalarDS
      * (non-Javadoc)
      * @see ncsa.hdf.object.Dataset#getDatatype()
      */
-    @Override
-	public Datatype getDatatype() {
+    public Datatype getDatatype() {
         if (datatype == null) {
             try {datatype = new FitsDatatype(nativeDataset.getBitPix());}
             catch (Exception ex) {}
@@ -355,8 +334,7 @@ public class FitsDataset extends ScalarDS
      * (non-Javadoc)
      * @see ncsa.hdf.object.HObject#setName(java.lang.String)
      */
-    @Override
-	public void setName (String newName) throws Exception {
+    public void setName (String newName) throws Exception {
         // not supported
         throw new UnsupportedOperationException("Unsupported operation for NetCDF.");
     }
@@ -396,9 +374,4 @@ public class FitsDataset extends ScalarDS
 
         return offset;
     }
-
-    //Implementing DataFormat
-	public List getMetadata(int... attrPropList) throws Exception {
-		throw new UnsupportedOperationException("getMetadata(int... attrPropList) is not supported");	
-	}
 }

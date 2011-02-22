@@ -14,11 +14,8 @@
 
 package ncsa.hdf.object.fits;
 
-import java.util.List;
-
-import ncsa.hdf.object.Datatype;
-import ncsa.hdf.object.HObject;
-import nom.tam.fits.BasicHDU;
+import ncsa.hdf.object.*;
+import nom.tam.fits.*;
 
 /**
  * Datatype encapsulates information of a datatype.
@@ -126,8 +123,7 @@ public class FitsDatatype extends Datatype
      * <p>
      * @param nativeID the fits native datatype.
      */
-    @Override
-	public void fromNative(int dtype)
+    public void fromNative(int dtype)
     {
         switch (dtype) {
             case BasicHDU.BITPIX_BYTE:
@@ -158,8 +154,7 @@ public class FitsDatatype extends Datatype
     }
 
     // implementing Datatype
-    @Override
-	public String getDatatypeDescription() {
+    public String getDatatypeDescription() {
         String description = "Unknown data type.";
 
         switch (nativeType) {
@@ -198,14 +193,12 @@ public class FitsDatatype extends Datatype
     }
 
     // implementing Datatype
-    @Override
-	public boolean isUnsigned() {
+    public boolean isUnsigned() {
         return false;
     }
 
     // implementing Datatype
-    @Override
-	public int toNative() {
+    public int toNative() {
         if (datatypeClass == CLASS_INTEGER) {
             if (datatypeSize == 1) {
                 nativeType = BasicHDU.BITPIX_BYTE;
@@ -231,11 +224,5 @@ public class FitsDatatype extends Datatype
      * (non-Javadoc)
      * @see ncsa.hdf.object.Datatype#close(int)
      */
-    @Override
-	public void close(int id) {;}
-
-  //Implementing DataFormat
-	public List getMetadata(int... attrPropList) throws Exception {
-		throw new UnsupportedOperationException("getMetadata(int... attrPropList) is not supported");
-	}    
+    public void close(int id) {;}    
 }

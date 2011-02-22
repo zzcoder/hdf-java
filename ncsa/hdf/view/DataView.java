@@ -14,7 +14,7 @@
 
 package ncsa.hdf.view;
 
-import ncsa.hdf.object.HObject;
+import ncsa.hdf.object.*;
 
 /**
  * The data view interface for displaying data object

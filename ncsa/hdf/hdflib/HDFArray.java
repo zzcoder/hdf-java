@@ -290,7 +290,7 @@ public Object arrayify(byte[] bytes) throws HDFException {
         /* 2 data copies here! */
         try {
         if (ArrayDescriptor.NT == 'I') {
-            int [] x = ncsa.hdf.hdflib.HDFNativeData.byteToInt(_barray);
+            int [] x = (int [])ncsa.hdf.hdflib.HDFNativeData.byteToInt(_barray);
             System.arraycopy(x,0,_theArray,0,ArrayDescriptor.dimlen[1]);
             return _theArray;
         } else if (ArrayDescriptor.NT == 'S') {
@@ -349,7 +349,7 @@ public Object arrayify(byte[] bytes) throws HDFException {
         }
         } catch (OutOfMemoryError err) {
          HDFException ex =
-            new HDFJavaException("HDFArray: arrayify array too big?");
+            (HDFException)new HDFJavaException("HDFArray: arrayify array too big?");
             ex.printStackTrace();
             throw(ex);
         }

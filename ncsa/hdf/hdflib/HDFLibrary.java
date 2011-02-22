@@ -11,7 +11,7 @@
 
 package ncsa.hdf.hdflib;
 
-import java.io.File;
+import java.io.*;
 
 /**
  *  This is the Java interface for the HDF 4.1 library.
@@ -394,6 +394,8 @@ public class HDFLibrary
     public static native int ANcreate(int an_id, short tag, short ref, int type) throws HDFException;
 
     public static native int ANcreatef(int an_id, int type) throws HDFException;
+
+    public static native boolean ANdestroy() throws HDFException;
 
     /**
      *  @param an_id <b>IN</b>: the AN interface id, returned by ANstart

@@ -14,58 +14,20 @@
 
 package ncsa.hdf.view;
 
-import java.awt.BorderLayout;
+import ncsa.hdf.object.*;
+
+import javax.swing.*;
+import javax.swing.text.Position;
+import javax.swing.tree.*;
+import java.util.*;
+import java.io.*;
+import java.lang.reflect.*;
 import java.awt.Component;
-import java.awt.Cursor;
+import java.awt.BorderLayout;
+import java.awt.Event;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.Serializable;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.BitSet;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
-import javax.swing.Icon;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JSeparator;
-import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-
-import ncsa.hdf.object.CompoundDS;
-import ncsa.hdf.object.Dataset;
-import ncsa.hdf.object.Datatype;
-import ncsa.hdf.object.FileFormat;
-import ncsa.hdf.object.Group;
-import ncsa.hdf.object.HObject;
-import ncsa.hdf.object.ScalarDS;
-import ncsa.hdf.view.ViewProperties.DATA_VIEW_KEY;
+import java.awt.event.*;
+import java.awt.Cursor;
 
 /**
  *
@@ -104,7 +66,7 @@ public class DefaultTreeView extends JPanel
     private final DefaultTreeModel treeModel;
 
     /** A list open files. */
-    private final List<FileFormat> fileList;
+    private final List fileList;
 
     private final Toolkit toolkit;
 
@@ -127,53 +89,39 @@ public class DefaultTreeView extends JPanel
      * The popup menu used to display user choice of actions on data object.
      */
     private final JPopupMenu popupMenu;
-    
-    private JSeparator separator;
 
     /** a list of editing GUI components */
-    private List<JMenuItem> editGUIs;
+    private List editGUIs;
 
     /** the list of current selected objects */
-    private List<Object> objectsToCopy;
+    private List objectsToCopy;
 
-    private JMenuItem addTableMenuItem, addDatasetMenuItem;
+    private JMenuItem addTableMenuItem;
 
     private JMenuItem addDatatypeMenuItem;
 
     private JMenuItem addLinkMenuItem;
     
-    private JMenuItem setLibVerBoundsItem;
-    
     private String currentSearchPhrase = null;
-    
-    private boolean moveFlag;
-    
-    private TreePath[] currentSelectionsForMove ;
 
     public DefaultTreeView(ViewManager theView) {
         viewer = theView;
-        
+
         root = new DefaultMutableTreeNode() {
         	public static final long serialVersionUID = HObject.serialVersionUID;
 
             public boolean isLeaf() { return false; }
         };
 
-        fileList = new Vector<FileFormat>();
+        fileList = new Vector();
         toolkit = Toolkit.getDefaultToolkit();
-        editGUIs = new Vector<JMenuItem>();
+        editGUIs = new Vector();
         objectsToCopy = null;
         isDefaultDisplay = true;
         selectedTreePath = null;
         selectedNode = null;
-        moveFlag = false;
-        currentSelectionsForMove= null;
 
-        addDatasetMenuItem = new JMenuItem( "Dataset", ViewProperties.getDatasetIcon());
-        addDatasetMenuItem.addActionListener(this);
-        addDatasetMenuItem.setActionCommand("Add dataset");
-
-        addTableMenuItem = new JMenuItem( "Compound DS", ViewProperties.getTableIcon());
+        addTableMenuItem = new JMenuItem( "Table", ViewProperties.getTableIcon());
         addTableMenuItem.addActionListener(this);
         addTableMenuItem.setActionCommand("Add table");
 
@@ -184,10 +132,6 @@ public class DefaultTreeView extends JPanel
         addLinkMenuItem = new JMenuItem( "Link", ViewProperties.getLinkIcon());
         addLinkMenuItem.addActionListener(this);
         addLinkMenuItem.setActionCommand("Add link");
-        
-        setLibVerBoundsItem = new JMenuItem( "Set Lib version bounds");
-        setLibVerBoundsItem.addActionListener(this);
-        setLibVerBoundsItem.setActionCommand("Set Lib version bounds");
 
         // initialize the tree and root
         treeModel = new DefaultTreeModel(root);
@@ -200,12 +144,9 @@ public class DefaultTreeView extends JPanel
         //tree.setShowsRootHandles(true);
         int rowheight = 23 + (int)((tree.getFont().getSize()-12)*0.5);
         tree.setRowHeight(rowheight);
-       
-        // create the separator
-        separator= new JPopupMenu.Separator();
         
         // create the popupmenu
-        popupMenu = createPopupMenu();       
+        popupMenu = createPopupMenu();
 
         // reset the scroll increament
         // layout GUI component
@@ -238,10 +179,10 @@ public class DefaultTreeView extends JPanel
 
         // find the file by matching its file name and close the file
         FileFormat theFile = null;
-        Iterator<FileFormat> iterator = fileList.iterator();
+        Iterator iterator = fileList.iterator();
         while(iterator.hasNext())
         {
-            theFile = iterator.next();
+            theFile = (FileFormat)iterator.next();
             if (theFile.getFilePath().equals(filename))
             {
                 isOpen = true;
@@ -281,7 +222,10 @@ public class DefaultTreeView extends JPanel
         item.setActionCommand("Add group");
         newOjbectMenu.add(item);
 
-        newOjbectMenu.add(addDatasetMenuItem);
+        item = new JMenuItem( "Dataset", ViewProperties.getDatasetIcon());
+        item.addActionListener(this);
+        item.setActionCommand("Add dataset");
+        newOjbectMenu.add(item);
 
         item = new JMenuItem( "Image", ViewProperties.getImageIcon());
         item.addActionListener(this);
@@ -311,13 +255,6 @@ public class DefaultTreeView extends JPanel
         item.setMnemonic(KeyEvent.VK_D);
         item.addActionListener(this);
         item.setActionCommand("Cut object");
-        menu.add(item);
-        editGUIs.add(item);
-        
-        item = new JMenuItem( "Cut");
-        item.setMnemonic(KeyEvent.VK_T);
-        item.addActionListener(this);
-        item.setActionCommand("Move object");
         menu.add(item);
         editGUIs.add(item);
 
@@ -380,9 +317,6 @@ public class DefaultTreeView extends JPanel
         item.addActionListener(this);
         item.setActionCommand("Close file");
         menu.add(item);
-        
-        menu.add(separator);
-        menu.add(setLibVerBoundsItem);
 
         return menu;
     }
@@ -408,9 +342,8 @@ public class DefaultTreeView extends JPanel
             popupMenu.getComponent(5).setEnabled(state); // "Copy" menuitem
             popupMenu.getComponent(6).setEnabled(isWritable); // "Paste" menuitem
             popupMenu.getComponent(7).setEnabled(state && isWritable); // "Delete" menuitem
-            popupMenu.getComponent(10).setEnabled(state); // "save to" menuitem
-            popupMenu.getComponent(11).setEnabled(state && isWritable); // "rename" menuitem
-            popupMenu.getComponent(8).setEnabled((selectedObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5)))&& state && isWritable); // "cut" menuitem
+            popupMenu.getComponent(9).setEnabled(state); // "save to" menuitem
+            popupMenu.getComponent(10).setEnabled(state && isWritable); // "rename" menuitem
         }
         else {
             popupMenu.getComponent(0).setEnabled(true);
@@ -418,49 +351,35 @@ public class DefaultTreeView extends JPanel
             popupMenu.getComponent(5).setEnabled(true); // "Copy" menuitem
             popupMenu.getComponent(6).setEnabled(isWritable); // "Paste" menuitem
             popupMenu.getComponent(7).setEnabled(isWritable); // "Delete" menuitem
-            popupMenu.getComponent(10).setEnabled(true); // "save to" menuitem
-            popupMenu.getComponent(11).setEnabled(isWritable); // "rename" menuitem
-            popupMenu.getComponent(8).setEnabled((selectedObject.getFileFormat().isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5))) && isWritable); // "cut" menuitem
+            popupMenu.getComponent(9).setEnabled(true); // "save to" menuitem
+            popupMenu.getComponent(10).setEnabled(isWritable); // "rename" menuitem
         }
 
         // adding table is only supported by HDF5
         if ((selectedFile != null) &&
             selectedFile.isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5)))
         {
-            addDatasetMenuItem.setText("Dataset");
             addTableMenuItem.setVisible(true);
             addDatatypeMenuItem.setVisible(true);
             addLinkMenuItem.setVisible(true);
-            if ((selectedObject instanceof Group)){
-            	boolean state = (((Group)selectedObject).isRoot());
-            	separator.setVisible(isWritable && state);
-            	setLibVerBoundsItem.setVisible(isWritable && state); //added only if it is HDF5format, iswritable & isroot
-            }
-            else{
-            	separator.setVisible(false);
-            	setLibVerBoundsItem.setVisible(false);
-            }
         } else
         {
-            addDatasetMenuItem.setText("SDS");
             addTableMenuItem.setVisible(false);
             addDatatypeMenuItem.setVisible(false);
             addLinkMenuItem.setVisible(false);
-            separator.setVisible(false);
-            setLibVerBoundsItem.setVisible(false);
         }
 
         popupMenu.show((JComponent)e.getSource(), x, y);
     }
 
     /** disable/enable GUI components */
-    private static void setEnabled(List<JMenuItem> list, boolean b)
+    private static void setEnabled(List list, boolean b)
     {
         Component item = null;
-        Iterator<JMenuItem> it = list.iterator();
+        Iterator it = list.iterator();
         while (it.hasNext())
         {
-            item = it.next();
+            item = (Component)it.next();
             item.setEnabled(b);
         }
     }
@@ -546,7 +465,7 @@ public class DefaultTreeView extends JPanel
         try { bo.close(); } catch (Exception ex ) {}
 
         try {
-            openFile(filename, FileFormat.WRITE);
+            FileFormat newFile = openFile(filename, FileFormat.WRITE);
         } catch (Exception ex) {
             toolkit.beep();
             JOptionPane.showMessageDialog(
@@ -598,7 +517,7 @@ public class DefaultTreeView extends JPanel
         String filename = dialog.getFile();
 
         int n = root.getChildCount();
-        Vector<Object> objList = new Vector<Object>(n);
+        Vector objList = new Vector(n);
         DefaultMutableTreeNode node = null;
         for (int i=0; i<n; i++)
         {
@@ -631,8 +550,8 @@ public class DefaultTreeView extends JPanel
         Group srcGroup = (Group) ((DefaultMutableTreeNode)root).getUserObject();
         Group dstGroup = (Group) ((DefaultMutableTreeNode)newFile.getRootNode()).getUserObject();
         Object[] parameter = new Object[2];
-        Class<?> classHOjbect = null;
-        Class<?>[] parameterClass = new Class[2];
+        Class classHOjbect = null;
+        Class[] parameterClass = new Class[2];
         Method method = null;
 
         // copy attributes of the root group
@@ -673,44 +592,11 @@ public class DefaultTreeView extends JPanel
     private void copyObject()
     {
         objectsToCopy = getSelectedObjects();
-        moveFlag = false;
-    }
-    
-    /** move selected objects */
-    private void moveObject()
-    { 	      
-    	 objectsToCopy = getSelectedObjects();
-         moveFlag = true;
-         currentSelectionsForMove = tree.getSelectionPaths();      
     }
 
     /** paste selected objects */
     private void pasteObject()
     {
-        
-    	if(moveFlag==true){
-    		HObject theObj = null;
-            for (int i=0; i< currentSelectionsForMove.length; i++) {
-                DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) (currentSelectionsForMove[i].getLastPathComponent());
-                theObj = (HObject)currentNode.getUserObject();
-
-                if (isObjectOpen(theObj)) {
-                    toolkit.beep();
-                    JOptionPane.showMessageDialog(
-                        this,
-                        "Cannot move the selected object: "+theObj+
-                        "\nThe dataset or dataset in the group is in use."+
-                        "\n\nPlease close the dataset(s) and try again.\n",
-                         "HDFView",
-                        JOptionPane.ERROR_MESSAGE);
-                    moveFlag = false;
-                    currentSelectionsForMove = null;
-                    objectsToCopy = null;
-                    return;
-                }
-            }
-    	}
-    	
         TreeNode pnode = selectedNode;
 
         if ((objectsToCopy == null) ||
@@ -765,21 +651,6 @@ public class DefaultTreeView extends JPanel
             return;
         }
 
-        if(moveFlag==true){
-        	 if(srcFile!=dstFile){
-                 toolkit.beep();
-                 JOptionPane.showMessageDialog(
-                     this,
-                     "Cannot move the selected object to different file",
-                      "HDFView",
-                     JOptionPane.ERROR_MESSAGE);
-                 moveFlag = false;
-                 currentSelectionsForMove = null;
-                 objectsToCopy = null;
-                 return;
-             }
-        }
-        
         if (pnode.isLeaf()) {
             pnode = pnode.getParent();
         }
@@ -799,24 +670,12 @@ public class DefaultTreeView extends JPanel
 
         msg += "Do you want to copy the selected object(s) to \nGroup: "+
             fullPath + "\nFile: "+ dstFile.getFilePath();
-   
-        int op = -1;
-        if(moveFlag ==true){
-        	String moveMsg = "Do you want to paste the selected object(s) to \nGroup: "+
-            fullPath + "\nFile: "+ dstFile.getFilePath();
-        	op = JOptionPane.showConfirmDialog(this,
-        			moveMsg,
-                    "Copy object",
-                    JOptionPane.YES_NO_OPTION,
-                    msgType);
-        }
-        else {
-        	op = JOptionPane.showConfirmDialog(this,
-        			msg,
-        			"Copy object",
-        			JOptionPane.YES_NO_OPTION,
-        			msgType);
-        }
+
+        int op = JOptionPane.showConfirmDialog(this,
+            msg,
+            "Copy object",
+            JOptionPane.YES_NO_OPTION,
+            msgType);
 
         if (op == JOptionPane.NO_OPTION) {
             return;
@@ -825,16 +684,10 @@ public class DefaultTreeView extends JPanel
         pasteObject(objectsToCopy, pnode, dstFile);
 
         //objectsToCopy = null;
-        if(moveFlag==true){
-        	removeSelectedObjects();
-        	moveFlag = false;
-        	currentSelectionsForMove = null;
-            objectsToCopy = null;
-        }
     }
 
     /** paste selected objects */
-    private void pasteObject(List<Object> objList, TreeNode pnode, FileFormat dstFile)
+    private void pasteObject(List objList, TreeNode pnode, FileFormat dstFile)
     {
         if ((objList == null) ||
             (objList.size() <=0) ||
@@ -842,12 +695,12 @@ public class DefaultTreeView extends JPanel
             return;
         }
 
-        ((HObject)objList.get(0)).getFileFormat();
+        FileFormat srcFile = ((HObject)objList.get(0)).getFileFormat();
         Group pgroup = (Group)((DefaultMutableTreeNode)pnode).getUserObject();
 
         HObject theObj=null;
         TreeNode newNode = null;
-        Iterator<Object> iterator = objList.iterator();
+        Iterator iterator = objList.iterator();
         while (iterator.hasNext())
         {
             newNode = null;
@@ -917,23 +770,20 @@ public class DefaultTreeView extends JPanel
         }
 
         TreePath[] currentSelections = tree.getSelectionPaths();
-        
-        if(moveFlag==true){
-        	currentSelections = currentSelectionsForMove;
-        }
         if ((currentSelections == null) || (currentSelections.length <=0)) {
             return;
         }
-        if(moveFlag !=true){
-        	int op = JOptionPane.showConfirmDialog(this,
-        			"Do you want to remove all the selected object(s) ?",
-        			"Remove object",
-        			JOptionPane.YES_NO_OPTION);
 
-        	if (op == JOptionPane.NO_OPTION) {
-        		return;
-        	}
+        int op = JOptionPane.showConfirmDialog(this,
+            "Do you want to remove all the selected object(s) ?",
+            "Remove object",
+            JOptionPane.YES_NO_OPTION);
+
+        if (op == JOptionPane.NO_OPTION) {
+            return;
         }
+
+        String frameName = "";
         HObject theObj = null;
         for (int i=0; i< currentSelections.length; i++) {
             DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) (currentSelections[i].getLastPathComponent());
@@ -953,18 +803,16 @@ public class DefaultTreeView extends JPanel
                 }
             }
 
-            if(moveFlag !=true){
-            	if (isObjectOpen(theObj)) {
-            		toolkit.beep();
-            		JOptionPane.showMessageDialog(
-            				this,
-            				"Cannot delete the selected object: "+theObj+
-            				"\nThe dataset or dataset in the group is in use."+
-            				"\n\nPlease close the dataset(s) and try again.\n",
-            				"HDFView",
-            				JOptionPane.ERROR_MESSAGE);
-            		continue;
-            	}
+            if (isObjectOpen(theObj)) {
+                toolkit.beep();
+                JOptionPane.showMessageDialog(
+                    this,
+                    "Cannot delete the selected object: "+theObj+
+                    "\nThe dataset or dataset in the group is in use."+
+                    "\n\nPlease close the dataset(s) and try again.\n",
+                     "HDFView",
+                    JOptionPane.ERROR_MESSAGE);
+                continue;
             }
 
             try {
@@ -1015,7 +863,7 @@ public class DefaultTreeView extends JPanel
 
         if (obj instanceof Group) {
             Group g = (Group) obj;
-            List<?> members = g.getMemberList();
+            List members = g.getMemberList();
             if ((members == null) || (members.size() == 0)) {
                 isOpen = false;
             } else {
@@ -1045,15 +893,15 @@ public class DefaultTreeView extends JPanel
      * at this node in breadth-first order..
      * @param node the node to start with.
      */
-    private final List<Object> breadthFirstUserObjects(TreeNode node)
+    private final List breadthFirstUserObjects(TreeNode node)
     {
         if (node == null) {
             return null;
         }
 
-        Vector<Object> list = new Vector<Object>();
+        Vector list = new Vector();
         DefaultMutableTreeNode theNode = null;
-        Enumeration<?> local_enum = ((DefaultMutableTreeNode)node).breadthFirstEnumeration();
+        Enumeration local_enum = ((DefaultMutableTreeNode)node).breadthFirstEnumeration();
         while(local_enum.hasMoreElements())
         {
             theNode = (DefaultMutableTreeNode)local_enum.nextElement();
@@ -1105,7 +953,7 @@ public class DefaultTreeView extends JPanel
         HObject obj = null;
         String theName = null;
         DefaultMutableTreeNode theNode = null;
-        Enumeration<?> local_enum = node.breadthFirstEnumeration();
+        Enumeration local_enum = node.breadthFirstEnumeration();
         while(local_enum.hasMoreElements())
         {
             theNode = (DefaultMutableTreeNode)local_enum.nextElement();
@@ -1155,7 +1003,7 @@ public class DefaultTreeView extends JPanel
             return parent;
 
         if (theNode.getChildCount() >= 0) {
-            for (Enumeration<?> e = theNode.children(); e.hasMoreElements();) {
+            for (Enumeration e = theNode.children(); e.hasMoreElements();) {
                 TreeNode n = (TreeNode) e.nextElement();
                 TreePath path = parent.pathByAddingChild(n);
                 TreePath result = getTreePath(path, node, depth + 1);
@@ -1440,54 +1288,6 @@ public class DefaultTreeView extends JPanel
         }
     }
 
-    private void setLibVersionBounds(){
-		Object[] lowValues = { "Earliest", "Latest" };
-		Object[] highValues= { "Latest" };
-		JComboBox lowComboBox  = new JComboBox(lowValues);
-		JComboBox highComboBox  = new JComboBox(highValues);
- 
-		Object[] msg = {"Earliest Version:",lowComboBox,"Latest Version:", highComboBox};
-		Object[] options = {"Ok", "Cancel"};
-		JOptionPane op = new JOptionPane(
-			msg,
-			JOptionPane.PLAIN_MESSAGE,
-			JOptionPane.OK_CANCEL_OPTION,
-			null,
-			options);
- 
-		JDialog dialog = op.createDialog(this, "Set the library version bounds: ");
-		dialog.setVisible(true);
- 
-		String result = null;
-		try {
-			result = (String)op.getValue();		
-			}
-		catch(Exception err){
-			//err.printStackTrace();
-		}
- 
-		if((result!=null) && (result.equals("Ok"))){
-			int low = -1;
-			int high = 1;
-			if((lowComboBox.getSelectedItem()).equals("Earliest"))
-				low = 0;
-			else 
-				low = 1;
-			try {
-				selectedObject.getFileFormat().setLibBounds(low,high);
-			} catch (Throwable err) {
-				toolkit.beep();
-				JOptionPane.showMessageDialog(this,
-						err,
-						"Error when setting lib version bounds",
-						JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-		}
-		else
-			return;    	   	
-    }
-    
     // Implementing java.io.ActionListener
     public void actionPerformed(ActionEvent e)
     {
@@ -1542,9 +1342,6 @@ public class DefaultTreeView extends JPanel
         else if (cmd.equals("Cut object")) {
             removeSelectedObjects();
         }
-        else if (cmd.equals("Move object")) {
-            moveObject();
-        }
         else if (cmd.equals("Save object to file")) {
             if (selectedObject == null) {
                 return;
@@ -1591,7 +1388,7 @@ public class DefaultTreeView extends JPanel
                     "HDFView",
                     JOptionPane.ERROR_MESSAGE);
             }
-            List<Object> objList = new Vector<Object>(2);
+            List objList = new Vector(2);
             objList.add(selectedObject);
             pasteObject(objList, dstFile.getRootNode(), dstFile);
         }
@@ -1606,7 +1403,7 @@ public class DefaultTreeView extends JPanel
             }
 
             try {
-                showMetaData(selectedObject);
+                MetaDataView theView = showMetaData(selectedObject);
             }
             catch (Exception ex) {
                 toolkit.beep();
@@ -1648,11 +1445,7 @@ public class DefaultTreeView extends JPanel
                 tree.collapseRow(row);
                 row--;
             }
-        }   
-        
-        else if (cmd.startsWith("Set Lib version bounds")) {       	
-        	setLibVersionBounds();
-        }
+        }        
     }
 
     /**
@@ -1679,6 +1472,7 @@ public class DefaultTreeView extends JPanel
     {
         FileFormat fileFormat = null;
         MutableTreeNode fileRoot = null;
+        String msg = "";
 
         if (isFileOpen(filename))
         {
@@ -1696,7 +1490,7 @@ public class DefaultTreeView extends JPanel
             accessID = FileFormat.READ;
         }
 
-        Enumeration<?> keys = FileFormat.getFileFormatKeys();
+        Enumeration keys = FileFormat.getFileFormatKeys();
 
         String theKey = null;
         while (keys.hasMoreElements())
@@ -1743,23 +1537,9 @@ public class DefaultTreeView extends JPanel
 
         ((JFrame)viewer).setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try {
-        	fileFormat.setMaxMembers(ViewProperties.getMaxMembers());
-        	fileFormat.setStartMembers(ViewProperties.getStartMembers());
-
-        	//--------For the feature:To display groups in creation order
-        	//            if(fileFormat.isThisType(FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5))){
-        	//            	String idxType = ViewProperties.getIndexType();
-        	//            	int indxType = 0;
-        	//            	if(idxType.equals("alphabetical"))
-        	//            		indxType = 0;
-        	//            	else if(idxType.equals("creation"))
-        	//            		indxType = 1;
-        	//
-        	//            	fileFormat.open(indxType);
-        	//            }
-        	//            else
-
-        	fileFormat.open();
+            fileFormat.setMaxMembers(ViewProperties.getMaxMembers());
+            fileFormat.setStartMembers(ViewProperties.getStartMembers());
+            fileFormat.open();
         } finally {
             ((JFrame)viewer).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
@@ -1792,7 +1572,7 @@ public class DefaultTreeView extends JPanel
         // find the file node in the tree and removed it from the tree first
         FileFormat theFile = null;
         DefaultMutableTreeNode theNode = null;
-        Enumeration<?> enumeration = root.children();
+        Enumeration enumeration = root.children();
         while(enumeration.hasMoreElements())
         {
             theNode = (DefaultMutableTreeNode)enumeration.nextElement();
@@ -1842,7 +1622,7 @@ public class DefaultTreeView extends JPanel
         }
 
         // write the change of the data into file before save the file
-        List<?> views = ((HDFView)viewer).getDataViews();
+        List views = ((HDFView)viewer).getDataViews();
         Object theView = null;
         TableView tableView = null;
         TextView textView = null;
@@ -1900,13 +1680,13 @@ public class DefaultTreeView extends JPanel
      *
      * @return a list of selected object in the tree.
      */
-    public List<Object> getSelectedObjects() {
+    public List getSelectedObjects() {
         TreePath[] paths = tree.getSelectionPaths();
         if ((paths == null) || (paths.length <=0)) {
             return null;
         }
 
-        List<Object> objs = new Vector<Object>(paths.length);
+        List objs = new Vector(paths.length);
         HObject theObject=null, parentObject;
         DefaultMutableTreeNode currentNode=null, parentNode=null;
         for (int i=0; i<paths.length; i++)
@@ -1944,7 +1724,6 @@ public class DefaultTreeView extends JPanel
     public DataView showDataContent(HObject dataObject)
         throws Exception
     {
-    	
         if ((dataObject == null) ||!(dataObject instanceof Dataset)) {
             return null; // can only display dataset
         }
@@ -1958,7 +1737,7 @@ public class DefaultTreeView extends JPanel
         boolean isImage = ((d instanceof ScalarDS) && ((ScalarDS)d).isImage());
         boolean isDisplayTypeChar = false;
         boolean isTransposed = false;
-        BitSet bitmask = null;
+        //BitSet bitmask = null;
         String dataViewName = null;
 
         JInternalFrame theFrame = (JInternalFrame)viewer.getDataView(d);
@@ -1997,11 +1776,11 @@ public class DefaultTreeView extends JPanel
             isDisplayTypeChar = dialog.isDisplayTypeChar();
             dataViewName = dialog.getDataViewName();
             isTransposed = dialog.isTransposed();
-            bitmask = dialog.getBitmask();
+            //bitmask = dialog.getBitmask();
         }
 
         // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
-        Class<?> theClass = null;
+        Class theClass = null;
         try { theClass = Class.forName(dataViewName); }
         catch (Exception ex) { 
         	try {
@@ -2022,66 +1801,49 @@ public class DefaultTreeView extends JPanel
 
         Object theView = null;
         Object[] initargs = {viewer};
-        HashMap<DATA_VIEW_KEY, Serializable> map = new HashMap<DATA_VIEW_KEY, Serializable>(4);
-        if (bitmask != null) {
-            map.put(ViewProperties.DATA_VIEW_KEY.BITMASK, bitmask);
-
-            // create a copy of dataset
-            ScalarDS d_copy = null;
-            Constructor<? extends Dataset> constructor = null;
-            Object[] paramObj = null;
-            try {
-                Class<?>[] paramClass = { FileFormat.class, String.class,
-                        String.class, long[].class};
-                constructor = d.getClass().getConstructor(paramClass);
-                
-                paramObj = new Object[] { d.getFileFormat(), d.getName(),
-                        d.getPath() , d.getOID()};
-            }
-            catch (Exception ex) {
-                constructor = null;
-            }
-
-            try {
-               d_copy = (ScalarDS) constructor.newInstance(paramObj);
-            }
-            catch (Exception ex) {
-                d_copy = null;
-            }
-            if (d_copy != null) {
-                try {
-                    d_copy.init();
-                    int rank = d.getRank();
-                    System.arraycopy(d.getDims(), 0, d_copy.getDims(), 0, rank);
-                    System.arraycopy(d.getStartDims(), 0,
-                            d_copy.getStartDims(), 0, rank);
-                    System.arraycopy(d.getSelectedDims(), 0, d_copy
-                            .getSelectedDims(), 0, rank);
-                    System.arraycopy(d.getStride(), 0, d_copy.getStride(), 0,
-                            rank);
-                    System.arraycopy(d.getSelectedIndex(), 0, d_copy
-                            .getSelectedIndex(), 0, 3);
-                }
-                catch (Throwable ex) {
-                	ex.printStackTrace();
-                }
-
-                map.put(ViewProperties.DATA_VIEW_KEY.OBJECT, d_copy);
-            }
-        }
         if (dataViewName.startsWith("ncsa.hdf.view.DefaultTableView")) {
-        	map.put(ViewProperties.DATA_VIEW_KEY.CHAR, new Boolean(isDisplayTypeChar));
-        	map.put(ViewProperties.DATA_VIEW_KEY.TRANSPOSED, new Boolean(isTransposed));   
-        	Object[] tmpargs = { viewer, map };
+            
+            HashMap map = new HashMap(4);
+            map.put(ViewProperties.DATA_VIEW_KEY.CHAR, new Boolean(isDisplayTypeChar));
+            map.put(ViewProperties.DATA_VIEW_KEY.TRANSPOSED, new Boolean(isTransposed));
+//            if (bitmask != null) {
+//                map.put(ViewProperties.DATA_VIEW_KEY.BITMASK, bitmask);
+//
+//                // create a copy of dataset
+//                ScalarDS d_copy = null;
+//                Constructor constructor = null;
+//                Object[] paramObj = null;
+//                try {
+//                    Class[] paramClass = {FileFormat.class, String.class, String.class};
+//                    constructor = d.getClass().getConstructor(paramClass);
+//                    paramObj = new Object[] {d.getFileFormat(), d.getName(), d.getPath()};
+//                } catch (Exception ex) { constructor = null; }
+//
+//                try { d_copy = (ScalarDS)constructor.newInstance(paramObj); }
+//                catch (Exception ex) { d_copy = null; }
+//                if (d_copy!= null) {
+//                    try {
+//                        d_copy.init();
+//                        int rank = d.getRank();
+//                        System.arraycopy(d.getDims(), 0, d_copy.getDims(), 0, rank);
+//                        System.arraycopy(d.getStartDims(), 0, d_copy.getStartDims(), 0, rank);
+//                        System.arraycopy(d.getSelectedDims(), 0, d_copy.getSelectedDims(), 0, rank);
+//                        System.arraycopy(d.getStride(), 0, d_copy.getStride(), 0, rank);
+//                        System.arraycopy(d.getSelectedIndex(), 0, d_copy.getSelectedIndex(), 0, 3);
+//                    } catch (Throwable ex) {}
+//
+//                    map.put(ViewProperties.DATA_VIEW_KEY.OBJECT, d_copy);
+//                }
+//            }
+            
+            Object[] tmpargs = {viewer, map};
             initargs = tmpargs;
         }
         else if (dataViewName.startsWith("ncsa.hdf.view.DefaultImageView")) {
-        	map.put(ViewProperties.DATA_VIEW_KEY.CONVERTBYTE, new Boolean(
-        			(bitmask != null)));
-        	Object[] tmpargs = { viewer, map };
+            Object[] tmpargs = {viewer};
             initargs = tmpargs;
         }
-        
+
         ((JFrame)viewer).setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try {
             theView = Tools.newInstance(theClass, initargs);
@@ -2106,12 +1868,13 @@ public class DefaultTreeView extends JPanel
             return null;
         }
 
-        List<?> metaDataViewList = HDFView.getListOfMetaDataView();
+        List metaDataViewList = HDFView.getListOfMetaDataView();
         if ((metaDataViewList == null) || (metaDataViewList.size() <=0)) {
             return null;
         }
 
         int n = metaDataViewList.size();
+        Class viewClass = null;
         String className = (String)metaDataViewList.get(0);
 
         if (!isDefaultDisplay && (n>1)) {
@@ -2126,7 +1889,7 @@ public class DefaultTreeView extends JPanel
         }
  
         // enables use of JHDF5 in JNLP (Web Start) applications, the system class loader with reflection first.
-        Class<?> theClass = null;
+        Class theClass = null;
         try { theClass = Class.forName(className); }
         catch (Exception ex) { theClass = ViewProperties.loadExtClass().loadClass(className); }
 
@@ -2175,7 +1938,7 @@ public class DefaultTreeView extends JPanel
     /**
      * Returns the list of current open files..
      */
-    public List<FileFormat> getCurrentFiles() {
+    public List getCurrentFiles() {
         return fileList;
     }
 
@@ -2195,7 +1958,7 @@ public class DefaultTreeView extends JPanel
 
         DefaultMutableTreeNode theNode = null;
         HObject theObj = null;
-        Enumeration<?> local_enum = ((DefaultMutableTreeNode)theFileRoot).breadthFirstEnumeration();
+        Enumeration local_enum = ((DefaultMutableTreeNode)theFileRoot).breadthFirstEnumeration();
         while(local_enum.hasMoreElements())
         {
             theNode = (DefaultMutableTreeNode)local_enum.nextElement();
@@ -2222,7 +1985,7 @@ public class DefaultTreeView extends JPanel
                 datasetIcon, imageIcon, tableIcon, textIcon,
                 openFolder, closeFolder,
                 datasetIconA, imageIconA, tableIconA, textIconA,
-                openFolderA, closeFolderA, datatypeIcon, datatypeIconA, questionIcon;
+                openFolderA, closeFolderA, datatypeIcon, datatypeIconA;
 
         private HTreeCellRenderer()
         {
@@ -2245,8 +2008,6 @@ public class DefaultTreeView extends JPanel
             textIconA = ViewProperties.getTextIconA();
             datatypeIcon = ViewProperties.getDatatypeIcon();
             datatypeIconA = ViewProperties.getDatatypeIconA();
-            
-            questionIcon = ViewProperties.getQuestionIcon();
 
             if (openFolder != null) {
                 openIcon = openFolder;
@@ -2282,10 +2043,6 @@ public class DefaultTreeView extends JPanel
                 datatypeIcon = leafIcon;
             }
 
-            if (questionIcon == null) {
-            	questionIcon = leafIcon;
-            }
-            
             if (openFolderA == null) {
                 openFolderA = openFolder;
             }
@@ -2394,10 +2151,6 @@ public class DefaultTreeView extends JPanel
                 } else {
                     leafIcon = datatypeIcon;
                 }
-            }
-            
-            else {
-                    leafIcon = questionIcon;
             }
 
             return super.getTreeCellRendererComponent(

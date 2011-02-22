@@ -1,14 +1,12 @@
 /****************************************************************************
- * Copyright by The HDF Group.                                               *
- * Copyright by the Board of Trustees of the University of Illinois.         *
- * All rights reserved.                                                      *
- *                                                                           *
- * This file is part of HDF Java Products. The full HDF Java copyright       *
- * notice, including terms governing use, modification, and redistribution,  *
- * is contained in the file, COPYING.  COPYING can be found at the root of   *
- * the source code distribution tree. You can also access it online  at      *
- * http://www.hdfgroup.org/products/licenses.html.  If you do not have       *
- * access to the file, you may request a copy from help@hdfgroup.org.        *
+ * NCSA HDF                                                                 *
+ * National Comptational Science Alliance                                   *
+ * University of Illinois at Urbana-Champaign                               *
+ * 605 E. Springfield, Champaign IL 61820                                   *
+ *                                                                          *
+ * For conditions of distribution and use, see the accompanying             *
+ * hdf-java/COPYING file.                                                   *
+ *                                                                          *
  ****************************************************************************/
 #ifdef __cplusplus
 extern "C" {
@@ -28,6 +26,7 @@ extern "C" {
 
 #include "hdf5.h"
 #include <jni.h>
+#include <jni.h>
 /*
 #include <signal.h>
 */
@@ -44,7 +43,6 @@ extern jboolean h5JNIFatalError( JNIEnv *env, char *functName);
 extern jboolean h5nullArgument( JNIEnv *env, char *functName);
 extern jboolean h5libraryError( JNIEnv *env );
 extern jboolean h5raiseException( JNIEnv *env, char *exception, char *message);
-
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5open
@@ -110,6 +108,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5get_1libversion
     }
 
     theArray = (unsigned *)ENVPTR->GetIntArrayElements(ENVPAR libversion,&isCopy);
+
     if (theArray == NULL) {
         h5JNIFatalError( env, "H5get_libversion:  input not pinned");
         return -1;
@@ -184,29 +183,59 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5check_1version
 
 
 /*
+ *  This is the only routine from H5E currently implemente, so
+ *  there is no separate file h5eImp.c
+ */
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5check_version
+ * Signature: (III)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Eclear
+  (JNIEnv *env, jclass clss )
+{
+    herr_t res = -1;
+    res = H5Eclear() ;
+    if (res < 0) {
+        h5raiseException( env,
+        "ncsa/hdf/hdf5lib/exceptions/HDF5LibraryException",
+        "H5Eclear Failed");
+
+    }
+    return (jint) res;
+}
+
+/*
  * Class:     ncsa_hdf_hdf5lib_H5
  * Method:    H5garbage_collect
  * Signature: ()I
+ *
+ *  ** New in HDF5.1.2.2:  if linking with earlier version
+ *     of HDF5, configure with --enable-hdf5_1_2_1
  *
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5garbage_1collect
   (JNIEnv *env, jclass clss)
 {
     herr_t retVal = -1;
+#ifndef USE_H5_1_2_1
     retVal =  H5garbage_collect();
     if (retVal < 0) {
         h5libraryError(env);
     }
+#endif
     return (jint)retVal;
 }
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
- * Method:    H5set_free_list_limits
- * Signature: (IIIIII)I
+ * Method:    H5set_free_list_limits(int reg_global_lim, int reg_list_lim,
+ *                int arr_global_lim, int arr_list_lim, int blk_global_lim,
+ *                int blk_list_lim )
+ * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5set_1free_1list_1limits
-  (JNIEnv *env, jclass clss, jint reg_global_lim, jint reg_list_lim,
+  (JNIEnv *env, jclass clss,jint reg_global_lim, jint reg_list_lim,
   jint arr_global_lim, jint arr_list_lim, jint blk_global_lim, jint blk_list_lim )
 {
     int retVal = H5set_free_list_limits((int)reg_global_lim, (int)reg_list_lim,

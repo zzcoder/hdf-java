@@ -14,21 +14,21 @@
 
 package ncsa.hdf.view;
 
-import ncsa.hdf.object.Attribute;
-import ncsa.hdf.object.HObject;
+import ncsa.hdf.object.*;
 
 /**
- * 
+ *
  *The metadata view interface for displaying metadata information
- * 
+ *
  * @author Peter X. Cao
  * @version 2.4 9/6/2007
  */
-public abstract interface MetaDataView extends DataView {
-    /** add an attribute to a data object. */
+public abstract interface MetaDataView extends DataView
+{
+    /** add an attribute to a data object.*/
     public abstract Attribute addAttribute(HObject obj);
 
-    /** delete an attribribute from a data object. */
+    /** delete an attribribute from a data object.*/
     public abstract Attribute deleteAttribute(HObject obj);
 
 }

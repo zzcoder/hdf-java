@@ -11,7 +11,7 @@
   This file is intended for use with HDF5 Library verion 1.6
 
  ************************************************************/
-package examples.datasets;
+package datasets;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -135,7 +135,7 @@ public class H5Ex_D_Gzip {
 		try {
 			if ((file_id >= 0) && (filespace_id >= 0) && (dcpl_id >= 0))
 				dataset_id = H5.H5Dcreate(file_id, DATASETNAME,
-						HDF5Constants.H5T_STD_I32LE, filespace_id, HDF5Constants.H5P_DEFAULT, dcpl_id, HDF5Constants.H5P_DEFAULT);
+						HDF5Constants.H5T_STD_I32LE, filespace_id, dcpl_id);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -205,7 +205,7 @@ public class H5Ex_D_Gzip {
 		// Open an existing dataset.
 		try {
 			if (file_id >= 0)
-				dataset_id = H5.H5Dopen(file_id, DATASETNAME, HDF5Constants.H5P_DEFAULT);
+				dataset_id = H5.H5Dopen(file_id, DATASETNAME);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
