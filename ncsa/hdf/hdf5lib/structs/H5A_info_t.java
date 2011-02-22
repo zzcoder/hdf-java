@@ -13,8 +13,10 @@
 
 package ncsa.hdf.hdf5lib.structs;
 
+import java.io.Serializable;
+
 //Information struct for Attribute (For H5Aget_info/H5Aget_info_by_idx/H5Aget_info_by_name)
-public class H5A_info_t {
+public class H5A_info_t implements Serializable{
 	public boolean corder_valid; // Indicate if creation order is valid
 	public long corder; // Creation order of attribute
 	public int cset; // Character set of attribute name

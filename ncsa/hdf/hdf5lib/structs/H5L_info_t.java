@@ -13,8 +13,10 @@
 
 package ncsa.hdf.hdf5lib.structs;
 
+import java.io.Serializable;
+
 //Information struct for link (for H5Lget_info/H5Lget_info_by_idx)
-public class H5L_info_t {
+public class H5L_info_t implements Serializable{
     public int     type;
     public boolean corder_valid;
     public long    corder;

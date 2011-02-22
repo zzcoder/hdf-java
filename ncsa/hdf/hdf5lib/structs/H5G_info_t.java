@@ -13,8 +13,10 @@
 
 package ncsa.hdf.hdf5lib.structs;
 
+import java.io.Serializable;
+
 //Information struct for group (for H5Gget_info/H5Gget_info_by_name/H5Gget_info_by_idx)
-public class H5G_info_t {
+public class H5G_info_t implements Serializable{
     public int storage_type; // Type of storage for links in group
     public long nlinks; // Number of links in group
     public long max_corder; // Current max. creation order value for group
