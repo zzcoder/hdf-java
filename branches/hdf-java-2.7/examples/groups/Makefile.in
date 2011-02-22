@@ -1,0 +1,44 @@
+# Generated automatically from Makefile.in by configure.
+#/****************************************************************************
+# * NCSA HDF                                                                 *
+# * National Comptational Science Alliance                                   *
+# * University of Illinois at Urbana-Champaign                               *
+# * 605 E. Springfield, Champaign IL 61820                                   *
+# *                                                                          *
+# * For conditions of distribution and use, see the accompanying             *
+# * hdf-java/COPYING file.                                                   *
+# *                                                                          *
+# ****************************************************************************/
+
+
+JAVAC=@JAVAC@
+RM=@RM@
+
+CLASSPATH=@CLASSPATH@   
+
+.SUFFIXES: .java .class
+
+.java.class:
+	$(JAVAC) -classpath $(CLASSPATH) $<
+
+all: H5Ex_G_Create H5Ex_G_Iterate H5Ex_G_Compact H5Ex_G_Corder H5Ex_G_Intermediate H5Ex_G_Phase H5Ex_G_Visit
+
+H5Ex_G_Create: H5Ex_G_Create.class
+
+H5Ex_G_Iterate: H5Ex_G_Iterate.class
+
+H5Ex_G_Compact: H5Ex_G_Compact.class
+
+H5Ex_G_Corder : H5Ex_G_Corder.class
+
+H5Ex_G_Intermediate : H5Ex_G_Intermediate.class
+
+H5Ex_G_Phase : H5Ex_G_Phase.class
+
+H5Ex_G_Visit : H5Ex_G_Visit.class
+
+check: all
+
+clean:
+	$(RM) -f *.class
+	$(RM) -f *.hdf
