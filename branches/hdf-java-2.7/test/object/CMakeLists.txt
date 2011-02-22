@@ -1,0 +1,69 @@
+cmake_minimum_required (VERSION 2.8.3)
+PROJECT (HDFJAVA_TEST_OBJECT Java)
+
+SET(CMAKE_VERBOSE_MAKEFILE 1)
+
+INCLUDE_DIRECTORIES(
+    ${JAVA_NCSA_HDF_HDF4_BINARY_DIR}
+    ${JAVA_NCSA_HDF_HDF5_BINARY_DIR}
+    ${JAVA_NCSA_HDF_OBJECT_BINARY_DIR}
+    ${HDFJAVA_LIB_DIR}
+)
+
+SET (CMAKE_JAVA_INCLUDE_PATH ${CMAKE_JAVA_INCLUDE_PATH} ${HDFJAVA_LIB_DIR}/junit.jar ${HDFJAVA_JARS_TO_EXPORT})
+
+SET (HDFJAVA_TEST_OBJECT_SRCS
+    AllH5ObjectTests.java
+    AttributeTest.java
+    CompoundDSTest.java
+    DatasetTest.java
+    DatatypeTest.java
+    FileFormatTest.java
+    GroupTest.java
+    H5BugFixTest.java
+    H5CompoundDSTest.java
+    H5DatatypeTest.java
+    H5FileTest.java
+    H5GroupTest.java
+    H5ScalarDSTest.java
+    H5TestFile.java
+    HObjectTest.java
+    ScalarDSTest.java
+)
+
+ADD_JAR (${HDFJAVA_TEST_OBJECT_LIB_TARGET} "." ${HDFJAVA_TEST_OBJECT_SRCS})
+#INSTALL_JAR (${HDFJAVA_TEST_OBJECT_LIB_TARGET} ${HJAVA_INSTALL_DATA_DIR}/tests tests)
+ADD_DEPENDENCIES (${HDFJAVA_TEST_OBJECT_LIB_TARGET} ${HDFJAVA_NCSA_H5_LIB_TARGET})
+
+SET (HDF_JAVA_TEST_FILES
+      h5ex_d_extern.data
+      h5ex_d_extern.hdf5
+)
+
+FOREACH (h5_file ${HDF_JAVA_TEST_FILES})
+  SET (dest "${PROJECT_BINARY_DIR}/${h5_file}")
+  #MESSAGE (STATUS " Copying ${h5_file}")
+  ADD_CUSTOM_COMMAND (
+      TARGET     ${HDFJAVA_TEST_OBJECT_LIB_TARGET}
+      POST_BUILD
+      COMMAND    ${CMAKE_COMMAND}
+      ARGS       -E copy_if_different ${PROJECT_SOURCE_DIR}/${h5_file} ${dest}
+  )
+ENDFOREACH (h5_file ${HDF_JAVA_TEST_FILES})
+
+SET (JUNIT_TEST_RUNNER ${PROJECT_BINARY_DIR}/JUnitRunner.cmake)
+FILE (WRITE ${JUNIT_TEST_RUNNER} 
+  "EXECUTE_PROCESS(COMMAND
+  ${CMAKE_Java_RUNTIME} -Xmx1024M 
+  -Djava.library.path=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+  -cp \"${${HDFJAVA_TEST_OBJECT_LIB_TARGET}_CLASSPATH}\"
+  -ea org.junit.runner.JUnitCore test.object.AllH5ObjectTests
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  RESULT_VARIABLE RESULT)
+  IF(RESULT)
+    MESSAGE(SEND_ERROR \"Error during JUnit OBJECT Tests\")
+  ENDIF(RESULT)
+  ")
+
+ADD_TEST (JUnit-object-interface  ${CMAKE_COMMAND} -P ${JUNIT_TEST_RUNNER})
+   
