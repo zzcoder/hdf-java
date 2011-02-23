@@ -671,7 +671,7 @@ ENDIF (NOT BUILD_SHARED_LIBS)
               INSTALL_COMMAND ""
               CMAKE_ARGS
                   -DBLDTYPE:STRING=Release
-                  -DH5_LEGACY_NAMING:BOOL=OFF
+                  -DHDF_LEGACY_NAMING:BOOL=OFF
                   -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
                   -DHDF5_BUILD_TOOLS:BOOL=OFF
                   -DHDF5_ALLOW_EXTERNAL_SUPPORT:STRING="SVN"
@@ -690,7 +690,7 @@ ENDIF (NOT BUILD_SHARED_LIBS)
               INSTALL_COMMAND ""
               CMAKE_ARGS
                   -DBLDTYPE:STRING=Release
-                  -DH5_LEGACY_NAMING:BOOL=OFF
+                  -DHDF_LEGACY_NAMING:BOOL=OFF
                   -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
                   -DHDF5_BUILD_TOOLS:BOOL=OFF
                   -DHDF5_ALLOW_EXTERNAL_SUPPORT:STRING="TGZ"
