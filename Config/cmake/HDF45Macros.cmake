@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-MACRO (EXTERNAL_HDF4_LIBRARY compress_type lib_url libtype jpeg_pic)
+MACRO (EXTERNAL_HDF4_LIBRARY compress_type libtype jpeg_pic)
   IF (${compress_type} MATCHES "SVN")
     EXTERNALPROJECT_ADD (HDF4
         SVN_REPOSITORY ${HDF4_URL}
@@ -123,7 +123,7 @@ MACRO (PACKAGE_HDF4_LIBRARY compress_type libtype)
 ENDMACRO (PACKAGE_HDF4_LIBRARY)
 
 #-------------------------------------------------------------------------------
-MACRO (EXTERNAL_HDF5_LIBRARY compress_type lib_url libtype)
+MACRO (EXTERNAL_HDF5_LIBRARY compress_type libtype)
   IF (${compress_type} MATCHES "SVN")
     EXTERNALPROJECT_ADD (HDF5
         SVN_REPOSITORY ${HDF5_URL}
