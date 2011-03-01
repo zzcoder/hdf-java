@@ -1,0 +1,106 @@
+<?php 
+$page_title = "Investigation on Java implementation of HDF Browser Plug-in"; 
+include ("../../../links.php"); 
+include ("../../../includes/header.html"); 
+?><fieldset><h1>Report on HDF Browser Plug-in Project</h1></fieldset>
+
+<p>Peter Cao<br />
+Robert E. McGrath<br />
+National Center for Supercomputing Applications<br />
+University of Illinois, Urbana-Champaign</p>
+<p>July, 2004</p>
+<p>This paper discusses investigations of how to implement a Web browser plug-in that can browse Hierarchical Data Format (HDF) files. </p>
+<p>The HDFView browser [1] and other tools provide stand-alone tools for accessing HDF files. The main goal of the HDF browser plug-in is to provide a similar ability to browse HDF using standard Web browsers. The plug-in would enable users to click-and-view HDF files remotely and locally from popular web browsers. Users do not have to install and reinstall a separate tool. The plug-in would be automatically updated when new release comes out. </p>
+<p>We investigated current browser plug-in technology. This note summarizes the most promising technology. We conclude that there is no single solution that will work for all browsers and all platforms of interest. The best single option appears to be to work on IE and Windows. A plug-in for this browser would cover 85+% of computer users, although it may not be 85% of HDF users.</p>
+<p>The purpose of this report is to seek direction of where we should go from here.</p>
+<h2>1.Overview</h2>
+<p>The NCSA HDF team provides a Java application, HDFview, that implements a graphical browse and editor, which works with HDF4, HDF5 and has optional plug-ins for HDF-EOS, FITS, and netCDF3 [1]. In other work, we investigated Client-Server approaches, include Java Remote Method Invocation, CORBA, and Web Services [2]. Similar products are available from third parties, such as the HDF Explorer browser [3] and the Intel Array Visualizer [4]. </p>
+<p>The purpose of this project is to attempt to provide similar services in a Web Browser. The idea would be to handle HDF similar to popular multimedia formats. Once installed in the browser, the user would be able to click on an HDF file, and automatically launch a browse window. </p>
+<p>A second requirement is to reuse as much of the Java HDFView as possible. We do not want to duplicate the work that went into the HDFView, and we do not want to support two or more separate code bases. Ideally, the plug-in would wrap Java classes from the HDFView.</p>
+<p>We have investigated current technology for implementing Web browser plug-ins, as well as similar services. We have limited the investigation to two major browsers, Microsoft Internet Explorer (IE) and Mozilla (including netscape, mozilla, firefox), and four platforms, Microsoft Windows, Linux, Apple MacOsX and Sun Microsystems Solaris. We would like to create a single plug-in for all these cases, ideally, using the HDFView code.</p>
+<p>Our investigation showed that, at this time, plug-ins are browser specific and may be platform specific as well. There is no single implementation will fit into all the cases: it is not possible to create a single plug-in that will work for all the browsers and platforms listed. Furthermore, it is not clear that Java can be used in a Web browser plug-in, or that a combined Java and C implementation (such as the HDFView) could be plugged in to any Web browser.</p>
+<p>In addition to Web browser plug-ins, several other technologies might provide a simple point-and-click browser for HDF. The following approaches are discussed below:</p>
+<p>1.A browser plug-in, written in C++ (native binary for a given platform).</p>
+<p>2.A Mozilla "pluglet"</p>
+<p>3.A Java Applet</p>
+<p>4.Java Web Start</p>
+<p>5.Add web browsing to HDFView</p>
+<p>Each of these approaches was investigated. We summarize the technology, advantages and disadvantages, and present our conclusions.</p>
+<h2>2. Native C++ Implementation</h2>
+<p>The conventional technology for providing Web Browser plug-ins is supported by C++ APIs for the browser. There are two sets of plug-in APIs, Netscape Plug-in APIs and Microsoft ActiveX controls. Since Microsoft has removed support for Netscape plug-ins from IE 5.5 SP 2 and beyond, plug-ins developed in ActiveX control will not work on Mozilla, and Mozilla does not support ActiveX controls. This means that it is not possible to create a single plug-in that works with IE and Mozilla, you must implement at least two different versions of the "plug" code: Active X for IE on Windows, and Mozilla for other browsers and platforms.</p>
+<p>The following is a list of the pros and cons of using ActiveX control.</p>
+<p><b>Pros</b>:</p>
+<p2>a)The plug-in is all in native C/C++. It will have the best performance in speed and memory management when loading files and open dataset.</p>
+<p>b)It is compiled into one module, for easy installation. No additional software required, so the package will be smaller.</p>
+<p>c)It will work best for IE. Although other browsers like Mozilla will not display the plug-in, the plug-in will be launched as a standalone application from other browsers on Windows</p>
+<p>d)MFC (Microsoft Foundation Classes) provides a rich set of GUI components. The HDF plug-in will use a lot of such GUI components. The implementation will be easy and quick.</p>
+<p><b>Cons:</b></p>
+<p>a)This plug-in will work only for IE and Windows. </p>
+<p>b)This would be a completely different product from HDFView. We will have to support two products.</p>
+<h3>Conclusions:</h3>
+<p>The ActiveX control is a good solution, because of the popularity of the IE browser. The two disadvantages are that it is limited to Windows and IE, and that it cannot reuse our existing Java code.</p>
+<h2>3. Mozilla Pluglet</h2>
+<p>There is no plug-in package in the JDK because browser plug-ins is browser and platform dependent. In order to support a plug-in package, it would be necessary for Java has to implement the native APIs to bridge the browser and Java Virtual Machine. Such APIs do not exist in the core Java package and Sun has no intention to do so.</p>
+<p>Mozilla's Blackwood project has developed a set of Java APIs for plug-in called "pluglet" to fill the gap [5]. A Pluglet is a Plug-in that is written in the Java programming language. At the mozilla web site, it says "Writing a Plug-in in Java instantly makes it available on all platforms on which a Java Virtual Machine is available." </p>
+<p><b>Figure 1</b> illustrates how pluglets work. We would need to write a little code to use the "Pluglet" API (top box). The reset would be handled by the pluglet package. This approach appears to be ideal for our goals. </p>
+<p>We downloaded the source, installed cygwin, and tried to compile it on Windows 2000. We also tried to install on Linux. The package is so complex and configuration is very confusing, and we could not make it compile. </p>
+<p>We downloaded and installed the precompiled binaries. The package comes with examples to run sample pluglets within the Mozilla. None of the examples work, and inquiries to the Mozilla forum did not give answers. </p>
+<p>Here is a summary of what we learned about the pluglet.</p>
+<p><b>Pros:</b></p>
+<p>a)It is 100% Java. It will work with Mozilla on all major platforms including Windows and Linux.</p>
+<p>b)Pluglets may also work on IE as the pluglet project described although we couldn't make that work.</p>
+<p>c)We could reuse all the major components in the HDFView. Although we have two products, we basically maintain a single product.</p>
+<p><b>Cons:</b></p>
+<p2>a)The biggest problem is that pluglets don't seem to work, or atleast are difficult to make work. Pluglets do not seem to be a viable technology at this time.</p>
+<p2>b)It is uncertain whether pluglets will work with C libraries through Java Native Interface. This needs to be confirmed by experiment, and we don't know at this point.</p>
+<p2>c)Installation of the pluglet would complicated. There many individual pieces such as the JRE dlls, JRE bins, pluglet jar files, pluglet Java Native Interface dlls, pluglet native C++ dll, HDF Java plugin jar file and HDF Java Native Interface dlls. These pieces have to put into different sub-directories under the Mozilla browser directory. The path and classpath have to be set correctly. All this will require complex installation scripts, which could be difficult to develop and maintain.<p><img width=542 height=734 src="./hdf_plugin_report_files/image002.gif" ></p><p>The performance might be a problem. Any actions on an HDF file such as open file or dataset, it will go through the following steps: Native browser API (activeX or NS plug-in APIs) - pluglet C++ engine - JVM - pluglet Java engine- HDF plugin Java components - HDF Java Native Interface - HDF library, and all the way back to the browser again. <br>
+  Since we can't get pluglets to work, it is impossible to determine whether performance would be a practical issue.</p>
+<p2>d)Some users may have security or other policy issues about using Java in IE. Pluglets (or any Java extension) requires the JRE (Java Runtime Environment). Although Java plug-in technology can automatically install the JRE, some browsers such IE disable Java for security reasons.<br>
+  Again, since we couldn't get it to work, it is difficult ot assess these problems.</p>
+<p>e)Signing and registering a pluglet is very complicated.</p>
+<p><b>Conclusions:</b></p>
+<p>The pluglet technology is the right idea. Unfortunately, it does not seem to be working yet, and it is certainly not as solid as we would like for a real product.</p>
+<p>If we discover how to make pluglets work, it would be a good idea to investigate them in more detail.</p>
+<h2>4. Java Applet</h2>
+<p>An applet is a program written in the Java programming language that can be included in an HTML page, much in the same way an image is included. When you use a Java-enabled browser to view a page that contains an applet, the applet's code is transferred to your system and executed by the browser's Java Virtual Machine (JVM). This technology might be used to provide a way to browse HDF files, at least from a Web server. </p>
+<p>Here are the pros and cons of Java applet.</p>
+<p><b>Pros:</b></p>
+<p>a)With a little work, we probably could make the current HDFView into an applet, or make a version that would work as an applet.</p>
+<p>b)We would have to maintain only one product. The HDFview will be both a standalone application and an applet</p>
+<p><b>Cons:</b></p>
+<p>a)The &lt;applet&gt; tag has to put into an html file in order to launch the applet. There is no way to launch the applet by file extension or MIME types. This does not meet the goal of a click-and-view for a local HDF file.</p>
+<p>b)It is not clear that an applet can use the Java Native Interface (it probably can't). This could mean that the HDFView must be split, with the data access on the server, and the GUI in the browser (e.g., see an earlier study [6].) This is definitely much more work, and does not meet the goals of this project.</p>
+<p>c)Applets are downloaded at each invocation. The HDFView is a large package, it would probably be unacceptably slow to download it every time users hit a page. The alternative is to use a signed applet, which does not need to be downloaded every time. </p>
+<p><b>Conclusions:</b></p>
+<p>Java Applets do not meet the basic goal of this project. There are several technical issues that would need to be resolved, as well.</p>
+<h2>5. Java Web Start</h2>
+<p>Java Web Start is a Java technology to deploy standalone Java software applications with a single click over the network [7]. When a user clicks a link in the browser, pointing to a special JNLP (Java Network Launching Protocol) executing file with a Java application, it launches Java Web Start, which in turn automatically downloads application files from Web server; the user caches some of them and launches the described Java application. In certain circumstances, we could use Java Web Start to launch the HDFView. </p>
+<p>Here are the pros and cons for Java Web Start.</p>
+<p><b>Pros:</b></p>
+<p>a)No need to write new software</p>
+<p><b>Cons:</b></p>
+<p>a)Because Java Web Start's work is based on using the JNLP protocol, the configuration is carried on both the client and server sides. On the client side, is is necessary to configure Java Web Start (Application Manager) and Web browser to work together. On the server side, it is necessary to register JNLP file extension for the server to be able to launch the right application.</p>
+<p>b)All application resources, such as images, configuration files, and libraries (DLL, SO) must be included into JAR files. It is not clear whether it is possible to load the HDF JNI from JAR file, it may well not be possible. </p>
+<p>c)It is not clear that this meets the goals of this project.</p>
+<p><b>Conclusions:</b></p>
+<p>Web Start is an interesting technology for certain circumstances. It does not seem to meet the requirements for this project. There are some open technical questions.</p>
+<h2>7. HDFView as Browser</h2>
+<p>In principle, we could add new features into the HDFView so that the HDFView will act like the Web browser, i.e., users can browse remote/local HTML and other files in the HDFView. </p>
+<p>The HDFView could provide all the basic functions such as display HTML files and following links on a Web page. However, it would be difficult for the HDFView to implement all the advanced browsing features of Mozilla and IE. Users would have to install the HDFView and use it as their Web browser, which doesn't seem to meet the goals of this project.</p>
+<p><b>Pros</b>:</p>
+<p>a)We would maintain one software base, which is compatible with the Web and provides HDF viewing.</p>
+<p>b)This would work for all currently supported platforms</p>
+<p><b>Cons</b>:</p>
+<p>a)This does not meet the requirements of the project. </p>
+<p>b)It is questionable whether users would use a different, less featureful Web browser.</p>
+<h2>References</h2>
+<p>1.HDF Java Information, http:ncsa.uiuc.edu/java-hdf-html.</p>
+<p>2."Experiments on JSP, XML, CORBA, and HDF," http://hdf.ncsa.uiuc.edu/HDF5/XML/JSPExperiments/index.html</p>
+<p>3.http://www.space-research.pt/</p>
+<p>4.http://intel.com/software/products/ compilers/fwin/array_vis.htm</p>
+<p>5.http://www.mozilla.org/projects/blackwood/java-plug-ins/</p>
+<p>6.Kun Yan and Robert E. McGrath, &quot;Experiments with JSP, XML, CORBA, and HDF&quot; (August, 2002)http://hdf.ncsa.uiuc.edu/HDF5/XML/JSPExperiments/Java-JSP-CORBA-HDF5.pdf</p>
+<p>7.http://java.sun.com/products/javawebstart/</p>
+<?php 
+include ("../../../includes/footer.html"); 
+?>
