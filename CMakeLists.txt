@@ -201,12 +201,12 @@ INCLUDE (${HDFJAVA_RESOURCES_DIR}/ConfigureChecks.cmake)
 #-----------------------------------------------------------------------------
 # Option to use code coverage
 #-----------------------------------------------------------------------------
-OPTION (HDFJAVA_ENABLE_COVERAGE "Enable code coverage for Libraries and Programs" OFF)
-IF (HDFJAVA_ENABLE_COVERAGE)
+OPTION (HDF_ENABLE_COVERAGE "Enable code coverage for Libraries and Programs" OFF)
+IF (HDF_ENABLE_COVERAGE)
     SET (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -fprofile-arcs -ftest-coverage")
     SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -fprofile-arcs -ftest-coverage")
     SET (LDFLAGS "${LDFLAGS} -fprofile-arcs -ftest-coverage")   
-ENDIF (HDFJAVA_ENABLE_COVERAGE)
+ENDIF (HDF_ENABLE_COVERAGE)
 
 #-----------------------------------------------------------------------------
 # Include the main src and config directories
@@ -234,10 +234,10 @@ ENDIF (MAKE_SYSTEM)
 #-----------------------------------------------------------------------------
 # Build utility to copy and strip X lines of file
 #-----------------------------------------------------------------------------
-IF (HDFJAVA_BUILD_EXAMPLES AND BUILD_TESTING)
+IF (HDF_BUILD_EXAMPLES AND BUILD_TESTING)
   SET (XLATE_UTILITY "xlatefile")
   ADD_EXECUTABLE(${XLATE_UTILITY} ${HDFJAVA_RESOURCES_DIR}/xlatefile.c)
-ENDIF (HDFJAVA_BUILD_EXAMPLES AND BUILD_TESTING)
+ENDIF (HDF_BUILD_EXAMPLES AND BUILD_TESTING)
 
 FIND_PACKAGE(JNI)
 
@@ -268,9 +268,9 @@ ENDIF (BUILD_TESTING)
 #-----------------------------------------------------------------------------
 # Option to build HDFJAVA Examples
 #-----------------------------------------------------------------------------
-IF (HDFJAVA_BUILD_EXAMPLES)
+IF (HDF_BUILD_EXAMPLES)
   ADD_SUBDIRECTORY(${HDFJAVA_SOURCE_DIR}/examples    examples)
-ENDIF (HDFJAVA_BUILD_EXAMPLES)
+ENDIF (HDF_BUILD_EXAMPLES)
 
 #-----------------------------------------------------------------------------
 # Add Required Jar(s)

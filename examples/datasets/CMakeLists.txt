@@ -52,6 +52,10 @@ MACRO (ADD_H5_TEST resultfile resultcode)
           -D "TEST_REFERENCE=${HDFJAVA_EXAMPLES_DATASETS_BINARY_DIR}/${resultfile}.txt"
           -P "${HDFJAVA_RESOURCES_DIR}/runTest.cmake"
   )
+  IF (NOT "${last_test}" STREQUAL "")
+    SET_TESTS_PROPERTIES (datasets-${resultfile} PROPERTIES DEPENDS ${last_test})
+  ENDIF (NOT "${last_test}" STREQUAL "")
+  SET (last_test "datasets-${resultfile}")
 ENDMACRO (ADD_H5_TEST file)
 
 IF (BUILD_TESTING)
@@ -65,6 +69,9 @@ IF (BUILD_TESTING)
             ${example}.out
             ${example}.out.err
     )
+    IF (NOT "${last_test}" STREQUAL "")
+      SET_TESTS_PROPERTIES (datasets-${example}-clearall-objects PROPERTIES DEPENDS ${last_test})
+    ENDIF (NOT "${last_test}" STREQUAL "")
     ADD_TEST (
         NAME datasets-${example}-copy-objects
         COMMAND    ${CMAKE_COMMAND}
@@ -72,6 +79,8 @@ IF (BUILD_TESTING)
             ${HDFJAVA_EXAMPLES_SOURCE_DIR}/testfiles/examples.datasets.${example}.txt
             ${HDFJAVA_EXAMPLES_DATASETS_BINARY_DIR}/${example}.txt  
     )
+    SET_TESTS_PROPERTIES (datasets-${example}-copy-objects PROPERTIES DEPENDS datasets-${example}-clearall-objects)
+    SET (last_test "datasets-${example}-copy-objects")
     ADD_H5_TEST (${example} 0)
   ENDFOREACH (example ${HDF_JAVA_EXAMPLES})
 
