@@ -242,12 +242,6 @@ ENDIF (HDF_BUILD_EXAMPLES AND BUILD_TESTING)
 FIND_PACKAGE(JNI)
 
 #-----------------------------------------------------------------------------
-# Add the HDFJAVA Library Target to the build
-#-----------------------------------------------------------------------------
-ADD_SUBDIRECTORY(${HDFJAVA_SOURCE_DIR}/native    native)
-ADD_SUBDIRECTORY(${HDFJAVA_SOURCE_DIR}/ncsa      ncsa)
-
-#-----------------------------------------------------------------------------
 # Dashboard and Testing Settings
 #-----------------------------------------------------------------------------
 OPTION (BUILD_TESTING "Build HDFJAVA Unit Testing" OFF)
@@ -258,11 +252,19 @@ IF (BUILD_TESTING)
   )
   ENABLE_TESTING ()
   INCLUDE (CTest)
+  INCLUDE (${HDFJAVA_SOURCE_DIR}/CTestConfig.cmake)
+  CONFIGURE_FILE (${HDFJAVA_RESOURCES_DIR}/CTestCustom.cmake ${HDFJAVA_BINARY_DIR}/CTestCustom.ctest @ONLY)
+ENDIF (BUILD_TESTING)
+
+#-----------------------------------------------------------------------------
+# Add the HDFJAVA Library Target to the build
+#-----------------------------------------------------------------------------
+ADD_SUBDIRECTORY(${HDFJAVA_SOURCE_DIR}/native    native)
+ADD_SUBDIRECTORY(${HDFJAVA_SOURCE_DIR}/ncsa      ncsa)
+IF (BUILD_TESTING)
   IF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
     ADD_SUBDIRECTORY(${HDFJAVA_SOURCE_DIR}/test ${PROJECT_BINARY_DIR}/test)
   ENDIF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
-  INCLUDE (${HDFJAVA_SOURCE_DIR}/CTestConfig.cmake)
-  CONFIGURE_FILE (${HDFJAVA_RESOURCES_DIR}/CTestCustom.cmake ${HDFJAVA_BINARY_DIR}/CTestCustom.ctest @ONLY)
 ENDIF (BUILD_TESTING)
 
 #-----------------------------------------------------------------------------
