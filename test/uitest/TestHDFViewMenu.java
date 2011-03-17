@@ -4,6 +4,7 @@ import static org.fest.swing.finder.WindowFinder.findFrame;
 import static org.fest.swing.launcher.ApplicationLauncher.application;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.io.File;
 
@@ -102,14 +103,18 @@ public class TestHDFViewMenu {
         fileMenuItem.robot.waitForIdle();
         fileMenuItem.requireVisible();
         fileMenuItem.click();
+        
+        File hdf_file = new File("testfile.hdf");
+        if(hdf_file.exists())
+          hdf_file.delete();
 
         JFileChooserFixture fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
         fileChooser.fileNameTextBox().requireText("*.hdf");
         fileChooser.fileNameTextBox().setText("testfile.hdf");
         fileChooser.approve();
-        File hdf_file = new File("testfile.hdf");
         assertTrue(hdf_file.exists());
-        hdf_file.delete();
+        assertTrue(hdf_file.delete());
+        assertFalse(hdf_file.exists());
     }
     
     @Test 
@@ -118,13 +123,17 @@ public class TestHDFViewMenu {
         fileMenuItem.robot.waitForIdle();
         fileMenuItem.requireVisible();
         fileMenuItem.click();
+        
+        File hdf_file = new File("testfile.h5");
+        if(hdf_file.exists())
+                hdf_file.delete();
 
         JFileChooserFixture fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
         fileChooser.fileNameTextBox().requireText("*.h5");
         fileChooser.fileNameTextBox().setText("testfile.h5");
         fileChooser.approve();
-        File hdf_file = new File("testfile.h5");
         assertTrue(hdf_file.exists());
-        hdf_file.delete();
+        assertTrue(hdf_file.delete());
+        assertFalse(hdf_file.exists());
     }
 }

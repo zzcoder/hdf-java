@@ -4,6 +4,7 @@ import static org.fest.swing.finder.WindowFinder.findFrame;
 import static org.fest.swing.launcher.ApplicationLauncher.application;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.io.File;
 
@@ -74,5 +75,6 @@ public class TestHDFView {
         mainFrameFixture.dialog("dialog2").button("OK").click();
         
         hdf_file.delete();
+        assertFalse(hdf_file.exists());
     }
 }
