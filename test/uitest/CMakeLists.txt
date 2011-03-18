@@ -11,10 +11,10 @@ INCLUDE_DIRECTORIES(
 )
 
 SET (HDFJAVA_FEST_JARS
-    ${HDFJAVA_LIB_DIR}/fest-swing-1.2.jar
-    ${HDFJAVA_LIB_DIR}/fest-reflect-1.2.jar
-    ${HDFJAVA_LIB_DIR}/fest-util-1.1.2.jar
-    ${HDFJAVA_LIB_DIR}/fest-assert-1.2.jar
+    ${HDFJAVA_LIB_DIR}/fest-swing.jar
+    ${HDFJAVA_LIB_DIR}/fest-reflect.jar
+    ${HDFJAVA_LIB_DIR}/fest-util.jar
+    ${HDFJAVA_LIB_DIR}/fest-assert.jar
 )
 
 SET (CMAKE_JAVA_INCLUDE_PATH ${CMAKE_JAVA_INCLUDE_PATH} ${HDFJAVA_LIB_DIR}/junit.jar ${HDFJAVA_JARS_TO_EXPORT} ${HDFJAVA_FEST_JARS})
