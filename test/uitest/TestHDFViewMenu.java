@@ -90,12 +90,47 @@ public class TestHDFViewMenu {
     @Test 
     public void verifyMenuOpen() {
         try {
-            JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File","Open");
+            JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File","New","HDF4");
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
+
+            File hdf_file = new File("testopenfile.hdf");
+            if(hdf_file.exists())
+                hdf_file.delete();
+
             JFileChooserFixture fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
-            fileChooser.cancel();
+            fileChooser.fileNameTextBox().requireText("*.hdf");
+            fileChooser.fileNameTextBox().setText("testopenfile.hdf");
+            fileChooser.approve();
+
+            assertTrue("File-Open-HDF4 file created", hdf_file.exists());
+
+            fileMenuItem = mainFrameFixture.menuItemWithPath("File","Close All");
+            fileMenuItem.robot.waitForIdle();
+            fileMenuItem.requireVisible();
+            fileMenuItem.click();
+
+            fileMenuItem = mainFrameFixture.menuItemWithPath("File","Open");
+            fileMenuItem.robot.waitForIdle();
+            fileMenuItem.requireVisible();
+            fileMenuItem.click();
+            fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
+            fileChooser.fileNameTextBox().setText("testopenfile.hdf");
+            fileChooser.approve();
+
+            JTreeFixture filetree = mainFrameFixture.tree().focus();
+            assertTrue("File-Open-HDF4 filetree shows:", filetree.target.getRowCount()==1);
+            assertTrue("File-Open-HDF4 filetree has file", (filetree.valueAt(0)).compareTo("testopenfile.hdf")==0);
+
+            filetree.clickRow(0);
+            fileMenuItem = mainFrameFixture.menuItemWithPath("File","Close");
+            fileMenuItem.robot.waitForIdle();
+            fileMenuItem.requireVisible();
+            fileMenuItem.click();
+
+            assertTrue("File-Open-HDF4 file deleted", hdf_file.delete());
+            assertFalse("File-Open-HDF4 file gone", hdf_file.exists());
         }
         catch (Exception ex) {
             ex.printStackTrace();
@@ -197,11 +232,11 @@ public class TestHDFViewMenu {
             fileChooser.fileNameTextBox().requireText("*.hdf");
             fileChooser.fileNameTextBox().setText("closefile.hdf");
             fileChooser.approve();
-            assertTrue("File-New-HDF4 Close file created", hdf_file.exists());
+            assertTrue("File-Close-HDF4 file created", hdf_file.exists());
 
             JTreeFixture filetree = mainFrameFixture.tree().focus();
-            assertTrue("File-New-HDF4 Close filetree shows:", filetree.target.getRowCount()==1);
-            assertTrue("File-New-HDF4 Close filetree has file", (filetree.valueAt(0)).compareTo("closefile.hdf")==0);
+            assertTrue("File-Close-HDF4 filetree shows:", filetree.target.getRowCount()==1);
+            assertTrue("File-Close-HDF4 filetree has file", (filetree.valueAt(0)).compareTo("closefile.hdf")==0);
 
             filetree.clickRow(0);
             fileMenuItem = mainFrameFixture.menuItemWithPath("File","Close");
@@ -209,8 +244,8 @@ public class TestHDFViewMenu {
             fileMenuItem.requireVisible();
             fileMenuItem.click();
 
-            assertTrue("File-New-HDF4 Close file deleted", hdf_file.delete());
-            assertFalse("File-New-HDF4 Close file gone", hdf_file.exists());
+            assertTrue("File-Close-HDF4 file deleted", hdf_file.delete());
+            assertFalse("File-Close-HDF4 file gone", hdf_file.exists());
         }
         catch (Exception ex) {
             ex.printStackTrace();
@@ -220,10 +255,55 @@ public class TestHDFViewMenu {
     @Test 
     public void verifyMenuCloseAll() {
         try {
-            JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File","Close All");
+            JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File","New","HDF4");
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
+
+            File hdf4_file = new File("closeallfile.hdf");
+            if(hdf4_file.exists())
+                hdf4_file.delete();
+
+            JFileChooserFixture fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
+            fileChooser.fileNameTextBox().requireText("*.hdf");
+            fileChooser.fileNameTextBox().setText("closeallfile.hdf");
+            fileChooser.approve();
+            assertTrue("File-Close All-HDF4 file created", hdf4_file.exists());
+
+            JTreeFixture filetree = mainFrameFixture.tree().focus();
+            assertTrue("File-Close All-HDF4 filetree shows:", filetree.target.getRowCount()==1);
+            assertTrue("File-Close All-HDF4 filetree has file", (filetree.valueAt(0)).compareTo("closeallfile.hdf")==0);
+
+            fileMenuItem = mainFrameFixture.menuItemWithPath("File","New","HDF5");
+            fileMenuItem.robot.waitForIdle();
+            fileMenuItem.requireVisible();
+            fileMenuItem.click();
+
+            File hdf5_file = new File("closeallfile.h5");
+            if(hdf5_file.exists())
+                hdf5_file.delete();
+
+            fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
+            fileChooser.fileNameTextBox().requireText("*.h5");
+            fileChooser.fileNameTextBox().setText("closeallfile.h5");
+            fileChooser.approve();
+
+            assertTrue("File-Close All-HDF5 file created", hdf5_file.exists());
+
+            filetree = mainFrameFixture.tree().focus();
+            assertTrue("File-Close All-HDF4 filetree shows:", filetree.target.getRowCount()==2);
+            assertTrue("File-Close All-HDF4 filetree has file", (filetree.valueAt(1)).compareTo("closeallfile.h5")==0);
+
+            fileMenuItem = mainFrameFixture.menuItemWithPath("File","Close All");
+            fileMenuItem.robot.waitForIdle();
+            fileMenuItem.requireVisible();
+            fileMenuItem.click();
+
+            assertTrue("File-Close All-HDF4 file deleted", hdf4_file.delete());
+            assertFalse("File-Close All-HDF4 file gone", hdf4_file.exists());
+
+            assertTrue("File-Close All-HDF5 file deleted", hdf5_file.delete());
+            assertFalse("File-Close All-HDF5 file gone", hdf5_file.exists());
         }
         catch (Exception ex) {
             ex.printStackTrace();
