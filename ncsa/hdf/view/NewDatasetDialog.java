@@ -160,11 +160,13 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         okButton.addActionListener(this);
 
         JButton cancelButton = new JButton("Cancel");
+        cancelButton.setName("Cancel");
         cancelButton.setMnemonic(KeyEvent.VK_C);
         cancelButton.setActionCommand("Cancel");
         cancelButton.addActionListener(this);
 
         JButton helplButton = new JButton("Help");
+        helplButton.setName("Help");
         helplButton.setMnemonic(KeyEvent.VK_H);
         helplButton.setActionCommand("Show help");
         helplButton.addActionListener(this);
