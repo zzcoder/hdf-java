@@ -140,12 +140,51 @@ public class TestHDFViewMenu {
     @Test 
     public void verifyMenuOpenReadOnly() {
         try {
-            JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File","Open Read-Only");
+            JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath("File","New","HDF5");
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
+
+            File hdf_file = new File("testopenrofile.h5");
+            if(hdf_file.exists())
+                hdf_file.delete();
+
             JFileChooserFixture fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
-            fileChooser.cancel();
+            fileChooser.fileNameTextBox().requireText("*.h5");
+            fileChooser.fileNameTextBox().setText("testopenrofile.h5");
+            fileChooser.approve();
+
+            assertTrue("File-OpenRO-HDF5 file created", hdf_file.exists());
+
+            fileMenuItem = mainFrameFixture.menuItemWithPath("File","Close All");
+            fileMenuItem.robot.waitForIdle();
+            fileMenuItem.requireVisible();
+            fileMenuItem.click();
+
+            fileMenuItem = mainFrameFixture.menuItemWithPath("File","Open Read-Only");
+            fileMenuItem.robot.waitForIdle();
+            fileMenuItem.requireVisible();
+            fileMenuItem.click();
+            fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
+            fileChooser.fileNameTextBox().setText("testopenrofile.h5");
+            fileChooser.approve();
+
+            JTreeFixture filetree = mainFrameFixture.tree().focus();
+            assertTrue("File-OpenRO-HDF5 filetree shows:", filetree.target.getRowCount()==1);
+            assertTrue("File-OpenRO-HDF5 filetree has file", (filetree.valueAt(0)).compareTo("testopenrofile.h5")==0);
+
+            JMenuItemFixture datasetMenuItem = filetree.showPopupMenuAt(0).menuItemWithPath("Delete");
+            datasetMenuItem.robot.waitForIdle();
+            datasetMenuItem.requireDisabled();
+            
+            filetree.clickRow(0);
+            fileMenuItem = mainFrameFixture.menuItemWithPath("File","Close");
+            fileMenuItem.robot.waitForIdle();
+            fileMenuItem.requireVisible();
+            fileMenuItem.click();
+
+            assertTrue("File-OpenRO-HDF5 file deleted", hdf_file.delete());
+            assertFalse("File-OpenRO-HDF5 file gone", hdf_file.exists());
         }
         catch (Exception ex) {
             ex.printStackTrace();
