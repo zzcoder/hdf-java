@@ -162,16 +162,19 @@ public class NewGroupDialog extends JDialog implements ActionListener, ItemListe
         contentPane.setPreferredSize(new Dimension(w, h));
 
         JButton okButton = new JButton("   Ok   ");
+        okButton.setName("OK");
         okButton.setActionCommand("Ok");
         okButton.setMnemonic(KeyEvent.VK_O);
         okButton.addActionListener(this);
 
         JButton cancelButton = new JButton("Cancel");
+        cancelButton.setName("Cancel");
         cancelButton.setMnemonic(KeyEvent.VK_C);
         cancelButton.setActionCommand("Cancel");
         cancelButton.addActionListener(this);
 
-        moreButton = new JButton("More" );
+        moreButton = new JButton("More");
+        moreButton.setName("More");
         moreButton.addActionListener(this);
         
         // set OK and CANCEL buttons
@@ -205,6 +208,7 @@ public class NewGroupDialog extends JDialog implements ActionListener, ItemListe
             textPanel.add(parentChoice);
             textPanel.add(new JLabel("")); //for more button
         }
+        nameField.setName("groupname");
         
         creationOrderHelpButton = new JButton(ViewProperties.getHelpIcon());
         creationOrderHelpButton.setToolTipText("Help on Creation Order");

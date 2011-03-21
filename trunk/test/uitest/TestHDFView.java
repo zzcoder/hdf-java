@@ -70,7 +70,7 @@ public class TestHDFView {
             JTreeFixture filetree = mainFrameFixture.tree().focus();
             filetree.requireVisible();
             assertTrue("File-New-HDF5 filetree has file", (filetree.valueAt(0)).compareTo("testds.h5")==0);
-            JMenuItemFixture datasetMenuItem = filetree.showPopupMenuAt(2).menuItemWithPath("New","Dataset");
+            JMenuItemFixture datasetMenuItem = filetree.showPopupMenuAt(0).menuItemWithPath("New","Dataset");
             datasetMenuItem.robot.waitForIdle();
             datasetMenuItem.requireVisible();
             datasetMenuItem.click();
