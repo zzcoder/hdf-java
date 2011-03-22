@@ -3,8 +3,7 @@
 ###########################################################
 #      Sample configuration file to build hdf-java        #
 ###########################################################
-EXTRA_FLAGS=
-BUILDDIR=/mnt/scr1/pre-release/hdf-java/build/
+BUILDDIR=/mnt/scr1/xcao/hdf_java/build
 LIBDIR=/mnt/scr1/xcao/hdf_java/lib
 
 ############################################################
@@ -15,12 +14,13 @@ LIBDIR=/mnt/scr1/xcao/hdf_java/lib
 #JAVALIB=/usr/java/jdk-106/jdk/jre/lib
 
 ############################################################
-#                     linux64 (amani)                     #
+#                     linux64 (koala)                      #
 ############################################################
 #MACHINE=linux64
-#JAVAINC=/mnt/scr1/xcao/jdk/linux64/jdk1.6.0_11/include
-#JAVALIB=/mnt/scr1/xcao/jdk/linux64/jdk1.6.0_11/jre/lib
+#JAVAINC=/usr/lib/jvm/java-1.6.0-openjdk.x86_64/include
+#JAVALIB=/usr/lib/jvm/java-1.6.0-openjdk.x86_64/jre/lib
 #export CC="gcc -fPIC"
+#EXTRA_FLAGS=--with-javax="-d64"
 
 ############################################################
 #                     solaris32 (linew)                    #
@@ -39,6 +39,7 @@ LIBDIR=/mnt/scr1/xcao/hdf_java/lib
 #JAVABIN=/usr/java/jdk1.6.0_12/bin/sparcv9
 #export CC="/opt/SUNWspro/bin/cc -KPIC -m64"
 #EXTRA_FLAGS=--with-javabin=$JAVABIN 
+#EXTRA_FLAGS=--with-javax="-d64"
 
 ############################################################
 #                     macintel32 (tejeda)                  #
@@ -58,9 +59,8 @@ LIBDIR=/mnt/scr1/xcao/hdf_java/lib
 #LIBDIR=/Users/xcao/hdf_java/lib
 #JAVAINC=/System/Library/Frameworks/JavaVM.framework/Headers
 #JAVALIB=/System/Library/Frameworks/JavaVM.framework/Libraries
-#EXTRA_FLAGS="-build=powerpc-apple --with-jdkclasses=/System/Library/Frameworks/JavaVM.framework/Classes --with-javabin=/System/Library/Frameworks/JavaVM.framework/Commands"
+#EXTRA_FLAGS="--with-javax=-d64 -build=powerpc-apple --with-jdkclasses=/System/Library/Frameworks/JavaVM.framework/Classes --with-javabin=/System/Library/Frameworks/JavaVM.framework/Commands"
 #export CC="gcc -mmacosx-version-min=10.5 -isysroot /Developer/SDKs/MacOSX10.5.sdk -fPIC"
-
 
 
 ############################################################
