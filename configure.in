@@ -552,6 +552,17 @@ HERE=`pwd`
 CLASSPATH="$JAVACLASSES"":""$HERE"
 
 withval="";
+AC_SUBST(javabin) javax=""
+AC_ARG_WITH(javax,[  --with-javax=LIB],,)
+javax=$withval
+
+if test -n "$javax" ; then
+JAVAX=$javax
+else
+JAVAX="-Xmx1024m"
+fi
+
+withval="";
 AC_SUBST(javabin) javabin=""
 AC_ARG_WITH(javabin,[  --with-javabin=LIB],,)
 javabin=$withval
@@ -761,6 +772,7 @@ AC_SUBST(AWK)
 AC_SUBST(FIND)
 AC_SUBST(JAVA)
 AC_SUBST(JAVABIN)
+AC_SUBST(JAVAX)
 AC_SUBST(JAVAC)
 AC_SUBST(JAVADOC)
 AC_SUBST(JAVAINC)
