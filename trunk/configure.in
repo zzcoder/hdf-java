@@ -558,8 +558,6 @@ javax=$withval
 
 if test -n "$javax" ; then
 JAVAX=$javax
-else
-JAVAX="-Xmx1024m"
 fi
 
 withval="";
