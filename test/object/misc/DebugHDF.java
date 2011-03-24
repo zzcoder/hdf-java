@@ -134,8 +134,10 @@ public class DebugHDF {
 //        try {testH5TconvertStr(); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testH5DeleteDS("g:\\temp\\strs.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testExtendData("g:\\temp\\extended.h5", "dset", 1000, 1500); } catch (Exception ex) {ex.printStackTrace();} 
-        try {createNestedcompound("g:\\temp\\nested_cmp.h5", "dset"); } catch (Exception ex) {ex.printStackTrace();} 
-    }
+//        try {createNestedcompound("g:\\temp\\nested_cmp.h5", "dset"); } catch (Exception ex) {ex.printStackTrace();}
+        try {  testH5Vlen("G:\\temp\\str.h5") ; } catch (Exception ex) {ex.printStackTrace();}
+        try {  testH5VlenObj("G:\\temp\\str2.h5") ; } catch (Exception ex) {ex.printStackTrace();}
+   }
     
     private static void createNestedcompound(String fname, String dname) throws Exception 
     {
@@ -1703,7 +1705,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
     
     private static void testH5Vlen(final String filename) throws Exception 
     {
-        String buf[] = {"This is a test"};
+        String buf[] = {"Parting", "is such", "sweet", "sorrow."};
         
         // Case 1, may run into infinite loop
         // int tid = H5.H5Tvlen_create(HDF5Constants.H5T_C_S1);
@@ -1713,7 +1715,7 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         H5.H5Tset_size(tid, HDF5Constants.H5T_VARIABLE);
         
         int fid = H5.H5Fcreate(filename, HDF5Constants.H5F_ACC_TRUNC, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-        int sid = H5.H5Screate_simple(1, new long[] {1}, null);
+        int sid = H5.H5Screate_simple(1, new long[] {4}, null);
         int did = H5.H5Dcreate(fid, "/str", tid, sid, HDF5Constants.H5P_DEFAULT);
         
         // write() fails on both case 1 and 2
@@ -1725,6 +1727,23 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         H5.H5Tclose(tid);
         H5.H5Fclose(fid);
     }
+    
+    private static void testH5VlenObj(final String fname) throws Exception 
+    {
+        int strLen = -1;
+        long[] dims = {4};
+        String buf[] = {"Parting", "is such", "sweet", "sorrow."};
+        
+        // create a new file with a given file name.
+        H5File testFile = new H5File(fname, H5File.CREATE);
+
+        testFile.open();
+        Group root = (Group)((javax.swing.tree.DefaultMutableTreeNode)testFile.getRootNode()).getUserObject();
+        Datatype dtype = testFile.createDatatype(Datatype.CLASS_STRING, strLen, Datatype.NATIVE, Datatype.NATIVE);
+        Dataset dataset = testFile.createScalarDS ("/str", root, dtype, dims, null, null, 0, buf);
+
+        testFile.close();
+     }    
     
     private static void testH5WriteFloats(final String filename) throws Exception 
     {
