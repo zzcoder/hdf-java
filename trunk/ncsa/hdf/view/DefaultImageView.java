@@ -20,11 +20,13 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -2125,7 +2127,21 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         }
 
         public void paint(Graphics g) {
+        	if (g instanceof Graphics2D) {
+        		Graphics2D g2 = (Graphics2D) g;
+
+            	g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON);
+
+            	g2.setRenderingHint(RenderingHints.KEY_RENDERING,
+                        RenderingHints.VALUE_RENDER_QUALITY);
+
+            	g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                        RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                g2.drawImage(image, 0, 0, imageSize.width, imageSize.height, this);
+        	} else
             g.drawImage(image, 0, 0, imageSize.width, imageSize.height, this);
+        	
             if ((selectedArea.width > 0) && (selectedArea.height > 0)) {
                 g.setColor(Color.red);
                 g.drawRect(selectedArea.x, selectedArea.y, selectedArea.width,
@@ -2370,7 +2386,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             int w = selectedArea.width;
             int h = selectedArea.height;
             if ((w > 0) && (h > 0)) {
-                // use fixed aelected area to reduce the rounding error
+                // use fixed selected area to reduce the rounding error
                 selectedArea.setBounds(
                         (int) (originalSelectedArea.x * zoomFactor),
                         (int) (originalSelectedArea.y * zoomFactor),
