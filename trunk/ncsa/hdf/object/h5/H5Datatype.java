@@ -573,7 +573,7 @@ public class H5Datatype extends Datatype {
                 break;
             case CLASS_STRING:
                 tid = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
-                if (isVLEN)
+                if (isVLEN || datatypeSize < 0)
                     H5.H5Tset_size(tid, HDF5Constants.H5T_VARIABLE);
                 else
                     H5.H5Tset_size(tid, datatypeSize);
