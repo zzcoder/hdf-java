@@ -1290,11 +1290,17 @@ implements ActionListener, MetaDataView
     				break;
     			}
     			case 'J':
-    				Array.setLong  (data, i, (long)d); break;
+    				Array.setLong  (data, i, (long)d); 
+    				break;
     			case 'F':
-    				Array.setFloat (data, i, (float)d); break;
+    				Array.setFloat (data, i, (float)d); 
+    				break;
     			case 'D':
-    			default:  Array.set      (data, i, newValue); break;
+    				Array.setDouble(data, i, d); 
+    				break;
+    			default:  
+    				Array.set(data, i, theToken); 
+    			    break;
     			}
     		}
 

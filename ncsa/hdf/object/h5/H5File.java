@@ -1766,25 +1766,13 @@ public class H5File extends FileFormat {
                             HDF5Constants.H5R_OBJECT, -1);
                 }
                 else if (Array.get(attrValue, 0) instanceof String) {
-                    String strValue = (String) Array.get(attrValue, 0);
-                    int size = H5.H5Tget_size(tid);
-
-                    if (strValue.length() > size) {
-                        // truncate the extra characters
-                        strValue = strValue.substring(0, size);
-                        Array.set(attrValue, 0, strValue);
-                    }
-                    else {
-                        // pad space to the unused space
-                        for (int i = strValue.length(); i < size; i++) {
-                            strValue += " ";
-                        }
-                    }
-
-                    byte[] bval = strValue.getBytes();
-                    // add null to the end to get rid of the junks
-                    bval[(strValue.length() - 1)] = 0;
-                    attrValue = bval;
+                	int size = H5.H5Tget_size(tid);
+                	int len = ((String[])attrValue).length;
+                	byte[] bval = Dataset.stringToByte((String[])attrValue, size);
+                	if (bval != null && bval.length == size*len) {
+                		bval[bval.length-1] = 0;
+                		attrValue = bval;
+                	}
                 }
 
                 try {

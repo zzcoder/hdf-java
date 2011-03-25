@@ -135,9 +135,65 @@ public class DebugHDF {
 //        try {testH5DeleteDS("g:\\temp\\strs.h5"); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {testExtendData("g:\\temp\\extended.h5", "dset", 1000, 1500); } catch (Exception ex) {ex.printStackTrace();} 
 //        try {createNestedcompound("g:\\temp\\nested_cmp.h5", "dset"); } catch (Exception ex) {ex.printStackTrace();}
-        try {  testH5Vlen("G:\\temp\\str.h5") ; } catch (Exception ex) {ex.printStackTrace();}
-        try {  testH5VlenObj("G:\\temp\\str2.h5") ; } catch (Exception ex) {ex.printStackTrace();}
+//        try {  testH5Vlen("G:\\temp\\str.h5") ; } catch (Exception ex) {ex.printStackTrace();}
+//        try {  testH5VlenObj("G:\\temp\\str2.h5") ; } catch (Exception ex) {ex.printStackTrace();}
+        try {  testH5VlenAttr("G:\\temp\\vlen_str_attr.h5") ; } catch (Exception ex) {ex.printStackTrace();}
    }
+    
+    private static void testH5VlenAttr( String fname) throws Exception
+    {
+        FileFormat fileFormat = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
+        if (fileFormat == null)
+        {
+            System.err.println("Cannot find HDF5 FileFormat.");
+            return;
+        }
+
+        H5File testFile = (H5File)fileFormat.create(fname);
+        if (testFile == null)
+        {
+            System.err.println("Failed to create file:"+fname);
+            return;
+        }
+
+        testFile.open();
+        Group root = (Group)((javax.swing.tree.DefaultMutableTreeNode)testFile.getRootNode()).getUserObject();
+
+        String[] data = {"abc de fghi jk lmn op qrst uvw xyz\n0 12 345 6 789"};
+        long[] data_dims = {1};
+        Datatype dtype = testFile.createDatatype(
+            Datatype.CLASS_STRING, data[0].length(),
+            Datatype.NATIVE, Datatype.NATIVE);
+        Dataset dataset = testFile.createScalarDS
+            ("text", root, dtype, data_dims, null, null, 0, data);
+
+        long[] attr_dims = {3};
+        String[] attr_value = {"a", "ab", "abc"};
+        Datatype attr_dtype = testFile.createDatatype(
+            Datatype.CLASS_STRING, 5,
+            Datatype.NATIVE, Datatype.NATIVE);
+        Attribute attr = new Attribute("foo", attr_dtype, attr_dims);
+        //byte[] bvalue = Dataset.stringToByte(attr_value, 5);
+        attr.setValue(attr_value);
+        dataset.writeMetadata(attr);
+
+        testFile.close();
+
+        // read attributes back
+        testFile = (H5File)fileFormat.open(fname, FileFormat.READ);
+        if (testFile == null)
+        {
+            System.err.println("Failed to open file:"+fname);
+            return;
+        }
+        testFile.open();
+        root = (Group)((javax.swing.tree.DefaultMutableTreeNode)testFile.getRootNode()).getUserObject();
+        dataset = (Dataset)root.getMemberList().get(0);
+        List attrList = dataset.getMetadata();
+        attr = (Attribute)attrList.get(0);
+        String[] value = (String [])attr.getValue();
+        testFile.close();
+    }
     
     private static void createNestedcompound(String fname, String dname) throws Exception 
     {
