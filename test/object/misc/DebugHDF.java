@@ -173,6 +173,7 @@ public class DebugHDF {
             Datatype.CLASS_STRING, 5,
             Datatype.NATIVE, Datatype.NATIVE);
         Attribute attr = new Attribute("foo", attr_dtype, attr_dims);
+        
         //byte[] bvalue = Dataset.stringToByte(attr_value, 5);
         attr.setValue(attr_value);
         dataset.writeMetadata(attr);
