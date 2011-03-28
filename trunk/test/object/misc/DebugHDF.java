@@ -137,8 +137,54 @@ public class DebugHDF {
 //        try {createNestedcompound("g:\\temp\\nested_cmp.h5", "dset"); } catch (Exception ex) {ex.printStackTrace();}
 //        try {  testH5Vlen("G:\\temp\\str.h5") ; } catch (Exception ex) {ex.printStackTrace();}
 //        try {  testH5VlenObj("G:\\temp\\str2.h5") ; } catch (Exception ex) {ex.printStackTrace();}
-        try {  testH5VlenAttr("G:\\temp\\vlen_str_attr.h5") ; } catch (Exception ex) {ex.printStackTrace();}
+//        try {  testH5VlenAttr("G:\\temp\\vlen_str_attr.h5") ; } catch (Exception ex) {ex.printStackTrace();}
+      try {testRefData("g:\\temp\\refs.h5", "refs"); } catch (Exception ex) {ex.printStackTrace();} 
    }
+    
+    public static void testRefData(String fname, String dname)throws Exception
+    {
+    	int size = 10;
+    	long dims[] = {size};
+    	long[] maxdims = {HDF5Constants.H5S_UNLIMITED};
+    	byte[][] ref_buf = new byte[2][8];
+    	
+    	float data[] = new float[size];
+    	for (int i=0; i<size; i++)
+    		data[i] = i;
+    	
+        H5File file = new H5File(fname, H5File.CREATE);
+        file.open();
+        
+        // create a ref dataset
+        Group grp = file.createGroup("grp", null);
+        Dataset ds = file.createScalarDS("dset", grp, new H5Datatype(Datatype.CLASS_FLOAT, -1, -1, -1), dims, maxdims, null, 0, data);
+        ref_buf[0] = H5.H5Rcreate(file.getFID(), grp.getFullName(), HDF5Constants.H5R_OBJECT, -1);
+        ref_buf[1] = H5.H5Rcreate(file.getFID(), ds.getFullName(), HDF5Constants.H5R_OBJECT, -1);
+        file.createScalarDS(dname, null, new H5Datatype(Datatype.CLASS_REFERENCE, -1, -1, -1), new long[] {2}, null, null, 0, ref_buf);
+    	file.close();
+    	
+    	// open the file and the dataset with refs
+    	file.open();
+    	ds = (H5ScalarDS)file.get(dname);
+     	long[] refs = (long[])ds.getData();
+     	
+     	// use low level API function, H5.H5Rget_name
+       	String[] name = {""};;
+     	for (int i=0; i<refs.length; i++) {
+     		H5.H5Rget_name(file.getFID(), HDF5Constants.H5R_OBJECT, HDFNativeData.longToByte(refs[i]), name, 32);
+    		System.out.println(name[0]);
+    	}
+    	
+     	// if file.open() was called, search objects in memory by high level function, findObject() 
+    	long[] oid = new long[1];
+    	for (int i=0; i<refs.length; i++) {
+    		oid[0] = refs[i];
+     		HObject obj = FileFormat.findObject(file, oid);
+    		System.out.println(obj.getFullName());
+    	}
+
+    	file.close();
+	}
     
     private static void testH5VlenAttr( String fname) throws Exception
     {
