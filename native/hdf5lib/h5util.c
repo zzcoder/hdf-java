@@ -207,8 +207,8 @@ int h5str_sprintf(h5str_t *str, hid_t container, hid_t tid, void *ptr) {
         }
 
         if (size > 0) {
-            this_str = (char *) malloc(size);
-            strcpy(this_str, tmp_str);
+            this_str = (char *) malloc(size+1);
+            strncpy(this_str, tmp_str, size);
         }
     }
     else if (tclass == H5T_COMPOUND) {
