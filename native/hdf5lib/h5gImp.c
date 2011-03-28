@@ -47,7 +47,7 @@ extern "C" {
 
 #ifdef __cplusplus
 #define ENVPTR (env)
-#define ENVPAR 
+#define ENVPAR
 #else
 #define ENVPTR (*env)
 #define ENVPAR env,
@@ -208,8 +208,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Glink
  * Signature: (ILjava/lang/String;IILjava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Glink2
-  (JNIEnv *env, jclass clss, 
-    jint current_loc_id, jstring current_name, jint link_type, 
+  (JNIEnv *env, jclass clss,
+    jint current_loc_id, jstring current_name, jint link_type,
     jint new_loc_id, jstring new_name)
 {
     herr_t status;
@@ -346,10 +346,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1objinfo
     }
     if (follow_link == JNI_TRUE) {
         follow = TRUE;  /*  HDF5 'TRUE' */
-    } 
+    }
     else if (follow_link == JNI_FALSE) {
         follow = FALSE;  /*  HDF5 'FALSE' */
-    } 
+    }
     else {
         h5badArgument( env, "H5Gget_objinfo:  follow_link is invalid");
         return -1;
@@ -429,7 +429,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1objinfo
         ENVPTR->ReleaseStringUTFChars(ENVPAR name,gName);
         h5libraryError(env);
         return -1;
-    } 
+    }
     else {
         fileInfo[0] = (jlong)h5gInfo.fileno[0];
         fileInfo[1] = (jlong)h5gInfo.fileno[1];
@@ -454,7 +454,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1objinfo
  * Signature: (ILjava/lang/String;I[Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1linkval
-  (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint size, 
+  (JNIEnv *env, jclass clss, jint loc_id, jstring name, jint size,
           jobjectArray value)
 {
     char* gName;
@@ -499,7 +499,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1linkval
         /*  the SetObjectArrayElement may raise exceptions... */
         ENVPTR->SetObjectArrayElement(ENVPAR value,0,(jobject)str);
         free(lValue);
-    } 
+    }
     else {
         free(lValue);
         h5libraryError(env);
@@ -605,7 +605,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1comment
         /*  The SetObjectArrayElement may raise exceptions */
         ENVPTR->SetObjectArrayElement(ENVPAR comment,0,(jobject)str);
         free(gComment);
-    } 
+    }
     else {
         free(gComment);
         h5libraryError(env);
@@ -659,7 +659,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1num_1objs
         free(num_obja);
         h5libraryError(env);
         return -1;
-    } 
+    }
     for (i = 0; i < rank; i++) {
             num_objP[i] = num_obja[i];
         }
@@ -675,7 +675,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1num_1objs
  * Signature: (IJ[Ljava/lang/String;J)J
  */
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1objname_1by_1idx
-  (JNIEnv *env, jclass clss, jint group_id, jlong idx, 
+  (JNIEnv *env, jclass clss, jint group_id, jlong idx,
           jobjectArray name, jlong buf_size)
 {
     char *aName;
@@ -753,7 +753,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1objtype_1by_1idx
  * Signature: (ILjava/lang/String;[Ljava/lang/String;[I[I[JII)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
-  (JNIEnv *env, jclass clss, jint loc_id, jstring group_name, 
+  (JNIEnv *env, jclass clss, jint loc_id, jstring group_name,
   jobjectArray objName, jintArray oType, jintArray lType,
   jlongArray oRef, jint n, jint indx_type)
 {
@@ -765,7 +765,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
     jint *otarr;
     jint *ltarr;
     jlong *refP;
-    unsigned long *refs;
+    unsigned long *refs=NULL;
     int i;
     int gid = loc_id;
 	int indexType = indx_type;
@@ -785,17 +785,17 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
             return -1;
         }
     }
-    
+
     if (oType == NULL) {
         h5nullArgument( env, "H5Gget_obj_info_all:  oType is NULL");
         return -1;
     }
-   
+
     if (lType == NULL) {
         h5nullArgument( env, "H5Gget_obj_info_all:  lType is NULL");
         return -1;
     }
-    
+
     if (oRef == NULL) {
         h5nullArgument( env, "H5Gget_obj_info_all:  oRef is NULL");
         return -1;
@@ -813,46 +813,35 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
         h5JNIFatalError( env, "H5Gget_obj_info_all:  ltype not pinned");
         return -1;
     }
-    
+
     refP = ENVPTR->GetLongArrayElements(ENVPAR oRef,&isCopy);
     if (refP == NULL) {
         ENVPTR->ReleaseIntArrayElements(ENVPAR lType,ltarr,JNI_ABORT);
         ENVPTR->ReleaseIntArrayElements(ENVPAR oType,otarr,JNI_ABORT);
         h5JNIFatalError( env, "H5Gget_obj_info_all:  type not pinned");
         return -1;
-    }    
+    }
 
     oName = (char **)calloc(n, sizeof (*oName));
-    refs = (unsigned long *)calloc(n, sizeof (unsigned long));
+    if (!oName)
+    	goto error;
 
+    refs = (unsigned long *)calloc(n, sizeof (unsigned long));
+    if (!refs)
+    	goto error;
+printf("@@@ refs = %p\n", (void *)refs);
     ret_val = H5Gget_obj_info_all( (hid_t) gid, oName, (int *)otarr, (int *)ltarr, refs , indexType);
 
-    if (group_name != NULL) {
-        H5Gclose(gid);
-    }
-    
-    if (ret_val < 0) {
-        ENVPTR->ReleaseIntArrayElements(ENVPAR lType,ltarr,JNI_ABORT);
-        ENVPTR->ReleaseIntArrayElements(ENVPAR oType,otarr,JNI_ABORT);
-        ENVPTR->ReleaseLongArrayElements(ENVPAR oRef,refP,JNI_ABORT);
-        h5str_array_free(oName, n);
-        free(refs);
-        h5libraryError(env);
-        return -1;
-    }
-
-    ENVPTR->ReleaseIntArrayElements(ENVPAR lType,ltarr,0);
-    ENVPTR->ReleaseIntArrayElements(ENVPAR oType,otarr,0);
+    if (ret_val < 0)
+        goto error;
 
     if (refs) {
         for (i=0; i<n; i++) {
             refP[i] = (jlong) refs[i];
+            printf("\n@@@ ref=%u\n", refP[i]);fflush(stdout);
         }
     }
 
-    free(refs);
-    ENVPTR->ReleaseLongArrayElements(ENVPAR oRef,refP,0);
-    
     if (oName) {
         for (i=0; i<n; i++) {
             if (*(oName+i)) {
@@ -861,9 +850,30 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
             }
         } /* for (i=0; i<n; i++)*/
     }
-    h5str_array_free(oName, n);
-    
+
+    if (group_name != NULL) H5Gclose(gid);
+	ENVPTR->ReleaseIntArrayElements(ENVPAR lType,ltarr,0);
+	ENVPTR->ReleaseIntArrayElements(ENVPAR oType,otarr,0);
+	ENVPTR->ReleaseLongArrayElements(ENVPAR oRef,refP,0);
+	if (oName) h5str_array_free(oName, n);
+
+printf("@@@ before free(refs): ref[0]=%u\n", refs[0]);fflush(stdout);
+printf("@@@ refs = %p\n", (void *)refs);fflush(stdout);
+	if (refs) free(refs);
+puts("@@@ afer free(refs)\n");fflush(stdout);
+
     return ret_val;
+
+error:
+	if (group_name != NULL) H5Gclose(gid);
+	ENVPTR->ReleaseIntArrayElements(ENVPAR lType,ltarr,JNI_ABORT);
+	ENVPTR->ReleaseIntArrayElements(ENVPAR oType,otarr,JNI_ABORT);
+	ENVPTR->ReleaseLongArrayElements(ENVPAR oRef,refP,JNI_ABORT);
+	if (oName) h5str_array_free(oName, n);
+	if (refs) free(refs);
+	h5libraryError(env);
+
+	return -1;
 }
 
 /*
@@ -872,8 +882,8 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
  * Signature: (I[Ljava/lang/String;[I[I[JII)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1max
-  (JNIEnv *env, jclass clss, jint loc_id, jobjectArray objName, 
-          jintArray oType, jintArray lType, jlongArray oRef, 
+  (JNIEnv *env, jclass clss, jint loc_id, jobjectArray objName,
+          jintArray oType, jintArray lType, jlongArray oRef,
           int maxnum, int n)
 {
     herr_t ret_val = -1;
@@ -895,7 +905,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1max
         h5nullArgument( env, "H5Gget_obj_info_max:  lType is NULL");
         return -1;
     }
-    
+
     if (oRef == NULL) {
         h5nullArgument( env, "H5Gget_obj_info_all:  oRef is NULL");
         return -1;
@@ -913,14 +923,14 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1max
         h5JNIFatalError( env, "H5Gget_obj_info_max:  ltype not pinned");
         return -1;
     }
-    
+
     refP = ENVPTR->GetLongArrayElements(ENVPAR oRef,&isCopy);
     if (refP == NULL) {
         ENVPTR->ReleaseIntArrayElements(ENVPAR oType,otarr,JNI_ABORT);
         ENVPTR->ReleaseIntArrayElements(ENVPAR lType,ltarr,JNI_ABORT);
         h5JNIFatalError( env, "H5Gget_obj_info_all:  type not pinned");
         return -1;
-    }    
+    }
 
     oName = (char **)calloc(n, sizeof (*oName));
     refs = (unsigned long *)calloc(n, sizeof (unsigned long));
@@ -947,7 +957,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1max
     }
     free(refs);
     ENVPTR->ReleaseLongArrayElements(ENVPAR oRef,refP,0);
-    
+
     if (oName) {
         for (i=0; i<n; i++) {
             if (*(oName+i)) {
@@ -958,7 +968,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1max
     }
 
     h5str_array_free(oName, n);
-    
+
     return ret_val;
 }
 
@@ -974,7 +984,7 @@ int H5Gget_obj_info_all( hid_t loc_id, char **objname, int *otype, int *ltype, u
 
 	if(H5Literate(loc_id, (H5_index_t)indexType, H5_ITER_INC, NULL, obj_info_all, (void *)&info) < 0){
 		if(H5Literate(loc_id, H5_INDEX_NAME, H5_ITER_INC, NULL, obj_info_all, (void *)&info) < 0)
-        return -1;      
+        return -1;
 	}
 
     return info.count;
@@ -996,7 +1006,7 @@ int H5Gget_obj_info_max( hid_t loc_id, char **objname, int *otype, int *ltype, u
     return info.count;
 }
 
-herr_t obj_info_all(hid_t loc_id, const char *name, const H5L_info_t *info, void *op_data)  
+herr_t obj_info_all(hid_t loc_id, const char *name, const H5L_info_t *info, void *op_data)
 {
     int type = -1;
     herr_t retVal = 0;
@@ -1012,7 +1022,7 @@ herr_t obj_info_all(hid_t loc_id, const char *name, const H5L_info_t *info, void
         strcpy(*(datainfo->objname+datainfo->count), name);
         *(datainfo->objno+datainfo->count) = -1;
         //return 1;
-    } 
+    }
     else {
         *(datainfo->otype+datainfo->count) = object_info.type;
         *(datainfo->ltype+datainfo->count) = info->type;
@@ -1024,12 +1034,13 @@ herr_t obj_info_all(hid_t loc_id, const char *name, const H5L_info_t *info, void
         else
             *(datainfo->objno+datainfo->count) = info->u.val_size;
     }
+
     datainfo->count++;
 
     return 0;
 }
 
-herr_t obj_info_max(hid_t loc_id, const char *name, const H5L_info_t *info, void *op_data)  
+herr_t obj_info_max(hid_t loc_id, const char *name, const H5L_info_t *info, void *op_data)
 {
     int type = -1;
     herr_t retVal = 0;
@@ -1043,7 +1054,7 @@ herr_t obj_info_max(hid_t loc_id, const char *name, const H5L_info_t *info, void
         *(datainfo->objname+datainfo->count) = NULL;
         *(datainfo->objno+datainfo->count) = -1;
         return 1;
-    } 
+    }
     else {
         *(datainfo->otype+datainfo->count) = object_info.type;
         *(datainfo->ltype+datainfo->count) = info->type;
@@ -1112,7 +1123,7 @@ jobject create_H5G_info_t(JNIEnv *env, H5G_info_t group_info)
  * Signature: (ILjava/lang/String;III)I
  */
 JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Gcreate2
-  (JNIEnv *env, jclass clss, jint loc_id, jstring name, 
+  (JNIEnv *env, jclass clss, jint loc_id, jstring name,
           jint link_plist_id, jint create_plist_id, jint access_plist_id)
 {
     hid_t status;
