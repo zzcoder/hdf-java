@@ -829,7 +829,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Gget_1obj_1info_1all
     refs = (unsigned long *)calloc(n, sizeof (unsigned long));
     if (!refs)
     	goto error;
-printf("@@@ refs = %p\n", (void *)refs);
+
     ret_val = H5Gget_obj_info_all( (hid_t) gid, oName, (int *)otarr, (int *)ltarr, refs , indexType);
 
     if (ret_val < 0)
@@ -838,7 +838,6 @@ printf("@@@ refs = %p\n", (void *)refs);
     if (refs) {
         for (i=0; i<n; i++) {
             refP[i] = (jlong) refs[i];
-            printf("\n@@@ ref=%u\n", refP[i]);fflush(stdout);
         }
     }
 
@@ -856,11 +855,7 @@ printf("@@@ refs = %p\n", (void *)refs);
 	ENVPTR->ReleaseIntArrayElements(ENVPAR oType,otarr,0);
 	ENVPTR->ReleaseLongArrayElements(ENVPAR oRef,refP,0);
 	if (oName) h5str_array_free(oName, n);
-
-printf("@@@ before free(refs): ref[0]=%u\n", refs[0]);fflush(stdout);
-printf("@@@ refs = %p\n", (void *)refs);fflush(stdout);
 	if (refs) free(refs);
-puts("@@@ afer free(refs)\n");fflush(stdout);
 
     return ret_val;
 
