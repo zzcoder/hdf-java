@@ -44,5 +44,23 @@ FILE (WRITE ${JUNIT_TEST_RUNNER}
   ENDIF(RESULT)
   ")
 
+ADD_TEST (
+    NAME JUnit-gui-clear-objects
+    COMMAND    ${CMAKE_COMMAND}
+        -E remove 
+        testopenfile.hdf
+        testopenrofile.h5
+        testfile.hdf
+        testfile.h5
+        closefile.hdf
+        closeallfile.hdf
+        closeallfile.h5
+        testsavefile.h5
+        testsaveasfile.h5
+        testsaveasfile2.h5
+        testds.h5
+)
+
 ADD_TEST (JUnit-gui  ${CMAKE_COMMAND} -P ${JUNIT_TEST_RUNNER})
+SET_TESTS_PROPERTIES (JUnit-gui PROPERTIES DEPENDS JUnit-gui-clear-objects)
    
