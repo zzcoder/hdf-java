@@ -89,5 +89,8 @@ public class TestHDFView {
         catch (Exception ex) {
             ex.printStackTrace();
         }
+        catch (AssertionError ae) {
+            ae.printStackTrace();
+        }
     }
 }
