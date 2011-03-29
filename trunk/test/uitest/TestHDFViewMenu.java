@@ -76,8 +76,8 @@ public class TestHDFViewMenu {
             assertTrue("File file deleted", hdf_file.delete());
             assertFalse("File file gone", hdf_file.exists());
         }
-
     }
+
     @BeforeClass 
     public static void setUpOnce() {
         FailOnThreadViolationRepaintManager.install();
