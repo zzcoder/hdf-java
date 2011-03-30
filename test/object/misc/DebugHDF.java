@@ -160,7 +160,17 @@ public class DebugHDF {
         Dataset ds = file.createScalarDS("dset", grp, new H5Datatype(Datatype.CLASS_FLOAT, -1, -1, -1), dims, maxdims, null, 0, data);
         ref_buf[0] = H5.H5Rcreate(file.getFID(), grp.getFullName(), HDF5Constants.H5R_OBJECT, -1);
         ref_buf[1] = H5.H5Rcreate(file.getFID(), ds.getFullName(), HDF5Constants.H5R_OBJECT, -1);
-        file.createScalarDS(dname, null, new H5Datatype(Datatype.CLASS_REFERENCE, -1, -1, -1), new long[] {2}, null, null, 0, ref_buf);
+        ds = file.createScalarDS(dname, null, new H5Datatype(Datatype.CLASS_REFERENCE, -1, -1, -1), new long[] {2}, null, null, 0, ref_buf);
+        
+        // create ref attributes
+        Datatype attr_dtype = file.createDatatype( Datatype.CLASS_REFERENCE, Datatype.NATIVE, Datatype.NATIVE, Datatype.NATIVE);
+        Attribute attr = new Attribute("ref", attr_dtype, new long[] {1});
+        attr.setValue(ds.getFullName());
+        file.writeAttribute(ds, attr, false);
+        attr = new Attribute("refs", attr_dtype, new long[] {2});
+        attr.setValue(ref_buf);
+        ds.writeMetadata(attr);        
+        
     	file.close();
     	
     	// open the file and the dataset with refs

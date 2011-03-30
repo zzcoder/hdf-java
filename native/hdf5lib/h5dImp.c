@@ -1175,7 +1175,6 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DwriteString
     char  **wdata;
     jsize   size;
     jint    i;
-    jint    j;
 
     if (buf == NULL) {
         h5nullArgument(env, "H5Dwrite:  buf is NULL");
@@ -1199,29 +1198,15 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DwriteString
 
             if (utf8) {
                 wdata[i] = (char*)malloc(strlen(utf8) + 1);
-                if (!wdata[i]) {
-                    status = -1;
-                    // can't allocate memory, cleanup
-                    for (j = 0; j < i; ++i) {
-                        if(wdata[j]) {
-                            free(wdata[j]);
-                        }
-                    }
-                    free(wdata);
-
-                    ENVPTR->ReleaseStringUTFChars(ENVPAR obj, utf8);
-                    ENVPTR->DeleteLocalRef(ENVPAR obj);
-                    h5JNIFatalError(env, "H5DwriteString:  cannot allocate buffer");
-                    return -1;
+                if (wdata[i]) {
+                	strcpy(wdata[i], utf8);
                 }
-
-                strcpy(wdata[i], utf8);
            }
 
            ENVPTR->ReleaseStringUTFChars(ENVPAR obj, utf8);
            ENVPTR->DeleteLocalRef(ENVPAR obj);
         }
-    }
+    } /*for (i = 0; i < size; ++i) */
 
     status = H5Dwrite((hid_t)dataset_id, (hid_t)mem_type_id, (hid_t)mem_space_id,
                       (hid_t)file_space_id, (hid_t)xfer_plist_id, wdata);

@@ -28,6 +28,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
+import java.awt.Transparency;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -1020,15 +1021,15 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
 
     // implementing ImageObserver
     private void zoomTo(float zf) {
-        if (zf > 8) {
-            zoomFactor = 8;
-        }
-        else if (zf < 0.125) {
-            zoomFactor = 0.125f;
-        }
-        else {
-            zoomFactor = zf;
-        }
+        if (zf > 8)
+        	zf = 8;
+        else if (zf < 0.125)
+        	zf = 0.125f;
+        
+        if (zoomFactor == zf)
+        	return; // no change in zooming
+        
+        zoomFactor = zf;
 
         Dimension imageSize = new Dimension(
                 (int) (imageComponent.originalSize.width * zoomFactor),
@@ -2130,17 +2131,13 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         	if (g instanceof Graphics2D && (zoomFactor<0.99)) {
         		Graphics2D g2 = (Graphics2D) g;
 
-//            	g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-//                        RenderingHints.VALUE_ANTIALIAS_ON);
-//
-//            	g2.setRenderingHint(RenderingHints.KEY_RENDERING,
-//                        RenderingHints.VALUE_RENDER_QUALITY);
-
             	g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                         RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                g2.drawImage(image, 0, 0, imageSize.width, imageSize.height, this);
+            	Image scaledImg = multiBiliner(image, imageSize.width, imageSize.height, true);
+                g2.drawImage(scaledImg, 0, 0, imageSize.width, imageSize.height, this);
+                
         	} else
-            g.drawImage(image, 0, 0, imageSize.width, imageSize.height, this);
+        		g.drawImage(image, 0, 0, imageSize.width, imageSize.height, this);
         	
             if ((selectedArea.width > 0) && (selectedArea.height > 0)) {
                 g.setColor(Color.red);
@@ -2148,7 +2145,61 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                         selectedArea.height);
             }
         }
+        
+        /**
+         * Create an image using multiple step bilinear, see details at
+         * http://today.java.net/pub/a/today/2007/04/03/perils-of-image-getscaledinstance.html
+         *
+         * @param img the original image to be scaled
+         * @param targetWidth the desired width of the scaled instance
+         * @param targetHeight the desired height of the scaled instance,
+         * @return a scaled version of the original 
+         */
+        private Image multiBiliner(Image img, int targetWidth, int targetHeight, boolean highquality)
+        {
+            Image ret = img;
+            int w = img.getWidth(null)/2;
+            int h = img.getHeight(null)/2;
+            
+            // only do multiple step bilinear for down scale more than two times
+            if (!highquality || w <=targetWidth || h <=targetHeight)
+            	return ret;
+            
+            int type = BufferedImage.TYPE_INT_RGB;
+            if (image instanceof BufferedImage) {
+            	BufferedImage tmp = (BufferedImage)image;
+                 if (tmp.getColorModel().hasAlpha())
+                	 type = BufferedImage.TYPE_INT_ARGB;
+            } 
+            else {
+            	PixelGrabber pg = new PixelGrabber(image, 0, 0, 1, 1, false);
+            	ColorModel cm = pg.getColorModel();
+            	if (cm!=null && cm.hasAlpha())
+            		type = BufferedImage.TYPE_INT_ARGB;
+            }
 
+            do {
+                BufferedImage tmp = new BufferedImage(w, h, type);
+                Graphics2D g2 = tmp.createGraphics();
+                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                g2.drawImage(ret, 0, 0, w, h, null);
+                g2.dispose();
+                ret = tmp;
+                
+                w /= 2;
+                if (w < targetWidth) {
+                    w = targetWidth;
+                }
+
+                h /= 2;
+                if (h < targetHeight) {
+                    h = targetHeight;
+                }
+                
+            } while (w != targetWidth || h != targetHeight);
+
+            return ret;
+        }
         public void mousePressed(MouseEvent e) {
             startPosition = e.getPoint();
             selectedArea.setBounds(startPosition.x, startPosition.y, 0, 0);
