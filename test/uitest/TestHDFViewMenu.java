@@ -639,4 +639,25 @@ public class TestHDFViewMenu {
             ae.printStackTrace();
         }
     }
+
+    @Test
+    public void verifyTextInLabelWhenClickingSupportedFileFormatsHelp() {
+        try {
+            JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath(
+                    "Help", "Supported File Formats");
+            fileMenuItem.robot.waitForIdle();
+            fileMenuItem.requireVisible();
+            fileMenuItem.click();
+            mainFrameFixture.dialog().optionPane()
+                    .requirePlainMessage().requireMessage("\\sSupported File Formats: \\s.*HDF5\\s.*HDF4\\s\\s");
+            mainFrameFixture.dialog().optionPane().button(
+                    "OptionPane.button").click();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        catch (AssertionError ae) {
+            ae.printStackTrace();
+        }
+    }
 }
