@@ -95,8 +95,8 @@ public class TestHDFView {
             groupMenuItem.requireVisible();
             groupMenuItem.click();
 
-            mainFrameFixture.dialog("dialog2").textBox("groupname").setText("testgroupname");
-            mainFrameFixture.dialog("dialog2").button("OK").click();
+            mainFrameFixture.dialog().textBox("groupname").setText("testgroupname");
+            mainFrameFixture.dialog().button("OK").click();
 
             filetree = mainFrameFixture.tree().focus();
             assertTrue("File-Dataset-HDF5 filetree shows:", filetree.target.getRowCount()==2);
@@ -108,8 +108,8 @@ public class TestHDFView {
             datasetMenuItem.requireVisible();
             datasetMenuItem.click();
 
-            mainFrameFixture.dialog("dialog3").textBox("datasetname").setText("testdatasetname");
-            mainFrameFixture.dialog("dialog3").button("OK").click();
+            mainFrameFixture.dialog().textBox("datasetname").setText("testdatasetname");
+            mainFrameFixture.dialog().button("OK").click();
 
             filetree = mainFrameFixture.tree().focus();
             assertTrue("File-Dataset-HDF5 filetree shows:", filetree.target.getRowCount()==3);

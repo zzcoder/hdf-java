@@ -163,9 +163,9 @@ public class TestHDFViewMenu {
     public void verifyTextInLabelWhenClickingHDF4Button() {
         try {
             mainFrameFixture.button("HDF4 library").click();
-            mainFrameFixture.dialog("dialog0").optionPane()
+            mainFrameFixture.dialog().optionPane()
                     .requirePlainMessage().requireMessage("HDF 4.2.5");
-            mainFrameFixture.dialog("dialog0").optionPane().button(
+            mainFrameFixture.dialog().optionPane().button(
                     "OptionPane.button").click();
         }
         catch (Exception ex) {
@@ -180,9 +180,9 @@ public class TestHDFViewMenu {
     public void verifyTextInLabelWhenClickingHDF5Button() {
         try {
             mainFrameFixture.button("HDF5 library").click();
-            mainFrameFixture.dialog("dialog1").optionPane()
+            mainFrameFixture.dialog().optionPane()
                     .requirePlainMessage().requireMessage("HDF5 1.8.7");
-            mainFrameFixture.dialog("dialog1").optionPane().button(
+            mainFrameFixture.dialog().optionPane().button(
                     "OptionPane.button").click();
         }
         catch (Exception ex) {
@@ -457,9 +457,9 @@ public class TestHDFViewMenu {
             groupMenuItem.requireVisible();
             groupMenuItem.click();
 
-            mainFrameFixture.dialog("dialog2").textBox("groupname").setText(
+            mainFrameFixture.dialog().textBox("groupname").setText(
                     "grouptestname");
-            mainFrameFixture.dialog("dialog2").button("OK").click();
+            mainFrameFixture.dialog().button("OK").click();
 
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath(
                     "File", "Save");
@@ -512,9 +512,9 @@ public class TestHDFViewMenu {
             groupMenuItem.requireVisible();
             groupMenuItem.click();
 
-            mainFrameFixture.dialog("dialog3").textBox("groupname").setText(
+            mainFrameFixture.dialog().textBox("groupname").setText(
                     "grouptestname");
-            mainFrameFixture.dialog("dialog3").button("OK").click();
+            mainFrameFixture.dialog().button("OK").click();
 
             JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath(
                     "File", "Save As");
@@ -564,9 +564,9 @@ public class TestHDFViewMenu {
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
-            mainFrameFixture.dialog("dialog4").optionPane()
+            mainFrameFixture.dialog().optionPane()
                     .requirePlainMessage().requireMessage("HDF 4.2.5");
-            mainFrameFixture.dialog("dialog4").optionPane().button(
+            mainFrameFixture.dialog().optionPane().button(
                     "OptionPane.button").click();
         }
         catch (Exception ex) {
@@ -585,9 +585,30 @@ public class TestHDFViewMenu {
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
-            mainFrameFixture.dialog("dialog5").optionPane()
+            mainFrameFixture.dialog().optionPane()
                     .requirePlainMessage().requireMessage("HDF5 1.8.7");
-            mainFrameFixture.dialog("dialog5").optionPane().button(
+            mainFrameFixture.dialog().optionPane().button(
+                    "OptionPane.button").click();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        catch (AssertionError ae) {
+            ae.printStackTrace();
+        }
+    }
+
+    @Test
+    public void verifyTextInLabelWhenClickingJavaHelp() {
+        try {
+            JMenuItemFixture fileMenuItem = mainFrameFixture.menuItemWithPath(
+                    "Help", "Java Version");
+            fileMenuItem.robot.waitForIdle();
+            fileMenuItem.requireVisible();
+            fileMenuItem.click();
+            mainFrameFixture.dialog().optionPane()
+                    .requirePlainMessage().requireMessage("Compiled at jdk 1.6.*\\sRunning at.*");
+            mainFrameFixture.dialog().optionPane().button(
                     "OptionPane.button").click();
         }
         catch (Exception ex) {
