@@ -139,6 +139,54 @@ public class TestHDFViewMenu {
     }
 
     @Test 
+    public void verifyButtonOpen() {
+        try {
+            File hdf_file = createHDF4File("testopenbutton");
+            closeFile(hdf_file, false);
+
+            mainFrameFixture.button("Open").click();
+            JFileChooserFixture fileChooser = JFileChooserFinder.findFileChooser().using(mainFrameFixture.robot);
+            fileChooser.fileNameTextBox().setText("testopenbutton.hdf");
+            fileChooser.approve();
+
+            JTreeFixture filetree = mainFrameFixture.tree().focus();
+            assertTrue("Button-Open-HDF4 filetree shows:", filetree.target.getRowCount()==1);
+            assertTrue("Button-Open-HDF4 filetree has file", (filetree.valueAt(0)).compareTo("testopenbutton.hdf")==0);
+
+            closeFile(hdf_file, true);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        catch (AssertionError ae) {
+            ae.printStackTrace();
+        }
+    }
+
+    @Test
+    public void verifyButtonClose() {
+        try {
+            File hdf_file = createHDF4File("closebutton");
+
+            JTreeFixture filetree = mainFrameFixture.tree().focus();
+            assertTrue("Button-Close-HDF4 filetree shows:", filetree.target.getRowCount()==1);
+            assertTrue("Button-Close-HDF4 filetree has file", (filetree.valueAt(0)).compareTo("closebutton.hdf")==0);
+
+            filetree.clickRow(0);
+            mainFrameFixture.button("Close").click();
+
+            assertTrue("Button-Close-HDF4 file deleted", hdf_file.delete());
+            assertFalse("Button-Close-HDF4 file gone", hdf_file.exists());
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        catch (AssertionError ae) {
+            ae.printStackTrace();
+        }
+    }
+
+    @Test 
     public void verifyMenuOpen() {
         try {
             File hdf_file = createHDF4File("testopenfile");
