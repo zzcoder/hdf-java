@@ -1242,7 +1242,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DreadVL
   (JNIEnv *env, jclass clss, jint dataset_id, jint mem_type_id, jint mem_space_id,
   jint file_space_id, jint xfer_plist_id, jobjectArray buf)
 {
-    htri_t isStr=0, isNestedCompound=0, isVlenStr=0;
+    htri_t isStr=0, isComplex=0, isVlenStr=0;
 
     if (buf == NULL) {
         h5nullArgument(env, "H5DreadVL:  buf is NULL");
@@ -1265,16 +1265,18 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DreadVL
 
     isStr = H5Tdetect_class((hid_t)mem_type_id, H5T_STRING);
 
+
     /* fixed compound of vlen of compound */
     if (H5Tget_class((hid_t)mem_type_id) == H5T_COMPOUND) {
         hid_t nested_tid = H5Tget_member_type((hid_t)mem_type_id, 0);
-        isNestedCompound = H5Tdetect_class((hid_t)nested_tid, H5T_COMPOUND);
+        isComplex = H5Tdetect_class((hid_t)nested_tid, H5T_COMPOUND) ||
+                    H5Tdetect_class((hid_t)nested_tid, H5T_VLEN);
         H5Tclose(nested_tid);
     } else if (H5Tget_class((hid_t)mem_type_id) == H5T_VLEN) {
     	isVlenStr = 1; /* strings created by H5Tvlen_create( H5T_C_S1) */
     }
 
-    if (isStr == 0 || isNestedCompound>0 || isVlenStr) {
+    if (isStr == 0 || isComplex>0 || isVlenStr) {
         return (jint) H5DreadVL_notstr (env, (hid_t)dataset_id, (hid_t)mem_type_id,
                                      (hid_t)mem_space_id, (hid_t)file_space_id,
                                      (hid_t)xfer_plist_id, buf);
