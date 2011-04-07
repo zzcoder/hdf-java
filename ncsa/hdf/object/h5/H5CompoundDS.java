@@ -348,7 +348,7 @@ public class H5CompoundDS extends CompoundDS {
                 catch (Exception ex) {
                     member_data = null;
                 }
-                
+
                 if (member_data == null
                         || H5.H5Tequal(atom_tid,
                                 HDF5Constants.H5T_STD_REF_DSETREG)) {
