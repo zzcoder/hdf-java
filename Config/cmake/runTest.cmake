@@ -26,6 +26,8 @@ ENDIF (NOT TEST_REFERENCE)
 
 MESSAGE (STATUS "COMMAND: ${TEST_TESTER} -Xmx1024M -Djava.library.path=${TEST_LIBRARY_DIRECTORY} -cp ${TEST_CLASSPATH} ${TEST_PROGRAM}")
 
+SET (ENV{PATH} "ENV{PATH}\\;${TEST_LIBRARY_DIRECTORY}")
+
 # run the test program, capture the stdout/stderr and the result var
 EXECUTE_PROCESS (
     COMMAND ${TEST_TESTER} -Xmx1024M
