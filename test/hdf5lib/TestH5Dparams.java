@@ -113,4 +113,9 @@ public class TestH5Dparams {
         H5.H5Dvlen_reclaim(-1, -1, -1, null);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testH5Dget_storage_size_invalid() throws Throwable, HDF5LibraryException {
+        H5.H5Dget_storage_size(-1);
+    }
+
 }

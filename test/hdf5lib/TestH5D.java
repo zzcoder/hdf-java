@@ -20,6 +20,7 @@ public class TestH5D {
     private static final int DIM_Y = 6;
     int H5fid = -1;
     int H5dsid = -1;
+    int H5did = -1;
     long[] H5dims = { DIM_X, DIM_Y };
 
     private final void _deleteFile(String filename) {
@@ -35,10 +36,9 @@ public class TestH5D {
         }
     }
 
-    private final int _createDataset(int fid, int dsid, String name, int dapl) {
-        int did = -1;
+    private final void _createDataset(int fid, int dsid, String name, int dapl) {
         try {
-            did = H5.H5Dcreate(fid, name,
+            H5did = H5.H5Dcreate(fid, name,
                         HDF5Constants.H5T_STD_I32BE, dsid,
                         HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, dapl);
         }
@@ -46,9 +46,7 @@ public class TestH5D {
             err.printStackTrace();
             fail("H5.H5Dcreate: " + err);
         }
-        assertTrue("TestH5D._createDataset: ",did > 0);
-
-        return did;
+        assertTrue("TestH5D._createDataset: ", H5did > 0);
     }
 
 //    private final int _openDataset(int fid, String name) {
@@ -87,6 +85,8 @@ public class TestH5D {
 
     @After
     public void deleteH5file() throws HDF5LibraryException {
+        if (H5did >= 0)
+            H5.H5Dclose(H5did);
         if (H5dsid > 0) 
             H5.H5Sclose(H5dsid);
         if (H5fid > 0) 
@@ -144,8 +144,10 @@ public class TestH5D {
 
     @Test
     public void testH5Dopen() throws Throwable, HDF5LibraryException {
-        int dataset_id = _createDataset(H5fid, H5dsid, "dset", HDF5Constants.H5P_DEFAULT);
-        H5.H5Dclose(dataset_id);
+        int dataset_id = -1;
+        _createDataset(H5fid, H5dsid, "dset", HDF5Constants.H5P_DEFAULT);
+        H5.H5Dclose(H5did);
+        H5did = -1;
         
         try {
             dataset_id = H5.H5Dopen(H5fid, "dset", HDF5Constants.H5P_DEFAULT);
@@ -164,6 +166,53 @@ public class TestH5D {
         catch (Exception err) {
             err.printStackTrace();
         }
+    }
+
+    @Test
+    public void testH5Dget_storage_size_empty() throws Throwable, HDF5LibraryException {
+        long storage_size = 0;
+        _createDataset(H5fid, H5dsid, "dset", HDF5Constants.H5P_DEFAULT);
+        
+        try {
+            storage_size = H5.H5Dget_storage_size(H5did);
+        }
+        catch (Exception err) {
+            err.printStackTrace();
+            fail("testH5Dget_storage_size: " + err);
+        }
+        assertTrue("testH5Dget_storage_size: ", storage_size == 0);
+    }
+
+    @Test
+    public void testH5Dget_storage_size() throws Throwable, HDF5LibraryException {
+        long storage_size = 0;
+        int[][] dset_data = new int[DIM_X][DIM_Y];
+        int FILLVAL = 99;
+        _createDataset(H5fid, H5dsid, "dset", HDF5Constants.H5P_DEFAULT);
+
+        // Initialize the dataset.
+        for (int indx = 0; indx < DIM_X; indx++)
+            for (int jndx = 0; jndx < DIM_Y; jndx++)
+                dset_data[indx][jndx] = FILLVAL;
+ 
+        try {
+            if (H5did >= 0)
+                H5.H5Dwrite(H5did, HDF5Constants.H5T_NATIVE_INT,
+                        HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
+                        HDF5Constants.H5P_DEFAULT, dset_data[0]);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        try {
+            storage_size = H5.H5Dget_storage_size(H5did);
+        }
+        catch (Exception err) {
+            err.printStackTrace();
+            fail("testH5Dget_storage_size: " + err);
+        }
+        assertTrue("testH5Dget_storage_size: "+storage_size, storage_size == DIM_X*DIM_Y*4);
     }
 
 }
