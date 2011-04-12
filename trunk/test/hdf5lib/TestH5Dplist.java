@@ -20,6 +20,7 @@ public class TestH5Dplist {
     private static final int DIM_Y = 6;
     int H5fid = -1;
     int H5dsid = -1;
+    int H5did = -1;
     long[] H5dims = { DIM_X, DIM_Y };
 
     private final void _deleteFile(String filename) {
@@ -35,10 +36,9 @@ public class TestH5Dplist {
         }
     }
 
-    private final int _createDataset(int fid, int dsid, String name, int dapl) {
-        int did = -1;
+    private final void _createDataset(int fid, int dsid, String name, int dapl) {
         try {
-            did = H5.H5Dcreate(fid, name,
+            H5did = H5.H5Dcreate(fid, name,
                         HDF5Constants.H5T_STD_I32BE, dsid,
                         HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, dapl);
         }
@@ -46,24 +46,19 @@ public class TestH5Dplist {
             err.printStackTrace();
             fail("H5.H5Dcreate: " + err);
         }
-        assertTrue("TestH5D._createDataset: ",did > 0);
-
-        return did;
+        assertTrue("TestH5D._createDataset: ",H5did > 0);
     }
 
-    private final int _openDataset(int fid, String name) {
-        int did = -1;
+    private final void _openDataset(int fid, String name) {
         try {
-            did = H5.H5Dopen(fid, name, HDF5Constants.H5P_DEFAULT);
+            H5did = H5.H5Dopen(fid, name, HDF5Constants.H5P_DEFAULT);
         }
         catch (Throwable err) {
-            did = -1;
+            H5did = -1;
             err.printStackTrace();
             fail("H5.H5Dopen: " + err);
         }
-        assertTrue("TestH5D._openDataset: ",did > 0);
-
-        return did;
+        assertTrue("TestH5D._openDataset: ",H5did > 0);
     }
 
     @Before
@@ -86,6 +81,8 @@ public class TestH5Dplist {
 
     @After
     public void deleteH5file() throws HDF5LibraryException {
+        if (H5did > 0) 
+            H5.H5Dclose(H5did);
         if (H5dsid > 0) 
             H5.H5Sclose(H5dsid);
         if (H5fid > 0) 
@@ -103,10 +100,10 @@ public class TestH5Dplist {
 //        nlinks = H5.H5Pget_nlinks(test_dapl_id);
         assertTrue("testH5Dget_access_plist: nlinks: ", nlinks == 134);
         
-        int dataset_id = _createDataset(H5fid, H5dsid, "dset", test_dapl_id);
+        _createDataset(H5fid, H5dsid, "dset", test_dapl_id);
         
         try {
-            dapl_id = H5.H5Dget_access_plist(dataset_id);
+            dapl_id = H5.H5Dget_access_plist(H5did);
         }
         catch (Exception err) {
             err.printStackTrace();
@@ -119,8 +116,6 @@ public class TestH5Dplist {
         try {
             if (dapl_id >= 0)
                 H5.H5Pclose(dapl_id);
-            if (dataset_id >= 0)
-                H5.H5Dclose(dataset_id);
         }
         catch (Exception err) {
             err.printStackTrace();
@@ -132,10 +127,10 @@ public class TestH5Dplist {
 //      int dapl_id = -1;
 //      int test_dapl_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_ACCESS);
 //      H5.H5Pset_nlinks(dapl1, 134);
-//      int dataset_id = _createDataset(H5fid, H5dsid, "dset", test_dapl_id);
+//      _createDataset(H5fid, H5dsid, "dset", test_dapl_id);
 //      
 //      try {
-//          dapl_id = H5.H5Dset_extent(dataset_id);
+//          dapl_id = H5.H5Dset_extent(H5did);
 //      }
 //      catch (Exception err) {
 //          err.printStackTrace();
@@ -148,8 +143,6 @@ public class TestH5Dplist {
 //      try {
 //          if (dapl_id >= 0)
 //              H5.H5Pclose(dapl_id);
-//          if (dataset_id >= 0)
-//              H5.H5Dclose(dataset_id);
 //      }
 //      catch (Exception err) {
 //          err.printStackTrace();

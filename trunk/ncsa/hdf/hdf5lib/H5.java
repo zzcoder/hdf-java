@@ -1460,7 +1460,7 @@ public class H5 {
      *                - Error from the HDF-5 Library.
      **/
     public synchronized static native long H5Dget_storage_size(int dataset_id)
-            throws HDF5LibraryException;
+            throws HDF5LibraryException, IllegalArgumentException;
 
     /**
      * H5Dcopy copies the content of one dataset to another dataset.

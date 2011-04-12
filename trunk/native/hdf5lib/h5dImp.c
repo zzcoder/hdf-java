@@ -492,13 +492,11 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dclose
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dget_1storage_1size
   (JNIEnv *env, jclass clss, jint dataset_id)
 {
+    if (dataset_id < 0) {
+        h5badArgument(env, "H5Dget_storage_size: not a dataset");
+    }
     hsize_t retVal = (hsize_t)-1;
     retVal = H5Dget_storage_size((hid_t)dataset_id );
-/* probably returns '0' if fails--don't do an exception
-    if (retVal < 0) {
-        h5libraryError(env);
-    }
-*/
     return (jlong)retVal;
 }
 
@@ -521,7 +519,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dcopy
 
     total_allocated_size = H5Dget_storage_size(src_did);
     if (total_allocated_size <=0)
-    	return 0; // nothing to write;
+      return 0; // nothing to write;
 
     sid = H5Dget_space(src_did);
     if (sid < 0) {
@@ -1199,7 +1197,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DwriteString
             if (utf8) {
                 wdata[i] = (char*)malloc(strlen(utf8) + 1);
                 if (wdata[i]) {
-                	strcpy(wdata[i], utf8);
+                  strcpy(wdata[i], utf8);
                 }
            }
 
@@ -1273,7 +1271,7 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5DreadVL
                     H5Tdetect_class((hid_t)nested_tid, H5T_VLEN);
         H5Tclose(nested_tid);
     } else if (H5Tget_class((hid_t)mem_type_id) == H5T_VLEN) {
-    	isVlenStr = 1; /* strings created by H5Tvlen_create( H5T_C_S1) */
+      isVlenStr = 1; /* strings created by H5Tvlen_create( H5T_C_S1) */
     }
 
     if (isStr == 0 || isComplex>0 || isVlenStr) {
