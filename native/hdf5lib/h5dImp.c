@@ -492,10 +492,10 @@ JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5__1H5Dclose
 JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dget_1storage_1size
   (JNIEnv *env, jclass clss, jint dataset_id)
 {
+    hsize_t retVal = (hsize_t)-1;
     if (dataset_id < 0) {
         h5badArgument(env, "H5Dget_storage_size: not a dataset");
     }
-    hsize_t retVal = (hsize_t)-1;
     retVal = H5Dget_storage_size((hid_t)dataset_id );
     return (jlong)retVal;
 }
