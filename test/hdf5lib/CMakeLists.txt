@@ -30,6 +30,7 @@ SET (HDFJAVA_TEST_HDF5LIB_SRCS
     TestH5T.java
     TestH5Dparams.java
     TestH5D.java
+    TestH5Dplist.java
     TestH5Lparams.java
     TestH5Lbasic.java
     TestH5Lcreate.java
