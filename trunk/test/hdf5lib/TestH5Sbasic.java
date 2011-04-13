@@ -10,6 +10,7 @@ import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestH5Sbasic {
@@ -98,11 +99,12 @@ public class TestH5Sbasic {
     public void testH5Screate_simple_dims_exceed()
             throws Throwable, HDF5LibraryException, NullPointerException {
         long dims[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,
-                21,22,23,24,25,26,27,28,29,30,31,32,33,34};
+                21,22,23,24,25,26,27,28,29,30,31,32,33,35};
         H5.H5Screate_simple(35, dims, null);
     }
 
-    @Test(expected = HDF5LibraryException.class)
+    //H5Screate_simple was changed to allow a dim of 0
+    @Ignore//(expected = HDF5LibraryException.class)
     public void testH5Screate_simple_dims_zero()
             throws Throwable, HDF5LibraryException, NullPointerException {
         long dims[] = {0, 0};
