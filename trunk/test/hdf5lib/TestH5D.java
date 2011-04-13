@@ -215,4 +215,49 @@ public class TestH5D {
         assertTrue("testH5Dget_storage_size: "+storage_size, storage_size == DIM_X*DIM_Y*4);
     }
 
+    @Test
+    public void testH5Dget_access_plist() throws Throwable, HDF5LibraryException {
+        int dapl_id = -1;
+        int pequal = -1;
+        int test_dapl_id = -1;
+        
+        try {
+            test_dapl_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_ACCESS);
+        }
+        catch (Exception err) {
+            err.printStackTrace();
+            fail("testH5Dget_access_plist: H5.H5Pcreate: " + err);
+        }
+        assertTrue("testH5Dget_access_plist: test_dapl_id: ", test_dapl_id > 0);
+       
+        _createDataset(H5fid, H5dsid, "dset", test_dapl_id);
+        
+        try {
+            dapl_id = H5.H5Dget_access_plist(H5did);
+        }
+        catch (Exception err) {
+            err.printStackTrace();
+            fail("testH5Dget_access_plist: H5.H5Dget_access_plist: " + err);
+        }
+        assertTrue("testH5Dget_access_plist: dapl_id: ", dapl_id > 0);
+        pequal = H5.H5Pequal(dapl_id, test_dapl_id);
+
+        // End access to the dataset and release resources used by it.
+        try {
+            if (dapl_id >= 0)
+                H5.H5Pclose(dapl_id);
+        }
+        catch (Exception err) {
+            err.printStackTrace();
+        }
+        try {
+            if (test_dapl_id >= 0)
+                H5.H5Pclose(test_dapl_id);
+        }
+        catch (Exception err) {
+            err.printStackTrace();
+        }
+        assertTrue("testH5Dget_access_plist: ", pequal > 0);
+    }
+
 }
