@@ -10,8 +10,8 @@ LIBDIR=/mnt/scr1/xcao/hdf_java/lib
 #                     linux32 (jam)                        #
 ############################################################
 #MACHINE=linux32
-#JAVAINC=/usr/java/jdk-106/jdk/include
-#JAVALIB=/usr/java/jdk-106/jdk/jre/lib
+#JAVAINC=/usr/lib/jvm/java/include
+#JAVALIB=/usr/lib/jvm/java/jre/lib
 #EXTRA_FLAGS=--with-javax="-Xmx1024m"
 
 ############################################################
