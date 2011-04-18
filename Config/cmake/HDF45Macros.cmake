@@ -5,7 +5,7 @@ MACRO (EXTERNAL_HDF4_LIBRARY compress_type libtype jpeg_pic)
         DEPENDS JPEG ZLIB SZIP
         SVN_REPOSITORY ${HDF4_URL}
         # [SVN_REVISION rev] 
-#        INSTALL_COMMAND ""
+        INSTALL_COMMAND ""
         CMAKE_ARGS
             -DHDF_LEGACY_NAMING:BOOL=OFF
             -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
@@ -33,7 +33,7 @@ MACRO (EXTERNAL_HDF4_LIBRARY compress_type libtype jpeg_pic)
         DEPENDS JPEG ZLIB SZIP
         URL ${HDF4_URL}
         URL_MD5 ""
-#        INSTALL_COMMAND ""
+        INSTALL_COMMAND ""
         CMAKE_ARGS
             -DHDF_LEGACY_NAMING:BOOL=OFF
             -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
@@ -135,7 +135,7 @@ MACRO (EXTERNAL_HDF5_LIBRARY compress_type libtype)
         DEPENDS ZLIB SZIP
         SVN_REPOSITORY ${HDF5_URL}
         # [SVN_REVISION rev] 
-#        INSTALL_COMMAND ""
+        INSTALL_COMMAND ""
         CMAKE_ARGS
             -DHDF_LEGACY_NAMING:BOOL=OFF
             -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
@@ -159,7 +159,7 @@ MACRO (EXTERNAL_HDF5_LIBRARY compress_type libtype)
         DEPENDS ZLIB SZIP
         URL ${HDF5_URL}
         URL_MD5 ""
-#        INSTALL_COMMAND ""
+        INSTALL_COMMAND ""
         CMAKE_ARGS
             -DHDF_LEGACY_NAMING:BOOL=OFF
             -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
