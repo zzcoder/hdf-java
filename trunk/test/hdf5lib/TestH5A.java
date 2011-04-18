@@ -61,22 +61,24 @@ public class TestH5A {
         try {
             H5fid = H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_TRUNC,
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+            assertTrue("TestH5D.createH5file: H5.H5Fcreate: ", H5fid > 0);
             H5dsid = H5.H5Screate_simple(2, H5dims, null);
+            assertTrue("TestH5D.createH5file: H5.H5Screate_simple: ", H5dsid > 0);
             H5did = _createDataset(H5fid, H5dsid, "dset",
                     HDF5Constants.H5P_DEFAULT);
-            type_id = H5.H5Tcreate(HDF5Constants.H5T_ENUM, (long) 1);
+            assertTrue("TestH5D.createH5file: _createDataset: ", H5did > 0);
             space_id = H5.H5Screate(HDF5Constants.H5S_NULL);
+            assertTrue(space_id > 0);
             lapl_id = H5.H5Pcreate(HDF5Constants.H5P_DATASET_ACCESS);
+            assertTrue(lapl_id > 0);
+            type_id = H5.H5Tenum_create(HDF5Constants.H5T_STD_I32LE);
+            assertTrue(type_id > 0);
+            int status = H5.H5Tenum_insert(type_id, "test", 1);
+            assertTrue(status >= 0);
         } catch (Throwable err) {
             err.printStackTrace();
             fail("TestH5D.createH5file: " + err);
         }
-        assertTrue("TestH5D.createH5file: H5.H5Fcreate: ", H5fid > 0);
-        assertTrue("TestH5D.createH5file: H5.H5Screate_simple: ", H5dsid > 0);
-        assertTrue("TestH5D.createH5file: _createDataset: ", H5did > 0);
-        assertTrue(type_id > 0);
-        assertTrue(space_id > 0);
-        assertTrue(lapl_id > 0);
 
         H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
     }
