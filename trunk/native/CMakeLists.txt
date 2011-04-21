@@ -89,6 +89,10 @@ IF (HDF_DISABLE_COMPILER_WARNINGS)
   ENDIF (NOT HDF_WARNINGS_BLOCKED)
 ENDIF (HDF_DISABLE_COMPILER_WARNINGS)
 
+SET (EXTERNAL_HEADER_LIST "")
+SET (EXTERNAL_LIBRARY_LIST "")
+SET (EXTERNAL_LIBRARYDLL_LIST "")
+
 #-----------------------------------------------------------------------------
 # This is in here to help some of the GCC based IDES like Eclipse
 # and code blocks parse the compiler errors and warnings better.
@@ -344,11 +348,6 @@ ENDIF (NOT BUILD_SHARED_LIBS)
 #-----------------------------------------------------------------------------
 OPTION (HDF_PACKAGE_EXTLIBS "CPACK - include external libraries" OFF)
 IF (HDF_PACKAGE_EXTLIBS)
-  SET (EXTERNAL_HEADER_LIST "")
-  SET (EXTERNAL_LIBRARY_LIST "")
-  SET (EXTERNAL_LIBRARYDLL_LIST "")
-  FILE (MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${BLDTYPE})
-    
   IF (HDF_ENABLE_JPEG_LIB_SUPPORT AND JPEG_FOUND)
     PACKAGE_JPEG_LIBRARY (${HDF_ALLOW_EXTERNAL_SUPPORT})
   ENDIF (HDF_ENABLE_JPEG_LIB_SUPPORT AND JPEG_FOUND)
