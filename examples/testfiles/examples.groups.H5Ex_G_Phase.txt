@@ -6,7 +6,6 @@
 6 Groups: Storage type is H5G_STORAGE_TYPE_DENSE
 7 Groups: Storage type is H5G_STORAGE_TYPE_DENSE
 
-
 6 Groups: Storage type is H5G_STORAGE_TYPE_DENSE
 5 Groups: Storage type is H5G_STORAGE_TYPE_DENSE
 4 Groups: Storage type is H5G_STORAGE_TYPE_DENSE
