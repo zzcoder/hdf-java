@@ -24,6 +24,8 @@ import org.junit.Test;
 
 public class TestHDFViewMenu {
     private static FrameFixture mainFrameFixture;
+    private static String HDF5VERSION = "HDF5 1.8.8";
+    private static String HDF4VERSION = "HDF 4.2.5";
 
     private File createFile(String name, boolean hdf4_type) {
         String file_ext;
@@ -160,7 +162,7 @@ public class TestHDFViewMenu {
     public void verifyTextInLabelWhenClickingHDF4Button() {
         try {
             mainFrameFixture.button("HDF4 library").click();
-            mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("HDF 4.2.5");
+            mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage(HDF4VERSION);
             mainFrameFixture.dialog().optionPane().button("OptionPane.button").click();
         }
         catch (Exception ex) {
@@ -175,7 +177,7 @@ public class TestHDFViewMenu {
     public void verifyTextInLabelWhenClickingHDF5Button() {
         try {
             mainFrameFixture.button("HDF5 library").click();
-            mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("HDF5 1.8.7");
+            mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage(HDF5VERSION);
             mainFrameFixture.dialog().optionPane().button("OptionPane.button").click();
         }
         catch (Exception ex) {
@@ -514,7 +516,7 @@ public class TestHDFViewMenu {
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
-            mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("HDF 4.2.5");
+            mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage(HDF4VERSION);
             mainFrameFixture.dialog().optionPane().button("OptionPane.button").click();
         }
         catch (Exception ex) {
@@ -532,7 +534,7 @@ public class TestHDFViewMenu {
             fileMenuItem.robot.waitForIdle();
             fileMenuItem.requireVisible();
             fileMenuItem.click();
-            mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage("HDF5 1.8.7");
+            mainFrameFixture.dialog().optionPane().requirePlainMessage().requireMessage(HDF5VERSION);
             mainFrameFixture.dialog().optionPane().button("OptionPane.button").click();
         }
         catch (Exception ex) {
