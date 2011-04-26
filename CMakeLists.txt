@@ -362,7 +362,7 @@ ENDIF (NOT HDFJAVA_EXTERNALLY_CONFIGURED)
 #-----------------------------------------------------------------------------
 # Set the cpack variables
 #-----------------------------------------------------------------------------
-SET (CPACK_PACKAGE_VENDOR "The HDF Group")
+SET (CPACK_PACKAGE_VENDOR "HDF Group")
 SET (CPACK_PACKAGE_DESCRIPTION_SUMMARY "HDF-JAVA Installation")
 SET (CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/Readme.txt")
 SET (CPACK_PACKAGE_NAME "${HDFJAVA_PACKAGE_NAME}")
@@ -390,6 +390,8 @@ ELSE (WIN32)
   SET (CPACK_RPM_PACKAGE_URL "http://www.hdfgroup.org/")
   SET (CPACK_STRIP_FILES "${HDFJAVA_LIBRARIES_TO_EXPORT};${HDFJAVA_JARS_TO_EXPORT};${EXTERNAL_LIBRARY_LIST}")
 ENDIF (WIN32)
+
+SET (CPACK_NSIS_MUI_FINISHPAGE_RUN ${HDFVIEW_SCRIPT})
 
 INCLUDE (CPack)
 INCLUDE(InstallRequiredSystemLibraries)
