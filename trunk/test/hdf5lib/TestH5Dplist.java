@@ -1,9 +1,13 @@
 package test.hdf5lib;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
@@ -24,6 +28,7 @@ public class TestH5Dplist {
     private static final int CHUNK_Y = 4;
     private static final int NDIMS = 2;
     private static final int FILLVAL = 99;
+    private static final int RANK = 2;
     int H5fid = -1;
     int H5dsid = -1;
     int H5did = -1;
@@ -53,9 +58,9 @@ public class TestH5Dplist {
         }
         catch (Exception err) {
             err.printStackTrace();
-            fail("testH5Dset_extent: H5.H5Pcreate: " + err);
+            fail("H5.H5Pcreate: " + err);
         }
-        assertTrue("testH5Dset_extent - test_dapl_id: ", H5dcpl_id > 0);
+        assertTrue("TestH5Dplist._createPDataset: ", H5dcpl_id > 0);
 
         // Set the chunk size.
         try {
@@ -97,20 +102,20 @@ public class TestH5Dplist {
             err.printStackTrace();
             fail("H5.H5Dcreate: " + err);
         }
-        assertTrue("TestH5D._createDataset: ",H5did > 0);
+        assertTrue("TestH5Dplist._createDataset: ",H5did > 0);
     }
 
-    private final void _openDataset(int fid, String name) {
-        try {
-            H5did = H5.H5Dopen(fid, name, HDF5Constants.H5P_DEFAULT);
-        }
-        catch (Throwable err) {
-            H5did = -1;
-            err.printStackTrace();
-            fail("H5.H5Dopen: " + err);
-        }
-        assertTrue("TestH5D._openDataset: ",H5did > 0);
-    }
+//    private final void _openDataset(int fid, String name) {
+//        try {
+//            H5did = H5.H5Dopen(fid, name, HDF5Constants.H5P_DEFAULT);
+//        }
+//        catch (Throwable err) {
+//            H5did = -1;
+//            err.printStackTrace();
+//            fail("H5.H5Dopen: " + err);
+//        }
+//        assertTrue("TestH5D._openDataset: ",H5did > 0);
+//    }
 
     @Before
     public void createH5file()
@@ -119,14 +124,14 @@ public class TestH5Dplist {
         try {
             H5fid = H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_TRUNC,
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-            H5dsid = H5.H5Screate_simple(2, H5dims, H5maxdims);
+            H5dsid = H5.H5Screate_simple(RANK, H5dims, H5maxdims);
         }
         catch (Throwable err) {
             err.printStackTrace();
-            fail("TestH5D.createH5file: " + err);
+            fail("TestH5Dplist.createH5file: " + err);
         }
-        assertTrue("TestH5D.createH5file: H5.H5Fcreate: ",H5fid > 0);
-        assertTrue("TestH5D.createH5file: H5.H5Screate_simple: ",H5dsid > 0);
+        assertTrue("TestH5Dplist.createH5file: H5.H5Fcreate: ",H5fid > 0);
+        assertTrue("TestH5Dplist.createH5file: H5.H5Screate_simple: ",H5dsid > 0);
 
         H5.H5Fflush(H5fid, HDF5Constants.H5F_SCOPE_LOCAL);
     }

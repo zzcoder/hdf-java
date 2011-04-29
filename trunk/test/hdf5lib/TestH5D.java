@@ -1,5 +1,6 @@
 package test.hdf5lib;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -18,10 +19,29 @@ public class TestH5D {
     private static final String H5_FILE = "test.h5";
     private static final int DIM_X = 4;
     private static final int DIM_Y = 6;
+    private static final int RANK = 2;
     int H5fid = -1;
     int H5dsid = -1;
     int H5did = -1;
+    int H5did0 = -1;
+    int H5dcpl_id = -1;
     long[] H5dims = { DIM_X, DIM_Y };
+
+    // Values for the status of space allocation
+    enum H5D_space_status {
+        H5D_SPACE_STATUS_ERROR(-1), H5D_SPACE_STATUS_NOT_ALLOCATED(0), H5D_SPACE_STATUS_PART_ALLOCATED(
+                1), H5D_SPACE_STATUS_ALLOCATED(2);
+
+        private int code;
+
+        H5D_space_status(int space_status) {
+            this.code = space_status;
+        }
+
+        public int getCode() {
+            return this.code;
+        }
+    }
 
     private final void _deleteFile(String filename) {
         File file = new File(filename);
@@ -36,6 +56,39 @@ public class TestH5D {
         }
     }
 
+    private final void _createPDataset(int fid, int dsid, String name, int dcpl_val) {
+        
+        try {
+            H5dcpl_id = H5.H5Pcreate(dcpl_val);
+        }
+        catch (Exception err) {
+            err.printStackTrace();
+            fail("H5.H5Pcreate: " + err);
+        }
+        assertTrue("testH5D._createPDataset: H5.H5Pcreate: ", H5dcpl_id > 0);
+
+        // Set the allocation time to "early". This way we can be sure
+        // that reading from the dataset immediately after creation will
+        // return the fill value.
+        try {
+            H5.H5Pset_alloc_time(H5dcpl_id, HDF5Constants.H5D_ALLOC_TIME_EARLY);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            H5did0 = H5.H5Dcreate(fid, name,
+                        HDF5Constants.H5T_STD_I32BE, dsid,
+                        HDF5Constants.H5P_DEFAULT, H5dcpl_id, HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Dcreate: " + err);
+        }
+        assertTrue("TestH5D._createPDataset: ", H5did0 > 0);
+    }
+
     private final void _createDataset(int fid, int dsid, String name, int dapl) {
         try {
             H5did = H5.H5Dcreate(fid, name,
@@ -46,7 +99,7 @@ public class TestH5D {
             err.printStackTrace();
             fail("H5.H5Dcreate: " + err);
         }
-        assertTrue("TestH5D._createDataset: ", H5did > 0);
+        assertTrue("TestH5D._createPDataset: ", H5did > 0);
     }
 
 //    private final int _openDataset(int fid, String name) {
@@ -71,7 +124,7 @@ public class TestH5D {
         try {
             H5fid = H5.H5Fcreate(H5_FILE, HDF5Constants.H5F_ACC_TRUNC,
                     HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
-            H5dsid = H5.H5Screate_simple(2, H5dims, null);
+            H5dsid = H5.H5Screate_simple(RANK, H5dims, null);
         }
         catch (Throwable err) {
             err.printStackTrace();
@@ -85,6 +138,10 @@ public class TestH5D {
 
     @After
     public void deleteH5file() throws HDF5LibraryException {
+        if (H5dcpl_id >= 0)
+            H5.H5Pclose(H5dcpl_id);
+        if (H5did0 >= 0)
+            H5.H5Dclose(H5did0);
         if (H5did >= 0)
             H5.H5Dclose(H5did);
         if (H5dsid > 0) 
@@ -258,6 +315,58 @@ public class TestH5D {
             err.printStackTrace();
         }
         assertTrue("testH5Dget_access_plist: ", pequal > 0);
+    }
+    
+    @Test
+    public void testH5Dget_space_status() throws Throwable, HDF5LibraryException {
+        int[][] write_dset_data = new int[DIM_X][DIM_Y];
+        int[] space_status = new int[1];
+        int[] space_status0 = new int[1];
+
+        // Initialize the dataset.
+        for (int indx = 0; indx < DIM_X; indx++)
+            for (int jndx = 0; jndx < DIM_Y; jndx++)
+                write_dset_data[indx][jndx] = indx * jndx - jndx;
+
+        _createPDataset(H5fid, H5dsid, "dset0", HDF5Constants.H5P_DATASET_CREATE);
+        _createDataset(H5fid, H5dsid, "dset", HDF5Constants.H5P_DEFAULT);
+
+        // Retrieve and print space status and storage size for dset0.
+        try {
+            H5.H5Dget_space_status(H5did0, space_status0);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        assertTrue("testH5Dget_space_status0 - H5.H5Dget_space_status: ", space_status0[0] == H5D_space_status.H5D_SPACE_STATUS_ALLOCATED.getCode());
+
+        // Retrieve and print space status and storage size for dset.
+        try {
+            H5.H5Dget_space_status(H5did, space_status);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        assertFalse("testH5Dget_space_status - H5.H5Dget_space_status: ", space_status[0] == H5D_space_status.H5D_SPACE_STATUS_ALLOCATED.getCode());
+
+        // Write the data to the dataset.
+        try {
+            H5.H5Dwrite(H5did, HDF5Constants.H5T_NATIVE_INT,
+                        HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
+                        HDF5Constants.H5P_DEFAULT, write_dset_data);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Retrieve and print space status and storage size for dset.
+        try {
+            H5.H5Dget_space_status(H5did, space_status);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        assertTrue("testH5Dget_space_status - H5.H5Dget_space_status: ", space_status[0] == H5D_space_status.H5D_SPACE_STATUS_ALLOCATED.getCode());
     }
 
 }
