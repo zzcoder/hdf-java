@@ -369,4 +369,46 @@ public class TestH5D {
         assertTrue("testH5Dget_space_status - H5.H5Dget_space_status: ", space_status[0] == H5D_space_status.H5D_SPACE_STATUS_ALLOCATED.getCode());
     }
 
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Dget_space_closed() throws Throwable, HDF5LibraryException {
+        int dataset_id = -1;
+        try {
+            dataset_id = H5.H5Dcreate(H5fid, "dset",
+                        HDF5Constants.H5T_STD_I32BE, H5dsid,
+                        HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Dcreate: " + err);
+        }
+        assertTrue("TestH5D.testH5Dget_space_closed: ", dataset_id > 0);
+        H5.H5Dclose(dataset_id);
+        
+        H5.H5Dget_space(dataset_id);
+    }
+
+    @Test
+    public void testH5Dget_space() throws Throwable, HDF5LibraryException {
+        int dataspace_id = -1;
+        _createDataset(H5fid, H5dsid, "dset", HDF5Constants.H5P_DEFAULT);
+        
+        try {
+            dataspace_id = H5.H5Dget_space(H5did);
+        }
+        catch (Exception err) {
+            err.printStackTrace();
+            fail("H5.H5Dget_space: " + err);
+        }
+        assertTrue("TestH5D.testH5Dget_space: ", dataspace_id > 0);
+
+        // End access to the dataset and release resources used by it.
+        try {
+            if (dataspace_id >= 0)
+                H5.H5Sclose(dataspace_id);
+        }
+        catch (Exception err) {
+            err.printStackTrace();
+        }
+    }
+
 }
