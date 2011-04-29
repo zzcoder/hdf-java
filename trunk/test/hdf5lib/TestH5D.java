@@ -401,10 +401,52 @@ public class TestH5D {
         }
         assertTrue("TestH5D.testH5Dget_space: ", dataspace_id > 0);
 
-        // End access to the dataset and release resources used by it.
+        // End access to the dataspace and release resources used by it.
         try {
             if (dataspace_id >= 0)
                 H5.H5Sclose(dataspace_id);
+        }
+        catch (Exception err) {
+            err.printStackTrace();
+        }
+    }
+
+    @Test(expected = HDF5LibraryException.class)
+    public void testH5Dget_type_closed() throws Throwable, HDF5LibraryException {
+        int dataset_id = -1;
+        try {
+            dataset_id = H5.H5Dcreate(H5fid, "dset",
+                        HDF5Constants.H5T_STD_I32BE, H5dsid,
+                        HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Dcreate: " + err);
+        }
+        assertTrue("TestH5D.testH5Dget_type_closed: ", dataset_id > 0);
+        H5.H5Dclose(dataset_id);
+        
+        H5.H5Dget_type(dataset_id);
+    }
+
+    @Test
+    public void testH5Dget_type() throws Throwable, HDF5LibraryException {
+        int datatype_id = -1;
+        _createDataset(H5fid, H5dsid, "dset", HDF5Constants.H5P_DEFAULT);
+        
+        try {
+            datatype_id = H5.H5Dget_type(H5did);
+        }
+        catch (Exception err) {
+            err.printStackTrace();
+            fail("H5.H5Dget_type: " + err);
+        }
+        assertTrue("TestH5D.testH5Dget_type: ", datatype_id > 0);
+
+        // End access to the datatype and release resources used by it.
+        try {
+            if (datatype_id >= 0)
+                H5.H5Tclose(datatype_id);
         }
         catch (Exception err) {
             err.printStackTrace();
