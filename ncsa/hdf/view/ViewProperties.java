@@ -63,6 +63,18 @@ public class ViewProperties extends Properties {
 
     /** name of the tab delimiter */
     public static final String DELIMITER_COLON = "Colon";
+    
+    /** image origin: UpperLeft */
+    public static final String ORIGIN_UL = "UpperLeft";
+
+    /** image origin: LowerLeft */
+    public static final String ORIGIN_LL = "LowerLeft";
+
+    /** image origin: UpperRight */
+    public static final String ORIGIN_UR = "UpperRight";
+
+    /** image origin: LowerRight */
+    public static final String ORIGIN_LR = "LowerRight";
 
     /** name of the tab delimiter */
     public static final String DELIMITER_SEMI_COLON = "Semi-Colon";
@@ -89,6 +101,10 @@ public class ViewProperties extends Properties {
 
     /** data delimiter */
     private static String delimiter = DELIMITER_TAB;
+    
+    /** image origin */
+    private static String origin = ORIGIN_UL;
+    
     
     //------For the feature:To display groups/attributes in creation order
     //    /** Display index */
@@ -1017,6 +1033,11 @@ public class ViewProperties extends Properties {
             delimiter = propVal;
         }
         
+        propVal = (String) get("image.origin");
+        if ((propVal != null) && (propVal.length() > 0)) {
+            origin = propVal;
+        }        
+        
         //------For the feature:To display groups/attributes in creation order
         //        propVal = (String) get("data.indexType");
         //        if ((propVal != null) && (propVal.length() > 0)) {
@@ -1154,6 +1175,13 @@ public class ViewProperties extends Properties {
         else {
             put("data.delimiter", delimiter);
         }
+        
+        if (origin == null) {
+            put("image.origin", ORIGIN_UL);
+        }
+        else {
+            put("image.origin", origin);
+        }        
         
         //--For the feature:To display groups/attributes in creation order
         //        if (indexType == null) {
@@ -1320,6 +1348,11 @@ public class ViewProperties extends Properties {
     public static String getDataDelimiter() {
         return delimiter;
     }
+    
+    /** returns the image origin */
+    public static String getImageOrigin() {
+        return origin;
+    }    
 
     //--For the feature:To display groups/attributes in creation order
     //    /** returns the Index type for Display */
@@ -1440,6 +1473,11 @@ public class ViewProperties extends Properties {
         delimiter = delim;
     }
     
+    /** set the image origin */
+    public static void setImageOrigin(String o) {
+        origin = o;
+    }
+        
     //---For the feature:To display groups/attributes in creation order
     //    /** set the Index Type */
     //    public static void setIndexType(String idxType) {

@@ -2051,7 +2051,8 @@ implements TableView, ActionListener, MouseListener
     
     private void gotoPage(long idx)
     {
-        if (dataset.getRank() < 3) {
+        if (dataset.getRank() < 3 ||
+        		idx == (curFrame-indexBase)) {
             return;
         }
 

@@ -63,7 +63,8 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
     private String H4toH5Path;
     private JTextField H4toH5Field, UGField, workField, fileExtField,
             maxMemberField, startMemberField;
-    private JComboBox fontSizeChoice, fontTypeChoice, delimiterChoice;
+    private JComboBox fontSizeChoice, fontTypeChoice, delimiterChoice,
+     		imageOriginChoice;
     private JComboBox choiceTreeView, choiceMetaDataView, choiceTextView,
             choiceTableView, choiceImageView, choicePaletteView;
     private String rootDir, workDir;
@@ -220,9 +221,16 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
     			ViewProperties.DELIMITER_COMMA, ViewProperties.DELIMITER_SPACE,
     			ViewProperties.DELIMITER_COLON,
     			ViewProperties.DELIMITER_SEMI_COLON };
-
     	delimiterChoice = new JComboBox(delimiterChoices);
     	delimiterChoice.setSelectedItem(ViewProperties.getDataDelimiter());
+    	
+    	String[] imageOriginChoices = { 
+    			ViewProperties.ORIGIN_UL,
+    			ViewProperties.ORIGIN_LL,
+    			ViewProperties.ORIGIN_UR,
+    			ViewProperties.ORIGIN_LR };
+    	imageOriginChoice = new JComboBox(imageOriginChoices);
+    	imageOriginChoice.setSelectedItem(ViewProperties.getImageOrigin());
 
     	//-----For the feature:To display groups/attributes in creation order
     	//        String[] displayIndexChoices = {"alphabetical", "creation" };
@@ -299,12 +307,12 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
     	p0.setLayout(new GridLayout(1, 2, 8, 8));
     	p00 = new JPanel();
     	p00.setLayout(new BorderLayout());
-    	p00.add(new JLabel("Font Size: "), BorderLayout.WEST);
+    	p00.add(new JLabel("Font Size:"), BorderLayout.WEST);
     	p00.add(fontSizeChoice, BorderLayout.CENTER);
     	p0.add(p00);
     	p00 = new JPanel();
     	p00.setLayout(new BorderLayout());
-    	p00.add(new JLabel("Font Type: "), BorderLayout.WEST);
+    	p00.add(new JLabel("Font Type:"), BorderLayout.WEST);
     	p00.add(fontTypeChoice, BorderLayout.CENTER);
     	p0.add(p00);
     	tborder = new TitledBorder("Text Font");
@@ -313,17 +321,30 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
     	centerP.add(p0);
 
     	p0 = new JPanel();
-    	p0.setLayout(new BorderLayout(20, 0));
+    	p0.setLayout(new GridLayout(1, 3, 8, 8));
+
+    	p00 = new JPanel();
+    	p00.setLayout(new BorderLayout());
     	checkAutoContrast = new JCheckBox("Auto Image Contrast");
     	checkAutoContrast.setSelected(ViewProperties.isAutoContrast());
-    	p0.add(checkAutoContrast, BorderLayout.CENTER);
+    	p00.add(checkAutoContrast, BorderLayout.CENTER);
     	JButton button = new JButton(ViewProperties.getHelpIcon());
     	button.setToolTipText("Help on Auto Contrast");
     	button.setMargin(new Insets(0, 0, 0, 0));
     	button.addActionListener(this);
     	button.setActionCommand("Help on Auto Contrast");
-    	p0.add(button, BorderLayout.WEST);
-    	tborder = new TitledBorder("ImageView");
+    	p00.add(button, BorderLayout.WEST);
+    	p0.add(p00);
+
+    	p00 = new JPanel();
+    	p00.setLayout(new BorderLayout());
+    	p00.add(new JLabel("Image Origin:"), BorderLayout.WEST);
+    	p00.add(imageOriginChoice, BorderLayout.CENTER);
+    	p0.add(p00);
+    	
+    	p0.add(new JLabel());
+    	
+    	tborder = new TitledBorder("Image");
     	tborder.setTitleColor(Color.darkGray);
     	p0.setBorder(tborder);
     	centerP.add(p0);
@@ -353,11 +374,11 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
 
     	p00 = new JPanel();
     	p00.setLayout(new BorderLayout());
-    	p00.add(new JLabel("Data Delimiter:  "), BorderLayout.WEST);
+    	p00.add(new JLabel("Data Delimiter:"), BorderLayout.WEST);
     	p00.add(delimiterChoice, BorderLayout.CENTER);
     	p0.add(p00);
 
-    	tborder = new TitledBorder("TableView");
+    	tborder = new TitledBorder("Data");
     	tborder.setTitleColor(Color.darkGray);
     	p0.setBorder(tborder);
     	centerP.add(p0);
@@ -822,8 +843,8 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
         }
 
         // set data delimiter
-        ViewProperties.setDataDelimiter((String) delimiterChoice
-                .getSelectedItem());
+        ViewProperties.setDataDelimiter((String) delimiterChoice.getSelectedItem());
+        ViewProperties.setImageOrigin((String) imageOriginChoice.getSelectedItem());
 
         //------For the feature:To display groups/attributes in creation order
         //        // set index type
