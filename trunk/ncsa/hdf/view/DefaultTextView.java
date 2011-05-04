@@ -110,6 +110,8 @@ public class DefaultTextView extends JInternalFrame implements TextView,
     private TextAreaEditor textEditor = null;
 
     private RowHeader rowHeaders = null;
+    
+    private int indexBase = 0;
 
     /**
      * Constructs an TextView.
@@ -141,6 +143,9 @@ public class DefaultTextView extends JInternalFrame implements TextView,
         table = null;
         dataset = null;
         textEditor = new TextAreaEditor(this);
+        
+        if (ViewProperties.isIndexBase1())
+        	indexBase = 1;
 
         HObject hobject = null;
         if (map != null)
@@ -634,7 +639,7 @@ public class DefaultTextView extends JInternalFrame implements TextView,
             // Set the values of the row headers starting at 0.
             int n = parentTable.getRowCount();
             for (int i = 0; i < n; i++) {
-                setValueAt(new Integer(start + i * stride), i, 0);
+                setValueAt(new Integer(start + indexBase+ i * stride), i, 0);
             }
 
             // Get the only table column.

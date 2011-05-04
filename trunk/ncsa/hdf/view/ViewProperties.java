@@ -129,6 +129,9 @@ public class ViewProperties extends Properties {
     /** flag to indicate if enum data is converted to strings */
     private static boolean convertEnum = true;
 
+    /** flag to indicate if data is 1-based index */
+    private static boolean isIndexBase1 = false;
+
     /**
      * Current Java application such as HDFView cannot handle files with large
      * number of objects such 1,000,000 objects. max_members defines the maximum
@@ -1003,6 +1006,11 @@ public class ViewProperties extends Properties {
         if (propVal != null) {
             convertEnum = ("true".equalsIgnoreCase(propVal));
         }
+        
+        propVal = (String) get("index.base1");
+        if (propVal != null) {
+            isIndexBase1 = ("true".equalsIgnoreCase(propVal));
+        }        
 
         propVal = (String) get("data.delimiter");
         if ((propVal != null) && (propVal.length() > 0)) {
@@ -1191,7 +1199,8 @@ public class ViewProperties extends Properties {
         }
 
         put("enum.conversion", String.valueOf(convertEnum));
-
+        put("index.base1", String.valueOf(isIndexBase1));
+ 
         // save the list of most recent files
         String theFile;
         int size = mrf.size();
@@ -1530,6 +1539,13 @@ public class ViewProperties extends Properties {
     public static boolean isConvertEnum() {
         return convertEnum;
     }
+    
+    /**
+     * @return the convertEnum
+     */
+    public static boolean isIndexBase1() {
+        return isIndexBase1;
+    }
 
     /**
      * @param convertEnum
@@ -1538,5 +1554,13 @@ public class ViewProperties extends Properties {
     public static void setConvertEnum(boolean convertEnum) {
         ViewProperties.convertEnum = convertEnum;
     }
+    
+    /**
+     * @param convertEnum
+     *            the convertEnum to set
+     */
+    public static void setIndexBase1(boolean b) {
+        ViewProperties.isIndexBase1 = b;
+    }    
 
 }

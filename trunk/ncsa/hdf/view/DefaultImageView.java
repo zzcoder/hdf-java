@@ -232,6 +232,8 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
     private AutoContrastSlider autoContrastSlider;
 
     private GeneralContrastSlider generalContrastSlider;
+    
+    private int indexBase = 0;
 
     /**
      * gainBias[0] = gain, gainBias[1] = bias. gain equates to contrast and bias
@@ -302,6 +304,9 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         autoGainData = null;
         generalContrastSlider = null;
         bitmask = null;
+        
+        if (ViewProperties.isIndexBase1())
+        	indexBase = 1;
 
         HObject hobject = null;
         if (map != null) {
@@ -394,7 +399,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         int n = Math.min(3, rank);
 
         if (rank > 2) {
-            curFrame = start[selectedIndex[2]];
+            curFrame = start[selectedIndex[2]]+indexBase;
             maxFrame = dims[selectedIndex[2]];
         }
 
@@ -1525,13 +1530,13 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             else if (cmd.startsWith("Go to frame")) {
                 int page = 0;
                 try {
-                    page = Integer.parseInt(frameField.getText().trim());
+                    page = Integer.parseInt(frameField.getText().trim())-indexBase;
                 }
                 catch (Exception ex) {
                     page = -1;
                 }
 
-                gotoPage(page);
+                gotoPage (page);
             }
             else if (cmd.startsWith("Show animation")) {
                 setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -1801,8 +1806,8 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         if ((idx < 0) || (idx >= dims[selectedIndex[2]])) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                    "Frame number must be between 0 and "
-                            + (dims[selectedIndex[2]] - 1), getTitle(),
+                    "Frame number must be between "+indexBase+" and "
+                            + (dims[selectedIndex[2]] - 1+indexBase), getTitle(),
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -1810,7 +1815,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
         start[selectedIndex[2]] = idx;
-        curFrame = idx;
+        curFrame = idx+indexBase;
         dataset.clearData();
         image = null;
         imageComponent.setImage(getImage());
@@ -2343,9 +2348,9 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
 
             strBuff.setLength(0); // reset the string buffer
             strBuff.append("x=");
-            strBuff.append(x);
+            strBuff.append(x+indexBase);
             strBuff.append(",   y=");
-            strBuff.append(y);
+            strBuff.append(y+indexBase);
             strBuff.append(",   value=");
 
             if (isTrueColor) {
