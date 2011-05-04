@@ -484,7 +484,7 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         item.setEnabled(!isTrueColor);
         menu.add(item);
 
-        item = new JMenuItem("Import Palette from File");
+        item = new JMenuItem("Add Palette from File");
         item.addActionListener(this);
         item.setActionCommand("Import palette");
         item.setEnabled(!isTrueColor);
@@ -1470,8 +1470,10 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                     return;
                 }
 
-                (ViewProperties.getPaletteList()).addElement(choosedFile
-                        .getAbsolutePath());
+                Vector<String> palList = ViewProperties.getPaletteList();
+                String palPath = choosedFile.getAbsolutePath();
+                if(!palList.contains(palList))
+                	palList.addElement(palPath);
             }
             else if (cmd.equals("Set data range")) {
                 DataRangeDialog drd = new DataRangeDialog((JFrame) viewer,
