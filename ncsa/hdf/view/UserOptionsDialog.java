@@ -67,7 +67,8 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
     private JComboBox choiceTreeView, choiceMetaDataView, choiceTextView,
             choiceTableView, choiceImageView, choicePaletteView;
     private String rootDir, workDir;
-    private JCheckBox checkCurrentUserDir, checkAutoContrast, checkConvertEnum;
+    private JCheckBox checkCurrentUserDir, checkAutoContrast, 
+    		checkConvertEnum, check1BasedIndex;
     private JButton currentDirButton;
     private JRadioButton checkReadOnly;
 
@@ -229,7 +230,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
     	//        displayIndexChoice.setSelectedItem(ViewProperties.getIndexType());
 
     	JPanel centerP = new JPanel();
-    	centerP.setLayout(new GridLayout(9, 1, 10, 10));
+    	centerP.setLayout(new GridLayout(8, 1, 10, 10));
     	centerP.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
 
     	JPanel p0 = new JPanel();
@@ -312,17 +313,8 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
     	centerP.add(p0);
 
     	p0 = new JPanel();
-    	p0.setLayout(new BorderLayout());
-    	p0.add(new JLabel("Data Delimiter:  "), BorderLayout.WEST);
-    	p0.add(delimiterChoice, BorderLayout.CENTER);
-    	tborder = new TitledBorder("Text Data Input/Output");
-    	tborder.setTitleColor(Color.darkGray);
-    	p0.setBorder(tborder);
-    	centerP.add(p0);
-
-    	p0 = new JPanel();
     	p0.setLayout(new BorderLayout(20, 0));
-    	checkAutoContrast = new JCheckBox("Auto Contrast");
+    	checkAutoContrast = new JCheckBox("Auto Image Contrast");
     	checkAutoContrast.setSelected(ViewProperties.isAutoContrast());
     	p0.add(checkAutoContrast, BorderLayout.CENTER);
     	JButton button = new JButton(ViewProperties.getHelpIcon());
@@ -331,23 +323,41 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
     	button.addActionListener(this);
     	button.setActionCommand("Help on Auto Contrast");
     	p0.add(button, BorderLayout.WEST);
-    	tborder = new TitledBorder("Image Brightness/Contrast");
+    	tborder = new TitledBorder("ImageView");
     	tborder.setTitleColor(Color.darkGray);
     	p0.setBorder(tborder);
     	centerP.add(p0);
 
     	p0 = new JPanel();
-    	p0.setLayout(new BorderLayout(20, 0));
-    	checkConvertEnum = new JCheckBox("Convert Enum");
-    	checkConvertEnum.setSelected(ViewProperties.isConvertEnum());
-    	p0.add(checkConvertEnum, BorderLayout.CENTER);
+    	p0.setLayout(new GridLayout(1, 3, 8, 8));
+
+    	p00 = new JPanel();
+    	p00.setLayout(new BorderLayout());
     	button = new JButton(ViewProperties.getHelpIcon());
     	button.setToolTipText("Help on Convert Enum");
     	button.setMargin(new Insets(0, 0, 0, 0));
     	button.addActionListener(this);
     	button.setActionCommand("Help on Convert Enum");
-    	p0.add(button, BorderLayout.WEST);
-    	tborder = new TitledBorder("Convert Enum Data");
+    	p00.add(button, BorderLayout.WEST);
+    	checkConvertEnum = new JCheckBox("Convert Enum");
+    	checkConvertEnum.setSelected(ViewProperties.isConvertEnum());
+    	p00.add(checkConvertEnum, BorderLayout.CENTER);
+    	p0.add(p00);
+
+    	p00 = new JPanel();
+    	p00.setLayout(new BorderLayout());
+    	check1BasedIndex = new JCheckBox("Use 1-based Index");
+    	check1BasedIndex.setSelected(ViewProperties.isIndexBase1());
+    	p00.add(check1BasedIndex, BorderLayout.CENTER);
+    	p0.add(p00);
+
+    	p00 = new JPanel();
+    	p00.setLayout(new BorderLayout());
+    	p00.add(new JLabel("Data Delimiter:  "), BorderLayout.WEST);
+    	p00.add(delimiterChoice, BorderLayout.CENTER);
+    	p0.add(p00);
+
+    	tborder = new TitledBorder("TableView");
     	tborder.setTitleColor(Color.darkGray);
     	p0.setBorder(tborder);
     	centerP.add(p0);
@@ -846,6 +856,7 @@ public class UserOptionsDialog extends JDialog implements ActionListener {
 
         ViewProperties.setAutoContrast(checkAutoContrast.isSelected());
         ViewProperties.setConvertEnum(checkConvertEnum.isSelected());
+        ViewProperties.setIndexBase1(check1BasedIndex.isSelected());
     }
 
     public boolean isFontChanged() {

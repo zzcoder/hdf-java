@@ -202,6 +202,8 @@ implements TableView, ActionListener, MouseListener
     
     private int binaryOrder;
     
+    private int indexBase = 0;
+    
     private static final int FLOAT_BUFFER_SIZE = 524288;
     
     private static final int INT_BUFFER_SIZE = 524288;
@@ -249,6 +251,9 @@ implements TableView, ActionListener, MouseListener
         HObject hobject = null;
         popupMenu = null;
         bitmask = null;
+        
+        if (ViewProperties.isIndexBase1())
+        	indexBase = 1;
         
         checkFixedDataLength = new JCheckBoxMenuItem("Fixed Data Length", false);
         checkScientificNotation = new JCheckBoxMenuItem("Show Scientific Notation", false);
@@ -413,7 +418,7 @@ implements TableView, ActionListener, MouseListener
         long[] start = dataset.getStartDims();
         int n = Math.min(3, rank);
         if (rank>2) {
-            curFrame = start[selectedIndex[2]];
+            curFrame = start[selectedIndex[2]]+indexBase;
             maxFrame = dims[selectedIndex[2]];
         }
 
@@ -895,7 +900,7 @@ implements TableView, ActionListener, MouseListener
             else if (cmd.startsWith("Go to frame"))
             {
                 int page = 0;
-                try { page = Integer.parseInt(frameField.getText().trim()); }
+                try { page = Integer.parseInt(frameField.getText().trim())-indexBase; }
                 catch (Exception ex) { page = -1; }
 
                 gotoPage(page);
@@ -1567,7 +1572,7 @@ implements TableView, ActionListener, MouseListener
 
         for (int i=0; i<cols; i++)
         {
-            columnNames[i] = String.valueOf(start+i*stride);
+            columnNames[i] = String.valueOf(start+indexBase+i*stride);
         }
 
         AbstractTableModel tm =  new AbstractTableModel()
@@ -1735,7 +1740,7 @@ implements TableView, ActionListener, MouseListener
                 if ((getSelectedRow()==row) && (getSelectedColumn()==column))
                 {
                     cellLabel.setText(
-                        String.valueOf(rowStart+row*rowStride)+
+                        String.valueOf(rowStart+indexBase+row*rowStride)+
                         ", "+
                         table.getColumnName(column)+
                         "  =  ");
@@ -2020,7 +2025,7 @@ implements TableView, ActionListener, MouseListener
                 if ((getSelectedRow()==row) && (getSelectedColumn()==column))
                 {
                     cellLabel.setText(
-                        String.valueOf(rowStart+row*rowStride)+
+                        String.valueOf(rowStart+indexBase+row*rowStride)+
                         ", "+ table.getColumnName(column)+
                         "  =  ");
                     cellValueField.setText(getValueAt(row, column).toString());
@@ -2061,14 +2066,14 @@ implements TableView, ActionListener, MouseListener
         if ((idx <0) || (idx >= dims[selectedIndex[2]])) {
             toolkit.beep();
             JOptionPane.showMessageDialog(this,
-                "Frame number must be between 0 and "+(dims[selectedIndex[2]]-1),
+                "Frame number must be between" +indexBase+" and "+(dims[selectedIndex[2]]-1+indexBase),
                 getTitle(),
                 JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         start[selectedIndex[2]] = idx;
-        curFrame = idx;
+        curFrame = idx+indexBase;
         dataset.clearData();
 
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -3612,7 +3617,7 @@ implements TableView, ActionListener, MouseListener
                 }
 				public Object getValueAt(int row, int column)
                 {
-                	return String.valueOf(start+row*stride);
+                	return String.valueOf(start+indexBase+row*stride);
                 }
             };
            
