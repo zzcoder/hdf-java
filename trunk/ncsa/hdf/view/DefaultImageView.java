@@ -251,6 +251,9 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
 
     private BitSet bitmask;
     private boolean convertByteData = false;
+    
+    /* image origin: 0-UL, 1-LL, 2-UR, 3-LR */
+    private int origin = 0;
 
     /**
      * Constructs an ImageView.
@@ -304,6 +307,14 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         autoGainData = null;
         generalContrastSlider = null;
         bitmask = null;
+        
+        String origStr = ViewProperties.getImageOrigin();
+        if (ViewProperties.ORIGIN_LL.equalsIgnoreCase(origStr))
+        	origin = 1;
+        else if (ViewProperties.ORIGIN_UR.equalsIgnoreCase(origStr))
+        	origin = 2;
+        else if (ViewProperties.ORIGIN_LR.equalsIgnoreCase(origStr))
+        	origin = 3;
         
         if (ViewProperties.isIndexBase1())
         	indexBase = 1;
@@ -375,9 +386,18 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
             paletteComponent = new PaletteComponent(imagePalette, dataRange);
             contentPane.add(paletteComponent, BorderLayout.EAST);
         }
+        
+        if (origin == 1)
+        	flip(FLIP_VERTICAL);
+        else if (origin == 2)
+        	flip(FLIP_HORIZONTAL);
+        if (origin == 3) {
+        	rotate(ROTATE_CW_90);
+           	rotate(ROTATE_CW_90);
+        }
 
         // set title
-        StringBuffer sb = new StringBuffer("ImageView  -  ");
+        StringBuffer sb = new StringBuffer("ImageView <"+ViewProperties.getImageOrigin()+">  -  ");
         sb.append(hobject.getName());
         sb.append("  -  ");
         sb.append(hobject.getPath());
@@ -1170,8 +1190,24 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
 
     // implementing ImageObserver
     private void rotate(int direction) {
+    	if ( !(direction == ROTATE_CW_90 || direction == ROTATE_CCW_90))
+    		return;
+    		
         Rotate90Filter filter = new Rotate90Filter(direction);
         changeImageFilter(filter);
+        
+        if (direction == ROTATE_CW_90) {
+            rotateCount++;
+            if (rotateCount == 4) {
+                rotateCount = 0;
+            }
+        }
+        else {
+            rotateCount--;
+            if (rotateCount == -4) {
+                rotateCount = 0;
+            }
+        }
     }
 
     // implementing ImageObserver
@@ -1501,20 +1537,10 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
                 flip(FLIP_VERTICAL);
             }
             else if (cmd.startsWith("Rotate")) {
-                if (cmd.equals("Rotate clockwise")) {
+                if (cmd.equals("Rotate clockwise"))
                     rotate(ROTATE_CW_90);
-                    rotateCount++;
-                    if (rotateCount == 4) {
-                        rotateCount = 0;
-                    }
-                }
-                else {
+                else
                     rotate(ROTATE_CCW_90);
-                    rotateCount--;
-                    if (rotateCount == -4) {
-                        rotateCount = 0;
-                    }
-                }
 
                 int n = rotateRelatedItems.size();
                 for (int i = 0; i < n; i++) {
@@ -1795,7 +1821,8 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
     }
 
     private void gotoPage(long idx) {
-        if (dataset.getRank() < 3) {
+        if (dataset.getRank() < 3 ||
+        		idx == (curFrame-indexBase) ) {
             return;
         }
 
@@ -1820,6 +1847,19 @@ public class DefaultImageView extends JInternalFrame implements ImageView,
         image = null;
         imageComponent.setImage(getImage());
         frameField.setText(String.valueOf(curFrame));
+    
+        isHorizontalFlipped = false;
+        isVerticalFlipped = false;
+        rotateCount = 0;        
+
+        if (origin == 1)
+        	flip(FLIP_VERTICAL);
+        else if (origin == 2)
+        	flip(FLIP_HORIZONTAL);
+        if (origin == 3) {
+        	rotate(ROTATE_CW_90);
+           	rotate(ROTATE_CW_90);
+        }
 
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
