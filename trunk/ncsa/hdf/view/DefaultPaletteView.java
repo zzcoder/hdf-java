@@ -108,20 +108,26 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
         choicePalette = new JComboBox();
         choicePalette.addItemListener(this);
 
-        choicePalette.addItem("Select palette");
-        String paletteName = ((ScalarDS) dataset).getPaletteName(0);
-        choicePalette.addItem(paletteName);
         boolean isH5 = dataset.getFileFormat().isThisType(
                 FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5));
- 
+
+        choicePalette.addItem("Select palette");
+        String paletteName = ((ScalarDS) dataset).getPaletteName(0);
+        
+        if (paletteName!= null)
+        	paletteName = paletteName.trim();
+        
+        if (paletteName!= null && paletteName.length()>0)
+        	choicePalette.addItem(paletteName);
+        
         if (isH5 && (dataset instanceof ScalarDS)) {
             byte[] palRefs = ((ScalarDS) dataset).getPaletteRefs();
             if ((palRefs != null) && (palRefs.length > 8)) {
               numberOfPalettes = palRefs.length / 8;
             }
         }
-        for (int i = 2; i <= numberOfPalettes; i++) {
-        	paletteName = ((ScalarDS) dataset).getPaletteName(i-1);
+        for (int i = 1; i < numberOfPalettes; i++) {
+        	paletteName = ((ScalarDS) dataset).getPaletteName(i);
         	choicePalette.addItem(paletteName);
         }
         choicePalette.addItem(PALETTE_GRAY);
@@ -317,13 +323,11 @@ public class DefaultPaletteView extends JDialog implements PaletteView,
         else if (item.equals(PALETTE_WAVE)) {
             imagePalette = Tools.createWavePalette();
         }
+        else if (idx > 0 && idx <= numberOfPalettes) {
+        	imagePalette = ((ScalarDS) dataset).readPalette(idx - 1);
+        }
         else {
-        	 byte[][] pal = null;
-        	if((idx > 0) && (idx <= numberOfPalettes)) 
-            // multiple palettes attached
-            pal = ((ScalarDS) dataset).readPalette(idx - 1);
-            if (pal != null)
-                imagePalette = pal;
+            imagePalette = Tools.readPalette((String)item);
         }
 
         if (imagePalette == null) {

@@ -1074,7 +1074,10 @@ public class ViewProperties extends Properties {
         theFile = null;
         for (int i = 0; i < MAX_RECENT_FILES; i++) {
             theFile = getProperty("palette.file" + i);
-            if ((theFile != null) && !paletteList.contains(theFile)) {
+            if (theFile!=null)
+            	theFile = theFile.trim();
+            
+            if ((theFile != null && theFile.length()>0) && !paletteList.contains(theFile)) {
                 if ((new File(theFile)).exists()) {
                     paletteList.addElement(theFile);
                 }

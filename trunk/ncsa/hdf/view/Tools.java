@@ -402,13 +402,12 @@ public final class Tools {
      * @return the wave palette in the form of byte[3][256]
      */
     public static final byte[][] readPalette(String filename) {
-        int ncolors = 256;
-        byte[][] p = new byte[3][ncolors];
+        final int COLOR256 = 256;
         BufferedReader in = null;
         String line = null;
         int nentries = 0, i, j, idx;
         float v, r, g, b, ratio, max_v, min_v, max_color, min_color;
-        float[][] tbl = new float[ncolors][4]; /* value, red, green, blue */
+        float[][] tbl = new float[COLOR256][4]; /* value, red, green, blue */
 
         if (filename == null)
             return null;
@@ -474,9 +473,11 @@ public final class Tools {
             min_color = Math.min(min_color, b);
 
             idx++;
-            if (idx >= ncolors)
+            if (idx >= COLOR256)
                 break; /* only support to 256 colors */
         } while (line != null);
+        
+        try { in.close();} catch (Exception ex) {}
 
         nentries = idx;
         if (nentries <= 1) // must have more than one entries
@@ -486,7 +487,7 @@ public final class Tools {
         nentries = idx;
         if (max_color <= 1) {
             ratio = (min_color == max_color) ? 1.0f
-                    : ((ncolors - 1.0f) / (max_color - min_color));
+                    : ((COLOR256 - 1.0f) / (max_color - min_color));
 
             for (i = 0; i < nentries; i++) {
                 for (j = 1; j < 4; j++)
@@ -496,34 +497,47 @@ public final class Tools {
 
         // convert table to 256 entries
         idx = 0;
-        ratio = (min_v == max_v) ? 1.0f : ((ncolors - 1.0f) / (max_v - min_v));
+        ratio = (min_v == max_v) ? 1.0f : ((COLOR256 - 1.0f) / (max_v - min_v));
 
+        int[][] p = new int[3][COLOR256];
         for (i = 0; i < nentries; i++) {
             idx = (int) ((tbl[i][0] - min_v) * ratio);
             for (j = 0; j < 3; j++)
-                p[j][idx] = (byte) tbl[i][j + 1];
+                p[j][idx] = (int) tbl[i][j + 1];
         }
 
         /* linear interpolating missing values in the color table */
-        for (i = 1; i < ncolors; i++) {
+        for (i = 1; i < COLOR256; i++) {
             if ((p[0][i] + p[1][i] + p[2][i]) == 0) {
                 j = i + 1;
-                while ((p[0][j] + p[1][j] + p[2][j]) == 0) {
+                
+                // figure out number of missing points between two given points
+                while (j<COLOR256 && (p[0][j] + p[1][j] + p[2][j]) == 0)
                     j++;
-                    if (j >= ncolors)
-                        return p; /* nothing in the table to interpolating */
-                }
+                
+                if (j >= COLOR256)
+                    break; /* nothing in the table to interpolating */
 
-                p[0][i] = (byte) (p[0][i - 1] + (float) (p[0][j] - p[0][i - 1])
-                        / (j - i));
-                p[1][i] = (byte) (p[1][i - 1] + (float) (p[1][j] - p[1][i - 1])
-                        / (j - i));
-                p[2][i] = (byte) (p[2][i - 1] + (float) (p[2][j] - p[2][i - 1])
-                        / (j - i));
-            }
+                float d1 = (p[0][j] - p[0][i - 1]) / (j - i);
+                float d2 = (p[1][j] - p[1][i - 1]) / (j - i);
+                float d3 = (p[2][j] - p[2][i - 1]) / (j - i);
+                
+                for (int k=i; k<=j; k++) {
+                    p[0][k] = (int) (p[0][i - 1] + d1*(k-i+1));
+                    p[1][k] = (int) (p[1][i - 1] + d2*(k-i+1));
+                    p[2][k] = (int) (p[2][i - 1] + d3*(k-i+1));     
+                }
+                i = j+1;
+            } // if ((p[0][i] + p[1][i] + p[2][i]) == 0)
+        } // for (i = 1; i < COLOR256; i++) {
+
+        byte[][] pal = new byte[3][COLOR256];
+        for (i = 1; i < COLOR256; i++) {
+        	for (j = 0; j < 3; j++)
+        		pal[j][i] = (byte) (p[j][i]);
         }
 
-        return p;
+        return pal;
     }
 
     /**
