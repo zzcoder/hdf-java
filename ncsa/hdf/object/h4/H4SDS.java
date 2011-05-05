@@ -503,7 +503,8 @@ public class H4SDS extends ScalarDS
                         (attrInfo[0] ==  HDFConstants.DFNT_UCHAR8))
                     {
                         buf = Dataset.byteToString((byte[])buf, attrInfo[1]);
-                    } else if (attrName[0].equalsIgnoreCase("fillValue")) {
+                    } else if (attrName[0].equalsIgnoreCase("fillValue") || 
+                    		attrName[0].equalsIgnoreCase("_fillValue")) {
                     	fillValue = buf;
                     }
 
