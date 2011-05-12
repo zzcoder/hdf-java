@@ -2,6 +2,9 @@
 # HDFJAVA Config file for compiling against HDFJAVA install directory
 #-----------------------------------------------------------------------------
 GET_FILENAME_COMPONENT (SELF_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+GET_FILENAME_COMPONENT(_IMPORT_PREFIX "${SELF_DIR}" PATH)
+GET_FILENAME_COMPONENT(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
+GET_FILENAME_COMPONENT(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
 
 #-----------------------------------------------------------------------------
 # User Options
@@ -16,7 +19,7 @@ SET (HDF_ENABLE_SZIP_ENCODING @HDF_ENABLE_SZIP_ENCODING@)
 #-----------------------------------------------------------------------------
 # Directories
 #-----------------------------------------------------------------------------
-SET (HDFJAVA_INCLUDE_DIRS "@CMAKE_INSTALL_PREFIX@")
+SET (HDFJAVA_INCLUDE_DIRS "${_IMPORT_PREFIX}")
 
 #-----------------------------------------------------------------------------
 # Version Strings
