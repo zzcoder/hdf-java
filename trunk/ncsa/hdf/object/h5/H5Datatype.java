@@ -578,7 +578,7 @@ public class H5Datatype extends Datatype {
                 else
                     H5.H5Tset_size(tid, datatypeSize);
 
-                H5.H5Tset_strpad(tid, HDF5Constants.H5T_STR_NULLPAD);
+                //H5.H5Tset_strpad(tid, HDF5Constants.H5T_STR_NULLPAD);
                 break;
             case CLASS_REFERENCE:
                 if (datatypeSize > H5
