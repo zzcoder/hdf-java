@@ -1191,7 +1191,7 @@ public class TestH5Object
             tid = dtype.toNative();
             tid2 = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
             H5.H5Tset_size(tid2, STR_LEN);
-            H5.H5Tset_strpad(tid2, HDF5Constants.H5T_STR_NULLPAD);
+            //H5.H5Tset_strpad(tid2, HDF5Constants.H5T_STR_NULLPAD); /* default is not NULL padding */
             if (!H5.H5Tequal(tid, tid2)) {
                 failed(message, new HDF5Exception("Failed to convert string"), file);
                 return 1;
