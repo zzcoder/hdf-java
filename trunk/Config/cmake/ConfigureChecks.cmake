@@ -104,7 +104,7 @@ IF (HJAVA_BUILD_TOOLS)
 ENDIF (HJAVA_BUILD_TOOLS)
 
 IF (CYGWIN)
-  SET (H4_HAVE_LSEEK64 0)
+  SET (HJAVA_HAVE_LSEEK64 0)
 ENDIF (CYGWIN)
 
 #-----------------------------------------------------------------------------
