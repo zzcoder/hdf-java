@@ -8,6 +8,7 @@ import java.io.File;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
+import ncsa.hdf.hdf5lib.HDFNativeData;
 import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
@@ -451,6 +452,100 @@ public class TestH5D {
         catch (Exception err) {
             err.printStackTrace();
         }
+    }
+
+    @Test
+    public void testH5Dget_offset() throws Throwable, HDF5LibraryException {
+        int[][] write_dset_data = new int[DIM_X][DIM_Y];
+        long dset_address = 0;
+        _createDataset(H5fid, H5dsid, "dset", HDF5Constants.H5P_DEFAULT);
+        
+        try {
+            // Test dataset address.  Should be undefined.
+            dset_address = H5.H5Dget_offset(H5did);
+        }
+        catch (HDF5LibraryException hdfex) {
+            ;
+        }
+        catch (Exception err) {
+            err.printStackTrace();
+            fail("H5.H5Dget_offset: " + err);
+        }
+        // Write the data to the dataset.
+        try {
+            H5.H5Dwrite(H5did, HDF5Constants.H5T_NATIVE_INT,
+                        HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
+                        HDF5Constants.H5P_DEFAULT, write_dset_data);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        try {
+            // Test dataset address.
+            dset_address = H5.H5Dget_offset(H5did);
+        }
+        catch (Exception err) {
+            err.printStackTrace();
+            fail("H5.H5Dget_offset: " + err);
+        }
+        
+        assertTrue("TestH5D.testH5Dget_offset: ", dset_address > 0);
+    }
+
+    @Test
+    public void testH5Dfill_null() throws Throwable, HDF5LibraryException {
+        int[] buf_data = new int[DIM_X*DIM_Y];
+        
+        // Initialize memory buffer
+        for (int indx = 0; indx < DIM_X; indx++)
+            for (int jndx = 0; jndx < DIM_Y; jndx++) {
+                buf_data[indx*jndx] = indx * jndx - jndx;
+            }
+        byte[] buf_array = HDFNativeData.intToByte(0, DIM_X*DIM_Y, buf_data);
+        
+        // Fill selection in memory
+        try {
+            H5.H5Dfill(null, HDF5Constants.H5T_NATIVE_UINT, buf_array, HDF5Constants.H5T_NATIVE_UINT, H5dsid);
+        }
+        catch (Exception err) {
+            err.printStackTrace();
+            fail("H5.H5Dfill: " + err);
+        }
+        buf_data = HDFNativeData.byteToInt(buf_array);
+
+        // Verify memory buffer the hard way
+        for (int indx = 0; indx < DIM_X; indx++)
+            for (int jndx = 0; jndx < DIM_Y; jndx++)
+                assertTrue("H5.H5Dfill: [" + indx+","+jndx + "] ", buf_data[indx*jndx] == 0);
+    }
+
+    @Test
+    public void testH5Dfill() throws Throwable, HDF5LibraryException {
+        int[] buf_data = new int[DIM_X*DIM_Y];
+        byte[] fill_value = HDFNativeData.intToByte(254);
+        
+        // Initialize memory buffer
+        for (int indx = 0; indx < DIM_X; indx++)
+            for (int jndx = 0; jndx < DIM_Y; jndx++) {
+                buf_data[indx*jndx] = indx * jndx - jndx;
+            }
+        byte[] buf_array = HDFNativeData.intToByte(0, DIM_X*DIM_Y, buf_data);
+        
+        // Fill selection in memory
+        try {
+            H5.H5Dfill(fill_value, HDF5Constants.H5T_NATIVE_UINT, buf_array, HDF5Constants.H5T_NATIVE_UINT, H5dsid);
+        }
+        catch (Exception err) {
+            err.printStackTrace();
+            fail("H5.H5Dfill: " + err);
+        }
+        buf_data = HDFNativeData.byteToInt(buf_array);
+
+        // Verify memory buffer the hard way
+        for (int indx = 0; indx < DIM_X; indx++)
+            for (int jndx = 0; jndx < DIM_Y; jndx++)
+                assertTrue("H5.H5Dfill: [" + indx+","+jndx + "] ", buf_data[indx*jndx] == 254);
     }
 
 }

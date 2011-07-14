@@ -1614,11 +1614,50 @@ JNIEXPORT jlong JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dvlen_1get_1buf_1size_1long
 JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dfill
   (JNIEnv *env, jclass clss, jbyteArray fill, jint fill_type_id, jbyteArray buf, jint buf_type_id, jint space_id)
 {
-    herr_t status;
+    herr_t    status;
+    jbyte    *fillP;
+    jbyte    *buffP;
+    jboolean  isCopy1;
+    jboolean  isCopy2;
+    
+    if(fill) {
+        fillP = ENVPTR->GetByteArrayElements(ENVPAR fill, &isCopy1);
+        if (fillP == NULL) {
+            h5JNIFatalError( env, "H5Dfill:  fill not pinned");
+            return;
+        }
+    }
+    else
+        fillP = NULL;
+    
+    if (buf == NULL) {
+        h5nullArgument(env, "H5Dfill:  buf is NULL");
+        return;
+    }
 
-    status = H5Dfill((const void*)fill, (hid_t)fill_type_id, (void*)buf, (hid_t)buf_type_id, (hid_t)space_id);
+    buffP = ENVPTR->GetByteArrayElements(ENVPAR buf, &isCopy2);
+    if (buffP == NULL) {
+        h5JNIFatalError(env, "H5Dfill:  buf not pinned");
+        return;
+    }
+    
+    status = H5Dfill((const void*)fillP, (hid_t)fill_type_id, (void*)buffP, (hid_t)buf_type_id, (hid_t)space_id);
     if (status < 0) {
+        ENVPTR->ReleaseByteArrayElements(ENVPAR buf, buffP, JNI_ABORT);
+        if(fillP) {
+            ENVPTR->ReleaseByteArrayElements(ENVPAR fill, fillP, JNI_ABORT);
+        }
         h5libraryError(env);
+        return;
+    }
+    
+    if (isCopy2 == JNI_TRUE) {
+        ENVPTR->ReleaseByteArrayElements(ENVPAR buf, buffP, 0);
+    }
+    if(fillP) {
+        if (isCopy1 == JNI_TRUE) {
+            ENVPTR->ReleaseByteArrayElements(ENVPAR fill, fillP, JNI_ABORT);
+        }
     }
 }
 
