@@ -37,25 +37,35 @@ extern "C" {
 #include "h5dImp.h"
 
 #ifdef __cplusplus
-#ifdef _WINDOWS
-#include <direct.h>
-#endif
+  #ifdef _WINDOWS
+    #include <direct.h>
+  #endif
 #endif
 
 #ifdef _WINDOWS
-#define CHDIR _chdir
-#define GETCWD _getcwd
+  #define CHDIR _chdir
+  #define GETCWD _getcwd
 #else
-#define CHDIR chdir
-#define GETCWD getcwd
+  #define CHDIR chdir
+  #define GETCWD getcwd
 #endif
 
 #ifdef __cplusplus
-#define ENVPTR (env)
-#define ENVPAR
+  #define ENVPTR (env)
+  #define ENVPAR
+  #define CBENVPTR (cbenv)
+  #define CBENVPAR 
+  #define JVMPTR (jvm)
+  #define JVMPAR 
+  #define JVMPAR2 
 #else
-#define ENVPTR (*env)
-#define ENVPAR env,
+  #define ENVPTR (*env)
+  #define ENVPAR env,
+  #define CBENVPTR (*cbenv)
+  #define CBENVPAR cbenv,
+  #define JVMPTR (*jvm)
+  #define JVMPAR jvm
+  #define JVMPAR2 jvm,
 #endif
 
 herr_t H5DreadVL_str (JNIEnv *env, hid_t did, hid_t tid, hid_t mem_sid, hid_t file_sid, hid_t xfer_plist_id, jobjectArray buf);
@@ -1706,6 +1716,115 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dset_1extent
     if (status < 0) {
         h5libraryError(env);
     }
+}
+
+herr_t H5D_iterate_cb(void* elem, hid_t elem_id, unsigned ndim, const hsize_t *point, void *op_data) {
+    JNIEnv    *cbenv;
+    jint       status;
+    jclass     cls;
+    jmethodID  mid;
+    jmethodID  constructor;
+    jbyteArray elemArray;
+    jlongArray pointArray;
+    jboolean   isCopy;
+    jsize      size;
+
+    if(JVMPTR->AttachCurrentThread(JVMPAR2 (void**)&cbenv, NULL) != 0) {
+        JVMPTR->DetachCurrentThread(JVMPAR);
+        return -1;
+    }
+    cls = CBENVPTR->GetObjectClass(CBENVPAR visit_callback);
+    if (cls == 0) {
+       JVMPTR->DetachCurrentThread(JVMPAR);
+       return -1;
+    }
+    mid = CBENVPTR->GetMethodID(CBENVPAR cls, "callback", "([BII[JLncsa/hdf/hdf5lib/callbacks/H5D_iterate_t;)I");
+    if (mid == 0) {
+        JVMPTR->DetachCurrentThread(JVMPAR);
+        return -1;
+    }
+    
+    if (elem == NULL) {
+        JVMPTR->DetachCurrentThread(JVMPAR);
+        return -1;
+    }
+    if (point == NULL) {
+        JVMPTR->DetachCurrentThread(JVMPAR);
+        return -1;
+    }
+
+    size = H5Tget_size(elem_id);
+    elemArray = CBENVPTR->NewByteArray(CBENVPAR size);
+    if (elemArray == NULL) {
+        JVMPTR->DetachCurrentThread(JVMPAR);
+        return -1;
+    }
+    CBENVPTR->SetByteArrayRegion(CBENVPAR elemArray, 0, size, elem);
+    
+    pointArray = CBENVPTR->NewLongArray(CBENVPAR 2);
+    if (pointArray == NULL) {
+        JVMPTR->DetachCurrentThread(JVMPAR);
+        return -1;
+    }
+
+    CBENVPTR->SetLongArrayRegion(CBENVPAR pointArray, 0, 2, point);
+
+    status = CBENVPTR->CallIntMethod(CBENVPAR visit_callback, mid, elemArray, elem_id, ndim, pointArray, op_data);
+
+    CBENVPTR->GetByteArrayRegion(CBENVPAR elemArray, 0, size, elem);
+
+    JVMPTR->DetachCurrentThread(JVMPAR);
+    return status;
+}
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Diterate
+ * Signature: ([BIILjava/lang/Object;Ljava/lang/Object;)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Diterate
+  (JNIEnv *env, jclass clss, jbyteArray buf, jint buf_type, jint space,
+          jobject callback_op, jobject op_data)
+{
+    jboolean      isCopy;
+    jbyte        *buffP;
+    herr_t        status = -1;
+    
+    ENVPTR->GetJavaVM(ENVPAR &jvm);
+    visit_callback = callback_op;
+
+    if (op_data == NULL) {
+        h5nullArgument(env,  "H5Diterate:  op_data is NULL");
+        return -1;
+    }
+    if (callback_op == NULL) {
+        h5nullArgument(env,  "H5Diterate:  callback_op is NULL");
+        return -1;
+    }
+
+    if (buf == NULL) {
+        h5nullArgument(env,  "H5Diterate:  buf is NULL");
+        return -1;
+    }
+    buffP = ENVPTR->GetByteArrayElements(ENVPAR buf, &isCopy);
+    if (buffP == NULL) {
+        h5JNIFatalError(env, "H5Diterate:  buf not pinned");
+        return -1;
+    }
+    
+    status = H5Diterate((void*)buffP, (hid_t)buf_type, (hid_t)space, (H5D_operator_t)H5D_iterate_cb, (void*)op_data);
+    
+    if (status < 0) {
+       ENVPTR->ReleaseByteArrayElements(ENVPAR buf, buffP, JNI_ABORT);
+       h5libraryError(env);
+       return status;
+    }
+    
+    if (isCopy == JNI_TRUE) {
+        ENVPTR->ReleaseByteArrayElements(ENVPAR buf, buffP, 0);
+    }
+    
+    return status;
 }
 
 
