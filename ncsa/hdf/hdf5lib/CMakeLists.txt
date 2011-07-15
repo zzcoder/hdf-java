@@ -9,6 +9,8 @@ INCLUDE_DIRECTORIES(
 )
 
 SET (HDFJAVA_NCSA_HDF_HDF5_CALLBACKS_SRCS
+    callbacks/H5D_iterate_cb.java
+    callbacks/H5D_iterate_t.java
     callbacks/H5L_iterate_cb.java
     callbacks/H5L_iterate_t.java
     callbacks/H5O_iterate_cb.java

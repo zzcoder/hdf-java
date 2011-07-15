@@ -5,10 +5,15 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 import ncsa.hdf.hdf5lib.HDFNativeData;
+import ncsa.hdf.hdf5lib.callbacks.H5D_iterate_cb;
+import ncsa.hdf.hdf5lib.callbacks.H5D_iterate_t;
 import ncsa.hdf.hdf5lib.exceptions.HDF5Exception;
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
@@ -500,7 +505,7 @@ public class TestH5D {
         // Initialize memory buffer
         for (int indx = 0; indx < DIM_X; indx++)
             for (int jndx = 0; jndx < DIM_Y; jndx++) {
-                buf_data[indx*jndx] = indx * jndx - jndx;
+                buf_data[(indx * DIM_Y) + jndx] = indx * jndx - jndx;
             }
         byte[] buf_array = HDFNativeData.intToByte(0, DIM_X*DIM_Y, buf_data);
         
@@ -517,7 +522,7 @@ public class TestH5D {
         // Verify memory buffer the hard way
         for (int indx = 0; indx < DIM_X; indx++)
             for (int jndx = 0; jndx < DIM_Y; jndx++)
-                assertTrue("H5.H5Dfill: [" + indx+","+jndx + "] ", buf_data[indx*jndx] == 0);
+                assertTrue("H5.H5Dfill: [" + indx+","+jndx + "] ", buf_data[(indx * DIM_Y) + jndx] == 0);
     }
 
     @Test
@@ -528,7 +533,7 @@ public class TestH5D {
         // Initialize memory buffer
         for (int indx = 0; indx < DIM_X; indx++)
             for (int jndx = 0; jndx < DIM_Y; jndx++) {
-                buf_data[indx*jndx] = indx * jndx - jndx;
+                buf_data[(indx * DIM_Y) + jndx] = indx * jndx - jndx;
             }
         byte[] buf_array = HDFNativeData.intToByte(0, DIM_X*DIM_Y, buf_data);
         
@@ -545,7 +550,177 @@ public class TestH5D {
         // Verify memory buffer the hard way
         for (int indx = 0; indx < DIM_X; indx++)
             for (int jndx = 0; jndx < DIM_Y; jndx++)
-                assertTrue("H5.H5Dfill: [" + indx+","+jndx + "] ", buf_data[indx*jndx] == 254);
+                assertTrue("H5.H5Dfill: [" + indx+","+jndx + "] ", buf_data[(indx * DIM_Y) + jndx] == 254);
+    }
+
+    @Test
+    public void testH5Diterate() throws Throwable, HDF5LibraryException, NullPointerException {
+        final int SPACE_RANK = 2;
+        final int SPACE_FILL = 254;
+        
+        class H5D_iter_data implements H5D_iterate_t {
+            public int fill_value;             /* The fill value to check */
+            public long fill_curr_coord;          /* Current coordinate to examine */
+            public long[] fill_coords;            /* Pointer to selection's coordinates */
+        }
+        
+        H5D_iterate_t iter_data = new H5D_iter_data();
+
+        class H5D_iter_callback implements H5D_iterate_cb {
+            public int callback(byte[] elem_buf, int elem_id, int ndim, long[] point, H5D_iterate_t op_data) {
+                //Check value in current buffer location
+                int element = HDFNativeData.byteToInt(elem_buf, 0);
+                if(element != ((H5D_iter_data)op_data).fill_value)
+                    return -1;
+                //Check number of dimensions
+                if(ndim != SPACE_RANK)
+                    return(-1);
+                //Check Coordinates
+                long[] fill_coords = new long[2];
+                fill_coords[0] = ((H5D_iter_data)op_data).fill_coords[(int) (2 * ((H5D_iter_data)op_data).fill_curr_coord)];
+                fill_coords[1] = ((H5D_iter_data)op_data).fill_coords[(int) (2 * ((H5D_iter_data)op_data).fill_curr_coord) + 1];
+                ((H5D_iter_data)op_data).fill_curr_coord++;
+                if(fill_coords[0] != point[0])
+                    return(-1);
+                if(fill_coords[1] != point[1])
+                    return(-1);
+                
+                return(0);
+            }
+        }
+        
+        int[] buf_data = new int[DIM_X*DIM_Y];
+        byte[] fill_value = HDFNativeData.intToByte(SPACE_FILL);
+        
+        // Initialize memory buffer
+        for (int indx = 0; indx < DIM_X; indx++)
+            for (int jndx = 0; jndx < DIM_Y; jndx++) {
+                buf_data[(indx * DIM_Y) + jndx] = indx * jndx - jndx;
+            }
+        byte[] buf_array = HDFNativeData.intToByte(0, DIM_X*DIM_Y, buf_data);
+        
+        // Fill selection in memory
+        try {
+            H5.H5Dfill(fill_value, HDF5Constants.H5T_NATIVE_UINT, buf_array, HDF5Constants.H5T_NATIVE_UINT, H5dsid);
+        }
+        catch (Exception err) {
+            err.printStackTrace();
+            fail("H5.H5Diterate: " + err);
+        }
+
+        // Initialize the iterator structure
+        ((H5D_iter_data)iter_data).fill_value = SPACE_FILL;
+        ((H5D_iter_data)iter_data).fill_curr_coord = 0;
+        // Set the coordinates of the selection
+        ((H5D_iter_data)iter_data).fill_coords = new long[DIM_X*DIM_Y*SPACE_RANK];   /* Coordinates of selection */
+        for (int indx = 0; indx < DIM_X; indx++)
+            for (int jndx = 0; jndx < DIM_Y; jndx++) {
+                ((H5D_iter_data)iter_data).fill_coords[2*(indx * DIM_Y + jndx)] = indx;
+                ((H5D_iter_data)iter_data).fill_coords[2*(indx * DIM_Y + jndx) + 1] = jndx;
+            } /* end for */
+
+        // Iterate through selection, verifying correct data
+        H5D_iterate_cb iter_cb = new H5D_iter_callback();
+        int op_status = -1;
+        try {
+            op_status = H5.H5Diterate(buf_array, HDF5Constants.H5T_NATIVE_UINT, H5dsid, iter_cb, iter_data);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Diterate: " + err);
+        }
+        assertTrue("H5Diterate ", op_status == 0);
+    }
+
+    @Test
+    public void testH5Diterate_write() throws Throwable, HDF5LibraryException, NullPointerException {
+        final int SPACE_RANK = 2;
+        final int SPACE_FILL = 254;
+        
+        class H5D_iter_data implements H5D_iterate_t {
+            public int fill_value;             /* The fill value to check */
+            public long fill_curr_coord;          /* Current coordinate to examine */
+            public long[] fill_coords;            /* Pointer to selection's coordinates */
+        }
+        
+        H5D_iterate_t iter_data = new H5D_iter_data();
+
+        class H5D_iter_callback implements H5D_iterate_cb {
+            public int callback(byte[] elem_buf, int elem_id, int ndim, long[] point, H5D_iterate_t op_data) {
+                //Check value in current buffer location
+                int element = HDFNativeData.byteToInt(elem_buf, 0);
+                if(element != ((H5D_iter_data)op_data).fill_value)
+                    return -1;
+                //Check number of dimensions
+                if(ndim != SPACE_RANK)
+                    return(-1);
+                //Check Coordinates
+                long[] fill_coords = new long[2];
+                fill_coords[0] = ((H5D_iter_data)op_data).fill_coords[(int) (2 * ((H5D_iter_data)op_data).fill_curr_coord)];
+                fill_coords[1] = ((H5D_iter_data)op_data).fill_coords[(int) (2 * ((H5D_iter_data)op_data).fill_curr_coord) + 1];
+                ((H5D_iter_data)op_data).fill_curr_coord++;
+                if(fill_coords[0] != point[0])
+                    return(-1);
+                if(fill_coords[1] != point[1])
+                    return(-1);
+                element -= 128;
+                byte[] new_elembuf = HDFNativeData.intToByte(element);
+                elem_buf[0] = new_elembuf[0];
+                elem_buf[1] = new_elembuf[1];
+                elem_buf[2] = new_elembuf[2];
+                elem_buf[3] = new_elembuf[3];
+                return(0);
+            }
+        }
+        
+        int[] buf_data = new int[DIM_X*DIM_Y];
+        byte[] fill_value = HDFNativeData.intToByte(SPACE_FILL);
+        
+        // Initialize memory buffer
+        for (int indx = 0; indx < DIM_X; indx++)
+            for (int jndx = 0; jndx < DIM_Y; jndx++) {
+                buf_data[(indx * DIM_Y) + jndx] = indx * jndx - jndx;
+            }
+        byte[] buf_array = HDFNativeData.intToByte(0, DIM_X*DIM_Y, buf_data);
+        
+        // Fill selection in memory
+        try {
+            H5.H5Dfill(fill_value, HDF5Constants.H5T_NATIVE_UINT, buf_array, HDF5Constants.H5T_NATIVE_UINT, H5dsid);
+        }
+        catch (Exception err) {
+            err.printStackTrace();
+            fail("H5.H5Diterate: " + err);
+        }
+
+        // Initialize the iterator structure
+        ((H5D_iter_data)iter_data).fill_value = SPACE_FILL;
+        ((H5D_iter_data)iter_data).fill_curr_coord = 0;
+        // Set the coordinates of the selection
+        ((H5D_iter_data)iter_data).fill_coords = new long[DIM_X*DIM_Y*SPACE_RANK];   /* Coordinates of selection */
+        for (int indx = 0; indx < DIM_X; indx++)
+            for (int jndx = 0; jndx < DIM_Y; jndx++) {
+                ((H5D_iter_data)iter_data).fill_coords[2*(indx * DIM_Y + jndx)] = indx;
+                ((H5D_iter_data)iter_data).fill_coords[2*(indx * DIM_Y + jndx) + 1] = jndx;
+            } /* end for */
+
+        // Iterate through selection, verifying correct data
+        H5D_iterate_cb iter_cb = new H5D_iter_callback();
+        int op_status = -1;
+        try {
+            op_status = H5.H5Diterate(buf_array, HDF5Constants.H5T_NATIVE_UINT, H5dsid, iter_cb, iter_data);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Diterate: " + err);
+        }
+        assertTrue("H5Diterate ", op_status == 0);
+        
+        buf_data = HDFNativeData.byteToInt(buf_array);
+
+        // Verify memory buffer the hard way
+        for (int indx = 0; indx < DIM_X; indx++)
+            for (int jndx = 0; jndx < DIM_Y; jndx++)
+                assertTrue("H5.H5Diterate: [" + indx+","+jndx + "] "+buf_data[(indx * DIM_Y) + jndx], buf_data[(indx * DIM_Y) + jndx] == 126);
     }
 
 }

@@ -9,6 +9,8 @@
 extern "C" {
 #endif
 
+extern JavaVM *jvm;
+extern jobject visit_callback;   
 
 /*
  * Class:     ncsa_hdf_hdf5lib_H5
@@ -323,6 +325,14 @@ JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dfill
  */
 JNIEXPORT void JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Dset_1extent
   (JNIEnv *, jclass, jint, jlongArray);
+
+/*
+ * Class:     ncsa_hdf_hdf5lib_H5
+ * Method:    H5Diterate
+ * Signature: ([BIILjava/lang/Object;Ljava/lang/Object;)I
+ */
+JNIEXPORT jint JNICALL Java_ncsa_hdf_hdf5lib_H5_H5Diterate
+  (JNIEnv *, jclass, jbyteArray, jint, jint, jobject, jobject);
 
 #ifdef __cplusplus
 }

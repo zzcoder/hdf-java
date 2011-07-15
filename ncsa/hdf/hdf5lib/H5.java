@@ -19,6 +19,8 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import ncsa.hdf.hdf5lib.callbacks.H5D_iterate_cb;
+import ncsa.hdf.hdf5lib.callbacks.H5D_iterate_t;
 import ncsa.hdf.hdf5lib.callbacks.H5L_iterate_cb;
 import ncsa.hdf.hdf5lib.callbacks.H5L_iterate_t;
 import ncsa.hdf.hdf5lib.callbacks.H5O_iterate_cb;
@@ -7850,9 +7852,29 @@ throws HDF5LibraryException, NullPointerException;
 public synchronized static native void H5Dset_extent(int dset_id, long size[])
 throws HDF5LibraryException, NullPointerException;
 
+/**
+ *  H5Diterate iterates over all the data elements in the memory buffer buf, 
+ *  executing the callback function operator once for each such data element. 
+ *
+ *  @param buf     IN/OUT: Pointer to the memory containing the elements to iterate over.
+ *  @param buf_type    IN: Buffer datatype identifier.
+ *  @param space       IN: Dataspace describing memory buffer.
+ *  @param op          IN: Callback function to operate on each value.
+ *  @param op_data IN/OUT: Pointer to any user-efined data for use by operator function.
+ *
+ *  @return  returns the return value of the first operator that returns a positive value, or zero if all members were 
+ *           processed with no operator returning non-zero.
+ *
+ *  @exception HDF5LibraryException - Error from the HDF-5 Library.
+ *  @exception NullPointerException - buf is null.
+ **/
+public synchronized static native int H5Diterate(byte[] buff, int buf_type, int space,
+        H5D_iterate_cb op, H5D_iterate_t op_data)
+throws HDF5LibraryException, NullPointerException;
+
 //////////////////////////////////////////////////////////////
 ////
-//H5R: HDF5 1.8 Reference API Functions            //
+//H5R: HDF5 1.8 Reference API Functions                     //
 ////
 //////////////////////////////////////////////////////////////
 
