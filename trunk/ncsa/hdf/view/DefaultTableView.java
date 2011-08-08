@@ -216,6 +216,9 @@ implements TableView, ActionListener, MouseListener
     
     private static final int BYTE_BUFFER_SIZE = 2097152;
     
+    /* the value of the current cell value in editing. */
+    private Object currentEditingCellValue = null;
+    
      /**
      * Constructs an TableView.
      * <p>
@@ -1692,18 +1695,25 @@ implements TableView, ActionListener, MouseListener
 
         	public boolean editCellAt(int row, int column, java.util.EventObject e) 
         	{
-
                 if (!isCellEditable(row, column)) {
                     return super.editCellAt(row, column, e);
                 }
                 
 				if (e instanceof KeyEvent) {
 					KeyEvent ke = (KeyEvent)e;
-					if (ke.getID()==KeyEvent.KEY_PRESSED) 
+					if (ke.getID()==KeyEvent.KEY_PRESSED)  {
 						startEditing[0] = true;
+					}
 				}
-				
-                return super.editCellAt(row, column, e);
+				else if (e instanceof MouseEvent) {
+					MouseEvent me = (MouseEvent) e;
+					int mc = me.getClickCount();
+					if (mc > 1) {
+						currentEditingCellValue = getValueAt(row, column);
+					}
+				}
+
+				return super.editCellAt(row, column, e);
             }
             
             public void editingStopped(ChangeEvent e)
@@ -1719,7 +1729,7 @@ implements TableView, ActionListener, MouseListener
                 {
                     CellEditor editor = (CellEditor)source;
                     String cellValue = (String)editor.getCellEditorValue();
-
+                    
                     try {
                         updateValueInMemory(cellValue, row, col);
                     }
@@ -1982,6 +1992,13 @@ implements TableView, ActionListener, MouseListener
 					if (ke.getID()==KeyEvent.KEY_PRESSED) 
 						startEditing[0] = true;
 				}
+				else if (e instanceof MouseEvent) {
+					MouseEvent me = (MouseEvent) e;
+					int mc = me.getClickCount();
+					if (mc > 1) {
+						currentEditingCellValue = getValueAt(row, column);
+					}
+				}
 				
                 return super.editCellAt(row, column, e);
             }
@@ -1991,8 +2008,8 @@ implements TableView, ActionListener, MouseListener
                 int row = getEditingRow();
                 int col = getEditingColumn();
                 super.editingStopped(e);
-                startEditing[0] = false;
-
+            	startEditing[0] = false;
+ 
                 Object source = e.getSource();
 
                 if (source instanceof CellEditor)
@@ -2000,7 +2017,9 @@ implements TableView, ActionListener, MouseListener
                     CellEditor editor = (CellEditor)source;
                     String cellValue = (String)editor.getCellEditorValue();
 
-                    try { updateValueInMemory(cellValue, row, col); }
+                    try { 
+                    	updateValueInMemory(cellValue, row, col); 
+                    }
                     catch (Exception ex)
                     {
                         toolkit.beep();
@@ -2708,13 +2727,6 @@ implements TableView, ActionListener, MouseListener
         out.close();
 
         viewer.showStatus("Data save to: "+fname);
-
-//        try {
-//            RandomAccessFile rf = new RandomAccessFile(choosedFile, "r");
-//            long size = rf.length();
-//            rf.close();
-//            viewer.showStatus("File size (bytes): "+size);
-//        } catch (Exception ex) {}
     }
     
     /** Save data as binary. */
@@ -3108,6 +3120,12 @@ implements TableView, ActionListener, MouseListener
     private void updateValueInMemory(String cellValue, int row, int col)
     throws Exception
     {
+    	if (currentEditingCellValue!=null) {
+    		// data values are the same, no need to change the data
+    		if (currentEditingCellValue.toString().equals(cellValue))
+    			return;
+    	}
+    	
         if (dataset instanceof ScalarDS) {
             updateScalarData(cellValue, row, col);
         } else if (dataset instanceof CompoundDS) {
