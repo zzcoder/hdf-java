@@ -138,8 +138,9 @@ public class DebugHDF {
 //        try {  testH5Vlen("G:\\temp\\str.h5") ; } catch (Exception ex) {ex.printStackTrace();}
 //        try {  testH5VlenObj("G:\\temp\\str2.h5") ; } catch (Exception ex) {ex.printStackTrace();}
 //        try {  testH5VlenAttr("G:\\temp\\vlen_str_attr.h5") ; } catch (Exception ex) {ex.printStackTrace();}
-      try {testRefData("g:\\temp\\refs.h5", "refs"); } catch (Exception ex) {ex.printStackTrace();} 
-   }
+//        try {testRefData("g:\\temp\\refs.h5", "refs"); } catch (Exception ex) {ex.printStackTrace();}
+      try {testH5WriteDouble("g:\\temp\\double.h5"); } catch (Exception ex) {ex.printStackTrace();}
+    }
     
     public static void testRefData(String fname, String dname)throws Exception
     {
@@ -1897,6 +1898,25 @@ FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
         dataset.write(data);
         */
         
+        file.close();
+    }
+    
+    private static void testH5WriteDouble(final String filename) throws Exception 
+    {
+    	double[] data = new double[100];
+        H5File file = new H5File(filename, H5File.CREATE);
+        file.open();
+        
+        for (int i=0; i<data.length; i++)
+        	data[i] = Math.random();
+        
+        long[] dims = {data.length};
+        Datatype dtype = file.createDatatype(Datatype.CLASS_FLOAT, 8, Datatype.NATIVE, Datatype.NATIVE);
+
+        Dataset dataset = file.createScalarDS("dset", null, dtype, dims, null, null, 0, null);
+        dataset.init();
+        dataset.write(data);
+
         file.close();
     }
     
