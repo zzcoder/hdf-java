@@ -849,10 +849,10 @@ jint sdsid)
 
     rval = SDisrecord((int32)sdsid);
 
-    if (rval == FAIL) {
-        return JNI_FALSE;
-    } else {
+    if (rval == TRUE) {
         return JNI_TRUE;
+    } else {
+        return JNI_FALSE;
     }
 }
 
