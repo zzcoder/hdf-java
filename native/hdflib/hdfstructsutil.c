@@ -24,7 +24,7 @@ extern "C" {
 
 #ifdef __cplusplus
 #define ENVPTR (env)
-#define ENVPAR 
+#define ENVPAR
 #else
 #define ENVPTR (*env)
 #define ENVPAR env,
@@ -570,7 +570,7 @@ jobject compinfo;
                 if (jc == NULL) {
                     return JNI_FALSE;
                 }
-                jmi = ENVPTR->GetMethodID(ENVPAR  jc, "<init>", "(IIIIII)V");
+                jmi = ENVPTR->GetMethodID(ENVPAR  jc, "<init>", "(IIIII)V");
                 if (jmi == NULL) {
                     return JNI_FALSE;
                 }
@@ -621,13 +621,13 @@ jint coder_type) /* out: CompInfo */
 {
 	intn rval;
 	uint32 compression_config_info=0;
-	
+
 	/* check for success... */
 	rval = HCget_config_info( (comp_coder_t) coder_type, (uint32*)&compression_config_info);
 
 	if (rval == FAIL)
 		return -1;
-	
+
 	return compression_config_info;
 }
 
