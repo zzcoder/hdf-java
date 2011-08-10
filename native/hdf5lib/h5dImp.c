@@ -1759,19 +1759,18 @@ herr_t H5D_iterate_cb(void* elem, hid_t elem_id, unsigned ndim, const hsize_t *p
         JVMPTR->DetachCurrentThread(JVMPAR);
         return -1;
     }
-    CBENVPTR->SetByteArrayRegion(CBENVPAR elemArray, 0, size, elem);
+    CBENVPTR->SetByteArrayRegion(CBENVPAR elemArray, 0, size, (jbyte *)elem);
     
     pointArray = CBENVPTR->NewLongArray(CBENVPAR 2);
     if (pointArray == NULL) {
         JVMPTR->DetachCurrentThread(JVMPAR);
         return -1;
     }
-
-    CBENVPTR->SetLongArrayRegion(CBENVPAR pointArray, 0, 2, point);
+    CBENVPTR->SetLongArrayRegion(CBENVPAR pointArray, 0, 2, (const jlong *)point);
 
     status = CBENVPTR->CallIntMethod(CBENVPAR visit_callback, mid, elemArray, elem_id, ndim, pointArray, op_data);
 
-    CBENVPTR->GetByteArrayRegion(CBENVPAR elemArray, 0, size, elem);
+    CBENVPTR->GetByteArrayRegion(CBENVPAR elemArray, 0, size, (jbyte *)elem);
 
     JVMPTR->DetachCurrentThread(JVMPAR);
     return status;
