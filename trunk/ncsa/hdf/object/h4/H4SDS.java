@@ -128,7 +128,7 @@ public class H4SDS extends ScalarDS
     public H4SDS(FileFormat theFile, String name, String path)
     {
         this(theFile, name, path, null);
-    }
+    } 
 
     /**
      * Creates an H4SDS object with specific name and path.
@@ -614,7 +614,7 @@ public class H4SDS extends ScalarDS
             }
 
             isUnlimited = HDFLibrary.SDisrecord(id);
-            
+           
             datatypeID = sdInfo[1];
             isText = ((datatypeID == HDFConstants.DFNT_CHAR) || (datatypeID == HDFConstants.DFNT_UCHAR8));
 
@@ -673,7 +673,7 @@ public class H4SDS extends ScalarDS
 
                 try {
                     boolean status = HDFLibrary.SDgetchunkinfo(id, chunkInfo, cflag);
-                } catch (Throwable ex) {}
+                } catch (Throwable ex) {ex.printStackTrace();}
 
                 if (cflag[0] == HDFConstants.HDF_NONE) {
                     chunkSize = null;
