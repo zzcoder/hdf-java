@@ -638,7 +638,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         else if (source.equals(checkCompression)) {
             boolean isCompressed = checkCompression.isSelected();
 
-            if (isCompressed) {
+            if (isCompressed && isH5) {
                 if (!checkChunked.isSelected()) {
                     String currentStr = currentSizeField.getText();
                     int idx = currentStr.lastIndexOf("x");
@@ -665,7 +665,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
                 chunkSizeField.setEnabled(true);
             }
             else {
-                compressionLevel.setEnabled(false);
+                compressionLevel.setEnabled(isCompressed);
                 checkContinguous.setEnabled(true);
             }
         }
@@ -691,12 +691,11 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
     	int rank = stDim.countTokens();
     	long max=0, dim=0;
     	long[] maxdims = new long[rank];
-    	long[] dims = new long[rank];
     	for (int i = 0; i < rank; i++) {
     		String token = stMax.nextToken().trim();
 
     		token = token.toLowerCase();
-    		if (token.startsWith("unl")) {
+    		if (token.startsWith("u")) {
     			max = -1;
     			isChunkNeeded = true;
     		} else {
@@ -738,15 +737,32 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
     		} else if (max>dim) {
     			isChunkNeeded = true;
     		}
+    		
+    		maxdims[i] = max;
     	} // for (int i = 0; i < rank; i++)
     	
-    	if (isChunkNeeded && !checkChunked.isSelected()) {
-			toolkit.beep();
-			JOptionPane.showMessageDialog(this,
-					"Chunking is required for the max dimensions of "
-					+ maxStr, getTitle(),
-					JOptionPane.ERROR_MESSAGE);
-			checkChunked.setSelected(true);
+    	if (isH5) {
+        	if (isChunkNeeded && !checkChunked.isSelected()) {
+    			toolkit.beep();
+    			JOptionPane.showMessageDialog(this,
+    					"Chunking is required for the max dimensions of "
+    					+ maxStr, getTitle(),
+    					JOptionPane.ERROR_MESSAGE);
+    			checkChunked.setSelected(true);
+        	}
+    	} else {
+    		for (int i=1; i<rank; i++) {
+    			if (maxdims[i] <=0) {
+    				maxSizeField.setText(currentSizeField.getText());
+        			toolkit.beep();
+        			JOptionPane.showMessageDialog(this,
+        					"Only dim[0] can be unlimited."
+        					+ maxStr, getTitle(),
+        					JOptionPane.ERROR_MESSAGE);
+
+    				return;
+    			}
+    		}
     	}
     }
 
@@ -1021,7 +1037,7 @@ public class NewDatasetDialog extends JDialog implements ActionListener,
         		token = st.nextToken().trim();
 
         		token = token.toLowerCase();
-        		if (token.startsWith("unl"))
+        		if (token.startsWith("u"))
         			l = -1;
         		else {
         			try {
