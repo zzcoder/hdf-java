@@ -420,13 +420,7 @@ jboolean bb;
         if (jf == NULL) {
             return JNI_FALSE;
         }
-                cinf->comp.comp_type = ENVPTR->GetIntField(ENVPAR  chunkobj, jf);
-
-        jf = ENVPTR->GetFieldID(ENVPAR  jc, "model_type", "I");
-        if (jf == NULL) {
-            return JNI_FALSE;
-        }
-                cinf->comp.model_type = ENVPTR->GetIntField(ENVPAR  chunkobj, jf);
+        cinf->comp.comp_type = ENVPTR->GetIntField(ENVPAR  chunkobj, jf);
 
         jf = ENVPTR->GetFieldID(ENVPAR  jc, "cinfo", "Lncsa/hdf/hdflib/HDFCompInfo;");
         if (jf == NULL) {
@@ -436,7 +430,10 @@ jboolean bb;
         if (larr == NULL) {
             return JNI_FALSE;
         }
-        bval = getNewCompInfo(env, (jobject)larr,&(cinf->comp.cinfo));
+
+        /* set compression information */
+        bval = getNewCompInfo(env, (jobject)larr, &(cinf->comp.cinfo));
+
      } else if (ctype == (HDF_CHUNK | HDF_NBIT)) {
         jc = ENVPTR->FindClass(ENVPAR  "ncsa/hdf/hdflib/HDFNBITChunkInfo");
         if (jc == NULL) {
@@ -463,26 +460,27 @@ jboolean bb;
         if (jf == NULL) {
             return JNI_FALSE;
         }
-                cinf->nbit.start_bit = ENVPTR->GetIntField(ENVPAR  chunkobj, jf);
+        cinf->nbit.start_bit = ENVPTR->GetIntField(ENVPAR  chunkobj, jf);
 
         jf = ENVPTR->GetFieldID(ENVPAR  jc, "bit_len", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-                cinf->nbit.bit_len = ENVPTR->GetIntField(ENVPAR  chunkobj, jf);
+        cinf->nbit.bit_len = ENVPTR->GetIntField(ENVPAR  chunkobj, jf);
 
         jf = ENVPTR->GetFieldID(ENVPAR  jc, "sign_ext", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-                cinf->nbit.sign_ext = ENVPTR->GetIntField(ENVPAR  chunkobj, jf);
+        cinf->nbit.sign_ext = ENVPTR->GetIntField(ENVPAR  chunkobj, jf);
 
         jf = ENVPTR->GetFieldID(ENVPAR  jc, "fill_one", "I");
         if (jf == NULL) {
             return JNI_FALSE;
         }
-                cinf->nbit.fill_one = ENVPTR->GetIntField(ENVPAR  chunkobj, jf);
+        cinf->nbit.fill_one = ENVPTR->GetIntField(ENVPAR  chunkobj, jf);
     }
+
     return JNI_TRUE;
 }
 

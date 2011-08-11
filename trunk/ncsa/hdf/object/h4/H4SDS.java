@@ -763,8 +763,7 @@ public class H4SDS extends ScalarDS
         H4SDS dataset = null;
         if ((pgroup == null) ||
             (name == null)||
-            (dims == null) ||
-            ((gzip>0) && (chunks==null))) {
+            (dims == null)) {
             return null;
         }
 
@@ -773,7 +772,7 @@ public class H4SDS extends ScalarDS
         if (file == null) {
             return null;
         }
-
+        
         String path = HObject.separator;
         if (!pgroup.isRoot()) {
             path = pgroup.getPath()+pgroup.getName()+HObject.separator;
@@ -794,7 +793,7 @@ public class H4SDS extends ScalarDS
         // the dimension of the lowest rank or the slowest-changing dimension)
         // can be assigned the value SD_UNLIMITED (or 0) to make the first
         // dimension unlimited.
-        if ((maxdims != null) && (maxdims[0]<0))
+        if ((maxdims != null) && (maxdims[0]<=0))
         {
             idims[0] = 0; // set to unlimited dimension.
         }
@@ -806,6 +805,11 @@ public class H4SDS extends ScalarDS
             for (int i=0; i<rank; i++) {
                 ichunks[i] = (int)chunks[i];
             }
+        }
+        
+        // unlimted cannot be used with chunking or compression for HDF 4.2.6 or earlier.
+        if (idims[0] == 0 && (ichunks != null || gzip>0)) {
+        	throw new HDFException("Unlimted cannot be used with chunking or compression");
         }
 
         int sdid, sdsid, vgid;
@@ -830,7 +834,7 @@ public class H4SDS extends ScalarDS
 
             // comment out the following lines because SDwritedata fails when
             // try to write data into a zero dimension array. 05/25/05
-            // don't know why teh code was first put here ????
+            // don't know why the code was first put here ????
             /**
             if (idims[0] == 0 && data == null)
             {
@@ -846,25 +850,38 @@ public class H4SDS extends ScalarDS
             throw (new HDFException("Unable to create the new dataset."));
         }
 
-        if ((sdsid > 0) && (data != null))
+        HDFDeflateCompInfo compInfo = null;
+        if (gzip > 0)
         {
-            HDFLibrary.SDwritedata(sdsid, start, null, idims, data);
+            // set compression
+            compInfo = new HDFDeflateCompInfo();
+            compInfo.level = gzip;
+            if (chunks == null)
+            	HDFLibrary.SDsetcompress(sdsid, HDFConstants.COMP_CODE_DEFLATE, compInfo);
         }
 
         if (chunks != null)
         {
-            // set chunk
-            HDFChunkInfo chunkInfo = new HDFChunkInfo(ichunks);
-            HDFLibrary.SDsetchunk (sdsid, chunkInfo, HDFConstants.HDF_CHUNK);
+        	// set chunk
+        	HDFChunkInfo chunkInfo = new HDFChunkInfo(ichunks);
+        	int flag = HDFConstants.HDF_CHUNK;
+
+        	if (gzip > 0) {
+        		flag = HDFConstants.HDF_CHUNK | HDFConstants.HDF_COMP;
+        		chunkInfo = new HDFChunkInfo(ichunks, HDFConstants.COMP_CODE_DEFLATE, compInfo);
+        	}
+        	
+        	try  {
+        		HDFLibrary.SDsetchunk (sdsid, chunkInfo, flag);
+        	} catch (Throwable err) {
+        		err.printStackTrace();
+            	throw new HDFException("SDsetchunk failed.");
+        	}
         }
 
-        if (gzip > 0)
+        if ((sdsid > 0) && (data != null))
         {
-            // set compression
-            int compType = HDFConstants.COMP_CODE_DEFLATE;
-            HDFDeflateCompInfo compInfo = new HDFDeflateCompInfo();
-            compInfo.level = gzip;
-            HDFLibrary.SDsetcompress(sdsid, compType, compInfo);
+            HDFLibrary.SDwritedata(sdsid, start, null, idims, data);
         }
 
         int ref = HDFLibrary.SDidtoref(sdsid);
