@@ -321,7 +321,7 @@ public class H5CompoundDS extends CompoundDS {
         Vector atomicList = new Vector();
         try // to match finally for closing resources
         {
-             long[] lsize = { 1 };
+            long[] lsize = { 1 };
             lsize[0] = selectHyperslab(did, spaceIDs);
 
             // read each of member data into a byte array, then extract
