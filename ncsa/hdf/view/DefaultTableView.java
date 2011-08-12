@@ -1874,12 +1874,11 @@ implements TableView, ActionListener, MouseListener
         {
         	private static final long serialVersionUID = HObject.serialVersionUID;
 
-        	List list = (List)dataValue;
         	CompoundDS compound = (CompoundDS)dataset;
         	int orders[] = compound.getSelectedMemberOrders();
         	Datatype types[] = compound.getSelectedMemberTypes();
         	StringBuffer stringBuffer = new StringBuffer();
-        	int nFields = list.size();
+        	int nFields = ((List)dataValue).size();
         	int nRows = getRowCount();
         	int nSubColumns = (nFields>0) ? getColumnCount()/nFields : 0;
 
@@ -1914,7 +1913,7 @@ implements TableView, ActionListener, MouseListener
         			rowIdx = row*orders[fieldIdx];
         		}
 
-        		Object colValue = list.get(fieldIdx);
+        		Object colValue = ((List)dataValue).get(fieldIdx);
         		if (colValue == null) {
         			return "Null";
         		}

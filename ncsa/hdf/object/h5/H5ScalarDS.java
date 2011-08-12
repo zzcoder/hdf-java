@@ -514,7 +514,7 @@ public class H5ScalarDS extends ScalarDS {
             selectedDims[selectedIndex[1]] = dims[selectedIndex[1]];
         }
 
-        // only can display one-D a time for text data
+        // by default, only one-D is selected for text data 
         if ((rank > 1) && isText) {
             selectedIndex[0] = rank - 1;
             selectedIndex[1] = 0;
