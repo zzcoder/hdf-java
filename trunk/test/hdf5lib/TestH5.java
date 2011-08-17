@@ -5,7 +5,17 @@ package test.hdf5lib;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
 
@@ -162,6 +172,58 @@ public class TestH5 {
         }
         catch (Throwable err) {
             fail("H5.H5check_version failed: " + err);
+        }
+    }
+    
+    @Test
+    public void testIsSerializable() {
+        H5 test = new H5();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ObjectOutputStream oos;
+        try {
+            oos = new ObjectOutputStream(out);
+            oos.writeObject(test);
+            oos.close();
+        }
+        catch (IOException err) {
+            err.printStackTrace();
+            fail("ObjectOutputStream failed: " + err);
+        }
+        assertTrue(out.toByteArray().length > 0);
+
+    }
+    
+    @SuppressWarnings("static-access")
+    @Test 
+    public void serializeToDisk()
+    {
+        try {
+            H5 test = new H5();
+
+            FileOutputStream fos = new FileOutputStream("temph5.ser");
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(test);
+            oos.close();
+        }
+        catch (Exception ex) {
+            fail("Exception thrown during test: " + ex.toString());
+        }
+        
+        try {
+            FileInputStream fis = new FileInputStream("temph5.ser");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            H5 test = (ncsa.hdf.hdf5lib.H5) ois.readObject();
+            ois.close();
+            
+            assertTrue("H5.LIB_VERSION[0]", test.LIB_VERSION[0]==H5.LIB_VERSION[0]);
+            assertTrue("H5.LIB_VERSION[1]", test.LIB_VERSION[1]==H5.LIB_VERSION[1]);
+            assertTrue("H5.LIB_VERSION[2]", test.LIB_VERSION[2]==H5.LIB_VERSION[2]);
+            
+            // Clean up the file
+            new File("temph5.ser").delete();
+        }
+        catch (Exception ex) {
+            fail("Exception thrown during test: " + ex.toString());
         }
     }
 }

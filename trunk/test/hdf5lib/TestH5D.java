@@ -5,9 +5,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.util.ArrayList;
 
 import ncsa.hdf.hdf5lib.H5;
 import ncsa.hdf.hdf5lib.HDF5Constants;
@@ -19,6 +16,7 @@ import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestH5D {
@@ -28,6 +26,7 @@ public class TestH5D {
     private static final int RANK = 2;
     int H5fid = -1;
     int H5dsid = -1;
+    int H5dtid = -1;
     int H5did = -1;
     int H5did0 = -1;
     int H5dcpl_id = -1;
@@ -105,22 +104,59 @@ public class TestH5D {
             err.printStackTrace();
             fail("H5.H5Dcreate: " + err);
         }
-        assertTrue("TestH5D._createPDataset: ", H5did > 0);
+        assertTrue("TestH5D._createDataset: ", H5did > 0);
     }
 
-//    private final int _openDataset(int fid, String name) {
-//       int did = -1;
-//       try {
-//           did = H5.H5Dopen(fid, name, HDF5Constants.H5P_DEFAULT);
-//      }
-//       catch (Throwable err) {
-//           did = -1;
-//           err.printStackTrace();
-//           fail("H5.H5Dopen: " + err);
-//       }
-//       assertTrue("TestH5D._openDataset: ",did > 0);
-//       return did;
-//    }
+    private final void _createVLDataset(int fid, int dsid, String name, int dapl) {
+        try {
+            H5dtid = H5.H5Tcopy(HDF5Constants.H5T_C_S1);
+            H5.H5Tset_size(H5dtid, HDF5Constants.H5T_VARIABLE);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Tcopy: " + err);
+        }
+        assertTrue("TestH5D._createVLDataset: ", H5dtid > 0);
+        try {
+            H5did = H5.H5Dcreate(fid, name, H5dtid, dsid,
+                        HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT, dapl);
+        }
+        catch (Throwable err) {
+            err.printStackTrace();
+            fail("H5.H5Dcreate: " + err);
+        }
+        assertTrue("TestH5D._createVLDataset: ", H5did > 0);
+    }
+    
+    private final void _closeH5file() throws HDF5LibraryException {
+        if (H5dcpl_id >= 0)
+            H5.H5Pclose(H5dcpl_id);
+        if (H5did0 >= 0)
+            H5.H5Dclose(H5did0);
+        if (H5did >= 0)
+            H5.H5Dclose(H5did);
+        if (H5dtid > 0) 
+            H5.H5Tclose(H5dtid);
+        if (H5dsid > 0) 
+            H5.H5Sclose(H5dsid);
+        if (H5fid > 0) 
+            H5.H5Fclose(H5fid);
+    }
+
+    private final void _openH5file(String name, int dapl) {
+       try {
+           H5fid = H5.H5Fopen(H5_FILE,
+                   HDF5Constants.H5P_DEFAULT, HDF5Constants.H5P_DEFAULT);
+           H5did = H5.H5Dopen(H5fid, name, dapl);
+           H5dsid = H5.H5Dget_space(H5did);
+      }
+       catch (Throwable err) {
+           err.printStackTrace();
+           fail("TestH5D._openH5file: " + err);
+       }
+       assertTrue("TestH5D._openH5file: H5.H5Fopen: ",H5fid > 0);
+       assertTrue("TestH5D._openH5file: H5.H5Screate_simple: ",H5dsid > 0);
+    }
 
     @Before
     public void createH5file()
@@ -150,6 +186,8 @@ public class TestH5D {
             H5.H5Dclose(H5did0);
         if (H5did >= 0)
             H5.H5Dclose(H5did);
+        if (H5dtid > 0) 
+            H5.H5Tclose(H5dtid);
         if (H5dsid > 0) 
             H5.H5Sclose(H5dsid);
         if (H5fid > 0) 
@@ -721,6 +759,105 @@ public class TestH5D {
         for (int indx = 0; indx < DIM_X; indx++)
             for (int jndx = 0; jndx < DIM_Y; jndx++)
                 assertTrue("H5.H5Diterate: [" + indx+","+jndx + "] "+buf_data[(indx * DIM_Y) + jndx], buf_data[(indx * DIM_Y) + jndx] == 126);
+    }
+
+    @Test
+    public void testH5Dvlen_get_buf_size() throws Throwable, HDF5LibraryException, NullPointerException {
+        String[] str_data = { "Parting", "is such", "sweet", "sorrow.",
+                "Testing", "one", "two", "three.",
+                "Dog,", "man's", "best", "friend.",
+                "Diamonds", "are", "a", "girls!",
+                "S A", "T U R", "D A Y", "night",
+                "That's", "all", "folks", "!!!" };
+        int[] size = new int[2];
+        long vl_size = -1;  /* Number of bytes used */
+        long str_data_bytes = 0;
+        for (int idx = 0; idx < str_data.length; idx++)
+            str_data_bytes += str_data[idx].length() + 1;  //Account for terminating null
+        
+        _createVLDataset(H5fid, H5dsid, "dset", HDF5Constants.H5P_DEFAULT);
+        
+        try {
+            if ((H5did >= 0) && (H5dtid >= 0))
+                H5.H5DwriteString(H5did, H5dtid,
+                        HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
+                        HDF5Constants.H5P_DEFAULT, str_data);
+
+            _closeH5file();
+            _openH5file("dset", HDF5Constants.H5P_DEFAULT);
+            H5dtid = H5.H5Dget_type(H5did);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            H5.H5Dvlen_get_buf_size(H5did, H5dtid, H5dsid, size);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        byte[] buf_array = HDFNativeData.intToByte(0, 2, size);
+        vl_size = HDFNativeData.byteToLong(buf_array, 0);
+        assertTrue("H5Dvlen_get_buf_size " + vl_size + " == " + str_data_bytes, vl_size == str_data_bytes);
+    }
+
+    @Test
+    public void testH5Dvlen_get_buf_size_long() throws Throwable, HDF5LibraryException, NullPointerException {
+        String[] str_data = { "Parting", "is such", "sweet", "sorrow.",
+                "Testing", "one", "two", "three.",
+                "Dog,", "man's", "best", "friend.",
+                "Diamonds", "are", "a", "girls!",
+                "S A", "T U R", "D A Y", "night",
+                "That's", "all", "folks", "!!!" };
+        long vl_size = -1;  /* Number of bytes used */
+        long str_data_bytes = 0;
+        for (int idx = 0; idx < str_data.length; idx++)
+            str_data_bytes += str_data[idx].length() + 1;  //Account for terminating null
+        
+        _createVLDataset(H5fid, H5dsid, "dset", HDF5Constants.H5P_DEFAULT);
+        
+        try {
+            if ((H5did >= 0) && (H5dtid >= 0))
+                H5.H5DwriteString(H5did, H5dtid,
+                        HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
+                        HDF5Constants.H5P_DEFAULT, str_data);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            vl_size = H5.H5Dvlen_get_buf_size_long(H5did, H5dtid, H5dsid);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        assertTrue("H5Dvlen_get_buf_size_long " + vl_size + " == " + str_data_bytes, vl_size == str_data_bytes);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testH5Dvlen_read_invalid_buffer() throws Throwable, HDF5LibraryException {
+        String[] str_data = { "Parting", "is such", "sweet", "sorrow.",
+                "Testing", "one", "two", "three.",
+                "Dog,", "man's", "best", "friend.",
+                "Diamonds", "are", "a", "girls!",
+                "S A", "T U R", "D A Y", "night",
+                "That's", "all", "folks", "!!!" };
+        byte[] read_data = new byte[512];
+        
+        _createVLDataset(H5fid, H5dsid, "dset", HDF5Constants.H5P_DEFAULT);
+        
+        try {
+            H5.H5DwriteString(H5did, H5dtid,
+                    HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
+                    HDF5Constants.H5P_DEFAULT, str_data);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        H5.H5Dread(H5did, H5dtid, 
+                     HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL, 
+                     HDF5Constants.H5P_DEFAULT, read_data);
     }
 
 }
