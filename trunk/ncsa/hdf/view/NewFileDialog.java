@@ -82,24 +82,25 @@ public class NewFileDialog extends JFileChooser // JDialog
         fileCreated = false;
         fileList = openFiles;
         toolkit = Toolkit.getDefaultToolkit();
-
-        if (fileType == FileFormat.FILE_TYPE_HDF4) {
-            isH4 = true;
-            setSelectedFile(new File("*.hdf"));
-            setFileFilter(DefaultFileFilter.getFileFilterHDF4());
-        }
-        else if (fileType == FileFormat.FILE_TYPE_HDF5) {
-            isH5 = true;
-            setSelectedFile(new File("*.h5"));
-            setFileFilter(DefaultFileFilter.getFileFilterHDF5());
-        }
-
+        
         if (currentDir != null) {
             currentDir += File.separator;
         }
         else {
             currentDir = "";
         }
+
+        if (fileType == FileFormat.FILE_TYPE_HDF4) {
+            isH4 = true;
+            setSelectedFile(Tools.checkNewFile(currentDir, ".hdf"));
+            setFileFilter(DefaultFileFilter.getFileFilterHDF4());
+        }
+        else if (fileType == FileFormat.FILE_TYPE_HDF5) {
+            isH5 = true;
+            setSelectedFile(Tools.checkNewFile(currentDir, ".h5"));
+            setFileFilter(DefaultFileFilter.getFileFilterHDF5());
+        }
+
 
         this.showSaveDialog(owner);
     }
